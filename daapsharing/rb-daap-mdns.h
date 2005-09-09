@@ -57,6 +57,7 @@ typedef void (* RBDAAPmDNSResolverCallback) (RBDAAPmDNSResolver resolver,
 					     const gchar *name,
 					     gchar *host,
 					     guint port,
+					     gboolean password_protected,
 					     gpointer user_data);
 
 gboolean

@@ -195,6 +195,40 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/daap/sorting</key>
+        <applyto>/apps/rhythmbox/state/daap/sorting</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Artist,ascending</default>
+        <locale name="C">
+	<short>The sorting order</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/daap/show_browser</key>
+        <applyto>/apps/rhythmbox/state/daap/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>1</default>
+        <locale name="C">
+	<short>Show browser in remote music shares</short>
+	<long>Show the artist and album browser in remote music shares.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/daap/paned_position</key>
+        <applyto>/apps/rhythmbox/state/daap/paned_position</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>180</default>
+        <locale name="C">
+	<short>Position of remote music shares browser pane</short>
+	<long>Position of remote music shares browser pane.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/ui/columns_setup</key>
         <applyto>/apps/rhythmbox/ui/columns_setup</applyto>
         <owner>rhythmbox</owner>

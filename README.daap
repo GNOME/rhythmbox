@@ -8,11 +8,10 @@ How to build and use Rhythmbox with DAAP music sharing support
 * Check Edit->Preferences->Sharing to share your music library.
 
 
-
 How Music Sharing Works
 
 0. Definitions
-1. mDNS support 
+1. mDNS/DNS-SD support 
 2. Discovering new music shares
 3. Connecting to a music share
 4. Playing remote music
@@ -29,14 +28,13 @@ response.  DAAP is the same music sharing protocol used by Apple iTunes.  So,
 a copy of Rhythmbox that was compiled with DAAP will be able to browse iTunes
 shares, and iTunes will be able to browse Rhythmbox's music.
 
-mDNS is multicast DNS.  Apple calls it Bonjour or Rendezvous.  Its also part of
-or known as DNS Service Discovery (DNS-SD).  The fundamentals aren't especially
-important, suffice it to say it allows for automatic discovery of services on 
-your local network.  You send out an mDNS request for DAAP servers, it responds
-with all the servers that have published their information on your network.  
-mDNS services have types.  The DAAP service type is _daap.  It is transported 
-over tcp, so in the code you'll often see _daap._tcp, which is the full name 
-for a DAAP service.  
+mDNS is multicast DNS.  DNS Service Discovery (DNS-SD) sits on top of it.  
+mDNS/DNS-SD is what Apple calls Bonjour or Rendezvous.  The fundamentals aren't especially important, suffice it to say it allows for automatic discovery of 
+services on your local network.  You send out an mDNS/DNS-SD request for DAAP 
+servers, it responds with all the servers that have published their information 
+on your network.  mDNS/DNS-SD services have types.  The DAAP service type is 
+_daap.  It is transported over tcp, so in the code you'll often see _daap._tcp, 
+which is the full name for a DAAP service.  
 
 iTunes hashing is an "authentication" method that appeared in later versions
 of Apple iTunes.  It is a modified md5 hash of the URI being requested from a
@@ -44,26 +42,26 @@ DAAP server.  The hash is sent along in the HTTP headers to show an iTunes
 server that the connecting client is "authenticated" (i.e. "is an iTunes
 client").  The hashing code was borrowed with many thanks from libopendaap.
 
-1. mDNS support
+1. mDNS/DNS-SD support
 
-For DAAP music sharing you'll need an mDNS implementation.  
+For DAAP music sharing you'll need an mDNS/DNS-SD implementation.  
 
 Howl (http://www.porchdogsoft.com/products/howl/) 
 or
 Avahi (http://www.freedesktop.org/Software/Avahi) 
 
-are supported.  Either way, the mDNS routines live in 
+are supported.  Either way, the mDNS/DNS-SD routines live in 
 daapsharing/rb-daap-mdns.c/h.
 
-There are three routines in the mDNS libraries that we need.  Browsing to
+There are three routines in the mDNS/DNS-SD libraries that we need.  Browsing to
 discover remote shares, Resolving to figure out those shares' IP addresses, and
 Publishing to make our own share known on the network.  There are three opaque
 datatypes, RBDAAPmDNSBrowser, RBDAAPmDNSResolver, RBDAAPmDNSPublisher.  If
 Rhythmbox has been compiled with Howl support, these will will be used as
-sw_discovery_oid structures, which are used to identify the specific mDNS call.
-If Rhythmbox is using Avahi, these datatypes represent AvahiServiceBrowser,
-AvahiServiceResolver and AvahiEntryGroup variables, which, again, are used to 
-uniquely idenfity the specific mDNS call.
+sw_discovery_oid structures, which are used to identify the specific mDNS/DNS-SD
+call.  If Rhythmbox is using Avahi, these datatypes represent 
+AvahiServiceBrowser, AvahiServiceResolver and AvahiEntryGroup variables, 
+which, again, are used to uniquely idenfity the specific mDNS/DNS-SD call.
 
 Browsing for remote shares is started via rb_daap_mdns_browse() which takes a
 callback that is run anytime a share is discovered or goes away.  Browsing will
@@ -184,7 +182,7 @@ Publishing is started in shell/rb-shell.c:rb_shell_constructor() via the
 rb_daap_sharing_init() call.  This creates an RBDAAPShare structure, which, in 
 turn, creates a SoupServer structure to handle HTTP requests.  The server binds
 on an available port, and this port along with the machine's IP address are
-published to mDNS/DNS-sd via RBDAAPmDNSPublisher.
+published to mDNS/DNS-SD via RBDAAPmDNSPublisher.
 
 RBDAAPShare does several things.  It assigns unique ID numbers to every song
 in the RhythmDB, and keeps an up to date mapping of RhythmDBEntry to ID and ID

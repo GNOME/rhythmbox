@@ -58,7 +58,8 @@ typedef struct
 GType		rb_playlist_source_get_type	(void);
 
 RBSource *	rb_playlist_source_new		(RBShell *shell,
-						 gboolean smart);
+						 gboolean smart, 
+						 gboolean local);
 
 RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 						 xmlNodePtr node);
@@ -95,6 +96,9 @@ void		rb_playlist_source_remove_entry	(RBPlaylistSource *source,
 
 void		rb_playlist_source_add_location	(RBPlaylistSource *source,
 						 const char *location);
+
+void            rb_playlist_source_add_locations (RBPlaylistSource *source,
+						  GList *locations);
 
 void		rb_playlist_source_remove_location	(RBPlaylistSource *source,
 						 	 const char *location);

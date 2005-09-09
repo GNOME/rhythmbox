@@ -26,12 +26,55 @@
 #include <libgnome/gnome-i18n.h>
 #include "rb-dialog.h"
 
+#include <string.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #ifdef WITH_DAAP_SUPPORT
 static void mdns_error_dialog (const gchar *impl)
 {
 	rb_error_dialog (NULL, _("Unable to browse for remote shares"), _("Could not start browsing for music servers on your network.  Rhythmbox will continue to function, without this feature.  Check your %s installation"), impl);
 
 	return;
+}
+
+static gboolean
+is_local_address (const gchar *address)
+{
+	static struct hostent *he = NULL;
+	struct in_addr addr;
+	gint i;
+	
+	if (he == NULL) {
+		gint ret;
+		gchar hostname[255 + 7];
+	
+		ret = gethostname (hostname, 255);
+		if (ret) {
+			return FALSE;
+		}
+
+		strncat (hostname, ".local", 6);
+		he = gethostbyname (hostname);
+
+		if (he == NULL) {
+			return FALSE;
+		}
+	}
+
+	for (i = 0; he->h_addr_list[i]; i++) {
+		memcpy (&addr, he->h_addr_list[0], sizeof (struct in_addr));
+
+		if (strcmp (inet_ntoa (addr), address) == 0) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }
 
 typedef struct _CallbackAndData {
@@ -192,16 +235,38 @@ resolve_cb (sw_discovery disc,
 {
 	gchar *host = g_malloc (16);
 	CallbackAndData *cd = (CallbackAndData *) extra;
-
+	sw_text_record_iterator it;
+	gboolean pp = FALSE;
+	
 	sw_ipv4_address_name (address, host, 16);
 
-	sw_discovery_cancel (disc, oid);
-
+	if (is_local_address (host)) {
+		g_free (host);
+		return SW_OKAY;
+	}
+	
+	if (sw_text_record_iterator_init (&it, text_record, text_record_length) == SW_OKAY) {
+		sw_char key[SW_TEXT_RECORD_MAX_LEN];
+		sw_octet val[SW_TEXT_RECORD_MAX_LEN];
+		sw_ulong val_len;
+		
+		while (sw_text_record_iterator_next (it, (char *)key, val, &val_len) == SW_OKAY) {
+			if (strcmp ((char *)key, "Password") == 0) {
+				if (val_len >= 4 && strncmp ((char *)val, "true", 4) == 0) {
+					pp = TRUE;
+				}
+			}
+		}
+		
+		sw_text_record_iterator_fina (it);
+	}
+	
 	((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) oid,
 						    RB_DAAP_MDNS_RESOLVER_FOUND,
 						    name,
 						    host,
 						    (guint) port,
+						    pp,
 						    cd->data);
 
 	return SW_OKAY;
@@ -472,16 +537,40 @@ resolve_cb (AvahiServiceResolver *resolver,
 
 	if (event == AVAHI_RESOLVER_FOUND) {
 		gchar *host = g_malloc (16);
-
+		gboolean pp = FALSE;
+		
 		avahi_address_snprint (host, 16, address);
-		avahi_service_resolver_free (resolver);
-		resolver = NULL;
+
+		if (is_local_address (host)) {
+			g_free (host);
+			return;
+		}
+		
+		if (text) {
+			AvahiStringList *l = avahi_string_list_find (text, "Password");
+
+			if (l) {
+				size_t s;
+				char *n;
+				char *v;
+
+				avahi_string_list_get_pair (l, &n, &v, &s);
+
+				if (s >= 4 && strncmp (v, "true", 4) == 0) {
+					pp = TRUE;
+				}
+
+				avahi_free (n);
+				avahi_free (v);
+			}
+		}
 
 		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
 							    RB_DAAP_MDNS_RESOLVER_FOUND,
 							    name,
 							    host,
 							    (guint16) port,
+							    pp,
 							    cd->data);
 	} else if (event == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
 		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
@@ -489,6 +578,7 @@ resolve_cb (AvahiServiceResolver *resolver,
 							    name,
 							    NULL,
 							    0,
+							    FALSE,
 							    cd->data);
 	}
 

@@ -32,9 +32,6 @@
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
-#ifdef WITH_DAAP_SUPPORT
-#include "rb-daap-playlist-source.h"
-#endif
 #if defined(WITH_CD_BURNER_SUPPORT)
 #include "rb-recorder.h"
 #endif
@@ -715,6 +712,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 		if (gtk_tree_model_get_iter_first (model, &iter)) {
 			do {
 				RBSource *source;
+				gboolean local;
 				GValue v = {0,};
 				gtk_tree_model_get_value (model,
 							  &iter,
@@ -723,12 +721,14 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 				source = g_value_get_pointer (&v);
 				if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 					continue;
-#ifdef WITH_DAAP_SUPPORT
-				if (RB_IS_DAAP_PLAYLIST_SOURCE (source))
-					continue;
-#endif /* WITH DAAP_SUPPORT */
-				g_object_get (G_OBJECT (source), "dirty", &dirty, NULL);
 
+				g_object_get (G_OBJECT (source), 
+					      "dirty", &dirty, 
+					      "is-local", &local, 
+					      NULL);
+				if (local && dirty) {
+					break;
+				}
 			} while (gtk_tree_model_iter_next (model, &iter));
 		}
 
@@ -765,6 +765,8 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 		do {
 			RBSource *source;
 			GValue v = {0,};
+			gboolean local;
+
 			gtk_tree_model_get_value (model,
 						  &iter,
 						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
@@ -772,12 +774,13 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 			source = g_value_get_pointer (&v);
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 				continue;
-#ifdef WITH_DAAP_SUPPORT
-			if (RB_IS_DAAP_PLAYLIST_SOURCE (source))
-				continue;
-#endif /* WITH DAAP_SUPPORT */
 
-			rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
+			g_object_get (G_OBJECT (source), "is-local", &local, 
+				      NULL);
+			if (local) {
+
+				rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
+			}
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
 
@@ -801,7 +804,7 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  const char *suggested_name, 
 				  gboolean automatic)
 {
-	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->shell, automatic));
+	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->shell, automatic, TRUE));
 	
 	g_object_set (G_OBJECT (playlist),
 		      "name", suggested_name ? suggested_name : "",
@@ -832,6 +835,8 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 		do {
 			RBSource *source;
 			GValue v = {0,};
+			gboolean local;
+
 			gtk_tree_model_get_value (model,
 						  &iter,
 						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
@@ -839,12 +844,11 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 			source = g_value_get_pointer (&v);
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 				continue;
-#ifdef WITH_DAAP_SUPPORT
-			if (RB_IS_DAAP_PLAYLIST_SOURCE (source)) 
-				continue;
-#endif
-
-			playlists = g_list_prepend (playlists, source);
+			g_object_get (G_OBJECT (source), "is-local", &local, 
+				      NULL);
+			if (local) {
+				playlists = g_list_prepend (playlists, source);
+			}
 
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}

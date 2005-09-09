@@ -1,3 +1,48 @@
+2005-09-09  Charles Schmidt   <cschmidt2@emich.edu>
+	* README.daap: Fixed some terminology.
+
+	* configure.ac: Better automatic detection of mDNS/DNS-SD library.
+	New --with-mdns=auto|howl|avahi flag to specify.
+
+	* daapsharing/rb-daap-dialog.c/h: New files to handle password &
+	name collision dialogs.
+
+	* daapsharing/rb-daap-connection.c:
+	(connection_get_password), (build_message), (http_get)
+	(connection_login): Ask for & use a password if the share demands it.
+
+	* daapsharing/rb-daap-connection.h: Changed prototype of
+	rb_daap_connection_new.
+	
+	* daapsharing/rb-daap-mdns.c: 
+	(resolve_cb): Better detection of your own music share so it doesn't 
+	appear in the sourcelist.
+
+	* daapsharing/rb-daap-share.c:
+	(rb_daap_share_start_publish): Attempt to start on port 3689, failing
+	that start on any available port.
+
+	* daapsharing/rhythmbox.schemas: Schemas for music shares' UI state.
+
+	* sources/rb-daap-source.c:
+	(find_source_by_name), (rb_daap_source_new), (resolve_cb),
+	(browse_cb): Handle passworded shares. Resolve the host immediately
+	instead of when activated.
+	(rb_daap_source_get_browser_key), (rb_daap_source_get_paned_key),
+	(rb_daap_source_new): New GConf keys for UI state.
+	(rb_daap_source_activate): Use RBPlaylistSource instead of
+	RBDAAPPlaylistSource
+	
+	* sources/rb-daap-playlist-source.c/h: Removed
+
+	* sources/rb-playlist-source.c/h: Added 'is-local' property, TRUE
+	if the playlist is local (i.e. not DAAP or iPod).
+	
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_save_playlists): Fixed a bug where the playlists
+	wouldn't get saved if the last playlist hadn't changed.  Only save
+	local playlists.
+	
 2005-09-09  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-ipod-source.c: (rb_ipod_source_class_init): remove the

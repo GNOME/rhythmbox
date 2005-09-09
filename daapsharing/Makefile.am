@@ -15,7 +15,9 @@ libdaapsharing_la_SOURCES += \
 		rb-daap-connection.c 	\
 		rb-daap-connection.h 	\
 		rb-daap-src.c 		\
-		rb-daap-src.h
+		rb-daap-src.h		\
+		rb-daap-dialog.c	\
+		rb-daap-dialog.h
 endif
 
 INCLUDES =						\

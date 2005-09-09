@@ -37,8 +37,10 @@ typedef struct {
 } RBDAAPPlaylist;
 
 RBDAAPConnection * 
-rb_daap_connection_new (const gchar *host,
+rb_daap_connection_new (const gchar *name,
+			const gchar *host,
 		        gint port,
+			gboolean password_protected,
 			RhythmDB *db,
 			RhythmDBEntryType type);
 

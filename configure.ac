@@ -178,7 +178,6 @@ dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
 			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox **EXPERIMENTAL**]))
-AM_CONDITIONAL(USE_DAAP, test x"$enable_daap" = xyes)
 if test x"$enable_daap" = xyes; then
    AC_MSG_WARN([DAAP support is experimental, and may cause Rhythmbox to crash uncontrollably, use at your own risk])
    PKG_CHECK_MODULES(SOUP,                            \
@@ -190,36 +189,89 @@ if test x"$enable_daap" = xyes; then
 		libsoup-2.4,
 		have_libsoup=yes)
    fi
-   PKG_CHECK_MODULES(MDNS,
-		howl,
-		have_howl=yes,
-		have_howl=no)
-   if test x"$have_howl" = xyes; then
-      AC_DEFINE(WITH_HOWL, 1, [Define if Howl should be used for mDNS])
-      have_mdns="yes"
-   else
-	PKG_CHECK_MODULES(MDNS,
-		avahi-client avahi-glib,
-		have_avahi=yes,
-		have_avahi=no)
-	if test x"$have_avahi" = xyes; then
-	   AC_DEFINE(WITH_AVAHI, 1, [Define if Avahi should be used for mDNS])
-	   have_mdns="yes"
-        fi
+fi
+
+AC_ARG_WITH(mdns,
+    AC_HELP_STRING([--with-mdns=auto|howl|avahi],
+    [Select the mDNS/DNS-SD implementation to use (default auto)]),,
+    with_mdns=auto)
+
+have_howl=no
+have_avahi=no
+have_mdns=no
+
+PKG_CHECK_MODULES(AVAHI,
+    avahi-client avahi-glib,
+    have_avahi=yes,
+    have_avahi=no)
+
+PKG_CHECK_MODULES(HOWL,
+    howl,
+    have_howl=yes,
+    have_howl=no)
+
+if test x"$with_mdns" = xauto; then
+   if test x"$have_howl" = xno -a x"$have_avahi" = xno; then
+      AC_MSG_ERROR([If you wish to use music sharing you need either Avahi or Howl installed])
    fi
 
+   if test x"$have_avahi" = xyes; then
+      MDNS_CFLAGS=$AVAHI_CFLAGS
+      MDNS_LIBS=$AVAHI_LIBS
+      AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Howl])
+      AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
+
+   else
+      MDNS_CFLAGS=$HOWL_CFLAGS
+      MDNS_LIBS=$HOWL_LIBS
+      AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
+      AC_MSG_NOTICE([Detected Howl, using it for mDNS/DNS-SD])
+   fi
+
+   have_mdns=yes
+fi
+
+if test x"$with_mdns" = xhowl; then
+   if test x"$have_howl" = xno; then
+      AC_MSG_ERROR([Howl explicitly requested but not found.  Install Howl or try --with-mdns=avahi])
+   fi
+
+   MDNS_CFLAGS=$HOWL_CFLAGS
+   MDNS_LIBS=$HOWL_LIBS
+   AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Howl])
+   AC_MSG_NOTICE([Using Howl for mDNS/DNS-SD])
+
+   have_mdns=yes
+fi
+
+if test x"$with_mdns" = xavahi; then
+   if test x"$have_avahi" = xno; then
+      AC_MSG_ERROR([Avahi explicitly requested but not found.  Install Avahi or try --with-mdns=howl])
+   fi
+
+   MDNS_CFLAGS=$AVAHI_CFLAGS
+   MDNS_LIBS=$AVAHI_LIBS
+   AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
+   AC_MSG_NOTICE([Using Avahi for mDNS/DNS-SD])
+
+   have_mdns=yes
+fi
+
+
+if test x"$enable_daap" = xyes; then
    enable_daap="no"
 
    if test x"$have_libsoup" = xyes; then
-     if test x"$have_mdns" = xyes; then
-	AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if daap should be enabled])
-	enable_daap="yes"
-     else
-	AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implentation found.  Install Howl or Avahi])
-     fi	
+      if test x"$have_mdns" = xyes; then
+	 AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if DAAP should be enabled])
+	 enable_daap="yes"
+         AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
+	 AC_SUBST(MDNS_CFLAGS)
+	 AC_SUBST(MDNS_LIBS)
+      else
+	 AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implentation found.  Install Howl or Avahi])
+      fi	
    fi
-
-   AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 fi
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
@@ -565,6 +617,11 @@ if test x"$enable_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+if test x"$enable_daap" = xyes; then
+	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
+else
+	AC_MSG_NOTICE([   DAAP (music sharing) support is disabled])
 fi
 if test x"$enable_cd_burner" = xyes; then
 	AC_MSG_NOTICE([** CD burner support is enabled])

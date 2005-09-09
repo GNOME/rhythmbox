@@ -21,6 +21,7 @@
 
 #include "rb-daap-connection.h"
 #include "rb-daap-structure.h"
+#include "rb-daap-dialog.h"
 
 #include <libgnome/gnome-i18n.h>
 #include "rb-debug.h"
@@ -87,9 +88,8 @@ byteReverse (unsigned char *buf,
           buf += 4;
      } while (--longs);
 }
-#endif
-#endif
-
+#endif /* ! ASM_MD5 */
+#endif /* #if 0 */
 
 static void 
 OpenDaap_MD5Init (MD5_CTX *ctx, 
@@ -523,6 +523,10 @@ rb_daap_hash_generate (short version_major,
 #define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
 
 struct _RBDAAPConnection {
+	gchar *name;
+	gboolean password_protected;
+	gchar *password;
+	
 	SoupSession *session;
 	SoupUri *base_uri;
 	
@@ -536,6 +540,12 @@ struct _RBDAAPConnection {
 	GSList *playlists;
 	GHashTable *item_id_to_uri;
 };
+
+static gchar *
+connection_get_password (RBDAAPConnection *connection)
+{
+	return rb_daap_password_dialog_new_run (connection->name);
+}
 
 
 static SoupMessage * 
@@ -560,16 +570,22 @@ build_message (RBDAAPConnection *connection,
 	soup_message_add_header (message->request_headers, "Client-DAAP-Version", 	"3.0");
 	soup_message_add_header (message->request_headers, "Accept-Laungage", 		"en-us, en;q=5.0");
 	soup_message_add_header (message->request_headers, "Client-DAAP-Access-Index", 	"2");
+	if (connection->password_protected) {
+		gchar *h = g_strconcat ("Basic ", connection->password, NULL);
+		
+		soup_message_add_header (message->request_headers, "Authorization", h);
+		g_free (h);
+	}
 	
 	if (need_hash) {
 		gchar hash[33] = {0};
-		gchar *norb_daap_path = (gchar *)path;
+		gchar *no_daap_path = (gchar *)path;
 		
 		if (g_strncasecmp (path, "daap://", 7) == 0) {
-			norb_daap_path = strstr (path, "/data");
+			no_daap_path = strstr (path, "/data");
 		}
 
-		rb_daap_hash_generate ((short)floor (version), (const guchar*)norb_daap_path, 2, (guchar*)hash, req_id);
+		rb_daap_hash_generate ((short)floor (version), (const guchar*)no_daap_path, 2, (guchar*)hash, req_id);
 
 		soup_message_add_header (message->request_headers, "Client-DAAP-Validation", hash);
 	}
@@ -582,7 +598,13 @@ build_message (RBDAAPConnection *connection,
 	return message;
 }
 
-static gboolean 
+typedef enum {
+	HTTP_OK,
+	HTTP_ERR,
+	HTTP_AUTH_ERR
+} HTTPResponse;
+
+static HTTPResponse
 http_get (RBDAAPConnection *connection, 
 	  const gchar *path, 
 	  gboolean need_hash, 
@@ -597,15 +619,21 @@ http_get (RBDAAPConnection *connection,
 	message = build_message (connection, path, need_hash, version, req_id, send_close);
 	if (message == NULL) {
 		rb_debug ("Error building message for %s", path);
-		return FALSE;
+		return HTTP_ERR;
 	}
 	
 	soup_session_send_message (connection->session, message);
 	
-	if (SOUP_STATUS_IS_SUCCESSFUL (message->status_code) == FALSE) {
+	if (message->status_code == 401) {
 		g_object_unref (message);
+		return HTTP_AUTH_ERR;
+	}
+	
+	if (SOUP_STATUS_IS_SUCCESSFUL (message->status_code) == FALSE) {
 		rb_debug ("Error getting %s: %d, %s\n", path, message->status_code, message->reason_phrase);
-		return FALSE;
+		g_object_unref (message);
+
+		return HTTP_ERR;
 	} 
 
 	*structure = rb_daap_structure_parse (message->response.body, message->response.length);
@@ -613,21 +641,21 @@ http_get (RBDAAPConnection *connection,
 	
 	if (*structure == NULL) {
 		rb_debug ("No daap structure returned %s", path);
-		return FALSE;
+		return HTTP_ERR;
 	}
 
 	item = rb_daap_structure_find_item (*structure, RB_DAAP_CC_MSTT);
 	if (item == NULL) {
 		rb_debug ("Could not find dmap.status item in %s", path);
-		return FALSE;
+		return HTTP_ERR;
 	}
 
 	if (g_value_get_int (&(item->content)) != 200) {
 		rb_debug ("Error, dmap.status is not 200 in %s", path);
-		return FALSE;
+		return HTTP_ERR;
 	}
 
-	return TRUE;
+	return HTTP_OK;
 }
 	
 static void 
@@ -655,12 +683,13 @@ static gboolean
 connection_get_info (RBDAAPConnection *connection)
 {
 	GNode *structure = NULL;
+	HTTPResponse resp;
 	gboolean ret;
 	RBDAAPItem *item = NULL;
 
 	/* get the daap version number */
-	ret = http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, &structure);
-	if (structure == NULL || ret == FALSE) {
+	resp = http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, &structure);
+	if (structure == NULL || resp == HTTP_ERR) {
 		rb_debug ("Got invalid response from /server-info");
 		ret = FALSE;
 		goto out;
@@ -683,17 +712,31 @@ out:
 }
 
 static gboolean
-connection_login (RBDAAPConnection *connection)
+connection_login (RBDAAPConnection *connection, gboolean password_protected)
 {
 	GNode *structure = NULL;
+	HTTPResponse resp;
 	gboolean ret;
 	RBDAAPItem *item = NULL;
 	gchar *path = NULL;
 
+get_password:	
+        if (password_protected) {
+                connection->password_protected = password_protected;
+                connection->password = connection_get_password (connection);
+		if (connection->password == NULL || connection->password[0] == '\0') {
+			return FALSE;
+		}
+        }
+	
 	/* get a session id */
-	ret = http_get (connection,"/login", FALSE, 0.0, 0, FALSE, &structure);
+	resp = http_get (connection, "/login", FALSE, 0.0, 0, FALSE, &structure);
 
-	if (structure == NULL || ret == FALSE) {
+	if (resp == HTTP_AUTH_ERR) {
+		goto get_password;
+	}
+
+	if (structure == NULL || resp == HTTP_ERR) {
 		rb_debug ("Got invalid response from /login");
 		ret = FALSE;
 		goto out;
@@ -713,9 +756,9 @@ connection_login (RBDAAPConnection *connection)
 
 	/* get a revision number */
 	path = g_strdup_printf ("/update?session-id=%d&revision-number=1", connection->session_id);
-	ret = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
+	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
 
-	if (structure == NULL || ret == FALSE) {
+	if (structure == NULL || resp == HTTP_ERR) {
 		rb_debug ("Got invalid response from %s", path);
 		ret = FALSE;
 		goto out;
@@ -742,6 +785,7 @@ static gboolean
 connection_get_database_info (RBDAAPConnection *connection)
 {
 	GNode *structure = NULL;
+	HTTPResponse resp;
 	gboolean ret;
 	RBDAAPItem *item = NULL;
 	GNode *listing_node;
@@ -752,9 +796,9 @@ connection_get_database_info (RBDAAPConnection *connection)
 	/* get a list of databases, there should be only 1 */
 
 	path = g_strdup_printf ("/databases?session-id=%d&revision-number=%d", connection->session_id, connection->revision_number);
-	ret = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
+	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
 	
-	if (structure == NULL || ret == FALSE) {
+	if (structure == NULL || resp == HTTP_ERR) {
 		rb_debug ("Got invalid response from %s", path);
 		ret = FALSE;
 		goto out;
@@ -805,6 +849,7 @@ connection_get_song_listing (RBDAAPConnection *connection,
 			     RhythmDBEntryType type)
 {
 	GNode *structure = NULL;
+	HTTPResponse resp;
 	gboolean ret;
 	RBDAAPItem *item = NULL;
 	GNode *listing_node;
@@ -817,9 +862,9 @@ connection_get_song_listing (RBDAAPConnection *connection,
 
 	/* get the songs */
 	path = g_strdup_printf ("/databases/%i/items?session-id=%i&revision-number=%i&meta=dmap.itemid,dmap.itemname,daap.songalbum,daap.songartist,daap.daap.songgenre,daap.songsize,daap.songtime,daap.songtrackcount,daap.songtracknumber,daap.songyear,daap.songformat,daap.songgenre,daap.songbitrate", connection->database_id, connection->session_id, connection->revision_number);
-	ret = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
+	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
 	
-	if (structure == NULL || ret == FALSE) {
+	if (structure == NULL || resp == HTTP_ERR) {
 		rb_debug ("Got invalid response from %s", path);
 		ret = FALSE;
 		goto out;
@@ -1003,6 +1048,7 @@ static gboolean
 connection_get_playlists (RBDAAPConnection *connection)
 {
 	GNode *structure = NULL;
+	HTTPResponse resp;
 	gboolean ret;
 	GNode *listing_node;
 	gchar *path;
@@ -1010,9 +1056,9 @@ connection_get_playlists (RBDAAPConnection *connection)
 	GNode *n;
 
 	path = g_strdup_printf ("/databases/%d/containers?session-id=%d&revision-number=%d", connection->database_id, connection->session_id, connection->revision_number);
-	ret = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
+	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
 	
-	if (structure == NULL || ret == FALSE) {
+	if (structure == NULL || resp == HTTP_ERR) {
 		rb_debug ("Got invalid response from %s", path);
 		ret = FALSE;
 		goto out;
@@ -1059,9 +1105,9 @@ connection_get_playlists (RBDAAPConnection *connection)
 		name = g_value_dup_string (&(item->content));
 
 		path2 = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%d&revision-number=%d&meta=dmap.itemid", connection->database_id, id, connection->session_id, connection->revision_number);
-		ret = http_get (connection, path2, TRUE, connection->daap_version,0, FALSE,&playlist_structure);
+		resp = http_get (connection, path2, TRUE, connection->daap_version,0, FALSE,&playlist_structure);
 		
-		if (playlist_structure == NULL || ret == FALSE) {
+		if (playlist_structure == NULL || resp == HTTP_ERR) {
 			g_free (name);
 			continue;
 		}
@@ -1111,8 +1157,10 @@ out:
 }
 	
 RBDAAPConnection * 
-rb_daap_connection_new (const gchar *host, 
+rb_daap_connection_new (const gchar *name,
+			const gchar *host, 
 			gint port, 
+			gboolean password_protected,
 			RhythmDB *db, 
 			RhythmDBEntryType type)
 {
@@ -1120,6 +1168,7 @@ rb_daap_connection_new (const gchar *host,
 	gchar *path = NULL;
 	
 	connection = g_new0 (RBDAAPConnection, 1);
+	connection->name = g_strdup (name);
 
 	rb_debug ("Creating new DAAP connection to %s:%d", host, port);
 
@@ -1138,7 +1187,7 @@ rb_daap_connection_new (const gchar *host,
 	}
 
 	rb_debug ("Logging into DAAP server");
-	if (connection_login (connection) == FALSE) {
+	if (connection_login (connection, password_protected) == FALSE) {
 		rb_debug ("Could not login to DAAP server");
 		goto error_out;
 	}
@@ -1197,7 +1246,10 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 	rb_daap_hash_generate ((short)floorf (connection->daap_version), (const guchar*)norb_daap_uri,2, (guchar*)hash, connection->request_id);
 
 	headers = g_string_new ("Accept: */*\r\nCache-Control: no-cache\r\nUser-Agent: "RB_DAAP_USER_AGENT"\r\nAccept-Language: en-us, en;q=5.0\r\nClient-DAAP-Access-Index: 2\r\nClient-DAAP-Version: 3.0\r\n");
-	g_string_append_printf (headers,"Client-DAAP-Validation: %s\r\nClient-DAAP-Request-ID: %d\r\nConnection: close\r\n", hash, connection->request_id);
+	g_string_append_printf (headers, "Client-DAAP-Validation: %s\r\nClient-DAAP-Request-ID: %d\r\nConnection: close\r\n", hash, connection->request_id);
+	if (connection->password_protected) {
+		g_string_append_printf (headers, "Authentication: Basic %s\r\n", connection->password);
+	}
 
 	if (bytes != 0) {
 		g_string_append_printf (headers,"Range: bytes=%"G_GINT64_FORMAT"-\r\n", bytes);
@@ -1225,6 +1277,16 @@ rb_daap_connection_destroy (RBDAAPConnection *connection)
 {
 	GSList *l;
 
+	if (connection->name) {
+		g_free (connection->name);
+		connection->name = NULL;
+	}
+	
+	if (connection->password) {
+		g_free (connection->password);
+		connection->password = NULL;
+	}
+	
 	for (l = connection->playlists; l; l = l->next) {
 		RBDAAPPlaylist *playlist = l->data;
 

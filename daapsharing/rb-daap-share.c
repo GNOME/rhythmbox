@@ -23,6 +23,7 @@
 #include "rb-daap-share.h"
 #include "rb-daap-structure.h"
 #include "rb-daap-mdns.h"
+#include "rb-daap-dialog.h"
 
 #include "rb-playlist-source.h"
 #include "rb-debug.h"
@@ -1134,54 +1135,20 @@ publish_cb (RBDAAPmDNSPublisher publisher,
 			share->priv->published = TRUE;
 			break;
 		case RB_DAAP_MDNS_PUBLISHER_COLLISION: {
+			gchar *new_name;
+			
 			g_message ("Duplicate share name on mDNS");
-/*			
-			dialog = gtk_dialog_new_with_buttons (_("Invalid share name"),
-							      NULL,
-							      0,
-							      GTK_STOCK_OK,
-							      GTK_RESPONSE_OK,
-							      NULL);
 			
-			vbox = gtk_vbox_new (FALSE, 5);
-			gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
-			gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), vbox, TRUE, TRUE, 0);
+			new_name = rb_daap_collision_dialog_new_run (share->priv->name);
 
-			s = g_strconcat (_("The share name '"),
-					 share->priv->name,
-					 _("' is already taken. Please choose another."),
-					 NULL);
-			label = gtk_label_new (s);
-			gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
-			g_free (s);
-			
-			hbox = gtk_hbox_new (FALSE,5);
-			gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-			
-			label = gtk_label_new_with_mnemonic (_("Shared music _name"));
-			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-
-			entry = gtk_entry_new ();
-			gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
-			gtk_label_set_mnemonic_widget (GTK_LABEL (label), entry);
-
-			gtk_entry_set_text (GTK_ENTRY (entry), share->priv->name);
-			gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
-		
-			gtk_widget_show_all (dialog);
-
-run:
-			result = gtk_dialog_run (GTK_DIALOG (dialog));
-			if (result == GTK_RESPONSE_OK) {
-				const gchar *new_share_name = gtk_entry_get_text (GTK_ENTRY (entry));			
-				g_print ("set string %s\n", new_share_name);
-//				eel_gconf_set_string (CONF_NAME, new_share_name);
-				g_print ("set string done\n");
-//				gtk_widget_hide (dialog);				
-			} else {
-				goto run;
-			}
-*/
+			/* FIXME test & apply this
+			 * or, do we even need it?
+			 *
+			 * Howl already automaticall renames for us, that was a
+			 * pain til I figured out a better way to filter us
+			 * out of browsing.  Why not have avahi autorename
+			 * also.  no ones the wiser?
+			 */
 			break;
 		}
 		
@@ -1190,16 +1157,23 @@ run:
 	return;
 }
 
+#define STANDARD_DAAP_PORT 3689
+
 static void
 rb_daap_share_start_publish (RBDAAPShare *share)
 {
-	gint port = SOUP_ADDRESS_ANY_PORT;
+	gint port = STANDARD_DAAP_PORT;
 	gboolean ret;
 	
 	share->priv->server = soup_server_new (SOUP_SERVER_PORT, port, NULL);
 	if (share->priv->server == NULL) {
-		g_warning ("Unable to start music sharing server");
-		return;
+		rb_debug ("Unable to start music sharing server on port %d, trying any open port", port);
+		share->priv->server = soup_server_new (SOUP_SERVER_PORT, SOUP_ADDRESS_ANY_PORT, NULL);
+
+		if (share->priv->server == NULL) {
+			g_warning ("Unable to start music sharing server");
+			return;
+		}
 	}
 
 	share->priv->port = soup_server_get_port (share->priv->server);

@@ -132,6 +132,7 @@ struct RBPlaylistSourcePrivate
 	RBEntryView *songs;
 
 	gboolean dirty;
+	gboolean is_local;
 
 	char *title;
 };
@@ -141,7 +142,8 @@ enum
 	PROP_0,
 	PROP_AUTOMATIC,
 	PROP_QUERY_MODEL,
-	PROP_DIRTY
+	PROP_DIRTY,
+	PROP_LOCAL
 };
 
 static GObjectClass *parent_class = NULL;
@@ -232,6 +234,15 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist should be saved",
 							       FALSE,
 							       G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_LOCAL,
+					 g_param_spec_boolean ("is-local",
+							       "is-local",
+							       "whether this playlist is attached to the local library",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 }
 
 static void
@@ -407,6 +418,9 @@ rb_playlist_source_set_property (GObject *object,
 	case PROP_AUTOMATIC:
 		source->priv->automatic = g_value_get_boolean (value);
 		break;
+	case PROP_LOCAL:
+		source->priv->is_local = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -432,6 +446,9 @@ rb_playlist_source_get_property (GObject *object,
 	case PROP_QUERY_MODEL:
 		g_value_set_object (value, source->priv->model);
 		break;
+	case PROP_LOCAL:
+		g_value_set_boolean (value, source->priv->is_local);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -439,7 +456,7 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_playlist_source_new (RBShell *shell, gboolean automatic)
+rb_playlist_source_new (RBShell *shell, gboolean automatic, gboolean local)
 {
 	RBSource *source;
 	
@@ -447,6 +464,7 @@ rb_playlist_source_new (RBShell *shell, gboolean automatic)
 					  "name", _("Unknown"),
 					  "shell", shell,
 					  "automatic", automatic,
+					  "is-local", local,
 					  NULL));
 
 	return source;
@@ -735,6 +753,21 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 }
 
 void
+rb_playlist_source_add_locations (RBPlaylistSource *source,
+				  GList *locations)
+{
+	GList *l;
+
+	for (l = locations; l; l = l->next) {
+		const gchar *uri = (const gchar *)l->data;
+		
+		rb_playlist_source_add_location (RB_PLAYLIST_SOURCE (source), 
+						 uri);
+	}
+}
+
+
+void
 rb_playlist_source_remove_location (RBPlaylistSource *source,
 				    const char *location)
 {
@@ -880,7 +913,7 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	xmlNodePtr child;
 	xmlChar *tmp;
 
-	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (shell, FALSE));
+	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (shell, FALSE, TRUE));
 
 	tmp = xmlGetProp (node, RB_PLAYLIST_TYPE);
 	if (!xmlStrcmp (tmp, RB_PLAYLIST_AUTOMATIC))

@@ -38,11 +38,9 @@
 #include "rb-daap-mdns.h"
 #include "rb-daap-src.h"
 
-#include "rb-daap-playlist-source.h"
+#include "rb-playlist-source.h"
 
 #define CONF_ENABLE_BROWSING "/apps/rhythmbox/sharing/enable_browsing"
-#define CONF_ENABLE_SHARING "/apps/rhythmbox/sharing/enable_sharing"
-#define CONF_SHARE_NAME "/apps/rhythmbox/sharing/share_name"
 
 static void rb_daap_source_init (RBDAAPSource *source);
 static void rb_daap_source_finalize (GObject *object);
@@ -50,12 +48,20 @@ static void rb_daap_source_class_init (RBDAAPSourceClass *klass);
 static void rb_daap_source_activate (RBSource *source);
 static gboolean rb_daap_source_disconnect (RBSource *source);
 static gboolean rb_daap_source_show_popup (RBSource *source);
+static const gchar * rb_daap_source_get_browser_key (RBSource *source);
+static const gchar * rb_daap_source_get_paned_key (RBLibrarySource *source);
+
+#define CONF_STATE_SORTING "/apps/rhythmbox/state/daap/sorting"
+#define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/daap/paned_position"
+#define CONF_STATE_SHOW_BROWSER "/apps/rhythmbox/state/daap/show_browser"
 
 struct RBDAAPSourcePrivate
 {
-	gboolean resolved;
+	gchar *real_name;
 	gchar *host;
 	gint port;
+	
+	gboolean password_protected;
 
 	RBDAAPConnection *connection;
 	GSList *playlist_sources;
@@ -102,6 +108,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBLibrarySourceClass *library_source_class = RB_LIBRARY_SOURCE_CLASS (klass);
 	
 	object_class->finalize = rb_daap_source_finalize;
 
@@ -114,9 +121,11 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	source_class->impl_paste = NULL;
 	source_class->impl_receive_drag = NULL;
 	source_class->impl_delete = NULL;
-	source_class->impl_receive_drag = NULL;
 	source_class->impl_show_popup = rb_daap_source_show_popup;
 	source_class->impl_get_config_widget = NULL;
+	source_class->impl_get_browser_key = rb_daap_source_get_browser_key;
+
+	library_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
 	
 	return;
 }
@@ -138,8 +147,8 @@ rb_daap_source_finalize (GObject *object)
 	rb_daap_source_disconnect (RB_SOURCE (source));
 	
 	if (source->priv) {
+		g_free (source->priv->real_name);
 		g_free (source->priv->host);
-	
 		g_free (source->priv);
 		source->priv = NULL;
 	}
@@ -161,30 +170,46 @@ rb_daap_get_icon (void)
 
 static RBSource *
 rb_daap_source_new (RBShell *shell,
-		    const gchar *name)
+		    const gchar *name,
+		    gboolean password_protected)
 {
 	RBSource *source;
 	RhythmDBEntryType type;
-	
+	gchar *visible_name = g_strdup (name);
+
+	if (password_protected) {
+		gchar *s;
+
+		s = strrchr (visible_name, '_');
+		if (s && strcmp (s, "_PW") == 0) {
+			s[0] = '\0';
+		}
+	}	
+
 	type = rhythmdb_entry_daap_type_new ();
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
-					  "name", name,
+					  "name", visible_name,
 					  "entry-type", type,
 					  "icon", rb_daap_get_icon (),
 					  "shell", shell,
 					  "visibility", TRUE,
+					  "sorting-key", CONF_STATE_SORTING,
 					  NULL));
 
+	
 	rb_shell_register_entry_type_for_source (shell, source, 
 						 type);
 
 
+	RB_DAAP_SOURCE (source)->priv->password_protected = password_protected;
+	RB_DAAP_SOURCE (source)->priv->real_name = g_strdup (name);
+	
 	return source;
 }
 
 static RBDAAPmDNSBrowser browser = 0;
-static RBDAAPmDNSResolver resolver = 0;
+static GHashTable *name_to_resolver = NULL;
 
 static GSList *sources = NULL;
 
@@ -195,21 +220,53 @@ find_source_by_name (const gchar *name)
 	RBSource *source = NULL;
 
 	for (l = sources; l; l = l->next) {
-		gchar *s;
 		
 		source = l->data;
-		g_object_get (G_OBJECT (source), "name", &s, NULL);
 		
-		if (strcmp (name, s) == 0) {
-			g_free (s);
+		if (strcmp (name, RB_DAAP_SOURCE (source)->priv->real_name) == 0) {
 			return source;
 		}
-
-		g_free (s);
 	}
 
 	return NULL;
 }
+
+static void
+resolve_cb (RBDAAPmDNSResolver resolver,
+	    RBDAAPmDNSResolverStatus status,
+	    const gchar *name,
+	    gchar *host,
+	    guint port,
+	    gboolean password_protected,
+	    RBShell *shell)
+{
+	if (status == RB_DAAP_MDNS_RESOLVER_FOUND) {
+		RBSource *source = find_source_by_name (name);
+		RBDAAPSource *daap_source;
+		
+		if (source == NULL) {
+			source = rb_daap_source_new (shell, name, password_protected);
+			sources = g_slist_prepend (sources, source);
+			rb_shell_append_source (shell, source, NULL);
+		}
+		
+		daap_source = RB_DAAP_SOURCE (source);
+		
+		/* FIXME? dunno what to do if we're already connected... */
+		if (daap_source->priv->host) {
+			g_free (daap_source->priv->host);
+		}
+		daap_source->priv->host = host;
+		
+		daap_source->priv->port = port;
+		daap_source->priv->password_protected = password_protected;
+	} else if (status == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
+		g_warning ("Unable to resolve %s", name);
+	}
+
+	return;
+}
+
 
 static void
 browse_cb (RBDAAPmDNSBrowser b,
@@ -218,56 +275,47 @@ browse_cb (RBDAAPmDNSBrowser b,
 	   RBShell *shell)
 {
 	if (status == RB_DAAP_MDNS_BROWSER_ADD_SERVICE) {
-		RBSource *source = find_source_by_name (name);
+		gboolean ret;
+		RBDAAPmDNSResolver *resolver;
 
-		rb_debug ("New DAAP (music sharing) source '%s' discovered", name);
-		
-		if (source) {
+		if (find_source_by_name (name)) {
 			rb_debug ("Ignoring duplicate DAAP source");
 			return;
 		}
-
-		/* Make sure it isn't us. 
-		 * This will fail if we're using howl for mDNS and someone
-		 * has already taken our name, forcing us to use a suffix 
-		 * like (2).  In that case, the other share (with our preferred
-		 * name) will be removed from the sourcelist, and our share
-		 * will show up.  Stupid howl.
-		 * http://lists.porchdogsoft.com/pipermail/howl-users/Week-of-Mon-20041206/000487.html
-		 * FIXME try resolving it right away and seeing if its us
-		 */
-  		if (eel_gconf_get_boolean (CONF_ENABLE_SHARING)) {
-			gchar *my_name;
-
-			my_name = eel_gconf_get_string (CONF_SHARE_NAME);
-
-			if (strcmp (my_name, name) == 0) {
-				return;
-			}
-		}
 		
-		source = rb_daap_source_new (shell, name);
+		rb_debug ("New DAAP (music sharing) source '%s' discovered", name);
 
-		sources = g_slist_prepend (sources, source);
-
-		rb_shell_append_source (shell, source, NULL);
-
+		/* the resolver takes care of ignoring our own shares,
+		 * if this is us, the callback won't fire
+		 */
+		resolver = g_new0 (RBDAAPmDNSResolver, 1);
+		g_hash_table_insert (name_to_resolver, g_strdup(name), resolver);
+		ret = rb_daap_mdns_resolve (resolver,
+					    name,
+					    (RBDAAPmDNSResolverCallback) resolve_cb,
+					    shell);
+		if (ret == FALSE) {
+			g_warning ("could not start resolving host");
+		}			
+		
 	} else if (status == RB_DAAP_MDNS_BROWSER_REMOVE_SERVICE) {
 		RBSource *source = find_source_by_name (name);
 
+		
 		rb_debug ("DAAP source '%s' went away", name);
 		if (source == NULL) {
-			/* if this happens, its almost always because the user
-			 * turned sharing off in the preferences, and we've 
-			 * been notified that our own daap server has gone away
-			 * fancy that.
-			 *
-			 * probably no need for any error messages
+			/* if this happens, its because the user's own share
+			 * went away.  since that one doesnt resolve, 
+			 * it doesnt get added to the sources list
+			 * it does have a resolver tho, so we should remove 
+			 * that.
 			 */
-//			g_warning ("notification of removed daap source that does not exist in rhythmbox");
+			g_hash_table_remove (name_to_resolver, name);
+			
 			return;
 		}
 		
+		g_hash_table_remove (name_to_resolver, name);
 		sources = g_slist_remove (sources, source);
 		
 		rb_daap_source_disconnect (source);
@@ -275,6 +323,17 @@ browse_cb (RBDAAPmDNSBrowser b,
 		/* unref is done via gtk in rb_shell_source_delete_cb at
 		 * gtk_notebook_remove_page */
 	}
+
+	return;
+}
+
+static void
+stop_resolver (RBDAAPmDNSResolver *resolver)
+{
+	rb_daap_mdns_resolve_cancel (*resolver);
+	g_free (resolver);
+
+	resolver = NULL;
 
 	return;
 }
@@ -294,6 +353,11 @@ start_browsing (RBShell *shell)
 		return;
 	}
 
+	name_to_resolver = g_hash_table_new_full ((GHashFunc)g_str_hash, 
+						  (GEqualFunc)g_str_equal, 
+						  (GDestroyNotify)g_free, 
+						  (GDestroyNotify)stop_resolver);
+	
 	rb_daap_src_init ();
 	
 	return;
@@ -304,6 +368,9 @@ stop_browsing (RBShell *shell)
 {
 	GSList *l;
 	
+	g_hash_table_destroy (name_to_resolver);
+	name_to_resolver = NULL;
+
 	for (l = sources; l; l = l->next) {
 		RBSource *source = l->data;
 
@@ -374,89 +441,54 @@ rb_daap_sources_shutdown (RBShell *shell)
 	return;
 }
 
-static void
-resolve_cb (RBDAAPmDNSResolver resolver,
-	    RBDAAPmDNSResolverStatus status,
-	    const gchar *name,
-	    gchar *host,
-	    guint port,
-	    RBDAAPSource *daap_source)
-{
-	RBShell *shell = NULL;
-	RhythmDB *db = NULL;
-	RhythmDBEntryType type;
-
-	if (status == RB_DAAP_MDNS_RESOLVER_FOUND) {
-		daap_source->priv->host = host;
-		daap_source->priv->port = port;
-	
-		daap_source->priv->resolved = TRUE;
-
-		if (daap_source->priv->connection == NULL) {
-			GSList *playlists;
-			GSList *l;
-			
-			g_object_get (G_OBJECT (daap_source), "shell", &shell, "entry-type", &type, NULL);
-			g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	
-			/* FIXME FIXME FIXME
-			 * this is the call that takes a long time 
-			 */
-			daap_source->priv->connection = rb_daap_connection_new (daap_source->priv->host, daap_source->priv->port, db, type);
-	
-			playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
-			for (l = playlists; l; l = l->next) {
-				RBDAAPPlaylist *playlist = l->data;
-				RBSource *playlist_source;
-		
-	
-				playlist_source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_PLAYLIST_SOURCE,
-						  "name", playlist->name,
-						  "shell", shell,
-						  "visibility", TRUE,
-						  NULL));
-/* this is set here instead of in construction so that 
- * rb_playlist_source_constructor has a chance to be run to set things up */
-				g_object_set (G_OBJECT (playlist_source), "playlist", playlist, NULL); 
-	
-				rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
-				daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
-			}
-	
-			g_object_unref (G_OBJECT (db));
-			g_object_unref (G_OBJECT (shell));
-	
-			daap_source->priv->connected = TRUE;
-		}
-	} else if (status == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
-		g_warning ("Unable to resolve %s", name);
-	}
-
-	return;
-}
 
 static void 
 rb_daap_source_activate (RBSource *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
-	gchar *name;
-	
-	g_object_get (G_OBJECT (source), "name", &name, NULL);
-	
-	if (daap_source->priv->resolved == FALSE) {
-		gboolean ret;
 
-		ret = rb_daap_mdns_resolve (&resolver,
-					    name,
-					    (RBDAAPmDNSResolverCallback) resolve_cb,
-					    source);
+	if (daap_source->priv->connection == NULL) {
+		RBShell *shell = NULL;
+		RhythmDB *db = NULL;
+		gchar *name = NULL;
+		RhythmDBEntryType type;
+		GSList *playlists;
+		GSList *l;
+		
+		g_object_get (G_OBJECT (daap_source), "shell", &shell, "entry-type", &type, "name", &name, NULL);
+		g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	
+		/* FIXME FIXME FIXME
+		 * this is the call that takes a long time 
+		 */
+		daap_source->priv->connection = rb_daap_connection_new (name, daap_source->priv->host, daap_source->priv->port, daap_source->priv->password_protected, db, type);
+		g_free (name);
 
-		if (ret == FALSE) {
-			g_warning ("could not start resolving host");
+		playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
+		for (l = playlists; l; l = l->next) {
+			RBDAAPPlaylist *playlist = l->data;
+			RBSource *playlist_source;
+	
+
+			playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
+					  "name", playlist->name,
+					  "shell", shell,
+					  "visibility", TRUE,
+					  "is-local", FALSE,
+					  NULL));
+/* this is set here instead of in construction so that 
+ * rb_playlist_source_constructor has a chance to be run to set things up */
+			rb_playlist_source_add_locations (RB_PLAYLIST_SOURCE (playlist_source), playlist->uris);
+			
+			rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
+			daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
 		}
-	}
+	
+		g_object_unref (G_OBJECT (db));
+		g_object_unref (G_OBJECT (shell));
 
-	g_free (name);
+		daap_source->priv->connected = TRUE;
+	}
 
 	return;
 }
@@ -521,7 +553,7 @@ rb_daap_source_find_for_uri (const gchar *uri)
 	for (l = sources; l; l = l->next) {
 		RBDAAPSource *source = l->data;
 
-		if (source->priv->resolved == TRUE && strcmp (ip, source->priv->host) == 0) {
+		if (strcmp (ip, source->priv->host) == 0) {
 			found_source = source;
 
 			break;
@@ -564,5 +596,18 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 	
 	*bytes_out = bytes;
 	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
+}
+
+
+static const gchar * 
+rb_daap_source_get_browser_key (RBSource *source)
+{
+	return CONF_STATE_SHOW_BROWSER;
+}
+
+static const gchar * 
+rb_daap_source_get_paned_key (RBLibrarySource *source)
+{
+	return CONF_STATE_PANED_POSITION;
 }
 
