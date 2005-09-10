@@ -321,10 +321,10 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 	GtkWidget *entry;
 	gchar *name;
 
-	vbox = gtk_vbox_new (FALSE, 5);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
+	vbox = gtk_vbox_new (FALSE, 6);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox), 12);
 
-	hbox = gtk_hbox_new (FALSE, 5);
+	hbox = gtk_hbox_new (FALSE, 12);
 
 	check = gtk_check_button_new_with_mnemonic (_("_Share my music"));
 	gtk_box_pack_start (GTK_BOX (vbox), check, FALSE, FALSE, 0);
@@ -335,7 +335,7 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 	
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
-	label = gtk_label_new_with_mnemonic (_("Shared music _name"));
+	label = gtk_label_new_with_mnemonic (_("Shared music _name:"));
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 
 	entry = gtk_entry_new ();
