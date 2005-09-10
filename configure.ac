@@ -265,7 +265,6 @@ if test x"$enable_daap" = xyes; then
       if test x"$have_mdns" = xyes; then
 	 AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if DAAP should be enabled])
 	 enable_daap="yes"
-         AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 	 AC_SUBST(MDNS_CFLAGS)
 	 AC_SUBST(MDNS_LIBS)
       else
@@ -273,6 +272,7 @@ if test x"$enable_daap" = xyes; then
       fi	
    fi
 fi
+AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
