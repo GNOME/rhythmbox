@@ -212,23 +212,21 @@ PKG_CHECK_MODULES(HOWL,
    have_howl=no)
 
 if test x"$with_mdns" = xauto; then
-   if test x"$have_howl" = xno -a x"$have_avahi" = xno; then
-      AC_MSG_ERROR([If you wish to use music sharing you need either Avahi or Howl installed])
-   fi
-
    if test x"$have_avahi" = xyes; then
       MDNS_CFLAGS=$AVAHI_CFLAGS
       MDNS_LIBS=$AVAHI_LIBS
       AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
       AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
-   else
+
+      have_mdns=yes
+   elif test x"$have_howl" = xyes; then
       MDNS_CFLAGS=$HOWL_CFLAGS
       MDNS_LIBS=$HOWL_LIBS
       AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Howl])
       AC_MSG_NOTICE([Detected Howl, using it for mDNS/DNS-SD])
-   fi
 
-   have_mdns=yes
+      have_mdns=yes
+   fi
 fi
 
 if test x"$with_mdns" = xhowl; then
