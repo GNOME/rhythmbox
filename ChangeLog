@@ -1,8 +1,25 @@
+2005-09-10  Charles Schmidt   <cschmidt2@emich.edu>
+
+	* configure.ac: Updated to require avahi >= 0.5.  Small fixes.
+
+	* daapsharing/rb-daap-dialog.c:
+	(rb_daap_password_dialog_new_run), (rb_daap_collision_dialog_new_run):
+	HIG compliancy & images.
+
+	* daapsharing/rb-daap-mdns.c:
+	(browse_cb), (resolve_cb): Better detection of local services.  
+	Requries avahi 0.5.  Still doesn't work quite right with Howl, due to 
+	Howl's limitations.  Fix the way collision handling is done under
+	Avahi.
+
+	* daapsharing/rb-daap-share.c:
+	(publish_cb): Better name collision handling (at least for Avahi).
+
 2005-09-10  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-preferences.c: (add_daap_preferences): Patch from
 	Dennis Cranston <dennis_cranston@yahoo.com> to make the DAAP
-	preferences more HIG compliant
+	preferences more HIG compliant (Closes #315889)
 	
 	* po/POTFILES.in: add widgets/rb-query-creator-properties.c to the
 	list of files to be translated

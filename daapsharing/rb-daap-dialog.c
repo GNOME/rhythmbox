@@ -82,15 +82,16 @@ gchar *
 rb_daap_password_dialog_new_run (const gchar *name)
 {
 	GtkWidget *dialog;
-	GtkWidget *vbox;
 	GtkWidget *hbox;
+	GtkWidget *image;
+	GtkWidget *vbox;
 	gchar *s;
 	GtkWidget *label;
 	GtkWidget *entry;
 	gint resp;
 	gchar *ret;
 
-	dialog = gtk_dialog_new_with_buttons (_("Password"),
+	dialog = gtk_dialog_new_with_buttons (_("Password Required"),
 					      NULL,
 					      0,
 					      GTK_STOCK_CANCEL,
@@ -100,9 +101,15 @@ rb_daap_password_dialog_new_run (const gchar *name)
 					      NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 	
-	vbox = gtk_vbox_new (FALSE, 5);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), vbox, TRUE, TRUE, 0);
+	hbox = gtk_hbox_new (FALSE, 6);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE, 0);
+	
+	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG);
+	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+	
+	vbox = gtk_vbox_new (FALSE, 6);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 	s = g_strconcat (_("The music share '"), 
 			 name, 
@@ -112,10 +119,10 @@ rb_daap_password_dialog_new_run (const gchar *name)
 	g_free (s);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 
-	hbox = gtk_hbox_new (FALSE, 5);
+	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 	
-	label = gtk_label_new_with_mnemonic (_("_Password"));
+	label = gtk_label_new_with_mnemonic (_("_Password:"));
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	
 	entry = gtk_entry_new ();
@@ -158,10 +165,11 @@ gchar *
 rb_daap_collision_dialog_new_run (const gchar *old_name)
 {
 	GtkWidget *dialog;
+	GtkWidget *hbox;
+	GtkWidget *image;
 	GtkWidget *vbox;
 	gchar *s;
 	GtkWidget *label;
-	GtkWidget *hbox;
 	GtkWidget *entry;
 	gint resp;
 
@@ -171,12 +179,19 @@ rb_daap_collision_dialog_new_run (const gchar *old_name)
 					      GTK_STOCK_OK,
 					      GTK_RESPONSE_OK,
 					      NULL);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 	
-	vbox = gtk_vbox_new (FALSE, 5);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), vbox, TRUE, TRUE, 0);
+	hbox = gtk_hbox_new (FALSE, 6);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE, 0);
+	
+	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
+	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+	
+	vbox = gtk_vbox_new (FALSE, 6);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-	s = g_strconcat (_("The share name '"),
+	s = g_strconcat (_("The shared music name '"),
 			 old_name,
 			 _("' is already taken. Please choose another."),
 			 NULL);
@@ -184,16 +199,15 @@ rb_daap_collision_dialog_new_run (const gchar *old_name)
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 	g_free (s);
 			
-	hbox = gtk_hbox_new (FALSE, 5);
+	hbox = gtk_hbox_new (FALSE, 12);
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 			
-	label = gtk_label_new_with_mnemonic (_("Shared music _name"));
+	label = gtk_label_new_with_mnemonic (_("Shared music _name:"));
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 
 	entry = gtk_entry_new ();
-	gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), entry);
-
 	gtk_entry_set_text (GTK_ENTRY (entry), old_name);
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
 		

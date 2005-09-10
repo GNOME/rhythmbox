@@ -62,7 +62,7 @@ struct RBDAAPSharePrivate {
 	gchar *name;
 	guint port;
 
-	/* mdns/zeroconf/dns-sd/rendezvous publishing things */
+	/* mdns/dns-sd publishing things */
 	gboolean published;
 	RBDAAPmDNSPublisher publisher;
 
@@ -1124,7 +1124,7 @@ db_entry_deleted_cb (RhythmDB *db,
 
 #define CONF_NAME "/apps/rhythmbox/sharing/share_name"
 
-static void 
+static gchar *
 publish_cb (RBDAAPmDNSPublisher publisher,
 	    RBDAAPmDNSPublisherStatus status,
 	    RBDAAPShare *share)
@@ -1137,24 +1137,15 @@ publish_cb (RBDAAPmDNSPublisher publisher,
 		case RB_DAAP_MDNS_PUBLISHER_COLLISION: {
 			gchar *new_name;
 			
-			g_message ("Duplicate share name on mDNS");
+			rb_debug ("Duplicate share name on mDNS");
 			
 			new_name = rb_daap_collision_dialog_new_run (share->priv->name);
-
-			/* FIXME test & apply this
-			 * or, do we even need it?
-			 *
-			 * Howl already automaticall renames for us, that was a
-			 * pain til I figured out a better way to filter us
-			 * out of browsing.  Why not have avahi autorename
-			 * also.  no ones the wiser?
-			 */
-			break;
+			return new_name;
 		}
 		
 	}
 
-	return;
+	return NULL;
 }
 
 #define STANDARD_DAAP_PORT 3689

@@ -78,9 +78,9 @@ typedef enum {
 	RB_DAAP_MDNS_PUBLISHER_COLLISION
 } RBDAAPmDNSPublisherStatus;
 
-typedef void (* RBDAAPmDNSPublisherCallback) (RBDAAPmDNSPublisher publisher,
-					      RBDAAPmDNSPublisherStatus status,
-					      gpointer user_data);
+typedef gchar * (* RBDAAPmDNSPublisherCallback) (RBDAAPmDNSPublisher publisher,
+					         RBDAAPmDNSPublisherStatus status,
+					         gpointer user_data);
 
 gboolean
 rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,

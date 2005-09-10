@@ -25,14 +25,11 @@
 
 #include <libgnome/gnome-i18n.h>
 #include "rb-dialog.h"
+#include "rb-debug.h"
+#include "eel-gconf-extensions.h"
 
 #include <string.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+#include <stdlib.h>
 
 #ifdef WITH_DAAP_SUPPORT
 static void mdns_error_dialog (const gchar *impl)
@@ -42,44 +39,10 @@ static void mdns_error_dialog (const gchar *impl)
 	return;
 }
 
-static gboolean
-is_local_address (const gchar *address)
-{
-	static struct hostent *he = NULL;
-	struct in_addr addr;
-	gint i;
-	
-	if (he == NULL) {
-		gint ret;
-		gchar hostname[255 + 7];
-	
-		ret = gethostname (hostname, 255);
-		if (ret) {
-			return FALSE;
-		}
-
-		strncat (hostname, ".local", 6);
-		he = gethostbyname (hostname);
-
-		if (he == NULL) {
-			return FALSE;
-		}
-	}
-
-	for (i = 0; he->h_addr_list[i]; i++) {
-		memcpy (&addr, he->h_addr_list[0], sizeof (struct in_addr));
-
-		if (strcmp (inet_ntoa (addr), address) == 0) {
-			return TRUE;
-		}
-	}
-
-	return FALSE;
-}
-
 typedef struct _CallbackAndData {
 	gpointer callback;
 	gpointer data;
+	gint port;
 } CallbackAndData;
 #endif
 
@@ -88,6 +51,9 @@ typedef struct _CallbackAndData {
 #undef PACKAGE
 #undef VERSION
 #include <howl.h>
+
+/* stupid hack cause howl sucks */
+static gchar *our_service_name = NULL;
 
 static gboolean
 howl_in_cb (GIOChannel *io_channel,
@@ -158,6 +124,21 @@ browse_cb (sw_discovery discovery,
 	CallbackAndData *cd = (CallbackAndData *) extra;
 	RBDAAPmDNSBrowserStatus bstatus;
 
+	/* This sucks.  Howl sucks.  I can't wait til avahi gets used more
+	 * places and I feel fine about dropping Howl.
+	 *
+	 * Howl automatically renames your service if there is a collision,
+	 * and doesn't tell you.  So this won't work if there is a collision.
+	 *
+	 * Howl also does not provide the nifty API for detecting local
+	 * services like Avahi does.
+	 *
+	 * Bollix
+	 */
+	if (strcmp ((const gchar *)name, our_service_name) == 0) {
+		return SW_OKAY;
+	}
+	
 	if (status == SW_DISCOVERY_BROWSE_ADD_SERVICE) {
 		bstatus = RB_DAAP_MDNS_BROWSER_ADD_SERVICE;
 	} else if (status == SW_DISCOVERY_BROWSE_REMOVE_SERVICE) {
@@ -240,11 +221,6 @@ resolve_cb (sw_discovery disc,
 	
 	sw_ipv4_address_name (address, host, 16);
 
-	if (is_local_address (host)) {
-		g_free (host);
-		return SW_OKAY;
-	}
-	
 	if (sw_text_record_iterator_init (&it, text_record, text_record_length) == SW_OKAY) {
 		sw_char key[SW_TEXT_RECORD_MAX_LEN];
 		sw_octet val[SW_TEXT_RECORD_MAX_LEN];
@@ -328,24 +304,21 @@ publish_cb (sw_discovery discovery,
 	    sw_opaque extra)
 {
 	CallbackAndData *cd = (CallbackAndData *) extra;
-	RBDAAPmDNSPublisherStatus pstatus;
 
 	if (status == SW_DISCOVERY_PUBLISH_STARTED) {
-		pstatus = RB_DAAP_MDNS_PUBLISHER_STARTED;
+		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) oid,
+							     RB_DAAP_MDNS_PUBLISHER_STARTED,
+							     cd->data);
 	} else if (status == SW_DISCOVERY_PUBLISH_NAME_COLLISION) {
 	/* This is all well and good, but howl won't report a name collision.
 	 * http://lists.porchdogsoft.com/pipermail/howl-users/Week-of-Mon-20041206/000487.html
 	 * So.  Fuck.
 	 */
-		pstatus = RB_DAAP_MDNS_PUBLISHER_COLLISION;
-	} else {
-		return SW_OKAY;
+		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) oid,
+							     RB_DAAP_MDNS_PUBLISHER_COLLISION,
+							     cd->data);
 	}
-
-	((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) oid,
-						     pstatus,
-						     cd->data);
-
+	
 	return SW_OKAY;
 }
 
@@ -365,7 +338,10 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		sw_result result;
 		
 		cd.callback = callback;
+		cd.port = port;
 		cd.data = user_data;
+
+		our_service_name = g_strdup (name);
 		
 	       	result = sw_discovery_publish (discovery,
 					       0,
@@ -397,6 +373,11 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 
 	if (discovery) {
 		sw_discovery_cancel (discovery, (sw_discovery_oid) publisher);
+	}
+
+	if (our_service_name) {
+		g_free (our_service_name);
+		our_service_name = NULL;
 	}
 
 	return;
@@ -458,6 +439,11 @@ browse_cb (AvahiServiceBrowser *browser,
 	CallbackAndData *cd = (CallbackAndData *) data;
 	RBDAAPmDNSBrowserStatus bstatus;
 
+	if (avahi_client_is_service_local (get_avahi_client (), interface, protocol, name, type, domain)) {
+		rb_debug ("Ignoring local service %s", name);
+		return;
+	}
+	
 	if (event == AVAHI_BROWSER_NEW) {
 		bstatus = RB_DAAP_MDNS_BROWSER_ADD_SERVICE;
 	} else if (event == AVAHI_BROWSER_REMOVE) {
@@ -536,15 +522,8 @@ resolve_cb (AvahiServiceResolver *resolver,
 	CallbackAndData *cd = (CallbackAndData *) data;
 
 	if (event == AVAHI_RESOLVER_FOUND) {
-		gchar *host = g_malloc (16);
+		gchar *host;
 		gboolean pp = FALSE;
-		
-		avahi_address_snprint (host, 16, address);
-
-		if (is_local_address (host)) {
-			g_free (host);
-			return;
-		}
 		
 		if (text) {
 			AvahiStringList *l = avahi_string_list_find (text, "Password");
@@ -564,6 +543,10 @@ resolve_cb (AvahiServiceResolver *resolver,
 				avahi_free (v);
 			}
 		}
+		
+		host = g_malloc0 (16);
+		avahi_address_snprint (host, 16, address);
+
 
 		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
 							    RB_DAAP_MDNS_RESOLVER_FOUND,
@@ -633,30 +616,64 @@ rb_daap_mdns_resolve_cancel (RBDAAPmDNSResolver resolver)
 	return;
 }
 
-/* FIXME
- * the publisher callback should return a new char * if there was a collision
- * and we should reset/update/commit the entry group if that is the case
- */
+static gint
+add_service (AvahiEntryGroup *group,
+	     const gchar *name,
+	     gint port)
+{
+	gint ret;
+	
+	ret = avahi_entry_group_add_service (group,
+					     AVAHI_IF_UNSPEC,
+					     AVAHI_PROTO_INET,
+					     name,
+					     "_daap._tcp",
+					     NULL,
+					     NULL,
+					     port,
+					     NULL);
+
+	if (ret < 0) {
+		return ret;
+	}
+	
+	ret = avahi_entry_group_commit (group);
+
+	return ret;
+}
+
+
 static void
 entry_group_cb (AvahiEntryGroup *group,
 		AvahiEntryGroupState state,
 		void *data)
 {
 	CallbackAndData *cd = (CallbackAndData *)data;
-	RBDAAPmDNSPublisherStatus pstatus;
 
 	if (state == AVAHI_ENTRY_GROUP_ESTABLISHED) {
-		pstatus = RB_DAAP_MDNS_PUBLISHER_STARTED;
+		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) group,
+							     RB_DAAP_MDNS_PUBLISHER_STARTED,
+							     cd->data);
 	} else if (state == AVAHI_ENTRY_GROUP_COLLISION) {
-		pstatus = RB_DAAP_MDNS_PUBLISHER_COLLISION;
-	} else {
-		return;
+		gchar *new_name = NULL;
+		gint ret;
+		
+		new_name = ((RBDAAPmDNSPublisherCallback)cd->callback) (
+				(RBDAAPmDNSPublisher) group,
+				RB_DAAP_MDNS_PUBLISHER_COLLISION, 
+				cd->data);
+		
+		ret = add_service (group, new_name, cd->port);
+
+		g_free (new_name);
+
+		if (ret < 0) {
+			g_warning ("Error starting mDNS discovery");
+			mdns_error_dialog ("Avahi");
+			return;
+		}
 	}
-
-	((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) group,
-						     pstatus,
-						     cd->data);
-
+	
 	return;
 }
 
@@ -679,9 +696,10 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 	}
 
 	cd.callback = callback;
+	cd.port = port;
 	cd.data = user_data;
 	
-	*publisher = (gpointer) avahi_entry_group_new (client,
+	*publisher = (RBDAAPmDNSPublisher) avahi_entry_group_new (client,
 						       entry_group_cb,
 						       &cd);
 	if (!*publisher) {
@@ -689,25 +707,9 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
-	
-	ret = avahi_entry_group_add_service ((AvahiEntryGroup *)*publisher,
-					     AVAHI_IF_UNSPEC,
-					     AVAHI_PROTO_INET,
-					     name,
-					     "_daap._tcp",
-					     NULL,
-					     NULL,
-					     port,
-					     NULL);
-	if (ret < 0) {
-		g_warning ("Error starting mDNS discovery");
-		mdns_error_dialog ("Avahi");
-		return FALSE;
-	}
-	
 
-	ret = avahi_entry_group_commit ((AvahiEntryGroup *)*publisher);
-
+	ret = add_service ((AvahiEntryGroup *)*publisher, name, port);
+	
 	if (ret < 0) {
 		g_warning ("Error starting mDNS discovery");
 		mdns_error_dialog ("Avahi");
@@ -724,7 +726,7 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 
 	avahi_entry_group_free (eg);
 	publisher = NULL;
-
+	
 	return;
 }
 #endif
