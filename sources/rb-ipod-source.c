@@ -413,8 +413,12 @@ static void
 rb_ipod_unload_songs (RBiPodSource *source)
 {
 	RhythmDB *db;
+	RBShell *shell;
 
-	g_object_get (G_OBJECT (source), "db", &db, NULL);
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_unref (G_OBJECT (shell));
+
 	rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_IPOD);
 	rhythmdb_commit (db);
 	g_object_unref (db);
