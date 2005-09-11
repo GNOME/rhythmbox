@@ -635,8 +635,14 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 		
 		filename = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		ext = strrchr (filename, '.');
-		ext++;
-		rb_daap_structure_add (mlit, RB_DAAP_CC_ASFM, ext);
+		if (ext == NULL) {
+			/* FIXME we should use RHYTHMDB_PROP_MIMETYPE instead */
+			ext = "mp3";
+			rb_daap_structure_add (mlit, RB_DAAP_CC_ASFM, ext);
+		} else {
+			ext++;
+			rb_daap_structure_add (mlit, RB_DAAP_CC_ASFM, ext);
+		}
 	}
 	if (client_requested (mb->bits, SONG_GENRE))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASGN, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE));
