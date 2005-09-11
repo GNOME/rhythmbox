@@ -788,7 +788,6 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	mgr->priv->outstanding_threads++;
 	
 	g_thread_create ((GThreadFunc) rb_playlist_manager_save_thread_main, data, FALSE, NULL);
-	g_object_unref (G_OBJECT (model));
 }
 
 static void
@@ -852,8 +851,6 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
-	
-	g_object_unref (model);
 	
 	return playlists;
 }

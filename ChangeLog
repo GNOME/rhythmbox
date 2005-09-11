@@ -1,5 +1,14 @@
 2005-09-11  James Livingston  <jrl@ids.org.au>
 
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_save_playlists),
+	(rb_playlist_manager_get_playlists): don't unref the sourcelist model
+	when we aren't supposed to. (Closes bug 315886)
+
+2005-09-11  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-removable-media-manager.c:
 	(rb_removable_media_manager_class_init),
 	(rb_removable_media_manager_init),
