@@ -13,8 +13,10 @@ libsourcesimpl_la_SOURCES =		\
 	rb-library-source.h		\
 	rb-iradio-source.c		\
 	rb-iradio-source.h		\
+	rb-removable-media-source.c	\
+	rb-removable-media-source.h	\
 	rb-playlist-source.c            \
-	rb-playlist-source.h		
+	rb-playlist-source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

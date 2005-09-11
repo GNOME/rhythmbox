@@ -41,69 +41,32 @@
 #include "rb-ipod-source.h"
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
+#include "rb-util.h"
+#include "rhythmdb.h"
 
-static void rb_ipod_source_init (RBiPodSource *source);
-static void rb_ipod_source_finalize (GObject *object);
-static void rb_ipod_source_class_init (RBiPodSourceClass *klass);
-static GObject *rb_ipod_source_constructor (GType type, 
-					    guint n_construct_properties,
-					    GObjectConstructParam *construct_properties);
+static GObject *rb_ipod_source_constructor (GType type, guint n_construct_properties,
+			       GObjectConstructParam *construct_properties);
+static void rb_ipod_source_dispose (GObject *object);
 
-static gboolean rb_ipod_is_volume_ipod (GnomeVFSVolume *volume);
-static void rb_ipod_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor, 
-				       GnomeVFSVolume *volume, gpointer data);
-static void rb_ipod_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-					 GnomeVFSVolume *volume, 
-					 gpointer data);
-static void rb_ipod_plugged   (RBiPodSource *source, 
-			       const gchar *mount_path,
-			       GnomeVFSVolume *volume);
-static void rb_ipod_unplugged (RBiPodSource *source);
+static gboolean impl_show_popup (RBSource *source);
+static void rb_ipod_load_songs (RBiPodSource *source);
 static gchar *rb_ipod_get_mount_path (GnomeVFSVolume *volume);
 
-static void rb_ipod_monitor (RBiPodSource *source, gboolean enable);
 #ifdef HAVE_HAL
 static gboolean hal_udi_is_ipod (const char *udi);
 #endif
 
-struct RBiPodSourcePrivate
+typedef struct
 {
-	GnomeVFSVolume *ipod_volume;
 	iPodParser *parser;
 	gchar *ipod_mount_path;
-};
-
-static GObjectClass *parent_class = NULL;
+} RBiPodSourcePrivate;
 
 
-GType
-rb_ipod_source_get_type (void)
-{
-	static GType rb_ipod_source_type = 0;
+G_DEFINE_TYPE (RBiPodSource, rb_ipod_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
+#define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
 
-	if (rb_ipod_source_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBiPodSourceClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_ipod_source_class_init,
-			NULL,
-			NULL,
-			sizeof (RBiPodSource),
-			0,
-			(GInstanceInitFunc) rb_ipod_source_init
-		};
-
-		rb_ipod_source_type = g_type_register_static (RB_TYPE_LIBRARY_SOURCE,
-							      "RBiPodSource",
-							      &our_info, 0);
-
-	}
-
-	return rb_ipod_source_type;
-}
+typedef const char * (*RBSourceStringFunc) (RBSource *source);
 
 static void
 rb_ipod_source_class_init (RBiPodSourceClass *klass)
@@ -111,148 +74,74 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
-	parent_class = g_type_class_peek_parent (klass);
-
-	object_class->finalize = rb_ipod_source_finalize;
 	object_class->constructor = rb_ipod_source_constructor;
+	object_class->dispose = rb_ipod_source_dispose;
 
-	source_class->impl_get_config_widget = NULL;
-}
+	source_class->impl_show_popup = impl_show_popup;
 
-
-static GObject *
-rb_ipod_source_constructor (GType type, guint n_construct_properties,
-			    GObjectConstructParam *construct_properties)
-{
-	GObject *object;
-	RBiPodSourceClass *klass;
-	GObjectClass *parent_class;  
-
-	/* Invoke parent constructor. */
-	klass = RB_IPOD_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IPOD_SOURCE));
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	object = parent_class->constructor (type,
-					    n_construct_properties,
-					    construct_properties);
-  
-	/* This needs to be done once the GObject properties are set
-	 * since rb_ipod_monitor expect the properties on the
-	 * RBiPodSource to be set (especially the "db" property)
-	 */
-	rb_ipod_monitor (RB_IPOD_SOURCE (object), TRUE);
-	return object;
-}
-
-
-static void
-rb_ipod_monitor (RBiPodSource *source, gboolean enable)
-{
-	GnomeVFSVolumeMonitor *monitor;
-	
-	monitor = gnome_vfs_get_volume_monitor ();
-
-	if (enable) {
-		GList *volumes;
-		GList *it;
-
-		/* Look for already plugged iPod */
-		volumes = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
-		for (it = volumes; it != NULL; it = it->next) {
-			if (rb_ipod_is_volume_ipod (GNOME_VFS_VOLUME (it->data))) {
-				rb_ipod_plugged (source, NULL,
-						 GNOME_VFS_VOLUME (it->data));
-			}
-		}
-		
-		/* Monitor new (un)mounted file systems to look for an iPod */
-		g_signal_connect (G_OBJECT (monitor), "volume-mounted", 
-				  G_CALLBACK (rb_ipod_volume_mounted_cb), 
-				  source);
-		g_signal_connect (G_OBJECT (monitor), "volume-unmounted", 
-				  G_CALLBACK (rb_ipod_volume_unmounted_cb), 
-				  source);
-	} else {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor), 
-						      G_CALLBACK (rb_ipod_volume_mounted_cb), 
-						      source);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor), 
-						      G_CALLBACK (rb_ipod_volume_unmounted_cb), 
-						      source);
-
-	}
+	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
 
 static void
 rb_ipod_source_init (RBiPodSource *source)
 {
-	source->priv = g_new0 (RBiPodSourcePrivate, 1);
+
 }
 
+static GObject *
+rb_ipod_source_constructor (GType type, guint n_construct_properties,
+			       GObjectConstructParam *construct_properties)
+{
+	GObjectClass *klass, *parent_class; 
+	RBiPodSource *source; 
+
+	klass = G_OBJECT_CLASS (g_type_class_peek (type));
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	source = RB_IPOD_SOURCE (parent_class->constructor (type, n_construct_properties, construct_properties));
+
+	rb_ipod_load_songs (source);
+
+	return G_OBJECT (source);
+}
 
 static void 
-rb_ipod_source_finalize (GObject *object)
+rb_ipod_source_dispose (GObject *object)
 {
-	RBiPodSource *source = RB_IPOD_SOURCE (object);
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
 
-	rb_ipod_monitor (source, FALSE);
-
-	if (source->priv->parser != NULL) {
-		ipod_parser_destroy (source->priv->parser);
-		source->priv->parser = NULL;
+	if (priv->parser != NULL) {
+		ipod_parser_destroy (priv->parser);
+		priv->parser = NULL;
 	}
 
-	if (source->priv->ipod_volume != NULL) {
-		gnome_vfs_volume_unref (source->priv->ipod_volume);
-		source->priv->ipod_volume = NULL;
+	if (priv->ipod_mount_path) {
+		g_free (priv->ipod_mount_path);
+		priv->ipod_mount_path = NULL;
 	}
-	g_free (source->priv->ipod_mount_path);
-	g_free (source->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
 }
 
-static GdkPixbuf *
-rb_ipod_get_icon (void)
+RBRemovableMediaSource *
+rb_ipod_source_new (RBShell *shell, GnomeVFSVolume *volume)
 {
-	GdkPixbuf *icon;
-	GtkIconTheme *theme;
+	RBiPodSource *source;
+	RhythmDBEntryType entry_type;
 
-	theme = gtk_icon_theme_get_default ();
-	icon = gtk_icon_theme_load_icon (theme, "gnome-dev-ipod", 24, 0, NULL);
+	g_assert (rb_ipod_is_volume_ipod (volume));
 
-	if (icon == NULL) {
-		/* gnome-dev-ipod is only available in gnome 2.8, so fallback
-		 * to an icon provided by rhythmbox for older gnome 
-		 */
-		GtkWidget *dummy;
+	entry_type =  rhythmdb_entry_register_type ();
 
-		dummy = gtk_tree_view_new ();
-		icon = gtk_widget_render_icon (dummy, RB_STOCK_IPOD,
-					       GTK_ICON_SIZE_LARGE_TOOLBAR,
-					       NULL);
-		gtk_widget_destroy (dummy);
-	}
-
-	return icon;
-}
-
-RBSource *
-rb_ipod_source_new (RBShell *shell)
-{
-	RBSource *source;
-
-	source = RB_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
+	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "name", _("iPod"),
-					  "entry-type", RHYTHMDB_ENTRY_TYPE_IPOD,
-					  "icon", rb_ipod_get_icon (),
+					  "entry-type", entry_type,
+					  "volume", volume,
 					  "shell", shell,
-					  "visibility", FALSE,
 					  NULL));
 
-	rb_shell_register_entry_type_for_source (shell, source, 
-						 RHYTHMDB_ENTRY_TYPE_IPOD);
+	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
-	return source;
+	return RB_REMOVABLE_MEDIA_SOURCE (source);
 }
 
 static void 
@@ -275,17 +164,20 @@ entry_set_string_prop (RhythmDB *db, RhythmDBEntry *entry,
 static gboolean
 load_ipod_db_idle_cb (RBiPodSource *source)
 {
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntry *entry;
 	RBShell *shell;
 	RhythmDB *db;
 	int i;
+	RhythmDBEntryType entry_type;
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 	g_object_unref (G_OBJECT (shell));
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 
 	g_assert (db != NULL);
-	g_assert (source->priv->parser != NULL);
+	g_assert (priv->parser != NULL);
 
 	for (i = 0; i < MAX_SONGS_LOADED_AT_ONCE; i++) {
 		gchar *pc_path, *pc_vfs_path;
@@ -293,23 +185,23 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 		iPodItem *item;
 		iPodSong *song;
 		
-		item = ipod_get_next_item (source->priv->parser);
+		item = ipod_get_next_item (priv->parser);
 		if ((item == NULL) || (item->type != IPOD_ITEM_SONG)) {
 			ipod_item_destroy (item);
-			ipod_parser_destroy (source->priv->parser);
-			source->priv->parser = NULL;
+			ipod_parser_destroy (priv->parser);
+			priv->parser = NULL;
 			g_object_unref (G_OBJECT (db));
 			return FALSE;
 		}
 		song = (iPodSong *)item->data;
 				
 		/* Set URI */
-		mount_path = source->priv->ipod_mount_path;
+		mount_path = priv->ipod_mount_path;
 		pc_path = itunesdb_get_track_name_on_ipod (mount_path, song);
 		pc_vfs_path = g_strdup_printf ("file://%s", pc_path);
 		g_free (pc_path);
 		entry = rhythmdb_entry_new (RHYTHMDB (db), 
-					    RHYTHMDB_ENTRY_TYPE_IPOD,
+					    entry_type,
 					    pc_vfs_path);
 		g_free (pc_vfs_path);
 
@@ -395,90 +287,18 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	return TRUE;
 }
 
-static int
+static void
 rb_ipod_load_songs (RBiPodSource *source)
 {
-	source->priv->parser = ipod_parser_new (source->priv->ipod_mount_path);
-	if (source->priv->parser == NULL) {
-		return -1;
-	}
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, 
-			 (GSourceFunc)load_ipod_db_idle_cb,
-			 source, NULL);
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	GnomeVFSVolume *volume;
 
-	return 0;
-}
+	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
+	priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
+	g_object_unref (G_OBJECT (volume));
+	priv->parser = ipod_parser_new (priv->ipod_mount_path);
 
-static void
-rb_ipod_unload_songs (RBiPodSource *source)
-{
-	RhythmDB *db;
-	RBShell *shell;
-
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
-
-	rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_IPOD);
-	rhythmdb_commit (db);
-	g_object_unref (db);
-}
-
-
-static void
-rb_ipod_plugged (RBiPodSource *source, 
-		 const gchar *mount_path,
-		 GnomeVFSVolume *volume)
-{
-	int res;
-
-	rb_debug ("iPod plugged\n");
-
-	if (source->priv->ipod_mount_path != NULL) {
-		/* Only one iPod can be recognized at once */
-		return;
-	}
-	
-	source->priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
-	res = rb_ipod_load_songs (source);
-	if (res == 0) {
-		source->priv->ipod_volume = volume;
-		gnome_vfs_volume_ref (volume);
-		g_object_set (G_OBJECT (source), "visibility", TRUE, NULL);
-	} else {
-		g_free (source->priv->ipod_mount_path);
-		source->priv->ipod_mount_path = NULL;
-	}
-	/* FIXME: should we suspend this monitor until the iPod 
-	 * database has been read and fed to rhythmbox?
-	 */
-}
-
-static void
-rb_ipod_unplugged (RBiPodSource *source)
-{
-	rb_debug ("iPod unplugged\n");
-	
-	g_assert (source->priv->ipod_mount_path != NULL);
-
-	gnome_vfs_volume_unref (source->priv->ipod_volume);
-	source->priv->ipod_volume = NULL;
-	
-	g_free (source->priv->ipod_mount_path);
-	source->priv->ipod_mount_path = NULL;
-	g_object_set (G_OBJECT (source), "visibility", FALSE, NULL);
-	rb_ipod_unload_songs (source);
-}
-
-RhythmDBEntryType rhythmdb_entry_ipod_get_type (void) 
-{
-	static RhythmDBEntryType ipod_type = -1;
-       
-	if (ipod_type == -1) {
-		ipod_type = rhythmdb_entry_register_type ();
-	}
-
-	return ipod_type;
+	g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 }
 
 static gchar *
@@ -494,7 +314,6 @@ rb_ipod_get_mount_path (GnomeVFSVolume *volume)
 
 	return path;
 }
-
 
 static gchar *
 rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
@@ -519,7 +338,7 @@ rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
 	return result;
 }
 
-static gboolean
+gboolean
 rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 {
 	gchar *itunesdb_path;
@@ -550,38 +369,6 @@ rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 
 	return result;
 }
-
-static void 
-rb_ipod_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-			   GnomeVFSVolume *volume, 
-			   gpointer data)
-{
-	RBiPodSource *source = RB_IPOD_SOURCE (data);
-
-	if (source->priv->ipod_volume != NULL) {
-		rb_debug ("iPod plugged while another one is already present, ignoring the new one");
-		return;
-	}
-
-	if (rb_ipod_is_volume_ipod (volume)) {
-		rb_ipod_plugged (source, NULL, volume);
-	}
-}
-
-static void 
-rb_ipod_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-			     GnomeVFSVolume *volume, 
-			     gpointer data)
-{
-	RBiPodSource *source = RB_IPOD_SOURCE (data);
-
-	g_assert (volume != NULL);
-
-	if (source->priv->ipod_volume == volume) {
-		rb_ipod_unplugged (source);
-	}
-}
-
 
 #ifdef HAVE_HAL_0_5
 
@@ -665,3 +452,10 @@ hal_udi_is_ipod (const char *udi)
 }
 
 #endif
+
+static gboolean
+impl_show_popup (RBSource *source)
+{
+	_rb_source_show_popup (RB_SOURCE (source), "/iPodSourcePopup");
+	return TRUE;
+}

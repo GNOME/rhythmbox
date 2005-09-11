@@ -40,6 +40,8 @@ rhythmbox_SOURCES =              			\
 	rb-shell-clipboard.h				\
 	rb-playlist-manager.c				\
 	rb-playlist-manager.h				\
+	rb-removable-media-manager.c			\
+	rb-removable-media-manager.h				\
 	rb-history.c					\
 	rb-history.h					\
 	rb-play-order.c					\

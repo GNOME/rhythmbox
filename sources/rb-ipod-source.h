@@ -23,7 +23,7 @@
 #define __RB_IPOD_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-library-source.h"
+#include "rb-removable-media-source.h"
 #include "rhythmdb.h"
 
 G_BEGIN_DECLS
@@ -35,27 +35,20 @@ G_BEGIN_DECLS
 #define RB_IS_IPOD_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_IPOD_SOURCE))
 #define RB_IPOD_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourceClass))
 
-#define RHYTHMDB_ENTRY_TYPE_IPOD (rhythmdb_entry_ipod_get_type ())
-
-typedef struct RBiPodSourcePrivate RBiPodSourcePrivate;
-
 typedef struct
 {
-	RBLibrarySource parent;
-
-	RBiPodSourcePrivate *priv;
+	RBRemovableMediaSource parent;
 } RBiPodSource;
 
 typedef struct
 {
-	RBLibrarySourceClass parent;
+	RBRemovableMediaSourceClass parent;
 } RBiPodSourceClass;
 
-RBSource *	rb_ipod_source_new		(RBShell *shell);
+RBRemovableMediaSource *	rb_ipod_source_new		(RBShell *shell, GnomeVFSVolume *volume);
+GType			rb_ipod_source_get_type		(void);
 
-GType		rb_ipod_source_get_type	        (void);
-
-RhythmDBEntryType rhythmdb_entry_ipod_get_type  (void);
+gboolean		rb_ipod_is_volume_ipod		(GnomeVFSVolume *volume);
 
 G_END_DECLS
 

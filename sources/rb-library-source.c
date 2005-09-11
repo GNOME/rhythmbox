@@ -1184,10 +1184,12 @@ paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBLibrarySource *source)
 {
+	const char *key = rb_library_source_get_paned_key (source);;
+
 	/* save state */
 	rb_debug ("paned size allocate");
-	eel_gconf_set_integer (rb_library_source_get_paned_key (source),
-			       gtk_paned_get_position (GTK_PANED (source->priv->paned)));
+	if (key)
+		eel_gconf_set_integer (key, gtk_paned_get_position (GTK_PANED (source->priv->paned)));
 }
 
 static void
@@ -1341,7 +1343,10 @@ rb_library_source_get_paned_key (RBLibrarySource *source)
 {
 	RBLibrarySourceClass *klass = RB_LIBRARY_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_paned_key (source);
+	if (klass->impl_get_paned_key)
+		return klass->impl_get_paned_key (source);
+	else
+		return NULL;
 }
 
 static void

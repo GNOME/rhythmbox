@@ -1,3 +1,23 @@
+2005-09-11  James Livingston  <jrl@ids.org.au>
+
+	* shell/Makefile.am: Add rb-removable-media-manager.{c,h}
+	* sources/Makefile.am: Add rb-removable-media-source.{c,h} 
+	
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_medium_added_cb), (rb_shell_select_source): create the
+	removable-media-manager on startup, and handle creation of sources.
+	
+	* sources/rb-ipod-source.h:
+	* sources/rb-ipod-source.c: (rb_ipod_source_class_init),
+	(rb_ipod_source_init), (rb_ipod_source_constructor),
+	(rb_ipod_source_dispose), (rb_ipod_source_new),
+	(load_ipod_db_idle_cb), (rb_ipod_load_songs), (impl_show_popup): Port
+	the iPod source over to the removable media framework.
+	
+	* sources/rb-library-source.c: (paned_size_allocate_cb),
+	(rb_library_source_get_paned_key): fix a potential bug is a
+	library-derived source doesn't have a paned-key
+
 2005-09-11  Bastien Nocera  <hadess@hadess.net>
 
 	* daapsharing/rb-daap-share.c: (add_entry_to_mlcl): default to

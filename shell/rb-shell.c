@@ -56,6 +56,7 @@
 #include "rb-file-helpers.h"
 #include "rb-source.h"
 #include "rb-playlist-manager.h"
+#include "rb-removable-media-manager.h"
 #include "rb-preferences.h"
 #include "rb-druid.h"
 #include "rb-shell-clipboard.h"
@@ -66,13 +67,7 @@
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
-#ifdef WITH_IPOD_SUPPORT
-#include "rb-ipod-source.h"
-#endif
 #include "totem-pl-parser.h"
-#ifdef WITH_IPOD_SUPPORT
-#include "rb-ipod-source.h"
-#endif /* WITH_IPOD_SUPPORT */
 #ifdef WITH_DAAP_SUPPORT
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
@@ -80,9 +75,6 @@
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
-#ifdef HAVE_AUDIOCD
-#include "rb-audiocd-source.h"
-#endif
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "eel-gconf-extensions.h"
@@ -141,6 +133,7 @@ static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr, RBShell *shell);
 static void rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell);
+static void rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
 static void rb_shell_set_duration (RBShell *shell, const char *duration);
@@ -199,11 +192,6 @@ static void paned_changed_cb (GConfClient *client,
 			      guint cnxn_id,
 			      GConfEntry *entry,
 			      RBShell *shell);
-#ifdef HAVE_AUDIOCD
-static void audiocd_changed_cb (MonkeyMediaAudioCD *cd,
-				gboolean available,
-				gpointer data);
-#endif
 static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBSource *source,
 					 GtkSelectionData *data,
@@ -322,6 +310,7 @@ struct RBShellPrivate
 	RBSourceHeader *source_header;
 	RBStatusbar *statusbar;
 	RBPlaylistManager *playlist_manager;
+	RBRemovableMediaManager *removable_media_manager;
 
 	GtkWidget *load_error_dialog;
 	GList *supported_media_extensions;
@@ -329,9 +318,6 @@ struct RBShellPrivate
 
 	RBLibrarySource *library_source;
 	RBIRadioSource *iradio_source;
-#ifdef WITH_IPOD_SUPPORT
-	RBiPodSource *ipod_source;
-#endif
 
 	RBSource *selected_source;
 
@@ -762,6 +748,7 @@ rb_shell_finalize (GObject *object)
 	g_hash_table_destroy (shell->priv->sources_hash);
 
 	g_object_unref (G_OBJECT (shell->priv->playlist_manager));
+	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
 
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 
@@ -995,10 +982,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
 	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source), NULL);
-#ifdef WITH_IPOD_SUPPORT
-	shell->priv->ipod_source = RB_IPOD_SOURCE (rb_ipod_source_new (shell));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->ipod_source), NULL);
-#endif
 	
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
@@ -1020,7 +1003,16 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	rb_daap_sources_init (shell);
 	rb_daap_sharing_init (shell);
 #endif
-	
+
+	/* Initialize removable media manager */
+	rb_debug ("shell: creating removable media manager");
+	shell->priv->removable_media_manager = rb_removable_media_manager_new (shell,
+								 RB_SOURCELIST (shell->priv->sourcelist));
+	g_idle_add ((GSourceFunc)rb_removable_media_manager_load_media, shell->priv->removable_media_manager);
+
+	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "medium_added",
+				 G_CALLBACK (rb_shell_medium_added_cb), shell, 0);
+
 	rb_debug ("shell: loading ui");
 	gtk_ui_manager_insert_action_group (shell->priv->ui_manager,
 					    shell->priv->actiongroup, 0);
@@ -1056,26 +1048,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
-#ifdef HAVE_AUDIOCD
-        if (rb_audiocd_is_any_device_available () == TRUE) {
-		rb_debug ("AudioCD device is available");
-		shell->priv->cd = monkey_media_audio_cd_new (NULL);
-
-		if (monkey_media_audio_cd_available (shell->priv->cd, NULL)) {
-			rb_debug ("Calling audiocd_changed_cb");
-			audiocd_changed_cb (shell->priv->cd,
-					    TRUE,
-					    shell);
-		}
-		else
-			rb_debug("CD is not available");
-
-		g_signal_connect_object (G_OBJECT (shell->priv->cd), "cd_changed",
-					 G_CALLBACK (audiocd_changed_cb), shell, 0);
-        }
-	else
-		rb_debug ("No AudioCD device is available!");
-#endif
 	
 	/* GO GO GO! */
 	if (rhythmdb_exists) {
@@ -1415,6 +1387,12 @@ rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell)
 }
 
 static void
+rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell)
+{
+	rb_shell_append_source (shell, source, NULL);
+}
+
+static void
 rb_shell_source_deleted_cb (RBSource *source,
 			    RBShell *shell)
 {
@@ -1520,6 +1498,7 @@ rb_shell_select_source (RBShell *shell,
 				 RB_SOURCE (source));
 	rb_playlist_manager_set_source (shell->priv->playlist_manager,
 					RB_SOURCE (source));
+	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", RB_SOURCE (source), NULL);
 }
 
 static void
