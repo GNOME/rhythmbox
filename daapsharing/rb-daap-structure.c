@@ -544,9 +544,9 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 				v += (gdouble)(patch * 0.01);
 				
 				g_value_set_double (&(item->content), v);
-//#ifdef PARSE_DEBUG
+#ifdef PARSE_DEBUG
 				g_print ("Code: %s, content: %f\n", rb_daap_content_code_string (item->content_code), v);
-//#endif
+#endif
 
 				break;
 			}
