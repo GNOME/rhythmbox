@@ -65,17 +65,16 @@ static const gchar * rb_daap_source_get_paned_key (RBLibrarySource *source);
 
 
 static RBDAAPmDNSBrowser browser = 0;
-static GHashTable *name_to_resolver = NULL;
+static GHashTable *service_name_to_resolver = NULL;
 static GSList *sources = NULL;
 static guint enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 
 
 struct RBDAAPSourcePrivate
 {
-	gchar *real_name;
+	gchar *service_name;
 	gchar *host;
-	gint port;
-
+	guint port;
 	gboolean password_protected;
 
 	RBDAAPConnection *connection;
@@ -85,7 +84,9 @@ struct RBDAAPSourcePrivate
 
 enum {
 	PROP_0,
-	PROP_REAL_NAME,
+	PROP_SERVICE_NAME,
+	PROP_HOST,
+	PROP_PORT,
 	PROP_PASSWORD_PROTECTED
 };
 
@@ -126,19 +127,37 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 
 
 	g_object_class_install_property (object_class,
-					 PROP_REAL_NAME,
-					 g_param_spec_string ("real-name",
-						 	      "Real name",
-							      "Real name of the share",
+					 PROP_SERVICE_NAME,
+					 g_param_spec_string ("service-name",
+						 	      "Service name",
+							      "mDNS/DNS-SD service name of the share",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	
+	g_object_class_install_property (object_class,
+					 PROP_HOST,
+					 g_param_spec_string ("host",
+						 	      "Host",
+							      "Host IP address",
+							      NULL,
+							      G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_PORT,
+					 g_param_spec_uint ("port",
+						 	    "Port",
+							    "Port of DAAP server on host",
+							    0,
+							    G_MAXUINT,
+							    0,
+							    G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_PASSWORD_PROTECTED,
 					 g_param_spec_boolean ("password-protected",
 							       "Password Protected",
 							       "Whether the share is password protected",
 							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							       G_PARAM_READWRITE));
 }
 
 static void
@@ -156,7 +175,7 @@ rb_daap_source_dispose (GObject *object)
 	rb_daap_source_disconnect (RB_SOURCE (source));
 
 	if (source->priv) {
-		g_free (source->priv->real_name);
+		g_free (source->priv->service_name);
 		g_free (source->priv->host);
 		g_free (source->priv);
 		source->priv = NULL;
@@ -174,16 +193,26 @@ rb_daap_source_set_property (GObject *object,
 	RBDAAPSource *source = RB_DAAP_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_REAL_NAME: {
-		source->priv->real_name = g_value_dup_string (value);
-		break;
-	}
-	case PROP_PASSWORD_PROTECTED:
-		source->priv->password_protected = g_value_get_boolean (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
+		case PROP_SERVICE_NAME: 
+			source->priv->service_name = g_value_dup_string (value);
+			break;
+		case PROP_HOST:
+			if (source->priv->host) {
+				g_free (source->priv->host);
+			}
+			source->priv->host = g_value_dup_string (value);
+			/* FIXME what do we do if its already connected and we
+			 * get a new host? */
+			break;
+		case PROP_PORT:
+			source->priv->port = g_value_get_uint (value);
+			break;
+		case PROP_PASSWORD_PROTECTED:
+			source->priv->password_protected = g_value_get_boolean (value);
+			break;
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+			break;
 	}
 }
 
@@ -196,15 +225,21 @@ rb_daap_source_get_property (GObject *object,
 	RBDAAPSource *source = RB_DAAP_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_REAL_NAME:
-		g_value_set_string (value, source->priv->real_name);
-		break;
-	case PROP_PASSWORD_PROTECTED:
-		g_value_set_boolean (value, source->priv->password_protected);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
+		case PROP_SERVICE_NAME:
+			g_value_set_string (value, source->priv->service_name);
+			break;
+		case PROP_HOST:
+			g_value_set_string (value, source->priv->host);
+			break;
+		case PROP_PORT:
+			g_value_set_uint (value, source->priv->port);
+			break;
+		case PROP_PASSWORD_PROTECTED:
+			g_value_set_boolean (value, source->priv->password_protected);
+			break;
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+			break;
 	}
 }
 
@@ -222,53 +257,46 @@ rb_daap_get_icon (void)
 
 static RBSource *
 rb_daap_source_new (RBShell *shell,
+		    const gchar *service_name,
 		    const gchar *name,
+		    const gchar *host,
+		    guint port,
 		    gboolean password_protected)
 {
 	RBSource *source;
 	RhythmDBEntryType type;
-	gchar *visible_name = g_strdup (name);
-
-	if (password_protected) {
-		gchar *s;
-
-		s = strrchr (visible_name, '_');
-		if (s && strcmp (s, "_PW") == 0) {
-			s[0] = '\0';
-		}
-	}	
 
 	type = rhythmdb_entry_daap_type_new ();
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
-					  "name", visible_name,
+					  "service-name", service_name,
+					  "name", name,
+					  "host", host,
+					  "port", port,
 					  "entry-type", type,
 					  "icon", rb_daap_get_icon (),
 					  "shell", shell,
 					  "visibility", TRUE,
 					  "sorting-key", CONF_STATE_SORTING,
-					  "real-name", name,
 					  "password-protected", password_protected,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source,
 						 type);
 
-	g_free (visible_name);
-
 	return source;
 }
 
 
 static RBSource *
-find_source_by_name (const gchar *name)
+find_source_by_service_name (const gchar *service_name)
 {
 	GSList *l;
 
 	for (l = sources; l != NULL; l = l->next) {
 		RBSource *source = l->data;
 
-		if (strcmp (name, RB_DAAP_SOURCE (source)->priv->real_name) == 0) {
+		if (strcmp (service_name, RB_DAAP_SOURCE (source)->priv->service_name) == 0) {
 			return source;
 		}
 	}
@@ -279,64 +307,58 @@ find_source_by_name (const gchar *name)
 static void
 resolve_cb (RBDAAPmDNSResolver resolver,
 	    RBDAAPmDNSResolverStatus status,
-	    const gchar *name,
+	    const gchar *service_name,
+	    gchar *name,
 	    gchar *host,
 	    guint port,
 	    gboolean password_protected,
 	    RBShell *shell)
 {
 	if (status == RB_DAAP_MDNS_RESOLVER_FOUND) {
-		RBSource *source = find_source_by_name (name);
-		RBDAAPSource *daap_source;
+		RBSource *source = find_source_by_service_name (service_name);
 
 		if (source == NULL) {
-			source = rb_daap_source_new (shell, name, password_protected);
+			source = rb_daap_source_new (shell, service_name, name, host, port, password_protected);
 			sources = g_slist_prepend (sources, source);
 			rb_shell_append_source (shell, source, NULL);
+		} else {
+			g_object_set (G_OBJECT (source),
+				      "name", name,
+				      "host", host,
+				      "port", port,
+				      "password-protected", password_protected,
+				      NULL);
 		}
-
-		daap_source = RB_DAAP_SOURCE (source);
-
-		/* FIXME? dunno what to do if we're already connected... */
-		if (daap_source->priv->host) {
-			g_free (daap_source->priv->host);
-		}
-		daap_source->priv->host = g_strdup (host);
-
-		daap_source->priv->port = port;
-		daap_source->priv->password_protected = password_protected;
 	} else if (status == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
-		g_warning ("Unable to resolve %s", name);
+		g_warning ("Unable to resolve %s", service_name);
 	}
-
-	g_free (host);
 }
 
 
 static void
 browse_cb (RBDAAPmDNSBrowser b,
 	   RBDAAPmDNSBrowserStatus status,
-	   const gchar *name,
+	   const gchar *service_name,
 	   RBShell *shell)
 {
 	if (status == RB_DAAP_MDNS_BROWSER_ADD_SERVICE) {
 		gboolean ret;
 		RBDAAPmDNSResolver *resolver;
 
-		if (find_source_by_name (name)) {
+		if (find_source_by_service_name (service_name)) {
 			rb_debug ("Ignoring duplicate DAAP source");
 			return;
 		}
 
-		rb_debug ("New DAAP (music sharing) source '%s' discovered", name);
+		rb_debug ("New DAAP (music sharing) source '%s' discovered", service_name);
 
 		/* the resolver takes care of ignoring our own shares,
 		 * if this is us, the callback won't fire
 		 */
 		resolver = g_new0 (RBDAAPmDNSResolver, 1);
-		g_hash_table_insert (name_to_resolver, g_strdup (name), resolver);
+		g_hash_table_insert (service_name_to_resolver, g_strdup (service_name), resolver);
 		ret = rb_daap_mdns_resolve (resolver,
-					    name,
+					    service_name,
 					    (RBDAAPmDNSResolverCallback) resolve_cb,
 					    shell);
 		if (!ret) {
@@ -344,9 +366,9 @@ browse_cb (RBDAAPmDNSBrowser b,
 		}
 
 	} else if (status == RB_DAAP_MDNS_BROWSER_REMOVE_SERVICE) {
-		RBSource *source = find_source_by_name (name);
+		RBSource *source = find_source_by_service_name (service_name);
 
-		rb_debug ("DAAP source '%s' went away", name);
+		rb_debug ("DAAP source '%s' went away", service_name);
 		if (source == NULL) {
 			/* if this happens, its because the user's own share
 			 * went away.  since that one doesnt resolve,
@@ -354,12 +376,12 @@ browse_cb (RBDAAPmDNSBrowser b,
 			 * it does have a resolver tho, so we should remove
 			 * that.
 			 */
-			g_hash_table_remove (name_to_resolver, name);
+			g_hash_table_remove (service_name_to_resolver, service_name);
 
 			return;
 		}
 
-		g_hash_table_remove (name_to_resolver, name);
+		g_hash_table_remove (service_name_to_resolver, service_name);
 		sources = g_slist_remove (sources, source);
 
 		rb_daap_source_disconnect (source);
@@ -382,7 +404,7 @@ stop_resolver (RBDAAPmDNSResolver *resolver)
 static void
 start_browsing (RBShell *shell)
 {
-	if (name_to_resolver != NULL)
+	if (service_name_to_resolver != NULL)
 		return;
 
 	gboolean ret = rb_daap_mdns_browse (&browser,
@@ -394,10 +416,10 @@ start_browsing (RBShell *shell)
 		return;
 	}
 
-	name_to_resolver = g_hash_table_new_full ((GHashFunc)g_str_hash,
-						  (GEqualFunc)g_str_equal,
-						  (GDestroyNotify)g_free,
-						  (GDestroyNotify)stop_resolver);
+	service_name_to_resolver = g_hash_table_new_full ((GHashFunc)g_str_hash,
+		       				 	  (GEqualFunc)g_str_equal, 
+							  (GDestroyNotify)g_free, 
+							  (GDestroyNotify)stop_resolver);
 
 	rb_daap_src_init ();
 }
@@ -407,11 +429,11 @@ stop_browsing (RBShell *shell)
 {
 	GSList *l;
 
-	if (name_to_resolver == NULL)
+	if (service_name_to_resolver == NULL)
 		return;
 
-	g_hash_table_destroy (name_to_resolver);
-	name_to_resolver = NULL;
+	g_hash_table_destroy (service_name_to_resolver);
+	service_name_to_resolver = NULL;
 
 	for (l = sources; l != NULL; l = l->next) {
 		RBSource *source = l->data;

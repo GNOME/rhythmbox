@@ -1,4 +1,24 @@
 2005-09-11  Charles Schmidt   <cschmidt2@emich.edu>
+	
+	* daapsharing/rb-daap-structure.c:
+	(rb_daap_structure_parse_container_buffer): Read the patch from daap 
+	type = version.
+
+	* daapsharing/rb-daap-mdns.c/h:
+	(resolve_cb): Updated mDNS resolve callback to send service-name &
+	name (read from Machine Name in the TXT data or equal to service-name
+	if not in TXT).
+
+	* daapsharing/rb-daap-source.c:
+	(rb_daap_source_class_init), (rb_daap_source_set_property), 
+	(rb_daap_source_get_property), (rb_daap_source_new),
+	(find_source_by_service_name), (resolve_cb), (browse_cb), 
+	(stop_resolver), (start_browsing), (stop_browsing), 
+	(enable_browsing_changed_cb): Switched 'real-name' for 'service-name'
+	and added 'host' and 'port' gobject properties.  Updated to use new
+	mDNS resolve callback sending service-name & name arguments.
+
+2005-09-11  Charles Schmidt   <cschmidt2@emich.edu>
 
 	* daapsharing/rb-daap-mdns.c:
 	(howl_strerror): New function to report errors from Howl

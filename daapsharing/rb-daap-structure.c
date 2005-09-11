@@ -530,20 +530,23 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 			case RB_DAAP_TYPE_VERSION: {
 				gint16 major = 0;
 				gint16 minor = 0;
+				gint16 patch = 0;
 				gdouble v = 0;
 
 				if (codesize == 4) {
 					major = rb_daap_buffer_read_int16(&(buf[l]));
-					minor = rb_daap_buffer_read_int16(&(buf[l]) + 2);
+					minor = rb_daap_buffer_read_int8(&(buf[l]) + 2);
+					patch = rb_daap_buffer_read_int8(&(buf[l]) + 3);
 				}
 
 				v = (gdouble)major;
 				v += (gdouble)(minor * 0.1);
+				v += (gdouble)(patch * 0.01);
 				
 				g_value_set_double (&(item->content), v);
-#ifdef PARSE_DEBUG
+//#ifdef PARSE_DEBUG
 				g_print ("Code: %s, content: %f\n", rb_daap_content_code_string (item->content_code), v);
-#endif
+//#endif
 
 				break;
 			}

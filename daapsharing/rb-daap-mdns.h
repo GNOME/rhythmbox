@@ -34,7 +34,7 @@ typedef enum {
 
 typedef void (* RBDAAPmDNSBrowserCallback) (RBDAAPmDNSBrowser browser,
 					    RBDAAPmDNSBrowserStatus status,
-					    const gchar *name,
+					    const gchar *service_name,
 					    gpointer user_data);
 gboolean
 rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
@@ -54,7 +54,8 @@ typedef enum {
 
 typedef void (* RBDAAPmDNSResolverCallback) (RBDAAPmDNSResolver resolver,
 					     RBDAAPmDNSResolverStatus status,
-					     const gchar *name,
+					     const gchar *service_name,
+					     gchar *name,
 					     gchar *host,
 					     guint port,
 					     gboolean password_protected,

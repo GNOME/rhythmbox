@@ -226,7 +226,7 @@ static sw_result
 resolve_cb (sw_discovery disc,
 	    sw_discovery_oid oid, 
 	    sw_uint32 interface_index, 
-	    sw_const_string name, 
+	    sw_const_string service_name, 
 	    sw_const_string type, 
 	    sw_const_string domain, 
 	    sw_ipv4_address address, 
@@ -239,6 +239,7 @@ resolve_cb (sw_discovery disc,
 	CallbackAndData *cd = (CallbackAndData *) extra;
 	sw_text_record_iterator it;
 	gboolean pp = FALSE;
+	gchar *name = NULL;
 	
 	sw_ipv4_address_name (address, host, 16);
 
@@ -253,6 +254,9 @@ resolve_cb (sw_discovery disc,
 					pp = TRUE;
 				}
 			}
+			if (strcmp ((char *)key, "Machine Name") == 0) {
+				name = g_strdup ((char *)val);
+			}
 		}
 		
 		sw_text_record_iterator_fina (it);
@@ -265,7 +269,9 @@ resolve_cb (sw_discovery disc,
 						    (guint) port,
 						    pp,
 						    cd->data);
-
+	g_free (host);
+	g_free (name);
+	
 	return SW_OKAY;
 }
 	
@@ -537,7 +543,7 @@ resolve_cb (AvahiServiceResolver *resolver,
 	    AvahiIfIndex interface,
 	    AvahiProtocol protocol,
 	    AvahiResolverEvent event,
-	    const char *name,
+	    const char *service_name,
 	    const char *type,
 	    const char *domain,
 	    const char *host_name,
@@ -551,6 +557,7 @@ resolve_cb (AvahiServiceResolver *resolver,
 	if (event == AVAHI_RESOLVER_FOUND) {
 		gchar *host;
 		gboolean pp = FALSE;
+		gchar *name = NULL;
 		
 		if (text) {
 			AvahiStringList *l = avahi_string_list_find (text, "Password");
@@ -569,6 +576,25 @@ resolve_cb (AvahiServiceResolver *resolver,
 				avahi_free (n);
 				avahi_free (v);
 			}
+
+			l = NULL;
+			l = avahi_string_list_find (text, "Machine Name");
+			
+			if (l) {
+				size_t s;
+				char *n;
+				char *v;
+
+				avahi_string_list_get_pair (l, &n, &v, &s);
+				name = g_strdup (v);
+
+				avahi_free (n);
+				avahi_free (v);
+			}
+		}
+
+		if (name == NULL) {
+			name = g_strdup (service_name);
 		}
 		
 		host = g_malloc0 (16);
@@ -577,15 +603,20 @@ resolve_cb (AvahiServiceResolver *resolver,
 
 		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
 							    RB_DAAP_MDNS_RESOLVER_FOUND,
+							    service_name,
 							    name,
 							    host,
 							    (guint16) port,
 							    pp,
 							    cd->data);
+
+		g_free (host);
+		g_free (name);
 	} else if (event == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
 		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
 							    RB_DAAP_MDNS_RESOLVER_TIMEOUT,
-							    name,
+							    service_name,
+							    NULL,
 							    NULL,
 							    0,
 							    FALSE,
