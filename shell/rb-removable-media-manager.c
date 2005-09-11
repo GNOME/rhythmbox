@@ -28,6 +28,7 @@
 
 #include "rb-removable-media-manager.h"
 #include "rb-sourcelist.h"
+#include "rb-removable-media-source.h"
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
 #endif
