@@ -1,5 +1,35 @@
 2005-09-11  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_class_init),
+	(rb_removable_media_manager_init),
+	(rb_removable_media_manager_dispose),
+	(rb_removable_media_manager_set_property),
+	(rb_removable_media_manager_get_property),
+	(rb_removable_media_manager_new),
+	(rb_removable_media_manager_load_media),
+	(rb_removable_media_manager_volume_mounted_cb),
+	(rb_removable_media_manager_volume_unmounted_cb),
+	(rb_removable_media_manager_mount_volume),
+	(rb_removable_media_manager_unmount_volume),
+	(rb_removable_media_manager_source_deleted_cb),
+	(rb_removable_media_manager_append_media_source),
+	(rb_removable_media_manager_set_uimanager),
+	(rb_removable_media_manager_eject_medium_cb),
+	(rb_removable_media_manager_cmd_eject_medium):
+	* shell/rb-removable-media-manager.h:
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init),
+	(rb_removable_media_source_init),
+	(rb_removable_media_source_dispose),
+	(rb_removable_media_source_set_property),
+	(rb_removable_media_source_get_property), (impl_get_pixbuf),
+	(impl_delete_thyself):
+	* sources/rb-removable-media-source.h: Add the four files that I
+	somehow managed not to add to cvs in the last commit. Oops.
+
+2005-09-11  James Livingston  <jrl@ids.org.au>
+
 	* shell/Makefile.am: Add rb-removable-media-manager.{c,h}
 	* sources/Makefile.am: Add rb-removable-media-source.{c,h} 
 	
