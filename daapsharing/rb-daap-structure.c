@@ -369,9 +369,9 @@ rb_daap_buffer_read_string (const gchar *buf, gssize size)
 {
 	if (g_utf8_validate (buf, size, NULL) == TRUE) {
 		return g_strndup (buf, size);
+	} else {
+		return g_strdup ("");
 	}
-
-	return g_strdup ("");
 }
 
 //#define PARSE_DEBUG
@@ -648,19 +648,18 @@ rb_daap_structure_find_node (GNode *structure,
 
 
 
-static void 
+static void
 rb_daap_item_free (RBDAAPItem *item)
 {
 	if (rb_daap_content_code_rb_daap_type (item->content_code) != RB_DAAP_TYPE_CONTAINER) {
 		g_value_unset (&(item->content));
 	}
-	g_free (item);
 
-	return;
+	g_free (item);
 }
 
-static gboolean 
-gnode_free_rb_daap_item (GNode *node, 
+static gboolean
+gnode_free_rb_daap_item (GNode *node,
 			 gpointer data)
 {
 	rb_daap_item_free ((RBDAAPItem *)node->data);
@@ -678,11 +677,9 @@ rb_daap_structure_destroy (GNode *structure)
 
 		structure = NULL;
 	}
-
-	return;
 }
 
-const RBDAAPContentCodeDefinition * 
+const RBDAAPContentCodeDefinition *
 rb_daap_content_codes (guint *number)
 {
 	*number = G_N_ELEMENTS (cc_defs);
@@ -725,20 +722,17 @@ print_rb_daap_item (GNode *node,
 	} else {
 		value = g_strdup ("");
 	}
-	
+
 	g_print ("%d, %s = %s (%d)\n", g_node_depth (node), name, value, item->size);
 	g_free (value);
 
 	return FALSE;
 }
 
-void 
+void
 rb_daap_structure_print (GNode *structure)
 {
 	if (structure) {
 		g_node_traverse (structure, G_PRE_ORDER, G_TRAVERSE_ALL, -1, (GNodeTraverseFunc)print_rb_daap_item, NULL);
 	}
-
-	return;
 }
-	

@@ -1,5 +1,60 @@
 2005-09-11  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-dialog.c: (encode_base64),
+	(rb_daap_password_dialog_new_run),
+	(rb_daap_collision_dialog_new_run): fix a translatable string, so that
+	it is no broken in to two pieces, and remove a use of a goto
+	
+	* daapsharing/rb-daap-mdns.c: (mdns_error_dialog),
+	(setup_sw_discovery), (rb_daap_mdns_resolve_cancel), (publish_cb),
+	(rb_daap_mdns_publish), (rb_daap_mdns_publish_cancel), (client_cb),
+	(get_avahi_client), (browse_cb), (rb_daap_mdns_browse),
+	(rb_daap_mdns_browse_cancel), (resolve_cb), (entry_group_cb): fix a
+	memory leaks, and some code style things.
+	
+	* daapsharing/rb-daap-share.c: (rb_daap_share_class_init),
+	(rb_daap_share_init), (rb_daap_share_set_property),
+	(rb_daap_share_dispose), (rb_daap_share_new),
+	(rb_daap_share_get_property): make the DB and the playlist manager
+	gobject properties.
+	
+	(message_add_standard_headers),
+	(message_set_from_rb_daap_structure), (server_info_cb),
+	(content_codes_cb), (login_cb), (update_cb), (databases_cb),
+	(server_cb), (add_db_entry), (db_entry_added_cb),
+	(db_entry_deleted_cb), (publish_cb), (rb_daap_share_start_publish),
+	(rb_daap_share_stop_publish): Fix a couple of memory leaks, some code
+	style and use CONF_PREFIX in the gconf keys
+	
+	* daapsharing/rb-daap-sharing.c: (create_share),
+	(enable_sharing_changed_cb), (share_name_changed_cb),
+	(rb_daap_sharing_init), (rb_daap_sharing_shutdown):
+	* daapsharing/rb-daap-src.c: (rb_daap_src_class_init),
+	(rb_daap_src_instance_init), (rb_daap_src_dispose),
+	(rb_daap_src_uri_handler_init), (rb_daap_src_set_property),
+	(rb_daap_src_get_property), (rb_daap_src_getcaps),
+	(rb_daap_src_close_file), (rb_daap_src_srcpad_event),
+	(rb_daap_src_init), (rb_daap_src_shutdown), (rb_daap_src_set_time),
+	(rb_daap_src_get_time): Deal with gconf callbacks where the key
+	hasn't actually changed, fix some memory leaks, code style and release
+	gconf notifications when the object is destroyed.
+	
+	* sources/rb-daap-source.c: (rhythmdb_entry_daap_type_new),
+	(rb_daap_source_class_init), (rb_daap_source_init),
+	(rb_daap_source_dispose), (rb_daap_source_set_property),
+	(rb_daap_source_get_property), (rb_daap_source_new),
+	(find_source_by_name), (resolve_cb), (browse_cb), (stop_resolver),
+	(start_browsing), (stop_browsing), (enable_browsing_changed_cb),
+	(rb_daap_sources_init), (rb_daap_sources_shutdown),
+	(rb_daap_source_activate), (rb_daap_source_disconnect),
+	(rb_daap_source_show_popup), (rb_daap_source_find_for_uri),
+	(rb_daap_source_get_headers): use CONF_PREFIX in the gconf keys,
+	release gconf notifications, handle gconf callbacks where the key
+	hasn't changed, make "real name" and "password protected" gobject
+	properties, fix some code style and fix a memory leak.
+
+2005-09-11  James Livingston  <jrl@ids.org.au>
+
 	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
 
 	* shell/rb-playlist-manager.c:

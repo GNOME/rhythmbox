@@ -21,30 +21,35 @@
 
 #include <config.h>
 
+#include <libgnome/gnome-i18n.h>
+#include <glib/gprintf.h>
+#include <string.h>
+
 #include "rb-daap-sharing.h"
 #include "rb-daap-share.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-playlist-manager.h"
 #include "eel-gconf-extensions.h"
-#include <libgnome/gnome-i18n.h>
-#include <string.h>
+#include "rb-preferences.h"
 
-#define CONF_ENABLE_SHARING "/apps/rhythmbox/sharing/enable_sharing"
-#define CONF_SHARE_NAME "/apps/rhythmbox/sharing/share_name"
+#define CONF_ENABLE_SHARING CONF_PREFIX "/sharing/enable_sharing"
+#define CONF_SHARE_NAME CONF_PREFIX "/sharing/share_name"
 
 static RBDAAPShare *share = NULL;
+static guint enable_sharing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
+static guint share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 
 static void 
 create_share (RBShell *shell)
 {
 	RhythmDB *db;
 	RBPlaylistManager *playlist_manager;
-	
 	gchar *name;
-	
+
+	g_assert (share == NULL);
 	rb_debug ("initialize daap sharing\n");
-		
+
 	name = eel_gconf_get_string (CONF_SHARE_NAME);
 
 	if (name == NULL || *name == '\0') {
@@ -56,20 +61,18 @@ create_share (RBShell *shell)
 		if (strcmp (real_name, "Unknown") == 0) {
 			real_name = g_get_user_name ();
 		}
-		
-		name = g_strconcat (real_name, "'s Music", NULL);
+
+		name = g_strdup_printf (_("%s's Music"), real_name);
 		eel_gconf_set_string (CONF_SHARE_NAME, name);
 	}
-	
+
 	g_object_get (G_OBJECT (shell), "db", &db, "playlist-manager", &playlist_manager, NULL);
-	
+
 	share = rb_daap_share_new (name, db, playlist_manager);
 
 	g_object_unref (db);
 	g_object_unref (playlist_manager);
 	g_free (name);
-
-	return;
 }
 
 static void 
@@ -83,15 +86,15 @@ enable_sharing_changed_cb (GConfClient *client,
 	enabled = eel_gconf_get_boolean (CONF_ENABLE_SHARING);
 
 	if (enabled) {
-		create_share (shell);
+		if (share == NULL)
+			create_share (shell);
 	} else {
-		rb_debug ("shutdown daap sharing\n");
+		rb_debug ("shutdown daap sharing");
 
-		g_object_unref (share);
+		if (share)
+			g_object_unref (share);
 		share = NULL;
 	}
-
-	return;
 }
 
 static void 
@@ -100,55 +103,52 @@ share_name_changed_cb (GConfClient *client,
 		       GConfEntry *entry, 
 		       RBShell *shell)
 {
-	gchar *name;
-
-	name = eel_gconf_get_string (CONF_SHARE_NAME);
-
 	if (share) {
+		gchar *name = eel_gconf_get_string (CONF_SHARE_NAME);;
 		g_object_set (G_OBJECT (share), "name", name, NULL);
+		g_free (name);
 	}
-
-	g_free (name);
-	
-	return;
 }
 
 
 void 
 rb_daap_sharing_init (RBShell *shell)
 {
-	gboolean enabled;
-
 	g_object_ref (shell);
-	
-	enabled = eel_gconf_get_boolean (CONF_ENABLE_SHARING);
-	
-	if (enabled) {
+
+	if (eel_gconf_get_boolean (CONF_ENABLE_SHARING)) {
 		create_share (shell);
 	}
-	
-	eel_gconf_notification_add (CONF_ENABLE_SHARING,
-				    (GConfClientNotifyFunc) enable_sharing_changed_cb,
-				    shell);
-	eel_gconf_notification_add (CONF_SHARE_NAME,
-				    (GConfClientNotifyFunc) share_name_changed_cb,
-				    shell);
 
-	return;
+	enable_sharing_notify_id =
+		eel_gconf_notification_add (CONF_ENABLE_SHARING,
+					    (GConfClientNotifyFunc) enable_sharing_changed_cb,
+					    shell);
+	share_name_notify_id =
+		eel_gconf_notification_add (CONF_ENABLE_SHARING,
+					    (GConfClientNotifyFunc) share_name_changed_cb,
+					    shell);
 }
 
 void 
 rb_daap_sharing_shutdown (RBShell *shell)
 {
-	g_object_unref (shell);
-	
 	if (share) {
-		rb_debug ("shutdown daap sharing\n");
+		rb_debug ("shutdown daap sharing");
 
 		g_object_unref (share);
 		share = NULL;
 	}
-	
-	return;
+
+	if (enable_sharing_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
+		eel_gconf_notification_remove (enable_sharing_notify_id);
+		enable_sharing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
+	}
+	if (share_name_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
+		eel_gconf_notification_remove (share_name_notify_id);
+		share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
+	}
+
+	g_object_unref (shell);
 }
 

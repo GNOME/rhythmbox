@@ -87,57 +87,46 @@ struct _RBDAAPSrcClass
 
 static GstElementClass *parent_class = NULL;
 
-static void 
-rb_daap_src_base_init (gpointer g_class);
-static void 
-rb_daap_src_class_init (RBDAAPSrcClass *klass);
-static void 
-rb_daap_src_instance_init (RBDAAPSrc *daap_src);
-static void 
-rb_daap_src_finalize (GObject *object);
+static void rb_daap_src_base_init (gpointer g_class);
+static void rb_daap_src_class_init (RBDAAPSrcClass *klass);
+static void rb_daap_src_instance_init (RBDAAPSrc *daap_src);
+static void rb_daap_src_dispose (GObject *object);
 
-static void 
-rb_daap_src_uri_handler_init (gpointer g_iface, 
+static void rb_daap_src_uri_handler_init (gpointer g_iface,
 			      gpointer iface_data);
 
-static void 
-rb_daap_src_set_property (GObject *object, 
-			  guint prop_id, 
-			  const GValue *value, 
+static void rb_daap_src_set_property (GObject *object,
+			  guint prop_id,
+			  const GValue *value,
 			  GParamSpec *pspec);
-static void 
-rb_daap_src_get_property (GObject *object, 
-		          guint prop_id, 
-			  GValue *value, 
+static void rb_daap_src_get_property (GObject *object,
+		          guint prop_id,
+			  GValue *value,
 			  GParamSpec *pspec);
 
-static GstCaps *
-rb_daap_src_getcaps (GstPad *pad);
+static GstCaps * rb_daap_src_getcaps (GstPad *pad);
 
-static GstData *
-rb_daap_src_get (GstPad *pad);
+static GstData * rb_daap_src_get (GstPad *pad);
 
-static GstElementStateReturn
-rb_daap_src_change_state (GstElement *element);
+static GstElementStateReturn rb_daap_src_change_state (GstElement *element);
 
-static void 
-rb_daap_src_close_file (RBDAAPSrc *src);
-static gboolean 
-rb_daap_src_open_file (RBDAAPSrc *src);
-static gboolean 
-rb_daap_src_srcpad_event (GstPad *pad, 
+static void rb_daap_src_close_file (RBDAAPSrc *src);
+static gboolean rb_daap_src_open_file (RBDAAPSrc *src);
+static gboolean rb_daap_src_srcpad_event (GstPad *pad,
 			  GstEvent *event);
-static gboolean 
-rb_daap_src_srcpad_query (GstPad *pad, 
-			  GstQueryType type, 
-			  GstFormat *format, 
+static gboolean rb_daap_src_srcpad_query (GstPad *pad,
+			  GstQueryType type,
+			  GstFormat *format,
 			  gint64 *value);
+
 
 static GstElementDetails rb_daap_src_details =
 GST_ELEMENT_DETAILS ("RBDAAP Source",
 	"Source/File",
 	"Read a DAAP (music share) file",
 	"Charles Schmidt <cschmidt2@emich.edu");
+
+
 
 static const GstFormat *
 rb_daap_src_get_formats (GstPad *pad)
@@ -249,41 +238,39 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 		"bytesperread", ARG_BYTESPERREAD, G_PARAM_READWRITE,
 		"location", ARG_LOCATION, G_PARAM_READWRITE, NULL);
 
-	gobject_class->finalize = rb_daap_src_finalize;
+	gobject_class->dispose = rb_daap_src_dispose;
 
-	g_object_class_install_property (gobject_class, 
-					 ARG_SEEKABLE, 
-					 g_param_spec_boolean ("seekable", 
-						 	       "seekable", 
-							       "TRUE is stream is seekable", 
-							       TRUE, 
+	g_object_class_install_property (gobject_class,
+					 ARG_SEEKABLE,
+					 g_param_spec_boolean ("seekable",
+						 	       "seekable",
+							       "TRUE is stream is seekable",
+							       TRUE,
 							       G_PARAM_READABLE));
 
 	gstelement_class->set_property = rb_daap_src_set_property;
 	gstelement_class->get_property = rb_daap_src_get_property;
 
 	gstelement_class->change_state = rb_daap_src_change_state;
-
-	return;
 }
 
-static void 
+static void
 rb_daap_src_instance_init (RBDAAPSrc *src)
 {
 	src->srcpad = gst_pad_new ("src", GST_PAD_SRC);
 	gst_pad_set_getcaps_function (src->srcpad,
 				      rb_daap_src_getcaps);
-	gst_pad_set_get_function (src->srcpad, 
+	gst_pad_set_get_function (src->srcpad,
 				  rb_daap_src_get);
-	gst_pad_set_event_mask_function (src->srcpad, 
+	gst_pad_set_event_mask_function (src->srcpad,
 					 rb_daap_src_get_event_mask);
-	gst_pad_set_event_function (src->srcpad, 
+	gst_pad_set_event_function (src->srcpad,
 				    rb_daap_src_srcpad_event);
-	gst_pad_set_query_type_function (src->srcpad, 
+	gst_pad_set_query_type_function (src->srcpad,
 					 rb_daap_src_get_query_types);
-	gst_pad_set_query_function (src->srcpad, 
+	gst_pad_set_query_function (src->srcpad,
 				    rb_daap_src_srcpad_query);
-	gst_pad_set_formats_function (src->srcpad, 
+	gst_pad_set_formats_function (src->srcpad,
 				      rb_daap_src_get_formats);
 	gst_element_add_pad (GST_ELEMENT (src), src->srcpad);
 
@@ -297,19 +284,17 @@ rb_daap_src_instance_init (RBDAAPSrc *src)
 	src->seek_bytes = 0;
 	src->send_discont = FALSE;
 	src->need_flush = FALSE;
-
-	return;
 }
 
-static void 
-rb_daap_src_finalize (GObject *object)
+static void
+rb_daap_src_dispose (GObject *object)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (object);
 
 	if (GST_FLAG_IS_SET (src, RB_DAAP_SRC_OPEN)) {
 		rb_daap_src_close_file (src);
 	}
-	
+
 	if (src->daap_uri) {
 		g_free (src->daap_uri);
 		src->daap_uri = NULL;
@@ -329,15 +314,13 @@ rb_daap_src_finalize (GObject *object)
 		g_free (src->path);
 		src->path = NULL;
 	}
-	
+
 	if (src->sock_fd != -1) {
 		close (src->sock_fd);
 		src->sock_fd = -1;
 	}
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
-
-	return;
+	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static guint
@@ -388,22 +371,15 @@ rb_daap_src_uri_handler_init (gpointer g_iface,
 	iface->get_protocols = rb_daap_src_uri_get_protocols;
 	iface->get_uri = rb_daap_src_uri_get_uri;
 	iface->set_uri = rb_daap_src_uri_set_uri;
-
-	return;
 }
-	
-static void 
-rb_daap_src_set_property (GObject *object, 
-			  guint prop_id, 
-			  const GValue *value, 
+
+static void
+rb_daap_src_set_property (GObject *object,
+			  guint prop_id,
+			  const GValue *value,
 			  GParamSpec *pspec)
 {
-	RBDAAPSrc *src;
-
-	/* it's not null if we got it, but it might not be ours */
-	g_return_if_fail (RB_IS_DAAP_SRC (object));
-
-	src = RB_DAAP_SRC (object);
+	RBDAAPSrc *src = RB_DAAP_SRC (object);
 
 	switch (prop_id) {
 		case ARG_LOCATION:
@@ -467,22 +443,15 @@ rb_daap_src_set_property (GObject *object,
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 			break;
 	}
-
-	return;
 }
 
-static void 
-rb_daap_src_get_property (GObject *object, 
-		          guint prop_id, 
-			  GValue *value, 
+static void
+rb_daap_src_get_property (GObject *object,
+		          guint prop_id,
+			  GValue *value,
 			  GParamSpec *pspec)
 {
-	RBDAAPSrc *src;
-
-	/* it's not null if we got it, but it might not be ours */
-	g_return_if_fail (RB_IS_DAAP_SRC (object));
-
-	src = RB_DAAP_SRC (object);
+	RBDAAPSrc *src = RB_DAAP_SRC (object);
 
 	switch (prop_id) {
 		case ARG_LOCATION:
@@ -498,12 +467,10 @@ rb_daap_src_get_property (GObject *object,
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 			break;
 	}
-
-	return;
 }
 
 /* I tell you, it'd be nice if Gstreamer's typefind element actually listened
- * to this stuff, then it wouldnt have to do all that seeking and testing 
+ * to this stuff, then it wouldnt have to do all that seeking and testing
  * the streams against the typefind functions.  Here I am, /telling/ it what
  * sort of stream it is, and it can't even listen.  Bah.
  */
@@ -511,13 +478,13 @@ static GstCaps *
 rb_daap_src_getcaps (GstPad *pad)
 {
 	RBDAAPSrc *src = NULL;
-	gchar *extension = NULL;
+	const gchar *extension = NULL;
 	static GstStaticCaps mp3_caps = GST_STATIC_CAPS ("audio/mpeg, mpegversion = (int) 1, layer = (int) [ 1, 3 ]");
 	static GstStaticCaps ogg_caps = GST_STATIC_CAPS ("application/ogg");
 	static GstStaticCaps wav_caps = GST_STATIC_CAPS ("audio/x-wav");
 	static GstStaticCaps m4a_caps = GST_STATIC_CAPS ("audio/x-m4a");
 	static GstStaticCaps aac_caps = GST_STATIC_CAPS ("audio/mpeg, mpegversion = (int) { 2, 4 }, framed = (bool) false");
-	
+
 	src = RB_DAAP_SRC (GST_OBJECT_PARENT (pad));
 
 	if (src->daap_uri == NULL) {
@@ -876,12 +843,10 @@ rb_daap_src_close_file (RBDAAPSrc *src)
 	src->send_discont = FALSE;
 
 	GST_FLAG_UNSET (src, RB_DAAP_SRC_OPEN);
-
-	return;
 }
 
-static gboolean 
-rb_daap_src_srcpad_event (GstPad *pad, 
+static gboolean
+rb_daap_src_srcpad_event (GstPad *pad,
 			  GstEvent *event)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (GST_PAD_PARENT (pad));
@@ -1004,24 +969,18 @@ rb_daap_src_init ()
 		seek_time = 0;
 		src_initialized = TRUE;
 	}
-
-	return;
 }
 
 void
 rb_daap_src_shutdown ()
 {
 	src_initialized = FALSE;
-	
-	return;
 }
 
 void
 rb_daap_src_set_time (glong time)
 {
 	seek_time = time;
-
-	return;
 }
 
 glong
@@ -1029,8 +988,3 @@ rb_daap_src_get_time ()
 {
 	return seek_time_to_return;
 }
-
-
-	
-	
-

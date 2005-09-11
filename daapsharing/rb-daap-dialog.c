@@ -23,10 +23,11 @@
 #include "rb-daap-dialog.h"
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
+#include <glib/gprintf.h>
 #include <string.h>
 
 static gchar *
-encode_base64 (gchar *string)
+encode_base64 (const gchar *string)
 {
 	static const gchar base64chars[] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -111,10 +112,7 @@ rb_daap_password_dialog_new_run (const gchar *name)
 	vbox = gtk_vbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-	s = g_strconcat (_("The music share '"), 
-			 name, 
-			 _("' requires a password to connect"), 
-			 NULL);
+	s = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
 	label = gtk_label_new_with_mnemonic (s);
 	g_free (s);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
@@ -191,10 +189,7 @@ rb_daap_collision_dialog_new_run (const gchar *old_name)
 	vbox = gtk_vbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-	s = g_strconcat (_("The shared music name '"),
-			 old_name,
-			 _("' is already taken. Please choose another."),
-			 NULL);
+	s = g_strdup_printf (_("The shared music name '%s' is already taken. Please choose another."), old_name);
 	label = gtk_label_new (s);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 	g_free (s);
@@ -213,16 +208,12 @@ rb_daap_collision_dialog_new_run (const gchar *old_name)
 		
 	gtk_widget_show_all (dialog);
 
-run:
-	resp = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (resp == GTK_RESPONSE_OK) {
-		gchar *new_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));			
-		gtk_widget_destroy (dialog);
+	do {
+		resp = gtk_dialog_run (GTK_DIALOG (dialog));
+	} while (resp != GTK_RESPONSE_OK);
 
-		return new_name; 
-	} else {
-		goto run;
-	}
+	s = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));			
+	gtk_widget_destroy (dialog);
 
-	return NULL;
+	return s; 
 }

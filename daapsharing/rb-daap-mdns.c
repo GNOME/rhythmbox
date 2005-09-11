@@ -34,9 +34,10 @@
 #ifdef WITH_DAAP_SUPPORT
 static void mdns_error_dialog (const gchar *impl)
 {
-	rb_error_dialog (NULL, _("Unable to browse for remote shares"), _("Could not start browsing for music servers on your network.  Rhythmbox will continue to function, without this feature.  Check your %s installation"), impl);
-
-	return;
+	rb_error_dialog (NULL,
+			 _("Unable to browse for remote shares"),
+			 _("Could not start browsing for music servers on your network.  Rhythmbox will continue to function, without this feature.  Check your %s installation"),
+			 impl);
 }
 
 typedef struct _CallbackAndData {
@@ -83,8 +84,6 @@ setup_sw_discovery (sw_discovery discovery)
 	channel = g_io_channel_unix_new (fd);
 	g_io_add_watch (channel, G_IO_IN, howl_in_cb, discovery);
 	g_io_channel_unref (channel);
-
-	return;
 }
 
 static sw_discovery
@@ -286,21 +285,17 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 void
 rb_daap_mdns_resolve_cancel (RBDAAPmDNSResolver resolver)
 {
-	sw_discovery discovery;
-	
-	discovery = get_sw_discovery ();
+	sw_discovery discovery = get_sw_discovery ();
 
 	if (discovery) {
 		sw_discovery_cancel (discovery, (sw_discovery_oid) resolver);
 	}
-
-	return;
 }
 
 static sw_result
-publish_cb (sw_discovery discovery, 
-	    sw_discovery_oid oid, 
-	    sw_discovery_publish_status status, 
+publish_cb (sw_discovery discovery,
+	    sw_discovery_oid oid,
+	    sw_discovery_publish_status status,
 	    sw_opaque extra)
 {
 	CallbackAndData *cd = (CallbackAndData *) extra;
@@ -329,24 +324,24 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		      RBDAAPmDNSPublisherCallback callback,
 		      gpointer user_data)
 {
-	sw_discovery discovery;
-	
-	discovery = get_sw_discovery ();
+	sw_discovery discovery = get_sw_discovery ();
 
 	if (discovery) {
 		static CallbackAndData cd;
 		sw_result result;
-		
+
 		cd.callback = callback;
 		cd.port = port;
 		cd.data = user_data;
 
+		if (our_service_name)
+			g_free (our_service_name);
 		our_service_name = g_strdup (name);
-		
+
 	       	result = sw_discovery_publish (discovery,
 					       0,
-					       name, 
-					       "_daap._tcp", 
+					       name,
+					       "_daap._tcp",
 					       "local",
 					       NULL,
 					       port,
@@ -379,8 +374,6 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 		g_free (our_service_name);
 		our_service_name = NULL;
 	}
-
-	return;
 }
 #endif
 
@@ -400,17 +393,16 @@ client_cb (AvahiClient *client,
  * check to make sure we're in the _RUNNING state before we publish
  * check for COLLISION state and remove published information
  */
-	return;
 }
-	
+
 static AvahiClient * get_avahi_client ()
 {
 	static gboolean initialized = FALSE;
 	static AvahiClient *client = NULL;
-	
+
 	if (initialized == FALSE) {
 		AvahiGLibPoll *poll = NULL;
-		
+
 		avahi_set_allocator (avahi_glib_allocator ());
 
 		poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
@@ -451,13 +443,11 @@ browse_cb (AvahiServiceBrowser *browser,
 	} else {
 		return;
 	}
-	
+
 	((RBDAAPmDNSBrowserCallback)cd->callback) ((RBDAAPmDNSBrowser) browser,
 						   bstatus,
 						   (const gchar *) name,
 						   cd->data);
-	
-	return;
 }
 
 gboolean
@@ -485,7 +475,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 							 "local",
 							 (AvahiServiceBrowserCallback)browse_cb,
 							 &cd);
-	if (!*browser) {
+	if (*browser == NULL) {
 		g_warning ("Error starting mDNS discovery");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
@@ -501,8 +491,6 @@ rb_daap_mdns_browse_cancel (RBDAAPmDNSBrowser browser)
 
 	avahi_service_browser_free (sb);
 	browser = NULL;
-	
-	return;
 }
 
 static void
@@ -564,10 +552,8 @@ resolve_cb (AvahiServiceResolver *resolver,
 							    FALSE,
 							    cd->data);
 	}
-
-	return;
 }
-	
+
 gboolean
 rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		      const gchar *name,
@@ -612,8 +598,6 @@ rb_daap_mdns_resolve_cancel (RBDAAPmDNSResolver resolver)
 
 	avahi_service_resolver_free (sr);
 	resolver = NULL;
-	
-	return;
 }
 
 static gint
@@ -673,8 +657,6 @@ entry_group_cb (AvahiEntryGroup *group,
 			return;
 		}
 	}
-	
-	return;
 }
 
 gboolean
@@ -726,7 +708,5 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 
 	avahi_entry_group_free (eg);
 	publisher = NULL;
-	
-	return;
 }
 #endif

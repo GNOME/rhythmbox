@@ -43,20 +43,21 @@
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
 
-static void rb_daap_share_init	        (RBDAAPShare *share);
-static void rb_daap_share_set_property  (GObject *object, 
-					 guint prop_id, 
-					 const GValue *value, 
+static void rb_daap_share_set_property  (GObject *object,
+					 guint prop_id,
+					 const GValue *value,
 					 GParamSpec *pspec);
-static void rb_daap_share_get_property  (GObject *object, 
-					 guint prop_id, 
-					 GValue *value, 
+static void rb_daap_share_get_property  (GObject *object,
+					 guint prop_id,
+					 GValue *value,
 				 	 GParamSpec *pspec);
-static void rb_daap_share_finalize      (GObject *object);
-static void rb_daap_share_class_init    (RBDAAPShareClass *klass);
+static void rb_daap_share_dispose	(GObject *object);
 
 static void rb_daap_share_start_publish (RBDAAPShare *share);
 static void rb_daap_share_stop_publish  (RBDAAPShare *share);
+
+#define CONF_NAME CONF_PREFIX "/sharing/share_name"
+#define STANDARD_DAAP_PORT 3689
 
 struct RBDAAPSharePrivate {
 	gchar *name;
@@ -77,7 +78,7 @@ struct RBDAAPSharePrivate {
 	GHashTable *entry_to_id;
 	gulong entry_added_id;
 	gulong entry_deleted_id;
-	
+
 	/* playlist things */
 	RBPlaylistManager *playlist_manager;
 };
@@ -85,44 +86,22 @@ struct RBDAAPSharePrivate {
 enum {
 	PROP_0,
 	PROP_NAME,
-	PROP_DB
+	PROP_DB,
+	PROP_PLAYLIST_MANAGER
 };
 
-GType 
-rb_daap_share_get_type (void)
-{
-	static GType rb_daap_share_type = 0;
 
-	if (rb_daap_share_type == 0) {
-		static const GTypeInfo our_info = {
-			sizeof (RBDAAPShareClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_daap_share_class_init,
-			NULL,
-			NULL,
-			sizeof (RBDAAPShare),
-			0,
-			(GInstanceInitFunc) rb_daap_share_init
-		};
+G_DEFINE_TYPE (RBDAAPShare, rb_daap_share, G_TYPE_OBJECT)
 
-		rb_daap_share_type = g_type_register_static (G_TYPE_OBJECT,
-		 	 				     "RBDAAPShare",
-							     &our_info, 0);
-
-	}
-
-	return rb_daap_share_type;
-}
 
 static void
 rb_daap_share_class_init (RBDAAPShareClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	
+
 	object_class->get_property = rb_daap_share_get_property;
 	object_class->set_property = rb_daap_share_set_property;
-	object_class->finalize = rb_daap_share_finalize;
+	object_class->dispose = rb_daap_share_dispose;
 
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
@@ -133,13 +112,18 @@ rb_daap_share_class_init (RBDAAPShareClass *klass)
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_DB,
-					 g_param_spec_object ("db", 
-							      "RhythmDB", 
-							      "RhythmDB object", 
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
-							       G_PARAM_READABLE));
-
-	return;
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_MANAGER,
+					 g_param_spec_object ("playlist-manager",
+							      "Playlist Manager",
+							      "Playlist manager object",
+							      RB_TYPE_PLAYLIST_MANAGER,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -147,73 +131,83 @@ rb_daap_share_init (RBDAAPShare *share)
 {
 	share->priv = g_new0 (RBDAAPSharePrivate, 1);
 	share->priv->revision_number = 5;
-
-	return;
 }
 
 static void
-rb_daap_share_set_property (GObject *object, 
-			    guint prop_id, 
-			    const GValue *value, 
+rb_daap_share_set_property (GObject *object,
+			    guint prop_id,
+			    const GValue *value,
 			    GParamSpec *pspec)
 {
 	RBDAAPShare *share = RB_DAAP_SHARE (object);
 
 	switch (prop_id) {
-		case PROP_NAME: {
-			gboolean restart_publish = FALSE;
-			
-			if (share->priv->name && share->priv->published) {
+	case PROP_NAME: {
+		gboolean restart_publish = FALSE;
+	
+		if (share->priv->name) {
+			g_free (share->priv->name);
+
+			if (share->priv->published) {
 				rb_daap_share_stop_publish (share);
-				g_free (share->priv->name);
 				restart_publish = TRUE;
 			}
-
-			share->priv->name = g_value_dup_string (value);
-
-			if (restart_publish) {
-				rb_daap_share_start_publish (share);
-			}
-
-			break;
 		}
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-			break;
+
+		share->priv->name = g_value_dup_string (value);
+
+		if (restart_publish) {
+			rb_daap_share_start_publish (share);
+		}
+
+		break;
+	}
+	case PROP_DB:
+		share->priv->db = g_value_get_object (value);
+		break;
+	case PROP_PLAYLIST_MANAGER:
+		share->priv->playlist_manager = g_value_get_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
 	}
 }
 
 static void
-rb_daap_share_get_property (GObject *object, 
-			    guint prop_id, 
-			    GValue *value, 
+rb_daap_share_get_property (GObject *object,
+			    guint prop_id,
+			    GValue *value,
 			    GParamSpec *pspec)
 {
 	RBDAAPShare *share = RB_DAAP_SHARE (object);
 
 	switch (prop_id) {
-		case PROP_NAME:
-			g_value_set_string (value, share->priv->name);
-			break;
-		case PROP_DB:
-			g_value_set_object (value, share->priv->db);
-			break;
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-			break;
+	case PROP_NAME:
+		g_value_set_string (value, share->priv->name);
+		break;
+	case PROP_DB:
+		g_value_set_object (value, share->priv->db);
+		break;
+	case PROP_PLAYLIST_MANAGER:
+		g_value_set_object (value, share->priv->playlist_manager);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
 	}
 }
 
 
-static void 
-rb_daap_share_finalize (GObject *object)
+static void
+rb_daap_share_dispose (GObject *object)
 {
 	RBDAAPShare *share = RB_DAAP_SHARE (object);
 
 	if (share->priv->published) {
 		rb_daap_share_stop_publish (share);
 	}
-	
+
 	if (share->priv) {
 		g_free (share->priv->name);
 		g_object_unref (share->priv->db);
@@ -222,27 +216,28 @@ rb_daap_share_finalize (GObject *object)
 		share->priv = NULL;
 	}
 
-	return;
+	G_OBJECT_CLASS (rb_daap_share_parent_class)->dispose (object);
 }
 
 
-RBDAAPShare * 
-rb_daap_share_new (const gchar *name, 
-		   RhythmDB *db, 
+RBDAAPShare *
+rb_daap_share_new (const gchar *name,
+		   RhythmDB *db,
 		   RBPlaylistManager *playlist_manager)
 {
 	RBDAAPShare *share;
 
-	share = RB_DAAP_SHARE (g_object_new (RB_TYPE_DAAP_SHARE, "name", name, NULL));
-	share->priv->db = g_object_ref (db);
-	share->priv->playlist_manager = g_object_ref (playlist_manager);
-
+	share = RB_DAAP_SHARE (g_object_new (RB_TYPE_DAAP_SHARE,
+					     "name", name,
+					     "db", db,
+					     "playlist-manager", playlist_manager,
+					     NULL));
 	rb_daap_share_start_publish (share);
-	
+
 	return share;
 }
 
-static void 
+static void
 message_add_standard_headers (SoupMessage *message)
 {
 	gchar *s;
@@ -250,21 +245,19 @@ message_add_standard_headers (SoupMessage *message)
 	struct tm *tm;
 
 	soup_message_add_header (message->response_headers, "DAAP-Server", "Rhythmbox " VERSION);
-	
+
 	soup_message_add_header (message->response_headers, "Content-Type", "application/x-dmap-tagged");
-	
+
 	t = time (NULL);
 	tm = gmtime (&t);
 	s = g_new (gchar, 100);
 	strftime (s, 100, "%a, %d %b %Y %T GMT", tm);
 	soup_message_add_header (message->response_headers, "Date", s);
 	g_free (s);
-
-	return;
 }
 
-static void 
-message_set_from_rb_daap_structure (SoupMessage *message, 
+static void
+message_set_from_rb_daap_structure (SoupMessage *message,
 				    GNode *structure)
 {
 	gchar *resp;
@@ -280,13 +273,11 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 	message->response.owner = SOUP_BUFFER_SYSTEM_OWNED;
 	message->response.length = length;
 	message->response.body = resp;
-		
+	
 	message_add_standard_headers (message);
-		
+	
 	soup_message_set_status (message, SOUP_STATUS_OK);
 	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
-
-	return;
 }
 
 #define DMAP_STATUS_OK 200
@@ -352,12 +343,10 @@ server_info_cb (RBDAAPShare *share,
 
 	message_set_from_rb_daap_structure (message, msrv);
 	rb_daap_structure_destroy (msrv);
-	
-	return;
 }
 
-static void 
-content_codes_cb (RBDAAPShare *share, 
+static void
+content_codes_cb (RBDAAPShare *share,
 		  SoupMessage *message)
 {
 /* MCCR content codes response
@@ -381,17 +370,15 @@ content_codes_cb (RBDAAPShare *share,
 
 	for (i = 0; i < num_defs; i++) {
 		GNode *mdcl;
-		
+
 		mdcl = rb_daap_structure_add (mccr, RB_DAAP_CC_MDCL);
 		rb_daap_structure_add (mdcl, RB_DAAP_CC_MCNM, rb_daap_content_code_string_as_int32(defs[i].string));
 		rb_daap_structure_add (mdcl, RB_DAAP_CC_MCNA, defs[i].name);
 		rb_daap_structure_add (mdcl, RB_DAAP_CC_MCTY, (gint32) defs[i].type);
 	}
-	
+
 	message_set_from_rb_daap_structure (message, mccr);
 	rb_daap_structure_destroy (mccr);
-
-	return;
 }
 
 /* This is arbitrary.  iTunes communicates with a session id for
@@ -418,22 +405,20 @@ login_cb (RBDAAPShare *share,
 
 	message_set_from_rb_daap_structure (message, mlog);
 	rb_daap_structure_destroy (mlog);
-	
-	return;
 }
 
-static void 
-update_cb (RBDAAPShare *share, 
+static void
+update_cb (RBDAAPShare *share,
 	   SoupMessage *message)
 {
 	gchar *path;
 	gchar *revision_number_position;
 	guint revision_number;
-	
+
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
 
 	revision_number_position = strstr (path, "revision-number=");
-	
+
 	if (revision_number_position == NULL) {
 		g_print ("client asked for an update without a revision number?!?\n");
 		g_free (path);
@@ -462,8 +447,6 @@ update_cb (RBDAAPShare *share,
 		g_object_ref (message);
 		soup_message_io_pause (message);
 	}
-	
-	return;
 }
 
 typedef enum {
@@ -880,7 +863,8 @@ databases_cb (RBDAAPShare *share,
 
 		playlists = rb_playlist_manager_get_playlists (share->priv->playlist_manager);
 		g_list_foreach (playlists, (GFunc)add_playlist_to_mlcl, mlcl);
-		
+		g_list_free (playlists);
+	
 		message_set_from_rb_daap_structure (message, aply);
 		rb_daap_structure_destroy (aply);
 	} else if (g_ascii_strncasecmp ("/1/containers/", rest_of_path, 14) == 0) {
@@ -1014,18 +998,16 @@ databases_cb (RBDAAPShare *share,
 		message->response.body = buf;
 
 		gnome_vfs_close (handle);
-		
+	
 		soup_message_set_status (message, status_code);
 		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
 
 	} else {
 		g_print ("unhandled: %s\n", path);
 	}
-		
+	
 out:
 	g_free (path);
-		
-	return;
 }
 
 typedef void (* DAAPPathFunction) (RBDAAPShare *share, SoupMessage *message);
@@ -1044,57 +1026,48 @@ static const struct DAAPPath paths_to_functions[] = {
 	{"/databases", 10, databases_cb}
 };
 
-static void 
-server_cb (SoupServerContext *context, 
-	   SoupMessage *message, 
+static void
+server_cb (SoupServerContext *context,
+	   SoupMessage *message,
 	   RBDAAPShare *share)
 {
 	gchar *path;
 	guint i;
-	
+
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
-	
+
 	for (i = 0; i < G_N_ELEMENTS (paths_to_functions); i++) {
 		if (g_ascii_strncasecmp (paths_to_functions[i].path, path, paths_to_functions[i].path_length) == 0) {
 			paths_to_functions[i].function (share, message);
-			
 			return;
 		}
 	}
-	
+
 	g_warning ("unhandled path %s\n", soup_uri_to_string (soup_message_get_uri (message), TRUE));
 
 	g_free (path);
-	
-	return;
 }
 
-static void 
-add_db_entry (RhythmDBEntry *entry, 
+static void
+add_db_entry (RhythmDBEntry *entry,
 	      RBDAAPShare *share)
 {
-	RhythmDBEntryType type;
-	
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
 
 	if (type == rhythmdb_entry_song_get_type ()) {
 		share->priv->num_songs++;
-	
+
 		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (share->priv->num_songs), entry);
 		g_hash_table_insert (share->priv->entry_to_id, entry, GINT_TO_POINTER (share->priv->num_songs));
 	}
-
-	return;
 }
 
-static void 
-db_entry_added_cb (RhythmDB *db, 
+static void
+db_entry_added_cb (RhythmDB *db,
 		   RhythmDBEntry *entry,
 		   RBDAAPShare *share)
 {
-	RhythmDBEntryType type;
-	
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
 
 	if (type == rhythmdb_entry_song_get_type ()) {
 		share->priv->num_songs++;
@@ -1102,18 +1075,14 @@ db_entry_added_cb (RhythmDB *db,
 		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (share->priv->num_songs), entry);
 		g_hash_table_insert (share->priv->entry_to_id, entry, GINT_TO_POINTER (share->priv->num_songs));
 	}
-	
-	return;
 }
 
-static void 
-db_entry_deleted_cb (RhythmDB *db, 
-		     RhythmDBEntry *entry, 
+static void
+db_entry_deleted_cb (RhythmDB *db,
+		     RhythmDBEntry *entry,
 		     RBDAAPShare *share)
 {
-	RhythmDBEntryType type;
-	
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
 
 	if (type == rhythmdb_entry_song_get_type ()) {
 		gpointer id;
@@ -1124,11 +1093,8 @@ db_entry_deleted_cb (RhythmDB *db,
 
 		share->priv->num_songs--;
 	}
-
-	return;
 }
 
-#define CONF_NAME "/apps/rhythmbox/sharing/share_name"
 
 static gchar *
 publish_cb (RBDAAPmDNSPublisher publisher,
@@ -1142,26 +1108,24 @@ publish_cb (RBDAAPmDNSPublisher publisher,
 			break;
 		case RB_DAAP_MDNS_PUBLISHER_COLLISION: {
 			gchar *new_name;
-			
+		
 			rb_debug ("Duplicate share name on mDNS");
-			
+		
 			new_name = rb_daap_collision_dialog_new_run (share->priv->name);
 			return new_name;
 		}
-		
+	
 	}
 
 	return NULL;
 }
-
-#define STANDARD_DAAP_PORT 3689
 
 static void
 rb_daap_share_start_publish (RBDAAPShare *share)
 {
 	gint port = STANDARD_DAAP_PORT;
 	gboolean ret;
-	
+
 	share->priv->server = soup_server_new (SOUP_SERVER_PORT, port, NULL);
 	if (share->priv->server == NULL) {
 		rb_debug ("Unable to start music sharing server on port %d, trying any open port", port);
@@ -1202,11 +1166,15 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 	share->priv->num_songs = 0;
 
 	rhythmdb_entry_foreach (share->priv->db, (GFunc)add_db_entry, share);
-	
-	share->priv->entry_added_id = g_signal_connect (G_OBJECT (share->priv->db), "entry-added", G_CALLBACK (db_entry_added_cb), share);
-	share->priv->entry_deleted_id = g_signal_connect (G_OBJECT (share->priv->db), "entry-deleted", G_CALLBACK (db_entry_deleted_cb), share);
-	
-	return;
+
+	share->priv->entry_added_id = g_signal_connect (G_OBJECT (share->priv->db),
+							"entry-added",
+							G_CALLBACK (db_entry_added_cb),
+							share);
+	share->priv->entry_deleted_id = g_signal_connect (G_OBJECT (share->priv->db),
+							  "entry-deleted",
+							  G_CALLBACK (db_entry_deleted_cb),
+							  share);
 }
 
 static void
@@ -1242,15 +1210,11 @@ rb_daap_share_stop_publish (RBDAAPShare *share)
 		g_signal_handler_disconnect (share->priv->db, share->priv->entry_deleted_id);
 		share->priv->entry_deleted_id = 0;
 	}
-	
+
 	if (share->priv->publisher) {
 		rb_daap_mdns_publish_cancel (share->priv->publisher);
 		share->priv->publisher = 0;
 	}
 
 	share->priv->published = FALSE;
-	
-	return;
 }
-
-
