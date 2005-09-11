@@ -97,7 +97,7 @@ get_sw_discovery ()
 		result = sw_discovery_init (&discovery);
 	
 		if (result != SW_OKAY) {
-			g_warning ("Error starting mDNS discovery");
+			rb_debug ("Error initializing Howl");
 			mdns_error_dialog ("Howl");
 			return NULL;
 		}
@@ -109,6 +109,25 @@ get_sw_discovery ()
 
 	return discovery;
 }
+
+static const gchar *
+howl_strerror (sw_result result)
+{
+	switch (result) {
+		case SW_OKAY:
+			return "No error";
+		case SW_DISCOVERY_E_NO_MEM:
+			return "Out of memory";
+		case SW_DISCOVERY_E_BAD_PARAM:
+			return "Invalid paramater";
+		case SW_DISCOVERY_E_UNKNOWN:
+		default:
+			return "Unknown error";
+	}
+
+	return "";
+}
+		
 		
 static sw_result
 browse_cb (sw_discovery discovery,
@@ -159,31 +178,34 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		     RBDAAPmDNSBrowserCallback callback,
 		     gpointer user_data)
 {
-	sw_discovery discovery;
+	sw_discovery discovery = get_sw_discovery ();
+	static CallbackAndData cd;
+	sw_result result;
 	
-	discovery = get_sw_discovery ();
-
-	if (discovery) {
-		static CallbackAndData cd;
-		sw_result result;
+	if (!discovery) {
+		rb_debug ("Error initializing Howl for browsing");
+		mdns_error_dialog ("Howl");
+		return FALSE;
+	}
 		
-		cd.callback = callback;
-		cd.data = user_data;
+	cd.callback = callback;
+	cd.data = user_data;
 		
-	       	result = sw_discovery_browse (discovery,
-					      0,
-					      "_daap._tcp", 
-					      "local", 
-					      (sw_discovery_browse_reply) browse_cb, 
-					      (sw_opaque) &cd, 
-					      (sw_discovery_oid *)browser);
+       	result = sw_discovery_browse (discovery,
+				      0,
+				      "_daap._tcp", 
+				      "local", 
+				      (sw_discovery_browse_reply) browse_cb, 
+				      (sw_opaque) &cd, 
+				      (sw_discovery_oid *)browser);
 
-		if (result == SW_OKAY) {
-			return TRUE;
-		}
+	if (result != SW_OKAY) {
+		rb_debug ("Error starting mDNS browsing with Howl: %s", howl_strerror (result));
+		mdns_error_dialog ("Howl");
+		return FALSE;
 	}
 
-	return FALSE;
+	return TRUE;
 }
 
 void
@@ -254,32 +276,35 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		      RBDAAPmDNSResolverCallback callback,
 		      gpointer user_data)
 {
-	sw_discovery discovery;
-	
-	discovery = get_sw_discovery ();
+	sw_discovery discovery = get_sw_discovery ();
+	static CallbackAndData cd;
+	sw_result result;
 
-	if (discovery) {
-		static CallbackAndData cd;
-		sw_result result;
-		
-		cd.callback = callback;
-		cd.data = user_data;
-		
-	       	result = sw_discovery_resolve (discovery,
-					       0,
-					       name, 
-					       "_daap._tcp", 
-					       "local",
-					       (sw_discovery_resolve_reply) resolve_cb,
-		       			       (sw_opaque) &cd,
-					       (sw_discovery_oid *)resolver);
-		
-		if (result == SW_OKAY) {
-			return TRUE;
-		}
+	if (!discovery) {
+		rb_debug ("Error initializing Howl for resolving");
+		mdns_error_dialog ("Howl");
+		return FALSE;
 	}
 
-	return FALSE;
+	cd.callback = callback;
+	cd.data = user_data;
+		
+       	result = sw_discovery_resolve (discovery,
+				       0,
+				       name, 
+				       "_daap._tcp", 
+				       "local",
+				       (sw_discovery_resolve_reply) resolve_cb,
+	       			       (sw_opaque) &cd,
+				       (sw_discovery_oid *)resolver);
+		
+	if (result != SW_OKAY) {
+		rb_debug ("Error starting mDNS resolving with Howl: %s", howl_strerror (result));
+		mdns_error_dialog ("Howl");
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 void
@@ -325,38 +350,45 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		      gpointer user_data)
 {
 	sw_discovery discovery = get_sw_discovery ();
+	static CallbackAndData cd;
+	sw_result result;
 
-	if (discovery) {
-		static CallbackAndData cd;
-		sw_result result;
-
-		cd.callback = callback;
-		cd.port = port;
-		cd.data = user_data;
-
-		if (our_service_name)
-			g_free (our_service_name);
-		our_service_name = g_strdup (name);
-
-	       	result = sw_discovery_publish (discovery,
-					       0,
-					       name,
-					       "_daap._tcp",
-					       "local",
-					       NULL,
-					       port,
-					       NULL,
-					       0,
-					       (sw_discovery_publish_reply) publish_cb,
-		       			       (sw_opaque) &cd,
-					       (sw_discovery_oid *)publisher);
-		
-		if (result == SW_OKAY) {
-			return TRUE;
-		}
+	if (!discovery) {
+		rb_debug ("Error initializing Howl for resolving");
+		mdns_error_dialog ("Howl");
+		return FALSE;
 	}
 
-	return FALSE;
+	cd.callback = callback;
+	cd.port = port;
+	cd.data = user_data;
+
+	if (our_service_name) {
+		g_free (our_service_name);
+	}
+	
+	our_service_name = g_strdup (name);
+
+	result = sw_discovery_publish (discovery,
+				       0,
+				       name,
+				       "_daap._tcp",
+				       "local",
+				       NULL,
+				       port,
+				       NULL,
+				       0,
+				       (sw_discovery_publish_reply) publish_cb,
+	       			       (sw_opaque) &cd,
+				       (sw_discovery_oid *)publisher);
+		
+	if (result != SW_OKAY) {
+		rb_debug ("Error starting mDNS pubilsh with Howl: %s", howl_strerror (result));
+		mdns_error_dialog ("Howl");
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 void
@@ -402,16 +434,23 @@ static AvahiClient * get_avahi_client ()
 
 	if (initialized == FALSE) {
 		AvahiGLibPoll *poll = NULL;
+		gint error = 0;
 
 		avahi_set_allocator (avahi_glib_allocator ());
 
 		poll = avahi_glib_poll_new (NULL, G_PRIORITY_DEFAULT);
 
 		if (!poll) {
+			rb_debug ("Unable to create AvahiGlibPoll object for mDNS");
 			return NULL;
 		}
 
-		client = avahi_client_new (avahi_glib_poll_get (poll), client_cb, NULL, NULL);
+		client = avahi_client_new (avahi_glib_poll_get (poll), client_cb, NULL, &error);
+		if (client == NULL) {
+			rb_debug ("Unable to create AvahiClient: %s", avahi_strerror (error));
+			return NULL;
+		}
+
 		initialized = TRUE;
 	}
 
@@ -460,7 +499,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 	
 	client = get_avahi_client ();
 	if (!client) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Error initializing Avahi for browsing");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
@@ -476,7 +515,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 							 (AvahiServiceBrowserCallback)browse_cb,
 							 &cd);
 	if (*browser == NULL) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Error starting mDNS discovery using AvahiServiceBrowser");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
@@ -565,7 +604,7 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 	
 	client = get_avahi_client ();
 	if (!client) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Error initializing Avahi for resolving");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
@@ -583,7 +622,7 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 							   (AvahiServiceResolverCallback)resolve_cb,
 							   &cd);
 	if (!*resolver) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Error starting mDNS resolving using AvahiServiceResolver");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
@@ -652,7 +691,7 @@ entry_group_cb (AvahiEntryGroup *group,
 		g_free (new_name);
 
 		if (ret < 0) {
-			g_warning ("Error starting mDNS discovery");
+			rb_debug ("Error adding service to AvahiEntryGroup: %s", avahi_strerror (ret));
 			mdns_error_dialog ("Avahi");
 			return;
 		}
@@ -672,7 +711,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 	
 	client = get_avahi_client ();
 	if (!client) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Error initializing Avahi for publishing");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
@@ -685,7 +724,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 						       entry_group_cb,
 						       &cd);
 	if (!*publisher) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Could not create AvahiEntryGroup for publishing");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
@@ -693,7 +732,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 	ret = add_service ((AvahiEntryGroup *)*publisher, name, port);
 	
 	if (ret < 0) {
-		g_warning ("Error starting mDNS discovery");
+		rb_debug ("Error adding service to AvahiEntryGroup: %s", avahi_strerror (ret));
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}

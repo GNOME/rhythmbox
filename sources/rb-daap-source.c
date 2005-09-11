@@ -382,7 +382,7 @@ stop_resolver (RBDAAPmDNSResolver *resolver)
 static void
 start_browsing (RBShell *shell)
 {
-	if (name_to_resolver == NULL)
+	if (name_to_resolver != NULL)
 		return;
 
 	gboolean ret = rb_daap_mdns_browse (&browser,
@@ -407,7 +407,7 @@ stop_browsing (RBShell *shell)
 {
 	GSList *l;
 
-	if (name_to_resolver != NULL)
+	if (name_to_resolver == NULL)
 		return;
 
 	g_hash_table_destroy (name_to_resolver);

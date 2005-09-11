@@ -1,3 +1,15 @@
+2005-09-11  Charles Schmidt   <cschmidt2@emich.edu>
+
+	* daapsharing/rb-daap-mdns.c:
+	(howl_strerror): New function to report errors from Howl
+	(rb_daap_mdns_browse), (rb_daap_mdns_resolve),(rb_daap_mdns_publish), 
+	(get_sw_discovery), (get_avahi_client): Better error reporting from
+	Howl & Avahi.
+
+	* sources/rb-daap-source.:
+	(start_browsing), (stop_browsing): Fixed a bug where browsing would
+	not get started or stopped in some situations.
+	
 2005-09-12  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-removable-media-manager.c: add a missing include, that
