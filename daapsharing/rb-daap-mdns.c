@@ -264,6 +264,7 @@ resolve_cb (sw_discovery disc,
 	
 	((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) oid,
 						    RB_DAAP_MDNS_RESOLVER_FOUND,
+						    service_name,
 						    name,
 						    host,
 						    (guint) port,

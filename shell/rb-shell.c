@@ -94,7 +94,7 @@ static void rb_shell_get_property (GObject *object,
 				   GValue *value,
 				   GParamSpec *pspec);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
-					  GdkEvent *event,
+					  GdkEventWindowState *event,
 					  RBShell *shell);
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
@@ -1108,13 +1108,20 @@ set_icon_geometry  (GdkWindow *window,
 
 static gboolean
 rb_shell_window_state_cb (GtkWidget *widget,
-			  GdkEvent *event,
+			  GdkEventWindowState *event,
 			  RBShell *shell)
 {
-	if (event->type == GDK_WINDOW_STATE) {
-		shell->priv->iconified = (event->window_state.new_window_state
-					  & GDK_WINDOW_STATE_ICONIFIED);
+	shell->priv->iconified = (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED);
+
+	if (event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) {
+		gboolean show;
+
+		show = !(event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED);
+
+		gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (shell->priv->statusbar),
+						   show);
 	}
+
 	return FALSE;
 }
 
