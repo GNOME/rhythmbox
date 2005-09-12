@@ -19,7 +19,7 @@
  *
  */
 
-#include <gtk/gtkhbox.h>
+#include <gtk/gtkstatusbar.h>
 #include <gtk/gtkactiongroup.h>
 
 #include "rb-shell-player.h"
@@ -42,14 +42,14 @@ typedef struct RBStatusbarPrivate RBStatusbarPrivate;
 
 typedef struct
 {
-	GtkHBox parent;
+	GtkStatusbar parent;
 
 	RBStatusbarPrivate *priv;
 } RBStatusbar;
 
 typedef struct
 {
-	GtkHBoxClass parent_class;
+	GtkStatusbarClass parent_class;
 } RBStatusbarClass;
 
 GType			rb_statusbar_get_type	(void);

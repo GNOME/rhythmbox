@@ -1,3 +1,21 @@
+2005-09-11  James Livingston  <jrl@ids.org.au>
+
+	Patch from William Jon McCann <mccann@jhu.edu>
+
+	* shell/rb-statusbar.[ch]: Use G_DEFINE_TYPE.  Make a
+	subclass of GtkStatusbar instead of GtkHBox.
+	(rb_statusbar_construct): Don't set border width.
+	(rb_statusbar_init): Use resize grip.  Don't use
+	markup.
+	(set_statusbar_tooltip, unset_statusbar_tooltip) 
+	(rb_statusbar_connect_action_group, rb_statusbar_set_property):
+	Connect tooltips for actions.
+	(rb_statusbar_sync_status): Push new message to statusbar.
+	(rb_statusbar_set_progress): Don't use markup.
+	(rb_statusbar_entry_view_changed_cb): Don't set syncing_state
+	flag here since it prevents actually showing or hiding.
+	(rb_statusbar_sync_with_source): Push new message to statusbar.
+
 2005-09-11  Charles Schmidt   <cschmidt2@emich.edu>
 
 	* daapsharing/rb-daap-structure.c:

@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of status display widget
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -119,33 +120,7 @@ enum
 
 static GObjectClass *parent_class = NULL;
 
-GType
-rb_statusbar_get_type (void)
-{
-        static GType rb_statusbar_type = 0;
-
-        if (rb_statusbar_type == 0)
-        {
-                static const GTypeInfo our_info =
-                {
-                        sizeof (RBStatusbarClass),
-                        NULL,
-                        NULL,
-                        (GClassInitFunc) rb_statusbar_class_init,
-                        NULL,
-                        NULL,
-                        sizeof (RBStatusbar),
-                        0,
-                        (GInstanceInitFunc) rb_statusbar_init
-                };
-
-                rb_statusbar_type = g_type_register_static (GTK_TYPE_HBOX,
-                                                                "RBStatusbar",
-                                                                &our_info, 0);
-        }
-
-        return rb_statusbar_type;
-}
+G_DEFINE_TYPE (RBStatusbar, rb_statusbar, GTK_TYPE_STATUSBAR)
 
 static void
 rb_statusbar_class_init (RBStatusbarClass *klass)
@@ -211,9 +186,7 @@ rb_statusbar_construct (GType                  type,
         
         statusbar = RB_STATUSBAR (object);
 
-	gtk_container_set_border_width (GTK_CONTAINER (statusbar), 5);
-
-	rb_statusbar_sync_state (statusbar);
+        rb_statusbar_sync_state (statusbar);
 
         g_signal_connect_object (G_OBJECT (statusbar->priv->player),
 				 "notify::play-order", 
@@ -232,6 +205,8 @@ rb_statusbar_init (RBStatusbar *statusbar)
         statusbar->priv->tooltips = gtk_tooltips_new ();
         gtk_tooltips_enable (statusbar->priv->tooltips);
 
+        gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (statusbar), TRUE);
+
         statusbar->priv->shuffle = gtk_check_button_new_with_mnemonic (_("Sh_uffle"));
         gtk_tooltips_set_tip (GTK_TOOLTIPS (statusbar->priv->tooltips), 
                               GTK_WIDGET (statusbar->priv->shuffle), 
@@ -246,35 +221,25 @@ rb_statusbar_init (RBStatusbar *statusbar)
         g_signal_connect_object (G_OBJECT (statusbar->priv->repeat), "toggled",
                                  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar, 0);
 
-        statusbar->priv->status = gtk_label_new ("");
-        gtk_label_set_use_markup (GTK_LABEL (statusbar->priv->status), TRUE);
-        gtk_misc_set_alignment (GTK_MISC (statusbar->priv->status), 0.0, 0.5);
-
-        gtk_box_set_spacing (GTK_BOX (statusbar), 5);
-
         statusbar->priv->progress = gtk_progress_bar_new ();
         statusbar->priv->progress_fraction = 1.0;
 
-        statusbar->priv->loading_text = g_strdup_printf ("<b>%s</b>", _("Loading..."));
+        statusbar->priv->loading_text = g_strdup (_("Loading..."));
 
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
-	gtk_widget_hide (statusbar->priv->progress);
+        gtk_widget_hide (statusbar->priv->progress);
 
         gtk_box_pack_start (GTK_BOX (statusbar),
-                            GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
+                            GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
+        gtk_box_pack_start (GTK_BOX (statusbar),
+                            GTK_WIDGET (statusbar->priv->shuffle), FALSE, TRUE, 0);
+        gtk_box_pack_start (GTK_BOX (statusbar),
+                            GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
 
-        gtk_box_pack_end (GTK_BOX (statusbar),
-			  GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
-        gtk_box_pack_end (GTK_BOX (statusbar),
-			  GTK_WIDGET (statusbar->priv->shuffle), FALSE, TRUE, 0);
-
-        gtk_box_pack_end (GTK_BOX (statusbar),
-                          GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
-
-	statusbar->priv->notify_id = 
-		eel_gconf_notification_add (CONF_UI_STATUSBAR_HIDDEN,
+        statusbar->priv->notify_id = 
+                eel_gconf_notification_add (CONF_UI_STATUSBAR_HIDDEN,
 					    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
-					    statusbar);
+                                            statusbar);
 }
 
 static void
@@ -301,6 +266,73 @@ rb_statusbar_finalize (GObject *object)
         g_free (statusbar->priv);
 
         G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+
+typedef struct {
+        GtkWidget *statusbar;
+        char      *tooltip;
+} StatusTip;
+
+static void
+statustip_free (StatusTip *tip)
+{
+        g_object_unref (tip->statusbar);
+        g_free (tip->tooltip);
+        g_free (tip);
+}
+
+static void
+set_statusbar_tooltip (GtkWidget *widget,
+                       StatusTip *data)
+{
+        guint context_id;
+
+        context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (data->statusbar),
+                                                   "rb_statusbar_tooltip");
+        gtk_statusbar_push (GTK_STATUSBAR (data->statusbar),
+                            context_id,
+                            data->tooltip ? data->tooltip: "");
+}
+
+static void
+unset_statusbar_tooltip (GtkWidget *widget,
+                         GtkWidget *statusbar)
+{
+        guint context_id;
+
+        context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar),
+                                                   "rb_statusbar_tooltip");
+        gtk_statusbar_pop (GTK_STATUSBAR (statusbar), context_id);
+}
+
+static void
+rb_statusbar_connect_action_group (RBStatusbar    *statusbar,
+                                   GtkAction      *action,
+                                   GtkWidget      *proxy,
+                                   GtkActionGroup *action_group)
+{
+        char *tooltip;
+
+        if (! GTK_IS_MENU_ITEM (proxy))
+                return;
+
+        g_object_get (action, "tooltip", &tooltip, NULL);
+
+        if (tooltip) {
+                StatusTip *statustip;
+
+                statustip = g_new (StatusTip, 1);
+                statustip->statusbar = g_object_ref (statusbar);
+                statustip->tooltip = tooltip;
+                g_signal_connect_data (proxy, "select",
+                                       G_CALLBACK (set_statusbar_tooltip),
+                                       statustip, (GClosureNotify)statustip_free, 0);
+
+                g_signal_connect (proxy, "deselect",
+                                  G_CALLBACK (unset_statusbar_tooltip),
+                                  statusbar);
+        }
 }
 
 static void
@@ -343,7 +375,19 @@ rb_statusbar_set_property (GObject *object,
 
                 break;
         case PROP_ACTION_GROUP:
+                if (statusbar->priv->actiongroup) {
+                        g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->actiongroup),
+                                                              G_CALLBACK (rb_statusbar_connect_action_group),
+                                                              statusbar);
+                }
                 statusbar->priv->actiongroup = g_value_get_object (value);
+
+                g_signal_connect_object (statusbar->priv->actiongroup,
+                                         "connect-proxy",
+                                         G_CALLBACK (rb_statusbar_connect_action_group),
+                                         statusbar,
+                                         G_CONNECT_SWAPPED);
+
 		gtk_action_group_add_toggle_actions (statusbar->priv->actiongroup,
 						     rb_statusbar_toggle_entries,
 						     rb_statusbar_n_toggle_entries,
@@ -458,7 +502,8 @@ rb_statusbar_sync_status (RBStatusbar *status)
 
         /* set up the status text */
         if (status_text) {
-                gtk_label_set_markup (GTK_LABEL (status->priv->status), status_text);
+                gtk_statusbar_pop (GTK_STATUSBAR (status), 0);
+                gtk_statusbar_push (GTK_STATUSBAR (status), 0, status_text);
 
                 changed = TRUE;
                 status->priv->idle = FALSE;
@@ -537,7 +582,7 @@ rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *
         if (progress > 0.0) {
                 statusbar->priv->progress_fraction = progress;
                 statusbar->priv->progress_changed = TRUE;
-                statusbar->priv->progress_text = g_strdup_printf ("<b>%s</b>", text);
+                statusbar->priv->progress_text = g_strdup (text);
         } else {
                 /* trick sync_status into hiding it */
                 statusbar->priv->progress_fraction = 1.0;
@@ -552,7 +597,8 @@ rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 	char *status_str;
 
 	status_str = rb_source_get_status (statusbar->priv->selected_source);
-        gtk_label_set_markup (GTK_LABEL (statusbar->priv->status), status_str);
+        gtk_statusbar_pop (GTK_STATUSBAR (statusbar), 0);
+        gtk_statusbar_push (GTK_STATUSBAR (statusbar), 0, status_str);
 	g_free (status_str);
 }
 
@@ -642,7 +688,6 @@ rb_statusbar_view_statusbar_changed_cb (GtkAction *action,
         rb_debug ("got view statusbar toggle: active: %d");
 	if (statusbar->priv->syncing_state)
 		return;
-	statusbar->priv->syncing_state = TRUE;
 	eel_gconf_set_boolean (CONF_UI_STATUSBAR_HIDDEN,
 			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
