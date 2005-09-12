@@ -1,10 +1,15 @@
+2005-09-12  Bastien Nocera  <hadess@hadess.net>
+
+	* sources/rb-daap-source.c: (rb_daap_sources_init): Check
+	the GConf value's default, especially for badly installed schema
+	files
+
 2005-09-12  James Livingston  <jrl@ids.org.au>
 
 	* daapsharing/rb-daap-mdns.c: (resolve_cb): fix compilation with Howl
 
-
 	Patch from Paolo Borelli <pborelli@katamail.com>
-	
+
 	* shell/rb-shell.c: (rb_shell_window_state_cb): hide the statusbar
 	grip when maximised. Closes bug 316055.
 

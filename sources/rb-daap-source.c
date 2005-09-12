@@ -471,7 +471,16 @@ enable_browsing_changed_cb (GConfClient *client,
 RBSource *
 rb_daap_sources_init (RBShell *shell)
 {
-	gboolean enabled = eel_gconf_get_boolean (CONF_ENABLE_BROWSING);;
+	gboolean enabled = TRUE;
+	GConfValue *value;
+	GConfClient *client = eel_gconf_client_get_global ();
+
+	value = gconf_client_get_without_default (client,
+						  CONF_ENABLE_BROWSING, NULL);
+	if (value != NULL) {
+		enabled = gconf_value_get_bool (value);
+		gconf_value_free (value);
+	}
 
 	g_object_ref (shell);
 
