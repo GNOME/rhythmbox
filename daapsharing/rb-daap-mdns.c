@@ -153,7 +153,7 @@ browse_cb (sw_discovery discovery,
 	 *
 	 * Bollix
 	 */
-	if (strcmp ((const gchar *)name, our_service_name) == 0) {
+	if (our_service_name && strcmp ((const gchar *)name, our_service_name) == 0) {
 		return SW_OKAY;
 	}
 	
