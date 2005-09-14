@@ -20,14 +20,7 @@
  *
  */
 
-#include <gtk/gtktreeview.h>
-
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkiconfactory.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtktooltips.h>
-#include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
@@ -1428,6 +1421,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		GtkTreeViewColumn *column;
 		GtkTooltips *tooltip;
 		GtkCellRenderer *renderer;
+		GtkWidget *image_widget;
 		gint width;
 
 		tooltip = gtk_tooltips_new ();
@@ -1441,7 +1435,11 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 							 rb_entry_view_playing_cell_data_func,
 							 view,
 							 NULL);
+		image_widget = gtk_image_new_from_pixbuf (view->priv->playing_pixbuf);
+		gtk_tree_view_column_set_widget (column, image_widget);
+		gtk_widget_show (image_widget);
 		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_tree_view_column_set_clickable (column, FALSE);
 		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 		gtk_tree_view_column_set_fixed_width (column, width + 5);
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
@@ -1449,6 +1447,9 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 					  "pixbuf-clicked",
 					  G_CALLBACK (rb_entry_view_pixbuf_clicked_cb),
 					  G_OBJECT (view));
+		g_signal_connect_object (G_OBJECT (column), "clicked",
+				 G_CALLBACK (rb_entry_view_column_clicked_cb),
+				 view, 0);
 
 		gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltip), GTK_WIDGET (column->button),
 				       _("Now Playing"), NULL);
