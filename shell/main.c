@@ -253,7 +253,7 @@ main (int argc, char **argv)
 	if (session_bus == NULL) {
 		g_critical ("couldn't connect to session bus: %s", error->message);
 		g_clear_error (&error);
-	} else {
+	} else if (!no_registration) {
 		guint request_name_reply;
 		DBusGProxy *bus_proxy;
 

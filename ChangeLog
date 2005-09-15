@@ -1,5 +1,13 @@
 2005-09-15  James Livingston  <jrl@ids.org.au>
 
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* shell/Makefile.am: stop some linker warnings
+
+	* shell/main.c: (main): make --no-registration work with dbus
+
+2005-09-15  James Livingston  <jrl@ids.org.au>
+
 	* daapsharing/rb-daap-sharing.c: (create_share):
 	* widgets/rb-entry-view.c: (rb_entry_view_constructor): Fix some
 	reference sinking and counting issues that I caused.
