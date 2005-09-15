@@ -1,5 +1,17 @@
 2005-09-15  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac: increase totem-plparser requirements to 1.1.5
+
+	* shell/rb-playlist-manager.c: (playlist_load_start_cb),
+	(playlist_load_end_cb), (rb_playlist_manager_parse_file):
+	* sources/rb-playlist-source.c: (rb_playlist_source_save_playlist):
+	use the newer playlist APIs to save the name of the playlist, and use
+	the name of a loaded playlist.
+
+	Closes bug 309817.
+
+2005-09-15  James Livingston  <jrl@ids.org.au>
+
 	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
 
 	* shell/Makefile.am: stop some linker warnings

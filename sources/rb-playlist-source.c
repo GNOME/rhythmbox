@@ -842,13 +842,17 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 {
 	TotemPlParser *playlist;
 	GError *error = NULL;
-	rb_debug ("saving playlist");
+	char *name;
 
+
+	rb_debug ("saving playlist");
 	playlist = totem_pl_parser_new ();
 
-	totem_pl_parser_write (playlist, GTK_TREE_MODEL (source->priv->model),
-			       playlist_iter_func, uri, TOTEM_PL_PARSER_PLS,
-			       NULL, &error);
+	g_object_get (G_OBJECT (source), "name", &name, NULL);
+
+	totem_pl_parser_write_with_title (playlist, GTK_TREE_MODEL (source->priv->model),
+					  playlist_iter_func, uri, name,
+					  TOTEM_PL_PARSER_PLS, NULL, &error);
 	if (error != NULL)
 		rb_error_dialog (NULL, _("Couldn't save playlist"),
 				 "%s", error->message);

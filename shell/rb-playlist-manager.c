@@ -574,6 +574,24 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 	}
 }
 
+static void
+playlist_load_start_cb (TotemPlParser *parser, const char *title, RBPlaylistManager *mgr)
+{
+	rb_debug ("loading new playlist %s", title);
+
+	if (!mgr->priv->loading_playlist) {
+		mgr->priv->loading_playlist =
+			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
+	}
+}
+
+static void
+playlist_load_end_cb (TotemPlParser *parser, const char *title, RBPlaylistManager *mgr)
+{
+	rb_debug ("finished loading playlist %s", title);
+	mgr->priv->loading_playlist = NULL;
+}
+
 gboolean
 rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError **error)
 {
@@ -589,6 +607,14 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 
 		g_signal_connect_object (G_OBJECT (parser), "entry",
 					 G_CALLBACK (handle_playlist_entry_cb),
+					 mgr, 0);
+
+		g_signal_connect_object (G_OBJECT (parser), "playlist-start",
+					 G_CALLBACK (playlist_load_start_cb),
+					 mgr, 0);
+
+		g_signal_connect_object (G_OBJECT (parser), "playlist-end",
+					 G_CALLBACK (playlist_load_end_cb),
 					 mgr, 0);
 		
 		if (totem_pl_parser_parse (parser, uri, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
