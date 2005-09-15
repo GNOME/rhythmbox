@@ -1435,9 +1435,14 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 							 rb_entry_view_playing_cell_data_func,
 							 view,
 							 NULL);
+
 		image_widget = gtk_image_new_from_pixbuf (view->priv->playing_pixbuf);
+		g_object_ref (G_OBJECT (image_widget));
+		gtk_object_sink (GTK_OBJECT (image_widget));
 		gtk_tree_view_column_set_widget (column, image_widget);
 		gtk_widget_show (image_widget);
+
+
 		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 		gtk_tree_view_column_set_clickable (column, FALSE);
 		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);

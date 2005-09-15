@@ -69,9 +69,6 @@ create_share (RBShell *shell)
 	g_object_get (G_OBJECT (shell), "db", &db, "playlist-manager", &playlist_manager, NULL);
 
 	share = rb_daap_share_new (name, db, playlist_manager);
-
-	g_object_unref (db);
-	g_object_unref (playlist_manager);
 	g_free (name);
 }
 

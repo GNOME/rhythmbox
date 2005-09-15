@@ -1,5 +1,11 @@
 2005-09-15  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-sharing.c: (create_share):
+	* widgets/rb-entry-view.c: (rb_entry_view_constructor): Fix some
+	reference sinking and counting issues that I caused.
+
+2005-09-15  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-entry-view.c: (rb_entry_view_constructor): Put the "now
 	playing" icon in the "now playing" column header.
 
