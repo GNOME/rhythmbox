@@ -1,3 +1,18 @@
+2005-09-16  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_do_previous_or_seek),
+	(rb_shell_player_previous_button_cb),
+	(rb_shell_player_next_button_cb), (rb_shell_player_cmd_previous),
+	(rb_shell_player_playpause_button_cb): Make the previous button act
+	the same as the menu item. Fix an inversion of the "previous track or
+	seek" logic.
+	
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
+	
+	(rb_shell_player_playpause): make --play-pause stop source that can't
+	be paused
+
 2005-09-15  James Livingston  <jrl@ids.org.au>
 
 	* configure.ac: increase totem-plparser requirements to 1.1.5

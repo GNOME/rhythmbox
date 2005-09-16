@@ -97,13 +97,18 @@ static void rb_shell_player_cmd_pause (GtkAction *action,
 			               RBShellPlayer *player);
 static void rb_shell_player_cmd_stop (GtkAction *action,
 			              RBShellPlayer *player);
-static void rb_shell_player_playpause_button (RBShellPlayer *player);
+static void rb_shell_player_playpause_button_cb (GtkButton *button,
+						  RBShellPlayer *player);
 static void rb_shell_player_cmd_next (GtkAction *action,
 			              RBShellPlayer *player);
 static void rb_shell_player_shuffle_changed_cb (GtkAction *action,
 						RBShellPlayer *player);
 static void rb_shell_player_repeat_changed_cb (GtkAction *action,
 					       RBShellPlayer *player);
+static void rb_shell_player_previous_button_cb (GtkButton *button,
+						RBShellPlayer *player);
+static void rb_shell_player_next_button_cb (GtkButton *button,
+					    RBShellPlayer *player);
 static void rb_shell_player_cmd_song_info (GtkAction *action,
 					   RBShellPlayer *player);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
@@ -651,8 +656,8 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv->prev_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
-	g_signal_connect_swapped (G_OBJECT (player->priv->prev_button),
-				  "clicked", G_CALLBACK (rb_shell_player_do_previous), player);
+	g_signal_connect (G_OBJECT (player->priv->prev_button),
+			  "clicked", G_CALLBACK (rb_shell_player_previous_button_cb), player);
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->prev_button), 
 			      _("Play previous song"), NULL);
@@ -672,16 +677,16 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button), player->priv->play_image);
 	player->priv->playbutton_state = PLAY_BUTTON_PLAY;
 
-	g_signal_connect_swapped (G_OBJECT (player->priv->play_pause_stop_button),
-				  "clicked", G_CALLBACK (rb_shell_player_playpause_button), player);
+	g_signal_connect (G_OBJECT (player->priv->play_pause_stop_button),
+			  "clicked", G_CALLBACK (rb_shell_player_playpause_button_cb), player);
 
 	/* Next button */
 	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_NEXT,
 					 GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->next_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
-	g_signal_connect_swapped (G_OBJECT (player->priv->next_button),
-				  "clicked", G_CALLBACK (rb_shell_player_do_next), player);
+	g_signal_connect (G_OBJECT (player->priv->next_button),
+			  "clicked", G_CALLBACK (rb_shell_player_next_button_cb), player);
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->next_button), 
 			      _("Play next song"), NULL);
@@ -1318,22 +1323,42 @@ rb_shell_player_do_next (RBShellPlayer *player, GError **error)
 }
 
 static void
-rb_shell_player_cmd_previous (GtkAction *action,
-			      RBShellPlayer *player)
+rb_shell_player_do_previous_or_seek (RBShellPlayer *player, GError **error)
 {
 	rb_debug ("previous");
-	/* If we're in the first 2 seconds go to the previous song,
+	/* If we're in the first 3 seconds go to the previous song,
 	 * else restart the current one.
 	 */
 	if (player->priv->source != NULL
 	    && rb_source_can_pause (player->priv->source)
-	    && rb_player_get_time (player->priv->mmplayer) < 3) {
-		rb_debug ("under 3 second previous, restarting song");
+	    && rb_player_get_time (player->priv->mmplayer) > 3) {
+		rb_debug ("after 3 second previous, restarting song");
 		rb_player_set_time (player->priv->mmplayer, 0);
 		rb_header_sync_time (player->priv->header_widget);
 	} else {
 		rb_shell_player_do_previous (player, NULL);
 	}
+}
+
+static void
+rb_shell_player_previous_button_cb (GtkButton *button,
+				    RBShellPlayer *player)
+{
+	rb_shell_player_do_previous_or_seek (player, NULL);
+}
+
+static void
+rb_shell_player_next_button_cb (GtkButton *button,
+				RBShellPlayer *player)
+{
+	rb_shell_player_do_next (player, NULL);
+}
+
+static void
+rb_shell_player_cmd_previous (GtkAction *action,
+			      RBShellPlayer *player)
+{
+	rb_shell_player_do_previous_or_seek (player, NULL);
 }
 
 static void
@@ -1368,7 +1393,8 @@ rb_shell_player_cmd_play (GtkAction *action,
 }
 
 static void
-rb_shell_player_playpause_button (RBShellPlayer *player)
+rb_shell_player_playpause_button_cb (GtkButton *button,
+				     RBShellPlayer *player)
 {
 	/* FIXME - do something with error... */
 	rb_shell_player_playpause (player, FALSE, NULL);
@@ -1387,7 +1413,7 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 
 	switch (player->priv->playbutton_state) {
 	case PLAY_BUTTON_STOP:
-		if (!ignore_stop) {
+		if (!ignore_stop || !rb_source_can_pause (player->priv->source)) {
 			rb_debug ("setting playing source to NULL");
 			rb_shell_player_set_playing_source (player, NULL);
 			break;
