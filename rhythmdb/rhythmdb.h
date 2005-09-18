@@ -100,7 +100,8 @@ typedef enum
 	RHYTHMDB_PROP_LAST_PLAYED_STR,
 	RHYTHMDB_PROP_HIDDEN,
 	RHYTHMDB_PROP_PLAYBACK_ERROR,
-
+	RHYTHMDB_PROP_FIRST_SEEN_STR,
+	
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
 
@@ -159,10 +160,11 @@ typedef struct {
 	gdouble rating;
 	gboolean auto_rate;
 	glong play_count;
-	glong last_played;
+	gulong last_played;
 
 	/* cached data */
 	RBRefString *last_played_str;
+	RBRefString *first_seen_str;
 
 	/* playback error string */
 	char *playback_error;
@@ -225,6 +227,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return rb_refstring_get (entry->last_played_str);
 	case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		return entry->playback_error;
+	case RHYTHMDB_PROP_FIRST_SEEN_STR:
+		return rb_refstring_get (entry->first_seen_str);
 	default:
 		g_assert_not_reached ();
 		return NULL;

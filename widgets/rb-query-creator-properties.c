@@ -94,6 +94,7 @@ const RBQueryCreatorSortOption sort_options[] =
 	{ N_("Duration"), "Time", N_("W_ith longer tracks first") },
 	{ N_("Track Number"), "Track", N_("_In decreasing order")},
 	{ N_("Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },
+	{ N_("Date Added"), "FirstSeen", N_("W_ith more recently added tracks first") },
 };
 
 const int num_sort_options = G_N_ELEMENTS (sort_options);

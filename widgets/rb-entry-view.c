@@ -1285,6 +1285,15 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		title = _("L_ast Played");
 		key = "LastPlayed";
 		break;
+	case RB_ENTRY_VIEW_COL_FIRST_SEEN:
+		propid = RHYTHMDB_PROP_FIRST_SEEN;
+		cell_data->propid = RHYTHMDB_PROP_FIRST_SEEN_STR;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
+		sort_data->propid = RHYTHMDB_PROP_FIRST_SEEN;
+		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		title = _("_Date Added");
+		key = "FirstSeen";
+		break;
 	case RB_ENTRY_VIEW_COL_RATING:
 	default:
 		g_assert_not_reached ();

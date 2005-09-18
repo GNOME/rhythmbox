@@ -546,6 +546,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_FIRST_SEEN);
 
 	g_signal_connect_object (G_OBJECT (source->priv->songs), "show_popup",
 				 G_CALLBACK (rb_library_source_songs_show_popup_cb), source, 0);

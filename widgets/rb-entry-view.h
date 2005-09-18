@@ -51,6 +51,7 @@ typedef enum {
 	RB_ENTRY_VIEW_COL_RATING,
 	RB_ENTRY_VIEW_COL_PLAY_COUNT,
 	RB_ENTRY_VIEW_COL_LAST_PLAYED,
+	RB_ENTRY_VIEW_COL_FIRST_SEEN
 } RBEntryViewColumn;
 
 typedef struct RBEntryViewPrivate RBEntryViewPrivate;

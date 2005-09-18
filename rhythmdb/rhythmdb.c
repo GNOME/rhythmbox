@@ -2127,10 +2127,21 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 			entry->last_played_str = rb_refstring_new_full (_("Never"), FALSE);
 		else {
 			val = eel_strdup_strftime (_("%Y-%m-%d %H:%M"),
-						   localtime (&entry->last_played));
+						   localtime ((glong*)&entry->last_played));
 			entry->last_played_str = rb_refstring_new_full (val, FALSE);
 			g_free (val);
 		}
+		break;
+	}
+	case RHYTHMDB_PROP_FIRST_SEEN:
+	{
+		if (entry->first_seen_str)
+			rb_refstring_unref (entry->first_seen_str);
+
+		val = eel_strdup_strftime (_("%Y-%m-%d %H:%M"),
+					   localtime ((glong*)&entry->first_seen));
+		entry->first_seen_str = rb_refstring_new_full (val, FALSE);
+		g_free (val);
 		break;
 	}
 	default:
@@ -2761,6 +2772,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Visibility (gboolean) [visibility]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN_STR, "Time Added to Library (gchararray) [first-seen-str]"),
 			{ 0, 0, 0 }
 		};
 		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES);

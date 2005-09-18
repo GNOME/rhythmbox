@@ -86,6 +86,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *rating_check;
 	GtkWidget *play_count_check;
 	GtkWidget *last_played_check;
+	GtkWidget *first_seen_check;
 	GtkWidget *quality_check;
 
 	gboolean loading;
@@ -224,6 +225,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "last_played_check");
 	shell_preferences->priv->quality_check =
 		glade_xml_get_widget (xml, "quality_check");
+	shell_preferences->priv->first_seen_check =
+		glade_xml_get_widget (xml, "first_seen_check");
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
 				  glade_xml_get_widget (xml, "general_vbox"),
@@ -441,6 +444,8 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 	else if (shell_preferences->priv->quality_check
 		 && butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
 		colname = "RHYTHMDB_PROP_BITRATE";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->first_seen_check))
+		colname = "RHYTHMDB_PROP_FIRST_SEEN";
 	else
 		g_assert_not_reached ();
 
@@ -505,6 +510,9 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 			gtk_toggle_button_set_active
 				(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
 				 strstr (columns, "RHYTHMDB_PROP_BITRATE") != NULL);
+		gtk_toggle_button_set_active
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->first_seen_check),
+			 strstr (columns, "RHYTHMDB_PROP_FIRST_SEEN") != NULL);
 	}
 
 	g_free (columns);
