@@ -1,3 +1,21 @@
+2005-09-20  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery): don't
+	crash is the entry has a NULL string in a property
+	
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_load_media): fix some memory leaks
+	
+	(rb_removable_media_manager_mount_volume),
+	(rb_removable_media_manager_eject_medium_cb),
+	(rb_removable_media_manager_cmd_eject_medium): use
+	gnome_vfs_volume_ref/unref instead of g_object_ref/unref
+	
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_set_property),
+	(rb_removable_media_source_get_property): use
+        gnome_vfs_volume_ref/unref instead of g_object_ref/unref
+
 2005-09-18  James Livingston  <jrl@ids.org.au>
 
 	Patch from Ernst Persson <ernstp@gmail.com> to add a "date added"

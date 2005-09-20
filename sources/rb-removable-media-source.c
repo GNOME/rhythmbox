@@ -121,10 +121,10 @@ rb_removable_media_source_set_property (GObject *object,
 	{
 	case PROP_VOLUME:
 		if (priv->volume) {
-			g_object_unref (G_OBJECT (priv->volume));
+			gnome_vfs_volume_unref (priv->volume);
 		}
 		priv->volume = g_value_get_object (value);
-		g_object_ref (priv->volume);
+		gnome_vfs_volume_ref (priv->volume);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -143,7 +143,8 @@ rb_removable_media_source_get_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_VOLUME:
-		g_value_set_object (value, priv->volume);
+		gnome_vfs_volume_ref (priv->volume);
+		g_value_take_object (value, priv->volume);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

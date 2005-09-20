@@ -302,7 +302,6 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *mgr)
 	g_signal_connect (G_OBJECT (monitor), "volume-unmounted", 
 			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb), 
 			  mgr);
-
 	return FALSE;
 }
 
@@ -335,17 +334,22 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source = NULL;
 	RBShell *shell;
+	char *fs_type, *device_path, *display_name, *hal_udi, *icon_name;
 
 	g_object_get (G_OBJECT (mgr), "shell", &shell, NULL);
 
+	fs_type = gnome_vfs_volume_get_filesystem_type (volume);
+	device_path = gnome_vfs_volume_get_device_path (volume);
+	display_name = gnome_vfs_volume_get_display_name (volume);
+	hal_udi = gnome_vfs_volume_get_hal_udi (volume);
+	icon_name = gnome_vfs_volume_get_icon (volume);
 	rb_debug ("detecting new media - device_type=%d", gnome_vfs_volume_get_device_type (volume));
 	rb_debug ("detecting new media - volumd_type=%d", gnome_vfs_volume_get_volume_type (volume));
-	rb_debug ("detecting new media - fs type=%s", gnome_vfs_volume_get_filesystem_type (volume));
-	rb_debug ("detecting new media - device path=%s", gnome_vfs_volume_get_device_path (volume));
-	rb_debug ("detecting new media - display name=%s", gnome_vfs_volume_get_display_name (volume));
-	rb_debug ("detecting new media - hal udi=%s", gnome_vfs_volume_get_hal_udi (volume));
-	rb_debug ("detecting new media - icon=%s", gnome_vfs_volume_get_icon (volume));
-	rb_debug ("detecting new media - hal udi=%s", gnome_vfs_volume_get_hal_udi (volume));
+	rb_debug ("detecting new media - fs type=%s", fs_type);
+	rb_debug ("detecting new media - device path=%s", device_path);
+	rb_debug ("detecting new media - display name=%s", display_name);
+	rb_debug ("detecting new media - hal udi=%s", hal_udi);
+	rb_debug ("detecting new media - icon=%s", icon_name);
 
 	/* rb_xxx_source_new first checks if the 'volume' parameter corresponds
 	 * to a medium of type 'xxx', and returns NULL if it doesn't.
@@ -357,13 +361,18 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 		source = rb_ipod_source_new (shell, volume);
 #endif
 
-	g_object_unref (G_OBJECT (shell));
-
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
 		rb_removable_media_manager_append_media_source (mgr, source);
 	} else
 		rb_debug ("Unhanded media");
+
+	g_free (fs_type);
+	g_free (device_path);
+	g_free (display_name);
+	g_free (hal_udi);
+	g_free (icon_name);
+	g_object_unref (G_OBJECT (shell));
 }
 
 static void
@@ -435,8 +444,8 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 
 static void
 rb_removable_media_manager_eject_medium_cb (gboolean succeeded,
-					   char *error,
-					   char *detailed_error,
+					   const char *error,
+					   const char *detailed_error,
 					   gpointer *data)
 {
 	if (succeeded)
@@ -454,5 +463,5 @@ rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMedia
 
 	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 	gnome_vfs_volume_eject (volume, (GnomeVFSVolumeOpCallback)rb_removable_media_manager_eject_medium_cb, mgr);
-	g_object_unref (G_OBJECT (volume));
+	gnome_vfs_volume_unref (volume);
 }

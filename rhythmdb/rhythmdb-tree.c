@@ -1274,9 +1274,14 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		{
 			if (rhythmdb_get_property_type (db, data->propid) == G_TYPE_STRING) {
+				const char *entry_string = rhythmdb_entry_get_string (entry, data->propid);
 				gboolean islike = FALSE;
-				islike = (strstr (rhythmdb_entry_get_string (entry, data->propid),
-						  g_value_get_string (data->val)) != NULL);
+
+				/* check in case the property is NULL, the value should never be NULL */
+				if (entry_string == NULL)
+					return FALSE;
+
+				islike = (strstr (entry_string, g_value_get_string (data->val)) != NULL);
 				if (data->type == RHYTHMDB_QUERY_PROP_LIKE) {
 					if (!islike)
 						return FALSE;
