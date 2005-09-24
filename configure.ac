@@ -545,6 +545,9 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+dnl Enable gtk-doc
+GTK_DOC_CHECK(1.4)
+
 AC_OUTPUT([ 
 Makefile
 macros/Makefile
@@ -572,6 +575,8 @@ help/ja/Makefile
 po/Makefile.in
 tests/Makefile
 rhythmbox.spec
+doc/Makefile
+doc/reference/Makefile
 ])
 
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])

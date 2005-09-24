@@ -44,16 +44,20 @@ typedef enum {
 #define RB_IS_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SOURCE))
 #define RB_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE, RBSourceClass))
 
-typedef struct RBSourcePrivate RBSourcePrivate;
+typedef struct _RBSourceClass	RBSourceClass;
+typedef struct _RBSource		RBSource;
+typedef struct _RBSourcePrivate	RBSourcePrivate;
 
-typedef struct
+typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
+
+struct _RBSource
 {
 	GtkHBox parent;
 
 	RBSourcePrivate *priv;
-} RBSource;
+};
 
-typedef struct
+struct _RBSourceClass
 {
 	GtkHBoxClass parent;
 	
@@ -104,9 +108,7 @@ typedef struct
 	void		(*impl_activate)	(RBSource *source);
 	void		(*impl_deactivate)	(RBSource *source);
 	gboolean	(*impl_disconnect)	(RBSource *source);
-} RBSourceClass;
-
-typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
+};
 
 GType		rb_source_get_type		(void);
 

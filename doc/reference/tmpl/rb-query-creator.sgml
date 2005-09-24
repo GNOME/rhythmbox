@@ -1,0 +1,83 @@
+<!-- ##### SECTION Title ##### -->
+rb-query-creator
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM RBQueryCreatorLimitType ##### -->
+<para>
+
+</para>
+
+@RB_QUERY_CREATOR_LIMIT_COUNT: 
+@RB_QUERY_CREATOR_LIMIT_MB: 
+@RB_QUERY_CREATOR_LIMIT_SECONDS: 
+
+<!-- ##### FUNCTION rb_query_creator_new ##### -->
+<para>
+
+</para>
+
+@db: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_query_creator_new_from_query ##### -->
+<para>
+
+</para>
+
+@db: 
+@query: 
+@limit_count: 
+@limit_size: 
+@limit_time: 
+@sort_column: 
+@sort_direction: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_query_creator_get_query ##### -->
+<para>
+
+</para>
+
+@creator: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_query_creator_get_limit ##### -->
+<para>
+
+</para>
+
+@creator: 
+@type: 
+@limit: 
+
+
+<!-- ##### FUNCTION rb_query_creator_get_sort_order ##### -->
+<para>
+
+</para>
+
+@creator: 
+@sort_key: 
+@sort_direction: 
+
+

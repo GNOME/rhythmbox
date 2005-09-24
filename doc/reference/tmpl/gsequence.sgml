@@ -1,0 +1,276 @@
+<!-- ##### SECTION Title ##### -->
+gsequence
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GSequence ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF GSequencePtr ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_sequence_new ##### -->
+<para>
+
+</para>
+
+@data_destroy: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_free ##### -->
+<para>
+
+</para>
+
+@seq: 
+
+
+<!-- ##### FUNCTION g_sequence_sort ##### -->
+<para>
+
+</para>
+
+@seq: 
+@cmp_func: 
+@cmp_data: 
+
+
+<!-- ##### FUNCTION g_sequence_append ##### -->
+<para>
+
+</para>
+
+@seq: 
+@data: 
+
+
+<!-- ##### FUNCTION g_sequence_prepend ##### -->
+<para>
+
+</para>
+
+@seq: 
+@data: 
+
+
+<!-- ##### FUNCTION g_sequence_insert ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@data: 
+
+
+<!-- ##### FUNCTION g_sequence_remove ##### -->
+<para>
+
+</para>
+
+@ptr: 
+
+
+<!-- ##### FUNCTION g_sequence_insert_sorted ##### -->
+<para>
+
+</para>
+
+@seq: 
+@data: 
+@cmp_func: 
+@cmp_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_insert_sequence ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@other_seq: 
+
+
+<!-- ##### FUNCTION g_sequence_concatenate ##### -->
+<para>
+
+</para>
+
+@seq1: 
+@seq: 
+
+
+<!-- ##### FUNCTION g_sequence_remove_range ##### -->
+<para>
+
+</para>
+
+@begin: 
+@end: 
+@removed: 
+
+
+<!-- ##### FUNCTION g_sequence_get_length ##### -->
+<para>
+
+</para>
+
+@seq: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_get_end_ptr ##### -->
+<para>
+
+</para>
+
+@seq: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_get_begin_ptr ##### -->
+<para>
+
+</para>
+
+@seq: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_get_ptr_at_pos ##### -->
+<para>
+
+</para>
+
+@seq: 
+@pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_is_end ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_is_begin ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_get_position ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_next ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_prev ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_move ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@leap: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_sort_changed ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@cmp_func: 
+@cmp_data: 
+
+
+<!-- ##### FUNCTION g_sequence_ptr_get_data ##### -->
+<para>
+
+</para>
+
+@ptr: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION GSequenceSearchFunc ##### -->
+<para>
+
+</para>
+
+@begin: 
+@end: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_sequence_search ##### -->
+<para>
+
+</para>
+
+@seq: 
+@f: 
+@data: 
+
+
+<!-- ##### FUNCTION g_sequence_calc_tree_height ##### -->
+<para>
+
+</para>
+
+@seq: 
+@Returns: 
+
+

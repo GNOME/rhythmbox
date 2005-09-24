@@ -22,10 +22,11 @@ DOCUMENTERS.tab : $(top_srcdir)/DOCUMENTERS
 
 tab_files = AUTHORS.tab MAINTAINERS.tab MAINTAINERS.old.tab DOCUMENTERS.tab
 
-bin_PROGRAMS = rhythmbox 
+bin_PROGRAMS = rhythmbox
+rhythmbox_SOURCES = main.c
+noinst_LTLIBRARIES = librbshell.la
 
-rhythmbox_SOURCES =              			\
-	main.c						\
+librbshell_la_SOURCES =              			\
 	rb-shell.c					\
 	rb-shell.h					\
 	rb-shell-player.c				\
@@ -68,6 +69,7 @@ rhythmbox_SOURCES =              			\
 	rb-tray-icon.h				
 
 rhythmbox_LDADD =					\
+	librbshell.la					\
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/rhythmdb/librhythmdb.la         \

@@ -1,0 +1,219 @@
+<!-- ##### SECTION Title ##### -->
+rb-recorder
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM RBRecorderError ##### -->
+<para>
+
+</para>
+
+@RB_RECORDER_ERROR_NO_INPUT_PLUGIN: 
+@RB_RECORDER_ERROR_NO_TYPEFIND_PLUGIN: 
+@RB_RECORDER_ERROR_NO_DEMUX_PLUGIN: 
+@RB_RECORDER_ERROR_NO_AUDIO: 
+@RB_RECORDER_ERROR_GENERAL: 
+@RB_RECORDER_ERROR_INTERNAL: 
+
+<!-- ##### ENUM RBRecorderAction ##### -->
+<para>
+
+</para>
+
+@RB_RECORDER_ACTION_UNKNOWN: 
+@RB_RECORDER_ACTION_FILE_CONVERTING: 
+@RB_RECORDER_ACTION_DISC_PREPARING_WRITE: 
+@RB_RECORDER_ACTION_DISC_WRITING: 
+@RB_RECORDER_ACTION_DISC_FIXATING: 
+@RB_RECORDER_ACTION_DISC_BLANKING: 
+
+<!-- ##### ENUM RBRecorderResponse ##### -->
+<para>
+
+</para>
+
+@RB_RECORDER_RESPONSE_NONE: 
+@RB_RECORDER_RESPONSE_CANCEL: 
+@RB_RECORDER_RESPONSE_ERASE: 
+@RB_RECORDER_RESPONSE_RETRY: 
+
+<!-- ##### ENUM RBRecorderResult ##### -->
+<para>
+
+</para>
+
+@RB_RECORDER_RESULT_ERROR: 
+@RB_RECORDER_RESULT_CANCEL: 
+@RB_RECORDER_RESULT_FINISHED: 
+@RB_RECORDER_RESULT_RETRY: 
+
+<!-- ##### MACRO RB_RECORDER_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION rb_recorder_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### STRUCT RBRecorderPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION rb_recorder_new ##### -->
+<para>
+
+</para>
+
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_open ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@uri: 
+@cdtext: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_recorder_opened ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_close ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_recorder_write ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_recorder_pause ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_recorder_get_default_device ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_get_device ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_set_device ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@device: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_set_tmp_dir ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@path: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_recorder_get_media_length ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_burn ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@speed: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_burn_cancel ##### -->
+<para>
+
+</para>
+
+@recorder: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_recorder_enabled ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

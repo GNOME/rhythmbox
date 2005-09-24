@@ -1,0 +1,193 @@
+<!-- ##### SECTION Title ##### -->
+rb-tree-dnd
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO RB_TYPE_TREE_DRAG_DEST ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RB_TREE_DRAG_DEST ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+
+<!-- ##### MACRO RB_IS_TREE_DRAG_DEST ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+
+<!-- ##### MACRO RB_TREE_DRAG_DEST_GET_IFACE ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+
+<!-- ##### STRUCT RbTreeDragSource ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT RbTreeDragSourceIface ##### -->
+<para>
+
+</para>
+
+@g_iface: 
+@row_draggable: 
+@drag_data_get: 
+@drag_data_delete: 
+
+<!-- ##### STRUCT RbTreeDragDest ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT RbTreeDragDestIface ##### -->
+<para>
+
+</para>
+
+@g_iface: 
+@drag_data_received: 
+@row_drop_possible: 
+@row_drop_position: 
+@get_drag_target: 
+
+<!-- ##### ENUM RbTreeDestFlag ##### -->
+<para>
+
+</para>
+
+@RB_TREE_DEST_EMPTY_VIEW_DROP: 
+@RB_TREE_DEST_CAN_DROP_INTO: 
+@RB_TREE_DEST_CAN_DROP_BETWEEN: 
+
+<!-- ##### FUNCTION rb_tree_drag_source_row_draggable ##### -->
+<para>
+
+</para>
+
+@drag_source: 
+@path_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_drag_source_drag_data_delete ##### -->
+<para>
+
+</para>
+
+@drag_source: 
+@path_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_drag_source_drag_data_get ##### -->
+<para>
+
+</para>
+
+@drag_source: 
+@path_list: 
+@selection_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_drag_dest_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_drag_dest_drag_data_received ##### -->
+<para>
+
+</para>
+
+@drag_dest: 
+@dest: 
+@pos: 
+@selection_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_drag_dest_row_drop_possible ##### -->
+<para>
+
+</para>
+
+@drag_dest: 
+@dest_path: 
+@pos: 
+@selection_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_drag_dest_row_drop_position ##### -->
+<para>
+
+</para>
+
+@drag_dest: 
+@dest_path: 
+@targets: 
+@pos: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_tree_dnd_add_drag_dest_support ##### -->
+<para>
+
+</para>
+
+@tree_view: 
+@flags: 
+@targets: 
+@n_targets: 
+@actions: 
+
+
+<!-- ##### FUNCTION rb_tree_dnd_add_drag_source_support ##### -->
+<para>
+
+</para>
+
+@tree_view: 
+@start_button_mask: 
+@targets: 
+@n_targets: 
+@actions: 
+
+

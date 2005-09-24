@@ -50,6 +50,7 @@ static GList *default_get_extra_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
 static gboolean default_can_cut (RBSource *source);
+static GdkPixbuf *default_get_pixbuf (RBSource *source);
 static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
 static void default_song_properties (RBSource *source);
@@ -63,7 +64,10 @@ static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static gboolean default_disconnect (RBSource *source);
 
-struct RBSourcePrivate
+G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, GTK_TYPE_HBOX)
+#define RB_SOURCE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_SOURCE, RBSourcePrivate))
+
+struct _RBSourcePrivate
 {
 	char *name;
 	
@@ -90,42 +94,10 @@ enum
 
 static guint rb_source_signals[LAST_SIGNAL] = { 0 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_source_get_type (void)
-{
-	static GType rb_source_type = 0;
-
-	if (rb_source_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBSourceClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_source_class_init,
-			NULL,
-			NULL,
-			sizeof (RBSource),
-			0,
-			(GInstanceInitFunc) rb_source_init
-		};
-
-		rb_source_type = g_type_register_static (GTK_TYPE_HBOX,
-						       "RBSource",
-						       &our_info, G_TYPE_FLAG_ABSTRACT);
-	}
-
-	return rb_source_type;
-}
-
 static void
 rb_source_class_init (RBSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_source_finalize;
 
@@ -139,6 +111,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_cut = default_can_cut;
 	klass->impl_can_delete = default_can_cut;
 	klass->impl_can_copy = default_can_cut;
+	klass->impl_get_pixbuf = default_get_pixbuf;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_song_properties = default_song_properties;
@@ -211,7 +184,7 @@ rb_source_class_init (RBSourceClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
-	/**
+	/*
 	 * Fires when the user changes the filter, either by changing the
 	 * contents of the search box or by selecting a different browser
 	 * entry.
@@ -225,34 +198,34 @@ rb_source_class_init (RBSourceClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	
+	g_type_class_add_private (object_class, sizeof (RBSourcePrivate));
 }
 
 static void
 rb_source_init (RBSource *source)
 {
-	source->priv = g_new0 (RBSourcePrivate, 1);
-	source->priv->visible = TRUE;
+	RB_SOURCE_GET_PRIVATE (source)->visible = TRUE;
 }
 
 static void
 rb_source_finalize (GObject *object)
 {
 	RBSource *source;
-
+	RBSourcePrivate *priv;
+	
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_SOURCE (object));
 
 	source = RB_SOURCE (object);
-
-	g_return_if_fail (source->priv != NULL);
+	priv = RB_SOURCE_GET_PRIVATE (source);
+	g_return_if_fail (priv != NULL);
 
 	rb_debug ("Finalizing view %p", source);
 
-	g_free (source->priv->name);
+	g_free (priv->name);
 
-	g_free (source->priv);
-
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
 }
 
 static void
@@ -261,22 +234,22 @@ rb_source_set_property (GObject *object,
 		      const GValue *value,
 		      GParamSpec *pspec)
 {
-	RBSource *source = RB_SOURCE (object);
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
 
 	switch (prop_id)
 	{
 	case PROP_NAME:
-		g_free (source->priv->name);
-		source->priv->name = g_strdup (g_value_get_string (value));
+		g_free (priv->name);
+		priv->name = g_strdup (g_value_get_string (value));
 		break;
 	case PROP_SHELL:
-		source->priv->shell = g_value_get_object (value);
+		priv->shell = g_value_get_object (value);
 		break;
 	case PROP_VISIBLE:
-		source->priv->visible = g_value_get_boolean (value);
-		rb_debug ("Setting %s visibility to %u\n", 
-			  source->priv->name, 
-			  source->priv->visible);
+		priv->visible = g_value_get_boolean (value);
+		rb_debug ("Setting %s visibility to %u", 
+			  priv->name, 
+			  priv->visible);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -290,23 +263,23 @@ rb_source_get_property (GObject *object,
 		      GValue *value,
 		      GParamSpec *pspec)
 {
-	RBSource *source = RB_SOURCE (object);
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
 
 	switch (prop_id)
 	{
 	case PROP_NAME:
-		g_value_set_string (value, source->priv->name);
+		g_value_set_string (value, priv->name);
 		break;
 	case PROP_SHELL:
-		g_value_set_object (value, source->priv->shell);
+		g_value_set_object (value, priv->shell);
 		break;
 	case PROP_VISIBLE:
-		g_value_set_boolean (value, source->priv->visible);
+		g_value_set_boolean (value, priv->visible);
 		break;
 	case PROP_UI_MANAGER:
 	{
 		GtkUIManager *manager;
-		g_object_get (G_OBJECT (source->priv->shell), 
+		g_object_get (G_OBJECT (priv->shell), 
 			      "ui-manager", &manager,
 			      NULL);
 		g_value_set_object (value, manager);
@@ -319,6 +292,15 @@ rb_source_get_property (GObject *object,
 	}
 }
 
+/**
+ * rb_source_get_status:
+ * @status: a #RBSource
+ *
+ * FIXME:
+ * Some Random comments
+ *
+ * Returns: The status string
+ **/
 char *
 rb_source_get_status (RBSource *status)
 {
@@ -401,6 +383,12 @@ rb_source_get_extra_views (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_get_extra_views (source);
+}
+
+static GdkPixbuf *
+default_get_pixbuf (RBSource *source)
+{
+	return NULL;
 }
 
 GdkPixbuf *
@@ -629,7 +617,7 @@ _rb_source_show_popup (RBSource *source, const char *ui_path)
 {
 	GtkUIManager *uimanager;
 
-	g_object_get (G_OBJECT (source->priv->shell), 
+	g_object_get (G_OBJECT (RB_SOURCE_GET_PRIVATE (source)->shell), 
 		      "ui-manager", &uimanager, NULL);
 	rb_gtk_action_popup_menu (uimanager, ui_path);
 	g_object_unref (G_OBJECT (uimanager));

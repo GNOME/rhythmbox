@@ -1,0 +1,352 @@
+<!-- ##### SECTION Title ##### -->
+rb-entry-view
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM RBEntryViewColumn ##### -->
+<para>
+
+</para>
+
+@RB_ENTRY_VIEW_COL_TRACK_NUMBER: 
+@RB_ENTRY_VIEW_COL_TITLE: 
+@RB_ENTRY_VIEW_COL_ARTIST: 
+@RB_ENTRY_VIEW_COL_ALBUM: 
+@RB_ENTRY_VIEW_COL_GENRE: 
+@RB_ENTRY_VIEW_COL_DURATION: 
+@RB_ENTRY_VIEW_COL_QUALITY: 
+@RB_ENTRY_VIEW_COL_RATING: 
+@RB_ENTRY_VIEW_COL_PLAY_COUNT: 
+@RB_ENTRY_VIEW_COL_LAST_PLAYED: 
+@RB_ENTRY_VIEW_COL_FIRST_SEEN: 
+
+<!-- ##### TYPEDEF RBEntryViewPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION rb_entry_view_new ##### -->
+<para>
+
+</para>
+
+@db: 
+@sort_key: 
+@drag_source: 
+@drag_dest: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_append_column ##### -->
+<para>
+
+</para>
+
+@view: 
+@coltype: 
+
+
+<!-- ##### FUNCTION rb_entry_view_append_column_custom ##### -->
+<para>
+
+</para>
+
+@view: 
+@column: 
+@title: 
+@key: 
+@sort_func: 
+@user_data: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_columns_clickable ##### -->
+<para>
+
+</para>
+
+@view: 
+@clickable: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_model ##### -->
+<para>
+
+</para>
+
+@view: 
+@model: 
+
+
+<!-- ##### FUNCTION rb_entry_view_busy ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_total_size ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_duration ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_playing ##### -->
+<para>
+
+</para>
+
+@view: 
+@playing: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_playing_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_playing_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_first_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_next_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_previous_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_next_from_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_previous_from_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_have_selection ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_selected_entries ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_select_all ##### -->
+<para>
+
+</para>
+
+@view: 
+
+
+<!-- ##### FUNCTION rb_entry_view_select_none ##### -->
+<para>
+
+</para>
+
+@view: 
+
+
+<!-- ##### FUNCTION rb_entry_view_select_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_num_entries ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_entry_contained ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_entry_visible ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_scroll_to_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+
+
+<!-- ##### FUNCTION rb_entry_view_enable_drag_source ##### -->
+<para>
+
+</para>
+
+@view: 
+@targets: 
+@n_targets: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_random_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_sorting_order ##### -->
+<para>
+
+</para>
+
+@view: 
+@column_name: 
+@sort_order: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_sorting_order ##### -->
+<para>
+
+</para>
+
+@view: 
+@column_name: 
+@sort_order: 
+
+
+<!-- ##### FUNCTION rb_entry_view_get_sorting_type ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_sorting_type ##### -->
+<para>
+
+</para>
+
+@view: 
+@sorttype: 
+
+
+<!-- ##### FUNCTION rb_entry_view_set_resorting ##### -->
+<para>
+
+</para>
+
+@view: 
+
+
+<!-- ##### FUNCTION rb_entry_view_poll_model ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+

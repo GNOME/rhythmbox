@@ -1,0 +1,187 @@
+<!-- ##### SECTION Title ##### -->
+rb-player
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM RBPlayerError ##### -->
+<para>
+
+</para>
+
+@RB_PLAYER_ERROR_NO_INPUT_PLUGIN: 
+@RB_PLAYER_ERROR_NO_QUEUE_PLUGIN: 
+@RB_PLAYER_ERROR_NO_TYPEFIND_PLUGIN: 
+@RB_PLAYER_ERROR_NO_DEMUX_PLUGIN: 
+@RB_PLAYER_ERROR_NO_VOLUME_PLUGIN: 
+@RB_PLAYER_ERROR_DEMUX_FAILED: 
+@RB_PLAYER_ERROR_NO_AUDIO: 
+@RB_PLAYER_ERROR_GENERAL: 
+@RB_PLAYER_ERROR_INTERNAL: 
+
+<!-- ##### MACRO RB_PLAYER_TICK_HZ ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RB_PLAYER_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION rb_player_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### TYPEDEF RBPlayerPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION rb_player_new ##### -->
+<para>
+
+</para>
+
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_open ##### -->
+<para>
+
+</para>
+
+@mp: 
+@uri: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_opened ##### -->
+<para>
+
+</para>
+
+@mp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_close ##### -->
+<para>
+
+</para>
+
+@mp: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_play ##### -->
+<para>
+
+</para>
+
+@mp: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_pause ##### -->
+<para>
+
+</para>
+
+@mp: 
+
+
+<!-- ##### FUNCTION rb_player_playing ##### -->
+<para>
+
+</para>
+
+@mp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_set_volume ##### -->
+<para>
+
+</para>
+
+@mp: 
+@volume: 
+
+
+<!-- ##### FUNCTION rb_player_get_volume ##### -->
+<para>
+
+</para>
+
+@mp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_set_replaygain ##### -->
+<para>
+
+</para>
+
+@mp: 
+@track_gain: 
+@track_peak: 
+@album_gain: 
+@album_peak: 
+
+
+<!-- ##### FUNCTION rb_player_seekable ##### -->
+<para>
+
+</para>
+
+@mp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_player_set_time ##### -->
+<para>
+
+</para>
+
+@mp: 
+@Param2: 
+
+
+<!-- ##### FUNCTION rb_player_get_time ##### -->
+<para>
+
+</para>
+
+@mp: 
+@Returns: 
+
+

@@ -1,0 +1,172 @@
+<!-- ##### SECTION Title ##### -->
+rb-metadata
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO RB_METADATA_NUM_FIELDS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### ENUM RBMetaDataField ##### -->
+<para>
+
+</para>
+
+@RB_METADATA_FIELD_TITLE: 
+@RB_METADATA_FIELD_ARTIST: 
+@RB_METADATA_FIELD_ALBUM: 
+@RB_METADATA_FIELD_DATE: 
+@RB_METADATA_FIELD_GENRE: 
+@RB_METADATA_FIELD_COMMENT: 
+@RB_METADATA_FIELD_TRACK_NUMBER: 
+@RB_METADATA_FIELD_MAX_TRACK_NUMBER: 
+@RB_METADATA_FIELD_DISC_NUMBER: 
+@RB_METADATA_FIELD_MAX_DISC_NUMBER: 
+@RB_METADATA_FIELD_DESCRIPTION: 
+@RB_METADATA_FIELD_VERSION: 
+@RB_METADATA_FIELD_ISRC: 
+@RB_METADATA_FIELD_ORGANIZATION: 
+@RB_METADATA_FIELD_COPYRIGHT: 
+@RB_METADATA_FIELD_CONTACT: 
+@RB_METADATA_FIELD_LICENSE: 
+@RB_METADATA_FIELD_PERFORMER: 
+@RB_METADATA_FIELD_DURATION: 
+@RB_METADATA_FIELD_CODEC: 
+@RB_METADATA_FIELD_BITRATE: 
+@RB_METADATA_FIELD_TRACK_GAIN: 
+@RB_METADATA_FIELD_TRACK_PEAK: 
+@RB_METADATA_FIELD_ALBUM_GAIN: 
+@RB_METADATA_FIELD_ALBUM_PEAK: 
+
+<!-- ##### ENUM RBMetaDataError ##### -->
+<para>
+
+</para>
+
+@RB_METADATA_ERROR_GNOMEVFS: 
+@RB_METADATA_ERROR_MISSING_PLUGIN: 
+@RB_METADATA_ERROR_UNRECOGNIZED: 
+@RB_METADATA_ERROR_UNSUPPORTED: 
+@RB_METADATA_ERROR_GENERAL: 
+@RB_METADATA_ERROR_INTERNAL: 
+@RB_METADATA_ERROR_NOT_AUDIO: 
+@RB_METADATA_ERROR_NOT_AUDIO_IGNORE: 
+
+<!-- ##### MACRO RB_METADATA_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION rb_metadata_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### TYPEDEF RBMetaDataPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION rb_metadata_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_metadata_get_field_type ##### -->
+<para>
+
+</para>
+
+@md: 
+@field: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_metadata_can_save ##### -->
+<para>
+
+</para>
+
+@md: 
+@mimetype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_metadata_load ##### -->
+<para>
+
+</para>
+
+@md: 
+@uri: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_metadata_save ##### -->
+<para>
+
+</para>
+
+@md: 
+@error: 
+
+
+<!-- ##### FUNCTION rb_metadata_get_mime ##### -->
+<para>
+
+</para>
+
+@md: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_metadata_get ##### -->
+<para>
+
+</para>
+
+@md: 
+@field: 
+@val: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_metadata_set ##### -->
+<para>
+
+</para>
+
+@md: 
+@field: 
+@val: 
+@Returns: 
+
+

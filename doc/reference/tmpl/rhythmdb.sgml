@@ -1,0 +1,714 @@
+<!-- ##### SECTION Title ##### -->
+rhythmdb
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO RHYTHMDB_TYPE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RHYTHMDB ##### -->
+<para>
+
+</para>
+
+@o: 
+
+
+<!-- ##### MACRO RHYTHMDB_IS ##### -->
+<para>
+
+</para>
+
+@o: 
+
+
+<!-- ##### MACRO RHYTHMDB_GET_CLASS ##### -->
+<para>
+
+</para>
+
+@o: 
+
+
+<!-- ##### TYPEDEF RhythmDBEntryType ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO RHYTHMDB_ENTRY_TYPE_SONG ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### ENUM RhythmDBQueryType ##### -->
+<para>
+
+</para>
+
+@RHYTHMDB_QUERY_END: 
+@RHYTHMDB_QUERY_DISJUNCTION: 
+@RHYTHMDB_QUERY_SUBQUERY: 
+@RHYTHMDB_QUERY_PROP_EQUALS: 
+@RHYTHMDB_QUERY_PROP_LIKE: 
+@RHYTHMDB_QUERY_PROP_NOT_LIKE: 
+@RHYTHMDB_QUERY_PROP_GREATER: 
+@RHYTHMDB_QUERY_PROP_LESS: 
+@RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN: 
+@RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN: 
+
+<!-- ##### ENUM RhythmDBPropType ##### -->
+<para>
+
+</para>
+
+@RHYTHMDB_PROP_TYPE: 
+@RHYTHMDB_PROP_TITLE: 
+@RHYTHMDB_PROP_GENRE: 
+@RHYTHMDB_PROP_ARTIST: 
+@RHYTHMDB_PROP_ALBUM: 
+@RHYTHMDB_PROP_TRACK_NUMBER: 
+@RHYTHMDB_PROP_DISC_NUMBER: 
+@RHYTHMDB_PROP_DURATION: 
+@RHYTHMDB_PROP_FILE_SIZE: 
+@RHYTHMDB_PROP_LOCATION: 
+@RHYTHMDB_PROP_MOUNTPOINT: 
+@RHYTHMDB_PROP_MTIME: 
+@RHYTHMDB_PROP_FIRST_SEEN: 
+@RHYTHMDB_PROP_LAST_SEEN: 
+@RHYTHMDB_PROP_RATING: 
+@RHYTHMDB_PROP_PLAY_COUNT: 
+@RHYTHMDB_PROP_LAST_PLAYED: 
+@RHYTHMDB_PROP_BITRATE: 
+@RHYTHMDB_PROP_TRACK_GAIN: 
+@RHYTHMDB_PROP_TRACK_PEAK: 
+@RHYTHMDB_PROP_ALBUM_GAIN: 
+@RHYTHMDB_PROP_ALBUM_PEAK: 
+@RHYTHMDB_PROP_MIMETYPE: 
+@RHYTHMDB_PROP_TITLE_SORT_KEY: 
+@RHYTHMDB_PROP_GENRE_SORT_KEY: 
+@RHYTHMDB_PROP_ARTIST_SORT_KEY: 
+@RHYTHMDB_PROP_ALBUM_SORT_KEY: 
+@RHYTHMDB_PROP_TITLE_FOLDED: 
+@RHYTHMDB_PROP_GENRE_FOLDED: 
+@RHYTHMDB_PROP_ARTIST_FOLDED: 
+@RHYTHMDB_PROP_ALBUM_FOLDED: 
+@RHYTHMDB_PROP_LAST_PLAYED_STR: 
+@RHYTHMDB_PROP_HIDDEN: 
+@RHYTHMDB_PROP_PLAYBACK_ERROR: 
+@RHYTHMDB_PROP_FIRST_SEEN_STR: 
+@RHYTHMDB_NUM_PROPERTIES: 
+
+<!-- ##### FUNCTION rhythmdb_prop_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### MACRO RHYTHMDB_TYPE_QUERY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RHYTHMDB_TYPE_PROP ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT RhythmDBQueryData ##### -->
+<para>
+
+</para>
+
+@type: 
+@propid: 
+@val: 
+@subquery: 
+
+<!-- ##### STRUCT RhythmDBEntry ##### -->
+<para>
+
+</para>
+
+@refcount: 
+@data: 
+@type: 
+@title: 
+@artist: 
+@album: 
+@genre: 
+@tracknum: 
+@discnum: 
+@duration: 
+@bitrate: 
+@track_gain: 
+@track_peak: 
+@album_gain: 
+@album_peak: 
+@location: 
+@mountpoint: 
+@file_size: 
+@mimetype: 
+@inode: 
+@first_seen: 
+@last_seen: 
+@rating: 
+@auto_rate: 
+@play_count: 
+@last_played: 
+@last_played_str: 
+@first_seen_str: 
+@playback_error: 
+@hidden: 
+
+<!-- ##### STRUCT RhythmDBEntryChange ##### -->
+<para>
+
+</para>
+
+@prop: 
+@old: 
+@new: 
+
+<!-- ##### FUNCTION rhythmdb_entry_get ##### -->
+<para>
+
+</para>
+
+@entry: 
+@propid: 
+@val: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_get_string ##### -->
+<para>
+
+</para>
+
+@entry: 
+@propid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_get_boolean ##### -->
+<para>
+
+</para>
+
+@entry: 
+@propid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_get_uint64 ##### -->
+<para>
+
+</para>
+
+@entry: 
+@propid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_get_ulong ##### -->
+<para>
+
+</para>
+
+@entry: 
+@propid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_get_double ##### -->
+<para>
+
+</para>
+
+@entry: 
+@propid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_refstring_get ##### -->
+<para>
+
+</para>
+
+@val: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_refstring_get_sort_key ##### -->
+<para>
+
+</para>
+
+@val: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rb_refstring_get_folded ##### -->
+<para>
+
+</para>
+
+@val: 
+@Returns: 
+
+
+<!-- ##### ENUM RhythmDBError ##### -->
+<para>
+
+</para>
+
+@RHYTHMDB_ERROR_ACCESS_FAILED: 
+
+<!-- ##### MACRO RHYTHMDB_ERROR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION rhythmdb_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### TYPEDEF RhythmDBPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION rhythmdb_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_new ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_shutdown ##### -->
+<para>
+
+</para>
+
+@db: 
+
+
+<!-- ##### FUNCTION rhythmdb_load ##### -->
+<para>
+
+</para>
+
+@db: 
+
+
+<!-- ##### FUNCTION rhythmdb_save ##### -->
+<para>
+
+</para>
+
+@db: 
+
+
+<!-- ##### FUNCTION rhythmdb_save_async ##### -->
+<para>
+
+</para>
+
+@db: 
+
+
+<!-- ##### FUNCTION rhythmdb_commit ##### -->
+<para>
+
+</para>
+
+@db: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_is_editable ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_new ##### -->
+<para>
+
+</para>
+
+@db: 
+@type: 
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_add_uri ##### -->
+<para>
+
+</para>
+
+@db: 
+@uri: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_set ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
+@value: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_set_nonotify ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
+@value: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_set_uninserted ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
+@value: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_delete ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_delete_by_type ##### -->
+<para>
+
+</para>
+
+@db: 
+@type: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_destroy ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_lookup_by_location ##### -->
+<para>
+
+</para>
+
+@db: 
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_evaluate_query ##### -->
+<para>
+
+</para>
+
+@db: 
+@query: 
+@entry: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_foreach ##### -->
+<para>
+
+</para>
+
+@db: 
+@func: 
+@data: 
+
+
+<!-- ##### FUNCTION rhythmdb_do_full_query ##### -->
+<para>
+
+</para>
+
+@db: 
+@main_model: 
+@Varargs: 
+
+
+<!-- ##### FUNCTION rhythmdb_do_full_query_parsed ##### -->
+<para>
+
+</para>
+
+@db: 
+@main_model: 
+@query: 
+
+
+<!-- ##### FUNCTION rhythmdb_do_full_query_async ##### -->
+<para>
+
+</para>
+
+@db: 
+@main_model: 
+@Varargs: 
+
+
+<!-- ##### FUNCTION rhythmdb_do_full_query_async_parsed ##### -->
+<para>
+
+</para>
+
+@db: 
+@main_model: 
+@query: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_cancel ##### -->
+<para>
+
+</para>
+
+@db: 
+@query_model: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_sync_mirrored ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_parse ##### -->
+<para>
+
+</para>
+
+@db: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_append ##### -->
+<para>
+
+</para>
+
+@db: 
+@query: 
+@Varargs: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_free ##### -->
+<para>
+
+</para>
+
+@query: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_copy ##### -->
+<para>
+
+</para>
+
+@array: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_serialize ##### -->
+<para>
+
+</para>
+
+@db: 
+@query: 
+@node: 
+
+
+<!-- ##### FUNCTION rhythmdb_query_deserialize ##### -->
+<para>
+
+</para>
+
+@db: 
+@node: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_emit_entry_added ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+
+
+<!-- ##### FUNCTION rhythmdb_emit_entry_deleted ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+
+
+<!-- ##### FUNCTION rhythmdb_is_busy ##### -->
+<para>
+
+</para>
+
+@db: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_compute_status_normal ##### -->
+<para>
+
+</para>
+
+@n_songs: 
+@duration: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_register_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_song_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_iradio_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_icecast_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_get_property_type ##### -->
+<para>
+
+</para>
+
+@db: 
+@property_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_ref ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+
+
+<!-- ##### FUNCTION rhythmdb_entry_unref ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+
+

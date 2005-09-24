@@ -1,0 +1,115 @@
+#include <glib.h>
+#include <glib-object.h>
+#include <gtk/gtk.h>
+
+#include "eel-gconf-extensions.h"
+#include "rb-cell-renderer-pixbuf.h"
+#include "rb-cell-renderer-rating.h"
+#include "rb-cut-and-paste-code.h"
+#include "rb-debug.h"
+#include "rb-dialog.h"
+#include "rb-druid.h"
+#include "rb-entry-view.h"
+#include "rb-enums.h"
+#include "rb-file-helpers.h"
+#include "rb-glade-helpers.h"
+#include "rb-header.h"
+#include "rb-history.h"
+#include "rb-iradio-source.h"
+#include "rb-library-source.h"
+#include "rb-load-failure-dialog.h"
+#include "rb-marshal.h"
+#include "rb-metadata.h"
+#include "rb-new-station-dialog.h"
+#include "rb-player.h"
+#include "rb-playlist-manager.h"
+#include "rb-playlist-source.h"
+#include "rb-playlist-source-recorder.h"
+#include "rb-play-order.h"
+#include "rb-play-order-linear.h"
+#include "rb-play-order-linear-loop.h"
+#include "rb-play-order-random-by-age-and-rating.h"
+#include "rb-play-order-random-by-age.h"
+#include "rb-play-order-random-by-rating.h"
+#include "rb-play-order-random-equal-weights.h"
+#include "rb-play-order-random.h"
+#include "rb-play-order-shuffle.h"
+#include "rb-preferences.h"
+#include "rb-property-view.h"
+#include "rb-query-creator.h"
+#include "rb-rating.h"
+#include "rb-rating-helper.h"
+#include "rb-recorder.h"
+#include "rb-recorder-marshal.h"
+#include "rb-refstring.h"
+#include "rb-remote-proxy.h"
+#include "rb-search-entry.h"
+#include "rb-shell-clipboard.h"
+#include "rb-shell.h"
+#include "rb-shell-player.h"
+#include "rb-shell-preferences.h"
+#include "rb-song-display-box.h"
+#include "rb-song-info.h"
+#include "rb-source.h"
+#include "rb-source-header.h"
+#include "rb-sourcelist.h"
+#include "rb-sourcelist-model.h"
+#include "rb-station-properties-dialog.h"
+#include "rb-statusbar.h"
+#include "rb-stock-icons.h"
+#include "rb-string-helpers.h"
+#include "rb-tray-icon.h"
+#include "rb-tree-dnd.h"
+#include "rb-util.h"
+#include "rhythmdb.h"
+#include "rhythmdb-marshal.h"
+#include "rhythmdb-private.h"
+#include "rhythmdb-property-model.h"
+#include "rhythmdb-query-model.h"
+#include "rhythmdb-tree.h"
+
+rb_druid_get_type
+rb_entry_view_get_type
+rb_header_get_type
+rb_history_get_type
+rb_iradio_source_get_type
+rb_library_source_get_type
+rb_linear_play_order_get_type
+rb_linear_play_order_loop_get_type
+rb_load_failure_dialog_get_type
+rb_metadata_get_type
+rb_new_station_dialog_get_type
+rb_player_get_type
+rb_playlist_manager_get_type
+rb_playlist_source_get_type
+rb_playlist_source_recorder_get_type
+rb_play_order_get_type
+rb_property_view_get_type
+rb_query_creator_get_type
+rb_random_play_order_by_age_and_rating_get_type
+rb_random_play_order_by_age_get_type
+rb_random_play_order_by_rating_get_type
+rb_random_play_order_equal_weights_get_type
+rb_random_play_order_get_type
+rb_recorder_get_type
+rb_search_entry_get_type
+rb_shell_clipboard_get_type
+rb_shell_get_type
+rb_shell_player_get_type
+rb_shell_preferences_get_type
+rb_shuffle_play_order_get_type
+rb_song_display_box_get_type
+rb_song_info_get_type
+rb_source_get_type
+rb_source_header_get_type
+rb_sourcelist_get_type
+rb_sourcelist_model_get_type
+rb_station_properties_dialog_get_type
+rb_statusbar_get_type
+rb_tray_icon_get_type
+rb_tree_drag_dest_get_type
+rb_tree_drag_source_get_type
+rhythmdb_get_type
+rhythmdb_property_model_get_type
+rhythmdb_query_model_get_type
+rhythmdb_tree_get_type
