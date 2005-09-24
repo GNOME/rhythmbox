@@ -172,16 +172,6 @@ static void rb_shell_player_init_mmkeys (RBShellPlayer *shell_player);
 
 #define CONF_STATE		CONF_PREFIX "/state"
 
-#define AUTO_RATE_FIRST_SKIP_RATE        -0.40
-#define AUTO_RATE_CONS_SKIP_RATE         -0.27
-#define AUTO_RATE_FIRST_NON_SKIP_RATE     0.33
-#define AUTO_RATE_CONS_NON_SKIP_RATE      0.07
-#define AUTO_RATE_NO_XIDLE_BONUS          0.07
-#define AUTO_RATE_INTERACTIVE_BONUS       0.13
-#define AUTO_RATE_JUMPED_FROM            -0.07
-#define AUTO_RATE_JUMPED_TO_SKIPPED       0.07
-#define AUTO_RATE_JUMPED_TO_FINISHED      0.47
-
 struct RBShellPlayerPrivate
 {
 	RhythmDB *db;

@@ -1,9 +1,16 @@
 Overview of Changes in Rhythmbox 0.9.1
 ======================================
+[Last updated 2005-09-24]
 
+* Add DAAP (iTunes' music sharing) support [Charles Schmidt]
 * Notification bubble from tray icon [Colin Walters]
+* Minimise to tray rather than exiting when close is used [Colin Walters]
+* Allow sources to form a tree, for child playlists [Charles Schmidt]
+* Add start of removable media framework and port ipod code [James Livingston]
+* Support HAL >= 0.5 as well as > 0.2 [Ronald Bultje]
 * Much improved automatic playlists, including more criteria options and
   sorting [James Livingston:132566]
+* Use a proper GTK status bar [William Jon McCann]
 * Better drag-n-drop support: drag from browsers to source list, from browsers
   or track list to other apps and re-order playlists [Jonathan Matthew: 147337]
 * Update DBus support to version 0.35, general DBUS improvements and drop
@@ -14,9 +21,21 @@ Overview of Changes in Rhythmbox 0.9.1
 * Focus entry view when enter is pressed in search box [Paolo Borelli: 128110]
 * Show source list when playlist os created [James Livingston: 161935]
 * Disable rather then hide seek bar [James Livingston: 139102]
-* Disable "create audio cd" if one can't be created [James Livingston, 313253]
 * Improved error handling in RBPlayer [Colin Walters]
-* Misc bug fixes [James Livingston: 313253, 314477; Raphael Slinckx: 313262]
+* Remove dashboard support [Colin Walters]
+* Many HIG and UI improvements [Dennis Cranston and Paolo Borelli]
+* Use last.fm instead of allofmusic.com for links [Colin Walters]
+* Remove autorating of tracks [Colin Walters]
+* Fix header synchronisation [Raphael Slinckx]
+* Fix some window state issues [James Livingston: 313893 and 137068]
+* Add "Date Added" column [Ernst Persson]
+* Better playlist loading [James Livingston, Bastien Nocera, Colin Walters]
+* Make playing source bold, rather than using an icon [Colin Walters]
+* Allow library-derived sources to override behaviour [James Livingston]
+* Correctly update status bar and don't use useless info [James Livingston]
+* Many rhythmdb improvements
+* Fix more memory leaks
+* Many bug fixes and minor improvements
 
 Overview of Changes in Rhythmbox 0.9.0
 ======================================

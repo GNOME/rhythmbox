@@ -117,9 +117,6 @@ struct RBSongInfoPrivate
 	GtkWidget   *location;
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
-	guint        auto_rate_notify_id;
-	GtkWidget   *auto_rate_label;
-	GtkWidget   *auto_rate;
 	GtkWidget   *rating;
 };
 
@@ -461,12 +458,6 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 		str_final = g_strdup_printf ("<b>%s</b>",
 					     gtk_label_get_label GTK_LABEL (label));
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-		
-		label = glade_xml_get_widget (xml, "auto_rate_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-     		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
 		g_free (str_final);
 		
 	}

@@ -1,3 +1,16 @@
+2005-09-25  James Livingston  <jrl@ids.org.au>
+
+	* NEWS: Update with about a months worth of changes
+
+	* data/glade/song-info-multiple.glade:
+	* data/glade/song-info.glade:
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-shell-player.c:
+	* widgets/rb-song-info.c: (rb_song_info_constructor): remove the last
+	few remaining parts of autorating.
+
 2005-09-24  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: (rb_shell_constructor),
@@ -8,7 +21,7 @@
 2005-09-20  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery): don't
-	crash is the entry has a NULL string in a property
+	crash if the entry has a NULL string in a property
 	
 	* shell/rb-removable-media-manager.c:
 	(rb_removable_media_manager_load_media): fix some memory leaks

@@ -158,7 +158,6 @@ typedef struct {
 
 	/* user data */
 	gdouble rating;
-	gboolean auto_rate;
 	glong play_count;
 	gulong last_played;
 
