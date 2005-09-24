@@ -96,6 +96,9 @@ static void rb_shell_get_property (GObject *object,
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEventWindowState *event,
 					  RBShell *shell);
+static gboolean rb_shell_window_configure_cb (GtkWidget *win,
+					      GdkEventConfigure*event,
+					      RBShell *shell);
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
@@ -823,6 +826,9 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_shell_window_state_cb),
 				 shell, 0);
 
+	g_signal_connect_object (G_OBJECT (win), "configure-event",
+				 G_CALLBACK (rb_shell_window_configure_cb),
+				 shell, 0);
 
 	g_signal_connect_object (G_OBJECT (win), "delete_event",
 				 G_CALLBACK (rb_shell_window_delete_cb),
@@ -1114,12 +1120,13 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	shell->priv->iconified = (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED);
 
 	if (event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) {
-		gboolean show;
-
-		show = !(event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED);
+		gboolean maximised = event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED;
+		gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 
 		gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (shell->priv->statusbar),
-						   show);
+						   !maximised);
+		if (!small)
+			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED, maximised);
 	}
 
 	return FALSE;
@@ -1194,6 +1201,23 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible)
 
 	g_signal_emit_by_name (shell, "visibility_changed", visible);
 
+}
+
+static gboolean
+rb_shell_window_configure_cb (GtkWidget *win,
+			      GdkEventConfigure *event,
+			      RBShell *shell)
+{
+	gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+
+	if (small) {
+		eel_gconf_set_integer (CONF_STATE_SMALL_WIDTH, event->width);
+	} else {
+		eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->width);
+		eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->height);
+	}
+
+	return FALSE;
 }
 
 static gboolean
