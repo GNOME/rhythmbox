@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-21 03:48+0200\n"
-"PO-Revision-Date: 2005-09-21 10:58+0200\n"
+"POT-Creation-Date: 2005-09-25 19:45+0200\n"
+"PO-Revision-Date: 2005-09-25 22:44+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,12 +22,12 @@ msgstr ""
 #: ../daapsharing/rb-daap-connection.c:671
 #: ../iradio/rb-new-station-dialog.c:182
 #: ../iradio/rb-station-properties-dialog.c:424 ../rhythmdb/rhythmdb.c:1014
-#: ../shell/rb-shell-player.c:2267 ../sources/rb-ipod-source.c:154
+#: ../shell/rb-shell-player.c:2257 ../sources/rb-ipod-source.c:154
 #: ../sources/rb-iradio-source.c:245 ../sources/rb-iradio-source.c:246
 #: ../sources/rb-iradio-source.c:247 ../sources/rb-iradio-source.c:465
 #: ../sources/rb-playlist-source.c:465 ../widgets/rb-entry-view.c:942
-#: ../widgets/rb-entry-view.c:968 ../widgets/rb-song-info.c:701
-#: ../widgets/rb-song-info.c:749
+#: ../widgets/rb-entry-view.c:968 ../widgets/rb-song-info.c:692
+#: ../widgets/rb-song-info.c:740
 msgid "Unknown"
 msgstr "Neznámý"
 
@@ -66,7 +66,14 @@ msgstr "Nemohu hledat vzdálená sdílení"
 msgid ""
 "Could not start browsing for music servers on your network.  Rhythmbox will "
 "continue to function, without this feature.  Check your %s installation"
-msgstr "Nemohu začít hledat servery hudby ve vaší síti. Rhythmbox bude dále fungovat bez této funkce. Zkontrolujte vaši instalaci %s"
+msgstr ""
+"Nemohu začít hledat servery hudby ve vaší síti. Rhythmbox bude dále fungovat "
+"bez této funkce. Zkontrolujte vaši instalaci %s"
+
+#: ../daapsharing/rb-daap-sharing.c:65
+#, c-format
+msgid "%s's Music"
+msgstr "Hudba %s"
 
 #: ../daapsharing/rb-daap-src.c:738
 #, c-format
@@ -241,76 +248,71 @@ msgid "_Make multiple copies"
 msgstr "Vytvořit více _kopií"
 
 #: ../data/glade/song-info.glade.h:2
-#: ../data/glade/song-info-multiple.glade.h:2
-msgid "A_utomatically rate:"
-msgstr "_Automaticky hodnotit:"
-
-#: ../data/glade/song-info.glade.h:3
 msgid "Basic"
 msgstr "Základní"
 
-#: ../data/glade/song-info.glade.h:4
+#: ../data/glade/song-info.glade.h:3
 #: ../data/glade/station-properties.glade.h:2
 msgid "Bitrate:"
 msgstr "Bit rate:"
 
-#: ../data/glade/song-info.glade.h:5
+#: ../data/glade/song-info.glade.h:4
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: ../data/glade/song-info.glade.h:6
+#: ../data/glade/song-info.glade.h:5
 msgid "Duration:"
 msgstr "Trvání:"
 
-#: ../data/glade/song-info.glade.h:7
+#: ../data/glade/song-info.glade.h:6
 msgid "Error message"
 msgstr "Zpráva o chybě"
 
-#: ../data/glade/song-info.glade.h:8
+#: ../data/glade/song-info.glade.h:7
 msgid "File name:"
 msgstr "Název souboru:"
 
-#: ../data/glade/song-info.glade.h:9
+#: ../data/glade/song-info.glade.h:8
 msgid "Last played:"
 msgstr "Naposledy hrané:"
 
-#: ../data/glade/song-info.glade.h:10
+#: ../data/glade/song-info.glade.h:9
 msgid "Location:"
 msgstr "Umístění:"
 
-#: ../data/glade/song-info.glade.h:11
+#: ../data/glade/song-info.glade.h:10
 msgid "Play count:"
 msgstr "Počet hraní:"
 
-#: ../data/glade/song-info.glade.h:12
-#: ../data/glade/song-info-multiple.glade.h:3
+#: ../data/glade/song-info.glade.h:11
+#: ../data/glade/song-info-multiple.glade.h:2
 msgid "_Album:"
 msgstr "_Album:"
 
-#: ../data/glade/song-info.glade.h:13
-#: ../data/glade/song-info-multiple.glade.h:4
+#: ../data/glade/song-info.glade.h:12
+#: ../data/glade/song-info-multiple.glade.h:3
 msgid "_Artist:"
 msgstr "_Umělec:"
 
-#: ../data/glade/song-info.glade.h:14
-#: ../data/glade/song-info-multiple.glade.h:5
+#: ../data/glade/song-info.glade.h:13
+#: ../data/glade/song-info-multiple.glade.h:4
 #: ../data/glade/station-new.glade.h:2
 #: ../data/glade/station-properties.glade.h:5
 msgid "_Genre:"
 msgstr "Žán_r:"
 
-#: ../data/glade/song-info.glade.h:15
-#: ../data/glade/song-info-multiple.glade.h:6
+#: ../data/glade/song-info.glade.h:14
+#: ../data/glade/song-info-multiple.glade.h:5
 #: ../data/glade/station-properties.glade.h:7
 msgid "_Rating:"
 msgstr "O_hodnocení:"
 
-#: ../data/glade/song-info.glade.h:16 ../data/glade/station-new.glade.h:4
+#: ../data/glade/song-info.glade.h:15 ../data/glade/station-new.glade.h:4
 #: ../data/glade/station-properties.glade.h:8
 msgid "_Title:"
 msgstr "_Název:"
 
-#: ../data/glade/song-info.glade.h:17
+#: ../data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "Číslo _stopy:"
 
@@ -338,8 +340,8 @@ msgstr "Zadejte _umístění (URI) souboru, který chcete přidat:"
 msgid "Open from URI"
 msgstr "Otevřít URI"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:818
-#: ../shell/rb-shell.c:1559
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:821
+#: ../shell/rb-shell.c:1583
 msgid "Music Player"
 msgstr "Přehrávač hudby"
 
@@ -360,7 +362,7 @@ msgstr "Nové internetové rádio"
 msgid "All"
 msgstr "Vše"
 
-#: ../iradio/rb-station-properties-dialog.c:173 ../widgets/rb-song-info.c:686
+#: ../iradio/rb-station-properties-dialog.c:173 ../widgets/rb-song-info.c:677
 #, c-format
 msgid "%s Properties"
 msgstr "Vlastnosti %s"
@@ -552,7 +554,7 @@ msgid "Couldn't access %s: %s"
 msgstr "Nemohu přistupovat k %s: %s"
 
 #: ../rhythmdb/rhythmdb.c:2127 ../widgets/rb-entry-view.c:916
-#: ../widgets/rb-song-info.c:905
+#: ../widgets/rb-song-info.c:896
 msgid "Never"
 msgstr "Nikdy"
 
@@ -813,7 +815,7 @@ msgstr "_Odstranit"
 msgid "Delete playlist"
 msgstr "Odstranit seznam skladeb"
 
-#: ../shell/rb-playlist-manager.c:165 ../shell/rb-shell.c:339
+#: ../shell/rb-playlist-manager.c:165 ../shell/rb-shell.c:342
 msgid "_Edit"
 msgstr "Ú_pravy"
 
@@ -836,6 +838,14 @@ msgstr "Načíst seznam skladeb"
 #: ../shell/rb-playlist-manager.c:1063
 msgid "Save Playlist"
 msgstr "Uložit seznam skladeb"
+
+#: ../shell/rb-removable-media-manager.c:106
+msgid "_Eject"
+msgstr "_Vysunout"
+
+#: ../shell/rb-removable-media-manager.c:107
+msgid "Eject this medium"
+msgstr "Vysunout toto médium"
 
 #: ../shell/rb-shell-clipboard.c:90
 msgid "Select _All"
@@ -881,121 +891,121 @@ msgstr "Vložit výběr"
 msgid "Delete selection"
 msgstr "Odstranit výběr"
 
-#: ../shell/rb-shell-player.c:273
+#: ../shell/rb-shell-player.c:263
 msgid "P_revious"
 msgstr "_Předchozí"
 
-#: ../shell/rb-shell-player.c:274
+#: ../shell/rb-shell-player.c:264
 msgid "Start playing the previous song"
 msgstr "Začít přehrávat předchozí skladbu"
 
-#: ../shell/rb-shell-player.c:276
+#: ../shell/rb-shell-player.c:266
 msgid "_Next"
 msgstr "_Následující"
 
-#: ../shell/rb-shell-player.c:277
+#: ../shell/rb-shell-player.c:267
 msgid "Start playing the next song"
 msgstr "Začít přehrávat následující skladbu"
 
-#: ../shell/rb-shell-player.c:279
+#: ../shell/rb-shell-player.c:269
 msgid "_Properties"
 msgstr "_Vlastnosti"
 
-#: ../shell/rb-shell-player.c:280
+#: ../shell/rb-shell-player.c:270
 msgid "Show information on the selected song"
 msgstr "Zobrazení informací o vybrané skladbě"
 
-#: ../shell/rb-shell-player.c:287
+#: ../shell/rb-shell-player.c:277
 msgid "_Play"
 msgstr "_Hrát"
 
-#: ../shell/rb-shell-player.c:288
+#: ../shell/rb-shell-player.c:278
 msgid "Start playback"
 msgstr "Začít přehrávat"
 
-#: ../shell/rb-shell-player.c:294
+#: ../shell/rb-shell-player.c:284
 msgid "_Pause"
 msgstr "_Pozastavit"
 
-#: ../shell/rb-shell-player.c:295
+#: ../shell/rb-shell-player.c:285
 msgid "Pause playback"
 msgstr "Pozastavit přehrávání"
 
-#: ../shell/rb-shell-player.c:301
+#: ../shell/rb-shell-player.c:291
 msgid "_Stop"
 msgstr "Za_stavit"
 
-#: ../shell/rb-shell-player.c:302
+#: ../shell/rb-shell-player.c:292
 msgid "Stop playback"
 msgstr "Zastavit přehrávání"
 
-#: ../shell/rb-shell-player.c:308 ../shell/rb-statusbar.c:210
+#: ../shell/rb-shell-player.c:298 ../shell/rb-statusbar.c:210
 msgid "Sh_uffle"
 msgstr "Za_míchat"
 
-#: ../shell/rb-shell-player.c:309 ../shell/rb-statusbar.c:213
+#: ../shell/rb-shell-player.c:299 ../shell/rb-statusbar.c:213
 msgid "Play songs in a random order"
 msgstr "Přehrávat skladby v náhodném pořadí"
 
-#: ../shell/rb-shell-player.c:311 ../shell/rb-statusbar.c:215
+#: ../shell/rb-shell-player.c:301 ../shell/rb-statusbar.c:215
 msgid "_Repeat"
 msgstr "_Opakovat"
 
-#: ../shell/rb-shell-player.c:312 ../shell/rb-statusbar.c:218
+#: ../shell/rb-shell-player.c:302 ../shell/rb-statusbar.c:218
 msgid "Play first song again after all songs are played"
 msgstr "Když jsou přehrány všechny skladby, hrát znovu první skladbu"
 
-#: ../shell/rb-shell-player.c:601
+#: ../shell/rb-shell-player.c:591
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nemohu vytvořit přehrávač: %s"
 
-#: ../shell/rb-shell-player.c:663
+#: ../shell/rb-shell-player.c:653
 msgid "Play previous song"
 msgstr "Přehrávat předchozí skladbu"
 
-#: ../shell/rb-shell-player.c:692
+#: ../shell/rb-shell-player.c:682
 msgid "Play next song"
 msgstr "Přehrávat následující skladbu"
 
-#: ../shell/rb-shell-player.c:716
+#: ../shell/rb-shell-player.c:706
 msgid "Change the music volume"
 msgstr "Změnit hlasitost hudby"
 
-#: ../shell/rb-shell-player.c:1288
+#: ../shell/rb-shell-player.c:1278
 msgid "No previous song"
 msgstr "Žádná předchozí skladba"
 
-#: ../shell/rb-shell-player.c:1298
+#: ../shell/rb-shell-player.c:1288
 msgid "Not currently playing"
 msgstr "Momentálně nepřehrávám"
 
-#: ../shell/rb-shell-player.c:1317
+#: ../shell/rb-shell-player.c:1307
 msgid "No next song"
 msgstr "Žádná následující skladba"
 
-#: ../shell/rb-shell-player.c:1391
+#: ../shell/rb-shell-player.c:1381
 #, c-format
 msgid "Couldn't start playback: %s"
 msgstr "Nemohu začít přehrávat: %s"
 
-#: ../shell/rb-shell-player.c:1977
+#: ../shell/rb-shell-player.c:1967
 msgid "Couldn't stop playback"
 msgstr "Nemohu zastavit přehrávání"
 
-#: ../shell/rb-shell-player.c:2076
+#: ../shell/rb-shell-player.c:2066
 msgid "Stream error"
 msgstr "Chyba proudu"
 
-#: ../shell/rb-shell-player.c:2077
+#: ../shell/rb-shell-player.c:2067
 msgid "Unexpected end of stream!"
 msgstr "Neočekávaný konec proudu!"
 
-#: ../shell/rb-shell-player.c:2325
+#: ../shell/rb-shell-player.c:2315
 msgid "Buffering"
 msgstr "Ukládám do vyrovnávací paměti"
 
-#: ../shell/rb-shell-preferences.c:145 ../shell/rb-shell.c:1687
+#: ../shell/rb-shell-preferences.c:145 ../shell/rb-shell.c:1711
 msgid "Couldn't display help"
 msgstr "Nemohu zobrazit nápovědu"
 
@@ -1015,144 +1025,144 @@ msgstr "_Sdílet mou hudbu"
 msgid "Sharing"
 msgstr "Sdílení"
 
-#: ../shell/rb-shell.c:338
+#: ../shell/rb-shell.c:341
 msgid "_Music"
 msgstr "_Hudba"
 
-#: ../shell/rb-shell.c:340
+#: ../shell/rb-shell.c:343
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: ../shell/rb-shell.c:341
+#: ../shell/rb-shell.c:344
 msgid "_Control"
 msgstr "_Ovládání"
 
-#: ../shell/rb-shell.c:342
+#: ../shell/rb-shell.c:345
 msgid "_Help"
 msgstr "_Nápověda"
 
-#: ../shell/rb-shell.c:344
+#: ../shell/rb-shell.c:347
 msgid "New _Internet Radio Station"
 msgstr "Nová stanice _internetového rádia"
 
-#: ../shell/rb-shell.c:345
+#: ../shell/rb-shell.c:348
 msgid "Create a new Internet Radio station"
 msgstr "Vytvořit novou stanici internetového rádia"
 
-#: ../shell/rb-shell.c:348
+#: ../shell/rb-shell.c:351
 msgid "_Import Folder..."
 msgstr "_Importovat adresář..."
 
-#: ../shell/rb-shell.c:349
+#: ../shell/rb-shell.c:352
 msgid "Choose folder to be added to the Library"
 msgstr "Zvolte adresář, který přidat do knihovny"
 
-#: ../shell/rb-shell.c:351
+#: ../shell/rb-shell.c:354
 msgid "Import _File..."
 msgstr "_Importovat soubor..."
 
-#: ../shell/rb-shell.c:352
+#: ../shell/rb-shell.c:355
 msgid "Choose file to be added to the Library"
 msgstr "Zvolte soubor, který přidat do knihovny"
 
-#: ../shell/rb-shell.c:354
+#: ../shell/rb-shell.c:357
 msgid "Import _Audio CD..."
 msgstr "Importovat zvukové _CD..."
 
-#: ../shell/rb-shell.c:355
+#: ../shell/rb-shell.c:358
 msgid "Extract and import songs from a CD"
 msgstr "Extrahovat a importovat skladby z CD"
 
-#: ../shell/rb-shell.c:357
+#: ../shell/rb-shell.c:360
 msgid "_About"
 msgstr "O _aplikaci"
 
-#: ../shell/rb-shell.c:358
+#: ../shell/rb-shell.c:361
 msgid "Show information about the music player"
 msgstr "Zobrazení informací o přehrávači hudby"
 
-#: ../shell/rb-shell.c:360
+#: ../shell/rb-shell.c:363
 msgid "_Contents"
 msgstr "_Obsah"
 
-#: ../shell/rb-shell.c:361
+#: ../shell/rb-shell.c:364
 msgid "Display music player help"
 msgstr "Zobrazení nápovědy přehrávače hudby"
 
-#: ../shell/rb-shell.c:363
+#: ../shell/rb-shell.c:366
 msgid "_Close"
 msgstr "_Zavřít"
 
-#: ../shell/rb-shell.c:364
+#: ../shell/rb-shell.c:367
 msgid "Hide the music player window"
 msgstr "Skrýt okno přehrávače hudby"
 
-#: ../shell/rb-shell.c:366
+#: ../shell/rb-shell.c:369
 msgid "_Quit"
 msgstr "U_končit"
 
-#: ../shell/rb-shell.c:367
+#: ../shell/rb-shell.c:370
 msgid "Quit the music player"
 msgstr "Ukončit přehrávač hudby"
 
-#: ../shell/rb-shell.c:369
+#: ../shell/rb-shell.c:372
 msgid "Prefere_nces"
 msgstr "_Nastavení"
 
-#: ../shell/rb-shell.c:370
+#: ../shell/rb-shell.c:373
 msgid "Edit music player preferences"
 msgstr "Upravit nastavení přehrávače hudby"
 
-#: ../shell/rb-shell.c:372
+#: ../shell/rb-shell.c:375
 msgid "Show _All"
 msgstr "Zobrazit _vše"
 
-#: ../shell/rb-shell.c:373
+#: ../shell/rb-shell.c:376
 msgid "Show all items in this music source"
 msgstr "Zobrazit všechny položky tohoto zdroje hudby"
 
-#: ../shell/rb-shell.c:375
+#: ../shell/rb-shell.c:378
 msgid "_Jump to Playing Song"
 msgstr "Pře_jít na hranou skladbu"
 
-#: ../shell/rb-shell.c:376
+#: ../shell/rb-shell.c:379
 msgid "Scroll the view to the currently playing song"
 msgstr "Posunout pohled na právě hranou skladbu"
 
-#: ../shell/rb-shell.c:378
+#: ../shell/rb-shell.c:381
 msgid "_Disconnect"
 msgstr "_Odpojit"
 
-#: ../shell/rb-shell.c:379
+#: ../shell/rb-shell.c:382
 msgid "Disconnect from selected source"
 msgstr "Odpojit od vybraného zdroje"
 
-#: ../shell/rb-shell.c:386
+#: ../shell/rb-shell.c:389
 msgid "Source _List"
 msgstr "_Seznam zdrojů"
 
-#: ../shell/rb-shell.c:387
+#: ../shell/rb-shell.c:390
 msgid "Change the visibility of the source list"
 msgstr "Změnit viditelnost seznamu zdrojů"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:392
 msgid "_Small Display"
 msgstr "_Malé zobrazení"
 
-#: ../shell/rb-shell.c:390
+#: ../shell/rb-shell.c:393
 msgid "Make the main window smaller"
 msgstr "Zmenšit hlavní okno"
 
-#: ../shell/rb-shell.c:1460 ../widgets/rb-entry-view.c:1469
+#: ../shell/rb-shell.c:1484 ../widgets/rb-entry-view.c:1469
 msgid "Now Playing"
 msgstr "Nyní se přehrává"
 
-#: ../shell/rb-shell.c:1534 ../shell/rb-tray-icon.c:185
+#: ../shell/rb-shell.c:1558 ../shell/rb-tray-icon.c:185
 msgid "Not playing"
 msgstr "Nepřehrávám"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1537
+#: ../shell/rb-shell.c:1561
 #, c-format
 msgid ""
 "%s\n"
@@ -1162,7 +1172,7 @@ msgstr ""
 "Pozastaveno, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1541
+#: ../shell/rb-shell.c:1565
 #, c-format
 msgid ""
 "%s\n"
@@ -1172,70 +1182,70 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1575
+#: ../shell/rb-shell.c:1599
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: ../shell/rb-shell.c:1627
+#: ../shell/rb-shell.c:1651
 msgid "translator_credits"
 msgstr ""
 "Michal Bukovjan <bukm@centrum.cz>\n"
 "Miloslav Trmač <mitr@volny.cz>"
 
-#: ../shell/rb-shell.c:1631
+#: ../shell/rb-shell.c:1655
 msgid "Maintainers:"
 msgstr "Správci:"
 
-#: ../shell/rb-shell.c:1634
+#: ../shell/rb-shell.c:1658
 msgid "Former Maintainers:"
 msgstr "Dřívější správci:"
 
-#: ../shell/rb-shell.c:1637
+#: ../shell/rb-shell.c:1661
 msgid "Contributors:"
 msgstr "Přispěli:"
 
-#: ../shell/rb-shell.c:1639
+#: ../shell/rb-shell.c:1663
 msgid "Music management and playback software for GNOME."
 msgstr "Software pro správu a přehrávání hudby pro GNOME."
 
-#: ../shell/rb-shell.c:1747
+#: ../shell/rb-shell.c:1771
 msgid "Import Folder into Library"
 msgstr "Importovat adresář do knihovny"
 
-#: ../shell/rb-shell.c:1769
+#: ../shell/rb-shell.c:1793
 msgid "Import File into Library"
 msgstr "Importovat soubor do knihovny"
 
-#: ../shell/rb-shell.c:1803
+#: ../shell/rb-shell.c:1827
 msgid "CD Ripper not found"
 msgstr "Ripper CD nenalezen"
 
-#: ../shell/rb-shell.c:1804
+#: ../shell/rb-shell.c:1828
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr ""
 "Pro extrahování CD musíte nainstalovat balíček CD ripperu Sound Juicer."
 
-#: ../shell/rb-shell.c:1812
+#: ../shell/rb-shell.c:1836
 msgid "Couldn't run CD Ripper"
 msgstr "Nemohu spustit CD ripper"
 
-#: ../shell/rb-shell.c:1813
+#: ../shell/rb-shell.c:1837
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Při spouštění sound-juicer došlo k chybě: %s"
 
-#: ../shell/rb-shell.c:2587 ../shell/rb-shell.c:2632
+#: ../shell/rb-shell.c:2611 ../shell/rb-shell.c:2656
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznámé URI skladby: %s"
 
-#: ../shell/rb-shell.c:2641
+#: ../shell/rb-shell.c:2665
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznámá vlastnost %s"
 
-#: ../shell/rb-shell.c:2651
+#: ../shell/rb-shell.c:2675
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neplatný typ vlastnosti %s pro vlastnost %s"
@@ -1702,17 +1712,27 @@ msgstr ""
 "Nemohu najít dost dočasného místa pro převod zvukových stop. Je potřeba %s "
 "MiB."
 
-#: ../sources/rb-source.c:614
+#: ../sources/rb-source.c:602
 msgid "Not supported"
 msgstr "Nepodporováno"
 
-#: ../sources/rb-source.c:615
+#: ../sources/rb-source.c:603
 msgid "This source does not support drag and drop."
 msgstr "Tento zdroj nepodporuje přetažení a puštění."
 
 #: ../sources/rb-sourcelist.c:248
 msgid "_Source"
 msgstr "_Zdroj"
+
+#. +
+#: ../widgets/bacon-volume.c:187
+msgid "+"
+msgstr "+"
+
+#. -
+#: ../widgets/bacon-volume.c:203
+msgid "-"
+msgstr "-"
 
 #: ../widgets/eel-gconf-extensions.c:68
 msgid "Configuration system error"
@@ -2066,30 +2086,33 @@ msgstr "z"
 msgid "by"
 msgstr "od"
 
-#: ../widgets/rb-song-info.c:275
+#: ../widgets/rb-song-info.c:272
 msgid "Song Properties"
 msgstr "Vlastnosti skladby"
 
-#: ../widgets/rb-song-info.c:367
+#: ../widgets/rb-song-info.c:364
 msgid "Multiple Song Properties"
 msgstr "Vlastnosti více skladeb"
 
-#: ../widgets/rb-song-info.c:747
+#: ../widgets/rb-song-info.c:738
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
 
-#: ../widgets/rb-song-info.c:792
+#: ../widgets/rb-song-info.c:783
 msgid "Unknown file name"
 msgstr "Neznámý název souboru"
 
-#: ../widgets/rb-song-info.c:811
+#: ../widgets/rb-song-info.c:802
 msgid "On the desktop"
 msgstr "Na ploše"
 
-#: ../widgets/rb-song-info.c:820
+#: ../widgets/rb-song-info.c:811
 msgid "Unknown location"
 msgstr "Neznámé umístění"
+
+#~ msgid "A_utomatically rate:"
+#~ msgstr "_Automaticky hodnotit:"
 
 #~ msgid "_Show Window"
 #~ msgstr "_Zobrazit okno"
