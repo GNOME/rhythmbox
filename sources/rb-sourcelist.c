@@ -47,6 +47,8 @@ struct RBSourceListPriv
 	GtkTreeSelection *selection;
 
 	RBSource *playing_source;
+	int child_source_count;
+	GtkTreeViewColumn *expander_column;
 
 	RBShell *shell;
 };
@@ -102,6 +104,7 @@ static void source_name_edited_cb (GtkCellRendererText *renderer, const char *pa
 static void rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 						GtkTreeModel *tree_model, GtkTreeIter *iter,
 						RBSourceList *sourcelist);
+static void rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist);
 
 static GtkVBoxClass *parent_class = NULL;
 
@@ -244,6 +247,12 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 				 G_CALLBACK (popup_menu_cb),
 				 sourcelist, 0);
 
+	sourcelist->priv->expander_column = gtk_tree_view_column_new ();
+	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
+				     sourcelist->priv->expander_column);
+	gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
+				     sourcelist->priv->expander_column);
+
 	gcolumn = gtk_tree_view_column_new ();
 	gtk_tree_view_column_set_title (gcolumn, _("_Source"));
 	gtk_tree_view_column_set_clickable (gcolumn, FALSE);
@@ -271,6 +280,8 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 			         G_CALLBACK (rb_sourcelist_selection_changed_cb),
 			         sourcelist,
 				 0);
+
+	rb_sourcelist_update_expander_visibility (sourcelist);
 }
 
 static void
@@ -361,6 +372,10 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 		GtkTreeIter parent_iter;
 		g_assert (rb_sourcelist_source_to_iter (sourcelist, parent, &parent_iter));
 		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, &parent_iter);
+
+		/* !!! make the expander column visible */
+		sourcelist->priv->child_source_count++;
+		rb_sourcelist_update_expander_visibility (sourcelist);
 	} else {
 		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, NULL);
 	}
@@ -374,7 +389,6 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 
 	g_signal_connect_object (G_OBJECT (source), "notify::name", G_CALLBACK (name_notify_cb), sourcelist, 0);
 	g_signal_connect_object (G_OBJECT (source), "notify::visibility", G_CALLBACK (visibility_notify_cb), sourcelist, 0);
-
 }
 
 typedef struct _SourcePath {
@@ -491,6 +505,12 @@ rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
 	GtkTreeIter iter;
 
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
+
+	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
+		sourcelist->priv->child_source_count--;
+		rb_sourcelist_update_expander_visibility (sourcelist);
+	}
+
 	gtk_tree_store_remove (GTK_TREE_STORE (sourcelist->priv->real_model), &iter);
 	g_signal_handlers_disconnect_by_func (G_OBJECT (source),
 					      G_CALLBACK (name_notify_cb), sourcelist);
@@ -629,8 +649,19 @@ static void
 visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (data);
-	
+	RBSource *source = RB_SOURCE (obj);
+	GtkTreeIter iter;
+
 	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
+
+	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
+	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
+		gboolean visible;
+
+		g_object_get (obj, "visibility", &visible, NULL);
+		sourcelist->priv->child_source_count += visible ? 1 : -1;
+		rb_sourcelist_update_expander_visibility (sourcelist);
+	}
 }
 
 static void
@@ -679,3 +710,13 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 	g_object_set (G_OBJECT (renderer), "editable", FALSE, NULL);
 }
 
+static void
+rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist)
+{
+	gboolean visible;
+
+	g_assert (sourcelist->priv->child_source_count >= 0);
+
+	visible = (sourcelist->priv->child_source_count > 0);
+	gtk_tree_view_column_set_visible (sourcelist->priv->expander_column, visible);
+}

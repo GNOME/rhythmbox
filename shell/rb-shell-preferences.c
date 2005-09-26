@@ -316,44 +316,35 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry, GdkEventFocus *event, gpoi
 static void
 add_daap_preferences (RBShellPreferences *shell_preferences)
 {
-	GtkWidget *vbox;
+	GladeXML *xml;
 	GtkWidget *check;
-	gboolean b;
-	GtkWidget *hbox;
-	GtkWidget *label;
 	GtkWidget *entry;
+	GtkWidget *hbox;
+	gboolean b;
+
 	gchar *name;
 
-	vbox = gtk_vbox_new (FALSE, 6);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 12);
+	xml = rb_glade_xml_new ("daap-prefs.glade",
+				"daap_vbox",
+				shell_preferences);
 
-	hbox = gtk_hbox_new (FALSE, 12);
-
-	check = gtk_check_button_new_with_mnemonic (_("_Share my music"));
-	gtk_box_pack_start (GTK_BOX (vbox), check, FALSE, FALSE, 0);
+	check = glade_xml_get_widget (xml, "daap_enable_check");
+	entry = glade_xml_get_widget (xml, "daap_name_entry");
+	hbox = glade_xml_get_widget (xml, "daap_hbox");
 	
 	b = eel_gconf_get_boolean (CONF_ENABLE_SHARING);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), b);
 	g_signal_connect (G_OBJECT (check), "toggled", G_CALLBACK (share_check_button_toggled_cb), hbox);
 	
-	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-
-	label = gtk_label_new_with_mnemonic (_("Shared music _name:"));
-	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-
-	entry = gtk_entry_new ();
-	gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
-	gtk_label_set_mnemonic_widget (GTK_LABEL (label), entry);
-
 	name = eel_gconf_get_string (CONF_NAME);
 	gtk_entry_set_text (GTK_ENTRY (entry), name);
 	g_signal_connect (G_OBJECT (entry), "focus-out-event", G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);	
 
 	gtk_widget_set_sensitive (hbox, b);
 	
-	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook), vbox, gtk_label_new (_("Sharing")));
-
-	return;
+	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
+				  glade_xml_get_widget (xml, "daap_vbox"),
+				  gtk_label_new (_("Sharing")));
 }
 #endif /* WITH_DAAP_SUPPORT */
 

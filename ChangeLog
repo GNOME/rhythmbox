@@ -1,3 +1,15 @@
+2005-09-27  James Livingston  <jrl@ids.org.au>
+
+	* data/glade/daap-prefs.glade:
+	* shell/rb-shell-preferences.c: (add_daap_preferences): use a glade
+	file for the daap preferences pane
+	
+	* sources/rb-sourcelist.c: (rb_sourcelist_init),
+	(rb_sourcelist_append), (rb_sourcelist_remove),
+	(visibility_notify_cb), (rb_sourcelist_update_expander_visibility):
+	don't display the column for source expanders unless there is an
+	expandable source.
+
 2005-09-24  Raphael Slinckx  <rslinckx@cvs.gnome.org>
 
 	* .cvsignore:
