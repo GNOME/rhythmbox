@@ -26,7 +26,6 @@
 
 
 #include <gtk/gtktreeview.h>
-#include <gtk/gtkicontheme.h>
 #include <string.h>
 #include "itunesdb.h"
 #include "rhythmdb.h"
@@ -39,7 +38,6 @@
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
 #include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
-#include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rhythmdb.h"

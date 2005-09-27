@@ -25,31 +25,13 @@
 
 G_BEGIN_DECLS
 
-#define RB_STOCK_SHUFFLE       "rhythmbox-shuffle"
-#define RB_STOCK_REPEAT        "rhythmbox-repeat"
-#define RB_STOCK_VISUALS       "rhythmbox-visuals"
-#define RB_STOCK_PLAYLIST      "rhythmbox-playlist"
-#define RB_STOCK_LIBRARY       "rhythmbox-library"
-#define RB_STOCK_IRADIO        "rhythmbox-iradio"
-#define RB_STOCK_PLAYLIST      "rhythmbox-playlist"
-#define RB_STOCK_PLAYLIST_MENU "rhythmbox-playlist-menu"
 #define RB_STOCK_PLAYBACK_ERROR "rhythmbox-playback-error"
 #define RB_STOCK_PLAYING       "rhythmbox-playing"
 #define RB_STOCK_PAUSED        "rhythmbox-paused"
-#define RB_STOCK_ALBUM         "rhythmbox-album"
-#define RB_STOCK_VOLUME_ZERO   "rhythmbox-volume-zero"
-#define RB_STOCK_VOLUME_MIN    "rhythmbox-volume-min"
-#define RB_STOCK_VOLUME_MEDIUM "rhythmbox-volume-medium"
-#define RB_STOCK_VOLUME_MAX    "rhythmbox-volume-max"
-#define RB_STOCK_VOLUME_MUTE   "rhythmbox-volume-mute"
 #define RB_STOCK_TRAY_ICON     "rhythmbox-tray-icon"
 #define RB_STOCK_SET_STAR      "rhythmbox-set-star"
-#define RB_STOCK_AUTOMATIC_PLAYLIST "rhythmbox-automatic-playlist"
 #define RB_STOCK_UNSET_STAR    "rhythmbox-unset-star"
 #define RB_STOCK_NO_STAR       "rhythmbox-no-star"
-#define RB_STOCK_AUDIOCD       "rhythmbox-audiocd"
-#define RB_STOCK_DND_ICON      "rhythmbox-dnd"
-#define RB_STOCK_IPOD          "rhythmbox-ipod"
 
 void	rb_stock_icons_init	(void);
 

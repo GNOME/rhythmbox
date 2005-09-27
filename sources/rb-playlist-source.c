@@ -272,7 +272,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	RBPlaylistSource *source;
 	RBPlaylistSourceClass *klass;
 	GObjectClass *parent_class;  
-	GtkWidget *dummy = gtk_tree_view_new ();
 	RBShell *shell;
 
 	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
@@ -337,16 +336,21 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_playlist_source_drop_cb), source, 0);
 	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
 			   target_uri, G_N_ELEMENTS (target_uri), GDK_ACTION_COPY);
-		
-	source->priv->normal_pixbuf = gtk_widget_render_icon (dummy,
-						       RB_STOCK_PLAYLIST,
-						       GTK_ICON_SIZE_LARGE_TOOLBAR,
-						       NULL);
-	source->priv->smartypants_pixbuf = gtk_widget_render_icon (dummy,
-								   RB_STOCK_AUTOMATIC_PLAYLIST,
-								   GTK_ICON_SIZE_LARGE_TOOLBAR,
-								   NULL);
-	gtk_widget_destroy (dummy);
+
+	{
+		GtkIconTheme *theme = gtk_icon_theme_get_default();
+		gint size;
+
+		gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+		source->priv->normal_pixbuf = gtk_icon_theme_load_icon (theme,
+									"stock_playlist",
+									size,
+									0, NULL);
+		source->priv->smartypants_pixbuf = gtk_icon_theme_load_icon (theme,
+									     "stock_smart-playlist",
+									     size,
+									     0, NULL);
+	}
 		
 	rb_entry_view_set_columns_clickable (source->priv->songs, FALSE);
 	source->priv->query_resetting = FALSE;

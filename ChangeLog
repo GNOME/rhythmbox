@@ -1,5 +1,68 @@
 2005-09-27  James Livingston  <jrl@ids.org.au>
 
+	* data/art-clearlooks/Makefile.am:
+	- data/art-clearlooks/rhythmbox-album.png:
+	- data/art-clearlooks/rhythmbox-audiocd.png:
+	- data/art-clearlooks/rhythmbox-automatic-playlist.png:
+	- data/art-clearlooks/rhythmbox-dnd.png:
+	- data/art-clearlooks/rhythmbox-ipod.png:
+	- data/art-clearlooks/rhythmbox-iradio.png:
+	- data/art-clearlooks/rhythmbox-library.png:
+	- data/art-clearlooks/rhythmbox-next.png:
+	- data/art-clearlooks/rhythmbox-pause.png:
+	- data/art-clearlooks/rhythmbox-play.png:
+	- data/art-clearlooks/rhythmbox-playlist-menu.png:
+	- data/art-clearlooks/rhythmbox-playlist.png:
+	- data/art-clearlooks/rhythmbox-previous.png:
+	- data/art-clearlooks/rhythmbox-repeat.png:
+	- data/art-clearlooks/rhythmbox-rewind.png:
+	- data/art-clearlooks/rhythmbox-shuffle.png:
+	- data/art-clearlooks/rhythmbox-stop.png:
+	- data/art-clearlooks/rhythmbox-visuals.png:
+	- data/art-clearlooks/rhythmbox-volume-max.png:
+	- data/art-clearlooks/rhythmbox-volume-medium.png:
+	- data/art-clearlooks/rhythmbox-volume-min.png:
+	- data/art-clearlooks/rhythmbox-volume-mute.png:
+	- data/art-clearlooks/rhythmbox-volume-zero.png:
+	* data/art/Makefile.am:
+	- data/art/rhythmbox-album.png:
+	- data/art/rhythmbox-audiocd.png:
+	- data/art/rhythmbox-automatic-playlist.png:
+	- data/art/rhythmbox-dnd.png:
+	- data/art/rhythmbox-ipod.png:
+	- data/art/rhythmbox-iradio.png:
+	- data/art/rhythmbox-library.png:
+	- data/art/rhythmbox-next.png:
+	- data/art/rhythmbox-pause.png:
+	- data/art/rhythmbox-play.png:
+	- data/art/rhythmbox-playlist-menu.png:
+	- data/art/rhythmbox-playlist.png:
+	- data/art/rhythmbox-previous.png:
+	- data/art/rhythmbox-repeat.png:
+	- data/art/rhythmbox-rewind.png:
+	- data/art/rhythmbox-shuffle.png:
+	- data/art/rhythmbox-stop.png:
+	- data/art/rhythmbox-visuals.png:
+	- data/art/rhythmbox-volume-max.png:
+	- data/art/rhythmbox-volume-medium.png:
+	- data/art/rhythmbox-volume-min.png:
+	- data/art/rhythmbox-volume-mute.png:
+	- data/art/rhythmbox-volume-zero.png:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* shell/rb-playlist-manager.c:
+	* shell/rb-shell-player.c:
+	* sources/rb-daap-source.c: (rb_daap_get_icon):
+	* sources/rb-ipod-source.c:
+	* sources/rb-iradio-source.c: (rb_iradio_source_init):
+	* sources/rb-library-source.c: (rb_library_source_new):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-removable-media-source.c: (impl_get_pixbuf): Remove art
+	that hasn't been used in a LONG time, and also remove art that are
+	now stock icons.
+
+2005-09-27  James Livingston  <jrl@ids.org.au>
+
 	* README: point to the gnome.org web sites, and update the example
 	gstreamer pipeline to a plybin/decodebin based one. Closes bug 317108
 	

@@ -23,6 +23,7 @@
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkicontheme.h>
+#include <gtk/gtkiconfactory.h>
 #include <string.h>
 #include "rhythmdb.h"
 #include "rb-shell.h"
@@ -248,9 +249,11 @@ rb_daap_get_icon (void)
 {
 	GdkPixbuf *icon;
 	GtkIconTheme *theme;
+	gint size;
 
 	theme = gtk_icon_theme_get_default ();
-	icon = gtk_icon_theme_load_icon (theme, "gnome-fs-network", 24, 0, NULL);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	icon = gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
 
 	return icon;
 }

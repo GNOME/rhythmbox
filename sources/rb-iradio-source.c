@@ -235,7 +235,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 static void
 rb_iradio_source_init (RBIRadioSource *source)
 {
-	GtkWidget *dummy = gtk_tree_view_new ();
+	gint size;
 	source->priv = g_new0 (RBIRadioSourcePrivate, 1);
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
@@ -246,11 +246,11 @@ rb_iradio_source_init (RBIRadioSource *source)
 	source->priv->name = g_strdup (_("Unknown"));
 	source->priv->title = g_strdup (_("Unknown"));
 
-	source->priv->pixbuf = gtk_widget_render_icon (dummy,
-						       RB_STOCK_IRADIO,
-						       GTK_ICON_SIZE_LARGE_TOOLBAR,
-						       NULL);
-	gtk_widget_destroy (dummy);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	source->priv->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+							 "stock_channel",
+							 size,
+							 0, NULL);
 }
 
 static void

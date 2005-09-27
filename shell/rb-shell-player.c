@@ -295,10 +295,10 @@ static GtkActionEntry rb_shell_player_stop_action [] =
 
 static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 {
-	{ "ControlShuffle", RB_STOCK_SHUFFLE, N_("Sh_uffle"), "<control>U",
+	{ "ControlShuffle", NULL, N_("Sh_uffle"), "<control>U",
 	  N_("Play songs in a random order"),
 	  G_CALLBACK (rb_shell_player_shuffle_changed_cb) },
-	{ "ControlRepeat", RB_STOCK_REPEAT, N_("_Repeat"), "<control>R",
+	{ "ControlRepeat", NULL, N_("_Repeat"), "<control>R",
 	  N_("Play first song again after all songs are played"),
 	  G_CALLBACK (rb_shell_player_repeat_changed_cb) }
 };

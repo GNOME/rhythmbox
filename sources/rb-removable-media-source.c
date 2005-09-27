@@ -24,6 +24,7 @@
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkicontheme.h>
+#include <gtk/gtkiconfactory.h>
 #include <string.h>
 #include "rhythmdb.h"
 #include <libgnome/gnome-i18n.h>
@@ -156,10 +157,12 @@ static GdkPixbuf *
 impl_get_pixbuf (RBSource *source)
 {
 	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
+	gint size;
 
 	char *icon_name = gnome_vfs_volume_get_icon (priv->volume);
 	GtkIconTheme *theme = gtk_icon_theme_get_default ();
-	GdkPixbuf *icon = gtk_icon_theme_load_icon (theme, icon_name, 24, 0, NULL);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	GdkPixbuf *icon = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
 	g_free (icon_name);
 
 	return icon;
