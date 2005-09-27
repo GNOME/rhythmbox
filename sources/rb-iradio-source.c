@@ -502,10 +502,7 @@ impl_search (RBSource *asource, const char *search_text)
 		search_text = NULL;
 
 	g_free (source->priv->search_text);
-	if (search_text)
-		source->priv->search_text = g_utf8_casefold (search_text, -1);
-	else
-		source->priv->search_text = NULL;
+	source->priv->search_text = g_strdup (search_text);
 	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));

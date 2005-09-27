@@ -1,24 +1,23 @@
 General Information
 ===================
 
-This is Rhythmbox version 0.8. Rhythmbox is your one-stop multimedia
+This is Rhythmbox version 0.9. Rhythmbox is your one-stop multimedia
 application, supporting a music library, multiple playlists,
 internet radio, and more.
 
 Rhythmbox is free software, licensed under the GNU GPL.
 
 The official web site is:
-  http://web.rhythmbox.org/
+  http://www.gnome.org/projects/rhythmbox/
 
 Information about mailing lists can be found at:
   http://lists.gnome.org/mailman/listinfo/rhythmbox-devel
 
 Our IRC channel is #rhythmbox on GIMPnet (irc.gimp.org).
 
-Rhythmbox is developed primarily using the arch revision control
-system, specifically the "tla" implementation.  To get a copy
+Rhythmbox is developed primarily using in gnome cvs. To get a copy
 of the latest development tree, see this web page:
-http://web.rhythmbox.org/development.html
+http://www.gnome.org/projects/rhythmbox/development.html
 
 Installation
 ============
@@ -43,23 +42,22 @@ In the bug report please include:
 
 * If rhythmbox crashes when you try to import a folder full of music files
   to your library, you can pinpoint the exact file causing the crash
-  by running rhythmbox -d from a console. It will output lots of debugging
+  by running "rhythmbox -d" from a console. It will output lots of debugging
   information, the last file mentioned in the console output will quite likely
-  correspond to the file causing the crash.
+  correspond to the file causing the crash. If you want to save the debug log
+  to a file, use "rhythmbox -d 2> debug.log".
 
 * Before you report a bug, it will be useful to know if GStreamer works.
   If you have playback issues, try running this command:
 
-  $ gst-launch-0.8 gnomevfssrc location=/path/to/my/musicfile.ogg ! spider ! volume ! audioscale ! audioconvert ! $(gconftool-2 -g /system/gstreamer/0.8/default/audiosink)  
+  $ gst-launch-0.8 playbin uri="file:///path/to/my/musicfile.ogg"
 
   If you have troubles importing a specific file to your library, try running:
 
-  $ gst-launch-0.8 filesrc location=/path/to/my/musicfile.ogg ! typefind ! spider ! audio/x-raw-int ! fakesink
+  $ gst-launch-0.8 -t filesrc location=/path/to/my/musicfile.ogg ! decodebin ! fakesink
  
   Just replace /path/to/my/musicfile.ogg with some sound file in the 2 commands
   above.
-
-  You might also want to try the monkey-media tests/test-cmdline program.
 
 * How to reproduce the bug.
 

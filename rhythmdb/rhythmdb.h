@@ -448,6 +448,7 @@ GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
 void		rhythmdb_query_free			(GPtrArray *query);
 GPtrArray *	rhythmdb_query_copy			(GPtrArray *array);
+void		rhythmdb_query_preprocess		(GPtrArray *query);
 
 void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
 							 xmlNodePtr node);

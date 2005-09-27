@@ -1,5 +1,23 @@
 2005-09-27  James Livingston  <jrl@ids.org.au>
 
+	* README: point to the gnome.org web sites, and update the example
+	gstreamer pipeline to a plybin/decodebin based one. Closes bug 317108
+	
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property),
+	(rhythmdb_query_model_finalize):
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_internal),
+	(rhythmdb_entry_set_visibility), (rhythmdb_query_preprocess):
+	* rhythmdb/rhythmdb.h:
+	* sources/rb-iradio-source.c: (impl_search):
+	* sources/rb-library-source.c: (impl_search): Add query
+	"preprocessing", which performs operations such as casefolding any
+	strings that will be compared to any of the *_FOLDED properties.
+	Closes bug 316039
+
+2005-09-27  James Livingston  <jrl@ids.org.au>
+
 	* data/glade/daap-prefs.glade:
 	* shell/rb-shell-preferences.c: (add_daap_preferences): use a glade
 	file for the daap preferences pane

@@ -2569,6 +2569,8 @@ rhythmdb_query_internal (struct RhythmDBQueryThreadData *data)
 	struct RhythmDBEvent *result;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (data->db);
 
+	rhythmdb_query_preprocess (data->query);
+
 	rb_debug ("doing query");
 
 	klass->impl_do_full_query (data->db, data->query,
@@ -3047,4 +3049,32 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_unset (&new_val);
 	}
 	g_value_unset (&old_val);
+}
+
+void
+rhythmdb_query_preprocess (GPtrArray *query)
+{
+	int i;	
+
+	for (i = 0; i < query->len; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (query, i);
+		
+		if (data->subquery) {
+			rhythmdb_query_preprocess (data->subquery);
+		} else switch (data->propid) {
+			case RHYTHMDB_PROP_TITLE_FOLDED:
+			case RHYTHMDB_PROP_GENRE_FOLDED:
+			case RHYTHMDB_PROP_ARTIST_FOLDED:
+			case RHYTHMDB_PROP_ALBUM_FOLDED:
+			{
+				/* as we are matching against a folded property, the string needs to also be folded */
+				const char *orig = g_value_get_string (data->val);
+				char *folded = g_utf8_casefold (orig, -1);
+
+				g_value_reset (data->val);
+				g_value_take_string (data->val, folded);
+				break;
+			}
+		}
+	}
 }

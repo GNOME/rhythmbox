@@ -139,7 +139,7 @@ struct RhythmDBQueryModelPrivate
 	gpointer sort_user_data;
 	GDestroyNotify sort_destroy_notify;
 
-	GPtrArray *query;
+	GPtrArray *query, *original_query;
 
 	guint stamp;
 
@@ -339,12 +339,12 @@ rhythmdb_query_model_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_RHYTHMDB:
-	{
 		model->priv->db = g_value_get_object (value);
 		break;
-	}
 	case PROP_QUERY:
 		model->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
+		model->priv->original_query = rhythmdb_query_copy (model->priv->query);
+		rhythmdb_query_preprocess (model->priv->query);
 		break;
 	case PROP_SORT_FUNC:
 		model->priv->sort_func = g_value_get_pointer (value);
@@ -384,7 +384,7 @@ rhythmdb_query_model_get_property (GObject *object,
 		g_value_set_object (value, model->priv->db);
 		break;
 	case PROP_QUERY:
-		g_value_set_pointer (value, model->priv->query);
+		g_value_set_pointer (value, model->priv->original_query);
 		break;
 	case PROP_SORT_FUNC:
 		g_value_set_pointer (value, model->priv->sort_func);
@@ -513,6 +513,8 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	if (model->priv->query)
 		rhythmdb_query_free (model->priv->query);
+	if (model->priv->original_query)
+		rhythmdb_query_free (model->priv->original_query);
 
 	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL)
 		rhythmdb_query_model_free_pending_update (model, update);
