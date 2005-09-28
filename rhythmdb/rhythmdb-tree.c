@@ -45,7 +45,6 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
-#include "rb-string-helpers.h"
 
 typedef struct RhythmDBTreeProperty
 {

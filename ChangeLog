@@ -1,3 +1,16 @@
+2005-09-29  James Livingston  <jrl@ids.org.au>
+
+	- lib/rb-string-helpers.c:
+	- lib/rb-string-helpers.h:
+	* lib/Makefile.am:
+	* rhythmdb/rhythmdb-tree.c:
+	* rhythmdb/rhythmdb.c:
+	* shell/main.c: (main):
+	* shell/rb-shell.c:
+	* widgets/rb-entry-view.c:
+	* widgets/rb-property-view.c: remove rb-string-helpers, as they
+	utility functions haven't been used in a while.
+
 2005-09-27  James Livingston  <jrl@ids.org.au>
 
 	* data/art-clearlooks/Makefile.am:

@@ -36,7 +36,6 @@
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
-#include "rb-string-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"

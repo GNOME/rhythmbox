@@ -9,8 +9,6 @@ librb_la_SOURCES =					\
 	rb-file-helpers.h				\
 	rb-glade-helpers.c				\
 	rb-glade-helpers.h				\
-	rb-string-helpers.c				\
-	rb-string-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
 	rb-cut-and-paste-code.c				\

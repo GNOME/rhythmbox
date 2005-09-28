@@ -41,7 +41,6 @@
 #include <libgnomevfs/gnome-vfs-file-info.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnome/gnome-i18n.h>
-#include "rb-string-helpers.h"
 #include "rhythmdb-marshal.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"

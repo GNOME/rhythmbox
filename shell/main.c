@@ -51,7 +51,6 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
-#include "rb-string-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
@@ -299,7 +298,6 @@ main (int argc, char **argv)
 		rb_refstring_system_init ();
 
 		rb_file_helpers_init ();
-		rb_string_helpers_init ();
 
 		rb_debug ("Going to create a new shell");
 	
@@ -386,7 +384,6 @@ main (int argc, char **argv)
 		rb_debug ("out of toplevel loop");
 
 		rb_file_helpers_shutdown ();
-		rb_string_helpers_shutdown ();
 		rb_stock_icons_shutdown ();
 		rb_refstring_system_shutdown ();
 

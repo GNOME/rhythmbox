@@ -52,7 +52,6 @@
 #endif
 #include "rb-stock-icons.h"
 #include "rb-sourcelist.h"
-#include "rb-string-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-source.h"
 #include "rb-playlist-manager.h"
