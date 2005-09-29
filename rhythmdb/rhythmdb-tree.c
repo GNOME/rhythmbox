@@ -823,18 +823,31 @@ rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntry *entry)
 
 	g_return_if_fail (entry->location != NULL);
 
-	rb_refstring_ref (entry->genre);
-	rb_refstring_ref (entry->artist);
-	rb_refstring_ref (entry->album);
+	if (entry->title == NULL) {
+		g_warning ("Entry %s has missing title",entry->location);
+		entry->title = rb_refstring_new (_("Unknown"));
+	}
+	if (entry->artist == NULL) {
+		g_warning ("Entry %s has missing artist",entry->location);
+		entry->artist = rb_refstring_new (_("Unknown"));
+	}
+	if (entry->album == NULL) {
+		g_warning ("Entry %s has missing album",entry->location);
+		entry->album = rb_refstring_new (_("Unknown"));
+	}
+	if (entry->genre == NULL) {
+		g_warning ("Entry %s has missing genre",entry->location);
+		entry->genre = rb_refstring_new (_("Unknown"));
+	}
+	if (entry->mimetype == NULL) {
+		g_warning ("Entry %s has missing mimetype",entry->location);
+		entry->mimetype = rb_refstring_new ("unknown/unknown");
+	}
 
 	/* Initialize the tree structure. */
 	genre = get_or_create_genre (db, entry->type, entry->genre);
 	artist = get_or_create_artist (db, genre, entry->artist);
 	set_entry_album (db, entry, artist, entry->album);
-
-	rb_refstring_unref (entry->genre);
-	rb_refstring_unref (entry->artist);
-	rb_refstring_unref (entry->album);
 
 	g_hash_table_insert (db->priv->entries, entry->location, entry);
 }

@@ -1,3 +1,12 @@
+2005-09-30  James Livingston  <jrl@ids.org.au>
+
+	* po/POTFILES.in: mremove rb-string-helper.c from the list of
+	translatable files, so that make check works and we don't annoy the
+	translators.
+	
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_new): do a bit of
+	sanity checking, in case a db entry is missing some properties.
+
 2005-09-29  James Livingston  <jrl@ids.org.au>
 
 	- lib/rb-string-helpers.c:
