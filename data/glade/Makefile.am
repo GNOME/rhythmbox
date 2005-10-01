@@ -10,6 +10,7 @@ glade_DATA =	general-prefs.glade	  	\
 		create-playlist.glade		\
 		druid.glade			\
 		recorder.glade			\
+		daap-prefs.glade		\
 		uri.glade
 
 gladedir = $(pkgdatadir)/glade
