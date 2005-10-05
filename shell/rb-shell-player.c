@@ -1863,6 +1863,8 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		else
 			pstate = PLAY_BUTTON_STOP;
 
+		rb_entry_view_set_playing (view, TRUE);
+
 		action = gtk_action_group_get_action (player->priv->play_action_group,
 						      "ControlPlay");
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
@@ -1874,6 +1876,8 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 			pstate = PLAY_BUTTON_PLAY;
 		else
 			pstate = PLAY_BUTTON_STOP;
+
+		rb_entry_view_set_playing (view, FALSE);
 
 		action = gtk_action_group_get_action (player->priv->play_action_group,
 						      "ControlPlay");

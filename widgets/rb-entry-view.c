@@ -403,25 +403,27 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 static void
 rb_entry_view_init (RBEntryView *view)
 {
-	GtkWidget *dummy;
+	GtkIconTheme* icon_theme;
 	
 	view->priv = g_new0 (RBEntryViewPrivate, 1);
 
-	dummy = gtk_tree_view_new ();
-	view->priv->playing_pixbuf = gtk_widget_render_icon (dummy,
-							     RB_STOCK_PLAYING,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
+	icon_theme = gtk_icon_theme_get_default ();
 
-	view->priv->paused_pixbuf = gtk_widget_render_icon (dummy,
-							    RB_STOCK_PAUSED,
-							    GTK_ICON_SIZE_MENU,
-							    NULL);
-	view->priv->error_pixbuf = gtk_widget_render_icon (dummy,
-							   RB_STOCK_PLAYBACK_ERROR,
-							   GTK_ICON_SIZE_MENU,
-							   NULL);
-	gtk_widget_destroy (dummy);
+	view->priv->playing_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+                                   			       "stock_volume-max", 
+                                   			       16,
+                                   			       0, 
+                                   			       NULL);
+	view->priv->paused_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+                                   			      "stock_volume-0", 
+                                   			      16,
+                                   			      0, 
+                                   			      NULL);
+	view->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+                                   			     "stock_dialog-error", 
+                                   			     16,
+                                   			     0, 
+                                   			     NULL);
 
 	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
 	view->priv->column_sort_data_map = g_hash_table_new_full (NULL, NULL, NULL, g_free);
@@ -2107,9 +2109,19 @@ void
 rb_entry_view_set_playing (RBEntryView *view,
 			   gboolean playing)
 {
+	GtkTreePath *path;
+	GtkTreeIter iter;
+
 	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
 
-	view->priv->playing = TRUE;
+	view->priv->playing = playing;
+	/* Redraw the treeview */
+	if (view->priv->playing_entry) {
+		rhythmdb_query_model_entry_to_iter (view->priv->playing_model, view->priv->playing_entry, &iter);
+		path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->playing_model), &iter);
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_model), path, &iter);
+  		gtk_tree_path_free (path);
+	}
 }
 
 gboolean

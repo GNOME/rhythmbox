@@ -1,12 +1,6 @@
 ## arch-tag: Automake rules for various data files
 
-SUBDIRS = ui glade
-
-if WITH_OLD_ART
-SUBDIRS += art
-else
-SUBDIRS += art-clearlooks
-endif
+SUBDIRS = ui glade art
 
 @INTLTOOL_SERVER_RULE@
 @INTLTOOL_DESKTOP_RULE@

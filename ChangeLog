@@ -1,3 +1,27 @@
+2005-10-06  James Livingston  <jrl@ids.org.au>
+
+	* NEWS: more updates
+	
+	patch from Jaap Haitsma <jaap@haitsma.org>:
+
+	* configure.ac:
+	* data/Makefile.am:
+	* data/art/Makefile.am:
+	- data/art/rhythmbox-paused.png:
+	- data/art/rhythmbox-playback-error.png:
+	- data/art/rhythmbox-playing.png:
+	- data/art-clearlooks/:
+	* lib/rb-file-helpers.c: (rb_file):
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* shell/rb-shell-player.c: (rb_shell_player_sync_buttons):
+	* widgets/rb-cell-renderer-pixbuf.c:
+	(rb_cell_renderer_pixbuf_render):
+	* widgets/rb-entry-view.c: (rb_entry_view_init),
+	(rb_entry_view_set_playing):
+	* widgets/rb-rating-helper.c: (rb_rating_render_stars):  use more
+	stock icons instead of custom art. Drop remanents of art-clearlooks.
+
 2005-10-04  Pawan Chitrakar  <pchitrakar@gmail.com>
 
 	* configure.ac: Added ne in ALL_LINGUAS

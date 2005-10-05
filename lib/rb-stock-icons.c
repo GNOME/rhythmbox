@@ -37,9 +37,6 @@ rb_stock_icons_init (void)
 
 	static const char *items[] =
 	{
-		RB_STOCK_PLAYBACK_ERROR,
-		RB_STOCK_PLAYING,
-		RB_STOCK_PAUSED,
 		RB_STOCK_TRAY_ICON,
 		RB_STOCK_SET_STAR,
 		RB_STOCK_UNSET_STAR,

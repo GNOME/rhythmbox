@@ -25,9 +25,6 @@
 
 G_BEGIN_DECLS
 
-#define RB_STOCK_PLAYBACK_ERROR "rhythmbox-playback-error"
-#define RB_STOCK_PLAYING       "rhythmbox-playing"
-#define RB_STOCK_PAUSED        "rhythmbox-paused"
 #define RB_STOCK_TRAY_ICON     "rhythmbox-tray-icon"
 #define RB_STOCK_SET_STAR      "rhythmbox-set-star"
 #define RB_STOCK_UNSET_STAR    "rhythmbox-unset-star"

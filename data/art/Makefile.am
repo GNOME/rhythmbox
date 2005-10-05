@@ -1,8 +1,6 @@
 ## arch-tag: Automake rules for included art
 
-art_DATA = rhythmbox-playback-error.png \
-	   rhythmbox-playing.png       \
-	   rhythmbox-paused.png	       \
+art_DATA =  \
 	   rhythmbox-tray-icon.png     \
 	   rhythmbox-set-star.png      \
 	   rhythmbox-unset-star.png    \

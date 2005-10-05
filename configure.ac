@@ -117,18 +117,6 @@ esac
 AC_SUBST(GDA_CFLAGS)
 AC_SUBST(GDA_LIBS)
 
-AC_ARG_WITH(old-art,
-            AC_HELP_STRING([--with-old-art],
-			   [Use old artwork]),,
-	      with_old_art=auto)
-if test x$with_old_art == xauto; then
-  with_old_art=xyes
-fi       
-if test x$with_old_art == xyes; then
-  AC_DEFINE(WITH_OLD_ART, 1, [Define if you want to use old artwork])
-fi      
-AM_CONDITIONAL(WITH_OLD_ART, test "x$with_old" == "xyes")
-
 dnl Database debugging
 AC_ARG_WITH(rhythmdb-debug,
               AC_HELP_STRING([--with-rhythmdb-debug=0|1|2],
@@ -564,7 +552,6 @@ shell/Makefile
 data/Makefile
 data/ui/Makefile
 data/art/Makefile
-data/art-clearlooks/Makefile
 data/glade/Makefile
 data/rhythmbox.pc
 sources/Makefile
