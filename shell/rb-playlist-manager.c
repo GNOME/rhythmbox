@@ -538,7 +538,9 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 	gint entry_type;
 
 	if (uri_maybe[0] == '/') {
-		uri = gnome_vfs_get_uri_from_local_path (uri_maybe);
+		char *tmp = gnome_vfs_escape_string (uri_maybe);
+		uri = g_strconcat ("file://", tmp, NULL);
+		g_free (tmp);
 		if (uri == NULL) {
 			rb_debug ("Error processing absolute filename %s", uri_maybe);
 			return;

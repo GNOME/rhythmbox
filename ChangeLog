@@ -1,3 +1,9 @@
+2005-10-07  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-playlist-manager.c: (handle_playlist_entry_cb): escape
+	local path names in the same way as every other URI. This should stop
+	duplicates occurring due to different escapings. Closes bug 158211.
+
 2005-10-06  James Livingston  <jrl@ids.org.au>
 
 	* NEWS: more updates
