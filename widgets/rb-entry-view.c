@@ -1201,7 +1201,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_long_cell_data_func;
 		sort_func = (GCompareDataFunc) rb_entry_view_track_sort_func;
 		real_sort_data = view;
-		title = _("Tra_ck");
+		title = _("Trac_k");
 		key = "Track";
 		break;
 	case RB_ENTRY_VIEW_COL_TITLE:
@@ -1232,7 +1232,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_data->propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_album_sort_func;
 		real_sort_data = view;
-		title = _("A_lbum");
+		title = _("_Album");
 		key = "Album";
 		ellipsize = TRUE;
 		break;
@@ -1243,7 +1243,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_data->propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_genre_sort_func;
 		real_sort_data = view;
-		title = _("Ge_nre");
+		title = _("_Genre");
 		key = "Genre";
 		ellipsize = TRUE;
 		break;
@@ -1253,7 +1253,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
 		sort_data->propid = cell_data->propid;
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
-		title = _("Ti_me");
+		title = _("Tim_e");
 		key = "Time";
 		break;
 #if 0
@@ -1283,7 +1283,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 		sort_data->propid = RHYTHMDB_PROP_LAST_PLAYED;
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
-		title = _("L_ast Played");
+		title = _("_Last Played");
 		key = "LastPlayed";
 		break;
 	case RB_ENTRY_VIEW_COL_FIRST_SEEN:

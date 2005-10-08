@@ -254,7 +254,7 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 				     sourcelist->priv->expander_column);
 
 	gcolumn = gtk_tree_view_column_new ();
-	gtk_tree_view_column_set_title (gcolumn, _("_Source"));
+	gtk_tree_view_column_set_title (gcolumn, _("S_ource"));
 	gtk_tree_view_column_set_clickable (gcolumn, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), gcolumn);
 
