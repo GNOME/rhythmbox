@@ -28,8 +28,9 @@
 G_BEGIN_DECLS
 
 const char *	rb_file			(const char *filename);
-
 const char *	rb_dot_dir		(void);
+
+char *		rb_canonicalise_uri	(const char *uri);
 
 GnomeVFSResult	rb_uri_mkstemp		(const char *prefix, char **uri,
 					 GnomeVFSHandle **handle);

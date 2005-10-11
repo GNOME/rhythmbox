@@ -534,34 +534,19 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 			  const char *title,
 			  const char *genre, RBPlaylistManager *mgr)
 {
-	char *uri;
+	char *uri = rb_canonicalise_uri (uri_maybe);
 	gint entry_type;
 
-	if (uri_maybe[0] == '/') {
-		char *tmp = gnome_vfs_escape_string (uri_maybe);
-		uri = g_strconcat ("file://", tmp, NULL);
-		g_free (tmp);
-		if (uri == NULL) {
-			rb_debug ("Error processing absolute filename %s", uri_maybe);
-			return;
-		}
-	} else {
-		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri_maybe);
-		if (!vfsuri) {
-			rb_debug ("Error processing probable URI %s", uri_maybe);
-			return;
-		}
-		gnome_vfs_uri_unref (vfsuri);
-	}
+	g_return_if_fail (uri != NULL);
 
-	entry_type = rb_shell_guess_type_for_uri (mgr->priv->shell, uri_maybe);
+	entry_type = rb_shell_guess_type_for_uri (mgr->priv->shell, uri);
 	if (entry_type < 0) {
 		return;
 	}
 
 	rb_shell_add_uri (mgr->priv->shell,
 			  entry_type,
-			  uri_maybe,
+			  uri,
 			  title,
 			  genre,
 			  NULL);
@@ -571,9 +556,10 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 			mgr->priv->loading_playlist =
 				RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
 		}
-		rb_playlist_source_add_location (mgr->priv->loading_playlist,
-						 uri_maybe);
+		rb_playlist_source_add_location (mgr->priv->loading_playlist, uri);
 	}
+
+	g_free (uri);
 }
 
 static void

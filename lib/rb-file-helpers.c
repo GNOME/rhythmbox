@@ -33,6 +33,7 @@
 #include <unistd.h>
 
 #include "rb-file-helpers.h"
+#include "rb-debug.h"
 
 static GHashTable *files = NULL;
 
@@ -683,6 +684,43 @@ rb_uri_mkstemp (const char *prefix, char **uri_ret, GnomeVFSHandle **ret)
 	} else {
 		g_free (uri);
 	}
+	return result;
+}
+
+
+char *
+rb_canonicalise_uri (const char *uri)
+{
+	char *result = NULL;
+
+	if (uri[0] == '/') {
+		/* local path */
+		char *tmp;
+		result = gnome_vfs_make_path_name_canonical (uri);
+		tmp = gnome_vfs_escape_path_string (result);
+		g_free (result);
+		result = g_strconcat ("file://", tmp, NULL);
+		g_free (tmp);
+	} else  if (g_str_has_prefix (uri, "file://")) {
+	    	/* local file, rhythmdb wants this path escaped */
+		char *tmp1, *tmp2;
+		tmp1  = gnome_vfs_unescape_string (uri + 7, NULL);  /* ignore "file://" */
+		tmp2 = gnome_vfs_escape_path_string (tmp1);
+		g_free (tmp1);
+		result = g_strconcat ("file://", tmp2, NULL); /* re-add scheme */
+		g_free (tmp2);
+	} else {
+		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+
+		if (vfsuri != NULL) {
+			/* non-local uri, leave as-is */
+			gnome_vfs_uri_unref (vfsuri);
+			result = g_strdup (uri);
+		} else {
+			rb_debug ("Error processing probable URI %s", uri);
+		}
+	}
+
 	return result;
 }
 

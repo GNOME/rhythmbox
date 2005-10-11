@@ -1,5 +1,15 @@
 2005-10-11  James Livingston  <jrl@ids.org.au>
 
+	* lib/rb-file-helpers.c: (rb_canonicalise_uri):
+	* lib/rb-file-helpers.h: add a function to turn uris into our
+	canonical path-escaped form
+	* shell/rb-playlist-manager.c: (handle_playlist_entry_cb): use the
+	above function when import playlists. This will fix the problem of
+	duplicate entries due to different representations of the uri (bug
+	158211).
+
+2005-10-11  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_get_visibility),
 	(rb_shell_set_visibility), (rb_shell_window_delete_cb),
 	(rb_shell_toggle_visibility), (rb_shell_set_visibility_impl): Fix
