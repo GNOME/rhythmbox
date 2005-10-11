@@ -389,6 +389,8 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 
 	g_signal_connect_object (G_OBJECT (source), "notify::name", G_CALLBACK (name_notify_cb), sourcelist, 0);
 	g_signal_connect_object (G_OBJECT (source), "notify::visibility", G_CALLBACK (visibility_notify_cb), sourcelist, 0);
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
 typedef struct _SourcePath {
@@ -517,6 +519,8 @@ rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
         g_signal_handlers_disconnect_by_func (G_OBJECT (source),
 					      G_CALLBACK (visibility_notify_cb),
                                              sourcelist);
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
 void
@@ -643,6 +647,8 @@ name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 				    &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_NAME, name, -1);
 	}
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 	
 static void
@@ -662,6 +668,8 @@ visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 		sourcelist->priv->child_source_count += visible ? 1 : -1;
 		rb_sourcelist_update_expander_visibility (sourcelist);
 	}
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
 static void
@@ -708,6 +716,8 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 	gtk_tree_path_free (path);
 
 	g_object_set (G_OBJECT (renderer), "editable", FALSE, NULL);
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
 static void

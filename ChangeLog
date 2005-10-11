@@ -1,5 +1,12 @@
 2005-10-11  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-sourcelist.c: (rb_sourcelist_append),
+	(rb_sourcelist_remove), (name_notify_cb), (visibility_notify_cb),
+	(source_name_edited_cb): Ask for the columns to be resized when a
+	source is added, deleted or changes name.
+
+2005-10-11  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (add_thread_main), (rhythmdb_add_uri): only
 	create a thread when processing a directory. This stops up created one
 	thread for each file in a playlist we're trying to load. Closes
