@@ -1,3 +1,15 @@
+2005-10-11  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell.c: (rb_shell_get_visibility),
+	(rb_shell_set_visibility), (rb_shell_window_delete_cb),
+	(rb_shell_toggle_visibility), (rb_shell_set_visibility_impl): Fix
+	window hiding so that Alt-F4 works again.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_album_sort_func),
+	(rb_entry_view_artist_sort_func), (rb_entry_view_genre_sort_func),
+	(rb_entry_view_string_sort_func): Stop some crashes where a string
+	property was set to NULL.
+
 2005-10-10  James Livingston  <jrl@ids.org.au>
 
 	* doc/reference/rhythmbox.types: fix gtk-doc generation

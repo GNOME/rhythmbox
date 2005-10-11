@@ -1134,6 +1134,11 @@ rb_shell_window_state_cb (GtkWidget *widget,
 static gboolean
 rb_shell_get_visibility (RBShell *shell)
 {
+	rb_debug ("FOO %d %d %d",
+		GTK_WIDGET_REALIZED (shell->priv->window),
+		!shell->priv->iconified,
+		gtk_window_is_active (GTK_WINDOW (shell->priv->window)));
+
 	return GTK_WIDGET_REALIZED (shell->priv->window)
 		&& !shell->priv->iconified
 		&& gtk_window_is_active (GTK_WINDOW (shell->priv->window));
@@ -1156,12 +1161,13 @@ idle_hide_mainwindow (gpointer data)
 }
 
 static void
-rb_shell_set_visibility (RBShell *shell, gboolean visible)
+rb_shell_set_visibility (RBShell *shell, gboolean visible, gboolean force)
 {
 	gboolean current_visible;
 
+
 	current_visible = rb_shell_get_visibility (shell);
-	if (visible == current_visible)
+	if (!force && visible == current_visible)
 		return;
 
 	/* FIXME - see below */
@@ -1226,7 +1232,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 {
 	if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
 		rb_debug ("window deleted, hiding");
-		rb_shell_set_visibility (shell, FALSE);
+		rb_shell_set_visibility (shell, FALSE, TRUE);
 	} else {
 		rb_debug ("no tray icon to minimize to, quitting");
 		rb_shell_quit (shell);
@@ -1681,7 +1687,7 @@ rb_shell_toggle_visibility (RBShell *shell)
 
 	visible = rb_shell_get_visibility (shell);
 
-	rb_shell_set_visibility (shell, !visible);
+	rb_shell_set_visibility (shell, !visible, FALSE);
 }
 
 static void
@@ -2433,7 +2439,7 @@ static void
 rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible)
 {
 	RBShell *shell = RB_SHELL (proxy);
-	rb_shell_set_visibility (shell, visible);
+	rb_shell_set_visibility (shell, visible, FALSE);
 }
 
 static gboolean

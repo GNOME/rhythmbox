@@ -743,11 +743,24 @@ static gint
 rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
+	const char *a_val;
+	const char *b_val;
 	gint ret;
 
 	/* Sort by album name */
-	ret = strcmp (rb_refstring_get_sort_key (a->album),
-		      rb_refstring_get_sort_key (b->album));
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			ret = 0;
+		else
+			ret = -1;
+	} else if (b_val == NULL)
+		ret = 1;
+	else
+		ret = strcmp (a_val, b_val);
+
 	if (ret != 0)
 		return ret;
 
@@ -760,36 +773,72 @@ rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 		return (a->tracknum < b->tracknum ? -1 : 1);
 
 	/* And finally by title */
-	return strcmp (rb_refstring_get_sort_key (a->title),
-		       rb_refstring_get_sort_key (b->title));
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			return 0;
+		else
+			return -1;
+	} else if (b_val == NULL)
+		return 1;
+	else
+		return strcmp (a_val, b_val);
 }
 
 static gint
 rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				RBEntryView *view)
 {
+	const char *a_val;
+	const char *b_val;
 	gint ret;
 
-	ret = strcmp (rb_refstring_get_sort_key (a->artist),
-		      rb_refstring_get_sort_key (b->artist));
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+	b_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			ret = 0;
+		else
+			ret = -1;
+	} else if (b_val == NULL)
+		ret = 1;
+	else
+		ret = strcmp (a_val, b_val);
+
 	if (ret != 0)
 		return ret;
-
-	return rb_entry_view_album_sort_func (a, b, view);
+	else
+		return rb_entry_view_album_sort_func (a, b, view);
 }
 
 static gint
 rb_entry_view_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
+	const char *a_val;
+	const char *b_val;
 	gint ret;
 
-	ret = strcmp (rb_refstring_get_sort_key (a->genre),
-		      rb_refstring_get_sort_key (b->genre));
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_GENRE_SORT_KEY);
+	b_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_GENRE_SORT_KEY);
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			ret = 0;
+		else
+			ret = -1;
+	} else if (b_val == NULL)
+		ret = 1;
+	else
+		ret = strcmp (a_val, b_val);
+
 	if (ret != 0)
 		return ret;
-
-	return rb_entry_view_artist_sort_func (a, b, view);
+	else
+		return rb_entry_view_artist_sort_func (a, b, view);
 }
 
 static gint
@@ -834,15 +883,20 @@ rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				struct RBEntryViewCellDataFuncData *data)
 {
 	const char *a_val;
-	const char *b_val;	
-	gint ret;
+	const char *b_val;
 
 	a_val = rhythmdb_entry_get_string (a, data->propid);
 	b_val = rhythmdb_entry_get_string (b, data->propid);
 
-	ret = strcmp (a_val, b_val);
-
-	return ret;
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			return 0;
+		else
+			return -1;
+	} else if (b_val == NULL)
+		return 1;
+	else
+		return strcmp (a_val, b_val);
 }
 
 static void
