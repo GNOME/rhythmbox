@@ -1,5 +1,15 @@
 2005-10-11  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (add_thread_main), (rhythmdb_add_uri): only
+	create a thread when processing a directory. This stops up created one
+	thread for each file in a playlist we're trying to load. Closes
+	317850.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_artist_sort_func): fix a
+	typo that made sort-by-artist not work correctly.
+
+2005-10-11  James Livingston  <jrl@ids.org.au>
+
 	* doc/reference/Makefile.am: Make gtk-doc generation work when daap
 	support is enabled
 

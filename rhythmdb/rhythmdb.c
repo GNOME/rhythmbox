@@ -1570,18 +1570,11 @@ queue_stat_uri (const char *uri, RhythmDB *db)
 static gpointer
 add_thread_main (struct RhythmDBAddThreadData *data)
 {
-	char  *realuri;
 	struct RhythmDBEvent *result;
 
-	realuri = rb_uri_resolve_symlink (data->uri);
+	rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri,
+				   &data->db->priv->exiting, data->db);
 
-	if (rb_uri_is_directory (realuri))
-		rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri,
-					   &data->db->priv->exiting, data->db);
-	else 
-		queue_stat_uri (realuri, data->db);
-	
-	g_free (realuri);
 	rb_debug ("exiting");
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
@@ -1763,11 +1756,18 @@ action_thread_main (RhythmDB *db)
 void
 rhythmdb_add_uri (RhythmDB *db, const char *uri)
 {
-	struct RhythmDBAddThreadData *data = g_new0 (struct RhythmDBAddThreadData, 1);
-	data->db = db;
-	data->uri = g_strdup (uri);
+	char  *realuri = rb_uri_resolve_symlink (uri);
 
-	rhythmdb_thread_create (db, (GThreadFunc) add_thread_main, data);
+	if (rb_uri_is_directory (realuri)) {
+		struct RhythmDBAddThreadData *data = g_new0 (struct RhythmDBAddThreadData, 1);
+		data->db = db;
+		data->uri = realuri;
+
+		rhythmdb_thread_create (db, (GThreadFunc) add_thread_main, data);
+	} else {
+		queue_stat_uri (realuri, db);
+		g_free (realuri);
+	}
 }
 
 #if 0
