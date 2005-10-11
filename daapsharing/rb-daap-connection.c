@@ -1206,11 +1206,11 @@ rb_daap_connection_new (const gchar *name,
 		rb_debug ("Could not get DAAP song listing");
 		goto error_out;
 	}
+	/* now that we have gotten the song listing, creation shouldn't fail */
 
 	rb_debug ("Getting DAAP playlists");
 	if (connection_get_playlists (connection) == FALSE) {
-		rb_debug ("Could not get DAAP playlsits");
-		goto error_out;
+		rb_debug ("Could not get DAAP playlists");
 	}
 	
 	rb_debug ("Successfully created DAAP connection");

@@ -1,5 +1,11 @@
 2005-10-11  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-connection.c: (rb_daap_connection_new): Don't
+	destroy the connection when retrieving the playlists fails, because
+	tracks have already been added. Closes 318380.
+
+2005-10-11  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-sourcelist.c: (rb_sourcelist_append),
 	(rb_sourcelist_remove), (name_notify_cb), (visibility_notify_cb),
 	(source_name_edited_cb): Ask for the columns to be resized when a
