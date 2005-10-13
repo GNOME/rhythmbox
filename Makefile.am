@@ -2,7 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.7
 
-DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
+DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install --enable-gtk-doc
+distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper'
 
 SUBDIRS = macros lib metadata player rhythmdb widgets sources iradio remote daapsharing shell data po help tests doc
 

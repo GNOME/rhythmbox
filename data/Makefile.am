@@ -60,4 +60,4 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(iradio_DATA)	    \
 		generate-keys.sh
 
-CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server
+CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server org.gnome.Rhythmbox.service

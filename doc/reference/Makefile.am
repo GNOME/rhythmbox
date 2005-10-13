@@ -36,6 +36,7 @@ IGNORE_HFILES= \
 
 INCLUDES=\
 	-I$(top_srcdir) \
+	-I$(top_builddir) \
 	-I$(top_srcdir)/sources \
 	-I$(top_srcdir)/shell \
 	-I$(top_srcdir)/rhythmdb \
