@@ -187,6 +187,7 @@ enum
 	COMPLETE,
 	ENTRY_PROP_CHANGED,
 	ENTRY_REMOVED,
+	NON_ENTRY_DROPPED,
 	LAST_SIGNAL
 };
 
@@ -285,6 +286,14 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      NULL, NULL,
 			      rhythmdb_marshal_VOID__POINTER,
 			      G_TYPE_NONE, 1, G_TYPE_POINTER);
+	rhythmdb_query_model_signals[NON_ENTRY_DROPPED] =
+		g_signal_new ("non-entry-dropped",
+			      RHYTHMDB_TYPE_QUERY_MODEL,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, non_entry_dropped),
+			      NULL, NULL,
+			      rhythmdb_marshal_VOID__POINTER,
+			      G_TYPE_NONE, 1, G_TYPE_STRING);
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -1232,9 +1241,13 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 			entry = rhythmdb_entry_lookup_by_location (model->priv->db,
 								   strv[i]);
 
-			if (entry == NULL)
+			if (entry == NULL) {
 				rhythmdb_add_uri (model->priv->db, strv[i]);
-			else {
+
+				g_signal_emit (G_OBJECT (model),
+					       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
+					       0, g_strdup (strv[i]));
+			} else {
 				GSequencePtr old_ptr = g_hash_table_lookup (model->priv->reverse_map,
 									    entry);
 

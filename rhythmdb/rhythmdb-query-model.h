@@ -56,6 +56,7 @@ typedef struct
 	void	(*complete)		(void);
 	void	(*entry_prop_changed)	(RhythmDBEntry *entry, RhythmDBPropType prop,
 					 const GValue *old, const GValue *new);
+	void    (*non_entry_dropped)    (const char *uri);
 	void    (*entry_removed)        (RhythmDBEntry *entry);
 
 } RhythmDBQueryModelClass;

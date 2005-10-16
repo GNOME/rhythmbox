@@ -108,6 +108,13 @@ static void rb_playlist_source_do_query (RBPlaylistSource *source,
 					 guint limit_count,
 					 guint limit_mb,
 					 guint limit_time);
+static void rb_playlist_source_row_inserted (GtkTreeModel *treemodel,
+					     GtkTreePath *path,
+					     GtkTreeIter *iter,
+					     RBPlaylistSource *source);
+static void rb_playlist_source_non_entry_dropped (GtkTreeModel *model,
+						  const char *uri,
+						  RBPlaylistSource *source);
 
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
 #define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
@@ -300,6 +307,14 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 		
 	source->priv->songs = rb_entry_view_new (source->priv->db, NULL, TRUE, TRUE);
+
+	/* watch these to find out when things were dropping into the entry view */
+	g_signal_connect_object (G_OBJECT (source->priv->model), "row-inserted",
+			 G_CALLBACK (rb_playlist_source_row_inserted),
+			 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->model), "non-entry-dropped",
+			 G_CALLBACK (rb_playlist_source_non_entry_dropped),
+			 source, 0);
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
 
@@ -732,28 +747,43 @@ rb_playlist_source_drop_cb (GtkWidget *widget,
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
+
+
+static void
+rb_playlist_source_add_location_swapped (const char *uri, RBPlaylistSource *source)
+{
+	rb_playlist_source_add_location (source, uri);
+}
+
 void
 rb_playlist_source_add_location (RBPlaylistSource *source,
 				 const char *location)
 {
 	RhythmDBEntry *entry;
 
-	if (g_hash_table_lookup (source->priv->entries, location)) {
-		return;
-	}
+	if (rb_uri_is_directory (location)) {
+		rb_uri_handle_recursively (location,
+					   (GFunc) rb_playlist_source_add_location_swapped,
+					   NULL,
+					   source);
+	} else {
+		if (g_hash_table_lookup (source->priv->entries, location)) {
+			return;
+		}
 
-	g_hash_table_insert (source->priv->entries,
-			     g_strdup (location), GINT_TO_POINTER (1));
+		g_hash_table_insert (source->priv->entries,
+				     g_strdup (location), GINT_TO_POINTER (1));
 
-	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-	if (entry)
-		rhythmdb_entry_ref (source->priv->db, entry);
+		entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
+		if (entry)
+			rhythmdb_entry_ref (source->priv->db, entry);
 
-	if (entry != NULL) {
-		rhythmdb_query_model_add_entry (source->priv->model, entry);
-		rhythmdb_entry_unref (source->priv->db, entry);
+		if (entry != NULL) {
+			rhythmdb_query_model_add_entry (source->priv->model, entry);
+			rhythmdb_entry_unref (source->priv->db, entry);
 
-		source->priv->dirty = TRUE;
+			source->priv->dirty = TRUE;
+		}
 	}
 }
 
@@ -1110,4 +1140,25 @@ rb_playlist_source_do_query (RBPlaylistSource *source,
 
 	/* emit notification the the property has changed */
 	g_object_notify (G_OBJECT (source), "query-model");
+}
+
+static void
+rb_playlist_source_non_entry_dropped (GtkTreeModel *model,
+				      const char *uri,
+				      RBPlaylistSource *source)
+{
+	rb_playlist_source_add_location (source, uri);
+}
+
+static void
+rb_playlist_source_row_inserted (GtkTreeModel *model,
+				 GtkTreePath *path,
+				 GtkTreeIter *iter,
+				 RBPlaylistSource *source)
+{
+	RhythmDBEntry *entry;
+
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
+
+	rb_playlist_source_add_location (source, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 }

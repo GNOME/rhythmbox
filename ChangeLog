@@ -1,5 +1,21 @@
 2005-10-16  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_drag_data_received): 
+	* rhythmdb/rhythmdb-query-model.h: Allow sources to be
+	notified when things are dropped into the entry view.
+	
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor),
+	(rb_playlist_source_add_location_swapped),
+	(rb_playlist_source_add_location), (rb_playlist_source_do_query),
+	(rb_playlist_source_non_entry_dropped),
+	(rb_playlist_source_row_inserted): Use the new signal so that dropping
+	things onto a playlist's entry view work correctly, and doesn't cause
+	crashes. Allow folders to be dropped as well. (Closes 318308)
+
+2005-10-16  James Livingston  <jrl@ids.org.au>
+
 	* NEWS: Update some more
 
 	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
