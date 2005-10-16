@@ -103,9 +103,6 @@ static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell);
 static void rb_shell_sync_paned (RBShell *shell);
-static void paned_size_allocate_cb (GtkWidget *widget,
-				    GtkAllocation *allocation,
-				    RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
 						    RhythmDBEntryType type);
@@ -190,10 +187,6 @@ static void smalldisplay_changed_cb (GConfClient *client,
 				     guint cnxn_id,
 				     GConfEntry *entry,
 				     RBShell *shell);
-static void paned_changed_cb (GConfClient *client,
-			      guint cnxn_id,
-			      GConfEntry *entry,
-			      RBShell *shell);
 static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBSource *source,
 					 GtkSelectionData *data,
@@ -248,6 +241,9 @@ static gboolean save_yourself_cb (GnomeClient *client,
                                   GnomeInteractStyle interact_style,
                                   gboolean fast,
                                   RBShell *shell);
+static void paned_size_allocate_cb (GtkWidget *widget,
+				    GtkAllocation *allocation,
+				    RBShell *shell);
 
 static void session_die_cb (GnomeClient *client, RBShell *shell);
 static void rb_shell_session_init (RBShell *shell);
@@ -332,7 +328,8 @@ struct RBShellPrivate
 
 	guint sourcelist_visibility_notify_id;
 	guint smalldisplay_notify_id;
-	guint paned_changed_notify_id;
+
+	gint paned_position;
 };
 
 static GtkActionEntry rb_shell_actions [] =
@@ -759,7 +756,6 @@ rb_shell_finalize (GObject *object)
 	
 	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
-	eel_gconf_notification_remove (shell->priv->paned_changed_notify_id);
 
 	rb_debug ("shutting down DB");
 	rhythmdb_shutdown (shell->priv->db);
@@ -929,8 +925,8 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
-	g_signal_connect_object (G_OBJECT (shell->priv->notebook),
-				 "size_allocate",
+	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist),
+				 "size-allocate",
 				 G_CALLBACK (paned_size_allocate_cb),
 				 shell, 0);
 
@@ -938,7 +934,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), shell->priv->notebook);
 
 	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), 
-			 shell->priv->sourcelist, TRUE, TRUE);
+			 shell->priv->sourcelist, FALSE, TRUE);
 	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
 
 	vbox = gtk_vbox_new (FALSE, 0);
@@ -961,10 +957,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->smalldisplay_notify_id =
 		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
 				    (GConfClientNotifyFunc) smalldisplay_changed_cb,
-				    shell);
-	shell->priv->paned_changed_notify_id =
-		eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
-				    (GConfClientNotifyFunc) paned_changed_cb,
 				    shell);
 
 	rb_debug ("shell: syncing with gconf");
@@ -1958,24 +1950,10 @@ smalldisplay_changed_cb (GConfClient *client,
 static void
 rb_shell_sync_paned (RBShell *shell)
 {
-	int actual_width, default_width, pos;
-	gboolean maximized;
-
-	maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
-	pos = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
-
-	rb_debug ("syncing paned to %d", pos);
-
-	if (pos > 0) {
-		if (maximized) {
-			gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
-			default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
-			if (actual_width != default_width)
-				pos = pos * (float)actual_width/(float)default_width + 1;            
-		}
-		gtk_paned_set_position (GTK_PANED (shell->priv->paned),
-					pos);
-	}
+	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+	
+	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
+				shell->priv->paned_position);
 }
 
 static void
@@ -1983,31 +1961,9 @@ paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBShell *shell)
 {
-	int actual_width, default_width, pos;
-	gboolean maximized;
-
-	rb_debug ("paned size allocate");
-
-	maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
-	pos = gtk_paned_get_position (GTK_PANED (shell->priv->paned));
-    
-	if (maximized) {
-		gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
-		default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
-		pos = pos * (float)default_width/(float)actual_width;
-	}
-    
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, pos); 
-}
-
-static void
-paned_changed_cb (GConfClient *client,
-		  guint cnxn_id,
-		  GConfEntry *entry,
-		  RBShell *shell)
-{
-	rb_debug ("paned changed");
-	rb_shell_sync_paned (shell);
+	shell->priv->paned_position = gtk_paned_get_position (GTK_PANED (shell->priv->paned));
+	rb_debug ("paned position %d", shell->priv->paned_position);
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, shell->priv->paned_position);
 }
 
 static void

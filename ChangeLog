@@ -1,3 +1,15 @@
+2005-10-16  James Livingston  <jrl@ids.org.au>
+
+	* NEWS: Update some more
+
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_sync_paned), (paned_size_allocate_cb): Don't do funky things
+	with the paned size, so that it doesn't move when the window is
+	maximised/restored. Closes bug 315852.
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_constructor): Don't
+	display the playcount column, as it's useless (it never get changed).
+
 2005-10-14  James Livingston  <jrl@ids.org.au>
 
 	* Makefile.am:
