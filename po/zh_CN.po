@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-15 03:49+0200\n"
-"PO-Revision-Date: 2005-10-15 16:43+0800\n"
+"POT-Creation-Date: 2005-10-18 11:56+0200\n"
+"PO-Revision-Date: 2005-10-18 19:04+0800\n"
 "Last-Translator: Yan Shuangchun <yahzee@d3eye.com>\n"
 "Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr ""
 #: ../rhythmdb/rhythmdb.c:1013 ../shell/rb-shell-player.c:2261
 #: ../sources/rb-ipod-source.c:152 ../sources/rb-iradio-source.c:245
 #: ../sources/rb-iradio-source.c:246 ../sources/rb-iradio-source.c:247
-#: ../sources/rb-iradio-source.c:465 ../sources/rb-playlist-source.c:469
+#: ../sources/rb-iradio-source.c:465 ../sources/rb-playlist-source.c:484
 #: ../widgets/rb-entry-view.c:997 ../widgets/rb-entry-view.c:1023
 #: ../widgets/rb-song-info.c:692 ../widgets/rb-song-info.c:740
 msgid "Unknown"
@@ -67,8 +67,8 @@ msgid ""
 "Could not start browsing for music servers on your network.  Rhythmbox will "
 "continue to function, without this feature.  Check your %s installation"
 msgstr ""
-"无法开始浏览您网络中的音乐服务器。Rhythmbox 可以不使用此特性继续工作。"
-"请检查您的 %s 安装"
+"无法开始浏览您网络中的音乐服务器。Rhythmbox 可以不使用此特性继续工作。请检查"
+"您的 %s 安装"
 
 #: ../daapsharing/rb-daap-sharing.c:65
 #, c-format
@@ -348,8 +348,8 @@ msgstr "输入您想要添加的文件的位置(URI)(_L)："
 msgid "Open from URI"
 msgstr "从 URI 打开"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:820
-#: ../shell/rb-shell.c:1588
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:816
+#: ../shell/rb-shell.c:1581
 msgid "Music Player"
 msgstr "音乐播放器"
 
@@ -480,7 +480,9 @@ msgstr "播放列表有 %s 分钟长。这超过了驱动器中介质的 %s 分�
 msgid ""
 "There was an error writing to the CD:\n"
 "%s"
-msgstr "写入 CD 时发生了错误：\n%s"
+msgstr ""
+"写入 CD 时发生了错误：\n"
+"%s"
 
 #: ../player/rb-recorder-gst.c:1310
 msgid "There was an error writing to the CD"
@@ -534,8 +536,8 @@ msgid ""
 "bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 "注册 shell 失败：%s\n"
-"这可能意味着您将 Rhythmbox 安装到了与 bonobo-activation 不同的前缀；"
-"此警告完全无害，但 IPC 无法工作。"
+"这可能意味着您将 Rhythmbox 安装到了与 bonobo-activation 不同的前缀；此警告完"
+"全无害，但 IPC 无法工作。"
 
 #: ../remote/bonobo/rb-remote-bonobo.c:976
 #: ../remote/bonobo/rb-remote-bonobo.c:985
@@ -810,7 +812,7 @@ msgstr "删除(_D)"
 msgid "Delete playlist"
 msgstr "删除播放列表"
 
-#: ../shell/rb-playlist-manager.c:165 ../shell/rb-shell.c:341
+#: ../shell/rb-playlist-manager.c:165 ../shell/rb-shell.c:338
 msgid "_Edit"
 msgstr "编辑(_E)"
 
@@ -852,7 +854,7 @@ msgstr "选择所有歌曲"
 
 #: ../shell/rb-shell-clipboard.c:93
 msgid "D_eselect All"
-msgstr "全部不选选(_E)"
+msgstr "全部不选(_E)"
 
 #: ../shell/rb-shell-clipboard.c:94
 msgid "Deselect all songs"
@@ -1000,7 +1002,7 @@ msgstr "流意外结束！"
 msgid "Buffering"
 msgstr "正在缓存"
 
-#: ../shell/rb-shell-preferences.c:145 ../shell/rb-shell.c:1716
+#: ../shell/rb-shell-preferences.c:145 ../shell/rb-shell.c:1709
 msgid "Couldn't display help"
 msgstr "无法显示帮助"
 
@@ -1016,144 +1018,150 @@ msgstr "常规"
 msgid "Sharing"
 msgstr "共享"
 
-#: ../shell/rb-shell.c:340
+#: ../shell/rb-shell.c:337
 msgid "_Music"
 msgstr "音乐(_M)"
 
-#: ../shell/rb-shell.c:342
+#: ../shell/rb-shell.c:339
 msgid "_View"
 msgstr "查看(_V)"
 
-#: ../shell/rb-shell.c:343
+#: ../shell/rb-shell.c:340
 msgid "_Control"
 msgstr "控制(_C)"
 
-#: ../shell/rb-shell.c:344
+#: ../shell/rb-shell.c:341
 msgid "_Help"
 msgstr "帮助(_H)"
 
-#: ../shell/rb-shell.c:346
+#: ../shell/rb-shell.c:343
 msgid "New _Internet Radio Station"
 msgstr "新建 Internet 电台(_I)"
 
-#: ../shell/rb-shell.c:347
+#: ../shell/rb-shell.c:344
 msgid "Create a new Internet Radio station"
 msgstr "创建一个新的 Internet 电台"
 
-#: ../shell/rb-shell.c:350
+#: ../shell/rb-shell.c:347
 msgid "_Import Folder..."
 msgstr "导入文件夹(_I)..."
 
-#: ../shell/rb-shell.c:351
+#: ../shell/rb-shell.c:348
 msgid "Choose folder to be added to the Library"
 msgstr "选择将要加入库的文件夹"
 
-#: ../shell/rb-shell.c:353
+#: ../shell/rb-shell.c:350
 msgid "Import _File..."
 msgstr "导入文件(_F)..."
 
-#: ../shell/rb-shell.c:354
+#: ../shell/rb-shell.c:351
 msgid "Choose file to be added to the Library"
 msgstr "选择将要加入库的文件"
 
-#: ../shell/rb-shell.c:356
+#: ../shell/rb-shell.c:353
 msgid "Import _Audio CD..."
 msgstr "导入音频 CD(_A)..."
 
-#: ../shell/rb-shell.c:357
+#: ../shell/rb-shell.c:354
 msgid "Extract and import songs from a CD"
 msgstr "从一张 CD 提取并导入歌曲"
 
-#: ../shell/rb-shell.c:359
+#: ../shell/rb-shell.c:356
 msgid "_About"
 msgstr "关于(_A)"
 
-#: ../shell/rb-shell.c:360
+#: ../shell/rb-shell.c:357
 msgid "Show information about the music player"
 msgstr "显示关于音乐播放器的信息"
 
-#: ../shell/rb-shell.c:362
+#: ../shell/rb-shell.c:359
 msgid "_Contents"
-msgstr "内容(_C)"
+msgstr "目录(_C)"
 
-#: ../shell/rb-shell.c:363
+#: ../shell/rb-shell.c:360
 msgid "Display music player help"
 msgstr "显示音乐播放器帮助"
 
-#: ../shell/rb-shell.c:365
+#: ../shell/rb-shell.c:362
 msgid "_Close"
 msgstr "关闭(_C)"
 
-#: ../shell/rb-shell.c:366
+#: ../shell/rb-shell.c:363
 msgid "Hide the music player window"
 msgstr "隐藏音乐播放器窗口"
 
-#: ../shell/rb-shell.c:368
+#: ../shell/rb-shell.c:365
 msgid "_Quit"
 msgstr "退出(_Q)"
 
-#: ../shell/rb-shell.c:369
+#: ../shell/rb-shell.c:366
 msgid "Quit the music player"
 msgstr "退出音乐播放器"
 
-#: ../shell/rb-shell.c:371
+#: ../shell/rb-shell.c:368
 msgid "Prefere_nces"
 msgstr "首选项(_N)"
 
-#: ../shell/rb-shell.c:372
+#: ../shell/rb-shell.c:369
 msgid "Edit music player preferences"
 msgstr "编辑音乐播放器首选项"
 
-#: ../shell/rb-shell.c:374
+#: ../shell/rb-shell.c:371
 msgid "Show _All"
 msgstr "全部显示(_A)"
 
-#: ../shell/rb-shell.c:375
+#: ../shell/rb-shell.c:372
 msgid "Show all items in this music source"
 msgstr "显示此音乐源中的全部项目"
 
-#: ../shell/rb-shell.c:377
+#: ../shell/rb-shell.c:374
 msgid "_Jump to Playing Song"
 msgstr "跳到正在播放的歌曲(_J)"
 
-#: ../shell/rb-shell.c:378
+#: ../shell/rb-shell.c:375
 msgid "Scroll the view to the currently playing song"
 msgstr "将视图滚动到当前正在播放的歌曲"
 
-#: ../shell/rb-shell.c:380
+#: ../shell/rb-shell.c:377
 msgid "_Disconnect"
 msgstr "断开连接(_D)"
 
-#: ../shell/rb-shell.c:381
+#: ../shell/rb-shell.c:378
 msgid "Disconnect from selected source"
 msgstr "从选中的源断开"
 
-#: ../shell/rb-shell.c:388
+#: ../shell/rb-shell.c:385
 msgid "Source _List"
 msgstr "源列表(_L)"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:386
 msgid "Change the visibility of the source list"
 msgstr "更改来源列表的可视性"
 
-#: ../shell/rb-shell.c:391
+#: ../shell/rb-shell.c:388
 msgid "_Small Display"
 msgstr "小巧显示界面(_S)"
 
-#: ../shell/rb-shell.c:392
+#: ../shell/rb-shell.c:389
 msgid "Make the main window smaller"
 msgstr "把主窗口变得小一点"
 
-#: ../shell/rb-shell.c:1489 ../widgets/rb-entry-view.c:1524
+#. Translators: Trackname by Artist
+#: ../shell/rb-shell.c:1480
+#, c-format
+msgid "%s by %s"
+msgstr "%2$s 的 %1$s"
+
+#: ../shell/rb-shell.c:1482 ../widgets/rb-entry-view.c:1524
 msgid "Now Playing"
 msgstr "正在播放"
 
-#: ../shell/rb-shell.c:1563 ../shell/rb-tray-icon.c:185
+#: ../shell/rb-shell.c:1556 ../shell/rb-tray-icon.c:185
 msgid "Not playing"
 msgstr "未播放"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1566
+#: ../shell/rb-shell.c:1559
 #, c-format
 msgid ""
 "%s\n"
@@ -1163,7 +1171,7 @@ msgstr ""
 "已暂停，%s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1570
+#: ../shell/rb-shell.c:1563
 #, c-format
 msgid ""
 "%s\n"
@@ -1173,74 +1181,74 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1604
+#: ../shell/rb-shell.c:1597
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s(已暂停)"
 
-#: ../shell/rb-shell.c:1656
+#: ../shell/rb-shell.c:1649
 msgid "translator_credits"
 msgstr "开源软件国际化之 GNOME 简体中文组"
 
-#: ../shell/rb-shell.c:1660
+#: ../shell/rb-shell.c:1653
 msgid "Maintainers:"
 msgstr "维护者："
 
-#: ../shell/rb-shell.c:1663
+#: ../shell/rb-shell.c:1656
 msgid "Former Maintainers:"
 msgstr "先前维护者："
 
-#: ../shell/rb-shell.c:1666
+#: ../shell/rb-shell.c:1659
 msgid "Contributors:"
 msgstr "贡献者："
 
-#: ../shell/rb-shell.c:1668
+#: ../shell/rb-shell.c:1661
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME 的音乐管理和回放软件。"
 
-#: ../shell/rb-shell.c:1776
+#: ../shell/rb-shell.c:1769
 msgid "Import Folder into Library"
 msgstr "将文件夹导入到库"
 
-#: ../shell/rb-shell.c:1798
+#: ../shell/rb-shell.c:1791
 msgid "Import File into Library"
 msgstr "将文件导入到库"
 
-#: ../shell/rb-shell.c:1832
+#: ../shell/rb-shell.c:1825
 msgid "CD Ripper not found"
 msgstr "未找到 CD 抓轨程序"
 
-#: ../shell/rb-shell.c:1833
+#: ../shell/rb-shell.c:1826
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "要提取 CD，您必须安装 Sound Juicer CD 抓轨软件包。"
 
-#: ../shell/rb-shell.c:1841
+#: ../shell/rb-shell.c:1834
 msgid "Couldn't run CD Ripper"
 msgstr "无法运行 CD 抓轨程序"
 
-#: ../shell/rb-shell.c:1842
+#: ../shell/rb-shell.c:1835
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "运行 sound-juicer 时发生了错误：%s"
 
-#: ../shell/rb-shell.c:2616 ../shell/rb-shell.c:2661
+#: ../shell/rb-shell.c:2573 ../shell/rb-shell.c:2618
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "未知的歌曲 URI：%s"
 
-#: ../shell/rb-shell.c:2670
+#: ../shell/rb-shell.c:2627
 #, c-format
 msgid "Unknown property %s"
 msgstr "未知属性 %s"
 
-#: ../shell/rb-shell.c:2680
+#: ../shell/rb-shell.c:2637
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "属性 %2$s 的类型 %1$s 无效"
 
 #: ../shell/rb-source-header.c:94
 msgid "_Browser"
-msgstr "浏览(_B)"
+msgstr "浏览器(_B)"
 
 #: ../shell/rb-source-header.c:95
 msgid "Change the visibility of the browser"
@@ -1387,11 +1395,11 @@ msgstr "库"
 msgid "Add Location"
 msgstr "添加位置"
 
-#: ../sources/rb-playlist-source.c:317
+#: ../sources/rb-playlist-source.c:332
 msgid "Tra_ck"
 msgstr "音轨(_C)"
 
-#: ../sources/rb-playlist-source.c:862
+#: ../sources/rb-playlist-source.c:892
 msgid "Couldn't save playlist"
 msgstr "无法保存播放列表"
 
@@ -1462,7 +1470,9 @@ msgstr "创建音频 CD 完成。"
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
-msgstr "创建音频 CD 完成。\n另外创建一份吗？"
+msgstr ""
+"创建音频 CD 完成。\n"
+"另外创建一份吗？"
 
 #: ../sources/rb-playlist-source-recorder.c:506
 msgid "Writing cancelled.  Try again?"
@@ -1668,6 +1678,8 @@ msgid ""
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
 msgstr ""
+"播放列表有 %s 分钟长。这超过了标准音频 CD 的长度。如果目标介质长于标准音频 CD，"
+"请将其插入驱动器，然后再试一次。"
 
 #: ../sources/rb-playlist-source-recorder.c:1534
 msgid "Playlist too long"
@@ -1675,14 +1687,14 @@ msgstr "播放列表太长"
 
 #: ../sources/rb-playlist-source-recorder.c:1546
 msgid "Could not find temporary space!"
-msgstr ""
+msgstr "找不到临时空间！"
 
 #: ../sources/rb-playlist-source-recorder.c:1547
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
 "required."
-msgstr ""
+msgstr "找不到足够的临时空间转换音轨，需要 %s MB。"
 
 #: ../sources/rb-source.c:602
 msgid "Not supported"
@@ -1724,11 +1736,11 @@ msgstr "通知"
 
 #: ../widgets/rb-cell-renderer-pixbuf.c:129
 msgid "Pixbuf Object"
-msgstr ""
+msgstr "像素缓存对象"
 
 #: ../widgets/rb-cell-renderer-pixbuf.c:130
 msgid "The pixbuf to render."
-msgstr ""
+msgstr "要渲染的像素缓存。"
 
 #: ../widgets/rb-druid.c:239
 msgid "Welcome to Rhythmbox"
@@ -1959,15 +1971,15 @@ msgstr "字母逆序(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:92
 msgid "W_ith more highly rated tracks first"
-msgstr ""
+msgstr "先显示评分最高的音轨(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:93
 msgid "W_ith more often played songs first"
-msgstr ""
+msgstr "先显示最常播放的音轨(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:94
 msgid "W_ith longer tracks first"
-msgstr ""
+msgstr "先显示最长的音轨(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "_In decreasing order"
@@ -1979,15 +1991,15 @@ msgstr "上次播放"
 
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "W_ith more recently played tracks first"
-msgstr ""
+msgstr "先显示最近播放的音轨(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Date Added"
-msgstr ""
+msgstr "添加的日期"
 
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "W_ith more recently added tracks first"
-msgstr ""
+msgstr "先显示最近添加的音轨(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:111
 msgid "contains"
@@ -2017,7 +2029,7 @@ msgstr "至多"
 #.
 #: ../widgets/rb-query-creator-properties.c:190
 msgid "in the last"
-msgstr "前"
+msgstr "在前"
 
 #.
 #. * Translators: this is the opposite of the above, and will match if not
@@ -2025,7 +2037,7 @@ msgstr "前"
 #.
 #: ../widgets/rb-query-creator-properties.c:196
 msgid "not in the last"
-msgstr ""
+msgstr "不在前"
 
 #: ../widgets/rb-query-creator-properties.c:210
 msgid "seconds"
