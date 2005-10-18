@@ -102,6 +102,11 @@ EXTRA_DIST += rb-shell.xml rb-shell-player.xml
 
 endif
 
+if USE_IPOD
+rhythmbox_LDADD += $(IPOD_LIBS)
+endif
+
+
 # i hate link order problems
 rhythmbox_LDADD += $(top_builddir)/remote/librbremote.la
 

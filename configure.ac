@@ -71,6 +71,7 @@ if test "x$with_ipod" != "xno"; then
 	if test x$enable_hal05 != xyes; then
 	   PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5 gnome-vfs-2.0 >= 2.7.4, enable_hal02=yes, enable_hal02=no)
 	fi
+	PKG_CHECK_MODULES(IPOD, libgpod-1.0)
 	if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
   	  enable_hal=yes
 	else
@@ -88,6 +89,10 @@ if test "x$with_ipod" != "xno"; then
 	      AC_DEFINE(HAVE_HAL_0_2, 1, [Define if you have HAL 0.2 or later])
 	   fi
 	fi
+	AC_SUBST(HAL_CFLAGS)
+	AC_SUBST(HAL_LIBS)
+	AC_SUBST(IPOD_CFLAGS)
+	AC_SUBST(IPOD_LIBS)
 fi			  
 AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
 

@@ -27,7 +27,6 @@
 
 #include <gtk/gtktreeview.h>
 #include <string.h>
-#include "itunesdb.h"
 #include "rhythmdb.h"
 #include <libgnome/gnome-i18n.h>
 #ifdef HAVE_HAL
@@ -36,11 +35,17 @@
 #endif
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
+#include <gpod/itdb.h>
 #include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
 #include "rb-debug.h"
+#include "rb-playlist-source.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
+
+static GObject *rb_ipod_source_constructor (GType type, guint n_construct_properties,
+			       GObjectConstructParam *construct_properties);
+static void rb_ipod_source_dispose (GObject *object);
 
 static GObject *rb_ipod_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties);
@@ -49,6 +54,7 @@ static void rb_ipod_source_dispose (GObject *object);
 static gboolean impl_show_popup (RBSource *source);
 static void rb_ipod_load_songs (RBiPodSource *source);
 static gchar *rb_ipod_get_mount_path (GnomeVFSVolume *volume);
+static void impl_delete_thyself (RBSource *source);
 
 #ifdef HAVE_HAL
 static gboolean hal_udi_is_ipod (const char *udi);
@@ -56,7 +62,7 @@ static gboolean hal_udi_is_ipod (const char *udi);
 
 typedef struct
 {
-	iPodParser *parser;
+	Itdb_iTunesDB *ipod_db;
 	gchar *ipod_mount_path;
 } RBiPodSourcePrivate;
 
@@ -76,6 +82,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	object_class->dispose = rb_ipod_source_dispose;
 
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
@@ -107,10 +114,10 @@ rb_ipod_source_dispose (GObject *object)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
 
-	if (priv->parser != NULL) {
-		ipod_parser_destroy (priv->parser);
-		priv->parser = NULL;
-	}
+ 	if (priv->ipod_db != NULL) {
+ 		itdb_free (priv->ipod_db);
+ 		priv->ipod_db = NULL;
+  	}
 
 	if (priv->ipod_mount_path) {
 		g_free (priv->ipod_mount_path);
@@ -157,52 +164,110 @@ entry_set_string_prop (RhythmDB *db, RhythmDBEntry *entry,
 	g_value_unset (&value);
 }
 
-#define MAX_SONGS_LOADED_AT_ONCE 250
+
+static char *
+ipod_path_to_uri (const char *mount_point, const char *ipod_path)
+{
+ 	char *rel_pc_path;
+ 	char *full_pc_path;
+ 	char *uri;
+	
+ 	rel_pc_path = g_strdup (ipod_path);	
+ 	itdb_filename_ipod2fs (rel_pc_path);
+ 	full_pc_path = g_build_filename (mount_point, rel_pc_path, NULL);
+ 	g_free (rel_pc_path);
+ 	uri = g_filename_to_uri (full_pc_path, NULL, NULL);
+ 	g_free (full_pc_path);
+ 	return uri;
+}
+
+static void
+add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
+{
+	RBShell *shell;
+	RBSource *playlist_source;
+	GList *it;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+
+	playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
+						   "name", playlist->name,
+						   "shell", shell,
+						   "visibility", TRUE,
+						   "is-local", FALSE,
+						   NULL));
+
+	for (it = playlist->members; it != NULL; it = it->next) {
+		Itdb_Track *song;
+		char *filename;
+
+		song = (Itdb_Track *)it->data;
+ 		filename = ipod_path_to_uri (priv->ipod_mount_path, 
+ 					    song->ipod_path);
+		rb_playlist_source_add_location (RB_PLAYLIST_SOURCE (playlist_source),
+						 filename);
+		g_free (filename);
+	}
+
+	rb_shell_append_source (shell, playlist_source, RB_SOURCE (source));
+	g_object_unref (G_OBJECT (shell));
+}
+
+
+static void
+load_ipod_playlists (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	GList *it;
+
+	for (it = priv->ipod_db->playlists; it != NULL; it = it->next) {
+		Itdb_Playlist *playlist;
+
+		playlist = (Itdb_Playlist *)it->data;
+		if (itdb_playlist_is_mpl (playlist)) {
+			continue;
+		}
+		if (playlist->is_spl) {
+			continue;
+		}
+
+		add_rb_playlist (source, playlist);
+	}
+
+}
 
 static gboolean
 load_ipod_db_idle_cb (RBiPodSource *source)
 {
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-	RhythmDBEntry *entry;
 	RBShell *shell;
 	RhythmDB *db;
-	int i;
-	RhythmDBEntryType entry_type;
+ 	GList *it;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+  
+  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+  	g_object_unref (G_OBJECT (shell));
+  
+  	g_assert (db != NULL);
+ 	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
+ 		Itdb_Track *song;
+ 		RhythmDBEntry *entry;
+		RhythmDBEntryType entry_type;
+ 		char *pc_path;
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+ 		song = (Itdb_Track *)it->data;
+  		
+  		/* Set URI */
+		g_object_get (G_OBJECT (source), "entry-type", &entry_type, 
+			      NULL);
 
-	g_assert (db != NULL);
-	g_assert (priv->parser != NULL);
-
-	for (i = 0; i < MAX_SONGS_LOADED_AT_ONCE; i++) {
-		gchar *pc_path, *pc_vfs_path;
-		gchar *mount_path;
-		iPodItem *item;
-		iPodSong *song;
-		
-		item = ipod_get_next_item (priv->parser);
-		if ((item == NULL) || (item->type != IPOD_ITEM_SONG)) {
-			ipod_item_destroy (item);
-			ipod_parser_destroy (priv->parser);
-			priv->parser = NULL;
-			g_object_unref (G_OBJECT (db));
-			return FALSE;
-		}
-		song = (iPodSong *)item->data;
-				
-		/* Set URI */
-		mount_path = priv->ipod_mount_path;
-		pc_path = itunesdb_get_track_name_on_ipod (mount_path, song);
-		pc_vfs_path = g_strdup_printf ("file://%s", pc_path);
-		g_free (pc_path);
-		entry = rhythmdb_entry_new (RHYTHMDB (db), 
-					    entry_type,
-					    pc_vfs_path);
-		g_free (pc_vfs_path);
-
+ 		pc_path = ipod_path_to_uri (priv->ipod_mount_path, 
+ 					    song->ipod_path);
+  		entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type,
+ 					    pc_path);
+ 		g_free (pc_path);
+  
 		rb_debug ("Adding %s from iPod", pc_path);
 
 		/* Set track number */
@@ -260,8 +325,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			g_value_unset (&value);
 		}
 		
-		/* Set title */
-		
+		/* Set title */		
 		entry_set_string_prop (RHYTHMDB (db), entry, 
 				       RHYTHMDB_PROP_TITLE, song->title);
 		
@@ -276,13 +340,13 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 				       RHYTHMDB_PROP_GENRE, song->genre);
 		
 		rhythmdb_commit (RHYTHMDB (db));
-
-
-		ipod_item_destroy (item);
+	
 	}
 
+	load_ipod_playlists (source);
+
 	g_object_unref (G_OBJECT (db));
-	return TRUE;
+	return FALSE;
 }
 
 static void
@@ -293,10 +357,11 @@ rb_ipod_load_songs (RBiPodSource *source)
 
 	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 	priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
-	g_object_unref (G_OBJECT (volume));
-	priv->parser = ipod_parser_new (priv->ipod_mount_path);
 
-	g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
+ 	priv->ipod_db = itdb_parse (priv->ipod_mount_path, NULL);
+	if (priv->ipod_db != NULL) {
+		g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
+	}
 }
 
 static gchar *
@@ -456,4 +521,15 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/iPodSourcePopup");
 	return TRUE;
+}
+
+static void
+impl_delete_thyself (RBSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	itdb_free (priv->ipod_db);
+	priv->ipod_db = NULL;
+
+	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }

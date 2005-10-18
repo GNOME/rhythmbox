@@ -1,5 +1,4 @@
 ## arch-tag: Automake rules for source object library
-
 noinst_LTLIBRARIES = libsources.la libsourcesimpl.la
 
 libsources_la_SOURCES = rb-source.c rb-source.h
@@ -47,9 +46,8 @@ libsourcesimpl_la_LDFLAGS = -export-dynamic
 if USE_IPOD
 libsourcesimpl_la_SOURCES +=         \
 	rb-ipod-source.c             \
-	rb-ipod-source.h	     \
-	itunesdb.c		     \
-	itunesdb.h
+	rb-ipod-source.h
+INCLUDES += -I$(top_srcdir)/sources/ipod $(IPOD_CFLAGS)
 endif
 
 if USE_CD_BURNER
