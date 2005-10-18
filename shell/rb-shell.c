@@ -1476,7 +1476,8 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 
 	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
 
-	notifytitle = g_strdup_printf ("%s by %s",
+	// Translators: Trackname by Artist
+	notifytitle = g_strdup_printf (_("%s by %s"),
 				       song.title, song.artist);
 	rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, notifytitle);
 	g_free (notifytitle);
