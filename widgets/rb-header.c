@@ -607,6 +607,12 @@ rb_header_sync (RBHeader *player)
 		rb_header_set_urldata (player, NULL, NULL);
 		rb_header_set_show_artist_album (player, FALSE);
 		rb_header_set_show_timeline (player, FALSE);
+
+		player->priv->slider_locked = TRUE;
+		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
+		player->priv->slider_locked = FALSE;
+		gtk_widget_set_sensitive (player->priv->scale, FALSE);
+		gtk_label_set_text (GTK_LABEL (player->priv->elapsed), "0:00");
 	}
 
 #if 0

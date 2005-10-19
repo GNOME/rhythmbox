@@ -1094,13 +1094,9 @@ do_next_idle (RBShellPlayer *player)
 	GError *error = NULL;
 	
 	if (!rb_shell_player_do_next (player, &error)) {
-		if (error->domain == RB_SHELL_PLAYER_ERROR
-		    && error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
-			rb_debug ("No next entry, stopping playback");
-			rb_shell_player_set_playing_source (player, NULL);
-			g_object_notify (G_OBJECT (player), "playing");
-		}
-		g_warning ("do_next_idle: Unhandled error: %s", error->message);
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			g_warning ("do_next_idle: Unhandled error: %s", error->message);
 	}
 
 	return FALSE;
@@ -1276,6 +1272,7 @@ rb_shell_player_do_previous (RBShellPlayer *player, GError **error)
 				     RB_SHELL_PLAYER_ERROR,
 				     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
 				     _("No previous song"));
+			rb_shell_player_set_playing_source (player, NULL);
 			return FALSE;
 		}
 		
@@ -1305,6 +1302,9 @@ rb_shell_player_do_next (RBShellPlayer *player, GError **error)
 				     RB_SHELL_PLAYER_ERROR,
 				     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
 				     _("No next song"));
+			rb_debug ("No previous entry, stopping playback");
+			rb_shell_player_set_playing_source (player, NULL);
+			g_object_notify (G_OBJECT (player), "playing");
 			return FALSE;
 		}
 		rb_shell_player_jump_to_current (player);
@@ -1312,7 +1312,7 @@ rb_shell_player_do_next (RBShellPlayer *player, GError **error)
 	return TRUE;
 }
 
-static void
+static gboolean
 rb_shell_player_do_previous_or_seek (RBShellPlayer *player, GError **error)
 {
 	rb_debug ("previous");
@@ -1326,37 +1326,63 @@ rb_shell_player_do_previous_or_seek (RBShellPlayer *player, GError **error)
 		rb_player_set_time (player->priv->mmplayer, 0);
 		rb_header_sync_time (player->priv->header_widget);
 	} else {
-		rb_shell_player_do_previous (player, NULL);
+		return rb_shell_player_do_previous (player, error);
 	}
+
+	return TRUE;
 }
 
 static void
 rb_shell_player_previous_button_cb (GtkButton *button,
 				    RBShellPlayer *player)
 {
-	rb_shell_player_do_previous_or_seek (player, NULL);
+	GError *error = NULL;
+	
+	if (!rb_shell_player_do_previous_or_seek (player, &error)) {
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			g_warning ("previos_button_cb: Unhandled error: %s", error->message);
+	}
 }
 
 static void
 rb_shell_player_next_button_cb (GtkButton *button,
 				RBShellPlayer *player)
 {
-	rb_shell_player_do_next (player, NULL);
+	GError *error = NULL;
+	
+	if (!rb_shell_player_do_next (player, &error)) {
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			g_warning ("next_button_cb: Unhandled error: %s", error->message);
+	}
+
 }
 
 static void
 rb_shell_player_cmd_previous (GtkAction *action,
 			      RBShellPlayer *player)
 {
-	rb_shell_player_do_previous_or_seek (player, NULL);
+	GError *error = NULL;
+	
+	if (!rb_shell_player_do_previous_or_seek (player, &error)) {
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			g_warning ("cmd_previous: Unhandled error: %s", error->message);
+	}
 }
 
 static void
 rb_shell_player_cmd_next (GtkAction *action,
 			  RBShellPlayer *player)
 {
-	rb_debug ("next");
-	rb_shell_player_do_next (player, NULL);
+	GError *error = NULL;
+	
+	if (!rb_shell_player_do_next (player, &error)) {
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			g_warning ("cmd_next: Unhandled error: %s", error->message);
+	}
 }
 
 void
@@ -2087,7 +2113,15 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 		}
 			break;
 		case RB_SOURCE_EOF_NEXT:
-			rb_shell_player_do_next (player, NULL);
+			{
+				GError *error = NULL;
+	
+				if (!rb_shell_player_do_next (player, &error)) {
+					if (error->domain != RB_SHELL_PLAYER_ERROR ||
+					    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+						g_warning ("eos_cb: Unhandled error: %s", error->message);
+				}
+			}
 			break;
 		}
 

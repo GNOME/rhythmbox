@@ -1,3 +1,16 @@
+2005-10-19  James Livingston  <jrl@ids.org.au>
+
+	Patch from Caio Marcelo <cmarcelo@gmail.com>
+
+	* shell/rb-shell-player.c: (do_next_idle),
+	(rb_shell_player_do_previous), (rb_shell_player_do_next),
+	(rb_shell_player_do_previous_or_seek),
+	(rb_shell_player_previous_button_cb),
+	(rb_shell_player_next_button_cb), (rb_shell_player_cmd_previous),
+	(rb_shell_player_cmd_next), (eos_cb):
+	* widgets/rb-header.c: (rb_header_sync): Stop playback when the
+	end of the playlist is reached.
+
 2005-10-19  Christopher Aillon  <caillon@redhat.com>
 
 	* lib/rb-thread.c: fix a few GSource leaks
