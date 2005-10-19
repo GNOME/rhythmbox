@@ -366,7 +366,8 @@ process_actions (gpointer data)
 	source = g_idle_source_new ();
 	g_source_set_callback (source, process_results, resultdata, free_results);
 	g_source_attach (source, thread->priv->target_context);
-	
+	g_source_unref (source);
+
 	return FALSE;
 }
 
@@ -385,6 +386,7 @@ rb_thread_push_action (RBThread *thread,
 
 		g_source_set_callback (source, process_actions, thread, NULL);
 		g_source_attach (source, thread->priv->context);
+		g_source_unref (source);
 		g_atomic_int_inc (&(thread->priv->action_queue_processors));
 	}
 }
@@ -408,7 +410,8 @@ rb_thread_terminate (RBThread *thread)
 	source = g_idle_source_new ();
 	g_source_set_callback (source, mainloop_quit_cb, thread, NULL);
 	g_source_attach (source, thread->priv->context);
-	
+	g_source_unref (source);
+
 	g_thread_join (thread->priv->thread);
 }
 
