@@ -48,6 +48,7 @@ INCLUDES=\
 	-I$(top_srcdir)/remote \
 	-I$(top_srcdir)/daapsharing \
 	$(DBUS_CFLAGS) \
+	$(IPOD_CFLAGS) \
 	$(RHYTHMBOX_CFLAGS)
 	
 GTKDOC_LIBS=\
@@ -68,6 +69,7 @@ GTKDOC_LIBS=\
 	$(DBUS_LIBS)					\
 	$(SOUP_LIBS)					\
 	$(MDNS_LIBS)					\
+	$(IPOD_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
 content_files =
