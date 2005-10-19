@@ -101,7 +101,7 @@ static gboolean rb_shell_window_configure_cb (GtkWidget *win,
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
-static void rb_shell_sync_window_state (RBShell *shell);
+static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
@@ -270,6 +270,17 @@ enum
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
+#define CONF_STATE_WINDOW_X_POSITION CONF_PREFIX "/state/window_x_position"
+#define CONF_STATE_WINDOW_Y_POSITION CONF_PREFIX "/state/window_y_position"
+
+
+G_DEFINE_TYPE_EXTENDED (RBShell, 
+                        rb_shell, 
+                        G_TYPE_OBJECT,
+                        0, 
+                        G_IMPLEMENT_INTERFACE (RB_TYPE_REMOTE_PROXY, 
+                                               rb_shell_remote_proxy_init));
+
 
 struct RBShellPrivate
 {
@@ -329,6 +340,15 @@ struct RBShellPrivate
 	guint sourcelist_visibility_notify_id;
 	guint smalldisplay_notify_id;
 
+	glong last_small_time; /* when we last changed small mode */
+	
+	/* Cached copies of the gconf keys.
+	 *
+	 * To avoid race conditions, the only time the keys are actually read is at startup
+	 */
+	guint window_width, window_height, small_width;
+	gboolean window_maximised, window_small;
+	gint window_x, window_y;
 	gint paned_position;
 };
 
@@ -392,53 +412,10 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 };
 static guint rb_shell_n_toggle_entries = G_N_ELEMENTS (rb_shell_toggle_entries);
 
-static GObjectClass *parent_class;
-
-GType
-rb_shell_get_type (void)
-{
-	static GType type = 0;
-                                                                              
-	if (type == 0)
-	{ 
-		static GTypeInfo info =
-		{
-			sizeof (RBShellClass),
-			NULL, 
-			NULL,
-			(GClassInitFunc) rb_shell_class_init, 
-			NULL,
-			NULL, 
-			sizeof (RBShell),
-			0,
-			(GInstanceInitFunc) rb_shell_init
-		};
-		
-		static const GInterfaceInfo rb_remote_proxy_info =
-		{
-			(GInterfaceInitFunc) rb_shell_remote_proxy_init,
-			NULL,
-			NULL
-		};
-
-		type = g_type_register_static (G_TYPE_OBJECT,
-					       "RBShell",
-					       &info, 0);
-
-		g_type_add_interface_static (type,
-					     RB_TYPE_REMOTE_PROXY,
-					     &rb_remote_proxy_info);
-	}
-
-	return type;
-}
-
 static void
 rb_shell_class_init (RBShellClass *klass)
 {
         GObjectClass *object_class = (GObjectClass *) klass;
-
-        parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rb_shell_set_property;
 	object_class->get_property = rb_shell_get_property;
@@ -769,7 +746,7 @@ rb_shell_finalize (GObject *object)
 	g_free (shell->priv->rhythmdb_file);
 	g_free (shell->priv);
 
-        parent_class->finalize (G_OBJECT (shell));
+        ((GObjectClass*)rb_shell_parent_class)->finalize (G_OBJECT (shell));
 
 	rb_debug ("shell shutdown complete");
 }
@@ -794,20 +771,14 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		      GObjectConstructParam *construct_properties)
 {
 	RBShell *shell;
-	RBShellClass *klass;
-	GObjectClass *parent_class;  
 	GtkWindow *win;
 	GtkWidget *menubar;
 	GtkWidget *vbox;
 	gboolean rhythmdb_exists;
 	GError *error = NULL;
 
-	klass = RB_SHELL_CLASS (g_type_class_peek (RB_TYPE_SHELL));
-
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-
-	shell = RB_SHELL (parent_class->constructor (type, n_construct_properties,
-						      construct_properties));
+	shell = RB_SHELL (((GObjectClass*)rb_shell_parent_class)
+		->constructor (type, n_construct_properties, construct_properties));
 
 	rb_debug ("Constructing shell");
 
@@ -959,6 +930,17 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 				    (GConfClientNotifyFunc) smalldisplay_changed_cb,
 				    shell);
 
+	/* read the cached copies of the gconf keys */
+	shell->priv->window_width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
+	shell->priv->window_height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
+	shell->priv->small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
+	shell->priv->window_maximised = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
+	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	shell->priv->window_x = eel_gconf_get_integer (CONF_STATE_WINDOW_X_POSITION);
+	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
+	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+
+	
 	rb_debug ("shell: syncing with gconf");
 	rb_shell_sync_sourcelist_visibility (shell);
 
@@ -1041,7 +1023,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
 	
-	rb_shell_sync_window_state (shell);
+	rb_shell_sync_window_state (shell, FALSE);
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
@@ -1110,14 +1092,22 @@ rb_shell_window_state_cb (GtkWidget *widget,
 {
 	shell->priv->iconified = (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED);
 
+	/* don't save maximized state when is hidden */
+	if (!GTK_WIDGET_VISIBLE(shell->priv->window))
+		return FALSE;
+
 	if (event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) {
-		gboolean maximised = event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED;
-		gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+		gboolean maximised = ((event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0);
 
 		gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (shell->priv->statusbar),
 						   !maximised);
-		if (!small)
-			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED, maximised);
+		if (!shell->priv->window_small) {
+			shell->priv->window_maximised = maximised;
+			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
+					       shell->priv->window_maximised);
+		}
+		/*rb_shell_sync_window_state (shell, TRUE);*/
+		rb_shell_sync_paned (shell);
 	}
 
 	return FALSE;
@@ -1169,7 +1159,7 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible, gboolean force)
 
 	if (visible) {
 		rb_debug ("showing main window");
-		rb_shell_sync_window_state (shell);
+		rb_shell_sync_window_state (shell, FALSE);
 
 		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
 			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
@@ -1205,13 +1195,25 @@ rb_shell_window_configure_cb (GtkWidget *win,
 			      GdkEventConfigure *event,
 			      RBShell *shell)
 {
-	gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
-
-	if (small) {
+	if (shell->priv->window_small) {
+		rb_debug ("storing small window width of %d", event->width);
+		shell->priv->small_width = event->width;
 		eel_gconf_set_integer (CONF_STATE_SMALL_WIDTH, event->width);
-	} else {
+	} else if (!shell->priv->window_maximised) {
+		rb_debug ("storing window size of %d:%d", event->width, event->height);
+		shell->priv->window_width = event->width;
+		shell->priv->window_height = event->height;
 		eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->width);
 		eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->height);
+	}
+
+	if (shell->priv->window_small || !shell->priv->window_maximised) {
+		gtk_window_get_position (GTK_WINDOW(shell->priv->window),
+					 &shell->priv->window_x,
+					 &shell->priv->window_y);
+
+		eel_gconf_set_integer (CONF_STATE_WINDOW_X_POSITION, shell->priv->window_x);
+		eel_gconf_set_integer (CONF_STATE_WINDOW_Y_POSITION, shell->priv->window_y);
 	}
 
 	return FALSE;
@@ -1233,44 +1235,48 @@ rb_shell_window_delete_cb (GtkWidget *win,
 }
 
 static void
-rb_shell_sync_window_state (RBShell *shell)
+rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise)
 {
-	int small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
-	int width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH); 
-	int height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
-	gboolean maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
-	gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	GdkGeometry hints;
-	if (small == TRUE)
+
+	if (shell->priv->window_small)
 	{
 		hints.min_height = -1;
 		hints.min_width = -1;
 		hints.max_height = -1;
 		hints.max_width = 3000;
-		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
 		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
-					     small_width, 0);
+					     shell->priv->small_width, 0);
 		gtk_window_resize (GTK_WINDOW (shell->priv->window),
-				   small_width, 1);
+				   shell->priv->small_width, 1);
 		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
 						NULL,
 						&hints,
 						GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
+		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+		rb_debug ("syncing small window width to %d", shell->priv->small_width);
 	} else {
 		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
-					     width, height);
+					     shell->priv->window_width,
+					     shell->priv->window_height);
 		gtk_window_resize (GTK_WINDOW (shell->priv->window),
-				   width, height);
+				   shell->priv->window_width,
+				   shell->priv->window_height);
 		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
 						NULL,
 						&hints,
 						0);
-
-		if (maximized)
-			gtk_window_maximize (GTK_WINDOW (shell->priv->window));
-		else
-			gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+		if (!dont_maximise) {
+			if (shell->priv->window_maximised)
+				gtk_window_maximize (GTK_WINDOW (shell->priv->window));
+			else
+				gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+		}
 	}
+	
+	gtk_window_move (GTK_WINDOW (shell->priv->window),
+			 shell->priv->window_x,
+			 shell->priv->window_y);
 }
 
 static void
@@ -1398,8 +1404,11 @@ rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *s
 static void
 rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell)
 {
-	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY, FALSE);
-	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN, FALSE);
+	shell->priv->window_small = FALSE;
+	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY, shell->priv->window_small);
+	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN, shell->priv->window_small);
+
+	rb_shell_sync_window_state (shell, FALSE);
 }
 
 static void
@@ -1617,8 +1626,17 @@ static void
 rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 				       RBShell *shell)
 {
-	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY,
-			       gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+	GTimeVal time;
+	
+	/* don't change more than once per second, it causes weirdness */
+	g_get_current_time (&time);
+	if (time.tv_sec == shell->priv->last_small_time)
+		return;
+
+	shell->priv->last_small_time = time.tv_sec;
+	
+	shell->priv->window_small = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY, shell->priv->window_small);
 }
 
 static void
@@ -1895,15 +1913,14 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 static void
 rb_shell_sync_smalldisplay (RBShell *shell)
 {
-	gboolean smalldisplay;
 	GtkAction *action;
 
-	smalldisplay = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	rb_shell_sync_window_state (shell, FALSE);
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
 					      "ViewSourceList");
 
-	if (smalldisplay) {
+	if (shell->priv->window_small) {
 		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
@@ -1923,9 +1940,7 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
 					      "ViewSmallDisplay");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
-				      smalldisplay);
-
-	rb_shell_sync_window_state (shell);
+				      shell->priv->window_small);
 }
 
 static void
@@ -1945,14 +1960,13 @@ smalldisplay_changed_cb (GConfClient *client,
 				  RBShell *shell)
 {
 	rb_debug ("small display mode changed");
+	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	rb_shell_sync_smalldisplay (shell);
 }
 
 static void
 rb_shell_sync_paned (RBShell *shell)
 {
-	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
-	
 	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 				shell->priv->paned_position);
 }

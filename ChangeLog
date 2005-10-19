@@ -1,5 +1,24 @@
 2005-10-19  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_finalize),
+	(rb_shell_constructor), (rb_shell_window_state_cb),
+	(rb_shell_set_visibility), (rb_shell_window_configure_cb),
+	(rb_shell_sync_window_state), (rb_shell_playlist_created_cb),
+	(rb_shell_view_smalldisplay_changed_cb),
+	(rb_shell_sync_smalldisplay), (smalldisplay_changed_cb),
+	(rb_shell_sync_paned): remove gconf window-state races, prevent
+	changing small mode too often, fix window event races. Closes 122806.
+
+	
+	Patch from Caio Marcelo <cmarcelo@gmail.com>
+
+	* data/rhythmbox.schemas:
+	* shell/rb-shell.c: (rb_shell_window_state_cb),
+	(rb_shell_window_configure_cb), (rb_shell_sync_window_state):
+	Remember the position of the window. Closes 315289.
+
+2005-10-19  James Livingston  <jrl@ids.org.au>
+
 	Patch from Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: determine whether libgpod is present when neither

@@ -48,7 +48,37 @@
 	<long>Main window width.</long>
         </locale>
       </schema>
+
+
       <schema>
+        <key>/schemas/apps/rhythmbox/state/window_position_x</key>
+        <applyto>/apps/rhythmbox/state/window_position_x</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Main window X position</short>
+	<long>Main window X position.</long>
+        </locale>
+      </schema>
+ 
+
+<schema>
+        <key>/schemas/apps/rhythmbox/state/window_position_y</key>
+        <applyto>/apps/rhythmbox/state/window_position_y</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Main window Y position</short>
+	<long>Main window Y position.</long>
+        </locale>
+      </schema>
+ 
+
+
+
+<schema>
         <key>/schemas/apps/rhythmbox/state/window_height</key>
         <applyto>/apps/rhythmbox/state/window_height</applyto>
         <owner>rhythmbox</owner>
