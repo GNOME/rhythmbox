@@ -1,3 +1,13 @@
+2005-10-20  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_added_cb),
+	(rhythmdb_query_model_do_insert), (rhythmdb_query_model_poll): fix
+	problem where hidden entries could be shown in playlists.
+	
+	* shell/rb-shell.c: (rb_shell_window_state_cb): fix a window-sizing
+	issues when switching in and out of small mode.
+
 2005-10-19  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_finalize),

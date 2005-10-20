@@ -599,6 +599,9 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 				     RhythmDBQueryModel *model)
 {
 	if (model->priv->query) {
+		if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+			return;
+
 		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
 			rhythmdb_query_model_do_insert (model, entry);
 		}
@@ -952,10 +955,11 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	GtkTreePath *path;
 	GtkTreeIter iter;
 
+	g_assert (!rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN));
+
 	/* we check again if the entry already exists in the hash table */
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL)
 		return;
-
 	ptr = g_hash_table_lookup (model->priv->limited_reverse_map, entry);
 	if (ptr != NULL)
 		rhythmdb_query_model_remove_from_limited_list (model, entry);
@@ -1062,9 +1066,12 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 		{
 			guint i;
 			rb_debug ("inserting %d rows", update->entries->len);
-			for (i = 0; i < update->entries->len; i++)
-				rhythmdb_query_model_do_insert (model,
-								g_ptr_array_index (update->entries, i));
+			for (i = 0; i < update->entries->len; i++ ) {
+				RhythmDBEntry *entry = g_ptr_array_index (update->entries, i);
+
+				if (!rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+					rhythmdb_query_model_do_insert (model, entry);
+			}
 			break;
 		}
 		case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:

@@ -1106,7 +1106,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
 					       shell->priv->window_maximised);
 		}
-		/*rb_shell_sync_window_state (shell, TRUE);*/
+		rb_shell_sync_window_state (shell, TRUE);
 		rb_shell_sync_paned (shell);
 	}
 
