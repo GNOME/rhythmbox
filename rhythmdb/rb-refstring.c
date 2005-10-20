@@ -23,6 +23,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include "rb-cut-and-paste-code.h"
 
 GHashTable *rb_refstrings;
 GMutex *rb_refstrings_mutex;
@@ -70,7 +71,7 @@ rb_refstring_new_full (const char *init, gboolean compute_sortdata)
 	
 	if (compute_sortdata) {
 		ret->folded = g_utf8_casefold (init, -1);
-		ret->sortkey = g_utf8_collate_key (ret->folded, -1);
+		ret->sortkey = rb_utf8_collate_key_for_filename (ret->folded, -1);
 	} else {
 		ret->folded = NULL;
 		ret->sortkey = NULL;

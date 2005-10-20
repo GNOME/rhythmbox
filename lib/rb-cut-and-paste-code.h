@@ -35,6 +35,11 @@ GdkPixbuf *eel_create_colorized_pixbuf (GdkPixbuf *src,
 					int green_value,
 					int blue_value);
 
+#ifdef HAVE_COLLATE_KEY_FILENAME
+#define rb_utf8_collate_key_for_filename g_utf8_collate_key_for_filename
+#else
+gchar*	rb_utf8_collate_key_for_filename (const gchar *str, gssize len);
+#endif
 
 G_END_DECLS
 

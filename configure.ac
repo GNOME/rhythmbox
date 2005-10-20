@@ -43,6 +43,9 @@ AC_CHECK_FUNC(mkdtemp,
     mkdtemp_missing=true)
 AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
+AC_CHECK_LIB(glib-2.0, g_utf8_collate_key_for_filename,
+    [AC_DEFINE([HAVE_COLLATE_KEY_FILENAME], 1, [Have glib function to collate filename sort keys])])
+
 PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(RHYTHMBOX,				\

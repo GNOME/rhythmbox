@@ -1,5 +1,16 @@
 2005-10-20  James Livingston  <jrl@ids.org.au>
 
+	* NEWS: update with changes since 0.9.1
+
+	* configure.ac: check whether collate_key_for_filename is available
+	* lib/rb-cut-and-paste-code.c: (rb_utf8_collate_key_for_filename):
+	* lib/rb-cut-and-paste-code.h: add function copied from glib 2.8, use
+	it if it isn't available in glib (i.e. building against 2.6)
+	* rhythmdb/rb-refstring.c: (rb_refstring_new_full): use the filename
+	collation to get "natural sorting". Closes bug 158599.
+
+2005-10-20  James Livingston  <jrl@ids.org.au>
+
 	Patch from Paul Kuliniewicz <kuliniew@purdue.edu>
 
 	* doc/reference/tmpl/rb-shell-player.sgml:
