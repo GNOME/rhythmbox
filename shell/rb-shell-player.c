@@ -250,7 +250,7 @@ enum
 enum
 {
 	WINDOW_TITLE_CHANGED,
-	DURATION_CHANGED,
+	ELAPSED_CHANGED,
 	PLAYING_SOURCE_CHANGED,
 	PLAYING_CHANGED,
 	PLAYING_SONG_CHANGED,
@@ -425,16 +425,16 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      1,
 			      G_TYPE_STRING);
 
-	rb_shell_player_signals[DURATION_CHANGED] =
-		g_signal_new ("duration_changed",
+	rb_shell_player_signals[ELAPSED_CHANGED] =
+		g_signal_new ("elapsed_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, duration_changed),
+			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      g_cclosure_marshal_VOID__UINT,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_STRING);
+			      G_TYPE_UINT);
 
 	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
 		g_signal_new ("playing-source-changed",
@@ -544,8 +544,10 @@ volume_pre_unmount_cb (GnomeVFSVolumeMonitor *monitor,
 	gchar *volume_mount_point;
 	RhythmDBEntry *entry;
 	const char *uri;
+	gboolean playing;
 
-	if (rb_shell_player_get_playing (player)) {
+	rb_shell_player_get_playing (player, &playing, NULL);
+	if (playing) {
 		return;
 	}
 
@@ -1777,7 +1779,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	const char *artist = NULL;	
 	char *title;
 	RhythmDBEntry *entry;
-	char *duration;
+	glong elapsed;
 
 	entry = rb_shell_player_get_playing_entry (player);
 	rb_debug ("playing source: %p, active entry: %p", player->priv->source, entry);
@@ -1805,13 +1807,12 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	else
 		title = NULL;
 
-	duration = rb_header_get_elapsed_string (player->priv->header_widget);
+	elapsed = rb_player_get_time (player->priv->mmplayer);
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
-	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED], 0,
-		       duration);
-	g_free (duration);
+	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED], 0,
+		       (guint) elapsed);
 
 	/* Sync the player */
 	if (player->priv->song)
@@ -2001,11 +2002,14 @@ rb_shell_player_stop (RBShellPlayer *player)
 }
 
 gboolean
-rb_shell_player_get_playing (RBShellPlayer *player)
+rb_shell_player_get_playing (RBShellPlayer *player,
+			     gboolean *playing,
+			     GError **error)
 {
-	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), -1);
+	if (playing != NULL)
+		*playing = rb_player_playing (player->priv->mmplayer);
 
-	return rb_player_playing (player->priv->mmplayer);
+	return TRUE;
 }
 
 RBPlayer *
@@ -2016,21 +2020,38 @@ rb_shell_player_get_mm_player (RBShellPlayer *player)
 	return player->priv->mmplayer;
 }
 
-long
-rb_shell_player_get_playing_time (RBShellPlayer *player)
+char *
+rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 {
-	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), 0);
-	
-	return rb_player_get_time (player->priv->mmplayer);
+	return rb_header_get_elapsed_string (player->priv->header_widget);
 }
 
-void
-rb_shell_player_set_playing_time (RBShellPlayer *player, long time)
+gboolean
+rb_shell_player_get_playing_time (RBShellPlayer *player,
+				  guint *time,
+				  GError **error)
 {
-	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
-	
-	if (rb_player_seekable (player->priv->mmplayer))
-		rb_player_set_time (player->priv->mmplayer, time);
+	if (time != NULL)
+		*time = (guint) rb_player_get_time (player->priv->mmplayer);
+
+	return TRUE;
+}
+
+gboolean
+rb_shell_player_set_playing_time (RBShellPlayer *player,
+				  guint time,
+				  GError **error)
+{
+	if (rb_player_seekable (player->priv->mmplayer)) {
+		rb_player_set_time (player->priv->mmplayer, (long) time);
+		return TRUE;
+	} else {
+		g_set_error (error,
+			     RB_SHELL_PLAYER_ERROR,
+			     RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE,
+			     _("Current song is not seekable"));
+		return FALSE;
+	}
 }
 
 void
@@ -2205,16 +2226,11 @@ tick_cb (RBPlayer *mmplayer, long elapsed, gpointer data)
 	rb_header_sync_time (player->priv->header_widget);
 
 	if (rb_player_playing (mmplayer)) {
-		static int callback_runs = 0;
-		callback_runs++;
-		if (callback_runs >= RB_PLAYER_TICK_HZ) {
-			gchar *duration;
-
-			duration = rb_header_get_elapsed_string (player->priv->header_widget);
-			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED],
-				       0, duration);
-			g_free (duration);
-			callback_runs = 0;
+		static long last_elapsed = -1;
+		if (last_elapsed != elapsed) {
+			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED],
+				       0, (guint) elapsed);
+			last_elapsed = elapsed;
 		}
 	}
 
@@ -2355,10 +2371,21 @@ buffering_cb (RBPlayer *mmplayer, guint progress, gpointer data)
 }
 
 
-const char *
-rb_shell_player_get_playing_path (RBShellPlayer *shell_player)
+gboolean
+rb_shell_player_get_playing_path (RBShellPlayer *shell_player,
+				  const gchar **path,
+				  GError **error)
 {
-	return shell_player->priv->url;
+	RhythmDBEntry *entry;
+
+	entry = rb_play_order_get_playing_entry (shell_player->priv->play_order);
+	if (entry != NULL) {
+		*path = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	} else {
+		*path = NULL;
+	}
+
+	return TRUE;
 }
 
 #ifdef HAVE_MMKEYS
@@ -2425,7 +2452,9 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 		rb_shell_player_playpause (player, TRUE, NULL);
 		return GDK_FILTER_REMOVE;
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause) == key->keycode) {	
-		if (rb_shell_player_get_playing	(player)) {
+		gboolean playing;
+		rb_shell_player_get_playing (player, &playing, NULL);
+		if (playing) {
 			rb_shell_player_playpause (player, TRUE, NULL);
 		}
 		return GDK_FILTER_REMOVE;

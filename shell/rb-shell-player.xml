@@ -16,9 +16,33 @@
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_do_next"/>
     </method>
 
+    <method name="getPlaying">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_get_playing"/>
+      <arg type="b" name="playing" direction="out"/>
+    </method>
+
+    <method name="getPlayingUri">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_get_playing_path"/>
+      <arg type="s" name="uri" direction="out">
+        <annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
+      </arg>
+    </method>
+
+    <method name="getElapsed">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_get_playing_time"/>
+      <arg type="u" name="elapsed" direction="out"/>
+    </method>
+
+    <method name="setElapsed">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_set_playing_time"/>
+      <arg type="u" name="elapsed" direction="in"/>
+    </method>
+
+
     <!-- <property name="playing" access="readwrite"/> -->
     <signal name="playingChanged"/>
     <signal name="playingUriChanged"/>
+    <signal name="elapsedChanged"/>
 
   </interface>
 </node>

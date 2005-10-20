@@ -44,7 +44,8 @@ typedef enum
 {
 	RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR,
 	RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
-	RB_SHELL_PLAYER_ERROR_NOT_PLAYING
+	RB_SHELL_PLAYER_ERROR_NOT_PLAYING,
+        RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE,
 } RBShellPlayerError;
 
 #define RB_SHELL_PLAYER_ERROR rb_shell_player_error_quark ()
@@ -65,7 +66,7 @@ typedef struct
 	GtkHBoxClass parent_class;
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
-	void (*duration_changed) (RBShellPlayer *player, const char *duration);
+	void (*elapsed_changed) (RBShellPlayer *player, guint elapsed);
 	void (*playing_changed) (RBShellPlayer *player, gboolean playing);
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
 	void (*playing_uri_changed) (RBShellPlayer *player, const char *uri);
@@ -94,16 +95,25 @@ void			rb_shell_player_stop		(RBShellPlayer *player);
 gboolean                rb_shell_player_do_previous	(RBShellPlayer *player, GError **error);
 gboolean		rb_shell_player_do_next		(RBShellPlayer *player, GError **error);
 
-long			rb_shell_player_get_playing_time(RBShellPlayer *player);
-void			rb_shell_player_set_playing_time(RBShellPlayer *player, long time);
+char * 			rb_shell_player_get_playing_time_string	(RBShellPlayer *player);
+gboolean		rb_shell_player_get_playing_time(RBShellPlayer *player,
+                                                         guint *time,
+                                                         GError **error);
+gboolean		rb_shell_player_set_playing_time(RBShellPlayer *player,
+                                                         guint time,
+                                                         GError **error);
 void			rb_shell_player_seek		(RBShellPlayer *player, long offset);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
 RBPlayer *		rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
 
-gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player);
+gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player,
+							 gboolean *playing,
+							 GError **error);
 
-const char *		rb_shell_player_get_playing_path(RBShellPlayer *shell_player);
+gboolean		rb_shell_player_get_playing_path(RBShellPlayer *shell_player,
+							 const gchar **path,
+							 GError **error);
 
 void			rb_shell_player_sync_buttons	(RBShellPlayer *player);
 

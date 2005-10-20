@@ -1,5 +1,27 @@
 2005-10-20  James Livingston  <jrl@ids.org.au>
 
+	Patch from Paul Kuliniewicz <kuliniew@purdue.edu>
+
+	* doc/reference/tmpl/rb-shell-player.sgml:
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(volume_pre_unmount_cb), (rb_shell_player_sync_with_source),
+	(rb_shell_player_get_playing),
+	(rb_shell_player_get_playing_time_string),
+	(rb_shell_player_get_playing_time),
+	(rb_shell_player_set_playing_time), (tick_cb),
+	(rb_shell_player_get_playing_path), (filter_mmkeys):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-player.xml:
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_player_elapsed_changed_cb), (rb_shell_set_elapsed),
+	(rb_shell_set_window_title), (rb_shell_playing_impl),
+	(rb_shell_get_playing_time_impl), (rb_shell_set_playing_time_impl):
+	Merge the duration_changed and elapsed_changed DBUS signals into one
+	elapsed_changed signal. Check that the output argument isn't NULL
+	before trying to put things in it.
+
+2005-10-20  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_entry_added_cb),
 	(rhythmdb_query_model_do_insert), (rhythmdb_query_model_poll): fix

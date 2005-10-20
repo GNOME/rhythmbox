@@ -135,13 +135,13 @@ static void rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *s
 static void rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
-static void rb_shell_set_duration (RBShell *shell, const char *duration);
+static void rb_shell_set_elapsed (RBShell *shell, guint elapsed);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
-static void rb_shell_player_duration_changed_cb (RBShellPlayer *player,
-						 const char *duration,
-						 RBShell *shell);
+static void rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
+						guint elapsed,
+						RBShell *shell);
 static void rb_shell_cmd_about (GtkAction *action,
 		                RBShell *shell);
 static void rb_shell_cmd_contents (GtkAction *action,
@@ -867,8 +867,8 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_shell_player_window_title_changed_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
-				 "duration_changed",
-				 G_CALLBACK (rb_shell_player_duration_changed_cb),
+				 "elapsed_changed",
+				 G_CALLBACK (rb_shell_player_elapsed_changed_cb),
 				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->db);
@@ -1548,32 +1548,37 @@ rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 }
 
 static void
-rb_shell_player_duration_changed_cb (RBShellPlayer *player,
-				     const char *duration,
-				     RBShell *shell)
+rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
+				    guint elapsed,
+				    RBShell *shell)
 {
-	rb_shell_set_duration (shell, duration);
+	rb_shell_set_elapsed (shell, elapsed);
 }
 
 static void
-rb_shell_set_duration (RBShell *shell, const char *duration)
+rb_shell_set_elapsed (RBShell *shell, guint elapsed)
 {
-	gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
+	gboolean playing;
+	char *elapsed_string;
 	char *tooltip;
 
-	if (shell->priv->cached_title == NULL) 
+	rb_shell_player_get_playing (shell->priv->player_shell, &playing, NULL);
+	elapsed_string = rb_shell_player_get_playing_time_string (shell->priv->player_shell);
+
+	if (shell->priv->cached_title == NULL)
 		tooltip = g_strdup (_("Not playing"));
 	else if (!playing) {
 		/* Translators: the first %s is substituted by the song name, the second one is the elapsed and total time */
 		tooltip = g_strdup_printf (_("%s\nPaused, %s"),
-					 shell->priv->cached_title, duration);
+					 shell->priv->cached_title, elapsed_string);
 	} else {
 		/* Translators: the first %s is substituted by the song name, the second one is the elapsed and total time */
 		tooltip = g_strdup_printf (_("%s\n%s"),
-					   shell->priv->cached_title, duration);
+					   shell->priv->cached_title, elapsed_string);
 	}
 
 	rb_tray_icon_set_tooltip (shell->priv->tray_icon, tooltip);
+	g_free (elapsed_string);
 	g_free (tooltip);
 }
 
@@ -1590,8 +1595,10 @@ rb_shell_set_window_title (RBShell *shell, const char *window_title)
 				      _("Music Player"));
 	}
 	else {
-		gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
+		gboolean playing;
 		char *title;
+
+		rb_shell_player_get_playing (shell->priv->player_shell, &playing, NULL);
 
 		if (shell->priv->cached_title &&
 		    !strcmp (shell->priv->cached_title, window_title)) {
@@ -2489,21 +2496,25 @@ static gboolean
 rb_shell_playing_impl (RBRemoteProxy *proxy)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	return rb_shell_player_get_playing (player);
+	gboolean playing;
+	rb_shell_player_get_playing (player, &playing, NULL);
+	return playing;
 }
 
 static long
 rb_shell_get_playing_time_impl (RBRemoteProxy *proxy)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	return rb_shell_player_get_playing_time (player);
+	guint time;
+	rb_shell_player_get_playing_time (player, &time, NULL);
+	return (long) time;
 }
 
 static void
 rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	rb_shell_player_set_playing_time (player, time);
+	rb_shell_player_set_playing_time (player, (guint) time, NULL);
 }
 
 static gchar*
