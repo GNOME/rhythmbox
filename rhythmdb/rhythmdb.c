@@ -865,9 +865,15 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	ret->artist = rb_refstring_ref (db->priv->empty_string);
 	ret->album = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
+	
+	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) ||
+	    (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED))
+	       ret->podcast = g_new0 (RhythmDBPodcastFields, 1);
+	else
+		ret->podcast = NULL;
 
 	rhythmdb_entry_sync_mirrored (db, ret, RHYTHMDB_PROP_LAST_PLAYED);
-
+	
 	/* The refcount is initially 0, we want to set it to 1 */
 	g_atomic_int_inc (&ret->refcount);
 	return ret;
@@ -918,6 +924,17 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->artist);
 	rb_refstring_unref (entry->album);
 	rb_refstring_unref (entry->mimetype);
+	
+	if (entry->podcast) {
+		rb_refstring_unref (entry->podcast->description);
+		rb_refstring_unref (entry->podcast->subtitle);
+		rb_refstring_unref (entry->podcast->summary);
+		rb_refstring_unref (entry->podcast->lang);
+		rb_refstring_unref (entry->podcast->copyright);
+		rb_refstring_unref (entry->podcast->image);
+		g_free (entry->podcast);
+		entry->podcast = NULL;
+	}
 }
 
 void
@@ -2102,6 +2119,36 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_HIDDEN:
 		entry->hidden = g_value_get_boolean (value);
 		break;
+	case RHYTHMDB_PROP_STATUS:
+		entry->podcast->status = g_value_get_ulong (value);
+		break;
+	case RHYTHMDB_PROP_DESCRIPTION:
+		rb_refstring_unref (entry->podcast->description);
+		entry->podcast->description = rb_refstring_new (g_value_get_string (value));
+		break;	
+	case RHYTHMDB_PROP_SUBTITLE:
+		rb_refstring_unref (entry->podcast->subtitle);
+		entry->podcast->subtitle = rb_refstring_new (g_value_get_string (value));
+		break;	
+	case RHYTHMDB_PROP_SUMMARY:
+		rb_refstring_unref (entry->podcast->summary);
+		entry->podcast->summary = rb_refstring_new (g_value_get_string (value));
+		break;	
+	case RHYTHMDB_PROP_LANG:
+		rb_refstring_unref (entry->podcast->lang);
+		entry->podcast->lang = rb_refstring_new (g_value_get_string (value));
+		break;	
+	case RHYTHMDB_PROP_COPYRIGHT:
+		rb_refstring_unref (entry->podcast->copyright);
+		entry->podcast->copyright = rb_refstring_new (g_value_get_string (value));
+		break;	
+	case RHYTHMDB_PROP_IMAGE:
+		rb_refstring_unref (entry->podcast->image);
+		entry->podcast->image = rb_refstring_new (g_value_get_string (value));
+		break;
+	case RHYTHMDB_PROP_POST_TIME:
+		entry->podcast->post_time = g_value_get_ulong (value);
+		break;	
 	case RHYTHMDB_NUM_PROPERTIES:
 		g_assert_not_reached ();
 		break;
@@ -2774,6 +2821,14 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Visibility (gboolean) [visibility]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN_STR, "Time Added to Library (gchararray) [first-seen-str]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_STATUS, "Status of file (gulong) [status]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_DESCRIPTION, "Podcast description(gchararray) [description]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_SUBTITLE, "Podcast subtitle (gchararray) [subtitle]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_SUMMARY, "Podcast summary (gchararray) [summary]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_LANG, "Podcast language (gchararray) [lang]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_COPYRIGHT, "Podcast copyright (gchararray) [copyright]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_IMAGE, "Podcast image(gchararray) [image]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_POST_TIME, "Podcast time of post (gulong) [post-time]"),
 			{ 0, 0, 0 }
 		};
 		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES);
@@ -2926,6 +2981,33 @@ RhythmDBEntryType rhythmdb_entry_iradio_get_type (void)
 
 	return iradio_type;
 }
+
+RhythmDBEntryType rhythmdb_entry_podcast_post_get_type (void) 
+{
+	static RhythmDBEntryType podcast_post_type = -1;
+       
+	g_static_mutex_lock (&entry_type_mutex);
+	if (podcast_post_type == -1) {
+		podcast_post_type = rhythmdb_entry_register_type ();
+	}
+	g_static_mutex_unlock (&entry_type_mutex);
+
+	return podcast_post_type;
+}
+
+RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void) 
+{
+	static RhythmDBEntryType podcast_feed_type = -1;
+       
+	g_static_mutex_lock (&entry_type_mutex);
+	if (podcast_feed_type == -1) {
+		podcast_feed_type = rhythmdb_entry_register_type ();
+	}
+	g_static_mutex_unlock (&entry_type_mutex);
+
+	return podcast_feed_type;
+}
+
 
 struct MountCtxt {
 	RhythmDB *db;

@@ -558,6 +558,7 @@ player/Makefile
 rhythmdb/Makefile
 widgets/Makefile
 iradio/Makefile
+podcast/Makefile
 remote/Makefile
 remote/bonobo/Makefile
 remote/dbus/Makefile

@@ -248,6 +248,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						type = RHYTHMDB_ENTRY_TYPE_SONG;
 					else if (!strcmp (typename, "iradio"))
 						type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+					else if (!strcmp (typename, "podcast-post"))
+						type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
+					else if (!strcmp (typename, "podcast-feed"))
+						type = RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
 					else
 						return;
 					type_set = TRUE;
@@ -391,6 +395,30 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			break;
 		case RHYTHMDB_PROP_MIMETYPE:
 			ctx->entry->mimetype = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_STATUS:
+			ctx->entry->podcast->status = parse_ulong (ctx->buf->str);
+			break;			
+		case RHYTHMDB_PROP_DESCRIPTION:
+			ctx->entry->podcast->description = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_SUBTITLE:
+			ctx->entry->podcast->subtitle = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_SUMMARY:
+			ctx->entry->podcast->summary = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_LANG:
+			ctx->entry->podcast->lang = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_COPYRIGHT:
+			ctx->entry->podcast->copyright = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_IMAGE:
+			ctx->entry->podcast->image = rb_refstring_new (ctx->buf->str);
+			break;
+		case RHYTHMDB_PROP_POST_TIME:			
+			ctx->entry->podcast->post_time = parse_ulong (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
@@ -615,6 +643,10 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		RHYTHMDB_FWRITE_STATICSTR ("song", ctx->handle, ctx->error);
 	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
 		RHYTHMDB_FWRITE_STATICSTR ("iradio", ctx->handle, ctx->error);
+	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+		RHYTHMDB_FWRITE_STATICSTR ("podcast-post", ctx->handle, ctx->error);
+	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+		RHYTHMDB_FWRITE_STATICSTR ("podcast-feed", ctx->handle, ctx->error);
 	} else
 		g_assert_not_reached ();
 
@@ -703,6 +735,38 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_LAST_PLAYED:
 			save_entry_ulong(ctx, elt_name, entry->last_played);
 			break;
+		case RHYTHMDB_PROP_STATUS:
+			if (entry->podcast)
+				save_entry_ulong (ctx, elt_name, entry->podcast->status);
+			break;
+		case RHYTHMDB_PROP_DESCRIPTION:
+			if (entry->podcast && entry->podcast->description)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->description));
+			break;
+		case RHYTHMDB_PROP_SUBTITLE:
+			if (entry->podcast && entry->podcast->subtitle)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->subtitle));
+			break;
+		case RHYTHMDB_PROP_SUMMARY:
+			if (entry->podcast && entry->podcast->summary)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->summary));
+			break;
+		case RHYTHMDB_PROP_LANG:
+			if (entry->podcast && entry->podcast->lang)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->lang));
+			break;
+		case RHYTHMDB_PROP_COPYRIGHT:
+			if (entry->podcast && entry->podcast->copyright)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->copyright));
+			break;
+		case RHYTHMDB_PROP_IMAGE:
+			if (entry->podcast && entry->podcast->image)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->image));
+			break;
+		case RHYTHMDB_PROP_POST_TIME:
+			if (entry->podcast)
+				save_entry_ulong (ctx, elt_name, entry->podcast->post_time);
+			break;			
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORT_KEY:
@@ -755,6 +819,12 @@ rhythmdb_tree_save (RhythmDB *rdb)
 				    (RBTreeEntryItFunc)save_entry, 
 				    NULL, NULL, NULL, &ctx);
 	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, 
+				    (RBTreeEntryItFunc)save_entry, 
+				    NULL, NULL, NULL, &ctx);
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_POST, 
+				    (RBTreeEntryItFunc)save_entry, 
+				    NULL, NULL, NULL, &ctx);
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED, 
 				    (RBTreeEntryItFunc)save_entry, 
 				    NULL, NULL, NULL, &ctx);
 

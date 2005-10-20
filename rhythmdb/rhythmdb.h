@@ -48,6 +48,8 @@ typedef gint32 RhythmDBEntryType;
 
 #define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
+#define RHYTHMDB_ENTRY_TYPE_PODCAST_POST (rhythmdb_entry_podcast_post_get_type ())
+#define RHYTHMDB_ENTRY_TYPE_PODCAST_FEED (rhythmdb_entry_podcast_feed_get_type ())
 
 typedef enum
 {
@@ -101,6 +103,15 @@ typedef enum
 	RHYTHMDB_PROP_HIDDEN,
 	RHYTHMDB_PROP_PLAYBACK_ERROR,
 	RHYTHMDB_PROP_FIRST_SEEN_STR,
+//podcast propriets
+	RHYTHMDB_PROP_STATUS,
+	RHYTHMDB_PROP_DESCRIPTION,
+	RHYTHMDB_PROP_SUBTITLE,
+	RHYTHMDB_PROP_SUMMARY,
+	RHYTHMDB_PROP_LANG,
+	RHYTHMDB_PROP_COPYRIGHT,
+	RHYTHMDB_PROP_IMAGE,
+	RHYTHMDB_PROP_POST_TIME,
 	
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
@@ -118,6 +129,19 @@ typedef struct {
 	GValue *val;
 	GPtrArray *subquery;
 } RhythmDBQueryData;
+
+typedef struct {
+	/* podcast */
+	RBRefString *description;
+	RBRefString *subtitle;
+	RBRefString *summary;
+	RBRefString *lang;
+	RBRefString *copyright;
+	RBRefString *image;
+	gulong status;   //0-99: downloading; 100: Conplete; 101: Error; 102: wait; 103: pause;
+	gulong post_time;
+} RhythmDBPodcastFields;
+
 
 typedef struct {
 	/* internal bits */
@@ -170,6 +194,9 @@ typedef struct {
 
 	/* visibility (to hide entries on unmounted volumes) */
 	gboolean hidden;
+
+	/*Podcast*/
+	RhythmDBPodcastFields *podcast;
 } RhythmDBEntry;
 
 typedef struct {
@@ -228,6 +255,19 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->playback_error;
 	case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		return rb_refstring_get (entry->first_seen_str);
+//podcast propriets
+	case RHYTHMDB_PROP_DESCRIPTION:
+		return rb_refstring_get (entry->podcast->description);
+	case RHYTHMDB_PROP_SUBTITLE:
+		return rb_refstring_get (entry->podcast->subtitle);
+	case RHYTHMDB_PROP_SUMMARY: 
+		return rb_refstring_get (entry->podcast->summary);
+	case RHYTHMDB_PROP_LANG:
+		return rb_refstring_get (entry->podcast->lang);
+	case RHYTHMDB_PROP_COPYRIGHT:
+		return rb_refstring_get (entry->podcast->copyright);
+	case RHYTHMDB_PROP_IMAGE:
+		return rb_refstring_get (entry->podcast->image);
 	default:
 		g_assert_not_reached ();
 		return NULL;
@@ -282,6 +322,10 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->play_count;
 	case RHYTHMDB_PROP_BITRATE:
 		return entry->bitrate;		
+	case RHYTHMDB_PROP_POST_TIME:
+		return entry->podcast->post_time;
+	case RHYTHMDB_PROP_STATUS:
+		return entry->podcast->status;		
 	default:
 		g_assert_not_reached ();
 		return 0;
@@ -359,7 +403,7 @@ typedef struct
 	void            (*impl_entry_delete_by_type) (RhythmDB *db, RhythmDBEntryType type);
 
 	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, const char *uri);
-
+	
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
 
 	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
@@ -468,6 +512,8 @@ RhythmDBEntryType rhythmdb_entry_register_type          (void);
 
 RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
 RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
+RhythmDBEntryType rhythmdb_entry_podcast_post_get_type  (void);
+RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type  (void);
 RhythmDBEntryType rhythmdb_entry_icecast_get_type        (void);
 
 extern GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];

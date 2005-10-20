@@ -264,7 +264,7 @@
         <applyto>/apps/rhythmbox/ui/rhythmdb_columns_setup</applyto>
         <owner>rhythmbox</owner>
         <type>string</type>
-        <default>RHYTHMDB_PROP_TRACK_NUMBER,RHYTHMDB_PROP_ARTIST,RHYTHMDB_PROP_ALBUM,RHYTHMDB_PROP_GENRE,RHYTHMDB_PROP_DURATION</default>
+        <default>RHYTHMDB_PROP_TRACK_NUMBER,RHYTHMDB_PROP_ARTIST,RHYTHMDB_PROP_ALBUM,RHYTHMDB_PROP_GENRE,RHYTHMDB_PROP_DURATION,RHYTHMDB_PROP_POST_TIME</default>
         <locale name="C">
 	<short>List of active columns.</short>
 	<long>The list of columns that will be shown.  If a source
@@ -304,6 +304,67 @@
 	<short>The sorting order</short>
 	<long>A comma-separated list.  The first is the title of the
 	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/podcast/show_browser</key>
+        <applyto>/apps/rhythmbox/state/podcast/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	  <short>Show browser in podcast display</short>
+	  <long>Show the album browser in the Podcast display.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/podcast/sorting</key>
+        <applyto>/apps/rhythmbox/state/podcast/sorting</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Title,ascending</default>
+        <locale name="C">
+	<short>The sorting order</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/podcast/download_interval</key>
+        <applyto>/apps/rhythmbox/state/podcast/download_interval</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+	<short>The index of config update interval</short>
+	<long>
+	0 Every hour 
+	1 Every day
+	2 Every week
+	3 Manually
+	</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/podcast/download_next_time</key>
+        <applyto>/apps/rhythmbox/state/podcast/download_next_time</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+	<short>The exactly time of update</short>
+	<long>The time in secs of update</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/podcast/download_prefix</key>
+        <applyto>/apps/rhythmbox/state/podcast/download_prefix</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+	<short>The dir to save your podcast files</short>
+	<long>The dir to save your podcast files</long>
         </locale>
       </schema>
       <schema>

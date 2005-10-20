@@ -15,6 +15,7 @@
 	<menuitem name="MusicPlaylistDeletePlaylistMenu" action="MusicPlaylistDeletePlaylist"/>
       </menu>
       <menuitem name="MusicNewInternetRadioStationMenu" action="MusicNewInternetRadioStation"/>
+      <menuitem name="MusicNewPodcastMenu" action="MusicNewPodcast"/>
       <separator/>
       <menuitem name="MusicPropertiesMenu" action="MusicProperties"/>
       <separator/>
@@ -120,6 +121,27 @@
     <separator/>
     <menuitem name="PropertiesIRadioPopup" action="MusicProperties"/>
   </popup>
+  <popup name="PodcastSourcePopup">
+    <menuitem name="PodcastSrcPopupNew" action="MusicNewPodcast"/>
+  </popup>
+
+  <popup name="PodcastViewPopup">
+    <menuitem name="DeletePodcastPopup" action="EditDelete"/>
+    <menuitem name="DownloadPodcastPopup" action="PodcastSrcDownloadPost"/>
+    <separator/>
+    <menuitem name="PropertiesPodcastPopup" action="MusicProperties"/>
+  </popup>
+
+  <popup name="PodcastFeedViewPopup">
+    <menuitem name="NewPodcastPopup" action="MusicNewPodcast"/>
+    <separator/>
+    <menuitem name="SubscribeFeedPodcastPopup" action="PodcastFeedSubscribe"/>
+    <menuitem name="UpdateFeedPodcastPopup" action="PodcastFeedUpdate"/>
+    <menuitem name="DeleteFeedPodcastPopup" action="PodcastFeedDelete"/>
+    <separator/>
+    <menuitem name="PropertiesFeedPodcastPopup" action="PodcastFeedProperties"/>
+  </popup>
+
 
   <popup name="PlaylistSourcePopup">
     <menuitem name="RenameSmartPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>

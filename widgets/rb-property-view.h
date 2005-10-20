@@ -78,6 +78,8 @@ void		rb_property_view_set_model		(RBPropertyView *view,
 
 guint		rb_property_view_get_num_properties	(RBPropertyView *view);
 
+GtkWidget *	rb_property_view_get_treeview		(RBPropertyView *view);
+
 G_END_DECLS
 
 #endif /* __RB_PROPERTY_VIEW_H */

@@ -242,6 +242,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0); 
+	
 }
 
 static void
@@ -506,6 +507,7 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 			         G_CALLBACK (rb_property_view_row_activated_cb),
 			         view,
 				 0);
+	
 	view->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview));
 	g_signal_connect_object (G_OBJECT (view->priv->selection),
 			         "changed",
@@ -526,7 +528,6 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 						 view, NULL);
 	gtk_tree_view_column_set_title (column, view->priv->title);
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 				     column);
 
@@ -636,5 +637,11 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				       is_all ? NULL : selected_prop);
 		}
 	}
+}
+
+GtkWidget*
+rb_property_view_get_treeview	(RBPropertyView *view)
+{
+	return view->priv->treeview;
 }
 

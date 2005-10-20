@@ -59,6 +59,7 @@
 #include "rb-util.h"
 #include "rb-play-order.h"
 #include "rb-statusbar.h"
+#include "rhythmdb.h"
 
 #ifdef HAVE_XIDLE_EXTENSION
 #include <X11/extensions/xidle.h>
@@ -1052,7 +1053,10 @@ rb_shell_player_open_location (RBShellPlayer *player,
 static gboolean
 rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	return rb_shell_player_open_location (player, entry->location, error);
+	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+		return rb_shell_player_open_location (player, rb_refstring_get (entry->mountpoint), error);
+	else
+		return rb_shell_player_open_location (player, entry->location, error);
 }
 
 static gboolean

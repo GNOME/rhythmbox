@@ -12,6 +12,8 @@ libsourcesimpl_la_SOURCES =		\
 	rb-library-source.h		\
 	rb-iradio-source.c		\
 	rb-iradio-source.h		\
+	rb-podcast-source.c		\
+	rb-podcast-source.h		\
 	rb-removable-media-source.c	\
 	rb-removable-media-source.h	\
 	rb-playlist-source.c            \
@@ -30,8 +32,10 @@ INCLUDES =						\
 	-I$(top_srcdir)/library 			\
 	-I$(top_srcdir)/player	 			\
 	-I$(top_srcdir)/iradio				\
+	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/daapsharing			\
+	-I$(top_srcdir)/metadata			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\

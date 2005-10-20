@@ -40,6 +40,7 @@ rb_stock_icons_init (void)
 		RB_STOCK_TRAY_ICON,
 		RB_STOCK_SET_STAR,
 		RB_STOCK_UNSET_STAR,
+		RB_STOCK_PODCAST,
 		RB_STOCK_NO_STAR
 	};
 

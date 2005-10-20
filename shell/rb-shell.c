@@ -66,6 +66,7 @@
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
+#include "rb-podcast-source.h"
 #include "totem-pl-parser.h"
 #ifdef WITH_DAAP_SUPPORT
 #include "rb-daap-source.h"
@@ -74,6 +75,7 @@
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
+#include "rb-new-podcast-dialog.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "eel-gconf-extensions.h"
@@ -158,6 +160,9 @@ static void rb_shell_cmd_add_file_to_library (GtkAction *action,
 					      RBShell *shell);
 static void rb_shell_cmd_new_station (GtkAction *action,
 				      RBShell *shell);
+static void rb_shell_cmd_new_podcast (GtkAction *action,
+				      RBShell *shell);
+
 static void rb_shell_cmd_extract_cd (GtkAction *action,
 				     RBShell *shell);
 static void rb_shell_cmd_current_song (GtkAction *action,
@@ -327,6 +332,7 @@ struct RBShellPrivate
 
 	RBLibrarySource *library_source;
 	RBIRadioSource *iradio_source;
+	RBPodcastSource *podcast_source;
 
 	RBSource *selected_source;
 
@@ -363,6 +369,10 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New _Internet Radio Station"), "<control>I",
 	  N_("Create a new Internet Radio station"),
 	  G_CALLBACK (rb_shell_cmd_new_station) },
+
+	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_Subscribe to a new Podcast"), "<control>S",
+	  N_("Create a new Podcast Feed"),
+	  G_CALLBACK (rb_shell_cmd_new_podcast) },
 
 	{ "MusicImportFolder", GTK_STOCK_OPEN, N_("_Import Folder..."), "<control>O",
 	  N_("Choose folder to be added to the Library"),
@@ -719,13 +729,13 @@ rb_shell_finalize (GObject *object)
 	g_list_free (shell->priv->supported_media_extensions);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
-	
+
 	g_list_free (shell->priv->sources);
+
 	g_hash_table_destroy (shell->priv->sources_hash);
 
 	g_object_unref (G_OBJECT (shell->priv->playlist_manager));
 	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
-
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 
 	gtk_widget_destroy (shell->priv->window);
@@ -961,7 +971,10 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
 	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source), NULL);
-	
+	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_source_new (shell));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
+
+
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
@@ -1756,6 +1769,7 @@ add_to_library_response_cb (GtkDialog *dialog,
 			    int response_id,
 			    RBShell *shell)
 {
+	
 	char *current_dir = NULL;
 	GSList *uri_list = NULL, *uris = NULL;
 
@@ -1840,6 +1854,21 @@ rb_shell_cmd_new_station (GtkAction *action,
 }
 
 static void
+rb_shell_cmd_new_podcast (GtkAction *action,
+			  RBShell *shell)
+{
+	GtkWidget *dialog;
+	GObject *object;
+	
+	rb_debug ("Got new podcast command");
+	g_object_get (G_OBJECT (shell->priv->podcast_source), "podcast-manager", &object, NULL);
+	dialog = rb_new_podcast_dialog_new ( RB_PODCAST_MANAGER(object));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+}
+
+
+static void
 rb_shell_cmd_extract_cd (GtkAction *action,
 			 RBShell *shell)
 {
@@ -1867,6 +1896,8 @@ static void
 rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
+
+	rb_podcast_source_shutdown (shell->priv->podcast_source);	
 	
 #ifdef WITH_DAAP_SUPPORT
 	rb_daap_sources_shutdown (shell);

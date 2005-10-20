@@ -103,6 +103,7 @@ enum {
 	TARGET_ALBUMS,
 	TARGET_GENRE,
 	TARGET_ARTISTS,
+	TARGET_LOCATION,
 	TARGET_URIS,
 };
 
@@ -118,6 +119,11 @@ static const GtkTargetEntry targets_artist [] = {
 	{ "text/x-rhythmbox-artist", 0, TARGET_ARTISTS },
 	{ "text/uri-list", 0, TARGET_URIS },
 };
+static const GtkTargetEntry targets_location [] = {
+	{ "text/x-rhythmbox-location", 0, TARGET_LOCATION },
+	{ "text/uri-list", 0, TARGET_URIS },
+};
+
 
 static GtkTargetList *rhythmdb_property_model_album_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_artist_drag_target_list = NULL;
@@ -293,6 +299,7 @@ rhythmdb_property_model_set_property (GObject *object,
 			model->priv->sort_propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
 			break;
 		case RHYTHMDB_PROP_TITLE:
+		case RHYTHMDB_PROP_LOCATION:
 			model->priv->sort_propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
 			break;
 		default:
@@ -985,6 +992,10 @@ rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model, GtkTreeView *
 	case RHYTHMDB_PROP_ARTIST:
 		targets = targets_artist;
 		n_elements = G_N_ELEMENTS (targets_artist);
+		break;
+	case RHYTHMDB_PROP_LOCATION:
+		targets = targets_location;
+		n_elements = G_N_ELEMENTS (targets_location);		
 		break;
 	default:
 		g_assert_not_reached ();

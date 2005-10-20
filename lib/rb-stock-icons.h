@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_SET_STAR      "rhythmbox-set-star"
 #define RB_STOCK_UNSET_STAR    "rhythmbox-unset-star"
 #define RB_STOCK_NO_STAR       "rhythmbox-no-star"
+#define RB_STOCK_PODCAST       "rhythmbox-podcast"
 
 void	rb_stock_icons_init	(void);
 

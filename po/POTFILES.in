@@ -12,6 +12,10 @@ data/glade/druid.glade
 data/glade/general-prefs.glade
 data/glade/library-prefs.glade
 data/glade/load-failure.glade
+data/glade/podcast-feed-properties.glade
+data/glade/podcast-new.glade
+data/glade/podcast-prefs.glade
+data/glade/podcast-properties.glade
 data/glade/recorder.glade
 data/glade/song-info.glade
 data/glade/song-info-multiple.glade
@@ -26,6 +30,11 @@ lib/rb-file-helpers.c
 metadata/rb-metadata-gst.c
 player/rb-player-gst.c
 player/rb-recorder-gst.c
+podcast/rb-feed-podcast-properties-dialog.c
+podcast/rb-new-podcast-dialog.c
+podcast/rb-podcast-manager.c
+podcast/rb-podcast-parse.c
+podcast/rb-podcast-properties-dialog.c
 remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in
 remote/bonobo/rb-remote-bonobo.c
 rhythmdb/rhythmdb-property-model.c
@@ -48,6 +57,7 @@ sources/rb-iradio-source.c
 sources/rb-library-source.c
 sources/rb-playlist-source.c
 sources/rb-playlist-source-recorder.c
+sources/rb-podcast-source.c
 sources/rb-source.c
 sources/rb-sourcelist.c
 widgets/bacon-volume.c
@@ -63,5 +73,6 @@ widgets/rb-load-failure-dialog.c
 widgets/rb-query-creator.c
 widgets/rb-query-creator-properties.c
 widgets/rb-search-entry.c
+widgets/rb-simple-view.c
 widgets/rb-song-display-box.c
 widgets/rb-song-info.c

@@ -1,3 +1,59 @@
+2005-10-21  James Livingston  <jrl@ids.org.au>
+
+	Patch from Renato Araujo <renatox@gmail.com> to add Podcast support
+
+	* Makefile.am:
+	* NEWS:
+	* configure.ac:
+	* data/art/Makefile.am:
+	* data/glade/Makefile.am:
+	* data/rhythmbox.schemas:
+	* data/ui/rhythmbox-ui.xml:
+	* doc/reference/Makefile.am:
+	* doc/reference/tmpl/rhythmdb.sgml:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* po/POTFILES.in:
+	* podcast/Makefile.am:
+	+ podcast/rb-feed-podcast-properties-dialog.c:
+	+ podcast/rb-feed-podcast-properties-dialog.h:
+	+ podcast/rb-new-podcast-dialog.c:
+	+ podcast/rb-new-podcast-dialog.h:
+	+ podcast/rb-podcast-manager.c:
+	+ podcast/rb-podcast-manager.h:
+	+ podcast/rb-podcast-marshal.list:
+	+ podcast/rb-podcast-parse.c:
+	+ podcast/rb-podcast-parse.h:
+	+ podcast/rb-podcast-properties-dialog.c:
+	+ podcast/rb-podcast-properties-dialog.h:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_set_property),
+	(rhythmdb_property_model_enable_drag):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (save_entry),
+	(rhythmdb_tree_save):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate),
+	(rhythmdb_entry_finalize), (rhythmdb_entry_set_internal),
+	(rhythmdb_prop_get_type), (rhythmdb_entry_podcast_post_get_type),
+	(rhythmdb_entry_podcast_feed_get_type):
+	* rhythmdb/rhythmdb.h:
+	* shell/Makefile.am:
+	* shell/rb-shell-player.c: (rb_shell_player_open_entry):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(add_to_library_response_cb), (rb_shell_cmd_new_podcast),
+	(rb_shell_quit):
+	* sources/Makefile.am:
+	+ sources/rb-podcast-source.c:
+	+ sources/rb-podcast-source.h:
+	* widgets/Makefile.am:
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_constructor),
+	(rb_property_view_selection_changed_cb),
+	(rb_property_view_get_treeview):
+	* widgets/rb-property-view.h:
+	+ widgets/rb-simple-view.c:
+	+ widgets/rb-simple-view.h:
+
 2005-10-20  James Livingston  <jrl@ids.org.au>
 
 	* NEWS: update with changes since 0.9.1
