@@ -1,3 +1,13 @@
+2005-10-22  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-iradio-source.c:
+	(rb_iradio_source_first_time_changed): Make merging the default
+	stations actually work.
+	
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_post_status_cell_data_func): fix problem where some
+	people weren't seing the percentages in the stats column.
+
 2005-10-21  James Livingston  <jrl@ids.org.au>
 
 	Patch from Caio Marcelo <cmarcelo@gmail.com>

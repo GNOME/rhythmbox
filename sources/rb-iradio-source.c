@@ -781,12 +781,14 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 				     RBIRadioSource *source)
 {
 	TotemPlParser *parser = totem_pl_parser_new ();
+	char *uri = gnome_vfs_get_uri_from_local_path (rb_file ("iradio-initial.pls"));
 
 	g_signal_connect_object (G_OBJECT (parser), "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
-	totem_pl_parser_parse (parser, rb_file ("iradio-initial.pls"), FALSE);	
+	totem_pl_parser_parse (parser, uri, FALSE);	
 	g_object_unref (G_OBJECT (parser));
+	g_free (uri);
 }
 
 static void

@@ -1551,8 +1551,13 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column, GtkCell
 		value = 0;
 		break;
 	default:
-		g_object_set (G_OBJECT (renderer), "text", NULL, NULL);
-		value = entry->podcast->status;
+		{
+			char *s = g_strdup_printf ("%u %%", (guint)entry->podcast->status);
+			
+			g_object_set (G_OBJECT (renderer), "text", s, NULL);
+			value = entry->podcast->status;
+			g_free (s);
+		}
 	}
 		
 	g_object_set (G_OBJECT (renderer), "value", value, NULL);
