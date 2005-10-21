@@ -18,7 +18,9 @@ librb_la_SOURCES =					\
 	rb-enums.h					\
 	rb-tree-dnd.c					\
 	rb-tree-dnd.h					\
-	rb-preferences.h	
+	rb-preferences.h				\
+	md5.c						\
+	md5.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

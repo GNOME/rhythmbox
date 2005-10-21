@@ -21,6 +21,9 @@
 
 #include <gtk/gtkdialog.h>
 #include "rb-preferences.h"
+#ifdef WITH_AUDIOSCROBBLER
+#include "rb-audioscrobbler.h"
+#endif
 
 #ifndef __RB_SHELL_PREFERENCES_H
 #define __RB_SHELL_PREFERENCES_H
@@ -50,7 +53,12 @@ typedef struct
 
 GType      rb_shell_preferences_get_type (void);
 
+#ifdef WITH_AUDIOSCROBBLER
+GtkWidget *rb_shell_preferences_new      (GList *views,
+					  RBAudioscrobbler *audioscrobbler);
+#else
 GtkWidget *rb_shell_preferences_new      (GList *views);
+#endif
 
 G_END_DECLS
 

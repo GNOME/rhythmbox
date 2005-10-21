@@ -15,7 +15,8 @@ glade_DATA =	general-prefs.glade	  	\
 		druid.glade			\
 		recorder.glade			\
 		daap-prefs.glade		\
-		uri.glade
+		uri.glade			\
+		audioscrobbler-prefs.glade
 
 gladedir = $(pkgdatadir)/glade
 

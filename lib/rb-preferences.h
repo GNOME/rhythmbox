@@ -41,6 +41,10 @@ G_BEGIN_DECLS
 #define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"
 #define CONF_STATE_BURN_DEVICE	CONF_PREFIX "/state/burn_device"
 
+#define CONF_AUDIOSCROBBLER_USERNAME CONF_PREFIX "/audioscrobbler/username"
+#define CONF_AUDIOSCROBBLER_PASSWORD CONF_PREFIX "/audioscrobbler/password"
+#define CONF_AUDIOSCROBBLER_ENABLED CONF_PREFIX "/audioscrobbler/enabled"
+
 G_END_DECLS
 
 #endif /* __RB_PREFERENCES_H */

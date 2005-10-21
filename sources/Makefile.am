@@ -66,8 +66,9 @@ if USE_DAAP
 libsourcesimpl_la_SOURCES +=		\
 	rb-daap-source.c 		\
 	rb-daap-source.h
+endif
 
-INCLUDES += $(SOUP_CFLAGS) 
-
+if USE_LIBSOUP
+INCLUDES += $(SOUP_CFLAGS)
 endif
 

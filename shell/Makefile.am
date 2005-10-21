@@ -68,6 +68,12 @@ librbshell_la_SOURCES =              			\
 	rb-tray-icon.c					\
 	rb-tray-icon.h				
 
+if WITH_AUDIOSCROBBLER
+rhythmbox_SOURCES +=					\
+	rb-audioscrobbler.c				\
+	rb-audioscrobbler.h
+endif
+
 rhythmbox_LDADD =					\
 	librbshell.la					\
 	$(top_builddir)/sources/libsources.la	        \
@@ -150,9 +156,13 @@ endif
 if USE_DAAP
 INCLUDES += -I$(top_srcdir)/daapsharing
 
-rhythmbox_LDADD += $(SOUP_LIBS) \
-		   $(MDNS_LIBS) \
+rhythmbox_LDADD += $(MDNS_LIBS) \
 		   $(top_builddir)/daapsharing/libdaapsharing.la
+endif
+
+if USE_LIBSOUP
+rhythmbox_LDADD += $(SOUP_LIBS)
+INCLUDES += $(SOUP_CFLAGS)
 endif
 
 BUILT_SOURCES += $(tab_files)

@@ -80,6 +80,10 @@
 #include "rb-playlist-source.h"
 #include "eel-gconf-extensions.h"
 
+#ifdef WITH_AUDIOSCROBBLER
+#include "rb-audioscrobbler.h"
+#endif /* WITH_AUDIOSCROBBLER */
+
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
 static void rb_shell_init (RBShell *shell);
@@ -333,6 +337,10 @@ struct RBShellPrivate
 	RBLibrarySource *library_source;
 	RBIRadioSource *iradio_source;
 	RBPodcastSource *podcast_source;
+
+#ifdef WITH_AUDIOSCROBBLER
+	RBAudioscrobbler *audioscrobbler;
+#endif
 
 	RBSource *selected_source;
 
@@ -736,6 +744,11 @@ rb_shell_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (shell->priv->playlist_manager));
 	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
+
+#ifdef WITH_AUDIOSCROBBLER
+	g_object_unref (G_OBJECT (shell->priv->audioscrobbler));
+#endif
+	
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 
 	gtk_widget_destroy (shell->priv->window);
@@ -929,6 +942,11 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	gtk_container_add (GTK_CONTAINER (win), vbox);
 	gtk_widget_show_all (vbox);
 
+#ifdef WITH_AUDIOSCROBBLER
+	rb_debug ("Audioscrobbler support enabled.");
+	shell->priv->audioscrobbler = rb_audioscrobbler_new (shell->priv->player_shell); 
+#endif /* WITH_AUDIOSCROBBLER */
+
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
 	shell->priv->sourcelist_visibility_notify_id =
@@ -1065,7 +1083,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
 	}
-	
+
 	rb_statusbar_sync_state (shell->priv->statusbar);
 	rb_shell_sync_smalldisplay (shell);
 
@@ -1549,6 +1567,9 @@ rb_shell_select_source (RBShell *shell,
 				 RB_SOURCE (source));
 	rb_playlist_manager_set_source (shell->priv->playlist_manager,
 					RB_SOURCE (source));
+#ifdef WITH_AUDIOSCROBBLER
+	g_object_set (G_OBJECT (shell->priv->audioscrobbler), "shell_player",  RB_SHELL_PLAYER (shell->priv->player_shell), NULL);
+#endif
 	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", RB_SOURCE (source), NULL);
 }
 
@@ -1755,7 +1776,12 @@ rb_shell_cmd_preferences (GtkAction *action,
 		          RBShell *shell)
 {
 	if (shell->priv->prefs == NULL) {
+#ifdef WITH_AUDIOSCROBBLER
+		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources,
+							       shell->priv->audioscrobbler);
+#else
 		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
+#endif
 
 		gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
 					      GTK_WINDOW (shell->priv->window));

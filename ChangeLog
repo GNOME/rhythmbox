@@ -1,3 +1,51 @@
+2005-10-20  Ryan P Skadberg  <skadz@stigmata.org>
+
+	Patch from Ruben Vermeersch <ruben@lambda1.be> to add
+         Audioscrobbler/Last.fm support
+
+	* configure.ac:
+	* data/glade/Makefile.am:
+	* data/glade/audioscrobbler-prefs.glade:
+	* data/rhythmbox.schemas:
+	* lib/Makefile.am:
+	* lib/md5.c: (md5_process), (md5_init), (md5_append), (md5_finish):
+	* lib/md5.h:
+	* lib/rb-preferences.h:
+	* po/POTFILES.in:
+	* shell/Makefile.am:
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_class_init),
+	(rb_audioscrobbler_init), (rb_audioscrobbler_finalize),
+	(rb_audioscrobbler_new), (rb_audioscrobbler_set_property),
+	(rb_audioscrobbler_get_property), (rb_audioscrobbler_add_timeout),
+	(rb_audioscrobbler_timeout_cb), (mkmd5),
+	(rb_audioscrobbler_parse_response), (rb_audioscrobbler_perform),
+	(rb_audioscrobbler_do_handshake),
+	(rb_audioscrobbler_do_handshake_cb),
+	(rb_audioscrobbler_submit_queue),
+	(rb_audioscrobbler_submit_queue_cb),
+	(rb_audioscrobbler_import_settings),
+	(rb_audioscrobbler_preferences_sync),
+	(rb_audioscrobbler_get_config_widget), (get_proxy_uri),
+	(rb_audioscrobbler_gconf_changed_cb),
+	(rb_audioscrobbler_song_changed_cb),
+	(rb_audioscrobbler_username_entry_changed_cb),
+	(rb_audioscrobbler_username_entry_activate_cb),
+	(rb_audioscrobbler_password_entry_changed_cb),
+	(rb_audioscrobbler_password_entry_activate_cb),
+	(rb_audioscrobbler_enabled_check_changed_cb),
+	(audioscrobbler_entry_init), (audioscrobbler_entry_free),
+	(rb_audioscrobbler_load_entry_from_string),
+	(rb_audioscrobbler_load_queue), (rb_audioscrobbler_save_queue),
+	(rb_audioscrobbler_print_queue),
+	(rb_audioscrobbler_free_queue_entries):
+	* shell/rb-audioscrobbler.h:
+	* shell/rb-shell-preferences.c:
+	(rb_shell_preferences_append_audioscrobbler_config):
+	* shell/rb-shell-preferences.h:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_select_source), (rb_shell_cmd_preferences):
+	* sources/Makefile.am:
+
 2005-10-21  James Livingston  <jrl@ids.org.au>
 
 	Patch from Renato Araujo <renatox@gmail.com> to add Podcast support
