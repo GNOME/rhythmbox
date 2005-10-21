@@ -75,46 +75,58 @@ rb_podcast_initializa_item ()
 static void
 rb_set_channel_value (struct RBPoadcastLoadContext* ctx, const char* name, const char* value)
 {
+   xmlChar *dvalue;
    if (!value)
        return;
 
+   dvalue = xmlCharStrdup (value);
+   g_strstrip ((char *)dvalue);
+   
    if (!strcmp (name, "title")) {
-        ctx->channel_data->title = xmlCharStrdup (value);
+        ctx->channel_data->title = dvalue;
    } else if (!strcmp (name, "language")) { 
-        ctx->channel_data->lang = xmlCharStrdup (value);
+        ctx->channel_data->lang = dvalue;
    } else if (!strcmp (name, "itunes:subtitle")) {
-        ctx->channel_data->subtitle = xmlCharStrdup (value);
+        ctx->channel_data->subtitle = dvalue;
    } else if (!strcmp (name, "itunes:summary")) { 
-        ctx->channel_data->summary = xmlCharStrdup (value);
+        ctx->channel_data->summary = dvalue;
    } else if (!strcmp (name, "description")) {
-        ctx->channel_data->description = xmlCharStrdup (value);
+        ctx->channel_data->description = dvalue;
    } else if (!strcmp (name, "generator") ||
               !strcmp (name, "itunes:author")) {
-        ctx->channel_data->author = xmlCharStrdup (value);
+        ctx->channel_data->author = dvalue;
    } else if (!strcmp (name, "webMaster")) {
-        ctx->channel_data->contact = xmlCharStrdup (value);
+        ctx->channel_data->contact = dvalue;
    } else if (!strcmp (name, "pubDate")) {
-        ctx->channel_data->pub_date = xmlCharStrdup (value);
+        ctx->channel_data->pub_date = dvalue;
    } else if (!strcmp (name, "copyright")) {
-        ctx->channel_data->copyright = xmlCharStrdup (value);
+        ctx->channel_data->copyright = dvalue;
    } else if (!strcmp (name, "img")) {
-        ctx->channel_data->img = xmlCharStrdup (value);
-   };
+        ctx->channel_data->img = dvalue;
+   } else {
+	g_free (dvalue);
+   }
 }
 
 
 static void
 rb_set_item_value (struct RBPoadcastLoadContext* ctx, const char* name, const char* value)
 {
-    if (!strcmp (name, "title")) {
-       ctx->item_data->title = xmlCharStrdup (value);
+   xmlChar *dvalue;
+   dvalue = xmlCharStrdup (value);
+   g_strstrip ((char *)dvalue);
+
+   if (!strcmp (name, "title")) {
+       ctx->item_data->title = dvalue;
    } else if (!strcmp (name, "url")) {
-       ctx->item_data->url = xmlCharStrdup (value);
+       ctx->item_data->url = dvalue;
    } else if (!strcmp (name, "pubDate")) {
-       ctx->item_data->pub_date = rb_podcast_parse_date (value);
+       ctx->item_data->pub_date = rb_podcast_parse_date ((char *)dvalue);
    } else if (!strcmp (name, "description")) {
-       ctx->item_data->description = xmlCharStrdup (value);
-   };
+       ctx->item_data->description = dvalue;
+   } else {
+       g_free (dvalue);
+   }
 }
 
 

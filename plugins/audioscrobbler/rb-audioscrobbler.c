@@ -950,7 +950,9 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 
 	if (entry == NULL)
 		return;
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION)
+	if (entry->type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 		return;
 
 	old_artist = audioscrobbler->priv->artist;

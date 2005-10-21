@@ -1,3 +1,22 @@
+2005-10-21  James Livingston  <jrl@ids.org.au>
+
+	* doc/reference/tmpl/rb-shell-preferences.sgml:
+	* shell/Makefile.am: fix building with gtk-doc
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
+	don't submit podcasts to audioscrobbler
+	
+	
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
+	
+	* podcast/rb-podcast-parse.c: (rb_set_channel_value),
+	(rb_set_item_value): strip spaces surrounding podcast urls
+	
+
+	Patch from Paul Kuliniewicz <kuliniew@purdue.edu>
+	
+	* rhythmdb/rhythmdb.h: fix crasher caused by dbus-podcast interaction
+
 2005-10-20  Ryan P Skadberg  <skadz@stigmata.org>
 
 	Patch from Ruben Vermeersch <ruben@lambda1.be> to add

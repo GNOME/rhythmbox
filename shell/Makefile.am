@@ -69,7 +69,7 @@ librbshell_la_SOURCES =              			\
 	rb-tray-icon.h				
 
 if WITH_AUDIOSCROBBLER
-rhythmbox_SOURCES +=					\
+librbshell_la_SOURCES +=				\
 	rb-audioscrobbler.c				\
 	rb-audioscrobbler.h
 endif

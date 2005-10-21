@@ -257,17 +257,35 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return rb_refstring_get (entry->first_seen_str);
 //podcast propriets
 	case RHYTHMDB_PROP_DESCRIPTION:
-		return rb_refstring_get (entry->podcast->description);
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->description);
+		else
+			return NULL;
 	case RHYTHMDB_PROP_SUBTITLE:
-		return rb_refstring_get (entry->podcast->subtitle);
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->subtitle);
+		else
+			return NULL;
 	case RHYTHMDB_PROP_SUMMARY: 
-		return rb_refstring_get (entry->podcast->summary);
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->summary);
+		else
+			return NULL;
 	case RHYTHMDB_PROP_LANG:
-		return rb_refstring_get (entry->podcast->lang);
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->lang);
+		else
+			return NULL;
 	case RHYTHMDB_PROP_COPYRIGHT:
-		return rb_refstring_get (entry->podcast->copyright);
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->copyright);
+		else
+			return NULL;
 	case RHYTHMDB_PROP_IMAGE:
-		return rb_refstring_get (entry->podcast->image);
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->image);
+		else
+			return NULL;
 	default:
 		g_assert_not_reached ();
 		return NULL;
@@ -323,9 +341,15 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 	case RHYTHMDB_PROP_BITRATE:
 		return entry->bitrate;		
 	case RHYTHMDB_PROP_POST_TIME:
-		return entry->podcast->post_time;
+		if (entry->podcast)
+			return entry->podcast->post_time;
+		else
+			return 0;
 	case RHYTHMDB_PROP_STATUS:
-		return entry->podcast->status;		
+		if (entry->podcast)
+			return entry->podcast->status;		
+		else
+			return 0;
 	default:
 		g_assert_not_reached ();
 		return 0;
