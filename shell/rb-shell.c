@@ -1122,6 +1122,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 			  RBShell *shell)
 {
 	shell->priv->iconified = (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED);
+	g_signal_emit_by_name (shell, "visibility_changed", 0);
 
 	/* don't save maximized state when is hidden */
 	if (!GTK_WIDGET_VISIBLE(shell->priv->window))
@@ -1153,8 +1154,8 @@ rb_shell_get_visibility (RBShell *shell)
 		gtk_window_is_active (GTK_WINDOW (shell->priv->window)));
 
 	return GTK_WIDGET_REALIZED (shell->priv->window)
-		&& !shell->priv->iconified
-		&& gtk_window_is_active (GTK_WINDOW (shell->priv->window));
+		&& !shell->priv->iconified;
+/*		&& gtk_window_is_active (GTK_WINDOW (shell->priv->window));*/
 }
 
 static gboolean
@@ -1165,6 +1166,8 @@ idle_hide_mainwindow (gpointer data)
 	GDK_THREADS_ENTER ();
 
 	gtk_widget_hide (GTK_WIDGET (shell->priv->window));
+
+	g_signal_emit_by_name (shell, "visibility_changed", 0);
 
 	g_object_unref (shell);
 
@@ -1197,6 +1200,7 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible, gboolean force)
 		gtk_widget_show (GTK_WIDGET (shell->priv->window));
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
 		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
+		g_signal_emit_by_name (shell, "visibility_changed", visible);
 	} else {
 		int x, y, width, height;
 
@@ -1216,8 +1220,6 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible, gboolean force)
 		shell->priv->idle_hide_mainwindow_id =
 			g_timeout_add (250, idle_hide_mainwindow, g_object_ref (shell));
 	}
-
-	g_signal_emit_by_name (shell, "visibility_changed", visible);
 
 }
 

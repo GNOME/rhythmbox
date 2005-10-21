@@ -1,5 +1,15 @@
 2005-10-21  James Livingston  <jrl@ids.org.au>
 
+	Patch from Caio Marcelo <cmarcelo@gmail.com>
+
+	* shell/rb-shell.c: (rb_shell_window_state_cb),
+	(rb_shell_get_visibility), (idle_hide_mainwindow),
+	(rb_shell_set_visibility): Make the "show window" item in the tray
+	icon menu show the toggle state correctly. Use a better policy on
+	deciding whether the window is "visible" or not. Closes bug 308053.
+
+2005-10-21  James Livingston  <jrl@ids.org.au>
+
 	* doc/reference/tmpl/rb-shell-preferences.sgml:
 	* shell/Makefile.am: fix building with gtk-doc
 
