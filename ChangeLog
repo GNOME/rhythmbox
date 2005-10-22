@@ -1,5 +1,25 @@
 2005-10-22  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (rb_shell_player_set_playing_entry): don't
+	crash if an entry couldn't be playerd, without streamer setting an
+	error.
+
+	
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init),
+	(rb_new_podcast_dialog_text_changed): enable the add button when a url
+	is pasted into the dialog.
+	
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):
+	* podcast/rb-podcast-parse.c: (rb_set_channel_value),
+	(rb_set_item_value), (rb_insert_item), (rb_validate_item_propert),
+	(rb_podcast_parse_channel_free):
+	* podcast/rb-podcast-parse.h: handle per-entry author names in podcast
+	feeds
+
+2005-10-22  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-iradio-source.c:
 	(rb_iradio_source_first_time_changed): Make merging the default
 	stations actually work.

@@ -29,6 +29,7 @@ typedef struct
 	xmlChar* title;
 	xmlChar* url;
 	xmlChar* description;
+	xmlChar* author;
 	uintmax_t pub_date;
 }RBPodcastItem;
 
@@ -43,7 +44,7 @@ typedef struct
 	xmlChar* author;
 	xmlChar* contact;
 	xmlChar* img;
-    	xmlChar* pub_date;	
+	uintmax_t pub_date;	
     	xmlChar* copyright;
     
 	GList *lst_itens;

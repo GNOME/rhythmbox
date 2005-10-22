@@ -55,9 +55,8 @@ static void rb_new_podcast_dialog_get_property (GObject *object,
 static void rb_new_podcast_dialog_response_cb (GtkDialog *gtkdialog,
 					       int response_id,
 					       RBNewPodcastDialog *dialog);
-static gboolean rb_new_podcast_dialog_text_changed_cb (GtkTextView *text,
-		                                       GdkEventKey *event,
-						       RBNewPodcastDialog *dialog);
+static void rb_new_podcast_dialog_text_changed (GtkTextBuffer *buffer,
+						RBNewPodcastDialog *dialog);
 //static gpointer rb_new_podcast_dialog_copy_file(gpointer data);
 
 
@@ -131,6 +130,7 @@ static void
 rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 {
 	GladeXML *xml;
+	GtkTextBuffer *buffer;
 
 	/* create the dialog and some buttons forward - close */
 	dialog->priv = g_new0 (RBNewPodcastDialogPrivate, 1);
@@ -170,11 +170,11 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	/* get the widgets from the XML */
 	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
 
-	g_signal_connect_object (G_OBJECT (dialog->priv->url),
-				 "key-release-event",
-				 G_CALLBACK (rb_new_podcast_dialog_text_changed_cb),
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->priv->url));
+	g_signal_connect_object (G_OBJECT (buffer),
+				 "changed",
+				 G_CALLBACK (rb_new_podcast_dialog_text_changed),
 				 dialog, 0);
-
 
 	/* default focus */
 	gtk_widget_grab_focus (dialog->priv->url);
@@ -283,22 +283,11 @@ rb_new_podcast_dialog_response_cb (GtkDialog *gtkdialog,
 	
 }
 
-static gboolean 
-rb_new_podcast_dialog_text_changed_cb (GtkTextView *text,
-                                       GdkEventKey *event,
-				       RBNewPodcastDialog *dialog)
+static void
+rb_new_podcast_dialog_text_changed (GtkTextBuffer *buffer,
+				    RBNewPodcastDialog *dialog)
 {
-	GtkTextIter begin, end;
-	const gchar *str;
-	
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer (text);
-	gtk_text_buffer_get_start_iter (buffer, &begin);
-	gtk_text_buffer_get_end_iter (buffer, &end);
-	
-	str = gtk_text_buffer_get_text (buffer, &begin, &end, TRUE);	
-	
 	gtk_widget_set_sensitive (dialog->priv->okbutton,
-				  g_utf8_strlen (str, -1) > 0);
-
-	return TRUE;
+				  gtk_text_buffer_get_char_count (buffer) > 0);
 }
+

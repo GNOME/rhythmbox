@@ -1527,11 +1527,11 @@ load_posts:
 							       (gchar* ) data->title,
 						 	       (gchar* ) item->title, 
 							       (gchar* ) data->url,
-							       (gchar* ) data->author,
+							       (gchar* ) (item->author ? item->author : data->author),
 							       (gchar* ) item->url,
 							       (gchar* ) item->description,
 							       status,
-							       (gulong ) item->pub_date);
+							       (gulong ) (item->pub_date > 0 ? item->pub_date : data->pub_date));
 			status = 103;
 		}
 		lst_songs = lst_songs->next;

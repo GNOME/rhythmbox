@@ -98,7 +98,8 @@ rb_set_channel_value (struct RBPoadcastLoadContext* ctx, const char* name, const
    } else if (!strcmp (name, "webMaster")) {
         ctx->channel_data->contact = dvalue;
    } else if (!strcmp (name, "pubDate")) {
-        ctx->channel_data->pub_date = dvalue;
+        ctx->channel_data->pub_date = rb_podcast_parse_date ((char *)dvalue);
+        g_free (dvalue);
    } else if (!strcmp (name, "copyright")) {
         ctx->channel_data->copyright = dvalue;
    } else if (!strcmp (name, "img")) {
@@ -122,8 +123,11 @@ rb_set_item_value (struct RBPoadcastLoadContext* ctx, const char* name, const ch
        ctx->item_data->url = dvalue;
    } else if (!strcmp (name, "pubDate")) {
        ctx->item_data->pub_date = rb_podcast_parse_date ((char *)dvalue);
+       g_free (dvalue);
    } else if (!strcmp (name, "description")) {
        ctx->item_data->description = dvalue;
+   } else if (!strcmp (name, "author")) {
+       ctx->item_data->author = dvalue;
    } else {
        g_free (dvalue);
    }
@@ -133,11 +137,12 @@ rb_set_item_value (struct RBPoadcastLoadContext* ctx, const char* name, const ch
 static void
 rb_insert_item (struct RBPoadcastLoadContext* ctx)
 {
-     RBPodcastItem *data = ctx->item_data;
+	RBPodcastItem *data = ctx->item_data;
 
-     if ((data->url) && (data->url) && (data->pub_date)) {
-        ctx->channel_data->lst_itens = g_list_append (ctx->channel_data->lst_itens, (void *) ctx->item_data);
-     }
+	if (!data->url)
+		return;
+
+	ctx->channel_data->lst_itens = g_list_append (ctx->channel_data->lst_itens, (void *) ctx->item_data);
 }
 
 static gboolean rb_validate_channel_propert (const char *name)
@@ -164,7 +169,8 @@ static gboolean rb_validate_item_propert (const char *name)
     if (!strcmp(name, "title") ||
         !strcmp(name, "url") ||
         !strcmp(name, "pubDate") ||
-	!strcmp(name, "description"))
+	!strcmp(name, "description") ||
+	!strcmp(name, "author"))
         return TRUE;
     else
         return FALSE;
@@ -455,9 +461,6 @@ rb_podcast_parse_channel_free (RBPodcastChannel *data)
 
 	if (data->img != NULL)
 		g_free (data->img);
-
-	if (data->pub_date != NULL)
-		g_free (data->pub_date);
 
 	if (data->copyright != NULL)
 		g_free (data->copyright);

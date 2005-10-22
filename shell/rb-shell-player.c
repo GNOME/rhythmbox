@@ -1150,6 +1150,11 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry, 
  lose:
 	/* Ignore errors, shutdown the player */
 	rb_player_close (player->priv->mmplayer, NULL);
+	if (tmp_error == NULL)
+		tmp_error = g_error_new (RB_SHELL_PLAYER_ERROR,
+					 RB_SHELL_PLAYER_ERROR_NOT_PLAYING,
+					 "Problem occurred without error being set. "
+					 "This is a bug in Rhythmbox or GStreamer.");
 	/* Mark this song as failed */
 	rb_shell_player_set_entry_playback_error (player, entry, tmp_error->message);
 	g_propagate_error (error, tmp_error);
