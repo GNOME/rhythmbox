@@ -1,3 +1,18 @@
+2005-10-25  Ryan P Skadberg  <skadz@stigmata.org>
+
+	Patch by: Renato Araujo <renatox@gmail.com>
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_start_sync),
+	(rb_podcast_manager_sync_head_cb), (rb_podcast_manager_add_post),
+	(rb_podcast_manager_update_synctime),
+	(rb_podcast_manager_config_changed),
+	(rb_podcast_manager_insert_feed):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_finalize),
+	(rhythmdb_entry_set_internal), (rhythmdb_prop_get_type):
+	* rhythmdb/rhythmdb.h: Fixes for #319759 and #319755.
+
 2005-10-25  James Livingston  <jrl@ids.org.au>
 
 	* daapsharing/rb-daap-share.c: (db_entry_added_cb),

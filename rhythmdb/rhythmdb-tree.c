@@ -417,6 +417,9 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_IMAGE:
 			ctx->entry->podcast->image = rb_refstring_new (ctx->buf->str);
 			break;
+		case RHYTHMDB_PROP_LAST_POST:
+			ctx->entry->podcast->last_post = rb_refstring_new (ctx->buf->str);
+			break;
 		case RHYTHMDB_PROP_POST_TIME:			
 			ctx->entry->podcast->post_time = parse_ulong (ctx->buf->str);
 			break;
@@ -762,6 +765,10 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_IMAGE:
 			if (entry->podcast && entry->podcast->image)
 				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->image));
+			break;
+		case RHYTHMDB_PROP_LAST_POST:
+			if (entry->podcast && entry->podcast->last_post)
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->last_post));
 			break;
 		case RHYTHMDB_PROP_POST_TIME:
 			if (entry->podcast)

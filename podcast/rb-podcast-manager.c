@@ -79,6 +79,7 @@ struct RBPodcastManagerPrivate
 {
 	RhythmDB *db;
 	GList *download_list;
+	guint next_time;
 	guint source_sync;
 	guint update_interval_notify_id;
 	GMutex *mutex_job;
@@ -187,7 +188,7 @@ static void start_job					(RBPodcastManagerInfo *data);
 static void end_job					(RBPodcastManagerInfo *data);
 static void cancel_job					(RBPodcastManagerInfo *pd);
 static void write_job_data				(RBPodcastManagerInfo *data);
-static void  rb_podcast_manager_update_synctime		(void);
+static void  rb_podcast_manager_update_synctime		(RBPodcastManager *pd);
 static void  rb_podcast_manager_config_changed		(GConfClient* client,
                                         		 guint cnxn_id,
 				                         GConfEntry *entry,
@@ -480,7 +481,12 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 void
 rb_podcast_manager_start_sync(RBPodcastManager *pd)
 {
-	gint next_time =  eel_gconf_get_integer(CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME);
+	gint next_time;
+	if (pd->priv->next_time > 0) {
+		next_time = pd->priv->next_time;
+	} else {
+		next_time = eel_gconf_get_integer(CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME);
+	}
 
 	if (next_time > 0) {
 		if (pd->priv->source_sync != 0) {
@@ -490,7 +496,8 @@ rb_podcast_manager_start_sync(RBPodcastManager *pd)
 		next_time = next_time - ((int)time (NULL));
 		if (next_time <= 0) {
 			rb_podcast_manager_update_feeds (pd);
-			rb_podcast_manager_update_synctime ();
+			pd->priv->next_time = 0;
+			rb_podcast_manager_update_synctime (pd);
 			return;
 		}
 		pd->priv->source_sync = g_timeout_add (next_time * 1000, (GSourceFunc ) rb_podcast_manager_sync_head_cb, pd);
@@ -501,9 +508,11 @@ rb_podcast_manager_start_sync(RBPodcastManager *pd)
 static gboolean
 rb_podcast_manager_sync_head_cb (gpointer data)
 {
-	rb_podcast_manager_update_feeds (RB_PODCAST_MANAGER (data));
-	rb_podcast_manager_start_sync (RB_PODCAST_MANAGER (data));
-	RB_PODCAST_MANAGER(data)->priv->source_sync = 0;
+	RBPodcastManager *pd = RB_PODCAST_MANAGER (data);
+	rb_podcast_manager_update_feeds (pd);
+	pd->priv->source_sync = 0;
+	pd->priv->next_time = 0;
+	rb_podcast_manager_update_synctime (RB_PODCAST_MANAGER (data));
 	return FALSE;
 }
 
@@ -907,8 +916,6 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
 			
-		rhythmdb_commit (db);
-		
 		g_value_unset (&time_val);
 		g_value_unset (&title_val);
 		g_value_unset (&subtitle_val);
@@ -1352,7 +1359,7 @@ rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 
 
 static void 
-rb_podcast_manager_update_synctime (void)
+rb_podcast_manager_update_synctime (RBPodcastManager *pd)
 {
 	gint value;
 	gint index = eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL);
@@ -1377,6 +1384,8 @@ rb_podcast_manager_update_synctime (void)
 
 	eel_gconf_set_integer (CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME, value);
 	eel_gconf_suggest_sync ();
+	pd->priv->next_time = value;
+	rb_podcast_manager_start_sync (pd);
 }
 
 static void  rb_podcast_manager_config_changed (GConfClient* client,
@@ -1384,8 +1393,7 @@ static void  rb_podcast_manager_config_changed (GConfClient* client,
 				                GConfEntry *entry,
 						gpointer user_data)
 {
-	rb_podcast_manager_update_synctime ();
-	rb_podcast_manager_start_sync (RB_PODCAST_MANAGER (user_data));
+	rb_podcast_manager_update_synctime (RB_PODCAST_MANAGER (user_data));
 }
 
 
@@ -1414,8 +1422,12 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue image_val = { 0, };
 	GValue author_val = { 0, };
 	GValue status_val = { 0, };
+	GValue last_post_val = { 0, };
+	gchar *last_post;
 	gulong status;
 	gboolean updates;
+	gboolean new_feed;
+	gboolean insert_post;
 	RhythmDB *db = pd->priv->db;
 
 	RhythmDBEntry *entry;
@@ -1428,6 +1440,10 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		return;
 	}
 
+	last_post = NULL;
+	insert_post = TRUE;
+	new_feed = TRUE;
+
 	//processing podcast head
 	entry = rhythmdb_entry_lookup_by_location (db, (gchar* )data->url);
 	if (entry) {
@@ -1437,7 +1453,9 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		rhythmdb_commit (db);
 		g_value_unset (&status_val);
-
+		last_post = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LAST_POST));
+		new_feed = FALSE;
+		insert_post = FALSE;
 		goto load_posts;
 	}
 	
@@ -1510,19 +1528,26 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 	g_value_unset (&status_val);
 
-
-	rhythmdb_commit (db);
-	
 	rb_debug("Podcast head Inserted");
 	
 load_posts:
 	
-	lst_songs = data->lst_itens;
-	status = 102;
+	lst_songs = g_list_reverse (data->lst_itens);
+	status = 103;
 	updates = FALSE;
 	while (lst_songs) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
-		if (item) {
+		if (item && (new_feed || insert_post)) {
+			
+			if (last_post) {
+				g_free (last_post);	
+			}
+			
+			last_post = g_strdup ((gchar* ) item->url);
+			if (g_list_last (lst_songs) == lst_songs) {
+				status = 102;
+			}
+				    
 			updates = rb_podcast_manager_add_post (db, 
 							       (gchar* ) data->title,
 						 	       (gchar* ) item->title, 
@@ -1533,10 +1558,27 @@ load_posts:
 							       status,
 							       (gulong ) (item->pub_date > 0 ? item->pub_date : data->pub_date));
 			status = 103;
+		} else {
+			if (!g_strcasecmp(last_post, (gchar* )item->url)) {
+				insert_post = TRUE;
+			}
 		}
+		
 		lst_songs = lst_songs->next;
 	}
 
+	g_value_init (&last_post_val, G_TYPE_STRING);
+	g_value_set_string (&last_post_val, last_post);
+	if (new_feed) 
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
+	else
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
+	
+	g_value_unset (&last_post_val);
+	
+	rhythmdb_commit (db);
+
+	g_free (last_post);
 	return;
 }
 

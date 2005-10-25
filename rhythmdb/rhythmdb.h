@@ -112,6 +112,7 @@ typedef enum
 	RHYTHMDB_PROP_COPYRIGHT,
 	RHYTHMDB_PROP_IMAGE,
 	RHYTHMDB_PROP_POST_TIME,
+	RHYTHMDB_PROP_LAST_POST,
 	
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
@@ -138,6 +139,7 @@ typedef struct {
 	RBRefString *lang;
 	RBRefString *copyright;
 	RBRefString *image;
+	RBRefString *last_post;
 	gulong status;   //0-99: downloading; 100: Conplete; 101: Error; 102: wait; 103: pause;
 	gulong post_time;
 } RhythmDBPodcastFields;
@@ -286,6 +288,12 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 			return rb_refstring_get (entry->podcast->image);
 		else
 			return NULL;
+	case RHYTHMDB_PROP_LAST_POST:
+		if (entry->podcast)
+			return rb_refstring_get (entry->podcast->last_post);
+		else
+			return NULL;
+
 	default:
 		g_assert_not_reached ();
 		return NULL;
