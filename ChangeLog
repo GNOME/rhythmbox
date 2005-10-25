@@ -1,3 +1,9 @@
+2005-10-25  James Livingston  <jrl@ids.org.au>
+
+	* daapsharing/rb-daap-share.c: (db_entry_added_cb),
+	(db_entry_deleted_cb): don't share tracks that are hidden because the
+	file is missing.
+
 2005-10-22  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (rb_shell_player_set_playing_entry): don't

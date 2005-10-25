@@ -1068,8 +1068,9 @@ db_entry_added_cb (RhythmDB *db,
 		   RBDAAPShare *share)
 {
 	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	gboolean hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
 
-	if (type == rhythmdb_entry_song_get_type ()) {
+	if (type == rhythmdb_entry_song_get_type () && !hidden) {
 		share->priv->num_songs++;
 
 		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (share->priv->num_songs), entry);
@@ -1082,14 +1083,11 @@ db_entry_deleted_cb (RhythmDB *db,
 		     RhythmDBEntry *entry,
 		     RBDAAPShare *share)
 {
-	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	gpointer id;
 
-	if (type == rhythmdb_entry_song_get_type ()) {
-		gpointer id;
-
-		id = g_hash_table_lookup (share->priv->entry_to_id, entry);
+	id = g_hash_table_lookup (share->priv->entry_to_id, entry);
+	if (id) {
 		g_hash_table_remove (share->priv->entry_to_id, entry);
-		g_hash_table_remove (share->priv->id_to_entry, id);
 
 		share->priv->num_songs--;
 	}
