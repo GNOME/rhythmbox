@@ -55,6 +55,16 @@ static void rb_daap_share_dispose	(GObject *object);
 
 static void rb_daap_share_start_publish (RBDAAPShare *share);
 static void rb_daap_share_stop_publish  (RBDAAPShare *share);
+static void rb_daap_share_playlist_created (RBPlaylistManager *mgr,
+					    RBSource *playlist,
+					    RBDAAPShare *share);
+static void rb_daap_share_process_playlist (RBSource *playlist,
+					    RBDAAPShare *share);
+static void rb_daap_share_playlist_destroyed (RBDAAPShare *share,
+					      RBSource *source);
+static void rb_daap_share_forget_playlist (gpointer data,
+					   RBDAAPShare *share);
+
 
 #define CONF_NAME CONF_PREFIX "/sharing/share_name"
 #define STANDARD_DAAP_PORT 3689
@@ -81,7 +91,15 @@ struct RBDAAPSharePrivate {
 
 	/* playlist things */
 	RBPlaylistManager *playlist_manager;
+	guint next_playlist_id;
+	GList *playlist_ids;	/* contains RBPlaylistIDs */
 };
+
+typedef struct {
+	RBSource *source;
+	gint32 id;
+} RBPlaylistID;
+
 
 enum {
 	PROP_0,
@@ -166,7 +184,21 @@ rb_daap_share_set_property (GObject *object,
 		share->priv->db = g_value_get_object (value);
 		break;
 	case PROP_PLAYLIST_MANAGER:
-		share->priv->playlist_manager = g_value_get_object (value);
+		{
+			GList *playlists;
+			share->priv->playlist_manager = g_value_get_object (value);
+			g_signal_connect_object (G_OBJECT (share->priv->playlist_manager),
+						 "playlist_added",
+						 G_CALLBACK (rb_daap_share_playlist_created),
+						 share, 0);
+
+			/* Currently, there are no playlists when this object is created, but in
+			 * case it changes..
+			 */
+			playlists = rb_playlist_manager_get_playlists (share->priv->playlist_manager);
+			g_list_foreach (playlists, (GFunc) rb_daap_share_process_playlist, share);
+			g_list_free (playlists);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -198,6 +230,77 @@ rb_daap_share_get_property (GObject *object,
 	}
 }
 
+static gint
+_find_by_id (gconstpointer a, gconstpointer b)
+{
+	RBPlaylistID *ai = (RBPlaylistID *)a;
+	gint bv = GPOINTER_TO_INT (b);
+	return (ai->id - bv);
+}
+
+static gint
+_find_by_source (gconstpointer a, gconstpointer b)
+{
+	RBPlaylistID *ai = (RBPlaylistID *)a;
+	RBSource *bs = (RBSource *)b;
+	return (ai->source - bs);
+}
+
+static void
+rb_daap_share_playlist_created (RBPlaylistManager *manager,
+				RBSource *source,
+				RBDAAPShare *share)
+{
+	rb_daap_share_process_playlist (source, share);
+}
+
+static void
+rb_daap_share_process_playlist (RBSource *source,
+				RBDAAPShare *share)
+{
+	RBPlaylistID *id;
+	
+	/* make sure we're not going insane.. */
+	g_assert (g_list_find_custom (share->priv->playlist_ids, 
+				      source, 
+				      _find_by_source) == NULL);
+
+	g_object_weak_ref (G_OBJECT (source),
+			   (GWeakNotify) rb_daap_share_playlist_destroyed,
+			   share);
+	id = g_new0 (RBPlaylistID, 1);
+	id->source = source;
+	id->id = share->priv->next_playlist_id++;
+	share->priv->playlist_ids = g_list_append (share->priv->playlist_ids, id);
+
+	/* if we knew how to send updates to clients, we'd probably do something here */
+}
+
+static void
+rb_daap_share_playlist_destroyed (RBDAAPShare *share,
+				  RBSource *source)
+{
+	GList *id;
+
+	id = g_list_find_custom (share->priv->playlist_ids, source, _find_by_source);
+	if (!id)
+		return;
+
+	share->priv->playlist_ids = g_list_remove_link (share->priv->playlist_ids, id);
+	g_free (id->data);
+	g_list_free_1 (id);
+}
+
+static void
+rb_daap_share_forget_playlist (gpointer data,
+			       RBDAAPShare *share)
+{
+	RBPlaylistID *id = (RBPlaylistID *)data;
+	g_object_weak_unref (G_OBJECT (id->source),
+			     (GWeakNotify) rb_daap_share_playlist_destroyed,
+			     share);
+}
+
 
 static void
 rb_daap_share_dispose (GObject *object)
@@ -212,6 +315,10 @@ rb_daap_share_dispose (GObject *object)
 		g_free (share->priv->name);
 		g_object_unref (share->priv->db);
 		g_object_unref (share->priv->playlist_manager);
+		
+		g_list_foreach (share->priv->playlist_ids, (GFunc) rb_daap_share_forget_playlist, share);
+		g_list_foreach (share->priv->playlist_ids, (GFunc) g_free, NULL);
+		
 		g_free (share->priv);
 		share->priv = NULL;
 	}
@@ -656,7 +763,7 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 }
 
 static void 
-add_playlist_to_mlcl (RBSource *source, 
+add_playlist_to_mlcl (RBPlaylistID *playlist_id, 
 		      GNode *mlcl)
 {
  /* 	MLIT listing item
@@ -670,14 +777,15 @@ add_playlist_to_mlcl (RBSource *source,
 	RBEntryView *ev;
 	guint num_songs;
 	
-	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	g_object_get (G_OBJECT (playlist_id->source), "name", &name, NULL);
 	
-	ev = rb_source_get_entry_view (source);
+	ev = rb_source_get_entry_view (playlist_id->source);
 	num_songs = rb_entry_view_get_num_entries (ev);
 	
 	mlit = rb_daap_structure_add (mlcl, RB_DAAP_CC_MLIT);
-	rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) source);
-	rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64)(gint32) source);
+	rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, playlist_id->id);
+	/* we don't have a persistant ID for playlists, unfortunately */
+	rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64) playlist_id->id);
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, name);
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) num_songs);
 	
@@ -846,7 +954,6 @@ databases_cb (RBDAAPShare *share,
 		GNode *aply;
 		GNode *mlcl;
 		GNode *mlit;
-		GList *playlists;
 
 		aply = rb_daap_structure_add (NULL, RB_DAAP_CC_APLY);
 		rb_daap_structure_add (aply, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
@@ -861,9 +968,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) share->priv->num_songs);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ABPL, (gchar) 1); /* base playlist */
 
-		playlists = rb_playlist_manager_get_playlists (share->priv->playlist_manager);
-		g_list_foreach (playlists, (GFunc)add_playlist_to_mlcl, mlcl);
-		g_list_free (playlists);
+		g_list_foreach (share->priv->playlist_ids, (GFunc) add_playlist_to_mlcl, mlcl);
 	
 		message_set_from_rb_daap_structure (message, aply);
 		rb_daap_structure_destroy (aply);
@@ -898,25 +1003,37 @@ databases_cb (RBDAAPShare *share,
 		
 			g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
 		} else {
-			RBSource *source = GINT_TO_POINTER (pl_id);
+			RBPlaylistID *id;
+			GList *idl;
 			RBEntryView *ev;
 			guint num_songs;
 			RhythmDBQueryModel *model;
+
+			idl = g_list_find_custom (share->priv->playlist_ids, 
+						  GINT_TO_POINTER (pl_id), 
+						  _find_by_id);
+			if (idl == NULL) {
+				soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
+				soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), 
+								  SOUP_TRANSFER_CONTENT_LENGTH);
+				soup_message_set_response (message, "text/plain", SOUP_BUFFER_USER_OWNED, "", 0);
+				goto out;
+			}
+			id = (RBPlaylistID *)idl->data;
 
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
 
 			mb.pointer = share->priv->entry_to_id;
 			
-			ev = rb_source_get_entry_view (source);
+			ev = rb_source_get_entry_view (id->source);
 			num_songs = rb_entry_view_get_num_entries (ev);
 				
 			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);
 			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) num_songs);
 
-			g_object_get (G_OBJECT (source), "query-model", &model, NULL);
+			g_object_get (G_OBJECT (id->source), "query-model", &model, NULL);
 			gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc) add_playlist_entry_to_mlcl, &mb);
 			g_object_unref (model);
-			
 		}
 		
 		message_set_from_rb_daap_structure (message, apso);
@@ -1162,6 +1279,7 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 	share->priv->id_to_entry = g_hash_table_new (NULL, NULL);
 	share->priv->entry_to_id = g_hash_table_new (NULL, NULL);
 	share->priv->num_songs = 0;
+	share->priv->next_playlist_id = 2;		/* 1 already used */
 
 	rhythmdb_entry_foreach (share->priv->db, (GFunc)add_db_entry, share);
 

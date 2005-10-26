@@ -1,3 +1,29 @@
+2005-10-25  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	reviewed by: James Livingston <jrl@ids.org.au>
+
+	Assign sequential IDs to playlists for DAAP rather than using the
+	address of the playlist object.  Less flaky, and should work on 64bit
+	platforms. Closes bug 319304.
+
+	* daapsharing/rb-daap-share.c: 
+	(rb_daap_share_set_property): watch for playlist creation
+	(_find_by_id), (_find_by_source): playlist list search functions
+	(rb_daap_share_playlist_created),
+	(rb_daap_share_process_playlist),
+	(rb_daap_share_playlist_destroyed):
+	 update playlist list as it changes, use weak refs on 
+	 playlists to get notified on destroy.
+	(rb_daap_share_forget_playlist), (rb_daap_share_dispose): 
+	 destroy playlist list on shutdown
+	(add_playlist_to_mlcl): use playlist ID rather than pointer in
+	 DAAP response
+	(databases_cb): search for playlist ID in list rather than just
+	 converting it to a pointer; return HTTP 404 if playlist not 
+	 found.
+	(rb_daap_share_start_publish): playlist IDs start at 2, since 1
+	 is already used for the main library
+
 2005-10-26  James Livingston  <jrl@ids.org.au>
 
 	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
