@@ -1,5 +1,17 @@
 2005-10-26  James Livingston  <jrl@ids.org.au>
 
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_do_reorder): generate the row re-order map
+	correctly.
+	
+	* widgets/rb-entry-view.c: (rb_entry_view_set_property),
+	(rb_entry_view_row_changed_cb), (rb_entry_view_rows_reordered_cb):
+	Update selection when rows get re-ordered. Closes 319718.
+
+2005-10-26  James Livingston  <jrl@ids.org.au>
+
 	patch from Jonathan Matthew <jonathan@kaolin.hn.org> 
 
 	* shell/rb-play-order.c: (rb_play_order_playing_source_changed):

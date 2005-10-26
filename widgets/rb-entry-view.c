@@ -79,6 +79,11 @@ static void rb_entry_view_row_changed_cb (GtkTreeModel *model,
 					  GtkTreePath *path,
 					  GtkTreeIter *iter,
 					  RBEntryView *view);
+static void rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
+					     GtkTreePath *path,
+					     GtkTreeIter *iter,
+					     gint *order,
+					     RBEntryView *view);
 static gboolean emit_entry_changed (RBEntryView *view);
 static void queue_changed_sig (RBEntryView *view);
 static void rb_entry_view_sync_columns_visible (RBEntryView *view);
@@ -502,6 +507,9 @@ rb_entry_view_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
 							      G_CALLBACK (rb_entry_view_row_changed_cb),
 							      view);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
+							      G_CALLBACK (rb_entry_view_rows_reordered_cb),
+							      view);
 		}
 		new_model = g_value_get_object (value);
 
@@ -521,6 +529,11 @@ rb_entry_view_set_property (GObject *object,
 		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_changed",
 					 G_CALLBACK (rb_entry_view_row_changed_cb),
+					 view,
+					 0);
+		g_signal_connect_object (G_OBJECT (new_model),
+					 "rows_reordered",
+					 G_CALLBACK (rb_entry_view_rows_reordered_cb),
 					 view,
 					 0);
 
@@ -1903,6 +1916,49 @@ rb_entry_view_row_changed_cb (GtkTreeModel *model,
 {
 	rb_debug ("row changed");
 	queue_changed_sig (view);
+}
+
+static void
+rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
+				 GtkTreePath *path,
+				 GtkTreeIter *iter,
+				 gint *order,
+				 RBEntryView *view)
+{
+	GList *selected_rows;
+	GList *i;
+	gint model_size;
+	rb_debug ("rows reordered");
+
+	model_size = gtk_tree_model_iter_n_children (model, NULL);
+
+	/* check if a selected row was moved; if so, we'll
+	 * need to move the selection too.
+	 */
+	selected_rows = gtk_tree_selection_get_selected_rows (view->priv->selection,
+							      NULL);
+	for (i = selected_rows; i != NULL; i = i->next) {
+		GtkTreePath *path = (GtkTreePath *)i->data;
+		gint index = gtk_tree_path_get_indices (path)[0];
+		gint newindex;
+		if (order[index] != index) {
+			GtkTreePath *newpath;
+			gtk_tree_selection_unselect_path (view->priv->selection, path);
+
+			for (newindex = 0; newindex < model_size; newindex++) {
+				if (order[newindex] == index) {
+					newpath = gtk_tree_path_new_from_indices (newindex, -1);
+					gtk_tree_selection_select_path (view->priv->selection, newpath);
+					gtk_tree_path_free (newpath);
+					break;
+				}
+			}
+			
+		}
+	}
+
+	g_list_foreach (selected_rows, (GFunc) gtk_tree_path_free, NULL);
+	g_list_free (selected_rows);
 }
 
 guint

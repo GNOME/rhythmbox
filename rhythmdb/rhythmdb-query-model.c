@@ -917,8 +917,8 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 
 	reorder_map = malloc (length * sizeof(gint));
 
-	if (new_pos > old_pos ){
-		/* it has mover furthur down the list */
+	if (new_pos > old_pos) {
+		/* it has mover further down the list */
 		for (i = 0; i < old_pos; i++)
 			reorder_map[i] = i;
 		for (i = old_pos; i < new_pos; i++)
@@ -931,9 +931,9 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 		for (i = 0; i < new_pos; i++)
 			reorder_map[i] = i;
 		reorder_map[new_pos] = old_pos;
-		for (i = new_pos + 1; i < old_pos; i++)
+		for (i = new_pos + 1; i < old_pos + 1; i++)
 			reorder_map[i] = i - 1;
-		for (i = new_pos; i < length; i++)
+		for (i = old_pos + 1; i < length; i++)
 			reorder_map[i] = i;
 	}
 
