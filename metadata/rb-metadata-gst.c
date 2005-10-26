@@ -106,9 +106,10 @@ rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
 	if (!(spider = gst_element_factory_make ("spider", "spider")))
 		return NULL;
 
-	if (!(tagger = gst_element_factory_make ("id3mux", "id3mux")))
-		/* FIXME: leaks spider */
+	if (!(tagger = gst_element_factory_make ("id3mux", "id3mux"))) {
+		gst_object_unref (GST_OBJECT (spider));
 		return NULL;
+	}
 
 	gst_bin_add (GST_BIN (pipeline), spider);
 	gst_bin_add (GST_BIN (pipeline), tagger);
@@ -138,6 +139,8 @@ add_supported_type (RBMetaData *md,
 static void
 rb_metadata_init (RBMetaData *md)
 {
+       RBAddTaggerElem add_tagger;
+        
 	md->priv = g_new0 (RBMetaDataPrivate, 1);
 
 	md->priv->supported_types = g_ptr_array_new ();
@@ -152,9 +155,11 @@ rb_metadata_init (RBMetaData *md)
 	 * purpose.
  	 */
 
-	add_supported_type (md, "application/x-id3", rb_add_id3_tagger, "MP3");
-	add_supported_type (md, "audio/mpeg", rb_add_id3_tagger, "MP3");
+	add_tagger = (gst_element_factory_find("id3mux") && gst_element_factory_find("spider")) ?  rb_add_id3_tagger : NULL;
+	add_supported_type (md, "application/x-id3", add_tagger, "MP3");
+	add_supported_type (md, "audio/mpeg", add_tagger, "MP3");
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
+	add_tagger = (gst_element_factory_find("flactag")) ?  rb_add_flac_tagger : NULL;
 	add_supported_type (md, "audio/x-flac", rb_add_flac_tagger, "FLAC");
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
 	add_supported_type (md, "audio/x-wav", NULL, "WAV");
@@ -746,7 +751,23 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 	}
 }
 
+static gboolean
+rb_metadata_file_valid (char *original, char *newfile)
+{
+	RBMetaData *md = rb_metadata_new ();
+	GError *error = NULL;
+	gboolean ret;
 
+	rb_metadata_load (md, newfile, &error);
+	ret = (error == NULL);
+
+	/* TODO: check that the tags are correct? */
+
+	if (error != NULL)	
+		g_error_free (error);
+	g_object_unref (G_OBJECT (md));
+	return ret;
+}
 
 void
 rb_metadata_save (RBMetaData *md, GError **error)
@@ -804,6 +825,14 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	}
 
 	tagger = add_tagger_func (GST_BIN (pipeline), gnomevfssrc);
+	if (!tagger) {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     "Unsupported file type: %s", md->priv->type);
+		goto missing_plugin;
+	}
+
 	gst_tag_setter_set_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_REPLACE);
 	g_hash_table_foreach (md->priv->metadata, 
 			      (GHFunc) rb_metadata_gst_add_tag_data,
@@ -827,30 +856,39 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	if (handle != NULL) {
 		if ((result = gnome_vfs_close (handle)) != GNOME_VFS_OK)
 			goto vfs_error;
+		/* check to ensure the file isn't corrupt */
+		if (!rb_metadata_file_valid (md->priv->uri, tmpname)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     "File corrupted during write");
+			goto out_error;
+		}
+		
 		if ((result = gnome_vfs_move (tmpname, md->priv->uri, TRUE)) != GNOME_VFS_OK)
 				goto vfs_error;
 	}
 
 	goto out;
- vfs_error:
+vfs_error:
 	g_set_error (error,
 		     RB_METADATA_ERROR,
 		     RB_METADATA_ERROR_GNOMEVFS,
 		     "%s",
 		     gnome_vfs_result_to_string (result)); 
 	goto out_error;
- missing_plugin:
+missing_plugin:
 	g_set_error (error,
 		     RB_METADATA_ERROR,
 		     RB_METADATA_ERROR_MISSING_PLUGIN,
 		     _("Failed to create %s element; check your installation"),
 		     plugin_name); 
- out_error:
+out_error:
 	if (handle != NULL)
 		gnome_vfs_close (handle);
 	if (tmpname != NULL)
 		gnome_vfs_unlink (tmpname);
- out:
+out:
 	if (pipeline != NULL)
 		gst_object_unref (GST_OBJECT (pipeline));
 	md->priv->pipeline = NULL;

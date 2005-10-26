@@ -1,3 +1,14 @@
+2005-10-26  James Livingston  <jrl@ids.org.au>
+
+	Patch by Artem Baguinski <femistofel@gmail.com> and James Livingston
+	<jrl@ids.org.au>
+
+	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger),
+	(rb_metadata_init): Check that the necessary plugins are present to do
+	id3 editing.
+	(rb_metadata_file_valid), (rb_metadata_save): Ensure the file isn't
+	corrupted before replacing the original.
+
 2005-10-25  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	reviewed by: James Livingston <jrl@ids.org.au>
