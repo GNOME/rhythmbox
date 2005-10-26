@@ -105,42 +105,13 @@ enum
 	PROP_BACKEND
 };
 
-static GObjectClass *parent_class = NULL;
+G_DEFINE_TYPE (RBPodcastPropertiesDialog, rb_podcast_properties_dialog, GTK_TYPE_DIALOG)
 
-GType
-rb_podcast_properties_dialog_get_type (void)
-{
-	static GType rb_podcast_properties_dialog_type = 0;
-
-	if (rb_podcast_properties_dialog_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPodcastPropertiesDialogClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_podcast_properties_dialog_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPodcastPropertiesDialog),
-			0,
-			(GInstanceInitFunc) rb_podcast_properties_dialog_init
-		};
-		
-		rb_podcast_properties_dialog_type = g_type_register_static (GTK_TYPE_DIALOG,
-									    "RBPodcastPropertiesDialog",
-									    &our_info, 0);
-	}
-
-	return rb_podcast_properties_dialog_type;
-}
 
 static void
 rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rb_podcast_properties_dialog_set_property;
 	object_class->get_property = rb_podcast_properties_dialog_get_property;
@@ -231,7 +202,7 @@ rb_podcast_properties_dialog_finalize (GObject *object)
 
 	g_free (dialog->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_podcast_properties_dialog_parent_class)->finalize (object);
 }
 
 static void

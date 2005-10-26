@@ -27,6 +27,7 @@
 #define __USE_XOPEN
 #include <time.h>
 
+#include "rb-debug.h"
 #include "rb-podcast-parse.h" 
 
 #define BUFFER_SIZE 256
@@ -379,7 +380,7 @@ rb_podcast_parse_load_feed(RBPodcastChannel *data, const char *file_name) {
 	((strstr (info->mime_type, "xml") == NULL) &&
 	 (strstr (info->mime_type, "rss") == NULL) &&
 	 (strstr (file_name, ".rss") == NULL))) {
-	    printf("RENATO: ARQUIVO INVALIDO %s\n", info->mime_type);
+	    rb_debug ("Invalid mime-type in podcatst feed %s\n", info->mime_type);
 	    gnome_vfs_file_info_unref (info);
 	    return;
     }

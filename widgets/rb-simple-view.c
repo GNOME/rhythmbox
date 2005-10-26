@@ -58,8 +58,6 @@ enum
 	PROP_IS_DRAG_DEST
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_simple_view_signals[LAST_SIGNAL] = { 0 };
 
 
@@ -89,41 +87,13 @@ static gboolean rb_simple_view_button_press_cb 	(GtkTreeView *treeview,
 					      	 GdkEventButton *event,
 					      	 RBSimpleView *view);
 
+G_DEFINE_TYPE (RBSimpleView, rb_simple_view, RB_TYPE_PROPERTY_VIEW)
 
-GType
-rb_simple_view_get_type (void)
-{
-	static GType rb_simple_view_type = 0;
-
-	if (rb_simple_view_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBSimpleViewClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_simple_view_class_init,
-			NULL,
-			NULL,
-			sizeof (RBSimpleView),
-			0,
-			(GInstanceInitFunc) rb_simple_view_init
-		};
-		
-		rb_simple_view_type = g_type_register_static (RB_TYPE_PROPERTY_VIEW,
-							      "RBSimpleView",
-							       &our_info, 0);
-	}
-
-	return rb_simple_view_type;
-}
 
 static void
 rb_simple_view_class_init (RBSimpleViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_simple_view_finalize;
 	object_class->constructor = rb_simple_view_constructor;
@@ -179,7 +149,7 @@ rb_simple_view_finalize (GObject *object)
 
 	g_free (view->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_simple_view_parent_class)->finalize (object);
 }
 
 
@@ -257,14 +227,12 @@ rb_simple_view_constructor (GType type, guint n_construct_properties,
 {
 	RBSimpleView *view;
 	RBSimpleViewClass *klass;
-	GObjectClass *parent_class; 
 	GtkWidget *treeview;
 
 	klass = RB_SIMPLE_VIEW_CLASS (g_type_class_peek (RB_TYPE_SIMPLE_VIEW));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	view = RB_SIMPLE_VIEW (parent_class->constructor (type, n_construct_properties,
-							    construct_properties));
+	view = RB_SIMPLE_VIEW (G_OBJECT_CLASS (rb_simple_view_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 	
 	treeview = rb_property_view_get_treeview ( RB_PROPERTY_VIEW (view));
 	g_signal_connect_object (G_OBJECT (treeview),

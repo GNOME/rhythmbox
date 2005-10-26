@@ -23,6 +23,7 @@
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include <libgnome/gnome-i18n.h>
 #define __USE_XOPEN
 #include <time.h>
 
@@ -128,9 +129,6 @@ typedef struct
 static guint rb_podcast_manager_signals[LAST_SIGNAL] = { 0 };
 static GStaticMutex entry_add_mutex = G_STATIC_MUTEX_INIT;
 
-static GObjectClass *parent_class = NULL;
-
-
 /* functions */
 static void rb_podcast_manager_class_init 		(RBPodcastManagerClass *klass);
 static void rb_podcast_manager_init 			(RBPodcastManager *dp);
@@ -194,43 +192,14 @@ static void  rb_podcast_manager_config_changed		(GConfClient* client,
 				                         GConfEntry *entry,
 							 gpointer user_data);
 
+G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
 
-GType
-rb_podcast_manager_get_type (void)
-{
-	static GType rb_podcast_manager_type = 0;
-
-	if (rb_podcast_manager_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPodcastManagerClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_podcast_manager_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPodcastManager),
-			0,
-			(GInstanceInitFunc) rb_podcast_manager_init
-		};
-
-		rb_podcast_manager_type = g_type_register_static (G_TYPE_OBJECT,
-							     "RBPodcastManager",
-							     &our_info, 0);
-	}
-
-	return rb_podcast_manager_type;
-
-}
 
 static void
 rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	
-	parent_class = g_type_class_peek_parent (klass);
-
 	object_class->constructor = rb_podcast_manager_constructor;	
 	object_class->finalize = rb_podcast_manager_finalize;
 
@@ -323,8 +292,8 @@ rb_podcast_manager_constructor (GType type, guint n_construct_properties,
 {
 	RBPodcastManager *pd;
 
-	pd = RB_PODCAST_MANAGER (G_OBJECT_CLASS (parent_class)
-					->constructor (type, n_construct_properties, construct_properties));
+	pd = RB_PODCAST_MANAGER (G_OBJECT_CLASS (rb_podcast_manager_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
 	pd->priv->update_interval_notify_id = eel_gconf_notification_add (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL,
 	                    			       			  rb_podcast_manager_config_changed,
@@ -375,7 +344,7 @@ rb_podcast_manager_finalize (GObject *object)
 	
 	g_free (pd->priv);
 	
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->finalize (object);
 	rb_debug ("Podcast Manager END");
 }
 
@@ -604,7 +573,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 
 	if (conf_dir_name == NULL) {
 		conf_dir_name = g_build_filename (g_get_home_dir (),
-						  "My Podcast",
+						  "Podcasts",
 						  NULL);
 		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_name);
 	}
@@ -851,7 +820,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		g_value_set_ulong (&status_val, status);
 
 		g_value_init (&genre_val, G_TYPE_STRING);
-		g_value_set_string (&genre_val, "Podcast");
+		g_value_set_string (&genre_val, _("Podcast"));
 
 		g_value_init (&time_val, G_TYPE_ULONG);
 		g_value_set_ulong (&time_val, date);
@@ -1471,12 +1440,12 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	g_value_set_string (&title_val, (gchar* ) data->title);
 	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 	g_value_unset (&title_val);
-
-	if (!data->author)
-		data->author = xmlCharStrdup("<unknowm>");
 	
 	g_value_init (&author_val, G_TYPE_STRING);
-	g_value_set_string (&author_val, (gchar* ) data->author);
+	if (data->author)
+		g_value_set_string (&author_val, (gchar* ) data->author);
+	else
+		g_value_set_static_string (&author_val, _("Unknown"));
 	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
 	g_value_unset (&author_val);
 	
@@ -1600,7 +1569,7 @@ rb_podcast_manager_event_loop (gpointer data)
 				case EVENT_ERROR_FEED:
 				{
 					gchar *error_msg;
-					error_msg = g_strdup_printf ("There was a problem adding this podcast. Please verify the URL: %s", (gchar *) event->channel->url);
+					error_msg = g_strdup_printf (_("There was a problem adding this podcast. Please verify the URL: %s"), (gchar *) event->channel->url);
 					g_signal_emit (G_OBJECT (data), 
 						       rb_podcast_manager_signals[PROCESS_ERROR], 
 						       0, error_msg);

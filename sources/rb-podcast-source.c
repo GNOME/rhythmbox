@@ -282,10 +282,10 @@ struct RBPodcastSourcePrivate
 
 static GtkActionEntry rb_podcast_source_actions [] =
 {
-	{ "PodcastSrcDownloadPost", NULL, N_("Download Post"), NULL,
+	{ "PodcastSrcDownloadPost", NULL, N_("Download Podcast Episode"), NULL,
 	  N_("Download Post"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
-	{ "PodcastFeedSubscribe", NULL, N_("Subscribe to Feed"), NULL,
+	{ "PodcastFeedSubscribe", NULL, N_("Subscribe to Podcast Feed"), NULL,
 	  N_("Subscribe Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_subscribe_feed) },
 	{ "PodcastFeedProperties", NULL, N_("Properties"), NULL,
@@ -316,37 +316,8 @@ enum
 	PROP_PODCAST_MANAGER
 };
 
+G_DEFINE_TYPE (RBPodcastSource, rb_podcast_source, RB_TYPE_SOURCE)
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_podcast_source_get_type (void)
-{
-	static GType rb_podcast_source_type = 0;
-
-	if (rb_podcast_source_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPodcastSourceClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_podcast_source_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPodcastSource),
-			0,
-			(GInstanceInitFunc) rb_podcast_source_init
-		};
-
-		rb_podcast_source_type = g_type_register_static (RB_TYPE_SOURCE,
-							      "RBPodcastSource",
-							      &our_info, 0);
-		
-	}
-
-	return rb_podcast_source_type;
-}
 
 static void
 rb_podcast_source_class_init (RBPodcastSourceClass *klass)
@@ -354,8 +325,6 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->dispose = rb_podcast_source_dispose;
 	object_class->finalize = rb_podcast_source_finalize;
@@ -476,7 +445,7 @@ rb_podcast_source_finalize (GObject *object)
 	g_free (source->priv);
 
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_podcast_source_parent_class)->finalize (object);
 }
 
 static GObject *
@@ -485,7 +454,6 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 {
 	RBPodcastSource *source;
 	RBPodcastSourceClass *klass;
-	GObjectClass *parent_class;  
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	RhythmDBPropertyModel *feed_model;
@@ -500,9 +468,8 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 
 	klass = RB_PODCAST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PODCAST_SOURCE));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	source = RB_PODCAST_SOURCE (parent_class->constructor (type, n_construct_properties,
-							      construct_properties));
+	source = RB_PODCAST_SOURCE (G_OBJECT_CLASS (rb_podcast_source_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
 	register_action_group (source);
 	source->priv->paned = gtk_vpaned_new ();
@@ -779,7 +746,7 @@ rb_podcast_source_new (RBShell *shell)
 {
 	RBSource *source;
 	source = RB_SOURCE (g_object_new (RB_TYPE_PODCAST_SOURCE,
-					  "name", _("Podcast"),
+					  "name", _("Podcasts"),
 					  "shell", shell,
 					  NULL));
 

@@ -75,42 +75,13 @@ enum
 	PROP_PODCAST_MANAGER
 };
 
-static GObjectClass *parent_class = NULL;
+G_DEFINE_TYPE (RBNewPodcastDialog, rb_new_podcast_dialog, GTK_TYPE_DIALOG)
 
-GType
-rb_new_podcast_dialog_get_type (void)
-{
-	static GType rb_new_podcast_dialog_type = 0;
-
-	if (rb_new_podcast_dialog_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBNewPodcastDialogClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_new_podcast_dialog_class_init,
-			NULL,
-			NULL,
-			sizeof (RBNewPodcastDialog),
-			0,
-			(GInstanceInitFunc) rb_new_podcast_dialog_init
-		};
-
-		rb_new_podcast_dialog_type = g_type_register_static (GTK_TYPE_DIALOG,
-								     "RBNewPodcastDialog",
-								     &our_info, 0);
-	}
-
-	return rb_new_podcast_dialog_type;
-}
 
 static void
 rb_new_podcast_dialog_class_init (RBNewPodcastDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rb_new_podcast_dialog_set_property;
 	object_class->get_property = rb_new_podcast_dialog_get_property;
@@ -147,7 +118,7 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
-	gtk_window_set_title (GTK_WINDOW (dialog), _("New Podcast"));
+	gtk_window_set_title (GTK_WINDOW (dialog), _("New Podcast Feed"));
 
 	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CANCEL,
@@ -199,7 +170,7 @@ rb_new_podcast_dialog_finalize (GObject *object)
 
 	g_free (dialog->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_new_podcast_dialog_parent_class)->finalize (object);
 }
 
 static void

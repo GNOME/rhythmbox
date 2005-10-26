@@ -378,8 +378,8 @@ static GtkActionEntry rb_shell_actions [] =
 	  N_("Create a new Internet Radio station"),
 	  G_CALLBACK (rb_shell_cmd_new_station) },
 
-	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_Subscribe to a new Podcast"), "<control>S",
-	  N_("Create a new Podcast Feed"),
+	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), "<control>F",
+	  N_("Subscribe to a new Podcast Feed"),
 	  G_CALLBACK (rb_shell_cmd_new_podcast) },
 
 	{ "MusicImportFolder", GTK_STOCK_OPEN, N_("_Import Folder..."), "<control>O",

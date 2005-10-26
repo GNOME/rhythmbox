@@ -1,5 +1,37 @@
 2005-10-26  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/podcast-prefs.glade:
+	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init):
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):
+	* sources/rb-podcast-source.c: (rb_podcast_source_new):
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_copy_post), (rb_podcast_manager_add_post),
+	(rb_podcast_manager_insert_feed), (rb_podcast_manager_event_loop):
+	* shell/rb-shell.c: Change some strings to make them more consistent.
+	"Podcast" is now replaces by "Podcast Feed" or "Podcast Episode" which
+	makes it clearer which is which. "Episode" may not be the best term,
+	but it seems to be widely used.
+	
+	Also fix some strings that weren't marked as translatable.
+	
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_class_init),
+	(rb_feed_podcast_properties_dialog_finalize):
+	* podcast/rb-new-podcast-dialog.c:
+	(rb_new_podcast_dialog_class_init), (rb_new_podcast_dialog_finalize):
+	* widgets/rb-simple-view.c: (rb_simple_view_class_init),
+	(rb_simple_view_finalize), (rb_simple_view_constructor):
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_class_init),
+	(rb_podcast_properties_dialog_finalize):
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init),
+	(rb_podcast_manager_constructor), (rb_podcast_manager_finalize),
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_finalize), (rb_podcast_source_constructor):
+	use G_DEFINE_TYPE, instead of doing it manually.
+
+2005-10-26  James Livingston  <jrl@ids.org.au>
+
 	Patch by Artem Baguinski <femistofel@gmail.com> and James Livingston
 	<jrl@ids.org.au>
 
