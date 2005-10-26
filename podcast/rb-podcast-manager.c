@@ -1420,11 +1420,12 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		g_value_init (&status_val, G_TYPE_ULONG);
 		g_value_set_ulong (&status_val, 1);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-		rhythmdb_commit (db);
 		g_value_unset (&status_val);
 		last_post = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LAST_POST));
+		if (last_post) {
+			insert_post = FALSE;
+		}
 		new_feed = FALSE;
-		insert_post = FALSE;
 		goto load_posts;
 	}
 	
@@ -1535,9 +1536,13 @@ load_posts:
 		
 		lst_songs = lst_songs->next;
 	}
-
+	
 	g_value_init (&last_post_val, G_TYPE_STRING);
-	g_value_set_string (&last_post_val, last_post);
+	if (last_post) {
+		g_value_set_string (&last_post_val, last_post);
+	} else {
+		g_value_set_string (&last_post_val, "");
+	}
 	if (new_feed) 
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
 	else
