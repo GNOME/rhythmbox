@@ -74,42 +74,12 @@ enum
 };
 
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_play_order_get_type (void)
-{
-	static GType rb_play_order_type = 0;
-
-	if (rb_play_order_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPlayOrderClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_play_order_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPlayOrder),
-			0,
-			(GInstanceInitFunc) rb_play_order_init
-		};
-
-		rb_play_order_type = g_type_register_static (G_TYPE_OBJECT,
-							     "RBPlayOrder",
-							     &our_info, 0);
-	}
-
-	return rb_play_order_type;
-}
+G_DEFINE_TYPE (RBPlayOrder, rb_play_order, G_TYPE_OBJECT)
 
 static void
 rb_play_order_class_init (RBPlayOrderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->constructor = rb_play_order_constructor;
 	object_class->finalize = rb_play_order_finalize;
@@ -140,7 +110,7 @@ rb_play_order_constructor (GType type, guint n_construct_properties,
 {
 	RBPlayOrder *porder;
 
-	porder = RB_PLAY_ORDER (G_OBJECT_CLASS (parent_class)
+	porder = RB_PLAY_ORDER (G_OBJECT_CLASS (rb_play_order_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 
 	rb_play_order_playing_source_changed (porder);
@@ -175,7 +145,7 @@ rb_play_order_finalize (GObject *object)
 	}
 
 	g_free (porder->priv);
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_play_order_parent_class)->finalize (object);
 }
 
 static void
@@ -338,7 +308,8 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder)
 
 	if (db != porder->priv->db) {
 		if (RB_PLAY_ORDER_GET_CLASS (porder)->db_changed)
-			RB_PLAY_ORDER_GET_CLASS (porder)->db_changed (porder, porder->priv->db);
+			RB_PLAY_ORDER_GET_CLASS (porder)->db_changed (porder, db);
+		porder->priv->db = db;
 	}
 
 	if (source != porder->priv->source) {
