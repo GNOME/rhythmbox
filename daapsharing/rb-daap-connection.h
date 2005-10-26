@@ -36,13 +36,26 @@ typedef struct {
 	GList *uris;
 } RBDAAPPlaylist;
 
+/* hmm, maybe should give more error information? */
+typedef gboolean (*RBDAAPConnectionCallback) (RBDAAPConnection *connection,
+					      gboolean result,
+					      gpointer user_data);
+
 RBDAAPConnection * 
 rb_daap_connection_new (const gchar *name,
 			const gchar *host,
 		        gint port,
 			gboolean password_protected,
 			RhythmDB *db,
-			RhythmDBEntryType type);
+			RhythmDBEntryType type,
+			RBDAAPConnectionCallback callback,
+			gpointer user_data);
+
+/* will cause an assertion failure if the login has not completed yet (probably should FIXME) */
+void
+rb_daap_connection_logout (RBDAAPConnection *connection,
+			   RBDAAPConnectionCallback callback,
+			   gpointer user_data);
 
 gchar * 
 rb_daap_connection_get_headers (RBDAAPConnection *connection,

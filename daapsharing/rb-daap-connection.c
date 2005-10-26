@@ -522,6 +522,10 @@ rb_daap_hash_generate (short version_major,
 
 #define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
 
+typedef void (*RBDAAPResponseHandler) (RBDAAPConnection *connection,
+				       guint status,
+				       GNode *structure);
+
 struct _RBDAAPConnection {
 	gchar *name;
 	gboolean password_protected;
@@ -529,6 +533,7 @@ struct _RBDAAPConnection {
 	
 	SoupSession *session;
 	SoupUri *base_uri;
+	gchar *daap_base_uri;
 	
 	gdouble daap_version;
 	gint session_id;
@@ -537,9 +542,35 @@ struct _RBDAAPConnection {
 	gint request_id;
 	gint database_id;
 
+	guint reading_playlist;
 	GSList *playlists;
 	GHashTable *item_id_to_uri;
+
+	RhythmDB *db;
+	RhythmDBEntryType db_type;
+
+	enum {
+		DAAP_GET_INFO = 0,
+		DAAP_GET_PASSWORD,
+		DAAP_LOGIN,
+		DAAP_GET_REVISION_NUMBER,
+		DAAP_GET_DB_INFO,
+		DAAP_GET_SONGS,
+		DAAP_GET_PLAYLISTS,
+		DAAP_GET_PLAYLIST_ENTRIES,
+		DAAP_LOGOUT,
+		DAAP_DONE
+	} state;
+	RBDAAPResponseHandler response_handler;
+
+	gboolean result;
+	RBDAAPConnectionCallback callback;
+	gpointer callback_user_data;
 };
+
+
+static void rb_daap_connection_do_something (RBDAAPConnection *connection);
+static void rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result);
 
 static gchar *
 connection_get_password (RBDAAPConnection *connection)
@@ -562,7 +593,7 @@ build_message (RBDAAPConnection *connection,
 	uri = soup_uri_new_with_base (connection->base_uri, path);
 	if (uri == NULL) {
 		return NULL;
-	}		
+	}
 	
 	message = soup_message_new_from_uri (SOUP_METHOD_GET, uri);
 	soup_message_set_http_version (message, SOUP_HTTP_1_1);
@@ -598,66 +629,85 @@ build_message (RBDAAPConnection *connection,
 	return message;
 }
 
-typedef enum {
-	HTTP_OK,
-	HTTP_ERR,
-	HTTP_AUTH_ERR
-} HTTPResponse;
+static void
+http_response_handler (SoupMessage *message,
+		       RBDAAPConnection *connection)
+{
+	GNode *structure = NULL;
+	guint status = message->status_code;
 
-static HTTPResponse
+	if (SOUP_STATUS_IS_SUCCESSFUL (message->status_code)) {
+		RBDAAPItem *item;
+
+		structure = rb_daap_structure_parse (message->response.body, message->response.length);
+		if (structure == NULL) {
+			rb_debug ("No daap structure returned from http://%s:%d/%s", 
+				  connection->base_uri->host,
+				  connection->base_uri->port,
+				  connection->base_uri->path);
+			status = SOUP_STATUS_MALFORMED;
+		} else {
+			int dmap_status = 0;
+			item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MSTT);
+			if (item)
+				dmap_status = g_value_get_int (&(item->content));
+
+			if (dmap_status != 200) {
+				rb_debug ("Error, dmap.status is not 200 in response from http://%s:%d/%s",
+					  connection->base_uri->host,
+					  connection->base_uri->port,
+					  connection->base_uri->path);
+				status = SOUP_STATUS_MALFORMED;
+			}
+		}
+	} else {
+		rb_debug ("Error getting http://%s:%d/%s: %d, %s\n", 
+			  connection->base_uri->host,
+			  connection->base_uri->port,
+			  connection->base_uri->path, 
+			  message->status_code, message->reason_phrase);
+	}
+
+	if (connection->response_handler) {
+		RBDAAPResponseHandler h = connection->response_handler;
+		connection->response_handler = NULL;
+		(*h) (connection, status, structure);
+	}
+
+	if (structure)
+		rb_daap_structure_destroy (structure);
+}
+
+static gboolean
 http_get (RBDAAPConnection *connection, 
 	  const gchar *path, 
 	  gboolean need_hash, 
 	  gdouble version, 
 	  gint req_id, 
-	  gboolean send_close, 
-	  GNode **structure)
+	  gboolean send_close,
+	  RBDAAPResponseHandler handler)
 {
-	SoupMessage *message;
-	RBDAAPItem *item = NULL;
-	
-	message = build_message (connection, path, need_hash, version, req_id, send_close);
+	SoupMessage *message = build_message (connection, path, need_hash, version, req_id, send_close);
 	if (message == NULL) {
-		rb_debug ("Error building message for %s", path);
-		return HTTP_ERR;
+		rb_debug ("Error building message for http://%s:%d/%s", 
+			  connection->base_uri->host,
+			  connection->base_uri->port,
+			  path);
+		return FALSE;
 	}
 	
-	soup_session_send_message (connection->session, message);
-	
-	if (message->status_code == 401) {
-		g_object_unref (message);
-		return HTTP_AUTH_ERR;
-	}
-	
-	if (SOUP_STATUS_IS_SUCCESSFUL (message->status_code) == FALSE) {
-		rb_debug ("Error getting %s: %d, %s\n", path, message->status_code, message->reason_phrase);
-		g_object_unref (message);
-
-		return HTTP_ERR;
-	} 
-
-	*structure = rb_daap_structure_parse (message->response.body, message->response.length);
-	g_object_unref (message);
-	
-	if (*structure == NULL) {
-		rb_debug ("No daap structure returned %s", path);
-		return HTTP_ERR;
-	}
-
-	item = rb_daap_structure_find_item (*structure, RB_DAAP_CC_MSTT);
-	if (item == NULL) {
-		rb_debug ("Could not find dmap.status item in %s", path);
-		return HTTP_ERR;
-	}
-
-	if (g_value_get_int (&(item->content)) != 200) {
-		rb_debug ("Error, dmap.status is not 200 in %s", path);
-		return HTTP_ERR;
-	}
-
-	return HTTP_OK;
+	connection->response_handler = handler;
+	soup_session_queue_message (connection->session, message,
+				    (SoupMessageCallbackFn) http_response_handler, 
+				    connection);
+	rb_debug ("Queued message for http://%s:%d/%s",
+		  connection->base_uri->host,
+		  connection->base_uri->port,
+		  path);
+	return TRUE;
 }
-	
+
+
 static void 
 entry_set_string_prop (RhythmDB *db, 
 		       RhythmDBEntry *entry,
@@ -679,138 +729,95 @@ entry_set_string_prop (RhythmDB *db,
 	g_value_unset (&value);
 }
 
-static gboolean
-connection_get_info (RBDAAPConnection *connection)
+static void
+handle_server_info (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	GNode *structure = NULL;
-	HTTPResponse resp;
-	gboolean ret;
 	RBDAAPItem *item = NULL;
 
-	/* get the daap version number */
-	resp = http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, &structure);
-	if (structure == NULL || resp == HTTP_ERR) {
-		rb_debug ("Got invalid response from /server-info");
-		ret = FALSE;
-		goto out;
+	if (!SOUP_STATUS_IS_SUCCESSFUL (status) || structure == NULL) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 	
+	/* get the daap version number */
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_APRO);
-	if (item == NULL ){
-		rb_debug ("Could not find daap.protocolversion item in /server-info");
-		ret = FALSE;
-		goto out;
+	if (item == NULL) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	connection->daap_version = g_value_get_double (&(item->content));
-	ret = TRUE;
-
-out:
-	rb_daap_structure_destroy (structure);
-
-	return ret;
+	rb_daap_connection_state_done (connection, TRUE);
 }
 
-static gboolean
-connection_login (RBDAAPConnection *connection)
+static void
+handle_login (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	GNode *structure = NULL;
-	HTTPResponse resp;
-	gboolean ret;
 	RBDAAPItem *item = NULL;
-	gchar *path = NULL;
 
-get_password:	
-        if (connection->password_protected) {
-		rb_debug ("Need a password for %s", connection->name);
-                connection->password = connection_get_password (connection);
-		if (connection->password == NULL || connection->password[0] == '\0') {
-			rb_debug ("Password entry canceled");
-			return FALSE;
-		}
-        }
-	
-	/* get a session id */
-	resp = http_get (connection, "/login", FALSE, 0.0, 0, FALSE, &structure);
-
-	if (resp == HTTP_AUTH_ERR) {
+	if (status == SOUP_STATUS_UNAUTHORIZED || status == SOUP_STATUS_FORBIDDEN) {
 		rb_debug ("Incorrect password");
-		goto get_password;
+		connection->state = DAAP_GET_PASSWORD;
+		rb_daap_connection_do_something (connection);
 	}
 
-	if (structure == NULL || resp == HTTP_ERR) {
-		rb_debug ("Got invalid response from /login");
-		ret = FALSE;
-		goto out;
+	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MLID);
 	if (item == NULL) {
 		rb_debug ("Could not find daap.sessionid item in /login");
-		ret = FALSE;
-		goto out;
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	connection->session_id = g_value_get_int (&(item->content));
+	rb_daap_connection_state_done (connection, TRUE);
+}
 
-	rb_daap_structure_destroy (structure);
-	structure = NULL;
+static void
+handle_update (RBDAAPConnection *connection, guint status, GNode *structure)
+{
+	RBDAAPItem *item;
 
-	/* get a revision number */
-	path = g_strdup_printf ("/update?session-id=%d&revision-number=1", connection->session_id);
-	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
-
-	if (structure == NULL || resp == HTTP_ERR) {
-		rb_debug ("Got invalid response from %s", path);
-		ret = FALSE;
-		goto out;
+	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
+	/* get a revision number */
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MUSR);
 	if (item == NULL) {
-		rb_debug ("Could not find daap.serverrevision item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find daap.serverrevision item in /update");
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	connection->revision_number = g_value_get_int (&(item->content));
-
-	ret = TRUE;
-out:
-	rb_daap_structure_destroy (structure);
-	g_free (path);
-
-	return ret;
+	rb_daap_connection_state_done (connection, TRUE);
 }
 
-static gboolean
-connection_get_database_info (RBDAAPConnection *connection)
+static void 
+handle_database_info (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	GNode *structure = NULL;
-	HTTPResponse resp;
-	gboolean ret;
 	RBDAAPItem *item = NULL;
 	GNode *listing_node;
-	gchar *path;
 	gint n_databases = 0;
 
-	/* get database id */
 	/* get a list of databases, there should be only 1 */
 
-	path = g_strdup_printf ("/databases?session-id=%d&revision-number=%d", connection->session_id, connection->revision_number);
-	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
-	
-	if (structure == NULL || resp == HTTP_ERR) {
-		rb_debug ("Got invalid response from %s", path);
-		ret = FALSE;
-		goto out;
+	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MRCO);
 	if (item == NULL) {
-		rb_debug ("Could not find dmap.returnedcount item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.returnedcount item in /databases");
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	n_databases = g_value_get_int (&(item->content));
@@ -820,42 +827,27 @@ connection_get_database_info (RBDAAPConnection *connection)
 	
 	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
 	if (listing_node == NULL) {
-		rb_debug ("Could not find dmap.listing item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.listing item in /databases");
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	item = rb_daap_structure_find_item (listing_node->children, RB_DAAP_CC_MIID);
 	if (item == NULL) {
-		rb_debug ("Could not find dmap.itemid item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.itemid item in /databases");
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 	
 	connection->database_id = g_value_get_int (&(item->content));
-
-	ret = TRUE;
-
-out:
-	rb_daap_structure_destroy (structure);
-	g_free (path);
-
-	return ret;
+	rb_daap_connection_state_done (connection, TRUE);
 }
 
-static gboolean
-connection_get_song_listing (RBDAAPConnection *connection,
-			     const gchar *host,
-			     gint port,
-			     RhythmDB *db,
-			     RhythmDBEntryType type)
+static void
+handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	GNode *structure = NULL;
-	HTTPResponse resp;
-	gboolean ret;
 	RBDAAPItem *item = NULL;
 	GNode *listing_node;
-	gchar *path;
 	gint returned_count;
 	gint i;
 	GNode *n;
@@ -863,44 +855,45 @@ connection_get_song_listing (RBDAAPConnection *connection,
 	gboolean update_type;
 
 	/* get the songs */
-	path = g_strdup_printf ("/databases/%i/items?session-id=%i&revision-number=%i&meta=dmap.itemid,dmap.itemname,daap.songalbum,daap.songartist,daap.daap.songgenre,daap.songsize,daap.songtime,daap.songtrackcount,daap.songtracknumber,daap.songyear,daap.songformat,daap.songgenre,daap.songbitrate", connection->database_id, connection->session_id, connection->revision_number);
-	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
 	
-	if (structure == NULL || resp == HTTP_ERR) {
-		rb_debug ("Got invalid response from %s", path);
-		ret = FALSE;
-		goto out;
+	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MRCO);
 	if (item == NULL) {
-		rb_debug ("Could not find dmap.returnedcount item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.returnedcount item in /databases/%d/items",
+			  connection->database_id);
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 	returned_count = g_value_get_int (&(item->content));
 	
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MTCO);
 	if (item == NULL) {
-		rb_debug ("Could not find dmap.specifiedtotalcount item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.specifiedtotalcount item in /databases/%d/items",
+			  connection->database_id);
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 	specified_total_count = g_value_get_int (&(item->content));
 	
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MUTY);
 	if (item == NULL) {
-		rb_debug ("Could not find dmap.updatetype item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.updatetype item in /databases/%d/items",
+			  connection->database_id);
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 	update_type = g_value_get_char (&(item->content));
 
 	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
 	if (listing_node == NULL) {
-		rb_debug ("Could not find dmap.listing item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.listing item in /databases/%d/items",
+			  connection->database_id);
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	connection->item_id_to_uri = g_hash_table_new_full ((GHashFunc)g_direct_hash,(GEqualFunc)g_direct_equal, NULL, g_free);
@@ -971,7 +964,11 @@ connection_get_song_listing (RBDAAPConnection *connection,
 		}
 
 //		if (connection->daap_version == 3.0) {
-			uri = g_strdup_printf ("daap://%s:%d/databases/%d/items/%d.%s?session-id=%d", host, port, connection->database_id, item_id, format, connection->session_id);
+			uri = g_strdup_printf ("%s/databases/%d/items/%d.%s?session-id=%d", 
+					       connection->daap_base_uri, 
+					       connection->database_id, 
+					       item_id, format, 
+					       connection->session_id);
 //		} else {
 //		??FIXME??
 //		OLD ITUNES
@@ -983,60 +980,55 @@ connection_get_song_listing (RBDAAPConnection *connection,
 		// maybe just /dont/ support older itunes.  doesn't seem 
 		// unreasonable to me, honestly
 //		}
-		entry = rhythmdb_entry_new (db, type, uri);
+		entry = rhythmdb_entry_new (connection->db, connection->db_type, uri);
 		g_hash_table_insert (connection->item_id_to_uri, GINT_TO_POINTER (item_id), uri);
 
 		 /* track number */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value,(gulong)track_number);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &value);
+		rhythmdb_entry_set_uninserted (connection->db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &value);
 		g_value_unset (&value);
 
 		/* disc number */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value,(gulong)disc_number);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DISC_NUMBER, &value);
+		rhythmdb_entry_set_uninserted (connection->db, entry, RHYTHMDB_PROP_DISC_NUMBER, &value);
 		g_value_unset (&value);
 
 		/* bitrate */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value,(gulong)bitrate);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_BITRATE, &value);
+		rhythmdb_entry_set_uninserted (connection->db, entry, RHYTHMDB_PROP_BITRATE, &value);
 		g_value_unset (&value);
 		
 		/* length */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value,(gulong)length / 1000);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DURATION, &value);
+		rhythmdb_entry_set_uninserted (connection->db, entry, RHYTHMDB_PROP_DURATION, &value);
 		g_value_unset (&value);
 
 		/* file size */
 		g_value_init (&value, G_TYPE_UINT64);
 		g_value_set_uint64(&value,(gint64)size);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &value);
+		rhythmdb_entry_set_uninserted (connection->db, entry, RHYTHMDB_PROP_FILE_SIZE, &value);
 		g_value_unset (&value);
 
 		/* title */
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_TITLE, title);
+		entry_set_string_prop (connection->db, entry, RHYTHMDB_PROP_TITLE, title);
 
 		/* album */
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, album);
+		entry_set_string_prop (connection->db, entry, RHYTHMDB_PROP_ALBUM, album);
 
 		/* artist */
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, artist);
+		entry_set_string_prop (connection->db, entry, RHYTHMDB_PROP_ARTIST, artist);
 
 		/* genre */
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, genre);
+		entry_set_string_prop (connection->db, entry, RHYTHMDB_PROP_GENRE, genre);
 	}
 
-	rhythmdb_commit (db);
-
-	ret = TRUE;
-out:
-	rb_daap_structure_destroy (structure);
-	g_free (path);
-
-	return ret;
+	rhythmdb_commit (connection->db);
+		
+	rb_daap_connection_state_done (connection, TRUE);
 }
 
 /* FIXME
@@ -1046,31 +1038,24 @@ out:
  * connection times and reduce memory consumption.
  */
 
-static gboolean
-connection_get_playlists (RBDAAPConnection *connection)
+static void
+handle_playlists (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	GNode *structure = NULL;
-	HTTPResponse resp;
-	gboolean ret;
 	GNode *listing_node;
-	gchar *path;
 	gint i;
 	GNode *n;
-
-	path = g_strdup_printf ("/databases/%d/containers?session-id=%d&revision-number=%d", connection->database_id, connection->session_id, connection->revision_number);
-	resp = http_get (connection, path, TRUE, connection->daap_version,0, FALSE,&structure);
 	
-	if (structure == NULL || resp == HTTP_ERR) {
-		rb_debug ("Got invalid response from %s", path);
-		ret = FALSE;
-		goto out;
+	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
 	if (listing_node == NULL) {
-		rb_debug ("Could not find dmap.listing item in %s", path);
-		ret = FALSE;
-		goto out;
+		rb_debug ("Could not find dmap.listing item in /databases/%d/containers", 
+			  connection->database_id);
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
 	}
 
 	for (i = 0, n = listing_node->children; n; n = n->next, i++) {
@@ -1078,12 +1063,6 @@ connection_get_playlists (RBDAAPConnection *connection)
 		gint id;
 		gchar *name;
 		RBDAAPPlaylist *playlist;
-		GNode *playlist_structure;
-		GNode *playlist_listing_node;
-		GNode *n2;
-		gint j;
-		GList *playlist_uris = NULL;
-		gchar *path2;
 		
 		item = rb_daap_structure_find_item (n, RB_DAAP_CC_ABPL);
 		if (item != NULL) {
@@ -1092,142 +1071,325 @@ connection_get_playlists (RBDAAPConnection *connection)
 
 		item = rb_daap_structure_find_item (n, RB_DAAP_CC_MIID);
 		if (item == NULL) {
-			rb_debug ("Could not find dmap.itemid item in %s", path);
-			ret = FALSE;
-			goto out;
+			rb_debug ("Could not find dmap.itemid item in /databases/%d/containers",
+				  connection->database_id);
+			continue;
 		}
 		id = g_value_get_int (&(item->content));
 
 		item = rb_daap_structure_find_item (n, RB_DAAP_CC_MINM);
 		if (item == NULL) {
-			rb_debug ("Could not find dmap.itemname item in %s", path);
-			ret = FALSE;
-			goto out;
+			rb_debug ("Could not find dmap.itemname item in /databases/%d/containers",
+				  connection->database_id);
+			continue;
 		}
 		name = g_value_dup_string (&(item->content));
 
-		path2 = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%d&revision-number=%d&meta=dmap.itemid", connection->database_id, id, connection->session_id, connection->revision_number);
-		resp = http_get (connection, path2, TRUE, connection->daap_version,0, FALSE,&playlist_structure);
-		
-		if (playlist_structure == NULL || resp == HTTP_ERR) {
-			g_free (name);
-			continue;
-		}
-
-		playlist_listing_node = rb_daap_structure_find_node (playlist_structure, RB_DAAP_CC_MLCL);
-		if (playlist_listing_node == NULL) {
-			rb_debug ("Could not find dmap.listing item in %s", path2);
-			g_free (name);
-			continue;
-		}
-
-		for (j = 0, n2 = playlist_listing_node->children; n2; n2 = n2->next, j++) {
-			gchar *item_uri;
-			gint playlist_item_id;
-
-			item = rb_daap_structure_find_item (n2, RB_DAAP_CC_MIID);
-			if (item == NULL) {
-				rb_debug ("Could not find dmap.itemid item in %s", path2);
-				continue;
-			}
-			playlist_item_id = g_value_get_int (&(item->content));
-		
-			item_uri = g_hash_table_lookup (connection->item_id_to_uri, GINT_TO_POINTER (playlist_item_id));
-			if (item_uri == NULL) {
-				rb_debug ("%d in %s doesnt exist in the database\n", playlist_item_id, name);
-				continue;
-			}
-			
-			playlist_uris = g_list_prepend (playlist_uris, item_uri);
-		}
-		
-		playlist = g_new0(RBDAAPPlaylist,1);
-
+		playlist = g_new0 (RBDAAPPlaylist, 1);
 		playlist->id = id;
 		playlist->name = name;
-		playlist->uris = playlist_uris;
+		rb_debug ("Got playlist %p: name %s, id %d", playlist, playlist->name, playlist->id);
 
 		connection->playlists = g_slist_prepend (connection->playlists, playlist);
 	}
 
-	ret = TRUE;
-out:
-	rb_daap_structure_destroy (structure);
-	structure = NULL;
+	rb_daap_connection_state_done (connection, TRUE);
+}
 
-	return ret;
+static void
+handle_playlist_entries (RBDAAPConnection *connection, guint status, GNode *structure)
+{
+	RBDAAPPlaylist *playlist;
+	GNode *listing_node;
+	GNode *node;
+	gint i;
+	GList *playlist_uris = NULL;
+
+	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
+	}
+
+	playlist = (RBDAAPPlaylist *)g_slist_nth_data (connection->playlists, connection->reading_playlist);
+	g_assert (playlist);
+
+	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
+	if (listing_node == NULL) {
+		rb_debug ("Could not find dmap.listing item in /databases/%d/containers/%d/items", 
+			  connection->database_id, playlist->id);
+		rb_daap_connection_state_done (connection, FALSE);
+		return;
+	}
+
+	for (i = 0, node = listing_node->children; node; node = node->next, i++) {
+		gchar *item_uri;
+		gint playlist_item_id;
+		RBDAAPItem *item;
+
+		item = rb_daap_structure_find_item (node, RB_DAAP_CC_MIID);
+		if (item == NULL) {
+			rb_debug ("Could not find dmap.itemid item in /databases/%d/containers/%d/items",
+				  connection->database_id, playlist->id);
+			continue;
+		}
+		playlist_item_id = g_value_get_int (&(item->content));
+	
+		item_uri = g_hash_table_lookup (connection->item_id_to_uri, GINT_TO_POINTER (playlist_item_id));
+		if (item_uri == NULL) {
+			rb_debug ("Entry %d in playlist %s doesn't exist in the database\n", 
+				  playlist_item_id, playlist->name);
+			continue;
+		}
+		
+		playlist_uris = g_list_prepend (playlist_uris, item_uri);
+	}
+
+	playlist->uris = playlist_uris;
+	rb_daap_connection_state_done (connection, TRUE);
+}
+
+static void
+handle_logout (RBDAAPConnection *connection, guint status, GNode *structure)
+{
+	/* is there any point handling errors here? */
+	rb_daap_connection_state_done (connection, TRUE);
 }
 	
 RBDAAPConnection * 
 rb_daap_connection_new (const gchar *name,
-			const gchar *host, 
+			const gchar *host,
 			gint port, 
 			gboolean password_protected,
 			RhythmDB *db, 
-			RhythmDBEntryType type)
+			RhythmDBEntryType type,
+			RBDAAPConnectionCallback callback,
+			gpointer user_data)
 {
 	RBDAAPConnection *connection = NULL;
 	gchar *path = NULL;
 	
 	connection = g_new0 (RBDAAPConnection, 1);
 	connection->name = g_strdup (name);
+	connection->db_type = type;
+	connection->password_protected = password_protected;
+	connection->callback = callback;
+	connection->callback_user_data = user_data;
+	connection->db = db;
+	connection->result = TRUE;
+	g_object_ref (G_OBJECT (db));
 
 	rb_debug ("Creating new DAAP connection to %s:%d", host, port);
 
-	connection->session = soup_session_sync_new ();
-	path = g_strdup_printf ("http://%s:%d/", host, port);
+	connection->session = soup_session_async_new ();
+	path = g_strdup_printf ("http://%s:%d", host, port);
 	connection->base_uri = soup_uri_new (path);
+	g_free (path);
+
 	if (connection->base_uri == NULL) {
-		rb_debug ("Error parsing %s", path);
-		goto error_out;
-	}
-	
-	rb_debug ("Getting DAAP connection info");
-	if (connection_get_info (connection) == FALSE) {
-		rb_debug ("Could not get DAAP connection info");
-		goto error_out;
+		rb_debug ("Error parsing http://%s:%d", host, port);
+		rb_daap_connection_destroy (connection);
+		return NULL;
 	}
 
-	rb_debug ("Logging into DAAP server");
-	connection->password_protected = password_protected;
-	if (connection_login (connection) == FALSE) {
-		rb_debug ("Could not login to DAAP server");
-		goto error_out;
-	}
-	
-	rb_debug ("Getting DAAP database info");
-	if (connection_get_database_info (connection) == FALSE) {
-		rb_debug ("Could not get DAAP database info");
-		goto error_out;
-	}
-	
-	rb_debug ("Getting DAAP song listing");
-	if (connection_get_song_listing (connection, host, port, db, type) == FALSE) {
-		rb_debug ("Could not get DAAP song listing");
-		goto error_out;
-	}
-	/* now that we have gotten the song listing, creation shouldn't fail */
+	connection->daap_base_uri = g_strdup_printf ("daap://%s:%d", host, port);
 
-	rb_debug ("Getting DAAP playlists");
-	if (connection_get_playlists (connection) == FALSE) {
-		rb_debug ("Could not get DAAP playlists");
-	}
-	
-	rb_debug ("Successfully created DAAP connection");
-	
-	goto out;
-
-	
-error_out:
-	rb_daap_connection_destroy (connection);
-	connection = NULL;
-	
-out:
-	if (path) {
-		g_free (path);
-	}
-	
+	connection->state = DAAP_GET_INFO;
+	rb_daap_connection_do_something (connection);
 	return connection;
+}
+
+void
+rb_daap_connection_logout (RBDAAPConnection *connection,
+			   RBDAAPConnectionCallback callback,
+			   gpointer user_data)
+{
+	if (connection->state == DAAP_LOGOUT)
+		return;
+	
+	/* FIXME what to do if we get asked to log out before login has completed? */
+	g_assert (connection->state == DAAP_DONE);
+
+	connection->callback = callback;
+	connection->callback_user_data = user_data;
+	connection->result = TRUE;
+	
+	connection->state = DAAP_LOGOUT;
+	rb_daap_connection_do_something (connection);
+}
+
+static void
+rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result)
+{
+	if (result == FALSE) {
+		connection->state = DAAP_DONE;
+		connection->result = FALSE;
+	} else {
+		switch (connection->state) {
+		case DAAP_GET_PLAYLIST_ENTRIES:
+			/* keep reading playlists until we've got them all */
+			if (++connection->reading_playlist == g_slist_length (connection->playlists))
+				connection->state = DAAP_DONE;
+			break;
+
+		case DAAP_LOGOUT:
+			connection->state = DAAP_DONE;
+			break;
+
+		case DAAP_DONE:
+			/* uhh.. */
+			rb_debug ("This should never happen.");
+			break;
+
+		default:
+			/* in most states, we just move on to the next */
+			if (connection->state > DAAP_DONE) {
+				rb_debug ("This should REALLY never happen.");
+				return;
+			}
+			connection->state++;
+			break;
+		}
+	}
+
+	rb_daap_connection_do_something (connection);
+}
+
+static void
+rb_daap_connection_do_something (RBDAAPConnection *connection)
+{
+	char *path;
+
+	switch (connection->state) {
+	case DAAP_GET_INFO:
+		rb_debug ("Getting DAAP server info");
+		if (!http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, 
+			       (RBDAAPResponseHandler) handle_server_info)) {
+			rb_debug ("Could not get DAAP connection info");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		break;
+	
+	case DAAP_GET_PASSWORD:
+		if (connection->password_protected) {
+			/* FIXME this bit is still synchronous */
+			rb_debug ("Need a password for %s", connection->name);
+			connection->password = connection_get_password (connection);
+			if (connection->password == NULL || connection->password[0] == '\0') {
+				rb_debug ("Password entry canceled");
+				connection->result = FALSE;
+				connection->state = DAAP_DONE;
+				rb_daap_connection_do_something (connection);
+				return;
+			}
+		}
+
+		/* otherwise, fall through */
+		connection->state = DAAP_LOGIN;
+		
+	case DAAP_LOGIN:
+		rb_debug ("Logging into DAAP server");
+		if (!http_get (connection, "/login", FALSE, 0.0, 0, FALSE, 
+			       (RBDAAPResponseHandler) handle_login)) {
+			rb_debug ("Could not login to DAAP server");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		break;
+
+	case DAAP_GET_REVISION_NUMBER:
+		rb_debug ("Getting DAAP server database revision number");
+		path = g_strdup_printf ("/update?session-id=%d&revision-number=1", connection->session_id);
+		if (!http_get (connection, path, TRUE, connection->daap_version, 0, FALSE, 
+			       (RBDAAPResponseHandler) handle_update)) {
+			rb_debug ("Could not get server database revision number");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		g_free (path);
+		break;
+
+	case DAAP_GET_DB_INFO:
+		rb_debug ("Getting DAAP database info");
+		path = g_strdup_printf ("/databases?session-id=%d&revision-number=%d", 
+					connection->session_id, connection->revision_number);
+		if (!http_get (connection, path, TRUE, connection->daap_version, 0, FALSE, 
+			       (RBDAAPResponseHandler) handle_database_info)) {
+			rb_debug ("Could not get DAAP database info");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		g_free (path);
+		break;
+
+	case DAAP_GET_SONGS:
+		rb_debug ("Getting DAAP song listing");
+		path = g_strdup_printf ("/databases/%i/items?session-id=%i&revision-number=%i"
+				        "&meta=dmap.itemid,dmap.itemname,daap.songalbum,"
+					"daap.songartist,daap.daap.songgenre,daap.songsize,"
+					"daap.songtime,daap.songtrackcount,daap.songtracknumber,"
+					"daap.songyear,daap.songformat,daap.songgenre,"
+					"daap.songbitrate", 
+					connection->database_id, 
+					connection->session_id, 
+					connection->revision_number);
+		if (!http_get (connection, path, TRUE, connection->daap_version, 0, FALSE, 
+			       (RBDAAPResponseHandler) handle_song_listing)) {
+			rb_debug ("Could not get DAAP song listing");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		g_free (path);
+		break;
+
+	case DAAP_GET_PLAYLISTS:
+		rb_debug ("Getting DAAP playlists");
+		path = g_strdup_printf ("/databases/%d/containers?session-id=%d&revision-number=%d", 
+					connection->database_id, 
+					connection->session_id, 
+					connection->revision_number);
+		if (!http_get (connection, path, TRUE, connection->daap_version, 0, FALSE, 
+			       (RBDAAPResponseHandler) handle_playlists)) {
+			rb_debug ("Could not get DAAP playlists");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		g_free (path);
+		break;
+
+	case DAAP_GET_PLAYLIST_ENTRIES:
+		{
+			RBDAAPPlaylist *playlist = 
+				(RBDAAPPlaylist *) g_slist_nth_data (connection->playlists, 
+								     connection->reading_playlist);
+			g_assert (playlist);
+			rb_debug ("Reading DAAP playlist %d entries", connection->reading_playlist);
+			path = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%d&revision-number=%d&meta=dmap.itemid", 
+						connection->database_id, 
+						playlist->id,
+						connection->session_id, connection->revision_number);
+			if (!http_get (connection, path, TRUE, connection->daap_version, 0, FALSE, 
+				       (RBDAAPResponseHandler) handle_playlist_entries)) {
+				rb_debug ("Could not get entries for DAAP playlist %d", 
+					  connection->reading_playlist);
+				rb_daap_connection_state_done (connection, FALSE);
+			}
+			g_free (path);
+		}
+		break;
+
+	case DAAP_LOGOUT:
+		rb_debug ("Logging out of DAAP server");
+		path = g_strdup_printf ("/logout?session-id=%d", connection->session_id);
+		if (!http_get (connection, path, TRUE, connection->daap_version, 0, FALSE,
+			       (RBDAAPResponseHandler) handle_logout)) {
+			rb_debug ("Could not log out of DAAP server");
+			rb_daap_connection_state_done (connection, FALSE);
+		}
+		g_free (path);
+		break;
+
+	case DAAP_DONE:
+		if (connection->callback) {
+			(*connection->callback) (connection, connection->result, connection->callback_user_data);
+			connection->callback = NULL;
+		}
+		break;
+	}
 }
 
 gchar * 
@@ -1246,10 +1408,22 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 		norb_daap_uri = strstr (uri,"/data");
 	}
 
-	rb_daap_hash_generate ((short)floorf (connection->daap_version), (const guchar*)norb_daap_uri,2, (guchar*)hash, connection->request_id);
+	rb_daap_hash_generate ((short)floorf (connection->daap_version), 
+			       (const guchar*)norb_daap_uri, 2, 
+			       (guchar*)hash, 
+			       connection->request_id);
 
-	headers = g_string_new ("Accept: */*\r\nCache-Control: no-cache\r\nUser-Agent: "RB_DAAP_USER_AGENT"\r\nAccept-Language: en-us, en;q=5.0\r\nClient-DAAP-Access-Index: 2\r\nClient-DAAP-Version: 3.0\r\n");
-	g_string_append_printf (headers, "Client-DAAP-Validation: %s\r\nClient-DAAP-Request-ID: %d\r\nConnection: close\r\n", hash, connection->request_id);
+	headers = g_string_new ("Accept: */*\r\n"
+				"Cache-Control: no-cache\r\n"
+				"User-Agent: " RB_DAAP_USER_AGENT "\r\n"
+				"Accept-Language: en-us, en;q=5.0\r\n"
+				"Client-DAAP-Access-Index: 2\r\n"
+				"Client-DAAP-Version: 3.0\r\n");
+	g_string_append_printf (headers, 
+				"Client-DAAP-Validation: %s\r\n"
+				"Client-DAAP-Request-ID: %d\r\n"
+				"Connection: close\r\n", 
+				hash, connection->request_id);
 	if (connection->password_protected) {
 		g_string_append_printf (headers, "Authentication: Basic %s\r\n", connection->password);
 	}
@@ -1307,8 +1481,23 @@ rb_daap_connection_destroy (RBDAAPConnection *connection)
 	}
 	
 	if (connection->session) {
-		g_object_unref (connection->session);
+		g_object_unref (G_OBJECT (connection->session));
 		connection->session = NULL;
+	}
+
+	if (connection->base_uri) {
+		soup_uri_free (connection->base_uri);
+		connection->base_uri = NULL;
+	}
+
+	if (connection->daap_base_uri) {
+		g_free (connection->daap_base_uri);
+		connection->daap_base_uri = NULL;
+	}
+
+	if (connection->db) {
+		g_object_unref (G_OBJECT (connection->db));
+		connection->db = NULL;
 	}
 	
 	g_free (connection);

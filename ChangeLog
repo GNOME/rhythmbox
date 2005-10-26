@@ -2,6 +2,25 @@
 
 	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
 
+	* daapsharing/rb-daap-connection.c: (build_message),
+	(http_response_handler), (http_get), (handle_server_info),
+	(handle_login), (handle_update), (handle_database_info),
+	(handle_song_listing), (handle_playlists),
+	(handle_playlist_entries), (handle_logout),
+	(rb_daap_connection_new), (rb_daap_connection_logout),
+	(rb_daap_connection_state_done), (rb_daap_connection_do_something),
+	(rb_daap_connection_get_headers), (rb_daap_connection_destroy):
+	* daapsharing/rb-daap-connection.h:
+	* sources/rb-daap-source.c: (rb_daap_source_activate),
+	(rb_daap_source_connection_cb), (rb_daap_source_disconnect_cb),
+	(rb_daap_source_disconnect): Make connecting to DAAP sources
+	asynchronous, so that non-responsive servers don't hang the UI. Closes
+	316225.
+
+2005-10-26  James Livingston  <jrl@ids.org.au>
+
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_do_reorder): generate the row re-order map
 	correctly.

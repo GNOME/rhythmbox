@@ -53,6 +53,9 @@ static void rb_daap_source_get_property  (GObject *object,
 					  GValue *value,
 				 	  GParamSpec *pspec);
 static void rb_daap_source_activate (RBSource *source);
+static void rb_daap_source_connection_cb (RBDAAPConnection *connection,
+					  gboolean result,
+					  RBSource *source);
 static gboolean rb_daap_source_disconnect (RBSource *source);
 static gboolean rb_daap_source_show_popup (RBSource *source);
 static const gchar * rb_daap_source_get_browser_key (RBSource *source);
@@ -519,56 +522,87 @@ static void
 rb_daap_source_activate (RBSource *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	RBShell *shell = NULL;
+	RhythmDB *db = NULL;
+	gchar *name = NULL;
+	RhythmDBEntryType type;
 
+	if (daap_source->priv->connection != NULL) 
+		return;
+
+	g_object_get (G_OBJECT (daap_source), 
+		      "shell", &shell, 
+		      "entry-type", &type, 
+		      "name", &name, 
+		      NULL);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+
+	daap_source->priv->connection =
+		rb_daap_connection_new (name,
+					daap_source->priv->host,
+					daap_source->priv->port,
+					daap_source->priv->password_protected,
+					db,
+					type,
+					(RBDAAPConnectionCallback) rb_daap_source_connection_cb,
+					source);
+	g_object_unref (G_OBJECT (db));
+	g_object_unref (G_OBJECT (shell));
 	if (daap_source->priv->connection == NULL) {
-		RBShell *shell = NULL;
-		RhythmDB *db = NULL;
-		gchar *name = NULL;
-		RhythmDBEntryType type;
-
-		g_object_get (G_OBJECT (daap_source), "shell", &shell, "entry-type", &type, "name", &name, NULL);
-		g_object_get (G_OBJECT (shell), "db", &db, NULL);
-
-		/* FIXME FIXME FIXME
-		 * this is the call that takes a long time
-		 */
-		daap_source->priv->connection =
-			rb_daap_connection_new (name,
-						daap_source->priv->host,
-						daap_source->priv->port,
-						daap_source->priv->password_protected,
-						db,
-						type);
-
-		if (daap_source->priv->connection != NULL) {
-			GSList *playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
-			GSList *l;
-
-			for (l = playlists; l != NULL; l = l->next) {
-				RBDAAPPlaylist *playlist = l->data;
-				RBSource *playlist_source;
-
-				playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
-									   "name", playlist->name,
-									   "shell", shell,
-									   "visibility", TRUE,
-									   "is-local", FALSE,
-									   NULL));
-				/* this is set here instead of in construction so that
-				 * rb_playlist_source_constructor has a chance to be run to set things up */
-				rb_playlist_source_add_locations (RB_PLAYLIST_SOURCE (playlist_source), playlist->uris);
-
-				rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
-				daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
-			}
-		} else {
-			daap_source->priv->playlist_sources = NULL;
-		}
-
-		g_free (name);
-		g_object_unref (G_OBJECT (db));
-		g_object_unref (G_OBJECT (shell));
+		/* XXX can this still happen? */
+		daap_source->priv->playlist_sources = NULL;
+		return;
 	}
+}
+
+static void
+rb_daap_source_connection_cb (RBDAAPConnection *connection,
+			      gboolean result,
+			      RBSource *source)
+{
+	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	RBShell *shell = NULL;
+	GSList *playlists;
+	GSList *l;
+
+	if (result == FALSE) {
+		/* FIXME display error?  should get more info from the connection.. */
+		return;
+	}
+
+	g_object_get (G_OBJECT (daap_source), 
+		      "shell", &shell, 
+		      NULL);
+	playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
+	for (l = playlists; l != NULL; l = l->next) {
+		RBDAAPPlaylist *playlist = l->data;
+		RBSource *playlist_source;
+
+		playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
+							   "name", playlist->name,
+							   "shell", shell,
+							   "visibility", TRUE,
+							   "is-local", FALSE,
+							   NULL));
+		/* this is set here instead of in construction so that
+		 * rb_playlist_source_constructor has a chance to be run to set things up */
+		rb_playlist_source_add_locations (RB_PLAYLIST_SOURCE (playlist_source), playlist->uris);
+
+		rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
+		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
+	}
+	g_object_unref (G_OBJECT (shell));
+}
+
+static void
+rb_daap_source_disconnect_cb (RBDAAPConnection *connection,
+			      gboolean result,
+			      RBSource *source)
+{
+	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	rb_daap_connection_destroy (connection);
+	daap_source->priv->connection = NULL;
+	g_object_unref (G_OBJECT (daap_source));
 }
 
 static gboolean
@@ -603,8 +637,10 @@ rb_daap_source_disconnect (RBSource *source)
 		g_slist_free (daap_source->priv->playlist_sources);
 		daap_source->priv->playlist_sources = NULL;
 
-		rb_daap_connection_destroy (daap_source->priv->connection);
-		daap_source->priv->connection = NULL;
+		g_object_ref (G_OBJECT (daap_source));
+		rb_daap_connection_logout (daap_source->priv->connection,
+					   (RBDAAPConnectionCallback) rb_daap_source_disconnect_cb,
+					   daap_source);
 	}
 
 	return TRUE;
