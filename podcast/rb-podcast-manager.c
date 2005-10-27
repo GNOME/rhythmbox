@@ -1193,7 +1193,10 @@ download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressIn
 	
 	if ((info->phase == GNOME_VFS_XFER_PHASE_COPYING) &&
 	    (data->entry != NULL)) {
-		guint local_progress = (gint) 100 * info->total_bytes_copied / info->file_size;
+		guint local_progress = 0;
+	       
+		if (info->file_size > 0)
+			local_progress = (gint) 100 * info->total_bytes_copied / info->file_size;
 
 		if (local_progress != data->progress) {
 			data->entry->podcast->status = local_progress;
