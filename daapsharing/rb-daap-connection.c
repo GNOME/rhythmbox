@@ -1225,9 +1225,15 @@ rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result)
 		connection->result = FALSE;
 	} else {
 		switch (connection->state) {
+		case DAAP_GET_PLAYLISTS:
+			if (connection->playlists == NULL)
+				connection->state = DAAP_DONE;
+			else
+				connection->state = DAAP_GET_PLAYLIST_ENTRIES;
+			break;
 		case DAAP_GET_PLAYLIST_ENTRIES:
 			/* keep reading playlists until we've got them all */
-			if (++connection->reading_playlist == g_slist_length (connection->playlists))
+			if (++connection->reading_playlist >= g_slist_length (connection->playlists))
 				connection->state = DAAP_DONE;
 			break;
 

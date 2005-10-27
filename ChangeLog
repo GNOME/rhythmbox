@@ -1,5 +1,11 @@
 2005-10-27  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_state_done): don't assert when a daap server
+	doesn't have any playlists
+
+2005-10-27  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-sourcelist-model.c:
 	(rb_sourcelist_model_set_dnd_targets): Add the COPY action to the drag
 	source for the sourcelist. Closes bug 319817.
