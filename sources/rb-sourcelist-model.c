@@ -200,7 +200,7 @@ rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
 	rb_tree_dnd_add_drag_source_support (treeview,
 					     GDK_BUTTON1_MASK,
 					     sourcelist_targets, n_targets,
-					     GDK_ACTION_MOVE);
+					     GDK_ACTION_MOVE | GDK_ACTION_COPY);
 }
 		
 static void
