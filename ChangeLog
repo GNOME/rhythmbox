@@ -1,5 +1,11 @@
 2005-10-29  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_events),
+	(rhythmdb_query_preprocess), (rhythmdb_idle_save): Save database
+	regularly. Closes 155306.
+
+2005-10-29  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c:
 	(rb_podcast_manager_download_entry),
 	(rb_podcast_manager_copy_post), (rb_podcast_manager_add_post),

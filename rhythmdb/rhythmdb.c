@@ -200,6 +200,7 @@ static void rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 static gboolean free_entry_changes (RhythmDBEntry *entry, 
 				    GSList *changes,
 				    RhythmDB *db);
+static gboolean rhythmdb_idle_save (RhythmDB *db);
 
 enum
 {
@@ -1482,6 +1483,13 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 		case RHYTHMDB_EVENT_DB_LOAD:
 			rb_debug ("processing RHYTHMDB_EVENT_DB_LOAD");
 			g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
+			
+			/* save the db every five minutes */
+			g_timeout_add_full (G_PRIORITY_LOW,
+					    5 * 60 * 1000,
+					    (GSourceFunc) rhythmdb_idle_save,
+					    db,
+					    NULL);
 			break;
 		case RHYTHMDB_EVENT_THREAD_EXITED:
 			rb_debug ("processing RHYTHMDB_EVENT_THREAD_EXITED");
@@ -3164,4 +3172,15 @@ rhythmdb_query_preprocess (GPtrArray *query)
 			}
 		}
 	}
+}
+
+static gboolean
+rhythmdb_idle_save (RhythmDB *db)
+{
+	if (db->priv->dirty) {
+		rb_debug ("database is dirty, doing regular save");
+		rhythmdb_save_async (db);
+	}
+
+	return TRUE;
 }
