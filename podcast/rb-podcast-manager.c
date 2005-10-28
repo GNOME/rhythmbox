@@ -640,18 +640,17 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	}
 
 	if (g_file_test (local_file_name, G_FILE_TEST_EXISTS)) {
-		guint64 remote_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+		guint64 remote_size;
 		GnomeVFSFileInfo *info = gnome_vfs_file_info_new ();
 		GnomeVFSResult result;
 
-		if (remote_size == 0) {
-			result = gnome_vfs_get_file_info_uri (remote_uri, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-			if (result != GNOME_VFS_OK) {
-				rb_debug ("unable to retrieve info on remote of podcast");
-			} else { 
-				remote_size = info->size;
-				gnome_vfs_file_info_unref (info);
-			}
+		result = gnome_vfs_get_file_info_uri (remote_uri, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+		if (result != GNOME_VFS_OK) {
+			rb_debug ("unable to retrieve info on remote of podcast");
+			goto next_step;
+		} else { 
+			remote_size = info->size;
+			gnome_vfs_file_info_unref (info);
 		}
 
 		result = gnome_vfs_get_file_info (local_file_name, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
