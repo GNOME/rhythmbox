@@ -108,6 +108,8 @@ struct RBSongInfoPrivate
 	GtkWidget   *genre_label;
 	GtkWidget   *track_cur;
 	GtkWidget   *track_cur_label;
+	GtkWidget   *disc_cur;
+	GtkWidget   *disc_cur_label;
 	GtkWidget   *playback_error_box;
 	GtkWidget   *playback_error_label;
 
@@ -282,6 +284,8 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
 	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
+	song_info->priv->disc_cur     = glade_xml_get_widget (xml, "song_info_disc_cur");
+	song_info->priv->disc_cur_label = glade_xml_get_widget (xml, "discn_label");
 
 	/* We add now the Pango attributes (look at bug #99867 and #97061) */
 	{
@@ -336,6 +340,11 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
 		g_free (str_final);
 
+		label = glade_xml_get_widget (xml, "discn_label");
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 	}
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
@@ -658,10 +667,21 @@ rb_song_info_mnemonic_cb (GtkWidget *target)
 	}
 }
 
+static void
+rb_song_info_populate_num_field (GtkEntry *field, gulong num)
+{
+	char *tmp;
+	if (num > 0)
+		tmp = g_strdup_printf ("%.2ld", num);
+	else
+		tmp = g_strdup (_("Unknown"));
+	gtk_entry_set_text (field, tmp);
+	g_free (tmp);
+}
+
 static void 
 rb_song_info_populate_dialog (RBSongInfo *song_info)
 {
-	gulong num;
 	const char *text = NULL;
 	char *tmp;
 	/* update the buttons sensitivity */
@@ -685,14 +705,10 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	text = rb_refstring_get (song_info->priv->current_entry->genre);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->genre), text);
 
-	num = song_info->priv->current_entry->tracknum;
-	if (num > 0)
-		tmp = g_strdup_printf ("%.2ld", num);
-	else
-		tmp = g_strdup (_("Unknown"));
-	gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur),
-			    tmp);
-	g_free (tmp);
+	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->track_cur),
+					 song_info->priv->current_entry->tracknum);
+	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur),
+					 song_info->priv->current_entry->discnum);
 
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
@@ -973,9 +989,11 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
 	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
 	const char *tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
+	const char *discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
 	char *endptr;
 	GType type;
 	gint tracknum;
+	gint discnum;
 	GValue val = {0,};
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry = dialog->priv->current_entry;
@@ -990,6 +1008,17 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		g_value_init (&val, type);
 		g_value_set_ulong (&val, tracknum);
 		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+	
+	discnum = g_ascii_strtoull (discnum_str, &endptr, 10);
+	if ((endptr != discnum_str) && (discnum != entry->discnum)) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_DISC_NUMBER);
+		g_value_init (&val, type);
+		g_value_set_ulong (&val, discnum);
+		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_DISC_NUMBER, &val);
 		g_value_unset (&val);
 		changed = TRUE;
 	}

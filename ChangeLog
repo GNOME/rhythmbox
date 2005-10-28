@@ -1,5 +1,15 @@
 2005-10-29  James Livingston  <jrl@ids.org.au>
 
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* data/glade/song-info.glade:
+	* widgets/rb-song-info.c: (rb_song_info_construct_single),
+	(rb_song_info_populate_num_field), (rb_song_info_populate_dialog),
+	(rb_song_info_sync_entry_single): show the disc number in the song
+	info window. From bug 311199.
+
+2005-10-29  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_events),
 	(rhythmdb_query_preprocess), (rhythmdb_idle_save): Save database
 	regularly. Closes 155306.
