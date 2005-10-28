@@ -421,7 +421,7 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup,
 							    "ViewStatusbar");
 	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive",
-		      not_small && header->priv->have_search, NULL);
+		      not_small, NULL);
 	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
 						      "ViewAll");
 	g_object_set (G_OBJECT (viewall_action), "sensitive",

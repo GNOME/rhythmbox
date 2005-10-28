@@ -1,5 +1,11 @@
 2005-10-28  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-source-header.c: (rb_source_header_sync_control_state):
+	don't disable the status-bar menu item when the current source doesn't
+	use the search box.
+
+2005-10-28  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c: (download_progress_update_cb): don't
 	crash if the file has unknown length
 
