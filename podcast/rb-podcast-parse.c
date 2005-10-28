@@ -129,6 +129,8 @@ rb_set_item_value (struct RBPoadcastLoadContext* ctx, const char* name, const ch
        ctx->item_data->description = dvalue;
    } else if (!strcmp (name, "author")) {
        ctx->item_data->author = dvalue;
+   } else if (!strcmp (name, "length")) {
+       ctx->item_data->filesize = g_ascii_strtoull ((char*)dvalue, NULL, 10);
    } else {
        g_free (dvalue);
    }
@@ -230,6 +232,9 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext* ctx, const char *
                     if (!strcmp (*attrs, "url")) {
                         const char *url_value = *(attrs+1);
                         rb_set_item_value(ctx, "url", url_value);
+                    } else if (!strcmp (*attrs, "length")) {
+                        const char *length_value = *(attrs+1);
+                        rb_set_item_value(ctx, "length", length_value);
                     }
                 }
             } else  if (!rb_validate_item_propert (name)) {

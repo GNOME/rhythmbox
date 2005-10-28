@@ -1,3 +1,16 @@
+2005-10-29  James Livingston  <jrl@ids.org.au>
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_download_entry),
+	(rb_podcast_manager_copy_post), (rb_podcast_manager_add_post),
+	(rb_podcast_manager_insert_feed):
+	* podcast/rb-podcast-manager.h:
+	* podcast/rb-podcast-parse.c: (rb_set_item_value),
+	(rb_podcast_parser_start_element):
+	* podcast/rb-podcast-parse.h: Detect already-downloaded podcasts, and
+	don't download them again. However, it can't resume
+	partially-downloaded ones.
+
 2005-10-28  James Livingston  <jrl@ids.org.au>
 
 	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger),

@@ -31,6 +31,7 @@ typedef struct
 	xmlChar* description;
 	xmlChar* author;
 	uintmax_t pub_date;
+	guint64 filesize;
 }RBPodcastItem;
 
 typedef struct 

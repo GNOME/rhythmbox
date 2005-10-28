@@ -442,7 +442,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
         	g_static_mutex_lock (&entry_add_mutex);
 		pd->priv->download_list =  g_list_append (pd->priv->download_list, data);
 		g_static_mutex_unlock (&entry_add_mutex);
-		rb_podcast_manager_next_file (pd);
+		gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file_idle , pd);
 	}
 }
 
@@ -600,10 +600,12 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	
 	remote_uri = gnome_vfs_uri_new (location);
 	if (!remote_uri) {
+		rb_debug ("Error downloading podcast: could not create remote uri");
 		goto next_step;
 	}
 		
 	if (gnome_vfs_uri_is_local (remote_uri)) {	
+		rb_debug ("Error downloading podcast: uri is local");
 		goto next_step;
 	}
 
@@ -620,7 +622,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 
 	 if (!g_file_test (dir_name, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
 		if (rb_podcast_manager_mkdir_with_parents (dir_name, 0750) != 0) {
-			rb_debug ("Error on create local dirs.");
+			rb_debug ("Error downloading podcast: could not create local dirs");
 			goto next_step;
 		}
 	 }
@@ -633,13 +635,56 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 
 	local_uri = gnome_vfs_uri_new (local_file_name);
 	if (!local_uri) {
+		rb_debug ("Error downloading podcast: could not create local uri");
 		goto next_step;
 	}
 
-	//TODO: suport resume file
 	if (g_file_test (local_file_name, G_FILE_TEST_EXISTS)) {
-		rb_debug ("Removing existent file.");
-		g_remove (local_file_name);
+		guint64 remote_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+		GnomeVFSFileInfo *info = gnome_vfs_file_info_new ();
+		GnomeVFSResult result;
+
+		if (remote_size == 0) {
+			result = gnome_vfs_get_file_info_uri (remote_uri, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+			if (result != GNOME_VFS_OK) {
+				rb_debug ("unable to retrieve info on remote of podcast");
+			} else { 
+				remote_size = info->size;
+				gnome_vfs_file_info_unref (info);
+			}
+		}
+
+		result = gnome_vfs_get_file_info (local_file_name, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+		if (result != GNOME_VFS_OK) {
+			rb_debug ("unable to retrieve info on local copy of podcast");
+			goto next_step;
+		} else if (remote_size == info->size) {
+			GValue val = {0,};
+			char *uri = gnome_vfs_uri_to_string (local_uri, GNOME_VFS_URI_HIDE_NONE);
+		
+			rb_debug ("podcast %s already downloaded", location);
+
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, 100);
+			rhythmdb_entry_set (pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
+
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, uri);
+			rhythmdb_entry_set (pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+			g_value_unset (&val);
+
+			rb_podcast_manager_save_metadata (pd->priv->db, data->entry, uri);
+			rhythmdb_commit (pd->priv->db);
+				
+			goto next_step;
+		} else if (remote_size > info->size) {
+			/* TODO: suport resume file */
+		} else {
+			/* the local file is larger. replace it */
+		}
+		
+		gnome_vfs_file_info_unref (info);
 	}
 
 	
@@ -658,7 +703,6 @@ next_step:
 	if (local_uri)
 		gnome_vfs_uri_unref (local_uri);
 
-	rb_debug ("Erro starting job");
 	g_static_mutex_lock (&entry_add_mutex);
 	pd->priv->download_list = g_list_remove (pd->priv->download_list, (gconstpointer ) data);
 	g_static_mutex_unlock (&entry_add_mutex);
@@ -667,7 +711,7 @@ next_step:
 	data = NULL;
 
 	g_mutex_unlock (pd->priv->mutex_job);
-	rb_podcast_manager_next_file (pd);
+	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file_idle , pd);	
 }
 
 
@@ -787,7 +831,8 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			      const char *uri,
 			      const char *description,
 			      gulong status,
-			      gulong date)
+			      gulong date,
+			      guint64 filesize)
 {
 	//GThread* copy_thread = NULL;
 	GValue title_val = { 0, };
@@ -800,6 +845,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	GValue subtitle_val = { 0, };
 	GValue description_val = { 0, };
 	GValue value =  { 0, };
+	GValue size_val = {0,};
 	GTimeVal time;
 	
 	RhythmDBEntry *entry;
@@ -848,6 +894,9 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		else
 			g_value_set_string (&artist_val, "");
 
+		g_value_init (&size_val, G_TYPE_UINT64);
+		g_value_set_uint64 (&size_val, filesize);
+
 
 		
 		entry = rhythmdb_entry_new (db,
@@ -884,6 +933,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &mountpoit_val);
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &size_val);
 			
 		g_value_unset (&time_val);
 		g_value_unset (&title_val);
@@ -893,6 +943,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		g_value_unset (&status_val);
 		g_value_unset (&artist_val);
 		g_value_unset (&description_val);
+		g_value_unset (&size_val);
 
 	}
 	return TRUE;
@@ -1529,7 +1580,9 @@ load_posts:
 							       (gchar* ) item->url,
 							       (gchar* ) item->description,
 							       status,
-							       (gulong ) (item->pub_date > 0 ? item->pub_date : data->pub_date));
+							       (gulong ) (item->pub_date > 0 ? item->pub_date : data->pub_date),
+							       item->filesize);
+			
 			status = 103;
 		} else {
 			if (!g_strcasecmp(last_post, (gchar* )item->url)) {

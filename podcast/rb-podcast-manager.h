@@ -81,7 +81,8 @@ gboolean                rb_podcast_manager_add_post  	  	(RhythmDB *db,
 	                                                 	 const char *uri,
 		        	                               	 const char *description,
 								 gulong status,
-	        	                                       	 gulong date);
+	        	                                       	 gulong date,
+								 guint64 filesize);
 
 G_END_DECLS
 
