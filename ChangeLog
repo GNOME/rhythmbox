@@ -1,5 +1,13 @@
 2005-10-28  James Livingston  <jrl@ids.org.au>
 
+	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger),
+	(rb_metadata_gst_add_tag_data), (rb_metadata_save): Make ID3 tagging
+	work. Don't attempt to write duration as a tag.
+
+	Thanks to Artem Baguinski <femistofel@gmail.com>
+
+2005-10-28  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-source-header.c: (rb_source_header_sync_control_state):
 	don't disable the status-bar menu item when the current source doesn't
 	use the search box.

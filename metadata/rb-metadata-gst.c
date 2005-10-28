@@ -99,28 +99,33 @@ rb_add_flac_tagger (GstBin *pipeline, GstElement *element)
 static GstElement *
 rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
 {
-	GstElement *spider;
-	GstElement *tagger;
+        GstElement * tagger, * identity;
 	GstCaps *filtercaps = NULL;
 
-	if (!(spider = gst_element_factory_make ("spider", "spider")))
-		return NULL;
+        if (!(tagger = gst_element_factory_make("id3tag", "tagger"))) 
+                return NULL;
 
-	if (!(tagger = gst_element_factory_make ("id3mux", "id3mux"))) {
-		gst_object_unref (GST_OBJECT (spider));
-		return NULL;
-	}
-
-	gst_bin_add (GST_BIN (pipeline), spider);
-	gst_bin_add (GST_BIN (pipeline), tagger);
-	
-	gst_element_link_many (element, spider, NULL);
-	filtercaps = gst_caps_new_simple ("audio/mpeg", NULL);
-	gst_element_link_filtered (spider, tagger, filtercaps);
+        if (!(identity = gst_element_factory_make("identity", "identity"))) {
+                gst_object_unref( GST_OBJECT(tagger) );
+                return NULL;
+        }
+        
+	gst_element_set (tagger, "v1-tag", TRUE, NULL);
+        gst_bin_add_many (GST_BIN (pipeline), tagger, identity, NULL);
+        
+	filtercaps = gst_caps_new_simple ("application/x-id3", NULL);
+	if (!gst_element_link_filtered (tagger, identity, filtercaps)) {
+		g_warning("Linking id3tag and identity failed");
+                gst_caps_free(filtercaps);
+                gst_object_unref(GST_OBJECT(tagger));
+                gst_object_unref(GST_OBJECT(identity));
+                return NULL;
+        }
 	gst_caps_free (filtercaps);
 
-	return tagger;
-
+        gst_element_link_many(element, tagger, NULL);
+        
+	return identity;
 }
 
 static void
@@ -739,10 +744,15 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 	RBMetaDataField field = GPOINTER_TO_INT (key);
 	const char *tag = rb_metadata_gst_field_to_gst_tag (field);
 
+	/* don't write this out */
+	if (field == RB_METADATA_FIELD_DURATION)
+		return;
+	
 	if (tag) {
 		GValue newval = {0,};
 		g_value_init (&newval, gst_tag_get_type (tag));
 		if (g_value_transform (val, &newval)) {
+			g_debug("Setting %s",tag);
 			gst_tag_setter_add_values (GST_TAG_SETTER (tagsetter),
 						   GST_TAG_MERGE_REPLACE,
 						   tag, &newval, NULL);
@@ -774,6 +784,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 {
 	GstElement *pipeline = NULL;
 	GstElement *gnomevfssrc = NULL;
+        GstElement *retag_end = NULL; /* the last elemet after retagging subpipeline */
 	GstElement *tagger = NULL;
 	const char *plugin_name = NULL;
 	char *tmpname = NULL;
@@ -824,7 +835,16 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	tagger = add_tagger_func (GST_BIN (pipeline), gnomevfssrc);
+	retag_end = add_tagger_func (GST_BIN (pipeline), gnomevfssrc);
+	if (!retag_end) {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     "Unsupported file type: %s", md->priv->type);
+		goto missing_plugin;
+	}
+
+        tagger = gst_bin_get_by_interface(GST_BIN(pipeline), GST_TYPE_TAG_SETTER);
 	if (!tagger) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -837,10 +857,9 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	g_hash_table_foreach (md->priv->metadata, 
 			      (GHFunc) rb_metadata_gst_add_tag_data,
 			      GST_TAG_SETTER (tagger));
-
+	
 	gst_bin_add (GST_BIN (pipeline), md->priv->sink); 
-
-	gst_element_link_many (tagger, md->priv->sink, NULL);
+	gst_element_link_many (retag_end, md->priv->sink, NULL);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
