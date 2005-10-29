@@ -377,15 +377,14 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New _Internet Radio Station"), "<control>I",
 	  N_("Create a new Internet Radio station"),
 	  G_CALLBACK (rb_shell_cmd_new_station) },
-
 	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), "<control>F",
 	  N_("Subscribe to a new Podcast Feed"),
 	  G_CALLBACK (rb_shell_cmd_new_podcast) },
 
-	{ "MusicImportFolder", GTK_STOCK_OPEN, N_("_Import Folder..."), "<control>O",
+	{ "MusicImportFolder", GTK_STOCK_DIRECTORY, N_("_Import Folder..."), "<control>O",
 	  N_("Choose folder to be added to the Library"),
 	  G_CALLBACK (rb_shell_cmd_add_folder_to_library) },
-	{ "MusicImportFile", NULL, N_("Import _File..."), NULL,
+	{ "MusicImportFile", GTK_STOCK_FILE, N_("Import _File..."), NULL,
 	  N_("Choose file to be added to the Library"),
 	  G_CALLBACK (rb_shell_cmd_add_file_to_library) },
 	{ "MusicImportCD", GTK_STOCK_CDROM, N_("Import _Audio CD..."), "<control>E",

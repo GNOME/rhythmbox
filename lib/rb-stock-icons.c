@@ -30,18 +30,41 @@
 
 static GtkIconFactory *factory = NULL;
 
+const char RB_STOCK_TRAY_ICON[] = "rhythmbox-tray-icon";
+const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
+const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
+const char RB_STOCK_NO_STAR[] = "rhythmbox-no-star";
+const char RB_STOCK_PODCAST[] = "rhythmbox-podcast";
+const char GNOME_MEDIA_SHUFFLE[] = "stock_shuffle";
+const char GNOME_MEDIA_REPEAT[] = "stock_repeat";
+const char GNOME_MEDIA_PLAYLIST[] = "stock_playlist";
+const char GNOME_MEDIA_AUTO_PLAYLIST[] = "stock_smart-playlist";
+
+typedef struct {
+	const char *name;
+	gboolean custom;
+} RBStockIcon;
+
 void
 rb_stock_icons_init (void)
 {
+	GtkIconTheme *theme = gtk_icon_theme_get_default ();
 	int i;
 
-	static const char *items[] =
+	static const RBStockIcon items[] =
 	{
-		RB_STOCK_TRAY_ICON,
-		RB_STOCK_SET_STAR,
-		RB_STOCK_UNSET_STAR,
-		RB_STOCK_PODCAST,
-		RB_STOCK_NO_STAR
+		/* Rhythmbox custom icons */
+		{RB_STOCK_TRAY_ICON, TRUE},
+		{RB_STOCK_SET_STAR, TRUE},
+		{RB_STOCK_UNSET_STAR, TRUE},
+		{RB_STOCK_PODCAST, TRUE},
+		{RB_STOCK_NO_STAR, TRUE},
+		
+		/* gnome-icon-theme icons */
+		{GNOME_MEDIA_SHUFFLE, FALSE},
+		{GNOME_MEDIA_REPEAT, FALSE},
+		{GNOME_MEDIA_PLAYLIST, FALSE},
+		{GNOME_MEDIA_AUTO_PLAYLIST, FALSE},
 	};
 
 	g_return_if_fail (factory == NULL);
@@ -52,14 +75,23 @@ rb_stock_icons_init (void)
 	for (i = 0; i < (int) G_N_ELEMENTS (items); i++) {
 		GtkIconSet *icon_set;
 		GdkPixbuf *pixbuf;
-		char *fn;
 
-		fn = g_strconcat (items[i], ".png", NULL);
-		pixbuf = gdk_pixbuf_new_from_file (rb_file (fn), NULL);
-		g_free (fn);
+		if (items[i].custom) {
+			char *fn = g_strconcat (items[i].name, ".png", NULL);
+			pixbuf = gdk_pixbuf_new_from_file (rb_file (fn), NULL);
+			g_free (fn);
+		} else {
+			/* we should really add all the sizes */
+			int size = GTK_ICON_SIZE_LARGE_TOOLBAR;
+			pixbuf = gtk_icon_theme_load_icon (theme,
+							   items[i].name,
+							   size,
+							   0,
+							   NULL);
+		}
 
 		icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
-		gtk_icon_factory_add (factory, items[i], icon_set);
+		gtk_icon_factory_add (factory, items[i].name, icon_set);
 		gtk_icon_set_unref (icon_set);
 		
 		g_object_unref (G_OBJECT (pixbuf));

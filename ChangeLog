@@ -1,5 +1,18 @@
 2005-10-29  James Livingston  <jrl@ids.org.au>
 
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h: bind gnome-icon-theme icons to stock ids.
+	
+	* shell/rb-playlist-manager.c:
+	* shell/rb-shell.c: use the above stock ids, so that the icons get set
+	correctly.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_constructor): set the
+	initial state of the shuffle/repeat menu items correctly. Patch from
+	Dennis Cranston <dennis_cranston@yahoo.com>, closes 313158.
+
+2005-10-29  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post): fix
 	double-free.
 	

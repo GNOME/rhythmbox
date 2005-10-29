@@ -296,10 +296,10 @@ static GtkActionEntry rb_shell_player_stop_action [] =
 
 static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 {
-	{ "ControlShuffle", NULL, N_("Sh_uffle"), "<control>U",
+	{ "ControlShuffle", GNOME_MEDIA_SHUFFLE, N_("Sh_uffle"), "<control>U",
 	  N_("Play songs in a random order"),
 	  G_CALLBACK (rb_shell_player_shuffle_changed_cb) },
-	{ "ControlRepeat", NULL, N_("_Repeat"), "<control>R",
+	{ "ControlRepeat", GNOME_MEDIA_REPEAT, N_("_Repeat"), "<control>R",
 	  N_("Play first song again after all songs are played"),
 	  G_CALLBACK (rb_shell_player_repeat_changed_cb) }
 };
@@ -530,8 +530,11 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 					     rb_shell_player_toggle_entries,
 					     rb_shell_player_n_toggle_entries,
 					     player);
+	player->priv->syncing_state = TRUE;
 	rb_shell_player_set_playing_source (player, NULL);
 	rb_shell_player_sync_play_order (player);
+	rb_shell_player_sync_control_state (player);
+	player->priv->syncing_state = FALSE;
 
 	return G_OBJECT (player);
 }

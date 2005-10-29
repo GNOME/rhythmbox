@@ -25,11 +25,15 @@
 
 G_BEGIN_DECLS
 
-#define RB_STOCK_TRAY_ICON     "rhythmbox-tray-icon"
-#define RB_STOCK_SET_STAR      "rhythmbox-set-star"
-#define RB_STOCK_UNSET_STAR    "rhythmbox-unset-star"
-#define RB_STOCK_NO_STAR       "rhythmbox-no-star"
-#define RB_STOCK_PODCAST       "rhythmbox-podcast"
+extern const char RB_STOCK_TRAY_ICON[];
+extern const char RB_STOCK_SET_STAR[];
+extern const char RB_STOCK_UNSET_STAR[];
+extern const char RB_STOCK_NO_STAR[];
+extern const char RB_STOCK_PODCAST[];
+extern const char GNOME_MEDIA_SHUFFLE[];
+extern const char GNOME_MEDIA_REPEAT[];
+extern const char GNOME_MEDIA_PLAYLIST[];
+extern const char GNOME_MEDIA_AUTO_PLAYLIST[];
 
 void	rb_stock_icons_init	(void);
 
