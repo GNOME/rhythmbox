@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include "rb-debug.h"
 
 static GPrivate * private_is_primary_thread;
 
@@ -380,3 +381,168 @@ rb_threads_init (void)
 	 */
 	gdk_threads_init ();
 }
+
+gchar **
+rb_string_split_words (const gchar *string)
+{
+	/*return g_slist_prepend (NULL, g_strdup (string));*/
+
+	GSList *words, *current;
+	gunichar *unicode, *cur_write, *cur_read;
+	gchar **ret;
+	gint i, wordcount = 1;
+	gboolean new_word = TRUE;
+
+	g_return_val_if_fail (string != NULL, NULL);
+
+	cur_write = cur_read = unicode = g_utf8_to_ucs4_fast (string, -1, NULL);
+
+	/* we may fail here, we expect valid utf-8 */
+	g_return_val_if_fail (unicode != NULL, NULL);
+
+	words = g_slist_prepend (NULL, unicode);
+
+	/* now normalize this text */
+	while (*cur_read) {
+		switch (g_unichar_type (*cur_read)) {
+		case G_UNICODE_UNASSIGNED:
+			g_warning ("unassigned unicode character type found");
+			/* fall through */
+		case G_UNICODE_CONTROL:
+		case G_UNICODE_FORMAT:
+		case G_UNICODE_PRIVATE_USE:
+
+		case G_UNICODE_SURROGATE:
+		case G_UNICODE_LINE_SEPARATOR:
+		case G_UNICODE_PARAGRAPH_SEPARATOR:
+		case G_UNICODE_SPACE_SEPARATOR:
+			/* remove these and start a new word */
+			if (!new_word) {
+				/* end current word if it isn't ended yet */
+				*cur_write++ = 0;
+				new_word = TRUE;
+			}
+
+			break;
+		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_ENCLOSING_MARK:
+		case G_UNICODE_NON_SPACING_MARK:
+		case G_UNICODE_CONNECT_PUNCTUATION:
+		case G_UNICODE_DASH_PUNCTUATION:
+		case G_UNICODE_CLOSE_PUNCTUATION:
+		case G_UNICODE_FINAL_PUNCTUATION:
+		case G_UNICODE_INITIAL_PUNCTUATION:
+		case G_UNICODE_OTHER_PUNCTUATION:
+		case G_UNICODE_OPEN_PUNCTUATION:
+			/* remove these */
+			/*break;*/
+		case G_UNICODE_LOWERCASE_LETTER:
+		case G_UNICODE_MODIFIER_LETTER:
+		case G_UNICODE_OTHER_LETTER:
+		case G_UNICODE_TITLECASE_LETTER:
+		case G_UNICODE_UPPERCASE_LETTER:
+		case G_UNICODE_DECIMAL_NUMBER:
+		case G_UNICODE_LETTER_NUMBER:
+		case G_UNICODE_OTHER_NUMBER:
+		case G_UNICODE_CURRENCY_SYMBOL:
+		case G_UNICODE_MODIFIER_SYMBOL:
+		case G_UNICODE_MATH_SYMBOL:
+		case G_UNICODE_OTHER_SYMBOL:
+			/* keep these unchanged */
+			*cur_write = *cur_read;
+			if (new_word) {
+				if (cur_write != unicode) {/* first insert has been done above */
+					words = g_slist_prepend (words, cur_write);
+					wordcount++;
+				}
+				new_word = FALSE;
+			}
+			cur_write++;
+			break;    
+		default:
+			g_warning ("unknown unicode character type found");
+			break;
+		}
+		cur_read++;
+	}
+
+	if (!new_word) {
+		*cur_write++ = 0;
+	}
+
+	ret = g_new (gchar *, wordcount + 1); 
+	current = words;
+	for (i = wordcount - 1; i >= 0; i--) {
+		ret[i] = g_ucs4_to_utf8 (current->data, -1, NULL, NULL, NULL);
+		current = g_slist_next (current);
+	}
+	ret[wordcount] = NULL;
+
+	g_slist_free (words);
+	g_free (unicode);
+
+	return ret;
+}
+
+gchar*
+rb_search_fold (const char *original)
+{
+	GString *string;
+	gunichar *unicode, *cur;
+	
+	g_return_val_if_fail (original != NULL, NULL);
+
+	/* old behaviour is equivalent to: return g_utf8_casefold (original, -1); */
+	
+	string = g_string_new (NULL);
+	unicode = g_utf8_to_ucs4_fast (original, -1, NULL);
+
+	for (cur = unicode; *cur != 0; cur++) {
+		switch (g_unichar_type (*cur)) {
+		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_ENCLOSING_MARK:
+		case G_UNICODE_NON_SPACING_MARK:
+		case G_UNICODE_CONNECT_PUNCTUATION:
+		case G_UNICODE_DASH_PUNCTUATION:
+		case G_UNICODE_CLOSE_PUNCTUATION:
+		case G_UNICODE_FINAL_PUNCTUATION:
+		case G_UNICODE_INITIAL_PUNCTUATION:
+		case G_UNICODE_OTHER_PUNCTUATION:
+		case G_UNICODE_OPEN_PUNCTUATION:
+			/* remove these */
+			break;
+
+		case G_UNICODE_LOWERCASE_LETTER:
+		case G_UNICODE_MODIFIER_LETTER:
+		case G_UNICODE_OTHER_LETTER:
+		case G_UNICODE_TITLECASE_LETTER:
+		case G_UNICODE_UPPERCASE_LETTER:
+			/* convert to lower case */
+			*cur = g_unichar_tolower (*cur);
+			/* ... and fall through */\
+		case G_UNICODE_DECIMAL_NUMBER:
+		case G_UNICODE_LETTER_NUMBER:
+		case G_UNICODE_OTHER_NUMBER:
+		/* should be keep symbols? */
+		case G_UNICODE_CURRENCY_SYMBOL:
+		case G_UNICODE_MODIFIER_SYMBOL:
+		case G_UNICODE_MATH_SYMBOL:
+		case G_UNICODE_OTHER_SYMBOL:
+			g_string_append_unichar (string, *cur);
+			break;
+
+		case G_UNICODE_UNASSIGNED:
+			g_warning ("unassigned unicode character type found");
+			/* fall through */
+
+		default:
+			/* leave these in */
+			g_string_append_unichar (string, *cur);
+		}
+	}
+	
+	g_free (unicode);
+			
+	return g_string_free (string, FALSE);
+}
+

@@ -32,6 +32,7 @@
 #include "rb-entry-view.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
@@ -215,7 +216,7 @@ type_ahead_search_func (GtkTreeModel *model, gint column,
 	gboolean res;
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
-	folded = g_utf8_casefold (key, -1);
+	folded = rb_search_fold (key);
 	res = (strstr (rb_refstring_get_folded (entry->title), folded) == NULL);
 	g_free (folded);
 	return res;

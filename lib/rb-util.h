@@ -23,8 +23,7 @@
 #define __RB_UTIL_H
 
 #include <stdarg.h>
-#include <glib/gtypes.h>
-#include <glib-object.h>
+#include <glib.h>
 #include <gtk/gtkimage.h>
 #include <gtk/gtkuimanager.h>
 
@@ -49,8 +48,8 @@ gboolean rb_uri_is_mounted (const char *uri);
 void rb_threads_init (void);
 gboolean rb_is_main_thread (void);
 
-
-
+gchar* rb_search_fold (const char *original);
+gchar** rb_string_split_words (const gchar *string);
 
 G_END_DECLS
 

@@ -1,5 +1,33 @@
 2005-10-29  James Livingston  <jrl@ids.org.au>
 
+	Allow the search box to match words from multiple properties. Closes
+	bug 139196. Thanks to the person from IRC who did a lot of the initial
+	work.
+
+
+	* lib/rb-util.c: (rb_string_split_words), (rb_search_fold):
+	* lib/rb-util.h: Add functions to split a string into words, and one
+	to perform "search folding" which is currently like casefolding but
+	also strips punctuation
+	
+	* rhythmdb/rhythmdb.c: (rhythmdb_prop_get_type),
+	(rhythmdb_query_preprocess):
+	* rhythmdb/rhythmdb.h: add a SEARCH_MATCH property which will match
+	against title, artist, album and genre (for the search box)
+	
+	* rhythmdb/rb-refstring.c: (rb_refstring_new_full):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry), (search_match_properties),
+	(evaluate_conjunctive_subquery): process the SEARCH_MATCH property by
+	splitting into words and matching across multiple properties.
+	
+	* sources/rb-library-source.c: (construct_query_from_selection): use
+	the new SEARCH_MATCH property for the search box
+	
+	* widgets/rb-entry-view.c: (type_ahead_search_func):
+
+2005-10-29  James Livingston  <jrl@ids.org.au>
+
 	* lib/rb-stock-icons.c: (rb_stock_icons_init):
 	* lib/rb-stock-icons.h: bind gnome-icon-theme icons to stock ids.
 	

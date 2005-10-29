@@ -435,6 +435,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_HIDDEN:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
+		case RHYTHMDB_PROP_SEARCH_MATCH:
 		case RHYTHMDB_NUM_PROPERTIES:
 			g_assert_not_reached ();
 			break;
@@ -786,6 +787,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_HIDDEN:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
+		case RHYTHMDB_PROP_SEARCH_MATCH:
 		case RHYTHMDB_NUM_PROPERTIES:
 			break;
 		}
@@ -1304,6 +1306,40 @@ rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 			}
 
 static gboolean
+search_match_properties (RhythmDB *db, RhythmDBEntry *entry, gchar **words)
+{
+	const RhythmDBPropType props[] = {
+		RHYTHMDB_PROP_TITLE_FOLDED,
+		RHYTHMDB_PROP_ALBUM_FOLDED,
+		RHYTHMDB_PROP_ARTIST_FOLDED,
+		RHYTHMDB_PROP_GENRE_FOLDED
+	};
+	gboolean islike = TRUE;
+	gchar **current;
+	int i;
+	
+	for (current = words; *current != NULL; current++) {
+		gboolean word_found = FALSE;
+
+		for (i = 0; i < G_N_ELEMENTS (props); i++) {
+			const char *entry_string = rhythmdb_entry_get_string (entry, props[i]);
+			if (entry_string && (strstr (entry_string, *current) != NULL)) {
+				/* the word was found, go to the next one */	
+				word_found = TRUE;
+				break;
+			}
+		}
+		if (!word_found) {
+			/* the word wasn't in any of the properties*/
+			islike = FALSE;
+			break;
+		}
+	}
+
+	return islike;
+}
+
+static gboolean
 evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			       guint base, guint max, RhythmDBEntry *entry)
 
@@ -1363,25 +1399,27 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		{
 			if (rhythmdb_get_property_type (db, data->propid) == G_TYPE_STRING) {
-				const char *entry_string = rhythmdb_entry_get_string (entry, data->propid);
-				gboolean islike = FALSE;
+				gboolean islike;
 
-				/* check in case the property is NULL, the value should never be NULL */
-				if (entry_string == NULL)
-					return FALSE;
+				if (data->propid == RHYTHMDB_PROP_SEARCH_MATCH) {
+					/* this is a special property, that should match several things */
+					islike = search_match_properties (db, entry, g_value_get_boxed (data->val));
+					
+				} else {
+					const gchar *value_string = g_value_get_string (data->val);
+					const char *entry_string = rhythmdb_entry_get_string (entry, data->propid);
 
-				islike = (strstr (entry_string, g_value_get_string (data->val)) != NULL);
-				if (data->type == RHYTHMDB_QUERY_PROP_LIKE) {
-					if (!islike)
+					/* check in case the property is NULL, the value should never be NULL */
+					if (entry_string == NULL)
 						return FALSE;
-					else
-						continue;
-				} else if (data->type == RHYTHMDB_QUERY_PROP_NOT_LIKE) {
-					if (islike)
-						return FALSE;
-					else
-						continue;
+
+					islike = (strstr (entry_string, value_string) != NULL);
 				}
+
+				if ((data->type == RHYTHMDB_QUERY_PROP_LIKE) ^ islike)
+					return FALSE;
+				else
+					continue;
 				break;
 			} 
 			/* Fall through */

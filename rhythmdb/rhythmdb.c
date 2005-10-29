@@ -2834,6 +2834,8 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Visibility (gboolean) [visibility]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN_STR, "Time Added to Library (gchararray) [first-seen-str]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_SEARCH_MATCH, "Search matching key (gchararray) [search-match]"),
+
 			ENUM_ENTRY (RHYTHMDB_PROP_STATUS, "Status of file (gulong) [status]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_DESCRIPTION, "Podcast description(gchararray) [description]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_SUBTITLE, "Podcast subtitle (gchararray) [subtitle]"),
@@ -3164,12 +3166,28 @@ rhythmdb_query_preprocess (GPtrArray *query)
 			{
 				/* as we are matching against a folded property, the string needs to also be folded */
 				const char *orig = g_value_get_string (data->val);
-				char *folded = g_utf8_casefold (orig, -1);
+				char *folded = rb_search_fold (orig);
 
 				g_value_reset (data->val);
 				g_value_take_string (data->val, folded);
 				break;
 			}
+
+			case RHYTHMDB_PROP_SEARCH_MATCH:
+			{
+				const char *orig = g_value_get_string (data->val);
+				char *folded = rb_search_fold (orig);
+				char **words = rb_string_split_words (folded);
+
+				g_free (folded);
+				g_value_unset (data->val);
+				g_value_init (data->val, G_TYPE_STRV);
+				g_value_take_boxed (data->val, words);
+				break;
+			}
+
+			default:
+				break;
 		}
 	}
 }
