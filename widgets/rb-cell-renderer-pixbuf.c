@@ -268,7 +268,6 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
 
 {
   RBCellRendererPixbuf *cellpixbuf = (RBCellRendererPixbuf *) cell;
-  GdkPixbuf *pixbuf;
   GdkRectangle pix_rect;
   GdkRectangle draw_rect;
   GtkStateType state;
@@ -291,14 +290,6 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
   if (!cellpixbuf->pixbuf)
     return;
 
-  pixbuf = eel_create_colorized_pixbuf (cellpixbuf->pixbuf,
-					widget->style->text[state].red >> 8,
-					widget->style->text[state].green >> 8,
-					widget->style->text[state].blue >> 8);
-
-  if (!pixbuf)
-    return;
-
   rb_cell_renderer_pixbuf_get_size (cell, widget, cell_area,
 				     &pix_rect.x,
 				     &pix_rect.y,
@@ -311,7 +302,7 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
   pix_rect.height -= cell->ypad * 2;
   
   if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect))
-    gdk_pixbuf_render_to_drawable_alpha (pixbuf,
+    gdk_pixbuf_render_to_drawable_alpha (cellpixbuf->pixbuf,
                                          window,
                                          /* pixbuf 0, 0 is at pix_rect.x, pix_rect.y */
                                          draw_rect.x - pix_rect.x,
@@ -324,8 +315,6 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
                                          0,
                                          GDK_RGB_DITHER_NORMAL,
                                          0, 0);
-
-  g_object_unref (pixbuf);
 }
 
 

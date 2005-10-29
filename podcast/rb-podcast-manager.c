@@ -650,7 +650,6 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 			goto next_step;
 		} else { 
 			remote_size = info->size;
-			gnome_vfs_file_info_unref (info);
 		}
 
 		result = gnome_vfs_get_file_info (local_file_name, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
