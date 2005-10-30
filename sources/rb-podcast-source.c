@@ -1623,26 +1623,22 @@ rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column, GtkCellRe
 {
 	RhythmDBEntry *entry;
 	gulong value;
-	char *str;
+	char str[255];
 
 	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
 
       	value = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
         if (value == 0)
-	       str = _("Unknown");
+	       g_strlcpy (str, _("Unknown"), sizeof (str));
 	else {
 		struct tm *time_tm;
 		gint ret;
 		time_t time = (time_t) value;
-                str = g_new0 (char, 30);
 		time_tm = localtime(&time);
-		ret = strftime (str, 30, "%d/%m/%Y %H:%M", time_tm);
+		ret = strftime (str, sizeof (str), "%x %H:%M", time_tm);
 	}
 	
         g_object_set (G_OBJECT (renderer), "text", str, NULL);
-
-	if (value != 0)
-		g_free (str);
 }
 
 

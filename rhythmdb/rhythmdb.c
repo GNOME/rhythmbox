@@ -874,6 +874,7 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 		ret->podcast = NULL;
 
 	rhythmdb_entry_sync_mirrored (db, ret, RHYTHMDB_PROP_LAST_PLAYED);
+	rhythmdb_entry_sync_mirrored (db, ret, RHYTHMDB_PROP_FIRST_SEEN);
 	
 	/* The refcount is initially 0, we want to set it to 1 */
 	g_atomic_int_inc (&ret->refcount);
@@ -2185,7 +2186,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		if (entry->last_played == 0)
 			entry->last_played_str = rb_refstring_new_full (_("Never"), FALSE);
 		else {
-			val = eel_strdup_strftime (_("%Y-%m-%d %H:%M"),
+			val = eel_strdup_strftime ("%x %H:%M",
 						   localtime ((glong*)&entry->last_played));
 			entry->last_played_str = rb_refstring_new_full (val, FALSE);
 			g_free (val);
@@ -2197,7 +2198,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		if (entry->first_seen_str)
 			rb_refstring_unref (entry->first_seen_str);
 
-		val = eel_strdup_strftime (_("%Y-%m-%d %H:%M"),
+		val = eel_strdup_strftime ("%x %H:%M",
 					   localtime ((glong*)&entry->first_seen));
 		entry->first_seen_str = rb_refstring_new_full (val, FALSE);
 		g_free (val);

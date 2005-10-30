@@ -1,3 +1,13 @@
+2005-10-31  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_post_date_cell_data_func): generate the date string
+	in a way that is correct in all locales.
+	
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate),
+	(rhythmdb_entry_sync_mirrored): make the last played/date added
+	columns use the same format.
+
 2005-10-30  James Livingston  <jrl@ids.org.au>
 
 
