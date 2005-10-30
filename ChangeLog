@@ -1,3 +1,10 @@
+2005-10-30  James Livingston  <jrl@ids.org.au>
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_subscribe_feed),
+	(rb_podcast_manager_insert_feed): Don't crash if the podcast feed has
+	already been added, usually as a radio station. Closes 319434.
+
 2005-10-29  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	* data/glade/podcast-new.glade: HIG fixes (spacing, capitalization,

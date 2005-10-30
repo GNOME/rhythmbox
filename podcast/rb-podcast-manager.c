@@ -36,6 +36,7 @@
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-podcast-parse.h"
+#include "rb-dialog.h"
 #include "rb-metadata.h"
 
 #define CONF_STATE_PODCAST_PREFIX		CONF_PREFIX "/state/podcast"
@@ -774,6 +775,21 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char* url)
 	RBPodcastThreadInfo *info;
 	gchar *valid_url = gnome_vfs_make_uri_from_input (url);
 
+	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
+	if (entry) {
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+			/* already added */
+			rb_error_dialog (NULL, _("URL already added"),
+					 _("The URL \"%s\" has already been added as a podcast feed."), url);
+		} else {
+			/* added as something else, probably iradio */
+			rb_error_dialog (NULL, _("URL already added"),
+					 _("The URL \"%s\" has already been added as a radio station. "
+					 "If this is a podcast feed, please remove the radio station."), url);
+		}
+		return FALSE;
+	}
+
 	info = g_new0 (RBPodcastThreadInfo, 1);
 	info->pd = pd;
 	info->url = valid_url;
@@ -1468,6 +1484,9 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	//processing podcast head
 	entry = rhythmdb_entry_lookup_by_location (db, (gchar* )data->url);
 	if (entry) {
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
+			return;
+			
 		rb_debug ("Head found");
 		g_value_init (&status_val, G_TYPE_ULONG);
 		g_value_set_ulong (&status_val, 1);
