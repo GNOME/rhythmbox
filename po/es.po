@@ -1,3 +1,4 @@
+# translation of es.po to 
 # translation of rhythmbox.HEAD.es.po to Spanish
 # Copyright © 2002-2003 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
@@ -11,20 +12,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-29 16:32+0200\n"
-"PO-Revision-Date: 2005-10-29 16:36+0200\n"
-"Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
-"Language-Team: Spanish <traductores@es.gnome.org>\n"
+"POT-Creation-Date: 2005-10-30 12:12+0100\n"
+"PO-Revision-Date: 2005-10-30 12:14+0100\n"
+"Last-Translator: \n"
+"Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.10.2\n"
+"X-Generator: KBabel 1.9.1\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: ../daapsharing/rb-daap-connection.c:721
 #: ../iradio/rb-new-station-dialog.c:182
 #: ../iradio/rb-station-properties-dialog.c:424
-#: ../podcast/rb-podcast-manager.c:1501
+#: ../podcast/rb-podcast-manager.c:1516
 #: ../podcast/rb-podcast-properties-dialog.c:400
 #: ../rhythmdb/rhythmdb-tree.c:907 ../rhythmdb/rhythmdb-tree.c:911
 #: ../rhythmdb/rhythmdb-tree.c:915 ../rhythmdb/rhythmdb-tree.c:919
@@ -33,7 +34,7 @@ msgstr ""
 #: ../shell/rb-shell-player.c:2323 ../sources/rb-ipod-source.c:159
 #: ../sources/rb-iradio-source.c:245 ../sources/rb-iradio-source.c:246
 #: ../sources/rb-iradio-source.c:247 ../sources/rb-iradio-source.c:465
-#: ../sources/rb-playlist-source.c:484 ../sources/rb-podcast-source.c:1629
+#: ../sources/rb-playlist-source.c:484 ../sources/rb-podcast-source.c:1632
 #: ../widgets/rb-entry-view.c:1011 ../widgets/rb-entry-view.c:1037
 #: ../widgets/rb-song-info.c:677 ../widgets/rb-song-info.c:756
 msgid "Unknown"
@@ -294,8 +295,8 @@ msgid "URL:"
 msgstr "URL:"
 
 #: ../data/glade/podcast-new.glade.h:1
-msgid "Podcast Feed URL:"
-msgstr "URL del Podcast:"
+msgid "_URL of podcast feed:"
+msgstr "_URL del proveedor Podcast:"
 
 #: ../data/glade/podcast-prefs.glade.h:2
 msgid "."
@@ -306,12 +307,12 @@ msgid "<b>Download Manager</b>"
 msgstr "<b>Gestor de descargas</b>"
 
 #: ../data/glade/podcast-prefs.glade.h:4
-msgid "Check for new episodes:"
-msgstr "Comprobar si hay nuevos episodios:"
+msgid "Check for _new episodes:"
+msgstr "Comprobar si hay _nuevos episodios:"
 
 #: ../data/glade/podcast-prefs.glade.h:5
-msgid "Download Location:"
-msgstr "Lugar de descarga:"
+msgid "_Download location:"
+msgstr "Lugar de _descarga:"
 
 #: ../data/glade/podcast-properties.glade.h:2
 #: ../data/glade/song-info.glade.h:3
@@ -499,8 +500,7 @@ msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 
 #: ../metadata/rb-metadata-gst.c:599
 msgid "Failed to create a source element; check your installation"
-msgstr ""
-"Ha ocurrido un error al crear un elemento de origen; compruebe su instalación"
+msgstr "Ha ocurrido un error al crear un elemento de origen; compruebe su instalación"
 
 #: ../metadata/rb-metadata-gst.c:680
 msgid "The MIME type of the file could not be identified"
@@ -608,11 +608,23 @@ msgstr "Ha ocurrido un error al escribir en el CD"
 msgid "New Podcast Feed"
 msgstr "Proveedor Podcast nuevo"
 
-#: ../podcast/rb-podcast-manager.c:867
+#. added as something else, probably iradio
+#: ../podcast/rb-podcast-manager.c:782
+msgid "URL already added"
+msgstr "El URL ya se ha añadido"
+
+#: ../podcast/rb-podcast-manager.c:783
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr "El URL «%s» ya se ha añadido como estación de radio. Si esto es un proveedor PodCast, elimine la estación de radio."
+
+#: ../podcast/rb-podcast-manager.c:879
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1631
+#: ../podcast/rb-podcast-manager.c:1646
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este podcast. Compruebe la URL: %s"
@@ -771,8 +783,7 @@ msgstr "Muestra la duración de la canción que se está reproduciendo y sale"
 
 #: ../shell/main.c:144
 msgid "Print the current elapsed time of playing song and exit"
-msgstr ""
-"Muestra el tiempo transcurrido de la canción que se está reproduciendo y sale"
+msgstr "Muestra el tiempo transcurrido de la canción que se está reproduciendo y sale"
 
 #: ../shell/main.c:145
 msgid "Seek to the specified time in playing song if possible and exit"
@@ -1870,7 +1881,7 @@ msgstr "Estado"
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../sources/rb-podcast-source.c:841 ../sources/rb-podcast-source.c:1394
+#: ../sources/rb-podcast-source.c:841 ../sources/rb-podcast-source.c:1397
 msgid "Remove files from disk?"
 msgstr "¿Eliminar archivos del disco?"
 
@@ -1886,55 +1897,55 @@ msgstr "Suscribirse a este proveedor"
 msgid "Unsubscribe This Feed"
 msgstr "Cancelar suscripción de este proveedor"
 
-#: ../sources/rb-podcast-source.c:1193
+#: ../sources/rb-podcast-source.c:1195
 msgid "Save Folder"
 msgstr "Carpeta de guardado"
 
-#: ../sources/rb-podcast-source.c:1213
+#: ../sources/rb-podcast-source.c:1216
 msgid "Every hour"
 msgstr "Cada hora"
 
-#: ../sources/rb-podcast-source.c:1214
+#: ../sources/rb-podcast-source.c:1217
 msgid "Every day"
 msgstr "Cada día"
 
-#: ../sources/rb-podcast-source.c:1215
+#: ../sources/rb-podcast-source.c:1218
 msgid "Every week"
 msgstr "Cada semana"
 
-#: ../sources/rb-podcast-source.c:1216
+#: ../sources/rb-podcast-source.c:1219
 msgid "Manually"
 msgstr "Manualmente"
 
-#: ../sources/rb-podcast-source.c:1505
+#: ../sources/rb-podcast-source.c:1508
 msgid "Completed"
 msgstr "Completado"
 
-#: ../sources/rb-podcast-source.c:1509
+#: ../sources/rb-podcast-source.c:1512
 msgid "Failed"
 msgstr "Falló"
 
-#: ../sources/rb-podcast-source.c:1513
+#: ../sources/rb-podcast-source.c:1516
 msgid "Waiting"
 msgstr "Esperando"
 
-#: ../sources/rb-podcast-source.c:1517
+#: ../sources/rb-podcast-source.c:1520
 msgid "Paused"
 msgstr "Pausado"
 
-#: ../sources/rb-podcast-source.c:1731
+#: ../sources/rb-podcast-source.c:1734
 msgid "Downloading podcast"
 msgstr "Descargando podcast"
 
-#: ../sources/rb-podcast-source.c:1741
+#: ../sources/rb-podcast-source.c:1744
 msgid "Finished downloading podcast"
 msgstr "Terminó la descarga del podcast"
 
-#: ../sources/rb-podcast-source.c:1751
+#: ../sources/rb-podcast-source.c:1754
 msgid "New updates avaliable from"
 msgstr "Actualizaciones nuevas desde"
 
-#: ../sources/rb-podcast-source.c:1818
+#: ../sources/rb-podcast-source.c:1821
 msgid "Error in podcast"
 msgstr "Error en el podcast"
 
@@ -2335,35 +2346,3 @@ msgstr "En el escritorio"
 msgid "Unknown location"
 msgstr "Dirección desconocida"
 
-#~ msgid "Update Interval:"
-#~ msgstr "Intervalo de actualización:"
-
-#~ msgid "Create a new Podcast Feed"
-#~ msgstr "Crear un proveedor Podcast nuevo"
-
-#~ msgid "Master-PL"
-#~ msgstr "Master-PL"
-
-#~ msgid "Playlist"
-#~ msgstr "Lista de reproducción"
-
-#~ msgid "Error reading \"%s\".\n"
-#~ msgstr "Error al leer %s.\n"
-
-#~ msgid "\"%s\" is not a valid iPod database.\n"
-#~ msgstr "«%s» no es una BD iPod válida.\n"
-
-#~ msgid "Could not open \"%s\" file for reading.\n"
-#~ msgstr "No se ha podido abrir «%s» para lectura.\n"
-
-#~ msgid "Could not open \"%s\" file for writing.\n"
-#~ msgstr "No se ha podido abrir «%s» para escritura.\n"
-
-#~ msgid "Error renaming '%s' to '%s' (%s).\n"
-#~ msgstr "Error al renombrar «%s» a «%s» (%s).\n"
-
-#~ msgid "Error reading file \"%s\".\n"
-#~ msgstr "Error al leer el archivo: %s.\n"
-
-#~ msgid "Error writing PC file \"%s\".\n"
-#~ msgstr "Error al escribir el archivo PC «%s».\n"
