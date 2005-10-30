@@ -1,5 +1,14 @@
 2005-10-30  James Livingston  <jrl@ids.org.au>
 
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_subscribe_feed): fix feed updating, which I broke
+	
+	* shell/rb-shell-player.c: (rb_shell_player_open_location): report
+	iradio errors better.
+
+2005-10-30  James Livingston  <jrl@ids.org.au>
+
 	patch by: Artem Baguinski <femistofel@gmail.com>
 
 	* metadata/rb-metadata-gst.c: (rb_metadata_init):

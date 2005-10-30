@@ -1032,8 +1032,8 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		if (!rb_player_open (player->priv->mmplayer, location, error))
 			return FALSE;
 	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_ERROR
-		   && error
-		   && player->priv->playlist_parse_error) {
+		   || error
+		   || player->priv->playlist_parse_error) {
 		g_propagate_error (error, player->priv->playlist_parse_error);
 	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
 		/* We already started playback in the open_playlist_location

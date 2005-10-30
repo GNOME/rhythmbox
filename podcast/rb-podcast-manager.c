@@ -777,17 +777,13 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char* url)
 
 	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
 	if (entry) {
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-			/* already added */
-			rb_error_dialog (NULL, _("URL already added"),
-					 _("The URL \"%s\" has already been added as a podcast feed."), url);
-		} else {
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			/* added as something else, probably iradio */
 			rb_error_dialog (NULL, _("URL already added"),
 					 _("The URL \"%s\" has already been added as a radio station. "
 					 "If this is a podcast feed, please remove the radio station."), url);
+			return FALSE;
 		}
-		return FALSE;
 	}
 
 	info = g_new0 (RBPodcastThreadInfo, 1);
