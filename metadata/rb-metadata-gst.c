@@ -160,7 +160,7 @@ rb_metadata_init (RBMetaData *md)
 	 * purpose.
  	 */
 
-	add_tagger = (gst_element_factory_find("id3mux") && gst_element_factory_find("spider")) ?  rb_add_id3_tagger : NULL;
+	add_tagger = (gst_element_factory_find("id3tag")) ?  rb_add_id3_tagger : NULL;
 	add_supported_type (md, "application/x-id3", add_tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", add_tagger, "MP3");
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
