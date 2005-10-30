@@ -1,3 +1,14 @@
+2005-10-29  Dennis Cranston  <dennis_cranston@yahoo.com>
+
+	* data/glade/podcast-new.glade: HIG fixes (spacing, capitalization,
+	mnemonics & resize issues)
+	* data/glade/podcast-prefs.glade: HIG fixes (spacing, capitalization
+	& mnemonics)
+	* sources/rb-podcast-source.c: (impl_get_config_widget): Set mnemonic
+	widget for the "downloand location" label.
+
+	Closes bug 320184.
+
 2005-10-29  James Livingston  <jrl@ids.org.au>
 
 	Allow the search box to match words from multiple properties. Closes

@@ -1175,6 +1175,7 @@ impl_get_config_widget (RBSource *asource)
 	GtkWidget *cb_update_interval;
 	GtkWidget *btn_file;
 	GtkWidget *v_box;
+	GtkWidget *label;
 	const char *download_dir;
 	GladeXML *xml;
 
@@ -1187,6 +1188,7 @@ impl_get_config_widget (RBSource *asource)
 		glade_xml_get_widget (xml, "podcast_vbox");
 	
 	v_box = glade_xml_get_widget (xml, "vbox11");
+	label = glade_xml_get_widget (xml, "label18");
 	
 
 	rb_debug("creating btn file choose");
@@ -1194,6 +1196,7 @@ impl_get_config_widget (RBSource *asource)
 
 	rb_debug("btn file choose created");
 	gtk_box_pack_start (GTK_BOX(v_box), btn_file, FALSE, TRUE, 0); 
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), GTK_WIDGET (btn_file));
 	
 	download_dir = 	eel_gconf_get_string(CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
