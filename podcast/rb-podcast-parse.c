@@ -56,6 +56,7 @@ struct RBPoadcastLoadContext
 static gboolean rb_validate_channel_propert (const char *name);
 static gboolean rb_validate_item_propert (const char *name);
 static uintmax_t rb_podcast_parse_date (const char* date_str);
+static gulong rb_podcast_parse_time (const char *time_str);
 static void rb_podcast_parser_start_element (struct RBPoadcastLoadContext* ctx, const char *name, const char **attrs);
 static void rb_podcast_parser_end_element (struct RBPoadcastLoadContext* ctx, const char *name);
 static void rb_podcast_parser_characters (struct RBPoadcastLoadContext* ctx, const char *data, guint len);
@@ -66,10 +67,6 @@ static RBPodcastItem *
 rb_podcast_initializa_item ()
 {
     RBPodcastItem *data = g_new0 (RBPodcastItem, 1);
-    data->title = NULL;
-    data->url = NULL;
-    data->pub_date = 0;
-    data->description = NULL;
     return data;
 }
 
@@ -129,6 +126,9 @@ rb_set_item_value (struct RBPoadcastLoadContext* ctx, const char* name, const ch
        ctx->item_data->description = dvalue;
    } else if (!strcmp (name, "author")) {
        ctx->item_data->author = dvalue;
+   } else if (!strcmp (name, "itunes:duration")) {
+       ctx->item_data->duration = rb_podcast_parse_time ((char*)dvalue);
+       g_free (dvalue);
    } else if (!strcmp (name, "length")) {
        ctx->item_data->filesize = g_ascii_strtoull ((char*)dvalue, NULL, 10);
    } else {
@@ -173,7 +173,9 @@ static gboolean rb_validate_item_propert (const char *name)
         !strcmp(name, "url") ||
         !strcmp(name, "pubDate") ||
 	!strcmp(name, "description") ||
-	!strcmp(name, "author"))
+	!strcmp(name, "author") ||
+	!strcmp(name, "itunes:duration") )
+	    
         return TRUE;
     else
         return FALSE;
@@ -431,6 +433,22 @@ rb_podcast_parse_date(const char* date_str)
     strftime(buff, sizeof(buff), "%d/%m/%Y %H:%M", &tm);
     tm.tm_sec = 0;
     return (uintmax_t) mktime (&tm);
+}
+
+static gulong
+rb_podcast_parse_time (const char *time_str)
+{
+	struct tm tm;
+	char *result;
+
+	memset (&tm, 0, sizeof (struct tm));
+	result = strptime (time_str, "%H:%M:%S", &tm);
+	if (result == NULL)
+		result = strptime (time_str, "%M:%S", &tm);
+	if (result == NULL)
+		rb_debug ("unable to convert duration string %s", time_str);
+	
+	return ((tm.tm_hour * 60 + tm.tm_min) * 60 + tm.tm_sec);
 }
 
 void

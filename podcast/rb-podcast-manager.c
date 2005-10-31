@@ -842,122 +842,98 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			      const char *description,
 			      gulong status,
 			      gulong date,
+			      gulong duration,
 			      guint64 filesize)
 {
-	//GThread* copy_thread = NULL;
-	GValue title_val = { 0, };
-	GValue artist_val = { 0, };
-	GValue album_val = { 0, };
-	GValue mountpoit_val = { 0, };
-	GValue status_val = { 0, };
-	GValue time_val = { 0, };
-	GValue genre_val = { 0, };
-	GValue subtitle_val = { 0, };
-	GValue description_val = { 0, };
-	GValue value =  { 0, };
-	GValue size_val = {0,};
-	GTimeVal time;
-	
-	RhythmDBEntry *entry;
 
 	if (uri && name && title && date && g_utf8_validate(uri, -1, NULL)) {
-		entry = rhythmdb_entry_lookup_by_location (db, uri);
+		RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (db, uri);
+		GValue val = {0,};
+		GTimeVal time;
 
 		if (entry)
 			return FALSE;
 
-		g_value_init (&album_val, G_TYPE_STRING);
-		g_value_set_string (&album_val, name);
-		
-		g_value_init (&mountpoit_val, G_TYPE_STRING);
-		g_value_set_string (&mountpoit_val, uri);
-	
-		g_value_init (&status_val, G_TYPE_ULONG);
-		g_value_set_ulong (&status_val, status);
-
-		g_value_init (&genre_val, G_TYPE_STRING);
-		g_value_set_string (&genre_val, _("Podcast"));
-
-		g_value_init (&time_val, G_TYPE_ULONG);
-		g_value_set_ulong (&time_val, date);
-		
-		g_value_init (&title_val, G_TYPE_STRING);
-		g_value_set_string (&title_val, title);
-
-		g_value_init (&subtitle_val, G_TYPE_STRING);
-		if (subtitle)
-			g_value_set_string (&subtitle_val, subtitle);
-		else
-			g_value_set_string (&subtitle_val, "");
-			
-
-		g_value_init (&description_val, G_TYPE_STRING);
-		if (description)
-			g_value_set_string (&description_val, description);
-		else
-			g_value_set_string (&description_val, "");
-
-	
-		g_value_init (&artist_val, G_TYPE_STRING);
-		if (generator) 
-			g_value_set_string (&artist_val, generator);
-		else
-			g_value_set_string (&artist_val, "");
-
-		g_value_init (&size_val, G_TYPE_UINT64);
-		g_value_set_uint64 (&size_val, filesize);
-
-
-		
 		entry = rhythmdb_entry_new (db,
 					    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 				    	    uri);
-		
-		/* initialize the last played date to 0=never */
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, 0);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
-		g_value_unset (&value);
 
-		/* initialize the rating */
-		g_value_init (&value, G_TYPE_DOUBLE);
-		g_value_set_double (&value, 2.5);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &value);
-		g_value_unset (&value);
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, name);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+		
+		g_value_reset (&val);
+		g_value_set_string (&val, uri);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+	
+		g_value_reset (&val);
+		g_value_set_static_string (&val, _("Podcast"));
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
+
+		g_value_reset (&val);
+		g_value_set_string (&val, title);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &val);
+
+		g_value_reset (&val);
+		if (subtitle)
+			g_value_set_string (&val, subtitle);
+		else
+			g_value_set_static_string (&val, "");
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
+
+		g_value_reset (&val);
+		if (description)
+			g_value_set_string (&val, description);
+		else
+			g_value_set_static_string (&val, "");
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
+
+		g_value_reset (&val);
+		if (generator) 
+			g_value_set_string (&val, generator);
+		else
+			g_value_set_static_string (&val, "");
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, status);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &val);
+
+		g_value_reset (&val);
+		g_value_set_ulong (&val, date);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
+
+		g_value_reset (&val);
+		g_value_set_ulong (&val, duration);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DURATION, &val);
+	
+		g_value_reset (&val);
+		g_value_set_ulong (&val, 0);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
 
 		/* first seen */
 		g_get_current_time (&time);
+		g_value_reset (&val);
+		g_value_set_ulong (&val, time.tv_sec);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
+		g_value_unset (&val);
 		
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, time.tv_sec);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
-		g_value_unset (&value);
+		/* initialize the rating */
+		g_value_init (&val, G_TYPE_DOUBLE);
+		g_value_set_double (&val, 2.5);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &val);
+		g_value_unset (&val);
 
-			
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_POST_TIME, &time_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &artist_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &album_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &mountpoit_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &size_val);
-			
-		g_value_unset (&time_val);
-		g_value_unset (&title_val);
-		g_value_unset (&subtitle_val);
-		g_value_unset (&album_val);
-		g_value_unset (&mountpoit_val);
-		g_value_unset (&status_val);
-		g_value_unset (&artist_val);
-		g_value_unset (&description_val);
-		g_value_unset (&size_val);
+		g_value_init (&val, G_TYPE_UINT64);
+		g_value_set_uint64 (&val, filesize);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+		g_value_unset (&val);
 
+		return TRUE;
+	} else {
+		return FALSE;
 	}
-	return TRUE;
-
 }
 
 static gboolean
@@ -1594,6 +1570,7 @@ load_posts:
 							       (gchar* ) item->description,
 							       status,
 							       (gulong ) (item->pub_date > 0 ? item->pub_date : data->pub_date),
+							       (gulong) item->duration,
 							       item->filesize);
 			
 			status = 103;

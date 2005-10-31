@@ -31,6 +31,7 @@ typedef struct
 	xmlChar* description;
 	xmlChar* author;
 	uintmax_t pub_date;
+	gulong duration;
 	guint64 filesize;
 }RBPodcastItem;
 

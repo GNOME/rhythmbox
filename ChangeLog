@@ -1,3 +1,14 @@
+2005-11-01  James Livingston  <jrl@ids.org.au>
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_add_post),
+	(rb_podcast_manager_insert_feed):
+	* podcast/rb-podcast-manager.h:
+	* podcast/rb-podcast-parse.c: (rb_podcast_initializa_item),
+	(rb_set_item_value), (rb_validate_item_propert),
+	(rb_podcast_parse_date), (rb_podcast_parse_time):
+	* podcast/rb-podcast-parse.h: get the duration of podcast episodes
+	from the feed.
+
 2005-10-31  James Livingston  <jrl@ids.org.au>
 
 	* ChangeLog:
