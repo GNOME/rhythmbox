@@ -1,3 +1,13 @@
+2005-11-02  James Livingston  <jrl@ids.org.au>
+
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* sources/rb-iradio-source.c:
+	(stations_view_drag_data_received_cb):
+	* sources/rb-podcast-source.c: (posts_view_drag_data_received_cb):
+	don't crash when the second uri is missing frm the drop, which
+	browsers sometimes do.
+
 2005-11-01  James Livingston  <jrl@ids.org.au>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_add_post),

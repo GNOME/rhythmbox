@@ -1270,7 +1270,8 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 
 	rb_debug ("adding uris");
 
-	for (i = uri_list; i != NULL; i = i->next) {
+	i = uri_list;
+	while (i != NULL) {
 		char *uri = NULL;
 
 		uri = i->data;
@@ -1288,6 +1289,9 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 		}
 
 		g_free (uri);
+
+		if (i != NULL)
+			i = i->next;
 	}
 
 	g_list_free (uri_list);
