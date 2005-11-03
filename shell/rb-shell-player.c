@@ -1678,6 +1678,11 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	g_return_if_fail (entry != NULL);
 
 	rb_debug  ("got entry %p activated", entry);
+
+	/* ensure the podcast has been downloaded */
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+		if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL)
+			return;
 	
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 

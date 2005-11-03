@@ -1,3 +1,24 @@
+2005-11-03  James Livingston  <jrl@ids.org.au>
+
+	Don't start playing from the remote site when a un-downloaded podcast
+	is activated. Closes 319983.
+	
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_add_post),
+	(write_job_data), (download_progress_cb): write the local location as
+	soon as any data is recieved
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element): set
+	the mountpoint to NULL for podcast episodes that haven't yet been
+	downloaded.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_entry_activated_cb): don't
+	start playing a podcast if it hasn't been downloaded.
+	
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_entry_activated_cb): begin downloading when the
+	podcast is activated.
+
 2005-11-03  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	* data/glade/general-prefs.glade:  Fix capitalization.

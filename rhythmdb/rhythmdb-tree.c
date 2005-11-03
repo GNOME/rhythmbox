@@ -358,7 +358,9 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			ctx->entry->location = g_strdup (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			ctx->entry->mountpoint = rb_refstring_new (ctx->buf->str);
+			/* remove this from old podcast-post entries */
+			if (!g_str_has_prefix (ctx->buf->str, "http://"))
+				ctx->entry->mountpoint = rb_refstring_new (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_MTIME:
 			ctx->entry->mtime = parse_ulong (ctx->buf->str);

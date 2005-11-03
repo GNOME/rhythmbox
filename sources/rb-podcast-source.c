@@ -214,6 +214,9 @@ static void rb_podcast_source_cb_interval_changed_cb 	(GtkComboBox *box, gpointe
 
 static gboolean rb_podcast_source_load_finish_cb  	(gpointer cb_data);
 static RBShell *rb_podcast_source_get_shell		(RBPodcastSource *source);
+static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
+						  RhythmDBEntry *entry,
+						  RBPodcastSource *source);
 
 
 
@@ -487,6 +490,10 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	/* set up posts view */
 	source->priv->posts = rb_entry_view_new (source->priv->db, CONF_STATE_PODCAST_SORTING_POSTS,
 						    FALSE, FALSE);
+	g_signal_connect_object (G_OBJECT (source->priv->posts),
+				 "entry-activated",
+				 G_CALLBACK (rb_podcast_source_entry_activated_cb),
+				 source, 0);
 
 
 	column = gtk_tree_view_column_new ();
@@ -1821,4 +1828,22 @@ rb_podcast_source_download_process_error_cb (RBPodcastManager *pd,
 	rb_error_dialog (NULL, _("Error in podcast"), "%s", error);
 }
 
+static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
+						  RhythmDBEntry *entry,
+						  RBPodcastSource *source)
+{
+	GValue val = {0,};
+	
+	/* check to see if it has already been downloaded */
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) != NULL)
+		return;
+	
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, 102);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+	rhythmdb_commit (source->priv->db);
+	g_value_unset (&val);
+
+	rb_podcast_manager_download_entry (source->priv->podcast_mg, entry);
+}
 

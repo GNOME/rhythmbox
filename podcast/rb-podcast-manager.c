@@ -863,10 +863,6 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 		
 		g_value_reset (&val);
-		g_value_set_string (&val, uri);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
-	
-		g_value_reset (&val);
 		g_value_set_static_string (&val, _("Podcast"));
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
 
@@ -1003,18 +999,11 @@ write_job_data (RBPodcastManagerInfo *data)
 	rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
 	g_value_unset (&val);
 	
-	
 	g_value_init (&val, G_TYPE_ULONG);
 	g_value_set_ulong (&val, 100);
 	rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_STATUS, &val);
 	g_value_unset (&val);
 
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val,  
-			    gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE));
-	rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
-	g_value_unset (&val);
-	
 	rb_podcast_manager_save_metadata (db, data->entry, 
 		       			   gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE));
 
@@ -1193,6 +1182,18 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 		end_job (data);
 		data = NULL;
 		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
+	}
+	
+	if (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
+		GValue val = {0,};
+		RhythmDB *db = data->pd->priv->db;
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val,  
+				    gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE));
+		rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+		g_value_unset (&val);
+		rhythmdb_commit (db);
 	}
 	
 	if (info->phase  == GNOME_VFS_XFER_PHASE_COMPLETED) {
