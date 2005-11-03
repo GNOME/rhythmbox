@@ -122,7 +122,7 @@ static GtkActionEntry rb_removable_media_manager_actions [] =
 	{ "RemovableSourceEject", NULL, N_("_Eject"), NULL,
 	  N_("Eject this medium"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
-	{ "MusicScanMedia", NULL, N_("Scan Removable Media"), NULL,
+	{ "MusicScanMedia", NULL, N_("_Scan Removable Media"), NULL,
 	  N_("Scan for new Removable Media"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_scan_media) },
 };

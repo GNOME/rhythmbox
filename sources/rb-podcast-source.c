@@ -282,19 +282,19 @@ struct RBPodcastSourcePrivate
 
 static GtkActionEntry rb_podcast_source_actions [] =
 {
-	{ "PodcastSrcDownloadPost", NULL, N_("Download Podcast Episode"), NULL,
+	{ "PodcastSrcDownloadPost", NULL, N_("Download Podcast _Episode"), NULL,
 	  N_("Download Post"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
-	{ "PodcastFeedSubscribe", NULL, N_("Subscribe to Podcast Feed"), NULL,
+	{ "PodcastFeedSubscribe", NULL, N_("_Subscribe to Podcast Feed"), NULL,
 	  N_("Subscribe Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_subscribe_feed) },
-	{ "PodcastFeedProperties", NULL, N_("Properties"), NULL,
+	{ "PodcastFeedProperties", NULL, N_("_Properties"), NULL,
 	  N_("Properties Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_properties_feed) },
-	{ "PodcastFeedUpdate", NULL, N_("Update Podcast Feed"), NULL,
+	{ "PodcastFeedUpdate", NULL, N_("_Update Podcast Feed"), NULL,
 	  N_("Update Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_update_feed) },
-	{ "PodcastFeedDelete", NULL, N_("Delete Podcast Feed"), NULL,
+	{ "PodcastFeedDelete", NULL, N_("_Delete Podcast Feed"), NULL,
 	  N_("Delete Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_delete_feed) }
 
@@ -947,11 +947,11 @@ rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
 		act_post = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcDownloadPost");
 
 		if ((all_status < 100) || (all_status == 102))  {
-			g_object_set (G_OBJECT (act_post), "label", _("Cancel Download") , NULL);
+			g_object_set (G_OBJECT (act_post), "label", _("_Cancel Download") , NULL);
 			gtk_action_set_visible (act_post, TRUE);
 		}
 		else if ((all_status > 100) && (all_status != 999)) {
-			g_object_set (G_OBJECT (act_post), "label", _("Download Post") , NULL);
+			g_object_set (G_OBJECT (act_post), "label", _("_Download Post") , NULL);
 			gtk_action_set_visible (act_post, TRUE);
 		}
 		else 
@@ -1002,11 +1002,11 @@ rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
 			}
 
 			if (all_status == 0) {
-				g_object_set (G_OBJECT (act_subscribe), "label", _("Subscribe This Feed") , NULL);
+				g_object_set (G_OBJECT (act_subscribe), "label", _("_Subscribe This Feed") , NULL);
 				gtk_action_set_visible (act_update, FALSE);
 			}
 			else {
-				g_object_set (G_OBJECT (act_subscribe), "label", _("Unsubscribe This Feed") , NULL);
+				g_object_set (G_OBJECT (act_subscribe), "label", _("Un_subscribe This Feed") , NULL);
 				gtk_action_set_visible (act_update, TRUE);
 			}
 
