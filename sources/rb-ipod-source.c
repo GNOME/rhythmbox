@@ -460,12 +460,12 @@ hal_udi_is_ipod (const char *udi)
 		g_print ("Error: %s\n", error.message);
 		goto end;
 	}
+	libhal_ctx_set_dbus_connection (ctx, conn);
 	if (!libhal_ctx_init (ctx, &error)) {
 		g_print ("Error: %s\n", error.message);
 		goto end;
 	}
 
-	libhal_ctx_set_dbus_connection (ctx, conn);
 	parent_udi = libhal_device_get_property_string (ctx, udi,
 			"info.parent", &error);
 	parent_name = libhal_device_get_property_string (ctx, parent_udi,
