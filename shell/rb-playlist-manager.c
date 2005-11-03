@@ -147,7 +147,7 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "MusicPlaylistNewAutomaticPlaylist", GNOME_MEDIA_AUTO_PLAYLIST, N_("New _Automatic Playlist..."), NULL,
 	  N_("Create a new automatically updating playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_new_automatic_playlist) },
-	{ "MusicPlaylistLoadPlaylist", GTK_STOCK_OPEN, N_("_Load from File..."), NULL,
+	{ "MusicPlaylistLoadPlaylist", NULL, N_("_Load from File..."), NULL,
 	  N_("Choose a playlist to be loaded"),
 	  G_CALLBACK (rb_playlist_manager_cmd_load_playlist) },
 	{ "MusicPlaylistSavePlaylist", GTK_STOCK_SAVE_AS, N_("_Save to File..."), NULL,

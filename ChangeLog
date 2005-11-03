@@ -1,5 +1,18 @@
 2005-11-03  James Livingston  <jrl@ids.org.au>
 
+	* NEWS: update the news file
+
+	* data/glade/general-prefs.glade: make the prefs refer to "time" not
+	"duration" column.
+
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-playlist-manager.c:
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_feeds_show_popup_cb): don't have both "unsubscribe"
+	and "delete" for feeds.
+
+2005-11-03  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-podcast-source.c: (impl_delete),
 	(rb_podcast_source_cmd_delete_feed): Allow users to cancel deleting a
 	feed. Closes 319760.
@@ -154,7 +167,7 @@
 	* data/glade/podcast-prefs.glade: HIG fixes (spacing, capitalization
 	& mnemonics)
 	* sources/rb-podcast-source.c: (impl_get_config_widget): Set mnemonic
-	widget for the "downloand location" label.
+	widget for the "download location" label.
 
 	Closes bug 320184.
 

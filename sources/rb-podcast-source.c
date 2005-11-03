@@ -288,9 +288,6 @@ static GtkActionEntry rb_podcast_source_actions [] =
 	{ "PodcastSrcDownloadPost", NULL, N_("Download Podcast _Episode"), NULL,
 	  N_("Download Post"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
-	{ "PodcastFeedSubscribe", NULL, N_("_Subscribe to Podcast Feed"), NULL,
-	  N_("Subscribe Feed"),
-	  G_CALLBACK (rb_podcast_source_cmd_subscribe_feed) },
 	{ "PodcastFeedProperties", NULL, N_("_Properties"), NULL,
 	  N_("Properties Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_properties_feed) },
@@ -510,7 +507,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 						 source, NULL);
 	
 	rb_entry_view_append_column_custom (source->priv->posts, column, 
-					    _("Date"), "Date", 
+					    _("_Date"), "Date", 
 					    (GCompareDataFunc) rb_podcast_source_post_date_cell_sort_func, NULL);
 						    
 
@@ -988,7 +985,6 @@ rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
 		return;
 	}
 	else {
-		GtkAction* act_subscribe;
 		GtkAction* act_update;
 		GtkAction* act_properties;
 		GtkAction* act_delete;
@@ -998,7 +994,6 @@ rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
 		RhythmDBEntry *entry = NULL;
 		GList *lst = source->priv->selected_feeds;
 
-		act_subscribe = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedSubscribe");
 		act_update = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedUpdate");
 		act_properties = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedProperties");
 		act_delete = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedDelete");
@@ -1019,20 +1014,10 @@ rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
 				lst = lst->next;
 			}
 
-			if (all_status == 0) {
-				g_object_set (G_OBJECT (act_subscribe), "label", _("_Subscribe This Feed") , NULL);
-				gtk_action_set_visible (act_update, FALSE);
-			}
-			else {
-				g_object_set (G_OBJECT (act_subscribe), "label", _("Un_subscribe This Feed") , NULL);
-				gtk_action_set_visible (act_update, TRUE);
-			}
-
 			gtk_action_set_visible (act_properties, TRUE);
 			gtk_action_set_visible (act_delete, TRUE);
 		} else {
 			gtk_action_set_visible (act_update, FALSE);
-			gtk_action_set_visible (act_subscribe, FALSE);
 			gtk_action_set_visible (act_properties, FALSE);
 			gtk_action_set_visible (act_delete, FALSE);
 		}
