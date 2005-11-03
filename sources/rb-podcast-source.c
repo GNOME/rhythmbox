@@ -150,9 +150,6 @@ static void posts_view_drag_data_received_cb 		(GtkWidget *widget,
 static void rb_podcast_source_cmd_download_post		(GtkAction *action,
 							 RBShell *shell);
 
-static void rb_podcast_source_cmd_subscribe_feed	(GtkAction *action,
-							 RBShell *shell);
-
 static void rb_podcast_source_cmd_delete_feed		(GtkAction *action,
 							 RBShell *shell);
 
@@ -1472,39 +1469,6 @@ rb_podcast_source_cmd_update_feed (GtkAction *action,
 		rb_podcast_manager_subscribe_feed (source->priv->podcast_mg,
 						   (gchar *) lst->data);
 
-		lst = lst->next;
-	}
-}
-
-static void
-rb_podcast_source_cmd_subscribe_feed (GtkAction *action,
-			     	   RBShell *shell)
-{
-	RBPodcastSource *source;
-	GList *lst;
-	gulong status;
-	
-	rb_debug ("Subscribe action");
-
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
-	
-	lst = source->priv->selected_feeds;
-
-	while (lst != NULL) {
-		RhythmDBEntry *entry  = rhythmdb_entry_lookup_by_location (source->priv->db, (gchar *) lst->data);
-		g_assert (entry != NULL);
-
-		status  = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-		if (status == 0) {
-			rb_podcast_manager_subscribe_feed (source->priv->podcast_mg,
-							   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
-		}
-		else {
-			rb_podcast_manager_unsubscribe_feed (source->priv->db,
-					  		     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
-
-		}
-	
 		lst = lst->next;
 	}
 }
