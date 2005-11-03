@@ -422,8 +422,17 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	RBRemovableMediaSource *source = NULL;
 	RBShell *shell;
 	char *fs_type, *device_path, *display_name, *hal_udi, *icon_name;
+	GnomeVFSDeviceType device_type;
 	
 	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL)
+		return;
+
+	/* ignore network volumes */
+	device_type = gnome_vfs_volume_get_device_type (volume);
+	if (device_type == GNOME_VFS_DEVICE_TYPE_NFS ||
+	    device_type == GNOME_VFS_DEVICE_TYPE_AUTOFS ||
+	    device_type == GNOME_VFS_DEVICE_TYPE_SMB ||
+	    device_type == GNOME_VFS_DEVICE_TYPE_NETWORK)
 		return;
 
 	g_object_get (G_OBJECT (mgr), "shell", &shell, NULL);
@@ -433,7 +442,7 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	display_name = gnome_vfs_volume_get_display_name (volume);
 	hal_udi = gnome_vfs_volume_get_hal_udi (volume);
 	icon_name = gnome_vfs_volume_get_icon (volume);
-	rb_debug ("detecting new media - device_type=%d", gnome_vfs_volume_get_device_type (volume));
+	rb_debug ("detecting new media - device_type=%d", device_type);
 	rb_debug ("detecting new media - volumd_type=%d", gnome_vfs_volume_get_volume_type (volume));
 	rb_debug ("detecting new media - fs type=%s", fs_type);
 	rb_debug ("detecting new media - device path=%s", device_path);
@@ -441,6 +450,7 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	rb_debug ("detecting new media - hal udi=%s", hal_udi);
 	rb_debug ("detecting new media - icon=%s", icon_name);
 
+	
 	/* rb_xxx_source_new first checks if the 'volume' parameter corresponds
 	 * to a medium of type 'xxx', and returns NULL if it doesn't.
 	 * When volume is of the appropriate type, it creates a new source

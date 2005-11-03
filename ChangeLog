@@ -1,5 +1,18 @@
 2005-11-03  James Livingston  <jrl@ids.org.au>
 
+	patch by: Shun-ichi Tahara <jado@flowernet.gr.jp>
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume): don't check network or
+	autofs mounts, as they're not going to be removable media. Stops
+	sending lots of warnings to syslog. Closes 320571.
+
+	* sources/rb-ipod-source.c: (hal_udi_is_ipod): actually initialise the
+	DBus connection, so that it doesn't wedge gnome-vfs-daemon. Closes
+	320570.
+
+2005-11-03  James Livingston  <jrl@ids.org.au>
+
 	Add support for playing audio CDs. Metadata lookup is done using
 	SoundJuicer's MusicBrainz lookup code, which can be switched to using
 	the library when it gets broken out of S-J.
