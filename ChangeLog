@@ -1,5 +1,11 @@
 2005-11-03  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-podcast-source.c: (impl_delete),
+	(rb_podcast_source_cmd_delete_feed): Allow users to cancel deleting a
+	feed. Closes 319760.
+
+2005-11-03  James Livingston  <jrl@ids.org.au>
+
 	Don't start playing from the remote site when a un-downloaded podcast
 	is activated. Closes 319983.
 	

@@ -844,11 +844,22 @@ impl_delete (RBSource *asource)
 	dialog = gtk_message_dialog_new (NULL,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_YES_NO,
-					 _("Remove files from disk?"));
+					 GTK_BUTTONS_NONE,
+					 _("Do you want to delete the podcast episode data from disk?"));
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+				GTK_STOCK_CANCEL,
+				GTK_RESPONSE_CANCEL,
+				GTK_STOCK_NO,
+				GTK_RESPONSE_NO,
+				GTK_STOCK_YES,
+				GTK_RESPONSE_YES,
+				NULL);
 	
 	ret = gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
+
+	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
+		return;
 
 	rb_podcast_manager_set_remove_files (source->priv->podcast_mg, 
 					     (ret == GTK_RESPONSE_YES));
@@ -1404,11 +1415,22 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 	dialog = gtk_message_dialog_new (NULL,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_YES_NO,
-					 _("Remove files from disk?"));
+					 GTK_BUTTONS_NONE,
+					 _("Do you want the podcast episodes to be deleted from disk?"));
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+			        GTK_STOCK_CANCEL,
+			        GTK_RESPONSE_CANCEL,
+				GTK_STOCK_NO,
+				GTK_RESPONSE_NO,
+				GTK_STOCK_YES,
+				GTK_RESPONSE_YES,
+				NULL);
 	
 	ret = gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
+
+	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
+		return;
 	
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	
