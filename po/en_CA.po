@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-10-31 14:31-0500\n"
+"POT-Creation-Date: 2005-11-03 11:58-0500\n"
 "PO-Revision-Date: 2005-08-31 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
@@ -18,18 +18,18 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: daapsharing/rb-daap-connection.c:721 iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:424 podcast/rb-podcast-manager.c:1492
-#: podcast/rb-podcast-properties-dialog.c:400 rhythmdb/rhythmdb-tree.c:907
-#: rhythmdb/rhythmdb-tree.c:911 rhythmdb/rhythmdb-tree.c:915
-#: rhythmdb/rhythmdb-tree.c:919 rhythmdb/rhythmdb.c:1033
+#: iradio/rb-station-properties-dialog.c:424 podcast/rb-podcast-manager.c:1493
+#: podcast/rb-podcast-properties-dialog.c:400 rhythmdb/rhythmdb-tree.c:909
+#: rhythmdb/rhythmdb-tree.c:913 rhythmdb/rhythmdb-tree.c:917
+#: rhythmdb/rhythmdb-tree.c:921 rhythmdb/rhythmdb.c:1033
 #: shell/rb-audioscrobbler.c:447 shell/rb-audioscrobbler.c:973
-#: shell/rb-audioscrobbler.c:974 shell/rb-shell-player.c:2323
-#: sources/rb-ipod-source.c:159 sources/rb-iradio-source.c:245
-#: sources/rb-iradio-source.c:246 sources/rb-iradio-source.c:247
-#: sources/rb-iradio-source.c:465 sources/rb-playlist-source.c:484
-#: sources/rb-podcast-source.c:1632 widgets/rb-entry-view.c:1011
-#: widgets/rb-entry-view.c:1037 widgets/rb-song-info.c:677
-#: widgets/rb-song-info.c:756
+#: shell/rb-audioscrobbler.c:974 shell/rb-shell-player.c:2328
+#: sources/rb-audiocd-source.c:194 sources/rb-ipod-source.c:159
+#: sources/rb-iradio-source.c:245 sources/rb-iradio-source.c:246
+#: sources/rb-iradio-source.c:247 sources/rb-iradio-source.c:465
+#: sources/rb-playlist-source.c:484 sources/rb-podcast-source.c:1614
+#: widgets/rb-entry-view.c:1011 widgets/rb-entry-view.c:1037
+#: widgets/rb-song-info.c:677 widgets/rb-song-info.c:756
 msgid "Unknown"
 msgstr "Unknown"
 
@@ -194,24 +194,24 @@ msgid "A_lbum"
 msgstr "A_lbum"
 
 #: data/glade/general-prefs.glade.h:3
-msgid "Da_te Added"
-msgstr "Da_te Added"
+msgid "Da_te added"
+msgstr "Da_te added"
 
 #: data/glade/general-prefs.glade.h:4
+msgid "Ti_me"
+msgstr "Ti_me"
+
+#: data/glade/general-prefs.glade.h:5
 msgid "Track _number"
 msgstr "Track _number"
 
-#: data/glade/general-prefs.glade.h:5
+#: data/glade/general-prefs.glade.h:6
 msgid "Visible Columns"
 msgstr "Visible Columns"
 
-#: data/glade/general-prefs.glade.h:6
+#: data/glade/general-prefs.glade.h:7
 msgid "_Artist"
 msgstr "_Artist"
-
-#: data/glade/general-prefs.glade.h:7
-msgid "_Duration"
-msgstr "_Duration"
 
 #: data/glade/general-prefs.glade.h:8 widgets/rb-entry-view.c:1314
 msgid "_Genre"
@@ -500,6 +500,72 @@ msgstr "The file is not an audio stream, but is being ignored"
 msgid "There is no plugin installed to handle a %s file."
 msgstr "There is no plugin installed to handle a %s file."
 
+#: metadata/sj-metadata-musicbrainz.c:92
+msgid "Cannot create MusicBrainz client"
+msgstr "Cannot create MusicBrainz client"
+
+#: metadata/sj-metadata-musicbrainz.c:195
+#: metadata/sj-metadata-musicbrainz.c:317
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "Cannot read CD: %s"
+
+#: metadata/sj-metadata-musicbrainz.c:202
+#: metadata/sj-metadata-musicbrainz.c:362
+msgid "Unknown Artist"
+msgstr "Unknown Artist"
+
+#: metadata/sj-metadata-musicbrainz.c:203
+#: metadata/sj-metadata-musicbrainz.c:370
+msgid "Unknown Title"
+msgstr "Unknown Title"
+
+#: metadata/sj-metadata-musicbrainz.c:209
+#, c-format
+msgid "Track %d"
+msgstr "Track %d"
+
+#: metadata/sj-metadata-musicbrainz.c:237
+msgid ""
+"MusicBrainz metadata object is not valid. This is bad, check your console "
+"for errors."
+msgstr ""
+"MusicBrainz metadata object is not valid. This is bad; check your console "
+"for errors."
+
+#: metadata/sj-metadata-musicbrainz.c:311
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "Device '%s' does not contain any media"
+
+#: metadata/sj-metadata-musicbrainz.c:314
+#, c-format
+msgid ""
+"Device '%s' could not be opened. Check the access permissions on the device."
+msgstr ""
+"Device '%s' could not be opened. Check the access permissions on the device."
+
+#: metadata/sj-metadata-musicbrainz.c:327
+#, c-format
+msgid "This CD could not be queried: %s\n"
+msgstr "This CD could not be queried: %s\n"
+
+#: metadata/sj-metadata-musicbrainz.c:335
+msgid "This CD was not found.\n"
+msgstr "This CD was not found.\n"
+
+#: metadata/sj-metadata-musicbrainz.c:357
+msgid "Various"
+msgstr "Various"
+
+#: metadata/sj-metadata-musicbrainz.c:394
+msgid "Incomplete metadata for this CD.\n"
+msgstr "Incomplete metadata for this CD.\n"
+
+#: metadata/sj-metadata-musicbrainz.c:472
+msgid "Could not create CD lookup thread"
+msgstr "Could not create CD lookup thread"
+
 #: player/rb-player-gst.c:449 player/rb-recorder-gst.c:417
 msgid "Could not create audio output element; check your settings"
 msgstr "Could not create audio output element; check your settings"
@@ -600,11 +666,11 @@ msgstr ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 
-#: podcast/rb-podcast-manager.c:870
+#: podcast/rb-podcast-manager.c:866
 msgid "Podcast"
 msgstr "Podcast"
 
-#: podcast/rb-podcast-manager.c:1623
+#: podcast/rb-podcast-manager.c:1624
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "There was a problem adding this podcast. Please verify the URL: %s"
@@ -955,13 +1021,21 @@ msgstr "Load Playlist"
 msgid "Save Playlist"
 msgstr "Save Playlist"
 
-#: shell/rb-removable-media-manager.c:106
+#: shell/rb-removable-media-manager.c:122
 msgid "_Eject"
 msgstr "_Eject"
 
-#: shell/rb-removable-media-manager.c:107
+#: shell/rb-removable-media-manager.c:123
 msgid "Eject this medium"
 msgstr "Eject this medium"
+
+#: shell/rb-removable-media-manager.c:125
+msgid "_Scan Removable Media"
+msgstr "_Scan Removable Media"
+
+#: shell/rb-removable-media-manager.c:126
+msgid "Scan for new Removable Media"
+msgstr "Scan for new Removable Media"
 
 #: shell/rb-shell-clipboard.c:90
 msgid "Select _All"
@@ -1023,7 +1097,7 @@ msgstr "_Next"
 msgid "Start playing the next song"
 msgstr "Start playing the next song"
 
-#: shell/rb-shell-player.c:270
+#: shell/rb-shell-player.c:270 sources/rb-podcast-source.c:288
 msgid "_Properties"
 msgstr "_Properties"
 
@@ -1105,23 +1179,23 @@ msgstr "No next song"
 msgid "Couldn't start playback: %s"
 msgstr "Couldn't start playback: %s"
 
-#: shell/rb-shell-player.c:2010
+#: shell/rb-shell-player.c:2015
 msgid "Couldn't stop playback"
 msgstr "Could not stop playback"
 
-#: shell/rb-shell-player.c:2064
+#: shell/rb-shell-player.c:2069
 msgid "Current song is not seekable"
 msgstr "Current song is not seekable"
 
-#: shell/rb-shell-player.c:2129
+#: shell/rb-shell-player.c:2134
 msgid "Stream error"
 msgstr "Stream error"
 
-#: shell/rb-shell-player.c:2130
+#: shell/rb-shell-player.c:2135
 msgid "Unexpected end of stream!"
 msgstr "Unexpected end of stream!"
 
-#: shell/rb-shell-player.c:2381
+#: shell/rb-shell-player.c:2386
 msgid "Buffering"
 msgstr "Buffering"
 
@@ -1418,6 +1492,36 @@ msgstr "_Show Music Player"
 #: shell/rb-tray-icon.c:100
 msgid "Choose music to play"
 msgstr "Choose music to play"
+
+#: sources/rb-audiocd-source.c:231
+#, c-format
+msgid "Track %u"
+msgstr "Track %u"
+
+#: sources/rb-audiocd-source.c:296 sources/rb-audiocd-source.c:303
+#: sources/rb-audiocd-source.c:450
+msgid "Couldn't load Audio CD"
+msgstr "Could not load Audio CD"
+
+#: sources/rb-audiocd-source.c:297
+msgid "Rhythmbox couldn't access the cd."
+msgstr "Rhythmbox could not access the cd."
+
+#: sources/rb-audiocd-source.c:304
+msgid "Rhythmbox could read the cd information."
+msgstr "Rhythmbox could read the cd information."
+
+#: sources/rb-audiocd-source.c:451
+msgid "Rhythmbox could not get access to the CD device."
+msgstr "Rhythmbox could not get access to the CD device."
+
+#: sources/rb-audiocd-source.c:538 sources/rb-source.c:602
+msgid "Not supported"
+msgstr "Not supported"
+
+#: sources/rb-audiocd-source.c:539
+msgid "Audio CDs do not support drag and drop."
+msgstr "Audio CDs do not support drag and drop."
 
 #: sources/rb-ipod-source.c:141
 msgid "iPod"
@@ -1790,77 +1894,61 @@ msgstr ""
 "required."
 
 #: sources/rb-podcast-source.c:285
-msgid "Download Podcast Episode"
-msgstr "Download Podcast Episode"
+msgid "Download Podcast _Episode"
+msgstr "Download Podcast _Episode"
 
-#: sources/rb-podcast-source.c:286 sources/rb-podcast-source.c:954
+#: sources/rb-podcast-source.c:286
 msgid "Download Post"
 msgstr "Download Post"
 
-#: sources/rb-podcast-source.c:288
-msgid "Subscribe to Podcast Feed"
-msgstr "Subscribe to Podcast Feed"
-
 #: sources/rb-podcast-source.c:289
-msgid "Subscribe Feed"
-msgstr "Subscribe Feed"
-
-#: sources/rb-podcast-source.c:291
-msgid "Properties"
-msgstr "Properties"
-
-#: sources/rb-podcast-source.c:292
 msgid "Properties Feed"
 msgstr "Properties Feed"
 
-#: sources/rb-podcast-source.c:294
-msgid "Update Podcast Feed"
-msgstr "Update Podcast Feed"
+#: sources/rb-podcast-source.c:291
+msgid "_Update Podcast Feed"
+msgstr "_Update Podcast Feed"
 
-#: sources/rb-podcast-source.c:295
+#: sources/rb-podcast-source.c:292
 msgid "Update Feed"
 msgstr "Update Feed"
 
-#: sources/rb-podcast-source.c:297
-msgid "Delete Podcast Feed"
-msgstr "Delete Podcast Feed"
+#: sources/rb-podcast-source.c:294
+msgid "_Delete Podcast Feed"
+msgstr "_Delete Podcast Feed"
 
-#: sources/rb-podcast-source.c:298
+#: sources/rb-podcast-source.c:295
 msgid "Delete Feed"
 msgstr "Delete Feed"
 
-#: sources/rb-podcast-source.c:506
-msgid "Date"
-msgstr "Date"
+#: sources/rb-podcast-source.c:507
+msgid "_Date"
+msgstr "_Date"
 
-#: sources/rb-podcast-source.c:527 sources/rb-podcast-source.c:608
-#: sources/rb-podcast-source.c:650
+#: sources/rb-podcast-source.c:528 sources/rb-podcast-source.c:609
+#: sources/rb-podcast-source.c:651
 msgid "Feed"
 msgstr "Feed"
 
-#: sources/rb-podcast-source.c:551
+#: sources/rb-podcast-source.c:552
 msgid "Status"
 msgstr "Status"
 
-#: sources/rb-podcast-source.c:749
+#: sources/rb-podcast-source.c:750
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: sources/rb-podcast-source.c:841 sources/rb-podcast-source.c:1397
-msgid "Remove files from disk?"
-msgstr "Remove files from disk?"
+#: sources/rb-podcast-source.c:842
+msgid "Do you want to delete the podcast episode data from disk?"
+msgstr "Do you want to delete the podcast episode data from disk?"
 
-#: sources/rb-podcast-source.c:950
-msgid "Cancel Download"
-msgstr "Cancel Download"
+#: sources/rb-podcast-source.c:962
+msgid "_Cancel Download"
+msgstr "_Cancel Download"
 
-#: sources/rb-podcast-source.c:1005
-msgid "Subscribe This Feed"
-msgstr "Subscribe This Feed"
-
-#: sources/rb-podcast-source.c:1009
-msgid "Unsubscribe This Feed"
-msgstr "Unsubscribe This Feed"
+#: sources/rb-podcast-source.c:966
+msgid "_Download Post"
+msgstr "_Download Post"
 
 #: sources/rb-podcast-source.c:1195
 msgid "Save Folder"
@@ -1882,41 +1970,41 @@ msgstr "Every week"
 msgid "Manually"
 msgstr "Manually"
 
-#: sources/rb-podcast-source.c:1508
+#: sources/rb-podcast-source.c:1401
+msgid "Do you want the podcast episodes to be deleted from disk?"
+msgstr "Do you want the podcast episodes to be deleted from disk?"
+
+#: sources/rb-podcast-source.c:1490
 msgid "Completed"
 msgstr "Completed"
 
-#: sources/rb-podcast-source.c:1512
+#: sources/rb-podcast-source.c:1494
 msgid "Failed"
 msgstr "Failed"
 
-#: sources/rb-podcast-source.c:1516
+#: sources/rb-podcast-source.c:1498
 msgid "Waiting"
 msgstr "Waiting"
 
-#: sources/rb-podcast-source.c:1520
+#: sources/rb-podcast-source.c:1502
 msgid "Paused"
 msgstr "Paused"
 
-#: sources/rb-podcast-source.c:1730
+#: sources/rb-podcast-source.c:1712
 msgid "Downloading podcast"
 msgstr "Downloading podcast"
 
-#: sources/rb-podcast-source.c:1740
+#: sources/rb-podcast-source.c:1722
 msgid "Finished downloading podcast"
 msgstr "Finished downloading podcast"
 
-#: sources/rb-podcast-source.c:1750
+#: sources/rb-podcast-source.c:1732
 msgid "New updates avaliable from"
 msgstr "New updates avaliable from"
 
-#: sources/rb-podcast-source.c:1817
+#: sources/rb-podcast-source.c:1799
 msgid "Error in podcast"
 msgstr "Error in podcast"
-
-#: sources/rb-source.c:602
-msgid "Not supported"
-msgstr "Not supported"
 
 #: sources/rb-source.c:603
 msgid "This source does not support drag and drop."
