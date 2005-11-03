@@ -556,6 +556,21 @@ end_gstreamer_operation (RBPlayer *mp, gboolean op_failed, GError **error)
 	}
 }
 
+static void
+cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *uri)
+{
+	GstElement *source;
+
+	gst_element_get (GST_ELEMENT (object), "source", &source, NULL);
+	rb_debug ("got source %p", source);
+	if (source) {
+		g_signal_handlers_disconnect_by_func (object, cdda_got_source_cb, uri);
+
+		g_object_set (G_OBJECT (source), "device", uri, NULL);
+		g_free (uri);
+	}
+}
+
 gboolean
 rb_player_open (RBPlayer *mp,
 		const char *uri,
@@ -578,9 +593,37 @@ rb_player_open (RBPlayer *mp,
 		return TRUE;
 	}
 
+
 	begin_gstreamer_operation (mp);
-	g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);	
 	mp->priv->uri = g_strdup (uri);
+
+	if (g_str_has_prefix (uri, "cdda://")) {
+		gchar *copy, *temp, *split;
+		int l = strlen ("cdda://");
+
+		copy = g_strdup (uri);
+		split = g_utf8_strrchr (copy + l, -1, ':');
+
+		if (split == NULL) {
+			/* invalid URI, it doesn't contain a ':' */
+			end_gstreamer_operation (mp, TRUE, error);
+			return FALSE;
+		}
+
+		temp = g_strdup_printf ("cdda://%s", split + 1);
+		g_object_set (G_OBJECT (mp->priv->playbin), "uri", temp, NULL);
+		g_free (temp);
+
+		*split = 0;
+		temp = g_strdup (copy + l);
+		g_signal_connect (G_OBJECT (mp->priv->playbin),
+				  "notify::source",
+				  G_CALLBACK (cdda_got_source_cb),
+				  temp);
+		g_free (copy);
+	} else {
+		g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);
+	}
 
 	if (!rb_player_sync_pipeline (mp)) {
 		end_gstreamer_operation (mp, TRUE, error);

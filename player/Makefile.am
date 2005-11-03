@@ -4,7 +4,11 @@ noinst_LTLIBRARIES = librbplayer.la
 
 librbplayer_la_SOURCES =	\
 	rb-player.h 		\
-	rb-player-gst.c
+	rb-player-gst.c		\
+	rb-recorder.h		\
+	rb-recorder-gst.c       \
+	rb-recorder-marshal.c	\
+	rb-recorder-marshal.h
 
 librbplayer_la_LIBADD =				\
 	$(RHYTHMBOX_LIBS)
@@ -22,6 +26,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/daapsharing			\
+	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 
 
@@ -32,15 +37,6 @@ endif
 
 BUILT_SOURCES = rb-recorder-marshal.c rb-recorder-marshal.h
 
-if USE_CD_BURNER
-librbplayer_la_SOURCES += 	\
-	rb-recorder.h		\
-	rb-recorder-gst.c       \
-	rb-recorder-marshal.c	\
-	rb-recorder-marshal.h
-
-INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
-endif
 
 rb-recorder-marshal.c: rb-recorder-marshal.list
 	echo "#include \"rb-recorder-marshal.h\"" > $@ && \

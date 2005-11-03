@@ -89,6 +89,7 @@ rhythmbox_LDADD =					\
 	$(GDA_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
+	$(LIBNAUTILUS_BURN_LIBS)			\
 	$(RHYTHMBOX_LIBS)
 
 if WITH_BONOBO
@@ -141,6 +142,7 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
+	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 if WITH_BONOBO
@@ -148,9 +150,6 @@ INCLUDES += -I$(top_srcdir)/remote/bonobo
 endif
 if WITH_DBUS
 INCLUDES += -I$(top_srcdir)/remote/dbus
-endif
-if USE_CD_BURNER
-rhythmbox_LDADD += $(LIBNAUTILUS_BURN_LIBS)
 endif
 
 if USE_DAAP

@@ -4,7 +4,9 @@ SUBDIRS =
 
 noinst_LTLIBRARIES = librbmetadata.la
 
-librbmetadata_la_SOURCES = rb-metadata.h rb-metadata-common.c rb-metadata-gst.c
+librbmetadata_la_SOURCES = \
+	rb-metadata.h rb-metadata-common.c rb-metadata-gst.c
+
 
 librbmetadata_la_LIBADD =			\
 	$(RHYTHMBOX_LIBS)
@@ -16,5 +18,40 @@ INCLUDES = 						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
+	-I$(top_srcdir)/widgets				\
 	$(RHYTHMBOX_CFLAGS)
+
+MARSHALFILES = 
+
+if HAVE_MUSICBRAINZ
+librbmetadata_la_SOURCES += \
+	sj-metadata.h sj-metadata.c \
+	sj-metadata-musicbrainz.h sj-metadata-musicbrainz.c \
+	sj-structures.h sj-structures.c \
+	sj-error.h sj-error.c \
+	$(MARSHALFILES)
+
+INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
+
+MARSHALFILES += sj-metadata-marshal.h sj-metadata-marshal.c
+
+sj-metadata-marshal.h: sj-metadata-marshal.list
+	( $(GLIB_GENMARSHAL) --prefix=metadata_marshal $< \
+	--header > marshal-header.tmp \
+	&& mv marshal-header.tmp $@ ) \
+	|| ( rm -f marshal-header.tmp && exit 1 )
+
+sj-metadata-marshal.c: sj-metadata-marshal.list
+	( $(GLIB_GENMARSHAL) --prefix=metadata_marshal $< \
+	--body > marshal-source.tmp \
+	&& echo "#include \"sj-metadata-marshal.h\"" > $@ \
+	&& cat marshal-source.tmp >> $@ \
+	&& rm -f marshal-source.tmp ) \
+	|| ( rm -f marshal-source.tmp && exit 1 )
+
+endif
+
+BUILT_SOURCES = $(MARSHALFILES)
+CLEANFILES = $(BUILT_SOURCES)
+EXTRA_DIST = sj-metadata-marshal.list
 

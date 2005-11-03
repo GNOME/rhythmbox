@@ -16,6 +16,10 @@ libsourcesimpl_la_SOURCES =		\
 	rb-podcast-source.h		\
 	rb-removable-media-source.c	\
 	rb-removable-media-source.h	\
+	rb-audiocd-source.c		\
+	rb-audiocd-source.h		\
+	rb-playlist-source-recorder.c   \
+	rb-playlist-source-recorder.h	\
 	rb-playlist-source.c            \
 	rb-playlist-source.h
 
@@ -27,7 +31,8 @@ INCLUDES =						\
 	-I$(top_builddir)/lib 				\
 	-I$(top_srcdir)/corba 				\
 	-I$(top_builddir)/corba				\
-	-I$(top_srcdir)/rhythmdb			\
+	-I$(top_srcdir)/rhythmdb				\
+	-I$(top_srcdir)/metadata 			\
 	-I$(top_srcdir)/widgets 			\
 	-I$(top_srcdir)/library 			\
 	-I$(top_srcdir)/player	 			\
@@ -42,6 +47,7 @@ INCLUDES =						\
 	$(WARN_CFLAGS)					\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(HAL_CFLAGS)					\
+	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 
 libsources_la_LDFLAGS = -export-dynamic
@@ -54,13 +60,6 @@ libsourcesimpl_la_SOURCES +=         \
 INCLUDES += -I$(top_srcdir)/sources/ipod $(IPOD_CFLAGS)
 endif
 
-if USE_CD_BURNER
-libsourcesimpl_la_SOURCES += 		\
-	rb-playlist-source-recorder.c   \
-	rb-playlist-source-recorder.h	
-
-INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
-endif
 
 if USE_DAAP
 libsourcesimpl_la_SOURCES +=		\

@@ -293,20 +293,12 @@ if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" = "xyes"; the
 fi
 AM_CONDITIONAL(USE_LIBSOUP, test x"$have_libsoup" = "xyes")
 
-dnl AC_CHECK_LIB(lirc_client, lirc_init,
-dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
-dnl 			[ RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS -llirc_client"
-dnl 			AC_DEFINE(HAVE_REMOTE)]
-dnl 			,,) ] ,)
 
-
-dnl Check for Musicbrainz
-dnl DISABLED
-dnl AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
-dnl				[don't build with MusicBrainz support]))
-enable_musicbrainz=no
+dnl check for MusicBrainz
+AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
+				[don't build with MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
-	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= 2.0.0, enable_musicbrainz=yes,
+	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= 2.1.0, enable_musicbrainz=yes,
 		          enable_musicbrainz=no)
 fi
 if test x"$enable_musicbrainz" = xyes; then
@@ -314,7 +306,9 @@ if test x"$enable_musicbrainz" = xyes; then
 	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $MUSICBRAINZ_LIBS"
 	AC_DEFINE(HAVE_MUSICBRAINZ, 1, [define if you have Musicbrainz])
 fi
-AM_CONDITIONAL(HAVE_MUSICBRAINZ,test "x$enable_musicbrainz" = "xyes")
+AM_CONDITIONAL(HAVE_MUSICBRAINZ, test "x$enable_musicbrainz" = "xyes")
+
+
 
 AC_PATH_X
 
@@ -366,19 +360,11 @@ else
 fi
 
 dnl CD Audio support		  
-dnl AC_ARG_ENABLE(audiocd, AC_HELP_STRING([--enable-audiocd],
-dnl				[build with Audio CD support]),enable_audiocd=yes)
-dnl For now.
-enable_audiocd=no
-
-if test "x$enable_audiocd" = "xyes"; then
-  if test x"$enable_musicbrainz" != xyes; then
-	AC_MSG_ERROR([MusicBrainz is required for AudioCD support])
-  fi
-  AC_CHECK_HEADER(linux/cdrom.h,[enable_linux_cdrom=yes],)
-  if test "x$enable_linux_cdrom" = "xyes"; then
-    AC_MSG_CHECKING([whether linux/cdrom.h actually works])
-    AC_COMPILE_IFELSE([
+AC_DEFINE(WITH_AUDIOCD_SUPPORT, 1, [Define if audio cd support is enabled])
+AC_CHECK_HEADER(linux/cdrom.h,[enable_linux_cdrom=yes],)
+if test "x$enable_linux_cdrom" = "xyes"; then
+  AC_MSG_CHECKING([whether linux/cdrom.h actually works])
+  AC_COMPILE_IFELSE([
 #include <stdlib.h>    
 #include <sys/ioctl.h>    
 #include <linux/cdrom.h>
@@ -388,42 +374,23 @@ int main(int argc,char **argv) {
   ioctl (0, CDROMREADTOCHDR, NULL);
   exit(0);
 }], [enable_linux_cdrom=yes],[enable_linux_cdrom=no])
-    if test "x$enable_linux_cdrom" = "xyes"; then
-      AC_MSG_RESULT([yes])
-      enable_audiocd=yes
-    else
-      AC_MSG_FAILURE([linux/cdrom.h is damaged; fix your system or use --disable-audiocd])
-    fi
+  if test "x$enable_linux_cdrom" = "xyes"; then
+    AC_MSG_RESULT([yes])
+    enable_audiocd=yes
+  else
+    AC_MSG_FAILURE([linux/cdrom.h is damaged; fix your system or use --disable-audiocd])
   fi
-else
-  AC_MSG_NOTICE([CD audio support disabled])
 fi
-if test "x$enable_audiocd" = "xyes"; then
-  AM_GST_ELEMENT_CHECK(cdparanoia,,missing_gst_elements="$missing_gst_elements cdparanoia")
-  AC_DEFINE(HAVE_AUDIOCD,,[Define if we have CD Audio support])
-  AC_SUBST(AUDIOCD_INCLUDES, ["#include \"monkey-media-audio-cd.h\""])
-else
-  :
-  AC_SUBST(AUDIOCD_INCLUDES, [])
-fi
-AM_CONDITIONAL(HAVE_AUDIOCD, test "x$enable_audiocd" = "xyes")
 AM_CONDITIONAL(HAVE_LINUX_CDROM, test "x$enable_linux_cdrom" = "xyes")
 
+NCB_DRIVE_DOOR_VERSION=2.11.3
 dnl CD burner support
-AC_ARG_WITH(cd_burner,
-            AC_HELP_STRING([--with-cd-burner],
-			   [Enable CD burner support in Rhythmbox]),,
-	      with_cd_burner=auto)
-if test "x$with_cd_burner" != "xno"; then
-	PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], enable_cd_burner=yes, enable_cd_burner=no)
-        if test "x$with_cd_burner" = xyes && test "x$enable_cd_burner" = xno; then
-	   AC_MSG_ERROR([CD burner support explicitly requested but no support found])	   
-	fi
-        if test "x$enable_cd_burner" = xyes; then
-		AC_DEFINE(WITH_CD_BURNER_SUPPORT, 1, [Define if CD burner support is enabled])	   
-	fi
-fi			  
-AM_CONDITIONAL(USE_CD_BURNER, test "x$enable_cd_burner" = "xyes")
+PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_cd_burner=yes, have_cd_burner=no)
+if test "x$have_cd_burner" = xno; then
+   AC_MSG_ERROR([libnautilus-burn not found or too cold])	   
+fi
+AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_door_is_open,
+    [AC_DEFINE([HAVE_BURN_DRIVE_DOOR], 1, [Have nautilus-burn function to check drive door state])])
 
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
@@ -624,11 +591,11 @@ if test x"$enable_mmkeys" != "xyes"; then
 else
 	AC_MSG_NOTICE([** Multimedia keys support is enabled])
 fi
-dnl if test x"$enable_musicbrainz" != "xyes"; then
-dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
-dnl else
-dnl 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
-dnl fi
+if test x"$enable_musicbrainz" != "xyes"; then
+	AC_MSG_NOTICE([   MusicBrainz support is disabled])
+else
+	AC_MSG_NOTICE([** MusicBrainz support is enabled])
+fi
 
 AC_MSG_NOTICE([** GStreamer $GST_MAJORMINOR player is enabled])
 
@@ -641,11 +608,6 @@ if test x"$enable_daap" = xyes; then
 	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
 else
 	AC_MSG_NOTICE([   DAAP (music sharing) support is disabled])
-fi
-if test x"$enable_cd_burner" = xyes; then
-	AC_MSG_NOTICE([** CD burner support is enabled])
-else
-	AC_MSG_NOTICE([   CD burner support is disabled])
 fi
 if test x"$enable_bonobo" = xyes; then
 	AC_MSG_NOTICE([** Bonobo control/activation enabled])
@@ -669,12 +631,6 @@ else
 fi
 AM_CONDITIONAL(WITH_AUDIOSCROBBLER,test "x$enable_audioscrobbler" = "xyes")
 
-dnl if test "x$enable_audiocd" != "xyes"; then
-dnl 	AC_MSG_NOTICE([   Audio CD support is disabled])
-dnl else
-dnl 	AC_MSG_NOTICE([** Audio CD support is enabled])
-dnl 	AC_MSG_WARN([Audio CD support is experimental!])
-dnl fi
 if test x"$missing_gst_output_element" != x; then
 	AC_MSG_WARN([Neither osssink nor alsasink could be found on your system])
 fi	

@@ -3,7 +3,9 @@
     <menu name="MusicMenu" action="Music">  
       <menuitem name="MusicImportFileMenu" action="MusicImportFile"/>
       <menuitem name="MusicImportFolderMenu" action="MusicImportFolder"/>
+      <separator/>
       <menuitem name="MusicImportCD" action="MusicImportCD"/>
+      <menuitem name="MusicScanMedia" action="MusicScanMedia"/>
       <separator/>
       <menu name="PlaylistMenu" action="Playlist">
 	<menuitem name="MusicPlaylistNewPlaylistMenu" action="MusicPlaylistNewPlaylist"/>
@@ -142,6 +144,11 @@
     <menuitem name="PropertiesFeedPodcastPopup" action="PodcastFeedProperties"/>
   </popup>
 
+
+  <popup name="AudioCdSourcePopup">
+    <menuitem name="AudioCdSourcePopupImportCd" action="MusicImportCD"/>
+    <menuitem name="AudioCdSourcePopupEjectCd" action="RemovableSourceEject"/>
+  </popup>
 
   <popup name="PlaylistSourcePopup">
     <menuitem name="RenameSmartPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>

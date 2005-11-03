@@ -57,18 +57,6 @@ test_cmdline_LDADD =						\
 
 test_cmdline_LDFLAGS = -export-dynamic
 
-if HAVE_AUDIOCD
-noinst_PROGRAMS += test-cd
-
-test_cd_SOURCES = test-cd.c
-
-test_cd_LDADD = 						\
-	$(top_builddir)/monkey-media/libmonkey-media.la			\
-	$(RHYTHMBOX_LIBS)
-
-test_cd_LDFLAGS = -export-dynamic
-endif
-
 INCLUDES = 							\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"	        \
 	-DG_LOG_DOMAIN=\"Rhythmbox-tests\"			\

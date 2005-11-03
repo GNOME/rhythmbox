@@ -1,3 +1,45 @@
+2005-11-03  James Livingston  <jrl@ids.org.au>
+
+	Add support for playing audio CDs. Metadata lookup is done using
+	SoundJuicer's MusicBrainz lookup code, which can be switched to using
+	the library when it gets broken out of S-J.
+	
+	Add a "rescan media" menu item, and commands for ejecting removable
+	media.
+
+	Move nautilus-cd-burner from optional to required depenency.
+
+	* configure.ac:
+	* data/ui/rhythmbox-ui.xml:
+	* metadata/Makefile.am:
+	+ metadata/sj-error.c:
+	+ metadata/sj-error.h:
+	+ metadata/sj-metadata-marshal.list:
+	+ metadata/sj-metadata-musicbrainz.c:
+	+ metadata/sj-metadata-musicbrainz.h:
+	+ metadata/sj-metadata.c:
+	+ metadata/sj-metadata.h:
+	+ metadata/sj-structures.c:
+	+ metadata/sj-structures.h:
+	* player/Makefile.am:
+	* player/rb-player-gst.c: (cdda_got_source_cb), (rb_player_open):
+	* po/POTFILES.in:
+	* shell/Makefile.am:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_dispose), (poll_tray_opened),
+	(end_cd_drive_monitor), (begin_cd_drive_monitor),
+	(rb_removable_media_manager_load_media),
+	(rb_removable_media_manager_mount_volume),
+	(rb_removable_media_manager_cmd_eject_medium),
+	(rb_removable_media_manager_cmd_scan_media),
+	(rb_removable_media_manager_check_volume),
+	(rb_removable_media_manager_unmount_volume_swap),
+	(rb_removable_media_manager_scan):
+	* sources/Makefile.am:
+	+ sources/rb-audiocd-source.c:
+	+ sources/rb-audiocd-source.h:
+	* tests/Makefile.am:
+
 2005-11-02  James Livingston  <jrl@ids.org.au>
 
 	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
