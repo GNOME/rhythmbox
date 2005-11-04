@@ -1027,15 +1027,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 					    shell->priv->actiongroup, 0);
 	gtk_ui_manager_add_ui_from_file (shell->priv->ui_manager,
 					 rb_file ("rhythmbox-ui.xml"), &error);
-	/* Hide CD burner related items */
-	{
-		GtkWidget *w = gtk_ui_manager_get_widget (shell->priv->ui_manager,
-							  "/MenuBar/MusicMenu/PlaylistMenu/MusicPlaylistBurnPlaylistMenu");
-		g_object_set (G_OBJECT (w), "visible", FALSE, NULL);
-		w = gtk_ui_manager_get_widget (shell->priv->ui_manager,
-					       "/PlaylistSourcePopup/MusicPlaylistBurnPlaylistMenu");
-		g_object_set (G_OBJECT (w), "visible", FALSE, NULL);
-	}
 	gtk_ui_manager_ensure_update (shell->priv->ui_manager);
 	gtk_window_add_accel_group (GTK_WINDOW (shell->priv->window),
 				    gtk_ui_manager_get_accel_group (shell->priv->ui_manager));
