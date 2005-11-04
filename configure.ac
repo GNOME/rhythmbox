@@ -619,11 +619,6 @@ if test x"$enable_dbus" = xyes; then
 else
 	AC_MSG_NOTICE([   D-BUS control/activation disabled])
 fi
-if test x"$enable_daap" = xyes; then
-	AC_MSG_NOTICE([** DAAP support enabled])
-else
-	AC_MSG_NOTICE([   DAAP support disabled])
-fi
 if test x"$enable_audioscrobbler" = xyes; then
 	AC_MSG_NOTICE([** Audioscrobbler support enabled])
 else
