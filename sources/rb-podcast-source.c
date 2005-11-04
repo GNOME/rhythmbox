@@ -525,7 +525,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 						 source, NULL);
 	
 	rb_entry_view_append_column_custom (source->priv->posts, column, 
-					    _("Feed"), "Feed", 
+					    _("_Feed"), "Feed", 
 					    (GCompareDataFunc) rb_podcast_source_post_feed_cell_sort_func, NULL);
 
 	
@@ -1174,8 +1174,6 @@ impl_get_config_widget (RBSource *asource)
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	GtkWidget *cb_update_interval;
 	GtkWidget *btn_file;
-	GtkWidget *v_box;
-	GtkWidget *label;
 	const char *download_dir;
 	GladeXML *xml;
 
@@ -1184,50 +1182,27 @@ impl_get_config_widget (RBSource *asource)
 
 
 	xml = rb_glade_xml_new ("podcast-prefs.glade", "podcast_vbox", source);
-	source->priv->config_widget =
-		glade_xml_get_widget (xml, "podcast_vbox");
+	source->priv->config_widget = glade_xml_get_widget (xml, "podcast_vbox");
 	
-	v_box = glade_xml_get_widget (xml, "vbox11");
-	label = glade_xml_get_widget (xml, "label18");
-	
-
-	rb_debug("creating btn file choose");
-	btn_file = gtk_file_chooser_button_new(_("Save Folder"), GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-
-	rb_debug("btn file choose created");
-	gtk_box_pack_start (GTK_BOX(v_box), btn_file, FALSE, TRUE, 0); 
-	gtk_label_set_mnemonic_widget (GTK_LABEL (label), GTK_WIDGET (btn_file));
-	
+	btn_file = glade_xml_get_widget (xml, "location_chooser");
 	download_dir = 	eel_gconf_get_string(CONF_STATE_PODCAST_DOWNLOAD_DIR);
-
-
 	if (download_dir != NULL) {
 		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER(btn_file), 
 						download_dir);
 	}
-
 	g_signal_connect ( G_OBJECT(btn_file),
 				"selection-changed",
 				G_CALLBACK (rb_podcast_source_btn_file_change_cb),
 				CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
 	cb_update_interval = glade_xml_get_widget (xml, "cb_update_interval");
-	gtk_combo_box_remove_text (GTK_COMBO_BOX (cb_update_interval), 0);
-	gtk_combo_box_append_text (GTK_COMBO_BOX (cb_update_interval), _("Every hour"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (cb_update_interval), _("Every day"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (cb_update_interval), _("Every week"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (cb_update_interval), _("Manually"));
 	gtk_combo_box_set_active (GTK_COMBO_BOX (cb_update_interval),
 				  eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL));
-	
 	g_signal_connect ( G_OBJECT(cb_update_interval),
 			   "changed",
 			   G_CALLBACK(rb_podcast_source_cb_interval_changed_cb),
 			   source);
 				
-	
-	g_object_unref (G_OBJECT (xml));
-	
 	return source->priv->config_widget;
 }
 

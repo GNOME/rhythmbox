@@ -1,5 +1,20 @@
 2005-11-05  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/audioscrobbler-prefs.glade: add a link to the last.fm
+	homepage, so that users can find out what AudioScrobbler is. Add
+	access keys.
+
+	* data/glade/daap-prefs.glade:
+	* data/glade/general-prefs.glade:
+	* data/glade/library-prefs.glade: make the indent be more consistent
+
+	* data/glade/podcast-prefs.glade: 
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(impl_get_config_widget): move thing out of code into glade, where
+	they belong
+
+2005-11-05  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_constructor): really remove bit of code
 	related to WITH_CD_BURNER_SUPPORT that I missed in the other commit
 
