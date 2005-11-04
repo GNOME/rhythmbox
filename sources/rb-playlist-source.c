@@ -38,9 +38,7 @@
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-playlist-source.h"
-#if defined(WITH_CD_BURNER_SUPPORT)
 #include "rb-playlist-source-recorder.h"
-#endif
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
@@ -893,7 +891,6 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 				 "%s", error->message);
 }
 
-#if defined(WITH_CD_BURNER_SUPPORT)
 static void
 burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **artist, char **title, gulong *duration)
 {
@@ -906,12 +903,10 @@ burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, cha
 	*title = g_strdup (rb_refstring_get (entry->title));
 	*duration = entry->duration;
 }
-#endif
 
 void
 rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 {
-#if defined(WITH_CD_BURNER_SUPPORT)
 	GtkWidget *recorder;
 	char *name;
 	RBShell *shell;
@@ -941,7 +936,6 @@ rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 			  NULL);
 
 	gtk_widget_show (recorder);
-#endif
 }
 
 RBSource *

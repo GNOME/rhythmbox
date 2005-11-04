@@ -1,5 +1,12 @@
 2005-11-04  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_property):
+	* sources/rb-playlist-source.c: (burn_playlist_iter_func),
+	(rb_playlist_source_burn_playlist): remove the WITH_CD_BURNER_SUPPORT
+	#ifdefs, since we removed the symbol. Oops
+
+2005-11-04  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-ipod-source.c: (hal_udi_is_ipod): put the libhal_ctx_init
 	after the connect line, not before. Oops.
 

@@ -32,9 +32,7 @@
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
-#if defined(WITH_CD_BURNER_SUPPORT)
 #include "rb-recorder.h"
-#endif
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
 #include "rb-query-creator.h"
@@ -413,7 +411,6 @@ rb_playlist_manager_set_property (GObject *object,
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistDeletePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
-#if defined(WITH_CD_BURNER_SUPPORT)
 		{
 			gboolean recorder_active;
 			int num_tracks = rb_entry_view_get_num_entries (rb_source_get_entry_view (mgr->priv->selected_source));
@@ -431,7 +428,6 @@ rb_playlist_manager_set_property (GObject *object,
 							 "entry-deleted", G_CALLBACK (rb_playlist_manager_playlist_entries_changed), mgr, 0);
 			}
 		}
-#endif
 		break;
 	}
 	case PROP_SHELL:
