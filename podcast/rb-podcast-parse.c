@@ -443,10 +443,14 @@ rb_podcast_parse_time (const char *time_str)
 
 	memset (&tm, 0, sizeof (struct tm));
 	result = strptime (time_str, "%H:%M:%S", &tm);
-	if (result == NULL)
+	if (result == NULL) {
+		memset (&tm, 0, sizeof (struct tm));
 		result = strptime (time_str, "%M:%S", &tm);
-	if (result == NULL)
+	}
+	if (result == NULL) {
+		memset (&tm, 0, sizeof (struct tm));	
 		rb_debug ("unable to convert duration string %s", time_str);
+	}
 	
 	return ((tm.tm_hour * 60 + tm.tm_min) * 60 + tm.tm_sec);
 }
