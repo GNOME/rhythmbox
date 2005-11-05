@@ -1,5 +1,39 @@
 2005-11-05  James Livingston  <jrl@ids.org.au>
 
+	patch by Christophe Fergeau <teuf@gnome.org> to add support for the
+	release date metadata ("Year"). Closes bug 166093.
+
+	* metadata/rb-metadata-common.c: (rb_metadata_get_field_type):
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_load_tag),
+	(rb_metadata_gst_add_tag_data):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):
+	* rhythmdb/rhythmdb.c: (metadata_field_from_prop),
+	(extract_gtype_from_enum_entry), (rhythmdb_entry_finalize),
+	(set_props_from_metadata), (rhythmdb_entry_set_internal),
+	(rhythmdb_prop_get_type):
+	* rhythmdb/rhythmdb.h: add support for "date" property
+	
+	* data/glade/general-prefs.glade:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init):
+	* widgets/rb-entry-view.c: (rb_entry_view_year_cell_data_func),
+	(rb_entry_view_append_column):
+	* widgets/rb-entry-view.h:
+	* sources/rb-library-source.c: (rb_library_source_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor): Add
+	"Year" colums
+
+	* data/glade/song-info.glade:
+	* widgets/rb-song-info.c: (rb_song_info_boldify_label),
+	(rb_song_info_construct_single), (rb_song_info_constructor),
+	(rb_song_info_populate_dialog), (rb_song_info_update_year),
+	(rb_song_info_sync_entry_single): Add "Year" to song info window
+
+	* widgets/rb-query-creator-properties.c: Allow auto playlists to be
+	sorted by year.
+
+2005-11-05  James Livingston  <jrl@ids.org.au>
+
 	* data/glade/podcast-properties.glade: Add a scrollbar to the podcast
 	description if it's very long.
 

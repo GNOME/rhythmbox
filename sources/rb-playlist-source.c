@@ -334,6 +334,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_YEAR);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);

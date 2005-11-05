@@ -86,6 +86,7 @@ typedef enum
 	RHYTHMDB_PROP_PLAY_COUNT,
 	RHYTHMDB_PROP_LAST_PLAYED,
 	RHYTHMDB_PROP_BITRATE,
+	RHYTHMDB_PROP_DATE,
 	RHYTHMDB_PROP_TRACK_GAIN,
 	RHYTHMDB_PROP_TRACK_PEAK,
 	RHYTHMDB_PROP_ALBUM_GAIN,
@@ -170,6 +171,7 @@ typedef struct {
 	double track_peak;
 	double album_gain;
 	double album_peak;
+	GDate *date;
 
 	/* filesystem */
 	char *location;
@@ -350,6 +352,11 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->play_count;
 	case RHYTHMDB_PROP_BITRATE:
 		return entry->bitrate;		
+	case RHYTHMDB_PROP_DATE:
+		if (entry->date)
+			return g_date_get_julian (entry->date);
+		else
+			return 0;
 	case RHYTHMDB_PROP_POST_TIME:
 		if (entry->podcast)
 			return entry->podcast->post_time;

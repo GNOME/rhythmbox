@@ -39,7 +39,7 @@ rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ALBUM),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DATE),
-				     GINT_TO_POINTER (G_TYPE_STRING));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_GENRE),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_COMMENT),

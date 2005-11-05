@@ -69,6 +69,7 @@ static void rb_song_info_update_last_played (RBSongInfo *song_info);
 static void rb_song_info_update_bitrate (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
+static void rb_song_info_update_year (RBSongInfo *song_info);
 static void rb_song_info_update_playback_error (RBSongInfo *song_info);
 
 static void rb_song_info_backward_clicked_cb (GtkWidget *button,
@@ -99,17 +100,12 @@ struct RBSongInfoPrivate
 	GtkWidget   *forward;
 
 	GtkWidget   *title;
-	GtkWidget   *title_label;
 	GtkWidget   *artist;
-	GtkWidget   *artist_label;
 	GtkWidget   *album;
-	GtkWidget   *album_label;
 	GtkWidget   *genre;
-	GtkWidget   *genre_label;
 	GtkWidget   *track_cur;
-	GtkWidget   *track_cur_label;
 	GtkWidget   *disc_cur;
-	GtkWidget   *disc_cur_label;
+	GtkWidget   *year;
 	GtkWidget   *playback_error_box;
 	GtkWidget   *playback_error_label;
 
@@ -250,6 +246,21 @@ rb_song_info_show (GtkWidget *widget)
 }
 
 static void
+rb_song_info_boldify_label (RBSongInfo *song_info, GladeXML *xml, 
+			    const char *label_str)
+{
+	gchar *str_final;
+	GtkWidget *label;
+	
+	/* We add now the Pango attributes (look at bug #99867 and #97061) */
+	label = glade_xml_get_widget (xml, label_str);
+	str_final = g_strdup_printf ("<b>%s</b>",
+				     gtk_label_get_label GTK_LABEL (label));
+	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+	g_free (str_final);
+}
+
+static void
 rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 			       gboolean editable)
 {
@@ -275,9 +286,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 
 	/* get the widgets from the XML */
 	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
-	song_info->priv->title_label   = glade_xml_get_widget (xml, "title_label");
 	song_info->priv->track_cur     = glade_xml_get_widget (xml, "song_info_track_cur");
-	song_info->priv->track_cur_label = glade_xml_get_widget (xml, "trackn_label");
 	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
 	song_info->priv->location = glade_xml_get_widget (xml, "song_info_location");
@@ -285,67 +294,18 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
 	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
 	song_info->priv->disc_cur     = glade_xml_get_widget (xml, "song_info_disc_cur");
-	song_info->priv->disc_cur_label = glade_xml_get_widget (xml, "discn_label");
+	song_info->priv->year		= glade_xml_get_widget (xml, "song_info_year");
 
-	/* We add now the Pango attributes (look at bug #99867 and #97061) */
-	{
-		gchar *str_final;
-		GtkWidget *label;
-
-		label = glade_xml_get_widget (xml, "title_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "trackn_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "name_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "location_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "last_played_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "play_count_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "duration_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "bitrate_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "discn_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-	}
+	rb_song_info_boldify_label (song_info, xml, "title_label");
+	rb_song_info_boldify_label (song_info, xml, "trackn_label");
+	rb_song_info_boldify_label (song_info, xml, "name_label");
+	rb_song_info_boldify_label (song_info, xml, "location_label");
+	rb_song_info_boldify_label (song_info, xml, "last_played_label");
+	rb_song_info_boldify_label (song_info, xml, "play_count_label");
+	rb_song_info_boldify_label (song_info, xml, "duration_label");
+	rb_song_info_boldify_label (song_info, xml, "bitrate_label");
+	rb_song_info_boldify_label (song_info, xml, "discn_label");
+	rb_song_info_boldify_label (song_info, xml, "year_label");
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect_object (G_OBJECT (song_info->priv->title),
@@ -437,39 +397,10 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	song_info->priv->playback_error_box = glade_xml_get_widget (xml, "song_info_error_box");
 	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
 
-        /* We add now the Pango attributes (look at bug #99867 and #97061) */
-	{
-		gchar *str_final;
-		GtkWidget *label;
-
-		label = glade_xml_get_widget (xml, "album_label");
-		song_info->priv->album_label = label;
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "artist_label");
-		song_info->priv->artist_label = label;
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-		
-		label = glade_xml_get_widget (xml, "genre_label");
-		song_info->priv->genre_label = label;
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-
-		label = glade_xml_get_widget (xml, "rating_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-		
-	}
+	rb_song_info_boldify_label (song_info, xml, "album_label");
+	rb_song_info_boldify_label (song_info, xml, "artist_label");
+	rb_song_info_boldify_label (song_info, xml, "genre_label");
+	rb_song_info_boldify_label (song_info, xml, "rating_label");
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
 				 "mnemonic-activate",
@@ -716,6 +647,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_last_played (song_info);
 	rb_song_info_update_bitrate (song_info);
 	rb_song_info_update_rating (song_info);
+	rb_song_info_update_year (song_info);
 	rb_song_info_update_playback_error (song_info);
 }
 
@@ -925,6 +857,21 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 }
 
 static void
+rb_song_info_update_year (RBSongInfo *song_info)
+{
+	char *text;
+
+	if (song_info->priv->current_entry->date) {
+		gulong year = g_date_get_year (song_info->priv->current_entry->date);
+		text = g_strdup_printf ("%lu", year);
+	} else {
+		text = g_strdup (_("Unknown"));
+	}
+	gtk_entry_set_text (GTK_ENTRY (song_info->priv->year), text);
+	g_free (text);
+}
+
+static void
 rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 {
 	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
@@ -990,10 +937,12 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
 	const char *tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
 	const char *discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
+	const char *year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
 	char *endptr;
 	GType type;
 	gint tracknum;
 	gint discnum;
+	gint year;
 	GValue val = {0,};
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry = dialog->priv->current_entry;
@@ -1022,6 +971,33 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		g_value_unset (&val);
 		changed = TRUE;
 	}
+	
+	year = g_ascii_strtoull (year_str, &endptr, 10);
+	if ((endptr != year_str) && 
+	    (entry->date == NULL || year != g_date_get_year (entry->date))) {
+		GDate *date = NULL;
+	
+		if (year > 0) {
+			if (entry->date) {
+				date = g_date_new_julian (g_date_get_julian (entry->date));
+				g_date_set_year (date, year);
+			} else {
+				date = g_date_new_dmy (1, G_DATE_JANUARY, year);
+			}
+		}
+
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_DATE);
+		g_value_init (&val, type);
+		g_value_set_ulong (&val, (date ? g_date_get_julian (date) : 0));
+		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_DATE, &val);
+		changed = TRUE;
+		
+		g_value_unset (&val);
+		if (date)
+			g_date_free (date);
+	}
+
 
 	if (strcmp (title, rb_refstring_get (entry->title))) {
 		type = rhythmdb_get_property_type (dialog->priv->db,

@@ -92,6 +92,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *last_played_check;
 	GtkWidget *first_seen_check;
 	GtkWidget *quality_check;
+	GtkWidget *year_check;
 
 	gboolean loading;
 };
@@ -229,6 +230,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "last_played_check");
 	shell_preferences->priv->quality_check =
 		glade_xml_get_widget (xml, "quality_check");
+	shell_preferences->priv->year_check =
+		glade_xml_get_widget (xml, "year_check");
 	shell_preferences->priv->first_seen_check =
 		glade_xml_get_widget (xml, "first_seen_check");
 
@@ -481,6 +484,8 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		colname = "RHYTHMDB_PROP_PLAY_COUNT";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->last_played_check))
 		colname = "RHYTHMDB_PROP_LAST_PLAYED";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->year_check))
+		colname = "RHYTHMDB_PROP_DATE";
 	else if (shell_preferences->priv->quality_check
 		 && butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
 		colname = "RHYTHMDB_PROP_BITRATE";
@@ -546,6 +551,9 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
 			 strstr (columns, "RHYTHMDB_PROP_LAST_PLAYED") != NULL);
+		gtk_toggle_button_set_active
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->year_check),
+			 strstr (columns, "RHYTHMDB_PROP_DATE") != NULL);
 		if (shell_preferences->priv->quality_check)
 			gtk_toggle_button_set_active
 				(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),

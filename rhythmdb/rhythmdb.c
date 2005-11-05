@@ -33,7 +33,8 @@
 #include "rb-metadata.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
-#include <glib/gatomic.h>
+#include <glib.h>
+#include <glib-object.h>
 #include <gconf/gconf-client.h>
 #include <gdk/gdk.h>
 #include <libxml/tree.h>
@@ -404,6 +405,9 @@ metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
 	case RHYTHMDB_PROP_BITRATE:
 		*field = RB_METADATA_FIELD_BITRATE; 
 		return TRUE;
+	case RHYTHMDB_PROP_DATE:
+		*field = RB_METADATA_FIELD_DATE;
+		return TRUE;
 	case RHYTHMDB_PROP_TRACK_GAIN:
 		*field = RB_METADATA_FIELD_TRACK_GAIN;
 		return TRUE;
@@ -432,21 +436,21 @@ extract_gtype_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 	
 	value = g_enum_get_value (klass, i);
 
-	/* First check to see whether this is a property that maps to
-	   a RBMetaData property. */
-	if (metadata_field_from_prop (value->value, &field))
-		return rb_metadata_get_field_type (db->priv->metadata, field); 
-
-	/* This is a "synthetic" property. */
-
 	typename = strstr (value->value_nick, "(");
-	g_return_val_if_fail (typename != NULL, G_TYPE_INVALID);
+	g_assert (typename != NULL);
 
 	typename_end = strstr (typename, ")");
+	g_assert (typename_end);
+
 	typename++;
 	typename = g_strndup (typename, typename_end-typename);
 	ret = g_type_from_name (typename);
 	g_free (typename);
+	
+	/* Check to see whether this is a property that maps to
+	   a RBMetaData property. */
+	if (metadata_field_from_prop (value->value, &field))
+		g_assert (ret == rb_metadata_get_field_type (db->priv->metadata, field)); 
 	return ret;
 }
 
@@ -921,6 +925,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 {
 	g_free (entry->location);
 	g_free (entry->playback_error);
+	g_date_free (entry->date);
 	rb_refstring_unref (entry->title);
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
@@ -1097,6 +1102,15 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 			     &val)) {
 		rhythmdb_entry_set_internal (db, entry, TRUE,
 					     RHYTHMDB_PROP_BITRATE, &val);
+		g_value_unset (&val);
+	}
+
+	/* date */
+	if (rb_metadata_get (metadata,
+			     RB_METADATA_FIELD_DATE,
+			     &val)) {
+		rhythmdb_entry_set_internal (db, entry, TRUE,
+					     RHYTHMDB_PROP_DATE, &val);
 		g_value_unset (&val);
 	}
 
@@ -2076,6 +2090,17 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_BITRATE:
 		entry->bitrate = g_value_get_ulong (value);
 		break;
+	case RHYTHMDB_PROP_DATE:
+	{
+		gulong julian;
+		
+		if (entry->date)
+			g_date_free (entry->date);
+		
+		julian = g_value_get_ulong (value);
+		entry->date = (julian > 0) ? g_date_new_julian (julian) : NULL;
+		break;
+	}
 	case RHYTHMDB_PROP_TRACK_GAIN:
 		entry->track_gain = g_value_get_double (value);
 		break;
@@ -2817,6 +2842,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gulong) [play-count]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (gulong) [last-played]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate (gulong) [bitrate]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_DATE, "Date of release (gulong) [date]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_GAIN, "Replaygain track gain (gdouble) [replaygain-track-gain]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_PEAK, "Replaygain track peak (gdouble) [replaygain-track-peak]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_GAIN, "Replaygain album pain (gdouble) [replaygain-album-gain]"),

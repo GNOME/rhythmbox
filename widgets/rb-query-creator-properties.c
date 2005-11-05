@@ -91,6 +91,7 @@ const RBQueryCreatorSortOption sort_options[] =
 	{ N_("Title"), "Title", N_("_In reverse alphabetical order") },
 	{ N_("Rating"), "Rating", N_("W_ith more highly rated tracks first") },
 	{ N_("Play Count"), "PlayCount", N_("W_ith more often played songs first") },
+	{ N_("Year"), "Year", N_("W_ith newer tracks first") },
 	{ N_("Duration"), "Time", N_("W_ith longer tracks first") },
 	{ N_("Track Number"), "Track", N_("_In decreasing order")},
 	{ N_("Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },

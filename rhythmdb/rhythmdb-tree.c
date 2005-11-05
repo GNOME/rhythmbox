@@ -348,6 +348,14 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_DISC_NUMBER:
 			ctx->entry->discnum = parse_ulong (ctx->buf->str);
 			break;
+		case RHYTHMDB_PROP_DATE:
+		{
+			gulong value = parse_ulong (ctx->buf->str);
+			
+			if (value > 0)
+				ctx->entry->date = g_date_new_julian (value);
+			break;
+		}
 		case RHYTHMDB_PROP_DURATION:
 			ctx->entry->duration = parse_ulong (ctx->buf->str);
 			break;
@@ -688,6 +696,10 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
 			save_entry_ulong(ctx, elt_name, entry->discnum);
+			break;
+		case RHYTHMDB_PROP_DATE:
+			if (entry->date)
+				save_entry_ulong (ctx, elt_name, g_date_get_julian (entry->date));
 			break;
 		case RHYTHMDB_PROP_DURATION:
 			save_entry_ulong(ctx, elt_name, entry->duration);

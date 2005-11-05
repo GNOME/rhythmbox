@@ -1019,6 +1019,29 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 	g_free (str);
 }
 
+static void
+rb_entry_view_year_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+				   GtkTreeModel *tree_model, GtkTreeIter *iter,
+				   struct RBEntryViewCellDataFuncData *data)
+{
+	RhythmDBEntry *entry;
+	char str[255];
+	int julian;
+	GDate *date;
+
+	entry = entry_from_tree_iter (data->view, iter);
+	julian = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
+	
+	if (julian > 0) {
+		date = g_date_new_julian (julian);
+		g_date_strftime (str, sizeof (str), "%Y", date);	
+		g_object_set (G_OBJECT (renderer), "text", str, NULL);
+		g_date_free (date);
+	} else {
+		g_object_set (G_OBJECT (renderer), "text", _("Unknown"), NULL);
+	}
+}
+
 #if 0
 static void
 rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -1323,6 +1346,15 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("Tim_e");
 		key = "Time";
+		break;
+	case RB_ENTRY_VIEW_COL_YEAR:
+		propid = RHYTHMDB_PROP_DATE;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_year_cell_data_func;
+		sort_data->propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		title = _("_Year");
+		key = "Year";
 		break;
 #if 0
 	case RB_ENTRY_VIEW_COL_QUALITY:

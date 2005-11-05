@@ -407,6 +407,8 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		rb_debug ("Could not transform tag value type %s into %s",
 			  g_type_name (G_VALUE_TYPE (val)), 
 			  g_type_name (G_VALUE_TYPE (newval)));
+		g_value_unset (newval);
+		g_free (newval);
 		return;
 	}
 
@@ -747,15 +749,22 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 	/* don't write this out */
 	if (field == RB_METADATA_FIELD_DURATION)
 		return;
-	
+
 	if (tag) {
 		GValue newval = {0,};
 		g_value_init (&newval, gst_tag_get_type (tag));
 		if (g_value_transform (val, &newval)) {
 			g_debug("Setting %s",tag);
-			gst_tag_setter_add_values (GST_TAG_SETTER (tagsetter),
-						   GST_TAG_MERGE_REPLACE,
-						   tag, &newval, NULL);
+
+			if (field == RB_METADATA_FIELD_DATE && g_value_get_ulong (&newval) == 0) {
+				/* we should ask gstreamer to remove the tag,
+				 * but there is no easy way of doing so
+				 */
+			} else {
+				gst_tag_setter_add_values (GST_TAG_SETTER (tagsetter),
+							   GST_TAG_MERGE_REPLACE,
+							   tag, &newval, NULL);
+			}
 		}
 		g_value_unset (&newval);
 	}
