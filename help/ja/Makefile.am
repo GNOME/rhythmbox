@@ -13,15 +13,15 @@ authors.xml: $(top_srcdir)/AUTHORS $(top_srcdir)/MAINTAINERS $(top_srcdir)/DOCUM
 	 echo '<sect3>'; \
          echo '<title>Lead Developers:</title>'; \
 	 echo '<para><simplelist>') > $@.tmp
-	 sed -e 's/>/<\/email><\/member>/' -e 's/ </ <email>/' -e 's/^/<member>/'  < $(top_srcdir)/MAINTAINERS >> $@.tmp
+	sed -e 's/>/<\/email><\/member>/' -e 's/ </ <email>/' -e 's/^/<member>/'  < $(top_srcdir)/MAINTAINERS >> $@.tmp
 	(echo '</simplelist></para></sect3><sect3>'; \
 	 echo '<title>Contributors</title>'; \
 	 echo '<para><simplelist>') >> $@.tmp
-	 sed -e 's/>/<\/email><\/member>/' -e 's/ </ <email>/' -e 's/^/<member>/'  < $(top_srcdir)/AUTHORS >> $@.tmp
+	sed -e 's/>/<\/email><\/member>/' -e 's/ </ <email>/' -e 's/^/<member>/'  < $(top_srcdir)/AUTHORS >> $@.tmp
 	(echo '</simplelist></para></sect3>'; \
 	 echo '<sect3><title>Documentation</title>'; \
 	 echo '<para><simplelist>') >> $@.tmp
-	 sed -e 's/>/<\/email><\/member>/' -e 's/ </ <email>/' -e 's/^/<member>/'  < $(top_srcdir)/DOCUMENTERS >> $@.tmp
+	sed -e 's/>/<\/email><\/member>/' -e 's/ </ <email>/' -e 's/^/<member>/'  < $(top_srcdir)/DOCUMENTERS >> $@.tmp
 	(echo '</simplelist></para></sect3>'; \
 	 echo '</sect2>') >> $@.tmp
 	mv $@.tmp $@
