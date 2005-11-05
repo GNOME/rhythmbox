@@ -1,3 +1,21 @@
+2005-11-05  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* data/glade/station-properties.glade:
+	 Add box containing error icon and error message label
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_class_init),
+	(rb_station_properties_dialog_finalize):
+	 Change this class to use G_DEFINE_TYPE
+	(rb_station_properties_dialog_init),
+	(rb_station_properties_dialog_update),
+	(rb_station_properties_dialog_update_playback_error):
+	 Display error icon and message when there is one, and hide the error
+	 box otherwise.
+	(rb_station_properties_dialog_show): Hack widget show
+	 method to update the visibility of the error info box when showing
+	 the widget.  Otherwise the icon is displayed all the time (same thing
+	 is done in rb-song-info). Closes bug 320749.
+
 2005-11-04  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_time):  Fix the 

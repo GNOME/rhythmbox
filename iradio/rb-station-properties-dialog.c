@@ -71,11 +71,13 @@ static void rb_station_properties_dialog_update_play_count (RBStationPropertiesD
 static void rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog);
+static void rb_station_properties_dialog_update_playback_error (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_rated_cb (RBRating *rating,
 						   double score,
 						   RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
 static GtkWidget * boldify_label (GtkWidget *label);
+static void rb_station_properties_dialog_show (GtkWidget *widget);
 
 struct RBStationPropertiesDialogPrivate
 {
@@ -90,6 +92,8 @@ struct RBStationPropertiesDialogPrivate
 	GtkWidget   *playcount;
 	GtkWidget   *bitrate;
 	GtkWidget   *rating;
+	GtkWidget   *playback_error;
+	GtkWidget   *playback_error_box;
 	GtkWidget   *okbutton;
 	GtkWidget   *cancelbutton;
 };
@@ -101,45 +105,20 @@ enum
 	PROP_BACKEND
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_station_properties_dialog_get_type (void)
-{
-	static GType rb_station_properties_dialog_type = 0;
-
-	if (rb_station_properties_dialog_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBStationPropertiesDialogClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_station_properties_dialog_class_init,
-			NULL,
-			NULL,
-			sizeof (RBStationPropertiesDialog),
-			0,
-			(GInstanceInitFunc) rb_station_properties_dialog_init
-		};
-		
-		rb_station_properties_dialog_type = g_type_register_static (GTK_TYPE_DIALOG,
-									    "RBStationPropertiesDialog",
-									    &our_info, 0);
-	}
-
-	return rb_station_properties_dialog_type;
-}
+G_DEFINE_TYPE (RBStationPropertiesDialog, 
+	       rb_station_properties_dialog, 
+	       GTK_TYPE_DIALOG)
 
 static void
 rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->set_property = rb_station_properties_dialog_set_property;
 	object_class->get_property = rb_station_properties_dialog_get_property;
+
+	widget_class->show = rb_station_properties_dialog_show;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_VIEW,
@@ -195,6 +174,8 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
 	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
 	dialog->priv->bitrate = glade_xml_get_widget (xml, "bitrateLabel");
+	dialog->priv->playback_error = glade_xml_get_widget (xml, "errorLabel");
+	dialog->priv->playback_error_box = glade_xml_get_widget (xml, "errorBox");
 
 	boldify_label (glade_xml_get_widget (xml, "titleLabel"));
 	boldify_label (glade_xml_get_widget (xml, "genreLabel"));
@@ -228,7 +209,7 @@ rb_station_properties_dialog_finalize (GObject *object)
 
 	g_free (dialog->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)->finalize (object);
 }
 
 static void
@@ -343,6 +324,7 @@ rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 	rb_station_properties_dialog_update_bitrate (dialog);
 	rb_station_properties_dialog_update_last_played (dialog);
 	rb_station_properties_dialog_update_rating (dialog);
+	rb_station_properties_dialog_update_playback_error (dialog);
 }
 
 static void
@@ -446,6 +428,21 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 }
 
 static void
+rb_station_properties_dialog_update_playback_error (RBStationPropertiesDialog *dialog)
+{
+	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
+
+	if (dialog->priv->current_entry->playback_error) {
+		gtk_label_set_text (GTK_LABEL (dialog->priv->playback_error),
+				    dialog->priv->current_entry->playback_error);
+		gtk_widget_show (dialog->priv->playback_error_box);
+	} else {
+		gtk_label_set_text (GTK_LABEL (dialog->priv->playback_error), "");
+		gtk_widget_hide (dialog->priv->playback_error_box);
+	}
+}
+
+static void
 rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 {
 	const char *title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
@@ -485,4 +482,14 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 
 	if (changed)
 		rhythmdb_commit (dialog->priv->db);
+}
+
+static void
+rb_station_properties_dialog_show (GtkWidget *widget)
+{
+	if (GTK_WIDGET_CLASS (rb_station_properties_dialog_parent_class)->show)
+		GTK_WIDGET_CLASS (rb_station_properties_dialog_parent_class)->show (widget);
+
+	rb_station_properties_dialog_update_playback_error (
+			RB_STATION_PROPERTIES_DIALOG (widget));
 }
