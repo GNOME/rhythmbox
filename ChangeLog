@@ -1,5 +1,14 @@
 2005-11-05  James Livingston  <jrl@ids.org.au>
 
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* daapsharing/rb-daap-share.c: (write_next_chunk),
+	(message_finished), (databases_cb): Use chunked file loading and
+	sending in the DAAP server. This should reduce the amount of memory
+	required to send files to the client.
+
+2005-11-05  James Livingston  <jrl@ids.org.au>
+
 	* configure.ac: make the nautilus_burn_drive_door_is_open detection
 	work better on some systems. Closes 320622.
 

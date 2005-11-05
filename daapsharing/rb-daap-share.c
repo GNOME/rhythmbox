@@ -69,6 +69,9 @@ static void rb_daap_share_forget_playlist (gpointer data,
 #define CONF_NAME CONF_PREFIX "/sharing/share_name"
 #define STANDARD_DAAP_PORT 3689
 
+/* HTTP chunk size used to send files to clients */
+#define DAAP_SHARE_CHUNK_SIZE	16384
+
 struct RBDAAPSharePrivate {
 	gchar *name;
 	guint port;
@@ -861,6 +864,28 @@ parse_meta (const gchar *s)
 	return bits;
 }
 
+static void
+write_next_chunk (SoupMessage *message, GnomeVFSHandle *handle)
+{
+	GnomeVFSFileSize read_size;
+	GnomeVFSResult result;
+	gchar *chunk = g_malloc (DAAP_SHARE_CHUNK_SIZE);
+
+	result = gnome_vfs_read (handle, chunk, DAAP_SHARE_CHUNK_SIZE, &read_size);
+	if (result == GNOME_VFS_OK && read_size > 0) {
+		soup_message_add_chunk (message, SOUP_BUFFER_SYSTEM_OWNED, chunk, read_size);
+	} else {
+		g_free (chunk);
+		soup_message_add_final_chunk (message);
+	}
+}
+
+static void
+message_finished (SoupMessage *message, GnomeVFSHandle *handle)
+{
+	gnome_vfs_close (handle);
+}
+
 static void 
 databases_cb (RBDAAPShare *share, 
 	      SoupMessage *message)
@@ -1048,7 +1073,6 @@ databases_cb (RBDAAPShare *share,
 		GnomeVFSResult result;
 		GnomeVFSHandle *handle;
 		const gchar *range_header;
-		gchar *buf;
 		guint status_code = SOUP_STATUS_OK;
 		
 		id_str = rest_of_path + 9;
@@ -1089,35 +1113,13 @@ databases_cb (RBDAAPShare *share,
 
 			file_size -= range;
 		}
-		
-		/* FIXME FIXME FIXME
-		 * Ideally, it seems that an mmap type solution should be used
-		 * here.  However, this works for now.
-		 */
-		buf = g_try_malloc (file_size);
-		if (buf == NULL) {
-			g_warning ("Unable to malloc %"G_GUINT64_FORMAT" bytes to transfer file", file_size);
-			soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
-			goto out;
-		}
 
-		result = gnome_vfs_read (handle, buf, file_size, NULL);
-		if (result != GNOME_VFS_OK) {
-			soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
-			g_free (buf);
-			goto out;
-		}
-		
-		message_add_standard_headers (message);
-		soup_message_add_header (message->response_headers, "Accept-Ranges", "bytes");
-		message->response.owner = SOUP_BUFFER_SYSTEM_OWNED;
-		message->response.length = file_size;
-		message->response.body = buf;
-
-		gnome_vfs_close (handle);
-	
+		g_signal_connect (message, "wrote_chunk", G_CALLBACK (write_next_chunk), handle);
+		g_signal_connect (message, "finished", G_CALLBACK (message_finished), handle);
+		write_next_chunk (message, handle);
+		 
 		soup_message_set_status (message, status_code);
-		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
+		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
 
 	} else {
 		g_print ("unhandled: %s\n", path);
