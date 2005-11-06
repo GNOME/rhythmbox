@@ -517,7 +517,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	RBShell *shell;
 
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_SOURCE));
-
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
 	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
@@ -565,10 +564,14 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 				 "drag_data_received",
 				 G_CALLBACK (songs_view_drag_data_received_cb),
 				 source, 0);
-	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs),
-			   GTK_DEST_DEFAULT_ALL,
-			   songs_view_drag_types, 1,
-			   GDK_ACTION_COPY | GDK_ACTION_MOVE);	/* really accept move actions? */
+
+	/* only add drop support for the Library, subclasses can add it themselves */	
+	if (G_OBJECT_GET_CLASS (source) == G_OBJECT_CLASS (klass)) {
+		gtk_drag_dest_set (GTK_WIDGET (source->priv->songs),
+				   GTK_DEST_DEFAULT_ALL,
+				   songs_view_drag_types, 1,
+				   GDK_ACTION_COPY | GDK_ACTION_MOVE);	/* really accept move actions? */
+	}
 
 	/* set up genres treeview */
 	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE,

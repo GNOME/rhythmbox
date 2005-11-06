@@ -79,6 +79,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 
 	source_class->impl_get_pixbuf = impl_get_pixbuf;
 	source_class->impl_delete_thyself = impl_delete_thyself;
+	source_class->impl_receive_drag = NULL;
 
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,

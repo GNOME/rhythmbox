@@ -1,3 +1,16 @@
+2005-11-06  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_class_init): remove
+	drag-and-drop error.
+	
+	* sources/rb-library-source.c: (rb_library_source_constructor): only
+	add drag-and-drop for the Library itself, subclasses can add support
+	themselves if they want it.
+
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init): by default removable media
+	sources do not support dnd
+
 2005-11-05  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* data/glade/station-properties.glade:

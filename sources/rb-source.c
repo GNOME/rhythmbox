@@ -57,7 +57,6 @@ static void default_song_properties (RBSource *source);
 static GtkWidget * default_get_config_widget (RBSource *source);
 static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
-static gboolean default_receive_drag  (RBSource *source, GtkSelectionData *data);
 static gboolean default_show_popup  (RBSource *source);
 static void default_delete_thyself (RBSource *source);
 static void default_activate (RBSource *source);
@@ -117,7 +116,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_get_config_widget = default_get_config_widget;
-	klass->impl_receive_drag = default_receive_drag;
+	klass->impl_receive_drag = NULL;
 	klass->impl_show_popup = default_show_popup;
 	klass->impl_delete_thyself = default_delete_thyself;
 	klass->impl_activate = default_activate;
@@ -596,20 +595,14 @@ rb_source_have_url (RBSource *source)
 }
 
 gboolean
-default_receive_drag (RBSource *source, GtkSelectionData *data)
-{
-	rb_error_dialog (NULL,
-			 _("Not supported"),
-			 _("This source does not support drag and drop."));
-	return FALSE;
-}
-
-gboolean
 rb_source_receive_drag (RBSource *source, GtkSelectionData *data)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_receive_drag (source, data);
+	if (klass->impl_receive_drag)
+		return klass->impl_receive_drag (source, data);
+	else
+		return FALSE;
 }
 
 void

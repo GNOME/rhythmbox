@@ -57,7 +57,6 @@ static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_pro
 
 static gboolean impl_show_popup (RBSource *source);
 static GtkWidget *impl_get_config_widget (RBSource *source);
-static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static void impl_delete_thyself (RBSource *source);
 
 static gboolean rb_audiocd_load_songs (RBAudioCdSource *source);
@@ -103,7 +102,6 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_config_widget = impl_get_config_widget;
-	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
@@ -531,11 +529,3 @@ impl_get_config_widget (RBSource *source)
 	return NULL;
 }
 
-gboolean
-impl_receive_drag (RBSource *source, GtkSelectionData *data)
-{
-	rb_error_dialog (NULL,
-			 _("Not supported"),
-			 _("Audio CDs do not support drag and drop."));
-	return FALSE;
-}
