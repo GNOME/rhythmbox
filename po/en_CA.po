@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-05 13:04-0500\n"
+"POT-Creation-Date: 2005-11-07 13:35-0500\n"
 "PO-Revision-Date: 2005-08-31 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
@@ -24,10 +24,10 @@ msgstr ""
 #: rhythmdb/rhythmdb-tree.c:933 rhythmdb/rhythmdb.c:1038
 #: shell/rb-audioscrobbler.c:447 shell/rb-audioscrobbler.c:973
 #: shell/rb-audioscrobbler.c:974 shell/rb-shell-player.c:2328
-#: sources/rb-audiocd-source.c:194 sources/rb-ipod-source.c:159
+#: sources/rb-audiocd-source.c:192 sources/rb-ipod-source.c:159
 #: sources/rb-iradio-source.c:245 sources/rb-iradio-source.c:246
 #: sources/rb-iradio-source.c:247 sources/rb-iradio-source.c:465
-#: sources/rb-playlist-source.c:483 sources/rb-podcast-source.c:1589
+#: sources/rb-playlist-source.c:483 sources/rb-podcast-source.c:1603
 #: widgets/rb-entry-view.c:1011 widgets/rb-entry-view.c:1041
 #: widgets/rb-entry-view.c:1060 widgets/rb-song-info.c:608
 #: widgets/rb-song-info.c:688 widgets/rb-song-info.c:868
@@ -1033,19 +1033,19 @@ msgstr "_Edit"
 msgid "Change this automatic playlist"
 msgstr "Change this automatic playlist"
 
-#: shell/rb-playlist-manager.c:609
+#: shell/rb-playlist-manager.c:615
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "The playlist file may be in an unknown format or corrupted."
 
-#: shell/rb-playlist-manager.c:994
+#: shell/rb-playlist-manager.c:1000
 msgid "Couldn't read playlist"
 msgstr "Could not read playlist"
 
-#: shell/rb-playlist-manager.c:1009
+#: shell/rb-playlist-manager.c:1015
 msgid "Load Playlist"
 msgstr "Load Playlist"
 
-#: shell/rb-playlist-manager.c:1047
+#: shell/rb-playlist-manager.c:1053
 msgid "Save Playlist"
 msgstr "Save Playlist"
 
@@ -1525,41 +1525,33 @@ msgstr "_Show Music Player"
 msgid "Choose music to play"
 msgstr "Choose music to play"
 
-#: sources/rb-audiocd-source.c:231
+#: sources/rb-audiocd-source.c:229
 #, c-format
 msgid "Track %u"
 msgstr "Track %u"
 
-#: sources/rb-audiocd-source.c:296 sources/rb-audiocd-source.c:303
-#: sources/rb-audiocd-source.c:450
+#: sources/rb-audiocd-source.c:294 sources/rb-audiocd-source.c:301
+#: sources/rb-audiocd-source.c:448
 msgid "Couldn't load Audio CD"
 msgstr "Could not load Audio CD"
 
-#: sources/rb-audiocd-source.c:297
+#: sources/rb-audiocd-source.c:295
 msgid "Rhythmbox couldn't access the cd."
 msgstr "Rhythmbox could not access the cd."
 
-#: sources/rb-audiocd-source.c:304
+#: sources/rb-audiocd-source.c:302
 msgid "Rhythmbox could read the cd information."
 msgstr "Rhythmbox could read the cd information."
 
-#: sources/rb-audiocd-source.c:451
+#: sources/rb-audiocd-source.c:449
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox could not get access to the CD device."
-
-#: sources/rb-audiocd-source.c:538 sources/rb-source.c:602
-msgid "Not supported"
-msgstr "Not supported"
-
-#: sources/rb-audiocd-source.c:539
-msgid "Audio CDs do not support drag and drop."
-msgstr "Audio CDs do not support drag and drop."
 
 #: sources/rb-ipod-source.c:141
 msgid "iPod"
 msgstr "iPod"
 
-#: sources/rb-iradio-source.c:353 sources/rb-library-source.c:575
+#: sources/rb-iradio-source.c:353 sources/rb-library-source.c:578
 #: widgets/rb-query-creator-properties.c:64
 #: widgets/rb-query-creator-properties.c:90
 msgid "Genre"
@@ -1600,27 +1592,27 @@ msgstr "Browse This A_lbum"
 msgid "Set the browser to view only this album"
 msgstr "Set the browser to view only this album"
 
-#: sources/rb-library-source.c:589 widgets/rb-query-creator-properties.c:62
+#: sources/rb-library-source.c:592 widgets/rb-query-creator-properties.c:62
 #: widgets/rb-query-creator-properties.c:88
 msgid "Artist"
 msgstr "Artist"
 
-#: sources/rb-library-source.c:603 widgets/rb-query-creator-properties.c:63
+#: sources/rb-library-source.c:606 widgets/rb-query-creator-properties.c:63
 #: widgets/rb-query-creator-properties.c:89
 msgid "Album"
 msgstr "Album"
 
-#: sources/rb-library-source.c:734
+#: sources/rb-library-source.c:737
 msgid "Library"
 msgstr "Library"
 
-#: sources/rb-library-source.c:1240
+#: sources/rb-library-source.c:1243
 msgid "Add Location"
 msgstr "Add Location"
 
-#: sources/rb-playlist-source.c:330
-msgid "Tra_ck"
-msgstr "Tra_ck"
+#: sources/rb-playlist-source.c:330 widgets/rb-entry-view.c:1295
+msgid "Trac_k"
+msgstr "Trac_k"
 
 #: sources/rb-playlist-source.c:891
 msgid "Couldn't save playlist"
@@ -1973,57 +1965,71 @@ msgstr "Feed"
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: sources/rb-podcast-source.c:842
-msgid "Do you want to delete the podcast episode data from disk?"
-msgstr "Do you want to delete the podcast episode data from disk?"
+#: sources/rb-podcast-source.c:843
+msgid "Delete the podcast episode and downloaded file?"
+msgstr "Delete the podcast episode and downloaded file?"
 
-#: sources/rb-podcast-source.c:962
+#: sources/rb-podcast-source.c:846
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+
+#: sources/rb-podcast-source.c:854
+msgid "_Delete Episode Only"
+msgstr "_Delete Episode Only"
+
+#: sources/rb-podcast-source.c:860
+msgid "_Delete Episode And File"
+msgstr "_Delete Episode And File"
+
+#: sources/rb-podcast-source.c:976
 msgid "_Cancel Download"
 msgstr "_Cancel Download"
 
-#: sources/rb-podcast-source.c:966
+#: sources/rb-podcast-source.c:980
 msgid "_Download Post"
 msgstr "_Download Post"
 
-#: sources/rb-podcast-source.c:1376
+#: sources/rb-podcast-source.c:1390
 msgid "Do you want the podcast episodes to be deleted from disk?"
 msgstr "Do you want the podcast episodes to be deleted from disk?"
 
-#: sources/rb-podcast-source.c:1465
+#: sources/rb-podcast-source.c:1479
 msgid "Completed"
 msgstr "Completed"
 
-#: sources/rb-podcast-source.c:1469
+#: sources/rb-podcast-source.c:1483
 msgid "Failed"
 msgstr "Failed"
 
-#: sources/rb-podcast-source.c:1473
+#: sources/rb-podcast-source.c:1487
 msgid "Waiting"
 msgstr "Waiting"
 
-#: sources/rb-podcast-source.c:1477
+#: sources/rb-podcast-source.c:1491
 msgid "Paused"
 msgstr "Paused"
 
-#: sources/rb-podcast-source.c:1687
+#: sources/rb-podcast-source.c:1701
 msgid "Downloading podcast"
 msgstr "Downloading podcast"
 
-#: sources/rb-podcast-source.c:1697
+#: sources/rb-podcast-source.c:1711
 msgid "Finished downloading podcast"
 msgstr "Finished downloading podcast"
 
-#: sources/rb-podcast-source.c:1707
+#: sources/rb-podcast-source.c:1721
 msgid "New updates avaliable from"
 msgstr "New updates avaliable from"
 
-#: sources/rb-podcast-source.c:1774
+#: sources/rb-podcast-source.c:1788
 msgid "Error in podcast"
 msgstr "Error in podcast"
-
-#: sources/rb-source.c:603
-msgid "This source does not support drag and drop."
-msgstr "This source does not support drag and drop."
 
 #: sources/rb-sourcelist.c:257
 msgid "S_ource"
@@ -2133,10 +2139,6 @@ msgstr "Very High"
 #: widgets/rb-entry-view.c:1072
 msgid "Perfect"
 msgstr "Perfect"
-
-#: widgets/rb-entry-view.c:1295
-msgid "Trac_k"
-msgstr "Trac_k"
 
 #: widgets/rb-entry-view.c:1304
 msgid "_Title"
