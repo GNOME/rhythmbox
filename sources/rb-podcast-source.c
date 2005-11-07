@@ -832,23 +832,37 @@ impl_delete (RBSource *asource)
 	GList *l;
 	gint ret;
 	GtkWidget *dialog;
+	GtkWidget *button;
 
 	rb_debug ("Delete feed action");
 	
 	dialog = gtk_message_dialog_new (NULL,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
-					 GTK_MESSAGE_QUESTION,
+					 GTK_MESSAGE_WARNING,
 					 GTK_BUTTONS_NONE,
-					 _("Do you want to delete the podcast episode data from disk?"));
-	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-				GTK_STOCK_CANCEL,
-				GTK_RESPONSE_CANCEL,
-				GTK_STOCK_NO,
-				GTK_RESPONSE_NO,
-				GTK_STOCK_YES,
-				GTK_RESPONSE_YES,
-				NULL);
+					 _("Delete the podcast episode and downloaded file?"));
+
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+	                                          _("If you choose to delete the episode and file, "
+						    "they will be permanently lost.  Please note that "
+						    "you can delete the episode but keep the downloaded "
+						    "file by choosing to delete the episode only."));
+
+	gtk_window_set_title (GTK_WINDOW (dialog), "");
+
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog), 
+	                        _("_Delete Episode Only"), 
+	                        GTK_RESPONSE_NO,
+	                        GTK_STOCK_CANCEL, 
+	                        GTK_RESPONSE_CANCEL, 
+	                        NULL);
+	button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+	                                _("_Delete Episode And File"),
+			                GTK_RESPONSE_YES);
 	
+	gtk_window_set_focus (GTK_WINDOW (dialog), button);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_YES);
+
 	ret = gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 
