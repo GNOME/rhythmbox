@@ -1,3 +1,10 @@
+2005-11-07  James Livingston  <jrl@ids.org.au>
+
+	patch by: Jaap A. Haitsma <jaap@haitsma.org>
+
+	* widgets/rb-dialog.c: (rb_file_chooser_new): add overwrite
+	confirmation to save dialogs, with gtk 2.8 or higher.
+
 2005-11-07 James Livingston  <jrl@ids.org.au>
 	* configure.ac: move gnome-vfs 2.7.4 from being an ipod-only
 	requirement to a general on, because people are going to have it for

@@ -92,6 +92,9 @@ rb_file_chooser_new (const char *title,
 						      NULL);
 		gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 						 GTK_RESPONSE_ACCEPT);
+#if GTK_MINOR_VERSION >= 8
+		gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
+#endif
 	} else {
 		g_assert_not_reached ();
 		return NULL;
