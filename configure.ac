@@ -15,10 +15,9 @@ AC_PROG_CC
 AC_STDC_HEADERS
 AM_PROG_LIBTOOL
 AC_C_BIGENDIAN
-AC_CHECK_SIZEOF(long)
-
+AC_CHECK_SIZEOF(lo
 GTK_REQS=2.5.4
-GNOME_VFS_REQS=2.6
+GNOME_VFS_REQS=2.7.4
 NCB_MIN_REQS=2.9.0
 DBUS_MIN_REQS=0.35
 TOTEM_PLPARSER_REQS=1.1.5
@@ -61,8 +60,6 @@ if test x$have_totem_plparser != xyes; then
 fi   
 
 dnl iPod support
-dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
-dnl function was added in that release.
 
 AC_ARG_WITH(ipod,
             AC_HELP_STRING([--with-ipod],
@@ -75,9 +72,9 @@ if test "x$with_ipod" != "xno"; then
 	  AC_MSG_ERROR([iPod explicitly requested but libgpod couldn't be found])
 	fi
 	if test "x$have_libgpod" = "xyes"; then
-	  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6 gnome-vfs-2.0 >= 2.7.4, enable_hal05=yes, enable_hal05=no)
+	  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal05=yes, enable_hal05=no)
 	  if test x$enable_hal05 != xyes; then
-	     PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5 gnome-vfs-2.0 >= 2.7.4, enable_hal02=yes, enable_hal02=no)
+	     PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5, enable_hal02=yes, enable_hal02=no)
 	  fi
 	  if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
   	    enable_hal=yes
