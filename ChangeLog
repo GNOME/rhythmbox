@@ -1,5 +1,18 @@
 2005-11-08  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* rhythmdb/rhythmdb.h: make RhythmDB's impl_entry_set
+	method return a gboolean indicating whether the changes
+	to the entry have already been applied.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_internal):
+	only modify the entry if impl_entry_set returns FALSE.
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_set):
+	When setting the location of an entry, update the
+	hash table mapping locations to entries.
+
+2005-11-08  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* data/glade/Makefile.am:
 	* iradio/Makefile.am:
 	  Remove 'new station' dialog.

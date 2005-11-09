@@ -433,7 +433,7 @@ typedef struct
 	
 	void		(*impl_entry_new)	(RhythmDB *db, RhythmDBEntry *entry);
 
-	void		(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
+	gboolean	(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
 	                                 guint propid, const GValue *value);
 
 	void		(*impl_entry_get)	(RhythmDB *db, RhythmDBEntry *entry,

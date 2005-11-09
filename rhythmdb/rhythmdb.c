@@ -2033,6 +2033,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			     guint propid, const GValue *value)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	gboolean handled;
 
 #ifndef G_DISABLE_ASSERT	
 	switch (G_VALUE_TYPE (value))
@@ -2055,142 +2056,144 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 		record_entry_change (db, entry, propid, value);
 	}
 
-	klass->impl_entry_set (db, entry, propid, value);
+	handled = klass->impl_entry_set (db, entry, propid, value);
 
-	switch (propid)
-	{
-	case RHYTHMDB_PROP_TYPE:
-		g_assert_not_reached ();
-		break;
-	case RHYTHMDB_PROP_TITLE:
-		rb_refstring_unref (entry->title);
-		entry->title = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_ALBUM:
-		rb_refstring_unref (entry->album);
-		entry->album = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_ARTIST:
-		rb_refstring_unref (entry->artist);
-		entry->artist = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_GENRE:
-		rb_refstring_unref (entry->genre);
-		entry->genre = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_TRACK_NUMBER:
-		entry->tracknum = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_DISC_NUMBER:
-		entry->discnum = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_DURATION:
-		entry->duration = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_BITRATE:
-		entry->bitrate = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_DATE:
-	{
-		gulong julian;
-		
-		if (entry->date)
-			g_date_free (entry->date);
-		
-		julian = g_value_get_ulong (value);
-		entry->date = (julian > 0) ? g_date_new_julian (julian) : NULL;
-		break;
-	}
-	case RHYTHMDB_PROP_TRACK_GAIN:
-		entry->track_gain = g_value_get_double (value);
-		break;
-	case RHYTHMDB_PROP_TRACK_PEAK:
-		entry->track_peak = g_value_get_double (value);
-		break;
-	case RHYTHMDB_PROP_ALBUM_GAIN:
-		entry->album_gain = g_value_get_double (value);
-		break;
-	case RHYTHMDB_PROP_ALBUM_PEAK:
-		entry->album_peak = g_value_get_double (value);
-		break;
-	case RHYTHMDB_PROP_LOCATION:
-		g_free (entry->location);
-		entry->location = g_value_dup_string (value);
-		break;
-	case RHYTHMDB_PROP_PLAYBACK_ERROR:
-		g_free (entry->playback_error);
-		entry->playback_error = g_value_dup_string (value);
-		break;
-	case RHYTHMDB_PROP_MOUNTPOINT:
-		rb_refstring_unref (entry->mountpoint);
-		entry->mountpoint = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_FILE_SIZE:
-		entry->file_size = g_value_get_uint64 (value);
-		break;
-	case RHYTHMDB_PROP_MIMETYPE:
-		if (entry->mimetype)
-			rb_refstring_unref (entry->mimetype);
-		entry->mimetype = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_MTIME:
-		entry->mtime = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_FIRST_SEEN:
-		entry->first_seen = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_LAST_SEEN:
-		entry->last_seen = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_RATING:
-		entry->rating = g_value_get_double (value);
-		break;
-	case RHYTHMDB_PROP_PLAY_COUNT:
-		entry->play_count = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_LAST_PLAYED:
-		entry->last_played = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_HIDDEN:
-		entry->hidden = g_value_get_boolean (value);
-		break;
-	case RHYTHMDB_PROP_STATUS:
-		entry->podcast->status = g_value_get_ulong (value);
-		break;
-	case RHYTHMDB_PROP_DESCRIPTION:
-		rb_refstring_unref (entry->podcast->description);
-		entry->podcast->description = rb_refstring_new (g_value_get_string (value));
-		break;	
-	case RHYTHMDB_PROP_SUBTITLE:
-		rb_refstring_unref (entry->podcast->subtitle);
-		entry->podcast->subtitle = rb_refstring_new (g_value_get_string (value));
-		break;	
-	case RHYTHMDB_PROP_SUMMARY:
-		rb_refstring_unref (entry->podcast->summary);
-		entry->podcast->summary = rb_refstring_new (g_value_get_string (value));
-		break;	
-	case RHYTHMDB_PROP_LANG:
-		rb_refstring_unref (entry->podcast->lang);
-		entry->podcast->lang = rb_refstring_new (g_value_get_string (value));
-		break;	
-	case RHYTHMDB_PROP_COPYRIGHT:
-		rb_refstring_unref (entry->podcast->copyright);
-		entry->podcast->copyright = rb_refstring_new (g_value_get_string (value));
-		break;	
-	case RHYTHMDB_PROP_IMAGE:
-		rb_refstring_unref (entry->podcast->image);
-		entry->podcast->image = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_LAST_POST:
-		rb_refstring_unref (entry->podcast->last_post);
-		entry->podcast->last_post = rb_refstring_new (g_value_get_string (value));
-		break;
-	case RHYTHMDB_PROP_POST_TIME:
-		entry->podcast->post_time = g_value_get_ulong (value);
-		break;	
-	case RHYTHMDB_NUM_PROPERTIES:
-		g_assert_not_reached ();
-		break;
+	if (!handled) {
+		switch (propid)
+		{
+		case RHYTHMDB_PROP_TYPE:
+			g_assert_not_reached ();
+			break;
+		case RHYTHMDB_PROP_TITLE:
+			rb_refstring_unref (entry->title);
+			entry->title = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_ALBUM:
+			rb_refstring_unref (entry->album);
+			entry->album = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_ARTIST:
+			rb_refstring_unref (entry->artist);
+			entry->artist = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_GENRE:
+			rb_refstring_unref (entry->genre);
+			entry->genre = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_TRACK_NUMBER:
+			entry->tracknum = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_DISC_NUMBER:
+			entry->discnum = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_DURATION:
+			entry->duration = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_BITRATE:
+			entry->bitrate = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_DATE:
+		{
+			gulong julian;
+			
+			if (entry->date)
+				g_date_free (entry->date);
+			
+			julian = g_value_get_ulong (value);
+			entry->date = (julian > 0) ? g_date_new_julian (julian) : NULL;
+			break;
+		}
+		case RHYTHMDB_PROP_TRACK_GAIN:
+			entry->track_gain = g_value_get_double (value);
+			break;
+		case RHYTHMDB_PROP_TRACK_PEAK:
+			entry->track_peak = g_value_get_double (value);
+			break;
+		case RHYTHMDB_PROP_ALBUM_GAIN:
+			entry->album_gain = g_value_get_double (value);
+			break;
+		case RHYTHMDB_PROP_ALBUM_PEAK:
+			entry->album_peak = g_value_get_double (value);
+			break;
+		case RHYTHMDB_PROP_LOCATION:
+			g_free (entry->location);
+			entry->location = g_value_dup_string (value);
+			break;
+		case RHYTHMDB_PROP_PLAYBACK_ERROR:
+			g_free (entry->playback_error);
+			entry->playback_error = g_value_dup_string (value);
+			break;
+		case RHYTHMDB_PROP_MOUNTPOINT:
+			rb_refstring_unref (entry->mountpoint);
+			entry->mountpoint = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_FILE_SIZE:
+			entry->file_size = g_value_get_uint64 (value);
+			break;
+		case RHYTHMDB_PROP_MIMETYPE:
+			if (entry->mimetype)
+				rb_refstring_unref (entry->mimetype);
+			entry->mimetype = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_MTIME:
+			entry->mtime = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_FIRST_SEEN:
+			entry->first_seen = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_LAST_SEEN:
+			entry->last_seen = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_RATING:
+			entry->rating = g_value_get_double (value);
+			break;
+		case RHYTHMDB_PROP_PLAY_COUNT:
+			entry->play_count = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_LAST_PLAYED:
+			entry->last_played = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_HIDDEN:
+			entry->hidden = g_value_get_boolean (value);
+			break;
+		case RHYTHMDB_PROP_STATUS:
+			entry->podcast->status = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_DESCRIPTION:
+			rb_refstring_unref (entry->podcast->description);
+			entry->podcast->description = rb_refstring_new (g_value_get_string (value));
+			break;	
+		case RHYTHMDB_PROP_SUBTITLE:
+			rb_refstring_unref (entry->podcast->subtitle);
+			entry->podcast->subtitle = rb_refstring_new (g_value_get_string (value));
+			break;	
+		case RHYTHMDB_PROP_SUMMARY:
+			rb_refstring_unref (entry->podcast->summary);
+			entry->podcast->summary = rb_refstring_new (g_value_get_string (value));
+			break;	
+		case RHYTHMDB_PROP_LANG:
+			rb_refstring_unref (entry->podcast->lang);
+			entry->podcast->lang = rb_refstring_new (g_value_get_string (value));
+			break;	
+		case RHYTHMDB_PROP_COPYRIGHT:
+			rb_refstring_unref (entry->podcast->copyright);
+			entry->podcast->copyright = rb_refstring_new (g_value_get_string (value));
+			break;	
+		case RHYTHMDB_PROP_IMAGE:
+			rb_refstring_unref (entry->podcast->image);
+			entry->podcast->image = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_LAST_POST:
+			rb_refstring_unref (entry->podcast->last_post);
+			entry->podcast->last_post = rb_refstring_new (g_value_get_string (value));
+			break;
+		case RHYTHMDB_PROP_POST_TIME:
+			entry->podcast->post_time = g_value_get_ulong (value);
+			break;	
+		case RHYTHMDB_NUM_PROPERTIES:
+			g_assert_not_reached ();
+			break;
+		}
 	}
 	rhythmdb_entry_sync_mirrored (db, entry, propid);
 	

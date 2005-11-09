@@ -64,8 +64,8 @@ static void rhythmdb_tree_finalize (GObject *object);
 static void rhythmdb_tree_load (RhythmDB *rdb, gboolean *die);
 static void rhythmdb_tree_save (RhythmDB *rdb);
 static void rhythmdb_tree_entry_new (RhythmDB *db, RhythmDBEntry *entry);
-static void rhythmdb_tree_entry_set (RhythmDB *db, RhythmDBEntry *entry,
-				     guint propid, const GValue *value);
+static gboolean rhythmdb_tree_entry_set (RhythmDB *db, RhythmDBEntry *entry,
+					 guint propid, const GValue *value);
 
 static void rhythmdb_tree_entry_delete (RhythmDB *db, RhythmDBEntry *entry);
 static void rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType type);
@@ -1108,7 +1108,7 @@ remove_entry_from_album (RhythmDBTree *db, RhythmDBEntry *entry)
 	rb_refstring_unref (entry->album);
 }
 
-static void
+static gboolean
 rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
 			 guint propid, const GValue *value)
 {
@@ -1120,6 +1120,23 @@ rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
 	/* Handle special properties */
 	switch (propid)
 	{
+	case RHYTHMDB_PROP_LOCATION:
+	{
+		/* We have to use the string in the entry itself as the hash key,
+		 * otherwise either we leak it, or the string vanishes when the
+		 * GValue is freed; this means we have to do the entry modification
+		 * here, rather than letting rhythmdb_entry_set_internal do it.
+		 */
+		g_assert (g_hash_table_lookup (db->priv->entries, entry->location) != NULL);
+
+		g_hash_table_remove (db->priv->entries, entry->location);
+
+		g_free (entry->location);
+		entry->location = g_strdup (g_value_get_string (value));
+		g_hash_table_insert (db->priv->entries, entry->location, entry);
+
+		return TRUE;
+	}
 	case RHYTHMDB_PROP_ALBUM:
 	{
 		const char *albumname = g_value_get_string (value);
@@ -1197,6 +1214,8 @@ rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
 	default:
 		break;
 	}
+
+	return FALSE;
 }
 
 static void
