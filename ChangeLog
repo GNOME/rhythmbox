@@ -1,3 +1,10 @@
+2005-11-09  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume),
+	(rb_removable_media_manager_scan): Fix a crasher where we were getting
+	NULL for a cd volume.
+
 2005-11-08  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* rhythmdb/rhythmdb.h: make RhythmDB's impl_entry_set

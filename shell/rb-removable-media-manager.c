@@ -423,6 +423,8 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	RBShell *shell;
 	char *fs_type, *device_path, *display_name, *hal_udi, *icon_name;
 	GnomeVFSDeviceType device_type;
+
+	g_assert (volume != NULL);
 	
 	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL)
 		return;
@@ -634,8 +636,10 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	for  (it = list; it != NULL; it = g_list_next (it)) {
 		NautilusBurnDrive *drive = (NautilusBurnDrive*)it->data;
 		volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, drive->device);
-		rb_removable_media_manager_mount_volume (manager, volume);
-		gnome_vfs_volume_unref (volume);
+		if (volume) {
+			rb_removable_media_manager_mount_volume (manager, volume);
+			gnome_vfs_volume_unref (volume);
+		}
 	}
 	g_list_free (list);
 }
