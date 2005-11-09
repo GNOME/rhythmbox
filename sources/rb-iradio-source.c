@@ -39,7 +39,6 @@
 #include "totem-pl-parser.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
-#include "rb-new-station-dialog.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
@@ -589,7 +588,7 @@ static void
 impl_song_properties (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations);
+	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations, FALSE);
 	rb_debug ("in song properties");
 	if (dialog)
 		gtk_widget_show_all (dialog);

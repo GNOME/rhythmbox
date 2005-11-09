@@ -1,3 +1,37 @@
+2005-11-08  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* data/glade/Makefile.am:
+	* iradio/Makefile.am:
+	  Remove 'new station' dialog.
+
+	* iradio/rb-station-properties-dialog.h:
+	* sources/rb-iradio-source.c: (impl_song_properties):
+	* shell/rb-shell.c: (rb_shell_cmd_new_station):
+	 Add 'new station' mode parameter to
+	 rb_station_properties_dialog_new.
+
+	* (rb_station_properties_dialog_response_cb),
+	(rb_station_properties_dialog_create_station):
+	 When in 'new station' mode, create the station
+	 when OK button is pressed.
+
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_location_changed_cb):
+	 Only enable OK button if a location is specified
+	(rb_station_properties_dialog_init),
+	(rb_station_properties_dialog_new),
+	(rb_station_properties_dialog_update),
+	(rb_station_properties_dialog_update_title),
+	(rb_station_properties_dialog_rated_cb),
+	(rb_station_properties_dialog_update_play_count),
+	(rb_station_properties_dialog_update_bitrate),
+	(rb_station_properties_dialog_update_last_played),
+	(rb_station_properties_dialog_update_rating),
+	(rb_station_properties_dialog_update_playback_error),
+	(rb_station_properties_dialog_show):
+	 Handle 'new station' mode, where there's no current
+	 station to edit.
+
 2005-11-08  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-playlist-source.c: (rb_playlist_source_constructor): make

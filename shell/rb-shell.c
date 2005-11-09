@@ -73,7 +73,7 @@
 #include "rb-daap-sharing.h"
 #endif /* WITH_DAAP_SUPPORT */
 #include "rb-load-failure-dialog.h"
-#include "rb-new-station-dialog.h"
+#include "rb-station-properties-dialog.h"
 #include "rb-iradio-source.h"
 #include "rb-new-podcast-dialog.h"
 #include "rb-shell-preferences.h"
@@ -1863,10 +1863,11 @@ rb_shell_cmd_new_station (GtkAction *action,
 			  RBShell *shell)
 {
 	GtkWidget *dialog;
+	RBEntryView *entry_view = rb_source_get_entry_view (RB_SOURCE (shell->priv->iradio_source));
 	rb_debug ("Got new station command");
-	dialog = rb_new_station_dialog_new (shell->priv->db);
+	dialog = rb_station_properties_dialog_new (entry_view, TRUE);
+	gtk_widget_show_all (dialog);
 	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
 }
 
 static void

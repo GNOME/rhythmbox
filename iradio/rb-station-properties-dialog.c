@@ -78,6 +78,10 @@ static void rb_station_properties_dialog_rated_cb (RBRating *rating,
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
 static GtkWidget * boldify_label (GtkWidget *label);
 static void rb_station_properties_dialog_show (GtkWidget *widget);
+static void rb_station_properties_dialog_create_station (RBStationPropertiesDialog *dialog);
+static void rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
+							      RBStationPropertiesDialog *dialog);
+						  
 
 struct RBStationPropertiesDialogPrivate
 {
@@ -101,8 +105,7 @@ struct RBStationPropertiesDialogPrivate
 enum 
 {
 	PROP_0,
-	PROP_ENTRY_VIEW,
-	PROP_BACKEND
+	PROP_ENTRY_VIEW
 };
 
 G_DEFINE_TYPE (RBStationPropertiesDialog, 
@@ -149,7 +152,6 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
-	gtk_window_set_title (GTK_WINDOW (dialog), _("%s Properties"));
 
 	xml = rb_glade_xml_new ("station-properties.glade",
 				"stationproperties",
@@ -184,6 +186,11 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	boldify_label (glade_xml_get_widget (xml, "lastplayedDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "playcountDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "bitrateDescLabel"));
+
+	g_signal_connect_object (G_OBJECT (dialog->priv->location),
+				 "changed",
+				 G_CALLBACK (rb_station_properties_dialog_location_changed_cb),
+				 dialog, 0);
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (dialog->priv->rating, 
@@ -253,18 +260,21 @@ rb_station_properties_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_station_properties_dialog_new (RBEntryView *entry_view)
+rb_station_properties_dialog_new (RBEntryView *entry_view, gboolean new_station)
 {
 	RBStationPropertiesDialog *dialog;
 
 	g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
 
 	dialog = g_object_new (RB_TYPE_STATION_PROPERTIES_DIALOG,
-			       "entry-view", entry_view, NULL);
+			       "entry-view", entry_view, 
+			       NULL);
 
-	if (!rb_station_properties_dialog_get_current_entry (dialog)) {
-		g_object_unref (G_OBJECT (dialog));
-		return NULL;
+	if (!new_station) {
+		if (!rb_station_properties_dialog_get_current_entry (dialog)) {
+			g_object_unref (G_OBJECT (dialog));
+			return NULL;
+		}
 	}
 	rb_station_properties_dialog_update (dialog);
 
@@ -289,7 +299,12 @@ rb_station_properties_dialog_response_cb (GtkDialog *gtkdialog,
 {
 	if (response_id != GTK_RESPONSE_OK)
 		goto cleanup;
-	rb_station_properties_dialog_sync_entries (dialog);
+
+	if (dialog->priv->current_entry)
+		rb_station_properties_dialog_sync_entries (dialog);
+	else
+		rb_station_properties_dialog_create_station (dialog);
+	
 cleanup:
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -315,27 +330,35 @@ rb_station_properties_dialog_get_current_entry (RBStationPropertiesDialog *dialo
 static void
 rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 {
-	g_return_if_fail (dialog->priv->current_entry != NULL);
-	rb_station_properties_dialog_update_location (dialog);
 	rb_station_properties_dialog_update_title (dialog);
-	rb_station_properties_dialog_update_title_entry (dialog);
-	rb_station_properties_dialog_update_genre (dialog);
+
+	if (dialog->priv->current_entry) {
+		rb_station_properties_dialog_update_location (dialog);
+		rb_station_properties_dialog_update_title_entry (dialog);
+		rb_station_properties_dialog_update_genre (dialog);
+	}
+
 	rb_station_properties_dialog_update_play_count (dialog);
 	rb_station_properties_dialog_update_bitrate (dialog);
 	rb_station_properties_dialog_update_last_played (dialog);
 	rb_station_properties_dialog_update_rating (dialog);
-	rb_station_properties_dialog_update_playback_error (dialog);
+	rb_station_properties_dialog_location_changed_cb (GTK_ENTRY (dialog->priv->location), dialog);
 }
 
 static void
 rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 {
 	const char *name;
-	char *tmp;	
-	name = rb_refstring_get (dialog->priv->current_entry->title);
-	tmp = g_strdup_printf (_("Properties for %s"), name);
-	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
-	g_free (tmp);
+	char *tmp;
+
+	if (dialog->priv->current_entry) {
+		name = rb_refstring_get (dialog->priv->current_entry->title);
+		tmp = g_strdup_printf (_("Properties for %s"), name);
+		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
+		g_free (tmp);
+	} else {
+		gtk_window_set_title (GTK_WINDOW (dialog), _("New Internet Radio Station"));
+	}
 }
 
 static void
@@ -372,6 +395,9 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 	g_return_if_fail (score >= 0 && score <= 5 );
 
+	if (!dialog->priv->current_entry)
+		return;
+
 	g_value_init (&value, G_TYPE_DOUBLE);
 	g_value_set_double (&value, score);
 
@@ -390,7 +416,12 @@ static void
 rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialog)
 {
 	char *text;
-	text = g_strdup_printf ("%ld", dialog->priv->current_entry->play_count);
+	long int count = 0;
+
+	if (dialog->priv->current_entry)
+		count = dialog->priv->current_entry->play_count;
+
+	text = g_strdup_printf ("%ld", count);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->playcount), text);
 	g_free (text);
 }
@@ -398,10 +429,12 @@ rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialo
 static void
 rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 {
-	guint val;
+	guint val = 0;
 	char *text;
 
-	val = dialog->priv->current_entry->bitrate;
+	if (dialog->priv->current_entry)
+		val = dialog->priv->current_entry->bitrate;
+
 	if (val == 0)
 		text = g_strdup (_("Unknown"));
 	else
@@ -414,17 +447,23 @@ rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog)
 {
-	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed),
-		       rb_refstring_get (dialog->priv->current_entry->last_played_str));
+	const char *last_played = _("Never");
+
+	if (dialog->priv->current_entry)
+		last_played = rb_refstring_get (dialog->priv->current_entry->last_played_str);
+	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed), last_played);
 }
 
 static void
 rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 {
+	gdouble rating = 0.0;
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
-	g_object_set (G_OBJECT (dialog->priv->rating),
-		      "rating", dialog->priv->current_entry->rating, NULL);
+	if (dialog->priv->current_entry)
+		rating = dialog->priv->current_entry->rating;
+	
+	g_object_set (G_OBJECT (dialog->priv->rating), "rating", rating, NULL);
 }
 
 static void
@@ -432,7 +471,7 @@ rb_station_properties_dialog_update_playback_error (RBStationPropertiesDialog *d
 {
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
-	if (dialog->priv->current_entry->playback_error) {
+	if (dialog->priv->current_entry && dialog->priv->current_entry->playback_error) {
 		gtk_label_set_text (GTK_LABEL (dialog->priv->playback_error),
 				    dialog->priv->current_entry->playback_error);
 		gtk_widget_show (dialog->priv->playback_error_box);
@@ -485,6 +524,48 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 }
 
 static void
+rb_station_properties_dialog_create_station (RBStationPropertiesDialog *dialog)
+{
+	GValue title_val = { 0, };
+	GValue genre_val = { 0, };
+	GValue rating_val = { 0, };
+	RhythmDBEntry *entry;
+	gdouble rating;
+	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
+	char *trimmed_location = g_strstrip (g_strdup (location));
+
+	g_value_init (&title_val, G_TYPE_STRING);
+	g_value_set_static_string (&title_val,
+				   gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)));
+	g_value_init (&genre_val, G_TYPE_STRING);
+	g_value_set_static_string (&genre_val,
+				   gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre)));
+	g_object_get (G_OBJECT (dialog->priv->rating), "rating", &rating, NULL);
+	g_value_init (&rating_val, G_TYPE_DOUBLE);
+	g_value_set_double (&rating_val, rating);
+
+	entry = rhythmdb_entry_lookup_by_location (dialog->priv->db, trimmed_location);
+	if (entry) {
+		g_free (trimmed_location);
+		return;
+	}
+
+	entry = rhythmdb_entry_new (dialog->priv->db,
+				    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
+				    trimmed_location);
+
+	rhythmdb_entry_set_uninserted (dialog->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
+	g_value_unset (&title_val);
+	rhythmdb_entry_set_uninserted (dialog->priv->db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
+	g_value_unset (&genre_val);
+	rhythmdb_entry_set_uninserted (dialog->priv->db, entry, RHYTHMDB_PROP_RATING, &rating_val);
+	g_value_unset (&rating_val);
+	rhythmdb_commit (dialog->priv->db);
+
+	g_free (trimmed_location);
+}
+
+static void
 rb_station_properties_dialog_show (GtkWidget *widget)
 {
 	if (GTK_WIDGET_CLASS (rb_station_properties_dialog_parent_class)->show)
@@ -492,4 +573,13 @@ rb_station_properties_dialog_show (GtkWidget *widget)
 
 	rb_station_properties_dialog_update_playback_error (
 			RB_STATION_PROPERTIES_DIALOG (widget));
+}
+
+static void
+rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
+						  RBStationPropertiesDialog *dialog)
+{
+	/* only enable OK button if there's a location */
+	gtk_widget_set_sensitive (dialog->priv->okbutton,
+				  g_utf8_strlen (gtk_entry_get_text (entry), -1) > 0);
 }
