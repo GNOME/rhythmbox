@@ -599,7 +599,7 @@ build_message (RBDAAPConnection *connection,
 	soup_message_set_http_version (message, SOUP_HTTP_1_1);
 	
 	soup_message_add_header (message->request_headers, "Client-DAAP-Version", 	"3.0");
-	soup_message_add_header (message->request_headers, "Accept-Laungage", 		"en-us, en;q=5.0");
+	soup_message_add_header (message->request_headers, "Accept-Language", 		"en-us, en;q=5.0");
 	soup_message_add_header (message->request_headers, "Client-DAAP-Access-Index", 	"2");
 	if (connection->password_protected) {
 		gchar *h = g_strconcat ("Basic ", connection->password, NULL);
