@@ -1001,10 +1001,11 @@ rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
 }
 				
 
-void
+gboolean
 rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, 
 				   RhythmDBEntry *entry)
 {
+	g_return_val_if_fail (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL, FALSE);
 	/* emit entry-removed, so listeners know the
 	 * entry has actually been removed, rather than filtered
 	 * out.
@@ -1013,6 +1014,8 @@ rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model,
 		       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
 		       entry);
 	rhythmdb_query_model_filter_out_entry (model, entry);
+
+	return TRUE;
 }
 
 static gboolean

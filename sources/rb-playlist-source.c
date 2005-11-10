@@ -759,6 +759,13 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 				 const char *location)
 {
 	RhythmDBEntry *entry;
+	
+	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
+	if (entry != NULL &&
+	    rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_SONG) {
+		rb_debug ("attempting to add non-song track to playlist");
+		return;
+	}
 
 	if (rb_uri_is_directory (location)) {
 		rb_uri_handle_recursively (location,
@@ -773,13 +780,8 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 		g_hash_table_insert (source->priv->entries,
 				     g_strdup (location), GINT_TO_POINTER (1));
 
-		entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-		if (entry)
-			rhythmdb_entry_ref (source->priv->db, entry);
-
 		if (entry != NULL) {
 			rhythmdb_query_model_add_entry (source->priv->model, entry);
-			rhythmdb_entry_unref (source->priv->db, entry);
 
 			source->priv->dirty = TRUE;
 		}
@@ -808,11 +810,14 @@ rb_playlist_source_remove_location (RBPlaylistSource *source,
 	RhythmDBEntry *entry;
 
 	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) != NULL);
-	g_hash_table_remove (source->priv->entries,
-			     location);
+
+	g_hash_table_remove (source->priv->entries, location);
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
 	if (entry != NULL) {
-		rhythmdb_query_model_remove_entry (source->priv->model, entry);
+		gboolean removed;
+		
+		removed = rhythmdb_query_model_remove_entry (source->priv->model, entry);
+		g_assert (removed); /* if this fails, the model and the playlist are out of sync */
 		source->priv->dirty = TRUE;
 	}
 }
