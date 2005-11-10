@@ -49,7 +49,7 @@ typedef struct
 	uintmax_t pub_date;	
     	xmlChar* copyright;
     
-	GList *lst_itens;
+	GList *posts;
 }RBPodcastChannel;
 
 

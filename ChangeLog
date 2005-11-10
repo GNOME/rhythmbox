@@ -1,3 +1,24 @@
+2005-11-10  James Livingston  <jrl@ids.org.au>
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_init),
+	(rb_podcast_manager_finalize), (rb_podcast_manager_subscribe_feed),
+	(rb_podcast_manager_thread_parse_feed),
+	(rb_podcast_manager_insert_feed), (rb_podcast_manager_event_loop),
+	(rb_podcast_manager_abort_subscribe): use aa GAsyncQueue rather than
+	emulating one with a list and mutex. Fixes a couple of threading
+	issues.
+	
+	(rb_podcast_manager_insert_feed): fix some problems with ignoring
+	updated feeds.
+	
+	(rb_podcast_manager_download_entry), (rb_podcast_manager_next_file),
+	(rb_podcast_manager_copy_post),	(end_job), (cancel_job),
+	(download_progress_cb), (rb_podcast_manager_db_entry_deleted_cb),
+	* podcast/rb-podcast-parse.c: (rb_insert_item),
+	(rb_podcast_parse_channel_free):
+	* podcast/rb-podcast-parse.h: Convery C++-style comments to C-style,
+	fix some typos, and make a bit of code clearer.
+
 2005-11-10  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	Make the "delete podcast" dialog better. Closes bug 320899.

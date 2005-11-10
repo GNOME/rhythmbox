@@ -71,8 +71,7 @@ enum
 typedef enum 
 {
 	EVENT_INSERT_FEED,
-	EVENT_ERROR_FEED,
-	EVENT_INSERT_POST
+	EVENT_ERROR_FEED
 }RBPodcastEventType;
 
 
@@ -88,22 +87,18 @@ struct RBPodcastManagerPrivate
 
 	gboolean remove_files;
 
-	//manager loop
-	guint event_count;
-	GList *event_list;
-	GMutex *event_mutex;
-	GMutex *event_loop_mutex;
+	GAsyncQueue *event_queue;
 };
 
-//used on event loop
+/* used on event loop */
 typedef struct
 {
 	RBPodcastEventType 	type;
 	RBPodcastChannel 	*channel;
-}RBPodcastManagerEvent;
+} RBPodcastManagerEvent;
 
 
-//used on donwload thread
+/* used on donwload thread */
 typedef struct 
 {
 	RBPodcastManager *pd;
@@ -116,19 +111,18 @@ typedef struct
 	guint total_size;
 	guint progress;
 	gboolean canceled;
-
 }RBPodcastManagerInfo;
 
-//used on subscribe thread
+/* used on subscribe thread */
 typedef struct
 {
 	RBPodcastManager *pd;
 	char* url;
-}RBPodcastThreadInfo;
+} RBPodcastThreadInfo;
 
 
 static guint rb_podcast_manager_signals[LAST_SIGNAL] = { 0 };
-static GStaticMutex entry_add_mutex = G_STATIC_MUTEX_INIT;
+static GStaticMutex download_list_mutex = G_STATIC_MUTEX_INIT;
 
 /* functions */
 static void rb_podcast_manager_class_init 		(RBPodcastManagerClass *klass);
@@ -163,14 +157,13 @@ static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static void rb_podcast_manager_db_entry_deleted_cb 	(RBPodcastManager *pd, 
 							 RhythmDBEntry *entry);
-static void rb_podcast_manager_next_file 		(RBPodcastManager * pd);
-static gboolean rb_podcast_manager_next_file_idle 	(RBPodcastManager *pd);
+static gboolean rb_podcast_manager_next_file 		(RBPodcastManager * pd);
 static void rb_podcast_manager_insert_feed 		(RBPodcastManager *pd, RBPodcastChannel *data);
 static void rb_podcast_manager_abort_subscribe 		(RBPodcastManager *pd);
 
-//event loop
-static gboolean rb_podcast_manager_event_loop 		(gpointer data);
-static gpointer rb_podcast_manager_thread_parse_feed 	(gpointer data);
+/* event loop */
+static gboolean rb_podcast_manager_event_loop		(RBPodcastManager *pd) ;
+static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastThreadInfo *info);
 	
 
 /* async read file functions */
@@ -279,11 +272,8 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 	pd->priv = g_new0 (RBPodcastManagerPrivate, 1);
 	pd->priv->source_sync = 0;
 	pd->priv->mutex_job = g_mutex_new();
+	pd->priv->event_queue = g_async_queue_new ();
 	pd->priv->db = NULL;
-	pd->priv->event_list = NULL;
-	pd->priv->event_mutex  = g_mutex_new ();
-	pd->priv->event_loop_mutex  = g_mutex_new ();
-	pd->priv->event_count = 0;
 	eel_gconf_monitor_add (CONF_STATE_PODCAST_PREFIX);
 }
 
@@ -333,15 +323,7 @@ rb_podcast_manager_finalize (GObject *object)
 
 
 	g_mutex_free (pd->priv->mutex_job);	
-
-
-	g_mutex_free (pd->priv->event_loop_mutex);
-
-	g_list_free (pd->priv->event_list);
-
-	g_mutex_free (pd->priv->event_mutex);
-	
-	//g_static_mutex_free (&entry_add_mutex);
+	g_async_queue_unref (pd->priv->event_queue);
 	
 	g_free (pd->priv);
 	
@@ -440,10 +422,10 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 		data  = download_info_new();
 		data->pd = pd;	
 		data->entry = entry;
-        	g_static_mutex_lock (&entry_add_mutex);
+        	g_static_mutex_lock (&download_list_mutex);
 		pd->priv->download_list =  g_list_append (pd->priv->download_list, data);
-		g_static_mutex_unlock (&entry_add_mutex);
-		gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file_idle , pd);
+		g_static_mutex_unlock (&download_list_mutex);
+		gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);
 	}
 }
 
@@ -528,7 +510,7 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
         return FALSE;
 }
 
-static void
+static gboolean
 rb_podcast_manager_next_file (RBPodcastManager * pd)
 {
 
@@ -536,17 +518,19 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	if (g_mutex_trylock (pd->priv->mutex_job) == TRUE) {
 		gint size;
 		
-		g_static_mutex_lock (&entry_add_mutex);
+		g_static_mutex_lock (&download_list_mutex);
 		size = g_list_length (pd->priv->download_list);
-		g_static_mutex_unlock (&entry_add_mutex);
+		g_static_mutex_unlock (&download_list_mutex);
 			
 		if (size > 0)
 			rb_podcast_manager_copy_post (pd);
 		else
 			g_mutex_unlock (pd->priv->mutex_job);
-	}
-	else
+	} else {
 		rb_debug ("not start");
+	}
+
+	return FALSE;
 }
 
 static void 
@@ -580,14 +564,14 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	}
 
 		
-	//get first element of list
-	g_static_mutex_lock (&entry_add_mutex);
+	/* get first element of list */
+	g_static_mutex_lock (&download_list_mutex);
 
 	data = (RBPodcastManagerInfo *) g_list_first(pd->priv->download_list)->data;
 	if (data == NULL)
 		return;
 			
-	g_static_mutex_unlock (&entry_add_mutex);
+	g_static_mutex_unlock (&download_list_mutex);
 
 	
 	entry = data->entry;
@@ -702,15 +686,15 @@ next_step:
 	if (local_uri)
 		gnome_vfs_uri_unref (local_uri);
 
-	g_static_mutex_lock (&entry_add_mutex);
+	g_static_mutex_lock (&download_list_mutex);
 	pd->priv->download_list = g_list_remove (pd->priv->download_list, (gconstpointer ) data);
-	g_static_mutex_unlock (&entry_add_mutex);
+	g_static_mutex_unlock (&download_list_mutex);
 
 	download_info_free (data);
 	data = NULL;
 
 	g_mutex_unlock (pd->priv->mutex_job);
-	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file_idle , pd);	
+	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);	
 }
 
 
@@ -790,42 +774,26 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char* url)
 	info->pd = pd;
 	info->url = valid_url;
 
-
-	g_mutex_lock (pd->priv->event_mutex);
-	pd->priv->event_count++;
-	if (pd->priv->event_count == 1) {
-		g_mutex_lock (pd->priv->event_loop_mutex);
-		g_idle_add ((GSourceFunc ) rb_podcast_manager_event_loop, pd);
-	}
-	g_mutex_unlock (pd->priv->event_mutex);
-
-	
-	g_thread_create (rb_podcast_manager_thread_parse_feed,
+	g_async_queue_ref (info->pd->priv->event_queue);
+	g_thread_create ((GThreadFunc) rb_podcast_manager_thread_parse_feed,
 			 info, TRUE, NULL);
 
 	return TRUE;
 }
 
 static gpointer 
-rb_podcast_manager_thread_parse_feed (gpointer data)
+rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 {
-	RBPodcastManagerEvent *event;
-	RBPodcastThreadInfo *info = (RBPodcastThreadInfo *) data;
+	RBPodcastManagerEvent *event = g_new0 (RBPodcastManagerEvent, 1);
 	RBPodcastChannel *feed = g_new0 (RBPodcastChannel, 1);
 
 	rb_podcast_parse_load_feed (feed, info->url);	
 	
-	event = g_new0 (RBPodcastManagerEvent, 1);
-	if (feed->title	== NULL) {
-	        event->type = EVENT_ERROR_FEED;	
-		event->channel = feed;
-	} else {
-		event->type = EVENT_INSERT_FEED;
-		event->channel = feed;
-	}
+	event->channel = feed;
+	event->type = (feed->title == NULL) ? EVENT_ERROR_FEED : EVENT_INSERT_FEED;
 
-
-	info->pd->priv->event_list = g_list_append (info->pd->priv->event_list, event);
+	g_async_queue_push (info->pd->priv->event_queue, event);
+	g_idle_add ((GSourceFunc) rb_podcast_manager_event_loop, info->pd);
 	
 	g_free (info->url);
 	g_free (info);
@@ -1107,9 +1075,9 @@ end_job	(RBPodcastManagerInfo *data)
 	RBPodcastManager *pd = data->pd;
 	rb_debug ("end_job");
 	
-	g_static_mutex_lock (&entry_add_mutex);
+	g_static_mutex_lock (&download_list_mutex);
 	data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, (gconstpointer ) data);
-	g_static_mutex_unlock (&entry_add_mutex);
+	g_static_mutex_unlock (&download_list_mutex);
 	
 	g_mutex_unlock (data->mutex_working);
 
@@ -1127,16 +1095,8 @@ end_job	(RBPodcastManagerInfo *data)
 	
 	g_mutex_unlock (pd->priv->mutex_job);
 
-	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file_idle , pd);
+	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file, pd);
 	
-}
-
-static gboolean
-rb_podcast_manager_next_file_idle (RBPodcastManager *pd)
-{
-	rb_podcast_manager_next_file  (pd);
-
-	return FALSE;
 }
 
 static void
@@ -1149,9 +1109,9 @@ cancel_job (RBPodcastManagerInfo *data)
 	else {
 		rb_debug ("job cancel");
 		
-		g_static_mutex_lock (&entry_add_mutex);
+		g_static_mutex_lock (&download_list_mutex);
 		data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, (gconstpointer ) data);
-		g_static_mutex_unlock (&entry_add_mutex);
+		g_static_mutex_unlock (&download_list_mutex);
 
 		g_mutex_unlock (data->mutex_working);
 		
@@ -1215,7 +1175,6 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 
 
 	return 1;
-
 }
 
 static guint 
@@ -1298,7 +1257,7 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 		if ((uri != NULL) && (gnome_vfs_uri_is_local (uri) == TRUE)) {
 			gnome_vfs_unlink (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT));
 		
-			//remove dir
+			/* remove dir */
 			rb_debug ("removing dir");
 			conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
 			
@@ -1434,10 +1393,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue status_val = { 0, };
 	GValue last_post_val = { 0, };
 	gchar *last_post;
-	gulong status;
-	gboolean updates;
 	gboolean new_feed;
-	gboolean insert_post;
 	RhythmDB *db = pd->priv->db;
 
 	RhythmDBEntry *entry;
@@ -1445,16 +1401,15 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GList *lst_songs;
 
 	if (data->title	== NULL) {
-		g_list_free (data->lst_itens);
+		g_list_free (data->posts);
 		g_free (data);
 		return;
 	}
 
 	last_post = NULL;
-	insert_post = TRUE;
 	new_feed = TRUE;
 
-	//processing podcast head
+	/* processing podcast head */
 	entry = rhythmdb_entry_lookup_by_location (db, (gchar* )data->url);
 	if (entry) {
 		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
@@ -1466,213 +1421,165 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		g_value_unset (&status_val);
 		last_post = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LAST_POST));
-		if (last_post) {
-			insert_post = FALSE;
-		}
 		new_feed = FALSE;
-		goto load_posts;
-	}
+	} else {
+		rb_debug ("Insert new entry");
+		entry = rhythmdb_entry_new (db,
+					    RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
+				    	    (gchar*) data->url);
+		rb_debug("New entry create\n");
 	
-	rb_debug ("Insert new entry");
-	entry = rhythmdb_entry_new (db,
-				    RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
-			    	    (gchar*) data->url);
-
-
-	rb_debug("New entry create\n");
+		g_value_init (&title_val, G_TYPE_STRING);
+		g_value_set_string (&title_val, (gchar* ) data->title);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
+		g_value_unset (&title_val);
 	
-	g_value_init (&title_val, G_TYPE_STRING);
-	g_value_set_string (&title_val, (gchar* ) data->title);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-	g_value_unset (&title_val);
-	
-	g_value_init (&author_val, G_TYPE_STRING);
-	if (data->author)
-		g_value_set_string (&author_val, (gchar* ) data->author);
-	else
-		g_value_set_static_string (&author_val, _("Unknown"));
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
-	g_value_unset (&author_val);
+		g_value_init (&author_val, G_TYPE_STRING);
+		if (data->author)
+			g_value_set_string (&author_val, (gchar* ) data->author);
+		else
+			g_value_set_static_string (&author_val, _("Unknown"));
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
+		g_value_unset (&author_val);
 	
 	
-	if (data->subtitle) {
-		g_value_init (&subtitle_val, G_TYPE_STRING);
-		g_value_set_string (&subtitle_val, (gchar* ) data->subtitle);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
-		g_value_unset (&subtitle_val);
-	}
-	
-	if (data->description) {
-		g_value_init (&description_val, G_TYPE_STRING);
-		g_value_set_string (&description_val, (gchar* ) data->description);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
-		g_value_unset (&description_val);
-	}
-	
-	if (data->summary) {
-		g_value_init (&summary_val, G_TYPE_STRING);
-		g_value_set_string (&summary_val, (gchar* ) data->summary);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
-		g_value_unset (&summary_val);
-	}
-
-	if (data->lang) {
-		g_value_init (&lang_val, G_TYPE_STRING);
-		g_value_set_string (&lang_val, (gchar* ) data->lang);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
-		g_value_unset (&lang_val);
-	}
-
-	if (data->copyright) { 
-		g_value_init (&copyright_val, G_TYPE_STRING);
-		g_value_set_string (&copyright_val, (gchar* ) data->copyright);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
-		g_value_unset (&copyright_val);
-	}
-
-	if (data->img) {
-		g_value_init (&image_val, G_TYPE_STRING);
-		g_value_set_string (&image_val, (gchar* ) data->img);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
-		g_value_unset (&image_val);
-	}
-
-	g_value_init (&status_val, G_TYPE_ULONG);
-	g_value_set_ulong (&status_val, 1);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-	g_value_unset (&status_val);
-
-	rb_debug("Podcast head Inserted");
-	
-load_posts:
-	
-	lst_songs = g_list_reverse (data->lst_itens);
-	status = 103;
-	updates = FALSE;
-	while (lst_songs) {
-		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
-		if (item && (new_feed || insert_post)) {
-			
-			if (last_post) {
-				g_free (last_post);	
-			}
-			
-			last_post = g_strdup ((gchar* ) item->url);
-			if (g_list_last (lst_songs) == lst_songs) {
-				status = 102;
-			}
-				    
-			updates = rb_podcast_manager_add_post (db, 
-							       (gchar* ) data->title,
-						 	       (gchar* ) item->title, 
-							       (gchar* ) data->url,
-							       (gchar* ) (item->author ? item->author : data->author),
-							       (gchar* ) item->url,
-							       (gchar* ) item->description,
-							       status,
-							       (gulong ) (item->pub_date > 0 ? item->pub_date : data->pub_date),
-							       (gulong) item->duration,
-							       item->filesize);
-			
-			status = 103;
-		} else {
-			if (!g_strcasecmp(last_post, (gchar* )item->url)) {
-				insert_post = TRUE;
-			}
+		if (data->subtitle) {
+			g_value_init (&subtitle_val, G_TYPE_STRING);
+			g_value_set_string (&subtitle_val, (gchar* ) data->subtitle);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
+			g_value_unset (&subtitle_val);
 		}
-		
-		lst_songs = lst_songs->next;
+	
+		if (data->description) {
+			g_value_init (&description_val, G_TYPE_STRING);
+			g_value_set_string (&description_val, (gchar* ) data->description);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
+			g_value_unset (&description_val);
+		}
+	
+		if (data->summary) {
+			g_value_init (&summary_val, G_TYPE_STRING);
+			g_value_set_string (&summary_val, (gchar* ) data->summary);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
+			g_value_unset (&summary_val);
+		}
+
+		if (data->lang) {
+			g_value_init (&lang_val, G_TYPE_STRING);
+			g_value_set_string (&lang_val, (gchar* ) data->lang);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
+			g_value_unset (&lang_val);
+		}
+
+		if (data->copyright) { 
+			g_value_init (&copyright_val, G_TYPE_STRING);
+			g_value_set_string (&copyright_val, (gchar* ) data->copyright);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
+			g_value_unset (&copyright_val);
+		}
+
+		if (data->img) {
+			g_value_init (&image_val, G_TYPE_STRING);
+			g_value_set_string (&image_val, (gchar* ) data->img);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
+			g_value_unset (&image_val);
+		}
+
+		g_value_init (&status_val, G_TYPE_ULONG);
+		g_value_set_ulong (&status_val, 1);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
+		g_value_unset (&status_val);
+
+		rb_debug("Podcast head Inserted");
+	}
+
+	/* insert episodes */
+	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
+		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
+
+		if (strcmp (last_post, (char*)item->url) != 0) {
+			if (last_post)
+				g_free (last_post);	
+			last_post = g_strdup ((gchar* ) item->url);
+
+			/* last episode gets status 102, so that it begins downloading */
+			rb_podcast_manager_add_post (db, 
+						     (gchar*) data->title,
+						     (gchar*) item->title, 
+					 	     (gchar*) data->url,
+						     (gchar*) (item->author ? item->author : data->author),
+						     (gchar*) item->url,
+						     (gchar*) item->description,
+						     (lst_songs == (g_list_last (data->posts))) ? 102 : 103,
+						     (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
+						     (gulong) item->duration,
+						     item->filesize);
+		}
 	}
 	
 	g_value_init (&last_post_val, G_TYPE_STRING);
 	if (last_post) {
-		g_value_set_string (&last_post_val, last_post);
+		g_value_take_string (&last_post_val, last_post);
 	} else {
-		g_value_set_string (&last_post_val, "");
+		g_value_set_static_string (&last_post_val, "");
 	}
 	if (new_feed) 
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
 	else
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
-	
 	g_value_unset (&last_post_val);
 	
 	rhythmdb_commit (db);
-
-	g_free (last_post);
-	return;
 }
 
 
 static gboolean 
-rb_podcast_manager_event_loop (gpointer data) 
+rb_podcast_manager_event_loop (RBPodcastManager *pd) 
 {
-	gboolean ret;
-	RBPodcastManager *pd = (RBPodcastManager *) data;
+	RBPodcastManagerEvent *event;
 
-	if (pd->priv->event_list && (g_list_length (pd->priv->event_list) > 0)) {
-		while (g_list_length (pd->priv->event_list) > 0) {
-			RBPodcastManagerEvent *event =  (RBPodcastManagerEvent *) g_list_first (pd->priv->event_list)->data;
-			switch (event->type)
+	while ((event = g_async_queue_try_pop (pd->priv->event_queue))) {
+		switch (event->type)
+		{
+			case EVENT_INSERT_FEED:
+				rb_podcast_manager_insert_feed (pd, event->channel);
+				break;
+			case EVENT_ERROR_FEED:
 			{
-				case EVENT_INSERT_FEED:
-					rb_podcast_manager_insert_feed (pd, event->channel);
-					break;
-				case EVENT_ERROR_FEED:
-				{
-					gchar *error_msg;
-					error_msg = g_strdup_printf (_("There was a problem adding this podcast. Please verify the URL: %s"), (gchar *) event->channel->url);
-					g_signal_emit (G_OBJECT (data), 
-						       rb_podcast_manager_signals[PROCESS_ERROR], 
-						       0, error_msg);
-					g_free (error_msg);
-					break;
-				}
-				default:					
-					break;
+				gchar *error_msg;
+				error_msg = g_strdup_printf (_("There was a problem adding this podcast. Please verify the URL: %s"),
+							     (gchar*) event->channel->url);
+				g_signal_emit (G_OBJECT (pd), 
+					       rb_podcast_manager_signals[PROCESS_ERROR], 
+					       0, error_msg);
+				g_free (error_msg);
+				break;
 			}
-			
-			g_mutex_lock (pd->priv->event_mutex);
-			pd->priv->event_list = g_list_remove (pd->priv->event_list, (gconstpointer ) event);
-			pd->priv->event_count--;
-			g_mutex_unlock (pd->priv->event_mutex);
-			rb_podcast_parse_channel_free (event->channel);
-			event->channel = NULL;
-			g_free (event);
 		}
+			
+		rb_podcast_parse_channel_free (event->channel);
+		g_free (event);
 	}
+
+	g_async_queue_unref (pd->priv->event_queue);
 	
-	g_mutex_lock (pd->priv->event_mutex);
-	if (pd->priv->event_count > 0) {
-		ret = TRUE;
-		g_usleep (1000);
-	} else {
-		ret = FALSE;
-		g_mutex_unlock (pd->priv->event_loop_mutex);
-	}
-	g_mutex_unlock (pd->priv->event_mutex);
-	
-	return ret;
+	return FALSE;
 }
 
 static void
 rb_podcast_manager_abort_subscribe (RBPodcastManager *pd)
 {
-	GList *lst;
-	pd->priv->event_count = 0;
-	g_mutex_lock (pd->priv->event_loop_mutex);
-
-	lst = pd->priv->event_list;
+	RBPodcastManagerEvent *event;
 	
-	while (lst) {
-		RBPodcastManagerEvent *event = (RBPodcastManagerEvent *) (g_list_first (lst))->data;
+	/* remove all event processing functions */
+	while (g_idle_remove_by_data (pd))
+		;
+	
+	/* purge the event queue */
+	while ((event = g_async_queue_try_pop (pd->priv->event_queue))) {
 		rb_podcast_parse_channel_free (event->channel);
-		event->channel = NULL;
-		lst = g_list_remove (lst, (gconstpointer ) event);
 		g_free (event);
 	}
-
-	g_mutex_unlock (pd->priv->event_loop_mutex);
 }
 
 void
