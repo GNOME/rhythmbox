@@ -1,3 +1,17 @@
+2005-11-11  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_row_inserted_cb),
+	(rhythmdb_property_model_prop_changed_cb),
+	(rhythmdb_property_model_entry_removed_cb),
+	(rhythmdb_property_model_insert_prop),
+	(rhythmdb_property_model_sync): display the count after tha "All"
+	entry of a property model.
+
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_finalize), (rb_property_view_constructor): use
+	G_DEFINE_TYPE
+
 2005-11-10  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:

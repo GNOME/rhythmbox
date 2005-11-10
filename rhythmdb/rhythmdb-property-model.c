@@ -48,6 +48,7 @@ static void rhythmdb_property_model_get_property (GObject *object,
 					       guint prop_id,
 					       GValue *value,
 					       GParamSpec *pspec);
+static void rhythmdb_property_model_sync (RhythmDBPropertyModel *model);
 static void rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 						     GtkTreePath *path,
 						     GtkTreeIter *iter,
@@ -452,6 +453,8 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 {
 	RhythmDBEntry *entry = entry_from_tree_iter (model, iter);
 	rhythmdb_property_model_insert (propmodel, entry);
+
+	rhythmdb_property_model_sync (propmodel);
 }
 
 static void
@@ -465,6 +468,8 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 
 	rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
 	rhythmdb_property_model_insert (propmodel, entry);
+
+	rhythmdb_property_model_sync (propmodel);
 }
 
 static void
@@ -473,6 +478,8 @@ rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
 					  RhythmDBPropertyModel *propmodel)
 {
 	rhythmdb_property_model_delete (propmodel, entry);
+
+	rhythmdb_property_model_sync (propmodel);
 }
 
 static gint
@@ -508,6 +515,7 @@ rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
 		prop = g_sequence_ptr_get_data (ptr);
 		prop->refcount++;
+		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
 		return;
 	}
 
@@ -1006,3 +1014,21 @@ rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model, GtkTreeView *
 					     targets, n_elements,
 					     GDK_ACTION_COPY);
 }
+
+static void
+rhythmdb_property_model_sync (RhythmDBPropertyModel *model)
+{
+	int count = g_sequence_get_length (model->priv->properties);
+	GtkTreeIter iter;
+	GtkTreePath *path;
+
+	g_free (model->priv->all->name);
+	model->priv->all->name = g_strdup_printf (_("All (%d)"), count);
+
+	iter.stamp = model->priv->stamp;
+	iter.user_data = model->priv->all;
+	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
+	gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+	gtk_tree_path_free (path);
+}
+

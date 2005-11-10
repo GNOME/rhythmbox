@@ -103,8 +103,6 @@ enum
 	PROP_MODEL,
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_property_view_signals[LAST_SIGNAL] = { 0 };
 
 enum {
@@ -127,40 +125,13 @@ static const GtkTargetEntry targets_artist [] = {
 	{ "text/uri-list", 0, TARGET_URIS },
 };
 
-GType
-rb_property_view_get_type (void)
-{
-	static GType rb_property_view_type = 0;
+G_DEFINE_TYPE (RBPropertyView, rb_property_view, GTK_TYPE_SCROLLED_WINDOW)
 
-	if (rb_property_view_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPropertyViewClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_property_view_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPropertyView),
-			0,
-			(GInstanceInitFunc) rb_property_view_init
-		};
-		
-		rb_property_view_type = g_type_register_static (GTK_TYPE_SCROLLED_WINDOW,
-								"RBPropertyView",
-								&our_info, 0);
-	}
-
-	return rb_property_view_type;
-}
 
 static void
 rb_property_view_class_init (RBPropertyViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_property_view_finalize;
 	object_class->constructor = rb_property_view_constructor;
@@ -266,7 +237,7 @@ rb_property_view_finalize (GObject *object)
 	g_free (view->priv->title);
 	g_free (view->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_property_view_parent_class)->finalize (object);
 }
 
 
@@ -488,13 +459,11 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	RBPropertyView *view;
 	RBPropertyViewClass *klass;
-	GObjectClass *parent_class; 
 
 	klass = RB_PROPERTY_VIEW_CLASS (g_type_class_peek (RB_TYPE_PROPERTY_VIEW));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	view = RB_PROPERTY_VIEW (parent_class->constructor (type, n_construct_properties,
-							    construct_properties));
+	view = RB_PROPERTY_VIEW (G_OBJECT_CLASS (rb_property_view_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
