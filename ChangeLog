@@ -1,3 +1,14 @@
+2005-11-10  Dennis Cranston  <dennis_cranston@yahoo.com>
+
+	Make the "delete podcast" dialog better. Closes bug 320899.
+
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property):
+	Add PROP_WINDOW for rb_shell_get_property so we can access the
+	GtkWindow widget of the main window. 
+	* sources/rb-podcast-source.c: (impl_delete):  Set parent window &
+	fix mnemonic conflict; (rb_podcast_source_cmd_delete_feed): Make the 
+	podcast feed delete dialog less confusing as well.
+
 2005-11-09  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-removable-media-manager.c:

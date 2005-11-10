@@ -833,10 +833,16 @@ impl_delete (RBSource *asource)
 	gint ret;
 	GtkWidget *dialog;
 	GtkWidget *button;
+	GtkWindow *window;
+	RBShell *shell;
 
-	rb_debug ("Delete feed action");
+	rb_debug ("Delete episode action");
 	
-	dialog = gtk_message_dialog_new (NULL,
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "window", &window, NULL);
+	g_object_unref (G_OBJECT (shell));
+	
+	dialog = gtk_message_dialog_new (window,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_WARNING,
 					 GTK_BUTTONS_NONE,
@@ -851,7 +857,7 @@ impl_delete (RBSource *asource)
 	gtk_window_set_title (GTK_WINDOW (dialog), "");
 
 	gtk_dialog_add_buttons (GTK_DIALOG (dialog), 
-	                        _("_Delete Episode Only"), 
+	                        _("Delete _Episode Only"), 
 	                        GTK_RESPONSE_NO,
 	                        GTK_STOCK_CANCEL, 
 	                        GTK_RESPONSE_CANCEL, 
@@ -1380,22 +1386,40 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 	GList *lst;
 	gint ret;
 	GtkWidget *dialog;
+	GtkWidget *button;
+	GtkWindow *window;
 
 	rb_debug ("Delete feed action");
+
+	g_object_get (G_OBJECT (shell), "window", &window, NULL);
 	
-	dialog = gtk_message_dialog_new (NULL,
+	dialog = gtk_message_dialog_new (window,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
-					 GTK_MESSAGE_QUESTION,
+					 GTK_MESSAGE_WARNING,
 					 GTK_BUTTONS_NONE,
-					 _("Do you want the podcast episodes to be deleted from disk?"));
-	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-			        GTK_STOCK_CANCEL,
-			        GTK_RESPONSE_CANCEL,
-				GTK_STOCK_NO,
-				GTK_RESPONSE_NO,
-				GTK_STOCK_YES,
-				GTK_RESPONSE_YES,
-				NULL);
+					 _("Delete the podcast feed and downloaded files?"));
+
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+	                                          _("If you choose to delete the feed and files, "
+						    "they will be permanently lost.  Please note that "
+						    "you can delete the feed but keep the downloaded "
+						    "files by choosing to delete the feed only."));
+	
+	gtk_window_set_title (GTK_WINDOW (dialog), "");
+
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog), 
+	                        _("Delete _Feed Only"), 
+	                        GTK_RESPONSE_NO,
+	                        GTK_STOCK_CANCEL, 
+	                        GTK_RESPONSE_CANCEL, 
+	                        NULL);
+
+	button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+	                                _("_Delete Feed And Files"),
+			                GTK_RESPONSE_YES);
+	
+	gtk_window_set_focus (GTK_WINDOW (dialog), button);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_YES);
 	
 	ret = gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);

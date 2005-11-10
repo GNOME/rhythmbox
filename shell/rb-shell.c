@@ -269,7 +269,8 @@ enum
 	PROP_SELECTED_SOURCE,
 	PROP_DB,
 	PROP_UI_MANAGER,
-	PROP_PLAYLIST_MANAGER
+	PROP_PLAYLIST_MANAGER,
+	PROP_WINDOW
 };
 
 /* prefs */
@@ -520,6 +521,13 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBPlaylistManager object",
 							      RB_TYPE_PLAYLIST_MANAGER,
 							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_WINDOW,
+					 g_param_spec_object ("window", 
+							      "GtkWindow", 
+							      "GtkWindow object", 
+							      GTK_TYPE_WINDOW,
+							      G_PARAM_READABLE));
 
 }
 
@@ -662,6 +670,9 @@ rb_shell_get_property (GObject *object,
 	case PROP_SELECTED_SOURCE:
 		g_value_set_object (value, shell->priv->selected_source);
 		break;
+	case PROP_WINDOW:
+		g_value_set_object (value, shell->priv->window);
+		break;	
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
