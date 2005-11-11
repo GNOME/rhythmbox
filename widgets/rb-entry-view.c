@@ -893,6 +893,25 @@ rb_entry_view_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 }
 
 static gint
+rb_entry_view_date_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			      RBEntryView *view)
+{
+	gulong a_val, b_val;
+	gint ret;
+
+	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_DATE);
+	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_DATE);
+
+	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
+	if (a_val > b_val)
+		return 1;
+	else if (a_val < b_val)
+		return -1;
+	else
+		return rb_entry_view_album_sort_func (a, b, view);
+}
+
+static gint
 rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				struct RBEntryViewCellDataFuncData *data)
 {
@@ -1352,7 +1371,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_year_cell_data_func;
 		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_date_sort_func;
 		title = _("_Year");
 		key = "Year";
 		break;
