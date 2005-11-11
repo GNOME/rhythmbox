@@ -148,16 +148,19 @@ static void posts_view_drag_data_received_cb 		(GtkWidget *widget,
 				              		 RBPodcastSource *source);
 
 static void rb_podcast_source_cmd_download_post		(GtkAction *action,
-							 RBShell *shell);
+							 RBPodcastSource *source);
 
 static void rb_podcast_source_cmd_delete_feed		(GtkAction *action,
-							 RBShell *shell);
+							 RBPodcastSource *source);
 
 static void rb_podcast_source_cmd_update_feed		(GtkAction *action,
-							 RBShell *shell);
+							 RBPodcastSource *source);
+
+static void rb_podcast_source_cmd_update_all		(GtkAction *action,
+							 RBPodcastSource *source);
 
 static void rb_podcast_source_cmd_properties_feed	(GtkAction *action,
-							 RBShell *shell);
+							 RBPodcastSource *source);
 
 static void register_action_group			(RBPodcastSource *source);
 
@@ -285,17 +288,18 @@ static GtkActionEntry rb_podcast_source_actions [] =
 	{ "PodcastSrcDownloadPost", NULL, N_("Download Podcast _Episode"), NULL,
 	  N_("Download Post"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
-	{ "PodcastFeedProperties", NULL, N_("_Properties"), NULL,
+	{ "PodcastFeedProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
 	  N_("Properties Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_properties_feed) },
-	{ "PodcastFeedUpdate", NULL, N_("_Update Podcast Feed"), NULL,
+	{ "PodcastFeedUpdate", GTK_STOCK_REFRESH, N_("_Update Podcast Feed"), NULL,
 	  N_("Update Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_update_feed) },
-	{ "PodcastFeedDelete", NULL, N_("_Delete Podcast Feed"), NULL,
+	{ "PodcastFeedDelete", GTK_STOCK_DELETE, N_("_Delete Podcast Feed"), NULL,
 	  N_("Delete Feed"),
-	  G_CALLBACK (rb_podcast_source_cmd_delete_feed) }
-
-
+	  G_CALLBACK (rb_podcast_source_cmd_delete_feed) },
+	{ "PodcastUpdateAllFeeds", GTK_STOCK_REFRESH, N_("_Update All Feeds"), NULL,
+	  N_("Update all feeds"),
+	  G_CALLBACK (rb_podcast_source_cmd_update_all) },
 };
 
 
@@ -611,9 +615,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds), GTK_SELECTION_MULTIPLE);
 	
 	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
-	
 	g_object_set (G_OBJECT (feed_model), "query-model", query_model, NULL);
-	
 	
 	rhythmdb_query_free (query);
 	
@@ -1306,7 +1308,6 @@ register_action_group (RBPodcastSource *source)
 	GtkUIManager *uimanager;
 	GList *actiongroups;
 	GList *group;
-	RBShell *shell;
 
 	g_object_get (G_OBJECT (source), "ui-manager", &uimanager, NULL);
 	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
@@ -1322,39 +1323,33 @@ register_action_group (RBPodcastSource *source)
 		}
 	}
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	source->priv->action_group = gtk_action_group_new ("PodcastActions");
 	gtk_action_group_set_translation_domain (source->priv->action_group,
 						 GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (source->priv->action_group, 
 				      rb_podcast_source_actions,
 				      G_N_ELEMENTS (rb_podcast_source_actions),
-				      shell);
+				      source);
 	gtk_ui_manager_insert_action_group (uimanager, 
 					    source->priv->action_group, 0);
 	g_object_unref (G_OBJECT (uimanager));
-	g_object_unref (G_OBJECT (shell));
 
 }
 
 static void
 rb_podcast_source_cmd_download_post (GtkAction *action,
-				     RBShell *shell)
+				     RBPodcastSource *source)
 {
-	RBPodcastSource *source;
 	GList *lst;
 	gulong status;
 	GValue val = {0, };
 	RBEntryView *posts;
 	
 	rb_debug ("Add to download action");
-
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	posts = source->priv->posts;
 	
 	lst = rb_entry_view_get_selected_entries (posts);
 	g_value_init (&val, G_TYPE_ULONG);
-
 
 	while (lst != NULL) {
 		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
@@ -1380,19 +1375,21 @@ rb_podcast_source_cmd_download_post (GtkAction *action,
 
 static void
 rb_podcast_source_cmd_delete_feed (GtkAction *action,
-			     	   RBShell *shell)
+			     	   RBPodcastSource *source)
 {
-	RBPodcastSource *source;
 	GList *lst;
 	gint ret;
 	GtkWidget *dialog;
 	GtkWidget *button;
 	GtkWindow *window;
+	RBShell *shell;
 
 	rb_debug ("Delete feed action");
 
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "window", &window, NULL);
-	
+	g_object_unref (G_OBJECT (shell));
+
 	dialog = gtk_message_dialog_new (window,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_WARNING,
@@ -1427,10 +1424,7 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
 		return;
 	
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
-	
 	lst = source->priv->selected_feeds;
-
 
 	while (lst != NULL) {
 		g_return_if_fail (lst->data != NULL);
@@ -1444,13 +1438,10 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 
 static void
 rb_podcast_source_cmd_properties_feed (GtkAction *action,
-			     	       RBShell *shell)
+			     	       RBPodcastSource *source)
 {
-	RBPodcastSource *source;
 	RhythmDBEntry *entry;
 	
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
-
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, 
 						   (gchar *) source->priv->selected_feeds->data );
 	
@@ -1466,17 +1457,12 @@ rb_podcast_source_cmd_properties_feed (GtkAction *action,
 	
 static void
 rb_podcast_source_cmd_update_feed (GtkAction *action,
-			     	   RBShell *shell)
+			     	   RBPodcastSource *source)
 {
-	RBPodcastSource *source;
 	GList *lst;
 	
 	rb_debug ("Update action");
-
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
-	
 	lst = source->priv->selected_feeds;
-
 
 	while (lst != NULL) {
 		rb_podcast_manager_subscribe_feed (source->priv->podcast_mg,
@@ -1484,6 +1470,37 @@ rb_podcast_source_cmd_update_feed (GtkAction *action,
 
 		lst = lst->next;
 	}
+}
+
+static gboolean
+rb_podcast_source_update_feed_func (GtkTreeModel *model,
+				    GtkTreePath *path,
+				    GtkTreeIter *iter,
+				    RBPodcastSource *source)
+{
+	RhythmDBEntry *entry;
+	const char *uri;
+
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	
+	rb_podcast_manager_subscribe_feed (source->priv->podcast_mg, uri);
+
+	return FALSE;
+}
+
+static void
+rb_podcast_source_cmd_update_all (GtkAction *action, RBPodcastSource *source)
+{
+	RhythmDBPropertyModel *feed_model;
+	RhythmDBQueryModel *query_model;
+
+	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
+	g_object_get (G_OBJECT (feed_model), "query-model", &query_model, NULL);
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (query_model),
+				(GtkTreeModelForeachFunc) rb_podcast_source_update_feed_func,
+				source);
 }
 
 static void

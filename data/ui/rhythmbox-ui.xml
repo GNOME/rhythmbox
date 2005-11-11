@@ -126,6 +126,7 @@
   </popup>
   <popup name="PodcastSourcePopup">
     <menuitem name="PodcastSrcPopupNew" action="MusicNewPodcast"/>
+    <menuitem name="PodcastSrcPopupUpdateAllFeeds" action="PodcastUpdateAllFeeds"/>
   </popup>
 
   <popup name="PodcastViewPopup">
@@ -137,6 +138,7 @@
 
   <popup name="PodcastFeedViewPopup">
     <menuitem name="NewPodcastPopup" action="MusicNewPodcast"/>
+    <menuitem name="PodcastSrcPopupUpdateAllFeeds" action="PodcastUpdateAllFeeds"/>
     <separator/>
     <menuitem name="UpdateFeedPodcastPopup" action="PodcastFeedUpdate"/>
     <menuitem name="DeleteFeedPodcastPopup" action="PodcastFeedDelete"/>

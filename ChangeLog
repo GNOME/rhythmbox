@@ -1,3 +1,19 @@
+2005-11-12  James Livingston  <jrl@ids.org.au>
+
+	Add "update all podcast feeds" command. Closes bug 319954.
+
+	* data/ui/rhythmbox-ui.xml: add to source context menu.
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(register_action_group), (rb_podcast_source_cmd_download_post),
+	(rb_podcast_source_cmd_delete_feed),
+	(rb_podcast_source_cmd_properties_feed),
+	(rb_podcast_source_cmd_update_feed): pass the source to the actions,
+	rather than the shell.
+
+	(rb_podcast_source_update_feed_func),
+	(rb_podcast_source_cmd_update_all): update every feed.
+
 2005-11-11  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (rb_shell_player_class_init),
