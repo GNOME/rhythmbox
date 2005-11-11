@@ -212,6 +212,8 @@ struct RhythmDBTreeLoadContext
 	RhythmDBEntry *entry;
 	GString *buf;
 	RhythmDBPropType propid;
+
+	gboolean has_date;
 };
 
 static void
@@ -261,6 +263,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 			g_assert (type_set);
 			ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
 			ctx->entry = rhythmdb_entry_allocate (RHYTHMDB (ctx->db), type);
+			ctx->has_date = FALSE;
 		} else
 			ctx->in_unknown_elt = TRUE;
 		break;
@@ -316,6 +319,13 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		break;
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
+		if (!ctx->has_date) {
+			/* there is no date metadata, so this is from an old version
+			 * reset the last-modified timestamp, so that the file is re-read
+			 */
+			rb_debug ("pre-Date entry found, causing re-read");
+			ctx->entry->mtime = 0;
+		}
 		rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
 		rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
 		rhythmdb_commit (RHYTHMDB (ctx->db));
@@ -354,6 +364,9 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			
 			if (value > 0)
 				ctx->entry->date = g_date_new_julian (value);
+			else
+				;
+			ctx->has_date = TRUE;
 			break;
 		}
 		case RHYTHMDB_PROP_DURATION:
@@ -599,10 +612,10 @@ save_entry_int (struct RhythmDBTreeSaveContext *ctx,
 
 static void
 save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
-		  const xmlChar *elt_name, gulong num)
+		  const xmlChar *elt_name, gulong num, gboolean save_zeroes)
 {
 	char buf[92];
-	if (num == 0)
+	if (num == 0 && !save_zeroes)
 		return;
 	write_elt_name_open (ctx, elt_name);
 	g_snprintf (buf, sizeof (buf), "%lu", num);
@@ -692,17 +705,19 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->genre));
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
-			save_entry_ulong(ctx, elt_name, entry->tracknum);
+			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);
 			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
-			save_entry_ulong(ctx, elt_name, entry->discnum);
+			save_entry_ulong (ctx, elt_name, entry->discnum, FALSE);
 			break;
 		case RHYTHMDB_PROP_DATE:
 			if (entry->date)
-				save_entry_ulong (ctx, elt_name, g_date_get_julian (entry->date));
+				save_entry_ulong (ctx, elt_name, g_date_get_julian (entry->date), TRUE);
+			else
+				save_entry_ulong (ctx, elt_name, 0, TRUE);
 			break;
 		case RHYTHMDB_PROP_DURATION:
-			save_entry_ulong(ctx, elt_name, entry->duration);
+			save_entry_ulong (ctx, elt_name, entry->duration, FALSE);
 			break;
 		case RHYTHMDB_PROP_BITRATE:
 			save_entry_int(ctx, elt_name, entry->bitrate);
@@ -736,26 +751,26 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->mimetype));
 			break;
 		case RHYTHMDB_PROP_MTIME:
-			save_entry_ulong(ctx, elt_name, entry->mtime);
+			save_entry_ulong (ctx, elt_name, entry->mtime, FALSE);
 			break;
 		case RHYTHMDB_PROP_FIRST_SEEN:
-			save_entry_ulong(ctx, elt_name, entry->first_seen);
+			save_entry_ulong (ctx, elt_name, entry->first_seen, FALSE);
 			break;
 		case RHYTHMDB_PROP_LAST_SEEN:
-			save_entry_ulong(ctx, elt_name, entry->last_seen);
+			save_entry_ulong (ctx, elt_name, entry->last_seen, FALSE);
 			break;
 		case RHYTHMDB_PROP_RATING:
 			save_entry_double(ctx, elt_name, entry->rating);
 			break;
 		case RHYTHMDB_PROP_PLAY_COUNT:
-			save_entry_ulong(ctx, elt_name, entry->play_count);
+			save_entry_ulong (ctx, elt_name, entry->play_count, FALSE);
 			break;
 		case RHYTHMDB_PROP_LAST_PLAYED:
-			save_entry_ulong(ctx, elt_name, entry->last_played);
+			save_entry_ulong (ctx, elt_name, entry->last_played, FALSE);
 			break;
 		case RHYTHMDB_PROP_STATUS:
 			if (entry->podcast)
-				save_entry_ulong (ctx, elt_name, entry->podcast->status);
+				save_entry_ulong (ctx, elt_name, entry->podcast->status, FALSE);
 			break;
 		case RHYTHMDB_PROP_DESCRIPTION:
 			if (entry->podcast && entry->podcast->description)
@@ -787,7 +802,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			break;
 		case RHYTHMDB_PROP_POST_TIME:
 			if (entry->podcast)
-				save_entry_ulong (ctx, elt_name, entry->podcast->post_time);
+				save_entry_ulong (ctx, elt_name, entry->podcast->post_time, FALSE);
 			break;			
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
