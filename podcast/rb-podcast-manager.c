@@ -759,7 +759,13 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char* url)
 	RBPodcastThreadInfo *info;
 	gchar *valid_url = gnome_vfs_make_uri_from_input (url);
 
-	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
+	if (valid_url == NULL) {
+		rb_error_dialog (NULL, _("Invalid URL"),
+				 _("The URL \"%s\" is not valid, please check it."), url);
+		return FALSE;
+	}
+
+	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, valid_url);
 	if (entry) {
 		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			/* added as something else, probably iradio */
