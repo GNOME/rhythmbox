@@ -261,13 +261,13 @@ enum
 
 static GtkActionEntry rb_shell_player_actions [] =
 {
-	{ "ControlPrevious", GTK_STOCK_MEDIA_PREVIOUS, N_("P_revious"), "<control>Left",
+	{ "ControlPrevious", GTK_STOCK_MEDIA_PREVIOUS, N_("P_revious"), "<alt>Left",
 	  N_("Start playing the previous song"),
 	  G_CALLBACK (rb_shell_player_cmd_previous) },
-	{ "ControlNext", GTK_STOCK_MEDIA_NEXT, N_("_Next"), "<control>Right",
+	{ "ControlNext", GTK_STOCK_MEDIA_NEXT, N_("_Next"), "<alt>Right",
 	  N_("Start playing the next song"),
 	  G_CALLBACK (rb_shell_player_cmd_next) },
-	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), "<control>P",
+	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), "<Alt>Return",
 	  N_("Show information on the selected song"),
 	  G_CALLBACK (rb_shell_player_cmd_song_info) },
 };
@@ -305,44 +305,15 @@ static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 };
 static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_shell_player_signals[LAST_SIGNAL] = { 0 };
 
-GType
-rb_shell_player_get_type (void)
-{
-	static GType rb_shell_player_type = 0;
+G_DEFINE_TYPE (RBShellPlayer, rb_shell_player, GTK_TYPE_HBOX)
 
-	if (rb_shell_player_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBShellPlayerClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_shell_player_class_init,
-			NULL,
-			NULL,
-			sizeof (RBShellPlayer),
-			0,
-			(GInstanceInitFunc) rb_shell_player_init
-		};
-
-		rb_shell_player_type = g_type_register_static (GTK_TYPE_HBOX,
-							       "RBShellPlayer",
-							       &our_info, 0);
-	}
-
-	return rb_shell_player_type;
-}
 
 static void
 rb_shell_player_class_init (RBShellPlayerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_shell_player_finalize;
 	object_class->constructor = rb_shell_player_constructor;
@@ -488,13 +459,11 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 {
 	RBShellPlayer *player;
 	RBShellPlayerClass *klass;
-	GObjectClass *parent_class;  
-
+	
 	klass = RB_SHELL_PLAYER_CLASS (g_type_class_peek (RB_TYPE_SHELL_PLAYER));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	player = RB_SHELL_PLAYER (parent_class->constructor (type, n_construct_properties,
-							     construct_properties));
+	player = RB_SHELL_PLAYER (G_OBJECT_CLASS (rb_shell_player_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
 	gtk_action_group_add_actions (player->priv->actiongroup,
 				      rb_shell_player_actions,
@@ -761,7 +730,7 @@ rb_shell_player_finalize (GObject *object)
 	
 	g_free (player->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
 }
 
 static void

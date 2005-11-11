@@ -1,5 +1,12 @@
 2005-11-11  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_constructor), (rb_shell_player_finalize):
+	* shell/rb-shell.c: fix some conflicting keybindings, and mak some
+	others follow the HIG recommentations.
+
+2005-11-11  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c:
 	(rb_podcast_manager_subscribe_feed): check that the url is valid,
 	before trying to use it.
