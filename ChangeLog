@@ -1,3 +1,10 @@
+2005-11-15  James Livingston  <jrl@ids.org.au>
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_save_metadata),
+	(end_job): mark podcast episodes as failed, if the metadata load
+	fails. This will prevent people playing non-audio enclosures, helping
+	stop bug 320366.
+
 2005-11-14  James Livingston  <jrl@ids.org.au>
 
 	* player/rb-player-gst.c: (rb_player_construct): Explicitly set the

@@ -911,7 +911,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 }
 
 static gboolean
-rb_podcast_manager_save_metadata(RhythmDB *db, RhythmDBEntry *entry, const char* uri)
+rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char* uri)
 {
 	RBMetaData *md = rb_metadata_new();
 	GError *error = NULL;
@@ -921,18 +921,30 @@ rb_podcast_manager_save_metadata(RhythmDB *db, RhythmDBEntry *entry, const char*
 	rb_debug("Loading podcast metadata");
         rb_metadata_load (md, uri, &error);	
 
+	if (error != NULL) {
+		/* this probably isn't an audio enclosure. or some other error */
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, error->message);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+		g_value_unset (&val);
+			
+		rhythmdb_commit (db);
+		
+		g_object_unref (md);
+		return FALSE;
+	}
+
 	mime = rb_metadata_get_mime (md);
 	if (mime) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, mime);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MIMETYPE, &val);
 		g_value_unset (&val);
-	}
-
-
-	if (error != NULL) {
-		g_object_unref (md);
-		return FALSE;
 	}
 
 	if (rb_metadata_get (md,
@@ -948,6 +960,8 @@ rb_podcast_manager_save_metadata(RhythmDB *db, RhythmDBEntry *entry, const char*
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_BITRATE, &val);
 		g_value_unset (&val);
 	}
+
+	rhythmdb_commit (db);
 
 	g_object_unref (md);
 	return TRUE;
@@ -1088,6 +1102,7 @@ static void
 end_job	(RBPodcastManagerInfo *data)
 {
 	RBPodcastManager *pd = data->pd;
+	
 	rb_debug ("end_job");
 	
 	g_mutex_lock (data->pd->priv->download_list_mutex);
