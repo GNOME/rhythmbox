@@ -1302,6 +1302,8 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 						    new_event);
 			}
 		}
+
+		rhythmdb_commit (db);
 	} else {
 		action = g_new0 (struct RhythmDBAction, 1);
 		action->type = RHYTHMDB_ACTION_LOAD;

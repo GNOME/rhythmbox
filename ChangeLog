@@ -1,3 +1,10 @@
+2005-11-14  Bastien Nocera  <hadess@hadess.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_stat_event): Patch from 
+	Jonathan Matthew <jonathan@kaolin.hn.org> to avoid lingering
+	entry-changed events after stats on startup, fixes entry deleted from
+	filtered views not disappearing
+
 2005-11-14  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	Fix rhythmdb query model refcount and polling problems. Closes bug
