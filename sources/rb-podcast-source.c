@@ -981,11 +981,12 @@ rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
 
 		act_post = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcDownloadPost");
 
-		if ((all_status < 100) || (all_status == 102))  {
+		if ((all_status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
+		    (all_status == RHYTHMDB_PODCAST_STATUS_WAITING)) {
 			g_object_set (G_OBJECT (act_post), "label", _("_Cancel Download") , NULL);
 			gtk_action_set_visible (act_post, TRUE);
 		}
-		else if ((all_status > 100) && (all_status != 999)) {
+		else if ((all_status > RHYTHMDB_PODCAST_STATUS_COMPLETE) && (all_status != 999)) {
 			g_object_set (G_OBJECT (act_post), "label", _("_Download Post") , NULL);
 			gtk_action_set_visible (act_post, TRUE);
 		}
@@ -1358,15 +1359,15 @@ rb_podcast_source_cmd_download_post (GtkAction *action,
 	while (lst != NULL) {
 		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
 		status  = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-		if ( (status < 100) || (status == 102)) {
-			//cancel download
-			g_value_set_ulong (&val, 103);
+		if ( (status < RHYTHMDB_PODCAST_STATUS_COMPLETE) || (status == RHYTHMDB_PODCAST_STATUS_WAITING)) {
+			/* cancel download */
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
 			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 			rb_podcast_manager_cancel_download (source->priv->podcast_mg, entry);
 		}
 		else {
-			//add to downlaod
-			g_value_set_ulong (&val, 102);
+			/* add to download */
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_WAITING);
 			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 			rb_podcast_manager_download_entry (source->priv->podcast_mg, entry);
 		}
@@ -1521,19 +1522,19 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column, GtkCell
 
 	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS))
 	{
-	case 100:
+	case RHYTHMDB_PODCAST_STATUS_COMPLETE:
 		g_object_set (G_OBJECT (renderer), "text", _("Completed"), NULL);
 		value = 100;  
 		break;
-	case 101:
+	case RHYTHMDB_PODCAST_STATUS_ERROR:
 		g_object_set (G_OBJECT (renderer), "text", _("Failed"), NULL);
 		value = 0;
 		break;
-	case 102:
+	case RHYTHMDB_PODCAST_STATUS_WAITING:
 		g_object_set (G_OBJECT (renderer), "text", _("Waiting"), NULL);
 		value = 0;
 		break;
-	case 103:
+	case RHYTHMDB_PODCAST_STATUS_PAUSED:
 		g_object_set (G_OBJECT (renderer), "text", _("Paused"), NULL);
 		value = 0;
 		break;
@@ -1845,7 +1846,7 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 		return;
 	
 	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, 102);
+	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_WAITING);
 	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 	rhythmdb_commit (source->priv->db);
 	g_value_unset (&val);

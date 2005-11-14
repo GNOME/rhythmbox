@@ -415,7 +415,7 @@ static gboolean
 rb_player_construct (RBPlayer *mp, GError **error)
 {
 	char *element_name = NULL;
-	GstElement *sink;
+	GstElement *sink, *fakesink;
 
 	/* playbin */
 	rb_debug ("constructing element \"playbin\"");
@@ -423,6 +423,10 @@ rb_player_construct (RBPlayer *mp, GError **error)
 	if (mp->priv->playbin == NULL) {
 		goto missing_element;
 	}
+
+	fakesink = gst_element_factory_make ("fakesink", "fakesink");
+	g_object_set (G_OBJECT (mp->priv->playbin), "video-sink", fakesink, NULL);
+
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 				 "found_tag",
 				 G_CALLBACK (found_tag_cb),

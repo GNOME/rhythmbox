@@ -1650,7 +1650,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 
 	/* ensure the podcast has been downloaded */
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
-		if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL)
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS) != RHYTHMDB_PODCAST_STATUS_COMPLETE)
 			return;
 	
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);

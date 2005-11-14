@@ -120,6 +120,12 @@ typedef enum
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
 
+enum {
+	RHYTHMDB_PODCAST_STATUS_COMPLETE = 100,
+	RHYTHMDB_PODCAST_STATUS_ERROR = 101,
+	RHYTHMDB_PODCAST_STATUS_WAITING = 102,
+	RHYTHMDB_PODCAST_STATUS_PAUSED = 103,
+};
 
 GType rhythmdb_query_get_type (void);
 GType rhythmdb_prop_get_type (void);

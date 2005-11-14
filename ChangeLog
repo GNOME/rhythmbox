@@ -1,3 +1,28 @@
+2005-11-14  James Livingston  <jrl@ids.org.au>
+
+	* player/rb-player-gst.c: (rb_player_construct): Explicitly set the
+	video sink to fakesink. This will stop problems (potentially crashers)
+	that will occur if the file contains a video stream.
+
+	* rhythmdb/rhythmdb.h: define the podcast status number in an enum,
+	rather than using magic numbers everywhere.
+
+	* shell/rb-shell-player.c: (rb_shell_player_entry_activated_cb):
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_songs_show_popup_cb),
+	(rb_podcast_source_cmd_download_post),
+	(rb_podcast_source_post_status_cell_data_func),
+	(rb_podcast_source_entry_activated_cb): use the above constants.
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_init),
+	(rb_podcast_manager_finalize), (rb_podcast_manager_download_entry),
+	(rb_podcast_manager_next_file), (rb_podcast_manager_copy_post),
+	(write_job_data), (rb_podcast_manager_cancel_all), (end_job),
+	(cancel_job), (download_progress_cb),
+	(rb_podcast_manager_cancel_download),
+	(rb_podcast_manager_insert_feed): use the constants, and fix a
+	trhead-safety issue.
+
 2005-11-14  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_stat_event): Patch from 
