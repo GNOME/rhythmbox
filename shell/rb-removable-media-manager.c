@@ -535,6 +535,8 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 
 	if (priv->actiongroup == NULL) {
 		priv->actiongroup = gtk_action_group_new ("RemovableMediaActions");
+		gtk_action_group_set_translation_domain (priv->actiongroup,
+							 GETTEXT_PACKAGE);
 		gtk_action_group_add_actions (priv->actiongroup,
 					      rb_removable_media_manager_actions,
 					      rb_removable_media_manager_n_actions,

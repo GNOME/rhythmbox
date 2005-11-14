@@ -220,6 +220,8 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 							construct_properties));
 
 	tray->priv->actiongroup = gtk_action_group_new ("TrayActions");
+	gtk_action_group_set_translation_domain (tray->priv->actiongroup,
+						 GETTEXT_PACKAGE);
 	gtk_action_group_add_toggle_actions (tray->priv->actiongroup,
 					     rb_tray_icon_toggle_entries,
 					     rb_tray_icon_n_toggle_entries,
