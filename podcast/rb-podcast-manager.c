@@ -1503,7 +1503,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
 
-		if (strcmp (last_post, (char*)item->url) != 0) {
+		if (last_post == NULL || strcmp (last_post, (char*)item->url) != 0) {
 			if (last_post)
 				g_free (last_post);	
 			last_post = g_strdup ((gchar* ) item->url);
