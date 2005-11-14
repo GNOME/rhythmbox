@@ -82,14 +82,10 @@ GnomeVFSFileSize	rhythmdb_query_model_get_size	(RhythmDBQueryModel *model);
 
 long			rhythmdb_query_model_get_duration(RhythmDBQueryModel *model);
 
-gboolean		rhythmdb_query_model_poll	(RhythmDBQueryModel *model,
-							 GTimeVal *timeout);
-
 gboolean		rhythmdb_query_model_entry_to_iter(RhythmDBQueryModel *model,
 							   RhythmDBEntry *entry,
 							   GtkTreeIter *iter);
 
-void			rhythmdb_query_model_cancel	(RhythmDBQueryModel *model);
 gboolean		rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model);
 
 G_END_DECLS

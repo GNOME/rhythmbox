@@ -497,7 +497,6 @@ rb_entry_view_set_property (GObject *object,
 		struct RBEntryViewColumnSortData *sort_data;
 		
 		if (view->priv->model) {
-			rhythmdb_query_model_cancel (view->priv->model);
 			rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (view->priv->model), FALSE);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
 							      G_CALLBACK (rb_entry_view_row_inserted_cb),
@@ -2284,17 +2283,6 @@ rb_entry_view_set_playing (RBEntryView *view,
 		gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_model), path, &iter);
   		gtk_tree_path_free (path);
 	}
-}
-
-gboolean
-rb_entry_view_poll_model (RBEntryView *view)
-{
-	GTimeVal timeout;
-
-	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
-
-	return rhythmdb_query_model_poll (view->priv->model, &timeout);
 }
 
 static void

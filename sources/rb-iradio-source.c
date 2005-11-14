@@ -717,6 +717,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 
 		genre_model = rb_property_view_get_model (source->priv->genres);
 		g_object_set (G_OBJECT (genre_model), "query-model", query_model, NULL);
+		g_object_unref (G_OBJECT (genre_model));
 
 		source->priv->all_query = query_model;
 	} else {

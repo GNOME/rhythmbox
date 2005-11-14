@@ -1480,11 +1480,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	/* Unlocked */
 	rb_debug ("preparing to read lock for query");
 
-	if (source->priv->active_query) {
-		rb_debug ("killing active query");
-		rhythmdb_query_model_cancel (RHYTHMDB_QUERY_MODEL (source->priv->active_query));
-	}
-
 	is_all_query = (source->priv->selected_genres == NULL &&
 			source->priv->selected_artists == NULL &&	    
 			source->priv->selected_albums == NULL &&	    
@@ -1513,7 +1508,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 						    source->priv->cached_artists_model);
 			rb_property_view_set_model (source->priv->albums,
 						    source->priv->cached_albums_model);
-			rb_entry_view_poll_model (source->priv->songs);
 			return;
 		} else if (source->priv->cached_all_query) {
 			rb_debug ("sorting mismatch, freeing cached query");
@@ -1577,6 +1571,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			genre_model = rb_property_view_get_model (source->priv->genres);
 			g_object_set (G_OBJECT (genre_model), "query-model",
 				      query_model, NULL);
+			g_object_unref (G_OBJECT (genre_model));
 		case RB_LIBRARY_QUERY_TYPE_GENRE:
 			rb_debug ("resetting artist view");
 			g_list_foreach (source->priv->selected_artists,
@@ -1588,6 +1583,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			artist_model = rb_property_view_get_model (source->priv->artists);
 			g_object_set (G_OBJECT (artist_model), "query-model",
 				      query_model, NULL);
+			g_object_unref (G_OBJECT (artist_model));
 		case RB_LIBRARY_QUERY_TYPE_ARTIST:
 			rb_debug ("resetting album view");
 			g_list_foreach (source->priv->selected_albums,
@@ -1599,6 +1595,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			album_model = rb_property_view_get_model (source->priv->albums);
 			g_object_set (G_OBJECT (album_model), "query-model",
 				      query_model, NULL);
+			g_object_unref (G_OBJECT (album_model));
 		case RB_LIBRARY_QUERY_TYPE_ALBUM:
 		case RB_LIBRARY_QUERY_TYPE_SEARCH:
 			break;
@@ -1608,7 +1605,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	model = GTK_TREE_MODEL (query_model);
 
 	rb_debug ("setting empty model");
-	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (query_model));
+	rb_entry_view_set_model (source->priv->songs, query_model);
 
 	query = construct_query_from_selection (source);
 	
@@ -1616,7 +1613,9 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 		
 	rhythmdb_query_free (query);
-	g_object_unref (G_OBJECT (query_model));
+	
+	if (!is_all_query)
+		g_object_unref (G_OBJECT (query_model));
 }
 
 static void

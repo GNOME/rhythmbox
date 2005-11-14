@@ -32,6 +32,7 @@
 #include "gsequence.h"
 #include "rb-tree-dnd.h"
 #include "rhythmdb-marshal.h"
+#include "rb-util.h"
 
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
@@ -113,16 +114,11 @@ static gboolean rhythmdb_query_model_iter_nth_child (GtkTreeModel *tree_model,
 static gboolean rhythmdb_query_model_iter_parent (GtkTreeModel *tree_model,
 						  GtkTreeIter  *iter,
 						  GtkTreeIter  *child);
-static GSequencePtr choose_sequence_element (GSequence *seq);
 
-static gboolean idle_poll_model (RhythmDBQueryModel *model);
-
-static const GtkTargetEntry rhythmdb_query_model_drag_types[] = { { "text/uri-list", 0, 0 },};
-
-static GtkTargetList *rhythmdb_query_model_drag_target_list = NULL;
 
 struct RhythmDBQueryModelUpdate
 {
+	RhythmDBQueryModel *model;
 	enum {
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE,
@@ -130,6 +126,15 @@ struct RhythmDBQueryModelUpdate
 	RhythmDBEntry *entry;
 	GPtrArray *entries;
 };
+
+static void rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update);
+
+static gboolean idle_process_update (struct RhythmDBQueryModelUpdate *update);
+
+static const GtkTargetEntry rhythmdb_query_model_drag_types[] = { { "text/uri-list", 0, 0 },};
+
+static GtkTargetList *rhythmdb_query_model_drag_target_list = NULL;
+
 
 struct RhythmDBQueryModelPrivate
 {
@@ -147,11 +152,7 @@ struct RhythmDBQueryModelPrivate
 	guint max_count;
 	guint max_time;
 
-	gboolean cancelled;
-	
 	gboolean connected;
-
-	guint model_poll_id;
 
 	glong total_duration;
 	GnomeVFSFileSize total_size;
@@ -161,10 +162,7 @@ struct RhythmDBQueryModelPrivate
 	GSequence *limited_entries;
 	GHashTable *limited_reverse_map;
 
-	GAsyncQueue *query_complete;
-
-	/* row_inserted/row_changed/row_deleted */
-	GAsyncQueue *pending_updates;
+	gint pending_update_count;
 
 	gboolean reorder_drag_and_drop;
 };
@@ -431,13 +429,7 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 	model->priv->limited_entries = g_sequence_new (NULL);
 	model->priv->limited_reverse_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	model->priv->query_complete = g_async_queue_new ();
-	model->priv->pending_updates = g_async_queue_new ();
-
 	model->priv->reorder_drag_and_drop = FALSE;
-
-	model->priv->model_poll_id = g_idle_add ((GSourceFunc) idle_poll_model, model);
-
 }
 
 static GObject *
@@ -474,31 +466,15 @@ rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
 }
 
 static void
-rhythmdb_query_model_free_pending_update (RhythmDBQueryModel *model,
-					  struct RhythmDBQueryModelUpdate *update)
+_unref_entry (RhythmDBEntry *entry, gpointer stuff, RhythmDB *db)
 {
-	switch (update->type) {
-	case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
-	{
-		guint i;
-		for (i = 0; i < update->entries->len; i++)
-			rhythmdb_entry_unref (model->priv->db,
-					      g_ptr_array_index (update->entries, i));
-		g_ptr_array_free (update->entries, TRUE);
-		break;
-	}
-	case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
-		break;
-	}
-
-	g_free (update);
+	rhythmdb_entry_unref (db, entry);
 }
 
 static void
 rhythmdb_query_model_finalize (GObject *object)
 {
 	RhythmDBQueryModel *model;
-	struct RhythmDBQueryModelUpdate *update;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RHYTHMDB_IS_QUERY_MODEL (object));
@@ -513,8 +489,9 @@ rhythmdb_query_model_finalize (GObject *object)
 	    model->priv->sort_destroy_notify)
 		model->priv->sort_destroy_notify (model->priv->sort_user_data);
 
-	g_source_remove (model->priv->model_poll_id);
-
+	g_hash_table_foreach (model->priv->reverse_map, (GHFunc) _unref_entry, model->priv->db);
+	g_hash_table_foreach (model->priv->limited_reverse_map, (GHFunc) _unref_entry, model->priv->db);
+		
 	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->entries);
 	g_hash_table_destroy (model->priv->limited_reverse_map);
@@ -524,12 +501,6 @@ rhythmdb_query_model_finalize (GObject *object)
 		rhythmdb_query_free (model->priv->query);
 	if (model->priv->original_query)
 		rhythmdb_query_free (model->priv->original_query);
-
-	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL)
-		rhythmdb_query_model_free_pending_update (model, update);
-
-	g_async_queue_unref (model->priv->query_complete);
-	g_async_queue_unref (model->priv->pending_updates);
 
 	g_free (model->priv);
 
@@ -559,21 +530,16 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 }
 
 void
-rhythmdb_query_model_cancel (RhythmDBQueryModel *model)
-{
-	rb_debug ("cancelling query");
-	g_async_queue_push (model->priv->query_complete, GINT_TO_POINTER (1));
-}
-
-void
 rhythmdb_query_model_signal_complete (RhythmDBQueryModel *model)
 {
 	struct RhythmDBQueryModelUpdate *update;
 
 	update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE;
+	update->model = model;
+	g_object_ref (G_OBJECT (model));
 
-	g_async_queue_push (model->priv->pending_updates, update);
+	rhythmdb_query_model_process_update (update);
 }
 
 void
@@ -585,13 +551,7 @@ rhythmdb_query_model_set_connected (RhythmDBQueryModel *model, gboolean connecte
 gboolean
 rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model)
 {
-	return g_async_queue_length (model->priv->pending_updates) > 0;
-}
-
-static inline GSequencePtr
-choose_sequence_element (GSequence *seq)
-{
-	return g_sequence_get_ptr_at_pos (seq, 0);
+	return g_atomic_int_get (&model->priv->pending_update_count) > 0;
 }
 
 static void
@@ -670,7 +630,48 @@ rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 		rhythmdb_query_model_remove_entry (model, entry);
 }
 
-/* Threading: Called from the database context, holding a db write lock
+static void 
+rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update)
+{
+	g_atomic_int_inc (&update->model->priv->pending_update_count);
+	if (rb_is_main_thread ())
+		idle_process_update (update);
+	else
+		g_idle_add ((GSourceFunc) idle_process_update, update);
+}
+
+gboolean
+idle_process_update (struct RhythmDBQueryModelUpdate *update)
+{
+	switch (update->type) {
+	case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
+	{
+		guint i;
+		rb_debug ("inserting %d rows", update->entries->len);
+		for (i = 0; i < update->entries->len; i++ ) {
+			RhythmDBEntry *entry = g_ptr_array_index (update->entries, i);
+
+			if (!rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+				rhythmdb_query_model_do_insert (update->model, entry);
+			
+			rhythmdb_entry_unref (update->model->priv->db, entry);
+		}
+		g_ptr_array_free (update->entries, TRUE);
+		break;
+	}
+	case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
+		g_signal_emit (G_OBJECT (update->model), rhythmdb_query_model_signals[COMPLETE], 0);
+		break;
+	}
+
+	g_atomic_int_add (&update->model->priv->pending_update_count, -1);
+	g_object_unref (G_OBJECT (update->model));
+	g_free (update);
+	return FALSE;
+}
+
+/* Threading: Called from the database query thread for async queries,
+ *  from the main thread for synchronous queries.
  */
 void
 rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
@@ -683,12 +684,13 @@ rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED;
 	update->entries = entries;
+	update->model = model;
+	g_object_ref (G_OBJECT (model));
 
-	/* Called with a locked database */
 	for (i = 0; i < update->entries->len; i++)
 		rhythmdb_entry_ref (model->priv->db, g_ptr_array_index (update->entries, i));
 
-	g_async_queue_push (model->priv->pending_updates, update);
+	rhythmdb_query_model_process_update (update);
 }
 
 void
@@ -710,21 +712,6 @@ long
 rhythmdb_query_model_get_duration (RhythmDBQueryModel *model)
 {
 	return model->priv->total_duration;
-}
-
-static int
-compare_times (GTimeVal *a, GTimeVal *b)
-{
-	if (a->tv_sec == b->tv_sec)
-		/* It's quite unlikely that microseconds are equal,
-		 * so just ignore that case, we don't need a lot
-		 * of precision.
-		 */
-		return a->tv_usec > b->tv_usec ? 1 : -1;
-	else if (a->tv_sec > b->tv_sec)
-		return 1;
-	else
-		return -1;
 }
 
 static void
@@ -1016,91 +1003,6 @@ rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model,
 	rhythmdb_query_model_filter_out_entry (model, entry);
 
 	return TRUE;
-}
-
-static gboolean
-idle_poll_model (RhythmDBQueryModel *model)
-{
-	gboolean did_sync;
-	GTimeVal timeout;
-
-	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
-
-	GDK_THREADS_ENTER ();
-
-	did_sync = rhythmdb_query_model_poll (model, &timeout);
-
-	if (did_sync)
-		model->priv->model_poll_id =
-			g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) idle_poll_model, model, NULL);
-	else
-		model->priv->model_poll_id =
-			g_timeout_add (300, (GSourceFunc) idle_poll_model, model);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-	
-/* Threading: main thread only, should hold GDK lock
- */
-gboolean
-rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
-{
-	GList *processed = NULL, *tem;
-	GTimeVal now;
-	struct RhythmDBQueryModelUpdate *update;
-	guint count = 0;
-
-	if (G_UNLIKELY (model->priv->cancelled))
-		return FALSE;
-
-	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL) {
-		GtkTreeIter iter;
-
-		if (update == NULL)
-			break;
-
-		iter.stamp = model->priv->stamp;
-
-		switch (update->type) {
-		case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
-		{
-			guint i;
-			rb_debug ("inserting %d rows", update->entries->len);
-			for (i = 0; i < update->entries->len; i++ ) {
-				RhythmDBEntry *entry = g_ptr_array_index (update->entries, i);
-
-				if (!rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
-					rhythmdb_query_model_do_insert (model, entry);
-			}
-			break;
-		}
-		case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
-		{
-			g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
-			g_async_queue_push (model->priv->query_complete, GINT_TO_POINTER (1));
-			break;
-		}
-		}
-
-		processed = g_list_prepend (processed, update);
-
-		count++;
-		if (timeout && count / 8 > 0) {
-			/* Do this here at the bottom, so we do at least one update. */
-			g_get_current_time (&now);
-			if (compare_times (timeout,&now) < 0)
-				break;
-		}
-	}
-	
-	for (tem = processed; tem; tem = tem->next)
-		rhythmdb_query_model_free_pending_update (model, tem->data);
-		
-	g_list_free (processed);
-	return processed != NULL;
 }
 
 gboolean

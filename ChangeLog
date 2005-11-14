@@ -1,3 +1,76 @@
+2005-11-14  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Fix rhythmdb query model refcount and polling problems. Closes bug
+	321410.
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_finalize):
+	 Unref the query model if we have one.
+
+	* rhythmdb/rhythmdb-query-model.h:
+	 Remove poll and cancel methods.  Query cancellation
+	 never did anything anyway.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_init): Remove GAsyncQueues.
+	 Replace the GAsyncQueue-based update processing
+	 with a simpler g_idle_add approach; still has the
+	 same queueing properties, but now we don't poll the
+	 model forever and updates are processed immediately.
+
+	(_unref_entry), (rhythmdb_query_model_finalize):
+	 Unref DB entries when finalized
+
+	(rhythmdb_query_model_has_pending_changes):
+	 Use our own counter to decide if there are updates pending
+
+	(rhythmdb_query_model_process_update), (idle_process_update):
+	 Process updates using g_idle_add, or directly if possible
+
+	(rhythmdb_query_model_signal_complete),
+	(rhythmdb_query_model_add_entries):
+	 Change to new update processing method
+
+	(idle_poll_model), (rhythmdb_query_model_poll):
+	 Remove GAsyncQueue-based update processing.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_do_full_query_internal):
+	 No need to poll the model any more - updates are processed
+	 directly for synchronous queries.
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_do_query):
+	 Property model needs to be unref'd here
+
+	* sources/rb-library-source.c: (rb_library_source_do_query):
+	 Don't try to cancel the active query (it never worked anyway),
+	 remove obsolete poll call, unref property models as required,
+	 and don't unref the cached 'all' query, since hold on to it.
+	 We unref it when the sort order changes, which forces the query
+	 to be rerun.
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	 Unref the property model as required
+
+	(rb_podcast_source_do_query):
+	 Treat any query with no selected feeds and no search text as
+	 an 'all' query.  Unref query models except for the cached
+	 'all' query, since we hold on to that.
+
+	(rb_podcast_source_cmd_update_all):
+	 Unref the property model as required.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_set_property):
+	 Don't try to cancel the query (it never worked anyway)
+
+	(rb_entry_view_poll_model):
+	 No need for this any more.
+
+	* widgets/rb-entry-view.h:
+	 Remove obsolete function rb_entry_view_poll_model
+
+	* widgets/rb-property-view.c: (rb_property_view_set_property):
+	 Ref and unref the property model as required.
+
 2005-11-14  James Livingston  <jrl@ids.org.au>
 
 	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>

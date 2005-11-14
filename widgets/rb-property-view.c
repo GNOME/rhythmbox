@@ -71,8 +71,6 @@ struct RBPropertyViewPrivate
 
 	RhythmDBPropType propid;
 
-	GPtrArray *query;
-	
 	RhythmDBPropertyModel *prop_model;
 
 	char *title;
@@ -81,8 +79,6 @@ struct RBPropertyViewPrivate
 	GtkTreeSelection *selection;
 
 	gboolean handling_row_deletion;
-
-	guint refresh_idle_id;
 };
 
 enum
@@ -271,6 +267,7 @@ rb_property_view_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
 							      G_CALLBACK (rb_property_view_post_row_deleted_cb),
 							      view);
+			g_object_unref (G_OBJECT (view->priv->prop_model));
 		}
 
 		view->priv->prop_model = g_value_get_object (value);
@@ -281,6 +278,7 @@ rb_property_view_set_property (GObject *object,
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (view->priv->prop_model));
 
+		g_object_ref (G_OBJECT (view->priv->prop_model));
 		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
 					 "pre-row-deletion",
 					 G_CALLBACK (rb_property_view_pre_row_deleted_cb),

@@ -2749,8 +2749,6 @@ rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
 
 	g_object_ref (G_OBJECT (main_model));
 	rhythmdb_query_internal (data);
-	while (rhythmdb_query_model_poll (RHYTHMDB_QUERY_MODEL (main_model), NULL))
-		;
 	g_free (data);
 }
 

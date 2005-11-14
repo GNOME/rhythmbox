@@ -426,6 +426,9 @@ rhythmdb_property_model_finalize (GObject *object)
 	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->properties);
 
+	if (model->priv->query_model)
+		g_object_unref (G_OBJECT (model->priv->query_model));
+
 	g_free (model->priv);
 
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);

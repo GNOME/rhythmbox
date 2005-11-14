@@ -616,6 +616,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	
 	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
 	g_object_set (G_OBJECT (feed_model), "query-model", query_model, NULL);
+	g_object_unref (G_OBJECT (feed_model));
 	
 	rhythmdb_query_free (query);
 	
@@ -1097,9 +1098,9 @@ rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
 
 	rb_debug ("select entry filter");
 	
-	is_all_query  = ((qtype == RB_PODCAST_QUERY_TYPE_ALL) &&
-			 (source->priv->selected_feeds == NULL) &&
-			 (source->priv->search_text == NULL));
+	is_all_query  = ((qtype == RB_PODCAST_QUERY_TYPE_ALL) ||
+			 ((source->priv->selected_feeds == NULL) &&
+			 (source->priv->search_text == NULL)));
 
 	if (is_all_query && (source->priv->cached_all_query)) {
                 rb_debug ("using cached query");
@@ -1180,6 +1181,9 @@ rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 
 	rhythmdb_query_free (query);
+
+	if (!is_all_query)
+		g_object_unref (G_OBJECT (query_model));
 }
 
 static gboolean
@@ -1497,6 +1501,7 @@ rb_podcast_source_cmd_update_all (GtkAction *action, RBPodcastSource *source)
 
 	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
 	g_object_get (G_OBJECT (feed_model), "query-model", &query_model, NULL);
+	g_object_unref (G_OBJECT (feed_model));
 
 	gtk_tree_model_foreach (GTK_TREE_MODEL (query_model),
 				(GtkTreeModelForeachFunc) rb_podcast_source_update_feed_func,
