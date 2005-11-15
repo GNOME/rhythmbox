@@ -378,7 +378,14 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 	switch (event->button) {
 	case 1: {
 		gboolean visible = rb_remote_proxy_get_visibility (icon->priv->proxy);
-		rb_remote_proxy_set_visibility (icon->priv->proxy, visible ? FALSE : TRUE);
+		rb_remote_proxy_set_visibility (icon->priv->proxy, !visible);
+		break;
+	}
+	case 2: {
+		if (rb_remote_proxy_playing (icon->priv->proxy))
+			rb_remote_proxy_pause (icon->priv->proxy);
+		else
+			rb_remote_proxy_play (icon->priv->proxy);
 		break;
 	}
 		
