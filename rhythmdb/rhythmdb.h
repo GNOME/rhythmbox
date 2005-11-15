@@ -490,8 +490,6 @@ void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 void            rhythmdb_entry_delete_by_type (RhythmDB *db, 
 					       RhythmDBEntryType type);
 
-void		rhythmdb_entry_destroy	(RhythmDB *db, RhythmDBEntry *entry);
-
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);
 

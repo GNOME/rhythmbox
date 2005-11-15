@@ -1,5 +1,17 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* doc/reference/tmpl/rb-entry-view.sgml:
+	* doc/reference/tmpl/rhythmbox-unused.sgml:
+	* doc/reference/tmpl/rhythmdb-query-model.sgml:
+	* doc/reference/tmpl/rhythmdb.sgml:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_unref): add some RhythmDB API
+	docs, including the patch that was on bug 
+
+	* rhythmdb/rhythmdb.h: remove rhythmdb_entry_destroy from the public
+	API, because it should only be used by RhythmDB itself.
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-tray-icon.c: (rb_tray_icon_button_press_event_cb): allow
 	pausing by middle clicking on the tray icon.
 
