@@ -172,6 +172,12 @@ if test x"$enable_tag_writing" = xyes; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
 
+
+dnl Audioscrobbler
+AC_ARG_ENABLE(audioscrobbler,
+	      AC_HELP_STRING([--disable-audioscrobbler],
+			     [Disable Audioscrobbler support in Rhythmbox]))
+
 dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
@@ -259,19 +265,8 @@ if test x"$enable_daap" = xyes; then
 fi
 AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 
-dnl Audioscrobbler
-AC_ARG_ENABLE(audioscrobbler,
-	      AC_HELP_STRING([--enable-audioscrobbler],
-			     [Enable Audioscrobbler support in Rhythmbox **EXPERIMENTAL**]),
-	      enable_audioscrobbler=yes)
-if test "x$enable_audioscrobbler" = "xyes"; then
-	AC_MSG_WARN([Audioscrobbler support is experimental, use at your own risk])
-	AC_DEFINE(WITH_AUDIOSCROBBLER, 1, [Define if Audioscrobbler support should be enabled])
-fi
-AM_CONDITIONAL(WITH_AUDIOSCROBBLER, test "x$enable_audioscrobbler" = "xyes")
-
 dnl Check for libsoup, needed for DAAP and audioscrobbler
-if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" = "xyes"; then
+if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" != "xno"; then
 	dnl We want libsoup now
 	PKG_CHECK_MODULES(SOUP,                            \
 		libsoup-2.2,
@@ -283,15 +278,31 @@ if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" = "xyes"; the
 			have_libsoup=yes,
 			have_libsoup=no)
 	fi
-
-	if test x"$have_libsoup" = "xno"; then
-		AC_MSG_ERROR([DAAP or Audioscrobbler support explicitly requested, but no libsoup found.  Install libsoup])
-	fi
 fi
 AM_CONDITIONAL(USE_LIBSOUP, test x"$have_libsoup" = "xyes")
 
+
+dnl audioscrobbler support
+if test "x$enable_audioscrobbler" != "xno"; then
+	if test x"$have_libsoup" = "xno"; then
+		if test "x$enable_audioscrobbler" = "xyes"; then
+			AC_MSG_ERROR([AudioScrobbler support explicitly requested, but no libsoup found.  Install libsoup])
+		fi
+		enable_audioscrobbler=no
+	else
+		AC_DEFINE(WITH_AUDIOSCROBBLER, 1, [define if Audioscrobbler support should be enabled])
+	fi
+fi
+AM_CONDITIONAL(WITH_AUDIOSCROBBLER, test "x$enable_audioscrobbler" != "xno")
+
+
+dnl daap support
+if test x"$have_libsoup" = "xno" && "x$enable_daap" = "xyes"; then
+	AC_MSG_ERROR([DAAP support explicitly requested, but no libsoup found.  Install libsoup])
+fi
 dnl Check for libz, useful for DAAP
 AC_CHECK_LIB(z, uncompress)
+
 
 dnl check for MusicBrainz
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
@@ -619,12 +630,11 @@ if test x"$enable_dbus" = xyes; then
 else
 	AC_MSG_NOTICE([   D-BUS control/activation disabled])
 fi
-if test x"$enable_audioscrobbler" = xyes; then
+if test x"$enable_audioscrobbler" != xno; then
 	AC_MSG_NOTICE([** Audioscrobbler support enabled])
 else
 	AC_MSG_NOTICE([   Audioscrobbler support disabled])
 fi
-AM_CONDITIONAL(WITH_AUDIOSCROBBLER,test "x$enable_audioscrobbler" = "xyes")
 
 if test x"$missing_gst_output_element" != x; then
 	AC_MSG_WARN([Neither osssink nor alsasink could be found on your system])
