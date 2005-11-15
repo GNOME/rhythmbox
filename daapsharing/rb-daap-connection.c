@@ -26,6 +26,10 @@
 #include <libgnome/gnome-i18n.h>
 #include "rb-debug.h"
 
+#ifdef HAVE_LIBZ
+#include <zlib.h>
+#endif
+
 /* hashing - based on/copied from libopendaap
  * Copyright (c) 2004 David Hammerton
  */
@@ -600,6 +604,9 @@ build_message (RBDAAPConnection *connection,
 	
 	soup_message_add_header (message->request_headers, "Client-DAAP-Version", 	"3.0");
 	soup_message_add_header (message->request_headers, "Accept-Language", 		"en-us, en;q=5.0");
+#ifdef HAVE_LIBZ
+	soup_message_add_header (message->request_headers, "Accept-Encoding",		"gzip");
+#endif
 	soup_message_add_header (message->request_headers, "Client-DAAP-Access-Index", 	"2");
 	if (connection->password_protected) {
 		gchar *h = g_strconcat ("Basic ", connection->password, NULL);
@@ -629,17 +636,95 @@ build_message (RBDAAPConnection *connection,
 	return message;
 }
 
+#ifdef HAVE_LIBZ
+static void *g_zalloc_wrapper (voidpf opaque, uInt items, uInt size)
+{
+	return g_malloc0 (items * size);
+}
+
+static void g_zfree_wrapper (voidpf opaque, voidpf address)
+{
+	g_free (address);
+}
+#endif
+
 static void
 http_response_handler (SoupMessage *message,
 		       RBDAAPConnection *connection)
 {
 	GNode *structure = NULL;
 	guint status = message->status_code;
+	char *response = message->response.body;
+	int response_length = message->response.length;
+	const char *encoding_header = NULL;
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (message->status_code)) {
+	if (message->response_headers)
+		encoding_header = soup_message_get_header (message->response_headers, "Content-Encoding");
+
+	if (SOUP_STATUS_IS_SUCCESSFUL (status) && encoding_header && strcmp(encoding_header, "gzip") == 0) {
+#ifdef HAVE_LIBZ
+		z_stream stream;
+		char *new_response;
+		int factor = 4;
+		int unc_size = response_length * factor;
+
+		stream.next_in = (unsigned char *)response;
+		stream.avail_in = response_length;
+		stream.total_in = 0;
+
+		new_response = g_malloc (unc_size + 1);
+		stream.next_out = (unsigned char *)new_response;
+		stream.avail_out = unc_size;
+		stream.total_out = 0;
+		stream.zalloc = g_zalloc_wrapper;
+		stream.zfree = g_zfree_wrapper;
+		stream.opaque = NULL;
+
+		if (inflateInit2 (&stream, 32 /* auto-detect */ + 15 /* max */ ) != Z_OK) {
+			inflateEnd (&stream);
+			g_free (new_response);
+			rb_debug ("Unable to decompress response from http://%s:%d/%s",
+				  connection->base_uri->host,
+				  connection->base_uri->port,
+				  connection->base_uri->path);
+			status = SOUP_STATUS_MALFORMED;
+		} else {
+			do {
+				int z_res = inflate (&stream, Z_FINISH);
+				if (z_res == Z_STREAM_END)
+					break;
+				if ((z_res != Z_OK && z_res != Z_BUF_ERROR) || stream.avail_out != 0 || unc_size > 40*1000*1000) {
+					inflateEnd (&stream);
+					g_free (new_response);
+					new_response = NULL;
+					break;
+				}
+
+				factor *= 4;
+				unc_size = (response_length * factor);
+				new_response = g_realloc (new_response, unc_size + 1);
+				stream.next_out = (unsigned char *)(new_response + stream.total_out);
+				stream.avail_out = unc_size - stream.total_out;
+			} while (1);
+		}
+
+		if (new_response) {
+			response = new_response;
+			response_length = stream.total_out;
+		}
+#else
+		rb_debug ("Received compressed response from http://%s:%d/%s but can't handle it",
+			  connection->base_uri->host,
+			  connection->base_uri->port,
+			  connection->base_uri->path);
+		status = SOUP_STATUS_MALFORMED;
+#endif
+	}
+
+	if (SOUP_STATUS_IS_SUCCESSFUL (status)) {
 		RBDAAPItem *item;
 
-		structure = rb_daap_structure_parse (message->response.body, message->response.length);
+		structure = rb_daap_structure_parse (response, response_length);
 		if (structure == NULL) {
 			rb_debug ("No daap structure returned from http://%s:%d/%s", 
 				  connection->base_uri->host,
@@ -676,6 +761,9 @@ http_response_handler (SoupMessage *message,
 
 	if (structure)
 		rb_daap_structure_destroy (structure);
+
+	if (response != message->response.body)
+		g_free (response);
 }
 
 static gboolean
@@ -981,6 +1069,7 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 		// unreasonable to me, honestly
 //		}
 		entry = rhythmdb_entry_new (connection->db, connection->db_type, uri);
+		g_free (uri);
 		g_hash_table_insert (connection->item_id_to_uri, GINT_TO_POINTER (item_id), uri);
 
 		 /* track number */

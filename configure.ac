@@ -290,6 +290,8 @@ if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" = "xyes"; the
 fi
 AM_CONDITIONAL(USE_LIBSOUP, test x"$have_libsoup" = "xyes")
 
+dnl Check for libz, useful for DAAP
+AC_CHECK_LIB(z, uncompress)
 
 dnl check for MusicBrainz
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
