@@ -1653,7 +1653,7 @@ rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column, GtkCellRe
 		gint ret;
 		time_t time = (time_t) value;
 		time_tm = localtime(&time);
-		ret = strftime (str, sizeof (str), "%x %H:%M", time_tm);
+		ret = strftime (str, sizeof (str), _("%Y-%m-%d %H:%M"), time_tm);
 	}
 	
         g_object_set (G_OBJECT (renderer), "text", str, NULL);

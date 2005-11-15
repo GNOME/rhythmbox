@@ -2206,7 +2206,9 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 void
 rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 {
+	const char *format = _("%Y-%m-%d %H:%M");
 	char *val;
+	
 	switch (propid)
 	{
 	case RHYTHMDB_PROP_LAST_PLAYED:
@@ -2216,7 +2218,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		if (entry->last_played == 0)
 			entry->last_played_str = rb_refstring_new_full (_("Never"), FALSE);
 		else {
-			val = eel_strdup_strftime ("%x %H:%M",
+			val = eel_strdup_strftime (format,
 						   localtime ((glong*)&entry->last_played));
 			entry->last_played_str = rb_refstring_new_full (val, FALSE);
 			g_free (val);
@@ -2228,7 +2230,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		if (entry->first_seen_str)
 			rb_refstring_unref (entry->first_seen_str);
 
-		val = eel_strdup_strftime ("%x %H:%M",
+		val = eel_strdup_strftime (format,
 					   localtime ((glong*)&entry->first_seen));
 		entry->first_seen_str = rb_refstring_new_full (val, FALSE);
 		g_free (val);

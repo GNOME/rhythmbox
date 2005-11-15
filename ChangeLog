@@ -1,5 +1,13 @@
 2005-11-15  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_sync_mirrored):
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_post_date_cell_data_func): make the date format
+	translatable again, so that translators can choose the best format for
+	their locale (%x is huge in some locales)
+
+2005-11-15  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_save_metadata),
 	(end_job): mark podcast episodes as failed, if the metadata load
 	fails. This will prevent people playing non-audio enclosures, helping
