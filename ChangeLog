@@ -1,5 +1,23 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_init), (rhythmdb_property_model_finalize),
+	(rhythmdb_property_model_compare),
+	(rhythmdb_property_model_insert),
+	(rhythmdb_property_model_insert_prop),
+	(rhythmdb_property_model_delete),
+	(rhythmdb_property_model_delete_prop),
+	(rhythmdb_property_model_get_value): use RBRefStrings rather than
+	copying the string and re-creating the sort key. Saves a little bit of
+	memory and time.
+
+	(rhythmdb_property_model_perform_sync),
+	(rhythmdb_property_model_sync): perform the count sync in an idle
+	callback, so that it doesn't have to be re-run once per value when
+	loading.
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_entry_deleted_cb),
 	(rhythmdb_query_model_remove_entry): remove deleted entries from the
