@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-02 12:21+0100\n"
-"PO-Revision-Date: 2005-11-03 00:06+0800\n"
+"POT-Creation-Date: 2005-11-16 12:21+0100\n"
+"PO-Revision-Date: 2005-11-16 23:15+0800\n"
 "Last-Translator: Funda Wang <fundawang@linux.net.cn>\n"
 "Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
 "MIME-Version: 1.0\n"
@@ -17,21 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../daapsharing/rb-daap-connection.c:721
-#: ../iradio/rb-new-station-dialog.c:182
-#: ../iradio/rb-station-properties-dialog.c:424
-#: ../podcast/rb-podcast-manager.c:1492
+#: ../daapsharing/rb-daap-connection.c:809
+#: ../iradio/rb-station-properties-dialog.c:439
+#: ../podcast/rb-podcast-manager.c:1475
 #: ../podcast/rb-podcast-properties-dialog.c:400
-#: ../rhythmdb/rhythmdb-tree.c:907 ../rhythmdb/rhythmdb-tree.c:911
-#: ../rhythmdb/rhythmdb-tree.c:915 ../rhythmdb/rhythmdb-tree.c:919
-#: ../rhythmdb/rhythmdb.c:1033 ../shell/rb-audioscrobbler.c:447
+#: ../rhythmdb/rhythmdb-tree.c:936 ../rhythmdb/rhythmdb-tree.c:940
+#: ../rhythmdb/rhythmdb-tree.c:944 ../rhythmdb/rhythmdb-tree.c:948
+#: ../rhythmdb/rhythmdb.c:1090 ../shell/rb-audioscrobbler.c:447
 #: ../shell/rb-audioscrobbler.c:973 ../shell/rb-audioscrobbler.c:974
-#: ../shell/rb-shell-player.c:2323 ../sources/rb-ipod-source.c:159
+#: ../shell/rb-shell-player.c:2297 ../sources/rb-audiocd-source.c:192
+#: ../sources/rb-ipod-source.c:159 ../sources/rb-iradio-source.c:244
 #: ../sources/rb-iradio-source.c:245 ../sources/rb-iradio-source.c:246
-#: ../sources/rb-iradio-source.c:247 ../sources/rb-iradio-source.c:465
-#: ../sources/rb-playlist-source.c:484 ../sources/rb-podcast-source.c:1636
-#: ../widgets/rb-entry-view.c:1011 ../widgets/rb-entry-view.c:1037
-#: ../widgets/rb-song-info.c:677 ../widgets/rb-song-info.c:756
+#: ../sources/rb-iradio-source.c:464 ../sources/rb-playlist-source.c:483
+#: ../sources/rb-podcast-source.c:1650 ../widgets/rb-entry-view.c:1029
+#: ../widgets/rb-entry-view.c:1059 ../widgets/rb-entry-view.c:1078
+#: ../widgets/rb-song-info.c:608 ../widgets/rb-song-info.c:688
+#: ../widgets/rb-song-info.c:868
 msgid "Unknown"
 msgstr "未知"
 
@@ -45,6 +46,7 @@ msgid "The music share '%s' requires a password to connect"
 msgstr "音乐共享“%s”需要密码才能连接"
 
 #: ../daapsharing/rb-daap-dialog.c:123
+#: ../data/glade/audioscrobbler-prefs.glade.h:5
 msgid "_Password:"
 msgstr "密码(_P)："
 
@@ -57,15 +59,15 @@ msgstr "无效的共享名"
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "共享音乐名“%s”已被使用。请另外选择一个。"
 
-#: ../daapsharing/rb-daap-dialog.c:200 ../data/glade/daap-prefs.glade.h:3
+#: ../daapsharing/rb-daap-dialog.c:200 ../data/glade/daap-prefs.glade.h:2
 msgid "Shared music _name:"
 msgstr "共享音乐名(_N)："
 
-#: ../daapsharing/rb-daap-mdns.c:38
+#: ../daapsharing/rb-daap-mdns.c:49
 msgid "Unable to browse for remote shares"
 msgstr "无法浏览远程共享"
 
-#: ../daapsharing/rb-daap-mdns.c:39
+#: ../daapsharing/rb-daap-mdns.c:50
 #, c-format
 msgid ""
 "Could not start browsing for music servers on your network.  Rhythmbox will "
@@ -93,21 +95,32 @@ msgid "Rhythmbox shell factory"
 msgstr "Rhythmbox shell 工厂"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:1
-#: ../shell/rb-shell-preferences.c:369
-msgid "Audioscrobbler"
+msgid "AudioScrobbler"
 msgstr "同乐会"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:2
-msgid "Enable Audioscrobbler"
-msgstr "启用同乐会"
+msgid "_Enable AudioScrobbler"
+msgstr "启用同乐会(_E)"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:3
-msgid "Password:"
-msgstr "密码："
+msgid "_Find out about AudioScrobbler at"
+msgstr "关于同乐会的更多信息请看(_F)"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:4
-msgid "Username:"
-msgstr "用户名："
+msgid "_Join the Rhythmbox group at"
+msgstr "加入 Rhythmbox 用户组请看(_J)"
+
+#: ../data/glade/audioscrobbler-prefs.glade.h:6
+msgid "_Username:"
+msgstr "用户名(_U)："
+
+#: ../data/glade/audioscrobbler-prefs.glade.h:7
+msgid "http://last.fm"
+msgstr "http://last.fm"
+
+#: ../data/glade/audioscrobbler-prefs.glade.h:8
+msgid "http://last.fm/group/Rhythmbox"
+msgstr "http://last.fm/group/Rhythmbox"
 
 #: ../data/glade/create-playlist.glade.h:1
 msgid "A_dd if any criteria are matched"
@@ -141,22 +154,16 @@ msgstr "排序方式(_W)："
 msgid "songs"
 msgstr "歌曲"
 
-#: ../data/glade/daap-prefs.glade.h:1 ../data/glade/general-prefs.glade.h:1
-#: ../data/glade/library-prefs.glade.h:1 ../data/glade/podcast-prefs.glade.h:1
-msgid "    "
-msgstr "    "
-
-#: ../data/glade/daap-prefs.glade.h:2
+#: ../data/glade/daap-prefs.glade.h:1
 msgid "<b>Sharing</b>"
 msgstr "<b>共享</b>"
 
-#: ../data/glade/daap-prefs.glade.h:4
+#: ../data/glade/daap-prefs.glade.h:3
 msgid "_Share my music"
 msgstr "共享我的音乐(_S)"
 
 #: ../data/glade/druid.glade.h:1 ../data/glade/song-info.glade.h:1
 #: ../data/glade/song-info-multiple.glade.h:1
-#: ../data/glade/station-new.glade.h:1
 #: ../data/glade/station-properties.glade.h:1 ../data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
@@ -192,13 +199,17 @@ msgstr "路径(_P)："
 msgid "_Skip this step"
 msgstr "跳过这一步(_S)"
 
-#: ../data/glade/general-prefs.glade.h:2
+#: ../data/glade/general-prefs.glade.h:1
 msgid "A_lbum"
 msgstr "专辑(_L)"
 
-#: ../data/glade/general-prefs.glade.h:3
-msgid "Da_te Added"
+#: ../data/glade/general-prefs.glade.h:2
+msgid "Da_te added"
 msgstr "添加的日期(_T)"
+
+#: ../data/glade/general-prefs.glade.h:3
+msgid "Ti_me"
+msgstr "时长(_M)"
 
 #: ../data/glade/general-prefs.glade.h:4
 msgid "Track _number"
@@ -212,39 +223,39 @@ msgstr "可见列"
 msgid "_Artist"
 msgstr "艺人(_A)"
 
-#: ../data/glade/general-prefs.glade.h:7
-msgid "_Duration"
-msgstr "时长(_D)"
-
-#: ../data/glade/general-prefs.glade.h:8 ../widgets/rb-entry-view.c:1314
+#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1355
 msgid "_Genre"
 msgstr "流派(_G)"
 
-#: ../data/glade/general-prefs.glade.h:9
+#: ../data/glade/general-prefs.glade.h:8
 msgid "_Last played"
 msgstr "上次播放(_L)"
 
-#: ../data/glade/general-prefs.glade.h:10
+#: ../data/glade/general-prefs.glade.h:9
 msgid "_Play count"
 msgstr "播放统计(_P)"
 
-#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1254
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1295
 msgid "_Rating"
 msgstr "评分(_R)"
 
-#: ../data/glade/library-prefs.glade.h:2
+#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1374
+msgid "_Year"
+msgstr "年份(_Y)"
+
+#: ../data/glade/library-prefs.glade.h:1
 msgid "Browser Views"
 msgstr "浏览器视图"
 
-#: ../data/glade/library-prefs.glade.h:3
+#: ../data/glade/library-prefs.glade.h:2
 msgid "G_enres, artists and albums"
 msgstr "流派、艺人和专辑(_E)"
 
-#: ../data/glade/library-prefs.glade.h:4
+#: ../data/glade/library-prefs.glade.h:3
 msgid "_Artists and albums"
 msgstr "艺人和专辑(_A)"
 
-#: ../data/glade/library-prefs.glade.h:5
+#: ../data/glade/library-prefs.glade.h:4
 msgid "_Genres and artists"
 msgstr "流派和艺人(_G)"
 
@@ -291,19 +302,27 @@ msgstr "URL："
 msgid "_URL of podcast feed:"
 msgstr "播客种子的 _URL："
 
-#: ../data/glade/podcast-prefs.glade.h:2
-msgid "."
-msgstr "."
-
-#: ../data/glade/podcast-prefs.glade.h:3
+#: ../data/glade/podcast-prefs.glade.h:1
 msgid "<b>Download Manager</b>"
 msgstr "<b>下载管理器</b>"
 
-#: ../data/glade/podcast-prefs.glade.h:4
+#: ../data/glade/podcast-prefs.glade.h:2
 msgid "Check for _new episodes:"
 msgstr "检查新片断(_N)："
 
-#: ../data/glade/podcast-prefs.glade.h:5
+#: ../data/glade/podcast-prefs.glade.h:3
+msgid ""
+"Every hour\n"
+"Every day\n"
+"Every week\n"
+"Manually"
+msgstr "每小时\n每天\n每周\n手动"
+
+#: ../data/glade/podcast-prefs.glade.h:7
+msgid "Select Folder For Podcasts"
+msgstr "选择播客的文件夹"
+
+#: ../data/glade/podcast-prefs.glade.h:8
 msgid "_Download location:"
 msgstr "下载位置(_E)："
 
@@ -335,7 +354,7 @@ msgid "Location:"
 msgstr "位置："
 
 #: ../data/glade/podcast-properties.glade.h:8
-#: ../data/glade/station-properties.glade.h:4
+#: ../data/glade/station-properties.glade.h:5
 msgid "Play Count:"
 msgstr "播放统计："
 
@@ -380,6 +399,7 @@ msgid "Duration:"
 msgstr "时长："
 
 #: ../data/glade/song-info.glade.h:6
+#: ../data/glade/station-properties.glade.h:3
 msgid "Error message"
 msgstr "错误消息"
 
@@ -411,19 +431,18 @@ msgstr "盘片序号(_D)："
 
 #: ../data/glade/song-info.glade.h:14
 #: ../data/glade/song-info-multiple.glade.h:4
-#: ../data/glade/station-new.glade.h:2
-#: ../data/glade/station-properties.glade.h:5
+#: ../data/glade/station-properties.glade.h:6
 msgid "_Genre:"
 msgstr "流派(_G)："
 
 #: ../data/glade/song-info.glade.h:15
 #: ../data/glade/song-info-multiple.glade.h:5
-#: ../data/glade/station-properties.glade.h:7
+#: ../data/glade/station-properties.glade.h:8
 msgid "_Rating:"
 msgstr "评分(_R)："
 
-#: ../data/glade/song-info.glade.h:16 ../data/glade/station-new.glade.h:4
-#: ../data/glade/station-properties.glade.h:8
+#: ../data/glade/song-info.glade.h:16
+#: ../data/glade/station-properties.glade.h:9
 msgid "_Title:"
 msgstr "标题(_T)："
 
@@ -431,15 +450,15 @@ msgstr "标题(_T)："
 msgid "_Track number:"
 msgstr "曲目序号(_T)："
 
-#: ../data/glade/station-new.glade.h:3
-msgid "_Location:"
-msgstr "位置(_L)："
+#: ../data/glade/song-info.glade.h:18
+msgid "_Year:"
+msgstr "年份(_Y)："
 
-#: ../data/glade/station-properties.glade.h:3
+#: ../data/glade/station-properties.glade.h:4
 msgid "L_ocation:"
 msgstr "位置(_O)："
 
-#: ../data/glade/station-properties.glade.h:6
+#: ../data/glade/station-properties.glade.h:7
 msgid "_Last Played:"
 msgstr "上次播放(_L)："
 
@@ -451,7 +470,7 @@ msgstr "输入您想要添加的文件的位置(URI)(_L)："
 msgid "Open from URI"
 msgstr "从 URI 打开"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:809
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:820
 #: ../shell/rb-shell.c:1630
 msgid "Music Player"
 msgstr "音乐播放器"
@@ -464,63 +483,122 @@ msgstr "播放和组织您的音乐收藏"
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox 音乐播放器"
 
-#: ../iradio/rb-new-station-dialog.c:144
-msgid "New Internet Radio Station"
-msgstr "新建 Internet 电台"
-
-#: ../iradio/rb-new-station-dialog.c:314
-#: ../rhythmdb/rhythmdb-property-model.c:396
-msgid "All"
-msgstr "全部"
-
-#: ../iradio/rb-station-properties-dialog.c:173 ../widgets/rb-song-info.c:697
-#, c-format
-msgid "%s Properties"
-msgstr "%s 属性"
-
-#: ../iradio/rb-station-properties-dialog.c:354
+#: ../iradio/rb-station-properties-dialog.c:356
 #: ../podcast/rb-feed-podcast-properties-dialog.c:223
 #: ../podcast/rb-podcast-properties-dialog.c:329
 #, c-format
 msgid "Properties for %s"
 msgstr "%s 的属性"
 
-#: ../metadata/rb-metadata-gst.c:539 ../metadata/rb-metadata-gst.c:903
-#: ../player/rb-player-gst.c:468 ../player/rb-recorder-gst.c:457
+#: ../iradio/rb-station-properties-dialog.c:360
+msgid "New Internet Radio Station"
+msgstr "新建 Internet 电台"
+
+#: ../iradio/rb-station-properties-dialog.c:450 ../rhythmdb/rhythmdb.c:2339
+#: ../widgets/rb-entry-view.c:1003 ../widgets/rb-song-info.c:844
+msgid "Never"
+msgstr "从不"
+
+#: ../metadata/rb-metadata-gst.c:541 ../metadata/rb-metadata-gst.c:912
+#: ../player/rb-player-gst.c:472 ../player/rb-recorder-gst.c:457
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "创建 %s 元素失败；请检查您的安装"
 
-#: ../metadata/rb-metadata-gst.c:599
+#: ../metadata/rb-metadata-gst.c:601
 msgid "Failed to create a source element; check your installation"
 msgstr "创建源元素失败；请检查您的安装"
 
-#: ../metadata/rb-metadata-gst.c:680
+#: ../metadata/rb-metadata-gst.c:682
 msgid "The MIME type of the file could not be identified"
 msgstr "文件的 MIME 类型无法辨别"
 
-#: ../metadata/rb-metadata-gst.c:692
+#: ../metadata/rb-metadata-gst.c:694
 msgid "The file is not an audio stream"
 msgstr "文件不是音频流"
 
-#: ../metadata/rb-metadata-gst.c:697
+#: ../metadata/rb-metadata-gst.c:699
 msgid "The file is not an audio stream, but is being ignored"
 msgstr "文件不是音频流，但可被忽略"
 
-#: ../metadata/rb-metadata-gst.c:705
+#: ../metadata/rb-metadata-gst.c:707
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "没有安装可处理 %s 文件的插件。"
 
-#: ../player/rb-player-gst.c:449 ../player/rb-recorder-gst.c:417
+#: ../metadata/sj-metadata-musicbrainz.c:92
+msgid "Cannot create MusicBrainz client"
+msgstr "无法创建 MusicBrainz 客户端"
+
+#: ../metadata/sj-metadata-musicbrainz.c:195
+#: ../metadata/sj-metadata-musicbrainz.c:317
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "无法读取 CD：%s"
+
+#: ../metadata/sj-metadata-musicbrainz.c:202
+#: ../metadata/sj-metadata-musicbrainz.c:362
+msgid "Unknown Artist"
+msgstr "未知艺人"
+
+#: ../metadata/sj-metadata-musicbrainz.c:203
+#: ../metadata/sj-metadata-musicbrainz.c:370
+msgid "Unknown Title"
+msgstr "未知标题"
+
+#: ../metadata/sj-metadata-musicbrainz.c:209
+#, c-format
+msgid "Track %d"
+msgstr "第%d条音轨"
+
+#: ../metadata/sj-metadata-musicbrainz.c:237
+msgid ""
+"MusicBrainz metadata object is not valid. This is bad, check your console "
+"for errors."
+msgstr ""
+"MusicBrainz 元数据对象无效。请检查您控制台中的错误信息。"
+
+#: ../metadata/sj-metadata-musicbrainz.c:311
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "设备“%s”不包含任何媒体"
+
+#: ../metadata/sj-metadata-musicbrainz.c:314
+#, c-format
+msgid ""
+"Device '%s' could not be opened. Check the access permissions on the device."
+msgstr "无法打开设备“%s”。请检查设备的访问权限。"
+
+#: ../metadata/sj-metadata-musicbrainz.c:327
+#, c-format
+msgid "This CD could not be queried: %s\n"
+msgstr "无法查询此 CD：%s\n"
+
+#: ../metadata/sj-metadata-musicbrainz.c:335
+msgid "This CD was not found.\n"
+msgstr "未找到此 CD。\n"
+
+#: ../metadata/sj-metadata-musicbrainz.c:357
+msgid "Various"
+msgstr "多位"
+
+#: ../metadata/sj-metadata-musicbrainz.c:394
+msgid "Incomplete metadata for this CD.\n"
+msgstr "此 CD 的元信息不完整。\n"
+
+#: ../metadata/sj-metadata-musicbrainz.c:472
+msgid "Could not create CD lookup thread"
+msgstr "无法创建 CD 查阅线程"
+
+#: ../player/rb-player-gst.c:453 ../player/rb-recorder-gst.c:417
 msgid "Could not create audio output element; check your settings"
 msgstr "无法创建音频输出元素；请检查您的设置"
 
-#: ../player/rb-player-gst.c:492 ../player/rb-recorder-gst.c:521
+#: ../player/rb-player-gst.c:496 ../player/rb-recorder-gst.c:521
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "无法初始化进度编排程序。您是否运行了 gst-register？"
 
-#: ../player/rb-player-gst.c:555
+#: ../player/rb-player-gst.c:559
 msgid "Unknown playback error"
 msgstr "未知的回放错误"
 
@@ -597,24 +675,32 @@ msgstr "写入 CD 出错"
 msgid "New Podcast Feed"
 msgstr "新建播客种子"
 
+#: ../podcast/rb-podcast-manager.c:767
+msgid "Invalid URL"
+msgstr "无效的 URL"
+
+#: ../podcast/rb-podcast-manager.c:768
+#, c-format
+msgid "The URL \"%s\" is not valid, please check it."
+msgstr "URL“%s”无效，请检查。"
+
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:782
+#: ../podcast/rb-podcast-manager.c:776
 msgid "URL already added"
 msgstr "URL 已添加"
 
-#: ../podcast/rb-podcast-manager.c:783
+#: ../podcast/rb-podcast-manager.c:777
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
-msgstr ""
-"URL“%s”已经添加为电台。如果这是一个播客种子，请删除电台。"
+msgstr "URL“%s”已经添加为电台。如果这是一个播客种子，请删除电台。"
 
-#: ../podcast/rb-podcast-manager.c:870
+#: ../podcast/rb-podcast-manager.c:844
 msgid "Podcast"
 msgstr "播客"
 
-#: ../podcast/rb-podcast-manager.c:1623
+#: ../podcast/rb-podcast-manager.c:1590
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "添加此播客有问题。请验证 URL：%s"
@@ -676,51 +762,59 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "发生了意外“%s”"
 
-#: ../rhythmdb/rhythmdb.c:1016
+#: ../rhythmdb/rhythmdb-property-model.c:396
+msgid "All"
+msgstr "全部"
+
+#: ../rhythmdb/rhythmdb-property-model.c:1026
+#, c-format
+msgid "All (%d)"
+msgstr "全部(%d首)"
+
+#: ../rhythmdb/rhythmdb.c:1073
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "无法监视 %s：%s"
 
-#: ../rhythmdb/rhythmdb.c:1116
+#: ../rhythmdb/rhythmdb.c:1182
 msgid "<invalid filename>"
 msgstr "<无效的文件名>"
 
-#: ../rhythmdb/rhythmdb.c:1634
+#: ../rhythmdb/rhythmdb.c:1702
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "无法访问 %s：%s"
 
-#: ../rhythmdb/rhythmdb.c:2187 ../widgets/rb-entry-view.c:985
-#: ../widgets/rb-song-info.c:912
-msgid "Never"
-msgstr "从不"
+#: ../rhythmdb/rhythmdb.c:2329 ../sources/rb-podcast-source.c:1656
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:2894
+#: ../rhythmdb/rhythmdb.c:3172
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d 首歌"
 
-#: ../rhythmdb/rhythmdb.c:2901
+#: ../rhythmdb/rhythmdb.c:3179
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld 分钟"
 
-#: ../rhythmdb/rhythmdb.c:2902
+#: ../rhythmdb/rhythmdb.c:3180
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld 小时"
 
-#: ../rhythmdb/rhythmdb.c:2903
+#: ../rhythmdb/rhythmdb.c:3181
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld 天"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:2909
+#: ../rhythmdb/rhythmdb.c:3187
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s %s %s"
@@ -728,8 +822,8 @@ msgstr "%s %s %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:2915 ../rhythmdb/rhythmdb.c:2923
-#: ../rhythmdb/rhythmdb.c:2934
+#: ../rhythmdb/rhythmdb.c:3193 ../rhythmdb/rhythmdb.c:3201
+#: ../rhythmdb/rhythmdb.c:3212
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
@@ -879,97 +973,105 @@ msgid "Random by time since last play and rating"
 msgstr "按照上次播放的时间和评分随机"
 
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:142
+#: ../shell/rb-playlist-manager.c:140
 msgid "_Playlist"
 msgstr "播放列表(_P)"
 
-#: ../shell/rb-playlist-manager.c:144
+#: ../shell/rb-playlist-manager.c:142
 msgid "_New Playlist..."
 msgstr "新建播放列表(_N)..."
 
-#: ../shell/rb-playlist-manager.c:145
+#: ../shell/rb-playlist-manager.c:143
 msgid "Create a new playlist"
 msgstr "创建一个新的播放列表"
 
-#: ../shell/rb-playlist-manager.c:147
+#: ../shell/rb-playlist-manager.c:145
 msgid "New _Automatic Playlist..."
 msgstr "新建自动播放列表(_A)..."
 
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:146
 msgid "Create a new automatically updating playlist"
 msgstr "创建一个新的自动更新播放列表"
 
-#: ../shell/rb-playlist-manager.c:150
+#: ../shell/rb-playlist-manager.c:148
 msgid "_Load from File..."
 msgstr "从文件加载(_L)..."
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:149
 msgid "Choose a playlist to be loaded"
 msgstr "选择一个将要加载的播放列表"
 
-#: ../shell/rb-playlist-manager.c:153
+#: ../shell/rb-playlist-manager.c:151
 msgid "_Save to File..."
 msgstr "保存到文件(_S)..."
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:152
 msgid "Save a playlist to a file"
 msgstr "将播放列表保存到一个文件"
 
-#: ../shell/rb-playlist-manager.c:156
+#: ../shell/rb-playlist-manager.c:154
 msgid "_Create Audio CD..."
 msgstr "创建音频 CD(_C)..."
 
-#: ../shell/rb-playlist-manager.c:157
+#: ../shell/rb-playlist-manager.c:155
 msgid "Create an audio CD from playlist"
 msgstr "根据播放列表创建一张音频 CD"
 
-#: ../shell/rb-playlist-manager.c:159
+#: ../shell/rb-playlist-manager.c:157
 msgid "_Rename..."
 msgstr "重命名(_R)..."
 
-#: ../shell/rb-playlist-manager.c:160
+#: ../shell/rb-playlist-manager.c:158
 msgid "Rename playlist"
 msgstr "重命名播放列表"
 
-#: ../shell/rb-playlist-manager.c:162 ../shell/rb-shell-clipboard.c:105
+#: ../shell/rb-playlist-manager.c:160 ../shell/rb-shell-clipboard.c:105
 msgid "_Delete"
 msgstr "删除(_D)"
 
-#: ../shell/rb-playlist-manager.c:163
+#: ../shell/rb-playlist-manager.c:161
 msgid "Delete playlist"
 msgstr "删除播放列表"
 
-#: ../shell/rb-playlist-manager.c:165 ../shell/rb-shell.c:372
+#: ../shell/rb-playlist-manager.c:163 ../shell/rb-shell.c:373
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: ../shell/rb-playlist-manager.c:166
+#: ../shell/rb-playlist-manager.c:164
 msgid "Change this automatic playlist"
 msgstr "更改此自动播放列表"
 
-#: ../shell/rb-playlist-manager.c:613
+#: ../shell/rb-playlist-manager.c:617
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "播放列表文件可能格式未知或已损坏。"
 
-#: ../shell/rb-playlist-manager.c:998
+#: ../shell/rb-playlist-manager.c:1002
 msgid "Couldn't read playlist"
 msgstr "无法读取播放列表"
 
-#: ../shell/rb-playlist-manager.c:1013
+#: ../shell/rb-playlist-manager.c:1017
 msgid "Load Playlist"
 msgstr "装入播放列表"
 
-#: ../shell/rb-playlist-manager.c:1051
+#: ../shell/rb-playlist-manager.c:1055
 msgid "Save Playlist"
 msgstr "保存播放列表"
 
-#: ../shell/rb-removable-media-manager.c:106
+#: ../shell/rb-removable-media-manager.c:122
 msgid "_Eject"
 msgstr "弹出(_E)"
 
-#: ../shell/rb-removable-media-manager.c:107
+#: ../shell/rb-removable-media-manager.c:123
 msgid "Eject this medium"
 msgstr "弹出此介质"
+
+#: ../shell/rb-removable-media-manager.c:125
+msgid "_Scan Removable Media"
+msgstr "扫描可移动介质(_S)"
+
+#: ../shell/rb-removable-media-manager.c:126
+msgid "Scan for new Removable Media"
+msgstr "扫描新的可移动介质"
 
 #: ../shell/rb-shell-clipboard.c:90
 msgid "Select _All"
@@ -1031,7 +1133,7 @@ msgstr "下一首(_N)"
 msgid "Start playing the next song"
 msgstr "开始播放下一首歌"
 
-#: ../shell/rb-shell-player.c:270
+#: ../shell/rb-shell-player.c:270 ../sources/rb-podcast-source.c:291
 msgid "_Properties"
 msgstr "属性(_P)"
 
@@ -1079,209 +1181,213 @@ msgstr "重复(_R)"
 msgid "Play first song again after all songs are played"
 msgstr "在全部歌曲播放完毕后再播放第一首歌"
 
-#: ../shell/rb-shell-player.c:597
+#: ../shell/rb-shell-player.c:566
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "创建播放器失败：%s"
 
-#: ../shell/rb-shell-player.c:659
+#: ../shell/rb-shell-player.c:628
 msgid "Play previous song"
 msgstr "播放上一首歌"
 
-#: ../shell/rb-shell-player.c:688
+#: ../shell/rb-shell-player.c:657
 msgid "Play next song"
 msgstr "播放下一首歌"
 
-#: ../shell/rb-shell-player.c:712
+#: ../shell/rb-shell-player.c:681
 msgid "Change the music volume"
 msgstr "更改音量"
 
-#: ../shell/rb-shell-player.c:1288
+#: ../shell/rb-shell-player.c:1257
 msgid "No previous song"
 msgstr "没有上一首歌"
 
-#: ../shell/rb-shell-player.c:1299
+#: ../shell/rb-shell-player.c:1268
 msgid "Not currently playing"
 msgstr "目前未播放"
 
-#: ../shell/rb-shell-player.c:1318
+#: ../shell/rb-shell-player.c:1287
 msgid "No next song"
 msgstr "没有下一首歌"
 
-#: ../shell/rb-shell-player.c:1421
+#: ../shell/rb-shell-player.c:1390
 #, c-format
 msgid "Couldn't start playback: %s"
 msgstr "无法开始回放：%s"
 
-#: ../shell/rb-shell-player.c:2010
+#: ../shell/rb-shell-player.c:1984
 msgid "Couldn't stop playback"
 msgstr "无法停止播放"
 
-#: ../shell/rb-shell-player.c:2064
+#: ../shell/rb-shell-player.c:2038
 msgid "Current song is not seekable"
 msgstr "目前歌曲无法搜索"
 
-#: ../shell/rb-shell-player.c:2129
+#: ../shell/rb-shell-player.c:2103
 msgid "Stream error"
 msgstr "流错误"
 
-#: ../shell/rb-shell-player.c:2130
+#: ../shell/rb-shell-player.c:2104
 msgid "Unexpected end of stream!"
 msgstr "流意外结束！"
 
-#: ../shell/rb-shell-player.c:2381
+#: ../shell/rb-shell-player.c:2355
 msgid "Buffering"
 msgstr "正在缓存"
 
-#: ../shell/rb-shell-preferences.c:149 ../shell/rb-shell.c:1769
+#: ../shell/rb-shell-preferences.c:150 ../shell/rb-shell.c:1769
 msgid "Couldn't display help"
 msgstr "无法显示帮助"
 
-#: ../shell/rb-shell-preferences.c:187
+#: ../shell/rb-shell-preferences.c:188
 msgid "Music Player Preferences"
 msgstr "音乐播放器首选项"
 
-#: ../shell/rb-shell-preferences.c:237
+#: ../shell/rb-shell-preferences.c:240
 msgid "General"
 msgstr "常规"
 
-#: ../shell/rb-shell-preferences.c:351
+#: ../shell/rb-shell-preferences.c:354
 msgid "Sharing"
 msgstr "共享"
 
-#: ../shell/rb-shell.c:371
+#: ../shell/rb-shell-preferences.c:372
+msgid "Audioscrobbler"
+msgstr "同乐会"
+
+#: ../shell/rb-shell.c:372
 msgid "_Music"
 msgstr "音乐(_M)"
 
-#: ../shell/rb-shell.c:373
+#: ../shell/rb-shell.c:374
 msgid "_View"
 msgstr "查看(_V)"
 
-#: ../shell/rb-shell.c:374
+#: ../shell/rb-shell.c:375
 msgid "_Control"
 msgstr "控制(_C)"
 
-#: ../shell/rb-shell.c:375
+#: ../shell/rb-shell.c:376
 msgid "_Help"
 msgstr "帮助(_H)"
 
-#: ../shell/rb-shell.c:377
-msgid "New _Internet Radio Station"
-msgstr "新建 Internet 电台(_I)"
-
 #: ../shell/rb-shell.c:378
+msgid "New Internet _Radio Station"
+msgstr "新建 Internet 电台(_R)"
+
+#: ../shell/rb-shell.c:379
 msgid "Create a new Internet Radio station"
 msgstr "创建一个新的 Internet 电台"
 
-#: ../shell/rb-shell.c:380
+#: ../shell/rb-shell.c:381
 msgid "_New Podcast Feed"
 msgstr "新建播客种子(_N)"
 
-#: ../shell/rb-shell.c:381
+#: ../shell/rb-shell.c:382
 msgid "Subscribe to a new Podcast Feed"
 msgstr "订阅新的播客种子"
 
-#: ../shell/rb-shell.c:384
+#: ../shell/rb-shell.c:385
 msgid "_Import Folder..."
 msgstr "导入文件夹(_I)..."
 
-#: ../shell/rb-shell.c:385
+#: ../shell/rb-shell.c:386
 msgid "Choose folder to be added to the Library"
 msgstr "选择将要加入库的文件夹"
 
-#: ../shell/rb-shell.c:387
+#: ../shell/rb-shell.c:388
 msgid "Import _File..."
 msgstr "导入文件(_F)..."
 
-#: ../shell/rb-shell.c:388
+#: ../shell/rb-shell.c:389
 msgid "Choose file to be added to the Library"
 msgstr "选择将要加入库的文件"
 
-#: ../shell/rb-shell.c:390
+#: ../shell/rb-shell.c:391
 msgid "Import _Audio CD..."
 msgstr "导入音频 CD(_A)..."
 
-#: ../shell/rb-shell.c:391
+#: ../shell/rb-shell.c:392
 msgid "Extract and import songs from a CD"
 msgstr "从一张 CD 提取并导入歌曲"
 
-#: ../shell/rb-shell.c:393
+#: ../shell/rb-shell.c:394
 msgid "_About"
 msgstr "关于(_A)"
 
-#: ../shell/rb-shell.c:394
+#: ../shell/rb-shell.c:395
 msgid "Show information about the music player"
 msgstr "显示关于音乐播放器的信息"
 
-#: ../shell/rb-shell.c:396
+#: ../shell/rb-shell.c:397
 msgid "_Contents"
 msgstr "目录(_C)"
 
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:398
 msgid "Display music player help"
 msgstr "显示音乐播放器帮助"
 
-#: ../shell/rb-shell.c:399
+#: ../shell/rb-shell.c:400
 msgid "_Close"
 msgstr "关闭(_C)"
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:401
 msgid "Hide the music player window"
 msgstr "隐藏音乐播放器窗口"
 
-#: ../shell/rb-shell.c:402
+#: ../shell/rb-shell.c:403
 msgid "_Quit"
 msgstr "退出(_Q)"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:404
 msgid "Quit the music player"
 msgstr "退出音乐播放器"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:406
 msgid "Prefere_nces"
 msgstr "首选项(_N)"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:407
 msgid "Edit music player preferences"
 msgstr "编辑音乐播放器首选项"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:409
 msgid "Show _All"
 msgstr "全部显示(_A)"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:410
 msgid "Show all items in this music source"
 msgstr "显示此音乐源中的全部项目"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:412
 msgid "_Jump to Playing Song"
 msgstr "跳到正在播放的歌曲(_J)"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:413
 msgid "Scroll the view to the currently playing song"
 msgstr "将视图滚动到当前正在播放的歌曲"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:415
 msgid "_Disconnect"
 msgstr "断开连接(_D)"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:416
 msgid "Disconnect from selected source"
 msgstr "从选中的源断开"
 
-#: ../shell/rb-shell.c:422
+#: ../shell/rb-shell.c:423
 msgid "Source _List"
 msgstr "源列表(_L)"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:424
 msgid "Change the visibility of the source list"
 msgstr "更改来源列表的可视性"
 
-#: ../shell/rb-shell.c:425
+#: ../shell/rb-shell.c:426
 msgid "_Small Display"
 msgstr "小巧显示界面(_S)"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:427
 msgid "Make the main window smaller"
 msgstr "把主窗口变得小一点"
 
@@ -1291,7 +1397,7 @@ msgstr "把主窗口变得小一点"
 msgid "%s by %s"
 msgstr "%2$s 的 %1$s"
 
-#: ../shell/rb-shell.c:1523 ../widgets/rb-entry-view.c:1538
+#: ../shell/rb-shell.c:1523 ../widgets/rb-entry-view.c:1588
 msgid "Now Playing"
 msgstr "正在播放"
 
@@ -1353,34 +1459,34 @@ msgstr "将文件夹导入到库"
 msgid "Import File into Library"
 msgstr "将文件导入到库"
 
-#: ../shell/rb-shell.c:1906
+#: ../shell/rb-shell.c:1907
 msgid "CD Ripper not found"
 msgstr "未找到 CD 抓轨程序"
 
-#: ../shell/rb-shell.c:1907
+#: ../shell/rb-shell.c:1908
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "要提取 CD，您必须安装 Sound Juicer CD 抓轨软件包。"
 
-#: ../shell/rb-shell.c:1915
+#: ../shell/rb-shell.c:1916
 msgid "Couldn't run CD Ripper"
 msgstr "无法运行 CD 抓轨程序"
 
-#: ../shell/rb-shell.c:1916
+#: ../shell/rb-shell.c:1917
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "运行 sound-juicer 时发生了错误：%s"
 
-#: ../shell/rb-shell.c:2656 ../shell/rb-shell.c:2701
+#: ../shell/rb-shell.c:2657 ../shell/rb-shell.c:2702
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "未知的歌曲 URI：%s"
 
-#: ../shell/rb-shell.c:2710
+#: ../shell/rb-shell.c:2711
 #, c-format
 msgid "Unknown property %s"
 msgstr "未知属性 %s"
 
-#: ../shell/rb-shell.c:2720
+#: ../shell/rb-shell.c:2721
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "属性 %2$s 的类型 %1$s 无效"
@@ -1425,21 +1531,43 @@ msgstr "显示音乐播放器(_S)"
 msgid "Choose music to play"
 msgstr "选择要播放的音乐"
 
+#: ../sources/rb-audiocd-source.c:229
+#, c-format
+msgid "Track %u"
+msgstr "第%u条音轨"
+
+#: ../sources/rb-audiocd-source.c:294 ../sources/rb-audiocd-source.c:301
+#: ../sources/rb-audiocd-source.c:448
+msgid "Couldn't load Audio CD"
+msgstr "无法装入音频 CD"
+
+#: ../sources/rb-audiocd-source.c:295
+msgid "Rhythmbox couldn't access the cd."
+msgstr "Rhythmbox 无法访问 CD。"
+
+#: ../sources/rb-audiocd-source.c:302
+msgid "Rhythmbox could read the cd information."
+msgstr "Rhythmbox 无法读取 CD 信息。"
+
+#: ../sources/rb-audiocd-source.c:449
+msgid "Rhythmbox could not get access to the CD device."
+msgstr "Rhythmbox 无法获得 CD 驱动器的访问权。"
+
 #: ../sources/rb-ipod-source.c:141
 msgid "iPod"
 msgstr "iPod"
 
-#: ../sources/rb-iradio-source.c:353 ../sources/rb-library-source.c:574
+#: ../sources/rb-iradio-source.c:352 ../sources/rb-library-source.c:578
 #: ../widgets/rb-query-creator-properties.c:64
 #: ../widgets/rb-query-creator-properties.c:90
 msgid "Genre"
 msgstr "流派"
 
-#: ../sources/rb-iradio-source.c:431
+#: ../sources/rb-iradio-source.c:430
 msgid "Radio"
 msgstr "电台"
 
-#: ../sources/rb-iradio-source.c:564
+#: ../sources/rb-iradio-source.c:563
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1469,31 +1597,31 @@ msgstr "浏览此专辑(_L)"
 msgid "Set the browser to view only this album"
 msgstr "设定浏览器只查看此专辑"
 
-#: ../sources/rb-library-source.c:588
+#: ../sources/rb-library-source.c:592
 #: ../widgets/rb-query-creator-properties.c:62
 #: ../widgets/rb-query-creator-properties.c:88
 msgid "Artist"
 msgstr "艺人"
 
-#: ../sources/rb-library-source.c:602
+#: ../sources/rb-library-source.c:606
 #: ../widgets/rb-query-creator-properties.c:63
 #: ../widgets/rb-query-creator-properties.c:89
 msgid "Album"
 msgstr "专辑"
 
-#: ../sources/rb-library-source.c:733
+#: ../sources/rb-library-source.c:737
 msgid "Library"
 msgstr "库"
 
-#: ../sources/rb-library-source.c:1239
+#: ../sources/rb-library-source.c:1243
 msgid "Add Location"
 msgstr "添加位置"
 
-#: ../sources/rb-playlist-source.c:332
-msgid "Tra_ck"
-msgstr "音轨(_C)"
+#: ../sources/rb-playlist-source.c:330 ../widgets/rb-entry-view.c:1313
+msgid "Trac_k"
+msgstr "音轨(_K)"
 
-#: ../sources/rb-playlist-source.c:892
+#: ../sources/rb-playlist-source.c:896
 msgid "Couldn't save playlist"
 msgstr "无法保存播放列表"
 
@@ -1790,140 +1918,145 @@ msgid ""
 "required."
 msgstr "找不到足够的临时空间转换音轨，需要 %s MB。"
 
-#: ../sources/rb-podcast-source.c:285
-msgid "Download Podcast Episode"
-msgstr "下载播客片断"
-
-#: ../sources/rb-podcast-source.c:286 ../sources/rb-podcast-source.c:954
-msgid "Download Post"
-msgstr "下载片断"
-
 #: ../sources/rb-podcast-source.c:288
-msgid "Subscribe to Podcast Feed"
-msgstr "订阅播客种子"
+msgid "Download Podcast _Episode"
+msgstr "下载播客片断(_E)"
 
 #: ../sources/rb-podcast-source.c:289
-msgid "Subscribe Feed"
-msgstr "订阅种子"
-
-#: ../sources/rb-podcast-source.c:291
-msgid "Properties"
-msgstr "属性"
+msgid "Download Post"
+msgstr "下载片断"
 
 #: ../sources/rb-podcast-source.c:292
 msgid "Properties Feed"
 msgstr "种子属性"
 
 #: ../sources/rb-podcast-source.c:294
-msgid "Update Podcast Feed"
-msgstr "更新播客种子"
+msgid "_Update Podcast Feed"
+msgstr "更新播客种子(_U)"
 
 #: ../sources/rb-podcast-source.c:295
 msgid "Update Feed"
 msgstr "更新种子"
 
 #: ../sources/rb-podcast-source.c:297
-msgid "Delete Podcast Feed"
-msgstr "删除播客种子"
+msgid "_Delete Podcast Feed"
+msgstr "删除播客种子(_D)"
 
 #: ../sources/rb-podcast-source.c:298
 msgid "Delete Feed"
 msgstr "删除种子"
 
-#: ../sources/rb-podcast-source.c:506
-msgid "Date"
-msgstr "日期"
+#: ../sources/rb-podcast-source.c:300
+msgid "_Update All Feeds"
+msgstr "更新全部种子(_U)"
 
-#: ../sources/rb-podcast-source.c:527 ../sources/rb-podcast-source.c:608
-#: ../sources/rb-podcast-source.c:650
-msgid "Feed"
-msgstr "种子"
+#: ../sources/rb-podcast-source.c:301
+msgid "Update all feeds"
+msgstr "更新全部种子"
 
-#: ../sources/rb-podcast-source.c:551
+#: ../sources/rb-podcast-source.c:511
+msgid "_Date"
+msgstr "日期(_D)"
+
+#: ../sources/rb-podcast-source.c:532
+msgid "_Feed"
+msgstr "种子(_F)"
+
+#: ../sources/rb-podcast-source.c:556
 msgid "Status"
 msgstr "状态栏"
 
-#: ../sources/rb-podcast-source.c:749
+#: ../sources/rb-podcast-source.c:613 ../sources/rb-podcast-source.c:654
+msgid "Feed"
+msgstr "种子"
+
+#: ../sources/rb-podcast-source.c:753
 msgid "Podcasts"
 msgstr "播客"
 
-#: ../sources/rb-podcast-source.c:841 ../sources/rb-podcast-source.c:1401
-msgid "Remove files from disk?"
-msgstr "从磁盘中删除文件吗？"
+#: ../sources/rb-podcast-source.c:852
+msgid "Delete the podcast episode and downloaded file?"
+msgstr "删除播客片断和下载的文件吗？"
 
-#: ../sources/rb-podcast-source.c:950
-msgid "Cancel Download"
-msgstr "取消下载"
+#: ../sources/rb-podcast-source.c:855
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"如果您选择删除片断和文件，它们将永久丢失。"
+"请注意，您可以只删除片断但保留下载的文件。"
 
-#: ../sources/rb-podcast-source.c:1005
-msgid "Subscribe This Feed"
-msgstr "订阅此种子"
+#: ../sources/rb-podcast-source.c:863
+msgid "Delete _Episode Only"
+msgstr "只删除片断(_E)"
 
-#: ../sources/rb-podcast-source.c:1009
-msgid "Unsubscribe This Feed"
-msgstr "取消此种子的订阅"
+#: ../sources/rb-podcast-source.c:869
+msgid "_Delete Episode And File"
+msgstr "删除片断和文件(_D)"
 
-#: ../sources/rb-podcast-source.c:1195
-msgid "Save Folder"
-msgstr "保存文件夹"
+#: ../sources/rb-podcast-source.c:986
+msgid "_Cancel Download"
+msgstr "取消下载(_C)"
 
-#: ../sources/rb-podcast-source.c:1216
-msgid "Every hour"
-msgstr "每小时"
+#: ../sources/rb-podcast-source.c:990
+msgid "_Download Post"
+msgstr "下载播客(_D)"
 
-#: ../sources/rb-podcast-source.c:1217
-msgid "Every day"
-msgstr "每天"
+#: ../sources/rb-podcast-source.c:1402
+msgid "Delete the podcast feed and downloaded files?"
+msgstr "删除播客种子和下载的文件吗？"
 
-#: ../sources/rb-podcast-source.c:1218
-msgid "Every week"
-msgstr "每周"
+#: ../sources/rb-podcast-source.c:1405
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"如果您选择删除种子和文件，它们将永久丢失。"
+"请注意，您可以只删除种子但保留下载的文件。"
 
-#: ../sources/rb-podcast-source.c:1219
-msgid "Manually"
-msgstr "手动"
+#: ../sources/rb-podcast-source.c:1413
+msgid "Delete _Feed Only"
+msgstr "只删除种子(_F)"
 
-#: ../sources/rb-podcast-source.c:1512
+#: ../sources/rb-podcast-source.c:1420
+msgid "_Delete Feed And Files"
+msgstr "删除种子和文件(_D)"
+
+#: ../sources/rb-podcast-source.c:1526
 msgid "Completed"
 msgstr "已完成"
 
-#: ../sources/rb-podcast-source.c:1516
+#: ../sources/rb-podcast-source.c:1530
 msgid "Failed"
 msgstr "失败"
 
-#: ../sources/rb-podcast-source.c:1520
+#: ../sources/rb-podcast-source.c:1534
 msgid "Waiting"
 msgstr "等候"
 
-#: ../sources/rb-podcast-source.c:1524
+#: ../sources/rb-podcast-source.c:1538
 msgid "Paused"
 msgstr "已暂停"
 
-#: ../sources/rb-podcast-source.c:1734
+#: ../sources/rb-podcast-source.c:1748
 msgid "Downloading podcast"
 msgstr "正在下载播客"
 
-#: ../sources/rb-podcast-source.c:1744
+#: ../sources/rb-podcast-source.c:1758
 msgid "Finished downloading podcast"
 msgstr "下载播客已完成"
 
-#: ../sources/rb-podcast-source.c:1754
+#: ../sources/rb-podcast-source.c:1768
 msgid "New updates avaliable from"
 msgstr "新更新可用"
 
-#: ../sources/rb-podcast-source.c:1821
+#: ../sources/rb-podcast-source.c:1835
 msgid "Error in podcast"
 msgstr "播客出错"
 
-#: ../sources/rb-source.c:602
-msgid "Not supported"
-msgstr "不支持"
-
-#: ../sources/rb-source.c:603
-msgid "This source does not support drag and drop."
-msgstr "此源不支持拖放。"
-
-#: ../sources/rb-sourcelist.c:257
+#: ../sources/rb-sourcelist.c:230
 msgid "S_ource"
 msgstr "源(_O)"
 
@@ -1997,77 +2130,73 @@ msgstr ""
 msgid "Load folder into Library"
 msgstr "将文件夹载入库"
 
-#: ../widgets/rb-entry-view.c:1013 ../widgets/rb-header.c:887
+#: ../widgets/rb-entry-view.c:1031 ../widgets/rb-header.c:887
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../widgets/rb-entry-view.c:1015 ../widgets/rb-header.c:889
+#: ../widgets/rb-entry-view.c:1033 ../widgets/rb-header.c:889
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../widgets/rb-entry-view.c:1039
+#: ../widgets/rb-entry-view.c:1080
 msgid "Very Low"
 msgstr "非常低"
 
-#: ../widgets/rb-entry-view.c:1041
+#: ../widgets/rb-entry-view.c:1082
 msgid "Low"
 msgstr "低"
 
-#: ../widgets/rb-entry-view.c:1043
+#: ../widgets/rb-entry-view.c:1084
 msgid "Regular"
 msgstr "普通"
 
-#: ../widgets/rb-entry-view.c:1045
+#: ../widgets/rb-entry-view.c:1086
 msgid "High"
 msgstr "高"
 
-#: ../widgets/rb-entry-view.c:1047
+#: ../widgets/rb-entry-view.c:1088
 msgid "Very High"
 msgstr "非常高"
 
-#: ../widgets/rb-entry-view.c:1049
+#: ../widgets/rb-entry-view.c:1090
 msgid "Perfect"
 msgstr "完美"
 
-#: ../widgets/rb-entry-view.c:1272
-msgid "Trac_k"
-msgstr "音轨(_K)"
-
-#: ../widgets/rb-entry-view.c:1281
+#: ../widgets/rb-entry-view.c:1322
 msgid "_Title"
 msgstr "标题(_T)"
 
-#: ../widgets/rb-entry-view.c:1292
+#: ../widgets/rb-entry-view.c:1333
 msgid "Art_ist"
 msgstr "艺人(_I)"
 
-#: ../widgets/rb-entry-view.c:1303
+#: ../widgets/rb-entry-view.c:1344
 msgid "_Album"
 msgstr "专辑(_A)"
 
-#: ../widgets/rb-entry-view.c:1324
+#: ../widgets/rb-entry-view.c:1365
 msgid "Tim_e"
 msgstr "时长(_E)"
 
-#: ../widgets/rb-entry-view.c:1334
+#: ../widgets/rb-entry-view.c:1384
 msgid "_Quality"
 msgstr "质量(_Q)"
 
-#: ../widgets/rb-entry-view.c:1345
+#: ../widgets/rb-entry-view.c:1395
 msgid "_Play Count"
 msgstr "播放统计(_P)"
 
-#: ../widgets/rb-entry-view.c:1354
+#: ../widgets/rb-entry-view.c:1404
 msgid "_Last Played"
 msgstr "上次播放(_L)"
 
-#: ../widgets/rb-entry-view.c:1363
+#: ../widgets/rb-entry-view.c:1413
 msgid "_Date Added"
 msgstr "添加的日期(_D)"
 
-#: ../widgets/rb-entry-view.c:1618
+#: ../widgets/rb-entry-view.c:1668
 msgid "Playback Error"
 msgstr "回放错误"
 
@@ -2151,7 +2280,7 @@ msgid "Play Count"
 msgstr "播放统计"
 
 #: ../widgets/rb-query-creator-properties.c:69
-#: ../widgets/rb-query-creator-properties.c:95
+#: ../widgets/rb-query-creator-properties.c:96
 msgid "Track Number"
 msgstr "曲目序号"
 
@@ -2164,7 +2293,7 @@ msgid "Bitrate"
 msgstr "比特率"
 
 #: ../widgets/rb-query-creator-properties.c:73
-#: ../widgets/rb-query-creator-properties.c:94
+#: ../widgets/rb-query-creator-properties.c:95
 msgid "Duration"
 msgstr "时长"
 
@@ -2192,48 +2321,56 @@ msgid "W_ith more often played songs first"
 msgstr "先显示最常播放的音轨(_I)"
 
 #: ../widgets/rb-query-creator-properties.c:94
+msgid "Year"
+msgstr "年份"
+
+#: ../widgets/rb-query-creator-properties.c:94
+msgid "W_ith newer tracks first"
+msgstr "先显示最新的音轨(_I)"
+
+#: ../widgets/rb-query-creator-properties.c:95
 msgid "W_ith longer tracks first"
 msgstr "先显示最长的音轨(_I)"
 
-#: ../widgets/rb-query-creator-properties.c:95
+#: ../widgets/rb-query-creator-properties.c:96
 msgid "_In decreasing order"
 msgstr "逆序(_I)"
 
-#: ../widgets/rb-query-creator-properties.c:96
+#: ../widgets/rb-query-creator-properties.c:97
 msgid "Last Played"
 msgstr "上次播放"
 
-#: ../widgets/rb-query-creator-properties.c:96
+#: ../widgets/rb-query-creator-properties.c:97
 msgid "W_ith more recently played tracks first"
 msgstr "先显示最近播放的音轨(_I)"
 
-#: ../widgets/rb-query-creator-properties.c:97
+#: ../widgets/rb-query-creator-properties.c:98
 msgid "Date Added"
 msgstr "添加的日期"
 
-#: ../widgets/rb-query-creator-properties.c:97
+#: ../widgets/rb-query-creator-properties.c:98
 msgid "W_ith more recently added tracks first"
 msgstr "先显示最近添加的音轨(_I)"
 
-#: ../widgets/rb-query-creator-properties.c:111
+#: ../widgets/rb-query-creator-properties.c:112
 msgid "contains"
 msgstr "包含"
 
-#: ../widgets/rb-query-creator-properties.c:112
+#: ../widgets/rb-query-creator-properties.c:113
 msgid "does not contain"
 msgstr "不包含"
 
-#: ../widgets/rb-query-creator-properties.c:113
-#: ../widgets/rb-query-creator-properties.c:141
+#: ../widgets/rb-query-creator-properties.c:114
+#: ../widgets/rb-query-creator-properties.c:142
 msgid "equals"
 msgstr "等于"
 
-#: ../widgets/rb-query-creator-properties.c:142
+#: ../widgets/rb-query-creator-properties.c:143
 msgid "at least"
 msgstr "至少"
 
 #. matches if A >= B
-#: ../widgets/rb-query-creator-properties.c:143
+#: ../widgets/rb-query-creator-properties.c:144
 msgid "at most"
 msgstr "至多"
 
@@ -2241,7 +2378,7 @@ msgstr "至多"
 #. * Translators: this will match when within <value> of the current time
 #. * e.g. "in the last" "7 days" will match if within 7 days of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:190
+#: ../widgets/rb-query-creator-properties.c:191
 msgid "in the last"
 msgstr "在前"
 
@@ -2249,27 +2386,27 @@ msgstr "在前"
 #. * Translators: this is the opposite of the above, and will match if not
 #. * within <value> of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:196
+#: ../widgets/rb-query-creator-properties.c:197
 msgid "not in the last"
 msgstr "不在前"
 
-#: ../widgets/rb-query-creator-properties.c:210
+#: ../widgets/rb-query-creator-properties.c:211
 msgid "seconds"
 msgstr "秒"
 
-#: ../widgets/rb-query-creator-properties.c:211
+#: ../widgets/rb-query-creator-properties.c:212
 msgid "minutes"
 msgstr "分钟"
 
-#: ../widgets/rb-query-creator-properties.c:212
+#: ../widgets/rb-query-creator-properties.c:213
 msgid "hours"
 msgstr "小时"
 
-#: ../widgets/rb-query-creator-properties.c:213
+#: ../widgets/rb-query-creator-properties.c:214
 msgid "days"
 msgstr "天"
 
-#: ../widgets/rb-query-creator-properties.c:214
+#: ../widgets/rb-query-creator-properties.c:215
 msgid "weeks"
 msgstr "周"
 
@@ -2286,28 +2423,33 @@ msgstr "专辑："
 msgid "by"
 msgstr "艺人："
 
-#: ../widgets/rb-song-info.c:274
+#: ../widgets/rb-song-info.c:285
 msgid "Song Properties"
 msgstr "歌曲属性"
 
-#: ../widgets/rb-song-info.c:373
+#: ../widgets/rb-song-info.c:333
 msgid "Multiple Song Properties"
 msgstr "多首歌属性"
 
-#: ../widgets/rb-song-info.c:754
+#: ../widgets/rb-song-info.c:628
+#, c-format
+msgid "%s Properties"
+msgstr "%s 属性"
+
+#: ../widgets/rb-song-info.c:686
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../widgets/rb-song-info.c:799
+#: ../widgets/rb-song-info.c:731
 msgid "Unknown file name"
 msgstr "未知文件名"
 
-#: ../widgets/rb-song-info.c:818
+#: ../widgets/rb-song-info.c:750
 msgid "On the desktop"
 msgstr "在桌面上"
 
-#: ../widgets/rb-song-info.c:827
+#: ../widgets/rb-song-info.c:759
 msgid "Unknown location"
 msgstr "未知位置"
 
