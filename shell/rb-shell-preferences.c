@@ -97,42 +97,12 @@ struct RBShellPreferencesPrivate
 	gboolean loading;
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_shell_preferences_get_type (void)
-{
-	static GType rb_shell_preferences_type = 0;
-
-	if (rb_shell_preferences_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBShellPreferencesClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_shell_preferences_class_init,
-			NULL,
-			NULL,
-			sizeof (RBShellPreferences),
-			0,
-			(GInstanceInitFunc) rb_shell_preferences_init
-		};
-
-		rb_shell_preferences_type = g_type_register_static (GTK_TYPE_DIALOG,
-							            "RBShellPreferences",
-							            &our_info, 0);
-	}
-
-	return rb_shell_preferences_type;
-}
+G_DEFINE_TYPE (RBShellPreferences, rb_shell_preferences, GTK_TYPE_DIALOG)
 
 static void
 rb_shell_preferences_class_init (RBShellPreferencesClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_shell_preferences_finalize;
 }
@@ -262,7 +232,7 @@ rb_shell_preferences_finalize (GObject *object)
 
 	g_free (shell_preferences->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_shell_preferences_parent_class)->finalize (object);
 }
 
 static void
@@ -516,6 +486,24 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 }
 
 static void
+rb_shell_preferences_sync_column_button (RBShellPreferences *preferences,
+					 GtkWidget *button,
+					 const char *columns,
+					 const char *propid)
+{
+	g_signal_handlers_block_by_func (G_OBJECT (button),
+					 rb_shell_preferences_column_check_changed_cb,
+					 preferences);
+	
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), 
+				      strstr (columns, propid) != NULL);
+
+	g_signal_handlers_unblock_by_func (G_OBJECT (button),
+					   rb_shell_preferences_column_check_changed_cb,
+					   preferences);
+}
+
+static void
 rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
 	char *columns;
@@ -527,40 +515,40 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 	if (columns != NULL)
 	{
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->artist_check), 
-			 strstr (columns, "RHYTHMDB_PROP_ARTIST") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->album_check),
-			 strstr (columns, "RHYTHMDB_PROP_ALBUM") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->genre_check),
-			 strstr (columns, "RHYTHMDB_PROP_GENRE") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
-			 strstr (columns, "RHYTHMDB_PROP_DURATION") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
-			 strstr (columns, "RHYTHMDB_PROP_TRACK_NUMBER") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
-			 strstr (columns, "RHYTHMDB_PROP_RATING") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
-			 strstr (columns, "RHYTHMDB_PROP_PLAY_COUNT") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
-			 strstr (columns, "RHYTHMDB_PROP_LAST_PLAYED") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->year_check),
-			 strstr (columns, "RHYTHMDB_PROP_DATE") != NULL);
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->artist_check,
+							 columns, "RHYTHMDB_PROP_ARTIST");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->album_check,
+							 columns, "RHYTHMDB_PROP_ALBUM");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->genre_check,
+							 columns, "RHYTHMDB_PROP_GENRE");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->duration_check,
+							 columns, "RHYTHMDB_PROP_DURATION");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->track_check,
+							 columns, "RHYTHMDB_PROP_TRACK_NUMBER");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->rating_check,
+							 columns, "RHYTHMDB_PROP_RATING");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->play_count_check,
+							 columns, "RHYTHMDB_PROP_PLAY_COUNT");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->last_played_check,
+							 columns, "RHYTHMDB_PROP_LAST_PLAYED");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->year_check,
+							 columns, "RHYTHMDB_PROP_DATE");
+		rb_shell_preferences_sync_column_button (shell_preferences,
+			       				 shell_preferences->priv->first_seen_check,
+							 columns, "RHYTHMDB_PROP_FIRST_SEEN");
 		if (shell_preferences->priv->quality_check)
-			gtk_toggle_button_set_active
-				(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
-				 strstr (columns, "RHYTHMDB_PROP_BITRATE") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->first_seen_check),
-			 strstr (columns, "RHYTHMDB_PROP_FIRST_SEEN") != NULL);
+			rb_shell_preferences_sync_column_button (shell_preferences,
+				       				 shell_preferences->priv->quality_check,
+								 columns, "RHYTHMDB_PROP_BITRATE");
 	}
 
 	g_free (columns);

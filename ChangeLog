@@ -1,5 +1,16 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_class_init),
+	(rb_shell_preferences_finalize), (rb_shell_preferences_sync),
+	(rb_shell_preferences_sync_column_button): block the toggle signal of
+	the column checkboxes while setting their initial state. This stops
+	the visibility being re-set, which causes a lot of time being spent
+	measuring the columns aagin when opening the prefs window.
+
+	Use G_DEFINE_TYPE.
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-sourcelist.c: (rb_sourcelist_init),
 	(rb_sourcelist_edit_source_name): don't assume that the editable
 	source name is in the first column, because it isn't. Fixes bug
