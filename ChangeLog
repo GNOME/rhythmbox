@@ -1,5 +1,12 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* NEWS: update NEWS
+
+	* shell/rb-shell.c: (rb_shell_window_delete_cb): disable close
+	button's minimise-to-tray action
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_directory_change_cb): fix a memory
 	leak. Disable adding newly created files for now, because it doesn't
 	work properly.

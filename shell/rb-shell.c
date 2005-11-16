@@ -1256,13 +1256,13 @@ rb_shell_window_delete_cb (GtkWidget *win,
 			   GdkEventAny *event,
 			   RBShell *shell)
 {
-	if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
+	/*if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
 		rb_debug ("window deleted, hiding");
 		rb_shell_set_visibility (shell, FALSE, TRUE);
-	} else {
+	} else {*/
 		rb_debug ("no tray icon to minimize to, quitting");
 		rb_shell_quit (shell);
-	}
+	/*}*/
 	return TRUE;
 }
 
