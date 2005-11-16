@@ -1,5 +1,11 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-audiocd-source.c: (rb_audiocd_is_volume_audiocd): fix
+	problem where a GError* wasn't being set to NULL. Actually check the
+	result.
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* doc/reference/tmpl/rb-entry-view.sgml:
 	* doc/reference/tmpl/rhythmbox-unused.sgml:
 	* doc/reference/tmpl/rhythmdb-query-model.sgml:

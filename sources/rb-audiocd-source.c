@@ -504,10 +504,15 @@ rb_audiocd_is_volume_audiocd (GnomeVFSVolume *volume)
 
 	/* for sometimes device_type is GNOME_VFS_DEVICE_TYPE_CDROM */
 	if (device_type == GNOME_VFS_DEVICE_TYPE_AUDIO_CD || device_type == GNOME_VFS_DEVICE_TYPE_CDROM) {
-		GError *error;
+		GError *error = NULL;
 		MediaType media_type;
 
 		media_type = totem_cd_detect_type (device_path, &error);
+		if (error != NULL) {
+			rb_debug ("error while detecting cd: %s", error->message);
+			g_error_free (error);
+			return FALSE;
+		}
 		rb_debug ("detecting new cd - totem cd media type=%d", media_type);
 		return (media_type == MEDIA_TYPE_CDDA);
 	}
