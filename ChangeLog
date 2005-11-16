@@ -1,5 +1,13 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_deleted_cb),
+	(rhythmdb_query_model_remove_entry): remove deleted entries from the
+	limited list. Stops problems if they are deleted, and then things on
+	the main list are
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* NEWS: update NEWS
 
 	* shell/rb-shell.c: (rb_shell_window_delete_cb): disable close

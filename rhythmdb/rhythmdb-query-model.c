@@ -626,7 +626,8 @@ rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       RhythmDBQueryModel *model)
 {
 	
-	if (g_hash_table_lookup (model->priv->reverse_map, entry))
+	if (g_hash_table_lookup (model->priv->reverse_map, entry) ||
+	    g_hash_table_lookup (model->priv->limited_reverse_map, entry))
 		rhythmdb_query_model_remove_entry (model, entry);
 }
 
@@ -992,7 +993,10 @@ gboolean
 rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, 
 				   RhythmDBEntry *entry)
 {
-	g_return_val_if_fail (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL, FALSE);
+	gboolean present = (g_hash_table_lookup (model->priv->reverse_map, entry) == NULL) ||
+			    (g_hash_table_lookup (model->priv->limited_reverse_map, entry) == NULL);
+	g_return_val_if_fail (present, FALSE);
+
 	/* emit entry-removed, so listeners know the
 	 * entry has actually been removed, rather than filtered
 	 * out.
