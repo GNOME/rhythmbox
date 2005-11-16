@@ -1,5 +1,12 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-sourcelist.c: (rb_sourcelist_init),
+	(rb_sourcelist_edit_source_name): don't assume that the editable
+	source name is in the first column, because it isn't. Fixes bug
+	320137.
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* daapsharing/rb-daap-mdns.h:
 	* daapsharing/rb-daap-mdns.c: (rb_daap_mdns_error_quark),
 	(get_sw_discovery), (get_avahi_client): use GErrors, so that other

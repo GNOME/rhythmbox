@@ -49,6 +49,7 @@ struct RBSourceListPriv
 	RBSource *playing_source;
 	int child_source_count;
 	GtkTreeViewColumn *expander_column;
+	GtkTreeViewColumn *main_column;
 
 	RBShell *shell;
 };
@@ -188,7 +189,6 @@ static void
 rb_sourcelist_init (RBSourceList *sourcelist)
 {
 	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *gcolumn;
 
 	sourcelist->priv = g_new0 (RBSourceListPriv, 1);
 
@@ -226,22 +226,22 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 	gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
 				     sourcelist->priv->expander_column);
 
-	gcolumn = gtk_tree_view_column_new ();
-	gtk_tree_view_column_set_title (gcolumn, _("S_ource"));
-	gtk_tree_view_column_set_clickable (gcolumn, FALSE);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), gcolumn);
+	sourcelist->priv->main_column = gtk_tree_view_column_new ();
+	gtk_tree_view_column_set_title (sourcelist->priv->main_column, _("S_ource"));
+	gtk_tree_view_column_set_clickable (sourcelist->priv->main_column, FALSE);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), sourcelist->priv->main_column);
 
 	/* Set up the pixbuf column */
 	renderer = gtk_cell_renderer_pixbuf_new ();
-	gtk_tree_view_column_pack_start (gcolumn, renderer, FALSE);
-	gtk_tree_view_column_set_attributes (gcolumn, renderer,
+	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, FALSE);
+	gtk_tree_view_column_set_attributes (sourcelist->priv->main_column, renderer,
 				             "pixbuf", RB_SOURCELIST_MODEL_COLUMN_PIXBUF,
 					     NULL);
 
 	/* Set up the name column */
 	sourcelist->priv->title_renderer = renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
-	gtk_tree_view_column_set_cell_data_func (gcolumn, renderer,
+	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, TRUE);
+	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column, renderer,
 						 (GtkTreeCellDataFunc)
 						 rb_sourcelist_title_cell_data_func,
 						 sourcelist, NULL);
@@ -436,19 +436,18 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	GtkTreeViewColumn *col;
 	
 	g_assert (rb_sourcelist_visible_source_to_iter (sourcelist, source, &iter));
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (sourcelist->priv->filter_model),
 					&iter);
-	col = gtk_tree_view_get_column (GTK_TREE_VIEW (sourcelist->priv->treeview), 0);
 	
 	/* Make cell editable just for the moment.
 	   We'll turn it off once editing is done. */
 	g_object_set (G_OBJECT (sourcelist->priv->title_renderer), "editable", TRUE, NULL);
 	
 	gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (sourcelist->priv->treeview),
-					  path, col, sourcelist->priv->title_renderer,
+					  path, sourcelist->priv->main_column,
+					  sourcelist->priv->title_renderer,
 					  TRUE);
 	
 	gtk_tree_path_free (path);
