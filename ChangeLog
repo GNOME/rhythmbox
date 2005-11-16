@@ -1,5 +1,16 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_directory_change_cb): fix a memory
+	leak. Disable adding newly created files for now, because it doesn't
+	work properly.
+
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_class_init),
+	(rb_sourcelist_model_finalize):
+	* sources/rb-sourcelist.c: (rb_sourcelist_class_init),
+	(rb_sourcelist_finalize): use G_DEFINE_TYPE,
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-audiocd-source.c: (rb_audiocd_is_volume_audiocd): fix
 	problem where a GError* wasn't being set to NULL. Actually check the
 	result.

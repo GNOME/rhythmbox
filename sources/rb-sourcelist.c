@@ -106,43 +106,16 @@ static void rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCe
 						RBSourceList *sourcelist);
 static void rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist);
 
-static GtkVBoxClass *parent_class = NULL;
-
 static guint rb_sourcelist_signals[LAST_SIGNAL] = { 0 };
 
-GType
-rb_sourcelist_get_type (void)
-{
-	static GType rb_sourcelist_type = 0;
+G_DEFINE_TYPE (RBSourceList, rb_sourcelist, GTK_TYPE_SCROLLED_WINDOW) 
 
-	if (!rb_sourcelist_type)
-	{
-		static const GTypeInfo rb_sourcelist_info = {
-			sizeof (RBSourceListClass),
-			NULL,		/* base_init */
-			NULL,		/* base_finalize */
-			(GClassInitFunc) rb_sourcelist_class_init,
-			NULL,		/* class_finalize */
-			NULL,		/* class_data */
-			sizeof (RBSourceList),
-			0,              /* n_preallocs */
-			(GInstanceInitFunc) rb_sourcelist_init
-		};
-
-		rb_sourcelist_type = g_type_register_static (GTK_TYPE_SCROLLED_WINDOW, "RBSourceList",
-							     &rb_sourcelist_info, 0);
-	}
-	
-	return rb_sourcelist_type;
-}
 
 static void
 rb_sourcelist_class_init (RBSourceListClass *class)
 {
 	GObjectClass   *o_class;
 	GtkObjectClass *object_class;
-
-	parent_class = g_type_class_peek_parent (class);
 
 	o_class = (GObjectClass *) class;
 	object_class = (GtkObjectClass *) class;
@@ -291,8 +264,7 @@ rb_sourcelist_finalize (GObject *object)
 
 	g_free (sourcelist->priv);
 
-	if (G_OBJECT_CLASS (parent_class)->finalize)
-		(* G_OBJECT_CLASS (parent_class)->finalize) (object);
+	G_OBJECT_CLASS (rb_sourcelist_parent_class)->finalize (object);
 }
 static void
 rb_sourcelist_set_property (GObject *object,

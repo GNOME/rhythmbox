@@ -75,76 +75,39 @@ static gboolean rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source
 						   GList *path_list);
 
 
-static GtkTreeModelFilterClass *parent_class = NULL;
-
 static guint rb_sourcelist_model_signals[LAST_SIGNAL] = { 0 };
 
 enum {
 	TARGET_PROPERTY,
 	TARGET_SOURCE,
-	TARGET_URIS
+	TARGET_URIS,
+	TARGET_DELETE
 };
 
 static const GtkTargetEntry sourcelist_targets[] = { { "text/x-rhythmbox-album", 0, TARGET_PROPERTY },
 						     { "text/x-rhythmbox-artist", 0, TARGET_PROPERTY },
 						     { "text/x-rhythmbox-genre", 0, TARGET_PROPERTY },
 						     { "application/x-rhythmbox-source", 0, TARGET_SOURCE },
-						     { "text/uri-list", 0, TARGET_URIS } };
+						     { "text/uri-list", 0, TARGET_URIS },
+						     { "application/x-delete-me", 0, TARGET_DELETE }};
 
 static GtkTargetList *sourcelist_drag_target_list = NULL;
 
-GType
-rb_sourcelist_model_get_type (void)
-{
-	static GType rb_sourcelist_model_type = 0;
+G_DEFINE_TYPE_EXTENDED (RBSourceListModel, 
+                        rb_sourcelist_model, 
+                        GTK_TYPE_TREE_MODEL_FILTER,
+                        0, 
+                        G_IMPLEMENT_INTERFACE (RB_TYPE_TREE_DRAG_SOURCE, 
+                                               rb_sourcelist_model_drag_source_init)
+                        G_IMPLEMENT_INTERFACE (RB_TYPE_TREE_DRAG_DEST, 
+                                               rb_sourcelist_model_drag_dest_init));
 
-	if (!rb_sourcelist_model_type)
-	{
-		static const GTypeInfo rb_sourcelist_model_info = {
-			sizeof (RBSourceListModelClass),
-			NULL,		/* base_init */
-			NULL,		/* base_finalize */
-			(GClassInitFunc) rb_sourcelist_model_class_init,
-			NULL,		/* class_finalize */
-			NULL,		/* class_data */
-			sizeof (RBSourceListModel),
-			0,              /* n_preallocs */
-			(GInstanceInitFunc) rb_sourcelist_model_init
-		};
-
-		static const GInterfaceInfo drag_dest_info = {
-			(GInterfaceInitFunc) rb_sourcelist_model_drag_dest_init,
-			NULL,
-			NULL
-		};
-
-
-		static const GInterfaceInfo drag_source_info = {
-			(GInterfaceInitFunc) rb_sourcelist_model_drag_source_init,
-			NULL,
-			NULL
-		};
-
-		rb_sourcelist_model_type = g_type_register_static (GTK_TYPE_TREE_MODEL_FILTER, "RBSourceListModel",
-								   &rb_sourcelist_model_info, 0);
-		g_type_add_interface_static (rb_sourcelist_model_type,
-					     RB_TYPE_TREE_DRAG_SOURCE,
-					     &drag_source_info);
-		g_type_add_interface_static (rb_sourcelist_model_type,
-					     RB_TYPE_TREE_DRAG_DEST,
-					     &drag_dest_info);
-	}
-	
-	return rb_sourcelist_model_type;
-}
 
 static void
 rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 {
 	GObjectClass   *o_class;
 	GtkObjectClass *object_class;
-
-	parent_class = g_type_class_peek_parent (class);
 
 	o_class = (GObjectClass *) class;
 	object_class = (GtkObjectClass *) class;
@@ -216,8 +179,7 @@ rb_sourcelist_model_finalize (GObject *object)
 
 	g_free (model->priv);
 
-	if (G_OBJECT_CLASS (parent_class)->finalize)
-		(* G_OBJECT_CLASS (parent_class)->finalize) (object);
+	G_OBJECT_CLASS (rb_sourcelist_model_parent_class)->finalize (object);
 }
 
 static gboolean

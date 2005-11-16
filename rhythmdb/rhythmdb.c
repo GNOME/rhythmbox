@@ -1012,24 +1012,31 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			      gpointer data)
 {
 	RhythmDB *db = RHYTHMDB (data);
-	struct RhythmDBEvent *event = g_new0 (struct RhythmDBEvent, 1);
+	struct RhythmDBEvent *event;
 	rb_debug ("directory event %d for %s: %s", (int) vfsevent,
 		  monitor_uri, info_uri);
-
-	event->uri = g_strdup (info_uri);
 
 	switch (vfsevent)
         {
         case GNOME_VFS_MONITOR_EVENT_CREATED:
+		/* disable until we have proper library monitoring
+		 * because it doesn't work properly now.
+		event = g_new0 (struct RhythmDBEvent, 1)
+		event->uri = g_strdup (info_uri);
                 event->type = RHYTHMDB_EVENT_FILE_CREATED;
                 g_async_queue_push (db->priv->event_queue, event);
+		*/
                 break;
         case GNOME_VFS_MONITOR_EVENT_CHANGED:
         case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
+		event = g_new0 (struct RhythmDBEvent, 1);
+		event->uri = g_strdup (info_uri);
                 event->type = RHYTHMDB_EVENT_FILE_MODIFIED;
 		g_async_queue_push (db->priv->event_queue, event);
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:
+		event = g_new0 (struct RhythmDBEvent, 1);
+		event->uri = g_strdup (info_uri);
                 event->type = RHYTHMDB_EVENT_FILE_DELETED;
 		g_async_queue_push (db->priv->event_queue, event);
 		break;
