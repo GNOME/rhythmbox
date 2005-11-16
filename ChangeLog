@@ -1,5 +1,18 @@
 2005-11-16  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-mdns.h:
+	* daapsharing/rb-daap-mdns.c: (rb_daap_mdns_error_quark),
+	(get_sw_discovery), (get_avahi_client): use GErrors, so that other
+	parts can know why operations failed. Avahi can report that the daemon
+	was not running. Howl doesn't do this (yet).
+	
+	(rb_daap_mdns_browse), (rb_daap_mdns_resolve),
+	(rb_daap_mdns_publish), (rb_daap_mdns_publish_cancel),
+	(browse_cb): don't display mdns errors to the user, if it wa because
+	the daemon was not running.
+
+2005-11-16  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-property-model.c:
 	(rhythmdb_property_model_init), (rhythmdb_property_model_finalize),
 	(rhythmdb_property_model_compare),

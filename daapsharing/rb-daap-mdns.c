@@ -31,6 +31,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+GQuark
+rb_daap_mdns_error_quark (void)
+{
+	static GQuark quark = 0;
+	if (!quark)
+		quark = g_quark_from_static_string ("rb_daap_mdns_error");
+
+	return quark;
+}
+
 #ifdef WITH_DAAP_SUPPORT
 static void mdns_error_dialog (const gchar *impl)
 {
@@ -87,7 +98,7 @@ setup_sw_discovery (sw_discovery discovery)
 }
 
 static sw_discovery
-get_sw_discovery ()
+get_sw_discovery (GError **error)
 {
 	sw_result result;
 	static sw_discovery discovery = NULL;
@@ -98,7 +109,10 @@ get_sw_discovery ()
 	
 		if (result != SW_OKAY) {
 			rb_debug ("Error initializing Howl");
-			mdns_error_dialog ("Howl");
+			g_set_error (err,
+				     RB_DAAP_MDNS_ERROR,
+				     RB_DAAP_MDNS_ERROR_FAILED,
+				     "Hown daemon was not running");
 			return NULL;
 		}
 
@@ -178,13 +192,16 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		     RBDAAPmDNSBrowserCallback callback,
 		     gpointer user_data)
 {
-	sw_discovery discovery = get_sw_discovery ();
+	sw_discovery discovery;
 	static CallbackAndData cd;
 	sw_result result;
+	GError *error = NULL;
 	
+	discovery = get_sw_discovery (&error);
 	if (!discovery) {
 		rb_debug ("Error initializing Howl for browsing");
-		mdns_error_dialog ("Howl");
+		if (!g_error_matches (error, RB_DAAP_MDNS_ERROR, RB_DAAP_MDNS_ERROR_NOT_RUNNING))
+			mdns_error_dialog ("Howl");
 		return FALSE;
 	}
 		
@@ -283,13 +300,16 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		      RBDAAPmDNSResolverCallback callback,
 		      gpointer user_data)
 {
-	sw_discovery discovery = get_sw_discovery ();
+	sw_discovery discovery;
 	static CallbackAndData cd;
 	sw_result result;
+	GError *error = NULL;
 
+	discovery = get_sw_discovery (&error);
 	if (!discovery) {
 		rb_debug ("Error initializing Howl for resolving");
-		mdns_error_dialog ("Howl");
+		if (!g_error_matches (error, RB_DAAP_MDNS_ERROR, RB_DAAP_MDNS_ERROR_NOT_RUNNING))
+			mdns_error_dialog ("Howl");
 		return FALSE;
 	}
 
@@ -356,13 +376,16 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		      RBDAAPmDNSPublisherCallback callback,
 		      gpointer user_data)
 {
-	sw_discovery discovery = get_sw_discovery ();
+	sw_discovery discovery;
 	static CallbackAndData cd;
 	sw_result result;
+	GError *error = NULL;
 
+	discovery = get_sw_discovery (&error);
 	if (!discovery) {
 		rb_debug ("Error initializing Howl for resolving");
-		mdns_error_dialog ("Howl");
+		if (!g_error_matches (error, RB_DAAP_MDNS_ERROR, RB_DAAP_MDNS_ERROR_NOT_RUNNING))
+			mdns_error_dialog ("Howl");
 		return FALSE;
 	}
 
@@ -403,7 +426,7 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 {
 	sw_discovery discovery;
 	
-	discovery = get_sw_discovery ();
+	discovery = get_sw_discovery (NULL);
 
 	if (discovery) {
 		sw_discovery_cancel (discovery, (sw_discovery_oid) publisher);
@@ -434,7 +457,8 @@ client_cb (AvahiClient *client,
  */
 }
 
-static AvahiClient * get_avahi_client ()
+static AvahiClient *
+get_avahi_client (GError **err)
 {
 	static gboolean initialized = FALSE;
 	static AvahiClient *client = NULL;
@@ -449,12 +473,27 @@ static AvahiClient * get_avahi_client ()
 
 		if (!poll) {
 			rb_debug ("Unable to create AvahiGlibPoll object for mDNS");
+			g_set_error (err,
+				     RB_DAAP_MDNS_ERROR,
+				     RB_DAAP_MDNS_ERROR_FAILED,
+				     "Could not create AvahiGlibPoll object");
 			return NULL;
 		}
 
 		client = avahi_client_new (avahi_glib_poll_get (poll), client_cb, NULL, &error);
 		if (client == NULL) {
 			rb_debug ("Unable to create AvahiClient: %s", avahi_strerror (error));
+			if (error == AVAHI_ERR_NO_DAEMON) {
+				g_set_error (err,
+					     RB_DAAP_MDNS_ERROR,
+					     RB_DAAP_MDNS_ERROR_NOT_RUNNING,
+					     "Avahi daemon was noty running");
+			} else {
+				g_set_error (err,
+					     RB_DAAP_MDNS_ERROR,
+					     RB_DAAP_MDNS_ERROR_FAILED,
+					     "Error creating avahi client: %s", avahi_strerror (error));
+			}
 			return NULL;
 		}
 
@@ -477,7 +516,7 @@ browse_cb (AvahiServiceBrowser *browser,
 	CallbackAndData *cd = (CallbackAndData *) data;
 	RBDAAPmDNSBrowserStatus bstatus;
 
-	if (avahi_client_is_service_local (get_avahi_client (), interface, protocol, name, type, domain)) {
+	if (avahi_client_is_service_local (get_avahi_client (NULL), interface, protocol, name, type, domain)) {
 		rb_debug ("Ignoring local service %s", name);
 		return;
 	}
@@ -503,11 +542,13 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 {
 	AvahiClient *client;
 	static CallbackAndData cd;
+	GError *error = NULL;
 	
-	client = get_avahi_client ();
+	client = get_avahi_client (&error);
 	if (!client) {
 		rb_debug ("Error initializing Avahi for browsing");
-		mdns_error_dialog ("Avahi");
+		if (!g_error_matches (error, RB_DAAP_MDNS_ERROR, RB_DAAP_MDNS_ERROR_NOT_RUNNING))
+			mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
 
@@ -633,11 +674,13 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 {
 	AvahiClient *client;
 	static CallbackAndData cd;
+	GError *error = NULL;
 	
-	client = get_avahi_client ();
+	client = get_avahi_client (&error);
 	if (!client) {
 		rb_debug ("Error initializing Avahi for resolving");
-		mdns_error_dialog ("Avahi");
+		if (!g_error_matches (error, RB_DAAP_MDNS_ERROR, RB_DAAP_MDNS_ERROR_NOT_RUNNING))
+			mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
 
@@ -740,11 +783,13 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 	AvahiClient *client;
 	static CallbackAndData cd;
 	gint ret;
+	GError *error = NULL;
 	
-	client = get_avahi_client ();
+	client = get_avahi_client (&error);
 	if (!client) {
 		rb_debug ("Error initializing Avahi for publishing");
-		mdns_error_dialog ("Avahi");
+		if (!g_error_matches (error, RB_DAAP_MDNS_ERROR, RB_DAAP_MDNS_ERROR_NOT_RUNNING))
+			mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
 

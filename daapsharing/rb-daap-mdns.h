@@ -24,6 +24,15 @@
 
 #include <glib.h>
 
+#define RB_DAAP_MDNS_ERROR rb_daap_mdns_error_quark ()
+GQuark rb_daap_mdns_error_quark (void);
+
+typedef enum
+{
+	RB_DAAP_MDNS_ERROR_NOT_RUNNING,
+	RB_DAAP_MDNS_ERROR_FAILED,
+} RBDaapMdnsError;
+
 /* discovering hosts */
 typedef gpointer RBDAAPmDNSBrowser;
 
