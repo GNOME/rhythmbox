@@ -2119,16 +2119,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 		return;
 
 	songs = rb_source_get_entry_view (source);
-	if (!rb_entry_view_get_entry_contained (songs, entry)) {
-		rb_source_reset_filters (source);
-		rb_source_header_clear_search (shell->priv->source_header);
-	}
-
 	rb_shell_select_source (shell, source);
-
-	if (!rb_entry_view_get_entry_contained (songs, entry)) {
-		rb_source_search (shell->priv->selected_source, NULL);
-	}
 
 	rb_entry_view_scroll_to_entry (songs, entry);
 	rb_entry_view_select_entry (songs, entry);

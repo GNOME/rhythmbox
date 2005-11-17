@@ -1,5 +1,22 @@
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
+	Don't reset the search box when viewing a different source, because it
+	will change what is being played. Closes 321593.
+
+	* shell/rb-shell.c: (rb_shell_jump_to_entry_with_source): don't reset
+	the search box
+
+	* shell/rb-source-header.c: (rb_source_header_class_init),
+	(rb_source_header_init), (rb_source_header_finalize): use
+	G_DEFINE_TYPE.
+
+	(rb_source_header_set_property),
+	(rb_source_header_source_weak_destroy_cb),
+	(rb_source_header_search_cb): store the search text when leaving a
+	source and put it in the search box when viewing it again.
+
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
 	(save_entry):
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_finalize),

@@ -80,6 +80,8 @@ struct RBSourceHeaderPrivate
 	guint search_notify_id;
 	gboolean have_search;
 	const char *browser_key;
+
+	GHashTable *source_search_text;
 };
 
 enum
@@ -98,42 +100,12 @@ static GtkToggleActionEntry rb_source_header_toggle_entries [] =
 static guint rb_source_header_n_toggle_entries = G_N_ELEMENTS (rb_source_header_toggle_entries);
 
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_source_header_get_type (void)
-{
-	static GType rb_source_header_type = 0;
-
-	if (rb_source_header_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBSourceHeaderClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_source_header_class_init,
-			NULL,
-			NULL,
-			sizeof (RBSourceHeader),
-			0,
-			(GInstanceInitFunc) rb_source_header_init
-		};
-
-		rb_source_header_type = g_type_register_static (GTK_TYPE_TABLE,
-							       "RBSourceHeader",
-							       &our_info, 0);
-	}
-
-	return rb_source_header_type;
-}
+G_DEFINE_TYPE (RBSourceHeader, rb_source_header, GTK_TYPE_TABLE)
 
 static void
 rb_source_header_class_init (RBSourceHeaderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_source_header_finalize;
 
@@ -199,6 +171,9 @@ rb_source_header_init (RBSourceHeader *header)
 			  GTK_EXPAND | GTK_FILL,
 			  GTK_EXPAND | GTK_FILL,
 			  5, 0);
+
+	header->priv->source_search_text = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+								  NULL, (GDestroyNotify)g_free);
 }
 
 static void
@@ -213,9 +188,11 @@ rb_source_header_finalize (GObject *object)
 
 	g_return_if_fail (header->priv != NULL);
 
+	g_hash_table_destroy (header->priv->source_search_text);
+
 	g_free (header->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_source_header_parent_class)->finalize (object);
 }
 
 static void
@@ -243,13 +220,16 @@ rb_source_header_set_property (GObject *object,
 
 		if (header->priv->selected_source != NULL)
 		{
+			const char *text = g_hash_table_lookup (header->priv->source_search_text,
+								header->priv->selected_source);
+			
 			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
 			if (header->priv->browser_key)
 				header->priv->browser_notify_id
 					= eel_gconf_notification_add (header->priv->browser_key,
 								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
 								      header);
-			rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), "");
+			rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);
 			g_signal_connect_object (G_OBJECT (header->priv->selected_source),
 						 "filter_changed",
 						 G_CALLBACK (rb_source_header_filter_changed_cb),
@@ -261,10 +241,6 @@ rb_source_header_set_property (GObject *object,
 				gtk_widget_hide (GTK_WIDGET (header));
 			else
 				gtk_widget_show (GTK_WIDGET (header));
-			if (header->priv->have_search)
-				rb_source_header_search_cb (RB_SEARCH_ENTRY (header->priv->search),
-							    "",
-							    header);
 		}
 		rb_source_header_sync_control_state (header);
 		
@@ -342,11 +318,28 @@ rb_source_header_filter_changed_cb (RBSource *source,
 }
 
 static void
+rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source)
+{
+	g_hash_table_remove (header->priv->source_search_text, source);
+}
+
+static void
 rb_source_header_search_cb (RBSearchEntry *search,
 			    const char *text,
 			    RBSourceHeader *header)
 {
 	rb_debug  ("searching for \"%s\"", text);
+
+	/* if we haven't seen the source before, monitor it for deletion */
+	if (g_hash_table_lookup (header->priv->source_search_text, header->priv->selected_source) == NULL) {
+		g_object_weak_ref (G_OBJECT (header->priv->selected_source),
+				   (GWeakNotify)rb_source_header_source_weak_destroy_cb,
+				   header);
+	}
+
+	g_hash_table_insert (header->priv->source_search_text,
+			     header->priv->selected_source,
+			     g_strdup (text));
 	rb_source_search (header->priv->selected_source, text);
 	rb_source_header_sync_control_state (header);
 }
