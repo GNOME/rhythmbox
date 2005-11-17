@@ -2222,26 +2222,27 @@ propid_from_name (const char *name)
 }
 
 static void
-set_column_not_visible (guint propid, GtkTreeViewColumn *column, gpointer unused)
+set_column_visibility (guint propid, GtkTreeViewColumn *column, GList *visible_props)
 {
+	gboolean visible;
+
 	/* title is always visible */
 	if (propid == RHYTHMDB_PROP_TITLE)
 		return;
-	
-	gtk_tree_view_column_set_visible (column, FALSE);
+
+	visible = (g_list_find (visible_props, GINT_TO_POINTER (propid)) != NULL);
+	gtk_tree_view_column_set_visible (column, visible);
 }
 
 static void
 rb_entry_view_sync_columns_visible (RBEntryView *view)
 {
 	char **items;
-	GList *visible_properties = NULL, *tem;
+	GList *visible_properties = NULL;
 	char *config = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (config != NULL);
-
-	g_hash_table_foreach (view->priv->propid_column_map, (GHFunc) set_column_not_visible, NULL);
 
 	items = g_strsplit (config, ",", 0);
 	if (items != NULL) {
@@ -2250,17 +2251,12 @@ rb_entry_view_sync_columns_visible (RBEntryView *view)
 			int value = propid_from_name (items[i]);
 
 			if ((value >= 0) && (value < RHYTHMDB_NUM_PROPERTIES))
-				visible_properties = g_list_append (visible_properties, GINT_TO_POINTER (value));
+				visible_properties = g_list_prepend (visible_properties, GINT_TO_POINTER (value));
 		}
 		g_strfreev (items);
 	}
 
-	for (tem = visible_properties; tem; tem = tem->next) {
-		GtkTreeViewColumn *column
-			= g_hash_table_lookup (view->priv->propid_column_map, tem->data);
-		if (column)
-			gtk_tree_view_column_set_visible (column, TRUE);
-	}
+	g_hash_table_foreach (view->priv->propid_column_map, (GHFunc) set_column_visibility, visible_properties);
 
 	g_list_free (visible_properties);
 	g_free (config);

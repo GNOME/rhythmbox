@@ -1,3 +1,10 @@
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
+	* widgets/rb-entry-view.c: (set_column_visibility),
+	(rb_entry_view_sync_columns_visible): when changing visibility of one
+	column, don't hide and re-show all the others. Makes a show/hide
+	column operation a lot faster.
+
 2005-11-17  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	Closes bug 321702.
