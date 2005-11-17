@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of new podcast dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho - INdT <renato.filho@indt.org.br>
@@ -20,21 +21,14 @@
  */
 
 #include <config.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkcombo.h>
-#include <gtk/gtkbox.h>
-#include <gtk/gtktable.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtktextview.h>
-#include <gtk/gtktextbuffer.h>
-#include <gtk/gtkmessagedialog.h>
-#include <glade/glade.h>
+
 #include <string.h>
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-new-podcast-dialog.h"
 #include "rb-glade-helpers.h"
@@ -55,10 +49,8 @@ static void rb_new_podcast_dialog_get_property (GObject *object,
 static void rb_new_podcast_dialog_response_cb (GtkDialog *gtkdialog,
 					       int response_id,
 					       RBNewPodcastDialog *dialog);
-static void rb_new_podcast_dialog_text_changed (GtkTextBuffer *buffer,
+static void rb_new_podcast_dialog_text_changed (GtkEditable *buffer,
 						RBNewPodcastDialog *dialog);
-//static gpointer rb_new_podcast_dialog_copy_file(gpointer data);
-
 
 struct RBNewPodcastDialogPrivate
 {
@@ -101,7 +93,6 @@ static void
 rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 {
 	GladeXML *xml;
-	GtkTextBuffer *buffer;
 
 	/* create the dialog and some buttons forward - close */
 	dialog->priv = g_new0 (RBNewPodcastDialogPrivate, 1);
@@ -141,8 +132,7 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	/* get the widgets from the XML */
 	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
 
-	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->priv->url));
-	g_signal_connect_object (G_OBJECT (buffer),
+	g_signal_connect_object (G_OBJECT (dialog->priv->url),
 				 "changed",
 				 G_CALLBACK (rb_new_podcast_dialog_text_changed),
 				 dialog, 0);
@@ -175,9 +165,9 @@ rb_new_podcast_dialog_finalize (GObject *object)
 
 static void
 rb_new_podcast_dialog_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *pspec)
 {
 	RBNewPodcastDialog *dialog = RB_NEW_PODCAST_DIALOG (object);
 
@@ -194,9 +184,9 @@ rb_new_podcast_dialog_set_property (GObject *object,
 
 static void
 rb_new_podcast_dialog_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *pspec)
 {
 	RBNewPodcastDialog *dialog = RB_NEW_PODCAST_DIALOG (object);
 
@@ -231,34 +221,30 @@ rb_new_podcast_dialog_response_cb (GtkDialog *gtkdialog,
 				   RBNewPodcastDialog *dialog)
 {
 	gchar *valid_url;
-	GtkTextIter begin, end;
-	const gchar *str;
-	GtkTextBuffer *buffer;
+	gchar *str;
 
 	if (response_id != GTK_RESPONSE_OK)
 		return;
 
-	
-	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->priv->url));
-	gtk_text_buffer_get_start_iter (buffer, &begin);
-	gtk_text_buffer_get_end_iter (buffer, &end);
-	
-	str = gtk_text_buffer_get_text (buffer, &begin, &end, TRUE);	
+	str = gtk_editable_get_chars (GTK_EDITABLE (dialog->priv->url), 0, -1);
 
-
-	valid_url = g_strstrip ( g_strdup (str));
+	valid_url = g_strstrip (str);
 
 	rb_podcast_manager_subscribe_feed (dialog->priv->pd, valid_url);
-	gtk_widget_hide(GTK_WIDGET(gtkdialog));	
-	g_free (valid_url);
-	
+
+	gtk_widget_hide (GTK_WIDGET (gtkdialog));	
+
+	g_free (str);
 }
 
 static void
-rb_new_podcast_dialog_text_changed (GtkTextBuffer *buffer,
+rb_new_podcast_dialog_text_changed (GtkEditable *buffer,
 				    RBNewPodcastDialog *dialog)
 {
-	gtk_widget_set_sensitive (dialog->priv->okbutton,
-				  gtk_text_buffer_get_char_count (buffer) > 0);
+	char *text = gtk_editable_get_chars (buffer, 0, -1);
+	gboolean has_text = ((text != NULL) && (*text != 0));
+
+	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);
+	g_free (text);
 }
 

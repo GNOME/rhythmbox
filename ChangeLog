@@ -1,5 +1,15 @@
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/podcast-new.glade:
+	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init),
+	(rb_new_podcast_dialog_set_property),
+	(rb_new_podcast_dialog_get_property),
+	(rb_new_podcast_dialog_response_cb),
+	(rb_new_podcast_dialog_text_changed): use a GtkEntry not a GtkTextView
+	for entering new podcast urls in. Closes bug 321610.
+
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-podcast-source.c: (construct_query_from_selection),
 	(rb_podcast_source_do_query): allow podcast list to be re-sorted
 	without restarting RB. Closes bug 321612.
