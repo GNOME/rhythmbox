@@ -2330,6 +2330,20 @@ info_available_cb (RBPlayer *mmplayer,
 		}
 		break;
 	}
+	case RB_METADATA_FIELD_BITRATE:
+		if (!rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE)) {
+			gulong bitrate;
+
+			/* GStreamer sends us bitrate in bps, but we need it in kbps*/
+			bitrate = g_value_get_ulong (value);
+			g_value_set_ulong (value, bitrate/1000);
+			
+			rb_debug ("setting bitrate of iradio station to %d", 
+				  g_value_get_ulong (value));
+			entry_field = RHYTHMDB_PROP_BITRATE;
+			set_field = TRUE;
+		}
+		break;
 	default:
 		break;
 	}

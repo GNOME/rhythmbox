@@ -429,7 +429,7 @@ rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialo
 static void
 rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 {
-	guint val = 0;
+	gulong val = 0;
 	char *text;
 
 	if (dialog->priv->current_entry)
@@ -438,7 +438,7 @@ rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 	if (val == 0)
 		text = g_strdup (_("Unknown"));
 	else
-		text = g_strdup_printf ("%d", val);
+		text = g_strdup_printf (_("%lu kbps"), val);
 
 	gtk_label_set_text (GTK_LABEL (dialog->priv->bitrate), text);
 	g_free (text);

@@ -359,16 +359,30 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
 		field = RB_METADATA_FIELD_GENRE;
 	else if (!strcmp (tag, GST_TAG_COMMENT))
 		field = RB_METADATA_FIELD_COMMENT;
+	else if (!strcmp (tag, GST_TAG_BITRATE))
+		field = RB_METADATA_FIELD_BITRATE;
 	else
 		return;
 
-	/* of those, all are strings */
+	/* of those, all except bitrate are strings */
 	newval = g_new0 (GValue, 1);
-	g_value_init (newval, G_TYPE_STRING);
+	switch (field) {
+	case RB_METADATA_FIELD_BITRATE:
+		g_value_init (newval, G_TYPE_ULONG);
+		break;
+
+	case RB_METADATA_FIELD_TITLE:
+	case RB_METADATA_FIELD_GENRE:
+	case RB_METADATA_FIELD_COMMENT:
+	default:
+		g_value_init (newval, G_TYPE_STRING);
+		break;
+	}
 	val = gst_tag_list_get_value_index (list, tag, 0);
 	if (!g_value_transform (val, newval)) {
-		rb_debug ("Could not transform tag value type %s into string",
-			  g_type_name (G_VALUE_TYPE (val)));
+		rb_debug ("Could not transform tag value type %s into %s",
+			  g_type_name (G_VALUE_TYPE (val)),
+			  g_type_name (G_VALUE_TYPE (newval)));
 		return;
 	}
 
