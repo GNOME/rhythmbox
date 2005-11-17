@@ -1,5 +1,11 @@
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-podcast-source.c: (construct_query_from_selection),
+	(rb_podcast_source_do_query): allow podcast list to be re-sorted
+	without restarting RB. Closes bug 321612.
+
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-entry-view.c: (set_column_visibility),
 	(rb_entry_view_sync_columns_visible): when changing visibility of one
 	column, don't hide and re-show all the others. Makes a show/hide

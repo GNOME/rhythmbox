@@ -276,6 +276,7 @@ struct RBPodcastSourcePrivate
 	char *search_text;
 	GList *selected_feeds;
 	RhythmDBQueryModel *cached_all_query;
+	char *cached_sorting_type;
 
 	gboolean initialized;
 	
@@ -1087,28 +1088,13 @@ rb_podcast_source_show_browser (RBPodcastSource *source,
 	}
 }
 
-static void
-rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
+
+static GPtrArray *
+construct_query_from_selection (RBPodcastSource *source)
 {
-	RhythmDBEntryType entry_type;
-	RhythmDBQueryModel *query_model;
-	GtkTreeModel *model;
 	GPtrArray *query;
-	GList *lst_feeds;
-	gboolean is_all_query;
+	RhythmDBEntryType entry_type;
 
-	rb_debug ("select entry filter");
-	
-	is_all_query  = ((qtype == RB_PODCAST_QUERY_TYPE_ALL) ||
-			 ((source->priv->selected_feeds == NULL) &&
-			 (source->priv->search_text == NULL)));
-
-	if (is_all_query && (source->priv->cached_all_query)) {
-                rb_debug ("using cached query");
-                rb_entry_view_set_model (source->priv->posts, RHYTHMDB_QUERY_MODEL (source->priv->cached_all_query));
-                return;
-	}
-	
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1116,73 +1102,96 @@ rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
 				      entry_type,
 				      RHYTHMDB_QUERY_END);
 
-	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	if (source->priv->search_text) {
+		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
+							    RHYTHMDB_QUERY_PROP_LIKE,
+							    RHYTHMDB_PROP_ALBUM_FOLDED,
+							    source->priv->search_text,
+							    RHYTHMDB_QUERY_DISJUNCTION,
+							    RHYTHMDB_QUERY_PROP_LIKE,
+							    RHYTHMDB_PROP_TITLE_FOLDED,
+							    source->priv->search_text,
+							    RHYTHMDB_QUERY_END);
+		rhythmdb_query_append (source->priv->db,
+				       query,
+				       RHYTHMDB_QUERY_SUBQUERY,
+				       subquery,
+				       RHYTHMDB_QUERY_END);
+	}
 
-	if (is_all_query) {
-                source->priv->cached_all_query = query_model;
-	} else {
-		if (source->priv->search_text) {
-			GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
-								    RHYTHMDB_QUERY_PROP_LIKE,
-								    RHYTHMDB_PROP_ALBUM_FOLDED,
-								    source->priv->search_text,
-								    RHYTHMDB_QUERY_DISJUNCTION,
-								    RHYTHMDB_QUERY_PROP_LIKE,
-								    RHYTHMDB_PROP_TITLE_FOLDED,
-								    source->priv->search_text,
-								    RHYTHMDB_QUERY_END);
-			rhythmdb_query_append (source->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_SUBQUERY,
-					       subquery,
-					       RHYTHMDB_QUERY_END);
-		}
+	if (source->priv->selected_feeds) {
+		GPtrArray *subquery = g_ptr_array_new ();	
+		GList *l;	       
 
-		lst_feeds = source->priv->selected_feeds;
-	
-		if (lst_feeds) {
-			GPtrArray *subquery = g_ptr_array_new ();
-			
-			rb_debug ("feed selected");
-			
+		for (l = source->priv->selected_feeds; l != NULL; l = g_list_next (l)) {
+			rb_debug ("equals loop");
 			rhythmdb_query_append (source->priv->db,
 					       subquery,
 					       RHYTHMDB_QUERY_PROP_EQUALS,
 					       RHYTHMDB_PROP_SUBTITLE,
-					       (gchar *) lst_feeds->data,
+					       (gchar *) l->data,
 					       RHYTHMDB_QUERY_END);
+			if (g_list_next(l))
+				rhythmdb_query_append (source->priv->db, subquery,
+						RHYTHMDB_QUERY_DISJUNCTION);
+		}
+		
+		rhythmdb_query_append (source->priv->db, query,
+				       RHYTHMDB_QUERY_SUBQUERY, subquery,
+				       RHYTHMDB_QUERY_END);
+	}
 
-			rb_debug ("entry: %s", (gchar *) lst_feeds->data);
-			lst_feeds = lst_feeds->next;				       
+	return query;
+}
 
-			while (lst_feeds) {
-				rb_debug ("equals loop");
-				rhythmdb_query_append (source->priv->db,
-						       subquery,
-						       RHYTHMDB_QUERY_DISJUNCTION,
-						       RHYTHMDB_QUERY_PROP_EQUALS,
-						       RHYTHMDB_PROP_SUBTITLE,
-						       (gchar *) lst_feeds->data,
-						       RHYTHMDB_QUERY_END);
-				lst_feeds = lst_feeds->next;
-			}
-			
-			rhythmdb_query_append (source->priv->db, query, RHYTHMDB_QUERY_SUBQUERY, subquery,
-					       RHYTHMDB_QUERY_END);
+static void
+rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
+{
+	RhythmDBQueryModel *query_model;
+	GPtrArray *query;
+	gboolean is_all_query, sorting_matches;
+	const char *current_sorting_type;
+
+	rb_debug ("select entry filter");
+	
+	is_all_query  = ((qtype == RB_PODCAST_QUERY_TYPE_ALL) ||
+			 ((source->priv->selected_feeds == NULL) &&
+			 (source->priv->search_text == NULL)));
+	current_sorting_type = rb_entry_view_get_sorting_type (source->priv->posts);
+	sorting_matches = source->priv->cached_sorting_type
+	&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
+	rb_debug ("current sorting: %s, match: %s", current_sorting_type, sorting_matches ? "TRUE" : "FALSE" );
+
+	if (is_all_query) {
+		if (sorting_matches) {
+                	rb_debug ("using cached query");
+                	rb_entry_view_set_model (source->priv->posts, RHYTHMDB_QUERY_MODEL (source->priv->cached_all_query));
+                	return;
+		} else if (source->priv->cached_all_query) {
+			g_object_unref (source->priv->cached_all_query);
+			source->priv->cached_all_query = NULL;
+			g_free (source->priv->cached_sorting_type);
 		}
 	}
+
+	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	if (source->priv->cached_all_query == NULL) {
+		rb_debug ("caching new query");
+		source->priv->cached_all_query = query_model;
+		source->priv->cached_sorting_type = g_strdup (current_sorting_type);
+	}
+
+	rb_debug ("setting empty model");
+	rb_entry_view_set_model (source->priv->posts, query_model);
+
+	rb_debug ("doing query");
+	query = construct_query_from_selection (source);
+	rhythmdb_do_full_query_async_parsed (source->priv->db,
+					     GTK_TREE_MODEL (query_model),
+					     query);
 		
-	rb_debug ("query create end");
-
-
-	model = GTK_TREE_MODEL (query_model);
-
-	rb_entry_view_set_model (source->priv->posts, RHYTHMDB_QUERY_MODEL (query_model));
-
-	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
-
 	rhythmdb_query_free (query);
-
+	
 	if (!is_all_query)
 		g_object_unref (G_OBJECT (query_model));
 }
