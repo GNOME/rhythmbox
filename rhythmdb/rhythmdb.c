@@ -943,7 +943,8 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 {
 	g_free (entry->location);
 	g_free (entry->playback_error);
-	g_date_free (entry->date);
+	if (entry->date)
+		g_date_free (entry->date);
 	rb_refstring_unref (entry->title);
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
