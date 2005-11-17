@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Header files for podcast download manager
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho - INdT <renato.filho@indt.org.br>
@@ -69,6 +70,7 @@ gboolean 		rb_podcast_manager_get_remove_files	(RBPodcastManager *pd);
 gboolean                rb_podcast_manager_remove_feed 		(RBPodcastManager *pd, 
 								 const gchar* url, 
 								 gboolean remove_files);
+gchar *                 rb_podcast_manager_get_podcast_dir	(RBPodcastManager *pd);
 
 gboolean                rb_podcast_manager_subscribe_feed    	(RBPodcastManager *pd, const gchar* url);
 void            	rb_podcast_manager_unsubscribe_feed    	(RhythmDB *db, const gchar* url);

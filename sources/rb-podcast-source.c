@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of Internet Podcast source object
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org.br>
@@ -20,31 +21,16 @@
  */
 
 #include <config.h>
-#include <gtk/gtkmain.h>
-#include <gtk/gtkmessagedialog.h>
-#include <gtk/gtkiconfactory.h>
-#include <gtk/gtkprogressbar.h>
-#include <gtk/gtkcombobox.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtktogglebutton.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkfilechooserbutton.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkvpaned.h>
-#include <gtk/gtkhpaned.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkcellrendererprogress.h>
-#include <gtk/gtksignal.h>
-#include <glib/gfileutils.h>
-#include <glade/glade.h>
-#include <libgnome/gnome-i18n.h>
-#include <libxml/tree.h>
+
 #include <string.h>
 #define __USE_XOPEN
 #include <time.h>
+
+#include <libxml/tree.h>
+#include <glib.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
 
 #include "rb-podcast-source.h"
 
@@ -134,7 +120,7 @@ static void rb_podcast_source_download_status_changed_cb(RBPodcastManager *downl
 							 RBPodcastSource *source);
 
 static void rb_podcast_source_btn_file_change_cb 	(GtkFileChooserButton *widget, 
-							 gpointer data);
+							 const char *key);
 
 
 void rb_podcast_source_show_columns_changed_cb 		(GtkToggleButton *button, 
@@ -1210,7 +1196,7 @@ impl_get_config_widget (RBSource *asource)
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	GtkWidget *cb_update_interval;
 	GtkWidget *btn_file;
-	const char *download_dir;
+	char *download_dir;
 	GladeXML *xml;
 
 	if (source->priv->config_widget)
@@ -1221,35 +1207,34 @@ impl_get_config_widget (RBSource *asource)
 	source->priv->config_widget = glade_xml_get_widget (xml, "podcast_vbox");
 	
 	btn_file = glade_xml_get_widget (xml, "location_chooser");
-	download_dir = 	eel_gconf_get_string(CONF_STATE_PODCAST_DOWNLOAD_DIR);
-	if (download_dir != NULL) {
-		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER(btn_file), 
-						download_dir);
-	}
-	g_signal_connect ( G_OBJECT(btn_file),
-				"selection-changed",
-				G_CALLBACK (rb_podcast_source_btn_file_change_cb),
-				CONF_STATE_PODCAST_DOWNLOAD_DIR);
+	download_dir = rb_podcast_manager_get_podcast_dir (source->priv->podcast_mg);
+	gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (btn_file), 
+						 download_dir);
+	g_free (download_dir);
+
+	g_signal_connect (btn_file,
+			  "selection-changed",
+			  G_CALLBACK (rb_podcast_source_btn_file_change_cb),
+			  CONF_STATE_PODCAST_DOWNLOAD_DIR);
 
 	cb_update_interval = glade_xml_get_widget (xml, "cb_update_interval");
 	gtk_combo_box_set_active (GTK_COMBO_BOX (cb_update_interval),
 				  eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL));
-	g_signal_connect ( G_OBJECT(cb_update_interval),
-			   "changed",
-			   G_CALLBACK(rb_podcast_source_cb_interval_changed_cb),
-			   source);
+	g_signal_connect (cb_update_interval,
+			  "changed",
+			  G_CALLBACK (rb_podcast_source_cb_interval_changed_cb),
+			  source);
 				
 	return source->priv->config_widget;
 }
 
 static void 
-rb_podcast_source_btn_file_change_cb (GtkFileChooserButton *widget, gpointer data)
+rb_podcast_source_btn_file_change_cb (GtkFileChooserButton *widget, const char *key)
 {
-
-	eel_gconf_set_string ((const char *) data,
-			      gnome_vfs_get_local_path_from_uri (
-		              gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(widget)))
-			     );
+	char *uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (widget));
+	
+	eel_gconf_set_string (key, gnome_vfs_get_local_path_from_uri (uri));
+	g_free (uri);
 }
 
 

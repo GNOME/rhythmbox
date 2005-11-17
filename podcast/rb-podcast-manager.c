@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implemetation files for podcast download manager
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho - INdT <renato.filho@indt.org.br>
@@ -19,13 +20,14 @@
  *
  */
 
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <glib/gstdio.h>
-#include <gtk/gtk.h>
 #include <string.h>
-#include <libgnome/gnome-i18n.h>
 #define __USE_XOPEN
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <glib/gstdio.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
@@ -112,7 +114,7 @@ typedef struct
 	guint total_size;
 	guint progress;
 	gboolean canceled;
-}RBPodcastManagerInfo;
+} RBPodcastManagerInfo;
 
 /* used on subscribe thread */
 typedef struct
@@ -436,7 +438,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 
 
 void
-rb_podcast_manager_start_sync(RBPodcastManager *pd)
+rb_podcast_manager_start_sync (RBPodcastManager *pd)
 {
 	gint next_time;
 	if (pd->priv->next_time > 0) {
@@ -543,30 +545,15 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 {
 	GnomeVFSURI *remote_uri = NULL;
 	GnomeVFSURI *local_uri = NULL;
-	
 	GValue location_val = { 0, };
-	
-	const char *short_name;
-	const char *local_file_name;
-	const char *dir_name;
-	const char *location; 
-	const char *album_name; 
-	const char *conf_dir_name;
-	
+	const char *location, *album_name;
+	char *short_name, *local_file_name;
+	char *dir_name, *conf_dir_name;
 	RBPodcastManagerInfo *data = NULL; 
-	
 	RhythmDBEntry *entry;
 
 	rb_debug ("Stating copy file");
 	g_value_init (&location_val, G_TYPE_STRING);
-	conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
-
-	if (conf_dir_name == NULL) {
-		conf_dir_name = g_build_filename (g_get_home_dir (),
-						  "Podcasts",
-						  NULL);
-		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_name);
-	}
 
 		
 	/* get first element of list */
@@ -599,15 +586,11 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	}
 
 
-	short_name = gnome_vfs_uri_extract_short_name (remote_uri);
-		
-	
-	
-
+	conf_dir_name = rb_podcast_manager_get_podcast_dir (pd);
 	dir_name = g_build_filename (conf_dir_name,
 				     album_name,
 				     NULL);
-
+	g_free (conf_dir_name);
 
 	 if (!g_file_test (dir_name, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
 		if (rb_podcast_manager_mkdir_with_parents (dir_name, 0750) != 0) {
@@ -616,9 +599,12 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 		}
 	 }
 		 		 
+	short_name = gnome_vfs_uri_extract_short_name (remote_uri);	
 	local_file_name = g_build_filename (dir_name,
 	 				    short_name,
-					   NULL);	
+					   NULL);
+	g_free (short_name);
+	g_free (dir_name);
 
 	rb_debug ("creating file %s\n", local_file_name);
 
@@ -674,7 +660,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 		gnome_vfs_file_info_unref (info);
 	}
 
-	
+	g_free (local_file_name);
 	
 	data->read_uri = remote_uri;
 	data->write_uri = local_uri;
@@ -1628,3 +1614,19 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 	rb_podcast_manager_cancel_all (pd);
 	rb_podcast_manager_abort_subscribe (pd);
 }
+
+gchar *
+rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
+{
+	gchar *conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
+	
+	if (conf_dir_name == NULL || (strcmp (conf_dir_name, "") == 0)) {
+		conf_dir_name = g_build_filename (g_get_home_dir (),
+						  "Podcasts",
+						  NULL);
+		eel_gconf_set_string (CONF_STATE_PODCAST_DOWNLOAD_DIR, conf_dir_name);
+	}
+
+	return conf_dir_name;
+}
+

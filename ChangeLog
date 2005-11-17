@@ -1,5 +1,16 @@
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_start_sync),
+	(rb_podcast_manager_copy_post),
+	(rb_podcast_manager_get_podcast_dir):
+	* podcast/rb-podcast-manager.h:
+	* sources/rb-podcast-source.c: (impl_get_config_widget),
+	(rb_podcast_source_btn_file_change_cb): fix problem of podcast
+	download location switching to / if the prefs were opened before
+	downloading an episode. Closes 321611.
+
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
 	* data/glade/podcast-new.glade:
 	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init),
 	(rb_new_podcast_dialog_set_property),
