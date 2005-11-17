@@ -958,7 +958,6 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 		rb_refstring_unref (entry->podcast->lang);
 		rb_refstring_unref (entry->podcast->copyright);
 		rb_refstring_unref (entry->podcast->image);
-		rb_refstring_unref (entry->podcast->last_post);
 		g_free (entry->podcast);
 		entry->podcast = NULL;
 	}
@@ -2294,10 +2293,6 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			rb_refstring_unref (entry->podcast->image);
 			entry->podcast->image = rb_refstring_new (g_value_get_string (value));
 			break;
-		case RHYTHMDB_PROP_LAST_POST:
-			rb_refstring_unref (entry->podcast->last_post);
-			entry->podcast->last_post = rb_refstring_new (g_value_get_string (value));
-			break;
 		case RHYTHMDB_PROP_POST_TIME:
 			entry->podcast->post_time = g_value_get_ulong (value);
 			break;	
@@ -3107,7 +3102,6 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_LANG, "Podcast language (gchararray) [lang]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_COPYRIGHT, "Podcast copyright (gchararray) [copyright]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_IMAGE, "Podcast image(gchararray) [image]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_LAST_POST, "Podcast last_post(gchararray) [last_post]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_POST_TIME, "Podcast time of post (gulong) [post-time]"),
 			{ 0, 0, 0 }
 		};

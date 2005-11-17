@@ -1412,7 +1412,8 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue author_val = { 0, };
 	GValue status_val = { 0, };
 	GValue last_post_val = { 0, };
-	gchar *last_post;
+	gulong last_post = 0;
+	gulong new_last_post;
 	gboolean new_feed;
 	RhythmDB *db = pd->priv->db;
 
@@ -1426,7 +1427,6 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		return;
 	}
 
-	last_post = NULL;
 	new_feed = TRUE;
 
 	/* processing podcast head */
@@ -1440,7 +1440,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		g_value_set_ulong (&status_val, 1);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		g_value_unset (&status_val);
-		last_post = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LAST_POST));
+		last_post = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_SEEN);
 		new_feed = FALSE;
 	} else {
 		rb_debug ("Insert new entry");
@@ -1514,14 +1514,13 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	}
 
 	/* insert episodes */
+	new_last_post = last_post;
+	
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
 
-		if (last_post == NULL || strcmp (last_post, (char*)item->url) != 0) {
+		if (item->pub_date > last_post) {
 			gulong status;
-			if (last_post)
-				g_free (last_post);	
-			last_post = g_strdup ((gchar* ) item->url);
 
 			/* last episode gets status RHYTHMDB_PODCAST_STATUS_WAITING, so that it begins downloading */
 			if (lst_songs == (g_list_last (data->posts)))
@@ -1540,19 +1539,21 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 						     (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
 						     (gulong) item->duration,
 						     item->filesize);
+			if (item->pub_date > new_last_post)
+				new_last_post = item->pub_date;
 		}
 	}
+
+	if (data->pub_date > new_last_post)
+		new_last_post = data->pub_date;
 	
-	g_value_init (&last_post_val, G_TYPE_STRING);
-	if (last_post) {
-		g_value_take_string (&last_post_val, last_post);
-	} else {
-		g_value_set_static_string (&last_post_val, "");
-	}
+	g_value_init (&last_post_val, G_TYPE_ULONG);
+	g_value_set_ulong (&last_post_val, new_last_post);
+
 	if (new_feed) 
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_post_val);
 	else
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_POST, &last_post_val);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_post_val);
 	g_value_unset (&last_post_val);
 	
 	rhythmdb_commit (db);

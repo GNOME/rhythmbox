@@ -1,5 +1,18 @@
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_finalize),
+	(rhythmdb_entry_set_internal), (rhythmdb_prop_get_type):
+	* rhythmdb/rhythmdb.h: Remove LAST_POST property, use LAST_SEEN as a
+	time stamp.
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed): use
+	last-seen as the timestamp of the last update of the feed. Don't
+	re-add episodes that have been deleted. Closes 319759.
+
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): parse dates
 	that don't have the day name at the start. Closes 321645.
 
