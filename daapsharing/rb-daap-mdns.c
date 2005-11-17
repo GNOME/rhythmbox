@@ -109,7 +109,7 @@ get_sw_discovery (GError **error)
 	
 		if (result != SW_OKAY) {
 			rb_debug ("Error initializing Howl");
-			g_set_error (err,
+			g_set_error (error,
 				     RB_DAAP_MDNS_ERROR,
 				     RB_DAAP_MDNS_ERROR_FAILED,
 				     "Hown daemon was not running");
@@ -230,7 +230,7 @@ rb_daap_mdns_browse_cancel (RBDAAPmDNSBrowser browser)
 {
 	sw_discovery discovery;
 	
-	discovery = get_sw_discovery ();
+	discovery = get_sw_discovery (NULL);
 
 	if (discovery) {
 		sw_discovery_cancel (discovery, (sw_discovery_oid) browser);
@@ -337,7 +337,7 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 void
 rb_daap_mdns_resolve_cancel (RBDAAPmDNSResolver resolver)
 {
-	sw_discovery discovery = get_sw_discovery ();
+	sw_discovery discovery = get_sw_discovery (NULL);
 
 	if (discovery) {
 		sw_discovery_cancel (discovery, (sw_discovery_oid) resolver);
