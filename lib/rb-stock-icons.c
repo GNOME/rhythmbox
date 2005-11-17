@@ -82,7 +82,8 @@ rb_stock_icons_init (void)
 			g_free (fn);
 		} else {
 			/* we should really add all the sizes */
-			int size = GTK_ICON_SIZE_LARGE_TOOLBAR;
+			gint size;
+			gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 			pixbuf = gtk_icon_theme_load_icon (theme,
 							   items[i].name,
 							   size,
@@ -90,11 +91,15 @@ rb_stock_icons_init (void)
 							   NULL);
 		}
 
-		icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
-		gtk_icon_factory_add (factory, items[i].name, icon_set);
-		gtk_icon_set_unref (icon_set);
-		
-		g_object_unref (G_OBJECT (pixbuf));
+		if (pixbuf) {
+			icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
+			gtk_icon_factory_add (factory, items[i].name, icon_set);
+			gtk_icon_set_unref (icon_set);
+			
+			g_object_unref (G_OBJECT (pixbuf));
+		} else {
+			g_warning ("Unable to load icon %s", items[i].name);
+		}
 	}
 }
 
