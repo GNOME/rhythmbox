@@ -427,12 +427,20 @@ end_function:
 static uintmax_t
 rb_podcast_parse_date(const char* date_str)
 {
-    struct tm tm;
-    char buff[255];
-    strptime(date_str, "%a, %d %b %Y %T", &tm);
-    strftime(buff, sizeof(buff), "%d/%m/%Y %H:%M", &tm);
-    tm.tm_sec = 0;
-    return (uintmax_t) mktime (&tm);
+	struct tm tm;
+	char *result;
+
+	result = strptime (date_str, "%a, %d %b %Y %T", &tm);
+	if (result == NULL) {
+		memset (&tm, 0, sizeof (struct tm));
+		result = strptime (date_str, "%d %b %Y %T", &tm);
+	}
+	if (result == NULL) {
+		memset (&tm, 0, sizeof (struct tm));	
+		rb_debug ("unable to convert date string %s", date_str);
+	}
+
+	return (uintmax_t) mktime (&tm);
 }
 
 static gulong

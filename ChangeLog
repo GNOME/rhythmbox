@@ -1,5 +1,10 @@
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): parse dates
+	that don't have the day name at the start. Closes 321645.
+
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_start_sync),
 	(rb_podcast_manager_copy_post),
 	(rb_podcast_manager_get_podcast_dir):
