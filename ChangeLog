@@ -1,3 +1,8 @@
+2005-11-18  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell.c: (rb_shell_get_visibility): don't count the window
+	as hidden if it is on the current workspace.
+
 2005-11-17  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-podcast-source.c (rb_podcast_source_post_date_cell_data_func): 

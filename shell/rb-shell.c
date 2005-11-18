@@ -1147,14 +1147,18 @@ rb_shell_window_state_cb (GtkWidget *widget,
 static gboolean
 rb_shell_get_visibility (RBShell *shell)
 {
-	rb_debug ("FOO %d %d %d",
-		GTK_WIDGET_REALIZED (shell->priv->window),
-		!shell->priv->iconified,
-		gtk_window_is_active (GTK_WINDOW (shell->priv->window)));
+	GdkWindowState state;
 
-	return GTK_WIDGET_REALIZED (shell->priv->window)
-		&& !shell->priv->iconified;
-/*		&& gtk_window_is_active (GTK_WINDOW (shell->priv->window));*/
+	if (!GTK_WIDGET_REALIZED (shell->priv->window))
+		return FALSE;
+	if (shell->priv->iconified)
+		return FALSE;
+		
+	state = gdk_window_get_state (GTK_WIDGET (shell->priv->window)->window);
+	if (state & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED))
+		return FALSE;
+
+	return TRUE;
 }
 
 static gboolean
