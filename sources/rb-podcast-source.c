@@ -54,6 +54,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-podcast-manager.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-cut-and-paste-code.h"
 
 typedef enum
 {
@@ -1635,22 +1636,23 @@ rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column, GtkCellRe
 {
 	RhythmDBEntry *entry;
 	gulong value;
-	char str[255];
+	char *str;
 
 	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
 
-      	value = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
-        if (value == 0)
-	       g_strlcpy (str, _("Unknown"), sizeof (str));
-	else {
-		struct tm *time_tm;
-		gint ret;
+	value = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
+        if (value == 0) {
+		str = g_strdup (_("Unknown"));
+	} else {
+		struct tm time_tm;
 		time_t time = (time_t) value;
-		time_tm = localtime(&time);
-		ret = strftime (str, sizeof (str), _("%Y-%m-%d %H:%M"), time_tm);
+
+		localtime_r (&time, &time_tm);
+		str = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &time_tm);
 	}
 	
-        g_object_set (G_OBJECT (renderer), "text", str, NULL);
+	g_object_set (G_OBJECT (renderer), "text", str, NULL);
+	g_free (str);
 }
 
 

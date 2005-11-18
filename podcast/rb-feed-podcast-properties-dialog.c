@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Headfile of feed_podcast feed properties dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org>
@@ -20,31 +21,21 @@
  */
 
 #include <config.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtktable.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtkliststore.h>
-#include <gtk/gtktreemodel.h>
-#include <gtk/gtkbox.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkcellrenderer.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <glade/glade.h>
+
 #include <string.h>
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
+#include "rb-cut-and-paste-code.h"
 
 static void rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass *klass);
 static void rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog);
@@ -194,8 +185,8 @@ boldify_label (GtkWidget *label)
 
 static void
 rb_feed_podcast_properties_dialog_response_cb (GtkDialog *gtkdialog,
-					  int response_id,
-					  RBFeedPodcastPropertiesDialog *dialog)
+					       int response_id,
+					       RBFeedPodcastPropertiesDialog *dialog)
 {
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -265,11 +256,12 @@ rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog
 static void
 rb_feed_podcast_properties_dialog_update_last_update (RBFeedPodcastPropertiesDialog *dialog)
 {
-	gchar *time = rb_feed_podcast_properties_dialog_parse_time (dialog->priv->current_entry->podcast->post_time);
-	time[strlen (time) - 1] = '\0';
-	gtk_label_set (GTK_LABEL (dialog->priv->last_update),
-			time);
+	char *time;
 
+	time = rb_feed_podcast_properties_dialog_parse_time (dialog->priv->current_entry->podcast->post_time);
+	gtk_label_set (GTK_LABEL (dialog->priv->last_update),
+		       time);
+	g_free (time);
 }
 
 static void
@@ -279,9 +271,18 @@ rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog 
 		       rb_refstring_get (dialog->priv->current_entry->podcast->summary));
 }
 
-static gchar*
+static char *
 rb_feed_podcast_properties_dialog_parse_time (gulong value)
 {
-	time_t result = (time_t) value;
-	return asctime(localtime(&result));
+	char *str;
+	struct tm then;
+
+	if (0 == value) {
+		return NULL;
+	}
+
+	localtime_r ((time_t*)&value, &then);
+	str = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &then);
+
+	return str;
 }

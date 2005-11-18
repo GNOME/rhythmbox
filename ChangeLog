@@ -1,3 +1,15 @@
+2005-11-17  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-podcast-source.c (rb_podcast_source_post_date_cell_data_func): 
+	* podcast/rb-podcast-properties-dialog.c (rb_podcast_properties_dialog_update_date) 
+	(rb_podcast_properties_dialog_parse_time): 
+	* podcast/rb-feed-podcast-properties-dialog.c (rb_feed_podcast_properties_dialog_update_last_update) 
+	(rb_feed_podcast_properties_dialog_parse_time):
+	Rework the way the last mod time strings are created.  It was using
+	thread unsafe functions, not creating value UTF, and not not checking
+	the value of the result before modifying it.  This new method fixes
+	these problems.
+
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
 	Don't reset the search box when viewing a different source, because it

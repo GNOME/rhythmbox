@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Headfile of podcast properties dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org>
@@ -20,31 +21,21 @@
  */
 
 #include <config.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtktable.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtkliststore.h>
-#include <gtk/gtktreemodel.h>
-#include <gtk/gtkbox.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkcellrenderer.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <glade/glade.h>
+
 #include <string.h>
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
+#include "rb-cut-and-paste-code.h"
 
 static void rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass);
 static void rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog);
@@ -207,14 +198,13 @@ rb_podcast_properties_dialog_finalize (GObject *object)
 
 static void
 rb_podcast_properties_dialog_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *pspec)
 {
 	RBPodcastPropertiesDialog *dialog = RB_PODCAST_PROPERTIES_DIALOG (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_VIEW:
 		dialog->priv->entry_view = g_value_get_object (value);
 		g_object_get (G_OBJECT (dialog->priv->entry_view), "db",
@@ -228,14 +218,13 @@ rb_podcast_properties_dialog_set_property (GObject *object,
 
 static void
 rb_podcast_properties_dialog_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *pspec)
 {
 	RBPodcastPropertiesDialog *dialog = RB_PODCAST_PROPERTIES_DIALOG (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_VIEW:
 		g_value_set_object (value, dialog->priv->entry_view);
 		break;
@@ -424,12 +413,13 @@ rb_podcast_properties_dialog_update_rating (RBPodcastPropertiesDialog *dialog)
 static void
 rb_podcast_properties_dialog_update_date (RBPodcastPropertiesDialog *dialog)
 {
-	gchar *time = rb_podcast_properties_dialog_parse_time (dialog->priv->current_entry->podcast->post_time);
-	time[strlen (time) - 1] = '\0';
-	gtk_label_set (GTK_LABEL (dialog->priv->date),
-			time);
-//_free (time);
+	char *time;
+	
+	time = rb_podcast_properties_dialog_parse_time (dialog->priv->current_entry->podcast->post_time);
 
+	gtk_label_set (GTK_LABEL (dialog->priv->date),
+		       time);
+	g_free (time);
 }
 
 static void
@@ -439,9 +429,18 @@ rb_podcast_properties_dialog_update_description (RBPodcastPropertiesDialog *dial
 		       rb_refstring_get (dialog->priv->current_entry->podcast->description));
 }
 
-static gchar*
+static char *
 rb_podcast_properties_dialog_parse_time (gulong value)
 {
-	time_t result = (time_t) value;
-	return asctime(localtime(&result));
+	struct tm then;
+	char *str;
+
+	if (0 == value) {
+		return NULL;
+	}
+
+	localtime_r ((time_t*)&value, &then);
+	str = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &then);
+
+	return str;
 }
