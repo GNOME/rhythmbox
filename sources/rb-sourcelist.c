@@ -48,7 +48,7 @@ struct RBSourceListPriv
 
 	RBSource *playing_source;
 	int child_source_count;
-	GtkTreeViewColumn *expander_column;
+	GtkTreeViewColumn *hidden_column;
 	GtkTreeViewColumn *main_column;
 
 	RBShell *shell;
@@ -220,11 +220,12 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 				 G_CALLBACK (popup_menu_cb),
 				 sourcelist, 0);
 
-	sourcelist->priv->expander_column = gtk_tree_view_column_new ();
+	sourcelist->priv->hidden_column = gtk_tree_view_column_new ();
 	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
-				     sourcelist->priv->expander_column);
+				     sourcelist->priv->hidden_column);
+	gtk_tree_view_column_set_visible (sourcelist->priv->hidden_column, FALSE);
 	gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
-				     sourcelist->priv->expander_column);
+				     sourcelist->priv->hidden_column);
 
 	sourcelist->priv->main_column = gtk_tree_view_column_new ();
 	gtk_tree_view_column_set_title (sourcelist->priv->main_column, _("S_ource"));
@@ -695,9 +696,16 @@ static void
 rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist)
 {
 	gboolean visible;
+	GtkTreeViewColumn *column;
 
 	g_assert (sourcelist->priv->child_source_count >= 0);
 
 	visible = (sourcelist->priv->child_source_count > 0);
-	gtk_tree_view_column_set_visible (sourcelist->priv->expander_column, visible);
+	if (visible)
+		column = sourcelist->priv->main_column;
+	else
+		column = sourcelist->priv->hidden_column;
+
+	gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
+					   column);
 }
