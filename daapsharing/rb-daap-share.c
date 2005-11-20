@@ -165,6 +165,13 @@ rb_daap_share_set_property (GObject *object,
 	switch (prop_id) {
 	case PROP_NAME: {
 		gboolean restart_publish = FALSE;
+		const char *name = g_value_get_string (value);
+
+		/* check if the name hasn't really changed */
+		if (share->priv->name && name &&
+		    strcmp (name, share->priv->name) == 0) {
+			return;
+		}
 	
 		if (share->priv->name) {
 			g_free (share->priv->name);
@@ -175,7 +182,7 @@ rb_daap_share_set_property (GObject *object,
 			}
 		}
 
-		share->priv->name = g_value_dup_string (value);
+		share->priv->name = g_strdup (name);
 
 		if (restart_publish) {
 			rb_daap_share_start_publish (share);

@@ -282,10 +282,15 @@ static gboolean
 share_name_entry_focus_out_event_cb (GtkEntry *entry, GdkEventFocus *event, gpointer data)
 {
 	const gchar *name;
+	char *old_name;
 
 	name = gtk_entry_get_text (entry);
+	old_name = eel_gconf_get_string (CONF_NAME);
 
-	eel_gconf_set_string (CONF_NAME, name);
+	if (strcmp (name, old_name) != 0)
+		eel_gconf_set_string (CONF_NAME, name);
+
+	g_free (old_name);
 
 	return FALSE;
 }

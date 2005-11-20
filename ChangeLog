@@ -1,3 +1,18 @@
+2005-11-20  James Livingston  <jrl@ids.org.au>
+
+	* daapsharing/rb-daap-mdns.c: (browse_cb), (rb_daap_mdns_browse),
+	(resolve_cb), (rb_daap_mdns_resolve), (publish_cb),
+	(rb_daap_mdns_publish), (rb_daap_mdns_publish_cancel),
+	(rb_daap_mdns_browse_cancel), (rb_daap_mdns_resolve_cancel),
+	(add_service), (entry_group_cb): dynamically allocate memory, rather
+	than using static variables.
+
+	* daapsharing/rb-daap-share.c: (rb_daap_share_set_property): don't
+	re-enable the daap share if the name hasn't changed.
+	* shell/rb-shell-preferences.c:
+	(share_name_entry_focus_out_event_cb): don't ask the daap share to
+	change it's name when the checkbox is disabled. Fixed bug 321748.
+
 2005-11-18  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: (rb_shell_get_visibility): don't count the window

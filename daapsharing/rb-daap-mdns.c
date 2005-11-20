@@ -51,11 +51,6 @@ static void mdns_error_dialog (const gchar *impl)
 			 impl);
 }
 
-typedef struct _CallbackAndData {
-	gpointer callback;
-	gpointer data;
-	gint port;
-} CallbackAndData;
 #endif
 
 #ifdef WITH_HOWL
@@ -64,8 +59,13 @@ typedef struct _CallbackAndData {
 #undef VERSION
 #include <howl.h>
 
-/* stupid hack cause howl sucks */
-static gchar *our_service_name = NULL;
+typedef struct {
+	char *service_name; /* stupid hack cause howl sucks */
+	gpointer callback;
+	gpointer data;
+	gint port;
+} CallbackAndData;
+
 
 static gboolean
 howl_in_cb (GIOChannel *io_channel,
@@ -151,9 +151,8 @@ browse_cb (sw_discovery discovery,
 	   sw_const_string name,
 	   sw_const_string type,
 	   sw_const_string domain,
-	   sw_opaque extra)
+	   CallbackAndData *cd)
 {
-	CallbackAndData *cd = (CallbackAndData *) extra;
 	RBDAAPmDNSBrowserStatus bstatus;
 
 	/* This sucks.  Howl sucks.  I can't wait til avahi gets used more
@@ -167,7 +166,7 @@ browse_cb (sw_discovery discovery,
 	 *
 	 * Bollix
 	 */
-	if (our_service_name && strcmp ((const gchar *)name, our_service_name) == 0) {
+	if (cd->service_name && strcmp ((const gchar *)name, cd->service_name) == 0) {
 		return SW_OKAY;
 	}
 	
@@ -193,7 +192,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		     gpointer user_data)
 {
 	sw_discovery discovery;
-	static CallbackAndData cd;
+	CallbackAndData *cd;
 	sw_result result;
 	GError *error = NULL;
 	
@@ -204,19 +203,22 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 			mdns_error_dialog ("Howl");
 		return FALSE;
 	}
-		
-	cd.callback = callback;
-	cd.data = user_data;
+
+	cd = g_new0 (CallbackAndData, 1);
+	*browser = (RBDAAPmDNSBrowser) cd;
+	cd->callback = callback;
+	cd->data = user_data;
 		
        	result = sw_discovery_browse (discovery,
 				      0,
 				      "_daap._tcp", 
 				      "local", 
 				      (sw_discovery_browse_reply) browse_cb, 
-				      (sw_opaque) &cd, 
-				      (sw_discovery_oid *)browser);
+				      (sw_opaque) cd, 
+				      (sw_discovery_oid*) cd);
 
 	if (result != SW_OKAY) {
+		g_free (cd);
 		rb_debug ("Error starting mDNS browsing with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
 		return FALSE;
@@ -250,10 +252,9 @@ resolve_cb (sw_discovery disc,
 	    sw_port port, 
 	    sw_octets text_record, 
 	    sw_ulong text_record_length, 
-	    sw_opaque extra)
+	    CallbackAndData *cd)
 {
 	gchar *host = g_malloc (16);
-	CallbackAndData *cd = (CallbackAndData *) extra;
 	sw_text_record_iterator it;
 	gboolean pp = FALSE;
 	gchar *name = NULL;
@@ -301,7 +302,7 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		      gpointer user_data)
 {
 	sw_discovery discovery;
-	static CallbackAndData cd;
+	CallbackAndData *cd;
 	sw_result result;
 	GError *error = NULL;
 
@@ -313,8 +314,10 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		return FALSE;
 	}
 
-	cd.callback = callback;
-	cd.data = user_data;
+	cd = g_new0 (CallbackAndData, 1);
+	*resolver = (RBDAAPmDNSResolver)cd;
+	cd->callback = callback;
+	cd->data = user_data;
 		
        	result = sw_discovery_resolve (discovery,
 				       0,
@@ -322,10 +325,11 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 				       "_daap._tcp", 
 				       "local",
 				       (sw_discovery_resolve_reply) resolve_cb,
-	       			       (sw_opaque) &cd,
-				       (sw_discovery_oid *)resolver);
+	       			       (sw_opaque) cd,
+				       (sw_discovery_oid* )cd);
 		
 	if (result != SW_OKAY) {
+		g_free (cd);
 		rb_debug ("Error starting mDNS resolving with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
 		return FALSE;
@@ -348,10 +352,8 @@ static sw_result
 publish_cb (sw_discovery discovery,
 	    sw_discovery_oid oid,
 	    sw_discovery_publish_status status,
-	    sw_opaque extra)
+	    CallbackAndData *cd)
 {
-	CallbackAndData *cd = (CallbackAndData *) extra;
-
 	if (status == SW_DISCOVERY_PUBLISH_STARTED) {
 		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) oid,
 							     RB_DAAP_MDNS_PUBLISHER_STARTED,
@@ -377,7 +379,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		      gpointer user_data)
 {
 	sw_discovery discovery;
-	static CallbackAndData cd;
+	CallbackAndData *cd;
 	sw_result result;
 	GError *error = NULL;
 
@@ -389,15 +391,13 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		return FALSE;
 	}
 
-	cd.callback = callback;
-	cd.port = port;
-	cd.data = user_data;
+	cd = g_new0 (CallbackAndData, 1);
+	*publisher = (RBDAAPmDNSPublisher)cd;
+	cd->callback = callback;
+	cd->port = port;
+	cd->data = user_data;
 
-	if (our_service_name) {
-		g_free (our_service_name);
-	}
-	
-	our_service_name = g_strdup (name);
+	cd->service_name = g_strdup (name);
 
 	result = sw_discovery_publish (discovery,
 				       0,
@@ -409,10 +409,11 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 				       NULL,
 				       0,
 				       (sw_discovery_publish_reply) publish_cb,
-	       			       (sw_opaque) &cd,
-				       (sw_discovery_oid *)publisher);
+	       			       (sw_opaque) cd,
+				       (sw_discovery_oid*) cd);
 		
 	if (result != SW_OKAY) {
+		g_free (cd);
 		rb_debug ("Error starting mDNS pubilsh with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
 		return FALSE;
@@ -424,6 +425,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 void
 rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 {
+	CallbackAndData *cd = (CallbackAndData*) publisher;
 	sw_discovery discovery;
 	
 	discovery = get_sw_discovery (NULL);
@@ -432,10 +434,7 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 		sw_discovery_cancel (discovery, (sw_discovery_oid) publisher);
 	}
 
-	if (our_service_name) {
-		g_free (our_service_name);
-		our_service_name = NULL;
-	}
+	g_free (cd->service_name);
 }
 #endif
 
@@ -445,6 +444,13 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
 #include <avahi-glib/glib-watch.h>
+
+typedef struct {
+	AvahiServiceBrowser *sb;
+	RBDAAPmDNSBrowserCallback callback;
+	gpointer data;
+} RBDAAPmDNSBrowserData;
+
 
 static void
 client_cb (AvahiClient *client,
@@ -511,9 +517,8 @@ browse_cb (AvahiServiceBrowser *browser,
 	   const char *name,
 	   const char *type,
 	   const char *domain,
-	   void *data)
+	   RBDAAPmDNSBrowserData *browse_data)
 {
-	CallbackAndData *cd = (CallbackAndData *) data;
 	RBDAAPmDNSBrowserStatus bstatus;
 
 	if (avahi_client_is_service_local (get_avahi_client (NULL), interface, protocol, name, type, domain)) {
@@ -529,10 +534,10 @@ browse_cb (AvahiServiceBrowser *browser,
 		return;
 	}
 
-	((RBDAAPmDNSBrowserCallback)cd->callback) ((RBDAAPmDNSBrowser) browser,
-						   bstatus,
-						   (const gchar *) name,
-						   cd->data);
+	(browse_data->callback) ((RBDAAPmDNSBrowser) browse_data,
+				 bstatus,
+				 name,
+				 browse_data->data);
 }
 
 gboolean
@@ -541,7 +546,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		     gpointer user_data)
 {
 	AvahiClient *client;
-	static CallbackAndData cd;
+	RBDAAPmDNSBrowserData *browse_data;
 	GError *error = NULL;
 	
 	client = get_avahi_client (&error);
@@ -552,17 +557,20 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		return FALSE;
 	}
 
-	cd.callback = callback;
-	cd.data = user_data;
+	browse_data = g_new0(RBDAAPmDNSBrowserData, 1);
+	*browser = (RBDAAPmDNSBrowser)browse_data;
+	browse_data->callback = callback;
+	browse_data->data = user_data;
 	
-	*browser = (gpointer) avahi_service_browser_new (client,
-							 AVAHI_IF_UNSPEC,
-							 AVAHI_PROTO_INET,
-							 "_daap._tcp",
-							 "local",
-							 (AvahiServiceBrowserCallback)browse_cb,
-							 &cd);
-	if (*browser == NULL) {
+	browse_data->sb = avahi_service_browser_new (client,
+						     AVAHI_IF_UNSPEC,
+						     AVAHI_PROTO_INET,
+						     "_daap._tcp",
+						     "local",
+						     (AvahiServiceBrowserCallback)browse_cb,
+						     browse_data);
+	if (browse_data->sb == NULL) {
+		g_free (browse_data);
 		rb_debug ("Error starting mDNS discovery using AvahiServiceBrowser");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
@@ -574,11 +582,19 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 void
 rb_daap_mdns_browse_cancel (RBDAAPmDNSBrowser browser)
 {
-	AvahiServiceBrowser *sb = (AvahiServiceBrowser *) browser;
+	RBDAAPmDNSBrowserData *browse_data = (RBDAAPmDNSBrowserData*)browser;
 
-	avahi_service_browser_free (sb);
-	browser = NULL;
+	avahi_service_browser_free (browse_data->sb);
+	g_free (browse_data);
 }
+
+
+
+typedef struct {
+	AvahiServiceResolver *sr;
+	RBDAAPmDNSResolverCallback callback;
+	gpointer data;
+} RBDAAPmDNSResolverData;
 
 static void
 resolve_cb (AvahiServiceResolver *resolver,
@@ -592,9 +608,8 @@ resolve_cb (AvahiServiceResolver *resolver,
 	    const AvahiAddress *address,
 	    uint16_t port,
 	    AvahiStringList *text,
-	    void *data)
+	    RBDAAPmDNSResolverData *res_data)
 {
-	CallbackAndData *cd = (CallbackAndData *) data;
 
 	if (event == AVAHI_RESOLVER_FOUND) {
 		gchar *host;
@@ -643,26 +658,26 @@ resolve_cb (AvahiServiceResolver *resolver,
 		avahi_address_snprint (host, 16, address);
 
 
-		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
-							    RB_DAAP_MDNS_RESOLVER_FOUND,
-							    service_name,
-							    name,
-							    host,
-							    (guint16) port,
-							    pp,
-							    cd->data);
+		(res_data->callback) ((RBDAAPmDNSResolver) res_data,
+				      RB_DAAP_MDNS_RESOLVER_FOUND,
+				      service_name,
+				      name,
+				      host,
+				      port,
+				      pp,
+				      res_data->data);
 
 		g_free (host);
 		g_free (name);
 	} else if (event == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
-		((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) resolver,
-							    RB_DAAP_MDNS_RESOLVER_TIMEOUT,
-							    service_name,
-							    NULL,
-							    NULL,
-							    0,
-							    FALSE,
-							    cd->data);
+		(res_data->callback) ((RBDAAPmDNSResolver) res_data,
+				      RB_DAAP_MDNS_RESOLVER_TIMEOUT,
+				      service_name,
+				      NULL,
+				      NULL,
+				      0,
+				      FALSE,
+				      res_data->data);
 	}
 }
 
@@ -673,8 +688,8 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		      gpointer user_data)
 {
 	AvahiClient *client;
-	static CallbackAndData cd;
 	GError *error = NULL;
+	RBDAAPmDNSResolverData *res_data;
 	
 	client = get_avahi_client (&error);
 	if (!client) {
@@ -684,19 +699,22 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		return FALSE;
 	}
 
-	cd.callback = callback;
-	cd.data = user_data;
+	res_data = g_new0 (RBDAAPmDNSResolverData, 1);
+	*resolver = (RBDAAPmDNSResolver) res_data;
+	res_data->callback = callback;
+	res_data->data = user_data;
 	
-	*resolver = (gpointer) avahi_service_resolver_new (client,
-							   AVAHI_IF_UNSPEC,
-							   AVAHI_PROTO_INET,
-							   name,
-							   "_daap._tcp",
-							   "local",
-							   AVAHI_PROTO_UNSPEC,
-							   (AvahiServiceResolverCallback)resolve_cb,
-							   &cd);
-	if (!*resolver) {
+	res_data->sr = avahi_service_resolver_new (client,
+						   AVAHI_IF_UNSPEC,
+						   AVAHI_PROTO_INET,
+						   name,
+						   "_daap._tcp",
+						   "local",
+						   AVAHI_PROTO_UNSPEC,
+						   (AvahiServiceResolverCallback)resolve_cb,
+						   res_data);
+	if (res_data->sr == NULL) {
+		g_free (res_data);
 		rb_debug ("Error starting mDNS resolving using AvahiServiceResolver");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
@@ -708,16 +726,25 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 void
 rb_daap_mdns_resolve_cancel (RBDAAPmDNSResolver resolver)
 {
-	AvahiServiceResolver *sr = (AvahiServiceResolver *) resolver;
+	RBDAAPmDNSResolverData *res_data = (RBDAAPmDNSResolverData*) resolver;
 
-	avahi_service_resolver_free (sr);
-	resolver = NULL;
+	avahi_service_resolver_free (res_data->sr);
+	g_free (res_data);
 }
+
+
+
+typedef struct {
+	AvahiEntryGroup *eg;
+	RBDAAPmDNSPublisherCallback callback;
+	gpointer data;
+	guint port;
+} RBDAAPmDNSPublisherData;
 
 static gint
 add_service (AvahiEntryGroup *group,
 	     const gchar *name,
-	     gint port)
+	     guint port)
 {
 	gint ret;
 	
@@ -744,24 +771,22 @@ add_service (AvahiEntryGroup *group,
 static void
 entry_group_cb (AvahiEntryGroup *group,
 		AvahiEntryGroupState state,
-		void *data)
+		RBDAAPmDNSPublisherData *pub_data)
 {
-	CallbackAndData *cd = (CallbackAndData *)data;
-
 	if (state == AVAHI_ENTRY_GROUP_ESTABLISHED) {
-		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) group,
-							     RB_DAAP_MDNS_PUBLISHER_STARTED,
-							     cd->data);
+		(pub_data->callback) ((RBDAAPmDNSPublisher)pub_data,
+				      RB_DAAP_MDNS_PUBLISHER_STARTED,
+				      pub_data->data);
 	} else if (state == AVAHI_ENTRY_GROUP_COLLISION) {
 		gchar *new_name = NULL;
 		gint ret;
 		
-		new_name = ((RBDAAPmDNSPublisherCallback)cd->callback) (
-				(RBDAAPmDNSPublisher) group,
+		new_name = (pub_data->callback) (
+				(RBDAAPmDNSPublisher)pub_data,
 				RB_DAAP_MDNS_PUBLISHER_COLLISION, 
-				cd->data);
+				pub_data->data);
 		
-		ret = add_service (group, new_name, cd->port);
+		ret = add_service (group, new_name, pub_data->port);
 
 		g_free (new_name);
 
@@ -781,7 +806,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		      gpointer user_data)
 {
 	AvahiClient *client;
-	static CallbackAndData cd;
+	RBDAAPmDNSPublisherData *pub_data;
 	gint ret;
 	GError *error = NULL;
 	
@@ -793,22 +818,26 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		return FALSE;
 	}
 
-	cd.callback = callback;
-	cd.port = port;
-	cd.data = user_data;
+	pub_data = g_new0 (RBDAAPmDNSPublisherData, 1);
+	*publisher = (RBDAAPmDNSPublisher) pub_data;
+	pub_data->callback = callback;
+	pub_data->port = port;
+	pub_data->data = user_data;
 	
-	*publisher = (RBDAAPmDNSPublisher) avahi_entry_group_new (client,
-						       entry_group_cb,
-						       &cd);
-	if (!*publisher) {
+	pub_data->eg = avahi_entry_group_new (client,
+					      (AvahiEntryGroupCallback)entry_group_cb,
+					      pub_data);
+	if (pub_data->eg == NULL) {
+		g_free (pub_data);
 		rb_debug ("Could not create AvahiEntryGroup for publishing");
 		mdns_error_dialog ("Avahi");
 		return FALSE;
 	}
 
-	ret = add_service ((AvahiEntryGroup *)*publisher, name, port);
+	ret = add_service (pub_data->eg, name, port);
 	
 	if (ret < 0) {
+		g_free (pub_data);
 		rb_debug ("Error adding service to AvahiEntryGroup: %s", avahi_strerror (ret));
 		mdns_error_dialog ("Avahi");
 		return FALSE;
@@ -820,9 +849,9 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 void
 rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 {
-	AvahiEntryGroup *eg = (AvahiEntryGroup *)publisher;
+	RBDAAPmDNSPublisherData *pub_data = (RBDAAPmDNSPublisherData*)publisher;
 
-	avahi_entry_group_free (eg);
-	publisher = NULL;
+	avahi_entry_group_free (pub_data->eg);
+	g_free (pub_data);
 }
 #endif
