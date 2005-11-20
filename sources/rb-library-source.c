@@ -756,11 +756,11 @@ string_list_equal (GList *a, GList *b)
 		return FALSE;
 
 	for (sorted_a_keys = NULL; a; a = a->next) {
-		sorted_a_keys = g_list_append (sorted_a_keys,
+		sorted_a_keys = g_list_prepend (sorted_a_keys,
 					       g_utf8_collate_key (a->data, -1));
 	}
 	for (sorted_b_keys = NULL; b; b = b->next) {
-		sorted_b_keys = g_list_append (sorted_b_keys,
+		sorted_b_keys = g_list_prepend (sorted_b_keys,
 					       g_utf8_collate_key (b->data, -1));
 	}
 	sorted_a_keys = g_list_sort (sorted_a_keys, (GCompareFunc) strcmp);
@@ -1052,9 +1052,9 @@ impl_get_extra_views (RBSource *asource)
 	GList *ret;
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
-	ret = g_list_append (NULL, source->priv->genres);
-	ret = g_list_append (ret, source->priv->artists);
-	ret = g_list_append (ret, source->priv->albums);
+	ret = g_list_prepend (NULL, source->priv->albums);
+	ret = g_list_prepend (ret, source->priv->artists);
+	ret = g_list_prepend (ret, source->priv->genres);
 	return ret;
 }
 
@@ -1315,7 +1315,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	uri_list = NULL;
 
 	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
 
 	gnome_vfs_uri_list_free (list);
 

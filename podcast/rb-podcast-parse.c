@@ -145,7 +145,7 @@ rb_insert_item (struct RBPoadcastLoadContext* ctx)
 	if (!data->url)
 		return;
 
-	ctx->channel_data->posts = g_list_append (ctx->channel_data->posts, (void *) ctx->item_data);
+	ctx->channel_data->posts = g_list_prepend (ctx->channel_data->posts, (void *) ctx->item_data);
 }
 
 static gboolean rb_validate_channel_propert (const char *name)
@@ -418,6 +418,7 @@ rb_podcast_parse_load_feed(RBPodcastChannel *data, const char *file_name) {
 
     g_free (buffer);
     g_string_free(ctx->prop_value, TRUE);
+    ctx->channel_data->posts = g_list_reverse (ctx->channel_data->posts);
 
 end_function:
     g_free(sax_handler);    

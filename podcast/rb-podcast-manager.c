@@ -151,7 +151,7 @@ static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
 static gboolean rb_podcast_manager_entry_remove_cb	(GtkTreeModel *query_model,
 						   	 GtkTreePath *path, 
 							 GtkTreeIter *iter,
-						   	 gpointer data);
+						   	 RBPodcastManager *pd);
 static gboolean rb_podcast_manager_save_metadata	(RhythmDB *db, 
 						  	 RhythmDBEntry *entry, 
 						  	 const char* uri);
@@ -1037,8 +1037,8 @@ start_job (RBPodcastManagerInfo *data)
 		       0, data->entry);
 	GDK_THREADS_LEAVE ();
 
-	source_uri_list = g_list_append (source_uri_list, data->read_uri);
-	target_uri_list = g_list_append (target_uri_list, data->write_uri);
+	source_uri_list = g_list_prepend (source_uri_list, data->read_uri);
+	target_uri_list = g_list_prepend (target_uri_list, data->write_uri);
 
 	g_mutex_lock (data->mutex_working);
 
@@ -1283,7 +1283,6 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 	}
 	else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 	{
-		GList *list = g_list_alloc();
 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
 
 		rhythmdb_do_full_query (pd->priv->db, query_model,
@@ -1295,17 +1294,8 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 	
 	 	gtk_tree_model_foreach (query_model,
 			                (GtkTreeModelForeachFunc) rb_podcast_manager_entry_remove_cb,
-                	                (gpointer) list);
-
-		list = list->next;
+                	                pd);
 		
-		while (list != NULL) {
-			RhythmDBEntry *entry = (RhythmDBEntry *) list->data;
-			rhythmdb_entry_delete (pd->priv->db, entry);
-			list = list->next;
-		}
-		
-		g_list_free (list);
 		rhythmdb_commit (pd->priv->db);
 	
 	}
@@ -1314,12 +1304,13 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 static gboolean
 rb_podcast_manager_entry_remove_cb (GtkTreeModel *query_model,
 				    GtkTreePath *path, GtkTreeIter *iter,
-				    gpointer data)
+				    RBPodcastManager *pd)
 {
 	RhythmDBEntry* entry;
-	GList *list = (GList *) data;
+
 	gtk_tree_model_get (query_model, iter, 0, &entry, -1);
-	list = g_list_append (list, entry);
+	rhythmdb_entry_delete (pd->priv->db, entry);
+
 	return FALSE;
 }
 

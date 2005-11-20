@@ -209,9 +209,11 @@ get_offline_track_listing(SjMetadata *metadata, GError **error)
     track->title = g_strdup_printf (_("Track %d"), i);
     track->artist = g_strdup (album->artist);
     track->duration = get_duration_from_sectors (mb_GetResultInt1 (priv->mb, MBE_TOCGetTrackNumSectors, i+1));
-    album->tracks = g_list_append (album->tracks, track);
+    album->tracks = g_list_prepend (album->tracks, track);
     album->number++;
   }
+  album->tracks = g_list_reverse (album->tracks);
+  
   return g_list_append (list, album);
 }
 
@@ -427,9 +429,10 @@ lookup_cd (SjMetadata *metadata)
         track->duration = atoi (data) / 1000;
       }
       
-      album->tracks = g_list_append (album->tracks, track);
+      album->tracks = g_list_prepend (album->tracks, track);
       album->number++;
     }
+    album->tracks = g_list_reverse (album->tracks);
 
     albums = g_list_append (albums, album);
   }

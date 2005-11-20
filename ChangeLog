@@ -1,5 +1,36 @@
 2005-11-20  James Livingston  <jrl@ids.org.au>
 
+	* metadata/sj-metadata-musicbrainz.c: (get_offline_track_listing),
+	(lookup_cd):
+	* podcast/rb-podcast-manager.c: (start_job),
+	(rb_podcast_manager_db_entry_deleted_cb),
+	(rb_podcast_manager_entry_remove_cb):
+	* podcast/rb-podcast-parse.c: (rb_insert_item),
+	(rb_podcast_parse_load_feed):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_insert):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_append_media_source):
+	* shell/rb-shell.c: (add_to_library_response_cb):
+	* shell/rb-tray-icon.c: (rb_tray_icon_drop_cb):
+	* sources/rb-audiocd-source.c: (rb_audiocd_scan_songs):
+	* sources/rb-iradio-source.c:
+	(stations_view_drag_data_received_cb):
+	* sources/rb-library-source.c: (string_list_equal),
+	(impl_get_extra_views), (impl_receive_drag):
+	* sources/rb-playlist-source.c: (rb_playlist_source_add_list_uri):
+	* sources/rb-podcast-source.c: (posts_view_drag_data_received_cb),
+	(impl_receive_drag):
+	* widgets/rb-entry-view.c: (rb_entry_view_finalize),
+	(rb_entry_view_append_column_custom), (harvest_entries):
+	* widgets/rb-property-view.c:
+	(rb_property_view_selection_changed_cb):
+	* widgets/rb-simple-view.c: (rb_simple_view_button_press_cb):
+	switch from using g_list_append to g_list_prepend. This changes
+	operations from O(n^2) to O(n), which in cases like deleting a lot of
+	tracks can give huge improvements in speed. Closes bug 321696.
+
+2005-11-20  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-sourcelist.c: (rb_sourcelist_init),
 	(rb_sourcelist_update_expander_visibility): fix indenting of child
 	sources.

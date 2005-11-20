@@ -330,7 +330,7 @@ rb_simple_view_button_press_cb (GtkTreeView *tree,
 			gtk_tree_model_get_iter (model, &iter, path);
 
 			gtk_tree_model_get (model, &iter, 0, &val, -1);
-			lst = g_list_append (lst, (gpointer) val);
+			lst = g_list_prepend (lst, (gpointer) val);
 
 			rb_property_view_set_selection (RB_PROPERTY_VIEW (view), lst);	
 		}

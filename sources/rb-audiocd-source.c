@@ -308,10 +308,11 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 		RhythmDBEntry* entry = rb_audiocd_create_track_entry (source, db, i);
 
 		if (entry)
-			priv->tracks = g_list_append (priv->tracks, entry);
+			priv->tracks = g_list_prepend (priv->tracks, entry);
 		else
 			g_warning ("Could not create audio cd track entry");
 	}
+	priv->tracks = g_list_reverse (priv->tracks);
 
 	if (gst_element_set_state (priv->pipeline, GST_STATE_NULL) != GST_STATE_SUCCESS) {
 		rb_debug ("failed to set cd state");

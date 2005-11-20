@@ -810,7 +810,7 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 	uri_list = NULL;
 
 	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
 
 	gnome_vfs_uri_list_free (list);
 

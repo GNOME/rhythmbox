@@ -577,7 +577,7 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				selected_properties = NULL;
 				break;
 			}
-			selected_properties = g_list_append (selected_properties,
+			selected_properties = g_list_prepend (selected_properties,
 							     g_strdup (selected_prop));
 		}
 

@@ -149,7 +149,6 @@ struct RBEntryViewPrivate
 	
 	char *sorting_key;
 	guint sorting_gconf_notification_id;
-	GList *clickable_columns;
 	GtkTreeViewColumn *sorting_column;
 	gint sorting_order;
 	char *sorting_column_name;
@@ -455,8 +454,6 @@ rb_entry_view_finalize (GObject *object)
 		eel_gconf_notification_remove (view->priv->gconf_notification_id);
 	if (view->priv->sorting_gconf_notification_id > 0)
 		eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
-
-	g_list_free (view->priv->clickable_columns);
 
 	g_hash_table_destroy (view->priv->propid_column_map);
 	g_hash_table_destroy (view->priv->column_sort_data_map);
@@ -1450,9 +1447,6 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 	gtk_tree_view_column_set_title (column, title);
 	gtk_tree_view_column_set_reorderable (column, FALSE);
 
-	if (gtk_tree_view_column_get_clickable (column))
-		view->priv->clickable_columns = g_list_append (view->priv->clickable_columns, column);
-
 	g_signal_connect_object (G_OBJECT (column), "clicked",
 				 G_CALLBACK (rb_entry_view_column_clicked_cb),
 				 view, 0);
@@ -1776,7 +1770,7 @@ harvest_entries (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	*list = g_list_append (*list, entry);
+	*list = g_list_prepend (*list, entry);
 
 	return FALSE;
 }

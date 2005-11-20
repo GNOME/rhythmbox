@@ -1814,7 +1814,7 @@ add_to_library_response_cb (GtkDialog *dialog,
 
 	uri_list = gtk_file_chooser_get_uris (GTK_FILE_CHOOSER (dialog));
 	if (uri_list == NULL) {
-		uri_list = g_slist_append (uri_list, g_strdup (current_dir));
+		uri_list = g_slist_prepend (uri_list, g_strdup (current_dir));
 	}
 
 	shell->priv->show_db_errors = TRUE;

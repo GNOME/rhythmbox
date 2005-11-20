@@ -509,7 +509,7 @@ rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RB
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
 
-	priv->sources = g_list_append (priv->sources, source);
+	priv->sources = g_list_prepend (priv->sources, source);
 	g_signal_connect_object (G_OBJECT (source), "deleted",
 				 G_CALLBACK (rb_removable_media_manager_source_deleted_cb), mgr, 0);
 	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[MEDIUM_ADDED], 0,
