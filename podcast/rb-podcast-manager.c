@@ -772,7 +772,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char* url)
 
 	g_async_queue_ref (info->pd->priv->event_queue);
 	g_thread_create ((GThreadFunc) rb_podcast_manager_thread_parse_feed,
-			 info, TRUE, NULL);
+			 info, FALSE, NULL);
 
 	return TRUE;
 }

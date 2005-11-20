@@ -1,5 +1,12 @@
 2005-11-20  James Livingston  <jrl@ids.org.au>
 
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_subscribe_feed): make threads non-joinable, so
+	that we don't leak thread structures. Fixes bug 321636, and probably
+	321775.
+
+2005-11-20  James Livingston  <jrl@ids.org.au>
+
 	* metadata/sj-metadata-musicbrainz.c: (get_offline_track_listing),
 	(lookup_cd):
 	* podcast/rb-podcast-manager.c: (start_job),
