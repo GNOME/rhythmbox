@@ -833,7 +833,7 @@ rb_entry_view_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	gint ret;
 
 	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_GENRE_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_GENRE_SORT_KEY);
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_GENRE_SORT_KEY);
 
 	if (a_val == NULL) {
 		if (b_val == NULL)
