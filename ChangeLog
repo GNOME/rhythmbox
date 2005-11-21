@@ -1,10 +1,19 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	patch by: Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* daapsharing/rb-daap-src.c: (gst_tcp_socket_read),
+	(gst_tcp_socket_write), (rb_daap_src_open_file): don't hang when using
+	a broken daap server. Fixes bug 321919.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-podcast-source.c: (rb_podcast_source_constructor): set up
 	drag-and-drop for both the episodes and feeds list.
 	
 	(posts_view_drag_data_received_cb), (impl_receive_drag): handle drops
 	consistantly and steal a trick from Totem for _NETSCAPE_URL drops.
+	From Jonathan Matthew  <jonathan@kaolin.hn.org>.
 
 	* widgets/rb-property-view.c: (rb_property_view_class_init),
 	(rb_property_view_set_property), (rb_property_view_get_property),
@@ -15,6 +24,8 @@
 	views and set it to false for the feed list. Fixes bug 321284.
 
 2005-11-22  James Livingston  <jrl@ids.org.au>
+
+	Patch from Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_new_playlist):
 	* sources/rb-daap-source.c: (rb_daap_source_connection_cb):

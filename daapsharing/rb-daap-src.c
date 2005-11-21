@@ -558,19 +558,14 @@ gst_tcp_socket_read (int socket, guchar *buf, size_t count)
 
 		if (ret < 0) {
 			GST_WARNING ("error while reading: %s", g_strerror (errno));
+			return ret;
 		}
-		if (ret <= 0) {
-		      return bytes_read;
-		}
+		if (ret == 0)
+			break;
 		bytes_read += ret;
 	}
 
-	if (bytes_read < 0) {
-		GST_WARNING ("error while reading: %s", g_strerror (errno));
-	} else {
-		GST_LOG ("read %d bytes succesfully", bytes_read);
-	}
-
+	GST_LOG ("read %d bytes succesfully", bytes_read);
 	return bytes_read;
 }
 
@@ -582,18 +577,17 @@ gst_tcp_socket_write (int socket, const guchar *buf, size_t count)
 	while (bytes_written < count) {
 		ssize_t wrote = send (socket, buf + bytes_written, count - bytes_written, MSG_NOSIGNAL);
 
-		if (wrote <= 0) {
-			return bytes_written;
+		if (wrote < 0) {
+			GST_WARNING ("error while writing: %s", g_strerror (errno));
+			return wrote;
 		}
+		if (wrote == 0)
+			break;
+
 		bytes_written += wrote;
 	}
 
-	if (bytes_written < 0) {
-		GST_WARNING ("error while writing");
-	} else {
-		GST_LOG ("wrote %d bytes succesfully", bytes_written);
-	}
-	
+	GST_LOG ("wrote %d bytes succesfully", bytes_written);
 	return bytes_written;
 }
 
@@ -752,7 +746,7 @@ rb_daap_src_open_file (RBDAAPSrc *src)
 					src->path, src->host, headers);
 	g_free (headers);
 	GST_DEBUG_OBJECT(src, "sending request %s", request);
-	if (gst_tcp_socket_write(src->sock_fd, (guchar *)request, strlen(request)) < 0) {
+	if (gst_tcp_socket_write(src->sock_fd, (guchar *)request, strlen(request)) <= 0) {
 				GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
 						("sending HTTP request to %s failed: %s", src->daap_uri,
 								g_strerror (errno)));
@@ -770,7 +764,7 @@ rb_daap_src_open_file (RBDAAPSrc *src)
 		guchar responseline[12];
 		gint rc;
 		/* receive response line (HTTP/1.x NNN) */
-		if ((rc = gst_tcp_socket_read(src->sock_fd, (guchar *)responseline, sizeof(responseline))) < 0) {
+		if ((rc = gst_tcp_socket_read(src->sock_fd, (guchar *)responseline, sizeof(responseline))) <= 0) {
 			GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
 			 ("reading HTTP response from %s failed: %s", src->daap_uri,
 				g_strerror (errno)));
@@ -787,7 +781,7 @@ rb_daap_src_open_file (RBDAAPSrc *src)
 		} response_state = RESPONSE_CHAR;
 		while (response_state != RESPONSE_END_OF_HEADERS) {
 			guchar ch;
-			if (gst_tcp_socket_read(src->sock_fd, (guchar *)&ch, sizeof(ch)) < 0) {
+			if (gst_tcp_socket_read(src->sock_fd, (guchar *)&ch, sizeof(ch)) <= 0) {
 				GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, (NULL),
 				 ("reading HTTP response from %s failed: %s", src->daap_uri,
 					g_strerror (errno)));
