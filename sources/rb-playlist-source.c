@@ -127,6 +127,7 @@ struct RBPlaylistSourcePrivate
 	gboolean automatic;
 	GHashTable *entries;
 
+	RhythmDBEntryType entry_type;
 	RhythmDBQueryModel *model;
 	gboolean query_resetting;
 
@@ -148,7 +149,8 @@ enum
 	PROP_AUTOMATIC,
 	PROP_QUERY_MODEL,
 	PROP_DIRTY,
-	PROP_LOCAL
+	PROP_LOCAL,
+	PROP_ENTRY_TYPE
 };
 
 static GObjectClass *parent_class = NULL;
@@ -247,6 +249,13 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist is attached to the local library",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_ENTRY_TYPE,
+					 g_param_spec_int ("entry-type",
+							   "entry-type",
+							   "The entry type this playlist accepts",
+							   -1, G_MAXINT, -1,
+							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 }
 
@@ -440,6 +449,9 @@ rb_playlist_source_set_property (GObject *object,
 	case PROP_LOCAL:
 		source->priv->is_local = g_value_get_boolean (value);
 		break;
+	case PROP_ENTRY_TYPE:
+		source->priv->entry_type = g_value_get_int (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -468,6 +480,9 @@ rb_playlist_source_get_property (GObject *object,
 	case PROP_LOCAL:
 		g_value_set_boolean (value, source->priv->is_local);
 		break;
+	case PROP_ENTRY_TYPE:
+		g_value_set_int (value, source->priv->entry_type);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -475,7 +490,7 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_playlist_source_new (RBShell *shell, gboolean automatic, gboolean local)
+rb_playlist_source_new (RBShell *shell, gboolean automatic, gboolean local, RhythmDBEntryType entry_type)
 {
 	RBSource *source;
 	
@@ -484,6 +499,7 @@ rb_playlist_source_new (RBShell *shell, gboolean automatic, gboolean local)
 					  "shell", shell,
 					  "automatic", automatic,
 					  "is-local", local,
+					  "entry-type", entry_type,
 					  NULL));
 
 	return source;
@@ -693,13 +709,19 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		g_strfreev (names);
 
 		if (subquery) {
-			GPtrArray *query = rhythmdb_query_parse (source->priv->db,
-							         RHYTHMDB_QUERY_PROP_EQUALS,
-							         RHYTHMDB_PROP_TYPE,
-							         RHYTHMDB_ENTRY_TYPE_SONG,
-							         RHYTHMDB_QUERY_SUBQUERY,
-							         subquery,
-							         RHYTHMDB_QUERY_END);
+			RhythmDBEntryType qtype = RHYTHMDB_ENTRY_TYPE_SONG;
+			GPtrArray *query;
+			
+			if (source->priv->entry_type != -1)
+				qtype = source->priv->entry_type;
+
+			query = rhythmdb_query_parse (source->priv->db,
+						      RHYTHMDB_QUERY_PROP_EQUALS,
+						      RHYTHMDB_PROP_TYPE,
+						      qtype,
+						      RHYTHMDB_QUERY_SUBQUERY,
+						      subquery,
+						      RHYTHMDB_QUERY_END);
 			rb_playlist_source_set_query (source, query, 0, 0, 0, NULL, 0);
 		}
 	}
@@ -761,9 +783,10 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 	RhythmDBEntry *entry;
 	
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-	if (entry != NULL &&
-	    rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_SONG) {
-		rb_debug ("attempting to add non-song track to playlist");
+	if (entry != NULL && 
+	    source->priv->entry_type != -1 &&
+	    rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != source->priv->entry_type) {
+		rb_debug ("attempting to add an entry of the wrong type to playlist");
 		return;
 	}
 
@@ -953,7 +976,7 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	xmlNodePtr child;
 	xmlChar *tmp;
 
-	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (shell, FALSE, TRUE));
+	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (shell, FALSE, TRUE, RHYTHMDB_ENTRY_TYPE_SONG));
 
 	tmp = xmlGetProp (node, RB_PLAYLIST_TYPE);
 	if (!xmlStrcmp (tmp, RB_PLAYLIST_AUTOMATIC))

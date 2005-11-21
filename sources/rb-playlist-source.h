@@ -59,7 +59,8 @@ GType		rb_playlist_source_get_type	(void);
 
 RBSource *	rb_playlist_source_new		(RBShell *shell,
 						 gboolean smart, 
-						 gboolean local);
+						 gboolean local,
+						 RhythmDBEntryType entry_type);
 
 RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 						 xmlNodePtr node);

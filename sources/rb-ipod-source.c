@@ -188,14 +188,19 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	RBSource *playlist_source;
 	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RhythmDBEntryType entry_type;
 
-  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+  	g_object_get (G_OBJECT (source), 
+		      "shell", &shell, 
+		      "entry-type", &entry_type,
+		      NULL);
 
 	playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 						   "name", playlist->name,
 						   "shell", shell,
 						   "visibility", TRUE,
 						   "is-local", FALSE,
+						   "entry-type", entry_type,
 						   NULL));
 
 	for (it = playlist->members; it != NULL; it = it->next) {

@@ -821,7 +821,10 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  const char *suggested_name, 
 				  gboolean automatic)
 {
-	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->shell, automatic, TRUE));
+	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->shell, 
+								automatic, 
+								TRUE, 
+								RHYTHMDB_ENTRY_TYPE_SONG));
 	
 	g_object_set (G_OBJECT (playlist),
 		      "name", suggested_name ? suggested_name : "",

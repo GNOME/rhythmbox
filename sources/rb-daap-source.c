@@ -564,6 +564,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 	RBShell *shell = NULL;
 	GSList *playlists;
 	GSList *l;
+	RhythmDBEntryType entry_type;
 
 	if (result == FALSE) {
 		/* FIXME display error?  should get more info from the connection.. */
@@ -572,6 +573,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 
 	g_object_get (G_OBJECT (daap_source), 
 		      "shell", &shell, 
+		      "entry-type", &entry_type,
 		      NULL);
 	playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
 	for (l = playlists; l != NULL; l = l->next) {
@@ -583,6 +585,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 							   "shell", shell,
 							   "visibility", TRUE,
 							   "is-local", FALSE,
+							   "entry-type", entry_type,
 							   NULL));
 		/* this is set here instead of in construction so that
 		 * rb_playlist_source_constructor has a chance to be run to set things up */

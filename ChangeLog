@@ -1,3 +1,16 @@
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_new_playlist):
+	* sources/rb-daap-source.c: (rb_daap_source_connection_cb):
+	* sources/rb-ipod-source.c: (add_rb_playlist):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_set_property),
+	(rb_playlist_source_get_property), (rb_playlist_source_new),
+	(impl_receive_drag), (rb_playlist_source_add_location),
+	(rb_playlist_source_new_from_xml):
+	* sources/rb-playlist-source.h: give playlists and (optional)
+	entry-type, and reject entries that don't match. Fixes bug 322006.
+
 2005-11-21  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-source-header.c: (rb_source_header_source_weak_unref),
