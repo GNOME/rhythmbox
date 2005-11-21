@@ -43,19 +43,10 @@
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 
-static const GtkTargetEntry rb_simple_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
-
 enum
 {
 	SHOW_POPUP,
 	LAST_SIGNAL
-};
-
-enum
-{
-	PROP_0,
-	PROP_IS_DRAG_SOURCE,
-	PROP_IS_DRAG_DEST
 };
 
 static guint rb_simple_view_signals[LAST_SIGNAL] = { 0 };
@@ -63,22 +54,13 @@ static guint rb_simple_view_signals[LAST_SIGNAL] = { 0 };
 
 struct RBSimpleViewPrivate
 {
-	gboolean is_drag_source;
-	gboolean is_drag_dest;
+
 };
 
 
 static void rb_simple_view_class_init 		(RBSimpleViewClass *klass);
 static void rb_simple_view_init 		(RBSimpleView *view);
 static void rb_simple_view_finalize 		(GObject *object);
-static void rb_simple_view_set_property 	(GObject *object,
-				       	 	 guint prop_id,
-				       	 	 const GValue *value,
-				       	 	 GParamSpec *pspec);
-static void rb_simple_view_get_property 	(GObject *object,
-				         	 guint prop_id,
-				       	 	 GValue *value,
-				       	 	 GParamSpec *pspec);
 static GObject * rb_simple_view_constructor 	(GType type, guint n_construct_properties,
 					       	 GObjectConstructParam *construct_properties);
 static gboolean rb_simple_view_popup_menu_cb 	(GtkTreeView *treeview,
@@ -97,25 +79,6 @@ rb_simple_view_class_init (RBSimpleViewClass *klass)
 
 	object_class->finalize = rb_simple_view_finalize;
 	object_class->constructor = rb_simple_view_constructor;
-
-	object_class->set_property = rb_simple_view_set_property;
-	object_class->get_property = rb_simple_view_get_property;
-
-	g_object_class_install_property (object_class,
-					 PROP_IS_DRAG_SOURCE,
-					 g_param_spec_boolean ("is-drag-source",
-							       "is drag source",
-							       "whether or not this is a drag source",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	
-	g_object_class_install_property (object_class,
-					 PROP_IS_DRAG_DEST,
-					 g_param_spec_boolean ("is-drag-dest",
-							       "is drag dest",
-							       "whether or not this is a drag dest",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	
 	rb_simple_view_signals[SHOW_POPUP] =
 		g_signal_new ("show_popup",
@@ -152,51 +115,6 @@ rb_simple_view_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_simple_view_parent_class)->finalize (object);
 }
 
-
-static void
-rb_simple_view_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
-{
-	RBSimpleView *view = RB_SIMPLE_VIEW (object);
-
-	switch (prop_id)
-	{
-	case PROP_IS_DRAG_SOURCE:
-		view->priv->is_drag_source = g_value_get_boolean (value);
-		break;
-	case PROP_IS_DRAG_DEST:
-		view->priv->is_drag_dest = g_value_get_boolean (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void 
-rb_simple_view_get_property (GObject *object,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *pspec)
-{
-	RBSimpleView *view = RB_SIMPLE_VIEW (object);
-
-	switch (prop_id)
-	{
-	case PROP_IS_DRAG_SOURCE:
-		g_value_set_boolean (value, view->priv->is_drag_source);
-		break;
-	case PROP_IS_DRAG_DEST:
-		g_value_set_boolean (value, view->priv->is_drag_dest);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
 RBSimpleView *
 rb_simple_view_new (RhythmDB *db, guint propid, const char *title)
 {
@@ -211,11 +129,8 @@ rb_simple_view_new (RhythmDB *db, guint propid, const char *title)
 					       "db", db,
 					       "prop", propid,
 					       "title", title,
-					       "is-drag-source", FALSE,
-					       "is-drag-dest", FALSE,
+					       "draggable", FALSE,
 					       NULL));
-
-	g_return_val_if_fail (view->priv != NULL, NULL);
 
 	return view;
 }
@@ -247,19 +162,6 @@ rb_simple_view_constructor (GType type, guint n_construct_properties,
 			         view,
 				 0);
 
-	if (view->priv->is_drag_source)
-		rb_tree_dnd_add_drag_source_support (GTK_TREE_VIEW (treeview),
-						     GDK_BUTTON1_MASK,
-						     rb_simple_view_drag_types,
-						     G_N_ELEMENTS (rb_simple_view_drag_types),
-						     GDK_ACTION_COPY | GDK_ACTION_MOVE);
-	if (view->priv->is_drag_dest)
-		rb_tree_dnd_add_drag_dest_support (GTK_TREE_VIEW (treeview),
-						   RB_TREE_DEST_CAN_DROP_BETWEEN | RB_TREE_DEST_EMPTY_VIEW_DROP,
-						   rb_simple_view_drag_types,
-						   G_N_ELEMENTS (rb_simple_view_drag_types),
-						   GDK_ACTION_COPY | GDK_ACTION_MOVE);
-
 	return G_OBJECT (view);
 }
 
@@ -280,20 +182,6 @@ rb_simple_view_append_column_custom 	(RBSimpleView *view,
 	gtk_tree_view_column_set_visible (column, TRUE);
 }
 
-
-void
-rb_simple_view_enable_drag_source (RBSimpleView *view,
-				   const GtkTargetEntry *targets,
-				   int n_targets)
-{
-	GtkWidget *treeview;
-	g_return_if_fail (view != NULL);
-
-	treeview = rb_property_view_get_treeview (RB_PROPERTY_VIEW (view));
-	rb_tree_dnd_add_drag_source_support (GTK_TREE_VIEW (treeview),
-					     GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
-					     targets, n_targets, GDK_ACTION_COPY);
-}
 
 static gboolean 
 rb_simple_view_popup_menu_cb 	(GtkTreeView *treeview,

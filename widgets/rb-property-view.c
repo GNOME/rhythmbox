@@ -78,6 +78,7 @@ struct RBPropertyViewPrivate
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
+	gboolean draggable;
 	gboolean handling_row_deletion;
 };
 
@@ -97,6 +98,7 @@ enum
 	PROP_PROP,
 	PROP_TITLE,
 	PROP_MODEL,
+	PROP_DRAGGABLE,
 };
 
 static guint rb_property_view_signals[LAST_SIGNAL] = { 0 };
@@ -166,6 +168,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							      "RhythmDBPropertyModel",
 							      RHYTHMDB_TYPE_PROPERTY_MODEL,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_DRAGGABLE,
+					 g_param_spec_boolean ("draggable",
+						 	       "draggable",
+							       "is a drag source",
+							       TRUE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_property_view_signals[PROPERTY_ACTIVATED] =
 		g_signal_new ("property-activated",
@@ -303,6 +312,9 @@ rb_property_view_set_property (GObject *object,
 
 	}
 		break;
+	case PROP_DRAGGABLE:
+		view->priv->draggable = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -331,6 +343,9 @@ rb_property_view_get_property (GObject *object,
 	case PROP_MODEL:
 		g_value_set_object (value, view->priv->prop_model);
 		break;
+	case PROP_DRAGGABLE:
+		g_value_set_boolean (value, view->priv->draggable);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -351,6 +366,7 @@ rb_property_view_new (RhythmDB *db, guint propid, const char *title)
 					       "db", db,
 					       "prop", propid,
 					       "title", title,
+					       "draggable", TRUE,
 					       NULL));
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
@@ -466,8 +482,9 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
 
-	rhythmdb_property_model_enable_drag (view->priv->prop_model,
-					     GTK_TREE_VIEW (view->priv->treeview));
+	if (view->priv->draggable)
+		rhythmdb_property_model_enable_drag (view->priv->prop_model,
+						     GTK_TREE_VIEW (view->priv->treeview));
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",

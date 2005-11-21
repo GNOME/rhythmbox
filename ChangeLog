@@ -1,5 +1,21 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor): set up
+	drag-and-drop for both the episodes and feeds list.
+	
+	(posts_view_drag_data_received_cb), (impl_receive_drag): handle drops
+	consistantly and steal a trick from Totem for _NETSCAPE_URL drops.
+
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_set_property), (rb_property_view_get_property),
+	(rb_property_view_new), (rb_property_view_constructor):
+	* widgets/rb-simple-view.c: (rb_simple_view_class_init),
+	(rb_simple_view_new), (rb_simple_view_constructor):
+	* widgets/rb-simple-view.h: add a "draggable" property to property
+	views and set it to false for the feed list. Fixes bug 321284.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_new_playlist):
 	* sources/rb-daap-source.c: (rb_daap_source_connection_cb):
 	* sources/rb-ipod-source.c: (add_rb_playlist):

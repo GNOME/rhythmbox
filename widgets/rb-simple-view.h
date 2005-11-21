@@ -63,10 +63,6 @@ void		rb_simple_view_append_column_custom 	(RBSimpleView *view,
 				    			 GtkTreeViewColumn *column,
 				    			 const char *title, 
 				    			 gpointer user_data);
-
-void 		rb_simple_view_enable_drag_source 	(RBSimpleView *view,
-				   			 const GtkTargetEntry *targets,
-				   			 int n_targets);
 G_END_DECLS
 
 #endif /* __RB_SIMPLE_VIEW_H */

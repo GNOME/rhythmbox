@@ -124,9 +124,6 @@ static void rb_podcast_source_btn_file_change_cb 	(GtkFileChooserButton *widget,
 							 const char *key);
 
 
-void rb_podcast_source_show_columns_changed_cb 		(GtkToggleButton *button, 
-							 RBPodcastSource *source);
-
 static void posts_view_drag_data_received_cb 		(GtkWidget *widget,
 					      		 GdkDragContext *dc,
   				              		 gint x, gint y,
@@ -502,7 +499,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_TITLE);
 	
-	//COLUMN FEED
+	/* COLUMN FEED */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new();
 	
@@ -549,19 +546,6 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_podcast_source_posts_view_sort_order_changed_cb),
 				 source, 0);
 
-	/* set up drag and drop for the song tree view.
-	 * we don't use RBEntryView's DnD support because it does too much.
-	 * we just want to be able to drop stations in to add them.
-	 */
-	g_signal_connect_object (G_OBJECT (source->priv->posts), 
-				 "drag_data_received",
-				 G_CALLBACK (posts_view_drag_data_received_cb),
-				 source, 0);
-
-	gtk_drag_dest_set (GTK_WIDGET (source->priv->posts),
-			   GTK_DEST_DEFAULT_ALL,
-			   posts_view_drag_types, 2,
-			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
 
 	g_signal_connect (G_OBJECT (source->priv->podcast_mg),
@@ -583,7 +567,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_podcast_source_songs_show_popup_cb), source, 0);
 	
 
-	//configure feed view
+	/* configure feed view */
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
@@ -608,7 +592,8 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	
 	rhythmdb_query_free (query);
 	
-	//column status
+
+	/* column status */
 	column = gtk_tree_view_column_new ();
 	renderer = rb_cell_renderer_pixbuf_new ();
 	
@@ -627,7 +612,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 					       column, " ", source);
 	
 
-	//column title
+	/* column title */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new ();
 
@@ -642,15 +627,6 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 		 		             column, _("Feed"), source);
 
 	
-	g_signal_connect_object (G_OBJECT (source->priv->feeds), 
-				 "drag_data_received",
-				 G_CALLBACK (posts_view_drag_data_received_cb),
-				 source, 0);
-
-	gtk_drag_dest_set (GTK_WIDGET (source->priv->feeds),
-			   GTK_DEST_DEFAULT_ALL,
-			   posts_view_drag_types, 2,
-			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
 
 	g_signal_connect_object (G_OBJECT (source->priv->feeds), "show_popup",
@@ -665,6 +641,26 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_ref (G_OBJECT (source->priv->feeds));
 
+	/* set up drag and drop */
+	g_signal_connect_object (G_OBJECT (source->priv->feeds), 
+				 "drag_data_received",
+				 G_CALLBACK (posts_view_drag_data_received_cb),
+				 source, 0);
+
+	gtk_drag_dest_set (GTK_WIDGET (source->priv->feeds),
+			   GTK_DEST_DEFAULT_ALL,
+			   posts_view_drag_types, 2,
+			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
+	
+	g_signal_connect_object (G_OBJECT (source->priv->posts), 
+				 "drag_data_received",
+				 G_CALLBACK (posts_view_drag_data_received_cb),
+				 source, 0);
+
+	gtk_drag_dest_set (GTK_WIDGET (source->priv->posts),
+			   GTK_DEST_DEFAULT_ALL,
+			   posts_view_drag_types, 2,
+			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
 	/* set up propiets page */
 	
@@ -1247,52 +1243,7 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 				  guint info, guint time,
 				  RBPodcastSource *source)
 {
-	GList *list, *uri_list, *i;
-
-	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse ((char *)selection_data->data);
-
-	if (list == NULL)
-		return;
-
-	uri_list = NULL;
-
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-
-	gnome_vfs_uri_list_free (list);
-
-	if (uri_list == NULL)
-		return;
-
-	rb_debug ("adding uris");
-
-	i = uri_list;
-	while (i != NULL) {
-		char *uri = NULL;
-
-		uri = i->data;
-
-		/* as totem source says, "Super _NETSCAPE_URL trick" */
-		if (info == 1) {
-			i = i->next;
-			if (i != NULL) {
-				g_free (i->data);
-			}
-		}
-		if ((uri != NULL) && 
-		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
-			rb_podcast_source_add_feed (source, uri);
-		}
-
-		g_free (uri);
-
-		if (i != NULL)
-			i = i->next;
-	}
-
-	g_list_free (uri_list);
-	return;
+	impl_receive_drag (RB_SOURCE (source), selection_data);
 }
 
 void 
@@ -1694,13 +1645,13 @@ rb_podcast_source_load_finish_cb  (gpointer cb_data)
 }
 
 static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 {
-	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	GList *list, *uri_list, *i;
+	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 
 	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse ((char *) data->data);
+	list = gnome_vfs_uri_list_parse ((char *)selection_data->data);
 
 	if (list == NULL)
 		return FALSE;
@@ -1714,20 +1665,31 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 	if (uri_list == NULL)
 		return FALSE;
-	
+
 	rb_debug ("adding uris");
 
-	for (i = uri_list; i != NULL; i = i->next) {
+	i = uri_list;
+	while (i != NULL) {
 		char *uri = NULL;
 
 		uri = i->data;
 
+		/* as totem source says, "Super _NETSCAPE_URL trick" */
+		if (selection_data->type == gdk_atom_intern ("_NETSCAPE_URL", FALSE)) {
+			i = i->next;
+			if (i != NULL) {
+				g_free (i->data);
+			}
+		}
 		if ((uri != NULL) && 
 		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
 			rb_podcast_source_add_feed (source, uri);
 		}
 
 		g_free (uri);
+
+		if (i != NULL)
+			i = i->next;
 	}
 
 	g_list_free (uri_list);
