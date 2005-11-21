@@ -1069,7 +1069,6 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 		// unreasonable to me, honestly
 //		}
 		entry = rhythmdb_entry_new (connection->db, connection->db_type, uri);
-		g_free (uri);
 		g_hash_table_insert (connection->item_id_to_uri, GINT_TO_POINTER (item_id), uri);
 
 		 /* track number */
@@ -1562,6 +1561,7 @@ rb_daap_connection_destroy (RBDAAPConnection *connection)
 	for (l = connection->playlists; l; l = l->next) {
 		RBDAAPPlaylist *playlist = l->data;
 
+		g_list_foreach (playlist->uris, (GFunc)g_free, NULL);
 		g_list_free (playlist->uris);
 		g_free (playlist->name);
 		g_free (playlist);

@@ -1,5 +1,12 @@
 2005-11-21  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-connection.c: (handle_song_listing): fix freeing
+	of strings when they are still in use. Fixes bug 321547.
+
+	(rb_daap_connection_destroy): fix memory leak
+
+2005-11-21  James Livingston  <jrl@ids.org.au>
+
 	* daapsharing/rb-daap-mdns.c: (browse_cb), (rb_daap_mdns_browse),
 	(rb_daap_mdns_browse_cancel), (resolve_cb), (rb_daap_mdns_resolve),
 	(rb_daap_mdns_resolve_cancel), (publish_cb),
