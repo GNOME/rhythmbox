@@ -59,12 +59,7 @@ static void mdns_error_dialog (const gchar *impl)
 #undef VERSION
 #include <howl.h>
 
-typedef struct {
-	char *service_name; /* stupid hack cause howl sucks */
-	gpointer callback;
-	gpointer data;
-	gint port;
-} CallbackAndData;
+char *our_service_name; /* stupid hack cause howl sucks */
 
 
 static gboolean
@@ -141,7 +136,12 @@ howl_strerror (sw_result result)
 
 	return "";
 }
-		
+
+typedef struct {
+	gpointer callback;
+	gpointer data;
+	sw_discovery_oid oid;
+} HowlBrowseData;
 		
 static sw_result
 browse_cb (sw_discovery discovery,
@@ -151,7 +151,7 @@ browse_cb (sw_discovery discovery,
 	   sw_const_string name,
 	   sw_const_string type,
 	   sw_const_string domain,
-	   CallbackAndData *cd)
+	   HowlBrowseData *browse_data)
 {
 	RBDAAPmDNSBrowserStatus bstatus;
 
@@ -166,7 +166,7 @@ browse_cb (sw_discovery discovery,
 	 *
 	 * Bollix
 	 */
-	if (cd->service_name && strcmp ((const gchar *)name, cd->service_name) == 0) {
+	if (our_service_name && strcmp ((const gchar *)name, our_service_name) == 0) {
 		return SW_OKAY;
 	}
 	
@@ -178,10 +178,10 @@ browse_cb (sw_discovery discovery,
 		return SW_OKAY;
 	}
 	
-	((RBDAAPmDNSBrowserCallback)cd->callback) ((RBDAAPmDNSBrowser) oid,
-						   bstatus,
-						   (const gchar *) name,
-						   cd->data);
+	((RBDAAPmDNSBrowserCallback)browse_data->callback) ((RBDAAPmDNSBrowser) browse_data,
+							    bstatus,
+							    (const gchar *) name,
+							    browse_data->data);
 	
 	return SW_OKAY;
 }
@@ -192,7 +192,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		     gpointer user_data)
 {
 	sw_discovery discovery;
-	CallbackAndData *cd;
+	HowlBrowseData *browse_data;
 	sw_result result;
 	GError *error = NULL;
 	
@@ -204,21 +204,21 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 		return FALSE;
 	}
 
-	cd = g_new0 (CallbackAndData, 1);
-	*browser = (RBDAAPmDNSBrowser) cd;
-	cd->callback = callback;
-	cd->data = user_data;
+	browse_data = g_new0 (HowlBrowseData, 1);
+	*browser = (RBDAAPmDNSBrowser) browse_data;
+	browse_data->callback = callback;
+	browse_data->data = user_data;
 		
        	result = sw_discovery_browse (discovery,
 				      0,
 				      "_daap._tcp", 
 				      "local", 
 				      (sw_discovery_browse_reply) browse_cb, 
-				      (sw_opaque) cd, 
-				      (sw_discovery_oid*) cd);
+				      (sw_opaque) browse_data ,
+				      (sw_discovery_oid*) &browse_data->oid);
 
 	if (result != SW_OKAY) {
-		g_free (cd);
+		g_free (browse_data);
 		rb_debug ("Error starting mDNS browsing with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
 		return FALSE;
@@ -230,16 +230,24 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 void
 rb_daap_mdns_browse_cancel (RBDAAPmDNSBrowser browser)
 {
+	HowlBrowseData *browse_data = (HowlBrowseData*) browser;
 	sw_discovery discovery;
 	
 	discovery = get_sw_discovery (NULL);
 
 	if (discovery) {
-		sw_discovery_cancel (discovery, (sw_discovery_oid) browser);
+		sw_discovery_cancel (discovery, (sw_discovery_oid) browse_data->oid);
 	}
 
-	return;
+	g_free (browse_data);
 }
+
+typedef struct {
+	gpointer callback;
+	gpointer data;
+	sw_discovery_oid oid;
+} HowlResolveData;
+
 
 static sw_result
 resolve_cb (sw_discovery disc,
@@ -252,7 +260,7 @@ resolve_cb (sw_discovery disc,
 	    sw_port port, 
 	    sw_octets text_record, 
 	    sw_ulong text_record_length, 
-	    CallbackAndData *cd)
+	    HowlResolveData *res_data)
 {
 	gchar *host = g_malloc (16);
 	sw_text_record_iterator it;
@@ -273,21 +281,26 @@ resolve_cb (sw_discovery disc,
 				}
 			}
 			if (strcmp ((char *)key, "Machine Name") == 0) {
+				if (name != NULL)
+					g_free (name);
 				name = g_strdup ((char *)val);
 			}
 		}
 		
 		sw_text_record_iterator_fina (it);
 	}
-	
-	((RBDAAPmDNSResolverCallback)cd->callback) ((RBDAAPmDNSResolver) oid,
-						    RB_DAAP_MDNS_RESOLVER_FOUND,
-						    service_name,
-						    name,
-						    host,
-						    (guint) port,
-						    pp,
-						    cd->data);
+
+	if (name == NULL)
+		name = g_strdup (service_name);
+
+	((RBDAAPmDNSResolverCallback)res_data->callback) ((RBDAAPmDNSResolver) res_data,
+							  RB_DAAP_MDNS_RESOLVER_FOUND,
+							  service_name,
+							  name,
+							  host,
+							  (guint) port,
+							  pp,
+							  res_data->data);
 	g_free (host);
 	g_free (name);
 	
@@ -302,7 +315,7 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		      gpointer user_data)
 {
 	sw_discovery discovery;
-	CallbackAndData *cd;
+	HowlResolveData *res_data;
 	sw_result result;
 	GError *error = NULL;
 
@@ -314,10 +327,10 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 		return FALSE;
 	}
 
-	cd = g_new0 (CallbackAndData, 1);
-	*resolver = (RBDAAPmDNSResolver)cd;
-	cd->callback = callback;
-	cd->data = user_data;
+	res_data = g_new0 (HowlResolveData, 1);
+	*resolver = (RBDAAPmDNSResolver)res_data;
+	res_data->callback = callback;
+	res_data->data = user_data;
 		
        	result = sw_discovery_resolve (discovery,
 				       0,
@@ -325,11 +338,11 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 				       "_daap._tcp", 
 				       "local",
 				       (sw_discovery_resolve_reply) resolve_cb,
-	       			       (sw_opaque) cd,
-				       (sw_discovery_oid* )cd);
+	       			       (sw_opaque) res_data,
+				       (sw_discovery_oid*) &res_data->oid);
 		
 	if (result != SW_OKAY) {
-		g_free (cd);
+		g_free (res_data);
 		rb_debug ("Error starting mDNS resolving with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
 		return FALSE;
@@ -341,31 +354,42 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 void
 rb_daap_mdns_resolve_cancel (RBDAAPmDNSResolver resolver)
 {
+	HowlResolveData *res_data = (HowlResolveData*) resolver;
 	sw_discovery discovery = get_sw_discovery (NULL);
 
 	if (discovery) {
-		sw_discovery_cancel (discovery, (sw_discovery_oid) resolver);
+		sw_discovery_cancel (discovery, (sw_discovery_oid) res_data->oid);
 	}
+
+	g_free (res_data);
 }
+
+
+typedef struct {
+	gpointer callback;
+	gpointer data;
+	gint port;
+	sw_discovery_oid oid;
+} HowlPublishData;
 
 static sw_result
 publish_cb (sw_discovery discovery,
 	    sw_discovery_oid oid,
 	    sw_discovery_publish_status status,
-	    CallbackAndData *cd)
+	    HowlPublishData *pub_data)
 {
 	if (status == SW_DISCOVERY_PUBLISH_STARTED) {
-		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) oid,
-							     RB_DAAP_MDNS_PUBLISHER_STARTED,
-							     cd->data);
+		((RBDAAPmDNSPublisherCallback)pub_data->callback) ((RBDAAPmDNSPublisher) pub_data,
+								   RB_DAAP_MDNS_PUBLISHER_STARTED,
+								   pub_data->data);
 	} else if (status == SW_DISCOVERY_PUBLISH_NAME_COLLISION) {
 	/* This is all well and good, but howl won't report a name collision.
 	 * http://lists.porchdogsoft.com/pipermail/howl-users/Week-of-Mon-20041206/000487.html
 	 * So.  Fuck.
 	 */
-		((RBDAAPmDNSPublisherCallback)cd->callback) ((RBDAAPmDNSPublisher) oid,
-							     RB_DAAP_MDNS_PUBLISHER_COLLISION,
-							     cd->data);
+		((RBDAAPmDNSPublisherCallback)pub_data->callback) ((RBDAAPmDNSPublisher) pub_data,
+								   RB_DAAP_MDNS_PUBLISHER_COLLISION,
+								   pub_data->data);
 	}
 	
 	return SW_OKAY;
@@ -379,7 +403,7 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		      gpointer user_data)
 {
 	sw_discovery discovery;
-	CallbackAndData *cd;
+	HowlPublishData *pub_data;
 	sw_result result;
 	GError *error = NULL;
 
@@ -391,13 +415,14 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		return FALSE;
 	}
 
-	cd = g_new0 (CallbackAndData, 1);
-	*publisher = (RBDAAPmDNSPublisher)cd;
-	cd->callback = callback;
-	cd->port = port;
-	cd->data = user_data;
+	pub_data = g_new0 (HowlPublishData, 1);
+	*publisher = (RBDAAPmDNSPublisher)pub_data;
+	pub_data->callback = callback;
+	pub_data->port = port;
+	pub_data->data = user_data;
 
-	cd->service_name = g_strdup (name);
+	g_assert (our_service_name == NULL);
+	our_service_name = g_strdup (name);
 
 	result = sw_discovery_publish (discovery,
 				       0,
@@ -409,11 +434,11 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 				       NULL,
 				       0,
 				       (sw_discovery_publish_reply) publish_cb,
-	       			       (sw_opaque) cd,
-				       (sw_discovery_oid*) cd);
+	       			       (sw_opaque) pub_data,
+				       (sw_discovery_oid*) &pub_data->oid);
 		
 	if (result != SW_OKAY) {
-		g_free (cd);
+		g_free (pub_data);
 		rb_debug ("Error starting mDNS pubilsh with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
 		return FALSE;
@@ -425,16 +450,17 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 void
 rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 {
-	CallbackAndData *cd = (CallbackAndData*) publisher;
+	HowlPublishData *pub_data = (HowlPublishData*) publisher;
 	sw_discovery discovery;
 	
 	discovery = get_sw_discovery (NULL);
 
 	if (discovery) {
-		sw_discovery_cancel (discovery, (sw_discovery_oid) publisher);
+		sw_discovery_cancel (discovery, (sw_discovery_oid) pub_data->oid);
 	}
 
-	g_free (cd->service_name);
+	g_free (pub_data);
+	g_free (our_service_name);
 }
 #endif
 
