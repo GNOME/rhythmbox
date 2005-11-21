@@ -1,5 +1,12 @@
 2005-11-21  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-source-header.c: (rb_source_header_source_weak_unref),
+	(rb_source_header_finalize): remove the weak references when the
+	source header is finalised. Stops the callbacks being called after the
+	object is destroyed.
+
+2005-11-21  James Livingston  <jrl@ids.org.au>
+
 	* shell/main.c: (main): don't try to acquite bonobo/dbus when
 	--no-registration was passed. It causes warnings that make it
 	impossible to run with --no-registration --g-fatal-warnings

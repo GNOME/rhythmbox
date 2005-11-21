@@ -64,6 +64,7 @@ static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 							  RBSourceHeader *header);
 static void rb_source_header_view_browser_changed_cb (GtkAction *action,
 						      RBSourceHeader *header);
+static void rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source);
 
 struct RBSourceHeaderPrivate
 {
@@ -177,6 +178,14 @@ rb_source_header_init (RBSourceHeader *header)
 }
 
 static void
+rb_source_header_source_weak_unref (RBSource *source, char *text, RBSourceHeader *header)
+{
+	g_object_weak_unref (G_OBJECT (source),
+			     (GWeakNotify)rb_source_header_source_weak_destroy_cb,
+			     header);
+}
+
+static void
 rb_source_header_finalize (GObject *object)
 {
 	RBSourceHeader *header;
@@ -188,6 +197,9 @@ rb_source_header_finalize (GObject *object)
 
 	g_return_if_fail (header->priv != NULL);
 
+	g_hash_table_foreach (header->priv->source_search_text,
+			      (GHFunc) rb_source_header_source_weak_unref,
+			      header);
 	g_hash_table_destroy (header->priv->source_search_text);
 
 	g_free (header->priv);
