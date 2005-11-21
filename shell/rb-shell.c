@@ -1820,9 +1820,9 @@ add_to_library_response_cb (GtkDialog *dialog,
 	shell->priv->show_db_errors = TRUE;
 
 	for (uris = uri_list; uris; uris = uris->next) {
-		rhythmdb_add_uri (shell->priv->db, (char *)uris->data);
+			rb_shell_load_uri (shell, (char *)uris->data, FALSE, NULL);
+			g_free (uris->data);
 	}
-	g_slist_foreach (uri_list, (GFunc)g_free, NULL);
 	g_slist_free (uri_list);
 	g_free (current_dir);
 	gtk_widget_destroy (GTK_WIDGET (dialog));

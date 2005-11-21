@@ -1,5 +1,11 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (add_to_library_response_cb): detect playlists
+	when import as a file or passed on the command line, and load them as
+	playlists.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	patch by: Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* daapsharing/rb-daap-src.c: (gst_tcp_socket_read),
