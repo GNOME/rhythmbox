@@ -1,5 +1,11 @@
 2005-11-21  James Livingston  <jrl@ids.org.au>
 
+	* shell/main.c: (main): don't try to acquite bonobo/dbus when
+	--no-registration was passed. It causes warnings that make it
+	impossible to run with --no-registration --g-fatal-warnings
+
+2005-11-21  James Livingston  <jrl@ids.org.au>
+
 	* daapsharing/rb-daap-connection.c: (handle_song_listing): fix freeing
 	of strings when they are still in use. Fixes bug 321547.
 

@@ -308,19 +308,21 @@ main (int argc, char **argv)
 		rb_shell = rb_shell_new (argc, argv, TRUE, no_update, dry_run, rhythmdb_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 #ifdef WITH_BONOBO
-		rb_remote_bonobo_acquire (bonobo, RB_REMOTE_PROXY (rb_shell), &error);
-		if (error) {
-			g_warning ("error: %s", error->message);
-		} else {
-			if (rb_remote_bonobo_activate (bonobo))
-				client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
-			else
-				g_critical ("acquired bonobo service but couldn't activate!");
+		if (!no_registration) {
+			rb_remote_bonobo_acquire (bonobo, RB_REMOTE_PROXY (rb_shell), &error);
+			if (error) {
+				g_warning ("error: %s", error->message);
+			} else {
+				if (rb_remote_bonobo_activate (bonobo))
+					client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
+				else
+					g_critical ("acquired bonobo service but couldn't activate!");
+			}
 		}
 
 #endif
 #ifdef WITH_DBUS
-		if (session_bus != NULL) {
+		if (!no_registration && session_bus != NULL) {
 			GObject *player;
 			const char *path;
 
@@ -333,7 +335,7 @@ main (int argc, char **argv)
 			dbus_g_connection_register_g_object (session_bus, path, G_OBJECT (player));
 		}
 #endif
-	} else {
+	} else if (!no_registration) {
 #ifdef WITH_DBUS
 		DBusGProxy *shell_proxy;
 		guint32 current_time;
