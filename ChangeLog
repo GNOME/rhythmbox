@@ -1,5 +1,11 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_constructor), (rb_playlist_source_dispose): chain
+	up dispose method, and use G_DEFINE_TYPE. Fixes bug 321715.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-podcast-source.c:
 	(rb_podcast_source_post_date_cell_sort_func),
 	(rb_podcast_source_post_status_cell_sort_func),

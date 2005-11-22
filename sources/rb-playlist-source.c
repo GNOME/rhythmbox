@@ -63,7 +63,6 @@ static void rb_playlist_source_init (RBPlaylistSource *source);
 static GObject *rb_playlist_source_constructor (GType type, guint n_construct_properties,
 						GObjectConstructParam *construct_properties);
 static void rb_playlist_source_dispose (GObject *object);
-static void rb_playlist_source_finalize (GObject *object);
 static void rb_playlist_source_set_property (GObject *object,
 			                  guint prop_id,
 			                  const GValue *value,
@@ -153,37 +152,10 @@ enum
 	PROP_ENTRY_TYPE
 };
 
-static GObjectClass *parent_class = NULL;
-
 static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
 
-GType
-rb_playlist_source_get_type (void)
-{
-	static GType rb_playlist_source_type = 0;
+G_DEFINE_TYPE (RBPlaylistSource, rb_playlist_source, RB_TYPE_SOURCE);
 
-	if (rb_playlist_source_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPlaylistSourceClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_playlist_source_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPlaylistSource),
-			0,
-			(GInstanceInitFunc) rb_playlist_source_init
-		};
-
-		rb_playlist_source_type = g_type_register_static (RB_TYPE_SOURCE,
-								  "RBPlaylistSource",
-								  &our_info, 0);
-	}
-
-	return rb_playlist_source_type;
-}
 
 static void
 rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
@@ -191,10 +163,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
-	parent_class = g_type_class_peek_parent (klass);
-
 	object_class->dispose = rb_playlist_source_dispose;
-	object_class->finalize = rb_playlist_source_finalize;
 	object_class->constructor = rb_playlist_source_constructor;
 
 	object_class->set_property = rb_playlist_source_set_property;
@@ -285,14 +254,12 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 {
 	RBPlaylistSource *source;
 	RBPlaylistSourceClass *klass;
-	GObjectClass *parent_class;  
 	RBShell *shell;
 
 	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	source = RB_PLAYLIST_SOURCE (parent_class->constructor (type, n_construct_properties,
-								construct_properties));
+	source = RB_PLAYLIST_SOURCE (G_OBJECT_CLASS (rb_playlist_source_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (RB_SHELL (shell), "db", &source->priv->db, NULL);
@@ -405,32 +372,16 @@ rb_playlist_source_dispose (GObject *object)
 	RBPlaylistSource *source;
 	source = RB_PLAYLIST_SOURCE (object);
 
-	if (source->priv->disposed)
-		return;
-	source->priv->disposed = TRUE;
+	if (source->priv) {
+		g_hash_table_destroy (source->priv->entries);
+		g_object_unref (source->priv->db);
+		g_free (source->priv->title);
+	
+		g_free (source->priv);
+		source->priv = NULL;
+	}
 
-	g_object_unref (source->priv->db);
-}
-
-static void
-rb_playlist_source_finalize (GObject *object)
-{
-	RBPlaylistSource *source;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (object));
-
-	source = RB_PLAYLIST_SOURCE (object);
-
-	g_return_if_fail (source->priv != NULL);
-
-	g_hash_table_destroy (source->priv->entries);
-
-	g_free (source->priv->title);
-
-	g_free (source->priv);
-
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_playlist_source_parent_class)->dispose (object);
 }
 
 static void
