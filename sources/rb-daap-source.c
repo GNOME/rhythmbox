@@ -176,9 +176,10 @@ rb_daap_source_dispose (GObject *object)
 {
 	RBDAAPSource *source = RB_DAAP_SOURCE (object);
 
-	rb_daap_source_disconnect (RB_SOURCE (source));
-
 	if (source->priv) {
+		/* we should already have been disconnected */
+		g_assert (source->priv->connection == NULL);
+	
 		g_free (source->priv->service_name);
 		g_free (source->priv->host);
 		g_free (source->priv);
@@ -576,7 +577,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		      "entry-type", &entry_type,
 		      NULL);
 	playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
-	for (l = playlists; l != NULL; l = l->next) {
+	for (l = playlists; l != NULL; l = g_slist_next (l)) {
 		RBDAAPPlaylist *playlist = l->data;
 		RBSource *playlist_source;
 
@@ -603,9 +604,9 @@ rb_daap_source_disconnect_cb (RBDAAPConnection *connection,
 			      RBSource *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
-	rb_daap_connection_destroy (connection);
+	g_object_unref (G_OBJECT (connection));
 	daap_source->priv->connection = NULL;
-	g_object_unref (G_OBJECT (daap_source));
+	g_object_unref (source);
 }
 
 static gboolean
@@ -631,16 +632,15 @@ rb_daap_source_disconnect (RBSource *source)
 
 		for (l = daap_source->priv->playlist_sources; l!= NULL; l = l->next) {
 			RBSource *playlist_source = RB_SOURCE (l->data);
-			gchar *s;
 
-			g_object_get (G_OBJECT (playlist_source), "name", &s, NULL);
 			rb_source_delete_thyself (playlist_source);
 		}
 
 		g_slist_free (daap_source->priv->playlist_sources);
 		daap_source->priv->playlist_sources = NULL;
 
-		g_object_ref (G_OBJECT (daap_source));
+		/* keep the source alive until the disconnect completes */
+		g_object_ref (daap_source);
 		rb_daap_connection_logout (daap_source->priv->connection,
 					   (RBDAAPConnectionCallback) rb_daap_source_disconnect_cb,
 					   daap_source);

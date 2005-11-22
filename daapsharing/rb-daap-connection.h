@@ -28,13 +28,30 @@
 
 G_BEGIN_DECLS
 
-typedef struct _RBDAAPConnection RBDAAPConnection;
 
 typedef struct {
 	gchar *name;
 	gint id;
 	GList *uris;
 } RBDAAPPlaylist;
+
+
+#define RB_TYPE_DAAP_CONNECTION		(rb_daap_connection_get_type ())
+#define RB_DAAP_CONNECTION(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DAAP_CONNECTION, RBDAAPConnection))
+#define RB_DAAP_CONNECTION_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DAAP_CONNECTION, RBDAAPConnectionClass))
+#define RB_IS_DAAP_CONNECTION(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DAAP_CONNECTION))
+#define RB_IS_DAAP_CONNECTION_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DAAP_CONNECTION))
+#define RB_DAAP_CONNECTION_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DAAP_CONNECTION, RBDAAPConnectionClass))
+
+
+typedef struct {
+	GObject parent;
+} RBDAAPConnection;
+
+typedef struct {
+	GObjectClass parent;
+} RBDAAPConnectionClass;
+
 
 /* hmm, maybe should give more error information? */
 typedef gboolean (*RBDAAPConnectionCallback) (RBDAAPConnection *connection,
@@ -65,9 +82,8 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 GSList * 
 rb_daap_connection_get_playlists (RBDAAPConnection *connection);
 
-void 
-rb_daap_connection_destroy (RBDAAPConnection *connection);
-
+GType 
+rb_daap_connection_get_type (void);
 
 G_END_DECLS
 

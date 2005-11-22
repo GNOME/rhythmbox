@@ -1,5 +1,27 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_class_init), (rb_daap_connection_init),
+	(connection_get_password), (build_message),
+	(http_response_handler), (http_get), (handle_server_info),
+	(handle_login), (handle_update), (handle_database_info),
+	(handle_song_listing), (handle_playlists),
+	(handle_playlist_entries), (rb_daap_connection_new),
+	(rb_daap_connection_constructor), (rb_daap_connection_logout),
+	(rb_daap_connection_state_done), (rb_daap_connection_do_something),
+	(rb_daap_connection_get_headers),
+	(rb_daap_connection_get_playlists), (rb_daap_connection_dispose),
+	(rb_daap_connection_set_property),
+	(rb_daap_connection_get_property):
+	* daapsharing/rb-daap-connection.h:
+	* sources/rb-daap-source.c: (rb_daap_source_dispose),
+	(rb_daap_source_connection_cb), (rb_daap_source_disconnect_cb),
+	(rb_daap_source_disconnect): GObject-ify RBDaapConnection, fix problem
+	of destroying the object when it is going to be used by a callback and
+	fixes a double-free. Fixes bugs 321930 and 322007.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_head_query_cb),
 	(rb_podcast_manager_insert_feed): Don't show the "new episodes"
 	notification if there aren't any. Fixes bug 321968.
