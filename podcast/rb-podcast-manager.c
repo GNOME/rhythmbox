@@ -148,10 +148,6 @@ static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
 						   	 GtkTreePath *path, 
 							 GtkTreeIter *iter,
 						   	 RBPodcastManager *data);
-static gboolean rb_podcast_manager_entry_remove_cb	(GtkTreeModel *query_model,
-						   	 GtkTreePath *path, 
-							 GtkTreeIter *iter,
-						   	 RBPodcastManager *pd);
 static gboolean rb_podcast_manager_save_metadata	(RhythmDB *db, 
 						  	 RhythmDBEntry *entry, 
 						  	 const char* uri);
@@ -1277,6 +1273,7 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 	else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 	{
 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
+		GtkTreeIter iter;
 
 		rhythmdb_do_full_query (pd->priv->db, query_model,
                 	                RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1285,26 +1282,17 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 					RHYTHMDB_PROP_SUBTITLE, rhythmdb_entry_get_string (entry,  RHYTHMDB_PROP_LOCATION),
                                 	RHYTHMDB_QUERY_END);
 	
-	 	gtk_tree_model_foreach (query_model,
-			                (GtkTreeModelForeachFunc) rb_podcast_manager_entry_remove_cb,
-                	                pd);
-		
-		rhythmdb_commit (pd->priv->db);
-	
+		if (gtk_tree_model_get_iter_first (query_model, &iter)) {
+			gboolean has_next;
+			do {
+				RhythmDBEntry *entry;
+				gtk_tree_model_get (query_model, &iter, 0, &entry, -1);
+				has_next = gtk_tree_model_iter_next (query_model, &iter);
+				rhythmdb_entry_delete (pd->priv->db, entry);
+			} while (has_next);
+			rhythmdb_commit (pd->priv->db);
+		}
 	}
-}
-
-static gboolean
-rb_podcast_manager_entry_remove_cb (GtkTreeModel *query_model,
-				    GtkTreePath *path, GtkTreeIter *iter,
-				    RBPodcastManager *pd)
-{
-	RhythmDBEntry* entry;
-
-	gtk_tree_model_get (query_model, iter, 0, &entry, -1);
-	rhythmdb_entry_delete (pd->priv->db, entry);
-
-	return FALSE;
 }
 
 

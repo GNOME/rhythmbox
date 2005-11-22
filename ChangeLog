@@ -1,3 +1,14 @@
+2005-11-22  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_db_entry_deleted_cb):
+	Use a custom loop to remove podcast posts, rather than
+	gtk_tree_model_foreach(), as deleting the entries within
+	that loop causes the iterator to return the first entry
+	twice.	Instead, we need to find the next entry before
+	removing the current one. Fixes bug 321956.
+	(rb_podcast_manager_entry_remove_cb): No longer needed.
+
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
