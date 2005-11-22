@@ -1753,7 +1753,11 @@ rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_POST_TIME);
 	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_POST_TIME);
 
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
+	if (a_val != b_val)
+		ret = (a_val > b_val) ? 1 : -1;
+	else
+		ret = rb_podcast_source_post_feed_cell_sort_func (a, b, source);
+
         return ret;
 }
 
@@ -1767,22 +1771,43 @@ rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b
 	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_STATUS);
 	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_STATUS);
 
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-        return ret;
+        if (a_val != b_val)
+		ret = (a_val > b_val) ? 1 : -1;
+	else
+		ret = rb_podcast_source_post_feed_cell_sort_func (a, b, source);
+
+	return ret;
 }
 
 static gint
 rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-	                                    RBPodcastSource *source)
+					    RBPodcastSource *source)
 {
-	const char *a_val;
-        const char *b_val;
+	const char *a_str, *b_str;
+	gint ret;
 
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ALBUM);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ALBUM);
-	
-	return strcmp (a_val, b_val);
+	/* feeds */
+	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ALBUM);
+	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ALBUM);
 
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		return ret;
+
+	/* titles */
+	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE);
+	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		return ret;
+
+	/* location */
+	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_LOCATION);
+	b_str = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_LOCATION);
+
+	ret = strcmp (a_str, b_str);
+	return ret;
 }
 
 static void

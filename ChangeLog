@@ -1,5 +1,19 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_post_date_cell_sort_func),
+	(rb_podcast_source_post_status_cell_sort_func),
+	(rb_podcast_source_post_feed_cell_sort_func):
+	* widgets/rb-entry-view.c: (rb_entry_view_location_sort_func),
+	(rb_entry_view_album_sort_func),
+	(rb_entry_view_double_ceiling_sort_func),
+	(rb_entry_view_ulong_sort_func), (rb_entry_view_string_sort_func): use
+	the entry's location as a last resort when sorting, so the sort order
+	is stable. This will stop entries moving around when two entries have
+	the same sorting, and one of them gets played.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	* daapsharing/rb-daap-connection.c:
 	(rb_daap_connection_class_init), (rb_daap_connection_init),
 	(connection_get_password), (build_message),

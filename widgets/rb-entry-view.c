@@ -750,6 +750,27 @@ struct RBEntryViewCellDataFuncData {
 };
 
 static gint
+rb_entry_view_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+				  RBEntryView *view)
+{
+	const char *a_val;
+	const char *b_val;
+
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_LOCATION);
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_LOCATION);
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			return 0;
+		else
+			return -1;
+	} else if (b_val == NULL)
+		return 1;
+	else
+		return strcmp (a_val, b_val);
+}
+
+static gint
 rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
@@ -782,7 +803,7 @@ rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	if (a->tracknum != b->tracknum)
 		return (a->tracknum < b->tracknum ? -1 : 1);
 
-	/* And finally by title */
+	/*  by title */
 	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
 	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
 
@@ -794,7 +815,7 @@ rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	} else if (b_val == NULL)
 		return 1;
 	else
-		return strcmp (a_val, b_val);
+		return rb_entry_view_location_sort_func (a, b, view);
 }
 
 static gint
@@ -863,14 +884,14 @@ rb_entry_view_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				       struct RBEntryViewCellDataFuncData *data)
 {
 	gdouble a_val, b_val;
-	gint ret;
 
 	a_val = ceil (rhythmdb_entry_get_double (a, data->propid));
 	b_val = ceil (rhythmdb_entry_get_double (b, data->propid));
 
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-
-	return ret;
+	if (a_val != b_val)
+		return (a_val > b_val ? 1 : -1);
+	else
+		return rb_entry_view_location_sort_func (a, b, data->view);
 }
 
 static gint
@@ -878,14 +899,14 @@ rb_entry_view_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       struct RBEntryViewCellDataFuncData *data)
 {
 	gulong a_val, b_val;
-	gint ret;
 
 	a_val = rhythmdb_entry_get_ulong (a, data->propid);
 	b_val = rhythmdb_entry_get_ulong (b, data->propid);
 
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-
-	return ret;
+	if (a_val != b_val)
+		return (a_val > b_val ? 1 : -1);
+	else
+		return rb_entry_view_location_sort_func (a, b, data->view);
 }
 
 static gint
@@ -913,19 +934,25 @@ rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 {
 	const char *a_val;
 	const char *b_val;
+	gint ret;
 
 	a_val = rhythmdb_entry_get_string (a, data->propid);
 	b_val = rhythmdb_entry_get_string (b, data->propid);
 
 	if (a_val == NULL) {
 		if (b_val == NULL)
-			return 0;
+			ret = 0;
 		else
-			return -1;
+			ret = -1;
 	} else if (b_val == NULL)
-		return 1;
+		ret = 1;
 	else
-		return strcmp (a_val, b_val);
+		ret = strcmp (a_val, b_val);
+
+	if (ret != 0)
+		return ret;
+	else
+		return rb_entry_view_location_sort_func (a, b, data->view);
 }
 
 static void
