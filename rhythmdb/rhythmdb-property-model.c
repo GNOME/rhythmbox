@@ -63,10 +63,8 @@ static void rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
 static void rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry);
 static void rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 					    RhythmDBEntry *entry);
-static void rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
-							 const char *propstr);
 static void rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
-							 const char *propstr);
+						 const char *propstr);
 static GtkTreeModelFlags rhythmdb_property_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_property_model_get_n_columns (GtkTreeModel *tree_model);
 static GType rhythmdb_property_model_get_column_type (GtkTreeModel *tree_model, int index);
@@ -131,6 +129,7 @@ static GtkTargetList *rhythmdb_property_model_genre_drag_target_list = NULL;
 
 typedef struct {
 	RBRefString *string;
+	RBRefString *sort_string;
 	guint refcount;
 } RhythmDBPropertyModelEntry;
 
@@ -290,17 +289,17 @@ rhythmdb_property_model_set_property (GObject *object,
 		switch (model->priv->propid)
 		{
 		case RHYTHMDB_PROP_GENRE:
-			model->priv->sort_propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
+			model->priv->sort_propid = RHYTHMDB_PROP_GENRE;
 			break;
 		case RHYTHMDB_PROP_ARTIST:
-			model->priv->sort_propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
+			model->priv->sort_propid = RHYTHMDB_PROP_ARTIST;
 			break;
 		case RHYTHMDB_PROP_ALBUM:
-			model->priv->sort_propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
+			model->priv->sort_propid = RHYTHMDB_PROP_ALBUM;
 			break;
 		case RHYTHMDB_PROP_TITLE:
 		case RHYTHMDB_PROP_LOCATION:
-			model->priv->sort_propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
+			model->priv->sort_propid = RHYTHMDB_PROP_TITLE;
 			break;
 		default:
 			g_assert_not_reached ();
@@ -420,6 +419,7 @@ rhythmdb_property_model_finalize (GObject *object)
 	     ptr = g_sequence_ptr_next (ptr)) {
 		RhythmDBPropertyModelEntry *prop = g_sequence_ptr_get_data (ptr);
 		rb_refstring_unref (prop->string);
+		rb_refstring_unref (prop->sort_string);
 	}
 
 	g_mem_chunk_destroy (model->priv->property_memchunk);
@@ -490,8 +490,8 @@ rhythmdb_property_model_compare (RhythmDBPropertyModelEntry *a, RhythmDBProperty
 {
 	const char *a_str, *b_str;
 
-	a_str = rb_refstring_get_sort_key (a->string);
-	b_str = rb_refstring_get_sort_key (b->string);
+	a_str = rb_refstring_get_sort_key (a->sort_string);
+	b_str = rb_refstring_get_sort_key (b->sort_string);
 	
 	return strcmp (a_str, b_str);
 }
@@ -499,20 +499,13 @@ rhythmdb_property_model_compare (RhythmDBPropertyModelEntry *a, RhythmDBProperty
 static void
 rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry)
 {
-	const char *propstr;
-
-	propstr = rhythmdb_entry_get_string (entry, model->priv->propid);
-	rhythmdb_property_model_insert_prop (model, propstr);
-}
-
-static void
-rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
-				     const char *propstr)
-{
 	RhythmDBPropertyModelEntry *prop;
 	GtkTreeIter iter;
 	GtkTreePath *path;
 	GSequencePtr ptr;
+	const char *propstr;
+
+	propstr = rhythmdb_entry_get_string (entry, model->priv->propid);
 
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
 		prop = g_sequence_ptr_get_data (ptr);
@@ -523,6 +516,7 @@ rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
 
 	prop = g_mem_chunk_alloc (model->priv->property_memchunk);
 	prop->string = rb_refstring_new (propstr);
+	prop->sort_string = rb_refstring_new (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
 	prop->refcount = 1;
 
 	iter.stamp = model->priv->stamp;
@@ -532,7 +526,7 @@ rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
 	g_hash_table_insert (model->priv->reverse_map,
 			     (gpointer)rb_refstring_get (prop->string),
 			     ptr);
-	
+
 	iter.user_data = ptr;
 	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
@@ -576,6 +570,7 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	g_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, propstr);
 	rb_refstring_unref (prop->string);
+	rb_refstring_unref (prop->sort_string);
 	g_mem_chunk_free (model->priv->property_memchunk, prop);
 	return;
 }
