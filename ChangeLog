@@ -1,5 +1,11 @@
 2005-11-22  James Livingston  <jrl@ids.org.au>
 
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_head_query_cb),
+	(rb_podcast_manager_insert_feed): Don't show the "new episodes"
+	notification if there aren't any. Fixes bug 321968.
+
+2005-11-22  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-property-model.c:
 	(rhythmdb_property_model_set_property),
 	(rhythmdb_property_model_finalize),

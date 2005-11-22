@@ -495,7 +495,7 @@ rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 static gboolean
 rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
  	   			  GtkTreePath *path, GtkTreeIter *iter,
-				  RBPodcastManager *data)
+				  RBPodcastManager *manager)
 {
         const char* uri;
         RhythmDBEntry* entry;
@@ -504,15 +504,8 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
         gtk_tree_model_get (query_model, iter, 0, &entry, -1);
         uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-	if (status == 1) {
-		if (rb_podcast_manager_subscribe_feed (data, uri) == TRUE) {
-			GDK_THREADS_ENTER ();
-			g_signal_emit (data, rb_podcast_manager_signals[FEED_UPDATES_AVALIABLE],
-				       0, entry);
-			GDK_THREADS_LEAVE ();
-
-		}
-	}
+	if (status == 1)
+		rb_podcast_manager_subscribe_feed (manager, uri);
 	
         return FALSE;
 }
@@ -1405,7 +1398,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue last_post_val = { 0, };
 	gulong last_post = 0;
 	gulong new_last_post;
-	gboolean new_feed;
+	gboolean new_feed, updated;
 	RhythmDB *db = pd->priv->db;
 
 	RhythmDBEntry *entry;
@@ -1507,11 +1500,13 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	/* insert episodes */
 	new_last_post = last_post;
 	
+	updated = FALSE;
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
 
 		if (item->pub_date > last_post) {
 			gulong status;
+			updated = TRUE;
 
 			/* last episode gets status RHYTHMDB_PODCAST_STATUS_WAITING, so that it begins downloading */
 			if (lst_songs == (g_list_last (data->posts)))
@@ -1534,6 +1529,10 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 				new_last_post = item->pub_date;
 		}
 	}
+
+	if (updated)
+		g_signal_emit (pd, rb_podcast_manager_signals[FEED_UPDATES_AVALIABLE],
+			       0, entry);
 
 	if (data->pub_date > new_last_post)
 		new_last_post = data->pub_date;
