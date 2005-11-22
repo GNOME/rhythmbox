@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.9.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-11-16 20:35+0100\n"
+"POT-Creation-Date: 2005-11-22 21:47+0100\n"
 "PO-Revision-Date: 2005-11-17 20:44+0200\n"
 "Last-Translator: Baptiste Mille-Mathias <bmm80@free.fr>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -21,20 +21,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
 
-#: ../daapsharing/rb-daap-connection.c:809
+#: ../daapsharing/rb-daap-connection.c:923
 #: ../iradio/rb-station-properties-dialog.c:439
-#: ../podcast/rb-podcast-manager.c:1475
-#: ../podcast/rb-podcast-properties-dialog.c:400
-#: ../rhythmdb/rhythmdb-tree.c:936 ../rhythmdb/rhythmdb-tree.c:940
-#: ../rhythmdb/rhythmdb-tree.c:944 ../rhythmdb/rhythmdb-tree.c:948
-#: ../rhythmdb/rhythmdb.c:1090 ../shell/rb-audioscrobbler.c:447
-#: ../shell/rb-audioscrobbler.c:973 ../shell/rb-audioscrobbler.c:974
+#: ../podcast/rb-podcast-manager.c:1433
+#: ../podcast/rb-podcast-properties-dialog.c:389
+#: ../rhythmdb/rhythmdb-tree.c:929 ../rhythmdb/rhythmdb-tree.c:933
+#: ../rhythmdb/rhythmdb-tree.c:937 ../rhythmdb/rhythmdb-tree.c:941
+#: ../rhythmdb/rhythmdb.c:1090 ../shell/rb-audioscrobbler.c:439
+#: ../shell/rb-audioscrobbler.c:963 ../shell/rb-audioscrobbler.c:964
 #: ../shell/rb-shell-player.c:2297 ../sources/rb-audiocd-source.c:192
 #: ../sources/rb-ipod-source.c:159 ../sources/rb-iradio-source.c:244
 #: ../sources/rb-iradio-source.c:245 ../sources/rb-iradio-source.c:246
-#: ../sources/rb-iradio-source.c:464 ../sources/rb-playlist-source.c:483
-#: ../sources/rb-podcast-source.c:1650 ../widgets/rb-entry-view.c:1029
-#: ../widgets/rb-entry-view.c:1059 ../widgets/rb-entry-view.c:1078
+#: ../sources/rb-iradio-source.c:464 ../sources/rb-playlist-source.c:449
+#: ../sources/rb-podcast-source.c:1596 ../widgets/rb-entry-view.c:1053
+#: ../widgets/rb-entry-view.c:1083 ../widgets/rb-entry-view.c:1102
 #: ../widgets/rb-song-info.c:608 ../widgets/rb-song-info.c:688
 #: ../widgets/rb-song-info.c:868
 msgid "Unknown"
@@ -51,7 +51,6 @@ msgstr ""
 "Le partage de musique « %s » nécessite un mot de passe pour se connecter"
 
 #: ../daapsharing/rb-daap-dialog.c:123
-#: ../data/glade/audioscrobbler-prefs.glade.h:5
 msgid "_Password:"
 msgstr "_Mot de passe : "
 
@@ -81,15 +80,15 @@ msgid ""
 "continue to function, without this feature.  Check your %s installation"
 msgstr ""
 "Impossible de naviguer parmi les serveurs de musique sur votre réseau. "
-"Rhythmbox va continuer à fonctionner, sans cette fonction. Vérifier "
-"votre installation de %s"
+"Rhythmbox va continuer à fonctionner, sans cette fonction. Vérifier votre "
+"installation de %s"
 
 #: ../daapsharing/rb-daap-sharing.c:65
 #, c-format
 msgid "%s's Music"
 msgstr "Musique de %s"
 
-#: ../daapsharing/rb-daap-src.c:738
+#: ../daapsharing/rb-daap-src.c:732
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Connection à %s:%d refusée."
@@ -103,33 +102,24 @@ msgid "Rhythmbox shell factory"
 msgstr "Fabrique de shell Rhythmbox"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:1
-msgid "AudioScrobbler"
-msgstr "AudioScrobbler"
+#: ../shell/rb-shell-preferences.c:347
+msgid "Audioscrobbler"
+msgstr "Audioscrobbler"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:2
-msgid "_Enable AudioScrobbler"
+#, fuzzy
+msgid "Enable Audioscrobbler"
 msgstr "_Activer AudioScrobbler"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:3
 #, fuzzy
-msgid "_Find out about AudioScrobbler at"
-msgstr "Activer Audioscrobbler"
+msgid "Password:"
+msgstr "_Mot de passe : "
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:4
-msgid "_Join the Rhythmbox group at"
-msgstr "Re_joigner le groupe Rhythmbox à"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:6
-msgid "_Username:"
+#, fuzzy
+msgid "Username:"
 msgstr "Nom d'_utilisateur :"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:7
-msgid "http://last.fm"
-msgstr "http://last.fm"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:8
-msgid "http://last.fm/group/Rhythmbox"
-msgstr "http://last.fm/group/Rhythmbox"
 
 #: ../data/glade/create-playlist.glade.h:1
 msgid "A_dd if any criteria are matched"
@@ -159,7 +149,7 @@ msgstr "_Limiter à : "
 
 #: ../data/glade/create-playlist.glade.h:7
 msgid "_When sorted by:"
-msgstr "_Lorsque que trié par"
+msgstr "_Lorsque trié par :"
 
 #: ../data/glade/create-playlist.glade.h:8
 msgid "songs"
@@ -220,7 +210,6 @@ msgid "Da_te added"
 msgstr "Da_te d'ajout"
 
 #: ../data/glade/general-prefs.glade.h:3
-#, fuzzy
 msgid "Ti_me"
 msgstr "_Durée"
 
@@ -236,7 +225,7 @@ msgstr "Colonnes visibles"
 msgid "_Artist"
 msgstr "A_rtiste"
 
-#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1355
+#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1379
 msgid "_Genre"
 msgstr "_Genre"
 
@@ -248,11 +237,11 @@ msgstr "_Dernière Lecture"
 msgid "_Play count"
 msgstr "_Nombre de lecture"
 
-#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1295
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1319
 msgid "_Rating"
 msgstr "_Note"
 
-#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1374
+#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1398
 msgid "_Year"
 msgstr "_Année"
 
@@ -291,7 +280,8 @@ msgid "Copyright:"
 msgstr "Copyright :"
 
 #: ../data/glade/podcast-feed-properties.glade.h:4
-msgid "Language: "
+#, fuzzy
+msgid "Language:"
 msgstr "Langue : "
 
 #: ../data/glade/podcast-feed-properties.glade.h:5
@@ -488,7 +478,7 @@ msgid "Open from URI"
 msgstr "Ouvrir depuis une URI"
 
 #: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:820
-#: ../shell/rb-shell.c:1630
+#: ../shell/rb-shell.c:1634
 msgid "Music Player"
 msgstr "Lecteur de musique"
 
@@ -501,8 +491,8 @@ msgid "Rhythmbox Music Player"
 msgstr "Lecteur de musique Rhythmbox"
 
 #: ../iradio/rb-station-properties-dialog.c:356
-#: ../podcast/rb-feed-podcast-properties-dialog.c:223
-#: ../podcast/rb-podcast-properties-dialog.c:329
+#: ../podcast/rb-feed-podcast-properties-dialog.c:214
+#: ../podcast/rb-podcast-properties-dialog.c:318
 #, c-format
 msgid "Properties for %s"
 msgstr "Propriétés de %s"
@@ -511,13 +501,18 @@ msgstr "Propriétés de %s"
 msgid "New Internet Radio Station"
 msgstr "Nouvelle station radio internet"
 
-#: ../iradio/rb-station-properties-dialog.c:450 ../rhythmdb/rhythmdb.c:2339
-#: ../widgets/rb-entry-view.c:1003 ../widgets/rb-song-info.c:844
+#: ../iradio/rb-station-properties-dialog.c:441 ../widgets/rb-song-info.c:686
+#, c-format
+msgid "%lu kbps"
+msgstr "%lu kbps"
+
+#: ../iradio/rb-station-properties-dialog.c:450 ../rhythmdb/rhythmdb.c:2335
+#: ../widgets/rb-entry-view.c:1027 ../widgets/rb-song-info.c:844
 msgid "Never"
 msgstr "Jamais"
 
 #: ../metadata/rb-metadata-gst.c:541 ../metadata/rb-metadata-gst.c:912
-#: ../player/rb-player-gst.c:472 ../player/rb-recorder-gst.c:457
+#: ../player/rb-player-gst.c:486 ../player/rb-recorder-gst.c:457
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Impossible de créer l'élément %s ; vérifiez votre installation."
@@ -548,77 +543,79 @@ msgid "Cannot create MusicBrainz client"
 msgstr "Impossible de créer le client MusicBrainz"
 
 #: ../metadata/sj-metadata-musicbrainz.c:195
-#: ../metadata/sj-metadata-musicbrainz.c:317
+#: ../metadata/sj-metadata-musicbrainz.c:319
+#, c-format
 msgid "Cannot read CD: %s"
 msgstr "Impossible de lire le CD : %s"
 
 #: ../metadata/sj-metadata-musicbrainz.c:202
-#: ../metadata/sj-metadata-musicbrainz.c:362
+#: ../metadata/sj-metadata-musicbrainz.c:364
 msgid "Unknown Artist"
 msgstr "Artiste inconnu"
 
 #: ../metadata/sj-metadata-musicbrainz.c:203
-#: ../metadata/sj-metadata-musicbrainz.c:370
+#: ../metadata/sj-metadata-musicbrainz.c:372
 msgid "Unknown Title"
 msgstr "Titre inconnu"
 
 #: ../metadata/sj-metadata-musicbrainz.c:209
+#, c-format
 msgid "Track %d"
 msgstr "Piste %d"
 
-#: ../metadata/sj-metadata-musicbrainz.c:237
+#: ../metadata/sj-metadata-musicbrainz.c:239
 msgid ""
 "MusicBrainz metadata object is not valid. This is bad, check your console "
 "for errors."
 msgstr ""
-"L'objet de métadonnée MusicBrainz n'est pas valide. C'est mal, vérifiez votre "
-"terminal pour trouver les erreurs."
+"L'objet de métadonnée MusicBrainz n'est pas valide. C'est mal, vérifiez "
+"votre terminal pour trouver les erreurs."
 
-#: ../metadata/sj-metadata-musicbrainz.c:311
+#: ../metadata/sj-metadata-musicbrainz.c:313
 #, c-format
 msgid "Device '%s' does not contain any media"
 msgstr "Le périphérique '%s' ne contient aucun média"
 
-#: ../metadata/sj-metadata-musicbrainz.c:314
+#: ../metadata/sj-metadata-musicbrainz.c:316
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
 msgstr ""
-"Le périphérique '%s' ne peut être ouvert. Vérifiez vos droits d'accès au périphérique"
+"Le périphérique '%s' ne peut être ouvert. Vérifiez vos droits d'accès au "
+"périphérique"
 
-#: ../metadata/sj-metadata-musicbrainz.c:327
+#: ../metadata/sj-metadata-musicbrainz.c:329
 #, c-format
 msgid "This CD could not be queried: %s\n"
 msgstr "Ce CD ne peut être interrogé : %s\n"
 
-#: ../metadata/sj-metadata-musicbrainz.c:335
+#: ../metadata/sj-metadata-musicbrainz.c:337
 msgid "This CD was not found.\n"
 msgstr "Ce CD n'a pas été trouvé.\n"
 
-#: ../metadata/sj-metadata-musicbrainz.c:357
-#, fuzzy
+#: ../metadata/sj-metadata-musicbrainz.c:359
 msgid "Various"
-msgstr "_Précédent"
+msgstr "Différents"
 
-#: ../metadata/sj-metadata-musicbrainz.c:394
+#: ../metadata/sj-metadata-musicbrainz.c:396
 msgid "Incomplete metadata for this CD.\n"
 msgstr "Metadonnées incomplètes pour ce CD.\n"
 
-#: ../metadata/sj-metadata-musicbrainz.c:472
+#: ../metadata/sj-metadata-musicbrainz.c:475
 msgid "Could not create CD lookup thread"
 msgstr "Impossible de créer le thread de recherche de CD"
 
-#: ../player/rb-player-gst.c:453 ../player/rb-recorder-gst.c:417
+#: ../player/rb-player-gst.c:467 ../player/rb-recorder-gst.c:417
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "Impossible de créer l'élément audio de sortie ; vérifiez vos paramètres."
 
-#: ../player/rb-player-gst.c:496 ../player/rb-recorder-gst.c:521
+#: ../player/rb-player-gst.c:510 ../player/rb-recorder-gst.c:521
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr ""
 "Impossible d'initialiser l'ordonnanceur. Avez-vous exécuté gst-register ?"
 
-#: ../player/rb-player-gst.c:559
+#: ../player/rb-player-gst.c:573
 msgid "Unknown playback error"
 msgstr "Erreur de lecture inconnu"
 
@@ -693,40 +690,48 @@ msgstr ""
 msgid "There was an error writing to the CD"
 msgstr "Une erreur est survenue à la gravure du CD"
 
-#: ../podcast/rb-new-podcast-dialog.c:121
+#: ../podcast/rb-feed-podcast-properties-dialog.c:285
+#: ../podcast/rb-podcast-properties-dialog.c:443 ../rhythmdb/rhythmdb.c:2325
+#: ../sources/rb-podcast-source.c:1602
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d-%m-%Y %H:%M"
+
+#: ../podcast/rb-new-podcast-dialog.c:112
 msgid "New Podcast Feed"
 msgstr "Nouveau flux podcast"
 
-#: ../podcast/rb-podcast-manager.c:767
+#: ../podcast/rb-podcast-manager.c:742
 msgid "Invalid URL"
 msgstr "URL invalide"
 
-#: ../podcast/rb-podcast-manager.c:768
+#: ../podcast/rb-podcast-manager.c:743
+#, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "L'URL « %s » n'est pas valide, veuillez la vérifier."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:776
+#: ../podcast/rb-podcast-manager.c:751
 msgid "URL already added"
 msgstr "URL déjà ajoutée"
 
-#: ../podcast/rb-podcast-manager.c:777
+#: ../podcast/rb-podcast-manager.c:752
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"L'URL « %s » a déjà été ajouté comme station radio. Si c'est un flux podcast, "
-"supprimez la station radio."
+"L'URL « %s » a déjà été ajouté comme station radio. Si c'est un flux "
+"podcast, supprimez la station radio."
 
-#: ../podcast/rb-podcast-manager.c:844
+#: ../podcast/rb-podcast-manager.c:819
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1590
+#: ../podcast/rb-podcast-manager.c:1555
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr "Il y a eu un problème lors de l'ajout de ce podcast. Vérifiez l'URL : %s"
+msgstr ""
+"Il y a eu un problème lors de l'ajout de ce podcast. Vérifiez l'URL : %s"
 
 #: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -786,11 +791,11 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "Une exception a été levée « %s »"
 
-#: ../rhythmdb/rhythmdb-property-model.c:396
+#: ../rhythmdb/rhythmdb-property-model.c:395
 msgid "All"
 msgstr "Tout"
 
-#: ../rhythmdb/rhythmdb-property-model.c:1026
+#: ../rhythmdb/rhythmdb-property-model.c:1021
 #, c-format
 msgid "All (%d)"
 msgstr "Tout (%d)"
@@ -809,32 +814,28 @@ msgstr "<nom de fichier non valide>"
 msgid "Couldn't access %s: %s"
 msgstr "Impossible d'accéder à %s : %s"
 
-#: ../rhythmdb/rhythmdb.c:2329 ../sources/rb-podcast-source.c:1656
-msgid "%Y-%m-%d %H:%M"
-msgstr "%d-%m-%Y %H:%M"
-
-#: ../rhythmdb/rhythmdb.c:3172
+#: ../rhythmdb/rhythmdb.c:3167
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d titre"
 msgstr[1] "%d titres"
 
-#: ../rhythmdb/rhythmdb.c:3179
+#: ../rhythmdb/rhythmdb.c:3174
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: ../rhythmdb/rhythmdb.c:3180
+#: ../rhythmdb/rhythmdb.c:3175
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld heure"
 msgstr[1] "%ld heures"
 
-#: ../rhythmdb/rhythmdb.c:3181
+#: ../rhythmdb/rhythmdb.c:3176
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -842,7 +843,7 @@ msgstr[0] "%ld jour"
 msgstr[1] "%ld jours"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3187
+#: ../rhythmdb/rhythmdb.c:3182
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s et %s"
@@ -850,8 +851,8 @@ msgstr "%s, %s et %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3193 ../rhythmdb/rhythmdb.c:3201
-#: ../rhythmdb/rhythmdb.c:3212
+#: ../rhythmdb/rhythmdb.c:3188 ../rhythmdb/rhythmdb.c:3196
+#: ../rhythmdb/rhythmdb.c:3207
 #, c-format
 msgid "%s and %s"
 msgstr "%s et %s"
@@ -1075,15 +1076,15 @@ msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 "Le fichier de la liste de lecture est dans un format inconnu ou est corrompu."
 
-#: ../shell/rb-playlist-manager.c:1002
+#: ../shell/rb-playlist-manager.c:1005
 msgid "Couldn't read playlist"
 msgstr "Impossible de lire la liste de lecture"
 
-#: ../shell/rb-playlist-manager.c:1017
+#: ../shell/rb-playlist-manager.c:1020
 msgid "Load Playlist"
 msgstr "Charger la liste de lecture"
 
-#: ../shell/rb-playlist-manager.c:1055
+#: ../shell/rb-playlist-manager.c:1058
 msgid "Save Playlist"
 msgstr "Enregistrer la liste de lecture"
 
@@ -1164,7 +1165,7 @@ msgstr "_Suivant"
 msgid "Start playing the next song"
 msgstr "Démarre la lecture du titre suivant"
 
-#: ../shell/rb-shell-player.c:270 ../sources/rb-podcast-source.c:291
+#: ../shell/rb-shell-player.c:270 ../sources/rb-podcast-source.c:276
 msgid "_Properties"
 msgstr "_Propriétés"
 
@@ -1264,11 +1265,11 @@ msgstr "Erreur de flux"
 msgid "Unexpected end of stream!"
 msgstr "Fin inattendue du flux !"
 
-#: ../shell/rb-shell-player.c:2355
+#: ../shell/rb-shell-player.c:2369
 msgid "Buffering"
 msgstr "Chargement"
 
-#: ../shell/rb-shell-preferences.c:120 ../shell/rb-shell.c:1769
+#: ../shell/rb-shell-preferences.c:120 ../shell/rb-shell.c:1773
 msgid "Couldn't display help"
 msgstr "Impossible d'afficher l'aide"
 
@@ -1280,13 +1281,9 @@ msgstr "Préférences du lecteur de musique"
 msgid "General"
 msgstr "Général"
 
-#: ../shell/rb-shell-preferences.c:324
+#: ../shell/rb-shell-preferences.c:329
 msgid "Sharing"
 msgstr "Partage"
-
-#: ../shell/rb-shell-preferences.c:342
-msgid "Audioscrobbler"
-msgstr "Audioscrobbler"
 
 #: ../shell/rb-shell.c:372
 msgid "_Music"
@@ -1425,21 +1422,21 @@ msgid "Make the main window smaller"
 msgstr "Réduit la taille de la fenêtre principale"
 
 #. Translators: Trackname by Artist
-#: ../shell/rb-shell.c:1521
+#: ../shell/rb-shell.c:1525
 #, c-format
 msgid "%s by %s"
 msgstr "%s par %s"
 
-#: ../shell/rb-shell.c:1523 ../widgets/rb-entry-view.c:1588
+#: ../shell/rb-shell.c:1527 ../widgets/rb-entry-view.c:1609
 msgid "Now Playing"
 msgstr "En cours de lecture"
 
-#: ../shell/rb-shell.c:1604 ../shell/rb-tray-icon.c:185
+#: ../shell/rb-shell.c:1608 ../shell/rb-tray-icon.c:185
 msgid "Not playing"
 msgstr "Ne joue pas"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1607
+#: ../shell/rb-shell.c:1611
 #, c-format
 msgid ""
 "%s\n"
@@ -1449,7 +1446,7 @@ msgstr ""
 "En pause, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1611
+#: ../shell/rb-shell.c:1615
 #, c-format
 msgid ""
 "%s\n"
@@ -1459,12 +1456,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1648
+#: ../shell/rb-shell.c:1652
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (en pause)"
 
-#: ../shell/rb-shell.c:1709
+#: ../shell/rb-shell.c:1713
 msgid "translator_credits"
 msgstr ""
 "Mainteneur :\n"
@@ -1477,79 +1474,81 @@ msgstr ""
 "Laurent Richard <laurent.richard@lilit.be>\n"
 "Stéphane Raimbault <stephane.raimbault@free.fr>"
 
-#: ../shell/rb-shell.c:1713
+#: ../shell/rb-shell.c:1717
 msgid "Maintainers:"
 msgstr "Mainteneurs :"
 
-#: ../shell/rb-shell.c:1716
+#: ../shell/rb-shell.c:1720
 msgid "Former Maintainers:"
 msgstr "Anciens mainteneurs :"
 
-#: ../shell/rb-shell.c:1719
+#: ../shell/rb-shell.c:1723
 msgid "Contributors:"
 msgstr "Contributeurs :"
 
-#: ../shell/rb-shell.c:1721
+#: ../shell/rb-shell.c:1725
 msgid "Music management and playback software for GNOME."
 msgstr "Gestionnaire de musique et lecteur audio pour GNOME."
 
-#: ../shell/rb-shell.c:1835
+#: ../shell/rb-shell.c:1839
 msgid "Import Folder into Library"
 msgstr "Importe un dossier dans la bibliothèque"
 
-#: ../shell/rb-shell.c:1857
+#: ../shell/rb-shell.c:1861
 msgid "Import File into Library"
 msgstr "Importe un fichier dans la bibliothèque"
 
-#: ../shell/rb-shell.c:1907
+#: ../shell/rb-shell.c:1911
 msgid "CD Ripper not found"
 msgstr "L'extracteur de CD n'a pas été trouvé"
 
-#: ../shell/rb-shell.c:1908
+#: ../shell/rb-shell.c:1912
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr ""
 "Pour extraire des CD, vous devez installer le paquet de l'extracteur de CD "
 "Sound Juicer."
 
-#: ../shell/rb-shell.c:1916
+#: ../shell/rb-shell.c:1920
 msgid "Couldn't run CD Ripper"
 msgstr "Impossible de lancer l'extracteur de CD"
 
-#: ../shell/rb-shell.c:1917
+#: ../shell/rb-shell.c:1921
+#, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Une erreur est survenue lors de l'exécution de sound-juicer : %s"
 
-#: ../shell/rb-shell.c:2657 ../shell/rb-shell.c:2702
+#: ../shell/rb-shell.c:2652 ../shell/rb-shell.c:2697
+#, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI du titre inconnu : %s"
 
-#: ../shell/rb-shell.c:2711
+#: ../shell/rb-shell.c:2706
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriété %s inconnue"
 
-#: ../shell/rb-shell.c:2721
+#: ../shell/rb-shell.c:2716
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Type de propriété %s non-valide pour la propriété %s"
 
-#: ../shell/rb-source-header.c:94
+#: ../shell/rb-source-header.c:97
 msgid "_Browser"
 msgstr "_Navigateur"
 
-#: ../shell/rb-source-header.c:95
+#: ../shell/rb-source-header.c:98
 msgid "Change the visibility of the browser"
 msgstr "Modifie la visibilité du navigateur"
 
-#: ../shell/rb-source-header.c:177
+#: ../shell/rb-source-header.c:150
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Filtre l'affichage de la musique par genre, artiste ou titre"
 
-#: ../shell/rb-source-header.c:186
+#: ../shell/rb-source-header.c:159
 msgid "Show _Browser"
 msgstr "Afficher le _navigateur"
 
-#: ../shell/rb-source-header.c:187
+#: ../shell/rb-source-header.c:160
 msgid "Hide _Browser"
 msgstr "Masquer le _navigateur"
 
@@ -1574,11 +1573,12 @@ msgid "Choose music to play"
 msgstr "Choisir la musique à jouer"
 
 #: ../sources/rb-audiocd-source.c:229
+#, c-format
 msgid "Track %u"
 msgstr "Piste %u"
 
 #: ../sources/rb-audiocd-source.c:294 ../sources/rb-audiocd-source.c:301
-#: ../sources/rb-audiocd-source.c:448
+#: ../sources/rb-audiocd-source.c:449
 msgid "Couldn't load Audio CD"
 msgstr "Impossible de charger le CD audio"
 
@@ -1590,7 +1590,7 @@ msgstr "Rhythmbox ne peut accéder au CD"
 msgid "Rhythmbox could read the cd information."
 msgstr "Rhythmbox ne peut lire les informations du CD"
 
-#: ../sources/rb-audiocd-source.c:449
+#: ../sources/rb-audiocd-source.c:450
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox ne peut obtenir l'accès au périphérique CD"
 
@@ -1655,15 +1655,15 @@ msgstr "Album"
 msgid "Library"
 msgstr "Bibliothèque"
 
-#: ../sources/rb-library-source.c:1243
+#: ../sources/rb-library-source.c:1235
 msgid "Add Location"
 msgstr "Ajouter un emplacement"
 
-#: ../sources/rb-playlist-source.c:330 ../widgets/rb-entry-view.c:1313
+#: ../sources/rb-playlist-source.c:306 ../widgets/rb-entry-view.c:1337
 msgid "Trac_k"
 msgstr "_Piste"
 
-#: ../sources/rb-playlist-source.c:896
+#: ../sources/rb-playlist-source.c:871
 msgid "Couldn't save playlist"
 msgstr "Impossible d'enregistrer la liste de lecture"
 
@@ -1971,147 +1971,149 @@ msgstr ""
 "L'espace de stockage temporaire n'est pas suffisant pour la conversion des "
 "pistes audio. L'opération nécessite au minimum %s Mo."
 
-#: ../sources/rb-podcast-source.c:288
+#: ../sources/rb-podcast-source.c:273
 msgid "Download Podcast _Episode"
 msgstr "Télécharger l'_épisode du podcast :"
 
-#: ../sources/rb-podcast-source.c:289
+#: ../sources/rb-podcast-source.c:274
 msgid "Download Post"
 msgstr "Télécharger le billet"
 
-#: ../sources/rb-podcast-source.c:292
+#: ../sources/rb-podcast-source.c:277
 msgid "Properties Feed"
 msgstr "Propriétés du flux"
 
-#: ../sources/rb-podcast-source.c:294
+#: ../sources/rb-podcast-source.c:279
 msgid "_Update Podcast Feed"
 msgstr "Mettre à jour le fl_ux du podcast"
 
-#: ../sources/rb-podcast-source.c:295
+#: ../sources/rb-podcast-source.c:280
 msgid "Update Feed"
 msgstr "Mettre à jour le flux"
 
-#: ../sources/rb-podcast-source.c:297
+#: ../sources/rb-podcast-source.c:282
 msgid "_Delete Podcast Feed"
 msgstr "Supprimer le flux po_dcast"
 
-#: ../sources/rb-podcast-source.c:298
+#: ../sources/rb-podcast-source.c:283
 msgid "Delete Feed"
 msgstr "Supprimer le flux"
 
-#: ../sources/rb-podcast-source.c:300
+#: ../sources/rb-podcast-source.c:285
 msgid "_Update All Feeds"
 msgstr "Mettre à jo_ur tous les flux"
 
-#: ../sources/rb-podcast-source.c:301
+#: ../sources/rb-podcast-source.c:286
 msgid "Update all feeds"
 msgstr "Mettre à jour tous les flux"
 
-#: ../sources/rb-podcast-source.c:511
+#: ../sources/rb-podcast-source.c:496
 msgid "_Date"
 msgstr "_Date"
 
-#: ../sources/rb-podcast-source.c:532
+#: ../sources/rb-podcast-source.c:517
 msgid "_Feed"
 msgstr "_Flux"
 
-#: ../sources/rb-podcast-source.c:556
+#: ../sources/rb-podcast-source.c:541
 msgid "Status"
 msgstr "Status"
 
-#: ../sources/rb-podcast-source.c:613 ../sources/rb-podcast-source.c:654
+#: ../sources/rb-podcast-source.c:585 ../sources/rb-podcast-source.c:627
 msgid "Feed"
 msgstr "Flux"
 
-#: ../sources/rb-podcast-source.c:753
+#: ../sources/rb-podcast-source.c:737
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../sources/rb-podcast-source.c:852
+#: ../sources/rb-podcast-source.c:836
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Supprimer l'épisode du podcast et le fichier téléchargé ?"
 
-#: ../sources/rb-podcast-source.c:855
+#: ../sources/rb-podcast-source.c:839
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
 "Si vous choisissez de supprimer l'épisode et le fichier, ils seront "
-"définitivement perdus. Veuillez noter que vous pouvez supprimer l'épisode mais "
-"garder le fichier téléchargé en choisissant de supprimer l'épisode uniquement."
+"définitivement perdus. Veuillez noter que vous pouvez supprimer l'épisode "
+"mais garder le fichier téléchargé en choisissant de supprimer l'épisode "
+"uniquement."
 
-#: ../sources/rb-podcast-source.c:863
+#: ../sources/rb-podcast-source.c:847
 msgid "Delete _Episode Only"
 msgstr "Supprimer l'_épisode uniquement"
 
-#: ../sources/rb-podcast-source.c:869
+#: ../sources/rb-podcast-source.c:853
 msgid "_Delete Episode And File"
 msgstr "_Supprimer l'épisode et le fichier"
 
-#: ../sources/rb-podcast-source.c:986
+#: ../sources/rb-podcast-source.c:970
 msgid "_Cancel Download"
 msgstr "_Annuler le téléchargement"
 
-#: ../sources/rb-podcast-source.c:990
+#: ../sources/rb-podcast-source.c:974
 msgid "_Download Post"
 msgstr "_Télécharger le billet"
 
-#: ../sources/rb-podcast-source.c:1402
+#: ../sources/rb-podcast-source.c:1348
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Supprimer le flux podcast et les fichiers téléchargés ?"
 
-#: ../sources/rb-podcast-source.c:1405
+#: ../sources/rb-podcast-source.c:1351
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
 "Si vous choisissez de supprimer le flux et les fichiers, ils seront "
-"définitivement perdus. Notez que vous pouvez supprimer le flux mais conserver "
-"les fichiers téléchargés en choisissant de supprimer le flux uniquement."
+"définitivement perdus. Notez que vous pouvez supprimer le flux mais "
+"conserver les fichiers téléchargés en choisissant de supprimer le flux "
+"uniquement."
 
-#: ../sources/rb-podcast-source.c:1413
+#: ../sources/rb-podcast-source.c:1359
 msgid "Delete _Feed Only"
 msgstr "Supprimer le _flux uniquement"
 
-#: ../sources/rb-podcast-source.c:1420
+#: ../sources/rb-podcast-source.c:1366
 msgid "_Delete Feed And Files"
 msgstr "_Supprimer le flux et les fichiers"
 
-#: ../sources/rb-podcast-source.c:1526
+#: ../sources/rb-podcast-source.c:1472
 msgid "Completed"
 msgstr "Complet"
 
-#: ../sources/rb-podcast-source.c:1530
+#: ../sources/rb-podcast-source.c:1476
 msgid "Failed"
 msgstr "Echoué"
 
-#: ../sources/rb-podcast-source.c:1534
+#: ../sources/rb-podcast-source.c:1480
 msgid "Waiting"
 msgstr "En attente"
 
-#: ../sources/rb-podcast-source.c:1538
+#: ../sources/rb-podcast-source.c:1484
 msgid "Paused"
 msgstr "Pause"
 
-#: ../sources/rb-podcast-source.c:1748
+#: ../sources/rb-podcast-source.c:1706
 msgid "Downloading podcast"
 msgstr "Téléchargement en cours du podcast"
 
-#: ../sources/rb-podcast-source.c:1758
+#: ../sources/rb-podcast-source.c:1716
 msgid "Finished downloading podcast"
 msgstr "Téléchargement terminé du podcast"
 
-#: ../sources/rb-podcast-source.c:1768
+#: ../sources/rb-podcast-source.c:1726
 msgid "New updates avaliable from"
 msgstr "Nouvelles mises à jour disponible de"
 
-#: ../sources/rb-podcast-source.c:1835
+#: ../sources/rb-podcast-source.c:1818
 msgid "Error in podcast"
 msgstr "Erreur dans le podcast"
 
-#: ../sources/rb-sourcelist.c:230
+#: ../sources/rb-sourcelist.c:231
 msgid "S_ource"
 msgstr "S_ource"
 
@@ -2187,73 +2189,73 @@ msgstr ""
 msgid "Load folder into Library"
 msgstr "Charge un dossier dans la bibliothèque"
 
-#: ../widgets/rb-entry-view.c:1031 ../widgets/rb-header.c:887
+#: ../widgets/rb-entry-view.c:1055 ../widgets/rb-header.c:887
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../widgets/rb-entry-view.c:1033 ../widgets/rb-header.c:889
+#: ../widgets/rb-entry-view.c:1057 ../widgets/rb-header.c:889
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../widgets/rb-entry-view.c:1080
+#: ../widgets/rb-entry-view.c:1104
 msgid "Very Low"
 msgstr "Très faible"
 
-#: ../widgets/rb-entry-view.c:1082
+#: ../widgets/rb-entry-view.c:1106
 msgid "Low"
 msgstr "Faible"
 
-#: ../widgets/rb-entry-view.c:1084
+#: ../widgets/rb-entry-view.c:1108
 msgid "Regular"
 msgstr "Normal"
 
-#: ../widgets/rb-entry-view.c:1086
+#: ../widgets/rb-entry-view.c:1110
 msgid "High"
 msgstr "Haute"
 
-#: ../widgets/rb-entry-view.c:1088
+#: ../widgets/rb-entry-view.c:1112
 msgid "Very High"
 msgstr "Très haute"
 
-#: ../widgets/rb-entry-view.c:1090
+#: ../widgets/rb-entry-view.c:1114
 msgid "Perfect"
 msgstr "Parfaite"
 
-#: ../widgets/rb-entry-view.c:1322
+#: ../widgets/rb-entry-view.c:1346
 msgid "_Title"
 msgstr "_Titre"
 
-#: ../widgets/rb-entry-view.c:1333
+#: ../widgets/rb-entry-view.c:1357
 msgid "Art_ist"
 msgstr "A_rtiste"
 
-#: ../widgets/rb-entry-view.c:1344
+#: ../widgets/rb-entry-view.c:1368
 msgid "_Album"
 msgstr "A_lbum"
 
-#: ../widgets/rb-entry-view.c:1365
+#: ../widgets/rb-entry-view.c:1389
 msgid "Tim_e"
 msgstr "_Durée"
 
-#: ../widgets/rb-entry-view.c:1384
+#: ../widgets/rb-entry-view.c:1408
 msgid "_Quality"
 msgstr "_Qualité"
 
-#: ../widgets/rb-entry-view.c:1395
+#: ../widgets/rb-entry-view.c:1419
 msgid "_Play Count"
 msgstr "_Nombre de lecture"
 
-#: ../widgets/rb-entry-view.c:1404
+#: ../widgets/rb-entry-view.c:1428
 msgid "_Last Played"
 msgstr "Dernière _lecture"
 
-#: ../widgets/rb-entry-view.c:1413
+#: ../widgets/rb-entry-view.c:1437
 msgid "_Date Added"
 msgstr "_Date d'ajout"
 
-#: ../widgets/rb-entry-view.c:1668
+#: ../widgets/rb-entry-view.c:1689
 msgid "Playback Error"
 msgstr "Erreur de lecture"
 
@@ -2371,11 +2373,11 @@ msgstr "En ordre _alphabétique inverse"
 
 #: ../widgets/rb-query-creator-properties.c:92
 msgid "W_ith more highly rated tracks first"
-msgstr "A_vec les pistes les mieux notés en premier"
+msgstr "A_vec les pistes les mieux notées en premier"
 
 #: ../widgets/rb-query-creator-properties.c:93
 msgid "W_ith more often played songs first"
-msgstr "A_vec les pistes les mieux joués en premier"
+msgstr "A_vec les pistes les plus jouées en premier"
 
 #: ../widgets/rb-query-creator-properties.c:94
 msgid "Year"
@@ -2493,11 +2495,6 @@ msgstr "Propriétés de plusieurs titres"
 msgid "%s Properties"
 msgstr "%s propriétés"
 
-#: ../widgets/rb-song-info.c:686
-#, c-format
-msgid "%lu kbps"
-msgstr "%lu kbps"
-
 #: ../widgets/rb-song-info.c:731
 msgid "Unknown file name"
 msgstr "Nom de fichier inconnu"
@@ -2509,3 +2506,18 @@ msgstr "Sur le bureau"
 #: ../widgets/rb-song-info.c:759
 msgid "Unknown location"
 msgstr "Emplacement inconnu"
+
+#~ msgid "AudioScrobbler"
+#~ msgstr "AudioScrobbler"
+
+#~ msgid "_Find out about AudioScrobbler at"
+#~ msgstr "_Retrouvez Audioscrobbler sur"
+
+#~ msgid "_Join the Rhythmbox group at"
+#~ msgstr "Re_joigner le groupe Rhythmbox à"
+
+#~ msgid "http://last.fm"
+#~ msgstr "http://last.fm"
+
+#~ msgid "http://last.fm/group/Rhythmbox"
+#~ msgstr "http://last.fm/group/Rhythmbox"
