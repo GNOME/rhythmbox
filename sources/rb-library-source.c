@@ -872,14 +872,6 @@ rb_library_source_cmd_choose_album (GtkAction *action,
 }
 
 static void
-rb_library_source_sync_query (RBLibrarySource *source)
-{
-	GPtrArray *query = construct_query_from_selection (source);
-	g_object_set (G_OBJECT (source->priv->model), "query", query, NULL);
-	rhythmdb_query_free (query);
-}
-
-static void
 genres_selected_cb (RBPropertyView *propview, GList *genres,
 		   RBLibrarySource *libsource)
 {
@@ -907,7 +899,7 @@ genres_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource)
 	g_list_foreach (libsource->priv->selected_genres, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_genres);
 	libsource->priv->selected_genres = NULL;
-	rb_library_source_sync_query (libsource);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE);
 }
 
 static void
@@ -939,7 +931,7 @@ artists_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource
 	g_list_foreach (libsource->priv->selected_artists, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_artists);
 	libsource->priv->selected_artists = NULL;
-	rb_library_source_sync_query (libsource);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM);
 }
 
 static void
@@ -970,7 +962,7 @@ albums_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource)
 	g_list_foreach (libsource->priv->selected_albums, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_albums);
 	libsource->priv->selected_albums = NULL;
-	rb_library_source_sync_query (libsource);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM);
 }
 
 static void
