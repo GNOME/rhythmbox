@@ -297,7 +297,7 @@ AM_CONDITIONAL(WITH_AUDIOSCROBBLER, test "x$enable_audioscrobbler" != "xno")
 
 
 dnl daap support
-if test x"$have_libsoup" = "xno" && "x$enable_daap" = "xyes"; then
+if test x"$have_libsoup" = "xno" && test "x$enable_daap" = "xyes"; then
 	AC_MSG_ERROR([DAAP support explicitly requested, but no libsoup found.  Install libsoup])
 fi
 dnl Check for libz, useful for DAAP
