@@ -4,14 +4,28 @@
   -->
 
 <sect1 id="quick-reference">
-  <title>Keyboard Shortcuts</title>
+  <title>Shortcuts</title>
 
-  <informaltable frame="none">
+	<sect2 id="keyboard-keys">
+  	<title>Multimedia Keys</title>
+
+	<para>
+	You can use the following shortcuts in &application; to perform action without the use of the
+	mouse.
+	</para>
+	
+  	<informaltable frame="none">
     <tgroup cols="2" colsep="0" rowsep="0">
     <colspec colname="COLSPEC0" colwidth="30*"/>
     <colspec colname="COLSPEC1" colwidth="70*"/>
-    <tbody>
-
+    <thead>
+		<row>
+			<entry>Shortcuts</entry>
+			<entry>Actions</entry>
+		</row>
+	</thead>
+	<tbody>
+	
       <row>
         <entry>
 <shortcut>
@@ -47,7 +61,19 @@
           <para>Jump to playing song</para>
         </entry>
       </row>
-
+	
+	<row>
+        <entry>
+			<shortcut>
+  			<keycombo><keycap>Ctrl</keycap><keycap>Y</keycap></keycombo>
+ 			</shortcut>
+        </entry>
+        <entry>
+          <para>Clear the search field text and remove all filtering in the
+		  Library browser</para>
+        </entry>
+      </row>
+	  
       <row>
         <entry>
 <shortcut>
@@ -66,7 +92,7 @@
 
         </entry>
         <entry>
-          <para>Add to library</para>
+          <para>Add a folder to library</para>
         </entry>
       </row>
 
@@ -82,7 +108,6 @@
         </entry>
       </row>
 
-
       <row>
         <entry>
 <shortcut>
@@ -91,7 +116,7 @@
 
         </entry>
         <entry>
-          <para>Restart</para>
+          <para>Repeat</para>
         </entry>
       </row>
 
@@ -115,10 +140,24 @@
 
         </entry>
         <entry>
-          <para>Exit &application;</para>
+          <para>Close &application;</para>
         </entry>
       </row>
 
+	  
+	<row>
+        <entry>
+			<shortcut>
+  				<keycombo>
+					<keycap>Ctrl</keycap>
+					<keycap>Q</keycap>
+				</keycombo>
+ 			</shortcut>
+        </entry>
+        <entry>
+        	<para>Quit &application;</para>
+		</entry>
+	</row>
 
       <row>
         <entry>
@@ -159,18 +198,7 @@
 <row>
         <entry>
 <shortcut>
-<keycap>F2</keycap>
- </shortcut>
-        </entry>
-        <entry>
-          <para>Rename group</para>
-        </entry>
-      </row>
-
-<row>
-        <entry>
-<shortcut>
-<keycap>F7</keycap>
+<keycombo><keycap>Ctrl</keycap><keycap>B</keycap></keycombo>
  </shortcut>
         </entry>
         <entry>
@@ -181,7 +209,7 @@
 <row>
         <entry>
 <shortcut>
-<keycap>F8</keycap>
+<keycombo><keycap>Ctrl</keycap><keycap>D</keycap></keycombo>
  </shortcut>
         </entry>
         <entry>
@@ -192,25 +220,34 @@
 <row>
         <entry>
 <shortcut>
-<keycap>F9</keycap>
+<keycombo><keycap>Ctrl</keycap><keycap>L</keycap></keycombo>
  </shortcut>
         </entry>
         <entry>
-          <para>Show/hide side bar</para>
+          <para>Show/hide source list</para>
         </entry>
       </row>
 
     </tbody>
     </tgroup>
   </informaltable>
-</sect1>
-<sect1 id="multimedia-keys">
+</sect2>
+<sect2 id="multimedia-keys">
   <title>Multimedia Keys</title>
 
+  <para>&application; supports also the keys on multimedia keyboard, if your
+  desktop environment is configured.</para>
+  
   <informaltable frame="none">
     <tgroup cols="2" colsep="0" rowsep="0">
-    <colspec colname="COLSPEC0" colwidth="30*"/>
-    <colspec colname="COLSPEC1" colwidth="70*"/>
+    <colspec colname="COLSPEC0"/>
+    <colspec colname="COLSPEC1"/>
+	<thead>
+		<row>
+			<entry>Shortcuts</entry>
+			<entry>Actions</entry>
+		</row>
+	</thead>
     <tbody>
 
 	<row>
@@ -220,7 +257,7 @@
 	 </shortcut>
         </entry>
         <entry>
-        <para>Stops the player</para>
+        <para>Stop</para>
         </entry>
       	</row>
 
@@ -231,7 +268,7 @@
 	 </shortcut>
         </entry>
         <entry>
-        <para>Pauses / Play the player</para>
+        <para>Pause / Play</para>
         </entry>
       	</row>
 
@@ -242,7 +279,7 @@
 	 </shortcut>
         </entry>
         <entry>
-        <para>Plays the previous played track</para>
+        <para>Previous Played Track</para>
         </entry>
       	</row>
 
@@ -253,11 +290,12 @@
 	 </shortcut>
         </entry>
         <entry>
-        <para>Plays the next track</para>
+        <para>Next Track</para>
         </entry>
       	</row>
 
     </tbody>
     </tgroup>
   </informaltable>
+</sect2>
 </sect1>
