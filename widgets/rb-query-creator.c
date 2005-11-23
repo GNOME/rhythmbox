@@ -94,11 +94,8 @@ typedef struct
 } RBQueryCreatorPrivate;
 
 
-static GType rb_query_creator_type = 0;
-
-#define QUERY_CREATOR_GET_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), rb_query_creator_type, RBQueryCreatorPrivate))
-
-static GObjectClass *parent_class = NULL;
+G_DEFINE_TYPE (RBQueryCreator, rb_query_creator, GTK_TYPE_DIALOG)
+#define QUERY_CREATOR_GET_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), rb_query_creator_get_type(), RBQueryCreatorPrivate))
 
 enum
 {
@@ -107,38 +104,11 @@ enum
 	PROP_CREATING,
 };
 
-GType
-rb_query_creator_get_type (void)
-{
-	if (rb_query_creator_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBQueryCreatorClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_query_creator_class_init,
-			NULL,
-			NULL,
-			sizeof (RBQueryCreator),
-			0,
-			NULL
-		};
-		
-		rb_query_creator_type = g_type_register_static (GTK_TYPE_DIALOG,
-								"RBQueryCreator",
-								&our_info, 0);
-	}
-
-	return rb_query_creator_type;
-}
 
 static void
 rb_query_creator_class_init (RBQueryCreatorClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->dispose = rb_query_creator_dispose;
 	object_class->constructor = rb_query_creator_constructor;
@@ -164,6 +134,12 @@ rb_query_creator_class_init (RBQueryCreatorClass *klass)
 	g_type_class_add_private (klass, sizeof (RBQueryCreatorPrivate));
 }
 
+static void
+rb_query_creator_init (RBQueryCreator *creator)
+{
+
+}
+
 static GObject *
 rb_query_creator_constructor (GType type, guint n_construct_properties,
 			      GObjectConstructParam *construct_properties)
@@ -171,14 +147,12 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	RBQueryCreatorPrivate *priv;
 	RBQueryCreator *creator;
 	RBQueryCreatorClass *klass;
-	GObjectClass *parent_class;  
 	GladeXML *xml;
 	GtkWidget *mainbox;
 
 	klass = RB_QUERY_CREATOR_CLASS (g_type_class_peek (type));
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	creator = RB_QUERY_CREATOR (parent_class->constructor (type, n_construct_properties,
-							   construct_properties));
+	creator = RB_QUERY_CREATOR (G_OBJECT_CLASS (rb_query_creator_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 	priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	
 	if (priv->creating) { 
@@ -234,7 +208,8 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	setup_sort_option_menu (creator, priv->sort_menu, sort_options, num_sort_options);
 
 	priv->vbox = GTK_BOX (glade_xml_get_widget (xml, "sub_vbox"));
-	append_row (creator);
+	if (priv->creating)
+		append_row (creator);
 
 	mainbox = glade_xml_get_widget (xml, "main_vbox");
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (creator)->vbox), mainbox, FALSE, FALSE, 0);
@@ -270,7 +245,7 @@ rb_query_creator_dispose (GObject *object)
 		g_list_free (priv->rows);
 	priv->rows = NULL;
 	
-	G_OBJECT_CLASS (parent_class)->dispose (object);
+	G_OBJECT_CLASS (rb_query_creator_parent_class)->dispose (object);
 }
 
 static void
@@ -345,7 +320,7 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 	subquery = qdata->subquery;
 
 	if (subquery->len > 0)
-		for (i = 0; i < subquery->len - 1; i++) {
+		for (i = 0; i < subquery->len; i++) {
 			RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
 			if (data->type != RHYTHMDB_QUERY_DISJUNCTION)
 				append_row (creator);
