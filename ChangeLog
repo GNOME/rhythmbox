@@ -1,5 +1,12 @@
 2005-11-24  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_dispose), (rb_iradio_source_finalize),
+	(rb_iradio_source_constructor): Chain up dispose method and use
+	G_DEFINE_TYPE
+
+2005-11-24  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-player.c: (rb_shell_player_error): fix a silly
 	mistake in the last commit that can cause crashes.
 

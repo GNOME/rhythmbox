@@ -119,8 +119,6 @@ static void stations_view_drag_data_received_cb (GtkWidget *widget,
 
 struct RBIRadioSourcePrivate
 {
-	gboolean disposed;
-	
 	RhythmDB *db;
 
 	GtkWidget *vbox;
@@ -157,44 +155,13 @@ enum
 	PROP_ENTRY_TYPE
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_iradio_source_get_type (void)
-{
-	static GType rb_iradio_source_type = 0;
-
-	if (rb_iradio_source_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBIRadioSourceClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_iradio_source_class_init,
-			NULL,
-			NULL,
-			sizeof (RBIRadioSource),
-			0,
-			(GInstanceInitFunc) rb_iradio_source_init
-		};
-
-		rb_iradio_source_type = g_type_register_static (RB_TYPE_SOURCE,
-							      "RBIRadioSource",
-							      &our_info, 0);
-		
-	}
-
-	return rb_iradio_source_type;
-}
+G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_SOURCE)
 
 static void
 rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->dispose = rb_iradio_source_dispose;
 	object_class->finalize = rb_iradio_source_finalize;
@@ -258,12 +225,19 @@ rb_iradio_source_dispose (GObject *object)
 	RBIRadioSource *source;
 
 	source = RB_IRADIO_SOURCE (object);
-	if (source->priv->disposed)
-		return;
+
 	source->priv->disposed = TRUE;
 	
-	g_object_unref (source->priv->all_query);
-	g_object_unref (source->priv->db);
+	if (source->priv->all_query) {
+		g_object_unref (source->priv->all_query);
+		source->priv->all_query = NULL;
+	}
+	if (source->priv->db) {
+		g_object_unref (source->priv->db);
+		source->priv->db = NULL
+	}
+
+	G_OBJECT_CLASS (rb_iradio_source_parent_class)->dispose (object);
 }
 
 static void
@@ -287,7 +261,7 @@ rb_iradio_source_finalize (GObject *object)
 
 	g_free (source->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_iradio_source_parent_class)->finalize (object);
 }
 
 static GObject *
@@ -296,14 +270,12 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 {
 	RBIRadioSource *source;
 	RBIRadioSourceClass *klass;
-	GObjectClass *parent_class;  
 	RBShell *shell;
 
 	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IRADIO_SOURCE));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	source = RB_IRADIO_SOURCE (parent_class->constructor (type, n_construct_properties,
-							      construct_properties));
+	source = RB_IRADIO_SOURCE (G_OBJECT_CLASS (rb_iradio_source_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
 	source->priv->paned = gtk_hpaned_new ();
 
