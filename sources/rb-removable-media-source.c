@@ -35,6 +35,7 @@
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-util.h"
 
 static void rb_removable_media_source_dispose (GObject *object);
 
@@ -72,6 +73,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBLibrarySourceClass *library_source_class = RB_LIBRARY_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_removable_media_source_dispose;
 	object_class->set_property = rb_removable_media_source_set_property;
@@ -79,7 +81,19 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 
 	source_class->impl_get_pixbuf = impl_get_pixbuf;
 	source_class->impl_delete_thyself = impl_delete_thyself;
+	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = NULL;
+	source_class->impl_paste = NULL;
+	source_class->impl_delete = NULL;
+	source_class->impl_get_config_widget = NULL;
+	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_get_browser_key = (RBSourceStringFunc) rb_null_function;
+
+	library_source_class->impl_get_paned_key = NULL;
+	library_source_class->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_false_function;
+	library_source_class->impl_has_drop_support = (RBLibrarySourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,

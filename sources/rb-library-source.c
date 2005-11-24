@@ -284,6 +284,8 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 
 	klass->impl_get_paned_key = impl_get_paned_key;
+	klass->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_true_function;
+	klass->impl_has_drop_support = (RBLibrarySourceFeatureFunc) rb_true_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_ICON,
@@ -546,7 +548,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_FIRST_SEEN);
+	if (rb_library_source_has_first_added_column (source))
+		rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_FIRST_SEEN);
 
 	g_signal_connect_object (G_OBJECT (source->priv->songs), "show_popup",
 				 G_CALLBACK (rb_library_source_songs_show_popup_cb), source, 0);
@@ -566,7 +569,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 				 source, 0);
 
 	/* only add drop support for the Library, subclasses can add it themselves */	
-	if (G_OBJECT_GET_CLASS (source) == G_OBJECT_CLASS (klass)) {
+	if (rb_library_source_has_drop_support (source)) {
 		gtk_drag_dest_set (GTK_WIDGET (source->priv->songs),
 				   GTK_DEST_DEFAULT_ALL,
 				   songs_view_drag_types, 1,
@@ -1346,6 +1349,23 @@ rb_library_source_get_paned_key (RBLibrarySource *source)
 	else
 		return NULL;
 }
+
+gboolean
+rb_library_source_has_first_added_column (RBLibrarySource *source)
+{
+	RBLibrarySourceClass *klass = RB_LIBRARY_SOURCE_GET_CLASS (source);
+
+	return klass->impl_has_first_added_column (source);
+}
+
+gboolean
+rb_library_source_has_drop_support (RBLibrarySource *source)
+{
+	RBLibrarySourceClass *klass = RB_LIBRARY_SOURCE_GET_CLASS (source);
+
+	return klass->impl_has_drop_support (source);
+}
+
 
 static void
 push_multi_equals_query (RhythmDB *db, GPtrArray *query, guint propid, GList *items)

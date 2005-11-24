@@ -70,7 +70,6 @@ typedef struct
 G_DEFINE_TYPE (RBiPodSource, rb_ipod_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
 
-typedef const char * (*RBSourceStringFunc) (RBSource *source);
 
 static void
 rb_ipod_source_class_init (RBiPodSourceClass *klass)

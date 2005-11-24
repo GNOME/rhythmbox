@@ -80,9 +80,6 @@ G_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURC
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
 
 
-typedef const char * (*RBSourceStringFunc) (RBSource *source);
-
-
 static void
 rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 {
@@ -93,12 +90,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	object_class->dispose = rb_audiocd_source_dispose;
 
 	/* don't bother showing the browser/search bits */
-	source_class->impl_get_browser_key = (RBSourceStringFunc) rb_null_function;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
-
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_config_widget = impl_get_config_widget;

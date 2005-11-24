@@ -49,6 +49,7 @@ typedef struct _RBSource		RBSource;
 typedef struct _RBSourcePrivate	RBSourcePrivate;
 
 typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
+typedef const char * (*RBSourceStringFunc) (RBSource *source);
 
 struct _RBSource
 {

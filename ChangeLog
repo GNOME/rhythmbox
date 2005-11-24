@@ -1,3 +1,21 @@
+2005-11-25  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_class_init):
+	* sources/rb-daap-source.c: (rb_daap_source_class_init):
+	* sources/rb-ipod-source.c:
+	* sources/rb-source.h:
+	* sources/rb-library-source.h:
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_constructor),
+	(rb_library_source_has_first_added_column),
+	(rb_library_source_has_drop_support):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init): Make library-derived sources
+	not show the Date Added column, as it doesn't make sense. Fixes bug
+	322269.
+	Move some of the feature funcs from the ipod and audio cd sources up to
+	the removable media source.
+
 2005-11-24  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-iradio-source.c: (rb_iradio_source_dispose): fix compile

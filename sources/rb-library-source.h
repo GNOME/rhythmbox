@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 #define RB_IS_LIBRARY_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIBRARY_SOURCE))
 #define RB_LIBRARY_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIBRARY_SOURCE, RBLibrarySourceClass))
 
+
 typedef struct RBLibrarySourcePrivate RBLibrarySourcePrivate;
 
 typedef struct
@@ -52,18 +53,25 @@ typedef struct
 	RBSourceClass parent;
 
 	const char *	(*impl_get_paned_key)		(RBLibrarySource *source);
+	gboolean	(*impl_has_first_added_column)	(RBLibrarySource *source);
+	gboolean	(*impl_has_drop_support)	(RBLibrarySource *source);
 } RBLibrarySourceClass;
 
-GType		rb_library_source_get_type	(void);
+typedef gboolean (*RBLibrarySourceFeatureFunc) (RBLibrarySource *source);
 
-RBSource *      rb_library_source_new           (RBShell *shell);
+GType		rb_library_source_get_type		(void);
 
-void		rb_library_source_add_location	(RBLibrarySource *source, GtkWindow *win);
+RBSource *      rb_library_source_new			(RBShell *shell);
 
-void            rb_library_source_class_add_actions (RBShell *shell, 
-						     GtkActionGroup *uimgr);
+void		rb_library_source_add_location		(RBLibrarySource *source, GtkWindow *win);
 
-const char *	rb_library_source_get_paned_key	(RBLibrarySource *source);
+void            rb_library_source_class_add_actions	(RBShell *shell, 
+							GtkActionGroup *uimgr);
+
+const char *	rb_library_source_get_paned_key		(RBLibrarySource *source);
+gboolean	rb_library_source_has_first_added_column (RBLibrarySource *source);
+gboolean	rb_library_source_has_drop_support	(RBLibrarySource *source);
+
 
 G_END_DECLS
 
