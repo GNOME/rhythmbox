@@ -1,5 +1,10 @@
 2005-11-24  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (rb_shell_player_error): fix a silly
+	mistake in the last commit that can cause crashes.
+
+2005-11-24  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-player.c: (rb_shell_player_error): use rb_debug,
 	instead of g_printerr.
 

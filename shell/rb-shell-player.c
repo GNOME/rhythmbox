@@ -2168,7 +2168,7 @@ rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 		rb_entry_view_set_playing_entry (songs, entry);
 	}
 
-	rb_debug ("playback error while playing %s: %s", entry->location, err->message);
+	rb_debug ("playback error while playing: %s", err->message);
 	/* For synchronous errors the entry playback error has already been set */
 	if (entry && async)
 		rb_shell_player_set_entry_playback_error (player, entry, err->message);
