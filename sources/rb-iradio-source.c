@@ -226,15 +226,13 @@ rb_iradio_source_dispose (GObject *object)
 
 	source = RB_IRADIO_SOURCE (object);
 
-	source->priv->disposed = TRUE;
-	
 	if (source->priv->all_query) {
 		g_object_unref (source->priv->all_query);
 		source->priv->all_query = NULL;
 	}
 	if (source->priv->db) {
 		g_object_unref (source->priv->db);
-		source->priv->db = NULL
+		source->priv->db = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_iradio_source_parent_class)->dispose (object);

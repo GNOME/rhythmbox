@@ -1,5 +1,10 @@
 2005-11-24  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-iradio-source.c: (rb_iradio_source_dispose): fix compile
+	errors. oops.
+
+2005-11-24  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
 	(rb_iradio_source_dispose), (rb_iradio_source_finalize),
 	(rb_iradio_source_constructor): Chain up dispose method and use
