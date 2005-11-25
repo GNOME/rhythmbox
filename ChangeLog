@@ -1,5 +1,12 @@
 2005-11-25  James Livingston  <jrl@ids.org.au>
 
+	* player/rb-player-gst.c: (rb_player_set_replaygain): limit the volume
+	adjustment to be inside the element's limits. Without this songs that
+	have large ReplayGain values will recieve no increase because they are
+	outside the acceptable range, causing them to remain quiet.
+
+2005-11-25  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-audiocd-source.c: (rb_audiocd_source_class_init):
 	* sources/rb-daap-source.c: (rb_daap_source_class_init):
 	* sources/rb-ipod-source.c:

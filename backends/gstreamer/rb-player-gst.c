@@ -777,10 +777,19 @@ rb_player_set_replaygain (RBPlayer *mp,
         rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
 
 	if (mp->priv->playbin != NULL) {
-		g_object_set (G_OBJECT (mp->priv->playbin),
-			      "volume",
-			      mp->priv->cur_volume * scale,
-			      NULL);
+		GParamSpec *volume_pspec;
+		GValue val;
+		
+		volume_pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (mp->priv->playbin),
+							     "volume");
+		g_value_init (&val, G_TYPE_DOUBLE);
+		
+		g_value_set_double (&val, mp->priv->cur_volume * scale);
+		if (g_param_value_validate (volume_pspec, &val))
+			rb_debug ("replay gain too high, reducing value to %f", g_value_get_double (&val));
+	
+		g_object_set_property (G_OBJECT (mp->priv->playbin), "volume", &val);
+		g_value_unset (&val);
 	}
 }
 
