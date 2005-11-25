@@ -86,7 +86,7 @@ if test "x$with_ipod" != "xno"; then
 	  fi
           if test "x$enable_hal" = xyes; then
 	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
-	     enable_ipod=yes
+	     use_ipod=yes
 	     if test x$enable_hal05 == xyes; then
 	        AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
 	     else
@@ -99,7 +99,7 @@ if test "x$with_ipod" != "xno"; then
 	  AC_SUBST(IPOD_LIBS)
 	fi
 fi			  
-AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
+AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
 dnl Database
 AC_ARG_WITH(database,
@@ -610,7 +610,7 @@ fi
 
 AC_MSG_NOTICE([** GStreamer $GST_MAJORMINOR player is enabled])
 
-if test x"$enable_ipod" = xyes; then
+if test x"$use_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])

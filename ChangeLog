@@ -1,5 +1,10 @@
 2005-11-25  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac: Make --enable-ipod not confuse configure. Closes bug
+	321926.
+
+2005-11-25  James Livingston  <jrl@ids.org.au>
+
 	* metadata/rb-metadata-gst.c: (rb_metadata_gst_add_tag_data): use
 	correct type for checking the date against 0. Stops a warning when
 	saving metadata.
