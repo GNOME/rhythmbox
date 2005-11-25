@@ -752,11 +752,12 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 
 	if (tag) {
 		GValue newval = {0,};
+
 		g_value_init (&newval, gst_tag_get_type (tag));
 		if (g_value_transform (val, &newval)) {
 			g_debug("Setting %s",tag);
 
-			if (field == RB_METADATA_FIELD_DATE && g_value_get_ulong (&newval) == 0) {
+			if (field == RB_METADATA_FIELD_DATE && g_value_get_ulong (val) == 0) {
 				/* we should ask gstreamer to remove the tag,
 				 * but there is no easy way of doing so
 				 */

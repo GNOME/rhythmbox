@@ -1,5 +1,11 @@
 2005-11-25  James Livingston  <jrl@ids.org.au>
 
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_add_tag_data): use
+	correct type for checking the date against 0. Stops a warning when
+	saving metadata.
+
+2005-11-25  James Livingston  <jrl@ids.org.au>
+
 	* player/rb-player-gst.c: (rb_player_set_replaygain): limit the volume
 	adjustment to be inside the element's limits. Without this songs that
 	have large ReplayGain values will recieve no increase because they are
