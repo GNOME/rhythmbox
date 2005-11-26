@@ -19,13 +19,13 @@
  *
  */
 
+#define _XOPEN_SOURCE
+#include <time.h>
 #include <libxml/entities.h>
 #include <libxml/SAX.h>
 #include <libxml/parserInternals.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <string.h>
-#define __USE_XOPEN
-#include <time.h>
 
 #include "rb-debug.h"
 #include "rb-podcast-parse.h" 
