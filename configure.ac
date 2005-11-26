@@ -264,6 +264,12 @@ if test x"$with_mdns" = xavahi; then
    AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
    AC_MSG_NOTICE([Using Avahi for mDNS/DNS-SD])
 
+   if test x$have_avahi_06 == xyes; then
+      AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
+   else
+      AC_DEFINE(HAVE_AVAHI_0_5, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.5])
+   fi
+
    have_mdns=yes
 fi
 
