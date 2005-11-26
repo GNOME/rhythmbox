@@ -466,6 +466,10 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 
 #ifdef WITH_AVAHI
 
+#ifdef HAVE_AVAHI_0_6
+#include <avahi-client/lookup.h>
+#include <avahi-client/publish.h>
+#endif
 #include <avahi-client/client.h>
 #include <avahi-common/error.h>
 #include <avahi-glib/glib-malloc.h>
@@ -512,7 +516,17 @@ get_avahi_client (GError **err)
 			return NULL;
 		}
 
+#ifdef HAVE_AVAHI_0_5
 		client = avahi_client_new (avahi_glib_poll_get (poll), client_cb, NULL, &error);
+#endif
+#ifdef HAVE_AVAHI_0_6
+		{
+			AvahiClientFlags flags;
+			flags = AVAHI_CLIENT_NO_FAIL;
+
+			client = avahi_client_new (avahi_glib_poll_get (poll), flags, client_cb, NULL, &error);
+		}
+#endif
 		if (client == NULL) {
 			rb_debug ("Unable to create AvahiClient: %s", avahi_strerror (error));
 			if (error == AVAHI_ERR_NO_DAEMON) {
@@ -543,11 +557,21 @@ browse_cb (AvahiServiceBrowser *browser,
 	   const char *name,
 	   const char *type,
 	   const char *domain,
+#ifdef HAVE_AVAHI_0_6
+	   AvahiLookupResultFlags flags,
+#endif
 	   RBDAAPmDNSBrowserData *browse_data)
 {
 	RBDAAPmDNSBrowserStatus bstatus;
+	gboolean local;
 
-	if (avahi_client_is_service_local (get_avahi_client (NULL), interface, protocol, name, type, domain)) {
+#ifdef HAVE_AVAHI_0_5
+	local = avahi_client_is_service_local (get_avahi_client (NULL), interface, protocol, name, type, domain);
+#endif
+#ifdef HAVE_AVAHI_0_6
+	local = (flags == AVAHI_LOOKUP_RESULT_LOCAL);
+#endif
+	if (local) {
 		rb_debug ("Ignoring local service %s", name);
 		return;
 	}
@@ -593,6 +617,9 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 						     AVAHI_PROTO_INET,
 						     "_daap._tcp",
 						     "local",
+#ifdef HAVE_AVAHI_0_6
+						     AVAHI_LOOKUP_RESULT_MULTICAST,
+#endif
 						     (AvahiServiceBrowserCallback)browse_cb,
 						     browse_data);
 	if (browse_data->sb == NULL) {
@@ -634,6 +661,9 @@ resolve_cb (AvahiServiceResolver *resolver,
 	    const AvahiAddress *address,
 	    uint16_t port,
 	    AvahiStringList *text,
+#ifdef HAVE_AVAHI_0_6
+	    AvahiLookupResultFlags flags,
+#endif
 	    RBDAAPmDNSResolverData *res_data)
 {
 
@@ -737,6 +767,9 @@ rb_daap_mdns_resolve (RBDAAPmDNSResolver *resolver,
 						   "_daap._tcp",
 						   "local",
 						   AVAHI_PROTO_UNSPEC,
+#ifdef HAVE_AVAHI_0_6
+						   AVAHI_LOOKUP_USE_MULTICAST,
+#endif
 						   (AvahiServiceResolverCallback)resolve_cb,
 						   res_data);
 	if (res_data->sr == NULL) {
@@ -777,6 +810,9 @@ add_service (AvahiEntryGroup *group,
 	ret = avahi_entry_group_add_service (group,
 					     AVAHI_IF_UNSPEC,
 					     AVAHI_PROTO_INET,
+#ifdef HAVE_AVAHI_0_6
+					     AVAHI_PUBLISH_USE_MULTICAST,
+#endif
 					     name,
 					     "_daap._tcp",
 					     NULL,

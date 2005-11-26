@@ -1,3 +1,13 @@
+2005-11-26  James Livingston  <jrl@ids.org.au>
+
+	patch by Daniel S. Haischt <e@daniel.stefan.haischt.name> to support
+	Avahi 0.6, as well as 0.5.
+
+	* configure.ac:
+	* daapsharing/rb-daap-mdns.c: (get_avahi_client), (browse_cb),
+	(rb_daap_mdns_browse), (resolve_cb), (rb_daap_mdns_resolve),
+	(add_service):
+
 2005-11-25  James Livingston  <jrl@ids.org.au>
 
 	* configure.ac: Make --enable-ipod not confuse configure. Closes bug

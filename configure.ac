@@ -196,10 +196,22 @@ have_avahi=no
 have_mdns=no
 
 PKG_CHECK_MODULES(AVAHI,
-   avahi-client >= 0.5
-   avahi-glib >= 0.5,
-   have_avahi=yes,
-   have_avahi=no)
+   avahi-client >= 0.6
+   avahi-glib >= 0.6,
+   have_avahi_06=yes,
+   have_avahi_06=no)
+if test x$have_avahi_06 != xyes; then
+   PKG_CHECK_MODULES(AVAHI,
+      avahi-client >= 0.5
+      avahi-glib >= 0.5,
+      have_avahi_05=yes,
+      have_avahi_05=no)
+fi
+if test x$have_avahi_06 == xyes || test x$have_avahi_05 == xyes; then
+   have_avahi=yes
+else
+   have_avahi=no
+fi
 
 PKG_CHECK_MODULES(HOWL,
    howl,
@@ -212,6 +224,11 @@ if test x"$with_mdns" = xauto; then
       MDNS_LIBS=$AVAHI_LIBS
       AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
       AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
+      if test x$have_avahi_06 == xyes; then
+         AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
+      else
+         AC_DEFINE(HAVE_AVAHI_0_5, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.5])
+      fi
 
       have_mdns=yes
    elif test x"$have_howl" = xyes; then
