@@ -569,7 +569,7 @@ browse_cb (AvahiServiceBrowser *browser,
 	local = avahi_client_is_service_local (get_avahi_client (NULL), interface, protocol, name, type, domain);
 #endif
 #ifdef HAVE_AVAHI_0_6
-	local = (flags == AVAHI_LOOKUP_RESULT_LOCAL);
+	local = ((flags & AVAHI_LOOKUP_RESULT_LOCAL) != 0);
 #endif
 	if (local) {
 		rb_debug ("Ignoring local service %s", name);
@@ -618,7 +618,7 @@ rb_daap_mdns_browse (RBDAAPmDNSBrowser *browser,
 						     "_daap._tcp",
 						     "local",
 #ifdef HAVE_AVAHI_0_6
-						     AVAHI_LOOKUP_RESULT_MULTICAST,
+						     0,
 #endif
 						     (AvahiServiceBrowserCallback)browse_cb,
 						     browse_data);
