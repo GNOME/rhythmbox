@@ -1,4 +1,12 @@
-2005-11-28  James Livingston,,,  <jrl@ids.org.au>
+2005-11-28  James Livingston  <jrl@ids.org.au>
+
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org>
+
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_property):
+	Disable saving, renaming and delting for DAAP playlists.
+	Fixes bug 322627.
+
+2005-11-28  James Livingston  <jrl@ids.org.au>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed): check if
 	gnome_vfs_get_file_info is returning NULL for the mime-type. Should

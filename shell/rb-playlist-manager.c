@@ -398,6 +398,7 @@ rb_playlist_manager_set_property (GObject *object,
 	{
 		gboolean playlist_active;
 		gboolean playlist_automatic = FALSE;
+		gboolean playlist_local = FALSE;
 		GtkAction *action;
 
 		if (mgr->priv->selected_source != NULL)
@@ -407,18 +408,23 @@ rb_playlist_manager_set_property (GObject *object,
 
 		mgr->priv->selected_source = g_value_get_object (value);
 		playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
-		if (playlist_active)
+		if (playlist_active) {
 			g_object_get (G_OBJECT (mgr->priv->selected_source), "automatic", &playlist_automatic, NULL);
+			g_object_get (G_OBJECT (mgr->priv->selected_source), "is-local", &playlist_local, NULL);
+		}
 
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistSavePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
+		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistDeletePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
+		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
  						      "EditAutomaticPlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_active && playlist_automatic, NULL);
+		g_object_set (G_OBJECT (action), "sensitive", playlist_automatic, NULL);
+		action = gtk_action_group_get_action (mgr->priv->actiongroup,
+ 						      "MusicPlaylistRenamePlaylist");
+		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
 		{
 			gboolean recorder_active;
 			int num_tracks = rb_entry_view_get_num_entries (rb_source_get_entry_view (mgr->priv->selected_source));
