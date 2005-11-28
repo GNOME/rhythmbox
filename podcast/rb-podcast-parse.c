@@ -384,6 +384,7 @@ rb_podcast_parse_load_feed(RBPodcastChannel *data, const char *file_name) {
     info = gnome_vfs_file_info_new();
     result = gnome_vfs_get_file_info (file_name, info, GNOME_VFS_FILE_INFO_DEFAULT);
     if ((result != GNOME_VFS_OK) ||
+	(info->mime_type == NULL) ||
 	((strstr (info->mime_type, "xml") == NULL) &&
 	 (strstr (info->mime_type, "rss") == NULL) &&
 	 (strstr (file_name, ".rss") == NULL))) {

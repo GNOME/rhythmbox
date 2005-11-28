@@ -1,3 +1,14 @@
+2005-11-28  James Livingston,,,  <jrl@ids.org.au>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed): check if
+	gnome_vfs_get_file_info is returning NULL for the mime-type. Should
+	prevent bug 322619.
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_class_init):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init): fix ipod browser visibility
+	problem.
+
 2005-11-28  James Livingston  <jrl@ids.org.au>
 
 	* daapsharing/rb-daap-mdns.c: (browse_cb), (rb_daap_mdns_browse): make

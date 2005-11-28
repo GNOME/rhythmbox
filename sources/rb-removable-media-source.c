@@ -89,7 +89,6 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_delete = NULL;
 	source_class->impl_get_config_widget = NULL;
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_get_browser_key = (RBSourceStringFunc) rb_null_function;
 
 	library_source_class->impl_get_paned_key = NULL;
 	library_source_class->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_false_function;

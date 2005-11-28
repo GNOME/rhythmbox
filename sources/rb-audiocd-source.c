@@ -95,6 +95,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_delete_thyself = impl_delete_thyself;
+	source_class->impl_get_browser_key = (RBSourceStringFunc) rb_null_function;
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
 }
