@@ -124,9 +124,12 @@ static void rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
-static void rb_shell_db_error_cb (RhythmDB *db,
-				  const char *uri, const char *msg,
-				  RBShell *shell); 
+static void rb_shell_db_load_error_cb (RhythmDB *db,
+				       const char *uri, const char *msg,
+				       RBShell *shell); 
+static void rb_shell_db_save_error_cb (RhythmDB *db,
+				       const char *uri, const GError *error,
+				       RBShell *shell); 
 static void rb_shell_db_entry_added_cb (RhythmDB *db,
 					RhythmDBEntry *entry,
 					RBShell *shell);
@@ -986,8 +989,10 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->show_db_errors = FALSE;
 	gtk_widget_hide (shell->priv->load_error_dialog);
 
-	g_signal_connect_object (G_OBJECT (shell->priv->db), "error",
-				 G_CALLBACK (rb_shell_db_error_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "load-error",
+				 G_CALLBACK (rb_shell_db_load_error_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
+				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
 				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
 
@@ -1342,9 +1347,9 @@ source_activated_cb (RBSourceList *sourcelist,
 }
 
 static void
-rb_shell_db_error_cb (RhythmDB *db,
-		      const char *uri, const char *msg,
-		      RBShell *shell)
+rb_shell_db_load_error_cb (RhythmDB *db,
+			   const char *uri, const char *msg,
+		  	   RBShell *shell)
 {
 	rb_debug ("got db error, showing: %s",
 		  shell->priv->show_db_errors ? "TRUE" : "FALSE");
@@ -1361,6 +1366,16 @@ rb_shell_db_error_cb (RhythmDB *db,
 	rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
 				    uri, msg);
 	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
+}
+
+static void
+rb_shell_db_save_error_cb (RhythmDB *db,
+			   const char *uri, const GError *error,
+		  	   RBShell *shell)
+{
+	rb_error_dialog (GTK_WINDOW (shell->priv->window),
+			 _("Error while saving song information"),
+			 "%s", error->message);
 }
 
 static void

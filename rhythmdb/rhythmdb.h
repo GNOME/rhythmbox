@@ -421,7 +421,8 @@ typedef struct
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(void);
 	void	(*save_complete)	(void);
-	void	(*error)		(const char *uri, const char *msg);
+	void	(*load_error)		(const char *uri, const char *msg);
+	void	(*save_error)		(const char *uri, const GError *error);
 	void	(*read_only)		(gboolean readonly);
 
 	/* virtual methods */

@@ -1,5 +1,18 @@
 2005-11-29  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-marshal.list:
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init),
+	(emit_load_error_idle), (rhythmdb_process_metadata_load),
+	(entry_to_rb_metadata), (emit_save_error_idle),
+	(action_thread_main): emit error signal when metadata write fails.
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_db_load_error_cb), (rb_shell_db_save_error_cb): process the
+	"metadata save" error and display it to the user.
+
+2005-11-29  James Livingston  <jrl@ids.org.au>
+
 	* data/ui/rhythmbox-ui.xml:
 	* sources/rb-podcast-source.c:
 	(rb_podcast_source_songs_show_popup_cb),

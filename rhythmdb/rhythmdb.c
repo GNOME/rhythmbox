@@ -219,7 +219,8 @@ enum
 	ENTRY_DELETED,
 	LOAD_COMPLETE,
 	SAVE_COMPLETE,
-	ERROR,
+	LOAD_ERROR,
+	SAVE_ERROR,
 	READ_ONLY,
 	LAST_SIGNAL
 };
@@ -318,17 +319,30 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
-	rhythmdb_signals[ERROR] =
-		g_signal_new ("error",
+	rhythmdb_signals[LOAD_ERROR] =
+		g_signal_new ("load-error",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, error),
+			      G_STRUCT_OFFSET (RhythmDBClass, load_error),
 			      NULL, NULL,
 			      rhythmdb_marshal_VOID__STRING_STRING,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_STRING);
+
+	rhythmdb_signals[SAVE_ERROR] =
+		g_signal_new ("save-error",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, save_error),
+			      NULL, NULL,
+			      rhythmdb_marshal_VOID__STRING_POINTER,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_STRING,
+			      G_TYPE_POINTER);
+
 
 	rhythmdb_signals[READ_ONLY] =
 		g_signal_new ("read-only",
@@ -1372,10 +1386,12 @@ struct RhythmDBLoadErrorData {
 };
 
 static gboolean
-emit_error_idle (struct RhythmDBLoadErrorData *data)
+emit_load_error_idle (struct RhythmDBLoadErrorData *data)
 {
-	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ERROR], 0, data->uri, data->msg);
+	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[LOAD_ERROR], 0, data->uri, data->msg);
 	g_object_unref (G_OBJECT (data->db));
+	g_free (data->uri);
+	g_free (data->msg);
 	g_free (data);
 	return FALSE;
 }
@@ -1401,7 +1417,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 		data->uri = g_strdup (event->real_uri);
 		data->msg = g_strdup (event->error->message);
 		
-		g_idle_add ((GSourceFunc)emit_error_idle, data);
+		g_idle_add ((GSourceFunc)emit_load_error_idle, data);
 		return TRUE;
 	}
 
@@ -1746,7 +1762,7 @@ rhythmdb_entry_get (RhythmDBEntry *entry,
 }
 
 static void
-entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry)
+entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry, RBMetaData *metadata)
 {
 	GValue val = {0, };
 	int i;
@@ -1760,11 +1776,28 @@ entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry)
 
 		g_value_init (&val, rhythmdb_property_type_map[i]);
 		rhythmdb_entry_get (entry, i, &val);
-		rb_metadata_set (db->priv->metadata, 
+		rb_metadata_set (metadata, 
 				 field,
 				 &val);
 		g_value_unset (&val);
 	}
+}
+
+struct RhythmDBSaveErrorData {
+	RhythmDB *db;
+	char *uri;
+	GError *error;
+};
+
+static gboolean
+emit_save_error_idle (struct RhythmDBSaveErrorData *data)
+{
+	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[SAVE_ERROR], 0, data->uri, data->error);
+	g_object_unref (G_OBJECT (data->db));
+	g_free (data->uri);
+	g_error_free (data->error);
+	g_free (data);
+	return FALSE;
 }
 
 static gpointer
@@ -1814,6 +1847,7 @@ action_thread_main (RhythmDB *db)
 		case RHYTHMDB_ACTION_SYNC:
 		{
 			GError *error = NULL;
+			struct RhythmDBSaveErrorData *data;
 			RhythmDBEntry *entry;
 
 			if (db->priv->dry_run) {
@@ -1824,8 +1858,13 @@ action_thread_main (RhythmDB *db)
 			rb_metadata_load (db->priv->metadata,
 					  action->uri, &error);
 			if (error != NULL) {
-				g_warning ("error loading metadata from %s: %s", action->uri,
-					   error->message);
+				data = g_new0 (struct RhythmDBSaveErrorData, 1);
+				g_object_ref (G_OBJECT (db));
+				data->db = db;
+				data->uri = g_strdup (action->uri);
+				data->error = error;
+		
+				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
 				break;
 			}
 
@@ -1834,12 +1873,17 @@ action_thread_main (RhythmDB *db)
 				break;
 			}
 
-			entry_to_rb_metadata (db, entry);
+			entry_to_rb_metadata (db, entry, db->priv->metadata);
 
 			rb_metadata_save (db->priv->metadata, &error);
 			if (error != NULL) {
-				g_warning ("error saving metadata to %s: %s", 
-					   action->uri, error->message);
+				data = g_new0 (struct RhythmDBSaveErrorData, 1);
+				g_object_ref (G_OBJECT (db));
+				data->db = db;
+				data->uri = g_strdup (action->uri);
+				data->error = error;
+		
+				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
 				break;
 			}
 			break;
