@@ -882,7 +882,7 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 				 "%s", error->message);
 }
 
-static void
+static gboolean
 burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **artist, char **title, gulong *duration)
 {
 	RhythmDBEntry *entry;
@@ -893,14 +893,19 @@ burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, cha
 	*artist = g_strdup (rb_refstring_get (entry->artist));
 	*title = g_strdup (rb_refstring_get (entry->title));
 	*duration = entry->duration;
+
+	return TRUE;
 }
 
 void
 rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 {
 	GtkWidget *recorder;
+	GtkWidget *parent;
 	char *name;
 	RBShell *shell;
+	gboolean res;
+	GError *error;
 
 	/* don't burn if the playlist is empty */
 	if (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL) == 0)
@@ -910,16 +915,28 @@ rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 
 	g_object_get (source, "name", &name, "shell", &shell, NULL);
 
-	recorder = rb_playlist_source_recorder_new (gtk_widget_get_toplevel (GTK_WIDGET (source)),
+	parent = gtk_widget_get_toplevel (GTK_WIDGET (source));
+	recorder = rb_playlist_source_recorder_new (parent,
 						    shell,
 						    name);
 	g_object_unref (shell);
 	g_free (name);
 
-	rb_playlist_source_recorder_add_from_model (RB_PLAYLIST_SOURCE_RECORDER (recorder),
-						    GTK_TREE_MODEL (source->priv->model),
-						    burn_playlist_iter_func,
-						    NULL);
+	error = NULL;
+	res = rb_playlist_source_recorder_add_from_model (RB_PLAYLIST_SOURCE_RECORDER (recorder),
+							  GTK_TREE_MODEL (source->priv->model),
+							  burn_playlist_iter_func,
+							  &error);
+	if (! res) {
+		rb_error_dialog (GTK_WINDOW (parent),
+				 _("Unable to create audio CD"),
+				 "%s", error->message);
+		g_error_free (error);
+
+		gtk_widget_destroy (recorder);
+
+		return;
+	}
 
         g_signal_connect (recorder,
 			  "response",

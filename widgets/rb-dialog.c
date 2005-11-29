@@ -22,7 +22,9 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
@@ -55,6 +57,8 @@ rb_error_dialog (GtkWindow *parent,
 
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 						  "%s", text);
+
+	gtk_window_set_title (GTK_WINDOW (dialog), "");
 
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 

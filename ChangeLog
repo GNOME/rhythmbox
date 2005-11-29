@@ -1,3 +1,29 @@
+2005-11-18  William Jon McCann  <mccann@jhu.edu>
+
+	* widgets/rb-dialog.c (rb_error_dialog): Don't use a
+	title on alert dialogs per the HIG.
+
+	* sources/rb-playlist-source-recorder.c (burn_cd): Don't use
+	the term Burn.
+	(free_song_list): Routine to free song list.
+	(rb_playlist_source_recorder_finalize): Use free_song_list.
+	(rb_playlist_source_recorder_add_from_model): Return FALSE
+	if unable to add all songs.  Check that duration of all
+	songs doesn't exceed MAX_PLAYLIST_DURATION which is set to 100 min.
+	Fixes #321753.
+
+	* sources/rb-playlist-source-recorder.c (check_media_length)
+	(rb_playlist_source_recorder_start): Only check the duration
+	and current media if the playlist length is longer than a
+	standard CD (74 min).  Otherwise, just let the Recorder do the
+	check.
+	* player/rb-recorder-gst.c (rb_recorder_init): Get a default
+	drive at init.
+	(rb_recorder_set_device): Don't leak drives.
+	(rb_recorder_get_media_length): Use drive that was already set.
+	(rb_recorder_burn): Let the recorder handle checking media type/size.
+	Fixes bug 321754.
+
 2005-11-29  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:

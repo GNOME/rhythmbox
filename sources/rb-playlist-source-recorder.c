@@ -58,6 +58,7 @@ extern char *mkdtemp (char *template);
 #include "rb-recorder.h"
 
 #define AUDIO_BYTERATE (2 * 44100 * 2)
+#define MAX_PLAYLIST_DURATION 6000
 
 static void rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass);
 static void rb_playlist_source_recorder_init       (RBPlaylistSourceRecorder *source);
@@ -124,6 +125,8 @@ typedef enum {
 
 static guint rb_playlist_source_recorder_signals [LAST_SIGNAL] = { 0 };
 
+#define RB_PLAYLIST_SOURCE_RECORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYLIST_SOURCE_RECORDER, RBPlaylistSourceRecorderPrivate))
+
 G_DEFINE_TYPE(RBPlaylistSourceRecorder, rb_playlist_source_recorder, GTK_TYPE_DIALOG)
 
 static void
@@ -153,11 +156,9 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
 
         parent_class = g_type_class_peek_parent (klass);
 
-        widget_class->style_set    = rb_playlist_source_recorder_style_set;
+        widget_class->style_set = rb_playlist_source_recorder_style_set;
 
         object_class->finalize = rb_playlist_source_recorder_finalize;
-
-        g_type_class_add_private (klass, sizeof (RBPlaylistSourceRecorderPrivate));
 
         rb_playlist_source_recorder_signals [NAME_CHANGED] =
                 g_signal_new ("name_changed",
@@ -181,6 +182,7 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
                               1,
                               G_TYPE_STRING);
 
+        g_type_class_add_private (klass, sizeof (RBPlaylistSourceRecorderPrivate));
 }
 
 GtkWidget *
@@ -303,6 +305,7 @@ set_media_device (RBPlaylistSourceRecorder *source)
         GError     *error;
 
         device = nautilus_burn_drive_selection_get_device (NAUTILUS_BURN_DRIVE_SELECTION (source->priv->device_menu));
+
         if (device && strcmp (device, "")) {
                 rb_recorder_set_device (source->priv->recorder, device, &error);
                 if (error) {
@@ -472,7 +475,7 @@ burn_cd (RBPlaylistSourceRecorder *source,
 
         set_media_device (source);
 
-        set_message_text (source, _("Burning audio to CD"));
+        set_message_text (source, _("Writing audio to CD"));
 
         speed = get_speed_selection (source->priv->speed_combobox);
 
@@ -1090,7 +1093,8 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
                           G_CALLBACK (delete_event_handler),
                           NULL);
 
-        source->priv = g_new0 (RBPlaylistSourceRecorderPrivate, 1);
+        source->priv = RB_PLAYLIST_SOURCE_RECORDER_GET_PRIVATE (source);
+
         source->priv->gconf_client = gconf_client_get_default ();
 
         gtk_dialog_set_has_separator (GTK_DIALOG (source), FALSE);
@@ -1245,10 +1249,22 @@ recorder_song_free (RBRecorderSong *song)
 }
 
 static void
+free_song_list (GSList *songs)
+{
+        GSList *l;
+
+        for (l = songs; l; l = l->next) {
+                recorder_song_free ((RBRecorderSong *)l->data);
+        }
+
+        g_slist_free (songs);
+        songs = NULL;
+}
+
+static void
 rb_playlist_source_recorder_finalize (GObject *object)
 {
         RBPlaylistSourceRecorder *source;
-        GSList *l;
 
         g_return_if_fail (object != NULL);
         g_return_if_fail (RB_IS_PLAYLIST_SOURCE_RECORDER (object));
@@ -1267,14 +1283,10 @@ rb_playlist_source_recorder_finalize (GObject *object)
                 g_object_unref (source->priv->gconf_client);
         source->priv->gconf_client = NULL;
 
-        for (l = source->priv->songs; l; l = l->next)
-                recorder_song_free ((RBRecorderSong *)l->data);
-
         g_free (source->priv->name);
         source->priv->name = NULL;
 
-        g_slist_free (source->priv->songs);
-        source->priv->songs = NULL;
+        free_song_list (source->priv->songs);
 
         g_object_unref (source->priv->recorder);
         source->priv->recorder = NULL;
@@ -1287,9 +1299,6 @@ rb_playlist_source_recorder_finalize (GObject *object)
                 g_free (source->priv->tmp_dir);
                 source->priv->tmp_dir = NULL;
         }
-
-        g_free (source->priv);
-        source->priv = NULL;
 
         G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -1345,35 +1354,81 @@ rb_playlist_source_recorder_set_name (RBPlaylistSourceRecorder *source,
                        name);
 }
 
-void
+gboolean
 rb_playlist_source_recorder_add_from_model (RBPlaylistSourceRecorder *source,
                                             GtkTreeModel             *model,
                                             RBPlaylistSourceIterFunc  func,
                                             GError                  **error)
 {
         GtkTreeIter iter;
+        gboolean    failed;
+        GSList     *songs  = NULL;
+        GSList     *l;
+        guint64     length = 0;
 
-        g_return_if_fail (source != NULL);
-        g_return_if_fail (RB_IS_PLAYLIST_SOURCE_RECORDER (source));
+        g_return_val_if_fail (source != NULL, FALSE);
+        g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE_RECORDER (source), FALSE);
 
-        g_return_if_fail (model != NULL);
+        g_return_val_if_fail (model != NULL, FALSE);
 
-        if (!gtk_tree_model_get_iter_first (model, &iter))
-                return;
+        if (! gtk_tree_model_get_iter_first (model, &iter)) {
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
+                             RB_RECORDER_ERROR_GENERAL,
+                             _("Unable to build an audio track list."));
 
+                return FALSE;
+        }
+
+        /* Make sure we can use all of the songs before we
+           modify the song list */
+        failed = FALSE;
         do {
                 RBRecorderSong *song = recorder_song_new ();
-                
-                func (model, &iter, &song->uri, &song->artist, &song->title, &song->duration);
+                gboolean        res;
+
+                res = func (model, &iter, &song->uri, &song->artist, &song->title, &song->duration);
+                if (! res) {
+                        failed = TRUE;
+                        g_set_error (error,
+                                     RB_RECORDER_ERROR,
+                                     RB_RECORDER_ERROR_GENERAL,
+                                     _("Unable to build an audio track list."));
+                        break;
+                }
+
+                length += song->duration;
+                if (length > MAX_PLAYLIST_DURATION) {
+                        failed = TRUE;
+                        g_set_error (error,
+                                     RB_RECORDER_ERROR,
+                                     RB_RECORDER_ERROR_GENERAL,
+                                     _("This playlist is too long to write to an audio CD."));
+                        break;
+                }
+
+                songs = g_slist_append (songs, song);
+        } while (gtk_tree_model_iter_next (model, &iter));
+
+        if (failed) {
+                free_song_list (songs);
+
+                return FALSE;
+        }
+
+        /* now that we've checked all the songs, add them to the song list */
+        for (l = songs; l; l = l->next) {
+                RBRecorderSong *song = l->data;
 
                 source->priv->songs = g_slist_append (source->priv->songs, song);
+
                 g_signal_emit (G_OBJECT (source),
                                rb_playlist_source_recorder_signals [FILE_ADDED],
                                0,
                                song->uri);
-        } while (gtk_tree_model_iter_next (model, &iter));
+        }
 
-        return;
+        return TRUE;
 }
 
 static guint64
@@ -1489,6 +1544,41 @@ check_tmp_dir (RBPlaylistSourceRecorder *source,
         return TRUE;
 }
 
+static gboolean
+check_media_length (RBPlaylistSourceRecorder *source,
+                    GError                  **error)
+{
+        gint64  duration = rb_playlist_source_recorder_get_total_duration (source);
+        char   *message  = NULL;
+        gint64  media_duration;
+        char   *duration_string;
+
+        media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
+        duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
+
+        /* Only check if the playlist is greater than 74 minutes */
+        if ((media_duration < 0) && (duration > 4440)) {
+                message = g_strdup_printf (_("This playlist is %s minutes long.  "
+                                             "This exceeds the length of a standard audio CD.  "
+                                             "If the destination media is larger than a standard audio CD "
+                                             "please insert it in the drive and try again."),
+                                           duration_string);
+        }
+
+        g_free (duration_string);
+
+        if (message) {
+                error_dialog (source,
+                              _("Playlist too long"),
+                              message);
+                g_free (message);
+
+                return FALSE;
+        }
+
+        return TRUE;
+}
+
 void
 rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
                                    GError                  **error)
@@ -1504,41 +1594,17 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
         if (source->priv->already_converted) {
                 g_idle_add ((GSourceFunc)burn_cd_idle, source);
         } else {
-                gint64  duration = rb_playlist_source_recorder_get_total_duration (source);
-                char   *message  = NULL;
-                gint64  media_duration;
-                char   *duration_string;
+                gboolean is_ok;
 
                 set_media_device (source);
 
-                media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
-                duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
-
-                if ((media_duration < 0) && (duration > 4440)) {
-                        message = g_strdup_printf (_("This playlist is %s minutes long.  "
-                                                     "This exceeds the length of a standard audio CD.  "
-                                                     "If the destination media is larger than a standard audio CD "
-                                                     "please insert it in the drive and try again."),
-                                                   duration_string);
-                } else if ((media_duration > 0) && (media_duration <= duration)) {
-                        char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
-                        message = g_strdup_printf (_("This playlist is %s minutes long.  "
-                                                     "This exceeds the %s minute length of the media in the drive."),
-                                                   duration_string, media_duration_string);
-                        g_free (media_duration_string);
-                }
-                g_free (duration_string);
-
-                if (message) {
-                        error_dialog (source,
-                                      _("Playlist too long"),
-                                      message);
-                        g_free (message);
-
+                is_ok = check_media_length (source, error);
+                if (! is_ok) {
                         return;
                 }
 
-                if (!check_tmp_dir (source, error)) {
+                is_ok = check_tmp_dir (source, error);
+                if (! is_ok) {
                         guint64 mib_needed = rb_playlist_source_recorder_estimate_total_size (source) / 1048576;
                         char   *mib_needed_string = g_strdup_printf ("%" G_GUINT64_FORMAT, mib_needed);
 

@@ -47,12 +47,12 @@ typedef struct
         GtkDialogClass parent_class;
 } RBPlaylistSourceRecorderClass;
 
-typedef void (*RBPlaylistSourceIterFunc) (GtkTreeModel *model,
-                                          GtkTreeIter  *iter,
-                                          char        **uri,
-                                          char        **artist,
-                                          char        **title,
-                                          gulong       *duration);
+typedef gboolean (*RBPlaylistSourceIterFunc) (GtkTreeModel *model,
+                                              GtkTreeIter  *iter,
+                                              char        **uri,
+                                              char        **artist,
+                                              char        **title,
+                                              gulong       *duration);
 
 GType       rb_playlist_source_recorder_get_type (void);
 
@@ -63,7 +63,7 @@ GtkWidget * rb_playlist_source_recorder_new            (GtkWidget               
 void        rb_playlist_source_recorder_set_name       (RBPlaylistSourceRecorder *recorder,
                                                         const char               *name,
                                                         GError                  **error);
-void        rb_playlist_source_recorder_add_from_model (RBPlaylistSourceRecorder *recorder,
+gboolean    rb_playlist_source_recorder_add_from_model (RBPlaylistSourceRecorder *recorder,
                                                         GtkTreeModel             *model,
                                                         RBPlaylistSourceIterFunc  func,
                                                         GError                  **error);

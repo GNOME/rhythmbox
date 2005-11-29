@@ -103,16 +103,7 @@ static guint rb_recorder_signals [LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
-gboolean
-rb_recorder_enabled (void)
-{
-        char    *device  = rb_recorder_get_default_device ();
-        gboolean enabled = (device != NULL);
-
-        g_free (device);
-
-        return enabled;
-}
+#define RB_RECORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RECORDER, RBRecorderPrivate))
 
 GQuark
 rb_recorder_error_quark (void)
@@ -207,14 +198,52 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_TYPE_NONE,
                               1,
                               G_TYPE_POINTER);
+
+        g_type_class_add_private (klass, sizeof (RBRecorderPrivate));
+}
+
+static NautilusBurnDrive *
+rb_recorder_get_default_drive (void)
+{
+        NautilusBurnDrive *drive  = NULL;
+        GList             *drives = NULL;
+
+        drives = nautilus_burn_drive_get_list (TRUE, FALSE);
+
+        if (drives)
+                drive = nautilus_burn_drive_copy ((NautilusBurnDrive*) drives->data);
+
+        g_list_foreach (drives, (GFunc)nautilus_burn_drive_free, NULL);
+        g_list_free (drives);
+
+        return drive;
+}
+
+gboolean
+rb_recorder_enabled (void)
+{
+        NautilusBurnDrive *drive;
+        gboolean           enabled;
+
+        drive = rb_recorder_get_default_drive ();
+
+        enabled = (drive != NULL);
+
+        if (drive) {
+                nautilus_burn_drive_free (drive);
+        }
+
+        return enabled;
 }
 
 static void
 rb_recorder_init (RBRecorder *recorder)
 {
-        recorder->priv = g_new0 (RBRecorderPrivate, 1);
+        recorder->priv = RB_RECORDER_GET_PRIVATE (recorder);
 
         recorder->priv->tmp_dir = g_strdup (g_get_tmp_dir ());
+
+        recorder->priv->drive = rb_recorder_get_default_drive ();
 }
 
 static void
@@ -499,8 +528,6 @@ rb_recorder_finalize (GObject *object)
                         (GFunc)recorder_track_free,
                         NULL);
         g_list_free (recorder->priv->tracks);
-
-        g_free (recorder->priv);
 
         G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -810,7 +837,8 @@ rb_recorder_get_device (RBRecorder  *recorder,
         drive = recorder->priv->drive;
 
         if (! drive) {
-                g_set_error (error, RB_RECORDER_ERROR,
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
                              _("Cannot find drive"));
                 return NULL;
@@ -834,20 +862,28 @@ rb_recorder_set_device (RBRecorder  *recorder,
         if (error)
                 *error = NULL;
 
+        if (recorder->priv->drive) {
+                nautilus_burn_drive_free (recorder->priv->drive);
+                recorder->priv->drive = NULL;
+        }
+
         drives = nautilus_burn_drive_get_list (TRUE, FALSE);
 
         for (tmp = drives; tmp != NULL; tmp = tmp->next) {
-                NautilusBurnDrive *drive = (NautilusBurnDrive*) tmp->data;
+                NautilusBurnDrive *drive = (NautilusBurnDrive *) tmp->data;
+
                 if (strcmp (drive->device, device) == 0) {
                         recorder->priv->drive = drive;
                         break;
                 }
+
                 nautilus_burn_drive_free (drive);
         }
         g_list_free (drives);
 
         if (! recorder->priv->drive) {
-                g_set_error (error, RB_RECORDER_ERROR,
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
                              _("Cannot find drive %s"),
                              device);
@@ -855,7 +891,8 @@ rb_recorder_set_device (RBRecorder  *recorder,
         }
 
         if (! (recorder->priv->drive->type & NAUTILUS_BURN_DRIVE_TYPE_CD_RECORDER)) {
-                g_set_error (error, RB_RECORDER_ERROR,
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
                              _("Drive %s is not a recorder"),
                              device);
@@ -992,23 +1029,6 @@ rb_recorder_warn_data_loss_cb (NautilusBurnRecorder *cdrecorder,
         return ret;
 }
 
-static NautilusBurnDrive *
-rb_recorder_get_default_drive (void)
-{
-        NautilusBurnDrive *drive  = NULL;
-        GList             *drives = NULL;
-
-        drives = nautilus_burn_drive_get_list (TRUE, FALSE);
-
-        if (drives)
-                drive = nautilus_burn_drive_copy ((NautilusBurnDrive*) drives->data);
-
-        g_list_foreach (drives, (GFunc)nautilus_burn_drive_free, NULL);
-        g_list_free (drives);
-
-        return drive;
-}
-
 char *
 rb_recorder_get_default_device (void)
 {
@@ -1029,20 +1049,23 @@ gint64
 rb_recorder_get_media_length (RBRecorder *recorder,
                               GError    **error)
 {
-        char  *device;
-        gint64 size;
-        gint64 secs;
+        gint64                size;
+        gint64                secs;
 
-        g_return_val_if_fail (recorder != NULL, FALSE);
-        g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
-        g_return_val_if_fail (recorder->priv != NULL, FALSE);
+        g_return_val_if_fail (recorder != NULL, -1);
+        g_return_val_if_fail (RB_IS_RECORDER (recorder), -1);
+        g_return_val_if_fail (recorder->priv != NULL, -1);
 
-        if (recorder->priv->drive)
-                device = g_strdup (recorder->priv->drive->device);
-        else
-                device = rb_recorder_get_default_device ();
-                
-        size = nautilus_burn_drive_get_media_size_from_path (device);
+        if (! recorder->priv->drive) {
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
+                             RB_RECORDER_ERROR_INTERNAL,
+                             _("No writable drives found."));
+
+                return -1;
+        }
+
+        size = nautilus_burn_drive_get_media_size (recorder->priv->drive);
         if (size > 0) {
 #ifdef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
                 secs = NAUTILUS_BURN_DRIVE_SIZE_TO_TIME (size);
@@ -1052,8 +1075,6 @@ rb_recorder_get_media_length (RBRecorder *recorder,
         } else {
                 secs = size;
         }
-
-        g_free (device);
 
         return secs;
 }
@@ -1203,7 +1224,6 @@ rb_recorder_burn (RBRecorder *recorder,
         int                            res;
         gboolean                       result;
         gint64                         tracks_length;
-        gint64                         media_length;
 
         g_return_val_if_fail (recorder != NULL, RB_RECORDER_RESULT_ERROR);
         g_return_val_if_fail (RB_IS_RECORDER (recorder), RB_RECORDER_RESULT_ERROR);
@@ -1214,18 +1234,12 @@ rb_recorder_burn (RBRecorder *recorder,
         if (!recorder->priv->tracks)
                 return RB_RECORDER_RESULT_ERROR;
 
-        if (!recorder->priv->drive) {
-                char *default_device = rb_recorder_get_default_device ();
-
-                if (!default_device) {
-                        g_warning (_("Could not determine default writer device"));
-                        return RB_RECORDER_RESULT_ERROR;
-                }
-
-                rb_recorder_set_device  (recorder, default_device, error);
-                g_free (default_device);
-                if (error && *error)
-                        return RB_RECORDER_RESULT_ERROR;
+        if (! recorder->priv->drive) {
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
+                             RB_RECORDER_ERROR_INTERNAL,
+                             _("No writable drives found."));
+                return RB_RECORDER_RESULT_ERROR;
         }
 
         tracks_length = get_tracks_length (recorder, error);
@@ -1234,28 +1248,6 @@ rb_recorder_burn (RBRecorder *recorder,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_INTERNAL,
                              _("Could not determine audio track durations."));
-                return RB_RECORDER_RESULT_ERROR;
-        }
-
-        media_length = rb_recorder_get_media_length (recorder, error);
-
-        /* don't fail here if media length cannot be determined
-         * nautilus_burn_recorder_write_tracks will fail and issue a signal */
-        if ((media_length > 0) && (tracks_length > media_length)) {
-                char *duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, tracks_length / 60);
-                char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_length / 60);
-
-                g_set_error (error,
-                             RB_RECORDER_ERROR,
-                             RB_RECORDER_ERROR_GENERAL,
-                             _("This playlist is %s minutes long.  "
-                               "This exceeds the %s minute length of the media in the drive."),
-                             duration_string,
-                             media_duration_string);
-
-                g_free (duration_string);
-                g_free (media_duration_string);
-
                 return RB_RECORDER_RESULT_ERROR;
         }
 
