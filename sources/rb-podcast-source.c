@@ -479,6 +479,7 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 				 source, 0);
 
 
+	/* Podcast date column */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new();
 	
@@ -486,7 +487,14 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	gtk_tree_view_column_set_resizable (column, TRUE);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+	{
+		const char *sample_strings[3];
+		sample_strings[0] = _("Date");
+		sample_strings[1] = rb_entry_view_get_time_date_column_sample ();
+		sample_strings[2] = NULL;
+		rb_entry_view_set_fixed_column_width (source->priv->posts, column, renderer, sample_strings);
+	}
 	
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 (GtkTreeCellDataFunc) rb_podcast_source_post_date_cell_data_func,
@@ -507,7 +515,8 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	gtk_tree_view_column_set_resizable (column, TRUE);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+	gtk_tree_view_column_set_expand (column, TRUE);
 	
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 (GtkTreeCellDataFunc) rb_podcast_source_post_feed_cell_data_func,
@@ -524,14 +533,30 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_LAST_PLAYED);
 
 
+	/* Status column */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_progress_new();
 	
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
 
 	gtk_tree_view_column_set_clickable (column, TRUE);
-	gtk_tree_view_column_set_fixed_width (column, 80);
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+
+	{
+		static const char *status_strings[7];
+		status_strings[0] = _("Status");
+		status_strings[1] = _("Completed");
+		status_strings[2] = _("Paused");
+		status_strings[3] = _("Waiting");
+		status_strings[4] = _("Failed");
+		status_strings[5] = "100 %";
+		status_strings[6] = NULL;
+		
+		rb_entry_view_set_fixed_column_width (source->priv->posts, 
+						      column, 
+						      renderer, 
+						      status_strings);
+	}
 	
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 (GtkTreeCellDataFunc) rb_podcast_source_post_status_cell_data_func,

@@ -154,6 +154,13 @@ const char *	rb_entry_view_get_sorting_type		(RBEntryView *view);
 /** Should be called by sources before resorting the query model. */
 void		rb_entry_view_set_resorting		(RBEntryView *view);
 
+void		rb_entry_view_set_fixed_column_width	(RBEntryView *view,
+							 GtkTreeViewColumn *column,
+							 GtkCellRenderer *renderer,
+							 const gchar **strings);
+
+const char *	rb_entry_view_get_time_date_column_sample (void);
+
 G_END_DECLS
 
 #endif /* __RB_ENTRY_VIEW_H */

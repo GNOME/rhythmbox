@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #include "rb-tree-dnd.h"
 #include "rb-entry-view.h"
@@ -40,6 +41,7 @@
 #include "rb-stock-icons.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
+#include "rb-cut-and-paste-code.h"
 
 static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
 
@@ -1281,6 +1283,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	struct RBEntryViewCellDataFuncData *sort_data;
 	const char *title = NULL;
 	const char *key = NULL;
+	const char *strings[4] = {0};
 	GtkTreeCellDataFunc cell_data_func = NULL;
 	GCompareDataFunc sort_func = NULL;
 	gpointer real_sort_data = NULL;
@@ -1336,6 +1339,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		real_sort_data = view;
 		title = _("Trac_k");
 		key = "Track";
+		strings[0] = title;
+		strings[1] = "9999";
 		break;
 	case RB_ENTRY_VIEW_COL_TITLE:
 		propid = RHYTHMDB_PROP_TITLE;
@@ -1388,6 +1393,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("Tim_e");
 		key = "Time";
+		strings[0] = title;
+		strings[1] = "000:00";
+		strings[2] = _("Unknown");
 		break;
 	case RB_ENTRY_VIEW_COL_YEAR:
 		propid = RHYTHMDB_PROP_DATE;
@@ -1397,6 +1405,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_date_sort_func;
 		title = _("_Year");
 		key = "Year";
+		strings[0] = title;
+		strings[1] = "0000";
 		break;
 #if 0
 	case RB_ENTRY_VIEW_COL_QUALITY:
@@ -1407,6 +1417,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("_Quality");
 		key = "Quality";
+		strings[0] = title;
+		strings[1] = "000";
 		break;
 #endif
 	/* RB_ENTRY_VIEW_COL_RATING at bottom */
@@ -1418,6 +1430,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("_Play Count");
 		key = "PlayCount";
+		strings[0] = title;
+		strings[1] = _("Never");
+		strings[2] = "9999";
 		break;
 	case RB_ENTRY_VIEW_COL_LAST_PLAYED:
 		propid = RHYTHMDB_PROP_LAST_PLAYED;
@@ -1427,6 +1442,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("_Last Played");
 		key = "LastPlayed";
+		strings[0] = title;
+		strings[1] = rb_entry_view_get_time_date_column_sample ();
+		strings[2] = _("Never");
 		break;
 	case RB_ENTRY_VIEW_COL_FIRST_SEEN:
 		propid = RHYTHMDB_PROP_FIRST_SEEN;
@@ -1436,6 +1454,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("_Date Added");
 		key = "FirstSeen";
+		strings[0] = title;
+		strings[1] = rb_entry_view_get_time_date_column_sample ();
 		break;
 	case RB_ENTRY_VIEW_COL_RATING:
 	default:
@@ -1445,14 +1465,23 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	}
 
 	renderer = gtk_cell_renderer_text_new ();
+
+	/* 
+	 * Columns must either be expanding (ellipsized) or have a 
+	 * fixed minimum width specified.  Otherwise, gtk+ gives them a 
+	 * width of 0.
+	 */
 	if (ellipsize) {
 		g_object_set (G_OBJECT (renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 		gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
+	} else {
+		rb_entry_view_set_fixed_column_width (view, column, renderer, strings);
 	}
+
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 cell_data_func, cell_data, g_free);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_clickable (column, TRUE);
 	gtk_tree_view_column_set_resizable (column, TRUE);
 
@@ -1520,6 +1549,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 							 construct_properties));
 
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new ());
+	gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
 					     type_ahead_search_func, 
@@ -2309,3 +2339,63 @@ rb_entry_view_grab_focus (GtkWidget *widget)
 
 	gtk_widget_grab_focus (GTK_WIDGET (view->priv->treeview));
 }
+
+
+void
+rb_entry_view_set_fixed_column_width (RBEntryView *view,
+				      GtkTreeViewColumn *column,
+				      GtkCellRenderer *renderer, 
+				      const gchar **strings) 
+{
+	gint max_width = 0;
+	int i = 0;
+
+	while (strings[i] != NULL) {
+		gint width;
+		g_object_set (renderer, "text", strings[i], NULL);
+		gtk_cell_renderer_get_size (renderer,
+					    view->priv->treeview,
+					    NULL,
+					    NULL, NULL,
+					    &width, NULL);
+
+		if (width > max_width)
+			max_width = width;
+
+		i++;
+	}
+
+	/* include some arbitrary amount of padding, just to be safeish */
+	gtk_tree_view_column_set_fixed_width (column, max_width + 5);
+}
+
+const char *
+rb_entry_view_get_time_date_column_sample ()
+{
+	static const char *sample = NULL;
+	/* 
+	 * Currently, Japanese is the only translation that uses
+	 * anything other than %Y, %m ,%d, %H, and %M to format dates.
+	 * It uses %B (month name) and %e (days), and the values for
+	 * the month name appear to all consist of the month number
+	 * followed by a single character, so they're of consistent
+	 * width.  So, this approach should work for every locale.
+	 *
+	 * Midnight on September 30th, 2000 is the widest date/time I
+	 * can think of.  2000-09-30 00:00.
+	 */
+
+	if (sample == NULL) {
+				/*    s  m  h   d  M    Y dw   dY  x */
+		struct tm someday = { 0, 0, 0, 30, 9, 100, 6, 274, 0};
+
+		/* Translators:  Please keep the translated date format
+		 * compact, and avoid variable-width items such as month and
+		 * day names wherever possible.  This allows us to disable
+		 * column autosizing, which makes the Rhythmbox UI much faster.
+		 */
+		sample = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &someday);
+	}
+	return sample;
+}
+

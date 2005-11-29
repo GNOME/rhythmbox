@@ -293,17 +293,27 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
 
 	{
+		const char *title = _("Trac_k");
+		const char *strings[3] = {0};
+
 		GtkTreeViewColumn *column = gtk_tree_view_column_new ();
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 
 		gtk_tree_view_column_set_clickable (column, TRUE);
+		gtk_tree_view_column_set_resizable (column, TRUE);
+		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+
+		strings[0] = title;
+		strings[1] = "9999";
+		rb_entry_view_set_fixed_column_width (source->priv->songs, column, renderer,
+						      strings);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 (GtkTreeCellDataFunc)
 							 rb_playlist_source_track_cell_data_func,
 							 source, NULL);
-		rb_entry_view_append_column_custom (source->priv->songs, column, 
-						    _("Trac_k"), "PlaylistTrack", NULL, NULL);
+		rb_entry_view_append_column_custom (source->priv->songs, column, title,
+						    "PlaylistTrack", NULL, NULL);
 	}
 
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);

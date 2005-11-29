@@ -1,3 +1,21 @@
+2005-11-29  James Livingston  <jrl@ids.org.au>
+
+	patch by: Jonathan Matthew <jonathan@kaolin.hn.org> to disable column
+	autosizing, which results in large speedups. Closes bug 312122.
+
+	* po/ja.po: change the date format, so that it is a constant width
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	* widgets/rb-entry-view.c: (rb_entry_view_append_column),
+	(rb_entry_view_constructor): make columns use fixed widths,
+	disable column autosizing, and enable fixed-height mode.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_set_fixed_column_width),
+	(rb_entry_view_get_time_date_column_sample):
+	* widgets/rb-entry-view.h: functions to set a column to a fixed width,
+	and get the canonical date format for the locale.
+
 ============ Version 0.9.2
 
 2005-11-28  James Livingston  <jrl@ids.org.au>
