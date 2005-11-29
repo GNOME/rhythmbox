@@ -1,3 +1,13 @@
+2005-11-29  James Livingston  <jrl@ids.org.au>
+
+	* data/ui/rhythmbox-ui.xml:
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_songs_show_popup_cb),
+	(rb_podcast_source_cmd_download_post),
+	(rb_podcast_source_cmd_cancel_download): split download and cancel
+	download commands. Replace usage of "Post" with "Esisode". Fixes bug
+	321653.
+
 2005-11-18  William Jon McCann  <mccann@jhu.edu>
 
 	* widgets/rb-dialog.c (rb_error_dialog): Don't use a

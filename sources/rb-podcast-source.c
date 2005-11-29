@@ -133,16 +133,14 @@ static void posts_view_drag_data_received_cb 		(GtkWidget *widget,
 
 static void rb_podcast_source_cmd_download_post		(GtkAction *action,
 							 RBPodcastSource *source);
-
+static void rb_podcast_source_cmd_cancel_download	(GtkAction *action,
+							 RBPodcastSource *source);
 static void rb_podcast_source_cmd_delete_feed		(GtkAction *action,
 							 RBPodcastSource *source);
-
 static void rb_podcast_source_cmd_update_feed		(GtkAction *action,
 							 RBPodcastSource *source);
-
 static void rb_podcast_source_cmd_update_all		(GtkAction *action,
 							 RBPodcastSource *source);
-
 static void rb_podcast_source_cmd_properties_feed	(GtkAction *action,
 							 RBPodcastSource *source);
 
@@ -269,11 +267,14 @@ struct RBPodcastSourcePrivate
 
 static GtkActionEntry rb_podcast_source_actions [] =
 {
-	{ "PodcastSrcDownloadPost", NULL, N_("Download Podcast _Episode"), NULL,
-	  N_("Download Post"),
+	{ "PodcastSrcDownloadPost", NULL, N_("Download _Episode"), NULL,
+	  N_("Download Podcast Episode"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
+	{ "PodcastSrcCancelDownload", NULL, N_("_Cancel Download"), NULL,
+	  N_("Cancel Episode Download"),
+	  G_CALLBACK (rb_podcast_source_cmd_cancel_download) },
 	{ "PodcastFeedProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
-	  N_("Properties Feed"),
+	  N_("Episode Properties"),
 	  G_CALLBACK (rb_podcast_source_cmd_properties_feed) },
 	{ "PodcastFeedUpdate", GTK_STOCK_REFRESH, N_("_Update Podcast Feed"), NULL,
 	  N_("Update Feed"),
@@ -966,39 +967,30 @@ rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
 		return;
 	}
 	else {
-		GtkAction* act_post;
-		gulong status;
-		gulong all_status = 999;
-		RhythmDBEntry *entry = NULL;
+		GtkAction* action;
 		GList *lst = rb_entry_view_get_selected_entries(view);
-		
+		gboolean downloadable = FALSE;
+		gboolean cancellable = FALSE;
+
 		while (lst) {
-			entry = (RhythmDBEntry *) lst->data;
-			status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-			if ((status != all_status) && (all_status != 999)) {
-				all_status = 999;
-				break;
-			} 
-			else {
-				all_status = status;
-			}
+			RhythmDBEntry *entry = (RhythmDBEntry*) lst->data;
+			gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+
+			if ((status > 0 && status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
+			    status == RHYTHMDB_PODCAST_STATUS_WAITING)
+				cancellable = TRUE;
+			else if (status == RHYTHMDB_PODCAST_STATUS_PAUSED ||
+				 status == RHYTHMDB_PODCAST_STATUS_ERROR)
+				 downloadable = TRUE;
 					
 			lst = lst->next;
 		}
 
-		act_post = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcDownloadPost");
+		action = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcDownloadPost");
+		gtk_action_set_sensitive (action, downloadable);
 
-		if ((all_status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
-		    (all_status == RHYTHMDB_PODCAST_STATUS_WAITING)) {
-			g_object_set (G_OBJECT (act_post), "label", _("_Cancel Download") , NULL);
-			gtk_action_set_visible (act_post, TRUE);
-		}
-		else if ((all_status > RHYTHMDB_PODCAST_STATUS_COMPLETE) && (all_status != 999)) {
-			g_object_set (G_OBJECT (act_post), "label", _("_Download Post") , NULL);
-			gtk_action_set_visible (act_post, TRUE);
-		}
-		else 
-			gtk_action_set_visible (act_post, FALSE);
+		action = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcCancelDownload");
+		gtk_action_set_sensitive (action, cancellable);
 
 		_rb_source_show_popup (RB_SOURCE (source), "/PodcastViewPopup");
 	}
@@ -1302,7 +1294,6 @@ rb_podcast_source_cmd_download_post (GtkAction *action,
 				     RBPodcastSource *source)
 {
 	GList *lst;
-	gulong status;
 	GValue val = {0, };
 	RBEntryView *posts;
 	
@@ -1314,18 +1305,44 @@ rb_podcast_source_cmd_download_post (GtkAction *action,
 
 	while (lst != NULL) {
 		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
-		status  = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-		if ( (status < RHYTHMDB_PODCAST_STATUS_COMPLETE) || (status == RHYTHMDB_PODCAST_STATUS_WAITING)) {
-			/* cancel download */
-			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
-			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
-			rb_podcast_manager_cancel_download (source->priv->podcast_mg, entry);
-		}
-		else {
-			/* add to download */
+		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+
+		if (status == RHYTHMDB_PODCAST_STATUS_PAUSED ||
+		    status == RHYTHMDB_PODCAST_STATUS_ERROR) {
 			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_WAITING);
 			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 			rb_podcast_manager_download_entry (source->priv->podcast_mg, entry);
+		}
+			
+		lst = lst->next;
+	}
+	g_value_unset (&val);
+	rhythmdb_commit (source->priv->db);
+}
+
+static void
+rb_podcast_source_cmd_cancel_download (GtkAction *action,
+				       RBPodcastSource *source)
+{
+	GList *lst;
+	GValue val = {0, };
+	RBEntryView *posts;
+	
+	rb_debug ("Add to download action");
+	posts = source->priv->posts;
+	
+	lst = rb_entry_view_get_selected_entries (posts);
+	g_value_init (&val, G_TYPE_ULONG);
+
+	while (lst != NULL) {
+		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
+		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+
+		if ((status > 0 && status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
+		    status == RHYTHMDB_PODCAST_STATUS_WAITING) {
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
+			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+			rb_podcast_manager_cancel_download (source->priv->podcast_mg, entry);
 		}
 			
 		lst = lst->next;
