@@ -88,6 +88,11 @@ gboolean		rhythmdb_query_model_entry_to_iter(RhythmDBQueryModel *model,
 
 gboolean		rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model);
 
+void			rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
+							     GCompareDataFunc sort_func,
+							     gpointer user_data,
+							     GDestroyNotify sort_destroy_notify);
+
 G_END_DECLS
 
 #endif /* __RHYTHMBDB_QUERY_MODEL_H */

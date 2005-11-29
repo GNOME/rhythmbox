@@ -154,8 +154,6 @@ struct RBEntryViewPrivate
 	GtkTreeViewColumn *sorting_column;
 	gint sorting_order;
 	char *sorting_column_name;
-	struct RBEntryViewReverseSortingData *reverse_sorting_data;
-	gboolean resorting;
 
 	gboolean have_selection;
 
@@ -203,7 +201,7 @@ enum
 	PROP_IS_DRAG_DEST,
 };
 
-static GObjectClass *parent_class = NULL;
+G_DEFINE_TYPE (RBEntryView, rb_entry_view, GTK_TYPE_SCROLLED_WINDOW)
 
 static guint rb_entry_view_signals[LAST_SIGNAL] = { 0 };
 
@@ -224,41 +222,11 @@ type_ahead_search_func (GtkTreeModel *model, gint column,
 }
 
 
-GType
-rb_entry_view_get_type (void)
-{
-	static GType rb_entry_view_type = 0;
-
-	if (rb_entry_view_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBEntryViewClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_entry_view_class_init,
-			NULL,
-			NULL,
-			sizeof (RBEntryView),
-			0,
-			(GInstanceInitFunc) rb_entry_view_init
-		};
-
-		rb_entry_view_type = g_type_register_static (GTK_TYPE_SCROLLED_WINDOW,
-							    "RBEntryView",
-							    &our_info, 0);
-	}
-
-	return rb_entry_view_type;
-}
-
 static void
 rb_entry_view_class_init (RBEntryViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_entry_view_finalize;
 	object_class->constructor = rb_entry_view_constructor;
@@ -469,7 +437,7 @@ rb_entry_view_finalize (GObject *object)
 
 	g_free (view->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_entry_view_parent_class)->finalize (object);
 }
 
 
@@ -493,7 +461,6 @@ rb_entry_view_set_property (GObject *object,
 	case PROP_MODEL:
 	{
 		RhythmDBQueryModel *new_model;
-		struct RBEntryViewColumnSortData *sort_data;
 		
 		if (view->priv->model) {
 			rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (view->priv->model), FALSE);
@@ -536,26 +503,28 @@ rb_entry_view_set_property (GObject *object,
 					 view,
 					 0);
 
+		view->priv->model = new_model;
 		if (view->priv->sorting_column) {
+			struct RBEntryViewColumnSortData *sort_data;
 			sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
 							 view->priv->sorting_column);
 			g_assert (sort_data);
 
 			if (view->priv->sorting_order != GTK_SORT_DESCENDING) {
-				g_object_set (G_OBJECT (new_model),
+				g_object_set (G_OBJECT (view->priv->model),
 					      "sort-func", sort_data->func,
 					      "sort-data", sort_data->data,
 					      "sort-data-destroy", NULL,
 					      NULL);
 			} else {
-				view->priv->reverse_sorting_data
+				struct RBEntryViewReverseSortingData *reverse_sorting_data
 					= g_new (struct RBEntryViewReverseSortingData, 1);
-				view->priv->reverse_sorting_data->func = sort_data->func;
-				view->priv->reverse_sorting_data->data = sort_data->data;
-				
-				g_object_set (G_OBJECT (new_model),
+				reverse_sorting_data->func = sort_data->func;
+				reverse_sorting_data->data = sort_data->data;
+
+				g_object_set (G_OBJECT (view->priv->model),
 					      "sort-func", reverse_sorting_func,
-					      "sort-data", view->priv->reverse_sorting_data,
+					      "sort-data", reverse_sorting_data,
 					      "sort-data-destroy", g_free,
 					      NULL);
 			}
@@ -563,16 +532,9 @@ rb_entry_view_set_property (GObject *object,
 
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (new_model));
-		view->priv->model = new_model;
 		view->priv->have_selection = FALSE;
 
-		if (view->priv->resorting) {
-			/* When the sort order changes, the model is replaced
-			 * but the set of entries doesn't change. */
-			view->priv->resorting = FALSE;
-		} else {
-			g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
-		}
+		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
 
 		queue_changed_sig (view);
 
@@ -1240,14 +1202,6 @@ rb_entry_view_set_sorting_order (RBEntryView *view, const char *column_name, gin
 	rb_entry_view_sync_sorting (view);
 }
 
-void
-rb_entry_view_set_resorting (RBEntryView *view)
-{
-	if (view->priv->resorting)
-		g_warning ("Sort order changed while resorting");
-	view->priv->resorting = TRUE;
-}
-
 static void
 rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 {
@@ -1541,12 +1495,10 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 {
 	RBEntryView *view;
 	RBEntryViewClass *klass;
-	GObjectClass *parent_class;
 	klass = RB_ENTRY_VIEW_CLASS (g_type_class_peek (RB_TYPE_ENTRY_VIEW));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	view = RB_ENTRY_VIEW (parent_class->constructor (type, n_construct_properties,
-							 construct_properties));
+	view = RB_ENTRY_VIEW (G_OBJECT_CLASS (rb_entry_view_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new ());
 	gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->priv->treeview), TRUE);
@@ -1661,19 +1613,6 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		
 	return G_OBJECT (view);
 }
-
-/* static gboolean */
-/* rb_entry_view_dummy_drag_drop_cb (GtkWidget *widget, */
-/* 				  GdkDragContext *drag_context, */
-/* 				  int x, int y, guint time, */
-/* 				  gpointer user_data) */
-/* { */
-/* 	g_signal_stop_emission_by_name (widget, "drag_drop"); */
-
-/* 	return TRUE; */
-/* } */
-
-
 
 static void
 rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
@@ -2399,3 +2338,30 @@ rb_entry_view_get_time_date_column_sample ()
 	return sample;
 }
 
+void
+rb_entry_view_resort_model (RBEntryView *view)
+{
+	struct RBEntryViewColumnSortData *sort_data;
+
+	g_assert (view->priv->sorting_column);
+	sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
+					 view->priv->sorting_column);
+	g_assert (sort_data);
+
+	if (view->priv->sorting_order != GTK_SORT_DESCENDING) {
+		rhythmdb_query_model_set_sort_order (view->priv->model,
+			      			     sort_data->func,
+			      			     sort_data->data,
+			      			     NULL);
+	} else {
+		struct RBEntryViewReverseSortingData *reverse_sorting_data
+			= g_new (struct RBEntryViewReverseSortingData, 1);
+		reverse_sorting_data->func = sort_data->func;
+		reverse_sorting_data->data = sort_data->data;
+
+		rhythmdb_query_model_set_sort_order (view->priv->model,
+			      			     (GCompareDataFunc)reverse_sorting_func,
+						     reverse_sorting_data,
+			      			     g_free);
+	}
+}

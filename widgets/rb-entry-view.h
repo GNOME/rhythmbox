@@ -151,15 +151,15 @@ void		rb_entry_view_set_sorting_order		(RBEntryView *view, const char *column_na
 const char *	rb_entry_view_get_sorting_type		(RBEntryView *view);
  void		rb_entry_view_set_sorting_type		(RBEntryView *view, const char *sorttype);
 
-/** Should be called by sources before resorting the query model. */
-void		rb_entry_view_set_resorting		(RBEntryView *view);
-
 void		rb_entry_view_set_fixed_column_width	(RBEntryView *view,
 							 GtkTreeViewColumn *column,
 							 GtkCellRenderer *renderer,
 							 const gchar **strings);
 
 const char *	rb_entry_view_get_time_date_column_sample (void);
+
+/* resort the model with the current sorting order*/
+void		rb_entry_view_resort_model		(RBEntryView *view);
 
 G_END_DECLS
 

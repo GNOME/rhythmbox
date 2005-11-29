@@ -1,5 +1,32 @@
 2005-11-29  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_sort_order):
+	* rhythmdb/rhythmdb-query-model.h: add a function to resort the query,
+	emitting the tree-model "resorted" signal.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_finalize), (rb_entry_view_set_property),
+	(rb_entry_view_constructor), (rb_entry_view_resort_model):
+	* widgets/rb-entry-view.h: add a function to resort the entry view,
+	using the above function.
+
+	* sources/rb-iradio-source.c:
+	(rb_iradio_source_songs_view_sort_order_changed_cb):
+	* sources/rb-library-source.c: (rb_library_source_finalize),
+	(songs_view_sort_order_changed_cb), (rb_library_source_do_query):
+	* sources/rb-playlist-source.c:
+	(rb_playlist_source_songs_sort_order_changed_cb):
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_posts_view_sort_order_changed_cb),
+	(rb_podcast_source_do_query): use the above function instead of
+	re-creating the query model. This makes changing the sorting an order
+	of magnitude faster, as it uses a single resorted signal rather than
+	deleting and re-adding everything (which emits 2N signals). Closes bug
+	315389.
+
+2005-11-29  James Livingston  <jrl@ids.org.au>
+
 	patch by: Jonathan Matthew <jonathan@kaolin.hn.org> to disable column
 	autosizing, which results in large speedups. Closes bug 312122.
 

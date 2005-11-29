@@ -260,7 +260,6 @@ struct RBPodcastSourcePrivate
 	char *search_text;
 	GList *selected_feeds;
 	RhythmDBQueryModel *cached_all_query;
-	char *cached_sorting_type;
 
 	gboolean initialized;
 	
@@ -944,8 +943,7 @@ rb_podcast_source_posts_view_sort_order_changed_cb (RBEntryView *view,
 						   RBPodcastSource *source)
 {
 	rb_debug ("sort order changed");
-	rb_entry_view_set_resorting (view);
-	rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_SEARCH);
+	rb_entry_view_resort_model (view);
 }
 
 static void
@@ -1157,36 +1155,23 @@ rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
 {
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
-	gboolean is_all_query, sorting_matches;
-	const char *current_sorting_type;
+	gboolean is_all_query;
 
 	rb_debug ("select entry filter");
 	
 	is_all_query  = ((qtype == RB_PODCAST_QUERY_TYPE_ALL) ||
 			 ((source->priv->selected_feeds == NULL) &&
 			 (source->priv->search_text == NULL)));
-	current_sorting_type = rb_entry_view_get_sorting_type (source->priv->posts);
-	sorting_matches = source->priv->cached_sorting_type
-	&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
-	rb_debug ("current sorting: %s, match: %s", current_sorting_type, sorting_matches ? "TRUE" : "FALSE" );
 
-	if (is_all_query) {
-		if (sorting_matches) {
-                	rb_debug ("using cached query");
-                	rb_entry_view_set_model (source->priv->posts, RHYTHMDB_QUERY_MODEL (source->priv->cached_all_query));
-                	return;
-		} else if (source->priv->cached_all_query) {
-			g_object_unref (source->priv->cached_all_query);
-			source->priv->cached_all_query = NULL;
-			g_free (source->priv->cached_sorting_type);
-		}
+	if (is_all_query && source->priv->cached_all_query) {
+		g_object_unref (source->priv->cached_all_query);
+		source->priv->cached_all_query = NULL;
 	}
 
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
 	if (source->priv->cached_all_query == NULL) {
 		rb_debug ("caching new query");
 		source->priv->cached_all_query = query_model;
-		source->priv->cached_sorting_type = g_strdup (current_sorting_type);
 	}
 
 	rb_debug ("setting empty model");

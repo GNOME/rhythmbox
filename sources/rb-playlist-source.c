@@ -1082,9 +1082,6 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 static void
 rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBPlaylistSource *source)
 {
-	GPtrArray *query;
-	guint limit_count, limit_mb, limit_time;
-
 	g_assert (source->priv->automatic);
 
 	/* don't process this if we are in the middle of setting a query */
@@ -1092,16 +1089,7 @@ rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBPlaylistSou
 		return;
 	rb_debug ("sort order changed");
 
-	/* need to re-run query with the same settings*/
-	g_object_get (G_OBJECT (source->priv->model),
-		      "query", &query,
-		      "max-count", &limit_count,
-		      "max-size", &limit_mb,
-		      "max-size", &limit_time,
-		      NULL);
-
-	rb_playlist_source_do_query (source, query, limit_count, limit_mb, limit_time);
-	rhythmdb_query_free (query);
+	rb_entry_view_resort_model (view);
 }
 
 static void

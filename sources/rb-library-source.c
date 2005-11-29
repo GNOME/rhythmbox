@@ -169,7 +169,6 @@ struct RBLibrarySourcePrivate
 	RhythmDBPropertyModel *cached_genres_model;
 	RhythmDBPropertyModel *cached_artists_model;
 	RhythmDBPropertyModel *cached_albums_model;
-	char *cached_sorting_type;
 	
 	RhythmDBQueryModel *model;
 	RhythmDBQueryModel *active_query;
@@ -455,7 +454,6 @@ rb_library_source_finalize (GObject *object)
 	g_free (source->priv->artist);
 	g_free (source->priv->album);
 
-	g_free (source->priv->cached_sorting_type);
 	if (source->priv->cached_all_query)
 		g_object_unref (G_OBJECT (source->priv->cached_all_query));
 
@@ -972,8 +970,7 @@ static void
 songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source)
 {
 	rb_debug ("sort order changed");
-	rb_entry_view_set_resorting (view);
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
+	rb_entry_view_resort_model (view);
 }
 
 static char *
@@ -1486,8 +1483,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	RhythmDBPropertyModel *album_model = NULL;
 	GtkTreeModel *model;
 	GPtrArray *query;
-	gboolean is_all_query, sorting_matches;
-	const char *current_sorting_type;
+	gboolean is_all_query;
 
 	/* Unlocked */
 	rb_debug ("preparing to read lock for query");
@@ -1496,50 +1492,22 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			source->priv->selected_artists == NULL &&	    
 			source->priv->selected_albums == NULL &&	    
 			source->priv->search_text == NULL);
-	current_sorting_type = rb_entry_view_get_sorting_type (source->priv->songs);
-	sorting_matches = source->priv->cached_sorting_type
-	&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
-	rb_debug ("current sorting: %s, match: %s", current_sorting_type, sorting_matches ? "TRUE" : "FALSE" );
 
-	if (is_all_query) {
-		if (sorting_matches) {
-			rb_debug ("cached query hit");
-			source->priv->model = source->priv->cached_all_query;
-			source->priv->active_query = NULL;
-			rb_entry_view_set_model (source->priv->songs,
-						 RHYTHMDB_QUERY_MODEL (source->priv->cached_all_query));
-			g_object_set (G_OBJECT (source->priv->cached_genres_model),
-				      "query-model", source->priv->cached_all_query, NULL);
-			g_object_set (G_OBJECT (source->priv->cached_artists_model),
-				      "query-model", source->priv->cached_all_query, NULL);
-			g_object_set (G_OBJECT (source->priv->cached_albums_model),
-				      "query-model", source->priv->cached_all_query, NULL);
-			rb_property_view_set_model (source->priv->genres,
-						    source->priv->cached_genres_model);
-			rb_property_view_set_model (source->priv->artists,
-						    source->priv->cached_artists_model);
-			rb_property_view_set_model (source->priv->albums,
-						    source->priv->cached_albums_model);
-			return;
-		} else if (source->priv->cached_all_query) {
-			rb_debug ("sorting mismatch, freeing cached query");
-			g_object_unref (source->priv->cached_all_query);
-			g_object_unref (source->priv->cached_genres_model);
-			g_object_unref (source->priv->cached_artists_model);
-			g_object_unref (source->priv->cached_albums_model);
-			g_free (source->priv->cached_sorting_type);
-		}
+	if (is_all_query && source->priv->cached_all_query) {
+		rb_debug ("sorting mismatch, freeing cached query");
+		g_object_unref (source->priv->cached_all_query);
+		g_object_unref (source->priv->cached_genres_model);
+		g_object_unref (source->priv->cached_artists_model);
+		g_object_unref (source->priv->cached_albums_model);
 	}
 
 	source->priv->query_type = qtype;
 	rb_debug ("query type: %d", qtype);
 
-	if (source->priv->cached_all_query == NULL
-	    || (is_all_query && !sorting_matches)) {
+	if ((source->priv->cached_all_query == NULL) || is_all_query ) {
 		rb_debug ("caching new query");
 		query_model = source->priv->active_query = source->priv->model = 
 			source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
-		source->priv->cached_sorting_type = g_strdup (current_sorting_type);
 		source->priv->cached_genres_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_GENRE);
 		source->priv->cached_artists_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
 		source->priv->cached_albums_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
