@@ -56,6 +56,8 @@ static void rb_shell_clipboard_cmd_paste (GtkAction *action,
 			                  RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_delete (GtkAction *action,
 					   RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_move_to_trash (GtkAction *action,
+						  RBShellClipboard *clipboard);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static gboolean rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard);
@@ -111,6 +113,9 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	{ "EditDelete", NULL, N_("_Delete"), NULL,
 	  N_("Delete selection"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_delete) },
+	{ "EditMovetoTrash", NULL, N_("_Move To Trash"), "<control>D",
+	  N_("Move selection to the trash"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
 };
 static guint rb_shell_clipboard_n_actions = G_N_ELEMENTS (rb_shell_clipboard_actions);
 
@@ -340,10 +345,11 @@ static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
 	gboolean have_selection;
-	gboolean can_cut;	
+	gboolean can_cut;
 	gboolean can_paste;
-	gboolean can_delete;	
-	gboolean can_copy;	
+	gboolean can_delete;
+	gboolean can_copy;
+	gboolean can_move_to_trash;
 	GtkAction *action;
 
 	if (!clipboard->priv->source)
@@ -353,7 +359,8 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	can_cut = have_selection;	
 	can_paste = have_selection;
 	can_delete = have_selection;	
-	can_copy = have_selection;	
+	can_copy = have_selection;
+	can_move_to_trash = have_selection;
 
 	rb_debug ("syncing clipboard");
 	
@@ -366,6 +373,8 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 		can_delete = rb_source_can_delete (clipboard->priv->source);
 	if (have_selection)
 		can_copy = rb_source_can_copy (clipboard->priv->source);
+	if (have_selection)
+		can_move_to_trash = rb_source_can_move_to_trash (clipboard->priv->source);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
 					      "EditCut");
@@ -373,6 +382,9 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
 					      "EditDelete");
 	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "EditMovetoTrash");
+	g_object_set (G_OBJECT (action), "sensitive", can_move_to_trash, NULL);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
 					      "EditCopy");
 	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
@@ -438,6 +450,14 @@ rb_shell_clipboard_cmd_delete (GtkAction *action,
 {
 	rb_debug ("delete");
 	rb_source_delete (clipboard->priv->source);
+}
+
+static void
+rb_shell_clipboard_cmd_move_to_trash (GtkAction *action,
+				      RBShellClipboard *clipboard)
+{
+	rb_debug ("movetotrash");
+	rb_source_move_to_trash (clipboard->priv->source);
 }
 
 static void

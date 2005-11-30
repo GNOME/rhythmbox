@@ -105,7 +105,7 @@ typedef enum
 	RHYTHMDB_PROP_FIRST_SEEN_STR,
 	RHYTHMDB_PROP_SEARCH_MATCH,
 
-//podcast propriets
+	/* Podcast properties */
 	RHYTHMDB_PROP_STATUS,
 	RHYTHMDB_PROP_DESCRIPTION,
 	RHYTHMDB_PROP_SUBTITLE,
@@ -146,7 +146,11 @@ typedef struct {
 	RBRefString *lang;
 	RBRefString *copyright;
 	RBRefString *image;
-	gulong status;   //0-99: downloading; 100: Conplete; 101: Error; 102: wait; 103: pause;
+	gulong status;	/* 0-99: downloading
+			   100: Complete
+			   101: Error
+			   102: wait
+			   103: pause */
 	gulong post_time;
 } RhythmDBPodcastFields;
 
@@ -264,7 +268,7 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->playback_error;
 	case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		return rb_refstring_get (entry->first_seen_str);
-//podcast propriets
+	/* Podcast properties */
 	case RHYTHMDB_PROP_DESCRIPTION:
 		if (entry->podcast)
 			return rb_refstring_get (entry->podcast->description);
@@ -482,6 +486,8 @@ void		rhythmdb_entry_set_uninserted   (RhythmDB *db, RhythmDBEntry *entry,
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 void            rhythmdb_entry_delete_by_type (RhythmDB *db, 
 					       RhythmDBEntryType type);
+void		rhythmdb_entry_move_to_trash (RhythmDB *db,
+					      RhythmDBEntry *entry);
 
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);

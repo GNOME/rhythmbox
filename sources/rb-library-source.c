@@ -117,6 +117,7 @@ static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_extra_views (RBSource *source);
 static void impl_delete (RBSource *source);
+static void impl_move_to_trash (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_reset_filters (RBSource *source);
 static GtkWidget *impl_get_config_widget (RBSource *source);
@@ -281,7 +282,9 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
+	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
@@ -1143,12 +1146,29 @@ static void
 impl_delete (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	GList *l;
+	GList *sel, *tem;
 
-	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l)) {
-		rhythmdb_entry_delete (source->priv->db, l->data);
+	sel = rb_entry_view_get_selected_entries (source->priv->songs);
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		rhythmdb_entry_delete (source->priv->db, tem->data);
 		rhythmdb_commit (source->priv->db);
 	}
+	g_list_free (sel);
+}
+
+static void
+impl_move_to_trash (RBSource *asource)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	GList *sel, *tem;
+
+	sel = rb_entry_view_get_selected_entries (source->priv->songs);
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		rhythmdb_entry_move_to_trash (source->priv->db,
+					       (RhythmDBEntry *) tem->data);
+		rhythmdb_commit (source->priv->db);
+	}
+	g_list_free (sel);
 }
 
 static void

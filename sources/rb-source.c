@@ -49,7 +49,6 @@ static const char * default_get_browser_key (RBSource *status);
 static GList *default_get_extra_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
-static gboolean default_can_cut (RBSource *source);
 static GdkPixbuf *default_get_pixbuf (RBSource *source);
 static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
@@ -107,9 +106,10 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_get_extra_views = default_get_extra_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_search = default_can_search;
-	klass->impl_can_cut = default_can_cut;
-	klass->impl_can_delete = default_can_cut;
-	klass->impl_can_copy = default_can_cut;
+	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_pixbuf = default_get_pixbuf;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
@@ -454,12 +454,6 @@ rb_source_get_config_widget (RBSource *source)
 	}
 }
 
-static gboolean
-default_can_cut (RBSource *source)
-{
-	return FALSE;
-}
-
 gboolean
 rb_source_can_cut (RBSource *source)
 {
@@ -474,6 +468,14 @@ rb_source_can_delete (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_can_delete (source);
+}
+
+gboolean
+rb_source_can_move_to_trash (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_move_to_trash (source);
 }
 
 gboolean
@@ -520,6 +522,14 @@ rb_source_delete (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	klass->impl_delete (source);
+}
+
+void
+rb_source_move_to_trash (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	klass->impl_move_to_trash (source);
 }
 
 static void

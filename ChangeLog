@@ -1,3 +1,29 @@
+2005-11-30  Bastien Nocera  <hadess@hadess.net>
+
+	* data/ui/rhythmbox-ui.xml:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_move_to_trash_cb),
+	(rhythmbd_entry_move_to_trash_set_error),
+	(rhythmdb_entry_move_to_trash):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync),
+	(rb_shell_clipboard_cmd_delete),
+	(rb_shell_clipboard_cmd_move_to_trash):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(impl_delete), (impl_move_to_trash):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(impl_delete), (impl_move_to_trash):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_can_move_to_trash), (rb_source_delete),
+	(rb_source_move_to_trash):
+	* sources/rb-source.h:
+	Add move_to_trash member for the sources, implement move to trash for
+	the library and playlists
+	Add a "Move to Trash" context menu item, and menu item (Ctrl+D) to move
+	local files to the trash, and deleting them from the database
+	(Closes: #315389)
+
 2005-11-30  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-tray-icon.c (rb_tray_icon_class_init) 

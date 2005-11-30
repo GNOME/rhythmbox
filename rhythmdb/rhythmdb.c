@@ -2425,6 +2425,117 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 	db->priv->dirty = TRUE;
 }
 
+static gint
+rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info, gpointer data)
+{
+	/* Abort immediately if anything happens */
+	if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
+		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
+	/* Don't overwrite files */
+	if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OVERWRITE)
+		return 0;
+	return TRUE;
+}
+
+static void
+rhythmbd_entry_move_to_trash_set_error (RhythmDB *db, RhythmDBEntry *entry,
+				        GnomeVFSResult res)
+{
+	GValue value = { 0, };
+
+	if (res == -1)
+		res = GNOME_VFS_ERROR_INTERNAL;
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, gnome_vfs_result_to_string (res));
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+	g_value_unset (&value);
+
+	rb_debug ("Deleting %s failed: %s", entry->location,
+			gnome_vfs_result_to_string (res));
+}
+
+void
+rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
+{
+	GnomeVFSResult res;
+	GnomeVFSURI *uri, *trash, *dest;
+	char *shortname;
+
+	uri = gnome_vfs_uri_new (entry->location);
+	if (uri == NULL) {
+		rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		return;
+	}
+
+	res = gnome_vfs_find_directory (uri,
+			GNOME_VFS_DIRECTORY_KIND_TRASH,
+			&trash,
+			TRUE, TRUE,
+			0);
+	if (res != GNOME_VFS_OK || trash == NULL) {
+		/* If the file doesn't exist, or trash isn't support,
+		 * remove it from the db */
+		if (res == GNOME_VFS_ERROR_NOT_FOUND ||
+		    res == GNOME_VFS_ERROR_NOT_SUPPORTED) {
+			rhythmdb_entry_delete (db, entry);
+		} else {
+			rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		}
+
+		gnome_vfs_uri_unref (uri);
+		return;
+	}
+
+	/* Is the file already in the Trash? If so it should be hidden */
+	if (gnome_vfs_uri_is_parent (trash, uri, TRUE)) {
+		GValue value = { 0, };
+		g_value_init (&value, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&value, TRUE);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &value);
+		rhythmdb_commit (db);
+
+		gnome_vfs_uri_unref (trash);
+		gnome_vfs_uri_unref (uri);
+		return;
+	}
+
+	shortname = gnome_vfs_uri_extract_short_name (uri);
+	if (shortname == NULL) {
+		rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		gnome_vfs_uri_unref (uri);
+		gnome_vfs_uri_unref (trash);
+		return;
+	}
+
+	/* Compute the destination URI */
+	dest = gnome_vfs_uri_append_path (trash, shortname);
+	gnome_vfs_uri_unref (trash);
+	g_free (shortname);
+	if (dest == NULL) {
+		rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		gnome_vfs_uri_unref (uri);
+		return;
+	}
+
+	/* RB can't tell that a file's moved, so no unique names */
+	res = gnome_vfs_xfer_uri (uri, dest,
+			GNOME_VFS_XFER_REMOVESOURCE,
+			GNOME_VFS_XFER_ERROR_MODE_ABORT,
+			GNOME_VFS_XFER_OVERWRITE_MODE_SKIP,
+			rhythmdb_entry_move_to_trash_cb,
+			entry);
+
+	if (res == GNOME_VFS_OK) {
+		rhythmdb_entry_delete (db, entry);
+	} else {
+		rhythmbd_entry_move_to_trash_set_error (db, entry, res);
+	}
+
+	gnome_vfs_uri_unref (dest);
+	gnome_vfs_uri_unref (uri);
+}
+
 /**
  * rhythmdb_entry_delete_by_type:
  * @db: a #RhythmDB.

@@ -83,6 +83,7 @@ static gboolean impl_can_cut (RBSource *asource);
 static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
+static void impl_move_to_trash (RBSource *asource);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
@@ -182,9 +183,11 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_cut = impl_can_cut;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = impl_can_cut;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_cut = impl_cut;
 	source_class->impl_paste = impl_paste;
 	source_class->impl_delete = impl_delete;
+	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
@@ -599,6 +602,21 @@ impl_delete (RBSource *asource)
 	sel = rb_entry_view_get_selected_entries (source->priv->songs);
 	for (tem = sel; tem != NULL; tem = tem->next)
 		rb_playlist_source_remove_entry (source, tem->data);
+	g_list_free (sel);
+}
+
+static void
+impl_move_to_trash (RBSource *asource)
+{
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+	GList *sel, *tem;
+
+	sel = rb_entry_view_get_selected_entries (source->priv->songs);
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		rhythmdb_entry_move_to_trash (source->priv->db,
+				(RhythmDBEntry *) tem->data);
+		rhythmdb_commit (source->priv->db);
+	}
 	g_list_free (sel);
 }
 
