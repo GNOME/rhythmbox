@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of preferences dialog object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -21,22 +22,13 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkentry.h>
-#include <gdk/gdkkeysyms.h>
-#include <gtk/gtkbox.h>
-#include <gtk/gtktogglebutton.h>
-#include <gtk/gtkoptionmenu.h>
-#include <gtk/gtkradiobutton.h>
-#include <gtk/gtknotebook.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkcheckbutton.h>
+
+#include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <glade/glade.h>
 #include <libgnome/gnome-help.h>
-#include <string.h>
 
 #include "rb-file-helpers.h"
 #include "rb-shell-preferences.h"
@@ -97,6 +89,8 @@ struct RBShellPreferencesPrivate
 	gboolean loading;
 };
 
+#define RB_SHELL_PREFERENCES_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferencesPrivate))
+
 G_DEFINE_TYPE (RBShellPreferences, rb_shell_preferences, GTK_TYPE_DIALOG)
 
 static void
@@ -105,6 +99,8 @@ rb_shell_preferences_class_init (RBShellPreferencesClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_shell_preferences_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBShellPreferencesPrivate));
 }
 
 static void
@@ -130,7 +126,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	GtkWidget *help;
 	GladeXML *xml;
 
-	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
+	shell_preferences->priv = RB_SHELL_PREFERENCES_GET_PRIVATE (shell_preferences);
 
 	g_signal_connect_object (G_OBJECT (shell_preferences),
 				 "delete_event",
@@ -219,8 +215,6 @@ rb_shell_preferences_finalize (GObject *object)
 	shell_preferences = RB_SHELL_PREFERENCES (object);
 
 	g_return_if_fail (shell_preferences->priv != NULL);
-
-	g_free (shell_preferences->priv);
 
 	G_OBJECT_CLASS (rb_shell_preferences_parent_class)->finalize (object);
 }

@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Rhythmbox playlist management object
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@gnome.org>
@@ -21,14 +21,16 @@
  */
 
 #include <config.h>
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libxml/tree.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
+
 #include <string.h>
 #include <stdio.h>      /* rename() */
 #include <unistd.h>     /* unlink() */
+
+#include <libxml/tree.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-utils.h>
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
@@ -112,6 +114,8 @@ struct RBPlaylistManagerPrivate
 	gboolean saving;
 	gboolean dirty;
 };
+
+#define RB_PLAYLIST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYLIST_MANAGER, RBPlaylistManagerPrivate))
 
 enum
 {
@@ -285,12 +289,14 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0, G_TYPE_NONE);
+
+	g_type_class_add_private (klass, sizeof (RBPlaylistManagerPrivate));
 }
 
 static void
 rb_playlist_manager_init (RBPlaylistManager *mgr)
 {
-	mgr->priv = g_new0 (RBPlaylistManagerPrivate, 1);
+	mgr->priv = RB_PLAYLIST_MANAGER_GET_PRIVATE (mgr);
 
 	mgr->priv->status_queue = g_async_queue_new ();
 
@@ -347,8 +353,6 @@ rb_playlist_manager_finalize (GObject *object)
 
 	g_mutex_free (mgr->priv->saving_mutex);
 	g_cond_free (mgr->priv->saving_condition);
-
-	g_free (mgr->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

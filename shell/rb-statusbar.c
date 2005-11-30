@@ -21,12 +21,14 @@
  *
  */
 
-#include <gtk/gtk.h>
 #include <config.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "rb-statusbar.h"
 #include "rb-preferences.h"
@@ -109,6 +111,8 @@ struct RBStatusbarPrivate
 	guint notify_id;
 };
 
+#define RB_STATUSBAR_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_STATUSBAR, RBStatusbarPrivate))
+
 enum
 {
         PROP_0,
@@ -165,7 +169,7 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               RB_TYPE_SHELL_PLAYER,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-
+	g_type_class_add_private (klass, sizeof (RBStatusbarPrivate));
 }
 
 static GObject*
@@ -200,7 +204,7 @@ rb_statusbar_construct (GType                  type,
 static void
 rb_statusbar_init (RBStatusbar *statusbar)
 {
-        statusbar->priv = g_new0 (RBStatusbarPrivate, 1);
+	statusbar->priv = RB_STATUSBAR_GET_PRIVATE (statusbar);
 
         statusbar->priv->tooltips = gtk_tooltips_new ();
         gtk_tooltips_enable (statusbar->priv->tooltips);
@@ -263,8 +267,6 @@ rb_statusbar_finalize (GObject *object)
         if (statusbar->priv->status_poll_id)
                 g_source_remove (statusbar->priv->status_poll_id);
         
-        g_free (statusbar->priv);
-
         G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 

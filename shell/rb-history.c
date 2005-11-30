@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of Song History List
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -19,10 +20,11 @@
  *  
  */ 
 
+#include <string.h>
+
 #include "rb-history.h"
 
 #include "rhythmdb.h"
-#include <string.h>
 #include "gsequence.h"
 
 struct RBHistoryPrivate
@@ -39,6 +41,8 @@ struct RBHistoryPrivate
 	GFunc destroyer;
 	gpointer destroy_userdata;
 };
+
+#define RB_HISTORY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_HISTORY, RBHistoryPrivate))
 
 #define MAX_HISTORY_SIZE 50
 
@@ -128,6 +132,7 @@ rb_history_class_init (RBHistoryClass *klass)
 							    0,
 							    G_PARAM_READWRITE));
 
+	g_type_class_add_private (klass, sizeof (RBHistoryPrivate));
 }
 
 RBHistory *
@@ -150,7 +155,7 @@ rb_history_new (gboolean truncate_on_play, GFunc destroyer, gpointer destroy_use
 static void
 rb_history_init (RBHistory *hist)
 {
-	hist->priv = g_new0 (RBHistoryPrivate, 1);
+	hist->priv = RB_HISTORY_GET_PRIVATE (hist);
 
 	hist->priv->entry_to_seqptr = g_hash_table_new (g_direct_hash,
 							g_direct_equal);
@@ -172,7 +177,6 @@ rb_history_finalize (GObject *object)
 
 	g_hash_table_destroy (hist->priv->entry_to_seqptr);
 	g_sequence_free (hist->priv->seq);
-	g_free (hist->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

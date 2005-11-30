@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of shuffle play order
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -19,13 +20,14 @@
  *
  */
 
+#include <string.h>
+
 #include "rb-play-order-shuffle.h"
 
 #include "rb-history.h"
 #include "rb-debug.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
-#include <string.h>
 
 static void rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass);
 static void rb_shuffle_play_order_init (RBShufflePlayOrder *sorder);
@@ -59,6 +61,8 @@ struct RBShufflePlayOrderPrivate
 	GHashTable *entries_removed;
 	GHashTable *entries_added;
 };
+
+#define RB_SHUFFLE_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHUFFLE_PLAY_ORDER, RBShufflePlayOrderPrivate))
 
 static RBPlayOrderClass *parent_class = NULL;
 
@@ -126,12 +130,14 @@ rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass)
 	porder->go_next = rb_shuffle_play_order_go_next;
 	porder->get_previous = rb_shuffle_play_order_get_previous;
 	porder->go_previous = rb_shuffle_play_order_go_previous;
+
+	g_type_class_add_private (klass, sizeof (RBShufflePlayOrderPrivate));
 }
 
 static void
 rb_shuffle_play_order_init (RBShufflePlayOrder *sorder)
 {
-	sorder->priv = g_new0 (RBShufflePlayOrderPrivate, 1);
+	sorder->priv = RB_SHUFFLE_PLAY_ORDER_GET_PRIVATE (sorder);
 
 	sorder->priv->history = rb_history_new (FALSE,
 						(GFunc) rb_play_order_unref_entry_swapped,
@@ -157,7 +163,6 @@ rb_shuffle_play_order_finalize (GObject *object)
 		g_object_unref (sorder->priv->tentative_history);
 	g_hash_table_destroy (sorder->priv->entries_added);
 	g_hash_table_destroy (sorder->priv->entries_removed);
-	g_free (sorder->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

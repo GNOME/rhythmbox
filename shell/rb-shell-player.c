@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of main playback logic object
  *
  *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -21,16 +21,18 @@
  *
  */
 
-#include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <config.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
-#include <libgnome/gnome-i18n.h>
 
 #ifdef HAVE_MMKEYS
 #include <X11/Xlib.h>
@@ -234,6 +236,8 @@ struct RBShellPlayerPrivate
 	gboolean mute;
 	float pre_mute_volume;
 };
+
+#define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
 
 enum
 {
@@ -451,6 +455,8 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
+
+	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
 }
 
 static GObject *
@@ -555,7 +561,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	GtkWidget *hbox, *image;
 	GtkWidget *alignment;
 
-	player->priv = g_new0 (RBShellPlayerPrivate, 1);
+	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
 
 	player->priv->mmplayer = rb_player_new (&error);
 	if (error != NULL) {
@@ -727,8 +733,6 @@ rb_shell_player_finalize (GObject *object)
 
 	if (player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (player->priv->remote));
-	
-	g_free (player->priv);
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
 }

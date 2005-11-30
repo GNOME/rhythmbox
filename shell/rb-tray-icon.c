@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Rhythmbox tray icon object
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@redhat.com>
@@ -19,12 +20,14 @@
  *
  */
 
-#include <gtk/gtk.h>
 #include <config.h>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 
@@ -80,6 +83,8 @@ struct RBTrayIconPrivate
 
 	RBRemoteProxy *proxy;
 };
+
+#define RB_TRAY_ICON_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_TRAY_ICON, RBTrayIconPrivate))
 
 enum
 {
@@ -168,6 +173,8 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READABLE));
+
+	g_type_class_add_private (klass, sizeof (RBTrayIconPrivate));
 }
 
 static void
@@ -177,7 +184,7 @@ rb_tray_icon_init (RBTrayIcon *icon)
 
 	rb_debug ("setting up tray icon");
 
-	icon->priv = g_new0 (RBTrayIconPrivate, 1);
+	icon->priv = RB_TRAY_ICON_GET_PRIVATE (icon);
 
 	icon->priv->tooltips = gtk_tooltips_new ();
 
@@ -251,8 +258,6 @@ rb_tray_icon_finalize (GObject *object)
 	g_return_if_fail (tray->priv != NULL);
 	
 	gtk_object_destroy (GTK_OBJECT (tray->priv->tooltips));
-
-	g_free (tray->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

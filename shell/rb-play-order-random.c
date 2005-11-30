@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of base class for weighted random play orders
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -29,12 +30,13 @@
  * will not see any changes to their history of played songs.
  */
 
+#include <string.h>
+
 #include "rb-play-order-random-by-age.h"
 
 #include "rb-debug.h"
 #include "rhythmdb.h"
 #include "rb-history.h"
-#include <string.h>
 
 static void rb_random_play_order_class_init (RBRandomPlayOrderClass *klass);
 static void rb_random_play_order_init (RBRandomPlayOrder *rorder);
@@ -64,6 +66,8 @@ struct RBRandomPlayOrderPrivate
 
 	gboolean entry_view_changed;
 };
+
+#define RB_RANDOM_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RANDOM_PLAY_ORDER, RBRandomPlayOrderPrivate))
 
 static RBPlayOrderClass *parent_class = NULL;
 
@@ -118,12 +122,14 @@ rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
 	porder->go_next = rb_random_play_order_go_next;
 	porder->get_previous = rb_random_play_order_get_previous;
 	porder->go_previous = rb_random_play_order_go_previous;
+
+	g_type_class_add_private (klass, sizeof (RBRandomPlayOrderPrivate));
 }
 
 static void
 rb_random_play_order_init (RBRandomPlayOrder *rorder)
 {
-	rorder->priv = g_new0 (RBRandomPlayOrderPrivate, 1);
+	rorder->priv = RB_RANDOM_PLAY_ORDER_GET_PRIVATE (rorder);
 
 	rorder->priv->history = rb_history_new (TRUE,
 						(GFunc) rb_play_order_unref_entry_swapped,
@@ -146,7 +152,6 @@ rb_random_play_order_finalize (GObject *object)
 	g_object_unref (G_OBJECT (rorder->priv->history));
 	if (rorder->priv->tentative_history)
 		g_object_unref (G_OBJECT (rorder->priv->tentative_history));
-	g_free (rorder->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

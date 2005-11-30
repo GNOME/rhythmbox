@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * rb-cell-renderer-rating.c
-
  * arch-tag: Implementation of star rating GtkTreeView cell renderer
  *
  * Copyright (C) 2000  Red Hat, Inc.,  Jonathan Blandford <jrb@redhat.com>
@@ -20,7 +20,7 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- *  $ Id $
+ *
  */
 
 #include <config.h>

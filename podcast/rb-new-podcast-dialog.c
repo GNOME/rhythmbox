@@ -61,6 +61,8 @@ struct RBNewPodcastDialogPrivate
 	GtkWidget   *cancelbutton;
 };
 
+#define RB_NEW_PODCAST_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NEW_PODCAST_DIALOG, RBNewPodcastDialogPrivate))
+
 enum 
 {
 	PROP_0,
@@ -87,6 +89,8 @@ rb_new_podcast_dialog_class_init (RBNewPodcastDialogClass *klass)
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_new_podcast_dialog_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBNewPodcastDialogPrivate));
 }
 
 static void
@@ -95,8 +99,7 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	GladeXML *xml;
 
 	/* create the dialog and some buttons forward - close */
-	dialog->priv = g_new0 (RBNewPodcastDialogPrivate, 1);
-
+	dialog->priv = RB_NEW_PODCAST_DIALOG_GET_PRIVATE (dialog);
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
@@ -157,8 +160,6 @@ rb_new_podcast_dialog_finalize (GObject *object)
 	dialog = RB_NEW_PODCAST_DIALOG (object);
 
 	g_return_if_fail (dialog->priv != NULL);
-
-	g_free (dialog->priv);
 
 	G_OBJECT_CLASS (rb_new_podcast_dialog_parent_class)->finalize (object);
 }

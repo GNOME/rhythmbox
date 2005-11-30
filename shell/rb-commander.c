@@ -1,7 +1,8 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Rhythmbox commander object
  *
- *  Copyright Â© 2002 Jorn Baayen.  All rights reserved.
+ *  Copyright © 2002 Jorn Baayen.  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +21,8 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
 
 #include "rb-commander.h"
 
@@ -42,6 +44,8 @@ struct RBCommanderPrivate
 
 	char *foo;
 };
+
+#define RB_COMMANDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_COMMANDER, RBCommanderPrivate))
 
 enum
 {
@@ -98,12 +102,14 @@ rb_commander_class_init (RBCommanderClass *klass)
 							      "RB object",
 							      RB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (klass, sizeof (RBCommanderPrivate));
 }
 
 static void
 rb_commander_init (RBCommander *commander)
 {
-	commander->priv = g_new0 (RBCommanderPrivate, 1);
+	commander->priv = RB_COMMANDER_GET_PRIVATE (commander);
 }
 
 static void
@@ -117,8 +123,6 @@ rb_commander_finalize (GObject *object)
 	commander = RB_COMMANDER (object);
 
 	g_return_if_fail (commander->priv != NULL);
-
-	g_free (commander->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

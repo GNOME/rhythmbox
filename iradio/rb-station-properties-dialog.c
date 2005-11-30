@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of internet radio station properties dialog
  *
  *  Copyright (C) 2002 Colin Walters <walters@gnu.org>
@@ -20,25 +21,14 @@
  */
 
 #include <config.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtktable.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtkliststore.h>
-#include <gtk/gtktreemodel.h>
-#include <gtk/gtkbox.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkcellrenderer.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <glade/glade.h>
+
 #include <string.h>
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-station-properties-dialog.h"
 #include "rb-file-helpers.h"
@@ -101,6 +91,8 @@ struct RBStationPropertiesDialogPrivate
 	GtkWidget   *cancelbutton;
 };
 
+#define RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_STATION_PROPERTIES_DIALOG, RBStationPropertiesDialogPrivate))
+
 enum 
 {
 	PROP_0,
@@ -131,6 +123,8 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_station_properties_dialog_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBStationPropertiesDialogPrivate));
 }
 
 static void
@@ -138,8 +132,8 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 {
 	GladeXML *xml;
 	
-	dialog->priv = g_new0 (RBStationPropertiesDialogPrivate, 1);
-	
+        dialog->priv = RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
+
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
 				 G_CALLBACK (rb_station_properties_dialog_response_cb),
@@ -212,8 +206,6 @@ rb_station_properties_dialog_finalize (GObject *object)
 	dialog = RB_STATION_PROPERTIES_DIALOG (object);
 
 	g_return_if_fail (dialog->priv != NULL);
-
-	g_free (dialog->priv);
 
 	G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)->finalize (object);
 }

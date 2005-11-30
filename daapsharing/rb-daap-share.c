@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Implmentation of DAAP (iTunes Music Sharing) sharing
  *
  *  Copyright (C) 2005 Charles Schmidt <cschmidt2@emich.edu>
@@ -19,6 +20,20 @@
  *
  */
 
+#include <config.h>
+
+#include <time.h>
+#include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libsoup/soup.h>
+#include <libsoup/soup-address.h>
+#include <libsoup/soup-message.h>
+#include <libsoup/soup-uri.h>
+#include <libsoup/soup-server.h>
+#include <libsoup/soup-server-message.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-daap-share.h"
 #include "rb-daap-structure.h"
@@ -28,20 +43,6 @@
 #include "rb-playlist-source.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
-
-#include <libsoup/soup.h>
-#include <libsoup/soup-address.h>
-#include <libsoup/soup-message.h>
-#include <libsoup/soup-uri.h>
-#include <libsoup/soup-server.h>
-#include <libsoup/soup-server-message.h>
-#include <libgnomevfs/gnome-vfs.h>
-
-#include <time.h>
-#include <string.h>
-
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
 
 static void rb_daap_share_set_property  (GObject *object,
 					 guint prop_id,
@@ -98,6 +99,8 @@ struct RBDAAPSharePrivate {
 	GList *playlist_ids;	/* contains RBPlaylistIDs */
 };
 
+#define RB_DAAP_SHARE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DAAP_SHARE, RBDAAPSharePrivate))
+
 typedef struct {
 	RBSource *source;
 	gint32 id;
@@ -145,12 +148,15 @@ rb_daap_share_class_init (RBDAAPShareClass *klass)
 							      "Playlist manager object",
 							      RB_TYPE_PLAYLIST_MANAGER,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (klass, sizeof (RBDAAPSharePrivate));
 }
 
 static void
 rb_daap_share_init (RBDAAPShare *share)
 {
-	share->priv = g_new0 (RBDAAPSharePrivate, 1);
+	share->priv = RB_DAAP_SHARE_GET_PRIVATE (share);
+
 	share->priv->revision_number = 5;
 }
 
@@ -328,9 +334,6 @@ rb_daap_share_dispose (GObject *object)
 		
 		g_list_foreach (share->priv->playlist_ids, (GFunc) rb_daap_share_forget_playlist, share);
 		g_list_foreach (share->priv->playlist_ids, (GFunc) g_free, NULL);
-		
-		g_free (share->priv);
-		share->priv = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_daap_share_parent_class)->dispose (object);

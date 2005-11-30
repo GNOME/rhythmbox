@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of search entry/browse toggle container
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -20,12 +21,13 @@
  *
  */
 
-#include <gtk/gtk.h>
 #include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "disclosure-widget.h"
 #include "rb-source-header.h"
@@ -85,6 +87,8 @@ struct RBSourceHeaderPrivate
 	GHashTable *source_search_text;
 };
 
+#define RB_SOURCE_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCE_HEADER, RBSourceHeaderPrivate))
+
 enum
 {
 	PROP_0,
@@ -127,6 +131,8 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (klass, sizeof (RBSourceHeaderPrivate));
 }
 
 static void
@@ -134,7 +140,8 @@ rb_source_header_init (RBSourceHeader *header)
 {
 	GtkWidget *align;
 	GtkEventBox *ebox;
-	header->priv = g_new0 (RBSourceHeaderPrivate, 1);
+
+	header->priv = RB_SOURCE_HEADER_GET_PRIVATE (header);
 
 	header->priv->tooltips = gtk_tooltips_new ();
 	gtk_tooltips_enable (header->priv->tooltips);
@@ -201,8 +208,6 @@ rb_source_header_finalize (GObject *object)
 			      (GHFunc) rb_source_header_source_weak_unref,
 			      header);
 	g_hash_table_destroy (header->priv->source_search_text);
-
-	g_free (header->priv);
 
 	G_OBJECT_CLASS (rb_source_header_parent_class)->finalize (object);
 }

@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of main Rhythmbox shell
  *
  *  Copyright (C) 2002, 2003 Jorn Baayen
@@ -21,24 +21,29 @@
  *
  */
 
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#include <X11/Xatom.h>
 #include <config.h>
-#include <libgnome/libgnome.h>
-#include <libgnomeui/gnome-stock-icons.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnome/gnome-init.h>
-#include <libgnome/gnome-program.h>
-#include <libgnomeui/gnome-window-icon.h>
-#include <libgnomeui/gnome-client.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
+
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <sys/stat.h>
+
+#include <glib/gi18n.h>
+#include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+
+#include <X11/Xatom.h>
+
+#include <libgnome/libgnome.h>
+#include <libgnomeui/gnome-stock-icons.h>
+#include <libgnome/gnome-init.h>
+#include <libgnome/gnome-program.h>
+#include <libgnomeui/gnome-window-icon.h>
+#include <libgnomeui/gnome-client.h>
+
+#include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-utils.h>
 
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -370,6 +375,8 @@ struct RBShellPrivate
 	gint paned_position;
 };
 
+#define RB_SHELL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL, RBShellPrivate))
+
 static GtkActionEntry rb_shell_actions [] =
 {
 	{ "Music", NULL, N_("_Music") },
@@ -532,6 +539,7 @@ rb_shell_class_init (RBShellClass *klass)
 							      GTK_TYPE_WINDOW,
 							      G_PARAM_READABLE));
 
+	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }
 
 static void
@@ -581,7 +589,7 @@ rb_shell_init (RBShell *shell)
 {
 	char *file;
 	
-	shell->priv = g_new0 (RBShellPrivate, 1);
+	shell->priv = RB_SHELL_GET_PRIVATE (shell);
 
 	rb_dot_dir ();
 
@@ -780,7 +788,6 @@ rb_shell_finalize (GObject *object)
 		gtk_widget_destroy (shell->priv->prefs);
 	
 	g_free (shell->priv->rhythmdb_file);
-	g_free (shell->priv);
 
         ((GObjectClass*)rb_shell_parent_class)->finalize (G_OBJECT (shell));
 

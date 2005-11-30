@@ -93,6 +93,8 @@ struct RBPodcastManagerPrivate
 	GAsyncQueue *event_queue;
 };
 
+#define RB_PODCAST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate))
+
 /* used on event loop */
 typedef struct
 {
@@ -261,13 +263,15 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				G_TYPE_NONE,
 				1,
 				G_TYPE_POINTER);
-					
+
+	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }	
 
 static void
 rb_podcast_manager_init (RBPodcastManager *pd)
 {
-	pd->priv = g_new0 (RBPodcastManagerPrivate, 1);
+	pd->priv = RB_PODCAST_MANAGER_GET_PRIVATE (pd);
+
 	pd->priv->source_sync = 0;
 	pd->priv->mutex_job = g_mutex_new();
 	pd->priv->download_list_mutex = g_mutex_new();
@@ -278,7 +282,7 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 
 static GObject *
 rb_podcast_manager_constructor (GType type, guint n_construct_properties,
-			   GObjectConstructParam *construct_properties)
+				GObjectConstructParam *construct_properties)
 {
 	RBPodcastManager *pd;
 
@@ -326,23 +330,20 @@ rb_podcast_manager_finalize (GObject *object)
 	g_mutex_free (pd->priv->mutex_job);	
 	g_mutex_free (pd->priv->download_list_mutex);	
 	g_async_queue_unref (pd->priv->event_queue);
-	
-	g_free (pd->priv);
-	
+
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->finalize (object);
 	rb_debug ("Podcast Manager END");
 }
 
 static void 
 rb_podcast_manager_set_property (GObject *object,
-                           		guint prop_id,
-	                                const GValue *value,
-	                                GParamSpec *pspec)
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *pspec)
 {
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		if (pd->priv->db) {
 			g_signal_handlers_disconnect_by_func (G_OBJECT (pd->priv->db),
@@ -381,8 +382,7 @@ rb_podcast_manager_get_property (GObject *object,
 {
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, pd->priv->db);
 		break;

@@ -91,6 +91,8 @@ struct RBPodcastPropertiesDialogPrivate
 	GtkWidget   *close_button;
 };
 
+#define RB_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_PROPERTIES_DIALOG, RBPodcastPropertiesDialogPrivate))
+
 enum 
 {
 	PROP_0,
@@ -118,6 +120,8 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_podcast_properties_dialog_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBPodcastPropertiesDialogPrivate));
 }
 
 static void
@@ -125,8 +129,8 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
 	GladeXML *xml;
 	
-	dialog->priv = g_new0 (RBPodcastPropertiesDialogPrivate, 1);
-	
+	dialog->priv = RB_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
+
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
 				 G_CALLBACK (rb_podcast_properties_dialog_response_cb),
@@ -194,8 +198,6 @@ rb_podcast_properties_dialog_finalize (GObject *object)
 	dialog = RB_PODCAST_PROPERTIES_DIALOG (object);
 
 	g_return_if_fail (dialog->priv != NULL);
-
-	g_free (dialog->priv);
 
 	G_OBJECT_CLASS (rb_podcast_properties_dialog_parent_class)->finalize (object);
 }

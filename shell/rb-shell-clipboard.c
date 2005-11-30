@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of song cut/paste handler object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -20,11 +21,14 @@
  *
  */
 
+#include <config.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
 #include "rb-shell-clipboard.h"
 #include "rhythmdb.h"
 #include "rb-debug.h"
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkstock.h>
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
@@ -76,6 +80,8 @@ struct RBShellClipboardPrivate
 
 	GList *entries;
 };
+
+#define RB_SHELL_CLIPBOARD_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_CLIPBOARD, RBShellClipboardPrivate))
 
 enum
 {
@@ -173,12 +179,13 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_type_class_add_private (klass, sizeof (RBShellClipboardPrivate));
 }
 
 static void
 rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 {
-	shell_clipboard->priv = g_new0 (RBShellClipboardPrivate, 1);
+	shell_clipboard->priv = RB_SHELL_CLIPBOARD_GET_PRIVATE (shell_clipboard);
 
 	shell_clipboard->priv->signal_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 								    NULL, g_free);
@@ -209,8 +216,6 @@ rb_shell_clipboard_finalize (GObject *object)
 	if (shell_clipboard->priv->idle_sync_id)
 		g_source_remove (shell_clipboard->priv->idle_sync_id);
 	
-	g_free (shell_clipboard->priv);
-
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 

@@ -1,8 +1,9 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Rhythmbox Audioscrobbler support
  *
  *  Copyright (C) 2005 Alex Revo <xiphoidappendix@gmail.com>,
- *					   Ruben Vermeersch <ruben@Lambda1.be>
+ *		       Ruben Vermeersch <ruben@Lambda1.be>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,13 +22,15 @@
  */
 
 #include <errno.h>
-#include <gconf/gconf-value.h>
-#include <glib.h>
-#include <glib/gprintf.h>
-#include <gtk/gtk.h>
+
 #include <string.h>
 #include <time.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib.h>
+#include <glib/gi18n.h>
+#include <glib/gprintf.h>
+#include <gtk/gtk.h>
+#include <gconf/gconf-value.h>
 
 #include <libsoup/soup.h>
 #include <libsoup/soup-uri.h>
@@ -131,6 +134,8 @@ struct _RBAudioscrobblerPrivate
 	guint notification_proxy_password_id;
 };
 
+#define RB_AUDIOSCROBBLER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER, RBAudioscrobblerPrivate))
+
 
 static void	     audioscrobbler_entry_init (AudioscrobblerEntry *entry);
 static void	     audioscrobbler_entry_free (AudioscrobblerEntry *entry);
@@ -218,6 +223,8 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE));
+
+	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
 }
 
 static void
@@ -229,7 +236,7 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	rb_debug ("Plugin ID: %s, Version %s (Protocol %s)",
 		  CLIENT_ID, CLIENT_VERSION, SCROBBLER_VERSION);
 
-	audioscrobbler->priv = g_new0 (RBAudioscrobblerPrivate, 1);
+	audioscrobbler->priv = RB_AUDIOSCROBBLER_GET_PRIVATE (audioscrobbler);
 
 	audioscrobbler->priv->queue = NULL;
 	audioscrobbler->priv->submission= NULL;
@@ -346,7 +353,6 @@ rb_audioscrobbler_finalize (GObject *object)
 
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->queue);
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);
-	g_free (audioscrobbler->priv);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_parent_class)->finalize (object);
 }

@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of base class for play order classes
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -19,13 +20,15 @@
  *
  */
 
+#include <string.h>
+
+#include <glib/gi18n.h>
+
 #include "rb-play-order.h"
 
 #include "rb-shell-player.h"
 #include "rb-debug.h"
-#include <string.h>
 #include "rb-preferences.h"
-#include <libgnome/gnome-i18n.h>
 
 /* Play Orders */
 #include "rb-play-order-linear.h"
@@ -67,6 +70,8 @@ struct RBPlayOrderPrivate
 	RhythmDB *db;
 };
 
+#define RB_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAY_ORDER, RBPlayOrderPrivate))
+
 enum
 {
 	PROP_0,
@@ -96,12 +101,14 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 						 	      "Rhythmbox Player",
 						 	      RB_TYPE_SHELL_PLAYER,
 						 	      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (klass, sizeof (RBPlayOrderPrivate));
 }
 
 static void
 rb_play_order_init (RBPlayOrder *porder)
 {
-	porder->priv = g_new0 (RBPlayOrderPrivate, 1);
+	porder->priv = RB_PLAY_ORDER_GET_PRIVATE (porder);
 }
 
 static GObject *
@@ -144,7 +151,6 @@ rb_play_order_finalize (GObject *object)
 						      porder);
 	}
 
-	g_free (porder->priv);
 	G_OBJECT_CLASS (rb_play_order_parent_class)->finalize (object);
 }
 

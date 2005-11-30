@@ -1,3 +1,55 @@
+2005-11-30  William Jon McCann  <mccann@jhu.edu>
+
+	* shell/rb-tray-icon.c (rb_tray_icon_class_init) 
+	(rb_tray_icon_init, rb_tray_icon_finalize): 
+	* shell/rb-statusbar.c (rb_statusbar_class_init) 
+	(rb_statusbar_init, rb_statusbar_finalize): 
+	* shell/rb-source-header.c (rb_source_header_class_init) 
+	(rb_source_header_init, rb_source_header_finalize): 
+	* shell/rb-shell.c (rb_shell_class_init, rb_shell_init) 
+	(rb_shell_finalize): 
+	* shell/rb-shell-preferences.c (rb_shell_preferences_class_init) 
+	(rb_shell_preferences_init, rb_shell_preferences_finalize): 
+	* shell/rb-shell-player.c (rb_shell_player_class_init) 
+	(rb_shell_player_init, rb_shell_player_finalize): 
+	* shell/rb-shell-clipboard.c (rb_shell_clipboard_class_init) 
+	(rb_shell_clipboard_init, rb_shell_clipboard_finalize): 
+	* shell/rb-playlist-manager.c (rb_playlist_manager_class_init) 
+	(rb_playlist_manager_init, rb_playlist_manager_finalize): 
+	* shell/rb-play-order.c (rb_play_order_class_init) 
+	(rb_play_order_init, rb_play_order_finalize): 
+	* shell/rb-play-order-shuffle.c (rb_shuffle_play_order_class_init) 
+	(rb_shuffle_play_order_init, rb_shuffle_play_order_finalize): 
+	* shell/rb-play-order-random.c (rb_random_play_order_class_init) 
+	(rb_random_play_order_init, rb_random_play_order_finalize): 
+	* shell/rb-history.c (rb_history_class_init, rb_history_init) 
+	(rb_history_finalize): 
+	* shell/rb-commander.c (rb_commander_class_init) 
+	(rb_commander_init, rb_commander_finalize): 
+	* shell/rb-audioscrobbler.c (rb_audioscrobbler_class_init) 
+	(rb_audioscrobbler_init, rb_audioscrobbler_finalize): 
+	* remote/bonobo/rb-remote-bonobo.c (rb_remote_bonobo_class_init) 
+	(rb_remote_bonobo_init, rb_remote_bonobo_finalize): 
+	* podcast/rb-podcast-properties-dialog.c (rb_podcast_properties_dialog_class_init) 
+	(rb_podcast_properties_dialog_init) 
+	(rb_podcast_properties_dialog_finalize): 
+	* podcast/rb-podcast-manager.c (rb_podcast_manager_class_init) 
+	(rb_podcast_manager_init, rb_podcast_manager_finalize): 
+	* podcast/rb-new-podcast-dialog.c (rb_new_podcast_dialog_class_init) 
+	(rb_new_podcast_dialog_init, rb_new_podcast_dialog_finalize): 
+	* podcast/rb-feed-podcast-properties-dialog.c (rb_feed_podcast_properties_dialog_class_init) 
+	(rb_feed_podcast_properties_dialog_init) 
+	(rb_feed_podcast_properties_dialog_finalize): 
+	* metadata/rb-metadata-gst.c (rb_metadata_class_init) 
+	(rb_metadata_init, rb_metadata_finalize): 
+	* iradio/rb-station-properties-dialog.c (rb_station_properties_dialog_class_init) 
+	(rb_station_properties_dialog_init) 
+	(rb_station_properties_dialog_finalize): 
+	* daapsharing/rb-daap-share.c (rb_daap_share_class_init) 
+	(rb_daap_share_init, rb_daap_share_dispose): 
+
+	Use g_type_class_add_private in all classes. Closes bug 313688.
+	
 2005-11-30  James Livingston  <jrl@ids.org.au>
 
 	patch by: William Jon McCann <mccann@jhu.edu> to use

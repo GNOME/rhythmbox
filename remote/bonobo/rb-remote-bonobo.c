@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Rhythmbox Bonobo remoting
  *
  *  Copyright (C) 2004 Colin Walters <walters@gnome.org>
@@ -19,6 +20,15 @@
  *
  */
 
+#include <config.h>
+
+#include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <libgnome/libgnome.h>
+
 #include "rb-remote-bonobo.h"
 #include "rb-remote-client-proxy.h"
 #include <Rhythmbox.h>
@@ -29,12 +39,6 @@
 #include <bonobo/bonobo-window.h>
 #include <bonobo/bonobo-control-frame.h>
 #include <bonobo-activation/bonobo-activation-register.h>
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <config.h>
-#include <string.h>
-#include <libgnome/libgnome.h>
-#include <libgnome/gnome-i18n.h>
 
 #include "rb-debug.h"
 
@@ -146,6 +150,8 @@ struct RBRemoteBonoboPrivate
 	GParamSpec *property_spec[16];
 };
 
+#define RB_REMOTE_BONOBO_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_REMOTE_BONOBO, RBRemoteBonoboPrivate))
+
 GType
 rb_remote_bonobo_get_type (void)
 {
@@ -214,6 +220,8 @@ rb_remote_bonobo_class_init (RBRemoteBonoboClass *klass)
 	epv->setRating = rb_remote_bonobo_corba_set_rating;
 	epv->skip = rb_remote_bonobo_corba_skip;
 	epv->toggleMute = rb_remote_bonobo_corba_toggle_mute;
+
+	g_type_class_add_private (klass, sizeof (RBRemoteBonoboPrivate));
 }
 
 static void
@@ -306,7 +314,7 @@ rb_remote_bonobo_preinit (void)
 static void
 rb_remote_bonobo_init (RBRemoteBonobo *bonobo) 
 {
-	bonobo->priv = g_new0 (RBRemoteBonoboPrivate, 1);
+	bonobo->priv = RB_REMOTE_BONOBO_GET_PRIVATE (bonobo);
 }
 
 static void
@@ -322,10 +330,6 @@ rb_remote_bonobo_dispose (GObject *object)
 static void
 rb_remote_bonobo_finalize (GObject *object)
 {
-        RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (object);
-
-	g_free (bonobo->priv);
-
 	(* G_OBJECT_CLASS (parent_class)->finalize) (object);
 }
 

@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of metadata reading using GStreamer
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
@@ -20,11 +21,13 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <string.h>
+
+#include <glib/gi18n.h>
 #include <gst/gst.h>
 #include <gst/gsttag.h>
 #include <gst/gsturi.h>
-#include <string.h>
 
 #include "rb-metadata.h"
 #include "rb-debug.h"
@@ -72,6 +75,8 @@ struct RBMetaDataPrivate
 	GError *error;
 };
 
+#define RB_METADATA_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_METADATA, RBMetaDataPrivate))
+
 
 static void
 rb_metadata_class_init (RBMetaDataClass *klass)
@@ -79,6 +84,8 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_metadata_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
 }
 
 
@@ -144,9 +151,9 @@ add_supported_type (RBMetaData *md,
 static void
 rb_metadata_init (RBMetaData *md)
 {
-       RBAddTaggerElem add_tagger;
+	RBAddTaggerElem add_tagger;
         
-	md->priv = g_new0 (RBMetaDataPrivate, 1);
+	md->priv = RB_METADATA_GET_PRIVATE (md);
 
 	md->priv->supported_types = g_ptr_array_new ();
 	
@@ -194,8 +201,6 @@ rb_metadata_finalize (GObject *object)
 
 	g_free (md->priv->type);
 	g_free (md->priv->uri);
-
-	g_free (md->priv);
 
 	G_OBJECT_CLASS (rb_metadata_parent_class)->finalize (object);
 }
