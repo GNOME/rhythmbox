@@ -22,6 +22,7 @@
 #include "rb-util.h"
 #include <gtk/gtk.h>
 #include <string.h>
+#include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include "rb-debug.h"
 
@@ -544,5 +545,25 @@ rb_search_fold (const char *original)
 	g_free (unicode);
 			
 	return g_string_free (string, FALSE);
+}
+
+char *
+rb_make_duration_string (guint duration)
+{
+	char *str;
+	int hours, minutes, seconds;
+
+	hours = duration / (60 * 60);
+	minutes = (duration - (hours * 60 * 60)) / 60;
+	seconds = duration % 60;
+
+	if (hours == 0 && minutes == 0 && seconds == 0)
+		str = g_strdup (_("Unknown"));
+	else if (hours == 0)
+		str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+	else
+		str = g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
+
+	return str;
 }
 

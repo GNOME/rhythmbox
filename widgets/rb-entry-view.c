@@ -1004,24 +1004,14 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 				       struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
+	gulong duration;
 	char *str;
-	int hours, minutes, seconds;
 
 	entry = entry_from_tree_iter (data->view, iter);
+	duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 
-	hours = entry->duration / (60 * 60);
-	minutes = (entry->duration - (hours * 60 * 60)) / 60;
-	seconds = entry->duration % 60;
-
-	if (hours == 0 && minutes == 0 && seconds == 0)
-		str = g_strdup (_("Unknown"));
-	else if (hours == 0)
-		str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
-	else
-		str = g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
-
+	str = rb_make_duration_string (duration);
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
-
 	g_free (str);
 }
 

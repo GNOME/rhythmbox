@@ -36,6 +36,7 @@ gpointer rb_null_function (gpointer dummy);
 gboolean rb_gvalue_compare (GValue *a, GValue *b);
 
 int rb_compare_gtimeval (GTimeVal *a, GTimeVal *b);
+char * rb_make_duration_string (guint duration);
 
 void rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path);
 

@@ -35,6 +35,7 @@
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
+#include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
 
 static void rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass);
@@ -58,6 +59,7 @@ static void rb_podcast_properties_dialog_response_cb (GtkDialog *gtkdialog,
 static void rb_podcast_properties_dialog_update (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_title_label (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_feed (RBPodcastPropertiesDialog *dialog);
+static void rb_podcast_properties_dialog_update_duration (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_play_count (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_bitrate (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_last_played (RBPodcastPropertiesDialog *dialog);
@@ -79,6 +81,7 @@ struct RBPodcastPropertiesDialogPrivate
 	GtkWidget   *title;
 	GtkWidget   *feed;
 	GtkWidget   *location;
+	GtkWidget   *duration;
 	GtkWidget   *lastplayed;
 	GtkWidget   *playcount;
 	GtkWidget   *bitrate;
@@ -86,7 +89,7 @@ struct RBPodcastPropertiesDialogPrivate
 	GtkWidget   *date;
 	GtkWidget   *description;
 	
-	GtkWidget   *okbutton;
+	GtkWidget   *close_button;
 };
 
 enum 
@@ -144,14 +147,15 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "podcastproperties"));
-	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							GTK_STOCK_OK,
-							GTK_RESPONSE_OK);
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+							    GTK_STOCK_CLOSE,
+							    GTK_RESPONSE_CLOSE);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
 	/* get the widgets from the XML */
 	dialog->priv->title = glade_xml_get_widget (xml, "titleLabel");
 	dialog->priv->feed = glade_xml_get_widget (xml, "feedLabel");
+	dialog->priv->duration = glade_xml_get_widget (xml, "durationLabel");
 	dialog->priv->location = glade_xml_get_widget (xml, "locationLabel");
 	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
 	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
@@ -162,6 +166,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	boldify_label (glade_xml_get_widget (xml, "titleDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "feedDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "locationDescLabel"));
+	boldify_label (glade_xml_get_widget (xml, "durationDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "ratingDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "lastplayedDescLabel"));
 	boldify_label (glade_xml_get_widget (xml, "playcountDescLabel"));
@@ -301,6 +306,7 @@ rb_podcast_properties_dialog_update (RBPodcastPropertiesDialog *dialog)
 	rb_podcast_properties_dialog_update_title (dialog);
 	rb_podcast_properties_dialog_update_title_label (dialog);
 	rb_podcast_properties_dialog_update_feed (dialog);
+	rb_podcast_properties_dialog_update_duration (dialog);
 	rb_podcast_properties_dialog_update_play_count (dialog);
 	rb_podcast_properties_dialog_update_bitrate (dialog);
 	rb_podcast_properties_dialog_update_last_played (dialog);
@@ -315,7 +321,7 @@ rb_podcast_properties_dialog_update_title (RBPodcastPropertiesDialog *dialog)
 	const char *name;
 	char *tmp;	
 	name = rb_refstring_get (dialog->priv->current_entry->title);
-	tmp = g_strdup_printf (_("Properties for %s"), name);
+	tmp = g_strdup_printf (_("%s Properties"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 	g_free (tmp);
 }
@@ -331,7 +337,20 @@ static void
 rb_podcast_properties_dialog_update_feed (RBPodcastPropertiesDialog *dialog)
 {
 	gtk_label_set_text (GTK_LABEL (dialog->priv->feed),
-			    rb_refstring_get (dialog->priv->current_entry->podcast->subtitle));
+			    rb_refstring_get (dialog->priv->current_entry->album));
+}
+
+static void
+rb_podcast_properties_dialog_update_duration (RBPodcastPropertiesDialog *dialog)
+{
+        char *text;
+        gulong duration = 0;
+	
+        duration = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_DURATION);
+
+	text = rb_make_duration_string (duration);
+        gtk_label_set_text (GTK_LABEL (dialog->priv->duration), text);
+        g_free (text);
 }
 
 static void
@@ -381,17 +400,17 @@ rb_podcast_properties_dialog_update_play_count (RBPodcastPropertiesDialog *dialo
 static void
 rb_podcast_properties_dialog_update_bitrate (RBPodcastPropertiesDialog *dialog)
 {
-	guint val;
-	char *text;
+        char *tmp = NULL;
+        gulong bitrate = 0;
 
-	val = dialog->priv->current_entry->bitrate;
-	if (val == 0)
-		text = g_strdup (_("Unknown"));
-	else
-		text = g_strdup_printf ("%d", val);
+	bitrate = dialog->priv->current_entry->bitrate;
+        if (bitrate > 0)
+                tmp = g_strdup_printf (_("%lu kbps"), bitrate);
+        else
+                tmp = g_strdup (_("Unknown"));
 
-	gtk_label_set_text (GTK_LABEL (dialog->priv->bitrate), text);
-	g_free (text);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->bitrate), tmp);
+	g_free (tmp);
 }
 
 static void

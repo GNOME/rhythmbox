@@ -1,3 +1,26 @@
+2005-11-30  James Livingston  <jrl@ids.org.au>
+
+	* lib/rb-util.c: (rb_search_fold), (rb_make_duration_string):
+	* lib/rb-util.h:
+	* widgets/rb-entry-view.c: (rb_entry_view_duration_cell_data_func):
+	move the duration->string function into rb-utils, as it gets used in a
+	few places.
+
+	patch by: William Jon McCann <mccann@jhu.edu>
+
+	* data/glade/podcast-properties.glade:
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_init),
+	(rb_podcast_properties_dialog_update),
+	(rb_podcast_properties_dialog_update_title),
+	(rb_podcast_properties_dialog_update_feed),
+	(rb_podcast_properties_dialog_update_duration),
+	(rb_podcast_properties_dialog_update_bitrate): Make the podcast
+	info dialog look more like the song info dialog. Use the same "Feed"
+	value that is displayed in the treeview (ie. the album field), displays
+	the duration, uses units in the bitrate field, and sort the fields in
+	the same order.
+
 2005-11-29  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-marshal.list:
