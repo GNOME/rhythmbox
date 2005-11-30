@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of search entry widget
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -20,12 +21,12 @@
  *
  */
 
-#include <gtk/gtklabel.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkentry.h>
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "rb-search-entry.h"
 
@@ -49,6 +50,8 @@ struct RBSearchEntryPrivate
 
 	guint timeout;
 };
+
+#define RB_SEARCH_ENTRY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SEARCH_ENTRY, RBSearchEntryPrivate))
 
 enum
 {
@@ -117,6 +120,8 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+
+	g_type_class_add_private (klass, sizeof (RBSearchEntryPrivate));
 }
 
 static void
@@ -124,7 +129,7 @@ rb_search_entry_init (RBSearchEntry *entry)
 {
 	GtkWidget *label;
 
-	entry->priv = g_new0 (RBSearchEntryPrivate, 1);
+	entry->priv = RB_SEARCH_ENTRY_GET_PRIVATE (entry);
 
 	/* this string can only be so long, or there wont be a search entry :) */
 	label = gtk_label_new_with_mnemonic (_("_Search:"));
@@ -163,8 +168,6 @@ rb_search_entry_finalize (GObject *object)
 	entry = RB_SEARCH_ENTRY (object);
 
 	g_return_if_fail (entry->priv != NULL);
-
-	g_free (entry->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

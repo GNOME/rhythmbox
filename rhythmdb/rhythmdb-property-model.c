@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of RhythmDB property GtkTreeModel
  *
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
@@ -24,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
 #include "rhythmdb-property-model.h"
 #include "rb-debug.h"
 #include "gsequence.h"
@@ -156,6 +157,8 @@ struct RhythmDBPropertyModelPrivate
 	guint syncing_id;
 };
 
+#define RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_PROPERTY_MODEL, RhythmDBPropertyModelPrivate))
+
 enum
 {
 	PRE_ROW_DELETION,
@@ -237,6 +240,7 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
 
+	g_type_class_add_private (klass, sizeof (RhythmDBPropertyModelPrivate));
 }
 
 static void
@@ -380,7 +384,7 @@ rhythmdb_property_model_get_property (GObject *object,
 static void
 rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 {
-	model->priv = g_new0 (RhythmDBPropertyModelPrivate, 1);
+	model->priv = RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE (model);
 
 	model->priv->property_memchunk = g_mem_chunk_new ("RhythmDBPropertyModel property memchunk",
 							  sizeof (RhythmDBPropertyModelEntry),
@@ -428,8 +432,6 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	if (model->priv->query_model)
 		g_object_unref (G_OBJECT (model->priv->query_model));
-
-	g_free (model->priv);
 
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }

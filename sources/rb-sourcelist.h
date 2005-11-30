@@ -37,13 +37,13 @@ G_BEGIN_DECLS
 #define RB_IS_SOURCELIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((obj), RB_TYPE_SOURCELIST))
 #define RB_SOURCELIST_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), RB_TYPE_SOURCELIST, RBSourceListClass))
 
-typedef struct RBSourceListPriv RBSourceListPriv;
+typedef struct RBSourceListPrivate RBSourceListPrivate;
 
 typedef struct RBSourceList
 {
-	GtkScrolledWindow parent;
+	GtkScrolledWindow    parent;
 
-	RBSourceListPriv *priv;
+	RBSourceListPrivate *priv;
 } RBSourceList;
 
 typedef struct RBSourceListClass

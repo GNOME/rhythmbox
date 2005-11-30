@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of dialog that displays errors during library loading
  *
  *  Copyright (C) 2003 Colin Walters <walters@gnu.org>
@@ -20,10 +21,11 @@
  */
 
 #include <config.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtk.h>
 
 #include "rb-load-failure-dialog.h"
 #include "rb-dialog.h"
@@ -55,6 +57,8 @@ struct RBLoadFailureDialogPrivate
 	GtkWidget *treeview;
 	GtkListStore *liststore;
 };
+
+#define RB_LOAD_FAILURE_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LOAD_FAILURE_DIALOG, RBLoadFailureDialogPrivate))
 
 static GObjectClass *parent_class = NULL;
 
@@ -94,6 +98,8 @@ rb_load_failure_dialog_class_init (RBLoadFailureDialogClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_load_failure_dialog_finalize;
+
+	g_type_class_add_private (klass, sizeof (RBLoadFailureDialogPrivate));
 }
 
 static void
@@ -103,7 +109,7 @@ rb_load_failure_dialog_init (RBLoadFailureDialog *dlg)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *gcolumn;
 
-	dlg->priv = g_new0 (RBLoadFailureDialogPrivate, 1);
+	dlg->priv = RB_LOAD_FAILURE_DIALOG_GET_PRIVATE (dlg);
 
 	g_signal_connect_object (G_OBJECT (dlg),
 				 "response",
@@ -175,8 +181,6 @@ rb_load_failure_dialog_finalize (GObject *object)
 	dlg = RB_LOAD_FAILURE_DIALOG (object);
 
 	g_return_if_fail (dlg->priv != NULL);
-
-	g_free (dlg->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

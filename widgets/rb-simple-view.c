@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of widget to display RhythmDB properties
  *
  *  Copyright (C) 2005 Renato Filho <renato.filho@indt.org.br>
@@ -19,20 +20,16 @@
  *
  */
 
-#include <gtk/gtktreeview.h>
-
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkiconfactory.h>
-#include <gtk/gtktooltips.h>
-#include <gdk/gdkkeysyms.h>
-#include <glib/ghash.h>
-#include <glib/glist.h>
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
+
 #include <string.h>
 #include <stdlib.h>
+
+#include <glib/gi18n.h>
+#include <glib.h>
+#include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-simple-view.h"
 #include "rb-tree-dnd.h"
@@ -54,8 +51,10 @@ static guint rb_simple_view_signals[LAST_SIGNAL] = { 0 };
 
 struct RBSimpleViewPrivate
 {
-
+	int reserved;
 };
+
+#define RB_SIMPLE_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SIMPLE_VIEW, RBSimpleViewPrivate))
 
 
 static void rb_simple_view_class_init 		(RBSimpleViewClass *klass);
@@ -90,12 +89,13 @@ rb_simple_view_class_init (RBSimpleViewClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	g_type_class_add_private (klass, sizeof (RBSimpleViewPrivate));
 }
 
 static void
 rb_simple_view_init (RBSimpleView *view)
 {
-	view->priv = g_new0 (RBSimpleViewPrivate, 1);
+	view->priv = RB_SIMPLE_VIEW_GET_PRIVATE (view);
 }
 
 static void
@@ -109,8 +109,6 @@ rb_simple_view_finalize (GObject *object)
 	view = RB_SIMPLE_VIEW (object);
 
 	g_return_if_fail (view->priv != NULL);
-
-	g_free (view->priv);
 
 	G_OBJECT_CLASS (rb_simple_view_parent_class)->finalize (object);
 }

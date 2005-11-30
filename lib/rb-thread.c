@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Copyright (C) 2005 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,9 +19,10 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include <glib/gi18n.h>
 
 #include "rb-thread.h"
 #include "rb-debug.h"
@@ -68,6 +70,8 @@ struct RBThreadPrivate
 
 	gint exit_flag;
 };
+
+#define RB_THREAD_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_THREAD, RBThreadPrivate))
 
 enum
 {
@@ -133,12 +137,14 @@ rb_thread_class_init (RBThreadClass *klass)
 							      "User data",
 							      "User data",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (klass, sizeof (RBThreadPrivate));
 }
 
 static void
 rb_thread_init (RBThread *thread)
 {
-	thread->priv = g_new0 (RBThreadPrivate, 1);
+	thread->priv = RB_THREAD_GET_PRIVATE (thread);
 
 	thread->priv->action_queue = g_async_queue_new ();
 	thread->priv->result_queue = g_async_queue_new ();
@@ -172,7 +178,6 @@ rb_thread_finalize (GObject *object)
 		
 	g_async_queue_unref (thread->priv->action_queue);
 	g_async_queue_unref (thread->priv->result_queue);
-	g_free (thread->priv);
 
 	(* G_OBJECT_CLASS (parent_class)->finalize) (object);
 }

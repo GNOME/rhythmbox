@@ -36,13 +36,13 @@ G_BEGIN_DECLS
 #define RB_IS_SOURCELIST_MODEL_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((obj), RB_TYPE_SOURCELIST_MODEL))
 #define RB_SOURCELIST_MODEL_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), RB_TYPE_SOURCELIST_MODEL, RBSourceListModelClass))
 
-typedef struct RBSourceListModelPriv RBSourceListModelPriv;
+typedef struct RBSourceListModelPrivate RBSourceListModelPrivate;
 
 typedef struct RBSourceListModel
 {
 	GtkTreeModelFilter parent;
 
-	RBSourceListModelPriv *priv;
+	RBSourceListModelPrivate *priv;
 } RBSourceListModel;
 
 typedef struct RBSourceListModelClass

@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of GStreamer backends, with workarounds for bugs
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -22,13 +22,14 @@
  */
 
 #include <config.h>
-#include <gdk/gdk.h>
-#include <gst/gst.h>
-#include <gst/gconf/gconf.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gdk/gdk.h>
+#include <gst/gst.h>
+#include <gst/gconf/gconf.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
@@ -68,6 +69,8 @@ struct RBPlayerPrivate
 
 	guint tick_timeout_id;
 };
+
+#define RB_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYER, RBPlayerPrivate))
 
 typedef enum
 {
@@ -149,6 +152,8 @@ rb_player_class_init (RBPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_UINT);
+
+	g_type_class_add_private (klass, sizeof (RBPlayerPrivate));
 }
 
 static gboolean
@@ -168,7 +173,8 @@ rb_player_init (RBPlayer *mp)
 {
 	gint ms_period = 1000 / RB_PLAYER_TICK_HZ;
 
-	mp->priv = g_new0 (RBPlayerPrivate, 1);
+	mp->priv = RB_PLAYER_GET_PRIVATE (mp);
+
 	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
 	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
 	
@@ -195,8 +201,6 @@ rb_player_finalize (GObject *object)
 		
 		rb_player_gst_free_playbin (mp);
 	}
-
-	g_free (mp->priv);
 
 	G_OBJECT_CLASS (rb_player_parent_class)->finalize (object);
 }

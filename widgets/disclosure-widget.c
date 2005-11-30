@@ -26,8 +26,8 @@
 #include <config.h>
 #endif
 
+#include <glib/gi18n.h>
 #include <gtk/gtkexpander.h>
-#include <libgnome/gnome-i18n.h>
 
 #include "disclosure-widget.h"
 
@@ -43,6 +43,8 @@ struct CDDBDisclosurePrivate {
 	char *hidden;
 };
 
+#define CDDB_DISCLOSURE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), CDDB_DISCLOSURE_TYPE, CDDBDisclosurePrivate))
+
 static void
 finalize (GObject *object)
 {
@@ -57,9 +59,6 @@ finalize (GObject *object)
 		g_object_unref (G_OBJECT (disclosure->priv->container));
 	}
 
-	g_free (disclosure->priv);
-	disclosure->priv = NULL;
-
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -71,12 +70,14 @@ class_init (CDDBDisclosureClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = finalize;
+
+	g_type_class_add_private (klass, sizeof (CDDBDisclosurePrivate));
 }
 
 static void
 init (CDDBDisclosure *disclosure)
 {
-	disclosure->priv = g_new0 (CDDBDisclosurePrivate, 1);
+	disclosure->priv = CDDB_DISCLOSURE_GET_PRIVATE (disclosure);
 }
 
 GType

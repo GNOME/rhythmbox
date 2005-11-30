@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of widget to display RhythmDB properties
  *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
@@ -19,18 +20,15 @@
  *
  */
 
-#include <gtk/gtktreeview.h>
-
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkiconfactory.h>
-#include <gtk/gtktooltips.h>
-#include <gdk/gdkkeysyms.h>
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
+
 #include <string.h>
 #include <stdlib.h>
+
+#include <glib/gi18n.h>
+#include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-property-view.h"
 #include "rb-dialog.h"
@@ -81,6 +79,8 @@ struct RBPropertyViewPrivate
 	gboolean draggable;
 	gboolean handling_row_deletion;
 };
+
+#define RB_PROPERTY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PROPERTY_VIEW, RBPropertyViewPrivate))
 
 enum
 {
@@ -218,13 +218,14 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0); 
-	
+
+	g_type_class_add_private (klass, sizeof (RBPropertyViewPrivate));
 }
 
 static void
 rb_property_view_init (RBPropertyView *view)
 {
-	view->priv = g_new0 (RBPropertyViewPrivate, 1);
+	view->priv = RB_PROPERTY_VIEW_GET_PRIVATE (view);
 }
 
 static void
@@ -240,7 +241,6 @@ rb_property_view_finalize (GObject *object)
 	g_return_if_fail (view->priv != NULL);
 
 	g_free (view->priv->title);
-	g_free (view->priv);
 
 	G_OBJECT_CLASS (rb_property_view_parent_class)->finalize (object);
 }

@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of RhythmDB tree-structured database
  *
  *  Copyright (C) 2003, 2004 Colin Walters <walters@verbum.org>
@@ -33,7 +34,7 @@
 #include <string.h>
 #include <glib/gprintf.h>
 #include <glib/gatomic.h>
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
 #include <gtk/gtkliststore.h>
 #include <libxml/entities.h>
 #include <libxml/SAX.h>
@@ -121,6 +122,8 @@ struct RhythmDBTreePrivate
 	guint idle_load_id;
 };
 
+#define RHYTHMDB_TREE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_TREE, RhythmDBTreePrivate))
+
 enum
 {
 	PROP_0,
@@ -147,12 +150,14 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_entry_foreach = rhythmdb_tree_entry_foreach;
 	rhythmdb_class->impl_evaluate_query = rhythmdb_tree_evaluate_query;
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
+
+	g_type_class_add_private (klass, sizeof (RhythmDBTreePrivate));
 }
 
 static void
 rhythmdb_tree_init (RhythmDBTree *db)
 {
-	db->priv = g_new0 (RhythmDBTreePrivate, 1);
+	db->priv = RHYTHMDB_TREE_GET_PRIVATE (db);
 
 	db->priv->entries = g_hash_table_new (g_str_hash, g_str_equal);
 
@@ -190,8 +195,6 @@ rhythmdb_tree_finalize (GObject *object)
 	g_mem_chunk_destroy (db->priv->property_memchunk);
 
 	g_hash_table_destroy (db->priv->genres);
-
-	g_free (db->priv);
 
 	G_OBJECT_CLASS (rhythmdb_tree_parent_class)->finalize (object);
 }

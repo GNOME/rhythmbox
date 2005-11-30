@@ -22,13 +22,15 @@
  */
 
 #include <config.h>
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <totem-pl-parser.h>
-#include <libxml/tree.h>
+
 #include <unistd.h>
 #include <string.h>
+
+#include <libxml/tree.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
+#include <totem-pl-parser.h>
 
 #include "rb-stock-icons.h"
 #include "rb-entry-view.h"
@@ -142,6 +144,8 @@ struct RBPlaylistSourcePrivate
 	char *title;
 };
 
+#define RB_PLAYLIST_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYLIST_SOURCE, RBPlaylistSourcePrivate))
+
 enum
 {
 	PROP_0,
@@ -226,6 +230,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							   -1, G_MAXINT, -1,
 							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_type_class_add_private (klass, sizeof (RBPlaylistSourcePrivate));
 }
 
 static void
@@ -373,7 +378,7 @@ rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 static void
 rb_playlist_source_init (RBPlaylistSource *source)
 {
-	source->priv = g_new0 (RBPlaylistSourcePrivate, 1);
+	source->priv = RB_PLAYLIST_SOURCE_GET_PRIVATE (source);
 }
 
 static void
@@ -386,9 +391,6 @@ rb_playlist_source_dispose (GObject *object)
 		g_hash_table_destroy (source->priv->entries);
 		g_object_unref (source->priv->db);
 		g_free (source->priv->title);
-	
-		g_free (source->priv);
-		source->priv = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_playlist_source_parent_class)->dispose (object);

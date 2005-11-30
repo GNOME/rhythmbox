@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of local song properties dialog
  *
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
@@ -26,12 +26,14 @@
  */
 
 #include <config.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtk.h>
-#include <glade/glade.h>
+
 #include <string.h>
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+#include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rhythmdb.h"
@@ -117,6 +119,8 @@ struct RBSongInfoPrivate
 	GtkWidget   *last_played;
 	GtkWidget   *rating;
 };
+
+#define RB_SONG_INFO_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SONG_INFO, RBSongInfoPrivate))
 
 enum
 {
@@ -208,13 +212,15 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
+
+	g_type_class_add_private (klass, sizeof (RBSongInfoPrivate));
 }
 
 static void
 rb_song_info_init (RBSongInfo *song_info)
 {
 	/* create the dialog and some buttons backward - forward - close */
-	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
+	song_info->priv = RB_SONG_INFO_GET_PRIVATE (song_info);
 
 	g_signal_connect_object (G_OBJECT (song_info),
 				 "response",
@@ -433,8 +439,6 @@ rb_song_info_finalize (GObject *object)
 	song_info = RB_SONG_INFO (object);
 
 	g_return_if_fail (song_info->priv != NULL);
-
-	g_free (song_info->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

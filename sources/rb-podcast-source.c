@@ -265,6 +265,8 @@ struct RBPodcastSourcePrivate
 	RBPodcastManager *podcast_mg;	
 };
 
+#define RB_PODCAST_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_SOURCE, RBPodcastSourcePrivate))
+
 static GtkActionEntry rb_podcast_source_actions [] =
 {
 	{ "PodcastSrcDownloadPost", NULL, N_("Download _Episode"), NULL,
@@ -355,16 +357,15 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 					                      RB_TYPE_PODCAST_MANAGER,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	
-	
-	
+	g_type_class_add_private (klass, sizeof (RBPodcastSourcePrivate));
 }
 
 static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
 	GtkWidget *dummy = gtk_tree_view_new ();
-	source->priv = g_new0 (RBPodcastSourcePrivate, 1);
+
+	source->priv = RB_PODCAST_SOURCE_GET_PRIVATE (source);
 
 	source->priv->selected_feeds = NULL;
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
@@ -427,9 +428,6 @@ rb_podcast_source_finalize (GObject *object)
 
        if (source->priv->cached_all_query)
 		g_object_unref (G_OBJECT (source->priv->cached_all_query));
-
-	g_free (source->priv);
-
 
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->finalize (object);
 }

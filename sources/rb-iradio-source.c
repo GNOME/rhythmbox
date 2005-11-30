@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  *  arch-tag: Implementation of Internet Radio source object
  *
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
@@ -20,12 +21,14 @@
  */
 
 #include <config.h>
+
+#include <string.h>
+
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
-#include <string.h>
 
 #include "rb-iradio-source.h"
 
@@ -144,6 +147,8 @@ struct RBIRadioSourcePrivate
 	RhythmDBQueryModel *all_query;
 };
 
+#define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
+
 static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "text/uri-list", 0, 0 },
 	{  "_NETSCAPE_URL", 0, 1 },
@@ -195,14 +200,16 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 							    G_MAXINT,
 							    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	
+
+	g_type_class_add_private (klass, sizeof (RBIRadioSourcePrivate));
 }
 
 static void
 rb_iradio_source_init (RBIRadioSource *source)
 {
 	gint size;
-	source->priv = g_new0 (RBIRadioSourcePrivate, 1);
+
+	source->priv = RB_IRADIO_SOURCE_GET_PRIVATE (source);
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
@@ -256,8 +263,6 @@ rb_iradio_source_finalize (GObject *object)
 	g_free (source->priv->song);
 	g_free (source->priv->title);
 	g_free (source->priv->status);
-
-	g_free (source->priv);
 
 	G_OBJECT_CLASS (rb_iradio_source_parent_class)->finalize (object);
 }

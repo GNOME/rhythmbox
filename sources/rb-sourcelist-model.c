@@ -23,10 +23,11 @@
 
 #include "config.h"
 
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <libgnome/gnome-i18n.h>
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
 
 #include "rb-sourcelist-model.h"
 #include "rb-tree-dnd.h"
@@ -34,9 +35,11 @@
 #include "rb-marshal.h"
 #include "rb-playlist-source.h"
 
-struct RBSourceListModelPriv
+struct RBSourceListModelPrivate
 {
 };
+
+#define RB_SOURCELIST_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCELIST_MODEL, RBSourceListModelPrivate))
 
 enum
 {
@@ -129,6 +132,8 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 		sourcelist_drag_target_list = 
 			gtk_target_list_new (sourcelist_targets,
 					     G_N_ELEMENTS (sourcelist_targets));
+
+	g_type_class_add_private (class, sizeof (RBSourceListModelPrivate));
 }
 
 static void
@@ -169,16 +174,12 @@ rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
 static void
 rb_sourcelist_model_init (RBSourceListModel *model)
 {
-	model->priv = g_new0 (RBSourceListModelPriv, 1);
+	model->priv = RB_SOURCELIST_MODEL_GET_PRIVATE (model);
 }
 
 static void
 rb_sourcelist_model_finalize (GObject *object)
 {
-	RBSourceListModel *model = RB_SOURCELIST_MODEL (object);
-
-	g_free (model->priv);
-
 	G_OBJECT_CLASS (rb_sourcelist_model_parent_class)->finalize (object);
 }
 

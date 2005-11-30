@@ -1,4 +1,5 @@
-/* 
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * 
  * arch-tag: Implementation of Rhythmbox first-time druid
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@debian.org>
@@ -19,9 +20,10 @@
  *
  */
 
-#include <gtk/gtk.h>
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libgnomeui/gnome-druid.h>
 #include <libgnomeui/gnome-druid-page-edge.h>
 #include <libgnomeui/gnome-druid-page-standard.h>
@@ -64,6 +66,8 @@ struct RBDruidPrivate
 	GtkWidget *page2_skip_radiobutton;
 	GtkWidget *path_entry;
 };
+
+#define RB_DRUID_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DRUID, RBDruidPrivate))
 
 enum
 {
@@ -120,13 +124,16 @@ rb_druid_class_init (RBDruidClass *klass)
 							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
+
+	g_type_class_add_private (klass, sizeof (RBDruidPrivate));
 }
 
 static void
 rb_druid_init (RBDruid *druid)
 {
 	GladeXML *xml;
-	druid->priv = g_new0 (RBDruidPrivate, 1);
+
+	druid->priv = RB_DRUID_GET_PRIVATE (druid);
 
 	xml = rb_glade_xml_new ("druid.glade", "druid_toplevel", druid);
 
@@ -162,8 +169,6 @@ rb_druid_finalize (GObject *object)
 
 	if (druid->priv->window)
 		gtk_widget_destroy (GTK_WIDGET (druid->priv->window));
-
-	g_free (druid->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

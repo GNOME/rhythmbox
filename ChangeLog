@@ -1,5 +1,69 @@
 2005-11-30  James Livingston  <jrl@ids.org.au>
 
+	patch by: William Jon McCann <mccann@jhu.edu> to use
+	g_type_class_add_private in all classes. Closes bug 313688.
+
+	* lib/rb-thread.c: (rb_thread_class_init), (rb_thread_init),
+	(rb_thread_finalize):
+	* player/rb-player-gst.c: (rb_player_class_init), (rb_player_init),
+	(rb_player_finalize):
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_class_init),
+	(rhythmdb_property_model_init), (rhythmdb_property_model_finalize):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init), (rhythmdb_query_model_init),
+	(rhythmdb_query_model_finalize):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_class_init),
+	(rhythmdb_tree_init), (rhythmdb_tree_finalize):
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init), (rhythmdb_init),
+	(rhythmdb_finalize):
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_source_init), (rb_daap_source_dispose):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_init), (rb_iradio_source_finalize):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_init), (rb_library_source_finalize):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_init), (rb_playlist_source_dispose):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_init), (rb_podcast_source_finalize):
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_class_init),
+	(rb_sourcelist_model_init), (rb_sourcelist_model_finalize):
+	* sources/rb-sourcelist-model.h:
+	* sources/rb-sourcelist.c: (rb_sourcelist_class_init),
+	(rb_sourcelist_init), (rb_sourcelist_finalize):
+	* sources/rb-sourcelist.h:
+	* widgets/disclosure-widget.c: (finalize), (class_init), (init):
+	* widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_init),
+	(rb_cell_renderer_rating_class_init),
+	(rb_cell_renderer_rating_finalize):
+	* widgets/rb-druid.c: (rb_druid_class_init), (rb_druid_init),
+	(rb_druid_finalize):
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_init), (rb_entry_view_finalize):
+	* widgets/rb-header.c: (rb_header_class_init), (rb_header_init),
+	(rb_header_finalize):
+	* widgets/rb-load-failure-dialog.c:
+	(rb_load_failure_dialog_class_init), (rb_load_failure_dialog_init),
+	(rb_load_failure_dialog_finalize):
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_init), (rb_property_view_finalize):
+	* widgets/rb-rating.c: (rb_rating_class_init), (rb_rating_init),
+	(rb_rating_finalize):
+	* widgets/rb-search-entry.c: (rb_search_entry_class_init),
+	(rb_search_entry_init), (rb_search_entry_finalize):
+	* widgets/rb-simple-view.c: (rb_simple_view_class_init),
+	(rb_simple_view_init), (rb_simple_view_finalize):
+	* widgets/rb-song-display-box.c: (rb_song_display_box_class_init),
+	(rb_song_display_box_init), (rb_song_display_box_finalize):
+	* widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_init), (rb_song_info_finalize):
+	* widgets/rb-tree-model-sort.c: (rb_tree_model_sort_class_init),
+	(rb_tree_model_sort_init), (rb_tree_model_sort_finalize):
+
+2005-11-30  James Livingston  <jrl@ids.org.au>
+
 	* iradio/rb-station-properties-dialog.c:
 	(rb_station_properties_dialog_init),
 	(rb_station_properties_dialog_new):

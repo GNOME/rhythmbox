@@ -1,4 +1,5 @@
-/* rb-cell-renderer-rating.c
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * rb-cell-renderer-rating.c
 
  * arch-tag: Implementation of star rating GtkTreeView cell renderer
  *
@@ -23,12 +24,11 @@
  */
 
 #include <config.h>
+
 #include <stdlib.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkiconfactory.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "rb-cell-renderer-rating.h"
 #include "rb-marshal.h"
@@ -76,6 +76,8 @@ struct RBCellRendererRatingClassPrivate
 {
 	RBRatingPixbufs *pixbufs;	
 };
+
+#define RB_CELL_RENDERER_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingPrivate))
 
 
 enum 
@@ -126,7 +128,7 @@ static void
 rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 {
 
-	cellrating->priv = g_new0 (RBCellRendererRatingPrivate, 1);
+	cellrating->priv = RB_CELL_RENDERER_RATING_GET_PRIVATE (cellrating);
 
 	/* set the renderer able to be activated */
 	GTK_CELL_RENDERER (cellrating)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
@@ -166,6 +168,8 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_DOUBLE);
+
+	g_type_class_add_private (class, sizeof (RBCellRendererRatingPrivate));
 }
 
 static void
@@ -174,8 +178,6 @@ rb_cell_renderer_rating_finalize (GObject *object)
 	RBCellRendererRating *cellrating;
 
 	cellrating = RB_CELL_RENDERER_RATING (object);
-
-	g_free (cellrating->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

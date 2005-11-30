@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of rating renderer object
  *
  *  Copyright (C) 2002 Olivier Martin <oleevye@wanadoo.fr>
@@ -64,6 +65,8 @@ struct RBRatingPrivate
 	double rating;
 	RBRatingPixbufs *pixbufs;
 };
+
+#define RB_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RATING, RBRatingPrivate))
 
 enum
 {
@@ -135,12 +138,14 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_DOUBLE);
+
+	g_type_class_add_private (klass, sizeof (RBRatingPrivate));
 }
 
 static void
 rb_rating_init (RBRating *rating)
 {
-	rating->priv = g_new0 (RBRatingPrivate, 1);
+	rating->priv = RB_RATING_GET_PRIVATE (rating);
 
 	/* create the needed icons */
 	rating->priv->pixbufs = rb_rating_pixbufs_new ();
@@ -159,7 +164,6 @@ rb_rating_finalize (GObject *object)
 
 	rating = RB_RATING (object);
 	rb_rating_pixbufs_free (rating->priv->pixbufs);
-	g_free (rating->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

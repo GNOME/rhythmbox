@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of wrapper around GtkTreeModel sort for D&D, etc
  * 
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
@@ -19,8 +20,9 @@
  *
  */
 
-#include <gtk/gtkmarshal.h>
 #include <string.h>
+
+#include <gtk/gtkmarshal.h>
 
 #include "rhythmdb.h"
 #include "rb-tree-model-sort.h"
@@ -43,6 +45,8 @@ struct RBTreeModelSortPrivate
 {
 	char *str_list;
 };
+
+#define RB_TREE_MODEL_SORT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_TREE_MODEL_SORT, RBTreeModelSortPrivate))
 
 enum
 {
@@ -121,12 +125,14 @@ rb_tree_model_sort_class_init (RBTreeModelSortClass *klass)
 			      2,
 			      G_TYPE_POINTER,
 			      G_TYPE_POINTER);
+
+	g_type_class_add_private (klass, sizeof (RBTreeModelSortPrivate));
 }
 
 static void
 rb_tree_model_sort_init (RBTreeModelSort *ma)
 {
-	ma->priv = g_new0 (RBTreeModelSortPrivate, 1);
+	ma->priv = RB_TREE_MODEL_SORT_GET_PRIVATE (ma);
 }
 
 static void
@@ -140,7 +146,6 @@ rb_tree_model_sort_finalize (GObject *object)
 	model = RB_TREE_MODEL_SORT (object);
 
 	g_free (model->priv->str_list);
-	g_free (model->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

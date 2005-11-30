@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of RhythmDB query result GtkTreeModel
  *
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
@@ -167,6 +168,8 @@ struct RhythmDBQueryModelPrivate
 	gboolean reorder_drag_and_drop;
 };
 
+#define RHYTHMDB_QUERY_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_QUERY_MODEL, RhythmDBQueryModelPrivate))
+
 enum
 {
 	PROP_0,
@@ -300,6 +303,8 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+
+	g_type_class_add_private (klass, sizeof (RhythmDBQueryModelPrivate));
 }
 
 static void
@@ -420,7 +425,7 @@ rhythmdb_query_model_get_property (GObject *object,
 static void
 rhythmdb_query_model_init (RhythmDBQueryModel *model)
 {
-	model->priv = g_new0 (RhythmDBQueryModelPrivate, 1);
+	model->priv = RHYTHMDB_QUERY_MODEL_GET_PRIVATE (model);
 
 	model->priv->stamp = g_random_int ();
 
@@ -501,8 +506,6 @@ rhythmdb_query_model_finalize (GObject *object)
 		rhythmdb_query_free (model->priv->query);
 	if (model->priv->original_query)
 		rhythmdb_query_free (model->priv->original_query);
-
-	g_free (model->priv);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }

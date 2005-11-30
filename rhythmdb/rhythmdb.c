@@ -41,7 +41,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-file-info.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
 #include "rhythmdb-marshal.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
@@ -108,6 +108,8 @@ struct RhythmDBPrivate
 	gboolean saving;
 	gboolean dirty;
 };
+
+#define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
 
 struct RhythmDBQueryThreadData
 {
@@ -354,6 +356,8 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+
+	g_type_class_add_private (klass, sizeof (RhythmDBPrivate));
 }
 
 static gboolean
@@ -458,7 +462,7 @@ rhythmdb_init (RhythmDB *db)
 	guint i;
 	GEnumClass *prop_class;
 
-	db->priv = g_new0 (RhythmDBPrivate, 1);
+	db->priv = RHYTHMDB_GET_PRIVATE (db);
 
 	db->priv->action_queue = g_async_queue_new ();
 	db->priv->event_queue = g_async_queue_new ();
@@ -654,8 +658,6 @@ rhythmdb_finalize (GObject *object)
 	rb_refstring_unref (db->priv->octet_stream_str);
 
 	g_free (db->priv->name);
-
-	g_free (db->priv);
 	
 	G_OBJECT_CLASS (rhythmdb_parent_class)->finalize (object);
 }

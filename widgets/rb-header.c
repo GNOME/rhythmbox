@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of main song information display widget
  *
  *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -20,18 +21,13 @@
  *
  */
 
-#include <math.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkimage.h>
-#include <gtk/gtkhscale.h>
-#include <gtk/gtkalignment.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtktooltips.h>
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <math.h>
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "rb-song-display-box.h"
 #include "rb-stock-icons.h"
@@ -104,6 +100,8 @@ struct RBHeaderPrivate
 
 	RBHeaderState *state;
 };
+
+#define RB_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_HEADER, RBHeaderPrivate))
 
 enum
 {
@@ -202,6 +200,7 @@ rb_header_class_init (RBHeaderClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 
+	g_type_class_add_private (klass, sizeof (RBHeaderPrivate));
 }
 
 static void
@@ -233,7 +232,7 @@ rb_header_init (RBHeader *player)
 	 */
 	GtkWidget *hbox, *vbox, *urlline, *label, *align, *scalebox, *textvbox;
 
-	player->priv = g_new0 (RBHeaderPrivate, 1);
+	player->priv = RB_HEADER_GET_PRIVATE (player);
 
 	player->priv->state = g_new0 (RBHeaderState, 1);
 
@@ -337,7 +336,6 @@ rb_header_finalize (GObject *object)
 	g_object_unref (G_OBJECT (player->priv->timeline));
 
 	g_free (player->priv->state);
-	g_free (player->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

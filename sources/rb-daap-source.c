@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Implementation of DAAP (iTunes Music Sharing) source object
  *
  *  Copyright (C) 2005 Charles Schmidt <cschmidt2@emich.edu>
@@ -21,13 +22,13 @@
 
 #include <config.h>
 
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkicontheme.h>
-#include <gtk/gtkiconfactory.h>
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
 #include "rhythmdb.h"
 #include "rb-shell.h"
-#include <libgnome/gnome-i18n.h>
 #include "eel-gconf-extensions.h"
 #include "rb-daap-source.h"
 #include "rb-stock-icons.h"
@@ -85,6 +86,7 @@ struct RBDAAPSourcePrivate
 	GSList *playlist_sources;
 };
 
+#define RB_DAAP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DAAP_SOURCE, RBDAAPSourcePrivate))
 
 enum {
 	PROP_0,
@@ -164,12 +166,14 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 							       "Whether the share is password protected",
 							       FALSE,
 							       G_PARAM_READWRITE));
+
+	g_type_class_add_private (klass, sizeof (RBDAAPSourcePrivate));
 }
 
 static void
 rb_daap_source_init (RBDAAPSource *source)
 {
-	source->priv = g_new0 (RBDAAPSourcePrivate, 1);
+	source->priv = RB_DAAP_SOURCE_GET_PRIVATE (source);
 }
 
 
@@ -184,8 +188,6 @@ rb_daap_source_dispose (GObject *object)
 	
 		g_free (source->priv->service_name);
 		g_free (source->priv->host);
-		g_free (source->priv);
-		source->priv = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_daap_source_parent_class)->dispose (object);

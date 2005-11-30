@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of local file source object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -21,11 +22,12 @@
  */
 
 #include <config.h>
+#include <string.h>
+
 #include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <glade/glade.h>
-#include <string.h>
 
 #include "rb-source.h"
 #include "rb-library-source.h"
@@ -194,6 +196,8 @@ struct RBLibrarySourcePrivate
 	guint browser_view_notify_id;
 };
 
+#define RB_LIBRARY_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_SOURCE, RBLibrarySourcePrivate))
+
 static GtkActionEntry rb_library_source_actions [] =
 {
 	{ "LibrarySrcChooseGenre", NULL, N_("Browse This _Genre"), NULL,
@@ -311,6 +315,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 							      CONF_STATE_LIBRARY_SORTING,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
 }
 
 static void
@@ -408,7 +413,7 @@ rb_library_source_ui_pref_changed (GConfClient *client,
 static void
 rb_library_source_init (RBLibrarySource *source)
 {
-	source->priv = g_new0 (RBLibrarySourcePrivate, 1);
+	source->priv = RB_LIBRARY_SOURCE_GET_PRIVATE (source);
 
 	/* Drag'n'Drop */
 
@@ -456,8 +461,6 @@ rb_library_source_finalize (GObject *object)
 
 	if (source->priv->cached_all_query)
 		g_object_unref (G_OBJECT (source->priv->cached_all_query));
-
-	g_free (source->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

@@ -20,14 +20,16 @@
  *
  */
 
-#include <gtk/gtk.h>
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-tree-dnd.h"
 #include "rb-entry-view.h"
@@ -174,6 +176,8 @@ struct RBEntryViewPrivate
 
 	gboolean idle;
 };
+
+#define RB_ENTRY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_ENTRY_VIEW, RBEntryViewPrivate))
 
 enum
 {
@@ -373,6 +377,8 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+
+	g_type_class_add_private (klass, sizeof (RBEntryViewPrivate));
 }
 
 static void
@@ -380,7 +386,7 @@ rb_entry_view_init (RBEntryView *view)
 {
 	GtkIconTheme* icon_theme;
 	
-	view->priv = g_new0 (RBEntryViewPrivate, 1);
+	view->priv = RB_ENTRY_VIEW_GET_PRIVATE (view);
 
 	icon_theme = gtk_icon_theme_get_default ();
 
@@ -434,8 +440,6 @@ rb_entry_view_finalize (GObject *object)
 	g_object_unref (G_OBJECT (view->priv->error_pixbuf));
 
 	g_free (view->priv->sorting_key);
-
-	g_free (view->priv);
 
 	G_OBJECT_CLASS (rb_entry_view_parent_class)->finalize (object);
 }

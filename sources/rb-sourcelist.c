@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * arch-tag: Implementation of main "Sources" display widget
  *
  * Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
@@ -22,11 +23,12 @@
 
 #include "config.h"
 
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <libgnome/gnome-i18n.h>
 #include <unistd.h>
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
 
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
@@ -37,7 +39,7 @@
 #include "rb-tree-dnd.h"
 #include "rb-util.h"
 
-struct RBSourceListPriv
+struct RBSourceListPrivate
 {
 	GtkWidget *treeview;
 	GtkCellRenderer *title_renderer;
@@ -53,6 +55,8 @@ struct RBSourceListPriv
 
 	RBShell *shell;
 };
+
+#define RB_SOURCELIST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCELIST, RBSourceListPrivate))
 
 enum
 {
@@ -183,6 +187,8 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      G_TYPE_BOOLEAN,
 			      1,
 			      G_TYPE_POINTER);
+
+	g_type_class_add_private (class, sizeof (RBSourceListPrivate));
 }
 
 static void
@@ -190,7 +196,7 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 {
 	GtkCellRenderer *renderer;
 
-	sourcelist->priv = g_new0 (RBSourceListPriv, 1);
+	sourcelist->priv = RB_SOURCELIST_GET_PRIVATE (sourcelist);
 
 	sourcelist->priv->filter_model = rb_sourcelist_model_new ();
 	sourcelist->priv->real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
@@ -261,12 +267,9 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 static void
 rb_sourcelist_finalize (GObject *object)
 {
-	RBSourceList *sourcelist = RB_SOURCELIST (object);
-
-	g_free (sourcelist->priv);
-
 	G_OBJECT_CLASS (rb_sourcelist_parent_class)->finalize (object);
 }
+
 static void
 rb_sourcelist_set_property (GObject *object,
 			    guint prop_id,

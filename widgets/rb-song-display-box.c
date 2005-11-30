@@ -1,3 +1,5 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+
 /*
  *  RBSongDisplayBox is a hack of GtkHBox
  *  arch-tag: RBSongDisplayBox - display album/artist information
@@ -31,7 +33,7 @@
 
 #include <config.h>
 
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
 
 #include "rb-song-display-box.h"
 #include "rb-debug.h"
@@ -42,6 +44,8 @@ struct RBSongDisplayBoxPrivate
 	GtkWidget *from;
 	GtkWidget *by;
 };
+
+#define RB_SONG_DISPLAY_BOX_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SONG_DISPLAY_BOX, RBSongDisplayBoxPrivate))
 
 static void rb_song_display_box_class_init    (RBSongDisplayBoxClass *klass);
 static void rb_song_display_box_init          (RBSongDisplayBox *box);
@@ -98,6 +102,8 @@ rb_song_display_box_class_init (RBSongDisplayBoxClass *class)
 
 	widget_class->size_request = rb_song_display_box_size_request;
 	widget_class->size_allocate = rb_song_display_box_size_allocate;
+
+	g_type_class_add_private (class, sizeof (RBSongDisplayBoxPrivate));
 }
 
 static void
@@ -105,7 +111,8 @@ rb_song_display_box_init (RBSongDisplayBox *displaybox)
 {
 	GtkBox *box;
 
-	displaybox->priv = g_new0 (RBSongDisplayBoxPrivate, 1);
+	displaybox->priv = RB_SONG_DISPLAY_BOX_GET_PRIVATE (displaybox);
+
 	box = GTK_BOX (displaybox);
 	box->spacing = 0;
 	box->homogeneous = FALSE;
@@ -142,8 +149,6 @@ rb_song_display_box_finalize (GObject *object)
 	RBSongDisplayBox *box;
 
 	box = RB_SONG_DISPLAY_BOX (object);
-
-	g_free (box->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
