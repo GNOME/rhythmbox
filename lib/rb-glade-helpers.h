@@ -30,6 +30,9 @@ GladeXML *rb_glade_xml_new (const char *file,
 			    const char *root,
 			    gpointer user_data);
 
+void rb_glade_boldify_label (GladeXML *xml,
+			     const char *name);
+
 G_END_DECLS
 
 #endif /* __RB_GLADE_HELPERS_H */

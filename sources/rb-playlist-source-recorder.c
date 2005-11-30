@@ -1151,19 +1151,8 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         widget = glade_xml_get_widget (xml, "device_label");
         gtk_label_set_mnemonic_widget (GTK_LABEL (widget), source->priv->device_menu);
 
-        pattrlist = pango_attr_list_new ();
-        attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-        attr->start_index = 0;
-        attr->end_index = G_MAXINT;
-        pango_attr_list_insert (pattrlist, attr);
-
-        widget = glade_xml_get_widget (xml, "progress_frame_label");
-        gtk_label_set_attributes (GTK_LABEL (widget), pattrlist);
-
-        widget = glade_xml_get_widget (xml, "options_expander_label");
-        gtk_label_set_attributes (GTK_LABEL (widget), pattrlist);
-
-        pango_attr_list_unref (pattrlist);
+	rb_glade_boldify_label (xml, "progress_frame_label");
+	rb_glade_boldify_label (xml, "options_expander_label");
 
         pattrlist = pango_attr_list_new ();
         attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);

@@ -1,5 +1,28 @@
 2005-11-30  James Livingston  <jrl@ids.org.au>
 
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_init),
+	(rb_station_properties_dialog_new):
+	* lib/rb-glade-helpers.c: (rb_glade_boldify_label):
+	* lib/rb-glade-helpers.h:
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_init),
+	(rb_feed_podcast_properties_dialog_new):
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_init),
+	(rb_podcast_properties_dialog_new):
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_get_config_widget):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init):
+	* sources/rb-library-source.c: (impl_get_config_widget):
+	* sources/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_init):
+	* widgets/rb-song-info.c: (rb_song_info_construct_single),
+	(rb_song_info_constructor): create a single rb_glade_boldify_label()
+	in rb-glade-helpers, rather than having eight implementation
+	throughout the code.
+
+2005-11-30  James Livingston  <jrl@ids.org.au>
+
 	* lib/rb-util.c: (rb_search_fold), (rb_make_duration_string):
 	* lib/rb-util.h:
 	* widgets/rb-entry-view.c: (rb_entry_view_duration_cell_data_func):

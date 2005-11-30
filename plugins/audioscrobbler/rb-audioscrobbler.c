@@ -844,9 +844,6 @@ GtkWidget *
 rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler)
 {
 	GladeXML *xml;
-	GtkWidget *audioscrobbler_label;
-	PangoAttrList *pattrlist;
-	PangoAttribute *attr;
 
 	if (audioscrobbler->priv->config_widget) {
 		return audioscrobbler->priv->config_widget;
@@ -860,14 +857,7 @@ rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler)
 	audioscrobbler->priv->password_label = glade_xml_get_widget (xml, "password_label");
 	audioscrobbler->priv->enabled_check = glade_xml_get_widget (xml, "enabled_check");
 
-	pattrlist = pango_attr_list_new (); 
-	attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-	attr->start_index = 0;
-	attr->end_index = G_MAXINT; 
-	pango_attr_list_insert (pattrlist, attr);
-	audioscrobbler_label = glade_xml_get_widget (xml, "audioscrobbler_label");
-	gtk_label_set_attributes (GTK_LABEL (audioscrobbler_label), pattrlist);
-	pango_attr_list_unref (pattrlist); 
+	rb_glade_boldify_label (xml, "audioscrobbler_label");
 
 	g_object_unref (G_OBJECT (xml));
 

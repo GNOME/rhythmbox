@@ -20,6 +20,7 @@
  */
 
 #include <gmodule.h>
+#include <gtk/gtk.h>
 
 #include "rb-glade-helpers.h"
 #include "rb-file-helpers.h"
@@ -108,3 +109,31 @@ glade_signal_connect_func (const gchar *cb_name, GObject *obj,
 		g_warning("callback function not found: %s", cb_name);
 	}
 }
+
+void
+rb_glade_boldify_label (GladeXML *xml, const char *name)
+{
+	GtkLabel *label = GTK_LABEL (glade_xml_get_widget (xml, name));
+	/* this way is probably better, but for some reason doesn't work with
+	 * labels with mnemonics.
+
+	static PangoAttrList *pattrlist = NULL;
+
+	if (pattrlist == NULL) {
+		PangoAttribute *attr;
+
+		pattrlist = pango_attr_list_new ();
+		attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+		attr->start_index = 0;
+		attr->end_index = G_MAXINT;
+		pango_attr_list_insert (pattrlist, attr);
+	}
+	gtk_label_set_attributes (label, pattrlist);*/
+
+	gchar *str_final;
+	str_final = g_strdup_printf ("<b>%s</b>", gtk_label_get_label (label));
+	gtk_label_set_markup_with_mnemonic (label, str_final);
+	g_free (str_final);
+}
+
+

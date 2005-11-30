@@ -1090,9 +1090,6 @@ impl_get_config_widget (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
-	GtkWidget *browser_views_label;
-	PangoAttrList *pattrlist;
-	PangoAttribute *attr;
 	GladeXML *xml;
 
 	if (source->priv->config_widget)
@@ -1106,15 +1103,7 @@ impl_get_config_widget (RBSource *asource)
 		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
 					       (GTK_RADIO_BUTTON (tmp))));
 
-	pattrlist = pango_attr_list_new ();
-	attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-	attr->start_index = 0;
-	attr->end_index = G_MAXINT;
-	pango_attr_list_insert (pattrlist, attr);
-	browser_views_label = glade_xml_get_widget (xml, "browser_views_label");
-	gtk_label_set_attributes (GTK_LABEL (browser_views_label), pattrlist);
-	pango_attr_list_unref (pattrlist);
-
+	rb_glade_boldify_label (xml, "browser_views_label");
 	g_object_unref (G_OBJECT (xml));
 	
 	rb_library_source_preferences_sync (source);

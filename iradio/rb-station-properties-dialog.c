@@ -76,7 +76,6 @@ static void rb_station_properties_dialog_rated_cb (RBRating *rating,
 						   double score,
 						   RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
-static GtkWidget * boldify_label (GtkWidget *label);
 static void rb_station_properties_dialog_show (GtkWidget *widget);
 static void rb_station_properties_dialog_create_station (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
@@ -179,13 +178,13 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	dialog->priv->playback_error = glade_xml_get_widget (xml, "errorLabel");
 	dialog->priv->playback_error_box = glade_xml_get_widget (xml, "errorBox");
 
-	boldify_label (glade_xml_get_widget (xml, "titleLabel"));
-	boldify_label (glade_xml_get_widget (xml, "genreLabel"));
-	boldify_label (glade_xml_get_widget (xml, "locationLabel"));
-	boldify_label (glade_xml_get_widget (xml, "ratingLabel"));
-	boldify_label (glade_xml_get_widget (xml, "lastplayedDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "playcountDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "bitrateDescLabel"));
+	rb_glade_boldify_label (xml, "titleLabel");
+	rb_glade_boldify_label (xml, "genreLabel");
+	rb_glade_boldify_label (xml, "locationLabel");
+	rb_glade_boldify_label (xml, "ratingLabel");
+	rb_glade_boldify_label (xml, "lasyplayedDescLabel");
+	rb_glade_boldify_label (xml, "playcountDescLabel");
+	rb_glade_boldify_label (xml, "bitrateDescLabel");
 
 	g_signal_connect_object (G_OBJECT (dialog->priv->location),
 				 "changed",
@@ -279,17 +278,6 @@ rb_station_properties_dialog_new (RBEntryView *entry_view, gboolean new_station)
 	rb_station_properties_dialog_update (dialog);
 
 	return GTK_WIDGET (dialog);
-}
-
-static GtkWidget *
-boldify_label (GtkWidget *label)
-{
-	gchar *str_final;
-	str_final = g_strdup_printf ("<b>%s</b>",
-				     gtk_label_get_label (GTK_LABEL (label)));
-	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-	g_free (str_final);
-	return label;
 }
 
 static void

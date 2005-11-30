@@ -70,7 +70,6 @@ static gchar* rb_podcast_properties_dialog_parse_time (gulong time);
 static void rb_podcast_properties_dialog_rated_cb (RBRating *rating,
 						   double score,
 						   RBPodcastPropertiesDialog *dialog);
-static GtkWidget * boldify_label (GtkWidget *label);
 
 struct RBPodcastPropertiesDialogPrivate
 {
@@ -163,16 +162,16 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	dialog->priv->date = glade_xml_get_widget (xml, "dateLabel");
 	dialog->priv->description = glade_xml_get_widget (xml, "descriptionLabel");
 
-	boldify_label (glade_xml_get_widget (xml, "titleDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "feedDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "locationDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "durationDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "ratingDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "lastplayedDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "playcountDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "bitrateDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "dateDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "descriptionDescLabel"));
+	rb_glade_boldify_label (xml, "titleDescLabel");
+	rb_glade_boldify_label (xml, "feedDescLabel");
+	rb_glade_boldify_label (xml, "locationDescLabel");
+	rb_glade_boldify_label (xml, "durationDescLabel");
+	rb_glade_boldify_label (xml, "ratingDescLabel");
+	rb_glade_boldify_label (xml, "lastplayedDescLabel");
+	rb_glade_boldify_label (xml, "playcountDescLabel");
+	rb_glade_boldify_label (xml, "bitrateDescLabel");
+	rb_glade_boldify_label (xml, "dateDescLabel");
+	rb_glade_boldify_label (xml, "descriptionDescLabel");
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (dialog->priv->rating, 
@@ -256,17 +255,6 @@ rb_podcast_properties_dialog_new (RBEntryView *entry_view)
 	rb_podcast_properties_dialog_update (dialog);
 
 	return GTK_WIDGET (dialog);
-}
-
-static GtkWidget *
-boldify_label (GtkWidget *label)
-{
-	gchar *str_final;
-	str_final = g_strdup_printf ("<b>%s</b>",
-				     gtk_label_get_label (GTK_LABEL (label)));
-	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-	g_free (str_final);
-	return label;
 }
 
 static void

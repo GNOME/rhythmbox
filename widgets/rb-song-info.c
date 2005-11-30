@@ -246,21 +246,6 @@ rb_song_info_show (GtkWidget *widget)
 }
 
 static void
-rb_song_info_boldify_label (RBSongInfo *song_info, GladeXML *xml, 
-			    const char *label_str)
-{
-	gchar *str_final;
-	GtkWidget *label;
-	
-	/* We add now the Pango attributes (look at bug #99867 and #97061) */
-	label = glade_xml_get_widget (xml, label_str);
-	str_final = g_strdup_printf ("<b>%s</b>",
-				     gtk_label_get_label GTK_LABEL (label));
-	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-	g_free (str_final);
-}
-
-static void
 rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 			       gboolean editable)
 {
@@ -296,16 +281,16 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	song_info->priv->disc_cur     = glade_xml_get_widget (xml, "song_info_disc_cur");
 	song_info->priv->year		= glade_xml_get_widget (xml, "song_info_year");
 
-	rb_song_info_boldify_label (song_info, xml, "title_label");
-	rb_song_info_boldify_label (song_info, xml, "trackn_label");
-	rb_song_info_boldify_label (song_info, xml, "name_label");
-	rb_song_info_boldify_label (song_info, xml, "location_label");
-	rb_song_info_boldify_label (song_info, xml, "last_played_label");
-	rb_song_info_boldify_label (song_info, xml, "play_count_label");
-	rb_song_info_boldify_label (song_info, xml, "duration_label");
-	rb_song_info_boldify_label (song_info, xml, "bitrate_label");
-	rb_song_info_boldify_label (song_info, xml, "discn_label");
-	rb_song_info_boldify_label (song_info, xml, "year_label");
+	rb_glade_boldify_label (xml, "title_label");
+	rb_glade_boldify_label (xml, "trackn_label");
+	rb_glade_boldify_label (xml, "name_label");
+	rb_glade_boldify_label (xml, "location_label");
+	rb_glade_boldify_label (xml, "last_played_label");
+	rb_glade_boldify_label (xml, "play_count_label");
+	rb_glade_boldify_label (xml, "duration_label");
+	rb_glade_boldify_label (xml, "bitrate_label");
+	rb_glade_boldify_label (xml, "discn_label");
+	rb_glade_boldify_label (xml, "year_label");
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect_object (G_OBJECT (song_info->priv->title),
@@ -397,10 +382,10 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	song_info->priv->playback_error_box = glade_xml_get_widget (xml, "song_info_error_box");
 	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
 
-	rb_song_info_boldify_label (song_info, xml, "album_label");
-	rb_song_info_boldify_label (song_info, xml, "artist_label");
-	rb_song_info_boldify_label (song_info, xml, "genre_label");
-	rb_song_info_boldify_label (song_info, xml, "rating_label");
+	rb_glade_boldify_label (xml, "album_label");
+	rb_glade_boldify_label (xml, "artist_label");
+	rb_glade_boldify_label (xml, "genre_label");
+	rb_glade_boldify_label (xml, "rating_label");
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
 				 "mnemonic-activate",

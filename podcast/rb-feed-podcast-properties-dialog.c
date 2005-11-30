@@ -55,8 +55,6 @@ static void rb_feed_podcast_properties_dialog_update_copyright (RBFeedPodcastPro
 static void rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog *dialog);
 static gchar* rb_feed_podcast_properties_dialog_parse_time (gulong time);
 
-static GtkWidget * boldify_label (GtkWidget *label);
-
 struct RBFeedPodcastPropertiesDialogPrivate
 {
 	RhythmDB *db;
@@ -131,13 +129,13 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	dialog->priv->copyright = glade_xml_get_widget (xml, "copyrightLabel");
 	dialog->priv->summary = glade_xml_get_widget (xml, "summaryLabel");
 
-	boldify_label (glade_xml_get_widget (xml, "titleDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "authorDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "locationDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "languageDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "lastupdateDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "copyrightDescLabel"));
-	boldify_label (glade_xml_get_widget (xml, "summaryDescLabel"));
+	rb_glade_boldify_label (xml, "titleDescLabel");
+	rb_glade_boldify_label (xml, "authorDescLabel");
+	rb_glade_boldify_label (xml, "locationDescLabel");
+	rb_glade_boldify_label (xml, "languageDescLabel");
+	rb_glade_boldify_label (xml, "lastupdateDescLabel");
+	rb_glade_boldify_label (xml, "copyrightDescLabel");
+	rb_glade_boldify_label (xml, "summaryDescLabel");
 
 	g_object_unref (G_OBJECT (xml));
 }
@@ -170,17 +168,6 @@ rb_feed_podcast_properties_dialog_new (RhythmDBEntry *entry)
 	rb_feed_podcast_properties_dialog_update (dialog);
 
 	return GTK_WIDGET (dialog);
-}
-
-static GtkWidget *
-boldify_label (GtkWidget *label)
-{
-	gchar *str_final;
-	str_final = g_strdup_printf ("<b>%s</b>",
-				     gtk_label_get_label (GTK_LABEL (label)));
-	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-	g_free (str_final);
-	return label;
 }
 
 static void
