@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: The Rhythmbox main entrypoint
  *
  *  Copyright (C) 2002 Jorn Baayen
@@ -21,18 +22,21 @@
  */
 
 #include <config.h>
-#include <libintl.h>
-#include <locale.h>
-#include <libgnome/gnome-program.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomeui/gnome-ui-init.h>
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h> /* For _get_user_time... */
-#include <glade/glade-init.h>
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
 #include <string.h>
+#include <libintl.h>
+#include <locale.h>
+
+#include <glib/gi18n.h>
+#include <gdk/gdkx.h> /* For _get_user_time... */
+#include <gtk/gtk.h>
+#include <glade/glade-init.h>
+#include <libgnome/gnome-program.h>
+#include <libgnomeui/gnome-ui-init.h>
+
 #ifdef HAVE_GSTREAMER
 #include <gst/gst.h>
 #include <gst/gconf/gconf.h>
@@ -254,19 +258,27 @@ main (int argc, char **argv)
 		g_clear_error (&error);
 	} else if (!no_registration) {
 		guint request_name_reply;
+		int flags;
 		DBusGProxy *bus_proxy;
 
 		bus_proxy = dbus_g_proxy_new_for_name (session_bus,
 						       "org.freedesktop.DBus",
 						       "/org/freedesktop/DBus",
 						       "org.freedesktop.DBus");
+
+#ifndef DBUS_NAME_FLAG_DO_NOT_QUEUE
+		flags = DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT;
+#else
+		flags = DBUS_NAME_FLAG_DO_NOT_QUEUE;
+#endif                
+
 		if (!dbus_g_proxy_call (bus_proxy,
 					"RequestName",
 					&error,
 					G_TYPE_STRING,
 					"org.gnome.Rhythmbox",
 					G_TYPE_UINT,
-					DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT,
+					flags,
 					G_TYPE_INVALID,
 					G_TYPE_UINT,
 					&request_name_reply,
