@@ -68,7 +68,7 @@ struct RBFeedPodcastPropertiesDialogPrivate
 	GtkWidget   *copyright;
 	GtkWidget   *summary;
 	
-	GtkWidget   *okbutton;
+	GtkWidget   *close_button;
 };
 
 #define RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_FEED_PODCAST_PROPERTIES_DIALOG, RBFeedPodcastPropertiesDialogPrivate))
@@ -104,12 +104,11 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 				 G_CALLBACK (rb_feed_podcast_properties_dialog_response_cb),
 				 dialog, 0);
 
+	gtk_window_set_default_size (GTK_WINDOW (dialog), 600, 400);
+
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
-
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
-					 GTK_RESPONSE_OK);
 
 	xml = rb_glade_xml_new ("podcast-feed-properties.glade",
 				"podcastproperties",
@@ -119,10 +118,11 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "podcastproperties"));
 	
-	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							GTK_STOCK_OK,
-							GTK_RESPONSE_OK);
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+							    GTK_STOCK_CLOSE,
+							    GTK_RESPONSE_CLOSE);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
+					 GTK_RESPONSE_CLOSE);
 
 	/* get the widgets from the XML */
 	dialog->priv->title = glade_xml_get_widget (xml, "titleLabel");
@@ -200,7 +200,7 @@ rb_feed_podcast_properties_dialog_update_title (RBFeedPodcastPropertiesDialog *d
 	const char *name;
 	char *tmp;	
 	name = rb_refstring_get (dialog->priv->current_entry->title);
-	tmp = g_strdup_printf (_("Properties for %s"), name);
+	tmp = g_strdup_printf (_("%s Properties"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 	g_free (tmp);
 }
