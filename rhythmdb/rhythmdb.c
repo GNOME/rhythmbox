@@ -2026,7 +2026,10 @@ rhythmdb_load (RhythmDB *db)
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	struct RhythmDBEvent *result;
 
+	/* grab the saving mutex, so that saves will block until the load is complete */
+	g_mutex_lock (db->priv->saving_mutex);
 	klass->impl_load (db, &db->priv->exiting);
+	g_mutex_unlock (db->priv->saving_mutex);
 
 	/* begin monitoring the for new tracks */
 	db->priv->library_location_notify_id =

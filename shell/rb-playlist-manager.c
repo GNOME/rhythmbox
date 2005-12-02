@@ -651,6 +651,9 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 	xmlNodePtr root;
 	xmlNodePtr child;
 	
+	/* block saves until the playlists have loaded */
+	g_mutex_lock (data->mgr->priv->saving_mutex);
+
 	if (!g_file_test (file, G_FILE_TEST_EXISTS))
 		goto out;
 
@@ -674,6 +677,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 
 	xmlFreeDoc (doc);
 out:
+	g_mutex_unlock (data->mgr->priv->saving_mutex);
 	g_free (file);
 }
 
