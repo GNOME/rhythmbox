@@ -1,5 +1,17 @@
 2005-12-02  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-preferences.c:
+	(rb_shell_preferences_append_view_page):
+	* sources/rb-library-source.c: (impl_get_config_widget):
+	* sources/rb-podcast-source.c: (impl_get_config_widget):
+	* sources/rb-source.c: (rb_source_get_config_widget):
+	* sources/rb-source.h: Make the preference actually work.
+
+	* shell/rb-shell.c: (rb_shell_constructor): set up monitoring correctly
+	if Rhythmbox is being run for the first time.
+
+2005-12-02  James Livingston  <jrl@ids.org.au>
+
 	Add support for Rhythmbox to watch your library, and automatically add
 	new tracks. Fixes bug 160159.
 

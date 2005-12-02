@@ -436,12 +436,12 @@ rb_source_search (RBSource *source, const char *text)
 }
 
 GtkWidget *
-rb_source_get_config_widget (RBSource *source)
+rb_source_get_config_widget (RBSource *source, RBShellPreferences *prefs)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	if (klass->impl_get_config_widget) {
-		return klass->impl_get_config_widget (source);
+		return klass->impl_get_config_widget (source, prefs);
 	} else {
 		return NULL;
 	}

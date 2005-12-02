@@ -213,7 +213,7 @@ static void impl_song_properties 			(RBSource *source);
 static RBSourceEOFType impl_handle_eos 			(RBSource *asource);
 static gboolean impl_show_popup 			(RBSource *source);
 static void rb_podcast_source_do_query			(RBPodcastSource *source, RBPodcastQueryType type);
-static GtkWidget *impl_get_config_widget 		(RBSource *source);
+static GtkWidget *impl_get_config_widget 		(RBSource *source, RBShellPreferences *prefs);
 static gboolean impl_receive_drag 			(RBSource *source, 
 							 GtkSelectionData *data);
 
@@ -1188,7 +1188,7 @@ impl_show_popup (RBSource *source)
 
 
 static GtkWidget *
-impl_get_config_widget (RBSource *asource)
+impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	GtkWidget *cb_update_interval;

@@ -129,7 +129,7 @@ static void impl_delete (RBSource *source);
 static void impl_move_to_trash (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_reset_filters (RBSource *source);
-static GtkWidget *impl_get_config_widget (RBSource *source);
+static GtkWidget *impl_get_config_widget (RBSource *source, RBShellPreferences *prefs);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
@@ -1122,19 +1122,16 @@ impl_reset_filters (RBSource *asource)
 }
   
 static GtkWidget *
-impl_get_config_widget (RBSource *asource)
+impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
 	GladeXML *xml;
-	RBShell *shell;
 
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
-
-	g_object_get (G_OBJECT (asource), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "prefs", &source->priv->shell_prefs, NULL);
-	g_object_unref (shell);
+	
+	source->priv->shell_prefs = prefs;
 	
 	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
 	source->priv->config_widget =

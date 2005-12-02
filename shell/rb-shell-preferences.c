@@ -238,7 +238,7 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 	g_return_if_fail (RB_IS_SHELL_PREFERENCES (prefs));
 	g_return_if_fail (RB_IS_SOURCE (source));
 
-	widget = rb_source_get_config_widget (source);
+	widget = rb_source_get_config_widget (source, prefs);
 	if (!widget)
 		return;
 

@@ -829,7 +829,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	GtkWindow *win;
 	GtkWidget *menubar;
 	GtkWidget *vbox;
-	gboolean rhythmdb_exists;
 	GError *error = NULL;
 
 	shell = RB_SHELL (((GObjectClass*)rb_shell_parent_class)
@@ -877,8 +876,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		else
 			pathname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
 
-		rhythmdb_exists = g_file_test (pathname, G_FILE_TEST_EXISTS);
-		
 #ifdef WITH_RHYTHMDB_TREE
 		shell->priv->db = rhythmdb_tree_new (pathname);
 #elif defined(WITH_RHYTHMDB_GDA)
@@ -891,13 +888,9 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		if (shell->priv->no_update)
 			g_object_set (G_OBJECT (shell->priv->db), "no-update", TRUE, NULL);
 
-		if (rhythmdb_exists) {
-			g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
-						 G_CALLBACK (rb_shell_load_complete_cb), shell,
-						 0);
-		} else {
-			shell->priv->load_complete = TRUE;
-		}
+		g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
+					 G_CALLBACK (rb_shell_load_complete_cb), shell,
+					 0);
 	}
 
 	rb_debug ("shell: setting up tray icon");
@@ -1083,15 +1076,8 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	
 	/* GO GO GO! */
-	if (rhythmdb_exists) {
-		rb_debug ("loading database");
-		rhythmdb_load (shell->priv->db);
-/* Disabled for now */
-#if 0
-		rb_debug ("adding db save-when-needed thread");
-		g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell->priv->db);
-#endif
-	}
+	rb_debug ("loading database");
+	rhythmdb_load (shell->priv->db);
 	
 	rb_debug ("shell: syncing window state");
 	rb_shell_sync_paned (shell);

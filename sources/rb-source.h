@@ -27,6 +27,7 @@
 #include <gtk/gtkactiongroup.h>
 
 #include "rb-entry-view.h"
+#include "rb-shell-preferences.h"
 
 G_BEGIN_DECLS
 
@@ -83,7 +84,7 @@ struct _RBSourceClass
 
 	void		(*impl_search)		(RBSource *source, const char *text);
 	void		(*impl_reset_filters)	(RBSource *source);
-	GtkWidget *	(*impl_get_config_widget)(RBSource *source);
+	GtkWidget *	(*impl_get_config_widget)(RBSource *source, RBShellPreferences *prefs);
 
 	gboolean	(*impl_can_cut)		(RBSource *source);
 	gboolean	(*impl_can_delete)	(RBSource *source);
@@ -141,7 +142,7 @@ void		rb_source_search		(RBSource *source,
 
 void		rb_source_reset_filters		(RBSource *source);
 
-GtkWidget *	rb_source_get_config_widget	(RBSource *source);
+GtkWidget *	rb_source_get_config_widget	(RBSource *source, RBShellPreferences *prefs);
 
 gboolean	rb_source_can_cut		(RBSource *source);
 gboolean	rb_source_can_delete		(RBSource *source);
