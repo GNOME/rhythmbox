@@ -143,7 +143,7 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	/* Submenu of Music */
 	{ "Playlist", NULL, N_("_Playlist") },
 
-	{ "MusicPlaylistNewPlaylist", GNOME_MEDIA_PLAYLIST, N_("_New Playlist..."), "<control>N",
+	{ "MusicPlaylistNewPlaylist", GNOME_MEDIA_PLAYLIST, N_("_New Playlist"), "<control>N",
 	  N_("Create a new playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_new_playlist) },
 	{ "MusicPlaylistNewAutomaticPlaylist", GNOME_MEDIA_AUTO_PLAYLIST, N_("New _Automatic Playlist..."), NULL,
@@ -158,13 +158,13 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "MusicPlaylistBurnPlaylist", GTK_STOCK_CDROM, N_("_Create Audio CD..."), NULL,
 	  N_("Create an audio CD from playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_burn_playlist) },
-	{ "MusicPlaylistRenamePlaylist", NULL, N_("_Rename..."), NULL,
+	{ "MusicPlaylistRenamePlaylist", NULL, N_("_Rename"), NULL,
 	  N_("Rename playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_rename_playlist) },
 	{ "MusicPlaylistDeletePlaylist", GTK_STOCK_REMOVE, N_("_Delete"), NULL,
 	  N_("Delete playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_delete_playlist) },
-	{ "EditAutomaticPlaylist", GTK_STOCK_PROPERTIES, N_("_Edit"), NULL,
+	{ "EditAutomaticPlaylist", GTK_STOCK_PROPERTIES, N_("_Edit..."), NULL,
 	  N_("Change this automatic playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_edit_automatic_playlist) },
 };
