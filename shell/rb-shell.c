@@ -1856,7 +1856,7 @@ rb_shell_cmd_add_folder_to_library (GtkAction *action,
 	dialog = rb_file_chooser_new (_("Import Folder into Library"),
 			              GTK_WINDOW (shell->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-				      TRUE);
+				      FALSE);
 	if (dir)
 		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (dialog),
 							 dir);
@@ -1878,7 +1878,7 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 	dialog = rb_file_chooser_new (_("Import File into Library"),
 			              GTK_WINDOW (shell->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
-				      TRUE);
+				      FALSE);
 	if (dir)
 		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (dialog),
 							 dir);

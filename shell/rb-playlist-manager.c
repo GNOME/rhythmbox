@@ -1034,7 +1034,7 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 	dialog = rb_file_chooser_new (_("Load Playlist"),
 				      GTK_WINDOW (mgr->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
-				      TRUE);
+				      FALSE);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
@@ -1072,7 +1072,7 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	dialog = rb_file_chooser_new (_("Save Playlist"),
 				      GTK_WINDOW (mgr->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_SAVE,
-				      TRUE);
+				      FALSE);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (save_playlist_response_cb),

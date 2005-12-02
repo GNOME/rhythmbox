@@ -771,7 +771,8 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 		return;
 	}
 
-	if (rb_uri_is_directory (location)) {
+	/* if there is an entry, it won't be a directory */
+	if (entry == NULL && rb_uri_is_directory (location)) {
 		rb_uri_handle_recursively (location,
 					   (GFunc) rb_playlist_source_add_location_swapped,
 					   NULL,

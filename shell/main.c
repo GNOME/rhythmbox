@@ -36,6 +36,7 @@
 #include <glade/glade-init.h>
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-ui-init.h>
+#include <libgnomeui/gnome-authentication-manager.h>
 
 #ifdef HAVE_GSTREAMER
 #include <gst/gst.h>
@@ -204,13 +205,7 @@ main (int argc, char **argv)
                                g_value_init (&context_as_value, G_TYPE_POINTER));
         poptContext = g_value_get_pointer (&context_as_value);
 
-	/* Disabled because it breaks internet radio and other things -
-	 * doing synchronous calls in the main thread causes deadlock.
-	 * This is too hard to fix right now, so we punt.
-	 */
-#if 0
 	gnome_authentication_manager_init ();
-#endif
 
 	g_random_set_seed (time(0));
 

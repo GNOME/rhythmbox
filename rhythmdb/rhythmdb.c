@@ -117,22 +117,22 @@ struct RhythmDBPrivate
 
 #define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
 
-struct RhythmDBQueryThreadData
+typedef struct
 {
 	RhythmDB *db;
 	GPtrArray *query;
 	guint propid;
 	GtkTreeModel *main_model;
 	gboolean cancel;
-};
+} RhythmDBQueryThreadData;
 
-struct RhythmDBAddThreadData
+typedef struct
 {
 	RhythmDB *db;
 	char *uri;
-};
+} RhythmDBAddThreadData;
 
-struct RhythmDBAction
+typedef struct
 {
 	enum {
 		RHYTHMDB_ACTION_STAT,
@@ -140,9 +140,9 @@ struct RhythmDBAction
 		RHYTHMDB_ACTION_SYNC
 	} type;
 	char *uri;
-};
+} RhythmDBAction;
 
-struct RhythmDBEvent
+typedef struct
 {
 	enum {
 		RHYTHMDB_EVENT_STAT,
@@ -159,9 +159,11 @@ struct RhythmDBEvent
 	char *real_uri; /* Target of a symlink, if any */
 
 	GError *error;
+	RhythmDB *db;
 
 	/* STAT */
 	GnomeVFSFileInfo *vfsinfo;
+	GnomeVFSAsyncHandle *handle;
 	/* LOAD */
 	RBMetaData *metadata;
 	/* QUERY_COMPLETE */
@@ -171,7 +173,7 @@ struct RhythmDBEvent
 	/* ENTRY_SET */
 	gboolean signal_change;
 	RhythmDBEntryChange change;
-};
+} RhythmDBEvent;
 
 G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
 
@@ -188,9 +190,9 @@ static void rhythmdb_thread_create (RhythmDB *db, GThreadFunc func, gpointer dat
 static void rhythmdb_read_enter (RhythmDB *db);
 static void rhythmdb_read_leave (RhythmDB *db);
 static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
-static gpointer add_thread_main (struct RhythmDBAddThreadData *data);
+static gpointer add_thread_main (RhythmDBAddThreadData *data);
 static gpointer action_thread_main (RhythmDB *db);
-static gpointer query_thread_main (struct RhythmDBQueryThreadData *data);
+static gpointer query_thread_main (RhythmDBQueryThreadData *data);
 static void queue_stat_uri (const char *uri, RhythmDB *db);
 static void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry, gboolean notify_if_inserted, guint propid, const GValue *value);
 static void rhythmdb_entry_set_mount_point (RhythmDB *db, 
@@ -548,7 +550,7 @@ rhythmdb_init (RhythmDB *db)
 }
 
 static void
-rhythmdb_action_free (RhythmDB *db, struct RhythmDBAction *action)
+rhythmdb_action_free (RhythmDB *db, RhythmDBAction *action)
 {
 	switch (action->type)
 	{
@@ -562,7 +564,7 @@ rhythmdb_action_free (RhythmDB *db, struct RhythmDBAction *action)
 }
 
 static void
-rhythmdb_event_free (RhythmDB *db, struct RhythmDBEvent *result)
+rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
 {
 	switch (result->type) {
 	case RHYTHMDB_EVENT_STAT:
@@ -621,8 +623,8 @@ rhythmdb_unmonitor_directories (char *dir, GnomeVFSMonitorHandle *handle, Rhythm
 void
 rhythmdb_shutdown (RhythmDB *db)
 {
-	struct RhythmDBEvent *result;
-	struct RhythmDBAction *action;
+	RhythmDBEvent *result;
+	RhythmDBAction *action;
 
 	g_return_if_fail (RHYTHMDB_IS (db));
 
@@ -803,7 +805,7 @@ emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 			RBMetaDataField field;
 			RhythmDBEntryChange *change = t->data;
 			if (metadata_field_from_prop (change->prop, &field)) {
-				struct RhythmDBAction *action = g_new0 (struct RhythmDBAction, 1);
+				RhythmDBAction *action = g_new0 (RhythmDBAction, 1);
 				action->type = RHYTHMDB_ACTION_SYNC;
 				action->uri = g_strdup (entry->location);
 				g_async_queue_push (db->priv->action_queue, action);
@@ -905,6 +907,10 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	ret->artist = rb_refstring_ref (db->priv->empty_string);
 	ret->album = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
+
+	/* don't show songs until they have been stat'd */
+	if (type == RHYTHMDB_ENTRY_TYPE_SONG)
+		ret->hidden = TRUE;
 	
 	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) ||
 	    (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED))
@@ -1093,7 +1099,8 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:
 		{
-			struct RhythmDBEvent *event = g_new0 (struct RhythmDBEvent, 1);
+			RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
+			event->db = db;
 			event->type = RHYTHMDB_EVENT_FILE_DELETED;
 			event->uri = g_strdup (info_uri);
 			g_async_queue_push (db->priv->event_queue, event);
@@ -1355,10 +1362,10 @@ is_ghost_entry (RhythmDBEntry *entry)
 
 
 static void
-rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
+rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
-	struct RhythmDBAction *action;
+	RhythmDBAction *action;
 
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (entry) {
@@ -1381,7 +1388,9 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 			GValue val = {0, };
 			GTimeVal time;
 			const char *mount_point;
-			
+
+			rhythmdb_entry_set_visibility (db, entry, TRUE);
+				
 			/* Update mount point if necessary (main reason is 
 			 * that we want to set the mount point in legacy
 			 * rhythmdb that doesn't have it already
@@ -1416,10 +1425,11 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 				/* monitor the file for changes */
 				rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
 			} else {
-				struct RhythmDBEvent *new_event;
+				RhythmDBEvent *new_event;
 
 				rb_debug ("changed: %s", event->real_uri);
-				new_event = g_new0 (struct RhythmDBEvent, 1);
+				new_event = g_new0 (RhythmDBEvent, 1);
+				new_event->db = db;
 				new_event->uri = g_strdup (event->real_uri);
 				new_event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 				g_async_queue_push (db->priv->event_queue, 
@@ -1429,7 +1439,7 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 
 		rhythmdb_commit (db);
 	} else {
-		action = g_new0 (struct RhythmDBAction, 1);
+		action = g_new0 (RhythmDBAction, 1);
 		action->type = RHYTHMDB_ACTION_LOAD;
 		action->uri = g_strdup (event->real_uri);
 		rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", action->uri);
@@ -1437,14 +1447,15 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 	}
 }
 
-struct RhythmDBLoadErrorData {
+typedef struct
+{
 	RhythmDB *db;
 	char *uri;
 	char *msg;
-};
+} RhythmDBLoadErrorData;
 
 static gboolean
-emit_load_error_idle (struct RhythmDBLoadErrorData *data)
+emit_load_error_idle (RhythmDBLoadErrorData *data)
 {
 	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[LOAD_ERROR], 0, data->uri, data->msg);
 	g_object_unref (G_OBJECT (data->db));
@@ -1455,7 +1466,7 @@ emit_load_error_idle (struct RhythmDBLoadErrorData *data)
 }
 
 static gboolean
-rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
+rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
@@ -1463,13 +1474,13 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 	GTimeVal time;
 
 	if (event->error) {
-		struct RhythmDBLoadErrorData *data;
+		RhythmDBLoadErrorData *data;
 
 		if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE))
 			return TRUE;
 
 		rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
-		data = g_new0 (struct RhythmDBLoadErrorData, 1);
+		data = g_new0 (RhythmDBLoadErrorData, 1);
 		g_object_ref (G_OBJECT (db));
 		data->db = db;
 		data->uri = g_strdup (event->real_uri);
@@ -1543,7 +1554,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 
 static void
 rhythmdb_process_queued_entry_set_event (RhythmDB *db, 
-					 struct RhythmDBEvent *event)
+					 RhythmDBEvent *event)
 {
 	rhythmdb_entry_set_internal (db, event->entry, 
 				     event->signal_change,
@@ -1559,18 +1570,18 @@ rhythmdb_process_queued_entry_set_event (RhythmDB *db,
 }
 
 static void
-rhythmdb_process_file_created_or_modified (RhythmDB *db, struct RhythmDBEvent *event)
+rhythmdb_process_file_created_or_modified (RhythmDB *db, RhythmDBEvent *event)
 {
-	struct RhythmDBAction *action;
+	RhythmDBAction *action;
 
-	action = g_new0 (struct RhythmDBAction, 1);
+	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_LOAD;
 	action->uri = g_strdup (event->uri);
 	g_async_queue_push (db->priv->action_queue, action);
 }
 
 static void
-rhythmdb_process_file_deleted (RhythmDB *db, struct RhythmDBEvent *event)
+rhythmdb_process_file_deleted (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (db, event->uri);
 
@@ -1585,7 +1596,7 @@ rhythmdb_process_file_deleted (RhythmDB *db, struct RhythmDBEvent *event)
 static gboolean
 rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 {
-	struct RhythmDBEvent *event;
+	RhythmDBEvent *event;
 	gboolean processed = FALSE;
 	guint count = 0;
 	
@@ -1722,26 +1733,27 @@ read_queue (GAsyncQueue *queue, gboolean *cancel)
 static void
 queue_stat_uri (const char *uri, RhythmDB *db)
 {
-	struct RhythmDBAction *action;
+	RhythmDBAction *action;
 
 	rb_debug ("queueing stat for \"%s\"", uri);
 
-	action = g_new0 (struct RhythmDBAction, 1);
+	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_STAT;
 	action->uri = g_strdup (uri);
 	g_async_queue_push (db->priv->action_queue, action);
 }
 
 static gpointer
-add_thread_main (struct RhythmDBAddThreadData *data)
+add_thread_main (RhythmDBAddThreadData *data)
 {
-	struct RhythmDBEvent *result;
+	RhythmDBEvent *result;
 
 	rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri,
 				   &data->db->priv->exiting, data->db);
 
 	rb_debug ("exiting");
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (data->db->priv->event_queue, result);
 	g_free (data->uri);
@@ -1750,33 +1762,88 @@ add_thread_main (struct RhythmDBAddThreadData *data)
 }
 
 static void
-rhythmdb_execute_stat (RhythmDB *db, const char *uri, struct RhythmDBEvent *event)
+rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
+			       GList *results, /* GnomeVFSGetFileInfoResult* items */
+			       RhythmDBEvent *event)
 {
-	GnomeVFSResult vfsresult = GNOME_VFS_OK;
-	char *unescaped;
+	GnomeVFSGetFileInfoResult *info_result = results->data;
+	char *uri = gnome_vfs_uri_to_string (info_result->uri, GNOME_VFS_URI_HIDE_NONE);
+	
+	if (uri) {
+		g_free (event->real_uri);
+		event->real_uri = uri;
+	}
+	
+	if (info_result->result == GNOME_VFS_OK) {
+		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 
-	vfsresult = GNOME_VFS_ERROR_GENERIC;
-	event->real_uri = rb_uri_resolve_symlink (uri);
-	if (!event->real_uri)
-		goto error;
-	event->vfsinfo = gnome_vfs_file_info_new ();
-	if ((vfsresult = gnome_vfs_get_file_info (uri,
-						  event->vfsinfo,
-						  GNOME_VFS_FILE_INFO_FOLLOW_LINKS))
-	    == GNOME_VFS_OK)
-		return;
-error:
-	unescaped = gnome_vfs_unescape_string_for_display (uri);
-	event->error = g_error_new (RHYTHMDB_ERROR,
-				    RHYTHMDB_ERROR_ACCESS_FAILED,
-				    _("Couldn't access %s: %s"),
-				    unescaped,
-				    gnome_vfs_result_to_string (vfsresult));
-	rb_debug ("got error on %s: %s", unescaped, event->error->message);
-	g_free (unescaped);
-	if (event->vfsinfo)
-		gnome_vfs_file_info_unref (event->vfsinfo);
-	event->vfsinfo = NULL;
+		if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
+			event->metadata = rb_metadata_new ();
+			rb_metadata_load (event->metadata, event->real_uri,
+					  &event->error);
+		}
+	} else {
+		char *unescaped = gnome_vfs_unescape_string_for_display (uri);
+		event->error = g_error_new (RHYTHMDB_ERROR,
+					    RHYTHMDB_ERROR_ACCESS_FAILED,
+					    _("Couldn't access %s: %s"),
+					    unescaped,
+					    gnome_vfs_result_to_string (info_result->result));
+		rb_debug ("got error on %s: %s", unescaped, event->error->message);
+		g_free (unescaped);
+		event->vfsinfo = NULL;
+	}
+	g_async_queue_push (event->db->priv->event_queue, event);
+}
+
+
+static void
+rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
+{
+	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+
+	if (gnome_vfs_uri_is_local (vfs_uri)) {
+		GnomeVFSResult vfsresult;
+		
+		event->real_uri = rb_uri_resolve_symlink (uri);
+		event->vfsinfo = gnome_vfs_file_info_new ();
+		
+		vfsresult = gnome_vfs_get_file_info (uri,
+						     event->vfsinfo,
+						     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+		if (vfsresult != GNOME_VFS_OK) {
+			char *unescaped = gnome_vfs_unescape_string_for_display (uri);
+			event->error = g_error_new (RHYTHMDB_ERROR,
+						    RHYTHMDB_ERROR_ACCESS_FAILED,
+						    _("Couldn't access %s: %s"),
+						    unescaped,
+						    gnome_vfs_result_to_string (vfsresult));
+			rb_debug ("got error on %s: %s", unescaped, event->error->message);
+			g_free (unescaped);
+			if (event->vfsinfo)
+				gnome_vfs_file_info_unref (event->vfsinfo);
+			event->vfsinfo = NULL;
+		} else {
+			if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
+				event->metadata = rb_metadata_new ();
+				rb_metadata_load (event->metadata, event->real_uri,
+						  &event->error);
+			}
+		}
+	
+		gnome_vfs_uri_unref (vfs_uri);
+		g_async_queue_push (db->priv->event_queue, event);
+	} else {
+		GList *uri_list = g_list_append (NULL, vfs_uri);
+		event->real_uri = g_strdup (uri);
+	
+		gnome_vfs_async_get_file_info (&event->handle, uri_list,
+				       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
+				       GNOME_VFS_PRIORITY_DEFAULT,
+				       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
+				       event);
+		g_list_free (uri_list);
+	}
 }
 
 
@@ -1837,14 +1904,15 @@ entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry, RBMetaData *metadata)
 	}
 }
 
-struct RhythmDBSaveErrorData {
+typedef struct
+{
 	RhythmDB *db;
 	char *uri;
 	GError *error;
-};
+} RhythmDBSaveErrorData;
 
 static gboolean
-emit_save_error_idle (struct RhythmDBSaveErrorData *data)
+emit_save_error_idle (RhythmDBSaveErrorData *data)
 {
 	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[SAVE_ERROR], 0, data->uri, data->error);
 	g_object_unref (G_OBJECT (data->db));
@@ -1857,10 +1925,10 @@ emit_save_error_idle (struct RhythmDBSaveErrorData *data)
 static gpointer
 action_thread_main (RhythmDB *db)
 {
-	struct RhythmDBEvent *result;
+	RhythmDBEvent *result;
 
 	while (TRUE) {
-		struct RhythmDBAction *action;
+		RhythmDBAction *action;
 
 		action = read_queue (db->priv->action_queue, &db->priv->exiting);
 
@@ -1871,37 +1939,31 @@ action_thread_main (RhythmDB *db)
 		{
 		case RHYTHMDB_ACTION_STAT:
 		{
-			result = g_new0 (struct RhythmDBEvent, 1);
+			result = g_new0 (RhythmDBEvent, 1);
+			result->db = db;
 			result->type = RHYTHMDB_EVENT_STAT;
 
 			rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", action->uri);
 
 			rhythmdb_execute_stat (db, action->uri, result);
-
-			g_async_queue_push (db->priv->event_queue, result);
 		}
 		break;
 		case RHYTHMDB_ACTION_LOAD:
 		{
-			result = g_new0 (struct RhythmDBEvent, 1);
+			result = g_new0 (RhythmDBEvent, 1);
+			result->db = db;
 			result->type = RHYTHMDB_EVENT_METADATA_LOAD;
 
 			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", action->uri);
 
 			/* First do another stat */
 			rhythmdb_execute_stat (db, action->uri, result);
-			if (!result->error) {
-				result->metadata = rb_metadata_new ();
-				rb_metadata_load (result->metadata, result->real_uri,
-						  &result->error);
-			}
-			g_async_queue_push (db->priv->event_queue, result);
 		}
 		break;
 		case RHYTHMDB_ACTION_SYNC:
 		{
 			GError *error = NULL;
-			struct RhythmDBSaveErrorData *data;
+			RhythmDBSaveErrorData *data;
 			RhythmDBEntry *entry;
 
 			if (db->priv->dry_run) {
@@ -1912,7 +1974,7 @@ action_thread_main (RhythmDB *db)
 			rb_metadata_load (db->priv->metadata,
 					  action->uri, &error);
 			if (error != NULL) {
-				data = g_new0 (struct RhythmDBSaveErrorData, 1);
+				data = g_new0 (RhythmDBSaveErrorData, 1);
 				g_object_ref (G_OBJECT (db));
 				data->db = db;
 				data->uri = g_strdup (action->uri);
@@ -1931,7 +1993,7 @@ action_thread_main (RhythmDB *db)
 
 			rb_metadata_save (db->priv->metadata, &error);
 			if (error != NULL) {
-				data = g_new0 (struct RhythmDBSaveErrorData, 1);
+				data = g_new0 (RhythmDBSaveErrorData, 1);
 				g_object_ref (G_OBJECT (db));
 				data->db = db;
 				data->uri = g_strdup (action->uri);
@@ -1947,7 +2009,8 @@ action_thread_main (RhythmDB *db)
 
 	}
 	rb_debug ("exiting main thread");
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (db->priv->event_queue, result);
 
@@ -1970,7 +2033,7 @@ rhythmdb_add_uri (RhythmDB *db, const char *uri)
 	char  *realuri = rb_uri_resolve_symlink (uri);
 
 	if (rb_uri_is_directory (realuri)) {
-		struct RhythmDBAddThreadData *data = g_new0 (struct RhythmDBAddThreadData, 1);
+		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
 		data->db = db;
 		data->uri = realuri;
 
@@ -1981,36 +2044,6 @@ rhythmdb_add_uri (RhythmDB *db, const char *uri)
 	}
 }
 
-#if 0
-static gpointer
-rhythmdb_load_thread_main (RhythmDB *db)
-{
-	struct RhythmDBEvent *result;
-	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-
-	klass->impl_load (db, &db->priv->exiting);
-
-	/* begin monitoring the for new tracks */
-	db->priv->library_location_notify_id =
-		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
-					    (GConfClientNotifyFunc) library_location_changed_cb,
-					    db);
-	rhythmdb_sync_library_location (db);
-
-	rb_debug ("queuing db load complete signal");
-	result = g_new0 (struct RhythmDBEvent, 1);
-	result->type = RHYTHMDB_EVENT_DB_LOAD;
-	g_async_queue_push (db->priv->event_queue, result);
-
-	rb_debug ("exiting");
-	result = g_new0 (struct RhythmDBEvent, 1);
-	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
-	g_async_queue_push (db->priv->event_queue, result);
-	
-	return NULL;
-}
-#endif
-
 /**
  * rhythmdb_load:
  * @db: a #RhythmDB.
@@ -2020,11 +2053,8 @@ rhythmdb_load_thread_main (RhythmDB *db)
 void
 rhythmdb_load (RhythmDB *db)
 {
-#if 0
-	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_load_thread_main, db);
-#endif
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-	struct RhythmDBEvent *result;
+	RhythmDBEvent *result;
 
 	/* grab the saving mutex, so that saves will block until the load is complete */
 	g_mutex_lock (db->priv->saving_mutex);
@@ -2039,7 +2069,8 @@ rhythmdb_load (RhythmDB *db)
 	rhythmdb_sync_library_location (db);
 
 	rb_debug ("queuing db load complete signal");
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = db;
 	result->type = RHYTHMDB_EVENT_DB_LOAD;
 	g_async_queue_push (db->priv->event_queue, result);
 }
@@ -2048,7 +2079,7 @@ static gpointer
 rhythmdb_save_thread_main (RhythmDB *db)
 {
 	RhythmDBClass *klass;
-	struct RhythmDBEvent *result;
+	RhythmDBEvent *result;
 
 	rb_debug ("entering save thread");
 	
@@ -2082,11 +2113,13 @@ rhythmdb_save_thread_main (RhythmDB *db)
 	g_cond_broadcast (db->priv->saving_condition);
 
 out:
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = db;
 	result->type = RHYTHMDB_EVENT_DB_SAVED;
 	g_async_queue_push (db->priv->event_queue, result);
 
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (db->priv->event_queue, result);
 	return NULL;
@@ -2136,9 +2169,10 @@ threadsafe_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
 		rhythmdb_entry_set_internal (db, entry, notify, propid, value);
 	} else {
-		struct RhythmDBEvent *result;
+		RhythmDBEvent *result;
 
-		result = g_new0 (struct RhythmDBEvent, 1);
+		result = g_new0 (RhythmDBEvent, 1);
+		result->db = db;
 		result->type = RHYTHMDB_EVENT_ENTRY_SET;
 
 		rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
@@ -3109,9 +3143,9 @@ rhythmdb_evaluate_query (RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry)
 }
 
 static void
-rhythmdb_query_internal (struct RhythmDBQueryThreadData *data)
+rhythmdb_query_internal (RhythmDBQueryThreadData *data)
 {
-	struct RhythmDBEvent *result;
+	RhythmDBEvent *result;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (data->db);
 
 	rhythmdb_query_preprocess (data->query);
@@ -3125,7 +3159,8 @@ rhythmdb_query_internal (struct RhythmDBQueryThreadData *data)
 	rb_debug ("completed");
 	rhythmdb_query_model_signal_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
 
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_QUERY_COMPLETE;
 	result->model = RHYTHMDB_QUERY_MODEL (data->main_model);
 	g_async_queue_push (data->db->priv->event_queue, result);
@@ -3134,15 +3169,16 @@ rhythmdb_query_internal (struct RhythmDBQueryThreadData *data)
 }
 
 static gpointer
-query_thread_main (struct RhythmDBQueryThreadData *data)
+query_thread_main (RhythmDBQueryThreadData *data)
 {
-	struct RhythmDBEvent *result;
+	RhythmDBEvent *result;
 
 	rb_debug ("entering query thread");
 
 	rhythmdb_query_internal (data);
 
-	result = g_new0 (struct RhythmDBEvent, 1);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (data->db->priv->event_queue, result);
 	g_free (data);
@@ -3153,9 +3189,9 @@ void
 rhythmdb_do_full_query_async_parsed (RhythmDB *db, GtkTreeModel *main_model,
 				     GPtrArray *query)
 {
-	struct RhythmDBQueryThreadData *data;
+	RhythmDBQueryThreadData *data;
 
-	data = g_new0 (struct RhythmDBQueryThreadData, 1);
+	data = g_new0 (RhythmDBQueryThreadData, 1);
 	data->db = db;
 	data->query = rhythmdb_query_copy (query);
 	data->main_model = main_model;
@@ -3191,9 +3227,9 @@ static void
 rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
 				 GPtrArray *query)
 {
-	struct RhythmDBQueryThreadData *data;
+	RhythmDBQueryThreadData *data;
 
-	data = g_new0 (struct RhythmDBQueryThreadData, 1);
+	data = g_new0 (RhythmDBQueryThreadData, 1);
 	data->db = db;
 	data->query = rhythmdb_query_copy (query);
 	data->main_model = main_model;
@@ -3533,15 +3569,16 @@ RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void)
 }
 
 
-struct MountCtxt {
+typedef struct
+{
 	RhythmDB *db;
 	char *mount_point;
 	gboolean mounted;
-};
+} MountCtxt;
 
 static void 
 entry_volume_mounted_or_unmounted (RhythmDBEntry *entry, 
-				   struct MountCtxt *ctxt)
+				   MountCtxt *ctxt)
 {
 	const char *mount_point;
 	
@@ -3578,7 +3615,7 @@ rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 			    GnomeVFSVolume *volume, 
 			    gpointer data)
 {
-	struct MountCtxt ctxt;
+	MountCtxt ctxt;
 
 	ctxt.db = RHYTHMDB (data);
 	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
@@ -3595,7 +3632,7 @@ rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 			      GnomeVFSVolume *volume, 
 			      gpointer data)
 {
-	struct MountCtxt ctxt;
+	MountCtxt ctxt;
 
 	ctxt.db = RHYTHMDB (data);
 	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
@@ -3646,11 +3683,6 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_set_boolean (&new_val, !visible);
 		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_HIDDEN, &new_val);
-		
-		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 
-			       0, entry, RHYTHMDB_PROP_HIDDEN, 
-			       &old_val, &new_val);
-		
 		g_value_unset (&new_val);
 	}
 	g_value_unset (&old_val);
@@ -3806,7 +3838,8 @@ rhythmdb_check_changed_file (const char *uri, gpointer data, RhythmDB *db)
 	g_get_current_time (&time);
 	if (time.tv_sec >= time_sec + RHYTHMDB_FILE_MODIFY_PROCESS_TIME) {
 		/* process and remove from table */
-		struct RhythmDBEvent *event = g_new0 (struct RhythmDBEvent, 1);
+		RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
+		event->db = db;
 		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 		event->uri = g_strdup (uri);
 		

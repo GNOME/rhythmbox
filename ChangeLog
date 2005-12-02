@@ -1,5 +1,45 @@
 2005-12-02  James Livingston  <jrl@ids.org.au>
 
+	Add full support for gnome-vfs remote files. Closes bug 140355.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_execute_stat_info_cb),
+	(rhythmdb_execute_stat): perform stats asynchronously, so that waiting
+	for authentication information from the user doesn't block the UI.
+
+	(rhythmdb_entry_set_visibility): don't emit the signal twice.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_action_free),
+	(rhythmdb_event_free), (rhythmdb_shutdown), (emit_entry_changed),
+	(rhythmdb_entry_allocate), (rhythmdb_directory_change_cb),
+	(rhythmdb_process_stat_event), (emit_load_error_idle),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_queued_entry_set_event),
+	(rhythmdb_process_file_created_or_modified),
+	(rhythmdb_process_file_deleted), (rhythmdb_process_events),
+	(queue_stat_uri), (add_thread_main),
+	(emit_save_error_idle), (action_thread_main), (rhythmdb_add_uri),
+	(rhythmdb_load), (rhythmdb_save_thread_main),
+	(threadsafe_entry_set), (rhythmdb_query_internal),
+	(query_thread_main), (rhythmdb_do_full_query_async_parsed),
+	(rhythmdb_do_full_query_internal),
+	(entry_volume_mounted_or_unmounted), (rhythmdb_volume_mounted_cb),
+	(rhythmdb_volume_unmounted_cb),
+	(rhythmdb_check_changed_file): trivial changes to support the
+	asynchronous stats.
+
+	* shell/main.c: (main): activate the authentication manager.
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_load_playlist),
+	(rb_playlist_manager_cmd_save_playlist):
+	* shell/rb-shell.c: (rb_shell_cmd_add_folder_to_library),
+	(rb_shell_cmd_add_file_to_library):
+	* sources/rb-playlist-source.c: (rb_playlist_source_add_location):
+	* widgets/rb-druid.c: (rb_druid_browse_clicked_cb): Let people select
+	remote files.
+
+2005-12-02  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-playlist-manager.c: makes playlist menu items use the
 	elipses correctly. Fixes bug 322283.
 
