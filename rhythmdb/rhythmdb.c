@@ -48,6 +48,7 @@
 #include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-preferences.h"
+#include "widgets/eel-gconf-extensions.h"
 
 #define RB_PARSE_CONJ (xmlChar *) "conjunction"
 #define RB_PARSE_SUBQUERY (xmlChar *) "subquery"
@@ -63,6 +64,8 @@
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
+
+#define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2
 
 GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
 
@@ -87,6 +90,9 @@ struct RhythmDBPrivate
 	GAsyncQueue *restored_queue;
 
 	GHashTable *monitored_directories;
+	GHashTable *changed_files;
+	guint library_location_notify_id, changed_files_id;
+	GSList *library_locations;
 
 	gboolean dry_run;
 	gboolean no_update;
@@ -145,8 +151,7 @@ struct RhythmDBEvent
 		RHYTHMDB_EVENT_THREAD_EXITED,
 		RHYTHMDB_EVENT_DB_SAVED,
 		RHYTHMDB_EVENT_QUERY_COMPLETE,
-		RHYTHMDB_EVENT_FILE_CREATED,
-		RHYTHMDB_EVENT_FILE_MODIFIED,
+		RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED,
 		RHYTHMDB_EVENT_FILE_DELETED,
 		RHYTHMDB_EVENT_ENTRY_SET
 	} type;
@@ -204,6 +209,15 @@ static gboolean free_entry_changes (RhythmDBEntry *entry,
 				    GSList *changes,
 				    RhythmDB *db);
 static gboolean rhythmdb_idle_save (RhythmDB *db);
+static void library_location_changed_cb (GConfClient *client,
+					  guint cnxn_id,
+					  GConfEntry *entry,
+					  RhythmDB *db);
+static void rhythmdb_sync_library_location (RhythmDB *db);
+static gboolean rhythmdb_process_changed_files (RhythmDB *db);
+static void rhythmdb_monitor_uri_path (RhythmDB *db,
+				       const char *uri,
+				       GError **error);
 
 enum
 {
@@ -500,6 +514,11 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->monitored_directories = g_hash_table_new_full (g_str_hash, g_str_equal,
 								 (GDestroyNotify) g_free,
 								 NULL);
+	db->priv->changed_files = g_hash_table_new_full (g_str_hash, g_str_equal,
+							 (GDestroyNotify) g_free,
+							 NULL);
+	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
+						    (GSourceFunc) rhythmdb_process_changed_files, db);
 
 	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
 	
@@ -574,9 +593,7 @@ rhythmdb_event_free (RhythmDB *db, struct RhythmDBEvent *result)
 	case RHYTHMDB_EVENT_QUERY_COMPLETE:
 		g_object_unref (result->model);
 		break;
-	case RHYTHMDB_EVENT_FILE_CREATED:
-		break;
-	case RHYTHMDB_EVENT_FILE_MODIFIED:
+	case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
 		break;
 	case RHYTHMDB_EVENT_FILE_DELETED:	       
 		break;
@@ -587,10 +604,11 @@ rhythmdb_event_free (RhythmDB *db, struct RhythmDBEvent *result)
 	g_free (result);
 }
 
-static void rhythmdb_unmonitor_directories (char *dir,
-					    GnomeVFSMonitorHandle *handle, RhythmDB *db)
+static gboolean
+rhythmdb_unmonitor_directories (char *dir, GnomeVFSMonitorHandle *handle, RhythmDB *db)
 {
 	gnome_vfs_monitor_cancel (handle);
+	return TRUE;
 }
 
 
@@ -610,8 +628,12 @@ rhythmdb_shutdown (RhythmDB *db)
 
 	db->priv->exiting = TRUE;
 
-	g_hash_table_foreach (db->priv->monitored_directories, (GHFunc) rhythmdb_unmonitor_directories,
-			      db);
+	eel_gconf_notification_remove (db->priv->library_location_notify_id);
+	g_hash_table_foreach_remove (db->priv->monitored_directories, (GHRFunc) rhythmdb_unmonitor_directories,
+				     db);
+	g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
+	g_slist_free (db->priv->library_locations);
+	db->priv->library_locations = NULL;
 
 	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL)
 		rhythmdb_action_free (db, action);
@@ -653,6 +675,8 @@ rhythmdb_finalize (GObject *object)
 
 	g_mem_chunk_destroy (db->priv->entry_memchunk);
 	g_hash_table_destroy (db->priv->monitored_directories);
+	g_source_remove (db->priv->changed_files_id);
+	g_hash_table_destroy (db->priv->changed_files);
 
 	rb_refstring_unref (db->priv->empty_string);
 	rb_refstring_unref (db->priv->octet_stream_str);
@@ -1025,36 +1049,55 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			      const char *monitor_uri,
 			      const char *info_uri,
 			      GnomeVFSMonitorEventType vfsevent,
-			      gpointer data)
+			      RhythmDB *db)
 {
-	RhythmDB *db = RHYTHMDB (data);
-	struct RhythmDBEvent *event;
 	rb_debug ("directory event %d for %s: %s", (int) vfsevent,
 		  monitor_uri, info_uri);
 
 	switch (vfsevent)
         {
         case GNOME_VFS_MONITOR_EVENT_CREATED:
-		/* disable until we have proper library monitoring
-		 * because it doesn't work properly now.
-		event = g_new0 (struct RhythmDBEvent, 1)
-		event->uri = g_strdup (info_uri);
-                event->type = RHYTHMDB_EVENT_FILE_CREATED;
-                g_async_queue_push (db->priv->event_queue, event);
-		*/
-                break;
-        case GNOME_VFS_MONITOR_EVENT_CHANGED:
+		{
+			GSList *cur;
+			gboolean in_library = FALSE;
+			
+			/* don't notices new files outside of the library locations */
+			for (cur = db->priv->library_locations; cur != NULL; cur = g_slist_next (cur)) {
+				if (g_str_has_prefix (info_uri, cur->data)) {
+					in_library = TRUE;
+					break;
+				}
+			}
+		
+			if (!in_library)
+				return;	
+		}
+		
+		/* process directories immediately */
+		if (rb_uri_is_directory (info_uri)) {
+			rhythmdb_monitor_uri_path (db, info_uri, NULL);
+			rhythmdb_add_uri (db, info_uri);
+			return;
+		}
+		/* fall through*/
+	case GNOME_VFS_MONITOR_EVENT_CHANGED:
         case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
-		event = g_new0 (struct RhythmDBEvent, 1);
-		event->uri = g_strdup (info_uri);
-                event->type = RHYTHMDB_EVENT_FILE_MODIFIED;
-		g_async_queue_push (db->priv->event_queue, event);
+		{
+			GTimeVal time;
+
+			g_get_current_time (&time);
+			g_hash_table_replace (db->priv->changed_files,
+					      g_strdup (info_uri),
+					      GINT_TO_POINTER (time.tv_sec));
+		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:
-		event = g_new0 (struct RhythmDBEvent, 1);
-		event->uri = g_strdup (info_uri);
-                event->type = RHYTHMDB_EVENT_FILE_DELETED;
-		g_async_queue_push (db->priv->event_queue, event);
+		{
+			struct RhythmDBEvent *event = g_new0 (struct RhythmDBEvent, 1);
+			event->type = RHYTHMDB_EVENT_FILE_DELETED;
+			event->uri = g_strdup (info_uri);
+			g_async_queue_push (db->priv->event_queue, event);
+		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_STARTEXECUTING:
 	case GNOME_VFS_MONITOR_EVENT_STOPEXECUTING:
@@ -1065,12 +1108,23 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 static void
 rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 {
-	GnomeVFSURI *vfsuri;
 	char *directory;
 
-	vfsuri = gnome_vfs_uri_new (uri);
-	directory = gnome_vfs_uri_extract_dirname (vfsuri);
-	gnome_vfs_uri_unref (vfsuri);
+	if (rb_uri_is_directory (uri))
+		if (g_str_has_suffix(uri, G_DIR_SEPARATOR_S))
+			directory = g_strdup (uri);
+		else
+			directory = g_strconcat (uri, G_DIR_SEPARATOR_S, NULL);
+	else {
+		GnomeVFSURI *vfsuri, *parent;
+		
+		vfsuri = gnome_vfs_uri_new (uri);
+		parent = gnome_vfs_uri_get_parent (vfsuri);
+		directory = gnome_vfs_uri_to_string (parent, GNOME_VFS_URI_HIDE_NONE);
+		gnome_vfs_uri_unref (vfsuri);
+		gnome_vfs_uri_unref (parent);
+	}
+
 	if (!g_hash_table_lookup (db->priv->monitored_directories, directory)) {
 		GnomeVFSResult vfsresult;
 		GnomeVFSMonitorHandle **handle = g_new0 (GnomeVFSMonitorHandle *, 1);
@@ -1359,13 +1413,15 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 					    
 			if (mtime == event->vfsinfo->mtime) {
 				rb_debug ("not modified: %s", event->real_uri);
+				/* monitor the file for changes */
+				rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
 			} else {
 				struct RhythmDBEvent *new_event;
 
 				rb_debug ("changed: %s", event->real_uri);
 				new_event = g_new0 (struct RhythmDBEvent, 1);
 				new_event->uri = g_strdup (event->real_uri);
-				new_event->type = RHYTHMDB_EVENT_FILE_MODIFIED;
+				new_event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 				g_async_queue_push (db->priv->event_queue, 
 						    new_event);
 			}
@@ -1477,8 +1533,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
 
-	if (event->vfsinfo->flags & GNOME_VFS_FILE_FLAGS_LOCAL)
-		rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
+	/* monitor the file for changes */
+	rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
 
 	rhythmdb_commit_internal (db, FALSE);
 	
@@ -1589,12 +1645,8 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 			rb_debug ("processing RHYTHMDB_EVENT_QUERY_COMPLETE");
 			rhythmdb_read_leave (db);
 			break;
-		case RHYTHMDB_EVENT_FILE_CREATED:
-			rb_debug ("processing RHYTHMDB_EVENT_FILE_CREATED");
-			rhythmdb_process_file_created_or_modified (db, event);
-			break;
-		case RHYTHMDB_EVENT_FILE_MODIFIED:
-			rb_debug ("processing RHYTHMDB_EVENT_FILE_MODIFIED");
+		case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
+			rb_debug ("processing RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED");
 			rhythmdb_process_file_created_or_modified (db, event);
 			break;
 		case RHYTHMDB_EVENT_FILE_DELETED:
@@ -1938,6 +1990,13 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	klass->impl_load (db, &db->priv->exiting);
 
+	/* begin monitoring the for new tracks */
+	db->priv->library_location_notify_id =
+		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
+					    (GConfClientNotifyFunc) library_location_changed_cb,
+					    db);
+	rhythmdb_sync_library_location (db);
+
 	rb_debug ("queuing db load complete signal");
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_DB_LOAD;
@@ -1968,6 +2027,13 @@ rhythmdb_load (RhythmDB *db)
 	struct RhythmDBEvent *result;
 
 	klass->impl_load (db, &db->priv->exiting);
+
+	/* begin monitoring the for new tracks */
+	db->priv->library_location_notify_id =
+		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
+					    (GConfClientNotifyFunc) library_location_changed_cb,
+					    db);
+	rhythmdb_sync_library_location (db);
 
 	rb_debug ("queuing db load complete signal");
 	result = g_new0 (struct RhythmDBEvent, 1);
@@ -3641,3 +3707,121 @@ rhythmdb_idle_save (RhythmDB *db)
 
 	return TRUE;
 }
+
+static void
+monitor_subdirectory (char *uri, RhythmDB *db)
+{
+	GError *error = NULL;
+
+	rhythmdb_monitor_uri_path (db, uri, &error);
+
+	if (error) {
+		/* FIXME: should we complain to the user? */
+		rb_debug ("error while attempting to monitor the library directory: %s", error->message);
+	}
+}
+
+static void
+monitor_library_directory (const char *uri, RhythmDB *db)
+{
+	GError *error = NULL;
+
+	if ((strcmp (uri, "file:///") == 0) ||
+	    (strcmp (uri, "file://") == 0)) {
+		/* display an error to the user? */
+		return;
+	}
+	
+	rb_debug ("beginning monitor of the library directory %s", uri);
+	rhythmdb_monitor_uri_path (db, uri, &error);
+	rb_uri_handle_recursively (uri, (GFunc) monitor_subdirectory, NULL, db);
+
+	if (error) {
+		/* FIXME: should we complain to the user? */
+		rb_debug ("error while attempting to monitor the library directory: %s", error->message);
+	}
+
+	rb_debug ("loading new tracks from library directory %s", uri);
+	rhythmdb_add_uri (db, uri);
+}
+
+static void
+monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
+{
+	GError *error = NULL;
+
+	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		rhythmdb_monitor_uri_path (db, entry->location, &error);
+	}
+
+	if (error) {
+		/* FIXME: should we complain to the user? */
+		rb_debug ("error while attempting to monitor library track: %s", error->message);
+	} 
+}
+
+static void
+rhythmdb_sync_library_location (RhythmDB *db)
+{
+	gboolean reload = (db->priv->library_locations != NULL);
+
+	if (reload) {
+		rb_debug ("ending monitor of old library directories");
+
+		g_hash_table_foreach_remove (db->priv->monitored_directories,
+					     (GHRFunc) rhythmdb_unmonitor_directories,
+					     db);
+		g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
+		g_slist_free (db->priv->library_locations);
+	}
+
+	db->priv->library_locations = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+
+	if (db->priv->library_locations) {
+		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
+	}
+
+	/* monitor every directory that contains a (TYPE_SONG) track */
+	rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
+}
+
+static void
+library_location_changed_cb (GConfClient *client,
+			     guint cnxn_id,
+			     GConfEntry *entry,
+			     RhythmDB *db)
+{
+	rhythmdb_sync_library_location (db);
+}
+
+static gboolean
+rhythmdb_check_changed_file (const char *uri, gpointer data, RhythmDB *db)
+{
+	GTimeVal time;
+	glong time_sec = GPOINTER_TO_INT (data);
+
+	g_get_current_time (&time);
+	if (time.tv_sec >= time_sec + RHYTHMDB_FILE_MODIFY_PROCESS_TIME) {
+		/* process and remove from table */
+		struct RhythmDBEvent *event = g_new0 (struct RhythmDBEvent, 1);
+		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
+		event->uri = g_strdup (uri);
+		
+		g_async_queue_push (db->priv->event_queue, event);
+		rb_debug ("adding newly located file %s", uri);
+		return TRUE;
+	}
+	
+	rb_debug ("waiting to add newly located file %s", uri);
+	
+	return FALSE;
+}
+
+static gboolean
+rhythmdb_process_changed_files (RhythmDB *db)
+{
+	g_hash_table_foreach_remove (db->priv->changed_files,
+				     (GHRFunc)rhythmdb_check_changed_file, db);
+	return TRUE;
+}
+

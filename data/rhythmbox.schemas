@@ -25,6 +25,18 @@
 	<long>When Rhythmbox's database contains a song stored on a mount point that is no longer available, Rhythmbox won't remove it from its XML file immedialty, but will keep it for a number of days defined by this key. Setting it to a negative number makes Rhythmbox keep the songs forever.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/library_locations</key>
+        <applyto>/apps/rhythmbox/library_locations</applyto>
+        <owner>rhythmbox</owner>
+        <type>list</type>
+        <list type="string"/>
+        <default></default>
+        <locale name="C">
+	<short>Directories that Rhythmbox should monitor</short>
+	<long>A list of directory URIs that Rhythmbox should monitor for changes and new tracks.</long>
+        </locale>
+      </schema>
 
       <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>

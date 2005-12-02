@@ -53,7 +53,6 @@ static GdkPixbuf *default_get_pixbuf (RBSource *source);
 static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
 static void default_song_properties (RBSource *source);
-static GtkWidget * default_get_config_widget (RBSource *source);
 static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
 static gboolean default_show_popup  (RBSource *source);
@@ -115,7 +114,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
-	klass->impl_get_config_widget = default_get_config_widget;
+	klass->impl_get_config_widget = NULL;
 	klass->impl_receive_drag = NULL;
 	klass->impl_show_popup = default_show_popup;
 	klass->impl_delete_thyself = default_delete_thyself;
@@ -434,12 +433,6 @@ rb_source_search (RBSource *source, const char *text)
 	/* several sources don't have a search ability */
 	if (klass->impl_search != NULL)
 		klass->impl_search (source, text);
-}
-
-static GtkWidget *
-default_get_config_widget (RBSource *source)
-{
-	return NULL;
 }
 
 GtkWidget *

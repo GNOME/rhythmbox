@@ -56,7 +56,6 @@ static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_pro
 					        GObjectConstructParam *construct_properties);
 
 static gboolean impl_show_popup (RBSource *source);
-static GtkWidget *impl_get_config_widget (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
 
 static gboolean rb_audiocd_load_songs (RBAudioCdSource *source);
@@ -93,7 +92,6 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 
 	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_get_browser_key = (RBSourceStringFunc) rb_null_function;
 
@@ -520,11 +518,5 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/AudioCdSourcePopup");
 	return TRUE;
-}
-
-static GtkWidget *
-impl_get_config_widget (RBSource *source)
-{
-	return NULL;
 }
 

@@ -278,7 +278,8 @@ enum
 	PROP_DB,
 	PROP_UI_MANAGER,
 	PROP_PLAYLIST_MANAGER,
-	PROP_WINDOW
+	PROP_WINDOW,
+	PROP_PREFS,
 };
 
 /* prefs */
@@ -538,6 +539,14 @@ rb_shell_class_init (RBShellClass *klass)
 							      "GtkWindow object", 
 							      GTK_TYPE_WINDOW,
 							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_PREFS,
+					 g_param_spec_object ("prefs", 
+							      "RBShellPreferences", 
+							      "RBShellPreferences object", 
+							      RB_TYPE_SHELL_PREFERENCES,
+							      G_PARAM_READABLE));
+
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }
@@ -683,6 +692,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_WINDOW:
 		g_value_set_object (value, shell->priv->window);
+		break;	
+	case PROP_PREFS:
+		g_value_set_object (value, shell->priv->prefs);
 		break;	
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1594,9 +1606,6 @@ rb_shell_select_source (RBShell *shell,
 				 RB_SOURCE (source));
 	rb_playlist_manager_set_source (shell->priv->playlist_manager,
 					RB_SOURCE (source));
-#ifdef WITH_AUDIOSCROBBLER
-	g_object_set (G_OBJECT (shell->priv->audioscrobbler), "shell_player",  RB_SHELL_PLAYER (shell->priv->player_shell), NULL);
-#endif
 	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", RB_SOURCE (source), NULL);
 }
 
@@ -1803,11 +1812,11 @@ rb_shell_cmd_preferences (GtkAction *action,
 		          RBShell *shell)
 {
 	if (shell->priv->prefs == NULL) {
-#ifdef WITH_AUDIOSCROBBLER
-		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources,
-							       shell->priv->audioscrobbler);
-#else
 		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
+#ifdef WITH_AUDIOSCROBBLER
+		g_object_set (G_OBJECT (shell->priv->audioscrobbler),
+			      "shell_preferences", shell->priv->prefs,
+			      NULL);
 #endif
 
 		gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),

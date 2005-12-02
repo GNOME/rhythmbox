@@ -47,6 +47,7 @@
 #include "rb-song-info.h"
 #include "rb-search-entry.h"
 #include "rb-preferences.h"
+#include "rb-shell-preferences.h"
 
 typedef enum
 {
@@ -91,6 +92,8 @@ static void albums_selected_cb (RBPropertyView *propview, GList *albums,
 			       RBLibrarySource *libsource);
 static void albums_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource);
 static void songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source);
+static void rb_library_source_library_location_cb (GtkFileChooser *chooser,
+						   RBLibrarySource *source);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -107,6 +110,12 @@ static void rb_library_source_browser_views_changed (GConfClient *client,
 						     guint cnxn_id,
 						     GConfEntry *entry,
 						     RBLibrarySource *source);
+static void rb_library_source_library_location_changed (GConfClient *client,
+							guint cnxn_id,
+							GConfEntry *entry,
+							RBLibrarySource *source);
+static void rb_library_source_prefs_update (RBShellPreferences *prefs,
+					    RBLibrarySource *source);
 static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -147,8 +156,6 @@ static void songs_view_drag_data_received_cb (GtkWidget *widget,
 
 struct RBLibrarySourcePrivate
 {
-	gboolean disposed;
-	
 	RhythmDB *db;
 	
 	GtkWidget *browser;
@@ -182,10 +189,14 @@ struct RBLibrarySourcePrivate
 	GList *selected_albums;
 	
 	gboolean loading_prefs;
+	RBShellPreferences *shell_prefs;
 
 	GtkActionGroup *action_group;
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
+
+	GtkFileChooser *library_location_widget;
+	gboolean library_location_change_pending, library_location_handle_pending;
 	
 	RhythmDBEntryType entry_type;
 
@@ -195,6 +206,7 @@ struct RBLibrarySourcePrivate
 	guint state_browser_notify_id;
 	guint state_sorting_notify_id;
 	guint browser_view_notify_id;
+	guint library_location_notify_id;
 };
 
 #define RB_LIBRARY_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_SOURCE, RBLibrarySourcePrivate))
@@ -397,6 +409,16 @@ rb_library_source_browser_views_changed (GConfClient *client,
 }
 
 static void
+rb_library_source_library_location_changed (GConfClient *client,
+					    guint cnxn_id,
+					    GConfEntry *entry,
+					    RBLibrarySource *source)
+{
+	if (source->priv->config_widget)
+		rb_library_source_preferences_sync (source);
+}
+
+static void
 rb_library_source_ui_prefs_sync (RBLibrarySource *source)
 {
 	if (source->priv->config_widget)
@@ -431,11 +453,15 @@ rb_library_source_dispose (GObject *object)
 	RBLibrarySource *source;
 	source = RB_LIBRARY_SOURCE (object);
 
-	if (source->priv->disposed)
-		return;
-	source->priv->disposed = TRUE;
+	if (source->priv->shell_prefs) {
+		g_object_unref (source->priv->shell_prefs);
+		source->priv->shell_prefs = NULL;
+	}
 
-	g_object_unref (source->priv->db);
+	if (source->priv->db) {
+		g_object_unref (source->priv->db);
+		source->priv->db = NULL;
+	}
 }
 
 static void
@@ -454,6 +480,7 @@ rb_library_source_finalize (GObject *object)
 	
 	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
 	eel_gconf_notification_remove (source->priv->browser_view_notify_id);
+	eel_gconf_notification_remove (source->priv->library_location_notify_id);
 	eel_gconf_notification_remove (source->priv->state_browser_notify_id);
 	eel_gconf_notification_remove (source->priv->state_paned_notify_id);
 	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
@@ -664,6 +691,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->browser_view_notify_id =
 		eel_gconf_notification_add (CONF_UI_LIBRARY_BROWSER_VIEWS,
 				    (GConfClientNotifyFunc) rb_library_source_browser_views_changed, source);
+	source->priv->library_location_notify_id =
+		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
+				    (GConfClientNotifyFunc) rb_library_source_library_location_changed, source);
 
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 	return G_OBJECT (source);
@@ -1097,10 +1127,15 @@ impl_get_config_widget (RBSource *asource)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
 	GladeXML *xml;
+	RBShell *shell;
 
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
 
+	g_object_get (G_OBJECT (asource), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "prefs", &source->priv->shell_prefs, NULL);
+	g_object_unref (shell);
+	
 	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
 	source->priv->config_widget =
 		glade_xml_get_widget (xml, "library_vbox");
@@ -1109,10 +1144,23 @@ impl_get_config_widget (RBSource *asource)
 		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
 					       (GTK_RADIO_BUTTON (tmp))));
 
+	source->priv->library_location_widget =
+		(GtkFileChooser*) glade_xml_get_widget (xml, "library_location_chooser");
+
 	rb_glade_boldify_label (xml, "browser_views_label");
+	rb_glade_boldify_label (xml, "library_location_label");
 	g_object_unref (G_OBJECT (xml));
 	
 	rb_library_source_preferences_sync (source);
+	g_signal_connect (G_OBJECT (source->priv->library_location_widget),
+			  "selection-changed",
+			  G_CALLBACK (rb_library_source_library_location_cb),
+			  asource);
+	g_signal_connect (G_OBJECT (source->priv->shell_prefs),
+			  "hide",
+			  G_CALLBACK (rb_library_source_prefs_update),
+			  asource);
+
 	return source->priv->config_widget;
 }
 
@@ -1126,6 +1174,23 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 	list = g_slist_nth (source->priv->browser_views_group,
 			    eel_gconf_get_integer (CONF_UI_LIBRARY_BROWSER_VIEWS));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (list->data), TRUE);
+
+	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+
+	if (g_slist_length (list) == 1) {
+		/* the uri might be missing the trailing slash */
+		gchar *s = g_strconcat (list->data, G_DIR_SEPARATOR_S, NULL);
+		gtk_file_chooser_set_uri (source->priv->library_location_widget, s);
+		rb_debug ("syncing library location %s", s);
+		g_free (s);
+	} else {
+		/* either no or multiple folders are chosen. make the widget blank*/
+		/*gtk_file_chooser_set_uri (source->priv->library_location_widget,
+					  "");*/
+	}
+
+	g_slist_foreach (list, (GFunc) g_free, NULL);
+	g_slist_free (list);
 }
 
 void
@@ -1622,3 +1687,62 @@ songs_view_drag_data_received_cb (GtkWidget *widget,
 	rb_source_receive_drag (RB_SOURCE (source), selection_data);
 }
 
+static gboolean
+rb_library_source_process_library_location_change (RBLibrarySource *source)
+{
+	GSList *list;
+	
+	if (!source->priv->library_location_change_pending)
+		return FALSE;
+
+	/* process the change */
+	list = gtk_file_chooser_get_uris (source->priv->library_location_widget);
+	eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+
+	g_slist_foreach (list, (GFunc) g_free, NULL);
+	g_slist_free (list);
+
+	source->priv->library_location_change_pending = FALSE;
+
+	return FALSE;
+}
+
+static void
+rb_library_source_prefs_update (RBShellPreferences *prefs,
+				RBLibrarySource *source)
+{
+	rb_library_source_process_library_location_change (source);
+}
+
+static gboolean
+rb_library_source_process_library_handle_selection (RBLibrarySource *source)
+{
+	GSList *list;
+	
+	if (!source->priv->library_location_handle_pending)
+		return FALSE;
+
+	/* this can't be processed immediately, because we sometimes get intemediate signals */
+	for (list = gtk_file_chooser_get_uris (source->priv->library_location_widget);
+	     list != NULL ; list = g_slist_next (list)) {
+		if ((strcmp (list->data, "file:///") == 0) ||
+		    (strcmp (list->data, "file://") == 0)) {
+			rb_error_dialog (GTK_WINDOW (source->priv->shell_prefs), _("Cannot select library location"),
+					 _("The root filesystem cannot be chosen as your library location. Please choose a different location"));
+		} else {
+			source->priv->library_location_change_pending = TRUE;
+		}
+	}
+
+	source->priv->library_location_handle_pending = FALSE;
+	return FALSE;
+}
+
+static void
+rb_library_source_library_location_cb (GtkFileChooser *chooser,
+				       RBLibrarySource *source)
+{
+	source->priv->library_location_handle_pending = TRUE;
+
+	g_idle_add ((GSourceFunc)rb_library_source_process_library_handle_selection, source);
+}

@@ -26,12 +26,7 @@
 G_BEGIN_DECLS
 
 #include <glib.h>
-
-#include "eel-gconf-extensions.h"
-#include "rhythmdb.h"
-#include "rb-shell.h"
 #include "rb-shell-player.h"
-#include "rb-source.h"
 
 #define RB_TYPE_AUDIOSCROBBLER			(rb_audioscrobbler_get_type ())
 #define RB_AUDIOSCROBBLER(o)			(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER, RBAudioscrobbler))

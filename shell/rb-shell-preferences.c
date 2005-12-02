@@ -39,10 +39,6 @@
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
 
-#ifdef WITH_AUDIOSCROBBLER
-#include "rb-audioscrobbler.h"
-#endif
-
 static void rb_shell_preferences_class_init (RBShellPreferencesClass *klass);
 static void rb_shell_preferences_init (RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_finalize (GObject *object);
@@ -219,14 +215,25 @@ rb_shell_preferences_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_shell_preferences_parent_class)->finalize (object);
 }
 
+void
+rb_shell_references_append_page (RBShellPreferences *prefs,
+				 const char *name,
+				 GtkWidget *widget)
+{
+	GtkWidget *label;
+		
+	label = gtk_label_new (name);
+	gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
+				  widget,
+				  label);
+}
+
 static void
 rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 				       const char *name,
 				       RBSource *source)
 {
 	GtkWidget *widget;
-	GtkWidget *label;
-	gboolean visible;
 
 	g_return_if_fail (RB_IS_SHELL_PREFERENCES (prefs));
 	g_return_if_fail (RB_IS_SOURCE (source));
@@ -234,13 +241,8 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 	widget = rb_source_get_config_widget (source);
 	if (!widget)
 		return;
-	label = gtk_label_new (name);
-	g_object_get (source, "visibility", &visible, NULL);
-	if (!visible)
-		gtk_widget_set_sensitive (label, FALSE);
-	gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
-				  widget,
-				  label);
+
+	rb_shell_references_append_page (prefs, name, widget);
 }
 
 #ifdef WITH_DAAP_SUPPORT
@@ -314,50 +316,6 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 }
 #endif /* WITH_DAAP_SUPPORT */
 
-#ifdef WITH_AUDIOSCROBBLER
-static void
-rb_shell_preferences_append_audioscrobbler_config (RBShellPreferences *prefs,
-						   RBAudioscrobbler *audioscrobbler)
-{
-	GtkWidget *widget;
-
-	g_return_if_fail (RB_IS_SHELL_PREFERENCES (prefs));
-
-	widget = rb_audioscrobbler_get_config_widget (audioscrobbler);
-	if (widget) {
-		rb_debug ("got widget!");
-		gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
-					  widget,
-					  gtk_label_new (_("Audioscrobbler")));
-	} else {
-		rb_debug ("No config widget for Audioscrobbler");
-	}
-}
-
-GtkWidget *
-rb_shell_preferences_new (GList *views,
-			  RBAudioscrobbler *audioscrobbler)
-{
-	RBShellPreferences *shell_preferences;
-
-	shell_preferences = g_object_new (RB_TYPE_SHELL_PREFERENCES,
-				          NULL);
-
-	g_return_val_if_fail (shell_preferences->priv != NULL, NULL);
-
-	for (; views; views = views->next)
-	{
-		const char *name = NULL;
-		g_object_get (G_OBJECT (views->data), "name", &name, NULL);
-		g_assert (name != NULL);
-		rb_shell_preferences_append_view_page (shell_preferences,
-						       name,
-						       RB_SOURCE (views->data));
-	}
-
-	rb_shell_preferences_append_audioscrobbler_config (shell_preferences,
-							   audioscrobbler);
-#else
 GtkWidget *
 rb_shell_preferences_new (GList *views)
 {
@@ -377,7 +335,6 @@ rb_shell_preferences_new (GList *views)
 						       name,
 						       RB_SOURCE (views->data));
 	}
-#endif /* WITH_AUDIOSCROBBLER */
 
 #ifdef WITH_DAAP_SUPPORT
 	add_daap_preferences (shell_preferences);

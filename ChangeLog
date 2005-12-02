@@ -1,3 +1,56 @@
+2005-12-02  James Livingston  <jrl@ids.org.au>
+
+	Add support for Rhythmbox to watch your library, and automatically add
+	new tracks. Fixes bug 160159.
+
+	* data/glade/library-prefs.glade: add "library location" preference
+	* data/rhythmbox.schemas: add gconf key for the library location
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_event_free),
+	(rhythmdb_unmonitor_directories), (rhythmdb_shutdown),
+	(rhythmdb_finalize), (rhythmdb_directory_change_cb),
+	(rhythmdb_monitor_uri_path), (rhythmdb_process_stat_event),
+	(rhythmdb_process_metadata_load), (rhythmdb_process_events),
+	(rhythmdb_load_thread_main), (rhythmdb_load),
+	(monitor_subdirectory), (monitor_library_directory),
+	(monitor_entry_file), (rhythmdb_sync_library_location),
+	(library_location_changed_cb), (rhythmdb_check_changed_file),
+	(rhythmdb_process_changed_files): Let Rhythmbox watch the directories
+	specifiec in the gconf key for new additions. Also fix monitoring code
+	so that it works properly, and notices deletions.
+
+	* lib/rb-preferences.h:
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_class_init),
+	(rb_audioscrobbler_init), (rb_audioscrobbler_set_property):
+	* shell/rb-audioscrobbler.h:
+	* shell/rb-shell-preferences.c: (rb_shell_references_append_page),
+	(rb_shell_preferences_append_view_page),
+	(rb_shell_preferences_new):
+	* shell/rb-shell-preferences.h: rework the way audioscrobbler adds
+	it's preferences pane, so that we don't need #ifdef's through
+	rb-shell-preferences.
+
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property),
+	(rb_shell_select_source), (rb_shell_cmd_preferences): give the shell a
+	"preferences" property, so that sources can acccess it. This is needed
+	because the library location pref needs to take effect when the window
+	is closed.
+
+	* sources/rb-library-source.c:
+	(rb_library_source_library_location_changed),
+	(rb_library_source_dispose), (rb_library_source_finalize),
+	(rb_library_source_constructor), (impl_get_config_widget),
+	(rb_library_source_preferences_sync),
+	(rb_library_source_process_library_location_change),
+	(rb_library_source_prefs_update),
+	(rb_library_source_process_library_handle_selection),
+	(rb_library_source_library_location_cb): set up and control the
+	"library location" preference.
+
+	* sources/rb-audiocd-source.c:(rb_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init): remove some pointless
+	code.
+
 2005-12-01  William Jon McCann  <mccann@jhu.edu>
 
 	* podcast/rb-feed-podcast-properties-dialog.c (rb_feed_podcast_properties_dialog_init) 

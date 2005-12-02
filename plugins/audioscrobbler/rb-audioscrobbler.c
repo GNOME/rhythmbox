@@ -42,6 +42,7 @@
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-preferences.h"
+#include "rb-shell-preferences.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-source.h"
@@ -187,6 +188,7 @@ enum
 {
 	PROP_0,
 	PROP_SHELL_PLAYER,
+	PROP_SHELL_PREFS,
 };
 
 enum
@@ -222,7 +224,14 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 							      "RBShellPlayer",
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
-							      G_PARAM_READWRITE));
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_SHELL_PREFS,
+					 g_param_spec_object ("shell-preferences",
+							      "RBShellPreferences",
+							      "RBShellPreferences object",
+							      RB_TYPE_SHELL_PREFERENCES,
+							      G_PARAM_WRITABLE));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
 }
@@ -271,7 +280,6 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	rb_audioscrobbler_load_queue (audioscrobbler);
 
 	rb_audioscrobbler_import_settings (audioscrobbler);
-	rb_audioscrobbler_get_config_widget (audioscrobbler);
 
 	/* gconf notifications: */
 	audioscrobbler->priv->notification_username_id = 
@@ -381,7 +389,16 @@ rb_audioscrobbler_set_property (GObject *object,
 						 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
 						 audioscrobbler, 0);
 			break;
+		case PROP_SHELL_PREFS:
+		{
+			RBShellPreferences *prefs = g_value_get_object (value);
+			GtkWidget *config_widget = rb_audioscrobbler_get_config_widget (audioscrobbler);
 
+			rb_shell_references_append_page (prefs,
+				       			 _("Audioscrobbler"),
+							 config_widget);
+			break;
+		}
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 	}
