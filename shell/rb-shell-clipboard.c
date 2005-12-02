@@ -113,7 +113,7 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	{ "EditDelete", NULL, N_("_Delete"), NULL,
 	  N_("Delete selection"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_delete) },
-	{ "EditMovetoTrash", NULL, N_("_Move To Trash"), "<control>D",
+	{ "EditMovetoTrash", NULL, N_("_Move To Trash"), "<control>T",
 	  N_("Move selection to the trash"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
 };
