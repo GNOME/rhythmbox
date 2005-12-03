@@ -161,7 +161,7 @@ rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
 	g_return_if_fail (RB_IS_SOURCELIST_MODEL (sourcelist));
 
 	rb_tree_dnd_add_drag_dest_support (treeview,
-					   RB_TREE_DEST_EMPTY_VIEW_DROP,
+					   (RB_TREE_DEST_EMPTY_VIEW_DROP | RB_TREE_DEST_SELECT_ON_DRAG_TIMEOUT),
 					   sourcelist_targets, n_targets,
 					   GDK_ACTION_LINK);
 

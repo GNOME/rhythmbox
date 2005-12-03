@@ -1,3 +1,21 @@
+2005-12-03  James Livingston  <jrl@ids.org.au>
+
+	patch by: Thomas de Grenier de Latour <degrenier@easyconnect.fr> to
+	add a selection timeout to the sourcelist. This lets you hold a track
+	over the playlist source, and then have the view switch so you can
+	insert the track in the middle of the playlist. Closes bug 323044.
+
+	* lib/rb-tree-dnd.c: (init_rb_tree_dnd_data), (scroll_row_timeout),
+	(select_on_drag_timeout), (remove_select_on_drag_timeout),
+	(rb_tree_dnd_drag_motion_cb), (rb_tree_dnd_drag_leave_cb),
+	(rb_tree_dnd_add_drag_dest_support):
+	* lib/rb-tree-dnd.h: Add an option for tree views to have a selection
+	timeout.
+
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_set_dnd_targets): Use the selection timeout for
+	the source list.
+
 2005-12-02  Bastien Nocera  <hadess@hadess.net>
 
 	* data/glade/audioscrobbler-prefs.glade: add a space before the web

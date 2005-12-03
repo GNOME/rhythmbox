@@ -41,6 +41,7 @@ typedef struct
   guint button_release_handler;
   guint drag_data_get_handler;
   guint drag_data_delete_handler;
+  guint drag_motion_handler;
   guint drag_leave_handler;
   guint drag_drop_handler;
   guint drag_data_received_handler;
@@ -58,13 +59,18 @@ typedef struct
   /* Scroll timeout (e.g. during dnd) */
   guint scroll_timeout;
 
+  /* Select on drag timeout */
+  GtkTreePath * previous_dest_path;
+  guint select_on_drag_timeout;
 } RbTreeDndData;
 
 RbTreeDndData *init_rb_tree_dnd_data (GtkWidget *widget);
 GList * get_context_data (GdkDragContext *context);
 static gboolean filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
 static gint scroll_row_timeout (gpointer data);
+static gboolean select_on_drag_timeout (gpointer data);
 static void remove_scroll_timeout (GtkTreeView *tree_view);
+static void remove_select_on_drag_timeout (GtkTreeView *tree_view);
 
 GType
 rb_tree_drag_source_get_type (void)
@@ -265,9 +271,12 @@ init_rb_tree_dnd_data (GtkWidget *widget)
 		priv_data = g_new0 (RbTreeDndData, 1);
 		priv_data->pending_event = FALSE;
 		g_object_set_data (G_OBJECT (widget), RB_TREE_DND_STRING, priv_data);
+		priv_data->drag_motion_handler = 0;
 		priv_data->drag_leave_handler = 0;
 		priv_data->button_press_event_handler = 0;
 		priv_data->scroll_timeout = 0;
+		priv_data->previous_dest_path = NULL;
+		priv_data->select_on_drag_timeout = 0;
 	}
 
 	return priv_data;
@@ -424,11 +433,40 @@ scroll_row_timeout (gpointer data)
 	value = CLAMP (vadj->value + offset, vadj->lower, vadj->upper - vadj->page_size);
 	gtk_adjustment_set_value (vadj, value);
 
+	remove_select_on_drag_timeout(tree_view);
+
 	GDK_THREADS_LEAVE ();
 
 	return TRUE;
 }
 
+
+static gboolean
+select_on_drag_timeout (gpointer data)
+{
+	GtkTreeView *tree_view = data;
+	GtkTreeSelection *selection;
+	RbTreeDndData *priv_data;
+
+	GDK_THREADS_ENTER ();
+
+	priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
+	g_return_val_if_fail(priv_data != NULL, FALSE);
+	g_return_val_if_fail(priv_data->previous_dest_path != NULL, FALSE);
+
+	selection = gtk_tree_view_get_selection(tree_view);
+	if (!gtk_tree_selection_path_is_selected(selection,priv_data->previous_dest_path)) {
+		rb_debug("Changing selection because of drag timeout");
+		gtk_tree_view_set_cursor(tree_view,priv_data->previous_dest_path,NULL,FALSE);
+	}
+
+	priv_data->select_on_drag_timeout = 0;
+	gtk_tree_path_free(priv_data->previous_dest_path);
+	priv_data->previous_dest_path = NULL;
+
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
 
 
 static void
@@ -444,6 +482,26 @@ remove_scroll_timeout (GtkTreeView *tree_view)
 		 g_source_remove (priv_data->scroll_timeout);
 		 priv_data->scroll_timeout = 0;
 	 }
+}
+
+
+static void
+remove_select_on_drag_timeout (GtkTreeView *tree_view)
+ {
+	RbTreeDndData *priv_data;
+
+	priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
+	g_return_if_fail(priv_data != NULL);
+
+	if (priv_data->select_on_drag_timeout != 0) {
+		rb_debug("Removing the select on drag timeout");
+		g_source_remove (priv_data->select_on_drag_timeout);
+		priv_data->select_on_drag_timeout = 0;
+	}
+	if (priv_data->previous_dest_path != NULL) {
+		gtk_tree_path_free(priv_data->previous_dest_path);
+		priv_data->previous_dest_path = NULL;
+	}
 }
 
 
@@ -567,6 +625,12 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 
 	gtk_tree_view_get_dest_row_at_pos (tree_view, x, y, &path, &pos);
 
+	if ((priv_data->previous_dest_path == NULL)
+	    || (path == NULL)
+	    || gtk_tree_path_compare(path,priv_data->previous_dest_path)) {
+				remove_select_on_drag_timeout(tree_view);
+	}
+
 	if (path == NULL)
 	{
 	  	gtk_tree_view_set_drag_dest_row (GTK_TREE_VIEW (widget),
@@ -603,8 +667,19 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 		action = context->suggested_action;
 
 	if (path) {
-	        gtk_tree_view_set_drag_dest_row (tree_view, path, pos);
-		gtk_tree_path_free (path);
+		gtk_tree_view_set_drag_dest_row (tree_view, path, pos);
+		if (priv_data->dest_flags & RB_TREE_DEST_SELECT_ON_DRAG_TIMEOUT) {
+			if (priv_data->previous_dest_path != NULL) {
+				gtk_tree_path_free (priv_data->previous_dest_path);
+			}
+			priv_data->previous_dest_path = path;
+			if (priv_data->select_on_drag_timeout == 0) {
+				rb_debug("Setting up a new select on drag timeout");
+				priv_data->select_on_drag_timeout = g_timeout_add (2000, select_on_drag_timeout, tree_view);
+			}
+		} else {
+			gtk_tree_path_free (path);
+		}
 	}
 
 	gdk_drag_status (context, action, time);
@@ -612,6 +687,17 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 	return TRUE;
 }
 
+
+static gboolean
+rb_tree_dnd_drag_leave_cb (GtkWidget        *widget,
+                           GdkDragContext   *context,
+                           gint              x,
+                           gint              y,
+                           guint             time)
+{
+	remove_select_on_drag_timeout(GTK_TREE_VIEW (widget));
+	return TRUE;
+}
 
 static gboolean
 rb_tree_dnd_drag_drop_cb (GtkWidget        *widget,
@@ -849,7 +935,7 @@ rb_tree_dnd_add_drag_dest_support (GtkTreeView *tree_view,
 
 	priv_data = init_rb_tree_dnd_data (GTK_WIDGET(tree_view));
 
-	if (!priv_data->drag_leave_handler) {
+	if (!priv_data->drag_motion_handler) {
 
 		priv_data->dest_target_list = gtk_target_list_new (targets, n_targets);
 		priv_data->dest_actions = actions;
@@ -861,9 +947,13 @@ rb_tree_dnd_add_drag_dest_support (GtkTreeView *tree_view,
 				   0,
 				   actions);
 
-		priv_data->drag_leave_handler = g_signal_connect (G_OBJECT (tree_view),
+		priv_data->drag_motion_handler = g_signal_connect (G_OBJECT (tree_view),
 								  "drag_motion",
 								  G_CALLBACK (rb_tree_dnd_drag_motion_cb),
+								  NULL);
+		priv_data->drag_leave_handler = g_signal_connect (G_OBJECT (tree_view),
+								  "drag_leave",
+								  G_CALLBACK (rb_tree_dnd_drag_leave_cb),
 								  NULL);
 		priv_data->drag_drop_handler = g_signal_connect (G_OBJECT (tree_view),
 								 "drag_drop",

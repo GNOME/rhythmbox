@@ -47,7 +47,8 @@ typedef struct _RbTreeDragDestIface RbTreeDragDestIface;
 typedef enum {
 	RB_TREE_DEST_EMPTY_VIEW_DROP = 1 << 0,
 	RB_TREE_DEST_CAN_DROP_INTO = 1 << 1,
-	RB_TREE_DEST_CAN_DROP_BETWEEN = 1 << 2
+	RB_TREE_DEST_CAN_DROP_BETWEEN = 1 << 2,
+	RB_TREE_DEST_SELECT_ON_DRAG_TIMEOUT = 1 << 3
 } RbTreeDestFlag;
 
 
