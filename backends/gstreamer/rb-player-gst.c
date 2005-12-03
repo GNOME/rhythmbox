@@ -782,7 +782,7 @@ rb_player_set_replaygain (RBPlayer *mp,
 
 	if (mp->priv->playbin != NULL) {
 		GParamSpec *volume_pspec;
-		GValue val;
+		GValue val = {0,};
 		
 		volume_pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (mp->priv->playbin),
 							     "volume");

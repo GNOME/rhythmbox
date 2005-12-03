@@ -1,5 +1,17 @@
 2005-12-03  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/podcast-new.glade:
+	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init),
+	(rb_new_podcast_dialog_text_changed): remove some unused stuff.
+
+	* player/rb-player-gst.c: (rb_player_set_replaygain): initialise the
+	GValue, which stops occasional errors.
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed): fix a
+	compile issue.
+
+2005-12-03  James Livingston  <jrl@ids.org.au>
+
 	patch by: Dennis Cranston <dennis_cranston@yahoo.com>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed): fix a

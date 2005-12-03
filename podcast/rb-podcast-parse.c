@@ -390,7 +390,7 @@ rb_podcast_parse_load_feed(RBPodcastChannel *data, const char *file_name) {
 	    ((info->mime_type == NULL) || 
 	     (strstr (info->mime_type, "xml") == NULL) || 
 	     (strstr (info->mime_type, "rss") == NULL))) {
-	    rb_debug (stderr, "Invalid mime-type in podcast feed %s\n", info->mime_type);
+	    rb_debug ("Invalid mime-type in podcast feed %s", info->mime_type);
 	    gnome_vfs_file_info_unref (info);
 	    return;
 	}

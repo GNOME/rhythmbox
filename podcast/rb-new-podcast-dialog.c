@@ -110,8 +110,6 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
-					 GTK_RESPONSE_OK);
 	gtk_window_set_title (GTK_WINDOW (dialog), _("New Podcast Feed"));
 
 	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
@@ -120,13 +118,11 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							GTK_STOCK_ADD,
 							GTK_RESPONSE_OK);
-	
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
 	xml = rb_glade_xml_new ("podcast-new.glade",
 				"newpodcast",
 				dialog);
-	glade_xml_signal_autoconnect (xml);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "newpodcast"));
@@ -245,7 +241,8 @@ rb_new_podcast_dialog_text_changed (GtkEditable *buffer,
 	char *text = gtk_editable_get_chars (buffer, 0, -1);
 	gboolean has_text = ((text != NULL) && (*text != 0));
 
-	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);
 	g_free (text);
+
+	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);	
 }
 
