@@ -1544,10 +1544,13 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
 
-	/* monitor the file for changes */
-	rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
+	rhythmdb_entry_set_visibility (db, entry, TRUE);
 
-	rhythmdb_commit_internal (db, FALSE);
+	/* monitor the file for changes */
+	/* FIXME: watch for errors */
+	rhythmdb_monitor_uri_path (db, entry->location, NULL);
+
+	rhythmdb_commit_internal (db, TRUE);
 	
 	return TRUE;
 }
@@ -1766,6 +1769,7 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 			       GList *results, /* GnomeVFSGetFileInfoResult* items */
 			       RhythmDBEvent *event)
 {
+	/* this is in the main thread, so we can't do any long operation here */
 	GnomeVFSGetFileInfoResult *info_result = results->data;
 	char *uri = gnome_vfs_uri_to_string (info_result->uri, GNOME_VFS_URI_HIDE_NONE);
 	
@@ -1776,12 +1780,6 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 	
 	if (info_result->result == GNOME_VFS_OK) {
 		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
-
-		if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
-			event->metadata = rb_metadata_new ();
-			rb_metadata_load (event->metadata, event->real_uri,
-					  &event->error);
-		}
 	} else {
 		char *unescaped = gnome_vfs_unescape_string_for_display (uri);
 		event->error = g_error_new (RHYTHMDB_ERROR,
@@ -1801,39 +1799,12 @@ static void
 rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 {
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+	GnomeVFSResult vfsresult;
 
-	if (gnome_vfs_uri_is_local (vfs_uri)) {
-		GnomeVFSResult vfsresult;
-		
-		event->real_uri = rb_uri_resolve_symlink (uri);
-		event->vfsinfo = gnome_vfs_file_info_new ();
-		
-		vfsresult = gnome_vfs_get_file_info (uri,
-						     event->vfsinfo,
-						     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-		if (vfsresult != GNOME_VFS_OK) {
-			char *unescaped = gnome_vfs_unescape_string_for_display (uri);
-			event->error = g_error_new (RHYTHMDB_ERROR,
-						    RHYTHMDB_ERROR_ACCESS_FAILED,
-						    _("Couldn't access %s: %s"),
-						    unescaped,
-						    gnome_vfs_result_to_string (vfsresult));
-			rb_debug ("got error on %s: %s", unescaped, event->error->message);
-			g_free (unescaped);
-			if (event->vfsinfo)
-				gnome_vfs_file_info_unref (event->vfsinfo);
-			event->vfsinfo = NULL;
-		} else {
-			if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
-				event->metadata = rb_metadata_new ();
-				rb_metadata_load (event->metadata, event->real_uri,
-						  &event->error);
-			}
-		}
-	
-		gnome_vfs_uri_unref (vfs_uri);
-		g_async_queue_push (db->priv->event_queue, event);
-	} else {
+	/* we can't do this synchonously if the file is remote and hasn't been stat'd yet
+	 * because it may block indefinitely while
+	 */
+	if ((event->type == RHYTHMDB_ACTION_STAT) && !gnome_vfs_uri_is_local (vfs_uri)) {
 		GList *uri_list = g_list_append (NULL, vfs_uri);
 		event->real_uri = g_strdup (uri);
 	
@@ -1843,7 +1814,37 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 				       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
 				       event);
 		g_list_free (uri_list);
+		return;
 	}
+
+	event->real_uri = rb_uri_resolve_symlink (uri);
+	event->vfsinfo = gnome_vfs_file_info_new ();
+
+	vfsresult = gnome_vfs_get_file_info (uri,
+					     event->vfsinfo,
+					     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+	if (vfsresult != GNOME_VFS_OK) {
+		char *unescaped = gnome_vfs_unescape_string_for_display (uri);
+		event->error = g_error_new (RHYTHMDB_ERROR,
+					    RHYTHMDB_ERROR_ACCESS_FAILED,
+					    _("Couldn't access %s: %s"),
+					    unescaped,
+					    gnome_vfs_result_to_string (vfsresult));
+		rb_debug ("got error on %s: %s", unescaped, event->error->message);
+		g_free (unescaped);
+		if (event->vfsinfo)
+			gnome_vfs_file_info_unref (event->vfsinfo);
+		event->vfsinfo = NULL;
+	} else {
+		if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
+			event->metadata = rb_metadata_new ();
+			rb_metadata_load (event->metadata, event->real_uri,
+					  &event->error);
+		}
+	}
+
+	gnome_vfs_uri_unref (vfs_uri);
+	g_async_queue_push (db->priv->event_queue, event);
 }
 
 
