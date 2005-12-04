@@ -55,6 +55,7 @@
 
       <child>
 	<widget class="GtkNotebook" id="podcastproperties">
+	  <property name="border_width">5</property>
 	  <property name="visible">True</property>
 	  <property name="can_focus">True</property>
 	  <property name="show_tabs">True</property>
@@ -65,7 +66,7 @@
 
 	  <child>
 	    <widget class="GtkTable" id="podcastpropertiesTable">
-	      <property name="border_width">5</property>
+	      <property name="border_width">12</property>
 	      <property name="visible">True</property>
 	      <property name="n_rows">4</property>
 	      <property name="n_columns">2</property>
@@ -352,7 +353,7 @@
 
 	  <child>
 	    <widget class="GtkTable" id="table1">
-	      <property name="border_width">5</property>
+	      <property name="border_width">12</property>
 	      <property name="visible">True</property>
 	      <property name="n_rows">6</property>
 	      <property name="n_columns">2</property>
