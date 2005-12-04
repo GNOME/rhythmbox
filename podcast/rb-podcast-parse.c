@@ -381,7 +381,7 @@ rb_podcast_parse_load_feed(RBPodcastChannel *data, const char *file_name) {
         goto end_function;
     }
 
-    if (!g_str_has_suffix (file_name, ".rss") || !g_str_has_suffix (file_name, ".xml")) {
+    if (!g_str_has_suffix (file_name, ".rss") && !g_str_has_suffix (file_name, ".xml")) {
         info = gnome_vfs_file_info_new();
 
         result = gnome_vfs_get_file_info (file_name, info, GNOME_VFS_FILE_INFO_DEFAULT);
