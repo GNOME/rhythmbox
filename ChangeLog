@@ -1,3 +1,17 @@
+2005-12-05  James Livingston  <jrl@ids.org.au>
+
+	* data/glade/library-prefs.glade:
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_directory_change_cb),
+	(rhythmdb_sync_library_location):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_finalize), (rb_library_source_constructor),
+	(impl_get_config_widget), (rb_library_source_preferences_sync),
+	(rb_library_source_watch_toggled_cb): allow people to disable library
+	monitoring, because with nothing set the file chooser button selects
+	the Home folder (and hence that will get monitored).
+
 2005-12-04  Ryan P Skadberg  <skadz@stigmata.org>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed): Another

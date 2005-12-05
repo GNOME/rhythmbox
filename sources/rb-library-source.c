@@ -145,6 +145,8 @@ static void songs_view_drag_data_received_cb (GtkWidget *widget,
 					      GtkSelectionData *data,
 					      guint info, guint time,
 					      RBLibrarySource *source);
+static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
+						RBLibrarySource *source);
 
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
@@ -196,6 +198,7 @@ struct RBLibrarySourcePrivate
 	GSList *browser_views_group;
 
 	GtkFileChooser *library_location_widget;
+	GtkWidget *watch_library_check;
 	gboolean library_location_change_pending, library_location_handle_pending;
 	
 	RhythmDBEntryType entry_type;
@@ -234,44 +237,14 @@ enum
 	PROP_SORTING_KEY
 };
 
-static GObjectClass *parent_class = NULL;
 
-GType
-rb_library_source_get_type (void)
-{
-	static GType rb_library_source_type = 0;
-
-	if (rb_library_source_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBLibrarySourceClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_library_source_class_init,
-			NULL,
-			NULL,
-			sizeof (RBLibrarySource),
-			0,
-			(GInstanceInitFunc) rb_library_source_init
-		};
-
-		rb_library_source_type = g_type_register_static (RB_TYPE_SOURCE,
-								 "RBLibrarySource",
-								 &our_info, 0);
-
-	}
-
-	return rb_library_source_type;
-}
+G_DEFINE_TYPE (RBLibrarySource, rb_library_source, RB_TYPE_SOURCE)
 
 static void
 rb_library_source_class_init (RBLibrarySourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->dispose = rb_library_source_dispose;
 	object_class->finalize = rb_library_source_finalize;
@@ -492,7 +465,7 @@ rb_library_source_finalize (GObject *object)
 	if (source->priv->cached_all_query)
 		g_object_unref (G_OBJECT (source->priv->cached_all_query));
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_library_source_parent_class)->finalize (object);
 }
 
 static void
@@ -546,14 +519,12 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 {
 	RBLibrarySource *source;
 	RBLibrarySourceClass *klass;
-	GObjectClass *parent_class;  
 	RBShell *shell;
 
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_SOURCE));
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 
-	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
-							       construct_properties));
+	source = RB_LIBRARY_SOURCE (G_OBJECT_CLASS (rb_library_source_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
 	register_action_group (source);
 
@@ -1143,6 +1114,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 
 	source->priv->library_location_widget =
 		(GtkFileChooser*) glade_xml_get_widget (xml, "library_location_chooser");
+	source->priv->watch_library_check = glade_xml_get_widget (xml, "watch_library_check");
 
 	rb_glade_boldify_label (xml, "browser_views_label");
 	rb_glade_boldify_label (xml, "library_location_label");
@@ -1156,6 +1128,10 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	g_signal_connect (G_OBJECT (source->priv->shell_prefs),
 			  "hide",
 			  G_CALLBACK (rb_library_source_prefs_update),
+			  asource);
+	g_signal_connect (G_OBJECT (source->priv->watch_library_check),
+			  "toggled",
+			  G_CALLBACK (rb_library_source_watch_toggled_cb),
 			  asource);
 
 	return source->priv->config_widget;
@@ -1188,6 +1164,9 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 
 	g_slist_foreach (list, (GFunc) g_free, NULL);
 	g_slist_free (list);
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check),
+				      eel_gconf_get_boolean (CONF_MONITOR_LIBRARY));
 }
 
 void
@@ -1743,3 +1722,13 @@ rb_library_source_library_location_cb (GtkFileChooser *chooser,
 
 	g_idle_add ((GSourceFunc)rb_library_source_process_library_handle_selection, source);
 }
+
+static void
+rb_library_source_watch_toggled_cb (GtkToggleButton *button, RBLibrarySource *source)
+{
+	gboolean active;
+
+	active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check));
+	eel_gconf_set_boolean (CONF_MONITOR_LIBRARY, active);
+}
+

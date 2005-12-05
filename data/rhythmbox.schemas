@@ -37,6 +37,17 @@
 	<long>A list of directory URIs that Rhythmbox should monitor for changes and new tracks.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/monitor_library</key>
+        <applyto>/apps/rhythmbox/monitor_library</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+          <short>Whether the library location are monitored</short>
+          <long>If true, the locations listed in /apps/rhythmbox/library_locations are monitored for new files</long>
+        </locale>
+      </schema>
 
       <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>

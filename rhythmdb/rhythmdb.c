@@ -1067,6 +1067,9 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			GSList *cur;
 			gboolean in_library = FALSE;
 			
+			if (!eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
+				return;
+
 			/* don't notices new files outside of the library locations */
 			for (cur = db->priv->library_locations; cur != NULL; cur = g_slist_next (cur)) {
 				if (g_str_has_prefix (info_uri, cur->data)) {
@@ -3811,10 +3814,12 @@ rhythmdb_sync_library_location (RhythmDB *db)
 		g_slist_free (db->priv->library_locations);
 	}
 
-	db->priv->library_locations = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY)) {
+		db->priv->library_locations = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
-	if (db->priv->library_locations) {
-		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
+		if (db->priv->library_locations) {
+			g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
+		}
 	}
 
 	/* monitor every directory that contains a (TYPE_SONG) track */
