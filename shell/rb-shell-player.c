@@ -53,7 +53,6 @@
 #include "rb-header.h"
 #include "totem-pl-parser.h"
 #include "rb-metadata.h"
-#include "bacon-volume.h"
 #include "rb-remote.h"
 #include "rb-iradio-source.h"
 #include "rb-library-source.h"
@@ -66,13 +65,6 @@
 #ifdef HAVE_XIDLE_EXTENSION
 #include <X11/extensions/xidle.h>
 #endif /* HAVE_XIDLE_EXTENSION */
-
-typedef enum
-{
-	PLAY_BUTTON_PLAY,
-	PLAY_BUTTON_PAUSE,
-	PLAY_BUTTON_STOP
-} PlayButtonState;
 
 static const char* const state_to_play_order[2][2] =
 	{{"linear",	"linear-loop"},
@@ -96,29 +88,19 @@ static void rb_shell_player_cmd_previous (GtkAction *action,
 			                  RBShellPlayer *player);
 static void rb_shell_player_cmd_play (GtkAction *action,
 			              RBShellPlayer *player);
-static void rb_shell_player_cmd_pause (GtkAction *action,
-			               RBShellPlayer *player);
-static void rb_shell_player_cmd_stop (GtkAction *action,
-			              RBShellPlayer *player);
-static void rb_shell_player_playpause_button_cb (GtkButton *button,
-						  RBShellPlayer *player);
 static void rb_shell_player_cmd_next (GtkAction *action,
 			              RBShellPlayer *player);
 static void rb_shell_player_shuffle_changed_cb (GtkAction *action,
 						RBShellPlayer *player);
 static void rb_shell_player_repeat_changed_cb (GtkAction *action,
 					       RBShellPlayer *player);
-static void rb_shell_player_previous_button_cb (GtkButton *button,
-						RBShellPlayer *player);
-static void rb_shell_player_next_button_cb (GtkButton *button,
-					    RBShellPlayer *player);
+static void rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
+								  RBShellPlayer *player);
 static void rb_shell_player_cmd_song_info (GtkAction *action,
 					   RBShellPlayer *player);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 							 RBSource *source,
 							 gboolean sync_entry_view);
-static void rb_shell_player_set_play_button (RBShellPlayer *player,
-			                     PlayButtonState state);
 static void rb_shell_player_sync_with_source (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 static void rb_shell_player_entry_changed_cb (RhythmDB *db,
@@ -141,8 +123,6 @@ static void rb_shell_player_volume_changed_cb (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
 					       RBShellPlayer *playa);
-static void rb_shell_player_volume_widget_changed_cb (BaconVolumeButton *vol,
-						      RBShellPlayer     *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player); 
 static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
@@ -161,9 +141,15 @@ static void rb_shell_player_set_play_order (RBShellPlayer *player,
 
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
 static void rb_shell_player_sync_control_state (RBShellPlayer *player);
+static void rb_shell_player_sync_song_position_slider_visibility (RBShellPlayer *player);
 
 static void gconf_play_order_changed (GConfClient *client,guint cnxn_id,
 				      GConfEntry *entry, RBShellPlayer *player);
+static void gconf_song_position_slider_visibility_changed (GConfClient *client,guint cnxn_id,
+							   GConfEntry *entry, RBShellPlayer *player);
+static void rb_shell_player_playing_changed_cb (RBShellPlayer *player,
+						GParamSpec *arg1,
+						gpointer user_data);
 
 #ifdef HAVE_MMKEYS
 static void grab_mmkey (int key_code, GdkWindow *root);
@@ -189,9 +175,6 @@ struct RBShellPlayerPrivate
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
-	GtkActionGroup *play_action_group;
-	GtkActionGroup *pause_action_group;
-	GtkActionGroup *stop_action_group;
 
 	gboolean handling_error;
 
@@ -212,26 +195,17 @@ struct RBShellPlayerPrivate
 	gboolean last_jumped;
 	gboolean last_skipped;
 
-	GtkTooltips *tooltips;
-	GtkWidget *prev_button;
-	PlayButtonState playbutton_state;
-	GtkWidget *play_pause_stop_button;
-	GtkWidget *play_image;
-	GtkWidget *pause_image;
-	GtkWidget *stop_image;
-	GtkWidget *next_button;
-
 	RBHeader *header_widget;
 	RBStatusbar *statusbar_widget;
 
 	GtkWidget *shuffle_button;
-	GtkWidget *volume_button;
 	GtkWidget *magic_button;
 
 	RBRemote *remote;
 
 	guint gconf_play_order_id;
 	guint gconf_state_id;
+	guint gconf_song_position_slider_visibility_id;
 
 	gboolean mute;
 	float pre_mute_volume;
@@ -277,35 +251,21 @@ static GtkActionEntry rb_shell_player_actions [] =
 };
 static guint rb_shell_player_n_actions = G_N_ELEMENTS (rb_shell_player_actions);
 
-static GtkActionEntry rb_shell_player_play_action [] =
+
+static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 {
 	{ "ControlPlay", GTK_STOCK_MEDIA_PLAY, N_("_Play"), "<control>space",
 	  N_("Start playback"),
 	  G_CALLBACK (rb_shell_player_cmd_play) },
-};
-
-static GtkActionEntry rb_shell_player_pause_action [] =
-{
-	{ "ControlPause", GTK_STOCK_MEDIA_PAUSE, N_("_Pause"), "<control>space",
-	  N_("Pause playback"),
-	  G_CALLBACK (rb_shell_player_cmd_pause) },
-};
-
-static GtkActionEntry rb_shell_player_stop_action [] =
-{
-	{ "ControlStop", GTK_STOCK_MEDIA_STOP, N_("_Stop"), "<control>space",
-	  N_("Stop playback"),
-	  G_CALLBACK (rb_shell_player_cmd_stop) },
-};
-
-static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
-{
 	{ "ControlShuffle", GNOME_MEDIA_SHUFFLE, N_("Sh_uffle"), "<control>U",
 	  N_("Play songs in a random order"),
 	  G_CALLBACK (rb_shell_player_shuffle_changed_cb) },
 	{ "ControlRepeat", GNOME_MEDIA_REPEAT, N_("_Repeat"), "<control>R",
 	  N_("Play first song again after all songs are played"),
-	  G_CALLBACK (rb_shell_player_repeat_changed_cb) }
+	  G_CALLBACK (rb_shell_player_repeat_changed_cb) },
+	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), "<control>S",
+	  N_("Change the visibility of the song position slider"),
+	  G_CALLBACK (rb_shell_player_view_song_position_slider_changed_cb), TRUE }
 };
 static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
@@ -465,6 +425,7 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 {
 	RBShellPlayer *player;
 	RBShellPlayerClass *klass;
+	GtkAction *action;
 	
 	klass = RB_SHELL_PLAYER_CLASS (g_type_class_peek (RB_TYPE_SHELL_PLAYER));
 
@@ -475,41 +436,27 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 				      rb_shell_player_actions,
 				      rb_shell_player_n_actions,
 				      player);
-	player->priv->play_action_group = gtk_action_group_new ("PlayActions");
-	gtk_action_group_set_translation_domain (player->priv->play_action_group,
-						 GETTEXT_PACKAGE);
-
-	gtk_action_group_add_actions (player->priv->play_action_group,
-				      rb_shell_player_play_action,
-				      1, player);
-	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
-					    player->priv->play_action_group, 0);
-	player->priv->pause_action_group = gtk_action_group_new ("PauseActions");
-	gtk_action_group_set_translation_domain (player->priv->pause_action_group,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (player->priv->pause_action_group,
-				      rb_shell_player_pause_action,
-				      1, player);
-	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
-					    player->priv->pause_action_group, 0);
-	player->priv->stop_action_group = gtk_action_group_new ("StopActions");
-	gtk_action_group_set_translation_domain (player->priv->stop_action_group,
-						 GETTEXT_PACKAGE);
-
-	gtk_action_group_add_actions (player->priv->stop_action_group,
-				      rb_shell_player_stop_action,
-				      1, player);
-	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
-					    player->priv->stop_action_group, 0);
 	gtk_action_group_add_toggle_actions (player->priv->actiongroup,
 					     rb_shell_player_toggle_entries,
 					     rb_shell_player_n_toggle_entries,
 					     player);
+
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlPlay");
+	g_object_set (action, "is-important", TRUE, NULL);
+
 	player->priv->syncing_state = TRUE;
 	rb_shell_player_set_playing_source (player, NULL);
 	rb_shell_player_sync_play_order (player);
 	rb_shell_player_sync_control_state (player);
 	player->priv->syncing_state = FALSE;
+
+	rb_shell_player_sync_song_position_slider_visibility (player);
+
+	g_signal_connect (G_OBJECT (player),
+			  "notify::playing",
+			  G_CALLBACK (rb_shell_player_playing_changed_cb),
+			  NULL);
 
 	return G_OBJECT (player);
 }
@@ -558,8 +505,6 @@ static void
 rb_shell_player_init (RBShellPlayer *player)
 {
 	GError *error = NULL;
-	GtkWidget *hbox, *image;
-	GtkWidget *alignment;
 
 	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
 
@@ -579,6 +524,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	player->priv->last_skipped = FALSE;
 
 	gtk_box_set_spacing (GTK_BOX (player), 12);
+	gtk_container_set_border_width (GTK_CONTAINER (player), 3);
 
 	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
 				 "info",
@@ -615,80 +561,9 @@ rb_shell_player_init (RBShellPlayer *player)
 					    (GConfClientNotifyFunc)gconf_play_order_changed,
 					    player);
 
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
-
-	player->priv->tooltips = gtk_tooltips_new ();
-	gtk_tooltips_enable (player->priv->tooltips);
-
-	/* Previous button */
-	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PREVIOUS,
-					 GTK_ICON_SIZE_LARGE_TOOLBAR);
-
-	player->priv->prev_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
-	g_signal_connect (G_OBJECT (player->priv->prev_button),
-			  "clicked", G_CALLBACK (rb_shell_player_previous_button_cb), player);
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
-			      GTK_WIDGET (player->priv->prev_button), 
-			      _("Play previous song"), NULL);
-
-	/* Button images */
-	player->priv->play_image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PLAY,
-							    GTK_ICON_SIZE_LARGE_TOOLBAR);
-	g_object_ref (player->priv->play_image);
-	player->priv->pause_image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PAUSE,
-							     GTK_ICON_SIZE_LARGE_TOOLBAR);
-	g_object_ref (player->priv->pause_image);
-	player->priv->stop_image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_STOP,
-							    GTK_ICON_SIZE_LARGE_TOOLBAR);
-	g_object_ref (player->priv->stop_image);
-
-	player->priv->play_pause_stop_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button), player->priv->play_image);
-	player->priv->playbutton_state = PLAY_BUTTON_PLAY;
-
-	g_signal_connect (G_OBJECT (player->priv->play_pause_stop_button),
-			  "clicked", G_CALLBACK (rb_shell_player_playpause_button_cb), player);
-
-	/* Next button */
-	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_NEXT,
-					 GTK_ICON_SIZE_LARGE_TOOLBAR);
-	player->priv->next_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
-	g_signal_connect (G_OBJECT (player->priv->next_button),
-			  "clicked", G_CALLBACK (rb_shell_player_next_button_cb), player);
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
-			      GTK_WIDGET (player->priv->next_button), 
-			      _("Play next song"), NULL);
-
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_pause_stop_button, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
-
-	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (alignment), hbox);
-	gtk_box_pack_start (GTK_BOX (player), alignment, FALSE, TRUE, 0);
-
-	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	player->priv->header_widget = rb_header_new (player->priv->mmplayer);
-	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->header_widget));
-	gtk_box_pack_start (GTK_BOX (player), alignment, TRUE, TRUE, 0);
-
-	player->priv->volume_button = bacon_volume_button_new (GTK_ICON_SIZE_LARGE_TOOLBAR,
-							       0.0, 1.0, 0.02);
-	rb_shell_player_sync_volume (player);
-	g_signal_connect (player->priv->volume_button, "value-changed",
-			  G_CALLBACK (rb_shell_player_volume_widget_changed_cb),
-			  player);
-
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
-			      GTK_WIDGET (player->priv->volume_button), 
-			      _("Change the music volume"), NULL);
-
-	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
-	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 5);
+	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
+	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
 	player->priv->gconf_state_id = 
 		eel_gconf_notification_add (CONF_STATE_VOLUME,
@@ -697,6 +572,12 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	g_signal_connect (player, "notify::playing",
 			  G_CALLBACK (reemit_playing_signal), NULL);
+
+	player->priv->gconf_song_position_slider_visibility_id =
+		eel_gconf_notification_add (CONF_UI_SONG_POSITION_SLIDER_HIDDEN,
+					    (GConfClientNotifyFunc) gconf_song_position_slider_visibility_changed,
+					    player);
+
 				 
 #ifdef HAVE_MMKEYS
 	/* Enable Multimedia Keys */
@@ -726,10 +607,7 @@ rb_shell_player_finalize (GObject *object)
 			     rb_player_get_volume (player->priv->mmplayer));
 
 	g_object_unref (G_OBJECT (player->priv->mmplayer));
-
 	g_object_unref (G_OBJECT (player->priv->play_order));
-
-	gtk_object_destroy (GTK_OBJECT (player->priv->tooltips));
 
 	if (player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (player->priv->remote));
@@ -1217,6 +1095,23 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 	g_free (new_play_order);
 }
 
+static void
+rb_shell_player_sync_song_position_slider_visibility (RBShellPlayer *player)
+{
+	gboolean visible;
+	GtkAction *action;
+
+	visible = !eel_gconf_get_boolean (CONF_UI_SONG_POSITION_SLIDER_HIDDEN);
+
+	rb_header_set_show_position_slider (player->priv->header_widget,
+					    visible);
+
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ViewSongPositionSlider");
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+				      visible);
+}
+
 void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
@@ -1320,33 +1215,6 @@ rb_shell_player_do_previous_or_seek (RBShellPlayer *player, GError **error)
 }
 
 static void
-rb_shell_player_previous_button_cb (GtkButton *button,
-				    RBShellPlayer *player)
-{
-	GError *error = NULL;
-	
-	if (!rb_shell_player_do_previous_or_seek (player, &error)) {
-		if (error->domain != RB_SHELL_PLAYER_ERROR ||
-		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
-			g_warning ("previos_button_cb: Unhandled error: %s", error->message);
-	}
-}
-
-static void
-rb_shell_player_next_button_cb (GtkButton *button,
-				RBShellPlayer *player)
-{
-	GError *error = NULL;
-	
-	if (!rb_shell_player_do_next (player, &error)) {
-		if (error->domain != RB_SHELL_PLAYER_ERROR ||
-		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
-			g_warning ("next_button_cb: Unhandled error: %s", error->message);
-	}
-
-}
-
-static void
 rb_shell_player_cmd_previous (GtkAction *action,
 			      RBShellPlayer *player)
 {
@@ -1390,17 +1258,9 @@ rb_shell_player_cmd_play (GtkAction *action,
 {
 	GError *error = NULL;
 	rb_debug ("play!");
-	if (!rb_shell_player_playpause (player, TRUE, &error))
+	if (!rb_shell_player_playpause (player, FALSE, &error))
 		rb_error_dialog (NULL, _("Couldn't start playback: %s"), error->message);
 	g_clear_error (&error);
-}
-
-static void
-rb_shell_player_playpause_button_cb (GtkButton *button,
-				     RBShellPlayer *player)
-{
-	/* FIXME - do something with error... */
-	rb_shell_player_playpause (player, FALSE, NULL);
 }
 
 gboolean
@@ -1414,20 +1274,15 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 
 	ret = TRUE;
 
-	switch (player->priv->playbutton_state) {
-	case PLAY_BUTTON_STOP:
-		if (!ignore_stop || !rb_source_can_pause (player->priv->source)) {
+	if (rb_player_playing (player->priv->mmplayer)) {
+		if (rb_source_can_pause (player->priv->source)) {
+			rb_debug ("pausing mm player");
+			rb_player_pause (player->priv->mmplayer);
+		} else if (!ignore_stop) {
 			rb_debug ("setting playing source to NULL");
 			rb_shell_player_set_playing_source (player, NULL);
-			break;
 		}
-		/* fall through */
-	case PLAY_BUTTON_PAUSE:
-		rb_debug ("pausing mm player");
-		rb_player_pause (player->priv->mmplayer);
-		break;
-	case PLAY_BUTTON_PLAY:
-	{
+	} else {
 		RhythmDBEntry *entry;
 		if (player->priv->source == NULL) {
 			/* no current stream, pull one in from the currently
@@ -1459,33 +1314,13 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 			}
 		}
 	}
-	break;
-	default:
-		g_assert_not_reached ();
-	}
+
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
 	g_object_notify (G_OBJECT (player), "playing");
 	return ret;
 }
 
-static void
-rb_shell_player_cmd_pause (GtkAction *action,
-			   RBShellPlayer *player)
-{
-	rb_debug ("pausing");
-	/* FIXME handle error */
-	rb_shell_player_playpause (player, TRUE, NULL);
-
-}
-
-static void
-rb_shell_player_cmd_stop (GtkAction *action,
-			  RBShellPlayer *player)
-{
-	rb_debug ("STOP FACTION WINS AGAIN!!");
-	rb_shell_player_set_playing_source (player, NULL);
-}
 
 static void
 rb_shell_player_sync_control_state (RBShellPlayer *player)
@@ -1514,8 +1349,6 @@ rb_shell_player_sync_volume (RBShellPlayer *player)
 		volume = 0.0;
 	else if (volume > 1.0)
 		volume = 1.0;
-	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (player->priv->volume_button),
-				       volume);
 	rb_player_set_volume (player->priv->mmplayer,
 					volume);
 					
@@ -1566,11 +1399,13 @@ rb_shell_player_volume_changed_cb (GConfClient *client,
 }
 
 static void
-rb_shell_player_volume_widget_changed_cb (BaconVolumeButton *vol,
-					  RBShellPlayer     *playa)
+gconf_song_position_slider_visibility_changed (GConfClient *client,
+					       guint cnxn_id,
+					       GConfEntry *entry,
+					       RBShellPlayer *player)
 {
-	eel_gconf_set_float (CONF_STATE_VOLUME,
-			     bacon_volume_button_get_value (vol));
+	rb_debug ("song position slider visibility visibility changed"); 
+	rb_shell_player_sync_song_position_slider_visibility (player);
 }
 
 static void
@@ -1618,6 +1453,15 @@ rb_shell_player_cmd_song_info (GtkAction *action,
 
 	rb_source_song_properties (player->priv->selected_source);
 }
+
+static void
+rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
+						      RBShellPlayer *player)
+{
+	eel_gconf_set_boolean (CONF_UI_SONG_POSITION_SLIDER_HIDDEN,
+			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+}
+
 
 static void
 rb_shell_player_playing_entry_deleted_cb (RBEntryView *view,
@@ -1690,47 +1534,6 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 		rb_shell_player_error (playa, FALSE, error);
 		g_clear_error (&error);
 	}
-}
-
-static void
-rb_shell_player_set_play_button (RBShellPlayer *player,
-			         PlayButtonState state)
-{
-	gtk_container_remove (GTK_CONTAINER (player->priv->play_pause_stop_button),
-			      gtk_bin_get_child (GTK_BIN (player->priv->play_pause_stop_button)));
-
-	gtk_action_group_set_visible (player->priv->play_action_group, FALSE);
-	gtk_action_group_set_visible (player->priv->pause_action_group, FALSE);
-	gtk_action_group_set_visible (player->priv->stop_action_group, FALSE);
-
-	switch (state)
-	{
-	case PLAY_BUTTON_PLAY:
-		rb_debug ("setting play button");
-		gtk_action_group_set_visible (player->priv->play_action_group, TRUE);
-		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
-				   player->priv->play_image);
-		break;
-	case PLAY_BUTTON_PAUSE:
-		rb_debug ("setting pause button");
-		gtk_action_group_set_visible (player->priv->pause_action_group, TRUE);
-		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
-				   player->priv->pause_image);
-		break;
-	case PLAY_BUTTON_STOP:
-		rb_debug ("setting STOP button");
-		gtk_action_group_set_visible (player->priv->stop_action_group, TRUE);
-		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
-				   player->priv->stop_image);
-		break;
-	default:
-		g_error ("Should not get here!");
-		break;
-	}
-	
-	gtk_widget_show_all (GTK_WIDGET (player->priv->play_pause_stop_button));
-
-	player->priv->playbutton_state = state;
 }
 
 static void
@@ -1823,8 +1626,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	gboolean not_empty = FALSE;
 	gboolean have_previous = FALSE;
 	gboolean have_next = FALSE;
-	PlayButtonState pstate = PLAY_BUTTON_PLAY;
-        gboolean not_small;
+	gboolean not_small;
 	RBEntryView *view;
 
 	source = rb_shell_player_get_playing_entry (player) == NULL ?
@@ -1850,11 +1652,10 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		have_next = rb_play_order_has_next (player->priv->play_order);
 	}
 
-	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->play_pause_stop_button), not_empty);
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPrevious");
 	g_object_set (G_OBJECT (action), "sensitive", have_previous, NULL);
-	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->prev_button), have_previous);
+
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlNext");
 	g_object_set (G_OBJECT (action), "sensitive", have_next, NULL);
@@ -1873,38 +1674,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	g_object_set (G_OBJECT (action), "sensitive", rb_entry_view_have_selection (view),
 		      NULL);
 
-	if (rb_player_playing (player->priv->mmplayer)) {
-		if (player->priv->source == player->priv->selected_source
-		    && rb_source_can_pause (RB_SOURCE (player->priv->selected_source)))
-			pstate = PLAY_BUTTON_PAUSE;
-		else
-			pstate = PLAY_BUTTON_STOP;
-
-		rb_entry_view_set_playing (view, TRUE);
-
-		action = gtk_action_group_get_action (player->priv->play_action_group,
-						      "ControlPlay");
-		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
-
-	} else  {
-		if (rb_player_opened (player->priv->mmplayer)
-		    || player->priv->source == NULL
-		    || player->priv->source == player->priv->selected_source)
-			pstate = PLAY_BUTTON_PLAY;
-		else
-			pstate = PLAY_BUTTON_STOP;
-
-		rb_entry_view_set_playing (view, FALSE);
-
-		action = gtk_action_group_get_action (player->priv->play_action_group,
-						      "ControlPlay");
-		g_object_set (G_OBJECT (action),
-			      "sensitive",
-			      rb_shell_player_have_first (player, source), NULL);
-
-	}
-
-	rb_shell_player_set_play_button (player, pstate);
+	rb_entry_view_set_playing (view, rb_player_playing (player->priv->mmplayer));
 }
 
 void
@@ -2324,8 +2094,8 @@ info_available_cb (RBPlayer *mmplayer,
 		 */
 		existing = rb_refstring_get (entry->title);
 		if ((existing == NULL) || 
-		    (strcmp(existing, "") == 0) || 
-		    (strcmp(existing, entry->location) == 0)) {
+		    (strcmp (existing, "") == 0) || 
+		    (strcmp (existing, entry->location) == 0)) {
 			entry_field = RHYTHMDB_PROP_TITLE;
 			rb_debug ("setting title of iradio station to %s", name);
 			set_field = TRUE;
@@ -2510,3 +2280,29 @@ rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
 	}
 }
 #endif /* HAVE_MMKEYS */
+
+static void
+rb_shell_player_playing_changed_cb (RBShellPlayer *player,
+				    GParamSpec *arg1,
+				    gpointer user_data)
+{
+	GtkAction *action;
+	gboolean playing;
+	char *tooltip;
+
+	g_object_get (G_OBJECT (player), "playing", &playing, NULL);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlPlay");
+	if (playing) {
+		tooltip = g_strdup (_("Stop playback"));
+	} else {
+		tooltip = g_strdup (_("Start playback"));
+	}
+	g_object_set (action, "tooltip", tooltip, NULL);
+	g_free (tooltip);
+
+	/* block the signal, so that it doesn't get stuck by triggering recursively */
+	g_signal_handlers_block_by_func (action, rb_shell_player_cmd_play, player);
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
+	g_signal_handlers_unblock_by_func (action, rb_shell_player_cmd_play, player);
+}

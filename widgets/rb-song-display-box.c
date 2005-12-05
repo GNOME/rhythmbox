@@ -34,6 +34,8 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomeui/libgnomeui.h> /* for GnomeUrl */
 
 #include "rb-song-display-box.h"
 #include "rb-debug.h"
@@ -42,7 +44,11 @@
 struct RBSongDisplayBoxPrivate
 {
 	GtkWidget *from;
+	GtkWidget *album;
 	GtkWidget *by;
+	GtkWidget *artist;
+
+	GtkTooltips *artist_tips, *album_tips;
 };
 
 #define RB_SONG_DISPLAY_BOX_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SONG_DISPLAY_BOX, RBSongDisplayBoxPrivate))
@@ -61,34 +67,8 @@ static void do_allocation                     (GtkWidget *widget,
 					       int size,
 					       GtkAllocation *allocation);
 
-static GObjectClass *parent_class = NULL;
+G_DEFINE_TYPE (RBSongDisplayBox, rb_song_display_box, GTK_TYPE_BOX);
 
-GType
-rb_song_display_box_get_type (void)
-{
-	static GType box_type = 0;
-
-	if (!box_type) {
-		static const GTypeInfo box_info =
-		{
-			sizeof (RBSongDisplayBoxClass),
-			NULL,           /* base_init */
-			NULL,           /* base_finalize */
-			(GClassInitFunc) rb_song_display_box_class_init,
-			NULL,           /* class_finalize */
-			NULL,           /* class_data */
-			sizeof (RBSongDisplayBox),
-			0,              /* n_preallocs */
-			(GInstanceInitFunc) rb_song_display_box_init,
-		};
-
-		box_type = g_type_register_static (GTK_TYPE_BOX,
-						   "RBSongDisplayBox",
-						   &box_info, 0);
-	}
-
-	return box_type;
-}
 
 static void
 rb_song_display_box_class_init (RBSongDisplayBoxClass *class)
@@ -96,7 +76,6 @@ rb_song_display_box_class_init (RBSongDisplayBoxClass *class)
 	GtkWidgetClass *widget_class;
 
 	widget_class = (GtkWidgetClass*) class;
-	parent_class = g_type_class_peek_parent (class);
 
 	G_OBJECT_CLASS (class)->finalize = rb_song_display_box_finalize;
 
@@ -118,19 +97,22 @@ rb_song_display_box_init (RBSongDisplayBox *displaybox)
 	box->homogeneous = FALSE;
 
 	displaybox->priv->from = gtk_label_new (_("from"));
-	displaybox->album = (GnomeHRef *) gnome_href_new ("", "");
+	displaybox->priv->album = gnome_href_new ("", "");
 	displaybox->priv->by = gtk_label_new (_("by"));
-	displaybox->artist = (GnomeHRef *) gnome_href_new ("", "");
+	displaybox->priv->artist = gnome_href_new ("", "");
 
 
 	gtk_box_pack_start (box, displaybox->priv->from, 
 			    FALSE, FALSE, 0);
-	gtk_box_pack_start (box, GTK_WIDGET (displaybox->album),
+	gtk_box_pack_start (box, displaybox->priv->album,
 			    FALSE, FALSE, 0);
 	gtk_box_pack_start (box, displaybox->priv->by, 
 			    FALSE, FALSE, 0);
-	gtk_box_pack_start (box, GTK_WIDGET (displaybox->artist), 
+	gtk_box_pack_start (box, displaybox->priv->artist, 
 			    FALSE, FALSE, 0);
+
+	displaybox->priv->artist_tips = gtk_tooltips_new ();
+	displaybox->priv->album_tips = gtk_tooltips_new ();
 }
 
 GtkWidget*
@@ -150,7 +132,7 @@ rb_song_display_box_finalize (GObject *object)
 
 	box = RB_SONG_DISPLAY_BOX (object);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_song_display_box_parent_class)->finalize (object);
 }
 
 static void
@@ -198,13 +180,13 @@ rb_song_display_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	width = allocation->width;
 	width -= displaybox_get_childwidth (displaybox->priv->from);
 	width -= displaybox_get_childwidth (displaybox->priv->by);
-	width -= displaybox_get_childwidth (GTK_WIDGET (displaybox->artist));
+	width -= displaybox_get_childwidth (displaybox->priv->artist);
 
 	/* if we can't fit the entire thing and we have less than 30 pixels
 	   then just don't bother.
 	*/
 	if (width < 30 &&
-	    width < displaybox_get_childwidth (GTK_WIDGET (displaybox->album)))
+	    width < displaybox_get_childwidth (displaybox->priv->album))
 	{
 		width = 0;
 		shown = 0;
@@ -216,10 +198,10 @@ rb_song_display_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL) {
 		remain.x += remain.width;
 	}
-	do_allocation (displaybox->priv->from,         shown, &remain);
-	do_allocation (GTK_WIDGET (displaybox->album), width, &remain);
-	do_allocation (displaybox->priv->by,           -1,    &remain);
-	do_allocation (GTK_WIDGET (displaybox->artist),-1,    &remain);
+	do_allocation (displaybox->priv->from, shown, &remain);
+	do_allocation (displaybox->priv->album, width, &remain);
+	do_allocation (displaybox->priv->by, -1, &remain);
+	do_allocation (displaybox->priv->artist,-1, &remain);
 }
 
 static int
@@ -255,4 +237,102 @@ do_allocation (GtkWidget *widget, int size, GtkAllocation *allocation)
 	child_allocation.y = allocation->y;
 
 	gtk_widget_size_allocate( widget, &child_allocation );
+}
+
+static char *
+sanitize_string (const char *data)
+{
+	char *ret;
+	
+	/*
+	 * netlabels often put URLs (or domain names) in the 'album' field
+	 * of their releases; since there are no artist names in AMG that
+	 * start with 'http://' or 'www.' (there is a 'www', from the 70s,
+	 * strangely enough), we can safely assume anything that looks 
+	 * like a URL or domain name is one.
+	 *
+	 * There's sometimes some trailing junk, usually after a space,
+	 * so it's probably sensible to strip that off.
+	 */
+	if (g_str_has_prefix (data, "http://")) {
+		char *end = strchr (data, ' ');
+		if (end != NULL)
+			ret = g_strndup (data, end - data);
+		else
+			ret = g_strdup (data);
+	} else if (g_str_has_prefix (data, "www.")) {
+		char *end = strchr (data, ' ');
+		if (end != NULL)
+			ret = g_strdup_printf ("http://%*s",
+					       (int) (end-data), data);
+		else
+			ret = g_strdup_printf ("http://%s", data);
+	} else {
+		ret = g_strdup (data);
+	}
+	return g_strstrip (ret);
+}
+
+static char *
+info_url (const char *artist, const char *album)
+{
+	char *escaped_artist;
+	char *sanitized_artist;
+	char *ret;
+
+	sanitized_artist = sanitize_string (artist);
+	escaped_artist = gnome_vfs_escape_string (sanitized_artist);
+	g_free (sanitized_artist);
+	if (album) {
+		char *sanitized_album;
+		char *escaped_album;
+		sanitized_album = sanitize_string (album);
+		escaped_album = gnome_vfs_escape_string (sanitized_album);
+		g_free (sanitized_album);
+		ret = g_strdup_printf ("http://www.last.fm/music/%s/%s",
+				       escaped_artist, escaped_album);
+		g_free (escaped_album);
+	} else {
+		ret = g_strdup_printf ("http://www.last.fm/music/%s", escaped_artist);
+	}
+	g_free (escaped_artist);
+
+	return ret;
+}
+
+void
+rb_song_display_box_sync (RBSongDisplayBox *displaybox, RhythmDBEntry *entry)
+{
+	const char *album, *artist; 
+	char *tmp;
+
+	if (entry == NULL)
+		return;
+	
+	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	
+	tmp = info_url (artist, album);
+	gnome_href_set_url (GNOME_HREF (displaybox->priv->album), tmp);
+	g_free (tmp);
+	tmp = g_markup_escape_text (album, -1);
+	gnome_href_set_text (GNOME_HREF (displaybox->priv->album), tmp);
+	g_free (tmp);
+
+	gtk_tooltips_set_tip (displaybox->priv->album_tips,
+			      displaybox->priv->album,
+			      _("Get information on this album from the web"), 
+			      NULL);
+
+	tmp = info_url (artist, NULL);
+	gnome_href_set_url (GNOME_HREF (displaybox->priv->artist), tmp);
+	g_free (tmp);
+	tmp = g_markup_escape_text (artist, -1);
+	gnome_href_set_text (GNOME_HREF (displaybox->priv->artist), tmp);
+	g_free (tmp);
+
+	gtk_tooltips_set_tip (displaybox->priv->artist_tips,
+			      displaybox->priv->artist,
+			      _("Get information on this artist from the web"),
+			      NULL);
 }

@@ -1,3 +1,68 @@
+2005-12-05  William Jon McCann  <mccann@jhu.edu>
+
+	* widgets/rb-song-display-box.[ch] (rb_song_display_box_init):
+	Hide internals and add tooltips.
+	(rb_song_display_box_size_allocate): Hide internals.
+	(sanitize_string, info_url): Copied from rb-header.
+	(rb_song_display_box_sync): New public function.
+
+	* widgets/rb-header.[ch]: Use G_DEFINE_TYPE.
+	(rb_header_init): Use a separate row for the seek bar.
+	(rb_header_finalize): Don't unref widgets.
+	(rb_header_sync): Use rb_song_display_box_sync.
+	(rb_header_set_urldata)
+	(rb_header_set_show_artist_album): Hide instead of remove widgets.
+	(rb_header_set_show_position_slider): Set visibility of seek bar.
+	(rb_header_set_show_timeline): Set sensitivity of seek bar.
+	(rb_header_get_elapsed_string): Don't shift when you first start playback.
+
+	* shell/rb-statusbar.c (rb_statusbar_init)
+	(rb_statusbar_sync_state): Remove shuffle and repeat controls.
+
+	* shell/rb-shell.c (rb_shell_finalize): Destroy tooltips.
+	(rb_shell_constructor): Remove hseparator.  Monitor
+	toolbar visibility settings.  Add toolbar.  Add
+	volume button to toolbar.  Add tooltips for volume button.
+	(rb_shell_view_toolbar_changed_cb) 
+	(rb_shell_sync_toolbar_visibility)
+	(toolbar_visibility_changed_cb): Set visibility of
+	toolbar.
+	(rb_shell_sync_smalldisplay): Set the toolbar style to
+	icons only when in small display mode.
+	(rb_shell_volume_widget_changed_cb): Save volume setting.
+
+	* shell/rb-shell-player.c (rb_shell_player_constructor):
+	Remove pause and stop actions.  Make play action "important"
+	so that text is visible in horizontal toolbar position.
+	Remove control buttons.
+	(rb_shell_player_init) 
+	(rb_shell_player_sync_song_position_slider_visibility):
+	Set visbibility of seek bar.
+	(rb_shell_player_cmd_play, rb_shell_player_playpause):
+	Make play action a toggle.
+	(rb_shell_player_sync_volume): Volume control moved
+	to player.
+	(gconf_song_position_slider_visibility_changed):
+	Set visbibility of seek bar.
+	(rb_shell_player_sync_buttons):
+	Set sensitivity of actions instead of buttons.
+	(rb_shell_player_playing_changed_cb): Add callback
+	for player notify::playing changes.
+
+	* lib/rb-preferences.h: Add hide toolbar and seek
+	bar key names.
+
+	* data/ui/rhythmbox-ui.xml: Add hide toolbar and
+	seek bar menu items.  Remove pause and stop actions
+	from the control menu.  Add a toolbar.
+
+	* data/rhythmbox.schemas: Add toolbar_hidden
+	song_position_slider_hidden keys.
+
+	Patch by: James Livingston  <jrl@ids.org.au>
+	          William Jon McCann  <mccann@jhu.edu>
+	Fixes #316238.
+
 2005-12-05  James Livingston  <jrl@ids.org.au>
 
 	* data/glade/library-prefs.glade:

@@ -64,8 +64,6 @@ static void rb_statusbar_state_changed_cb (GConfClient *client,
 
 static void rb_statusbar_sync_status (RBStatusbar *status);
 static gboolean poll_status (RBStatusbar *status);
-static void rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
-					    RBStatusbar *statusbar);
 static void rb_statusbar_view_statusbar_changed_cb (GtkAction *action,
 						    RBStatusbar *statusbar);
 static void rb_statusbar_entry_view_changed_cb (RBEntryView *view,
@@ -92,8 +90,6 @@ struct RBStatusbarPrivate
 
         GtkTooltips *tooltips;
 
-        GtkWidget *shuffle;
-        GtkWidget *repeat;
         GtkWidget *status;
 
         GtkWidget *progress;
@@ -211,20 +207,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
         gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (statusbar), TRUE);
 
-        statusbar->priv->shuffle = gtk_check_button_new_with_mnemonic (_("Sh_uffle"));
-        gtk_tooltips_set_tip (GTK_TOOLTIPS (statusbar->priv->tooltips), 
-                              GTK_WIDGET (statusbar->priv->shuffle), 
-                              _("Play songs in a random order"), NULL);
-
-        statusbar->priv->repeat = gtk_check_button_new_with_mnemonic (_("_Repeat"));
-        gtk_tooltips_set_tip (GTK_TOOLTIPS (statusbar->priv->tooltips), 
-                              GTK_WIDGET (statusbar->priv->repeat), 
-                              _("Play first song again after all songs are played"), NULL);
-        g_signal_connect_object (G_OBJECT (statusbar->priv->shuffle), "toggled",
-                                 G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar, 0);
-        g_signal_connect_object (G_OBJECT (statusbar->priv->repeat), "toggled",
-                                 G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar, 0);
-
         statusbar->priv->progress = gtk_progress_bar_new ();
         statusbar->priv->progress_fraction = 1.0;
 
@@ -233,10 +215,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
         gtk_widget_hide (statusbar->priv->progress);
 
-        gtk_box_pack_start (GTK_BOX (statusbar),
-                            GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
-        gtk_box_pack_start (GTK_BOX (statusbar),
-                            GTK_WIDGET (statusbar->priv->shuffle), FALSE, TRUE, 0);
         gtk_box_pack_start (GTK_BOX (statusbar),
                             GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
 
@@ -608,24 +586,11 @@ void
 rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
 	GtkAction *action;
-        gboolean hidden, consistent;
-        int shuffle, repeat;
+        gboolean hidden;
 
         rb_debug ("syncing state");
 
 	statusbar->priv->syncing_state = TRUE;
-        consistent = rb_shell_player_get_playback_state (statusbar->priv->player,
-                                                         &shuffle, &repeat);
-        if (consistent) {
-                gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
-                                              shuffle);
-                gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
-                                              repeat);
-        } 
-        gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
-                                            !consistent);
-        gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
-                                            !consistent);
         
         hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
         if (hidden)
@@ -661,26 +626,6 @@ rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player,
 		return;
 	statusbar->priv->syncing_state = TRUE;
 	rb_statusbar_sync_state (statusbar);
-}
-
-static void
-rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
-                                RBStatusbar *statusbar)
-{
-        RBShellPlayer *player = statusbar->priv->player;
-        gboolean shuffle, repeat;
-
-	if (statusbar->priv->syncing_state)
-		return;
-	statusbar->priv->syncing_state = TRUE;
-
-        rb_debug ("toggle changed");
-
-        shuffle = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle));
-        repeat = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat));
-
-        rb_shell_player_set_playback_state (player, shuffle, repeat);
-	statusbar->priv->syncing_state = FALSE;
 }
 
 static void

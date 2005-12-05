@@ -168,6 +168,30 @@
 	</locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/ui/toolbar_hidden</key>
+	<applyto>/apps/rhythmbox/ui/toolbar_hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Toolbar visibility</short>
+	<long>If true, the toolbar is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/song_position_slider_hidden</key>
+	<applyto>/apps/rhythmbox/ui/song_position_slider_hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Song position slider visibility</short>
+	<long>If true, the song position slider is hidden.</long>
+	</locale>
+      </schema>
+
+
+      <schema>
         <key>/schemas/apps/rhythmbox/state/play_order</key>
         <applyto>/apps/rhythmbox/state/play_order</applyto>
         <owner>rhythmbox</owner>

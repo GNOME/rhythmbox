@@ -64,6 +64,9 @@ void		rb_header_set_title		(RBHeader *player,
 void		rb_header_set_show_artist_album	(RBHeader *player,
 						 gboolean show);
 
+void		rb_header_set_show_position_slider (RBHeader *player,
+                                                    gboolean show);
+
 void		rb_header_set_urldata		(RBHeader *player,
 						 const char *urltext,
 						 const char *urllink);

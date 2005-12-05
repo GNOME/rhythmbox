@@ -28,6 +28,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libgnomeui/libgnomeui.h> /* for GnomeUrl */
 
 #include "rb-song-display-box.h"
 #include "rb-stock-icons.h"
@@ -78,8 +79,10 @@ struct RBHeaderPrivate
 	GtkWidget *image;
 	GtkWidget *song;
 
-	GtkWidget *timeframe;
 	GtkWidget *timeline;
+	GtkWidget *scaleline;
+	gboolean scaleline_shown;
+
 	GtkWidget *scale;
 	GtkAdjustment *adjustment;
 	gboolean slider_dragging;
@@ -89,11 +92,8 @@ struct RBHeaderPrivate
 	guint value_changed_update_handler;
 	GtkWidget *elapsed;
 
-	GtkWidget *textframe;
 	RBSongDisplayBox *displaybox;
 	gboolean displaybox_shown;
-	GtkTooltips *tips;
-	GtkWidget *urlframe;
 	GtkWidget *urlline;
 	gboolean urlline_shown;
 	GnomeHRef *url;
@@ -114,43 +114,15 @@ enum
 	PROP_URLLINK,
 };
 
-static GObjectClass *parent_class = NULL;
-
 #define SONG_MARKUP(xSONG) g_strdup_printf ("<big><b>%s</b></big>", xSONG);
 
-GType
-rb_header_get_type (void)
-{
-	static GType rb_header_type = 0;
+G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
-	if (rb_header_type == 0) {
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBHeaderClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_header_class_init,
-			NULL,
-			NULL,
-			sizeof (RBHeader),
-			0,
-			(GInstanceInitFunc) rb_header_init
-		};
-
-		rb_header_type = g_type_register_static (GTK_TYPE_HBOX,
-							 "RBHeader",
-							 &our_info, 0);
-	}
-
-	return rb_header_type;
-}
 
 static void
 rb_header_class_init (RBHeaderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_header_finalize;
 
@@ -204,119 +176,106 @@ rb_header_class_init (RBHeaderClass *klass)
 }
 
 static void
-rb_header_init (RBHeader *player)
+rb_header_init (RBHeader *header)
 {
 	/**
 	 * The children in this widget look like this:
 	 * RBHeader
 	 *   GtkHBox
-	 *     GtkVBox
-	 *       GtkAlignment
-	 *         GtkVBox
-	 *           GtkLabel		(priv->song)
-	 *           GtkHBox		(priv->textframe)
-	 *	       RBSongDisplayBox (priv->displaybox)
-	 *               GtkLabel	("from")
-	 *               GnomeHRef	(priv->displaybox->album)
-	 *               GtkLabel	("by")
-	 *               GnomeHRef	(priv->displaybox->artist)
-	 *           GtkHBox		(priv->urlframe)
-	 *	       GtkHBox		(priv->urlline)
-	 *               GtkLabel	("Listening to")
-	 *               GnomeHRef	(priv->url)
-	 *   GtkAlignment		(priv->timeframe)
-	 *     GtkVBox			(priv->timeline)
-	 *       GtkHScale		(priv->scale)
-	 *       GtkAlignment
-	 *         GtkLabel		(priv->elapsed)
+	 *     GtkLabel			(priv->song)
+	 *     RBSongDisplayBox		(priv->displaybox)
+	 *       GtkLabel		("from")
+	 *       GtkWidget		(priv->displaybox->album)
+	 *       GtkLabel		("by")
+	 *       GtkWidget		(priv->displaybox->artist)
+	 *     GtkHBox			(priv->urlline)
+	 *       GtkLabel		("Listening to")
+	 *       GnomeHRef		(priv->url)
+	 *   GtkHBox			(priv->timeline)
+	 *     GtkHScale		(priv->scale)
+	 *     GtkAlignment
+	 *       GtkLabel		(priv->elapsed)
 	 */
-	GtkWidget *hbox, *vbox, *urlline, *label, *align, *scalebox, *textvbox;
+	GtkWidget *urlline, *label,  *hbox;
+	GtkWidget *vbox;
+	char *s;
 
-	player->priv = RB_HEADER_GET_PRIVATE (player);
+	header->priv = g_new0 (RBHeaderPrivate, 1);
+	header->priv->state = g_new0 (RBHeaderState, 1);
 
-	player->priv->state = g_new0 (RBHeaderState, 1);
+	gtk_box_set_spacing (GTK_BOX (header), 3);
 
-	hbox = gtk_hbox_new (FALSE, 10);
+	vbox = gtk_vbox_new (FALSE, 6);
+	gtk_widget_show (vbox);
+	gtk_box_pack_start (GTK_BOX (header), vbox, TRUE, TRUE, 0);
 
-#if 0
-	player->priv->image = gtk_image_new ();
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->image, FALSE, TRUE, 0);
-#endif
+	/* song info */
+	hbox = gtk_hbox_new (FALSE, 16);
+	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
+	gtk_widget_show (hbox);
 
-	vbox = gtk_vbox_new (FALSE, 5);
-
-	align = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
-	gtk_box_pack_start (GTK_BOX (vbox), align, TRUE, TRUE, 0);
-	textvbox = gtk_vbox_new (FALSE, 0);
-	gtk_container_add (GTK_CONTAINER (align), textvbox);
-	
-	player->priv->song = gtk_label_new ("");
-	gtk_label_set_ellipsize (GTK_LABEL (player->priv->song), PANGO_ELLIPSIZE_END);
- 	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
- 	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);	
-	gtk_misc_set_alignment (GTK_MISC (player->priv->song), 0, 0);
-	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->song, FALSE, TRUE, 0);
+	header->priv->song = gtk_label_new ("");
+ 	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
+ 	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);	
+	gtk_box_pack_start (GTK_BOX (hbox), header->priv->song, FALSE, TRUE, 0);
+	gtk_widget_show (header->priv->song);
 
 	/* Construct the Artist/Album display */
-	player->priv->textframe = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->textframe, FALSE, TRUE, 0);
-
-	player->priv->displaybox = RB_SONG_DISPLAY_BOX (rb_song_display_box_new ());
-	g_object_ref (G_OBJECT (player->priv->displaybox));
-	player->priv->displaybox_shown = FALSE;
+	header->priv->displaybox = RB_SONG_DISPLAY_BOX (rb_song_display_box_new ());
+	header->priv->displaybox_shown = FALSE;
+	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (header->priv->displaybox), TRUE, TRUE, 0);
 
 	/* Construct the URL display */
-	player->priv->urlframe = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->urlframe, FALSE, TRUE, 0);
 
-	urlline = player->priv->urlline = gtk_hbox_new (FALSE, 2);
-	g_object_ref (G_OBJECT (urlline));
+	urlline = header->priv->urlline = gtk_hbox_new (FALSE, 2);
+	gtk_box_pack_start (GTK_BOX (hbox), header->priv->urlline, TRUE, TRUE, 0);
 
 	label = gtk_label_new (_("Listening to "));
 	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (label), FALSE, TRUE, 0);
-	player->priv->url = (GnomeHRef *) gnome_href_new ("", "");
-	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (player->priv->url), FALSE, TRUE, 0);
-	player->priv->urlline_shown = FALSE;
+	header->priv->url = (GnomeHRef *) gnome_href_new ("", "");
+	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (header->priv->url), FALSE, TRUE, 0);
+	header->priv->urlline_shown = FALSE;
 
-	/* construct the time slider and display */
-	scalebox = player->priv->timeline = gtk_vbox_new (FALSE, 0);
-	g_object_ref (G_OBJECT (scalebox));
+	/* construct the time display */
+	header->priv->timeline = gtk_hbox_new (FALSE, 3);
 
-	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
-	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
-	g_signal_connect_object (G_OBJECT (player->priv->scale),
+	s = rb_header_get_elapsed_string (header);
+	header->priv->elapsed = gtk_label_new (s);
+	g_free (s);
+
+	gtk_misc_set_padding (GTK_MISC (header->priv->elapsed), 2, 0);
+	gtk_box_pack_start (GTK_BOX (header->priv->timeline), header->priv->elapsed, FALSE, FALSE, 0);
+	gtk_widget_set_sensitive (header->priv->timeline, FALSE);
+	gtk_box_pack_end (GTK_BOX (hbox), header->priv->timeline, FALSE, FALSE, 0);
+	gtk_widget_show_all (header->priv->timeline);
+
+	/* row for the position slider */
+	header->priv->scaleline = gtk_hbox_new (FALSE, 3);
+	gtk_box_pack_start (GTK_BOX (vbox), header->priv->scaleline, FALSE, FALSE, 0);
+	header->priv->scaleline_shown = FALSE;
+
+	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
+	header->priv->scale = gtk_hscale_new (header->priv->adjustment);
+	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "button_press_event",
 				 G_CALLBACK (slider_press_callback),
-				 player, 0);
-	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 header, 0);
+	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "button_release_event",
 				 G_CALLBACK (slider_release_callback),
-				 player, 0);
-	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 header, 0);
+	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "motion_notify_event",
 				 G_CALLBACK (slider_moved_callback),
-				 player, 0);
-	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 header, 0);
+	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "value_changed",
 				 G_CALLBACK (slider_changed_callback),
-				 player, 0);
-	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
-	gtk_widget_set_size_request (player->priv->scale, 150, -1);
-	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
-	align = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
-	player->priv->elapsed = gtk_label_new ("0:00");
-	gtk_misc_set_padding (GTK_MISC (player->priv->elapsed), 2, 0);
-	player->priv->tips = gtk_tooltips_new ();
-	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
-	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
-	align = player->priv->timeframe = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
-	gtk_widget_set_sensitive (player->priv->timeline, FALSE);
+				 header, 0);
+	gtk_scale_set_draw_value (GTK_SCALE (header->priv->scale), FALSE);
+	gtk_widget_set_size_request (header->priv->scale, 150, -1);
+	gtk_box_pack_start (GTK_BOX (header->priv->scaleline), header->priv->scale, TRUE, TRUE, 0);
 
-	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
-
-	gtk_box_pack_start (GTK_BOX (player), hbox, TRUE, TRUE, 0);
-	gtk_box_pack_end (GTK_BOX (player), align, FALSE, FALSE, 0);
 }
 
 static void
@@ -328,16 +287,12 @@ rb_header_finalize (GObject *object)
 	g_return_if_fail (RB_IS_HEADER (object));
 
 	player = RB_HEADER (object);
-
 	g_return_if_fail (player->priv != NULL);
 
-	g_object_unref (G_OBJECT (player->priv->urlline));
-	g_object_unref (G_OBJECT (player->priv->displaybox));
-	g_object_unref (G_OBJECT (player->priv->timeline));
-
 	g_free (player->priv->state);
+	g_free (player->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_header_parent_class)->finalize (object);
 }
 
 static void
@@ -453,84 +408,22 @@ rb_header_get_duration (RBHeader *player)
 	return -1;
 }
 
-static char *
-sanitize_string (const char *data)
-{
-	char *ret;
-	
-	/*
-	 * netlabels often put URLs (or domain names) in the 'album' field
-	 * of their releases; since there are no artist names in AMG that
-	 * start with 'http://' or 'www.' (there is a 'www', from the 70s,
-	 * strangely enough), we can safely assume anything that looks 
-	 * like a URL or domain name is one.
-	 *
-	 * There's sometimes some trailing junk, usually after a space,
-	 * so it's probably sensible to strip that off.
-	 */
-	if (g_str_has_prefix (data, "http://")) {
-		char *end = strchr (data, ' ');
-		if (end != NULL)
-			ret = g_strndup (data, end - data);
-		else
-			ret = g_strdup (data);
-	} else if (g_str_has_prefix (data, "www.")) {
-		char *end = strchr (data, ' ');
-		if (end != NULL)
-			ret = g_strdup_printf ("http://%*s",
-					       (int) (end-data), data);
-		else
-			ret = g_strdup_printf ("http://%s", data);
-	} else {
-		ret = g_strdup (data);
-	}
-	return g_strstrip (ret);
-}
-
-static char *
-info_url (const char *artist, const char *album)
-{
-	char *escaped_artist;
-	char *sanitized_artist;
-	char *ret;
-
-	sanitized_artist = sanitize_string (artist);
-	escaped_artist = gnome_vfs_escape_string (sanitized_artist);
-	g_free (sanitized_artist);
-	if (album) {
-		char *sanitized_album;
-		char *escaped_album;
-		sanitized_album = sanitize_string (album);
-		escaped_album = gnome_vfs_escape_string (sanitized_album);
-		g_free (sanitized_album);
-		ret = g_strdup_printf ("http://www.last.fm/music/%s/%s",
-				       escaped_artist, escaped_album);
-		g_free (escaped_album);
-	} else {
-		ret = g_strdup_printf ("http://www.last.fm/music/%s", escaped_artist);
-	}
-	g_free (escaped_artist);
-
-	return ret;
-}
-
 void
 rb_header_sync (RBHeader *player)
 {
 	char *tmp;
 
 	rb_debug ("syncing with node = %p", player->priv->entry);
+	rb_song_display_box_sync (player->priv->displaybox, player->priv->entry);
+	
 	if (player->priv->entry != NULL) {
 		const char *song = player->priv->title;
 		char *escaped;
 		gboolean have_duration = rb_header_get_duration (player) > 0;
-		const char *album; 
-		const char *artist; 
-		GtkTooltips *artist_href_tips, *album_href_tips;
+		const char *album, *artist; 
 
-
-		album = rb_refstring_get (player->priv->entry->album);
-		artist = rb_refstring_get (player->priv->entry->artist);
+		album = rhythmdb_entry_get_string (player->priv->entry, RHYTHMDB_PROP_ALBUM);
+		artist = rhythmdb_entry_get_string (player->priv->entry, RHYTHMDB_PROP_ARTIST);
 
 		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);
@@ -540,41 +433,6 @@ rb_header_sync (RBHeader *player)
 
 		rb_header_set_show_artist_album (player, (album != NULL && artist != NULL)
 						 && (strlen (album) > 0 && strlen (artist) > 0));
-
-		if (player->priv->displaybox_shown)
-		{
-			g_return_if_fail (album != NULL);
-			g_return_if_fail (artist != NULL);
-
-			rb_debug ("artist: %s album: %s", artist, album);
-
-			tmp = info_url (artist, album);
-			gnome_href_set_url (player->priv->displaybox->album, tmp);
-			escaped = g_markup_escape_text (album, -1);
-			gnome_href_set_text (player->priv->displaybox->album, escaped);
-			g_free (escaped);
-			g_free (tmp);
-   
-   			album_href_tips = gtk_tooltips_new ();
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (album_href_tips), 
-					      GTK_WIDGET (player->priv->displaybox->album),
-					      _("Get information on this album from the web"), 
-					      NULL);
-			
-			tmp = info_url (artist, NULL);
-			gnome_href_set_url (player->priv->displaybox->artist, tmp);
-			escaped = g_markup_escape_text (artist, -1);
-			gnome_href_set_text (player->priv->displaybox->artist, escaped);
-			g_free (escaped);
-			g_free (tmp);
-
-   			artist_href_tips = gtk_tooltips_new ();
-			gtk_tooltips_set_tip (GTK_TOOLTIPS (artist_href_tips), 
-					      GTK_WIDGET (player->priv->displaybox->artist),
-					      _("Get information on this artist from the web"),
-					      NULL);
-			
-		}
 
 		if (player->priv->urlline_shown)
 		{
@@ -589,18 +447,10 @@ rb_header_sync (RBHeader *player)
 		if (have_duration)
 			rb_header_sync_time (player);
 	} else {
-		GtkTooltips *iradio_href_tips;
-
 		rb_debug ("not playing");
 		tmp = SONG_MARKUP (_("Not Playing"));
 		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
 		g_free (tmp);
-
-		iradio_href_tips = gtk_tooltips_new ();
-		gtk_tooltips_set_tip (GTK_TOOLTIPS (iradio_href_tips), 
-				      GTK_WIDGET (player->priv->displaybox->artist),
-				      _("Get information on this station from the web"),
-				      NULL);
 
 		rb_header_set_urldata (player, NULL, NULL);
 		rb_header_set_show_artist_album (player, FALSE);
@@ -610,15 +460,11 @@ rb_header_sync (RBHeader *player)
 		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
 		player->priv->slider_locked = FALSE;
 		gtk_widget_set_sensitive (player->priv->scale, FALSE);
-		gtk_label_set_text (GTK_LABEL (player->priv->elapsed), "0:00");
-	}
 
-#if 0
-	if (pixbuf != NULL)
-		gtk_image_set_from_pixbuf (GTK_IMAGE (player->priv->image), pixbuf);
-	else
-		gtk_image_set_from_stock (GTK_IMAGE (player->priv->image), RB_STOCK_ALBUM, GTK_ICON_SIZE_DIALOG);
-#endif
+		tmp = rb_header_get_elapsed_string (player);
+		gtk_label_set_text (GTK_LABEL (player->priv->elapsed), tmp);
+		g_free (tmp);
+	}
 }
 
 void
@@ -634,13 +480,10 @@ rb_header_set_urldata (RBHeader *player,
 	g_object_set (G_OBJECT (player), "urltext", urltext,
 		      "urllink", urllink, NULL);
 
-	if (show == FALSE)
-		gtk_container_remove (GTK_CONTAINER (player->priv->urlframe), player->priv->urlline);
-	else
-	{
-		gtk_container_add (GTK_CONTAINER (player->priv->urlframe), player->priv->urlline);
+	if (show)
 		gtk_widget_show_all (player->priv->urlline);
-	}
+	else
+		gtk_widget_hide (player->priv->urlline);
 }
 
 void
@@ -652,11 +495,26 @@ rb_header_set_show_artist_album (RBHeader *player,
 
 	player->priv->displaybox_shown = show;
 
-	if (show == FALSE)
-		gtk_container_remove (GTK_CONTAINER (player->priv->textframe), GTK_WIDGET (player->priv->displaybox));
-	else {
-		gtk_container_add (GTK_CONTAINER (player->priv->textframe), GTK_WIDGET (player->priv->displaybox));
-		gtk_widget_show_all (player->priv->textframe);
+	if (show)
+		gtk_widget_show_all (GTK_WIDGET (player->priv->displaybox));
+	else
+		gtk_widget_hide (GTK_WIDGET (player->priv->displaybox));
+}
+
+void
+rb_header_set_show_position_slider (RBHeader *player,
+				    gboolean show)
+{
+	if (player->priv->scaleline_shown == show)
+		return;
+
+	player->priv->scaleline_shown = show;
+
+	if (show) {
+		gtk_widget_show_all (GTK_WIDGET (player->priv->scaleline));
+		rb_header_sync_time (player);
+	} else {
+		gtk_widget_hide (GTK_WIDGET (player->priv->scaleline));
 	}
 }
 
@@ -665,6 +523,7 @@ rb_header_set_show_timeline (RBHeader *player,
 			     gboolean show)
 {
 	gtk_widget_set_sensitive (player->priv->timeline, show);
+	gtk_widget_set_sensitive (player->priv->scaleline, show);
 }
 
 gboolean
@@ -850,10 +709,16 @@ rb_header_get_elapsed_string (RBHeader *player)
 		seconds = player->priv->state->elapsed % 60;
 	}
 
-	if (player->priv->state->duration > 0) {
-		hours2 = player->priv->state->duration / (60 * 60);
-		minutes2 = (player->priv->state->duration - (hours2 * 60 * 60)) / 60;
-		seconds2 = player->priv->state->duration % 60;
+	/* use this if entry==NULL, so that it doesn't shift when you first start playback */
+	if (player->priv->entry == NULL || player->priv->state->duration > 0) {
+		if (player->priv->state->duration > 0) {
+			hours2 = player->priv->state->duration / (60 * 60);
+			minutes2 = (player->priv->state->duration - (hours2 * 60 * 60)) / 60;
+			seconds2 = player->priv->state->duration % 60;
+		} else {
+			hours2 = minutes2 = seconds2 = 0;
+		}
+
 		if (eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY)) {
 			if (hours == 0 && hours2 == 0)
 				return g_strdup_printf (_("%d:%02d of %d:%02d"),

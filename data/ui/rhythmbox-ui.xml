@@ -46,6 +46,8 @@
       <menuitem name="ViewSourceListMenu" action="ViewSourceList"/>
       <menuitem name="ViewBrowserMenu" action="ViewBrowser"/>
       <menuitem name="ViewStatusbarMenu" action="ViewStatusbar"/>
+      <menuitem name="ViewToolbarMenu" action="ViewToolbar"/>
+      <menuitem name="ViewSongPositionSliderMenu" action="ViewSongPositionSlider"/>
       <separator name="ViewSep2"/>
       <menuitem name="ViewAllMenu" action="ViewAll"/>
       <separator name="ViewSep3"/>
@@ -54,8 +56,6 @@
 
     <menu name="ControlMenu" action="Control">
       <menuitem name="ControlPlayMenu" action="ControlPlay"/>
-      <menuitem name="ControlPauseMenu" action="ControlPause"/>
-      <menuitem name="ControlStopMenu" action="ControlStop"/>
       <separator name="ControlSep1"/>
       <menuitem name="ControlPreviousMenu" action="ControlPrevious"/>
       <menuitem name="ControlNextMenu" action="ControlNext"/>
@@ -71,9 +71,19 @@
 
   </menubar>
 
+  <toolbar name="ToolBar">
+    <toolitem name="Previous" action="ControlPrevious"/>
+    <toolitem name="Play" action="ControlPlay"/>
+    <toolitem name="Next" action="ControlNext"/>
+    <separator/>
+    <toolitem name="Repeat" action="ControlRepeat"/>
+    <toolitem name="Shuffle" action="ControlShuffle"/>
+    <separator/>
+    <toolitem name="CreateCD" action="MusicPlaylistBurnPlaylist"/>
+  </toolbar>
+
   <popup name="RhythmboxTrayPopup">
       <menuitem name="PlayTray" action="ControlPlay"/>
-      <menuitem name="PauseTray" action="ControlPause"/>
       <separator/>
       <menuitem name="PreviousTray" action="ControlPrevious"/>
       <menuitem name="NextTray" action="ControlNext"/>

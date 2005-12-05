@@ -84,6 +84,7 @@
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "eel-gconf-extensions.h"
+#include "bacon-volume.h"
 
 #ifdef WITH_AUDIOSCROBBLER
 #include "rb-audioscrobbler.h"
@@ -191,15 +192,22 @@ static void rb_shell_cmd_view_all (GtkAction *action,
  				   RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 						 RBShell *shell);
+static void rb_shell_view_toolbar_changed_cb (GtkAction *action,
+					      RBShell *shell);
 static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
+static void rb_shell_sync_toolbar_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShell *shell);
+static void toolbar_visibility_changed_cb (GConfClient *client,
+					   guint cnxn_id,
+					   GConfEntry *entry,
+					   RBShell *shell);
 static void smalldisplay_changed_cb (GConfClient *client,
 				     guint cnxn_id,
 				     GConfEntry *entry,
@@ -261,6 +269,8 @@ static gboolean save_yourself_cb (GnomeClient *client,
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
+static void rb_shell_volume_widget_changed_cb (BaconVolumeButton *vol,
+					       RBShell *shell);
 
 static void session_die_cb (GnomeClient *client, RBShell *shell);
 static void rb_shell_session_init (RBShell *shell);
@@ -313,7 +323,6 @@ struct RBShellPrivate
 	GtkWidget *paned;
 	GtkWidget *sourcelist;
 	GtkWidget *notebook;
-	GtkWidget *hsep;
 
 	GList *sources;
 	GHashTable *sources_hash;
@@ -357,11 +366,14 @@ struct RBShellPrivate
 	GtkWidget *prefs;
 
 	RBTrayIcon *tray_icon;
+	GtkTooltips *tooltips;
+	GtkWidget *volume_button;
 
 	char *cached_title;
 	char *cached_duration;
 
 	guint sourcelist_visibility_notify_id;
+	guint toolbar_visibility_notify_id;
 	guint smalldisplay_notify_id;
 
 	glong last_small_time; /* when we last changed small mode */
@@ -434,6 +446,9 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewSourceList", NULL, N_("Source _List"), "<control>L",
 	  N_("Change the visibility of the source list"),
 	  G_CALLBACK (rb_shell_view_sourcelist_changed_cb), TRUE },
+	{ "ViewToolbar", NULL, N_("_Toolbar"), "<control>T",
+	  N_("Change the visibility of the toolbar"),
+	  G_CALLBACK (rb_shell_view_toolbar_changed_cb), TRUE },
 	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
 	  N_("Make the main window smaller"),
 	  G_CALLBACK (rb_shell_view_smalldisplay_changed_cb),
@@ -788,6 +803,7 @@ rb_shell_finalize (GObject *object)
 
 	
 	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
+	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
 
 	rb_debug ("shutting down DB");
@@ -798,6 +814,8 @@ rb_shell_finalize (GObject *object)
 
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
+
+	gtk_object_destroy (GTK_OBJECT (shell->priv->tooltips));
 	
 	g_free (shell->priv->rhythmdb_file);
 
@@ -830,6 +848,9 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	GtkWidget *menubar;
 	GtkWidget *vbox;
 	GError *error = NULL;
+	GtkWidget *toolbar;
+ 	GtkWidget *hbox;
+ 	GtkToolItem *tool_item;
 
 	shell = RB_SHELL (((GObjectClass*)rb_shell_parent_class)
 		->constructor (type, n_construct_properties, construct_properties));
@@ -921,10 +942,12 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->db);
 	shell->priv->source_header = rb_source_header_new (shell->priv->actiongroup);
+	gtk_widget_show_all (GTK_WIDGET (shell->priv->source_header));
 
 	shell->priv->paned = gtk_hpaned_new ();
 
 	shell->priv->sourcelist = rb_sourcelist_new (shell);
+	gtk_widget_show_all (shell->priv->sourcelist);
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "drop_received",
 				 G_CALLBACK (sourcelist_drag_received_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "source_activated",
@@ -936,12 +959,15 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 						   shell->priv->actiongroup,
 						   shell->priv->player_shell);
 	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
+	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "selected",
 				 G_CALLBACK (source_selected_cb), shell, 0);
 
 	vbox = gtk_vbox_new (FALSE, 4);
 	shell->priv->notebook = gtk_notebook_new ();
+	gtk_widget_show (vbox);
+	gtk_widget_show (shell->priv->notebook);
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist),
@@ -955,17 +981,18 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), 
 			 shell->priv->sourcelist, FALSE, TRUE);
 	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
+	gtk_widget_show (shell->priv->paned);
 
 	vbox = gtk_vbox_new (FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 0);
- 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);	
- 	shell->priv->hsep = gtk_hseparator_new ();
- 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->hsep, FALSE, FALSE, 5);
+ 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);	
+	gtk_widget_show (GTK_WIDGET (shell->priv->player_shell));
+
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
+	gtk_widget_show (vbox);
 
 	gtk_container_add (GTK_CONTAINER (win), vbox);
-	gtk_widget_show_all (vbox);
 
 #ifdef WITH_AUDIOSCROBBLER
 	rb_debug ("Audioscrobbler support enabled.");
@@ -977,6 +1004,10 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->sourcelist_visibility_notify_id =
 		eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
+				    shell);
+	shell->priv->toolbar_visibility_notify_id =
+		eel_gconf_notification_add (CONF_UI_TOOLBAR_HIDDEN,
+				    (GConfClientNotifyFunc) toolbar_visibility_changed_cb,
 				    shell);
 	shell->priv->smalldisplay_notify_id =
 		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
@@ -1061,6 +1092,42 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	menubar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/MenuBar");
 	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
 	gtk_box_reorder_child (GTK_BOX (vbox), menubar, 0);
+
+	hbox = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX (vbox), hbox, 1);
+
+	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
+	gtk_box_pack_start_defaults (GTK_BOX (hbox), toolbar);
+	rb_shell_sync_toolbar_visibility (shell);
+
+	shell->priv->volume_button = bacon_volume_button_new (GTK_ICON_SIZE_LARGE_TOOLBAR,
+							       0.0, 1.0, 0.02);
+	g_signal_connect (shell->priv->volume_button, "value-changed",
+			  G_CALLBACK (rb_shell_volume_widget_changed_cb),
+			  shell);
+	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (shell->priv->volume_button),
+				       eel_gconf_get_float (CONF_STATE_VOLUME));
+
+
+	tool_item = gtk_tool_item_new ();
+	gtk_tool_item_set_expand (tool_item, TRUE);
+	gtk_widget_show (GTK_WIDGET (tool_item));
+	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
+	
+	tool_item = gtk_tool_item_new ();
+	gtk_container_add (GTK_CONTAINER (tool_item), shell->priv->volume_button);
+	gtk_widget_show_all (GTK_WIDGET (tool_item));
+	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
+
+	gtk_widget_show (hbox);
+
+	shell->priv->tooltips = gtk_tooltips_new ();
+	gtk_tooltips_enable (shell->priv->tooltips);
+
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (shell->priv->tooltips), 
+			      GTK_WIDGET (shell->priv->volume_button), 
+			      _("Change the music volume"), NULL);
 
 	if (error != NULL) {
 		g_warning ("Couldn't merge %s: %s",
@@ -1686,6 +1753,14 @@ rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 }
 
 static void
+rb_shell_view_toolbar_changed_cb (GtkAction *action,
+				  RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_TOOLBAR_HIDDEN,
+			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+}
+
+static void
 rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 				       RBShell *shell)
 {
@@ -1998,27 +2073,51 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 }
 
 static void
+rb_shell_sync_toolbar_visibility (RBShell *shell)
+{
+	GtkWidget *toolbar;
+	gboolean visible;
+	GtkAction *action;
+
+	visible = !eel_gconf_get_boolean (CONF_UI_TOOLBAR_HIDDEN);
+
+	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
+	if (visible)
+		gtk_widget_show (toolbar);
+	else
+		gtk_widget_hide (toolbar);
+
+	action = gtk_action_group_get_action (shell->priv->actiongroup,
+					      "ViewToolbar");
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+				      visible);
+}
+
+static void
 rb_shell_sync_smalldisplay (RBShell *shell)
 {
 	GtkAction *action;
+	GtkWidget *toolbar;
 
 	rb_shell_sync_window_state (shell, FALSE);
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
 					      "ViewSourceList");
 
+	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
+
 	if (shell->priv->window_small) {
 		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
  		gtk_widget_hide (GTK_WIDGET (shell->priv->statusbar));
- 		gtk_widget_hide (GTK_WIDGET (shell->priv->hsep));		
+ 		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	} else {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
  		rb_statusbar_sync_state (shell->priv->statusbar);
- 		gtk_widget_show (GTK_WIDGET (shell->priv->hsep));	
+		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
 	}
 
 	rb_source_header_sync_control_state (shell->priv->source_header);
@@ -2038,6 +2137,16 @@ sourcelist_visibility_changed_cb (GConfClient *client,
 {
 	rb_debug ("sourcelist visibility changed"); 
 	rb_shell_sync_sourcelist_visibility (shell);
+}
+
+static void
+toolbar_visibility_changed_cb (GConfClient *client,
+			       guint cnxn_id,
+			       GConfEntry *entry,
+			       RBShell *shell)
+{
+	rb_debug ("toolbar visibility changed"); 
+	rb_shell_sync_toolbar_visibility (shell);
 }
 
 static void
@@ -2852,3 +2961,12 @@ rb_shell_toggle_mute_impl (RBRemoteProxy *proxy)
 	player = RB_SHELL (proxy)->priv->player_shell;
 	rb_shell_player_toggle_mute (player);
 }
+
+static void
+rb_shell_volume_widget_changed_cb (BaconVolumeButton *vol,
+				   RBShell *shell)
+{
+	eel_gconf_set_float (CONF_STATE_VOLUME,
+			     bacon_volume_button_get_value (vol));
+}
+

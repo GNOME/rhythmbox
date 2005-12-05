@@ -32,11 +32,9 @@
 #ifndef __RB_SONG_DISPLAY_BOX_H
 #define __RB_SONG_DISPLAY_BOX_H
 
-#include <gtk/gtklabel.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkbox.h>
+#include <gtk/gtk.h>
 
-#include <libgnomeui/libgnomeui.h>
+#include "rhythmdb.h"
 
 #define RB_TYPE_SONG_DISPLAY_BOX	(rb_song_display_box_get_type ())
 #define RB_SONG_DISPLAY_BOX(obj)	(GTK_CHECK_CAST ((obj), RB_TYPE_SONG_DISPLAY_BOX, RBSongDisplayBox))
@@ -47,9 +45,6 @@ typedef struct
 	GtkBox box;
 
 	RBSongDisplayBoxPrivate *priv;
-
-	GnomeHRef *album;
-	GnomeHRef *artist;
 } RBSongDisplayBox;
 
 typedef struct
@@ -59,5 +54,8 @@ typedef struct
 
 GType	   		rb_song_display_box_get_type (void) G_GNUC_CONST;
 GtkWidget * 		rb_song_display_box_new	     (void);
+
+void			rb_song_display_box_sync	(RBSongDisplayBox *displaybox,
+							 RhythmDBEntry *entry);
 
 #endif /* __RB_PLAYER_H */
