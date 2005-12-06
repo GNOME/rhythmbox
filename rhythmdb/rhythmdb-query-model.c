@@ -809,7 +809,6 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 		ptr = g_sequence_ptr_prev (g_sequence_get_end_ptr (model->priv->entries));
 		entry = (RhythmDBEntry*) g_sequence_ptr_get_data (ptr);
 
-		rb_debug ("query: moving entry to limited list");
 		rhythmdb_query_model_remove_from_main_list (model, entry);
 		rhythmdb_query_model_insert_into_limited_list (model, entry);
 	}
@@ -836,7 +835,6 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 		    (model->priv->max_time > 0 && model->priv->total_duration + duration > model->priv->max_time))
 			break;
 
-		rb_debug ("query: moving entry from limited list");
 		rhythmdb_query_model_remove_from_limited_list (model, entry);
 		rhythmdb_query_model_insert_into_main_list (model, entry);
 
@@ -1185,7 +1183,6 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 					gtk_tree_path_append_index (path,
 								    g_sequence_ptr_get_position (old_ptr));
 
-					rb_debug ("emitting row deleted");
 					gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
 								    path);
 					gtk_tree_path_free (path);
@@ -1209,7 +1206,6 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 				tem_path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 									  &tem_iter);
 
-				rb_debug ("emitting row inserted from dnd");
 				gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
 							     tem_path, &tem_iter);
 				gtk_tree_path_free (tem_path);

@@ -1374,14 +1374,8 @@ rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 	if (entry) {
 		time_t mtime = (time_t) entry->mtime;
 		if (event->error) {
-			const char *mount_point;
-
-			/* First check if the mount point the song was on 
-			 * still exists */
-			mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-			if ((rb_uri_is_mounted (mount_point) == FALSE) && !is_ghost_entry (entry)) {
+			if (!is_ghost_entry (entry)) {
 				rhythmdb_entry_set_visibility (db, entry, FALSE);
-				
 			} else {
 				rb_debug ("error accessing %s: %s", event->real_uri,
 					  event->error->message);
@@ -1591,11 +1585,11 @@ rhythmdb_process_file_deleted (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (db, event->uri);
 
+	g_hash_table_remove (db->priv->changed_files, event->uri);
+
 	if (entry) {
 		rb_debug ("deleting entry for %s", event->uri);
-		rhythmdb_entry_delete (db, entry);
-	} else {
-		rb_debug ("no entry for %s", event->uri);
+		rhythmdb_entry_set_visibility (db, entry, FALSE);
 	}
 }
 
@@ -2585,7 +2579,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 		 * remove it from the db */
 		if (res == GNOME_VFS_ERROR_NOT_FOUND ||
 		    res == GNOME_VFS_ERROR_NOT_SUPPORTED) {
-			rhythmdb_entry_delete (db, entry);
+			rhythmdb_entry_set_visibility (db, entry, FALSE);
 		} else {
 			rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
 		}
@@ -2634,7 +2628,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 			entry);
 
 	if (res == GNOME_VFS_OK) {
-		rhythmdb_entry_delete (db, entry);
+		rhythmdb_entry_set_visibility (db, entry, FALSE);
 	} else {
 		rhythmbd_entry_move_to_trash_set_error (db, entry, res);
 	}
