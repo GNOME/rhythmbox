@@ -1,5 +1,10 @@
 2005-12-06  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load),
+	(rhythmdb_entry_set_visibility): emit signal when visibility changes.
+
+2005-12-06  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-sourcelist.c: (rb_sourcelist_init): ellipsise source
 	names rather than adding a horizontal scroll bar.
 

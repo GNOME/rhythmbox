@@ -1540,6 +1540,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
+	rhythmdb_entry_set_visibility (db, entry, TRUE);
 
 	rhythmdb_entry_set_visibility (db, entry, TRUE);
 
@@ -3679,7 +3680,7 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 		
 		g_value_init (&new_val, G_TYPE_BOOLEAN);
 		g_value_set_boolean (&new_val, !visible);
-		rhythmdb_entry_set_internal (db, entry, FALSE,
+		rhythmdb_entry_set_internal (db, entry, TRUE,
 					     RHYTHMDB_PROP_HIDDEN, &new_val);
 		g_value_unset (&new_val);
 	}
