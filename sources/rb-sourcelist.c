@@ -247,6 +247,9 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 
 	/* Set up the name column */
 	sourcelist->priv->title_renderer = renderer = gtk_cell_renderer_text_new ();
+	g_object_set (G_OBJECT (sourcelist->priv->title_renderer),
+		      "ellipsize", PANGO_ELLIPSIZE_END,
+		      NULL);
 	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, TRUE);
 	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column, renderer,
 						 (GtkTreeCellDataFunc)
