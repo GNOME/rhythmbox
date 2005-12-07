@@ -1,5 +1,11 @@
 2005-12-07  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (emit_entry_changed), (sync_entry_changed),
+	(rhythmdb_commit_internal), (rhythmdb_process_metadata_load): make
+	metadata loads not attempt to write changes to disk.
+
+2005-12-07  James Livingston  <jrl@ids.org.au>
+
 	patch by: Alex Lancaster <alexl@users.sourceforge.net>
 
 	* data/glade/song-info-multiple.glade:

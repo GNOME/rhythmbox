@@ -799,6 +799,12 @@ free_entry_changes (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 static void
 emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 {
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, changes);
+}
+
+static void
+sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
+{
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
 		GSList *t;
 		for (t = changes; t; t = t->next) {
@@ -809,20 +815,21 @@ emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 				action->type = RHYTHMDB_ACTION_SYNC;
 				action->uri = g_strdup (entry->location);
 				g_async_queue_push (db->priv->action_queue, action);
+				break;
 			}
 		}
 	}
-	
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, changes);
 }
 
+
 static void
-rhythmdb_commit_internal (RhythmDB *db, gboolean signal_changed)
+rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 {
 	GList *tem;
 
-	if (signal_changed)
-		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
+	g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
+	if (sync_changes)
+		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
 	g_hash_table_foreach_remove (db->priv->changed_entries, (GHRFunc) free_entry_changes, db);
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next) {
@@ -1548,7 +1555,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	/* FIXME: watch for errors */
 	rhythmdb_monitor_uri_path (db, entry->location, NULL);
 
-	rhythmdb_commit_internal (db, TRUE);
+	rhythmdb_commit_internal (db, FALSE);
 	
 	return TRUE;
 }
