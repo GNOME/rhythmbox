@@ -385,12 +385,14 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	song_info->priv->artist = glade_xml_get_widget (xml, "song_info_artist");
 	song_info->priv->album = glade_xml_get_widget (xml, "song_info_album");
 	song_info->priv->genre = glade_xml_get_widget (xml, "song_info_genre");
+	song_info->priv->year = glade_xml_get_widget (xml, "song_info_year");
 	song_info->priv->playback_error_box = glade_xml_get_widget (xml, "song_info_error_box");
 	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
 
 	rb_glade_boldify_label (xml, "album_label");
 	rb_glade_boldify_label (xml, "artist_label");
 	rb_glade_boldify_label (xml, "genre_label");
+	rb_glade_boldify_label (xml, "year_label");
 	rb_glade_boldify_label (xml, "rating_label");
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
@@ -866,8 +868,12 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
 	const char *artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
 	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
+	const char *year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
+
+	char *endptr;
 	GValue val = {0,};
 	GList *tem;
+	gint year;
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry;
 
@@ -912,6 +918,34 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		}
 		g_value_unset (&val);
 	}
+
+	year = g_ascii_strtoull (year_str, &endptr, 10);
+	if (strlen (year_str) > 0) {
+		GDate *date = NULL;
+		GType type;
+
+		/* note: this will reset the day-of-year to Jan 1 for all entries */
+		if (year > 0)
+			date = g_date_new_dmy (1, G_DATE_JANUARY, year);
+
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_DATE);
+
+		g_value_init (&val, type);
+		g_value_set_ulong (&val, (date ? g_date_get_julian (date) : 0));
+
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			entry = (RhythmDBEntry *)tem->data;
+			rhythmdb_entry_set (dialog->priv->db, entry,
+					    RHYTHMDB_PROP_DATE, &val);
+			changed = TRUE;
+		}
+		g_value_unset (&val);
+		if (date)
+			g_date_free (date);
+
+	}
+
 
 	if (changed)
 		rhythmdb_commit (dialog->priv->db);
