@@ -39,7 +39,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
 #include "rb-debug.h"
-#include "rb-playlist-source.h"
+#include "rb-static-playlist-source.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
 
@@ -194,13 +194,10 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		      "entry-type", &entry_type,
 		      NULL);
 
-	playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
-						   "name", playlist->name,
-						   "shell", shell,
-						   "visibility", TRUE,
-						   "is-local", FALSE,
-						   "entry-type", entry_type,
-						   NULL));
+	playlist_source = rb_static_playlist_source_new (shell, 
+							 playlist->name, 
+							 FALSE,
+							 entry_type);
 
 	for (it = playlist->members; it != NULL; it = it->next) {
 		Itdb_Track *song;
@@ -209,8 +206,8 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 		song = (Itdb_Track *)it->data;
  		filename = ipod_path_to_uri (priv->ipod_mount_path, 
  					    song->ipod_path);
-		rb_playlist_source_add_location (RB_PLAYLIST_SOURCE (playlist_source),
-						 filename);
+		rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (playlist_source),
+							filename);
 		g_free (filename);
 	}
 

@@ -34,6 +34,8 @@
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
+#include "rb-static-playlist-source.h"
+#include "rb-auto-playlist-source.h"
 #include "rb-recorder.h"
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
@@ -99,7 +101,7 @@ struct RBPlaylistManagerPrivate
 
 	guint playlist_serial;
 
-	RBPlaylistSource *loading_playlist;
+	RBStaticPlaylistSource *loading_playlist;
 
 	char *firsturi;
 
@@ -401,7 +403,6 @@ rb_playlist_manager_set_property (GObject *object,
 	case PROP_SOURCE:
 	{
 		gboolean playlist_active;
-		gboolean playlist_automatic = FALSE;
 		gboolean playlist_local = FALSE;
 		GtkAction *action;
 
@@ -412,10 +413,8 @@ rb_playlist_manager_set_property (GObject *object,
 
 		mgr->priv->selected_source = g_value_get_object (value);
 		playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
-		if (playlist_active) {
-			g_object_get (G_OBJECT (mgr->priv->selected_source), "automatic", &playlist_automatic, NULL);
+		if (playlist_active)
 			g_object_get (G_OBJECT (mgr->priv->selected_source), "is-local", &playlist_local, NULL);
-		}
 
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistSavePlaylist");
@@ -425,7 +424,8 @@ rb_playlist_manager_set_property (GObject *object,
 		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
  						      "EditAutomaticPlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_automatic, NULL);
+		g_object_set (G_OBJECT (action), "sensitive", 
+			      RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source), NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
  						      "MusicPlaylistRenamePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
@@ -568,9 +568,9 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 	if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		if (!mgr->priv->loading_playlist) {
 			mgr->priv->loading_playlist =
-				RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
+				RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
 		}
-		rb_playlist_source_add_location (mgr->priv->loading_playlist, uri);
+		rb_static_playlist_source_add_location (mgr->priv->loading_playlist, uri);
 	}
 
 	g_free (uri);
@@ -583,7 +583,7 @@ playlist_load_start_cb (TotemPlParser *parser, const char *title, RBPlaylistMana
 
 	if (!mgr->priv->loading_playlist) {
 		mgr->priv->loading_playlist =
-			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
+			RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
 	}
 }
 
@@ -755,11 +755,14 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 					continue;
 
 				g_object_get (G_OBJECT (source), 
-					      "dirty", &dirty, 
-					      "is-local", &local, 
+					      "is-local", &local,
 					      NULL);
-				if (local && dirty) {
-					break;
+				if (local) {
+					g_object_get (G_OBJECT (source),
+						      "dirty", &dirty,
+						      NULL);
+					if (dirty)
+						break;
 				}
 			} while (gtk_tree_model_iter_next (model, &iter));
 		}
@@ -807,12 +810,9 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 				continue;
 
-			g_object_get (G_OBJECT (source), "is-local", &local, 
-				      NULL);
-			if (local) {
-
+			g_object_get (G_OBJECT (source), "is-local", &local, NULL);
+			if (local)
 				rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
-			}
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
 
@@ -835,14 +835,17 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  const char *suggested_name, 
 				  gboolean automatic)
 {
-	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->shell, 
-								automatic, 
-								TRUE, 
-								RHYTHMDB_ENTRY_TYPE_SONG));
+	RBSource *playlist;
+	if (automatic)
+		playlist = rb_auto_playlist_source_new (mgr->priv->shell, 
+							suggested_name, 
+							TRUE);
+	else
+		playlist = rb_static_playlist_source_new (mgr->priv->shell, 
+							  suggested_name, 
+							  TRUE, 
+							  RHYTHMDB_ENTRY_TYPE_SONG);
 	
-	g_object_set (G_OBJECT (playlist),
-		      "name", suggested_name ? suggested_name : "",
-		      NULL);
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
 	rb_playlist_manager_set_dirty (mgr);
@@ -899,7 +902,7 @@ rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 
 static void
 rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
-					    RBPlaylistSource *playlist,
+					    RBAutoPlaylistSource *playlist,
 					    RBQueryCreator *creator)
 {
 	RBQueryCreatorLimitType type;
@@ -919,10 +922,10 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 
 	rb_query_creator_get_sort_order (creator, &sort_key, &sort_direction);
 
-	rb_playlist_source_set_query (playlist,
-				      rb_query_creator_get_query (creator),
-				      limit_count, limit_size, limit_time,
-				      sort_key, sort_direction);
+	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist),
+					   rb_query_creator_get_query (creator),
+					   limit_count, limit_size, limit_time,
+					   sort_key, sort_direction);
 }
 
 static void
@@ -942,7 +945,7 @@ rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 
 	playlist = rb_playlist_manager_new_playlist (mgr, NULL, TRUE);
 
-	rb_playlist_manager_set_automatic_playlist (mgr, RB_PLAYLIST_SOURCE (playlist), creator); 
+	rb_playlist_manager_set_automatic_playlist (mgr, RB_AUTO_PLAYLIST_SOURCE (playlist), creator); 
 
 	rb_playlist_manager_set_dirty (mgr);
 
@@ -954,15 +957,15 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 						 RBPlaylistManager *mgr)
 {
 	RBQueryCreator *creator;
-	RBPlaylistSource *playlist;
+	RBAutoPlaylistSource *playlist;
 	GPtrArray *query;
 	guint limit_count = 0, limit_size = 0, limit_time = 0;
 	const char *sort_key;
 	gint sort_direction;
 	
 
-	playlist = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
-	rb_playlist_source_get_query (playlist, &query, &limit_count, &limit_size, &limit_time, &sort_key, &sort_direction);
+	playlist = RB_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	rb_auto_playlist_source_get_query (playlist, &query, &limit_count, &limit_size, &limit_time, &sort_key, &sort_direction);
 
 	creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
 								     query,

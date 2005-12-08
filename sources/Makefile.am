@@ -21,7 +21,12 @@ libsourcesimpl_la_SOURCES =		\
 	rb-playlist-source-recorder.c   \
 	rb-playlist-source-recorder.h	\
 	rb-playlist-source.c            \
-	rb-playlist-source.h
+	rb-playlist-source.h		\
+	rb-playlist-xml.h		\
+	rb-auto-playlist-source.c	\
+	rb-auto-playlist-source.h	\
+	rb-static-playlist-source.c	\
+	rb-static-playlist-source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

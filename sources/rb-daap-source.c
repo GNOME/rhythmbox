@@ -41,7 +41,7 @@
 #include "rb-daap-mdns.h"
 #include "rb-daap-src.h"
 
-#include "rb-playlist-source.h"
+#include "rb-static-playlist-source.h"
 
 
 static void rb_daap_source_dispose (GObject *object);
@@ -585,16 +585,8 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		RBDAAPPlaylist *playlist = l->data;
 		RBSource *playlist_source;
 
-		playlist_source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
-							   "name", playlist->name,
-							   "shell", shell,
-							   "visibility", TRUE,
-							   "is-local", FALSE,
-							   "entry-type", entry_type,
-							   NULL));
-		/* this is set here instead of in construction so that
-		 * rb_playlist_source_constructor has a chance to be run to set things up */
-		rb_playlist_source_add_locations (RB_PLAYLIST_SOURCE (playlist_source), playlist->uris);
+		playlist_source = rb_static_playlist_source_new (shell, playlist->name, FALSE, entry_type);
+		rb_static_playlist_source_add_locations (RB_STATIC_PLAYLIST_SOURCE (playlist_source), playlist->uris);
 
 		rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
 		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);

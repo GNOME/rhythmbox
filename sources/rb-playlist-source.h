@@ -25,8 +25,6 @@
 
 #include <libxml/tree.h>
 
-#include "rb-library-source.h"
-#include "rb-query-creator.h"
 #include "rb-shell.h"
 #include "rb-source.h"
 #include "rhythmdb.h"
@@ -53,33 +51,17 @@ typedef struct
 typedef struct
 {
 	RBSourceClass parent;
+
+	/* methods */
+	void	(*impl_show_entry_view_popup)	(RBPlaylistSource *source, RBEntryView *view);
+	void	(*impl_save_contents_to_xml)	(RBPlaylistSource *source, xmlNodePtr node);
+
 } RBPlaylistSourceClass;
 
 GType		rb_playlist_source_get_type	(void);
 
-RBSource *	rb_playlist_source_new		(RBShell *shell,
-						 gboolean smart, 
-						 gboolean local,
-						 RhythmDBEntryType entry_type);
-
 RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 						 xmlNodePtr node);
-
-void		rb_playlist_source_set_query	(RBPlaylistSource *source,
-						 GPtrArray *query,
-						 guint limit_count,
-						 guint limit_mb,
-						 guint limit_time,
-						 const char *sort_key,
-						 gint sort_order);
-
-void		rb_playlist_source_get_query	(RBPlaylistSource *source,
-						 GPtrArray **query,
-						 guint *limit_count,
-						 guint *limit_mb,
-						 guint *limit_time,
-						 const char **sort_key,
-						 gint *sort_order);
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);
@@ -89,23 +71,25 @@ void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
 
 void		rb_playlist_source_burn_playlist(RBPlaylistSource *source);
 
-void		rb_playlist_source_add_entry	(RBPlaylistSource *source,
-						 RhythmDBEntry *entry);
+/* methods for subclasses to call */
 
-void		rb_playlist_source_remove_entry	(RBPlaylistSource *source,
-						 RhythmDBEntry *entry);
+void		rb_playlist_source_setup_entry_view (RBPlaylistSource *source,
+						     RBEntryView *entry_view);	
 
-void		rb_playlist_source_add_location	(RBPlaylistSource *source,
+void		rb_playlist_source_set_query_model (RBPlaylistSource *source,
+						    RhythmDBQueryModel *model);
+
+RhythmDBQueryModel * rb_playlist_source_get_query_model (RBPlaylistSource *source);
+
+RhythmDB * 	rb_playlist_source_get_db 	(RBPlaylistSource *source);
+
+void		rb_playlist_source_mark_dirty	(RBPlaylistSource *source);
+
+gboolean	rb_playlist_source_location_in_map (RBPlaylistSource *source,
 						 const char *location);
 
-void            rb_playlist_source_add_locations (RBPlaylistSource *source,
-						  GList *locations);
-
-void		rb_playlist_source_remove_location	(RBPlaylistSource *source,
-						 	 const char *location);
-
-void		rb_playlist_source_delete	(RBPlaylistSource *source);
-
+gboolean	rb_playlist_source_add_to_map	(RBPlaylistSource *source,
+						 const char *location);
 G_END_DECLS
 
 #endif /* __RB_PLAYLIST_SOURCE_H */

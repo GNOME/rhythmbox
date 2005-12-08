@@ -13,7 +13,7 @@
 	<menuitem name="MusicPlaylistLoadPlaylistMenu" action="MusicPlaylistLoadPlaylist"/>
 	<menuitem name="MusicPlaylistSavePlaylistMenu" action="MusicPlaylistSavePlaylist"/>
 	<menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
-	<menuitem name="MusicPlaylistEditSmartPlaylistMenu" action="EditAutomaticPlaylist"/>
+	<menuitem name="MusicPlaylistEditAutoPlaylistMenu" action="EditAutomaticPlaylist"/>
 	<separator name="MusicPlaylistSeparator1"/>
 	<menuitem name="MusicPlaylistDeletePlaylistMenu" action="MusicPlaylistDeletePlaylist"/>
       </menu>
@@ -167,18 +167,18 @@
   </popup>
 
   <popup name="PlaylistSourcePopup">
-    <menuitem name="RenameSmartPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>
+    <menuitem name="RenameAutoPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>
     <separator/>
     <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
     <menuitem name="DeletePlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
   </popup>
 
-  <popup name="SmartPlaylistSourcePopup">
-    <menuitem name="EditSmartPlaylistPopup" action="EditAutomaticPlaylist"/>
-    <menuitem name="RenameSmartPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>
+  <popup name="AutoPlaylistSourcePopup">
+    <menuitem name="EditAutoPlaylistPopup" action="EditAutomaticPlaylist"/>
+    <menuitem name="RenameAutoPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>
     <separator/>
     <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
-    <menuitem name="DeleteSmartPlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
+    <menuitem name="DeleteAutoPlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
   </popup>
 
 </ui>

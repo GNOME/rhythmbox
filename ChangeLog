@@ -1,3 +1,41 @@
+2005-12-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+        * data/rhythmbox-ui.xml: replace 'smart' with 'auto' for consistency
+
+        * shell/rb-playlist-manager.c:
+          (rb_playlist_manager_set_property), (handle_playlist_entry_cb),
+          (playlist_load_start_cb), (rb_playlist_manager_new_playlist)
+          (rb_playlist_manager_set_automatic_playlist),
+          (rb_playlist_manager_cmd_new_automatic_playlist),
+          (rb_playlist_manager_cmd_edit_automatic_playlist):
+           Use new playlist subclasses.
+          (rb_playlist_manager_save_playlists): Only read the dirty flag
+           for local playlists, minor pointless reformatting
+
+        * sources/Makefile.am: add new files
+
+        * sources/rb-playlist-source.c, sources/rb-playlist-source.h:
+          split lots of stuff out into two
+          new classes, RBStaticPlaylistSource and RBAutoPlaylistSource,
+          make RBPlaylistSource abstract, add virtual methods for showing a
+          popup for the entry view and saving the playlist to XML.
+          Other stuff is subclass-specific, or already virtual in RBSource.
+
+        * sources/rb-playlist-xml: Define playlist XML tags and attributes
+          in one place, since they're used across three source files now
+
+        * sources/rb-daap-source.c: (rb_daap_source_connection_cb):
+          Use new static playlist class
+
+        * sources/rb-ipod-source.c: (add_rb_playlist):
+          Use new static playlist class
+
+	* sources/rb-static-playlist-source.{c,h},
+	source/rb-auto-playlist-source.{c,h}, sources/rb-playlist-xml.h: new
+	files.
+
+	* po/POTFILES.in: add new files
+
 2005-12-07  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (emit_entry_changed), (sync_entry_changed),
