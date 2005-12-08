@@ -228,9 +228,10 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint trac
 	{
 		GstFormat time_format = GST_FORMAT_TIME;
 		GstFormat track_format = gst_format_get_by_nick ("track");
-		GstEvent *event;
 		gint64 duration;
 		gboolean result;
+#ifdef HAVE_GSTREAMER_0_8
+		GstEvent *event;
 
 		event = gst_event_new_seek (track_format | GST_SEEK_METHOD_SET | GST_SEEK_FLAG_FLUSH, 
 					    (guint64) track_number - 1);
@@ -238,6 +239,12 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint trac
 
 		if (result)
 			result = gst_element_query (priv->fakesink, GST_QUERY_TOTAL, &time_format, &duration);
+#elif HAVE_GSTREAMER_0_10
+                result = gst_element_seek (priv->fakesink, 1.0, track_format, GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, (guint64) track_number - 1, GST_SEEK_TYPE_NONE, -1);
+		if (result) {
+			result = gst_element_query_duration (priv->fakesink, &time_format, &duration) && time_format == GST_FORMAT_TIME;
+		}
+#endif
 
 		if (result) {
 			g_value_init (&value, G_TYPE_ULONG);
@@ -266,11 +273,17 @@ rb_audiocd_get_cd_info (RBAudioCdSource *source, gint64 *num_tracks)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	GstFormat fmt = gst_format_get_by_nick ("track");
-
+#ifdef HAVE_GSTREAMER_0_8
 	if (!gst_element_query (priv->cdda, GST_QUERY_TOTAL, &fmt, num_tracks)) {
 		rb_debug ("failed to read cd track count");
 		return FALSE;
 	}
+#elif HAVE_GSTREAMER_0_10
+	GstFormat out_fmt = fmt;
+	if (!gst_element_query_duration (priv->cdda, &out_fmt, num_tracks) || out_fmt != fmt) {
+	    return FALSE;
+	}
+#endif
 
 	return TRUE;
 }
@@ -280,12 +293,27 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 {
 	gint64 i, num_tracks;
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
+#ifdef HAVE_GSTREAMER_0_10
+        GstStateChangeReturn ret;
+#endif
 
+#ifdef HAVE_GSTREAMER_0_8
 	if (gst_element_set_state (priv->pipeline, GST_STATE_PAUSED) != GST_STATE_SUCCESS) {
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't access the cd."));
 		return;
 	}
+#elif HAVE_GSTREAMER_0_10
+	ret = gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
+	if (ret == GST_STATE_CHANGE_ASYNC) {
+		ret = gst_element_get_state (priv->pipeline, NULL, NULL, 3 * GST_SECOND);
+	}
+        if (ret == GST_STATE_CHANGE_FAILURE) {
+		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
+					_("Rhythmbox couldn't access the cd."));
+		return;
+	}
+#endif
 
 	if (!rb_audiocd_get_cd_info (source, &num_tracks))
 	{
@@ -305,7 +333,11 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 	}
 	priv->tracks = g_list_reverse (priv->tracks);
 
+#ifdef HAVE_GSTREAMER_0_8
 	if (gst_element_set_state (priv->pipeline, GST_STATE_NULL) != GST_STATE_SUCCESS) {
+#elif HAVE_GSTREAMER_0_10
+	if (gst_element_set_state (priv->pipeline, GST_STATE_NULL) == GST_STATE_CHANGE_FAILURE) {
+#endif
 		rb_debug ("failed to set cd state");
 	}
 }
@@ -443,7 +475,11 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 	}
 
 	rb_debug ("cdda longname: %s", gst_element_factory_get_longname (gst_element_get_factory (priv->cdda)));
+#ifdef HAVE_GSTREAMER_0_8
 	gst_element_set (priv->cdda, "device", priv->device_path, NULL);
+#elif HAVE_GSTREAMER_0_10
+	g_object_set (G_OBJECT (priv->cdda), "device", priv->device_path, NULL);
+#endif
 	
 	priv->pipeline = gst_pipeline_new ("pipeline");
 	priv->fakesink = gst_element_factory_make ("fakesink", "fakesink");

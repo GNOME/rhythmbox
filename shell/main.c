@@ -40,11 +40,10 @@
 
 #ifdef HAVE_GSTREAMER
 #include <gst/gst.h>
+#ifdef HAVE_GSTREAMER_0_8
 #include <gst/gconf/gconf.h>
 #include <gst/control/control.h>
 #endif
-#ifdef WITH_MONKEYMEDIA
-#include "monkey-media.h"
 #endif
 #ifdef WITH_RHYTHMDB_GDA
 #include <libgda/libgda.h>
@@ -172,7 +171,7 @@ main (int argc, char **argv)
 		{ "dry-run",			0,  POPT_ARG_NONE,	&dry_run,			0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "rhythmdb-file",		0,  POPT_ARG_STRING,	&rhythmdb_file,			0, N_("Path for database file to use"), NULL },
 		{ "quit",			'q',POPT_ARG_NONE,	&quit,				0, N_("Quit Rhythmbox"), NULL },
-#ifdef HAVE_GSTREAMER
+#ifdef HAVE_GSTREAMER_0_8
 		{NULL, '\0', POPT_ARG_INCLUDE_TABLE, NULL, 0, "GStreamer", NULL},
 #endif
 		POPT_TABLEEND
@@ -185,9 +184,14 @@ main (int argc, char **argv)
 	new_argv[argc] = g_strdup ("--disable-sound");
 	new_argv[argc+1] = NULL;
 
-#ifdef HAVE_GSTREAMER	
+#ifdef HAVE_GSTREAMER_0_8
 	popt_options[(sizeof(popt_options)/sizeof(popt_options[0]))-2].arg
 		= (void *) gst_init_get_popt_table ();
+#elif HAVE_GSTREAMER_0_10
+        /* To pass options to GStreamer in 0.10, RB needs to use GOption, for
+         * now, GStreamer can live without them (people can still use env
+         * vars, after all) */
+        gst_init (NULL, NULL);
 #endif
 #ifdef WITH_BONOBO
 	rb_remote_bonobo_preinit ();
@@ -216,11 +220,8 @@ main (int argc, char **argv)
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
-#ifdef HAVE_GSTREAMER	
+#ifdef HAVE_GSTREAMER_0_8
 	gst_control_init (&argc, &argv);
-#endif
-#ifdef WITH_MONKEYMEDIA
-	monkey_media_init (&argc, &argv);
 #endif
 
 	rb_debug_init (debug);

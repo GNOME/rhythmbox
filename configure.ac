@@ -140,28 +140,60 @@ dnl Now we're ready to ask for gstreamer libs and cflags
 dnl And we can also ask for the right version of gstreamer
 HAVE_SOUNDSYSTEM=no
 
-GST_MAJORMINOR=0.8
-GST_REQUIRED_VERSION=0.8.2
-PKG_CHECK_MODULES(SOUNDSYSTEM, \
-	gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-libs-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION
-	gstreamer-control-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-gconf-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION,
-	HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
+GST_0_8_MAJORMINOR=0.8
+GST_0_8_REQUIRED_VERSION=0.8.9
+PKG_CHECK_MODULES(GSTREAMER_0_8, \
+	gstreamer-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION gstreamer-libs-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION
+	gstreamer-control-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION
+	gstreamer-gconf-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION,
+	have_gstreamer_0_8=yes,have_gstreamer_0_8=no)
+	
+GST_0_10_MAJORMINOR=0.10
+GST_0_10_REQUIRED_VERSION=0.9.7
+PKG_CHECK_MODULES(GSTREAMER_0_10, \
+	gstreamer-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION
+	gstreamer-plugins-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION,
+	have_gstreamer_0_10=yes,have_gstreamer_0_10=no)
 
-dnl Give error and exit if we don't have gstreamer
-if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
-		AC_MSG_ERROR([GStreamer not found, or older than version $GST_REQUIRED_VERSION])
+AC_ARG_WITH(player,
+   AC_HELP_STRING([--with-playback=auto|gstreamer-0-8|gstreamer-0-10],
+   [Select the playback backend to use (default auto)]),,
+   with_playback=auto)
+
+if test x$with_playback = xauto -o x$with_playback = x$gstreamer_0_10; then
+	if test x"$have_gstreamer_0_10" = xyes; then
+		with_playback=gstreamer_0_10
+		SOUNDSYSTEM_DEPS="gstreamer-$GST_0_10_MAJORMINOR"
+		AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
+		AC_DEFINE(HAVE_GSTREAMER_0_10,1,[Define if you want to use the GStreamer 0.10])
+		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
+		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
+	elif test x$with_playback = x$gstreamer_0_10; then
+		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
+	fi
+fi
+if test x$with_playback = xauto -o x$with_playback = x$gstreamer_0_8; then
+	if test x"$have_gstreamer_0_8" = xyes; then
+		with_playback=gstreamer_0_8
+		SOUNDSYSTEM_DEPS="gstreamer-$GST_0_8_MAJORMINOR"
+		AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
+		AC_DEFINE(HAVE_GSTREAMER_0_8,1,[Define if you want to use the GStreamer 0.8])
+		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_8_CFLAGS"
+		SOUNDSYSTEM_LIBS="$GSTREAMER_0_8_LIBS"
+	elif test x$with_playback = x$gstreamer_0_8; then
+		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
+	fi
 fi
 
-SOUNDSYSTEM_DEPS="gstreamer-$GST_MAJORMINOR"
+dnl Give error and exit if we don't have gstreamer
+if test x$with_playback = xauto; then
+		AC_MSG_ERROR([GStreamer not found, or older than version $GST_0_8_REQUIRED_VERSION/$GST_0_10_REQUIRED_VERSION])
+fi
+
 AC_SUBST(SOUNDSYSTEM_DEPS)
-
-AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
-
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
 
-dnl Check for gstreamer elements
-AM_GST_ELEMENT_CHECK(playbin,,missing_gst_elements="$missing_gst_elements spider")
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
@@ -183,6 +215,10 @@ AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
 			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox **EXPERIMENTAL**]))
 if test x"$enable_daap" = xyes; then
+   if test x"$with_playback" = xgstreamer_0_10; then
+      AC_MSG_ERROR([DAAP support cannot currently be used with GStreamer 0.10])
+   fi
+
    AC_MSG_WARN([DAAP support is experimental, and may cause Rhythmbox to crash uncontrollably, use at your own risk])
 fi
 
@@ -613,7 +649,6 @@ if test x"${with_rhythmdb_debug}" != x0; then
 	AC_MSG_NOTICE([** RhythmDB sanity checking enabled (may be slow!)])
 fi
 
-AC_MSG_NOTICE([** GStreamer metadata is enabled])
 
 if test x"$enable_tag_writing" = xyes; then
         AC_MSG_NOTICE([** Tag writing is enabled - USE AT YOUR OWN RISK])
@@ -631,7 +666,13 @@ else
 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 fi
 
-AC_MSG_NOTICE([** GStreamer $GST_MAJORMINOR player is enabled])
+if test x"$with_playback" = xgstreamer_0_8; then
+	AC_MSG_NOTICE([** GStreamer 0.8 player is enabled])
+elif test x"$with_playback" = xgstreamer_0_10; then
+	AC_MSG_NOTICE([** GStreamer 0.10 player is enabled])
+else
+	AC_MSG_NOTICE([** this shouldn't happen])
+fi
 
 if test x"$use_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
@@ -659,11 +700,4 @@ else
 	AC_MSG_NOTICE([   Audioscrobbler support disabled])
 fi
 
-if test x"$missing_gst_output_element" != x; then
-	AC_MSG_WARN([Neither osssink nor alsasink could be found on your system])
-fi	
-if test x"$missing_gst_elements" != x; then
-	AC_MSG_WARN([The following GStreamer elements could not be found at compile time: $missing_gst_elements])
-	AC_MSG_WARN([Rhythmbox will fail at runtime if these elements cannot be found])
-fi
 AC_MSG_NOTICE([End options])

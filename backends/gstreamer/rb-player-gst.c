@@ -29,7 +29,9 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 #include <gst/gst.h>
+#ifdef HAVE_GSTREAMER_0_8
 #include <gst/gconf/gconf.h>
+#endif
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
@@ -62,8 +64,10 @@ struct RBPlayerPrivate
 	guint idle_buffering_id;
 	GHashTable *idle_info_ids;
 
+#ifdef HAVE_GSTREAMER_0_8
 	guint error_signal_id;
 	guint buffering_signal_id;
+#endif
 
 	float cur_volume;
 
@@ -191,10 +195,12 @@ rb_player_finalize (GObject *object)
 	g_hash_table_destroy (mp->priv->idle_info_ids);
 
 	if (mp->priv->playbin) {
+#ifdef HAVE_GSTREAMER_0_8
 		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
 					     mp->priv->error_signal_id);
 		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
 					     mp->priv->buffering_signal_id);
+#endif
 		
 		gst_element_set_state (mp->priv->playbin,
 				       GST_STATE_NULL);
@@ -275,6 +281,7 @@ emit_signal_idle (RBPlayerSignal *signal)
 	return FALSE;
 }
 
+#ifdef HAVE_GSTREAMER_0_8
 static void
 eos_cb (GstElement *element,
 	RBPlayer *mp)
@@ -342,6 +349,7 @@ error_cb (GstElement *element,
 						   signal,
 						   destroy_idle_signal);
 }
+#endif
 
 static void
 process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
@@ -404,6 +412,7 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
 	g_hash_table_insert (player->priv->idle_info_ids, GUINT_TO_POINTER (signal->id), NULL);
 }
 
+#ifdef HAVE_GSTREAMER_0_8
 static void
 found_tag_cb (GObject *pipeline, GstElement *source, GstTagList *tags, RBPlayer *player)
 {
@@ -428,6 +437,83 @@ buffering_cb (GstElement *element, gint progress, RBPlayer *mp)
 		g_source_remove (mp->priv->idle_buffering_id);
 	mp->priv->idle_buffering_id = g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 }
+#elif HAVE_GSTREAMER_0_10
+static gboolean
+rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
+{
+	g_return_val_if_fail (mp != NULL, FALSE);
+
+	switch (GST_MESSAGE_TYPE (message)) {
+	case GST_MESSAGE_ERROR: {
+		char *debug;
+		GError *error, *sig_error;
+		int code;
+
+		gst_message_parse_error (message, &error, &debug);
+
+		if ((error->domain == GST_CORE_ERROR)
+			|| (error->domain == GST_LIBRARY_ERROR)
+			|| (error->code == GST_RESOURCE_ERROR_BUSY)) {
+			code = RB_PLAYER_ERROR_NO_AUDIO;
+		} else {
+		code = RB_PLAYER_ERROR_GENERAL;
+		}
+
+		sig_error = g_error_new_literal (RB_PLAYER_ERROR,
+						 code,
+						 error->message);
+		g_signal_emit (G_OBJECT (mp),
+			       rb_player_signals[ERROR], 0,
+			       sig_error);
+
+		/* close if not already closing */
+		if (mp->priv->uri != NULL)
+			rb_player_close (mp, NULL);
+
+		g_error_free (error);
+		g_free (debug);
+		break;
+	}
+	case GST_MESSAGE_EOS:
+		g_signal_emit (G_OBJECT (mp), rb_player_signals[EOS], 0);
+		break;
+	case GST_MESSAGE_TAG: {
+		GstTagList *tags;
+		gst_message_parse_tag (message, &tags);
+
+		gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
+		gst_tag_list_free (tags);
+		break;
+	}
+	case GST_MESSAGE_BUFFERING: {
+		RBPlayerSignal *signal;
+		const GstStructure *s;
+		gint progress;
+
+		s = gst_message_get_structure (message);
+		if (!gst_structure_get_int (s, "buffer-percent", &progress)) {
+			g_warning ("Could not get value from BUFFERING message");
+			break;
+		}
+		signal = g_new0 (RBPlayerSignal, 1);
+		signal->type = BUFFERING;
+
+		g_object_ref (G_OBJECT (mp));
+		signal->object = mp;
+		signal->info = g_new0 (GValue, 1);
+		g_value_init (signal->info, G_TYPE_UINT);
+		g_value_set_uint (signal->info, (guint)progress);
+		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+		break;
+	} 
+	default:
+		break;
+	}
+
+	return TRUE;
+}
+ 
+#endif
 
 static gboolean
 rb_player_construct (RBPlayer *mp, GError **error)
@@ -445,6 +531,7 @@ rb_player_construct (RBPlayer *mp, GError **error)
 	fakesink = gst_element_factory_make ("fakesink", "fakesink");
 	g_object_set (G_OBJECT (mp->priv->playbin), "video-sink", fakesink, NULL);
 
+#ifdef HAVE_GSTREAMER_0_8
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 				 "found_tag",
 				 G_CALLBACK (found_tag_cb),
@@ -464,6 +551,15 @@ rb_player_construct (RBPlayer *mp, GError **error)
 
 	/* Output sink */
 	sink = gst_gconf_get_default_audio_sink ();
+#endif
+#ifdef HAVE_GSTREAMER_0_10
+	gst_bus_add_watch (gst_element_get_bus (GST_ELEMENT (mp->priv->playbin)),
+			     (GstBusFunc) rb_player_bus_cb, mp);
+
+	/* Output sink */
+	sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
+#endif
+	
 	if (sink == NULL) {
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
@@ -474,8 +570,10 @@ rb_player_construct (RBPlayer *mp, GError **error)
 	}
 
 	g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
+#ifdef HAVE_GSTREAMER_0_8
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin), "eos",
 				 G_CALLBACK (eos_cb), mp, 0);
+#endif
 
 	if (mp->priv->cur_volume > 1.0)
 		mp->priv->cur_volume = 1.0;
@@ -503,6 +601,8 @@ RBPlayer *
 rb_player_new (GError **error)
 {
 	RBPlayer *mp;
+
+#ifdef HAVE_GSTREAMER_0_8
 	GstElement *dummy;
 
 	dummy = gst_element_factory_make ("fakesink", "fakesink");
@@ -514,6 +614,7 @@ rb_player_new (GError **error)
 			     _("Couldn't initialize scheduler.  Did you run gst-register?"));
 		return NULL;
 	}
+#endif
 
 	mp = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL, NULL));
 
@@ -536,17 +637,28 @@ rb_player_sync_pipeline (RBPlayer *mp)
 	rb_debug ("syncing pipeline");
 	if (mp->priv->playing) {
  		rb_debug ("PLAYING pipeline");
- 		if (gst_element_set_state (mp->priv->playbin,
- 					   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
+#ifdef HAVE_GSTREAMER_0_8
+ 		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING) == GST_STATE_FAILURE) {
+#elif HAVE_GSTREAMER_0_10
+		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
+#endif
  			return FALSE;
 		}
 	} else {
 		rb_debug ("PAUSING pipeline");
-		if (gst_element_set_state (mp->priv->playbin,
-					   GST_STATE_PAUSED) == GST_STATE_FAILURE) {
+#ifdef HAVE_GSTREAMER_0_8
+ 		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_FAILURE) {
+#elif HAVE_GSTREAMER_0_10
+		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
+#endif
 			return FALSE;
 		}
 	}
+#ifdef HAVE_GSTREAMER_0_10
+	/* FIXME: Set up a timeout to watch if the pipeline doesn't 
+         * go to PAUSED/PLAYING within some time (5 secs maybe?)
+	 */
+#endif
 	return TRUE;
 }
 
@@ -583,7 +695,11 @@ cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *uri)
 {
 	GstElement *source;
 
+#ifdef HAVE_GSTREAMER_0_10
+	g_object_get (object, "source", &source, NULL);
+#elif HAVE_GSTREAMER_0_8
 	gst_element_get (GST_ELEMENT (object), "source", &source, NULL);
+#endif
 	rb_debug ("got source %p", source);
 	if (source) {
 		g_signal_handlers_disconnect_by_func (object, cdda_got_source_cb, uri);
@@ -652,6 +768,7 @@ rb_player_open (RBPlayer *mp,
 		rb_player_close (mp, NULL);
 		return FALSE;
 	}
+
 	end_gstreamer_operation (mp, FALSE, error);
 	return TRUE;
 }
@@ -693,7 +810,11 @@ rb_player_close (RBPlayer *mp, GError **error)
 		return TRUE;
 
 	begin_gstreamer_operation (mp);
+#ifdef HAVE_GSTREAMER_0_8
 	ret = gst_element_set_state (mp->priv->playbin, GST_STATE_READY) == GST_STATE_SUCCESS;
+#elif HAVE_GSTREAMER_0_10
+	ret = gst_element_set_state (mp->priv->playbin, GST_STATE_READY) == GST_STATE_CHANGE_SUCCESS;
+#endif
 	end_gstreamer_operation (mp, !ret, error);
 	return ret;
 }
@@ -825,12 +946,27 @@ rb_player_get_volume (RBPlayer *mp)
 gboolean
 rb_player_seekable (RBPlayer *mp)
 {
+#ifdef HAVE_GSTREAMER_0_8
+	/* FIXME we're lying here,
+	 * (0.8) trying a seek might disrupt playback */
+	gboolean can_seek = TRUE;
+#elif HAVE_GSTREAMER_0_10
+	/* (0.10) Need to send a seekable query on playbin */
+	gboolean can_seek = TRUE;
+	GstQuery *query;
+#endif
+
 	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
+#ifdef HAVE_GSTREAMER_0_10
+	query = gst_query_new_seeking (GST_FORMAT_TIME);
+	g_return_val_if_fail (gst_element_query (mp->priv->playbin, query),
+	    FALSE);
+	gst_query_parse_seeking (query, NULL, &can_seek, NULL, NULL);
+	gst_query_unref (query);
+#endif
 
-	/* FIXME we're lying here, no idea how to fix this though, without trying
-	 * a seek which might disrupt playback */
-	return TRUE;
+	return can_seek;
 }
 
 void
@@ -841,7 +977,16 @@ rb_player_set_time (RBPlayer *mp, long time)
 
 	g_return_if_fail (mp->priv->playbin != NULL);
 
+#ifdef HAVE_GSTREAMER_0_8
 	gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
+#elif HAVE_GSTREAMER_0_10
+	if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {
+		/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+		if (gst_element_get_state (mp->priv->playbin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+			g_warning ("Failed to pause pipeline before seek");
+		}
+	}
+#endif
 
 #ifdef WITH_DAAP_SUPPORT
 	/* FIXME?
@@ -857,16 +1002,25 @@ rb_player_set_time (RBPlayer *mp, long time)
 		rb_daap_src_set_time (time);
 	} else {
 #endif
+#ifdef HAVE_GSTREAMER_0_8
 	gst_element_seek (mp->priv->playbin, 
 			  GST_FORMAT_TIME 
 			  | GST_SEEK_METHOD_SET 
 			  | GST_SEEK_FLAG_FLUSH, 
 			  time * GST_SECOND);
+#elif HAVE_GSTREAMER_0_10
+	gst_element_seek (mp->priv->playbin, 1.0, 
+			  GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH, 
+			  GST_SEEK_TYPE_SET, time * GST_SECOND,
+			  GST_SEEK_TYPE_NONE, -1);
+#endif
+	
 #ifdef WITH_DAAP_SUPPORT
 	}
 #endif
-	if (mp->priv->playing)
+	if (mp->priv->playing) {
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+	}
 }
 
 long
@@ -875,20 +1029,24 @@ rb_player_get_time (RBPlayer *mp)
 	g_return_val_if_fail (RB_IS_PLAYER (mp), -1);
 
 	if (mp->priv->playbin != NULL) {
-		gint64 gst_position;
-		glong ret = 0;
-
+		gint64 position = -1;
 		GstFormat fmt = GST_FORMAT_TIME;
-		gst_element_query (mp->priv->playbin, GST_QUERY_POSITION, &fmt, &gst_position);
-		ret = (glong) (gst_position / (1000*1000*1000));
+		
+#ifdef HAVE_GSTREAMER_0_8
+		gst_element_query (mp->priv->playbin, GST_QUERY_POSITION, &fmt, &position);
+#elif HAVE_GSTREAMER_0_10
+		gst_element_query_position (mp->priv->playbin, &fmt, &position);
+#endif
+		if (position != -1)
+			position /= GST_SECOND;
 
 #ifdef WITH_DAAP_SUPPORT
 		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
-			ret += rb_daap_src_get_time ();
+			position += rb_daap_src_get_time ();
 		}
 #endif
 
-		return ret;
+		return (long) position;
 	} else
 		return -1;
 }
