@@ -39,6 +39,10 @@
 #include "rb-dialog.h"
 #include "rhythmdb.h"
 
+#ifndef HAVE_BURN_DRIVE_UNREF
+#define nautilus_burn_drive_unref nautilus_burn_drive_free
+#endif
+
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_dispose (GObject *object);
@@ -298,7 +302,7 @@ gboolean poll_tray_opened (RbCdDriveInfo *info)
 	GnomeVFSVolume *volume;
 
 	if (info->removed) {
-		nautilus_burn_drive_free (info->drive);
+		nautilus_burn_drive_unref (info->drive);
 		g_free (info);
 		return FALSE;
 	}

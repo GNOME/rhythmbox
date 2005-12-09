@@ -1,5 +1,16 @@
 2005-12-09  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac:
+	* player/rb-recorder-gst.c: (rb_recorder_get_default_drive),
+	(rb_recorder_enabled):
+	* shell/rb-removable-media-manager.c: (poll_tray_opened):
+	* sources/rb-playlist-source-recorder.c:
+	(_nautilus_burn_drive_new_from_path), (ask_rewrite_disc): check
+	whether libnautilusburn has the _drive_unref function, and if so use
+	it. Stops it complaining about deprecated API.
+
+2005-12-09  James Livingston  <jrl@ids.org.au>
+
 	* configure.ac: drop the minimum gstreamer version back down, it
 	accidently got pushed up in the gst 0.10 patch. Closes bug 323561.
 

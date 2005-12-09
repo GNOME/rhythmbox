@@ -54,6 +54,9 @@
 #else
 extern char *mkdtemp (char *template);
 #endif
+#ifndef HAVE_BURN_DRIVE_UNREF
+#define nautilus_burn_drive_unref nautilus_burn_drive_free
+#endif
 
 #include "rb-recorder.h"
 
@@ -907,7 +910,7 @@ _nautilus_burn_drive_new_from_path (const char *device)
                 }
         }
 
-        g_list_foreach (drives, (GFunc)nautilus_burn_drive_free, NULL);
+        g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
         g_list_free (drives);
 
         return drive;
@@ -1026,7 +1029,7 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
                 _nautilus_burn_drive_eject (drive);
         }
 
-        nautilus_burn_drive_free (drive);
+        nautilus_burn_drive_unref (drive);
 
         return res;
 }

@@ -47,6 +47,10 @@
 #ifdef HAVE_GSTREAMER_0_8
 #define gst_caps_unref gst_caps_free
 #endif
+#ifndef HAVE_BURN_DRIVE_UNREF
+#define nautilus_burn_drive_unref nautilus_burn_drive_free
+#endif
+
 
 static void rb_recorder_class_init (RBRecorderClass *klass);
 static void rb_recorder_init       (RBRecorder      *recorder);
@@ -225,7 +229,7 @@ rb_recorder_get_default_drive (void)
         if (drives)
                 drive = nautilus_burn_drive_copy ((NautilusBurnDrive*) drives->data);
 
-        g_list_foreach (drives, (GFunc)nautilus_burn_drive_free, NULL);
+        g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
         g_list_free (drives);
 
         return drive;
@@ -242,7 +246,7 @@ rb_recorder_enabled (void)
         enabled = (drive != NULL);
 
         if (drive) {
-                nautilus_burn_drive_free (drive);
+                nautilus_burn_drive_unref (drive);
         }
 
         return enabled;
@@ -1045,7 +1049,7 @@ rb_recorder_set_device (RBRecorder  *recorder,
                 *error = NULL;
 
         if (recorder->priv->drive) {
-                nautilus_burn_drive_free (recorder->priv->drive);
+                nautilus_burn_drive_unref (recorder->priv->drive);
                 recorder->priv->drive = NULL;
         }
 
@@ -1059,7 +1063,7 @@ rb_recorder_set_device (RBRecorder  *recorder,
                         break;
                 }
 
-                nautilus_burn_drive_free (drive);
+                nautilus_burn_drive_unref (drive);
         }
         g_list_free (drives);
 
@@ -1221,7 +1225,7 @@ rb_recorder_get_default_device (void)
 
         if (drive) {
                 device = g_strdup (drive->device);
-                nautilus_burn_drive_free (drive);
+                nautilus_burn_drive_unref (drive);
         }
 
         return device;

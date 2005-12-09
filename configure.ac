@@ -461,6 +461,9 @@ fi
 AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_door_is_open,
     [AC_DEFINE([HAVE_BURN_DRIVE_DOOR], 1, [Have nautilus-burn function to check drive door state])],
     ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_unref,
+    [AC_DEFINE([HAVE_BURN_DRIVE_UNREF], 1, [Have nautilus-burn 2.13 drive unref function])],
+    ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
 
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
