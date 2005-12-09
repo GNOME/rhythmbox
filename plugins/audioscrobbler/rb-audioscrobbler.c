@@ -982,7 +982,6 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 
 	/* Ignore tracks that violate the specification (v1.1) */
 	if (audioscrobbler->priv->duration < 30 ||
-	    audioscrobbler->priv->duration > 1800 ||
 	    ! strcmp (audioscrobbler->priv->artist, _("Unknown")) ||
 	    ! strcmp (audioscrobbler->priv->title, _("Unknown"))) {
 		audioscrobbler->priv->should_queue = FALSE;

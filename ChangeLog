@@ -1,3 +1,10 @@
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
+	patch by: Ståle Lyngaas <staale@lyngaas.com>
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
+	submit songs longer than 30 minutes. Fixes bug 323639.
+
 2005-12-09  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c (idle_save_playlist_manager): Use new
