@@ -135,45 +135,15 @@ enum
 	PROP_ENTRY_VIEW
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_song_info_signals[LAST_SIGNAL] = { 0 };
 
-GType
-rb_song_info_get_type (void)
-{
-	static GType rb_song_info_type = 0;
-
-	if (rb_song_info_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBSongInfoClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_song_info_class_init,
-			NULL,
-			NULL,
-			sizeof (RBSongInfo),
-			0,
-			(GInstanceInitFunc) rb_song_info_init
-		};
-
-		rb_song_info_type = g_type_register_static (GTK_TYPE_DIALOG,
-							    "RBSongInfo",
-							    &our_info, 0);
-	}
-
-	return rb_song_info_type;
-}
+G_DEFINE_TYPE (RBSongInfo, rb_song_info, GTK_TYPE_DIALOG)
 
 static void
 rb_song_info_class_init (RBSongInfoClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rb_song_info_set_property;
 	object_class->get_property = rb_song_info_get_property;
@@ -245,8 +215,8 @@ rb_song_info_init (RBSongInfo *song_info)
 static void
 rb_song_info_show (GtkWidget *widget)
 {
-	if (GTK_WIDGET_CLASS (parent_class)->show)
-		GTK_WIDGET_CLASS (parent_class)->show (widget);
+	if (GTK_WIDGET_CLASS (rb_song_info_parent_class)->show)
+		GTK_WIDGET_CLASS (rb_song_info_parent_class)->show (widget);
 
 	rb_song_info_update_playback_error (RB_SONG_INFO (widget));
 }
@@ -331,7 +301,6 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 {
 	RBSongInfo *song_info;
 	RBSongInfoClass *klass;
-	GObjectClass *parent_class;  
 	GladeXML *xml;
 	GList *selected_entries;
 	GList *tem;
@@ -339,10 +308,8 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 
 	klass = RB_SONG_INFO_CLASS (g_type_class_peek (RB_TYPE_SONG_INFO));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	song_info = RB_SONG_INFO (parent_class->constructor (type,
-							     n_construct_properties,
-							     construct_properties));
+	song_info = RB_SONG_INFO (G_OBJECT_CLASS (rb_song_info_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
 	selected_entries = rb_entry_view_get_selected_entries (song_info->priv->entry_view);
 
@@ -442,7 +409,7 @@ rb_song_info_finalize (GObject *object)
 
 	g_return_if_fail (song_info->priv != NULL);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_song_info_parent_class)->finalize (object);
 }
 
 static void
@@ -757,6 +724,8 @@ static void
 rb_song_info_backward_clicked_cb (GtkWidget *button,
 				  RBSongInfo *song_info)
 {
+	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
+
 	song_info->priv->current_entry
 		= rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
 						     song_info->priv->current_entry);
@@ -772,6 +741,8 @@ static void
 rb_song_info_forward_clicked_cb (GtkWidget *button,
 				 RBSongInfo *song_info)
 {
+	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
+
 	song_info->priv->current_entry
 		= rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
 						     song_info->priv->current_entry);

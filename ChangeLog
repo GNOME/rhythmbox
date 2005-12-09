@@ -1,5 +1,14 @@
 2005-12-09  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_show), (rb_song_info_constructor),
+	(rb_song_info_finalize), (rb_song_info_backward_clicked_cb),
+	(rb_song_info_forward_clicked_cb): save metadata changes when the
+	Next/Previous buttons are pressed (closes bug 320952). use
+	G_DEFINE_TYPE.
+
+2005-12-09  James Livingston  <jrl@ids.org.au>
+
 	Patch by: <jonathan@kaolin.hn.org>
 
 	* sources/rb-iradio-source.c:
