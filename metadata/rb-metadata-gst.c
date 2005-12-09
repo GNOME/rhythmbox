@@ -568,6 +568,10 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	}
 
 	gst_caps_unref (caps);
+
+	/* if this is non-audio, cancel the operation */
+	if (md->priv->non_audio)
+		gst_element_set_state (md->priv->pipeline, GST_STATE_NULL);
 }
 
 static void
@@ -773,11 +777,13 @@ rb_metadata_load (RBMetaData *md,
 #ifdef HAVE_GSTREAMER_0_10
 	rb_debug ("going to PAUSED for metadata, uri: %s", uri);
 	state_ret = gst_element_set_state (pipeline, GST_STATE_PAUSED);
-        if (state_ret == GST_STATE_CHANGE_ASYNC && !md->priv->eos) {
+        while (state_ret == GST_STATE_CHANGE_ASYNC && !md->priv->eos && !md->priv->non_audio) {
 	    GstState state;
+	    rb_debug ("element state changing asyncronously: %d, %d", state_ret, state);
 	    state_ret = gst_element_get_state (GST_ELEMENT (pipeline),
-			    &state, NULL, 5 * GST_SECOND);
+			    &state, NULL, 1 * GST_SECOND);
 	}
+	rb_debug ("gone to PAUSED for for %s", uri);
 
 	if (state_ret != GST_STATE_CHANGE_FAILURE) {
 		/* Post application specific message so we'll know when to stop
