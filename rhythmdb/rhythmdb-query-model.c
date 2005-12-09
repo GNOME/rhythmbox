@@ -1061,9 +1061,10 @@ rhythmdb_query_model_get_next_from_entry (RhythmDBQueryModel *model,
 			return NULL;
 	} else {
 		/* If the entry isn't in the model, the "next" entry is the first. */
-		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
+		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
+			return NULL;
 	}
-	
+
 	return rhythmdb_query_model_iter_to_entry (model, &iter);
 }
 

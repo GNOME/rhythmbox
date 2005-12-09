@@ -1,5 +1,12 @@
 2005-12-09  William Jon McCann  <mccann@jhu.edu>
 
+	* rhythmdb/rhythmdb-query-model.c (rhythmdb_query_model_get_next_from_entry):
+	Return NULL if can't get first iter.
+
+	Fixes #323663
+
+2005-12-09  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-iradio-source.[ch] (impl_song_properties): Use
 	updated rb_station_properties_dialog_new API.
 	(rb_iradio_source_add_from_playlist): New public function.
