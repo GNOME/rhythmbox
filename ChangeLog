@@ -1,5 +1,14 @@
 2005-12-09  James Livingston  <jrl@ids.org.au>
 
+	Patch by: <jonathan@kaolin.hn.org>
+
+	* sources/rb-iradio-source.c:
+	(stations_view_drag_data_received_cb):
+	* sources/rb-podcast-source.c: (impl_receive_drag): fix drag and drop
+	of urls. Fixes bug 323610.
+
+2005-12-09  James Livingston  <jrl@ids.org.au>
+
 	 patch by Jan Schmidt <thaytan@mad.scientist.com> to add support for
 	 GStreamer 0.10. DAAP support for 0.10 isn't done yet.
 

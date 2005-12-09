@@ -1697,15 +1697,16 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 	while (i != NULL) {
 		char *uri = NULL;
 
-		uri = i->data;
-
 		/* as totem source says, "Super _NETSCAPE_URL trick" */
 		if (selection_data->type == gdk_atom_intern ("_NETSCAPE_URL", FALSE)) {
-			i = i->next;
-			if (i != NULL) {
+			if (i != NULL)
 				g_free (i->data);
-			}
+			i = i->next;
+			if (i == NULL)
+				break;
 		}
+		
+		uri = i->data;
 		if ((uri != NULL) && 
 		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
 			rb_podcast_source_add_feed (source, uri);

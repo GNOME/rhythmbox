@@ -798,16 +798,16 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 	while (i != NULL) {
 		char *uri = NULL;
 
-		uri = i->data;
-
 		/* as totem source says, "Super _NETSCAPE_URL trick" */
 		if (info == 1) {
-			i = i->next;
-			if (i != NULL) {
+			if (i != NULL)
 				g_free (i->data);
-			}
+			i = i->next;
+			if (i == NULL)
+				break;
 		}
 
+		uri = i->data;
 		if ((uri != NULL) && 
 		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
 			rb_iradio_source_add_station (source, uri, NULL, NULL);
