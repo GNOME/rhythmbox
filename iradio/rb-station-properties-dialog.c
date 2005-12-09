@@ -67,7 +67,6 @@ static void rb_station_properties_dialog_rated_cb (RBRating *rating,
 						   RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_show (GtkWidget *widget);
-static void rb_station_properties_dialog_create_station (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
 							      RBStationPropertiesDialog *dialog);
 						  
@@ -87,8 +86,8 @@ struct RBStationPropertiesDialogPrivate
 	GtkWidget   *rating;
 	GtkWidget   *playback_error;
 	GtkWidget   *playback_error_box;
-	GtkWidget   *okbutton;
-	GtkWidget   *cancelbutton;
+	GtkWidget   *close_button;
+
 };
 
 #define RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_STATION_PROPERTIES_DIALOG, RBStationPropertiesDialogPrivate))
@@ -143,9 +142,6 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
-					 GTK_RESPONSE_OK);
-
 	xml = rb_glade_xml_new ("station-properties.glade",
 				"stationproperties",
 				dialog);
@@ -153,13 +149,11 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "stationproperties"));
-	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							    GTK_STOCK_CANCEL,
-							    GTK_RESPONSE_CANCEL);
-	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							GTK_STOCK_OK,
-							GTK_RESPONSE_OK);
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+
+	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+							    GTK_STOCK_CLOSE,
+							    GTK_RESPONSE_CLOSE);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
 	/* get the widgets from the XML */
 	dialog->priv->title = glade_xml_get_widget (xml, "titleEntry");
@@ -176,7 +170,7 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	rb_glade_boldify_label (xml, "genreLabel");
 	rb_glade_boldify_label (xml, "locationLabel");
 	rb_glade_boldify_label (xml, "ratingLabel");
-	rb_glade_boldify_label (xml, "lasyplayedDescLabel");
+	rb_glade_boldify_label (xml, "lastplayedDescLabel");
 	rb_glade_boldify_label (xml, "playcountDescLabel");
 	rb_glade_boldify_label (xml, "bitrateDescLabel");
 
@@ -212,14 +206,13 @@ rb_station_properties_dialog_finalize (GObject *object)
 
 static void
 rb_station_properties_dialog_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *pspec)
 {
 	RBStationPropertiesDialog *dialog = RB_STATION_PROPERTIES_DIALOG (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_VIEW:
 		dialog->priv->entry_view = g_value_get_object (value);
 		g_object_get (G_OBJECT (dialog->priv->entry_view), "db",
@@ -233,14 +226,13 @@ rb_station_properties_dialog_set_property (GObject *object,
 
 static void
 rb_station_properties_dialog_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *pspec)
 {
 	RBStationPropertiesDialog *dialog = RB_STATION_PROPERTIES_DIALOG (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_VIEW:
 		g_value_set_object (value, dialog->priv->entry_view);
 		break;
@@ -251,7 +243,7 @@ rb_station_properties_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_station_properties_dialog_new (RBEntryView *entry_view, gboolean new_station)
+rb_station_properties_dialog_new (RBEntryView *entry_view)
 {
 	RBStationPropertiesDialog *dialog;
 
@@ -261,12 +253,11 @@ rb_station_properties_dialog_new (RBEntryView *entry_view, gboolean new_station)
 			       "entry-view", entry_view, 
 			       NULL);
 
-	if (!new_station) {
-		if (!rb_station_properties_dialog_get_current_entry (dialog)) {
-			g_object_unref (G_OBJECT (dialog));
-			return NULL;
-		}
+	if (!rb_station_properties_dialog_get_current_entry (dialog)) {
+		g_object_unref (G_OBJECT (dialog));
+		return NULL;
 	}
+
 	rb_station_properties_dialog_update (dialog);
 
 	return GTK_WIDGET (dialog);
@@ -277,15 +268,9 @@ rb_station_properties_dialog_response_cb (GtkDialog *gtkdialog,
 					  int response_id,
 					  RBStationPropertiesDialog *dialog)
 {
-	if (response_id != GTK_RESPONSE_OK)
-		goto cleanup;
-
 	if (dialog->priv->current_entry)
 		rb_station_properties_dialog_sync_entries (dialog);
-	else
-		rb_station_properties_dialog_create_station (dialog);
 	
-cleanup:
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
@@ -333,7 +318,7 @@ rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 
 	if (dialog->priv->current_entry) {
 		name = rb_refstring_get (dialog->priv->current_entry->title);
-		tmp = g_strdup_printf (_("Properties for %s"), name);
+		tmp = g_strdup_printf (_("%s Properties"), name);
 		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 		g_free (tmp);
 	} else {
@@ -504,48 +489,6 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 }
 
 static void
-rb_station_properties_dialog_create_station (RBStationPropertiesDialog *dialog)
-{
-	GValue title_val = { 0, };
-	GValue genre_val = { 0, };
-	GValue rating_val = { 0, };
-	RhythmDBEntry *entry;
-	gdouble rating;
-	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
-	char *trimmed_location = g_strstrip (g_strdup (location));
-
-	g_value_init (&title_val, G_TYPE_STRING);
-	g_value_set_static_string (&title_val,
-				   gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)));
-	g_value_init (&genre_val, G_TYPE_STRING);
-	g_value_set_static_string (&genre_val,
-				   gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre)));
-	g_object_get (G_OBJECT (dialog->priv->rating), "rating", &rating, NULL);
-	g_value_init (&rating_val, G_TYPE_DOUBLE);
-	g_value_set_double (&rating_val, rating);
-
-	entry = rhythmdb_entry_lookup_by_location (dialog->priv->db, trimmed_location);
-	if (entry) {
-		g_free (trimmed_location);
-		return;
-	}
-
-	entry = rhythmdb_entry_new (dialog->priv->db,
-				    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
-				    trimmed_location);
-
-	rhythmdb_entry_set_uninserted (dialog->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-	g_value_unset (&title_val);
-	rhythmdb_entry_set_uninserted (dialog->priv->db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
-	g_value_unset (&genre_val);
-	rhythmdb_entry_set_uninserted (dialog->priv->db, entry, RHYTHMDB_PROP_RATING, &rating_val);
-	g_value_unset (&rating_val);
-	rhythmdb_commit (dialog->priv->db);
-
-	g_free (trimmed_location);
-}
-
-static void
 rb_station_properties_dialog_show (GtkWidget *widget)
 {
 	if (GTK_WIDGET_CLASS (rb_station_properties_dialog_parent_class)->show)
@@ -559,7 +502,4 @@ static void
 rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
 						  RBStationPropertiesDialog *dialog)
 {
-	/* only enable OK button if there's a location */
-	gtk_widget_set_sensitive (dialog->priv->okbutton,
-				  g_utf8_strlen (gtk_entry_get_text (entry), -1) > 0);
 }

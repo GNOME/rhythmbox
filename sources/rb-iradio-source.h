@@ -56,6 +56,9 @@ RBSource *	rb_iradio_source_new		(RBShell *shell);
 void		rb_iradio_source_add_station	(RBIRadioSource *source,
 						 const char *uri, const char *title, const char *genre);
 
+void		rb_iradio_source_add_from_playlist (RBIRadioSource *source,
+                                                    const char *uri);
+
 G_END_DECLS
 
 #endif /* __RB_IRADIO_SOURCE_H */

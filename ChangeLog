@@ -1,3 +1,32 @@
+2005-12-09  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-iradio-source.[ch] (impl_song_properties): Use
+	updated rb_station_properties_dialog_new API.
+	(rb_iradio_source_add_from_playlist): New public function.
+	(rb_iradio_source_first_time_changed): Use add_from_playlist.
+
+	* shell/rb-shell.c (new_station_location_added): Handle
+	iradio location added signal.
+	(rb_shell_cmd_new_station): Use new iradio station dialog.
+
+	* iradio/rb-station-properties-dialog.c (rb_station_properties_dialog_init): Use close button.  Fix typo.
+	(rb_station_properties_dialog_new): Don't squeeze new
+	station functionality into this class.
+	(rb_station_properties_dialog_response_cb): ditto.
+	(rb_station_properties_dialog_update_title): Make
+	consistent with other properties dialogs.
+	(rb_station_properties_dialog_location_changed_cb): Do nothing.
+
+	* iradio/rb-new-station-dialog.[ch]: 
+	* iradio/Makefile.am: Add new station dialog.
+
+	* data/glade/station-new.glade: New file based on
+	new podcast feed dialog.
+	* data/glade/station-properties.glade: Updated to
+	be consistent with song properties dialog.
+
+	Fixes #323306.
+
 2005-12-10  James Livingston  <jrl@ids.org.au>
 
 	patch by: Ståle Lyngaas <staale@lyngaas.com>

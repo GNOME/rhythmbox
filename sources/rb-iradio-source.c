@@ -366,8 +366,7 @@ rb_iradio_source_set_property (GObject *object,
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
 		source->priv->entry_type = g_value_get_uint (value);
 		break;
@@ -385,8 +384,7 @@ rb_iradio_source_get_property (GObject *object,
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
 		g_value_set_uint (value, source->priv->entry_type);
 		break;
@@ -568,7 +566,7 @@ static void
 impl_song_properties (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations, FALSE);
+	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations);
 	rb_debug ("in song properties");
 	if (dialog)
 		gtk_widget_show_all (dialog);
@@ -755,20 +753,29 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri, const char *
 	}
 }
 
-static void
-rb_iradio_source_first_time_changed (GConfClient *client,
-				     guint cnxn_id,
-				     GConfEntry *entry,
-				     RBIRadioSource *source)
+void
+rb_iradio_source_add_from_playlist (RBIRadioSource *source,
+				    const char     *uri)
 {
 	TotemPlParser *parser = totem_pl_parser_new ();
-	char *uri = gnome_vfs_get_uri_from_local_path (rb_file ("iradio-initial.pls"));
 
 	g_signal_connect_object (G_OBJECT (parser), "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
 	totem_pl_parser_parse (parser, uri, FALSE);	
 	g_object_unref (G_OBJECT (parser));
+}
+
+static void
+rb_iradio_source_first_time_changed (GConfClient *client,
+				     guint cnxn_id,
+				     GConfEntry *entry,
+				     RBIRadioSource *source)
+{
+	char *uri = gnome_vfs_get_uri_from_local_path (rb_file ("iradio-initial.pls"));
+
+	rb_iradio_source_add_from_playlist (source, uri);
+
 	g_free (uri);
 }
 

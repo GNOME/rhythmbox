@@ -78,8 +78,8 @@
 #include "rb-daap-sharing.h"
 #endif /* WITH_DAAP_SUPPORT */
 #include "rb-load-failure-dialog.h"
-#include "rb-station-properties-dialog.h"
 #include "rb-iradio-source.h"
+#include "rb-new-station-dialog.h"
 #include "rb-new-podcast-dialog.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
@@ -780,6 +780,8 @@ static void
 rb_shell_finalize (GObject *object)
 {
         RBShell *shell = RB_SHELL (object);
+
+	rb_debug ("Finalizing shell");
 
 	rb_shell_player_stop (shell->priv->player_shell);
 
@@ -1996,15 +1998,30 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 }
 
 static void
+new_station_location_added (RBNewStationDialog *dialog,
+			    const char         *uri,
+			    RBShell            *shell)
+{
+	rb_iradio_source_add_from_playlist (shell->priv->iradio_source, uri);
+}
+
+static void
 rb_shell_cmd_new_station (GtkAction *action,
 			  RBShell *shell)
 {
 	GtkWidget *dialog;
 	RBEntryView *entry_view = rb_source_get_entry_view (RB_SOURCE (shell->priv->iradio_source));
+
 	rb_debug ("Got new station command");
-	dialog = rb_station_properties_dialog_new (entry_view, TRUE);
-	gtk_widget_show_all (dialog);
+
+	dialog = rb_new_station_dialog_new (entry_view);
+	g_signal_connect_object (dialog, "location-added",
+				 G_CALLBACK (new_station_location_added),
+				 shell, 0);
+
 	gtk_dialog_run (GTK_DIALOG (dialog));
+
+	gtk_widget_destroy (dialog);
 }
 
 static void
@@ -2016,7 +2033,7 @@ rb_shell_cmd_new_podcast (GtkAction *action,
 	
 	rb_debug ("Got new podcast command");
 	g_object_get (G_OBJECT (shell->priv->podcast_source), "podcast-manager", &object, NULL);
-	dialog = rb_new_podcast_dialog_new ( RB_PODCAST_MANAGER(object));
+	dialog = rb_new_podcast_dialog_new (RB_PODCAST_MANAGER (object));
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 }

@@ -50,7 +50,7 @@ typedef struct
 
 GType      rb_station_properties_dialog_get_type (void);
 
-GtkWidget *rb_station_properties_dialog_new      (RBEntryView *view, gboolean new_station);
+GtkWidget *rb_station_properties_dialog_new      (RBEntryView *view);
 
 G_END_DECLS
 

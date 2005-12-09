@@ -3,6 +3,8 @@
 noinst_LTLIBRARIES = librbiradio.la
 
 librbiradio_la_SOURCES =				\
+	rb-new-station-dialog.c				\
+	rb-new-station-dialog.h				\
 	rb-station-properties-dialog.c			\
 	rb-station-properties-dialog.h
 
