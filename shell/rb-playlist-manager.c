@@ -113,6 +113,7 @@ struct RBPlaylistManagerPrivate
 	GCond *saving_condition;
 	GMutex *saving_mutex;
 
+	gboolean exiting;
 	gboolean saving;
 	gboolean dirty;
 };
@@ -319,7 +320,7 @@ reap_dead_playlist_threads (RBPlaylistManager *mgr)
 	while ((obj = g_async_queue_try_pop (mgr->priv->status_queue)) != NULL) {
 		GDK_THREADS_ENTER ();
 		g_object_unref (obj);
-		mgr->priv->outstanding_threads--;
+		g_atomic_int_dec_and_test (&mgr->priv->outstanding_threads);
 		GDK_THREADS_LEAVE ();
 	}
 
@@ -330,6 +331,26 @@ reap_dead_playlist_threads (RBPlaylistManager *mgr)
 	return FALSE;
 }
 
+void
+rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
+{
+	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (mgr));
+
+	if (mgr->priv->exiting) {
+		return;
+	}
+		
+	mgr->priv->exiting = TRUE;
+
+	g_source_remove (mgr->priv->thread_reaper_id);
+
+	rb_debug ("%d outstanding threads", g_atomic_int_get (&mgr->priv->outstanding_threads));
+	while (g_atomic_int_get (&mgr->priv->outstanding_threads) > 0) {
+		GObject *obj = g_async_queue_pop (mgr->priv->status_queue);
+		g_object_unref (obj);
+		g_atomic_int_dec_and_test (&mgr->priv->outstanding_threads);
+	}
+}
 
 static void
 rb_playlist_manager_finalize (GObject *object)
@@ -339,17 +360,13 @@ rb_playlist_manager_finalize (GObject *object)
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (object));
 
+	rb_debug ("Finalizing playlist manager");
+
 	mgr = RB_PLAYLIST_MANAGER (object);
 
 	g_return_if_fail (mgr->priv != NULL);
 
 	g_source_remove (mgr->priv->thread_reaper_id);
-	
-	while (mgr->priv->outstanding_threads > 0) {
-		GObject *obj = g_async_queue_pop (mgr->priv->status_queue);
-		g_object_unref (obj);
-		mgr->priv->outstanding_threads--;
-	}
 	
 	g_async_queue_unref (mgr->priv->status_queue);
 
@@ -713,7 +730,7 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 	data->mgr->priv->saving = FALSE;
 	data->mgr->priv->dirty = FALSE;
 
-	g_cond_signal (data->mgr->priv->saving_condition);
+	g_cond_broadcast (data->mgr->priv->saving_condition);
 	g_mutex_unlock (data->mgr->priv->saving_mutex);
 
 	g_async_queue_push (data->mgr->priv->status_queue, data->mgr);
@@ -724,7 +741,7 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 }
 
 void
-rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
+rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force)
 {
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveThreadData *data;
@@ -817,9 +834,24 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	}
 
 	g_object_ref (G_OBJECT (mgr));
-	mgr->priv->outstanding_threads++;
-	
+	g_atomic_int_inc (&mgr->priv->outstanding_threads);
+
 	g_thread_create ((GThreadFunc) rb_playlist_manager_save_thread_main, data, FALSE, NULL);
+}
+
+void
+rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
+{
+	rb_debug("saving the playlists and blocking");
+	
+	rb_playlist_manager_save_playlists_async (mgr, force);
+	
+	g_mutex_lock (mgr->priv->saving_mutex);
+
+	while (mgr->priv->saving)
+		g_cond_wait (mgr->priv->saving_condition, mgr->priv->saving_mutex);
+
+	g_mutex_unlock (mgr->priv->saving_mutex);
 }
 
 static void
@@ -935,8 +967,7 @@ rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
 	RBSource *playlist;
 	
-	switch (gtk_dialog_run (GTK_DIALOG (creator)))
-	{
+	switch (gtk_dialog_run (GTK_DIALOG (creator))) {
 	case GTK_RESPONSE_NONE:
 	case GTK_RESPONSE_CLOSE:
 		gtk_widget_destroy (GTK_WIDGET (creator));	

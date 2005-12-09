@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of RhythmDB - Rhythmbox backend queryable database
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@gnome.org>
@@ -91,7 +91,8 @@ struct RhythmDBPrivate
 
 	GHashTable *monitored_directories;
 	GHashTable *changed_files;
-	guint library_location_notify_id, changed_files_id;
+	guint library_location_notify_id;
+	guint changed_files_id;
 	GSList *library_locations;
 
 	gboolean dry_run;
@@ -110,6 +111,7 @@ struct RhythmDBPrivate
 
 	guint event_poll_id;
 	guint commit_timeout_id;
+	guint save_timeout_id;
 
 	gboolean saving;
 	gboolean dirty;
@@ -552,8 +554,7 @@ rhythmdb_init (RhythmDB *db)
 static void
 rhythmdb_action_free (RhythmDB *db, RhythmDBAction *action)
 {
-	switch (action->type)
-	{
+	switch (action->type) {
 	case RHYTHMDB_ACTION_STAT:
 	case RHYTHMDB_ACTION_LOAD:
 	case RHYTHMDB_ACTION_SYNC:
@@ -637,8 +638,9 @@ rhythmdb_shutdown (RhythmDB *db)
 	g_slist_free (db->priv->library_locations);
 	db->priv->library_locations = NULL;
 
-	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL)
+	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
 		rhythmdb_action_free (db, action);
+	}
 
 	
 	rb_debug ("%d outstanding threads", g_atomic_int_get (&db->priv->outstanding_threads));
@@ -665,6 +667,9 @@ rhythmdb_finalize (GObject *object)
 	g_return_if_fail (db->priv != NULL);
 
 	g_source_remove (db->priv->event_poll_id);
+	if (db->priv->save_timeout_id > 0) {
+		g_source_remove (db->priv->save_timeout_id);
+	}
 
 	g_async_queue_unref (db->priv->action_queue);
 	g_async_queue_unref (db->priv->event_queue);
@@ -696,8 +701,7 @@ rhythmdb_set_property (GObject *object,
 {
 	RhythmDB *source = RHYTHMDB (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_NAME:
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
@@ -721,8 +725,7 @@ rhythmdb_get_property (GObject *object,
 {
 	RhythmDB *source = RHYTHMDB (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_NAME:
 		g_value_set_string (value, source->priv->name);
 		break;
@@ -1067,8 +1070,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 	rb_debug ("directory event %d for %s: %s", (int) vfsevent,
 		  monitor_uri, info_uri);
 
-	switch (vfsevent)
-        {
+	switch (vfsevent) {
         case GNOME_VFS_MONITOR_EVENT_CREATED:
 		{
 			GSList *cur;
@@ -1628,8 +1630,7 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 			goto next_event;
 		}
 
-		switch (event->type)
-		{
+		switch (event->type) {
 		case RHYTHMDB_EVENT_STAT:
 			rb_debug ("processing RHYTHMDB_EVENT_STAT");
 			rhythmdb_process_stat_event (db, event);
@@ -1647,11 +1648,14 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 			g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
 			
 			/* save the db every five minutes */
-			g_timeout_add_full (G_PRIORITY_LOW,
-					    5 * 60 * 1000,
-					    (GSourceFunc) rhythmdb_idle_save,
-					    db,
-					    NULL);
+			if (db->priv->save_timeout_id > 0) {
+				g_source_remove (db->priv->save_timeout_id);
+			}
+			db->priv->save_timeout_id = g_timeout_add_full (G_PRIORITY_LOW,
+									5 * 60 * 1000,
+									(GSourceFunc) rhythmdb_idle_save,
+									db,
+									NULL);
 			break;
 		case RHYTHMDB_EVENT_THREAD_EXITED:
 			rb_debug ("processing RHYTHMDB_EVENT_THREAD_EXITED");
@@ -1941,8 +1945,7 @@ action_thread_main (RhythmDB *db)
 		if (action == NULL)
 			break;
 
-		switch (action->type)
-		{
+		switch (action->type) {
 		case RHYTHMDB_ACTION_STAT:
 		{
 			result = g_new0 (RhythmDBEvent, 1);
@@ -2010,17 +2013,21 @@ action_thread_main (RhythmDB *db)
 			}
 			break;
 		}
+		break;
+		default:
+			g_assert_not_reached ();
+			break;
 		}
 		rhythmdb_action_free (db, action);
 
 	}
+
 	rb_debug ("exiting main thread");
 	result = g_new0 (RhythmDBEvent, 1);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (db->priv->event_queue, result);
 
-	g_thread_exit (NULL);
 	return NULL;
 }
 
@@ -2297,8 +2304,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	gboolean handled;
 
 #ifndef G_DISABLE_ASSERT	
-	switch (G_VALUE_TYPE (value))
-	{
+	switch (G_VALUE_TYPE (value)) {
 	case G_TYPE_STRING:
 		g_assert (g_utf8_validate (g_value_get_string (value), -1, NULL));
 		break;
@@ -2320,8 +2326,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	handled = klass->impl_entry_set (db, entry, propid, value);
 
 	if (!handled) {
-		switch (propid)
-		{
+		switch (propid) {
 		case RHYTHMDB_PROP_TYPE:
 			g_assert_not_reached ();
 			break;
@@ -2476,8 +2481,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	const char *format = _("%Y-%m-%d %H:%M");
 	char *val;
 	
-	switch (propid)
-	{
+	switch (propid) {
 	case RHYTHMDB_PROP_LAST_PLAYED:
 	{
 		if (entry->last_played_str)
@@ -2708,8 +2712,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 	while ((query = va_arg (args, RhythmDBQueryType)) != RHYTHMDB_QUERY_END) {
 		RhythmDBQueryData *data = g_new0 (RhythmDBQueryData, 1);
 		data->type = query;
-		switch (query)
-		{
+		switch (query) {
 		case RHYTHMDB_QUERY_DISJUNCTION:
 			break;
 		case RHYTHMDB_QUERY_SUBQUERY:
@@ -2838,8 +2841,7 @@ rhythmdb_query_free (GPtrArray *query)
 	
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
-		switch (data->type)
-		{
+		switch (data->type) {
 		case RHYTHMDB_QUERY_DISJUNCTION:
 			break;
 		case RHYTHMDB_QUERY_SUBQUERY:
@@ -2889,8 +2891,7 @@ write_encoded_gvalue (xmlNodePtr node,
 	char *strval;
 	xmlChar *quoted;
 
-	switch (G_VALUE_TYPE (val))
-	{
+	switch (G_VALUE_TYPE (val)) {
 	case G_TYPE_STRING:
 		strval = g_value_dup_string (val);
 		break;
@@ -2939,8 +2940,7 @@ read_encoded_property (RhythmDB *db,
 
 	content = (char *)xmlNodeGetContent (node);
 	
-	switch (G_VALUE_TYPE (val))
-	{
+	switch (G_VALUE_TYPE (val)) {
 	case G_TYPE_STRING:
 		g_value_set_string (val, content);
 		break;

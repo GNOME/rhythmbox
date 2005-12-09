@@ -328,6 +328,8 @@ struct RBShellPrivate
 	GHashTable *sources_hash;
 
 	guint async_state_save_id;
+	guint save_playlist_id;
+	guint save_db_id;
 
 	gboolean shutting_down;
 	gboolean load_complete;
@@ -382,7 +384,9 @@ struct RBShellPrivate
 	 *
 	 * To avoid race conditions, the only time the keys are actually read is at startup
 	 */
-	guint window_width, window_height, small_width;
+	guint window_width;
+	guint window_height;
+	guint small_width;
 	gboolean window_maximised, window_small;
 	gint window_x, window_y;
 	gint paned_position;
@@ -739,17 +743,19 @@ rb_shell_sync_state (RBShell *shell)
 }
 
 static gboolean
-idle_save_rhythmdb (RhythmDB *db)
+idle_save_rhythmdb (RBShell *shell)
 {
-	rhythmdb_save (db);
+	rhythmdb_save (shell->priv->db);
 	
+	shell->priv->save_db_id = 0;
+
 	return FALSE;
 }
 
 static gboolean
 idle_save_playlist_manager (RBPlaylistManager *mgr)
 {
-	rb_playlist_manager_save_playlists (mgr, FALSE);
+	rb_playlist_manager_save_playlists_async (mgr, FALSE);
 
 	return TRUE;
 }
@@ -775,36 +781,44 @@ rb_shell_finalize (GObject *object)
 {
         RBShell *shell = RB_SHELL (object);
 
-	gtk_widget_hide (shell->priv->window);
-	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	rb_shell_player_stop (shell->priv->player_shell);
 
 	eel_gconf_monitor_remove (CONF_PREFIX);
+	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
+	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
+	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
 
-	g_list_free (shell->priv->sources);
+	if (shell->priv->save_playlist_id > 0) {
+		g_source_remove (shell->priv->save_playlist_id);
+		shell->priv->save_playlist_id = 0;
+	}
 
-	g_hash_table_destroy (shell->priv->sources_hash);
+	if (shell->priv->save_db_id > 0) {
+		g_source_remove (shell->priv->save_db_id);
+		shell->priv->save_db_id = 0;
+	}
 
+	rb_debug ("shutting down playlist manager");
+	rb_playlist_manager_shutdown (shell->priv->playlist_manager);
+
+	rb_debug ("unreffing playlist manager");
 	g_object_unref (G_OBJECT (shell->priv->playlist_manager));
+
+	rb_debug ("unreffing removable media manager");
 	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
 
 #ifdef WITH_AUDIOSCROBBLER
+	rb_debug ("unreffing audioscrobbler");
 	g_object_unref (G_OBJECT (shell->priv->audioscrobbler));
 #endif
 	
+	rb_debug ("unreffing clipboard shell");
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
-
-	gtk_widget_destroy (shell->priv->window);
-
-	
-	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
-	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
-	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
 
 	rb_debug ("shutting down DB");
 	rhythmdb_shutdown (shell->priv->db);
@@ -812,12 +826,22 @@ rb_shell_finalize (GObject *object)
 	rb_debug ("unreffing DB");
 	g_object_unref (G_OBJECT (shell->priv->db));
 
+	rb_debug ("destroying prefs");
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
 
+	rb_debug ("destroying tooltips");
 	gtk_object_destroy (GTK_OBJECT (shell->priv->tooltips));
 	
 	g_free (shell->priv->rhythmdb_file);
+
+	rb_debug ("destroying window");
+	gtk_widget_destroy (shell->priv->window);
+
+	g_list_free (shell->priv->sources);
+	shell->priv->sources = NULL;
+
+	g_hash_table_destroy (shell->priv->sources_hash);
 
         ((GObjectClass*)rb_shell_parent_class)->finalize (G_OBJECT (shell));
 
@@ -1135,7 +1159,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		g_clear_error (&error);
 	}
 
-	g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
+	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
 	
 	rb_shell_sync_window_state (shell, FALSE);
 
@@ -1556,6 +1580,8 @@ static void
 rb_shell_source_deleted_cb (RBSource *source,
 			    RBShell *shell)
 {
+	rb_debug ("source deleted");
+
 	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell)) {
 		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
 	}
@@ -1918,7 +1944,11 @@ add_to_library_response_cb (GtkDialog *dialog,
 	g_slist_free (uri_list);
 	g_free (current_dir);
 	gtk_widget_destroy (GTK_WIDGET (dialog));
-	g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell->priv->db);
+
+	if (shell->priv->save_db_id > 0) {
+		g_source_remove (shell->priv->save_db_id);
+	}
+	shell->priv->save_db_id = g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell);
 }
 
 static void

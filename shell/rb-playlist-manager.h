@@ -73,6 +73,7 @@ RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
 							 RBLibrarySource *libsource,
 							 RBIRadioSource *iradio_source);
 
+void			rb_playlist_manager_shutdown	(RBPlaylistManager *mgr);
 gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
 							 const char *uri,
 							 GError **error);
@@ -84,6 +85,7 @@ void			rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr);
 
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
+void			rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force);
 void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force);
 
 RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,

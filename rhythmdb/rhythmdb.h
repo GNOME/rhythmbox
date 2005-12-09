@@ -230,8 +230,7 @@ G_INLINE_FUNC double rhythmdb_entry_get_double		(RhythmDBEntry *entry, RhythmDBP
 G_INLINE_FUNC const char *
 rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 {
-	switch (propid)
-	{
+	switch (propid) {
 	case RHYTHMDB_PROP_TITLE:
 		return rb_refstring_get (entry->title);
 	case RHYTHMDB_PROP_ALBUM:
