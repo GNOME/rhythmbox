@@ -65,7 +65,6 @@ static void rb_playlist_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 /* source methods */
-static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_move_to_trash (RBSource *asource);
@@ -122,7 +121,6 @@ enum
 {
 	PROP_0,
 	PROP_DB,
-	PROP_QUERY_MODEL,
 	PROP_DIRTY,
 	PROP_LOCAL,
 	PROP_ENTRY_TYPE
@@ -146,7 +144,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	object_class->set_property = rb_playlist_source_set_property;
 	object_class->get_property = rb_playlist_source_get_property;
 
-	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
@@ -169,14 +166,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							      "db",
 							      "rhythmdb instance",
 							      RHYTHMDB_TYPE,
-							      G_PARAM_READABLE));
-
-	g_object_class_install_property (object_class,
-					 PROP_QUERY_MODEL,
-					 g_param_spec_object ("query-model",
-							      "query-model",
-							      "query model for the playlist",
-							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,
 					 PROP_DIRTY,
@@ -357,9 +346,6 @@ rb_playlist_source_get_property (GObject *object,
 	case PROP_DIRTY:
 		g_value_set_boolean (value, source->priv->dirty);
 		break;
-	case PROP_QUERY_MODEL:
-		g_value_set_object (value, source->priv->model);
-		break;
 	case PROP_LOCAL:
 		g_value_set_boolean (value, source->priv->is_local);
 		break;
@@ -387,17 +373,6 @@ rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 		klass->impl_show_entry_view_popup (source, view);
 }
 
-static char *
-impl_get_status (RBSource *asource)
-{
-	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	gchar *status;
-
-	status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-						 rb_entry_view_get_duration (source->priv->songs),
-						 rb_entry_view_get_total_size (source->priv->songs));
-	return status;
-}
 
 static const char *
 impl_get_browser_key (RBSource *source)
@@ -617,12 +592,9 @@ rb_playlist_source_row_deleted (GtkTreeModel *model,
 				GtkTreePath *path,
 				RBPlaylistSource *source)
 {
-	GtkTreeIter entry_iter;
-	RhythmDBEntry *entry;
-
-	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (source->priv->model), &entry_iter, path));
-	gtk_tree_model_get (GTK_TREE_MODEL (source->priv->model), &entry_iter, 0,
-			    &entry, -1);
+	RhythmDBEntry *entry = 
+		rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model),
+							 path);
 	g_hash_table_remove (source->priv->entries, entry->location);
 }
 
@@ -694,6 +666,8 @@ rb_playlist_source_set_query_model (RBPlaylistSource *source,
 	}
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
+	
+	g_object_set (G_OBJECT (source), "query-model", source->priv->model, NULL);
 }
 
 RhythmDB *

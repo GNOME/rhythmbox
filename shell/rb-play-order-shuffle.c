@@ -26,7 +26,7 @@
 
 #include "rb-history.h"
 #include "rb-debug.h"
-#include "rb-preferences.h"
+#include "rb-util.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass);
@@ -38,16 +38,18 @@ static void rb_shuffle_play_order_go_next (RBPlayOrder* method);
 static RhythmDBEntry* rb_shuffle_play_order_get_previous (RBPlayOrder* method);
 static void rb_shuffle_play_order_go_previous (RBPlayOrder* method);
 
-static void rb_shuffle_sync_history_with_entry_view (RBShufflePlayOrder *sorder);
-static GPtrArray *get_entry_view_contents (RBEntryView *entry_view);
+static void rb_shuffle_sync_history_with_query_model (RBShufflePlayOrder *sorder);
+static GPtrArray *get_query_model_contents (RhythmDBQueryModel *model);
 
 static void rb_shuffle_db_changed (RBPlayOrder *porder, RhythmDB *db);
-static void rb_shuffle_playing_entry_changed (RBPlayOrder *porder, RhythmDBEntry *entry);
+static void rb_shuffle_playing_entry_changed (RBPlayOrder *porder, 
+					      RhythmDBEntry *old_entry,
+					      RhythmDBEntry *new_entry);
 static void rb_shuffle_entry_added (RBPlayOrder *porder, RhythmDBEntry *entry);
 static void rb_shuffle_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry);
-static void rb_shuffle_entries_replaced (RBPlayOrder *porder);
+static void rb_shuffle_query_model_changed (RBPlayOrder *porder);
 static void rb_shuffle_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry);
-static gboolean entry_view_and_history_contents_match (RBShufflePlayOrder *sorder);
+static gboolean query_model_and_history_contents_match (RBShufflePlayOrder *sorder);
 
 struct RBShufflePlayOrderPrivate
 {
@@ -56,43 +58,15 @@ struct RBShufflePlayOrderPrivate
 	/** holds a new history generated after changing the filter, but not committed until the playing song changes. */
 	RBHistory *tentative_history;
 
-	/** TRUE if all of the entries in the entry_view were replaced */
-	gboolean entries_replaced;
+	/** TRUE if the query model has been changed */
+	gboolean query_model_changed;
+
 	GHashTable *entries_removed;
 	GHashTable *entries_added;
 };
 
+G_DEFINE_TYPE (RBShufflePlayOrder, rb_shuffle_play_order, RB_TYPE_PLAY_ORDER)
 #define RB_SHUFFLE_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHUFFLE_PLAY_ORDER, RBShufflePlayOrderPrivate))
-
-static RBPlayOrderClass *parent_class = NULL;
-
-GType
-rb_shuffle_play_order_get_type (void)
-{
-	static GType rb_shuffle_play_order_type = 0;
-
-	if (rb_shuffle_play_order_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBShufflePlayOrderClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_shuffle_play_order_class_init,
-			NULL,
-			NULL,
-			sizeof (RBShufflePlayOrder),
-			0,
-			(GInstanceInitFunc) rb_shuffle_play_order_init
-		};
-
-		rb_shuffle_play_order_type = g_type_register_static (RB_TYPE_PLAY_ORDER,
-				"RBShufflePlayOrder",
-				&our_info, 0);
-	}
-
-	return rb_shuffle_play_order_type;
-}
 
 RBPlayOrder *
 rb_shuffle_play_order_new (RBShellPlayer *player)
@@ -112,10 +86,7 @@ rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass)
 	RBPlayOrderClass *porder;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	parent_class = g_type_class_peek_parent (klass);
-
 	object_class->finalize = rb_shuffle_play_order_finalize;
-
 
 	porder = RB_PLAY_ORDER_CLASS (klass);
 
@@ -123,9 +94,11 @@ rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass)
 	porder->playing_entry_changed = rb_shuffle_playing_entry_changed;
 	porder->entry_added = rb_shuffle_entry_added;
 	porder->entry_removed = rb_shuffle_entry_removed;
-	porder->entries_replaced = rb_shuffle_entries_replaced;
+	porder->query_model_changed = rb_shuffle_query_model_changed;
 	porder->db_entry_deleted = rb_shuffle_db_entry_deleted;
 
+	porder->has_next = rb_play_order_model_not_empty;
+	porder->has_previous = rb_play_order_model_not_empty;
 	porder->get_next = rb_shuffle_play_order_get_next;
 	porder->go_next = rb_shuffle_play_order_go_next;
 	porder->get_previous = rb_shuffle_play_order_get_previous;
@@ -143,7 +116,7 @@ rb_shuffle_play_order_init (RBShufflePlayOrder *sorder)
 						(GFunc) rb_play_order_unref_entry_swapped,
 					       	rb_play_order_get_db (RB_PLAY_ORDER (sorder)));
 
-	sorder->priv->entries_replaced = FALSE;
+	sorder->priv->query_model_changed = FALSE;
 	sorder->priv->entries_added = g_hash_table_new (g_direct_hash, g_direct_equal);
 	sorder->priv->entries_removed = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
@@ -164,7 +137,7 @@ rb_shuffle_play_order_finalize (GObject *object)
 	g_hash_table_destroy (sorder->priv->entries_added);
 	g_hash_table_destroy (sorder->priv->entries_removed);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_shuffle_play_order_parent_class)->finalize (object);
 }
 
 inline static RBHistory *
@@ -181,26 +154,29 @@ rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 {
 	RBShufflePlayOrder *sorder;
 	RhythmDBEntry *entry;
+	RBHistory *history;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (porder), NULL);
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 
-	rb_shuffle_sync_history_with_entry_view (sorder);
+	rb_shuffle_sync_history_with_query_model (sorder);
+	history = get_history (sorder);
 
-	if (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (sorder))) {
-		if (rb_history_current (get_history (sorder)) == rb_history_last (get_history (sorder))) {
+	entry = rb_play_order_get_playing_entry (porder);
+	if (entry == rb_history_current (history)) {
+		if (rb_history_current (history) == rb_history_last (history)) {
 			entry = NULL;
 		} else {
 			rb_debug ("choosing next entry in shuffle");
-			entry = rb_history_next (get_history (sorder));
+			entry = rb_history_next (history);
 		}
 	} else {
 		/* If the player is currently stopped, the "next" (first) song
 		 * is the first in the shuffle. */
 		rb_debug ("choosing current entry in shuffle");
-		entry = rb_history_current (get_history (sorder));
+		entry = rb_history_current (history);
 	}
 
 	return entry;
@@ -210,20 +186,22 @@ static void
 rb_shuffle_play_order_go_next (RBPlayOrder* porder)
 {
 	RBShufflePlayOrder *sorder;
+	RhythmDBEntry *entry;
+	RBHistory *history;
 
 	g_return_if_fail (porder != NULL);
 	g_return_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (porder));
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
+	history = get_history (sorder);
 
-	if (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (sorder))) {
-		if (rb_history_current (get_history (sorder)) != rb_history_last (get_history (sorder))) {
-			rb_history_go_next (get_history (sorder));
-		}
-	} else {
-		/* If the player is currently stopped, the current song in the
-		 * history needs to stay current */
+	g_object_get (G_OBJECT (sorder), "playing-entry", &entry, NULL);
+	g_assert (entry == NULL || entry == rb_history_current (history));
+	if (entry == rb_history_current (history)) {
+		if (rb_history_current (history) != rb_history_last (history))
+			rb_history_go_next (history);
 	}
+	rb_play_order_set_playing_entry (porder, rb_history_current (history));
 }
 
 static RhythmDBEntry*
@@ -238,7 +216,7 @@ rb_shuffle_play_order_get_previous (RBPlayOrder* porder)
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 
-	rb_shuffle_sync_history_with_entry_view (sorder);
+	rb_shuffle_sync_history_with_query_model (sorder);
 
 	rb_debug ("choosing previous history entry");
 	return rb_history_previous (get_history (sorder));
@@ -248,6 +226,7 @@ static void
 rb_shuffle_play_order_go_previous (RBPlayOrder* porder)
 {
 	RBShufflePlayOrder *sorder;
+	RBHistory *history;
 
 	g_return_if_fail (porder != NULL);
 	g_return_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (porder));
@@ -255,49 +234,52 @@ rb_shuffle_play_order_go_previous (RBPlayOrder* porder)
 	g_return_if_fail (rb_play_order_player_is_playing (porder));
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
+	history = get_history (sorder);
 
-	if (rb_history_current (get_history (sorder)) != rb_history_first (get_history (sorder)))
-		rb_history_go_previous (get_history (sorder));
-}
-
-static gboolean
-rb_return_true ()
-{
-	return TRUE;
+	if (rb_history_current (history) != rb_history_first (history)) {
+		rb_history_go_previous (history);
+		rb_play_order_set_playing_entry (porder, rb_history_current (history));
+	}
 }
 
 static void
-handle_entries_replaced (RBShufflePlayOrder *sorder)
+handle_query_model_changed (RBShufflePlayOrder *sorder)
 {
-	if (sorder->priv->entries_replaced) {
-		GPtrArray *history;
-		GPtrArray *entry_view;
-		int i;
+	GPtrArray *history;
+	RhythmDBQueryModel *model;
+	GtkTreeIter iter;
+	int i;
 
-		g_hash_table_foreach_remove (sorder->priv->entries_added, rb_return_true, NULL);
-		g_hash_table_foreach_remove (sorder->priv->entries_removed, rb_return_true, NULL);
+	if (!sorder->priv->query_model_changed)
+		return;
 
-		/* Only when the entries are replaced should the
-		 * tentative_history be completely removed */
-		if (sorder->priv->tentative_history) {
-			g_object_unref (sorder->priv->tentative_history);
-			sorder->priv->tentative_history = NULL;
-		}
+	g_hash_table_foreach_remove (sorder->priv->entries_added, (GHRFunc) rb_true_function, NULL);
+	g_hash_table_foreach_remove (sorder->priv->entries_removed, (GHRFunc) rb_true_function, NULL);
 
-		/* This simulates removing every entry in the old entry-view,
-		 * and then adding every entry in the new one. */
-		history = rb_history_dump (get_history (sorder));
-		for (i=0; i < history->len; ++i)
-			rb_shuffle_entry_removed (RB_PLAY_ORDER (sorder), g_ptr_array_index (history, i));
-		g_ptr_array_free (history, TRUE);
-
-		entry_view = get_entry_view_contents (rb_play_order_get_entry_view (RB_PLAY_ORDER (sorder)));
-		for (i=0; i < entry_view->len; ++i)
-			rb_shuffle_entry_added (RB_PLAY_ORDER (sorder), g_ptr_array_index (entry_view, i));
-		g_ptr_array_free (entry_view, TRUE);
-
-		sorder->priv->entries_replaced = FALSE;
+	/* Only when the entries are replaced should the
+	 * tentative_history be completely removed */
+	if (sorder->priv->tentative_history) {
+		g_object_unref (sorder->priv->tentative_history);
+		sorder->priv->tentative_history = NULL;
 	}
+
+	/* This simulates removing every entry in the old query model
+	 * and then adding every entry in the new one. */
+	history = rb_history_dump (get_history (sorder));
+	for (i=0; i < history->len; ++i)
+		rb_shuffle_entry_removed (RB_PLAY_ORDER (sorder), g_ptr_array_index (history, i));
+	g_ptr_array_free (history, TRUE);
+
+	model = rb_play_order_get_query_model (RB_PLAY_ORDER (sorder));
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
+		do {
+			RhythmDBEntry *entry;
+			entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+			rb_shuffle_entry_added (RB_PLAY_ORDER (sorder), entry);
+		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
+	}
+
+	sorder->priv->query_model_changed = FALSE;
 }
 
 static gboolean
@@ -317,63 +299,68 @@ remove_from_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOrder 
 static gboolean
 add_randomly_to_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOrder *sorder)
 {
-	if (!rb_history_contains_entry (get_history (sorder), entry)) {
-		gint history_size;
-		gint current_index;
+	gint history_size;
+	gint current_index;
 
-		if (sorder->priv->tentative_history == NULL) {
-			sorder->priv->tentative_history = rb_history_clone (sorder->priv->history,
-									    (GFunc) rb_play_order_ref_entry_swapped, 
-									    rb_play_order_get_db (RB_PLAY_ORDER (sorder)));
-		}
-
-		history_size = rb_history_length (sorder->priv->tentative_history);
-		current_index = rb_history_get_current_index (sorder->priv->tentative_history);
-		/* Insert entry into the history at a random position between
-		 * just after current and the very end. */
-		rhythmdb_entry_ref (rb_play_order_get_db (RB_PLAY_ORDER (sorder)), entry);
-		rb_history_insert_at_index (sorder->priv->tentative_history,
-					    entry,
-					    g_random_int_range (MIN (current_index, history_size-1) + 1,
-								history_size + 1));
+	if (rb_history_contains_entry (get_history (sorder), entry))
+		return TRUE;
+	
+	if (sorder->priv->tentative_history == NULL) {
+		sorder->priv->tentative_history = rb_history_clone (sorder->priv->history,
+								    (GFunc) rb_play_order_ref_entry_swapped, 
+								    rb_play_order_get_db (RB_PLAY_ORDER (sorder)));
 	}
+
+	history_size = rb_history_length (sorder->priv->tentative_history);
+	current_index = rb_history_get_current_index (sorder->priv->tentative_history);
+	/* Insert entry into the history at a random position between
+	 * just after current and the very end. */
+	rhythmdb_entry_ref (rb_play_order_get_db (RB_PLAY_ORDER (sorder)), entry);
+	rb_history_insert_at_index (sorder->priv->tentative_history,
+				    entry,
+				    g_random_int_range (MIN (current_index, history_size-1) + 1,
+							history_size + 1));
 	return TRUE;
 }
 
 static void
-rb_shuffle_sync_history_with_entry_view (RBShufflePlayOrder *sorder)
+rb_shuffle_sync_history_with_query_model (RBShufflePlayOrder *sorder)
 {
-	handle_entries_replaced (sorder);
+	handle_query_model_changed (sorder);
 	g_hash_table_foreach_remove (sorder->priv->entries_removed, (GHRFunc) remove_from_history, sorder);
 	g_hash_table_foreach_remove (sorder->priv->entries_added, (GHRFunc) add_randomly_to_history, sorder);
 
 	/* postconditions */
-	g_assert (entry_view_and_history_contents_match (sorder));
+	g_assert (query_model_and_history_contents_match (sorder));
 	g_assert (g_hash_table_size (sorder->priv->entries_added) == 0);
 	g_assert (g_hash_table_size (sorder->priv->entries_removed) == 0);
 }
 
 static GPtrArray *
-get_entry_view_contents (RBEntryView *entry_view)
+get_query_model_contents (RhythmDBQueryModel *model)
 {
 	guint num_entries;
-	guint i;
+	guint i = 0;
+	GtkTreeIter iter;
 
 	GPtrArray *result = g_ptr_array_new ();
-	if (entry_view == NULL)
+	if (model == NULL)
 		return result;
 
-	num_entries = rb_entry_view_get_num_entries (entry_view);
+	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	if (num_entries == 0)
 		return result;
 
 	g_ptr_array_set_size (result, num_entries);
-	g_ptr_array_index (result, 0) = rb_entry_view_get_first_entry (entry_view);
-	for (i=1; i<num_entries; ++i) {
-		g_ptr_array_index (result, i) =
-			rb_entry_view_get_next_from_entry (entry_view,
-							   g_ptr_array_index (result, i-1));
-	}
+
+	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
+		return result;
+	do {
+		RhythmDBEntry *entry;
+		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+		g_ptr_array_index (result, i++) = entry;
+	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
+	
 	return result;
 }
 
@@ -400,7 +387,9 @@ rb_shuffle_commit_history (RBShufflePlayOrder *sorder)
 }
 
 static void
-rb_shuffle_playing_entry_changed (RBPlayOrder *porder, RhythmDBEntry *entry)
+rb_shuffle_playing_entry_changed (RBPlayOrder *porder, 
+				  RhythmDBEntry *old_entry, 
+				  RhythmDBEntry *new_entry)
 {
 	RBShufflePlayOrder *sorder;
 
@@ -412,13 +401,18 @@ rb_shuffle_playing_entry_changed (RBPlayOrder *porder, RhythmDBEntry *entry)
 	 * started playing */
 	rb_shuffle_commit_history (sorder);
 
-	if (entry) {
-		if (entry == rb_history_current (get_history (sorder))) {
+	if (new_entry) {
+		if (new_entry == rb_history_current (get_history (sorder))) {
 			/* Do nothing */
 		} else {
-			rhythmdb_entry_ref (rb_play_order_get_db (porder), entry);
-			rb_history_set_playing (get_history (sorder), entry);
+			rhythmdb_entry_ref (rb_play_order_get_db (porder), new_entry);
+
+			rb_history_set_playing (get_history (sorder), new_entry);
 		}
+	} else {
+		/* go back to the start if we just finished the play order */
+		if (old_entry == rb_history_last (get_history (sorder)))
+			rb_history_go_first (get_history (sorder));
 	}
 }
 
@@ -439,10 +433,10 @@ rb_shuffle_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 }
 
 static void
-rb_shuffle_entries_replaced (RBPlayOrder *porder)
+rb_shuffle_query_model_changed (RBPlayOrder *porder)
 {
 	g_return_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (porder));
-	RB_SHUFFLE_PLAY_ORDER (porder)->priv->entries_replaced = TRUE;
+	RB_SHUFFLE_PLAY_ORDER (porder)->priv->query_model_changed = TRUE;
 }
 
 static void
@@ -471,26 +465,26 @@ ptr_compare (gconstpointer a, gconstpointer b)
 }
 
 static gboolean
-entry_view_and_history_contents_match (RBShufflePlayOrder *sorder)
+query_model_and_history_contents_match (RBShufflePlayOrder *sorder)
 {
 	gboolean result = TRUE;
 	GPtrArray *history_contents = rb_history_dump (get_history (sorder));
-	GPtrArray *entry_view_contents = get_entry_view_contents (rb_play_order_get_entry_view (RB_PLAY_ORDER (sorder)));
+	GPtrArray *query_model_contents = get_query_model_contents (rb_play_order_get_query_model (RB_PLAY_ORDER (sorder)));
 
-	if (history_contents->len != entry_view_contents->len)
+	if (history_contents->len != query_model_contents->len)
 		result = FALSE;
 	else {
 		int i;
 		g_ptr_array_sort (history_contents, ptr_compare);
-		g_ptr_array_sort (entry_view_contents, ptr_compare);
+		g_ptr_array_sort (query_model_contents, ptr_compare);
 		for (i=0; i<history_contents->len; ++i) {
-			if (g_ptr_array_index (history_contents, i) != g_ptr_array_index (entry_view_contents, i)) {
+			if (g_ptr_array_index (history_contents, i) != g_ptr_array_index (query_model_contents, i)) {
 				result = FALSE;
 				break;
 			}
 		}
 	}
 	g_ptr_array_free (history_contents, TRUE);
-	g_ptr_array_free (entry_view_contents, TRUE);
+	g_ptr_array_free (query_model_contents, TRUE);
 	return result;
 }

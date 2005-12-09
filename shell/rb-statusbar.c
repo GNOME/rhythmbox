@@ -66,8 +66,8 @@ static void rb_statusbar_sync_status (RBStatusbar *status);
 static gboolean poll_status (RBStatusbar *status);
 static void rb_statusbar_view_statusbar_changed_cb (GtkAction *action,
 						    RBStatusbar *statusbar);
-static void rb_statusbar_entry_view_changed_cb (RBEntryView *view,
-						RBStatusbar *statusbar);
+static void rb_statusbar_source_status_changed_cb (RBSource *source,
+						   RBStatusbar *statusbar);
 
 static GtkToggleActionEntry rb_statusbar_toggle_entries [] =
 {
@@ -332,24 +332,19 @@ rb_statusbar_set_property (GObject *object,
                 break;
         case PROP_SOURCE:
                 if (statusbar->priv->selected_source != NULL) {
-                        RBEntryView *songs = rb_source_get_entry_view (statusbar->priv->selected_source);
-
-                        g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-                                                              G_CALLBACK (rb_statusbar_entry_view_changed_cb),
-                                                              statusbar);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->selected_source),
+							      G_CALLBACK (rb_statusbar_source_status_changed_cb),
+							      statusbar);
                 }
                 
                 statusbar->priv->selected_source = g_value_get_object (value);
                 rb_debug ("selected source %p", g_value_get_object (value));
 
                 if (statusbar->priv->selected_source != NULL) {
-                        RBEntryView *songs = rb_source_get_entry_view (statusbar->priv->selected_source);
-
-                        g_signal_connect_object (G_OBJECT (songs),
-                                                 "changed",
-                                                 G_CALLBACK (rb_statusbar_entry_view_changed_cb),
-                                                 statusbar, 0);
-
+			g_signal_connect_object (G_OBJECT (statusbar->priv->selected_source),
+						 "status-changed",
+						 G_CALLBACK (rb_statusbar_source_status_changed_cb),
+						 statusbar, 0);
                 }
                 rb_statusbar_sync_with_source (statusbar);
 
@@ -470,14 +465,16 @@ rb_statusbar_sync_status (RBStatusbar *status)
                 pulse_progress = TRUE;
         }
 
-        /* 3. entry view busy? */
+        /* 3. query model busy? */
         if (status_text == NULL && status->priv->selected_source) {
-                RBEntryView *view;
-                view = rb_source_get_entry_view (status->priv->selected_source);
-                if (rb_entry_view_busy (view))
+		RhythmDBQueryModel *model;
+
+		g_object_get (G_OBJECT (status->priv->selected_source), "query-model", &model, NULL);
+                if (rhythmdb_query_model_has_pending_changes (model))
                         pulse_progress = TRUE;
                 else
                         show_progress = FALSE;
+		g_object_unref (G_OBJECT (model));
         }
 
         /* set up the status text */
@@ -640,10 +637,9 @@ rb_statusbar_view_statusbar_changed_cb (GtkAction *action,
 }
 
 static void
-rb_statusbar_entry_view_changed_cb (RBEntryView *view,
-                                    RBStatusbar *statusbar)
+rb_statusbar_source_status_changed_cb (RBSource *source, RBStatusbar *statusbar)
 {
-        rb_debug ("entry view changed");
-        if (statusbar->priv->idle)
-                rb_statusbar_sync_with_source (statusbar);
+	rb_debug ("source status changed");
+	if (statusbar->priv->idle)
+		rb_statusbar_sync_with_source (statusbar);
 }

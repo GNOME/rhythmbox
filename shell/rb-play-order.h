@@ -38,10 +38,10 @@
 #ifndef __RB_PLAY_ORDER_H
 #define __RB_PLAY_ORDER_H
 
-#include "rhythmdb/rhythmdb.h"
+#include <rhythmdb/rhythmdb.h>
+#include <rhythmdb/rhythmdb-query-model.h>
 
-#include "rb-shell-player.h"
-#include "rb-entry-view.h"
+#include <rb-shell-player.h>
 
 G_BEGIN_DECLS
 
@@ -61,6 +61,8 @@ typedef struct
 	RBPlayOrderPrivate *priv;
 } RBPlayOrder;
 
+typedef gboolean (*RBPlayOrderQueryFunc) (RBPlayOrder *porder);
+
 typedef struct
 {
 	GObjectClass parent_class;
@@ -68,10 +70,10 @@ typedef struct
 	/* EVENTS */
 	void (*playing_source_changed) (RBPlayOrder *porder);
 	void (*db_changed) (RBPlayOrder *porder, RhythmDB *new_db);
-	void (*playing_entry_changed) (RBPlayOrder *porder, RhythmDBEntry *new_entry);
+	void (*playing_entry_changed) (RBPlayOrder *porder, RhythmDBEntry *old_entry, RhythmDBEntry *new_entry);
 	void (*entry_added) (RBPlayOrder *porder, RhythmDBEntry *entry);
 	void (*entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
-	void (*entries_replaced) (RBPlayOrder *porder);
+	void (*query_model_changed) (RBPlayOrder *porder);
 	void (*db_entry_deleted) (RBPlayOrder *porder, RhythmDBEntry *entry);
 
 	/* QUERIES */
@@ -124,6 +126,9 @@ typedef struct
 	 */
 	void (*go_previous) (RBPlayOrder* porder);
 
+	/* SIGNALS */
+	void (*have_next_previous_changed) (RBPlayOrder *porder, gboolean have_next, gboolean have_previous);
+	void (*playing_entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
 } RBPlayOrderClass;
 
 GType			rb_play_order_get_type		(void);
@@ -145,7 +150,9 @@ typedef struct {
 } RBPlayOrderDescription;
 const RBPlayOrderDescription *	rb_play_order_get_orders	(void);
 
-void			rb_play_order_playing_source_changed	(RBPlayOrder *porder);
+void			rb_play_order_playing_source_changed	(RBPlayOrder *porder,
+								 RBSource *source);
+void			rb_play_order_query_model_changed	(RBPlayOrder *porder);
 
 gboolean		rb_play_order_has_next		(RBPlayOrder* porder);
 RhythmDBEntry *		rb_play_order_get_next		(RBPlayOrder *porder);
@@ -154,21 +161,24 @@ gboolean		rb_play_order_has_previous	(RBPlayOrder* porder);
 RhythmDBEntry *		rb_play_order_get_previous	(RBPlayOrder *porder);
 void 			rb_play_order_go_previous	(RBPlayOrder *porder);
 
+void			rb_play_order_set_playing_entry (RBPlayOrder *porder,
+							 RhythmDBEntry *entry);
+RhythmDBEntry *		rb_play_order_get_playing_entry (RBPlayOrder *porder);
+
 /* Private utility functions used by play order implementations */
 
 RBShellPlayer *		rb_play_order_get_player	(RBPlayOrder *porder);
 RBSource *		rb_play_order_get_source	(RBPlayOrder *porder);
 RhythmDB *		rb_play_order_get_db		(RBPlayOrder *porder);
-/**
- * Gets the entry-view through the source. Returns NULL if there is no entry-view.
- */
-RBEntryView*		rb_play_order_get_entry_view	(RBPlayOrder *porder);
-/**
- * Returns NULL if nothing is playing
- */
-RhythmDBEntry *		rb_play_order_get_playing_entry	(RBPlayOrder *porder);
+RhythmDBQueryModel *    rb_play_order_get_query_model   (RBPlayOrder *porder);
+gboolean		rb_play_order_model_not_empty	(RBPlayOrder *porder);
+
+void			rb_play_order_have_next_changed (RBPlayOrder *porder, gboolean have_next);
+void			rb_play_order_have_previous_changed (RBPlayOrder *porder, gboolean have_previous);
 
 gboolean		rb_play_order_player_is_playing	(RBPlayOrder *porder);
+
+void			rb_play_order_check_if_empty (RBPlayOrder *porder, RhythmDBEntry *entry);
 
 void			rb_play_order_ref_entry_swapped		(RhythmDBEntry *entry, RhythmDB *db);
 void			rb_play_order_unref_entry_swapped	(RhythmDBEntry *entry, RhythmDB *db);

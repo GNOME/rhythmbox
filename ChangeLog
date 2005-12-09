@@ -1,3 +1,138 @@
+2005-12-09  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Rework play orders to work off query models rather than 
+	entry views, and track the playing entry themselves rather
+	than relying on the entry view to do it.  This makes the entry
+	view mostly just a widget. Closes bug 323612.
+
+	* daapsharing/rb-daap-share.c (add_playlist_to_mlcl), (databases_cb):
+	Use query model rather than entry view to get the number
+	of entries in playlists.
+
+	* rhythmdb/rhythmdb-query-model.{c.h}
+	(rhythmdb_query_model_tree_path_to_entry),
+	(rhythmdb_query_model_iter_to_entry),
+	(rhythmdb_query_model_get_next_from_entry),
+	(rhythmdb_query_model_get_previous_from_entry):
+	New utility functions for iterating through query models.
+	(rhythmdb_query_model_compute_status_normal):
+	Have one copy of this code, not four.
+
+	* shell/rb-play-order.{c,h}:
+	Add signals for when next/previous availability changes, and
+	when the playing entry is removed, and add a property for
+	the current playing entry.  Add gtkdoc comments too.
+	(rb_play_order_class_init): Add new property and signals.
+	(rb_play_order_finalize), (rb_play_order_playing_source_changed),
+	(rb_play_orer_query_model_changed_cb),
+	(rb_play_order_query_model_changed): 
+	Use query model rather than entry view.
+	(rb_play_order_set_property), (rb_play_order_get_property):
+	Handle new playing-entry property.  Call playing_entry_changed virtual
+	method so subclasses can do any processing required.
+	(rb_play_order_is_playing), (rb_play_order_get_playing_entry),
+	(rb_play_order_set_playing_entry):
+	Just use the playing-entry property.
+	(rb_play_order_get_query_model), (rb_play_order_model_not_empty): 
+	Utility methods for subclasses.
+	(rb_play_order_entry_added_cb), (rb_play_order_entry_removed_cb):
+	Update next/previous availability, check if the playing entry
+	was removed.
+	(default_playing_entry_removed):
+	Keep the current behaviour of just stopping playback when the 
+	playing entry is deleted.
+	(rb_play_order_go_next), (rb_play_order_go_previous): Implement
+	these for subclasses that don't have go_next/go_previous, but do
+	have get_next/get_previous.
+	(rb_play_order_update_have_next_previous): Emit signal if the
+	availability of next/previous entries has changed.
+
+	* shell/rb-play-order-linear.c, shell/rb-play-order-linear-loop.c,
+	shell/rb-play-order-shuffle.c, shell/rb-play-order-random.c:
+	Use G_DEFINE_TYPE, replace entry view iterator with query model 
+	methods.
+	(rb_shuffle_playing_entry_changed): If new_entry is NULL and we're
+	on the last song in the shuffled order, go back to the start. This
+	means if you press 'play' again you'll get the whole order again, not
+	just one song.
+
+	* shell/rb-shell-player.c:
+	(rb_shell_player_get_playing_entry), (info_available_cb): Ask the 
+	play order rather than the entry view.
+	(rb_shell_player_set_property): Update the play order when the
+	selected source changes and we aren't playing anything.
+	(rb_shell_player_sync_play_order): Copy the playing entry across to
+	the new play order so playback continues from the same song, and watch
+	for updates to have_next/have_previous.
+	(rb_shell_player_play_order_update_cb): Enable/disable the
+	next/previous actions when next/previous entry availability changes.
+	(rb_shell_player_jump_to_current): Just use the play order's idea of
+	what's playing, not the entry view's; if not playing anything, clear
+	the selection, so when a playlist ends and you hit play again, it'll
+	start at the start rather than the end.
+	(rb_shell_player_do_previous): restructure a bit.
+	(rb_shell_player_do_next): restructure, jump to new playing entry in
+	an idle handler instead of directly.
+	(rb_shell_player_do_previous_or_seek): Only try to go to the previous
+	song if there is one.
+	(rb_shell_player_playpause): Jump to playing song, don't update the
+	play order if we got the song from the selection.
+	(rb_shell_player_playing_entry_deleted_cb): Not needed.
+	(rb_shell_player_sync_buttons): rb_shell_player_play_order_update_cb
+	looks after next/previous actions now.	Don't break if called while
+	there is no selected source.
+	(rb_shell_player_finalize), (rb_shell_player_set_playing_entry),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_error): No need to track the attempted playing entry
+	any more, since the play order does that.
+
+	* shell/rb-shell.c:
+	(rb_shell_jump_to_current), (rb_shell_set_rating_impl): Use
+	rb_shell_player_get_playing_entry rather than going through the entry
+	view.
+
+	* shell/rb-statusbar.c (rb_statusbar_set_property),
+	(rb_statusbar_source_status_changed_cb): Listen to the source rather 
+	than the entry view for status bar text changes.
+	(rb_statusbar_sync_status): Ask the query model directly
+
+	* sources/rb-source.{c}: Add query model property.
+	(default_get_status): Get status text from query model, should be
+	suitable for most sources.
+	(rb_source_set_property): Listen for changes to the query model 
+	to update the status text.
+	(rb_source_row_inserted_cb), (rb_source_row_deleted_cb),
+	(idle_emit_status_changed): Emit status-changed signals when query
+	model changes. 
+
+	* sources/rb-library-source.c, sources/rb-podcast-source.c:
+	(impl_get_status): Not needed, RBSource does this now
+	(rb_library_source_do_query) (rb_podcast_source_do_query): 
+	Update RBSource's query model reference.
+
+	* sources/rb-playlist-source.c:
+	Remove query-model property, since RBSource has one now
+	(impl_get_status): Not needed, RBSource does this now
+	(rb_playlist_source_row_deleted): Use query model iterator helper
+	function.
+	(rb_playlist_source_set_query_model): Update RBSource's query model
+	reference too.
+
+	* sources/rb-iradio-source.c:
+	(impl_get_status): Ask the query model directly.
+	(rb_iradio_source_do_query): Update RBSource's query model reference
+	when we create a new query.
+
+	* sources/rb-sourcelist-model.c (rb_sourcelist_model_drag_data_get):
+	Use query model rather than entry view.
+
+	* widgets/rb-entry-view.{c,h}: 
+	Remove playing_entry_deleted signal (now in play order).
+	(entry_from_tree_path), (entry_from_tree_iter): Not needed
+	 as RhythmDBQueryModel has equivalent helper functions.
+	(rb_entry_view_*): Use query model helpers instead of the above two
+	functions.
+
 2005-12-09  James Livingston  <jrl@ids.org.au>
 
 	* configure.ac:

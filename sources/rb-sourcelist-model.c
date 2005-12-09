@@ -497,10 +497,10 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 		return TRUE;
 	} else if (target == TARGET_URIS) {
 		RBSource *source;
-		RBEntryView *view;
-		RhythmDBEntry *entry, *first_entry;
+		RhythmDBQueryModel *query_model;
 		GtkTreeIter iter;
 		GString *data;
+		gboolean first = TRUE;
 
 		rb_debug ("getting drag data as uri list");
 		if (!gtk_tree_model_get_iter (GTK_TREE_MODEL (drag_source), &iter, path))
@@ -509,20 +509,26 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 		data = g_string_new ("");
 		gtk_tree_model_get (GTK_TREE_MODEL (drag_source), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-		view = rb_source_get_entry_view (source);
-		first_entry = rb_entry_view_get_first_entry (view);
-		if (!first_entry)
-			return FALSE;
+		g_object_get (G_OBJECT (source), "query-model", &query_model, NULL);
 
-		entry = first_entry;
+		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model), &iter)) {
+			g_object_unref (G_OBJECT (query_model));
+			return FALSE;
+		}
+
 		do {
-			if (entry != first_entry)
-				g_string_append (data, "\r\n");
+			RhythmDBEntry *entry;
+			if (first) {
+				g_string_append(data, "\r\n");
+				first = FALSE;
+			}
+
+			entry = rhythmdb_query_model_iter_to_entry (query_model, &iter);
 			g_string_append (data, entry->location);
 
-			entry = rb_entry_view_get_next_from_entry (view, entry);
-		} while (entry && entry != first_entry);
-
+		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (query_model), &iter));
+		g_object_unref (G_OBJECT (query_model));
+		
 		gtk_selection_data_set (selection_data,
 					selection_data->target,
 					8, (guchar *) data->str,

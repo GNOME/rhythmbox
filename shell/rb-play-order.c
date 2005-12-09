@@ -29,6 +29,7 @@
 #include "rb-shell-player.h"
 #include "rb-debug.h"
 #include "rb-preferences.h"
+#include "rb-marshal.h"
 
 /* Play Orders */
 #include "rb-play-order-linear.h"
@@ -55,19 +56,30 @@ static void rb_play_order_get_property (GObject *object,
 
 static gboolean default_has_next (RBPlayOrder *porder);
 static gboolean default_has_previous (RBPlayOrder *porder);
+static void default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry);
 
-static void rb_play_order_playing_entry_changed_cb (GObject *entry_view,
-						    GParamSpec *pspec,
-						    RBPlayOrder *porder);
-static void rb_play_order_entry_added_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
-static void rb_play_order_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
-static void rb_play_order_entries_replaced_cb (RBPlayOrder *porder);
+static void rb_play_order_entry_added_cb (GtkTreeModel *model,
+					  GtkTreePath *path,
+					  GtkTreeIter *iter,
+					  RBPlayOrder *porder);
+static void rb_play_order_entry_deleted_cb (GtkTreeModel *model,
+					    GtkTreePath *path,
+					    RBPlayOrder *porder);
+static void rb_play_order_query_model_changed_cb (GObject *source, 
+						  GParamSpec *arg,
+						  RBPlayOrder *porder);
+static void rb_play_order_update_have_next_previous (RBPlayOrder *porder);
 
 struct RBPlayOrderPrivate
 {
 	RBShellPlayer *player;
 	RBSource *source;
 	RhythmDB *db;
+	RhythmDBQueryModel *query_model;
+	RhythmDBEntry *playing_entry;
+	gulong query_model_change_id;
+	gboolean have_next;
+	gboolean have_previous;
 };
 
 #define RB_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAY_ORDER, RBPlayOrderPrivate))
@@ -76,8 +88,17 @@ enum
 {
 	PROP_0,
 	PROP_PLAYER,
+	PROP_PLAYING_ENTRY
 };
 
+enum
+{
+	PLAYING_ENTRY_REMOVED,
+	HAVE_NEXT_PREVIOUS_CHANGED,
+	LAST_SIGNAL
+};
+
+static guint rb_play_order_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBPlayOrder, rb_play_order, G_TYPE_OBJECT)
 
@@ -93,6 +114,7 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 
 	klass->has_next = default_has_next;
 	klass->has_previous = default_has_previous;
+	klass->playing_entry_removed = default_playing_entry_removed;
 
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER,
@@ -101,6 +123,32 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 						 	      "Rhythmbox Player",
 						 	      RB_TYPE_SHELL_PLAYER,
 						 	      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING_ENTRY,
+					 g_param_spec_pointer ("playing-entry",
+						 	       "RhythmDBEntry",
+						 	       "Playing entry",
+						 	       G_PARAM_READWRITE));
+	
+	rb_play_order_signals[PLAYING_ENTRY_REMOVED] =
+		g_signal_new ("playing_entry_removed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayOrderClass, playing_entry_removed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1, G_TYPE_POINTER);
+	rb_play_order_signals[HAVE_NEXT_PREVIOUS_CHANGED] =
+		g_signal_new ("have_next_previous_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayOrderClass, have_next_previous_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__BOOLEAN_BOOLEAN,
+			      G_TYPE_NONE,
+			      2, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 
 	g_type_class_add_private (klass, sizeof (RBPlayOrderPrivate));
 }
@@ -120,8 +168,6 @@ rb_play_order_constructor (GType type, guint n_construct_properties,
 	porder = RB_PLAY_ORDER (G_OBJECT_CLASS (rb_play_order_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 
-	rb_play_order_playing_source_changed (porder);
-
 	return G_OBJECT (porder);
 }
 
@@ -135,19 +181,12 @@ rb_play_order_finalize (GObject *object)
 
 	porder = RB_PLAY_ORDER (object);
 
-	if (porder->priv->source != NULL) {
-		RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
-						      G_CALLBACK (rb_play_order_playing_entry_changed_cb),
-						      porder);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+	if (porder->priv->query_model) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
 						      G_CALLBACK (rb_play_order_entry_added_cb),
 						      porder);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
 						      G_CALLBACK (rb_play_order_entry_deleted_cb),
-						      porder);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
-						      G_CALLBACK (rb_play_order_entries_replaced_cb),
 						      porder);
 	}
 
@@ -161,10 +200,26 @@ rb_play_order_set_property (GObject *object,
 			    GParamSpec *pspec)
 {
 	RBPlayOrder *porder = RB_PLAY_ORDER (object);
+	RhythmDBEntry *entry;
+	RhythmDBEntry *old_entry;
 
 	switch (prop_id) {
 	case PROP_PLAYER:
 		porder->priv->player = g_value_get_object (value);
+		break;
+	case PROP_PLAYING_ENTRY:
+		old_entry = porder->priv->playing_entry;
+		entry = g_value_get_pointer (value); 
+		porder->priv->playing_entry = entry;
+
+		if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
+			RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, old_entry, entry);
+		if (old_entry)
+			rhythmdb_entry_unref (porder->priv->db, old_entry);
+		if (entry)
+			rhythmdb_entry_ref (porder->priv->db, entry);
+
+		rb_play_order_update_have_next_previous (porder);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -185,6 +240,9 @@ rb_play_order_get_property (GObject *object,
 	case PROP_PLAYER:
 		g_value_set_object (value, porder->priv->player);
 		break;
+	case PROP_PLAYING_ENTRY:
+		g_value_set_pointer (value, porder->priv->playing_entry);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -192,6 +250,12 @@ rb_play_order_get_property (GObject *object,
 }
 
 /**
+ * rb_play_order_get_orders:
+ *
+ * Defines the set of available play orders, their translatable descriptions, their
+ * constructor functions, whether they should appear in a drop-down list of 
+ * play orders, and which one is the default.
+ *
  * This should be the only function with full knowledge of what play orders are
  * available.
  */
@@ -213,6 +277,15 @@ rb_play_order_get_orders (void)
 	return orders;
 }
 
+/**
+ * rb_play_order_new:
+ * @porder_name: Play order type name
+ * @player: #RBShellPlayer instance to attach to
+ *
+ * Creates a new #RBPlayOrder of the specified type.
+ *
+ * Returns: #RBPlayOrder instance
+ **/
 RBPlayOrder *
 rb_play_order_new (const char* porder_name, RBShellPlayer *player)
 {
@@ -240,73 +313,117 @@ rb_play_order_new (const char* porder_name, RBShellPlayer *player)
 	return orders[default_index].constructor (player);
 }
 
+/**
+ * rb_play_order_get_player:
+ * @porder: #RBPlayOrder instance
+ *
+ * Only for use by #RBPlayOrder subclasses.
+ *
+ * Returns: #RBShellPlayer instance
+ **/
 RBShellPlayer *
 rb_play_order_get_player (RBPlayOrder *porder)
 {
 	return porder->priv->player;
 }
 
+/**
+ * rb_play_order_get_source:
+ * @porder: #RBPlayOrder instance
+ *
+ * Only for use by #RBPlayOrder subclasses.
+ *
+ * Returns: the playing #RBSource instance.
+ **/
 RBSource *
 rb_play_order_get_source (RBPlayOrder *porder)
 {
 	return porder->priv->source;
 }
 
+/**
+ * rb_play_order_get_db:
+ * @porder: #RBPlayOrder instance
+ *
+ * Only for use by #RBPlayOrder subclasses.
+ *
+ * Returns: the #RhythmDB instance.
+ **/
 RhythmDB *
 rb_play_order_get_db (RBPlayOrder *porder)
 {
 	return porder->priv->db;
 }
 
-/* mostly copied from rb_shell_player_get_playing_entry in rb-shell-player.c */
+/**
+ * rb_play_order_get_query_model:
+ * @porder: #RBPlayOrder instance
+ *
+ * Only for use by #RBPlayOrder subclasses.
+ *
+ * Returns: the active #RhythmDBQueryModel for the playing source.
+ */
+RhythmDBQueryModel *
+rb_play_order_get_query_model (RBPlayOrder *porder)
+{
+	return porder->priv->query_model;
+}
+
+/**
+ * rb_play_order_player_is_playing:
+ * @porder: #RBPlayOrder instance
+ *
+ * Returns: true if there is a current playing entry in the play order.
+ **/
 gboolean
 rb_play_order_player_is_playing (RBPlayOrder *porder)
 {
-	RBSource *source = rb_shell_player_get_playing_source (porder->priv->player);
-	if (source) {
-		RBEntryView *entry_view = rb_source_get_entry_view (source);
-		return rb_entry_view_get_playing_entry (entry_view) != NULL;
-	}
-	return FALSE;
+	return (porder->priv->playing_entry != NULL);
 }
 
-RBEntryView*
-rb_play_order_get_entry_view (RBPlayOrder *porder)
+/**
+ * rb_play_order_set_playing_entry:
+ * @porder: #RBPlayOrder instance
+ * @entry: The new playing entry (or NULL for none)
+ *
+ * Sets the playing entry in the play order.
+ **/
+void
+rb_play_order_set_playing_entry (RBPlayOrder *porder,
+				 RhythmDBEntry *entry)
 {
-	RBSource *source;
-
-	g_return_val_if_fail (porder != NULL, NULL);
-	
-	source = porder->priv->source;
-	if (source == NULL)
-		return NULL;
-	return rb_source_get_entry_view (source);
+	g_object_set (G_OBJECT (porder), "playing-entry", entry, NULL);
 }
 
+/**
+ * rb_play_order_get_playing_entry:
+ * @porder: #RBPlayOrder instance
+ *
+ * Returns: the current playing entry in the play order.
+ */
 RhythmDBEntry *
 rb_play_order_get_playing_entry (RBPlayOrder *porder)
 {
-	RhythmDBEntry *entry = NULL;
-
-	RBEntryView *entry_view = rb_play_order_get_entry_view (porder);
-	if (entry_view) {
-		g_object_get (entry_view,
-			      "playing-entry", &entry,
-			      NULL);
-	}
-
-	return entry;
+	return porder->priv->playing_entry;
 }
 
+/**
+ * rb_play_order_playing_source_changed:
+ * @porder: #RBPlayOrder instance
+ * @source: New playing #RBSource
+ *
+ * Sets the playing #RBSource for the play order.  Should be called
+ * by #RBShellPlayer when the active source changes.  Subclasses
+ * should implement playing_source_changed() to make any necessary
+ * changes.
+ */
 void
-rb_play_order_playing_source_changed (RBPlayOrder *porder)
+rb_play_order_playing_source_changed (RBPlayOrder *porder,
+				      RBSource *source)
 {
-	RBSource *source;
 	RhythmDB *db = NULL;
 
 	g_return_if_fail (porder != NULL);
-
-	source = rb_shell_player_get_playing_source (porder->priv->player);
 
 	g_object_get (G_OBJECT (porder->priv->player),
 		      "db", &db,
@@ -319,92 +436,145 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder)
 	}
 
 	if (source != porder->priv->source) {
-		if (porder->priv->source != NULL) {
-			RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
-							      G_CALLBACK (rb_play_order_playing_entry_changed_cb),
-							      porder);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
-							      G_CALLBACK (rb_play_order_entry_added_cb),
-							      porder);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
-							      G_CALLBACK (rb_play_order_entry_deleted_cb),
-							      porder);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
-							      G_CALLBACK (rb_play_order_entries_replaced_cb),
-							      porder);
+		if (porder->priv->source) {
+			g_signal_handler_disconnect (G_OBJECT (porder->priv->source),
+						     porder->priv->query_model_change_id);
 		}
+		
 		porder->priv->source = source;
-		if (porder->priv->source != NULL) {
-			/* Optimization possibilty: Only connect handlers
-			 * subclass actually listens to. */
-			RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
-			g_signal_connect_object (G_OBJECT (entry_view),
-						 "notify::playing-entry",
-						 G_CALLBACK (rb_play_order_playing_entry_changed_cb),
-						 porder, 0);
-			g_signal_connect_object (G_OBJECT (entry_view),
-						 "entry-added",
-						 G_CALLBACK (rb_play_order_entry_added_cb),
-						 porder, G_CONNECT_SWAPPED);
-			g_signal_connect_object (G_OBJECT (entry_view),
-						  "entry-deleted",
-						  G_CALLBACK (rb_play_order_entry_deleted_cb),
-						 porder, G_CONNECT_SWAPPED);
-			g_signal_connect_object (G_OBJECT (entry_view),
-						 "entries-replaced",
-						 G_CALLBACK (rb_play_order_entries_replaced_cb),
-						 porder, G_CONNECT_SWAPPED);
+		if (porder->priv->source) {
+			porder->priv->query_model_change_id =
+				g_signal_connect_object (G_OBJECT (porder->priv->source),
+							 "notify::query-model",
+							 G_CALLBACK (rb_play_order_query_model_changed_cb),
+							 porder, 0);
 		}
-	}
 
-	/* Notify subclass if it cares */
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_source_changed)
-		RB_PLAY_ORDER_GET_CLASS (porder)->playing_source_changed (porder);
-	/* These are an inevitable side effect of replacing the source. */
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced)
-		RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced (porder);
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
-		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, rb_play_order_get_playing_entry (porder));
-}
+		rb_play_order_query_model_changed (porder);
 
-static void
-rb_play_order_playing_entry_changed_cb (GObject *entry_view,
-					GParamSpec *pspec,
-					RBPlayOrder *porder)
-{
-	g_return_if_fail (strcmp (pspec->name, "playing-entry") == 0);
-
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed) {
-		RhythmDBEntry *entry;
-		g_object_get (entry_view,
-				"playing-entry", &entry,
-				NULL);
-		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, entry);
+		if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_source_changed)
+			RB_PLAY_ORDER_GET_CLASS (porder)->playing_source_changed (porder);
+		
+		rb_play_order_update_have_next_previous (porder);
 	}
 }
 
 static void
-rb_play_order_entry_added_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
+rb_play_order_query_model_changed_cb (GObject *source, 
+				      GParamSpec *arg,
+				      RBPlayOrder *porder)
 {
+	rb_play_order_query_model_changed (porder);
+}
+
+/**
+ * rb_play_order_query_model_changed:
+ * @porder: RBPlayOrder instance
+ *
+ * Updates the #RhythmDBQueryModel instance for the play order.
+ * Called from the #RBSource notify signal handler, and also from
+ * #rb_play_order_source_changed.  Subclasses should implement
+ * query_model_changed() to make any necessary adjustments if they
+ * store any state based on the contents of the #RhythmDBQueryModel.
+ */
+void 
+rb_play_order_query_model_changed (RBPlayOrder *porder)
+{
+	RhythmDBQueryModel *new_model = NULL;
+
+	if (porder->priv->source)
+		g_object_get (G_OBJECT (porder->priv->source), "query-model", &new_model, NULL);
+
+	if (porder->priv->query_model == new_model)
+		return;
+
+	if (porder->priv->query_model != NULL) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
+						      rb_play_order_entry_added_cb,
+						      porder);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
+						      rb_play_order_entry_deleted_cb,
+						      porder);
+		g_object_unref (porder->priv->query_model);
+		porder->priv->query_model = NULL;
+	}
+
+	if (new_model != NULL) {
+		porder->priv->query_model = new_model;
+		g_object_ref (G_OBJECT (porder->priv->query_model));
+		g_signal_connect_object (G_OBJECT (porder->priv->query_model),
+					 "row-inserted",
+					 G_CALLBACK (rb_play_order_entry_added_cb),
+					 porder, 0);
+		g_signal_connect_object (G_OBJECT (porder->priv->query_model),
+					 "row-deleted",
+					 G_CALLBACK (rb_play_order_entry_deleted_cb),
+					 porder, 0);
+	}
+
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->query_model_changed)
+		RB_PLAY_ORDER_GET_CLASS (porder)->query_model_changed (porder);
+		
+	rb_play_order_update_have_next_previous (porder);
+}
+
+/**
+ * rb_play_order_entry_added_cb:
+ * @model: #GtkTreeModel
+ * @path: #GtkTreePath for added entry
+ * @iter: #GtkTreeIter for added entry
+ * @porder: #RBPlayOrder instance
+ *
+ * Called when a new entry is added to the active #RhythmDBQueryModel.
+ * Subclasses should implement entry_added() to make any necessary 
+ * changes if they store any state based on the contents of the 
+ * #RhythmDBQueryModel.
+ */
+static void
+rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBPlayOrder *porder)
+{
+	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry(RHYTHMDB_QUERY_MODEL (model),
+								  iter);
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_added)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_added (porder, entry);
+	
+	rb_play_order_update_have_next_previous (porder);
 }
 
+/**
+ * rb_play_order_entry_removed_cb:
+ * @model: #GtkTreeModel
+ * @path: #GtkTreePath for removed entry
+ * @porder: #RBPlayOrder instance
+ *
+ * Called when a new entry is removed from the active #RhythmDBQueryModel.
+ * Subclasses should implement entry_removed() to make any necessary 
+ * changes if they store any state based on the contents of the 
+ * #RhythmDBQueryModel.
+ *
+ * If the removed entry is the current playing entry, the playing-entry-deleted
+ * signal is emitted.
+ */
 static void
-rb_play_order_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
+rb_play_order_entry_deleted_cb (GtkTreeModel *model, GtkTreePath *path, RBPlayOrder *porder)
 {
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed) {
-		rb_debug ("signaling entry_deleted");
-		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
+	RhythmDBEntry *entry;
+	GtkTreeIter iter;
+	
+	gtk_tree_model_get_iter (model, &iter, path);
+	entry = rhythmdb_query_model_iter_to_entry(RHYTHMDB_QUERY_MODEL (model),
+						   &iter);
+
+	if (entry == porder->priv->playing_entry) {
+		rb_debug ("signaling playing_entry_removed");
+		g_signal_emit (G_OBJECT (porder), rb_play_order_signals[PLAYING_ENTRY_REMOVED],
+			       0, entry);
 	}
-}
+	
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed)
+		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
 
-static void
-rb_play_order_entries_replaced_cb (RBPlayOrder *porder)
-{
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced)
-		RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced (porder);
+	rb_play_order_update_have_next_previous (porder);
 }
 
 static gboolean
@@ -419,6 +589,28 @@ default_has_previous (RBPlayOrder *porder)
 	return rb_play_order_get_previous (porder) != NULL;
 }
 
+static void
+default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
+{
+	RBShellPlayer *player = rb_play_order_get_player (porder);
+
+	/* only clear the playing source if the source this play order is using
+	 * is currently playing.
+	 */
+	if (rb_shell_player_get_playing_source (player) == rb_play_order_get_source (porder))
+		rb_shell_player_set_playing_source (rb_play_order_get_player (porder), NULL);
+
+	rb_play_order_set_playing_entry (porder, NULL);
+}
+
+/**
+ * rb_play_order_has_next:
+ * @porder: RBPlayOrder instance.
+ *
+ * If there is no current playing entry, returns true if the play order is non-empty.
+ *
+ * Returns: true if there is an entry after the current playing entry in the play order.
+ */
 gboolean
 rb_play_order_has_next (RBPlayOrder* porder)
 {
@@ -427,6 +619,12 @@ rb_play_order_has_next (RBPlayOrder* porder)
 	return RB_PLAY_ORDER_GET_CLASS (porder)->has_next (porder);
 }
 
+/**
+ * rb_play_order_get_next:
+ * @porder: RBPlayOrder instance
+ *
+ * Returns: the next entry in the play order, or the first if not currently playing.
+ */
 RhythmDBEntry *
 rb_play_order_get_next (RBPlayOrder *porder)
 {
@@ -435,14 +633,31 @@ rb_play_order_get_next (RBPlayOrder *porder)
 	return RB_PLAY_ORDER_GET_CLASS (porder)->get_next (porder);
 }
 
+/**
+ * rb_play_order_go_next:
+ * @porder: RBPlayOrder instance
+ *
+ * Moves to the next entry in the play order.  If not currently playing, sets the
+ * first entry in the play order as the playing entry.
+ */
 void
 rb_play_order_go_next (RBPlayOrder *porder)
 {
 	g_return_if_fail (porder != NULL);
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_next)
 		RB_PLAY_ORDER_GET_CLASS (porder)->go_next (porder);
+	else if (RB_PLAY_ORDER_GET_CLASS (porder)->get_next)
+		rb_play_order_set_playing_entry (porder,
+						 RB_PLAY_ORDER_GET_CLASS (porder)->get_next (porder));
 }
 
+/**
+ * rb_play_order_has_previous:
+ * @porder: RBPlayOrder instance
+ *
+ * Returns: true if there is an entry before the current entry in the play order.
+ * If not currently playing, returns false.
+ */
 gboolean
 rb_play_order_has_previous (RBPlayOrder* porder)
 {
@@ -451,6 +666,12 @@ rb_play_order_has_previous (RBPlayOrder* porder)
 	return RB_PLAY_ORDER_GET_CLASS (porder)->has_previous (porder);
 }
 
+/**
+ * rb_play_order_get_previous:
+ * @porder: RBPlayOrder instance
+ *
+ * Returns: the previous entry in the play order, or NULL if not currently playing.
+ */
 RhythmDBEntry *
 rb_play_order_get_previous (RBPlayOrder *porder)
 {
@@ -459,20 +680,85 @@ rb_play_order_get_previous (RBPlayOrder *porder)
 	return RB_PLAY_ORDER_GET_CLASS (porder)->get_previous (porder);
 }
 
+/**
+ * rb_play_order_go_previous:
+ * @porder: RBPlayOrder instance
+ *
+ * Moves to the previous entry in the play order.  If not currently playing, does nothing.
+ */
 void
 rb_play_order_go_previous (RBPlayOrder *porder)
 {
 	g_return_if_fail (porder != NULL);
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_previous)
 		RB_PLAY_ORDER_GET_CLASS (porder)->go_previous (porder);
+	else if (RB_PLAY_ORDER_GET_CLASS (porder)->get_previous)
+		rb_play_order_set_playing_entry (porder,
+						 RB_PLAY_ORDER_GET_CLASS (porder)->get_previous (porder));
 }
 
+/**
+ * rb_play_order_model_not_empty:
+ * @porder: RBPlayOrder instance
+ *
+ * Returns: true if the #RhythmDBQueryModel is not empty.
+ * Can be used to implement has_next and has_previous for play orders
+ * that have no beginning or end.
+ */
+gboolean
+rb_play_order_model_not_empty (RBPlayOrder *porder)
+{
+	GtkTreeIter iter;
+	if (!porder->priv->query_model)
+		return FALSE;
+	return gtk_tree_model_get_iter_first (GTK_TREE_MODEL (porder->priv->query_model), &iter);
+}
+
+/**
+ * rb_play_order_update_have_next_previous:
+ * @porder: RBPlayOrder instance
+ *
+ * Updates the have_next and have_previous flags, and emits a signal if they
+ * change.  This is called whenever the play order changes in such a way that
+ * these flags might change.
+ */
+void
+rb_play_order_update_have_next_previous (RBPlayOrder *porder)
+{
+	gboolean have_next = rb_play_order_has_next (porder);
+	gboolean have_previous = rb_play_order_has_previous (porder);
+
+	if ((have_next != porder->priv->have_next) ||
+	    (have_previous != porder->priv->have_previous)) {
+		g_signal_emit (G_OBJECT (porder), rb_play_order_signals[HAVE_NEXT_PREVIOUS_CHANGED],
+			       0, have_next, have_previous);
+		porder->priv->have_next = have_next;
+		porder->priv->have_previous = have_previous;
+	}
+}
+
+/**
+ * rb_play_order_ref_entry_swapped:
+ * @entry: #RhythmDBEntry to reference
+ * @db: #RhythmDB instance
+ *
+ * Utility function that can be used with #RBHistory to implement play orders
+ * that maintain an internal list of entries.
+ */
 void
 rb_play_order_ref_entry_swapped (RhythmDBEntry *entry, RhythmDB *db)
 {
 	rhythmdb_entry_ref (db, entry);
 }
 
+/**
+ * rb_play_order_unref_entry_swapped:
+ * @entry: #RhythmDBEntry to unreference
+ * @db: #RhythmDB instance
+ *
+ * Utility function that can be used with #RBHistory to implement play orders
+ * that maintain an internal list of entries.
+ */
 void
 rb_play_order_unref_entry_swapped (RhythmDBEntry *entry, RhythmDB *db)
 {

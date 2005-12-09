@@ -2273,13 +2273,11 @@ static void
 rb_shell_jump_to_current (RBShell *shell)
 {
 	RBSource *source = rb_shell_player_get_playing_source (shell->priv->player_shell);
-	RBEntryView *songs;
 	RhythmDBEntry *playing;
 
 	g_return_if_fail (source != NULL);
 
-	songs = rb_source_get_entry_view (source);
-	playing = rb_entry_view_get_playing_entry (songs);
+	playing = rb_shell_player_get_playing_entry (shell->priv->player_shell);
 
 	rb_shell_jump_to_entry_with_source (shell, source, playing);
 }
@@ -2932,25 +2930,19 @@ rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating)
 {
 	RBShell *shell = RB_SHELL (proxy);
 	RhythmDBEntry *entry;
-	RBEntryView *view;
-	RBSource *playing_source;
 
 	rb_debug ("setting rating of playing entry to %f", rating);
 
-	playing_source = rb_shell_player_get_playing_source (shell->priv->player_shell);
-	if (playing_source != NULL) {
-		view = rb_source_get_entry_view (playing_source);
-		entry = rb_entry_view_get_playing_entry (view);
-		if (entry != NULL) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_DOUBLE);
-			g_value_set_double (&value, rating);
+	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+	if (entry != NULL) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_DOUBLE);
+		g_value_set_double (&value, rating);
 
-			rhythmdb_entry_set (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
+		rhythmdb_entry_set (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
 
-			g_value_unset (&value);
-			rhythmdb_commit (shell->priv->db);
-		}
+		g_value_unset (&value);
+		rhythmdb_commit (shell->priv->db);
 	}
 }
 

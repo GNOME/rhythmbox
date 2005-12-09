@@ -789,11 +789,15 @@ add_playlist_to_mlcl (RBPlaylistID *playlist_id,
 	gchar *name;
 	RBEntryView *ev;
 	guint num_songs;
+	RhythmDBQueryModel *model;
 	
 	g_object_get (G_OBJECT (playlist_id->source), "name", &name, NULL);
 	
 	ev = rb_source_get_entry_view (playlist_id->source);
-	num_songs = rb_entry_view_get_num_entries (ev);
+
+	g_object_get (G_OBJECT (playlist_id->source), "query-model", &model, NULL);
+	num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+	g_object_unref (G_OBJECT (model));
 	
 	mlit = rb_daap_structure_add (mlcl, RB_DAAP_CC_MLIT);
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, playlist_id->id);
@@ -1040,7 +1044,6 @@ databases_cb (RBDAAPShare *share,
 		} else {
 			RBPlaylistID *id;
 			GList *idl;
-			RBEntryView *ev;
 			guint num_songs;
 			RhythmDBQueryModel *model;
 
@@ -1060,13 +1063,12 @@ databases_cb (RBDAAPShare *share,
 
 			mb.pointer = share->priv->entry_to_id;
 			
-			ev = rb_source_get_entry_view (id->source);
-			num_songs = rb_entry_view_get_num_entries (ev);
+			g_object_get (G_OBJECT (id->source), "query-model", &model, NULL);
+			num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 				
 			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);
 			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) num_songs);
 
-			g_object_get (G_OBJECT (id->source), "query-model", &model, NULL);
 			gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc) add_playlist_entry_to_mlcl, &mb);
 			g_object_unref (model);
 		}

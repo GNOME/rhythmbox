@@ -188,7 +188,6 @@ enum
 	ENTRY_ACTIVATED,
 	CHANGED,
 	SHOW_POPUP,
-	PLAYING_ENTRY_DELETED,
 	HAVE_SEL_CHANGED,
 	SORT_ORDER_CHANGED,
 	LAST_SIGNAL
@@ -349,15 +348,6 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	rb_entry_view_signals[PLAYING_ENTRY_DELETED] =
-		g_signal_new ("playing_entry_deleted",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEntryViewClass, playing_entry_removed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
 	rb_entry_view_signals[HAVE_SEL_CHANGED] =
 		g_signal_new ("have_selection_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -684,27 +674,6 @@ rb_entry_view_get_total_size (RBEntryView *view)
 	return rhythmdb_query_model_get_size (RHYTHMDB_QUERY_MODEL (view->priv->model));
 }
 
-static RhythmDBEntry *
-entry_from_tree_path (RBEntryView *view, GtkTreePath *path)
-{
-	GtkTreeIter entry_iter;
-	RhythmDBEntry *entry;
-
-	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &entry_iter, path));
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->model), &entry_iter, 0,
-			    &entry, -1);
-	return entry;
-}
-
-static inline RhythmDBEntry *
-entry_from_tree_iter (RBEntryView *view, GtkTreeIter *iter)
-{
-	RhythmDBEntry *entry;
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->model), iter, 0,
-			    &entry, -1);
-	return entry;
-}
-
 static gint
 reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReverseSortingData *data)
 {
@@ -931,7 +900,7 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 	RhythmDBEntry *entry;
 	GdkPixbuf *pixbuf;
 
-	entry = entry_from_tree_iter (view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
 
 	if (entry == view->priv->playing_entry && view->priv->playing)
 		pixbuf = view->priv->playing_pixbuf;
@@ -952,7 +921,7 @@ rb_entry_view_rating_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 {
 	RhythmDBEntry *entry;
 
-	entry = entry_from_tree_iter (view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
 
 	g_object_set (G_OBJECT (renderer), "rating", entry->rating, NULL);
 }
@@ -966,7 +935,7 @@ rb_entry_view_long_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *r
 	char *str;
 	gulong val;
 
-	entry = entry_from_tree_iter (data->view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 
 	val = rhythmdb_entry_get_ulong (entry, data->propid);
 
@@ -988,7 +957,7 @@ rb_entry_view_play_count_cell_data_func (GtkTreeViewColumn *column, GtkCellRende
 	gulong i;
 	char *str;
 
-	entry = entry_from_tree_iter (data->view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 
 	i = rhythmdb_entry_get_ulong (entry, data->propid);
 	if (i == 0)
@@ -1011,7 +980,7 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 	gulong duration;
 	char *str;
 
-	entry = entry_from_tree_iter (data->view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 	duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 
 	str = rb_make_duration_string (duration);
@@ -1029,7 +998,7 @@ rb_entry_view_year_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *r
 	int julian;
 	GDate *date;
 
-	entry = entry_from_tree_iter (data->view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 	julian = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
 	
 	if (julian > 0) {
@@ -1051,7 +1020,7 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 	RhythmDBEntry *entry;
 	guint bitrate;
 
-	entry = entry_from_tree_iter (data->view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 
 	bitrate = rhythmdb_entry_get_int (data->view->priv->db, entry,
 					  data->propid);
@@ -1082,7 +1051,7 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 	RhythmDBEntry *entry;
 	const char *str;
 
-	entry = entry_from_tree_iter (data->view, iter);
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 
 	str = rhythmdb_entry_get_string (entry, data->propid);
 
@@ -1622,7 +1591,7 @@ rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 	g_return_if_fail (path_string != NULL);
 
 	path = gtk_tree_path_new_from_string (path_string);
-	entry = entry_from_tree_path (view, path);
+	entry = rhythmdb_query_model_tree_path_to_entry (view->priv->model, path);
 	gtk_tree_path_free (path);
 
 	g_value_init (&value, G_TYPE_DOUBLE);
@@ -1644,7 +1613,7 @@ rb_entry_view_pixbuf_clicked_cb (RBEntryView          *view,
 	g_return_if_fail (path_string != NULL);
 
 	path = gtk_tree_path_new_from_string (path_string);
-	entry = entry_from_tree_path (view, path);
+	entry = rhythmdb_query_model_tree_path_to_entry (view->priv->model, path);
 
 	gtk_tree_path_free (path);
 
@@ -1677,7 +1646,7 @@ rb_entry_view_get_first_entry (RBEntryView *view)
 	GtkTreeIter iter;
 
 	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->model), &iter))
-		return entry_from_tree_iter (view, &iter);
+		return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
 
 	return NULL;
 }
@@ -1697,7 +1666,7 @@ rb_entry_view_get_next_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 	
 	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->model),
 				      &iter))
-		return entry_from_tree_iter (view, &iter);
+		return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
 
 	return NULL;
 }
@@ -1707,7 +1676,6 @@ rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	RhythmDBEntry *ret;
 
 	g_return_val_if_fail (entry != NULL, NULL);
 
@@ -1724,8 +1692,7 @@ rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 
 	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &iter, path));
 	gtk_tree_path_free (path);
-	ret = entry_from_tree_iter (view, &iter);
-	return ret;
+	return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
 }
 
 
@@ -1802,7 +1769,7 @@ rb_entry_view_get_random_entry (RBEntryView *view)
 
 	gtk_tree_path_free (path);
 
-	return entry_from_tree_iter (view, &iter);
+	return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
 }
 
 static gboolean
@@ -1817,7 +1784,7 @@ rb_entry_view_button_press_cb (GtkTreeView *treeview,
 		gtk_tree_view_get_path_at_pos (treeview, event->x, event->y, &path, NULL, NULL, NULL);
 		if (path != NULL) {
 			GList *selected;
-			entry = entry_from_tree_path (view, path);
+			entry = rhythmdb_query_model_tree_path_to_entry (view->priv->model, path);
 
 			selected = rb_entry_view_get_selected_entries (view);
 			
@@ -1903,7 +1870,7 @@ rb_entry_view_row_activated_cb (GtkTreeView *treeview,
 
 	rb_debug ("row activated");
 
-	entry = entry_from_tree_path (view, path);
+	entry = rhythmdb_query_model_tree_path_to_entry (view->priv->model, path);
 
 	rb_debug ("emitting entry activated");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ACTIVATED], 0, entry);
@@ -1915,7 +1882,7 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 			       GtkTreeIter *iter,
 			       RBEntryView *view)
 {
-	RhythmDBEntry *entry = entry_from_tree_path (view, path);
+	RhythmDBEntry *entry = rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model), path);
 
 	rb_debug ("row added");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
@@ -1927,17 +1894,8 @@ rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 			      GtkTreePath *path,
 			      RBEntryView *view)
 {
-	RhythmDBEntry *entry = entry_from_tree_path (view, path);
+	RhythmDBEntry *entry = rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model), path);
 
-	if (entry == view->priv->playing_entry) {
-		view->priv->playing_entry = NULL;
-		
-		rb_debug ("emitting playing entry destroyed");
-		
-		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[PLAYING_ENTRY_DELETED],
-			       0, view->priv->playing_entry);
-	}
-	
 	rb_debug ("row deleted");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_DELETED], 0, entry);
 	queue_changed_sig (view);

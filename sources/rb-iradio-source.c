@@ -532,9 +532,14 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 static char *
 impl_get_status (RBSource *asource)
 {
- 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	char *ret;
-	guint num_entries = rb_entry_view_get_num_entries (source->priv->stations);
+	RhythmDBQueryModel *model;
+	guint num_entries;
+
+	g_object_get (G_OBJECT (asource), "query-model", &model, NULL);
+	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+	g_object_unref (G_OBJECT (model));
+
 	ret = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
 			       num_entries);
 	return ret;
@@ -727,6 +732,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	model = GTK_TREE_MODEL (query_model);
 	
 	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (query_model));
+	g_object_set (G_OBJECT (source), "query-model", query_model, NULL);
 
 	/* we rely on getting signals from all_query to update the genre view.
 	 * we keep it marked as connected so it doesn't just eat the signals.

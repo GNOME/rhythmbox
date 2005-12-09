@@ -74,7 +74,6 @@ typedef struct
 
 	void (*entry_selected)          (RBEntryView *view, RhythmDBEntry *entry);
 	void (*entry_activated)         (RBEntryView *view, RhythmDBEntry *entry);
-	void (*playing_entry_removed)   (RBEntryView *view);
 
 	void (*changed)                (RBEntryView *view);
 	void (*have_selection_changed) (RBEntryView *view, gboolean have_selection);

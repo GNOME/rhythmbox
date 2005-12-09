@@ -60,7 +60,15 @@ static void default_delete_thyself (RBSource *source);
 static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static gboolean default_disconnect (RBSource *source);
+static char *default_get_status (RBSource *source);
 
+static void rb_source_row_deleted_cb (GtkTreeModel *model,
+				      GtkTreePath *path,
+				      RBSource *source);
+static void rb_source_row_inserted_cb (GtkTreeModel *model,
+				       GtkTreePath *path,
+				       GtkTreeIter *iter,
+				       RBSource *source);
 G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, GTK_TYPE_HBOX)
 #define RB_SOURCE_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_SOURCE, RBSourcePrivate))
 
@@ -70,6 +78,8 @@ struct _RBSourcePrivate
 	
 	RBShell *shell;
 	gboolean visible;
+	RhythmDBQueryModel *query_model;
+	guint idle_status_changed_id;
 };
 
 enum
@@ -78,7 +88,8 @@ enum
 	PROP_NAME,
 	PROP_SHELL,
 	PROP_UI_MANAGER,
-	PROP_VISIBLE
+	PROP_VISIBLE,
+	PROP_QUERY_MODEL
 };
 
 enum
@@ -122,6 +133,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_deactivate = default_deactivate;
 	klass->impl_disconnect = default_disconnect;
 	klass->impl_try_playlist = default_try_playlist;
+	klass->impl_get_status = default_get_status;
 
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
@@ -160,7 +172,15 @@ rb_source_class_init (RBSourceClass *klass)
 							       "visibility",
 							       "Whether the source should be displayed in the source list",
 							       TRUE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+							       G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_QUERY_MODEL,
+					 g_param_spec_object ("query-model",
+						 	      "RhythmDBQueryModel",
+							      "RhythmDBQueryModel object",
+							      RHYTHMDB_TYPE_QUERY_MODEL,
+							      G_PARAM_READWRITE));
 
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
@@ -221,6 +241,11 @@ rb_source_finalize (GObject *object)
 
 	rb_debug ("Finalizing view %p", source);
 
+	if (priv->idle_status_changed_id)
+		g_source_remove (priv->idle_status_changed_id);
+	
+	g_object_unref (G_OBJECT (priv->query_model));
+	
 	g_free (priv->name);
 
 	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
@@ -233,6 +258,8 @@ rb_source_set_property (GObject *object,
 		      GParamSpec *pspec)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
+	RhythmDBQueryModel *model;
+	RBSource *source = RB_SOURCE (object);
 
 	switch (prop_id)
 	{
@@ -248,6 +275,37 @@ rb_source_set_property (GObject *object,
 		rb_debug ("Setting %s visibility to %u", 
 			  priv->name, 
 			  priv->visible);
+		break;
+	case PROP_QUERY_MODEL:
+		model = g_value_get_object (value); 
+		if (priv->query_model == model)
+			return;
+
+		if (priv->query_model) {
+			g_object_unref (G_OBJECT (priv->query_model));
+
+			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
+							      G_CALLBACK (rb_source_row_deleted_cb),
+							      source);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
+							      G_CALLBACK (rb_source_row_inserted_cb),
+							      source);
+		}
+		
+		priv->query_model = model;
+		if (priv->query_model) {
+			g_object_ref (G_OBJECT (model));
+
+			g_signal_connect_object (G_OBJECT (model), "row_deleted",
+						 G_CALLBACK (rb_source_row_deleted_cb),
+						 source, 0);
+			g_signal_connect_object (G_OBJECT (model), "row_inserted",
+						 G_CALLBACK (rb_source_row_inserted_cb),
+						 source, 0);
+		}
+
+		/* g_object_notify (G_OBJECT (source), "query-model"); */
+		rb_source_notify_status_changed (source);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -284,10 +342,23 @@ rb_source_get_property (GObject *object,
 		g_object_unref (G_OBJECT(manager));
 		break;
 	}
+	case PROP_QUERY_MODEL:
+		g_value_set_object (value, priv->query_model);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+static char *
+default_get_status (RBSource *source)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+	if (priv->query_model)
+		return rhythmdb_query_model_compute_status_normal (priv->query_model);
+
+	return g_strdup ("");
 }
 
 /**
@@ -688,4 +759,38 @@ gboolean rb_source_disconnect (RBSource *source)
 
 	return klass->impl_disconnect (source);
 }
+
+static void
+rb_source_row_inserted_cb (GtkTreeModel *model,
+			   GtkTreePath *path,
+			   GtkTreeIter *iter,
+			   RBSource *source)
+{
+	rb_source_notify_status_changed (source);
+}
+
+static gboolean
+idle_emit_status_changed (RBSource *source)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+	rb_source_notify_status_changed (source);
+	priv->idle_status_changed_id = 0;
+	return FALSE;
+}
+
+static void
+rb_source_row_deleted_cb (GtkTreeModel *model,
+			  GtkTreePath *path,
+			  RBSource *source)
+{
+	/* Emit the signal after the deletion has actually been processed,
+	 * since if we update the status now it'll show the old state.
+	 */
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+	if (priv->idle_status_changed_id == 0) {
+		priv->idle_status_changed_id = 
+			g_idle_add ((GSourceFunc) idle_emit_status_changed, source);
+	}
+}
+
 

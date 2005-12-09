@@ -88,6 +88,16 @@ gboolean		rhythmdb_query_model_entry_to_iter(RhythmDBQueryModel *model,
 
 gboolean		rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model);
 
+RhythmDBEntry *		rhythmdb_query_model_tree_path_to_entry(RhythmDBQueryModel *model,
+								GtkTreePath *path);
+RhythmDBEntry *		rhythmdb_query_model_iter_to_entry(RhythmDBQueryModel *model,
+							   GtkTreeIter *entry_iter);
+RhythmDBEntry *		rhythmdb_query_model_get_next_from_entry(RhythmDBQueryModel *model,
+								 RhythmDBEntry *entry);
+RhythmDBEntry *		rhythmdb_query_model_get_previous_from_entry(RhythmDBQueryModel *model,
+								     RhythmDBEntry *entry);
+char *			rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model);
+
 void			rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 							     GCompareDataFunc sort_func,
 							     gpointer user_data,

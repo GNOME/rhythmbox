@@ -203,7 +203,6 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 
 
 /* source methods */
-static char *impl_get_status 				(RBSource *source);
 static const char *impl_get_browser_key 		(RBSource *source);
 static GdkPixbuf *impl_get_pixbuf 			(RBSource *source);
 static RBEntryView *impl_get_entry_view 		(RBSource *source);
@@ -321,7 +320,6 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	object_class->set_property = rb_podcast_source_set_property;
 	object_class->get_property = rb_podcast_source_get_property;
 
-	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
@@ -817,18 +815,6 @@ impl_handle_eos (RBSource *asource)
 	return RB_SOURCE_EOF_NEXT;
 }
 
-static char *
-impl_get_status (RBSource *asource)
-{
-	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
-	gchar *status;
-
-	status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->posts),
-						 rb_entry_view_get_duration (source->priv->posts),
-						 rb_entry_view_get_total_size (source->priv->posts));
-	return status;
-}
-
 static const char *
 impl_get_browser_key (RBSource *asource)
 {
@@ -1166,6 +1152,7 @@ rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
 
 	rb_debug ("setting empty model");
 	rb_entry_view_set_model (source->priv->posts, query_model);
+	g_object_set (G_OBJECT (source), "query-model", query_model, NULL);
 
 	rb_debug ("doing query");
 	query = construct_query_from_selection (source);

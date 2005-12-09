@@ -1029,6 +1029,68 @@ rhythmdb_query_model_entry_to_iter (RhythmDBQueryModel *model, RhythmDBEntry *en
 	return TRUE;
 }
 
+RhythmDBEntry *
+rhythmdb_query_model_tree_path_to_entry (RhythmDBQueryModel *model,
+					 GtkTreePath *path)
+{
+	GtkTreeIter entry_iter;
+
+	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &entry_iter, path));
+	return rhythmdb_query_model_iter_to_entry (model, &entry_iter);
+}
+
+RhythmDBEntry *
+rhythmdb_query_model_iter_to_entry (RhythmDBQueryModel *model,
+				     GtkTreeIter *entry_iter)
+{
+	RhythmDBEntry *entry;
+	gtk_tree_model_get (GTK_TREE_MODEL (model), entry_iter, 0, &entry, -1);
+	return entry;
+}
+
+RhythmDBEntry *
+rhythmdb_query_model_get_next_from_entry (RhythmDBQueryModel *model,
+					  RhythmDBEntry *entry)
+{
+	GtkTreeIter iter;
+
+	g_return_val_if_fail (entry != NULL, NULL);
+
+	if (entry && rhythmdb_query_model_entry_to_iter (model, entry, &iter)) {
+		if (!gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter))
+			return NULL;
+	} else {
+		/* If the entry isn't in the model, the "next" entry is the first. */
+		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
+	}
+	
+	return rhythmdb_query_model_iter_to_entry (model, &iter);
+}
+
+RhythmDBEntry *
+rhythmdb_query_model_get_previous_from_entry (RhythmDBQueryModel *model,
+					      RhythmDBEntry *entry)
+{
+	GtkTreeIter iter;
+	GtkTreePath *path;
+
+	g_return_val_if_fail (entry != NULL, NULL);
+
+	if (!rhythmdb_query_model_entry_to_iter (model, entry, &iter))
+		return NULL;
+
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
+	g_assert (path);
+	if (!gtk_tree_path_prev (path)) {
+		gtk_tree_path_free (path);
+		return NULL;
+	}
+
+	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path));
+	gtk_tree_path_free (path);
+	return rhythmdb_query_model_iter_to_entry (model, &iter);
+}
+
 static gboolean
 rhythmdb_query_model_row_draggable (RbTreeDragSource *dragsource,
 					  GList *paths)
@@ -1412,6 +1474,15 @@ rhythmdb_query_model_iter_parent (GtkTreeModel *tree_model,
 {
 	return FALSE;
 }
+
+char *
+rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model)
+{
+	return rhythmdb_compute_status_normal (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL),
+					       rhythmdb_query_model_get_duration (model),
+					       rhythmdb_query_model_get_size (model));
+}
+
 
 void
 rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,

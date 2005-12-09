@@ -49,12 +49,14 @@ static RhythmDBEntry* rb_random_play_order_get_previous (RBPlayOrder* porder);
 static void rb_random_play_order_go_previous (RBPlayOrder* porder);
 
 static void rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db);
-static void rb_random_playing_entry_changed (RBPlayOrder *porder, RhythmDBEntry *entry);
-static void rb_random_entry_view_changed (RBPlayOrder *porder);
+static void rb_random_playing_entry_changed (RBPlayOrder *porder, 
+					     RhythmDBEntry *old_entry, 
+					     RhythmDBEntry *new_entry);
+static void rb_random_query_model_changed (RBPlayOrder *porder);
 static void rb_random_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry);
 
-static void rb_random_handle_entry_view_changed (RBRandomPlayOrder *rorder);
-static void rb_random_filter_history (RBRandomPlayOrder *rorder, RBEntryView *entry_view);
+static void rb_random_handle_query_model_changed (RBRandomPlayOrder *rorder);
+static void rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model);
 
 struct RBRandomPlayOrderPrivate
 {
@@ -64,40 +66,12 @@ struct RBRandomPlayOrderPrivate
 	 * over the real one when go_{next,previous} are called. */
 	RBHistory *tentative_history;
 
-	gboolean entry_view_changed;
+	gboolean query_model_changed;
 };
 
+G_DEFINE_TYPE (RBRandomPlayOrder, rb_random_play_order, RB_TYPE_PLAY_ORDER)
 #define RB_RANDOM_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RANDOM_PLAY_ORDER, RBRandomPlayOrderPrivate))
 
-static RBPlayOrderClass *parent_class = NULL;
-
-GType
-rb_random_play_order_get_type (void)
-{
-	static GType rb_random_play_order_type = 0;
-
-	if (rb_random_play_order_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBRandomPlayOrderClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_random_play_order_class_init,
-			NULL,
-			NULL,
-			sizeof (RBRandomPlayOrder),
-			0,
-			(GInstanceInitFunc) rb_random_play_order_init
-		};
-
-		rb_random_play_order_type = g_type_register_static (RB_TYPE_PLAY_ORDER,
-				"RBRandomPlayOrder",
-				&our_info, 0);
-	}
-
-	return rb_random_play_order_type;
-}
 
 static void
 rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
@@ -105,17 +79,14 @@ rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBPlayOrderClass *porder;
 
-	parent_class = g_type_class_peek_parent (klass);
-
 	object_class->finalize = rb_random_play_order_finalize;
-
 
 	porder = RB_PLAY_ORDER_CLASS (klass);
 	porder->db_changed = rb_random_db_changed;
 	porder->playing_entry_changed = rb_random_playing_entry_changed;
-	porder->entry_added = (void (*)(RBPlayOrder*,RhythmDBEntry*))rb_random_entry_view_changed;
-	porder->entry_removed = (void (*)(RBPlayOrder*,RhythmDBEntry*))rb_random_entry_view_changed;
-	porder->entries_replaced = rb_random_entry_view_changed;
+	porder->entry_added = (void (*)(RBPlayOrder*,RhythmDBEntry*))rb_random_query_model_changed;
+	porder->entry_removed = (void (*)(RBPlayOrder*,RhythmDBEntry*))rb_random_query_model_changed;
+	porder->query_model_changed = rb_random_query_model_changed;
 	porder->db_entry_deleted = rb_random_db_entry_deleted;
 
 	porder->get_next = rb_random_play_order_get_next;
@@ -136,7 +107,7 @@ rb_random_play_order_init (RBRandomPlayOrder *rorder)
 					       	rb_play_order_get_db (RB_PLAY_ORDER (rorder)));
 	rb_history_set_maximum_size (rorder->priv->history, 50);
 
-	rorder->priv->entry_view_changed = TRUE;
+	rorder->priv->query_model_changed = TRUE;
 }
 
 static void
@@ -153,7 +124,7 @@ rb_random_play_order_finalize (GObject *object)
 	if (rorder->priv->tentative_history)
 		g_object_unref (G_OBJECT (rorder->priv->tentative_history));
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_random_play_order_parent_class)->finalize (object);
 }
 
 static double
@@ -181,61 +152,61 @@ typedef struct {
 } EntryWeight;
 
 static GArray *
-get_entry_view_contents (RBRandomPlayOrder *rorder, RBEntryView *entry_view)
+get_query_model_contents (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 {
 	guint num_entries;
 	guint i;
 	RhythmDB *db;
-	double total_weight;
+	double weight = 0.0;
+	double cumulative_weight = 0.0;
+	GtkTreeIter iter;
 	GArray *result = g_array_new (FALSE, FALSE, sizeof (EntryWeight));
 
-	if (entry_view == NULL)
+	if (model == NULL)
 		return result;
 
-	num_entries = rb_entry_view_get_num_entries (entry_view);
+	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	if (num_entries == 0)
 		return result;
 
 	g_array_set_size (result, num_entries);
-	g_object_get (G_OBJECT (entry_view),
-		      "db", &db,
-		      NULL);
+	db = rb_play_order_get_db (RB_PLAY_ORDER (rorder));
 
-	g_array_index (result, EntryWeight, 0).entry = rb_entry_view_get_first_entry (entry_view);
-	g_array_index (result, EntryWeight, 0).weight
-		= rb_random_play_order_get_entry_weight (rorder, db, g_array_index (result, EntryWeight, 0).entry);
-	for (i=1; i<num_entries; ++i) {
-		g_array_index (result, EntryWeight, i).entry
-			= rb_entry_view_get_next_from_entry (entry_view, g_array_index (result, EntryWeight, i-1).entry);
-		g_array_index (result, EntryWeight, i).weight
-			= rb_random_play_order_get_entry_weight (rorder, db, g_array_index (result, EntryWeight, i).entry);
+	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
+		return result;
 
-	}
+	i = 0;
+	do {
+		RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+		if (!entry)
+			continue;
+		weight = rb_random_play_order_get_entry_weight (rorder, db, entry);
 
-	total_weight = 0.0;
-	for (i=0; i < num_entries; ++i) {
-		g_array_index (result, EntryWeight, i).cumulative_weight = total_weight;
-		total_weight += g_array_index (result, EntryWeight, i).weight;
-	}
+		g_array_index (result, EntryWeight, i).entry = entry;
+		g_array_index (result, EntryWeight, i).weight = weight;
+		g_array_index (result, EntryWeight, i).cumulative_weight = cumulative_weight;
+		cumulative_weight += weight;
+		i++;
+	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
 
 	return result;
 }
 
 static void
-rb_random_handle_entry_view_changed (RBRandomPlayOrder *rorder)
+rb_random_handle_query_model_changed (RBRandomPlayOrder *rorder)
 {
-	if (rorder->priv->entry_view_changed) {
-		RBEntryView *entry_view;
-		entry_view = rb_play_order_get_entry_view (RB_PLAY_ORDER (rorder));
+	RhythmDBQueryModel *model;
 
-		rb_random_filter_history (rorder, entry_view);
+	if (!rorder->priv->query_model_changed)
+		return;
 
-		rorder->priv->entry_view_changed = FALSE;
-	}
+	model = rb_play_order_get_query_model (RB_PLAY_ORDER (rorder));
+	rb_random_filter_history (rorder, model);
+	rorder->priv->query_model_changed = FALSE;
 }
 
 static void
-rb_random_filter_history (RBRandomPlayOrder *rorder, RBEntryView *entry_view)
+rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 {
 	GPtrArray *history_contents;
 	int i;
@@ -246,13 +217,21 @@ rb_random_filter_history (RBRandomPlayOrder *rorder, RBEntryView *entry_view)
 	}
 	history_contents = rb_history_dump (rorder->priv->history);
 	for (i=0; i < history_contents->len; ++i) {
-		if (!entry_view || !rb_entry_view_get_entry_contained (entry_view, g_ptr_array_index (history_contents, i))) {
+		gboolean remove = TRUE;
+		if (model) {
+			GtkTreeIter iter;
+			if (rhythmdb_query_model_entry_to_iter (model, g_ptr_array_index (history_contents, i), &iter))
+				remove = FALSE;
+		}
+
+		if (remove) {
 			if (!rorder->priv->tentative_history)
 				rorder->priv->tentative_history
 				       	= rb_history_clone (rorder->priv->history,
 							    (GFunc) rb_play_order_ref_entry_swapped,
 							    rb_play_order_get_db (RB_PLAY_ORDER (rorder)));
-			rb_history_remove_entry (rorder->priv->tentative_history, g_ptr_array_index (history_contents, i));
+			rb_history_remove_entry (rorder->priv->tentative_history, 
+						 g_ptr_array_index (history_contents, i));
 		}
 	}
 
@@ -287,7 +266,7 @@ rb_random_get_total_weight (GArray *weights)
 static RhythmDBEntry*
 rb_random_play_order_pick_entry (RBRandomPlayOrder *rorder)
 {
-	/* This is O(N) because we traverse the entry-view to get the entries
+	/* This is O(N) because we traverse the query model to get the entries
 	 * and weights.
 	 *
 	 * The general idea of this algorithm is that there is a line segment
@@ -302,11 +281,11 @@ rb_random_play_order_pick_entry (RBRandomPlayOrder *rorder)
 	int high, low;
 	GArray *entry_weights;
 	RhythmDBEntry *entry;
-	RBEntryView *entry_view;
+	RhythmDBQueryModel *model;
 
-	entry_view = rb_play_order_get_entry_view (RB_PLAY_ORDER (rorder));
+	model = rb_play_order_get_query_model (RB_PLAY_ORDER (rorder));
 
-	entry_weights = get_entry_view_contents (rorder, entry_view);
+	entry_weights = get_query_model_contents (rorder, model);
 
 	total_weight = rb_random_get_total_weight (entry_weights);
 	if (total_weight == 0.0)
@@ -335,26 +314,33 @@ rb_random_play_order_get_next (RBPlayOrder* porder)
 {
 	RBRandomPlayOrder *rorder;
 	RhythmDBEntry *entry;
+	RBHistory *history;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder), NULL);
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
 
-	rb_random_handle_entry_view_changed (rorder);
+	rb_random_handle_query_model_changed (rorder);
+	history = get_history (rorder);
 
-	if (rb_history_current (get_history (rorder)) == NULL
-			|| (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (rorder))
-				&& rb_history_current (get_history (rorder)) == rb_history_last (get_history (rorder)))) {
+	entry = rb_play_order_get_playing_entry (porder);
+	if (rb_history_current (history) == NULL
+	    || (entry == rb_history_current (history)
+	        && rb_history_current (history) == rb_history_last (history))) {
 
 		rb_debug ("choosing random entry");
 		entry = rb_random_play_order_pick_entry (rorder);
+		if (entry) {
+			rhythmdb_entry_ref (rb_play_order_get_db (porder), entry);
+			rb_history_append (history, entry);
+		}
 	} else {
 		rb_debug ("choosing enqueued entry");
-		if (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (rorder)))
-			entry = rb_history_next (get_history (rorder));
+		if (entry == rb_history_current (history))
+			entry = rb_history_next (history);
 		else
-			entry = rb_history_current (get_history (rorder));
+			entry = rb_history_current (history);
 	}
 
 	return entry;
@@ -364,17 +350,20 @@ static void
 rb_random_play_order_go_next (RBPlayOrder* porder)
 {
 	RBRandomPlayOrder *rorder;
+	RhythmDBEntry *entry;
+	RBHistory *history;
 
 	g_return_if_fail (porder != NULL);
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
-
-	if (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (rorder)))
-		rb_history_go_next (get_history (rorder));
-	else {
-		/* Leave the current entry current */
-	}
+	history = get_history (rorder);
+	
+	g_object_get (G_OBJECT (rorder), "playing-entry", &entry, NULL);
+	g_assert (entry == NULL || entry == rb_history_current (history));
+	if (entry == rb_history_current (history))
+		rb_history_go_next (history);
+	rb_play_order_set_playing_entry (porder, rb_history_current (history));
 }
 
 static RhythmDBEntry*
@@ -384,12 +373,10 @@ rb_random_play_order_get_previous (RBPlayOrder* porder)
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder), NULL);
-	/* It doesn't make sense to call get_previous when the player is stopped */
-	g_return_val_if_fail (rb_play_order_player_is_playing (porder), NULL);
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
 
-	rb_random_handle_entry_view_changed (rorder);
+	rb_random_handle_query_model_changed (rorder);
 
 	rb_debug ("choosing history entry");
 	return rb_history_previous (get_history (rorder));
@@ -399,15 +386,18 @@ static void
 rb_random_play_order_go_previous (RBPlayOrder* porder)
 {
 	RBRandomPlayOrder *rorder;
+	RBHistory *history;
 
 	g_return_if_fail (porder != NULL);
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
-	/* It doesn't make sense to call get_previous when the player is stopped */
+	/* It doesn't make sense to call go_previous when the player is stopped */
 	g_return_if_fail (rb_play_order_player_is_playing (porder));
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
+	history = get_history (rorder);
 
-	rb_history_go_previous (get_history (rorder));
+	rb_history_go_previous (history);
+	rb_play_order_set_playing_entry (porder, rb_history_current (history));
 }
 
 static void
@@ -423,7 +413,9 @@ rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db)
 }
 
 static void
-rb_random_playing_entry_changed (RBPlayOrder *porder, RhythmDBEntry *entry)
+rb_random_playing_entry_changed (RBPlayOrder *porder, 
+				 RhythmDBEntry *old_entry,
+				 RhythmDBEntry *new_entry)
 {
 	RBRandomPlayOrder *rorder;
 
@@ -432,21 +424,21 @@ rb_random_playing_entry_changed (RBPlayOrder *porder, RhythmDBEntry *entry)
 
 	rb_random_commit_history (rorder);
 
-	if (entry) {
-		if (entry == rb_history_current (get_history (rorder))) {
+	if (new_entry) {
+		if (new_entry == rb_history_current (get_history (rorder))) {
 			/* Do nothing */
 		} else {
-			rhythmdb_entry_ref (rb_play_order_get_db (porder), entry);
-			rb_history_set_playing (get_history (rorder), entry);
+			rhythmdb_entry_ref (rb_play_order_get_db (porder), new_entry);
+			rb_history_set_playing (get_history (rorder), new_entry);
 		}
 	}
 }
 
 static void
-rb_random_entry_view_changed (RBPlayOrder *porder)
+rb_random_query_model_changed (RBPlayOrder *porder)
 {
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
-	RB_RANDOM_PLAY_ORDER (porder)->priv->entry_view_changed = TRUE;
+	RB_RANDOM_PLAY_ORDER (porder)->priv->query_model_changed = TRUE;
 }
 
 static void

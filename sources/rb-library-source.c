@@ -120,7 +120,6 @@ static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
-static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
@@ -253,7 +252,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	object_class->set_property = rb_library_source_set_property;
 	object_class->get_property = rb_library_source_get_property;
 
-	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
@@ -980,18 +978,6 @@ songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source)
 	rb_entry_view_resort_model (view);
 }
 
-static char *
-impl_get_status (RBSource *asource)
-{
-	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	gchar *status;
-
-	status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-						 rb_entry_view_get_duration (source->priv->songs),
-						 rb_entry_view_get_total_size (source->priv->songs));
-	return status;
-}
-
 static const char *
 impl_get_browser_key (RBSource *source)
 {
@@ -1639,6 +1625,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 
 	rb_debug ("setting empty model");
 	rb_entry_view_set_model (source->priv->songs, query_model);
+	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
 
 	query = construct_query_from_selection (source);
 	

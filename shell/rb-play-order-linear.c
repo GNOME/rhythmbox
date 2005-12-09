@@ -30,33 +30,7 @@ static void rb_linear_play_order_class_init (RBLinearPlayOrderClass *klass);
 static RhythmDBEntry* rb_linear_play_order_get_next (RBPlayOrder* method);
 static RhythmDBEntry* rb_linear_play_order_get_previous (RBPlayOrder* method);
 
-GType
-rb_linear_play_order_get_type (void)
-{
-	static GType rb_linear_play_order_type = 0;
-
-	if (rb_linear_play_order_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBLinearPlayOrderClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_linear_play_order_class_init,
-			NULL,
-			NULL,
-			sizeof (RBLinearPlayOrder),
-			0,
-			NULL
-		};
-
-		rb_linear_play_order_type = g_type_register_static (RB_TYPE_PLAY_ORDER,
-				"RBLinearPlayOrder",
-				&our_info, 0);
-	}
-
-	return rb_linear_play_order_type;
-}
+G_DEFINE_TYPE (RBLinearPlayOrder, rb_linear_play_order, RB_TYPE_PLAY_ORDER)
 
 RBPlayOrder *
 rb_linear_play_order_new (RBShellPlayer *player)
@@ -78,43 +52,50 @@ rb_linear_play_order_class_init (RBLinearPlayOrderClass *klass)
 	porder->get_previous = rb_linear_play_order_get_previous;
 }
 
+static void
+rb_linear_play_order_init (RBLinearPlayOrder *porder)
+{
+}
+
 static RhythmDBEntry* 
 rb_linear_play_order_get_next (RBPlayOrder* porder)
 {
-	RBEntryView *entry_view;
+	RhythmDBQueryModel *model;
 	RhythmDBEntry *entry;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_LINEAR_PLAY_ORDER (porder), NULL);
 
-	entry_view = rb_play_order_get_entry_view (porder);
-	/* Does this interfere with starting from not playing? */
-	if (entry_view == NULL)
+	model = rb_play_order_get_query_model (porder);
+	if (model == NULL)
 		return NULL;
 
-	rb_debug ("choosing next linked entry");
-	entry = rb_entry_view_get_next_entry (entry_view);
-
-	if (entry == NULL
-			&& rb_entry_view_get_playing_entry (entry_view) == NULL) {
-		rb_debug ("Player is stopped, picking first entry");
-		entry = rb_entry_view_get_first_entry (entry_view);
+	g_object_get (porder, "playing-entry", &entry, NULL);
+	if (entry) {
+		return rhythmdb_query_model_get_next_from_entry (model, entry);
+	} else {
+		GtkTreeIter iter;
+		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
+			return NULL;
+		return rhythmdb_query_model_iter_to_entry (model, &iter);
 	}
-
-	return entry;
 }
 
 static RhythmDBEntry*
 rb_linear_play_order_get_previous (RBPlayOrder* porder)
 {
-	RBEntryView *entry_view;
+	RhythmDBQueryModel *model;
+	RhythmDBEntry *entry;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_LINEAR_PLAY_ORDER (porder), NULL);
 
-	entry_view = rb_play_order_get_entry_view (porder);
-	g_return_val_if_fail (entry_view != NULL, NULL);
+	model = rb_play_order_get_query_model (porder);
+	if (model == NULL)
+		return NULL;
 
-	rb_debug ("choosing previous linked entry");
-	return rb_entry_view_get_previous_entry (entry_view);
+	g_object_get (porder, "playing-entry", &entry, NULL);
+	if (entry == NULL)
+		return NULL;
+	return rhythmdb_query_model_get_previous_from_entry (model, entry);
 }
