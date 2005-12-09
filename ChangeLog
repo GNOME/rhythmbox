@@ -1,5 +1,10 @@
 2005-12-09  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac: drop the minimum gstreamer version back down, it
+	accidently got pushed up in the gst 0.10 patch. Closes bug 323561.
+
+2005-12-09  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-song-info.c: (rb_song_info_class_init),
 	(rb_song_info_show), (rb_song_info_constructor),
 	(rb_song_info_finalize), (rb_song_info_backward_clicked_cb),
