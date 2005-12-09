@@ -2102,14 +2102,10 @@ rhythmdb_save_thread_main (RhythmDB *db)
 
 	db->priv->saving = TRUE;
 
-	g_mutex_unlock (db->priv->saving_mutex);
-
 	rb_debug ("saving rhythmdb");
 			
 	klass = RHYTHMDB_GET_CLASS (db);
 	klass->impl_save (db);
-
-	g_mutex_lock (db->priv->saving_mutex);
 
 	db->priv->saving = FALSE;
 	db->priv->dirty = FALSE;

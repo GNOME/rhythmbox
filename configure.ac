@@ -635,7 +635,6 @@ help/C/Makefile
 help/ja/Makefile
 po/Makefile.in
 tests/Makefile
-rhythmbox.spec
 doc/Makefile
 doc/reference/Makefile
 ])

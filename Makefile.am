@@ -13,8 +13,6 @@ EXTRA_DIST = 			\
 	intltool-merge.in	\
 	intltool-update.in	\
 	intltool-extract.in	\
-	rhythmbox.spec		\
-	rhythmbox.spec.in	\
 	MAINTAINERS		\
 	MAINTAINERS.old		\
 	DOCUMENTERS		\

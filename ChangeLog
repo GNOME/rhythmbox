@@ -1,3 +1,12 @@
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
+	* Makefile.am:
+	* configure.ac: remove the rpm spec files, so that automake works.
+	oops
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_save_thread_main): fix a trivial
+	locking issue
+
 2005-12-09  James Livingston  <jrl@ids.org.au>
 
 	* debian/: try to get cvs to actually remove the files
