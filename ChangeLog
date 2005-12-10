@@ -1,5 +1,12 @@
 2005-12-10  James Livingston  <jrl@ids.org.au>
 
+	* player/rb-recorder-gst.c: (rb_recorder_get_default_drive):
+	* sources/rb-playlist-source-recorder.c:
+	(_nautilus_burn_drive_new_from_path): make more of the libnautilusburn
+	stuff not use the deprecated API when compiled against 2.13
+
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
 	patch by: Alex Lancaster <alexl@users.sourceforge.net>
 
 	* widgets/rb-song-info.c: (rb_song_info_sync_entry_single): fix

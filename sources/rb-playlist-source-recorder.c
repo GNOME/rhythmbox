@@ -56,6 +56,7 @@ extern char *mkdtemp (char *template);
 #endif
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
+#define nautilus_burn_drive_ref nautilus_burn_drive_copy
 #endif
 
 #include "rb-recorder.h"
@@ -906,7 +907,7 @@ _nautilus_burn_drive_new_from_path (const char *device)
         for (l = drives; l != NULL; l = l->next) {
                 NautilusBurnDrive *d = l->data;
                 if (g_str_equal (device, d->device)) {
-                        drive = nautilus_burn_drive_copy (d);
+                        drive = nautilus_burn_drive_ref (d);
                 }
         }
 

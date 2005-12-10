@@ -49,6 +49,7 @@
 #endif
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
+#define nautilus_burn_drive_ref nautilus_burn_drive_copy
 #endif
 
 
@@ -227,7 +228,7 @@ rb_recorder_get_default_drive (void)
         drives = nautilus_burn_drive_get_list (TRUE, FALSE);
 
         if (drives)
-                drive = nautilus_burn_drive_copy ((NautilusBurnDrive*) drives->data);
+                drive = nautilus_burn_drive_ref ((NautilusBurnDrive*) drives->data);
 
         g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
         g_list_free (drives);
