@@ -1815,6 +1815,13 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 {
 	GtkTreePath *path;
 
+	/* It's possible to we can be asked to scroll the play queue's entry
+	 * view to the playing entry before the view has ever been displayed.
+	 * This will result in gtk+ warnings, so we avoid it in this case.
+	 */
+	if (!GTK_WIDGET_REALIZED (view))
+		return;
+
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), iter);
 	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
 				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),

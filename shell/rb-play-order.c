@@ -39,6 +39,7 @@
 #include "rb-play-order-random-by-age.h"
 #include "rb-play-order-random-by-rating.h"
 #include "rb-play-order-random-by-age-and-rating.h"
+#include "rb-play-order-queue.h"
 
 static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
@@ -272,6 +273,7 @@ rb_play_order_get_orders (void)
 		{ "random-by-age", N_("Random by time since last play"), rb_random_play_order_by_age_new, TRUE, FALSE },
 		{ "random-by-rating", N_("Random by rating"), rb_random_play_order_by_rating_new, TRUE, FALSE },
 		{ "random-by-age-and-rating", N_("Random by time since last play and rating"), rb_random_play_order_by_age_and_rating_new, TRUE, FALSE },
+		{ "queue", N_("Linear, removing entries once played"), rb_queue_play_order_new, FALSE, FALSE },
 		{ NULL, NULL, NULL },
 	};
 	return orders;

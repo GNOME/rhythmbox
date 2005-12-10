@@ -135,6 +135,18 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/sourcelist_height</key>
+	<applyto>/apps/rhythmbox/state/sourcelist_height</applyto>
+	<owner>rhythmbox</owner>
+	<type>int</type>
+	<default>300</default>
+	<locale name="C">
+	  <short>Source list height</short>
+	  <long>Height of the source list when the play queue is shown as a sidebar.</long>
+	</locale>
+      </schema>
+
+      <schema>
         <key>/schemas/apps/rhythmbox/ui/sourcelist_hidden</key>
 	<applyto>/apps/rhythmbox/ui/sourcelist_hidden</applyto>
 	<owner>rhythmbox</owner>
@@ -165,6 +177,17 @@
 	<locale name="C">
 	<short>Statusbar visibility</short>
 	<long>If true, the statusbar is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/queue_as_sidebar</key>
+	<applyto>/apps/rhythmbox/ui/queue_as_sidebar</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Queue display type</short>
+	<long>If true, the play queue is displayed as a sidebar. If false, the play queue is displayed as a source in the source list.</long>
 	</locale>
       </schema>
       <schema>

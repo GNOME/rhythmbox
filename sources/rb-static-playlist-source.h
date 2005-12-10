@@ -59,13 +59,15 @@ RBSource *	rb_static_playlist_source_new_from_xml	(RBShell *shell,
 							 xmlNodePtr node);
 
 void		rb_static_playlist_source_add_entry	(RBStaticPlaylistSource *source,
-						 	 RhythmDBEntry *entry);
+						 	 RhythmDBEntry *entry,
+							 gint index);
 
 void		rb_static_playlist_source_remove_entry	(RBStaticPlaylistSource *source,
 							 RhythmDBEntry *entry);
 
 void		rb_static_playlist_source_add_location	(RBStaticPlaylistSource *source,
-							 const char *location);
+							 const char *location,
+							 gint index);
 
 void            rb_static_playlist_source_add_locations (RBStaticPlaylistSource *source,
 							 GList *locations);
@@ -73,6 +75,9 @@ void            rb_static_playlist_source_add_locations (RBStaticPlaylistSource 
 void		rb_static_playlist_source_remove_location(RBStaticPlaylistSource *source,
 						 	 const char *location);
 
+void		rb_static_playlist_source_move_entry	(RBStaticPlaylistSource *source,
+							 RhythmDBEntry *entry,
+							 gint index);
 G_END_DECLS
 
 #endif /* __RB_STATIC_PLAYLIST_SOURCE_H */

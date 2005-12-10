@@ -71,6 +71,9 @@ void		rb_sourcelist_append		(RBSourceList *sourcelist,
 void		rb_sourcelist_set_playing_source(RBSourceList *sourcelist,
 						 RBSource *source);
 
+void		rb_sourcelist_preempt_playing_source(RBSourceList *sourcelist,
+						 RBSource *source);
+
 void		rb_sourcelist_edit_source_name	(RBSourceList *sourcelist,
 						 RBSource *source);
 

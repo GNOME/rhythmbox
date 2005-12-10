@@ -54,6 +54,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-podcast-manager.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-static-playlist-source.h"
 #include "rb-cut-and-paste-code.h"
 
 typedef enum
@@ -215,6 +216,8 @@ static void rb_podcast_source_do_query			(RBPodcastSource *source, RBPodcastQuer
 static GtkWidget *impl_get_config_widget 		(RBSource *source, RBShellPreferences *prefs);
 static gboolean impl_receive_drag 			(RBSource *source, 
 							 GtkSelectionData *data);
+static gboolean impl_can_add_to_queue			(RBSource *source);
+static void impl_add_to_queue				(RBSource *source, RBSource *queue);
 
 
 
@@ -336,6 +339,8 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_receive_drag = impl_receive_drag;
+	source_class->impl_can_add_to_queue = impl_can_add_to_queue;
+	source_class->impl_add_to_queue = impl_add_to_queue;
 	
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -1840,7 +1845,7 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 	GValue val = {0,};
 	
 	/* check to see if it has already been downloaded */
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) != NULL)
+	if (rb_podcast_manager_entry_downloaded (entry))
 		return;
 	
 	g_value_init (&val, G_TYPE_ULONG);
@@ -1852,3 +1857,46 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 	rb_podcast_manager_download_entry (source->priv->podcast_mg, entry);
 }
 
+static gboolean
+impl_can_add_to_queue (RBSource *source)
+{
+	RBEntryView *songs = rb_source_get_entry_view (source);
+	GList *selection = rb_entry_view_get_selected_entries (songs);
+	GList *iter;
+	gboolean ok = FALSE;
+
+	if (selection == NULL) 
+		return FALSE;
+
+	/* If at least one entry has been downloaded, enable add to queue.
+	 * We'll filter out those that haven't when adding to the queue.
+	 */
+	for (iter = selection; iter && !ok; iter = iter->next) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)iter->data;
+		ok |= rb_podcast_manager_entry_downloaded (entry);
+	}
+
+	g_list_free (selection);
+	return ok;
+}
+
+static void
+impl_add_to_queue (RBSource *source, RBSource *queue)
+{
+	RBEntryView *songs = rb_source_get_entry_view (source);
+	GList *selection = rb_entry_view_get_selected_entries (songs);
+	GList *iter;
+
+	if (selection == NULL) 
+		return;
+
+	for (iter = selection; iter; iter = iter->next) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)iter->data;
+		if (!rb_podcast_manager_entry_downloaded (entry))
+			continue;
+		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (queue), 
+						     entry, -1);
+	}
+
+	g_list_free (selection);
+}

@@ -53,6 +53,8 @@ struct RBSourceListPrivate
 	GtkTreeViewColumn *hidden_column;
 	GtkTreeViewColumn *main_column;
 
+	RBSource *preempted_source;
+
 	RBShell *shell;
 };
 
@@ -460,22 +462,44 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 	gtk_tree_path_free (path);
 }
 
+static void set_source_playing (RBSourceList *sourcelist, RBSource *source, gboolean playing)
+{
+	GtkTreeIter iter;
+	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
+	gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
+			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, playing, -1);
+}
+
 void
 rb_sourcelist_set_playing_source (RBSourceList *sourcelist, RBSource *source)
 {
-	GtkTreeIter iter;
-	if (sourcelist->priv->playing_source) {
-		g_assert (rb_sourcelist_source_to_iter (sourcelist,
-							sourcelist->priv->playing_source,
-							&iter));
-		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_PLAYING, FALSE, -1);
-	}
+	if (sourcelist->priv->playing_source)
+		set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
+
 	sourcelist->priv->playing_source = source;
-	if (source) {
-		g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
-		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_PLAYING, TRUE, -1);
+	if (source)
+		set_source_playing (sourcelist, source, TRUE);
+}
+
+void
+rb_sourcelist_preempt_playing_source (RBSourceList *sourcelist, RBSource *source)
+{
+	if (source == NULL) {
+		if (sourcelist->priv->preempted_source) {
+			set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
+			set_source_playing (sourcelist, sourcelist->priv->preempted_source, TRUE);
+
+			sourcelist->priv->playing_source = sourcelist->priv->preempted_source;
+			sourcelist->priv->preempted_source = NULL;
+		}
+	} else {
+		if (sourcelist->priv->playing_source) {
+			set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
+			set_source_playing (sourcelist, source, TRUE);
+
+			sourcelist->priv->preempted_source = sourcelist->priv->playing_source;
+			sourcelist->priv->playing_source = source;
+		}
 	}
 }
 

@@ -151,6 +151,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_song_properties = impl_song_properties;
@@ -610,7 +611,7 @@ rb_playlist_source_entry_added_cb (RhythmDB *db,
 
 	location = entry->location;
 	if (g_hash_table_lookup (source->priv->entries, location)) {
-		rhythmdb_query_model_add_entry (source->priv->model, entry);
+		rhythmdb_query_model_add_entry (source->priv->model, entry, -1);
 		source->priv->dirty = TRUE;
 	}
 }

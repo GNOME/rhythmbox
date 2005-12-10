@@ -60,7 +60,8 @@ static void rhythmdb_query_model_get_property (GObject *object,
 					       GValue *value,
 					       GParamSpec *pspec);
 static void rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
-					    RhythmDBEntry *entry);
+					    RhythmDBEntry *entry,
+					    gint index);
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
@@ -71,6 +72,7 @@ static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *
 static void rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
 						   RhythmDBEntry *entry);
 static void rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry);
+static void rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint new_pos);
 static gboolean rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 							  GList *paths,
 							  GtkSelectionData *selection_data);
@@ -122,10 +124,17 @@ struct RhythmDBQueryModelUpdate
 	RhythmDBQueryModel *model;
 	enum {
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED,
+		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED_INDEX,
 		RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE,
 	} type;
-	RhythmDBEntry *entry;
-	GPtrArray *entries;
+
+	union {
+		struct {
+			RhythmDBEntry *entry;
+			gint index;
+		};
+		GPtrArray *entries;
+	};
 };
 
 static void rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update);
@@ -293,8 +302,8 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, non_entry_dropped),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__POINTER,
-			      G_TYPE_NONE, 1, G_TYPE_STRING);
+			      rhythmdb_marshal_VOID__POINTER_INT,
+			      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_INT);
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -566,7 +575,7 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 			return;
 
 		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			rhythmdb_query_model_do_insert (model, entry);
+			rhythmdb_query_model_do_insert (model, entry, -1);
 		}
 	}
 }
@@ -656,11 +665,18 @@ idle_process_update (struct RhythmDBQueryModelUpdate *update)
 			RhythmDBEntry *entry = g_ptr_array_index (update->entries, i);
 
 			if (!rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
-				rhythmdb_query_model_do_insert (update->model, entry);
+				rhythmdb_query_model_do_insert (update->model, entry, -1);
 			
 			rhythmdb_entry_unref (update->model->priv->db, entry);
 		}
 		g_ptr_array_free (update->entries, TRUE);
+		break;
+	}
+	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED_INDEX:
+	{
+		rb_debug ("inserting row at index %d", update->index);
+		rhythmdb_query_model_do_insert (update->model, update->entry, update->index);
+		rhythmdb_entry_unref (update->model->priv->db, update->entry);
 		break;
 	}
 	case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
@@ -698,18 +714,26 @@ rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
 }
 
 void
-rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index)
 {
-	GPtrArray *entries;
+	struct RhythmDBQueryModelUpdate *update;
 
 	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
 		rb_debug ("attempting to add hidden entry");
 		return;
 	}
 
-	entries = g_ptr_array_new ();
-	g_ptr_array_add (entries, entry);
-	rhythmdb_query_model_add_entries (model, entries);
+	rb_debug ("inserting entry %p at index %d", entry, index);
+	
+	update = g_new (struct RhythmDBQueryModelUpdate, 1);
+	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED_INDEX;
+	update->entry = entry;
+	update->index = index;
+	update->model = model;
+
+	g_object_ref (G_OBJECT (model));
+	rhythmdb_entry_ref (model->priv->db, entry);
+	rhythmdb_query_model_process_update (update);
 }
 
 GnomeVFSFileSize
@@ -725,7 +749,7 @@ rhythmdb_query_model_get_duration (RhythmDBQueryModel *model)
 }
 
 static void
-rhythmdb_query_model_insert_into_main_list (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+rhythmdb_query_model_insert_into_main_list (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index)
 {
 	GSequencePtr ptr;
 
@@ -736,7 +760,12 @@ rhythmdb_query_model_insert_into_main_list (RhythmDBQueryModel *model, RhythmDBE
 						model->priv->sort_func,
 						model->priv->sort_user_data);
 	} else {
-		ptr = g_sequence_get_end_ptr (model->priv->entries);
+		if (index == -1) {
+			ptr = g_sequence_get_end_ptr (model->priv->entries);
+		} else {
+			ptr = g_sequence_get_ptr_at_pos (model->priv->entries, index);
+		}
+
 		g_sequence_insert (ptr, entry);
 		ptr = g_sequence_ptr_prev (ptr);
 	}
@@ -786,7 +815,7 @@ rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model, RhythmDBE
 	model->priv->total_size -= entry->file_size;
 
 	g_sequence_remove (ptr);
-	g_hash_table_remove (model->priv->reverse_map, entry);
+	g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
 	
 	rhythmdb_entry_unref (model->priv->db, entry);
 }
@@ -842,7 +871,7 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 			break;
 
 		rhythmdb_query_model_remove_from_limited_list (model, entry);
-		rhythmdb_query_model_insert_into_main_list (model, entry);
+		rhythmdb_query_model_insert_into_main_list (model, entry, -1);
 
 		ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 		iter.stamp = model->priv->stamp;
@@ -855,61 +884,20 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 	}
 }
 
-
 static void
-rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint new_pos)
 {
-	GSequencePtr ptr;
-	int old_pos, new_pos;
-	gint *reorder_map;
 	int length, i;
+	gint *reorder_map;
 	GtkTreePath *path;
 	GtkTreeIter iter;
-
-	if (model->priv->sort_func == NULL)
-		return;
-
-	ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
-
-	if (ptr != NULL && !g_sequence_ptr_is_end (ptr)) {
-		RhythmDBEntry *first_limited = g_sequence_ptr_get_data (ptr);
-		int cmp = (model->priv->sort_func) (entry, first_limited, model->priv->sort_user_data);
-
-		if (cmp > 0) {
-			/* the entry belongs in the limited list, so we don't need a re-order */
-			rhythmdb_query_model_remove_entry (model, entry);
-			rhythmdb_query_model_do_insert (model, entry);
-			return;
-		}
-	}
-
-	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-	iter.stamp = model->priv->stamp;
-	iter.user_data = ptr;
-	path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
-					      &iter);
-	gtk_tree_model_row_changed (GTK_TREE_MODEL (model),
-				     path, &iter);
-	gtk_tree_path_free (path);
-
-	/* it may have moved, check for a re-order */
-	length = g_sequence_get_length (model->priv->entries);
-
-	g_hash_table_remove (model->priv->reverse_map, entry);
-	old_pos = g_sequence_ptr_get_position (ptr);
-	g_sequence_remove (ptr);
-
-	ptr = g_sequence_insert_sorted (model->priv->entries, entry,
-					model->priv->sort_func,
-					model->priv->sort_user_data);
-	new_pos = g_sequence_ptr_get_position (ptr);
-	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
 
 	if (new_pos == old_pos) {
 		/* it hasn't moved, don't emit a re-order */
 		return;
 	}
 
+	length = g_sequence_get_length (model->priv->entries);
 	reorder_map = malloc (length * sizeof(gint));
 
 	if (new_pos > old_pos) {
@@ -943,8 +931,57 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 }
 
 static void
+rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+{
+	GSequencePtr ptr;
+	int old_pos, new_pos;
+	GtkTreePath *path;
+	GtkTreeIter iter;
+
+	if (model->priv->sort_func == NULL)
+		return;
+
+	ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
+
+	if (ptr != NULL && !g_sequence_ptr_is_end (ptr)) {
+		RhythmDBEntry *first_limited = g_sequence_ptr_get_data (ptr);
+		int cmp = (model->priv->sort_func) (entry, first_limited, model->priv->sort_user_data);
+
+		if (cmp > 0) {
+			/* the entry belongs in the limited list, so we don't need a re-order */
+			rhythmdb_query_model_remove_entry (model, entry);
+			rhythmdb_query_model_do_insert (model, entry, -1);
+			return;
+		}
+	}
+
+	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	iter.stamp = model->priv->stamp;
+	iter.user_data = ptr;
+	path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
+					      &iter);
+	gtk_tree_model_row_changed (GTK_TREE_MODEL (model),
+				     path, &iter);
+	gtk_tree_path_free (path);
+
+	/* it may have moved, check for a re-order */
+	g_hash_table_remove (model->priv->reverse_map, entry);
+	old_pos = g_sequence_ptr_get_position (ptr);
+	g_sequence_remove (ptr);
+
+	ptr = g_sequence_insert_sorted (model->priv->entries, entry,
+					model->priv->sort_func,
+					model->priv->sort_user_data);
+	new_pos = g_sequence_ptr_get_position (ptr);
+	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
+
+	rhythmdb_query_model_emit_reorder (model, old_pos, new_pos);
+}
+
+static void
 rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
-				RhythmDBEntry *entry)
+				RhythmDBEntry *entry,
+				gint index)
 {
 	GSequencePtr ptr;
 	GtkTreePath *path;
@@ -959,7 +996,7 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	if (ptr != NULL)
 		rhythmdb_query_model_remove_from_limited_list (model, entry);
 
-	rhythmdb_query_model_insert_into_main_list (model, entry);
+	rhythmdb_query_model_insert_into_main_list (model, entry, index);
 
 	/* it was added to the main list, send out the inserted signal */
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
@@ -995,6 +1032,33 @@ rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
 	}
 }
 				
+void
+rhythmdb_query_model_move_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index)
+{
+	GSequencePtr ptr;
+	GSequencePtr nptr;
+	gint old_pos;
+
+	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	if (ptr == NULL)
+		return;
+
+	nptr = g_sequence_get_ptr_at_pos (model->priv->entries, index);
+	if ((nptr == NULL) || (ptr == nptr))
+		return;
+
+	/* remove from old position */
+	old_pos = g_sequence_ptr_get_position (ptr);
+	g_sequence_remove (ptr);
+	g_hash_table_remove (model->priv->reverse_map, entry);
+
+	/* insert into new position */
+	g_sequence_insert (nptr, entry);
+	ptr = g_sequence_ptr_prev (nptr);
+	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
+
+	rhythmdb_query_model_emit_reorder (model, old_pos, index);
+}
 
 gboolean
 rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, 
@@ -1230,9 +1294,16 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 								   strv[i]);
 
 			if (entry == NULL) {
+				int pos;
+
+				if (g_sequence_ptr_is_end (ptr))
+					pos = -1;
+				else
+					pos = g_sequence_ptr_get_position (ptr);
+
 				g_signal_emit (G_OBJECT (model),
 					       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
-					       0, strv[i]);
+					       0, strv[i], pos);
 			} else {
 				GSequencePtr old_ptr = g_hash_table_lookup (model->priv->reverse_map,
 									    entry);

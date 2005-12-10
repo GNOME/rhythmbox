@@ -36,6 +36,7 @@
 #include "rb-playlist-source.h"
 #include "rb-static-playlist-source.h"
 #include "rb-auto-playlist-source.h"
+#include "rb-play-queue-source.h"
 #include "rb-recorder.h"
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
@@ -438,7 +439,10 @@ rb_playlist_manager_set_property (GObject *object,
 		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistDeletePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
+		g_object_set (G_OBJECT (action), "sensitive", 
+			      playlist_local && !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source), 
+			      NULL);
+
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
  						      "EditAutomaticPlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", 
@@ -585,7 +589,7 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 			mgr->priv->loading_playlist =
 				RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
 		}
-		rb_static_playlist_source_add_location (mgr->priv->loading_playlist, uri);
+		rb_static_playlist_source_add_location (mgr->priv->loading_playlist, uri, -1);
 	}
 
 	g_free (uri);
@@ -768,6 +772,8 @@ rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force
 				source = g_value_get_pointer (&v);
 				if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 					continue;
+				if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
+					continue;
 
 				g_object_get (G_OBJECT (source), 
 					      "is-local", &local,
@@ -823,6 +829,8 @@ rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force
 						  &v);
 			source = g_value_get_pointer (&v);
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+				continue;
+			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
 				continue;
 
 			g_object_get (G_OBJECT (source), "is-local", &local, NULL);
@@ -910,6 +918,8 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 						  &v);
 			source = g_value_get_pointer (&v);
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+				continue;
+			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
 				continue;
 			g_object_get (G_OBJECT (source), "is-local", &local, 
 				      NULL);

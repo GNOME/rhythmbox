@@ -60,7 +60,10 @@
 #include "rb-util.h"
 #include "rb-play-order.h"
 #include "rb-statusbar.h"
+#include "rb-playlist-source.h"
+#include "rb-play-queue-source.h"
 #include "rhythmdb.h"
+#include "rb-podcast-manager.h"
 
 #ifdef HAVE_XIDLE_EXTENSION
 #include <X11/extensions/xidle.h>
@@ -96,8 +99,6 @@ static void rb_shell_player_repeat_changed_cb (GtkAction *action,
 					       RBShellPlayer *player);
 static void rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
 								  RBShellPlayer *player);
-static void rb_shell_player_cmd_song_info (GtkAction *action,
-					   RBShellPlayer *player);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 							 RBSource *source,
 							 gboolean sync_entry_view);
@@ -170,6 +171,8 @@ struct RBShellPlayerPrivate
 	
 	RBSource *selected_source;
 	RBSource *source;
+	RBPlayQueueSource *queue_source;
+	RBSource *current_playing_source;
 
 	gboolean did_retry;
 	GTimeVal last_retry;
@@ -188,6 +191,7 @@ struct RBShellPlayerPrivate
 	char *url;
 
 	RBPlayOrder *play_order;
+	RBPlayOrder *queue_play_order;
 
 	GError *playlist_parse_error;
 
@@ -222,7 +226,8 @@ enum
 	PROP_PLAY_ORDER,
 	PROP_PLAYING,
 	PROP_VOLUME,
-	PROP_STATUSBAR
+	PROP_STATUSBAR,
+	PROP_QUEUE_SOURCE
 };
 
 enum
@@ -230,6 +235,7 @@ enum
 	WINDOW_TITLE_CHANGED,
 	ELAPSED_CHANGED,
 	PLAYING_SOURCE_CHANGED,
+	PLAYING_FROM_QUEUE,
 	PLAYING_CHANGED,
 	PLAYING_SONG_CHANGED,
 	PLAYING_URI_CHANGED,
@@ -244,9 +250,6 @@ static GtkActionEntry rb_shell_player_actions [] =
 	{ "ControlNext", GTK_STOCK_MEDIA_NEXT, N_("_Next"), "<alt>Right",
 	  N_("Start playing the next song"),
 	  G_CALLBACK (rb_shell_player_cmd_next) },
-	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), "<Alt>Return",
-	  N_("Show information on the selected song"),
-	  G_CALLBACK (rb_shell_player_cmd_song_info) },
 };
 static guint rb_shell_player_n_actions = G_N_ELEMENTS (rb_shell_player_actions);
 
@@ -315,6 +318,15 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_SOURCE,
+					 g_param_spec_object ("queue-source",
+						 	      "RBPlaylistSource",
+							      "RBPlaylistSource object",
+							      RB_TYPE_PLAYLIST_SOURCE,
+							      G_PARAM_READWRITE));
+	
 	/* If you change these, be sure to update the CORBA interface
 	 * in rb-remote-bonobo.c! */
 	g_object_class_install_property (object_class,
@@ -381,6 +393,17 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_SOURCE);
+
+	rb_shell_player_signals[PLAYING_FROM_QUEUE] =
+		g_signal_new ("playing-from-queue",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_from_queue),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
 
 	rb_shell_player_signals[PLAYING_CHANGED] =
 		g_signal_new ("playing-changed",
@@ -659,10 +682,18 @@ rb_shell_player_set_property (GObject *object,
 							 player, 0);
 
 			g_list_free (extra_views);
+		}
 
-			/* If we're not playing, change the play order's view of the current source. */
-			if (player->priv->source == NULL)
-				rb_play_order_playing_source_changed (player->priv->play_order, player->priv->selected_source);
+		/* If we're not playing, change the play order's view of the current source;
+		 * if the selected source is the queue, however, set it to NULL so it'll stop
+		 * once the queue is empty.
+		 */
+		if (player->priv->current_playing_source == NULL) {
+			RBSource *source = player->priv->selected_source;
+			if (source == RB_SOURCE (player->priv->queue_source))
+				source = NULL;
+
+			rb_play_order_playing_source_changed (player->priv->play_order, source);
 		}
 		
 		break;
@@ -692,6 +723,28 @@ rb_shell_player_set_property (GObject *object,
 	case PROP_STATUSBAR:
 		player->priv->statusbar_widget = g_value_get_object (value);
 		break;
+	case PROP_QUEUE_SOURCE:
+		player->priv->queue_source = g_value_get_object (value);
+		if (player->priv->queue_source) {
+			RBEntryView *sidebar;
+
+			player->priv->queue_play_order = rb_play_order_new ("queue", player);
+			g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
+						 "have_next_previous_changed",
+						 G_CALLBACK (rb_shell_player_play_order_update_cb),
+						 player, 0);
+			rb_play_order_playing_source_changed (player->priv->queue_play_order,
+							      RB_SOURCE (player->priv->queue_source));
+
+			g_object_get (G_OBJECT (player->priv->queue_source), "sidebar", &sidebar, NULL);
+			g_signal_connect_object (G_OBJECT (sidebar),
+						 "entry-activated",
+						 G_CALLBACK (rb_shell_player_entry_activated_cb),
+						 player, 0);
+			g_object_unref (sidebar);
+		}
+		break;
+
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -737,6 +790,9 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_STATUSBAR:
 		g_value_set_object (value, player->priv->statusbar_widget);
 		break;
+	case PROP_QUEUE_SOURCE:
+		g_value_set_object (value, player->priv->queue_source);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -768,7 +824,7 @@ rb_shell_player_set_selected_source (RBShellPlayer *player,
 RBSource *
 rb_shell_player_get_playing_source (RBShellPlayer *player)
 {
-	return player->priv->source;
+	return player->priv->current_playing_source;
 }
 
 
@@ -786,10 +842,20 @@ rb_shell_player_new (RhythmDB *db, GtkUIManager *mgr,
 RhythmDBEntry *
 rb_shell_player_get_playing_entry (RBShellPlayer *player)
 {
-	if (player->priv->source == NULL)
+	RBPlayOrder *porder;
+	if (player->priv->current_playing_source == NULL)
 		return NULL;
 
-	return rb_play_order_get_playing_entry (player->priv->play_order);
+	if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source))
+		porder = player->priv->queue_play_order;
+	else
+		porder = player->priv->play_order;
+
+	if (!porder) {
+		return NULL;
+	}
+
+	return rb_play_order_get_playing_entry (porder);
 }
 
 static void
@@ -891,7 +957,7 @@ rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError 
 static gboolean
 rb_shell_player_play (RBShellPlayer *player, GError **error)
 {
-	RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
+	RBEntryView *songs = rb_source_get_entry_view (player->priv->current_playing_source);
 
 	if (!rb_player_play (player->priv->mmplayer, error))
 		return FALSE;
@@ -945,11 +1011,16 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 {
 	GError *tmp_error = NULL;
 	
-	g_return_val_if_fail (player->priv->source != NULL, TRUE);
+	g_return_val_if_fail (player->priv->current_playing_source != NULL, TRUE);
 	g_return_val_if_fail (entry != NULL, TRUE);
 
 	if (out_of_order) {
-		rb_play_order_set_playing_entry (player->priv->play_order, entry);
+		RBPlayOrder *porder;
+		if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source))
+			porder = player->priv->queue_play_order;
+		else
+			porder = player->priv->play_order;
+		rb_play_order_set_playing_entry (porder, entry);
 	}
 
 	if (!rb_shell_player_open_entry (player, entry, &tmp_error))
@@ -1075,7 +1146,7 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 				 G_CALLBACK (rb_shell_player_play_order_update_cb),
 				 player, 0);
 
-	source = player->priv->source;
+	source = player->priv->current_playing_source;
 	if (!source)
 		source = player->priv->selected_source;
 	rb_play_order_playing_source_changed (player->priv->play_order, source);
@@ -1102,6 +1173,10 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 	} else {
 		have_next = rb_play_order_has_next (player->priv->play_order);
 		have_previous = rb_play_order_has_previous (player->priv->play_order);
+		if (player->priv->queue_play_order) {
+			have_next |= rb_play_order_has_next (player->priv->queue_play_order);
+			have_previous |= rb_play_order_has_previous (player->priv->queue_play_order);
+		}
 	}
 	
 	not_empty = have_next || have_previous;
@@ -1145,7 +1220,7 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 	RhythmDBEntry *entry;
 	RBEntryView *songs;
 
-	source = player->priv->source ? player->priv->source :
+	source = player->priv->current_playing_source ? player->priv->current_playing_source :
 		player->priv->selected_source;
 
 	songs = rb_source_get_entry_view (source);
@@ -1158,12 +1233,28 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 	}
 }
 
+static void
+swap_playing_source (RBShellPlayer *player, RBSource *new_source)
+{
+	if (player->priv->current_playing_source != NULL) {
+		RBEntryView *old_songs = rb_source_get_entry_view (player->priv->current_playing_source);
+		rb_entry_view_set_state (old_songs, RB_ENTRY_VIEW_NOT_PLAYING);
+	}
+	if (new_source != NULL) {
+		RBEntryView *new_songs = rb_source_get_entry_view (new_source);
+		rb_entry_view_set_state (new_songs, RB_ENTRY_VIEW_PLAYING);
+
+		rb_shell_player_set_playing_source (player, new_source);
+	}
+}
+
 gboolean
 rb_shell_player_do_previous (RBShellPlayer *player, GError **error)
 {
-	RhythmDBEntry* entry;
+	RhythmDBEntry* entry = NULL;
+	RBSource *new_source;
 
-	if (player->priv->source == NULL) {
+	if (player->priv->current_playing_source == NULL) {
 		g_set_error (error,
 			     RB_SHELL_PLAYER_ERROR,
 			     RB_SHELL_PLAYER_ERROR_NOT_PLAYING,
@@ -1173,10 +1264,26 @@ rb_shell_player_do_previous (RBShellPlayer *player, GError **error)
 
 	rb_debug ("going to previous");
 
-	entry = rb_play_order_get_previous (player->priv->play_order);
+	if (player->priv->queue_play_order) {
+		entry = rb_play_order_get_previous (player->priv->queue_play_order);
+		if (entry) {
+			new_source = RB_SOURCE (player->priv->queue_source);
+			rb_play_order_go_previous (player->priv->queue_play_order);
+		}
+	}
+
+	if (!entry) {
+		new_source = player->priv->source;
+		entry = rb_play_order_get_previous (player->priv->play_order);
+		if (entry)
+			rb_play_order_go_previous (player->priv->play_order);
+	}
+		
 	if (entry) {
 		rb_debug ("previous song found, doing previous");
-		rb_play_order_go_previous (player->priv->play_order);
+		if (new_source != player->priv->current_playing_source)
+			swap_playing_source (player, new_source);
+
 		if (!rb_shell_player_set_playing_entry (player, entry, FALSE, error))
 			return FALSE;
 		rb_shell_player_jump_to_current (player);
@@ -1196,6 +1303,7 @@ rb_shell_player_do_previous (RBShellPlayer *player, GError **error)
 gboolean
 rb_shell_player_do_next (RBShellPlayer *player, GError **error)
 {
+	RBSource *new_source = NULL;
 	RhythmDBEntry *entry = NULL;
 	RhythmDBEntry *prev_entry = NULL;
 	gboolean rv = TRUE;
@@ -1205,10 +1313,31 @@ rb_shell_player_do_next (RBShellPlayer *player, GError **error)
 
 	prev_entry = rb_shell_player_get_playing_entry (player);
 
+	/* look for something to play in the queue. 
+	 * always call go_next to remove the current entry (if any) from the queue.
+	 */
+	if (player->priv->queue_play_order) {
+		entry = rb_play_order_get_next (player->priv->queue_play_order);
+		rb_play_order_go_next (player->priv->queue_play_order);
+		if (entry)
+			new_source = RB_SOURCE (player->priv->queue_source);
+	}
 
-	entry = rb_play_order_get_next (player->priv->play_order);
+	/* fall back to the playing source */
+	if (entry == NULL) {
+		entry = rb_play_order_get_next (player->priv->play_order);
+		if (entry) {
+			new_source = player->priv->source;
+			rb_play_order_go_next (player->priv->play_order);
+		}
+	}
+
+	/* play the new entry */
 	if (entry) {
-		rb_play_order_go_next (player->priv->play_order);
+		/* if the entry view containing the playing entry changed, update it */
+		if (new_source != player->priv->current_playing_source)
+			swap_playing_source (player, new_source);
+
 		if (!rb_shell_player_set_playing_entry (player, entry, FALSE, error))
 			rv = FALSE;
 	} else {
@@ -1234,13 +1363,16 @@ rb_shell_player_do_previous_or_seek (RBShellPlayer *player, GError **error)
 	/* If we're in the first 3 seconds go to the previous song,
 	 * else restart the current one.
 	 */
-	if (player->priv->source != NULL
+	if (player->priv->current_playing_source != NULL
 	    && rb_source_can_pause (player->priv->source)
 	    && rb_player_get_time (player->priv->mmplayer) > 3) {
 
 		/* see if there's anything to go back to */
 		gboolean have_previous;
 		have_previous = rb_play_order_has_previous (player->priv->play_order);
+		if (player->priv->queue_play_order)
+			have_previous |= rb_play_order_has_previous (player->priv->queue_play_order);
+
 		if (have_previous) {
 			rb_debug ("after 3 second previous, restarting song");
 			rb_player_set_time (player->priv->mmplayer, 0);
@@ -1318,7 +1450,7 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 		if (rb_source_can_pause (player->priv->source)) {
 			rb_debug ("pausing mm player");
 			rb_player_pause (player->priv->mmplayer);
-			songs = rb_source_get_entry_view (player->priv->source);
+			songs = rb_source_get_entry_view (player->priv->current_playing_source);
 			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PAUSED);
 		} else if (!ignore_stop) {
 			rb_debug ("setting playing source to NULL");
@@ -1326,6 +1458,7 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 		}
 	} else {
 		RhythmDBEntry *entry;
+		RBSource *new_source;
 		gboolean out_of_order = FALSE;
 		if (player->priv->source == NULL) {
 			/* no current stream, pull one in from the currently
@@ -1333,23 +1466,44 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 			rb_debug ("no playing source, using selected source");
 			rb_shell_player_set_playing_source (player, player->priv->selected_source);
 		}
+		new_source = player->priv->current_playing_source;
 
 		entry = rb_shell_player_get_playing_entry (player);
 		if (entry == NULL) {
-			RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
+			/* queue takes precedence over selection */
+			if (player->priv->queue_play_order) {
+				entry = rb_play_order_get_next (player->priv->queue_play_order);
+				if (entry != NULL) {
+					new_source = RB_SOURCE (player->priv->queue_source);
+					rb_play_order_go_next (player->priv->queue_play_order);
+				}
+			}
 
-			GList* selection = rb_entry_view_get_selected_entries (songs);
-			if (selection != NULL) {
-				rb_debug ("choosing first selected entry");
-				entry = (RhythmDBEntry*) selection->data;
-				if (entry)
-					out_of_order = TRUE;
-			} else {
+			/* selection takes precedence over first item in play order */
+			if (entry == NULL) {
+				songs = rb_source_get_entry_view (player->priv->source);
+				GList* selection = rb_entry_view_get_selected_entries (songs);
+				if (selection != NULL) {
+					rb_debug ("choosing first selected entry");
+					entry = (RhythmDBEntry*) selection->data;
+					if (entry)
+						out_of_order = TRUE;
+				}
+			}
+
+			/* play order is last */
+			if (entry == NULL) {
+				rb_debug ("getting entry from play order");
 				entry = rb_play_order_get_next (player->priv->play_order);
-				if (entry)
+				if (entry != NULL)
 					rb_play_order_go_next (player->priv->play_order);
 			}
+
 			if (entry != NULL) {
+				/* if the entry view containing the playing entry changed, update it */
+				if (new_source != player->priv->current_playing_source)
+					swap_playing_source (player, new_source);
+
 				if (!rb_shell_player_set_playing_entry (player, entry, out_of_order, error))
 					ret = FALSE;
 				rb_shell_player_jump_to_current (player);
@@ -1493,15 +1647,6 @@ rb_shell_player_repeat_changed_cb (GtkAction *action,
 }
 
 static void
-rb_shell_player_cmd_song_info (GtkAction *action,
-			       RBShellPlayer *player)
-{
-	rb_debug ("song info");
-
-	rb_source_song_properties (player->priv->selected_source);
-}
-
-static void
 rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
 						      RBShellPlayer *player)
 {
@@ -1515,22 +1660,67 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 				   RhythmDBEntry *entry,
 				   RBShellPlayer *playa)
 {
+	gboolean was_from_queue = FALSE;
+	RhythmDBEntry *prev_entry = NULL;
 	GError *error = NULL;
+	gboolean source_set = FALSE;
 
 	g_return_if_fail (entry != NULL);
 
 	rb_debug  ("got entry %p activated", entry);
 
 	/* ensure the podcast has been downloaded */
-	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS) != RHYTHMDB_PODCAST_STATUS_COMPLETE)
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+		if (!rb_podcast_manager_entry_downloaded (entry))
 			return;
+	}
 	
-	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
+	/* figure out where the previous entry came from */
+	if ((playa->priv->queue_source != NULL) &&
+	    (playa->priv->current_playing_source == RB_SOURCE (playa->priv->queue_source))) {
+		prev_entry = rb_shell_player_get_playing_entry (playa);
+		was_from_queue = TRUE;
+	}
+
+	if (playa->priv->queue_source) {
+		RBEntryView *queue_sidebar;
+		g_object_get (G_OBJECT (playa->priv->queue_source), "sidebar", &queue_sidebar, NULL);
+		if (view == queue_sidebar || view == rb_source_get_entry_view (RB_SOURCE (playa->priv->queue_source))) {
+			/* fall back to the current selected source once the queue is empty */
+			if (view == queue_sidebar && playa->priv->source == NULL) {
+				rb_play_order_playing_source_changed (playa->priv->play_order, 
+								      playa->priv->selected_source);
+				playa->priv->source = playa->priv->selected_source;
+			}
+			
+			/* queue entry activated: move it to the start of the queue */
+			rb_static_playlist_source_move_entry (RB_STATIC_PLAYLIST_SOURCE (playa->priv->queue_source), entry, 0);
+			rb_shell_player_set_playing_source (playa, RB_SOURCE (playa->priv->queue_source));
+
+			/* since we just moved the entry, we should give it focus.
+			 * just calling rb_shell_player_jump_to_current here
+			 * looks terribly ugly, though. */
+			g_idle_add ((GSourceFunc)rb_shell_player_jump_to_current_idle, playa);
+			was_from_queue = FALSE;
+			source_set = TRUE;
+		}
+		g_object_unref (G_OBJECT (queue_sidebar));
+	}
+	if (!source_set) {
+		rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
+		source_set = TRUE;
+	}
 
 	if (!rb_shell_player_set_playing_entry (playa, entry, TRUE, &error)) {
 		rb_shell_player_error (playa, FALSE, error);
 		g_clear_error (&error);
+	}
+
+	/* if we were previously playing from the queue, clear its playing entry,
+	 * so we'll start again from the start.
+	 */
+	if (was_from_queue && prev_entry != NULL) {
+		rb_play_order_set_playing_entry (playa->priv->queue_play_order, NULL);
 	}
 }
 
@@ -1606,7 +1796,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	glong elapsed;
 
 	entry = rb_shell_player_get_playing_entry (player);
-	rb_debug ("playing source: %p, active entry: %p", player->priv->source, entry);
+	rb_debug ("playing source: %p, active entry: %p", player->priv->current_playing_source, entry);
 
 	if (entry != NULL) {
 		entry_title = rb_refstring_get (entry->title);
@@ -1655,10 +1845,13 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	GtkAction *action;
 	RBSource *source;
 	gboolean not_small;
-	RBEntryView *view = NULL;
+	gboolean playing_from_queue;
+	RBEntryView *view;
 
 	source = rb_shell_player_get_playing_entry (player) == NULL ?
-		 player->priv->selected_source : player->priv->source;
+		 player->priv->selected_source : player->priv->current_playing_source;
+
+	playing_from_queue = (source == RB_SOURCE (player->priv->queue_source));
 
 	rb_debug ("syncing with source %p", source);
 
@@ -1669,13 +1862,6 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		      "sensitive",
 		      rb_shell_player_get_playing_entry (player) != NULL
 		      && not_small, NULL);
-
-	if (player->priv->selected_source)
-		view = rb_source_get_entry_view (player->priv->selected_source);
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "MusicProperties");
-	g_object_set (G_OBJECT (action), "sensitive", view && rb_entry_view_have_selection (view),
-		      NULL);
 
 	if (source) {
 		view = rb_source_get_entry_view (source);
@@ -1693,31 +1879,77 @@ rb_shell_player_set_playing_source (RBShellPlayer *player,
 }
 
 static void
+actually_set_playing_source (RBShellPlayer *player,
+			     RBSource *source, 
+			     gboolean sync_entry_view)
+{
+	player->priv->source = source;
+	player->priv->current_playing_source = source;
+
+	if (source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
+		if (sync_entry_view) {
+			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PLAYING); 
+		}
+	}
+
+	if (player->priv->play_order && source != RB_SOURCE (player->priv->queue_source)) {
+		if (source == NULL)
+			source = player->priv->selected_source;
+		rb_play_order_playing_source_changed (player->priv->play_order, source);
+	}
+}
+
+static void
 rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 					     RBSource *source,
 					     gboolean sync_entry_view)
 
 {
-	if (player->priv->source == source && source != NULL)
+	gboolean emit_source_changed = TRUE;
+
+	if (player->priv->source == source && 
+	    player->priv->current_playing_source == source &&
+	    source != NULL)
 		return;
 
 	rb_debug ("setting playing source to %p", source);
 
-	/* Stop the already playing source. */
-	if (player->priv->source != NULL) {
-		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
-		if (sync_entry_view) {
-			rb_debug ("source is already playing, stopping it");
-			rb_play_order_set_playing_entry (player->priv->play_order, NULL);
-			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_NOT_PLAYING);
+	if (RB_SOURCE (player->priv->queue_source) == source) {
+
+		if (player->priv->current_playing_source != source) {
+			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_FROM_QUEUE],
+				       0, TRUE);
 		}
+
+		if (player->priv->source == NULL) {
+			actually_set_playing_source (player, source, sync_entry_view);
+		} else {
+			emit_source_changed = FALSE;
+			player->priv->current_playing_source = source;
+		}
+
+	} else {
+		if (player->priv->current_playing_source != source) {
+			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_FROM_QUEUE],
+				       0, FALSE);
+
+			/* stop the old source */
+			if (player->priv->current_playing_source != NULL) {
+				if (sync_entry_view) {
+					RBEntryView *songs = rb_source_get_entry_view (player->priv->current_playing_source);
+					rb_debug ("source is already playing, stopping it");
+					
+					/* clear the playing entry if we're switching between non-queue sources */
+					if (player->priv->current_playing_source != RB_SOURCE (player->priv->queue_source))
+						rb_play_order_set_playing_entry (player->priv->play_order, NULL);
+
+					rb_entry_view_set_state (songs, RB_ENTRY_VIEW_NOT_PLAYING);
+				}
+			}
+		}
+		actually_set_playing_source (player, source, sync_entry_view);
 	}
-	
-	player->priv->source = source;
-
-	if (player->priv->play_order)
-		rb_play_order_playing_source_changed (player->priv->play_order, source);
-
 
 	g_free (player->priv->url);
 	g_free (player->priv->song);
@@ -1725,14 +1957,17 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	player->priv->url = NULL;
 	player->priv->have_url = FALSE;
 
-	if (source == NULL)
+	if (player->priv->current_playing_source == NULL)
 		rb_shell_player_stop (player);
 
 	rb_shell_player_sync_with_source (player);
 	if (player->priv->selected_source)
 		rb_shell_player_sync_buttons (player);
-	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_SOURCE_CHANGED],
-		       0, source);
+
+	if (emit_source_changed) {
+		g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_SOURCE_CHANGED],
+			       0, player->priv->source);
+	}
 }
 
 void
@@ -1763,8 +1998,8 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 {
 	if (playing != NULL) {
 		*playing = FALSE;
-		if (player->priv->source) {
-			RBEntryView *songs = rb_source_get_entry_view (player->priv->source); 
+		if (player->priv->current_playing_source) {
+			RBEntryView *songs = rb_source_get_entry_view (player->priv->current_playing_source); 
 			RBEntryViewState state;
 			g_object_get (G_OBJECT (songs), "playing-state", &state, NULL);
 			if (state == RB_ENTRY_VIEW_PLAYING)
@@ -1860,11 +2095,11 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 
 	GDK_THREADS_ENTER ();
 
-	if (player->priv->source != NULL) {
+	if (player->priv->current_playing_source != NULL) {
 		RhythmDBEntry *entry = rb_shell_player_get_playing_entry (player);
-		RBSource *source = player->priv->source;
+		RBSource *source = player->priv->current_playing_source;
 
-		switch (rb_source_handle_eos (player->priv->source))
+		switch (rb_source_handle_eos (source))
 		{
 		case RB_SOURCE_EOF_ERROR:
 			rb_error_dialog (NULL, _("Stream error"),

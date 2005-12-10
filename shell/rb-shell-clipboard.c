@@ -29,6 +29,9 @@
 #include "rb-shell-clipboard.h"
 #include "rhythmdb.h"
 #include "rb-debug.h"
+#include "rb-static-playlist-source.h"
+#include "rb-play-queue-source.h"
+#include <gtk/gtkstock.h>
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
@@ -56,6 +59,8 @@ static void rb_shell_clipboard_cmd_paste (GtkAction *action,
 			                  RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_delete (GtkAction *action,
 					   RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_queue_delete (GtkAction *action,
+						 RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_move_to_trash (GtkAction *action,
 						  RBShellClipboard *clipboard);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
@@ -66,11 +71,18 @@ static void rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 						 RBShellClipboard *clipboard);
 static void rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 						     RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_add_song_to_queue (GtkAction *action,
+						      RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_song_info (GtkAction *action,
+					      RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_queue_song_info (GtkAction *action,
+						    RBShellClipboard *clipboard);
 
 struct RBShellClipboardPrivate
 {
 	RhythmDB *db;
 	RBSource *source;
+	RBStaticPlaylistSource *queue_source;
 
 	GtkActionGroup *actiongroup;
 
@@ -91,6 +103,7 @@ enum
 	PROP_SOURCE,
 	PROP_ACTION_GROUP,
 	PROP_DB,
+	PROP_QUEUE_SOURCE,
 };
 
 static GtkActionEntry rb_shell_clipboard_actions [] =
@@ -116,45 +129,29 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	{ "EditMovetoTrash", NULL, N_("_Move To Trash"), "<control>T",
 	  N_("Move selection to the trash"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
+
+	{ "AddToQueue", GTK_STOCK_ADD, N_("Add _to Play Queue"), "<control>T",
+	  N_("Add the selected songs to the play queue"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_add_song_to_queue) },
+	{ "QueueDelete", NULL, N_("Delete"), NULL,
+	  N_("Delete selection"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_queue_delete) },
+
+	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), "<Alt>Return",
+	  N_("Show information on the selected song"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_song_info) },
+	{ "QueueMusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
+	  N_("Show information on the selected song"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_queue_song_info) },
 };
 static guint rb_shell_clipboard_n_actions = G_N_ELEMENTS (rb_shell_clipboard_actions);
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_shell_clipboard_get_type (void)
-{
-	static GType rb_shell_clipboard_type = 0;
-
-	if (rb_shell_clipboard_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBShellClipboardClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_shell_clipboard_class_init,
-			NULL,
-			NULL,
-			sizeof (RBShellClipboard),
-			0,
-			(GInstanceInitFunc) rb_shell_clipboard_init
-		};
-
-		rb_shell_clipboard_type = g_type_register_static (G_TYPE_OBJECT,
-							          "RBShellClipboard",
-							          &our_info, 0);
-	}
-
-	return rb_shell_clipboard_type;
-}
+G_DEFINE_TYPE (RBShellClipboard, rb_shell_clipboard, G_TYPE_OBJECT)
 
 static void
 rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_shell_clipboard_finalize;
 	object_class->constructor = rb_shell_clipboard_constructor;
@@ -183,6 +180,13 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      "RhythmDB database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_SOURCE,
+					 g_param_spec_object ("queue-source",
+						 	      "RBPlaylistSource",
+							      "RBPlaylistSource object",
+							      RB_TYPE_PLAYLIST_SOURCE,
+							      G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBShellClipboardPrivate));
 }
@@ -221,7 +225,7 @@ rb_shell_clipboard_finalize (GObject *object)
 	if (shell_clipboard->priv->idle_sync_id)
 		g_source_remove (shell_clipboard->priv->idle_sync_id);
 	
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->finalize (object);
 }
 
 static GObject *
@@ -234,7 +238,7 @@ rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
 
 	klass = RB_SHELL_CLIPBOARD_CLASS (g_type_class_peek (RB_TYPE_SHELL_CLIPBOARD));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	parent_class = G_OBJECT_CLASS (rb_shell_clipboard_parent_class);
 	clip = RB_SHELL_CLIPBOARD (parent_class->constructor (type,
 							      n_construct_properties,
 							      construct_properties));
@@ -291,6 +295,17 @@ rb_shell_clipboard_set_property (GObject *object,
 	case PROP_DB:
 		clipboard->priv->db = g_value_get_object (value);
 		break;
+	case PROP_QUEUE_SOURCE:
+		clipboard->priv->queue_source = g_value_get_object (value);
+		if (clipboard->priv->queue_source) {
+			RBEntryView *sidebar;
+			g_object_get (G_OBJECT (clipboard->priv->queue_source), "sidebar", &sidebar, NULL);
+			g_signal_connect_object (G_OBJECT (sidebar), "selection-changed",
+						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+						 clipboard, 0);
+			g_object_unref (G_OBJECT (sidebar));
+		}
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -315,6 +330,9 @@ rb_shell_clipboard_get_property (GObject *object,
 		break;
 	case PROP_DB:
 		g_value_set_object (value, clipboard->priv->db);
+		break;
+	case PROP_QUEUE_SOURCE:
+		g_value_set_object (value, clipboard->priv->queue_source);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -346,36 +364,39 @@ static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
 	gboolean have_selection;
-	gboolean can_cut;
-	gboolean can_paste;
-	gboolean can_delete;
-	gboolean can_copy;
-	gboolean can_move_to_trash;
+	gboolean have_sidebar_selection = FALSE;
+	gboolean can_cut = FALSE;
+	gboolean can_paste = FALSE;
+	gboolean can_delete = FALSE;
+	gboolean can_copy = FALSE;
+	gboolean can_add_to_queue = FALSE;
+	gboolean can_move_to_trash = FALSE;
 	GtkAction *action;
 
 	if (!clipboard->priv->source)
 		return;
 
 	have_selection = rb_entry_view_have_selection (rb_source_get_entry_view (clipboard->priv->source));
-	can_cut = have_selection;	
-	can_paste = have_selection;
-	can_delete = have_selection;	
-	can_copy = have_selection;
-	can_move_to_trash = have_selection;
+	if (clipboard->priv->queue_source) {
+		RBEntryView *sidebar;
+		g_object_get (G_OBJECT (clipboard->priv->queue_source), "sidebar", &sidebar, NULL);
+		have_sidebar_selection = rb_entry_view_have_selection (sidebar);
+		g_object_unref (G_OBJECT (sidebar));
+	}
 
 	rb_debug ("syncing clipboard");
 	
-	if (have_selection)
+	if (g_list_length (clipboard->priv->entries) > 0)
+		can_paste = rb_source_can_cut (clipboard->priv->source);
+
+	if (have_selection) {
 		can_cut = rb_source_can_cut (clipboard->priv->source);
-
-	can_paste = rb_source_can_cut (clipboard->priv->source);
-
-	if (have_selection)
 		can_delete = rb_source_can_delete (clipboard->priv->source);
-	if (have_selection)
 		can_copy = rb_source_can_copy (clipboard->priv->source);
-	if (have_selection)
 		can_move_to_trash = rb_source_can_move_to_trash (clipboard->priv->source);
+		if (clipboard->priv->queue_source)
+			can_add_to_queue = rb_source_can_add_to_queue (clipboard->priv->source);
+	}
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
 					      "EditCut");
@@ -390,11 +411,24 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 					      "EditCopy");
 	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
 
-	can_paste = can_paste && g_list_length (clipboard->priv->entries) > 0;
-
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
 					      "EditPaste");
 	g_object_set (G_OBJECT (action), "sensitive", can_paste, NULL);
+
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "AddToQueue");
+	g_object_set (G_OBJECT (action), "sensitive", can_add_to_queue, NULL);
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "MusicProperties");
+	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "QueueMusicProperties");
+	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "QueueDelete");
+	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
 }
 
 static void
@@ -451,6 +485,14 @@ rb_shell_clipboard_cmd_delete (GtkAction *action,
 {
 	rb_debug ("delete");
 	rb_source_delete (clipboard->priv->source);
+}
+
+static void
+rb_shell_clipboard_cmd_queue_delete (GtkAction *action,
+				     RBShellClipboard *clipboard)
+{
+	rb_debug ("delete");
+	rb_play_queue_source_sidebar_delete (RB_PLAY_QUEUE_SOURCE (clipboard->priv->queue_source));
 }
 
 static void
@@ -543,3 +585,30 @@ rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 	rb_debug ("entryview changed");
 	rb_shell_clipboard_sync (clipboard);
 }
+
+static void
+rb_shell_clipboard_cmd_add_song_to_queue (GtkAction *action,
+					  RBShellClipboard *clipboard)
+{
+	rb_debug ("add to queue");
+	rb_source_add_to_queue (clipboard->priv->source,
+				RB_SOURCE (clipboard->priv->queue_source));
+}
+
+static void
+rb_shell_clipboard_cmd_song_info (GtkAction *action,
+				  RBShellClipboard *clipboard)
+{
+	rb_debug ("song info");
+
+	rb_source_song_properties (clipboard->priv->source);
+}
+
+static void
+rb_shell_clipboard_cmd_queue_song_info (GtkAction *action,
+					RBShellClipboard *clipboard)
+{
+	rb_debug ("song info");
+	rb_play_queue_source_sidebar_song_info (RB_PLAY_QUEUE_SOURCE (clipboard->priv->queue_source));
+}
+

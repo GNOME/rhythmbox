@@ -56,7 +56,7 @@ typedef struct
 	void	(*complete)		(void);
 	void	(*entry_prop_changed)	(RhythmDBEntry *entry, RhythmDBPropType prop,
 					 const GValue *old, const GValue *new);
-	void    (*non_entry_dropped)    (const char *uri);
+	void    (*non_entry_dropped)    (const char *uri, int position);
 	void    (*entry_removed)        (RhythmDBEntry *entry);
 
 } RhythmDBQueryModelClass;
@@ -69,10 +69,12 @@ RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
-void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
+void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
 void			rhythmdb_query_model_add_entries(RhythmDBQueryModel *model, GPtrArray *entries);
 
 gboolean		rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
+
+void			rhythmdb_query_model_move_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
 
 void			rhythmdb_query_model_set_connected	(RhythmDBQueryModel *model, gboolean connected);
 

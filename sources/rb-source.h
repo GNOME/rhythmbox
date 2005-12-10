@@ -90,11 +90,13 @@ struct _RBSourceClass
 	gboolean	(*impl_can_delete)	(RBSource *source);
 	gboolean	(*impl_can_move_to_trash) (RBSource *source);
 	gboolean	(*impl_can_copy)	(RBSource *source);
+	gboolean	(*impl_can_add_to_queue)(RBSource *source);
 	
 	GList *		(*impl_cut)		(RBSource *source);
 	GList *		(*impl_copy)		(RBSource *source);
 	void		(*impl_paste)		(RBSource *source, GList *entries);
 	void		(*impl_delete)		(RBSource *source);
+	void		(*impl_add_to_queue)	(RBSource *source, RBSource *queue);
 	void		(*impl_move_to_trash)	(RBSource *source);
 
 	void		(*impl_song_properties)	(RBSource *source);
@@ -148,11 +150,13 @@ gboolean	rb_source_can_cut		(RBSource *source);
 gboolean	rb_source_can_delete		(RBSource *source);
 gboolean	rb_source_can_move_to_trash	(RBSource *source);
 gboolean	rb_source_can_copy		(RBSource *source);
+gboolean	rb_source_can_add_to_queue	(RBSource *source);
 
 GList *		rb_source_cut			(RBSource *source);
 GList *		rb_source_copy			(RBSource *source);
 void		rb_source_paste			(RBSource *source, GList *entries);
 void		rb_source_delete		(RBSource *source);
+void		rb_source_add_to_queue		(RBSource *source, RBSource *queue);
 void		rb_source_move_to_trash		(RBSource *source);
 
 void		rb_source_song_properties	(RBSource *source);

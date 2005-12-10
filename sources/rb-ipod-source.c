@@ -207,7 +207,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
  		filename = ipod_path_to_uri (priv->ipod_mount_path, 
  					    song->ipod_path);
 		rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (playlist_source),
-							filename);
+							filename, -1);
 		g_free (filename);
 	}
 

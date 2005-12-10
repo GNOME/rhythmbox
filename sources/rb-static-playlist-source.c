@@ -55,6 +55,7 @@ static void rb_static_playlist_source_row_inserted (GtkTreeModel *model,
 						    RBStaticPlaylistSource *source);
 static void rb_static_playlist_source_non_entry_dropped (GtkTreeModel *model,
 							 const char *uri,
+							 int position,
 							 RBStaticPlaylistSource *source);
 
 G_DEFINE_TYPE (RBStaticPlaylistSource, rb_static_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
@@ -147,7 +148,7 @@ rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 	
 		location = xmlNodeGetContent (child);
 		rb_static_playlist_source_add_location (source,
-						        (char *) location);
+						        (char *) location, -1);
 	}
 
 	return RB_SOURCE (source);
@@ -181,7 +182,7 @@ impl_paste (RBSource *asource, GList *entries)
 	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);
 
 	for (; entries; entries = g_list_next (entries))
-		rb_static_playlist_source_add_entry (source, entries->data);
+		rb_static_playlist_source_add_entry (source, entries->data, -1);
 }
 
 static void
@@ -264,7 +265,7 @@ rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
 		char *uri = i->data;
 		if (uri != NULL) {
 			rhythmdb_add_uri (rb_playlist_source_get_db (psource), uri);
-			rb_static_playlist_source_add_location (source, uri);
+			rb_static_playlist_source_add_location (source, uri, -1);
 		}
 
 		g_free (uri);
@@ -274,7 +275,8 @@ rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
 
 static void
 rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
-						 const char *location)
+						 const char *location,
+						 gint index)
 {
 	RhythmDB *db;
 	RhythmDBEntry *entry;
@@ -296,7 +298,7 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 		}
 
 		rhythmdb_entry_ref (db, entry);
-		rhythmdb_query_model_add_entry (model, entry);
+		rhythmdb_query_model_add_entry (model, entry, index);
 		rhythmdb_entry_unref (db, entry);
 	}
 
@@ -309,13 +311,14 @@ static void
 rb_static_playlist_source_add_location_swapped (const char *uri, 
 						RBStaticPlaylistSource *source)
 {
-	rb_static_playlist_source_add_location_internal (source, uri);
+	rb_static_playlist_source_add_location_internal (source, uri, -1);
 }
 
 
 void
 rb_static_playlist_source_add_location (RBStaticPlaylistSource *source,
-					const char *location)
+					const char *location,
+					gint index)
 {
 	RhythmDB *db;
 	RhythmDBEntry *entry;
@@ -330,7 +333,7 @@ rb_static_playlist_source_add_location (RBStaticPlaylistSource *source,
 					   NULL,
 					   source);
 	else
-		rb_static_playlist_source_add_location_internal (source, location);
+		rb_static_playlist_source_add_location_internal (source, location, index);
 
 }
 
@@ -342,7 +345,7 @@ rb_static_playlist_source_add_locations (RBStaticPlaylistSource *source,
 
 	for (l = locations; l; l = l->next) {
 		const gchar *uri = (const gchar *)l->data;
-		rb_static_playlist_source_add_location (source, uri);
+		rb_static_playlist_source_add_location (source, uri, -1);
 	}
 }
 
@@ -370,9 +373,10 @@ rb_static_playlist_source_remove_location (RBStaticPlaylistSource *source,
 
 void
 rb_static_playlist_source_add_entry (RBStaticPlaylistSource *source,
-				     RhythmDBEntry *entry)
+				     RhythmDBEntry *entry,
+				     gint index)
 {
-	rb_static_playlist_source_add_location_internal (source, entry->location);
+	rb_static_playlist_source_add_location_internal (source, entry->location, index);
 }
 
 void
@@ -382,15 +386,29 @@ rb_static_playlist_source_remove_entry (RBStaticPlaylistSource *source,
 	rb_static_playlist_source_remove_location (source, entry->location);
 }
 
+void
+rb_static_playlist_source_move_entry (RBStaticPlaylistSource *source,
+				      RhythmDBEntry *entry,
+				      gint index)
+{
+	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
+	RhythmDBQueryModel *model = rb_playlist_source_get_query_model (psource);
+	rhythmdb_query_model_move_entry (model, entry, index);
+
+	rb_playlist_source_mark_dirty (psource);
+}
+
+
 static void
 rb_static_playlist_source_non_entry_dropped (GtkTreeModel *model,
 					     const char *uri,
+					     int position,
 					     RBStaticPlaylistSource *source)
 {
 	g_assert (g_utf8_strlen (uri, -1) > 0);
 
 	rhythmdb_add_uri (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)), uri);
-	rb_static_playlist_source_add_location (source, uri);
+	rb_static_playlist_source_add_location (source, uri, position);
 }
 
 static void
@@ -403,6 +421,6 @@ rb_static_playlist_source_row_inserted (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	rb_static_playlist_source_add_entry (source, entry);
+	rb_static_playlist_source_add_entry (source, entry, -1);
 }
 

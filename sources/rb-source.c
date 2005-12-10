@@ -32,6 +32,7 @@
 #include "rb-shell.h"
 #include "rb-source.h"
 #include "rb-util.h"
+#include "rb-static-playlist-source.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
 static void rb_source_init (RBSource *source);
@@ -60,6 +61,7 @@ static void default_delete_thyself (RBSource *source);
 static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static gboolean default_disconnect (RBSource *source);
+static void default_add_to_queue (RBSource *source, RBSource *queue);
 static char *default_get_status (RBSource *source);
 
 static void rb_source_row_deleted_cb (GtkTreeModel *model,
@@ -119,6 +121,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_pixbuf = default_get_pixbuf;
 	klass->impl_copy = default_copy;
@@ -133,6 +136,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_deactivate = default_deactivate;
 	klass->impl_disconnect = default_disconnect;
 	klass->impl_try_playlist = default_try_playlist;
+	klass->impl_add_to_queue = default_add_to_queue;
 	klass->impl_get_status = default_get_status;
 
 	g_object_class_install_property (object_class,
@@ -578,6 +582,38 @@ rb_source_paste (RBSource *source, GList *nodes)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	klass->impl_paste (source, nodes);
+}
+
+gboolean
+rb_source_can_add_to_queue (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	return klass->impl_can_add_to_queue (source);
+}
+
+static void
+default_add_to_queue (RBSource *source, RBSource *queue)
+{
+	RBEntryView *songs = rb_source_get_entry_view (source);
+	GList *selection = rb_entry_view_get_selected_entries (songs);
+	GList *iter;
+
+	if (selection == NULL) 
+		return;
+
+	for (iter = selection; iter; iter = iter->next) {
+		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (queue), 
+						     (RhythmDBEntry *)iter->data, -1);
+	}
+
+	g_list_free (selection);
+}
+
+void
+rb_source_add_to_queue (RBSource *source, RBSource *queue)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	klass->impl_add_to_queue (source, queue);
 }
 
 void

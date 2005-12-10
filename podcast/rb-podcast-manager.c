@@ -432,6 +432,19 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 	}
 }
 
+gboolean
+rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
+{
+	g_assert (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
+
+	gulong status;
+	const gchar *file_name;
+
+	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+	file_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+
+	return (status != RHYTHMDB_PODCAST_STATUS_ERROR && file_name != NULL);
+}
 
 void
 rb_podcast_manager_start_sync (RBPodcastManager *pd)

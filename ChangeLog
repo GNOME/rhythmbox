@@ -1,3 +1,192 @@
+2005-12-10  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Play queue implementation. Closes bug 107787.
+
+	* data/rhythmbox.schemas: add items for whether the queue should be
+	displayed as a sidebar, and the height of the sourcelist if it is.
+
+	* data/ui/rhythmbox-ui.xml: add 'add to queue' actions for library,
+	playlist, and podcast popups; add 'view queue as sidebar' menu item,
+	add popups for queue as source and as sidebar.  We need a separate
+	popup for the sidebar view because otherwise it's hard to tell which
+	of the visible entry views the action came from.
+
+	* lib/rb-preferences.h: Add constant for queue-as-sidebar preference
+
+	* po/POTFILES.in: Add new file
+
+	* podcast/rb-podcast-manager.{c,h} (rb_podcast_manager_entry_downloaded):
+	Add helper function for deciding if a podcast episode is available for
+	playback.
+
+	* rhythmdb/rhythmdb-query-model.{c,h}: Add ability to programmatically
+	reorder entries in the query model.
+	(idle_process_update): Handle new update type used to insert entries
+	at a particular position in the query model.
+	(rhythmdb_query_model_add_entry): Use new update type, take an 'index'
+	parameter to specify the position (-1 meaning 'at the end').
+	(rhythmdb_query_model_insert_into_main_list): Handle the 'index'
+	parameter.
+	(rhythmdb_query_model_remove_from_main_list): Abort if we're getting
+	bad entry removal updates for entries that aren't in the model.
+	(rhythmdb_query_model_emit_reorder): Add helper function for
+	reordering rows.
+	(rhythmdb_query_model_move_entry): New method for moving entries
+	around in the model
+	(rhythmdb_query_model_entry_added_cb),
+	(rhythmdb_query_model_update_limited_entries),
+	(rhythmdb_query_model_do_reorder),
+	(rhythmdb_query_model_do_insert): Pass through the index parameter,
+	use rhythmdb_query_model_emit_reorder where appropriate.
+
+	* shell/rb-playlist-manager.c (rb_playlist_manager_set_property):
+	Don't allow the queue to be deleted.
+	(handle_playlist_entry_cb): Update for method signature change
+	(rb_playlist_manager_save_playlists_async),
+	(rb_playlist_manager_get_playlists): Don't save the play queue,
+	don't report it as a playlist.
+
+	* shell/rb-play-order.c: Include queue play order in the list of
+	available orders.
+
+	* shell/rb-shell.c
+	(rb_shell_class_init), (rb_shell_get_property): Add new property 
+	for access to the clipboard object.
+	(rb_shell_constructor): Handle playing-from-queue signal to update the
+	sourcelist display; add queue sidebar in to UI, listen for queue
+	sidebar pane changes, and read initial settings from gconf.
+	(rb_shell_playing_source_changed_cb), (rb_shell_playing_from_queue_cb): 
+	Only tell the sourcelist the source has changed if the new source is 
+	not the queue, as we update the sourcelist differently in that case.
+	(rb_shell_set_window_title): Only use the cached window title if the
+	playing state was the same when it was created.
+	(rb_shell_view_queue_as_sidebar_changed_cb): Mangle UI on request.
+	(rb_shell_sync_pane_visibility): Only hide the side pane if the
+	sourcelist is hidden and the queue is shown as a source.
+	(rb_shell_sync_smalldisplay): Disable 'view queue as sidebar' in small
+	mode, since it doesn't make any sense.
+	(sourcelist_visibility_changed_cb): Update the visibility of the pane
+	too.
+	(rb_shell_sync_paned): Update the queue sidebar pane separator too.
+	(sidebar_paned_size_allocate_cb): Update sourcelist height in gconf.
+	(rb_shell_jump_to_entry_with_source): Handle jump to entry when
+	playing from queue shown as sidebar.
+
+	* shell/rb-shell-clipboard.c: Use G_DEFINE_TYPE, move the
+	MusicProperties action here from rb-shell-player.c, since it acts like
+	cut/copy/paste etc.
+	(rb_shell_clipboard_class_init), (rb_shell_clipboard_set_property),
+	(rb_shell_clipboard_get_property): new property for queue source.
+	Watch for selection changes in the sidebar entry view as well as the
+	normal one.
+	(rb_shell_clipboard_sync): Rearrange code slightly, include sidebar
+	actions and MusicProperties.
+	(rb_shell_clipboard_cmd_queue_delete),
+	(rb_shell_clipboard_cmd_add_song_to_queue),
+	(rb_shell_clipboard_cmd_song_info),
+	(rb_shell_clipboard_cmd_queue_song_info): New action handlers.
+
+	* shell/rb-shell-player.{c,h}: Track the source the current playing entry
+	actually came from (could be the playing source, or the queue), add a 
+	new play order object for the queue, add a property for the queue
+	source, add a signal for when we switch between playing from the
+	source and from the queue.
+	(rb_shell_player_set_property): Handle playing directly from the
+	queue so we stop once the queue is empty.  Create queue play order
+	when we get the queue source.
+	(rb_shell_player_get_playing_source): Return the source we're actually
+	playing from.
+	(rb_shell_player_get_playing_entry): Get playing entry from queue if
+	that's where it is.
+	(rb_shell_player_set_playing_entry): Update the queue play order if 
+	that's where we're playing from.
+	(rb_shell_player_play_order_update_cb): Take has next/previous for the
+	queue into consideration too.
+	(swap_playing_source): Helper function for switching the playing
+	source.
+	(rb_shell_player_do_previous): Check the queue, even though there's
+	never a previous entry in it (yet), swap playing source if it changed.
+	(rb_shell_player_do_next): Check the queue for entries to play before
+	the normal play order, and swap playing source if it changed.
+	(rb_shell_player_do_previous_or_seek): Check the queue for previous
+	entries to go to as well.
+	(rb_shell_player_playpause): Check the queue before the selection and
+	the play order, and swap playing source if it changed.
+	(rb_shell_player_cmd_song_info): Move to rb-shell-clipboard.c
+	(rb_shell_player_entry_activated_cb): Use
+	rb_podcast_manager_entry_downloaded, do some tapdancing to make
+	activating queue entries work properly (move the activated entry to
+	the start of the queue and then play it); if we were playing from the
+	queue, clear its playing entry so it'll start again from the start
+	after the activated entry.
+	(rb_shell_player_sync_buttons): MusicProperties action handler moved
+	to rb-shell-clipboard.c
+	(actually_set_playing_source): Add helper for updating the playing
+	source.
+	(rb_shell_player_set_playing_source_internal): Emit playing-from-queue
+	signal if we stop or start doing so; use actually_set_playing_source; 
+	emit playing-source-changed if we actually did change source.
+
+	* sources/rb-ipod-source.c (add_rb_playlist): Add extra parameter for
+	rb_static_playlist_source_add_location.
+
+	* sources/rb-library-source.c (rb_library_source_class_init): Allow
+	enqueueing of songs from the library.
+
+	* sources/rb-playlist-source.c (rb_playlist_source_class_init): Allow
+	enqueueing of sonsg from playlists.
+	(rb_playlist_source_entry_added_cb): Add extra parameter for
+	rhythmdb_query_model_add_entry.
+	
+	* sources/rb-podcast-source.c (rb_podcast_source_class_init):
+	Implement (can_)add_to_queue for this class.
+	(rb_podcast_source_entry_activated): Use
+	rb_podcast_manager_entry_downloaded.
+	(impl_can_add_to_queue): Return TRUE if at least one entry that has
+	been downloaded is selected.
+	(impl_add_to_queue): Only add downloaded entries to the queue.
+
+	* sources/rb-source.{c,h}:
+	(rb_source_can_add_to_queue), (rb_source_add_to_queue): New virtual 
+	methods.
+	(rb_source_class_init): Don't allow enqueueing by default; implement 
+	add_to_queue though.
+	(default_add_to_queue): Add all selected entries to the queue.
+	
+	* sources/rb-sourcelist.{c,h}: Add concept of 'preempted' source (what
+	would be playing if there wasn't anything in the queue).
+	(set_source_playing): Helper function for manipulating tree store.
+	(rb_sourcelist_set_playing_source): Use set_source_playing
+	(rb_sourcelist_preempt_playing_source): Update preempted source
+	pointer, manipulate source states.
+
+	* sources/rb-static-playlist-source.{c,h}:
+	(rb_static_playlist_source_add_location_internal),
+	(rb_static_playlist_source_add_location),
+	(rb_static_playlist_source_add_entry): Add index parameter for
+	specifying where in the playlist the new entry goes.
+	(rb_static_playlist_source_new_from_xml), (impl_paste),
+	(rb_static_playlist_source_add_list_uri),
+	(rb_static_playlist_source_add_location_swapped),
+	(rb_static_playlist_source_add_locations),
+	(rb_static_playlist_source_non_entry_dropped),
+	(rb_static_playlist_source_row_inserted):
+	Handle new index parameter everywhere it appears
+	(rb_static_playlist_source_move_entry): New method for moving entries
+	around in the playlist.
+
+	* widgets/rb-entry-view.c (rb_entry_view_scroll_to_iter): Silence gtk
+	warnings when trying to scroll entry views that have never been
+	displayed.
+
+	* shell/rb-play-order-queue.{c,h}: New files, implementing a linear
+	play order that removes the old entry when switching to a new one.
+
+	* sources/rb-play-queue-source.{c,h}: New files, implementing a
+	static playlist subclass that has a second entry view for the sidebar
+	view using alternate formatting, and that displays the number of
+	entries it contains in its source list entry.
+
 2005-12-10  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:
