@@ -53,7 +53,6 @@
 #include "rb-statusbar.h"
 #include "eel-gconf-extensions.h"
 #include "rb-podcast-manager.h"
-#include "rb-cell-renderer-pixbuf.h"
 #include "rb-static-playlist-source.h"
 #include "rb-cut-and-paste-code.h"
 
@@ -127,9 +126,11 @@ static void rb_podcast_source_btn_file_change_cb 	(GtkFileChooserButton *widget,
 
 static void posts_view_drag_data_received_cb 		(GtkWidget *widget,
 					      		 GdkDragContext *dc,
-  				              		 gint x, gint y,
+  				              		 gint x,
+							 gint y,
 				              		 GtkSelectionData *selection_data, 
-				              		 guint info, guint time,
+				              		 guint info,
+							 guint time,
 				              		 RBPodcastSource *source);
 
 static void rb_podcast_source_cmd_download_post		(GtkAction *action,
@@ -148,33 +149,40 @@ static void rb_podcast_source_cmd_properties_feed	(GtkAction *action,
 static void register_action_group			(RBPodcastSource *source);
 
 
-static gint rb_podcast_source_post_date_cell_sort_func 	(RhythmDBEntry *a, RhythmDBEntry *b,
+static gint rb_podcast_source_post_date_cell_sort_func 	(RhythmDBEntry *a,
+							 RhythmDBEntry *b,
 		                                   	 RBPodcastSource *source);
 
-static gint rb_podcast_source_post_status_cell_sort_func(RhythmDBEntry *a, RhythmDBEntry *b,
+static gint rb_podcast_source_post_status_cell_sort_func(RhythmDBEntry *a,
+							 RhythmDBEntry *b,
 		                                   	 RBPodcastSource *source);
 
-static gint rb_podcast_source_post_feed_cell_sort_func 	(RhythmDBEntry *a, RhythmDBEntry *b,
+static gint rb_podcast_source_post_feed_cell_sort_func 	(RhythmDBEntry *a,
+							 RhythmDBEntry *b,
 		                                   	 RBPodcastSource *source);
 
-static void rb_podcast_source_post_status_cell_data_func(GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-						     	 GtkTreeModel *tree_model, GtkTreeIter *iter,
+static void rb_podcast_source_post_status_cell_data_func(GtkTreeViewColumn *column,
+							 GtkCellRenderer *renderer,
+						     	 GtkTreeModel *tree_model,
+							 GtkTreeIter *iter,
 						     	 RBPodcastSource *source);
 
-static void rb_podcast_source_post_date_cell_data_func 	(GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-		 			     	   	 GtkTreeModel *tree_model, GtkTreeIter *iter,
+static void rb_podcast_source_post_date_cell_data_func 	(GtkTreeViewColumn *column,
+							 GtkCellRenderer *renderer,
+		 			     	   	 GtkTreeModel *tree_model,
+							 GtkTreeIter *iter,
 				     	           	 RBPodcastSource *source);
 
-static void rb_podcast_source_post_feed_cell_data_func  (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-						     	 GtkTreeModel *tree_model, GtkTreeIter *iter,
+static void rb_podcast_source_post_feed_cell_data_func  (GtkTreeViewColumn *column,
+							 GtkCellRenderer *renderer,
+						     	 GtkTreeModel *tree_model,
+							 GtkTreeIter *iter,
 						     	 RBPodcastSource *source);
 
-static void rb_podcast_source_feed_status_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-						     	 GtkTreeModel *tree_model, GtkTreeIter *iter,
-						     	 RBPodcastSource *source);
-
-static void rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-						     	 GtkTreeModel *tree_model, GtkTreeIter *iter,
+static void rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
+							 GtkCellRenderer *renderer,
+						     	 GtkTreeModel *tree_model,
+							 GtkTreeIter *iter,
 						     	 RBPodcastSource *source);
 
 static void rb_podcast_source_start_download_cb 	(RBPodcastManager *pd, 
@@ -207,13 +215,16 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 static const char *impl_get_browser_key 		(RBSource *source);
 static GdkPixbuf *impl_get_pixbuf 			(RBSource *source);
 static RBEntryView *impl_get_entry_view 		(RBSource *source);
-static void impl_search 				(RBSource *source, const char *text);
+static void impl_search 				(RBSource *source,
+							 const char *text);
 static void impl_delete 				(RBSource *source);
 static void impl_song_properties 			(RBSource *source);
 static RBSourceEOFType impl_handle_eos 			(RBSource *asource);
 static gboolean impl_show_popup 			(RBSource *source);
-static void rb_podcast_source_do_query			(RBPodcastSource *source, RBPodcastQueryType type);
-static GtkWidget *impl_get_config_widget 		(RBSource *source, RBShellPreferences *prefs);
+static void rb_podcast_source_do_query			(RBPodcastSource *source,
+							 RBPodcastQueryType type);
+static GtkWidget *impl_get_config_widget 		(RBSource *source,
+							 RBShellPreferences *prefs);
 static gboolean impl_receive_drag 			(RBSource *source, 
 							 GtkSelectionData *data);
 static gboolean impl_can_add_to_queue			(RBSource *source);
@@ -249,9 +260,6 @@ struct RBPodcastSourcePrivate
 	GtkWidget *paned;
 	
 	GdkPixbuf *pixbuf;
-	GdkPixbuf *feed_subscribe_pixbuf;
-	GdkPixbuf *feed_unsubscribe_pixbuf;
-	GdkPixbuf *feed_working;
 
 	RBSimpleView *feeds;
 	RBEntryView *posts;
@@ -380,17 +388,6 @@ rb_podcast_source_init (RBPodcastSource *source)
 						       GTK_ICON_SIZE_LARGE_TOOLBAR,
 						       NULL);
 
-
-	source->priv->feed_subscribe_pixbuf = gtk_widget_render_icon (dummy,
-								      GTK_STOCK_YES,
-								      GTK_ICON_SIZE_MENU,
-								      NULL);
-	
-	source->priv->feed_unsubscribe_pixbuf = gtk_widget_render_icon (dummy,
-								        GTK_STOCK_NO,
-								      	GTK_ICON_SIZE_MENU,
-								      	NULL);
-
 	gtk_widget_destroy (dummy);
 }
 
@@ -436,8 +433,9 @@ rb_podcast_source_finalize (GObject *object)
 }
 
 static GObject *
-rb_podcast_source_constructor (GType type, guint n_construct_properties,
-			      GObjectConstructParam *construct_properties)
+rb_podcast_source_constructor (GType type,
+			       guint n_construct_properties,
+			       GObjectConstructParam *construct_properties)
 {
 	RBPodcastSource *source;
 	RBPodcastSourceClass *klass;
@@ -451,7 +449,6 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	RhythmDBQueryModel *query_model;
 	GtkTreeModel *model;
 	GPtrArray *query;
-	gint width;
 
 	klass = RB_PODCAST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PODCAST_SOURCE));
 
@@ -620,26 +617,6 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 	
 	rhythmdb_query_free (query);
 	
-
-	/* column status */
-	column = gtk_tree_view_column_new ();
-	renderer = rb_cell_renderer_pixbuf_new ();
-	
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
-	gtk_tree_view_column_set_fixed_width (column, width + 5);
-
-
-	gtk_tree_view_column_set_cell_data_func (column, 
-						 renderer,
-						 (GtkTreeCellDataFunc) rb_podcast_source_feed_status_cell_data_func,
-						 source, NULL);
-
-	rb_simple_view_append_column_custom (source->priv->feeds,
-					       column, " ", source);
-	
-
 	/* column title */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new ();
@@ -715,14 +692,13 @@ rb_podcast_source_constructor (GType type, guint n_construct_properties,
 
 static void
 rb_podcast_source_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *pspec)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
 		source->priv->entry_type = g_value_get_uint (value);
 		break;
@@ -737,14 +713,13 @@ rb_podcast_source_set_property (GObject *object,
 
 static void
 rb_podcast_source_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *pspec)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
 		g_value_set_uint (value, source->priv->entry_type);
 		break;
@@ -922,9 +897,9 @@ rb_podcast_source_state_prefs_sync (RBPodcastSource *source)
 
 static void
 rb_podcast_source_state_pref_changed (GConfClient *client,
-				     guint cnxn_id,
-				     GConfEntry *entry,
-				     RBPodcastSource *source)
+				      guint cnxn_id,
+				      GConfEntry *entry,
+				      RBPodcastSource *source)
 {
 	rb_debug ("state prefs changed");
 	rb_podcast_source_state_prefs_sync (source);
@@ -932,7 +907,7 @@ rb_podcast_source_state_pref_changed (GConfClient *client,
 
 static void
 rb_podcast_source_posts_view_sort_order_changed_cb (RBEntryView *view,
-						   RBPodcastSource *source)
+						    RBPodcastSource *source)
 {
 	rb_debug ("sort order changed");
 	rb_entry_view_resort_model (view);
@@ -940,9 +915,9 @@ rb_podcast_source_posts_view_sort_order_changed_cb (RBEntryView *view,
 
 static void
 rb_podcast_source_download_status_changed_cb (RBPodcastManager *download,
-						RhythmDBEntry *entry,
-						gulong status,
-						RBPodcastSource *source)
+					      RhythmDBEntry *entry,
+					      gulong status,
+					      RBPodcastSource *source)
 {
 	gtk_widget_queue_draw(GTK_WIDGET(source->priv->posts));
 	return;
@@ -1040,8 +1015,9 @@ rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
 
 
 static void
-feed_select_change_cb (RBPropertyView *propview, GList *feeds,
-		   RBPodcastSource *source)
+feed_select_change_cb (RBPropertyView *propview,
+		       GList *feeds,
+		       RBPodcastSource *source)
 {
 	if (source->priv->selected_feeds) {
 		g_list_foreach (source->priv->selected_feeds, (GFunc) g_free, NULL);
@@ -1232,9 +1208,11 @@ rb_podcast_source_btn_file_change_cb (GtkFileChooserButton *widget, const char *
 static void
 posts_view_drag_data_received_cb (GtkWidget *widget,
 				  GdkDragContext *dc,
-				  gint x, gint y,
+				  gint x,
+				  gint y,
 				  GtkSelectionData *selection_data, 
-				  guint info, guint time,
+				  guint info,
+				  guint time,
 				  RBPodcastSource *source)
 {
 	impl_receive_drag (RB_SOURCE (source), selection_data);
@@ -1475,8 +1453,10 @@ rb_podcast_source_cmd_update_all (GtkAction *action, RBPodcastSource *source)
 }
 
 static void
-rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				     	      GtkTreeModel *tree_model, GtkTreeIter *iter,
+rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
+					      GtkCellRenderer *renderer,
+				     	      GtkTreeModel *tree_model,
+					      GtkTreeIter *iter,
 				     	      RBPodcastSource *source)
 
 {
@@ -1485,8 +1465,7 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column, GtkCell
 
 	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
 
-	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS))
-	{
+	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS)) {
 	case RHYTHMDB_PODCAST_STATUS_COMPLETE:
 		g_object_set (G_OBJECT (renderer), "text", _("Completed"), NULL);
 		value = 100;  
@@ -1520,8 +1499,10 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column, GtkCell
 }
 
 static void
-rb_podcast_source_post_feed_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				       	    GtkTreeModel *tree_model, GtkTreeIter *iter,
+rb_podcast_source_post_feed_cell_data_func (GtkTreeViewColumn *column,
+					    GtkCellRenderer *renderer,
+				       	    GtkTreeModel *tree_model,
+					    GtkTreeIter *iter,
 				       	    RBPodcastSource *source)
 
 {
@@ -1534,49 +1515,12 @@ rb_podcast_source_post_feed_cell_data_func (GtkTreeViewColumn *column, GtkCellRe
 	g_object_set (G_OBJECT (renderer), "text", album, NULL);
 }
 
-
 static void
-rb_podcast_source_feed_status_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				     	      GtkTreeModel *tree_model, GtkTreeIter *iter,
-				     	      RBPodcastSource *source)
-{
-	GdkPixbuf *pixbuf;
-	gchar *location;
-	RhythmDBEntry *entry = NULL;
-
-	gtk_tree_model_get (tree_model, iter, 0, &location, -1);
-	
-	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-	g_free (location);	
-
-	if (entry == NULL) { 
-		g_object_set (G_OBJECT (renderer), "pixbuf", NULL, NULL);
-		return;
-	}
-	
-	
-	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS))
-	{
-	case 0:
-		pixbuf = source->priv->feed_unsubscribe_pixbuf;
-		break;
-	case 1:
-		pixbuf = source->priv->feed_subscribe_pixbuf;
-		break;
-	default:		
-		pixbuf = source->priv->feed_unsubscribe_pixbuf;
-	}
-	
-	g_object_set (G_OBJECT (renderer), "pixbuf", pixbuf, NULL);
-	
-}
-
-
-
-static void
-rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				     	      GtkTreeModel *tree_model, GtkTreeIter *iter,
-				     	      RBPodcastSource *source)
+rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
+					     GtkCellRenderer *renderer,
+					     GtkTreeModel *tree_model,
+					     GtkTreeIter *iter,
+					     RBPodcastSource *source)
 {
 	RhythmDBEntry *entry = NULL;
 	gchar *str;
@@ -1600,8 +1544,10 @@ rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column, GtkCellR
 
 
 static void
-rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				     	    GtkTreeModel *tree_model, GtkTreeIter *iter,
+rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column,
+					    GtkCellRenderer *renderer,
+				     	    GtkTreeModel *tree_model,
+					    GtkTreeIter *iter,
 				     	    RBPodcastSource *source)
 {
 	RhythmDBEntry *entry;
@@ -1718,7 +1664,9 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 
 
 static void
-rb_podcast_source_start_download_cb (RBPodcastManager *pd, RhythmDBEntry *entry, RBPodcastSource *source)
+rb_podcast_source_start_download_cb (RBPodcastManager *pd,
+				     RhythmDBEntry *entry,
+				     RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
@@ -1728,7 +1676,9 @@ rb_podcast_source_start_download_cb (RBPodcastManager *pd, RhythmDBEntry *entry,
 }
 
 static void
-rb_podcast_source_finish_download_cb (RBPodcastManager *pd, RhythmDBEntry *entry, RBPodcastSource *source)
+rb_podcast_source_finish_download_cb (RBPodcastManager *pd,
+				      RhythmDBEntry *entry,
+				      RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
@@ -1738,7 +1688,9 @@ rb_podcast_source_finish_download_cb (RBPodcastManager *pd, RhythmDBEntry *entry
 }
 
 static void
-rb_podcast_source_feed_updates_avaliable_cb (RBPodcastManager *pd, RhythmDBEntry *entry, RBPodcastSource *source)
+rb_podcast_source_feed_updates_avaliable_cb (RBPodcastManager *pd,
+					     RhythmDBEntry *entry,
+					     RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
@@ -1764,7 +1716,8 @@ rb_podcast_source_shutdown	(RBPodcastSource *source)
 }
 
 static gint
-rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a,
+					    RhythmDBEntry *b,
 	                                    RBPodcastSource *source)
 {
 	gulong a_val, b_val;
@@ -1782,7 +1735,8 @@ rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 }
 
 static gint
-rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a,
+					      RhythmDBEntry *b,
 	                                      RBPodcastSource *source)
 {
 	gulong a_val, b_val;
@@ -1800,7 +1754,8 @@ rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b
 }
 
 static gint
-rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
+					    RhythmDBEntry *b,
 					    RBPodcastSource *source)
 {
 	const char *a_str, *b_str;

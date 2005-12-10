@@ -1,3 +1,12 @@
+2005-12-10  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-podcast-source.c (rb_podcast_source_class_init) 
+	(rb_podcast_source_constructor): Remove unused pixbuf column.
+	(rb_podcast_source_set_property, rb_podcast_source_get_property):
+	Use consistent style.
+
+	Fixes #322961.
+
 2005-12-11  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-property-model.c:
