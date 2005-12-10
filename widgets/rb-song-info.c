@@ -1028,7 +1028,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 
-	if (strcmp (artist, rb_refstring_get (entry->artist))) {
+	if (strcmp (genre, rb_refstring_get (entry->genre))) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_GENRE);
 		g_value_init (&val, type);

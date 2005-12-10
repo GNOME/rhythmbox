@@ -1,3 +1,11 @@
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
+	patch by: Alex Lancaster <alexl@users.sourceforge.net>
+
+	* widgets/rb-song-info.c: (rb_song_info_sync_entry_single): fix
+	problem where the genre tag was getting set to the artist. Closes bug
+	323642.
+
 2005-12-09  William Jon McCann  <mccann@jhu.edu>
 
 	* rhythmdb/rhythmdb-query-model.c (rhythmdb_query_model_get_next_from_entry):
