@@ -211,15 +211,6 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
 
-	gtk_dialog_add_button (GTK_DIALOG (song_info),
-			       GTK_STOCK_CLOSE,
-			       GTK_RESPONSE_CLOSE);
-
-	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
-					 GTK_RESPONSE_CLOSE);
-
-
-
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
 }
@@ -404,6 +395,13 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 		rb_song_info_construct_single (song_info, xml, editable);
 	else
 		rb_song_info_construct_multiple (song_info, xml, editable);
+
+	gtk_dialog_add_button (GTK_DIALOG (song_info),
+			       GTK_STOCK_CLOSE,
+			       GTK_RESPONSE_CLOSE);
+
+	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
+					 GTK_RESPONSE_CLOSE);
 
 	g_object_unref (G_OBJECT (xml));
 	return G_OBJECT (song_info);

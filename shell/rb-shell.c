@@ -1935,6 +1935,22 @@ rb_shell_cmd_about (GtkAction *action,
 
 	const char *translator_credits = _("translator_credits");
 
+	const char *license[] = {
+		N_("Rhythmbox is free software; you can redistribute it and/or modify\n"
+		   "it under the terms of the GNU General Public License as published by\n"
+		   "the Free Software Foundation; either version 2 of the License, or\n"
+		   "(at your option) any later version.\n"),
+		N_("Rhythmbox is distributed in the hope that it will be useful,\n"
+		   "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+		   "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+		   "GNU General Public License for more details.\n"),
+		N_("You should have received a copy of the GNU General Public License\n"
+		   "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
+		   "59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n")
+	};
+
+	char *license_trans;
+
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
 	authors[0] = _("Maintainers:");
@@ -1947,17 +1963,24 @@ rb_shell_cmd_about (GtkAction *action,
 
 	comment = g_string_new (_("Music management and playback software for GNOME."));
 
+	license_trans = g_strconcat (_(license[0]), "\n", _(license[1]), "\n",
+				     _(license[2]), "\n", NULL);
+
 	gtk_show_about_dialog (GTK_WINDOW (shell->priv->window),
 			       "name", "Rhythmbox",
 			       "version", VERSION,
-			       "copyright", "Copyright \xc2\xa9 2003, 2004 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
+			       "copyright", "Copyright \xc2\xa9 2005 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
+			       "license", license_trans,
+			       "website", "http://www.gnome.org/projects/rhythmbox",
 			       "comments", comment->str,
 			       "authors", (const char **) authors,
 			       "documenters", (const char **) documenters,
 			       "translator-credits", strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
 			       "logo", pixbuf,
 			       NULL);
+
 	g_string_free (comment, TRUE);
+	g_free (license_trans);
 }
 
 void
