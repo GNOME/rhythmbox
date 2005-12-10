@@ -1,5 +1,13 @@
 2005-12-10  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (rb_shell_player_set_property),
+	(rb_shell_player_sync_buttons),
+	(rb_shell_player_selection_changed_cb): watch for the
+	"selection-changed" signal, so that the Song Properties get enabled.
+	Closes bug 323694.
+
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
 	* data/rhythmbox.schemas: fix the gconf schema
 
 2005-12-10  James Livingston  <jrl@ids.org.au>

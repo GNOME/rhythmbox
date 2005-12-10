@@ -149,6 +149,8 @@ static void gconf_song_position_slider_visibility_changed (GConfClient *client,g
 static void rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 						GParamSpec *arg1,
 						gpointer user_data);
+static void rb_shell_player_selection_changed_cb (RBEntryView *songs,
+						  RBShellPlayer *player);
 
 static gboolean rb_shell_player_jump_to_current_idle (RBShellPlayer *player);
 
@@ -629,6 +631,9 @@ rb_shell_player_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 							      G_CALLBACK (rb_shell_player_entry_activated_cb),
 							      player);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_player_selection_changed_cb),
+							      player);
 			for (; extra_views; extra_views = extra_views->next)
 				g_signal_handlers_disconnect_by_func (G_OBJECT (extra_views->data),
 								      G_CALLBACK (rb_shell_player_property_row_activated_cb),
@@ -651,6 +656,10 @@ rb_shell_player_set_property (GObject *object,
 			g_signal_connect_object (G_OBJECT (songs),
 						 "entry-activated",
 						 G_CALLBACK (rb_shell_player_entry_activated_cb),
+						 player, 0);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "selection-changed",
+						 G_CALLBACK (rb_shell_player_selection_changed_cb),
 						 player, 0);
 			for (; extra_views; extra_views = extra_views->next)
 				g_signal_connect_object (G_OBJECT (extra_views->data),
@@ -1683,6 +1692,12 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 					 rb_player_playing (player->priv->mmplayer) ? 
 					 RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_PAUSED);
 	}
+}
+
+static void
+rb_shell_player_selection_changed_cb (RBEntryView *songs, RBShellPlayer *player)
+{
+	rb_shell_player_sync_buttons (player);
 }
 
 void
