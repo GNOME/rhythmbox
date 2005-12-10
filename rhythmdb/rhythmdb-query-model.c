@@ -700,8 +700,14 @@ rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
 void
 rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
-	GPtrArray *entries = g_ptr_array_new ();
+	GPtrArray *entries;
 
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
+		rb_debug ("attempting to add hidden entry");
+		return;
+	}
+
+	entries = g_ptr_array_new ();
 	g_ptr_array_add (entries, entry);
 	rhythmdb_query_model_add_entries (model, entries);
 }
@@ -1217,16 +1223,16 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 			GtkTreeIter tem_iter;
 			GtkTreePath *tem_path;
 
+			if (g_utf8_strlen (strv[i], -1) == 0)
+				continue;
 
 			entry = rhythmdb_entry_lookup_by_location (model->priv->db,
 								   strv[i]);
 
 			if (entry == NULL) {
-				rhythmdb_add_uri (model->priv->db, strv[i]);
-
 				g_signal_emit (G_OBJECT (model),
 					       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
-					       0, g_strdup (strv[i]));
+					       0, strv[i]);
 			} else {
 				GSequencePtr old_ptr = g_hash_table_lookup (model->priv->reverse_map,
 									    entry);

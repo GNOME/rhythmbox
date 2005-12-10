@@ -1,5 +1,18 @@
 2005-12-10  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_add_entry),
+	(rhythmdb_query_model_drag_data_received):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_non_entry_dropped): when things are
+	dropped, ignore any blank lines in the list of uris. Make the source
+	responsible for adding new items to the db.
+
+	* rhythmdb/rhythmdb.c: (queue_stat_uri): make sure we aren't passed an
+	empty string.
+
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-player.c: (rb_shell_player_set_property),
 	(rb_shell_player_sync_buttons),
 	(rb_shell_player_selection_changed_cb): watch for the

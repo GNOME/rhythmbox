@@ -1748,6 +1748,7 @@ queue_stat_uri (const char *uri, RhythmDB *db)
 	RhythmDBAction *action;
 
 	rb_debug ("queueing stat for \"%s\"", uri);
+	g_assert (uri && *uri);
 
 	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_STAT;

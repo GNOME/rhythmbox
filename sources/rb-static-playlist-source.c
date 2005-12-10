@@ -387,6 +387,9 @@ rb_static_playlist_source_non_entry_dropped (GtkTreeModel *model,
 					     const char *uri,
 					     RBStaticPlaylistSource *source)
 {
+	g_assert (g_utf8_strlen (uri, -1) > 0);
+
+	rhythmdb_add_uri (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)), uri);
 	rb_static_playlist_source_add_location (source, uri);
 }
 
