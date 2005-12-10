@@ -1,3 +1,8 @@
+2005-12-10  James Livingston  <jrl@ids.org.au>
+
+	* metadata/rb-metadata-gst.c: don't set the state to NULL when inside
+	the decoded-pad callback with gstreamer 0.8, it causes problems.
+
 2005-12-10  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	Remove more junk from RBEntryView. Closes bug 323640.

@@ -569,9 +569,14 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 
 	gst_caps_unref (caps);
 
-	/* if this is non-audio, cancel the operation */
+#ifdef HAVE_GSTREAMER_0_10
+	/* if this is non-audio, cancel the operation
+	 * under 0.8 this causes assertion faliures when a pad with no caps in found
+	 * it isn't /needed/ under 0.8, so we don't do it
+	 */
 	if (md->priv->non_audio)
 		gst_element_set_state (md->priv->pipeline, GST_STATE_NULL);
+#endif
 }
 
 static void
