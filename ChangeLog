@@ -1,3 +1,17 @@
+2005-12-11  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_init), (rhythmdb_property_model_finalize),
+	(rhythmdb_property_model_insert),
+	(rhythmdb_property_model_delete_prop):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_init),
+	(rhythmdb_tree_finalize), (rhythmdb_tree_property_new),
+	(destroy_tree_property):
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_finalize),
+	(rhythmdb_entry_allocate), (rhythmdb_entry_destroy): remove the use of
+	GMemChunks, they are crap and deprecated. Improves startup-time and
+	memory usage slightly.
+
 2005-12-10  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c (rb_shell_cmd_about): Updated copyright.

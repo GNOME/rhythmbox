@@ -75,8 +75,6 @@ struct RhythmDBPrivate
 
 	gint read_counter;
 
-	GMemChunk *entry_memchunk;
-
 	RBMetaData *metadata;
 
 	xmlChar **column_xml_names;
@@ -511,10 +509,6 @@ rhythmdb_init (RhythmDB *db)
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
 
-	db->priv->entry_memchunk = g_mem_chunk_new ("RhythmDB entry memchunk",
-						    sizeof (RhythmDBEntry),
-						    1024, G_ALLOC_AND_FREE);
-
 	db->priv->monitored_directories = g_hash_table_new_full (g_str_hash, g_str_equal,
 								 (GDestroyNotify) g_free,
 								 NULL);
@@ -680,7 +674,6 @@ rhythmdb_finalize (GObject *object)
 
 	g_hash_table_destroy (db->priv->propname_map);
 
-	g_mem_chunk_destroy (db->priv->entry_memchunk);
 	g_hash_table_destroy (db->priv->monitored_directories);
 	g_source_remove (db->priv->changed_files_id);
 	g_hash_table_destroy (db->priv->changed_files);
@@ -906,7 +899,7 @@ RhythmDBEntry *
 rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 {
 	RhythmDBEntry *ret;
-	ret = g_mem_chunk_alloc0 (db->priv->entry_memchunk);
+	ret = g_new0 (RhythmDBEntry, 1);
 
 #ifndef G_DISABLE_ASSERT
 	ret->magic = 0xdeadb33f;
@@ -1023,7 +1016,7 @@ static void
 rhythmdb_entry_destroy (RhythmDB *db, RhythmDBEntry *entry)
 {
 	rhythmdb_entry_finalize (entry);
-	g_mem_chunk_free (db->priv->entry_memchunk, entry);
+	g_free (entry);
 }
 
 /**

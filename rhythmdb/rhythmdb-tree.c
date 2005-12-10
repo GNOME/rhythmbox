@@ -112,8 +112,6 @@ static gboolean evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *quer
 
 struct RhythmDBTreePrivate
 {
-	GMemChunk *property_memchunk;
-
 	GHashTable *entries;
 	GHashTable *genres;
 	GMutex *genres_lock;
@@ -161,9 +159,6 @@ rhythmdb_tree_init (RhythmDBTree *db)
 
 	db->priv->entries = g_hash_table_new (g_str_hash, g_str_equal);
 
-	db->priv->property_memchunk = g_mem_chunk_new ("RhythmDBTree property memchunk",
-						       sizeof (RhythmDBTreeProperty),
-						       1024, G_ALLOC_AND_FREE);
 	db->priv->genres = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 						  NULL, (GDestroyNotify)g_hash_table_destroy);
 }
@@ -191,8 +186,6 @@ rhythmdb_tree_finalize (GObject *object)
 	g_hash_table_foreach (db->priv->entries, (GHFunc) unparent_entries, db);
 
 	g_hash_table_destroy (db->priv->entries);
-
-	g_mem_chunk_destroy (db->priv->property_memchunk);
 
 	g_hash_table_destroy (db->priv->genres);
 
@@ -959,7 +952,7 @@ rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntry *entry)
 static RhythmDBTreeProperty *
 rhythmdb_tree_property_new (RhythmDBTree *db)
 {
-	RhythmDBTreeProperty *ret = g_mem_chunk_alloc0 (db->priv->property_memchunk);
+	RhythmDBTreeProperty *ret = g_new0 (RhythmDBTreeProperty, 1);
 #ifndef G_DISABLE_ASSERT
 	ret->magic = 0xf00dbeef;
 #endif	
@@ -1281,6 +1274,7 @@ destroy_tree_property (RhythmDBTreeProperty *prop)
 	prop->magic = 0xf33df33d;
 #endif
 	g_hash_table_destroy (prop->children);
+	g_free (prop);
 }
 
 typedef void (*RhythmDBTreeTraversalFunc) (RhythmDBTree *db, RhythmDBEntry *entry, gpointer data);

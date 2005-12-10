@@ -148,7 +148,6 @@ struct RhythmDBPropertyModelPrivate
 	GPtrArray *query;
 
 	GSequence *properties;
-	GMemChunk *property_memchunk;
 	GHashTable *reverse_map;
 
 	RhythmDBPropertyModelEntry *all;
@@ -386,16 +385,12 @@ rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 {
 	model->priv = RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE (model);
 
-	model->priv->property_memchunk = g_mem_chunk_new ("RhythmDBPropertyModel property memchunk",
-							  sizeof (RhythmDBPropertyModelEntry),
-							  1024, G_ALLOC_AND_FREE);
-
 	model->priv->stamp = g_random_int ();
 
 	model->priv->properties = g_sequence_new (NULL);
 	model->priv->reverse_map = g_hash_table_new (g_str_hash, g_str_equal);
 
-	model->priv->all = g_mem_chunk_alloc (model->priv->property_memchunk);
+	model->priv->all = g_new0 (RhythmDBPropertyModelEntry, 1);
 	model->priv->all->string = rb_refstring_new (_("All"));
 }
 
@@ -426,7 +421,6 @@ rhythmdb_property_model_finalize (GObject *object)
 		rb_refstring_unref (prop->sort_string);
 	}
 
-	g_mem_chunk_destroy (model->priv->property_memchunk);
 	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->properties);
 
@@ -516,7 +510,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 		return;
 	}
 
-	prop = g_mem_chunk_alloc (model->priv->property_memchunk);
+	prop = g_new0 (RhythmDBPropertyModelEntry, 1);
 	prop->string = rb_refstring_new (propstr);
 	prop->sort_string = rb_refstring_new (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
 	prop->refcount = 1;
@@ -573,7 +567,7 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	g_hash_table_remove (model->priv->reverse_map, propstr);
 	rb_refstring_unref (prop->string);
 	rb_refstring_unref (prop->sort_string);
-	g_mem_chunk_free (model->priv->property_memchunk, prop);
+	g_free (prop);
 	return;
 }
 
