@@ -518,6 +518,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	RBLibrarySource *source;
 	RBLibrarySourceClass *klass;
 	RBShell *shell;
+	GObject *shell_player;
 
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_SOURCE));
 
@@ -528,6 +529,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
 
 	source->priv->paned = gtk_vpaned_new ();
@@ -535,7 +537,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
 
 	/* set up songs tree view */
-	source->priv->songs = rb_entry_view_new (source->priv->db, source->priv->sorting_key,
+	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player,
+						 source->priv->sorting_key,
 						 TRUE, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);
@@ -1206,7 +1209,7 @@ impl_song_properties (RBSource *asource)
 
 	g_return_if_fail (source->priv->songs != NULL);
         
- 	song_info = rb_song_info_new (source->priv->songs); 
+ 	song_info = rb_song_info_new (asource, NULL);
 
         g_return_if_fail (song_info != NULL);
 

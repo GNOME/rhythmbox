@@ -25,7 +25,6 @@
 #include <gtk/gtkactiongroup.h>
 
 #include "rb-source.h"
-#include "rb-player.h"
 #include "rhythmdb.h"
 
 #ifndef __RB_SHELL_PLAYER_H
@@ -104,8 +103,6 @@ gboolean		rb_shell_player_set_playing_time(RBShellPlayer *player,
                                                          GError **error);
 void			rb_shell_player_seek		(RBShellPlayer *player, long offset);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
-
-RBPlayer *		rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
 
 gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player,
 							 gboolean *playing,

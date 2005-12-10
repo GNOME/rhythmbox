@@ -276,7 +276,7 @@ rb_shell_clipboard_set_property (GObject *object,
 			RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
 
 			g_signal_connect_object (G_OBJECT (songs),
-						 "changed",
+						 "selection-changed",
 						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 						 clipboard, 0);
 		}
@@ -327,7 +327,8 @@ rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 			       RBSource *source)
 {
 	g_return_if_fail (RB_IS_SHELL_CLIPBOARD (clipboard));
-	g_return_if_fail (RB_IS_SOURCE (source));
+	if (source != NULL)
+		g_return_if_fail (RB_IS_SOURCE (source));
 
 	g_object_set (G_OBJECT (clipboard), "source", source, NULL);
 }

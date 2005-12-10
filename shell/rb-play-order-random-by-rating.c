@@ -30,42 +30,12 @@ static void rb_random_play_order_by_rating_class_init (RBRandomPlayOrderByRating
 static double rb_random_by_rating_get_entry_weight (RBRandomPlayOrder *rorder,
 						 RhythmDB *db, RhythmDBEntry *entry);
 
-static RBPlayOrderClass *parent_class = NULL;
-
-GType
-rb_random_play_order_by_rating_get_type (void)
-{
-	static GType rb_random_play_order_by_rating_type = 0;
-
-	if (rb_random_play_order_by_rating_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBRandomPlayOrderByRatingClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_random_play_order_by_rating_class_init,
-			NULL,
-			NULL,
-			sizeof (RBRandomPlayOrderByRating),
-			0,
-			NULL
-		};
-
-		rb_random_play_order_by_rating_type = g_type_register_static (RB_TYPE_RANDOM_PLAY_ORDER,
-				"RBRandomPlayOrderByRating",
-				&our_info, 0);
-	}
-
-	return rb_random_play_order_by_rating_type;
-}
+G_DEFINE_TYPE (RBRandomPlayOrderByRating, rb_random_play_order_by_rating, RB_TYPE_RANDOM_PLAY_ORDER)
 
 static void
 rb_random_play_order_by_rating_class_init (RBRandomPlayOrderByRatingClass *klass)
 {
 	RBRandomPlayOrderClass *rorder;
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	rorder = RB_RANDOM_PLAY_ORDER_CLASS (klass);
 	rorder->get_entry_weight = rb_random_by_rating_get_entry_weight;
@@ -81,6 +51,11 @@ rb_random_play_order_by_rating_new (RBShellPlayer *player)
 			NULL);
 
 	return RB_PLAY_ORDER (rorder);
+}
+
+static void
+rb_random_play_order_by_rating_init (RBRandomPlayOrderByRating *porder)
+{
 }
 
 static double

@@ -44,6 +44,7 @@
 #include "rb-rating.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
+#include "rb-source.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -78,8 +79,9 @@ static void rb_song_info_backward_clicked_cb (GtkWidget *button,
 					      RBSongInfo *song_info);
 static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 					     RBSongInfo *song_info);
-static void rb_song_info_view_changed_cb (RBEntryView *entry_view,
-					  RBSongInfo *song_info);
+static void rb_song_info_query_model_changed_cb (GObject *source,
+						 GParamSpec *pspec,
+						 RBSongInfo *song_info);
 static void rb_song_info_rated_cb (RBRating *rating,
 				   double score,
 				   RBSongInfo *song_info);
@@ -89,7 +91,9 @@ static void rb_song_info_sync_entries (RBSongInfo *dialog);
 struct RBSongInfoPrivate
 {
 	RhythmDB *db;
+	RBSource *source;
 	RBEntryView *entry_view;
+	RhythmDBQueryModel *query_model;
 
 	/* information on the displayed song */
 	RhythmDBEntry *current_entry;
@@ -132,6 +136,7 @@ enum
 enum 
 {
 	PROP_0,
+	PROP_SOURCE,
 	PROP_ENTRY_VIEW
 };
 
@@ -152,8 +157,15 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 	widget_class->show = rb_song_info_show;
 
 	g_object_class_install_property (object_class,
+					 PROP_SOURCE,
+					 g_param_spec_object ("source",
+					                      "RBSource",
+					                      "RBSource object",
+					                      RB_TYPE_SOURCE,
+					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
 					 PROP_ENTRY_VIEW,
-					 g_param_spec_object ("entry_view",
+					 g_param_spec_object ("entry-view",
 					                      "RBEntryView",
 					                      "RBEntryView object",
 					                      RB_TYPE_ENTRY_VIEW,
@@ -409,6 +421,14 @@ rb_song_info_finalize (GObject *object)
 
 	g_return_if_fail (song_info->priv != NULL);
 
+	g_signal_handlers_disconnect_by_func (G_OBJECT (song_info->priv->source),
+					      G_CALLBACK (rb_song_info_query_model_changed_cb),
+					      song_info);
+
+	g_object_unref (G_OBJECT (song_info->priv->db));
+	g_object_unref (G_OBJECT (song_info->priv->source));
+	g_object_unref (G_OBJECT (song_info->priv->query_model));
+
 	G_OBJECT_CLASS (rb_song_info_parent_class)->finalize (object);
 }
 
@@ -422,18 +442,24 @@ rb_song_info_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_ENTRY_VIEW:
+	case PROP_SOURCE:
 	{
-		song_info->priv->entry_view = g_value_get_object (value);
-		g_object_get (G_OBJECT (song_info->priv->entry_view), "db",
+		song_info->priv->source = g_value_get_object (value);
+		g_object_ref (G_OBJECT (song_info->priv->source));
+		g_object_get (G_OBJECT (song_info->priv->source), 
+			      "query-model", &song_info->priv->query_model, NULL);
+		g_signal_connect_object (G_OBJECT (song_info->priv->source),
+					 "notify::query-model",
+					 G_CALLBACK (rb_song_info_query_model_changed_cb),
+					 song_info, 0);
+
+		g_object_get (G_OBJECT (song_info->priv->query_model), "db", 
 			      &song_info->priv->db, NULL);
-		g_signal_connect_object (G_OBJECT (song_info->priv->entry_view),
-					 "changed",
-					 G_CALLBACK (rb_song_info_view_changed_cb),
-					 song_info,
-					 G_CONNECT_AFTER);
 	}
 	break;
+	case PROP_ENTRY_VIEW:
+		song_info->priv->entry_view = g_value_get_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -450,6 +476,9 @@ rb_song_info_get_property (GObject *object,
 
 	switch (prop_id)
 	{
+	case PROP_SOURCE:
+		g_value_set_object (value, song_info->priv->source);
+		break;
 	case PROP_ENTRY_VIEW:
 		g_value_set_object (value, song_info->priv->entry_view);
 		break;
@@ -460,17 +489,22 @@ rb_song_info_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_song_info_new (RBEntryView *entry_view)
+rb_song_info_new (RBSource *source, RBEntryView *entry_view)
 {
 	RBSongInfo *song_info;
 
-        g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
+        g_return_val_if_fail (RB_IS_SOURCE (source), NULL);
+	if (!entry_view)
+		entry_view = rb_source_get_entry_view (source);
 
 	if (rb_entry_view_have_selection (entry_view) == FALSE) 
 		return NULL;
 
 	/* create the dialog */
-	song_info = g_object_new (RB_TYPE_SONG_INFO, "entry_view", entry_view, NULL);
+	song_info = g_object_new (RB_TYPE_SONG_INFO, 
+				  "source", source, 
+				  "entry-view", entry_view, 
+				  NULL);
 
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
@@ -725,10 +759,10 @@ rb_song_info_backward_clicked_cb (GtkWidget *button,
 				  RBSongInfo *song_info)
 {
 	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
+	song_info->priv->current_entry =
+		rhythmdb_query_model_get_previous_from_entry (song_info->priv->query_model,
+							      song_info->priv->current_entry);
 
-	song_info->priv->current_entry
-		= rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
-						     song_info->priv->current_entry);
 	rb_entry_view_select_entry (song_info->priv->entry_view,
 				    song_info->priv->current_entry);
 	rb_entry_view_scroll_to_entry (song_info->priv->entry_view,
@@ -742,10 +776,10 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 				 RBSongInfo *song_info)
 {
 	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
+	song_info->priv->current_entry =
+		rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
+							  song_info->priv->current_entry);
 
-	song_info->priv->current_entry
-		= rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
-						     song_info->priv->current_entry);
 	rb_entry_view_select_entry (song_info->priv->entry_view,
 				    song_info->priv->current_entry);
 	rb_entry_view_scroll_to_entry (song_info->priv->entry_view,
@@ -763,27 +797,32 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 	RhythmDBEntry *entry = NULL;
 
 	g_return_if_fail (song_info != NULL);
-	g_return_if_fail (song_info->priv->entry_view != NULL);
+	g_return_if_fail (song_info->priv->query_model != NULL);
 
 	if (!song_info->priv->current_entry)
 		return;
 	
 	/* backward */
-	entry = rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
-						       song_info->priv->current_entry);
+	entry = rhythmdb_query_model_get_previous_from_entry (song_info->priv->query_model,
+							      song_info->priv->current_entry);
 	
 	gtk_widget_set_sensitive (song_info->priv->backward, entry != NULL);
 	/* forward */
-	entry = rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
-						   song_info->priv->current_entry);
+	entry = rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
+							  song_info->priv->current_entry);
 	
 	gtk_widget_set_sensitive (song_info->priv->forward, entry != NULL);
 }
 
 static void
-rb_song_info_view_changed_cb (RBEntryView *entry_view,
-			      RBSongInfo *song_info)
+rb_song_info_query_model_changed_cb (GObject *source,
+				     GParamSpec *whatever,
+				     RBSongInfo *song_info)
 {
+	if (song_info->priv->query_model)
+		g_object_unref (G_OBJECT (song_info->priv->query_model));
+
+	g_object_get (source, "query-model", &song_info->priv->query_model, NULL);
 	/* update next button sensitivity */
 	rb_song_info_update_buttons (song_info);
 }

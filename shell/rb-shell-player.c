@@ -108,8 +108,6 @@ static void rb_shell_player_entry_changed_cb (RhythmDB *db,
 				       		GSList *changes,
 				       		RBShellPlayer *player);
 				       
-static void rb_shell_player_entry_view_changed_cb (RBEntryView *view,
-						   RBShellPlayer *playa);
 static void rb_shell_player_entry_activated_cb (RBEntryView *view,
 						RhythmDBEntry *entry,
 						RBShellPlayer *playa);
@@ -172,7 +170,7 @@ struct RBShellPlayerPrivate
 	
 	RBSource *selected_source;
 	RBSource *source;
-	RhythmDBEntry *playing_attempt_entry;
+
 	gboolean did_retry;
 	GTimeVal last_retry;
 
@@ -188,8 +186,6 @@ struct RBShellPlayerPrivate
 	char *song;
 	gboolean have_url;
 	char *url;
-
-	gboolean have_previous_entry;
 
 	RBPlayOrder *play_order;
 
@@ -631,9 +627,6 @@ rb_shell_player_set_property (GObject *object,
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_player_entry_view_changed_cb),
-							      player);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 							      G_CALLBACK (rb_shell_player_entry_activated_cb),
 							      player);
 			for (; extra_views; extra_views = extra_views->next)
@@ -646,7 +639,7 @@ rb_shell_player_set_property (GObject *object,
 
 		
 		player->priv->selected_source = g_value_get_object (value);
-		rb_debug ("selected source %p", g_value_get_object (value));
+		rb_debug ("selected source %p", player->priv->selected_source);
 
 		rb_shell_player_sync_with_selected_source (player);
 		rb_shell_player_sync_buttons (player);
@@ -655,10 +648,6 @@ rb_shell_player_set_property (GObject *object,
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
-			g_signal_connect_object (G_OBJECT (songs),
-						 "changed",
-						 G_CALLBACK (rb_shell_player_entry_view_changed_cb),
-						 player, 0);
 			g_signal_connect_object (G_OBJECT (songs),
 						 "entry-activated",
 						 G_CALLBACK (rb_shell_player_entry_activated_cb),
@@ -907,7 +896,7 @@ rb_shell_player_play (RBShellPlayer *player, GError **error)
 	if (!rb_player_play (player->priv->mmplayer, error))
 		return FALSE;
 
-	rb_entry_view_set_playing (songs, TRUE);
+	rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PLAYING);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -968,8 +957,6 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 	rb_shell_player_sync_replaygain (player, entry);
 	if (!rb_shell_player_play (player, &tmp_error))
 		goto lose;
-
-	rb_entry_view_set_playing_entry (rb_source_get_entry_view (player->priv->source), entry);
 
 	rb_debug ("Success!");
 	/* clear error on successful playback */
@@ -1319,6 +1306,7 @@ gboolean
 rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError **error)
 {
 	gboolean ret;
+	RBEntryView *songs;
 
 	rb_debug ("doing playpause");
 
@@ -1330,6 +1318,8 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 		if (rb_source_can_pause (player->priv->source)) {
 			rb_debug ("pausing mm player");
 			rb_player_pause (player->priv->mmplayer);
+			songs = rb_source_get_entry_view (player->priv->source);
+			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PAUSED);
 		} else if (!ignore_stop) {
 			rb_debug ("setting playing source to NULL");
 			rb_shell_player_set_playing_source (player, NULL);
@@ -1519,13 +1509,6 @@ rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
 			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
-static void
-rb_shell_player_entry_view_changed_cb (RBEntryView *view,
-				       RBShellPlayer *playa)
-{
-	rb_debug ("entry view changed");
-	rb_shell_player_sync_buttons (playa);
-}
 
 static void
 rb_shell_player_entry_activated_cb (RBEntryView *view,
@@ -1556,8 +1539,9 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 					   const char *name,
 					   RBShellPlayer *playa)
 {
-	RhythmDBEntry *entry;
-	RBEntryView *songs;
+	RhythmDBEntry *entry = NULL;
+	RhythmDBQueryModel *model;
+	GtkTreeIter iter;
 	GError *error = NULL;
 
 	rb_debug  ("got property activated");
@@ -1565,13 +1549,18 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 
 	/* RHYTHMDBFIXME - do we need to wait here until the query is finished?
+	 * in theory, yes, but in practice the query is started when the row is
+	 * selected (on the first click when doubleclicking, or when using the 
+	 * keyboard to select then activate) and is pretty much always done by
+	 * the time we get in here.
 	 */
-	songs = rb_source_get_entry_view (playa->priv->source);
-	entry = rb_entry_view_get_first_entry (songs);
-
-	if (!entry)
+	g_object_get (G_OBJECT (playa->priv->selected_source), "query-model", &model, NULL);
+	if (!model)
+		return;
+	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
 		return;
 
+	entry = rhythmdb_query_model_iter_to_entry (model, &iter); 
 	if (!rb_shell_player_set_playing_entry (playa, entry, TRUE, &error)) {
 		rb_shell_player_error (playa, FALSE, error);
 		g_clear_error (&error);
@@ -1688,8 +1677,12 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	g_object_set (G_OBJECT (action), "sensitive", view && rb_entry_view_have_selection (view),
 		      NULL);
 
-	if (view)
-		rb_entry_view_set_playing (view, rb_player_playing (player->priv->mmplayer));
+	if (source) {
+		view = rb_source_get_entry_view (source);
+		rb_entry_view_set_state (view, 
+					 rb_player_playing (player->priv->mmplayer) ? 
+					 RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_PAUSED);
+	}
 }
 
 void
@@ -1715,9 +1708,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 		if (sync_entry_view) {
 			rb_debug ("source is already playing, stopping it");
-			rb_entry_view_set_playing_entry (songs, NULL);
 			rb_play_order_set_playing_entry (player->priv->play_order, NULL);
-			rb_entry_view_set_playing (songs, FALSE);
+			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_NOT_PLAYING);
 		}
 	}
 	
@@ -1769,18 +1761,18 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 			     gboolean *playing,
 			     GError **error)
 {
-	if (playing != NULL)
-		*playing = rb_player_playing (player->priv->mmplayer);
+	if (playing != NULL) {
+		*playing = FALSE;
+		if (player->priv->source) {
+			RBEntryView *songs = rb_source_get_entry_view (player->priv->source); 
+			RBEntryViewState state;
+			g_object_get (G_OBJECT (songs), "playing-state", &state, NULL);
+			if (state == RB_ENTRY_VIEW_PLAYING)
+				*playing = TRUE;
+		}
+	}
 
 	return TRUE;
-}
-
-RBPlayer *
-rb_shell_player_get_mm_player (RBShellPlayer *player)
-{
-	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), NULL);
-
-	return player->priv->mmplayer;
 }
 
 char *

@@ -55,6 +55,12 @@ typedef enum {
 	RB_ENTRY_VIEW_COL_FIRST_SEEN
 } RBEntryViewColumn;
 
+typedef enum {
+	RB_ENTRY_VIEW_NOT_PLAYING,
+	RB_ENTRY_VIEW_PLAYING,
+	RB_ENTRY_VIEW_PAUSED
+} RBEntryViewState;
+
 typedef struct RBEntryViewPrivate RBEntryViewPrivate;
 
 typedef struct
@@ -72,11 +78,10 @@ typedef struct
 	void (*entry_deleted)		(RBEntryView *view, RhythmDBEntry *entry);
 	void (*entries_replaced)	(RBEntryView *view);
 
-	void (*entry_selected)          (RBEntryView *view, RhythmDBEntry *entry);
 	void (*entry_activated)         (RBEntryView *view, RhythmDBEntry *entry);
 
-	void (*changed)                (RBEntryView *view);
 	void (*have_selection_changed) (RBEntryView *view, gboolean have_selection);
+	void (*selection_changed)       (RBEntryView *view);
 	void (*sort_order_changed)     (RBEntryView *view);
 
 	void (*show_popup)             (RBEntryView *view);
@@ -84,8 +89,9 @@ typedef struct
 
 GType		rb_entry_view_get_type			(void);
 
-RBEntryView *	rb_entry_view_new			(RhythmDB *db, const char *sort_key,
-							 gboolean drag_source, gboolean drag_dest);
+RBEntryView *	rb_entry_view_new			(RhythmDB *db, GObject *shell_player,
+							 const char *sort_key, gboolean drag_source, 
+							 gboolean drag_dest);
 
 void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype);
 
@@ -99,26 +105,8 @@ void		rb_entry_view_set_columns_clickable	(RBEntryView *view, gboolean clickable
 void		rb_entry_view_set_model			(RBEntryView *view,
 							 RhythmDBQueryModel *model);
 
-gboolean	rb_entry_view_busy			(RBEntryView *view);
-
-GnomeVFSFileSize rb_entry_view_get_total_size		(RBEntryView *view);
-glong		rb_entry_view_get_duration		(RBEntryView *view);
-
-void		rb_entry_view_set_playing		(RBEntryView *view,
-							 gboolean playing);
-
-void		rb_entry_view_set_playing_entry         (RBEntryView *view,
-							 RhythmDBEntry *entry);
-RhythmDBEntry *	rb_entry_view_get_playing_entry         (RBEntryView *view);
-
-RhythmDBEntry *	rb_entry_view_get_first_entry		(RBEntryView *view);
-RhythmDBEntry *	rb_entry_view_get_next_entry		(RBEntryView *view);
-RhythmDBEntry *	rb_entry_view_get_previous_entry	(RBEntryView *view);
-
-RhythmDBEntry *	rb_entry_view_get_next_from_entry	(RBEntryView *view,
-							 RhythmDBEntry *entry);
-RhythmDBEntry *	rb_entry_view_get_previous_from_entry	(RBEntryView *view,
-							 RhythmDBEntry *entry);
+void		rb_entry_view_set_state			(RBEntryView *view,
+							 RBEntryViewState state);
 
 gboolean	rb_entry_view_have_selection		(RBEntryView *view);
 GList *		rb_entry_view_get_selected_entries	(RBEntryView *view);
@@ -127,8 +115,6 @@ void		rb_entry_view_select_all		(RBEntryView *view);
 void		rb_entry_view_select_none		(RBEntryView *view);
 void		rb_entry_view_select_entry		(RBEntryView *view,
 							 RhythmDBEntry *entry);
-
-guint		rb_entry_view_get_num_entries		(RBEntryView *view);
 
 gboolean	rb_entry_view_get_entry_contained	(RBEntryView *view,
 							 RhythmDBEntry *entry);
@@ -142,7 +128,6 @@ void		rb_entry_view_scroll_to_entry		(RBEntryView *view,
 void		rb_entry_view_enable_drag_source	(RBEntryView *view,
 							 const GtkTargetEntry *targets,
 							 int n_targets);
-RhythmDBEntry *	rb_entry_view_get_random_entry		(RBEntryView *view);
 
 void		rb_entry_view_get_sorting_order		(RBEntryView *view, const char **column_name, gint *sort_order);
 void		rb_entry_view_set_sorting_order		(RBEntryView *view, const char *column_name, gint sort_order);

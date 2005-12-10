@@ -43,6 +43,7 @@
 #include "rb-stock-icons.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
+#include "rb-shell-player.h"
 #include "rb-cut-and-paste-code.h"
 
 static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
@@ -80,17 +81,11 @@ static void rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 static void rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 					  GtkTreePath *path,
 					  RBEntryView *view);
-static void rb_entry_view_row_changed_cb (GtkTreeModel *model,
-					  GtkTreePath *path,
-					  GtkTreeIter *iter,
-					  RBEntryView *view);
 static void rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 					     GtkTreePath *path,
 					     GtkTreeIter *iter,
 					     gint *order,
 					     RBEntryView *view);
-static gboolean emit_entry_changed (RBEntryView *view);
-static void queue_changed_sig (RBEntryView *view);
 static void rb_entry_view_sync_columns_visible (RBEntryView *view);
 static void rb_entry_view_columns_config_changed_cb (GConfClient* client,
 						    guint cnxn_id,
@@ -100,10 +95,6 @@ static void rb_entry_view_sort_key_changed_cb (GConfClient* client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
 					       gpointer user_data);
-/* static gboolean rb_entry_view_dummy_drag_drop_cb (GtkWidget *widget, */
-/* 						  GdkDragContext *drag_context, */
-/* 						  int x, int y, guint time, */
-/* 						  gpointer user_data); */
 static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 				   const char *path,
 				   double rating,
@@ -121,6 +112,11 @@ static void rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry *en
 					    GtkTreeIter *iter);
 static void rb_entry_view_scroll_to_iter (RBEntryView *view,
 					  GtkTreeIter *iter);
+static gboolean rb_entry_view_emit_row_changed (RBEntryView *view,
+						RhythmDBEntry *entry);
+static void rb_entry_view_playing_song_changed (RBShellPlayer *player,
+						RhythmDBEntry *entry,
+						RBEntryView *view);
 
 struct RBEntryViewReverseSortingData
 {
@@ -133,13 +129,14 @@ static gint reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReve
 struct RBEntryViewPrivate
 {
 	RhythmDB *db;
+	RBShellPlayer *shell_player;
 	
 	RhythmDBQueryModel *model;
 
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
-	gboolean playing;
+	RBEntryViewState playing_state;
 	RhythmDBQueryModel *playing_model;
 	RhythmDBEntry *playing_entry;
 	gboolean playing_entry_in_view;
@@ -159,22 +156,11 @@ struct RBEntryViewPrivate
 
 	gboolean have_selection;
 
-	gboolean keep_selection;
-
-	RhythmDBEntry *selected_entry;
-
-	gboolean change_sig_queued;
-	guint change_sig_id;
-
-	gboolean selection_lock;
-
 	GHashTable *column_key_map;
 
 	guint gconf_notification_id;
 	GHashTable *propid_column_map;
 	GHashTable *column_sort_data_map;
-
-	gboolean idle;
 };
 
 #define RB_ENTRY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_ENTRY_VIEW, RBEntryViewPrivate))
@@ -184,9 +170,8 @@ enum
 	ENTRY_ADDED,
 	ENTRY_DELETED,
 	ENTRIES_REPLACED,
-	ENTRY_SELECTED,
+	SELECTION_CHANGED,
 	ENTRY_ACTIVATED,
-	CHANGED,
 	SHOW_POPUP,
 	HAVE_SEL_CHANGED,
 	SORT_ORDER_CHANGED,
@@ -197,11 +182,12 @@ enum
 {
 	PROP_0,
 	PROP_DB,
+	PROP_SHELL_PLAYER,
 	PROP_MODEL,
-	PROP_PLAYING_ENTRY,
 	PROP_SORTING_KEY,
 	PROP_IS_DRAG_SOURCE,
 	PROP_IS_DRAG_DEST,
+	PROP_PLAYING_STATE
 };
 
 G_DEFINE_TYPE (RBEntryView, rb_entry_view, GTK_TYPE_SCROLLED_WINDOW)
@@ -247,19 +233,19 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
+					 PROP_SHELL_PLAYER,
+					 g_param_spec_object ("shell-player",
+							      "RBShellPlayer",
+							      "RBShellPlayer object",
+							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
 					 PROP_MODEL,
 					 g_param_spec_object ("model",
 							      "RhythmDBQueryModel",
 							      "RhythmDBQueryModel",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class,
-					 PROP_PLAYING_ENTRY,
-					 g_param_spec_pointer ("playing-entry",
-							       "Playing entry",
-							       "Playing entry",
-							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_SORTING_KEY,
 					 g_param_spec_string ("sort-key",
@@ -281,6 +267,15 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							       "whether or not this is a drag dest",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING_STATE,
+					 g_param_spec_int ("playing-state",
+						 	   "playing state",
+							   "playback state for this entry view",
+							   RB_ENTRY_VIEW_NOT_PLAYING, 
+							   RB_ENTRY_VIEW_PAUSED,
+							   RB_ENTRY_VIEW_NOT_PLAYING,
+							   G_PARAM_READWRITE));
 	rb_entry_view_signals[ENTRY_ADDED] =
 		g_signal_new ("entry-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -320,21 +315,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
-	rb_entry_view_signals[ENTRY_SELECTED] =
-		g_signal_new ("entry-selected",
+	rb_entry_view_signals[SELECTION_CHANGED] =
+		g_signal_new ("selection-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEntryViewClass, entry_selected),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_POINTER);
-	rb_entry_view_signals[CHANGED] =
-		g_signal_new ("changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEntryViewClass, changed),
+			      G_STRUCT_OFFSET (RBEntryViewClass, selection_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -413,9 +398,6 @@ rb_entry_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	if (view->priv->change_sig_queued)
-		g_source_remove (view->priv->change_sig_id);
-
 	if (view->priv->gconf_notification_id > 0)
 		eel_gconf_notification_remove (view->priv->gconf_notification_id);
 	if (view->priv->sorting_gconf_notification_id > 0)
@@ -448,6 +430,13 @@ rb_entry_view_set_property (GObject *object,
 	case PROP_DB:
 		view->priv->db = g_value_get_object (value);
 		break;
+	case PROP_SHELL_PLAYER:
+		view->priv->shell_player = g_value_get_object (value);
+		g_signal_connect_object (G_OBJECT (view->priv->shell_player),
+					 "playing-song-changed",
+					 G_CALLBACK (rb_entry_view_playing_song_changed),
+					 view, 0);
+		break;
 	case PROP_SORTING_KEY:
 		g_free (view->priv->sorting_key);
 		view->priv->sorting_key = g_value_dup_string (value);
@@ -463,9 +452,6 @@ rb_entry_view_set_property (GObject *object,
 							      view);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
 							      G_CALLBACK (rb_entry_view_row_deleted_cb),
-							      view);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
-							      G_CALLBACK (rb_entry_view_row_changed_cb),
 							      view);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
 							      G_CALLBACK (rb_entry_view_rows_reordered_cb),
@@ -484,11 +470,6 @@ rb_entry_view_set_property (GObject *object,
 		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_deleted",
 					 G_CALLBACK (rb_entry_view_row_deleted_cb),
-					 view,
-					 0);
-		g_signal_connect_object (G_OBJECT (new_model),
-					 "row_changed",
-					 G_CALLBACK (rb_entry_view_row_changed_cb),
 					 view,
 					 0);
 		g_signal_connect_object (G_OBJECT (new_model),
@@ -529,65 +510,21 @@ rb_entry_view_set_property (GObject *object,
 		view->priv->have_selection = FALSE;
 
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
-
-		queue_changed_sig (view);
-
 		break;
 	}
-	case PROP_PLAYING_ENTRY:
-	{
-		GtkTreeIter iter;
-		GtkTreePath *path;
-		RhythmDBEntry *entry;
-		gboolean realized, visible;
-
-		entry = g_value_get_pointer (value);
-		
-		if (view->priv->playing_entry != NULL
-		    && view->priv->playing_entry_in_view) {
-			rhythmdb_query_model_entry_to_iter (view->priv->playing_model,
-							    view->priv->playing_entry,
-							    &iter);
-			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->playing_model),
-							&iter);
-			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_model),
-						    path, &iter);
-			gtk_tree_path_free (path);
-			g_object_unref (G_OBJECT (view->priv->playing_model));
-		}
-		
-		view->priv->playing_entry = entry;
-		g_object_ref (G_OBJECT (view->priv->model));
-		view->priv->playing_model = view->priv->model;
-
-		if (view->priv->playing_entry != NULL) {
-			view->priv->playing_entry_in_view = 
-				rhythmdb_query_model_entry_to_iter (view->priv->model,
-								    view->priv->playing_entry,
-								    &iter);
-			if (view->priv->playing_entry_in_view) {
-				path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model),
-								&iter);
-				gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->model),
-							    path, &iter);
-				gtk_tree_path_free (path);
-			}
-		}
-
-		if (view->priv->playing_entry
-		    && view->priv->playing_entry_in_view) {
-		    rb_entry_view_entry_is_visible (view, view->priv->playing_entry,
-						    &realized, &visible, &iter);
-		    if (realized && !visible)
-			    rb_entry_view_scroll_to_iter (view, &iter);
-		}
-	}
-	break;
 	case PROP_IS_DRAG_SOURCE:
 		view->priv->is_drag_source = g_value_get_boolean (value);
 		break;
 	case PROP_IS_DRAG_DEST:
 		view->priv->is_drag_dest = g_value_get_boolean (value);
+		break;
+	case PROP_PLAYING_STATE:
+		view->priv->playing_state = g_value_get_int (value);
+
+		/* redraw the playing entry, as the icon will have changed */
+		if (view->priv->playing_entry != NULL) {
+			rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -608,17 +545,20 @@ rb_entry_view_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, view->priv->db);
 		break;
+	case PROP_SHELL_PLAYER:
+		g_value_set_object (value, view->priv->shell_player);
+		break;
 	case PROP_SORTING_KEY:
 		g_value_set_string (value, view->priv->sorting_key);
-		break;
-	case PROP_PLAYING_ENTRY:
-		g_value_set_pointer (value, view->priv->playing_entry);
 		break;
 	case PROP_IS_DRAG_SOURCE:
 		g_value_set_boolean (value, view->priv->is_drag_source);
 		break;
 	case PROP_IS_DRAG_DEST:
 		g_value_set_boolean (value, view->priv->is_drag_dest);
+		break;
+	case PROP_PLAYING_STATE:
+		g_value_set_int (value, view->priv->playing_state);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -627,8 +567,9 @@ rb_entry_view_get_property (GObject *object,
 }
 
 RBEntryView *
-rb_entry_view_new (RhythmDB *db, const char *sort_key,
-		   gboolean is_drag_source, gboolean is_drag_dest) 
+rb_entry_view_new (RhythmDB *db, GObject *shell_player,
+		   const char *sort_key, gboolean is_drag_source, 
+		   gboolean is_drag_dest)
 {
 	RBEntryView *view;
 
@@ -638,10 +579,11 @@ rb_entry_view_new (RhythmDB *db, const char *sort_key,
 					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 					   "vscrollbar_policy", GTK_POLICY_ALWAYS,
 					   "shadow_type", GTK_SHADOW_IN,
-					    "db", db,
-					    "sort-key", sort_key,
-					    "is-drag-source", is_drag_source,
-					    "is-drag-dest", is_drag_dest,
+					   "db", db,
+					   "shell-player", RB_SHELL_PLAYER (shell_player),
+					   "sort-key", sort_key,
+					   "is-drag-source", is_drag_source,
+					   "is-drag-dest", is_drag_dest,
 					   NULL));
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
@@ -653,25 +595,6 @@ void
 rb_entry_view_set_model (RBEntryView *view, RhythmDBQueryModel *model)
 {
 	g_object_set (G_OBJECT (view), "model", model, NULL);
-}
-
-gboolean
-rb_entry_view_busy (RBEntryView *view)
-{
-	return view->priv->model &&
-		rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (view->priv->model));
-}
-
-glong
-rb_entry_view_get_duration (RBEntryView *view)
-{
-	return rhythmdb_query_model_get_duration (RHYTHMDB_QUERY_MODEL (view->priv->model));
-}
-
-GnomeVFSFileSize
-rb_entry_view_get_total_size (RBEntryView *view)
-{
-	return rhythmdb_query_model_get_size (RHYTHMDB_QUERY_MODEL (view->priv->model));
 }
 
 static gint
@@ -902,14 +825,23 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 
 	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
 
-	if (entry == view->priv->playing_entry && view->priv->playing)
-		pixbuf = view->priv->playing_pixbuf;
-	else if (entry == view->priv->playing_entry)
-		pixbuf = view->priv->paused_pixbuf;
-	else if (entry->playback_error)
+	if (entry == view->priv->playing_entry) {
+		switch (view->priv->playing_state) {
+		case RB_ENTRY_VIEW_PLAYING:	
+			pixbuf = view->priv->playing_pixbuf;
+			break;
+		case RB_ENTRY_VIEW_PAUSED:
+			pixbuf = view->priv->paused_pixbuf;
+			break;
+		default:
+			pixbuf = NULL;
+			break;
+		}
+	} else if (entry->playback_error) {
 		pixbuf = view->priv->error_pixbuf;
-	else
+	} else {
 		pixbuf = NULL;
+	}
 
 	g_object_set (G_OBJECT (renderer), "pixbuf", pixbuf, NULL);
 }
@@ -1623,97 +1555,40 @@ rb_entry_view_pixbuf_clicked_cb (RBEntryView          *view,
 	}
 }
 
-void
-rb_entry_view_set_playing_entry (RBEntryView *view,
-				 RhythmDBEntry *entry)
+static void
+rb_entry_view_playing_song_changed (RBShellPlayer *player,
+				    RhythmDBEntry *entry,
+				    RBEntryView *view)
 {
-	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
-
-	g_object_set (G_OBJECT (view), "playing-entry", entry, NULL);
-}
-
-RhythmDBEntry *
-rb_entry_view_get_playing_entry (RBEntryView *view)
-{
-	g_return_val_if_fail (RB_IS_ENTRY_VIEW (view), NULL);
-
-	return view->priv->playing_entry;
-}
-
-RhythmDBEntry *
-rb_entry_view_get_first_entry (RBEntryView *view)
-{
-	GtkTreeIter iter;
-
-	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->model), &iter))
-		return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
-
-	return NULL;
-}
-
-RhythmDBEntry *
-rb_entry_view_get_next_from_entry (RBEntryView *view, RhythmDBEntry *entry)
-{
-	GtkTreeIter iter;
-
-	g_return_val_if_fail (entry != NULL, NULL);
-
-	if (!rhythmdb_query_model_entry_to_iter (view->priv->model,
-						 entry, &iter)) {
-		/* If the entry isn't in the entryview, the "next" entry is the first. */
-		return rb_entry_view_get_first_entry (view);
-	}
-	
-	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->model),
-				      &iter))
-		return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
-
-	return NULL;
-}
-
-RhythmDBEntry *
-rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
-{
-	GtkTreeIter iter;
-	GtkTreePath *path;
-
-	g_return_val_if_fail (entry != NULL, NULL);
-
-	if (!rhythmdb_query_model_entry_to_iter (view->priv->model,
-						 entry, &iter))
-		return NULL;
-
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), &iter);
-	g_assert (path);
-	if (!gtk_tree_path_prev (path)) {
-		gtk_tree_path_free (path);
-		return NULL;
-	}
-
-	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &iter, path));
-	gtk_tree_path_free (path);
-	return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
-}
-
-
-RhythmDBEntry *
-rb_entry_view_get_next_entry (RBEntryView *view)
-{
-	if (view->priv->playing_entry == NULL)
-		return NULL;
-
-	return rb_entry_view_get_next_from_entry (view,
-						  view->priv->playing_entry);
-}
-
-RhythmDBEntry *
-rb_entry_view_get_previous_entry (RBEntryView *view)
-{
-	if (view->priv->playing_entry == NULL)
-		return NULL;
-	
-	return rb_entry_view_get_previous_from_entry (view,
-						      view->priv->playing_entry);
+ 	gboolean realized, visible;
+  	GtkTreeIter iter;
+  
+ 	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
+  
+ 	if (view->priv->playing_state == RB_ENTRY_VIEW_NOT_PLAYING)
+ 		return;
+  
+ 	if (view->priv->playing_entry != NULL) {
+ 		rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
+ 		g_object_unref (G_OBJECT (view->priv->playing_model));
+ 	}
+ 	
+ 	view->priv->playing_entry = entry;
+ 	g_object_ref (G_OBJECT (view->priv->model));
+ 	view->priv->playing_model = view->priv->model;
+ 
+ 	if (view->priv->playing_entry != NULL) {
+ 		view->priv->playing_entry_in_view = 
+ 			rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
+ 	}
+ 
+ 	if (view->priv->playing_entry
+ 	    && view->priv->playing_entry_in_view) {
+ 	    rb_entry_view_entry_is_visible (view, view->priv->playing_entry,
+ 					    &realized, &visible, &iter);
+ 	    if (realized && !visible)
+ 		    rb_entry_view_scroll_to_iter (view, &iter);
+  	}
 }
 
 static gboolean
@@ -1742,34 +1617,6 @@ rb_entry_view_get_selected_entries (RBEntryView *view)
 					     (gpointer) &list);
 
 	return list;
-}
-
-RhythmDBEntry *
-rb_entry_view_get_random_entry (RBEntryView *view)
-{
-	GtkTreePath *path;
-	GtkTreeIter iter;
-	char *path_str;
-	int index, n_rows;
-
-	n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model), NULL);
-	if (n_rows == 0)
-		return NULL;
-	else if ((n_rows - 1) > 0)
-		index = g_random_int_range (0, n_rows);
-	else
-		index = 0;
-
-	path_str = g_strdup_printf ("%d", index);
-	path = gtk_tree_path_new_from_string (path_str);
-	g_free (path_str);
-
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model),
-				 &iter, path);
-
-	gtk_tree_path_free (path);
-
-	return rhythmdb_query_model_iter_to_entry (view->priv->model, &iter);
 }
 
 static gboolean
@@ -1812,46 +1659,25 @@ rb_entry_view_popup_menu_cb (GtkTreeView *treeview,
 	return TRUE;
 }
 
-
-static void
-queue_changed_sig (RBEntryView *view)
-{
-	if (!view->priv->change_sig_queued) {
-		rb_debug ("queueing changed signal");
-		view->priv->change_sig_id = g_timeout_add (250, (GSourceFunc) emit_entry_changed, view);
-	}
-	view->priv->change_sig_queued = TRUE;
-}
-
 static void
 rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 				   RBEntryView *view)
 {
 	gboolean available;
-	RhythmDBEntry *selected_entry = NULL;
 	GList *sel;
-
-	if (view->priv->selection_lock == TRUE)
-		return;
 
 	sel = rb_entry_view_get_selected_entries (view);
 	available = (sel != NULL);
-	if (sel != NULL)
-		selected_entry = (g_list_first (sel))->data;
+	g_list_free (sel);
 
 	if (available != view->priv->have_selection) {
-		queue_changed_sig (view);
 		view->priv->have_selection = available;
 
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[HAVE_SEL_CHANGED], 0, available);
 	}
 
-	if (selected_entry != NULL && selected_entry != view->priv->selected_entry)
-		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_SELECTED], 0, selected_entry);
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SELECTION_CHANGED], 0);
 
-	view->priv->selected_entry = selected_entry;
-
-	g_list_free (sel);
 }
 
 gboolean
@@ -1886,7 +1712,6 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 
 	rb_debug ("row added");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
-	queue_changed_sig (view);
 }
 
 static void
@@ -1898,17 +1723,6 @@ rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 
 	rb_debug ("row deleted");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_DELETED], 0, entry);
-	queue_changed_sig (view);
-}
-
-static void
-rb_entry_view_row_changed_cb (GtkTreeModel *model,
-			      GtkTreePath *path,
-			      GtkTreeIter *iter,
-			      RBEntryView *view)
-{
-	rb_debug ("row changed");
-	queue_changed_sig (view);
 }
 
 static void
@@ -1954,13 +1768,6 @@ rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 	g_list_free (selected_rows);
 }
 
-guint
-rb_entry_view_get_num_entries (RBEntryView *view)
-{
-	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model),
-					       NULL);
-}
-
 void
 rb_entry_view_select_all (RBEntryView *view)
 {
@@ -1970,13 +1777,7 @@ rb_entry_view_select_all (RBEntryView *view)
 void
 rb_entry_view_select_none (RBEntryView *view)
 {
-	view->priv->selection_lock = TRUE;
-
 	gtk_tree_selection_unselect_all (view->priv->selection);
-
-	view->priv->selected_entry = NULL;
-
-	view->priv->selection_lock = FALSE;
 }
 
 void
@@ -1988,16 +1789,12 @@ rb_entry_view_select_entry (RBEntryView *view,
 	if (entry == NULL)
 		return;
 
-	view->priv->selection_lock = TRUE;
-
 	rb_entry_view_select_none (view);
 
 	if (rhythmdb_query_model_entry_to_iter (view->priv->model,
 						entry, &iter)) {
 		gtk_tree_selection_select_iter (view->priv->selection, &iter);
 	}
-
-	view->priv->selection_lock = FALSE;
 }
 
 void
@@ -2087,28 +1884,6 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 
 	*visible = (rect.y != 0 && rect.height != 0);
 }
-
-static gboolean
-emit_entry_changed (RBEntryView *view)
-{
-	GDK_THREADS_ENTER ();
-
-	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[CHANGED], 0);
-
-	view->priv->change_sig_queued = FALSE;
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
-/* static void */
-/* playing_entry_deleted_cb (RhythmDB *db, RBEntryView *view) */
-/* { */
-/* 	rb_debug ("emitting playing entry destroyed"); */
-/* 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[PLAYING_ENTRY_DELETED], */
-/* 		       0, view->priv->playing_entry); */
-/* } */
 
 void
 rb_entry_view_enable_drag_source (RBEntryView *view,
@@ -2205,22 +1980,11 @@ rb_entry_view_sync_columns_visible (RBEntryView *view)
 }
 
 void
-rb_entry_view_set_playing (RBEntryView *view,
-			   gboolean playing)
+rb_entry_view_set_state (RBEntryView *view,
+			 RBEntryViewState state)
 {
-	GtkTreePath *path;
-	GtkTreeIter iter;
-
 	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
-
-	view->priv->playing = playing;
-	/* Redraw the treeview */
-	if (view->priv->playing_entry) {
-		rhythmdb_query_model_entry_to_iter (view->priv->playing_model, view->priv->playing_entry, &iter);
-		path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->playing_model), &iter);
-		gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_model), path, &iter);
-  		gtk_tree_path_free (path);
-	}
+	g_object_set (G_OBJECT (view), "playing-state", state, NULL);
 }
 
 static void
@@ -2229,6 +1993,24 @@ rb_entry_view_grab_focus (GtkWidget *widget)
 	RBEntryView *view = RB_ENTRY_VIEW (widget);
 
 	gtk_widget_grab_focus (GTK_WIDGET (view->priv->treeview));
+}
+
+static gboolean
+rb_entry_view_emit_row_changed (RBEntryView *view,
+				RhythmDBEntry *entry)
+{
+	GtkTreeIter iter;
+	GtkTreePath *path;
+
+	if (!rhythmdb_query_model_entry_to_iter (view->priv->model, entry, &iter))
+		return FALSE;
+
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model),
+					&iter);
+	gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->model),
+				    path, &iter);
+	gtk_tree_path_free (path);
+	return TRUE;
 }
 
 

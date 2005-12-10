@@ -446,22 +446,20 @@ rb_playlist_manager_set_property (GObject *object,
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
  						      "MusicPlaylistRenamePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
-		{
-			gboolean recorder_active;
-			int num_tracks = rb_entry_view_get_num_entries (rb_source_get_entry_view (mgr->priv->selected_source));
 
-			recorder_active = playlist_active && rb_recorder_enabled ()
-					&& (num_tracks > 0);
-			action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
-			g_object_set (G_OBJECT (action), "sensitive", recorder_active, NULL);
-			
-			if (playlist_active && rb_recorder_enabled ()) {
-				/* monitor for changes, to enable/disable the burn menu item */
-				g_signal_connect_object (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
-							 "entry-added", G_CALLBACK (rb_playlist_manager_playlist_entries_changed), mgr, 0);
-				g_signal_connect_object (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
-							 "entry-deleted", G_CALLBACK (rb_playlist_manager_playlist_entries_changed), mgr, 0);
-			}
+		/* FIXME should base this on the query model so the entry-added and entry-deleted
+		 * signals can be removed from RBEntryView (where they don't belong).
+		 */
+		if (playlist_active && rb_recorder_enabled ()) {
+			/* monitor for changes, to enable/disable the burn menu item */
+			RBEntryView *songs = rb_source_get_entry_view (mgr->priv->selected_source);
+			g_signal_connect_object (G_OBJECT (songs), "entry-added", 
+						 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
+						 mgr, 0);
+			g_signal_connect_object (G_OBJECT (songs), "entry-deleted", 
+						 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
+						 mgr, 0);
+			rb_playlist_manager_playlist_entries_changed (songs, NULL, mgr);
 		}
 		break;
 	}
@@ -1123,8 +1121,15 @@ rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
 static void
 rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view, RhythmDBEntry *entry, RBPlaylistManager *mgr)
 {
-	int num_tracks = rb_entry_view_get_num_entries (entry_view);
-	GtkAction *action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
+	RhythmDBQueryModel *model;
+	int num_tracks;
+	GtkAction *action;
 
+	g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
+	num_tracks = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+
+	action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
 	g_object_set (G_OBJECT (action), "sensitive", (num_tracks > 0), NULL);
+
+	g_object_unref (G_OBJECT (model));
 }

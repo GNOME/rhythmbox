@@ -1,3 +1,100 @@
+2005-12-10  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Remove more junk from RBEntryView. Closes bug 323640.
+
+	* widgets/rb-entry-view.{c,h}:
+	Remove unused private structure members, replace 'playing' boolean
+	with an enum (so we know if we're paused too), and store a pointer to
+	the RBShellPlayer too.	
+	(rb_entry_view_class_init), (rb_entry_view_set_property),
+	(rb_entry_view_get_property):
+	Remove 'entry-selected' and 'changed' signals and
+	'playing-entry' property, add 'selection-changed' signal and
+	'shell-player' and 'playing-state' properties.
+	(rb_entry_view_new): Take the shell player object reference
+	(rb_entry_view_playing_cell_data_func): Get pixbuf based on state.
+	(rb_entry_view_set_playing_entry), (rb_entry_view_get_playing_entry):
+	No longer needed, shell player is the place to get this information.
+	(rb_entry_view_busy), (rb_entry_view_get_duration),
+	(rb_entry_view_get_total_size), (rb_entry_view_get_first_entry), 
+	(rb_entry_view_get_next_from_entry),
+	(rb_entry_view_get_previous_from_entry),
+	(rb_entry_view_get_next_entry), (rb_entry_view_get_random_entry),
+	(rb_entry_view_get_num_entries):
+	Removed, callers should go to the query model directly.
+	(rb_entry_view_playing_song_changed): Update active query model, emit
+	row changed signals to update pixbufs, and scroll to the playing song
+	when the playing song changes, based on a signal from the shell
+	player.
+	(queue_changed_sig), (rb_entry_view_row_changed_cb),
+	(emit_entry_changed): Evil, removed.
+	(rb_entry_view_selection_changed_cb): Remove old signals, add new
+	selection-changed signal.
+	(rb_entry_view_select_none), (rb_entry_view_select_entry):
+	Remove selection lock.	It didn't work anyway.
+	(rb_entry_view_set_playing): Replaced with rb_entry_view_set_state.
+	(rb_entry_view_emit_row_changed): Simple helper function to emit
+	row-changed signals.
+
+	* widgets/Makefile.am: Entry view needs headers from the shell/
+	directory.
+	* widgets/rb-song-info.{c,h}: Use the query model for everything except
+
+	scrolling the entry view to show the entry being displayed.
+	(rb_song_info_class_init), (rb_song_info_get_property): Add new 
+	'source' property so we can watch for query model changes.
+	(rb_song_info_finalize): Unref objects, disconnect signal handlers
+	(rb_song_info_set_property): Watch for query model changes, don't
+	watch for entry view changes.
+	(rb_song_info_new): Take source as a parameter, use the source's entry
+	view unless one was specifically supplied.
+	(rb_song_info_backward_clicked_cb), (rb_song_info_forward_clicked_cb):
+	Use query model rather than entry view to move between songs.
+	(rb_song_info_update_buttons): Use query model.
+	(rb_song_info_query_model_changed_cb): Handle query model changes.
+
+	* shell/rb-playlist-manager.c (rb_playlist_manager_set_property):
+	Only one copy of the code to enable/disable the CD burning action
+	(rb_playlist_manager_playlist_entries_changed):
+	Use the query model to get the number of entries, not the entry view.
+
+	* shell/rb-play-order-random-by-age-and-rating.c,
+	shell/rb-play-order-random-by-age.c,
+	shell/rb-play-order-random-by-rating.c,
+	shell/rb-play-order-random-equal-weights.c:
+	Use G_DEFINE_TYPE
+
+	* shell/rb-shell-player.{c,h}:
+	Remove a few unused entries from the structure.
+	(rb_shell_player_set_property):
+	Don't use the 'changed' signal on the entry view (it's evil)
+	(rb_shell_player_have_first): No longer needed
+	(rb_shell_player_play): Just tell the entry view it's playing
+	(rb_shell_player_playpause): Tell the entry view it's paused
+	when pausing.
+	(rb_shell_player_entry_view_changed_cb): No longer used, removed.
+	(rb_shell_player_property_row_activated_cb):
+	Get the entry to play using the query model, not the entry view.
+	(rb_shell_player_sync_buttons): Update entry view state while we're
+	here.
+	(rb_shell_player_set_playing_source_internal): Update entry view state
+	(rb_shell_player_get_playing): Ask the entry view, not the player.
+	This now returns TRUE when paused.  This makes rb_shell_set_elapsed 
+	and rb_shell_set_window_title work properly, so you get "(Paused)" in
+	the window title and tray icon tooltip.
+	(rb_shell_player_get_mm_player): Not used anywhere, so removed.
+
+	* sources/rb-iradio-source.c, sources/rb-library-source.c,
+	sources/rb-podcast-source.c, sources/rb-playlist-source.c:
+	(rb_iradio_source_constructor): Pass the RBShellPlayer in to the entry
+	view constructor, pass the source in to the song info widget
+	constructor.
+
+	* shell/rb-shell-clipboard.c (rb_shell_clipboard_set_property):
+	Use 'selection-changed' instead of 'changed', since that's what the
+	clipboard cares about.
+	(rb_shell_clipboard_set_source): Don't die if source == NULL
+
 2005-12-10  James Livingston  <jrl@ids.org.au>
 
 	* player/rb-recorder-gst.c: (rb_recorder_get_default_drive):

@@ -202,6 +202,7 @@ static GObject *
 rb_playlist_source_constructor (GType type, guint n_construct_properties,
 				GObjectConstructParam *construct_properties)
 {
+	GObject *shell_player;
 	RBPlaylistSource *source;
 	RBPlaylistSourceClass *klass;
 	RBShell *shell;
@@ -213,6 +214,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
@@ -228,7 +230,8 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_playlist_source_entry_added_cb),
 				 source, 0);
 
-	source->priv->songs = rb_entry_view_new (source->priv->db, NULL, TRUE, TRUE);
+	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player, 
+					 	 NULL, TRUE, TRUE);
 
 	rb_playlist_source_set_query_model (source, rhythmdb_query_model_new_empty (source->priv->db));
 
@@ -411,7 +414,7 @@ impl_song_properties (RBSource *asource)
 
 	g_return_if_fail (source->priv->songs != NULL);
 
-	song_info = rb_song_info_new (source->priv->songs);
+	song_info = rb_song_info_new (asource, NULL);
 	if (song_info)
 		gtk_widget_show_all (song_info);
 	else

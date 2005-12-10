@@ -274,6 +274,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	RBIRadioSource *source;
 	RBIRadioSourceClass *klass;
 	RBShell *shell;
+	GObject *shell_player;
 
 	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IRADIO_SOURCE));
 
@@ -284,11 +285,13 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
 
 
 	/* set up stations view */
-	source->priv->stations = rb_entry_view_new (source->priv->db, CONF_STATE_IRADIO_SORTING,
+	source->priv->stations = rb_entry_view_new (source->priv->db, shell_player,
+						    CONF_STATE_IRADIO_SORTING,
 						    FALSE, FALSE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE);

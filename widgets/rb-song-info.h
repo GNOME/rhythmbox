@@ -22,6 +22,7 @@
 #include <gtk/gtkdialog.h>
 #include "rb-entry-view.h"
 #include "rhythmdb.h"
+#include "rb-source.h"
 
 #ifndef __RB_SONG_INFO_H
 #define __RB_SONG_INFO_H
@@ -54,7 +55,7 @@ typedef struct
 
 GType      rb_song_info_get_type (void);
 
-GtkWidget *rb_song_info_new      (RBEntryView *view);
+GtkWidget *rb_song_info_new      (RBSource *source, RBEntryView *entry_view);
 
 G_END_DECLS
 

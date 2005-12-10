@@ -30,42 +30,12 @@ static void rb_random_play_order_by_age_class_init (RBRandomPlayOrderByAgeClass 
 static double rb_random_by_age_get_entry_weight (RBRandomPlayOrder *rorder,
 						 RhythmDB *db, RhythmDBEntry *entry);
 
-static RBPlayOrderClass *parent_class = NULL;
-
-GType
-rb_random_play_order_by_age_get_type (void)
-{
-	static GType rb_random_play_order_by_age_type = 0;
-
-	if (rb_random_play_order_by_age_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBRandomPlayOrderByAgeClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_random_play_order_by_age_class_init,
-			NULL,
-			NULL,
-			sizeof (RBRandomPlayOrderByAge),
-			0,
-			NULL
-		};
-
-		rb_random_play_order_by_age_type = g_type_register_static (RB_TYPE_RANDOM_PLAY_ORDER,
-				"RBRandomPlayOrderByAge",
-				&our_info, 0);
-	}
-
-	return rb_random_play_order_by_age_type;
-}
+G_DEFINE_TYPE (RBRandomPlayOrderByAge, rb_random_play_order_by_age, RB_TYPE_RANDOM_PLAY_ORDER)
 
 static void
 rb_random_play_order_by_age_class_init (RBRandomPlayOrderByAgeClass *klass)
 {
 	RBRandomPlayOrderClass *rorder;
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	rorder = RB_RANDOM_PLAY_ORDER_CLASS (klass);
 	rorder->get_entry_weight = rb_random_by_age_get_entry_weight;
@@ -81,6 +51,11 @@ rb_random_play_order_by_age_new (RBShellPlayer *player)
 			NULL);
 
 	return RB_PLAY_ORDER (rorder);
+}
+
+static void
+rb_random_play_order_by_age_init (RBRandomPlayOrderByAge *porder)
+{
 }
 
 static double
