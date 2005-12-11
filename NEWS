@@ -1,3 +1,47 @@
+Overview of Changes in Rhythmbox 0.9.3
+======================================
+[last updated 11/12/2005]
+
+* disable column auto-sizing, improves speed [Jonathan Matthew: 312122]
+* resort in a faster way [James Livingston: 315389]
+* don't try to burn long playlists [William Jon McCann: 321753]
+* other cd-burning fixes and HIG improvements [William Jon McCann: 321754]
+* fix "Post" and "Episode" wording [James Livingston: 321653]
+* display tag-writing errors to the user [James Livingston]
+* make the podcast dialog look like the song one [William Jon McCann]
+* refactor various bits of code into rb-utils.c [James Livingston]
+* use glib class private data everywhere [William Jon McCann: 313688]
+* add "Move to trash" command [Bastien Nocera: 315389]
+* support DBus 0.6 [William Jon McCann]
+* add support for "Watched Libraries] [James Livigston: 160159]
+* add support for remote gnome-vfs [James Livingston: 140355]
+* select source when hovering with drag [Thomas de Grenier de Latour: 323044]
+* fix parsing of some RSS feeds [Ryan P Skadberg: 323153]
+* use toolbar [William Jon McCann, James Livingston: 316238]
+* always hide rather than remove db entries until old [James Livingston]
+* ellipsise source names, instead of adding scroll bar [James Livingston]
+* allow year to be changed on multiple songs [Alex Lancaster]
+* refactor playlist classes [Jonathan Matthew]
+* add gstreamer 0.10 support [Jan Schmidt]
+* fix drag-and-drop of URLs [Jonathan Matthew:323610]
+* save metadata when forward/next are pressed [James Livingston: 320952]
+* fix complaints about deprecated libnautilusburn API in 2.13 [James Livingston]
+* make entry-views just a display, and fix play orders [Jonathan Matthew:323612]
+* remove distro-packaging stuff [James Livingston]
+* fix 5 sec pause when finding non-audio files with gst 0.10 [James Livingston]
+* fix playlist saving and shutdown [William Jon McCann: 322940]
+* submit songs longer than 30 mins to AudioScrobbler [Ståle Lyngaas: 323639]
+* make iradio dialog look like song one [William Jon McCann: 323306]
+* make genre tag-writing not use artist [Alex Lancaster: 323642]
+* more entry-view cleanup and refactoring [Jonathan Matthew: 323640]
+* fix problem with dropping artist/album into an entry view [James Livingston]
+* add play queue [Jonathan Matthew: 107787]
+* about dialog fixes and update AUTHORS and MAINTAINERS [William Jon McCann]
+* remove use of GMemChunks [James Livingston]
+* remove unused podcast feed column [William Jon McCann: 322961]
+* minor UI and HIG fixes [Dennis Cranston, James Livingston, William Jon McCann,
+  Bastien Nocera]
+
 Overview of Changes in Rhythmbox 0.9.2
 ======================================
 
