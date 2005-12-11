@@ -2051,6 +2051,13 @@ rhythmdb_add_uri (RhythmDB *db, const char *uri)
 	}
 }
 
+static gboolean
+rhythmdb_sync_library_idle (RhythmDB *db)
+{
+	rhythmdb_sync_library_location (db);
+	return FALSE;
+}
+
 /**
  * rhythmdb_load:
  * @db: a #RhythmDB.
@@ -2069,11 +2076,7 @@ rhythmdb_load (RhythmDB *db)
 	g_mutex_unlock (db->priv->saving_mutex);
 
 	/* begin monitoring the for new tracks */
-	db->priv->library_location_notify_id =
-		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
-					    (GConfClientNotifyFunc) library_location_changed_cb,
-					    db);
-	rhythmdb_sync_library_location (db);
+	g_idle_add ((GSourceFunc) rhythmdb_sync_library_idle, db);
 
 	rb_debug ("queuing db load complete signal");
 	result = g_new0 (RhythmDBEvent, 1);
@@ -3744,6 +3747,9 @@ monitor_subdirectory (char *uri, RhythmDB *db)
 {
 	GError *error = NULL;
 
+	if (!rb_uri_is_directory (uri))
+		return;
+
 	rhythmdb_monitor_uri_path (db, uri, &error);
 
 	if (error) {
@@ -3795,6 +3801,14 @@ static void
 rhythmdb_sync_library_location (RhythmDB *db)
 {
 	gboolean reload = (db->priv->library_locations != NULL);
+
+	if (db->priv->library_location_notify_id == 0) {
+		db->priv->library_location_notify_id =
+			eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
+						    (GConfClientNotifyFunc) library_location_changed_cb,
+						    db);
+	}
+	
 
 	if (reload) {
 		rb_debug ("ending monitor of old library directories");

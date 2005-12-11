@@ -1,3 +1,10 @@
+2005-12-11  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_sync_library_idle),
+	(rhythmdb_load), (monitor_subdirectory),
+	(rhythmdb_sync_library_location):  start the library sync and
+	monitoring in an idle callback.
+
 2005-12-10  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-podcast-source.c (rb_podcast_source_class_init) 
