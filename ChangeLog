@@ -1,5 +1,17 @@
 2005-12-11  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init), (impl_reset_filters),
+	(impl_search), (rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_get_query): add support for the search box
+	to automatic playlists.
+
+	* sources/rb-library-source.c: (rb_library_source_dispose): fix minor
+	memory leak.
+
+2005-12-11  James Livingston  <jrl@ids.org.au>
+
 	* NEWS: update NEWS
 
 2005-12-11  James Livingston  <jrl@ids.org.au>

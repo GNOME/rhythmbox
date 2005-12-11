@@ -434,6 +434,11 @@ rb_library_source_dispose (GObject *object)
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
 	}
+
+	if (source->priv->search_text) {
+		g_free (source->priv->search_text);
+		source->priv->search_text = NULL;
+	}
 }
 
 static void

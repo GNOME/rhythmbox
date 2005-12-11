@@ -24,6 +24,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
+#include <string.h>
 
 #include "rb-auto-playlist-source.h"
 #include "rb-util.h"
@@ -37,6 +38,8 @@ static GObject *rb_auto_playlist_source_constructor (GType type, guint n_constru
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
+static void impl_search (RBSource *asource, const char *search_text);
+static void impl_reset_filters (RBSource *asource);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
@@ -44,6 +47,7 @@ static void impl_save_contents_to_xml (RBPlaylistSource *source,
 
 static void rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, 
 								 RBAutoPlaylistSource *source); 
+static void rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source);
 
 #define AUTO_PLAYLIST_SOURCE_POPUP_PATH "/AutoPlaylistSourcePopup"
 
@@ -51,7 +55,12 @@ typedef struct _RBAutoPlaylistSourcePrivate RBAutoPlaylistSourcePrivate;
 
 struct _RBAutoPlaylistSourcePrivate
 {
+	GPtrArray *query;
 	gboolean query_resetting;
+	char *search_text;
+	guint limit_count;
+	guint limit_mb;
+	guint limit_time;
 };
 
 G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
@@ -73,6 +82,9 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_search = impl_search;
+	source_class->impl_reset_filters = impl_reset_filters;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 	
@@ -197,6 +209,47 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
+static void
+impl_reset_filters (RBSource *source)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	gboolean changed = FALSE;
+
+	if (priv->search_text != NULL) {
+		changed = TRUE;
+		g_free (priv->search_text);
+		priv->search_text = NULL;
+	}
+
+	if (changed) {
+		rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source));
+		rb_source_notify_filter_changed (source);
+	}
+}
+
+static void
+impl_search (RBSource *source, const char *search_text)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	if (search_text == NULL && priv->search_text == NULL)
+		return;
+	if (search_text != NULL && priv->search_text != NULL &&
+	    !strcmp (search_text, priv->search_text))
+		return;
+
+	if (search_text[0] == '\0')
+		search_text = NULL;
+
+	rb_debug ("doing search for \"%s\"", search_text ? search_text : "(NULL)");
+
+	g_free (priv->search_text);
+	priv->search_text = g_strdup (search_text);
+	rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source));
+
+	rb_source_notify_filter_changed (source);
+}
+
 static RhythmDBPropType
 rb_auto_playlist_source_drag_atom_to_prop (GdkAtom smasher)
 {
@@ -310,25 +363,34 @@ impl_save_contents_to_xml (RBPlaylistSource *psource, xmlNodePtr node)
 }
 
 static void
-rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source,
-				   GPtrArray *query,
-				   guint limit_count,
-				   guint limit_mb,
-				   guint limit_time)
+rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source)
 {
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 	RhythmDBQueryModel *model;
-	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
-	RhythmDB *db = rb_playlist_source_get_db (psource);
 
 	model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
 			      "db", db,
-			      "max-count", limit_count,
-			      "max-size", limit_mb, 
-			      "max-time", limit_time, 
+			      "max-count", priv->limit_count,
+			      "max-size", priv->limit_mb, 
+			      "max-time", priv->limit_time, 
 			      NULL);
 
-	rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (model), query);
-	rb_playlist_source_set_query_model (psource, model);
+	if (priv->search_text) {
+		GPtrArray *query = rhythmdb_query_copy (priv->query);
+
+		rhythmdb_query_append (db,
+				       query,
+				       RHYTHMDB_QUERY_PROP_LIKE,
+				       RHYTHMDB_PROP_SEARCH_MATCH,
+				       priv->search_text,
+				       RHYTHMDB_QUERY_END);
+		rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (model), query);
+		rhythmdb_query_free (query);
+	} else {
+		rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (model), priv->query);
+	}
+	rb_playlist_source_set_query_model (RB_PLAYLIST_SOURCE (source), model);
 }
 
 void
@@ -344,13 +406,19 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 
 	priv->query_resetting = TRUE;
+	if (priv->query)
+		rhythmdb_query_free (priv->query);
 
 	/* playlists that aren't limited, with a particular sort order, are user-orderable */
 	rb_entry_view_set_columns_clickable (songs, (limit_count == 0 && limit_mb == 0));
 	rb_entry_view_set_sorting_order (songs, sort_key, sort_direction);
 
-	rb_auto_playlist_source_do_query (source, query, limit_count, limit_mb, limit_time);
-	rhythmdb_query_free (query);
+	priv->query = query;
+	priv->limit_count = limit_count;
+	priv->limit_mb = limit_mb;
+	priv->limit_time = limit_time;
+	rb_auto_playlist_source_do_query (source);
+
 	priv->query_resetting = FALSE;
 }
 
@@ -363,15 +431,13 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 				    const char **sort_key,
 				    gint *sort_direction)
 {
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
-	RhythmDBQueryModel *model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
 
-	g_object_get (G_OBJECT (model),
-		      "query", query,
-		      "max-count", limit_count,
-		      "max-size", limit_mb,
-		      "max-time", limit_time,
-		      NULL);
+	*query = priv->query;
+	*limit_count = priv->limit_count;
+	*limit_mb = priv->limit_mb;
+	*limit_time = priv->limit_time;
 
 	rb_entry_view_get_sorting_order (songs, sort_key, sort_direction);
 }
