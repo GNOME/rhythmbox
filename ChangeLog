@@ -1,3 +1,20 @@
+2005-12-12  William Jon McCann  <mccann@jhu.edu>
+
+	* podcast/rb-podcast-parse.c (rb_set_channel_value) 
+	(rb_set_item_value, rb_insert_item, rb_validate_channel_propert) 
+	(rb_validate_item_propert, rb_podcast_parser_start_element) 
+	(rb_podcast_parser_end_element, rb_podcast_parser_characters):
+	Use RB style.  Check for NULL before strcmp.  No C++ comments.
+	(rb_podcast_parse_load_feed): Fix double free of xmlSAXHandler.
+	Don't set invalid mime type when mime type is NULL.  Fix leaks.
+	(rb_podcast_parse_date): Add support for some real world
+	date formats.
+	(rb_podcast_parse_time, rb_podcast_parse_channel_free) 
+	(rb_podcast_parse_item_free): Style and no need to check
+	for NULL before g_free.
+
+	May fix #323742
+
 2005-12-12  James Livingston  <jrl@ids.org.au>
 
 	* player/rb-recorder-gst.c: (rb_recorder_construct): use audioresample
