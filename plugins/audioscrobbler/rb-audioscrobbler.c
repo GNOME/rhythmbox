@@ -357,7 +357,7 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->artist);
 	g_free (audioscrobbler->priv->album);
 	g_free (audioscrobbler->priv->title);
-	g_free (audioscrobbler->priv->soup_session);
+	g_object_unref (G_OBJECT (audioscrobbler->priv->soup_session));
 
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->queue);
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);

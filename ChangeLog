@@ -1,3 +1,25 @@
+2005-12-12  James Livingston  <jrl@ids.org.au>
+
+	* player/rb-recorder-gst.c: (rb_recorder_construct): use audioresample
+	with gstreamer 0.10, which replaced audioscale.
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_finalize): use correct
+	function to free the SoupSession
+
+	* shell/rb-source-header.c: (rb_source_header_set_property),
+	(rb_source_header_disclosure_toggled_cb),
+	(rb_source_header_view_browser_changed_cb),
+	(rb_source_header_sync_control_state):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init):
+	* sources/rb-library-source.c: (rb_library_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_get_status), (default_get_browser_key),
+	(rb_source_get_browser_key), (rb_source_can_browse),
+	(rb_source_notify_status_changed),
+	(rb_source_notify_filter_changed):
+	* sources/rb-source.h: seperate the enabling of browsers from the use
+	of a gconf key.
+
 2005-12-11  William Jon McCann  <mccann@jhu.edu>
 
 	* data/glade/podcast-feed-properties.glade: 

@@ -559,7 +559,11 @@ rb_recorder_construct (RBRecorder *recorder,
         MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert);
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->audioconvert);
 
+#ifdef HAVE_GSTREAMER_0_8
         MAKE_ELEMENT_OR_LOSE(audioscale, audioscale);
+#elif HAVE_GSTREAMER_0_10
+        MAKE_ELEMENT_OR_LOSE(audioresample, audioscale);
+#endif
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->audioscale);
 
 #ifdef HAVE_GSTREAMER_0_10
@@ -573,15 +577,6 @@ rb_recorder_construct (RBRecorder *recorder,
         /* Output sink */
 
         MAKE_ELEMENT_OR_LOSE(gnomevfssink, sink);
-        if (recorder->priv->sink == NULL) {
-                g_set_error (error,
-                             RB_RECORDER_ERROR,
-                             RB_RECORDER_ERROR_NO_AUDIO,
-                             _("Could not create audio output element; check your settings"));
-                gst_object_unref (GST_OBJECT (recorder->priv->pipeline));
-                recorder->priv->pipeline = NULL;
-                return;
-        }
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->sink);
 
         filtercaps = gst_caps_new_simple ("audio/x-raw-int",

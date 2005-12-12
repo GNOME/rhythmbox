@@ -60,10 +60,6 @@ static void rb_source_header_disclosure_toggled_cb (GObject *object,
 						    gpointer data);
 static void rb_source_header_search_activate_cb (RBSearchEntry *search,
 						 RBSourceHeader *header);
-static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
-							  guint cnxn_id,
-							  GConfEntry *entry,
-							  RBSourceHeader *header);
 static void rb_source_header_view_browser_changed_cb (GtkAction *action,
 						      RBSourceHeader *header);
 static void rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source);
@@ -82,6 +78,8 @@ struct RBSourceHeaderPrivate
 	guint browser_notify_id;
 	guint search_notify_id;
 	gboolean have_search;
+	gboolean have_browser;
+	gboolean disclosed;
 	const char *browser_key;
 
 	GHashTable *source_search_text;
@@ -225,8 +223,6 @@ rb_source_header_set_property (GObject *object,
 	case PROP_SOURCE:
 		if (header->priv->selected_source != NULL)
 		{
-			if (header->priv->browser_key)
-				eel_gconf_notification_remove (header->priv->browser_notify_id);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
 							      G_CALLBACK (rb_source_header_filter_changed_cb),
 							      header);
@@ -235,32 +231,36 @@ rb_source_header_set_property (GObject *object,
 		header->priv->selected_source = g_value_get_object (value);
 		rb_debug ("selected source %p", g_value_get_object (value));
 
-		if (header->priv->selected_source != NULL)
-		{
+		if (header->priv->selected_source != NULL) {
 			const char *text = g_hash_table_lookup (header->priv->source_search_text,
 								header->priv->selected_source);
 			
 			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
-			if (header->priv->browser_key)
-				header->priv->browser_notify_id
-					= eel_gconf_notification_add (header->priv->browser_key,
-								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
-								      header);
+	
 			rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);
 			g_signal_connect_object (G_OBJECT (header->priv->selected_source),
 						 "filter_changed",
 						 G_CALLBACK (rb_source_header_filter_changed_cb),
 						 header, 0);
+	
 			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
 						  rb_source_can_search (header->priv->selected_source));
 			header->priv->have_search = rb_source_can_search (header->priv->selected_source);
-			if (!header->priv->browser_key && !header->priv->have_search)
+			header->priv->have_browser = rb_source_can_browse (header->priv->selected_source);
+			if (!header->priv->have_browser)
+				header->priv->disclosed = FALSE;
+			else if (header->priv->browser_key)
+				header->priv->disclosed = eel_gconf_get_boolean (header->priv->browser_key);
+			else
+				/* FIXME: remember the previous state of the source*/
+				header->priv->disclosed = FALSE;
+	
+			if (!header->priv->have_browser && !header->priv->have_search)
 				gtk_widget_hide (GTK_WIDGET (header));
 			else
 				gtk_widget_show (GTK_WIDGET (header));
 		}
 		rb_source_header_sync_control_state (header);
-		
 		break;
 	case PROP_ACTION_GROUP:
 		header->priv->actiongroup = g_value_get_object (value);
@@ -382,23 +382,12 @@ rb_source_header_disclosure_toggled_cb (GObject *object,
 {
 	RBSourceHeader *header = RB_SOURCE_HEADER (data);
 	GtkExpander *expander = GTK_EXPANDER (object);
-	gboolean disclosed = gtk_expander_get_expanded (expander);
 
-	rb_debug ("disclosed: %s", disclosed ? "TRUE" : "FALSE");
-	
-	if (header->priv->selected_source != NULL)
-		eel_gconf_set_boolean (header->priv->browser_key, disclosed);
-}
+	header->priv->disclosed = gtk_expander_get_expanded (expander);
 
-static void
-rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
-					      guint cnxn_id,
-					      GConfEntry *entry,
-					      RBSourceHeader *header)
-{
-	rb_debug ("gconf disclosure changed");
-
-	g_return_if_fail (header->priv->browser_key != NULL);
+	if (header->priv->browser_key)
+		eel_gconf_set_boolean (header->priv->browser_key, 
+				       header->priv->disclosed);
 
 	rb_source_header_sync_control_state (header);
 }
@@ -408,8 +397,8 @@ rb_source_header_view_browser_changed_cb (GtkAction *action,
 					  RBSourceHeader *header)
 {
 	rb_debug ("got view browser toggle");
-	eel_gconf_set_boolean (header->priv->browser_key,
-			       gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+	gtk_expander_set_expanded (GTK_EXPANDER (header->priv->disclosure),
+				   gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 void
@@ -418,16 +407,14 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	GtkAction *viewbrowser_action;
 	GtkAction *viewstatusbar_action;
 	GtkAction *viewall_action;
-	gboolean have_browser = header->priv->selected_source != NULL
-		&& header->priv->browser_key != NULL;
 	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 
 	gtk_widget_set_sensitive (header->priv->disclosure,
-				  have_browser);
+				  header->priv->have_browser);
 	viewbrowser_action = gtk_action_group_get_action (header->priv->actiongroup,
 							  "ViewBrowser");
 	g_object_set (G_OBJECT (viewbrowser_action), "sensitive",
-		      have_browser && not_small, NULL);
+		      header->priv->have_browser && not_small, NULL);
 	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup,
 							    "ViewStatusbar");
 	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive",
@@ -435,14 +422,12 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
 						      "ViewAll");
 	g_object_set (G_OBJECT (viewall_action), "sensitive",
-		      have_browser && not_small, NULL);
-	if (have_browser) {
-		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
-		gtk_expander_set_expanded    (GTK_EXPANDER (header->priv->disclosure),
-					      shown);
-		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
-					      shown);
-	}
+		      header->priv->have_browser && not_small, NULL);
+
+	gtk_expander_set_expanded (GTK_EXPANDER (header->priv->disclosure),
+				   header->priv->disclosed);
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
+				      header->priv->disclosed);
 }
 
 static void

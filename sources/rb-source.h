@@ -72,6 +72,7 @@ struct _RBSourceClass
 	/* methods */
 	char *	        (*impl_get_status)	(RBSource *source);
 
+	gboolean	(*impl_can_browse)	(RBSource *source);
 	const char *	(*impl_get_browser_key)	(RBSource *source);
 
 	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
@@ -128,6 +129,7 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 /* general interface */
 char *	        rb_source_get_status		(RBSource *source);
 
+gboolean	rb_source_can_browse		(RBSource *source);
 const char *	rb_source_get_browser_key	(RBSource *source);
 
 RBEntryView *	rb_source_get_entry_view	(RBSource *source);

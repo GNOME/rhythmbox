@@ -46,7 +46,7 @@ static void rb_source_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
-static const char * default_get_browser_key (RBSource *status);
+static const char * default_get_browser_key (RBSource *source);
 static GList *default_get_extra_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
@@ -114,6 +114,7 @@ rb_source_class_init (RBSourceClass *klass)
 	object_class->set_property = rb_source_set_property;
 	object_class->get_property = rb_source_get_property;
 
+	klass->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_browser_key = default_get_browser_key;
 	klass->impl_get_extra_views = default_get_extra_views;
 	klass->impl_can_rename = default_can_rename;
@@ -375,37 +376,45 @@ default_get_status (RBSource *source)
  * Returns: The status string
  **/
 char *
-rb_source_get_status (RBSource *status)
+rb_source_get_status (RBSource *source)
 {
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_status (status);
+	return klass->impl_get_status (source);
 }
 
 static const char *
-default_get_browser_key (RBSource *status)
+default_get_browser_key (RBSource *source)
 {
 	return NULL;
 }
 
 const char *
-rb_source_get_browser_key (RBSource *status)
+rb_source_get_browser_key (RBSource *source)
 {
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_browser_key (status);
+	return klass->impl_get_browser_key (source);
+}
+
+gboolean
+rb_source_can_browse (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_browse (source);
 }
 
 void
-rb_source_notify_status_changed (RBSource *status)
+rb_source_notify_status_changed (RBSource *source)
 {
-	g_signal_emit (G_OBJECT (status), rb_source_signals[STATUS_CHANGED], 0);
+	g_signal_emit (G_OBJECT (source), rb_source_signals[STATUS_CHANGED], 0);
 }
 
 void
-rb_source_notify_filter_changed (RBSource *status)
+rb_source_notify_filter_changed (RBSource *source)
 {
-	g_signal_emit (G_OBJECT (status), rb_source_signals[FILTER_CHANGED], 0);
+	g_signal_emit (G_OBJECT (source), rb_source_signals[FILTER_CHANGED], 0);
 }
 
 void

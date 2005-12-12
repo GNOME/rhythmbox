@@ -4,7 +4,13 @@
 </para>
 
 
-<!-- ##### TYPEDEF RBNewStationDialogPrivate ##### -->
+<!-- ##### TYPEDEF RBSourceListModelPriv ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF RBSourceListPriv ##### -->
 <para>
 
 </para>
@@ -161,6 +167,96 @@
 
 @connection: 
 
+<!-- ##### FUNCTION rb_entry_view_busy ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_duration ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_first_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_next_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_next_from_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_num_entries ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_playing_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_previous_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_previous_from_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_random_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_get_total_size ##### -->
+<para>
+
+</para>
+
+@view: 
+@Returns: 
+
 <!-- ##### FUNCTION rb_entry_view_poll_model ##### -->
 <para>
 
@@ -168,6 +264,29 @@
 
 @view: 
 @Returns: 
+
+<!-- ##### FUNCTION rb_entry_view_set_playing ##### -->
+<para>
+
+</para>
+
+@view: 
+@playing: 
+
+<!-- ##### FUNCTION rb_entry_view_set_playing_entry ##### -->
+<para>
+
+</para>
+
+@view: 
+@entry: 
+
+<!-- ##### FUNCTION rb_entry_view_set_resorting ##### -->
+<para>
+
+</para>
+
+@view: 
 
 <!-- ##### FUNCTION rb_get_sort_key ##### -->
 <para>
@@ -177,12 +296,104 @@
 @string: 
 @Returns: 
 
-<!-- ##### FUNCTION rb_new_station_dialog_new ##### -->
+<!-- ##### FUNCTION rb_play_order_get_entry_view ##### -->
 <para>
 
 </para>
 
-@db: 
+@porder: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_playlist_source_add_entry ##### -->
+<para>
+
+</para>
+
+@source: 
+@entry: 
+
+<!-- ##### FUNCTION rb_playlist_source_add_location ##### -->
+<para>
+
+</para>
+
+@source: 
+@location: 
+
+<!-- ##### FUNCTION rb_playlist_source_add_locations ##### -->
+<para>
+
+</para>
+
+@source: 
+@locations: 
+
+<!-- ##### FUNCTION rb_playlist_source_delete ##### -->
+<para>
+
+</para>
+
+@source: 
+
+<!-- ##### FUNCTION rb_playlist_source_get_query ##### -->
+<para>
+
+</para>
+
+@source: 
+@query: 
+@limit_count: 
+@limit_mb: 
+@limit_time: 
+@sort_key: 
+@sort_order: 
+
+<!-- ##### FUNCTION rb_playlist_source_new ##### -->
+<para>
+
+</para>
+
+@shell: 
+@smart: 
+@local: 
+@entry_type: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_playlist_source_remove_entry ##### -->
+<para>
+
+</para>
+
+@source: 
+@entry: 
+
+<!-- ##### FUNCTION rb_playlist_source_remove_location ##### -->
+<para>
+
+</para>
+
+@source: 
+@location: 
+
+<!-- ##### FUNCTION rb_playlist_source_set_query ##### -->
+<para>
+
+</para>
+
+@source: 
+@query: 
+@limit_count: 
+@limit_mb: 
+@limit_time: 
+@sort_key: 
+@sort_order: 
+
+<!-- ##### FUNCTION rb_shell_player_get_mm_player ##### -->
+<para>
+
+</para>
+
+@shell_player: 
 @Returns: 
 
 <!-- ##### FUNCTION rb_string_helpers_init ##### -->
