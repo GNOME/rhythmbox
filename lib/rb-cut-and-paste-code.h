@@ -35,6 +35,8 @@ GdkPixbuf *eel_create_colorized_pixbuf (GdkPixbuf *src,
 					int green_value,
 					int blue_value);
 
+char *     rb_utf_friendly_time        (time_t date);
+
 #ifdef HAVE_COLLATE_KEY_FILENAME
 #define rb_utf8_collate_key_for_filename g_utf8_collate_key_for_filename
 #else

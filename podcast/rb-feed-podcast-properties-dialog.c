@@ -184,6 +184,7 @@ static void
 rb_feed_podcast_properties_dialog_update (RBFeedPodcastPropertiesDialog *dialog)
 {
 	g_return_if_fail (dialog->priv->current_entry != NULL);
+
 	rb_feed_podcast_properties_dialog_update_location (dialog);
 	rb_feed_podcast_properties_dialog_update_title (dialog);
 	rb_feed_podcast_properties_dialog_update_title_label (dialog);
@@ -264,14 +265,12 @@ static char *
 rb_feed_podcast_properties_dialog_parse_time (gulong value)
 {
 	char *str;
-	struct tm then;
 
 	if (0 == value) {
-		return NULL;
+		str = g_strdup (_("Unknown"));
+	} else {
+		str = rb_utf_friendly_time ((time_t)value);
 	}
-
-	localtime_r ((time_t*)&value, &then);
-	str = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &then);
 
 	return str;
 }

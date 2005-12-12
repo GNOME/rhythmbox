@@ -1,5 +1,23 @@
 2005-12-12  William Jon McCann  <mccann@jhu.edu>
 
+	* sources/rb-podcast-source.c (rb_podcast_source_cmd_properties_feed):
+	Remove C99ism.
+
+	* lib/rb-cut-and-paste-code.c: (eel_strdup_strftime),
+	(rb_utf_friendly_time):
+	* lib/rb-cut-and-paste-code.h:
+
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_parse_time):
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_parse_time): use rb_utf8_friendly_time
+	to display the date in a more user friendly way.
+	For example, if the feed was updated yesterday it will say:
+	Last updated: Yesterday 10:00 AM
+	instead of printing the date.
+
+2005-12-12  William Jon McCann  <mccann@jhu.edu>
+
 	* podcast/rb-podcast-parse.c (rb_set_channel_value) 
 	(rb_set_item_value, rb_insert_item, rb_validate_channel_propert) 
 	(rb_validate_item_propert, rb_podcast_parser_start_element) 

@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: File containing code cut and pasted from elsewhere
  *
  *  Copyright (C) 2002 Jorn Baayen
@@ -20,8 +21,9 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "rb-cut-and-paste-code.h"
 
@@ -216,6 +218,73 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 	g_free (converted);
 
 	return result;
+}
+
+/* Based on evolution/mail/message-list.c:filter_date() */
+char *
+rb_utf_friendly_time (time_t date)
+{
+	time_t nowdate;
+	time_t yesdate;
+	struct tm then, now, yesterday;
+	const char *format = NULL;
+	char *str = NULL;
+	gboolean done = FALSE;
+	
+	nowdate = time (NULL);
+
+	if (date == 0)
+		return NULL;
+	
+	localtime_r (&date, &then);
+	localtime_r (&nowdate, &now);
+
+	if (then.tm_mday == now.tm_mday &&
+	    then.tm_mon == now.tm_mon &&
+	    then.tm_year == now.tm_year) {
+		format = _("Today %I:%M %p");
+		done = TRUE;
+	}
+
+	if (! done) {
+		yesdate = nowdate - 60 * 60 * 24;
+		localtime_r (&yesdate, &yesterday);
+		if (then.tm_mday == yesterday.tm_mday &&
+		    then.tm_mon == yesterday.tm_mon &&
+		    then.tm_year == yesterday.tm_year) {
+			format = _("Yesterday %I:%M %p");
+			done = TRUE;
+		}
+	}
+
+	if (! done) {
+		int i;
+		for (i = 2; i < 7; i++) {
+			yesdate = nowdate - 60 * 60 * 24 * i;
+			localtime_r (&yesdate, &yesterday);
+			if (then.tm_mday == yesterday.tm_mday &&
+			    then.tm_mon == yesterday.tm_mon &&
+			    then.tm_year == yesterday.tm_year) {
+				format = _("%a %I:%M %p");
+				done = TRUE;
+				break;
+			}
+		}
+	}
+
+	if (! done) {
+		if (then.tm_year == now.tm_year) {
+			format = _("%b %d %I:%M %p");
+		} else {
+			format = _("%b %d %Y");
+		}
+	}
+
+	if (format != NULL) {
+		str = eel_strdup_strftime (format, &then);
+	}
+
+	return str;
 }
 
 #ifndef HAVE_COLLATE_KEY_FILENAME

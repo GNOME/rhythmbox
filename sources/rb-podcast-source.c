@@ -1389,11 +1389,12 @@ rb_podcast_source_cmd_properties_feed (GtkAction *action,
 			     	       RBPodcastSource *source)
 {
 	RhythmDBEntry *entry;
-	
+	GtkWidget *dialog;
+
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, 
 						   (gchar *) source->priv->selected_feeds->data );
 	
-	GtkWidget *dialog = rb_feed_podcast_properties_dialog_new (entry);
+	dialog = rb_feed_podcast_properties_dialog_new (entry);
 	rb_debug ("in feed properties");
 	
 	if (dialog)

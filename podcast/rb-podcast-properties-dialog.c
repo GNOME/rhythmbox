@@ -441,15 +441,13 @@ rb_podcast_properties_dialog_update_description (RBPodcastPropertiesDialog *dial
 static char *
 rb_podcast_properties_dialog_parse_time (gulong value)
 {
-	struct tm then;
 	char *str;
 
 	if (0 == value) {
-		return NULL;
+		str = g_strdup (_("Unknown"));
+	} else {
+		str = rb_utf_friendly_time ((time_t)value);
 	}
-
-	localtime_r ((time_t*)&value, &then);
-	str = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &then);
 
 	return str;
 }
