@@ -331,6 +331,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	object_class->set_property = rb_podcast_source_set_property;
 	object_class->get_property = rb_podcast_source_get_property;
 
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
