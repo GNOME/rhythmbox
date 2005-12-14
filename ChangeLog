@@ -1,3 +1,10 @@
+2005-12-14  Ryan P Skadberg  <skadz@stigmata.org>
+
+	* configure.ac: Removed DBUS_SERVICES_DIR from top-level
+        configure.  It was not working with RPM.
+	* data/Makefile.am: Switched dbus directory location to use
+	datadir instead of variable that was not working.
+
 2005-12-13  James Livingston  <jrl@ids.org.au>
 
 	patch by: Alex Lancaster <alexl@users.sourceforge.net>

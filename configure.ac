@@ -492,9 +492,6 @@ AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
 AS_AC_EXPAND(DATADIR, $datadir)
 
-DBUS_SERVICES_DIR="$DATADIR/dbus-1/services"
-AC_SUBST(DBUS_SERVICES_DIR)
-AC_DEFINE_UNQUOTED(DBUS_SERVICES_DIR, "$DBUS_SERVICES_DIR", [Where services dir for DBUS is])
 AC_MSG_CHECKING([for D-BUS])
 AC_ARG_WITH(dbus,
             AC_HELP_STRING([--with-dbus],

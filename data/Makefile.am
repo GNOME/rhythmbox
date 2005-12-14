@@ -38,7 +38,7 @@ rhythmbox.keys: generate-keys.sh rhythmbox.applications
 	> rhythmbox.keys
 
 # Dbus service file
-servicedir = $(DBUS_SERVICES_DIR)
+servicedir = $(datadir)/dbus-1/services
 service_in_files = org.gnome.Rhythmbox.service.in
 service_DATA = $(service_in_files:.service.in=.service)
 
