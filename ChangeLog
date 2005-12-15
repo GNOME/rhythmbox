@@ -1,3 +1,12 @@
+2005-12-15  William Jon McCann  <mccann@jhu.edu>
+
+	* shell/rb-shell.c (rb_shell_sync_fullscreen) 
+	(rb_shell_view_fullscreen_changed_cb): Fix sense of fullscreen gconf
+	key.
+
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org>
+	Fixes #324157
+
 2005-12-14  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c (rb_shell_constructor, rb_shell_finalize) 

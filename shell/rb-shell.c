@@ -1934,7 +1934,7 @@ rb_shell_view_fullscreen_changed_cb (GtkAction *action,
 				     RBShell *shell)
 {
 	eel_gconf_set_boolean (CONF_UI_FULLSCREEN,
-			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+			       gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 static void
@@ -2328,7 +2328,7 @@ rb_shell_sync_fullscreen (RBShell *shell)
 	gboolean fullscreen;
 	GtkAction *action;
 
-	fullscreen = !eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
+	fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
 
 	if (fullscreen) {
 		gtk_window_fullscreen (GTK_WINDOW (shell->priv->window));
