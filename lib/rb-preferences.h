@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 #define CONF_UI_SOURCELIST_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
 #define CONF_UI_QUEUE_AS_SIDEBAR  CONF_PREFIX "/ui/queue_as_sidebar" 
 #define CONF_UI_SMALL_DISPLAY     CONF_PREFIX "/ui/small_display"
+#define CONF_UI_FULLSCREEN     CONF_PREFIX "/ui/fullscreen"
 #define CONF_UI_OBSOLETE_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
 #define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/rhythmdb_columns_setup"
 #define CONF_UI_TIME_DISPLAY CONF_PREFIX "/ui/time_display"

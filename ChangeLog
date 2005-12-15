@@ -1,3 +1,15 @@
+2005-12-14  William Jon McCann  <mccann@jhu.edu>
+
+	* shell/rb-shell.c (rb_shell_constructor, rb_shell_finalize) 
+	(rb_shell_view_fullscreen_changed_cb, rb_shell_sync_fullscreen) 
+	(fullscreen_changed_cb): 
+	* lib/rb-preferences.h: 
+	* data/ui/rhythmbox-ui.xml: 
+	* data/rhythmbox.schemas:
+	Add fullscreen mode.
+
+	Fixes #324075.
+
 2005-12-14  Ryan P Skadberg  <skadz@stigmata.org>
 
 	* configure.ac: Removed DBUS_SERVICES_DIR from top-level

@@ -94,7 +94,8 @@
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
 static void rb_shell_init (RBShell *shell);
-static GObject *rb_shell_constructor (GType type, guint n_construct_properties,
+static GObject *rb_shell_constructor (GType type,
+				      guint n_construct_properties,
 				      GObjectConstructParam *construct_properties);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_set_property (GObject *object,
@@ -116,6 +117,7 @@ static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
+static void rb_shell_sync_fullscreen (RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
 						    RhythmDBEntryType type);
@@ -198,6 +200,8 @@ static void rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_toolbar_changed_cb (GtkAction *action,
 					      RBShell *shell);
+static void rb_shell_view_fullscreen_changed_cb (GtkAction *action,
+						 RBShell *shell);
 static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
@@ -219,6 +223,10 @@ static void smalldisplay_changed_cb (GConfClient *client,
 				     guint cnxn_id,
 				     GConfEntry *entry,
 				     RBShell *shell);
+static void fullscreen_changed_cb (GConfClient *client,
+				   guint cnxn_id,
+				   GConfEntry *entry,
+				   RBShell *shell);
 static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBSource *source,
 					 GtkSelectionData *data,
@@ -393,6 +401,7 @@ struct RBShellPrivate
 	guint sourcelist_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
 	guint smalldisplay_notify_id;
+	guint fullscreen_notify_id;
 
 	glong last_small_time; /* when we last changed small mode */
 	
@@ -403,9 +412,12 @@ struct RBShellPrivate
 	guint window_width;
 	guint window_height;
 	guint small_width;
-	gboolean window_maximised, window_small;
+	gboolean window_maximised;
+	gboolean window_small;
+	gboolean window_fullscreen;
 	gboolean queue_as_sidebar;
-	gint window_x, window_y;
+	gint window_x;
+	gint window_y;
 	gint paned_position;
 	gint sourcelist_height;
 };
@@ -474,6 +486,9 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
 	  N_("Make the main window smaller"),
 	  G_CALLBACK (rb_shell_view_smalldisplay_changed_cb), },
+	{ "ViewFullscreen", NULL, N_("_Fullscreen"), "F11",
+	  N_("Expand the window to fill the screen"),
+	  G_CALLBACK (rb_shell_view_fullscreen_changed_cb), FALSE },
 	{ "ViewQueueAsSidebar", NULL, N_("_Queue as Sidebar"), "<control>K",
 	  N_("Change whether the queue is visible as a source or a sidebar"),
 	  G_CALLBACK (rb_shell_view_queue_as_sidebar_changed_cb) },
@@ -820,6 +835,7 @@ rb_shell_finalize (GObject *object)
 	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
+	eel_gconf_notification_remove (shell->priv->fullscreen_notify_id);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
@@ -1099,16 +1115,20 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	/* sync state */
 	shell->priv->sourcelist_visibility_notify_id =
 		eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
-				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
-				    shell);
+					    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
+					    shell);
 	shell->priv->toolbar_visibility_notify_id =
 		eel_gconf_notification_add (CONF_UI_TOOLBAR_HIDDEN,
-				    (GConfClientNotifyFunc) toolbar_visibility_changed_cb,
-				    shell);
+					    (GConfClientNotifyFunc) toolbar_visibility_changed_cb,
+					    shell);
 	shell->priv->smalldisplay_notify_id =
 		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
-				    (GConfClientNotifyFunc) smalldisplay_changed_cb,
-				    shell);
+					    (GConfClientNotifyFunc) smalldisplay_changed_cb,
+					    shell);
+	shell->priv->smalldisplay_notify_id =
+		eel_gconf_notification_add (CONF_UI_FULLSCREEN,
+					    (GConfClientNotifyFunc) fullscreen_changed_cb,
+					    shell);
 
 	/* read the cached copies of the gconf keys */
 	shell->priv->window_width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
@@ -1116,6 +1136,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
 	shell->priv->window_maximised = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
 	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	shell->priv->window_fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
 	shell->priv->queue_as_sidebar = eel_gconf_get_boolean (CONF_UI_QUEUE_AS_SIDEBAR); 
 	shell->priv->window_x = eel_gconf_get_integer (CONF_STATE_WINDOW_X_POSITION);
 	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
@@ -1237,6 +1258,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
 	
 	rb_shell_sync_window_state (shell, FALSE);
+	rb_shell_sync_fullscreen (shell);
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
@@ -1451,8 +1473,7 @@ rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise)
 {
 	GdkGeometry hints;
 
-	if (shell->priv->window_small)
-	{
+	if (shell->priv->window_small) {
 		hints.min_height = -1;
 		hints.min_width = -1;
 		hints.max_height = -1;
@@ -1909,6 +1930,14 @@ rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 }
 
 static void
+rb_shell_view_fullscreen_changed_cb (GtkAction *action,
+				     RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_FULLSCREEN,
+			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+}
+
+static void
 rb_shell_cmd_about (GtkAction *action,
 		    RBShell *shell)
 {
@@ -2294,6 +2323,26 @@ rb_shell_sync_toolbar_visibility (RBShell *shell)
 }
 
 static void
+rb_shell_sync_fullscreen (RBShell *shell)
+{
+	gboolean fullscreen;
+	GtkAction *action;
+
+	fullscreen = !eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
+
+	if (fullscreen) {
+		gtk_window_fullscreen (GTK_WINDOW (shell->priv->window));
+	} else {
+		gtk_window_unfullscreen (GTK_WINDOW (shell->priv->window));
+	}
+
+	action = gtk_action_group_get_action (shell->priv->actiongroup,
+					      "ViewFullscreen");
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+				      fullscreen);
+}
+
+static void
 rb_shell_sync_smalldisplay (RBShell *shell)
 {
 	GtkAction *action;
@@ -2357,13 +2406,24 @@ toolbar_visibility_changed_cb (GConfClient *client,
 
 static void
 smalldisplay_changed_cb (GConfClient *client,
-				  guint cnxn_id,
-				  GConfEntry *entry,
-				  RBShell *shell)
+			 guint cnxn_id,
+			 GConfEntry *entry,
+			 RBShell *shell)
 {
 	rb_debug ("small display mode changed");
 	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	rb_shell_sync_smalldisplay (shell);
+}
+
+static void
+fullscreen_changed_cb (GConfClient *client,
+		       guint cnxn_id,
+		       GConfEntry *entry,
+		       RBShell *shell)
+{
+	rb_debug ("fullscreen mode changed");
+	shell->priv->window_fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
+	rb_shell_sync_fullscreen (shell);
 }
 
 static void
