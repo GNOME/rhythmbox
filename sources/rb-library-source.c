@@ -173,17 +173,12 @@ struct RBLibrarySourcePrivate
 
 	gboolean lock;
 
-	char *artist;
-	char *album;
-
 	RhythmDBQueryModel *cached_all_query;
 	RhythmDBPropertyModel *cached_genres_model;
 	RhythmDBPropertyModel *cached_artists_model;
 	RhythmDBPropertyModel *cached_albums_model;
 	
 	RhythmDBQueryModel *model;
-	RhythmDBQueryModel *active_query;
-	RBLibraryQueryType query_type;
 	char *search_text;
 	GList *selected_genres;
 	GList *selected_artists;
@@ -464,8 +459,6 @@ rb_library_source_finalize (GObject *object)
 	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
 
 	g_free (source->priv->sorting_key);
-	g_free (source->priv->artist);
-	g_free (source->priv->album);
 
 	if (source->priv->cached_all_query)
 		g_object_unref (G_OBJECT (source->priv->cached_all_query));
@@ -1530,36 +1523,29 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	RhythmDBPropertyModel *genre_model = NULL;
 	RhythmDBPropertyModel *artist_model = NULL;
 	RhythmDBPropertyModel *album_model = NULL;
-	GtkTreeModel *model;
 	GPtrArray *query;
 	gboolean is_all_query;
-
-	/* Unlocked */
-	rb_debug ("preparing to read lock for query");
+	gboolean do_new_query = TRUE;
 
 	is_all_query = (source->priv->selected_genres == NULL &&
 			source->priv->selected_artists == NULL &&	    
 			source->priv->selected_albums == NULL &&	    
 			source->priv->search_text == NULL);
 
-	if (is_all_query && source->priv->cached_all_query) {
-		rb_debug ("sorting mismatch, freeing cached query");
-		g_object_unref (source->priv->cached_all_query);
-		g_object_unref (source->priv->cached_genres_model);
-		g_object_unref (source->priv->cached_artists_model);
-		g_object_unref (source->priv->cached_albums_model);
-	}
-
-	source->priv->query_type = qtype;
-	rb_debug ("query type: %d", qtype);
-
 	if ((source->priv->cached_all_query == NULL) || is_all_query ) {
-		rb_debug ("caching new query");
-		query_model = source->priv->active_query = source->priv->model = 
-			source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
-		source->priv->cached_genres_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_GENRE);
-		source->priv->cached_artists_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
-		source->priv->cached_albums_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
+		if (source->priv->cached_all_query == NULL) {
+			rb_debug ("caching new query");
+			query_model = source->priv->model = 
+				source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
+			source->priv->cached_genres_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_GENRE);
+			source->priv->cached_artists_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
+			source->priv->cached_albums_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
+		} else {
+			rb_debug ("using cached query");
+			query_model = source->priv->model = source->priv->cached_all_query;
+			do_new_query = FALSE;
+		}
+		
 		g_object_set (G_OBJECT (source->priv->cached_genres_model),
 			      "query-model", source->priv->cached_all_query, NULL);
 		g_object_set (G_OBJECT (source->priv->cached_artists_model),
@@ -1574,7 +1560,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 					    source->priv->cached_albums_model);
 	} else {
 		rb_debug ("query is not special");
-		source->priv->active_query = source->priv->model = 
+		source->priv->model = 
 			query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
 		if (source->priv->selected_genres == NULL) {
@@ -1631,18 +1617,18 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		}
 	}
 
-	model = GTK_TREE_MODEL (query_model);
-
-	rb_debug ("setting empty model");
+	rb_debug ("setting query model");
 	rb_entry_view_set_model (source->priv->songs, query_model);
 	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
 
-	query = construct_query_from_selection (source);
-	
-	rb_debug ("doing query");
-	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
+	if (do_new_query) {
+		query = construct_query_from_selection (source);
 		
-	rhythmdb_query_free (query);
+		rb_debug ("doing query");
+		rhythmdb_do_full_query_async_parsed (source->priv->db, GTK_TREE_MODEL (query_model), query);
+			
+		rhythmdb_query_free (query);
+	}
 	
 	if (!is_all_query)
 		g_object_unref (G_OBJECT (query_model));

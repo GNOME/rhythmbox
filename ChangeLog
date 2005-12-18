@@ -1,3 +1,9 @@
+2005-12-19  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-library-source.c: Remove unused structure members
+	(rb_library_source_do_query): Actually use the cached 'all' query.
+	Fixes #324025.
+	
 2005-12-16  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-audiocd-source.c 
