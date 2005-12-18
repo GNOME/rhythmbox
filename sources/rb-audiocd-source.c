@@ -281,14 +281,14 @@ rb_audiocd_get_cd_info (RBAudioCdSource *source, gint64 *num_tracks)
 #elif HAVE_GSTREAMER_0_10
 	GstFormat out_fmt = fmt;
 	if (!gst_element_query_duration (priv->cdda, &out_fmt, num_tracks) || out_fmt != fmt) {
-	    return FALSE;
+		return FALSE;
 	}
 #endif
 
 	return TRUE;
 }
 
-static void
+static gboolean
 rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 {
 	gint64 i, num_tracks;
@@ -300,8 +300,8 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 #ifdef HAVE_GSTREAMER_0_8
 	if (gst_element_set_state (priv->pipeline, GST_STATE_PAUSED) != GST_STATE_SUCCESS) {
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
-					_("Rhythmbox couldn't access the cd."));
-		return;
+					_("Rhythmbox couldn't access the CD."));
+		return FALSE;
 	}
 #elif HAVE_GSTREAMER_0_10
 	ret = gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
@@ -310,16 +310,16 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 	}
         if (ret == GST_STATE_CHANGE_FAILURE) {
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
-					_("Rhythmbox couldn't access the cd."));
-		return;
+					_("Rhythmbox couldn't access the CD."));
+		return FALSE;
 	}
 #endif
 
 	if (!rb_audiocd_get_cd_info (source, &num_tracks))
 	{
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
-					_("Rhythmbox could read the cd information."));
-		return;
+					_("Rhythmbox couldn't read the CD information."));
+		return FALSE;
 	}
 
 	rb_debug ("importing Audio Cd %s - %d tracks", priv->device_path, num_tracks);
@@ -340,6 +340,8 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 #endif
 		rb_debug ("failed to set cd state");
 	}
+
+	return TRUE;
 }
 
 #ifdef HAVE_MUSICBRAINZ
@@ -358,6 +360,10 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 		/* TODO display error to user? */
 		g_error_free (error);
 		g_object_unref (metadata);
+		return;
+	}
+	if (cd_track == NULL) {
+		/* empty cd? */
 		return;
 	}
 
@@ -486,8 +492,8 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 	gst_bin_add_many (GST_BIN (priv->pipeline), priv->cdda, priv->fakesink, NULL);
 	gst_element_link (priv->cdda, priv->fakesink);
 	
-	rb_audiocd_scan_songs (source, db);
-	rb_audiocd_load_metadata (source, db);
+	if (rb_audiocd_scan_songs (source, db))
+		rb_audiocd_load_metadata (source, db);
 
 error_out:
 	g_object_unref (G_OBJECT (db));

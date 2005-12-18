@@ -1,3 +1,14 @@
+2005-12-16  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-audiocd-source.c 
+	(rb_audiocd_get_cd_info): tab
+	(rb_audiocd_scan_songs): Return boolean success/failure,
+	fix error messages a bit.
+	(metadata_cb): Don't crash if we have no tracks
+	(rb_audiocd_load_songs): Don't try to read metadata if we can't read
+	the CD.
+	Fixes #324222.
+
 2005-12-15  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c (rb_shell_sync_fullscreen) 
