@@ -1,3 +1,8 @@
+2005-12-19  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_insert): really refuse to
+	add entries without a location, rather than those with one.
+
 2005-12-19  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (rb_shell_player_cmd_play): don't crash if
