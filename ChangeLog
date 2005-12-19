@@ -2,6 +2,12 @@
 
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_set_sort_order):
+	Fix a tiny memory leak in the previous commit.
+
+2005-12-20  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_sort_order):
 	Don't try to emit reorders for empty query models, since it doesn't
 	achieve anything and it results in a few warnings.
 

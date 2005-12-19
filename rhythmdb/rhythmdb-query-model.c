@@ -1585,9 +1585,9 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 		model->priv->sort_destroy_notify (model->priv->sort_user_data);
 
 	/* create the new sorted entry sequence */
-	new_entries = g_sequence_new (NULL);
 	length = g_sequence_get_length (model->priv->entries);
 	if (length > 0) {
+		new_entries = g_sequence_new (NULL);
 		ptr = g_sequence_get_begin_ptr (model->priv->entries);
 		for (i = 0; i < length; i++) {
 			gpointer entry = g_sequence_ptr_get_data (ptr);
@@ -1622,9 +1622,9 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 		gtk_tree_path_free (path);
 		free (reorder_map);
 		g_sequence_free (model->priv->entries);
+		model->priv->entries = new_entries;
 	}
 	
-	model->priv->entries = new_entries;
 	model->priv->sort_func = sort_func;
 	model->priv->sort_user_data = user_data;
 	model->priv->sort_destroy_notify = sort_destroy_notify;
