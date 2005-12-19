@@ -1430,7 +1430,7 @@ rb_shell_player_cmd_play (GtkAction *action,
 	GError *error = NULL;
 	rb_debug ("play!");
 	if (!rb_shell_player_playpause (player, FALSE, &error))
-		rb_error_dialog (NULL, _("Couldn't start playback: %s"), error->message);
+		rb_error_dialog (NULL, _("Couldn't start playback: %s"), (error) ? error->message : "(null)");
 	g_clear_error (&error);
 }
 
