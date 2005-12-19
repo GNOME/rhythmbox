@@ -1,3 +1,9 @@
+2005-12-19  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-playlist-source-recorder.c (rb_playlist_source_recorder_init):
+	Make burn dialog non-resizable so that the expander can shrink.
+	Fixes #308951.
+
 2005-12-19  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_insert): really refuse to
