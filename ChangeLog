@@ -1,3 +1,13 @@
+2005-12-19  James Livingston  <jrl@ids.org.au>
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element): don't
+	add entries without a location. Fixes bug 324290.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_insert): refuse to add entries
+	without a location.
+
+	* shell/main.c: (main): don't crash if dbus initialisation fails
+	without setting an error
+
 2005-12-19  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-library-source.c: Remove unused structure members

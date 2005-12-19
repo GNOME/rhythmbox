@@ -322,9 +322,14 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			rb_debug ("pre-Date entry found, causing re-read");
 			ctx->entry->mtime = 0;
 		}
-		rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
-		rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
-		rhythmdb_commit (RHYTHMDB (ctx->db));
+		if (ctx->entry->location != NULL) {
+			rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
+			rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
+			rhythmdb_commit (RHYTHMDB (ctx->db));
+		} else {
+			rb_debug ("found entry without location");
+			rhythmdb_entry_unref (RHYTHMDB (ctx->db), ctx->entry);
+		}
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
 		break;
 	}

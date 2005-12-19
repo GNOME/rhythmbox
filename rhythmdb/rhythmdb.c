@@ -943,6 +943,8 @@ void
 rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
 {
 	g_assert (entry->inserted == FALSE);
+	g_return_if_fail (entry->location == NULL);
+	
 	db->priv->added_entries = g_list_prepend (db->priv->added_entries, entry);	
 }
 

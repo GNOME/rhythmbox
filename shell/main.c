@@ -250,7 +250,7 @@ main (int argc, char **argv)
 
 	session_bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 	if (session_bus == NULL) {
-		g_critical ("couldn't connect to session bus: %s", error->message);
+		g_critical ("couldn't connect to session bus: %s", (error) ? error->message : "(null)");
 		g_clear_error (&error);
 	} else if (!no_registration) {
 		guint request_name_reply;
