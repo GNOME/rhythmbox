@@ -1587,41 +1587,42 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 	/* create the new sorted entry sequence */
 	new_entries = g_sequence_new (NULL);
 	length = g_sequence_get_length (model->priv->entries);
-	
-	ptr = g_sequence_get_begin_ptr (model->priv->entries);
-	for (i = 0; i < length; i++) {
-		gpointer entry = g_sequence_ptr_get_data (ptr);
+	if (length > 0) {
+		ptr = g_sequence_get_begin_ptr (model->priv->entries);
+		for (i = 0; i < length; i++) {
+			gpointer entry = g_sequence_ptr_get_data (ptr);
 
-		g_sequence_insert_sorted (new_entries, entry,
-					  sort_func, user_data);
-		ptr = g_sequence_ptr_next (ptr);
+			g_sequence_insert_sorted (new_entries, entry,
+						  sort_func, user_data);
+			ptr = g_sequence_ptr_next (ptr);
+		}
+
+		/* generate resort map and rebuild reverse map */
+		reorder_map = malloc (length * sizeof(gint));
+
+		ptr = g_sequence_get_begin_ptr (new_entries);
+		for (i = 0; i < length; i++) {
+			gpointer entry = g_sequence_ptr_get_data (ptr);
+			GSequencePtr old_ptr;
+		       
+			old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+			reorder_map[i] = g_sequence_ptr_get_position (ptr);
+			g_hash_table_replace (model->priv->reverse_map, entry, ptr);
+
+			ptr = g_sequence_ptr_next (ptr);
+		}
+
+		/* emit the re-order and clean up */
+		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
+		path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
+		gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model),
+					       path, &iter,
+					       reorder_map);
+
+		gtk_tree_path_free (path);
+		free (reorder_map);
+		g_sequence_free (model->priv->entries);
 	}
-
-	/* generate resort map and rebuild reverse map */
-	reorder_map = malloc (length * sizeof(gint));
-
-	ptr = g_sequence_get_begin_ptr (new_entries);
-	for (i = 0; i < length; i++) {
-		gpointer entry = g_sequence_ptr_get_data (ptr);
-		GSequencePtr old_ptr;
-	       
-		old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-		reorder_map[i] = g_sequence_ptr_get_position (ptr);
-		g_hash_table_replace (model->priv->reverse_map, entry, ptr);
-
-		ptr = g_sequence_ptr_next (ptr);
-	}
-
-	/* emit the re-order and clean up */
-	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
-	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model),
-				       path, &iter,
-				       reorder_map);
-
-	gtk_tree_path_free (path);
-	free (reorder_map);
-	g_sequence_free (model->priv->entries);
 	
 	model->priv->entries = new_entries;
 	model->priv->sort_func = sort_func;

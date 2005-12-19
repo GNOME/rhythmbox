@@ -1,3 +1,10 @@
+2005-12-20  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_sort_order):
+	Don't try to emit reorders for empty query models, since it doesn't
+	achieve anything and it results in a few warnings.
+
 2005-12-19  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-playlist-source-recorder.c (rb_playlist_source_recorder_init):
