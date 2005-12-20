@@ -549,6 +549,9 @@ rb_player_construct (RBPlayer *mp, GError **error)
 					 G_CALLBACK (error_cb),
 					 mp, 0);
 
+	g_signal_connect_object (G_OBJECT (mp->priv->playbin), "eos",
+				 G_CALLBACK (eos_cb), mp, 0);
+
 	/* Output sink */
 	sink = gst_gconf_get_default_audio_sink ();
 #endif
@@ -560,20 +563,9 @@ rb_player_construct (RBPlayer *mp, GError **error)
 	sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
 #endif
 	
-	if (sink == NULL) {
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_NO_AUDIO,
-			     _("Could not create audio output element; check your settings"));
-		rb_player_gst_free_playbin (mp);
-		return FALSE;
-	}
-
-	g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
-#ifdef HAVE_GSTREAMER_0_8
-	g_signal_connect_object (G_OBJECT (mp->priv->playbin), "eos",
-				 G_CALLBACK (eos_cb), mp, 0);
-#endif
+	/* if we could create the gconf sink use that, otherwise let playbin decide */
+	if (sink != NULL)
+		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
 
 	if (mp->priv->cur_volume > 1.0)
 		mp->priv->cur_volume = 1.0;

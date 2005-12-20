@@ -1,3 +1,13 @@
+2005-12-20  James Livingston  <jrl@ids.org.au>
+
+	* metadata/rb-metadata-gst.c: make the state changes time-out again,
+	so that it doesn't spend forever getting stuck on the one file. Don't
+	report errors for failing to change state on known non-audio files.
+
+	* player/rb-player-gst.c: (rb_player_construct): let playbin deal with
+	audio sink creation if we can't create the gconfaudiosink. This lets
+	it work with only gst-plugins-base on 0.10.
+
 2005-12-20  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* rhythmdb/rhythmdb-query-model.c:

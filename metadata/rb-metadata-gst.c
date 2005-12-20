@@ -689,6 +689,7 @@ rb_metadata_load (RBMetaData *md,
 	GstElement *typefind = NULL;
 #ifdef HAVE_GSTREAMER_0_10
 	GstStateChangeReturn state_ret;
+	int change_timeout;
 #endif
 
 	g_free (md->priv->uri);
@@ -782,15 +783,28 @@ rb_metadata_load (RBMetaData *md,
 #ifdef HAVE_GSTREAMER_0_10
 	rb_debug ("going to PAUSED for metadata, uri: %s", uri);
 	state_ret = gst_element_set_state (pipeline, GST_STATE_PAUSED);
-        while (state_ret == GST_STATE_CHANGE_ASYNC && !md->priv->eos && !md->priv->non_audio) {
+	change_timeout = 5;
+        while (state_ret == GST_STATE_CHANGE_ASYNC &&
+	       !md->priv->eos &&
+	       !md->priv->non_audio &&
+	       change_timeout > 0) {
 	    GstState state;
 	    rb_debug ("element state changing asyncronously: %d, %d", state_ret, state);
 	    state_ret = gst_element_get_state (GST_ELEMENT (pipeline),
 			    &state, NULL, 1 * GST_SECOND);
+	    change_timeout--;
 	}
-	rb_debug ("gone to PAUSED for for %s", uri);
+	if (state_ret == GST_STATE_CHANGE_ASYNC) {
+		rb_debug ("failed to go to PAUSED for %s", uri);
+		if (!md->priv->non_audio)
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("GStreamer error: failed to change state"));
+	} else
+		rb_debug ("gone to PAUSED for %s", uri);
 
-	if (state_ret != GST_STATE_CHANGE_FAILURE) {
+	if (state_ret != GST_STATE_CHANGE_FAILURE && state_ret != GST_STATE_CHANGE_ASYNC) {
 		/* Post application specific message so we'll know when to stop
 		 * the message loop */
 		GstBus *bus;
