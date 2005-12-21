@@ -1,3 +1,9 @@
+2005-12-22  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-audiocd-source.c:
+	(rb_audiocd_scan_songs): Always return the pipeline to NULL state,
+	so it closes the device.
+
 2005-12-20  James Livingston  <jrl@ids.org.au>
 
 	* metadata/rb-metadata-gst.c: make the state changes time-out again,

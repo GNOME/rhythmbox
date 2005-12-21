@@ -296,12 +296,13 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 #ifdef HAVE_GSTREAMER_0_10
         GstStateChangeReturn ret;
 #endif
+	gboolean ok = TRUE;
 
 #ifdef HAVE_GSTREAMER_0_8
 	if (gst_element_set_state (priv->pipeline, GST_STATE_PAUSED) != GST_STATE_SUCCESS) {
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't access the CD."));
-		return FALSE;
+		ok = FALSE;
 	}
 #elif HAVE_GSTREAMER_0_10
 	ret = gst_element_set_state (priv->pipeline, GST_STATE_PAUSED);
@@ -311,27 +312,29 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
         if (ret == GST_STATE_CHANGE_FAILURE) {
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't access the CD."));
-		return FALSE;
+		ok = FALSE;
 	}
 #endif
 
-	if (!rb_audiocd_get_cd_info (source, &num_tracks))
+	if (ok && !rb_audiocd_get_cd_info (source, &num_tracks))
 	{
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't read the CD information."));
-		return FALSE;
+		ok = FALSE;
 	}
 
-	rb_debug ("importing Audio Cd %s - %d tracks", priv->device_path, num_tracks);
-	for (i = 1; i <= num_tracks; i++) {
-		RhythmDBEntry* entry = rb_audiocd_create_track_entry (source, db, i);
+	if (ok) {
+		rb_debug ("importing Audio Cd %s - %d tracks", priv->device_path, num_tracks);
+		for (i = 1; i <= num_tracks; i++) {
+			RhythmDBEntry* entry = rb_audiocd_create_track_entry (source, db, i);
 
-		if (entry)
-			priv->tracks = g_list_prepend (priv->tracks, entry);
-		else
-			g_warning ("Could not create audio cd track entry");
+			if (entry)
+				priv->tracks = g_list_prepend (priv->tracks, entry);
+			else
+				g_warning ("Could not create audio cd track entry");
+		}
+		priv->tracks = g_list_reverse (priv->tracks);
 	}
-	priv->tracks = g_list_reverse (priv->tracks);
 
 #ifdef HAVE_GSTREAMER_0_8
 	if (gst_element_set_state (priv->pipeline, GST_STATE_NULL) != GST_STATE_SUCCESS) {
@@ -341,7 +344,7 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 		rb_debug ("failed to set cd state");
 	}
 
-	return TRUE;
+	return ok;
 }
 
 #ifdef HAVE_MUSICBRAINZ
