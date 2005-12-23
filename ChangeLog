@@ -1,3 +1,8 @@
+2005-12-24  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/main.c: (load_uri_args): don't compile this in if
+	neither bonobo nor dbus are enabled.  Fixes #324890.
+
 2005-12-22  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-audiocd-source.c:

@@ -78,7 +78,9 @@ static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
+#if WITH_DBUS || WITH_BONOBO
 static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
+#endif
 
 #ifdef WITH_BONOBO
 static gboolean print_playing = FALSE;
@@ -406,6 +408,7 @@ main (int argc, char **argv)
 	exit (0);
 }
 
+#if WITH_DBUS || WITH_BONOBO
 static gboolean
 load_uri_args (const char **args, GFunc handler, gpointer user_data)
 {
@@ -429,6 +432,7 @@ load_uri_args (const char **args, GFunc handler, gpointer user_data)
 	}
 	return handled;
 }
+#endif
 
 #ifdef WITH_DBUS
 static void
