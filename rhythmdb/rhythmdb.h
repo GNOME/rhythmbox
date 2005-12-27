@@ -267,6 +267,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->playback_error;
 	case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		return rb_refstring_get (entry->first_seen_str);
+	case RHYTHMDB_PROP_SEARCH_MATCH:
+		return NULL;	/* synthetic property */
 	/* Podcast properties */
 	case RHYTHMDB_PROP_DESCRIPTION:
 		if (entry->podcast)

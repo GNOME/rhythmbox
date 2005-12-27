@@ -1,3 +1,10 @@
+2005-12-27  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* rhythmdb/rhythmdb.h: (rhythmdb_entry_get_string):
+	just return NULL for RHYTHMDB_PROP_SEARCH_MATCH,
+	so we don't get an assertion failure.
+	Fixes #325025.
+
 2005-12-24  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* shell/main.c: (load_uri_args): don't compile this in if
