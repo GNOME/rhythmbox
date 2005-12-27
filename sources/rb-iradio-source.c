@@ -752,9 +752,7 @@ static void
 handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri, const char *title,
 			  const char *genre, RBIRadioSource *source)
 {
-	if (!rhythmdb_entry_lookup_by_location (source->priv->db, uri)) {
-		rb_iradio_source_add_station (source, uri, title, genre);
-	}
+	rb_iradio_source_add_station (source, uri, title, genre);
 }
 
 void
@@ -766,7 +764,17 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 	g_signal_connect_object (G_OBJECT (parser), "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
-	totem_pl_parser_parse (parser, uri, FALSE);	
+	switch (totem_pl_parser_parse (parser, uri, FALSE)) {
+	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
+	case TOTEM_PL_PARSER_RESULT_IGNORED:
+		/* maybe it's the actual stream URL, then */
+		rb_iradio_source_add_station (source, uri, NULL, NULL);
+		break;
+
+	case TOTEM_PL_PARSER_RESULT_SUCCESS:
+	case TOTEM_PL_PARSER_RESULT_ERROR:
+		break;
+	}
 	g_object_unref (G_OBJECT (parser));
 }
 
@@ -825,8 +833,7 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 		}
 
 		uri = i->data;
-		if ((uri != NULL) && 
-		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
+		if (uri != NULL) {
 			rb_iradio_source_add_station (source, uri, NULL, NULL);
 		}
 

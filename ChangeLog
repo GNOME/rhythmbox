@@ -1,3 +1,14 @@
+2005-12-28  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-iradio-source.c: (handle_playlist_entry_cb),
+	(stations_view_drag_data_received_cb):
+	Remove calls to rhythmdb_entry_lookup_by_location, as
+	rb_iradio_source_add_station does that anyway.
+	
+	(rb_iradio_source_add_from_playlist):
+	If the URL doesn't point to a playlist, add it as the stream
+	URL instead.
+
 2005-12-27  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* rhythmdb/rhythmdb.h: (rhythmdb_entry_get_string):
