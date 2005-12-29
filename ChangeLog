@@ -1,3 +1,17 @@
+2005-12-29  William Jon McCann  <mccann@jhu.edu>
+
+	* podcast/rb-podcast-parse.c (rb_insert_item):
+	Add debugging.
+	(rb_podcast_parser_start_element): Support itunes:image.
+	Add debugging.  Don't abuse the break statement.  Warn
+	if state is unknown.
+	(rb_podcast_parser_end_element): Add debugging.  Warn
+	if state is unknown.
+	(rb_podcast_parser_characters): Warn if state is unknown.
+
+	Fixes parsing of feeds that use the itunes:image element.
+	Fixes #324632
+
 2005-12-28  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-iradio-source.c: (handle_playlist_entry_cb),

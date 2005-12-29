@@ -153,10 +153,14 @@ rb_insert_item (struct RBPoadcastLoadContext *ctx)
 {
 	RBPodcastItem *data = ctx->item_data;
 
-	if (!data->url)
-		return;
+	rb_debug ("Inserting item as post");
 
-	ctx->channel_data->posts = g_list_prepend (ctx->channel_data->posts, (void *) ctx->item_data);
+	if (!data->url) {
+		rb_debug ("Item does not have a URL, skipping");
+		return;
+	}
+
+	ctx->channel_data->posts = g_list_prepend (ctx->channel_data->posts, ctx->item_data);
 }
 
 static gboolean
@@ -211,6 +215,8 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 				 const char **attrs)
 {
 
+	rb_debug ("Start element: %s state: %d", name, ctx->state);
+
 	switch (ctx->state) {
         case RB_PODCAST_PARSER_STATE_START:
 		{
@@ -219,6 +225,7 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 			} else {
 				ctx->in_unknown_elt++;
 			}
+
 			break;
 		}
         
@@ -229,25 +236,26 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 			} else {
 				ctx->in_unknown_elt++;
 			}
+
 			break;
 		}
 
         case RB_PODCAST_PARSER_STATE_CHANNEL:
 		{
  
-			if (!strcmp (name, "image")) {
+			if (strcmp (name, "image") == 0
+			    || strcmp (name, "itunes:image") == 0) {
 				ctx->state = RB_PODCAST_PARSER_STATE_IMG;
-				break;
 			} else if (!strcmp (name, "item")) {
 				ctx->item_data = rb_podcast_initializa_item ();
 				ctx->state = RB_PODCAST_PARSER_STATE_ITEM;
-				break;
 			} else if (!rb_validate_channel_propert (name)) {
+				rb_debug ("Unknown property");
 				ctx->in_unknown_elt++;
-				break;
-			} 
+			} else {
+				ctx->state = RB_PODCAST_PARSER_STATE_CHANNEL_PROPERTY;
+			}
 
-			ctx->state = RB_PODCAST_PARSER_STATE_CHANNEL_PROPERTY;
 			break;
 		}
 
@@ -260,16 +268,18 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 						rb_set_item_value (ctx, "url", url_value);
 					} else if (!strcmp (*attrs, "length")) {
 						const char *length_value = *(attrs + 1);
-						rb_set_item_value(ctx, "length", length_value);
+						rb_set_item_value (ctx, "length", length_value);
 					}
 				}
-			} else  if (!rb_validate_item_propert (name)) {
-				ctx->in_unknown_elt++;
-				break;
-			}
-            
 
-			ctx->state = RB_PODCAST_PARSER_STATE_ITEM_PROPERTY;
+				ctx->state = RB_PODCAST_PARSER_STATE_ITEM_PROPERTY;
+
+			} else if (!rb_validate_item_propert (name)) {
+				ctx->in_unknown_elt++;
+			} else {
+				ctx->state = RB_PODCAST_PARSER_STATE_ITEM_PROPERTY;
+			}
+
 			break;
 		}
 
@@ -277,10 +287,10 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 		{
 			if (strcmp (name, "url") != 0) {
 				ctx->in_unknown_elt++;
-				break;
+			} else {
+				ctx->state = RB_PODCAST_PARSER_STATE_IMG_PROPERTY;
 			}
 
-			ctx->state = RB_PODCAST_PARSER_STATE_IMG_PROPERTY;
 			break;
 		}
 
@@ -288,6 +298,9 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
         case RB_PODCAST_PARSER_STATE_ITEM_PROPERTY:
         case RB_PODCAST_PARSER_STATE_IMG_PROPERTY:
         case RB_PODCAST_PARSER_STATE_END:
+		break;
+	default:
+		g_warning ("Unknown podcast parser state: %d", ctx->state);
 		break;
 	}
 }
@@ -297,9 +310,11 @@ static void
 rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx, 
 			       const char *name)
 {
+	rb_debug ("End element: %s state: %d", name, ctx->state);
 
 	if (ctx->in_unknown_elt > 0) {
 		ctx->in_unknown_elt--;
+		rb_debug ("Unknown element");
 		return;
 	}
                
@@ -318,7 +333,7 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
             
         case RB_PODCAST_PARSER_STATE_CHANNEL_PROPERTY:
 		{
-			rb_set_channel_value(ctx, name, ctx->prop_value->str);
+			rb_set_channel_value (ctx, name, ctx->prop_value->str);
 			ctx->state = RB_PODCAST_PARSER_STATE_CHANNEL;
 			g_string_truncate (ctx->prop_value, 0);
 			break;
@@ -326,14 +341,14 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
 
         case RB_PODCAST_PARSER_STATE_ITEM:
 		{
-			rb_insert_item(ctx);
+			rb_insert_item (ctx);
 			ctx->state = RB_PODCAST_PARSER_STATE_CHANNEL;
 			break;
 		}
 
         case RB_PODCAST_PARSER_STATE_ITEM_PROPERTY:
 		{
-			rb_set_item_value(ctx, name, ctx->prop_value->str);
+			rb_set_item_value (ctx, name, ctx->prop_value->str);
 			ctx->state = RB_PODCAST_PARSER_STATE_ITEM;
 			g_string_truncate (ctx->prop_value, 0);
 			break;
@@ -341,7 +356,7 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
 
         case RB_PODCAST_PARSER_STATE_IMG_PROPERTY:
 		{
-			rb_set_channel_value(ctx, "img", ctx->prop_value->str);
+			rb_set_channel_value (ctx, "img", ctx->prop_value->str);
 			ctx->state = RB_PODCAST_PARSER_STATE_IMG;
 			g_string_truncate (ctx->prop_value, 0);
 			break;
@@ -352,6 +367,10 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
 		break;
 
         case RB_PODCAST_PARSER_STATE_END:
+		break;
+
+	default:
+		g_warning ("Unknown podcast parser state: %d", ctx->state);
 		break;
 	}
 }
@@ -374,6 +393,9 @@ rb_podcast_parser_characters (struct RBPoadcastLoadContext *ctx,
         case RB_PODCAST_PARSER_STATE_CHANNEL:
         case RB_PODCAST_PARSER_STATE_ITEM:
         case RB_PODCAST_PARSER_STATE_END:
+		break;
+	default:
+		g_warning ("Unknown podcast parser state: %d", ctx->state);
 		break;
 	}
 }
