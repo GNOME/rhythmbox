@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-21 17:08+0100\n"
-"PO-Revision-Date: 2005-12-21 17:15+0100\n"
+"POT-Creation-Date: 2005-12-30 22:48+0100\n"
+"PO-Revision-Date: 2005-12-30 22:49+0100\n"
 "Last-Translator: \n"
 "Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -478,6 +478,10 @@ msgstr "_Número de pista:"
 msgid "_Year:"
 msgstr "_Año:"
 
+#: ../data/glade/station-new.glade.h:1
+msgid "_URL of internet radio station:"
+msgstr "_URL de la emisora de radio de Internet:"
+
 #: ../data/glade/station-properties.glade.h:5
 msgid "L_ocation:"
 msgstr "_Dirección:"
@@ -503,16 +507,17 @@ msgstr "Organice y reproduzca su colección de música"
 msgid "Rhythmbox Music Player"
 msgstr "Reproductor de música Rhythmbox"
 
+#: ../iradio/rb-new-station-dialog.c:134
+#: ../iradio/rb-station-properties-dialog.c:325
+msgid "New Internet Radio Station"
+msgstr "Emisora de radio de Internet nueva"
+
 #: ../iradio/rb-station-properties-dialog.c:321
 #: ../podcast/rb-feed-podcast-properties-dialog.c:204
 #: ../podcast/rb-podcast-properties-dialog.c:314 ../widgets/rb-song-info.c:618
 #, c-format
 msgid "%s Properties"
 msgstr "Propiedades de %s"
-
-#: ../iradio/rb-station-properties-dialog.c:325
-msgid "New Internet Radio Station"
-msgstr "Emisora de radio de Internet nueva"
 
 #: ../iradio/rb-station-properties-dialog.c:406
 #: ../podcast/rb-podcast-properties-dialog.c:398 ../widgets/rb-song-info.c:676
@@ -525,6 +530,26 @@ msgstr "%lu Kbps"
 #: ../widgets/rb-entry-view.c:1296 ../widgets/rb-song-info.c:843
 msgid "Never"
 msgstr "Nunca"
+
+#: ../lib/rb-cut-and-paste-code.c:245
+msgid "Today %I:%M %p"
+msgstr "Hoy %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:255
+msgid "Yesterday %I:%M %p"
+msgstr "Ayer %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:268
+msgid "%a %I:%M %p"
+msgstr "%a %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:277
+msgid "%b %d %I:%M %p"
+msgstr "%d %b %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:279
+msgid "%b %d %Y"
+msgstr "%d %b %Y"
 
 #: ../lib/rb-util.c:563 ../widgets/rb-header.c:750
 #, c-format
@@ -878,120 +903,120 @@ msgstr "%s, %s y %s"
 msgid "%s and %s"
 msgstr "%s y %s"
 
-#: ../shell/main.c:140
+#: ../shell/main.c:142
 msgid "Print the playing song and exit"
 msgstr "Muestra la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:141
+#: ../shell/main.c:143
 msgid "Print the playing song artist and exit"
 msgstr "Muestra el artista de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:142
+#: ../shell/main.c:144
 msgid "Print the playing song album and exit"
 msgstr "Muestra el álbum de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:143
+#: ../shell/main.c:145
 msgid "Print the playing song track and exit"
 msgstr "Muestra pista de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:144
+#: ../shell/main.c:146
 msgid "Print the playing song genre and exit"
 msgstr "Muestra el género de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:145
+#: ../shell/main.c:147
 msgid "Print the playing song URI and exit"
 msgstr "Mostrar la URI de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 msgid "Print the playing song length in seconds and exit"
 msgstr "Muestra la duración de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:148
+#: ../shell/main.c:150
 msgid "Print the current elapsed time of playing song and exit"
 msgstr ""
 "Muestra el tiempo transcurrido de la canción que se está reproduciendo y sale"
 
-#: ../shell/main.c:149
+#: ../shell/main.c:151
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Colocarse en el tiempo especificado de la canción y salir"
 
-#: ../shell/main.c:150
+#: ../shell/main.c:152
 msgid "Seek by the specified amount if possible and exit"
 msgstr "Colocarse en el tiempo especificado de la canción y salir"
 
-#: ../shell/main.c:151
+#: ../shell/main.c:153
 msgid "Set the rating of the currently playing song and exit"
 msgstr "Establece la puntuación de la canción en reproducción y sale"
 
-#: ../shell/main.c:153
+#: ../shell/main.c:155
 msgid "Toggle play/pause mode"
 msgstr "Conmutar modo pausa/reproducción"
 
-#: ../shell/main.c:154
+#: ../shell/main.c:156
 msgid "Pause playback if currently playing"
 msgstr "Pausa la reproducción si está reproduciendo"
 
-#: ../shell/main.c:155
+#: ../shell/main.c:157
 msgid "Resume playback if currently paused"
 msgstr "Continua la reproducción si está pausado"
 
-#: ../shell/main.c:156
+#: ../shell/main.c:158
 msgid "Focus the running player"
 msgstr "Enfocar al reproductor en ejecución"
 
-#: ../shell/main.c:157
+#: ../shell/main.c:159
 msgid "Jump to previous song"
 msgstr "Saltar a la canción anterior"
 
-#: ../shell/main.c:158
+#: ../shell/main.c:160
 msgid "Jump to next song"
 msgstr "Saltar a la canción siguiente"
 
-#: ../shell/main.c:160
+#: ../shell/main.c:162
 msgid "Toggle shuffling"
 msgstr "Aleatorio"
 
-#: ../shell/main.c:161
+#: ../shell/main.c:163
 msgid "Toggle repeat"
 msgstr "Conmutar repetición"
 
-#: ../shell/main.c:163
+#: ../shell/main.c:165
 msgid "Set the volume level"
 msgstr "Establecer el nivel de volumen"
 
-#: ../shell/main.c:164
+#: ../shell/main.c:166
 msgid "Mute or unmute playback"
 msgstr "Enmudecer reproducción"
 
-#: ../shell/main.c:165
+#: ../shell/main.c:167
 msgid "Change visibility of the main Rhythmbox window"
 msgstr "Cambiar la visibilidad de la ventana principal de Rhythmbox"
 
-#: ../shell/main.c:168
+#: ../shell/main.c:170
 msgid "Enable debugging code"
 msgstr "Activar el código de depuración"
 
-#: ../shell/main.c:169
+#: ../shell/main.c:171
 msgid "Do not update the library"
 msgstr "No actualizar la fonoteca"
 
-#: ../shell/main.c:170
+#: ../shell/main.c:172
 msgid "Do not register the shell"
 msgstr "No registrar el shell"
 
-#: ../shell/main.c:171
+#: ../shell/main.c:173
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "No guardar ningún dato permanentemente (implica --no-registration)"
 
-#: ../shell/main.c:172
+#: ../shell/main.c:174
 msgid "Path for database file to use"
 msgstr "Ruta al archivo de base de datos a usar"
 
-#: ../shell/main.c:173
+#: ../shell/main.c:175
 msgid "Quit Rhythmbox"
 msgstr "Salir de Rhythmbox"
 
-#: ../shell/main.c:204 ../widgets/rb-druid.c:223
+#: ../shell/main.c:206 ../widgets/rb-druid.c:223
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -1673,20 +1698,20 @@ msgstr "Elija la música que reproducir"
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../sources/rb-audiocd-source.c:302 ../sources/rb-audiocd-source.c:312
-#: ../sources/rb-audiocd-source.c:320 ../sources/rb-audiocd-source.c:478
+#: ../sources/rb-audiocd-source.c:303 ../sources/rb-audiocd-source.c:313
+#: ../sources/rb-audiocd-source.c:321 ../sources/rb-audiocd-source.c:481
 msgid "Couldn't load Audio CD"
 msgstr "No se pudo cargar un CD de sonido"
 
-#: ../sources/rb-audiocd-source.c:303 ../sources/rb-audiocd-source.c:313
+#: ../sources/rb-audiocd-source.c:304 ../sources/rb-audiocd-source.c:314
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox no pudo acceder al CD."
 
-#: ../sources/rb-audiocd-source.c:321
+#: ../sources/rb-audiocd-source.c:322
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox pudo leer la información del CD."
 
-#: ../sources/rb-audiocd-source.c:479
+#: ../sources/rb-audiocd-source.c:482
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
 
