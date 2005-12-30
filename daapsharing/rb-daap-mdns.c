@@ -439,8 +439,10 @@ rb_daap_mdns_publish (RBDAAPmDNSPublisher *publisher,
 		
 	if (result != SW_OKAY) {
 		g_free (pub_data);
-		rb_debug ("Error starting mDNS pubilsh with Howl: %s", howl_strerror (result));
+		rb_debug ("Error starting mDNS publish with Howl: %s", howl_strerror (result));
 		mdns_error_dialog ("Howl");
+		g_free (our_service_name);
+		our_service_name = NULL;
 		return FALSE;
 	}
 
@@ -461,6 +463,7 @@ rb_daap_mdns_publish_cancel (RBDAAPmDNSPublisher publisher)
 
 	g_free (pub_data);
 	g_free (our_service_name);
+	our_service_name = NULL;
 }
 #endif
 
