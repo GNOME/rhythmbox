@@ -2361,7 +2361,7 @@ rb_shell_player_get_playing_path (RBShellPlayer *shell_player,
 {
 	RhythmDBEntry *entry;
 
-	entry = rb_play_order_get_playing_entry (shell_player->priv->play_order);
+	entry = rb_shell_player_get_playing_entry (shell_player);
 	if (entry != NULL) {
 		*path = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	} else {
