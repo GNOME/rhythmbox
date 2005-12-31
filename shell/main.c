@@ -379,7 +379,8 @@ main (int argc, char **argv)
 #endif
 	}
 #ifdef WITH_BONOBO	
-	handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
+	if (client_proxy)
+		handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
 #endif
 
 	if (activated) {

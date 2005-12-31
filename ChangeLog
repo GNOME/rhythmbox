@@ -1,5 +1,11 @@
 2005-12-31  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* shell/main.c: (main): Don't attempt to handle
+	bonobo-only arguments if we couldn't get a bonobo
+	client proxy.
+
+2005-12-31  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* daapsharing/rb-daap-mdns.c: (rb_daap_mdns_publish),
 	(rb_daap_mdns_publish_cancel):  Clear our_service_name so we don't
 	abort if daap sharing is disabled and then re-enabled.
