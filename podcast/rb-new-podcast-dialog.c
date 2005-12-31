@@ -130,6 +130,7 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	
 	/* get the widgets from the XML */
 	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
+	gtk_entry_set_activates_default (GTK_ENTRY (dialog->priv->url), TRUE);
 
 	g_signal_connect_object (G_OBJECT (dialog->priv->url),
 				 "changed",

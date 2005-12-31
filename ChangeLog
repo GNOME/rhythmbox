@@ -1,5 +1,12 @@
 2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_init):
+	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init):
+	Activate the default widget when enter is pressed in these dialogs.
+	Fixes #322887.
+
+2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* shell/rb-shell-player.c: (rb_shell_player_get_playing_path):
 	Use rb_shell_player_get_playing_entry, so we get the right entry
 	when playing from the queue.  Fixes #325379.
