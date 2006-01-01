@@ -325,7 +325,40 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 						       &value);
 			g_value_unset (&value);
 		}
-		
+
+		/* Set playcount */
+		if (song->playcount != 0) {
+			GValue value = {0, };
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value, song->playcount);
+			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+						       RHYTHMDB_PROP_PLAY_COUNT,
+						       &value);
+			g_value_unset (&value);
+		}
+
+		/* Set year */
+		if (song->year != 0) {
+			GDate *date = NULL;
+			GType type;
+			GValue value = {0, };
+			
+			date = g_date_new_dmy (1, G_DATE_JANUARY, song->year);
+
+			type = rhythmdb_get_property_type (RHYTHMDB(db),
+							    RHYTHMDB_PROP_DATE);
+			
+			g_value_init (&value, type);
+			g_value_set_ulong (&value, (date ? g_date_get_julian (date) : 0));
+			
+			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+						       RHYTHMDB_PROP_DATE,
+						       &value);
+			g_value_unset (&value);
+			if (date)
+				g_date_free (date);
+		}
+
 		/* Set title */		
 		entry_set_string_prop (RHYTHMDB (db), entry, 
 				       RHYTHMDB_PROP_TITLE, song->title);
