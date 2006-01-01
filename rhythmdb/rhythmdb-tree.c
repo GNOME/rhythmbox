@@ -322,6 +322,15 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			rb_debug ("pre-Date entry found, causing re-read");
 			ctx->entry->mtime = 0;
 		}
+		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED && ctx->entry->podcast->post_time == 0) {
+			/* Handle upgrades from 0.9.2.
+			 * Previously, last-seen for podcast feeds was the time of the last post,
+			 * and post-time was unused.  Now, we want last-seen to be the time we
+			 * last updated the feed, and post-time to be the time of the last post.
+			 */
+			ctx->entry->podcast->post_time = ctx->entry->last_seen;
+		}
+		
 		if (ctx->entry->location != NULL) {
 			rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
 			rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);

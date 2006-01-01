@@ -1,3 +1,24 @@
+2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* data/glade/podcast-feed-properties.glade,
+	 podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_init),
+	(rb_feed_podcast_properties_dialog_update):
+	Add 'last episode' field to the podcast feed properties dialog.
+
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_update_last_update),
+	(rb_feed_podcast_properties_dialog_update_last_episode),
+	 podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):
+	Use last-seen property for the time at which we last updated the feed,
+	and post-time for the time the last episode was published.
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element):
+	Handle upgrades from 0.9.2; if no post-time was found for a podcast
+	feed, use last-seen (which in 0.9.2 was the last post time).
+
+	Fixes #323894.
+
 2006-01-01  James Livingston  <jrl@ids.org.au>
 
 	patch by: Gunnar Steinn Magnusson <gsm@gunnarsteinn.com>

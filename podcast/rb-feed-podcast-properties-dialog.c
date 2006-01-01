@@ -51,6 +51,7 @@ static void rb_feed_podcast_properties_dialog_update (RBFeedPodcastPropertiesDia
 static void rb_feed_podcast_properties_dialog_update_author (RBFeedPodcastPropertiesDialog *dialog);
 static void rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog *dialog);
 static void rb_feed_podcast_properties_dialog_update_last_update (RBFeedPodcastPropertiesDialog *dialog);
+static void rb_feed_podcast_properties_dialog_update_last_episode (RBFeedPodcastPropertiesDialog *dialog);
 static void rb_feed_podcast_properties_dialog_update_copyright (RBFeedPodcastPropertiesDialog *dialog);
 static void rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog *dialog);
 static gchar* rb_feed_podcast_properties_dialog_parse_time (gulong time);
@@ -65,6 +66,7 @@ struct RBFeedPodcastPropertiesDialogPrivate
 	GtkWidget   *location;
 	GtkWidget   *language;
 	GtkWidget   *last_update;
+	GtkWidget   *last_episode;
 	GtkWidget   *copyright;
 	GtkWidget   *summary;
 	
@@ -130,6 +132,7 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	dialog->priv->location = glade_xml_get_widget (xml, "locationLabel");
 	dialog->priv->language = glade_xml_get_widget (xml, "languageLabel");
 	dialog->priv->last_update = glade_xml_get_widget (xml, "lastupdateLabel");
+	dialog->priv->last_episode = glade_xml_get_widget (xml, "lastepisodeLabel");
 	dialog->priv->copyright = glade_xml_get_widget (xml, "copyrightLabel");
 	dialog->priv->summary = glade_xml_get_widget (xml, "summaryLabel");
 
@@ -138,6 +141,7 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	rb_glade_boldify_label (xml, "locationDescLabel");
 	rb_glade_boldify_label (xml, "languageDescLabel");
 	rb_glade_boldify_label (xml, "lastupdateDescLabel");
+	rb_glade_boldify_label (xml, "lastepisodeDescLabel");
 	rb_glade_boldify_label (xml, "copyrightDescLabel");
 	rb_glade_boldify_label (xml, "summaryDescLabel");
 
@@ -191,6 +195,7 @@ rb_feed_podcast_properties_dialog_update (RBFeedPodcastPropertiesDialog *dialog)
 	rb_feed_podcast_properties_dialog_update_author (dialog);
 	rb_feed_podcast_properties_dialog_update_language (dialog);
 	rb_feed_podcast_properties_dialog_update_last_update (dialog);
+	rb_feed_podcast_properties_dialog_update_last_episode (dialog);
 	rb_feed_podcast_properties_dialog_update_copyright (dialog);
 	rb_feed_podcast_properties_dialog_update_summary (dialog);
 }
@@ -246,12 +251,25 @@ rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog
 static void
 rb_feed_podcast_properties_dialog_update_last_update (RBFeedPodcastPropertiesDialog *dialog)
 {
-	char *time;
+	char *time_str;
+	gulong time_val;
 
-	time = rb_feed_podcast_properties_dialog_parse_time (dialog->priv->current_entry->podcast->post_time);
-	gtk_label_set (GTK_LABEL (dialog->priv->last_update),
-		       time);
-	g_free (time);
+	time_val = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_LAST_SEEN);
+	time_str = rb_feed_podcast_properties_dialog_parse_time (time_val);
+	gtk_label_set (GTK_LABEL (dialog->priv->last_update), time_str);
+	g_free (time_str);
+}
+
+static void
+rb_feed_podcast_properties_dialog_update_last_episode (RBFeedPodcastPropertiesDialog *dialog)
+{
+	char *time_str;
+	gulong time_val;
+
+	time_val = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_POST_TIME);
+	time_str = rb_feed_podcast_properties_dialog_parse_time (time_val);
+	gtk_label_set (GTK_LABEL (dialog->priv->last_episode), time_str);
+	g_free (time_str);
 }
 
 static void
