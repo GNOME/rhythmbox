@@ -1,5 +1,16 @@
 2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* data/glade/song-info-multiple.glade:
+	Add disc number label and field.
+	* widgets/rb-song-info.c: (rb_song_info_construct_single),
+	(rb_song_info_constructor): 
+	Handle widgets for disc number.
+	(rb_song_info_sync_entries_multiple):
+	Set disc number property on selected entries.
+	Fixes #324777.
+
+2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_init):
 	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init):
 	Activate the default widget when enter is pressed in these dialogs.

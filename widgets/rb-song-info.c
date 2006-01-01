@@ -257,8 +257,6 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
 	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
-	song_info->priv->disc_cur     = glade_xml_get_widget (xml, "song_info_disc_cur");
-	song_info->priv->year		= glade_xml_get_widget (xml, "song_info_year");
 
 	rb_glade_boldify_label (xml, "title_label");
 	rb_glade_boldify_label (xml, "trackn_label");
@@ -268,8 +266,6 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	rb_glade_boldify_label (xml, "play_count_label");
 	rb_glade_boldify_label (xml, "duration_label");
 	rb_glade_boldify_label (xml, "bitrate_label");
-	rb_glade_boldify_label (xml, "discn_label");
-	rb_glade_boldify_label (xml, "year_label");
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect_object (G_OBJECT (song_info->priv->title),
@@ -358,12 +354,14 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	song_info->priv->year = glade_xml_get_widget (xml, "song_info_year");
 	song_info->priv->playback_error_box = glade_xml_get_widget (xml, "song_info_error_box");
 	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
+	song_info->priv->disc_cur = glade_xml_get_widget (xml, "song_info_disc_cur");
 
 	rb_glade_boldify_label (xml, "album_label");
 	rb_glade_boldify_label (xml, "artist_label");
 	rb_glade_boldify_label (xml, "genre_label");
 	rb_glade_boldify_label (xml, "year_label");
 	rb_glade_boldify_label (xml, "rating_label");
+	rb_glade_boldify_label (xml, "discn_label");
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
 				 "mnemonic-activate",
@@ -374,6 +372,14 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->genre),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->year),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->disc_cur),
 				 "mnemonic-activate",
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
@@ -877,11 +883,13 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 	const char *artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
 	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
 	const char *year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
+	const char *discn_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
 
 	char *endptr;
 	GValue val = {0,};
 	GList *tem;
 	gint year;
+	gint discn;
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry;
 
@@ -927,12 +935,12 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_unset (&val);
 	}
 
-	year = g_ascii_strtoull (year_str, &endptr, 10);
 	if (strlen (year_str) > 0) {
 		GDate *date = NULL;
 		GType type;
 
 		/* note: this will reset the day-of-year to Jan 1 for all entries */
+		year = g_ascii_strtoull (year_str, &endptr, 10);
 		if (year > 0)
 			date = g_date_new_dmy (1, G_DATE_JANUARY, year);
 
@@ -952,6 +960,25 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		if (date)
 			g_date_free (date);
 
+	}
+	
+	discn = g_ascii_strtoull (discn_str, &endptr, 10);
+	if (endptr != discn_str) {
+		GType type;
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_DISC_NUMBER);
+		g_value_init (&val, type);
+		g_value_set_ulong (&val, discn);
+
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			entry = (RhythmDBEntry *)tem->data;
+			if (discn != entry->discnum) {
+				rhythmdb_entry_set (dialog->priv->db, entry,
+						    RHYTHMDB_PROP_DISC_NUMBER, &val);
+				changed = TRUE;
+			}
+		}
+		g_value_unset (&val);
 	}
 
 
