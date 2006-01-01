@@ -53,7 +53,6 @@
 #include "rb-header.h"
 #include "totem-pl-parser.h"
 #include "rb-metadata.h"
-#include "rb-remote.h"
 #include "rb-iradio-source.h"
 #include "rb-library-source.h"
 #include "eel-gconf-extensions.h"
@@ -184,8 +183,6 @@ struct RBShellPlayerPrivate
 
 	RBPlayer *mmplayer;
 
-	GList *active_uris;
-
 	char *song;
 	gboolean have_url;
 	char *url;
@@ -195,16 +192,8 @@ struct RBShellPlayerPrivate
 
 	GError *playlist_parse_error;
 
-	gboolean last_jumped;
-	gboolean last_skipped;
-
 	RBHeader *header_widget;
 	RBStatusbar *statusbar_widget;
-
-	GtkWidget *shuffle_button;
-	GtkWidget *magic_button;
-
-	RBRemote *remote;
 
 	guint gconf_play_order_id;
 	guint gconf_state_id;
@@ -212,6 +201,8 @@ struct RBShellPlayerPrivate
 
 	gboolean mute;
 	float pre_mute_volume;
+
+	guint do_next_idle_id;
 };
 
 #define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
@@ -542,9 +533,6 @@ rb_shell_player_init (RBShellPlayer *player)
 		exit (1);
 	}
 
-	player->priv->last_jumped = FALSE;
-	player->priv->last_skipped = FALSE;
-
 	gtk_box_set_spacing (GTK_BOX (player), 12);
 	gtk_container_set_border_width (GTK_CONTAINER (player), 3);
 
@@ -627,9 +615,6 @@ rb_shell_player_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (player->priv->mmplayer));
 	g_object_unref (G_OBJECT (player->priv->play_order));
-
-	if (player->priv->remote != NULL)
-		g_object_unref (G_OBJECT (player->priv->remote));
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
 }
@@ -999,6 +984,7 @@ do_next_idle (RBShellPlayer *player)
 		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
 			g_warning ("do_next_idle: Unhandled error: %s", error->message);
 	}
+	player->priv->do_next_idle_id = 0;
 
 	return FALSE;
 }
@@ -2161,8 +2147,8 @@ rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 
 	if (err->code == RB_PLAYER_ERROR_NO_AUDIO)
 		rb_shell_player_set_playing_source (player, NULL);
-	else
-		g_idle_add ((GSourceFunc)do_next_idle, player);
+	else if (player->priv->do_next_idle_id == 0)
+		player->priv->do_next_idle_id = g_idle_add ((GSourceFunc)do_next_idle, player);
 
 	player->priv->handling_error = FALSE;
 }
