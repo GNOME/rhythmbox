@@ -1,5 +1,12 @@
 2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_new_decoded_pad_cb):
+	Only set the pipeline back to NULL state for really uninteresting
+	files.  This was causing deadlocks with various video files.
+	Fixes #324912.
+
+2006-01-01  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* data/glade/song-info-multiple.glade:
 	Add disc number label and field.
 	* widgets/rb-song-info.c: (rb_song_info_construct_single),

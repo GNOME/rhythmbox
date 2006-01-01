@@ -537,6 +537,7 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	GstCaps *caps;
 	GstStructure *structure;
 	const gchar *mimetype;
+	gboolean cancel = FALSE;
 
 	caps = gst_pad_get_caps (pad);
 
@@ -544,6 +545,7 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	if (gst_caps_is_empty (caps) || gst_caps_is_any (caps)) {
 		rb_debug ("decoded pad with no caps or any caps.  this file is boring.");
 		md->priv->non_audio = TRUE;
+		cancel = TRUE;
 	} else {
 		/* is this pad audio? */
 		structure = gst_caps_get_structure (caps, 0);
@@ -572,9 +574,12 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 #ifdef HAVE_GSTREAMER_0_10
 	/* if this is non-audio, cancel the operation
 	 * under 0.8 this causes assertion faliures when a pad with no caps in found
-	 * it isn't /needed/ under 0.8, so we don't do it
+	 * it isn't /needed/ under 0.8, so we don't do it.
+	 *
+	 * This seems to cause some deadlocks with video files, so only do it 
+	 * when we get no/any caps.
 	 */
-	if (md->priv->non_audio)
+	if (cancel)
 		gst_element_set_state (md->priv->pipeline, GST_STATE_NULL);
 #endif
 }
