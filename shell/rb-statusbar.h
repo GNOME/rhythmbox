@@ -22,7 +22,6 @@
 #include <gtk/gtkstatusbar.h>
 #include <gtk/gtkactiongroup.h>
 
-#include "rb-shell-player.h"
 #include "rb-source.h"
 #include "rhythmdb.h"
 
@@ -55,8 +54,7 @@ typedef struct
 GType			rb_statusbar_get_type	(void);
 
 RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
-						 GtkActionGroup *actiongroup,
-						 RBShellPlayer *player);
+						 GtkActionGroup *actiongroup);
 
 void			rb_statusbar_set_source	(RBStatusbar *bar,
 						 RBSource *player);
@@ -64,8 +62,6 @@ void			rb_statusbar_set_source	(RBStatusbar *bar,
 void			rb_statusbar_set_progress(RBStatusbar *bar, 
 						  double progress,
 						  const char *text);
-
-void			rb_statusbar_sync_state (RBStatusbar *statusbar);
 
 G_END_DECLS
 

@@ -1,4 +1,22 @@
 2006-01-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
+	
+	* shell/rb-statusbar.c: (rb_statusbar_class_init),
+	(rb_statusbar_construct), (rb_statusbar_init),
+	(rb_statusbar_finalize), (rb_statusbar_set_property),
+	(rb_statusbar_get_property), (rb_statusbar_new),
+	(rb_statusbar_sync_with_source):
+	* shell/rb-statusbar.h:
+	Remove visibility management code, stop watching for play order
+	changes (status bar doesn't show play order any more), remove unused
+	'player' property, and some other minor cleanup.
+	
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_view_statusbar_changed_cb), (rb_shell_sync_smalldisplay),
+	(rb_shell_sync_statusbar_visibility):
+	Manage status bar visibility here rather than in the status bar
+	itself, so we can take small mode into account.  Fixes #323589.
+
+2006-01-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* widgets/eggnotificationbubble.c: (draw_bubble):
 	Move the bubble off the visible screen while setting up bevels.  

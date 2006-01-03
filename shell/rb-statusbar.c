@@ -31,11 +31,7 @@
 #include <gtk/gtk.h>
 
 #include "rb-statusbar.h"
-#include "rb-preferences.h"
-#include "rb-search-entry.h"
 #include "rb-debug.h"
-#include "eel-gconf-extensions.h"
-#include "rb-play-order.h"
 
 #define EPSILON		(0.00001)
 
@@ -54,28 +50,11 @@ static void rb_statusbar_get_property (GObject *object,
 				       GValue *value,
 				       GParamSpec *pspec);
 static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
-static void rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player, 
-						      GParamSpec *param,
-						      RBStatusbar *statusbar);
-static void rb_statusbar_state_changed_cb (GConfClient *client,
-					   guint cnxn_id,
-					   GConfEntry *entry,
-					   RBStatusbar *statusbar);
 
 static void rb_statusbar_sync_status (RBStatusbar *status);
 static gboolean poll_status (RBStatusbar *status);
-static void rb_statusbar_view_statusbar_changed_cb (GtkAction *action,
-						    RBStatusbar *statusbar);
 static void rb_statusbar_source_status_changed_cb (RBSource *source,
 						   RBStatusbar *statusbar);
-
-static GtkToggleActionEntry rb_statusbar_toggle_entries [] =
-{
-        { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
-	  N_("Change the visibility of the statusbar"),
-	  G_CALLBACK (rb_statusbar_view_statusbar_changed_cb), TRUE }
-};
-static guint rb_statusbar_n_toggle_entries = G_N_ELEMENTS (rb_statusbar_toggle_entries);
 
 struct RBStatusbarPrivate
 {
@@ -83,14 +62,8 @@ struct RBStatusbarPrivate
 
         RhythmDB *db;
 
-	gboolean syncing_state;
-
         GtkActionGroup *actiongroup;
-        RBShellPlayer *player;
-
         GtkTooltips *tooltips;
-
-        GtkWidget *status;
 
         GtkWidget *progress;
         double progress_fraction;
@@ -103,8 +76,6 @@ struct RBStatusbarPrivate
 
         gboolean idle;
         guint idle_tick_id;
-
-	guint notify_id;
 };
 
 #define RB_STATUSBAR_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_STATUSBAR, RBStatusbarPrivate))
@@ -114,11 +85,8 @@ enum
         PROP_0,
         PROP_DB,
         PROP_ACTION_GROUP,
-        PROP_SOURCE,
-        PROP_PLAYER
+        PROP_SOURCE
 };
-
-static GObjectClass *parent_class = NULL;
 
 G_DEFINE_TYPE (RBStatusbar, rb_statusbar, GTK_TYPE_STATUSBAR)
 
@@ -126,8 +94,6 @@ static void
 rb_statusbar_class_init (RBStatusbarClass *klass)
 {
         GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-        parent_class = g_type_class_peek_parent (klass);
 
         object_class->constructor = rb_statusbar_construct;
         object_class->finalize = rb_statusbar_finalize;
@@ -157,14 +123,6 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               GTK_TYPE_ACTION_GROUP,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-        g_object_class_install_property (object_class,
-                                         PROP_PLAYER,
-                                         g_param_spec_object ("player",
-                                                              "RbShellPlayer",
-                                                              "RbShellPlayer object",
-                                                              RB_TYPE_SHELL_PLAYER,
-                                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	g_type_class_add_private (klass, sizeof (RBStatusbarPrivate));
 }
 
@@ -174,24 +132,16 @@ rb_statusbar_construct (GType                  type,
                         GObjectConstructParam *construct_properties)
 {
         RBStatusbarClass *klass;
-        GObjectClass *parent_class;  
         GObject *object;
         RBStatusbar *statusbar;
 
         klass = RB_STATUSBAR_CLASS (g_type_class_peek (RB_TYPE_STATUSBAR));
-        parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-        object = parent_class->constructor (type,
-                                            n_construct_properties,
-                                            construct_properties);
+        object = G_OBJECT_CLASS (rb_statusbar_parent_class)->constructor
+					(type,
+					 n_construct_properties,
+					 construct_properties);
         
         statusbar = RB_STATUSBAR (object);
-
-        rb_statusbar_sync_state (statusbar);
-
-        g_signal_connect_object (G_OBJECT (statusbar->priv->player),
-				 "notify::play-order", 
-				 G_CALLBACK (rb_statusbar_shell_play_order_changed_cb), 
-				 statusbar, 0);
 
         return object;
 }
@@ -217,11 +167,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
         gtk_box_pack_start (GTK_BOX (statusbar),
                             GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
-
-        statusbar->priv->notify_id = 
-                eel_gconf_notification_add (CONF_UI_STATUSBAR_HIDDEN,
-					    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
-                                            statusbar);
 }
 
 static void
@@ -236,7 +181,8 @@ rb_statusbar_finalize (GObject *object)
 
         g_return_if_fail (statusbar->priv != NULL);
 
-	eel_gconf_notification_remove (statusbar->priv->notify_id);
+	g_free (statusbar->priv->loading_text);
+	g_free (statusbar->priv->progress_text);
 
         if (statusbar->priv->idle_tick_id) {
                 g_source_remove (statusbar->priv->idle_tick_id);
@@ -245,7 +191,7 @@ rb_statusbar_finalize (GObject *object)
         if (statusbar->priv->status_poll_id)
                 g_source_remove (statusbar->priv->status_poll_id);
         
-        G_OBJECT_CLASS (parent_class)->finalize (object);
+        G_OBJECT_CLASS (rb_statusbar_parent_class)->finalize (object);
 }
 
 
@@ -362,14 +308,6 @@ rb_statusbar_set_property (GObject *object,
                                          G_CALLBACK (rb_statusbar_connect_action_group),
                                          statusbar,
                                          G_CONNECT_SWAPPED);
-
-		gtk_action_group_add_toggle_actions (statusbar->priv->actiongroup,
-						     rb_statusbar_toggle_entries,
-						     rb_statusbar_n_toggle_entries,
-						     statusbar);
-                break;
-        case PROP_PLAYER:
-                statusbar->priv->player = g_value_get_object (value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -395,9 +333,6 @@ rb_statusbar_get_property (GObject *object,
                 break;
         case PROP_ACTION_GROUP:
                 g_value_set_object (value, statusbar->priv->actiongroup);
-                break;
-        case PROP_PLAYER:
-                g_value_set_object (value, statusbar->priv->player);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -534,12 +469,10 @@ poll_status (RBStatusbar *status)
 }
 
 RBStatusbar *
-rb_statusbar_new (RhythmDB *db, GtkActionGroup *actions, 
-                  RBShellPlayer *player)
+rb_statusbar_new (RhythmDB *db, GtkActionGroup *actions)
 {
         RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
                                                "db", db,
-                                               "player", player,
                                                "action-group", actions,
                                                NULL);
 
@@ -577,63 +510,6 @@ rb_statusbar_sync_with_source (RBStatusbar *statusbar)
         gtk_statusbar_pop (GTK_STATUSBAR (statusbar), 0);
         gtk_statusbar_push (GTK_STATUSBAR (statusbar), 0, status_str);
 	g_free (status_str);
-}
-
-void
-rb_statusbar_sync_state (RBStatusbar *statusbar)
-{
-	GtkAction *action;
-        gboolean hidden;
-
-        rb_debug ("syncing state");
-
-	statusbar->priv->syncing_state = TRUE;
-        
-        hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
-        if (hidden)
-                gtk_widget_hide (GTK_WIDGET (statusbar));
-        else
-                gtk_widget_show (GTK_WIDGET (statusbar));
-	action = gtk_action_group_get_action (statusbar->priv->actiongroup,
-					      "ViewStatusbar");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), !hidden);
-	statusbar->priv->syncing_state = FALSE;
-}
-	
-static void
-rb_statusbar_state_changed_cb (GConfClient *client,
-                               guint cnxn_id,
-                               GConfEntry *entry,
-                               RBStatusbar *statusbar)
-{
-        rb_debug ("state changed");
-	if (statusbar->priv->syncing_state)
-		return;
-	statusbar->priv->syncing_state = TRUE;
-	rb_statusbar_sync_state (statusbar);
-}
-
-static void
-rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player, 
-					  GParamSpec *param, 
-					  RBStatusbar *statusbar)
-{
-        rb_debug ("state changed");
-	if (statusbar->priv->syncing_state)
-		return;
-	statusbar->priv->syncing_state = TRUE;
-	rb_statusbar_sync_state (statusbar);
-}
-
-static void
-rb_statusbar_view_statusbar_changed_cb (GtkAction *action,
-					RBStatusbar *statusbar)
-{
-        rb_debug ("got view statusbar toggle: active: %d");
-	if (statusbar->priv->syncing_state)
-		return;
-	eel_gconf_set_boolean (CONF_UI_STATUSBAR_HIDDEN,
-			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 static void

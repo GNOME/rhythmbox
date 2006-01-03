@@ -204,6 +204,8 @@ static void rb_shell_view_fullscreen_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 						 RBShell *shell);
+static void rb_shell_view_statusbar_changed_cb (GtkAction *action,
+						RBShell *shell);
 static void rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 						       RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
@@ -211,6 +213,7 @@ static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_toolbar_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void rb_shell_sync_pane_visibility (RBShell *shell);
+static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
@@ -416,6 +419,7 @@ struct RBShellPrivate
 	gboolean window_small;
 	gboolean window_fullscreen;
 	gboolean queue_as_sidebar;
+	gboolean statusbar_hidden;
 	gint window_x;
 	gint window_y;
 	gint paned_position;
@@ -492,6 +496,9 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewQueueAsSidebar", NULL, N_("_Queue as Sidebar"), "<control>K",
 	  N_("Change whether the queue is visible as a source or a sidebar"),
 	  G_CALLBACK (rb_shell_view_queue_as_sidebar_changed_cb) },
+        { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
+	  N_("Change the visibility of the statusbar"),
+	  G_CALLBACK (rb_shell_view_statusbar_changed_cb), TRUE }
 };
 static guint rb_shell_n_toggle_entries = G_N_ELEMENTS (rb_shell_toggle_entries);
 
@@ -1033,8 +1040,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_shell_show_popup_cb), shell, 0);
 
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
-						   shell->priv->actiongroup,
-						   shell->priv->player_shell);
+						   shell->priv->actiongroup);
 	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
 	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
@@ -1125,7 +1131,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
 					    (GConfClientNotifyFunc) smalldisplay_changed_cb,
 					    shell);
-	shell->priv->smalldisplay_notify_id =
+	shell->priv->fullscreen_notify_id =
 		eel_gconf_notification_add (CONF_UI_FULLSCREEN,
 					    (GConfClientNotifyFunc) fullscreen_changed_cb,
 					    shell);
@@ -1142,6 +1148,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
 	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
 	shell->priv->sourcelist_height = eel_gconf_get_integer (CONF_STATE_SOURCELIST_HEIGHT);
+	shell->priv->statusbar_hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
 
 	
 	rb_debug ("shell: syncing with gconf");
@@ -1281,7 +1288,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		g_object_unref (G_OBJECT (druid));
 	}
 
-	rb_statusbar_sync_state (shell->priv->statusbar);
 	rb_shell_sync_smalldisplay (shell);
 
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
@@ -1914,6 +1920,16 @@ rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 }
 
 static void
+rb_shell_view_statusbar_changed_cb (GtkAction *action,
+				    RBShell *shell)
+{
+	shell->priv->statusbar_hidden = !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+	eel_gconf_set_boolean (CONF_UI_STATUSBAR_HIDDEN, shell->priv->statusbar_hidden);
+
+	rb_shell_sync_statusbar_visibility (shell);
+}
+
+static void
 rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 					   RBShell *shell)
 {
@@ -2363,16 +2379,15 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 		g_object_set (G_OBJECT (queue_action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
- 		gtk_widget_hide (GTK_WIDGET (shell->priv->statusbar));
  		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	} else {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", TRUE, NULL);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
- 		rb_statusbar_sync_state (shell->priv->statusbar);
 		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
 	}
+	rb_shell_sync_statusbar_visibility (shell);
 
 	rb_source_header_sync_control_state (shell->priv->source_header);
 	rb_shell_player_sync_buttons (shell->priv->player_shell);
@@ -2381,6 +2396,15 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 					      "ViewSmallDisplay");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
 				      shell->priv->window_small);
+}
+
+static void
+rb_shell_sync_statusbar_visibility (RBShell *shell)
+{
+	if (shell->priv->statusbar_hidden || shell->priv->window_small)
+		gtk_widget_hide (GTK_WIDGET (shell->priv->statusbar));
+	else
+		gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 }
 
 static void
