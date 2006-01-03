@@ -87,11 +87,12 @@ struct RBDAAPSharePrivate {
 
 	/* db things */
 	RhythmDB *db;
-	gint32 num_songs;
+	gint32 next_song_id;
 	GHashTable *id_to_entry;
 	GHashTable *entry_to_id;
 	gulong entry_added_id;
 	gulong entry_deleted_id;
+	gulong entry_changed_id;
 
 	/* playlist things */
 	RBPlaylistManager *playlist_manager;
@@ -940,7 +941,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, share->priv->name);
-		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32)share->priv->num_songs);
+		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->entry_to_id));
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MCTC, (gint32) 1);
 	
 		message_set_from_rb_daap_structure (message, avdb);
@@ -958,6 +959,7 @@ databases_cb (RBDAAPShare *share,
 	 * 		...
 	 */
 		GNode *adbs;
+		gint32 num_songs = (gint32)g_hash_table_size (share->priv->entry_to_id);
 		struct MLCL_Bits mb = {NULL,0};
 
 		mb.bits = parse_meta (rest_of_path);
@@ -965,8 +967,8 @@ databases_cb (RBDAAPShare *share,
 		adbs = rb_daap_structure_add (NULL, RB_DAAP_CC_ADBS);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MUTY, 0);
-		rb_daap_structure_add (adbs, RB_DAAP_CC_MTCO, (gint32) share->priv->num_songs);
-		rb_daap_structure_add (adbs, RB_DAAP_CC_MRCO, (gint32) share->priv->num_songs);
+		rb_daap_structure_add (adbs, RB_DAAP_CC_MTCO, (gint32) num_songs);
+		rb_daap_structure_add (adbs, RB_DAAP_CC_MRCO, (gint32) num_songs);
 		mb.mlcl = rb_daap_structure_add (adbs, RB_DAAP_CC_MLCL);
 		
 		g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
@@ -1004,7 +1006,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, share->priv->name);
-		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) share->priv->num_songs);
+		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->entry_to_id));
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ABPL, (gchar) 1); /* base playlist */
 
 		g_list_foreach (share->priv->playlist_ids, (GFunc) add_playlist_to_mlcl, mlcl);
@@ -1036,8 +1038,9 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (apso, RB_DAAP_CC_MUTY, 0);
 
 		if (pl_id == 1) {
-			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) share->priv->num_songs);
-			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) share->priv->num_songs);
+			gint32 num_songs = (gint32) g_hash_table_size (share->priv->entry_to_id);
+			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);
+			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) num_songs);
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
 		
 			g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
@@ -1180,20 +1183,6 @@ server_cb (SoupServerContext *context,
 }
 
 static void
-add_db_entry (RhythmDBEntry *entry,
-	      RBDAAPShare *share)
-{
-	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
-
-	if (type == rhythmdb_entry_song_get_type ()) {
-		share->priv->num_songs++;
-
-		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (share->priv->num_songs), entry);
-		g_hash_table_insert (share->priv->entry_to_id, entry, GINT_TO_POINTER (share->priv->num_songs));
-	}
-}
-
-static void
 db_entry_added_cb (RhythmDB *db,
 		   RhythmDBEntry *entry,
 		   RBDAAPShare *share)
@@ -1201,13 +1190,20 @@ db_entry_added_cb (RhythmDB *db,
 	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
 	gboolean hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
 
-	if (type == rhythmdb_entry_song_get_type () && !hidden) {
-		share->priv->num_songs++;
-
-		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (share->priv->num_songs), entry);
-		g_hash_table_insert (share->priv->entry_to_id, entry, GINT_TO_POINTER (share->priv->num_songs));
+	if (type == rhythmdb_entry_song_get_type () && !hidden && g_hash_table_lookup (share->priv->entry_to_id, entry) == NULL) {
+		gint32 song_id = share->priv->next_song_id++;
+		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (song_id), entry);
+		g_hash_table_insert (share->priv->entry_to_id, entry, GINT_TO_POINTER (song_id));
 	}
 }
+
+static void
+add_db_entry (RhythmDBEntry *entry,
+	      RBDAAPShare *share)
+{
+	db_entry_added_cb (share->priv->db, entry, share);
+}
+
 
 static void
 db_entry_deleted_cb (RhythmDB *db,
@@ -1219,9 +1215,19 @@ db_entry_deleted_cb (RhythmDB *db,
 	id = g_hash_table_lookup (share->priv->entry_to_id, entry);
 	if (id) {
 		g_hash_table_remove (share->priv->entry_to_id, entry);
-
-		share->priv->num_songs--;
 	}
+}
+
+static void
+db_entry_changed_cb (RhythmDB *db,
+		     RhythmDBEntry *entry,
+		     GSList *changes,
+		     RBDAAPShare *share)
+{
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+		db_entry_deleted_cb (db, entry, share);
+	else
+		db_entry_added_cb (db, entry, share);
 }
 
 
@@ -1292,7 +1298,6 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 
 	share->priv->id_to_entry = g_hash_table_new (NULL, NULL);
 	share->priv->entry_to_id = g_hash_table_new (NULL, NULL);
-	share->priv->num_songs = 0;
 	share->priv->next_playlist_id = 2;		/* 1 already used */
 
 	rhythmdb_entry_foreach (share->priv->db, (GFunc)add_db_entry, share);
@@ -1304,6 +1309,10 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 	share->priv->entry_deleted_id = g_signal_connect (G_OBJECT (share->priv->db),
 							  "entry-deleted",
 							  G_CALLBACK (db_entry_deleted_cb),
+							  share);
+	share->priv->entry_changed_id = g_signal_connect (G_OBJECT (share->priv->db),
+							  "entry-changed",
+							  G_CALLBACK (db_entry_changed_cb),
 							  share);
 }
 
@@ -1339,6 +1348,11 @@ rb_daap_share_stop_publish (RBDAAPShare *share)
 	if (share->priv->entry_deleted_id != 0) {
 		g_signal_handler_disconnect (share->priv->db, share->priv->entry_deleted_id);
 		share->priv->entry_deleted_id = 0;
+	}
+	
+	if (share->priv->entry_changed_id != 0) {
+		g_signal_handler_disconnect (share->priv->db, share->priv->entry_changed_id);
+		share->priv->entry_changed_id = 0;
 	}
 
 	if (share->priv->publisher) {

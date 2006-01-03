@@ -1,4 +1,17 @@
 2006-01-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* daapsharing/rb-daap-share.c: (databases_cb): (db_entry_added_cb),
+	(add_db_entry), (db_entry_deleted_cb):
+	Don't track the number of songs currently present, track the next ID
+	to assign.  Fixes potential ID conflict problems.
+	
+	(db_entry_changed_cb), (rb_daap_share_start_publish),
+	(rb_daap_share_stop_publish):
+	Watch for db entry changes, and when songs become non-hidden after
+	a successful stat, add them to the mapping tables.   Fixes #325178,
+	making the DAAP server usable again.
+
+2006-01-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
 	
 	* shell/rb-statusbar.c: (rb_statusbar_class_init),
 	(rb_statusbar_construct), (rb_statusbar_init),
