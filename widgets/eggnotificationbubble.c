@@ -427,6 +427,7 @@ draw_bubble (EggNotificationBubble *bubble, guint timeout)
   g_free (markupquoted);
   gtk_label_set_text (GTK_LABEL (bubble->bubble_body_label), bubble->bubble_body_text);
   
+  gtk_window_move (GTK_WINDOW (bubble->bubble_window), 0, 2 * gdk_screen_get_height (screen));
   gtk_widget_show_all (bubble->bubble_window);
 
   gtk_widget_size_request (bubble->bubble_window, &requisition);
@@ -495,7 +496,6 @@ draw_bubble (EggNotificationBubble *bubble, guint timeout)
 
   gdk_window_shape_combine_region (bubble->bubble_window->window, region, 0, 0);
 
-  gtk_widget_show_all (bubble->bubble_window);
   gtk_window_move (GTK_WINDOW (bubble->bubble_window), x, y);
   bubble->active = TRUE;
   if (bubble->timeout_id)
