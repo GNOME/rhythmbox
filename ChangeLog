@@ -1,3 +1,9 @@
+2006-01-04  William Jon McCann  <mccann@jhu.edu>
+
+	* shell/rb-playlist-manager.c (rb_playlist_manager_set_property):
+	Disable burn action when source is not a playlist.
+	Fixes #323578.
+
 2006-01-04  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	Optionally use libnotify to display song change and other

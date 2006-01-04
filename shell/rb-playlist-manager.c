@@ -464,7 +464,12 @@ rb_playlist_manager_set_property (GObject *object,
 						 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
 						 mgr, 0);
 			rb_playlist_manager_playlist_entries_changed (songs, NULL, mgr);
+		} else {
+			action = gtk_action_group_get_action (mgr->priv->actiongroup,
+							      "MusicPlaylistBurnPlaylist");
+			g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
 		}
+
 		break;
 	}
 	case PROP_SHELL:
