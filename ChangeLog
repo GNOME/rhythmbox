@@ -1,3 +1,9 @@
+2006-01-04  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-playlist-source-recorder.c (rb_playlist_source_recorder_init):
+	Request a minimum size for the progress bar so that
+	the window doesn't shrink too small.
+
 2006-01-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* daapsharing/rb-daap-share.c: (databases_cb): (db_entry_added_cb),

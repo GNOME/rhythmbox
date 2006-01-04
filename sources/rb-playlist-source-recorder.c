@@ -1143,6 +1143,7 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         source->priv->progress = glade_xml_get_widget (xml, "progress");
         gtk_progress_bar_set_ellipsize (GTK_PROGRESS_BAR (source->priv->progress), PANGO_ELLIPSIZE_END);
         gtk_progress_bar_set_text (GTK_PROGRESS_BAR (source->priv->progress), " ");
+        gtk_widget_set_size_request (source->priv->progress, 400, -1);
 
         source->priv->progress_frame = glade_xml_get_widget (xml, "progress_frame");
 
