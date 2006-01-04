@@ -562,5 +562,16 @@
 	<long>Whether to enable Audioscrobbler support. Audioscrobbler is a computer system that builds up a detailed profile of your musical taste. See Audioscrobbler.com for more information.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/show_notifications</key>
+        <applyto>/apps/rhythmbox/ui/show_notifications</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>1</default>
+        <locale name="C">
+	<short>Whether to show notifications from the tray icon</short>
+	<long>When enabled, Rhythmbox will display notification bubbles when the playing track changes, a podcast is downloaded, a CD finished burning, etc.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

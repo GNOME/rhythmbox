@@ -324,6 +324,29 @@ if test x"$enable_daap" = xyes; then
 fi
 AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 
+
+AC_ARG_ENABLE(libnotify,
+            AC_HELP_STRING([--disable-libnotify],
+			   [Disable libnotify support]),,
+	      enable_libnotify=auto)
+if test "x$enable_libnotify" != "xno"; then
+	PKG_CHECK_MODULES(NOTIFY,                            \
+			  libnotify,
+			  have_libnotify=yes,
+			  have_libnotify=no)
+	if test "x$have_libnotify" = "xno" -a "x$enable_libnotify" = "xyes"; then
+	  AC_MSG_ERROR([libnotify support explicitly requested, but libnotify couldn't be found])
+	fi
+	if test "x$have_libnotify" = "xyes"; then
+	     AC_DEFINE(HAVE_NOTIFY, 1, [Define if libnotify support is enabled])
+	     enable_libnotify=yes
+	     AC_SUBST(NOTIFY_CFLAGS)
+	     AC_SUBST(NOTIFY_LIBS)
+	fi
+fi			  
+AM_CONDITIONAL(USE_NOTIFY, test x"$enable_libnotify" = xyes)
+
+
 dnl Check for libsoup, needed for DAAP and audioscrobbler
 if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" != "xno"; then
 	dnl We want libsoup now
@@ -682,6 +705,11 @@ if test x"$enable_daap" = xyes; then
 	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
 else
 	AC_MSG_NOTICE([   DAAP (music sharing) support is disabled])
+fi
+if test x"$have_libnotify" = xyes; then
+	AC_MSG_NOTICE([** libnotify support is enabled])
+else
+	AC_MSG_NOTICE([   libnotify support is disabled])
 fi
 if test x"$enable_bonobo" = xyes; then
 	AC_MSG_NOTICE([** Bonobo control/activation enabled])

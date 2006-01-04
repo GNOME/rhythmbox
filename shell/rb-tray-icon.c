@@ -61,6 +61,8 @@ static void rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 						RBTrayIcon *icon);
 static void rb_tray_icon_show_window_changed_cb (GtkAction *action,
 						 RBTrayIcon *icon);
+static void rb_tray_icon_show_notifications_changed_cb (GtkAction *action,
+							RBTrayIcon *icon);
 static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  GdkDragContext *context,
 				  gint x,
@@ -73,15 +75,14 @@ static void rb_tray_icon_drop_cb (GtkWidget *widget,
 struct RBTrayIconPrivate
 {
 	GtkTooltips *tooltips;
-
-	EggNotificationBubble *bubble;
-
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
 
 	GtkWidget *ebox;
 
 	RBRemoteProxy *proxy;
+
+	gboolean show_notifications;
 };
 
 #define RB_TRAY_ICON_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_TRAY_ICON, RBTrayIconPrivate))
@@ -103,48 +104,21 @@ static GtkToggleActionEntry rb_tray_icon_toggle_entries [] =
 {
 	{ "TrayShowWindow", NULL, N_("_Show Music Player"), NULL,
 	  N_("Choose music to play"),
-	  G_CALLBACK (rb_tray_icon_show_window_changed_cb) }
+	  G_CALLBACK (rb_tray_icon_show_window_changed_cb) },
+	{ "TrayShowNotifications", NULL, N_("Show _Notifications"), NULL,
+	  N_("Show notifications of song changes and other events"),
+	  G_CALLBACK (rb_tray_icon_show_notifications_changed_cb) }
 };
 static guint rb_tray_icon_n_toggle_entries = G_N_ELEMENTS (rb_tray_icon_toggle_entries);
 
 static const GtkTargetEntry target_uri [] = {{ "text/uri-list", 0, 0 }};
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_tray_icon_get_type (void)
-{
-	static GType rb_tray_icon_type = 0;
-
-	if (rb_tray_icon_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBTrayIconClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_tray_icon_class_init,
-			NULL,
-			NULL,
-			sizeof (RBTrayIcon),
-			0,
-			(GInstanceInitFunc) rb_tray_icon_init
-		};
-
-		rb_tray_icon_type = g_type_register_static (EGG_TYPE_TRAY_ICON,
-							    "RBTrayIcon",
-							    &our_info, 0);
-	}
-
-	return rb_tray_icon_type;
-}
+G_DEFINE_TYPE (RBTrayIcon, rb_tray_icon, EGG_TYPE_TRAY_ICON)
 
 static void
 rb_tray_icon_class_init (RBTrayIconClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_tray_icon_finalize;
 	object_class->constructor = rb_tray_icon_constructor;
@@ -218,13 +192,14 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 {
 	RBTrayIcon *tray;
 	RBTrayIconClass *klass;
-	GObjectClass *parent_class;  
 
 	klass = RB_TRAY_ICON_CLASS (g_type_class_peek (RB_TYPE_TRAY_ICON));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	tray = RB_TRAY_ICON (parent_class->constructor (type, n_construct_properties,
-							construct_properties));
+	tray = RB_TRAY_ICON (G_OBJECT_CLASS (rb_tray_icon_parent_class)->constructor 
+				(type, n_construct_properties,
+				 construct_properties));
+
+	tray->priv->show_notifications = eel_gconf_get_boolean (CONF_UI_SHOW_NOTIFICATIONS);
 
 	tray->priv->actiongroup = gtk_action_group_new ("TrayActions");
 	gtk_action_group_set_translation_domain (tray->priv->actiongroup,
@@ -259,7 +234,7 @@ rb_tray_icon_finalize (GObject *object)
 	
 	gtk_object_destroy (GTK_OBJECT (tray->priv->tooltips));
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_tray_icon_parent_class)->finalize (object);
 }
 
 static void
@@ -271,6 +246,11 @@ rb_tray_icon_sync_action (RBRemoteProxy *proxy, gboolean visible, RBTrayIcon *tr
 						      "TrayShowWindow");
 		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
 					      rb_remote_proxy_get_visibility (tray->priv->proxy));
+
+		action = gtk_action_group_get_action (tray->priv->actiongroup,
+						      "TrayShowNotifications");
+		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+					      tray->priv->show_notifications);
 	}
 }
 
@@ -495,6 +475,15 @@ rb_tray_icon_show_window_changed_cb (GtkAction *action,
 					gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
+static void
+rb_tray_icon_show_notifications_changed_cb (GtkAction *action,
+					    RBTrayIcon *icon)
+{
+	rb_debug ("show notifications clicked for %p", icon);
+	icon->priv->show_notifications = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+	eel_gconf_set_boolean (CONF_UI_SHOW_NOTIFICATIONS, icon->priv->show_notifications);
+}
+
 void
 rb_tray_icon_get_geom (RBTrayIcon *icon, int *x, int *y, int *width, int *height)
 {
@@ -519,24 +508,6 @@ rb_tray_icon_set_tooltip (RBTrayIcon *icon, const char *tooltip)
 			      tooltip, NULL);
 }
 
-static void
-rb_tray_icon_hide_notify_cb (EggNotificationBubble *bubble, gpointer data)
-{
-	gboolean visible;
-	RBTrayIcon *icon;
-
-	icon = RB_TRAY_ICON (data);
-
-	rb_debug ("hiding notification");
-
-	egg_notification_bubble_hide (bubble);
-	visible = rb_remote_proxy_get_visibility (icon->priv->proxy);	
-	if (!visible) {
-		rb_debug ("setting visible");
-		rb_remote_proxy_set_visibility (icon->priv->proxy, TRUE);
-	}
-}
-
 void
 rb_tray_icon_notify (RBTrayIcon *icon,
 		     guint timeout,
@@ -544,24 +515,21 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 		     GtkWidget *msgicon,
 		     const char *secondary)
 {
-	if (icon->priv->bubble) {
-		g_object_unref (icon->priv->bubble);
-		g_signal_handlers_disconnect_by_func (icon->priv->bubble,
-						      rb_tray_icon_hide_notify_cb,
-						      icon);
+	if (!egg_tray_icon_have_manager (EGG_TRAY_ICON (icon))) {
+		rb_debug ("not showing notification: %s", primary);
+		return;
 	}
+	if (!icon->priv->show_notifications) {
+		rb_debug ("ignoring notification: %s", primary);
+		return;
+	}
+	
 	rb_debug ("doing notify: %s", primary);
-	icon->priv->bubble = egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout, primary, msgicon, secondary);
-	g_object_ref (icon->priv->bubble);
-	g_signal_connect_object (icon->priv->bubble,
-				 "clicked",
-				 G_CALLBACK (rb_tray_icon_hide_notify_cb),
-				 icon, 0);
+	egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout, primary, msgicon, secondary);
 }
 
 void
 rb_tray_icon_cancel_notify (RBTrayIcon *icon)
 {
-	if (icon->priv->bubble)
-		egg_notification_bubble_hide (icon->priv->bubble);
+	egg_tray_icon_cancel_message (EGG_TRAY_ICON (icon), 1);
 }

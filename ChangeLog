@@ -1,3 +1,30 @@
+2006-01-04  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Optionally use libnotify to display song change and other
+	notifications, and provide an option to disable notifications.
+	Fixes #320355 and innumerable informal complaints.
+
+	* widgets/eggtrayicon.c: (egg_tray_icon_init),
+	(egg_tray_icon_unrealize), (egg_tray_icon_send_message),
+	(egg_tray_icon_cancel_message), (egg_tray_icon_hide_notify_cb),
+	(egg_tray_icon_notify):
+	* widgets/eggtrayicon.h:
+	* configure.ac:
+	* shell/Makefile.am:
+	Optionally use libnotify instead of eggnotificationbubble.
+
+	* shell/rb-tray-icon.c: (rb_tray_icon_class_init),
+	(rb_tray_icon_constructor), 
+	(rb_tray_icon_show_notifications_changed_cb),
+	(rb_tray_icon_hide_notify_cb)
+	(rb_tray_icon_cancel_notify), (rb_tray_icon_notify): 
+	Add 'show notifications' action handling, use G_DEFINE_TYPE, move
+	EggNotificationBubble pointer to eggtrayicon.
+
+	* data/ui/rhythmbox-ui.xml: Add 'show notifications' menu item
+	* lib/rb-preferences.h: Add #define for /ui/show_notifications key
+	* data/rhythmbox.schemas: Add schema for /ui/show_notification key
+
 2006-01-04  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-playlist-source-recorder.c (rb_playlist_source_recorder_init):

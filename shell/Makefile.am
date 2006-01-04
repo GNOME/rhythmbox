@@ -166,6 +166,11 @@ rhythmbox_LDADD += $(SOUP_LIBS)
 INCLUDES += $(SOUP_CFLAGS)
 endif
 
+if USE_NOTIFY
+rhythmbox_LDADD += $(NOTIFY_LIBS)
+INCLUDES += $(NOTIFY_CFLAGS)
+endif
+
 BUILT_SOURCES += $(tab_files)
 
 CLEANFILES += $(BUILT_SOURCES)

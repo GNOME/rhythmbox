@@ -21,11 +21,17 @@
 #ifndef __EGG_TRAY_ICON_H__
 #define __EGG_TRAY_ICON_H__
 
+#include <config.h>
+
 #include <gtk/gtkplug.h>
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
+#ifdef HAVE_NOTIFY
+#include <libnotify/notify.h>
+#else
 #include "eggnotificationbubble.h"
+#endif
 
 G_BEGIN_DECLS
 
@@ -38,6 +44,9 @@ G_BEGIN_DECLS
 	
 typedef struct _EggTrayIcon	  EggTrayIcon;
 typedef struct _EggTrayIconClass  EggTrayIconClass;
+#ifdef HAVE_NOTIFY
+typedef struct _Notify		  Notify;
+#endif
 
 struct _EggTrayIcon
 {
@@ -53,7 +62,11 @@ struct _EggTrayIcon
   Window manager_window;
 #endif
   GtkOrientation orientation;
+#ifdef HAVE_NOTIFY
+  Notify *notify;
+#else
   EggNotificationBubble *bubble;
+#endif
 };
 
 struct _EggTrayIconClass
@@ -77,12 +90,12 @@ void         egg_tray_icon_cancel_message (EggTrayIcon *icon,
 
 gboolean     egg_tray_icon_have_manager   (EggTrayIcon *icon);
 
-EggNotificationBubble *egg_tray_icon_notify         (EggTrayIcon *icon,
-						     guint timeout,
-						     const char *primary,
-						     GtkWidget *msgicon,
-						     const char *secondary);
-					   
+void 	     egg_tray_icon_notify         (EggTrayIcon *icon,
+					   guint timeout,
+					   const char *primary,
+					   GtkWidget *msgicon,
+					   const char *secondary);
+
 
 GtkOrientation egg_tray_icon_get_orientation (EggTrayIcon *icon);
 					    
