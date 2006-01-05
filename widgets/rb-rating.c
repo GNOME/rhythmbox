@@ -66,6 +66,7 @@ struct RBRatingPrivate
 	RBRatingPixbufs *pixbufs;
 };
 
+G_DEFINE_TYPE (RBRating, rb_rating, GTK_TYPE_EVENT_BOX)
 #define RB_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RATING, RBRatingPrivate))
 
 enum
@@ -80,35 +81,8 @@ enum
 	LAST_SIGNAL
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_rating_signals[LAST_SIGNAL] = { 0 };
 
-GType 
-rb_rating_get_type (void)
-{
-        static GType rb_rating_type = 0;
-
-        if (rb_rating_type == 0) {
-                static const GTypeInfo our_info = {
-                        sizeof (RBRatingClass),
-                        NULL, /* base_init */
-                        NULL, /* base_finalize */
-                        (GClassInitFunc) rb_rating_class_init,
-                        NULL,
-                        NULL, /* class_data */
-                        sizeof (RBRating),
-                        0, /* n_preallocs */
-                        (GInstanceInitFunc) rb_rating_init
-                };
-
-                rb_rating_type = g_type_register_static (GTK_TYPE_EVENT_BOX,
-							 "RBRating",
-							 &our_info, 0);
-        }
-
-        return rb_rating_type;
-}
 
 static void
 rb_rating_class_init (RBRatingClass *klass)
@@ -117,7 +91,6 @@ rb_rating_class_init (RBRatingClass *klass)
 	GtkWidgetClass *widget_class;
 
 	widget_class = (GtkWidgetClass*) klass;
-	parent_class = g_type_class_peek_parent (klass);
 	
 	object_class->finalize = rb_rating_finalize;
 	object_class->get_property = rb_rating_get_property;
@@ -165,7 +138,7 @@ rb_rating_finalize (GObject *object)
 	rating = RB_RATING (object);
 	rb_rating_pixbufs_free (rating->priv->pixbufs);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_rating_parent_class)->finalize (object);
 }
 
 static void

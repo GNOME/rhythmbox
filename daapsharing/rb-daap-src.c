@@ -85,7 +85,6 @@ struct _RBDAAPSrcClass
 	GstElementClass parent_class;
 };
 
-static GstElementClass *parent_class = NULL;
 
 static void rb_daap_src_base_init (gpointer g_class);
 static void rb_daap_src_class_init (RBDAAPSrcClass *klass);
@@ -177,41 +176,8 @@ enum
 	ARG_BYTESPERREAD
 };
 
-static GType
-rb_daap_src_get_type ()
-{
-	static GType daap_src_type = 0;
-
-	if (!daap_src_type) {
-		static const GTypeInfo daap_src_info = {
-			sizeof (RBDAAPSrcClass),
-			rb_daap_src_base_init,
-			NULL,
-			(GClassInitFunc) rb_daap_src_class_init,
-			NULL,
-			NULL,
-			sizeof (RBDAAPSrc),
-			0,
-			(GInstanceInitFunc) rb_daap_src_instance_init,
-		};
-
-		static const GInterfaceInfo urihandler_info = {
-			rb_daap_src_uri_handler_init,
-			NULL,
-			NULL
-		};
-
-		daap_src_type = g_type_register_static (GST_TYPE_ELEMENT,
-						       "RBDAAPSrc",
-						       &daap_src_info,
-						       0);
-		g_type_add_interface_static (daap_src_type,
-					     GST_TYPE_URI_HANDLER,
-					     &urihandler_info);
-	}
-
-	return daap_src_type;
-}
+G_DEFINE_TYPE_EXTENDED (RBDAAPSrc, rb_daap_src, GST_TYPE_ELEMENT, 0,
+		G_IMPLEMENT_INTERFACE (GST_TYPE_URI_HANDLER, rb_daap_src_uri_handler_init))
 
 static void 
 rb_daap_src_base_init (gpointer g_class)
@@ -231,8 +197,6 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 
 	gobject_class = (GObjectClass *) klass;
 	gstelement_class = (GstElementClass *) klass;
-
-	parent_class = g_type_class_ref (GST_TYPE_ELEMENT);
 
 	gst_element_class_install_std_props (GST_ELEMENT_CLASS (klass),
 		"bytesperread", ARG_BYTESPERREAD, G_PARAM_READWRITE,
@@ -320,7 +284,7 @@ rb_daap_src_dispose (GObject *object)
 		src->sock_fd = -1;
 	}
 
-	G_OBJECT_CLASS (parent_class)->dispose (object);
+	G_OBJECT_CLASS (rb_daap_src_parent_class)->dispose (object);
 }
 
 static guint
@@ -689,8 +653,8 @@ rb_daap_src_change_state (GstElement *element)
 			break;
 	}
 
-	if (GST_ELEMENT_CLASS (parent_class)->change_state) {
-		return GST_ELEMENT_CLASS (parent_class)->change_state (element);
+	if (GST_ELEMENT_CLASS (rb_daap_src_parent_class)->change_state) {
+		return GST_ELEMENT_CLASS (rb_daap_src_parent_class)->change_state (element);
 	}
 
 	return GST_STATE_SUCCESS;

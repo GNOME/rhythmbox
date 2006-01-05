@@ -77,7 +77,10 @@ struct RBCellRendererRatingClassPrivate
 	RBRatingPixbufs *pixbufs;	
 };
 
-#define RB_CELL_RENDERER_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingPrivate))
+G_DEFINE_TYPE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_RENDERER)
+#define RB_CELL_RENDERER_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
+						RB_TYPE_CELL_RENDERER_RATING, \
+						RBCellRendererRatingPrivate))
 
 
 enum 
@@ -92,37 +95,8 @@ enum
 	LAST_SIGNAL
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_cell_renderer_rating_signals[LAST_SIGNAL] = { 0 };
 
-GtkType
-rb_cell_renderer_rating_get_type (void)
-{
-	static GtkType cell_rating_type = 0;
-
-	if (!cell_rating_type) {
-		static const GTypeInfo cell_rating_info =
-		{
-			sizeof (RBCellRendererRatingClass),
-			NULL,		/* base_init */
-			NULL,		/* base_finalize */
-			(GClassInitFunc) rb_cell_renderer_rating_class_init,
-			NULL,		/* class_finalize */
-			NULL,		/* class_data */
-			sizeof (RBCellRendererRating),
-			0,              /* n_preallocs */
-			(GInstanceInitFunc) rb_cell_renderer_rating_init,
-		};
-
-		cell_rating_type = g_type_register_static (GTK_TYPE_CELL_RENDERER, 
-							   "RBCellRendererRating", 
-							   &cell_rating_info, 
-							   0);
-	}
-
-	return cell_rating_type;
-}
 
 static void
 rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
@@ -142,7 +116,6 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
 	GtkCellRendererClass *cell_class = GTK_CELL_RENDERER_CLASS (class);
 
-	parent_class = g_type_class_peek_parent (class);
 	object_class->finalize = rb_cell_renderer_rating_finalize;
 
 	object_class->get_property = rb_cell_renderer_rating_get_property;
@@ -179,7 +152,7 @@ rb_cell_renderer_rating_finalize (GObject *object)
 
 	cellrating = RB_CELL_RENDERER_RATING (object);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_cell_renderer_rating_parent_class)->finalize (object);
 }
 
 static void

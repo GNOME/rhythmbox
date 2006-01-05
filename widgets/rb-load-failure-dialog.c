@@ -58,44 +58,14 @@ struct RBLoadFailureDialogPrivate
 	GtkListStore *liststore;
 };
 
+G_DEFINE_TYPE (RBLoadFailureDialog, rb_load_failure_dialog, GTK_TYPE_DIALOG)
 #define RB_LOAD_FAILURE_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LOAD_FAILURE_DIALOG, RBLoadFailureDialogPrivate))
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_load_failure_dialog_get_type (void)
-{
-	static GType rb_load_failure_dialog_type = 0;
-
-	if (rb_load_failure_dialog_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBLoadFailureDialogClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_load_failure_dialog_class_init,
-			NULL,
-			NULL,
-			sizeof (RBLoadFailureDialog),
-			0,
-			(GInstanceInitFunc) rb_load_failure_dialog_init
-		};
-		
-		rb_load_failure_dialog_type = g_type_register_static (GTK_TYPE_DIALOG,
-								      "RBLoadFailureDialog",
-								      &our_info, 0);
-	}
-
-	return rb_load_failure_dialog_type;
-}
 
 static void
 rb_load_failure_dialog_class_init (RBLoadFailureDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_load_failure_dialog_finalize;
 
@@ -182,7 +152,7 @@ rb_load_failure_dialog_finalize (GObject *object)
 
 	g_return_if_fail (dlg->priv != NULL);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_load_failure_dialog_parent_class)->finalize (object);
 }
 
 GtkWidget *

@@ -49,32 +49,8 @@ static void rhythmdb_gda_do_full_query (RhythmDB * db, GPtrArray * query,
 static gboolean rhythmdb_gda_evaluate_query (RhythmDB * adb, GPtrArray * query,
     RhythmDBEntry * aentry);
 
-static GObjectClass *parent_class = NULL;
+G_DEFINE_TYPE (RhythmDBGda, rhythmdb_gda, RHYTHMDB_TYPE)
 
-GType
-rhythmdb_gda_get_type (void)
-{
-  static GType rhythmdb_gda_type = 0;
-
-  if (rhythmdb_gda_type == 0) {
-    static const GTypeInfo our_info = {
-      sizeof (RhythmDBGdaClass),
-      NULL,
-      NULL,
-      (GClassInitFunc) rhythmdb_gda_class_init,
-      NULL,
-      NULL,
-      sizeof (RhythmDBGda),
-      0,
-      (GInstanceInitFunc) rhythmdb_gda_init
-    };
-
-    rhythmdb_gda_type = g_type_register_static (RHYTHMDB_TYPE,
-        "RhythmDBGda", &our_info, 0);
-  }
-
-  return rhythmdb_gda_type;
-}
 
 static void
 rhythmdb_gda_class_init (RhythmDBGdaClass * klass)
@@ -82,7 +58,6 @@ rhythmdb_gda_class_init (RhythmDBGdaClass * klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   RhythmDBClass *rhythmdb_class = RHYTHMDB_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (klass);
 
   object_class->finalize = rhythmdb_gda_finalize;
 
@@ -377,7 +352,7 @@ rhythmdb_gda_finalize (GObject * object)
   g_object_unref (db->conn);
   g_object_unref (db->client);
 
-  parent_class->finalize (object);
+  G_OJECT_CLASS (rhythmdb_gda_parent_class)->finalize (object);
 }
 
 static void

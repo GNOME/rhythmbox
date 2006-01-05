@@ -1,5 +1,26 @@
 2006-01-05  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-src.c: (rb_daap_src_class_init),
+	(rb_daap_src_dispose), (rb_daap_src_change_state):
+	* rhythmdb/rhythmdb-gda.c: (rhythmdb_gda_class_init),
+	(rhythmdb_gda_finalize):
+	* widgets/rb-cell-renderer-pixbuf.c:
+	* widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_class_init),
+	(rb_cell_renderer_rating_finalize):
+	* widgets/rb-druid.c: (rb_druid_class_init), (rb_druid_finalize):
+	* widgets/rb-load-failure-dialog.c:
+	(rb_load_failure_dialog_class_init),
+	(rb_load_failure_dialog_finalize):
+	* widgets/rb-rating.c: (rb_rating_class_init),
+	(rb_rating_finalize):
+	* widgets/rb-search-entry.c: (rb_search_entry_class_init),
+	(rb_search_entry_finalize): use G_DEFINE_TYPE
+
+	* widgets/rb-tree-model-sort.{c.h}: remove obsolete files from cvs.
+
+2006-01-05  James Livingston  <jrl@ids.org.au>
+
 	patch by: Lubomir Marinov <lubomir.marinov@gmail.com>
 
 	* shell/rb-commander.{c,h}: remove obsolete files, that weren't put in

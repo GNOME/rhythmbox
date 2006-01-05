@@ -73,42 +73,12 @@ enum
 	PROP_MAX_SIZE,
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_history_get_type (void)
-{
-	static GType rb_history_type = 0;
-
-	if (rb_history_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBHistoryClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_history_class_init,
-			NULL,
-			NULL,
-			sizeof (RBHistory),
-			0,
-			(GInstanceInitFunc) rb_history_init
-		};
-
-		rb_history_type = g_type_register_static (G_TYPE_OBJECT,
-							  "RBHistory",
-							  &our_info, 0);
-	}
-
-	return rb_history_type;
-}
+G_DEFINE_TYPE (RBHistory, rb_history, G_TYPE_OBJECT)
 
 static void
 rb_history_class_init (RBHistoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_history_finalize;
 
@@ -178,7 +148,7 @@ rb_history_finalize (GObject *object)
 	g_hash_table_destroy (hist->priv->entry_to_seqptr);
 	g_sequence_free (hist->priv->seq);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_history_parent_class)->finalize (object);
 }
 
 static void

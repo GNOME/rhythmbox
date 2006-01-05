@@ -51,6 +51,7 @@ struct RBSearchEntryPrivate
 	guint timeout;
 };
 
+G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
 #define RB_SEARCH_ENTRY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SEARCH_ENTRY, RBSearchEntryPrivate))
 
 enum
@@ -60,44 +61,13 @@ enum
 	LAST_SIGNAL
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_search_entry_signals[LAST_SIGNAL] = { 0 };
 
-GType
-rb_search_entry_get_type (void)
-{
-	static GType rb_search_entry_type = 0;
-
-	if (rb_search_entry_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBSearchEntryClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_search_entry_class_init,
-			NULL,
-			NULL,
-			sizeof (RBSearchEntry),
-			0,
-			(GInstanceInitFunc) rb_search_entry_init
-		};
-
-		rb_search_entry_type = g_type_register_static (GTK_TYPE_HBOX,
-							       "RBSearchEntry",
-							       &our_info, 0);
-	}
-
-	return rb_search_entry_type;
-}
 
 static void
 rb_search_entry_class_init (RBSearchEntryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_search_entry_finalize;
 
@@ -169,7 +139,7 @@ rb_search_entry_finalize (GObject *object)
 
 	g_return_if_fail (entry->priv != NULL);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_search_entry_parent_class)->finalize (object);
 }
 
 RBSearchEntry *

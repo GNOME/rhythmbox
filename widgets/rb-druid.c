@@ -35,8 +35,6 @@
 #include "rb-glade-helpers.h"
 #include "eel-gconf-extensions.h"
 
-static void rb_druid_class_init (RBDruidClass *klass);
-static void rb_druid_init (RBDruid *druid);
 static void rb_druid_finalize (GObject *object);
 static void rb_druid_set_property (GObject *object,
 				   guint prop_id,
@@ -67,6 +65,7 @@ struct RBDruidPrivate
 	GtkWidget *path_entry;
 };
 
+G_DEFINE_TYPE (RBDruid, rb_druid, G_TYPE_OBJECT)
 #define RB_DRUID_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DRUID, RBDruidPrivate))
 
 enum
@@ -75,45 +74,13 @@ enum
 	PROP_DB,
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_druid_get_type (void)
-{
-	static GType rb_druid_type = 0;
-
-	if (rb_druid_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBDruidClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_druid_class_init,
-			NULL,
-			NULL,
-			sizeof (RBDruid),
-			0,
-			(GInstanceInitFunc) rb_druid_init
-		};
-
-		rb_druid_type = g_type_register_static (G_TYPE_OBJECT,
-							"RBDruid",
-							&our_info, 0);
-	}
-
-	return rb_druid_type;
-}
 
 static void
 rb_druid_class_init (RBDruidClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	parent_class = g_type_class_peek_parent (klass);
-
 	object_class->finalize = rb_druid_finalize;
-
 	object_class->set_property = rb_druid_set_property;
 	object_class->get_property = rb_druid_get_property;
 
@@ -170,7 +137,7 @@ rb_druid_finalize (GObject *object)
 	if (druid->priv->window)
 		gtk_widget_destroy (GTK_WIDGET (druid->priv->window));
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_druid_parent_class)->finalize (object);
 }
 
 static void

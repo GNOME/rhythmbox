@@ -174,42 +174,12 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 };
 static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_actions);
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_playlist_manager_get_type (void)
-{
-	static GType rb_playlist_manager_type = 0;
-
-	if (rb_playlist_manager_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPlaylistManagerClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_playlist_manager_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPlaylistManager),
-			0,
-			(GInstanceInitFunc) rb_playlist_manager_init
-		};
-
-		rb_playlist_manager_type = g_type_register_static (G_TYPE_OBJECT,
-								   "RBPlaylistManager",
-								   &our_info, 0);
-	}
-
-	return rb_playlist_manager_type;
-}
+G_DEFINE_TYPE (RBPlaylistManager, rb_playlist_manager, G_TYPE_OBJECT)
 
 static void
 rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_playlist_manager_finalize;
 
@@ -374,7 +344,7 @@ rb_playlist_manager_finalize (GObject *object)
 	g_mutex_free (mgr->priv->saving_mutex);
 	g_cond_free (mgr->priv->saving_condition);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->finalize (object);
 }
 
 static void

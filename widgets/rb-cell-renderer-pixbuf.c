@@ -74,33 +74,10 @@ enum
 	LAST_SIGNAL
 };
 
+G_DEFINE_TYPE (RBCellRendererPixbuf, rb_cell_renderer_pixbuf, GTK_TYPE_CELL_RENDERER)
+
 static guint rb_cell_renderer_pixbuf_signals [LAST_SIGNAL] = { 0 };
 
-GtkType
-rb_cell_renderer_pixbuf_get_type (void)
-{
-	static GtkType cell_pixbuf_type = 0;
-
-	if (!cell_pixbuf_type)
-	{
-		static const GTypeInfo cell_pixbuf_info =
-		{
-			sizeof (RBCellRendererPixbufClass),
-			NULL,		/* base_init */
-			NULL,		/* base_finalize */
-			(GClassInitFunc) rb_cell_renderer_pixbuf_class_init,
-			NULL,		/* class_finalize */
-			NULL,		/* class_data */
-			sizeof (RBCellRendererPixbuf),
-			0,              /* n_preallocs */
-			(GInstanceInitFunc) rb_cell_renderer_pixbuf_init,
-		};
-
-		cell_pixbuf_type = g_type_register_static (GTK_TYPE_CELL_RENDERER, "RBCellRendererPixbuf", &cell_pixbuf_info, 0);
-	}
-
-	return cell_pixbuf_type;
-}
 
 static void
 rb_cell_renderer_pixbuf_init (RBCellRendererPixbuf *cellpixbuf)

@@ -56,8 +56,6 @@ enum
 	LAST_SIGNAL
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rb_remote_signals[LAST_SIGNAL] = { 0 };
 static GIOChannel *lirc_channel = NULL;
 static GList *listeners = NULL;
@@ -92,6 +90,8 @@ rb_lirc_to_command (const gchar *str)
 	else
 		return RB_REMOTE_COMMAND_UNKNOWN;
 }
+
+G_DEFINE_TYPE (RBRemote, rb_remote, G_TYPE_OBJECT)
 
 static gboolean
 rb_remote_read_code (GIOChannel *source, GIOCondition condition,
@@ -180,15 +180,13 @@ rb_remote_finalize (GObject *object)
 		lirc_deinit ();
 	}
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_remote_parent_class)->finalize (object);
 }
 
 static void
 rb_remote_class_init (RBRemote *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_remote_finalize;
 
@@ -225,33 +223,6 @@ rb_remote_init (RBRemote *remote)
 	}
 
 	listeners = g_list_prepend (listeners, remote);
-}
-
-GType
-rb_remote_get_type (void)
-{
-	static GType type = 0;
-                                                                              
-	if (type == 0)
-	{ 
-		static GTypeInfo info =
-		{
-			sizeof (RBRemoteClass),
-			NULL, 
-			NULL,
-			(GClassInitFunc) rb_remote_class_init, 
-			NULL,
-			NULL, 
-			sizeof (RBRemote),
-			0,
-			(GInstanceInitFunc) rb_remote_init
-		};
-		
-		type = g_type_register_static (G_TYPE_OBJECT, "RBRemote",
-					       &info, 0);
-	}
-
-	return type;
 }
 
 RBRemote *
