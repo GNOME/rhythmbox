@@ -331,7 +331,7 @@ AC_ARG_ENABLE(libnotify,
 	      enable_libnotify=auto)
 if test "x$enable_libnotify" != "xno"; then
 	PKG_CHECK_MODULES(NOTIFY,                            \
-			  libnotify,
+			  libnotify >= 0.2.0 < 0.3.0,
 			  have_libnotify=yes,
 			  have_libnotify=no)
 	if test "x$have_libnotify" = "xno" -a "x$enable_libnotify" = "xyes"; then
