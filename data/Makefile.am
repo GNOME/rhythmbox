@@ -2,6 +2,7 @@
 
 SUBDIRS = ui glade art
 
+@INTLTOOL_XML_RULE@
 @INTLTOOL_SERVER_RULE@
 @INTLTOOL_DESKTOP_RULE@
 
@@ -33,6 +34,10 @@ iradio-initial.xml:
 iradio_DATA = iradio-initial.pls
 iradiodir = $(datadir)/rhythmbox
 
+playlists_in_files = playlists.xml.in
+playlists_DATA = playlists.xml
+playlistsdir = $(datadir)/rhythmbox
+
 rhythmbox.keys: generate-keys.sh rhythmbox.applications
 	$(srcdir)/generate-keys.sh $(srcdir)/rhythmbox.applications \
 	> rhythmbox.keys
@@ -58,6 +63,7 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(applications_DATA)   \
 	     $(schema_DATA)	    \
 	     $(iradio_DATA)	    \
+	     $(playlists_in_files)  \
 		generate-keys.sh
 
 CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server org.gnome.Rhythmbox.service

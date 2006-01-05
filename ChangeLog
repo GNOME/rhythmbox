@@ -1,3 +1,22 @@
+2006-01-05  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-playlist-source.c (xml_get_and_trim_names):
+	Get name element for current lang and remove all name nodes
+	from the XML tree.
+	(get_playlist_name_from_xml): Try to get name element or
+	fall back to name attribute.
+	(rb_playlist_source_new_from_xml): Get name before turning over
+	to sub-types for parsing so that we can remove name elements
+	from the tree if necessary.
+
+	* shell/rb-playlist-manager.c (rb_playlist_manager_load_playlists):
+	Load default playlists file if per user playlists are not found.
+
+	* data/playlists.xml.in: 
+	* data/Makefile.am: 
+	* data/.cvsignore: Add default set of playlists.
+	Fixes #323004
+
 2006-01-05  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* shell/main.c: (main): Don't use the dbus interface to show the

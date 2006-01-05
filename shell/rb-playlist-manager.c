@@ -640,16 +640,33 @@ append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 void
 rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 {
-	char *file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+	char *file;
 	xmlDocPtr doc;
 	xmlNodePtr root;
 	xmlNodePtr child;
+	gboolean exists;
 	
+	exists = FALSE;
+	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+
 	/* block saves until the playlists have loaded */
 	g_mutex_lock (mgr->priv->saving_mutex);
 
-	if (!g_file_test (file, G_FILE_TEST_EXISTS))
+	exists = g_file_test (file, G_FILE_TEST_EXISTS);
+	if (! exists) {
+		rb_debug ("personal playlists not found, loading defaults");
+
+		/* try global playlists */
+		g_free (file);
+		file = g_strdup (rb_file ("playlists.xml"));
+		exists = g_file_test (file, G_FILE_TEST_EXISTS);
+	}
+
+	if (! exists) {
+		rb_debug ("default playlists file not found");
+
 		goto out;
+	}
 
 	doc = xmlParseFile (file);
 	

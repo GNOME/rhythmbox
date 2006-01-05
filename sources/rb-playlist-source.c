@@ -551,12 +551,98 @@ rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 	gtk_widget_show (recorder);
 }
 
+/* Adapted from yelp-toc-pager.c */
+static xmlChar *
+xml_get_and_trim_names (xmlNodePtr node)
+{
+	xmlNodePtr cur, keep = NULL;
+	xmlChar *keep_lang = NULL;
+	xmlChar *value;
+	int j, keep_pri = INT_MAX;
+
+	const gchar * const * langs = g_get_language_names ();
+
+	value = NULL;
+
+	for (cur = node->children; cur; cur = cur->next) {
+		if (! xmlStrcmp (cur->name, RB_PLAYLIST_NAME)) {
+			xmlChar *cur_lang = NULL;
+			int cur_pri = INT_MAX;
+
+			cur_lang = xmlNodeGetLang (cur);
+
+			if (cur_lang) {
+				for (j = 0; langs[j]; j++) {
+					if (g_str_equal (cur_lang, langs[j])) {
+						cur_pri = j;
+						break;
+					}
+				}
+			} else {
+				cur_pri = INT_MAX - 1;
+			}
+
+			if (cur_pri <= keep_pri) {
+				if (keep_lang)
+					xmlFree (keep_lang);
+				if (value)
+					xmlFree (value);
+
+				value = xmlNodeGetContent (cur);
+
+				keep_lang = cur_lang;
+				keep_pri = cur_pri;
+				keep = cur;
+			} else {
+				if (cur_lang)
+					xmlFree (cur_lang);
+			}
+		}
+	}
+
+	/* Delete all RB_PLAYLIST_NAME nodes */
+	cur = node->children;
+	while (cur) {
+		xmlNodePtr this = cur;
+		cur = cur->next;
+		if (! xmlStrcmp (this->name, RB_PLAYLIST_NAME)) {
+			xmlUnlinkNode (this);
+			xmlFreeNode (this);
+		}
+	}
+
+	return value;
+}
+
+static xmlChar *
+get_playlist_name_from_xml (xmlNodePtr node)
+{
+	xmlChar *name;
+
+	/* try to get and trim elements */
+	name = xml_get_and_trim_names (node);
+
+	if (name != NULL) {
+		return name;
+	}
+
+	/* try the attribute */
+	name = xmlGetProp (node, RB_PLAYLIST_NAME);
+
+	return name;
+}
+
 RBSource *
 rb_playlist_source_new_from_xml	(RBShell *shell,
 				 xmlNodePtr node)
 {
 	xmlChar *tmp;
+	xmlChar *name;
 	RBSource *source;
+
+	/* Try to get name from XML and remove translated names */
+	name = get_playlist_name_from_xml (node);
+	rb_debug ("Got playlist name: %s", name);
 
 	tmp = xmlGetProp (node, RB_PLAYLIST_TYPE);
 	if (!xmlStrcmp (tmp, RB_PLAYLIST_AUTOMATIC))
@@ -565,10 +651,9 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 		source = rb_static_playlist_source_new_from_xml (shell, node);
 	else
 		g_assert_not_reached ();
-	
-	tmp = xmlGetProp (node, RB_PLAYLIST_NAME);
-	g_object_set (G_OBJECT (source), "name", tmp, NULL);
-	g_free (tmp);
+
+	g_object_set (G_OBJECT (source), "name", name, NULL);
+	g_free (name);
 
 	return source;
 }
