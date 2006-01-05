@@ -89,6 +89,7 @@ rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
 	porder->query_model_changed = rb_random_query_model_changed;
 	porder->db_entry_deleted = rb_random_db_entry_deleted;
 
+	porder->has_next = rb_play_order_model_not_empty;
 	porder->get_next = rb_random_play_order_get_next;
 	porder->go_next = rb_random_play_order_go_next;
 	porder->get_previous = rb_random_play_order_get_previous;
@@ -325,7 +326,7 @@ rb_random_play_order_get_next (RBPlayOrder* porder)
 	history = get_history (rorder);
 
 	entry = rb_play_order_get_playing_entry (porder);
-	if (rb_history_current (history) == NULL
+	if (rb_history_length (history) == 0 
 	    || (entry == rb_history_current (history)
 	        && rb_history_current (history) == rb_history_last (history))) {
 
@@ -358,10 +359,14 @@ rb_random_play_order_go_next (RBPlayOrder* porder)
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
 	history = get_history (rorder);
-	
+
+	rb_random_play_order_get_next (porder);
+
 	g_object_get (G_OBJECT (rorder), "playing-entry", &entry, NULL);
-	g_assert (entry == NULL || entry == rb_history_current (history));
-	if (entry == rb_history_current (history))
+	g_assert (entry == NULL || rb_history_current (history) == NULL || entry == rb_history_current (history));
+	if (rb_history_current (history) == NULL)
+		rb_history_go_first (history);
+	else
 		rb_history_go_next (history);
 	rb_play_order_set_playing_entry (porder, rb_history_current (history));
 }

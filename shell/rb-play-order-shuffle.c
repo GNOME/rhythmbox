@@ -165,7 +165,7 @@ rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 	history = get_history (sorder);
 
 	entry = rb_play_order_get_playing_entry (porder);
-	if (entry == rb_history_current (history)) {
+	if (entry == rb_history_current (history) && entry != NULL) {
 		if (rb_history_current (history) == rb_history_last (history)) {
 			entry = NULL;
 		} else {
@@ -177,6 +177,9 @@ rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 		 * is the first in the shuffle. */
 		rb_debug ("choosing current entry in shuffle");
 		entry = rb_history_current (history);
+		if (entry == NULL) {
+			entry = rb_history_first (history);
+		}
 	}
 
 	return entry;
@@ -195,9 +198,11 @@ rb_shuffle_play_order_go_next (RBPlayOrder* porder)
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 	history = get_history (sorder);
 
-	g_object_get (G_OBJECT (sorder), "playing-entry", &entry, NULL);
-	g_assert (entry == NULL || entry == rb_history_current (history));
-	if (entry == rb_history_current (history)) {
+	entry = rb_play_order_get_playing_entry (porder);
+	g_assert (entry == NULL || rb_history_current (history) == NULL || entry == rb_history_current (history));
+	if (rb_history_current (history) == NULL)  {
+		rb_history_go_first (history);
+	} else if (entry == rb_history_current (history)) {
 		if (rb_history_current (history) != rb_history_last (history))
 			rb_history_go_next (history);
 	}
@@ -326,9 +331,16 @@ add_randomly_to_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOr
 static void
 rb_shuffle_sync_history_with_query_model (RBShufflePlayOrder *sorder)
 {
+	RhythmDBEntry *current = rb_history_current (get_history (sorder));
+
 	handle_query_model_changed (sorder);
 	g_hash_table_foreach_remove (sorder->priv->entries_removed, (GHRFunc) remove_from_history, sorder);
 	g_hash_table_foreach_remove (sorder->priv->entries_added, (GHRFunc) add_randomly_to_history, sorder);
+
+	/* if the current entry no longer exists in the history, go back to the start */
+	if (!rb_history_contains_entry (get_history (sorder), current)) {
+		rb_history_set_playing (get_history (sorder), NULL);
+	}
 
 	/* postconditions */
 	g_assert (query_model_and_history_contents_match (sorder));

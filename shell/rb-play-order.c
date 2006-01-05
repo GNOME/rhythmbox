@@ -540,7 +540,8 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_added)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_added (porder, entry);
 	
-	rb_play_order_update_have_next_previous (porder);
+	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
+		rb_play_order_update_have_next_previous (porder);
 }
 
 /**
@@ -576,7 +577,8 @@ rb_play_order_entry_deleted_cb (GtkTreeModel *model, GtkTreePath *path, RBPlayOr
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
 
-	rb_play_order_update_have_next_previous (porder);
+	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
+		rb_play_order_update_have_next_previous (porder);
 }
 
 static gboolean

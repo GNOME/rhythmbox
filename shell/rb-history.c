@@ -347,8 +347,12 @@ void
 rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 {
 	g_return_if_fail (RB_IS_HISTORY (hist));
-	g_return_if_fail (entry != NULL);
 
+	if (entry == NULL) {
+		hist->priv->current = g_sequence_get_end_ptr (hist->priv->seq);
+		return;
+	}
+	
 	rb_history_remove_entry (hist, entry);
 
 	g_sequence_insert (g_sequence_ptr_next (hist->priv->current), entry);
@@ -380,9 +384,6 @@ rb_history_append (RBHistory *hist, RhythmDBEntry *entry)
 	g_sequence_append (hist->priv->seq, entry);
 	new_node = g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq));
 	g_hash_table_insert (hist->priv->entry_to_seqptr, entry, new_node);
-
-	if (g_sequence_ptr_is_end (hist->priv->current))
-		hist->priv->current = new_node;
 
 	rb_history_limit_size (hist, TRUE);
 }
@@ -460,7 +461,7 @@ static void
 rb_history_delete_link (RBHistory *hist, GSequencePtr to_delete)
 {
 	if (to_delete == hist->priv->current) {
-		hist->priv->current = g_sequence_ptr_next (hist->priv->current);
+		hist->priv->current = g_sequence_get_end_ptr (hist->priv->seq);
 	}
 	g_assert (to_delete != hist->priv->current);
 

@@ -1,3 +1,30 @@
+2006-01-05  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/rb-history.c: (rb_history_set_playing):
+	Allow setting the playing song to NULL.
+	(rb_history_append), (rb_history_delete_link):
+	Don't randomly change position when entries are added and removed,
+	it confuses play orders.
+	
+	* shell/rb-play-order-random.c: (rb_random_play_order_class_init):
+	Random orders always have a next entry if the model is not empty.
+	(rb_random_play_order_get_next), (rb_random_play_order_go_next):
+	Go back to the start of the history if we're past its end.
+
+	* shell/rb-play-order-shuffle.c: (rb_shuffle_play_order_get_next),
+	(rb_shuffle_play_order_go_next): Go back to the start of the history
+	if we're past its end.
+	(rb_shuffle_sync_history_with_query_model): Go back to the start of
+	the history if the current entry is removed.
+
+	* shell/rb-play-order.c: (rb_play_order_entry_added_cb),
+	(rb_play_order_entry_deleted_cb): Only update have next/previous for
+	the play order when the query has finished. This wasted about 10% CPU
+	while the query was running.
+
+	Fixes #324641: assertion failures when the query model was changed
+	such that the playing song was no longer present.
+
 2006-01-05  James Livingston  <jrl@ids.org.au>
 
 	* daapsharing/rb-daap-src.c: (rb_daap_src_class_init),
