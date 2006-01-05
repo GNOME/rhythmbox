@@ -361,6 +361,9 @@ main (int argc, char **argv)
 		} else {
 			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
 		}
+#ifdef WITH_BONOBO
+		if (!client_proxy) {
+#endif /* WITH_BONOBO */
 #if GTK_MINOR_VERSION >= 8
 		current_time = gdk_x11_display_get_user_time (gdk_display_get_default ());
 #else
@@ -372,11 +375,14 @@ main (int argc, char **argv)
 		 * ourself...
 		 */
 		current_time = GDK_CURRENT_TIME;
-#endif
+#endif	/* GTK_MINOR_VERSION */
 		dbus_g_proxy_call_no_reply (shell_proxy, "present",
 					    G_TYPE_UINT, current_time,
 					    G_TYPE_INVALID);
-#endif
+#ifdef WITH_BONOBO
+		}
+#endif /* WITH_BONOBO */
+#endif /* WITH_DBUS */
 	}
 #ifdef WITH_BONOBO	
 	if (client_proxy)

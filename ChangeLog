@@ -1,5 +1,10 @@
 2006-01-05  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* shell/main.c: (main): Don't use the dbus interface to show the
+	window if we're also going to use the bonobo interface.
+
+2006-01-05  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* shell/rb-history.c: (rb_history_set_playing):
 	Allow setting the playing song to NULL.
 	(rb_history_append), (rb_history_delete_link):
