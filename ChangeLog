@@ -1,5 +1,19 @@
 2006-01-05  James Livingston  <jrl@ids.org.au>
 
+	patch by: Lubomir Marinov <lubomir.marinov@gmail.com>
+
+	* shell/rb-commander.{c,h}: remove obsolete files, that weren't put in
+	the tarball.
+
+	* shell/rb-history.c: (rb_history_class_init),
+	(rb_history_finalize):
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_class_init),
+	(rb_playlist_manager_finalize):
+	* shell/rb-remote.c: (rb_remote_finalize), (rb_remote_class_init),
+	(rb_remote_init): use G_DEFINE_TYPE.
+
+2006-01-05  James Livingston  <jrl@ids.org.au>
+
 	* configure.ac: don't try to use libnotify >= 0.3.0 because of API
 	changes
 
