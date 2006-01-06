@@ -1,3 +1,9 @@
+2006-01-06  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* daapsharing/rb-daap-connection.c: (rb_daap_connection_logout),
+	(rb_daap_connection_do_something):  Don't crash if the DAAP server
+	goes away while we're still trying to log in.
+
 2006-01-06  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_query_preprocess): fix Year criteria.

@@ -1427,19 +1427,23 @@ rb_daap_connection_logout (RBDAAPConnection *connection,
 			   gpointer user_data)
 {
 	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	int old_state = priv->state;
 
 	if (priv->state == DAAP_LOGOUT)
 		return;
 	
-	/* FIXME what to do if we get asked to log out before login has completed? */
-	g_assert (priv->state == DAAP_DONE);
-
-	priv->callback = callback;
-	priv->callback_user_data = user_data;
-	priv->result = TRUE;
-	
 	priv->state = DAAP_LOGOUT;
-	rb_daap_connection_do_something (connection);
+
+	if (old_state <= DAAP_LOGIN) {
+		/* we haven't logged in yet, so we don't need to do anything here */
+		rb_daap_connection_state_done (connection, TRUE);
+	} else {
+		priv->callback = callback;
+		priv->callback_user_data = user_data;
+		priv->result = TRUE;
+		
+		rb_daap_connection_do_something (connection);
+	}
 }
 
 static void
@@ -1513,6 +1517,13 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 				priv->result = FALSE;
 				priv->state = DAAP_DONE;
 				rb_daap_connection_do_something (connection);
+				return;
+			}
+
+			/* If the share went away while we were asking for the password,
+			 * don't bother trying to log in.
+			 */
+			if (priv->state != DAAP_GET_PASSWORD) {
 				return;
 			}
 		}
