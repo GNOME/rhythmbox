@@ -62,6 +62,9 @@ typedef enum
 	RHYTHMDB_QUERY_PROP_LESS,
 	RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN,
 	RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN,
+	RHYTHMDB_QUERY_PROP_YEAR_EQUALS,
+	RHYTHMDB_QUERY_PROP_YEAR_GREATER,   
+	RHYTHMDB_QUERY_PROP_YEAR_LESS,   
 } RhythmDBQueryType;
 
 /* If you modify this enum, don't forget to modify rhythmdb_prop_get_type */
@@ -537,7 +540,7 @@ GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
 void		rhythmdb_query_free			(GPtrArray *query);
 GPtrArray *	rhythmdb_query_copy			(GPtrArray *array);
-void		rhythmdb_query_preprocess		(GPtrArray *query);
+void		rhythmdb_query_preprocess		(RhythmDB *db, GPtrArray *query);
 
 void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
 							 xmlNodePtr node);

@@ -365,7 +365,7 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_QUERY:
 		model->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
 		model->priv->original_query = rhythmdb_query_copy (model->priv->query);
-		rhythmdb_query_preprocess (model->priv->query);
+		rhythmdb_query_preprocess (model->priv->db, model->priv->query);
 		break;
 	case PROP_SORT_FUNC:
 		model->priv->sort_func = g_value_get_pointer (value);

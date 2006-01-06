@@ -1489,6 +1489,9 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			break;
 		case RHYTHMDB_QUERY_END:
 		case RHYTHMDB_QUERY_DISJUNCTION:
+		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
+		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
 			g_assert_not_reached ();
 			break;
 		}

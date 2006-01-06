@@ -61,6 +61,9 @@
 #define RB_PARSE_LESS (xmlChar *) "less"
 #define RB_PARSE_CURRENT_TIME_WITHIN (xmlChar *) "current-time-within"
 #define RB_PARSE_CURRENT_TIME_NOT_WITHIN (xmlChar *) "current-time-not-within"
+#define RB_PARSE_YEAR_EQUALS RB_PARSE_EQUALS
+#define RB_PARSE_YEAR_GREATER RB_PARSE_GREATER
+#define RB_PARSE_YEAR_LESS RB_PARSE_LESS
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
@@ -2724,6 +2727,9 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 		case RHYTHMDB_QUERY_PROP_LESS:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
+		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
 			data->propid = va_arg (args, guint);
 			data->val = g_new0 (GValue, 1);
 			g_value_init (data->val, rhythmdb_get_property_type (db, data->propid));
@@ -2853,6 +2859,9 @@ rhythmdb_query_free (GPtrArray *query)
 		case RHYTHMDB_QUERY_PROP_LESS:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
+		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
 			g_value_unset (data->val);
 			g_free (data->val);
 			break;
@@ -2995,6 +3004,11 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_EQUALS, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
 		case RHYTHMDB_QUERY_DISJUNCTION:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_DISJ, NULL);
 			break;
@@ -3005,8 +3019,18 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_GREATER, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
 		case RHYTHMDB_QUERY_PROP_LESS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_LESS, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
+			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_LESS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
@@ -3055,11 +3079,23 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 		} else if (!xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)) {
 			data->type = RHYTHMDB_QUERY_PROP_NOT_LIKE;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_EQUALS)) {
-			data->type = RHYTHMDB_QUERY_PROP_EQUALS;
+			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
+				       (xmlChar *)"date")) 
+				data->type = RHYTHMDB_QUERY_PROP_YEAR_EQUALS;
+			else 
+				data->type = RHYTHMDB_QUERY_PROP_EQUALS;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_GREATER)) {
-			data->type = RHYTHMDB_QUERY_PROP_GREATER;
+			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
+				       (xmlChar *)"date")) 
+				data->type = RHYTHMDB_QUERY_PROP_YEAR_GREATER;
+			else 
+				data->type = RHYTHMDB_QUERY_PROP_GREATER;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_LESS)) {
-			data->type = RHYTHMDB_QUERY_PROP_LESS;
+			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
+				       (xmlChar *)"date")) 
+				data->type = RHYTHMDB_QUERY_PROP_YEAR_LESS;
+			else 
+				data->type = RHYTHMDB_QUERY_PROP_LESS;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)) {
 			data->type = RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_NOT_WITHIN)) {
@@ -3072,6 +3108,9 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 		    || !xmlStrcmp (child->name, RB_PARSE_EQUALS)
 		    || !xmlStrcmp (child->name, RB_PARSE_GREATER)
 		    || !xmlStrcmp (child->name, RB_PARSE_LESS)
+		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_EQUALS)
+		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_GREATER)
+		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_LESS)
 		    || !xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)
 		    || !xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_NOT_WITHIN)) {
 			xmlChar *propstr = xmlGetProp (child, RB_PARSE_PROP);
@@ -3149,7 +3188,7 @@ rhythmdb_query_internal (RhythmDBQueryThreadData *data)
 	RhythmDBEvent *result;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (data->db);
 
-	rhythmdb_query_preprocess (data->query);
+	rhythmdb_query_preprocess (data->db, data->query);
 
 	rb_debug ("doing query");
 
@@ -3293,6 +3332,9 @@ rhythmdb_query_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LESS, "True if property1 <= property2"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN, "True if property1 is within property2 of the current time"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN, "True if property1 is not within property2 of the current time"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_EQUALS, "Year equivalence: true if date within year"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_GREATER, "True if date greater than year"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_YEAR_LESS, "True if date less than year"),
 			{ 0, 0, 0 }
 		};
 
@@ -3689,16 +3731,27 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 	g_value_unset (&old_val);
 }
 
+/**
+ * This is used to "process" queries, before using them. It is mainly used to two things:
+ *
+ * 1) performing expensive data transformations once per query, rather than
+ *    once per entry we try to match against. e.g. RHYTHMDB_PROP_SEARCH_MATCH
+ *
+ * 2) defining criteria in terms of other lower-level ones that the db backend
+ *    actually implements. e.g. RHYTHMDB_QUERY_YEAR_*
+ **/
+
 void
-rhythmdb_query_preprocess (GPtrArray *query)
+rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 {
 	int i;	
 
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
+		gboolean restart_criteria = FALSE;
 		
 		if (data->subquery) {
-			rhythmdb_query_preprocess (data->subquery);
+			rhythmdb_query_preprocess (db, data->subquery);
 		} else switch (data->propid) {
 			case RHYTHMDB_PROP_TITLE_FOLDED:
 			case RHYTHMDB_PROP_GENRE_FOLDED:
@@ -3727,9 +3780,66 @@ rhythmdb_query_preprocess (GPtrArray *query)
 				break;
 			}
 
+			case RHYTHMDB_PROP_DATE:
+			{
+				GDate *date;
+				gulong search_date;		
+				gulong begin;			
+				gulong end;
+				gulong year;
+
+				search_date = g_value_get_ulong (data->val);
+				date = g_date_new_julian (search_date);		
+				year = g_date_get_year (date);	
+				g_date_free (date);				
+
+				/* get Julian dates for beginning and end of year */ 
+				date = g_date_new_dmy (1, G_DATE_JANUARY, year); 
+				begin = g_date_get_julian (date);	
+				g_date_free (date);				
+
+				/* end the dat before the beginning of the next year */
+				date = g_date_new_dmy (1, G_DATE_JANUARY, year + 1); 
+				end =  g_date_get_julian (date) - 1;
+				g_date_free (date);				
+				
+				/* redo this criteria, in case the criteria we change to need transformation */
+				restart_criteria = TRUE;
+
+				switch (data->type)
+				{
+				case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+					data->type = RHYTHMDB_QUERY_SUBQUERY;
+					data->subquery = rhythmdb_query_parse (db,
+									       RHYTHMDB_QUERY_PROP_GREATER, data->propid, begin,
+									       RHYTHMDB_QUERY_PROP_LESS, data->propid, end,
+									       RHYTHMDB_QUERY_END);
+					break;
+
+				case RHYTHMDB_QUERY_PROP_YEAR_LESS:
+					data->type = RHYTHMDB_QUERY_PROP_LESS;
+					g_value_set_ulong (data->val, end);
+					break;
+
+				case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+					data->type = RHYTHMDB_QUERY_PROP_GREATER;
+					g_value_set_ulong (data->val, begin);
+					break;
+
+				default:
+					break;
+				}
+				
+				break;
+			}
+			
 			default:
 				break;
 		}
+
+		/* re-do this criteria, in case it needs furthur transformation */
+		if (restart_criteria)
+			i--;
 	}
 }
 

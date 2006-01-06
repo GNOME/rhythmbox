@@ -31,6 +31,7 @@ const RBQueryCreatorPropertyType string_property_type;
 const RBQueryCreatorPropertyType escaped_string_property_type;
 const RBQueryCreatorPropertyType rating_property_type;
 const RBQueryCreatorPropertyType integer_property_type;
+const RBQueryCreatorPropertyType year_property_type;
 const RBQueryCreatorPropertyType duration_property_type;
 const RBQueryCreatorPropertyType relative_time_property_type;
 
@@ -45,6 +46,9 @@ static void ratingCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
 static GtkWidget * integerCriteriaCreateWidget (gboolean *constrain);
 static void integerCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
 static void integerCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
+static GtkWidget * yearCriteriaCreateWidget (gboolean *constrain);
+static void yearCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
+static void yearCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
 static GtkWidget * durationCriteriaCreateWidget (gboolean *constrain);
 static void durationCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
 static void durationCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
@@ -62,6 +66,7 @@ const RBQueryCreatorPropertyOption property_options[] =
 	{ N_("Artist"), RHYTHMDB_PROP_ARTIST, RHYTHMDB_PROP_ARTIST_FOLDED, &string_property_type },
 	{ N_("Album"), RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_ALBUM_FOLDED, &string_property_type },
 	{ N_("Genre"), RHYTHMDB_PROP_GENRE, RHYTHMDB_PROP_GENRE_FOLDED, &string_property_type },
+	{ N_("Year"), RHYTHMDB_PROP_DATE, RHYTHMDB_PROP_DATE, &year_property_type },
 	{ N_("Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING, &rating_property_type },
 	{ N_("Path"), RHYTHMDB_PROP_LOCATION, RHYTHMDB_PROP_LOCATION, &escaped_string_property_type },
 
@@ -144,6 +149,20 @@ const RBQueryCreatorCriteriaOption numeric_criteria_options[] =
 	{ N_("at most"), 1, RHYTHMDB_QUERY_PROP_LESS }		/* matches if A <= B */
 };
 
+/*
+ * Property type for date quantities 
+ */
+
+const RBQueryCreatorCriteriaOption year_criteria_options[] =
+{
+	{ N_("in"), 1, RHYTHMDB_QUERY_PROP_YEAR_EQUALS }, 
+	/* matches if within 1-JAN-YEAR to 31-DEC-YEAR */
+	{ N_("after"), 1, RHYTHMDB_QUERY_PROP_YEAR_GREATER },	
+	/* matches if >= 31-DEC-YEAR */
+	{ N_("before"), 1, RHYTHMDB_QUERY_PROP_YEAR_LESS }		
+	/* matches if < 1-DEC-YEAR */
+};
+
 const RBQueryCreatorPropertyType rating_property_type =
 {
 	G_N_ELEMENTS (numeric_criteria_options),
@@ -160,6 +179,15 @@ const RBQueryCreatorPropertyType integer_property_type =
 	integerCriteriaCreateWidget,
 	integerCriteriaSetWidgetData,
 	integerCriteriaGetWidgetData
+};
+
+const RBQueryCreatorPropertyType year_property_type =
+{
+	G_N_ELEMENTS (year_criteria_options),
+	year_criteria_options,
+	yearCriteriaCreateWidget,
+	yearCriteriaSetWidgetData,
+	yearCriteriaGetWidgetData
 };
 
 const RBQueryCreatorPropertyType duration_property_type =
@@ -328,6 +356,45 @@ integerCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 	g_value_init (val, G_TYPE_ULONG);
 	g_value_set_ulong (val, (gulong)num);
 }
+
+/* Implementation for Year properties, using a single GtkSpinButton. */
+
+static GtkWidget *
+yearCriteriaCreateWidget (gboolean *constrain)
+{
+	return gtk_spin_button_new_with_range (0.0, (double)G_MAXINT, 1.0);
+}
+
+static void
+yearCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
+{
+	GDate *date = NULL;
+	gulong num = g_value_get_ulong (val);
+	g_assert (num <= G_MAXINT);
+
+	/* Create a date structure to get year from */
+	date = g_date_new();
+	g_date_set_julian (date, num);
+	
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), (gint)g_date_get_year(date));
+	g_date_free(date);
+}
+
+static void
+yearCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
+{
+	GDate *date = NULL;
+	gint num = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (widget));
+	g_assert (num >=  0);
+
+	/* New date structure, use year set in widget */
+	date = g_date_new_dmy (1, G_DATE_JANUARY, num);
+
+	g_value_init (val, G_TYPE_ULONG);
+	g_value_set_ulong (val, (gulong) g_date_get_julian (date) );
+	g_date_free(date);
+}
+
 
 
 /*
