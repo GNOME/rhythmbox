@@ -57,7 +57,7 @@
 #define SCROBBLER_URL "http://post.audioscrobbler.com/"
 #define SCROBBLER_VERSION "1.1"
 
-#define EXTRA_URI_ENCODE_CHARS	"&"
+#define EXTRA_URI_ENCODE_CHARS	"&+"
 
 typedef struct
 {

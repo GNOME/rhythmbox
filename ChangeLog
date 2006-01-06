@@ -1,3 +1,9 @@
+2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/rb-audioscrobbler.c:
+	Add '+' to the list of characters to URI-encode, so it doesn't get
+	interpreted as a space.
+
 2006-01-06  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* daapsharing/rb-daap-connection.c: (rb_daap_connection_logout),
