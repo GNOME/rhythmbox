@@ -432,7 +432,7 @@ start_browsing (RBShell *shell)
 							  (GDestroyNotify)g_free, 
 							  (GDestroyNotify)stop_resolver);
 
-	rb_daap_src_init ();
+	rb_daap_src_initialize ();
 }
 
 static void

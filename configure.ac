@@ -155,12 +155,14 @@ PKG_CHECK_MODULES(GSTREAMER_0_10, \
 	gstreamer-plugins-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION,
 	have_gstreamer_0_10=yes,have_gstreamer_0_10=no)
 
-AC_ARG_WITH(player,
+AC_ARG_WITH(playback,
    AC_HELP_STRING([--with-playback=auto|gstreamer-0-8|gstreamer-0-10],
    [Select the playback backend to use (default auto)]),,
    with_playback=auto)
 
-if test x$with_playback = xauto -o x$with_playback = x$gstreamer_0_10; then
+AC_MSG_NOTICE([foo: $with_playback])
+
+if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
 	if test x"$have_gstreamer_0_10" = xyes; then
 		with_playback=gstreamer_0_10
 		SOUNDSYSTEM_DEPS="gstreamer-$GST_0_10_MAJORMINOR"
@@ -168,11 +170,11 @@ if test x$with_playback = xauto -o x$with_playback = x$gstreamer_0_10; then
 		AC_DEFINE(HAVE_GSTREAMER_0_10,1,[Define if you want to use the GStreamer 0.10])
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
-	elif test x$with_playback = x$gstreamer_0_10; then
+	elif test x$with_playback = xgstreamer_0_10; then
 		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
 	fi
 fi
-if test x$with_playback = xauto -o x$with_playback = x$gstreamer_0_8; then
+if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
 	if test x"$have_gstreamer_0_8" = xyes; then
 		with_playback=gstreamer_0_8
 		SOUNDSYSTEM_DEPS="gstreamer-$GST_0_8_MAJORMINOR"
@@ -180,7 +182,7 @@ if test x$with_playback = xauto -o x$with_playback = x$gstreamer_0_8; then
 		AC_DEFINE(HAVE_GSTREAMER_0_8,1,[Define if you want to use the GStreamer 0.8])
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_8_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_8_LIBS"
-	elif test x$with_playback = x$gstreamer_0_8; then
+	elif test x$with_playback = xgstreamer_0_8; then
 		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
 	fi
 fi
@@ -693,7 +695,7 @@ if test x"$with_playback" = xgstreamer_0_8; then
 elif test x"$with_playback" = xgstreamer_0_10; then
 	AC_MSG_NOTICE([** GStreamer 0.10 player is enabled])
 else
-	AC_MSG_NOTICE([** this shouldn't happen])
+	AC_MSG_ERROR([   Playback engine set incorrectly])
 fi
 
 if test x"$use_ipod" = xyes; then

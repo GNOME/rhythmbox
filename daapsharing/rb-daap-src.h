@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-void rb_daap_src_init (void);
+void rb_daap_src_initialize (void);
 void rb_daap_src_shutdown (void);
 
 void rb_daap_src_set_time (glong time);

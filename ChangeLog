@@ -1,3 +1,13 @@
+2006-01-06  James Livingston  <jrl@ids.org.au>
+
+	* configure.ac: make the playback backend selection work correctly
+
+	* daapsharing/rb-daap-src.c: (rb_daap_src_get_type),
+	(rb_daap_src_class_init), (rb_daap_src_dispose),
+	(rb_daap_src_change_state), (rb_daap_src_initialize):
+	* daapsharing/rb-daap-src.h: revent the G_DEFINE_TYPE change, since it
+	doesn't work for this class. Fixes bug 325934
+
 2006-01-06  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* configure.ac: Fix check for libnotify.
