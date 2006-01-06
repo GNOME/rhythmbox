@@ -2761,6 +2761,7 @@ rb_shell_add_uri (RBShell *shell, gint entrytype, const char *uri,
 		return TRUE;
 	} else if (source == RB_SOURCE (shell->priv->podcast_source)) {
 		rb_podcast_source_add_feed (shell->priv->podcast_source, uri);
+		return TRUE;
 	} else if (entrytype == RHYTHMDB_ENTRY_TYPE_SONG) {
 		/* FIXME should be sync... */
 		rhythmdb_add_uri (shell->priv->db, uri);
