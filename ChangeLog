@@ -1,5 +1,13 @@
 2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_set_property):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_append_page),
+	(rb_shell_preferences_append_view_page):
+	* shell/rb-shell-preferences.h:
+	Fix typo in function name.  Fixes #325992.
+
+2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* shell/rb-audioscrobbler.c:
 	Add '+' to the list of characters to URI-encode, so it doesn't get
 	interpreted as a space.

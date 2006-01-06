@@ -51,7 +51,7 @@ typedef struct
 GType		rb_shell_preferences_get_type		(void);
 
 GtkWidget	*rb_shell_preferences_new		(GList *views);
-void		rb_shell_references_append_page		(RBShellPreferences *prefs,
+void		rb_shell_preferences_append_page	(RBShellPreferences *prefs,
 							 const char *name,
 							 GtkWidget *widget);
 

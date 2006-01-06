@@ -394,9 +394,9 @@ rb_audioscrobbler_set_property (GObject *object,
 			RBShellPreferences *prefs = g_value_get_object (value);
 			GtkWidget *config_widget = rb_audioscrobbler_get_config_widget (audioscrobbler);
 
-			rb_shell_references_append_page (prefs,
-				       			 _("Audioscrobbler"),
-							 config_widget);
+			rb_shell_preferences_append_page (prefs,
+				       			  _("Audioscrobbler"),
+							  config_widget);
 			break;
 		}
 		default:

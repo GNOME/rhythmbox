@@ -216,9 +216,9 @@ rb_shell_preferences_finalize (GObject *object)
 }
 
 void
-rb_shell_references_append_page (RBShellPreferences *prefs,
-				 const char *name,
-				 GtkWidget *widget)
+rb_shell_preferences_append_page (RBShellPreferences *prefs,
+				  const char *name,
+				  GtkWidget *widget)
 {
 	GtkWidget *label;
 		
@@ -242,7 +242,7 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 	if (!widget)
 		return;
 
-	rb_shell_references_append_page (prefs, name, widget);
+	rb_shell_preferences_append_page (prefs, name, widget);
 }
 
 #ifdef WITH_DAAP_SUPPORT
