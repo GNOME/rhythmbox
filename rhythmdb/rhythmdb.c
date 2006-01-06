@@ -584,7 +584,7 @@ rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
 		break;
 	case RHYTHMDB_EVENT_THREAD_EXITED:
 		g_object_unref (db);
-		g_atomic_int_dec_and_test (&db->priv->outstanding_threads);
+		g_assert (g_atomic_int_dec_and_test (&db->priv->outstanding_threads) >= 0);
 		g_async_queue_unref (db->priv->action_queue);
 		g_async_queue_unref (db->priv->event_queue);
 		break;
