@@ -2725,10 +2725,18 @@ rb_shell_guess_type_for_uri (RBShell *shell, const char *uri)
 		return -1;
 	}
 
-	if (strncmp ("http", uri, 4) == 0
-	    || strncmp ("pnm", uri, 3) == 0
-	    || strncmp ("rtsp", uri, 4) == 0)
+	if (strncmp ("http", uri, 4) == 0) {
+		const char *uriend = uri + strlen(uri);
+		if ((strcasecmp (".xml", uriend-4) == 0)
+		    || strcasecmp (".rss", uriend-4) == 0)
+			return RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
 		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+	}
+
+	if (strncmp ("pnm", uri, 3) == 0
+	    || strncmp ("rtsp", uri, 4) == 0) {
+		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+	}
 	return RHYTHMDB_ENTRY_TYPE_SONG;
 }
 
@@ -2751,6 +2759,8 @@ rb_shell_add_uri (RBShell *shell, gint entrytype, const char *uri,
 					      title,
 					      genre);
 		return TRUE;
+	} else if (source == RB_SOURCE (shell->priv->podcast_source)) {
+		rb_podcast_source_add_feed (shell->priv->podcast_source, uri);
 	} else if (entrytype == RHYTHMDB_ENTRY_TYPE_SONG) {
 		/* FIXME should be sync... */
 		rhythmdb_add_uri (shell->priv->db, uri);

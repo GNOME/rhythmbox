@@ -1,5 +1,14 @@
 2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* shell/rb-shell.c: (rb_shell_guess_type_for_uri):
+	Assume HTTP URLs ending with .xml or .rss are podcasts.
+	(rb_shell_add_uri): Handle adding podcast feeds.
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_new):
+	Register as the source for podcast feeds.
+
+2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_set_property):
 	* shell/rb-shell-preferences.c: (rb_shell_preferences_append_page),
 	(rb_shell_preferences_append_view_page):

@@ -743,6 +743,8 @@ rb_podcast_source_new (RBShell *shell)
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source, 
+						 RHYTHMDB_ENTRY_TYPE_PODCAST_FEED);
+	rb_shell_register_entry_type_for_source (shell, source, 
 						 RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 	
 	return source;
