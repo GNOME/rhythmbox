@@ -3803,12 +3803,10 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 				end =  g_date_get_julian (date) - 1;
 				g_date_free (date);				
 				
-				/* redo this criteria, in case the criteria we change to need transformation */
-				restart_criteria = TRUE;
-
 				switch (data->type)
 				{
 				case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+					restart_criteria = TRUE;
 					data->type = RHYTHMDB_QUERY_SUBQUERY;
 					data->subquery = rhythmdb_query_parse (db,
 									       RHYTHMDB_QUERY_PROP_GREATER, data->propid, begin,
@@ -3817,11 +3815,13 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 					break;
 
 				case RHYTHMDB_QUERY_PROP_YEAR_LESS:
+					restart_criteria = TRUE;
 					data->type = RHYTHMDB_QUERY_PROP_LESS;
 					g_value_set_ulong (data->val, end);
 					break;
 
 				case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+					restart_criteria = TRUE;
 					data->type = RHYTHMDB_QUERY_PROP_GREATER;
 					g_value_set_ulong (data->val, begin);
 					break;
