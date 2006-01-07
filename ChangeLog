@@ -1,3 +1,18 @@
+2006-01-07  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-playlist-source-recorder.c (update_speed_combobox):
+	Use new gconf key.
+	(burn_cd): Always eject CD after burning.  Too many drives
+	get confused if we don't.  Save the speed used if the burn
+	was completed successfully.
+
+	* data/rhythmbox.schemas: Use our own speed instead of from
+	n-c-b. The situation is that the default_speed for n-c-b is most
+	likely the maximum write speed.  This is fine for n-c-b because it
+	has burn-proof turned on.  We can't turn it on for audio CDs
+	because the results are poor in quality.  So we'll just pick a
+	default that should work for everyone (4).
+
 2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
 	
 	* shell/rb-playlist-manager.c: (reap_dead_playlist_threads),

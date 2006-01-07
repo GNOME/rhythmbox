@@ -61,6 +61,8 @@ extern char *mkdtemp (char *template);
 
 #include "rb-recorder.h"
 
+#define CONF_STATE_BURN_SPEED CONF_PREFIX "/state/burn_speed"
+
 #define AUDIO_BYTERATE (2 * 44100 * 2)
 #define MAX_PLAYLIST_DURATION 6000
 
@@ -93,7 +95,6 @@ struct RBPlaylistSourceRecorderPrivate
         RBRecorder  *recorder;
         GSList      *songs;
         GSList      *current;
-        GConfClient *gconf_client;
         GTimer      *timer;
         guint64      start_pos;
 
@@ -244,9 +245,9 @@ static void
 update_speed_combobox (RBPlaylistSourceRecorder *source)
 {
         GtkWidget               *combobox;
-        GConfClient             *gc;
         char                    *name;
-        int                      i, default_speed;
+        int                      i;
+        int                      default_speed;
         const NautilusBurnDrive *drive;
         GtkTreeModel            *model;
         GtkTreeIter              iter;
@@ -258,10 +259,6 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
         combobox = source->priv->speed_combobox;
         model = gtk_combo_box_get_model (GTK_COMBO_BOX (combobox));
         gtk_list_store_clear (GTK_LIST_STORE (model));
-
-        gc = gconf_client_get_default ();
-        default_speed = gconf_client_get_int (gc, "/apps/nautilus-cd-burner/default_speed", NULL);
-        g_object_unref (G_OBJECT (gc));
 
         gtk_list_store_append (GTK_LIST_STORE (model), &iter);
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -284,6 +281,8 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
                 /* Disable speed if max speed < 1 */
                 gtk_widget_set_sensitive (combobox, drive->max_speed_write > 0);
         }
+
+        default_speed = eel_gconf_get_integer (CONF_STATE_BURN_SPEED);
 
         /* for now assume equivalence between index in comboxbox and speed */
         gtk_combo_box_set_active (GTK_COMBO_BOX (combobox), default_speed);
@@ -468,6 +467,28 @@ progress_set_fraction (GtkWidget *progress,
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), fraction);
 }
 
+/* copied from nautilus-burn-drive 2.12 */
+static gboolean
+_nautilus_burn_drive_eject (NautilusBurnDrive *drive)
+{
+        char    *cmd;
+        gboolean res;
+
+        g_return_val_if_fail (drive != NULL, FALSE);
+
+        if (drive->device == NULL)
+                return FALSE;
+        
+        cmd = g_strdup_printf ("eject %s", drive->device);
+        res = g_spawn_command_line_sync (cmd, NULL, NULL, NULL, NULL);
+        g_free (cmd);
+
+        /* delay a bit to make sure eject finishes */
+        sleep (2);
+
+        return res;
+}
+
 static int
 burn_cd (RBPlaylistSourceRecorder *source,
          GError                  **error)
@@ -494,12 +515,20 @@ burn_cd (RBPlaylistSourceRecorder *source,
                 return RB_RECORDER_RESULT_ERROR;
 
         if (res == RB_RECORDER_RESULT_FINISHED) {
-                gboolean do_another;
-                const char *finished_msg;
+                NautilusBurnDrive *drive;
+                gboolean           do_another;
+                const char        *finished_msg;
 
                 finished_msg = _("Finished creating audio CD.");
 
                 rb_shell_hidden_notify (source->priv->shell, 0, finished_msg, source->priv->cd_icon, "");
+
+                /* save the write speed that was used */
+                eel_gconf_set_integer (CONF_STATE_BURN_SPEED, speed);
+
+                /* Always eject the disk after writing.  Too many drives mess up otherwise */
+                drive = (NautilusBurnDrive *)lookup_current_recorder (source);
+                _nautilus_burn_drive_eject (drive);
 
                 do_another = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->multiple_copies_checkbutton));
                 if (!do_another) {
@@ -953,28 +982,6 @@ _nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
         return _("Broken media type");
 }
 
-/* copied from nautilus-burn-drive 2.12 */
-static gboolean
-_nautilus_burn_drive_eject (NautilusBurnDrive *drive)
-{
-        char    *cmd;
-        gboolean res;
-
-        g_return_val_if_fail (drive != NULL, FALSE);
-
-        if (drive->device == NULL)
-                return FALSE;
-        
-        cmd = g_strdup_printf ("eject %s", drive->device);
-        res = g_spawn_command_line_sync (cmd, NULL, NULL, NULL, NULL);
-        g_free (cmd);
-
-        /* delay a bit to make sure eject finishes */
-        sleep (2);
-
-        return res;
-}
-
 static int
 ask_rewrite_disc (RBPlaylistSourceRecorder *source,
                   const char               *device)
@@ -1098,8 +1105,6 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
                           NULL);
 
         source->priv = RB_PLAYLIST_SOURCE_RECORDER_GET_PRIVATE (source);
-
-        source->priv->gconf_client = gconf_client_get_default ();
 
         gtk_window_set_resizable (GTK_WINDOW (source), FALSE);
         gtk_dialog_set_has_separator (GTK_DIALOG (source), FALSE);
@@ -1273,10 +1278,6 @@ rb_playlist_source_recorder_finalize (GObject *object)
         g_object_unref (source->priv->shell);
 
         g_object_unref (source->priv->cd_icon);
-
-        if (source->priv->gconf_client)
-                g_object_unref (source->priv->gconf_client);
-        source->priv->gconf_client = NULL;
 
         g_free (source->priv->name);
         source->priv->name = NULL;

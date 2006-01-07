@@ -497,6 +497,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/burn_speed</key>
+	<applyto>/apps/rhythmbox/state/burn_speed</applyto>
+	<owner>rhythmbox</owner>
+	<type>int</type>
+	<default>4</default>
+	<locale name="C">
+	  <short>Default audio disc writing speed</short>
+	  <long>Default speed at which the audio disc will be written.</long>
+	</locale>
+      </schema>
+      <schema>
 	<key>/schemas/apps/rhythmbox/sharing/enable_browsing</key>
 	<applyto>/apps/rhythmbox/sharing/enable_browsing</applyto>
 	<owner>rhythmbox</owner>
