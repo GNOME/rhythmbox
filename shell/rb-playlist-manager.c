@@ -291,7 +291,7 @@ reap_dead_playlist_threads (RBPlaylistManager *mgr)
 	while ((obj = g_async_queue_try_pop (mgr->priv->status_queue)) != NULL) {
 		GDK_THREADS_ENTER ();
 		g_object_unref (obj);
-		g_atomic_int_dec_and_test (&mgr->priv->outstanding_threads);
+		g_atomic_int_add (&mgr->priv->outstanding_threads, -1);
 		GDK_THREADS_LEAVE ();
 	}
 
@@ -319,7 +319,7 @@ rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
 	while (g_atomic_int_get (&mgr->priv->outstanding_threads) > 0) {
 		GObject *obj = g_async_queue_pop (mgr->priv->status_queue);
 		g_object_unref (obj);
-		g_atomic_int_dec_and_test (&mgr->priv->outstanding_threads);
+		g_atomic_int_add (&mgr->priv->outstanding_threads, -1);
 	}
 }
 

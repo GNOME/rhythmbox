@@ -1,4 +1,9 @@
 2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
+	
+	* shell/rb-playlist-manager.c: (reap_dead_playlist_threads),
+	(rb_playlist_manager_shutdown): Fix more compile errors with GCC 4.1.
+
+2006-01-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* shell/rb-shell.c: (rb_shell_add_uri): Fix compile error introduced
 	in my previous commit.  Fixes #326037.
