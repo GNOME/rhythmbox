@@ -1,5 +1,13 @@
 2006-01-07  William Jon McCann  <mccann@jhu.edu>
 
+	* shell/rb-shell.c (sourcelist_drag_received_cb): 
+	* shell/rb-playlist-manager.[ch] (create_name_from_selection_data) 
+	(rb_playlist_manager_new_playlist_from_selection_data):
+	Make a reasonable default name for playlists created from
+	dropped data.  Fixes #326116.
+
+2006-01-07  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-playlist-source-recorder.c (update_speed_combobox):
 	Use new gconf key.
 	(burn_cd): Always eject CD after burning.  Too many drives

@@ -339,9 +339,9 @@ tray_popup_position_menu (GtkMenu *menu,
         menu_ypos += widget->allocation.y;
 
 	if (menu_ypos > gdk_screen_get_height (gtk_widget_get_screen (widget)) / 2)
-		menu_ypos -= requisition.height;
+		menu_ypos -= requisition.height + widget->style->ythickness;
 	else
-		menu_ypos += widget->allocation.height;
+		menu_ypos += widget->allocation.height + widget->style->ythickness;
 
         *x = menu_xpos;
         *y = menu_ypos;

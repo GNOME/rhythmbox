@@ -2486,9 +2486,8 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 			     RBShell *shell)
 {
         if (source == NULL) {
-		gboolean smart = (data->type != gdk_atom_intern ("text/uri-list", TRUE));
-		source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
-							   NULL, smart);
+		source = rb_playlist_manager_new_playlist_from_selection_data (shell->priv->playlist_manager,
+									       data);
         }
 
         if (source != NULL) {

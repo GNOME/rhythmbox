@@ -886,6 +886,121 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 	return playlist;
 }
 
+static char *
+create_name_from_selection_data (RBPlaylistManager *mgr,
+				 GtkSelectionData *data)
+{
+	char  *name = NULL;
+	GList *list;
+
+        if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
+                list = gnome_vfs_uri_list_parse ((char *) data->data);
+
+		if (list != NULL) {
+			GList   *l;
+			char    *artist;
+			char    *album;
+			gboolean mixed_artists;
+			gboolean mixed_albums;
+
+			artist = NULL;
+			album  = NULL;
+			mixed_artists = FALSE;
+			mixed_albums  = FALSE;
+			for (l = list; l != NULL; l = g_list_next (l)) {
+				RhythmDBEntry *entry;
+				char          *location;
+				const char    *e_artist;
+				const char    *e_album;
+
+				location = gnome_vfs_uri_to_string ((const GnomeVFSURI *) l->data, 0);
+				if (location == NULL) {
+					continue;
+				}
+
+				entry = rhythmdb_entry_lookup_by_location (mgr->priv->db, location);
+				if (entry == NULL) {
+					continue;
+				}
+
+				e_artist = rb_refstring_get (entry->artist);
+				e_album  = rb_refstring_get (entry->album);
+
+				/* get value of first non-NULL artist */
+				if (e_artist != NULL && artist == NULL) {
+					artist = g_strdup (e_artist);
+				}
+
+				/* get value of first non-NULL album */
+				if (e_album != NULL && album == NULL) {
+					album = g_strdup (e_album);
+				}
+
+				/* pretend that NULL fields always match */
+				if (artist != NULL && e_artist != NULL
+				    && strcmp (artist, e_artist) != 0) {
+					mixed_artists = TRUE;
+				}
+
+				/* pretend that NULL fields always match */
+				if (album != NULL && e_album != NULL
+				    && strcmp (album, e_album) != 0) {
+					mixed_albums = TRUE;
+				}
+
+				/* if there is a mix of both then stop */
+				if (mixed_artists && mixed_albums) {
+					break;
+				}
+			}
+
+			if (! mixed_artists && ! mixed_albums) {
+				name = g_strdup_printf ("%s - %s", artist, album);
+			} else if (! mixed_artists) {
+				name = g_strdup_printf ("%s", artist);
+			} else if (! mixed_albums) {
+				name = g_strdup_printf ("%s", album);
+			}
+
+			g_free (artist);
+			g_free (album);
+			gnome_vfs_uri_list_free (list);
+		}
+
+	} else {
+		char **names;
+
+		names = g_strsplit ((char *)data->data, "\r\n", 0);
+		name = g_strjoinv (", ", names);
+		g_strfreev (names);
+	}
+
+	if (name == NULL) {
+		name = g_strdup (_("Untitled Playlist"));
+	}
+
+	return name;
+}
+
+RBSource *
+rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
+						      GtkSelectionData *data)
+{
+	RBSource *playlist;
+	gboolean  automatic;
+	char     *suggested_name;
+
+	automatic = (data->type != gdk_atom_intern ("text/uri-list", TRUE));
+	suggested_name = create_name_from_selection_data (mgr, data);
+
+	playlist = rb_playlist_manager_new_playlist (mgr,
+						     suggested_name, 
+						     automatic);
+	g_free (suggested_name);
+
+	return playlist;
+}
+
 GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 {
