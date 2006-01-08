@@ -1,5 +1,12 @@
 2006-01-07  William Jon McCann  <mccann@jhu.edu>
 
+	* shell/rb-tray-icon.c (tray_popup_position_menu):
+	Make tray menu align with edge of panel.
+
+	patch from Jaap A. Haitsma <jaap@haitsma.org>
+	Fixes #319913
+
+2006-01-07  William Jon McCann  <mccann@jhu.edu>
 	* shell/rb-shell.c (sourcelist_drag_received_cb): 
 	* shell/rb-playlist-manager.[ch] (create_name_from_selection_data) 
 	(rb_playlist_manager_new_playlist_from_selection_data):
