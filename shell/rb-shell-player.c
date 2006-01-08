@@ -114,11 +114,7 @@ static void rb_shell_player_entry_activated_cb (RBEntryView *view,
 static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 						       const char *name,
 						       RBShellPlayer *playa);
-static void rb_shell_player_volume_changed_cb (GConfClient *client,
-					       guint cnxn_id,
-					       GConfEntry *entry,
-					       RBShellPlayer *playa);
-static void rb_shell_player_sync_volume (RBShellPlayer *player); 
+static void rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify); 
 static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, long elapsed, gpointer data);
@@ -196,11 +192,10 @@ struct RBShellPlayerPrivate
 	RBStatusbar *statusbar_widget;
 
 	guint gconf_play_order_id;
-	guint gconf_state_id;
 	guint gconf_song_position_slider_visibility_id;
 
 	gboolean mute;
-	float pre_mute_volume;
+	float volume;
 
 	guint do_next_idle_id;
 };
@@ -575,10 +570,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
 	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
-	player->priv->gconf_state_id = 
-		eel_gconf_notification_add (CONF_STATE_VOLUME,
-					    (GConfClientNotifyFunc) rb_shell_player_volume_changed_cb,
-					    player);
+	player->priv->volume = eel_gconf_get_float (CONF_STATE_VOLUME);
 
 	g_signal_connect (player, "notify::playing",
 			  G_CALLBACK (reemit_playing_signal), NULL);
@@ -607,11 +599,9 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
-	eel_gconf_notification_remove(player->priv->gconf_play_order_id);
-	eel_gconf_notification_remove(player->priv->gconf_state_id);
+	eel_gconf_notification_remove (player->priv->gconf_play_order_id);
 
-	eel_gconf_set_float (CONF_STATE_VOLUME,
-			     rb_player_get_volume (player->priv->mmplayer));
+	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
 
 	g_object_unref (G_OBJECT (player->priv->mmplayer));
 	g_object_unref (G_OBJECT (player->priv->play_order));
@@ -702,8 +692,8 @@ rb_shell_player_set_property (GObject *object,
 				      g_value_get_string (value));
 		break;
 	case PROP_VOLUME:
-		eel_gconf_set_float (CONF_STATE_VOLUME, 
-				     g_value_get_float (value));
+		player->priv->volume = g_value_get_float (value);
+		rb_shell_player_sync_volume (player, FALSE);
 		break;
 	case PROP_STATUSBAR:
 		player->priv->statusbar_widget = g_value_get_object (value);
@@ -770,7 +760,7 @@ rb_shell_player_get_property (GObject *object,
 		g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
 		break;
 	case PROP_VOLUME:
-		g_value_set_float (value, rb_player_get_volume (player->priv->mmplayer));
+		g_value_set_float (value, player->priv->volume);
 		break;
 	case PROP_STATUSBAR:
 		g_value_set_object (value, player->priv->statusbar_widget);
@@ -1529,31 +1519,30 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 }
 
 static void
-rb_shell_player_sync_volume (RBShellPlayer *player)
+rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify)
 {
-	float volume = eel_gconf_get_float (CONF_STATE_VOLUME);
-	if (volume < 0.0)
-		volume = 0.0;
-	else if (volume > 1.0)
-		volume = 1.0;
+	if (player->priv->volume < 0.0)
+		player->priv->volume = 0.0;
+	else if (player->priv->volume > 1.0)
+		player->priv->volume = 1.0;
+
 	rb_player_set_volume (player->priv->mmplayer,
-					volume);
-					
+			      player->priv->mute ? 0.0 : player->priv->volume);
+
+	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
+
 	rb_shell_player_sync_replaygain (player, 
-					 rb_shell_player_get_playing_entry (player));					
+					 rb_shell_player_get_playing_entry (player));
+
+	if (notify)
+		g_object_notify (G_OBJECT (player), "volume");
 }
 
 void
 rb_shell_player_toggle_mute (RBShellPlayer *player)
 {
-	if (player->priv->mute) {
-		rb_player_set_volume (player->priv->mmplayer, player->priv->pre_mute_volume);
-		player->priv->mute = FALSE;
-	} else {
-		player->priv->pre_mute_volume = rb_player_get_volume (player->priv->mmplayer);
-		rb_player_set_volume (player->priv->mmplayer, 0.0);
-		player->priv->mute = TRUE;
-	}
+	player->priv->mute = !player->priv->mute;
+	rb_shell_player_sync_volume (player, FALSE);
 }
 
 static void
@@ -1575,14 +1564,54 @@ rb_shell_player_sync_replaygain (RBShellPlayer *player, RhythmDBEntry *entry)
 				  entry_track_peak, entry_album_gain, entry_album_peak);
 }
 
-static void
-rb_shell_player_volume_changed_cb (GConfClient *client,
-				   guint cnxn_id,
-				   GConfEntry *entry,
-				   RBShellPlayer *playa)
+gboolean
+rb_shell_player_set_volume (RBShellPlayer *player,
+			    gdouble volume,
+			    GError **error)
 {
-	rb_debug ("volume changed");
-	rb_shell_player_sync_volume (playa);
+	player->priv->volume = volume;
+	rb_shell_player_sync_volume (player, TRUE);
+	return TRUE;
+}
+
+gboolean
+rb_shell_player_set_volume_relative (RBShellPlayer *player,
+				     gdouble delta,
+				     GError **error)
+{
+	/* rb_shell_player_sync_volume does clipping */
+	player->priv->volume += delta;
+	rb_shell_player_sync_volume (player, TRUE);
+	return TRUE;
+}
+
+
+gboolean
+rb_shell_player_get_volume (RBShellPlayer *player,
+			    gdouble *volume,
+			    GError **error)
+{
+	*volume = player->priv->volume;
+	return TRUE;
+}
+
+gboolean
+rb_shell_player_set_mute (RBShellPlayer *player,
+			  gboolean mute,
+			  GError **error)
+{
+	player->priv->mute = mute;
+	rb_shell_player_sync_volume (player, FALSE);
+	return TRUE;
+}
+
+gboolean
+rb_shell_player_get_mute (RBShellPlayer *player,
+			  gboolean *mute,
+			  GError **error)
+{
+	*mute = player->priv->mute;
+	return TRUE;
 }
 
 static void

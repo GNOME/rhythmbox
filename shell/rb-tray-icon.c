@@ -391,8 +391,13 @@ rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 				    RBTrayIcon *icon)
 {
 	float volume;
+	GValue volume_val = {0,};
 	rb_debug ("tray button scroll");
-	volume = eel_gconf_get_float (CONF_STATE_VOLUME);
+
+	g_value_init (&volume_val, G_TYPE_FLOAT);
+	rb_remote_proxy_get_player_property (icon->priv->proxy, "volume", &volume_val);
+	volume = g_value_get_float (&volume_val);
+
 	switch (event->scroll.direction) {
 	case GDK_SCROLL_UP:
 		volume += 0.1;
@@ -410,7 +415,8 @@ rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 	}
 	
 	rb_debug ("got scroll, setting volume to %f", volume);
-	eel_gconf_set_float (CONF_STATE_VOLUME, volume);
+	g_value_set_float (&volume_val, volume);
+	rb_remote_proxy_set_player_property (icon->priv->proxy, "volume", &volume_val);
 }
 
 static void

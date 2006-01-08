@@ -126,6 +126,27 @@ RhythmDBEntry *         rb_shell_player_get_playing_entry (RBShellPlayer *player
 
 void			rb_shell_player_toggle_mute	(RBShellPlayer *player);
 
+gboolean		rb_shell_player_set_volume	(RBShellPlayer *player,
+							 gdouble volume,
+							 GError **error);
+
+gboolean		rb_shell_player_get_volume	(RBShellPlayer *player,
+							 gdouble *volume,
+							 GError **error);
+
+gboolean		rb_shell_player_set_volume_relative (RBShellPlayer *player,
+							 gdouble volume,
+							 GError **error);
+
+gboolean		rb_shell_player_set_mute	(RBShellPlayer *player,
+							 gboolean mute,
+							 GError **error);
+
+gboolean		rb_shell_player_get_mute	(RBShellPlayer *player,
+							 gboolean *mute,
+							 GError **error);
+
+
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);
 #endif

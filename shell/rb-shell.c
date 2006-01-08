@@ -292,6 +292,9 @@ static void sidebar_paned_size_allocate_cb (GtkWidget *widget,
 					    RBShell *shell);
 static void rb_shell_volume_widget_changed_cb (BaconVolumeButton *vol,
 					       RBShell *shell);
+static void rb_shell_player_volume_changed_cb (RBShellPlayer *player,
+					       GParamSpec *arg,
+					       RBShell *shell);
 
 static void session_die_cb (GnomeClient *client, RBShell *shell);
 static void rb_shell_session_init (RBShell *shell);
@@ -396,6 +399,7 @@ struct RBShellPrivate
 	RBTrayIcon *tray_icon;
 	GtkTooltips *tooltips;
 	GtkWidget *volume_button;
+	gboolean syncing_volume;
 
 	char *cached_title;
 	char *cached_duration;
@@ -1233,9 +1237,10 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	g_signal_connect (shell->priv->volume_button, "value-changed",
 			  G_CALLBACK (rb_shell_volume_widget_changed_cb),
 			  shell);
-	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (shell->priv->volume_button),
-				       eel_gconf_get_float (CONF_STATE_VOLUME));
-
+	g_signal_connect (shell->priv->player_shell, "notify::volume",
+			  G_CALLBACK (rb_shell_player_volume_changed_cb),
+			  shell);
+	rb_shell_player_volume_changed_cb (shell->priv->player_shell, NULL, shell);
 
 	tool_item = gtk_tool_item_new ();
 	gtk_tool_item_set_expand (tool_item, TRUE);
@@ -3274,7 +3279,23 @@ static void
 rb_shell_volume_widget_changed_cb (BaconVolumeButton *vol,
 				   RBShell *shell)
 {
-	eel_gconf_set_float (CONF_STATE_VOLUME,
-			     bacon_volume_button_get_value (vol));
+	if (!shell->priv->syncing_volume)
+		g_object_set (shell->priv->player_shell, 
+			      "volume", bacon_volume_button_get_value (vol), 
+			      NULL);
+}
+
+static void
+rb_shell_player_volume_changed_cb (RBShellPlayer *player,
+				   GParamSpec *arg,
+				   RBShell *shell)
+{
+	float volume;
+	g_object_get (G_OBJECT (player), "volume", &volume, NULL);
+	shell->priv->syncing_volume = TRUE;
+	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (shell->priv->volume_button), 
+				       volume);
+	shell->priv->syncing_volume = FALSE;
+
 }
 

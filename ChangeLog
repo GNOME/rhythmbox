@@ -1,3 +1,25 @@
+2006-01-08  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_finalize), (rb_shell_player_set_property),
+	(rb_shell_player_get_property), (rb_shell_player_sync_volume),
+	(rb_shell_player_toggle_mute), (rb_shell_player_set_volume),
+	(rb_shell_player_set_volume_relative),
+	(rb_shell_player_get_volume), (rb_shell_player_set_mute),
+	(rb_shell_player_get_mute):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-player.xml:
+	Store volume as a property on RBShellPlayer, rather than in gconf.
+	Add some methods to control volume via dbus.
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_volume_widget_changed_cb),
+	(rb_shell_player_volume_changed_cb):
+	* shell/rb-tray-icon.c: (rb_tray_icon_scroll_event_cb):
+	Update volume using player properties rather than gconf, and sync the
+	volume with the volume control button when something else changes it.
+	Fixes #323840.
+
 2006-01-07  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-tray-icon.c (tray_popup_position_menu):

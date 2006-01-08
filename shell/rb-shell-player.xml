@@ -38,6 +38,30 @@
       <arg type="u" name="elapsed" direction="in"/>
     </method>
 
+    <method name="getVolume">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_get_volume"/>
+      <arg type="d" name="volume" direction="out"/>
+    </method>
+
+    <method name="setVolume">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_set_volume"/>
+      <arg type="d" name="volume" direction="in"/>
+    </method>
+
+    <method name="setVolumeRelative">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_set_volume_relative"/>
+      <arg type="d" name="volume" direction="in"/>
+    </method>
+
+    <method name="setMute">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_set_mute"/>
+      <arg type="b" name="mute" direction="in"/>
+    </method>
+
+    <method name="getMute">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_get_mute"/>
+      <arg type="b" name="mute" direction="out"/>
+    </method>
 
     <!-- <property name="playing" access="readwrite"/> -->
     <signal name="playingChanged"/>
