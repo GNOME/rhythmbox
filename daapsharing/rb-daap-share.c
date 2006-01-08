@@ -708,7 +708,10 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 			gulong length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 			guint64 file_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 			
-			bitrate = (file_size / 128) / length;
+			if (length > 0)
+				bitrate = (file_size / 128) / length;
+			else
+				bitrate = 0;
 		}
 		
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASBR, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE));
