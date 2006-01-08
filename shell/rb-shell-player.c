@@ -580,6 +580,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
 	player->priv->volume = eel_gconf_get_float (CONF_STATE_VOLUME);
+	rb_shell_player_sync_volume (player, FALSE);
 
 	g_signal_connect (player, "notify::playing",
 			  G_CALLBACK (reemit_playing_signal), NULL);
