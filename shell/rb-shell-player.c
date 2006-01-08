@@ -213,7 +213,8 @@ enum
 	PROP_PLAYING,
 	PROP_VOLUME,
 	PROP_STATUSBAR,
-	PROP_QUEUE_SOURCE
+	PROP_QUEUE_SOURCE,
+	PROP_STREAM_SONG
 };
 
 enum
@@ -345,6 +346,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "RBStatusbar object", 
 							      RB_TYPE_STATUSBAR,
 							      G_PARAM_READWRITE));
+	
+	g_object_class_install_property (object_class,
+					 PROP_STREAM_SONG,
+					 g_param_spec_string ("stream-song", 
+							      "stream-song", 
+							      "Current stream song title",
+							      "",
+							      G_PARAM_READABLE));
 
 
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
@@ -768,6 +777,9 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, player->priv->queue_source);
 		break;
+	case PROP_STREAM_SONG:
+		g_value_set_string (value, player->priv->song);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -881,6 +893,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 	g_free (player->priv->song);
 	player->priv->song = NULL;
+	g_object_notify (G_OBJECT (player), "stream-song");
 
 	playlist = totem_pl_parser_new ();
 	g_signal_connect_object (G_OBJECT (playlist), "entry",
@@ -2274,6 +2287,7 @@ info_available_cb (RBPlayer *mmplayer,
 			changed = TRUE;
 			g_free (player->priv->song);
 			player->priv->song = song;
+			g_object_notify (G_OBJECT (player), "stream-song");
 		}
 		else
 			g_free (song);

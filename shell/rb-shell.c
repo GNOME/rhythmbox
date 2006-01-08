@@ -163,6 +163,9 @@ static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 static void rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
 						guint elapsed,
 						RBShell *shell);
+static void rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
+						    GParamSpec *arg,
+						    RBShell *shell);
 static void rb_shell_cmd_about (GtkAction *action,
 		                RBShell *shell);
 static void rb_shell_cmd_contents (GtkAction *action,
@@ -1027,6 +1030,10 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 				 "elapsed_changed",
 				 G_CALLBACK (rb_shell_player_elapsed_changed_cb),
 				 shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+				 "notify::stream-song",
+				 G_CALLBACK (rb_shell_player_stream_song_changed_cb),
+				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->db);
 	shell->priv->source_header = rb_source_header_new (shell->priv->actiongroup);
@@ -1821,6 +1828,19 @@ rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
 				    RBShell *shell)
 {
 	rb_shell_set_elapsed (shell, elapsed);
+}
+
+static void 
+rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
+					GParamSpec *arg,
+					RBShell *shell)
+{
+	char *song;
+	g_object_get (G_OBJECT (player), "stream-song", &song, NULL);
+	if (song) {
+		rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, song);
+		g_free (song);
+	}
 }
 
 static void
