@@ -1,5 +1,11 @@
 2006-01-10  William Jon McCann  <mccann@jhu.edu>
 
+	* widgets/eggtrayicon.c (egg_tray_icon_notify):
+	In order for set_icon_data_from_pixbuf() to be
+	effective, one must not set an icon in _new().
+
+2006-01-10  William Jon McCann  <mccann@jhu.edu>
+
 	* widgets/eggtrayicon.c (egg_tray_icon_init) 
 	(egg_tray_icon_unrealize, egg_tray_icon_cancel_message) 
 	(egg_tray_icon_notify): Add support for libnotify 0.3.

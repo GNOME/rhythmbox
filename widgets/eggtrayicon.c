@@ -563,7 +563,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   icon->notify->handle = notify_notification_new (primary,
                                                   secondary,
-                                                  "gnome-media-player",
+                                                  NULL,
                                                   NULL);
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
@@ -575,23 +575,21 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   else
     {
       GtkIconTheme *theme;
-      gint size;
+      gint icon_size;
 
       theme = gtk_icon_theme_get_default ();
-      gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+      gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &icon_size, NULL);
       pixbuf = gtk_icon_theme_load_icon (theme,
-                                         RB_STOCK_TRAY_ICON,
-                                         size,
+                                         "gnome-media-player",
+                                         icon_size,
                                          0,
                                          NULL);
     }
 
   if (pixbuf)
     {
-#if 0
       notify_notification_set_icon_data_from_pixbuf (icon->notify->handle,
                                                      pixbuf);
-#endif
       g_object_unref (pixbuf);
     }
 
