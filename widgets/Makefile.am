@@ -60,6 +60,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
 	$(WARN_CFLAGS)					\
+	$(NOTIFY_CFLAGS)				\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic

@@ -1,3 +1,12 @@
+2006-01-10  William Jon McCann  <mccann@jhu.edu>
+
+	* widgets/eggtrayicon.c (egg_tray_icon_init) 
+	(egg_tray_icon_unrealize, egg_tray_icon_cancel_message) 
+	(egg_tray_icon_notify): Add support for libnotify 0.3.
+	* widgets/Makefile.am: Add missing NOTIFY_CLAGS.
+	* configure.ac: Determine the version of libnotify.
+	Fixes #326333.
+
 2006-01-08  James Livingston  <jrl@ids.org.au>
 
 	* daapsharing/rb-daap-share.c: (add_entry_to_mlcl): fix crasher when

@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* eggtrayicon.c
  * Copyright (C) 2002 Anders Carlsson <andersca@gnu.org>
  *
@@ -62,9 +62,13 @@ enum {
 
 #ifdef HAVE_NOTIFY
 struct _Notify {
+#if (LIBNOTIFY_VERSION_MINOR == 2)
   NotifyHints *hints;
   NotifyIcon *icon;
   NotifyHandle *handle;
+#elif (LIBNOTIFY_VERSION_MINOR >= 3)
+  NotifyNotification *handle;
+#endif
 };
 #endif
          
@@ -120,9 +124,6 @@ egg_tray_icon_init (EggTrayIcon *icon)
   icon->orientation = GTK_ORIENTATION_HORIZONTAL;
 #ifdef HAVE_NOTIFY
   icon->notify = g_new0 (Notify, 1);
-  icon->notify->handle = NULL;
-  icon->notify->hints = NULL;
-  icon->notify->icon = NULL;
 #endif  
   gtk_widget_add_events (GTK_WIDGET (icon), GDK_PROPERTY_CHANGE_MASK);
 }
@@ -284,10 +285,18 @@ egg_tray_icon_unrealize (GtkWidget *widget)
   if (GTK_WIDGET_CLASS (parent_class)->unrealize)
     (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
 #endif
+
 #ifdef HAVE_NOTIFY
-  if (EGG_TRAY_ICON (widget)->notify->handle)
+
+  if (EGG_TRAY_ICON (widget)->notify->handle) {
+#if (LIBNOTIFY_VERSION_MINOR >= 3)
+    notify_notification_close (EGG_TRAY_ICON (widget)->notify->handle, NULL);
+#elif (LIBNOTIFY_VERSION_MINOR == 2)
     notify_close (EGG_TRAY_ICON (widget)->notify->handle);
-  g_free (EGG_TRAY_ICON(widget)->notify);
+#endif
+  }
+
+  g_free (EGG_TRAY_ICON (widget)->notify);
 #endif
 }
 
@@ -494,11 +503,16 @@ egg_tray_icon_cancel_message (EggTrayIcon *icon,
 			      guint        id)
 {
   g_return_if_fail (EGG_IS_TRAY_ICON (icon));
+
 #ifdef HAVE_NOTIFY
   if (icon->notify->handle)
   {
+#if (LIBNOTIFY_VERSION_MINOR >= 3)
+    notify_notification_close (icon->notify->handle, NULL);
+#elif (LIBNOTIFY_VERSION_MINOR == 2)
     notify_close (icon->notify->handle);
     icon->notify->handle = NULL;
+#endif
   }
 #else
   g_return_if_fail (id > 0);
@@ -532,6 +546,69 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 		      const char *secondary)
 {
 #ifdef HAVE_NOTIFY
+#if (LIBNOTIFY_VERSION_MINOR >= 3)
+  GtkRequisition size;
+  GdkPixbuf *pixbuf;
+  int x;
+  int y;
+
+  if (!notify_is_initted ())
+    if (!notify_init ("rhythmbox"))
+      return;
+
+  if (icon->notify->handle != NULL)
+    {
+      notify_notification_close (icon->notify->handle, NULL);
+    }
+
+  icon->notify->handle = notify_notification_new (primary,
+                                                  secondary,
+                                                  "gnome-media-player",
+                                                  NULL);
+
+  notify_notification_set_timeout (icon->notify->handle, timeout);
+
+  if (msgicon) 
+    {
+      pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (msgicon));
+    }
+  else
+    {
+      GtkIconTheme *theme;
+      gint size;
+
+      theme = gtk_icon_theme_get_default ();
+      gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+      pixbuf = gtk_icon_theme_load_icon (theme,
+                                         RB_STOCK_TRAY_ICON,
+                                         size,
+                                         0,
+                                         NULL);
+    }
+
+  if (pixbuf)
+    {
+#if 0
+      notify_notification_set_icon_data_from_pixbuf (icon->notify->handle,
+                                                     pixbuf);
+#endif
+      g_object_unref (pixbuf);
+    }
+
+  gdk_window_get_origin (GTK_WIDGET (icon)->window, &x, &y);
+  gtk_widget_size_request (GTK_WIDGET (icon), &size);
+  x += size.width / 2;
+  y += size.height;
+  notify_notification_set_hint_int32 (icon->notify->handle, "x", x);
+  notify_notification_set_hint_int32 (icon->notify->handle, "y", y);
+
+  if (! notify_notification_show (icon->notify->handle, NULL))
+    {
+      g_warning ("failed to send notification (%s)", primary);
+    }
+
+  return;
+#elif (LIBNOTIFY_VERSION_MINOR == 2)
   gint x, y;
   GtkRequisition size;
   NotifyIcon *icon_notify = NULL;
@@ -597,6 +674,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 			    	   	           NULL,
 			    	   	           0);  
   return;
+#endif
 #else
   gint x, y;
   gdk_window_get_origin (GTK_WIDGET (icon)->window,
