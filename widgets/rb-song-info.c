@@ -65,6 +65,7 @@ static void rb_song_info_response_cb (GtkDialog *dialog,
 				      int response_id,
 				      RBSongInfo *song_info);
 static void rb_song_info_populate_dialog (RBSongInfo *song_info);
+static void rb_song_info_populate_dialog_multiple (RBSongInfo *song_info);
 static void rb_song_info_update_duration (RBSongInfo *song_info);
 static void rb_song_info_update_location (RBSongInfo *song_info);
 static void rb_song_info_update_play_count (RBSongInfo *song_info);
@@ -397,10 +398,13 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->genre), editable);
 
 	/* Finish construction */
-	if (song_info->priv->current_entry)
+	if (song_info->priv->current_entry) {
 		rb_song_info_construct_single (song_info, xml, editable);
-	else
+		rb_song_info_populate_dialog (song_info);
+	} else {
 		rb_song_info_construct_multiple (song_info, xml, editable);
+		rb_song_info_populate_dialog_multiple (song_info);
+	}
 
 	gtk_dialog_add_button (GTK_DIALOG (song_info),
 			       GTK_STOCK_CLOSE,
@@ -512,7 +516,6 @@ rb_song_info_new (RBSource *source, RBEntryView *entry_view)
 
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
-	rb_song_info_populate_dialog (song_info);
 	return GTK_WIDGET (song_info);
 }
 
@@ -607,16 +610,89 @@ rb_song_info_populate_num_field (GtkEntry *field, gulong num)
 }
 
 static void 
+rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
+{
+	gboolean mixed_artists = FALSE;
+	gboolean mixed_albums = FALSE;
+	gboolean mixed_genres = FALSE;
+	gboolean mixed_years = FALSE;
+	gboolean mixed_disc_numbers = FALSE;
+	const char *artist = NULL;
+	const char *album = NULL;
+	const char *genre = NULL;
+	int year = 0;
+	int disc_number = 0;
+	GList *l;
+
+	g_assert (song_info->priv->selected_entries);
+
+	for (l = song_info->priv->selected_entries; l != NULL; l = g_list_next (l)) {
+		RhythmDBEntry *entry;
+		const char *entry_artist;
+		const char *entry_album;
+		const char *entry_genre;
+		int entry_year;
+		int entry_disc_number;
+
+		entry = (RhythmDBEntry*)l->data;
+		entry_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+		entry_album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+		entry_genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
+		entry_year = (entry->date) ? g_date_get_year (entry->date) : 0;
+		entry_disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
+
+		/* grab first valid values */
+		if (artist == NULL)
+			artist = entry_artist;
+		if (album == NULL)
+			album = entry_album;
+		if (genre == NULL)
+			genre = entry_genre;
+		if (year == 0)
+			year = entry_year;
+		if (disc_number == 0)
+			disc_number = entry_disc_number;
+
+		/* locate mixed values */
+		if (artist != entry_artist)
+			mixed_artists = TRUE;
+		if (album != entry_album)
+			mixed_albums = TRUE;
+		if (genre != entry_genre)
+			mixed_genres = TRUE;
+		if (year != entry_year)
+			mixed_years = TRUE;
+		if (disc_number != entry_disc_number)
+			mixed_disc_numbers = TRUE;
+
+		/* don't continue search if everything is mixed */
+		if (mixed_artists && mixed_albums && mixed_genres &&
+		    mixed_years && mixed_disc_numbers)
+			break;
+	}
+
+	if (!mixed_artists && artist != NULL)
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->artist), artist);
+	if (!mixed_albums && album != NULL)
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->album), album);
+	if (!mixed_genres && genre != NULL)
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->genre), genre);
+	if (!mixed_years && year != 0)
+		rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->year), year);
+	if (!mixed_disc_numbers && disc_number != 0)
+		rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur), disc_number);
+}
+
+static void 
 rb_song_info_populate_dialog (RBSongInfo *song_info)
 {
 	const char *text = NULL;
 	char *tmp;
+	
+	g_assert (song_info->priv->current_entry);
+
 	/* update the buttons sensitivity */
 	rb_song_info_update_buttons (song_info);
-
-	if (!song_info->priv->current_entry)
-		return;
-	
 
 	text = rb_refstring_get (song_info->priv->current_entry->title);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->title), text);

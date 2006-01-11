@@ -1,5 +1,12 @@
 2006-01-11  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-song-info.c: (rb_song_info_constructor),
+	(rb_song_info_new), (rb_song_info_populate_dialog_multiple),
+	(rb_song_info_populate_dialog): fill in the fields if all tracks have
+	the same value for properties. From bug 326054.
+
+2006-01-11  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-source.h:
 	* shell/rb-shell-player.c: (rb_shell_player_set_playing_entry),
 	(rb_shell_player_set_playing_source_internal), (eos_cb):
