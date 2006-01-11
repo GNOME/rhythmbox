@@ -1033,6 +1033,7 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
+	g_object_notify (G_OBJECT (player), "playing");
 
 	return TRUE;
  lose:
@@ -1046,6 +1047,11 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 	/* Mark this song as failed */
 	rb_shell_player_set_entry_playback_error (player, entry, tmp_error->message);
 	g_propagate_error (error, tmp_error);
+
+	rb_shell_player_sync_with_source (player);
+	rb_shell_player_sync_buttons (player);
+	g_object_notify (G_OBJECT (player), "playing");
+
 	return FALSE;
 }
 
@@ -1990,6 +1996,7 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 		rb_shell_player_stop (player);
 
 	rb_shell_player_sync_with_source (player);
+	g_object_notify (G_OBJECT (player), "playing");
 	if (player->priv->selected_source)
 		rb_shell_player_sync_buttons (player);
 
@@ -2133,6 +2140,9 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 		case RB_SOURCE_EOF_ERROR:
 			rb_error_dialog (NULL, _("Stream error"),
 					 _("Unexpected end of stream!"));
+			rb_shell_player_set_playing_source (player, NULL);
+			break;
+		case RB_SOURCE_EOF_STOP:
 			rb_shell_player_set_playing_source (player, NULL);
 			break;
 		case RB_SOURCE_EOF_RETRY: {

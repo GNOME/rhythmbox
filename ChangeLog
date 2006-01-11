@@ -1,3 +1,14 @@
+2006-01-11  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-source.h:
+	* shell/rb-shell-player.c: (rb_shell_player_set_playing_entry),
+	(rb_shell_player_set_playing_source_internal), (eos_cb):
+	add support for RB_SOURCE_EOF_STOP, so that playback will stop after
+	every entry.
+
+	* sources/rb-podcast-source.c: (impl_handle_eos): make the podcast
+	source use this. Closes bug 322077.
+
 2006-01-10  William Jon McCann  <mccann@jhu.edu>
 
 	* widgets/eggtrayicon.c (egg_tray_icon_notify):

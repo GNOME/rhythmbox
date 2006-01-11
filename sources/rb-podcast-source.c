@@ -797,7 +797,7 @@ impl_get_entry_view (RBSource *asource)
 static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
-	return RB_SOURCE_EOF_NEXT;
+	return RB_SOURCE_EOF_STOP;
 }
 
 static const char *
