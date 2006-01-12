@@ -71,6 +71,7 @@ GTKDOC_LIBS=\
 	$(SOUP_LIBS)					\
 	$(MDNS_LIBS)					\
 	$(IPOD_LIBS)					\
+	$(NOTIFY_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
 content_files =
