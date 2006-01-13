@@ -262,7 +262,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				g_cclosure_marshal_VOID__STRING,
 				G_TYPE_NONE,
 				1,
-				G_TYPE_POINTER);
+				G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }	

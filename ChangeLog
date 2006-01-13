@@ -1,3 +1,9 @@
+2006-01-13  William Jon McCann  <mccann@jhu.edu>
+
+	* podcast/rb-podcast-manager.c (rb_podcast_manager_class_init):
+	Correct the argument type for the process_error signal.
+	May fix bug #323154.
+
 2006-01-13  James Livingston  <jrl@ids.org.au>
 
 	save the queue to disk when exiting, and reload on startup. Fixed bug
