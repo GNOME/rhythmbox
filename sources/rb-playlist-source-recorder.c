@@ -4,7 +4,7 @@
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
- *  Copyright (C) 2004-2005 William Jon McCann <mccann@jhu.edu>
+ *  Copyright (C) 2004-2006 William Jon McCann <mccann@jhu.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,9 +54,14 @@
 #else
 extern char *mkdtemp (char *template);
 #endif
+
+/* Defined locally for compatibility with n-c-b < 2.14 */
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
 #define nautilus_burn_drive_ref nautilus_burn_drive_copy
+#define nautilus_burn_drive_eject _nautilus_burn_drive_eject
+#define nautilus_burn_drive_new_from_path _nautilus_burn_drive_new_from_path
+#define nautilus_burn_drive_media_type_get_string _nautilus_burn_drive_media_type_get_string
 #endif
 
 #include "rb-recorder.h"
@@ -467,6 +472,7 @@ progress_set_fraction (GtkWidget *progress,
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), fraction);
 }
 
+#ifndef HAVE_BURN_DRIVE_UNREF
 /* copied from nautilus-burn-drive 2.12 */
 static gboolean
 _nautilus_burn_drive_eject (NautilusBurnDrive *drive)
@@ -488,6 +494,66 @@ _nautilus_burn_drive_eject (NautilusBurnDrive *drive)
 
         return res;
 }
+/* copied from nautilus-burn-drive 2.12 */
+static NautilusBurnDrive *
+_nautilus_burn_drive_new_from_path (const char *device)
+{
+        GList             *drives, *l;
+        NautilusBurnDrive *drive;
+
+        drives = nautilus_burn_drive_get_list (FALSE, FALSE);
+
+        drive = NULL;
+
+        for (l = drives; l != NULL; l = l->next) {
+                NautilusBurnDrive *d = l->data;
+                if (g_str_equal (device, d->device)) {
+                        drive = nautilus_burn_drive_ref (d);
+                }
+        }
+
+        g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
+        g_list_free (drives);
+
+        return drive;
+}
+
+/* copied from nautilus-burn-drive 2.12 */
+static const char *
+_nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
+{
+        switch (type) {
+        case NAUTILUS_BURN_MEDIA_TYPE_BUSY:
+                return _("Could not determine media type because CD drive is busy");
+        case NAUTILUS_BURN_MEDIA_TYPE_ERROR:
+                return _("Couldn't open media");
+        case NAUTILUS_BURN_MEDIA_TYPE_UNKNOWN:
+                return _("Unknown Media");
+        case NAUTILUS_BURN_MEDIA_TYPE_CD:
+                return _("Commercial CD or Audio CD");
+        case NAUTILUS_BURN_MEDIA_TYPE_CDR:
+                return _("CD-R");
+        case NAUTILUS_BURN_MEDIA_TYPE_CDRW:
+                return _("CD-RW");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD:
+                return _("DVD");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVDR:
+                return _("DVD-R, or DVD-RAM");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVDRW:
+                return _("DVD-RW");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD_RAM:
+                return _("DVD-RAM");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_R:
+                return _("DVD+R");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_RW:
+                return _("DVD+RW");
+        default:
+                break;
+        }
+
+        return _("Broken media type");
+}
+#endif /* HAVE_BURN_DRIVE_UNREF */
 
 static int
 burn_cd (RBPlaylistSourceRecorder *source,
@@ -528,7 +594,7 @@ burn_cd (RBPlaylistSourceRecorder *source,
 
                 /* Always eject the disk after writing.  Too many drives mess up otherwise */
                 drive = (NautilusBurnDrive *)lookup_current_recorder (source);
-                _nautilus_burn_drive_eject (drive);
+                nautilus_burn_drive_eject (drive);
 
                 do_another = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->multiple_copies_checkbutton));
                 if (!do_another) {
@@ -922,66 +988,6 @@ burn_action_changed_cb (RBRecorder        *recorder,
                 set_message_text (source, text);
 }
 
-/* copied from nautilus-burn-drive 2.12 */
-static NautilusBurnDrive *
-_nautilus_burn_drive_new_from_path (const char *device)
-{
-        GList             *drives, *l;
-        NautilusBurnDrive *drive;
-
-        drives = nautilus_burn_drive_get_list (FALSE, FALSE);
-
-        drive = NULL;
-
-        for (l = drives; l != NULL; l = l->next) {
-                NautilusBurnDrive *d = l->data;
-                if (g_str_equal (device, d->device)) {
-                        drive = nautilus_burn_drive_ref (d);
-                }
-        }
-
-        g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
-        g_list_free (drives);
-
-        return drive;
-}
-
-/* copied from nautilus-burn-drive 2.12 */
-static const char *
-_nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
-{
-        switch (type) {
-        case NAUTILUS_BURN_MEDIA_TYPE_BUSY:
-                return _("Could not determine media type because CD drive is busy");
-        case NAUTILUS_BURN_MEDIA_TYPE_ERROR:
-                return _("Couldn't open media");
-        case NAUTILUS_BURN_MEDIA_TYPE_UNKNOWN:
-                return _("Unknown Media");
-        case NAUTILUS_BURN_MEDIA_TYPE_CD:
-                return _("Commercial CD or Audio CD");
-        case NAUTILUS_BURN_MEDIA_TYPE_CDR:
-                return _("CD-R");
-        case NAUTILUS_BURN_MEDIA_TYPE_CDRW:
-                return _("CD-RW");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD:
-                return _("DVD");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVDR:
-                return _("DVD-R, or DVD-RAM");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVDRW:
-                return _("DVD-RW");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD_RAM:
-                return _("DVD-RAM");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_R:
-                return _("DVD+R");
-        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_RW:
-                return _("DVD+RW");
-        default:
-                break;
-        }
-
-        return _("Broken media type");
-}
-
 static int
 ask_rewrite_disc (RBPlaylistSourceRecorder *source,
                   const char               *device)
@@ -994,11 +1000,11 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
         char                 *msg;
         NautilusBurnDrive    *drive;
 
-        drive = _nautilus_burn_drive_new_from_path (device);
+        drive = nautilus_burn_drive_new_from_path (device);
         type = nautilus_burn_drive_get_media_type (drive);
 
         msg = g_strdup_printf (_("This %s appears to have information already recorded on it."),
-                               _nautilus_burn_drive_media_type_get_string (type));
+                               nautilus_burn_drive_media_type_get_string (type));
 
 
         dialog = gtk_message_dialog_new (GTK_WINDOW (source),
@@ -1034,7 +1040,7 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
         gtk_widget_destroy (dialog);
 
         if (res == RB_RECORDER_RESPONSE_RETRY) {
-                _nautilus_burn_drive_eject (drive);
+                nautilus_burn_drive_eject (drive);
         }
 
         nautilus_burn_drive_unref (drive);
