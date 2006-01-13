@@ -25,6 +25,7 @@
 #include <libxml/tree.h>
 
 #include "rb-play-queue-source.h"
+#include "rb-playlist-xml.h"
 #include "rb-song-info.h"
 #include "rb-util.h"
 #include "rb-debug.h"
@@ -55,6 +56,8 @@ static void rb_play_queue_source_update_count (RBPlayQueueSource *source,
 					       gint offset);
 static void impl_show_entry_view_popup (RBPlaylistSource *source,
 					RBEntryView *view);
+static void impl_save_contents_to_xml (RBPlaylistSource *source,
+				       xmlNodePtr node);
 
 #define PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH "/QueuePlaylistViewPopup"
 #define PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH "/QueueSidebarViewPopup"
@@ -89,6 +92,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
 
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
+	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 
 	g_object_class_install_property (object_class,
 					 PROP_SIDEBAR,
@@ -304,3 +308,12 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 	if (count > 0)
 		g_free (name);
 }
+
+static void 
+impl_save_contents_to_xml (RBPlaylistSource *source,
+			   xmlNodePtr node)
+{
+	((RBPlaylistSourceClass*)rb_play_queue_source_parent_class)->impl_save_contents_to_xml (source, node);
+	xmlSetProp (node, RB_PLAYLIST_TYPE, RB_PLAYLIST_QUEUE);
+}
+

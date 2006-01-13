@@ -38,6 +38,7 @@
 /* values for the 'type' attribute */
 #define RB_PLAYLIST_AUTOMATIC (xmlChar *) "automatic"
 #define RB_PLAYLIST_STATIC (xmlChar *) "static"
+#define RB_PLAYLIST_QUEUE (xmlChar *) "queue"
 
 /* attributes for static playlists */
 #define RB_PLAYLIST_LOCATION (xmlChar *) "location"

@@ -1,5 +1,32 @@
 2006-01-13  James Livingston  <jrl@ids.org.au>
 
+	save the queue to disk when exiting, and reload on startup. Fixed bug
+	326677 .
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_load_playlists),
+	(rb_playlist_manager_save_playlists_async): don't disable saving of
+	the queue
+
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property):
+	add the queue source as a gobject property.
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_class_init), (impl_save_contents_to_xml): add
+	code to save the queue to xml
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_new_from_xml):
+	load the queue from xml.
+	* sources/rb-playlist-xml.h:
+
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_load_from_xml),
+	(rb_static_playlist_source_new_from_xml):
+	* sources/rb-static-playlist-source.h: split the playlist xml loading
+	from the static playlist creation function, so the queue can use it.
+
+2006-01-13  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_visibility): remove
 	assertion that should be there. Fixes bug 325923.
 	

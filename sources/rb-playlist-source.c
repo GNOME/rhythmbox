@@ -640,18 +640,23 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	xmlChar *name;
 	RBSource *source;
 
-	/* Try to get name from XML and remove translated names */
-	name = get_playlist_name_from_xml (node);
-	rb_debug ("Got playlist name: %s", name);
-
 	tmp = xmlGetProp (node, RB_PLAYLIST_TYPE);
 	if (!xmlStrcmp (tmp, RB_PLAYLIST_AUTOMATIC))
 		source = rb_auto_playlist_source_new_from_xml (shell, node);
 	else if (!xmlStrcmp (tmp, RB_PLAYLIST_STATIC))
 		source = rb_static_playlist_source_new_from_xml (shell, node);
-	else
+	else if (!xmlStrcmp (tmp, RB_PLAYLIST_QUEUE)) {
+		RBStaticPlaylistSource *queue;
+
+		g_object_get (shell, "queue-source", &queue, NULL);
+		rb_static_playlist_source_load_from_xml (queue, node);
+		g_object_unref (G_OBJECT (queue));
+		return NULL;
+	} else
 		g_assert_not_reached ();
 
+	/* Try to get name from XML and remove translated names */
+	name = get_playlist_name_from_xml (node);
 	g_object_set (G_OBJECT (source), "name", name, NULL);
 	g_free (name);
 

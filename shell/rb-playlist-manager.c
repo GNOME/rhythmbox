@@ -683,7 +683,8 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 
 		playlist = rb_playlist_source_new_from_xml (mgr->priv->shell,
 							    child);
-		append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
+		if (playlist)
+			append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	}
 
 	xmlFreeDoc (doc);
@@ -764,8 +765,6 @@ rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force
 				source = g_value_get_pointer (&v);
 				if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 					continue;
-				if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
-					continue;
 
 				g_object_get (G_OBJECT (source), 
 					      "is-local", &local,
@@ -821,8 +820,6 @@ rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force
 						  &v);
 			source = g_value_get_pointer (&v);
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
-				continue;
-			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
 				continue;
 
 			g_object_get (G_OBJECT (source), "is-local", &local, NULL);

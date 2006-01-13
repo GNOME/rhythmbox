@@ -318,6 +318,7 @@ enum
 	PROP_PLAYLIST_MANAGER,
 	PROP_WINDOW,
 	PROP_PREFS,
+	PROP_QUEUE_SOURCE,
 };
 
 /* prefs */
@@ -578,6 +579,7 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READABLE));
 
+
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db", 
@@ -621,6 +623,13 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RBShellPreferences", 
 							      "RBShellPreferences object", 
 							      RB_TYPE_SHELL_PREFERENCES,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_SOURCE,
+					 g_param_spec_object ("queue-source", 
+							      "queue-source", 
+							      "Queue source", 
+							      RB_TYPE_PLAY_QUEUE_SOURCE,
 							      G_PARAM_READABLE));
 
 
@@ -774,6 +783,9 @@ rb_shell_get_property (GObject *object,
 		break;	
 	case PROP_PREFS:
 		g_value_set_object (value, shell->priv->prefs);
+		break;	
+	case PROP_QUEUE_SOURCE:
+		g_value_set_object (value, shell->priv->queue_source);
 		break;	
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

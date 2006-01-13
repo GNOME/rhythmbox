@@ -127,14 +127,9 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, gboolean local,
 					NULL));
 }
 
-RBSource *	
-rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
+void
+rb_static_playlist_source_load_from_xml (RBStaticPlaylistSource *source, xmlNodePtr node)
 {
-	RBSource *psource = rb_static_playlist_source_new (shell,
-							   NULL,
-							   TRUE,
-							   RHYTHMDB_ENTRY_TYPE_SONG);
-	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (psource);
 	xmlNodePtr child;
 
 	for (child = node->children; child; child = child->next) {
@@ -150,6 +145,19 @@ rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 		rb_static_playlist_source_add_location (source,
 						        (char *) location, -1);
 	}
+}
+
+
+RBSource *	
+rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
+{
+	RBSource *psource = rb_static_playlist_source_new (shell,
+							   NULL,
+							   TRUE,
+							   RHYTHMDB_ENTRY_TYPE_SONG);
+	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (psource);
+
+	rb_static_playlist_source_load_from_xml (source, node);
 
 	return RB_SOURCE (source);
 }
