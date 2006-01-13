@@ -1,3 +1,18 @@
+2006-01-13  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_visibility): remove
+	assertion that should be there. Fixes bug 325923.
+	
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_new): make rhythmdb_entry_new
+	return NULL if the entry already exists (e.g. as another type).
+	* daapsharing/rb-daap-connection.c: (handle_song_listing):
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_add_post),
+	(rb_podcast_manager_insert_feed):
+	* sources/rb-audiocd-source.c: (rb_audiocd_create_track_entry):
+	* sources/rb-ipod-source.c: (load_ipod_db_idle_cb):
+	* sources/rb-iradio-source.c: (rb_iradio_source_add_station): check
+	for the above function returning NULL.
+
 2006-01-12  James Livingston  <jrl@ids.org.au>
 
 	* doc/reference/Makefile.am: make gtk-docs build again when libnotify

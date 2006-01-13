@@ -823,6 +823,8 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		entry = rhythmdb_entry_new (db,
 					    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 				    	    uri);
+		if (entry == NULL)
+			return FALSE;
 
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, name);
@@ -1433,6 +1435,8 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		entry = rhythmdb_entry_new (db,
 					    RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
 				    	    (gchar*) data->url);
+		if (entry == NULL)
+			return;
 		rb_debug("New entry create\n");
 	
 		g_value_init (&title_val, G_TYPE_STRING);

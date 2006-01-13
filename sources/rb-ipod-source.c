@@ -267,9 +267,15 @@ load_ipod_db_idle_cb (RBiPodSource *source)
  					    song->ipod_path);
   		entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type,
  					    pc_path);
- 		g_free (pc_path);
-  
+
+		if (entry == NULL) {
+			rb_debug ("cannot create entry %s", pc_path);
+ 			g_free (pc_path);
+			continue;
+		}
+		
 		rb_debug ("Adding %s from iPod", pc_path);
+ 		g_free (pc_path);
 
 		/* Set track number */
 		if (song->track_nr != 0) {

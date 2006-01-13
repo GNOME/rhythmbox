@@ -1188,6 +1188,10 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 		// unreasonable to me, honestly
 //		}
 		entry = rhythmdb_entry_new (priv->db, priv->db_type, uri);
+		if (entry == NULL) {
+			rb_debug ("cannot create entry for daap track %s", uri);
+			continue;
+		}
 		g_hash_table_insert (priv->item_id_to_uri, GINT_TO_POINTER (item_id), uri);
 
 		 /* track number */

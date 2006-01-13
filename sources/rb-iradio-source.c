@@ -427,6 +427,9 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 		return;
 	}
 	entry = rhythmdb_entry_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
+	if (entry == NULL)
+		return;
+
 	g_value_init (&val, G_TYPE_STRING);
 	if (title)
 		g_value_set_static_string (&val, title);

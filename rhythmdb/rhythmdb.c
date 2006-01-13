@@ -961,6 +961,9 @@ rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
  * Creates a new entry of type @type and location @uri, and inserts
  * it into the database. You must call rhythmdb_commit() at some  point
  * after invoking this function.
+ *
+ * This may return NULL if entry creation fails. This can occur if there is
+ * already an entry with the given uri.
  * 
  * Returns: the newly created #RhythmDBEntry
  **/
@@ -970,6 +973,12 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	RhythmDBEntry *ret;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	
+	ret = rhythmdb_entry_lookup_by_location (db, uri);
+	if (ret) {
+		g_warning ("attempting to create entry that already exists: %s", uri);
+		return NULL;
+	}
+
 	ret = rhythmdb_entry_allocate (db, type);
 	ret->location = g_strdup (uri);
 	klass->impl_entry_new (db, ret);
@@ -3711,8 +3720,6 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 {
 	GValue old_val = {0, };
 	gboolean old_visible;
-
-	g_assert (entry->type == RHYTHMDB_ENTRY_TYPE_SONG);
 
 	g_value_init (&old_val, G_TYPE_BOOLEAN);
 	

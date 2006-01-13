@@ -206,6 +206,10 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint trac
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rb_debug ("Audio CD - create entry for track %d from %s", track_number, audio_path);
 	entry = rhythmdb_entry_new (db, entry_type, audio_path);
+	if (entry == NULL) {
+		g_free (audio_path);
+		return NULL;
+	}
 
 	/* generate track # */
 	g_value_init (&value, G_TYPE_ULONG);
