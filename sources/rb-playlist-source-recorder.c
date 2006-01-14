@@ -55,13 +55,16 @@
 extern char *mkdtemp (char *template);
 #endif
 
-/* Defined locally for compatibility with n-c-b < 2.14 */
-#ifndef HAVE_BURN_DRIVE_UNREF
-#define nautilus_burn_drive_unref nautilus_burn_drive_free
-#define nautilus_burn_drive_ref nautilus_burn_drive_copy
+/* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.12 */
+#ifndef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
 #define nautilus_burn_drive_eject _nautilus_burn_drive_eject
 #define nautilus_burn_drive_new_from_path _nautilus_burn_drive_new_from_path
 #define nautilus_burn_drive_media_type_get_string _nautilus_burn_drive_media_type_get_string
+#endif
+/* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.14 */
+#ifndef HAVE_BURN_DRIVE_UNREF
+#define nautilus_burn_drive_unref nautilus_burn_drive_free
+#define nautilus_burn_drive_ref nautilus_burn_drive_copy
 #endif
 
 #include "rb-recorder.h"
@@ -472,7 +475,7 @@ progress_set_fraction (GtkWidget *progress,
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), fraction);
 }
 
-#ifndef HAVE_BURN_DRIVE_UNREF
+#ifndef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
 /* copied from nautilus-burn-drive 2.12 */
 static gboolean
 _nautilus_burn_drive_eject (NautilusBurnDrive *drive)
@@ -553,7 +556,7 @@ _nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
 
         return _("Broken media type");
 }
-#endif /* HAVE_BURN_DRIVE_UNREF */
+#endif /* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME */
 
 static int
 burn_cd (RBPlaylistSourceRecorder *source,
