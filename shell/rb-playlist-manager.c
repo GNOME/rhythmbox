@@ -392,6 +392,7 @@ rb_playlist_manager_set_property (GObject *object,
 	{
 		gboolean playlist_active;
 		gboolean playlist_local = FALSE;
+		gboolean can_rename;
 		GtkAction *action;
 
 		if (mgr->priv->selected_source != NULL)
@@ -417,9 +418,10 @@ rb_playlist_manager_set_property (GObject *object,
  						      "EditAutomaticPlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", 
 			      RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source), NULL);
+		can_rename = rb_source_can_rename (mgr->priv->selected_source);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
  						      "MusicPlaylistRenamePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
+		g_object_set (G_OBJECT (action), "sensitive", playlist_local && can_rename, NULL);
 
 		/* FIXME should base this on the query model so the entry-added and entry-deleted
 		 * signals can be removed from RBEntryView (where they don't belong).
