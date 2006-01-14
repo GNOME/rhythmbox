@@ -1882,7 +1882,17 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	gboolean not_small;
 	gboolean playing_from_queue;
 	RBEntryView *view;
+	int entry_view_state;
 
+	if (rb_shell_player_get_playing_entry (player)) {
+		source = player->priv->current_playing_source;
+		entry_view_state = rb_player_playing (player->priv->mmplayer) ?
+			RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_PAUSED;
+	} else {
+		source = player->priv->selected_source;
+		entry_view_state = RB_ENTRY_VIEW_NOT_PLAYING;
+	}
+	
 	source = rb_shell_player_get_playing_entry (player) == NULL ?
 		 player->priv->selected_source : player->priv->current_playing_source;
 
@@ -1900,9 +1910,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	if (source) {
 		view = rb_source_get_entry_view (source);
-		rb_entry_view_set_state (view, 
-					 rb_player_playing (player->priv->mmplayer) ? 
-					 RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_PAUSED);
+		rb_entry_view_set_state (view, entry_view_state);
 	}
 }
 
