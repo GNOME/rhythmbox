@@ -1,3 +1,12 @@
+2006-01-14  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_db_entry_deleted_cb):
+	Don't try to delete files we never downloaded, and cancel downloads
+	for deleted episodes.  Fixes bug #326862.
+	* sources/rb-podcast-source.c: (rb_podcast_source_cmd_delete_feed):
+	Don't complain about NULL data items in the selection list.
+
 2006-01-14  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_property):

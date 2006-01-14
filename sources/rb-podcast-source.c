@@ -1377,8 +1377,7 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 	
 	lst = source->priv->selected_feeds;
 
-	while (lst != NULL) {
-		g_return_if_fail (lst->data != NULL);
+	while (lst != NULL && lst->data != NULL) {
 		rb_podcast_manager_remove_feed (source->priv->podcast_mg,
 						(gchar *) lst->data,
 						(ret == GTK_RESPONSE_YES) );

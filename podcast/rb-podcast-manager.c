@@ -1268,7 +1268,14 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 		const gchar *conf_dir_name;
 		GnomeVFSURI *uri;
 
+		/* make sure we're not downloading it */
+		rb_podcast_manager_cancel_download (pd, entry);
+
 		file_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+		if (file_name == NULL) {
+			/* episode has not been downloaded */
+			return;
+		}
 		
 		uri = gnome_vfs_uri_new (file_name);
 		
