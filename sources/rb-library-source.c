@@ -1091,6 +1091,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
 	
+	g_object_ref (G_OBJECT (prefs));
 	source->priv->shell_prefs = prefs;
 	
 	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
