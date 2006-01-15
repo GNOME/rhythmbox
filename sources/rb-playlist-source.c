@@ -455,8 +455,13 @@ rb_playlist_source_drop_cb (GtkWidget *widget,
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
+#ifndef TOTEM_PL_PARSER_CHECK_VERSION
 static void
-playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **title, gpointer user_data)
+playlist_iter_func (GtkTreeModel *model,
+		    GtkTreeIter *iter,
+		    char **uri,
+		    char **title,
+		    gpointer user_data)
 {
 	RhythmDBEntry *entry;
 
@@ -465,6 +470,24 @@ playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **t
 	*uri = g_strdup (entry->location);
 	*title = g_strdup (rb_refstring_get (entry->title));
 }
+#else
+static void
+playlist_iter_func (GtkTreeModel *model,
+		    GtkTreeIter *iter,
+		    char **uri,
+		    char **title,
+		    gboolean *custom_title,
+		    gpointer user_data)
+{
+	RhythmDBEntry *entry;
+
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
+
+	*uri = g_strdup (entry->location);
+	*title = g_strdup (rb_refstring_get (entry->title));
+	*custom_title = FALSE;
+}
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
 void
 rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)

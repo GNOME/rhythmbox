@@ -1,3 +1,11 @@
+2006-01-15  James Livingston  <jrl@ids.org.au>
+
+	patch by: William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-playlist-source.c: (playlist_iter_func): use
+	totem-plparser's new API version macros to check for API changes.
+	Handle the recent API change.
+
 2006-01-15  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-library-source.c: (impl_get_config_widget):
