@@ -1,3 +1,9 @@
+2006-01-15  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_parse_response):
+	* shell/rb-removable-media-manager.c: (begin_cd_drive_monitor):
+	Fix valgrind warnings about accessing uninitialised values.
+
 2006-01-14  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-playlist-source-recorder.c: Make build on 2.12 again.

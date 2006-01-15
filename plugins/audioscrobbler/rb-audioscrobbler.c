@@ -548,10 +548,14 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 	rb_debug ("Parsing response, status=%d", msg->status_code);
 
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && (msg->response).body != NULL) {
+		gchar *body;
 		gchar **breaks;
 		
-		g_strstrip ((msg->response).body);
-		breaks = g_strsplit ((msg->response).body, "\n", 4);
+		body = g_malloc0 ((msg->response).length + 1);
+		memcpy (body, (msg->response).body, (msg->response).length);
+		
+		g_strstrip (body);
+		breaks = g_strsplit (body, "\n", 4);
 		int i;
 
 		for (i = 0; breaks[i] != NULL; i++) {
@@ -624,6 +628,7 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 			audioscrobbler->priv->submit_next = time(NULL) + audioscrobbler->priv->submit_interval;
 
 		g_strfreev (breaks);
+		g_free (body);
 	}
 
 	if (ret_val != RESP_0)

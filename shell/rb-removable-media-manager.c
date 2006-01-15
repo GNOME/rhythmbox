@@ -337,7 +337,7 @@ void begin_cd_drive_monitor (NautilusBurnDrive *drive, RBRemovableMediaManager *
 {
 #ifdef HAVE_BURN_DRIVE_DOOR
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
-	RbCdDriveInfo *info = g_new (RbCdDriveInfo, 1);
+	RbCdDriveInfo *info = g_new0 (RbCdDriveInfo, 1);
 	GnomeVFSVolumeMonitor *monitor=  gnome_vfs_get_volume_monitor ();
 	GnomeVFSVolume *volume;
 
