@@ -1,3 +1,39 @@
+2006-01-17  James Livingston  <jrl@ids.org.au>
+
+	Add support for mass-storage audio players. Players are detected via
+	either the HAL "audio_player" capability, or a ".is_audio_player" file
+	in the root of the volume. Closes bug 325602.
+
+	* configure.ac: separate using HAL from ipod support.
+
+	* lib/rb-file-helpers.c: (rb_uri_is_local):
+	* lib/rb-file-helpers.h: add function to determine whether a URI is
+	local.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal),
+	(rhythmdb_process_stat_event), (rhythmdb_process_metadata_load),
+	(rhythmdb_process_file_created_or_modified), (queue_stat_uri),
+	(queue_stat_uri_tad), (add_thread_main), (action_thread_main),
+	(rhythmdb_add_uri), (rhythmdb_add_uri_with_type):
+	* rhythmdb/rhythmdb.h: add rhythmdb_add_uri_with_type, so that
+	directories can be scanned for files to add as  non-SONG entries.
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume): add checking for
+	mass-storage players.
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* sources/rb-ipod-source.c: (rb_ipod_source_new),
+	(hal_udi_is_ipod):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init),
+	(rb_removable_media_source_constructor): move some things up to the
+	RBRemovableMediaSource, rather than making subclasses do it.
+
+	* sources/Makefile.am:
+	* sources/rb-generic-player-source.c:
+	* sources/rb-generic-player-source.h: add mass-storage player source.
+
 2006-01-16  James Livingston  <jrl@ids.org.au>
 
 	patch by: William Jon McCann  <mccann@jhu.edu>

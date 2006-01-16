@@ -604,6 +604,22 @@ rb_uri_is_writable (const char *text_uri)
 	return ret;
 }
 
+gboolean
+rb_uri_is_local (const char *text_uri)
+{
+	gboolean ret = FALSE;
+	GnomeVFSURI *uri;
+
+	uri = gnome_vfs_uri_new (text_uri);
+	if (uri == NULL)
+		return FALSE;
+
+	ret = gnome_vfs_uri_is_local (uri);
+	gnome_vfs_uri_unref (uri);
+
+	return ret;
+}
+
 void
 rb_uri_handle_recursively (const char *text_uri,
 		           GFunc func,

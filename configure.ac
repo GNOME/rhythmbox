@@ -59,6 +59,32 @@ if test x$have_totem_plparser != xyes; then
    AC_MSG_ERROR([totem playlist parsing library not found or too old])
 fi   
 
+AC_ARG_WITH(hal,
+	      AC_HELP_STRING([--without-hal],
+			     [Disable HAL support]))
+if test "x$with_hal" != "xno"; then
+  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal05=yes, enable_hal05=no)
+  if test x$enable_hal05 != xyes; then
+     PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5, enable_hal02=yes, enable_hal02=no)
+  fi
+  if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
+      enable_hal=yes
+      if test x$enable_hal05 == xyes; then
+         AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
+      else
+         AC_DEFINE(HAVE_HAL_0_2, 1, [Define if you have HAL 0.2 or later])
+      fi
+  	  AC_SUBST(HAL_CFLAGS)
+  	  AC_SUBST(HAL_LIBS)
+  else
+    if test "x$with_hal" = "xyes"; then
+	  AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
+    fi
+  fi
+fi
+
+
+
 dnl iPod support
 
 AC_ARG_WITH(ipod,
@@ -72,29 +98,13 @@ if test "x$with_ipod" != "xno"; then
 	  AC_MSG_ERROR([iPod explicitly requested but libgpod couldn't be found])
 	fi
 	if test "x$have_libgpod" = "xyes"; then
-	  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal05=yes, enable_hal05=no)
-	  if test x$enable_hal05 != xyes; then
-	     PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5, enable_hal02=yes, enable_hal02=no)
-	  fi
-	  if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
-  	    enable_hal=yes
-	  else
-	    enable_hal=no
-	  fi
           if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
 	     AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])	   
 	  fi
           if test "x$enable_hal" = xyes; then
 	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
 	     use_ipod=yes
-	     if test x$enable_hal05 == xyes; then
-	        AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
-	     else
-	        AC_DEFINE(HAVE_HAL_0_2, 1, [Define if you have HAL 0.2 or later])
-	     fi
 	  fi
-	  AC_SUBST(HAL_CFLAGS)
-	  AC_SUBST(HAL_LIBS)
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
 	fi
@@ -737,6 +747,11 @@ if test x"$enable_bonobo" = xyes; then
 	AC_MSG_NOTICE([** Bonobo control/activation enabled])
 else
 	AC_MSG_NOTICE([   Bonobo control/activation disabled])
+fi
+if test x"$enable_hal" = xyes; then
+	AC_MSG_NOTICE([** HAL support enabled])
+else
+	AC_MSG_NOTICE([   HAL support disabled])
 fi
 if test x"$enable_dbus" = xyes; then
 	AC_MSG_NOTICE([** D-BUS control/activation enabled])

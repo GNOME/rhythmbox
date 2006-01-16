@@ -37,6 +37,9 @@
 #include "rb-dialog.h"
 #include "rb-util.h"
 
+static GObject *rb_removable_media_source_constructor (GType type,
+						       guint n_construct_properties,
+						       GObjectConstructParam *construct_properties);
 static void rb_removable_media_source_dispose (GObject *object);
 
 static void rb_removable_media_source_set_property (GObject *object,
@@ -75,6 +78,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBLibrarySourceClass *library_source_class = RB_LIBRARY_SOURCE_CLASS (klass);
 
+	object_class->constructor = rb_removable_media_source_constructor;
 	object_class->dispose = rb_removable_media_source_dispose;
 	object_class->set_property = rb_removable_media_source_set_property;
 	object_class->get_property = rb_removable_media_source_get_property;
@@ -111,6 +115,29 @@ rb_removable_media_source_init (RBRemovableMediaSource *self)
 {
 
 }
+
+static GObject *
+rb_removable_media_source_constructor (GType type, guint n_construct_properties,
+				       GObjectConstructParam *construct_properties)
+{
+	GObject *source; 
+	GnomeVFSVolume *volume;
+	char *display_name;
+
+	source = G_OBJECT_CLASS(rb_removable_media_source_parent_class)
+			->constructor (type, n_construct_properties, construct_properties);
+
+	g_object_get (source, "volume", &volume, NULL);
+	
+	display_name = gnome_vfs_volume_get_display_name (volume);
+	g_object_set (source, "name", display_name, NULL);
+	g_free (display_name);
+
+	g_object_unref (volume);
+
+	return source;
+}
+
 
 static void 
 rb_removable_media_source_dispose (GObject *object)

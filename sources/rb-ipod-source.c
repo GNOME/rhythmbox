@@ -137,7 +137,6 @@ rb_ipod_source_new (RBShell *shell, GnomeVFSVolume *volume)
 	entry_type =  rhythmdb_entry_register_type ();
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
-					  "name", _("iPod"),
 					  "entry-type", entry_type,
 					  "volume", volume,
 					  "shell", shell,
@@ -486,41 +485,51 @@ hal_udi_is_ipod (const char *udi)
 
 	result = FALSE;
 	dbus_error_init (&error);
+	
 	conn = NULL;
 	ctx = libhal_ctx_new ();
 	if (ctx == NULL) {
 		/* FIXME: should we return an error somehow so that we can 
 		 * fall back to a check for iTunesDB presence instead ?
 		 */
-		g_print ("Error: %s\n", error.message);
+		rb_debug ("cannot connect to HAL");
 		goto end;
 	}
 	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-	if (conn == NULL) {
-		g_print ("Error: %s\n", error.message);
+	if (conn == NULL || dbus_error_is_set (&error))
 		goto end;
-	}
+
 	libhal_ctx_set_dbus_connection (ctx, conn);
-	if (!libhal_ctx_init (ctx, &error)) {
-		g_print ("Error: %s\n", error.message);
+	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
 		goto end;
-	}
 
 	parent_udi = libhal_device_get_property_string (ctx, udi,
 			"info.parent", &error);
+	if (parent_udi == NULL || dbus_error_is_set (&error))
+		goto end;
+		
 	parent_name = libhal_device_get_property_string (ctx, parent_udi,
 			"storage.model", &error);
 	g_free (parent_udi);
-	if (parent_name != NULL && strcmp (parent_name, "iPod") == 0) {
+	if (parent_name == NULL || dbus_error_is_set (&error))
+		goto end;
+
+	if (strcmp (parent_name, "iPod") == 0)
 		result = TRUE;
-	}
 
 	g_free (parent_name);
 end:
+	if (dbus_error_is_set (&error)) {
+		rb_debug ("Error: %s\n", error.message);
+		dbus_error_free (&error);
+		dbus_error_init (&error);
+	}
+
 	if (ctx) {
 		libhal_ctx_shutdown (ctx, &error);
 		libhal_ctx_free(ctx);
 	}
+
 	dbus_error_free (&error);
 
 	return result;

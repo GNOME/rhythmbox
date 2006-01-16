@@ -30,6 +30,7 @@
 #include "rb-removable-media-manager.h"
 #include "rb-sourcelist.h"
 #include "rb-removable-media-source.h"
+#include "rb-generic-player-source.h"
 #include "rb-audiocd-source.h"
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
@@ -433,6 +434,9 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL)
 		return;
 
+	if (!gnome_vfs_volume_is_mounted (volume))
+		return;
+
 	/* ignore network volumes */
 	device_type = gnome_vfs_volume_get_device_type (volume);
 	if (device_type == GNOME_VFS_DEVICE_TYPE_NFS ||
@@ -468,6 +472,8 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	if (source == NULL && rb_ipod_is_volume_ipod (volume))
 		source = rb_ipod_source_new (shell, volume);
 #endif
+	if (source == NULL && rb_generic_player_is_volume_player (volume))
+		source = rb_generic_player_source_new (shell, volume);
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);

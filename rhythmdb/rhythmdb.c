@@ -133,6 +133,7 @@ typedef struct
 {
 	RhythmDB *db;
 	char *uri;
+	RhythmDBEntryType type;
 } RhythmDBAddThreadData;
 
 typedef struct
@@ -143,6 +144,7 @@ typedef struct
 		RHYTHMDB_ACTION_SYNC
 	} type;
 	char *uri;
+ 	RhythmDBEntryType entry_type;
 } RhythmDBAction;
 
 typedef struct
@@ -160,6 +162,7 @@ typedef struct
 	} type;
 	char *uri;
 	char *real_uri; /* Target of a symlink, if any */
+	RhythmDBEntryType entry_type;
 
 	GError *error;
 	RhythmDB *db;
@@ -196,7 +199,7 @@ static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
 static gpointer add_thread_main (RhythmDBAddThreadData *data);
 static gpointer action_thread_main (RhythmDB *db);
 static gpointer query_thread_main (RhythmDBQueryThreadData *data);
-static void queue_stat_uri (const char *uri, RhythmDB *db);
+static void queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type);
 static void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry, gboolean notify_if_inserted, guint propid, const GValue *value);
 static void rhythmdb_entry_set_mount_point (RhythmDB *db, 
  					    RhythmDBEntry *entry, 
@@ -839,7 +842,7 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 			const gchar *uri;
 			uri = rhythmdb_entry_get_string (entry, 
 							 RHYTHMDB_PROP_LOCATION);
-			queue_stat_uri (uri, db);
+			queue_stat_uri (uri, db, -1);
 		}
 		g_assert (entry->inserted == FALSE);
 		entry->inserted = TRUE;
@@ -1389,6 +1392,10 @@ rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (entry) {
 		time_t mtime = (time_t) entry->mtime;
+
+		if ((event->entry_type != -1) && (entry->type != event->entry_type))
+			g_warning ("attempt to use same location in multiple entry types");
+
 		if (event->error) {
 			if (!is_ghost_entry (entry)) {
 				rhythmdb_entry_set_visibility (db, entry, FALSE);
@@ -1455,6 +1462,7 @@ rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 		action = g_new0 (RhythmDBAction, 1);
 		action->type = RHYTHMDB_ACTION_LOAD;
 		action->uri = g_strdup (event->real_uri);
+		action->entry_type = event->entry_type;
 		rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", action->uri);
 		g_async_queue_push (db->priv->action_queue, action);
 	}
@@ -1519,8 +1527,9 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (!entry) {
-
-		entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, event->real_uri);
+		if (event->entry_type == -1)
+			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+		entry = rhythmdb_entry_new (db, event->entry_type, event->real_uri);
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
 			return TRUE;
@@ -1545,6 +1554,9 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
 		g_value_unset (&value);
 	}
+
+	if ((event->entry_type != -1) && (entry->type != event->entry_type))
+		g_warning ("attempt to use same location in multiple entry types");
 
 	set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
 
@@ -1594,6 +1606,7 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db, RhythmDBEvent *event)
 	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_LOAD;
 	action->uri = g_strdup (event->uri);
+	action->entry_type = -1;
 	g_async_queue_push (db->priv->action_queue, action);
 }
 
@@ -1750,7 +1763,7 @@ read_queue (GAsyncQueue *queue, gboolean *cancel)
 }
 
 static void
-queue_stat_uri (const char *uri, RhythmDB *db)
+queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 {
 	RhythmDBAction *action;
 
@@ -1760,16 +1773,24 @@ queue_stat_uri (const char *uri, RhythmDB *db)
 	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_STAT;
 	action->uri = g_strdup (uri);
+	action->entry_type = type;
 	g_async_queue_push (db->priv->action_queue, action);
 }
+
+static void
+queue_stat_uri_tad (const char *uri, RhythmDBAddThreadData *data)
+{
+	queue_stat_uri (uri, data->db, data->type);
+}
+
 
 static gpointer
 add_thread_main (RhythmDBAddThreadData *data)
 {
 	RhythmDBEvent *result;
 
-	rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri,
-				   &data->db->priv->exiting, data->db);
+	rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri_tad,
+				   &data->db->priv->exiting, data);
 
 	rb_debug ("exiting");
 	result = g_new0 (RhythmDBEvent, 1);
@@ -1959,6 +1980,7 @@ action_thread_main (RhythmDB *db)
 			result = g_new0 (RhythmDBEvent, 1);
 			result->db = db;
 			result->type = RHYTHMDB_EVENT_STAT;
+			result->entry_type = action->entry_type;
 
 			rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", action->uri);
 
@@ -1970,6 +1992,7 @@ action_thread_main (RhythmDB *db)
 			result = g_new0 (RhythmDBEvent, 1);
 			result->db = db;
 			result->type = RHYTHMDB_EVENT_METADATA_LOAD;
+			result->entry_type = action->entry_type;
 
 			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", action->uri);
 
@@ -2051,16 +2074,23 @@ action_thread_main (RhythmDB *db)
 void
 rhythmdb_add_uri (RhythmDB *db, const char *uri)
 {
+	rhythmdb_add_uri_with_type (db, uri, RHYTHMDB_ENTRY_TYPE_SONG);
+}
+
+void
+rhythmdb_add_uri_with_type (RhythmDB *db, const char *uri, RhythmDBEntryType type)
+{
 	char  *realuri = rb_uri_resolve_symlink (uri);
 
 	if (rb_uri_is_directory (realuri)) {
 		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
 		data->db = db;
 		data->uri = realuri;
+		data->type = type;
 
 		rhythmdb_thread_create (db, (GThreadFunc) add_thread_main, data);
 	} else {
-		queue_stat_uri (realuri, db);
+		queue_stat_uri (realuri, db, type);
 		g_free (realuri);
 	}
 }

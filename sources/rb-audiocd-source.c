@@ -146,19 +146,17 @@ rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 RBRemovableMediaSource *
 rb_audiocd_source_new (RBShell *shell, GnomeVFSVolume *volume)
 {
-	char *display_name, *device_path;
+	char *device_path;
 	GObject *source;
 	RhythmDBEntryType entry_type;
 
 	g_assert (rb_audiocd_is_volume_audiocd (volume));
 
-	display_name = gnome_vfs_volume_get_display_name (volume);
-	device_path = gnome_vfs_volume_get_device_path (volume);
-
 	entry_type =  rhythmdb_entry_register_type ();
 
+	device_path = gnome_vfs_volume_get_device_path (volume);
+
 	source = g_object_new (RB_TYPE_AUDIOCD_SOURCE,
-			       "name", display_name,
 			       "entry-type", entry_type,
 			       "volume", volume,
 			       "shell", shell,
@@ -166,7 +164,6 @@ rb_audiocd_source_new (RBShell *shell, GnomeVFSVolume *volume)
 			       NULL);
 
 	g_free (device_path);
-	g_free (display_name);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
