@@ -1,3 +1,59 @@
+2006-01-16  James Livingston  <jrl@ids.org.au>
+
+	Patch to add support for "chained queries" and putting hidden tracks
+	in query models. Use chained queries to add search box support to
+	normal playlists, and to make hidden entries not get lost. Fixes bug
+	319278.
+
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property):
+	(rhythmdb_query_model_finalize): add "show-hidden" and
+	"base-model" properties.
+
+	(rhythmdb_query_model_set_connected),
+	(rhythmdb_query_model_has_pending_changes),	
+	(rhythmdb_query_model_entry_added_cb),
+	(rhythmdb_query_model_entry_changed_cb), (idle_process_update),
+	(rhythmdb_query_model_add_entry), (rhythmdb_query_model_do_insert),
+	(rhythmdb_query_model_remove_entry),
+	(rhythmdb_query_model_drag_data_received),
+	(rhythmdb_query_model_base_row_inserted),
+	(rhythmdb_query_model_base_row_deleted),
+	(rhythmdb_query_model_base_non_entry_dropped),
+	(rhythmdb_query_model_base_complete),
+	(rhythmdb_query_model_base_entry_prop_changed),
+	(rhythmdb_query_model_base_rows_reordered),
+	(rhythmdb_query_model_row_drop_possible): handle base-model by
+	chaining events and operations where necessary. Make hidden entries
+	not get added only if "show-hidden" is false.
+
+	(rhythmdb_query_model_child_index_to_base_index),
+	(rhythmdb_query_model_base_index_to_child_index),
+	(rhythmdb_query_model_get_entry_index): utility functions for handling
+	base-model entries.
+
+	(rhythmdb_query_model_reapply_query): apply the current query, and
+	remove entries that don't match it.
+
+	* rhythmdb/rhythmdb-tree.c: (do_query_recurse): small optimisation for
+	empty queries.
+
+	* sources/rb-source.c: (rb_source_set_property): move the unref later
+	to fix problem if it is the last reference.
+
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_init),
+	(rb_static_playlist_source_finalize),
+	(rb_static_playlist_source_constructor), (impl_reset_filters),
+	(impl_search), (rb_static_playlist_source_do_query),
+	(impl_save_contents_to_xml),
+	(rb_static_playlist_source_add_location_internal): use a chained query
+	model to filter out hidden entries and implement the search box.
+
 2006-01-15  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-playlist-source.c: (rb_playlist_source_new_from_xml): fix

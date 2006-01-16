@@ -1763,6 +1763,9 @@ do_query_recurse (RhythmDBTree *db, GPtrArray *query, RhythmDBTreeTraversalFunc 
 
 	rb_debug ("doing recursive query, %d conjunctions", g_list_length (conjunctions));
 
+	if (conjunctions == NULL)
+		return;
+
 	/* If there is a disjunction involved, we must uniquify the entry hits. */
 	if (conjunctions->next != NULL)
 		data->entries = g_hash_table_new (g_direct_hash, g_direct_equal);

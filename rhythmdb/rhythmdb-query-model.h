@@ -105,6 +105,8 @@ void			rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 							     gpointer user_data,
 							     GDestroyNotify sort_destroy_notify);
 
+void			rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter);
+
 G_END_DECLS
 
 #endif /* __RHYTHMBDB_QUERY_MODEL_H */

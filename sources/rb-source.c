@@ -287,20 +287,18 @@ rb_source_set_property (GObject *object,
 			return;
 
 		if (priv->query_model) {
-			g_object_unref (G_OBJECT (priv->query_model));
-
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
 							      G_CALLBACK (rb_source_row_deleted_cb),
 							      source);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
 							      G_CALLBACK (rb_source_row_inserted_cb),
 							      source);
+			g_object_unref (G_OBJECT (priv->query_model));
 		}
 		
 		priv->query_model = model;
 		if (priv->query_model) {
 			g_object_ref (G_OBJECT (model));
-
 			g_signal_connect_object (G_OBJECT (model), "row_deleted",
 						 G_CALLBACK (rb_source_row_deleted_cb),
 						 source, 0);
