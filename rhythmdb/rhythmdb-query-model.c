@@ -1912,10 +1912,10 @@ rhythmdb_query_model_base_row_deleted (GtkTreeModel *base_model,
 				       RhythmDBQueryModel *model)
 {
 	RhythmDBEntry *entry;
-       
-	rb_debug ("deleting entry %p from base model %p to model %p", entry, base_model, model);
-	
+       	
 	entry = rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (base_model), path);
+	rb_debug ("deleting entry %p from base model %p to model %p", entry, base_model, model);
+
 	rhythmdb_query_model_filter_out_entry (model, entry);
 }
 

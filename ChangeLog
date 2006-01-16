@@ -1,5 +1,13 @@
 2006-01-16  James Livingston  <jrl@ids.org.au>
 
+	patch by: William Jon McCann  <mccann@jhu.edu>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_base_row_deleted): fix build issue from last
+	commit.
+
+2006-01-16  James Livingston  <jrl@ids.org.au>
+
 	Patch to add support for "chained queries" and putting hidden tracks
 	in query models. Use chained queries to add search box support to
 	normal playlists, and to make hidden entries not get lost. Fixes bug
