@@ -1,5 +1,11 @@
 2006-01-17  James Livingston  <jrl@ids.org.au>
 
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb),
+	(rb_uri_handle_recursively): use gnome_vfs_directory_visit, so we
+	don't get stuck on recursive symlinks. Fixed bug 125452.
+
+2006-01-17  James Livingston  <jrl@ids.org.au>
+
 	Add support for mass-storage audio players. Players are detected via
 	either the HAL "audio_player" capability, or a ".is_audio_player" file
 	in the root of the volume. Closes bug 325602.

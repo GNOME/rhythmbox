@@ -620,65 +620,65 @@ rb_uri_is_local (const char *text_uri)
 	return ret;
 }
 
+typedef struct {
+	const char *uri;
+	GFunc func;
+	gpointer user_data;
+	gboolean *cancel_flag;
+} RBUriHandleRecursivelyData;
+
+static gboolean
+rb_uri_handle_recursively_cb (const gchar *rel_path,
+			      GnomeVFSFileInfo *info,
+			      gboolean recursing_will_loop,
+			      RBUriHandleRecursivelyData *data,
+			      gboolean *recurse)
+{
+	char *path;
+
+	if (data->cancel_flag && *data->cancel_flag)
+		return TRUE;
+	
+	if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) && g_str_has_prefix (rel_path, ".Trash")) {
+		*recurse = FALSE;
+		return TRUE;
+	}
+	
+	if (info->type == GNOME_VFS_FILE_TYPE_REGULAR) {
+		path = g_build_filename (data->uri, rel_path, NULL);
+		(data->func) (path, data->user_data);
+		g_free (path);
+	}
+
+	*recurse = !recursing_will_loop;
+	return TRUE;
+}
+
 void
 rb_uri_handle_recursively (const char *text_uri,
 		           GFunc func,
 			   gboolean *cancelflag,
 		           gpointer user_data)
 {
-	GList *list, *l;
-	GnomeVFSURI *uri;
+	RBUriHandleRecursivelyData *data = g_new0 (RBUriHandleRecursivelyData, 1);
+	GnomeVFSFileInfoOptions flags;
+	GnomeVFSResult result;
+	
+	data->uri = text_uri;
+	data->func = func;
+	data->user_data = user_data;
+	data->cancel_flag = cancelflag;
 
-	uri = gnome_vfs_uri_new (text_uri);
-
-	if (gnome_vfs_directory_list_load (&list, text_uri,
-				           (GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
-					    GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
-					    GNOME_VFS_FILE_INFO_FOLLOW_LINKS)) != GNOME_VFS_OK)
-		return;
-
-	for (l = list; l != NULL; l = g_list_next (l))
-	{
-		GnomeVFSFileInfo *info;
-		GnomeVFSURI *file_uri;
-		char *file_uri_text;
-
-		if (cancelflag && *cancelflag)
-			break;
-
-		info = (GnomeVFSFileInfo *) l->data;
-		
-		file_uri = gnome_vfs_uri_append_path (uri, info->name);
-		if (file_uri == NULL)
-			continue;
-		file_uri_text = gnome_vfs_uri_to_string (file_uri,
-							 GNOME_VFS_URI_HIDE_NONE);
-		gnome_vfs_uri_unref (file_uri);
-
-		if (info->type != GNOME_VFS_FILE_TYPE_REGULAR)
-		{
-			if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) &&
-			    (info->name) && (strcmp (info->name, "."))
-			    && (strcmp (info->name, ".."))
-			    && (strncmp (info->name, ".Trash", strlen (".Trash"))))
-			{
-				rb_uri_handle_recursively (file_uri_text,
-							   func,
-							   cancelflag,
-							   user_data);
-
-			}
-		}
-		else
-			(*func) (file_uri_text, user_data);
-
-		g_free (file_uri_text);
-	}
-
-	gnome_vfs_file_info_list_free (list);
-	gnome_vfs_uri_unref (uri);
+	flags = GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
+		GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
+		GNOME_VFS_FILE_INFO_FOLLOW_LINKS;
+	result = gnome_vfs_directory_visit (text_uri,
+					    flags,
+					    GNOME_VFS_DIRECTORY_VISIT_LOOPCHECK,
+					    (GnomeVFSDirectoryVisitFunc)rb_uri_handle_recursively_cb,
+					    data);
+	g_free (data);
 }
-
 
 GnomeVFSResult
 rb_uri_mkstemp (const char *prefix, char **uri_ret, GnomeVFSHandle **ret)
