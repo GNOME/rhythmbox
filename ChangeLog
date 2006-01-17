@@ -1,5 +1,10 @@
 2006-01-16  William Jon McCann  <mccann@jhu.edu>
 
+	* sources/rb-playlist-source-recorder.c (update_speed_combobox):
+	Off by one error in default speed index.
+
+2006-01-16  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-playlist-source-recorder.c (get_write_speeds) 
 	(update_speed_combobox, update_speed_combobox):
 	Get a list of the actually supported write speeds from

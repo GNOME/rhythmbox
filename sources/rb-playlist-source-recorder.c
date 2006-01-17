@@ -254,7 +254,7 @@ get_speed_selection (GtkWidget *combobox)
 }
 
 #if !NAUTILUS_BURN_CHECK_VERSION(2,13,90)
-static void
+static int *
 get_write_speeds (NautilusBurnDrive *drive)
 {
 	int  max_speed;
@@ -310,7 +310,7 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
 #else
                 int *write_speeds;
 
-                write_speeds = get_write_speeds (drive);
+                write_speeds = get_write_speeds ((NautilusBurnDrive *)drive);
 #endif
 
                 for (i = 0; write_speeds [i] > 0; i++) {
@@ -318,7 +318,7 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
                         name = g_strdup_printf ("%d \303\227", write_speeds [i]);
 
                         if (write_speeds [i] == default_speed) {
-                                default_speed_index = i;
+                                default_speed_index = i + 1;
                         }
 
                         gtk_list_store_append (GTK_LIST_STORE (model), &iter);
