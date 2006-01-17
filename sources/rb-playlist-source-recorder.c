@@ -55,6 +55,10 @@
 extern char *mkdtemp (char *template);
 #endif
 
+#ifndef NAUTILUS_BURN_CHECK_VERSION
+#define NAUTILUS_BURN_CHECK_VERSION FALSE
+#endif
+
 /* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.12 */
 #ifndef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
 #define nautilus_burn_drive_eject _nautilus_burn_drive_eject
@@ -249,6 +253,25 @@ get_speed_selection (GtkWidget *combobox)
         return speed;
 }
 
+#if !NAUTILUS_BURN_CHECK_VERSION(2,13,90)
+static void
+get_write_speeds (NautilusBurnDrive *drive)
+{
+	int  max_speed;
+	int  i;
+        int *write_speeds;
+
+	max_speed = drive->max_speed_write;
+	write_speeds = g_new0 (int, max_speed + 1);
+
+	for (i = 0; i < max_speed; i++) {
+		write_speeds [i] = max_speed - i;
+	}
+
+        return write_speeds;
+}
+#endif
+
 static void
 update_speed_combobox (RBPlaylistSourceRecorder *source)
 {
@@ -256,6 +279,7 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
         char                    *name;
         int                      i;
         int                      default_speed;
+	int                      default_speed_index;
         const NautilusBurnDrive *drive;
         GtkTreeModel            *model;
         GtkTreeIter              iter;
@@ -274,26 +298,47 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
                             1, 0,
                             -1);
 
+
+        default_speed = eel_gconf_get_integer (CONF_STATE_BURN_SPEED);
+        default_speed_index = 0;
+
         if (drive) {
-                for (i = 1; i <= drive->max_speed_write; i++) {
-                        name = g_strdup_printf ("%d \303\227", i);
+#if NAUTILUS_BURN_CHECK_VERSION(2,13,90)
+                const int *write_speeds;
+
+                write_speeds = nautilus_burn_drive_get_write_speeds ((NautilusBurnDrive *)drive);
+#else
+                int *write_speeds;
+
+                write_speeds = get_write_speeds (drive);
+#endif
+
+                for (i = 0; write_speeds [i] > 0; i++) {
+
+                        name = g_strdup_printf ("%d \303\227", write_speeds [i]);
+
+                        if (write_speeds [i] == default_speed) {
+                                default_speed_index = i;
+                        }
 
                         gtk_list_store_append (GTK_LIST_STORE (model), &iter);
                         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
                                             0, name,
-                                            1, i,
+                                            1, write_speeds [i],
                                             -1);
                         g_free (name);
                 }
 
-                /* Disable speed if max speed < 1 */
-                gtk_widget_set_sensitive (combobox, drive->max_speed_write > 0);
+                /* Disable speed if no items in list */
+                gtk_widget_set_sensitive (combobox, i > 0);
+
+#if !NAUTILUS_BURN_CHECK_VERSION(2,13,90)
+        g_free (write_speeds);
+#endif
         }
 
-        default_speed = eel_gconf_get_integer (CONF_STATE_BURN_SPEED);
-
         /* for now assume equivalence between index in comboxbox and speed */
-        gtk_combo_box_set_active (GTK_COMBO_BOX (combobox), default_speed);
+        gtk_combo_box_set_active (GTK_COMBO_BOX (combobox), default_speed_index);
 }
 
 void
