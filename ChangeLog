@@ -1,5 +1,12 @@
 2006-01-17  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (do_next_idle),
+	(rb_shell_player_cmd_previous), (rb_shell_player_cmd_next),
+	(eos_cb): release audio device when a playlist finishes. Fixes bug
+	323679.
+
+2006-01-17  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (set_props_from_metadata), (queue_stat_uri):
 	canonicalise the URIs when things are added via library watching.
 

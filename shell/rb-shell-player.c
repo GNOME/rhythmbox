@@ -987,6 +987,8 @@ do_next_idle (RBShellPlayer *player)
 		if (error->domain != RB_SHELL_PLAYER_ERROR ||
 		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
 			g_warning ("do_next_idle: Unhandled error: %s", error->message);
+		else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			rb_shell_player_set_playing_source (player, NULL);
 	}
 	player->priv->do_next_idle_id = 0;
 
@@ -1390,6 +1392,8 @@ rb_shell_player_cmd_previous (GtkAction *action,
 		if (error->domain != RB_SHELL_PLAYER_ERROR ||
 		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
 			g_warning ("cmd_previous: Unhandled error: %s", error->message);
+		else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			rb_shell_player_set_playing_source (player, NULL);
 	}
 }
 
@@ -1403,6 +1407,8 @@ rb_shell_player_cmd_next (GtkAction *action,
 		if (error->domain != RB_SHELL_PLAYER_ERROR ||
 		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
 			g_warning ("cmd_next: Unhandled error: %s", error->message);
+		else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+			rb_shell_player_set_playing_source (player, NULL);
 	}
 }
 
@@ -2160,6 +2166,7 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 			    && (current.tv_sec - player->priv->last_retry.tv_sec) < 4) {
 				rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
 				player->priv->did_retry = FALSE;
+				rb_shell_player_set_playing_source (player, NULL);
 				break;
 			} else {
 				player->priv->did_retry = TRUE;
@@ -2176,6 +2183,8 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 					if (error->domain != RB_SHELL_PLAYER_ERROR ||
 					    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
 						g_warning ("eos_cb: Unhandled error: %s", error->message);
+					else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+						rb_shell_player_set_playing_source (player, NULL);
 				}
 			}
 			break;
