@@ -1,3 +1,11 @@
+2006-01-17  James Livingston  <jrl@ids.org.au>
+
+	patch by: Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-audiocd-source.c: don't assert if MusicBrainz returns a
+	different number of tracks than exist on the cd, since that happens
+	with audio+data hybrid CDs. Part of bug 325046.
+
 2006-01-17  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):

@@ -356,6 +356,7 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 	GList *cd_track = priv->tracks;
 	RBShell *shell;
 	RhythmDB *db;
+	GValue true_value = {0,};
 
 	g_assert (metadata == priv->metadata);
 
@@ -375,18 +376,20 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 	g_object_unref (G_OBJECT (shell));
 
+	g_value_init (&true_value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&true_value, TRUE);
+
 	/*while (albums) {*/
 		AlbumDetails *album;
 		album = (AlbumDetails*)albums->data;
 
 		g_object_set (G_OBJECT (source), "name", album->title, NULL);
 
-		while (album->tracks) {
+		while (album->tracks && cd_track) {
 			TrackDetails *track = (TrackDetails*)album->tracks->data;
 			RhythmDBEntry *entry = cd_track->data;
 			GValue value = {0, };
 
-			g_assert (cd_track != NULL);
 			/* record track info in entry*/
 			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
 			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
@@ -405,7 +408,17 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 			cd_track = g_list_next (cd_track);
 		}
 
-		g_assert (cd_track == NULL);
+		while (cd_track) {
+			/* Musicbrainz doesn't report data tracks on multisession CDs.
+			 * These aren't interesting to us anyway, so they should be hidden.
+			 */
+			RhythmDBEntry *entry = cd_track->data;
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &true_value);
+			rhythmdb_commit (db);
+
+			cd_track = g_list_next (cd_track);
+		}
+
 		/*albums = g_list_next (albums);
 	}*/
 
