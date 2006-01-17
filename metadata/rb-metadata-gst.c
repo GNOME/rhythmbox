@@ -190,7 +190,8 @@ add_supported_type (RBMetaData *md,
 static void
 rb_metadata_init (RBMetaData *md)
 {
-	RBAddTaggerElem add_tagger;
+	RBAddTaggerElem tagger;
+	gboolean has_gnomevfssink;
         
 	md->priv = RB_METADATA_GET_PRIVATE (md);
 
@@ -205,15 +206,19 @@ rb_metadata_init (RBMetaData *md)
  	 * only registering types we have plugins for defeats the second 
 	 * purpose.
  	 */
+	has_gnomevfssink = (gst_element_factory_find ("gnomevfssink") != NULL);
 
-	add_tagger = (gst_element_factory_find("id3tag")) ?  rb_add_id3_tagger : NULL;
-	add_supported_type (md, "application/x-id3", add_tagger, "MP3");
-	add_supported_type (md, "audio/mpeg", add_tagger, "MP3");
+	tagger = (has_gnomevfssink && gst_element_factory_find ("id3tag")) ?  rb_add_id3_tagger : NULL;
+	add_supported_type (md, "application/x-id3", tagger, "MP3");
+	add_supported_type (md, "audio/mpeg", tagger, "MP3");
+
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
-	add_tagger = (gst_element_factory_find("flactag")) ?  rb_add_flac_tagger : NULL;
-	add_supported_type (md, "audio/x-flac", rb_add_flac_tagger, "FLAC");
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
 	add_supported_type (md, "audio/x-wav", NULL, "WAV");
+
+	tagger = (has_gnomevfssink && gst_element_factory_find ("flactag")) ?  rb_add_flac_tagger : NULL;
+	add_supported_type (md, "audio/x-flac", tagger, "FLAC");
+
 }
 
 static void
@@ -399,31 +404,6 @@ rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
 }
 
 static void
-rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
-{
-	rb_debug ("caught eos");
-	if (md->priv->eos) {
-		rb_debug ("RENTERED EOS!");
-		return;
-	}
-	gst_element_set_state (md->priv->sink, GST_STATE_NULL);
-	md->priv->eos = TRUE;
-}
-
-static void
-rb_metadata_gst_error_cb (GstElement *element,
-			  GstElement *source,
-			  GError *error,
-			  gchar *debug,
-			  RBMetaData *md)
-{
-	rb_debug ("caught error: %s ", error->message);
-	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
-					       RB_METADATA_ERROR_GENERAL,
-					       error->message);
-}
-
-static void
 rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *md)
 {
 	int count, tem, type;
@@ -519,6 +499,32 @@ rb_metadata_gst_fakesink_handoff_cb (GstElement *fakesink, GstBuffer *buf, GstPa
 	rb_debug ("in fakesink handoff");
 	md->priv->handoff = TRUE;
 }
+
+static void
+rb_metadata_gst_error_cb (GstElement *element,
+			  GstElement *source,
+			  GError *error,
+			  gchar *debug,
+			  RBMetaData *md)
+{
+	rb_debug ("caught error: %s ", error->message);
+	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
+					       RB_METADATA_ERROR_GENERAL,
+					       error->message);
+}
+
+static void
+rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
+{
+	rb_debug ("caught eos");
+	if (md->priv->eos) {
+		rb_debug ("RENTERED EOS!");
+		return;
+	}
+	gst_element_set_state (md->priv->sink, GST_STATE_NULL);
+	md->priv->eos = TRUE;
+}
+
 #endif
 
 static void
@@ -1011,7 +1017,9 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	pipeline = gst_pipeline_new ("pipeline");
 
+#ifdef HAVE_GSTREAMER_0_8
 	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
+#endif
 
 	/* Source */
 	plugin_name = "gnomevfssrc";
@@ -1026,7 +1034,10 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto missing_plugin;
 
 	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
+#if HAVE_GSTREAMER_0_8
 	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
+#endif
+
 	/* FIXME: gst_bin_add (GST_BIN (pipeline, md->priv->sink)) really
 	 * should be called here, but weird crashes happen when unreffing the
 	 * pipeline if it's not moved after the creation of the tagging
@@ -1049,8 +1060,8 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
-			     "Unsupported file type: %s", md->priv->type);
-		goto missing_plugin;
+			     "Unable to create tag-writing elements");
+		goto out_error;
 	}
 
         tagger = gst_bin_get_by_interface(GST_BIN(pipeline), GST_TYPE_TAG_SETTER);
@@ -1058,8 +1069,8 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
-			     "Unsupported file type: %s", md->priv->type);
-		goto missing_plugin;
+			     "Unable to find tag-writing element");
+		goto out_error;
 	}
 
 	gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_REPLACE);

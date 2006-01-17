@@ -1,5 +1,13 @@
 2006-01-17  James Livingston  <jrl@ids.org.au>
 
+	* metadata/rb-metadata-gst.c: don't set properties with gst 0.10 which
+	are 0.8 only. Fix element detection.
+
+	* rhythmdb/rhythmdb.c: (action_thread_main): reload old metadata is
+	saving the new metadata failed
+
+2006-01-17  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-player.c: (do_next_idle),
 	(rb_shell_player_cmd_previous), (rb_shell_player_cmd_next),
 	(eos_cb): release audio device when a playlist finishes. Fixes bug

@@ -2028,21 +2028,29 @@ action_thread_main (RhythmDB *db)
 			}
 
 			entry = rhythmdb_entry_lookup_by_location (db, action->uri);
-			if (!entry) {
+			if (!entry)
 				break;
-			}
 
 			entry_to_rb_metadata (db, entry, db->priv->metadata);
 
 			rb_metadata_save (db->priv->metadata, &error);
 			if (error != NULL) {
+				RhythmDBAction *load_action;
+
+				/* reload the metadata, to revert the db changes */
+				load_action = g_new0 (RhythmDBAction, 1);
+				load_action->type = RHYTHMDB_ACTION_LOAD;
+				load_action->uri = g_strdup (action->uri);
+				load_action->entry_type = -1;
+				g_async_queue_push (db->priv->action_queue, load_action);
+				
 				data = g_new0 (RhythmDBSaveErrorData, 1);
 				g_object_ref (G_OBJECT (db));
 				data->db = db;
 				data->uri = g_strdup (action->uri);
 				data->error = error;
-		
 				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
+
 				break;
 			}
 			break;
