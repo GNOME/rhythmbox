@@ -1280,7 +1280,10 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 		if (!utf8name) {
 			utf8name = g_strdup (_("<invalid filename>"));
 		}
-		g_value_init (&val, G_TYPE_STRING);
+		if (G_VALUE_HOLDS_STRING (&val))
+			g_value_reset (&val);
+		else
+			g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, utf8name);
 		g_free (utf8name);
 	}
@@ -1772,7 +1775,7 @@ queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 
 	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_STAT;
-	action->uri = g_strdup (uri);
+	action->uri = rb_canonicalise_uri (uri);
 	action->entry_type = type;
 	g_async_queue_push (db->priv->action_queue, action);
 }
@@ -2080,7 +2083,7 @@ rhythmdb_add_uri (RhythmDB *db, const char *uri)
 void
 rhythmdb_add_uri_with_type (RhythmDB *db, const char *uri, RhythmDBEntryType type)
 {
-	char  *realuri = rb_uri_resolve_symlink (uri);
+	char *realuri = rb_uri_resolve_symlink (uri);
 
 	if (rb_uri_is_directory (realuri)) {
 		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
