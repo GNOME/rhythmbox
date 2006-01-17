@@ -56,7 +56,7 @@ extern char *mkdtemp (char *template);
 #endif
 
 #ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION FALSE
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
 #endif
 
 /* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.12 */
