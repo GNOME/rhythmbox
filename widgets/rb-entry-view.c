@@ -1363,10 +1363,12 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
 
-	sortdata = g_new (struct RBEntryViewColumnSortData, 1);
-	sortdata->func = (GCompareDataFunc) sort_func;
-	sortdata->data = user_data;
-	g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
+	if (sort_func != NULL) {
+		sortdata = g_new (struct RBEntryViewColumnSortData, 1);
+		sortdata->func = (GCompareDataFunc) sort_func;
+		sortdata->data = user_data;
+		g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
+	}
 	g_hash_table_insert (view->priv->column_key_map, g_strdup (key), column);
 
 	rb_entry_view_sync_columns_visible (view);
@@ -1379,8 +1381,12 @@ rb_entry_view_set_columns_clickable (RBEntryView *view, gboolean clickable)
 	GList *columns, *tem;
 
   	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
-	for (tem = columns; tem; tem = tem->next)
-		gtk_tree_view_column_set_clickable (tem->data, clickable); 
+	for (tem = columns; tem; tem = tem->next) {
+		/* only columns we can sort on should be clickable */
+		GtkTreeViewColumn *column = (GtkTreeViewColumn *) tem->data;
+		if (g_hash_table_lookup (view->priv->column_sort_data_map, column) != NULL)
+			gtk_tree_view_column_set_clickable (tem->data, clickable); 
+	}
 	g_list_free (columns);
 }
 
@@ -1478,9 +1484,6 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 					  "pixbuf-clicked",
 					  G_CALLBACK (rb_entry_view_pixbuf_clicked_cb),
 					  G_OBJECT (view));
-		g_signal_connect_object (G_OBJECT (column), "clicked",
-				 G_CALLBACK (rb_entry_view_column_clicked_cb),
-				 view, 0);
 
 		gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltip), GTK_WIDGET (column->button),
 				       _("Now Playing"), NULL);

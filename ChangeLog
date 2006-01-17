@@ -1,3 +1,18 @@
+2006-01-17  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	Remove useless call to gtk_tree_view_column_set_clickable().
+
+	* widgets/rb-entry-view.c: (rb_entry_view_append_column_custom):
+	Don't store sort data for columns if the sort function is NULL,
+	so only sortable columns will be in the column sort data map.
+	(rb_entry_view_set_columns_clickable): Only make columns we can sort
+	on clickable.
+	(rb_entry_view_constructor):  The 'playing icon' column is never
+	clickable, so don't connect a signal handler for it.
+
+	Fixes bug 326811.
+
 2006-01-17  James Livingston  <jrl@ids.org.au>
 
 	* metadata/rb-metadata-gst.c: don't set properties with gst 0.10 which

@@ -244,7 +244,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 
-		gtk_tree_view_column_set_clickable (column, TRUE);
 		gtk_tree_view_column_set_resizable (column, TRUE);
 		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 
