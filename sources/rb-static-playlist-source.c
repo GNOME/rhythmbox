@@ -303,10 +303,6 @@ rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 	priv->filter_model = rhythmdb_query_model_new_empty (db);
 	g_object_set (G_OBJECT (priv->filter_model), "base-model", priv->base_model, NULL);
 
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
-				      RHYTHMDB_QUERY_END);
-	
 	if (priv->search_text) {
 		rhythmdb_query_append (db,
 				       query,

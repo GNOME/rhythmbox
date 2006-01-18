@@ -1,5 +1,16 @@
 2006-01-18  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_do_query): don't filter on the SONG entry
+	type, since the playlists can contain non-song entries. Fixes bug
+	327448.
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_class_init): disable the search box for the
+	queue.
+
+2006-01-18  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-podcast-source.c: (rb_podcast_source_constructor): allow
 	dragging of podcast episodes. Fixed bug 327450.
 

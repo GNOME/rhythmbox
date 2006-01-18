@@ -90,6 +90,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
