@@ -305,6 +305,8 @@ rb_recorder_gst_free_pipeline (RBRecorder *recorder)
 	recorder->priv->got_audio_pad = FALSE;
 #endif
 
+        gst_element_set_state (recorder->priv->pipeline, GST_STATE_NULL);
+
         gst_object_unref (GST_OBJECT (recorder->priv->pipeline));
         recorder->priv->pipeline = NULL;
 }
