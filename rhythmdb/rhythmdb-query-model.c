@@ -1439,14 +1439,20 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 		RhythmDBEntry *entry;
 		gboolean result;
 
-		entry = rhythmdb_query_model_tree_path_to_entry (model, dest);
-		g_assert (entry);
-		rhythmdb_query_model_entry_to_iter (model->priv->base_model, entry, &base_iter);
-		base_dest = gtk_tree_model_get_path (GTK_TREE_MODEL (model->priv->base_model), &base_iter);
+		if (dest) {
+			entry = rhythmdb_query_model_tree_path_to_entry (model, dest);
+			g_assert (entry);
+			rhythmdb_query_model_entry_to_iter (model->priv->base_model, entry, &base_iter);
+			base_dest = gtk_tree_model_get_path (GTK_TREE_MODEL (model->priv->base_model), &base_iter);
+		} else {
+			base_dest = NULL;
+		}
 		
 		result = rhythmdb_query_model_drag_data_received ((RbTreeDragDest*)model->priv->base_model,
 								  base_dest, pos, selection_data);
-		gtk_tree_path_free (base_dest);
+		if (base_dest)
+			gtk_tree_path_free (base_dest);
+
 		return result;
 	}
 
