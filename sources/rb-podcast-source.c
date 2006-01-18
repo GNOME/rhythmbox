@@ -473,7 +473,7 @@ rb_podcast_source_constructor (GType type,
 	source->priv->posts = rb_entry_view_new (source->priv->db, 
 						 rb_shell_get_player (shell),
 						 CONF_STATE_PODCAST_SORTING_POSTS,
-						 FALSE, FALSE);
+						 TRUE, FALSE);
 	g_signal_connect_object (G_OBJECT (source->priv->posts),
 				 "entry-activated",
 				 G_CALLBACK (rb_podcast_source_entry_activated_cb),

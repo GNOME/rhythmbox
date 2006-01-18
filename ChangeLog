@@ -1,5 +1,10 @@
 2006-01-18  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor): allow
+	dragging of podcast episodes. Fixed bug 327450.
+
+2006-01-18  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_drag_data_received): fix possible assertion when
 	dragging to an emoty playlist.
