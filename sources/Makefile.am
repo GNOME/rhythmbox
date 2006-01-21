@@ -28,7 +28,7 @@ libsourcesimpl_la_SOURCES =		\
 	rb-static-playlist-source.c	\
 	rb-static-playlist-source.h	\
 	rb-generic-player-source.c	\
-	rb-geberic-player-source.h	\
+	rb-generic-player-source.h	\
 	rb-play-queue-source.c		\
 	rb-play-queue-source.h
 
