@@ -39,7 +39,6 @@
 
 #include "rb-daap-connection.h"
 #include "rb-daap-mdns.h"
-#include "rb-daap-src.h"
 
 #include "rb-static-playlist-source.h"
 
@@ -432,7 +431,6 @@ start_browsing (RBShell *shell)
 							  (GDestroyNotify)g_free, 
 							  (GDestroyNotify)stop_resolver);
 
-	rb_daap_src_initialize ();
 }
 
 static void
@@ -460,8 +458,6 @@ stop_browsing (RBShell *shell)
 		rb_daap_mdns_browse_cancel (browser);
 		browser = 0;
 	}
-
-	rb_daap_src_shutdown ();
 }
 
 static void

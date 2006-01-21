@@ -1,3 +1,24 @@
+2006-01-21  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* configure.ac: Don't disable DAAP with gstreamer 0.10
+
+	* daapsharing/rb-daap-src.c: (_do_init), (rb_daap_src_base_init),
+	(rb_daap_src_class_init), (rb_daap_src_init),
+	(rb_daap_src_finalize), (rb_daap_src_set_property),
+	(rb_daap_src_get_property), (rb_daap_src_write),
+	(rb_daap_src_read), (_expect_char), (rb_daap_src_read_chunk_size),
+	(_split_uri), (rb_daap_src_open):
+	* daapsharing/rb-daap-src.h:
+	Mostly fix seeking, handle chunked transfer encoding, and port to
+	gstreamer 0.10.
+	
+	* player/rb-player-gst.c:
+	* sources/rb-daap-source.c: (start_browsing), (stop_browsing):
+	Remove rb_daap_src_initialize and rb_daap_src_shutdown.
+
+	Fixes bugs #326738 and #318852, and brings #309609 one step closer to
+	being fixed.
+
 2006-01-21  James Livingston  <jrl@ids.org.au>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net> to add support

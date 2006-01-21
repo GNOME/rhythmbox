@@ -991,7 +991,11 @@ rb_player_set_time (RBPlayer *mp, long time)
 	 * So, we do it this way.  Doesn't that suck?
 	 */
 	if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
-		rb_daap_src_set_time (time);
+		GstElement *src;
+
+		g_object_get (G_OBJECT (mp->priv->playbin), "source", &src, NULL);
+		if (src)
+			rb_daap_src_set_time (src, time);
 	} else {
 #endif
 #ifdef HAVE_GSTREAMER_0_8
@@ -1032,10 +1036,19 @@ rb_player_get_time (RBPlayer *mp)
 		if (position != -1)
 			position /= GST_SECOND;
 
+		/* FIXME whether this is a good idea or not depends on gstreamer version 
+		 * and filetype.  ugh.  for now, disabling it with gstreamer 0.8 seems to 
+		 * give the best results.
+		 */
+#ifdef HAVE_GSTREAMER_0_8
 #ifdef WITH_DAAP_SUPPORT
 		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
-			position += rb_daap_src_get_time ();
+			GstElement *src;
+			g_object_get (G_OBJECT (mp->priv->playbin), "source", &src, NULL);
+			if (src) 
+				position += rb_daap_src_get_time (src);
 		}
+#endif
 #endif
 
 		return (long) position;

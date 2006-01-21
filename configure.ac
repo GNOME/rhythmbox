@@ -162,6 +162,7 @@ GST_0_10_MAJORMINOR=0.10
 GST_0_10_REQUIRED_VERSION=0.9.7
 PKG_CHECK_MODULES(GSTREAMER_0_10, \
 	gstreamer-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION
+	gstreamer-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION
 	gstreamer-plugins-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION,
 	have_gstreamer_0_10=yes,have_gstreamer_0_10=no)
 
@@ -196,6 +197,8 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
 		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
 	fi
 fi
+AM_CONDITIONAL(USE_GSTREAMER_0_10, test x"$with_playback" = xgstreamer_0_10)
+AM_CONDITIONAL(USE_GSTREAMER_0_8, test x"$with_playback" = xgstreamer_0_8)
 
 dnl Give error and exit if we don't have gstreamer
 if test x$with_playback = xauto; then
@@ -227,10 +230,6 @@ AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
 			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox **EXPERIMENTAL**]))
 if test x"$enable_daap" = xyes; then
-   if test x"$with_playback" = xgstreamer_0_10; then
-      AC_MSG_ERROR([DAAP support cannot currently be used with GStreamer 0.10])
-   fi
-
    AC_MSG_WARN([DAAP support is experimental, and may cause Rhythmbox to crash uncontrollably, use at your own risk])
 fi
 

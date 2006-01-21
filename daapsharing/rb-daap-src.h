@@ -23,14 +23,12 @@
 #define __RB_DAAP_SRC_H
 
 #include <glib.h>
+#include <gst/gstelement.h>
 
 G_BEGIN_DECLS
 
-void rb_daap_src_initialize (void);
-void rb_daap_src_shutdown (void);
-
-void rb_daap_src_set_time (glong time);
-glong rb_daap_src_get_time (void);
+void rb_daap_src_set_time (GstElement *element, glong time);
+glong rb_daap_src_get_time (GstElement *element);
 
 G_END_DECLS
 
