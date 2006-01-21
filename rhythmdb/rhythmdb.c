@@ -226,6 +226,7 @@ static gboolean rhythmdb_process_changed_files (RhythmDB *db);
 static void rhythmdb_monitor_uri_path (RhythmDB *db,
 				       const char *uri,
 				       GError **error);
+static gboolean timeout_rhythmdb_commit (RhythmDB *db);
 
 enum
 {
@@ -521,8 +522,6 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->changed_files = g_hash_table_new_full (g_str_hash, g_str_equal,
 							 (GDestroyNotify) g_free,
 							 NULL);
-	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
-						    (GSourceFunc) rhythmdb_process_changed_files, db);
 
 	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
 	
@@ -829,6 +828,8 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 {
 	GList *tem;
 
+	g_assert (rb_is_main_thread ());
+
 	g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
 	if (sync_changes)
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
@@ -864,7 +865,12 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 void
 rhythmdb_commit (RhythmDB *db)
 {
-	rhythmdb_commit_internal (db, TRUE);
+	if (rb_is_main_thread ())
+		rhythmdb_commit_internal (db, TRUE);
+	else {
+		if (!db->priv->commit_timeout_id)
+			db->priv->commit_timeout_id = g_timeout_add (100, (GSourceFunc)timeout_rhythmdb_commit, db);
+	}
 }
 
 static gboolean
@@ -1573,8 +1579,6 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
 	rhythmdb_entry_set_visibility (db, entry, TRUE);
 
-	rhythmdb_entry_set_visibility (db, entry, TRUE);
-
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
 	rhythmdb_monitor_uri_path (db, entry->location, NULL);
@@ -1705,7 +1709,7 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 		
 		count++;
 	next_event:
-		if (timeout && count / 8 > 0) {
+		if (timeout && (count % 8 == 0)) {
 			GTimeVal now;
 			g_get_current_time (&now);
 			if (rb_compare_gtimeval (timeout,&now) < 0)
@@ -2113,6 +2117,33 @@ rhythmdb_sync_library_idle (RhythmDB *db)
 	return FALSE;
 }
 
+static gpointer 	 
+rhythmdb_load_thread_main (RhythmDB *db) 	 
+{ 	 
+	RhythmDBEvent *result; 	 
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db); 	 
+
+	g_mutex_lock (db->priv->saving_mutex);
+	klass->impl_load (db, &db->priv->exiting); 	 
+	g_mutex_unlock (db->priv->saving_mutex);
+
+	g_timeout_add (10000, (GSourceFunc) rhythmdb_sync_library_idle, db);
+	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
+						    (GSourceFunc) rhythmdb_process_changed_files, db);
+
+	rb_debug ("queuing db load complete signal"); 	 
+	result = g_new0 (RhythmDBEvent, 1); 	 
+	result->type = RHYTHMDB_EVENT_DB_LOAD; 	 
+	g_async_queue_push (db->priv->event_queue, result); 	 
+  	 
+	rb_debug ("exiting"); 	 
+	result = g_new0 (RhythmDBEvent, 1); 	 
+	result->type = RHYTHMDB_EVENT_THREAD_EXITED; 	 
+	g_async_queue_push (db->priv->event_queue, result); 	 
+
+	return NULL; 	 
+}
+
 /**
  * rhythmdb_load:
  * @db: a #RhythmDB.
@@ -2122,22 +2153,27 @@ rhythmdb_sync_library_idle (RhythmDB *db)
 void
 rhythmdb_load (RhythmDB *db)
 {
+	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_load_thread_main, db);
+
+#if 0
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	RhythmDBEvent *result;
-
+	
 	/* grab the saving mutex, so that saves will block until the load is complete */
 	g_mutex_lock (db->priv->saving_mutex);
 	klass->impl_load (db, &db->priv->exiting);
 	g_mutex_unlock (db->priv->saving_mutex);
 
-	/* begin monitoring the for new tracks */
 	g_idle_add ((GSourceFunc) rhythmdb_sync_library_idle, db);
+	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
+						    (GSourceFunc) rhythmdb_process_changed_files, db);
 
 	rb_debug ("queuing db load complete signal");
 	result = g_new0 (RhythmDBEvent, 1);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_DB_LOAD;
 	g_async_queue_push (db->priv->event_queue, result);
+#endif
 }
 
 static gpointer

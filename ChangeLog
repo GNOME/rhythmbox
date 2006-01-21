@@ -1,3 +1,18 @@
+2006-01-21  James Livingston  <jrl@ids.org.au>
+
+	Make Rhythmbox start faster by not blocking the UI while database
+	initialisation and loading occurs. Closes bug 323348.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_init): make the library monitoring
+	start 10 seconds later instead of immediately.
+	
+	(rhythmdb_commit_internal), (rhythmdb_commit): make rhythmdb_commit
+	safe to call from any thread.
+
+	(rhythmdb_process_metadata_load), (rhythmdb_process_events),
+	(rhythmdb_load_thread_main), (rhythmdb_load): load the db in a thread,
+	so the UI doesn't block.
+
 2006-01-18  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-static-playlist-source.c:
