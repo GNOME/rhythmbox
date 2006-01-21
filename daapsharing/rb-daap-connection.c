@@ -1170,23 +1170,22 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 			}
 		}
 
-//		if (connection->daap_version == 3.0) {
+		/*if (connection->daap_version == 3.0) {*/
 			uri = g_strdup_printf ("%s/databases/%d/items/%d.%s?session-id=%d", 
 					       priv->daap_base_uri, 
 					       priv->database_id, 
 					       item_id, format, 
 					       priv->session_id);
-//		} else {
-//		??FIXME??
-//		OLD ITUNES
-		// uri should be 
-		// "/databases/%d/items/%d.%s?session-id=%d&revision-id=%d";
-		// but its not going to work cause the other parts of the code 
-		// depend on the uri to have the ip address so that the
-		// RBDAAPSource can be found to ++request_id
-		// maybe just /dont/ support older itunes.  doesn't seem 
-		// unreasonable to me, honestly
-//		}
+		/*} else {*/
+		/* uri should be 
+		 * "/databases/%d/items/%d.%s?session-id=%d&revision-id=%d";
+		 * but its not going to work cause the other parts of the code 
+		 * depend on the uri to have the ip address so that the
+		 * RBDAAPSource can be found to ++request_id
+		 * maybe just /dont/ support older itunes.  doesn't seem 
+		 * unreasonable to me, honestly
+		 */
+		/*}*/
 		entry = rhythmdb_entry_new (priv->db, priv->db_type, uri);
 		if (entry == NULL) {
 			rb_debug ("cannot create entry for daap track %s", uri);
@@ -1194,7 +1193,23 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 		}
 		g_hash_table_insert (priv->item_id_to_uri, GINT_TO_POINTER (item_id), uri);
 
-		 /* track number */
+		/* year */
+		if (year != 0) {
+			GDate *date;
+			gulong julian;
+
+			/* create dummy date with given year */
+			date = g_date_new_dmy (1, G_DATE_JANUARY, year); 
+			julian = g_date_get_julian (date);
+			g_date_free (date);
+
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value,julian);
+			rhythmdb_entry_set_uninserted (priv->db, entry, RHYTHMDB_PROP_DATE, &value);
+			g_value_unset (&value);
+		} 
+
+		/* track number */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value,(gulong)track_number);
 		rhythmdb_entry_set_uninserted (priv->db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &value);
