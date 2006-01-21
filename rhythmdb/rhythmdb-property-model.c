@@ -275,8 +275,7 @@ rhythmdb_property_model_set_property (GObject *object,
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_RHYTHMDB:
 	{
 		model->priv->db = g_value_get_object (value);
@@ -289,8 +288,7 @@ rhythmdb_property_model_set_property (GObject *object,
 		break;
 	case PROP_PROP:
 		model->priv->propid = g_value_get_int (value);
-		switch (model->priv->propid)
-		{
+		switch (model->priv->propid) {
 		case RHYTHMDB_PROP_GENRE:
 			model->priv->sort_propid = RHYTHMDB_PROP_GENRE;
 			break;
@@ -299,6 +297,9 @@ rhythmdb_property_model_set_property (GObject *object,
 			break;
 		case RHYTHMDB_PROP_ALBUM:
 			model->priv->sort_propid = RHYTHMDB_PROP_ALBUM;
+			break;
+		case RHYTHMDB_PROP_SUBTITLE:
+			model->priv->sort_propid = RHYTHMDB_PROP_SUBTITLE;
 			break;
 		case RHYTHMDB_PROP_TITLE:
 		case RHYTHMDB_PROP_LOCATION:
@@ -360,8 +361,7 @@ rhythmdb_property_model_get_property (GObject *object,
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_RHYTHMDB:
 		g_value_set_object (value, model->priv->db);
 		break;
@@ -503,6 +503,8 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 
 	propstr = rhythmdb_entry_get_string (entry, model->priv->propid);
 
+	model->priv->all->refcount++;
+
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
 		prop = g_sequence_ptr_get_data (ptr);
 		prop->refcount++;
@@ -549,6 +551,8 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	GtkTreeIter iter;
 
 	g_assert ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr)));
+
+	model->priv->all->refcount--;
 
 	prop = g_sequence_ptr_get_data (ptr);
 	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
@@ -603,12 +607,13 @@ rhythmdb_property_model_get_n_columns (GtkTreeModel *tree_model)
 static GType
 rhythmdb_property_model_get_column_type (GtkTreeModel *tree_model, int index)
 {
-	switch (index)
-	{
-	case 0:
+	switch (index) {
+	case RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE:
 		return G_TYPE_STRING;
-	case 1:
+	case RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY:
 		return G_TYPE_BOOLEAN;
+	case RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER:
+		return G_TYPE_UINT;
 	default:
 		g_assert_not_reached ();
 		return G_TYPE_INVALID;
@@ -617,7 +622,7 @@ rhythmdb_property_model_get_column_type (GtkTreeModel *tree_model, int index)
 
 static gboolean
 rhythmdb_property_model_get_iter (GtkTreeModel *tree_model, GtkTreeIter *iter,
-			       GtkTreePath *path)
+				  GtkTreePath *path)
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 	guint index;
@@ -645,7 +650,7 @@ rhythmdb_property_model_get_iter (GtkTreeModel *tree_model, GtkTreeIter *iter,
 
 static GtkTreePath *
 rhythmdb_property_model_get_path (GtkTreeModel *tree_model,
-			       GtkTreeIter  *iter)
+				  GtkTreeIter  *iter)
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 	GtkTreePath *path;
@@ -673,15 +678,18 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model, GtkTreeIter *iter,
 	g_return_if_fail (model->priv->stamp == iter->stamp);
 
 	if (iter->user_data == model->priv->all) {
-		switch (column)
-		{
-		case 0:
+		switch (column) {
+		case RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE:
 			g_value_init (value, G_TYPE_STRING);
 			g_value_set_string (value, rb_refstring_get (model->priv->all->string));
 			break;
-		case 1:
+		case RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY:
 			g_value_init (value, G_TYPE_BOOLEAN);
 			g_value_set_boolean (value, TRUE);
+			break;
+		case RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER:
+			g_value_init (value, G_TYPE_UINT);
+			g_value_set_uint (value, model->priv->all->refcount);
 			break;
 		default:
 			g_assert_not_reached ();
@@ -689,15 +697,18 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model, GtkTreeIter *iter,
 	} else {
 		RhythmDBPropertyModelEntry *prop = g_sequence_ptr_get_data (iter->user_data);
 		
-		switch (column)
-		{
-		case 0:
+		switch (column) {
+		case RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE:
 			g_value_init (value, G_TYPE_STRING);
 			g_value_set_string (value, rb_refstring_get (prop->string));
 			break;
-		case 1:
+		case RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY:
 			g_value_init (value, G_TYPE_BOOLEAN);
 			g_value_set_boolean (value, prop == model->priv->all);
+			break;
+		case RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER:
+			g_value_init (value, G_TYPE_UINT);
+			g_value_set_uint (value, prop->refcount);
 			break;
 		default:
 			g_assert_not_reached ();
@@ -707,7 +718,7 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model, GtkTreeIter *iter,
 
 static gboolean
 rhythmdb_property_model_iter_next (GtkTreeModel  *tree_model,
-				GtkTreeIter   *iter)
+				   GtkTreeIter   *iter)
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 
@@ -761,8 +772,8 @@ rhythmdb_property_model_iter_n_children (GtkTreeModel *tree_model,
 
 static gboolean
 rhythmdb_property_model_iter_nth_child (GtkTreeModel *tree_model,
-				     GtkTreeIter *iter, GtkTreeIter *parent,
-				     gint n)
+					GtkTreeIter *iter, GtkTreeIter *parent,
+					gint n)
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 	GSequencePtr child;
@@ -1008,15 +1019,8 @@ rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model, GtkTreeView *
 static gboolean
 rhythmdb_property_model_perform_sync (RhythmDBPropertyModel *model)
 {
-	int count = g_sequence_get_length (model->priv->properties);
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	char *s;
-
-	rb_refstring_unref (model->priv->all->string);
-	s = g_strdup_printf (_("All (%d)"), count);
-	model->priv->all->string = rb_refstring_new (s);
-	g_free (s);
 
 	iter.stamp = model->priv->stamp;
 	iter.user_data = model->priv->all;

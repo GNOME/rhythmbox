@@ -215,7 +215,7 @@ rb_simple_view_button_press_cb (GtkTreeView *tree,
 			model = gtk_tree_view_get_model (GTK_TREE_VIEW (treeview));
 			gtk_tree_model_get_iter (model, &iter, path);
 
-			gtk_tree_model_get (model, &iter, 0, &val, -1);
+			gtk_tree_model_get (model, &iter, RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &val, -1);
 			lst = g_list_prepend (lst, (gpointer) val);
 
 			rb_property_view_set_selection (RB_PROPERTY_VIEW (view), lst);	

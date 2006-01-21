@@ -1,3 +1,40 @@
+2006-01-20  William Jon McCann  <mccann@jhu.edu>
+
+	* widgets/rb-simple-view.c (rb_simple_view_button_press_cb): Use
+	enum values instead of magic numbers.
+
+	* widgets/rb-property-view.c (rb_property_view_cell_data_func):
+	Add number of songs that match each property title into
+	the cell.  Also show the number of properties that match
+	in the All entry.
+	(rb_property_view_constructor): Use enum values instead of
+	magic numbers.
+
+	* sources/rb-podcast-source.c (rb_podcast_source_constructor):
+	Query podcast posts instead of feeds for browser.  Use
+	post SUBTITLE which is the location for the property view.
+	(rb_podcast_source_feeds_show_popup_cb): Remove unused code.
+	(construct_query_from_selection) 
+	(rb_podcast_source_cmd_delete_feed) 
+	(rb_podcast_source_cmd_properties_feed) 
+	(rb_podcast_source_cmd_update_feed): Use variable to make
+	it clear what the selection data represents.
+	(rb_podcast_source_feed_title_cell_data_func): Add number
+	of posts that belong to each feed in the browser.
+
+	* rhythmdb/rhythmdb-property-model.c (rhythmdb_property_model_set_property): Allow using SUBTITLE property.
+	(rhythmdb_property_model_delete_prop): Decrement the refcount
+	for the All entry.
+	(rhythmdb_property_model_get_column_type): Use column enum
+	values instead of magic numbers.  Add NUMBER column.
+	(rhythmdb_property_model_get_value): Use enum.
+	Add NUMBER column that represents the refcount for
+	the title of that property.
+	(rhythmdb_property_model_perform_sync): Don't fake up
+	a title for All here.
+
+	Fixes #327372.
+	
 2006-01-21  James Livingston  <jrl@ids.org.au>
 
 	Make Rhythmbox start faster by not blocking the UI while database

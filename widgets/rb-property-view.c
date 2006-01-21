@@ -42,19 +42,19 @@ static void rb_property_view_class_init (RBPropertyViewClass *klass);
 static void rb_property_view_init (RBPropertyView *view);
 static void rb_property_view_finalize (GObject *object);
 static void rb_property_view_set_property (GObject *object,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *pspec);
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *pspec);
 static void rb_property_view_get_property (GObject *object,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *pspec);
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *pspec);
 static GObject * rb_property_view_constructor (GType type, guint n_construct_properties,
 					       GObjectConstructParam *construct_properties);
 static void rb_property_view_row_activated_cb (GtkTreeView *treeview,
-			                   GtkTreePath *path,
-			                   GtkTreeViewColumn *column,
-			                   RBPropertyView *view);
+					       GtkTreePath *path,
+					       GtkTreeViewColumn *column,
+					       RBPropertyView *view);
 static void rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 						   RBPropertyView *view);
 static void rb_property_view_pre_row_deleted_cb (RhythmDBPropertyModel *model,
@@ -248,9 +248,9 @@ rb_property_view_finalize (GObject *object)
 
 static void
 rb_property_view_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *pspec)
 {
 	RBPropertyView *view = RB_PROPERTY_VIEW (object);
 
@@ -323,9 +323,9 @@ rb_property_view_set_property (GObject *object,
 
 static void 
 rb_property_view_get_property (GObject *object,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *pspec)
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *pspec)
 {
 	RBPropertyView *view = RB_PROPERTY_VIEW (object);
 
@@ -353,7 +353,9 @@ rb_property_view_get_property (GObject *object,
 }
 
 RBPropertyView *
-rb_property_view_new (RhythmDB *db, guint propid, const char *title)
+rb_property_view_new (RhythmDB *db,
+		      guint propid,
+		      const char *title)
 {
 	RBPropertyView *view;
 
@@ -448,24 +450,60 @@ rb_property_view_get_num_properties (RBPropertyView *view)
 }
 
 static void
-rb_property_view_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				 GtkTreeModel *tree_model, GtkTreeIter *iter,
+rb_property_view_cell_data_func (GtkTreeViewColumn *column,
+				 GtkCellRenderer *renderer,
+				 GtkTreeModel *tree_model,
+				 GtkTreeIter *iter,
 				 RBPropertyView *view)
 {
+	char *title;
 	char *str;
-	gboolean bold;
+	guint number;
+	gboolean is_all;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &str,
-			    1, &bold, -1);
-	
+	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, &number, -1);
+
+	if (is_all) {
+		int nodes;
+		const char *fmt;
+
+		nodes = gtk_tree_model_iter_n_children  (GTK_TREE_MODEL (tree_model), NULL);
+		/* Subtract one for the All node */
+		nodes--;
+
+		switch (view->priv->propid) {
+		case RHYTHMDB_PROP_ARTIST:
+			fmt = ngettext ("All %d artist (%d)", "All %d artists (%d)", nodes);
+			break;
+		case RHYTHMDB_PROP_ALBUM:
+			fmt = ngettext ("All %d album (%d)", "All %d albums (%d)", nodes);
+			break;
+		case RHYTHMDB_PROP_GENRE:
+			fmt = ngettext ("All %d genre (%d)", "All %d genres (%d)", nodes);
+			break;
+		default:
+			fmt = _("All %d (%d)");
+			break;
+		}
+
+		str = g_strdup_printf (fmt, nodes, number);
+	} else {
+		str = g_strdup_printf (_("%s (%d)"), title, number);
+	}
+
 	g_object_set (G_OBJECT (renderer), "text", str,
-		      "weight", G_UNLIKELY (bold) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
+		      "weight", G_UNLIKELY (is_all) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
 		      NULL);
 	g_free (str);
+	g_free (title);
 }
 
 static GObject *
-rb_property_view_constructor (GType type, guint n_construct_properties,
+rb_property_view_constructor (GType type,
+			      guint n_construct_properties,
 			      GObjectConstructParam *construct_properties)
 {
 	GtkTreeViewColumn *column;
@@ -531,8 +569,9 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 	rb_debug ("row activated");
 	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->prop_model), &iter, path);
 
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->prop_model), &iter, 0,
-			    &val, 1, &is_all, -1);
+	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->prop_model), &iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &val,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
 
 	rb_debug ("emitting property activated");
 	g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_ACTIVATED], 0,
@@ -588,7 +627,9 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 		selected_rows = gtk_tree_selection_get_selected_rows (view->priv->selection, &model);
 		for (tem = selected_rows; tem; tem = tem->next) {
 			g_assert (gtk_tree_model_get_iter (model, &iter, tem->data));
-			gtk_tree_model_get (model, &iter, 0, &selected_prop, 1, &is_all, -1);
+			gtk_tree_model_get (model, &iter,
+					    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &selected_prop,
+					    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
 			if (is_all) {
 				g_list_free (selected_properties);
 				selected_properties = NULL;
@@ -616,7 +657,9 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 			       selected_properties);
 	} else {
 		if (gtk_tree_selection_get_selected (view->priv->selection, &model, &iter)) {
-			gtk_tree_model_get (model, &iter, 0, &selected_prop, 1, &is_all, -1);
+			gtk_tree_model_get (model, &iter,
+					    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &selected_prop,
+					    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
 			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
 				       is_all ? NULL : selected_prop);
 		}

@@ -597,7 +597,7 @@ rb_podcast_source_constructor (GType type,
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
-				      RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
+				      RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 				      RHYTHMDB_QUERY_END);
 	
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
@@ -607,7 +607,8 @@ rb_podcast_source_constructor (GType type,
 	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
 
 
-	source->priv->feeds = rb_simple_view_new (source->priv->db,  RHYTHMDB_PROP_LOCATION, 
+	source->priv->feeds = rb_simple_view_new (source->priv->db,
+						  RHYTHMDB_PROP_SUBTITLE,
 						  _("Feed"));	
 	
 	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds), GTK_SELECTION_MULTIPLE);
@@ -631,9 +632,6 @@ rb_podcast_source_constructor (GType type,
 	
 	rb_simple_view_append_column_custom (source->priv->feeds,
 		 		             column, _("Feed"), source);
-
-	
-
 
 	g_signal_connect_object (G_OBJECT (source->priv->feeds), "show_popup",
 				 G_CALLBACK (rb_podcast_source_feeds_show_popup_cb), 
@@ -922,7 +920,7 @@ rb_podcast_source_download_status_changed_cb (RBPodcastManager *download,
 					      gulong status,
 					      RBPodcastSource *source)
 {
-	gtk_widget_queue_draw(GTK_WIDGET(source->priv->posts));
+	gtk_widget_queue_draw (GTK_WIDGET (source->priv->posts));
 	return;
 
 }
@@ -934,12 +932,13 @@ rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
 {
 	if (G_OBJECT (source) == NULL) {
 		return;
-	}
-	else {
+	} else {
 		GtkAction* action;
-		GList *lst = rb_entry_view_get_selected_entries(view);
+		GList *lst;
 		gboolean downloadable = FALSE;
 		gboolean cancellable = FALSE;
+
+		lst = rb_entry_view_get_selected_entries (view);
 
 		while (lst) {
 			RhythmDBEntry *entry = (RhythmDBEntry*) lst->data;
@@ -972,37 +971,19 @@ rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
 {
 	if (G_OBJECT (source) == NULL) {
 		return;
-	}
-	else {
-		GtkAction* act_update;
-		GtkAction* act_properties;
-		GtkAction* act_delete;
+	} else {
+		GtkAction *act_update;
+		GtkAction *act_properties;
+		GtkAction *act_delete;
+		GList *lst;
 
-		gulong status;
-		gulong all_status = 999;
-		RhythmDBEntry *entry = NULL;
-		GList *lst = source->priv->selected_feeds;
+		lst = source->priv->selected_feeds;
 
 		act_update = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedUpdate");
 		act_properties = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedProperties");
 		act_delete = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedDelete");
 		
 		if (lst) {
-			while (lst) {
-				entry = rhythmdb_entry_lookup_by_location (source->priv->db, 
-									   (gchar *) lst->data);
-				status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-				if ((status != all_status) && (all_status != 999)) {
-					all_status = 999;
-					break;
-				} 
-				else {
-					all_status = status;
-				}
-						
-				lst = lst->next;
-			}
-
 			gtk_action_set_visible (act_properties, TRUE);
 			gtk_action_set_visible (act_delete, TRUE);
 		} else {
@@ -1064,6 +1045,7 @@ construct_query_from_selection (RBPodcastSource *source)
 	RhythmDBEntryType entry_type;
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
@@ -1092,16 +1074,20 @@ construct_query_from_selection (RBPodcastSource *source)
 		GList *l;	       
 
 		for (l = source->priv->selected_feeds; l != NULL; l = g_list_next (l)) {
-			rb_debug ("equals loop");
+			const char *location;
+
+			location = (char *) l->data;
+			rb_debug ("subquery SUBTITLE equals %s", location);
+
 			rhythmdb_query_append (source->priv->db,
 					       subquery,
 					       RHYTHMDB_QUERY_PROP_EQUALS,
 					       RHYTHMDB_PROP_SUBTITLE,
-					       (gchar *) l->data,
+					       location,
 					       RHYTHMDB_QUERY_END);
 			if (g_list_next(l))
 				rhythmdb_query_append (source->priv->db, subquery,
-						RHYTHMDB_QUERY_DISJUNCTION);
+						       RHYTHMDB_QUERY_DISJUNCTION);
 		}
 		
 		rhythmdb_query_append (source->priv->db, query,
@@ -1378,9 +1364,15 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 	lst = source->priv->selected_feeds;
 
 	while (lst != NULL && lst->data != NULL) {
+		const char *location;
+
+		location = (char *) lst->data;
+
+		rb_debug ("Removing podcast location: %s", location);
+
 		rb_podcast_manager_remove_feed (source->priv->podcast_mg,
-						(gchar *) lst->data,
-						(ret == GTK_RESPONSE_YES) );
+						location,
+						(ret == GTK_RESPONSE_YES));
 
 		lst = lst->next;
 	}
@@ -1392,18 +1384,21 @@ rb_podcast_source_cmd_properties_feed (GtkAction *action,
 {
 	RhythmDBEntry *entry;
 	GtkWidget *dialog;
+	const char *location;
+
+	location = (char *) source->priv->selected_feeds->data;
 
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, 
-						   (gchar *) source->priv->selected_feeds->data );
-	
-	dialog = rb_feed_podcast_properties_dialog_new (entry);
-	rb_debug ("in feed properties");
-	
-	if (dialog)
-		gtk_widget_show_all (dialog);
-	else
-		rb_debug ("no selection!");
+						   location);
 
+	if (entry != NULL) {
+		dialog = rb_feed_podcast_properties_dialog_new (entry);
+		rb_debug ("in feed properties");
+		if (dialog)
+			gtk_widget_show_all (dialog);
+		else
+			rb_debug ("no selection!");
+	}
 }
 	
 static void
@@ -1416,8 +1411,12 @@ rb_podcast_source_cmd_update_feed (GtkAction *action,
 	lst = source->priv->selected_feeds;
 
 	while (lst != NULL) {
+		const char *location;
+
+		location = (char *) lst->data;
+
 		rb_podcast_manager_subscribe_feed (source->priv->podcast_mg,
-						   (gchar *) lst->data);
+						   location);
 
 		lst = lst->next;
 	}
@@ -1496,9 +1495,6 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 	}
 		
 	g_object_set (G_OBJECT (renderer), "value", value, NULL);
-	
-
-
 }
 
 static void
@@ -1525,24 +1521,45 @@ rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
 					     GtkTreeIter *iter,
 					     RBPodcastSource *source)
 {
+	char *title;
+	char *str;
+	gboolean is_all;
+	guint number;
 	RhythmDBEntry *entry = NULL;
-	gchar *str;
-	gboolean bold;
 
-	gtk_tree_model_get (tree_model, iter, 0, &str, 1, &bold, -1);
-	
-	entry = rhythmdb_entry_lookup_by_location (source->priv->db, str);
+	str = NULL;
+	gtk_tree_model_get (tree_model, iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, &number, -1);
 
+	entry = rhythmdb_entry_lookup_by_location (source->priv->db, title);
 	if (entry != NULL) {
-		str = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		g_free (title);
+		title = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+	}
+
+	if (is_all) {
+		int nodes;
+		const char *fmt;
+
+		nodes = gtk_tree_model_iter_n_children  (GTK_TREE_MODEL (tree_model), NULL);
+		/* Subtract one for the All node */
+		nodes--;
+
+		fmt = ngettext ("All %d feed (%d)", "All %d feeds (%d)", nodes);
+
+		str = g_strdup_printf (fmt, nodes, number);
+	} else {
+		str = g_strdup_printf (_("%s (%d)"), title, number);
 	}
 
 	g_object_set (G_OBJECT (renderer), "text", str,
-		      "weight", G_UNLIKELY (bold) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
+		      "weight", G_UNLIKELY (is_all) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
 		      NULL);
 
-	g_free (str);	
-
+	g_free (str);
+	g_free (title);
 }
 
 
