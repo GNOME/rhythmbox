@@ -525,7 +525,7 @@ get_avahi_client (GError **err)
 #ifdef HAVE_AVAHI_0_6
 		{
 			AvahiClientFlags flags;
-			flags = AVAHI_CLIENT_NO_FAIL;
+			flags = 0;
 
 			client = avahi_client_new (avahi_glib_poll_get (poll), flags, client_cb, NULL, &error);
 		}

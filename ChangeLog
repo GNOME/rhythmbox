@@ -1,3 +1,9 @@
+2006-01-22  James Livingston  <jrl@ids.org.au>
+
+	* daapsharing/rb-daap-mdns.c: (get_avahi_client): don't pass
+	NEVER_FAIL as it causes the daemon-not-running error to never be
+	reported, resulting in bug 319438 re-occurring.
+
 2006-01-22  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-podcast-source.c: (rb_podcast_source_cmd_update_all):
