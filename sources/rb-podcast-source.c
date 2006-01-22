@@ -1422,36 +1422,10 @@ rb_podcast_source_cmd_update_feed (GtkAction *action,
 	}
 }
 
-static gboolean
-rb_podcast_source_update_feed_func (GtkTreeModel *model,
-				    GtkTreePath *path,
-				    GtkTreeIter *iter,
-				    RBPodcastSource *source)
-{
-	RhythmDBEntry *entry;
-	const char *uri;
-
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
-	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	
-	rb_podcast_manager_subscribe_feed (source->priv->podcast_mg, uri);
-
-	return FALSE;
-}
-
 static void
 rb_podcast_source_cmd_update_all (GtkAction *action, RBPodcastSource *source)
 {
-	RhythmDBPropertyModel *feed_model;
-	RhythmDBQueryModel *query_model;
-
-	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
-	g_object_get (G_OBJECT (feed_model), "query-model", &query_model, NULL);
-	g_object_unref (G_OBJECT (feed_model));
-
-	gtk_tree_model_foreach (GTK_TREE_MODEL (query_model),
-				(GtkTreeModelForeachFunc) rb_podcast_source_update_feed_func,
-				source);
+	rb_podcast_manager_update_feeds (source->priv->podcast_mg);
 }
 
 static void

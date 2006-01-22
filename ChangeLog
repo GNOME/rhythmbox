@@ -1,5 +1,11 @@
 2006-01-22  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
+	* sources/rb-podcast-source.c: (rb_podcast_source_cmd_update_all):
+	Just call the podcast manager's update method.  Unbreaks the 'update
+	all feeds' command.
+
+2006-01-22  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
 	* sources/Makefile.am: Fix typo.  Fixes bug #327970.
 
 2006-01-21  Jonathan Matthew  <jonathan@kaolin.hn.org>
