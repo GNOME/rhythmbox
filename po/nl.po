@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-11 12:21+0100\n"
-"PO-Revision-Date: 2006-01-11 13:30+0100\n"
+"POT-Creation-Date: 2006-01-22 20:22+0100\n"
+"PO-Revision-Date: 2006-01-23 03:20+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,17 +27,17 @@ msgstr ""
 #: ../daapsharing/rb-daap-connection.c:923
 #: ../iradio/rb-station-properties-dialog.c:404 ../lib/rb-util.c:561
 #: ../podcast/rb-feed-podcast-properties-dialog.c:288
-#: ../podcast/rb-podcast-manager.c:1447
+#: ../podcast/rb-podcast-manager.c:1458
 #: ../podcast/rb-podcast-properties-dialog.c:400
 #: ../podcast/rb-podcast-properties-dialog.c:447
 #: ../rhythmdb/rhythmdb-tree.c:939 ../rhythmdb/rhythmdb-tree.c:943
 #: ../rhythmdb/rhythmdb-tree.c:947 ../rhythmdb/rhythmdb-tree.c:951
-#: ../rhythmdb/rhythmdb.c:1177 ../shell/rb-audioscrobbler.c:470
-#: ../shell/rb-audioscrobbler.c:985 ../shell/rb-audioscrobbler.c:986
-#: ../shell/rb-shell-player.c:2320 ../sources/rb-audiocd-source.c:183
-#: ../sources/rb-ipod-source.c:158 ../sources/rb-iradio-source.c:219
+#: ../rhythmdb/rhythmdb.c:1195 ../shell/rb-audioscrobbler.c:470
+#: ../shell/rb-audioscrobbler.c:990 ../shell/rb-audioscrobbler.c:991
+#: ../shell/rb-shell-player.c:2337 ../sources/rb-audiocd-source.c:180
+#: ../sources/rb-ipod-source.c:157 ../sources/rb-iradio-source.c:219
 #: ../sources/rb-iradio-source.c:220 ../sources/rb-iradio-source.c:221
-#: ../sources/rb-iradio-source.c:441 ../sources/rb-podcast-source.c:1565
+#: ../sources/rb-iradio-source.c:444 ../sources/rb-podcast-source.c:1555
 #: ../widgets/rb-entry-view.c:942 ../widgets/rb-entry-view.c:961
 #: ../widgets/rb-entry-view.c:1247 ../widgets/rb-song-info.c:607
 #: ../widgets/rb-song-info.c:760 ../widgets/rb-song-info.c:949
@@ -95,7 +95,7 @@ msgstr ""
 msgid "%s's Music"
 msgstr "%s's muziek"
 
-#: ../daapsharing/rb-daap-src.c:732
+#: ../daapsharing/rb-daap-src.c:682
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Verbinding met %s:%d geweigerd."
@@ -535,8 +535,8 @@ msgstr "Recentelijk toegevoegd"
 msgid "Recently Played"
 msgstr "Recentelijk afgespeeld"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:949
-#: ../shell/rb-shell.c:1883
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:961
+#: ../shell/rb-shell.c:1895
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -566,7 +566,7 @@ msgstr "%s Eigenschappen"
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2492
+#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2578
 #: ../widgets/rb-entry-view.c:896 ../widgets/rb-entry-view.c:1283
 #: ../widgets/rb-entry-view.c:1296 ../widgets/rb-song-info.c:925
 msgid "Never"
@@ -605,33 +605,33 @@ msgstr "%d:%02d"
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:602 ../metadata/rb-metadata-gst.c:1117
-#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:631
+#: ../metadata/rb-metadata-gst.c:608 ../metadata/rb-metadata-gst.c:1128
+#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:633
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Aanmaken van een %s-element mislukt; controleer uw installatie"
 
-#: ../metadata/rb-metadata-gst.c:741
+#: ../metadata/rb-metadata-gst.c:747
 msgid "Failed to create a source element; check your installation"
 msgstr "Aanmaken van een bronelement mislukt; controleer uw installatie"
 
-#: ../metadata/rb-metadata-gst.c:808
+#: ../metadata/rb-metadata-gst.c:814
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer-fout: wijzigen status is mislukt"
 
-#: ../metadata/rb-metadata-gst.c:881
+#: ../metadata/rb-metadata-gst.c:887
 msgid "The MIME type of the file could not be identified"
 msgstr "Het MIME-type van het bestand kon niet worden bepaald"
 
-#: ../metadata/rb-metadata-gst.c:893
+#: ../metadata/rb-metadata-gst.c:899
 msgid "The file is not an audio stream"
 msgstr "Het bestand is geen audio-stroom"
 
-#: ../metadata/rb-metadata-gst.c:898
+#: ../metadata/rb-metadata-gst.c:904
 msgid "The file is not an audio stream, but is being ignored"
 msgstr "Het bestand is geen audio-stroom, maar wordt genegeerd"
 
-#: ../metadata/rb-metadata-gst.c:906
+#: ../metadata/rb-metadata-gst.c:912
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "Er is geen plugin geïnstalleerd voor een %s-bestand."
@@ -705,7 +705,7 @@ msgid "Could not create CD lookup thread"
 msgstr "Kon het proces om de cd op te zoeken niet aanmaken"
 
 # vertaling scheduler?
-#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:693
+#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:695
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Kon de scheduler niet initialiseren.  Heeft u gst-register uitgevoerd?"
 
@@ -713,66 +713,66 @@ msgstr "Kon de scheduler niet initialiseren.  Heeft u gst-register uitgevoerd?"
 msgid "Unknown playback error"
 msgstr "Onbekende afspeelfout"
 
-#: ../player/rb-recorder-gst.c:518
+#: ../player/rb-recorder-gst.c:520
 msgid "Failed to create pipeline"
 msgstr "Aanmaken pijplijn is mislukt"
 
-#: ../player/rb-recorder-gst.c:649 ../player/rb-recorder-gst.c:653
+#: ../player/rb-recorder-gst.c:651 ../player/rb-recorder-gst.c:655
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "Ontlinken van '%s' is mislukt"
 
-#: ../player/rb-recorder-gst.c:725
+#: ../player/rb-recorder-gst.c:727
 msgid "Could not retrieve state from processing pipeline"
 msgstr "Kon de status van de verwerkingspijplijn niet verkrijgen"
 
-#: ../player/rb-recorder-gst.c:740 ../player/rb-recorder-gst.c:748
+#: ../player/rb-recorder-gst.c:742 ../player/rb-recorder-gst.c:750
 msgid "Could not get current track position"
 msgstr "Kan de huide nummer positie niet verkrijgen"
 
 # misschien weglaten? 'via pijpleiding'
 # misschien andere formulering:
 # via ander programma?
-#: ../player/rb-recorder-gst.c:804
+#: ../player/rb-recorder-gst.c:806
 msgid "Could not start pipeline playing"
 msgstr "Kon afspelen via pijpleiding niet starten"
 
-#: ../player/rb-recorder-gst.c:827
+#: ../player/rb-recorder-gst.c:829
 msgid "Could not pause playback"
 msgstr "Kon het afspelen niet pauzeren"
 
 # station/apparaat
-#: ../player/rb-recorder-gst.c:1025
+#: ../player/rb-recorder-gst.c:1027
 msgid "Cannot find drive"
 msgstr "Kan het apparaat niet vinden"
 
-#: ../player/rb-recorder-gst.c:1070
+#: ../player/rb-recorder-gst.c:1072
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Kan apparaat %s niet vinden"
 
 # CD/DVD-brander
-#: ../player/rb-recorder-gst.c:1079
+#: ../player/rb-recorder-gst.c:1081
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "Apparaat %s is geen brander"
 
 # schrijvers/branders/schrijfapparaten
-#: ../player/rb-recorder-gst.c:1245 ../player/rb-recorder-gst.c:1423
+#: ../player/rb-recorder-gst.c:1247 ../player/rb-recorder-gst.c:1425
 msgid "No writable drives found."
 msgstr "Geen branders gevonden."
 
 # voor/van bestand
-#: ../player/rb-recorder-gst.c:1373
+#: ../player/rb-recorder-gst.c:1375
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Kan de speeltijd voor bestand %s niet bepalen"
 
-#: ../player/rb-recorder-gst.c:1432
+#: ../player/rb-recorder-gst.c:1434
 msgid "Could not determine audio track durations."
 msgstr "Kan de lengte van de audio-tracks niet bepalen."
 
-#: ../player/rb-recorder-gst.c:1480
+#: ../player/rb-recorder-gst.c:1482
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -781,7 +781,7 @@ msgstr ""
 "Er was een fout bij het schrijven naar de cd:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1484
+#: ../player/rb-recorder-gst.c:1486
 msgid "There was an error writing to the CD"
 msgstr "Er is een fout opgetreden bij het schrijven naar de cd"
 
@@ -808,16 +808,19 @@ msgstr "URL is al toegevoegd"
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
-msgstr "De URL \"%s\" is al toegevoegd als een radiostation. Als dit een podcast feed is, verwijder dan het radiostation."
+msgstr ""
+"De URL \"%s\" is al toegevoegd als een radiostation. Als dit een podcast "
+"feed is, verwijder dan het radiostation."
 
-#: ../podcast/rb-podcast-manager.c:832
+#: ../podcast/rb-podcast-manager.c:834
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1578
+#: ../podcast/rb-podcast-manager.c:1589
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr "Er was een probleem bij het toevoegen van deze podcast. Controleer de URL: %s"
+msgstr ""
+"Er was een probleem bij het toevoegen van deze podcast. Controleer de URL: %s"
 
 #: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -881,22 +884,17 @@ msgstr "Een fout is opgetreden: '%s'"
 msgid "All"
 msgstr "Alle"
 
-#: ../rhythmdb/rhythmdb-property-model.c:1017
-#, c-format
-msgid "All (%d)"
-msgstr "Alle (%d)"
-
 # observeren/monitoren
-#: ../rhythmdb/rhythmdb.c:1160
+#: ../rhythmdb/rhythmdb.c:1178
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Kon %s niet monitoren: %s"
 
-#: ../rhythmdb/rhythmdb.c:1269
+#: ../rhythmdb/rhythmdb.c:1287
 msgid "<invalid filename>"
 msgstr "<ongeldige bestandsnaam>"
 
-#: ../rhythmdb/rhythmdb.c:1795 ../rhythmdb/rhythmdb.c:1838
+#: ../rhythmdb/rhythmdb.c:1832 ../rhythmdb/rhythmdb.c:1875
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kan geen toegang krijgen tot %s: %s"
@@ -906,19 +904,19 @@ msgstr "Kan geen toegang krijgen tot %s: %s"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2483 ../sources/rb-podcast-source.c:1571
-#: ../widgets/rb-entry-view.c:2077
+#: ../rhythmdb/rhythmdb.c:2569 ../sources/rb-podcast-source.c:1561
+#: ../widgets/rb-entry-view.c:2080
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d-%m-%Y %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3472
+#: ../rhythmdb/rhythmdb.c:3558
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d nummer"
 msgstr[1] "%d nummers"
 
-#: ../rhythmdb/rhythmdb.c:3479
+#: ../rhythmdb/rhythmdb.c:3565
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -928,14 +926,14 @@ msgstr[1] "%ld minuten"
 # meervoud van uur is uren, maar je zegt:
 # 1 dag 5 uur en 10 minuten    en niet:
 # 1 dag 5 uren en 10 minuten
-#: ../rhythmdb/rhythmdb.c:3480
+#: ../rhythmdb/rhythmdb.c:3566
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld uur"
 msgstr[1] "%ld uur"
 
-#: ../rhythmdb/rhythmdb.c:3481
+#: ../rhythmdb/rhythmdb.c:3567
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -943,7 +941,7 @@ msgstr[0] "%.ld dag"
 msgstr[1] "%.ld dagen"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3487
+#: ../rhythmdb/rhythmdb.c:3573
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s en %s"
@@ -951,8 +949,8 @@ msgstr "%s, %s en %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3493 ../rhythmdb/rhythmdb.c:3501
-#: ../rhythmdb/rhythmdb.c:3512
+#: ../rhythmdb/rhythmdb.c:3579 ../rhythmdb/rhythmdb.c:3587
+#: ../rhythmdb/rhythmdb.c:3598
 #, c-format
 msgid "%s and %s"
 msgstr "%s en %s"
@@ -1186,41 +1184,41 @@ msgstr "Be_werken..."
 msgid "Change this automatic playlist"
 msgstr "Deze automatische afspeellijst aanpassen"
 
-#: ../shell/rb-playlist-manager.c:621
+#: ../shell/rb-playlist-manager.c:623
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 "Het afspeellijstbestand is wellicht in een onbekend formaat, of beschadigd."
 
-#: ../shell/rb-playlist-manager.c:979
+#: ../shell/rb-playlist-manager.c:978
 msgid "Untitled Playlist"
 msgstr "Afspeellijst zonder naam"
 
-#: ../shell/rb-playlist-manager.c:1168
+#: ../shell/rb-playlist-manager.c:1167
 msgid "Couldn't read playlist"
 msgstr "Kan afspeellijst niet inlezen"
 
-#: ../shell/rb-playlist-manager.c:1183
+#: ../shell/rb-playlist-manager.c:1182
 msgid "Load Playlist"
 msgstr "Afspeellijst laden"
 
-#: ../shell/rb-playlist-manager.c:1221
+#: ../shell/rb-playlist-manager.c:1220
 msgid "Save Playlist"
 msgstr "Afspeellijst opslaan"
 
-#: ../shell/rb-removable-media-manager.c:126
+#: ../shell/rb-removable-media-manager.c:127
 msgid "_Eject"
 msgstr "_Uitwerpen"
 
 # schijfje/medium
-#: ../shell/rb-removable-media-manager.c:127
+#: ../shell/rb-removable-media-manager.c:128
 msgid "Eject this medium"
 msgstr "Dit medium uitwerpen"
 
-#: ../shell/rb-removable-media-manager.c:129
+#: ../shell/rb-removable-media-manager.c:130
 msgid "_Scan Removable Media"
 msgstr "Verwisselbare media _scannen"
 
-#: ../shell/rb-removable-media-manager.c:130
+#: ../shell/rb-removable-media-manager.c:131
 msgid "Scan for new Removable Media"
 msgstr "Zoek naar nieuwe verwisselbare media"
 
@@ -1317,7 +1315,7 @@ msgstr "Het volgende nummer afspelen"
 msgid "_Play"
 msgstr "_Afspelen"
 
-#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2548
+#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2565
 msgid "Start playback"
 msgstr "Afspelen starten"
 
@@ -1355,50 +1353,50 @@ msgstr "Kan geen speler aanmaken: %s"
 # momenteel niet spelend
 # niet bezig met afspelen
 # afspelen gestopt
-#: ../shell/rb-shell-player.c:1257
+#: ../shell/rb-shell-player.c:1259
 msgid "Not currently playing"
 msgstr "Niet bezig met afspelen"
 
-#: ../shell/rb-shell-player.c:1291
+#: ../shell/rb-shell-player.c:1293
 msgid "No previous song"
 msgstr "Geen vorig nummerk afspelen"
 
-#: ../shell/rb-shell-player.c:1343
+#: ../shell/rb-shell-player.c:1345
 msgid "No next song"
 msgstr "Geen volgend nummer"
 
 # Kon het afspelen niet starten/ kon niet beginnen met afspelen
-#: ../shell/rb-shell-player.c:1429
+#: ../shell/rb-shell-player.c:1435
 #, c-format
 msgid "Couldn't start playback: %s"
 msgstr "Kon niet beginnen met afspelen: %s"
 
-#: ../shell/rb-shell-player.c:2022
+#: ../shell/rb-shell-player.c:2036
 msgid "Couldn't stop playback"
 msgstr "Kon het afspelen niet stoppen"
 
 # hmm, betere vertaling voor doorzoekbaar
-#: ../shell/rb-shell-player.c:2078
+#: ../shell/rb-shell-player.c:2092
 msgid "Current song is not seekable"
 msgstr "Huidige nummer is niet doorzoekbaar"
 
-#: ../shell/rb-shell-player.c:2141
+#: ../shell/rb-shell-player.c:2155
 msgid "Stream error"
 msgstr "Stream-fout"
 
-#: ../shell/rb-shell-player.c:2142
+#: ../shell/rb-shell-player.c:2156
 msgid "Unexpected end of stream!"
 msgstr "Onverwachte eind aan gegevensstroom!"
 
-#: ../shell/rb-shell-player.c:2392
+#: ../shell/rb-shell-player.c:2409
 msgid "Buffering"
 msgstr "Bufferen"
 
-#: ../shell/rb-shell-player.c:2546
+#: ../shell/rb-shell-player.c:2563
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
-#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2089
+#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2101
 msgid "Couldn't display help"
 msgstr "Kan hulptekst niet weergeven"
 
@@ -1415,204 +1413,204 @@ msgstr "Algemeen"
 msgid "Sharing"
 msgstr "Delen"
 
-#: ../shell/rb-shell.c:440
+#: ../shell/rb-shell.c:441
 msgid "_Music"
 msgstr "_Muziek"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:442
 msgid "_Edit"
 msgstr "Be_werken"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:443
 msgid "_View"
 msgstr "Beel_d"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:444
 msgid "_Control"
 msgstr "_Bediening"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:445
 msgid "_Help"
 msgstr "_Hulp"
 
-#: ../shell/rb-shell.c:446
+#: ../shell/rb-shell.c:447
 msgid "New Internet _Radio Station"
 msgstr "Nieuw internet_radiostation"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:448
 msgid "Create a new Internet Radio station"
 msgstr "Nieuw internet-radiostation aanmaken"
 
-#: ../shell/rb-shell.c:449
+#: ../shell/rb-shell.c:450
 msgid "_New Podcast Feed"
 msgstr "_Nieuwe podcast-feed"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:451
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Abonneren op een nieuwe podcast-feed"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:454
 msgid "_Import Folder..."
 msgstr "_Map importeren..."
 
-#: ../shell/rb-shell.c:454
+#: ../shell/rb-shell.c:455
 msgid "Choose folder to be added to the Library"
 msgstr "Kies een map om toe te voegen aan de bibliotheek"
 
-#: ../shell/rb-shell.c:456
+#: ../shell/rb-shell.c:457
 msgid "Import _File..."
 msgstr "_Bestand importeren..."
 
-#: ../shell/rb-shell.c:457
+#: ../shell/rb-shell.c:458
 msgid "Choose file to be added to the Library"
 msgstr "Kies een bestand om toe te voegen aan de bibliotheek"
 
-#: ../shell/rb-shell.c:459
+#: ../shell/rb-shell.c:460
 msgid "Import _Audio CD..."
 msgstr "_Audio-cd importeren..."
 
-#: ../shell/rb-shell.c:460
+#: ../shell/rb-shell.c:461
 msgid "Extract and import songs from a CD"
 msgstr "Nummers van een cd overnemen en importeren"
 
-#: ../shell/rb-shell.c:462
+#: ../shell/rb-shell.c:463
 msgid "_About"
 msgstr "In_fo"
 
-#: ../shell/rb-shell.c:463
+#: ../shell/rb-shell.c:464
 msgid "Show information about the music player"
 msgstr "Informatie weergeven over de muziekspeler"
 
-#: ../shell/rb-shell.c:465
+#: ../shell/rb-shell.c:466
 msgid "_Contents"
 msgstr "_Inhoud"
 
-#: ../shell/rb-shell.c:466
+#: ../shell/rb-shell.c:467
 msgid "Display music player help"
 msgstr "Hulp bij de muziekspeler weergeven"
 
-#: ../shell/rb-shell.c:468
+#: ../shell/rb-shell.c:469
 msgid "_Close"
 msgstr "Sl_uiten"
 
-#: ../shell/rb-shell.c:469
+#: ../shell/rb-shell.c:470
 msgid "Hide the music player window"
 msgstr "Muziekspeler verbergen"
 
-#: ../shell/rb-shell.c:471
+#: ../shell/rb-shell.c:472
 msgid "_Quit"
 msgstr "A_fsluiten"
 
-#: ../shell/rb-shell.c:472
+#: ../shell/rb-shell.c:473
 msgid "Quit the music player"
 msgstr "Muziekspeler afsluiten"
 
-#: ../shell/rb-shell.c:474
+#: ../shell/rb-shell.c:475
 msgid "Prefere_nces"
 msgstr "_Voorkeuren"
 
-#: ../shell/rb-shell.c:475
+#: ../shell/rb-shell.c:476
 msgid "Edit music player preferences"
 msgstr "Muziekspeler-voorkeuren bewerken"
 
-#: ../shell/rb-shell.c:477
+#: ../shell/rb-shell.c:478
 msgid "Show _All"
 msgstr "_Alles tonen"
 
-#: ../shell/rb-shell.c:478
+#: ../shell/rb-shell.c:479
 msgid "Show all items in this music source"
 msgstr "Alle items in deze muziekbron tonen"
 
-#: ../shell/rb-shell.c:480
+#: ../shell/rb-shell.c:481
 msgid "_Jump to Playing Song"
 msgstr "_Ga naar het huidige nummer"
 
-#: ../shell/rb-shell.c:481
+#: ../shell/rb-shell.c:482
 msgid "Scroll the view to the currently playing song"
 msgstr "Verschuif naar het nummer dat nu wordt afgespeeld"
 
-#: ../shell/rb-shell.c:483
+#: ../shell/rb-shell.c:484
 msgid "_Disconnect"
 msgstr "_Verbinding verbreken"
 
-#: ../shell/rb-shell.c:484
+#: ../shell/rb-shell.c:485
 msgid "Disconnect from selected source"
 msgstr "Verbinding met de geselecteerde bron verbreken"
 
-#: ../shell/rb-shell.c:491
+#: ../shell/rb-shell.c:492
 msgid "Source _List"
 msgstr "_Bronnenlijst"
 
-#: ../shell/rb-shell.c:492
+#: ../shell/rb-shell.c:493
 msgid "Change the visibility of the source list"
 msgstr "Zichtbaarheid van de bronnenlijst wijzigen"
 
-#: ../shell/rb-shell.c:494
+#: ../shell/rb-shell.c:495
 msgid "_Toolbar"
 msgstr "_Werkbalk"
 
-#: ../shell/rb-shell.c:495
+#: ../shell/rb-shell.c:496
 msgid "Change the visibility of the toolbar"
 msgstr "Zichtbaarheid van de werkbalk wijzigen"
 
-#: ../shell/rb-shell.c:497
+#: ../shell/rb-shell.c:498
 msgid "_Small Display"
 msgstr "_Kleine weergave"
 
-#: ../shell/rb-shell.c:498
+#: ../shell/rb-shell.c:499
 msgid "Make the main window smaller"
 msgstr "Het hoofdvenster kleiner maken"
 
-#: ../shell/rb-shell.c:500
+#: ../shell/rb-shell.c:501
 msgid "_Fullscreen"
 msgstr "_Volledig scherm"
 
-#: ../shell/rb-shell.c:501
+#: ../shell/rb-shell.c:502
 msgid "Expand the window to fill the screen"
 msgstr "Het volledige scherm vullen"
 
 # wachtrij in zijbalk/als zijbalk
-#: ../shell/rb-shell.c:503
+#: ../shell/rb-shell.c:504
 msgid "_Queue as Sidebar"
 msgstr "_Wachtrij als zijbalk"
 
-#: ../shell/rb-shell.c:504
+#: ../shell/rb-shell.c:505
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Instellen of de wachtrij zichtbaar is als bron of als zijbalk"
 
-#: ../shell/rb-shell.c:506
+#: ../shell/rb-shell.c:507
 msgid "S_tatusbar"
 msgstr "S_tatusbalk"
 
-#: ../shell/rb-shell.c:507
+#: ../shell/rb-shell.c:508
 msgid "Change the visibility of the statusbar"
 msgstr "Zichtbaarheid van de statusbalk wijzigen"
 
-#: ../shell/rb-shell.c:1269
+#: ../shell/rb-shell.c:1281
 msgid "Change the music volume"
 msgstr "Geluidssterkte aanpassen"
 
-#: ../shell/rb-shell.c:1587
+#: ../shell/rb-shell.c:1599
 msgid "Error while saving song information"
 msgstr "Fout tijdens het opslaan van de informatie over het nummer"
 
 #. Translators: Trackname by Artist
-#: ../shell/rb-shell.c:1764
+#: ../shell/rb-shell.c:1776
 #, c-format
 msgid "%s by %s"
 msgstr "%s door %s"
 
-#: ../shell/rb-shell.c:1766 ../shell/rb-shell.c:1841
-#: ../widgets/rb-entry-view.c:1486
+#: ../shell/rb-shell.c:1778 ../shell/rb-shell.c:1853
+#: ../widgets/rb-entry-view.c:1489
 msgid "Now Playing"
 msgstr "Bezig met afspelen"
 
-#: ../shell/rb-shell.c:1857 ../shell/rb-tray-icon.c:166
+#: ../shell/rb-shell.c:1869 ../shell/rb-tray-icon.c:166
 msgid "Not playing"
 msgstr "Afspelen gestopt"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1860
+#: ../shell/rb-shell.c:1872
 #, c-format
 msgid ""
 "%s\n"
@@ -1622,7 +1620,7 @@ msgstr ""
 "Gepauzeerd, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1864
+#: ../shell/rb-shell.c:1876
 #, c-format
 msgid ""
 "%s\n"
@@ -1632,12 +1630,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1903
+#: ../shell/rb-shell.c:1915
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (gepauzeerd)"
 
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:2018
 msgid "translator_credits"
 msgstr ""
 "Tino Meinen\n"
@@ -1647,7 +1645,7 @@ msgstr ""
 "\n"
 "Kijk voor meer informatie op http://nl.gnome.org/"
 
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2021
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -1659,7 +1657,7 @@ msgstr ""
 "die gepubliceerd is door de Free Software Foundation; ofwel versie 2\n"
 "van de licentie, of (zo u wilt) een latere versie.\n"
 
-#: ../shell/rb-shell.c:2013
+#: ../shell/rb-shell.c:2025
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -1671,7 +1669,7 @@ msgstr ""
 "van VERKOOPBAARHEID, of GESCHIKTHEID VOOR EEN BEPAALD DOEL.\n"
 "Zie de GNU General Public License voor meer informatie.\n"
 
-#: ../shell/rb-shell.c:2017
+#: ../shell/rb-shell.c:2029
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -1682,60 +1680,60 @@ msgstr ""
 "Free Software Foundation, Inc., 59 Temple Place, Suite 330,\n"
 "Boston, MA 02111-1307 USA\n"
 
-#: ../shell/rb-shell.c:2026
+#: ../shell/rb-shell.c:2038
 msgid "Maintainers:"
 msgstr "Ontwikkelaars:"
 
-#: ../shell/rb-shell.c:2029
+#: ../shell/rb-shell.c:2041
 msgid "Former Maintainers:"
 msgstr "Ex-ontwikkelaars:"
 
-#: ../shell/rb-shell.c:2032
+#: ../shell/rb-shell.c:2044
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
-#: ../shell/rb-shell.c:2034
+#: ../shell/rb-shell.c:2046
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziekbeheer en -afspeelprogramma voor GNOME."
 
 # laden/importeren
-#: ../shell/rb-shell.c:2159
+#: ../shell/rb-shell.c:2171
 msgid "Import Folder into Library"
 msgstr "Map in bibliotheek importeren"
 
 # laden/importeren
-#: ../shell/rb-shell.c:2181
+#: ../shell/rb-shell.c:2193
 msgid "Import File into Library"
 msgstr "Bestand in bibliotheek importeren"
 
-#: ../shell/rb-shell.c:2246
+#: ../shell/rb-shell.c:2258
 msgid "CD Ripper not found"
 msgstr "cd-ripper niet gevonden"
 
-#: ../shell/rb-shell.c:2247
+#: ../shell/rb-shell.c:2259
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "Om cd's over te nemen dient u het Sound Juicer-pakket te installeren."
 
-#: ../shell/rb-shell.c:2255
+#: ../shell/rb-shell.c:2267
 msgid "Couldn't run CD Ripper"
 msgstr "Kan cd-ripper niet opstarten"
 
-#: ../shell/rb-shell.c:2256
+#: ../shell/rb-shell.c:2268
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Er is een fout opgetreden bij het starten van sound-juicer: %s"
 
-#: ../shell/rb-shell.c:3117 ../shell/rb-shell.c:3162
+#: ../shell/rb-shell.c:3129 ../shell/rb-shell.c:3174
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Onbekend nummer URI: %s"
 
-#: ../shell/rb-shell.c:3171
+#: ../shell/rb-shell.c:3183
 #, c-format
 msgid "Unknown property %s"
 msgstr "Onbekende eigenschap %s"
 
-#: ../shell/rb-shell.c:3181
+#: ../shell/rb-shell.c:3193
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ongeldig eigenschaptype %s voor eigenschap %s"
@@ -1779,34 +1777,31 @@ msgstr "_Mededelingen tonen"
 
 #: ../shell/rb-tray-icon.c:109
 msgid "Show notifications of song changes and other events"
-msgstr "Toon een mededeling bij het wisselen van nummer en andere gebeurtenissen"
+msgstr ""
+"Toon een mededeling bij het wisselen van nummer en andere gebeurtenissen"
 
-#: ../sources/rb-audiocd-source.c:220
+#: ../sources/rb-audiocd-source.c:221
 #, c-format
 msgid "Track %u"
 msgstr "Nummer %u"
 
-#: ../sources/rb-audiocd-source.c:303 ../sources/rb-audiocd-source.c:313
-#: ../sources/rb-audiocd-source.c:321 ../sources/rb-audiocd-source.c:481
+#: ../sources/rb-audiocd-source.c:304 ../sources/rb-audiocd-source.c:314
+#: ../sources/rb-audiocd-source.c:322 ../sources/rb-audiocd-source.c:495
 msgid "Couldn't load Audio CD"
 msgstr "Kon de audio-cd niet laden"
 
 # toegang krijgen tot/benaderen
-#: ../sources/rb-audiocd-source.c:304 ../sources/rb-audiocd-source.c:314
+#: ../sources/rb-audiocd-source.c:305 ../sources/rb-audiocd-source.c:315
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox kon geen toegang krijgen tot de cd."
 
-#: ../sources/rb-audiocd-source.c:322
+#: ../sources/rb-audiocd-source.c:323
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox kon de informaite over de cd niet lezen."
 
-#: ../sources/rb-audiocd-source.c:482
+#: ../sources/rb-audiocd-source.c:496
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox kon geen toegang verkrijgen tot de cd-speler."
-
-#: ../sources/rb-ipod-source.c:140
-msgid "iPod"
-msgstr "iPod"
 
 #: ../sources/rb-iradio-source.c:331 ../sources/rb-library-source.c:584
 #: ../widgets/rb-query-creator-properties.c:68
@@ -1818,7 +1813,7 @@ msgstr "Genre"
 msgid "Radio"
 msgstr "Radio"
 
-#: ../sources/rb-iradio-source.c:545
+#: ../sources/rb-iradio-source.c:548
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1869,17 +1864,17 @@ msgstr "Album"
 msgid "Library"
 msgstr "Bibliotheek"
 
-#: ../sources/rb-library-source.c:1277
+#: ../sources/rb-library-source.c:1278
 msgid "Add Location"
 msgstr "Locatie toevoegen"
 
-#: ../sources/rb-library-source.c:1689
+#: ../sources/rb-library-source.c:1690
 msgid "Cannot select library location"
 msgstr "Kan de locatie van de bibliotheek niet selecteren"
 
 # vrij vertaald, het is heel verwarrend om het over het 'root filesystem' te
 # hebben als je een locatie bedoeld.
-#: ../sources/rb-library-source.c:1690
+#: ../sources/rb-library-source.c:1691
 msgid ""
 "The root filesystem cannot be chosen as your library location. Please choose "
 "a different location"
@@ -1888,17 +1883,17 @@ msgstr ""
 "bibliotheek. Kies een andere locatie."
 
 # wachtrij/nummers in de wachtrij/nummers in wachtrij
-#: ../sources/rb-play-queue-source.c:143 ../sources/rb-play-queue-source.c:192
-#: ../sources/rb-play-queue-source.c:297
+#: ../sources/rb-play-queue-source.c:148 ../sources/rb-play-queue-source.c:197
+#: ../sources/rb-play-queue-source.c:302
 msgid "Queued songs"
 msgstr "Wachtrij"
 
 # uit?
-#: ../sources/rb-play-queue-source.c:257 ../widgets/rb-song-display-box.c:99
+#: ../sources/rb-play-queue-source.c:262 ../widgets/rb-song-display-box.c:99
 msgid "from"
 msgstr "van"
 
-#: ../sources/rb-play-queue-source.c:257 ../widgets/rb-song-display-box.c:101
+#: ../sources/rb-play-queue-source.c:262 ../widgets/rb-song-display-box.c:101
 msgid "by"
 msgstr "door"
 
@@ -1906,21 +1901,21 @@ msgstr "door"
 msgid "Trac_k"
 msgstr "_Nummer"
 
-#: ../sources/rb-playlist-source.c:486
+#: ../sources/rb-playlist-source.c:508
 msgid "Couldn't save playlist"
 msgstr "Kan afspeellijst niet opslaan"
 
-#: ../sources/rb-playlist-source.c:537
+#: ../sources/rb-playlist-source.c:559
 msgid "Unable to create audio CD"
 msgstr "Kon de audio-cd niet aanmaken"
 
 # maximaal mogelijk/mogelijke
-#: ../sources/rb-playlist-source-recorder.c:265
+#: ../sources/rb-playlist-source-recorder.c:297
 msgid "Maximum possible"
 msgstr "Maximaal mogelijke"
 
 # brander/schrijfapparaat
-#: ../sources/rb-playlist-source-recorder.c:315
+#: ../sources/rb-playlist-source-recorder.c:368
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Ongeldig schrijfapparaat: %s"
@@ -1928,21 +1923,21 @@ msgstr "Ongeldig schrijfapparaat: %s"
 # meervoud van uur is uren, maar je zegt:
 # 1 dag 5 uur en 10 minuten    en niet:
 # 1 dag 5 uren en 10 minuten
-#: ../sources/rb-playlist-source-recorder.c:415
+#: ../sources/rb-playlist-source-recorder.c:468
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d uur"
 msgstr[1] "%d uur"
 
-#: ../sources/rb-playlist-source-recorder.c:417
+#: ../sources/rb-playlist-source-recorder.c:470
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d minuut"
 msgstr[1] "%d minuten"
 
-#: ../sources/rb-playlist-source-recorder.c:420
+#: ../sources/rb-playlist-source-recorder.c:473
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -1950,43 +1945,97 @@ msgstr[0] "%d seconde"
 msgstr[1] "%d seconden"
 
 #. hour:minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:425
+#: ../sources/rb-playlist-source-recorder.c:478
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:428
+#: ../sources/rb-playlist-source-recorder.c:481
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. seconds
-#: ../sources/rb-playlist-source-recorder.c:431
+#: ../sources/rb-playlist-source-recorder.c:484
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../sources/rb-playlist-source-recorder.c:434
+#: ../sources/rb-playlist-source-recorder.c:487
 msgid "0 seconds"
 msgstr "0 seconden"
 
-#: ../sources/rb-playlist-source-recorder.c:453
+#: ../sources/rb-playlist-source-recorder.c:506
 #, c-format
 msgid "About %s left"
 msgstr "Ongeveer %s over"
 
+# bepalen/uitvinden/ontdekken
+#: ../sources/rb-playlist-source-recorder.c:575
+msgid "Could not determine media type because CD drive is busy"
+msgstr "Kon het mediatype niet bepalen omdat het cd-apparaat bezig is"
+
+#: ../sources/rb-playlist-source-recorder.c:577
+msgid "Couldn't open media"
+msgstr "Kon media niet openen"
+
+#: ../sources/rb-playlist-source-recorder.c:579
+msgid "Unknown Media"
+msgstr "Onbekend medium"
+
+#: ../sources/rb-playlist-source-recorder.c:581
+msgid "Commercial CD or Audio CD"
+msgstr "Commerciële cd of audio-cd"
+
+#: ../sources/rb-playlist-source-recorder.c:583
+msgid "CD-R"
+msgstr "cd-r"
+
+#: ../sources/rb-playlist-source-recorder.c:585
+msgid "CD-RW"
+msgstr "cd-rw"
+
+#: ../sources/rb-playlist-source-recorder.c:587
+msgid "DVD"
+msgstr "dvd"
+
+#: ../sources/rb-playlist-source-recorder.c:589
+msgid "DVD-R, or DVD-RAM"
+msgstr "dvd-r, of dvd-ram"
+
+#: ../sources/rb-playlist-source-recorder.c:591
+msgid "DVD-RW"
+msgstr "dvd-rw"
+
+#: ../sources/rb-playlist-source-recorder.c:593
+msgid "DVD-RAM"
+msgstr "dvd-ram"
+
+#: ../sources/rb-playlist-source-recorder.c:595
+msgid "DVD+R"
+msgstr "dvd+r"
+
+#: ../sources/rb-playlist-source-recorder.c:597
+msgid "DVD+RW"
+msgstr "dvd+rw"
+
+# foutief/gebroken/onjuist/gecorrumpeerd
+#: ../sources/rb-playlist-source-recorder.c:602
+msgid "Broken media type"
+msgstr "Foutief mediatype"
+
 # schrijven/branden
-#: ../sources/rb-playlist-source-recorder.c:503
+#: ../sources/rb-playlist-source-recorder.c:617
 msgid "Writing audio to CD"
 msgstr "Audio branden naar cd"
 
-#: ../sources/rb-playlist-source-recorder.c:522
+#: ../sources/rb-playlist-source-recorder.c:636
 msgid "Finished creating audio CD."
 msgstr "Klaar met het maken van audio-cd."
 
-#: ../sources/rb-playlist-source-recorder.c:540
+#: ../sources/rb-playlist-source-recorder.c:654
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1994,225 +2043,171 @@ msgstr ""
 "Klaar met het maken van de audio-cd.\n"
 "Nog een kopie maken?"
 
-#: ../sources/rb-playlist-source-recorder.c:542
+#: ../sources/rb-playlist-source-recorder.c:656
 msgid "Writing cancelled.  Try again?"
 msgstr "Schrijven afgebroken. Opnieuw proberen?"
 
-#: ../sources/rb-playlist-source-recorder.c:607
+#: ../sources/rb-playlist-source-recorder.c:721
 msgid "Audio recording error"
 msgstr "Audio opname fout"
 
-#: ../sources/rb-playlist-source-recorder.c:635
+#: ../sources/rb-playlist-source-recorder.c:749
 msgid "Audio Conversion Error"
 msgstr "Audio conversie fout"
 
-#: ../sources/rb-playlist-source-recorder.c:665
+#: ../sources/rb-playlist-source-recorder.c:779
 msgid "Recording error"
 msgstr "Opname fout"
 
-#: ../sources/rb-playlist-source-recorder.c:784
+#: ../sources/rb-playlist-source-recorder.c:898
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Wilt u het schrijven van deze schijf onderbreken?"
 
-#: ../sources/rb-playlist-source-recorder.c:787
+#: ../sources/rb-playlist-source-recorder.c:901
 msgid "This may result in an unusable disc."
 msgstr "Dit kan resulteren in een onbruikbare schijf."
 
-#: ../sources/rb-playlist-source-recorder.c:794
+#: ../sources/rb-playlist-source-recorder.c:908
 msgid "_Cancel"
 msgstr "_Annuleren"
 
-#: ../sources/rb-playlist-source-recorder.c:795
+#: ../sources/rb-playlist-source-recorder.c:909
 msgid "_Interrupt"
 msgstr "_Onderbreken"
 
-#: ../sources/rb-playlist-source-recorder.c:817
+#: ../sources/rb-playlist-source-recorder.c:931
 msgid "Could not create audio CD"
 msgstr "Kan de audiocd niet aanmaken"
 
 # Controleer of het apparaat niet door een andere toepassing wordt gebruikt.
 # Of een andere toepassing het apparaat in gebruik heeft
 # toevoegen van "niet" is onnodig verwarrend
-#: ../sources/rb-playlist-source-recorder.c:839
+#: ../sources/rb-playlist-source-recorder.c:953
 msgid "Please make sure another application is not using the drive."
 msgstr "Controleer of een andere toepassing het apparaat in gebruik heeft."
 
-#: ../sources/rb-playlist-source-recorder.c:840
+#: ../sources/rb-playlist-source-recorder.c:954
 msgid "Drive is busy"
 msgstr "Apparaat is bezig"
 
-#: ../sources/rb-playlist-source-recorder.c:842
+#: ../sources/rb-playlist-source-recorder.c:956
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Doe een herschrijfbare of lege cd in in de schijflade."
 
-#: ../sources/rb-playlist-source-recorder.c:843
+#: ../sources/rb-playlist-source-recorder.c:957
 msgid "Insert a rewritable or blank CD"
 msgstr "Voer een lege of herschrijfbare cd in"
 
 # doe een lege CD in het apparaat
-#: ../sources/rb-playlist-source-recorder.c:845
+#: ../sources/rb-playlist-source-recorder.c:959
 msgid "Please put a blank CD in the drive."
 msgstr "Voer een lege cd in de schijflade in."
 
-#: ../sources/rb-playlist-source-recorder.c:846
+#: ../sources/rb-playlist-source-recorder.c:960
 msgid "Insert a blank CD"
 msgstr "Een lege cd invoeren"
 
-#: ../sources/rb-playlist-source-recorder.c:848
+#: ../sources/rb-playlist-source-recorder.c:962
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr ""
 "Vervang het schijfje in het apparaat door een lege of herschrijfbare cd."
 
-#: ../sources/rb-playlist-source-recorder.c:849
+#: ../sources/rb-playlist-source-recorder.c:963
 msgid "Reload a rewritable or blank CD"
 msgstr "Een herschrijfbare of lege cd herladen"
 
-#: ../sources/rb-playlist-source-recorder.c:851
+#: ../sources/rb-playlist-source-recorder.c:965
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Vervang het schijfje in het apparaat door een lege cd."
 
-#: ../sources/rb-playlist-source-recorder.c:852
+#: ../sources/rb-playlist-source-recorder.c:966
 msgid "Reload a blank CD"
 msgstr "Een lege cd herladen"
 
-#: ../sources/rb-playlist-source-recorder.c:903
+#: ../sources/rb-playlist-source-recorder.c:1017
 msgid "Converting audio tracks"
 msgstr "Audionummers converteren"
 
-#: ../sources/rb-playlist-source-recorder.c:906
+#: ../sources/rb-playlist-source-recorder.c:1020
 msgid "Preparing to write CD"
 msgstr "Voorbereiden voor het schrijven van de cd"
 
 # branden
-#: ../sources/rb-playlist-source-recorder.c:909
+#: ../sources/rb-playlist-source-recorder.c:1023
 msgid "Writing CD"
 msgstr "CD schrijven"
 
-#: ../sources/rb-playlist-source-recorder.c:912
+#: ../sources/rb-playlist-source-recorder.c:1026
 msgid "Finishing write"
 msgstr "Schrijven voltooien"
 
-#: ../sources/rb-playlist-source-recorder.c:915
+#: ../sources/rb-playlist-source-recorder.c:1029
 msgid "Erasing CD"
 msgstr "CD leegmaken"
 
-#: ../sources/rb-playlist-source-recorder.c:918
+#: ../sources/rb-playlist-source-recorder.c:1032
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Onbehandelde actie in burn_action_changed_cb"
 
-# bepalen/uitvinden/ontdekken
-#: ../sources/rb-playlist-source-recorder.c:955
-msgid "Could not determine media type because CD drive is busy"
-msgstr "Kon het mediatype niet bepalen omdat het cd-apparaat bezig is"
-
-#: ../sources/rb-playlist-source-recorder.c:957
-msgid "Couldn't open media"
-msgstr "Kon media niet openen"
-
-#: ../sources/rb-playlist-source-recorder.c:959
-msgid "Unknown Media"
-msgstr "Onbekend medium"
-
-#: ../sources/rb-playlist-source-recorder.c:961
-msgid "Commercial CD or Audio CD"
-msgstr "Commerciële cd of audio-cd"
-
-#: ../sources/rb-playlist-source-recorder.c:963
-msgid "CD-R"
-msgstr "cd-r"
-
-#: ../sources/rb-playlist-source-recorder.c:965
-msgid "CD-RW"
-msgstr "cd-rw"
-
-#: ../sources/rb-playlist-source-recorder.c:967
-msgid "DVD"
-msgstr "dvd"
-
-#: ../sources/rb-playlist-source-recorder.c:969
-msgid "DVD-R, or DVD-RAM"
-msgstr "dvd-r, of dvd-ram"
-
-#: ../sources/rb-playlist-source-recorder.c:971
-msgid "DVD-RW"
-msgstr "dvd-rw"
-
-#: ../sources/rb-playlist-source-recorder.c:973
-msgid "DVD-RAM"
-msgstr "dvd-ram"
-
-#: ../sources/rb-playlist-source-recorder.c:975
-msgid "DVD+R"
-msgstr "dvd+r"
-
-#: ../sources/rb-playlist-source-recorder.c:977
-msgid "DVD+RW"
-msgstr "dvd+rw"
-
-# foutief/gebroken/onjuist/gecorrumpeerd
-#: ../sources/rb-playlist-source-recorder.c:982
-msgid "Broken media type"
-msgstr "Foutief mediatype"
-
 # informatie/gegevens/data
 # informatie is hier verwarrend
-#: ../sources/rb-playlist-source-recorder.c:1000
+#: ../sources/rb-playlist-source-recorder.c:1054
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "Deze %s bevat kennelijk al gegevens die er op zijn gebrand."
 
-#: ../sources/rb-playlist-source-recorder.c:1008
+#: ../sources/rb-playlist-source-recorder.c:1062
 msgid "Erase information on this disc?"
 msgstr "Informatie op deze schijf wissen?"
 
-#: ../sources/rb-playlist-source-recorder.c:1017
+#: ../sources/rb-playlist-source-recorder.c:1071
 msgid "_Try Another"
 msgstr "_Probeer een andere"
 
-#: ../sources/rb-playlist-source-recorder.c:1024
+#: ../sources/rb-playlist-source-recorder.c:1078
 msgid "_Erase Disc"
 msgstr "_Schijf leegmaken"
 
-#: ../sources/rb-playlist-source-recorder.c:1128
+#: ../sources/rb-playlist-source-recorder.c:1182
 msgid "C_reate"
 msgstr "Aan_maken"
 
 # aanmaken van de recorder is mislukt
-#: ../sources/rb-playlist-source-recorder.c:1192
+#: ../sources/rb-playlist-source-recorder.c:1246
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Aanmaken van opnameapparaat mislukt: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1292
+#: ../sources/rb-playlist-source-recorder.c:1346
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Kan de tijdelijke map '%s' niet verwijderen: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1311
+#: ../sources/rb-playlist-source-recorder.c:1365
 msgid "Create Audio CD"
 msgstr "Audio-cd aanmaken"
 
-#: ../sources/rb-playlist-source-recorder.c:1328
+#: ../sources/rb-playlist-source-recorder.c:1382
 #, c-format
 msgid "Create audio CD from '%s' playlist?"
 msgstr "Audio-cd aanmaken van speellijst '%s'?"
 
 # wat is een audio track list? bedoelen ze hetzelfde als playlist?
-#: ../sources/rb-playlist-source-recorder.c:1374
-#: ../sources/rb-playlist-source-recorder.c:1392
+#: ../sources/rb-playlist-source-recorder.c:1428
+#: ../sources/rb-playlist-source-recorder.c:1446
 msgid "Unable to build an audio track list."
 msgstr "Kon geen afspeellijst aanmaken."
 
-#: ../sources/rb-playlist-source-recorder.c:1402
+#: ../sources/rb-playlist-source-recorder.c:1456
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Deze afspeellijst is te lang om een audio-cd mee te maken."
 
-#: ../sources/rb-playlist-source-recorder.c:1472
+#: ../sources/rb-playlist-source-recorder.c:1526
 #, c-format
 msgid "Cannot get free space at %s"
 msgstr "Kan geen vrije ruimte verkrijgen op %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1557
+#: ../sources/rb-playlist-source-recorder.c:1611
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -2223,16 +2218,16 @@ msgstr ""
 "standaard audio cd. Als het doelmedium groter is dan een standaaard audio cd "
 "kunt u het in het brandapparaat laden en opnieuw proberen."
 
-#: ../sources/rb-playlist-source-recorder.c:1568
+#: ../sources/rb-playlist-source-recorder.c:1622
 msgid "Playlist too long"
 msgstr "Speellijst te lang"
 
-#: ../sources/rb-playlist-source-recorder.c:1608
+#: ../sources/rb-playlist-source-recorder.c:1662
 msgid "Could not find temporary space!"
 msgstr "Kon geen tijdelijke ruimte vinden!"
 
 # 	
-#: ../sources/rb-playlist-source-recorder.c:1609
+#: ../sources/rb-playlist-source-recorder.c:1663
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -2301,36 +2296,36 @@ msgstr "_Feed"
 msgid "Status"
 msgstr "Status"
 
-#: ../sources/rb-podcast-source.c:549 ../sources/rb-podcast-source.c:1474
+#: ../sources/rb-podcast-source.c:549 ../sources/rb-podcast-source.c:1446
 msgid "Completed"
 msgstr "Voltooid"
 
-#: ../sources/rb-podcast-source.c:550 ../sources/rb-podcast-source.c:1486
+#: ../sources/rb-podcast-source.c:550 ../sources/rb-podcast-source.c:1458
 msgid "Paused"
 msgstr "Gepauzeerd"
 
-#: ../sources/rb-podcast-source.c:551 ../sources/rb-podcast-source.c:1482
+#: ../sources/rb-podcast-source.c:551 ../sources/rb-podcast-source.c:1454
 msgid "Waiting"
 msgstr "Wachten"
 
-#: ../sources/rb-podcast-source.c:552 ../sources/rb-podcast-source.c:1478
+#: ../sources/rb-podcast-source.c:552 ../sources/rb-podcast-source.c:1450
 msgid "Failed"
 msgstr "Mislukt"
 
-#: ../sources/rb-podcast-source.c:611 ../sources/rb-podcast-source.c:633
+#: ../sources/rb-podcast-source.c:612 ../sources/rb-podcast-source.c:634
 msgid "Feed"
 msgstr "Feed"
 
-#: ../sources/rb-podcast-source.c:741
+#: ../sources/rb-podcast-source.c:739
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../sources/rb-podcast-source.c:830
+#: ../sources/rb-podcast-source.c:828
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "De podcast-aflevering en het gedownloade bestand verwijderen?"
 
 # vrij vertaald
-#: ../sources/rb-podcast-source.c:833
+#: ../sources/rb-podcast-source.c:831
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2340,47 +2335,62 @@ msgstr ""
 "beiden voorgoed verloren gaan.  Merk op dat u ook alleen de aflevering kunt "
 "verwijderen, maar het gedownloade bestand kunt behouden."
 
-#: ../sources/rb-podcast-source.c:841
+#: ../sources/rb-podcast-source.c:839
 msgid "Delete _Episode Only"
 msgstr "Alleen de _aflevering verwijderen"
 
-#: ../sources/rb-podcast-source.c:847
+#: ../sources/rb-podcast-source.c:845
 msgid "_Delete Episode And File"
 msgstr "A_flevering en bestand verwijderen"
 
 # gedownloade/binnengehaalde/opgehaalde
-#: ../sources/rb-podcast-source.c:1348
+#: ../sources/rb-podcast-source.c:1334
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "De podcast-feed en opgehaalde bestanden verwijderen?"
 
-#: ../sources/rb-podcast-source.c:1351
+#: ../sources/rb-podcast-source.c:1337
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
-msgstr "Indien u kiest om zowel de feed als de bestanden te verwijderen, zullen deze definitief verloren gaan. Merk op dat u ook alleen de feed kunt verwijderen. De opgehaalde bestanden zullen dat behouden blijven."
+msgstr ""
+"Indien u kiest om zowel de feed als de bestanden te verwijderen, zullen deze "
+"definitief verloren gaan. Merk op dat u ook alleen de feed kunt verwijderen. "
+"De opgehaalde bestanden zullen dat behouden blijven."
 
-#: ../sources/rb-podcast-source.c:1359
+#: ../sources/rb-podcast-source.c:1345
 msgid "Delete _Feed Only"
 msgstr "Alleen feed verwijderen"
 
-#: ../sources/rb-podcast-source.c:1366
+#: ../sources/rb-podcast-source.c:1352
 msgid "_Delete Feed And Files"
 msgstr "_Zowel feed als bestanden verwijderen"
 
-#: ../sources/rb-podcast-source.c:1678
+#: ../sources/rb-podcast-source.c:1524
+#, c-format
+msgid "All %d feed (%d)"
+msgid_plural "All %d feeds (%d)"
+msgstr[0] "Alle (%d) feed"
+msgstr[1] "Alle (%d) feeds"
+
+#: ../sources/rb-podcast-source.c:1528
+#, c-format
+msgid "%s (%d)"
+msgstr "%s (%d)"
+
+#: ../sources/rb-podcast-source.c:1668
 msgid "Downloading podcast"
 msgstr "Downloaden podcast"
 
-#: ../sources/rb-podcast-source.c:1690
+#: ../sources/rb-podcast-source.c:1680
 msgid "Finished downloading podcast"
 msgstr "Downloaden podcast voltooid"
 
-#: ../sources/rb-podcast-source.c:1702
+#: ../sources/rb-podcast-source.c:1692
 msgid "New updates avaliable from"
 msgstr "Nieuwe updates beschikbaar van"
 
-#: ../sources/rb-podcast-source.c:1797
+#: ../sources/rb-podcast-source.c:1787
 msgid "Error in podcast"
 msgstr "Fout in podcast"
 
@@ -2519,7 +2529,7 @@ msgstr "_Laatst gespeeld"
 msgid "_Date Added"
 msgstr "_Toegevoegd"
 
-#: ../widgets/rb-entry-view.c:1553
+#: ../widgets/rb-entry-view.c:1556
 msgid "Playback Error"
 msgstr "Afspeelfout"
 
@@ -2778,6 +2788,9 @@ msgstr "Op het werkblad"
 #: ../widgets/rb-song-info.c:831
 msgid "Unknown location"
 msgstr "Onbekende locatie:"
+
+#~ msgid "iPod"
+#~ msgstr "iPod"
 
 #~ msgid "Could not create audio output element; check your settings"
 #~ msgstr ""
