@@ -99,6 +99,7 @@ struct RhythmDBPrivate
 	gboolean dry_run;
 	gboolean no_update;
 
+	GMutex *change_mutex;
 	GList *added_entries;
 	GHashTable *changed_entries;
 
@@ -523,6 +524,7 @@ rhythmdb_init (RhythmDB *db)
 							 (GDestroyNotify) g_free,
 							 NULL);
 
+	db->priv->change_mutex = g_mutex_new ();
 	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
 	
 	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
@@ -677,6 +679,8 @@ rhythmdb_finalize (GObject *object)
 	g_mutex_free (db->priv->saving_mutex);
 	g_cond_free (db->priv->saving_condition);
 
+	g_mutex_free (db->priv->change_mutex);
+
 	g_hash_table_destroy (db->priv->propname_map);
 
 	g_hash_table_destroy (db->priv->monitored_directories);
@@ -830,6 +834,7 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 
 	g_assert (rb_is_main_thread ());
 
+	g_mutex_lock (db->priv->change_mutex);
 	g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
 	if (sync_changes)
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
@@ -851,6 +856,7 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 
 	g_list_free (db->priv->added_entries);
 	db->priv->added_entries = NULL;
+	g_mutex_unlock (db->priv->change_mutex);
 }
 
 
@@ -957,7 +963,9 @@ rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
 	g_assert (entry->inserted == FALSE);
 	g_return_if_fail (entry->location != NULL);
 	
+	g_mutex_lock (db->priv->change_mutex);
 	db->priv->added_entries = g_list_prepend (db->priv->added_entries, entry);	
+	g_mutex_unlock (db->priv->change_mutex);
 }
 
 
@@ -2356,9 +2364,11 @@ record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
 	g_value_init (&changedata->new, G_VALUE_TYPE (value));
 	g_value_copy (value, &changedata->new);
 
+	g_mutex_lock (db->priv->change_mutex);
 	changelist = g_hash_table_lookup (db->priv->changed_entries, entry);
 	changelist = g_slist_append (changelist, changedata);
 	g_hash_table_insert (db->priv->changed_entries, entry, changelist);
+	g_mutex_unlock (db->priv->change_mutex);
 }
 
 /**

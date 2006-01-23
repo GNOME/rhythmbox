@@ -1,3 +1,10 @@
+2006-01-23  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_finalize),
+	(rhythmdb_commit_internal), (rhythmdb_entry_insert),
+	(record_entry_change): Protect added_entries and changed_entries with
+	a mutex, so it doesn't crash on startup on SMT/SMP machines.
+
 2006-01-23  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-audiocd-source.c: (rb_audiocd_source_class_init): disable
