@@ -6,16 +6,16 @@
 # Copyright (C) 2004 THE rhythmbox'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the rhythmbox package.
 # Punjab Linux Technology <punjablinux@netscape.net>, 2004.
-# Amanpreet Singh Alam <aalam@redhat.com>, 2004.
+# Amanpreet Singh Alam <aalam@redhat.com>, 2004, 2006.
 # Amanpreet Singh Alam <amanpreetalam@yahoo.com>, 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-12-09 12:25+0100\n"
-"PO-Revision-Date: 2005-12-09 17:49+0530\n"
-"Last-Translator: Amanpreet Singh Alam <amanpreetalam@yahoo.com>\n"
+"POT-Creation-Date: 2006-01-23 04:29+0100\n"
+"PO-Revision-Date: 2006-01-23 14:51+0530\n"
+"Last-Translator: Amanpreet Singh Alam <aalam@redhat.com>\n"
 "Language-Team: Punjabi <fedora-trans-pa@redhat.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,20 +24,22 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../daapsharing/rb-daap-connection.c:923
-#: ../iradio/rb-station-properties-dialog.c:419 ../lib/rb-util.c:561
-#: ../podcast/rb-podcast-manager.c:1433
+#: ../iradio/rb-station-properties-dialog.c:404 ../lib/rb-util.c:561
+#: ../podcast/rb-feed-podcast-properties-dialog.c:288
+#: ../podcast/rb-podcast-manager.c:1458
 #: ../podcast/rb-podcast-properties-dialog.c:400
-#: ../rhythmdb/rhythmdb-tree.c:932 ../rhythmdb/rhythmdb-tree.c:936
-#: ../rhythmdb/rhythmdb-tree.c:940 ../rhythmdb/rhythmdb-tree.c:944
-#: ../rhythmdb/rhythmdb.c:1177 ../shell/rb-audioscrobbler.c:470
-#: ../shell/rb-audioscrobbler.c:986 ../shell/rb-audioscrobbler.c:987
-#: ../shell/rb-shell-player.c:2071 ../sources/rb-audiocd-source.c:183
-#: ../sources/rb-ipod-source.c:158 ../sources/rb-iradio-source.c:218
-#: ../sources/rb-iradio-source.c:219 ../sources/rb-iradio-source.c:220
-#: ../sources/rb-iradio-source.c:439 ../sources/rb-podcast-source.c:1621
-#: ../widgets/rb-entry-view.c:1041 ../widgets/rb-entry-view.c:1060
-#: ../widgets/rb-entry-view.c:1346 ../widgets/rb-song-info.c:566
-#: ../widgets/rb-song-info.c:646 ../widgets/rb-song-info.c:830
+#: ../podcast/rb-podcast-properties-dialog.c:447
+#: ../rhythmdb/rhythmdb-tree.c:939 ../rhythmdb/rhythmdb-tree.c:943
+#: ../rhythmdb/rhythmdb-tree.c:947 ../rhythmdb/rhythmdb-tree.c:951
+#: ../rhythmdb/rhythmdb.c:1195 ../shell/rb-audioscrobbler.c:470
+#: ../shell/rb-audioscrobbler.c:990 ../shell/rb-audioscrobbler.c:991
+#: ../shell/rb-shell-player.c:2337 ../sources/rb-audiocd-source.c:180
+#: ../sources/rb-ipod-source.c:157 ../sources/rb-iradio-source.c:219
+#: ../sources/rb-iradio-source.c:220 ../sources/rb-iradio-source.c:221
+#: ../sources/rb-iradio-source.c:444 ../sources/rb-podcast-source.c:1555
+#: ../widgets/rb-entry-view.c:942 ../widgets/rb-entry-view.c:961
+#: ../widgets/rb-entry-view.c:1247 ../widgets/rb-song-info.c:607
+#: ../widgets/rb-song-info.c:760 ../widgets/rb-song-info.c:949
 msgid "Unknown"
 msgstr "ਅਣਜਾਣ"
 
@@ -84,7 +86,7 @@ msgstr ""
 msgid "%s's Music"
 msgstr "%s ਦਾ ਸੰਗੀਤ"
 
-#: ../daapsharing/rb-daap-src.c:732
+#: ../daapsharing/rb-daap-src.c:682
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "%s:%d ਨਾਲ ਕੁਨੈਕਸ਼ਨ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ ਗਿਆ।"
@@ -166,8 +168,7 @@ msgid "_Share my music"
 msgstr "ਆਪਣਾ ਸੰਗੀਤ ਸਾਂਝਾ ਕਰੋ(_S)"
 
 #: ../data/glade/druid.glade.h:1 ../data/glade/song-info.glade.h:1
-#: ../data/glade/song-info-multiple.glade.h:1
-#: ../data/glade/station-properties.glade.h:1 ../data/glade/uri.glade.h:1
+#: ../data/glade/song-info-multiple.glade.h:1 ../data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
 
@@ -226,7 +227,7 @@ msgstr "ਉਪਲੱਬਧ ਕਾਲਮ"
 msgid "_Artist"
 msgstr "ਕਲਾਕਾਰ(_A)"
 
-#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1332
+#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1233
 msgid "_Genre"
 msgstr "ਸ਼ੈਲੀ(_G)"
 
@@ -238,11 +239,11 @@ msgstr "ਆਖਰੀ ਚਲਾਇਆ(_L)"
 msgid "_Play count"
 msgstr "ਚੱਲਣ ਗਿਣਤੀ(_P)"
 
-#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1270
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1171
 msgid "_Rating"
 msgstr "ਰੇਟਿੰਗ(_R)"
 
-#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1354
+#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1255
 msgid "_Year"
 msgstr "ਸਾਲ(_Y)"
 
@@ -295,6 +296,7 @@ msgstr "ਲੇਖਕ:"
 #: ../data/glade/podcast-feed-properties.glade.h:3
 #: ../data/glade/podcast-properties.glade.h:2
 #: ../data/glade/song-info.glade.h:2
+#: ../data/glade/station-properties.glade.h:1
 msgid "Basic"
 msgstr "ਮੂਲ"
 
@@ -310,6 +312,7 @@ msgstr "ਵੇਰਵਾ:"
 #: ../data/glade/podcast-feed-properties.glade.h:6
 #: ../data/glade/podcast-properties.glade.h:6
 #: ../data/glade/song-info.glade.h:4
+#: ../data/glade/station-properties.glade.h:3
 msgid "Details"
 msgstr "ਵੇਰਵਾ"
 
@@ -318,15 +321,19 @@ msgid "Language:"
 msgstr "ਭਾਸ਼ਾ:"
 
 #: ../data/glade/podcast-feed-properties.glade.h:8
+msgid "Last episode:"
+msgstr "ਆਖਰੀ ਕੜੀ:"
+
+#: ../data/glade/podcast-feed-properties.glade.h:9
 msgid "Last updated:"
 msgstr "ਆਖਰੀ ਅੱਪਡੇਟ:"
 
-#: ../data/glade/podcast-feed-properties.glade.h:9
+#: ../data/glade/podcast-feed-properties.glade.h:10
 #: ../data/glade/podcast-properties.glade.h:11
 msgid "Source:"
 msgstr "ਸਰੋਤ:"
 
-#: ../data/glade/podcast-feed-properties.glade.h:10
+#: ../data/glade/podcast-feed-properties.glade.h:11
 #: ../data/glade/podcast-properties.glade.h:12
 msgid "Title:"
 msgstr "ਸਿਰਲੇਖ:"
@@ -384,18 +391,20 @@ msgstr "ਫੀਡ:"
 
 #: ../data/glade/podcast-properties.glade.h:9
 #: ../data/glade/song-info.glade.h:8
+#: ../data/glade/station-properties.glade.h:6
 msgid "Last played:"
 msgstr "ਆਖਰੀ ਚਲਾਇਆ:"
 
 #: ../data/glade/podcast-properties.glade.h:10
 #: ../data/glade/song-info.glade.h:10
+#: ../data/glade/station-properties.glade.h:7
 msgid "Play count:"
 msgstr "ਚੱਲਣ ਗਿਣਤੀ:"
 
 #: ../data/glade/podcast-properties.glade.h:13
 #: ../data/glade/song-info.glade.h:15
-#: ../data/glade/song-info-multiple.glade.h:5
-#: ../data/glade/station-properties.glade.h:8
+#: ../data/glade/song-info-multiple.glade.h:6
+#: ../data/glade/station-properties.glade.h:9
 msgid "_Rating:"
 msgstr "ਰੇਟਿੰਗ(_R):"
 
@@ -424,7 +433,7 @@ msgid "_Make multiple copies"
 msgstr "ਬਹੁ-ਨਕਲ ਬਣਾਓ(_M)"
 
 #: ../data/glade/song-info.glade.h:6
-#: ../data/glade/station-properties.glade.h:3
+#: ../data/glade/station-properties.glade.h:4
 msgid "Error message"
 msgstr "ਗਲਤੀ ਸੁਨੇਹਾ"
 
@@ -451,13 +460,13 @@ msgid "_Disc number:"
 msgstr "ਡਿਸਕ ਨੰਬਰ(_D):"
 
 #: ../data/glade/song-info.glade.h:14
-#: ../data/glade/song-info-multiple.glade.h:4
-#: ../data/glade/station-properties.glade.h:6
+#: ../data/glade/song-info-multiple.glade.h:5
+#: ../data/glade/station-properties.glade.h:8
 msgid "_Genre:"
 msgstr "ਸ਼ੈਲੀ(_G):"
 
 #: ../data/glade/song-info.glade.h:16
-#: ../data/glade/station-properties.glade.h:9
+#: ../data/glade/station-properties.glade.h:10
 msgid "_Title:"
 msgstr "ਨਾਂ(_T):"
 
@@ -466,21 +475,21 @@ msgid "_Track number:"
 msgstr "ਟਰੈਕ ਨੰਬਰ(_T):"
 
 #: ../data/glade/song-info.glade.h:18
-#: ../data/glade/song-info-multiple.glade.h:6
+#: ../data/glade/song-info-multiple.glade.h:7
 msgid "_Year:"
 msgstr "ਸਾਲ(_Y):"
 
-#: ../data/glade/station-properties.glade.h:4
-msgid "L_ocation:"
-msgstr "ਟਿਕਾਣਾ(_o):"
+#: ../data/glade/song-info-multiple.glade.h:4
+msgid "_Disc Number:"
+msgstr "ਡਿਸਕ ਨੰਬਰ(_D):"
+
+#: ../data/glade/station-new.glade.h:1
+msgid "_URL of internet radio station:"
+msgstr "ਇੰਟਰਨੈੱਟ ਰੇਡੀਓ ਸਟੇਸ਼ਨ ਦਾ _URL:"
 
 #: ../data/glade/station-properties.glade.h:5
-msgid "Play Count:"
-msgstr "ਚੱਲਣ ਗਿਣਤੀ:"
-
-#: ../data/glade/station-properties.glade.h:7
-msgid "_Last Played:"
-msgstr "ਆਖਰੀ ਚਲਾਇਆ(_L):"
+msgid "L_ocation:"
+msgstr "ਟਿਕਾਣਾ(_o):"
 
 #: ../data/glade/uri.glade.h:2
 msgid "Enter the _location (URI) of the file you would like to add:"
@@ -490,8 +499,20 @@ msgstr "ਫਾਇਲ, ਜੋ ਤੁਸੀਂ ਚਲਾਉਣੀ ਚਾਹੁੰ�
 msgid "Open from URI"
 msgstr "URI ਤੋਂ ਖੋਲੋ"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:862
-#: ../shell/rb-shell.c:1718
+#: ../data/playlists.xml.in.h:1
+msgid "My Top Rated"
+msgstr "ਮੇਰੀ ਟਾਪ ਸੂਚੀ"
+
+#: ../data/playlists.xml.in.h:2
+msgid "Recently Added"
+msgstr "ਤਾਜ਼ਾ ਜੋੜੇ"
+
+#: ../data/playlists.xml.in.h:3
+msgid "Recently Played"
+msgstr "ਤਾਜ਼ਾ ਚਲਾਓ"
+
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:961
+#: ../shell/rb-shell.c:1895
 msgid "Music Player"
 msgstr "ਸੰਗੀਤ ਪਲੇਅਰ"
 
@@ -503,26 +524,49 @@ msgstr "ਆਪਣੀ ਸੰਗੀਤ ਪਸੰਦ ਚਲਾਉ ਅਤੇ ਸੰ�
 msgid "Rhythmbox Music Player"
 msgstr "ਰੀਥਮਬਾਕਸ ਸੰਗੀਤ ਪਲੇਅਰ"
 
-#: ../iradio/rb-station-properties-dialog.c:336
-#, c-format
-msgid "Properties for %s"
-msgstr "%s ਦੀ ਵਿਸ਼ੇਸਤਾ"
-
-#: ../iradio/rb-station-properties-dialog.c:340
+#: ../iradio/rb-new-station-dialog.c:134
+#: ../iradio/rb-station-properties-dialog.c:325
 msgid "New Internet Radio Station"
 msgstr "ਨਵਾਂ ਇੰਟਰਨੈੱਟ ਰੇਡੀਓ ਸਟੇਸ਼ਨ"
 
-#: ../iradio/rb-station-properties-dialog.c:421
-#: ../podcast/rb-podcast-properties-dialog.c:398 ../widgets/rb-song-info.c:644
+#: ../iradio/rb-station-properties-dialog.c:321
+#: ../podcast/rb-feed-podcast-properties-dialog.c:209
+#: ../podcast/rb-podcast-properties-dialog.c:314 ../widgets/rb-song-info.c:700
+#, c-format
+msgid "%s Properties"
+msgstr "%s ਵਿਸ਼ੇਸਤਾ"
+
+#: ../iradio/rb-station-properties-dialog.c:406
+#: ../podcast/rb-podcast-properties-dialog.c:398 ../widgets/rb-song-info.c:758
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../iradio/rb-station-properties-dialog.c:430 ../rhythmdb/rhythmdb.c:2490
-#: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1382
-#: ../widgets/rb-entry-view.c:1395 ../widgets/rb-song-info.c:806
+#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2578
+#: ../widgets/rb-entry-view.c:896 ../widgets/rb-entry-view.c:1283
+#: ../widgets/rb-entry-view.c:1296 ../widgets/rb-song-info.c:925
 msgid "Never"
 msgstr "ਕਦੇ ਨਹੀ"
+
+#: ../lib/rb-cut-and-paste-code.c:245
+msgid "Today %I:%M %p"
+msgstr "ਅੱਜ %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:255
+msgid "Yesterday %I:%M %p"
+msgstr "ਕੱਲ੍ਹ %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:268
+msgid "%a %I:%M %p"
+msgstr "%a %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:277
+msgid "%b %d %I:%M %p"
+msgstr "%b %d %I:%M %p"
+
+#: ../lib/rb-cut-and-paste-code.c:279
+msgid "%b %d %Y"
+msgstr "%b %d %Y"
 
 #: ../lib/rb-util.c:563 ../widgets/rb-header.c:750
 #, c-format
@@ -534,29 +578,33 @@ msgstr "%d:%02d"
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:588 ../metadata/rb-metadata-gst.c:1087
-#: ../player/rb-player-gst.c:588 ../player/rb-recorder-gst.c:631
+#: ../metadata/rb-metadata-gst.c:608 ../metadata/rb-metadata-gst.c:1128
+#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:633
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "ਇਕਾਈ %s ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ; ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ ਇੰਸਟਾਲੇਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ"
 
-#: ../metadata/rb-metadata-gst.c:726
+#: ../metadata/rb-metadata-gst.c:747
 msgid "Failed to create a source element; check your installation"
 msgstr "ਇੱਕ ਸਰੋਤ ਇਕਾਈ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ ਹੈ, ਆਪਣੀ ਇੰਸਟਾਲੇਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ"
 
-#: ../metadata/rb-metadata-gst.c:851
+#: ../metadata/rb-metadata-gst.c:814
+msgid "GStreamer error: failed to change state"
+msgstr "ਜਸਟਰੀਮਰ ਗਲਤੀ: ਹਾਲਤ ਤਬਦੀਲ ਕਰਨ ਲਈ ਫੇਲ"
+
+#: ../metadata/rb-metadata-gst.c:887
 msgid "The MIME type of the file could not be identified"
 msgstr "ਫਾਇਲ ਦੀ MIME ਕਿਸਮ ਨੂੰ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: ../metadata/rb-metadata-gst.c:863
+#: ../metadata/rb-metadata-gst.c:899
 msgid "The file is not an audio stream"
 msgstr "ਫਾਇਲ ਆਡੀਓ ਸਟਰੀਮ ਨਹੀਂ ਹੈ"
 
-#: ../metadata/rb-metadata-gst.c:868
+#: ../metadata/rb-metadata-gst.c:904
 msgid "The file is not an audio stream, but is being ignored"
 msgstr "ਫਾਇਲ ਆਡੀਓ ਸਟਰੀਮ ਨਹੀਂ ਹੈ, ਪਰ ਅਣਡਿੱਠਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ"
 
-#: ../metadata/rb-metadata-gst.c:876
+#: ../metadata/rb-metadata-gst.c:912
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "ਇੱਕ %s ਫਾਇਲ ਨੂੰ ਖੋਲਣ ਲਈ ਕੋਈ ਪਲੱਗਿੰਨ ਇੰਸਟਾਲ ਨਹੀਂ ਹੈ।"
@@ -623,71 +671,67 @@ msgstr "ਇਹ CD ਲਈ ਮੈਟਾ-ਡਾਟਾ ਨਾ-ਮੁਕੰਮਲ ਹ
 msgid "Could not create CD lookup thread"
 msgstr "CD ਖੋਜ ਥਰਿੱਡ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਿਆ"
 
-#: ../player/rb-player-gst.c:567 ../player/rb-recorder-gst.c:575
-msgid "Could not create audio output element; check your settings"
-msgstr "ਆਡੀਓ ਆਉਟਪੁੱਟ ਇਕਾਈ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ; ਆਪਣੀ ਸੈਟਿੰਗ ਦੀ ਜਾਂਚ ਕਰੋ"
-
-#: ../player/rb-player-gst.c:614 ../player/rb-recorder-gst.c:693
+#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:695
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "ਸਮਾਂ-ਸੂਚੀ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਹੈ।  ਕੀ ਤੁਸੀ gst-register ਚਲਾਉਣਾ ਪਸੰਦ ਕਰੋਗੇ?"
 
-#: ../player/rb-player-gst.c:689
+#: ../player/rb-player-gst.c:681
 msgid "Unknown playback error"
 msgstr "ਅਣਜਾਣ ਚਲਾਉਣ ਗਲਤੀ"
 
-#: ../player/rb-recorder-gst.c:513
+#: ../player/rb-recorder-gst.c:520
 msgid "Failed to create pipeline"
 msgstr "ਪਾਈਪਲਾਇਨ ਬਣਾਉਣ ਲਈ ਅਸਫਲ"
 
-#: ../player/rb-recorder-gst.c:649 ../player/rb-recorder-gst.c:653
+#: ../player/rb-recorder-gst.c:651 ../player/rb-recorder-gst.c:655
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "'%s' ਨੂੰ ਨਾ-ਸਬੰਧਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../player/rb-recorder-gst.c:725
+#: ../player/rb-recorder-gst.c:727
 msgid "Could not retrieve state from processing pipeline"
 msgstr ""
 
-#: ../player/rb-recorder-gst.c:740 ../player/rb-recorder-gst.c:748
+#: ../player/rb-recorder-gst.c:742 ../player/rb-recorder-gst.c:750
 msgid "Could not get current track position"
 msgstr "ਮੌਜੂਦਾ ਟਰੈਕ ਟਿਕਾਣੇ ਨੂੰ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../player/rb-recorder-gst.c:804
+#: ../player/rb-recorder-gst.c:806
 msgid "Could not start pipeline playing"
 msgstr "ਗੀਤ-ਸੂਚੀ ਨੂੰ ਜੋਡ਼ਨ ਵਿੱਚ ਅਸਮਰੱਥ"
 
-#: ../player/rb-recorder-gst.c:827
+#: ../player/rb-recorder-gst.c:829
 msgid "Could not pause playback"
 msgstr "ਗੀਤ ਨੂੰ ਵਿਰਾਮ ਨਹੀ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../player/rb-recorder-gst.c:1025
+#: ../player/rb-recorder-gst.c:1027
 msgid "Cannot find drive"
 msgstr "ਡਰਾਇਵ ਨਹੀਂ ਲੱਭੀ ਜਾ ਸਕਦੀ"
 
-#: ../player/rb-recorder-gst.c:1070
+#: ../player/rb-recorder-gst.c:1072
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "ਡਰਾਇਵ %s ਲੱਭੀ ਨਹੀਂ ਜਾ ਸਕਦੀ"
 
-#: ../player/rb-recorder-gst.c:1079
+#: ../player/rb-recorder-gst.c:1081
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "ਡਰਾਇਵ %s ਰਾਇਟਰ ਨਹੀਂ ਹੈ"
 
-#: ../player/rb-recorder-gst.c:1245 ../player/rb-recorder-gst.c:1423
+#: ../player/rb-recorder-gst.c:1247 ../player/rb-recorder-gst.c:1425
 msgid "No writable drives found."
 msgstr "ਕੋਈ ਲਿਖਣ ਯੋਗ ਡਰਾਇਵ ਨਹੀਂ ਮਿਲੀ ਹੈ।"
 
-#: ../player/rb-recorder-gst.c:1373
+#: ../player/rb-recorder-gst.c:1375
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "ਇਸ ਫਾਇਲ ਲਈ ਟਰੈਕ ਸਮਾਂ ਪਰਾਪਤ ਨਹੀਂ ਹੋ ਸਕਿਆ: %s"
 
-#: ../player/rb-recorder-gst.c:1432
+#: ../player/rb-recorder-gst.c:1434
 msgid "Could not determine audio track durations."
 msgstr "ਆਡੀਓ ਟਰੈਕ ਅੰਤਰਾਲ ਲੱਭਣ ਵਿੱਚ ਅਸਫਲ ਹੈ।"
 
-#: ../player/rb-recorder-gst.c:1480
+#: ../player/rb-recorder-gst.c:1482
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -696,57 +740,40 @@ msgstr ""
 "CD ਲਿਖਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1484
+#: ../player/rb-recorder-gst.c:1486
 msgid "There was an error writing to the CD"
 msgstr "CD ਲਿਖਣ ਦੌਰਾਨ ਗਲਤੀ ਆਈ ਹੈ"
-
-#: ../podcast/rb-feed-podcast-properties-dialog.c:203
-#: ../podcast/rb-podcast-properties-dialog.c:314 ../widgets/rb-song-info.c:586
-#, c-format
-msgid "%s Properties"
-msgstr "%s ਵਿਸ਼ੇਸਤਾ"
-
-#. Translators:  Please keep the translated date format
-#. * compact, and avoid variable-width items such as month and
-#. * day names wherever possible.  This allows us to disable
-#. * column autosizing, which makes the Rhythmbox UI much faster.
-#.
-#: ../podcast/rb-feed-podcast-properties-dialog.c:274
-#: ../podcast/rb-podcast-properties-dialog.c:452 ../rhythmdb/rhythmdb.c:2480
-#: ../sources/rb-podcast-source.c:1627 ../widgets/rb-entry-view.c:2330
-msgid "%Y-%m-%d %H:%M"
-msgstr "%Y-%m-%d %H:%M"
 
 #: ../podcast/rb-new-podcast-dialog.c:113
 msgid "New Podcast Feed"
 msgstr "ਨਵੀਂ ਪੋਸਟ-ਕਾਸਟ ਫੀਡ"
 
-#: ../podcast/rb-podcast-manager.c:742
+#: ../podcast/rb-podcast-manager.c:755
 msgid "Invalid URL"
 msgstr "ਗਲਤ URL"
 
-#: ../podcast/rb-podcast-manager.c:743
+#: ../podcast/rb-podcast-manager.c:756
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" ਠੀਕ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਜਾਂਚ ਕਰੋ।"
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:751
+#: ../podcast/rb-podcast-manager.c:764
 msgid "URL already added"
 msgstr "URL ਪਹਿਲਾਂ ਹੀ ਜੋੜਿਆ ਗਿਆ ਹੈ"
 
-#: ../podcast/rb-podcast-manager.c:752
+#: ../podcast/rb-podcast-manager.c:765
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:819
+#: ../podcast/rb-podcast-manager.c:834
 msgid "Podcast"
 msgstr "ਪੋਸਟ-ਕਾਸਟ"
 
-#: ../podcast/rb-podcast-manager.c:1555
+#: ../podcast/rb-podcast-manager.c:1589
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "ਇਹ ਪੋਸਟ-ਕਾਸਟ ਜੋੜਨ ਦੌਰਾਨ ਇੱਕ ਸਮੱਸਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ URL ਦੀ ਜਾਂਚ ਕਰੋ: %s"
@@ -808,51 +835,56 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "ਇੱਕ ਅਪਵਾਦ '%s' ਆਇਆ ਹੈ"
 
-#: ../rhythmdb/rhythmdb-property-model.c:399
+#: ../rhythmdb/rhythmdb-property-model.c:394
 msgid "All"
 msgstr "ਸਭ"
 
-#: ../rhythmdb/rhythmdb-property-model.c:1023
-#, c-format
-msgid "All (%d)"
-msgstr "ਸਭ (%d)"
-
-#: ../rhythmdb/rhythmdb.c:1160
+#: ../rhythmdb/rhythmdb.c:1178
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "%s ਦੀ ਜਾਂਚ ਸੰਭਵ ਨਹੀਂ : %s"
 
-#: ../rhythmdb/rhythmdb.c:1269
+#: ../rhythmdb/rhythmdb.c:1287
 msgid "<invalid filename>"
 msgstr "<ਗਲਤ ਫਾਇਲ ਨਾਂ>"
 
-#: ../rhythmdb/rhythmdb.c:1792 ../rhythmdb/rhythmdb.c:1835
+#: ../rhythmdb/rhythmdb.c:1832 ../rhythmdb/rhythmdb.c:1875
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "%s ਨੂੰ ਖੋਲਣਾ ਸੰਭਵ ਨਹੀਂ: %s"
 
-#: ../rhythmdb/rhythmdb.c:3435
+#. Translators:  Please keep the translated date format
+#. * compact, and avoid variable-width items such as month and
+#. * day names wherever possible.  This allows us to disable
+#. * column autosizing, which makes the Rhythmbox UI much faster.
+#.
+#: ../rhythmdb/rhythmdb.c:2569 ../sources/rb-podcast-source.c:1561
+#: ../widgets/rb-entry-view.c:2080
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
+
+#: ../rhythmdb/rhythmdb.c:3558
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d ਗੀਤ"
 msgstr[1] "%d ਗੀਤ"
 
-#: ../rhythmdb/rhythmdb.c:3442
+#: ../rhythmdb/rhythmdb.c:3565
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld ਮਿੰਟ"
 msgstr[1] "%ld ਮਿੰਟ"
 
-#: ../rhythmdb/rhythmdb.c:3443
+#: ../rhythmdb/rhythmdb.c:3566
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld ਘੰਟਾ"
 msgstr[1] "%ld ਘੰਟੇ"
 
-#: ../rhythmdb/rhythmdb.c:3444
+#: ../rhythmdb/rhythmdb.c:3567
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -860,7 +892,7 @@ msgstr[0] "%ld ਦਿਨ"
 msgstr[1] "%ld ਦਿਨ"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3450
+#: ../rhythmdb/rhythmdb.c:3573
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ਅਤੇ %s"
@@ -868,125 +900,125 @@ msgstr "%s, %s ਅਤੇ %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3456 ../rhythmdb/rhythmdb.c:3464
-#: ../rhythmdb/rhythmdb.c:3475
+#: ../rhythmdb/rhythmdb.c:3579 ../rhythmdb/rhythmdb.c:3587
+#: ../rhythmdb/rhythmdb.c:3598
 #, c-format
 msgid "%s and %s"
 msgstr "%s ਅਤੇ %s"
 
-#: ../shell/main.c:140
+#: ../shell/main.c:142
 msgid "Print the playing song and exit"
 msgstr "ਚੱਲ ਰਿਹਾ ਗੀਤ ਛਾਪੋ ਅਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:141
+#: ../shell/main.c:143
 msgid "Print the playing song artist and exit"
 msgstr "ਚੱਲ਼ਦੇ ਗੀਤ ਦਾ ਗਾਇਕ ਛਾਪੋ ਅਤੇ ਬੰਦ"
 
-#: ../shell/main.c:142
+#: ../shell/main.c:144
 msgid "Print the playing song album and exit"
 msgstr "ਚੱਲਦੇ ਗੀਤ ਦਾ ਗਾਇਕ ਛਾਪੋ ਅਤੇ ਬੰਦ"
 
-#: ../shell/main.c:143
+#: ../shell/main.c:145
 msgid "Print the playing song track and exit"
 msgstr "ਚੱਲ ਰਿਹਾ ਗੀਤ ਛਾਪੋ ਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:144
+#: ../shell/main.c:146
 msgid "Print the playing song genre and exit"
 msgstr "ਚੱਲ ਰਹੀ ਗੀਤ ਧੁਨ ਛਾਪੋ ਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:145
+#: ../shell/main.c:147
 msgid "Print the playing song URI and exit"
 msgstr "ਚੱਲ ਰਹੇ ਗੀਤ ਦਾ URI ਛਾਪੋ ਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 msgid "Print the playing song length in seconds and exit"
 msgstr "ਗੀਤ ਚਲਾਉਣ ਦੀ ਲੰਬਾਈ ਸਕਿੰਟਾਂ ਵਿੱਚ ਛਾਪੋ ਅਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:148
+#: ../shell/main.c:150
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "ਗੀਤ ਚਲਾਉਣ ਲਈ ਮੌਜੂਦਾ ਲੱਗਾ ਨਿਰਧਾਰਿਤ ਸਮਾਂ ਛਾਪੋ ਅਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:149
+#: ../shell/main.c:151
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "ਸੰਭਵ ਹੈ ਤਾਂ ਚਲਾਉਣ ਲਈ ਨਿਰਧਾਰਿਤ ਸਮਾਂ ਖੋਜੋ ਅਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:150
+#: ../shell/main.c:152
 msgid "Seek by the specified amount if possible and exit"
 msgstr "ਸੰਭਵ ਹੈ ਤਾਂ ਖਾਸ ਮਾਤਰਾ ਨਾਲ ਛੱਡੋ ਅਤੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:151
+#: ../shell/main.c:153
 msgid "Set the rating of the currently playing song and exit"
 msgstr "ਮੌਜੂਦਾ ਚੱਲ ਰਹੇ ਗੀਤ ਦੀ ਰੇਟਿੰਗ ਸੈਟ ਕਰਕੇ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:153
+#: ../shell/main.c:155
 msgid "Toggle play/pause mode"
 msgstr "ਚਲਾਉ/ਰੋਕੋ ਮੋਡ ਤਬਦੀਲ"
 
-#: ../shell/main.c:154
+#: ../shell/main.c:156
 msgid "Pause playback if currently playing"
 msgstr "ਜੇਕਰ ਇਸ ਸਮੇਂ ਸੰਗੀਤ ਚੱਲ ਰਿਹਾ ਹੈ ਤਾਂ ਰੋਕੋ"
 
-#: ../shell/main.c:155
+#: ../shell/main.c:157
 msgid "Resume playback if currently paused"
 msgstr "ਜੇਕਰ ਇਸ ਸਮੇਂ ਸੰਗੀਤ ਰੁਕਿਆ ਤਾਂ ਚਲਾਉ"
 
-#: ../shell/main.c:156
+#: ../shell/main.c:158
 msgid "Focus the running player"
 msgstr "ਚੱਲ ਰਹੇ ਪਲੇਅਰ 'ਤੇ ਕੇਂਦਰਿਤ"
 
-#: ../shell/main.c:157
+#: ../shell/main.c:159
 msgid "Jump to previous song"
 msgstr "ਪਿੱਛੇ ਗੀਤ 'ਤੇ ਜਾਉ"
 
-#: ../shell/main.c:158
+#: ../shell/main.c:160
 msgid "Jump to next song"
 msgstr "ਅੱਗੇ ਗੀਤ 'ਤੇ ਜਾਉ"
 
-#: ../shell/main.c:160
+#: ../shell/main.c:162
 msgid "Toggle shuffling"
 msgstr "ਰਲਵਾਂ ਤਬਦੀਲ"
 
-#: ../shell/main.c:161
+#: ../shell/main.c:163
 msgid "Toggle repeat"
 msgstr "ਦੁਹਰਾਉ ਤਬਦੀਲ"
 
-#: ../shell/main.c:163
+#: ../shell/main.c:165
 msgid "Set the volume level"
 msgstr "ਆਵਾਜ਼ ਪੱਧਰ ਸੈਟ"
 
-#: ../shell/main.c:164
+#: ../shell/main.c:166
 msgid "Mute or unmute playback"
 msgstr "ਸੰਗੀਤ ਚੁੱਪ ਜਾਂ ਨਾ-ਚੁੱਪ"
 
-#: ../shell/main.c:165
+#: ../shell/main.c:167
 msgid "Change visibility of the main Rhythmbox window"
 msgstr "ਮੁੱਖ ਰੀਥਮਬਾਕਸ ਝਰੋਖੇ ਦੀ ਦਿੱਖ ਤਬਦੀਲ"
 
-#: ../shell/main.c:168
+#: ../shell/main.c:170
 msgid "Enable debugging code"
 msgstr "ਡੀਬੱਗਿੰਗ ਕੋਡ ਯੋਗ"
 
-#: ../shell/main.c:169
+#: ../shell/main.c:171
 msgid "Do not update the library"
 msgstr "ਲਾਇਬਰੇਰੀ ਅੱਪਡੇਟ ਨਾ ਕਰੋ"
 
-#: ../shell/main.c:170
+#: ../shell/main.c:172
 msgid "Do not register the shell"
 msgstr "ਸ਼ੈੱਲ ਰਜਿਸਟਰ ਨਾ ਕਰੋ"
 
-#: ../shell/main.c:171
+#: ../shell/main.c:173
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "ਕੋਈ ਡਾਟਾ ਸਥਾਈ ਰੂਪ ਵਿੱਚ ਨਾ ਸੰਭਾਲੋ (ਭਾਵ --no-registration ਨਹੀ)"
 
-#: ../shell/main.c:172
+#: ../shell/main.c:174
 msgid "Path for database file to use"
 msgstr "ਵਰਤਣ ਲਈ ਡਾਟਾਬੇਸ ਫਾਇਲ ਲਈ ਮਾਰਗ"
 
-#: ../shell/main.c:173
+#: ../shell/main.c:175
 msgid "Quit Rhythmbox"
 msgstr "ਰੀਥਮਬਾਕਸ ਬੰਦ ਕਰੋ"
 
-#: ../shell/main.c:204 ../widgets/rb-druid.c:223
+#: ../shell/main.c:206 ../widgets/rb-druid.c:190
 msgid "Rhythmbox"
 msgstr "ਰੀਥਮਬਾਕਸ"
 
@@ -994,290 +1026,311 @@ msgstr "ਰੀਥਮਬਾਕਸ"
 msgid "Audioscrobbler"
 msgstr "ਆਡੀਓਸਕਰੋਬਰ"
 
-#: ../shell/rb-play-order.c:204
+#: ../shell/rb-play-order.c:269
 msgid "Linear"
 msgstr "ਲਗਾਤਾਰ"
 
-#: ../shell/rb-play-order.c:205
+#: ../shell/rb-play-order.c:270
 msgid "Linear looping"
 msgstr "ਰੇਖਿਕ ਚੱਕਰ"
 
-#: ../shell/rb-play-order.c:206
+#: ../shell/rb-play-order.c:271
 msgid "Shuffle"
 msgstr "ਰਲਵਾਂ"
 
-#: ../shell/rb-play-order.c:207
+#: ../shell/rb-play-order.c:272
 msgid "Random with equal weights"
 msgstr "ਸਮਾਨ ਰੂਪ ਨਾਲ ਬੇਤਰਤੀਬ"
 
-#: ../shell/rb-play-order.c:208
+#: ../shell/rb-play-order.c:273
 msgid "Random by time since last play"
 msgstr "ਆਖਰੀ ਵਾਰ ਚਲਾਉਣ 'ਤੇ ਸਮੇਂ ਨਾਲ ਬੇਤਰਤੀਬ"
 
-#: ../shell/rb-play-order.c:209
+#: ../shell/rb-play-order.c:274
 msgid "Random by rating"
 msgstr "ਰੇਟ ਨਾਲ ਬੇਤਰਤੀਬ"
 
-#: ../shell/rb-play-order.c:210
+#: ../shell/rb-play-order.c:275
 msgid "Random by time since last play and rating"
 msgstr "ਸਮੇਂ ਨਾਲ ਬੇਤਰਤੀਬ, ਜਦੋਂ ਕਿ ਆਖਰੀ ਵਾਰ ਚਲਾਇਆ ਅਤੇ ਰੇਟਿੰਗ ਸੀ"
 
+#: ../shell/rb-play-order.c:276
+msgid "Linear, removing entries once played"
+msgstr "ਰੇਖਿਕ, ਇੱਕ ਵਾਰ ਚਲਾਏ ਗਾਣੇ ਹਟਾ ਦਿਓ"
+
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:146
+#: ../shell/rb-playlist-manager.c:148
 msgid "_Playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ(_P)"
 
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:150
 msgid "_New Playlist"
 msgstr "ਨਵੀਂ ਸੰਗੀਤ-ਸੂਚੀ(_N)"
 
-#: ../shell/rb-playlist-manager.c:149
+#: ../shell/rb-playlist-manager.c:151
 msgid "Create a new playlist"
 msgstr "ਇੱਕ ਨਵੀਂ ਸੰਗੀਤ-ਸੂਚੀ ਬਣਾਉ"
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:153
 msgid "New _Automatic Playlist..."
 msgstr "ਨਵੀਂ ਆਟੋਮੈਟਿਕ ਸੰਗੀਤ-ਸੂਚੀ(_A)..."
 
-#: ../shell/rb-playlist-manager.c:152
+#: ../shell/rb-playlist-manager.c:154
 msgid "Create a new automatically updating playlist"
 msgstr "ਇੱਕ ਆਟੋਮੈਟਿਕ ਅੱਪਡੇਟ ਸੰਗੀਤ-ਸੂਚੀ ਬਣਾਓ"
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:156
 msgid "_Load from File..."
 msgstr "ਫਾਇਲ ਤੋਂ ਲੋਡ(_L)..."
 
-#: ../shell/rb-playlist-manager.c:155
+#: ../shell/rb-playlist-manager.c:157
 msgid "Choose a playlist to be loaded"
 msgstr "ਲੋਡ ਕਰਨ ਲਈ ਗੀਤ-ਸੂਚੀ ਚੁਣੋ"
 
-#: ../shell/rb-playlist-manager.c:157
+#: ../shell/rb-playlist-manager.c:159
 msgid "_Save to File..."
 msgstr "ਫਾਇਲ 'ਚ ਸੰਭਾਲੋ(_S)..."
 
-#: ../shell/rb-playlist-manager.c:158
+#: ../shell/rb-playlist-manager.c:160
 msgid "Save a playlist to a file"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਨੂੰ ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਸੰਭਾਲੋ"
 
-#: ../shell/rb-playlist-manager.c:160
+#: ../shell/rb-playlist-manager.c:162
 msgid "_Create Audio CD..."
 msgstr "ਆਡੀਓ _CD ਬਣਾਓ..."
 
-#: ../shell/rb-playlist-manager.c:161
+#: ../shell/rb-playlist-manager.c:163
 msgid "Create an audio CD from playlist"
 msgstr "ਗੀਤ-ਸੂਚੀ ਤੋਂ ਆਡੀਓ CD ਬਣਾਉ"
 
-#: ../shell/rb-playlist-manager.c:163
+#: ../shell/rb-playlist-manager.c:165
 msgid "_Rename"
 msgstr "ਨਾਂ-ਤਬਦੀਲ(_R)"
 
-#: ../shell/rb-playlist-manager.c:164
+#: ../shell/rb-playlist-manager.c:166
 msgid "Rename playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਨਾਂ-ਤਬਦੀਲ"
 
-#: ../shell/rb-playlist-manager.c:166 ../shell/rb-shell-clipboard.c:113
+#: ../shell/rb-playlist-manager.c:168 ../shell/rb-shell-clipboard.c:126
 msgid "_Delete"
 msgstr "ਹਟਾਓ(_D)"
 
-#: ../shell/rb-playlist-manager.c:167
+#: ../shell/rb-playlist-manager.c:169
 msgid "Delete playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਹਟਾਓ"
 
-#: ../shell/rb-playlist-manager.c:169
+#: ../shell/rb-playlist-manager.c:171
 msgid "_Edit..."
 msgstr "ਸੋਧ(_E)..."
 
-#: ../shell/rb-playlist-manager.c:170
+#: ../shell/rb-playlist-manager.c:172
 msgid "Change this automatic playlist"
 msgstr "ਇਸ ਸਵੈ-ਚਾਲਤ ਗੀਤ-ਸੂਚੀ ਨੂੰ ਤਬਦੀਲ ਕਰੋ"
 
-#: ../shell/rb-playlist-manager.c:627
+#: ../shell/rb-playlist-manager.c:623
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਫਾਇਲ ਵਿੱਚ ਗਲਤੀ ਹੈ ਜਾਂ ਇਹ ਨਿਕਾਰਾ ਹੈ"
 
-#: ../shell/rb-playlist-manager.c:1022
+#: ../shell/rb-playlist-manager.c:978
+msgid "Untitled Playlist"
+msgstr "ਬਿਨਾਂ-ਨਾਂ ਸੰਗੀਤ-ਸੂਚੀ"
+
+#: ../shell/rb-playlist-manager.c:1167
 msgid "Couldn't read playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਨੂੰ ਪੜਿਆ ਨਹੀ ਜਾ ਸਕਦਾ ਹੈ"
 
-#: ../shell/rb-playlist-manager.c:1037
+#: ../shell/rb-playlist-manager.c:1182
 msgid "Load Playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਲੋਡ"
 
-#: ../shell/rb-playlist-manager.c:1075
+#: ../shell/rb-playlist-manager.c:1220
 msgid "Save Playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਸੰਭਾਲੋ"
 
-#: ../shell/rb-removable-media-manager.c:122
+#: ../shell/rb-removable-media-manager.c:127
 msgid "_Eject"
 msgstr "ਬਾਹਰ ਕੱਢੋ(_E)"
 
-#: ../shell/rb-removable-media-manager.c:123
+#: ../shell/rb-removable-media-manager.c:128
 msgid "Eject this medium"
 msgstr "ਇਹ ਮੀਡਿਆ ਬਾਹਰ ਕੱਢੋ"
 
-#: ../shell/rb-removable-media-manager.c:125
+#: ../shell/rb-removable-media-manager.c:130
 msgid "_Scan Removable Media"
 msgstr "ਹਟਾਉਣ ਯੋਗ ਮੀਡਿਏ ਦੀ ਜਾਂਚ ਕਰੋ(_S)"
 
-#: ../shell/rb-removable-media-manager.c:126
+#: ../shell/rb-removable-media-manager.c:131
 msgid "Scan for new Removable Media"
 msgstr "ਨਵੇਂ ਹਟਾਉਣਯੋਗ ਮੀਡਿਆ ਦੀਂ ਜਾਂਚ"
 
-#: ../shell/rb-shell-clipboard.c:98
+#: ../shell/rb-shell-clipboard.c:111
 msgid "Select _All"
 msgstr "ਸਭ ਚੁਣੋ(_A)"
 
-#: ../shell/rb-shell-clipboard.c:99
+#: ../shell/rb-shell-clipboard.c:112
 msgid "Select all songs"
 msgstr "ਸਭ ਗੀਤ ਚੁਣੋ"
 
-#: ../shell/rb-shell-clipboard.c:101
+#: ../shell/rb-shell-clipboard.c:114
 msgid "D_eselect All"
 msgstr "ਸਭ ਨਾ-ਚੁਣੇ(_e)"
 
-#: ../shell/rb-shell-clipboard.c:102
+#: ../shell/rb-shell-clipboard.c:115
 msgid "Deselect all songs"
 msgstr "ਸਭ ਗੀਤ ਅਣ-ਚੁਣੇ"
 
-#: ../shell/rb-shell-clipboard.c:104
+#: ../shell/rb-shell-clipboard.c:117
 msgid "Cu_t"
 msgstr "ਕੱਟੋ(_t)"
 
-#: ../shell/rb-shell-clipboard.c:105
+#: ../shell/rb-shell-clipboard.c:118
 msgid "Cut selection"
 msgstr "ਚੋਣ ਕੱਟੋ"
 
-#: ../shell/rb-shell-clipboard.c:107
+#: ../shell/rb-shell-clipboard.c:120
 msgid "_Copy"
 msgstr "ਨਕਲ(_C)"
 
-#: ../shell/rb-shell-clipboard.c:108
+#: ../shell/rb-shell-clipboard.c:121
 msgid "Copy selection"
 msgstr "ਚੋਣ ਦੀ ਨਕਲ"
 
-#: ../shell/rb-shell-clipboard.c:110
+#: ../shell/rb-shell-clipboard.c:123
 msgid "_Paste"
 msgstr "ਚੇਪੋ(_P)"
 
-#: ../shell/rb-shell-clipboard.c:111
+#: ../shell/rb-shell-clipboard.c:124
 msgid "Paste selection"
 msgstr "ਚੋਣ ਚਿਪਕਾਓ"
 
-#: ../shell/rb-shell-clipboard.c:114
+#: ../shell/rb-shell-clipboard.c:127 ../shell/rb-shell-clipboard.c:137
 msgid "Delete selection"
 msgstr "ਚੋਣ ਹਟਾਓ"
 
-#: ../shell/rb-shell-clipboard.c:116
+#: ../shell/rb-shell-clipboard.c:129
 msgid "_Move To Trash"
 msgstr "ਰੱਦੀ ਵਿੱਚ ਭੇਜੋ(_M)"
 
-#: ../shell/rb-shell-clipboard.c:117
+#: ../shell/rb-shell-clipboard.c:130
 msgid "Move selection to the trash"
 msgstr "ਚੋਣ ਨੂੰ ਰੱਦੀ ਵਿੱਚ ਭੇਜੋ"
 
-#: ../shell/rb-shell-player.c:242
-msgid "P_revious"
-msgstr "ਪਿੱਛੇ(_r)"
+#: ../shell/rb-shell-clipboard.c:133
+msgid "Add _to Play Queue"
+msgstr "ਚਲਾਉਣ ਲਈ ਕਤਾਰ 'ਚ ਜੋੜੋ(_t)"
 
-#: ../shell/rb-shell-player.c:243
-msgid "Start playing the previous song"
-msgstr "ਪਿਛਲਾ ਗੀਤ ਚਲਾਉਣਾ ਸ਼ੁਰੂ ਕਰੋ"
+#: ../shell/rb-shell-clipboard.c:134
+msgid "Add the selected songs to the play queue"
+msgstr "ਕਤਾਰ ਚਲਾਉਣ ਲਈ ਚੁਣੇ ਗੀਤ ਜੋੜੋ"
 
-#: ../shell/rb-shell-player.c:245
-msgid "_Next"
-msgstr "ਅੱਗੇ(_N)"
+#: ../shell/rb-shell-clipboard.c:136
+msgid "Delete"
+msgstr "ਹਟਾਓ"
 
-#: ../shell/rb-shell-player.c:246
-msgid "Start playing the next song"
-msgstr "ਅਗਲਾ ਗੀਤ ਚਲਾਉਣਾ ਸ਼ੁਰੂ ਕਰੋ"
-
-#: ../shell/rb-shell-player.c:248 ../sources/rb-podcast-source.c:278
+#: ../shell/rb-shell-clipboard.c:140 ../shell/rb-shell-clipboard.c:143
+#: ../sources/rb-podcast-source.c:288
 msgid "_Properties"
 msgstr "ਵਿਸ਼ੇਸਤਾ(_P)"
 
-#: ../shell/rb-shell-player.c:249
+#: ../shell/rb-shell-clipboard.c:141 ../shell/rb-shell-clipboard.c:144
 msgid "Show information on the selected song"
 msgstr "ਚੁਣੇ ਗੀਤਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੇਖਾਓ"
 
-#: ../shell/rb-shell-player.c:257
+#: ../shell/rb-shell-player.c:234
+msgid "P_revious"
+msgstr "ਪਿੱਛੇ(_r)"
+
+#: ../shell/rb-shell-player.c:235
+msgid "Start playing the previous song"
+msgstr "ਪਿਛਲਾ ਗੀਤ ਚਲਾਉਣਾ ਸ਼ੁਰੂ ਕਰੋ"
+
+#: ../shell/rb-shell-player.c:237
+msgid "_Next"
+msgstr "ਅੱਗੇ(_N)"
+
+#: ../shell/rb-shell-player.c:238
+msgid "Start playing the next song"
+msgstr "ਅਗਲਾ ਗੀਤ ਚਲਾਉਣਾ ਸ਼ੁਰੂ ਕਰੋ"
+
+#: ../shell/rb-shell-player.c:246
 msgid "_Play"
 msgstr "ਚਲਾਓ(_P)"
 
-#: ../shell/rb-shell-player.c:258 ../shell/rb-shell-player.c:2299
+#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2565
 msgid "Start playback"
 msgstr "ਚਲਾਉਣਾ ਸ਼ੁਰੂ"
 
-#: ../shell/rb-shell-player.c:260
+#: ../shell/rb-shell-player.c:249
 msgid "Sh_uffle"
 msgstr "ਰਲਵਾਂ(_u)"
 
-#: ../shell/rb-shell-player.c:261
+#: ../shell/rb-shell-player.c:250
 msgid "Play songs in a random order"
 msgstr "ਗੀਤਾਂ ਨੂੰ ਬੇਤਰਤੀਬ ਨਾਲ ਚਲਾਉ"
 
-#: ../shell/rb-shell-player.c:263
+#: ../shell/rb-shell-player.c:252
 msgid "_Repeat"
 msgstr "ਦੁਹਰਾਉ(_R)"
 
-#: ../shell/rb-shell-player.c:264
+#: ../shell/rb-shell-player.c:253
 msgid "Play first song again after all songs are played"
 msgstr "ਸਭ ਗੀਤ ਚਲਾਉ ਬਾਅਦ ਪਹਿਲਾਂ ਗੀਤ ਫਿਰ ਚਲਾਉ"
 
-#: ../shell/rb-shell-player.c:266
+#: ../shell/rb-shell-player.c:255
 msgid "_Song Position Slider"
-msgstr ""
+msgstr "ਗੀਤ ਸਥਿਤੀ ਬਾਹੀ(_S)"
 
-#: ../shell/rb-shell-player.c:267
+#: ../shell/rb-shell-player.c:256
 msgid "Change the visibility of the song position slider"
-msgstr ""
+msgstr "ਸੰਗੀਤ ਸਥਿਤੀ ਬਾਹੀ ਨੂੰ ਦਿੱਖ ਤਬਦੀਲ"
 
-#: ../shell/rb-shell-player.c:517
+#: ../shell/rb-shell-player.c:534
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "ਪਲੇਅਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ: %s"
 
-#: ../shell/rb-shell-player.c:1156
-msgid "No previous song"
-msgstr "ਕੋਈ ਪਿਛਲਾ ਗੀਤ ਨਹੀਂ"
-
-#: ../shell/rb-shell-player.c:1167
+#: ../shell/rb-shell-player.c:1259
 msgid "Not currently playing"
 msgstr "ਕੋਈ ਚੱਲ ਰਿਹਾ ਗੀਤ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:1186
+#: ../shell/rb-shell-player.c:1293
+msgid "No previous song"
+msgstr "ਕੋਈ ਪਿਛਲਾ ਗੀਤ ਨਹੀਂ"
+
+#: ../shell/rb-shell-player.c:1345
 msgid "No next song"
 msgstr "ਅੱਗੇ ਕੋਈ ਗੀਤ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:1262
+#: ../shell/rb-shell-player.c:1435
 #, c-format
 msgid "Couldn't start playback: %s"
 msgstr "ਸੰਗੀਤ ਨੂੰ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ: %s"
 
-#: ../shell/rb-shell-player.c:1758
+#: ../shell/rb-shell-player.c:2036
 msgid "Couldn't stop playback"
 msgstr "ਗੀਤ ਨੂੰ ਰੋਕਿਆ ਨਹੀ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../shell/rb-shell-player.c:1812
+#: ../shell/rb-shell-player.c:2092
 msgid "Current song is not seekable"
 msgstr "ਮੌਜੂਦਾ ਗੀਤ ਪ੍ਰਾਪਤੀਯੋਗ ਨਹੀਂ"
 
-#: ../shell/rb-shell-player.c:1877
+#: ../shell/rb-shell-player.c:2155
 msgid "Stream error"
 msgstr "ਸਟਰੀਮ ਗਲਤੀ"
 
-#: ../shell/rb-shell-player.c:1878
+#: ../shell/rb-shell-player.c:2156
 msgid "Unexpected end of stream!"
 msgstr "ਸਟਰੀਮ ਦਾ ਅਣ-ਚਾਹਿਆ ਅੰਤ!"
 
-#: ../shell/rb-shell-player.c:2143
+#: ../shell/rb-shell-player.c:2409
 msgid "Buffering"
 msgstr "ਬਫ਼ਰ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: ../shell/rb-shell-player.c:2297
+#: ../shell/rb-shell-player.c:2563
 msgid "Stop playback"
 msgstr "ਚਲਾਉਣਾ ਬੰਦ ਕਰੋ"
 
-#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:1865
+#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2101
 msgid "Couldn't display help"
 msgstr "ਸਹਾਇਤਾ ਵੇਖਾਈ ਨਹੀ ਜਾ ਸਕਦੀ ਹੈ"
 
@@ -1293,178 +1346,203 @@ msgstr "ਸਧਾਰਨ"
 msgid "Sharing"
 msgstr "ਸਾਂਝ"
 
-#: ../shell/rb-shell.c:395
+#: ../shell/rb-shell.c:441
 msgid "_Music"
 msgstr "ਸੰਗੀਤ(_M)"
 
-#: ../shell/rb-shell.c:396
+#: ../shell/rb-shell.c:442
 msgid "_Edit"
 msgstr "ਸੋਧ(_E)"
 
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:443
 msgid "_View"
 msgstr "ਵੇਖੋ(_V)"
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:444
 msgid "_Control"
 msgstr "ਕੰਟਰੋਲ(_C)"
 
-#: ../shell/rb-shell.c:399
+#: ../shell/rb-shell.c:445
 msgid "_Help"
 msgstr "ਸਹਾਇਤਾ(_H)"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:447
 msgid "New Internet _Radio Station"
 msgstr "ਨਵਾਂ ਇੰਟਰਨੈੱਟ ਰੇਡੀਓ ਸਟੇਸ਼ਨ(_R)"
 
-#: ../shell/rb-shell.c:402
+#: ../shell/rb-shell.c:448
 msgid "Create a new Internet Radio station"
 msgstr "ਨਵਾਂ ਇੰਟਰਨੈਟ ਰੇਡੀਓ ਸਟੇਸ਼ਨ ਬਣਾਉ"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:450
 msgid "_New Podcast Feed"
 msgstr "ਨਵੀਂ ਪੋਸਟ-ਕਾਸਟ ਫੀਡ(_N)"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:451
 msgid "Subscribe to a new Podcast Feed"
 msgstr "ਨਵੇਂ ਪੋਸਟ-ਕਾਸਟ ਫੀਡ ਲਈ ਮੈਂਬਰੀ"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:454
 msgid "_Import Folder..."
 msgstr "ਫੋਲਡਰ ਅਯਾਤ(_I)..."
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:455
 msgid "Choose folder to be added to the Library"
 msgstr "ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਸ਼ਾਮਿਲ ਕਰਨ ਲਈ ਡਾਇਰੈਕਟਰੀ ਚੁਣੋ"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:457
 msgid "Import _File..."
 msgstr "ਫਾਇਲ ਅਯਾਤ(_F)..."
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:458
 msgid "Choose file to be added to the Library"
 msgstr "ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਸ਼ਾਮਿਲ ਕਰਨ ਲਈ ਫਾਇਲਾਂ ਚੁਣੋ"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:460
 msgid "Import _Audio CD..."
 msgstr "ਆਡੀਓ CD ਆਯਾਤ(_A)..."
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:461
 msgid "Extract and import songs from a CD"
 msgstr "ਸੀਡੀ ਤੋ ਗੀਤ ਖੋਲ੍ਹੋ ਅਤੇ ਆਯਾਤ ਕਰੋ"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:463
 msgid "_About"
 msgstr "ਇਸ ਬਾਰੇ(_A)"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:464
 msgid "Show information about the music player"
 msgstr "ਸੰਗੀਤ-ਪਲੇਅਰ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵਿਖਾਉ"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:466
 msgid "_Contents"
 msgstr "ਭਾਗ(_C)"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:467
 msgid "Display music player help"
 msgstr "ਸੰਗੀਤ ਪਲੇਅਰ ਸਹਾਇਤਾ ਵੇਖਾਉ"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:469
 msgid "_Close"
 msgstr "ਬੰਦ ਕਰੋ(_C)"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:470
 msgid "Hide the music player window"
 msgstr "ਸੰਗੀਤ-ਪਲੇਅਰ ਝਰੋਖਾ ਓਹਲੇ"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:472
 msgid "_Quit"
 msgstr "ਬੰਦ ਕਰੋ(_Q)"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:473
 msgid "Quit the music player"
 msgstr "ਸੰਗੀਤ-ਪਲੇਅਰ ਨੂੰ ਬੰਦ ਕਰੋ"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:475
 msgid "Prefere_nces"
 msgstr "ਮੇਰੀ ਪਸੰਦ(_n)"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:476
 msgid "Edit music player preferences"
 msgstr "ਸੰਗੀਤ ਪਲੇਅਰ ਦੀ ਪਸੰਦ ਸੋਧ"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:478
 msgid "Show _All"
 msgstr "ਸਭ ਵੇਖਾਓ(_A)"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:479
 msgid "Show all items in this music source"
 msgstr "ਇਸ ਸੰਗੀਤ ਸਰੋਤ ਵਿੱਚ ਸਭ ਇਕਾਈਆਂ ਵੇਖਾਓ"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:481
 msgid "_Jump to Playing Song"
 msgstr "ਚੱਲ ਰਹੇ ਗੀਤ 'ਤੇ ਜਾਓ(_J)"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:482
 msgid "Scroll the view to the currently playing song"
 msgstr "ਮੌਜੂਦਾ ਚੱਲ ਰਹੇ ਗੀਤ ਦੀ ਝਲਕ ਘੁੰਮਾਓ"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:484
 msgid "_Disconnect"
 msgstr "ਕੁਨੈਕਸ਼ਨ ਬੰਦ(_D)"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:485
 msgid "Disconnect from selected source"
 msgstr "ਚੁਣੇ ਸਰੋਤ ਤੋਂ ਕੁਨੈਕਸ਼ਨ ਬੰਦ ਕਰੋ"
 
-#: ../shell/rb-shell.c:446
+#: ../shell/rb-shell.c:492
 msgid "Source _List"
 msgstr "ਸਰੋਤ-ਸੂਚੀ(_L)"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:493
 msgid "Change the visibility of the source list"
 msgstr "ਸਰੋਤ ਸੂਚੀ ਦੀ ਝਲਕ ਤਬਦੀਲ"
 
-#: ../shell/rb-shell.c:449
+#: ../shell/rb-shell.c:495
 msgid "_Toolbar"
 msgstr "ਸੰਦ-ਪੱਟੀ(_T)"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:496
 msgid "Change the visibility of the toolbar"
 msgstr "ਹਾਲਤ-ਪੱਟੀ ਦੀ ਦਿੱਖ ਤਬਦੀਲ"
 
-#: ../shell/rb-shell.c:452
+#: ../shell/rb-shell.c:498
 msgid "_Small Display"
 msgstr "ਛੋਟਾ ਦਰਿਸ਼(_S)"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:499
 msgid "Make the main window smaller"
 msgstr "ਮੁੱਖ ਝਰੋਖੇ ਨੂੰ ਛੋਟਾ ਬਣਾਉ"
 
-#: ../shell/rb-shell.c:1130
+#: ../shell/rb-shell.c:501
+msgid "_Fullscreen"
+msgstr "ਪੂਰੇ ਪਰਦੇ ਤੇ(_F)"
+
+#: ../shell/rb-shell.c:502
+msgid "Expand the window to fill the screen"
+msgstr "ਝਰੋਖੇ ਨੂੰ ਪੂਰੇ ਪਰਦੇ ਲਈ ਫੈਲਾਓ"
+
+#: ../shell/rb-shell.c:504
+msgid "_Queue as Sidebar"
+msgstr "ਕਾਤਰ ਬਾਹੀ ਵਾਂਗ(_Q)"
+
+#: ../shell/rb-shell.c:505
+msgid "Change whether the queue is visible as a source or a sidebar"
+msgstr "ਦੱਸੋ ਕਿ ਕਤਾਰ ਇੱਕ ਸਰੋਤ ਵਾਂਗ ਦਿੱਸੇ ਜਾਂ ਇੱਕ ਬਾਹੀ ਵਾਂਗ"
+
+#: ../shell/rb-shell.c:507
+msgid "S_tatusbar"
+msgstr "ਹਾਲਤ ਪੱਟੀ(_t)"
+
+#: ../shell/rb-shell.c:508
+msgid "Change the visibility of the statusbar"
+msgstr "ਹਾਲਤ-ਪੱਟੀ ਦੀ ਦਿੱਖ ਤਬਦੀਲ"
+
+#: ../shell/rb-shell.c:1281
 msgid "Change the music volume"
 msgstr "ਸੰਗੀਤ ਆਵਾਜ਼ ਤਬਦੀਲ"
 
-#: ../shell/rb-shell.c:1449
+#: ../shell/rb-shell.c:1599
 msgid "Error while saving song information"
 msgstr "ਸੰਗੀਤ ਜਾਣਕਾਰੀ ਸੰਭਾਲਣ ਦੌਰਾਨ ਗਲਤੀ"
 
 #. Translators: Trackname by Artist
-#: ../shell/rb-shell.c:1612
+#: ../shell/rb-shell.c:1776
 #, c-format
 msgid "%s by %s"
 msgstr "%2s ਵਲੋਂ %1s"
 
-#: ../shell/rb-shell.c:1614 ../widgets/rb-entry-view.c:1585
+#: ../shell/rb-shell.c:1778 ../shell/rb-shell.c:1853
+#: ../widgets/rb-entry-view.c:1489
 msgid "Now Playing"
 msgstr "ਹੁਣ ਚੱਲ ਰਿਹਾ ਹੈ"
 
-#: ../shell/rb-shell.c:1692 ../shell/rb-tray-icon.c:192
+#: ../shell/rb-shell.c:1869 ../shell/rb-tray-icon.c:166
 msgid "Not playing"
 msgstr "ਚੱਲ ਨਹੀ ਰਿਹਾ"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1695
+#: ../shell/rb-shell.c:1872
 #, c-format
 msgid ""
 "%s\n"
@@ -1474,7 +1552,7 @@ msgstr ""
 "ਵਿਰਾਮ, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1699
+#: ../shell/rb-shell.c:1876
 #, c-format
 msgid ""
 "%s\n"
@@ -1484,246 +1562,278 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1736
+#: ../shell/rb-shell.c:1915
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (ਵਿਰਾਮ)"
 
-#: ../shell/rb-shell.c:1805
+#: ../shell/rb-shell.c:2018
 msgid "translator_credits"
 msgstr ""
 "ਅਮਨਪ੍ਰੀਤ ਸਿੰਘ ਆਲਮ\n"
 "<aalam@redhat.com>"
 
-#: ../shell/rb-shell.c:1809
+#: ../shell/rb-shell.c:2021
+msgid ""
+"Rhythmbox is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+msgstr ""
+
+#: ../shell/rb-shell.c:2025
+msgid ""
+"Rhythmbox is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+msgstr ""
+
+#: ../shell/rb-shell.c:2029
+msgid ""
+"You should have received a copy of the GNU General Public License\n"
+"along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
+"59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
+msgstr ""
+
+#: ../shell/rb-shell.c:2038
 msgid "Maintainers:"
 msgstr "ਪ੍ਰਬੰਧਕ:"
 
-#: ../shell/rb-shell.c:1812
+#: ../shell/rb-shell.c:2041
 msgid "Former Maintainers:"
 msgstr "ਪਹਿਲੇ ਪ੍ਰਬੰਧਕ:"
 
-#: ../shell/rb-shell.c:1815
+#: ../shell/rb-shell.c:2044
 msgid "Contributors:"
 msgstr "ਯੋਗਦਾਨ:"
 
-#: ../shell/rb-shell.c:1817
+#: ../shell/rb-shell.c:2046
 msgid "Music management and playback software for GNOME."
 msgstr "ਗਨੋਮ ਲਈ ਸੰਗੀਤ ਪ੍ਰਬੰਧਕ ਤੇ ਚਲਾਉਣ ਵਾਲਾ ਸਾਫਟਵੇਅਰ।"
 
-#: ../shell/rb-shell.c:1931
+#: ../shell/rb-shell.c:2171
 msgid "Import Folder into Library"
 msgstr "ਫੋਲਡਰ ਲਾਇਬਰੇਰੀ 'ਚ ਅਯਾਤ"
 
-#: ../shell/rb-shell.c:1953
+#: ../shell/rb-shell.c:2193
 msgid "Import File into Library"
 msgstr "ਫਾਇਲਾਂ ਨੂੰ ਲਾਇਬਰੇਰੀ 'ਚ ਅਯਾਤ"
 
-#: ../shell/rb-shell.c:2003
+#: ../shell/rb-shell.c:2258
 msgid "CD Ripper not found"
 msgstr "CD ਰਿਪਰ ਨਹੀ ਲੱਭਿਆ"
 
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:2259
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "CD ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਤੁਹਾਨੂੰ ਸਾਊਡ-ਜੂਸਰ CD ਰਿਪਰ ਪੈਕੇਜ ਲਾਜ਼ਮੀ ਇੰਸਟਾਲ ਕਰਨਾ ਪਵੇਗਾ।"
 
-#: ../shell/rb-shell.c:2012
+#: ../shell/rb-shell.c:2267
 msgid "Couldn't run CD Ripper"
 msgstr "CD ਰਿਪਰ ਨੂੰ ਚਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: ../shell/rb-shell.c:2013
+#: ../shell/rb-shell.c:2268
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "ਸਾਉਡ-ਜੂਸਰ ਨੂੰ ਚਲਾਉਣ ਵਿੱਚ ਇੱਕ ਗਲਤੀ: %s"
 
-#: ../shell/rb-shell.c:2778 ../shell/rb-shell.c:2823
+#: ../shell/rb-shell.c:3129 ../shell/rb-shell.c:3174
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "ਅਣਜਾਣ ਗੀਤ URL: %s"
 
-#: ../shell/rb-shell.c:2832
+#: ../shell/rb-shell.c:3183
 #, c-format
 msgid "Unknown property %s"
 msgstr "ਅਣਜਾਣ ਵਿਸ਼ੇਸਤਾ %s"
 
-#: ../shell/rb-shell.c:2842
+#: ../shell/rb-shell.c:3193
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "ਵਿਸ਼ੇਸਤਾ %2s ਲਈ ਅਣਜਾਣ ਵਿਸ਼ੇਸਤਾ ਕਿਸਮ %1s"
 
-#: ../shell/rb-source-header.c:101
+#: ../shell/rb-source-header.c:99
 msgid "_Browser"
 msgstr "ਝਲਕਾਰਾ(_B)"
 
-#: ../shell/rb-source-header.c:102
+#: ../shell/rb-source-header.c:100
 msgid "Change the visibility of the browser"
 msgstr "ਝਲਕਾਰੇ ਦੀ ਦਿੱਖ ਤਬਦੀਲ"
 
-#: ../shell/rb-source-header.c:157
+#: ../shell/rb-source-header.c:155
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "ਸੰਗੀਤ ਵਿਖਾਉਣ ਲਈ ਸ਼ੈਲੀ, ਕਲਾਕਾਰ, ਐਲਬਮ, ਜਾਂ ਸਿਰਲੇਖ ਅਨੁਸਾਰ ਫਿਲਟਰ ਕਰੋ"
 
-#: ../shell/rb-source-header.c:166
+#: ../shell/rb-source-header.c:164
 msgid "Show _Browser"
 msgstr "ਝਲਕਾਰਾ ਵੇਖਾਓ(_B)"
 
-#: ../shell/rb-source-header.c:167
+#: ../shell/rb-source-header.c:165
 msgid "Hide _Browser"
 msgstr "ਝਲਕਾਰਾ ਉਹਲੇ(_B)"
 
-#: ../shell/rb-statusbar.c:74
-msgid "S_tatusbar"
-msgstr "ਹਾਲਤ ਪੱਟੀ(_t)"
-
-#: ../shell/rb-statusbar.c:75
-msgid "Change the visibility of the statusbar"
-msgstr "ਹਾਲਤ-ਪੱਟੀ ਦੀ ਦਿੱਖ ਤਬਦੀਲ"
-
-#: ../shell/rb-statusbar.c:213
+#: ../shell/rb-statusbar.c:163
 msgid "Loading..."
 msgstr "ਲੋਡਿੰਗ ਜਾਰੀ ਹੈ...."
 
-#: ../shell/rb-tray-icon.c:104
+#: ../shell/rb-tray-icon.c:105
 msgid "_Show Music Player"
 msgstr "ਸੰਗੀਤ ਪਲੇਅਰ ਵੇਖਾਓ(_S)"
 
-#: ../shell/rb-tray-icon.c:105
+#: ../shell/rb-tray-icon.c:106
 msgid "Choose music to play"
 msgstr "ਚਲਾਉਣ ਸਮੇਂ ਸੰਗੀਤ ਚੁਣੋ"
 
-#: ../sources/rb-audiocd-source.c:220
+#: ../shell/rb-tray-icon.c:108
+msgid "Show _Notifications"
+msgstr "ਸੂਚਨਾਵਾਂ ਵੇਖਾਓ(_N)"
+
+#: ../shell/rb-tray-icon.c:109
+msgid "Show notifications of song changes and other events"
+msgstr "ਗੀਤ ਤਬਦੀਲੀ ਅਤੇ ਹੋਰ ਘਟਨਾਵਾਂ ਲਈ ਸੂਚਨਾ ਵੇਖਾਓ"
+
+#: ../sources/rb-audiocd-source.c:221
 #, c-format
 msgid "Track %u"
 msgstr "ਟਰੈਕ %u"
 
-#: ../sources/rb-audiocd-source.c:302 ../sources/rb-audiocd-source.c:312
-#: ../sources/rb-audiocd-source.c:320 ../sources/rb-audiocd-source.c:472
+#: ../sources/rb-audiocd-source.c:304 ../sources/rb-audiocd-source.c:314
+#: ../sources/rb-audiocd-source.c:322 ../sources/rb-audiocd-source.c:495
 msgid "Couldn't load Audio CD"
 msgstr "ਆਡੀਓ CD ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ"
 
-#: ../sources/rb-audiocd-source.c:303 ../sources/rb-audiocd-source.c:313
-msgid "Rhythmbox couldn't access the cd."
-msgstr "ਰੀਥਮਬਾਕਸ CD ਨੂੰ ਵਰਤ ਨਹੀਂ ਸਕਿਆ ਹੈ।"
+#: ../sources/rb-audiocd-source.c:305 ../sources/rb-audiocd-source.c:315
+msgid "Rhythmbox couldn't access the CD."
+msgstr "ਰੀਥਮਬਾਕਸ CD ਨੂੰ ਵਰਤ ਨਹੀਂ ਸਕਿਆ।"
 
-#: ../sources/rb-audiocd-source.c:321
-msgid "Rhythmbox could read the cd information."
+#: ../sources/rb-audiocd-source.c:323
+msgid "Rhythmbox couldn't read the CD information."
 msgstr "ਰੀਥਮਬਾਕਸ CD ਜਾਣਕਾਰੀ ਨੂੰ ਨਹੀਂ ਪੜ ਸਕਿਆ ਹੈ।"
 
-#: ../sources/rb-audiocd-source.c:473
+#: ../sources/rb-audiocd-source.c:496
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "ਰੀਥਮਬਾਕਸ CD ਡਰਾਇਵ ਨੂੰ ਨਹੀਂ ਵਰਤ ਸਕਿਆ ਹੈ।"
 
-#: ../sources/rb-ipod-source.c:140
-msgid "iPod"
-msgstr "iPod"
-
-#: ../sources/rb-iradio-source.c:327 ../sources/rb-library-source.c:583
-#: ../widgets/rb-query-creator-properties.c:64
-#: ../widgets/rb-query-creator-properties.c:90
+#: ../sources/rb-iradio-source.c:331 ../sources/rb-library-source.c:584
+#: ../widgets/rb-query-creator-properties.c:68
+#: ../widgets/rb-query-creator-properties.c:95
 msgid "Genre"
 msgstr "ਸ਼ੈਲੀ"
 
-#: ../sources/rb-iradio-source.c:405
+#: ../sources/rb-iradio-source.c:407
 msgid "Radio"
 msgstr "ਰੇਡੀਓ"
 
-#: ../sources/rb-iradio-source.c:538
+#: ../sources/rb-iradio-source.c:548
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d ਸਟੇਸ਼ਨ"
 msgstr[1] "%d ਸਟੇਸ਼ਨ"
 
-#: ../sources/rb-library-source.c:219
+#: ../sources/rb-library-source.c:213
 msgid "Browse This _Genre"
 msgstr "ਇਹ ਧੁਨ ਦੀ ਝਲਕ(_G)"
 
-#: ../sources/rb-library-source.c:220
+#: ../sources/rb-library-source.c:214
 msgid "Set the browser to view only this genre"
 msgstr "ਇਹ ਧੁਨ ਵੇਖਣ ਲਈ ਝਲਕ ਸੈਟ ਕਰੋ"
 
-#: ../sources/rb-library-source.c:222
+#: ../sources/rb-library-source.c:216
 msgid "Browse This _Artist"
 msgstr "ਇਹ ਕਲਾਕਾਰ ਝਲਕ(_A)"
 
-#: ../sources/rb-library-source.c:223
+#: ../sources/rb-library-source.c:217
 msgid "Set the browser to view only this artist"
 msgstr "ਸਿਰਫ਼ ਇਸ ਕਲਾਕਾਰ ਲਈ ਝਲਕ ਦਿਓ"
 
-#: ../sources/rb-library-source.c:225
+#: ../sources/rb-library-source.c:219
 msgid "Browse This A_lbum"
 msgstr "ਇਹ ਐਲਬਮ ਝਲਕ(_L)"
 
-#: ../sources/rb-library-source.c:226
+#: ../sources/rb-library-source.c:220
 msgid "Set the browser to view only this album"
 msgstr "ਸਿਰਫ਼ ਇਸ ਐਲਬਮ ਦੀ ਝਲਕ ਰੱਖੋ"
 
-#: ../sources/rb-library-source.c:597
-#: ../widgets/rb-query-creator-properties.c:62
-#: ../widgets/rb-query-creator-properties.c:88
+#: ../sources/rb-library-source.c:598
+#: ../widgets/rb-query-creator-properties.c:66
+#: ../widgets/rb-query-creator-properties.c:93
 msgid "Artist"
 msgstr "ਕਲਾਕਾਰ"
 
-#: ../sources/rb-library-source.c:611
-#: ../widgets/rb-query-creator-properties.c:63
-#: ../widgets/rb-query-creator-properties.c:89
+#: ../sources/rb-library-source.c:612
+#: ../widgets/rb-query-creator-properties.c:67
+#: ../widgets/rb-query-creator-properties.c:94
 msgid "Album"
 msgstr "ਐਲਬਮ"
 
-#: ../sources/rb-library-source.c:745
+#: ../sources/rb-library-source.c:746
 msgid "Library"
 msgstr "ਲਾਇਬਰੇਰੀ"
 
-#: ../sources/rb-library-source.c:1288
+#: ../sources/rb-library-source.c:1278
 msgid "Add Location"
 msgstr "ਟਿਕਾਣਾ ਸ਼ਾਮਿਲ"
 
-#: ../sources/rb-library-source.c:1706
+#: ../sources/rb-library-source.c:1690
 msgid "Cannot select library location"
-msgstr ""
+msgstr "ਲਾਇਬਰੇਰੀ ਟਿਕਾਣਾ ਚੁਣਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ"
 
-#: ../sources/rb-library-source.c:1707
+#: ../sources/rb-library-source.c:1691
 msgid ""
 "The root filesystem cannot be chosen as your library location. Please choose "
 "a different location"
 msgstr ""
 
-#: ../sources/rb-playlist-source.c:247 ../widgets/rb-entry-view.c:1288
+#: ../sources/rb-play-queue-source.c:148 ../sources/rb-play-queue-source.c:197
+#: ../sources/rb-play-queue-source.c:302
+msgid "Queued songs"
+msgstr "ਕਤਾਰਬੱਧ ਗੀਤ"
+
+#: ../sources/rb-play-queue-source.c:262 ../widgets/rb-song-display-box.c:99
+msgid "from"
+msgstr "ਤੋਂ"
+
+#: ../sources/rb-play-queue-source.c:262 ../widgets/rb-song-display-box.c:101
+msgid "by"
+msgstr "ਰਾਹੀਂ"
+
+#: ../sources/rb-playlist-source.c:240 ../widgets/rb-entry-view.c:1189
 msgid "Trac_k"
 msgstr "ਟਰੈਕ(_k)"
 
-#: ../sources/rb-playlist-source.c:507
+#: ../sources/rb-playlist-source.c:508
 msgid "Couldn't save playlist"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਨੂੰ ਸੰਭਾਲਿਆ ਨਹੀ ਜਾ ਸਕਿਆ"
 
-#: ../sources/rb-playlist-source.c:558
+#: ../sources/rb-playlist-source.c:559
 msgid "Unable to create audio CD"
 msgstr "ਆਡੀਓ CD ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕੀ"
 
-#: ../sources/rb-playlist-source-recorder.c:264
+#: ../sources/rb-playlist-source-recorder.c:297
 msgid "Maximum possible"
 msgstr "ਵੱਧੋ-ਵੱਧ ਸੰਭਵ"
 
-#: ../sources/rb-playlist-source-recorder.c:312
+#: ../sources/rb-playlist-source-recorder.c:368
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "ਗਲਤ ਰਾਇਟਰ ਜੰਤਰ: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:412
+#: ../sources/rb-playlist-source-recorder.c:468
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d ਮਿੰਟ"
 msgstr[1] "%d ਮਿੰਟ"
 
-#: ../sources/rb-playlist-source-recorder.c:414
+#: ../sources/rb-playlist-source-recorder.c:470
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d ਮਿੰਟ"
 msgstr[1] "%d ਮਿੰਟ"
 
-#: ../sources/rb-playlist-source-recorder.c:417
+#: ../sources/rb-playlist-source-recorder.c:473
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -1731,42 +1841,94 @@ msgstr[0] "%d ਸਕਿੰਟ"
 msgstr[1] "%d ਸਕਿੰਟ"
 
 #. hour:minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:422
+#: ../sources/rb-playlist-source-recorder.c:478
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:425
+#: ../sources/rb-playlist-source-recorder.c:481
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. seconds
-#: ../sources/rb-playlist-source-recorder.c:428
+#: ../sources/rb-playlist-source-recorder.c:484
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../sources/rb-playlist-source-recorder.c:431
+#: ../sources/rb-playlist-source-recorder.c:487
 msgid "0 seconds"
 msgstr "0 ਸਕਿੰਟ"
 
-#: ../sources/rb-playlist-source-recorder.c:450
+#: ../sources/rb-playlist-source-recorder.c:506
 #, c-format
 msgid "About %s left"
 msgstr "%s ਬਾਕੀ"
 
-#: ../sources/rb-playlist-source-recorder.c:478
+#: ../sources/rb-playlist-source-recorder.c:575
+msgid "Could not determine media type because CD drive is busy"
+msgstr "ਮੀਡਿਆ ਕਿਸਮ ਖੋਜੀ ਨਹੀਂ ਜਾ ਸਕੀ ਹੈ, ਕਿਉਕਿ CD ਰੁਝੀ ਹੋਈ ਹੈ"
+
+#: ../sources/rb-playlist-source-recorder.c:577
+msgid "Couldn't open media"
+msgstr "ਮੀਡਿਆ ਖੋਲਿਆ ਨਹੀਂ ਜਾ ਸਿਆ"
+
+#: ../sources/rb-playlist-source-recorder.c:579
+msgid "Unknown Media"
+msgstr "ਅਣਜਾਣ ਮੀਡਿਆ"
+
+#: ../sources/rb-playlist-source-recorder.c:581
+msgid "Commercial CD or Audio CD"
+msgstr "ਵਪਾਰਕ CD ਜਾਂ ਆਡੀਓ CD"
+
+#: ../sources/rb-playlist-source-recorder.c:583
+msgid "CD-R"
+msgstr "CD-R"
+
+#: ../sources/rb-playlist-source-recorder.c:585
+msgid "CD-RW"
+msgstr "CD-RW"
+
+#: ../sources/rb-playlist-source-recorder.c:587
+msgid "DVD"
+msgstr "DVD"
+
+#: ../sources/rb-playlist-source-recorder.c:589
+msgid "DVD-R, or DVD-RAM"
+msgstr "DVD-R, ਜਾਂ DVD-RAM"
+
+#: ../sources/rb-playlist-source-recorder.c:591
+msgid "DVD-RW"
+msgstr "DVD-RW"
+
+#: ../sources/rb-playlist-source-recorder.c:593
+msgid "DVD-RAM"
+msgstr "DVD-RAM"
+
+#: ../sources/rb-playlist-source-recorder.c:595
+msgid "DVD+R"
+msgstr "DVD+R"
+
+#: ../sources/rb-playlist-source-recorder.c:597
+msgid "DVD+RW"
+msgstr "DVD+RW"
+
+#: ../sources/rb-playlist-source-recorder.c:602
+msgid "Broken media type"
+msgstr "ਟੁੱਟੀ ਮੀਡਿਆ ਕਿਸਮ"
+
+#: ../sources/rb-playlist-source-recorder.c:617
 msgid "Writing audio to CD"
 msgstr "ਆਡੀਓ ਨੂੰ CD ਉੱਤੇ ਲਿਖਿਆ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:496
+#: ../sources/rb-playlist-source-recorder.c:636
 msgid "Finished creating audio CD."
 msgstr "ਆਡੀਓ CD ਬਣਾਉਣਾ ਸਮਾਪਤ ਹੈ।"
 
-#: ../sources/rb-playlist-source-recorder.c:507
+#: ../sources/rb-playlist-source-recorder.c:654
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1774,213 +1936,161 @@ msgstr ""
 "ਆਡੀਓ CD ਬਣਾਉਣਾ ਸਮਾਪਤ ਹੈ।\n"
 "ਕੀ ਹੋਰ ਨਕਲ ਬਣਾਉਣੀ ਹੈ?"
 
-#: ../sources/rb-playlist-source-recorder.c:509
+#: ../sources/rb-playlist-source-recorder.c:656
 msgid "Writing cancelled.  Try again?"
 msgstr "ਲਿਖਣਾ ਰੱਦ ਕੀਤਾ ਹੈ।  ਕੀ ਮੁੜ-ਕੋਸ਼ਿਸ ਕਰਨੀ ਹੈ?"
 
-#: ../sources/rb-playlist-source-recorder.c:574
+#: ../sources/rb-playlist-source-recorder.c:721
 msgid "Audio recording error"
 msgstr "ਆਡੀਓ ਰਿਕਾਰਡਿੰਗ ਗਲਤੀ"
 
-#: ../sources/rb-playlist-source-recorder.c:602
+#: ../sources/rb-playlist-source-recorder.c:749
 msgid "Audio Conversion Error"
 msgstr "ਆਡੀਓ ਤਬਦੀਲੀ ਗਲਤੀ"
 
-#: ../sources/rb-playlist-source-recorder.c:632
+#: ../sources/rb-playlist-source-recorder.c:779
 msgid "Recording error"
 msgstr "ਪੜਨ ਵਿੱਚ ਗਲਤੀ"
 
-#: ../sources/rb-playlist-source-recorder.c:751
+#: ../sources/rb-playlist-source-recorder.c:898
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "ਕੀ ਤੁਸੀਂ ਡਿਸਕ ਵਿੱਚ ਰੁਕਾਵਟ ਪਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?"
 
-#: ../sources/rb-playlist-source-recorder.c:754
+#: ../sources/rb-playlist-source-recorder.c:901
 msgid "This may result in an unusable disc."
 msgstr "ਇਸ ਨਾਲ ਡਿਸਕ ਵਰਤਣਯੋਗ ਨਹੀਂ ਰਹੇਗੀ।"
 
-#: ../sources/rb-playlist-source-recorder.c:761
+#: ../sources/rb-playlist-source-recorder.c:908
 msgid "_Cancel"
 msgstr "ਰੱਦ ਕਰੋ(_C)"
 
-#: ../sources/rb-playlist-source-recorder.c:762
+#: ../sources/rb-playlist-source-recorder.c:909
 msgid "_Interrupt"
 msgstr "ਰੁਕਾਵਟ(_I)"
 
-#: ../sources/rb-playlist-source-recorder.c:784
+#: ../sources/rb-playlist-source-recorder.c:931
 msgid "Could not create audio CD"
 msgstr "ਆਡੀਓ CD ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕੀ"
 
-#: ../sources/rb-playlist-source-recorder.c:806
+#: ../sources/rb-playlist-source-recorder.c:953
 msgid "Please make sure another application is not using the drive."
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਯਕੀਨੀ ਬਣਾਉ ਕਿ ਕੋਈ ਹੋਰ ਕਾਰਜ ਡਰਾਇਵ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ।"
 
-#: ../sources/rb-playlist-source-recorder.c:807
+#: ../sources/rb-playlist-source-recorder.c:954
 msgid "Drive is busy"
 msgstr "ਡਿਸਕ ਰੁੱਝੀ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:809
+#: ../sources/rb-playlist-source-recorder.c:956
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਡਰਾਇਵ 'ਚ ਰੀ-ਰਾਇਟੇਬਲ ਜਾਂ ਖਾਲੀ CD ਪਾਉ।"
 
-#: ../sources/rb-playlist-source-recorder.c:810
+#: ../sources/rb-playlist-source-recorder.c:957
 msgid "Insert a rewritable or blank CD"
 msgstr "ਇੱਕ ਰੀ-ਰਾਇਟੇਬਲ ਜਾਂ ਖਾਲੀ CD ਪਾਓ"
 
-#: ../sources/rb-playlist-source-recorder.c:812
+#: ../sources/rb-playlist-source-recorder.c:959
 msgid "Please put a blank CD in the drive."
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਡਰਾਇਵ 'ਚ ਖਾਲੀ CD ਪਾਉ।"
 
-#: ../sources/rb-playlist-source-recorder.c:813
+#: ../sources/rb-playlist-source-recorder.c:960
 msgid "Insert a blank CD"
 msgstr "ਇੱਕ ਖਾਲੀ CD ਪਾਓ"
 
-#: ../sources/rb-playlist-source-recorder.c:815
+#: ../sources/rb-playlist-source-recorder.c:962
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਡਰਾਇਵ ਵਿਚਲੀ ਡਿਸਕ ਨੂੰ ਰੀ-ਰਾਇਟੇਬਲ ਜਾਂ ਖਾਲੀ CD ਨਾਲ ਤਬਦੀਲ ਕਰੋ।"
 
-#: ../sources/rb-playlist-source-recorder.c:816
+#: ../sources/rb-playlist-source-recorder.c:963
 msgid "Reload a rewritable or blank CD"
 msgstr "ਇੱਕ ਰੀ-ਰਾਇਟੇਬਲ ਜਾਂ ਖਾਲੀ CD ਮੁੜ-ਲੋਡ ਕਰੋ"
 
-#: ../sources/rb-playlist-source-recorder.c:818
+#: ../sources/rb-playlist-source-recorder.c:965
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "ਕਿਰਪਾ ਕਰਕੇ ਡਰਾਇਵ ਦੀ ਡਿਸਕ ਨੂੰ ਇੱਕ ਖਾਲੀ CD ਨਾਲ ਤਬਦੀਲ ਕਰੋ।"
 
-#: ../sources/rb-playlist-source-recorder.c:819
+#: ../sources/rb-playlist-source-recorder.c:966
 msgid "Reload a blank CD"
 msgstr "ਖਾਲੀ CD ਮੁੜ ਲੋਡ"
 
-#: ../sources/rb-playlist-source-recorder.c:870
+#: ../sources/rb-playlist-source-recorder.c:1017
 msgid "Converting audio tracks"
 msgstr "ਆਡੀਓ ਟਰੈਕ ਤਬਦੀਲ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ"
 
-#: ../sources/rb-playlist-source-recorder.c:873
+#: ../sources/rb-playlist-source-recorder.c:1020
 msgid "Preparing to write CD"
 msgstr "CD ਲਿਖਣ ਲਈ ਤਿਆਰ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:876
+#: ../sources/rb-playlist-source-recorder.c:1023
 msgid "Writing CD"
 msgstr "CD ਲਿਖੀ ਜਾ ਰਹੀ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:879
+#: ../sources/rb-playlist-source-recorder.c:1026
 msgid "Finishing write"
 msgstr "ਲਿਖਣਾ ਖਤਮ"
 
-#: ../sources/rb-playlist-source-recorder.c:882
+#: ../sources/rb-playlist-source-recorder.c:1029
 msgid "Erasing CD"
 msgstr "CD ਸਾਫ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:885
+#: ../sources/rb-playlist-source-recorder.c:1032
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "burn_action_changed_cb 'ਚ ਨਾ-ਸੰਭਾਲੀ ਕਾਰਵਾਈ"
 
-#: ../sources/rb-playlist-source-recorder.c:922
-msgid "Could not determine media type because CD drive is busy"
-msgstr "ਮੀਡਿਆ ਕਿਸਮ ਖੋਜੀ ਨਹੀਂ ਜਾ ਸਕੀ ਹੈ, ਕਿਉਕਿ CD ਰੁਝੀ ਹੋਈ ਹੈ"
-
-#: ../sources/rb-playlist-source-recorder.c:924
-msgid "Couldn't open media"
-msgstr "ਮੀਡਿਆ ਖੋਲਿਆ ਨਹੀਂ ਜਾ ਸਿਆ"
-
-#: ../sources/rb-playlist-source-recorder.c:926
-msgid "Unknown Media"
-msgstr "ਅਣਜਾਣ ਮੀਡਿਆ"
-
-#: ../sources/rb-playlist-source-recorder.c:928
-msgid "Commercial CD or Audio CD"
-msgstr "ਵਪਾਰਕ CD ਜਾਂ ਆਡੀਓ CD"
-
-#: ../sources/rb-playlist-source-recorder.c:930
-msgid "CD-R"
-msgstr "CD-R"
-
-#: ../sources/rb-playlist-source-recorder.c:932
-msgid "CD-RW"
-msgstr "CD-RW"
-
-#: ../sources/rb-playlist-source-recorder.c:934
-msgid "DVD"
-msgstr "DVD"
-
-#: ../sources/rb-playlist-source-recorder.c:936
-msgid "DVD-R, or DVD-RAM"
-msgstr "DVD-R, ਜਾਂ DVD-RAM"
-
-#: ../sources/rb-playlist-source-recorder.c:938
-msgid "DVD-RW"
-msgstr "DVD-RW"
-
-#: ../sources/rb-playlist-source-recorder.c:940
-msgid "DVD-RAM"
-msgstr "DVD-RAM"
-
-#: ../sources/rb-playlist-source-recorder.c:942
-msgid "DVD+R"
-msgstr "DVD+R"
-
-#: ../sources/rb-playlist-source-recorder.c:944
-msgid "DVD+RW"
-msgstr "DVD+RW"
-
-#: ../sources/rb-playlist-source-recorder.c:949
-msgid "Broken media type"
-msgstr "ਟੁੱਟੀ ਮੀਡਿਆ ਕਿਸਮ"
-
-#: ../sources/rb-playlist-source-recorder.c:989
+#: ../sources/rb-playlist-source-recorder.c:1054
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "ਇਹ %s ਵਿਖਾਉਣ ਹੈ ਕਿ ਇਸ ਉਤੇ ਪਹਿਲਾਂ ਹੀ ਜਾਣਕਾਰੀ ਲਿਖੀ ਜਾ ਚੁੱਕੀ ਹੈ।"
 
-#: ../sources/rb-playlist-source-recorder.c:997
+#: ../sources/rb-playlist-source-recorder.c:1062
 msgid "Erase information on this disc?"
 msgstr "ਕੀ ਇਹ ਡਿਸਕ ਤੋਂ ਜਾਣਕਾਰੀ ਸਾਫ਼ ਕਰਨੀ ਹੈ?"
 
-#: ../sources/rb-playlist-source-recorder.c:1006
+#: ../sources/rb-playlist-source-recorder.c:1071
 msgid "_Try Another"
 msgstr "ਹੋਰ ਕੋਸ਼ਿਸ(_T)"
 
-#: ../sources/rb-playlist-source-recorder.c:1013
+#: ../sources/rb-playlist-source-recorder.c:1078
 msgid "_Erase Disc"
 msgstr "ਡਿਸਕ ਸਾਫ਼(_E)"
 
-#: ../sources/rb-playlist-source-recorder.c:1118
+#: ../sources/rb-playlist-source-recorder.c:1182
 msgid "C_reate"
 msgstr "ਬਣਾਓ(_r)"
 
-#: ../sources/rb-playlist-source-recorder.c:1181
+#: ../sources/rb-playlist-source-recorder.c:1246
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "ਰਿਕਾਰਡਰ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1285
+#: ../sources/rb-playlist-source-recorder.c:1346
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "ਆਰਜ਼ੀ ਡਾਇਰੈਕਟਰੀ '%s' ਹਟਾਈ ਨਹੀਂ ਜਾ ਸਕੀ: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1304
+#: ../sources/rb-playlist-source-recorder.c:1365
 msgid "Create Audio CD"
 msgstr "ਆਡੀਓ CD ਬਣਾਓ"
 
-#: ../sources/rb-playlist-source-recorder.c:1321
+#: ../sources/rb-playlist-source-recorder.c:1382
 #, c-format
 msgid "Create audio CD from '%s' playlist?"
 msgstr "ਕੀ '%s' ਸੰਗੀਤ-ਸੂਚੀ ਤੋਂ ਆਡੀਓ CD ਬਣਾਉਣੀ ਹੈ?"
 
-#: ../sources/rb-playlist-source-recorder.c:1367
-#: ../sources/rb-playlist-source-recorder.c:1385
+#: ../sources/rb-playlist-source-recorder.c:1428
+#: ../sources/rb-playlist-source-recorder.c:1446
 msgid "Unable to build an audio track list."
 msgstr "ਇੱਕ ਆਡੀਓ ਟਰੈਕ ਸੂਚੀ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ ਹੈ।"
 
-#: ../sources/rb-playlist-source-recorder.c:1395
+#: ../sources/rb-playlist-source-recorder.c:1456
 msgid "This playlist is too long to write to an audio CD."
-msgstr ""
+msgstr "ਇਹ ਸੰਗੀਤ-ਸੂਚੀ ਬਹੁਤ ਲੰਮੀ ਹੈ, ਜਿਸ ਨੂੰ ਇੱਕ ਆਡੀਓ CD ਲਿਖਣਾ ਸੰਭਵ ਨਹੀਂ ਹੈ।"
 
-#: ../sources/rb-playlist-source-recorder.c:1465
+#: ../sources/rb-playlist-source-recorder.c:1526
 #, c-format
 msgid "Cannot get free space at %s"
 msgstr "%s 'ਤੇ ਖਾਲੀ ਥਾਂ ਮਿਲ ਨਹੀਂ ਸਕਦੀ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:1550
+#: ../sources/rb-playlist-source-recorder.c:1611
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1991,163 +2101,172 @@ msgstr ""
 "ਮੀਡਿਆ ਇੱਕ ਮਿਆਰੀ ਆਡੀਓ CD ਤੋਂ ਵੱਡਾ ਲੋੜੀਦਾ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਡਰਾਇਵ ਵਿੱਚ ਪਾ ਕੇ ਮੁੜ ਕੋਸ਼ਿਸ "
 "ਕਰੋ।"
 
-#: ../sources/rb-playlist-source-recorder.c:1561
+#: ../sources/rb-playlist-source-recorder.c:1622
 msgid "Playlist too long"
 msgstr "ਸੰਗੀਤ-ਸੂਚੀ ਬਹੁਤ ਲੰਮੀ ਹੈ"
 
-#: ../sources/rb-playlist-source-recorder.c:1601
+#: ../sources/rb-playlist-source-recorder.c:1662
 msgid "Could not find temporary space!"
 msgstr "ਆਰਜ਼ੀ ਥਾਂ ਨਹੀਂ ਲੱਭੀ!"
 
-#: ../sources/rb-playlist-source-recorder.c:1602
+#: ../sources/rb-playlist-source-recorder.c:1663
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
 "required."
 msgstr "ਆਡੀਓ ਟਰੈਕਾਂ ਨੂੰ ਬਦਲਣ ਲਈ ਆਰਜ਼ੀ ਥਾਂ ਨਹੀਂ ਮਿਲੀ ਸਕੀ ਹੈ:  %s ਮੈਬਾ ਲੋੜੀਦੀ ਹੈ।"
 
-#: ../sources/rb-podcast-source.c:272
+#: ../sources/rb-podcast-source.c:282
 msgid "Download _Episode"
 msgstr "ਕਾਂਡ ਡਾਊਨਲੋਡ (_E)"
 
-#: ../sources/rb-podcast-source.c:273
+#: ../sources/rb-podcast-source.c:283
 msgid "Download Podcast Episode"
 msgstr "ਪੋਸਟਕਾਸਟ ਕਾਂਡ ਡਾਊਨਲੋਡ"
 
-#: ../sources/rb-podcast-source.c:275
+#: ../sources/rb-podcast-source.c:285
 msgid "_Cancel Download"
 msgstr "ਡਾਊਨਲੋਡ ਰੱਦ(_C)"
 
-#: ../sources/rb-podcast-source.c:276
-#, fuzzy
+#: ../sources/rb-podcast-source.c:286
 msgid "Cancel Episode Download"
-msgstr "ਡਾਊਨਲੋਡ ਰੱਦ(_C)"
+msgstr "ਕਾਂਡ ਡਾਊਨਲੋਡ ਰੱਦ ਕਰੋ"
 
-#: ../sources/rb-podcast-source.c:279
-#, fuzzy
+#: ../sources/rb-podcast-source.c:289
 msgid "Episode Properties"
-msgstr "%s ਵਿਸ਼ੇਸਤਾ"
+msgstr "ਕਾਂਡ ਵਿਸ਼ੇਸ਼ਤਾ"
 
-#: ../sources/rb-podcast-source.c:281
+#: ../sources/rb-podcast-source.c:291
 msgid "_Update Podcast Feed"
 msgstr "ਪੋਸਟਕਾਸਟ ਫੀਡ ਅੱਪਡੇਟ(_U)"
 
-#: ../sources/rb-podcast-source.c:282
+#: ../sources/rb-podcast-source.c:292
 msgid "Update Feed"
 msgstr "ਫੀਡ ਅੱਪਡੇਟ"
 
-#: ../sources/rb-podcast-source.c:284
+#: ../sources/rb-podcast-source.c:294
 msgid "_Delete Podcast Feed"
 msgstr "ਪੋਸਟਕਾਸਟ ਫੀਡ ਹਟਾਓ(_D)"
 
-#: ../sources/rb-podcast-source.c:285
+#: ../sources/rb-podcast-source.c:295
 msgid "Delete Feed"
 msgstr "ਫੀਡ ਹਟਾਓ"
 
-#: ../sources/rb-podcast-source.c:287
+#: ../sources/rb-podcast-source.c:297
 msgid "_Update All Feeds"
 msgstr "ਸਭ ਫੀਡ ਅੱਪਡੇਟ(_U)"
 
-#: ../sources/rb-podcast-source.c:288
+#: ../sources/rb-podcast-source.c:298
 msgid "Update all feeds"
 msgstr "ਸਭ ਫੀਡ ਅੱਪਡੇਟ"
 
-#: ../sources/rb-podcast-source.c:491
-#, fuzzy
+#: ../sources/rb-podcast-source.c:494
 msgid "Date"
-msgstr "ਮਿਤੀ(_D)"
+msgstr "ਮਿਤੀ"
 
-#: ../sources/rb-podcast-source.c:502
+#: ../sources/rb-podcast-source.c:505
 msgid "_Date"
 msgstr "ਮਿਤੀ(_D)"
 
-#: ../sources/rb-podcast-source.c:524
+#: ../sources/rb-podcast-source.c:527
 msgid "_Feed"
 msgstr "ਫੀਡ(_F)"
 
-#: ../sources/rb-podcast-source.c:545 ../sources/rb-podcast-source.c:564
+#: ../sources/rb-podcast-source.c:548 ../sources/rb-podcast-source.c:567
 msgid "Status"
 msgstr "ਹਾਲਤ"
 
-#: ../sources/rb-podcast-source.c:546 ../sources/rb-podcast-source.c:1497
+#: ../sources/rb-podcast-source.c:549 ../sources/rb-podcast-source.c:1446
 msgid "Completed"
 msgstr "ਮੁਕੰਮਲ ਹੋਇਆ"
 
-#: ../sources/rb-podcast-source.c:547 ../sources/rb-podcast-source.c:1509
+#: ../sources/rb-podcast-source.c:550 ../sources/rb-podcast-source.c:1458
 msgid "Paused"
 msgstr "ਵਿਰਾਮ"
 
-#: ../sources/rb-podcast-source.c:548 ../sources/rb-podcast-source.c:1505
+#: ../sources/rb-podcast-source.c:551 ../sources/rb-podcast-source.c:1454
 msgid "Waiting"
 msgstr "ਉਡੀਕ ਜਾਰੀ"
 
-#: ../sources/rb-podcast-source.c:549 ../sources/rb-podcast-source.c:1501
+#: ../sources/rb-podcast-source.c:552 ../sources/rb-podcast-source.c:1450
 msgid "Failed"
 msgstr "ਅਸਫ਼ਲ ਹੋਇਆ"
 
-#: ../sources/rb-podcast-source.c:608 ../sources/rb-podcast-source.c:650
+#: ../sources/rb-podcast-source.c:612 ../sources/rb-podcast-source.c:634
 msgid "Feed"
 msgstr "ਫੀਡ"
 
-#: ../sources/rb-podcast-source.c:760
+#: ../sources/rb-podcast-source.c:739
 msgid "Podcasts"
 msgstr "ਪੋਸਟ-ਕਾਸਟ"
 
-#: ../sources/rb-podcast-source.c:859
+#: ../sources/rb-podcast-source.c:828
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "ਕੀ ਪੋਸਟਕਾਡ ਕਾਂਡ ਅਤੇ ਡਾਊਨਲੋਡ ਫਾਇਲਾਂ ਹਟਾਉਣੀਆਂ ਹਨ?"
 
-#: ../sources/rb-podcast-source.c:862
+#: ../sources/rb-podcast-source.c:831
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:870
+#: ../sources/rb-podcast-source.c:839
 msgid "Delete _Episode Only"
 msgstr "ਸਿਰਫ਼ ਕਾਂਡ ਹੀ ਹਟਾਓ(_E)"
 
-#: ../sources/rb-podcast-source.c:876
+#: ../sources/rb-podcast-source.c:845
 msgid "_Delete Episode And File"
 msgstr "ਕਾਂਡ ਅਤੇ ਫਾਇਲਾਂ ਹਟਾਓ(_D)"
 
-#: ../sources/rb-podcast-source.c:1373
+#: ../sources/rb-podcast-source.c:1334
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "ਕੀ ਪੋਸਟਕਾਸਟ ਫੀਡ ਅਤੇ ਡਾਊਨਲੋਡ ਫਾਇਲਾਂ ਹਟਾਉਣੀਆਂ ਹਨ?"
 
-#: ../sources/rb-podcast-source.c:1376
+#: ../sources/rb-podcast-source.c:1337
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
 
-#: ../sources/rb-podcast-source.c:1384
+#: ../sources/rb-podcast-source.c:1345
 msgid "Delete _Feed Only"
 msgstr "ਸਿਰਫ਼ ਫੀਡ ਹਟਾਓ(_F)"
 
-#: ../sources/rb-podcast-source.c:1391
+#: ../sources/rb-podcast-source.c:1352
 msgid "_Delete Feed And Files"
 msgstr "ਫੀਡ ਅਤੇ ਫਾਇਲਾਂ ਹਟਾਓ(_F)"
 
-#: ../sources/rb-podcast-source.c:1732
+#: ../sources/rb-podcast-source.c:1524
+#, c-format
+msgid "All %d feed (%d)"
+msgid_plural "All %d feeds (%d)"
+msgstr[0] "ਸਭ %d ਫੀਡ (%d)"
+msgstr[1] "ਸਭ %d ਫੀਡ (%d)"
+
+#: ../sources/rb-podcast-source.c:1528
+#, c-format
+msgid "%s (%d)"
+msgstr "%s (%d)"
+
+#: ../sources/rb-podcast-source.c:1668
 msgid "Downloading podcast"
 msgstr "ਪੋਸਟ-ਕਾਸਟ ਡਾਊਨਲੋਡ ਜਾਰੀ"
 
-#: ../sources/rb-podcast-source.c:1742
+#: ../sources/rb-podcast-source.c:1680
 msgid "Finished downloading podcast"
 msgstr "ਪੋਸਟ-ਕਾਸਟ ਡਾਊਨਲੋਡ ਕਰਨਾ ਮੁਕੰਮਲ"
 
-#: ../sources/rb-podcast-source.c:1752
+#: ../sources/rb-podcast-source.c:1692
 msgid "New updates avaliable from"
 msgstr "ਨਵਾਂ ਅੱਪਡੇਟ ਉਪਲੱਬਧ ਹੈ"
 
-#: ../sources/rb-podcast-source.c:1844
+#: ../sources/rb-podcast-source.c:1787
 msgid "Error in podcast"
 msgstr "ਪੋਸਟ-ਕਾਸਟ ਵਿੱਚ ਗਲਤੀ ਹੈ"
 
-#: ../sources/rb-sourcelist.c:237
+#: ../sources/rb-sourcelist.c:239
 msgid "S_ource"
 msgstr "ਸਰੋਤ(_o)"
 
@@ -2160,31 +2279,31 @@ msgstr "+"
 msgid "Configuration system error"
 msgstr "ਸੰਰਚਨਾ ਸਿਸਟਮ ਗਲਤੀ"
 
-#: ../widgets/eggtrayicon.c:127
+#: ../widgets/eggtrayicon.c:147
 msgid "Orientation"
 msgstr "ਸਥਿਤੀ"
 
-#: ../widgets/eggtrayicon.c:128
+#: ../widgets/eggtrayicon.c:148
 msgid "The orientation of the tray."
 msgstr "ਟਰੇ ਦੀ ਸਥਿਤੀ ਹੈ।"
 
-#: ../widgets/eggtrayicon.c:457
+#: ../widgets/eggtrayicon.c:485 ../widgets/eggtrayicon.c:493
 msgid "Notification"
 msgstr "ਸੂਚਨਾ"
 
-#: ../widgets/rb-cell-renderer-pixbuf.c:129
+#: ../widgets/rb-cell-renderer-pixbuf.c:106
 msgid "Pixbuf Object"
 msgstr "ਪਿਕ-ਬਫਰ ਇਕਾਈ"
 
-#: ../widgets/rb-cell-renderer-pixbuf.c:130
+#: ../widgets/rb-cell-renderer-pixbuf.c:107
 msgid "The pixbuf to render."
 msgstr "ਪੇਸ਼ ਕਰਨ ਲਈ ਪਿਕ-ਬਫਰ।"
 
-#: ../widgets/rb-druid.c:244
+#: ../widgets/rb-druid.c:211
 msgid "Welcome to Rhythmbox"
 msgstr "ਰੀਥਮਬਾਕਸ ਵਲੋਂ ਜੀ ਆਇਆਂ ਨੂੰ"
 
-#: ../widgets/rb-druid.c:248
+#: ../widgets/rb-druid.c:215
 msgid ""
 "Rhythmbox is the GNOME music player that lets you do everything: play your "
 "music files, listen to Internet Radio, import music from CDs, and much "
@@ -2197,15 +2316,15 @@ msgstr ""
 "\n"
 "ਇਹ ਸਹਾਇਕ ਤੁਹਾਨੂੰ ਕੁਝ ਸਧਾਰਨ ਸਵਾਲ ਕਰਕੇ ਤੁਹਾਨੂੰ ਸ਼ੁਰੂ ਕਰੇਗਾ।"
 
-#: ../widgets/rb-druid.c:254
+#: ../widgets/rb-druid.c:221
 msgid "Music library setup"
 msgstr "ਸੰਗੀਤ ਲਾਇਬਰੇਰੀ ਸੈਟਅੱਪ"
 
-#: ../widgets/rb-druid.c:263
+#: ../widgets/rb-druid.c:230
 msgid "Finish"
 msgstr "ਮੁਕੰਮਲ"
 
-#: ../widgets/rb-druid.c:265
+#: ../widgets/rb-druid.c:232
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
@@ -2217,67 +2336,67 @@ msgstr ""
 "ਯਾਦ ਰੱਖੋ ਕਿ ਤੁਸੀਂ ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਸੰਗੀਤ ਨੂੰ \"ਸੰਗੀਤ\", ਤਦ \"ਫੋਲਡਰ ਆਯਾਤ\" ਕਰਕੇ ਜਾਂ CD ਤੋਂ ਵੀ "
 "ਆਯਾਤ ਕਰਕੇ ਵੀ, ਸ਼ਾਮਿਲ ਕਰ ਸਕਦੇ ਹੋ।"
 
-#: ../widgets/rb-druid.c:324
+#: ../widgets/rb-druid.c:291
 msgid "Load folder into Library"
 msgstr "ਫੋਲਡਰ ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਲੋਡ ਕਰੋ"
 
-#: ../widgets/rb-entry-view.c:1062
+#: ../widgets/rb-entry-view.c:963
 msgid "Very Low"
 msgstr "ਬਹੁਤ ਘੱਟ"
 
-#: ../widgets/rb-entry-view.c:1064
+#: ../widgets/rb-entry-view.c:965
 msgid "Low"
 msgstr "ਘੱਟ"
 
-#: ../widgets/rb-entry-view.c:1066
+#: ../widgets/rb-entry-view.c:967
 msgid "Regular"
 msgstr "ਨਿਯਮਿਤ"
 
-#: ../widgets/rb-entry-view.c:1068
+#: ../widgets/rb-entry-view.c:969
 msgid "High"
 msgstr "ਜਿਆਦਾ"
 
-#: ../widgets/rb-entry-view.c:1070
+#: ../widgets/rb-entry-view.c:971
 msgid "Very High"
 msgstr "ਬਹੁਤ ਜਿਆਦਾ"
 
-#: ../widgets/rb-entry-view.c:1072
+#: ../widgets/rb-entry-view.c:973
 msgid "Perfect"
 msgstr "ਉੱਤਮ"
 
-#: ../widgets/rb-entry-view.c:1299
+#: ../widgets/rb-entry-view.c:1200
 msgid "_Title"
 msgstr "ਸਿਰਲੇਖ(_T)"
 
-#: ../widgets/rb-entry-view.c:1310
+#: ../widgets/rb-entry-view.c:1211
 msgid "Art_ist"
 msgstr "ਕਲਾਕਾਰ(_i)"
 
-#: ../widgets/rb-entry-view.c:1321
+#: ../widgets/rb-entry-view.c:1222
 msgid "_Album"
 msgstr "ਐਲਬਮ(_A)"
 
-#: ../widgets/rb-entry-view.c:1342
+#: ../widgets/rb-entry-view.c:1243
 msgid "Tim_e"
 msgstr "ਸਮਾਂ(_e)"
 
-#: ../widgets/rb-entry-view.c:1366
+#: ../widgets/rb-entry-view.c:1267
 msgid "_Quality"
 msgstr "ਗੁਣ(_Q)"
 
-#: ../widgets/rb-entry-view.c:1379
+#: ../widgets/rb-entry-view.c:1280
 msgid "_Play Count"
 msgstr "ਚੱਲਣ ਗਿਣਤੀ(_P)"
 
-#: ../widgets/rb-entry-view.c:1391
+#: ../widgets/rb-entry-view.c:1292
 msgid "_Last Played"
 msgstr "ਆਖਰੀ ਚਲਾਇਆ(_L)"
 
-#: ../widgets/rb-entry-view.c:1403
+#: ../widgets/rb-entry-view.c:1304
 msgid "_Date Added"
 msgstr "ਮਿਤੀ ਸ਼ਾਮਿਲ ਕੀਤੀ ਗਈ(_D)"
 
-#: ../widgets/rb-entry-view.c:1652
+#: ../widgets/rb-entry-view.c:1556
 msgid "Playback Error"
 msgstr "ਵਜਾਉਣ ਦੌਰਾਨ ਗਲਤੀ"
 
@@ -2309,15 +2428,15 @@ msgstr "%d:%02d ਵਿਚੋਂ %d:%02d ਬਕਾਇਆ"
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d ਵਿੱਚੋਂ %d:%02d:%02d ਬਾਕੀ"
 
-#: ../widgets/rb-load-failure-dialog.c:125
+#: ../widgets/rb-load-failure-dialog.c:95
 msgid "Error loading files into library"
 msgstr "ਫਾਇਲਾਂ ਨੂੰ ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਜੋਡ਼ਨ ਵਿੱਚ ਗਲਤੀ"
 
-#: ../widgets/rb-load-failure-dialog.c:142
+#: ../widgets/rb-load-failure-dialog.c:112
 msgid "_Error"
 msgstr "ਗਲਤੀ(_E)"
 
-#: ../widgets/rb-load-failure-dialog.c:150
+#: ../widgets/rb-load-failure-dialog.c:120
 msgid "_File"
 msgstr "ਫਾਇਲ(_F)"
 
@@ -2329,125 +2448,140 @@ msgstr "ਆਟੋਮੈਟਿਕ ਸੰਗੀਤ-ਸੂਚੀ ਬਣਾਓ"
 msgid "Edit Automatic Playlist"
 msgstr "ਸਵੈ-ਚਾਲਤ ਸੰਗੀਤ-ਸੂਚੀ ਸੋਧ"
 
-#: ../widgets/rb-query-creator-properties.c:61
-#: ../widgets/rb-query-creator-properties.c:91
+#: ../widgets/rb-query-creator-properties.c:65
+#: ../widgets/rb-query-creator-properties.c:96
 msgid "Title"
 msgstr "ਸਿਰਲੇਖ"
 
-#: ../widgets/rb-query-creator-properties.c:65
-#: ../widgets/rb-query-creator-properties.c:92
-msgid "Rating"
-msgstr "ਰੇਟਿੰਗ"
-
-#: ../widgets/rb-query-creator-properties.c:66
-msgid "Path"
-msgstr "ਮਾਰਗ"
-
-#: ../widgets/rb-query-creator-properties.c:68
-#: ../widgets/rb-query-creator-properties.c:93
-msgid "Play Count"
-msgstr "ਚੱਲਣ ਗਿਣਤੀ"
-
 #: ../widgets/rb-query-creator-properties.c:69
-#: ../widgets/rb-query-creator-properties.c:96
-msgid "Track Number"
-msgstr "ਟਰੈਕ ਨੰ"
-
-#: ../widgets/rb-query-creator-properties.c:70
-msgid "Disc Number"
-msgstr "ਡਿਸਕ ਨੰਬਰ"
-
-#: ../widgets/rb-query-creator-properties.c:71
-msgid "Bitrate"
-msgstr "ਬਿੱਟਰੇਟ"
-
-#: ../widgets/rb-query-creator-properties.c:73
-#: ../widgets/rb-query-creator-properties.c:95
-msgid "Duration"
-msgstr "ਅੰਤਰਾਲ"
-
-#: ../widgets/rb-query-creator-properties.c:75
-msgid "Time of Last Play"
-msgstr "ਆਖਰੀ ਚਲਾਉਣ ਦਾ ਸਮਾਂ"
-
-#: ../widgets/rb-query-creator-properties.c:76
-msgid "Time Added to Library"
-msgstr "ਲਾਇਬਰੇਰੀ 'ਚ ਸਮਾਂ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ"
-
-#: ../widgets/rb-query-creator-properties.c:88
-#: ../widgets/rb-query-creator-properties.c:89
-#: ../widgets/rb-query-creator-properties.c:90
-#: ../widgets/rb-query-creator-properties.c:91
-msgid "_In reverse alphabetical order"
-msgstr "ਉਲਟ ਵਰਣਮਾਲਾ ਕਰਮ(_I)"
-
-#: ../widgets/rb-query-creator-properties.c:92
-msgid "W_ith more highly rated tracks first"
-msgstr "ਹੋਰ ਰੇਟਿੰਗ ਵਾਲੇ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
-
-#: ../widgets/rb-query-creator-properties.c:93
-msgid "W_ith more often played songs first"
-msgstr "ਅਕਸਰ ਚਲਾਏ ਗੀਤਾਂ ਨੂੰ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
-
-#: ../widgets/rb-query-creator-properties.c:94
+#: ../widgets/rb-query-creator-properties.c:99
 msgid "Year"
 msgstr "ਸਾਲ"
 
+#: ../widgets/rb-query-creator-properties.c:70
+#: ../widgets/rb-query-creator-properties.c:97
+msgid "Rating"
+msgstr "ਰੇਟਿੰਗ"
+
+#: ../widgets/rb-query-creator-properties.c:71
+msgid "Path"
+msgstr "ਮਾਰਗ"
+
+#: ../widgets/rb-query-creator-properties.c:73
+#: ../widgets/rb-query-creator-properties.c:98
+msgid "Play Count"
+msgstr "ਚੱਲਣ ਗਿਣਤੀ"
+
+#: ../widgets/rb-query-creator-properties.c:74
+#: ../widgets/rb-query-creator-properties.c:101
+msgid "Track Number"
+msgstr "ਟਰੈਕ ਨੰ"
+
+#: ../widgets/rb-query-creator-properties.c:75
+msgid "Disc Number"
+msgstr "ਡਿਸਕ ਨੰਬਰ"
+
+#: ../widgets/rb-query-creator-properties.c:76
+msgid "Bitrate"
+msgstr "ਬਿੱਟਰੇਟ"
+
+#: ../widgets/rb-query-creator-properties.c:78
+#: ../widgets/rb-query-creator-properties.c:100
+msgid "Duration"
+msgstr "ਅੰਤਰਾਲ"
+
+#: ../widgets/rb-query-creator-properties.c:80
+msgid "Time of Last Play"
+msgstr "ਆਖਰੀ ਚਲਾਉਣ ਦਾ ਸਮਾਂ"
+
+#: ../widgets/rb-query-creator-properties.c:81
+msgid "Time Added to Library"
+msgstr "ਲਾਇਬਰੇਰੀ 'ਚ ਸਮਾਂ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ"
+
+#: ../widgets/rb-query-creator-properties.c:93
 #: ../widgets/rb-query-creator-properties.c:94
+#: ../widgets/rb-query-creator-properties.c:95
+#: ../widgets/rb-query-creator-properties.c:96
+msgid "_In reverse alphabetical order"
+msgstr "ਉਲਟ ਵਰਣਮਾਲਾ ਕਰਮ(_I)"
+
+#: ../widgets/rb-query-creator-properties.c:97
+msgid "W_ith more highly rated tracks first"
+msgstr "ਹੋਰ ਰੇਟਿੰਗ ਵਾਲੇ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
+
+#: ../widgets/rb-query-creator-properties.c:98
+msgid "W_ith more often played songs first"
+msgstr "ਅਕਸਰ ਚਲਾਏ ਗੀਤਾਂ ਨੂੰ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
+
+#: ../widgets/rb-query-creator-properties.c:99
 msgid "W_ith newer tracks first"
 msgstr "ਨਵੇਂ ਟਰੈਕ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
 
-#: ../widgets/rb-query-creator-properties.c:95
+#: ../widgets/rb-query-creator-properties.c:100
 msgid "W_ith longer tracks first"
 msgstr "ਲੰਮੇ ਟਰੈਕ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
 
-#: ../widgets/rb-query-creator-properties.c:96
+#: ../widgets/rb-query-creator-properties.c:101
 msgid "_In decreasing order"
 msgstr "ਘੱਟਦੇ ਕਰਮ 'ਚ(_I)"
 
-#: ../widgets/rb-query-creator-properties.c:97
+#: ../widgets/rb-query-creator-properties.c:102
 msgid "Last Played"
 msgstr "ਆਖਰੀ ਚੱਲਿਆ"
 
-#: ../widgets/rb-query-creator-properties.c:97
+#: ../widgets/rb-query-creator-properties.c:102
 msgid "W_ith more recently played tracks first"
 msgstr "ਹੋਰ ਤਾਜ਼ੇ ਚਲਾਏ ਟਰੈਕ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
 
-#: ../widgets/rb-query-creator-properties.c:98
+#: ../widgets/rb-query-creator-properties.c:103
 msgid "Date Added"
 msgstr "ਮਿਤੀ ਸ਼ਾਮਲ ਕੀਤੀ"
 
-#: ../widgets/rb-query-creator-properties.c:98
+#: ../widgets/rb-query-creator-properties.c:103
 msgid "W_ith more recently added tracks first"
 msgstr "ਤਾਜ਼ੇ ਸ਼ਾਮਲ ਟਰੈਕ ਪਹਿਲਾਂ ਰੱਖ ਕੇ(_i)"
 
-#: ../widgets/rb-query-creator-properties.c:112
+#: ../widgets/rb-query-creator-properties.c:117
 msgid "contains"
 msgstr "ਸ਼ਾਮਿਲ"
 
-#: ../widgets/rb-query-creator-properties.c:113
+#: ../widgets/rb-query-creator-properties.c:118
 msgid "does not contain"
 msgstr "ਸ਼ਾਮਿਲ ਨਹੀ"
 
-#: ../widgets/rb-query-creator-properties.c:114
-#: ../widgets/rb-query-creator-properties.c:142
+#: ../widgets/rb-query-creator-properties.c:119
+#: ../widgets/rb-query-creator-properties.c:147
 msgid "equals"
 msgstr "ਬਰਾਬਰ"
 
-#: ../widgets/rb-query-creator-properties.c:143
+#: ../widgets/rb-query-creator-properties.c:148
 msgid "at least"
 msgstr "ਘੱਟੋ-ਘੱਟ"
 
 #. matches if A >= B
-#: ../widgets/rb-query-creator-properties.c:144
+#: ../widgets/rb-query-creator-properties.c:149
 msgid "at most"
 msgstr "ਵੱਧੋ-ਵੱਧ"
+
+#: ../widgets/rb-query-creator-properties.c:158
+msgid "in"
+msgstr "ਵਿੱਚ"
+
+#. matches if within 1-JAN-YEAR to 31-DEC-YEAR
+#: ../widgets/rb-query-creator-properties.c:160
+msgid "after"
+msgstr "ਬਾਅਦ"
+
+#. matches if >= 31-DEC-YEAR
+#: ../widgets/rb-query-creator-properties.c:162
+msgid "before"
+msgstr "ਪਹਿਲਾਂ"
 
 #.
 #. * Translators: this will match when within <value> of the current time
 #. * e.g. "in the last" "7 days" will match if within 7 days of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:191
+#: ../widgets/rb-query-creator-properties.c:219
 msgid "in the last"
 msgstr "ਆਖਰ ਵਿੱਚ"
 
@@ -2455,42 +2589,34 @@ msgstr "ਆਖਰ ਵਿੱਚ"
 #. * Translators: this is the opposite of the above, and will match if not
 #. * within <value> of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:197
+#: ../widgets/rb-query-creator-properties.c:225
 msgid "not in the last"
 msgstr "ਆਖਰ 'ਚ ਨਹੀਂ"
 
-#: ../widgets/rb-query-creator-properties.c:211
+#: ../widgets/rb-query-creator-properties.c:239
 msgid "seconds"
 msgstr "ਸਕਿੰਟ"
 
-#: ../widgets/rb-query-creator-properties.c:212
+#: ../widgets/rb-query-creator-properties.c:240
 msgid "minutes"
 msgstr "ਮਿੰਟ"
 
-#: ../widgets/rb-query-creator-properties.c:213
+#: ../widgets/rb-query-creator-properties.c:241
 msgid "hours"
 msgstr "ਘੰਟੇ"
 
-#: ../widgets/rb-query-creator-properties.c:214
+#: ../widgets/rb-query-creator-properties.c:242
 msgid "days"
 msgstr "ਦਿਨ"
 
-#: ../widgets/rb-query-creator-properties.c:215
+#: ../widgets/rb-query-creator-properties.c:243
 msgid "weeks"
 msgstr "ਹਫ਼ਤੇ"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:135
+#: ../widgets/rb-search-entry.c:105
 msgid "_Search:"
 msgstr "ਖੋਜ(_S):"
-
-#: ../widgets/rb-song-display-box.c:99
-msgid "from"
-msgstr "ਤੋਂ"
-
-#: ../widgets/rb-song-display-box.c:101
-msgid "by"
-msgstr "ਰਾਹੀਂ"
 
 #: ../widgets/rb-song-display-box.c:324
 msgid "Get information on this album from the web"
@@ -2500,7 +2626,7 @@ msgstr "ਵੈੱਬ ਤੋਂ ਇਸ ਐਲਬਮ ਲਈ ਜਾਣਕਾਰੀ 
 msgid "Get information on this artist from the web"
 msgstr "ਵੈੱਬ ਤੋਂ ਇਸ ਕਲਾਕਾਰ ਲਈ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ"
 
-#: ../widgets/rb-song-info.c:246
+#: ../widgets/rb-song-info.c:250
 msgid "Song Properties"
 msgstr "ਗੀਤ ਵਿਸ਼ੇਸਤਾ"
 
@@ -2508,15 +2634,15 @@ msgstr "ਗੀਤ ਵਿਸ਼ੇਸਤਾ"
 msgid "Multiple Song Properties"
 msgstr "ਬਹੁ ਗੀਤ ਵਿਸ਼ੇਸਤਾ"
 
-#: ../widgets/rb-song-info.c:689
+#: ../widgets/rb-song-info.c:803
 msgid "Unknown file name"
 msgstr "ਅਣਜਾਣ ਫਾਇਲ ਨਾਂ"
 
-#: ../widgets/rb-song-info.c:708
+#: ../widgets/rb-song-info.c:822
 msgid "On the desktop"
 msgstr "ਵਿਹਡ਼ੇ ਉੱਤੇ"
 
-#: ../widgets/rb-song-info.c:717
+#: ../widgets/rb-song-info.c:831
 msgid "Unknown location"
 msgstr "ਅਣਜਾਣ ਟਿਕਾਣਾ"
 
