@@ -1,5 +1,10 @@
 2006-01-23  James Livingston  <jrl@ids.org.au>
 
+	* widgets/eggtrayicon.c: (egg_tray_icon_notify): support libnotify
+	0.3.2. Fixed bug 328158.
+
+2006-01-23  James Livingston  <jrl@ids.org.au>
+
 	* metadata/rb-metadata-gst.c: (gst_date_gulong_transform),
 	(gulong_gst_date_transform), (rb_metadata_class_init):
 	* metadata/rb-metadata.h: fix support for Year metadata in gst 0.10.

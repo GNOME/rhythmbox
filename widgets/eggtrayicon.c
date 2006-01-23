@@ -588,8 +588,11 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   if (pixbuf)
     {
-      notify_notification_set_icon_data_from_pixbuf (icon->notify->handle,
-                                                     pixbuf);
+#if (LIBNOTIFY_VERSION_MICRO < 2)
+      notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
+#else
+      notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
+#endif
       g_object_unref (pixbuf);
     }
 
