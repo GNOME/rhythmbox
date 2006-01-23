@@ -90,10 +90,10 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 
 	/* don't bother showing the browser/search bits */
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
-	source_class->impl_get_browser_key = (RBSourceStringFunc) rb_null_function;
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
 }
