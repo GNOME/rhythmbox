@@ -33,7 +33,7 @@ typedef enum
 	RB_METADATA_FIELD_TITLE,                   /* string */
 	RB_METADATA_FIELD_ARTIST,                  /* string */
 	RB_METADATA_FIELD_ALBUM,                   /* string */
-	RB_METADATA_FIELD_DATE,                    /* string */
+	RB_METADATA_FIELD_DATE,                    /* ulong */
 	RB_METADATA_FIELD_GENRE,                   /* string */
 	RB_METADATA_FIELD_COMMENT,                 /* string */
 	RB_METADATA_FIELD_TRACK_NUMBER,            /* ulong */

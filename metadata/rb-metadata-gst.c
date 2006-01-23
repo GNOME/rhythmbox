@@ -86,6 +86,26 @@ struct RBMetaDataPrivate
 
 #define RB_METADATA_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_METADATA, RBMetaDataPrivate))
 
+#ifdef HAVE_GSTREAMER_0_10
+static void
+gst_date_gulong_transform (const GValue *src, GValue *dest)
+{
+	const GDate *date = gst_value_get_date (src);
+
+	g_value_set_ulong (dest, (date) ? g_date_get_julian (date) : 0);
+}
+
+static void
+gulong_gst_date_transform (const GValue *src, GValue *dest)
+{
+	gulong day = g_value_get_ulong (src);
+	GDate *date = g_date_new_julian (day);
+
+	gst_value_set_date (dest, date);
+	g_date_free (date);
+}
+
+#endif
 
 static void
 rb_metadata_class_init (RBMetaDataClass *klass)
@@ -95,6 +115,10 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 	object_class->finalize = rb_metadata_finalize;
 
 	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
+#ifdef HAVE_GSTREAMER_0_10
+	g_value_register_transform_func (GST_TYPE_DATE, G_TYPE_ULONG, gst_date_gulong_transform);
+	g_value_register_transform_func (G_TYPE_ULONG, GST_TYPE_DATE, gulong_gst_date_transform);
+#endif
 }
 
 
