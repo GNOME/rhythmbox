@@ -30,13 +30,13 @@
       <menuitem name="EditCutMenu" action="EditCut"/>
       <menuitem name="EditCopyMenu" action="EditCopy"/>
       <menuitem name="EditPasteMenu" action="EditPaste"/>
-      <separator name="EditSep1"/> 
+      <menuitem name="EditDeleteMenu" action="EditDelete"/>
+      <separator/> 
       <menuitem name="EditSelectAllMenu" action="EditSelectAll"/>
       <menuitem name="EditSelectNoneMenu" action="EditSelectNone"/>
-      <separator name="EditSep2"/> 
-      <menuitem name="EditDeleteMenu" action="EditDelete"/>
+      <separator/> 
       <menuitem name="EditMovetoTrash" action="EditMovetoTrash"/>
-      <separator name="EditSep3"/>
+      <separator/>
       <menuitem name="EditPreferencesMenu" action="EditPreferences"/> 
     </menu>
 
@@ -98,9 +98,10 @@
 
   <popup name="LibraryViewPopup">
     <menuitem name="CopyLibraryPopup" action="EditCopy"/>
-    <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
-    <menuitem name="MovetoTrashPopup" action="EditMovetoTrash"/>
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
+    <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
+    <separator/>
+    <menuitem name="MovetoTrashPopup" action="EditMovetoTrash"/>
     <separator/>
     <menuitem name="BrowseGenreLibraryPopup" action="LibrarySrcChooseGenre"/>
     <menuitem name="BrowseArtistLibraryPopup" action="LibrarySrcChooseArtist"/>
@@ -113,8 +114,9 @@
     <menuitem name="CopyPlaylistPopup" action="EditCopy"/>
     <menuitem name="CutPlaylistPopup" action="EditCut"/>
     <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
-    <menuitem name="MovetoTrashPlaylistPopup" action="EditMovetoTrash"/>
     <menuitem name="AddToQueuePlaylistPopup" action="AddToQueue"/>
+    <separator/>
+    <menuitem name="MovetoTrashPlaylistPopup" action="EditMovetoTrash"/>
     <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
   </popup>
@@ -161,9 +163,9 @@
   </popup>
 
   <popup name="PodcastViewPopup">
-    <menuitem name="DeletePodcastPopup" action="EditDelete"/>
     <menuitem name="DownloadPodcastPopup" action="PodcastSrcDownloadPost"/>
     <menuitem name="CancelDownloadPopup" action="PodcastSrcCancelDownload"/>
+    <menuitem name="DeletePodcastPopup" action="EditDelete"/>
     <menuitem name="AddToQueuePodcastPopup" action="AddToQueue"/>
     <separator/>
     <menuitem name="PropertiesPodcastPopup" action="MusicProperties"/>
