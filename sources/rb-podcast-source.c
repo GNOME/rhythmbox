@@ -546,8 +546,8 @@ rb_podcast_source_constructor (GType type,
 	{
 		static const char *status_strings[7];
 		status_strings[0] = _("Status");
-		status_strings[1] = _("Completed");
-		status_strings[2] = _("Paused");
+		status_strings[1] = _("Downloaded");
+		status_strings[2] = _("Undownloaded");
 		status_strings[3] = _("Waiting");
 		status_strings[4] = _("Failed");
 		status_strings[5] = "100 %";
@@ -1443,7 +1443,7 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 
 	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS)) {
 	case RHYTHMDB_PODCAST_STATUS_COMPLETE:
-		g_object_set (G_OBJECT (renderer), "text", _("Completed"), NULL);
+		g_object_set (G_OBJECT (renderer), "text", _("Downloaded"), NULL);
 		value = 100;  
 		break;
 	case RHYTHMDB_PODCAST_STATUS_ERROR:
@@ -1455,7 +1455,7 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 		value = 0;
 		break;
 	case RHYTHMDB_PODCAST_STATUS_PAUSED:
-		g_object_set (G_OBJECT (renderer), "text", _("Paused"), NULL);
+		g_object_set (G_OBJECT (renderer), "text", _("Undownloaded"), NULL);
 		value = 0;
 		break;
 	default:
