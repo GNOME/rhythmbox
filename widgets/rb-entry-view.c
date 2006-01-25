@@ -1256,6 +1256,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		key = "Year";
 		strings[0] = title;
 		strings[1] = "0000";
+		strings[2] = _("Unknown");
 		break;
 #if 0
 	case RB_ENTRY_VIEW_COL_QUALITY:
