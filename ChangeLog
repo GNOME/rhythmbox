@@ -1,5 +1,12 @@
 2006-01-25  James Livingston  <jrl@ids.org.au>
 
+	patch by: Christope Fergeau  <teuf@gnome.org>
+
+	* daapsharing/rb-daap-connection.c: (g_zalloc_wrapper),
+	(http_response_handler): fix a potential buffer overflow issue.
+
+2006-01-25  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-entry-view.c: (rb_entry_view_append_column): make the
 	Year column wide enough to display "Unknown"
 

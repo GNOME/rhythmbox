@@ -749,6 +749,12 @@ build_message (RBDAAPConnection *connection,
 #ifdef HAVE_LIBZ
 static void *g_zalloc_wrapper (voidpf opaque, uInt items, uInt size)
 {
+	if ((items != 0) && (size >= G_MAXUINT/items)) {
+		return Z_NULL;
+	}
+	if ((size != 0) && (items >= G_MAXUINT/size)) {
+		return Z_NULL;
+	}
 	return g_malloc0 (items * size);
 }
 
@@ -769,6 +775,14 @@ http_response_handler (SoupMessage *message,
 	int response_length = message->response.length;
 	const char *encoding_header = NULL;
 
+
+	if (response_length < G_MAXUINT/4 - 1) {
+		/* If response_length is too big, 
+		 * the g_malloc (unc_size + 1) below would overflow 
+		 */
+		status = SOUP_STATUS_MALFORMED;
+	}
+
 	if (message->response_headers)
 		encoding_header = soup_message_get_header (message->response_headers, "Content-Encoding");
 
@@ -776,8 +790,9 @@ http_response_handler (SoupMessage *message,
 #ifdef HAVE_LIBZ
 		z_stream stream;
 		char *new_response;
-		int factor = 4;
-		int unc_size = response_length * factor;
+		unsigned int factor = 4;
+		unsigned int unc_size = response_length * factor;
+
 
 		stream.next_in = (unsigned char *)response;
 		stream.avail_in = response_length;
@@ -813,6 +828,10 @@ http_response_handler (SoupMessage *message,
 
 				factor *= 4;
 				unc_size = (response_length * factor);
+				/* unc_size can't grow bigger than 40KB, so
+				 * unc_size can't overflow, and this realloc
+				 * call is safe
+				 */
 				new_response = g_realloc (new_response, unc_size + 1);
 				stream.next_out = (unsigned char *)(new_response + stream.total_out);
 				stream.avail_out = unc_size - stream.total_out;
