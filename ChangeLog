@@ -1,3 +1,10 @@
+2006-01-26  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(idle_handle_load_complete):  Don't start the playlist save
+	timeout until we've loaded the playlists, otherwise we'll
+	write an empty playlist file if startup takes too long.
+
 2006-01-25  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c: Make view toolbar toggle use

@@ -1286,8 +1286,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		g_clear_error (&error);
 	}
 
-	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
-	
 	rb_shell_sync_window_state (shell, FALSE);
 	rb_shell_sync_fullscreen (shell);
 
@@ -2296,6 +2294,7 @@ idle_handle_load_complete (RBShell *shell)
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 	shell->priv->load_complete = TRUE;
+	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
 
 	GDK_THREADS_LEAVE ();
 
