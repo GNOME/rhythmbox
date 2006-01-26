@@ -1,3 +1,11 @@
+2006-01-27  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Patch by: Alex Lancaster  <alexl@users.sourceforge.net>
+	
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_source):
+	Don't include the artist field in the window title if it's blank.
+	Fixes #325973.
+
 2006-01-26  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell-clipboard.c (rb_shell_clipboard_actions):

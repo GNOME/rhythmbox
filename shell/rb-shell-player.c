@@ -1855,7 +1855,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	if (player->priv->song && entry_title)
 		title = g_strdup_printf ("%s (%s)", player->priv->song,
 					 entry_title);
-	else if (entry_title && artist)
+	else if (entry_title && artist && artist[0] != '\0')
 		title = g_strdup_printf ("%s - %s", artist, entry_title);
 	else if (entry_title)
 		title = g_strdup (entry_title);
