@@ -1,3 +1,10 @@
+2006-01-27  James Livingston  <jrl@ids.org.au>
+
+	Patch from Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb): correctly
+	escape paths when using rb_uri_handle_recursively. Closes bug 139646.
+
 2006-01-27  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	Patch by: Alex Lancaster  <alexl@users.sourceforge.net>

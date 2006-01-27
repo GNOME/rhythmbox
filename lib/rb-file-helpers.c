@@ -645,8 +645,10 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 	}
 	
 	if (info->type == GNOME_VFS_FILE_TYPE_REGULAR) {
-		path = g_build_filename (data->uri, rel_path, NULL);
+		char *escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
+		path = g_build_filename (data->uri, escaped_rel_path, NULL);
 		(data->func) (path, data->user_data);
+		g_free (escaped_rel_path);
 		g_free (path);
 	}
 
