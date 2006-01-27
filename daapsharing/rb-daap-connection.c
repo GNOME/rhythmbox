@@ -776,7 +776,7 @@ http_response_handler (SoupMessage *message,
 	const char *encoding_header = NULL;
 
 
-	if (response_length < G_MAXUINT/4 - 1) {
+	if (response_length >= G_MAXUINT/4 - 1) {
 		/* If response_length is too big, 
 		 * the g_malloc (unc_size + 1) below would overflow 
 		 */
