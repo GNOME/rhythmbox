@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-27 15:57+0100\n"
-"PO-Revision-Date: 2006-01-27 15:54+0100\n"
+"POT-Creation-Date: 2006-01-28 17:04+0100\n"
+"PO-Revision-Date: 2006-01-28 17:04+0100\n"
 "Last-Translator: Hendrik Brandt <heb@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -505,7 +505,7 @@ msgstr "Von URI öffnen"
 
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
-msgstr ""
+msgstr "Beste Bewertung"
 
 #: ../data/playlists.xml.in.h:2
 msgid "Recently Added"
@@ -552,35 +552,48 @@ msgstr "%lu kb/s"
 msgid "Never"
 msgstr "Nie"
 
-#: ../lib/rb-cut-and-paste-code.c:245
+#. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
+#: ../lib/rb-cut-and-paste-code.c:246
 msgid "Today %I:%M %p"
-msgstr ""
+msgstr "Heute %H:%M"
 
-#: ../lib/rb-cut-and-paste-code.c:255
+#. Translators: "friendly time" string for the previous day,
+#. * strftime format. e.g. "Yesterday 12:34 am"
+#.
+#: ../lib/rb-cut-and-paste-code.c:259
 msgid "Yesterday %I:%M %p"
-msgstr ""
+msgstr "Gestern %H:%M"
 
-#: ../lib/rb-cut-and-paste-code.c:268
+#. Translators: "friendly time" string for a day in the current week,
+#. * strftime format. e.g. "Wed 12:34 am"
+#.
+#: ../lib/rb-cut-and-paste-code.c:275
 msgid "%a %I:%M %p"
-msgstr ""
+msgstr "%a, %H:%M"
 
-#: ../lib/rb-cut-and-paste-code.c:277
+#. Translators: "friendly time" string for a day in the current year,
+#. * strftime format. e.g. "Feb 12 12:34 am"
+#.
+#: ../lib/rb-cut-and-paste-code.c:287
 msgid "%b %d %I:%M %p"
-msgstr ""
+msgstr "%d. %B %H:%M"
 
-#: ../lib/rb-cut-and-paste-code.c:279
+#. Translators: "friendly time" string for a day in a different year,
+#. * strftime format. e.g. "Feb 12 1997"
+#.
+#: ../lib/rb-cut-and-paste-code.c:292
 msgid "%b %d %Y"
-msgstr ""
+msgstr "%d. %B %Y"
 
 #: ../lib/rb-util.c:563 ../widgets/rb-header.c:750
 #, c-format
 msgid "%d:%02d"
-msgstr ""
+msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:565 ../widgets/rb-header.c:752
 #, c-format
 msgid "%d:%02d:%02d"
-msgstr ""
+msgstr "%d:%02d:%02d"
 
 #: ../metadata/rb-metadata-gst.c:632 ../metadata/rb-metadata-gst.c:1152
 #: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:633
@@ -1637,7 +1650,6 @@ msgstr ""
 "Lesen Sie die GNU General Public License für weiterführende Informationen.\n"
 
 #: ../shell/rb-shell.c:2027
-#, fuzzy
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -1645,7 +1657,8 @@ msgid ""
 msgstr ""
 "Im Paket mit Rhythmbox sollten Sie ebenfalls eine Kopie der\n"
 "GNU General Public License erhalten haben. Wenn nicht, schreiben\n"
-"Sie bitte an die Free Software Foundation\n"
+"Sie bitte an die Free Software Foundation, Inc., 59 Temple Place,\n"
+"Suite 330, Boston, MA  02111-1307  USA\n"
 
 #: ../shell/rb-shell.c:2036
 msgid "Maintainers:"
@@ -2314,16 +2327,16 @@ msgid "_Delete Feed And Files"
 msgstr "Feed und _Dateien löschen"
 
 #: ../sources/rb-podcast-source.c:1524
-#, fuzzy, c-format
+#, c-format
 msgid "All %d feed (%d)"
 msgid_plural "All %d feeds (%d)"
-msgstr[0] "Alle (%d)"
-msgstr[1] "Alle (%d)"
+msgstr[0] "%d Feed (%d Folgen)"
+msgstr[1] "Alle %d Feeds (%d Folgen)"
 
 #: ../sources/rb-podcast-source.c:1528 ../widgets/rb-property-view.c:494
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%d)"
-msgstr "Alle (%d)"
+msgstr "%s (%d)"
 
 #: ../sources/rb-podcast-source.c:1668
 msgid "Downloading podcast"
@@ -2519,30 +2532,30 @@ msgid "_File"
 msgstr "_Datei"
 
 #: ../widgets/rb-property-view.c:479
-#, fuzzy, c-format
+#, c-format
 msgid "All %d artist (%d)"
 msgid_plural "All %d artists (%d)"
-msgstr[0] "Alle (%d)"
-msgstr[1] "Alle (%d)"
+msgstr[0] "%d Künstler (%d Titel)"
+msgstr[1] "Alle %d Künstler (%d Titel)"
 
 #: ../widgets/rb-property-view.c:482
-#, fuzzy, c-format
+#, c-format
 msgid "All %d album (%d)"
 msgid_plural "All %d albums (%d)"
-msgstr[0] "Alle (%d)"
-msgstr[1] "Alle (%d)"
+msgstr[0] "%d Album (%d Titel)"
+msgstr[1] "Alle %d Alben (%d Titel)"
 
 #: ../widgets/rb-property-view.c:485
-#, fuzzy, c-format
+#, c-format
 msgid "All %d genre (%d)"
 msgid_plural "All %d genres (%d)"
-msgstr[0] "Alle (%d)"
-msgstr[1] "Alle (%d)"
+msgstr[0] "%d Genre (%d Titel)"
+msgstr[1] "Alle %d Genre (%d Titel)"
 
 #: ../widgets/rb-property-view.c:488
-#, fuzzy, c-format
+#, c-format
 msgid "All %d (%d)"
-msgstr "Alle (%d)"
+msgstr "Alle %d (%d Titel)"
 
 #: ../widgets/rb-query-creator.c:179
 msgid "Create Automatic Playlist"
