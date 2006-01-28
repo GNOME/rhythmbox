@@ -5,9 +5,20 @@ Rhythmbox requires the following packages:
 
 - A working GNOME 2.10 platform (more specifically, you need glib-2.6, gtk+-2.6,
   gnome-vfs-2.10, libgnome-2.10, gconf-2.10 and libglade-2.10)
-- Totem-plparser 1.1.3, which can be gotten by installing totem 1.1.3 or higher
-- A recent GStreamer and at least version 0.8.9 gst-plugins (newer are better)
+- Totem-plparser 1.1.5, which can be gotten by installing totem 1.1.5 or higher
+- libnautilus-burn 2.9.0 or newer, which can be gotten by installing 
+  nautilus-cd-burner
+- GStreamer 0.8 or 0.10 and associated plugin packages.  For GStreamer 0.8,
+  gst-plugins 0.8.9 or later is required.  Later releases of GStreamer are
+  always better in general.
 
+Rhythmbox can also make use of the following packages:
+
+- D-BUS 0.35 or newer
+- HAL 0.2 or newer (for iPod and generic audio player support)
+- Howl, or Avahi 0.5 or newer (for DAAP)
+- libsoup 2.2 or newer (for DAAP and Audioscrobbler)
+- libmusicbrainz 2.1.0 or newer (for audio CD track listings)
 
 
 Simple install procedure

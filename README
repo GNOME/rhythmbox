@@ -15,7 +15,7 @@ Information about mailing lists can be found at:
 
 Our IRC channel is #rhythmbox on GIMPnet (irc.gimp.org).
 
-Rhythmbox is developed primarily using in gnome cvs. To get a copy
+Rhythmbox is developed primarily using gnome cvs. To get a copy
 of the latest development tree, see this web page:
 http://www.gnome.org/projects/rhythmbox/development.html
 
@@ -57,17 +57,15 @@ In the bug report please include:
   $ gst-launch-0.8 -t filesrc location=/path/to/my/musicfile.ogg ! decodebin ! fakesink
  
   Just replace /path/to/my/musicfile.ogg with some sound file in the 2 commands
-  above.
+  above.  If Rhythmbox is compiled with GStreamer 0.10, use gst-launch-0.10 in
+  the commands above.
 
 * How to reproduce the bug.
 
-  If you can reproduce the bug with one of the programs in tests/, that
-  will be most convenient.  Otherwise, please include a short test program
-  that exhibits the behavior.  As a last resort, you can also provide
-  a pointer to a larger piece of software that can be downloaded.
-
 * If the bug was a crash, the exact text that was printed out when the
   crash occured, and a trace (which can be obtained by using gdb or bug-buddy).
+  See http://live.gnome.org/GettingTraces for more information on getting
+  stack traces.
 
 Development
 =======
