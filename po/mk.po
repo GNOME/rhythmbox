@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: mk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-01-27 12:42+0100\n"
-"PO-Revision-Date: 2006-01-27 19:00+0100\n"
+"PO-Revision-Date: 2006-01-28 12:01+0100\n"
 "Last-Translator: Arangel Angov <ufo@linux.net.mk>\n"
 "Language-Team: Macedonian <ossm-members@hedona.on.net.mk>\n"
 "MIME-Version: 1.0\n"
@@ -656,7 +656,7 @@ msgstr "Уредот '%s' не може да биде отворен. Прове
 #: ../metadata/sj-metadata-musicbrainz.c:329
 #, c-format
 msgid "This CD could not be queried: %s\n"
-msgstr ""
+msgstr "CD-то не може да биде најдено: %s\n"
 
 #: ../metadata/sj-metadata-musicbrainz.c:337
 msgid "This CD was not found.\n"
@@ -693,7 +693,7 @@ msgstr "Не успеа да се одврзам од %s"
 
 #: ../player/rb-recorder-gst.c:727
 msgid "Could not retrieve state from processing pipeline"
-msgstr ""
+msgstr "Не можам да ја добијам состојбата на работниот pipeline"
 
 #: ../player/rb-recorder-gst.c:742 ../player/rb-recorder-gst.c:750
 msgid "Could not get current track position"
@@ -771,6 +771,8 @@ msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
+"Адресата \"%s\" е веќе додадена како радио станица. Ако се работи за "
+"podcast фид, Ве молам отстранете ја радио станицата."
 
 #: ../podcast/rb-podcast-manager.c:834
 msgid "Podcast"
@@ -779,7 +781,7 @@ msgstr "Podcast"
 #: ../podcast/rb-podcast-manager.c:1589
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr ""
+msgstr "Се појави проблем при додавањето на овој podcast. Ве молам проверете ја адресата: %s"
 
 #: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -1064,7 +1066,7 @@ msgstr "Случајно по време од последното пушрањ�
 
 #: ../shell/rb-play-order.c:276
 msgid "Linear, removing entries once played"
-msgstr ""
+msgstr "Линеарно ги отстранувам пуштените записи"
 
 #. Submenu of Music
 #: ../shell/rb-playlist-manager.c:148
@@ -1294,7 +1296,7 @@ msgstr "_Лизгач за позиција на песните"
 
 #: ../shell/rb-shell-player.c:256
 msgid "Change the visibility of the song position slider"
-msgstr ""
+msgstr "Смени ја видливоста на лизгачот за позиција на песна"
 
 #: ../shell/rb-shell-player.c:534
 #, c-format
@@ -1516,11 +1518,11 @@ msgstr "Прошири го прозорецот на цел екран"
 
 #: ../shell/rb-shell.c:504
 msgid "_Queue as Sidebar"
-msgstr ""
+msgstr "_Намести како странична лента"
 
 #: ../shell/rb-shell.c:505
 msgid "Change whether the queue is visible as a source or a sidebar"
-msgstr ""
+msgstr "Смени дали редот е видлив како извор или како странична лента"
 
 #: ../shell/rb-shell.c:507
 msgid "S_tatusbar"
@@ -1607,6 +1609,10 @@ msgid ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
+"Rhythmbox is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
 
 #: ../shell/rb-shell.c:2027
 msgid ""
@@ -1614,6 +1620,9 @@ msgid ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
 msgstr ""
+"You should have received a copy of the GNU General Public License\n"
+"along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
+"59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
 
 #: ../shell/rb-shell.c:2036
 msgid "Maintainers:"
@@ -2231,7 +2240,7 @@ msgstr "Podcasts"
 
 #: ../sources/rb-podcast-source.c:828
 msgid "Delete the podcast episode and downloaded file?"
-msgstr ""
+msgstr "Да ја избришам podcast епизодата и да ја преземата датотеката?"
 
 #: ../sources/rb-podcast-source.c:831
 msgid ""
@@ -2239,6 +2248,9 @@ msgid ""
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
+"Ако изберете да ја избришете епизодата и датотеката тогаш тие ќе бидат "
+"трајно загубени.  Ве молам имајте на ум дека можете да ја избришете епизодата но "
+"да ја задржите датотеката со избирање на „избриши ја само епизодата“."
 
 #: ../sources/rb-podcast-source.c:839
 msgid "Delete _Episode Only"
@@ -2258,6 +2270,9 @@ msgid ""
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
+"Ако изберете да го избришете фидот и датотеките тие можат да бидат "
+"трајно изгубени.  Ве молам имајте на ум дека можете да го избришете фидот но "
+"да ги зачувате преземените датотеки со избирање на „избриши го само фидот“."
 
 #: ../sources/rb-podcast-source.c:1345
 msgid "Delete _Feed Only"
@@ -2271,9 +2286,9 @@ msgstr "_Избриши фидови и датотеки"
 #, c-format
 msgid "All %d feed (%d)"
 msgid_plural "All %d feeds (%d)"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Секој %d фид (%d)"
+msgstr[1] "Сите %d фидови (%d)"
+msgstr[2] "Сите %d фидови (%d)"
 
 #: ../sources/rb-podcast-source.c:1528 ../widgets/rb-property-view.c:494
 #, c-format
@@ -2476,30 +2491,30 @@ msgstr "_Датотека"
 #, c-format
 msgid "All %d artist (%d)"
 msgid_plural "All %d artists (%d)"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Секој %d изведувач (%d)"
+msgstr[1] "Сите %d изведувачи (%d)"
+msgstr[2] "Сите %d изведувачи (%d)"
 
 #: ../widgets/rb-property-view.c:482
 #, c-format
 msgid "All %d album (%d)"
 msgid_plural "All %d albums (%d)"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Секој %d албум (%d)"
+msgstr[1] "Сите %d албуми (%d)"
+msgstr[2] "Сите %d албуми (%d)"
 
 #: ../widgets/rb-property-view.c:485
 #, c-format
 msgid "All %d genre (%d)"
 msgid_plural "All %d genres (%d)"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Секој %d жанр (%d)"
+msgstr[1] "Сите %d жанрови (%d)"
+msgstr[2] "Сите %d жанрови (%d)"
 
 #: ../widgets/rb-property-view.c:488
 #, c-format
 msgid "All %d (%d)"
-msgstr ""
+msgstr "Сите %d (%d)"
 
 #: ../widgets/rb-query-creator.c:179
 msgid "Create Automatic Playlist"
@@ -2568,23 +2583,23 @@ msgstr "_Обратен азбучен редослед"
 
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "W_ith more highly rated tracks first"
-msgstr ""
+msgstr "П_рво со најпопуларните песни"
 
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "W_ith more often played songs first"
-msgstr ""
+msgstr "П_рво со најпуштаните песни"
 
 #: ../widgets/rb-query-creator-properties.c:99
 msgid "W_ith newer tracks first"
-msgstr ""
+msgstr "П_рво со најновите песни"
 
 #: ../widgets/rb-query-creator-properties.c:100
 msgid "W_ith longer tracks first"
-msgstr ""
+msgstr "П_рво со најдолгите песни"
 
 #: ../widgets/rb-query-creator-properties.c:101
 msgid "_In decreasing order"
-msgstr ""
+msgstr "_По опаѓачки редослед"
 
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Last Played"
@@ -2592,7 +2607,7 @@ msgstr "Последен пат свирено"
 
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "W_ith more recently played tracks first"
-msgstr ""
+msgstr "П_рво со неодамнешните песни"
 
 #: ../widgets/rb-query-creator-properties.c:103
 msgid "Date Added"
@@ -2600,7 +2615,7 @@ msgstr "Датумот е додаден"
 
 #: ../widgets/rb-query-creator-properties.c:103
 msgid "W_ith more recently added tracks first"
-msgstr ""
+msgstr "П_рво со неодамна додадените песни"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgid "contains"
