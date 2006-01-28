@@ -1561,7 +1561,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 		/* initialize the rating */
 		g_value_init (&value, G_TYPE_DOUBLE);
-		g_value_set_double (&value, 2.5);
+		g_value_set_double (&value, 0);
 		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &value);
 		g_value_unset (&value);
 

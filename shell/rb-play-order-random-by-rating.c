@@ -61,5 +61,12 @@ rb_random_play_order_by_rating_init (RBRandomPlayOrderByRating *porder)
 static double
 rb_random_by_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, RhythmDBEntry *entry)
 {
-	return entry->rating;
+	double rating;
+
+	if (entry->rating > 0.01)
+		rating = entry->rating;
+	else
+		rating = 2.5;
+
+	return rating;
 }

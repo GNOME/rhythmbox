@@ -5,6 +5,17 @@
 
 2006-01-28  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load): change the
+	default rating back to 0 (from 2.5, which was needed for autorating).
+
+	* shell/rb-play-order-random-by-age-and-rating.c:
+	(rb_random_by_age_and_rating_get_entry_weight):
+	* shell/rb-play-order-random-by-rating.c:
+	(rb_random_by_rating_get_entry_weight): Treat ratings of 0 the same as
+	2.5 for the purposes of weighting entries.
+
+2006-01-28  James Livingston  <jrl@ids.org.au>
+
 	* lib/rb-cut-and-paste-code.c: (rb_utf_friendly_time): Add some
 	translator comments, to make it clearer what the "friendly time"
 	formatting strings mean.
