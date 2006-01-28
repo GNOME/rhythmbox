@@ -78,7 +78,7 @@ rb_random_by_age_and_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmD
 	if (seconds_since_last_play < 1)
 		seconds_since_last_play = 1;
 
-	if (rating > 0.01)
+	if (entry->rating > 0.01)
 		rating = entry->rating;
 	else
 		rating = 2.5;
