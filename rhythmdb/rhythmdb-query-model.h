@@ -65,7 +65,8 @@ GType			rhythmdb_query_model_get_type	(void);
 
 RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 							 GCompareDataFunc sort_func,
-							 gpointer user_data);
+							 RhythmDBPropType sort_prop_id,
+							 gboolean sort_reverse);
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
@@ -102,11 +103,37 @@ char *			rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model);
 
 void			rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 							     GCompareDataFunc sort_func,
-							     gpointer user_data,
-							     GDestroyNotify sort_destroy_notify);
+							     RhythmDBPropType sort_prop_id,
+							     gboolean sort_reverse);
 
 void			rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter);
 
+gint 			rhythmdb_query_model_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+								 RhythmDBQueryModel *model);
+
+gint 			rhythmdb_query_model_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							       RhythmDBQueryModel *model);
+
+gint 			rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							      RhythmDBQueryModel *model);
+
+gint 			rhythmdb_query_model_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							       RhythmDBQueryModel *model);
+				
+gint 			rhythmdb_query_model_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							      RhythmDBQueryModel *model); 
+
+gint 			rhythmdb_query_model_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							      RhythmDBQueryModel *model);
+
+gint 			rhythmdb_query_model_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+								       RhythmDBQueryModel *model);
+
+gint 			rhythmdb_query_model_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							      RhythmDBQueryModel *model);
+
+gint 			rhythmdb_query_model_date_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							     RhythmDBQueryModel *model);
 G_END_DECLS
 
-#endif /* __RHYTHMBDB_QUERY_MODEL_H */
+#endif /* __RHYTHMDB_QUERY_MODEL_H */

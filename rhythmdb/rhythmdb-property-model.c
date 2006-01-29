@@ -850,16 +850,20 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (dragsource);
 	guint target;
 	GtkTargetList *drag_target_list;
+	GCompareDataFunc sort_func = NULL;
 
 	switch (model->priv->propid) {
 	case RHYTHMDB_PROP_GENRE:
 		drag_target_list = rhythmdb_property_model_genre_drag_target_list;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_genre_sort_func;
 		break;
 	case RHYTHMDB_PROP_ALBUM:
 		drag_target_list = rhythmdb_property_model_album_drag_target_list;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_album_sort_func;
 		break;
 	case RHYTHMDB_PROP_ARTIST:
 		drag_target_list = rhythmdb_property_model_artist_drag_target_list;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_artist_sort_func;
 		break;
 	default:
 		g_assert_not_reached ();
@@ -873,12 +877,15 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 
 	if (target == TARGET_URIS) {
 		RhythmDB *db = model->priv->db;
- 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(db));
+ 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
  		GString* reply = g_string_new ("");
  		GtkTreeIter iter;
  		gboolean is_all;
  		struct QueryModelCbStruct tmp;
 		GtkTreePath *path;
+
+		rhythmdb_query_model_set_sort_order (RHYTHMDB_QUERY_MODEL (query_model),
+						     sort_func, 0, FALSE);
 
 		rb_debug ("getting drag data as uri list");
 		/* check if first selected row is 'All' */

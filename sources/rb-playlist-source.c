@@ -256,7 +256,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 							 rb_playlist_source_track_cell_data_func,
 							 source, NULL);
 		rb_entry_view_append_column_custom (source->priv->songs, column, title,
-						    "PlaylistTrack", NULL, NULL);
+						    "PlaylistTrack", NULL, 0);
 	}
 
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);

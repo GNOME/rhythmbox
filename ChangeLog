@@ -1,4 +1,64 @@
 2006-01-29  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* INSTALL.quick: More random updates
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property),
+	(rhythmdb_query_model_finalize), (rhythmdb_query_model_new):
+	Remove user sort data handling, take a property ID and a reverse
+	flag instead.
+	(rhythmdb_query_model_insert_into_main_list),
+	(rhythmdb_query_model_insert_into_limited_list),
+	(rhythmdb_query_model_do_reorder),
+	(_reverse_sorting_func):
+	Handle reverse sorting by calling _reverse_sorting_func, which
+	calls the real sort function and reverses the result.
+	(rhythmdb_query_model_set_sort_order):
+	Allow this to be called to set the initial sort order for limited
+	queries, and handle reverse sorting when reordering.
+	(rhythmdb_query_model_location_sort_func),
+	(rhythmdb_query_model_album_sort_func),
+	(rhythmdb_query_model_artist_sort_func),
+	(rhythmdb_query_model_genre_sort_func),
+	(rhythmdb_query_model_track_sort_func),
+	(rhythmdb_query_model_double_ceiling_sort_func),
+	(rhythmdb_query_model_ulong_sort_func),
+	(rhythmdb_query_model_date_sort_func),
+	(rhythmdb_query_model_string_sort_func):
+	Sort functions moved from rb-entry-view.c.
+	* rhythmdb/rhythmdb-query-model.h:
+	Add the sort functions, and update the changed functions.
+	
+	* widgets/rb-entry-view.c: (rb_entry_view_set_property):
+	Just call _resort_model when the query model is set, since it
+	does all the same things.
+	(rb_entry_view_append_column):
+	Rework bits so the rating column doesn't have to be so much of a
+	special case.
+	(rb_entry_view_append_column_custom):
+	Take a property ID to sort on, rather than arbitrary custom data.
+	(rb_entry_view_resort_model):
+	Query model does all the reverse sort handling now.
+	* widgets/rb-entry-view.h: Update _append_column_custom.
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_post_date_cell_sort_func),
+	(rb_podcast_source_post_status_cell_sort_func),
+	(rb_podcast_source_post_feed_cell_sort_func):
+	Updates required by all the other changes.
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_drag_data_get):
+	Sort the query results on the selected property,
+	so they arrive in the expected order.  All the other changes were made
+	to make this possible.  Fixes bug #327494.
+
+2006-01-29  Jonathan Matthew  <jonathan@kaolin.hn.org>
 	
 	* shell/rb-shell-clipboard.c:
 	Use GTK_STOCK_REMOVE icon for the remove action in

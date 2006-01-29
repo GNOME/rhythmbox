@@ -51,7 +51,7 @@ static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0,
 struct RBEntryViewColumnSortData
 {
 	GCompareDataFunc func;
-	gpointer data;
+	RhythmDBPropType prop_id;
 };
 
 static void rb_entry_view_class_init (RBEntryViewClass *klass);
@@ -118,13 +118,6 @@ static void rb_entry_view_playing_song_changed (RBShellPlayer *player,
 						RhythmDBEntry *entry,
 						RBEntryView *view);
 
-struct RBEntryViewReverseSortingData
-{
-	GCompareDataFunc func;
-	gpointer data;
-};
-
-static gint reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReverseSortingData *data);
 
 struct RBEntryViewPrivate
 {
@@ -479,31 +472,8 @@ rb_entry_view_set_property (GObject *object,
 					 0);
 
 		view->priv->model = new_model;
-		if (view->priv->sorting_column) {
-			struct RBEntryViewColumnSortData *sort_data;
-			sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
-							 view->priv->sorting_column);
-			g_assert (sort_data);
-
-			if (view->priv->sorting_order != GTK_SORT_DESCENDING) {
-				g_object_set (G_OBJECT (view->priv->model),
-					      "sort-func", sort_data->func,
-					      "sort-data", sort_data->data,
-					      "sort-data-destroy", NULL,
-					      NULL);
-			} else {
-				struct RBEntryViewReverseSortingData *reverse_sorting_data
-					= g_new (struct RBEntryViewReverseSortingData, 1);
-				reverse_sorting_data->func = sort_data->func;
-				reverse_sorting_data->data = sort_data->data;
-
-				g_object_set (G_OBJECT (view->priv->model),
-					      "sort-func", reverse_sorting_func,
-					      "sort-data", reverse_sorting_data,
-					      "sort-data-destroy", g_free,
-					      NULL);
-			}
-		}
+		if (view->priv->sorting_column)
+			rb_entry_view_resort_model (view);
 
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (new_model));
@@ -597,223 +567,11 @@ rb_entry_view_set_model (RBEntryView *view, RhythmDBQueryModel *model)
 	g_object_set (G_OBJECT (view), "model", model, NULL);
 }
 
-static gint
-reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReverseSortingData *data)
-{
-	return - data->func (a, b, data->data);
-}
-
 /* Sweet name, eh? */
 struct RBEntryViewCellDataFuncData {
 	RBEntryView *view;
 	RhythmDBPropType propid;
 };
-
-static gint
-rb_entry_view_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				  RBEntryView *view)
-{
-	const char *a_val;
-	const char *b_val;
-
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_LOCATION);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_LOCATION);
-
-	if (a_val == NULL) {
-		if (b_val == NULL)
-			return 0;
-		else
-			return -1;
-	} else if (b_val == NULL)
-		return 1;
-	else
-		return strcmp (a_val, b_val);
-}
-
-static gint
-rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			       RBEntryView *view)
-{
-	const char *a_val;
-	const char *b_val;
-	gint ret;
-
-	/* Sort by album name */
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-
-	if (a_val == NULL) {
-		if (b_val == NULL)
-			ret = 0;
-		else
-			ret = -1;
-	} else if (b_val == NULL)
-		ret = 1;
-	else
-		ret = strcmp (a_val, b_val);
-
-	if (ret != 0)
-		return ret;
-
-	/* Then by disc number, */
-	if (a->discnum != b->discnum)
-		return (a->discnum < b->discnum ? -1 : 1);
-
-	/* by track number */
-	if (a->tracknum != b->tracknum)
-		return (a->tracknum < b->tracknum ? -1 : 1);
-
-	/*  by title */
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
-
-	if (a_val == NULL) {
-		if (b_val == NULL)
-			return 0;
-		else
-			return -1;
-	} else if (b_val == NULL)
-		return 1;
-	else
-		return rb_entry_view_location_sort_func (a, b, view);
-}
-
-static gint
-rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				RBEntryView *view)
-{
-	const char *a_val;
-	const char *b_val;
-	gint ret;
-
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-
-	if (a_val == NULL) {
-		if (b_val == NULL)
-			ret = 0;
-		else
-			ret = -1;
-	} else if (b_val == NULL)
-		ret = 1;
-	else
-		ret = strcmp (a_val, b_val);
-
-	if (ret != 0)
-		return ret;
-	else
-		return rb_entry_view_album_sort_func (a, b, view);
-}
-
-static gint
-rb_entry_view_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			       RBEntryView *view)
-{
-	const char *a_val;
-	const char *b_val;
-	gint ret;
-
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_GENRE_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_GENRE_SORT_KEY);
-
-	if (a_val == NULL) {
-		if (b_val == NULL)
-			ret = 0;
-		else
-			ret = -1;
-	} else if (b_val == NULL)
-		ret = 1;
-	else
-		ret = strcmp (a_val, b_val);
-
-	if (ret != 0)
-		return ret;
-	else
-		return rb_entry_view_artist_sort_func (a, b, view);
-}
-
-static gint
-rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			       RBEntryView *view)
-{
-	return rb_entry_view_album_sort_func (a, b, view);
-}
-
-static gint
-rb_entry_view_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				       struct RBEntryViewCellDataFuncData *data)
-{
-	gdouble a_val, b_val;
-
-	a_val = ceil (rhythmdb_entry_get_double (a, data->propid));
-	b_val = ceil (rhythmdb_entry_get_double (b, data->propid));
-
-	if (a_val != b_val)
-		return (a_val > b_val ? 1 : -1);
-	else
-		return rb_entry_view_location_sort_func (a, b, data->view);
-}
-
-static gint
-rb_entry_view_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			       struct RBEntryViewCellDataFuncData *data)
-{
-	gulong a_val, b_val;
-
-	a_val = rhythmdb_entry_get_ulong (a, data->propid);
-	b_val = rhythmdb_entry_get_ulong (b, data->propid);
-
-	if (a_val != b_val)
-		return (a_val > b_val ? 1 : -1);
-	else
-		return rb_entry_view_location_sort_func (a, b, data->view);
-}
-
-static gint
-rb_entry_view_date_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			      RBEntryView *view)
-{
-	gulong a_val, b_val;
-	gint ret;
-
-	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_DATE);
-	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_DATE);
-
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-	if (a_val > b_val)
-		return 1;
-	else if (a_val < b_val)
-		return -1;
-	else
-		return rb_entry_view_album_sort_func (a, b, view);
-}
-
-static gint
-rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				struct RBEntryViewCellDataFuncData *data)
-{
-	const char *a_val;
-	const char *b_val;
-	gint ret;
-
-	a_val = rhythmdb_entry_get_string (a, data->propid);
-	b_val = rhythmdb_entry_get_string (b, data->propid);
-
-	if (a_val == NULL) {
-		if (b_val == NULL)
-			ret = 0;
-		else
-			ret = -1;
-	} else if (b_val == NULL)
-		ret = 1;
-	else
-		ret = strcmp (a_val, b_val);
-
-	if (ret != 0)
-		return ret;
-	else
-		return rb_entry_view_location_sort_func (a, b, data->view);
-}
 
 static void
 rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -1127,56 +885,23 @@ void
 rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 {
 	GtkTreeViewColumn *column;
-	GtkCellRenderer *renderer;
+	GtkCellRenderer *renderer = NULL;
 	struct RBEntryViewCellDataFuncData *cell_data;
-	struct RBEntryViewCellDataFuncData *sort_data;
 	const char *title = NULL;
 	const char *key = NULL;
 	const char *strings[4] = {0};
 	GtkTreeCellDataFunc cell_data_func = NULL;
 	GCompareDataFunc sort_func = NULL;
-	gpointer real_sort_data = NULL;
 	RhythmDBPropType propid;
+	RhythmDBPropType sort_propid = RHYTHMDB_NUM_PROPERTIES;
 	gboolean ellipsize = FALSE;
+	gboolean resizable = TRUE;
+	gint column_width = -1;
 
 	column = gtk_tree_view_column_new ();
 
-	if (coltype == RB_ENTRY_VIEW_COL_RATING) {
-		gint width;
-
-		propid = RHYTHMDB_PROP_RATING;
-
-		sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
-		sort_data->view = view;
-		sort_data->propid = propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_double_ceiling_sort_func;
-
-		renderer = rb_cell_renderer_rating_new ();
-		gtk_tree_view_column_pack_start (column, renderer, TRUE);
-		gtk_tree_view_column_set_cell_data_func (column, renderer,
-							 (GtkTreeCellDataFunc)
-							 rb_entry_view_rating_cell_data_func,
-							 view,
-							 NULL);
-		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-		gtk_tree_view_column_set_clickable (column, TRUE);
-		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
-		gtk_tree_view_column_set_fixed_width (column, width * 5 + 5);
-		g_signal_connect_object (renderer,
-					 "rated",
-					 G_CALLBACK (rb_entry_view_rated_cb),
-					 G_OBJECT (view),
-					 0);
-		real_sort_data = sort_data;
-		title = _("_Rating");
-		key = "Rating";
-		goto append;
-	}
-
 	cell_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
 	cell_data->view = view;
-	sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
-	sort_data->view = view;
 
 	switch (coltype)
 	{
@@ -1184,8 +909,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_TRACK_NUMBER;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_long_cell_data_func;
-		sort_func = (GCompareDataFunc) rb_entry_view_track_sort_func;
-		real_sort_data = view;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_track_sort_func;
 		title = _("Trac_k");
 		key = "Track";
 		strings[0] = title;
@@ -1194,9 +918,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_TITLE:
 		propid = RHYTHMDB_PROP_TITLE;
 		cell_data->propid = propid;
-		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-		sort_data->propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		sort_propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_string_sort_func;
 		title = _("_Title");
 		key = "Title";
 		ellipsize = TRUE;
@@ -1205,9 +929,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_ARTIST;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-		sort_data->propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_artist_sort_func;
-		real_sort_data = view;
+		sort_propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_artist_sort_func;
 		title = _("Art_ist");
 		key = "Artist";
 		ellipsize = TRUE;
@@ -1215,10 +938,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_ALBUM:
 		propid = RHYTHMDB_PROP_ALBUM;
 		cell_data->propid = propid;
-		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-		sort_data->propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_album_sort_func;
-		real_sort_data = view;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		sort_propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_album_sort_func;
 		title = _("_Album");
 		key = "Album";
 		ellipsize = TRUE;
@@ -1227,9 +949,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_GENRE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-		sort_data->propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_genre_sort_func;
-		real_sort_data = view;
+		sort_propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_genre_sort_func;
 		title = _("_Genre");
 		key = "Genre";
 		ellipsize = TRUE;
@@ -1238,8 +959,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_DURATION;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
-		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		sort_propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
 		title = _("Tim_e");
 		key = "Time";
 		strings[0] = title;
@@ -1250,8 +971,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_DATE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_year_cell_data_func;
-		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_date_sort_func;
+		sort_propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_date_sort_func;
 		title = _("_Year");
 		key = "Year";
 		strings[0] = title;
@@ -1263,21 +984,43 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_BITRATE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
-		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		sort_propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
 		title = _("_Quality");
 		key = "Quality";
 		strings[0] = title;
 		strings[1] = "000";
 		break;
 #endif
-	/* RB_ENTRY_VIEW_COL_RATING at bottom */
+	case RB_ENTRY_VIEW_COL_RATING:
+		propid = RHYTHMDB_PROP_RATING;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_double_ceiling_sort_func;
+
+		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &column_width, NULL);
+		column_width = column_width * 5 + 5;
+		resizable = FALSE;
+		title = _("_Rating");
+		key = "Rating";
+
+		renderer = rb_cell_renderer_rating_new ();
+		gtk_tree_view_column_pack_start (column, renderer, TRUE);
+		gtk_tree_view_column_set_cell_data_func (column, renderer,
+							 (GtkTreeCellDataFunc)
+							 rb_entry_view_rating_cell_data_func,
+							 view,
+							 NULL);
+		g_signal_connect_object (renderer,
+					 "rated",
+					 G_CALLBACK (rb_entry_view_rated_cb),
+					 G_OBJECT (view),
+					 0);
+		break;
 	case RB_ENTRY_VIEW_COL_PLAY_COUNT:
 		propid = RHYTHMDB_PROP_PLAY_COUNT;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
-		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		sort_propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
 		title = _("_Play Count");
 		key = "PlayCount";
 		strings[0] = title;
@@ -1288,8 +1031,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_LAST_PLAYED;
 		cell_data->propid = RHYTHMDB_PROP_LAST_PLAYED_STR;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-		sort_data->propid = RHYTHMDB_PROP_LAST_PLAYED;
-		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		sort_propid = RHYTHMDB_PROP_LAST_PLAYED;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
 		title = _("_Last Played");
 		key = "LastPlayed";
 		strings[0] = title;
@@ -1300,21 +1043,28 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		propid = RHYTHMDB_PROP_FIRST_SEEN;
 		cell_data->propid = RHYTHMDB_PROP_FIRST_SEEN_STR;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-		sort_data->propid = RHYTHMDB_PROP_FIRST_SEEN;
-		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
+		sort_propid = RHYTHMDB_PROP_FIRST_SEEN;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
 		title = _("_Date Added");
 		key = "FirstSeen";
 		strings[0] = title;
 		strings[1] = rb_entry_view_get_time_date_column_sample ();
 		break;
-	case RB_ENTRY_VIEW_COL_RATING:
 	default:
 		g_assert_not_reached ();
 		propid = -1;
 		break;
 	}
+	
+	if (sort_propid == RHYTHMDB_NUM_PROPERTIES)
+		sort_propid = propid;
 
-	renderer = gtk_cell_renderer_text_new ();
+	if (renderer == NULL) {
+		renderer = gtk_cell_renderer_text_new ();
+		gtk_tree_view_column_pack_start (column, renderer, TRUE);
+		gtk_tree_view_column_set_cell_data_func (column, renderer,
+							 cell_data_func, cell_data, g_free);
+	}
 
 	/* 
 	 * Columns must either be expanding (ellipsized) or have a 
@@ -1324,21 +1074,20 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	if (ellipsize) {
 		g_object_set (G_OBJECT (renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 		gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
+	} else if (column_width != -1) {
+		gtk_tree_view_column_set_fixed_width (column, column_width);
 	} else {
 		rb_entry_view_set_fixed_column_width (view, column, renderer, strings);
 	}
 
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-	gtk_tree_view_column_set_cell_data_func (column, renderer,
-						 cell_data_func, cell_data, g_free);
+	if (resizable)
+		gtk_tree_view_column_set_resizable (column, TRUE);
+
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_clickable (column, TRUE);
-	gtk_tree_view_column_set_resizable (column, TRUE);
 
-append:
 	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
-	rb_entry_view_append_column_custom (view, column, title, key, sort_func,
-					    real_sort_data ? real_sort_data : sort_data);
+	rb_entry_view_append_column_custom (view, column, title, key, sort_func, sort_propid);
 }
 
 void
@@ -1346,7 +1095,8 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 				    GtkTreeViewColumn *column,
 				    const char *title,
 				    const char *key,
-				    GCompareDataFunc sort_func, gpointer user_data)
+				    GCompareDataFunc sort_func,
+				    RhythmDBPropType sort_prop_id)
 {
 	struct RBEntryViewColumnSortData *sortdata;
 
@@ -1367,7 +1117,7 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 	if (sort_func != NULL) {
 		sortdata = g_new (struct RBEntryViewColumnSortData, 1);
 		sortdata->func = (GCompareDataFunc) sort_func;
-		sortdata->data = user_data;
+		sortdata->prop_id = sort_prop_id;
 		g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
 	}
 	g_hash_table_insert (view->priv->column_key_map, g_strdup (key), column);
@@ -2093,20 +1843,8 @@ rb_entry_view_resort_model (RBEntryView *view)
 					 view->priv->sorting_column);
 	g_assert (sort_data);
 
-	if (view->priv->sorting_order != GTK_SORT_DESCENDING) {
-		rhythmdb_query_model_set_sort_order (view->priv->model,
-			      			     sort_data->func,
-			      			     sort_data->data,
-			      			     NULL);
-	} else {
-		struct RBEntryViewReverseSortingData *reverse_sorting_data
-			= g_new (struct RBEntryViewReverseSortingData, 1);
-		reverse_sorting_data->func = sort_data->func;
-		reverse_sorting_data->data = sort_data->data;
-
-		rhythmdb_query_model_set_sort_order (view->priv->model,
-			      			     (GCompareDataFunc)reverse_sorting_func,
-						     reverse_sorting_data,
-			      			     g_free);
-	}
+	rhythmdb_query_model_set_sort_order (view->priv->model,
+					     sort_data->func,
+					     sort_data->prop_id,
+					     (view->priv->sorting_order == GTK_SORT_DESCENDING));
 }

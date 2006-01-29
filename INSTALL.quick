@@ -9,8 +9,9 @@ Rhythmbox requires the following packages:
 - libnautilus-burn 2.9.0 or newer, which can be gotten by installing 
   nautilus-cd-burner
 - GStreamer 0.8 or 0.10 and associated plugin packages.  For GStreamer 0.8,
-  gst-plugins 0.8.9 or later is required.  Later releases of GStreamer are
-  always better in general.
+  gst-plugins 0.8.9 or later is required.  For GStreamer 0.10, both 
+  gst-plugins-base and gst-plugins-good are required.  gst-plugins-ugly is
+  useful for MP3 support.  Later releases of GStreamer are better in general.
 
 Rhythmbox can also make use of the following packages:
 
@@ -19,6 +20,7 @@ Rhythmbox can also make use of the following packages:
 - Howl, or Avahi 0.5 or newer (for DAAP)
 - libsoup 2.2 or newer (for DAAP and Audioscrobbler)
 - libmusicbrainz 2.1.0 or newer (for audio CD track listings)
+- libnotify 0.2.2 or newer
 
 
 Simple install procedure

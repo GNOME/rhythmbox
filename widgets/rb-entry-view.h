@@ -98,7 +98,7 @@ void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype
 void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
 							 const char *title, const char *key,
 							 GCompareDataFunc sort_func,
-							 gpointer user_data);
+							 RhythmDBPropType sort_propid);
 
 void		rb_entry_view_set_columns_clickable	(RBEntryView *view, gboolean clickable);
 

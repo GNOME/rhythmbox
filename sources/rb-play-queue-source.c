@@ -145,7 +145,7 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 						 rb_play_queue_source_track_info_cell_data_func,
 						 source, NULL);
 	rb_entry_view_append_column_custom (priv->sidebar, priv->sidebar_column,
-					    _("Queued songs"), "Title", NULL, NULL);
+					    _("Queued songs"), "Title", NULL, 0);
 	rb_entry_view_set_columns_clickable (priv->sidebar, FALSE);
 	rb_playlist_source_setup_entry_view (RB_PLAYLIST_SOURCE (source), priv->sidebar);
 

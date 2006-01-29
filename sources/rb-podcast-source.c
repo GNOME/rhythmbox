@@ -151,15 +151,15 @@ static void register_action_group			(RBPodcastSource *source);
 
 static gint rb_podcast_source_post_date_cell_sort_func 	(RhythmDBEntry *a,
 							 RhythmDBEntry *b,
-		                                   	 RBPodcastSource *source);
+		                                   	 RhythmDBQueryModel *model);
 
 static gint rb_podcast_source_post_status_cell_sort_func(RhythmDBEntry *a,
 							 RhythmDBEntry *b,
-		                                   	 RBPodcastSource *source);
+		                                   	 RhythmDBQueryModel *model);
 
 static gint rb_podcast_source_post_feed_cell_sort_func 	(RhythmDBEntry *a,
 							 RhythmDBEntry *b,
-		                                   	 RBPodcastSource *source);
+		                                   	 RhythmDBQueryModel *model);
 
 static void rb_podcast_source_post_status_cell_data_func(GtkTreeViewColumn *column,
 							 GtkCellRenderer *renderer,
@@ -503,7 +503,7 @@ rb_podcast_source_constructor (GType type,
 	
 	rb_entry_view_append_column_custom (source->priv->posts, column, 
 					    _("_Date"), "Date", 
-					    (GCompareDataFunc) rb_podcast_source_post_date_cell_sort_func, NULL);
+					    (GCompareDataFunc) rb_podcast_source_post_date_cell_sort_func, 0);
 						    
 
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_TITLE);
@@ -525,7 +525,7 @@ rb_podcast_source_constructor (GType type,
 	
 	rb_entry_view_append_column_custom (source->priv->posts, column, 
 					    _("_Feed"), "Feed", 
-					    (GCompareDataFunc) rb_podcast_source_post_feed_cell_sort_func, NULL);
+					    (GCompareDataFunc) rb_podcast_source_post_feed_cell_sort_func, 0);
 
 	
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_DURATION);
@@ -565,7 +565,7 @@ rb_podcast_source_constructor (GType type,
 	
 	rb_entry_view_append_column_custom (source->priv->posts, column, 
 					    _("Status"), "Status", 
-					    (GCompareDataFunc) rb_podcast_source_post_status_cell_sort_func, NULL);
+					    (GCompareDataFunc) rb_podcast_source_post_status_cell_sort_func, 0);
 
 	g_signal_connect_object (G_OBJECT (source->priv->posts),
 				 "sort-order-changed",
@@ -1712,7 +1712,7 @@ rb_podcast_source_shutdown	(RBPodcastSource *source)
 static gint
 rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a,
 					    RhythmDBEntry *b,
-	                                    RBPodcastSource *source)
+					    RhythmDBQueryModel *model)
 {
 	gulong a_val, b_val;
 	gint ret;
@@ -1723,7 +1723,7 @@ rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a,
 	if (a_val != b_val)
 		ret = (a_val > b_val) ? 1 : -1;
 	else
-		ret = rb_podcast_source_post_feed_cell_sort_func (a, b, source);
+		ret = rb_podcast_source_post_feed_cell_sort_func (a, b, model);
 
         return ret;
 }
@@ -1731,7 +1731,7 @@ rb_podcast_source_post_date_cell_sort_func (RhythmDBEntry *a,
 static gint
 rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a,
 					      RhythmDBEntry *b,
-	                                      RBPodcastSource *source)
+					      RhythmDBQueryModel *model)
 {
 	gulong a_val, b_val;
 	gint ret;
@@ -1742,7 +1742,7 @@ rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a,
         if (a_val != b_val)
 		ret = (a_val > b_val) ? 1 : -1;
 	else
-		ret = rb_podcast_source_post_feed_cell_sort_func (a, b, source);
+		ret = rb_podcast_source_post_feed_cell_sort_func (a, b, model);
 
 	return ret;
 }
@@ -1750,7 +1750,7 @@ rb_podcast_source_post_status_cell_sort_func (RhythmDBEntry *a,
 static gint
 rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
 					    RhythmDBEntry *b,
-					    RBPodcastSource *source)
+					    RhythmDBQueryModel *model)
 {
 	const char *a_str, *b_str;
 	gint ret;
