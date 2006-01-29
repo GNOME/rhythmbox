@@ -1512,20 +1512,22 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	GTimeVal time;
 
 	if (event->error) {
-		RhythmDBLoadErrorData *data;
-
-		if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE))
+		if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
+			rb_debug ("found file which will be ignored %s", event->real_uri);
 			return TRUE;
+		} else {
+			RhythmDBLoadErrorData *data;
 
-		rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
-		data = g_new0 (RhythmDBLoadErrorData, 1);
-		g_object_ref (G_OBJECT (db));
-		data->db = db;
-		data->uri = g_strdup (event->real_uri);
-		data->msg = g_strdup (event->error->message);
-		
-		g_idle_add ((GSourceFunc)emit_load_error_idle, data);
-		return TRUE;
+			rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
+			data = g_new0 (RhythmDBLoadErrorData, 1);
+			g_object_ref (G_OBJECT (db));
+			data->db = db;
+			data->uri = g_strdup (event->real_uri);
+			data->msg = g_strdup (event->error->message);
+
+			g_idle_add ((GSourceFunc)emit_load_error_idle, data);
+			return TRUE;
+		}
 	}
 
 	if (rhythmdb_get_readonly (db)) {
@@ -1585,7 +1587,6 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
-	rhythmdb_entry_set_visibility (db, entry, TRUE);
 
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
@@ -2097,7 +2098,7 @@ action_thread_main (RhythmDB *db)
 void
 rhythmdb_add_uri (RhythmDB *db, const char *uri)
 {
-	rhythmdb_add_uri_with_type (db, uri, RHYTHMDB_ENTRY_TYPE_SONG);
+	rhythmdb_add_uri_with_type (db, uri, -1);
 }
 
 void

@@ -81,6 +81,7 @@ struct RBMetaDataPrivate
 	gboolean handoff;
 	gboolean eos;
 	gboolean non_audio;
+	gboolean has_video;
 	GError *error;
 };
 
@@ -590,6 +591,10 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 			/* what happens if we get two audio pads from the same stream? 
 			 * can this happen?
 			 */
+		} else if (g_str_has_prefix (mimetype, "video/")) {
+			rb_debug ("got decoded video pad of type %s", mimetype);
+			md->priv->non_audio = TRUE;
+			md->priv->has_video = TRUE;
 		} else {
 			/* assume anything we can get a video or text stream out of is
 			 * something that should be fed to totem rather than rhythmbox.
@@ -735,6 +740,7 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->eos = FALSE;
 	md->priv->handoff = FALSE;
 	md->priv->non_audio = FALSE;
+	md->priv->has_video = FALSE;
 
 	if (md->priv->pipeline) {
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
@@ -913,9 +919,17 @@ rb_metadata_load (RBMetaData *md,
 		gboolean ignore = FALSE;
 		int i;
 
-		for (i = 0; i < G_N_ELEMENTS (ignore_mime_types); i++)
-			if (g_str_has_prefix (md->priv->type, ignore_mime_types[i]))
-				ignore = TRUE;
+		if (md->priv->has_video) {
+			ignore = TRUE;
+		} else {
+			for (i = 0; i < G_N_ELEMENTS (ignore_mime_types); i++) {
+				if (g_str_has_prefix (md->priv->type, ignore_mime_types[i])) {
+					ignore = TRUE;
+					break;
+				}
+			}
+		}
+
 		if (!ignore)
 			g_set_error (error,
 				     RB_METADATA_ERROR,
@@ -949,10 +963,6 @@ rb_metadata_load (RBMetaData *md,
 		}
 	}
 
-	if (*error != NULL) {
-		g_free (md->priv->type);
-		md->priv->type = NULL;
-	}
  out:
 	if (pipeline != NULL)
 		gst_object_unref (GST_OBJECT (pipeline));

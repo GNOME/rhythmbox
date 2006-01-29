@@ -1,3 +1,11 @@
+2006-01-29  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load):
+	(rhythmdb_add_uri):
+	* metadata/rb-metadata-gst.c: emit RB_METADATA_ERROR_NOT_AUDIO_IGNORE
+	for files containing known video streams.
+
+
 2006-01-29  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* INSTALL.quick: Random unupdates; gst-plugins-good isn't actually
