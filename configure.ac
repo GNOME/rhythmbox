@@ -229,9 +229,6 @@ dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
 			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox **EXPERIMENTAL**]))
-if test x"$enable_daap" = xyes; then
-   AC_MSG_WARN([DAAP support is experimental, and may cause Rhythmbox to crash uncontrollably, use at your own risk])
-fi
 
 AC_ARG_WITH(mdns,
    AC_HELP_STRING([--with-mdns=auto|howl|avahi],
@@ -321,19 +318,6 @@ if test x"$with_mdns" = xavahi; then
 fi
 
 
-if test x"$enable_daap" = xyes; then
-   enable_daap="no"
-
-  if test x"$have_mdns" = xyes; then
-	 AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if DAAP should be enabled])
-	 enable_daap="yes"
-	 AC_SUBST(MDNS_CFLAGS)
-	 AC_SUBST(MDNS_LIBS)
-  else
-	 AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implentation found.  Install Howl or Avahi])
-  fi	
-fi
-AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 
 LIBNOTIFY_REQUIRED=0.2.2
 AC_ARG_ENABLE(libnotify,
@@ -410,11 +394,28 @@ AM_CONDITIONAL(WITH_AUDIOSCROBBLER, test "x$enable_audioscrobbler" != "xno")
 
 
 dnl daap support
-if test x"$have_libsoup" = "xno" && test "x$enable_daap" = "xyes"; then
-	AC_MSG_ERROR([DAAP support explicitly requested, but no libsoup found.  Install libsoup])
+if test "x$enable_daap" != "xno"; then
+	if test x"$have_libsoup" = "xno"; then
+		if test "x$enable_daap" = "xyes"; then
+			AC_MSG_ERROR([DAAP support explicitly requested, but no libsoup found.  Install libsoup])
+		fi
+		enable_daap=no
+	elif test x"$have_mdns" = xno; then
+		if test "x$enable_daap" = "xyes"; then
+			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implentation found.  Install Howl or Avahi])
+		fi
+		enable_daap=no
+	else
+		AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if DAAP should be enabled])
+		enable_daap="yes"
+		AC_SUBST(MDNS_CFLAGS)
+		AC_SUBST(MDNS_LIBS)
+	fi
 fi
-dnl Check for libz, useful for DAAP
+AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" != "xno")
+
 AC_CHECK_LIB(z, uncompress)
+
 
 
 dnl check for MusicBrainz
