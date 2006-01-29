@@ -597,7 +597,7 @@ rb_podcast_source_constructor (GType type,
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
-				      RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+				      RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
 				      RHYTHMDB_QUERY_END);
 	
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
@@ -608,7 +608,7 @@ rb_podcast_source_constructor (GType type,
 
 
 	source->priv->feeds = rb_simple_view_new (source->priv->db,
-						  RHYTHMDB_PROP_SUBTITLE,
+						  RHYTHMDB_PROP_LOCATION,
 						  _("Feed"));	
 	
 	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds), GTK_SELECTION_MULTIPLE);
@@ -1521,11 +1521,11 @@ rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
 		/* Subtract one for the All node */
 		nodes--;
 
-		fmt = ngettext ("All %d feed (%d)", "All %d feeds (%d)", nodes);
+		fmt = ngettext ("All %d feed", "All %d feeds", nodes);
 
 		str = g_strdup_printf (fmt, nodes, number);
 	} else {
-		str = g_strdup_printf (_("%s (%d)"), title, number);
+		str = g_strdup_printf ("%s", title);
 	}
 
 	g_object_set (G_OBJECT (renderer), "text", str,

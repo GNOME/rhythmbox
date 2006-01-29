@@ -1,3 +1,12 @@
+2006-01-29  James Livingston  <jrl@ids.org.au>
+
+	patch by: William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_feed_title_cell_data_func): Revert the change of
+	property used for the feed list. Fixes problem with feeds with no
+	episodes not showing up.
+
 2006-01-29  Jonathan Matthew  <jonathan@kaolin.hn.org>
 	
 	* shell/rb-play-order-random-by-age-and-rating.c:
