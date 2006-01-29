@@ -1,3 +1,11 @@
+2006-01-29  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_constructor),
+	(rb_play_queue_source_update_count):
+	Don't make the 'queued songs' column clickable,
+	and add the queued song count to the column title.
+
 2006-01-29  James Livingston  <jrl@ids.org.au>
 
 	* configure.ac: remove "experimental" marking from DAAP, and enable by

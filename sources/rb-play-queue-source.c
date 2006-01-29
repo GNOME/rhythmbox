@@ -67,6 +67,7 @@ typedef struct _RBPlayQueueSourcePrivate RBPlayQueueSourcePrivate;
 struct _RBPlayQueueSourcePrivate
 {
 	RBEntryView *sidebar;
+	GtkTreeViewColumn *sidebar_column;
 };
 
 enum
@@ -122,7 +123,6 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 	GObject *shell_player;
 	RBShell *shell;
 	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
-	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	RhythmDBQueryModel *model;
 
@@ -134,17 +134,17 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 
 	g_object_set (G_OBJECT (priv->sidebar), "vscrollbar-policy", GTK_POLICY_AUTOMATIC, NULL);
 
-	column = gtk_tree_view_column_new ();
+	priv->sidebar_column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_tree_view_column_set_expand (column, TRUE);
-	gtk_tree_view_column_set_clickable (column, TRUE);
-	gtk_tree_view_column_set_cell_data_func (column, renderer,
+	gtk_tree_view_column_pack_start (priv->sidebar_column, renderer, TRUE);
+	gtk_tree_view_column_set_sizing (priv->sidebar_column, GTK_TREE_VIEW_COLUMN_FIXED);
+	gtk_tree_view_column_set_expand (priv->sidebar_column, TRUE);
+	gtk_tree_view_column_set_clickable (priv->sidebar_column, FALSE);
+	gtk_tree_view_column_set_cell_data_func (priv->sidebar_column, renderer,
 						 (GtkTreeCellDataFunc)
 						 rb_play_queue_source_track_info_cell_data_func,
 						 source, NULL);
-	rb_entry_view_append_column_custom (priv->sidebar, column,
+	rb_entry_view_append_column_custom (priv->sidebar, priv->sidebar_column,
 					    _("Queued songs"), "Title", NULL, NULL);
 	rb_entry_view_set_columns_clickable (priv->sidebar, FALSE);
 	rb_playlist_source_setup_entry_view (RB_PLAYLIST_SOURCE (source), priv->sidebar);
@@ -299,12 +299,14 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 				   gint offset)
 {
 	gint count = gtk_tree_model_iter_n_children (model, NULL) + offset;
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	char *name = _("Queued songs");
 
 	if (count > 0)
 		name = g_strdup_printf ("%s (%d)", name, count);
 
 	g_object_set (G_OBJECT (source), "name", name, NULL);
+	gtk_tree_view_column_set_title (priv->sidebar_column, name);
 
 	if (count > 0)
 		g_free (name);
