@@ -2574,22 +2574,29 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
  *
  * This should only be used by RhythmDB itself, or a backend (such as rhythmdb-tree).
  **/
+
+
 void
 rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 {
-	const char *format = _("%Y-%m-%d %H:%M");
+	static const char *format;
+	static const char *never;
 	char *val;
+
+	/* PERFORMANCE: doing these lookups every call creates a noticable slowdown */
+	if (format == NULL)
+		format = _("%Y-%m-%d %H:%M");
+	if (never == NULL)
+		never = _("Never");
 	
 	switch (propid) {
 	case RHYTHMDB_PROP_LAST_PLAYED:
 	{
-		if (entry->last_played_str)
 			rb_refstring_unref (entry->last_played_str);
 		if (entry->last_played == 0)
-			entry->last_played_str = rb_refstring_new_full (_("Never"), FALSE);
+			entry->last_played_str = rb_refstring_new_full (never, FALSE);
 		else {
-			val = eel_strdup_strftime (format,
-						   localtime ((glong*)&entry->last_played));
+			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_played));
 			entry->last_played_str = rb_refstring_new_full (val, FALSE);
 			g_free (val);
 		}
@@ -2597,11 +2604,9 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	}
 	case RHYTHMDB_PROP_FIRST_SEEN:
 	{
-		if (entry->first_seen_str)
 			rb_refstring_unref (entry->first_seen_str);
 
-		val = eel_strdup_strftime (format,
-					   localtime ((glong*)&entry->first_seen));
+		val = eel_strdup_strftime (format, localtime ((glong*)&entry->first_seen));
 		entry->first_seen_str = rb_refstring_new_full (val, FALSE);
 		g_free (val);
 		break;

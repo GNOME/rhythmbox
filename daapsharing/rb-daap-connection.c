@@ -938,7 +938,7 @@ entry_set_string_prop (RhythmDB *db,
 	GValue value = {0,};
 	gchar *tmp;
 
-	if (str == NULL) {
+	if (str == NULL || *str == '\0') {
 		tmp = g_strdup (_("Unknown"));
 	} else {
 		tmp = g_strdup (str);

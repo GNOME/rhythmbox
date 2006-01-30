@@ -1,3 +1,14 @@
+2006-01-30  James Livingston  <jrl@ids.org.au>
+
+	* daapsharing/rb-daap-connection.c: (entry_set_string_prop): Set
+	string properties to "Unknown" is the string is empty. Kind of fixes
+	bug 327495.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_sync_mirrored): only do the
+	gettext calls once, rather than once per time the function is used.
+	This stops us making tens of thousands of gettext calls on startup,
+	which reduces the cpu-time of startup by 10-20%
+
 2006-01-29  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load):
