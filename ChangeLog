@@ -1,5 +1,14 @@
 2006-02-01  James Livingston  <jrl@ids.org.au>
 
+	patch by: Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* shell/rb-shell-player.c: (_idle_unblock_signal_cb),
+	(rb_shell_player_playing_changed_cb): block the signal to prevent
+	re-entrancy. Fixes bug 329329 and fixes the first click of the play
+	button pausing.
+
+2006-02-01  James Livingston  <jrl@ids.org.au>
+
 	* metadata/rb-metadata-gst.c: a few gstreamer 0.10 fixes. Tag editing
 	/should/ now work, if the neccessary plugins get ported.
 

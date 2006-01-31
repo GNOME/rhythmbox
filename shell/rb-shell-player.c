@@ -2547,6 +2547,24 @@ rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
 }
 #endif /* HAVE_MMKEYS */
 
+static gboolean
+_idle_unblock_signal_cb (gpointer data)
+{
+	RBShellPlayer *player = (RBShellPlayer *)data;
+	GtkAction *action;
+	gboolean playing;
+
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlPlay");
+
+	/* sync the active state of the action again */
+	g_object_get (G_OBJECT (player), "playing", &playing, NULL);
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
+	
+	g_signal_handlers_unblock_by_func (action, rb_shell_player_cmd_play, player);
+	return FALSE;
+}
+
 static void
 rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 				    GParamSpec *arg1,
@@ -2567,8 +2585,10 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 	g_object_set (action, "tooltip", tooltip, NULL);
 	g_free (tooltip);
 
-	/* block the signal, so that it doesn't get stuck by triggering recursively */
+	/* block the signal, so that it doesn't get stuck by triggering recursively,
+	 * and don't unblock it until whatever else is happening has finished.
+	 */
 	g_signal_handlers_block_by_func (action, rb_shell_player_cmd_play, player);
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
-	g_signal_handlers_unblock_by_func (action, rb_shell_player_cmd_play, player);
+	g_idle_add (_idle_unblock_signal_cb, player);
 }
