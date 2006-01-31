@@ -439,7 +439,6 @@ rb_entry_view_set_property (GObject *object,
 		RhythmDBQueryModel *new_model;
 		
 		if (view->priv->model) {
-			rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (view->priv->model), FALSE);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
 							      G_CALLBACK (rb_entry_view_row_inserted_cb),
 							      view);
@@ -451,9 +450,6 @@ rb_entry_view_set_property (GObject *object,
 							      view);
 		}
 		new_model = g_value_get_object (value);
-
-		rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (new_model),
-						    TRUE);
 
 		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_inserted",

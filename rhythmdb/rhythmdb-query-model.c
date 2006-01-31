@@ -193,8 +193,6 @@ struct RhythmDBQueryModelPrivate
 	guint max_count;
 	guint max_time;
 
-	gboolean connected;
-
 	glong total_duration;
 	GnomeVFSFileSize total_size;
 
@@ -701,15 +699,6 @@ rhythmdb_query_model_signal_complete (RhythmDBQueryModel *model)
 	rhythmdb_query_model_process_update (update);
 }
 
-void
-rhythmdb_query_model_set_connected (RhythmDBQueryModel *model, gboolean connected)
-{
-	model->priv->connected = connected;
-
-	if (model->priv->base_model)
-		rhythmdb_query_model_set_connected (model->priv->base_model, connected);
-}
-
 gboolean
 rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model)
 {
@@ -748,10 +737,6 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 	gboolean hidden = FALSE;
 	GSList *t;
 
-	if (!model->priv->connected)
-		return;
-
-
 	hidden = (!model->priv->show_hidden && rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN));
 
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) == NULL) {
@@ -764,6 +749,23 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 	}
 
 	if (hidden) {
+		/* emit this, so things know why it was removed.
+		 * this is needed to update propery models correctly */
+		GValue true_val = { 0, };
+		GValue false_val = { 0, };
+		
+		g_value_init (&true_val, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&true_val, TRUE);
+		g_value_init (&false_val, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&false_val, FALSE);
+		
+		rb_debug ("emitting hidden-removal notification for %s", entry->location);
+		g_signal_emit (G_OBJECT (model),
+			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
+			       entry, RHYTHMDB_PROP_HIDDEN, &false_val, &true_val);
+		g_value_unset (&true_val);
+		g_value_unset (&false_val);
+		
 		rhythmdb_query_model_remove_entry (model, entry);
 		return;
 	}

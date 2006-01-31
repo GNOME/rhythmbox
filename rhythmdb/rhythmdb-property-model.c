@@ -451,9 +451,11 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 					 RhythmDBPropertyModel *propmodel)
 {
 	RhythmDBEntry *entry = entry_from_tree_iter (model, iter);
-	rhythmdb_property_model_insert (propmodel, entry);
 
-	rhythmdb_property_model_sync (propmodel);
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE) {
+		rhythmdb_property_model_insert (propmodel, entry);
+		rhythmdb_property_model_sync (propmodel);
+	}
 }
 
 static void
@@ -462,13 +464,31 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 					 const GValue *new,
 					 RhythmDBPropertyModel *propmodel)
 {
-	if (prop != propmodel->priv->propid)
-		return;
+	if (prop == RHYTHMDB_PROP_HIDDEN) {
+		gboolean old_hidden = g_value_get_boolean (old);
+		gboolean new_hidden = g_value_get_boolean (new);
 
-	rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
-	rhythmdb_property_model_insert (propmodel, entry);
+		if (new_hidden == old_hidden)
+			return;
 
-	rhythmdb_property_model_sync (propmodel);
+		rb_debug ("recieving hidden-change notification for %s", entry->location);
+
+		if (new_hidden)
+			rhythmdb_property_model_delete (propmodel, entry);
+		else
+			rhythmdb_property_model_insert (propmodel, entry);
+
+		rhythmdb_property_model_sync (propmodel);
+	} else {	
+		if (prop != propmodel->priv->propid)
+			return;
+		if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+			return;
+
+		rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
+		rhythmdb_property_model_insert (propmodel, entry);
+		rhythmdb_property_model_sync (propmodel);
+	}
 }
 
 static void
@@ -476,9 +496,10 @@ rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
 					  RhythmDBEntry *entry,
 					  RhythmDBPropertyModel *propmodel)
 {
-	rhythmdb_property_model_delete (propmodel, entry);
-
-	rhythmdb_property_model_sync (propmodel);
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE) {
+		rhythmdb_property_model_delete (propmodel, entry);
+		rhythmdb_property_model_sync (propmodel);
+	}
 }
 
 static gint

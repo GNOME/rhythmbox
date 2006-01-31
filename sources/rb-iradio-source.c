@@ -739,12 +739,6 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (query_model));
 	g_object_set (G_OBJECT (source), "query-model", query_model, NULL);
 
-	/* we rely on getting signals from all_query to update the genre view.
-	 * we keep it marked as connected so it doesn't just eat the signals.
-	 */
-	if (query_model != source->priv->all_query)
-		rhythmdb_query_model_set_connected (source->priv->all_query, TRUE);
-
 	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
 
 	rhythmdb_query_free (query);
