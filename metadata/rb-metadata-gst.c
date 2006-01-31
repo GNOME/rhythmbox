@@ -217,6 +217,7 @@ rb_metadata_init (RBMetaData *md)
 {
 	RBAddTaggerElem tagger;
 	gboolean has_gnomevfssink;
+	gboolean has_id3;
         
 	md->priv = RB_METADATA_GET_PRIVATE (md);
 
@@ -231,9 +232,11 @@ rb_metadata_init (RBMetaData *md)
  	 * only registering types we have plugins for defeats the second 
 	 * purpose.
  	 */
-	has_gnomevfssink = (gst_element_factory_find ("gnomevfssink") != NULL);
+	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
+			    gst_element_factory_find ("gnomevfssink") != NULL);
+	has_id3 = (gst_element_factory_find ("id3tag") != NULL);
 
-	tagger = (has_gnomevfssink && gst_element_factory_find ("id3tag")) ?  rb_add_id3_tagger : NULL;
+	tagger = (has_gnomevfssink && has_id3) ?  rb_add_id3_tagger : NULL;
 	add_supported_type (md, "application/x-id3", tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", tagger, "MP3");
 
@@ -694,7 +697,7 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 }
 
 static void 
-rb_metadata_event_loop (RBMetaData *md, GstElement *element)
+rb_metadata_event_loop (RBMetaData *md, GstElement *element, gboolean block)
 {
 	GstBus *bus;
 	gboolean done = FALSE;
@@ -705,7 +708,11 @@ rb_metadata_event_loop (RBMetaData *md, GstElement *element)
 	while (!done && !md->priv->eos) {
 		GstMessage *message;
 
-		message = gst_bus_pop (bus);
+		if (block)
+			message = gst_bus_poll (bus, GST_MESSAGE_ANY, -1);
+		else
+			message = gst_bus_pop (bus);
+
 		if (message == NULL) {
 			gst_object_unref (bus);
 			return;
@@ -857,7 +864,7 @@ rb_metadata_load (RBMetaData *md,
 		}
 
 		/* Poll the bus for messages */
-		rb_metadata_event_loop (md, GST_ELEMENT (pipeline));
+		rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
 #endif
 		/* We caught the first buffer(0.8) or went to PAUSED (0.10),
 		 * which means the decoder should have read all
@@ -1072,12 +1079,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 #endif
 
-	/* FIXME: gst_bin_add (GST_BIN (pipeline, md->priv->sink)) really
-	 * should be called here, but weird crashes happen when unreffing the
-	 * pipeline if it's not moved after the creation of the tagging
-	 * elements 
-	 */
-
 	/* Tagger element(s) */
 	add_tagger_func = rb_metadata_gst_type_to_tag_function (md, md->priv->type);
 	
@@ -1098,7 +1099,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-        tagger = gst_bin_get_by_interface(GST_BIN(pipeline), GST_TYPE_TAG_SETTER);
+        tagger = gst_bin_get_by_interface (GST_BIN (pipeline), GST_TYPE_TAG_SETTER);
 	if (!tagger) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -1122,11 +1123,21 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	       && md->priv->error == NULL
 	       && !md->priv->eos)
 		;
+	gst_element_set_state (pipeline, GST_STATE_NULL);
 #endif
 #ifdef HAVE_GSTREAMER_0_10
-	rb_metadata_event_loop (md, GST_ELEMENT (pipeline));
+	rb_metadata_event_loop (md, GST_ELEMENT (pipeline), TRUE);
+	if (gst_element_set_state (pipeline, GST_STATE_NULL) == GST_STATE_CHANGE_ASYNC) {
+		if (gst_element_get_state (pipeline, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     "Timeout while setting pipeline to NULL");
+			goto out_error;
+		}
+	}
 #endif
-	gst_element_set_state (pipeline, GST_STATE_NULL);
+
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
 		goto out_error;
@@ -1134,6 +1145,8 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	if (handle != NULL) {
 		if ((result = gnome_vfs_close (handle)) != GNOME_VFS_OK)
 			goto vfs_error;
+		handle = NULL;
+
 		/* check to ensure the file isn't corrupt */
 		if (!rb_metadata_file_valid (md->priv->uri, tmpname)) {
 			g_set_error (error,
