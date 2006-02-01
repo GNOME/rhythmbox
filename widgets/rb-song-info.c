@@ -394,8 +394,10 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 			   song_info->priv->rating);
 
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->artist), editable);
-	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->album), editable);
-	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->genre), editable);
+	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->album), editable);
+	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->genre), editable);
+	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->year), editable);
+	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->disc_cur), editable);
 
 	/* Finish construction */
 	if (song_info->priv->current_entry) {
