@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-28 17:04+0100\n"
-"PO-Revision-Date: 2006-01-28 17:04+0100\n"
+"POT-Creation-Date: 2006-02-01 15:51+0100\n"
+"PO-Revision-Date: 2006-02-01 15:51+0100\n"
 "Last-Translator: Hendrik Brandt <heb@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -33,8 +33,8 @@ msgstr ""
 #: ../sources/rb-ipod-source.c:157 ../sources/rb-iradio-source.c:219
 #: ../sources/rb-iradio-source.c:220 ../sources/rb-iradio-source.c:221
 #: ../sources/rb-iradio-source.c:444 ../sources/rb-podcast-source.c:1555
-#: ../widgets/rb-entry-view.c:942 ../widgets/rb-entry-view.c:961
-#: ../widgets/rb-entry-view.c:1247 ../widgets/rb-entry-view.c:1259
+#: ../widgets/rb-entry-view.c:696 ../widgets/rb-entry-view.c:715
+#: ../widgets/rb-entry-view.c:964 ../widgets/rb-entry-view.c:976
 #: ../widgets/rb-song-info.c:607 ../widgets/rb-song-info.c:760
 #: ../widgets/rb-song-info.c:949
 msgid "Unknown"
@@ -231,7 +231,7 @@ msgstr "Sichtbare Spalten"
 msgid "_Artist"
 msgstr "_Künstler"
 
-#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1233
+#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:950
 msgid "_Genre"
 msgstr "_Genre"
 
@@ -243,11 +243,11 @@ msgstr "_Letzte Wiedergabe"
 msgid "_Play count"
 msgstr "_Wiedergegeben"
 
-#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1171
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:998
 msgid "_Rating"
 msgstr "Bewe_rtung"
 
-#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1255
+#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:972
 msgid "_Year"
 msgstr "_Jahr"
 
@@ -546,9 +546,9 @@ msgstr "Eigenschaften von %s"
 msgid "%lu kbps"
 msgstr "%lu kb/s"
 
-#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2588
-#: ../widgets/rb-entry-view.c:896 ../widgets/rb-entry-view.c:1284
-#: ../widgets/rb-entry-view.c:1297 ../widgets/rb-song-info.c:925
+#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2590
+#: ../widgets/rb-entry-view.c:650 ../widgets/rb-entry-view.c:1023
+#: ../widgets/rb-entry-view.c:1036 ../widgets/rb-song-info.c:925
 msgid "Never"
 msgstr "Nie"
 
@@ -595,36 +595,36 @@ msgstr "%d:%02d"
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:632 ../metadata/rb-metadata-gst.c:1152
+#: ../metadata/rb-metadata-gst.c:640 ../metadata/rb-metadata-gst.c:1175
 #: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:633
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr ""
 "Element %s konnte nicht angelegt werden; überprüfen Sie die Installation"
 
-#: ../metadata/rb-metadata-gst.c:771
+#: ../metadata/rb-metadata-gst.c:784
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Quellelement konnte nicht angelegt werden; bitte überprüfen Sie die "
 "Installation"
 
-#: ../metadata/rb-metadata-gst.c:838
+#: ../metadata/rb-metadata-gst.c:851
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer-Fehler: Status konnte nicht geändert werden"
 
-#: ../metadata/rb-metadata-gst.c:911
+#: ../metadata/rb-metadata-gst.c:924
 msgid "The MIME type of the file could not be identified"
 msgstr "Der MIME-Typ der Datei konnte nicht ermittelt werden"
 
-#: ../metadata/rb-metadata-gst.c:923
+#: ../metadata/rb-metadata-gst.c:944
 msgid "The file is not an audio stream"
 msgstr "Die Datei ist kein Audio-Stream"
 
-#: ../metadata/rb-metadata-gst.c:928
+#: ../metadata/rb-metadata-gst.c:949
 msgid "The file is not an audio stream, but is being ignored"
 msgstr "Die Datei ist kein Audio-Stream und wird ignoriert"
 
-#: ../metadata/rb-metadata-gst.c:936
+#: ../metadata/rb-metadata-gst.c:957
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "Es ist kein Plugin installiert, um eine %s-Datei zu handhaben."
@@ -879,7 +879,7 @@ msgstr "%s konnte nicht überwacht werden: %s"
 msgid "<invalid filename>"
 msgstr "<ungültiger Dateiname>"
 
-#: ../rhythmdb/rhythmdb.c:1840 ../rhythmdb/rhythmdb.c:1883
+#: ../rhythmdb/rhythmdb.c:1841 ../rhythmdb/rhythmdb.c:1884
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Zugriff auf %s nicht möglich: %s"
@@ -889,33 +889,33 @@ msgstr "Zugriff auf %s nicht möglich: %s"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2579 ../sources/rb-podcast-source.c:1561
-#: ../widgets/rb-entry-view.c:2081
+#: ../rhythmdb/rhythmdb.c:2588 ../sources/rb-podcast-source.c:1561
+#: ../widgets/rb-entry-view.c:1827
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d.%m.%Y %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3568
+#: ../rhythmdb/rhythmdb.c:3574
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d Titel"
 msgstr[1] "%d Titel"
 
-#: ../rhythmdb/rhythmdb.c:3575
+#: ../rhythmdb/rhythmdb.c:3581
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld Minute"
 msgstr[1] "%ld Minuten"
 
-#: ../rhythmdb/rhythmdb.c:3576
+#: ../rhythmdb/rhythmdb.c:3582
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld Stunde"
 msgstr[1] "%ld Stunden"
 
-#: ../rhythmdb/rhythmdb.c:3577
+#: ../rhythmdb/rhythmdb.c:3583
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -923,7 +923,7 @@ msgstr[0] "%ld Tag"
 msgstr[1] "%ld Tage"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3583
+#: ../rhythmdb/rhythmdb.c:3589
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s und %s"
@@ -931,8 +931,8 @@ msgstr "%s, %s und %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3589 ../rhythmdb/rhythmdb.c:3597
-#: ../rhythmdb/rhythmdb.c:3608
+#: ../rhythmdb/rhythmdb.c:3595 ../rhythmdb/rhythmdb.c:3603
+#: ../rhythmdb/rhythmdb.c:3614
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
@@ -1301,7 +1301,7 @@ msgstr "Den nächsten Titel wiedergeben"
 msgid "_Play"
 msgstr "_Wiedergabe"
 
-#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2565
+#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2583
 msgid "Start playback"
 msgstr "Die Wiedergabe beginnen"
 
@@ -1371,7 +1371,7 @@ msgstr "Unerwartetes Datenstromende!"
 msgid "Buffering"
 msgstr "Zwischenspeichern"
 
-#: ../shell/rb-shell-player.c:2563
+#: ../shell/rb-shell-player.c:2581
 msgid "Stop playback"
 msgstr "Die Wiedergabe stoppen"
 
@@ -1581,7 +1581,7 @@ msgid "%s by %s"
 msgstr "%s von %s"
 
 #: ../shell/rb-shell.c:1776 ../shell/rb-shell.c:1851
-#: ../widgets/rb-entry-view.c:1490
+#: ../widgets/rb-entry-view.c:1236
 msgid "Now Playing"
 msgstr "Momentan wiedergegeben"
 
@@ -1856,7 +1856,7 @@ msgstr ""
 "ausgewählt werden. Bitte wählen Sie einen anderen Ort."
 
 #: ../sources/rb-play-queue-source.c:148 ../sources/rb-play-queue-source.c:197
-#: ../sources/rb-play-queue-source.c:302
+#: ../sources/rb-play-queue-source.c:303
 msgid "Queued songs"
 msgstr "Titel in Warteschlange"
 
@@ -1868,7 +1868,7 @@ msgstr "aus"
 msgid "by"
 msgstr "von"
 
-#: ../sources/rb-playlist-source.c:240 ../widgets/rb-entry-view.c:1189
+#: ../sources/rb-playlist-source.c:240 ../widgets/rb-entry-view.c:909
 msgid "Trac_k"
 msgstr "Tit_el"
 
@@ -2328,15 +2328,10 @@ msgstr "Feed und _Dateien löschen"
 
 #: ../sources/rb-podcast-source.c:1524
 #, c-format
-msgid "All %d feed (%d)"
-msgid_plural "All %d feeds (%d)"
-msgstr[0] "%d Feed (%d Folgen)"
-msgstr[1] "Alle %d Feeds (%d Folgen)"
-
-#: ../sources/rb-podcast-source.c:1528 ../widgets/rb-property-view.c:494
-#, c-format
-msgid "%s (%d)"
-msgstr "%s (%d)"
+msgid "All %d feed"
+msgid_plural "All %d feeds"
+msgstr[0] "%d Feed"
+msgstr[1] "Alle %d Feeds"
 
 #: ../sources/rb-podcast-source.c:1668
 msgid "Downloading podcast"
@@ -2431,63 +2426,63 @@ msgstr ""
 msgid "Load folder into Library"
 msgstr "Ordner in Musiksammlung laden"
 
-#: ../widgets/rb-entry-view.c:963
+#: ../widgets/rb-entry-view.c:717
 msgid "Very Low"
 msgstr "Sehr niedrig"
 
-#: ../widgets/rb-entry-view.c:965
+#: ../widgets/rb-entry-view.c:719
 msgid "Low"
 msgstr "Niedrig"
 
-#: ../widgets/rb-entry-view.c:967
+#: ../widgets/rb-entry-view.c:721
 msgid "Regular"
 msgstr "Normal"
 
-#: ../widgets/rb-entry-view.c:969
+#: ../widgets/rb-entry-view.c:723
 msgid "High"
 msgstr "Hoch"
 
-#: ../widgets/rb-entry-view.c:971
+#: ../widgets/rb-entry-view.c:725
 msgid "Very High"
 msgstr "Sehr hoch"
 
-#: ../widgets/rb-entry-view.c:973
+#: ../widgets/rb-entry-view.c:727
 msgid "Perfect"
 msgstr "Perfekt"
 
-#: ../widgets/rb-entry-view.c:1200
+#: ../widgets/rb-entry-view.c:920
 msgid "_Title"
 msgstr "_Titel"
 
-#: ../widgets/rb-entry-view.c:1211
+#: ../widgets/rb-entry-view.c:930
 msgid "Art_ist"
 msgstr "Kü_nstler"
 
-#: ../widgets/rb-entry-view.c:1222
+#: ../widgets/rb-entry-view.c:940
 msgid "_Album"
 msgstr "_Album"
 
-#: ../widgets/rb-entry-view.c:1243
+#: ../widgets/rb-entry-view.c:960
 msgid "Tim_e"
 msgstr "_Länge"
 
-#: ../widgets/rb-entry-view.c:1268
+#: ../widgets/rb-entry-view.c:985
 msgid "_Quality"
 msgstr "_Qualität"
 
-#: ../widgets/rb-entry-view.c:1281
+#: ../widgets/rb-entry-view.c:1020
 msgid "_Play Count"
 msgstr "_Wiedergegeben"
 
-#: ../widgets/rb-entry-view.c:1293
+#: ../widgets/rb-entry-view.c:1032
 msgid "_Last Played"
 msgstr "Let_zte Wiedergabe"
 
-#: ../widgets/rb-entry-view.c:1305
+#: ../widgets/rb-entry-view.c:1044
 msgid "_Date Added"
 msgstr "Hinzufüge_datum"
 
-#: ../widgets/rb-entry-view.c:1557
+#: ../widgets/rb-entry-view.c:1303
 msgid "Playback Error"
 msgstr "Wiedergabefehler"
 
@@ -2556,6 +2551,11 @@ msgstr[1] "Alle %d Genre (%d Titel)"
 #, c-format
 msgid "All %d (%d)"
 msgstr "Alle %d (%d Titel)"
+
+#: ../widgets/rb-property-view.c:494
+#, c-format
+msgid "%s (%d)"
+msgstr "%s (%d)"
 
 #: ../widgets/rb-query-creator.c:179
 msgid "Create Automatic Playlist"
