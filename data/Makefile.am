@@ -66,4 +66,4 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(playlists_in_files)  \
 		generate-keys.sh
 
-CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server org.gnome.Rhythmbox.service
+CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server org.gnome.Rhythmbox.service playlists.xml
