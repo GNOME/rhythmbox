@@ -1,3 +1,10 @@
+2006-02-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_post_status_cell_data_func):
+	Leave the podcast status column blank for episodes that have not been
+	downloaded.
+
 2006-02-03  James Livingston  <jrl@ids.org.au>
 
 	Add support for source-specific toolbar items, and make the Burn

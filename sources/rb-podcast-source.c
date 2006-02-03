@@ -548,14 +548,13 @@ rb_podcast_source_constructor (GType type,
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 
 	{
-		static const char *status_strings[7];
+		static const char *status_strings[6];
 		status_strings[0] = _("Status");
 		status_strings[1] = _("Downloaded");
-		status_strings[2] = _("Undownloaded");
-		status_strings[3] = _("Waiting");
-		status_strings[4] = _("Failed");
-		status_strings[5] = "100 %";
-		status_strings[6] = NULL;
+		status_strings[2] = _("Waiting");
+		status_strings[3] = _("Failed");
+		status_strings[4] = "100 %";
+		status_strings[5] = NULL;
 		
 		rb_entry_view_set_fixed_column_width (source->priv->posts, 
 						      column, 
@@ -1459,7 +1458,7 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 		value = 0;
 		break;
 	case RHYTHMDB_PODCAST_STATUS_PAUSED:
-		g_object_set (G_OBJECT (renderer), "text", _("Undownloaded"), NULL);
+		g_object_set (G_OBJECT (renderer), "text", "", NULL);
 		value = 0;
 		break;
 	default:
@@ -1471,7 +1470,11 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 			g_free (s);
 		}
 	}
-		
+
+	g_object_set (G_OBJECT (renderer), "visible",
+		      rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS) != RHYTHMDB_PODCAST_STATUS_PAUSED,
+		      NULL);
+
 	g_object_set (G_OBJECT (renderer), "value", value, NULL);
 }
 
