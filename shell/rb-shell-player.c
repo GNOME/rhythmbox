@@ -1126,7 +1126,7 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 	RBSource *source;
 
 	if (!new_play_order) {
-		g_critical (CONF_STATE_PLAY_ORDER " gconf key not found!");
+		g_warning (CONF_STATE_PLAY_ORDER " gconf key not found!");
 		new_play_order = g_strdup ("linear");
 	}
 

@@ -845,7 +845,7 @@ rhythmdb_tree_save (RhythmDB *rdb)
 	f = fopen (savepath->str, "w");
 
 	if (!f) {
-		g_critical ("Can't save XML: %s", g_strerror (errno));
+		g_warning ("Can't save XML: %s", g_strerror (errno));
 		goto out;
 	}
 
@@ -872,22 +872,22 @@ rhythmdb_tree_save (RhythmDB *rdb)
 	RHYTHMDB_FWRITE_STATICSTR ("</rhythmdb>\n", ctx.handle, ctx.error);
 
 	if (fclose (f) < 0) {
-		g_critical ("Couldn't close %s: %s",
-			    savepath->str,
-			    g_strerror (errno));
+		g_warning ("Couldn't close %s: %s",
+			   savepath->str,
+			   g_strerror (errno));
 		unlink (savepath->str);
 		goto out;
 	}
 
 	if (ctx.error != NULL) {
-		g_critical ("Writing to the database failed: %s", ctx.error);
+		g_warning ("Writing to the database failed: %s", ctx.error);
 		g_free (ctx.error);
 		unlink (savepath->str);
 	} else {
 		if (rename (savepath->str, name) < 0) {
-			g_critical ("Couldn't rename %s to %s: %s",
-				    name, savepath->str,
-				    g_strerror (errno));
+			g_warning ("Couldn't rename %s to %s: %s",
+				   name, savepath->str,
+				   g_strerror (errno));
 			unlink (savepath->str);
 		}
 	}
