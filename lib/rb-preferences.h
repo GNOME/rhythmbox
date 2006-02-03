@@ -52,6 +52,11 @@ G_BEGIN_DECLS
 #define CONF_AUDIOSCROBBLER_PASSWORD CONF_PREFIX "/audioscrobbler/password"
 #define CONF_AUDIOSCROBBLER_ENABLED CONF_PREFIX "/audioscrobbler/enabled"
 
+#define CONF_DAAP_ENABLE_SHARING   CONF_PREFIX "/sharing/enable_sharing"
+#define CONF_DAAP_SHARE_NAME       CONF_PREFIX "/sharing/share_name"
+#define CONF_DAAP_SHARE_PASSWORD   CONF_PREFIX "/sharing/share_password"
+#define CONF_DAAP_REQUIRE_PASSWORD CONF_PREFIX "/sharing/require_password"
+
 G_END_DECLS
 
 #endif /* __RB_PREFERENCES_H */

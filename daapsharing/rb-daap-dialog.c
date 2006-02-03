@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Implementation of DAAP (iTunes Music Sharing) dialogs 
  *  (password & name collision)
  *
@@ -20,11 +21,15 @@
  *
  */
 
-#include "rb-daap-dialog.h"
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <glib/gprintf.h>
+#include "config.h"
+
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <glib/gprintf.h>
+#include <gtk/gtk.h>
+
+#include "rb-daap-dialog.h"
 
 static gchar *
 encode_base64 (const gchar *string)
@@ -101,7 +106,8 @@ rb_daap_password_dialog_new_run (const gchar *name)
 					      GTK_RESPONSE_OK,
 					      NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
-	
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+
 	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE, 0);
@@ -156,9 +162,7 @@ rb_daap_password_dialog_new_run (const gchar *name)
 	
 	return ret;
 }
-	
 
-	
 gchar *
 rb_daap_collision_dialog_new_run (const gchar *old_name)
 {
@@ -178,7 +182,8 @@ rb_daap_collision_dialog_new_run (const gchar *old_name)
 					      GTK_RESPONSE_OK,
 					      NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
-	
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+
 	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE, 0);

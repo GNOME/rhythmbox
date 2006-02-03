@@ -247,36 +247,94 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 
 #ifdef WITH_DAAP_SUPPORT
 
-#define CONF_ENABLE_SHARING "/apps/rhythmbox/sharing/enable_sharing"
-#define CONF_NAME "/apps/rhythmbox/sharing/share_name"
-
 static void
-share_check_button_toggled_cb (GtkToggleButton *button, GtkWidget *hbox)
+share_check_button_toggled_cb (GtkToggleButton *button,
+			       GtkWidget *widget)
 {
 	gboolean b;
 
 	b = gtk_toggle_button_get_active (button);
 
-	eel_gconf_set_boolean (CONF_ENABLE_SHARING, b);
+	eel_gconf_set_boolean (CONF_DAAP_ENABLE_SHARING, b);
 
-	gtk_widget_set_sensitive (hbox, b);
+	gtk_widget_set_sensitive (widget, b);
+	
+	return;
+}
+
+static void
+password_check_button_toggled_cb (GtkToggleButton *button,
+				  GtkWidget *widget)
+{
+	gboolean b;
+
+	b = gtk_toggle_button_get_active (button);
+
+	eel_gconf_set_boolean (CONF_DAAP_REQUIRE_PASSWORD, b);
+
+	gtk_widget_set_sensitive (widget, b);
 	
 	return;
 }
 
 static gboolean
-share_name_entry_focus_out_event_cb (GtkEntry *entry, GdkEventFocus *event, gpointer data)
+share_name_entry_focus_out_event_cb (GtkEntry *entry,
+				     GdkEventFocus *event,
+				     gpointer data)
 {
-	const gchar *name;
-	char *old_name;
+	gboolean    changed;
+	const char *name;
+	char       *old_name;
 
 	name = gtk_entry_get_text (entry);
-	old_name = eel_gconf_get_string (CONF_NAME);
+	old_name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
 
-	if (strcmp (name, old_name) != 0)
-		eel_gconf_set_string (CONF_NAME, name);
+	if (name == NULL && old_name == NULL) {
+		changed = FALSE;
+	} else if (name == NULL || old_name == NULL) {
+		changed = TRUE;
+	} else if (strcmp (name, old_name) != 0) {
+		changed = TRUE;
+	} else {
+		changed = FALSE;
+	}
+
+	if (changed) {
+		eel_gconf_set_string (CONF_DAAP_SHARE_NAME, name);
+	}
 
 	g_free (old_name);
+
+	return FALSE;
+}
+
+static gboolean
+share_password_entry_focus_out_event_cb (GtkEntry *entry,
+					 GdkEventFocus *event,
+					 gpointer data)
+{
+	gboolean    changed;
+	const char *pw;
+	char       *old_pw;
+
+	pw = gtk_entry_get_text (entry);
+	old_pw = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
+
+	if (pw == NULL && old_pw == NULL) {
+		changed = FALSE;
+	} else if (pw == NULL || old_pw == NULL) {
+		changed = TRUE;
+	} else if (strcmp (pw, old_pw) != 0) {
+		changed = TRUE;
+	} else {
+		changed = FALSE;
+	}
+
+	if (changed) {
+		eel_gconf_set_string (CONF_DAAP_SHARE_PASSWORD, pw);
+	}
+
+	g_free (old_pw);
 
 	return FALSE;
 }
@@ -286,30 +344,53 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 {
 	GladeXML *xml;
 	GtkWidget *check;
-	GtkWidget *entry;
-	GtkWidget *hbox;
-	gboolean b;
+	GtkWidget *name_entry;
+	GtkWidget *password_entry;
+	GtkWidget *password_check;
+	GtkWidget *box;
+	gboolean sharing_enabled;
+	gboolean require_password;
 
-	gchar *name;
+	char *name;
+	char *password;
 
 	xml = rb_glade_xml_new ("daap-prefs.glade",
 				"daap_vbox",
 				shell_preferences);
 
 	check = glade_xml_get_widget (xml, "daap_enable_check");
-	entry = glade_xml_get_widget (xml, "daap_name_entry");
-	hbox = glade_xml_get_widget (xml, "daap_hbox");
+	password_check = glade_xml_get_widget (xml, "daap_password_check");
+	name_entry = glade_xml_get_widget (xml, "daap_name_entry");
+	password_entry = glade_xml_get_widget (xml, "daap_password_entry");
+	box = glade_xml_get_widget (xml, "daap_box");
 	
-	b = eel_gconf_get_boolean (CONF_ENABLE_SHARING);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), b);
-	g_signal_connect (G_OBJECT (check), "toggled", G_CALLBACK (share_check_button_toggled_cb), hbox);
-	
-	name = eel_gconf_get_string (CONF_NAME);
-	gtk_entry_set_text (GTK_ENTRY (entry), name);
-	g_signal_connect (G_OBJECT (entry), "focus-out-event", G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);	
+	sharing_enabled = eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), sharing_enabled);
+	g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), box);
 
-	gtk_widget_set_sensitive (hbox, b);
+	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (password_check), require_password);
+	g_signal_connect (password_check, "toggled", G_CALLBACK (password_check_button_toggled_cb), password_entry);
 	
+	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+	if (name != NULL) {
+		gtk_entry_set_text (GTK_ENTRY (name_entry), name);
+	}
+	g_free (name);
+	g_signal_connect (name_entry, "focus-out-event",
+			  G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);	
+
+	password = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
+	if (password != NULL) {
+		gtk_entry_set_text (GTK_ENTRY (password_entry), password);
+	}
+	g_free (password);
+	g_signal_connect (password_entry, "focus-out-event",
+			  G_CALLBACK (share_password_entry_focus_out_event_cb), NULL);	
+
+	gtk_widget_set_sensitive (box, sharing_enabled);
+	gtk_widget_set_sensitive (password_entry, require_password);
+
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
 				  glade_xml_get_widget (xml, "daap_vbox"),
 				  gtk_label_new (_("Sharing")));

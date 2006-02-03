@@ -1,3 +1,129 @@
+2006-02-03  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-daap-source.c: Use RBDaapMdnsBrowser object.
+	Use a hash for source lookup.
+	(mdns_service_added, mdns_service_removed): Handle
+	service-added and service-removed signals from RBDaapMdnsBrowser.
+	(remove_source): GDestroyNotify function for when sources
+	are removed from the hash.
+	(start_browsing): Create RBDaapMdnsBrowser and source lookup.
+	(stop_browsing): Unref RBDaapMdnsBrowser and destroy source lookup.
+	(rb_daap_sources_shutdown): Update.
+	(source_host_find): GHRFunc for finding a source by ip.
+	(rb_daap_source_find_for_uri): Use the hash source lookup.
+
+	* shell/rb-shell-preferences.c (share_check_button_toggled_cb):
+	Namespace keys.
+	(password_check_button_toggled_cb): Handle password enabled.
+	(share_name_entry_focus_out_event_cb): Namespace keys.
+	Handle changes more robustly.
+	(share_password_entry_focus_out_event_cb): Handle password entry.
+	(add_daap_preferences): Connect to password signals.
+
+	* lib/rb-preferences.h: Add DAAP keys.
+
+	* data/glade/daap-prefs.glade: Add password UI.
+
+	* data/rhythmbox.schemas: Add password keys.
+
+	* daapsharing/rb-daap-src.c (rb_daap_src_open): Replace
+	assert with warning.
+
+	* daapsharing/rb-daap-sharing.c: Fix includes.  Move
+	gconf keys to lib/rb-preferences.h.  Namespace
+	the gconf keys.
+	(create_share): Add password support.
+	(enable_sharing_changed_cb): Namespaced keys.
+	(require_password_changed_cb): Handle key change.
+	(share_name_changed_cb): Namespaced keys.
+	(share_password_changed_cb): Handle key change.
+	(rb_daap_sharing_init): Namespaced keys.
+	(rb_daap_sharing_shutdown): Ditto.
+
+	* daapsharing/rb-daap-share.[ch] (rb_daap_share_class_init):
+	Add password property.
+	(rb_daap_share_set_name): Break out prop set function.
+	(published_cb): New RBDaapMdnsPublisher signal handler.
+	(name_collision_cb): Ditto.
+	(rb_daap_share_init): Create publisher object and
+	connect to signals.
+	(rb_daap_share_set_password, rb_daap_share_set_playlist_manager) 
+	(rb_daap_share_set_property): Break out prop set functions.
+	(rb_daap_share_dispose): Stop publishing.  Stop DAAP server.
+	Unref publisher.
+	(rb_daap_share_new): Add password argument.  Start
+	publishing and DAAP server.
+	(message_set_from_rb_daap_structure): Change print to debug.
+	(server_info_cb): Set auth method to publish.
+	(logout_cb): Handle DAAP client logout.
+	(update_cb): Remove C++ comments.
+	(databases_cb): Ditto.  Make message a warning.  Make print a debug.
+	(server_cb): Add debug.
+	(soup_auth_callback): Handle auth requests.
+	(rb_daap_share_server_start): Split up functions for starting
+	server and publishing.  Add auth handling to server.
+	(rb_daap_share_server_stop): Split stop server and publish.
+	No C++ comments.
+	(rb_daap_share_publish_start, rb_daap_share_publish_stop):
+	Start and stop publishing.
+	(rb_daap_share_restart): Restart server and publishing.
+	(rb_daap_share_maybe_restart): Conditionally restart.
+
+	* daapsharing/rb-daap-dialog.c (rb_daap_password_dialog_new_run) 
+	(rb_daap_collision_dialog_new_run): Don't use
+	separators in dialogs.
+
+	* daapsharing/rb-daap-connection.h: Add private
+	data to class structure.
+
+	* daapsharing/rb-daap-connection.c: Move
+	some includes to top of file.  Make private
+	data struct name consistent with others.
+	(rb_daap_connection_class_init): Rename
+	private.
+	(rb_daap_connection_init): Get and store the pointer
+	to the private data once instead of in every
+	function.  Create a username value "Rhythmbox_VERSION".
+	(connection_get_password): Don't get private.
+	(build_message): Ditto.
+	(http_response_handler): Don't init variables in
+	declaration.  Add debug.  Spacing.
+	(http_get, entry_set_string_prop, handle_server_info) 
+	(handle_login, handle_update, handle_database_info) 
+	(handle_song_listing, handle_playlists, handle_playlist_entries) 
+	(rb_daap_connection_constructor, rb_daap_connection_logout) 
+	(rb_daap_connection_state_done): Don't get private.
+	(rb_daap_connection_get_headers): Ditto.  gchar yuck.
+	spacing.  Correctly base64 encode the Authentication token.
+	Add username to auth token.
+	(rb_daap_connection_get_playlists): Don't get private.
+	(rb_daap_connection_dispose): Ditto.  Free username.
+	(rb_daap_connection_set_property) 
+	(rb_daap_connection_get_property): Don't get private.
+
+	* daapsharing/Makefile.am: Conditionally
+	compile MDNS backends.  Add marshall stuff.
+
+	* daapsharing/.cvsignore: Update.
+
+	* configure.ac: Add conditional to see which
+	MDNS backend we should use.
+
+	* daapsharing/rb-daap-mdns.[ch]: Removed files.
+
+	* daapsharing/rb-daap-marshal.list:
+	* daapsharing/rb-daap-mdns-browser-avahi.c:
+	* daapsharing/rb-daap-mdns-browser-howl.c:
+	* daapsharing/rb-daap-mdns-browser.h:
+	* daapsharing/rb-daap-mdns-publisher-avahi.c:
+	* daapsharing/rb-daap-mdns-publisher-howl.c:
+	* daapsharing/rb-daap-mdns-publisher.h:
+	Split rb-daap-mdns.c into two classes.  One for
+	publishing and one for browsing.  Split out
+	the avahi and howl backends into different files.
+
+	Fixes #322966
+	
 2006-02-04  James Livingston  <jrl@ids.org.au>
 
 	patch by: Jan Schmidt <thaytan@mad.scientist.com>

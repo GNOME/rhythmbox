@@ -530,6 +530,17 @@
 	</locale>
       </schema>
       <schema>
+	<key>/schemas/apps/rhythmbox/sharing/require_password</key>
+	<applyto>/apps/rhythmbox/sharing/require_password</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Require a password to access your music over the network</short>
+	<long>When enabled, Rhythmbox will require a password for others to access your music over the network.</long>
+	</locale>
+      </schema>
+      <schema>
 	<key>/schemas/apps/rhythmbox/sharing/share_name</key>
 	<applyto>/apps/rhythmbox/sharing/share_name</applyto>
 	<owner>rhythmbox</owner>
@@ -538,6 +549,17 @@
 	<locale name="C">
 	<short>Name for your shared music</short>
 	<long>Name other computers will see your music shared as</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/sharing/share_password</key>
+	<applyto>/apps/rhythmbox/sharing/share_password</applyto>
+	<owner>rhythmbox</owner>
+	<type>string</type>
+	<default></default>
+	<locale name="C">
+	<short>Password for your shared music</short>
+	<long>Password that is required for accessing your shared music.</long>
 	</locale>
       </schema>
       <schema>

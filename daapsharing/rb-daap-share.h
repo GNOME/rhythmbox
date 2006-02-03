@@ -47,13 +47,12 @@ typedef struct {
 	GObjectClass parent;
 } RBDAAPShareClass;
 
-GType 
-rb_daap_share_get_type (void);
+GType         rb_daap_share_get_type (void);
 
-RBDAAPShare * 
-rb_daap_share_new (const gchar *name, 
-		   RhythmDB *db, 
-		   RBPlaylistManager *playlist_manager);
+RBDAAPShare * rb_daap_share_new      (const char *name, 
+                                      const char *password,
+                                      RhythmDB *db, 
+                                      RBPlaylistManager *playlist_manager);
 
 #endif /* __RB_DAAP_SHARE_H */
 

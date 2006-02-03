@@ -43,9 +43,11 @@ typedef struct {
 #define RB_IS_DAAP_CONNECTION_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DAAP_CONNECTION))
 #define RB_DAAP_CONNECTION_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DAAP_CONNECTION, RBDAAPConnectionClass))
 
+typedef struct RBDAAPConnectionPrivate RBDAAPConnectionPrivate;
 
 typedef struct {
 	GObject parent;
+	RBDAAPConnectionPrivate *priv;
 } RBDAAPConnection;
 
 typedef struct {

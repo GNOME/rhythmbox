@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Implementatin of DAAP (iTunes Music Sharing) GStreamer source
  *
  *  Copyright (C) 2005 Charles Schmidt <cschmidt2@emich.edu>
@@ -21,9 +22,6 @@
 
 #include "config.h"
 
-#include "rb-daap-src.h"
-#include "rb-daap-source.h"
-
 #include <string.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -45,6 +43,9 @@
 #include <gst/base/gstbasesrc.h>
 #include <gst/base/gstpushsrc.h>
 #endif
+
+#include "rb-daap-source.h"
+#include "rb-daap-src.h"
 
 #define RB_TYPE_DAAP_SRC (rb_daap_src_get_type())
 #define RB_DAAP_SRC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),RB_TYPE_DAAP_SRC,RBDAAPSrc))
@@ -693,7 +694,11 @@ rb_daap_src_open (RBDAAPSrc *src)
 
 	/* construct request */
 	source = rb_daap_source_find_for_uri (src->daap_uri);
-	g_assert (source != NULL);
+	if (source == NULL) {
+		g_warning ("Unable to lookup source for URI: %s", src->daap_uri);
+		return FALSE;
+	}
+
 	headers = rb_daap_source_get_headers (source, src->daap_uri, src->seek_time, &src->seek_bytes);
 	request = g_strdup_printf ("GET %s HTTP/1.1\r\nHost: %s\r\n%s\r\n",
 				   path, host, headers);

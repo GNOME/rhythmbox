@@ -38,7 +38,7 @@
 #include "rb-preferences.h"
 
 #include "rb-daap-connection.h"
-#include "rb-daap-mdns.h"
+#include "rb-daap-mdns-browser.h"
 
 #include "rb-static-playlist-source.h"
 
@@ -58,8 +58,8 @@ static void rb_daap_source_connection_cb (RBDAAPConnection *connection,
 					  RBSource *source);
 static gboolean rb_daap_source_disconnect (RBSource *source);
 static gboolean rb_daap_source_show_popup (RBSource *source);
-static const gchar * rb_daap_source_get_browser_key (RBSource *source);
-static const gchar * rb_daap_source_get_paned_key (RBLibrarySource *source);
+static const char * rb_daap_source_get_browser_key (RBSource *source);
+static const char * rb_daap_source_get_paned_key (RBLibrarySource *source);
 
 
 #define CONF_ENABLE_BROWSING CONF_PREFIX "/sharing/enable_browsing"
@@ -68,16 +68,17 @@ static const gchar * rb_daap_source_get_paned_key (RBLibrarySource *source);
 #define CONF_STATE_SHOW_BROWSER CONF_PREFIX "/state/daap/show_browser"
 
 
-static RBDAAPmDNSBrowser browser = 0;
-static GHashTable *service_name_to_resolver = NULL;
-static GSList *sources = NULL;
+static RBDaapMdnsBrowser *mdns_browser = NULL;
+
+static GHashTable *source_lookup = NULL;
+
 static guint enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 
 
 struct RBDAAPSourcePrivate
 {
-	gchar *service_name;
-	gchar *host;
+	char *service_name;
+	char *host;
 	guint port;
 	gboolean password_protected;
 
@@ -267,9 +268,9 @@ rb_daap_get_icon (void)
 
 static RBSource *
 rb_daap_source_new (RBShell *shell,
-		    const gchar *service_name,
-		    const gchar *name,
-		    const gchar *host,
+		    const char *service_name,
+		    const char *name,
+		    const char *host,
 		    guint port,
 		    gboolean password_protected)
 {
@@ -299,165 +300,135 @@ rb_daap_source_new (RBShell *shell,
 
 
 static RBSource *
-find_source_by_service_name (const gchar *service_name)
+find_source_by_service_name (const char *service_name)
 {
-	GSList *l;
+	RBSource *source;
 
-	for (l = sources; l != NULL; l = l->next) {
-		RBSource *source = l->data;
+	source = g_hash_table_lookup (source_lookup, service_name);
 
-		if (strcmp (service_name, RB_DAAP_SOURCE (source)->priv->service_name) == 0) {
-			return source;
-		}
-	}
-
-	return NULL;
+	return source;
 }
 
 static void
-resolve_cb (RBDAAPmDNSResolver resolver,
-	    RBDAAPmDNSResolverStatus status,
-	    const gchar *service_name,
-	    gchar *name,
-	    gchar *host,
-	    guint port,
-	    gboolean password_protected,
-	    RBShell *shell)
+mdns_service_added (RBDaapMdnsBrowser *browser,
+		    const char        *service_name,
+		    const char        *name,
+		    const char        *host,
+		    guint              port,
+		    gboolean           password_protected,
+		    RBShell           *shell)
 {
-	if (status == RB_DAAP_MDNS_RESOLVER_FOUND) {
-		RBSource *source = find_source_by_service_name (service_name);
+	RBSource *source;
 
-		if (source == NULL) {
-			source = rb_daap_source_new (shell, service_name, name, host, port, password_protected);
-			sources = g_slist_prepend (sources, source);
-			rb_shell_append_source (shell, source, NULL);
-		} else {
-			g_object_set (G_OBJECT (source),
-				      "name", name,
-				      "host", host,
-				      "port", port,
-				      "password-protected", password_protected,
-				      NULL);
-		}
-	} else if (status == RB_DAAP_MDNS_RESOLVER_TIMEOUT) {
-		g_warning ("Unable to resolve %s", service_name);
-	}
-}
+#if 0
+	g_message ("New service: %s name=%s host=%s port=%u password=%d",
+		   service_name, name, host, port, password_protected);
+#endif
 
+	source = find_source_by_service_name (service_name);
 
-static void
-browse_cb (RBDAAPmDNSBrowser b,
-	   RBDAAPmDNSBrowserStatus status,
-	   const gchar *service_name,
-	   RBShell *shell)
-{
-	if (status == RB_DAAP_MDNS_BROWSER_ADD_SERVICE) {
-		gboolean ret;
-		RBDAAPmDNSResolver *resolver;
-
-		if (find_source_by_service_name (service_name)) {
-			rb_debug ("Ignoring duplicate DAAP source");
-			return;
-		}
-
-		rb_debug ("New DAAP (music sharing) source '%s' discovered", service_name);
-
-		/* the resolver takes care of ignoring our own shares,
-		 * if this is us, the callback won't fire
-		 */
-		resolver = g_new0 (RBDAAPmDNSResolver, 1);
-		g_hash_table_insert (service_name_to_resolver, g_strdup (service_name), resolver);
-		ret = rb_daap_mdns_resolve (resolver,
-					    service_name,
-					    (RBDAAPmDNSResolverCallback) resolve_cb,
-					    shell);
-		if (!ret) {
-			g_warning ("could not start resolving host");
-		}
-
-	} else if (status == RB_DAAP_MDNS_BROWSER_REMOVE_SERVICE) {
-		RBSource *source = find_source_by_service_name (service_name);
-
-		rb_debug ("DAAP source '%s' went away", service_name);
-		if (source == NULL) {
-			/* if this happens, its because the user's own share
-			 * went away.  since that one doesnt resolve,
-			 * it doesnt get added to the sources list
-			 * it does have a resolver tho, so we should remove
-			 * that.
-			 */
-			g_hash_table_remove (service_name_to_resolver, service_name);
-
-			return;
-		}
-
-		g_hash_table_remove (service_name_to_resolver, service_name);
-		sources = g_slist_remove (sources, source);
-
-		rb_daap_source_disconnect (source);
-		rb_source_delete_thyself (source);
-		/* unref is done via gtk in rb_shell_source_delete_cb at
-		 * gtk_notebook_remove_page */
+	if (source == NULL) {
+		source = rb_daap_source_new (shell, service_name, name, host, port, password_protected);
+		g_hash_table_insert (source_lookup, g_strdup (service_name), source);
+		rb_shell_append_source (shell, source, NULL);
+	} else {
+		g_object_set (G_OBJECT (source),
+			      "name", name,
+			      "host", host,
+			      "port", port,
+			      "password-protected", password_protected,
+			      NULL);
 	}
 }
 
 static void
-stop_resolver (RBDAAPmDNSResolver *resolver)
+mdns_service_removed (RBDaapMdnsBrowser *browser,
+		      const char        *service_name,
+		      RBShell           *shell)
 {
-	rb_daap_mdns_resolve_cancel (*resolver);
-	g_free (resolver);
+	RBSource *source;
 
-	resolver = NULL;
+	source = find_source_by_service_name (service_name);
+
+	rb_debug ("DAAP source '%s' went away", service_name);
+	if (source == NULL) {
+		return;
+	}
+
+	g_hash_table_remove (source_lookup, service_name);
 }
 
+static void
+remove_source (RBSource *source)
+{
+	rb_daap_source_disconnect (source);
+	rb_source_delete_thyself (source);
+}
 
 static void
 start_browsing (RBShell *shell)
 {
-	if (service_name_to_resolver != NULL)
+	GError *error;
+
+	if (mdns_browser != NULL) {
 		return;
+	}
 
-	gboolean ret = rb_daap_mdns_browse (&browser,
-					   (RBDAAPmDNSBrowserCallback) browse_cb,
-					   shell);
-
-	if (!ret) {
+	mdns_browser = rb_daap_mdns_browser_new ();
+	if (mdns_browser == NULL) {
 		g_warning ("Unable to start mDNS browsing");
 		return;
 	}
 
-	service_name_to_resolver = g_hash_table_new_full ((GHashFunc)g_str_hash,
-		       				 	  (GEqualFunc)g_str_equal, 
-							  (GDestroyNotify)g_free, 
-							  (GDestroyNotify)stop_resolver);
+	g_signal_connect_object (mdns_browser,
+				 "service-added",
+				 G_CALLBACK (mdns_service_added),
+				 shell,
+				 0);
+	g_signal_connect_object (mdns_browser,
+				 "service-removed",
+				 G_CALLBACK (mdns_service_removed),
+				 shell,
+				 0);
+
+	error = NULL;
+	rb_daap_mdns_browser_start (mdns_browser, &error);
+	if (error != NULL) {
+		g_warning ("Unable to start mDNS browsing: %s", error->message);
+		g_error_free (error);
+	}
+
+	source_lookup = g_hash_table_new_full ((GHashFunc)g_str_hash,
+					       (GEqualFunc)g_str_equal, 
+					       (GDestroyNotify)g_free, 
+					       (GDestroyNotify)remove_source);
 
 }
 
 static void
 stop_browsing (RBShell *shell)
 {
-	GSList *l;
+	GError *error;
 
-	if (service_name_to_resolver == NULL)
+	if (mdns_browser == NULL) {
 		return;
-
-	g_hash_table_destroy (service_name_to_resolver);
-	service_name_to_resolver = NULL;
-
-	for (l = sources; l != NULL; l = l->next) {
-		RBSource *source = l->data;
-
-		rb_daap_source_disconnect (source);
-		rb_source_delete_thyself (source);
 	}
 
-	g_slist_free (sources);
-	sources = NULL;
+	g_hash_table_destroy (source_lookup);
+	source_lookup = NULL;
 
-	if (browser) {
-		rb_daap_mdns_browse_cancel (browser);
-		browser = 0;
+	g_signal_handlers_disconnect_by_func (mdns_browser, mdns_service_added, shell);
+	g_signal_handlers_disconnect_by_func (mdns_browser, mdns_service_removed, shell);
+
+	error = NULL;
+	rb_daap_mdns_browser_stop (mdns_browser, &error);
+	if (error != NULL) {
+		g_warning ("Unable to stop mDNS browsing: %s", error->message);
+		g_error_free (error);
 	}
+
+	g_object_unref (mdns_browser);
+	mdns_browser = NULL;
 }
 
 static void
@@ -506,7 +477,7 @@ rb_daap_sources_init (RBShell *shell)
 void
 rb_daap_sources_shutdown (RBShell *shell)
 {
-	if (browser) {
+	if (mdns_browser) {
 		stop_browsing (shell);
 	}
 
@@ -525,7 +496,7 @@ rb_daap_source_activate (RBSource *source)
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
 	RBShell *shell = NULL;
 	RhythmDB *db = NULL;
-	gchar *name = NULL;
+	char *name = NULL;
 	RhythmDBEntryType type;
 
 	if (daap_source->priv->connection != NULL) 
@@ -648,36 +619,47 @@ rb_daap_source_show_popup (RBSource *source)
 	return TRUE;
 }
 
-RBDAAPSource *
-rb_daap_source_find_for_uri (const gchar *uri)
+static gboolean
+source_host_find (const char *key,
+		  RBDAAPSource *source,
+		  const char *host)
 {
-	GSList *l;
-	gchar *ip;
-	gchar *s;
-	RBDAAPSource *found_source = NULL;
+	if (source == NULL || host == NULL) {
+		return FALSE;
+	}
 
-	ip = strdup (uri + 7); // daap://
+	if (strcmp (host, source->priv->host) == 0) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+RBDAAPSource *
+rb_daap_source_find_for_uri (const char *uri)
+{
+	char *ip;
+	char *s;
+	RBDAAPSource *source = NULL;
+
+	if (uri == NULL) {
+		return NULL;
+	}
+
+	ip = strdup (uri + 7); /* daap:// */
 	s = strchr (ip, ':');
 	*s = '\0';
 
-	for (l = sources; l != NULL; l = l->next) {
-		RBDAAPSource *source = l->data;
-
-		if (strcmp (ip, source->priv->host) == 0) {
-			found_source = source;
-			break;
-		}
-
-	}
+	source = (RBDAAPSource *)g_hash_table_find (source_lookup, (GHRFunc)source_host_find, ip);
 
 	g_free (ip);
-
-	return found_source;
+	
+	return source;
 }
 
-gchar *
+char *
 rb_daap_source_get_headers (RBDAAPSource *source,
-			    const gchar *uri,
+			    const char *uri,
 			    glong time,
 			    gint64 *bytes_out)
 {
@@ -708,13 +690,13 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 }
 
 
-static const gchar * 
+static const char * 
 rb_daap_source_get_browser_key (RBSource *source)
 {
 	return CONF_STATE_SHOW_BROWSER;
 }
 
-static const gchar * 
+static const char * 
 rb_daap_source_get_paned_key (RBLibrarySource *source)
 {
 	return CONF_STATE_PANED_POSITION;

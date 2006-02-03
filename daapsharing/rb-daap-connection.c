@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Implementation of DAAP (iTunes Music Sharing) hashing, parsing, connection
  *
  *  Copyright (C) 2004,2005 Charles Schmidt <cschmidt2@emich.edu>
@@ -19,24 +20,34 @@
  *
  */
 
-#include "rb-daap-connection.h"
-#include "rb-daap-structure.h"
-#include "rb-daap-dialog.h"
-
-#include <libgnome/gnome-i18n.h>
-#include "rb-debug.h"
-
-#ifdef HAVE_LIBZ
-#include <zlib.h>
-#endif
-
-/* hashing - based on/copied from libopendaap
- * Copyright (c) 2004 David Hammerton
- */
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <math.h>
+#ifdef HAVE_LIBZ
+#include <zlib.h>
+#endif
+
+#include <glib/gi18n.h>
+
+#include <libsoup/soup.h>
+#include <libsoup/soup-connection.h>
+#include <libsoup/soup-session-sync.h>
+#include <libsoup/soup-uri.h>
+
+#include "rb-daap-connection.h"
+#include "rb-daap-structure.h"
+#include "rb-daap-dialog.h"
+
+#include "rb-debug.h"
+
+#define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
+
+/* hashing - based on/copied from libopendaap
+ * Copyright (c) 2004 David Hammerton
+ */
 
 typedef struct {
     guint32 buf[4];
@@ -517,15 +528,6 @@ rb_daap_hash_generate (short version_major,
 
 
 /* connection */
-#include <math.h>
-#include <libsoup/soup.h>
-#include <libsoup/soup-connection.h>
-#include <libsoup/soup-session-sync.h>
-
-#include <libsoup/soup-uri.h>
-
-#define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
-
 
 static GObject * rb_daap_connection_constructor (GType type, guint n_construct_properties,
 						 GObjectConstructParam *construct_properties);
@@ -544,16 +546,18 @@ static void rb_daap_connection_state_done (RBDAAPConnection *connection, gboolea
 
 
 G_DEFINE_TYPE (RBDAAPConnection, rb_daap_connection, G_TYPE_OBJECT)
-#define DAAP_CONNECTION_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DAAP_CONNECTION, RBDaapConnectionPrivate))
+
+#define RB_DAAP_CONNECTION_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DAAP_CONNECTION, RBDAAPConnectionPrivate))
 
 typedef void (*RBDAAPResponseHandler) (RBDAAPConnection *connection,
 				       guint status,
 				       GNode *structure);
 
-typedef struct {
-	gchar *name;
+struct RBDAAPConnectionPrivate {
+	char *name;
 	gboolean password_protected;
-	gchar *password;
+	char *username;
+	char *password;
 	char *host;
 	guint port;
 	
@@ -592,7 +596,7 @@ typedef struct {
 	gboolean result;
 	RBDAAPConnectionCallback callback;
 	gpointer callback_user_data;
-} RBDaapConnectionPrivate;
+};
 
 
 enum {
@@ -617,7 +621,7 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 	object_class->set_property = rb_daap_connection_set_property;
 	object_class->get_property = rb_daap_connection_get_property;
 
-	g_type_class_add_private (klass, sizeof (RBDaapConnectionPrivate));
+	g_type_class_add_private (klass, sizeof (RBDAAPConnectionPrivate));
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -679,16 +683,16 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 static void
 rb_daap_connection_init (RBDAAPConnection *connection)
 {
+	connection->priv = RB_DAAP_CONNECTION_GET_PRIVATE (connection);
 
+	connection->priv->username = g_strdup_printf ("Rhythmbox_%s", VERSION);
 }
 
 
-static gchar *
+static char *
 connection_get_password (RBDAAPConnection *connection)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
-
-	return rb_daap_password_dialog_new_run (priv->name);
+	return rb_daap_password_dialog_new_run (connection->priv->name);
 }
 
 
@@ -700,7 +704,7 @@ build_message (RBDAAPConnection *connection,
 	       gint req_id, 
 	       gboolean send_close)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message = NULL;
 	SoupUri *uri = NULL;
 	
@@ -718,8 +722,9 @@ build_message (RBDAAPConnection *connection,
 	soup_message_add_header (message->request_headers, "Accept-Encoding",		"gzip");
 #endif
 	soup_message_add_header (message->request_headers, "Client-DAAP-Access-Index", 	"2");
+
 	if (priv->password_protected) {
-		gchar *h = g_strconcat ("Basic ", priv->password, NULL);
+		char *h = g_strdup_printf ("Basic %s", priv->password);
 		
 		soup_message_add_header (message->request_headers, "Authorization", h);
 		g_free (h);
@@ -768,13 +773,26 @@ static void
 http_response_handler (SoupMessage *message,
 		       RBDAAPConnection *connection)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
-	GNode *structure = NULL;
-	guint status = message->status_code;
-	char *response = message->response.body;
-	int response_length = message->response.length;
-	const char *encoding_header = NULL;
+	RBDAAPConnectionPrivate *priv;
+	GNode *structure;
+	guint status;
+	char *response;
+	int response_length;
+	const char *encoding_header;
 
+	priv = connection->priv;
+	structure = NULL;
+	status = message->status_code;
+	response = message->response.body;
+	response_length = message->response.length;
+	encoding_header = NULL;
+
+	rb_debug ("Received response from http://%s:%d/%s: %d, %s\n", 
+		  priv->base_uri->host,
+		  priv->base_uri->port,
+		  priv->base_uri->path, 
+		  message->status_code,
+		  message->reason_phrase);
 
 	if (response_length >= G_MAXUINT/4 - 1) {
 		/* If response_length is too big, 
@@ -783,16 +801,16 @@ http_response_handler (SoupMessage *message,
 		status = SOUP_STATUS_MALFORMED;
 	}
 
-	if (message->response_headers)
+	if (message->response_headers) {
 		encoding_header = soup_message_get_header (message->response_headers, "Content-Encoding");
+	}
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (status) && encoding_header && strcmp(encoding_header, "gzip") == 0) {
+	if (SOUP_STATUS_IS_SUCCESSFUL (status) && encoding_header && strcmp (encoding_header, "gzip") == 0) {
 #ifdef HAVE_LIBZ
 		z_stream stream;
 		char *new_response;
 		unsigned int factor = 4;
 		unsigned int unc_size = response_length * factor;
-
 
 		stream.next_in = (unsigned char *)response;
 		stream.avail_in = response_length;
@@ -880,7 +898,8 @@ http_response_handler (SoupMessage *message,
 			  priv->base_uri->host,
 			  priv->base_uri->port,
 			  priv->base_uri->path, 
-			  message->status_code, message->reason_phrase);
+			  message->status_code,
+			  message->reason_phrase);
 	}
 
 	if (priv->response_handler) {
@@ -905,7 +924,7 @@ http_get (RBDAAPConnection *connection,
 	  gboolean send_close,
 	  RBDAAPResponseHandler handler)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message;
        
 	message = build_message (connection, path, need_hash, version, req_id, send_close);
@@ -953,7 +972,7 @@ entry_set_string_prop (RhythmDB *db,
 static void
 handle_server_info (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
 
 	if (!SOUP_STATUS_IS_SUCCESSFUL (status) || structure == NULL) {
@@ -975,7 +994,7 @@ handle_server_info (RBDAAPConnection *connection, guint status, GNode *structure
 static void
 handle_login (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
 
 	if (status == SOUP_STATUS_UNAUTHORIZED || status == SOUP_STATUS_FORBIDDEN) {
@@ -1003,7 +1022,7 @@ handle_login (RBDAAPConnection *connection, guint status, GNode *structure)
 static void
 handle_update (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item;
 
 	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
@@ -1026,7 +1045,7 @@ handle_update (RBDAAPConnection *connection, guint status, GNode *structure)
 static void 
 handle_database_info (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
 	GNode *listing_node;
 	gint n_databases = 0;
@@ -1071,7 +1090,7 @@ handle_database_info (RBDAAPConnection *connection, guint status, GNode *structu
 static void
 handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
 	GNode *listing_node;
 	gint returned_count;
@@ -1286,7 +1305,7 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 static void
 handle_playlists (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	GNode *listing_node;
 	gint i;
 	GNode *n;
@@ -1345,7 +1364,7 @@ handle_playlists (RBDAAPConnection *connection, guint status, GNode *structure)
 static void
 handle_playlist_entries (RBDAAPConnection *connection, guint status, GNode *structure)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPPlaylist *playlist;
 	GNode *listing_node;
 	GNode *node;
@@ -1425,17 +1444,18 @@ rb_daap_connection_new (const gchar *name,
 }
 
 static GObject *
-rb_daap_connection_constructor (GType type, guint n_construct_properties,
+rb_daap_connection_constructor (GType type,
+				guint n_construct_properties,
 				GObjectConstructParam *construct_properties)
 {
 	RBDAAPConnection *connection;
-	RBDaapConnectionPrivate *priv;
+	RBDAAPConnectionPrivate *priv;
 	gchar *path = NULL;
 
 	connection = RB_DAAP_CONNECTION (G_OBJECT_CLASS(rb_daap_connection_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
-	priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	priv = connection->priv;
 	priv->result = TRUE;
 
 	rb_debug ("Creating new DAAP connection to %s:%d", priv->host, priv->port);
@@ -1464,7 +1484,7 @@ rb_daap_connection_logout (RBDAAPConnection *connection,
 			   RBDAAPConnectionCallback callback,
 			   gpointer user_data)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	int old_state = priv->state;
 
 	if (priv->state == DAAP_LOGOUT)
@@ -1487,7 +1507,7 @@ rb_daap_connection_logout (RBDAAPConnection *connection,
 static void
 rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 
 	if (result == FALSE) {
 		priv->state = DAAP_DONE;
@@ -1532,7 +1552,7 @@ rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result)
 static void
 rb_daap_connection_do_something (RBDAAPConnection *connection)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	char *path;
 
 	switch (priv->state) {
@@ -1682,16 +1702,16 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 				const gchar *uri, 
 				gint64 bytes)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
+	RBDAAPConnectionPrivate *priv = connection->priv;
 	GString *headers;
-	gchar hash[33] = {0};
-	gchar *norb_daap_uri = (gchar *)uri;
-	gchar *s;
+	char hash[33] = {0};
+	char *norb_daap_uri = (char *)uri;
+	char *s;
 	
 	priv->request_id++;
 	
-	if (g_strncasecmp (uri,"daap://",7) == 0) {
-		norb_daap_uri = strstr (uri,"/data");
+	if (g_strncasecmp (uri, "daap://", 7) == 0) {
+		norb_daap_uri = strstr (uri, "/data");
 	}
 
 	rb_daap_hash_generate ((short)floorf (priv->daap_version), 
@@ -1710,8 +1730,16 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 				"Client-DAAP-Request-ID: %d\r\n"
 				"Connection: close\r\n", 
 				hash, priv->request_id);
+
 	if (priv->password_protected) {
-		g_string_append_printf (headers, "Authentication: Basic %s\r\n", priv->password);
+		char *user_pass;
+		char *token;
+
+		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
+		token = soup_base64_encode (user_pass, strlen (user_pass));
+		g_string_append_printf (headers, "Authentication: Basic %s\r\n", token);
+		g_free (token);
+		g_free (user_pass);
 	}
 
 	if (bytes != 0) {
@@ -1727,16 +1755,13 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 GSList * 
 rb_daap_connection_get_playlists (RBDAAPConnection *connection)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (connection);
-
-	return priv->playlists;
+	return connection->priv->playlists;
 }
-
 
 static void 
 rb_daap_connection_dispose (GObject *object)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (object);
+	RBDAAPConnectionPrivate *priv = RB_DAAP_CONNECTION (object)->priv;
 	GSList *l;
 
 	g_assert (priv->callback == NULL);
@@ -1746,6 +1771,11 @@ rb_daap_connection_dispose (GObject *object)
 		priv->name = NULL;
 	}
 	
+	if (priv->username) {
+		g_free (priv->username);
+		priv->username = NULL;
+	}
+
 	if (priv->password) {
 		g_free (priv->password);
 		priv->password = NULL;
@@ -1804,10 +1834,9 @@ rb_daap_connection_set_property (GObject *object,
 				 const GValue *value,
 				 GParamSpec *pspec)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (object);
+	RBDAAPConnectionPrivate *priv = RB_DAAP_CONNECTION (object)->priv;
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_NAME:
 		g_free (priv->name);
 		priv->name = g_value_dup_string (value);
@@ -1846,10 +1875,9 @@ rb_daap_connection_get_property (GObject *object,
 				 GValue *value,
 				 GParamSpec *pspec)
 {
-	RBDaapConnectionPrivate *priv = DAAP_CONNECTION_GET_PRIVATE (object);
+	RBDAAPConnectionPrivate *priv = RB_DAAP_CONNECTION (object)->priv;
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, priv->db);
 		break;

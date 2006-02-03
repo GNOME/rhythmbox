@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <time.h>
 #include <string.h>
@@ -32,12 +32,13 @@
 #include <libsoup/soup-message.h>
 #include <libsoup/soup-uri.h>
 #include <libsoup/soup-server.h>
+#include <libsoup/soup-server-auth.h>
 #include <libsoup/soup-server-message.h>
 #include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-daap-share.h"
 #include "rb-daap-structure.h"
-#include "rb-daap-mdns.h"
+#include "rb-daap-mdns-publisher.h"
 #include "rb-daap-dialog.h"
 
 #include "rb-playlist-source.h"
@@ -53,9 +54,11 @@ static void rb_daap_share_get_property  (GObject *object,
 					 GValue *value,
 				 	 GParamSpec *pspec);
 static void rb_daap_share_dispose	(GObject *object);
-
-static void rb_daap_share_start_publish (RBDAAPShare *share);
-static void rb_daap_share_stop_publish  (RBDAAPShare *share);
+static void rb_daap_share_maybe_restart (RBDAAPShare *share);
+static gboolean rb_daap_share_publish_start (RBDAAPShare *share);
+static gboolean rb_daap_share_publish_stop  (RBDAAPShare *share);
+static gboolean rb_daap_share_server_start  (RBDAAPShare *share);
+static gboolean rb_daap_share_server_stop   (RBDAAPShare *share);
 static void rb_daap_share_playlist_created (RBPlaylistManager *mgr,
 					    RBSource *playlist,
 					    RBDAAPShare *share);
@@ -66,20 +69,27 @@ static void rb_daap_share_playlist_destroyed (RBDAAPShare *share,
 static void rb_daap_share_forget_playlist (gpointer data,
 					   RBDAAPShare *share);
 
-
-#define CONF_NAME CONF_PREFIX "/sharing/share_name"
 #define STANDARD_DAAP_PORT 3689
 
 /* HTTP chunk size used to send files to clients */
 #define DAAP_SHARE_CHUNK_SIZE	16384
 
+typedef enum {
+	RB_DAAP_SHARE_AUTH_METHOD_NONE              = 0,
+	RB_DAAP_SHARE_AUTH_METHOD_NAME_AND_PASSWORD = 1,
+	RB_DAAP_SHARE_AUTH_METHOD_PASSWORD          = 2
+} RBDAAPShareAuthMethod;
+
 struct RBDAAPSharePrivate {
 	gchar *name;
 	guint port;
+	char *password;
+	RBDAAPShareAuthMethod auth_method;
 
 	/* mdns/dns-sd publishing things */
+	gboolean server_active;
 	gboolean published;
-	RBDAAPmDNSPublisher publisher;
+	RBDaapMdnsPublisher *publisher;
 
 	/* http server things */
 	SoupServer *server;
@@ -111,6 +121,7 @@ typedef struct {
 enum {
 	PROP_0,
 	PROP_NAME,
+	PROP_PASSWORD,
 	PROP_DB,
 	PROP_PLAYLIST_MANAGER
 };
@@ -136,6 +147,13 @@ rb_daap_share_class_init (RBDAAPShareClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
+					 PROP_PASSWORD,
+					 g_param_spec_string ("password",
+							      "Authentication password",
+							      "Authentication password",
+							      NULL,
+							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
 							      "RhythmDB",
@@ -154,11 +172,126 @@ rb_daap_share_class_init (RBDAAPShareClass *klass)
 }
 
 static void
+rb_daap_share_set_name (RBDAAPShare *share,
+			const char  *name)
+{
+	GError *error;
+	gboolean res;
+
+	g_return_if_fail (share != NULL);
+
+	g_free (share->priv->name);
+	share->priv->name = g_strdup (name);
+
+	error = NULL;
+	res = rb_daap_mdns_publisher_set_name (share->priv->publisher, name, &error);
+	if (error != NULL) {
+		g_warning ("Unable to change MDNS service name: %s", error->message);
+		g_error_free (error);
+	}
+}
+
+static void
+published_cb (RBDaapMdnsPublisher *publisher,
+	      const char          *name,
+	      RBDAAPShare         *share)
+{
+	if (share->priv->name == NULL || name == NULL) {
+		return;
+	}
+
+	if (strcmp (name, share->priv->name) == 0) {
+		rb_debug ("mDNS publish successful");
+		share->priv->published = TRUE;
+	}
+}
+
+static void
+name_collision_cb (RBDaapMdnsPublisher *publisher,
+		   const char          *name,
+		   RBDAAPShare         *share)
+{
+	char *new_name;
+
+	if (share->priv->name == NULL || name == NULL) {
+		return;
+	}
+
+	if (strcmp (name, share->priv->name) == 0) {
+		rb_debug ("Duplicate share name on mDNS");
+		
+		new_name = rb_daap_collision_dialog_new_run (share->priv->name);
+
+		rb_daap_share_set_name (share, new_name);
+		g_free (new_name);
+	}
+	
+	return;
+}
+
+static void
 rb_daap_share_init (RBDAAPShare *share)
 {
 	share->priv = RB_DAAP_SHARE_GET_PRIVATE (share);
 
 	share->priv->revision_number = 5;
+
+	share->priv->auth_method = RB_DAAP_SHARE_AUTH_METHOD_NONE;
+	share->priv->publisher = rb_daap_mdns_publisher_new ();
+	g_signal_connect_object (share->priv->publisher,
+				 "published",
+				 G_CALLBACK (published_cb),
+				 share, 0);
+	g_signal_connect_object (share->priv->publisher,
+				 "name-collision",
+				 G_CALLBACK (name_collision_cb),
+				 share, 0);
+
+}
+
+static void
+rb_daap_share_set_password (RBDAAPShare *share,
+			    const char  *password)
+{
+	g_return_if_fail (share != NULL);
+
+	if (share->priv->password && password &&
+	    strcmp (password, share->priv->password) == 0) {
+		return;
+	}
+
+	g_free (share->priv->password);
+	share->priv->password = g_strdup (password);
+	if (password != NULL) {
+		share->priv->auth_method = RB_DAAP_SHARE_AUTH_METHOD_PASSWORD;
+	} else {
+		share->priv->auth_method = RB_DAAP_SHARE_AUTH_METHOD_NONE;
+	}
+
+	rb_daap_share_maybe_restart (share);
+}
+
+static void
+rb_daap_share_set_playlist_manager (RBDAAPShare       *share,
+				    RBPlaylistManager *playlist_manager)
+{
+	GList *playlists;
+
+	g_return_if_fail (share != NULL);
+
+	share->priv->playlist_manager = playlist_manager;
+
+	g_signal_connect_object (G_OBJECT (share->priv->playlist_manager),
+				 "playlist_added",
+				 G_CALLBACK (rb_daap_share_playlist_created),
+				 share, 0);
+
+	/* Currently, there are no playlists when this object is created, but in
+	 * case it changes..
+	 */
+	playlists = rb_playlist_manager_get_playlists (share->priv->playlist_manager);
+	g_list_foreach (playlists, (GFunc) rb_daap_share_process_playlist, share);
+	g_list_free (playlists);
 }
 
 static void
@@ -170,52 +303,17 @@ rb_daap_share_set_property (GObject *object,
 	RBDAAPShare *share = RB_DAAP_SHARE (object);
 
 	switch (prop_id) {
-	case PROP_NAME: {
-		gboolean restart_publish = FALSE;
-		const char *name = g_value_get_string (value);
-
-		/* check if the name hasn't really changed */
-		if (share->priv->name && name &&
-		    strcmp (name, share->priv->name) == 0) {
-			return;
-		}
-	
-		if (share->priv->name) {
-			g_free (share->priv->name);
-
-			if (share->priv->published) {
-				rb_daap_share_stop_publish (share);
-				restart_publish = TRUE;
-			}
-		}
-
-		share->priv->name = g_strdup (name);
-
-		if (restart_publish) {
-			rb_daap_share_start_publish (share);
-		}
-
+	case PROP_NAME:
+		rb_daap_share_set_name (share, g_value_get_string (value));
 		break;
-	}
+	case PROP_PASSWORD:
+		rb_daap_share_set_password (share, g_value_get_string (value));
+		break;
 	case PROP_DB:
 		share->priv->db = g_value_get_object (value);
 		break;
 	case PROP_PLAYLIST_MANAGER:
-		{
-			GList *playlists;
-			share->priv->playlist_manager = g_value_get_object (value);
-			g_signal_connect_object (G_OBJECT (share->priv->playlist_manager),
-						 "playlist_added",
-						 G_CALLBACK (rb_daap_share_playlist_created),
-						 share, 0);
-
-			/* Currently, there are no playlists when this object is created, but in
-			 * case it changes..
-			 */
-			playlists = rb_playlist_manager_get_playlists (share->priv->playlist_manager);
-			g_list_foreach (playlists, (GFunc) rb_daap_share_process_playlist, share);
-			g_list_free (playlists);
-		}
+		rb_daap_share_set_playlist_manager (share, g_value_get_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -234,6 +332,9 @@ rb_daap_share_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_NAME:
 		g_value_set_string (value, share->priv->name);
+		break;
+	case PROP_PASSWORD:
+		g_value_set_string (value, share->priv->password);
 		break;
 	case PROP_DB:
 		g_value_set_object (value, share->priv->db);
@@ -318,23 +419,28 @@ rb_daap_share_forget_playlist (gpointer data,
 			     share);
 }
 
-
 static void
 rb_daap_share_dispose (GObject *object)
 {
 	RBDAAPShare *share = RB_DAAP_SHARE (object);
 
 	if (share->priv->published) {
-		rb_daap_share_stop_publish (share);
+		rb_daap_share_publish_stop (share);
 	}
 
-	if (share->priv) {
-		g_free (share->priv->name);
-		g_object_unref (share->priv->db);
-		g_object_unref (share->priv->playlist_manager);
+	if (share->priv->server_active) {
+		rb_daap_share_server_stop (share);
+	}
+
+	g_free (share->priv->name);
+	g_object_unref (share->priv->db);
+	g_object_unref (share->priv->playlist_manager);
 		
-		g_list_foreach (share->priv->playlist_ids, (GFunc) rb_daap_share_forget_playlist, share);
-		g_list_foreach (share->priv->playlist_ids, (GFunc) g_free, NULL);
+	g_list_foreach (share->priv->playlist_ids, (GFunc) rb_daap_share_forget_playlist, share);
+	g_list_foreach (share->priv->playlist_ids, (GFunc) g_free, NULL);
+
+	if (share->priv->publisher) {
+		g_object_unref (share->priv->publisher);
 	}
 
 	G_OBJECT_CLASS (rb_daap_share_parent_class)->dispose (object);
@@ -342,7 +448,8 @@ rb_daap_share_dispose (GObject *object)
 
 
 RBDAAPShare *
-rb_daap_share_new (const gchar *name,
+rb_daap_share_new (const char *name,
+		   const char *password,
 		   RhythmDB *db,
 		   RBPlaylistManager *playlist_manager)
 {
@@ -350,10 +457,13 @@ rb_daap_share_new (const gchar *name,
 
 	share = RB_DAAP_SHARE (g_object_new (RB_TYPE_DAAP_SHARE,
 					     "name", name,
+					     "password", password,
 					     "db", db,
 					     "playlist-manager", playlist_manager,
 					     NULL));
-	rb_daap_share_start_publish (share);
+
+	rb_daap_share_server_start (share);
+	rb_daap_share_publish_start (share);
 
 	return share;
 }
@@ -387,7 +497,7 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 	resp = rb_daap_structure_serialize (structure, &length);
 
 	if (resp == NULL) {
-		g_print ("serialize gave us null?\n");
+		rb_debug ("serialize gave us null?\n");
 		return;
 	}
 
@@ -444,7 +554,7 @@ server_info_cb (RBDAAPShare *share,
 	 * 3.0 is 2/3
 	 */
 	rb_daap_structure_add (msrv, RB_DAAP_CC_MINM, share->priv->name);
-	rb_daap_structure_add (msrv, RB_DAAP_CC_MSAU, 0);
+	rb_daap_structure_add (msrv, RB_DAAP_CC_MSAU, share->priv->auth_method);
 	/* authentication method
 	 * 0 is nothing
 	 * 1 is name & password
@@ -528,6 +638,15 @@ login_cb (RBDAAPShare *share,
 	rb_daap_structure_destroy (mlog);
 }
 
+static void 
+logout_cb (RBDAAPShare *share, 
+	   SoupMessage *message)
+{
+	/* FIXME: check session id ? */
+	soup_message_set_status (message, SOUP_STATUS_NO_CONTENT);
+	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
+}
+
 static void
 update_cb (RBDAAPShare *share,
 	   SoupMessage *message)
@@ -541,7 +660,7 @@ update_cb (RBDAAPShare *share,
 	revision_number_position = strstr (path, "revision-number=");
 
 	if (revision_number_position == NULL) {
-		g_print ("client asked for an update without a revision number?!?\n");
+		rb_debug ("client asked for an update without a revision number?!?\n");
 		g_free (path);
 		return;
 	}
@@ -772,7 +891,7 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 	if (client_requested (mb->bits, SONG_TRACK_NUMBER))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASTN, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));
 	if (client_requested (mb->bits, SONG_USER_RATING))
-		rb_daap_structure_add (mlit, RB_DAAP_CC_ASUR, 0); // fixme
+		rb_daap_structure_add (mlit, RB_DAAP_CC_ASUR, 0); /* FIXME */
 	if (client_requested (mb->bits, SONG_YEAR))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASYR, 0);
 	
@@ -910,7 +1029,7 @@ databases_cb (RBDAAPShare *share,
 {
 	gchar *path;
 	gchar *rest_of_path;
-//	guint revision_number;
+	/*guint revision_number;*/
 	
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
 
@@ -1112,13 +1231,13 @@ databases_cb (RBDAAPShare *share,
 			GnomeVFSFileOffset range;
 			gchar *content_range;
 			
-			s = range_header + 6; // bytes=
+			s = range_header + 6; /* bytes= */
 			range = atoll (s);
 			
 			result = gnome_vfs_seek (handle, GNOME_VFS_SEEK_START, range);
 			
 			if (result != GNOME_VFS_OK) {
-				g_message ("Error seeking: %s", gnome_vfs_result_to_string (result));
+				g_warning ("Error seeking: %s", gnome_vfs_result_to_string (result));
 				soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
 				goto out;
 			}
@@ -1140,7 +1259,7 @@ databases_cb (RBDAAPShare *share,
 		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
 
 	} else {
-		g_print ("unhandled: %s\n", path);
+		rb_debug ("unhandled: %s\n", path);
 	}
 	
 out:
@@ -1159,6 +1278,7 @@ static const struct DAAPPath paths_to_functions[] = {
 	{"/server-info", 12, server_info_cb},
 	{"/content-codes", 14, content_codes_cb},
 	{"/login", 6, login_cb},
+	{"/logout", 7, logout_cb},
 	{"/update", 7, update_cb},
 	{"/databases", 10, databases_cb}
 };
@@ -1172,6 +1292,7 @@ server_cb (SoupServerContext *context,
 	guint i;
 
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
+	rb_debug ("request for %s", path);
 
 	for (i = 0; i < G_N_ELEMENTS (paths_to_functions); i++) {
 		if (g_ascii_strncasecmp (paths_to_functions[i].path, path, paths_to_functions[i].path_length) == 0) {
@@ -1233,36 +1354,54 @@ db_entry_changed_cb (RhythmDB *db,
 		db_entry_added_cb (db, entry, share);
 }
 
-
-static gchar *
-publish_cb (RBDAAPmDNSPublisher publisher,
-	    RBDAAPmDNSPublisherStatus status,
-	    RBDAAPShare *share)
+static gboolean
+soup_auth_callback (SoupServerAuthContext *auth_ctx,
+                    SoupServerAuth        *auth,
+                    SoupMessage           *message,
+                    RBDAAPShare           *share)
 {
-	switch (status) {
-		case RB_DAAP_MDNS_PUBLISHER_STARTED:
-			rb_debug ("mDNS publish successful");
-			share->priv->published = TRUE;
-			break;
-		case RB_DAAP_MDNS_PUBLISHER_COLLISION: {
-			gchar *new_name;
-		
-			rb_debug ("Duplicate share name on mDNS");
-		
-			new_name = rb_daap_collision_dialog_new_run (share->priv->name);
-			return new_name;
+	const char *username;
+	gboolean    allowed;
+	char       *path;
+
+	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
+	rb_debug ("Auth request for %s", path);
+
+	if (auth == NULL) {
+
+		/* This is to workaround libsoup looking up handlers by directory.
+		   We require auth for "/databases?" but not "/databases/" */
+		if (g_str_has_prefix (path, "/databases/")) {
+
+			/* FIXME: need to check for valid session id */
+
+			allowed = TRUE;
+			goto done;
 		}
-	
+
+		rb_debug ("Auth DENIED: information not provided");
+		allowed = FALSE;
+		goto done;
 	}
 
-	return NULL;
+	username = soup_server_auth_get_user (auth);
+	rb_debug ("Auth request for user: %s", username);
+
+	allowed = soup_server_auth_check_passwd (auth, share->priv->password);
+	rb_debug ("Auth request: %s", allowed ? "ALLOWED" : "DENIED");
+
+ done:
+	g_free (path);
+
+	return allowed;
 }
 
-static void
-rb_daap_share_start_publish (RBDAAPShare *share)
+static gboolean
+rb_daap_share_server_start (RBDAAPShare *share)
 {
-	gint port = STANDARD_DAAP_PORT;
-	gboolean ret;
+	int                   port = STANDARD_DAAP_PORT;
+	gboolean              password_required;
+	SoupServerAuthContext auth_ctx = { 0 };
 
 	share->priv->server = soup_server_new (SOUP_SERVER_PORT, port, NULL);
 	if (share->priv->server == NULL) {
@@ -1271,12 +1410,40 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 
 		if (share->priv->server == NULL) {
 			g_warning ("Unable to start music sharing server");
-			return;
+			return FALSE;
 		}
 	}
 
-	share->priv->port = soup_server_get_port (share->priv->server);
-	rb_debug ("Started DAAP server on port %d", port);
+	share->priv->port = (guint)soup_server_get_port (share->priv->server);
+	rb_debug ("Started DAAP server on port %u", share->priv->port);
+
+	password_required = (share->priv->auth_method != RB_DAAP_SHARE_AUTH_METHOD_NONE);
+
+	if (password_required) {
+		auth_ctx.types = SOUP_AUTH_TYPE_BASIC;
+		auth_ctx.callback = (SoupServerAuthCallbackFn)soup_auth_callback;
+		auth_ctx.user_data = share;
+		auth_ctx.basic_info.realm = "Music Sharing";
+
+		soup_server_add_handler (share->priv->server, 
+					 "/login",
+					 &auth_ctx, 
+					 (SoupServerCallbackFn)server_cb,
+					 NULL,
+					 share);
+		soup_server_add_handler (share->priv->server, 
+					 "/update",
+					 &auth_ctx, 
+					 (SoupServerCallbackFn)server_cb,
+					 NULL,
+					 share);
+		soup_server_add_handler (share->priv->server,
+					 "/databases",
+					 &auth_ctx, 
+					 (SoupServerCallbackFn)server_cb,
+					 NULL,
+					 share);
+	}
 
 	soup_server_add_handler (share->priv->server, 
 				 NULL, 
@@ -1286,18 +1453,6 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 				 share);
 	soup_server_run_async (share->priv->server);
 	
-	ret = rb_daap_mdns_publish (&(share->priv->publisher),
-				    share->priv->name,
-				    share->priv->port,
-				    (RBDAAPmDNSPublisherCallback) publish_cb,
-				    share);
-	
-	if (ret == FALSE) {
-		g_warning ("Unable to notify network of music sharing");
-		return;
-	}
-
-	rb_debug ("Published DAAP server information to mdns");
 
 	share->priv->id_to_entry = g_hash_table_new (NULL, NULL);
 	share->priv->entry_to_id = g_hash_table_new (NULL, NULL);
@@ -1317,10 +1472,14 @@ rb_daap_share_start_publish (RBDAAPShare *share)
 							  "entry-changed",
 							  G_CALLBACK (db_entry_changed_cb),
 							  share);
+
+	share->priv->server_active = TRUE;
+
+	return TRUE;
 }
 
-static void
-rb_daap_share_stop_publish (RBDAAPShare *share)
+static gboolean
+rb_daap_share_server_stop (RBDAAPShare *share)
 {
 	if (share->priv->server) {
 		/* FIXME */
@@ -1328,7 +1487,7 @@ rb_daap_share_stop_publish (RBDAAPShare *share)
 		 * GLib-CRITICAL **: g_main_loop_quit: assertion `loop != NULL' failed
 		 * But it doesn't seem to matter.
 		 */
-//		soup_server_quit (share->priv->server);
+		/*soup_server_quit (share->priv->server); */
 		g_object_unref (G_OBJECT (share->priv->server));
 		share->priv->server = NULL;
 	}
@@ -1358,10 +1517,80 @@ rb_daap_share_stop_publish (RBDAAPShare *share)
 		share->priv->entry_changed_id = 0;
 	}
 
+	share->priv->server_active = FALSE;
+
+	return TRUE;
+}
+
+static gboolean
+rb_daap_share_publish_start (RBDAAPShare *share)
+{
+	GError  *error;
+	gboolean res;
+	gboolean password_required;
+
+	password_required = (share->priv->auth_method != RB_DAAP_SHARE_AUTH_METHOD_NONE);
+
+	error = NULL;
+	res = rb_daap_mdns_publisher_publish (share->priv->publisher,
+					      share->priv->name,
+					      share->priv->port,
+					      password_required,
+					      &error);
+	
+	if (res == FALSE) {
+		if (error != NULL) {
+			g_warning ("Unable to notify network of music sharing: %s", error->message);
+			g_error_free (error);
+		} else {
+			g_warning ("Unable to notify network of music sharing");
+		}
+		return FALSE;
+	} else {
+		rb_debug ("Published DAAP server information to mdns");
+	}
+
+	return TRUE;
+}
+
+static gboolean
+rb_daap_share_publish_stop (RBDAAPShare *share)
+{
 	if (share->priv->publisher) {
-		rb_daap_mdns_publish_cancel (share->priv->publisher);
-		share->priv->publisher = 0;
+		gboolean res;
+		GError  *error;
+		error = NULL;
+		res = rb_daap_mdns_publisher_withdraw (share->priv->publisher, &error);
+		if (error != NULL) {
+			g_warning ("Unable to withdraw music sharing service: %s", error->message);
+			g_error_free (error);
+		}
+		return res;
 	}
 
 	share->priv->published = FALSE;
+	return TRUE;
+}
+
+static void
+rb_daap_share_restart (RBDAAPShare *share)
+{
+	gboolean res;
+
+	rb_daap_share_server_stop (share);
+	res = rb_daap_share_server_start (share);
+	if (res) {
+		/* To update information just publish again */
+		rb_daap_share_publish_start (share);
+	} else {
+		rb_daap_share_publish_stop (share);
+	}
+}
+
+static void
+rb_daap_share_maybe_restart (RBDAAPShare *share)
+{
+	if (share->priv->published) {
+		rb_daap_share_restart (share);
+	}
 }

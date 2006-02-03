@@ -236,6 +236,8 @@ AC_ARG_WITH(mdns,
 have_howl=no
 have_avahi=no
 have_mdns=no
+use_howl=no
+use_avahi=no
 
 PKG_CHECK_MODULES(AVAHI,
    avahi-client >= 0.6
@@ -265,6 +267,7 @@ if test x"$with_mdns" = xauto; then
       MDNS_CFLAGS=$AVAHI_CFLAGS
       MDNS_LIBS=$AVAHI_LIBS
       AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
+      use_avahi=yes
       AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
       if test x$have_avahi_06 == xyes; then
          AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
@@ -277,6 +280,7 @@ if test x"$with_mdns" = xauto; then
       MDNS_CFLAGS=$HOWL_CFLAGS
       MDNS_LIBS=$HOWL_LIBS
       AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Howl])
+      use_howl=yes
       AC_MSG_NOTICE([Detected Howl, using it for mDNS/DNS-SD])
 
       have_mdns=yes
@@ -291,8 +295,8 @@ if test x"$with_mdns" = xhowl; then
    MDNS_CFLAGS=$HOWL_CFLAGS
    MDNS_LIBS=$HOWL_LIBS
    AC_DEFINE(WITH_HOWL, 1, [Define if mDNS/DNS-SD implementation uses Howl])
+   use_howl=yes
    AC_MSG_NOTICE([Using Howl for mDNS/DNS-SD])
-
    have_mdns=yes
 fi
 
@@ -304,6 +308,7 @@ if test x"$with_mdns" = xavahi; then
    MDNS_CFLAGS=$AVAHI_CFLAGS
    MDNS_LIBS=$AVAHI_LIBS
    AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
+   use_avahi=yes
    AC_MSG_NOTICE([Using Avahi for mDNS/DNS-SD])
 
    if test x$have_avahi_06 == xyes; then
@@ -315,7 +320,8 @@ if test x"$with_mdns" = xavahi; then
    have_mdns=yes
 fi
 
-
+AM_CONDITIONAL(USE_HOWL, test "x$use_howl" = "xyes")
+AM_CONDITIONAL(USE_AVAHI, test "x$use_avahi" = "xyes")
 
 LIBNOTIFY_REQUIRED=0.2.2
 AC_ARG_ENABLE(libnotify,
