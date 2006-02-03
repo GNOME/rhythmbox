@@ -872,16 +872,58 @@ rb_shell_player_open_playlist_location (TotemPlParser *playlist, const char *uri
 	g_object_notify (G_OBJECT (player), "playing");
 }
 
+
+typedef struct {
+	RBShellPlayer *player;
+	char *location;
+} OpenLocationThreadData;
+
+static gpointer
+open_location_thread (OpenLocationThreadData *data)
+{
+	TotemPlParser *playlist;
+	TotemPlParserResult playlist_result;
+	gboolean playlist_parsed;
+	GError *error = NULL;
+
+	rb_statusbar_set_progress (data->player->priv->statusbar_widget, 0.01, _("Connecting"));
+
+	playlist = totem_pl_parser_new ();
+	g_signal_connect_object (G_OBJECT (playlist), "entry",
+				 G_CALLBACK (rb_shell_player_open_playlist_location),
+				 data->player, 0);
+	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
+
+	playlist_result = totem_pl_parser_parse (playlist, data->location, FALSE);
+	playlist_parsed = (playlist_result != TOTEM_PL_PARSER_RESULT_UNHANDLED);
+	g_object_unref (playlist);
+
+	if (!playlist_parsed) {
+		/* We get here if we failed to parse as a playlist */
+		rb_player_open (data->player->priv->mmplayer, data->location, &error);
+	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_ERROR
+		   && data->player->priv->playlist_parse_error) {
+		error = data->player->priv->playlist_parse_error;
+		data->player->priv->playlist_parse_error = NULL;
+	} else {
+		rb_player_play (data->player->priv->mmplayer, &error);
+		g_object_notify (G_OBJECT (data->player), "playing");
+	}
+
+	if (error)
+		rb_shell_player_error (data->player, TRUE, error);
+
+	g_free (data);
+	return NULL;
+}
+
 static gboolean
 rb_shell_player_open_location (RBShellPlayer *player,
 			       const char *location,
 			       GError **error)
 {
 	char *unescaped;
-	TotemPlParser *playlist;
 	gboolean was_playing;
-	gboolean playlist_parsed;
-	TotemPlParserResult playlist_result = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 
 	unescaped = gnome_vfs_unescape_string_for_display (location);
 	rb_debug ("Opening %s...", unescaped);
@@ -896,41 +938,25 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	player->priv->song = NULL;
 	g_object_notify (G_OBJECT (player), "stream-song");
 
-	playlist = totem_pl_parser_new ();
-	g_signal_connect_object (G_OBJECT (playlist), "entry",
-				 G_CALLBACK (rb_shell_player_open_playlist_location),
-				 player, 0);
-	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
-
-	playlist_parsed = FALSE;
 	if (rb_source_try_playlist (player->priv->source)) {
-		playlist_result = totem_pl_parser_parse (playlist, location, FALSE);
-		playlist_parsed = (playlist_result != TOTEM_PL_PARSER_RESULT_UNHANDLED);
-	}
-	g_object_unref (playlist);
-	if (!playlist_parsed) {
-		/* We get here if we failed to parse as a playlist */
+		OpenLocationThreadData *data;
+	       
+		data = g_new0 (OpenLocationThreadData, 1);
+		data->player = player;
+		data->location = g_strdup (location);
+
+		g_thread_create ((GThreadFunc)open_location_thread, data, FALSE, NULL);
+		return TRUE;
+	} else {
 		if (!rb_player_open (player->priv->mmplayer, location, error))
 			return FALSE;
-	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_ERROR
-		   && error
-		   && player->priv->playlist_parse_error) {
-		g_propagate_error (error, player->priv->playlist_parse_error);
-	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
-		/* We already started playback in the open_playlist_location
-		 * callback
-		 */
-		;
-	}
 
-	rb_statusbar_set_progress (player->priv->statusbar_widget, -1.0, NULL);
-	
-	if (!rb_player_play (player->priv->mmplayer, error))
-		return FALSE;
+		if (!rb_player_play (player->priv->mmplayer, error))
+			return FALSE;
 
-	if (!was_playing) {
 		g_object_notify (G_OBJECT (player), "playing");
 	}
+
 	return TRUE;
 }
 
@@ -1018,8 +1044,6 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 	if (!rb_shell_player_open_entry (player, entry, &tmp_error))
 		goto lose;
 	rb_shell_player_sync_replaygain (player, entry);
-	if (!rb_shell_player_play (player, &tmp_error))
-		goto lose;
 
 	rb_debug ("Success!");
 	/* clear error on successful playback */

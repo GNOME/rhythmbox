@@ -1,3 +1,15 @@
+2006-02-03  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell-player.c: (open_location_thread),
+	(rb_shell_player_open_location):
+	retrieve iradio playlists files in a thread, so that with GStreamer
+	0.10 the UI doesn't block while connecting to stations. The streamer
+	connection is synchronous with 0.8, so that will still block (a bit).
+	Fixed bug 128106.
+
+	(rb_shell_player_set_playing_entry): don't call rb_shell_player_play,
+	because _open_entry does that automatically when it is ready to.
+
 2006-02-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
