@@ -1,5 +1,10 @@
 2006-02-03  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac: mention gst-plugins-base in the error message for not
+	finding GStreamer 0.10, since not having that will cause it to fail.
+
+2006-02-03  James Livingston  <jrl@ids.org.au>
+
 	* configure.ac: fix typo that means you get the wrong error message if
 	you explicity request a particular playback engine, and it can't be
 	found.

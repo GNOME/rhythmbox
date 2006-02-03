@@ -180,7 +180,7 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
 	elif test x$with_playback = xgstreamer-0-10; then
-		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
+		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and it was not found or older than version $GST_REQUIRED_VERSION, or gst-plugins-base was missing])
 	fi
 fi
 if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
@@ -192,7 +192,7 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_8_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_8_LIBS"
 	elif test x$with_playback = xgstreamer-0-8; then
-		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
+		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and it was not found or older than version $GST_REQUIRED_VERSION])
 	fi
 fi
 AM_CONDITIONAL(USE_GSTREAMER_0_10, test x"$with_playback" = xgstreamer_0_10)
