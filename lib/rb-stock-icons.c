@@ -39,6 +39,7 @@ const char GNOME_MEDIA_SHUFFLE[] = "stock_shuffle";
 const char GNOME_MEDIA_REPEAT[] = "stock_repeat";
 const char GNOME_MEDIA_PLAYLIST[] = "stock_playlist";
 const char GNOME_MEDIA_AUTO_PLAYLIST[] = "stock_smart-playlist";
+const char GNOME_MEDIA_EJECT[] = "player_eject";
 
 typedef struct {
 	const char *name;
@@ -65,6 +66,7 @@ rb_stock_icons_init (void)
 		{GNOME_MEDIA_REPEAT, FALSE},
 		{GNOME_MEDIA_PLAYLIST, FALSE},
 		{GNOME_MEDIA_AUTO_PLAYLIST, FALSE},
+		{GNOME_MEDIA_EJECT, FALSE}
 	};
 
 	g_return_if_fail (factory == NULL);

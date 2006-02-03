@@ -116,6 +116,7 @@ struct _RBSourceClass
 	void		(*impl_activate)	(RBSource *source);
 	void		(*impl_deactivate)	(RBSource *source);
 	gboolean	(*impl_disconnect)	(RBSource *source);
+	GList*		(*impl_get_ui_actions)	(RBSource *source);
 };
 
 GType		rb_source_get_type		(void);
@@ -180,6 +181,7 @@ void		rb_source_delete_thyself	(RBSource *source);
 void		rb_source_activate		(RBSource *source);
 void		rb_source_deactivate		(RBSource *source);
 gboolean	rb_source_disconnect		(RBSource *source);
+GList*		rb_source_get_ui_actions	(RBSource *source);
 
 /* Protected method, should only be used by objects inheriting from RBSource */
 void            _rb_source_show_popup           (RBSource *source, 

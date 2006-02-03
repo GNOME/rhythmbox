@@ -34,6 +34,7 @@ extern const char GNOME_MEDIA_SHUFFLE[];
 extern const char GNOME_MEDIA_REPEAT[];
 extern const char GNOME_MEDIA_PLAYLIST[];
 extern const char GNOME_MEDIA_AUTO_PLAYLIST[];
+extern const char GNOME_MEDIA_EJECT[];
 
 void	rb_stock_icons_init	(void);
 

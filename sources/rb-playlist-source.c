@@ -70,6 +70,7 @@ static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_move_to_trash (RBSource *asource);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
+static GList *impl_get_ui_actions (RBSource *source);
 
 static void rb_playlist_source_songs_show_popup_cb (RBEntryView *view, RBPlaylistSource *playlist_view);
 static void rb_playlist_source_drop_cb (GtkWidget *widget,
@@ -158,6 +159,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
 
@@ -824,4 +826,15 @@ rb_playlist_source_add_to_map (RBPlaylistSource *source,
 			     g_strdup (location), GINT_TO_POINTER (1));
 	return TRUE;
 }
+
+static GList*
+impl_get_ui_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "MusicPlaylistBurnPlaylist");
+
+	return actions;
+}
+
 

@@ -229,6 +229,8 @@ static gboolean impl_receive_drag 			(RBSource *source,
 							 GtkSelectionData *data);
 static gboolean impl_can_add_to_queue			(RBSource *source);
 static void impl_add_to_queue				(RBSource *source, RBSource *queue);
+static GList *impl_get_ui_actions			(RBSource *source);
+
 
 
 
@@ -254,6 +256,7 @@ struct RBPodcastSourcePrivate
 	
 	RhythmDB *db;
 
+	guint toolbar_ui_merge_id;
 
 	GtkWidget *vbox;
 	GtkWidget *config_widget;
@@ -350,6 +353,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_add_to_queue = impl_can_add_to_queue;
 	source_class->impl_add_to_queue = impl_add_to_queue;
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -1848,4 +1852,14 @@ impl_add_to_queue (RBSource *source, RBSource *queue)
 	}
 
 	g_list_free (selection);
+}
+
+static GList*
+impl_get_ui_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "PodcastUpdateAllFeeds");
+
+	return actions;
 }

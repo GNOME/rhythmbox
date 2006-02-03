@@ -57,6 +57,7 @@ static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_pro
 
 static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
+static GList* impl_get_ui_actions (RBSource *source);
 
 static gboolean rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
@@ -94,6 +95,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
 }
@@ -577,5 +579,16 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/AudioCdSourcePopup");
 	return TRUE;
+}
+
+static GList*
+impl_get_ui_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "MusicImportCD");
+	actions = g_list_prepend (actions, "RemovableSourceEject");
+
+	return actions;
 }
 

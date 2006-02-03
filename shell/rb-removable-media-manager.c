@@ -38,6 +38,7 @@
 
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-stock-icons.h"
 #include "rhythmdb.h"
 
 #ifndef HAVE_BURN_DRIVE_UNREF
@@ -124,7 +125,7 @@ static guint rb_removable_media_manager_signals[LAST_SIGNAL] = { 0 };
 
 static GtkActionEntry rb_removable_media_manager_actions [] =
 {
-	{ "RemovableSourceEject", NULL, N_("_Eject"), NULL,
+	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
 	  N_("Eject this medium"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
 	{ "MusicScanMedia", NULL, N_("_Scan Removable Media"), NULL,

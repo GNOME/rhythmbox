@@ -349,6 +349,7 @@ struct RBShellPrivate
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
+	guint source_ui_merge_id;
 
 	GtkWidget *paned;
 	GtkWidget *sourcelist;
@@ -986,6 +987,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 					     rb_shell_toggle_entries,
 					     rb_shell_n_toggle_entries,
 					     shell);
+	shell->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (shell->priv->ui_manager);
 	/* Initialize the database */
 	rb_debug ("creating database object");
 	{
@@ -1778,10 +1780,23 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 }
 
 static void
+merge_source_ui_cb (const char *action, RBShell *shell)
+{
+	gtk_ui_manager_add_ui (shell->priv->ui_manager,
+			       shell->priv->source_ui_merge_id,
+			       "/ToolBar",
+			       action,
+			       action,
+			       GTK_UI_MANAGER_AUTO,
+			       FALSE);
+}
+
+static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
 {
 	RBEntryView *view;
+	GList *actions;
 
 	if (shell->priv->selected_source == source)
 		return;
@@ -1789,11 +1804,12 @@ rb_shell_select_source (RBShell *shell,
 	rb_debug ("selecting source %p", source);
 	
 	if (shell->priv->selected_source) {
-		rb_source_deactivate(shell->priv->selected_source);
+		rb_source_deactivate (shell->priv->selected_source);
+		gtk_ui_manager_remove_ui (shell->priv->ui_manager, shell->priv->source_ui_merge_id);
 	}
 	
 	shell->priv->selected_source = source;
-	rb_source_activate(shell->priv->selected_source);
+	rb_source_activate (shell->priv->selected_source);
 	
 	view = rb_source_get_entry_view (shell->priv->selected_source);
 
@@ -1811,17 +1827,17 @@ rb_shell_select_source (RBShell *shell,
 					   shell);
 	
 	/* update services */
-	rb_shell_clipboard_set_source (shell->priv->clipboard_shell,
-				       RB_SOURCE (source));
-	rb_shell_player_set_selected_source (shell->priv->player_shell,
-					     RB_SOURCE (source));
-	rb_source_header_set_source (shell->priv->source_header,
-				     RB_SOURCE (source));
-	rb_statusbar_set_source (shell->priv->statusbar,
-				 RB_SOURCE (source));
-	rb_playlist_manager_set_source (shell->priv->playlist_manager,
-					RB_SOURCE (source));
-	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", RB_SOURCE (source), NULL);
+	rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
+	rb_shell_player_set_selected_source (shell->priv->player_shell, source);
+	rb_source_header_set_source (shell->priv->source_header, source);
+	rb_statusbar_set_source (shell->priv->statusbar, source);
+	rb_playlist_manager_set_source (shell->priv->playlist_manager, source);
+	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", source, NULL);
+
+	/* merge the source-specific UI */
+	actions = rb_source_get_ui_actions (source);
+	g_list_foreach (actions, (GFunc)merge_source_ui_cb, shell);
+	g_list_free (actions);
 }
 
 static void
