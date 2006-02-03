@@ -1208,8 +1208,11 @@ set_metadata_string_default_unknown (RhythmDB *db,
 			       &val))) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_static_string (&val, unknown);
-	} else if (g_value_get_string (&val)[0] == '\0')
-		g_value_set_static_string (&val, unknown);
+	} else {
+                const gchar *str = g_value_get_string (&val);
+                if (str == NULL || str[0] == '\0')
+	        	g_value_set_static_string (&val, unknown);
+        }
 	rhythmdb_entry_set_internal (db, entry, TRUE, prop, &val);
 	g_value_unset (&val);
 }
