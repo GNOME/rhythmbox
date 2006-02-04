@@ -171,8 +171,6 @@ AC_ARG_WITH(playback,
    [Select the playback backend to use (default auto)]),,
    with_playback=auto)
 
-AC_MSG_NOTICE([foo: $with_playback])
-
 if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
 	if test x"$have_gstreamer_0_10" = xyes; then
 		with_playback=gstreamer_0_10
@@ -181,8 +179,8 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
 		AC_DEFINE(HAVE_GSTREAMER_0_10,1,[Define if you want to use the GStreamer 0.10])
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
-	elif test x$with_playback = xgstreamer_0_10; then
-		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
+	elif test x$with_playback = xgstreamer-0-10; then
+		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and it was not found or older than version $GST_REQUIRED_VERSION, or gst-plugins-base was missing])
 	fi
 fi
 if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
@@ -193,8 +191,8 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
 		AC_DEFINE(HAVE_GSTREAMER_0_8,1,[Define if you want to use the GStreamer 0.8])
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_8_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_8_LIBS"
-	elif test x$with_playback = xgstreamer_0_8; then
-		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and not found or older than version $GST_REQUIRED_VERSION])
+	elif test x$with_playback = xgstreamer-0-8; then
+		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and it was not found or older than version $GST_REQUIRED_VERSION])
 	fi
 fi
 AM_CONDITIONAL(USE_GSTREAMER_0_10, test x"$with_playback" = xgstreamer_0_10)
