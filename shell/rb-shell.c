@@ -493,7 +493,7 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewSourceList", NULL, N_("Source _List"), "<control>L",
 	  N_("Change the visibility of the source list"),
 	  G_CALLBACK (rb_shell_view_sourcelist_changed_cb), TRUE },
-	{ "ViewToolbar", NULL, N_("_Toolbar"), "<shift><control>T",
+	{ "ViewToolbar", NULL, N_("_Toolbar"), NULL,
 	  N_("Change the visibility of the toolbar"),
 	  G_CALLBACK (rb_shell_view_toolbar_changed_cb), TRUE },
 	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
