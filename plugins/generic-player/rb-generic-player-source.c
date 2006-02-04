@@ -156,7 +156,6 @@ rb_generic_player_source_get_mount_path (RBGenericPlayerSource *source)
 static gchar *
 default_get_mount_path (RBGenericPlayerSource *source)
 {
-	gchar *path;
 	gchar *uri;
 	GnomeVFSVolume *volume;
 
@@ -164,11 +163,7 @@ default_get_mount_path (RBGenericPlayerSource *source)
 	uri = gnome_vfs_volume_get_activation_uri (volume);
 	g_object_unref (G_OBJECT (volume));
 
-	path = g_filename_from_uri (uri, NULL, NULL);
-	g_assert (path != NULL);
-	g_free (uri);
-
-	return path;
+	return uri;
 }
 
 

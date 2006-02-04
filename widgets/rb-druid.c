@@ -267,9 +267,9 @@ path_dialog_response_cb (GtkDialog *dialog,
 		return;
 	}
 
-	file = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+	file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
 	if (file == NULL) {
-		file = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
+		file = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
