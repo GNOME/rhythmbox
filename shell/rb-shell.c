@@ -2042,7 +2042,7 @@ rb_shell_cmd_about (GtkAction *action,
 		   "GNU General Public License for more details.\n"),
 		N_("You should have received a copy of the GNU General Public License\n"
 		   "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
-		   "59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n")
+		   "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n")
 	};
 
 	char *license_trans;
