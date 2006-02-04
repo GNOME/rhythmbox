@@ -38,8 +38,11 @@ rhythmdb-query-model
 @db: 
 @query: 
 @sort_func: 
-@user_data: 
+@sort_prop_id: 
+@sort_reverse: 
 @Returns: 
+<!-- # Unused Parameters # -->
+@user_data: 
 
 
 <!-- ##### FUNCTION rhythmdb_query_model_new_empty ##### -->
@@ -78,15 +81,6 @@ rhythmdb-query-model
 @model: 
 @entry: 
 @Returns: 
-
-
-<!-- ##### FUNCTION rhythmdb_query_model_set_connected ##### -->
-<para>
-
-</para>
-
-@model: 
-@connected: 
 
 
 <!-- ##### FUNCTION rhythmdb_query_model_signal_complete ##### -->
