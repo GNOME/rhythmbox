@@ -2107,7 +2107,12 @@ rhythmdb_add_uri (RhythmDB *db, const char *uri)
 void
 rhythmdb_add_uri_with_type (RhythmDB *db, const char *uri, RhythmDBEntryType type)
 {
-	char *realuri = rb_uri_resolve_symlink (uri);
+	char *realuri;
+	char *canon_uri;
+	       
+	canon_uri = rb_canonicalise_uri (uri);
+	realuri = rb_uri_resolve_symlink (canon_uri);
+	g_free (canon_uri);
 
 	if (rb_uri_is_directory (realuri)) {
 		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);

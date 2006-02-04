@@ -1,3 +1,12 @@
+2006-02-04  James Livingston  <jrl@ids.org.au>
+
+        * rhythmdb/rhythmdb.c: (rhythmdb_add_uri_with_type): handle being
+        passed a path instead of a URI.
+
+        * sources/rb-generic-player-source.c: (default_get_mount_path):
+        * widgets/rb-druid.c: (path_dialog_response_cb): pass URIs instead of
+        the path. This fixes bug 329723.
+
 2006-02-04  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
         * daapsharing/rb-daap-structure.c:
