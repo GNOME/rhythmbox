@@ -252,7 +252,7 @@ main (int argc, char **argv)
 
 	session_bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 	if (session_bus == NULL) {
-		g_critical ("couldn't connect to session bus: %s", (error) ? error->message : "(null)");
+		g_warning ("couldn't connect to session bus: %s", (error) ? error->message : "(null)");
 		g_clear_error (&error);
 	} else if (!no_registration) {
 		guint request_name_reply;
@@ -281,8 +281,8 @@ main (int argc, char **argv)
 					G_TYPE_UINT,
 					&request_name_reply,
 					G_TYPE_INVALID)) {
-			g_critical ("Failed to invoke RequestName: %s",
-				    error->message);
+			g_warning ("Failed to invoke RequestName: %s",
+				   error->message);
 		}
 		g_object_unref (bus_proxy);
 
@@ -292,8 +292,8 @@ main (int argc, char **argv)
 		else if (request_name_reply == DBUS_REQUEST_NAME_REPLY_EXISTS)
 			activated = TRUE;
 		else {
-			g_critical ("Got unhandled reply %u from RequestName",
-				    request_name_reply);
+			g_warning ("Got unhandled reply %u from RequestName",
+				   request_name_reply);
 			activated = FALSE;
 		}
 	}
@@ -326,7 +326,7 @@ main (int argc, char **argv)
 				if (rb_remote_bonobo_activate (bonobo))
 					client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
 				else
-					g_critical ("acquired bonobo service but couldn't activate!");
+					g_warning ("acquired bonobo service but couldn't activate!");
 			}
 		}
 
@@ -356,8 +356,8 @@ main (int argc, char **argv)
 							       "org.gnome.Rhythmbox.Shell",
 							       &error);
 		if (!shell_proxy) {
-			g_critical ("Couldn't create proxy for Rhythmbox shell: %s",
-				    error->message);
+			g_warning ("Couldn't create proxy for Rhythmbox shell: %s",
+				   error->message);
 		} else {
 			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
 		}

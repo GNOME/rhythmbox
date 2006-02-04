@@ -1,4 +1,13 @@
+2006-02-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+        * rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_save):
+        * shell/main.c: (main):
+        * shell/rb-shell-player.c: (rb_shell_player_sync_play_order):
+        Replace all g_critical calls with g_warning, since none of them are
+        the sort of thing the process should die over.  Fixes #329398.
+
 2006-02-03  James Livingston  <jrl@ids.org.au>
+
 
 	* configure.ac: mention gst-plugins-base in the error message for not
         finding GStreamer 0.10, since not having that will cause it to fail.
