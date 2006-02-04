@@ -700,7 +700,7 @@ rb_daap_content_code_string_as_int32 (const gchar *str)
 
 	strncpy (u.str, str, 4);
 
-	return u.i;
+	return g_htonl (u.i);
 }
 
 static gboolean 
