@@ -1,3 +1,10 @@
+2006-02-04  James Livingston  <jrl@ids.org.au>
+
+        patch by: Jan Schmidt <thaytan@mad.scientist.com>
+
+        * rhythmdb/rhythmdb.c: (set_metadata_string_default_unknown): fix
+        crash if metadata reader gives us NULL for strings.
+
 2006-02-03  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
         * rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_save):
