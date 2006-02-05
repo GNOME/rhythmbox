@@ -660,9 +660,9 @@ RBSource *
 rb_playlist_source_new_from_xml	(RBShell *shell,
 				 xmlNodePtr node)
 {
+	RBSource *source = NULL;
 	xmlChar *tmp;
 	xmlChar *name;
-	RBSource *source;
 
 	/* Try to get name from XML and remove translated names */
 	name = get_playlist_name_from_xml (node);
@@ -679,10 +679,13 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 		rb_static_playlist_source_load_from_xml (queue, node);
 		g_object_unref (G_OBJECT (queue));
 		return NULL;
-	} else
-		g_assert_not_reached ();
+	} else {
+		g_warning ("attempting to load playlist '%s' of unknown type '%s'", name, tmp);
+	}
 
-	g_object_set (G_OBJECT (source), "name", name, NULL);
+	if (source)
+		g_object_set (G_OBJECT (source), "name", name, NULL);
+
 	g_free (name);
 
 	return source;

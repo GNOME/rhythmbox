@@ -543,7 +543,13 @@ rb_recorder_construct (RBRecorder *recorder,
 
 #ifdef HAVE_GSTREAMER_0_8
         recorder->priv->src_pad = gst_element_get_pad (recorder->priv->src, "src");
-        g_assert (recorder->priv->src_pad); /* TODO: GError */
+	if (recorder->priv->src_pad == NULL) {
+                g_set_error (error,
+                             RB_RECORDER_ERROR,
+                             RB_RECORDER_ERROR_INTERNAL,
+                             _("Could not access source pad"));
+		return;
+	}
 #endif
 
         /* The queue */

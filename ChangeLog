@@ -1,5 +1,18 @@
 2006-02-05  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_finalize): check whether
+	things are NULL before using g_object_unref. Fixes bug 327452.
+
+	* player/rb-recorder-gst.c: (rb_recorder_construct):
+	* shell/rb-shell-player.c: (rb_shell_player_error): return errors
+	rather than assertion.
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_new_from_xml):
+	emit a warning, rather than asserting if an unknown playlist type is
+	encountered.
+
+2006-02-05  James Livingston  <jrl@ids.org.au>
+
 	* widgets/Makefile.am:
 	* widgets/rb-simple-view.c:
 	* widgets/rb-simple-view.h: Move the two features that this class

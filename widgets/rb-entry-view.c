@@ -400,9 +400,12 @@ rb_entry_view_finalize (GObject *object)
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 	g_hash_table_destroy (view->priv->column_key_map);
 
-	g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
-	g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
-	g_object_unref (G_OBJECT (view->priv->error_pixbuf));
+	if (view->priv->playing_pixbuf)
+		g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
+	if (view->priv->paused_pixbuf)
+		g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
+	if (view->priv->error_pixbuf)
+		g_object_unref (G_OBJECT (view->priv->error_pixbuf));
 
 	g_free (view->priv->sorting_key);
 
