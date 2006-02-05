@@ -229,9 +229,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_added",
 				 G_CALLBACK (rb_playlist_source_entry_added_cb),
 				 source, 0);
-	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_restored",
-				 G_CALLBACK (rb_playlist_source_entry_added_cb),
-				 source, 0);
 
 	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player, 
 					 	 NULL, TRUE, TRUE);

@@ -587,10 +587,6 @@ rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
 				 model, 0);
 	g_signal_connect_object (G_OBJECT (model->priv->db),
-				 "entry_restored",
-				 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
-				 model, 0);
-	g_signal_connect_object (G_OBJECT (model->priv->db),
 				 "entry_changed",
 				 G_CALLBACK (rhythmdb_query_model_entry_changed_cb),
 				 model, 0);

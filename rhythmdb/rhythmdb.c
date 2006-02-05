@@ -175,7 +175,7 @@ typedef struct
 	RBMetaData *metadata;
 	/* QUERY_COMPLETE */
 	RhythmDBQueryModel *model;
-	/* ENTRY_RESTORED / ENTRY_SET */
+	/* ENTRY_SET */
 	RhythmDBEntry *entry;
 	/* ENTRY_SET */
 	gboolean signal_change;
@@ -240,7 +240,6 @@ enum
 enum
 {
 	ENTRY_ADDED,
-	ENTRY_RESTORED,
 	ENTRY_CHANGED,
 	ENTRY_DELETED,
 	LOAD_COMPLETE,
@@ -300,16 +299,6 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      RHYTHMDB_TYPE,
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
-
-	rhythmdb_signals[ENTRY_RESTORED] =
-		g_signal_new ("entry_restored",
-			      RHYTHMDB_TYPE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, entry_restored),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,

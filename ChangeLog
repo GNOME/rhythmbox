@@ -1,5 +1,17 @@
 2006-02-05  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init):
+	* rhythmdb/rhythmdb.h: remove the "entry-restored" signal nothing
+	really cares about the difference from "entry-added", and it isn't
+	emitted by the tree backend anyway.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	remove the references to the entry-restored signal.
+
+2006-02-05  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-player.c: (rb_shell_player_error): fix compilation
 	issue.
 

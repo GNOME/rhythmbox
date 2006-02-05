@@ -60,6 +60,8 @@ typedef enum
 	RHYTHMDB_QUERY_PROP_NOT_LIKE,
 	RHYTHMDB_QUERY_PROP_GREATER,
 	RHYTHMDB_QUERY_PROP_LESS,
+
+	/* synthetic query types, translated into non-synthetic ones internally */
 	RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN,
 	RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN,
 	RHYTHMDB_QUERY_PROP_YEAR_EQUALS,
@@ -188,10 +190,6 @@ typedef struct {
 	RBRefString *mountpoint;
 	guint64 file_size;
 	RBRefString *mimetype;
-#if 0
-	dev_t device;
-	GnomeVFSInodeNumber inode;
-#endif
 	gulong mtime;
 	gulong first_seen;
 	gulong last_seen;
@@ -424,7 +422,6 @@ typedef struct
 
 	/* signals */
 	void	(*entry_added)		(RhythmDBEntry *entry);
-	void	(*entry_restored)	(RhythmDBEntry *entry);
 	void	(*entry_changed)	(RhythmDBEntry *entry, GSList *changes); /* list of RhythmDBEntryChanges */
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(void);
