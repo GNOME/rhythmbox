@@ -28,6 +28,7 @@
 #include <time.h>
 #include <string.h>
 
+#include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
@@ -2228,7 +2229,7 @@ rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 {
 	RhythmDBEntry *entry;
 
-	g_return_val_if_fail (player->priv->handling_error == FALSE);
+	g_return_if_fail (player->priv->handling_error == FALSE);
 
 	player->priv->handling_error = TRUE;
 
