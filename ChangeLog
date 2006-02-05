@@ -1,5 +1,18 @@
 2006-02-05  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-tree.c: (parse_boolean),
+	(rhythmdb_tree_parser_end_element), (save_entry_boolean),
+	(save_entry): allow storage of booleans in the on-disk db, and
+	save/load the HIDDEN property.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal),
+	(rhythmdb_prop_get_type): restore the HIDDEN property of local files
+	to the state it was when RB shutdown. This makes RB appear to start
+	faster, as tracks can appear before the stat is done. Remote files
+	still start hidden. From bug 325215.
+
+2006-02-05  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_class_init):
 	* rhythmdb/rhythmdb.h: remove the "entry-restored" signal nothing
 	really cares about the difference from "entry-added", and it isn't

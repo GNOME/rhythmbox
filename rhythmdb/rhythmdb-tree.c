@@ -295,6 +295,12 @@ parse_ulong (const char *buffer)
 		return MIN (val, G_MAXUINT32);
 }
 
+static gboolean
+parse_boolean (const char *buffer)
+{
+	return (parse_ulong (buffer) > 0);
+}
+
 static void
 rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const char *name)
 {
@@ -429,6 +435,9 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_MIMETYPE:
 			ctx->entry->mimetype = rb_refstring_new (ctx->buf->str);
 			break;
+		case RHYTHMDB_PROP_HIDDEN:
+			ctx->entry->hidden = parse_boolean (ctx->buf->str);
+			break;
 		case RHYTHMDB_PROP_STATUS:
 			ctx->entry->podcast->status = parse_ulong (ctx->buf->str);
 			break;			
@@ -462,7 +471,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
-		case RHYTHMDB_PROP_HIDDEN:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		case RHYTHMDB_PROP_SEARCH_MATCH:
@@ -631,6 +639,13 @@ save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
 }
 
 static void
+save_entry_boolean (struct RhythmDBTreeSaveContext *ctx,
+		    const xmlChar *elt_name, gboolean val)
+{
+	save_entry_ulong (ctx, elt_name, val ? 1 : 0, FALSE);
+}
+
+static void
 save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name,
 		   guint64 num)
 {
@@ -775,6 +790,9 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_LAST_PLAYED:
 			save_entry_ulong (ctx, elt_name, entry->last_played, FALSE);
 			break;
+		case RHYTHMDB_PROP_HIDDEN:
+			save_entry_boolean (ctx, elt_name, entry->hidden);
+			break;
 		case RHYTHMDB_PROP_STATUS:
 			if (entry->podcast)
 				save_entry_ulong (ctx, elt_name, entry->podcast->status, FALSE);
@@ -816,7 +834,6 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
-		case RHYTHMDB_PROP_HIDDEN:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		case RHYTHMDB_PROP_SEARCH_MATCH:

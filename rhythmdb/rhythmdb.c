@@ -832,13 +832,19 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 	for (tem = db->priv->added_entries; tem; tem = tem->next) {
 		RhythmDBEntry *entry = tem->data;
 
-		rhythmdb_emit_entry_added (db, entry);
 		if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 			const gchar *uri;
+
 			uri = rhythmdb_entry_get_string (entry, 
 							 RHYTHMDB_PROP_LOCATION);
+
+			/* always start remote files hidden*/
+			if (!rb_uri_is_local (uri))
+				entry->hidden = TRUE;
+
 			queue_stat_uri (uri, db, -1);
 		}
+		rhythmdb_emit_entry_added (db, entry);
 		g_assert (entry->inserted == FALSE);
 		entry->inserted = TRUE;
 	}
@@ -3495,7 +3501,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Visibility (gboolean) [visibility]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Hidden (gboolean) [hidden]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN_STR, "Time Added to Library (gchararray) [first-seen-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_SEARCH_MATCH, "Search matching key (gchararray) [search-match]"),
 
