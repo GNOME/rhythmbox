@@ -24,7 +24,6 @@
 
 #include "rb-shell.h"
 #include "rb-source.h"
-#include "rb-podcast-manager.h"
 
 G_BEGIN_DECLS
 

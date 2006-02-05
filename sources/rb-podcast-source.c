@@ -89,7 +89,7 @@ static void rb_podcast_source_songs_show_popup_cb 	(RBEntryView *view,
 						  	 RBPodcastSource *source);
 
 
-static void rb_podcast_source_feeds_show_popup_cb 	(RBSimpleView *view,
+static void rb_podcast_source_feeds_show_popup_cb 	(RBPropertyView *view,
 						  	 RBPodcastSource *source);
 
 static void paned_size_allocate_cb 			(GtkWidget *widget,
@@ -264,7 +264,7 @@ struct RBPodcastSourcePrivate
 	
 	GdkPixbuf *pixbuf;
 
-	RBSimpleView *feeds;
+	RBPropertyView *feeds;
 	RBEntryView *posts;
 	GtkActionGroup *action_group;
 
@@ -452,7 +452,6 @@ rb_podcast_source_constructor (GType type,
 	RBShell *shell;
 
 	RhythmDBQueryModel *query_model;
-	GtkTreeModel *model;
 	GPtrArray *query;
 
 	klass = RB_PODCAST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PODCAST_SOURCE));
@@ -597,29 +596,21 @@ rb_podcast_source_constructor (GType type,
 	
 
 	/* configure feed view */
+	source->priv->feeds = rb_property_view_new (source->priv->db,  RHYTHMDB_PROP_LOCATION, _("Feed"));	
+	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds), GTK_SELECTION_MULTIPLE);
+	
+	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
+	g_object_set (G_OBJECT (feed_model), "query-model", query_model, NULL);
+	g_object_unref (G_OBJECT (feed_model));
+	
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
 				      RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
 				      RHYTHMDB_QUERY_END);
-	
-	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	rhythmdb_do_full_query_parsed (source->priv->db, GTK_TREE_MODEL (query_model), query);
 
-	model = GTK_TREE_MODEL (query_model);
-	
-	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
-
-
-	source->priv->feeds = rb_simple_view_new (source->priv->db,
-						  RHYTHMDB_PROP_LOCATION,
-						  _("Feed"));	
-	
-	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds), GTK_SELECTION_MULTIPLE);
-	
-	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
-	g_object_set (G_OBJECT (feed_model), "query-model", query_model, NULL);
-	g_object_unref (G_OBJECT (feed_model));
-	
 	rhythmdb_query_free (query);
 	
 	/* column title */
@@ -633,8 +624,10 @@ rb_podcast_source_constructor (GType type,
 						 (GtkTreeCellDataFunc) rb_podcast_source_feed_title_cell_data_func,
 						 source, NULL);
 	
-	rb_simple_view_append_column_custom (source->priv->feeds,
-		 		             column, _("Feed"), source);
+	gtk_tree_view_column_set_title (column, _("Feed"));
+	gtk_tree_view_column_set_reorderable (column, FALSE);
+	gtk_tree_view_column_set_visible (column, TRUE);
+	rb_property_view_append_column_custom (source->priv->feeds, column);
 
 	g_signal_connect_object (G_OBJECT (source->priv->feeds), "show_popup",
 				 G_CALLBACK (rb_podcast_source_feeds_show_popup_cb), 
@@ -969,7 +962,7 @@ rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
 
 
 static void
-rb_podcast_source_feeds_show_popup_cb (RBSimpleView *view,
+rb_podcast_source_feeds_show_popup_cb (RBPropertyView *view,
 				       RBPodcastSource *source)
 {
 	if (G_OBJECT (source) == NULL) {

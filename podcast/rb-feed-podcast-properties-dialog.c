@@ -36,6 +36,7 @@
 #include "rb-dialog.h"
 #include "rb-rating.h"
 #include "rb-cut-and-paste-code.h"
+#include "rhythmdb.h"
 
 static void rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass *klass);
 static void rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog);

@@ -1,3 +1,22 @@
+2006-02-05  James Livingston  <jrl@ids.org.au>
+
+	* widgets/Makefile.am:
+	* widgets/rb-simple-view.c:
+	* widgets/rb-simple-view.h: Move the two features that this class
+	provides into RBPropertyView, and remove this class. Closes bug
+	327500.
+
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	* podcast/rb-feed-podcast-properties-dialog.h:
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_feeds_show_popup_cb):
+	* sources/rb-podcast-source.h:
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_constructor), (rb_property_view_popup_menu_cb),
+	(rb_property_view_append_column_custom),
+	(rb_property_view_button_press_cb):
+	* widgets/rb-property-view.h: Updated for the above change.
+
 2006-02-04  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: remove the show/hide toolbar shortcut, since it is

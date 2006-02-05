@@ -11,8 +11,6 @@ librbwidgets_la_SOURCES =				\
 	rb-entry-view.h					\
 	rb-property-view.c				\
 	rb-property-view.h				\
-	rb-simple-view.c				\
-	rb-simple-view.h				\
 	rb-search-entry.c				\
 	rb-search-entry.h				\
 	rb-header.c					\

@@ -56,12 +56,15 @@ typedef struct
 	void (*properties_selected)	(RBPropertyView *view, GList *properties);
 	void (*property_activated)	(RBPropertyView *view, const char *name);
 	void (*selection_reset)		(RBPropertyView *view);
+	void (*show_popup)		(RBPropertyView *view);
 } RBPropertyViewClass;
 
 GType		rb_property_view_get_type		(void);
 
 RBPropertyView *rb_property_view_new			(RhythmDB *db, guint propid,
 							 const char *title);
+void		rb_property_view_append_column_custom	(RBPropertyView *view,
+							GtkTreeViewColumn *column);
 
 void		rb_property_view_set_selection_mode	(RBPropertyView *view,
 							 GtkSelectionMode mode);
@@ -77,8 +80,6 @@ void		rb_property_view_set_model		(RBPropertyView *view,
 							 RhythmDBPropertyModel *model);
 
 guint		rb_property_view_get_num_properties	(RBPropertyView *view);
-
-GtkWidget *	rb_property_view_get_treeview		(RBPropertyView *view);
 
 G_END_DECLS
 

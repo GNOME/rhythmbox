@@ -62,6 +62,11 @@ static void rb_property_view_pre_row_deleted_cb (RhythmDBPropertyModel *model,
 static void rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
 						  GtkTreePath *path,
 						  RBPropertyView *view);
+static gboolean rb_property_view_popup_menu_cb (GtkTreeView *treeview,
+						RBPropertyView *view);
+static gboolean rb_property_view_button_press_cb (GtkTreeView *tree,
+						  GdkEventButton *event,
+						  RBPropertyView *view);
 
 struct RBPropertyViewPrivate
 {
@@ -88,6 +93,7 @@ enum
 	PROPERTIES_SELECTED,
 	PROPERTY_ACTIVATED,
 	SELECTION_RESET,
+	SHOW_POPUP,
 	LAST_SIGNAL
 };
 
@@ -217,7 +223,17 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
-			      0); 
+			      0);
+	rb_property_view_signals[SHOW_POPUP] =
+		g_signal_new ("show_popup",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPropertyViewClass, show_popup),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
 
 	g_type_class_add_private (klass, sizeof (RBPropertyViewPrivate));
 }
@@ -536,6 +552,18 @@ rb_property_view_constructor (GType type,
 			         G_CALLBACK (rb_property_view_selection_changed_cb),
 			         view,
 				 0);
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+				 "popup_menu",
+				 G_CALLBACK (rb_property_view_popup_menu_cb),
+				 view,
+				 0);
+	
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+			         "button_press_event",
+			         G_CALLBACK (rb_property_view_button_press_cb),
+			         view,
+				 0);
+
 
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
@@ -666,9 +694,55 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 	}
 }
 
-GtkWidget*
-rb_property_view_get_treeview	(RBPropertyView *view)
+static gboolean 
+rb_property_view_popup_menu_cb (GtkTreeView *treeview,
+				RBPropertyView *view)
 {
-	return view->priv->treeview;
+	g_signal_emit (G_OBJECT (view), rb_property_view_signals[SHOW_POPUP], 0);
+	return TRUE;
 }
+
+void		
+rb_property_view_append_column_custom (RBPropertyView *view,
+				       GtkTreeViewColumn *column)
+{
+	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
+}
+
+static gboolean
+rb_property_view_button_press_cb (GtkTreeView *tree,
+				  GdkEventButton *event,
+				  RBPropertyView *view)
+{
+
+	if (event->button == 3) {
+		GtkTreeSelection *selection;
+		GtkTreePath *path;
+
+		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview));
+
+		gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (view->priv->treeview), event->x, event->y, &path, NULL, NULL, NULL);
+		if (path == NULL) {
+			gtk_tree_selection_unselect_all (selection);
+		} else {
+			GtkTreeModel *model;
+			GtkTreeIter iter;
+			const char *val;
+			GList *lst = NULL;
+			
+			model = gtk_tree_view_get_model (GTK_TREE_VIEW (view->priv->treeview));
+			gtk_tree_model_get_iter (model, &iter, path);
+
+			gtk_tree_model_get (model, &iter, 0, &val, -1);
+			lst = g_list_prepend (lst, (gpointer) val);
+
+			rb_property_view_set_selection (view, lst);	
+		}
+		g_signal_emit (G_OBJECT (view), rb_property_view_signals[SHOW_POPUP], 0);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 
