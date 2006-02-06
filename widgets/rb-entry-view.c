@@ -1318,30 +1318,30 @@ rb_entry_view_playing_song_changed (RBShellPlayer *player,
   
  	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
   
- 	if (view->priv->playing_state == RB_ENTRY_VIEW_NOT_PLAYING)
- 		return;
-  
- 	if (view->priv->playing_entry != NULL) {
- 		rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
- 		g_object_unref (G_OBJECT (view->priv->playing_model));
- 	}
+	if (view->priv->playing_entry != NULL) {
+		if (view->priv->playing_state != RB_ENTRY_VIEW_NOT_PLAYING)
+			rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
+		g_object_unref (G_OBJECT (view->priv->playing_model));
+	}
  	
  	view->priv->playing_entry = entry;
  	g_object_ref (G_OBJECT (view->priv->model));
  	view->priv->playing_model = view->priv->model;
  
- 	if (view->priv->playing_entry != NULL) {
- 		view->priv->playing_entry_in_view = 
- 			rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
- 	}
- 
- 	if (view->priv->playing_entry
- 	    && view->priv->playing_entry_in_view) {
- 	    rb_entry_view_entry_is_visible (view, view->priv->playing_entry,
- 					    &realized, &visible, &iter);
- 	    if (realized && !visible)
- 		    rb_entry_view_scroll_to_iter (view, &iter);
-  	}
+ 	if (view->priv->playing_state != RB_ENTRY_VIEW_NOT_PLAYING) {
+		if (view->priv->playing_entry != NULL) {
+			view->priv->playing_entry_in_view = 
+				rb_entry_view_emit_row_changed (view, view->priv->playing_entry);
+		}
+	 
+		if (view->priv->playing_entry
+		    && view->priv->playing_entry_in_view) {
+		    rb_entry_view_entry_is_visible (view, view->priv->playing_entry,
+						    &realized, &visible, &iter);
+		    if (realized && !visible)
+			    rb_entry_view_scroll_to_iter (view, &iter);
+		}
+	}
 }
 
 static gboolean

@@ -1,3 +1,10 @@
+2006-02-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_playing_song_changed):
+	Track the playing entry when the entry view isn't in the playing
+	state, so we don't have to get the state changes exactly right.
+	Fixes #330135.
+
 2006-02-06  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (open_location_thread),
