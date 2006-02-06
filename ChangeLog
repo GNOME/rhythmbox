@@ -1,3 +1,11 @@
+2006-02-06  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell-player.c: (open_location_thread),
+	(rb_shell_player_open_location): fix several iradio issues: having to
+	press play after double-clicking on a station, not working correctly
+	without a http:// prefix, and ignoring totem-plparser results other
+	than success or error (e.g. IGNORE).
+
 2006-02-06  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	Addition of dbus methods for dealing with static playlists and the

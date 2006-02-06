@@ -896,12 +896,14 @@ open_location_thread (OpenLocationThreadData *data)
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 
 	playlist_result = totem_pl_parser_parse (playlist, data->location, FALSE);
-	playlist_parsed = (playlist_result != TOTEM_PL_PARSER_RESULT_UNHANDLED);
+	playlist_parsed = (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS);
 	g_object_unref (playlist);
 
 	if (!playlist_parsed) {
 		/* We get here if we failed to parse as a playlist */
 		rb_player_open (data->player->priv->mmplayer, data->location, &error);
+		if (error == NULL)
+			rb_player_play (data->player->priv->mmplayer, &error);
 	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_ERROR
 		   && data->player->priv->playlist_parse_error) {
 		error = data->player->priv->playlist_parse_error;
@@ -944,7 +946,12 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	       
 		data = g_new0 (OpenLocationThreadData, 1);
 		data->player = player;
-		data->location = g_strdup (location);
+
+		/* add http:// as a prefix, if it doesn't have a URI scheme */
+		if (strstr (location, "://"))
+			data->location = g_strdup (location);
+		else
+			data->location = g_strconcat ("http://", location, NULL);
 
 		g_thread_create ((GThreadFunc)open_location_thread, data, FALSE, NULL);
 		return TRUE;
