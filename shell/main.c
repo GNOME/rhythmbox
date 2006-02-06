@@ -70,6 +70,8 @@
 #include <dbus/dbus-glib.h>
 #include "rb-shell-glue.h"
 #include "rb-shell-player-glue.h"
+#include "rb-playlist-manager.h"
+#include "rb-playlist-manager-glue.h"
 #endif
 
 static gboolean debug           = FALSE;
@@ -333,16 +335,23 @@ main (int argc, char **argv)
 #endif
 #ifdef WITH_DBUS
 		if (!no_registration && session_bus != NULL) {
-			GObject *player;
+			GObject *obj;
 			const char *path;
 
 			dbus_g_object_type_install_info (RB_TYPE_SHELL, &dbus_glib_rb_shell_object_info);
-			
 			dbus_g_connection_register_g_object (session_bus, "/org/gnome/Rhythmbox/Shell", G_OBJECT (rb_shell));
+
+			/* register player object */
 			dbus_g_object_type_install_info (RB_TYPE_SHELL_PLAYER, &dbus_glib_rb_shell_player_object_info);
-			player = rb_shell_get_player (rb_shell);
+			obj = rb_shell_get_player (rb_shell);
 			path = rb_shell_get_player_path (rb_shell);
-			dbus_g_connection_register_g_object (session_bus, path, G_OBJECT (player));
+			dbus_g_connection_register_g_object (session_bus, path, obj);
+			
+			/* register playlist manager object */
+			dbus_g_object_type_install_info (RB_TYPE_PLAYLIST_MANAGER, &dbus_glib_rb_playlist_manager_object_info);
+			obj = rb_shell_get_playlist_manager (rb_shell);
+			path = rb_shell_get_playlist_manager_path (rb_shell);
+			dbus_g_connection_register_g_object (session_bus, path, obj);
 		}
 #endif
 	} else if (!no_registration) {

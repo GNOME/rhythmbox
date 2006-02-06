@@ -83,6 +83,7 @@
 #include "rb-new-podcast-dialog.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
+#include "rb-static-playlist-source.h"
 #include "rb-play-queue-source.h"
 #include "eel-gconf-extensions.h"
 #include "bacon-volume.h"
@@ -2905,6 +2906,18 @@ rb_shell_get_player_path (RBShell *shell)
 	return "/org/gnome/Rhythmbox/Player";
 }
 
+GObject *
+rb_shell_get_playlist_manager (RBShell *shell)
+{
+	return G_OBJECT (shell->priv->playlist_manager);
+}
+
+const char *
+rb_shell_get_playlist_manager_path (RBShell *shell)
+{
+	return "/org/gnome/Rhythmbox/PlaylistManager";
+}
+
 static void
 rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri)
 {
@@ -2930,6 +2943,28 @@ rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri)
 					    entry);
 	}
 }
+
+gboolean
+rb_shell_add_to_queue (RBShell *shell,
+		       const gchar *uri,
+		       GError **error)
+{
+	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (shell->priv->queue_source), 
+						uri, -1);
+	return TRUE;
+}
+
+gboolean
+rb_shell_remove_from_queue (RBShell *shell,
+			    const gchar *uri,
+			    GError **error)
+{
+	if (rb_playlist_source_location_in_map (RB_PLAYLIST_SOURCE (shell->priv->queue_source), uri))
+		rb_static_playlist_source_remove_location (RB_STATIC_PLAYLIST_SOURCE (shell->priv->queue_source),
+							   uri);
+	return TRUE;
+}
+
 
 gboolean
 rb_shell_present (RBShell *shell, guint32 timestamp, GError **error)

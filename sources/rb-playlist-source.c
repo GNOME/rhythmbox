@@ -488,7 +488,9 @@ playlist_iter_func (GtkTreeModel *model,
 #endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
 void
-rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
+rb_playlist_source_save_playlist (RBPlaylistSource *source, 
+				  const char *uri,
+				  gboolean m3u_format)
 {
 	TotemPlParser *playlist;
 	GError *error = NULL;
@@ -500,8 +502,9 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
 
 	totem_pl_parser_write_with_title (playlist, GTK_TREE_MODEL (source->priv->model),
-					  playlist_iter_func, uri, name,
-					  TOTEM_PL_PARSER_PLS, NULL, &error);
+					  playlist_iter_func, uri, name, 
+					  m3u_format ? TOTEM_PL_PARSER_M3U : TOTEM_PL_PARSER_PLS,
+					  NULL, &error);
 	g_free (name);
 	if (error != NULL)
 		rb_error_dialog (NULL, _("Couldn't save playlist"),

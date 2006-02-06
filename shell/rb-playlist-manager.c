@@ -1000,45 +1000,6 @@ rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
 	return playlist;
 }
 
-GList *
-rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
-{
-	GList *playlists = NULL;
-	GtkTreeIter iter;
-	GtkTreeModel *fmodel;
-	GtkTreeModel *model;
-	
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (fmodel);
-	
-	if (gtk_tree_model_get_iter_first (model, &iter)) {
-		do {
-			RBSource *source;
-			GValue v = {0,};
-			gboolean local;
-
-			gtk_tree_model_get_value (model,
-						  &iter,
-						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-						  &v);
-			source = g_value_get_pointer (&v);
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
-				continue;
-			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
-				continue;
-			g_object_get (G_OBJECT (source), "is-local", &local, 
-				      NULL);
-			if (local) {
-				playlists = g_list_prepend (playlists, source);
-			}
-
-		} while (gtk_tree_model_iter_next (model, &iter));
-	}
-	
-	return playlists;
-}
-
 static void
 rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 				      RBPlaylistManager *mgr)
@@ -1207,7 +1168,8 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (file == NULL)
 		return;
 
-	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), file);
+	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), 
+					  file, FALSE);
 	g_free (file);
 }
 
@@ -1249,3 +1211,240 @@ rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view, RhythmDBE
 
 	g_object_unref (G_OBJECT (model));
 }
+
+GList *
+rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
+{
+	GList *playlists = NULL;
+	GtkTreeIter iter;
+	GtkTreeModel *fmodel;
+	GtkTreeModel *model;
+	
+	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
+	g_object_unref (fmodel);
+	
+	if (gtk_tree_model_get_iter_first (model, &iter)) {
+		do {
+			RBSource *source;
+			GValue v = {0,};
+			gboolean local;
+
+			gtk_tree_model_get_value (model,
+						  &iter,
+						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+						  &v);
+			source = g_value_get_pointer (&v);
+			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+				continue;
+			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
+				continue;
+			g_object_get (G_OBJECT (source), "is-local", &local, 
+				      NULL);
+			if (local) {
+				playlists = g_list_prepend (playlists, source);
+			}
+
+		} while (gtk_tree_model_iter_next (model, &iter));
+	}
+	
+	return playlists;
+}
+
+gboolean
+rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
+					gchar ***playlists,
+					GError **error)
+{
+	GtkTreeIter iter;
+	GtkTreeModel *fmodel;
+	GtkTreeModel *model;
+	int i;
+	
+	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
+	g_object_unref (fmodel);
+	
+	if (!gtk_tree_model_get_iter_first (model, &iter)) {
+		*playlists = NULL;
+		return TRUE;
+	}
+
+	*playlists = g_new0 (char *, gtk_tree_model_iter_n_children (model, NULL) + 1);
+	if (!*playlists)
+		return FALSE;
+
+	i = 0;
+	do {
+		RBSource *source;
+		GValue v = {0,};
+		char *source_name;
+
+		gtk_tree_model_get_value (model, &iter,
+					  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+					  &v);
+		source = g_value_get_pointer (&v);
+		if (!RB_IS_PLAYLIST_SOURCE (source))
+			continue;
+		if (RB_IS_PLAY_QUEUE_SOURCE (source))
+			continue;
+
+		g_object_get (G_OBJECT (source), "name", &source_name, NULL);
+		(*playlists)[i++] = source_name;
+	} while (gtk_tree_model_iter_next (model, &iter));
+
+	return TRUE;	
+}
+
+static RBSource *
+_get_playlist_by_name (RBPlaylistManager *mgr,
+		       const char *name)
+{
+	GtkTreeIter iter;
+	GtkTreeModel *fmodel;
+	GtkTreeModel *model;
+	RBSource *playlist = NULL;
+
+	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
+	g_object_unref (G_OBJECT (fmodel));
+
+	if (!gtk_tree_model_get_iter_first (model, &iter))
+		return NULL;
+
+	do {
+		RBSource *source;
+		GValue v = {0,};
+		char *source_name;
+		
+		gtk_tree_model_get_value (model, &iter,
+					  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+					  &v);
+		source = g_value_get_pointer (&v);
+		if (!RB_IS_PLAYLIST_SOURCE (source))
+			continue;
+		g_object_get (G_OBJECT (source), "name", &source_name, NULL);
+		if (strcmp (name, source_name) == 0)
+			playlist = source;
+
+		g_free (source_name);
+
+	} while (gtk_tree_model_iter_next (model, &iter) && playlist == NULL);
+
+	return playlist;
+}
+
+gboolean
+rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
+					    const gchar *name,
+					    GError **error)
+{
+	if (_get_playlist_by_name (mgr, name)) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_EXISTS,
+			     _("Playlist %s already exists"),
+			     name);
+		return FALSE;
+	}
+
+	rb_playlist_manager_new_playlist (mgr, name, FALSE);
+	return TRUE;
+}
+
+gboolean
+rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr, const gchar *name, GError **error)
+{
+	RBSource *playlist = _get_playlist_by_name (mgr, name);
+	if (!playlist) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND,
+			     _("Unknown playlist: %s"),
+			     name);
+		return FALSE;
+	}
+	rb_source_delete_thyself (playlist);
+	rb_playlist_manager_set_dirty (mgr);
+	return TRUE;
+}
+
+gboolean
+rb_playlist_manager_add_to_playlist (RBPlaylistManager *mgr,
+				     const gchar *playlist,
+				     const gchar *uri,
+				     GError **error)
+{
+	RBSource *source = _get_playlist_by_name (mgr, playlist);;
+	if (!source) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND,
+			     _("Unknown playlist: %s"),
+			     playlist);
+		return FALSE;
+	}
+	if (RB_IS_AUTO_PLAYLIST_SOURCE (source)) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND,
+			     _("Playlist %s is an automatic playlist"),
+			     playlist);
+		return FALSE;
+	}
+	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (source), uri, -1);
+	return TRUE;
+}
+
+gboolean
+rb_playlist_manager_remove_from_playlist (RBPlaylistManager *mgr,
+					  const gchar *playlist,
+					  const gchar *uri,
+					  GError **error)
+{
+	RBSource *source = _get_playlist_by_name (mgr, playlist);;
+	if (!source) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND,
+			     _("Unknown playlist: %s"),
+			     playlist);
+		return FALSE;
+	}
+	if (RB_IS_AUTO_PLAYLIST_SOURCE (source)) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND,
+			     _("Playlist %s is an automatic playlist"),
+			     playlist);
+		return FALSE;
+	}
+
+	if (rb_playlist_source_location_in_map (RB_PLAYLIST_SOURCE (source), uri))
+		rb_static_playlist_source_remove_location (RB_STATIC_PLAYLIST_SOURCE (source), uri);
+	return TRUE;
+}
+
+gboolean
+rb_playlist_manager_export_playlist (RBPlaylistManager *mgr,
+				     const gchar *playlist,
+				     const gchar *uri,
+				     gboolean m3u_format,
+				     GError **error)
+{
+	RBSource *source = _get_playlist_by_name (mgr, playlist);
+	if (!source) {
+		g_set_error (error,
+			     RB_PLAYLIST_MANAGER_ERROR,
+			     RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND,
+			     _("Unknown playlist: %s"),
+			     playlist);
+		return FALSE;
+	}
+
+	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (source),
+					  uri,
+					  m3u_format);
+	return TRUE;
+}
+

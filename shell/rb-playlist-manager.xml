@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+  <interface name="org.gnome.Rhythmbox.PlaylistManager">
+
+    <method name="getPlaylists">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_playlist_manager_get_playlist_names"/>
+      <arg type="as" direction="out"/>
+    </method>
+    
+    <method name="createPlaylist">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_playlist_manager_create_static_playlist"/>
+      <arg type="s" name="name"/>
+    </method>
+
+    <method name="deletePlaylist">
+      <arg type="s" name="name"/>
+    </method>
+
+    <method name="addToPlaylist">
+      <arg type="s" name="playlist"/>
+      <arg type="s" name="uri"/>
+    </method>
+
+    <method name="removeFromPlaylist">
+      <arg type="s" name="playlist"/>
+      <arg type="s" name="uri"/>
+    </method>
+
+    <method name="exportPlaylist">
+      <arg type="s" name="playlist"/>
+      <arg type="s" name="uri"/>
+      <arg type="b" name="m3u_format"/>
+    </method>
+
+    <method name="importPlaylist">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_playlist_manager_parse_file"/>
+      <arg type="s" name="uri"/>
+    </method>
+
+  </interface>
+</node>

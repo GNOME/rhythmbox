@@ -39,7 +39,9 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-	RB_PLAYLIST_MANAGER_ERROR_PARSE
+	RB_PLAYLIST_MANAGER_ERROR_PARSE,
+	RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_EXISTS,
+	RB_PLAYLIST_MANAGER_ERROR_PLAYLIST_NOT_FOUND
 } RBPlaylistManagerError;
 
 #define RB_PLAYLIST_MANAGER_ERROR rb_playlist_manager_error_quark ()
@@ -93,7 +95,31 @@ RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  gboolean automatic);
 RBSource *		rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
                                                                               GtkSelectionData *data);
+
 GList *			rb_playlist_manager_get_playlists (RBPlaylistManager *manager);
+
+gboolean		rb_playlist_manager_get_playlist_names (RBPlaylistManager *manager, 
+								gchar ***playlists,
+								GError **error);
+gboolean		rb_playlist_manager_create_static_playlist (RBPlaylistManager *manager,
+								    const gchar *name,
+								    GError **error);
+gboolean		rb_playlist_manager_delete_playlist (RBPlaylistManager *manager,
+							     const gchar *name,
+							     GError **error);
+gboolean		rb_playlist_manager_add_to_playlist (RBPlaylistManager *manager,
+							     const gchar *playlist,
+							     const gchar *uri,
+							     GError **error);
+gboolean		rb_playlist_manager_remove_from_playlist (RBPlaylistManager *manager,
+								  const gchar *playlist,
+								  const gchar *uri,
+								  GError **error);
+gboolean		rb_playlist_manager_export_playlist (RBPlaylistManager *manager,
+							     const gchar *playlist,
+							     const gchar *uri,
+							     gboolean m3u_format,
+							     GError **error);
 
 G_END_DECLS
 

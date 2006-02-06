@@ -86,6 +86,10 @@ GObject *       rb_shell_get_player     (RBShell *shell);
 
 const char *    rb_shell_get_player_path(RBShell *shell);
 
+GObject *	rb_shell_get_playlist_manager (RBShell *shell);
+
+const char *	rb_shell_get_playlist_manager_path (RBShell *shell);
+
 void            rb_shell_toggle_visibility (RBShell *shell);
 
 gboolean        rb_shell_get_song_properties (RBShell *shell,
@@ -97,6 +101,14 @@ gboolean        rb_shell_set_song_property (RBShell *shell,
 					    const char *uri,
 					    const char *propname,
 					    const GValue *value,
+					    GError **error);
+
+gboolean	rb_shell_add_to_queue (RBShell *shell,
+				       const gchar *uri,
+				       GError **error);
+
+gboolean	rb_shell_remove_from_queue (RBShell *shell,
+					    const gchar *uri,
 					    GError **error);
 
 void            rb_shell_hidden_notify  (RBShell *shell,

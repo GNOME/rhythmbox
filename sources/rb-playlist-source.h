@@ -64,7 +64,8 @@ RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 						 xmlNodePtr node);
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
-						 const char *uri);
+						 const char *uri,
+						 gboolean m3u_format);
 
 void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
 						 xmlNodePtr node);

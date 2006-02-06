@@ -1,3 +1,35 @@
+2006-02-06  Jonathan Matthew  <jonathan@kaolin.hn.org>
+
+	Addition of dbus methods for dealing with static playlists and the
+	play queue.  Fixes #329958.
+
+	* shell/Makefile.am:
+	* shell/rb-playlist-manager.h:
+	* shell/rb-playlist-manager.xml:
+	* shell/rb-playlist-manager.c: (save_playlist_response_cb),
+	(rb_playlist_manager_get_playlists),
+	(rb_playlist_manager_get_playlist_names), (_get_playlist_by_name),
+	(rb_playlist_manager_create_static_playlist),
+	(rb_playlist_manager_delete_playlist),
+	(rb_playlist_manager_add_to_playlist),
+	(rb_playlist_manager_remove_from_playlist),
+	(rb_playlist_manager_export_playlist):
+	Add org.gnome.Rhythmbox.PlaylistManager dbus interface, with methods
+	to create, delete, list, modify, export, and import  static playlists.
+	
+	* shell/main.c: (main): Register playlist manager object with dbus.
+
+	* shell/rb-shell.h:
+	* shell/rb-shell.xml:
+	* shell/rb-shell.c: (rb_shell_get_playlist_manager),
+	(rb_shell_get_playlist_manager_path), (rb_shell_add_to_queue),
+	(rb_shell_remove_from_queue):  Provide dbus access to the playlist manager
+	object, and implement the addToQueue and removeFromQueue methods.
+	
+	* sources/rb-playlist-source.c: (rb_playlist_source_save_playlist):
+	* sources/rb-playlist-source.h: Add flag to choose between PLS and M3U
+	formats.
+
 2006-02-05  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-tree.c: (parse_boolean),

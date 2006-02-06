@@ -15,6 +15,13 @@
 	<annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
       </arg>
     </method>
+    
+    <method name="getPlaylistManager">
+      <arg type="o" direction="out">
+	<annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
+	<annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
+      </arg>
+    </method>
 
     <method name="present">
       <arg type="u"/>
@@ -29,6 +36,14 @@
       <arg type="s" name="uri"/>
       <arg type="s" name="propname"/>
       <arg type="v" name="value"/>
+    </method>
+
+    <method name="addToQueue">
+      <arg type="s" name="uri"/>
+    </method>
+
+    <method name="removeFromQueue">
+      <arg type="s" name="uri"/>
     </method>
 
     <signal name="visibilityChanged"/>
