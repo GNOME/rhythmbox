@@ -1481,14 +1481,11 @@ rb_daap_share_server_start (RBDAAPShare *share)
 static gboolean
 rb_daap_share_server_stop (RBDAAPShare *share)
 {
+	rb_debug ("Stopping music sharing server on port %d", share->priv->port);
+
 	if (share->priv->server) {
-		/* FIXME */
-		/* This will spew:
-		 * GLib-CRITICAL **: g_main_loop_quit: assertion `loop != NULL' failed
-		 * But it doesn't seem to matter.
-		 */
-		/*soup_server_quit (share->priv->server); */
-		g_object_unref (G_OBJECT (share->priv->server));
+		soup_server_quit (share->priv->server);
+		g_object_unref (share->priv->server);
 		share->priv->server = NULL;
 	}
 	
