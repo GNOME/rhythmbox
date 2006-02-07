@@ -453,10 +453,10 @@ rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
 
 		if ((error->domain == GST_CORE_ERROR)
 			|| (error->domain == GST_LIBRARY_ERROR)
-			|| (error->code == GST_RESOURCE_ERROR_BUSY)) {
+			|| (error->domain == GST_RESOURCE_ERROR && error->code == GST_RESOURCE_ERROR_BUSY)) {
 			code = RB_PLAYER_ERROR_NO_AUDIO;
 		} else {
-		code = RB_PLAYER_ERROR_GENERAL;
+			code = RB_PLAYER_ERROR_GENERAL;
 		}
 
 		sig_error = g_error_new_literal (RB_PLAYER_ERROR,

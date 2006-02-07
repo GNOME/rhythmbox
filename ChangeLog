@@ -1,5 +1,12 @@
 2006-02-07  James Livingston  <jrl@ids.org.au>
 
+	* player/rb-player-gst.c: (rb_player_bus_cb): check error type
+	properly.
+	* shell/rb-shell-player.c: (do_next_idle): use eos_cb, so that the EOF
+	type of the source is taken into account. Fixes bug 329621.
+
+2006-02-07  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
 	(rhythmdb_tree_parser_end_element): update the rhythmdb.xml version to
 	1.1, and perform URI canonicalistion when first upgrading. This should

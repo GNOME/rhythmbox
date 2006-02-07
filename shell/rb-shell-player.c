@@ -1015,15 +1015,8 @@ rb_shell_player_set_entry_playback_error (RBShellPlayer *player,
 static gboolean
 do_next_idle (RBShellPlayer *player)
 {
-	GError *error = NULL;
-	
-	if (!rb_shell_player_do_next (player, &error)) {
-		if (error->domain != RB_SHELL_PLAYER_ERROR ||
-		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
-			g_warning ("do_next_idle: Unhandled error: %s", error->message);
-		else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
-			rb_shell_player_set_playing_source (player, NULL);
-	}
+	/* use the EOS callback, so that EOF_SOURCE_ conditions are handled properly */
+	eos_cb (player->priv->mmplayer, player);
 	player->priv->do_next_idle_id = 0;
 
 	return FALSE;
