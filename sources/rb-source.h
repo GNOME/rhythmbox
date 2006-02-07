@@ -75,9 +75,10 @@ struct _RBSourceClass
 
 	gboolean	(*impl_can_browse)	(RBSource *source);
 	const char *	(*impl_get_browser_key)	(RBSource *source);
+	void		(*impl_browser_toggled)	(RBSource *source, gboolean enabled);
 
 	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
-	GList *		(*impl_get_extra_views)	(RBSource *source);
+	GList *		(*impl_get_property_views)	(RBSource *source);
 
 	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
 	gboolean	(*impl_can_rename)	(RBSource *source);
@@ -133,16 +134,16 @@ char *	        rb_source_get_status		(RBSource *source);
 
 gboolean	rb_source_can_browse		(RBSource *source);
 const char *	rb_source_get_browser_key	(RBSource *source);
+void		rb_source_browser_toggled	(RBSource *source, gboolean enabled);
 
 RBEntryView *	rb_source_get_entry_view	(RBSource *source);
 
-GList *		rb_source_get_extra_views	(RBSource *source);
+GList *		rb_source_get_property_views	(RBSource *source);
 
 GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
 gboolean	rb_source_can_rename		(RBSource *source);
 
 gboolean	rb_source_can_search		(RBSource *source);
-
 void		rb_source_search		(RBSource *source,
 						 const char *text);
 
@@ -181,7 +182,10 @@ void		rb_source_delete_thyself	(RBSource *source);
 void		rb_source_activate		(RBSource *source);
 void		rb_source_deactivate		(RBSource *source);
 gboolean	rb_source_disconnect		(RBSource *source);
+
 GList*		rb_source_get_ui_actions	(RBSource *source);
+
+GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropType prop);
 
 /* Protected method, should only be used by objects inheriting from RBSource */
 void            _rb_source_show_popup           (RBSource *source, 

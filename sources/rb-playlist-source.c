@@ -106,8 +106,6 @@ struct RBPlaylistSourcePrivate
 	RhythmDBEntryType entry_type;
 	RhythmDBQueryModel *model;
 
-	GtkWidget *vbox;
-
 	RBEntryView *songs;
 
 	gboolean dirty;
@@ -220,10 +218,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
 
-	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
-
 	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
 	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_added",
@@ -272,7 +266,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	rb_playlist_source_setup_entry_view (source, source->priv->songs);
 
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), GTK_WIDGET (source->priv->songs));
+	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->songs));
 		
 	gtk_widget_show_all (GTK_WIDGET (source));
 

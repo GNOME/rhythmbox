@@ -2784,15 +2784,28 @@ rhythmdb_entry_delete_by_type (RhythmDB *db, RhythmDBEntryType type)
 GPtrArray *
 rhythmdb_query_copy (GPtrArray *array)
 {
-	guint i;
 	GPtrArray *ret;
 
 	if (!array)
 		return NULL;
 	
-	ret = g_ptr_array_sized_new (array->len);	
-	for (i = 0; i < array->len; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (array, i);
+	ret = g_ptr_array_sized_new (array->len);
+	rhythmdb_query_concatenate (ret, array);
+
+	return ret;
+}
+
+void
+rhythmdb_query_concatenate (GPtrArray *query1, GPtrArray *query2)
+{
+	guint i;
+
+	g_assert (query2);
+	if (!query2)
+		return;
+	
+	for (i = 0; i < query2->len; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (query2, i);
 		RhythmDBQueryData *new_data = g_new0 (RhythmDBQueryData, 1);
 		new_data->type = data->type;
 		new_data->propid = data->propid;
@@ -2803,11 +2816,10 @@ rhythmdb_query_copy (GPtrArray *array)
 		}
 		if (data->subquery)
 			new_data->subquery = rhythmdb_query_copy (data->subquery);
-		g_ptr_array_add (ret, new_data);
+		g_ptr_array_add (query1, new_data);
 	}
-
-	return ret;
 }
+
 
 static GPtrArray *
 rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
@@ -3849,6 +3861,9 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 {
 	int i;	
 
+	if (query == NULL)
+		return;
+
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
 		gboolean restart_criteria = FALSE;
@@ -3945,6 +3960,48 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 			i--;
 	}
 }
+
+void
+rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, guint propid, GList *items)
+{
+	GPtrArray *subquery;
+
+	if (items == NULL)
+		return;
+
+	if (items->next == NULL) {
+		rhythmdb_query_append (db,
+				       query,
+				       RHYTHMDB_QUERY_PROP_EQUALS,
+				       propid,
+				       items->data,
+				       RHYTHMDB_QUERY_END);
+		return;
+	}
+
+	subquery = g_ptr_array_new ();
+
+	rhythmdb_query_append (db,
+			       subquery,
+			       RHYTHMDB_QUERY_PROP_EQUALS,
+			       propid,
+			       items->data,
+			       RHYTHMDB_QUERY_END);
+	items = items->next;
+	while (items) {
+		rhythmdb_query_append (db,
+				       subquery,
+				       RHYTHMDB_QUERY_DISJUNCTION,
+				       RHYTHMDB_QUERY_PROP_EQUALS,
+				       propid,
+				       items->data,
+				       RHYTHMDB_QUERY_END);
+		items = items->next;
+	}
+	rhythmdb_query_append (db, query, RHYTHMDB_QUERY_SUBQUERY, subquery,
+			       RHYTHMDB_QUERY_END);
+}
+
 
 static gboolean
 rhythmdb_idle_save (RhythmDB *db)

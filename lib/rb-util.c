@@ -567,3 +567,103 @@ rb_make_duration_string (guint duration)
 	return str;
 }
 
+gboolean
+rb_string_list_equal (GList *a, GList *b)
+{
+	GList *sorted_a_keys;
+	GList *sorted_b_keys;
+	GList *a_ptr, *b_ptr;
+	gboolean ret = TRUE;
+
+	if (a == b)
+		return TRUE;
+
+	if (g_list_length (a) != g_list_length (b))
+		return FALSE;
+
+	for (sorted_a_keys = NULL; a; a = a->next) {
+		sorted_a_keys = g_list_prepend (sorted_a_keys,
+					       g_utf8_collate_key (a->data, -1));
+	}
+	for (sorted_b_keys = NULL; b; b = b->next) {
+		sorted_b_keys = g_list_prepend (sorted_b_keys,
+					       g_utf8_collate_key (b->data, -1));
+	}
+	sorted_a_keys = g_list_sort (sorted_a_keys, (GCompareFunc) strcmp);
+	sorted_b_keys = g_list_sort (sorted_b_keys, (GCompareFunc) strcmp);
+	
+	for (a_ptr = sorted_a_keys, b_ptr = sorted_b_keys;
+	     a_ptr && b_ptr; a_ptr = a_ptr->next, b_ptr = b_ptr->next) {
+		if (strcmp (a_ptr->data, b_ptr->data)) {
+			ret = FALSE;
+			break;
+		}
+	}
+	g_list_foreach (sorted_a_keys, (GFunc) g_free, NULL);
+	g_list_foreach (sorted_b_keys, (GFunc) g_free, NULL);
+	g_list_free (sorted_a_keys);
+	g_list_free (sorted_b_keys);
+	return ret;
+}
+
+static void
+list_copy_cb (const char *s, GList **list)
+{
+	*list = g_list_prepend (*list, g_strdup (s));
+}
+
+GList *
+rb_string_list_copy (GList *list)
+{
+	GList *copy = NULL;
+	
+	if (list == NULL)
+		return NULL;
+
+	g_list_foreach (list, (GFunc)list_copy_cb, &copy);
+	copy = g_list_reverse (copy);
+
+	return copy;
+}
+
+void
+rb_list_deep_free (GList *list)
+{
+	g_list_foreach (list, (GFunc)g_free, NULL);
+	g_list_free (list);
+}
+
+
+static void
+collate_keys_cb (gpointer key, gpointer value, GList **list)
+{
+	*list = g_list_prepend (*list, key);
+}
+
+static void
+collate_values_cb (gpointer key, gpointer value, GList **list)
+{
+	*list = g_list_prepend (*list, value);
+}
+
+GList*
+rb_collate_hash_table_keys (GHashTable *table)
+{
+	GList *list = NULL;
+
+	g_hash_table_foreach (table, (GHFunc)collate_keys_cb, &list);
+	list = g_list_reverse (list);
+
+	return list;
+}
+
+GList*
+rb_collate_hash_table_values (GHashTable *table)
+{
+	GList *list = NULL;
+
+	g_hash_table_foreach (table, (GHFunc)collate_values_cb, &list);
+	list = g_list_reverse (list);
+
+	return list;
+}

@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 #define CONF_UI_OBSOLETE_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
 #define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/rhythmdb_columns_setup"
 #define CONF_UI_TIME_DISPLAY CONF_PREFIX "/ui/time_display"
-#define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/browser_views"
+#define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
 #define CONF_UI_SHOW_NOTIFICATIONS CONF_PREFIX "/ui/show_notifications"
 #define CONF_STATE_PLAY_ORDER	CONF_PREFIX "/state/play_order"
 #define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"

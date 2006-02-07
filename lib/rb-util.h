@@ -52,6 +52,13 @@ gboolean rb_is_main_thread (void);
 gchar* rb_search_fold (const char *original);
 gchar** rb_string_split_words (const gchar *string);
 
+gboolean rb_string_list_equal (GList *a, GList *b);
+void rb_list_deep_free (GList *list);
+GList* rb_string_list_copy (GList *list);
+
+GList* rb_collate_hash_table_keys (GHashTable *table);
+GList* rb_collate_hash_table_values (GHashTable *table);
+
 G_END_DECLS
 
 #endif /* __RB_UTIL_H */

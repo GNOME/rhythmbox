@@ -1004,10 +1004,9 @@ feed_select_change_cb (RBPropertyView *propview,
 	        g_list_free (source->priv->selected_feeds);
 	}	
 
-	source->priv->selected_feeds = feeds;
+	source->priv->selected_feeds = rb_string_list_copy (feeds);
 	
 	rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_ALBUM);
-
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 

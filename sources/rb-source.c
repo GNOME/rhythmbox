@@ -47,7 +47,7 @@ static void rb_source_get_property (GObject *object,
 					GParamSpec *pspec);
 
 static const char * default_get_browser_key (RBSource *source);
-static GList *default_get_extra_views (RBSource *source);
+static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
 static GdkPixbuf *default_get_pixbuf (RBSource *source);
@@ -117,7 +117,8 @@ rb_source_class_init (RBSourceClass *klass)
 
 	klass->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_browser_key = default_get_browser_key;
-	klass->impl_get_extra_views = default_get_extra_views;
+	klass->impl_browser_toggled = NULL;
+	klass->impl_get_property_views = default_get_property_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_search = default_can_search;
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -406,6 +407,15 @@ rb_source_can_browse (RBSource *source)
 }
 
 void
+rb_source_browser_toggled (RBSource *source, gboolean enabled)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	if (klass->impl_browser_toggled != NULL)
+		klass->impl_browser_toggled (source, enabled);
+}
+
+void
 rb_source_notify_status_changed (RBSource *source)
 {
 	g_signal_emit (G_OBJECT (source), rb_source_signals[STATUS_CHANGED], 0);
@@ -454,17 +464,17 @@ rb_source_get_entry_view (RBSource *source)
 }
 
 static GList *
-default_get_extra_views (RBSource *source)
+default_get_property_views (RBSource *source)
 {
 	return NULL;
 }
 
 GList *
-rb_source_get_extra_views (RBSource *source)
+rb_source_get_property_views (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_extra_views (source);
+	return klass->impl_get_property_views (source);
 }
 
 static GdkPixbuf *
@@ -850,6 +860,36 @@ rb_source_row_deleted_cb (GtkTreeModel *model,
 		priv->idle_status_changed_id = 
 			g_idle_add ((GSourceFunc) idle_emit_status_changed, source);
 	}
+}
+
+static void
+rb_source_gather_hash_keys (char *key, gpointer unused, GList **data)
+{
+	*data = g_list_prepend (*data, key);
+}
+
+GList *
+rb_source_gather_selected_properties (RBSource *source,
+				      RhythmDBPropType prop)
+{
+	GList *selected, *tem;
+	GHashTable *selected_set;
+
+	selected_set = g_hash_table_new (g_str_hash, g_str_equal);
+	selected = rb_entry_view_get_selected_entries (rb_source_get_entry_view (RB_SOURCE (source)));
+	for (tem = selected; tem; tem = tem->next) {
+		RhythmDBEntry *entry = tem->data;
+		char *val = g_strdup (rhythmdb_entry_get_string (entry, prop));
+		g_hash_table_insert (selected_set, val, NULL);
+	}
+
+	g_list_free (selected);
+	
+	tem = NULL;
+	g_hash_table_foreach (selected_set, (GHFunc) rb_source_gather_hash_keys,
+			      &tem);
+	g_hash_table_destroy (selected_set);
+	return tem;
 }
 
 

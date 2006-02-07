@@ -4,6 +4,82 @@
 </para>
 
 
+<!-- ##### TYPEDEF RBDAAPmDNSBrowser ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION RBDAAPmDNSBrowserCallback ##### -->
+<para>
+
+</para>
+
+@browser: 
+@status: 
+@service_name: 
+@user_data: 
+
+<!-- ##### ENUM RBDAAPmDNSBrowserStatus ##### -->
+<para>
+
+</para>
+
+@RB_DAAP_MDNS_BROWSER_ADD_SERVICE: 
+@RB_DAAP_MDNS_BROWSER_REMOVE_SERVICE: 
+
+<!-- ##### TYPEDEF RBDAAPmDNSPublisher ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION RBDAAPmDNSPublisherCallback ##### -->
+<para>
+
+</para>
+
+@publisher: 
+@status: 
+@user_data: 
+@Returns: 
+
+<!-- ##### ENUM RBDAAPmDNSPublisherStatus ##### -->
+<para>
+
+</para>
+
+@RB_DAAP_MDNS_PUBLISHER_STARTED: 
+@RB_DAAP_MDNS_PUBLISHER_COLLISION: 
+
+<!-- ##### TYPEDEF RBDAAPmDNSResolver ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION RBDAAPmDNSResolverCallback ##### -->
+<para>
+
+</para>
+
+@resolver: 
+@status: 
+@service_name: 
+@name: 
+@host: 
+@port: 
+@password_protected: 
+@user_data: 
+
+<!-- ##### ENUM RBDAAPmDNSResolverStatus ##### -->
+<para>
+
+</para>
+
+@RB_DAAP_MDNS_RESOLVER_FOUND: 
+@RB_DAAP_MDNS_RESOLVER_TIMEOUT: 
+
 <!-- ##### TYPEDEF RBSourceListModelPriv ##### -->
 <para>
 
@@ -173,7 +249,67 @@
 
 @connection: 
 
+<!-- ##### FUNCTION rb_daap_mdns_browse ##### -->
+<para>
+
+</para>
+
+@browser: 
+@callback: 
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_daap_mdns_browse_cancel ##### -->
+<para>
+
+</para>
+
+@browser: 
+
+<!-- ##### FUNCTION rb_daap_mdns_publish ##### -->
+<para>
+
+</para>
+
+@publisher: 
+@name: 
+@port: 
+@callback: 
+@user_data: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_daap_mdns_publish_cancel ##### -->
+<para>
+
+</para>
+
+@publisher: 
+
+<!-- ##### FUNCTION rb_daap_mdns_resolve ##### -->
+<para>
+
+</para>
+
+@resolver: 
+@name: 
+@callback: 
+@data: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_daap_mdns_resolve_cancel ##### -->
+<para>
+
+</para>
+
+@resolver: 
+
 <!-- ##### FUNCTION rb_daap_src_init ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION rb_daap_src_shutdown ##### -->
 <para>
 
 </para>
@@ -408,6 +544,14 @@
 @shell_player: 
 @Returns: 
 
+<!-- ##### FUNCTION rb_source_get_extra_views ##### -->
+<para>
+
+</para>
+
+@source: 
+@Returns: 
+
 <!-- ##### FUNCTION rb_statusbar_sync_state ##### -->
 <para>
 
@@ -475,4 +619,12 @@
 @model: 
 @timeout: 
 @Returns: 
+
+<!-- ##### FUNCTION rhythmdb_query_model_set_connected ##### -->
+<para>
+
+</para>
+
+@model: 
+@connected: 
 

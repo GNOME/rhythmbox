@@ -38,6 +38,8 @@ librbwidgets_la_SOURCES =				\
 	rb-rating.c					\
 	rb-rating.h					\
 	rb-rating-helper.c				\
+	rb-library-browser.h				\
+	rb-library-browser.c				\
 	rb-rating-helper.h				\
 	rb-query-creator.c				\
 	rb-query-creator.h				\

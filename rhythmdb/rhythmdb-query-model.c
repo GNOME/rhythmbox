@@ -451,11 +451,13 @@ rhythmdb_query_model_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 							      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
 							      model);
+			g_object_unref (model->priv->base_model);
 		}
 
 		model->priv->base_model = g_value_get_object (value);
 
 		if (model->priv->base_model) {
+			g_object_ref (model->priv->base_model);
 			g_assert (model->priv->base_model->priv->db == model->priv->db);
 
 			g_signal_connect_object (G_OBJECT (model->priv->base_model),
@@ -632,7 +634,6 @@ rhythmdb_query_model_finalize (GObject *object)
 		rhythmdb_query_free (model->priv->original_query);
 
 	if (model->priv->base_model) {
-		g_object_unref (G_OBJECT (model->priv->base_model));
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_row_inserted),
 						      model);
@@ -651,6 +652,7 @@ rhythmdb_query_model_finalize (GObject *object)
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
 						      model);
+		g_object_unref (G_OBJECT (model->priv->base_model));
 	}
 
 
@@ -1767,6 +1769,43 @@ rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model)
 					       rhythmdb_query_model_get_size (model));
 }
 
+static void
+apply_updated_entry_sequence (RhythmDBQueryModel *model, GSequence *new_entries)
+{
+	int *reorder_map;
+	int length, i;
+	GtkTreePath *path;
+	GtkTreeIter iter;
+	GSequencePtr ptr;
+
+	length = g_sequence_get_length (new_entries);
+	/* generate resort map and rebuild reverse map */
+	reorder_map = malloc (length * sizeof(gint));
+
+	ptr = g_sequence_get_begin_ptr (new_entries);
+	for (i = 0; i < length; i++) {
+		gpointer entry = g_sequence_ptr_get_data (ptr);
+		GSequencePtr old_ptr;
+
+		old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+		reorder_map[i] = g_sequence_ptr_get_position (ptr);
+		g_hash_table_replace (model->priv->reverse_map, entry, ptr);
+
+		ptr = g_sequence_ptr_next (ptr);
+	}
+
+	/* emit the re-order and clean up */
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
+	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model),
+				       path, &iter,
+				       reorder_map);
+
+	gtk_tree_path_free (path);
+	free (reorder_map);
+	g_sequence_free (model->priv->entries);
+	model->priv->entries = new_entries;
+}
 
 void
 rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
@@ -1776,10 +1815,7 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 {
 	GSequence *new_entries;
 	GSequencePtr ptr;
-	GtkTreePath *path;
-	GtkTreeIter iter;
 	int length, i;
-	int *reorder_map;
 
 	g_return_if_fail (((model->priv->max_count == 0) &&
 			  (model->priv->max_time == 0) &&
@@ -1809,32 +1845,7 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 			ptr = g_sequence_ptr_next (ptr);
 		}
 
-		/* generate resort map and rebuild reverse map */
-		reorder_map = malloc (length * sizeof(gint));
-
-		ptr = g_sequence_get_begin_ptr (new_entries);
-		for (i = 0; i < length; i++) {
-			gpointer entry = g_sequence_ptr_get_data (ptr);
-			GSequencePtr old_ptr;
-		       
-			old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-			reorder_map[i] = g_sequence_ptr_get_position (ptr);
-			g_hash_table_replace (model->priv->reverse_map, entry, ptr);
-
-			ptr = g_sequence_ptr_next (ptr);
-		}
-
-		/* emit the re-order and clean up */
-		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
-		path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
-		gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model),
-					       path, &iter,
-					       reorder_map);
-
-		gtk_tree_path_free (path);
-		free (reorder_map);
-		g_sequence_free (model->priv->entries);
-		model->priv->entries = new_entries;
+		apply_updated_entry_sequence (model, new_entries);
 	}
 }
 
@@ -1856,7 +1867,7 @@ rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *model, int i
 	return g_sequence_ptr_get_position (ptr);
 }
 
-static int
+/*static int
 rhythmdb_query_model_base_index_to_child_index (RhythmDBQueryModel *model, int index)
 {
 	GSequencePtr ptr;
@@ -1877,9 +1888,8 @@ rhythmdb_query_model_base_index_to_child_index (RhythmDBQueryModel *model, int i
 		return -1;
 
 	pos = g_sequence_ptr_get_position (ptr);
-	g_assert (index == rhythmdb_query_model_child_index_to_base_index (model, pos));
 	return pos;
-}
+}*/
 
 static int
 rhythmdb_query_model_get_entry_index (RhythmDBQueryModel *model, RhythmDBEntry *entry)
@@ -1977,30 +1987,28 @@ rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 					  gint *order_map,
 					  RhythmDBQueryModel *model)
 {
-	gint new_length;
-	gint *new_map;
-	gint old_length;
-	gint i;
-	GtkTreePath *path;
-	GtkTreeIter iter;
+	RhythmDBQueryModel *base_query_model = RHYTHMDB_QUERY_MODEL (base_model);
+	GSequence *new_entries;
+	GSequencePtr ptr;
 
-	old_length = g_sequence_get_length (RHYTHMDB_QUERY_MODEL (base_model)->priv->entries);
-	new_length = g_sequence_get_length (model->priv->entries);
-	new_map = malloc (new_length * sizeof(gint));
+	/* ignore, if this model sorts */
+	if (model->priv->sort_func)
+		return;
 
-	/* convert the reorder map from the base to child models */
-	for (i = 0; i < new_length; i++) {
-		gint old_index = rhythmdb_query_model_child_index_to_base_index (model, i);
-		gint new_index = rhythmdb_query_model_base_index_to_child_index (model, order_map[old_index]);
+	new_entries = g_sequence_new (NULL);
 
-		new_map[i] = new_index;
+	/* iterate over the entries in the base, and recreate the sequence */
+	ptr = g_sequence_get_begin_ptr (base_query_model->priv->entries);
+	while (!g_sequence_ptr_is_end (ptr)) {
+		gpointer entry = g_sequence_ptr_get_data (ptr);
+
+		if (g_hash_table_lookup (model->priv->reverse_map, entry))
+			g_sequence_append (new_entries, entry);
+
+		ptr = g_sequence_ptr_next (ptr);
 	}
 
-	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
-	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model), path, NULL, new_map);
-	gtk_tree_path_free (path);
-	free (new_map);
+	apply_updated_entry_sequence (model, new_entries);
 }
 
 void

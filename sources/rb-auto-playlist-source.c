@@ -27,19 +27,25 @@
 #include <string.h>
 
 #include "rb-auto-playlist-source.h"
+#include "rb-library-browser.h"
 #include "rb-util.h"
 #include "rb-debug.h"
+#include "eel-gconf-extensions.h"
 #include "rb-stock-icons.h"
 #include "rb-playlist-xml.h"
 
+
 static GObject *rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 						      GObjectConstructParam *construct_properties);
+static void rb_auto_playlist_source_finalize (GObject *object);
+
 /* source methods */
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static void impl_search (RBSource *asource, const char *search_text);
 static void impl_reset_filters (RBSource *asource);
+static void impl_browser_toggled (RBSource *source, gboolean enabled);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
@@ -49,18 +55,32 @@ static void rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *vi
 								 RBAutoPlaylistSource *source); 
 static void rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source);
 
+/* browser stuff */
+static GList *impl_get_property_views (RBSource *source);
+void rb_auto_playlist_source_browser_views_activated_cb (GtkWidget *widget,
+							 RBAutoPlaylistSource *source);
+static void rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *entry,
+							RBAutoPlaylistSource *source);
+
+
 #define AUTO_PLAYLIST_SOURCE_POPUP_PATH "/AutoPlaylistSourcePopup"
 
 typedef struct _RBAutoPlaylistSourcePrivate RBAutoPlaylistSourcePrivate;
 
 struct _RBAutoPlaylistSourcePrivate
 {
+	RhythmDBQueryModel *cached_all_query;
 	GPtrArray *query;
 	gboolean query_resetting;
-	char *search_text;
 	guint limit_count;
 	guint limit_mb;
 	guint limit_time;
+
+	GtkWidget *paned;
+	RBLibraryBrowser *browser;
+	gboolean browser_shown;
+
+	char *search_text;
 };
 
 G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
@@ -76,15 +96,19 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_auto_playlist_source_constructor;
+	object_class->finalize = rb_auto_playlist_source_finalize;
 
 	source_class->impl_get_pixbuf = impl_get_pixbuf;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_browser_toggled = impl_browser_toggled;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
+	source_class->impl_get_property_views = impl_get_property_views;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 	
@@ -100,6 +124,18 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 static void
 rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 {
+
+}
+
+static void
+rb_auto_playlist_source_finalize (GObject *object)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
+
+	if (priv->cached_all_query)
+		g_object_unref (G_OBJECT (priv->cached_all_query));
+
+	G_OBJECT_CLASS (rb_auto_playlist_source_parent_class)->finalize (object);
 }
 
 static GObject *
@@ -109,14 +145,34 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	RBEntryView *songs;
 	RBAutoPlaylistSource *source;
 	GObjectClass *parent_class = G_OBJECT_CLASS (rb_auto_playlist_source_parent_class);
+	RBAutoPlaylistSourcePrivate *priv;
 
 	source = RB_AUTO_PLAYLIST_SOURCE (
 			parent_class->constructor (type, n_construct_properties, construct_properties));
+	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	priv->paned = gtk_vpaned_new ();
+
+	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)));
+	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
+	g_signal_connect_object (G_OBJECT (priv->browser), "changed",
+				 G_CALLBACK (rb_auto_playlist_source_browser_changed_cb),
+				 source, 0);
+
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	g_signal_connect_object (G_OBJECT (songs), "sort-order-changed",
-				 G_CALLBACK (rb_auto_playlist_source_songs_sort_order_changed_cb), source, 0);
+				 G_CALLBACK (rb_auto_playlist_source_songs_sort_order_changed_cb),
+				 source, 0);
+
+	/* reparent the entry view */
+	g_object_ref (G_OBJECT (songs));
+	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
+	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
+	gtk_container_add (GTK_CONTAINER (source), priv->paned);
 	
+	gtk_widget_show_all (GTK_WIDGET (source));
+
 	return G_OBJECT (source);
 }
 
@@ -214,6 +270,9 @@ impl_reset_filters (RBSource *source)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	gboolean changed = FALSE;
+	
+	if (rb_library_browser_reset (priv->browser))
+		changed = TRUE;
 
 	if (priv->search_text != NULL) {
 		changed = TRUE;
@@ -250,6 +309,16 @@ impl_search (RBSource *source, const char *search_text)
 	rb_source_notify_filter_changed (source);
 }
 
+static GList *
+impl_get_property_views (RBSource *source)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	GList *ret;
+
+	ret =  rb_library_browser_get_property_views (priv->browser);
+	return ret;
+}
+
 static RhythmDBPropType
 rb_auto_playlist_source_drag_atom_to_prop (GdkAtom smasher)
 {
@@ -263,6 +332,19 @@ rb_auto_playlist_source_drag_atom_to_prop (GdkAtom smasher)
 		g_assert_not_reached ();
 		return 0;
 	}
+}
+
+static void
+impl_browser_toggled (RBSource *source, gboolean enabled)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	priv->browser_shown = enabled;
+
+	if (enabled)
+		gtk_widget_show (GTK_WIDGET (priv->browser));
+	else
+		gtk_widget_hide (GTK_WIDGET (priv->browser));
 }
 
 static gboolean
@@ -362,37 +444,74 @@ impl_save_contents_to_xml (RBPlaylistSource *psource, xmlNodePtr node)
 	rhythmdb_query_serialize (rb_playlist_source_get_db (psource), query, node);
 }
 
+static GPtrArray *
+construct_query_from_selection (RBAutoPlaylistSource *source)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
+	GPtrArray *query = rhythmdb_query_copy (priv->query);
+	GPtrArray *browser_query;
+
+	if (priv->search_text) {
+		GPtrArray *subquery = rhythmdb_query_parse (db,
+							    RHYTHMDB_QUERY_PROP_LIKE,
+							    RHYTHMDB_PROP_SEARCH_MATCH,
+							    priv->search_text,
+							    RHYTHMDB_QUERY_END);
+		rhythmdb_query_append (db,
+				       query,
+				       RHYTHMDB_QUERY_SUBQUERY,
+				       subquery,
+				       RHYTHMDB_QUERY_END);
+		/* select where type="song" and
+		 *  (genre like "foo" or artist like "foo" or album like "foo")
+		 */
+	}
+
+	browser_query = rb_library_browser_construct_query (priv->browser);
+	rhythmdb_query_concatenate (query, browser_query);
+	rhythmdb_query_free (browser_query);
+
+	return query;
+}
+
 static void
 rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
-	RhythmDBQueryModel *model;
+	RhythmDBQueryModel *query_model;
+	gboolean is_all_query;
 
-	model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
-			      "db", db,
-			      "max-count", priv->limit_count,
-			      "max-size", priv->limit_mb, 
-			      "max-time", priv->limit_time, 
-			      NULL);
+	g_assert (priv->cached_all_query);
+	
+	is_all_query = (!rb_library_browser_has_selection (priv->browser) &&
+			(priv->search_text == NULL));
 
-	if (priv->search_text) {
-		GPtrArray *query = rhythmdb_query_copy (priv->query);
-
-		rhythmdb_query_append (db,
-				       query,
-				       RHYTHMDB_QUERY_PROP_LIKE,
-				       RHYTHMDB_PROP_SEARCH_MATCH,
-				       priv->search_text,
-				       RHYTHMDB_QUERY_END);
-		rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (model), query);
-		rhythmdb_query_free (query);
+	if (is_all_query) {
+		g_object_ref (priv->cached_all_query);
+		query_model = priv->cached_all_query;
 	} else {
-		rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (model), priv->query);
-	}
-	rb_playlist_source_set_query_model (RB_PLAYLIST_SOURCE (source), model);
-}
+		GPtrArray *query;
+	
+		query_model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
+					    "db", db,
+					    "max-count", priv->limit_count,
+					    "max-size", priv->limit_mb,
+					    "max-time", priv->limit_time, 
+					    NULL);
 
+		query = construct_query_from_selection (source);
+		rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (query_model), query);
+		rhythmdb_query_free (query);
+	}
+
+	rb_debug ("setting query model");
+	rb_entry_view_set_model (rb_source_get_entry_view (RB_SOURCE (source)), query_model);
+	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
+
+	g_object_unref (G_OBJECT (query_model));
+}
 void
 rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 				    GPtrArray *query,
@@ -403,11 +522,14 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 				    gint sort_direction)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 
 	priv->query_resetting = TRUE;
 	if (priv->query)
 		rhythmdb_query_free (priv->query);
+	if (priv->cached_all_query)
+		g_object_unref (G_OBJECT (priv->cached_all_query));
 
 	/* playlists that aren't limited, with a particular sort order, are user-orderable */
 	rb_entry_view_set_columns_clickable (songs, (limit_count == 0 && limit_mb == 0));
@@ -417,7 +539,17 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 	priv->limit_count = limit_count;
 	priv->limit_mb = limit_mb;
 	priv->limit_time = limit_time;
+	
+	priv->cached_all_query = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
+					      "db", db,
+					      "max-count", priv->limit_count,
+					      "max-size", priv->limit_mb,
+					      "max-time", priv->limit_time, 
+					      NULL);
+	rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (priv->cached_all_query), query);
+
 	rb_auto_playlist_source_do_query (source);
+	rb_library_browser_set_model (priv->browser, priv->cached_all_query);
 
 	priv->query_resetting = FALSE;
 }
@@ -455,3 +587,9 @@ rb_auto_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBAutoPl
 	rb_entry_view_resort_model (view);
 }
 
+static void
+rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *entry, RBAutoPlaylistSource *source)
+{
+	rb_auto_playlist_source_do_query (source);
+	rb_source_notify_filter_changed (RB_SOURCE (source));
+}

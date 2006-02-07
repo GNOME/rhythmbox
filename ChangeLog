@@ -1,5 +1,90 @@
 2006-02-07  James Livingston  <jrl@ids.org.au>
 
+	* lib/rb-util.h:
+	* lib/rb-util.c: (rb_string_list_equal), (list_copy_cb),
+	(rb_string_list_copy), (rb_list_deep_free), (collate_keys_cb),
+	(collate_values_cb), (rb_collate_hash_table_keys),
+	(rb_collate_hash_table_values): add functions to compare, copy and
+	free string-lists. add functions to collate the keys or values of a
+	hash table into a list.
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_class_init), (entry_from_tree_iter),
+	(_remove_entry_cb), (_add_entry_cb),
+	(rhythmdb_property_model_set_property),
+	(rhythmdb_property_model_get_property),
+	(rhythmdb_property_model_init), (rhythmdb_property_model_finalize),
+	(rhythmdb_property_model_row_inserted_cb),
+	(rhythmdb_property_model_prop_changed_cb),
+	(rhythmdb_property_model_entry_removed_cb): correctly handle entries
+	that are hidden, storing those that we have counted in a hash-table.
+
+	* shell/Makefile.am: fix build order issue
+
+	* shell/rb-shell-player.c: (rb_shell_player_set_property):
+	* sources/rb-source.h:
+	* shell/rb-source-header.c: (rb_source_header_sync_control_state):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-podcast-source.c: (feed_select_change_cb): add
+	browser-toggled method, rename _get_exta_views to _get_property_views,
+	since several things depend on returning only that.
+
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_browser_toggled), (default_get_property_views),
+	(rb_source_get_property_views), (rb_source_row_deleted_cb),
+	(rb_source_gather_hash_keys),
+	(rb_source_gather_selected_properties): above changes, and move some
+	utility functions up from RBLibraryView
+
+	* widgets/rb-property-view.c:
+	(rb_property_view_selection_changed_cb): fix leak.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_finalize), (apply_updated_entry_sequence),
+	(rhythmdb_query_model_set_sort_order),
+	(rhythmdb_query_model_base_rows_reordered): fix handling of the base
+	query model being resorted.
+
+	* rhythmdb/rhythmdb-tree.c: (do_query_recurse): handle being passed a
+	NULL query.
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_copy),
+	(rhythmdb_query_concatenate), (rhythmdb_query_preprocess),
+	(rhythmdb_query_append_prop_multiple): Add a function to concatenate
+	two queries. Add a function to append "property={X,Y,Z,...}" to a
+	query.
+
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_finalize), (rb_library_source_constructor),
+	(rb_library_source_cmd_choose_genre),
+	(rb_library_source_cmd_choose_artist),
+	(rb_library_source_cmd_choose_album), (impl_search),
+	(impl_get_property_views), (impl_reset_filters),
+	(rb_library_source_preferences_sync),
+	(rb_library_source_browser_views_activated_cb),
+	(rb_library_source_state_prefs_sync),
+	(construct_query_from_selection), (rb_library_source_do_query),
+	(rb_library_source_browser_changed_cb):
+	* widgets/Makefile.am:
+	* widgets/rb-library-browsers.{c,h}: Add a generalised "library
+	browser" widgets, which contains several property views, based on the
+	code from RBLibrarySource. Make RBLibrarySource use it.
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_init), (rb_auto_playlist_source_finalize),
+	(rb_auto_playlist_source_constructor), (impl_reset_filters),
+	(impl_get_property_views), (impl_browser_toggled),
+	(construct_query_from_selection),
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_browser_changed_cb): Use the new
+	library-browser widget to add browsers to automatic playlists.
+
+2006-02-07  James Livingston  <jrl@ids.org.au>
+
 	* player/rb-player-gst.c: (rb_player_bus_cb): check error type
 	properly.
 	* shell/rb-shell-player.c: (do_next_idle): use eos_cb, so that the EOF

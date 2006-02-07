@@ -37,6 +37,7 @@
 #include "rhythmdb-property-model.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
+#include "rb-util.h"
 
 static void rb_property_view_class_init (RBPropertyViewClass *klass);
 static void rb_property_view_init (RBPropertyView *view);
@@ -683,6 +684,7 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 		}
 		g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTIES_SELECTED], 0,
 			       selected_properties);
+		rb_list_deep_free (selected_properties);
 	} else {
 		if (gtk_tree_selection_get_selected (view->priv->selection, &model, &iter)) {
 			gtk_tree_model_get (model, &iter,

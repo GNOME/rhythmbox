@@ -1819,8 +1819,10 @@ do_query_recurse (RhythmDBTree *db, GPtrArray *query, RhythmDBTreeTraversalFunc 
 {
 	GList *conjunctions, *tem;
 
+	if (query == NULL)
+		return;
+	
 	conjunctions = split_query_by_disjunctions (db, query);
-
 	rb_debug ("doing recursive query, %d conjunctions", g_list_length (conjunctions));
 
 	if (conjunctions == NULL)

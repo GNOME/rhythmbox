@@ -428,6 +428,7 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 				   header->priv->disclosed);
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
 				      header->priv->disclosed);
+	rb_source_browser_toggled (header->priv->selected_source, header->priv->disclosed);
 }
 
 static void
