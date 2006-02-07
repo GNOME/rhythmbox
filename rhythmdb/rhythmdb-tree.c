@@ -94,7 +94,7 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 
-#define RHYTHMDB_TREE_XML_VERSION "1.0"
+#define RHYTHMDB_TREE_XML_VERSION "1.1"
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -209,7 +209,9 @@ struct RhythmDBTreeLoadContext
 	GString *buf;
 	RhythmDBPropType propid;
 
+	/* updating */
 	gboolean has_date;
+	gboolean canonicalise_uris;
 };
 
 static void
@@ -228,10 +230,30 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	{
 	case RHYTHMDB_TREE_PARSER_STATE_START:
 	{
-		if (!strcmp (name, "rhythmdb"))
+		if (!strcmp (name, "rhythmdb")) {
 			ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
-		else
+			for (; *attrs; attrs +=2) {
+				if (!strcmp (*attrs, "version")) {
+					const char *version = *(attrs+1);
+
+					if (!strcmp (version, "1.0")) {
+						ctx->canonicalise_uris = TRUE;
+						rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries");
+					} else if (!strcmp (version, "1.1")) {
+						/* current version*/
+					} else {
+						/* too new */
+						g_assert_not_reached ();
+					}
+				} else {
+					g_assert_not_reached ();
+				}
+			}
+
+		} else {
 			ctx->in_unknown_elt = TRUE;
+		}
+
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB:
@@ -338,9 +360,27 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		}
 		
 		if (ctx->entry->location != NULL) {
-			rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
-			rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
-			rhythmdb_commit (RHYTHMDB (ctx->db));
+			RhythmDBEntry *entry;
+
+			entry = g_hash_table_lookup (ctx->db->priv->entries, ctx->entry->location);
+			if (entry == NULL) {
+				rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
+				rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
+				rhythmdb_commit (RHYTHMDB (ctx->db));
+			} else {
+				rb_debug ("found entry with duplicate location %s. merging metadata", ctx->entry->location);
+				entry->play_count += ctx->entry->play_count;
+
+				if (entry->rating < 0.01)
+					entry->rating = ctx->entry->rating;
+				else if (ctx->entry->rating > 0.01)
+					entry->rating = (entry->rating + ctx->entry->rating) / 2;
+
+				if (ctx->entry->last_played > entry->last_played)
+					entry->last_played = ctx->entry->last_played;
+				
+				rhythmdb_entry_unref (RHYTHMDB (ctx->db), ctx->entry);
+			}
 		} else {
 			rb_debug ("found entry without location");
 			rhythmdb_entry_unref (RHYTHMDB (ctx->db), ctx->entry);
@@ -392,7 +432,10 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			ctx->entry->file_size = parse_ulong (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_LOCATION:
-			ctx->entry->location = g_strdup (ctx->buf->str);
+			if (ctx->canonicalise_uris)
+				ctx->entry->location = rb_canonicalise_uri (ctx->buf->str);
+			else
+				ctx->entry->location = g_strdup (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
 			/* remove this from old podcast-post entries */

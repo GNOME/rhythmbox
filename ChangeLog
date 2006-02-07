@@ -1,3 +1,10 @@
+2006-02-07  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element): update the rhythmdb.xml version to
+	1.1, and perform URI canonicalistion when first upgrading. This should
+	fix our remaining canonicalisation issues, such as bug 329988.
+
 2006-02-07  Jonathan Matthew  <jonathan@kaolin.hn.org>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_playing_song_changed):
