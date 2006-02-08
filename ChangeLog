@@ -1,3 +1,39 @@
+2006-02-08  William Jon McCann  <mccann@jhu.edu>
+
+	* daapsharing/rb-daap-share.c (server_info_cb, content_codes_cb):
+	Add context argument.
+	(message_get_session_id): New function to parse session id from
+	the message.
+	(message_get_revision_number): Break out function to parse
+	revision number from the message.
+	(session_id_validate): New function to validate given session id
+	is valid for given context (ie. client address).
+	(session_id_generate): Generate a random session id.
+	(session_id_create): Create a unique session id and store it.
+	(session_id_remove): Remove a session id from the store.
+	(login_cb): Create a session id instead of using a constant one.
+	(logout_cb): Validate session id.
+	(update_cb): Use new message_get_revision_number function.
+	(databases_cb): Validate session id.
+	(server_cb): Add server context to argument list for callbacks.  It
+	is needed to look up the remote host.
+	(db_entry_changed_cb): Use braces.
+	(soup_auth_callback): Remove FIXME.
+	(rb_daap_share_server_start): Create session id store.
+	(rb_daap_share_server_stop): Destroy session id store.
+
+	* daapsharing/rb-daap-dialog.c (rb_daap_password_dialog_new_run):
+	Don't base64-encode password here since it needs to be
+	combined with the username first.
+
+	* daapsharing/rb-daap-connection.c (build_message):
+	Add username to Authorization token.
+	(handle_login, handle_song_listing) 
+	(rb_daap_connection_do_something): Session id
+	must be an unsigned int.
+
+	Fixes #329814
+
 2006-02-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.c: (rb_shell_player_get_playing):

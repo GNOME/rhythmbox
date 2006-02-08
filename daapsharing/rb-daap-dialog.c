@@ -31,71 +31,18 @@
 
 #include "rb-daap-dialog.h"
 
-static gchar *
-encode_base64 (const gchar *string)
-{
-	static const gchar base64chars[] =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	gint out_index = 0;
-	gint outlen = ((strlen (string) * 4) / 3) + 4;
-	gchar *out = g_malloc (outlen + 1);
-	
-	memset (out, 0, outlen);
-
-	while (string[0]) {
-		int index;
-
-		/* first 6 bits from string[0] */
-		index = (string[0] & 0xFC) >> 2;
-		out[out_index++] = base64chars[index];
-
-		/* last 2 bits from string[0] and 6 bits from string[1] */
-		index = (string[0] & 0x3) << 4;
-		index |= (string[1] & 0xF0) >> 4;
-		out[out_index++] = base64chars[index];
-
-		/* but if string[1] was 0, it's the final char. fill the rest with pad */
-	 	if (!string[1]) {
-			out[out_index++] = '=';
-			out[out_index++] = '=';
-			break;
-		}
-
-		/* last 4 bits from string[1] and 2 bits from string[2] */
-		index = (string[1] & 0x0F) << 2;
-		index |= (string[2] & 0xC0) >> 6;
-		out[out_index++] = base64chars[index];
-
-		/* but if string[2] was 0, it was the final char. */
-		if (!string[2]) {
-			out[out_index++] = '=';
-			break;
-		}
-
-		/* finally, last 6 bits of string[2] */
-		index = (string[2] & 0x3F);
-		out[out_index++] = base64chars[index];
-
-		string += 3;
-	}
-	out[out_index++] = 0;
-
-	return out;
-}
-
-
-gchar * 
-rb_daap_password_dialog_new_run (const gchar *name)
+char * 
+rb_daap_password_dialog_new_run (const char *name)
 {
 	GtkWidget *dialog;
 	GtkWidget *hbox;
 	GtkWidget *image;
 	GtkWidget *vbox;
-	gchar *s;
+	char *s;
 	GtkWidget *label;
 	GtkWidget *entry;
 	gint resp;
-	gchar *ret;
+	char *ret;
 
 	dialog = gtk_dialog_new_with_buttons (_("Password Required"),
 					      NULL,
@@ -141,15 +88,7 @@ rb_daap_password_dialog_new_run (const gchar *name)
 
 	switch (resp) {
 		case GTK_RESPONSE_OK: {
-			const gchar *pw = gtk_entry_get_text (GTK_ENTRY (entry));
-			gchar *s;
-
-			s = g_malloc0 (strlen (pw) + 2);
-			s[0] = ':';
-			strcpy (s+1, pw);
-
-			ret = encode_base64 (s);
-			g_free (s);
+			ret = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
 			break;
 	      	}
 		case GTK_RESPONSE_CANCEL:
@@ -163,14 +102,14 @@ rb_daap_password_dialog_new_run (const gchar *name)
 	return ret;
 }
 
-gchar *
-rb_daap_collision_dialog_new_run (const gchar *old_name)
+char *
+rb_daap_collision_dialog_new_run (const char *old_name)
 {
 	GtkWidget *dialog;
 	GtkWidget *hbox;
 	GtkWidget *image;
 	GtkWidget *vbox;
-	gchar *s;
+	char *s;
 	GtkWidget *label;
 	GtkWidget *entry;
 	gint resp;

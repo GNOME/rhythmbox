@@ -566,7 +566,7 @@ struct RBDAAPConnectionPrivate {
 	gchar *daap_base_uri;
 	
 	gdouble daap_version;
-	gint session_id;
+	guint32 session_id;
 	gint revision_number;
 
 	gint request_id;
@@ -724,8 +724,17 @@ build_message (RBDAAPConnection *connection,
 	soup_message_add_header (message->request_headers, "Client-DAAP-Access-Index", 	"2");
 
 	if (priv->password_protected) {
-		char *h = g_strdup_printf ("Basic %s", priv->password);
-		
+		char *h;
+		char *user_pass;
+		char *token;
+
+		user_pass = g_strdup_printf ("%s:%s", priv->username, priv->password);
+		token = soup_base64_encode (user_pass, strlen (user_pass));
+		h = g_strdup_printf ("Basic %s", token);
+
+		g_free (token);
+		g_free (user_pass);
+
 		soup_message_add_header (message->request_headers, "Authorization", h);
 		g_free (h);
 	}
@@ -1015,7 +1024,7 @@ handle_login (RBDAAPConnection *connection, guint status, GNode *structure)
 		return;
 	}
 
-	priv->session_id = g_value_get_int (&(item->content));
+	priv->session_id = (guint32) g_value_get_int (&(item->content));
 	rb_daap_connection_state_done (connection, TRUE);
 }
 
@@ -1209,14 +1218,14 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
 		}
 
 		/*if (connection->daap_version == 3.0) {*/
-			uri = g_strdup_printf ("%s/databases/%d/items/%d.%s?session-id=%d", 
+			uri = g_strdup_printf ("%s/databases/%d/items/%d.%s?session-id=%u",
 					       priv->daap_base_uri, 
 					       priv->database_id, 
 					       item_id, format, 
 					       priv->session_id);
 		/*} else {*/
 		/* uri should be 
-		 * "/databases/%d/items/%d.%s?session-id=%d&revision-id=%d";
+		 * "/databases/%d/items/%d.%s?session-id=%u&revision-id=%d";
 		 * but its not going to work cause the other parts of the code 
 		 * depend on the uri to have the ip address so that the
 		 * RBDAAPSource can be found to ++request_id
@@ -1600,7 +1609,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_REVISION_NUMBER:
 		rb_debug ("Getting DAAP server database revision number");
-		path = g_strdup_printf ("/update?session-id=%d&revision-number=1", priv->session_id);
+		path = g_strdup_printf ("/update?session-id=%u&revision-number=1", priv->session_id);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_update)) {
 			rb_debug ("Could not get server database revision number");
@@ -1611,7 +1620,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_DB_INFO:
 		rb_debug ("Getting DAAP database info");
-		path = g_strdup_printf ("/databases?session-id=%d&revision-number=%d", 
+		path = g_strdup_printf ("/databases?session-id=%u&revision-number=%d", 
 					priv->session_id, priv->revision_number);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_database_info)) {
@@ -1623,7 +1632,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_SONGS:
 		rb_debug ("Getting DAAP song listing");
-		path = g_strdup_printf ("/databases/%i/items?session-id=%i&revision-number=%i"
+		path = g_strdup_printf ("/databases/%i/items?session-id=%u&revision-number=%i"
 				        "&meta=dmap.itemid,dmap.itemname,daap.songalbum,"
 					"daap.songartist,daap.daap.songgenre,daap.songsize,"
 					"daap.songtime,daap.songtrackcount,daap.songtracknumber,"
@@ -1642,7 +1651,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_PLAYLISTS:
 		rb_debug ("Getting DAAP playlists");
-		path = g_strdup_printf ("/databases/%d/containers?session-id=%d&revision-number=%d", 
+		path = g_strdup_printf ("/databases/%d/containers?session-id=%u&revision-number=%d", 
 					priv->database_id, 
 					priv->session_id, 
 					priv->revision_number);
@@ -1661,7 +1670,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 								     priv->reading_playlist);
 			g_assert (playlist);
 			rb_debug ("Reading DAAP playlist %d entries", priv->reading_playlist);
-			path = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%d&revision-number=%d&meta=dmap.itemid", 
+			path = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%u&revision-number=%d&meta=dmap.itemid", 
 						priv->database_id, 
 						playlist->id,
 						priv->session_id, priv->revision_number);
@@ -1677,7 +1686,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_LOGOUT:
 		rb_debug ("Logging out of DAAP server");
-		path = g_strdup_printf ("/logout?session-id=%d", priv->session_id);
+		path = g_strdup_printf ("/logout?session-id=%u", priv->session_id);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_logout)) {
 			rb_debug ("Could not log out of DAAP server");

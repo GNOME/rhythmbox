@@ -95,6 +95,8 @@ struct RBDAAPSharePrivate {
 	SoupServer *server;
 	guint revision_number;
 
+	GHashTable *session_ids;
+
 	/* db things */
 	RhythmDB *db;
 	gint32 next_song_id;
@@ -518,7 +520,8 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 #define DMAP_TIMEOUT 1800
 
 static void 
-server_info_cb (RBDAAPShare *share, 
+server_info_cb (RBDAAPShare *share,
+		SoupServerContext *context,
 		SoupMessage *message)
 {
 /* MSRV	server info response
@@ -578,6 +581,7 @@ server_info_cb (RBDAAPShare *share,
 
 static void
 content_codes_cb (RBDAAPShare *share,
+		  SoupServerContext *context,
 		  SoupMessage *message)
 {
 /* MCCR content codes response
@@ -612,16 +616,160 @@ content_codes_cb (RBDAAPShare *share,
 	rb_daap_structure_destroy (mccr);
 }
 
-/* This is arbitrary.  iTunes communicates with a session id for
- * reasons relating to updates to the database and such, I think
- * Since we don't do that, and since we don't keep track of connections
- * like iTunes do, everyone can just share the same, special, arbitrary
- * session id.
- */
-#define DAAP_SESSION_ID 42
+static gboolean
+message_get_session_id (SoupMessage *message,
+			guint32     *id)
+{
+	const SoupUri *uri;
+	char          *position;
+	guint32        session_id;
+
+	if (id) {
+		*id = 0;
+	}
+
+	uri = soup_message_get_uri (message);
+	if (uri == NULL) {
+		return FALSE;
+	}
+
+	position = strstr (uri->query, "session-id=");
+
+	if (position == NULL) {
+		rb_debug ("session id not found");
+		return FALSE;
+	}
+
+	position += 11;
+	session_id = (guint32) atoi (position);
+
+	if (id) {
+		*id = session_id;
+	}
+
+	return TRUE;
+}
+
+static gboolean
+message_get_revision_number (SoupMessage *message,
+			     guint       *number)
+{
+	const SoupUri *uri;
+	char          *position;
+	guint          revision_number;
+
+	if (number) {
+		*number = 0;
+	}
+
+	uri = soup_message_get_uri (message);
+	if (uri == NULL) {
+		return FALSE;
+	}
+
+	position = strstr (uri->query, "revision-number=");
+
+	if (position == NULL) {
+		rb_debug ("client asked for an update without a revision number?!?\n");
+		return FALSE;
+	}
+
+	position += 16;
+	revision_number = atoi (position);
+
+	if (number) {
+		*number = revision_number;
+	}
+
+	return TRUE;
+}
+
+static gboolean
+session_id_validate (RBDAAPShare       *share,
+		     SoupServerContext *context,
+		     SoupMessage       *message,
+		     guint32           *id)
+{
+	guint32     session_id;
+	gboolean    res;
+	const char *addr;
+	const char *remote_address;
+
+	if (id) {
+		*id = 0;
+	}
 	
+	res = message_get_session_id (message, &session_id);
+	if (! res) {
+		return FALSE;
+	}
+
+	/* check hash for remote address */
+	addr = g_hash_table_lookup (share->priv->session_ids, GUINT_TO_POINTER (session_id));
+	if (addr == NULL) {
+		return FALSE;
+	}
+
+	remote_address = soup_server_context_get_client_host (context);
+	rb_debug ("Validating session id %u from %s matches %s",
+		  session_id, remote_address, addr);
+	if (remote_address == NULL || strcmp (addr, remote_address) != 0) {
+		return FALSE;
+	}
+
+	if (id) {
+		*id = session_id;
+	}
+
+	return TRUE;
+}
+
+static guint32
+session_id_generate (RBDAAPShare       *share,
+		     SoupServerContext *context)
+{
+	guint32 id;
+
+	id = g_random_int ();
+
+	return id;
+}
+
+static guint32
+session_id_create (RBDAAPShare       *share,
+		   SoupServerContext *context)
+{
+	guint32     id;
+	const char *addr;
+	char       *remote_address;
+
+	do {
+		/* create a unique session id */
+		id = session_id_generate (share, context);
+		rb_debug ("Generated session id %u", id);
+
+		/* if already used, try again */
+		addr = g_hash_table_lookup (share->priv->session_ids, GUINT_TO_POINTER (id));
+	} while	(addr != NULL);
+
+	/* store session id and remote address */
+	remote_address = g_strdup (soup_server_context_get_client_host (context));
+	g_hash_table_insert (share->priv->session_ids, GUINT_TO_POINTER (id), remote_address);
+
+	return id;
+}
+
+static void
+session_id_remove (RBDAAPShare       *share,
+		   SoupServerContext *context,
+		   guint32            id)
+{
+	g_hash_table_remove (share->priv->session_ids, GUINT_TO_POINTER (id));
+}
+
 static void 
-login_cb (RBDAAPShare *share, 
+login_cb (RBDAAPShare *share,
+	  SoupServerContext *context,
 	  SoupMessage *message)
 {
 /* MLOG login response
@@ -629,10 +777,15 @@ login_cb (RBDAAPShare *share,
  * 	MLID session id
  */
 	GNode *mlog;
+	guint32 session_id;
+
+	session_id = session_id_create (share, context);
+
+	rb_debug ("Handling login session id %u", session_id);
 
 	mlog = rb_daap_structure_add (NULL, RB_DAAP_CC_MLOG);
 	rb_daap_structure_add (mlog, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
-	rb_daap_structure_add (mlog, RB_DAAP_CC_MLID, (gint32) DAAP_SESSION_ID);
+	rb_daap_structure_add (mlog, RB_DAAP_CC_MLID, session_id);
 
 	message_set_from_rb_daap_structure (message, mlog);
 	rb_daap_structure_destroy (mlog);
@@ -640,37 +793,36 @@ login_cb (RBDAAPShare *share,
 
 static void 
 logout_cb (RBDAAPShare *share, 
+	   SoupServerContext *context,
 	   SoupMessage *message)
 {
-	/* FIXME: check session id ? */
-	soup_message_set_status (message, SOUP_STATUS_NO_CONTENT);
+	int     status;
+	guint32 id;
+
+	if (session_id_validate (share, context, message, &id)) {
+		rb_debug ("Handling logout session id %u", id);
+		session_id_remove (share, context, id);
+
+		status = SOUP_STATUS_NO_CONTENT;
+	} else {
+		status = SOUP_STATUS_FORBIDDEN;
+	}
+
+	soup_message_set_status (message, status);
 	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
 }
 
 static void
 update_cb (RBDAAPShare *share,
+	   SoupServerContext *context,
 	   SoupMessage *message)
 {
-	gchar *path;
-	gchar *revision_number_position;
-	guint revision_number;
+	guint    revision_number;
+	gboolean res;
 
-	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
+	res = message_get_revision_number (message, &revision_number);
 
-	revision_number_position = strstr (path, "revision-number=");
-
-	if (revision_number_position == NULL) {
-		rb_debug ("client asked for an update without a revision number?!?\n");
-		g_free (path);
-		return;
-	}
-
-	revision_number_position += 16;
-	revision_number = atoi (revision_number_position);
-
-	g_free (path);
-	
-	if (revision_number != share->priv->revision_number) {
+	if (res && revision_number != share->priv->revision_number) {
 		/* MUPD update response
 		 * 	MSTT status
 		 * 	MUSR server revision
@@ -1025,11 +1177,18 @@ message_finished (SoupMessage *message, GnomeVFSHandle *handle)
 
 static void 
 databases_cb (RBDAAPShare *share, 
+	      SoupServerContext *context,
 	      SoupMessage *message)
 {
 	gchar *path;
 	gchar *rest_of_path;
 	/*guint revision_number;*/
+
+	if (! session_id_validate (share, context, message, NULL)) {
+		soup_message_set_status (message, SOUP_STATUS_FORBIDDEN);
+		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
+		return;
+	}
 	
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
 
@@ -1266,7 +1425,9 @@ out:
 	g_free (path);
 }
 
-typedef void (* DAAPPathFunction) (RBDAAPShare *share, SoupMessage *message);
+typedef void (* DAAPPathFunction) (RBDAAPShare       *share,
+				   SoupServerContext *context,
+				   SoupMessage       *message);
 
 struct DAAPPath {
 	const gchar *path;
@@ -1296,12 +1457,12 @@ server_cb (SoupServerContext *context,
 
 	for (i = 0; i < G_N_ELEMENTS (paths_to_functions); i++) {
 		if (g_ascii_strncasecmp (paths_to_functions[i].path, path, paths_to_functions[i].path_length) == 0) {
-			paths_to_functions[i].function (share, message);
+			paths_to_functions[i].function (share, context, message);
 			return;
 		}
 	}
 
-	g_warning ("unhandled path %s\n", soup_uri_to_string (soup_message_get_uri (message), TRUE));
+	g_warning ("unhandled path %s\n", path);
 
 	g_free (path);
 }
@@ -1348,10 +1509,11 @@ db_entry_changed_cb (RhythmDB *db,
 		     GSList *changes,
 		     RBDAAPShare *share)
 {
-	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
 		db_entry_deleted_cb (db, entry, share);
-	else
+	} else {
 		db_entry_added_cb (db, entry, share);
+	}
 }
 
 static gboolean
@@ -1372,9 +1534,6 @@ soup_auth_callback (SoupServerAuthContext *auth_ctx,
 		/* This is to workaround libsoup looking up handlers by directory.
 		   We require auth for "/databases?" but not "/databases/" */
 		if (g_str_has_prefix (path, "/databases/")) {
-
-			/* FIXME: need to check for valid session id */
-
 			allowed = TRUE;
 			goto done;
 		}
@@ -1456,6 +1615,9 @@ rb_daap_share_server_start (RBDAAPShare *share)
 
 	share->priv->id_to_entry = g_hash_table_new (NULL, NULL);
 	share->priv->entry_to_id = g_hash_table_new (NULL, NULL);
+	/* using direct since there is no g_uint_hash or g_uint_equal */
+	share->priv->session_ids = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
+
 	share->priv->next_playlist_id = 2;		/* 1 already used */
 
 	rhythmdb_entry_foreach (share->priv->db, (GFunc)add_db_entry, share);
@@ -1492,6 +1654,11 @@ rb_daap_share_server_stop (RBDAAPShare *share)
 	if (share->priv->id_to_entry) {
 		g_hash_table_destroy (share->priv->id_to_entry);
 		share->priv->id_to_entry = NULL;
+	}
+
+	if (share->priv->session_ids) {
+		g_hash_table_destroy (share->priv->session_ids);
+		share->priv->session_ids = NULL;
 	}
 
 	if (share->priv->entry_to_id) {
