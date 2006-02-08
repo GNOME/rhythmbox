@@ -641,7 +641,7 @@ message_get_session_id (SoupMessage *message,
 	}
 
 	position += 11;
-	session_id = (guint32) atoi (position);
+	session_id = (guint32) strtoul (position, NULL, 10);
 
 	if (id) {
 		*id = session_id;
@@ -701,12 +701,14 @@ session_id_validate (RBDAAPShare       *share,
 	
 	res = message_get_session_id (message, &session_id);
 	if (! res) {
+		rb_debug ("Validation failed: Unable to parse session id from message");
 		return FALSE;
 	}
 
 	/* check hash for remote address */
 	addr = g_hash_table_lookup (share->priv->session_ids, GUINT_TO_POINTER (session_id));
 	if (addr == NULL) {
+		rb_debug ("Validation failed: Unable to lookup session id %u", session_id);
 		return FALSE;
 	}
 
@@ -714,6 +716,7 @@ session_id_validate (RBDAAPShare       *share,
 	rb_debug ("Validating session id %u from %s matches %s",
 		  session_id, remote_address, addr);
 	if (remote_address == NULL || strcmp (addr, remote_address) != 0) {
+		rb_debug ("Validation failed: Remote address does not match stored address");
 		return FALSE;
 	}
 
