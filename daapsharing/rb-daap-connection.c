@@ -788,6 +788,7 @@ http_response_handler (SoupMessage *message,
 	char *response;
 	int response_length;
 	const char *encoding_header;
+	char *message_path;
 
 	priv = connection->priv;
 	structure = NULL;
@@ -796,10 +797,10 @@ http_response_handler (SoupMessage *message,
 	response_length = message->response.length;
 	encoding_header = NULL;
 
-	rb_debug ("Received response from http://%s:%d/%s: %d, %s\n", 
-		  priv->base_uri->host,
-		  priv->base_uri->port,
-		  priv->base_uri->path, 
+	message_path = soup_uri_to_string (soup_message_get_uri (message), FALSE);
+
+	rb_debug ("Received response from %s: %d, %s\n", 
+		  message_path,
 		  message->status_code,
 		  message->reason_phrase);
 
@@ -836,10 +837,8 @@ http_response_handler (SoupMessage *message,
 		if (inflateInit2 (&stream, 32 /* auto-detect */ + 15 /* max */ ) != Z_OK) {
 			inflateEnd (&stream);
 			g_free (new_response);
-			rb_debug ("Unable to decompress response from http://%s:%d/%s",
-				  priv->base_uri->host,
-				  priv->base_uri->port,
-				  priv->base_uri->path);
+			rb_debug ("Unable to decompress response from %s",
+				  message_path);
 			status = SOUP_STATUS_MALFORMED;
 		} else {
 			do {
@@ -870,10 +869,8 @@ http_response_handler (SoupMessage *message,
 			response_length = stream.total_out;
 		}
 #else
-		rb_debug ("Received compressed response from http://%s:%d/%s but can't handle it",
-			  priv->base_uri->host,
-			  priv->base_uri->port,
-			  priv->base_uri->path);
+		rb_debug ("Received compressed response from %s but can't handle it",
+			  message_path);
 		status = SOUP_STATUS_MALFORMED;
 #endif
 	}
@@ -883,10 +880,9 @@ http_response_handler (SoupMessage *message,
 
 		structure = rb_daap_structure_parse (response, response_length);
 		if (structure == NULL) {
-			rb_debug ("No daap structure returned from http://%s:%d/%s", 
-				  priv->base_uri->host,
-				  priv->base_uri->port,
-				  priv->base_uri->path);
+			rb_debug ("No daap structure returned from %s",
+				  message_path);
+
 			status = SOUP_STATUS_MALFORMED;
 		} else {
 			int dmap_status = 0;
@@ -895,18 +891,15 @@ http_response_handler (SoupMessage *message,
 				dmap_status = g_value_get_int (&(item->content));
 
 			if (dmap_status != 200) {
-				rb_debug ("Error, dmap.status is not 200 in response from http://%s:%d/%s",
-					  priv->base_uri->host,
-					  priv->base_uri->port,
-					  priv->base_uri->path);
+				rb_debug ("Error, dmap.status is not 200 in response from %s",
+					  message_path);
+
 				status = SOUP_STATUS_MALFORMED;
 			}
 		}
 	} else {
-		rb_debug ("Error getting http://%s:%d/%s: %d, %s\n", 
-			  priv->base_uri->host,
-			  priv->base_uri->port,
-			  priv->base_uri->path, 
+		rb_debug ("Error getting %s: %d, %s\n", 
+			  message_path,
 			  message->status_code,
 			  message->reason_phrase);
 	}
@@ -917,11 +910,15 @@ http_response_handler (SoupMessage *message,
 		(*h) (connection, status, structure);
 	}
 
-	if (structure)
+	if (structure) {
 		rb_daap_structure_destroy (structure);
+	}
 
-	if (response != message->response.body)
+	if (response != message->response.body) {
 		g_free (response);
+	}
+
+	g_free (message_path);
 }
 
 static gboolean

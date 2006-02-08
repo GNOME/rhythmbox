@@ -1,5 +1,10 @@
 2006-02-08  William Jon McCann  <mccann@jhu.edu>
 
+	* daapsharing/rb-daap-connection.c (http_response_handler):
+	Report the actual uri from the message in debug statements.
+
+2006-02-08  William Jon McCann  <mccann@jhu.edu>
+
 	* daapsharing/rb-daap-share.c (server_info_cb, content_codes_cb):
 	Add context argument.
 	(message_get_session_id): New function to parse session id from
