@@ -2071,16 +2071,8 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 			     gboolean *playing,
 			     GError **error)
 {
-	if (playing != NULL) {
-		*playing = FALSE;
-		if (player->priv->current_playing_source) {
-			RBEntryView *songs = rb_source_get_entry_view (player->priv->current_playing_source); 
-			RBEntryViewState state;
-			g_object_get (G_OBJECT (songs), "playing-state", &state, NULL);
-			if (state == RB_ENTRY_VIEW_PLAYING)
-				*playing = TRUE;
-		}
-	}
+	if (playing != NULL)
+		*playing = (rb_shell_player_get_playing_entry (player) != NULL);
 
 	return TRUE;
 }

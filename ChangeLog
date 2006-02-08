@@ -1,3 +1,9 @@
+2006-02-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_get_playing):
+	Don't ask the entry view if we're playing, just check if we've got a
+	playing entry.  Fixes #329993.
+
 2006-02-08  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:
