@@ -41,6 +41,8 @@
 static void rb_library_browser_class_init (RBLibraryBrowserClass *klass);
 static void rb_library_browser_init (RBLibraryBrowser *entry);
 static void rb_library_browser_finalize (GObject *object);
+static GObject* rb_library_browser_constructor (GType type, guint n_construct_properties,
+						GObjectConstructParam *construct_properties);
 static void rb_library_browser_set_property (GObject *object,
 					     guint prop_id,
 					     const GValue *value,
@@ -113,6 +115,7 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_library_browser_finalize;
+	object_class->constructor = rb_library_browser_constructor;
 	object_class->set_property = rb_library_browser_set_property;
 	object_class->get_property = rb_library_browser_get_property;
 
@@ -141,12 +144,27 @@ static void
 rb_library_browser_init (RBLibraryBrowser *widget)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
-	int i;
 
 	gtk_box_set_spacing (GTK_BOX (widget), 5);
 
 	priv->property_views = g_hash_table_new (g_direct_hash, g_direct_equal);
 	priv->selections = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_list_deep_free);
+}
+
+static GObject *
+rb_library_browser_constructor (GType type, guint n_construct_properties,
+				GObjectConstructParam *construct_properties)
+{
+	RBLibraryBrowserClass *klass;
+	RBLibraryBrowser *browser;
+	RBLibraryBrowserPrivate *priv;
+	int i;
+
+	klass = RB_LIBRARY_BROWSER_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_BROWSER));
+
+	browser = RB_LIBRARY_BROWSER (G_OBJECT_CLASS (rb_library_browser_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
+	priv = RB_LIBRARY_BROWSER_GET_PRIVATE (browser);
 
 	for (i = 0; i < num_browser_properties; i++) {
 		RBPropertyView *view;
@@ -160,22 +178,23 @@ rb_library_browser_init (RBLibraryBrowser *widget)
 		g_signal_connect_object (G_OBJECT (view),
 					 "properties-selected",
 					 G_CALLBACK (view_property_selected_cb),
-					 widget, 0);
+					 browser, 0);
 		g_signal_connect_object (G_OBJECT (view),
 					 "property-selection-reset",
 					 G_CALLBACK (view_selection_reset_cb),
-					 widget, 0);
+					 browser, 0);
 		gtk_widget_show_all (GTK_WIDGET (view));
 		gtk_widget_set_no_show_all (GTK_WIDGET (view), TRUE);
-		gtk_box_pack_start_defaults (GTK_BOX (widget), GTK_WIDGET (view));	     
+		gtk_box_pack_start_defaults (GTK_BOX (browser), GTK_WIDGET (view));	     
 	}
 
-	update_browser_views_visibility (widget);
+	update_browser_views_visibility (browser);
 	priv->browser_view_notify_id =
 		eel_gconf_notification_add (CONF_UI_BROWSER_VIEWS,
-				    (GConfClientNotifyFunc) rb_library_browser_views_changed, widget);
-}
+				(GConfClientNotifyFunc) rb_library_browser_views_changed, browser);
 
+	return G_OBJECT (browser);
+}
 static void
 rb_library_browser_finalize (GObject *object)
 {
@@ -240,10 +259,10 @@ rb_library_browser_new (RhythmDB *db)
 {
 	RBLibraryBrowser *widget;
 
+	g_assert (db);
 	widget = RB_LIBRARY_BROWSER (g_object_new (RB_TYPE_LIBRARY_BROWSER,
 						   "db", db,
 						   NULL));
-
 	return widget;
 }
 

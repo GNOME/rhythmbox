@@ -1,3 +1,18 @@
+2006-02-08  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_finalize),
+	(rhythmdb_query_model_base_complete): remove
+	rhythmdb_query_model_base_entry_prop_changed, so that two signals
+	don't get emitted for entry changes. Fixes bug 330301.
+
+	* widgets/rb-library-browser.c: (rb_library_browser_class_init),
+	(rb_library_browser_init), (rb_library_browser_constructor),
+	(rb_library_browser_new): do stuff in the constructor, not the init
+	function, so that the db property gets set on RBPropertyViews
+	correctly. Fixes a crash when dragging properties to a playlist.
+
 2006-02-07  William Jon McCann  <mccann@jhu.edu>
 
 	* daapsharing/rb-daap-share.c (rb_daap_share_server_stop):

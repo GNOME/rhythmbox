@@ -133,12 +133,6 @@ static void rhythmdb_query_model_base_non_entry_dropped (GtkTreeModel *base_mode
 							 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_base_complete (GtkTreeModel *base_model,
 						RhythmDBQueryModel *model);
-static void rhythmdb_query_model_base_entry_prop_changed (GtkTreeModel *base_model,
-							  RhythmDBEntry *entry,
-							  RhythmDBPropType prop,
-							  const GValue *old,
-							  const GValue *new,
-							  RhythmDBQueryModel *model);
 static void rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 						      GtkTreePath *arg1,
 						      GtkTreeIter *arg2,
@@ -446,9 +440,6 @@ rhythmdb_query_model_set_property (GObject *object,
 							      G_CALLBACK (rhythmdb_query_model_base_complete),
 							      model);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_entry_prop_changed),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 							      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
 							      model);
 			g_object_unref (model->priv->base_model);
@@ -475,10 +466,6 @@ rhythmdb_query_model_set_property (GObject *object,
 			g_signal_connect_object (G_OBJECT (model->priv->base_model),
 						 "complete",
 						 G_CALLBACK (rhythmdb_query_model_base_complete),
-						 model, 0);
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "entry-prop-changed",
-						 G_CALLBACK (rhythmdb_query_model_base_entry_prop_changed),
 						 model, 0);
 			g_signal_connect_object (G_OBJECT (model->priv->base_model),
 						 "rows-reordered",
@@ -645,9 +632,6 @@ rhythmdb_query_model_finalize (GObject *object)
 						      model);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_complete),
-						      model);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-						      G_CALLBACK (rhythmdb_query_model_base_entry_prop_changed),
 						      model);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
@@ -1964,20 +1948,6 @@ rhythmdb_query_model_base_complete (GtkTreeModel *base_model,
 				    RhythmDBQueryModel *model)
 {
 	g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
-}
-
-static void
-rhythmdb_query_model_base_entry_prop_changed (GtkTreeModel *base_model,
-					      RhythmDBEntry *entry,
-					      RhythmDBPropType prop,
-					      const GValue *old,
-					      const GValue *new,
-					      RhythmDBQueryModel *model)
-{
-	if (g_hash_table_lookup (model->priv->reverse_map, entry)) {
-		g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
-			       entry, prop, old, new);
-	}
 }
 
 static void
