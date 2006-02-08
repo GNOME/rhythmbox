@@ -2072,7 +2072,7 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 			     GError **error)
 {
 	if (playing != NULL)
-		*playing = (rb_shell_player_get_playing_entry (player) != NULL);
+		*playing = rb_player_playing (player->priv->mmplayer);
 
 	return TRUE;
 }
