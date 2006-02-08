@@ -369,11 +369,15 @@ rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
 {
 	GList *i, *uri_list = NULL;
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
+	RhythmDBEntry *entry;
 
 	g_return_if_fail (list != NULL);
 
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+	for (i = list; i != NULL; i = g_list_next (i)) {
+		char *uri = gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0);
+		uri_list = g_list_prepend (uri_list, rb_canonicalise_uri (uri));
+		g_free (uri);
+	}
 	uri_list = g_list_reverse (uri_list);
 
 	gnome_vfs_uri_list_free (list);
@@ -384,7 +388,10 @@ rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 		if (uri != NULL) {
-			rhythmdb_add_uri (rb_playlist_source_get_db (psource), uri);
+			entry = rhythmdb_entry_lookup_by_location (rb_playlist_source_get_db (psource), uri);
+			if (entry == NULL)
+				rhythmdb_add_uri (rb_playlist_source_get_db (psource), uri);
+
 			rb_static_playlist_source_add_location (source, uri, -1);
 		}
 
