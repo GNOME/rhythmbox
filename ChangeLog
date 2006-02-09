@@ -1,5 +1,16 @@
 2006-02-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property):
+	Get the check for hidden entries the right way around.
+	Fixes #330527, #330514.
+
+	(rhythmdb_query_model_set_sort_order):
+	Ignore no-op sort order changes, so we don't get critical
+	messages when selecting 'all' in auto playlist browsers.
+
+2006-02-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	Patch by: Christophe Fergeau  <teuf@gnome.org>
 
 	* sources/rb-removable-media-source.c:

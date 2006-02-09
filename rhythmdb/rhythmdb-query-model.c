@@ -482,7 +482,7 @@ rhythmdb_query_model_set_property (GObject *object,
 					entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
 					if (model->priv->query == NULL ||
 					    rhythmdb_evaluate_query (model->priv->db, model->priv->query, entry)) {
-						if (model->priv->show_hidden || rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+						if (model->priv->show_hidden == rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
 							rhythmdb_query_model_do_insert (model, entry, -1);
 					}
 
@@ -1802,6 +1802,11 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 	GSequencePtr ptr;
 	int length, i;
 
+	if ((model->priv->sort_func == sort_func) &&
+	    (model->priv->sort_prop_id == sort_prop_id) &&
+	    (model->priv->sort_reverse == sort_reverse))
+		return;
+	
 	g_return_if_fail (((model->priv->max_count == 0) &&
 			  (model->priv->max_time == 0) &&
 			  (model->priv->max_size == 0)) ||
