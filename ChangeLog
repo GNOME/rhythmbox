@@ -1,3 +1,9 @@
+2006-02-09  James Livingston  <jrl@ids.org.au>
+
+	* (rhythmdb_query_model_set_property): don't try to insert HIDDEN
+	entries from the base model if we don't have show-hidden set. Fixes
+	bug 330514.
+
 2006-02-08  William Jon McCann  <mccann@jhu.edu>
 
 	* daapsharing/rb-daap-share.c (message_get_session_id):
