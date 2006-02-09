@@ -482,7 +482,7 @@ rhythmdb_query_model_set_property (GObject *object,
 					entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
 					if (model->priv->query == NULL ||
 					    rhythmdb_evaluate_query (model->priv->db, model->priv->query, entry)) {
-						if (model->priv->show_hidden == rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+						if (model->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
 							rhythmdb_query_model_do_insert (model, entry, -1);
 					}
 
