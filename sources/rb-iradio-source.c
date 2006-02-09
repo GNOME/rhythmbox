@@ -91,7 +91,6 @@ static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view
 /* source methods */
 static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
-static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_delete (RBSource *source);
@@ -125,8 +124,6 @@ struct RBIRadioSourcePrivate
 	RhythmDB *db;
 
 	GtkWidget *vbox;
-
-	GdkPixbuf *pixbuf;
 
 	RBPropertyView *genres;
 	RBEntryView *stations;
@@ -178,7 +175,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
-	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -209,6 +205,7 @@ static void
 rb_iradio_source_init (RBIRadioSource *source)
 {
 	gint size;
+	GdkPixbuf *pixbuf;
 
 	source->priv = RB_IRADIO_SOURCE_GET_PRIVATE (source);
 
@@ -221,10 +218,14 @@ rb_iradio_source_init (RBIRadioSource *source)
 	source->priv->title = g_strdup (_("Unknown"));
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	source->priv->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							 "stock_channel",
-							 size,
-							 0, NULL);
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   "stock_channel",
+					   size,
+					   0, NULL);
+	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
 }
 
 static void
@@ -452,14 +453,6 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	g_value_unset (&val);
 	
 	rhythmdb_commit (source->priv->db);
-}
-
-static GdkPixbuf *
-impl_get_pixbuf (RBSource *asource)
-{
-	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-
-	return source->priv->pixbuf;
 }
 
 static void

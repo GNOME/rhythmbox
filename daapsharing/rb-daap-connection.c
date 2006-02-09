@@ -39,7 +39,7 @@
 
 #include "rb-daap-connection.h"
 #include "rb-daap-structure.h"
-#include "rb-daap-dialog.h"
+#include "rb-daap-marshal.h"
 
 #include "rb-debug.h"
 
@@ -611,6 +611,15 @@ enum {
 	PROP_PORT,
 };
 
+enum { 
+	AUTHENTICATE,
+	CONNECTED,
+	DISCONNECTED,
+	LAST_SIGNAL
+};
+
+static guint signals [LAST_SIGNAL] = { 0, };
+
 static void
 rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 {
@@ -678,6 +687,34 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 							    "port",
 							    0, G_MAXINT, 0,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	signals [AUTHENTICATE] = g_signal_new ("authenticate",
+					       G_TYPE_FROM_CLASS (object_class),
+					       G_SIGNAL_RUN_LAST,
+					       G_STRUCT_OFFSET (RBDAAPConnectionClass, authenticate),
+					       NULL,
+					       NULL,
+					       rb_daap_marshal_STRING__STRING,
+					       G_TYPE_STRING,
+					       1, G_TYPE_STRING);
+	signals [CONNECTED] = g_signal_new ("connected",
+					    G_TYPE_FROM_CLASS (object_class),
+					    G_SIGNAL_RUN_LAST,
+					    G_STRUCT_OFFSET (RBDAAPConnectionClass, connected),
+					    NULL,
+					    NULL,
+					    g_cclosure_marshal_VOID__VOID,
+					    G_TYPE_NONE,
+					    0);
+	signals [DISCONNECTED] = g_signal_new ("disconnected",
+					       G_TYPE_FROM_CLASS (object_class),
+					       G_SIGNAL_RUN_LAST,
+					       G_STRUCT_OFFSET (RBDAAPConnectionClass, disconnected),
+					       NULL,
+					       NULL,
+					       g_cclosure_marshal_VOID__VOID,
+					       G_TYPE_NONE,
+					       0);
 }
 
 static void
@@ -692,7 +729,32 @@ rb_daap_connection_init (RBDAAPConnection *connection)
 static char *
 connection_get_password (RBDAAPConnection *connection)
 {
-	return rb_daap_password_dialog_new_run (connection->priv->name);
+	char *password;
+
+	password = NULL;
+	g_signal_emit (connection,
+		       signals [AUTHENTICATE],
+		       0,
+		       connection->priv->name,
+		       &password);
+
+	return password;
+}
+
+static void
+connection_connected (RBDAAPConnection *connection)
+{
+	g_signal_emit (connection,
+		       signals [CONNECTED],
+		       0);
+}
+
+static void
+connection_disconnected (RBDAAPConnection *connection)
+{
+	g_signal_emit (connection,
+		       signals [DISCONNECTED],
+		       0);
 }
 
 
@@ -761,7 +823,8 @@ build_message (RBDAAPConnection *connection,
 }
 
 #ifdef HAVE_LIBZ
-static void *g_zalloc_wrapper (voidpf opaque, uInt items, uInt size)
+static void
+*g_zalloc_wrapper (voidpf opaque, uInt items, uInt size)
 {
 	if ((items != 0) && (size >= G_MAXUINT/items)) {
 		return Z_NULL;
@@ -772,7 +835,8 @@ static void *g_zalloc_wrapper (voidpf opaque, uInt items, uInt size)
 	return g_malloc0 (items * size);
 }
 
-static void g_zfree_wrapper (voidpf opaque, voidpf address)
+static void
+g_zfree_wrapper (voidpf opaque, voidpf address)
 {
 	g_free (address);
 }
@@ -976,7 +1040,9 @@ entry_set_string_prop (RhythmDB *db,
 }
 
 static void
-handle_server_info (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_server_info (RBDAAPConnection *connection,
+		    guint status,
+		    GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -998,7 +1064,9 @@ handle_server_info (RBDAAPConnection *connection, guint status, GNode *structure
 }
 
 static void
-handle_login (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_login (RBDAAPConnection *connection,
+	      guint status,
+	      GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1021,12 +1089,16 @@ handle_login (RBDAAPConnection *connection, guint status, GNode *structure)
 		return;
 	}
 
+	connection_connected (connection);
+
 	priv->session_id = (guint32) g_value_get_int (&(item->content));
 	rb_daap_connection_state_done (connection, TRUE);
 }
 
 static void
-handle_update (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_update (RBDAAPConnection *connection,
+	       guint status,
+	       GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item;
@@ -1049,7 +1121,9 @@ handle_update (RBDAAPConnection *connection, guint status, GNode *structure)
 }
 
 static void 
-handle_database_info (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_database_info (RBDAAPConnection *connection,
+		      guint status,
+		      GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1094,7 +1168,9 @@ handle_database_info (RBDAAPConnection *connection, guint status, GNode *structu
 }
 
 static void
-handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_song_listing (RBDAAPConnection *connection,
+		     guint status,
+		     GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1309,7 +1385,9 @@ handle_song_listing (RBDAAPConnection *connection, guint status, GNode *structur
  */
 
 static void
-handle_playlists (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_playlists (RBDAAPConnection *connection,
+		  guint status,
+		  GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	GNode *listing_node;
@@ -1368,7 +1446,9 @@ handle_playlists (RBDAAPConnection *connection, guint status, GNode *structure)
 }
 
 static void
-handle_playlist_entries (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_playlist_entries (RBDAAPConnection *connection,
+			 guint status,
+			 GNode *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPPlaylist *playlist;
@@ -1421,8 +1501,12 @@ handle_playlist_entries (RBDAAPConnection *connection, guint status, GNode *stru
 }
 
 static void
-handle_logout (RBDAAPConnection *connection, guint status, GNode *structure)
+handle_logout (RBDAAPConnection *connection,
+	       guint status,
+	       GNode *structure)
 {
+	connection_disconnected (connection);
+
 	/* is there any point handling errors here? */
 	rb_daap_connection_state_done (connection, TRUE);
 }
@@ -1511,7 +1595,8 @@ rb_daap_connection_logout (RBDAAPConnection *connection,
 }
 
 static void
-rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result)
+rb_daap_connection_state_done (RBDAAPConnection *connection,
+			       gboolean result)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 
@@ -1575,7 +1660,9 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		if (priv->password_protected) {
 			/* FIXME this bit is still synchronous */
 			rb_debug ("Need a password for %s", priv->name);
+			g_free (priv->password);
 			priv->password = connection_get_password (connection);
+
 			if (priv->password == NULL || priv->password[0] == '\0') {
 				rb_debug ("Password entry canceled");
 				priv->result = FALSE;
@@ -1600,8 +1687,10 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		if (!http_get (connection, "/login", FALSE, 0.0, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_login)) {
 			rb_debug ("Could not login to DAAP server");
+			/* FIXME: set state back to GET_PASSWORD to try again */
 			rb_daap_connection_state_done (connection, FALSE);
 		}
+
 		break;
 
 	case DAAP_GET_REVISION_NUMBER:
@@ -1689,6 +1778,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 			rb_debug ("Could not log out of DAAP server");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
+
 		g_free (path);
 		break;
 

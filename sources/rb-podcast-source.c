@@ -213,7 +213,6 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 
 /* source methods */
 static const char *impl_get_browser_key 		(RBSource *source);
-static GdkPixbuf *impl_get_pixbuf 			(RBSource *source);
 static RBEntryView *impl_get_entry_view 		(RBSource *source);
 static void impl_search 				(RBSource *source,
 							 const char *text);
@@ -262,8 +261,6 @@ struct RBPodcastSourcePrivate
 	GtkWidget *config_widget;
 	GtkWidget *paned;
 	
-	GdkPixbuf *pixbuf;
-
 	RBPropertyView *feeds;
 	RBEntryView *posts;
 	GtkActionGroup *action_group;
@@ -336,7 +333,6 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
-	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_config_widget = impl_get_config_widget;
@@ -379,7 +375,10 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
-	GtkWidget *dummy = gtk_tree_view_new ();
+	GtkWidget *dummy;
+	GdkPixbuf *pixbuf;
+
+	dummy = gtk_tree_view_new ();
 
 	source->priv = RB_PODCAST_SOURCE_GET_PRIVATE (source);
 
@@ -388,10 +387,15 @@ rb_podcast_source_init (RBPodcastSource *source)
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 	
-	source->priv->pixbuf = gtk_widget_render_icon (dummy,
-						       RB_STOCK_PODCAST,
-						       GTK_ICON_SIZE_LARGE_TOOLBAR,
-						       NULL);
+	pixbuf = gtk_widget_render_icon (dummy,
+					 RB_STOCK_PODCAST,
+					 GTK_ICON_SIZE_LARGE_TOOLBAR,
+					 NULL);
+
+	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
 
 	gtk_widget_destroy (dummy);
 }
@@ -742,14 +746,6 @@ rb_podcast_source_new (RBShell *shell)
 						 RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 	
 	return source;
-}
-
-static GdkPixbuf *
-impl_get_pixbuf (RBSource *asource)
-{
-	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
-
-	return source->priv->pixbuf;
 }
 
 static void

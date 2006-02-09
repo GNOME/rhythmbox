@@ -32,7 +32,8 @@
 #include "rb-daap-dialog.h"
 
 char * 
-rb_daap_password_dialog_new_run (const char *name)
+rb_daap_password_dialog_new_run (GtkWindow  *parent,
+				 const char *name)
 {
 	GtkWidget *dialog;
 	GtkWidget *hbox;
@@ -45,13 +46,14 @@ rb_daap_password_dialog_new_run (const char *name)
 	char *ret;
 
 	dialog = gtk_dialog_new_with_buttons (_("Password Required"),
-					      NULL,
-					      0,
+					      parent,
+					      GTK_DIALOG_DESTROY_WITH_PARENT,
 					      GTK_STOCK_CANCEL,
 					      GTK_RESPONSE_CANCEL,
 					      GTK_STOCK_OK,
 					      GTK_RESPONSE_OK,
 					      NULL);
+
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
@@ -103,7 +105,8 @@ rb_daap_password_dialog_new_run (const char *name)
 }
 
 char *
-rb_daap_collision_dialog_new_run (const char *old_name)
+rb_daap_collision_dialog_new_run (GtkWindow  *parent,
+				  const char *old_name)
 {
 	GtkWidget *dialog;
 	GtkWidget *hbox;
@@ -115,8 +118,8 @@ rb_daap_collision_dialog_new_run (const char *old_name)
 	gint resp;
 
 	dialog = gtk_dialog_new_with_buttons (_("Invalid share name"),
-					      NULL,
-					      0,
+					      parent,
+					      GTK_DIALOG_DESTROY_WITH_PARENT,
 					      GTK_STOCK_OK,
 					      GTK_RESPONSE_OK,
 					      NULL);

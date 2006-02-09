@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of removable media source object (based of the ipod source)
  *
  *  Copyright (C) 2004 Christophe Fergeau  <teuf@gnome.org>
@@ -22,14 +23,16 @@
 
 #include <config.h>
 
+#include <string.h>
+
+#include <glib/gi18n.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkiconfactory.h>
-#include <string.h>
-#include "rhythmdb.h"
-#include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
+
+#include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
 #include "rb-removable-media-source.h"
 #include "rb-stock-icons.h"
@@ -51,7 +54,6 @@ static void rb_removable_media_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 
-static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
 
 
@@ -83,7 +85,6 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	object_class->set_property = rb_removable_media_source_set_property;
 	object_class->get_property = rb_removable_media_source_get_property;
 
-	source_class->impl_get_pixbuf = impl_get_pixbuf;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
@@ -113,7 +114,22 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 static void
 rb_removable_media_source_init (RBRemovableMediaSource *self)
 {
+	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (self);
+	gint size;
+	char *icon_name;
+	GtkIconTheme *theme;
+	GdkPixbuf *pixbuf;
 
+	icon_name = gnome_vfs_volume_get_icon (priv->volume);
+	theme = gtk_icon_theme_get_default ();
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	pixbuf = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
+	g_free (icon_name);
+
+	rb_source_set_pixbuf (RB_SOURCE (self), pixbuf);
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
 }
 
 static GObject *
@@ -160,8 +176,7 @@ rb_removable_media_source_set_property (GObject *object,
 {
 	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_VOLUME:
 		if (priv->volume) {
 			gnome_vfs_volume_unref (priv->volume);
@@ -183,8 +198,7 @@ rb_removable_media_source_get_property (GObject *object,
 {
 	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_VOLUME:
 		gnome_vfs_volume_ref (priv->volume);
 		g_value_take_object (value, priv->volume);
@@ -193,21 +207,6 @@ rb_removable_media_source_get_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static GdkPixbuf *
-impl_get_pixbuf (RBSource *source)
-{
-	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (source);
-	gint size;
-
-	char *icon_name = gnome_vfs_volume_get_icon (priv->volume);
-	GtkIconTheme *theme = gtk_icon_theme_get_default ();
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	GdkPixbuf *icon = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
-	g_free (icon_name);
-
-	return icon;
 }
 
 static void

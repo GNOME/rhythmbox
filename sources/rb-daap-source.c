@@ -39,6 +39,7 @@
 
 #include "rb-daap-connection.h"
 #include "rb-daap-mdns-browser.h"
+#include "rb-daap-dialog.h"
 
 #include "rb-static-playlist-source.h"
 
@@ -74,6 +75,8 @@ static GHashTable *source_lookup = NULL;
 
 static guint enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 
+static GdkPixbuf *daap_share_pixbuf        = NULL;
+static GdkPixbuf *daap_share_pixbuf_locked = NULL;
 
 struct RBDAAPSourcePrivate
 {
@@ -253,7 +256,8 @@ rb_daap_source_get_property (GObject *object,
 }
 
 static GdkPixbuf *
-rb_daap_get_icon (void)
+rb_daap_get_icon (gboolean password_protected,
+		  gboolean connected)
 {
 	GdkPixbuf *icon;
 	GtkIconTheme *theme;
@@ -261,7 +265,14 @@ rb_daap_get_icon (void)
 
 	theme = gtk_icon_theme_get_default ();
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	icon = gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
+
+	if (! password_protected) {
+		icon = g_object_ref (daap_share_pixbuf);
+	} else if (connected) {
+		icon = g_object_ref (daap_share_pixbuf);
+	} else {
+		icon = g_object_ref (daap_share_pixbuf_locked);
+	}
 
 	return icon;
 }
@@ -276,8 +287,11 @@ rb_daap_source_new (RBShell *shell,
 {
 	RBSource *source;
 	RhythmDBEntryType type;
+	GdkPixbuf *icon;
 
 	type = rhythmdb_entry_daap_type_new ();
+
+	icon = rb_daap_get_icon (password_protected, FALSE);
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
 					  "service-name", service_name,
@@ -285,12 +299,16 @@ rb_daap_source_new (RBShell *shell,
 					  "host", host,
 					  "port", port,
 					  "entry-type", type,
-					  "icon", rb_daap_get_icon (),
+					  "icon", icon,
 					  "shell", shell,
 					  "visibility", TRUE,
 					  "sorting-key", CONF_STATE_SORTING,
 					  "password-protected", password_protected,
 					  NULL));
+
+	if (icon != NULL) {
+		g_object_unref (icon);
+	}
 
 	rb_shell_register_entry_type_for_source (shell, source,
 						 type);
@@ -446,6 +464,92 @@ enable_browsing_changed_cb (GConfClient *client,
 	}
 }
 
+static GdkPixbuf *
+composite_icons (const GdkPixbuf *src1,
+		 const GdkPixbuf *src2)
+{
+	GdkPixbuf *dest;
+	GdkPixbuf *scaled;
+	gint       w1, w2, h1, h2;
+	gint       dest_x, dest_y;
+	gboolean   do_scale;
+
+	if (! src1) {
+		return NULL;
+	}
+
+	dest = gdk_pixbuf_copy (src1);
+
+	if (! src2) {
+		return dest;
+	}
+
+	w1 = gdk_pixbuf_get_width (src1);
+	h1 = gdk_pixbuf_get_height (src1);
+	w2 = gdk_pixbuf_get_width (src2);
+	h2 = gdk_pixbuf_get_height (src2);
+
+	do_scale = ((float)w1 * 0.8) < w2;
+
+	/* scale the emblem down if it will obscure the entire bottom image */
+	if (do_scale) {
+		scaled = gdk_pixbuf_scale_simple (src2, w1 / 2, h1 / 2, GDK_INTERP_BILINEAR);
+	} else {
+		scaled = (GdkPixbuf *)src2;
+	}
+
+	w2 = gdk_pixbuf_get_width (scaled);
+	h2 = gdk_pixbuf_get_height (scaled);
+
+	dest_x = w1 - w2;
+	dest_y = h1 - h2;
+
+	gdk_pixbuf_composite (scaled, dest,
+			      dest_x, dest_y,
+			      w2, h2,
+			      dest_x, dest_y,
+			      1.0, 1.0,
+			      GDK_INTERP_BILINEAR, 0xFF);
+
+	if (do_scale) {
+		g_object_unref (scaled);
+	}
+
+	return dest;
+}
+
+static void
+create_pixbufs (void)
+{
+	GdkPixbuf    *emblem;
+	GtkIconTheme *theme;
+	gint          size;
+
+	theme = gtk_icon_theme_get_default ();
+
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	daap_share_pixbuf = gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
+
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &size, NULL);
+	emblem = gtk_icon_theme_load_icon (theme, "stock_lock", size, 0, NULL);
+
+	daap_share_pixbuf_locked = composite_icons (daap_share_pixbuf, emblem);
+}
+
+static void
+destroy_pixbufs (void)
+{
+	if (daap_share_pixbuf != NULL) {
+		g_object_unref (daap_share_pixbuf);
+	}
+	daap_share_pixbuf = NULL;
+
+	if (daap_share_pixbuf_locked != NULL) {
+		g_object_unref (daap_share_pixbuf_locked);
+	}
+	daap_share_pixbuf_locked = NULL;
+}
+
 RBSource *
 rb_daap_sources_init (RBShell *shell)
 {
@@ -471,6 +575,8 @@ rb_daap_sources_init (RBShell *shell)
 					    (GConfClientNotifyFunc) enable_browsing_changed_cb,
 					    shell);
 
+	create_pixbufs ();
+
 	return NULL;
 }
 
@@ -486,9 +592,50 @@ rb_daap_sources_shutdown (RBShell *shell)
 		enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 	}
 
+	destroy_pixbufs ();
+
 	g_object_unref (shell);
 }
 
+static char *
+connection_auth_cb (RBDAAPConnection *connection,
+		    const char       *name,
+		    RBSource         *source)
+{
+	char      *password;
+	GtkWindow *parent;
+
+	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
+	password = rb_daap_password_dialog_new_run (parent, name);
+
+	return password;
+}
+
+static void
+connection_connected_cb (RBDAAPConnection *connection,
+			 RBDAAPSource     *source)
+{
+	GdkPixbuf *icon;
+
+	icon = rb_daap_get_icon (source->priv->password_protected, TRUE);
+	g_object_set (source, "icon", icon, NULL);
+	if (icon != NULL) {
+		g_object_unref (icon);
+	}
+}
+
+static void
+connection_disconnected_cb (RBDAAPConnection *connection,
+			    RBDAAPSource     *source)
+{
+	GdkPixbuf *icon;
+
+	icon = rb_daap_get_icon (source->priv->password_protected, FALSE);
+	g_object_set (source, "icon", icon, NULL);
+	if (icon != NULL) {
+		g_object_unref (icon);
+	}
+}
 
 static void
 rb_daap_source_activate (RBSource *source)
@@ -520,11 +667,25 @@ rb_daap_source_activate (RBSource *source)
 					source);
 	g_object_unref (G_OBJECT (db));
 	g_object_unref (G_OBJECT (shell));
+
 	if (daap_source->priv->connection == NULL) {
 		/* XXX can this still happen? */
 		daap_source->priv->playlist_sources = NULL;
 		return;
 	}
+
+        g_signal_connect (daap_source->priv->connection,
+			  "authenticate",
+                          G_CALLBACK (connection_auth_cb),
+			  source);
+        g_signal_connect (daap_source->priv->connection,
+			  "connected",
+                          G_CALLBACK (connection_connected_cb),
+			  source);
+        g_signal_connect (daap_source->priv->connection,
+			  "disconnected",
+                          G_CALLBACK (connection_disconnected_cb),
+			  source);
 }
 
 static void

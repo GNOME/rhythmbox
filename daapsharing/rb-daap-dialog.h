@@ -26,11 +26,11 @@
 
 G_BEGIN_DECLS
 
-gchar * 
-rb_daap_password_dialog_new_run (const gchar *name);
+char * rb_daap_password_dialog_new_run  (GtkWindow  *parent,
+                                         const char *name);
 
-gchar * 
-rb_daap_collision_dialog_new_run (const gchar *old_name);
+char * rb_daap_collision_dialog_new_run (GtkWindow  *parent,
+                                         const char *old_name);
 
 G_END_DECLS
 

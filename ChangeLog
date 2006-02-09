@@ -1,3 +1,58 @@
+2006-02-09  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-sourcelist.c (rb_sourcelist_append, icon_notify_cb):
+	Make the source pixbuf a dynamic property.
+
+	* sources/rb-source.[ch] (rb_source_class_init, rb_source_finalize) 
+	(rb_source_set_pixbuf, rb_source_set_property) 
+	(rb_source_get_property): Add icon property.
+
+	* sources/rb-auto-playlist-source.c (rb_auto_playlist_source_class_init) 
+	(rb_auto_playlist_source_init):
+	* sources/rb-static-playlist-source.c (rb_static_playlist_source_class_init) 
+	(rb_static_playlist_source_init):
+	* sources/rb-removable-media-source.c (rb_removable_media_source_class_init) 
+	(rb_removable_media_source_init): 
+	* sources/rb-podcast-source.c (rb_podcast_source_class_init) 
+	(rb_podcast_source_init): 
+	* sources/rb-library-source.c (rb_library_source_class_init) 
+	(rb_library_source_set_property, rb_library_source_get_property): 
+	* sources/rb-iradio-source.c (rb_iradio_source_class_init) 
+	(rb_iradio_source_init): Remove impl_get_pixbuf and
+	set icon property on source base class.
+
+	* sources/rb-daap-source.c (rb_daap_get_icon): Get
+	a different icon for when the share is password protected
+	and locked.
+	(rb_daap_source_new): Set icon property.
+	(composite_icons): Composite an emblem on a pixbuf.
+	(create_pixbufs): Load global pixbufs.
+	(destroy_pixbufs): unref global pixbufs.
+	(rb_daap_sources_init, rb_daap_sources_shutdown): Pixbuf setup.
+	(connection_auth_cb, connection_connected_cb) 
+	(connection_disconnected_cb): Update icon when connection
+	status changes.
+	(rb_daap_source_activate): Connect signals.
+
+	* daapsharing/rb-daap-share.c (name_collision_cb): Run
+	dialog with parent.
+
+	* daapsharing/rb-daap-marshal.list: Add new signal.
+
+	* daapsharing/rb-daap-dialog.[ch] (rb_daap_password_dialog_new_run) 
+	(rb_daap_collision_dialog_new_run): Set parent of dialog.
+
+	* daapsharing/rb-daap-connection.[ch] (rb_daap_connection_class_init):
+	Add authenticate, connected, and disconnected signals.
+	(connection_get_password): emit authenticate signal instead
+	of running dialog directly.
+	(connection_connected, connection_disconnected): Emit signals.
+	(handle_login): Emit connected signal.
+	(handle_logout): Emit disconnected signal.
+	(rb_daap_connection_do_something): Fix leak.
+
+	Fixes #330291
+
 2006-02-09  James Livingston  <jrl@ids.org.au>
 
 	* (rhythmdb_query_model_set_property): don't try to insert HIDDEN

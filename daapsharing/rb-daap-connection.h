@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Header for DAAP (iTunes Music Sharing) hashing, connection
  *
  *  Copyright (C) 2004,2005 Charles Schmidt <cschmidt2@emich.edu>
@@ -52,6 +53,12 @@ typedef struct {
 
 typedef struct {
 	GObjectClass parent;
+
+	char * (* authenticate) (RBDAAPConnection *connection,
+				 const char       *name);
+	void   (* connected   ) (RBDAAPConnection *connection);
+	void   (* disconnected) (RBDAAPConnection *connection);
+
 } RBDAAPConnectionClass;
 
 

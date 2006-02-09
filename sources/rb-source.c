@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of the abstract base class of all sources
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -50,7 +51,6 @@ static const char * default_get_browser_key (RBSource *source);
 static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
-static GdkPixbuf *default_get_pixbuf (RBSource *source);
 static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
 static void default_song_properties (RBSource *source);
@@ -83,12 +83,14 @@ struct _RBSourcePrivate
 	gboolean visible;
 	RhythmDBQueryModel *query_model;
 	guint idle_status_changed_id;
+	GdkPixbuf *pixbuf;
 };
 
 enum
 {
 	PROP_0,
 	PROP_NAME,
+	PROP_ICON,
 	PROP_SHELL,
 	PROP_UI_MANAGER,
 	PROP_VISIBLE,
@@ -126,7 +128,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	klass->impl_get_pixbuf = default_get_pixbuf;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_song_properties = default_song_properties;
@@ -149,6 +150,13 @@ rb_source_class_init (RBSourceClass *klass)
 							      "UI name",
 							      "Interface name",
 							      NULL,
+							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_ICON,
+					 g_param_spec_object ("icon",
+							      "Icon",
+							      "Source Icon",
+							      GDK_TYPE_PIXBUF,
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
@@ -253,27 +261,52 @@ rb_source_finalize (GObject *object)
 		g_source_remove (priv->idle_status_changed_id);
 	
 	g_object_unref (G_OBJECT (priv->query_model));
-	
+
+	if (priv->pixbuf != NULL) {
+		g_object_unref (priv->pixbuf);
+	}
+
 	g_free (priv->name);
 
 	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
 }
 
+void
+rb_source_set_pixbuf (RBSource  *source,
+		      GdkPixbuf *pixbuf)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	g_return_if_fail (RB_IS_SOURCE (source));
+
+	if (priv->pixbuf != NULL) {
+		g_object_unref (priv->pixbuf);
+	}
+
+	priv->pixbuf = pixbuf;
+
+	if (priv->pixbuf != NULL) {
+		g_object_ref (priv->pixbuf);
+	}
+}
+
 static void
 rb_source_set_property (GObject *object,
-		      guint prop_id,
-		      const GValue *value,
-		      GParamSpec *pspec)
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *pspec)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
 	RhythmDBQueryModel *model;
 	RBSource *source = RB_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_NAME:
 		g_free (priv->name);
 		priv->name = g_strdup (g_value_get_string (value));
+		break;
+	case PROP_ICON:
+		rb_source_set_pixbuf (source, g_value_get_object (value));
 		break;
 	case PROP_SHELL:
 		priv->shell = g_value_get_object (value);
@@ -321,16 +354,18 @@ rb_source_set_property (GObject *object,
 
 static void 
 rb_source_get_property (GObject *object,
-		      guint prop_id,
-		      GValue *value,
-		      GParamSpec *pspec)
+			guint prop_id,
+			GValue *value,
+			GParamSpec *pspec)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_NAME:
 		g_value_set_string (value, priv->name);
+		break;
+	case PROP_ICON:
+		g_value_set_object (value, priv->pixbuf);
 		break;
 	case PROP_SHELL:
 		g_value_set_object (value, priv->shell);
@@ -475,20 +510,6 @@ rb_source_get_property_views (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_get_property_views (source);
-}
-
-static GdkPixbuf *
-default_get_pixbuf (RBSource *source)
-{
-	return NULL;
-}
-
-GdkPixbuf *
-rb_source_get_pixbuf (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_pixbuf (source);
 }
 
 static gboolean

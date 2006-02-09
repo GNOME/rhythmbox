@@ -96,7 +96,6 @@ static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
 static const char *impl_get_browser_key (RBSource *source);
-static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_property_views (RBSource *source);
 static void impl_delete (RBSource *source);
@@ -188,7 +187,6 @@ static const GtkTargetEntry songs_view_drag_types[] = {{  "text/uri-list", 0, 0 
 enum
 {
 	PROP_0,
-	PROP_ICON,
 	PROP_ENTRY_TYPE,
 	PROP_SORTING_KEY
 };
@@ -211,7 +209,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_browser_key = impl_get_browser_key;
-	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_entry_view = impl_get_entry_view;
@@ -235,13 +232,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	klass->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_true_function;
 	klass->impl_has_drop_support = (RBLibrarySourceFeatureFunc) rb_true_function;
 
-	g_object_class_install_property (object_class,
-					 PROP_ICON,
-					 g_param_spec_object ("icon",
-							      "Icon",
-							      "Source Icon",
-							      GDK_TYPE_PIXBUF,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_uint ("entry-type",
@@ -525,23 +515,13 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 static void
 rb_library_source_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *pspec)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (object);
 
-	switch (prop_id)
-	{
-	case PROP_ICON:
-		if (source->priv->pixbuf) {
-			g_object_unref (G_OBJECT (source->priv->pixbuf));
-		}
-		source->priv->pixbuf = g_value_get_object (value);
-
-		if (source->priv->pixbuf)
-			g_object_ref (source->priv->pixbuf);
-		break;
+	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
 		source->priv->entry_type = g_value_get_uint (value);
 		break;
@@ -557,17 +537,13 @@ rb_library_source_set_property (GObject *object,
 
 static void
 rb_library_source_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *pspec)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (object);
 
-	switch (prop_id)
-	{
-	case PROP_ICON:
-		g_value_set_object (value, source->priv->pixbuf);
-		break;
+	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
 		g_value_set_uint (value, source->priv->entry_type);
 		break;
@@ -669,14 +645,6 @@ static const char *
 impl_get_paned_key (RBLibrarySource *status)
 {
 	return CONF_STATE_PANED_POSITION;
-}
-
-static GdkPixbuf *
-impl_get_pixbuf (RBSource *asource)
-{
-	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-
-	return source->priv->pixbuf;
 }
 
 static void

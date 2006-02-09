@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *
@@ -40,7 +40,6 @@ static GObject *rb_auto_playlist_source_constructor (GType type, guint n_constru
 static void rb_auto_playlist_source_finalize (GObject *object);
 
 /* source methods */
-static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static void impl_search (RBSource *asource, const char *search_text);
@@ -98,7 +97,6 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	object_class->constructor = rb_auto_playlist_source_constructor;
 	object_class->finalize = rb_auto_playlist_source_finalize;
 
-	source_class->impl_get_pixbuf = impl_get_pixbuf;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
@@ -124,7 +122,9 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 static void
 rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 {
+	RBAutoPlaylistSourceClass *klass = RB_AUTO_PLAYLIST_SOURCE_GET_CLASS (source);
 
+	rb_source_set_pixbuf (RB_SOURCE (source), klass->pixbuf);
 }
 
 static void
@@ -249,13 +249,6 @@ rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 	g_free (sort_key);
 
 	return RB_SOURCE (source);
-}
-
-static GdkPixbuf *
-impl_get_pixbuf (RBSource *asource)
-{
-	RBAutoPlaylistSourceClass *klass = RB_AUTO_PLAYLIST_SOURCE_GET_CLASS (asource);
-	return klass->pixbuf;
 }
 
 static gboolean

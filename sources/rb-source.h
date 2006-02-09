@@ -56,8 +56,6 @@ typedef const char * (*RBSourceStringFunc) (RBSource *source);
 struct _RBSource
 {
 	GtkHBox parent;
-
-	RBSourcePrivate *priv;
 };
 
 struct _RBSourceClass
@@ -80,7 +78,6 @@ struct _RBSourceClass
 	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
 	GList *		(*impl_get_property_views)	(RBSource *source);
 
-	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
 	gboolean	(*impl_can_rename)	(RBSource *source);
 
 	gboolean	(*impl_can_search)	(RBSource *source);
@@ -130,6 +127,7 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 						 RhythmDBEntry *entry);
 
 /* general interface */
+void	        rb_source_set_pixbuf		(RBSource *source, GdkPixbuf *pixbuf);
 char *	        rb_source_get_status		(RBSource *source);
 
 gboolean	rb_source_can_browse		(RBSource *source);
@@ -140,7 +138,6 @@ RBEntryView *	rb_source_get_entry_view	(RBSource *source);
 
 GList *		rb_source_get_property_views	(RBSource *source);
 
-GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
 gboolean	rb_source_can_rename		(RBSource *source);
 
 gboolean	rb_source_can_search		(RBSource *source);

@@ -222,7 +222,7 @@ name_collision_cb (RBDaapMdnsPublisher *publisher,
 	if (strcmp (name, share->priv->name) == 0) {
 		rb_debug ("Duplicate share name on mDNS");
 		
-		new_name = rb_daap_collision_dialog_new_run (share->priv->name);
+		new_name = rb_daap_collision_dialog_new_run (NULL, share->priv->name);
 
 		rb_daap_share_set_name (share, new_name);
 		g_free (new_name);

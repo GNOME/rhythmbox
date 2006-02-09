@@ -106,6 +106,7 @@ static gboolean popup_menu_cb (GtkTreeView *treeview, RBSourceList *sourcelist);
 static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
 static void visibility_notify_cb (GObject *obj, GParamSpec *pspec, 
 				  gpointer data);
+static void icon_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
 static void source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 				   const char *text, RBSourceList *sourcelist);
 static void rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -343,11 +344,13 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 	GtkTreeIter iter;
 	PangoAttrList *attrs = pango_attr_list_new ();
 	const char *name;
+	GdkPixbuf *pixbuf;
 
 	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
 	g_return_if_fail (RB_IS_SOURCE (source));
 
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	g_object_get (G_OBJECT (source), "icon", &pixbuf, NULL);
 
 	if (parent) {
 		GtkTreeIter parent_iter;
@@ -362,14 +365,19 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 	}
 
 	gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
-			    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, rb_source_get_pixbuf (source),
+			    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, pixbuf,
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, name,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, source,
 			    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, attrs,
 			    -1);
 
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
+
 	g_signal_connect_object (G_OBJECT (source), "notify::name", G_CALLBACK (name_notify_cb), sourcelist, 0);
 	g_signal_connect_object (G_OBJECT (source), "notify::visibility", G_CALLBACK (visibility_notify_cb), sourcelist, 0);
+	g_signal_connect_object (G_OBJECT (source), "notify::icon", G_CALLBACK (icon_notify_cb), sourcelist, 0);
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
@@ -669,6 +677,27 @@ visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 		g_object_get (obj, "visibility", &visible, NULL);
 		sourcelist->priv->child_source_count += visible ? 1 : -1;
 		rb_sourcelist_update_expander_visibility (sourcelist);
+	}
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
+}
+
+static void
+icon_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
+{
+	RBSourceList *sourcelist = RB_SOURCELIST (data);
+	RBSource *source = RB_SOURCE (obj);
+	GtkTreeIter iter;
+	GdkPixbuf *pixbuf;
+	
+	if (rb_sourcelist_source_to_iter (sourcelist, source, &iter)) {
+		g_object_get (obj, "icon", &pixbuf, NULL);
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model),
+				    &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, pixbuf, -1);
+		if (pixbuf != NULL) {
+			g_object_unref (pixbuf);
+		}
 	}
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));

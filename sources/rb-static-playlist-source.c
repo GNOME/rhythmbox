@@ -1,5 +1,5 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *
@@ -38,7 +38,6 @@ static GObject *rb_static_playlist_source_constructor (GType type, guint n_const
 static void rb_static_playlist_source_finalize (GObject *object);
 
 /* source methods */
-static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
@@ -96,7 +95,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_cut = impl_cut;
 	source_class->impl_paste = impl_paste;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_get_pixbuf = impl_get_pixbuf;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
@@ -116,7 +114,9 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 static void
 rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 {
-	
+	RBStaticPlaylistSourceClass *klass = RB_STATIC_PLAYLIST_SOURCE_GET_CLASS (source);
+
+	rb_source_set_pixbuf (RB_SOURCE (source), klass->pixbuf);
 }
 
 static void
@@ -203,14 +203,6 @@ rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 
 	return RB_SOURCE (source);
 }
-
-static GdkPixbuf *
-impl_get_pixbuf (RBSource *asource)
-{
-	RBStaticPlaylistSourceClass *klass = RB_STATIC_PLAYLIST_SOURCE_GET_CLASS (asource);
-	return klass->pixbuf;
-}
-
 
 static GList *
 impl_cut (RBSource *asource)
