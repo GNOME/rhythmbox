@@ -114,22 +114,6 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 static void
 rb_removable_media_source_init (RBRemovableMediaSource *self)
 {
-	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (self);
-	gint size;
-	char *icon_name;
-	GtkIconTheme *theme;
-	GdkPixbuf *pixbuf;
-
-	icon_name = gnome_vfs_volume_get_icon (priv->volume);
-	theme = gtk_icon_theme_get_default ();
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
-	g_free (icon_name);
-
-	rb_source_set_pixbuf (RB_SOURCE (self), pixbuf);
-	if (pixbuf != NULL) {
-		g_object_unref (pixbuf);
-	}
 }
 
 static GObject *
@@ -139,15 +123,29 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 	GObject *source; 
 	GnomeVFSVolume *volume;
 	char *display_name;
+	gint size;
+	char *icon_name;
+	GtkIconTheme *theme;
+	GdkPixbuf *pixbuf;
 
 	source = G_OBJECT_CLASS(rb_removable_media_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties);
 
-	g_object_get (source, "volume", &volume, NULL);
-	
+	g_object_get (source, "volume", &volume, NULL);	
 	display_name = gnome_vfs_volume_get_display_name (volume);
 	g_object_set (source, "name", display_name, NULL);
 	g_free (display_name);
+
+	icon_name = gnome_vfs_volume_get_icon (volume);
+	theme = gtk_icon_theme_get_default ();
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	pixbuf = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
+	g_free (icon_name);
+
+	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
 
 	g_object_unref (volume);
 

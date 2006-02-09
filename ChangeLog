@@ -1,3 +1,13 @@
+2006-02-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	Patch by: Christophe Fergeau  <teuf@gnome.org>
+
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_init),
+	(rb_removable_media_source_constructor):
+	Move icon setup code to the constructor, as the volume property
+	haven't been set yet when _init is called.
+
 2006-02-09  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-sourcelist.c (rb_sourcelist_append, icon_notify_cb):
