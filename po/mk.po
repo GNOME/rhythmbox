@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-27 12:42+0100\n"
-"PO-Revision-Date: 2006-01-28 12:01+0100\n"
+"POT-Creation-Date: 2006-02-06 12:54+0100\n"
+"PO-Revision-Date: 2006-02-09 11:21+0100\n"
 "Last-Translator: Arangel Angov <ufo@linux.net.mk>\n"
 "Language-Team: Macedonian <ossm-members@hedona.on.net.mk>\n"
 "MIME-Version: 1.0\n"
@@ -21,73 +21,116 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural= n==1 || n%10==1 ? 0 : 1\n"
 "X-Generator: KBabel 1.10.2\n"
 
-#: ../daapsharing/rb-daap-connection.c:942
+#: ../daapsharing/rb-daap-connection.c:961
 #: ../iradio/rb-station-properties-dialog.c:404 ../lib/rb-util.c:561
-#: ../podcast/rb-feed-podcast-properties-dialog.c:288
+#: ../podcast/rb-feed-podcast-properties-dialog.c:289
 #: ../podcast/rb-podcast-manager.c:1458
 #: ../podcast/rb-podcast-properties-dialog.c:400
 #: ../podcast/rb-podcast-properties-dialog.c:447
-#: ../rhythmdb/rhythmdb-tree.c:939 ../rhythmdb/rhythmdb-tree.c:943
-#: ../rhythmdb/rhythmdb-tree.c:947 ../rhythmdb/rhythmdb-tree.c:951
-#: ../rhythmdb/rhythmdb.c:1203 ../shell/rb-audioscrobbler.c:470
+#: ../rhythmdb/rhythmdb-tree.c:956 ../rhythmdb/rhythmdb-tree.c:960
+#: ../rhythmdb/rhythmdb-tree.c:964 ../rhythmdb/rhythmdb-tree.c:968
+#: ../rhythmdb/rhythmdb.c:1198 ../shell/rb-audioscrobbler.c:470
 #: ../shell/rb-audioscrobbler.c:990 ../shell/rb-audioscrobbler.c:991
-#: ../shell/rb-shell-player.c:2337 ../sources/rb-audiocd-source.c:180
+#: ../shell/rb-shell-player.c:2369 ../sources/rb-audiocd-source.c:182
 #: ../sources/rb-ipod-source.c:157 ../sources/rb-iradio-source.c:219
 #: ../sources/rb-iradio-source.c:220 ../sources/rb-iradio-source.c:221
 #: ../sources/rb-iradio-source.c:444 ../sources/rb-podcast-source.c:1555
-#: ../widgets/rb-entry-view.c:942 ../widgets/rb-entry-view.c:961
-#: ../widgets/rb-entry-view.c:1247 ../widgets/rb-entry-view.c:1259
-#: ../widgets/rb-song-info.c:607 ../widgets/rb-song-info.c:760
-#: ../widgets/rb-song-info.c:949
+#: ../widgets/rb-entry-view.c:699 ../widgets/rb-entry-view.c:718
+#: ../widgets/rb-entry-view.c:967 ../widgets/rb-entry-view.c:979
+#: ../widgets/rb-song-info.c:609 ../widgets/rb-song-info.c:762
+#: ../widgets/rb-song-info.c:951
 msgid "Unknown"
 msgstr "Непознато"
 
-#: ../daapsharing/rb-daap-dialog.c:95
+#: ../daapsharing/rb-daap-dialog.c:100
 msgid "Password Required"
 msgstr "Потребна е лозинка"
 
-#: ../daapsharing/rb-daap-dialog.c:115
+#: ../daapsharing/rb-daap-dialog.c:121
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Музичкото делење '%s' бара лозинка"
 
-#: ../daapsharing/rb-daap-dialog.c:123
+#: ../daapsharing/rb-daap-dialog.c:129
 #: ../data/glade/audioscrobbler-prefs.glade.h:5
 msgid "_Password:"
 msgstr "_Лозинка:"
 
-#: ../daapsharing/rb-daap-dialog.c:174
+#: ../daapsharing/rb-daap-dialog.c:178
 msgid "Invalid share name"
 msgstr "Невалидно име на делење"
 
-#: ../daapsharing/rb-daap-dialog.c:192
+#: ../daapsharing/rb-daap-dialog.c:197
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
-msgstr "Името за споделената музика '%s' е веќе заземено. Ве молам изберете друго име."
+msgstr ""
+"Името за споделената музика '%s' е веќе заземено. Ве молам изберете друго "
+"име."
 
-#: ../daapsharing/rb-daap-dialog.c:200 ../data/glade/daap-prefs.glade.h:2
+#: ../daapsharing/rb-daap-dialog.c:205 ../data/glade/daap-prefs.glade.h:3
 msgid "Shared music _name:"
 msgstr "Име за споделената _музика:"
 
-#: ../daapsharing/rb-daap-mdns.c:49
-msgid "Unable to browse for remote shares"
-msgstr "Не успеав да прелистам далечни делења"
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:292
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:337
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:319
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:366
+msgid "MDNS service is not running"
+msgstr "MDNS сервисот не работи"
 
-#: ../daapsharing/rb-daap-mdns.c:50
-#, c-format
-msgid ""
-"Could not start browsing for music servers on your network.  Rhythmbox will "
-"continue to function, without this feature.  Check your %s installation"
-msgstr ""
-"Не можам да започнам со разгледување на сервери за музика на Вашата мрежа.  "
-"Ритамбокс ќе продолжи да функционира без оваа опција.  Проверете ја Вашата инсталација на %s"
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:300
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:328
+msgid "Browser already active"
+msgstr "Прелистувачот е веќе активен"
 
-#: ../daapsharing/rb-daap-sharing.c:65
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:320
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:349
+msgid "Unable to activate browser"
+msgstr "Не успеав да го активирам прелистувачот"
+
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:345
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:374
+msgid "Browser is not active"
+msgstr "Прелистувачот не е активен"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:198
+msgid "Could not create AvahiEntryGroup for publishing"
+msgstr "Не можам да креирам Avahi група за објава"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:234
+msgid "Could not add service"
+msgstr "Не можам да го додадам сервисот"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:246
+msgid "Could not commit service"
+msgstr "Не можам да го испратам сервисот"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:351
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:371
+msgid "The avahi MDNS service is not running"
+msgstr "Avahi MDNS сервисот не работи"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:380
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:273
+msgid "The MDNS service is not published"
+msgstr "MDNS сервисот не е објавен"
+
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:177
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:212
+msgid "Error initializing Howl for publishing"
+msgstr "Грешка при иницијализација на Howl"
+
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:239
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:264
+msgid "The howl MDNS service is not running"
+msgstr "Howl MDNS сервисот не работи"
+
+#: ../daapsharing/rb-daap-sharing.c:68
 #, c-format
 msgid "%s's Music"
 msgstr "Музиката на %s"
 
-#: ../daapsharing/rb-daap-src.c:682
+#: ../daapsharing/rb-daap-src.c:683
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Врската до %s:%d е одбиена."
@@ -164,7 +207,11 @@ msgstr "песни"
 msgid "<b>Sharing</b>"
 msgstr "<b>Делење</b>"
 
-#: ../data/glade/daap-prefs.glade.h:3
+#: ../data/glade/daap-prefs.glade.h:2
+msgid "Require _password:"
+msgstr "Потребна е _лозинка:"
+
+#: ../data/glade/daap-prefs.glade.h:4
 msgid "_Share my music"
 msgstr "_Сподели ја мојата музика"
 
@@ -230,7 +277,7 @@ msgstr "Видливи колони"
 msgid "_Artist"
 msgstr "_Изведувач"
 
-#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:1233
+#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:953
 msgid "_Genre"
 msgstr "_Жанр"
 
@@ -242,11 +289,11 @@ msgstr "_Последна пуштена"
 msgid "_Play count"
 msgstr "_Број на пуштања"
 
-#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1171
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1001
 msgid "_Rating"
 msgstr "_Рејтинг"
 
-#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1255
+#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:975
 msgid "_Year"
 msgstr "_Година"
 
@@ -514,8 +561,8 @@ msgstr "Додадени неодамна"
 msgid "Recently Played"
 msgstr "Пуштени неодамна"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:961
-#: ../shell/rb-shell.c:1893
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:963
+#: ../shell/rb-shell.c:1910
 msgid "Music Player"
 msgstr "Пуштач на Музика"
 
@@ -533,41 +580,54 @@ msgid "New Internet Radio Station"
 msgstr "Нова Интернет Радио Станица"
 
 #: ../iradio/rb-station-properties-dialog.c:321
-#: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:314 ../widgets/rb-song-info.c:700
+#: ../podcast/rb-feed-podcast-properties-dialog.c:210
+#: ../podcast/rb-podcast-properties-dialog.c:314 ../widgets/rb-song-info.c:702
 #, c-format
 msgid "%s Properties"
 msgstr "%s својства"
 
 #: ../iradio/rb-station-properties-dialog.c:406
-#: ../podcast/rb-podcast-properties-dialog.c:398 ../widgets/rb-song-info.c:758
+#: ../podcast/rb-podcast-properties-dialog.c:398 ../widgets/rb-song-info.c:760
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2588
-#: ../widgets/rb-entry-view.c:896 ../widgets/rb-entry-view.c:1284
-#: ../widgets/rb-entry-view.c:1297 ../widgets/rb-song-info.c:925
+#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2593
+#: ../widgets/rb-entry-view.c:653 ../widgets/rb-entry-view.c:1026
+#: ../widgets/rb-entry-view.c:1039 ../widgets/rb-song-info.c:927
 msgid "Never"
 msgstr "Никогаш"
 
-#: ../lib/rb-cut-and-paste-code.c:245
+#. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
+#: ../lib/rb-cut-and-paste-code.c:246
 msgid "Today %I:%M %p"
 msgstr "Денес %I:%M %p"
 
-#: ../lib/rb-cut-and-paste-code.c:255
+#. Translators: "friendly time" string for the previous day,
+#. * strftime format. e.g. "Yesterday 12:34 am"
+#.
+#: ../lib/rb-cut-and-paste-code.c:259
 msgid "Yesterday %I:%M %p"
 msgstr "Вчера %I:%M %p"
 
-#: ../lib/rb-cut-and-paste-code.c:268
+#. Translators: "friendly time" string for a day in the current week,
+#. * strftime format. e.g. "Wed 12:34 am"
+#.
+#: ../lib/rb-cut-and-paste-code.c:275
 msgid "%a %I:%M %p"
 msgstr "%a %I:%M %p"
 
-#: ../lib/rb-cut-and-paste-code.c:277
+#. Translators: "friendly time" string for a day in the current year,
+#. * strftime format. e.g. "Feb 12 12:34 am"
+#.
+#: ../lib/rb-cut-and-paste-code.c:287
 msgid "%b %d %I:%M %p"
 msgstr "%b %d %I:%M %p"
 
-#: ../lib/rb-cut-and-paste-code.c:279
+#. Translators: "friendly time" string for a day in a different year,
+#. * strftime format. e.g. "Feb 12 1997"
+#.
+#: ../lib/rb-cut-and-paste-code.c:292
 msgid "%b %d %Y"
 msgstr "%b %d %Y"
 
@@ -581,33 +641,33 @@ msgstr "%d:%02d"
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:632 ../metadata/rb-metadata-gst.c:1152
-#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:633
+#: ../metadata/rb-metadata-gst.c:640 ../metadata/rb-metadata-gst.c:1175
+#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:639
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Не успеав да креирам %s елемент; проверете ја Вашата инсталација"
 
-#: ../metadata/rb-metadata-gst.c:771
+#: ../metadata/rb-metadata-gst.c:784
 msgid "Failed to create a source element; check your installation"
 msgstr "Не успеав да креирам изворен елемент; Проверете ја Вашата инсталација"
 
-#: ../metadata/rb-metadata-gst.c:838
+#: ../metadata/rb-metadata-gst.c:851
 msgid "GStreamer error: failed to change state"
 msgstr "Грешка со GStreamer: не успеав да ја сменам состојбата"
 
-#: ../metadata/rb-metadata-gst.c:911
+#: ../metadata/rb-metadata-gst.c:924
 msgid "The MIME type of the file could not be identified"
 msgstr "MIME типот не може да биде идентификуван"
 
-#: ../metadata/rb-metadata-gst.c:923
+#: ../metadata/rb-metadata-gst.c:944
 msgid "The file is not an audio stream"
 msgstr "Датотеката не е аудио проток"
 
-#: ../metadata/rb-metadata-gst.c:928
+#: ../metadata/rb-metadata-gst.c:949
 msgid "The file is not an audio stream, but is being ignored"
 msgstr "Датотеката не е аудио проток и е игнорирана"
 
-#: ../metadata/rb-metadata-gst.c:936
+#: ../metadata/rb-metadata-gst.c:957
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "Нема инсталиран додаток за справување со %s датотека."
@@ -641,7 +701,9 @@ msgstr "Песна %d"
 msgid ""
 "MusicBrainz metadata object is not valid. This is bad, check your console "
 "for errors."
-msgstr "Податоците за објектот за MusicBrainz не се валидни. Ова е лошо, проверете ја конзолата за грешки."
+msgstr ""
+"Податоците за објектот за MusicBrainz не се валидни. Ова е лошо, проверете "
+"ја конзолата за грешки."
 
 #: ../metadata/sj-metadata-musicbrainz.c:313
 #, c-format
@@ -674,7 +736,7 @@ msgstr "Некомплетни податоци за ова CD.\n"
 msgid "Could not create CD lookup thread"
 msgstr "Не можам да креирам нишка за барање на CD-то"
 
-#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:695
+#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:701
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Не можам да го иницијализирам распоредот.  Дали извршивте gst-register?"
 
@@ -686,55 +748,59 @@ msgstr "Грешка при плејбек"
 msgid "Failed to create pipeline"
 msgstr "Не успеав да креирам pipeline"
 
-#: ../player/rb-recorder-gst.c:651 ../player/rb-recorder-gst.c:655
+#: ../player/rb-recorder-gst.c:550
+msgid "Could not access source pad"
+msgstr "Не можам да пристапам на изворната површина"
+
+#: ../player/rb-recorder-gst.c:657 ../player/rb-recorder-gst.c:661
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "Не успеа да се одврзам од %s"
 
-#: ../player/rb-recorder-gst.c:727
+#: ../player/rb-recorder-gst.c:733
 msgid "Could not retrieve state from processing pipeline"
 msgstr "Не можам да ја добијам состојбата на работниот pipeline"
 
-#: ../player/rb-recorder-gst.c:742 ../player/rb-recorder-gst.c:750
+#: ../player/rb-recorder-gst.c:748 ../player/rb-recorder-gst.c:756
 msgid "Could not get current track position"
 msgstr "Не можам да ја добијам моменталната позиција на песната"
 
-#: ../player/rb-recorder-gst.c:806
+#: ../player/rb-recorder-gst.c:812
 msgid "Could not start pipeline playing"
 msgstr "Could not start pipeline playing"
 
-#: ../player/rb-recorder-gst.c:829
+#: ../player/rb-recorder-gst.c:835
 msgid "Could not pause playback"
 msgstr "Не можам да го паузирам плејбекот"
 
-#: ../player/rb-recorder-gst.c:1027
+#: ../player/rb-recorder-gst.c:1033
 msgid "Cannot find drive"
 msgstr "Не можам да го најдам уредот"
 
-#: ../player/rb-recorder-gst.c:1072
+#: ../player/rb-recorder-gst.c:1078
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Не можам да го најдам уредот %s"
 
-#: ../player/rb-recorder-gst.c:1081
+#: ../player/rb-recorder-gst.c:1087
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "Уредот %s не е снимач"
 
-#: ../player/rb-recorder-gst.c:1247 ../player/rb-recorder-gst.c:1425
+#: ../player/rb-recorder-gst.c:1253 ../player/rb-recorder-gst.c:1431
 msgid "No writable drives found."
 msgstr "Не се пронајдени уреди за запишување."
 
-#: ../player/rb-recorder-gst.c:1375
+#: ../player/rb-recorder-gst.c:1381
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Не можам да го добијам времето за песната: %s"
 
-#: ../player/rb-recorder-gst.c:1434
+#: ../player/rb-recorder-gst.c:1440
 msgid "Could not determine audio track durations."
 msgstr "Не можам да ја одредам должината на аудио песните."
 
-#: ../player/rb-recorder-gst.c:1482
+#: ../player/rb-recorder-gst.c:1488
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -743,7 +809,7 @@ msgstr ""
 "Се појави грешка при запишување на CD:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1486
+#: ../player/rb-recorder-gst.c:1492
 msgid "There was an error writing to the CD"
 msgstr "Се појави грешка при запишување на CD"
 
@@ -771,8 +837,8 @@ msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"Адресата \"%s\" е веќе додадена како радио станица. Ако се работи за "
-"podcast фид, Ве молам отстранете ја радио станицата."
+"Адресата \"%s\" е веќе додадена како радио станица. Ако се работи за podcast "
+"фид, Ве молам отстранете ја радио станицата."
 
 #: ../podcast/rb-podcast-manager.c:834
 msgid "Podcast"
@@ -781,7 +847,9 @@ msgstr "Podcast"
 #: ../podcast/rb-podcast-manager.c:1589
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr "Се појави проблем при додавањето на овој podcast. Ве молам проверете ја адресата: %s"
+msgstr ""
+"Се појави проблем при додавањето на овој podcast. Ве молам проверете ја "
+"адресата: %s"
 
 #: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -845,16 +913,16 @@ msgstr "Се случи исклучок '%s'"
 msgid "All"
 msgstr "Сите"
 
-#: ../rhythmdb/rhythmdb.c:1186
+#: ../rhythmdb/rhythmdb.c:1181
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Не можам да надгледувам %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1295
+#: ../rhythmdb/rhythmdb.c:1293
 msgid "<invalid filename>"
 msgstr "<невалидно име на датотека>"
 
-#: ../rhythmdb/rhythmdb.c:1840 ../rhythmdb/rhythmdb.c:1883
+#: ../rhythmdb/rhythmdb.c:1839 ../rhythmdb/rhythmdb.c:1882
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Не можам да пристапам на %s: %s"
@@ -864,12 +932,12 @@ msgstr "Не можам да пристапам на %s: %s"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2579 ../sources/rb-podcast-source.c:1561
-#: ../widgets/rb-entry-view.c:2081
+#: ../rhythmdb/rhythmdb.c:2591 ../sources/rb-podcast-source.c:1561
+#: ../widgets/rb-entry-view.c:1830
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3568
+#: ../rhythmdb/rhythmdb.c:3577
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -877,7 +945,7 @@ msgstr[0] "%d песна"
 msgstr[1] "%d песни"
 msgstr[2] "%d песни"
 
-#: ../rhythmdb/rhythmdb.c:3575
+#: ../rhythmdb/rhythmdb.c:3584
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -885,7 +953,7 @@ msgstr[0] "%ld минута"
 msgstr[1] "%ld минути"
 msgstr[2] "%ld минути"
 
-#: ../rhythmdb/rhythmdb.c:3576
+#: ../rhythmdb/rhythmdb.c:3585
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -893,7 +961,7 @@ msgstr[0] "%ld час"
 msgstr[1] "%ld часа"
 msgstr[2] "%ld часа"
 
-#: ../rhythmdb/rhythmdb.c:3577
+#: ../rhythmdb/rhythmdb.c:3586
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -902,7 +970,7 @@ msgstr[1] "%ld дена"
 msgstr[2] "%ld дена"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3583
+#: ../rhythmdb/rhythmdb.c:3592
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s и %s"
@@ -910,125 +978,125 @@ msgstr "%s, %s и %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3589 ../rhythmdb/rhythmdb.c:3597
-#: ../rhythmdb/rhythmdb.c:3608
+#: ../rhythmdb/rhythmdb.c:3598 ../rhythmdb/rhythmdb.c:3606
+#: ../rhythmdb/rhythmdb.c:3617
 #, c-format
 msgid "%s and %s"
 msgstr "%s и %s"
 
-#: ../shell/main.c:142
+#: ../shell/main.c:144
 msgid "Print the playing song and exit"
 msgstr "Отпечати ја песната што свири и излези"
 
-#: ../shell/main.c:143
+#: ../shell/main.c:145
 msgid "Print the playing song artist and exit"
 msgstr "Отпечати ја песната и изведувачот и излези"
 
-#: ../shell/main.c:144
+#: ../shell/main.c:146
 msgid "Print the playing song album and exit"
 msgstr "Отпечати ја песната и албумот и излези"
 
-#: ../shell/main.c:145
+#: ../shell/main.c:147
 msgid "Print the playing song track and exit"
 msgstr "Отпечати ја песната и излези"
 
-#: ../shell/main.c:146
+#: ../shell/main.c:148
 msgid "Print the playing song genre and exit"
 msgstr "Отпечати ја песната и жанрот и излези"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 msgid "Print the playing song URI and exit"
 msgstr "Отпечати ја песната и адресата и излези"
 
-#: ../shell/main.c:149
+#: ../shell/main.c:151
 msgid "Print the playing song length in seconds and exit"
 msgstr "Отпечати ја должината на песната во секунди и излези"
 
-#: ../shell/main.c:150
+#: ../shell/main.c:152
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Отпечати го поминатото време и излези"
 
-#: ../shell/main.c:151
+#: ../shell/main.c:153
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Измотај до одреденото време и излези"
 
-#: ../shell/main.c:152
+#: ../shell/main.c:154
 msgid "Seek by the specified amount if possible and exit"
 msgstr "Измотај го одреденото и излези"
 
-#: ../shell/main.c:153
+#: ../shell/main.c:155
 msgid "Set the rating of the currently playing song and exit"
 msgstr "Постави рејтинг за тековната песна и излези"
 
-#: ../shell/main.c:155
+#: ../shell/main.c:157
 msgid "Toggle play/pause mode"
 msgstr "Менувај помеѓу пушти/пауза"
 
-#: ../shell/main.c:156
+#: ../shell/main.c:158
 msgid "Pause playback if currently playing"
 msgstr "Паузирај го плејбекот ако свири во моментот"
 
-#: ../shell/main.c:157
+#: ../shell/main.c:159
 msgid "Resume playback if currently paused"
 msgstr "Продолжи го плејбекот ако е паузирано"
 
-#: ../shell/main.c:158
+#: ../shell/main.c:160
 msgid "Focus the running player"
 msgstr "Фокусирај го извршениот пуштач"
 
-#: ../shell/main.c:159
+#: ../shell/main.c:161
 msgid "Jump to previous song"
 msgstr "Рипни на претходната песна"
 
-#: ../shell/main.c:160
+#: ../shell/main.c:162
 msgid "Jump to next song"
 msgstr "Рипи на наредната песна"
 
-#: ../shell/main.c:162
+#: ../shell/main.c:164
 msgid "Toggle shuffling"
 msgstr "Менувај мешање"
 
-#: ../shell/main.c:163
+#: ../shell/main.c:165
 msgid "Toggle repeat"
 msgstr "Менувај повторување"
 
-#: ../shell/main.c:165
+#: ../shell/main.c:167
 msgid "Set the volume level"
 msgstr "Постави ниво на звук"
 
-#: ../shell/main.c:166
+#: ../shell/main.c:168
 msgid "Mute or unmute playback"
 msgstr "Вклучи или исклучи плејбек"
 
-#: ../shell/main.c:167
+#: ../shell/main.c:169
 msgid "Change visibility of the main Rhythmbox window"
 msgstr "Промени ја видливоста на главниот прозорец на Rhytmbox"
 
-#: ../shell/main.c:170
+#: ../shell/main.c:172
 msgid "Enable debugging code"
 msgstr "Вклуи код за дебагирање"
 
-#: ../shell/main.c:171
+#: ../shell/main.c:173
 msgid "Do not update the library"
 msgstr "Не ја ажурирај библиотеката"
 
-#: ../shell/main.c:172
+#: ../shell/main.c:174
 msgid "Do not register the shell"
 msgstr "Не ја регистрирај школката"
 
-#: ../shell/main.c:173
+#: ../shell/main.c:175
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Не зачувувај податоци трајно (се однесува на --no-registration)"
 
-#: ../shell/main.c:174
+#: ../shell/main.c:176
 msgid "Path for database file to use"
 msgstr "Патека за датотеката база за користење"
 
-#: ../shell/main.c:175
+#: ../shell/main.c:177
 msgid "Quit Rhythmbox"
 msgstr "Излези од Rhytmbox"
 
-#: ../shell/main.c:206 ../widgets/rb-druid.c:190
+#: ../shell/main.c:208 ../widgets/rb-druid.c:190
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -1145,31 +1213,47 @@ msgstr "Датотеката за плејлиста може да е во не�
 msgid "Untitled Playlist"
 msgstr "Плејлиста без наслов"
 
-#: ../shell/rb-playlist-manager.c:1167
+#: ../shell/rb-playlist-manager.c:1128
 msgid "Couldn't read playlist"
 msgstr "Не можам да ја прочитам плејлистата"
 
-#: ../shell/rb-playlist-manager.c:1182
+#: ../shell/rb-playlist-manager.c:1143
 msgid "Load Playlist"
 msgstr "Вчитај плејлиста"
 
-#: ../shell/rb-playlist-manager.c:1220
+#: ../shell/rb-playlist-manager.c:1182
 msgid "Save Playlist"
 msgstr "Зачувај плејлиста"
 
-#: ../shell/rb-removable-media-manager.c:127
+#: ../shell/rb-playlist-manager.c:1346
+#, c-format
+msgid "Playlist %s already exists"
+msgstr "Плејлистата %s веќе постои"
+
+#: ../shell/rb-playlist-manager.c:1363 ../shell/rb-playlist-manager.c:1383
+#: ../shell/rb-playlist-manager.c:1410 ../shell/rb-playlist-manager.c:1440
+#, c-format
+msgid "Unknown playlist: %s"
+msgstr "Непозната плејлиста: %s"
+
+#: ../shell/rb-playlist-manager.c:1391 ../shell/rb-playlist-manager.c:1418
+#, c-format
+msgid "Playlist %s is an automatic playlist"
+msgstr "Плејлистата %s е автоматска плејлиста"
+
+#: ../shell/rb-removable-media-manager.c:128
 msgid "_Eject"
 msgstr "_Извади"
 
-#: ../shell/rb-removable-media-manager.c:128
+#: ../shell/rb-removable-media-manager.c:129
 msgid "Eject this medium"
 msgstr "Извади го медиумот"
 
-#: ../shell/rb-removable-media-manager.c:130
+#: ../shell/rb-removable-media-manager.c:131
 msgid "_Scan Removable Media"
 msgstr "_Скенирај ги преносливите уреди"
 
-#: ../shell/rb-removable-media-manager.c:131
+#: ../shell/rb-removable-media-manager.c:132
 msgid "Scan for new Removable Media"
 msgstr "Скенирај за нови преносливи уреди"
 
@@ -1242,7 +1326,7 @@ msgid "Remove"
 msgstr "Отстрани"
 
 #: ../shell/rb-shell-clipboard.c:140 ../shell/rb-shell-clipboard.c:143
-#: ../sources/rb-podcast-source.c:288
+#: ../sources/rb-podcast-source.c:291
 msgid "_Properties"
 msgstr "_Својства"
 
@@ -1250,101 +1334,105 @@ msgstr "_Својства"
 msgid "Show information on the selected song"
 msgstr "Прикажи информации за селектираната песна"
 
-#: ../shell/rb-shell-player.c:234
+#: ../shell/rb-shell-player.c:235
 msgid "P_revious"
 msgstr "П_ретходна"
 
-#: ../shell/rb-shell-player.c:235
+#: ../shell/rb-shell-player.c:236
 msgid "Start playing the previous song"
 msgstr "Започни со свирење на претходната песна"
 
-#: ../shell/rb-shell-player.c:237
+#: ../shell/rb-shell-player.c:238
 msgid "_Next"
 msgstr "_Следна"
 
-#: ../shell/rb-shell-player.c:238
+#: ../shell/rb-shell-player.c:239
 msgid "Start playing the next song"
 msgstr "Започни со свирење на следната песна"
 
-#: ../shell/rb-shell-player.c:246
+#: ../shell/rb-shell-player.c:247
 msgid "_Play"
 msgstr "_Пушти"
 
-#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2565
+#: ../shell/rb-shell-player.c:248 ../shell/rb-shell-player.c:2615
 msgid "Start playback"
 msgstr "Пушти плејбек"
 
-#: ../shell/rb-shell-player.c:249
+#: ../shell/rb-shell-player.c:250
 msgid "Sh_uffle"
 msgstr "Изм_ешај"
 
-#: ../shell/rb-shell-player.c:250
+#: ../shell/rb-shell-player.c:251
 msgid "Play songs in a random order"
 msgstr "Пушти песни по случаен избор"
 
-#: ../shell/rb-shell-player.c:252
+#: ../shell/rb-shell-player.c:253
 msgid "_Repeat"
 msgstr "_Повторување"
 
-#: ../shell/rb-shell-player.c:253
+#: ../shell/rb-shell-player.c:254
 msgid "Play first song again after all songs are played"
 msgstr "Пак пушти ја првата песна откако ќе завршат сите"
 
-#: ../shell/rb-shell-player.c:255
+#: ../shell/rb-shell-player.c:256
 msgid "_Song Position Slider"
 msgstr "_Лизгач за позиција на песните"
 
-#: ../shell/rb-shell-player.c:256
+#: ../shell/rb-shell-player.c:257
 msgid "Change the visibility of the song position slider"
 msgstr "Смени ја видливоста на лизгачот за позиција на песна"
 
-#: ../shell/rb-shell-player.c:534
+#: ../shell/rb-shell-player.c:535
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Не успеав да го креирам плеерот: %s"
 
-#: ../shell/rb-shell-player.c:1259
+#: ../shell/rb-shell-player.c:890
+msgid "Connecting"
+msgstr "Се врзувам"
+
+#: ../shell/rb-shell-player.c:1291
 msgid "Not currently playing"
 msgstr "Не свири"
 
-#: ../shell/rb-shell-player.c:1293
+#: ../shell/rb-shell-player.c:1325
 msgid "No previous song"
 msgstr "Нема претходна песна"
 
-#: ../shell/rb-shell-player.c:1345
+#: ../shell/rb-shell-player.c:1377
 msgid "No next song"
 msgstr "Нема следна песна"
 
-#: ../shell/rb-shell-player.c:1435
+#: ../shell/rb-shell-player.c:1467
 #, c-format
 msgid "Couldn't start playback: %s"
 msgstr "Не можам да го пуштам плејбекот: %s"
 
-#: ../shell/rb-shell-player.c:2036
+#: ../shell/rb-shell-player.c:2068
 msgid "Couldn't stop playback"
 msgstr "Не можам да го стораим плејбекот"
 
-#: ../shell/rb-shell-player.c:2092
+#: ../shell/rb-shell-player.c:2124
 msgid "Current song is not seekable"
 msgstr "Моменталната песна не може да биде мотана"
 
-#: ../shell/rb-shell-player.c:2155
+#: ../shell/rb-shell-player.c:2187
 msgid "Stream error"
 msgstr "Грешка со протокот"
 
-#: ../shell/rb-shell-player.c:2156
+#: ../shell/rb-shell-player.c:2188
 msgid "Unexpected end of stream!"
 msgstr "Неочекуван крај на протоко!"
 
-#: ../shell/rb-shell-player.c:2409
+#: ../shell/rb-shell-player.c:2441
 msgid "Buffering"
 msgstr "Бафер"
 
-#: ../shell/rb-shell-player.c:2563
+#: ../shell/rb-shell-player.c:2613
 msgid "Stop playback"
 msgstr "Стопирај плејбек"
 
-#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2099
+#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2116
 msgid "Couldn't display help"
 msgstr "Не можам да прикажам помош"
 
@@ -1356,207 +1444,207 @@ msgstr "Преференци на музичкиот пуштач"
 msgid "General"
 msgstr "Општо"
 
-#: ../shell/rb-shell-preferences.c:315
+#: ../shell/rb-shell-preferences.c:396
 msgid "Sharing"
 msgstr "Делење"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:443
 msgid "_Music"
 msgstr "_Музика"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:444
 msgid "_Edit"
 msgstr "_Уреди"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:445
 msgid "_View"
 msgstr "_Поглед"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:446
 msgid "_Control"
 msgstr "_Контрола"
 
-#: ../shell/rb-shell.c:445
+#: ../shell/rb-shell.c:447
 msgid "_Help"
 msgstr "_Помош"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:449
 msgid "New Internet _Radio Station"
 msgstr "Ново интернет _радио"
 
-#: ../shell/rb-shell.c:448
+#: ../shell/rb-shell.c:450
 msgid "Create a new Internet Radio station"
 msgstr "Креирај нова Интернет Радио Станица"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:452
 msgid "_New Podcast Feed"
 msgstr "_Нов podcast фид"
 
-#: ../shell/rb-shell.c:451
+#: ../shell/rb-shell.c:453
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Претплата на нов podcast фид"
 
-#: ../shell/rb-shell.c:454
+#: ../shell/rb-shell.c:456
 msgid "_Import Folder..."
 msgstr "_Увези папка..."
 
-#: ../shell/rb-shell.c:455
+#: ../shell/rb-shell.c:457
 msgid "Choose folder to be added to the Library"
 msgstr "Изберете папка за додавање во библиотеката"
 
-#: ../shell/rb-shell.c:457
+#: ../shell/rb-shell.c:459
 msgid "Import _File..."
 msgstr "Увези _датотека..."
 
-#: ../shell/rb-shell.c:458
+#: ../shell/rb-shell.c:460
 msgid "Choose file to be added to the Library"
 msgstr "Изберете датотеки за додавање во библиотеката"
 
-#: ../shell/rb-shell.c:460
+#: ../shell/rb-shell.c:462
 msgid "Import _Audio CD..."
 msgstr "Увези _аудио CD..."
 
-#: ../shell/rb-shell.c:461
+#: ../shell/rb-shell.c:463
 msgid "Extract and import songs from a CD"
 msgstr "Извади и увези песни од CD"
 
-#: ../shell/rb-shell.c:463
+#: ../shell/rb-shell.c:465
 msgid "_About"
 msgstr "_За"
 
-#: ../shell/rb-shell.c:464
+#: ../shell/rb-shell.c:466
 msgid "Show information about the music player"
 msgstr "Прикажи информации за пуштачот на музика"
 
-#: ../shell/rb-shell.c:466
+#: ../shell/rb-shell.c:468
 msgid "_Contents"
 msgstr "_Содржина"
 
-#: ../shell/rb-shell.c:467
+#: ../shell/rb-shell.c:469
 msgid "Display music player help"
 msgstr "Прикажи помош за пуштачот на музика"
 
-#: ../shell/rb-shell.c:469
+#: ../shell/rb-shell.c:471
 msgid "_Close"
 msgstr "_Затвори"
 
-#: ../shell/rb-shell.c:470
+#: ../shell/rb-shell.c:472
 msgid "Hide the music player window"
 msgstr "Скриј го прозорецот на пуштачот"
 
-#: ../shell/rb-shell.c:472
+#: ../shell/rb-shell.c:474
 msgid "_Quit"
 msgstr "_Излез"
 
-#: ../shell/rb-shell.c:473
+#: ../shell/rb-shell.c:475
 msgid "Quit the music player"
 msgstr "Излези од пуштачот на музика"
 
-#: ../shell/rb-shell.c:475
+#: ../shell/rb-shell.c:477
 msgid "Prefere_nces"
 msgstr "Пара_метри"
 
-#: ../shell/rb-shell.c:476
+#: ../shell/rb-shell.c:478
 msgid "Edit music player preferences"
 msgstr "Уреди ги параметрите за пуштачот на музика"
 
-#: ../shell/rb-shell.c:478
+#: ../shell/rb-shell.c:480
 msgid "Show _All"
 msgstr "Избери _се"
 
-#: ../shell/rb-shell.c:479
+#: ../shell/rb-shell.c:481
 msgid "Show all items in this music source"
 msgstr "Покажи ги сите предмети од изворот на музика"
 
-#: ../shell/rb-shell.c:481
+#: ../shell/rb-shell.c:483
 msgid "_Jump to Playing Song"
 msgstr "_Скокни до песната што свири"
 
-#: ../shell/rb-shell.c:482
+#: ../shell/rb-shell.c:484
 msgid "Scroll the view to the currently playing song"
 msgstr "Однеси ме на песната што свири"
 
-#: ../shell/rb-shell.c:484
+#: ../shell/rb-shell.c:486
 msgid "_Disconnect"
 msgstr "_Одврзи се"
 
-#: ../shell/rb-shell.c:485
+#: ../shell/rb-shell.c:487
 msgid "Disconnect from selected source"
 msgstr "Одврзи се од избраниот извор"
 
-#: ../shell/rb-shell.c:492
+#: ../shell/rb-shell.c:494
 msgid "Source _List"
 msgstr "Листа на _извори"
 
-#: ../shell/rb-shell.c:493
+#: ../shell/rb-shell.c:495
 msgid "Change the visibility of the source list"
 msgstr "Промени ја видливоста на изворната листа"
 
-#: ../shell/rb-shell.c:495
+#: ../shell/rb-shell.c:497
 msgid "_Toolbar"
 msgstr "_Лента со алатки"
 
-#: ../shell/rb-shell.c:496
+#: ../shell/rb-shell.c:498
 msgid "Change the visibility of the toolbar"
 msgstr "Промени ја видливоста на лентата со алатки"
 
-#: ../shell/rb-shell.c:498
+#: ../shell/rb-shell.c:500
 msgid "_Small Display"
 msgstr "_Мал приказ"
 
-#: ../shell/rb-shell.c:499
+#: ../shell/rb-shell.c:501
 msgid "Make the main window smaller"
 msgstr "Направи го главниот прозорец помал"
 
-#: ../shell/rb-shell.c:501
+#: ../shell/rb-shell.c:503
 msgid "_Fullscreen"
 msgstr "_Цел екран"
 
-#: ../shell/rb-shell.c:502
+#: ../shell/rb-shell.c:504
 msgid "Expand the window to fill the screen"
 msgstr "Прошири го прозорецот на цел екран"
 
-#: ../shell/rb-shell.c:504
+#: ../shell/rb-shell.c:506
 msgid "_Queue as Sidebar"
 msgstr "_Намести како странична лента"
 
-#: ../shell/rb-shell.c:505
+#: ../shell/rb-shell.c:507
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Смени дали редот е видлив како извор или како странична лента"
 
-#: ../shell/rb-shell.c:507
+#: ../shell/rb-shell.c:509
 msgid "S_tatusbar"
 msgstr "С_татусна лента"
 
-#: ../shell/rb-shell.c:508
+#: ../shell/rb-shell.c:510
 msgid "Change the visibility of the statusbar"
 msgstr "Промени ја видливоста на статусната лента"
 
-#: ../shell/rb-shell.c:1281
+#: ../shell/rb-shell.c:1284
 msgid "Change the music volume"
 msgstr "Промена на јачината на звукот"
 
-#: ../shell/rb-shell.c:1597
+#: ../shell/rb-shell.c:1600
 msgid "Error while saving song information"
 msgstr "Грешка при зачувување на информациите за песната"
 
 #. Translators: Trackname by Artist
-#: ../shell/rb-shell.c:1774
+#: ../shell/rb-shell.c:1777
 #, c-format
 msgid "%s by %s"
 msgstr "%s од %s"
 
-#: ../shell/rb-shell.c:1776 ../shell/rb-shell.c:1851
-#: ../widgets/rb-entry-view.c:1490
+#: ../shell/rb-shell.c:1779 ../shell/rb-shell.c:1868
+#: ../widgets/rb-entry-view.c:1239
 msgid "Now Playing"
 msgstr "Моментално свири"
 
-#: ../shell/rb-shell.c:1867 ../shell/rb-tray-icon.c:166
+#: ../shell/rb-shell.c:1884 ../shell/rb-tray-icon.c:166
 msgid "Not playing"
 msgstr "Не свири"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1870
+#: ../shell/rb-shell.c:1887
 #, c-format
 msgid ""
 "%s\n"
@@ -1566,7 +1654,7 @@ msgstr ""
 "Паузирано, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1874
+#: ../shell/rb-shell.c:1891
 #, c-format
 msgid ""
 "%s\n"
@@ -1576,12 +1664,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1913
+#: ../shell/rb-shell.c:1930
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Паузирано)"
 
-#: ../shell/rb-shell.c:2016
+#: ../shell/rb-shell.c:2033
 msgid "translator_credits"
 msgstr ""
 "Арангел Ангов   (ufo@linux.net.mk)\n"
@@ -1590,7 +1678,7 @@ msgstr ""
 "Слободен Софтвер Македонија\n"
 "http://www.slobodensoftver.org.mk"
 
-#: ../shell/rb-shell.c:2019
+#: ../shell/rb-shell.c:2036
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -1602,7 +1690,7 @@ msgstr ""
 "на Фондацијата за слободен софтвер; без разлика дали се работи за\n"
 "верзијата 2 или некоја понова верзија.\n"
 
-#: ../shell/rb-shell.c:2023
+#: ../shell/rb-shell.c:2040
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -1614,70 +1702,70 @@ msgstr ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 
-#: ../shell/rb-shell.c:2027
+#: ../shell/rb-shell.c:2044
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
-"59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
+"51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
-"You should have received a copy of the GNU General Public License\n"
-"along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
+"Би требало да имате копија од ГНУ општата јавна лиценца заедно со\n"
+"Ритамбокс; Доколку немате, пишете на Free Software Foundation, Inc.,\n"
 "59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
 
-#: ../shell/rb-shell.c:2036
+#: ../shell/rb-shell.c:2053
 msgid "Maintainers:"
 msgstr "Оддржувачи:"
 
-#: ../shell/rb-shell.c:2039
+#: ../shell/rb-shell.c:2056
 msgid "Former Maintainers:"
 msgstr "Стари оддржувачи:"
 
-#: ../shell/rb-shell.c:2042
+#: ../shell/rb-shell.c:2059
 msgid "Contributors:"
 msgstr "Соработници:"
 
-#: ../shell/rb-shell.c:2044
+#: ../shell/rb-shell.c:2061
 msgid "Music management and playback software for GNOME."
 msgstr "Софтвер за менаџирање и пуштање на музика под Гном."
 
-#: ../shell/rb-shell.c:2169
+#: ../shell/rb-shell.c:2186
 msgid "Import Folder into Library"
 msgstr "Увези папка во библиотеката"
 
-#: ../shell/rb-shell.c:2191
+#: ../shell/rb-shell.c:2208
 msgid "Import File into Library"
 msgstr "Увези датотека во библиотеката"
 
-#: ../shell/rb-shell.c:2256
+#: ../shell/rb-shell.c:2273
 msgid "CD Ripper not found"
 msgstr "CD риперот не е пронајден"
 
-#: ../shell/rb-shell.c:2257
+#: ../shell/rb-shell.c:2274
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr ""
 "За да вадите музика од цедиња мора да го инсталирате пакетот Sound Juicer за "
 "вадење на музика."
 
-#: ../shell/rb-shell.c:2265
+#: ../shell/rb-shell.c:2282
 msgid "Couldn't run CD Ripper"
 msgstr "Не можам да го извршам CD риперот"
 
-#: ../shell/rb-shell.c:2266
+#: ../shell/rb-shell.c:2283
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Се појави грешка при извршување на sound-juicer: %s"
 
-#: ../shell/rb-shell.c:3128 ../shell/rb-shell.c:3173
+#: ../shell/rb-shell.c:3179 ../shell/rb-shell.c:3224
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Непозната адреса за песната: %s"
 
-#: ../shell/rb-shell.c:3182
+#: ../shell/rb-shell.c:3233
 #, c-format
 msgid "Unknown property %s"
 msgstr "Непозната сопственост %s"
 
-#: ../shell/rb-shell.c:3192
+#: ../shell/rb-shell.c:3243
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Невалиден тип на сопственост %s за %s"
@@ -1722,25 +1810,25 @@ msgstr "Покажувај _известувања"
 msgid "Show notifications of song changes and other events"
 msgstr "Покажувај известувања за промена на песните и други настани"
 
-#: ../sources/rb-audiocd-source.c:221
+#: ../sources/rb-audiocd-source.c:223
 #, c-format
 msgid "Track %u"
 msgstr "Песна %u"
 
-#: ../sources/rb-audiocd-source.c:304 ../sources/rb-audiocd-source.c:314
-#: ../sources/rb-audiocd-source.c:322 ../sources/rb-audiocd-source.c:495
+#: ../sources/rb-audiocd-source.c:306 ../sources/rb-audiocd-source.c:316
+#: ../sources/rb-audiocd-source.c:324 ../sources/rb-audiocd-source.c:497
 msgid "Couldn't load Audio CD"
 msgstr "Не можам да го вчитам аудио CD-тo"
 
-#: ../sources/rb-audiocd-source.c:305 ../sources/rb-audiocd-source.c:315
+#: ../sources/rb-audiocd-source.c:307 ../sources/rb-audiocd-source.c:317
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Ритамбокс не може да му пристапи на CD-то."
 
-#: ../sources/rb-audiocd-source.c:323
+#: ../sources/rb-audiocd-source.c:325
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Ритамбокс не може да прочита информации од CD-то."
 
-#: ../sources/rb-audiocd-source.c:496
+#: ../sources/rb-audiocd-source.c:498
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Ритамбокс не може да добие пристап до уредот за CD-а."
 
@@ -1815,11 +1903,11 @@ msgid ""
 "The root filesystem cannot be chosen as your library location. Please choose "
 "a different location"
 msgstr ""
-"Датотечниот систем root не може да биде избран како локација за библиотеката. "
-"Ве молам изберете друга локација"
+"Датотечниот систем root не може да биде избран како локација за "
+"библиотеката. Ве молам изберете друга локација"
 
 #: ../sources/rb-play-queue-source.c:148 ../sources/rb-play-queue-source.c:197
-#: ../sources/rb-play-queue-source.c:302
+#: ../sources/rb-play-queue-source.c:303
 msgid "Queued songs"
 msgstr "Песни нa ред"
 
@@ -1831,15 +1919,15 @@ msgstr "од"
 msgid "by"
 msgstr "од"
 
-#: ../sources/rb-playlist-source.c:240 ../widgets/rb-entry-view.c:1189
+#: ../sources/rb-playlist-source.c:239 ../widgets/rb-entry-view.c:912
 msgid "Trac_k"
 msgstr "Пе_сна"
 
-#: ../sources/rb-playlist-source.c:508
+#: ../sources/rb-playlist-source.c:510
 msgid "Couldn't save playlist"
 msgstr "Не можам да ја зачувам плејлистата"
 
-#: ../sources/rb-playlist-source.c:559
+#: ../sources/rb-playlist-source.c:561
 msgid "Unable to create audio CD"
 msgstr "Не можам да креирам аудио CD"
 
@@ -2154,146 +2242,139 @@ msgstr ""
 "Не можам да најдам доволно привремен простор за конвертирање на аудио "
 "песните. Потребни се %s MB."
 
-#: ../sources/rb-podcast-source.c:282
+#: ../sources/rb-podcast-source.c:285
 msgid "Download _Episode"
 msgstr "Преземи _епизода"
 
-#: ../sources/rb-podcast-source.c:283
+#: ../sources/rb-podcast-source.c:286
 msgid "Download Podcast Episode"
 msgstr "Преземи епизода за podcast"
 
-#: ../sources/rb-podcast-source.c:285
+#: ../sources/rb-podcast-source.c:288
 msgid "_Cancel Download"
 msgstr "_Откажи преземање"
 
-#: ../sources/rb-podcast-source.c:286
+#: ../sources/rb-podcast-source.c:289
 msgid "Cancel Episode Download"
 msgstr "Откажи преземање на епизода"
 
-#: ../sources/rb-podcast-source.c:289
+#: ../sources/rb-podcast-source.c:292
 msgid "Episode Properties"
 msgstr "Својства на епизодата"
 
-#: ../sources/rb-podcast-source.c:291
+#: ../sources/rb-podcast-source.c:294
 msgid "_Update Podcast Feed"
 msgstr "_Ажурирај го фидот за podcast"
 
-#: ../sources/rb-podcast-source.c:292
+#: ../sources/rb-podcast-source.c:295
 msgid "Update Feed"
 msgstr "Ажурирај фид"
 
-#: ../sources/rb-podcast-source.c:294
+#: ../sources/rb-podcast-source.c:297
 msgid "_Delete Podcast Feed"
 msgstr "_Избриши фид за podcast"
 
-#: ../sources/rb-podcast-source.c:295
+#: ../sources/rb-podcast-source.c:298
 msgid "Delete Feed"
 msgstr "Избриши фид"
 
-#: ../sources/rb-podcast-source.c:297
+#: ../sources/rb-podcast-source.c:300
 msgid "_Update All Feeds"
 msgstr "_Ажурирај ги сите фидови"
 
-#: ../sources/rb-podcast-source.c:298
+#: ../sources/rb-podcast-source.c:301
 msgid "Update all feeds"
 msgstr "Ажурирај ги сите фидови"
 
-#: ../sources/rb-podcast-source.c:494
+#: ../sources/rb-podcast-source.c:497
 msgid "Date"
 msgstr "Датум"
 
-#: ../sources/rb-podcast-source.c:505
+#: ../sources/rb-podcast-source.c:508
 msgid "_Date"
 msgstr "_Датум"
 
-#: ../sources/rb-podcast-source.c:527
+#: ../sources/rb-podcast-source.c:530
 msgid "_Feed"
 msgstr "_Фид"
 
-#: ../sources/rb-podcast-source.c:548 ../sources/rb-podcast-source.c:567
+#: ../sources/rb-podcast-source.c:551 ../sources/rb-podcast-source.c:569
 msgid "Status"
 msgstr "Статус"
 
-#: ../sources/rb-podcast-source.c:549 ../sources/rb-podcast-source.c:1446
+#: ../sources/rb-podcast-source.c:552 ../sources/rb-podcast-source.c:1442
 msgid "Downloaded"
 msgstr "Преземени"
 
-#: ../sources/rb-podcast-source.c:550 ../sources/rb-podcast-source.c:1458
-msgid "Undownloaded"
-msgstr "Непреземени"
-
-#: ../sources/rb-podcast-source.c:551 ../sources/rb-podcast-source.c:1454
+#: ../sources/rb-podcast-source.c:553 ../sources/rb-podcast-source.c:1450
 msgid "Waiting"
 msgstr "Чекам"
 
-#: ../sources/rb-podcast-source.c:552 ../sources/rb-podcast-source.c:1450
+#: ../sources/rb-podcast-source.c:554 ../sources/rb-podcast-source.c:1446
 msgid "Failed"
 msgstr "Неуспешно"
 
-#: ../sources/rb-podcast-source.c:612 ../sources/rb-podcast-source.c:634
+#. configure feed view
+#: ../sources/rb-podcast-source.c:599 ../sources/rb-podcast-source.c:627
 msgid "Feed"
 msgstr "Фид"
 
-#: ../sources/rb-podcast-source.c:739
+#: ../sources/rb-podcast-source.c:735
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../sources/rb-podcast-source.c:828
+#: ../sources/rb-podcast-source.c:824
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Да ја избришам podcast епизодата и да ја преземата датотеката?"
 
-#: ../sources/rb-podcast-source.c:831
+#: ../sources/rb-podcast-source.c:827
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
 "Ако изберете да ја избришете епизодата и датотеката тогаш тие ќе бидат "
-"трајно загубени.  Ве молам имајте на ум дека можете да ја избришете епизодата но "
-"да ја задржите датотеката со избирање на „избриши ја само епизодата“."
+"трајно загубени.  Ве молам имајте на ум дека можете да ја избришете "
+"епизодата но да ја задржите датотеката со избирање на „избриши ја само "
+"епизодата“."
 
-#: ../sources/rb-podcast-source.c:839
+#: ../sources/rb-podcast-source.c:835
 msgid "Delete _Episode Only"
 msgstr "Избриши ја _само епизодата"
 
-#: ../sources/rb-podcast-source.c:845
+#: ../sources/rb-podcast-source.c:841
 msgid "_Delete Episode And File"
 msgstr "_Избриши ја епизодата и датотеката"
 
-#: ../sources/rb-podcast-source.c:1334
+#: ../sources/rb-podcast-source.c:1330
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Да го избришам podcast фидот и преземените датотеки?"
 
-#: ../sources/rb-podcast-source.c:1337
+#: ../sources/rb-podcast-source.c:1333
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
-"Ако изберете да го избришете фидот и датотеките тие можат да бидат "
-"трајно изгубени.  Ве молам имајте на ум дека можете да го избришете фидот но "
-"да ги зачувате преземените датотеки со избирање на „избриши го само фидот“."
+"Ако изберете да го избришете фидот и датотеките тие можат да бидат трајно "
+"изгубени.  Ве молам имајте на ум дека можете да го избришете фидот но да ги "
+"зачувате преземените датотеки со избирање на „избриши го само фидот“."
 
-#: ../sources/rb-podcast-source.c:1345
+#: ../sources/rb-podcast-source.c:1341
 msgid "Delete _Feed Only"
 msgstr "Избриши го _само фидот"
 
-#: ../sources/rb-podcast-source.c:1352
+#: ../sources/rb-podcast-source.c:1348
 msgid "_Delete Feed And Files"
 msgstr "_Избриши фидови и датотеки"
 
 #: ../sources/rb-podcast-source.c:1524
 #, c-format
-msgid "All %d feed (%d)"
-msgid_plural "All %d feeds (%d)"
-msgstr[0] "Секој %d фид (%d)"
-msgstr[1] "Сите %d фидови (%d)"
-msgstr[2] "Сите %d фидови (%d)"
-
-#: ../sources/rb-podcast-source.c:1528 ../widgets/rb-property-view.c:494
-#, c-format
-msgid "%s (%d)"
-msgstr "%s (%d)"
+msgid "All %d feed"
+msgid_plural "All %d feeds"
+msgstr[0] "Секој %d фид"
+msgstr[1] "Сите %d фидови"
+msgstr[2] "Сите %d фидови"
 
 #: ../sources/rb-podcast-source.c:1668
 msgid "Downloading podcast"
@@ -2387,63 +2468,63 @@ msgstr ""
 msgid "Load folder into Library"
 msgstr "Вчитај папка во библиотеката"
 
-#: ../widgets/rb-entry-view.c:963
+#: ../widgets/rb-entry-view.c:720
 msgid "Very Low"
 msgstr "Многу низок"
 
-#: ../widgets/rb-entry-view.c:965
+#: ../widgets/rb-entry-view.c:722
 msgid "Low"
 msgstr "низок"
 
-#: ../widgets/rb-entry-view.c:967
+#: ../widgets/rb-entry-view.c:724
 msgid "Regular"
 msgstr "Обичен"
 
-#: ../widgets/rb-entry-view.c:969
+#: ../widgets/rb-entry-view.c:726
 msgid "High"
 msgstr "Висок"
 
-#: ../widgets/rb-entry-view.c:971
+#: ../widgets/rb-entry-view.c:728
 msgid "Very High"
 msgstr "Многу висок"
 
-#: ../widgets/rb-entry-view.c:973
+#: ../widgets/rb-entry-view.c:730
 msgid "Perfect"
 msgstr "Одличен"
 
-#: ../widgets/rb-entry-view.c:1200
+#: ../widgets/rb-entry-view.c:923
 msgid "_Title"
 msgstr "_Наслов"
 
-#: ../widgets/rb-entry-view.c:1211
+#: ../widgets/rb-entry-view.c:933
 msgid "Art_ist"
 msgstr "Арт_ист"
 
-#: ../widgets/rb-entry-view.c:1222
+#: ../widgets/rb-entry-view.c:943
 msgid "_Album"
 msgstr "_Албум"
 
-#: ../widgets/rb-entry-view.c:1243
+#: ../widgets/rb-entry-view.c:963
 msgid "Tim_e"
 msgstr "Врем_е"
 
-#: ../widgets/rb-entry-view.c:1268
+#: ../widgets/rb-entry-view.c:988
 msgid "_Quality"
 msgstr "_Квалитет"
 
-#: ../widgets/rb-entry-view.c:1281
+#: ../widgets/rb-entry-view.c:1023
 msgid "_Play Count"
 msgstr "_Број на свирења"
 
-#: ../widgets/rb-entry-view.c:1293
+#: ../widgets/rb-entry-view.c:1035
 msgid "_Last Played"
 msgstr "_Последен пат пуштено"
 
-#: ../widgets/rb-entry-view.c:1305
+#: ../widgets/rb-entry-view.c:1047
 msgid "_Date Added"
 msgstr "_Датумот е додаден"
 
-#: ../widgets/rb-entry-view.c:1557
+#: ../widgets/rb-entry-view.c:1306
 msgid "Playback Error"
 msgstr "Грешка при плејбек"
 
@@ -2487,7 +2568,7 @@ msgstr "_Грешка"
 msgid "_File"
 msgstr "_Датотека"
 
-#: ../widgets/rb-property-view.c:479
+#: ../widgets/rb-property-view.c:495
 #, c-format
 msgid "All %d artist (%d)"
 msgid_plural "All %d artists (%d)"
@@ -2495,7 +2576,7 @@ msgstr[0] "Секој %d изведувач (%d)"
 msgstr[1] "Сите %d изведувачи (%d)"
 msgstr[2] "Сите %d изведувачи (%d)"
 
-#: ../widgets/rb-property-view.c:482
+#: ../widgets/rb-property-view.c:498
 #, c-format
 msgid "All %d album (%d)"
 msgid_plural "All %d albums (%d)"
@@ -2503,7 +2584,7 @@ msgstr[0] "Секој %d албум (%d)"
 msgstr[1] "Сите %d албуми (%d)"
 msgstr[2] "Сите %d албуми (%d)"
 
-#: ../widgets/rb-property-view.c:485
+#: ../widgets/rb-property-view.c:501
 #, c-format
 msgid "All %d genre (%d)"
 msgid_plural "All %d genres (%d)"
@@ -2511,10 +2592,15 @@ msgstr[0] "Секој %d жанр (%d)"
 msgstr[1] "Сите %d жанрови (%d)"
 msgstr[2] "Сите %d жанрови (%d)"
 
-#: ../widgets/rb-property-view.c:488
+#: ../widgets/rb-property-view.c:504
 #, c-format
 msgid "All %d (%d)"
 msgstr "Сите %d (%d)"
+
+#: ../widgets/rb-property-view.c:510
+#, c-format
+msgid "%s (%d)"
+msgstr "%s (%d)"
 
 #: ../widgets/rb-query-creator.c:179
 msgid "Create Automatic Playlist"
@@ -2710,15 +2796,15 @@ msgstr "Својства на песната"
 msgid "Multiple Song Properties"
 msgstr "Својства на повеќе песни"
 
-#: ../widgets/rb-song-info.c:803
+#: ../widgets/rb-song-info.c:805
 msgid "Unknown file name"
 msgstr "Непознато име на датотека"
 
-#: ../widgets/rb-song-info.c:822
+#: ../widgets/rb-song-info.c:824
 msgid "On the desktop"
 msgstr "На работната површина"
 
-#: ../widgets/rb-song-info.c:831
+#: ../widgets/rb-song-info.c:833
 msgid "Unknown location"
 msgstr "Непозната локација"
 
