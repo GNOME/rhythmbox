@@ -698,6 +698,9 @@ cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *uri)
 
 		g_object_set (G_OBJECT (source), "device", uri, NULL);
 		g_free (uri);
+
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
+			g_object_set (G_OBJECT (source), "paranoia-mode", 0, NULL);
 	}
 }
 
