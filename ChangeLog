@@ -1,3 +1,9 @@
+2006-02-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_get_selected_entries):
+	Reverse the selection list before returning it, so we get it in the
+	right order.  Fixes #330283 and some other weirdness.
+
 2006-02-11  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: (rb_shell_constructor),

@@ -1369,6 +1369,7 @@ rb_entry_view_get_selected_entries (RBEntryView *view)
 					     (GtkTreeSelectionForeachFunc) harvest_entries,
 					     (gpointer) &list);
 
+	list = g_list_reverse (list);
 	return list;
 }
 
