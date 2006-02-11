@@ -1,3 +1,14 @@
+2006-02-11  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_sync_fullscreen), (rb_shell_sync_smalldisplay):
+	* shell/rb-source-header.c: (rb_source_header_sync_control_state):
+	make small-mode and fullscreen mutually exclusive, since they don't
+	work together
+
+	* data/ui/rhythmbox-ui.xml: move Fullscreen up to the top with Small
+	Mode.
+
 2006-02-10  James Livingston  <jrl@ids.org.au>
 
 	* player/rb-player-gst.c: turn paranoia of when playing audio cds,

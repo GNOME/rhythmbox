@@ -1290,6 +1290,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	}
 
 	rb_shell_sync_window_state (shell, FALSE);
+	rb_shell_sync_smalldisplay (shell);
 	rb_shell_sync_fullscreen (shell);
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
@@ -1312,8 +1313,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
 	}
-
-	rb_shell_sync_smalldisplay (shell);
 
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 
@@ -2396,13 +2395,18 @@ rb_shell_sync_fullscreen (RBShell *shell)
 {
 	gboolean fullscreen;
 	GtkAction *action;
+	GtkAction *small_action;
 
 	fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
+	small_action = gtk_action_group_get_action (shell->priv->actiongroup,
+						    "ViewSmallDisplay");
 
 	if (fullscreen) {
 		gtk_window_fullscreen (GTK_WINDOW (shell->priv->window));
+		g_object_set (G_OBJECT (small_action), "sensitive", FALSE, NULL);
 	} else {
 		gtk_window_unfullscreen (GTK_WINDOW (shell->priv->window));
+		g_object_set (G_OBJECT (small_action), "sensitive", TRUE, NULL);
 	}
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
@@ -2416,6 +2420,7 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 {
 	GtkAction *action;
 	GtkAction *queue_action;
+	GtkAction *fullscreen_action;
 	GtkWidget *toolbar;
 
 	rb_shell_sync_window_state (shell, FALSE);
@@ -2424,18 +2429,22 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 					      "ViewSourceList");
 	queue_action = gtk_action_group_get_action (shell->priv->actiongroup,
 						    "ViewQueueAsSidebar");
+	fullscreen_action = gtk_action_group_get_action (shell->priv->actiongroup,
+						    "ViewFullscreen");
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 
 	if (shell->priv->window_small) {
 		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", FALSE, NULL);
+		g_object_set (G_OBJECT (fullscreen_action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
  		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	} else {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", TRUE, NULL);
+		g_object_set (G_OBJECT (fullscreen_action), "sensitive", TRUE, NULL);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
 		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
