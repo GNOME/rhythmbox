@@ -27,6 +27,7 @@
 #include <libgnomeui/gnome-druid.h>
 #include <libgnomeui/gnome-druid-page-edge.h>
 #include <libgnomeui/gnome-druid-page-standard.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-druid.h"
 #include "rb-preferences.h"
@@ -258,7 +259,8 @@ path_dialog_response_cb (GtkDialog *dialog,
 			 int response_id,
 			 RBDruid *druid)
 {
-	char *file;
+	char *uri;
+	char *path;
 
 	rb_debug ("got response");
 
@@ -267,18 +269,20 @@ path_dialog_response_cb (GtkDialog *dialog,
 		return;
 	}
 
-	file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
-	if (file == NULL) {
-		file = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
+	uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
+	if (uri == NULL) {
+		uri = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (file == NULL)
+	if (uri == NULL)
 		return;
-
-	gtk_entry_set_text (GTK_ENTRY (druid->priv->path_entry), file);
-	g_free (file);
+	
+	path = gnome_vfs_format_uri_for_display (uri);
+	gtk_entry_set_text (GTK_ENTRY (druid->priv->path_entry), path);
+	g_free (uri);
+	g_free (path);
 }
 
 

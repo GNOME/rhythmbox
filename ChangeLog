@@ -1,3 +1,11 @@
+2006-02-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	Patch by: Baptiste Mille-Mathias  <bmm80@free.fr>
+
+	* widgets/rb-druid.c: (path_dialog_response_cb):
+	If the URI is local, don't display the 'file://' prefix.  
+	Fixes #330919.
+
 2006-02-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
