@@ -564,7 +564,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   icon->notify->handle = notify_notification_new (primary,
                                                   secondary,
                                                   NULL,
-                                                  NULL);
+                                                  GTK_WIDGET (icon));
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
 

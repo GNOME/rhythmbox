@@ -1,3 +1,9 @@
+2006-02-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
+	Attach the notification to the tray icon widget, so libnotify
+	positions it less badly.  Fixes #330876.
+
 2006-02-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_get_selected_entries):
