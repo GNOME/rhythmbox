@@ -711,7 +711,8 @@ rb_playlist_source_row_deleted (GtkTreeModel *model,
 	RhythmDBEntry *entry = 
 		rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model),
 							 path);
-	g_hash_table_remove (source->priv->entries, entry->location);
+	if (g_hash_table_remove (source->priv->entries, entry->location))
+		source->priv->dirty = TRUE;
 }
 
 static void

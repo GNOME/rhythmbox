@@ -1,5 +1,16 @@
 2006-02-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* data/ui/rhythmbox-ui.xml: Move separator so 'remove' and 'move to
+	trash' are grouped together.
+	* shell/main.c: (main): Pass no-registration flag in to RBShell
+	constructor, rather than mysteriously always passing TRUE.
+	* sources/rb-playlist-source.c: (rb_playlist_source_row_deleted):
+	Set dirty flag when entries are removed from the model, so the play
+	queue is marked dirty appropriately.
+	* AUTHORS: update my email address
+
+2006-02-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	Patch by: Baptiste Mille-Mathias  <bmm80@free.fr>
 
 	* widgets/rb-druid.c: (path_dialog_response_cb):
