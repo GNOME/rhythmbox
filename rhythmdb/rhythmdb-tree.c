@@ -40,6 +40,7 @@
 #include <libxml/SAX.h>
 #include <libxml/parserInternals.h>
 
+#include "rhythmdb-private.h"
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
@@ -517,6 +518,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		case RHYTHMDB_PROP_SEARCH_MATCH:
+		case RHYTHMDB_PROP_YEAR:
 		case RHYTHMDB_NUM_PROPERTIES:
 			g_assert_not_reached ();
 			break;
@@ -880,6 +882,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		case RHYTHMDB_PROP_SEARCH_MATCH:
+		case RHYTHMDB_PROP_YEAR:
 		case RHYTHMDB_NUM_PROPERTIES:
 			break;
 		}

@@ -471,7 +471,7 @@ rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry 
 
 	g_value_init (&value, G_TYPE_ULONG);
 
-	current_count = entry->play_count;
+	current_count = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 
 	g_value_set_ulong (&value, current_count + 1);
 

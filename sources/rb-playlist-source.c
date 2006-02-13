@@ -475,8 +475,8 @@ playlist_iter_func (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	*uri = g_strdup (entry->location);
-	*title = g_strdup (rb_refstring_get (entry->title));
+	*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	*custom_title = FALSE;
 }
 #endif /* TOTEM_PL_PARSER_CHECK_VERSION */
@@ -512,10 +512,10 @@ burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, cha
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	*uri = g_strdup (entry->location);
-	*artist = g_strdup (rb_refstring_get (entry->artist));
-	*title = g_strdup (rb_refstring_get (entry->title));
-	*duration = entry->duration;
+	*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	*artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	*duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 
 	return TRUE;
 }
@@ -708,10 +708,14 @@ rb_playlist_source_row_deleted (GtkTreeModel *model,
 				GtkTreePath *path,
 				RBPlaylistSource *source)
 {
-	RhythmDBEntry *entry = 
-		rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model),
+	RhythmDBEntry *entry;
+	const char *location;
+
+	entry = rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model),
 							 path);
-	if (g_hash_table_remove (source->priv->entries, entry->location))
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	if (g_hash_table_remove (source->priv->entries, location))
 		source->priv->dirty = TRUE;
 }
 
@@ -722,7 +726,8 @@ rb_playlist_source_entry_added_cb (RhythmDB *db,
 {
 	const char *location;
 
-	location = entry->location;
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry, -1);
 		source->priv->dirty = TRUE;

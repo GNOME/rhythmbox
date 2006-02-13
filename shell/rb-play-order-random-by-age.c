@@ -62,15 +62,15 @@ static double
 rb_random_by_age_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, RhythmDBEntry *entry)
 {
 	time_t now;
-	glong last_play;
-	glong seconds_since_last_play;
+	gulong last_play;
+	gulong seconds_since_last_play;
 
 	/* This returns the log of the number of seconds since the last play.
 	 * It handles never played automatically, since now-0 is a valid
 	 * argument to log(). */
 	
 	time (&now);
-	last_play = entry->last_played;
+	last_play = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_PLAYED);
 	seconds_since_last_play = now - last_play;
 	/* The lowest weight should be 0. */
 	if (seconds_since_last_play < 1)

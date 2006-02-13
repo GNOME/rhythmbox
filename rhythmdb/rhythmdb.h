@@ -108,7 +108,10 @@ typedef enum
 	RHYTHMDB_PROP_HIDDEN,
 	RHYTHMDB_PROP_PLAYBACK_ERROR,
 	RHYTHMDB_PROP_FIRST_SEEN_STR,
+
+	/* synthetic properties */
 	RHYTHMDB_PROP_SEARCH_MATCH,
+	RHYTHMDB_PROP_YEAR,
 
 	/* Podcast properties */
 	RHYTHMDB_PROP_STATUS,
@@ -144,259 +147,22 @@ typedef struct {
 } RhythmDBQueryData;
 
 typedef struct {
-	/* podcast */
-	RBRefString *description;
-	RBRefString *subtitle;
-	RBRefString *summary;
-	RBRefString *lang;
-	RBRefString *copyright;
-	RBRefString *image;
-	gulong status;	/* 0-99: downloading
-			   100: Complete
-			   101: Error
-			   102: wait
-			   103: pause */
-	gulong post_time;
-} RhythmDBPodcastFields;
-
-
-typedef struct {
-	/* internal bits */
-#ifndef G_DISABLE_ASSERT
-	guint magic;
-#endif	
-	gboolean inserted;
-	gint refcount;
-	void *data;
-	gulong type;
-	
-	/* metadata */
-	RBRefString *title;
-	RBRefString *artist;
-	RBRefString *album;
-	RBRefString *genre;
-	gulong tracknum;
-	gulong discnum;
-	gulong duration;
-	gulong bitrate;
-	double track_gain;
-	double track_peak;
-	double album_gain;
-	double album_peak;
-	GDate *date;
-
-	/* filesystem */
-	char *location;
-	RBRefString *mountpoint;
-	guint64 file_size;
-	RBRefString *mimetype;
-	gulong mtime;
-	gulong first_seen;
-	gulong last_seen;
-
-	/* user data */
-	gdouble rating;
-	glong play_count;
-	gulong last_played;
-
-	/* cached data */
-	RBRefString *last_played_str;
-	RBRefString *first_seen_str;
-
-	/* playback error string */
-	char *playback_error;
-
-	/* visibility (to hide entries on unmounted volumes) */
-	gboolean hidden;
-
-	/*Podcast*/
-	RhythmDBPodcastFields *podcast;
-} RhythmDBEntry;
-
-typedef struct {
 	RhythmDBPropType prop;
 	GValue old;
 	GValue new;
 } RhythmDBEntryChange;
 
+struct RhythmDBEntry_;
+typedef struct RhythmDBEntry_ RhythmDBEntry;
+
 void rhythmdb_entry_get (RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
-G_INLINE_FUNC const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
-G_INLINE_FUNC gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
-G_INLINE_FUNC guint64 rhythmdb_entry_get_uint64		(RhythmDBEntry *entry, RhythmDBPropType propid);
-G_INLINE_FUNC gulong rhythmdb_entry_get_ulong		(RhythmDBEntry *entry, RhythmDBPropType propid);
-G_INLINE_FUNC double rhythmdb_entry_get_double		(RhythmDBEntry *entry, RhythmDBPropType propid);
+const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
+char *rhythmdb_entry_dup_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
+gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
+guint64 rhythmdb_entry_get_uint64		(RhythmDBEntry *entry, RhythmDBPropType propid);
+gulong rhythmdb_entry_get_ulong		(RhythmDBEntry *entry, RhythmDBPropType propid);
+double rhythmdb_entry_get_double		(RhythmDBEntry *entry, RhythmDBPropType propid);
 
-#if defined (G_CAN_INLINE) || defined (__RHYTHMDB_C__)
-
-G_INLINE_FUNC const char *
-rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
-{
-	switch (propid) {
-	case RHYTHMDB_PROP_TITLE:
-		return rb_refstring_get (entry->title);
-	case RHYTHMDB_PROP_ALBUM:
-		return rb_refstring_get (entry->album);
-	case RHYTHMDB_PROP_ARTIST:
-		return rb_refstring_get (entry->artist);
-	case RHYTHMDB_PROP_GENRE:
-		return rb_refstring_get (entry->genre);
-	case RHYTHMDB_PROP_MIMETYPE:
-		return rb_refstring_get (entry->mimetype);
-	case RHYTHMDB_PROP_TITLE_SORT_KEY:
-		return rb_refstring_get_sort_key (entry->title);
-	case RHYTHMDB_PROP_ALBUM_SORT_KEY:
-		return rb_refstring_get_sort_key (entry->album);
-	case RHYTHMDB_PROP_ARTIST_SORT_KEY:
-		return rb_refstring_get_sort_key (entry->artist);
-	case RHYTHMDB_PROP_GENRE_SORT_KEY:
-		return rb_refstring_get_sort_key (entry->genre);
-	case RHYTHMDB_PROP_TITLE_FOLDED:
-		return rb_refstring_get_folded (entry->title);
-	case RHYTHMDB_PROP_ALBUM_FOLDED:
-		return rb_refstring_get_folded (entry->album);
-	case RHYTHMDB_PROP_ARTIST_FOLDED:
-		return rb_refstring_get_folded (entry->artist);
-	case RHYTHMDB_PROP_GENRE_FOLDED:
-		return rb_refstring_get_folded (entry->genre);
-	case RHYTHMDB_PROP_LOCATION:
-		return entry->location;
-	case RHYTHMDB_PROP_MOUNTPOINT:
-		return rb_refstring_get (entry->mountpoint);
-	case RHYTHMDB_PROP_LAST_PLAYED_STR:
-		return rb_refstring_get (entry->last_played_str);
-	case RHYTHMDB_PROP_PLAYBACK_ERROR:
-		return entry->playback_error;
-	case RHYTHMDB_PROP_FIRST_SEEN_STR:
-		return rb_refstring_get (entry->first_seen_str);
-	case RHYTHMDB_PROP_SEARCH_MATCH:
-		return NULL;	/* synthetic property */
-	/* Podcast properties */
-	case RHYTHMDB_PROP_DESCRIPTION:
-		if (entry->podcast)
-			return rb_refstring_get (entry->podcast->description);
-		else
-			return NULL;
-	case RHYTHMDB_PROP_SUBTITLE:
-		if (entry->podcast)
-			return rb_refstring_get (entry->podcast->subtitle);
-		else
-			return NULL;
-	case RHYTHMDB_PROP_SUMMARY: 
-		if (entry->podcast)
-			return rb_refstring_get (entry->podcast->summary);
-		else
-			return NULL;
-	case RHYTHMDB_PROP_LANG:
-		if (entry->podcast)
-			return rb_refstring_get (entry->podcast->lang);
-		else
-			return NULL;
-	case RHYTHMDB_PROP_COPYRIGHT:
-		if (entry->podcast)
-			return rb_refstring_get (entry->podcast->copyright);
-		else
-			return NULL;
-	case RHYTHMDB_PROP_IMAGE:
-		if (entry->podcast)
-			return rb_refstring_get (entry->podcast->image);
-		else
-			return NULL;
-
-	default:
-		g_assert_not_reached ();
-		return NULL;
-	}
-}
-
-G_INLINE_FUNC gboolean
-rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
-{
-	switch (propid) {
-	case RHYTHMDB_PROP_HIDDEN:
-		return entry->hidden;
-	default:
-		g_assert_not_reached ();
-		return FALSE;
-	}
-}
-
-G_INLINE_FUNC guint64
-rhythmdb_entry_get_uint64 (RhythmDBEntry *entry, RhythmDBPropType propid)
-{
-	switch (propid) {
-	case RHYTHMDB_PROP_FILE_SIZE:
-		return entry->file_size;
-	default:
-		g_assert_not_reached ();
-		return 0;
-	}
-}
-
-G_INLINE_FUNC gulong
-rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
-{
-	switch (propid) {
-	case RHYTHMDB_PROP_TYPE:
-		return entry->type;
-	case RHYTHMDB_PROP_TRACK_NUMBER:
-		return entry->tracknum;
-	case RHYTHMDB_PROP_DISC_NUMBER:
-		return entry->discnum;
-	case RHYTHMDB_PROP_DURATION:
-		return entry->duration;
-	case RHYTHMDB_PROP_MTIME:
-		return entry->mtime;
-	case RHYTHMDB_PROP_FIRST_SEEN:
-		return entry->first_seen;
-	case RHYTHMDB_PROP_LAST_SEEN:
-		return entry->last_seen;
-	case RHYTHMDB_PROP_LAST_PLAYED:
-		return entry->last_played;
-	case RHYTHMDB_PROP_PLAY_COUNT:
-		return entry->play_count;
-	case RHYTHMDB_PROP_BITRATE:
-		return entry->bitrate;		
-	case RHYTHMDB_PROP_DATE:
-		if (entry->date)
-			return g_date_get_julian (entry->date);
-		else
-			return 0;
-	case RHYTHMDB_PROP_POST_TIME:
-		if (entry->podcast)
-			return entry->podcast->post_time;
-		else
-			return 0;
-	case RHYTHMDB_PROP_STATUS:
-		if (entry->podcast)
-			return entry->podcast->status;		
-		else
-			return 0;
-	default:
-		g_assert_not_reached ();
-		return 0;
-	}
-}
-
-G_INLINE_FUNC double
-rhythmdb_entry_get_double (RhythmDBEntry *entry, RhythmDBPropType propid)
-{
-	switch (propid) {
-	case RHYTHMDB_PROP_TRACK_GAIN:
-		return entry->track_gain;
-	case RHYTHMDB_PROP_TRACK_PEAK:
-		return entry->track_peak;
-	case RHYTHMDB_PROP_ALBUM_GAIN:
-		return entry->album_gain;
-	case RHYTHMDB_PROP_ALBUM_PEAK:
-		return entry->album_peak;
-	case RHYTHMDB_PROP_RATING:
-		return entry->rating;
-	default:
-		g_assert_not_reached ();
-		return 0.0;
-	}
-}
-#endif
 
 typedef enum
 {

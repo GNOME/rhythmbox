@@ -640,7 +640,7 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		entry_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
 		entry_album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 		entry_genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
-		entry_year = (entry->date) ? g_date_get_year (entry->date) : 0;
+		entry_year = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
 		entry_disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
 
 		/* grab first valid values */
@@ -688,32 +688,33 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 static void 
 rb_song_info_populate_dialog (RBSongInfo *song_info)
 {
-	const char *text = NULL;
+	const char *text;
 	char *tmp;
+	ulong num;
 	
 	g_assert (song_info->priv->current_entry);
 
 	/* update the buttons sensitivity */
 	rb_song_info_update_buttons (song_info);
 
-	text = rb_refstring_get (song_info->priv->current_entry->title);
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_TITLE);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->title), text);
 	
 	tmp = g_strdup_printf (_("%s Properties"), text);
 	gtk_window_set_title (GTK_WINDOW (song_info), tmp);
 	g_free (tmp);
 
-	text = rb_refstring_get (song_info->priv->current_entry->artist);
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_ARTIST);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->artist), text);
-	text = rb_refstring_get (song_info->priv->current_entry->album);
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_ALBUM);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->album), text);
-	text = rb_refstring_get (song_info->priv->current_entry->genre);
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_GENRE);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->genre), text);
 
-	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->track_cur),
-					 song_info->priv->current_entry->tracknum);
-	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur),
-					 song_info->priv->current_entry->discnum);
+	num = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_TRACK_NUMBER);
+	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->track_cur), num);
+	num = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_DISC_NUMBER);
+	rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur), num);
 
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
@@ -733,8 +734,7 @@ rb_song_info_update_playback_error (RBSongInfo *song_info)
 	if (!song_info->priv->current_entry)
 		return;
 
-	if (song_info->priv->current_entry->playback_error)
-		message = g_strdup (song_info->priv->current_entry->playback_error);
+	message = rhythmdb_entry_dup_string (song_info->priv->current_entry, RHYTHMDB_PROP_PLAYBACK_ERROR);
 
 	if (message) {
 		gtk_label_set_text (GTK_LABEL (song_info->priv->playback_error_label),
@@ -754,7 +754,7 @@ rb_song_info_update_bitrate (RBSongInfo *song_info)
 {
 	char *tmp = NULL;
 	gulong bitrate = 0;
-	bitrate = song_info->priv->current_entry->bitrate;
+	bitrate = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_BITRATE);
 
 	if (bitrate > 0)
 		tmp = g_strdup_printf (_("%lu kbps"), bitrate);
@@ -771,7 +771,7 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 	char *text = NULL;
 	long duration = 0;
 	int minutes, seconds;
-	duration = song_info->priv->current_entry->duration;
+	duration = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_DURATION);
 	minutes = duration / 60;
 	seconds = duration % 60;
 	text = g_strdup_printf ("%d:%02d", minutes, seconds);
@@ -786,7 +786,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 	g_return_if_fail (song_info != NULL);
 
-	text = song_info->priv->current_entry->location;
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_LOCATION);
 
 	if (text != NULL) {
 		char *tmp, *tmp_utf8;
@@ -912,8 +912,11 @@ rb_song_info_query_model_changed_cb (GObject *source,
 static void
 rb_song_info_update_play_count (RBSongInfo *song_info)
 {
+	gulong num;
 	char *text;
-	text = g_strdup_printf ("%ld", song_info->priv->current_entry->play_count);
+
+	num = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_PLAY_COUNT);
+	text = g_strdup_printf ("%ld", num);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->play_count), text);
 	g_free (text);
 }
@@ -922,7 +925,7 @@ static void
 rb_song_info_update_last_played (RBSongInfo *song_info)
 {
 	const char *str;
-	str = rb_refstring_get (song_info->priv->current_entry->last_played_str);
+	str = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_LAST_PLAYED_STR);
 	if (!strcmp ("", str))
 		str = _("Never");
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), str);
@@ -931,21 +934,24 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 static void
 rb_song_info_update_rating (RBSongInfo *song_info)
 {
+	double rating;
+
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 
+	rating = rhythmdb_entry_get_double (song_info->priv->current_entry, RHYTHMDB_PROP_RATING);
 	g_object_set (G_OBJECT (song_info->priv->rating),
-		      "rating", song_info->priv->current_entry->rating,
+		      "rating", rating,
 		      NULL);
-
 }
 
 static void
 rb_song_info_update_year (RBSongInfo *song_info)
 {
+	ulong year;
 	char *text;
 
-	if (song_info->priv->current_entry->date) {
-		gulong year = g_date_get_year (song_info->priv->current_entry->date);
+	year = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_YEAR);
+	if (year > 0) {
 		text = g_strdup_printf ("%lu", year);
 	} else {
 		text = g_strdup (_("Unknown"));
@@ -975,8 +981,12 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, album);
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			const char *entry_album;
+			
 			entry = (RhythmDBEntry *)tem->data;
-			if (strcmp (album, rb_refstring_get (entry->album)) == 0)
+			entry_album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+			
+			if (strcmp (album, entry_album) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_ALBUM, &val);
@@ -989,8 +999,12 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, artist);
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			const char *entry_artist;
+			
 			entry = (RhythmDBEntry *)tem->data;
-			if (strcmp (artist, rb_refstring_get (entry->artist)) == 0)
+			entry_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+			
+			if (strcmp (artist, entry_artist) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_ARTIST, &val);
@@ -1003,8 +1017,12 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, genre);
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			const char *entry_genre;
+
 			entry = (RhythmDBEntry *)tem->data;
-			if (strcmp (genre, rb_refstring_get (entry->genre)) == 0)
+			entry_genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
+			
+			if (strcmp (genre, entry_genre) == 0)
 				continue;
 			rhythmdb_entry_set (dialog->priv->db, entry,
 					    RHYTHMDB_PROP_GENRE, &val);
@@ -1049,8 +1067,12 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_set_ulong (&val, discn);
 
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			ulong entry_disc_num;
+			
 			entry = (RhythmDBEntry *)tem->data;
-			if (discn != entry->discnum) {
+			entry_disc_num = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
+
+			if (discn != entry_disc_num) {
 				rhythmdb_entry_set (dialog->priv->db, entry,
 						    RHYTHMDB_PROP_DISC_NUMBER, &val);
 				changed = TRUE;
@@ -1067,27 +1089,38 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 static void
 rb_song_info_sync_entry_single (RBSongInfo *dialog)
 {
-	const char *title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
-	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
-	const char *artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
-	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
-	const char *tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
-	const char *discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
-	const char *year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
+	const char *title;
+	const char *genre;
+	const char *artist;
+	const char *album;	
+	const char *tracknum_str;
+	const char *discnum_str;
+	const char *year_str;
+	const char *entry_string;
 	char *endptr;
 	GType type;
-	gint tracknum;
-	gint discnum;
-	gint year;
+	gulong tracknum;
+	gulong discnum;
+	gulong year;
+	gulong entry_val;
 	GValue val = {0,};
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry = dialog->priv->current_entry;
+
+	title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
+	genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
+	artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
+	album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
+	tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
+	discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
+	year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
 
 	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[PRE_METADATA_CHANGE], 0,
 		       entry);
 
 	tracknum = g_ascii_strtoull (tracknum_str, &endptr, 10);
-	if ((endptr != tracknum_str) && (tracknum != entry->tracknum)) {
+	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
+	if ((endptr != tracknum_str) && (tracknum != entry_val)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_TRACK_NUMBER);
 		g_value_init (&val, type);
@@ -1098,7 +1131,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 	
 	discnum = g_ascii_strtoull (discnum_str, &endptr, 10);
-	if ((endptr != discnum_str) && (discnum != entry->discnum)) {
+	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
+	if ((endptr != discnum_str) && (discnum != entry_val)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_DISC_NUMBER);
 		g_value_init (&val, type);
@@ -1109,13 +1143,17 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 	
 	year = g_ascii_strtoull (year_str, &endptr, 10);
+	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
 	if ((endptr != year_str) && 
-	    (entry->date == NULL || year != g_date_get_year (entry->date))) {
+	    (year > 0 || year != entry_val)) {
 		GDate *date = NULL;
 	
 		if (year > 0) {
-			if (entry->date) {
-				date = g_date_new_julian (g_date_get_julian (entry->date));
+			if (entry_val > 0) {
+				gulong julian;
+
+				julian = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
+				date = g_date_new_julian (julian);
 				g_date_set_year (date, year);
 			} else {
 				date = g_date_new_dmy (1, G_DATE_JANUARY, year);
@@ -1135,7 +1173,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	}
 
 
-	if (strcmp (title, rb_refstring_get (entry->title))) {
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+	if (strcmp (title, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_TITLE);
 		g_value_init (&val, type);
@@ -1146,8 +1185,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		changed = TRUE;
 	}
 
-
-	if (strcmp (album, rb_refstring_get (entry->album))) {
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+	if (strcmp (album, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_ALBUM);
 		g_value_init (&val, type);
@@ -1158,7 +1197,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		changed = TRUE;
 	}
 
-	if (strcmp (artist, rb_refstring_get (entry->artist))) {
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	if (strcmp (artist, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_ARTIST);
 		g_value_init (&val, type);
@@ -1169,8 +1209,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		changed = TRUE;
 	}
 
-
-	if (strcmp (genre, rb_refstring_get (entry->genre))) {
+	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
+	if (strcmp (genre, entry_string)) {
 		type = rhythmdb_get_property_type (dialog->priv->db,
 						   RHYTHMDB_PROP_GENRE);
 		g_value_init (&val, type);

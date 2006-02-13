@@ -1451,10 +1451,12 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 		break;
 	default:
 		{
-			char *s = g_strdup_printf ("%u %%", (guint)entry->podcast->status);
+			char *s;
+
+			value = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+			s = g_strdup_printf ("%u %%", value);
 			
 			g_object_set (G_OBJECT (renderer), "text", s, NULL);
-			value = entry->podcast->status;
 			g_free (s);
 		}
 	}

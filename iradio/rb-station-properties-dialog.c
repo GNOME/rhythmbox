@@ -317,7 +317,7 @@ rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 	char *tmp;
 
 	if (dialog->priv->current_entry) {
-		name = rb_refstring_get (dialog->priv->current_entry->title);
+		name = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_TITLE);
 		tmp = g_strdup_printf (_("%s Properties"), name);
 		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 		g_free (tmp);
@@ -329,22 +329,29 @@ rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_update_title_entry (RBStationPropertiesDialog *dialog)
 {
-	gtk_entry_set_text (GTK_ENTRY (dialog->priv->title),
-			    rb_refstring_get (dialog->priv->current_entry->title));
+	const char *title;
+
+	title = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_TITLE);
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->title),title);
 }
 
 static void
 rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog)
 {
-	gtk_entry_set_text (GTK_ENTRY (dialog->priv->genre),
-			    rb_refstring_get (dialog->priv->current_entry->genre));
+	const char *genre;
+
+	genre = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_GENRE);
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->genre), genre);
 }
 
 static void
 rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 {
+	const char *location;
 	char *unescaped;
-	unescaped = gnome_vfs_unescape_string_for_display (dialog->priv->current_entry->location);
+
+	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
+	unescaped = gnome_vfs_unescape_string_for_display (location);
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location), unescaped);
 	g_free (unescaped);
 }
@@ -384,7 +391,7 @@ rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialo
 	long int count = 0;
 
 	if (dialog->priv->current_entry)
-		count = dialog->priv->current_entry->play_count;
+		count = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_PLAY_COUNT);
 
 	text = g_strdup_printf ("%ld", count);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->playcount), text);
@@ -398,7 +405,7 @@ rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 	char *text;
 
 	if (dialog->priv->current_entry)
-		val = dialog->priv->current_entry->bitrate;
+		val = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_BITRATE);
 
 	if (val == 0)
 		text = g_strdup (_("Unknown"));
@@ -415,7 +422,7 @@ rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dial
 	const char *last_played = _("Never");
 
 	if (dialog->priv->current_entry)
-		last_played = rb_refstring_get (dialog->priv->current_entry->last_played_str);
+		last_played = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LAST_PLAYED_STR);
 	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed), last_played);
 }
 
@@ -426,7 +433,7 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
 	if (dialog->priv->current_entry)
-		rating = dialog->priv->current_entry->rating;
+		rating = rhythmdb_entry_get_double (dialog->priv->current_entry, RHYTHMDB_PROP_RATING);
 	
 	g_object_set (G_OBJECT (dialog->priv->rating), "rating", rating, NULL);
 }
@@ -434,11 +441,13 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_update_playback_error (RBStationPropertiesDialog *dialog)
 {
+	const char *error;
+	
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
-	if (dialog->priv->current_entry && dialog->priv->current_entry->playback_error) {
-		gtk_label_set_text (GTK_LABEL (dialog->priv->playback_error),
-				    dialog->priv->current_entry->playback_error);
+	error = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_PLAYBACK_ERROR);
+	if (dialog->priv->current_entry && error) {
+		gtk_label_set_text (GTK_LABEL (dialog->priv->playback_error), error);
 		gtk_widget_show (dialog->priv->playback_error_box);
 	} else {
 		gtk_label_set_text (GTK_LABEL (dialog->priv->playback_error), "");
@@ -449,14 +458,20 @@ rb_station_properties_dialog_update_playback_error (RBStationPropertiesDialog *d
 static void
 rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 {
-	const char *title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
-	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
-	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
+	const char *title;
+	const char *genre;
+	const char *location;
+	const char *string;
 	GValue val = {0,};
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry = dialog->priv->current_entry;
 
-	if (strcmp (title, rb_refstring_get (entry->title))) {
+	title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
+	genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
+	location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
+
+	string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+	if (strcmp (title, string)) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, title);
 		rhythmdb_entry_set (dialog->priv->db, entry, 
@@ -466,7 +481,8 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 		changed = TRUE;
 	}
 
-	if (strcmp (genre, rb_refstring_get (entry->genre))) {
+	string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
+	if (strcmp (genre, string)) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, genre);
 		rhythmdb_entry_set (dialog->priv->db, entry, 
@@ -475,7 +491,8 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 		changed = TRUE;
 	}
 
-	if (strcmp (location, entry->location)) {
+	string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	if (strcmp (location, string)) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, location);
 		rhythmdb_entry_set (dialog->priv->db, entry,

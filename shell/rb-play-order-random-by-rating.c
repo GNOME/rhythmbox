@@ -63,9 +63,8 @@ rb_random_by_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, R
 {
 	double rating;
 
-	if (entry->rating > 0.01)
-		rating = entry->rating;
-	else
+	rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING);
+	if (rating < 0.01)
 		rating = 2.5;
 
 	return rating;

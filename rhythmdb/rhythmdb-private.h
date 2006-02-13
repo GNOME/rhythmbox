@@ -30,6 +30,76 @@ G_BEGIN_DECLS
 RhythmDBEntry * rhythmdb_entry_allocate		(RhythmDB *db, RhythmDBEntryType type);
 void		rhythmdb_entry_insert		(RhythmDB *db, RhythmDBEntry *entry);
 
+typedef struct {
+	/* podcast */
+	RBRefString *description;
+	RBRefString *subtitle;
+	RBRefString *summary;
+	RBRefString *lang;
+	RBRefString *copyright;
+	RBRefString *image;
+	gulong status;	/* 0-99: downloading
+			   100: Complete
+			   101: Error
+			   102: wait
+			   103: pause */
+	gulong post_time;
+} RhythmDBPodcastFields;
+
+
+struct RhythmDBEntry_ {
+	/* internal bits */
+#ifndef G_DISABLE_ASSERT
+	guint magic;
+#endif	
+	gboolean inserted;
+	gint refcount;
+	void *data;
+	gulong type;
+	
+	/* metadata */
+	RBRefString *title;
+	RBRefString *artist;
+	RBRefString *album;
+	RBRefString *genre;
+	gulong tracknum;
+	gulong discnum;
+	gulong duration;
+	gulong bitrate;
+	double track_gain;
+	double track_peak;
+	double album_gain;
+	double album_peak;
+	GDate *date;
+
+	/* filesystem */
+	char *location;
+	RBRefString *mountpoint;
+	guint64 file_size;
+	RBRefString *mimetype;
+	gulong mtime;
+	gulong first_seen;
+	gulong last_seen;
+
+	/* user data */
+	gdouble rating;
+	glong play_count;
+	gulong last_played;
+
+	/* cached data */
+	RBRefString *last_played_str;
+	RBRefString *first_seen_str;
+
+	/* playback error string */
+	char *playback_error;
+
+	/* visibility (to hide entries on unmounted volumes) */
+	gboolean hidden;
+
+	/*Podcast*/
+	RhythmDBPodcastFields *podcast;
+};
+
 G_END_DECLS
 
 #endif /* __RHYTHMDB_PRIVATE_H */

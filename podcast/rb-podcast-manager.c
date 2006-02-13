@@ -435,10 +435,12 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 gboolean
 rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
 {
-	g_assert (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
-
 	gulong status;
 	const gchar *file_name;
+	gulong type;
+
+	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	g_assert (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 	file_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
@@ -961,7 +963,8 @@ static void
 rb_podcast_manager_db_entry_added_cb (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
 
-	if (entry->type != RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+	gulong type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	if (type != RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		return;
 	
         rb_podcast_manager_download_entry (pd, entry);
@@ -1214,7 +1217,13 @@ download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressIn
 			local_progress = (gint) 100 * info->total_bytes_copied / info->file_size;
 
 		if (local_progress != data->progress) {
-			data->entry->podcast->status = local_progress;
+			GValue val = {0,};
+
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, local_progress);
+			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
+
 			GDK_THREADS_ENTER ();
 			
 			g_signal_emit (data->pd, rb_podcast_manager_signals[STATUS_CHANGED],
@@ -1223,7 +1232,6 @@ download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressIn
 			GDK_THREADS_LEAVE ();
 			data->progress = local_progress;
 		}
-		
 	}
 	
 	return GNOME_VFS_XFER_ERROR_ACTION_SKIP;
@@ -1261,7 +1269,9 @@ static void
 rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
 
-	if ( (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) && (pd->priv->remove_files == TRUE) )
+	gulong type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+
+	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) && (pd->priv->remove_files == TRUE) )
 	{
 		const gchar *file_name;
 		const gchar *dir_name;
@@ -1292,7 +1302,7 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 			gnome_vfs_remove_directory (dir_name);
 		}
 	}
-	else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
+	else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 	{
 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
 		GtkTreeIter iter;

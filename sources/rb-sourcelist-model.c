@@ -524,7 +524,7 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 			}
 
 			entry = rhythmdb_query_model_iter_to_entry (query_model, &iter);
-			g_string_append (data, entry->location);
+			g_string_append (data, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (query_model), &iter));
 		g_object_unref (G_OBJECT (query_model));

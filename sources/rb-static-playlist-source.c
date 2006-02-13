@@ -345,10 +345,12 @@ impl_save_contents_to_xml (RBPlaylistSource *source,
 		xmlNodePtr child_node = xmlNewChild (node, NULL, RB_PLAYLIST_LOCATION, NULL);
 		RhythmDBEntry *entry;
 		xmlChar *encoded;
+		const char *location;
 
 		gtk_tree_model_get (GTK_TREE_MODEL (priv->base_model), &iter, 0, &entry, -1);
 
-		encoded = xmlEncodeEntitiesReentrant (NULL, BAD_CAST entry->location);
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		encoded = xmlEncodeEntitiesReentrant (NULL, BAD_CAST location);
 
 		xmlNodeSetContent (child_node, encoded);
 		g_free (encoded);
@@ -495,14 +497,20 @@ rb_static_playlist_source_add_entry (RBStaticPlaylistSource *source,
 				     RhythmDBEntry *entry,
 				     gint index)
 {
-	rb_static_playlist_source_add_location_internal (source, entry->location, index);
+	const char *location;
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	rb_static_playlist_source_add_location_internal (source, location, index);
 }
 
 void
 rb_static_playlist_source_remove_entry (RBStaticPlaylistSource *source,
 					RhythmDBEntry *entry)
 {
-	rb_static_playlist_source_remove_location (source, entry->location);
+	const char *location;
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	rb_static_playlist_source_remove_location (source, location);
 }
 
 void

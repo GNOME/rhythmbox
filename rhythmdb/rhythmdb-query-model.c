@@ -742,7 +742,8 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_init (&false_val, G_TYPE_BOOLEAN);
 		g_value_set_boolean (&false_val, FALSE);
 		
-		rb_debug ("emitting hidden-removal notification for %s", entry->location);
+		rb_debug ("emitting hidden-removal notification for %s",
+			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		g_signal_emit (G_OBJECT (model),
 			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
 			       entry, RHYTHMDB_PROP_HIDDEN, &false_val, &true_val);
@@ -978,8 +979,8 @@ rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model, RhythmDBE
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
 	
-	model->priv->total_duration -= entry->duration;
-	model->priv->total_size -= entry->file_size;
+	model->priv->total_duration -= rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+	model->priv->total_size -= rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 
 	g_sequence_remove (ptr);
 	g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
@@ -1029,8 +1030,8 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 		if (!entry)
 			break;
 
-		size = entry->file_size;
-		duration = entry->duration;
+		size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+		duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 
 		if ((model->priv->max_count > 0 && (g_hash_table_size (model->priv->reverse_map) + 1) > model->priv->max_count) ||
 		    (model->priv->max_size > 0 && model->priv->total_size + size > model->priv->max_size) ||
@@ -1404,7 +1405,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 
 			entry = g_sequence_ptr_get_data (iter.user_data);
 
-			location = entry->location;
+			location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 			g_string_append (data, location);
 
 			if (tem->next)
@@ -2073,6 +2074,8 @@ rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 {
 	const char *a_val;
 	const char *b_val;
+	ulong a_num;
+	ulong b_num;
 	gint ret;
 
 	/* Sort by album name */
@@ -2093,12 +2096,16 @@ rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 		return ret;
 
 	/* Then by disc number, */
-	if (a->discnum != b->discnum)
-		return (a->discnum < b->discnum ? -1 : 1);
+	a_num = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_DISC_NUMBER);
+	b_num = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_DISC_NUMBER);
+	if (a_num != b_num)
+		return (a_num < b_num ? -1 : 1);
 
 	/* by track number */
-	if (a->tracknum != b->tracknum)
-		return (a->tracknum < b->tracknum ? -1 : 1);
+	a_num = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_TRACK_NUMBER);
+	b_num = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_TRACK_NUMBER);
+	if (a_num != b_num)
+		return (a_num < b_num ? -1 : 1);
 
 	/*  by title */
 	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);

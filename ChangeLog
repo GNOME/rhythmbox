@@ -1,3 +1,99 @@
+2006-02-13  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb-private.h: Make definition of RhythmDBEntry
+	structure private, since things should use the accessor functions
+	rather than manipulating it directly - Only RhythmDB and the
+	implementation classes should access it directly. Part of the RhythmDB
+	cleanup of bug 330226.
+
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_update_title),
+	(rb_station_properties_dialog_update_title_entry),
+	(rb_station_properties_dialog_update_genre),
+	(rb_station_properties_dialog_update_location),
+	(rb_station_properties_dialog_update_play_count),
+	(rb_station_properties_dialog_update_bitrate),
+	(rb_station_properties_dialog_update_last_played),
+	(rb_station_properties_dialog_update_rating),
+	(rb_station_properties_dialog_update_playback_error),
+	(rb_station_properties_dialog_sync_entries):
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_update_title),
+	(rb_feed_podcast_properties_dialog_update_title_label),
+	(rb_feed_podcast_properties_dialog_update_author),
+	(rb_feed_podcast_properties_dialog_update_location),
+	(rb_feed_podcast_properties_dialog_update_copyright),
+	(rb_feed_podcast_properties_dialog_update_language),
+	(rb_feed_podcast_properties_dialog_update_summary):
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_entry_downloaded),
+	(rb_podcast_manager_db_entry_added_cb),
+	(download_progress_update_cb),
+	(rb_podcast_manager_db_entry_deleted_cb):
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_update_title),
+	(rb_podcast_properties_dialog_update_title_label),
+	(rb_podcast_properties_dialog_update_feed),
+	(rb_podcast_properties_dialog_update_location),
+	(rb_podcast_properties_dialog_update_play_count),
+	(rb_podcast_properties_dialog_update_bitrate),
+	(rb_podcast_properties_dialog_update_last_played),
+	(rb_podcast_properties_dialog_update_rating),
+	(rb_podcast_properties_dialog_update_date),
+	(rb_podcast_properties_dialog_update_description):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_remove_from_main_list),
+	(rhythmdb_query_model_update_limited_entries),
+	(rhythmdb_query_model_drag_data_get),
+	(rhythmdb_query_model_album_sort_func):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_internal),
+	(rhythmdb_prop_get_type), (rhythmdb_entry_dup_string),
+	(rhythmdb_entry_get_string), (rhythmdb_entry_get_boolean),
+	(rhythmdb_entry_get_uint64), (rhythmdb_entry_get_ulong),
+	(rhythmdb_entry_get_double):
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
+	* shell/rb-play-order-random-by-age-and-rating.c:
+	(rb_random_by_age_and_rating_get_entry_weight):
+	* shell/rb-play-order-random-by-age.c:
+	(rb_random_by_age_get_entry_weight):
+	* shell/rb-play-order-random-by-rating.c:
+	(rb_random_by_rating_get_entry_weight):
+	* shell/rb-playlist-manager.c: (create_name_from_selection_data):
+	* shell/rb-shell-player.c: (rb_shell_player_open_entry),
+	(rb_shell_player_set_playing_entry),
+	(rb_shell_player_sync_replaygain),
+	(rb_shell_player_sync_with_source),
+	(rb_shell_player_get_playing_song_duration), (info_available_cb):
+	* sources/rb-playlist-source.c: (playlist_iter_func),
+	(burn_playlist_iter_func), (rb_playlist_source_row_deleted),
+	(rb_playlist_source_entry_added_cb):
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_post_status_cell_data_func):
+	* sources/rb-source.c: (rb_source_update_play_statistics):
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_drag_data_get):
+	* sources/rb-static-playlist-source.c: (impl_save_contents_to_xml),
+	(rb_static_playlist_source_add_entry),
+	(rb_static_playlist_source_remove_entry):
+	* widgets/rb-entry-view.c: (type_ahead_search_func),
+	(rb_entry_view_playing_cell_data_func),
+	(rb_entry_view_rating_cell_data_func),
+	(rb_entry_view_pixbuf_clicked_cb):
+	* widgets/rb-header.c: (rb_header_get_duration):
+	* widgets/rb-song-info.c: (rb_song_info_populate_dialog_multiple),
+	(rb_song_info_populate_dialog),
+	(rb_song_info_update_playback_error),
+	(rb_song_info_update_bitrate), (rb_song_info_update_duration),
+	(rb_song_info_update_location), (rb_song_info_update_play_count),
+	(rb_song_info_update_last_played), (rb_song_info_update_rating),
+	(rb_song_info_update_year), (rb_song_info_sync_entries_multiple),
+	(rb_song_info_sync_entry_single): fix the huge number of times that
+	the internals got accessed directly.
+
 2006-02-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* data/ui/rhythmbox-ui.xml: Move separator so 'remove' and 'move to

@@ -962,25 +962,28 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBAudioscrobbler *audioscrobbler)
 {
+	gulong type;
 	gchar *old_artist;
 	gchar *old_album;
 	gchar *old_title;
 
 	if (entry == NULL)
 		return;
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
-	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
-	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
+
+	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
+	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
+	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 		return;
 
 	old_artist = audioscrobbler->priv->artist;
 	old_album = audioscrobbler->priv->album;
 	old_title = audioscrobbler->priv->title;
 
-	audioscrobbler->priv->artist = g_strdup (rb_refstring_get (entry->artist));
-	audioscrobbler->priv->album = g_strdup (rb_refstring_get (entry->album));
-	audioscrobbler->priv->title = g_strdup (rb_refstring_get (entry->title));
-	audioscrobbler->priv->duration = (int) entry->duration;
+	audioscrobbler->priv->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	audioscrobbler->priv->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	audioscrobbler->priv->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
+	audioscrobbler->priv->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 	guint time;
 	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &time, NULL);
 	audioscrobbler->priv->elapsed = (int) time;

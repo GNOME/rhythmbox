@@ -194,11 +194,13 @@ type_ahead_search_func (GtkTreeModel *model, gint column,
 {
 	RhythmDBEntry *entry;
 	gchar *folded;
+	const gchar *entry_folded;
 	gboolean res;
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 	folded = rb_search_fold (key);
-	res = (strstr (rb_refstring_get_folded (entry->title), folded) == NULL);
+	entry_folded = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_FOLDED);
+	res = (strstr (entry_folded, folded) == NULL);
 	g_free (folded);
 	return res;
 }
@@ -594,7 +596,7 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 			pixbuf = NULL;
 			break;
 		}
-	} else if (entry->playback_error) {
+	} else if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
 		pixbuf = view->priv->error_pixbuf;
 	} else {
 		pixbuf = NULL;
@@ -612,7 +614,9 @@ rb_entry_view_rating_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 
 	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
 
-	g_object_set (G_OBJECT (renderer), "rating", entry->rating, NULL);
+	g_object_set (G_OBJECT (renderer),
+		      "rating", rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING),
+		      NULL);
 }
 
 static void
@@ -1294,6 +1298,7 @@ rb_entry_view_pixbuf_clicked_cb (RBEntryView          *view,
 {
 	GtkTreePath *path;
 	RhythmDBEntry *entry;
+	const gchar *error;
 
 	g_return_if_fail (path_string != NULL);
 
@@ -1302,9 +1307,9 @@ rb_entry_view_pixbuf_clicked_cb (RBEntryView          *view,
 
 	gtk_tree_path_free (path);
 
-	if (entry->playback_error) {
-		rb_error_dialog (NULL, _("Playback Error"),
-				 "%s", entry->playback_error);
+	error = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR);
+	if (error) {
+		rb_error_dialog (NULL, _("Playback Error"), "%s", error);
 	}
 }
 

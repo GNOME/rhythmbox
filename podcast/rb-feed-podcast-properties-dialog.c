@@ -206,7 +206,7 @@ rb_feed_podcast_properties_dialog_update_title (RBFeedPodcastPropertiesDialog *d
 {
 	const char *name;
 	char *tmp;	
-	name = rb_refstring_get (dialog->priv->current_entry->title);
+	name = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_TITLE);
 	tmp = g_strdup_printf (_("%s Properties"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 	g_free (tmp);
@@ -215,22 +215,29 @@ rb_feed_podcast_properties_dialog_update_title (RBFeedPodcastPropertiesDialog *d
 static void
 rb_feed_podcast_properties_dialog_update_title_label (RBFeedPodcastPropertiesDialog *dialog)
 {
-	gtk_label_set_text (GTK_LABEL (dialog->priv->title),
-			    rb_refstring_get (dialog->priv->current_entry->title));
+	const char *title;
+
+	title = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_TITLE);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->title), title);
 }
 
 static void
 rb_feed_podcast_properties_dialog_update_author (RBFeedPodcastPropertiesDialog *dialog)
 {
-	gtk_label_set_text (GTK_LABEL (dialog->priv->author),
-			    rb_refstring_get (dialog->priv->current_entry->artist));
+	const char *artist;
+
+	artist = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_ARTIST);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->author), artist);
 }
 
 static void
 rb_feed_podcast_properties_dialog_update_location (RBFeedPodcastPropertiesDialog *dialog)
 {
+	const char *location;
 	char *unescaped;
-	unescaped = gnome_vfs_unescape_string_for_display (dialog->priv->current_entry->location);
+
+	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
+	unescaped = gnome_vfs_unescape_string_for_display (location);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->location), unescaped);
 	g_free (unescaped);
 }
@@ -238,15 +245,19 @@ rb_feed_podcast_properties_dialog_update_location (RBFeedPodcastPropertiesDialog
 static void
 rb_feed_podcast_properties_dialog_update_copyright (RBFeedPodcastPropertiesDialog *dialog)
 {
-	gtk_label_set_text (GTK_LABEL (dialog->priv->copyright),
-			    rb_refstring_get (dialog->priv->current_entry->podcast->copyright));
+	const char *copyright;
+
+	copyright = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_COPYRIGHT);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->copyright), copyright);
 }
 
 static void
 rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog *dialog)
 {
-	gtk_label_set_text (GTK_LABEL (dialog->priv->language),
-			    rb_refstring_get (dialog->priv->current_entry->podcast->lang));
+	const char *language;
+
+	language = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LANG);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->language), language);
 }
 
 static void
@@ -276,8 +287,10 @@ rb_feed_podcast_properties_dialog_update_last_episode (RBFeedPodcastPropertiesDi
 static void
 rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog *dialog)
 {
-	gtk_label_set (GTK_LABEL (dialog->priv->summary),
-		       rb_refstring_get (dialog->priv->current_entry->podcast->summary));
+	const char *summary;
+
+	summary = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_SUMMARY);
+	gtk_label_set (GTK_LABEL (dialog->priv->summary), summary);
 }
 
 static char *

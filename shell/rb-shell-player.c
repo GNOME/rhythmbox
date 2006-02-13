@@ -971,10 +971,16 @@ rb_shell_player_open_location (RBShellPlayer *player,
 static gboolean
 rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
-		return rb_shell_player_open_location (player, rb_refstring_get (entry->mountpoint), error);
+	gulong type;
+	const char *location;
+
+	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	else
-		return rb_shell_player_open_location (player, entry->location, error);
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+
+	return rb_shell_player_open_location (player, location, error);
 }
 
 static gboolean
@@ -1029,6 +1035,8 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 				   GError **error)
 {
 	GError *tmp_error = NULL;
+	const char *location;
+	GValue val = {0,};
 	
 	g_return_val_if_fail (player->priv->current_playing_source != NULL, TRUE);
 	g_return_val_if_fail (entry != NULL, TRUE);
@@ -1048,15 +1056,18 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 
 	rb_debug ("Success!");
 	/* clear error on successful playback */
-	g_free (entry->playback_error);
-	entry->playback_error = NULL;
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, NULL);
+	rhythmdb_entry_set (player->priv->db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+	g_value_unset (&val);
 
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	g_signal_emit (G_OBJECT (player),
 		       rb_shell_player_signals[PLAYING_SONG_CHANGED], 0,
 		       entry);
 	g_signal_emit (G_OBJECT (player),
 		       rb_shell_player_signals[PLAYING_URI_CHANGED], 0,
-		       entry->location);
+		       location);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -1605,10 +1616,10 @@ rb_shell_player_sync_replaygain (RBShellPlayer *player, RhythmDBEntry *entry)
 	double entry_album_peak = 0;
 	
 	if (entry != NULL) {
-             	entry_track_gain = entry->track_gain;
-             	entry_track_peak = entry->track_peak;
-             	entry_album_gain = entry->album_gain;
-             	entry_album_peak = entry->album_peak;
+             	entry_track_gain = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_TRACK_GAIN);
+             	entry_track_peak = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_TRACK_PEAK);
+             	entry_album_gain = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_ALBUM_GAIN);
+             	entry_album_peak = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_ALBUM_PEAK);
 	}
 
 	rb_player_set_replaygain (player->priv->mmplayer, entry_track_gain, 
@@ -1865,8 +1876,8 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	rb_debug ("playing source: %p, active entry: %p", player->priv->current_playing_source, entry);
 
 	if (entry != NULL) {
-		entry_title = rb_refstring_get (entry->title);
-		artist = rb_refstring_get (entry->artist);
+		entry_title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+		artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
 	}
 
 	if (player->priv->have_url)
@@ -2136,7 +2147,7 @@ rb_shell_player_get_playing_song_duration (RBShellPlayer *player)
 		return -1;
 	}
 	
-	return current_entry->duration;
+	return rhythmdb_entry_get_ulong (current_entry, RHYTHMDB_PROP_DURATION);
 }
 
 static void
@@ -2294,6 +2305,8 @@ info_available_cb (RBPlayer *mmplayer,
         RhythmDBPropType entry_field = 0;
         gboolean changed = FALSE;
         gboolean set_field = FALSE;
+	gulong type;
+	
         rb_debug ("info: %d", field);
 
         /* Sanity check, this signal may come in after we stopped the
@@ -2312,7 +2325,8 @@ info_available_cb (RBPlayer *mmplayer,
                 goto out_unlock;
         }
 
-	if (entry->type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
+	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	if (type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
 		rb_debug ("Got info_available but entry isn't an iradio station");
 		goto out_unlock;
 	}
@@ -2348,7 +2362,7 @@ info_available_cb (RBPlayer *mmplayer,
 		}
 
 		/* check if the db entry already has a genre; if so, don't change it */
-		existing = rb_refstring_get (entry->genre);
+		existing = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
 		if ((existing == NULL) || 
 		    (strcmp (existing, "") == 0) ||
 		    (strcmp (existing, _("Unknown")) == 0)) {
@@ -2364,6 +2378,8 @@ info_available_cb (RBPlayer *mmplayer,
 	{
 		const char *name = g_value_get_string (value);
 		const char *existing;
+		const char *location;
+
 		if (!g_utf8_validate (name, -1, NULL)) {
 			g_warning ("Invalid UTF-8 from internet radio: %s", name);
 			goto out_unlock;
@@ -2375,10 +2391,11 @@ info_available_cb (RBPlayer *mmplayer,
 		 * if the station title really is the same as the URI, then surely
 		 * the station title in the stream metadata will say that too..
 		 */
-		existing = rb_refstring_get (entry->title);
+		existing = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		if ((existing == NULL) || 
 		    (strcmp (existing, "") == 0) || 
-		    (strcmp (existing, entry->location) == 0)) {
+		    (strcmp (existing, location) == 0)) {
 			entry_field = RHYTHMDB_PROP_TITLE;
 			rb_debug ("setting title of iradio station to %s", name);
 			set_field = TRUE;

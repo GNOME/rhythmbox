@@ -403,7 +403,7 @@ static long
 rb_header_get_duration (RBHeader *player)
 {
 	if (player->priv->entry) {
-		return player->priv->entry->duration;
+		return rhythmdb_entry_get_ulong (player->priv->entry, RHYTHMDB_PROP_DURATION);
 	}
 	return -1;
 }

@@ -922,8 +922,8 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
 					continue;
 				}
 
-				e_artist = rb_refstring_get (entry->artist);
-				e_album  = rb_refstring_get (entry->album);
+				e_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+				e_album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 
 				/* get value of first non-NULL artist */
 				if (e_artist != NULL && artist == NULL) {
