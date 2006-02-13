@@ -459,8 +459,8 @@ playlist_iter_func (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	*uri = g_strdup (entry->location);
-	*title = g_strdup (rb_refstring_get (entry->title));
+	*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 }
 #else
 static void
