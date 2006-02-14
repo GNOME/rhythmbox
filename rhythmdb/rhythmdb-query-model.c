@@ -2069,6 +2069,34 @@ rhythmdb_query_model_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 }
 
 gint
+rhythmdb_query_model_title_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+				      RhythmDBQueryModel *model)
+{
+	const char *a_val;
+	const char *b_val;
+	gint ret;
+
+	/* Sort by album name */
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			ret = 0;
+		else
+			ret = -1;
+	} else if (b_val == NULL)
+		ret = 1;
+	else
+		ret = strcmp (a_val, b_val);
+
+	if (ret != 0)
+		return ret;
+	else
+		return rhythmdb_query_model_location_sort_func (a, b, model);
+}
+
+gint
 rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				      RhythmDBQueryModel *model)
 {

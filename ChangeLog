@@ -1,3 +1,13 @@
+2006-02-14  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_class_init),
+	(rhythmdb_property_model_drag_data_get):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_title_sort_func):
+	* rhythmdb/rhythmdb-query-model.h: fix drag-and-drop when using the
+	LOCATION as the key. Fixes bug 330601.
+
 2006-02-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-playlist-source.c: (playlist_iter_func):

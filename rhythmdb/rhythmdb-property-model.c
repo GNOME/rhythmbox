@@ -128,6 +128,7 @@ static const GtkTargetEntry targets_location [] = {
 static GtkTargetList *rhythmdb_property_model_album_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_artist_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_genre_drag_target_list = NULL;
+static GtkTargetList *rhythmdb_property_model_location_drag_target_list = NULL;
 
 typedef struct {
 	RBRefString *string;
@@ -193,6 +194,10 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 		rhythmdb_property_model_genre_drag_target_list =
 			gtk_target_list_new (targets_genre,
 					     G_N_ELEMENTS (targets_genre));
+	if (!rhythmdb_property_model_location_drag_target_list)
+		rhythmdb_property_model_location_drag_target_list =
+			gtk_target_list_new (targets_location,
+					     G_N_ELEMENTS (targets_location));
 
 	object_class->set_property = rhythmdb_property_model_set_property;
 	object_class->get_property = rhythmdb_property_model_get_property;
@@ -907,6 +912,10 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	case RHYTHMDB_PROP_ARTIST:
 		drag_target_list = rhythmdb_property_model_artist_drag_target_list;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_artist_sort_func;
+		break;
+	case RHYTHMDB_PROP_LOCATION:
+		drag_target_list = rhythmdb_property_model_location_drag_target_list;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_title_sort_func;
 		break;
 	default:
 		g_assert_not_reached ();

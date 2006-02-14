@@ -112,6 +112,9 @@ gint 			rhythmdb_query_model_location_sort_func (RhythmDBEntry *a, RhythmDBEntry
 gint 			rhythmdb_query_model_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 							       RhythmDBQueryModel *model);
 
+gint 			rhythmdb_query_model_title_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+							      RhythmDBQueryModel *model);
+
 gint 			rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 							      RhythmDBQueryModel *model);
 
