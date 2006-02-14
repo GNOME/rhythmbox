@@ -362,7 +362,7 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->disjunction_check),
 					      disjunction);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->limit_check),
-					      limit_count || limit_size);
+					      limit_count || limit_size || limit_time);
 				
 		if (limit_count > 0) {
 			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 0);
