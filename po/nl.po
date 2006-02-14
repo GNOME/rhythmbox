@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-02-14 03:50+0100\n"
-"PO-Revision-Date: 2006-02-14 15:26+0100\n"
+"PO-Revision-Date: 2006-02-14 17:00+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -1120,9 +1120,10 @@ msgstr "Het geluidsniveau instellen"
 msgid "Mute or unmute playback"
 msgstr "Afspelen op mute zetten of van mute afhalen"
 
+# statusbalkmelding
 #: ../shell/main.c:169
 msgid "Change visibility of the main Rhythmbox window"
-msgstr "Zichtbaarheid van het hoofdvenster van Rhythmbox wijzigen"
+msgstr "Het hoofdvenster van Rhythmbox wel of niet weergeven"
 
 #: ../shell/main.c:172
 msgid "Enable debugging code"
@@ -1420,7 +1421,7 @@ msgstr "_Willekeurig"
 
 #: ../shell/rb-shell-player.c:251
 msgid "Play songs in a random order"
-msgstr "Nummer in willekeurige volgorde afspelen"
+msgstr "Nummers in willekeurige volgorde afspelen"
 
 #: ../shell/rb-shell-player.c:253
 msgid "_Repeat"
@@ -1430,15 +1431,16 @@ msgstr "H_erhalen"
 # helemaal overnieuw beginnen
 #: ../shell/rb-shell-player.c:254
 msgid "Play first song again after all songs are played"
-msgstr "Schudden<"
+msgstr "Als alle nummers gespeeld zijn, opnieuw met het eerste nummer beginnen"
 
 #: ../shell/rb-shell-player.c:256
 msgid "_Song Position Slider"
 msgstr "_Positieschuif"
 
+# statusbalkmelding
 #: ../shell/rb-shell-player.c:257
 msgid "Change the visibility of the song position slider"
-msgstr "De zichtbaarheid van de positieschuif in het nummer wijzigen"
+msgstr "De positieschuif wel of niet tonen"
 
 #: ../shell/rb-shell-player.c:535
 #, c-format
@@ -1458,7 +1460,7 @@ msgstr "Niet bezig met afspelen"
 
 #: ../shell/rb-shell-player.c:1329
 msgid "No previous song"
-msgstr "Geen vorig nummerk afspelen"
+msgstr "Geen vorig nummer"
 
 #: ../shell/rb-shell-player.c:1381
 msgid "No next song"
@@ -1477,15 +1479,16 @@ msgstr "Kon het afspelen niet stoppen"
 # hmm, betere vertaling voor doorzoekbaar
 #: ../shell/rb-shell-player.c:2120
 msgid "Current song is not seekable"
-msgstr "Huidige nummer is niet doorzoekbaar"
+msgstr "Huidige nummer is niet te doorzoeken"
 
+# stromingsfout/stroomfout
 #: ../shell/rb-shell-player.c:2183
 msgid "Stream error"
-msgstr "Stream-fout"
+msgstr "Stroom-fout"
 
 #: ../shell/rb-shell-player.c:2184
 msgid "Unexpected end of stream!"
-msgstr "Onverwachte eind aan gegevensstroom!"
+msgstr "Onverwacht eind aan gegevensstroom!"
 
 #: ../shell/rb-shell-player.c:2443
 msgid "Buffering"
@@ -1501,7 +1504,7 @@ msgstr "Kan hulptekst niet weergeven"
 
 #: ../shell/rb-shell-preferences.c:147
 msgid "Music Player Preferences"
-msgstr "Muziekspelervoorkeuren"
+msgstr "Muziekspeler-voorkeuren"
 
 #: ../shell/rb-shell-preferences.c:192
 msgid "General"
@@ -1621,13 +1624,15 @@ msgstr "_Alles tonen"
 msgid "Show all items in this music source"
 msgstr "Alle items in deze muziekbron tonen"
 
+# menuitem
 #: ../shell/rb-shell.c:483
 msgid "_Jump to Playing Song"
 msgstr "_Ga naar het huidige nummer"
 
+# statusbalkmelding
 #: ../shell/rb-shell.c:484
 msgid "Scroll the view to the currently playing song"
-msgstr "Verschuif naar het nummer dat nu wordt afgespeeld"
+msgstr "De weergave verschuiven naar het nummer dat wordt afgespeeld"
 
 #: ../shell/rb-shell.c:486
 msgid "_Disconnect"
@@ -1641,25 +1646,28 @@ msgstr "Verbinding met de geselecteerde bron verbreken"
 msgid "Source _List"
 msgstr "_Bronnenlijst"
 
+# statusbalkmelding
 #: ../shell/rb-shell.c:495
 msgid "Change the visibility of the source list"
-msgstr "Zichtbaarheid van de bronnenlijst wijzigen"
+msgstr "De bronnenlijst wel of niet weergeven"
 
 #: ../shell/rb-shell.c:497
 msgid "_Toolbar"
 msgstr "_Werkbalk"
 
+# statusbalkmelding
 #: ../shell/rb-shell.c:498
 msgid "Change the visibility of the toolbar"
-msgstr "Zichtbaarheid van de werkbalk wijzigen"
+msgstr "De werkbalk wel of niet weergeven"
 
 #: ../shell/rb-shell.c:500
 msgid "_Small Display"
-msgstr "_Kleine weergave"
+msgstr "_Compacte weergave"
 
+# statusbalkmelding
 #: ../shell/rb-shell.c:501
 msgid "Make the main window smaller"
-msgstr "Het hoofdvenster kleiner maken"
+msgstr "Het hoofdvenster klein en compact weergeven"
 
 #: ../shell/rb-shell.c:503
 msgid "_Fullscreen"
@@ -1669,24 +1677,26 @@ msgstr "_Volledig scherm"
 msgid "Expand the window to fill the screen"
 msgstr "Het volledige scherm vullen"
 
-# wachtrij in zijbalk/als zijbalk
+# wachtrij in zijbalk/als zijbalk (in plaast van als bron)
 # ('in' is duidelijker dan 'als')
 # de _W wordt gebruikt voor _Werkbalk en de sneltoets is Ctrl+K
 #: ../shell/rb-shell.c:506
 msgid "_Queue as Sidebar"
 msgstr "Wachtrij in zijbal_k"
 
+# statusbalkmelding
 #: ../shell/rb-shell.c:507
 msgid "Change whether the queue is visible as a source or a sidebar"
-msgstr "Instellen of de wachtrij zichtbaar is als bron of als zijbalk"
+msgstr "De wachtrij in de zijbalk weergeven of als bron"
 
 #: ../shell/rb-shell.c:509
 msgid "S_tatusbar"
 msgstr "_Statusbalk"
 
+# statusbalkmelding
 #: ../shell/rb-shell.c:510
 msgid "Change the visibility of the statusbar"
-msgstr "Zichtbaarheid van de statusbalk wijzigen"
+msgstr "De statusbalk wel of niet weergeven"
 
 # tooltip
 # muziek harder of zachter zetten/Geluidsvolume aanpassen
@@ -1706,10 +1716,12 @@ msgstr "Fout bij het opslaan van de informatie over het nummer"
 msgid "%s by %s"
 msgstr "%s door %s"
 
+# U luistert naar/bezig met afspelen
+# wordt getoond als attentieballon bij een nieuw nummer
 #: ../shell/rb-shell.c:1778 ../shell/rb-shell.c:1867
 #: ../widgets/rb-entry-view.c:1243
 msgid "Now Playing"
-msgstr "Bezig met afspelen"
+msgstr "U luistert naar"
 
 #: ../shell/rb-shell.c:1883 ../shell/rb-tray-icon.c:166
 msgid "Not playing"
@@ -1849,9 +1861,10 @@ msgstr "Ongeldig type %s voor eigenschap %s"
 msgid "_Browser"
 msgstr "Bla_dervenster"
 
+# statusbalkmelding
 #: ../shell/rb-source-header.c:100
 msgid "Change the visibility of the browser"
-msgstr "Zichtbaarheid van het bladervenster wijzigen"
+msgstr "Het bladervenster wel of niet weergeven"
 
 #: ../shell/rb-source-header.c:155
 msgid "Filter music display by genre, artist, album, or title"
@@ -3060,9 +3073,6 @@ msgstr "Onbekende locatie:"
 
 #~ msgid "_Show Window"
 #~ msgstr "Ven_ster tonen"
-
-#~ msgid "Change the visibility of the main window"
-#~ msgstr "Zichtbaarheid van het hoofdvenster wijzigen"
 
 #~ msgid "Failed to close audio output sink"
 #~ msgstr "Kon de audio-afvoer niet sluiten"
