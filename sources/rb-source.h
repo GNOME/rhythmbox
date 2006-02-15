@@ -184,9 +184,14 @@ GList*		rb_source_get_ui_actions	(RBSource *source);
 
 GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropType prop);
 
-/* Protected method, should only be used by objects inheriting from RBSource */
+/* Protected methods, should only be used by objects inheriting from RBSource */
 void            _rb_source_show_popup           (RBSource *source, 
 						 const char *ui_path);
+GtkActionGroup *_rb_source_register_action_group (RBSource *source,
+						  const char *group_name,
+						  GtkActionEntry *actions,
+						  int num_actions,
+						  gpointer user_data);
 
 G_END_DECLS
 

@@ -1,3 +1,21 @@
+2006-02-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_class_init),
+	(rb_play_queue_source_constructor),
+	(rb_play_queue_source_update_count),
+	(rb_play_queue_source_cmd_clear), (impl_get_ui_actions):
+	Add a toolbar button to clear the play queue, and make it sensitive
+	only when there are entries in the queue.  Fixes #330014.
+
+	* sources/rb-source.c: (_rb_source_register_action_group):
+	* sources/rb-source.h:  Add helper function to register an
+	action group for a source.
+
+	* sources/rb-library-source.c: (rb_library_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(register_action_group):  Use _rb_source_register_action_group.
+
 2006-02-15  James Livingston  <jrl@ids.org.au>
 
 	* widgets/rb-song-info.c: (rb_song_info_add_completion),

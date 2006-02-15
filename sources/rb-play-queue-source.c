@@ -58,6 +58,9 @@ static void impl_show_entry_view_popup (RBPlaylistSource *source,
 					RBEntryView *view);
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
+static void rb_play_queue_source_cmd_clear (GtkAction *action,
+					    RBPlayQueueSource *source);
+static GList *impl_get_ui_actions (RBSource *source);
 
 #define PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH "/QueuePlaylistViewPopup"
 #define PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH "/QueueSidebarViewPopup"
@@ -68,6 +71,7 @@ struct _RBPlayQueueSourcePrivate
 {
 	RBEntryView *sidebar;
 	GtkTreeViewColumn *sidebar_column;
+	GtkActionGroup *action_group;
 };
 
 enum
@@ -78,6 +82,13 @@ enum
 
 G_DEFINE_TYPE (RBPlayQueueSource, rb_play_queue_source, RB_TYPE_STATIC_PLAYLIST_SOURCE)
 #define RB_PLAY_QUEUE_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_PLAY_QUEUE_SOURCE, RBPlayQueueSourcePrivate))
+
+static GtkActionEntry rb_play_queue_source_actions [] =
+{
+	{ "ClearQueue", GTK_STOCK_CLEAR, N_("Clear _Queue"), NULL,
+	  N_("Remove all songs from the play queue"),
+	  G_CALLBACK (rb_play_queue_source_cmd_clear) }
+};
 
 static void
 rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
@@ -92,6 +103,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
@@ -129,6 +141,12 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
+
+	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+							       "PlayQueueActions",
+							       rb_play_queue_source_actions,
+							       G_N_ELEMENTS (rb_play_queue_source_actions),
+							       source);
 		
 	priv->sidebar = rb_entry_view_new (db, shell_player, NULL, TRUE, TRUE);
 
@@ -301,7 +319,9 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 	gint count = gtk_tree_model_iter_n_children (model, NULL) + offset;
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	char *name = _("Queued songs");
+	GtkAction *action;
 
+	/* update source name */
 	if (count > 0)
 		name = g_strdup_printf ("%s (%d)", name, count);
 
@@ -310,6 +330,11 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 
 	if (count > 0)
 		g_free (name);
+
+	/* make 'clear queue' action sensitive when there are entries in the queue */
+	action = gtk_action_group_get_action (priv->action_group,
+					      "ClearQueue");
+	g_object_set (G_OBJECT (action), "sensitive", (count > 0), NULL);
 }
 
 static void 
@@ -320,3 +345,27 @@ impl_save_contents_to_xml (RBPlaylistSource *source,
 	xmlSetProp (node, RB_PLAYLIST_TYPE, RB_PLAYLIST_QUEUE);
 }
 
+static void
+rb_play_queue_source_cmd_clear (GtkAction *action,
+				RBPlayQueueSource *source)
+{
+	GtkTreeIter iter;
+	RhythmDBEntry *entry;
+	RhythmDBQueryModel *model;
+
+	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
+	while (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
+		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+		if (entry)
+			rhythmdb_query_model_remove_entry (model, entry);
+	}
+}
+
+static GList *
+impl_get_ui_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "ClearQueue");
+	return actions;
+}

@@ -349,44 +349,6 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 	_rb_source_show_popup (RB_SOURCE (source), "/LibraryViewPopup");
 }
 
-static void
-register_action_group (RBLibrarySource *source)
-{
-	GtkUIManager *uimanager;
-	GList *actiongroups;
-	GList *group;
-	RBShell *shell;
-
-	g_object_get (G_OBJECT (source), "ui-manager", &uimanager, NULL);
-	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
-
-	/* Don't create the action group if it's already registered */
-	for (group = actiongroups; group != NULL; group = group->next) {
-		const gchar *name;
-
-		name = gtk_action_group_get_name (GTK_ACTION_GROUP (group->data));
-		if (strcmp (name, "LibraryActions") == 0) {
-			g_object_unref (G_OBJECT (uimanager));
-			source->priv->action_group = GTK_ACTION_GROUP (group->data);
-			return;
-		}
-	}
-
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	source->priv->action_group = gtk_action_group_new ("LibraryActions");
-	gtk_action_group_set_translation_domain (source->priv->action_group,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (source->priv->action_group, 
-				      rb_library_source_actions,
-				      G_N_ELEMENTS (rb_library_source_actions),
-				      shell);
-	gtk_ui_manager_insert_action_group (uimanager, 
-					    source->priv->action_group, 0);
-	g_object_unref (G_OBJECT (uimanager));
-	g_object_unref (G_OBJECT (shell));
-
-}
-
 static GObject *
 rb_library_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
@@ -401,11 +363,16 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source = RB_LIBRARY_SOURCE (G_OBJECT_CLASS (rb_library_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 
-	register_action_group (source);
-
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
+	
+	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+								       "LibraryActions",
+								       rb_library_source_actions,
+								       G_N_ELEMENTS (rb_library_source_actions),
+								       shell);
+
 	g_object_unref (G_OBJECT (shell));
 
 	source->priv->paned = gtk_vpaned_new ();

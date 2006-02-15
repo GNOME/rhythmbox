@@ -25,7 +25,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <gtk/gtkuimanager.h>
 #include <time.h>
-
+#include <string.h>
 
 #include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"
@@ -913,4 +913,40 @@ rb_source_gather_selected_properties (RBSource *source,
 	return tem;
 }
 
+GtkActionGroup *
+_rb_source_register_action_group (RBSource *source,
+				  const char *group_name,
+				  GtkActionEntry *actions,
+				  int num_actions,
+				  gpointer user_data)
+{
+	GtkUIManager *uimanager;
+	GList *actiongroups;
+	GList *i;
+	GtkActionGroup *group;
 
+	g_object_get (G_OBJECT (source), "ui-manager", &uimanager, NULL);
+	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
+
+	/* Don't create the action group if it's already registered */
+	for (i = actiongroups; i != NULL; i = i->next) {
+		const gchar *name;
+
+		name = gtk_action_group_get_name (GTK_ACTION_GROUP (i->data));
+		if (strcmp (name, group_name) == 0) {
+			g_object_unref (G_OBJECT (uimanager));
+			return GTK_ACTION_GROUP (i->data);
+		}
+	}
+
+	group = gtk_action_group_new (group_name);
+	gtk_action_group_set_translation_domain (group,
+						 GETTEXT_PACKAGE);
+	gtk_action_group_add_actions (group,
+				      actions, num_actions,
+				      user_data);
+	gtk_ui_manager_insert_action_group (uimanager, group, 0);
+	g_object_unref (G_OBJECT (uimanager));
+
+	return group;
+}
