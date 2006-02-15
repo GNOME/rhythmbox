@@ -918,6 +918,7 @@ open_location_thread (OpenLocationThreadData *data)
 	GDK_THREADS_ENTER ();
 	if (error)
 		rb_shell_player_error (data->player, TRUE, error);
+	rb_shell_player_sync_buttons (data->player);
 	GDK_THREADS_LEAVE ();
 
 	g_free (data);
