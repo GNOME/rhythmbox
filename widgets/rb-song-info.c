@@ -300,6 +300,18 @@ rb_song_info_construct_multiple (RBSongInfo *song_info, GladeXML *xml,
 	gtk_widget_grab_focus (song_info->priv->artist);
 }
 
+static void
+rb_song_info_add_completion (GtkEntry *entry, RhythmDBPropertyModel *propmodel)
+{
+	GtkEntryCompletion* completion;
+
+	completion = gtk_entry_completion_new();
+	gtk_entry_completion_set_model (completion, GTK_TREE_MODEL (propmodel));
+	gtk_entry_completion_set_text_column (completion, RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE);
+	gtk_entry_set_completion (entry, completion);
+	g_object_unref (completion);
+}
+
 static GObject *
 rb_song_info_constructor (GType type, guint n_construct_properties,
 			  GObjectConstructParam *construct_properties)
@@ -310,7 +322,6 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	GList *selected_entries;
 	GList *tem;
 	gboolean editable = TRUE;
-	guint i;
 
 	klass = RB_SONG_INFO_CLASS (g_type_class_peek (RB_TYPE_SONG_INFO));
 
@@ -363,35 +374,10 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
 	song_info->priv->disc_cur = glade_xml_get_widget (xml, "song_info_disc_cur");
 
-	for(i = 0; i < 3; i++) {
-		GtkWidget* entry;
-		RhythmDBPropertyModel* model;
-		GtkEntryCompletion* completion;
-
-		switch(i) {
-		case 1:
-			entry = song_info->priv->genre;
-			model = song_info->priv->genres;
-			break;
-		case 2:
-			entry = song_info->priv->artist;
-			model = song_info->priv->artists;
-			break;
-		case 3:
-			entry = song_info->priv->album;
-			model = song_info->priv->albums;
-			break;
-		default:
-			continue;
-		};
-
-		completion = gtk_entry_completion_new();
-		gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(model));
-		gtk_entry_completion_set_text_column(completion, RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE);
-		gtk_entry_set_completion(GTK_ENTRY(entry), completion);
-		g_object_unref(completion);
-	}
-
+	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->genre), song_info->priv->genres);
+	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->artist), song_info->priv->artists);
+	rb_song_info_add_completion (GTK_ENTRY (song_info->priv->album), song_info->priv->albums);
+	
 	rb_glade_boldify_label (xml, "album_label");
 	rb_glade_boldify_label (xml, "artist_label");
 	rb_glade_boldify_label (xml, "genre_label");
@@ -527,18 +513,18 @@ rb_song_info_set_property (GObject *object,
 			g_object_set(song_info->priv->genres,  "query-model", song_info->priv->query_model, NULL);
 
 			if(song_info->priv->album) {
-				GtkEntryCompletion* comp = gtk_entry_get_completion(GTK_ENTRY(song_info->priv->album));
-				gtk_entry_completion_set_model(comp, GTK_TREE_MODEL(song_info->priv->albums));
+				GtkEntryCompletion* comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->album));
+				gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->albums));
 			}
 
 			if(song_info->priv->artist) {
-				GtkEntryCompletion* comp = gtk_entry_get_completion(GTK_ENTRY(song_info->priv->artist));
-				gtk_entry_completion_set_model(comp, GTK_TREE_MODEL(song_info->priv->artist));
+				GtkEntryCompletion* comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->artist));
+				gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->artist));
 			}
 
 			if(song_info->priv->genre) {
-				GtkEntryCompletion* comp = gtk_entry_get_completion(GTK_ENTRY(song_info->priv->genre));
-				gtk_entry_completion_set_model(comp, GTK_TREE_MODEL(song_info->priv->genre));
+				GtkEntryCompletion* comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->genre));
+				gtk_entry_completion_set_model (comp, GTK_TREE_MODEL (song_info->priv->genre));
 			}
 		}
 	}
