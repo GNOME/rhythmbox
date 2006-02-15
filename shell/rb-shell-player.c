@@ -887,7 +887,9 @@ open_location_thread (OpenLocationThreadData *data)
 	gboolean playlist_parsed;
 	GError *error = NULL;
 
+	GDK_THREADS_ENTER ();
 	rb_statusbar_set_progress (data->player->priv->statusbar_widget, 0.01, _("Connecting"));
+	GDK_THREADS_LEAVE ();
 
 	playlist = totem_pl_parser_new ();
 	g_signal_connect_object (G_OBJECT (playlist), "entry",
@@ -913,8 +915,10 @@ open_location_thread (OpenLocationThreadData *data)
 		g_object_notify (G_OBJECT (data->player), "playing");
 	}
 
+	GDK_THREADS_ENTER ();
 	if (error)
 		rb_shell_player_error (data->player, TRUE, error);
+	GDK_THREADS_LEAVE ();
 
 	g_free (data);
 	return NULL;

@@ -1,5 +1,10 @@
 2006-02-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell-player.c: (open_location_thread):
+	Take GDK lock before doing anything UI-related.
+
+2006-02-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: Move 'new iradio station' action to
 	iradio source.
 
