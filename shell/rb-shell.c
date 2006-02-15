@@ -79,7 +79,6 @@
 #endif /* WITH_DAAP_SUPPORT */
 #include "rb-load-failure-dialog.h"
 #include "rb-iradio-source.h"
-#include "rb-new-station-dialog.h"
 #include "rb-new-podcast-dialog.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
@@ -181,8 +180,6 @@ static void rb_shell_cmd_add_folder_to_library (GtkAction *action,
 						RBShell *shell);
 static void rb_shell_cmd_add_file_to_library (GtkAction *action,
 					      RBShell *shell);
-static void rb_shell_cmd_new_station (GtkAction *action,
-				      RBShell *shell);
 static void rb_shell_cmd_new_podcast (GtkAction *action,
 				      RBShell *shell);
 
@@ -446,9 +443,6 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "Control", NULL, N_("_Control") },
 	{ "Help", NULL, N_("_Help") },
 
-	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New Internet _Radio Station"), "<control>I",
-	  N_("Create a new Internet Radio station"),
-	  G_CALLBACK (rb_shell_cmd_new_station) },
 	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), "<control>P",
 	  N_("Subscribe to a new Podcast Feed"),
 	  G_CALLBACK (rb_shell_cmd_new_podcast) },
@@ -2219,32 +2213,6 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 				 shell, 0);
 }
 
-static void
-new_station_location_added (RBNewStationDialog *dialog,
-			    const char         *uri,
-			    RBShell            *shell)
-{
-	rb_iradio_source_add_from_playlist (shell->priv->iradio_source, uri);
-}
-
-static void
-rb_shell_cmd_new_station (GtkAction *action,
-			  RBShell *shell)
-{
-	GtkWidget *dialog;
-	RBEntryView *entry_view = rb_source_get_entry_view (RB_SOURCE (shell->priv->iradio_source));
-
-	rb_debug ("Got new station command");
-
-	dialog = rb_new_station_dialog_new (entry_view);
-	g_signal_connect_object (dialog, "location-added",
-				 G_CALLBACK (new_station_location_added),
-				 shell, 0);
-
-	gtk_dialog_run (GTK_DIALOG (dialog));
-
-	gtk_widget_destroy (dialog);
-}
 
 static void
 rb_shell_cmd_new_podcast (GtkAction *action,

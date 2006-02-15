@@ -43,6 +43,7 @@
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-station-properties-dialog.h"
+#include "rb-new-station-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 
@@ -87,6 +88,7 @@ static void genre_selected_cb (RBPropertyView *propview, const char *name,
 			       RBIRadioSource *iradio_source);
 static void genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source);
 static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
+static char *guess_uri_scheme (const char *uri);
 
 /* source methods */
 static char *impl_get_status (RBSource *source);
@@ -97,6 +99,8 @@ static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
+static GList *impl_get_ui_actions (RBSource *source);
+
 static void rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType type);
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
@@ -107,6 +111,8 @@ static void stations_view_drag_data_received_cb (GtkWidget *widget,
 						 GtkSelectionData *data,
 						 guint info, guint time,
 						 RBIRadioSource *source);
+static void rb_iradio_source_cmd_new_station (GtkAction *action,
+					      RBIRadioSource *source);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
@@ -124,17 +130,13 @@ struct RBIRadioSourcePrivate
 	RhythmDB *db;
 
 	GtkWidget *vbox;
+	GtkWidget *paned;
+	GtkActionGroup *action_group;
 
 	RBPropertyView *genres;
 	RBEntryView *stations;
 
-	char *title, *song, *name;
-
 	gboolean initialized;
-
-	char *status;
-
-	GtkWidget *paned;
 
 	char *search_text;
 	char *selected_genre;
@@ -145,6 +147,13 @@ struct RBIRadioSourcePrivate
 };
 
 #define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
+
+static GtkActionEntry rb_iradio_source_actions [] =
+{
+	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New Internet _Radio Station"), "<control>I",
+	  N_("Create a new Internet Radio station"),
+	  G_CALLBACK (rb_iradio_source_cmd_new_station) }
+};
 
 static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "text/uri-list", 0, 0 },
@@ -187,6 +196,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -213,10 +223,6 @@ rb_iradio_source_init (RBIRadioSource *source)
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 	
-	source->priv->song = g_strdup (_("Unknown"));
-	source->priv->name = g_strdup (_("Unknown"));
-	source->priv->title = g_strdup (_("Unknown"));
-
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					   "stock_channel",
@@ -261,11 +267,6 @@ rb_iradio_source_finalize (GObject *object)
 
 	rb_debug ("finalizing iradio source");
 
-	g_free (source->priv->name);
-	g_free (source->priv->song);
-	g_free (source->priv->title);
-	g_free (source->priv->status);
-
 	G_OBJECT_CLASS (rb_iradio_source_parent_class)->finalize (object);
 }
 
@@ -290,6 +291,11 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
 
+	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+								       "IRadioActions",
+								       rb_iradio_source_actions,
+								       G_N_ELEMENTS (rb_iradio_source_actions),
+								       source);
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db, shell_player,
@@ -415,21 +421,50 @@ rb_iradio_source_new (RBShell *shell)
 	return source;
 }
 
+static char *
+guess_uri_scheme (const char *uri)
+{
+	const char *scheme;
+	
+	/* if the URI has no scheme, it might be an absolute path, or it might be
+	 * host:port for HTTP.
+	 */
+	scheme = strstr (uri, "://");
+	if (scheme == NULL) {
+		if (uri[0] == '/') {
+			return g_strdup_printf ("file://%s", uri);
+		} else {
+			return g_strdup_printf ("http://%s", uri);
+		}
+	}
+
+	return NULL;
+}
+
+
 void
 rb_iradio_source_add_station (RBIRadioSource *source,
 			      const char *uri, const char *title, const char *genre)
 {
 	RhythmDBEntry *entry;
 	GValue val = { 0, };
+	char *real_uri = NULL;
+
+	real_uri = guess_uri_scheme (uri);
+	if (real_uri)
+		uri = real_uri;
 
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
 	if (entry) {
 		rb_debug ("uri %s already in db", uri); 
+		g_free (real_uri);
 		return;
 	}
 	entry = rhythmdb_entry_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
-	if (entry == NULL)
+	if (entry == NULL) {
+		g_free (real_uri);
 		return;
+	}
 
 	g_value_init (&val, G_TYPE_STRING);
 	if (title)
@@ -448,11 +483,13 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	g_value_unset (&val);
 	
 	g_value_init (&val, G_TYPE_DOUBLE);
-	g_value_set_double (&val, 2.5);
+	g_value_set_double (&val, 0.0);
 	rhythmdb_entry_set_uninserted (source->priv->db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 	
 	rhythmdb_commit (source->priv->db);
+
+	g_free (real_uri);
 }
 
 static void
@@ -745,11 +782,17 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri, const char *
 	rb_iradio_source_add_station (source, uri, title, genre);
 }
 
+
 void
 rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 				    const char     *uri)
 {
 	TotemPlParser *parser = totem_pl_parser_new ();
+	char *real_uri;
+
+	real_uri = guess_uri_scheme (uri);
+	if (real_uri)
+		uri = real_uri;
 
 	g_signal_connect_object (G_OBJECT (parser), "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
@@ -766,6 +809,7 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 		break;
 	}
 	g_object_unref (G_OBJECT (parser));
+	g_free (real_uri);
 }
 
 static void
@@ -842,5 +886,41 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/IRadioSourcePopup");
 	return TRUE;
+}
+
+static GList*
+impl_get_ui_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "MusicNewInternetRadioStation");
+
+	return actions;
+}
+
+static void
+new_station_location_added (RBNewStationDialog *dialog,
+			    const char         *uri,
+			    RBIRadioSource     *source)
+{
+	rb_iradio_source_add_from_playlist (source, uri);
+}
+
+static void
+rb_iradio_source_cmd_new_station (GtkAction *action,
+				  RBIRadioSource *source)
+{
+	GtkWidget *dialog;
+
+	rb_debug ("Got new station command");
+
+	dialog = rb_new_station_dialog_new (source->priv->stations);
+	g_signal_connect_object (dialog, "location-added",
+				 G_CALLBACK (new_station_location_added),
+				 source, 0);
+
+	gtk_dialog_run (GTK_DIALOG (dialog));
+
+	gtk_widget_destroy (dialog);
 }
 

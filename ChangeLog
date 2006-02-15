@@ -1,5 +1,22 @@
 2006-02-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: Move 'new iradio station' action to
+	iradio source.
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_init), (rb_iradio_source_finalize),
+	(rb_iradio_source_constructor):
+	Remove some unused stuff.
+
+	(guess_uri_scheme), (rb_iradio_source_add_station),
+	(rb_iradio_source_add_from_playlist),
+	(impl_get_ui_actions), (new_station_location_added),
+	(rb_iradio_source_cmd_new_station):  Handle 'new iradio station'
+	action, include it in the toolbar, and make sure the URI we add has a
+	scheme.  Fixes #327059, more or less.
+
+2006-02-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-play-queue-source.c:
 	(rb_play_queue_source_class_init),
 	(rb_play_queue_source_constructor),
