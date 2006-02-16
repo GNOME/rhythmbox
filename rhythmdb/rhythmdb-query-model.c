@@ -138,6 +138,9 @@ static void rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 						      GtkTreeIter *arg2,
 						      gint *order_map,
 						      RhythmDBQueryModel *model);
+static void rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_model,
+						     RhythmDBEntry *entry,
+						     RhythmDBQueryModel *model);
 static int rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *model, int index);
 
 static gint _reverse_sorting_func (gpointer a, gpointer b, RhythmDBQueryModel *model);
@@ -442,6 +445,9 @@ rhythmdb_query_model_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 							      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
 							      model);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+							      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
+							      model);
 			g_object_unref (model->priv->base_model);
 		}
 
@@ -470,6 +476,10 @@ rhythmdb_query_model_set_property (GObject *object,
 			g_signal_connect_object (G_OBJECT (model->priv->base_model),
 						 "rows-reordered",
 						 G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
+						 model, 0);
+			g_signal_connect_object (G_OBJECT (model->priv->base_model),
+						 "entry-removed",
+						 G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 						 model, 0);
 
 			if (model->priv->base_model->priv->entries) {
@@ -636,6 +646,9 @@ rhythmdb_query_model_finalize (GObject *object)
 						      model);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
+						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 						      model);
 		g_object_unref (G_OBJECT (model->priv->base_model));
 	}
@@ -1987,6 +2000,18 @@ rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 
 	apply_updated_entry_sequence (model, new_entries);
 }
+
+static void
+rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_model,
+					 RhythmDBEntry *entry,
+					 RhythmDBQueryModel *model)
+{
+	/* propagate the signal out to any attached property models */
+	g_signal_emit (G_OBJECT (model),
+		       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
+		       entry);
+}
+
 
 void
 rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter)

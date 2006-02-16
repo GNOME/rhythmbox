@@ -1,5 +1,14 @@
 2006-02-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_finalize),
+	(rhythmdb_query_model_base_entry_removed):
+	Propagate entry removal from base models out to attached property
+	models.  Fixes the rest of #331165.
+
+2006-02-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb-property-model.c:
 	(rhythmdb_property_model_row_inserted_cb),
 	(rhythmdb_property_model_prop_changed_cb),
