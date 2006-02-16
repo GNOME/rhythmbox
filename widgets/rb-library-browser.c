@@ -340,7 +340,7 @@ rb_library_browser_notify_changed (RBLibraryBrowser *widget)
 static void
 reset_view_cb (RhythmDBPropType prop, RBPropertyView *view, RBLibraryBrowser *widget)
 {
-	view_selection_reset_cb (view, widget);
+	rb_property_view_set_selection (view, NULL);
 }
 
 gboolean
