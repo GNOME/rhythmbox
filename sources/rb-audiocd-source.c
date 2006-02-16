@@ -59,7 +59,7 @@ static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
 
-static gboolean rb_audiocd_load_songs (RBAudioCdSource *source);
+static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
 static void rb_audiocd_load_metadata_cancel (RBAudioCdSource *source);
 
@@ -135,12 +135,17 @@ rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 {
 	GObjectClass *klass, *parent_class; 
 	RBAudioCdSource *source; 
+	RBEntryView *entry_view;
 
 	klass = G_OBJECT_CLASS (g_type_class_peek (type));
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_AUDIOCD_SOURCE (parent_class->constructor (type, n_construct_properties, construct_properties));
 
-	g_idle_add ((GSourceFunc)rb_audiocd_load_songs, source);
+	/* we want audio cds to sort by track# by default */
+	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
+	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
+
+	g_thread_create ((GThreadFunc)rb_audiocd_load_songs, source, FALSE, NULL);
 
 	return G_OBJECT (source);
 }
@@ -467,14 +472,13 @@ rb_audiocd_load_metadata_cancel (RBAudioCdSource *source)
 #endif
 }
 
-static gboolean
+static gpointer
 rb_audiocd_load_songs (RBAudioCdSource *source)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	RBShell *shell;
 	RhythmDB *db;
 	GnomeVFSVolume *volume;
-	RBEntryView *entry_view;
 	
 	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 	priv->device_path = gnome_vfs_volume_get_device_path (volume);
@@ -483,12 +487,6 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 	g_object_unref (G_OBJECT (shell));
-
-
-	/* we want audio cds to sort by track# by default */
-	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
-	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
-
 
 	rb_debug ("loading Audio CD from %s", priv->device_path);
 	/* create a cdda gstreamer element, to get cd info from */
@@ -517,7 +515,7 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 error_out:
 	g_object_unref (G_OBJECT (db));
 
-	return FALSE;
+	return NULL;
 }
 
 static void

@@ -1,5 +1,11 @@
 2006-02-16  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_constructor): read
+	the audio cd's TOC in a separate thread, so it doesn't block the UI.
+	Fixes bug 329942.
+
+2006-02-16  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-library-browser.c: (reset_view_cb): make View All
 	actually reset the browsers.
 
