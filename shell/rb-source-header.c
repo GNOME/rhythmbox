@@ -422,7 +422,7 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
 						      "ViewAll");
 	g_object_set (G_OBJECT (viewall_action), "sensitive",
-		      header->priv->have_browser && not_small, NULL);
+		      (header->priv->have_browser || header->priv->have_search) && not_small, NULL);
 
 	gtk_expander_set_expanded (GTK_EXPANDER (header->priv->disclosure),
 				   header->priv->disclosed);
