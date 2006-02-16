@@ -1,3 +1,14 @@
+2006-02-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_row_inserted_cb),
+	(rhythmdb_property_model_prop_changed_cb),
+	(rhythmdb_property_model_insert):
+	Don't store NULL as a hash table value if we want to use
+	g_hash_table_lookup to check if a key exists, and get the checks for
+	how and whether to handle entry changes the right way around.
+	Fixes #331211 and half of #331165.
+
 2006-02-16  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-audiocd-source.c: (rb_audiocd_source_constructor): read

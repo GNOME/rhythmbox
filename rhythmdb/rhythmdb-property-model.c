@@ -472,7 +472,7 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 	if (g_hash_table_lookup (propmodel->priv->entries, entry))
 		return;
 
-	g_hash_table_insert (propmodel->priv->entries, entry, NULL);
+	g_hash_table_insert (propmodel->priv->entries, entry, GINT_TO_POINTER (1));
 
 	rhythmdb_property_model_insert (propmodel, entry);
 	rhythmdb_property_model_sync (propmodel);
@@ -489,7 +489,7 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		gboolean new_val = g_value_get_boolean (new);
 
 		if (old_val != new_val) {
-			if (new_val) {
+			if (new_val == FALSE) {
 				if (g_hash_table_lookup (propmodel->priv->entries, entry) != NULL)
 					return;
 
@@ -505,7 +505,7 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		if (prop != propmodel->priv->propid)
 			return;
 
-		if (g_hash_table_lookup (propmodel->priv->entries, entry))
+		if (g_hash_table_lookup (propmodel->priv->entries, entry) == NULL)
 			return;
 
 		rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
@@ -559,6 +559,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
 		return;
 	}
+	rb_debug ("adding new property \"%s\"", propstr);
 
 	prop = g_new0 (RhythmDBPropertyModelEntry, 1);
 	prop->string = rb_refstring_new (propstr);
