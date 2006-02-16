@@ -551,6 +551,8 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   GdkPixbuf *pixbuf;
   int x;
   int y;
+  char *esc_primary;
+  char *esc_secondary;
 
   if (!notify_is_initted ())
     if (!notify_init ("rhythmbox"))
@@ -561,10 +563,14 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       notify_notification_close (icon->notify->handle, NULL);
     }
 
-  icon->notify->handle = notify_notification_new (primary,
-                                                  secondary,
+  esc_primary = g_markup_escape_text (primary, strlen (primary));
+  esc_secondary = g_markup_escape_text (secondary, strlen (secondary));
+  icon->notify->handle = notify_notification_new (esc_primary,
+                                                  esc_secondary,
                                                   NULL,
                                                   GTK_WIDGET (icon));
+  g_free (esc_primary);
+  g_free (esc_secondary);
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
 
@@ -615,7 +621,8 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   NotifyIcon *icon_notify = NULL;
   NotifyHints *hints;
   char *fn;
-  
+  char *esc_primary;
+  char *esc_secondary;
   
   if (!notify_is_initted ())
     if (!notify_init ("rhythmbox"))
@@ -663,6 +670,8 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       notify_close (icon->notify->handle);
     }
 	  
+  esc_primary = g_markup_escape_text (primary, strlen (primary));
+  esc_secondary = g_markup_escape_text (secondary, strlen (secondary));
   icon->notify->hints = hints;
   icon->notify->icon = icon_notify;
   icon->notify->handle = notify_send_notification (NULL, "transfer",
@@ -674,6 +683,8 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 			    	   	           hints,
 			    	   	           NULL,
 			    	   	           0);  
+  g_free (esc_primary);
+  g_free (esc_secondary);
   return;
 #endif
 #else

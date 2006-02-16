@@ -1,3 +1,9 @@
+2006-02-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
+	Escape the strings we pass into libnotify so we don't get blank
+	notifications when the song name contains '&' etc.  Fixes #330784.
+
 2006-02-16  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-source-header.c: (rb_source_header_sync_control_state):
