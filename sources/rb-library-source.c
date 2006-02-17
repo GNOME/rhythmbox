@@ -737,6 +737,11 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
+	/* don't trigger the change notification */
+	g_signal_handlers_block_by_func (G_OBJECT (source->priv->library_location_widget),
+					 G_CALLBACK (rb_library_source_library_location_cb),
+					 source);
+
 	if (g_slist_length (list) == 1) {
 		/* the uri might be missing the trailing slash */
 		gchar *s = g_strconcat (list->data, G_DIR_SEPARATOR_S, NULL);
@@ -748,6 +753,10 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 		/*gtk_file_chooser_set_uri (source->priv->library_location_widget,
 					  "");*/
 	}
+
+	g_signal_handlers_unblock_by_func (G_OBJECT (source->priv->library_location_widget),
+					   G_CALLBACK (rb_library_source_library_location_cb),
+					   source);
 
 	g_slist_foreach (list, (GFunc) g_free, NULL);
 	g_slist_free (list);
@@ -1143,6 +1152,9 @@ rb_library_source_library_location_cb (GtkFileChooser *chooser,
 	source->priv->library_location_handle_pending = TRUE;
 
 	g_idle_add ((GSourceFunc)rb_library_source_process_library_handle_selection, source);
+
+	/* don't do the first-run druid if the user sets the library location */
+	eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
 }
 
 static void

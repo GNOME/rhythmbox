@@ -141,6 +141,8 @@ struct RBIRadioSourcePrivate
 	char *search_text;
 	char *selected_genre;
 
+	gboolean firstrun_done;
+	
 	RhythmDBEntryType entry_type;
 
 	RhythmDBQueryModel *all_query;
@@ -359,6 +361,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
 				    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
 				    source);
+	source->priv->firstrun_done = eel_gconf_get_boolean (CONF_FIRST_TIME);
 	eel_gconf_notification_add (CONF_FIRST_TIME,
 				    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
 				    source);
@@ -818,11 +821,16 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 				     GConfEntry *entry,
 				     RBIRadioSource *source)
 {
-	char *uri = gnome_vfs_get_uri_from_local_path (rb_file ("iradio-initial.pls"));
+	char *uri;
 
+	if (source->priv->firstrun_done || !gconf_value_get_bool (entry->value))
+		return;
+
+	uri = gnome_vfs_get_uri_from_local_path (rb_file ("iradio-initial.pls"));
 	rb_iradio_source_add_from_playlist (source, uri);
-
 	g_free (uri);
+
+	source->priv->firstrun_done = TRUE;
 }
 
 static void
