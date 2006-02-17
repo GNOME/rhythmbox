@@ -21,11 +21,13 @@
  *
  */
 
-#include <config.h>
-#include <libgnome/gnome-i18n.h>
-#include <gtk/gtkuimanager.h>
+#include "config.h"
+
 #include <time.h>
 #include <string.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtkuimanager.h>
 
 #include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"
@@ -522,6 +524,11 @@ gboolean
 rb_source_can_rename (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	if (rb_shell_get_party_mode (priv->shell)) {
+		return FALSE;
+	}
 
 	return klass->impl_can_rename (source);
 }
@@ -574,6 +581,11 @@ gboolean
 rb_source_can_delete (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	if (rb_shell_get_party_mode (priv->shell)) {
+		return FALSE;
+	}
 
 	return klass->impl_can_delete (source);
 }
@@ -582,6 +594,11 @@ gboolean
 rb_source_can_move_to_trash (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	if (rb_shell_get_party_mode (priv->shell)) {
+		return FALSE;
+	}
 
 	return klass->impl_can_move_to_trash (source);
 }

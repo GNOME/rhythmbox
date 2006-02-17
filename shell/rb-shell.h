@@ -123,6 +123,8 @@ void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,
 							 RhythmDBEntryType type);
 
+gboolean        rb_shell_get_party_mode (RBShell *shell);
+
 void rb_shell_append_source (RBShell *shell, RBSource *source, RBSource *parent);
 
 G_END_DECLS

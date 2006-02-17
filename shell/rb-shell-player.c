@@ -164,7 +164,8 @@ struct RBShellPlayerPrivate
 	RhythmDB *db;
 
 	gboolean syncing_state;
-	
+	gboolean queue_only;
+
 	RBSource *selected_source;
 	RBSource *source;
 	RBPlayQueueSource *queue_source;
@@ -215,6 +216,7 @@ enum
 	PROP_VOLUME,
 	PROP_STATUSBAR,
 	PROP_QUEUE_SOURCE,
+	PROP_QUEUE_ONLY,
 	PROP_STREAM_SONG
 };
 
@@ -314,6 +316,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "RBPlaylistSource object",
 							      RB_TYPE_PLAYLIST_SOURCE,
 							      G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_ONLY,
+					 g_param_spec_boolean ("queue-only",
+							       "Queue only",
+							       "Activation only adds to queue",
+							       FALSE,
+							       G_PARAM_READWRITE));
 	
 	/* If you change these, be sure to update the CORBA interface
 	 * in rb-remote-bonobo.c! */
@@ -628,8 +638,7 @@ rb_shell_player_set_property (GObject *object,
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_SOURCE:
 		if (player->priv->selected_source != NULL) {
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
@@ -730,7 +739,9 @@ rb_shell_player_set_property (GObject *object,
 			g_object_unref (sidebar);
 		}
 		break;
-
+	case PROP_QUEUE_ONLY:
+		player->priv->queue_only = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -745,8 +756,7 @@ rb_shell_player_get_property (GObject *object,
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_SOURCE:
 		g_value_set_object (value, player->priv->selected_source);
 		break;
@@ -778,6 +788,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, player->priv->queue_source);
+		break;
+	case PROP_QUEUE_ONLY:
+		g_value_set_boolean (value, player->priv->queue_only);
 		break;
 	case PROP_STREAM_SONG:
 		g_value_set_string (value, player->priv->song);
@@ -1739,8 +1752,8 @@ rb_shell_player_view_song_position_slider_changed_cb (GtkAction *action,
 
 static void
 rb_shell_player_entry_activated_cb (RBEntryView *view,
-				   RhythmDBEntry *entry,
-				   RBShellPlayer *playa)
+				    RhythmDBEntry *entry,
+				    RBShellPlayer *playa)
 {
 	gboolean was_from_queue = FALSE;
 	RhythmDBEntry *prev_entry = NULL;
@@ -1766,8 +1779,11 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 
 	if (playa->priv->queue_source) {
 		RBEntryView *queue_sidebar;
+
 		g_object_get (G_OBJECT (playa->priv->queue_source), "sidebar", &queue_sidebar, NULL);
+
 		if (view == queue_sidebar || view == rb_source_get_entry_view (RB_SOURCE (playa->priv->queue_source))) {
+
 			/* fall back to the current selected source once the queue is empty */
 			if (view == queue_sidebar && playa->priv->source == NULL) {
 				rb_play_order_playing_source_changed (playa->priv->play_order, 
@@ -1785,9 +1801,23 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 			g_idle_add ((GSourceFunc)rb_shell_player_jump_to_current_idle, playa);
 			was_from_queue = FALSE;
 			source_set = TRUE;
+		} else {
+			if (playa->priv->queue_only) {
+				rb_source_add_to_queue (playa->priv->selected_source,
+							RB_SOURCE (playa->priv->queue_source));
+				rb_shell_player_set_playing_source (playa, RB_SOURCE (playa->priv->queue_source));
+				source_set = TRUE;
+			}
 		}
+
 		g_object_unref (G_OBJECT (queue_sidebar));
 	}
+
+	/* bail out if queue only */
+	if (playa->priv->queue_only) {
+		return;
+	}
+
 	if (!source_set) {
 		rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 		source_set = TRUE;

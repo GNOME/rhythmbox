@@ -1,3 +1,42 @@
+2006-02-17  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-static-playlist-source.c: Fix includes.
+
+	* sources/rb-source.c (rb_source_can_rename) 
+	(rb_source_can_delete, rb_source_can_move_to_trash):
+	Return FALSE if in party mode.
+
+	* shell/rb-shell.[ch] (rb_shell_finalize, rb_shell_constructor):
+	Replace fullscreen with party mode.
+	(rb_shell_window_delete_cb): Don't quit if in party mode.
+	(rb_shell_view_party_mode_changed_cb): Setup party mode.
+	(window_state_event_cb): Try to deiconify shell when iconified
+	in party mode.
+	(rb_shell_sync_party_mode): Sync party mode properties.
+	Currently, that means [de]sensitizing close, quit, and small-display,
+	going into fullscreen mode with window stuck and kept above, and
+	toggling queue-only for the shell player.
+	(rb_shell_sync_smalldisplay): Sensitive party mode.
+	(rb_shell_get_party_mode): Get party mode setting.
+
+	* shell/rb-shell-player.c (rb_shell_player_class_init) 
+	(rb_shell_player_set_property, rb_shell_player_get_property):
+	Add queue-only property.
+	(rb_shell_player_entry_activated_cb): If in party mode
+	only queue the entry on activation.
+
+	* shell/rb-playlist-manager.c (rb_playlist_manager_set_source_internal):
+	Break out from set_properties.  Desensitize some actions when
+	in party mode.
+	(rb_playlist_manager_set_property): Break out set_source_internal.
+
+	* data/rhythmbox.schemas: Remove fullscreen mode.
+
+	* data/ui/rhythmbox-ui.xml: Replace fullscreen
+	action with party mode.
+
+	Partial fix for #323933
+
 2006-02-17  James Livingston  <jrl@ids.org.au>
 
 	* configure.ac:

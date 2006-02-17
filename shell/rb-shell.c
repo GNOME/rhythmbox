@@ -117,7 +117,7 @@ static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
-static void rb_shell_sync_fullscreen (RBShell *shell);
+static void rb_shell_sync_party_mode (RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
 						    RhythmDBEntryType type);
@@ -201,7 +201,7 @@ static void rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_toolbar_changed_cb (GtkAction *action,
 					      RBShell *shell);
-static void rb_shell_view_fullscreen_changed_cb (GtkAction *action,
+static void rb_shell_view_party_mode_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 						 RBShell *shell);
@@ -227,10 +227,6 @@ static void smalldisplay_changed_cb (GConfClient *client,
 				     guint cnxn_id,
 				     GConfEntry *entry,
 				     RBShell *shell);
-static void fullscreen_changed_cb (GConfClient *client,
-				   guint cnxn_id,
-				   GConfEntry *entry,
-				   RBShell *shell);
 static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBSource *source,
 					 GtkSelectionData *data,
@@ -413,7 +409,6 @@ struct RBShellPrivate
 	guint sourcelist_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
 	guint smalldisplay_notify_id;
-	guint fullscreen_notify_id;
 
 	glong last_small_time; /* when we last changed small mode */
 	
@@ -426,9 +421,9 @@ struct RBShellPrivate
 	guint small_width;
 	gboolean window_maximised;
 	gboolean window_small;
-	gboolean window_fullscreen;
 	gboolean queue_as_sidebar;
 	gboolean statusbar_hidden;
+	gboolean party_mode;
 	gint window_x;
 	gint window_y;
 	gint paned_position;
@@ -496,9 +491,9 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
 	  N_("Make the main window smaller"),
 	  G_CALLBACK (rb_shell_view_smalldisplay_changed_cb), },
-	{ "ViewFullscreen", NULL, N_("_Fullscreen"), "F11",
-	  N_("Expand the window to fill the screen"),
-	  G_CALLBACK (rb_shell_view_fullscreen_changed_cb), FALSE },
+	{ "ViewPartyMode", NULL, N_("_Party Mode"), NULL,
+	  N_("Change the status of the party mode"),
+	  G_CALLBACK (rb_shell_view_party_mode_changed_cb), FALSE },
 	{ "ViewQueueAsSidebar", NULL, N_("_Queue as Sidebar"), "<control>K",
 	  N_("Change whether the queue is visible as a source or a sidebar"),
 	  G_CALLBACK (rb_shell_view_queue_as_sidebar_changed_cb) },
@@ -879,7 +874,6 @@ rb_shell_finalize (GObject *object)
 	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
-	eel_gconf_notification_remove (shell->priv->fullscreen_notify_id);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
@@ -942,8 +936,11 @@ rb_shell_finalize (GObject *object)
 }
 
 RBShell *
-rb_shell_new (int argc, char **argv, gboolean no_registration,
-	      gboolean no_update, gboolean dry_run,
+rb_shell_new (int argc,
+	      char **argv,
+	      gboolean no_registration,
+	      gboolean no_update,
+	      gboolean dry_run,
 	      char *rhythmdb)
 {
 	RBShell *s;
@@ -957,7 +954,8 @@ rb_shell_new (int argc, char **argv, gboolean no_registration,
 }
 
 static GObject *
-rb_shell_constructor (GType type, guint n_construct_properties,
+rb_shell_constructor (GType type,
+		      guint n_construct_properties,
 		      GObjectConstructParam *construct_properties)
 {
 	RBShell *shell;
@@ -1173,10 +1171,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
 					    (GConfClientNotifyFunc) smalldisplay_changed_cb,
 					    shell);
-	shell->priv->fullscreen_notify_id =
-		eel_gconf_notification_add (CONF_UI_FULLSCREEN,
-					    (GConfClientNotifyFunc) fullscreen_changed_cb,
-					    shell);
 
 	/* read the cached copies of the gconf keys */
 	shell->priv->window_width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
@@ -1184,7 +1178,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	shell->priv->small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
 	shell->priv->window_maximised = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
 	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
-	shell->priv->window_fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
 	shell->priv->queue_as_sidebar = eel_gconf_get_boolean (CONF_UI_QUEUE_AS_SIDEBAR); 
 	shell->priv->window_x = eel_gconf_get_integer (CONF_STATE_WINDOW_X_POSITION);
 	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
@@ -1307,7 +1300,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	rb_shell_sync_window_state (shell, FALSE);
 	rb_shell_sync_smalldisplay (shell);
-	rb_shell_sync_fullscreen (shell);
+	rb_shell_sync_party_mode (shell);
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
@@ -1424,7 +1417,9 @@ idle_hide_mainwindow (gpointer data)
 }
 
 static void
-rb_shell_set_visibility (RBShell *shell, gboolean visible, gboolean force)
+rb_shell_set_visibility (RBShell *shell,
+			 gboolean visible,
+			 gboolean force)
 {
 	gboolean current_visible;
 
@@ -1504,18 +1499,29 @@ rb_shell_window_delete_cb (GtkWidget *win,
 			   GdkEventAny *event,
 			   RBShell *shell)
 {
-	/*if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
+	if (shell->priv->party_mode) {
+		return TRUE;
+	}
+
+#if 0
+	if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
 		rb_debug ("window deleted, hiding");
 		rb_shell_set_visibility (shell, FALSE, TRUE);
-	} else {*/
+	} else {
 		rb_debug ("no tray icon to minimize to, quitting");
 		rb_shell_quit (shell);
-	/*}*/
+	}
+#else
+	rb_debug ("no tray icon to minimize to, quitting");
+	rb_shell_quit (shell);
+#endif
+
 	return TRUE;
 }
 
 static void
-rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise)
+rb_shell_sync_window_state (RBShell *shell,
+			    gboolean dont_maximise)
 {
 	GdkGeometry hints;
 
@@ -1643,7 +1649,8 @@ rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 }
 
 static RBSource *
-rb_shell_get_source_by_entry_type (RBShell *shell, RhythmDBEntryType type)
+rb_shell_get_source_by_entry_type (RBShell *shell,
+				   RhythmDBEntryType type)
 {
 	return g_hash_table_lookup (shell->priv->sources_hash, GINT_TO_POINTER (type));
 }
@@ -1685,13 +1692,17 @@ rb_shell_append_source (RBShell *shell,
 }
 
 static void
-rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell)
+rb_shell_playlist_added_cb (RBPlaylistManager *mgr,
+			    RBSource *source,
+			    RBShell *shell)
 {
 	rb_shell_append_source (shell, source, NULL);
 }
 
 static void
-rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell)
+rb_shell_playlist_created_cb (RBPlaylistManager *mgr,
+			      RBSource *source,
+			      RBShell *shell)
 {
 	shell->priv->window_small = FALSE;
 	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY, shell->priv->window_small);
@@ -1701,19 +1712,23 @@ rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell 
 }
 
 static void
-rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr, RBShell *shell)
+rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr,
+				 RBShell *shell)
 {
 	shell->priv->show_db_errors = TRUE;
 }
 
 static void
-rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell)
+rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr,
+				  RBShell *shell)
 {
 	shell->priv->show_db_errors = FALSE;
 }
 
 static void
-rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell)
+rb_shell_medium_added_cb (RBRemovableMediaManager *mgr,
+			  RBSource *source,
+			  RBShell *shell)
 {
 	rb_shell_append_source (shell, source, NULL);
 }
@@ -1796,7 +1811,8 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 }
 
 static void
-merge_source_ui_cb (const char *action, RBShell *shell)
+merge_source_ui_cb (const char *action,
+		    RBShell *shell)
 {
 	gtk_ui_manager_add_ui (shell->priv->ui_manager,
 			       shell->priv->source_ui_merge_id,
@@ -1886,7 +1902,8 @@ rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
 }
 
 static void
-rb_shell_set_elapsed (RBShell *shell, guint elapsed)
+rb_shell_set_elapsed (RBShell *shell,
+		      guint elapsed)
 {
 	gboolean playing;
 	char *elapsed_string;
@@ -1913,7 +1930,8 @@ rb_shell_set_elapsed (RBShell *shell, guint elapsed)
 }
 
 static void
-rb_shell_set_window_title (RBShell *shell, const char *window_title)
+rb_shell_set_window_title (RBShell *shell,
+			   const char *window_title)
 {
 	if (window_title == NULL) {
 		rb_debug ("clearing title");
@@ -2013,11 +2031,11 @@ rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 }
 
 static void
-rb_shell_view_fullscreen_changed_cb (GtkAction *action,
+rb_shell_view_party_mode_changed_cb (GtkAction *action,
 				     RBShell *shell)
 {
-	eel_gconf_set_boolean (CONF_UI_FULLSCREEN,
-			       gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+	shell->priv->party_mode = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+	rb_shell_sync_party_mode (shell);
 }
 
 static void
@@ -2308,7 +2326,8 @@ idle_handle_load_complete (RBShell *shell)
 }
 
 static void
-rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
+rb_shell_load_complete_cb (RhythmDB *db,
+			   RBShell *shell)
 {
 	g_idle_add ((GSourceFunc) idle_handle_load_complete, shell);
 }
@@ -2380,29 +2399,53 @@ rb_shell_sync_toolbar_visibility (RBShell *shell)
 				      visible);
 }
 
-static void
-rb_shell_sync_fullscreen (RBShell *shell)
+static gboolean
+window_state_event_cb (GtkWidget           *widget,
+		       GdkEventWindowState *event,
+		       RBShell             *shell)
 {
-	gboolean fullscreen;
-	GtkAction *action;
-	GtkAction *small_action;
-
-	fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
-	small_action = gtk_action_group_get_action (shell->priv->actiongroup,
-						    "ViewSmallDisplay");
-
-	if (fullscreen) {
-		gtk_window_fullscreen (GTK_WINDOW (shell->priv->window));
-		g_object_set (G_OBJECT (small_action), "sensitive", FALSE, NULL);
-	} else {
-		gtk_window_unfullscreen (GTK_WINDOW (shell->priv->window));
-		g_object_set (G_OBJECT (small_action), "sensitive", TRUE, NULL);
+	if (event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) {
+		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
 	}
 
-	action = gtk_action_group_get_action (shell->priv->actiongroup,
-					      "ViewFullscreen");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
-				      fullscreen);
+	return TRUE;
+}
+
+static void
+rb_shell_sync_party_mode (RBShell *shell)
+{
+	GtkAction *action;
+
+	/* party mode does not use gconf as a model since it
+	   should not be persistent */
+
+	/* disable/enable quit action */
+	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicClose");
+	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
+	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicQuit");
+	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
+	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSmallDisplay");
+	g_object_set (G_OBJECT (action), "sensitive", !shell->priv->party_mode, NULL);
+
+	/* show/hide queue as sidebar ? */
+
+	g_object_set (shell->priv->player_shell, "queue-only", shell->priv->party_mode, NULL);
+
+	/* Set playlist manager source to the current source to update properties */
+	if (shell->priv->selected_source) {
+		rb_playlist_manager_set_source (shell->priv->playlist_manager, shell->priv->selected_source);
+	}
+
+	gtk_window_set_keep_above (GTK_WINDOW (shell->priv->window), shell->priv->party_mode);
+	if (shell->priv->party_mode) {
+		gtk_window_fullscreen (GTK_WINDOW (shell->priv->window));
+		gtk_window_stick (GTK_WINDOW (shell->priv->window));
+		g_signal_connect (shell->priv->window, "window-state-event", G_CALLBACK (window_state_event_cb), shell);
+	} else {
+		gtk_window_unstick (GTK_WINDOW (shell->priv->window));
+		gtk_window_unfullscreen (GTK_WINDOW (shell->priv->window));
+		g_signal_handlers_disconnect_by_func (shell->priv->window, window_state_event_cb, shell);
+	}
 }
 
 static void
@@ -2410,7 +2453,7 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 {
 	GtkAction *action;
 	GtkAction *queue_action;
-	GtkAction *fullscreen_action;
+	GtkAction *party_mode_action;
 	GtkWidget *toolbar;
 
 	rb_shell_sync_window_state (shell, FALSE);
@@ -2419,22 +2462,22 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 					      "ViewSourceList");
 	queue_action = gtk_action_group_get_action (shell->priv->actiongroup,
 						    "ViewQueueAsSidebar");
-	fullscreen_action = gtk_action_group_get_action (shell->priv->actiongroup,
-						    "ViewFullscreen");
+	party_mode_action = gtk_action_group_get_action (shell->priv->actiongroup,
+							 "ViewPartyMode");
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 
 	if (shell->priv->window_small) {
 		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", FALSE, NULL);
-		g_object_set (G_OBJECT (fullscreen_action), "sensitive", FALSE, NULL);
+		g_object_set (G_OBJECT (party_mode_action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
  		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	} else {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", TRUE, NULL);
-		g_object_set (G_OBJECT (fullscreen_action), "sensitive", TRUE, NULL);
+		g_object_set (G_OBJECT (party_mode_action), "sensitive", TRUE, NULL);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
 		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
@@ -2489,17 +2532,6 @@ smalldisplay_changed_cb (GConfClient *client,
 	rb_debug ("small display mode changed");
 	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	rb_shell_sync_smalldisplay (shell);
-}
-
-static void
-fullscreen_changed_cb (GConfClient *client,
-		       guint cnxn_id,
-		       GConfEntry *entry,
-		       RBShell *shell)
-{
-	rb_debug ("fullscreen mode changed");
-	shell->priv->window_fullscreen = eel_gconf_get_boolean (CONF_UI_FULLSCREEN);
-	rb_shell_sync_fullscreen (shell);
 }
 
 static void
@@ -2589,7 +2621,8 @@ rb_shell_cmd_view_all (GtkAction *action,
 }
 
 static void
-rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
+rb_shell_jump_to_entry_with_source (RBShell *shell,
+				    RBSource *source,
 				    RhythmDBEntry *entry)
 {
 	RBEntryView *songs;
@@ -2613,13 +2646,15 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 }
 
 static void
-rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry)
+rb_shell_jump_to_entry (RBShell *shell,
+			RhythmDBEntry *entry)
 {
 	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
 }
 
 static void
-rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry)
+rb_shell_play_entry (RBShell *shell,
+		     RhythmDBEntry *entry)
 {
 	rb_shell_player_stop (shell->priv->player_shell);
 	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
@@ -2664,7 +2699,8 @@ tray_embedded_cb (GtkPlug *plug,
 }
 
 static gboolean
-tray_destroy_cb (GtkObject *object, RBShell *shell)
+tray_destroy_cb (GtkObject *object,
+		 RBShell *shell)
 {
 	if (shell->priv->tray_icon) {
 		rb_debug ("caught destroy event for tray icon %p", object);
@@ -2756,14 +2792,17 @@ rb_shell_session_init (RBShell *shell)
 }
 
 static void
-rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
+rb_shell_load_uri_impl (RBRemoteProxy *proxy,
+			const char *uri,
+			gboolean play)
 {
 	RBShell *shell = RB_SHELL (proxy);
 	rb_shell_load_uri (shell, uri, play, NULL);
 }
 
 gint
-rb_shell_guess_type_for_uri (RBShell *shell, const char *uri)
+rb_shell_guess_type_for_uri (RBShell *shell,
+			     const char *uri)
 {
 	GnomeVFSURI *vfs_uri;
 
@@ -2795,7 +2834,9 @@ rb_shell_guess_type_for_uri (RBShell *shell, const char *uri)
  * optional metadata
  */
 gboolean
-rb_shell_add_uri (RBShell *shell, gint entrytype, const char *uri,
+rb_shell_add_uri (RBShell *shell,
+		  gint entrytype,
+		  const char *uri,
 		  const char *title,
 		  const char *genre,
 		  GError **error)
@@ -2848,7 +2889,10 @@ handle_one_uri_with_possible_metadata (RBShell *shell,
  * an internet radio station, and optionally start playing it.
  */
 gboolean
-rb_shell_load_uri (RBShell *shell, const char *uri, gboolean play, GError **error)
+rb_shell_load_uri (RBShell *shell,
+		   const char *uri,
+		   gboolean play,
+		   GError **error)
 {
 	RhythmDBEntry *entry;
 	gboolean handled;
@@ -2893,6 +2937,12 @@ rb_shell_load_uri (RBShell *shell, const char *uri, gboolean play, GError **erro
 	return TRUE;
 }
 
+gboolean
+rb_shell_get_party_mode (RBShell *shell)
+{
+	return shell->priv->party_mode;
+}
+
 GObject *
 rb_shell_get_player (RBShell *shell)
 {
@@ -2930,7 +2980,8 @@ rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri)
 }
 
 static void
-rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri)
+rb_shell_play_uri_impl (RBRemoteProxy *proxy,
+			const char *uri)
 {
 	RBShell       *shell = RB_SHELL (proxy);
 	RhythmDBEntry *entry;
@@ -2966,7 +3017,9 @@ rb_shell_remove_from_queue (RBShell *shell,
 
 
 gboolean
-rb_shell_present (RBShell *shell, guint32 timestamp, GError **error)
+rb_shell_present (RBShell *shell,
+		  guint32 timestamp,
+		  GError **error)
 {
 	rb_debug ("presenting with timestamp %u", timestamp);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
@@ -2994,7 +3047,8 @@ rb_shell_get_visibility_impl (RBRemoteProxy *proxy)
 }
 
 static void
-rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible)
+rb_shell_set_visibility_impl (RBRemoteProxy *proxy,
+			      gboolean visible)
 {
 	RBShell *shell = RB_SHELL (proxy);
 	rb_shell_set_visibility (shell, visible, FALSE);
@@ -3014,7 +3068,8 @@ rb_shell_get_shuffle_impl (RBRemoteProxy *proxy)
 }
 
 static void
-rb_shell_set_shuffle_impl (RBRemoteProxy *proxy, gboolean shuffle)
+rb_shell_set_shuffle_impl (RBRemoteProxy *proxy,
+			   gboolean shuffle)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
 	gboolean       shuffle_old, repeat;
@@ -3042,7 +3097,8 @@ rb_shell_get_repeat_impl (RBRemoteProxy *proxy)
 }
 
 static void
-rb_shell_set_repeat_impl (RBRemoteProxy *proxy, gboolean repeat)
+rb_shell_set_repeat_impl (RBRemoteProxy *proxy,
+			  gboolean repeat)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
 	gboolean       shuffle, repeat_old;
@@ -3091,7 +3147,8 @@ rb_shell_get_playing_time_impl (RBRemoteProxy *proxy)
 }
 
 static void
-rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time)
+rb_shell_set_playing_time_impl (RBRemoteProxy *proxy,
+				long time)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
 	rb_shell_player_set_playing_time (player, (guint) time, NULL);
@@ -3114,7 +3171,9 @@ rb_shell_get_playing_uri_impl (RBRemoteProxy *proxy)
 }
 
 static gboolean
-rb_shell_get_song_info_impl (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSong *song)
+rb_shell_get_song_info_impl (RBRemoteProxy *proxy,
+			     const gchar *uri,
+			     RBRemoteSong *song)
 {
 	RBShell       *shell;
 	RhythmDBEntry *entry;
@@ -3320,7 +3379,8 @@ rb_shell_get_playing_source_impl (RBRemoteProxy *proxy)
 }
 
 static void
-rb_shell_seek_impl (RBRemoteProxy *proxy, long offset)
+rb_shell_seek_impl (RBRemoteProxy *proxy,
+		    long offset)
 {
 	RBShellPlayer *player;
 	player = RB_SHELL (proxy)->priv->player_shell;
@@ -3328,7 +3388,8 @@ rb_shell_seek_impl (RBRemoteProxy *proxy, long offset)
 }
 
 static void
-rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating)
+rb_shell_set_rating_impl (RBRemoteProxy *proxy,
+			  double rating)
 {
 	RBShell *shell = RB_SHELL (proxy);
 	RhythmDBEntry *entry;

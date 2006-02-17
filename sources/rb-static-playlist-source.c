@@ -19,12 +19,14 @@
  *
  */
 
-#include <config.h>
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <libxml/tree.h>
+#include "config.h"
+
 #include <string.h>
+
+#include <libxml/tree.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-static-playlist-source.h"
 #include "rb-util.h"

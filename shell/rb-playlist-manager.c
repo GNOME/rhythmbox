@@ -379,6 +379,73 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 }
 
 static void
+rb_playlist_manager_set_source_internal (RBPlaylistManager *mgr,
+					 RBSource *source)
+{
+	gboolean playlist_active;
+	gboolean playlist_local = FALSE;
+	gboolean party_mode;
+	gboolean can_save;
+	gboolean can_delete;
+	gboolean can_edit;
+	gboolean can_rename;
+	GtkAction *action;
+
+	if (mgr->priv->selected_source != NULL) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
+						      G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
+						      mgr);
+	}
+
+	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
+
+	mgr->priv->selected_source = source;
+	playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	if (playlist_active) {
+		g_object_get (G_OBJECT (mgr->priv->selected_source), "is-local", &playlist_local, NULL);
+	}
+
+	can_save = playlist_local && !party_mode;
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistSavePlaylist");
+	g_object_set (G_OBJECT (action), "sensitive", can_save, NULL);
+
+	can_delete = playlist_local && !party_mode && !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistDeletePlaylist");
+	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
+
+	can_edit = !party_mode && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "EditAutomaticPlaylist");
+	g_object_set (G_OBJECT (action), "sensitive", can_edit, NULL);
+
+	can_rename = rb_source_can_rename (mgr->priv->selected_source);
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistRenamePlaylist");
+	g_object_set (G_OBJECT (action), "sensitive", playlist_local && can_rename, NULL);
+
+	/* FIXME should base this on the query model so the entry-added and entry-deleted
+	 * signals can be removed from RBEntryView (where they don't belong).
+	 */
+	if (playlist_active && rb_recorder_enabled ()) {
+		/* monitor for changes, to enable/disable the burn menu item */
+		RBEntryView *songs = rb_source_get_entry_view (mgr->priv->selected_source);
+		g_signal_connect_object (G_OBJECT (songs), "entry-added", 
+					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
+					 mgr, 0);
+		g_signal_connect_object (G_OBJECT (songs), "entry-deleted", 
+					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
+					 mgr, 0);
+		rb_playlist_manager_playlist_entries_changed (songs, NULL, mgr);
+	} else {
+		action = gtk_action_group_get_action (mgr->priv->actiongroup,
+						      "MusicPlaylistBurnPlaylist");
+		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
+	}
+}
+
+static void
 rb_playlist_manager_set_property (GObject *object,
 				  guint prop_id,
 				  const GValue *value,
@@ -386,64 +453,11 @@ rb_playlist_manager_set_property (GObject *object,
 {
 	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_SOURCE:
-	{
-		gboolean playlist_active;
-		gboolean playlist_local = FALSE;
-		gboolean can_rename;
-		GtkAction *action;
-
-		if (mgr->priv->selected_source != NULL)
-			g_signal_handlers_disconnect_by_func (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
-							      G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
-							      mgr);
-
-		mgr->priv->selected_source = g_value_get_object (value);
-		playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
-		if (playlist_active)
-			g_object_get (G_OBJECT (mgr->priv->selected_source), "is-local", &playlist_local, NULL);
-
-		action = gtk_action_group_get_action (mgr->priv->actiongroup,
-						      "MusicPlaylistSavePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_local, NULL);
-		action = gtk_action_group_get_action (mgr->priv->actiongroup,
-						      "MusicPlaylistDeletePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", 
-			      playlist_local && !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source), 
-			      NULL);
-
-		action = gtk_action_group_get_action (mgr->priv->actiongroup,
- 						      "EditAutomaticPlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", 
-			      RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source), NULL);
-		can_rename = rb_source_can_rename (mgr->priv->selected_source);
-		action = gtk_action_group_get_action (mgr->priv->actiongroup,
- 						      "MusicPlaylistRenamePlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", playlist_local && can_rename, NULL);
-
-		/* FIXME should base this on the query model so the entry-added and entry-deleted
-		 * signals can be removed from RBEntryView (where they don't belong).
-		 */
-		if (playlist_active && rb_recorder_enabled ()) {
-			/* monitor for changes, to enable/disable the burn menu item */
-			RBEntryView *songs = rb_source_get_entry_view (mgr->priv->selected_source);
-			g_signal_connect_object (G_OBJECT (songs), "entry-added", 
-						 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
-						 mgr, 0);
-			g_signal_connect_object (G_OBJECT (songs), "entry-deleted", 
-						 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
-						 mgr, 0);
-			rb_playlist_manager_playlist_entries_changed (songs, NULL, mgr);
-		} else {
-			action = gtk_action_group_get_action (mgr->priv->actiongroup,
-							      "MusicPlaylistBurnPlaylist");
-			g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
-		}
+		rb_playlist_manager_set_source_internal (mgr, g_value_get_object (value));
 
 		break;
-	}
 	case PROP_SHELL:
 	{
 		GtkUIManager *uimanager;
@@ -453,7 +467,6 @@ rb_playlist_manager_set_property (GObject *object,
 			      "db", &mgr->priv->db,
 			      NULL);
 		rb_playlist_manager_set_uimanager (mgr, uimanager);
-			
 			      
 		break;
 	}
@@ -481,8 +494,7 @@ rb_playlist_manager_get_property (GObject *object,
 {
 	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_SOURCE:
 		g_value_set_object (value, mgr->priv->selected_source);
 		break;
