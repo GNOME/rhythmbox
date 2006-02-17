@@ -252,6 +252,32 @@ rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
 }
 
 static void
+rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
+					RBSource *source)
+{
+	if (clipboard->priv->source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
+
+		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+						      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+						      clipboard);
+	}
+	clipboard->priv->source = source;
+	rb_debug ("selected source %p", source);
+
+	rb_shell_clipboard_sync (clipboard);
+
+	if (clipboard->priv->source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
+
+		g_signal_connect_object (G_OBJECT (songs),
+					 "selection-changed",
+					 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+					 clipboard, 0);
+	}
+}
+
+static void
 rb_shell_clipboard_set_property (GObject *object,
 			         guint prop_id,
 			         const GValue *value,
@@ -262,28 +288,7 @@ rb_shell_clipboard_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_SOURCE:
-		if (clipboard->priv->source != NULL)
-		{
-			RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
-
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-							      clipboard);
-		}
-		clipboard->priv->source = g_value_get_object (value);
-		rb_debug ("selected source %p", g_value_get_object (value));
-
-		rb_shell_clipboard_sync (clipboard);
-
-		if (clipboard->priv->source != NULL)
-		{
-			RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
-
-			g_signal_connect_object (G_OBJECT (songs),
-						 "selection-changed",
-						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-						 clipboard, 0);
-		}
+		rb_shell_clipboard_set_source_internal (clipboard, g_value_get_object (value));
 		break;
 	case PROP_ACTION_GROUP:
 		clipboard->priv->actiongroup = g_value_get_object (value);

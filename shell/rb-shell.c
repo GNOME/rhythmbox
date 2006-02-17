@@ -2434,6 +2434,7 @@ rb_shell_sync_party_mode (RBShell *shell)
 	/* Set playlist manager source to the current source to update properties */
 	if (shell->priv->selected_source) {
 		rb_playlist_manager_set_source (shell->priv->playlist_manager, shell->priv->selected_source);
+		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, shell->priv->selected_source);
 	}
 
 	gtk_window_set_keep_above (GTK_WINDOW (shell->priv->window), shell->priv->party_mode);

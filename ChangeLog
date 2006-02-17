@@ -1,5 +1,12 @@
 2006-02-17  William Jon McCann  <mccann@jhu.edu>
 
+	* shell/rb-shell-clipboard.c (rb_shell_clipboard_set_source_internal) 
+	(rb_shell_clipboard_set_property): 
+	* shell/rb-shell.c (rb_shell_sync_party_mode):
+	Trigger a resync of the clipboard properties when changing party mode.
+
+2006-02-17  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-static-playlist-source.c: Fix includes.
 
 	* sources/rb-source.c (rb_source_can_rename) 
