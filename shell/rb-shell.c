@@ -314,6 +314,8 @@ enum
 	PROP_UI_MANAGER,
 	PROP_CLIPBOARD,
 	PROP_PLAYLIST_MANAGER,
+	PROP_REMOVABLE_MEDIA_MANAGER,
+	PROP_SHELL_PLAYER,
 	PROP_WINDOW,
 	PROP_PREFS,
 	PROP_QUEUE_SOURCE,
@@ -607,6 +609,20 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_PLAYLIST_MANAGER,
 							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,
+					 PROP_SHELL_PLAYER,
+					 g_param_spec_object ("shell-player",
+						 	      "RBShellPlayer",
+							      "RBShellPlayer object",
+							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_REMOVABLE_MEDIA_MANAGER,
+					 g_param_spec_object ("removable-media-manager",
+						 	      "RBRemovableMediaManager",
+							      "RBRemovableMediaManager object",
+							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
 					 PROP_WINDOW,
 					 g_param_spec_object ("window", 
 							      "GtkWindow", 
@@ -770,6 +786,12 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_PLAYLIST_MANAGER:
 		g_value_set_object (value, shell->priv->playlist_manager);
+		break;
+	case PROP_SHELL_PLAYER:
+		g_value_set_object (value, shell->priv->player_shell);
+		break;
+	case PROP_REMOVABLE_MEDIA_MANAGER:
+		g_value_set_object (value, shell->priv->removable_media_manager);
 		break;
 	case PROP_SELECTED_SOURCE:
 		g_value_set_object (value, shell->priv->selected_source);

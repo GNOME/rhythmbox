@@ -36,6 +36,8 @@
 #include "rb-ipod-source.h"
 #endif
 
+#include "rb-shell.h"
+#include "rb-shell-player.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-stock-icons.h"
@@ -102,6 +104,8 @@ typedef struct
 	GHashTable *volume_mapping;
 	GHashTable *cd_drive_mapping;
 	GList *cur_volume_list;
+
+	char *playing_uri;
 } RBRemovableMediaManagerPrivate;
 
 G_DEFINE_TYPE (RBRemovableMediaManager, rb_removable_media_manager, G_TYPE_OBJECT)
@@ -346,22 +350,101 @@ void begin_cd_drive_monitor (NautilusBurnDrive *drive, RBRemovableMediaManager *
 	info->drive = drive;
 	info->tray_opened = nautilus_burn_drive_door_is_open (drive);
 	info->manager = manager;
+
 	g_hash_table_insert (priv->cd_drive_mapping, drive, info);
 	g_timeout_add (1000, (GSourceFunc)poll_tray_opened, info);
-	if (!nautilus_burn_drive_door_is_open (drive)) {
-		volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, drive->device);
-		if (volume)
+
+	volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, drive->device);
+
+	if (volume) {
+		if (!nautilus_burn_drive_door_is_open (drive)) {
 			rb_removable_media_manager_mount_volume (manager, volume);
+		} else {
+			/* it may have got ejected while we weren't monitoring */
+			rb_removable_media_manager_unmount_volume (manager, volume);
+		}
 	}
 #endif
 }
 
+static char *
+split_drive_from_cdda_uri (const char *uri)
+{
+	gchar *copy, *temp, *split;
+	int len;
+
+	if (!g_str_has_prefix (uri, "cdda://"))
+		return NULL;
+
+	len = strlen ("cdda://");
+	
+	copy = g_strdup (uri);
+	split = g_utf8_strrchr (copy + len, -1, ':');
+
+	if (split == NULL) {
+		/* invalid URI, it doesn't contain a ':' */
+		g_free (copy);
+		return NULL;
+	}
+
+	*split = 0;
+	temp = g_strdup (copy + len);
+	g_free (copy);
+
+	return temp;
+}
+
+static void
+rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
+						   const char *uri,
+						   RBRemovableMediaManager *manager)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
+	char *old_drive = NULL;
+	char *new_drive = NULL;
+
+	/* extract the drive paths */
+	if (priv->playing_uri)
+		old_drive = split_drive_from_cdda_uri (priv->playing_uri);
+
+	if (uri)
+		new_drive = split_drive_from_cdda_uri (uri);
+
+
+	/* if the drive we're playing from has changed, adjust the polling */
+	if (old_drive == NULL || new_drive == NULL || strcmp (old_drive, new_drive) != 0) {
+		if (old_drive) {
+			NautilusBurnDrive *drive;
+
+			rb_debug ("restarting monitoring of drive %s after playing", old_drive);
+			drive = nautilus_burn_drive_new_from_path (old_drive);
+			begin_cd_drive_monitor (drive, manager);
+			nautilus_burn_drive_unref (drive);
+		}
+		
+		if (new_drive) {
+			NautilusBurnDrive *drive;
+
+			rb_debug ("stopping monitoring of drive %s while playing", new_drive);
+			drive = nautilus_burn_drive_new_from_path (new_drive);
+			/* removing it from the hash table makes it stop monitoring */
+			g_hash_table_remove (priv->cd_drive_mapping, drive);
+			nautilus_burn_drive_unref (drive);
+		}
+	}
+
+	g_free (priv->playing_uri);
+	priv->playing_uri = (uri) ? g_strdup (uri) : NULL;
+}
+
+	
 gboolean
 rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
 	GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
 	GList *drives;
+	GObject *shell_player;
 
 	/*
 	 * Monitor new (un)mounted file systems to look for new media
@@ -391,6 +474,12 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
 	g_list_foreach (drives, (GFunc)begin_cd_drive_monitor, manager);
 	g_list_free (drives);
+
+	/* monitor the playing song, to disable cd drive polling */
+	shell_player = rb_shell_get_player (priv->shell);
+	g_signal_connect (shell_player, "playing-uri-changed",
+			  G_CALLBACK (rb_removable_media_manager_playing_uri_changed_cb),
+			  manager);
 
 	/* scan for media */
 	rb_removable_media_manager_scan (manager);

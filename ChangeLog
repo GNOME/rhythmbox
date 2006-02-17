@@ -1,3 +1,14 @@
+2006-02-17  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-shell.c: (rb_shell_class_init): make the shell player and
+	removable media manager gobject properties
+
+	* shell/rb-removable-media-manager.c: (begin_cd_drive_monitor),
+	(split_drive_from_cdda_uri),
+	(rb_removable_media_manager_playing_uri_changed_cb),
+	(rb_removable_media_manager_load_media): stop polling a cd drive
+	when we are playing from it. Part of bug 330716.
+
 2006-02-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:
