@@ -1,5 +1,14 @@
 2006-02-17  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac:
+	* shell/rb-removable-media-manager.c:
+	(get_nautilus_burn_drive_for_path),
+	(rb_removable_media_manager_playing_uri_changed_cb): only use
+	nautilus_burn_drive_new_by_path when it exists, fall back to iterating
+	over the list when it doesn't.
+
+2006-02-17  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-iradio-source.c: (rb_iradio_source_constructor),
 	(rb_iradio_source_first_time_changed): Only do the import on the
 	first change from FALSE to TRUE.

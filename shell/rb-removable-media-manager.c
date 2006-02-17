@@ -394,6 +394,31 @@ split_drive_from_cdda_uri (const char *uri)
 	return temp;
 }
 
+static NautilusBurnDrive *
+get_nautilus_burn_drive_for_path (const char *path)
+{
+#ifdef HAVE_BURN_DRIVE_NEW_FROM_PATH
+	return nautilus_burn_drive_new_from_path (path);
+#else
+	GList *drives, *l;
+	NautilusBurnDrive *path_drive = NULL;
+
+	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
+	for (l = drives; l != NULL; l = g_list_next (l)) {
+		NautilusBurnDrive *drive = (NautilusBurnDrive*)l->data;
+
+		if (path_drive == NULL && strcmp (drive->device, path) == 0) {
+			path_drive = drive;
+		} else {
+			nautilus_burn_drive_unref (drive);
+		}
+	}
+	g_list_free (drives);
+
+	return path_drive;
+#endif
+}
+
 static void
 rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 						   const char *uri,
@@ -417,7 +442,7 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 			NautilusBurnDrive *drive;
 
 			rb_debug ("restarting monitoring of drive %s after playing", old_drive);
-			drive = nautilus_burn_drive_new_from_path (old_drive);
+			drive = get_nautilus_burn_drive_for_path (old_drive);
 			begin_cd_drive_monitor (drive, manager);
 			nautilus_burn_drive_unref (drive);
 		}
@@ -426,7 +451,7 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 			NautilusBurnDrive *drive;
 
 			rb_debug ("stopping monitoring of drive %s while playing", new_drive);
-			drive = nautilus_burn_drive_new_from_path (new_drive);
+			drive = get_nautilus_burn_drive_for_path (new_drive);
 			/* removing it from the hash table makes it stop monitoring */
 			g_hash_table_remove (priv->cd_drive_mapping, drive);
 			nautilus_burn_drive_unref (drive);
