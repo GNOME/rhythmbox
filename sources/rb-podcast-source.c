@@ -615,7 +615,9 @@ rb_podcast_source_constructor (GType type,
 				      RHYTHMDB_PROP_TYPE,
 				      RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
 				      RHYTHMDB_QUERY_END);
-	rhythmdb_do_full_query_parsed (source->priv->db, GTK_TREE_MODEL (query_model), query);
+	rhythmdb_do_full_query_parsed (source->priv->db, 
+				       RHYTHMDB_QUERY_RESULTS (query_model), 
+				       query);
 
 	rhythmdb_query_free (query);
 	
@@ -1122,7 +1124,7 @@ rb_podcast_source_do_query (RBPodcastSource *source, RBPodcastQueryType qtype)
 	rb_debug ("doing query");
 	query = construct_query_from_selection (source);
 	rhythmdb_do_full_query_async_parsed (source->priv->db,
-					     GTK_TREE_MODEL (query_model),
+					     RHYTHMDB_QUERY_RESULTS (query_model),
 					     query);
 		
 	rhythmdb_query_free (query);

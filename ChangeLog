@@ -1,3 +1,44 @@
+2006-02-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-results.h,
+	  rhythmdb/rhythmdb-query-results.c:
+	New interface for objects that accept query results from RhythmDB.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_query_results_init),
+	(rhythmdb_query_model_set_query),
+	(rhythmdb_query_model_add_results),
+	(rhythmdb_query_model_query_complete):
+	* rhythmdb/rhythmdb-query-model.h:
+	Make RhythmDBQueryModel implement the RhythmDBQueryResults interface.
+
+	* rhythmdb/rhythmdb-tree.c: (handle_entry_match),
+	(rhythmdb_tree_do_full_query):
+	* rhythmdb/rhythmdb.c: (rhythmdb_event_free),
+	(rhythmdb_query_internal), (rhythmdb_do_full_query_async_parsed),
+	(rhythmdb_do_full_query_async), (rhythmdb_do_full_query_internal),
+	(rhythmdb_do_full_query_parsed), (rhythmdb_do_full_query):
+	* rhythmdb/rhythmdb.h:
+	Pass query results through the RhythmDBQueryResults interface, rather
+	than directly to a RhythmDBQueryModel.
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_update_feeds),
+	(rb_podcast_manager_db_entry_deleted_cb):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query):
+	* sources/rb-iradio-source.c: (rb_iradio_source_do_query):
+	* sources/rb-library-source.c: (rb_library_source_constructor),
+	(rb_library_source_do_query):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor),
+	(rb_podcast_source_do_query):
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_drag_data_get):
+	Cast the query model to RhythmDBQueryResults when passing to one of
+	the RhythmDB query methods.
+
+	* rhythmdb/Makefile.am: Add new files.
+
 2006-02-18  James Livingston  <jrl@ids.org.au>
 
 	* data/ui/rhythmbox-ui.xml:

@@ -772,7 +772,9 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (query_model));
 	g_object_set (G_OBJECT (source), "query-model", query_model, NULL);
 
-	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
+	rhythmdb_do_full_query_parsed (source->priv->db, 
+				       RHYTHMDB_QUERY_RESULTS (model), 
+				       query);
 
 	rhythmdb_query_free (query);
 

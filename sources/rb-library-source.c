@@ -470,7 +470,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
 	rhythmdb_do_full_query_async (source->priv->db,
-				      GTK_TREE_MODEL (source->priv->cached_all_query),
+				      RHYTHMDB_QUERY_RESULTS (source->priv->cached_all_query),
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, source->priv->entry_type,
 				      RHYTHMDB_QUERY_END);
 	rb_library_browser_set_model (source->priv->browser, source->priv->cached_all_query);
@@ -1071,7 +1071,9 @@ rb_library_source_do_query (RBLibrarySource *source)
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
 		query = construct_query_from_selection (source);
-		rhythmdb_do_full_query_async_parsed (source->priv->db, GTK_TREE_MODEL (query_model), query);
+		rhythmdb_do_full_query_async_parsed (source->priv->db, 
+						     RHYTHMDB_QUERY_RESULTS (query_model), 
+						     query);
 		rhythmdb_query_free (query);
 	}
 

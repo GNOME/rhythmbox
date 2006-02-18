@@ -950,7 +950,8 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		gtk_tree_path_free (path);
 		if (is_all) {
  			/*filter out radios*/
- 			rhythmdb_do_full_query (db, query_model,
+ 			rhythmdb_do_full_query (db, 
+						RHYTHMDB_QUERY_RESULTS (query_model),
  						RHYTHMDB_QUERY_PROP_EQUALS,
  						RHYTHMDB_PROP_TYPE, 
  						RHYTHMDB_ENTRY_TYPE_SONG,
@@ -983,7 +984,8 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
  				g_free (name);
  			}
  			/*filter out radios*/
- 			rhythmdb_do_full_query (db, query_model,
+ 			rhythmdb_do_full_query (db,
+						RHYTHMDB_QUERY_RESULTS (query_model),
  						RHYTHMDB_QUERY_PROP_EQUALS,
  						RHYTHMDB_PROP_TYPE, 
  						RHYTHMDB_ENTRY_TYPE_SONG,

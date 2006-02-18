@@ -491,7 +491,8 @@ rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 {
 	GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
 
-	rhythmdb_do_full_query (pd->priv->db, query_model,
+	rhythmdb_do_full_query (pd->priv->db, 
+				RHYTHMDB_QUERY_RESULTS (query_model),
                                 RHYTHMDB_QUERY_PROP_EQUALS,
                                 RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
                                 RHYTHMDB_QUERY_END);
@@ -1307,7 +1308,8 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
 		GtkTreeIter iter;
 
-		rhythmdb_do_full_query (pd->priv->db, query_model,
+		rhythmdb_do_full_query (pd->priv->db, 
+					RHYTHMDB_QUERY_RESULTS (query_model),
                 	                RHYTHMDB_QUERY_PROP_EQUALS,
                         	        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
                 	                RHYTHMDB_QUERY_PROP_LIKE,

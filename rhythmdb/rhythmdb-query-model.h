@@ -71,13 +71,10 @@ RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
 void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
-void			rhythmdb_query_model_add_entries(RhythmDBQueryModel *model, GPtrArray *entries);
 
 gboolean		rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
 
 void			rhythmdb_query_model_move_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
-
-void			rhythmdb_query_model_signal_complete	(RhythmDBQueryModel *model);
 
 GnomeVFSFileSize	rhythmdb_query_model_get_size	(RhythmDBQueryModel *model);
 

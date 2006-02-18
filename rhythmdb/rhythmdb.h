@@ -32,6 +32,7 @@
 
 #include "config.h"
 #include "rb-refstring.h"
+#include "rhythmdb-query-results.h"
 
 G_BEGIN_DECLS
 
@@ -220,7 +221,7 @@ typedef struct
 	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
 
 	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
-						 GtkTreeModel *main_model,
+						 RhythmDBQueryResults *results,
 						 gboolean *cancel);
 } RhythmDBClass;
 
@@ -285,18 +286,19 @@ rhythmdb_do_full_query (db,
  * Which means: artist = Pink Floyd OR (genre = Classical AND rating >= 5)
  */
 void		rhythmdb_do_full_query			(RhythmDB *db,
-							 GtkTreeModel *main_model,
+							 RhythmDBQueryResults *results,
 							 ...);
 void		rhythmdb_do_full_query_parsed		(RhythmDB *db,
-							 GtkTreeModel *main_model,
+							 RhythmDBQueryResults *results,
 							 GPtrArray *query);
 
-void		rhythmdb_do_full_query_async		(RhythmDB *db, GtkTreeModel *main_model, ...);
+void		rhythmdb_do_full_query_async		(RhythmDB *db,
+							 RhythmDBQueryResults *results,
+							 ...);
 
-void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db, GtkTreeModel *main_model,
+void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db,
+							 RhythmDBQueryResults *results,
 							 GPtrArray *query);
-
-void		rhythmdb_query_cancel			(RhythmDB *db, GtkTreeModel *query_model);
 
 void		rhythmdb_entry_sync_mirrored		(RhythmDB *db, RhythmDBEntry *entry, guint propid);
 

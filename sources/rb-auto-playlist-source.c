@@ -495,7 +495,9 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source)
 					    NULL);
 
 		query = construct_query_from_selection (source);
-		rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (query_model), query);
+		rhythmdb_do_full_query_async_parsed (db, 
+						     RHYTHMDB_QUERY_RESULTS (query_model), 
+						     query);
 		rhythmdb_query_free (query);
 	}
 
@@ -539,7 +541,9 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 					      "max-size", priv->limit_mb,
 					      "max-time", priv->limit_time, 
 					      NULL);
-	rhythmdb_do_full_query_async_parsed (db, GTK_TREE_MODEL (priv->cached_all_query), query);
+	rhythmdb_do_full_query_async_parsed (db, 
+					     RHYTHMDB_QUERY_RESULTS (priv->cached_all_query), 
+					     query);
 
 	rb_auto_playlist_source_do_query (source);
 	rb_library_browser_set_model (priv->browser, priv->cached_all_query);

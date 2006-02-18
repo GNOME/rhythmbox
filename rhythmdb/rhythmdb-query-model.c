@@ -36,11 +36,14 @@
 #include "rhythmdb-marshal.h"
 #include "rb-util.h"
 
+static void rhythmdb_query_model_query_results_init (RhythmDBQueryResultsIface *iface);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
 static void rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryModel, rhythmdb_query_model, G_TYPE_OBJECT,
+			G_IMPLEMENT_INTERFACE(RHYTHMDB_TYPE_QUERY_RESULTS,
+					      rhythmdb_query_model_query_results_init)
 			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
 					      rhythmdb_query_model_tree_model_init)
 			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
@@ -93,6 +96,10 @@ static gboolean rhythmdb_query_model_row_drop_position (RbTreeDragDest   *drag_d
 							GtkTreePath       *dest_path,
 							GList *targets,
 							GtkTreeViewDropPosition *pos);
+
+static void rhythmdb_query_model_set_query (RhythmDBQueryResults *results, GPtrArray *query);
+static void rhythmdb_query_model_add_results (RhythmDBQueryResults *results, GPtrArray *entries);
+static void rhythmdb_query_model_query_complete (RhythmDBQueryResults *results);
 
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model);
@@ -353,6 +360,14 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBQueryModelPrivate));
+}
+
+static void
+rhythmdb_query_model_query_results_init (RhythmDBQueryResultsIface *iface)
+{
+	iface->set_query = rhythmdb_query_model_set_query;
+	iface->add_results = rhythmdb_query_model_add_results;
+	iface->query_complete = rhythmdb_query_model_query_complete;
 }
 
 static void
@@ -682,19 +697,6 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 			     "db", db, NULL);
 }
 
-void
-rhythmdb_query_model_signal_complete (RhythmDBQueryModel *model)
-{
-	struct RhythmDBQueryModelUpdate *update;
-
-	update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
-	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE;
-	update->model = model;
-	g_object_ref (G_OBJECT (model));
-
-	rhythmdb_query_model_process_update (update);
-}
-
 gboolean
 rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model)
 {
@@ -854,29 +856,6 @@ idle_process_update (struct RhythmDBQueryModelUpdate *update)
 	g_object_unref (G_OBJECT (update->model));
 	g_free (update);
 	return FALSE;
-}
-
-/* Threading: Called from the database query thread for async queries,
- *  from the main thread for synchronous queries.
- */
-void
-rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
-{
-	struct RhythmDBQueryModelUpdate *update;
-	guint i;
-
-	rb_debug ("adding %d entries", entries->len);
-
-	update = g_new (struct RhythmDBQueryModelUpdate, 1);
-	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED;
-	update->entries = entries;
-	update->model = model;
-	g_object_ref (G_OBJECT (model));
-
-	for (i = 0; i < update->entries->len; i++)
-		rhythmdb_entry_ref (model->priv->db, g_ptr_array_index (update->entries, i));
-
-	rhythmdb_query_model_process_update (update);
 }
 
 void
@@ -1583,6 +1562,51 @@ rhythmdb_query_model_row_drop_position (RbTreeDragDest   *drag_dest,
 {
 	return TRUE;
 }
+
+static void
+rhythmdb_query_model_set_query (RhythmDBQueryResults *results, GPtrArray *query)
+{
+	g_object_set (G_OBJECT (results), "query", query, NULL);
+}
+
+/* Threading: Called from the database query thread for async queries,
+ *  from the main thread for synchronous queries.
+ */
+static void
+rhythmdb_query_model_add_results (RhythmDBQueryResults *results, GPtrArray *entries)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (results);
+	struct RhythmDBQueryModelUpdate *update;
+	guint i;
+
+	rb_debug ("adding %d entries", entries->len);
+
+	update = g_new (struct RhythmDBQueryModelUpdate, 1);
+	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED;
+	update->entries = entries;
+	update->model = model;
+	g_object_ref (G_OBJECT (model));
+
+	for (i = 0; i < update->entries->len; i++)
+		rhythmdb_entry_ref (model->priv->db, g_ptr_array_index (update->entries, i));
+
+	rhythmdb_query_model_process_update (update);
+}
+
+static void
+rhythmdb_query_model_query_complete (RhythmDBQueryResults *results)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (results);
+	struct RhythmDBQueryModelUpdate *update;
+
+	update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
+	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE;
+	update->model = model;
+	g_object_ref (G_OBJECT (model));
+
+	rhythmdb_query_model_process_update (update);
+}
+
 
 static GtkTreeModelFlags
 rhythmdb_query_model_get_flags (GtkTreeModel *model)

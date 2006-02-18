@@ -42,7 +42,6 @@
 
 #include "rhythmdb-private.h"
 #include "rhythmdb-tree.h"
-#include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
 #include "rb-debug.h"
 #include "rb-util.h"
@@ -75,7 +74,8 @@ static void rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType
 static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_location (RhythmDB *db, const char *uri);
 static void rhythmdb_tree_entry_foreach (RhythmDB *adb, GFunc func, gpointer user_data);
 static void rhythmdb_tree_do_full_query (RhythmDB *db, GPtrArray *query,
-					 GtkTreeModel *main_model, gboolean *cancel);
+					 RhythmDBQueryResults *results,
+					 gboolean *cancel);
 static gboolean rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 				       RhythmDBEntry *aentry);
 
@@ -1813,7 +1813,7 @@ struct RhythmDBTreeQueryGatheringData
 	RhythmDBTree *db;
 	GPtrArray *queue;
 	GHashTable *entries;
-	RhythmDBQueryModel *main_model;
+	RhythmDBQueryResults *results;
 };
 
 static void
@@ -1861,7 +1861,7 @@ handle_entry_match (RhythmDB *db, RhythmDBEntry *entry,
 
 	g_ptr_array_add (data->queue, entry);
 	if (data->queue->len > RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK) {
-		rhythmdb_query_model_add_entries (data->main_model, data->queue);
+		rhythmdb_query_results_add_results (data->results, data->queue);
 		data->queue = g_ptr_array_new ();
 	}
 }
@@ -1869,18 +1869,18 @@ handle_entry_match (RhythmDB *db, RhythmDBEntry *entry,
 static void
 rhythmdb_tree_do_full_query (RhythmDB *adb,
 			     GPtrArray *query,
-			     GtkTreeModel *main_model,
+			     RhythmDBQueryResults *results,
 			     gboolean *cancel)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	struct RhythmDBTreeQueryGatheringData *data = g_new0 (struct RhythmDBTreeQueryGatheringData, 1);
 
-	data->main_model = RHYTHMDB_QUERY_MODEL (main_model);
+	data->results = results;
 	data->queue = g_ptr_array_new ();
 
 	do_query_recurse (db, query, (RhythmDBTreeTraversalFunc) handle_entry_match, data, cancel);
 
-	rhythmdb_query_model_add_entries (data->main_model, data->queue);
+	rhythmdb_query_results_add_results (data->results, data->queue);
 
 	g_free (data);
 }

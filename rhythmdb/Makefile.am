@@ -27,7 +27,9 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-property-model.h			\
 	rhythmdb-property-model.c			\
 	rhythmdb-query-model.h				\
-	rhythmdb-query-model.c
+	rhythmdb-query-model.c				\
+	rhythmdb-query-results.h			\
+	rhythmdb-query-results.c
 
 
 if USE_TREEDB
