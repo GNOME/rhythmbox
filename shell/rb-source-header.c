@@ -437,8 +437,5 @@ static void
 rb_source_header_search_activate_cb (RBSearchEntry *search,
 				     RBSourceHeader *header)
 {
-	RBEntryView *entry_view;
-
-	entry_view = rb_source_get_entry_view (header->priv->selected_source);
-	gtk_widget_grab_focus (GTK_WIDGET (entry_view));
+	gtk_widget_grab_focus (GTK_WIDGET (header->priv->selected_source));
 }

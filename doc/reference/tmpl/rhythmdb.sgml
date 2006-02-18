@@ -129,6 +129,7 @@ rhythmdb
 @RHYTHMDB_PROP_PLAYBACK_ERROR: 
 @RHYTHMDB_PROP_FIRST_SEEN_STR: 
 @RHYTHMDB_PROP_SEARCH_MATCH: 
+@RHYTHMDB_PROP_YEAR: 
 @RHYTHMDB_PROP_STATUS: 
 @RHYTHMDB_PROP_DESCRIPTION: 
 @RHYTHMDB_PROP_SUBTITLE: 
@@ -171,42 +172,11 @@ rhythmdb
 @val: 
 @subquery: 
 
-<!-- ##### STRUCT RhythmDBEntry ##### -->
+<!-- ##### TYPEDEF RhythmDBEntry ##### -->
 <para>
 
 </para>
 
-@refcount: 
-@data: 
-@type: 
-@title: 
-@artist: 
-@album: 
-@genre: 
-@tracknum: 
-@discnum: 
-@duration: 
-@bitrate: 
-@track_gain: 
-@track_peak: 
-@album_gain: 
-@album_peak: 
-@date: 
-@location: 
-@mountpoint: 
-@file_size: 
-@mimetype: 
-@mtime: 
-@first_seen: 
-@last_seen: 
-@rating: 
-@play_count: 
-@last_played: 
-@last_played_str: 
-@first_seen_str: 
-@playback_error: 
-@hidden: 
-@podcast: 
 
 <!-- ##### STRUCT RhythmDBEntryChange ##### -->
 <para>
@@ -507,8 +477,10 @@ rhythmdb
 </para>
 
 @db: 
-@main_model: 
+@results: 
 @Varargs: 
+<!-- # Unused Parameters # -->
+@main_model: 
 
 
 <!-- ##### FUNCTION rhythmdb_do_full_query_parsed ##### -->
@@ -517,8 +489,10 @@ rhythmdb
 </para>
 
 @db: 
-@main_model: 
+@results: 
 @query: 
+<!-- # Unused Parameters # -->
+@main_model: 
 
 
 <!-- ##### FUNCTION rhythmdb_do_full_query_async ##### -->
@@ -527,8 +501,10 @@ rhythmdb
 </para>
 
 @db: 
-@main_model: 
+@results: 
 @Varargs: 
+<!-- # Unused Parameters # -->
+@main_model: 
 
 
 <!-- ##### FUNCTION rhythmdb_do_full_query_async_parsed ##### -->
@@ -537,17 +513,10 @@ rhythmdb
 </para>
 
 @db: 
-@main_model: 
+@results: 
 @query: 
-
-
-<!-- ##### FUNCTION rhythmdb_query_cancel ##### -->
-<para>
-
-</para>
-
-@db: 
-@query_model: 
+<!-- # Unused Parameters # -->
+@main_model: 
 
 
 <!-- ##### FUNCTION rhythmdb_entry_sync_mirrored ##### -->

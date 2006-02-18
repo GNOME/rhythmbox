@@ -1,3 +1,22 @@
+2006-02-19  James Livingston  <jrl@ids.org.au>
+
+	* daapsharing/rb-daap-share.c: (add_playlist_to_mlcl):
+	* shell/rb-shell.c: (rb_shell_select_source): don't get the source's
+	entry view, when we're not even using it
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_row_inserted_cb): use the query-model utility
+	function, rather than a copy of the code.
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_playlist_row_inserted_cb),
+	(rb_playlist_manager_set_source_internal),
+	(rb_playlist_manager_playlist_entries_changed): use the query-model
+	directly, rather than the source's entry view.
+
+	* shell/rb-source-header.c: don't use the entry view, just select the
+	source widget.
+
 2006-02-18  James Livingston  <jrl@ids.org.au>
 
 	update by:  Baptiste Mille-Mathias  <bmm80@free.fr>

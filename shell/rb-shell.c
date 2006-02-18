@@ -1827,7 +1827,6 @@ static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
 {
-	RBEntryView *view;
 	GList *actions;
 
 	if (shell->priv->selected_source == source)
@@ -1843,8 +1842,6 @@ rb_shell_select_source (RBShell *shell,
 	shell->priv->selected_source = source;
 	rb_source_activate (shell->priv->selected_source);
 	
-	view = rb_source_get_entry_view (shell->priv->selected_source);
-
 	/* show source */
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),
 				       gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook), GTK_WIDGET (source)));

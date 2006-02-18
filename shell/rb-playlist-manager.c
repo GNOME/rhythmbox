@@ -83,9 +83,9 @@ static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 static void rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
 						    RBPlaylistManager *mgr);
 static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
-static void rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view,
-							   RhythmDBEntry *entry,
-							   RBPlaylistManager *mgr);
+static void rb_playlist_manager_playlist_entries_changed (GtkTreeModel *entry_view,
+							  RhythmDBEntry *entry,
+							  RBPlaylistManager *mgr);
 
 struct RBPlaylistManagerPrivate
 {
@@ -384,6 +384,18 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 }
 
 static void
+rb_playlist_manager_playlist_row_inserted_cb (GtkTreeModel *model,
+					      GtkTreePath *path,
+					      GtkTreeIter *iter,
+					      RBPlaylistManager *mgr)
+{
+	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
+
+	rb_playlist_manager_playlist_entries_changed (model, entry, mgr);
+}
+
+
+static void
 rb_playlist_manager_set_source_internal (RBPlaylistManager *mgr,
 					 RBSource *source)
 {
@@ -397,9 +409,17 @@ rb_playlist_manager_set_source_internal (RBPlaylistManager *mgr,
 	GtkAction *action;
 
 	if (mgr->priv->selected_source != NULL) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
+		RhythmDBQueryModel *model;
+
+		g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
+		
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model),
 						      G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
 						      mgr);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model),
+						      G_CALLBACK (rb_playlist_manager_playlist_row_inserted_cb),
+						      mgr);
+		g_object_unref (G_OBJECT (model));
 	}
 
 	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
@@ -434,15 +454,21 @@ rb_playlist_manager_set_source_internal (RBPlaylistManager *mgr,
 	 * signals can be removed from RBEntryView (where they don't belong).
 	 */
 	if (playlist_active && rb_recorder_enabled ()) {
+		RhythmDBQueryModel *model;
+
+		g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
 		/* monitor for changes, to enable/disable the burn menu item */
-		RBEntryView *songs = rb_source_get_entry_view (mgr->priv->selected_source);
-		g_signal_connect_object (G_OBJECT (songs), "entry-added", 
-					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
+		g_signal_connect_object (G_OBJECT (model),
+					 "row_inserted",
+					 G_CALLBACK (rb_playlist_manager_playlist_row_inserted_cb),
 					 mgr, 0);
-		g_signal_connect_object (G_OBJECT (songs), "entry-deleted", 
-					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed), 
+		g_signal_connect_object (G_OBJECT (model),
+					 "entry-removed",
+					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
 					 mgr, 0);
-		rb_playlist_manager_playlist_entries_changed (songs, NULL, mgr);
+
+		rb_playlist_manager_playlist_entries_changed (GTK_TREE_MODEL (model), NULL, mgr);
+		g_object_unref (model);
 	} else {
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistBurnPlaylist");
@@ -1246,19 +1272,15 @@ rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
 }
 
 static void
-rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view, RhythmDBEntry *entry, RBPlaylistManager *mgr)
+rb_playlist_manager_playlist_entries_changed (GtkTreeModel *model, RhythmDBEntry *entry, RBPlaylistManager *mgr)
 {
-	RhythmDBQueryModel *model;
 	int num_tracks;
 	GtkAction *action;
 
-	g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
-	num_tracks = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+	num_tracks = gtk_tree_model_iter_n_children (model, NULL);
 
 	action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
 	g_object_set (G_OBJECT (action), "sensitive", (num_tracks > 0), NULL);
-
-	g_object_unref (G_OBJECT (model));
 }
 
 GList *

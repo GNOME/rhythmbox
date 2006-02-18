@@ -266,14 +266,6 @@ rhythmdb_property_model_drag_source_init (RbTreeDragSourceIface *iface)
 	iface->drag_data_get = rhythmdb_property_model_drag_data_get;
 }
 
-static inline RhythmDBEntry *
-entry_from_tree_iter (GtkTreeModel *model, GtkTreeIter *iter)
-{
-	RhythmDBEntry *entry;
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
-	return entry;
-}
-
 static gboolean
 _remove_entry_cb (RhythmDBEntry *entry,
 		  gpointer unused,
@@ -467,7 +459,7 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 					 GtkTreeIter *iter,
 					 RhythmDBPropertyModel *propmodel)
 {
-	RhythmDBEntry *entry = entry_from_tree_iter (model, iter);
+	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
 
 	if (g_hash_table_lookup (propmodel->priv->entries, entry))
 		return;

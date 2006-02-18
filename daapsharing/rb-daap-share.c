@@ -1065,15 +1065,12 @@ add_playlist_to_mlcl (RBPlaylistID *playlist_id,
  */
 	GNode *mlit;
 	gchar *name;
-	RBEntryView *ev;
 	guint num_songs;
 	RhythmDBQueryModel *model;
 	
 	g_object_get (G_OBJECT (playlist_id->source), "name", &name, NULL);
-	
-	ev = rb_source_get_entry_view (playlist_id->source);
-
 	g_object_get (G_OBJECT (playlist_id->source), "query-model", &model, NULL);
+
 	num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (G_OBJECT (model));
 	
