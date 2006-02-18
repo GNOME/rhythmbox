@@ -72,7 +72,9 @@ static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
 
-static void rb_playlist_source_songs_show_popup_cb (RBEntryView *view, RBPlaylistSource *playlist_view);
+static void rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
+						    gboolean over_entry,
+						    RBPlaylistSource *playlist_view);
 static void rb_playlist_source_drop_cb (GtkWidget *widget,
 				     GdkDragContext *context,
 				     gint x,
@@ -87,7 +89,8 @@ static void rb_playlist_source_row_deleted (GtkTreeModel *model,
 					    GtkTreePath *path,
 					    RBPlaylistSource *playlist);
 static void default_show_entry_view_popup (RBPlaylistSource *source,
-					   RBEntryView *view);
+					   RBEntryView *view,
+					   gboolean over_entry);
 static void rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 					       RBPlaylistSource *source);
 static void rb_playlist_source_track_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -356,18 +359,22 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 static void
-default_show_entry_view_popup (RBPlaylistSource *source, RBEntryView *view)
+default_show_entry_view_popup (RBPlaylistSource *source,
+			       RBEntryView *view,
+			       gboolean over_entry)
 {
-	_rb_source_show_popup (RB_SOURCE (source), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
+	if (over_entry)
+		_rb_source_show_popup (RB_SOURCE (source), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
 }
 
 static void
 rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
+					gboolean over_entry,
 					RBPlaylistSource *source)
 {
 	RBPlaylistSourceClass *klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
 	if (klass->impl_show_entry_view_popup)
-		klass->impl_show_entry_view_popup (source, view);
+		klass->impl_show_entry_view_popup (source, view, over_entry);
 }
 
 

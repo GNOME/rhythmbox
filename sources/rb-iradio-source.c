@@ -69,6 +69,7 @@ static void rb_iradio_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 static void rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
+						  gboolean over_entry,
 						  RBIRadioSource *source);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -656,12 +657,16 @@ rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view,
 
 static void
 rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
+				      gboolean over_entry,
 				      RBIRadioSource *source)
 {
 	if (G_OBJECT (source) == NULL) {
 		return;
 	}
-	_rb_source_show_popup (RB_SOURCE (source), "/IRadioViewPopup");
+	if (over_entry)
+		_rb_source_show_popup (RB_SOURCE (source), "/IRadioViewPopup");
+	else
+		_rb_source_show_popup (RB_SOURCE (source), "/IRadioSourcePopup");
 }
 
 static void

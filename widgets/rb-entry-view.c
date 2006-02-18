@@ -325,9 +325,10 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, show_popup),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      g_cclosure_marshal_VOID__BOOLEAN,
 			      G_TYPE_NONE,
-			      0);
+			      1,
+			      G_TYPE_BOOLEAN);
 	rb_entry_view_signals[HAVE_SEL_CHANGED] =
 		g_signal_new ("have_selection_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -1388,9 +1389,9 @@ rb_entry_view_button_press_cb (GtkTreeView *treeview,
 
 			g_list_free (selected);
 			
-			g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SHOW_POPUP], 0);
 		}
-		return view->priv->have_selection;
+		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SHOW_POPUP], 0, (path != NULL));
+		return TRUE;
 	}
 
 	return FALSE;

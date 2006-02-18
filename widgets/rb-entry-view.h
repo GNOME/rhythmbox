@@ -84,7 +84,7 @@ typedef struct
 	void (*selection_changed)       (RBEntryView *view);
 	void (*sort_order_changed)     (RBEntryView *view);
 
-	void (*show_popup)             (RBEntryView *view);
+	void (*show_popup)             (RBEntryView *view, gboolean over_entry);
 } RBEntryViewClass;
 
 GType		rb_entry_view_get_type			(void);

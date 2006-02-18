@@ -344,9 +344,13 @@ rb_library_source_finalize (GObject *object)
 
 static void
 rb_library_source_songs_show_popup_cb (RBEntryView *view,
+				       gboolean over_entry,
 				       RBLibrarySource *source)
 {
-	_rb_source_show_popup (RB_SOURCE (source), "/LibraryViewPopup");
+	if (over_entry)
+		_rb_source_show_popup (RB_SOURCE (source), "/LibraryViewPopup");
+	else
+		_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
 }
 
 static GObject *

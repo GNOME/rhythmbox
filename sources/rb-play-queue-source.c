@@ -55,7 +55,8 @@ static void rb_play_queue_source_update_count (RBPlayQueueSource *source,
 					       GtkTreeModel *model,
 					       gint offset);
 static void impl_show_entry_view_popup (RBPlaylistSource *source,
-					RBEntryView *view);
+					RBEntryView *view,
+					gboolean over_entry);
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
 static void rb_play_queue_source_cmd_clear (GtkAction *action,
@@ -248,12 +249,16 @@ rb_play_queue_source_sidebar_delete (RBPlayQueueSource *source)
 }
 
 static void
-impl_show_entry_view_popup (RBPlaylistSource *source, RBEntryView *view)
+impl_show_entry_view_popup (RBPlaylistSource *source, 
+			    RBEntryView *view,
+			    gboolean over_entry)
 {
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	const char *popup = PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH;
 	if (view == priv->sidebar)
 		popup = PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH;
+	else if (!over_entry)
+		return;
 	_rb_source_show_popup (RB_SOURCE (source), popup);
 }
 

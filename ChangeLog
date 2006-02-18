@@ -1,3 +1,32 @@
+2006-02-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_button_press_cb):
+	* widgets/rb-entry-view.h: Emit show-popup when right clicked
+	anywhere, and include a flag indicating whether the click was over an
+	entry or not.
+	
+	* sources/rb-playlist-source.c: (default_show_entry_view_popup),
+	(rb_playlist_source_songs_show_popup_cb):
+	* sources/rb-playlist-source.h:
+	Add the 'over entry' flag to the class show popup method, and in the
+	default handler, ignore right clicks when not over an entry.
+	
+	* sources/rb-iradio-source.c:
+	(rb_iradio_source_songs_show_popup_cb):
+	* sources/rb-library-source.c:
+	(rb_library_source_songs_show_popup_cb):
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_songs_show_popup_cb):
+	Show the source list popup menu when right clicked while not over an
+	entry.
+
+	* sources/rb-play-queue-source.c: (impl_show_entry_view_popup):
+	For the queue sidebar, always display the popup so the 'clear queue'
+	action is available regardless of where you click.  For the queue
+	source, only display the popup when right clicked over an entry.
+	Fixes #331392.
+
 2006-02-19  James Livingston  <jrl@ids.org.au>
 
 	* daapsharing/rb-daap-share.c: (add_playlist_to_mlcl):

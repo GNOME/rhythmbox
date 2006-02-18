@@ -86,8 +86,8 @@ static void rb_podcast_source_get_property 		(GObject *object,
 			                  		 GParamSpec *pspec);
 
 static void rb_podcast_source_songs_show_popup_cb 	(RBEntryView *view,
+							 gboolean over_entry,
 						  	 RBPodcastSource *source);
-
 
 static void rb_podcast_source_feeds_show_popup_cb 	(RBPropertyView *view,
 						  	 RBPodcastSource *source);
@@ -924,10 +924,13 @@ rb_podcast_source_download_status_changed_cb (RBPodcastManager *download,
 
 static void
 rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
+				       gboolean over_entry,
 				       RBPodcastSource *source)
 {
 	if (G_OBJECT (source) == NULL) {
 		return;
+	} else if (!over_entry) {
+		_rb_source_show_popup (RB_SOURCE (source), "/PodcastSourcePopup");
 	} else {
 		GtkAction* action;
 		GList *lst;
