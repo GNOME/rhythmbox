@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-  <!ENTITY legal SYSTEM "legal.xml">
-  <!ENTITY GFDL SYSTEM "fdl-appendix.xml">
-  <!ENTITY authors SYSTEM "authors.xml">
-  <!ENTITY quick SYSTEM "quick-reference.xml">
-  <!ENTITY user-guide SYSTEM "user-guide.xml">
-  <!ENTITY version "0.0.3">
-  <!ENTITY date "08.08.2003">
-  <!ENTITY application "<application>Music Player</application>">
-  <!ENTITY nyi "<note><para>Not yet implemented</para></note>">
-  <!ENTITY playlist "playlist">
-  <!ENTITY audio-formats "MP3, FLAC or Ogg/Vorbis">
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY legal SYSTEM "legal.xml">
+<!ENTITY GFDL SYSTEM "fdl-appendix.xml">
+<!ENTITY appsystem "0.9">
+<!ENTITY manversion "0.1.0">
+<!ENTITY date "February 2006">
+<!ENTITY application "<application>Rhythmbox</application>">
+<!ENTITY fr "<application>Rhythmbox</application>">
+<!ENTITY playlist "playlist">
+<!ENTITY mdash "---">
+<!ENTITY audio-formats "MP3, FLAC or Ogg/Vorbis">
+  <!-- Information about the entities
+	   The legal.xml file contains legal information, there is no need to edit the file. 
+	   Use the appversion entity to specify the version of the application.
+	   Use the manrevision entity to specify the revision number of this manual.
+	   Use the date entity to specify the release date of this manual.
+	   Use the fr entity to specify the name of the application. -->
 ]>
-
-<!-- arch-tag: The toplevel glue for the English Rhythmbox DocBook documentation
-  -->
-
-<!--
-      (Do not remove this comment block.)
-  Template Maintained by the GNOME Documentation Project:
-	  http://developer.gnome.org/projects/gdp
-  Template version: 2.0 beta
-  Template last modified Feb 12, 2002
--->
-
 <!--
       (Do not remove this comment block.)
   Version: 0.0.2
@@ -33,7 +26,6 @@
                Mark Finlay <sisob@eircom.net>
 	       Mark Humphreys <marquee@users.sourceforge.net>
 -->
-
 <!--
       (Do not remove this comment block.)
   Version: 0.0.3
@@ -41,21 +33,29 @@
   Maintainers:
 	       Mark Humphreys <marquee@users.sourceforge.net>
 -->
-
+<!--
+      (Do not remove this comment block.)
+  Version: 0.0.4
+  Last modified: October 01, 2005
+  Maintainers:
+	       Baptiste Mille-Mathias <baptiste.millemathias@gmail.com>
+-->
 <!-- =============Document Header ============================= -->
 <article id="index" lang="en">
 <!-- please do not change the id; for translations, change lang to -->
 <!-- appropriate code -->
-
   <articleinfo>
-    <title>&application; Manual</title>
-    <copyright>
-      <year>2002</year>
-      <holder>Mark Finlay</holder>
-    </copyright>
+  	<title>&fr; Manual</title>
+	<copyright>
+		<year>2002</year>
+		<holder>Mark Finlay</holder>
+	</copyright>
+	<copyright>
+		<year>2005</year>
+		<holder>Baptiste Mille-Mathias</holder>
+	</copyright>
 
-  <!-- translators: uncomment this:
-
+<!-- translators: uncomment this:
   <copyright>
    <year>2000</year>
    <holder>ME-THE-TRANSLATOR (Latin translation)</holder>
@@ -65,153 +65,1498 @@
 <!-- An address can be added to the publisher information.  If a role is
      not specified, the publisher/author is the same for all versions of the
      document.  -->
-    <publisher>
-      <publishername> GNOME Project </publishername>
-    </publisher>
+	<publisher>
+	 	<publishername>GNOME Documentation Project</publishername>
+	</publisher>
 
-   &legal;
-   <!-- This file  contains link to license for the documentation (GNU FDL), and
-        other legal stuff such as "NO WARRANTY" statement. Please do not change
-        any of this. -->
+   &legal;<!-- This file  contains link to license for the documentation (GNU FDL), and
+   other legal stuff such as "NO WARRANTY" statement. Please do not change
+   any of this. -->
+   <authorgroup>
+   		<author>
+			<firstname>Mark</firstname>
+			<surname>Finlay</surname>
+			<affiliation>
+				<orgname>GNOME Documentation Project</orgname>
+				<address><email>sisob@eircom.net</email></address>
+			</affiliation>
+		</author>
+		<author>
+			<firstname>Baptiste</firstname>
+			<surname>Mille-Mathias</surname>
+			<affiliation>
+				<orgname>GNOME Documentation Project</orgname>
+				<address><email>baptiste.millemathias@gmail.com</email></address>
+			</affiliation>
+		</author>
+	</authorgroup>
+	<releaseinfo>This is the &fr; User's Manual</releaseinfo>
+	</articleinfo>
+  <indexterm zone="index">
+    <primary>Rhythmbox</primary>
+  </indexterm>
+  <indexterm zone="index">
+    <primary>rhythmbox</primary>
+  </indexterm>
+  <indexterm zone="index">
+    <primary>Music Player</primary>
+  </indexterm>
+<!-- ============= Document Body ============================= -->
+<!-- ============= Introduction ============================== -->
+  <sect1 id="introduction">
+    <title>Introduction</title>
+    <sect2 id="about-rhythmbox">
+      <title>About &fr;</title>
+      	<para>
+   			&fr; is a music player and library for tagged files, that support
+			various music formats.
+		</para>
+      	<para>
+			Current &fr; features include:
+		</para>
+      	<itemizedlist>
+        	<listitem>
+        	  	<para>Play various format music files from your tagged organized
+					Library.</para>
+        	</listitem>
+        	<listitem>
+        		<para>Display information on the songs through meta-data reading.</para>
+        	</listitem>
+        	<listitem>
+          		<para>Display songs in an organized view.</para>
+        	</listitem>
+        	<listitem>
+          		<para>Create static playlists by dragging and dropping from the Library
+					view.</para>
+        	</listitem>
+        	<listitem>
+          		<para>Create automatic playlists from criterias.</para>
+        	</listitem>
+        	<listitem>
+        		<para>Search for songs in the sources list like Library or Playlists.</para>
+        	</listitem>
+        	<listitem>
+        		<para>Listen to Internet radio stations.</para>
+        	</listitem>
+        	<listitem>
+        		<para>Read Audio CD, and retrieve information like track title from	Internet.</para>
+        	</listitem>
+        	<listitem>
+          		<para>Audio CD burning from playlists.</para>
+        	</listitem>
+      	</itemizedlist>
+    </sect2>
+  </sect1>
+  <sect1 id="rb-window">
+    <title>&fr; Window</title>
+    <sect2 id="rb-window-intro">
+      <title>Overview</title>
+      	<para>
+			The &fr; window enables you to browse and play your favorite
+			music. <xref linkend="fig-rb-window"/> shows the interface of
+			&fr; with its main components.
+		</para>
+      	<figure id="fig-rb-window">
+        <title>The &fr; Window</title>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="figures/rb-window.png" format="PNG"/>
+            </imageobject>
+            <textobject>
+            	<phrase>Show the &fr; window showing the different parts on the &fr; interface.
+						Callouts: Menubar, Player area, Browser, Source list, Statusbar.
+				</phrase>
+            </textobject>
+          </mediaobject>
+        </screenshot>
+      </figure>
+      <para>Table 1 describes the components of &fr; window.</para>
+      <table frame="topbot" id="table-rb-window">
+        <title>&fr; Window Components</title>
+        <tgroup cols="3" colsep="0" rowsep="0">
+          <colspec colname="COLSPEC0"/>
+          <colspec colname="COLSPEC1"/>
+          <colspec colname="COLSPEC2"/>
+          <thead>
+            <row rowsep="1">
+              <entry valign="top">Id</entry>
+              <entry valign="top">Component</entry>
+              <entry valign="top">Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry valign="top">1</entry>
+              <entry valign="top">Menubar</entry>
+              <entry valign="top">Contains menus that you use to perform
+							tasks in &fr; window.</entry>
+            </row>
+            <row>
+              <entry valign="top">2</entry>
+              <entry valign="top">Toolbar</entry>
+              <entry valign="top">Provides access to player
+							functions and details about the	currently playing track.</entry>
+            </row>
+            <row>
+              <entry valign="top">3</entry>
+              <entry valign="top">Time Slider</entry>
+              <entry valign="top">Displays the position of the read of a track; it enables to jump 								to another part of a track.</entry>
+            </row>
+            <row>
+              <entry valign="top">4</entry>
+              <entry valign="top">Browser</entry>
+              <entry valign="top">Allows to browse and filter the
+							Library tracks by Genre, Artist or Album name. The
+							Browser provides too a search function to display only
+							tracks that match your criterias.</entry>
+            </row>
+            <row>
+              <entry valign="top">5</entry>
+              <entry valign="top">Tracks list</entry>
+              <entry valign="top">Lists the tracks that belong to
+							the selected source.</entry>
+            </row>
+            <row>
+              <entry valign="top">6</entry>
+              <entry valign="top">Source List</entry>
+              <entry valign="top">Displays a list of available
+							sources.</entry>
+            </row>
+            <row>
+              <entry valign="top">7</entry>
+              <entry valign="top">Statusbar</entry>
+              <entry valign="top">Displays informations about the
+							source selected in Source List.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </sect2>
+    <sect2 id="intro-sourcelist">
+      <title>The Source List</title>
+      <para>The source list is where you can access your music library,
+			internet radio,	your playlists and audio CDs. The source list can contain	
+			the following sources:
+				<itemizedlist><listitem><para>The &fr; library, where all of the imported songs will appear.
+						</para></listitem><listitem><para>The iRadio source, with all internet radio stations.</para></listitem><listitem><para>Podcasts</para></listitem><listitem><para>All &playlist;s (normal and smart).</para></listitem><listitem><para>Audio CD's inserted into the computer's CD
+						drives.</para></listitem><listitem><para>Portable players like iPod plugged to your computer.</para></listitem><listitem><para>The DAAP Music shares discovered on the local network.</para></listitem></itemizedlist>
+	<!--
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-sidebar.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>Shows source list with library and &playlist; icons.
+		</phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+	-->
+			</para>
+      <para>
+				The display of the source list can be toggled on or off by selecting
+				<menuchoice><guimenu>View</guimenu><guimenuitem>Source
+				List</guimenuitem></menuchoice>.
+			</para>
+    </sect2>
+    <sect2 id="player-toolbar">
+      <title>The Player Toolbar</title>
+      <para>
+				The toolbar area provides access to details about the
+				currently playing track. When a track is not being played, this
+				area shows no information. When a track is played is selected, the track name
+				is displayed, and underneath, the artist and the album names.
+			</para>
+      <para>
+				A tracker is also displays, showing the progress of the
+				playing. When tracker has focus, the arrow keys can be used to
+				Fast-Forward or Rewind the playing track.
+			</para>
+      <screenshot>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/rb-toolbar.png" format="PNG"/>
+          </imageobject>
+          <textobject>
+            <phrase>Shows player area</phrase>
+          </textobject>
+        </mediaobject>
+      </screenshot>
+      <tip>
+        <para>
+					Clicking on the artist or album name (where they are
+					underlined) will open the your web browser and load the
+					appropriate page on the website <ulink url="http://www.last.fm/">last.fm</ulink>, which is a web
+					community music based site.
+				</para>
+      </tip>
+      <tip>
+        <para>
+					If you are using a mouse with a scroll wheel, you can 
+					adjust the volume by scrolling up or down while the mouse pointer 
+					is over the volume button.
+				</para>
+      </tip>
+    </sect2>
+    <sect2 id="status-area">
+      <title>The Statusbar</title>
+      <para>
+				The statusbar contains additional information about the number
+				of songs and the duration of the source selected. The display of the statusbar 
+				can be toggled on or off by selecting 
+				<menuchoice><guimenu>View</guimenu><guimenuitem>Statusbar</guimenuitem></menuchoice>.
+			</para>
+      <screenshot>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/rb-statusbar.png" format="PNG"/>
+          </imageobject>
+          <textobject>
+            <phrase>Shows statusbar</phrase>
+          </textobject>
+        </mediaobject>
+      </screenshot>
+    </sect2>
+    <sect2 id="rb-window-small">
+      <title>&fr; Minimized Window</title>
+      <para>
+				&fr; comes with a minimized mode, this mode enables only
+				to access to the menubar and the player function of &fr;.
+			</para>
+      <para>
+				To switch to the small display, select 
+				<menuchoice><guimenu>View</guimenu><guimenuitem>Small Display</guimenuitem></menuchoice>. 
+			</para>
+      <screenshot>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/rb-window-small.png" format="PNG"/>
+          </imageobject>
+          <textobject>
+            <phrase>Shows Rhythmbox music player in small display mode</phrase>
+          </textobject>
+        </mediaobject>
+      </screenshot>
+    </sect2>
+  </sect1>
+  <sect1 id="Usage">
+    <title>Using &fr;</title>
+    <sect2 id="Playing">
+      <title>Playing Music</title>
+      <para>To play a track, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Play</guimenuitem></menuchoice>, either select the track and press the
+		<guibutton>Play</guibutton> button on the toolbar, or simply
+		double-click on the track to start playing.
+		</para>
+      <para>When track ends, &fr; jumps to play next track 
+		in the list showed in view pane.
+		</para>
+      <para>In Library you can play all song from an artist or a
+		single album simply select <guilabel>Album</guilabel>
+		or <guilabel>Artist</guilabel> entry in 
+		<link linkend="library-filter-browser">library browser</link>.
+		</para>
+      <sect3 id="next-previous">
+        <title>Next/Play/Previous</title>
+        <para>The <guilabel>Next</guilabel> and <guilabel>Previous</guilabel> buttons can be used to skip between tracks
+ 			whilst playing. If a song is currently playing, the previous button will restart the
+ 			song. Clicking on the <guilabel>Play</guilabel> button will start &fr; playing the current track. 
+			<screenshot>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="figures/rb-toolbar-prevplaynext.png" format="PNG"/>
+					</imageobject>
+					<textobject>
+						<phrase>Shows buttons <guilabel>Previous</guilabel>,
+						<guilabel>Play</guilabel> and <guilabel>Next</guilabel> in toolbar.</phrase>
+					</textobject>
+				</mediaobject>
+			</screenshot>
+		</para>
+      </sect3>
+      <sect3 id="repeat">
+        <title>Repeat</title>
+        <para>The option <guilabel>Repeat</guilabel> make Rhythmbox restart to play tracks
+		from the beginning of the list when it reach the last track.</para>
+        <para>To activate repeat, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Repeat</guimenuitem></menuchoice>
+		, or press the button <guilabel>Repeat</guilabel> on the toolbar.
+			<screenshot>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="figures/rb-toolbar-repeat.png" format="PNG"/>
+					</imageobject>
+					<textobject>
+						<phrase>Shows repeat button in statusbar.</phrase>
+					</textobject>
+				</mediaobject>
+			</screenshot>
+		</para>
+      </sect3>
+      <sect3 id="shuffle">
+        <title>Shuffle</title>
+        <para>The option <guilabel>Shuffle</guilabel> makes Rhythmbox play tracks in a random order.</para>
+        <para>To activate shuffle, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Shuffle</guimenuitem></menuchoice>
+		, or press the button <guilabel>Shuffle</guilabel> on the toolbar.
+			<screenshot>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="figures/rb-toolbar-shuffle.png" format="PNG"/>
+					</imageobject>
+					<textobject>
+						<phrase>Shows shuffle button in statusbar.</phrase>
+					</textobject>
+				</mediaobject>
+			</screenshot>
+		</para>
+      </sect3>
+      <sect3 id="volume">
+        <title>Volume Control</title>
+        <para>
+				Volume control in the right hand of the toolbar.
+				Clicking on the loudspeaker icon will show the volume slider.
+				Sliding this up and down will increase and decrease the volume.
+				The loudspeaker icon will change to reflect the relative volume.
+			<screenshot><mediaobject><imageobject><imagedata fileref="figures/rb-volume-changer.png" format="PNG"/></imageobject><textobject><phrase>Shows volume slider in toolbar.
+				</phrase></textobject></mediaobject></screenshot>
 
-    <authorgroup>
-      <author>
-        <firstname>Mark</firstname>
-        <surname>Finlay</surname>
-        <affiliation>
-          <orgname>GNOME Project</orgname>
-          <address> <email>sisob@eircom.net</email> </address>
-        </affiliation>
-      </author>
-<!-- This is appropriate place for other contributors: translators,
-      maintainers,  etc. Commented out by default.
-       <othercredit role="translator">
-        <firstname>Latin</firstname>
-        <surname>Translator 1</surname>
-        <affiliation>
-          <orgname>Latin Translation Team</orgname>
-          <address> <email>translator@gnome.org</email> </address>
-        </affiliation>
-        <contrib>Latin translation</contrib>
-      </othercredit>
--->
-    </authorgroup>
-
-<!-- According to GNU FDL, revision history is mandatory if you are -->
-<!-- modifying/reusing someone else's document.  If not, you can omit it. -->
-<!-- Remember to remove the &manrevision; entity from the revision entries other
--->
-<!-- than the current revision. -->
-<!-- The revision numbering system for GNOME manuals is as follows: -->
-<!-- * the revision number consists of two components -->
-<!-- * the first component of the revision number reflects the release version of the GNOME desktop. -->
-<!-- * the second component of the revision number is a decimal unit that is incremented with each revision of the manual. -->
-<!-- For example, if the GNOME desktop release is V2.x, the first version of the manual that -->
-<!-- is written in that desktop timeframe is V2.0, the second version of the manual is V2.1, etc. -->
-<!-- When the desktop release version changes to V3.x, the revision number of the manual changes -->
-<!-- to V3.0, and so on. -->
-<!--
-    <revhistory>
-      <revision>
-        <revnumber>&app; Manual V&manrevision;</revnumber>
-        <date>&date;</date>
-        <revdescription>
-          <para role="author">Documentation Writer 2
-            <email>docwriter2@gnome.org</email>
-          </para>
-          <para role="publisher">GNOME Documentation Project</para>
-        </revdescription>
-      </revision>
-     
- -->
-    <releaseinfo>This is the &application; User's Manual
-    </releaseinfo>
-    <legalnotice>
-      <title>Feedback</title>
-      <para>To report a bug or make a suggestion regarding this package or
-        this manual, follow the directions in the
-        <ulink url="ghelp:gnome-feedback"
-          type="help">GNOME Feedback Page</ulink>.
+			</para>
+        <tip>
+          <para>You can adjust the volume by using the scroll wheel with the mouse over the loudspeaker icon.</para>
+        </tip>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1 id="library">
+    <title>Library Source</title>
+    	<para>
+			The Library is the main source available in Rhythmbox, it's the
+			database that contains all the music files that you import in
+			Rhythmbox (The Library stores the path to access your music files,
+			not the files themself).
+		</para>
+    	<para>
+			The Library can not only contains music files which is physically 
+			on your computer (in your HOME Directory for instance), but it can
+			also contains music files available over remote network services. 
+			Some examples on supported network service are :
+			<itemizedlist>
+				<listitem>
+					<para>Public FTP</para>
+				</listitem>
+				<listitem>
+					<para>Authenticated FTP</para>
+				</listitem>
+				<listitem>
+					<para>NFS</para>
+				</listitem>
+				<listitem>
+					<para>Windows Share</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+    	<para>
+			The files imported in the Library are displayed in the track list
+			with the information (like the Artist name or the album name) stored 
+			in the	tags embedded on the tracks.
+			Rhythmbox uses these tags to display the tracks in an organized manner.
+			<tip>
+				<para>At this time Rhythmbox is not able to modify the tags of
+				your music files, but you can use alternatively Easytag.</para>
+			</tip>
+		</para>
+    <sect2 id="library-tracks-add">
+      <title>Add tracks in the Library</title>
+      		<para>
+				To add tracks to the Library, you can follow these different
+				methods:
+				<itemizedlist>
+					<listitem>
+						<para>
+							To import only one track, choose menu
+							<menuchoice><guimenu>Music</guimenu><guimenuitem>Import
+							File...</guimenuitem></menuchoice>, then select the file
+							in the file selector and press the button <guibutton>Open</guibutton>.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							If you want to import several music files located in a
+							folder, choose menu
+							<menuchoice><guimenu>Music</guimenu><guimenuitem>Import
+							Folder...</guimenuitem></menuchoice>, then select the
+							folder in the file selector and press the button 
+							<guibutton>Open</guibutton>. All the music files located
+							in the folder and its sub-folders will be imported.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Drag and drop files from the file manager (like
+							<ulink url="http://www.gnome.org/projects/nautilus/">Nautilus</ulink>)
+							over the Rhythmbox window.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+      	<tip>
+       		<para>
+			If you have enabled the watch directory, all the music files
+			stored under this directory will be added to the Library.
+			</para>
+      	</tip>
+    </sect2>
+    <sect2 id="library-tracks-del">
+    	<title>Remove tracks from the Library</title>
+      	<para>
+			To remove a track from the library but leave it on the disk, choose menu
+			<menuchoice><guimenu>Edit</guimenu><guimenu>Delete</guimenu></menuchoice>.
+			The track and its properties (like rating or the play count) are
+			removed from the Rhythmbox database.
+		</para>
+      	<para>
+			To delete a track from the Library but also from your disk, choose
+			menu <menuchoice><guimenu>Edit</guimenu><guimenuitem>Move to
+			Trash</guimenuitem></menuchoice>. The tracks will be remove in the
+			same way as previous, but the file will be moved in the file
+			manager Trash.
+		</para>
+    </sect2>
+    <sect2 id="library-filter-search">
+    	<title>Find tracks using Search</title>
+      	<para>
+			Rhythmbox comes with a handy search function, which enables to find
+			and filter tracks by using a search term.
+		</para>
+      	<para>
+			Enter some text in the search entry, and as you type, only
+			the tracks that match the text entered will be displayed. The search
+			function do the lookup in all the tags of the tracks.
+		</para>
+    </sect2>
+    <sect2 id="library-filter-browser">
+    	<title>Find tracks using the Browser</title>
+      	<para>
+			The Browser is another convenient way to find tracks. The Browser
+			is a two or three column view which enable to navigate among music genres,
+			artists and albums and display tracks that match the chosen criteria.
+		</para>
+      	<para>
+			First, to display the Browser, select <menuchoice><guimenu>View</guimenu>
+			<guimenuitem>Browser</guimenuitem></menuchoice>. Select artists, album 
+			and genre, and as you choose, only the tracks that match your choice will 
+			be displayed in the track list. The criteria on the columns apply
+			from the left to the right.
+		</para>
+      	<tip>
+        	<para>
+				You can choose several criteria of the same category by using the
+				key <keycombo><keycap>Ctrl</keycap></keycombo>.
+			</para>
+      	</tip>
+      		<para>
+				You can also find from a selected track in the track list, all the
+				tracks with the same genre, artist or album name. Select a track in
+				the track list, right-click on it, and choose <guilabel>Browse
+				this Genre/Artist/Album</guilabel>. Then the browser will filter the
+				tracks using the criteria chosen.
+			</para>
+  	</sect2>
+  </sect1>
+  <sect1 id="radio">
+  	<title>Radio Source</title>
+    <para>
+		The Internet Radio tuner can be used to listen to streamed audio files over a network, local or Internet.
+	</para>
+    <figure id="fig-iradio">
+      <title>Internet Radio in &fr;</title>
+      <screenshot>
+        <graphic format="PNG" fileref="figures/rb-iradio-main.png"/>
+      </screenshot>
+    </figure>
+    <sect2 id="iradio-adding">
+      	<title>Adding a station</title>
+      	<para>
+			To add a new station to the Internet Radio tuner, Choose <menuchoice><guimenu>Music</guimenu>
+			<guimenuitem>Add New Internet Radio Station</guimenuitem></menuchoice>, then enter the URL of
+			the Internet radio, then press the button <guibutton>Add</guibutton>.
+		</para>
+    </sect2>
+    <sect2 id="iradio-modify">
+      	<title>Viewing and Changing the settings of a station</title>
+      	<para>
+			You can view and edit the settings of an Internet Radio station using the menu
+			<menuchoice><guimenu>Music</guimenu><guimenuitem>Properties</guimenuitem></menuchoice>.
+		</para>
+      	<para>
+			You can also change the properties of a station by selecting the
+			station and right-click, then choose <guimenuitem>Properties</guimenuitem>.
+		</para>
+      	<para>
+			When you access the properties of a radio stream, you can modify its title, its genre; you can 
+			also modify the stream location, and set a rating to it.
+		</para>
+    </sect2>
+    <sect2 id="iradio-delete">
+    	<title>Removing a station</title>
+      	<para>
+			To remove a radio station from the radio stations list, choose <menuchoice><guimenu>Edit</guimenu>
+			<guimenuitem>Remove</guimenuitem></menuchoice>; you can also right-click on the station and select
+			<guimenuitem>Remove</guimenuitem>.
+		</para>
+    </sect2>
+  </sect1>
+  <sect1 id="podcast">
+  	<title>Podcast Source</title>
+    <para>
+		Podcasting is a new way to broadcast audio content over the web; when an
+		author publishes an episode, podcast suscribers are informed, through an
+		XML feed.
+	</para>
+    <para>
+		Rhythmbox enables you to suscribe to podcast feeds, so when a new episode is 
+		available you'll be informed, it will download this episode and it will
+		play it.
+	</para>
+    <tip>
+      	<para>
+		You can find more information about podcast and podcasting by visiting the
+		definition of <ulink url="http://en.wikipedia.org/wiki/Podcast">Podcast</ulink> on the 
+		site <ulink url="http://en.wikipedia.org/">Wikipedia</ulink>.
+		</para>
+    </tip>
+    <para>
+      <figure>
+        <title>The Podcast interface</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="figures/rb-podcast-main.png" format="PNG"/>
+          </imageobject>
+          <textobject>
+            <phrase>The Podcast interface with some registered podcasts</phrase>
+          </textobject>
+        </mediaobject>
+      </figure>
+    </para>
+    <sect2 id="podcast-management">
+      <title>Podcast Management</title>
+      <sect3 id="podcast-feed-add">
+        <title>Add a podcast</title>
+        <para>
+			To register to a podcast, choose 
+			<menuchoice><guimenu>Music</guimenu><guimenuitem>New Podcast
+			Feed</guimenuitem></menuchoice>, then in the new window, enter the URL of
+			the podcast feed. Rhythmbox will retrieve the list of episodes and the 
+			latest episode will be downloaded on your hard disk.
+			</para>
+        <para>
+			To add a new podcast feed, you can also right-click over the
+			<guimenuitem>Podcasts</guimenuitem>
+			source, and select <guimenuitem>New Podcast Feed</guimenuitem>.
+			</para>
+      </sect3>
+      <sect3 id="podcast-feed-del">
+        <title>Delete a podcast</title>
+        <para>
+			To delete a podcast, right-click on the podcast feed's name, and choose
+			<menuchoice><guimenuitem>Delete Podcast
+			Feed</guimenuitem></menuchoice>, then choose
+			<menuchoice><guimenuitem>Delete Feed Only</guimenuitem></menuchoice> if you want to keep the
+			podcast's episodes, or choose <menuchoice><guimenuitem>Delete Feed And
+			Item</guimenuitem></menuchoice> if you want to delete the feed and all its
+			related episodes.
+			</para>
+      </sect3>
+      <sect3 id="podcast-feed-update">
+        <title>Update feeds</title>
+        <para>
+			To know if new episodes have been published for a podcast,
+			right-click over the podcast name in the browser and choose
+			<menuchoice><guimenuitem>Update Podcast	Feed</guimenuitem></menuchoice>. If new episodes
+			were pusblished, they will appear in the episode list.
+			</para>
+        <tip>
+          <para>
+			Rhythmbox checks regularly, by its own, the podcast feeds list
+			to know if they	were updated.
+			</para>
+        </tip>
+        <para>
+			You can also check all podcasts, by right-clicking over the 
+			<menuchoice><guimenuitem>Podcasts</guimenuitem></menuchoice> source and choose
+			<menuchoice><guimenuitem>Update All Feeds</guimenuitem></menuchoice>.
+			</para>
+      </sect3>
+      <sect3 id="podcast-feed-show">
+        <title>Access Podcast Feed properties</title>
+        <para>
+			To access to the Feed properties, right-click on the Feed name, and
+			choose
+			<menuchoice><guimenuitem>Properties</guimenuitem></menuchoice>.
+			<itemizedlist><listitem><para>
+						On the tab <guilabel>Basic</guilabel> you view the podcast
+						<guilabel>Title</guilabel>, <guilabel>Author</guilabel>, the
+						<guilabel>Last Updated</guilabel> date and the
+						<guilabel>Description</guilabel>.
+					</para></listitem><listitem><para>
+						On the tab <guilabel>Details</guilabel> you view the feed 
+						<guilabel>Source</guilabel>, <guilabel>Language</guilabel>, 
+						and the <guilabel>Copyright</guilabel> properties.
+					</para></listitem></itemizedlist>
+			You can view the properties, and also edit the rating.
+			</para>
+      </sect3>
+    </sect2>
+    <sect2 id="episode-management">
+      <title>Episode Management</title>
+      <sect3 id="podcast-episode-download">
+        <title>Download a podcast episode</title>
+        <para>
+			To download an episode on your disk, right-click on the episode, and 
+			choose <menuchoice><guimenuitem>Download Post</guimenuitem></menuchoice>,
+			Rhythmbox will start to download the episode in the location defined in
+			the preferences. You can see the download progress of an episode in
+			the column <guilabel>Status</guilabel>.
+			</para>
+        <tip>
+          <para>
+			By default, podcasts are download in folder <filename class="directory">
+			Podcasts/</filename> in your home directory. To change location, 
+			see <xref linkend="prefs-podscast"/>.
+			</para>
+        </tip>
+      </sect3>
+      <sect3 id="podcast-episode-read">
+        <title>Read a podcast episode</title>
+        <para>
+			To play a podcast episode, select the episode you want to read, and
+			choose
+			<menuchoice><guimenu>Control</guimenu><guimenuitem>Play</guimenuitem></menuchoice>;
+			you can also press the button <guibutton>Play</guibutton>.</para>
+        <para>
+			The episode have to downloaded before to read it, see <xref linkend="podcast-episode-download"/> to know how to download a
+			podcast episode.
+			</para>
+      </sect3>
+      <sect3 id="podcast-episode-delete">
+        <title>Delete a podcast episode</title>
+        <para>
+			To delete an episode from a podcast, right-click on the episode, and
+			choose <menuchoice><guimenuitem>Delete</guimenuitem></menuchoice>,
+			then choose <menuchoice><guimenuitem>Delete Episode
+			Only</guimenuitem></menuchoice> if you to keep the episode file on
+			your disk, or choose <guibutton>Delete Episode And File</guibutton>
+			if you want to remove the episode from the list and delete the file from your disk.
+			</para>
+        <warning>
+          <para>
+			When you delete an episode, it won't be available no more in the
+			list of episodes, even if you update the podcast.
+			</para>
+        </warning>
+      </sect3>
+      <sect3>
+        <title>Display Podcast Episode properties</title>
+        <para>
+			To access to the episode properties, right-click on the episode, and
+			choose
+			<menuchoice><guimenuitem>Properties</guimenuitem></menuchoice>.
+			<itemizedlist><listitem><para>
+						On the tab <guilabel>Basic</guilabel> you view the podcast
+						<guilabel>Title</guilabel>, <guilabel>Feed</guilabel>, the
+						publication <guilabel>Data</guilabel> and the
+						<guilabel>Description</guilabel>.
+					</para></listitem><listitem><para>
+						On the tab <guilabel>Details</guilabel> you view the podcast
+						<guilabel>Source</guilabel>, <guilabel>Duration</guilabel>, the
+						<guilabel>Bitrate</guilabel>, the <guilabel>Last Played
+						Date</guilabel>, the <guilabel>Play count</guilabel> and
+						the <guilabel>Rating</guilabel>.
+					</para></listitem></itemizedlist>
+			</para>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1 id="playlist">
+  	<title>Playlists Source</title>
+    <para>
+			Playlists are sources which are created from the tracks available in
+			the Library source. They enable to gather tracks following a
+			particular 'genre', a specific group of artists, or even songs that 
+			are of a particular 'mood', or whatever you want.
+	</para>
+    <para>
+			Rhythmbox has 2 kinds of playlists:
+			<itemizedlist>
+				<listitem>
+					<para>Static Playlists</para>
+				</listitem>
+				<listitem>
+					<para>Smart Playlists</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+    <para>
+			Rhythmbox lets you burn the tracks of your playlists to an Audio CD.
+		</para>
+    <sect2 id="playlist-static">
+    	<title>Static Playlists</title>
+      	<para>
+			Static playlists are playlists built from songs dropped from the Library.
+		</para>
+      <sect3 id="playlist-static-new">
+        <title>Create a static playlist</title>
+        <para>
+					To create a new playlist, choose
+					<menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>New
+					Playlist</guimenuitem></menuchoice>. A empty playlist without name 
+					appears in the Source list, Enter a name for the playlist and press
+					<keycombo><keycap>Enter</keycap></keycombo>.
+				</para>
+      </sect3>
+      <sect3 id="playlist-static-tracks-add">
+        <title>Add tracks to a playlist</title>
+        <para>
+					To add tracks to a playlist, select tracks from the track
+					list from the library and drag and drop your select over the
+					playlist icon in the Source list.
+				</para>
+        <para>
+					You can also drop over a playlist a genre, an artist, or an
+					album name from the	browser, and all the tracks that belongs 
+					to the chosen category will be added to the playlist.
+				</para>
+        <tip>
+          <para>You can create a playlist with tracks in one action. select tracks from the <guilabel>Tracks List</guilabel>, or directly one or more categories from the browser (<guilabel>genre</guilabel>, <guilabel>artist</guilabel> or <guilabel>album</guilabel>) and drop the selection over the <guilabel>Source List</guilabel>. It will create automatically a named playlist.</para>
+        </tip>
+      </sect3>
+      <sect3 id="playlist-static-tracks-del">
+        <title>Remove tracks from a playlist</title>
+        <para>
+					To remove tracks from a playlist, first select the tracks to
+					remove, and then you have two methods:
+					<itemizedlist><listitem><para>
+								Choose
+								<menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice>.
+							</para></listitem><listitem><para>
+								Right-click over the selection and choose <guimenuitem>Delete</guimenuitem>.
+							</para></listitem></itemizedlist>
+					This operation deletes the song only from playlist and not
+					from the Library.
+				</para>
+      </sect3>
+      <sect3 id="playlist-static-del">
+        <title>Delete a static playlist</title>
+        <para>
+					To delete a static playlist, select the playlist to delete,
+					then you have two ways to delete it:
+					<itemizedlist><listitem><para>
+								Choose
+								<menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice>.
+							</para></listitem><listitem><para>
+								Right-click over the playlist and choose <guimenuitem>Delete</guimenuitem>.
+							</para></listitem></itemizedlist>
+					This operation deletes only the playlist and not the songs
+					stored in the playlist deleted.
+				</para>
+      </sect3>
+    </sect2>
+    <sect2 id="playlist-smart">
+      <title>Smart Playlists</title>
+      <para>
+				Smart Playlists are playlists built from criterias, so their
+				content is build dynamically; all the tracks matching criterias 
+				will be added in the playlist.
+			</para>
+      <sect3 id="playlist-smart-new">
+        <title>Create a smart playlist</title>
+        <para>
+					To create a new playlist:
+					<orderedlist><listitem><para>
+								Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>New
+								Automatic Playlist...</guimenuitem></menuchoice>.
+							</para></listitem><listitem><para>
+								Edit the playlist criterias through the query editor. 
+							</para></listitem><listitem><para>
+								Once your criterias chosen, click <guibutton>New</guibutton> to create the
+								query.
+							</para></listitem></orderedlist>
+				</para>
+      </sect3>
+      <sect3 id="playlist-smart-edit">
+        <title>Edit a smart playlist</title>
+        <para>
+					Edit a smart playlist let you modify the criteria set for
+					this playlist. To edit a smart playlist, select the smart
+					playlist, choose
+					<menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Edit...</guimenuitem></menuchoice>, and edit the criterias.
+					Once done, choose <guibutton>Close</guibutton>.
+				</para>
+      </sect3>
+      <sect3 id="playlist-smart-del">
+        <title>Delete a smart playlist</title>
+        <para>
+					To delete a static playlist, select the playlist to delete,
+					then you have two ways to delete it:
+					<itemizedlist><listitem><para>
+								Choose
+								<menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice>.
+							</para></listitem><listitem><para>
+								Right-click over the playlist and choose <guimenuitem>Delete</guimenuitem>.
+							</para></listitem></itemizedlist>
+				</para>
+      </sect3>
+      <sect3 id="playlist-smart-query-use">
+        <title>Use the query editor</title>
+        <para>
+		Choose the criteria to apply to the rule. If you need one
+		more criteria click on the button
+		<guibutton>Add</guibutton>, a new line appears, and you can
+		set a new criteria.
+		</para>
+        <para>
+		If you want to limit the number of tracks in the playlist,
+		tick <guilabel>Limit to:</guilabel>, and choose how to
+		limit. You can limit by songs, by total size (in
+		<guilabel>MB</guilabel> or <guilabel>GB</guilabel>), ot by
+		duration (expressed in <guilabel>Minutes</guilabel>).
+		</para>
+        <para>
+		Once you finish to set criteria for the playlist, choose
+		<guibutton>New</guibutton>; the playlist query editor window
+		closes, and the playlist display the songs matched by your
+		criterias.
+		</para>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1 id="AudioCD">
+    <title>Audio CD Source</title>
+    <sect2 id="cd-playing">
+      <title>Playing</title>
+      <para>When an Audio CD is inserted to the CD drive, it will appear in the side pane, 
+			and the songs on it can be displayed in &fr;'s main window.
+			</para>
+      <para>To play and pause playback, or to skip forward or backwards,
+			use the same controls as used for playing from the library.
+			</para>
+    </sect2>
+    <sect2 id="cd-import">
+      <title>Importing Audio CD</title>
+      <para>If you wish to keep the songs of your Audio CDs on your computer,
+			you can import them; the tracks will be saved as music files.</para>
+      <para>To import Audio CD tracks, choose <menuchoice><guimenu>Music</guimenu><guimenuitem>Import Audio CD...</guimenuitem></menuchoice>, it will start Sound-Juicer,
+			a GNOME application dedicated to Audio CD import. To know more about Sound-Juicer, 
+			you can read the <ulink url="ghelp:sound-juicer">Sound-Juicer manual</ulink>.</para>
+      <tip>
+        <para>To get imported tracks  from Sound-Juicer automatically added to you Rhythmbox Library, you will have to configure Sound-Juicer to extract tracks into your Rhythmbox Library location and the Rhythmbox watch library feature has to be activated; refer to <ulink url="ghelp:sound-juicer#preferences">Sound-Juicer preferences</ulink> and <link linkend="prefs-library">Rhythmbox Library preferences</link>.</para>
+      </tip>
+    </sect2>
+    <sect2 id="cd-burning">
+      <title>Creating Audio CD</title>
+      <para>Rhythmbox enables you to create you own Audio CDs with the music stored in the rhythmbox Library.</para>
+      <para>To create an Audio CD : 
+				<orderedlist><listitem><para>Create a playlist, static or smart (see <xref linkend="playlist"/>) and add songs.</para></listitem><listitem><para>Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Create Audio CD...</guimenuitem></menuchoice></para></listitem><listitem><para>Insert a blank CD</para></listitem><listitem><para>Click the button <guibutton>Create</guibutton>, the burning process starts.</para></listitem></orderedlist>
+			</para>
+    </sect2>
+  </sect1>
+  <sect1 id="portable-player">
+    <title>Portable Player Source</title>
+    <para>Rhythmbox can detect when you plug portable players like Apple iPod to your computer, and is able to read tracks stored on it.</para>
+    <para>At this time, Rhythmbox can only read information but cannot write (like tags modification, tracks deletion).</para>
+    <para>The Portable Player source is displayed like the Library source.</para>
+  </sect1>
+  <sect1 id="daap">
+    <title>DAAP Share Source</title>
+    <para>DAAP is a network protocol that allow to share the music stored in Rhythmbox. DAAP stands for Digitial Audio Access Protocol.</para>
+    <para>As DAAP is a standard protocol for music sharing, you can listen and share music not only with others Rhythmbox users, but also with other users who uses DAAP compatible software like iTunes.</para>
+    <para>When you will start Rhythmbox, it will look for all DAAP shares published on your local network (your home or your office, not the whole Internet) by other users and will display them in the <guilabel>Source</guilabel> list; in the same time Rhythmbox will publish your library and your playlist. So you can read music stored on your friends'computer and they can listen your music.</para>
+    <para>If you want to disable Rhythmbox to share your music, see <xref linkend="prefs-sharing"/> in the preference.</para>
+  </sect1>
+  <sect1 id="notification">
+    <title>Notification Zone</title>
+    <sect2 id="notification-overview">
+      <title>Overview</title>
+      <para>
+		The Notification Area is a Gnome feature that add a small icon to the panel while the program is running;
+		this allows you to control &fr; from your tray, and received information when the Rhythmbox 
+		interface is not visible.
+		</para>
+      <figure id="fig-notification-zone">
+        <title>&fr; in the Notification Zone</title>
+        <screenshot>
+          <graphic format="PNG" fileref="figures/rb-notification-zone.png"/>
+        </screenshot>
+      </figure>
+    </sect2>
+    <sect2 id="notification-info-receive">
+      <title>Get information</title>
+      <sect3 id="notification-info-tooltip">
+        <title>Tooltip information</title>
+        <para>When you move the mouse cursur over the rhythmbox icon, you can see the track author,
+			 the track name and the time position.</para>
+      </sect3>
+      <sect3 id="notification-info-window">
+        <title>Notification window</title>
+        <para>Each time, the track has changed or a podcast episode was downloaded, Rhythmbox can inform you; 
+			it displays a notification window on the desktop, containing an information.</para>
+        <figure id="fig-notification-window">
+          <title>The notification window of &fr;</title>
+          <screenshot>
+            <graphic format="PNG" fileref="figures/rb-notification-window.png"/>
+          </screenshot>
+        </figure>
+        <tip>
+          <para>Although the notification window is interesting it can ennoy you, so you can disabled 
+			the notification window. Right-click over the rhythmbox icon in the notification zone and untick
+			<guilabel>Show Notifications</guilabel>.</para>
+        </tip>
+      </sect3>
+    </sect2>
+    <sect2 id="notification-control">
+      <title>Control Rhythmbox</title>
+      <para>
+		Using the &fr; icon in the notification area, the following commands 
+		can be sent to the application: 
+		</para>
+      <figure id="fig-notification-menu">
+        <title>Notification Area (showing menu)</title>
+        <screenshot>
+          <graphic format="PNG" fileref="figures/rb-notification-area-menu.png"/>
+        </screenshot>
+      </figure>
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para><guilabel>Play</guilabel> &mdash; If ticked, plays the currently selected song</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Previous</guilabel> &mdash; Skip to previous song in the selected source.</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Next</guilabel> &mdash; Skip to next song in the selected source.</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Show Window Player</guilabel> &mdash; choose whether
+			or not the &fr;	window is visible or not on the desktop.</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Show Notifications</guilabel> &mdash; Choose whether
+			or not &fr; notify you about song change and various information.</para>
+          </listitem>
+          <listitem>
+            <para><guilabel>Quit</guilabel> &mdash; Quit the application &fr;.</para>
+          </listitem>
+        </itemizedlist>
+        <tip>
+        	<para>
+				If you are using a mouse with a scroll wheel, you can adjust the volume by scrolling up 
+				or down while the mouse pointer is over the panel applet.
+			</para>
+          <para>You can quickly toggle Play/Pause by pressing the middle mouse button.</para>
+        </tip>
       </para>
-<!-- Translators may also add here feedback address for translations -->
-    </legalnotice>
-  </articleinfo>
-  <indexterm><primary>&application;</primary></indexterm>
-
- <!-- ============= Document Body ============================= -->
- <!-- ============= Introduction ============================== -->
-
-
- <sect1 id="intro">
-  <title>Introduction</title>
-   <indexterm>
-    <primary>ScrollKeeper</primary>
-    <secondary>Examples</secondary>
-    <tertiary>gdp-example2</tertiary>
-   </indexterm>
-
-  <sect2 id="aboutsk">
-   <title>About &application;</title>
-   <para>	
-&application; is a ID3 organized, music library and player for your &audio-formats; music files.
-<!--
-&application; is a music player that lets you do everything from importing your audio cds into &audio-formats; format, to playing these music files and other music files you have. You can play your music with an assortment of visualization plugins and burn audio and MP3/OGG cds from your music files. It's a one-stop shopping application for all your music needs. -->
-
-</para>
-<para>
-Current &application; features include:
-</para>
-<itemizedlist>
-	<listitem>
-	Play &audio-formats; music files from your ID3 organized Library.
-	</listitem>
-	<listitem>
-	Display information on the songs through meta-data reading.
-	</listitem>
-	<listitem>
-	Display songs in an organized view.
-	</listitem>
-	<listitem>
-	Create &playlist; by dragging and dropping from the Library view.
-	</listitem>
-	<listitem>
-	Search for entries in the Library.
-	</listitem>
-	<listitem>
-	Listen to Internet radio stations. 
-	</listitem>
-<!--	<listitem>
-	Visual effects to accompany the audio output.
-	</listitem>
-	<listitem>
-	Audio CD Support. Play music directly off of a CD. 
-	</listitem>
-	<listitem>
-	CD Ripping and Burning. &application; can be used to create custom CDs, based on a group of songs from the library. 
-	</listitem> -->
-
-</itemizedlist>
-
-   </sect2>
-
- <sect2 id="aboutex">
-   <title>About this Document</title>
-
-<para>
-     This is the &application; User Guide.
-   </para>
-   <para>
-     This package is maintained in <ulink type="http"
-     url="http://www.gnome.org/">GNOME</ulink> CVS
-     in the <filename
-     class="directory">rhythmbox</filename> module under 
-     <filename class="directory">help</filename>.
-   </para>
-
-  </sect2>
-
-&authors;
- </sect1>
-&user-guide;
-&quick;
+    </sect2>
+  </sect1>
+  <sect1 id="customize">
+    <title>Customizing &fr;</title>
+    <para>
+	You can customize &fr; to suit your requirements and
+	preferences. This section describes how to customize &fr;.
+	</para>
+    <sect2 id="prefs">
+      <title>Setting Your Preferences</title>
+      <para>
+		Using the <guilabel>Preferences</guilabel> dialog you can
+		customize how you want &fr; to look and behave. To display the
+		<guilabel>Preferences</guilabel> dialog, choose 
+		<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>.
+		</para>
+      <sect3 id="prefs-general">
+      	<title>General</title>
+      	<para>
+			Choose the <guilabel>Visible Columns</guilabel> you want to
+			display in &fr;. This option is global and affects the
+			following sources:
+			<itemizedlist>
+				<listitem><para>Library</para></listitem>
+				<listitem><para>Audio CD</para></listitem>
+				<listitem><para>Portable Players</para></listitem>
+				<listitem><para>Playlists</para></listitem>
+				<listitem><para>DAAP Music shares</para></listitem>
+			</itemizedlist>
+		</para>
+      </sect3>
+      <sect3 id="prefs-library">
+        <title>Library</title>
+        <itemizedlist>
+          <listitem>
+            <para>
+				Choose the way will be displayed the <guilabel>Browser
+				View</guilabel>. You can choose to use three or two panes.
+			</para>
+          </listitem>
+          <listitem>
+            <para>
+				The <guilabel>Library Location</guilabel> is a folder
+				that &fr; will monitor to find new songs. When you add new audio files in this folder
+				or its sub-folders with the file browser (like Nautilus), &fr; 
+				will detect them and they will be added automatically in the Library.
+			</para>
+            <warning>
+            	<para>
+					Avoid to set your <filename class="directory">Home</filename> folder as library
+					location because this feature is CPU consumming.
+				</para>
+            </warning>
+            <para>
+				To disable the watch functionnality untick
+				<guilabel>Watch my library for new file</guilabel>.
+			</para>
+            <tip>
+            	<para>
+					If you want to add more than one folder to watch, use gconf-editor and add it to the list
+					/app/rhythmbox/library_locations
+				</para>
+            </tip>
+          </listitem>
+        </itemizedlist>
+      </sect3>
+      <sect3 id="prefs-podscast">
+        <title>Podcasts</title>
+        <itemizedlist>
+          <listitem>
+            <para>
+				The <guilabel>Download Location</guilabel> of Podcasts is defined 
+				by default to Folder <filename class="directory">Podcasts/</filename>
+				in your home directory.
+			</para>
+            <para>
+				If this location doesn't fit your	needs, select another folder 
+				in the drop-down list or choose <guilabel>Other...</guilabel>
+				to make the File Selector appears.
+			</para>
+          </listitem>
+          <listitem>
+            <para>
+				Choose the frequency that &fr; will check for new
+				podcast episodes.
+			</para>
+          </listitem>
+        </itemizedlist>
+      </sect3>
+      <sect3 id="prefs-sharing">
+        <title>Sharing</title>
+        <para>Rhythmbox can share your Library contents over your Local Area
+			Network, to other &fr; and Apple iTunes users.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Select <guilabel>Share my music</guilabel> to enable
+					the users of your network to see and read your songs.</para>
+          </listitem>
+          <listitem>
+            <para>
+				Enter the name of you want to appear of the network in
+				the field <guilabel>Shared music name</guilabel>.</para>
+          </listitem>
+        </itemizedlist>
+      </sect3>
+      <sect3 id="prefs-audioscrobbler">
+        <title>AudioScrobbler</title>
+        <para>
+			AudioScrobbler is a plugin that collect and send information
+			about played songs to website <ulink url="http://www.last.fm/">Last.fm</ulink>. 
+			Data sent, once	computed, allows to you	to :
+			<itemizedlist>
+				<listitem>
+					<para>consult statistics (like most played songs or most played artists).</para>
+				</listitem>
+				<listitem>
+					<para>receive recommendation about artists that you could like.</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+        <warning>
+          <para>
+		  	Before use AudioScrobbler, you have to create an account on the website 
+			<ulink url="http://www.last.fm/signup.php">Last.fm</ulink>
+		  </para>
+        </warning>
+        <para>
+			Select <guilabel>Enable AudioScrobbler</guilabel> to allow AudioScrobbler to collect
+			and send data about the songs played in &fr;, and enter	your last.fm 
+			<guilabel>Username</guilabel> and <guilabel>password</guilabel>.
+		</para>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1 id="shortcuts">
+    <title>Shortcuts</title>
+    <sect2 id="keyboard-keys">
+      <title>Keyboard Shortcuts</title>
+      <table frame="topbot" id="rb-shorcuts-1">
+	  	<title>Player Shortcuts</title>
+        <tgroup cols="2" colsep="0" rowsep="0">
+          <colspec colname="COLSPEC0" colwidth="30*"/>
+          <colspec colname="COLSPEC1" colwidth="70*"/>
+          <thead>
+            <row>
+              <entry>Shortcuts</entry>
+              <entry>Actions</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Alt</keycap>
+                  <keycap>Space</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Play / Pause</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Alt</keycap>
+                  <keycap>Left</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Jump to the Previous Track / Back to the beginning of the song</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Alt</keycap>
+                  <keycap>Right</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Jump to the Next Track</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>R</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Enable / Disable Repeat play</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>U</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Enable / Disable Shuffle play</para>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <table frame="topbot" id="rb-shorcuts-2">
+	  	<title>General Shortcuts</title>
+		<tgroup cols="2" colsep="0" rowsep="0">
+          <colspec colname="COLSPEC0" colwidth="30*"/>
+          <colspec colname="COLSPEC1" colwidth="70*"/>
+          <thead>
+            <row>
+              <entry>Shortcuts</entry>
+              <entry>Actions</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>A</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Select All</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Shift</keycap>
+                  <keycap>Ctrl</keycap>
+                  <keycap>A</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Deselect All</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>E</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Extract CD (launch Sound-Juicer)</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>J</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Jump to playing song</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>Y</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Clear the search field text and remove all filters in the browser</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>N</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Create a New playlist</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>I</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Add a new Internet Radio Station</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>P</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Add a New Podcast Feed</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>O</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Add a folder to library</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Alt</keycap>
+                  <keycap>Return</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Display Track Properties</para>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      <table frame="topbot" id="rb-shorcuts-3">
+	  	<title>Window Shortcuts</title>
+        <tgroup cols="2" colsep="0" rowsep="0">
+          <colspec colname="COLSPEC0" colwidth="30*"/>
+          <colspec colname="COLSPEC1" colwidth="70*"/>
+          <thead>
+            <row>
+              <entry>Shortcuts</entry>
+              <entry>Actions</entry>
+            </row>
+          </thead>
+          <tbody>
+			<row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>W</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Close &fr; window</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>Q</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Quit &fr;</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>B</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Show / Hide browser</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>D</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Toggle / Untoggle small display mode</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>L</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Show / Hide source list</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>K</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Show / Hide Queue Sidebar</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Ctrl</keycap>
+                  <keycap>S</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Show / Hide Song Position Slider</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>Shift</keycap>
+                  <keycap>Ctrl</keycap>
+                  <keycap>T</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Show / Hide Queue Sidebar</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycombo>
+                  <keycap>F11</keycap>
+                </keycombo>
+              </entry>
+              <entry>
+                <para>Toggle / Untoggle Full Screen</para>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </sect2>
+    <sect2 id="multimedia-keys">
+      <title>Multimedia Keys</title>
+      <para>&fr; supports also the keys on multimedia keyboard, if your
+  		desktop environment is configured.</para>
+      <table frame="none">
+	  	<title>Window Shortcuts</title>
+        <tgroup cols="2" colsep="0" rowsep="0">
+          <colspec colname="COLSPEC0"/>
+          <colspec colname="COLSPEC1"/>
+          <thead>
+            <row>
+              <entry>Shortcuts</entry>
+              <entry>Actions</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                <keycap>Stop</keycap>
+              </entry>
+              <entry>
+                <para>Stop</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycap>Pause / Play</keycap>
+              </entry>
+              <entry>
+                <para>Pause / Play</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycap>Prev</keycap>
+              </entry>
+              <entry>
+                <para>Previous Played Track</para>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                <keycap>Next</keycap>
+              </entry>
+              <entry>
+                <para>Next Track</para>
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </sect2>
+  </sect1>
 </article>
