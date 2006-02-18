@@ -80,6 +80,8 @@ static void rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
 						     RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 							     RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
+						    RBPlaylistManager *mgr);
 static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
 static void rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view,
 							   RhythmDBEntry *entry,
@@ -171,6 +173,9 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "EditAutomaticPlaylist", GTK_STOCK_PROPERTIES, N_("_Edit..."), NULL,
 	  N_("Change this automatic playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_edit_automatic_playlist) },
+	{ "QueuePlaylist", NULL, N_("_Queue All Tracks"), NULL,
+	  N_("Add all tracks in this playlist to the queue"),
+	  G_CALLBACK (rb_playlist_manager_cmd_queue_playlist) },
 };
 static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_actions);
 
@@ -1094,6 +1099,38 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 
 	rb_playlist_manager_set_automatic_playlist (mgr, playlist, creator);
 	gtk_widget_destroy (GTK_WIDGET (creator));	
+}
+
+static gboolean
+_queue_track_cb (RhythmDBQueryModel *model,
+		 GtkTreePath *path,
+		 GtkTreeIter *iter,
+		 RBStaticPlaylistSource *queue_source)
+{
+	RhythmDBEntry *entry;
+	
+	entry = rhythmdb_query_model_iter_to_entry (model, iter);
+	rb_static_playlist_source_add_entry (queue_source, entry, -1);
+	
+	return FALSE;
+}
+
+static void
+rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
+					RBPlaylistManager *mgr)
+{
+	RBSource *queue_source;
+	RhythmDBQueryModel *model;
+
+	g_object_get (G_OBJECT (mgr->priv->shell), "queue-source", &queue_source, NULL);
+	g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (model),
+				(GtkTreeModelForeachFunc) _queue_track_cb,
+				queue_source);
+
+	g_object_unref (G_OBJECT (queue_source));
+	g_object_unref (G_OBJECT (model));
 }
 
 static void

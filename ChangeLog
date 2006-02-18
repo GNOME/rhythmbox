@@ -1,5 +1,12 @@
 2006-02-18  James Livingston  <jrl@ids.org.au>
 
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-playlist-manager.c:
+	(_queue_track_cb), (rb_playlist_manager_cmd_queue_playlist): Add
+	"queue playlist" item to source context menu. Fixes bug 330490.
+
+2006-02-18  James Livingston  <jrl@ids.org.au>
+
 	* data/glade/general-prefs.glade:
 	* shell/rb-shell-preferences.c:
 	(rb_shell_preferences_column_check_changed_cb),
