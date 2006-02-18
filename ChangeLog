@@ -1,5 +1,17 @@
 2006-02-18  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/general-prefs.glade:
+	* shell/rb-shell-preferences.c:
+	(rb_shell_preferences_column_check_changed_cb),
+	(rb_shell_preferences_sync):
+	* sources/rb-library-source.c: (rb_library_source_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* widgets/rb-entry-view.c: (rb_entry_view_quality_cell_data_func),
+	(rb_entry_view_append_column): Add a "quality" colume which indicates
+	the bitrate of media. Part of bug 167659.
+
+2006-02-18  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-play-order.c: (do_next_idle_cb),
 	(default_playing_entry_removed): move to next track when playing entry
 	is deleted. Fixes bug 131150.

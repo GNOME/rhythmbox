@@ -704,7 +704,6 @@ rb_entry_view_year_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *r
 	}
 }
 
-#if 0
 static void
 rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 				      GtkTreeModel *tree_model, GtkTreeIter *iter,
@@ -715,26 +714,17 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 
 	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
 
-	bitrate = rhythmdb_entry_get_int (data->view->priv->db, entry,
-					  data->propid);
+	bitrate = rhythmdb_entry_get_ulong (entry, data->propid);
 
-	if (bitrate <= 0) {
-		g_object_set (G_OBJECT (renderer), "text", _("Unknown"), NULL);
-	} else if (bitrate <= 80) {
-		g_object_set (G_OBJECT (renderer), "text", _("Very Low"), NULL);
-	} else if (bitrate <= 112) {
-		g_object_set (G_OBJECT (renderer), "text", _("Low"), NULL);
-	} else if (bitrate <= 160) {
-		g_object_set (G_OBJECT (renderer), "text", _("Regular"), NULL);
-	} else if (bitrate <= 224) {
-		g_object_set (G_OBJECT (renderer), "text", _("High"), NULL);
-	} else if (bitrate <= 1410) {
-		g_object_set (G_OBJECT (renderer), "text", _("Very High"), NULL);
+	if (bitrate > 0) {
+		char *s = g_strdup_printf (_("%u kbps"), (guint)bitrate);
+		g_object_set (G_OBJECT (renderer), "text", s, NULL);
+		g_free (s);
 	} else {
-		g_object_set (G_OBJECT (renderer), "text", _("Perfect"), NULL);
+		g_object_set (G_OBJECT (renderer), "text", _("Unknown"), NULL);
 	}
 }
-#endif
+
 
 static void
 rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -982,7 +972,6 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		strings[1] = "0000";
 		strings[2] = _("Unknown");
 		break;
-#if 0
 	case RB_ENTRY_VIEW_COL_QUALITY:
 		propid = RHYTHMDB_PROP_BITRATE;
 		cell_data->propid = propid;
@@ -992,9 +981,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		title = _("_Quality");
 		key = "Quality";
 		strings[0] = title;
-		strings[1] = "000";
+		strings[1] = _("000 kbps");
+		strings[2] = _("Unknown");
 		break;
-#endif
 	case RB_ENTRY_VIEW_COL_RATING:
 		propid = RHYTHMDB_PROP_RATING;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_double_ceiling_sort_func;
