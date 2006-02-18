@@ -593,18 +593,50 @@ default_has_previous (RBPlayOrder *porder)
 	return rb_play_order_get_previous (porder) != NULL;
 }
 
+typedef struct {
+	RBShellPlayer *player;
+	RhythmDBEntry *entry;
+} DoNextIdleData;
+
+static gboolean
+do_next_idle_cb (DoNextIdleData *data)
+{
+	rb_shell_player_play_entry (data->player, data->entry);
+	g_free (data);
+	return FALSE;
+}
+
 static void
 default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 {
 	RBShellPlayer *player = rb_play_order_get_player (porder);
+	RBSource *source = rb_shell_player_get_playing_source (player);
 
 	/* only clear the playing source if the source this play order is using
 	 * is currently playing.
 	 */
-	if (rb_shell_player_get_playing_source (player) == rb_play_order_get_source (porder))
-		rb_shell_player_set_playing_source (rb_play_order_get_player (porder), NULL);
-
-	rb_play_order_set_playing_entry (porder, NULL);
+	if (source == rb_play_order_get_source (porder)) {	
+		switch (rb_source_handle_eos (source)) {
+		case RB_SOURCE_EOF_ERROR:
+		case RB_SOURCE_EOF_STOP:
+		case RB_SOURCE_EOF_RETRY:
+			/* stop playing */
+			rb_shell_player_set_playing_source (player, NULL);
+			break;
+		case RB_SOURCE_EOF_NEXT:
+			{
+				DoNextIdleData *data = g_new0 (DoNextIdleData, 1);
+				
+				/* go to next song, do in an idle function so that other handler run first */
+				data->player = player;
+				data->entry = rb_play_order_get_next (porder);
+				g_idle_add_full (G_PRIORITY_HIGH_IDLE, (GSourceFunc)do_next_idle_cb, data, NULL);
+				break;
+			}
+		}
+	} else {
+		rb_play_order_set_playing_entry (porder, NULL);
+	}
 }
 
 /**

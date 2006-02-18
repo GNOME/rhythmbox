@@ -147,10 +147,6 @@ gboolean		rb_shell_player_get_mute	(RBShellPlayer *player,
 							 GError **error);
 
 
-#ifdef HAVE_ACME
-gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);
-#endif
-
 G_END_DECLS
 
 #endif /* __RB_SHELL_PLAYER_H */

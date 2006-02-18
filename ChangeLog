@@ -1,3 +1,11 @@
+2006-02-18  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-play-order.c: (do_next_idle_cb),
+	(default_playing_entry_removed): move to next track when playing entry
+	is deleted. Fixes bug 131150.
+
+	* shell/rb-shell-player.h: remove ancient stuff
+
 2006-02-17  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell-clipboard.c (rb_shell_clipboard_set_source_internal) 
