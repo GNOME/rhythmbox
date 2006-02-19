@@ -1,3 +1,19 @@
+2006-02-19  Luca Ferretti  <elle.uca@libero.it>
+
+	* .cvsignore:
+	* Makefile.am:
+	* autogen.sh:
+	* configure.ac:
+	* help/.cvsignore:
+	* help/Makefile.am: ported to gnome-doc-utils
+	* help/rhythmbox.omf.in: added, needed by gnome-doc-utils
+	* help/ChangeLog: added, for translators
+	* help/C/rhytmbox-C.omf: removed, no longer used
+	Know issue: figures are installed, but some are not showed; manual
+	description added, but not showed in Yelp while browsing. I'll
+	investigate, maybe are needed some little changes to
+	help/C/rhythmbox.xml.
+
 2006-02-20  James Livingston  <jrl@ids.org.au>
 
 	* data/ui/rhythmbox-ui.xml:
