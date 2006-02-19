@@ -55,6 +55,9 @@ typedef enum
 	RB_METADATA_FIELD_TRACK_PEAK,		   /* double */
 	RB_METADATA_FIELD_ALBUM_GAIN,		   /* double */
 	RB_METADATA_FIELD_ALBUM_PEAK,		   /* double */
+	RB_METADATA_FIELD_LANGUAGE_CODE,	   /* string */
+
+	RB_METADATA_FIELD_LAST			   /* nothing */
 } RBMetaDataField;
 
 typedef enum
@@ -96,9 +99,11 @@ typedef struct
 
 GType		rb_metadata_get_type	(void);
 
-RBMetaData *	rb_metadata_new		(void);
+GType		rb_metadata_get_field_type (RBMetaDataField field);
 
-GType		rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field);
+const char *	rb_metadata_get_field_name (RBMetaDataField field);
+
+RBMetaData *	rb_metadata_new		(void);
 
 gboolean	rb_metadata_can_save	(RBMetaData *md, const char *mimetype);
 

@@ -1,5 +1,36 @@
 2006-02-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* metadata/rb-metadata-dbus-client.c: 
+	* metadata/rb-metadata-dbus-service.c:
+	* metadata/rb-metadata-dbus.c:
+	* metadata/rb-metadata-dbus.h:
+	New files, adding an external service for reading and writing
+	metadata, and an implementation of the RBMetaData interface that uses
+	dbus to communicate with it.
+	
+	* metadata/rb-metadata.h,
+	* metadata/rb-metadata-common.c: (rb_metadata_get_field_type),
+	(rb_metadata_get_field_name): Put metadata details in a static array
+	instead of using a hash table, and add a field for language code (not
+	used for anything)
+	* metadata/rb-metadata-gst.c: Updates for changes in
+	rb-metadata-common.c, fix signal handler closure leak for the typefind
+	element's have-type signal, and add XML to the list of types we ignore.
+	* rhythmdb/rhythmdb.c: (extract_gtype_from_enum_entry):
+	Update for changes to rb_metadata_get_field_type
+	(rhythmdb_entry_allocate): Don't make songs hidden initially, as
+	rhythmdb_commit_internal do that for non-local files.  Saves us a stat
+	here and there.
+	
+	* configure.ac: Add --enable-metadata-helper option (not enabled by
+	default) to use the external metadata service
+	* metadata/Makefile.am: Add new files
+	* metadata/test-metadata.c:  Test program for the metadata service
+
+	Fixes #329597. 
+
+2006-02-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: (rb_shell_cmd_add_file_to_library):
 	* sources/rb-podcast-source.c: (impl_get_ui_actions),
 	(rb_podcast_source_cmd_new_podcast):

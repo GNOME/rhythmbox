@@ -445,7 +445,7 @@ extract_gtype_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 	/* Check to see whether this is a property that maps to
 	   a RBMetaData property. */
 	if (metadata_field_from_prop (value->value, &field))
-		g_assert (ret == rb_metadata_get_field_type (db->priv->metadata, field)); 
+		g_assert (ret == rb_metadata_get_field_type (field)); 
 	return ret;
 }
 
@@ -923,10 +923,6 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	ret->album = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
 
-	/* don't show songs until they have been stat'd */
-	if (type == RHYTHMDB_ENTRY_TYPE_SONG)
-		ret->hidden = TRUE;
-	
 	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) ||
 	    (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED))
 	       ret->podcast = g_new0 (RhythmDBPodcastFields, 1);

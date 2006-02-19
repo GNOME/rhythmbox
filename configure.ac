@@ -578,6 +578,21 @@ if test "x$with_dbus" != "xno"; then
 fi			  
 AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
 
+dnl out-of-process metadata reader (requires dbus)
+AC_ARG_WITH(metadata-helper,
+	    AC_HELP_STRING([--with-metadata-helper],
+	    		   [Use a separate process for metadata reading]),,
+	    with_metadata_helper=auto)
+if test "x$with_metadata_helper" = xyes; then
+	if test "x$enable_dbus" = xyes; then
+		AC_DEFINE(WITH_METADATA_HELPER, 1, [Define if the metadata helper process is enabled])
+		enable_metadata_helper=yes
+	elif test "x$with_metadata_helper" = xyes; then
+		AC_MSG_ERROR([Metadata helper process explicitly requested, but D-BUS is not enabled])
+	fi
+fi
+AM_CONDITIONAL(WITH_METADATA_HELPER, test "x$enable_metadata_helper" = "xyes")
+
 AC_MSG_CHECKING([for Bonobo])
 AC_ARG_WITH(bonobo,
             AC_HELP_STRING([--with-bonobo],
@@ -615,6 +630,7 @@ AC_ARG_ENABLE(uninstalled-build,
 	      enable_uninstalled=yes,)
 if test x"$enable_uninstalled" = xyes; then
 	AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/data",[path to source data dir])
+	AC_DEFINE_UNQUOTED(METADATA_UNINSTALLED_DIR,"`pwd`/metadata",[path to metadata build dir])
 fi
 
 dnl warnings bits, copied from gnome-keyring configure.in
@@ -769,6 +785,11 @@ if test x"$enable_audioscrobbler" != xno; then
 	AC_MSG_NOTICE([** Audioscrobbler support enabled])
 else
 	AC_MSG_NOTICE([   Audioscrobbler support disabled])
+fi
+if test x"$enable_metadata_helper" = xyes; then
+	AC_MSG_NOTICE([** Separate metadata helper process enabled])
+else
+	AC_MSG_NOTICE([   Separate metadata helper process disabled])
 fi
 
 AC_MSG_NOTICE([End options])

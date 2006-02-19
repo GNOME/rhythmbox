@@ -24,68 +24,57 @@
 #include "rb-metadata.h"
 #include "rb-debug.h"
 
+struct RBMetaDataFieldInfo {
+	GType type;
+	const char *name;
+};
+
+/*
+ * Note: the field names are the same as those used by GStreamer.  We
+ * could have just use the GST_TAG_X defines, but that would suck if we
+ * ever got a non-GStreamer metadata backend.
+ */
+static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
+	/* RB_METADATA_FIELD_TITLE */ 			{ G_TYPE_STRING, "title" },
+	/* RB_METADATA_FIELD_ARTIST */ 			{ G_TYPE_STRING, "artist" },
+	/* RB_METADATA_FIELD_ALBUM */ 			{ G_TYPE_STRING, "album" },
+	/* RB_METADATA_FIELD_DATE */ 			{ G_TYPE_ULONG, "date" },
+	/* RB_METADATA_FIELD_GENRE */ 			{ G_TYPE_STRING, "genre" },
+	/* RB_METADATA_FIELD_COMMENT */			{ G_TYPE_STRING, "comment" },
+	/* RB_METADATA_FIELD_TRACK_NUMBER */		{ G_TYPE_ULONG, "track-number" },
+	/* RB_METADATA_FIELD_MAX_TRACK_NUMBER */	{ G_TYPE_ULONG, "track-count" },
+	/* RB_METADATA_FIELD_DISC_NUMBER */ 		{ G_TYPE_ULONG, "album-disc-number" },
+	/* RB_METADATA_FIELD_MAX_DISC_NUMBER */ 	{ G_TYPE_ULONG, "album-disc-count" },
+	/* RB_METADATA_FIELD_DESCRIPTION */ 		{ G_TYPE_STRING, "description" },
+	/* RB_METADATA_FIELD_VERSION */ 		{ G_TYPE_STRING, "version" },
+	/* RB_METADATA_FIELD_IRSC */	 		{ G_TYPE_STRING, "isrc" },
+	/* RB_METADATA_FIELD_ORGANIZATION */ 		{ G_TYPE_STRING, "organization" },
+	/* RB_METADATA_FIELD_COPYRIGHT */ 		{ G_TYPE_STRING, "copyright" },
+	/* RB_METADATA_FIELD_CONTACT */ 		{ G_TYPE_STRING, "contact" },
+	/* RB_METADATA_FIELD_LICENSE */ 		{ G_TYPE_STRING, "license" },
+	/* RB_METADATA_FIELD_PERFORMER */ 		{ G_TYPE_STRING, "performer" },
+	/* RB_METADATA_FIELD_DURATION */ 		{ G_TYPE_ULONG, "duration" },
+	/* RB_METADATA_FIELD_CODEC */	 		{ G_TYPE_STRING, "codec" },
+	/* RB_METADATA_FIELD_BITRATE */ 		{ G_TYPE_ULONG, "bitrate" },
+	/* RB_METADATA_FIELD_TRACK_GAIN */ 		{ G_TYPE_DOUBLE, "replaygain-track-gain" },
+	/* RB_METADATA_FIELD_TRACK_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-track-peak" },
+	/* RB_METADATA_FIELD_ALBUM_GAIN */ 		{ G_TYPE_DOUBLE, "replaygain-album-gain" },
+	/* RB_METADATA_FIELD_ALBUM_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-album-peak" },
+	/* RB_METADATA_FIELD_LANGUAGE_CODE */		{ G_TYPE_STRING, "language-code" }
+};
+
 GType
-rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
+rb_metadata_get_field_type (RBMetaDataField field)
 {
-	GHashTable *map = g_object_get_data (G_OBJECT (md),
-					     "rb-metadata-field-type-map");
-	
-	if (!map) {
-		map = g_hash_table_new (g_direct_hash, g_direct_equal);
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TITLE),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ARTIST),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ALBUM),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DATE),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_GENRE),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_COMMENT),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_MAX_TRACK_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DISC_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_MAX_DISC_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DESCRIPTION),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_VERSION),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ISRC),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ORGANIZATION),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_COPYRIGHT),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_CONTACT),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_LICENSE),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_PERFORMER),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_CODEC),
-				     GINT_TO_POINTER (G_TYPE_STRING));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_BITRATE),
-				     GINT_TO_POINTER (G_TYPE_ULONG));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_GAIN),
-				     GINT_TO_POINTER (G_TYPE_DOUBLE));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_PEAK),
-				     GINT_TO_POINTER (G_TYPE_DOUBLE));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ALBUM_GAIN),
-				     GINT_TO_POINTER (G_TYPE_DOUBLE));
-		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ALBUM_PEAK),
-				     GINT_TO_POINTER (G_TYPE_DOUBLE));
-		g_object_set_data_full (G_OBJECT (md), "rb-metadata-field-type-map",
-					map, (GDestroyNotify) g_hash_table_destroy);
-	}
-	return GPOINTER_TO_INT (g_hash_table_lookup (map, GINT_TO_POINTER (field)));
+	g_assert (field >= 0 && field < RB_METADATA_FIELD_LAST);
+	return field_info[field].type;
+}
+
+const char *
+rb_metadata_get_field_name (RBMetaDataField field)
+{
+	g_assert (field >= 0 && field < RB_METADATA_FIELD_LAST);
+	return field_info[field].name;
 }
 
 GQuark

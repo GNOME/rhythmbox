@@ -56,6 +56,7 @@ typedef GstElement *(*RBAddTaggerElem) (GstBin *, GstElement *);
 const char * ignore_mime_types[] = {
 	"image/",
 	"text/",
+	"application/xml"
 };
 
 struct RBMetadataGstType
@@ -73,6 +74,7 @@ struct RBMetaDataPrivate
 
 	GstElement *pipeline;
 	GstElement *sink;
+	gulong typefind_cb_id;
 
 	/* Array of RBMetadataGstType */
 	GPtrArray *supported_types;
@@ -450,7 +452,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		return;
 	field = (RBMetaDataField) tem;
 
-	type = rb_metadata_get_field_type (md, field);
+	type = rb_metadata_get_field_type (field);
 	val = gst_tag_list_get_value_index (list, tag, 0);
 	newval = g_new0 (GValue, 1);
 	g_value_init (newval, type);
@@ -562,6 +564,8 @@ rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *c
 		md->priv->type = g_strdup (gst_structure_get_name (gst_caps_get_structure (caps, 0)));
 		rb_debug ("found type %s", md->priv->type);
 	}
+
+	g_signal_handler_disconnect (typefind, md->priv->typefind_cb_id);
 }
 
 
@@ -813,7 +817,11 @@ rb_metadata_load (RBMetaData *md,
  	 */
  	typefind = gst_bin_get_by_name (GST_BIN (decodebin), "typefind");
  	g_assert (typefind != NULL);
- 	g_signal_connect_object (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md, 0);
+	md->priv->typefind_cb_id = g_signal_connect_object (typefind, 
+							    "have_type", 
+							    G_CALLBACK (rb_metadata_gst_typefind_cb), 
+							    md, 
+							    0);
  
  	gst_element_link (urisrc, decodebin);
 
@@ -1216,7 +1224,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 		return FALSE;
 	}
 
-	type = rb_metadata_get_field_type (md, field);
+	type = rb_metadata_get_field_type (field);
 	g_return_val_if_fail (type == G_VALUE_TYPE (val), FALSE);
 
 	newval = g_new0 (GValue, 1);
