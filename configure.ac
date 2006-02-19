@@ -684,6 +684,9 @@ fi
 dnl Enable gtk-doc
 GTK_DOC_CHECK(1.4)
 
+dnl Enable gnome-doc-utils
+GNOME_DOC_INIT
+
 AC_OUTPUT([ 
 Makefile
 macros/Makefile
@@ -706,8 +709,6 @@ data/rhythmbox.pc
 sources/Makefile
 daapsharing/Makefile
 help/Makefile
-help/C/Makefile
-help/ja/Makefile
 po/Makefile.in
 tests/Makefile
 doc/Makefile
