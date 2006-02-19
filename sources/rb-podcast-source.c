@@ -205,6 +205,8 @@ static RBShell *rb_podcast_source_get_shell		(RBPodcastSource *source);
 static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 						  RhythmDBEntry *entry,
 						  RBPodcastSource *source);
+static void rb_podcast_source_cmd_new_podcast	 (GtkAction *action,
+						  RBPodcastSource *source);
 
 
 
@@ -276,6 +278,10 @@ struct RBPodcastSourcePrivate
 
 static GtkActionEntry rb_podcast_source_actions [] =
 {
+	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), "<control>P",
+	  N_("Subscribe to a new Podcast Feed"),
+	  G_CALLBACK (rb_podcast_source_cmd_new_podcast) },
+
 	{ "PodcastSrcDownloadPost", NULL, N_("Download _Episode"), NULL,
 	  N_("Download Podcast Episode"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
@@ -1825,6 +1831,22 @@ impl_get_ui_actions (RBSource *source)
 	GList *actions = NULL;
 
 	actions = g_list_prepend (actions, "PodcastUpdateAllFeeds");
+	actions = g_list_prepend (actions, "MusicNewPodcast");
 
 	return actions;
 }
+
+static void
+rb_podcast_source_cmd_new_podcast (GtkAction *action,
+				   RBPodcastSource *source)
+{
+	GtkWidget *dialog;
+	GObject *object;
+	
+	rb_debug ("Got new podcast command");
+	g_object_get (G_OBJECT (source), "podcast-manager", &object, NULL);
+	dialog = rb_new_podcast_dialog_new (RB_PODCAST_MANAGER (object));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+}
+

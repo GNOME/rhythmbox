@@ -79,7 +79,6 @@
 #endif /* WITH_DAAP_SUPPORT */
 #include "rb-load-failure-dialog.h"
 #include "rb-iradio-source.h"
-#include "rb-new-podcast-dialog.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "rb-static-playlist-source.h"
@@ -180,8 +179,6 @@ static void rb_shell_cmd_add_folder_to_library (GtkAction *action,
 						RBShell *shell);
 static void rb_shell_cmd_add_file_to_library (GtkAction *action,
 					      RBShell *shell);
-static void rb_shell_cmd_new_podcast (GtkAction *action,
-				      RBShell *shell);
 
 static void rb_shell_cmd_extract_cd (GtkAction *action,
 				     RBShell *shell);
@@ -439,10 +436,6 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "View", NULL, N_("_View") },
 	{ "Control", NULL, N_("_Control") },
 	{ "Help", NULL, N_("_Help") },
-
-	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), "<control>P",
-	  N_("Subscribe to a new Podcast Feed"),
-	  G_CALLBACK (rb_shell_cmd_new_podcast) },
 
 	{ "MusicImportFolder", GTK_STOCK_DIRECTORY, N_("_Import Folder..."), "<control>O",
 	  N_("Choose folder to be added to the Library"),
@@ -2249,22 +2242,6 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 				 G_CALLBACK (add_to_library_response_cb),
 				 shell, 0);
 }
-
-
-static void
-rb_shell_cmd_new_podcast (GtkAction *action,
-			  RBShell *shell)
-{
-	GtkWidget *dialog;
-	GObject *object;
-	
-	rb_debug ("Got new podcast command");
-	g_object_get (G_OBJECT (shell->priv->podcast_source), "podcast-manager", &object, NULL);
-	dialog = rb_new_podcast_dialog_new (RB_PODCAST_MANAGER (object));
-	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-}
-
 
 static void
 rb_shell_cmd_extract_cd (GtkAction *action,

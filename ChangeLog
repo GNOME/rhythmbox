@@ -1,3 +1,11 @@
+2006-02-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell.c: (rb_shell_cmd_add_file_to_library):
+	* sources/rb-podcast-source.c: (impl_get_ui_actions),
+	(rb_podcast_source_cmd_new_podcast):
+	Move 'new podcast' action to the podcast source, and add it to the
+	toolbar.  Fixes #331562.
+
 2006-02-19  James Livingston  <jrl@ids.org.au>
 
 	* data/ui/rhythmbox-ui.xml: Move add-to-queue to the top of the context
