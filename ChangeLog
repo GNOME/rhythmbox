@@ -1,3 +1,8 @@
+2006-02-19  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-play-order.c: (default_playing_entry_removed): don't crash
+	when deleting last entry. Fixes bug 331712.
+
 2006-02-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_class_init),

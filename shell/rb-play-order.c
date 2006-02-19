@@ -625,12 +625,19 @@ default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 			break;
 		case RB_SOURCE_EOF_NEXT:
 			{
-				DoNextIdleData *data = g_new0 (DoNextIdleData, 1);
+				RhythmDBEntry *entry;
+
+				entry = rb_play_order_get_next (porder);
+				if (entry != NULL) {
+					DoNextIdleData *data = g_new0 (DoNextIdleData, 1);
 				
-				/* go to next song, do in an idle function so that other handler run first */
-				data->player = player;
-				data->entry = rb_play_order_get_next (porder);
-				g_idle_add_full (G_PRIORITY_HIGH_IDLE, (GSourceFunc)do_next_idle_cb, data, NULL);
+					/* go to next song, do in an idle function so that other handler run first */
+					data->player = player;
+					data->entry = entry;
+					g_idle_add_full (G_PRIORITY_HIGH_IDLE, (GSourceFunc)do_next_idle_cb, data, NULL);
+				} else {
+					rb_shell_player_set_playing_source (player, NULL);
+				}
 				break;
 			}
 		}
