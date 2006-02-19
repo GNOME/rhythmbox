@@ -96,8 +96,8 @@
   </popup>
 
   <popup name="LibraryViewPopup">
-    <menuitem name="CopyLibraryPopup" action="EditCopy"/>
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
+    <menuitem name="CopyLibraryPopup" action="EditCopy"/>
     <separator/>
     <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
     <menuitem name="MovetoTrashPopup" action="EditMovetoTrash"/>
@@ -110,10 +110,10 @@
   </popup>
 
   <popup name="PlaylistViewPopup">
+    <menuitem name="AddToQueuePlaylistPopup" action="AddToQueue"/>
     <menuitem name="CopyPlaylistPopup" action="EditCopy"/>
     <menuitem name="CutPlaylistPopup" action="EditCut"/>
     <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
-    <menuitem name="AddToQueuePlaylistPopup" action="AddToQueue"/>
     <separator/>
     <menuitem name="MovetoTrashPlaylistPopup" action="EditMovetoTrash"/>
     <separator/>
@@ -166,6 +166,7 @@
     <menuitem name="DownloadPodcastPopup" action="PodcastSrcDownloadPost"/>
     <menuitem name="CancelDownloadPopup" action="PodcastSrcCancelDownload"/>
     <menuitem name="DeletePodcastPopup" action="EditDelete"/>
+    <separator/>
     <menuitem name="AddToQueuePodcastPopup" action="AddToQueue"/>
     <separator/>
     <menuitem name="PropertiesPodcastPopup" action="MusicProperties"/>
