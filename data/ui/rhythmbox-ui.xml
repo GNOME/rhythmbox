@@ -133,6 +133,12 @@
     <menuitem name="PropertiesPlaylistPopup" action="QueueMusicProperties"/>
   </popup>
 
+  <popup name="QueueSourcePopup">
+    <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
+    <separator/>
+    <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
+  </popup>
+
   <popup name="SourceListPopup">
     <menuitem name="SourceListPopupNewPlaylist" action="MusicPlaylistNewPlaylist"/>
     <menuitem name="SourceListPopupNewAutomaticPlaylist" action="MusicPlaylistNewAutomaticPlaylist"/>

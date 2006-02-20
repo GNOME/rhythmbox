@@ -62,9 +62,11 @@ static void impl_save_contents_to_xml (RBPlaylistSource *source,
 static void rb_play_queue_source_cmd_clear (GtkAction *action,
 					    RBPlayQueueSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
+static gboolean impl_show_popup (RBSource *asource);
 
 #define PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH "/QueuePlaylistViewPopup"
 #define PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH "/QueueSidebarViewPopup"
+#define PLAY_QUEUE_SOURCE_POPUP_PATH "/QueueSourcePopup"
 
 typedef struct _RBPlayQueueSourcePrivate RBPlayQueueSourcePrivate;
 
@@ -105,6 +107,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_show_popup = impl_show_popup;
 
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
@@ -364,6 +367,13 @@ rb_play_queue_source_cmd_clear (GtkAction *action,
 		if (entry)
 			rhythmdb_query_model_remove_entry (model, entry);
 	}
+}
+
+static gboolean
+impl_show_popup (RBSource *asource)
+{
+	_rb_source_show_popup (asource, PLAY_QUEUE_SOURCE_POPUP_PATH);
+	return TRUE;
 }
 
 static GList *

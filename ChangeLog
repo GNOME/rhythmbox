@@ -1,5 +1,16 @@
 2006-02-20  James Livingston  <jrl@ids.org.au>
 
+	* data/ui/rhythmbox-ui.xml:
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_class_init),
+	(rb_play_queue_source_cmd_clear), (impl_show_popup): don't display
+	playlist things in the queue popup source. From 330490.
+
+	* widgets/rb-song-info.c: (rb_song_info_sync_entries): fix mistake in
+	previous commit
+
+2006-02-20  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-song-info.c: (rb_song_info_response_cb),
 	(rb_song_info_sync_entry_single), (rb_song_info_sync_entries): don't
 	attempt to sync data for non-editable entries when using
