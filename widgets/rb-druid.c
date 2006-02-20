@@ -59,14 +59,13 @@ struct RBDruidPrivate
 	RhythmDB *db;
 	GnomeDruid *druid;
 
-	GtkWidget *window;
 	GtkWidget *page2_vbox;
 	GtkWidget *browse_button;
 	GtkWidget *page2_skip_radiobutton;
 	GtkWidget *path_entry;
 };
 
-G_DEFINE_TYPE (RBDruid, rb_druid, G_TYPE_OBJECT)
+G_DEFINE_TYPE (RBDruid, rb_druid, GTK_TYPE_DIALOG)
 #define RB_DRUID_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DRUID, RBDruidPrivate))
 
 enum
@@ -135,9 +134,6 @@ rb_druid_finalize (GObject *object)
 
 	g_return_if_fail (druid->priv != NULL);
 
-	if (druid->priv->window)
-		gtk_widget_destroy (GTK_WIDGET (druid->priv->window));
-
 	G_OBJECT_CLASS (rb_druid_parent_class)->finalize (object);
 }
 
@@ -185,15 +181,13 @@ rb_druid_init_widgets (RBDruid *druid)
 	GnomeDruidPage *page;
 
 	g_return_if_fail (RB_IS_DRUID (druid));
-	g_return_if_fail (druid->priv->window == NULL);
 	
-	druid->priv->window = gtk_dialog_new ();
-	gtk_window_set_title (GTK_WINDOW (druid->priv->window),_("Rhythmbox"));
-	gtk_window_set_modal (GTK_WINDOW (druid->priv->window), TRUE);
+	gtk_window_set_title (GTK_WINDOW (druid),_("Rhythmbox"));
+	gtk_window_set_modal (GTK_WINDOW (druid), TRUE);
 
 	druid->priv->druid = GNOME_DRUID (gnome_druid_new ());
 	gtk_widget_show (GTK_WIDGET (druid->priv->druid));
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (druid->priv->window)->vbox),
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (druid)->vbox),
 			   GTK_WIDGET (druid->priv->druid));
 	gnome_druid_set_show_help (druid->priv->druid, FALSE);
 
@@ -293,22 +287,13 @@ rb_druid_browse_clicked_cb (GtkButton *button, RBDruid *druid)
 	rb_debug ("browse");
 
 	dialog = rb_file_chooser_new (_("Load folder into Library"),
-				      GTK_WINDOW (druid->priv->window),
+				      GTK_WINDOW (druid),
 				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
 				      FALSE);
 	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (path_dialog_response_cb), druid, 0);
-}
-
-void
-rb_druid_show (RBDruid *druid)
-{
-	g_return_if_fail (RB_IS_DRUID (druid));
-	rb_debug ("showing druid");
-
-	gtk_dialog_run (GTK_DIALOG (druid->priv->window));
 }
 
 static void
@@ -372,7 +357,7 @@ static void
 do_response (RBDruid *druid)
 {
 	g_return_if_fail (RB_IS_DRUID (druid));
-	gtk_dialog_response (GTK_DIALOG (druid->priv->window), GTK_RESPONSE_OK);
+	gtk_dialog_response (GTK_DIALOG (druid), GTK_RESPONSE_OK);
 }	
 
 static void

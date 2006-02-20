@@ -1,5 +1,15 @@
 2006-02-21  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_player_volume_changed_cb), (rb_shell_druid_response_cb):
+	* widgets/rb-druid.c: (rb_druid_finalize), (rb_druid_init_widgets),
+	(rb_druid_browse_clicked_cb), (do_response):
+	* widgets/rb-druid.h: Make running the druid not block RBShell
+	starting up. This is required so that bonobo registration doesn't time
+	out. Fixed bug 318766.
+
+2006-02-21  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb-property-model.c:
 	(rhythmdb_property_model_entry_removed_cb): remove the entry from the
 	hash table after using it, not before. Fixed bug 331922.

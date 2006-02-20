@@ -147,6 +147,9 @@ static void rb_shell_db_entry_added_cb (RhythmDB *db,
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
+static void rb_shell_druid_response_cb (GtkDialog *druid,
+					guint response,
+					 RBShell *shell);
 
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
@@ -1311,12 +1314,13 @@ rb_shell_constructor (GType type,
 		RBDruid *druid;
 		shell->priv->show_db_errors = TRUE;
 		druid = rb_druid_new (shell->priv->db);
-		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
-		rb_druid_show (druid);
-		g_object_unref (G_OBJECT (druid));
-	}
+		g_signal_connect (G_OBJECT (druid),
+				  "response",
+				  G_CALLBACK (rb_shell_druid_response_cb),
+				  shell);
 
-	gtk_widget_show (GTK_WIDGET (shell->priv->window));
+		gtk_widget_show_all (GTK_WIDGET (druid));
+	}
 
 	return G_OBJECT (shell);
 }
@@ -3424,5 +3428,14 @@ rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 				       volume);
 	shell->priv->syncing_volume = FALSE;
 
+}
+
+static void
+rb_shell_druid_response_cb (GtkDialog *druid,
+			    guint response,
+			    RBShell *shell)
+{
+	gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
+	gtk_widget_destroy (GTK_WIDGET (druid));
 }
 

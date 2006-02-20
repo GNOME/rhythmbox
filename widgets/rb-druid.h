@@ -39,21 +39,19 @@ typedef struct RBDruidPrivate RBDruidPrivate;
 
 typedef struct
 {
-	GObject parent;
+	GtkDialog parent;
 
 	RBDruidPrivate *priv;
 } RBDruid;
 
 typedef struct
 {
-	GObjectClass parent_class;
+	GtkDialogClass parent_class;
 } RBDruidClass;
 
 GType			rb_druid_get_type	(void);
 
 RBDruid *		rb_druid_new		(RhythmDB *db);
-
-void			rb_druid_show		(RBDruid *druid);
 
 G_END_DECLS
 
