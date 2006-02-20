@@ -1,3 +1,11 @@
+2006-02-20  James Livingston  <jrl@ids.org.au>
+
+	* widgets/rb-song-info.c: (rb_song_info_response_cb),
+	(rb_song_info_sync_entry_single), (rb_song_info_sync_entries): don't
+	attempt to sync data for non-editable entries when using
+	next/previous. Don't write our Year if it wasn't changed. Fixes bug
+	331762.
+
 2006-02-19  Luca Ferretti  <elle.uca@libero.it>
 
 	* .cvsignore:

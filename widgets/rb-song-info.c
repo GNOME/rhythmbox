@@ -606,8 +606,7 @@ rb_song_info_response_cb (GtkDialog *dialog,
 			  RBSongInfo *song_info)
 {
 	if (response_id == GTK_RESPONSE_CLOSE) {
-		if (song_info->priv->editable)
-			rb_song_info_sync_entries (RB_SONG_INFO (dialog));
+		rb_song_info_sync_entries (RB_SONG_INFO (dialog));
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 	}
 }
@@ -1207,7 +1206,8 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	year = g_ascii_strtoull (year_str, &endptr, 10);
 	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
 	if ((endptr != year_str) && 
-	    (year > 0 || year != entry_val)) {
+	    (year != entry_val || 
+	     (entry_val == 0 && year > 0))) {
 		GDate *date = NULL;
 	
 		if (year > 0) {
@@ -1296,6 +1296,9 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 static void
 rb_song_info_sync_entries (RBSongInfo *dialog)
 {
+	if (song_info->priv->editable)
+		return;
+
 	if (dialog->priv->current_entry)
 		rb_song_info_sync_entry_single (dialog);
 	else
