@@ -40,6 +40,13 @@ G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_O
 			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
 					      rhythmdb_property_model_drag_source_init))
 
+typedef struct {
+	RBRefString *string;
+	RBRefString *sort_string;
+	guint refcount;
+} RhythmDBPropertyModelEntry;
+
+
 static void rhythmdb_property_model_finalize (GObject *object);
 static void rhythmdb_property_model_set_property (GObject *object,
 					       guint prop_id,
@@ -61,7 +68,8 @@ static void rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry
 static void rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
 						      RhythmDBEntry *entry,
 						      RhythmDBPropertyModel *propmodel);
-static void rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry);
+static RhythmDBPropertyModelEntry* rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
+								   RhythmDBEntry *entry);
 static void rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 					    RhythmDBEntry *entry);
 static void rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
@@ -129,12 +137,6 @@ static GtkTargetList *rhythmdb_property_model_album_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_artist_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_genre_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_location_drag_target_list = NULL;
-
-typedef struct {
-	RBRefString *string;
-	RBRefString *sort_string;
-	guint refcount;
-} RhythmDBPropertyModelEntry;
 
 struct RhythmDBPropertyModelPrivate
 {
@@ -460,32 +462,37 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 					 RhythmDBPropertyModel *propmodel)
 {
 	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
+	RhythmDBPropertyModelEntry *prop;
 
 	if (g_hash_table_lookup (propmodel->priv->entries, entry))
 		return;
 
-	g_hash_table_insert (propmodel->priv->entries, entry, GINT_TO_POINTER (1));
 
-	rhythmdb_property_model_insert (propmodel, entry);
+	prop = rhythmdb_property_model_insert (propmodel, entry);
+	g_hash_table_insert (propmodel->priv->entries, entry, prop);
+
 	rhythmdb_property_model_sync (propmodel);
 }
 
 static void
 rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-					 RhythmDBPropType prop, const GValue *old,
+					 RhythmDBPropType propid, const GValue *old,
 					 const GValue *new,
 					 RhythmDBPropertyModel *propmodel)
 {
-	if (prop == RHYTHMDB_PROP_HIDDEN) {
+	if (propid == RHYTHMDB_PROP_HIDDEN) {
 		gboolean old_val = g_value_get_boolean (old);
 		gboolean new_val = g_value_get_boolean (new);
 
 		if (old_val != new_val) {
 			if (new_val == FALSE) {
+				RhythmDBPropertyModelEntry *prop;
+
 				if (g_hash_table_lookup (propmodel->priv->entries, entry) != NULL)
 					return;
 
-				rhythmdb_property_model_insert (propmodel, entry);
+				prop = rhythmdb_property_model_insert (propmodel, entry);
+				g_hash_table_insert (propmodel->priv->entries, entry, prop);
 			} else {
 				if (g_hash_table_lookup (propmodel->priv->entries, entry) == NULL)
 					return;
@@ -494,14 +501,17 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 			}
 		}
 	} else {
-		if (prop != propmodel->priv->propid)
+		RhythmDBPropertyModelEntry *prop;
+		
+		if (propid != propmodel->priv->propid)
 			return;
 
 		if (g_hash_table_lookup (propmodel->priv->entries, entry) == NULL)
 			return;
 
-		rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
-		rhythmdb_property_model_insert (propmodel, entry);
+		rhythmdb_property_model_delete (propmodel, entry);
+		prop = rhythmdb_property_model_insert (propmodel, entry);
+		g_hash_table_insert (propmodel->priv->entries, entry, prop);
 	}
 
 	rhythmdb_property_model_sync (propmodel);
@@ -532,7 +542,7 @@ rhythmdb_property_model_compare (RhythmDBPropertyModelEntry *a, RhythmDBProperty
 	return strcmp (a_str, b_str);
 }
 
-static void
+static RhythmDBPropertyModelEntry *
 rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry)
 {
 	RhythmDBPropertyModelEntry *prop;
@@ -549,7 +559,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 		prop = g_sequence_ptr_get_data (ptr);
 		prop->refcount++;
 		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
-		return;
+		return prop;
 	}
 	rb_debug ("adding new property \"%s\"", propstr);
 
@@ -570,15 +580,19 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
+
+	return prop;
 }
 
 static void
 rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 				RhythmDBEntry *entry)
 {
+	RhythmDBPropertyModelEntry *prop;
 	const char *propstr;
 
-	propstr = rhythmdb_entry_get_string (entry, model->priv->propid);
+	prop = g_hash_table_lookup (model->priv->entries, entry);
+	propstr = rb_refstring_get (prop->string);
 	rhythmdb_property_model_delete_prop (model, propstr);
 }
 	

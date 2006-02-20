@@ -1,5 +1,15 @@
 2006-02-20  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_row_inserted_cb),
+	(rhythmdb_property_model_prop_changed_cb),
+	(rhythmdb_property_model_insert), (rhythmdb_property_model_delete):
+	store the roperty value in the entry-mapping table, so that receiving
+	the remove signal from a query model before we get notified of a
+	change doesn't cause a crash. Fixes bug 331770.
+
+2006-02-20  James Livingston  <jrl@ids.org.au>
+
 	* data/ui/rhythmbox-ui.xml:
 	* sources/rb-play-queue-source.c:
 	(rb_play_queue_source_class_init),
