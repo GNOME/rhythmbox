@@ -525,9 +525,8 @@ rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
 	if (g_hash_table_lookup (propmodel->priv->entries, entry) == NULL)
 		return;
 
-	g_hash_table_remove (propmodel->priv->entries, entry);
-
 	rhythmdb_property_model_delete (propmodel, entry);
+	g_hash_table_remove (propmodel->priv->entries, entry);
 	rhythmdb_property_model_sync (propmodel);
 }
 
