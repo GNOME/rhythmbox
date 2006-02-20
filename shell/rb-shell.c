@@ -1765,9 +1765,11 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 				RBShell *shell)
 {
 	rb_debug ("playing from queue changed");
-	/* show queue as playing source, selected source as 'paused' */
-	rb_sourcelist_preempt_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
-					      from_queue ? RB_SOURCE (shell->priv->queue_source) : NULL);
+	if (!shell->priv->queue_as_sidebar) {
+		/* show queue as playing source, selected source as 'paused' */
+		rb_sourcelist_preempt_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
+						      from_queue ? RB_SOURCE (shell->priv->queue_source) : NULL);
+	}
 }
 
 static void
@@ -2015,6 +2017,14 @@ rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 	    shell->priv->selected_source == RB_SOURCE (shell->priv->queue_source)) {
 		/* queue no longer exists as a source, so change to the library */
 		rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
+	}
+
+	if (rb_shell_player_get_playing_source (shell->priv->player_shell) == RB_SOURCE (shell->priv->queue_source)) {
+		/* for queue as sidebar, show the preempted source as playing;
+		 * otherwise, show the queue as playing.
+		 */
+		rb_sourcelist_preempt_playing_source (RB_SOURCELIST (shell->priv->sourcelist), 
+								     shell->priv->queue_as_sidebar ? NULL : RB_SOURCE (shell->priv->queue_source));
 	}
 	
 	rb_shell_sync_pane_visibility (shell);

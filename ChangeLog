@@ -1,3 +1,11 @@
+2006-02-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell.c: (rb_shell_playing_from_queue_cb),
+	(rb_shell_view_queue_as_sidebar_changed_cb):
+	When playing from the queue, only attempt to highlight the queue
+	source in the source list if it's actually visible there.  Otherwise,
+	leave the preempted source highlighted.  Mostly fixes #330819.
+
 2006-02-20  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-property-model.c:
