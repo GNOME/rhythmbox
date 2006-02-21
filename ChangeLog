@@ -1,3 +1,8 @@
+2006-02-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/test-metadata.c: (load_metadata_cb):
+	Fix compile warning for ignoring return value from getcwd, #332064.
+
 2006-02-21  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-playlist-manager.c: (edit_auto_playlist_response_cb),

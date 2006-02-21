@@ -69,8 +69,8 @@ load_metadata_cb (gpointer file)
 			uri = g_strdup_printf ("file://%s", uri);
 		} else {
 			char buf[600];
-			getcwd (buf, sizeof (buf));
-			uri = g_strdup_printf ("file://%s/%s", buf, uri);
+			if (getcwd (buf, sizeof (buf)) != NULL)
+				uri = g_strdup_printf ("file://%s/%s", buf, uri);
 		}
 	}
 	printf ("%s\n", (const char *)uri);
