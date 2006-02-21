@@ -1,5 +1,14 @@
 2006-02-21  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_constructor):
+	* widgets/rb-header.c: (rb_header_init), (rb_header_set_urldata),
+	(rb_header_set_show_artist_album):
+	* widgets/rb-song-display-box.c: (rb_song_display_box_init),
+	(rb_song_display_box_sync): make the queue sidebar and song display
+	not get affected by gtk_widget_show_all. Fixes bug 332001.
+
+2006-02-21  James Livingston  <jrl@ids.org.au>
+
 	Patch by: Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): add support for

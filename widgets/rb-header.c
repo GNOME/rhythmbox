@@ -235,6 +235,8 @@ rb_header_init (RBHeader *header)
 	header->priv->url = (GnomeHRef *) gnome_href_new ("", "");
 	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (header->priv->url), FALSE, TRUE, 0);
 	header->priv->urlline_shown = FALSE;
+	gtk_widget_show (header->priv->urlline);
+	gtk_widget_set_no_show_all (header->priv->urlline, TRUE);
 
 	/* construct the time display */
 	header->priv->timeline = gtk_hbox_new (FALSE, 3);
@@ -481,7 +483,7 @@ rb_header_set_urldata (RBHeader *player,
 		      "urllink", urllink, NULL);
 
 	if (show)
-		gtk_widget_show_all (player->priv->urlline);
+		gtk_widget_show (player->priv->urlline);
 	else
 		gtk_widget_hide (player->priv->urlline);
 }
@@ -496,7 +498,7 @@ rb_header_set_show_artist_album (RBHeader *player,
 	player->priv->displaybox_shown = show;
 
 	if (show)
-		gtk_widget_show_all (GTK_WIDGET (player->priv->displaybox));
+		gtk_widget_show (GTK_WIDGET (player->priv->displaybox));
 	else
 		gtk_widget_hide (GTK_WIDGET (player->priv->displaybox));
 }

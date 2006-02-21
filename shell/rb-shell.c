@@ -1100,6 +1100,7 @@ rb_shell_constructor (GType type,
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->queue_source), NULL);
 	g_object_get (G_OBJECT (shell->priv->queue_source), "sidebar", &shell->priv->queue_sidebar, NULL);
 	gtk_widget_show_all (shell->priv->queue_sidebar);
+	gtk_widget_set_no_show_all (shell->priv->queue_sidebar, TRUE);
 
 	/* set up sidebars */
 	shell->priv->paned = gtk_hpaned_new ();

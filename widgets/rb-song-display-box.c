@@ -92,6 +92,7 @@ rb_song_display_box_init (RBSongDisplayBox *displaybox)
 
 	displaybox->priv = RB_SONG_DISPLAY_BOX_GET_PRIVATE (displaybox);
 
+
 	box = GTK_BOX (displaybox);
 	box->spacing = 0;
 	box->homogeneous = FALSE;
@@ -110,6 +111,11 @@ rb_song_display_box_init (RBSongDisplayBox *displaybox)
 			    FALSE, FALSE, 0);
 	gtk_box_pack_start (box, displaybox->priv->artist, 
 			    FALSE, FALSE, 0);
+
+	gtk_widget_set_no_show_all (displaybox->priv->from, TRUE);
+	gtk_widget_set_no_show_all (displaybox->priv->album, TRUE);
+	gtk_widget_set_no_show_all (displaybox->priv->by, TRUE);
+	gtk_widget_set_no_show_all (displaybox->priv->artist, TRUE);
 
 	displaybox->priv->artist_tips = gtk_tooltips_new ();
 	displaybox->priv->album_tips = gtk_tooltips_new ();
@@ -306,8 +312,18 @@ rb_song_display_box_sync (RBSongDisplayBox *displaybox, RhythmDBEntry *entry)
 	const char *album, *artist; 
 	char *tmp;
 
-	if (entry == NULL)
+	if (entry == NULL) {
+		gtk_widget_hide (displaybox->priv->from);
+		gtk_widget_hide (displaybox->priv->album);
+		gtk_widget_hide (displaybox->priv->by);
+		gtk_widget_hide (displaybox->priv->artist);
 		return;
+	}
+	
+	gtk_widget_show (displaybox->priv->from);
+	gtk_widget_show (displaybox->priv->album);
+	gtk_widget_show (displaybox->priv->by);
+	gtk_widget_show (displaybox->priv->artist);
 	
 	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
