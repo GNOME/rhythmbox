@@ -1,3 +1,55 @@
+Overview of Changes in Rhythmbox 0.9.4
+======================================
+(last updated 2006-02-21)
+
+* add support for source-specific toolbar items (James Livingston: 329041)
+* make the status column blank for undownloaded podcasts (Jonathan Matthew)
+* make iradio station connect asynchronous (James Livingston:128106)
+* break mDNS class into backend-specific classes (William Jon McCann)
+* add support for password-protected DAAP shares (William Jon McCann: 322966)
+* have per-client DAAP session (William Jon McCann: 329814)
+* make DAAP source icon show authentication status (William Jon McCann: 330291)
+* turn of paranoia when playing audio cds (James Livingston: 322270)
+* use network byte-order for DAAP, fixes some issues with Banshee (Jonathan Matthew)
+* fold RBSimpleView back into RBPropertyView (James Livingston: 327500)
+* store hidden state of entries in on-disk db (James Livingston: 325215)
+* add dbus methods for static playlist control (Jonathan Matthew: 329958)
+* force URI canonicalisation when first upgrading (James Livingston: 329988)
+* add browsers to automatic playlists (James Livingston)
+* don't put drag-n-drop URIs in reverse order (Jonathan Matthew: 330283)
+* notification bubble fixed (Jonathan Matthew: 330876)
+* RhythmDB API cleanup (James Livingston, Jonathan Matthew: 330226)
+* add auto-completion to tag-editing (Sven Herzberg: )
+* add action to clear entire queue (Jonathan Matthew: 330014, 331392)
+* don't display entry notify bubble when containing "&" (Jonathan Matthew: 330784)
+* don't block UI when reading audio cd TOC (James Livingston: 329942)
+* stop polling cd drive when playing from it (James Livingston: 330716)
+* add Party Mode (William Jon McCann: 323933)
+* don't stop when playing track is deleted (James Livingston: 131150, 331712)
+* add quality column (James Livingston: 167659)
+* add "queue playlist" action (James Livingston: 330490, 330490)
+* update documentation to not be completely out-of-date (Baptiste Mille-Mathias: 314001)
+* add support for out-of-process metadata service (Jonathan Matthew: 329597)
+* port to using gnome-doc-utils (Luca Ferretti)
+* indicate pre-empted source when playing from queue (Jonathan Matthew: 330819)
+* don't block initialisation while druid is being shown (James Livingston: 318766)
+* UI updates and fixes (James Livingston, Jonathan Matthew: 331013, 331562)
+* assorted other bug fixes (Christophe Fergeau, James Livingston, Jonathan Matthew, William Jon McCann, Baptiste Mille-Mathias: 327452, 330135, 329621, 329816, 330301, 329993, 330514, 330527, 330514, 330919, 330601, 331026, 327059, 330014, 331395, 331211, 331165, 325997, 331762, 331770, 331922, others)
+
+Overview of Changes in Rhythmbox 0.9.3.1
+========================================
+
+* allow watches library to be in non-local places [James Livingston]
+* give better error messages for missing gstreamer [James Livingston]
+* emit normal warnings instead of critical ones [Jonathan Matthew: 329398]
+* fix crasher if gstreamer gives us NULL strings [Jan Schmidt]
+* use network dyte order for DAAP content codes [Jonathan Matthew]
+* fix the first-run druid and generic player support [James Livingston: 329723]
+
+Updated Translations
+--------------------
+* ca	Jordi Mallach
+
 Overview of Changes in Rhythmbox 0.9.3
 ======================================
 
