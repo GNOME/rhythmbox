@@ -1,5 +1,12 @@
 2006-02-21  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-playlist-manager.c: (edit_auto_playlist_response_cb),
+	(edit_auto_playlist_deleted_cb),
+	(rb_playlist_manager_cmd_edit_automatic_playlist): make the auto
+	playlist editor non-modal. Fixes bug 320030.
+
+2006-02-21  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_constructor):
 	* widgets/rb-header.c: (rb_header_init), (rb_header_set_urldata),
 	(rb_header_set_show_artist_album):

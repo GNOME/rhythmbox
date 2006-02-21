@@ -1101,6 +1101,33 @@ rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 	gtk_widget_destroy (GTK_WIDGET (creator));	
 }
 
+typedef struct {
+	RBAutoPlaylistSource *playlist;
+	RBPlaylistManager *mgr;
+	RBQueryCreator *creator;
+} EditAutoPlaylistData;
+
+static void
+edit_auto_playlist_response_cb (RBQueryCreator *dialog,
+				gint response,
+				EditAutoPlaylistData *data)
+{
+	rb_playlist_manager_set_automatic_playlist (data->mgr, data->playlist, dialog);
+	g_object_set_data (G_OBJECT (data->playlist), "rhythmbox-playlist-editor", NULL);
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+	g_free (data);
+}
+
+static void
+edit_auto_playlist_deleted_cb (RBAutoPlaylistSource *playlist, EditAutoPlaylistData *data)
+{
+	g_object_set_data (G_OBJECT (playlist), "rhythmbox-playlist-editor", NULL);
+
+	gtk_widget_destroy (GTK_WIDGET (data->creator));
+	g_free (data);
+}
+
 static void
 rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 						 RBPlaylistManager *mgr)
@@ -1111,20 +1138,34 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 	guint limit_count = 0, limit_size = 0, limit_time = 0;
 	const char *sort_key;
 	gint sort_direction;
-	
+	EditAutoPlaylistData *data;
 
 	playlist = RB_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source);
-	rb_auto_playlist_source_get_query (playlist, &query, &limit_count, &limit_size, &limit_time, &sort_key, &sort_direction);
+	creator = g_object_get_data (G_OBJECT (playlist), "rhythmbox-playlist-editor");
+	if (creator == NULL) {
+		rb_auto_playlist_source_get_query (playlist, &query, &limit_count, &limit_size, &limit_time, &sort_key, &sort_direction);
 
-	creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
-								     query,
-								     limit_count, limit_size, limit_time,
-								     sort_key, sort_direction));
+		creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
+									     query,
+									     limit_count, limit_size, limit_time,
+									     sort_key, sort_direction));
 
-	gtk_dialog_run (GTK_DIALOG (creator));
-
-	rb_playlist_manager_set_automatic_playlist (mgr, playlist, creator);
-	gtk_widget_destroy (GTK_WIDGET (creator));	
+		data = g_new0 (EditAutoPlaylistData, 1);
+		data->mgr = mgr;
+		data->playlist = playlist;
+		data->creator = creator;
+		g_signal_connect (G_OBJECT (creator),
+				  "response",
+				  G_CALLBACK (edit_auto_playlist_response_cb),
+				  data);
+		
+		g_object_set_data (G_OBJECT (playlist), "rhythmbox-playlist-editor", creator);
+		g_signal_connect (G_OBJECT (playlist),
+				  "deleted",
+				  G_CALLBACK (edit_auto_playlist_deleted_cb),
+				  data);
+	}
+	gtk_window_present (GTK_WINDOW (creator));
 }
 
 static gboolean
