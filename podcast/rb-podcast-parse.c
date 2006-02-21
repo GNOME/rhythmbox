@@ -520,6 +520,31 @@ rb_podcast_parse_date (const char *date_str)
 		}
 	}
 
+	/* format with timezone offset from GMT */
+	if (result == NULL) {
+		memset (&tm, 0, sizeof (struct tm));
+		result = strptime (date_str, "%a %b %d %T %z %Y", &tm);
+	}
+
+	/* format with timezone name */
+	if (result == NULL) {
+		char *tmp;
+		size_t n;
+		memset (&tm, 0, sizeof (struct tm));
+		/* match first part of time string */
+		result = strptime (date_str, "%a %b %d %T ", &tm);
+		/* look for anything with a timezone name-like format
+		   i.e. at least one all caps alphabetical character */
+		n = strspn(result, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		tmp = result+n;
+		/* make sure there was at least one character that matched */
+		if ((tmp != NULL) && n > 0) 
+			/* remaining part must be the year */
+			result = strptime (tmp, "%Y", &tm);
+		else 
+			result = NULL;
+	}
+
 	if (result == NULL) {
 		memset (&tm, 0, sizeof (struct tm));	
 		rb_debug ("unable to convert date string %s", date_str);

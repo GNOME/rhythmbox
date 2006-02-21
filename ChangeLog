@@ -1,5 +1,14 @@
 2006-02-21  James Livingston  <jrl@ids.org.au>
 
+	Patch by: Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): add support for
+	feeds which use timezone names instead of offsets. Doesn't actually
+	parse the timezone name since they are not standardised. Fixes bug
+	331691.
+
+2006-02-21  James Livingston  <jrl@ids.org.au>
+
 	* help/C/figures/rb-notification-area.png:
 	* help/C/figures/rb-sidebar.png:
 	* help/C/quick-reference.xml: remove obsolete files from CVS.
