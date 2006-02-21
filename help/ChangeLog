@@ -1,3 +1,17 @@
+2006-02-21  Luca Ferretti  <elle.uca@libero.it>
+
+	* C/rhythmbox.xml: 
+	 - remove unused entities
+	 - use entities for appversion, manversion and appname as suggested
+	   in GDP templage
+	 - put <abstract role="description"> inside </articleinfo>
+	 - add <revhistory>
+	 - remove <application> from section titles
+	 -  remove <sect2> in introduction, and put text directly in <sec1>
+	 - cosmetic changes to <sect1 id=introduction> (alignment, indent
+	   [2 chars]...)
+	 - use 2.0.1 as manrevison (2 means GNOME2, if I remember well)
+
 2006-02-19  Luca Ferretti  <elle.uca@libero.it>
 
 	* rhythmbox.omf.in: added, needed by gnome-doc-utils

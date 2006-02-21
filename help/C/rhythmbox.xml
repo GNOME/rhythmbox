@@ -1,23 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-<!ENTITY legal SYSTEM "legal.xml">
-<!ENTITY GFDL SYSTEM "fdl-appendix.xml">
-<!ENTITY appsystem "0.9">
-<!ENTITY manversion "0.1.0">
-<!ENTITY date "February 2006">
-<!ENTITY application "<application>Rhythmbox</application>">
-<!ENTITY app "Rhythmbox Music Player">
-<!ENTITY fr "<application>Rhythmbox</application>">
-<!ENTITY playlist "playlist">
-<!ENTITY mdash "---">
-<!ENTITY audio-formats "MP3, FLAC or Ogg/Vorbis">
-  <!-- Information about the entities
-	   The legal.xml file contains legal information, there is no need to edit the file. 
-	   Use the appversion entity to specify the version of the application.
-	   Use the manrevision entity to specify the revision number of this manual.
-	   Use the date entity to specify the release date of this manual.
-	   Use the fr entity to specify the name of the application. -->
+  <!ENTITY legal SYSTEM "legal.xml">
+  <!ENTITY appversion "0.9.3">
+  <!ENTITY manrevision "2.0.1">
+  <!ENTITY date "February 2006">
+  <!ENTITY app "Rhythmbox Music Player">
 ]>
 <!--
       (Do not remove this comment block.)
@@ -46,11 +34,16 @@
 <!-- please do not change the id; for translations, change lang to -->
 <!-- appropriate code -->
   <articleinfo>
-  	<title>&app; Manual</title>
+  	<title>&app; Manual V&manrevision;</title>
 	<copyright>
 		<year>2002</year>
 		<holder>Mark Finlay</holder>
 	</copyright>
+        <copyright>
+                <year>2002</year>
+                <year>2002</year>
+                <holder>Mark Humphreys</holder>
+        </copyright>
 	<copyright>
 		<year>2005</year>
 		<holder>Baptiste Mille-Mathias</holder>
@@ -70,7 +63,8 @@
 	 	<publishername>GNOME Documentation Project</publishername>
 	</publisher>
 
-   &legal;<!-- This file  contains link to license for the documentation (GNU FDL), and
+   &legal;
+   <!-- This file  contains link to license for the documentation (GNU FDL), and
    other legal stuff such as "NO WARRANTY" statement. Please do not change
    any of this. -->
    <authorgroup>
@@ -83,6 +77,14 @@
 			</affiliation>
 		</author>
 		<author>
+			<firstname>Mark</firstname>
+			<surname>Humphreys</surname>
+			<affiliation>
+				<orgname>GNOME Documentation Project</orgname>
+				<address><email>marquee@users.sourceforge.net</email></address>
+			</affiliation>
+		</author>		
+		<author role="maintainer">
 			<firstname>Baptiste</firstname>
 			<surname>Mille-Mathias</surname>
 			<affiliation>
@@ -90,12 +92,67 @@
 				<address><email>baptiste.millemathias@gmail.com</email></address>
 			</affiliation>
 		</author>
-	</authorgroup>
-	<releaseinfo>This is the &fr; User's Manual</releaseinfo>
-	</articleinfo>
-	<abstract role="description">
-	  <para>Rhythmbox is the full featured music player for GNOME Desktop.</para>
-	</abstract>
+   </authorgroup>
+
+<!-- According to GNU FDL, revision history is mandatory if you are -->
+<!-- modifying/reusing someone else's document.  If not, you can omit it. -->
+   <revhistory>
+      <revision> 
+		<revnumber>Rythmbox Music Player Manual V0.0.2</revnumber> 
+		<date>October 2002</date> 
+		<revdescription> 
+	  		<para role="author">Mark Finlay
+	  		</para>
+	  		<para role="publisher">GNOME Documentation Project</para>
+		</revdescription> 
+      </revision> 
+      <revision> 
+		<revnumber>Rythmbox Music Player Manual V0.0.3</revnumber> 
+		<date>August 2003</date> 
+		<revdescription> 
+	  		<para role="author">Mark Humphreys
+	  		</para>
+	  		<para role="publisher">GNOME Documentation Project</para>
+		</revdescription> 
+      </revision> 
+      <revision> 
+		<revnumber>Rythmbox Music Player Manual V0.0.4</revnumber> 
+		<date>October 2005</date> 
+		<revdescription> 
+	  		<para role="author">Baptiste Mille-0Mathias
+	  		</para>
+	  		<para role="publisher">GNOME Documentation Project</para>
+		</revdescription> 
+      </revision> 
+      <revision> 
+		<revnumber>&app; Manual V&manrevision;</revnumber> 
+		<date>&date;</date> 
+		<revdescription> 
+	  		<para role="author">Luca Ferretti
+	  		</para>
+	  		<para role="publisher">GNOME Documentation Project</para>
+		</revdescription> 
+      </revision> 
+    </revhistory> 
+
+    <releaseinfo>This manual describes version &appversion; of Rhythmbox Music Player.
+    </releaseinfo> 
+    <legalnotice> 
+      <title>Feedback</title> 
+      <para>To report a bug or make a suggestion regarding the &app; application or
+      this manual, follow the directions in the <ulink url="ghelp:gnome-feedback"
+	  type="help">GNOME Feedback Page</ulink>. 
+      </para>
+<!-- Translators may also add here feedback address for translations -->
+    </legalnotice> 
+
+   <abstract role="description">
+     <para>Rhythmbox is the full featured music player for GNOME Desktop.</para>
+   </abstract>
+
+  </articleinfo> 
+
+
   <indexterm zone="index">
     <primary>Rhythmbox</primary>
   </indexterm>
@@ -109,75 +166,75 @@
 <!-- ============= Introduction ============================== -->
   <sect1 id="introduction">
     <title>Introduction</title>
-    <sect2 id="about-rhythmbox">
-      <title>About &fr;</title>
-      	<para>
-   			&fr; is a music player and library for tagged files, that support
-			various music formats.
-		</para>
-      	<para>
-			Current &fr; features include:
-		</para>
+      <para>
+        <application>&app;</application> is a music player and library for
+        tagged files, that support various music formats.
+      </para>
+      <para>
+        Current <application>&app;</application> features include:</para>
       	<itemizedlist>
-        	<listitem>
-        	  	<para>Play various format music files from your tagged organized
-					Library.</para>
-        	</listitem>
-        	<listitem>
-        		<para>Display information on the songs through meta-data reading.</para>
-        	</listitem>
-        	<listitem>
-          		<para>Display songs in an organized view.</para>
-        	</listitem>
-        	<listitem>
-          		<para>Create static playlists by dragging and dropping from the Library
-					view.</para>
-        	</listitem>
-        	<listitem>
-          		<para>Create automatic playlists from criterias.</para>
-        	</listitem>
-        	<listitem>
-        		<para>Search for songs in the sources list like Library or Playlists.</para>
-        	</listitem>
-        	<listitem>
-        		<para>Listen to Internet radio stations.</para>
-        	</listitem>
-        	<listitem>
-        		<para>Read Audio CD, and retrieve information like track title from	Internet.</para>
-        	</listitem>
-        	<listitem>
-          		<para>Audio CD burning from playlists.</para>
-        	</listitem>
-      	</itemizedlist>
-    </sect2>
+          <listitem>
+            <para>Play various format music files from your tagged organized
+	    Library.</para>
+          </listitem>
+          <listitem>
+            <para>Display information on the songs through meta-data reading.</para>
+          </listitem>
+          <listitem>
+            <para>Display songs in an organized view.</para>
+          </listitem>
+          <listitem>
+            <para>Create static playlists by dragging and dropping from the
+            Library view.</para>
+          </listitem>
+          <listitem>
+            <para>Create automatic playlists from criterias.</para>
+          </listitem>
+          <listitem>
+            <para>Search for songs in the sources list like Library or
+            Playlists.</para>
+          </listitem>
+          <listitem>
+            <para>Listen to Internet radio stations.</para>
+          </listitem>
+          <listitem>
+            <para>Read Audio CD, and retrieve information like track title from
+            Internet.</para>
+          </listitem>
+          <listitem>
+            <para>Audio CD burning from playlists.</para>
+          </listitem>
+        </itemizedlist>
   </sect1>
+
+<!-- ============= Rhythmbox Window ============================== -->
   <sect1 id="rb-window">
-    <title>&fr; Window</title>
+    <title>&app; Window</title>
     <sect2 id="rb-window-intro">
       <title>Overview</title>
       	<para>
-			The &fr; window enables you to browse and play your favorite
+			The <application>&app;</application> window enables you to browse and play your favorite
 			music. <xref linkend="fig-rb-window"/> shows the interface of
-			&fr; with its main components.
+			<application>&app;</application> with its main components.
 		</para>
       	<figure id="fig-rb-window">
-        <title>The &fr; Window</title>
+        <title>The <application>&app;</application> Window</title>
         <screenshot>
           <mediaobject>
             <imageobject>
               <imagedata fileref="figures/rb-window.png" format="PNG"/>
             </imageobject>
             <textobject>
-            	<phrase>Show the &fr; window showing the different parts on the &fr; interface.
+            	<phrase>Show the <application>&app;</application> window showing the different parts on the <application>&app;</application> interface.
 						Callouts: Menubar, Player area, Browser, Source list, Statusbar.
 				</phrase>
             </textobject>
           </mediaobject>
         </screenshot>
       </figure>
-      <para>Table 1 describes the components of &fr; window.</para>
+      <para>Table 1 describes the components of <application>&app;</application> window.</para>
       <table frame="topbot" id="table-rb-window">
-        <title>&fr; Window Components</title>
+        <title><application>&app;</application> Window Components</title>
         <tgroup cols="3" colsep="0" rowsep="0">
           <colspec colname="COLSPEC0"/>
           <colspec colname="COLSPEC1"/>
@@ -194,7 +251,7 @@
               <entry valign="top">1</entry>
               <entry valign="top">Menubar</entry>
               <entry valign="top">Contains menus that you use to perform
-							tasks in &fr; window.</entry>
+							tasks in <application>&app;</application> window.</entry>
             </row>
             <row>
               <entry valign="top">2</entry>
@@ -242,8 +299,8 @@
       <para>The source list is where you can access your music library,
 			internet radio,	your playlists and audio CDs. The source list can contain	
 			the following sources:
-				<itemizedlist><listitem><para>The &fr; library, where all of the imported songs will appear.
-						</para></listitem><listitem><para>The iRadio source, with all internet radio stations.</para></listitem><listitem><para>Podcasts</para></listitem><listitem><para>All &playlist;s (normal and smart).</para></listitem><listitem><para>Audio CD's inserted into the computer's CD
+				<itemizedlist><listitem><para>The <application>&app;</application> library, where all of the imported songs will appear.
+						</para></listitem><listitem><para>The iRadio source, with all internet radio stations.</para></listitem><listitem><para>Podcasts</para></listitem><listitem><para>All playlists (normal and smart).</para></listitem><listitem><para>Audio CD's inserted into the computer's CD
 						drives.</para></listitem><listitem><para>Portable players like iPod plugged to your computer.</para></listitem><listitem><para>The DAAP Music shares discovered on the local network.</para></listitem></itemizedlist>
 	<!--
 	<screenshot>
@@ -253,7 +310,7 @@
 			format="PNG"/>
 		</imageobject>
 		<textobject>
-		<phrase>Shows source list with library and &playlist; icons.
+		<phrase>Shows source list with library and playlist icons.
 		</phrase>
 		</textobject>
 	</mediaobject>
@@ -325,10 +382,10 @@
       </screenshot>
     </sect2>
     <sect2 id="rb-window-small">
-      <title>&fr; Minimized Window</title>
+      <title><application>&app;</application> Minimized Window</title>
       <para>
-				&fr; comes with a minimized mode, this mode enables only
-				to access to the menubar and the player function of &fr;.
+				<application>&app;</application> comes with a minimized mode, this mode enables only
+				to access to the menubar and the player function of <application>&app;</application>.
 			</para>
       <para>
 				To switch to the small display, select 
@@ -347,14 +404,14 @@
     </sect2>
   </sect1>
   <sect1 id="Usage">
-    <title>Using &fr;</title>
+    <title>Using &app;</title>
     <sect2 id="Playing">
       <title>Playing Music</title>
       <para>To play a track, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Play</guimenuitem></menuchoice>, either select the track and press the
 		<guibutton>Play</guibutton> button on the toolbar, or simply
 		double-click on the track to start playing.
 		</para>
-      <para>When track ends, &fr; jumps to play next track 
+      <para>When track ends, <application>&app;</application> jumps to play next track 
 		in the list showed in view pane.
 		</para>
       <para>In Library you can play all song from an artist or a
@@ -366,7 +423,7 @@
         <title>Next/Play/Previous</title>
         <para>The <guilabel>Next</guilabel> and <guilabel>Previous</guilabel> buttons can be used to skip between tracks
  			whilst playing. If a song is currently playing, the previous button will restart the
- 			song. Clicking on the <guilabel>Play</guilabel> button will start &fr; playing the current track. 
+ 			song. Clicking on the <guilabel>Play</guilabel> button will start <application>&app;</application> playing the current track. 
 			<screenshot>
 				<mediaobject>
 					<imageobject>
@@ -574,7 +631,7 @@
 		The Internet Radio tuner can be used to listen to streamed audio files over a network, local or Internet.
 	</para>
     <figure id="fig-iradio">
-      <title>Internet Radio in &fr;</title>
+      <title>Internet Radio in <application>&app;</application></title>
       <screenshot>
         <graphic format="PNG" fileref="figures/rb-iradio-main.png"/>
       </screenshot>
@@ -940,7 +997,7 @@
     <sect2 id="cd-playing">
       <title>Playing</title>
       <para>When an Audio CD is inserted to the CD drive, it will appear in the side pane, 
-			and the songs on it can be displayed in &fr;'s main window.
+			and the songs on it can be displayed in <application>&app;</application>'s main window.
 			</para>
       <para>To play and pause playback, or to skip forward or backwards,
 			use the same controls as used for playing from the library.
@@ -984,11 +1041,11 @@
       <title>Overview</title>
       <para>
 		The Notification Area is a Gnome feature that add a small icon to the panel while the program is running;
-		this allows you to control &fr; from your tray, and received information when the Rhythmbox 
+		this allows you to control <application>&app;</application> from your tray, and received information when the Rhythmbox 
 		interface is not visible.
 		</para>
       <figure id="fig-notification-zone">
-        <title>&fr; in the Notification Zone</title>
+        <title><application>&app;</application> in the Notification Zone</title>
         <screenshot>
           <graphic format="PNG" fileref="figures/rb-notification-zone.png"/>
         </screenshot>
@@ -1006,7 +1063,7 @@
         <para>Each time, the track has changed or a podcast episode was downloaded, Rhythmbox can inform you; 
 			it displays a notification window on the desktop, containing an information.</para>
         <figure id="fig-notification-window">
-          <title>The notification window of &fr;</title>
+          <title>The notification window of <application>&app;</application></title>
           <screenshot>
             <graphic format="PNG" fileref="figures/rb-notification-window.png"/>
           </screenshot>
@@ -1021,7 +1078,7 @@
     <sect2 id="notification-control">
       <title>Control Rhythmbox</title>
       <para>
-		Using the &fr; icon in the notification area, the following commands 
+		Using the <application>&app;</application> icon in the notification area, the following commands 
 		can be sent to the application: 
 		</para>
       <figure id="fig-notification-menu">
@@ -1043,14 +1100,14 @@
           </listitem>
           <listitem>
             <para><guilabel>Show Window Player</guilabel> &mdash; choose whether
-			or not the &fr;	window is visible or not on the desktop.</para>
+			or not the <application>&app;</application>	window is visible or not on the desktop.</para>
           </listitem>
           <listitem>
             <para><guilabel>Show Notifications</guilabel> &mdash; Choose whether
-			or not &fr; notify you about song change and various information.</para>
+			or not <application>&app;</application> notify you about song change and various information.</para>
           </listitem>
           <listitem>
-            <para><guilabel>Quit</guilabel> &mdash; Quit the application &fr;.</para>
+            <para><guilabel>Quit</guilabel> &mdash; Quit the application <application>&app;</application>.</para>
           </listitem>
         </itemizedlist>
         <tip>
@@ -1064,16 +1121,16 @@
     </sect2>
   </sect1>
   <sect1 id="customize">
-    <title>Customizing &fr;</title>
+    <title>Customizing &app;</title>
     <para>
-	You can customize &fr; to suit your requirements and
-	preferences. This section describes how to customize &fr;.
+	You can customize <application>&app;</application> to suit your requirements and
+	preferences. This section describes how to customize <application>&app;</application>.
 	</para>
     <sect2 id="prefs">
       <title>Setting Your Preferences</title>
       <para>
 		Using the <guilabel>Preferences</guilabel> dialog you can
-		customize how you want &fr; to look and behave. To display the
+		customize how you want <application>&app;</application> to look and behave. To display the
 		<guilabel>Preferences</guilabel> dialog, choose 
 		<menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice>.
 		</para>
@@ -1081,7 +1138,7 @@
       	<title>General</title>
       	<para>
 			Choose the <guilabel>Visible Columns</guilabel> you want to
-			display in &fr;. This option is global and affects the
+			display in <application>&app;</application>. This option is global and affects the
 			following sources:
 			<itemizedlist>
 				<listitem><para>Library</para></listitem>
@@ -1104,8 +1161,8 @@
           <listitem>
             <para>
 				The <guilabel>Library Location</guilabel> is a folder
-				that &fr; will monitor to find new songs. When you add new audio files in this folder
-				or its sub-folders with the file browser (like Nautilus), &fr; 
+				that <application>&app;</application> will monitor to find new songs. When you add new audio files in this folder
+				or its sub-folders with the file browser (like Nautilus), <application>&app;</application> 
 				will detect them and they will be added automatically in the Library.
 			</para>
             <warning>
@@ -1144,7 +1201,7 @@
           </listitem>
           <listitem>
             <para>
-				Choose the frequency that &fr; will check for new
+				Choose the frequency that <application>&app;</application> will check for new
 				podcast episodes.
 			</para>
           </listitem>
@@ -1153,7 +1210,7 @@
       <sect3 id="prefs-sharing">
         <title>Sharing</title>
         <para>Rhythmbox can share your Library contents over your Local Area
-			Network, to other &fr; and Apple iTunes users.</para>
+			Network, to other <application>&app;</application> and Apple iTunes users.</para>
         <itemizedlist>
           <listitem>
             <para>Select <guilabel>Share my music</guilabel> to enable
@@ -1189,7 +1246,7 @@
         </warning>
         <para>
 			Select <guilabel>Enable AudioScrobbler</guilabel> to allow AudioScrobbler to collect
-			and send data about the songs played in &fr;, and enter	your last.fm 
+			and send data about the songs played in <application>&app;</application>, and enter	your last.fm 
 			<guilabel>Username</guilabel> and <guilabel>password</guilabel>.
 		</para>
       </sect3>
@@ -1415,7 +1472,7 @@
                 </keycombo>
               </entry>
               <entry>
-                <para>Close &fr; window</para>
+                <para>Close <application>&app;</application> window</para>
               </entry>
             </row>
             <row>
@@ -1426,7 +1483,7 @@
                 </keycombo>
               </entry>
               <entry>
-                <para>Quit &fr;</para>
+                <para>Quit <application>&app;</application></para>
               </entry>
             </row>
             <row>
@@ -1512,7 +1569,7 @@
     </sect2>
     <sect2 id="multimedia-keys">
       <title>Multimedia Keys</title>
-      <para>&fr; supports also the keys on multimedia keyboard, if your
+      <para><application>&app;</application> supports also the keys on multimedia keyboard, if your
   		desktop environment is configured.</para>
       <table frame="none">
 	  	<title>Window Shortcuts</title>
