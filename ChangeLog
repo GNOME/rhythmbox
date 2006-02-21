@@ -1,5 +1,21 @@
 2006-02-21  James Livingston  <jrl@ids.org.au>
 
+	* help/C/figures/rb-notification-area.png:
+	* help/C/figures/rb-sidebar.png:
+	* help/C/quick-reference.xml: remove obsolete files from CVS.
+
+	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery):
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_parse_valist),
+	(rhythmdb_query_free), (rhythmdb_query_serialize),
+	(rhythmdb_query_deserialize), (rhythmdb_query_get_type):
+	* rhythmdb/rhythmdb.h: Add operators for string prefix and suffix.
+
+	* widgets/rb-query-creator-properties.c: add prefix and suffix
+	(escapedStringCriteriaGetWidgetData): use better escaping, so it
+	doesn't escape the ':' separator in uris.
+
+2006-02-21  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_constructor): ensure the window is shown
 	on startup.
 

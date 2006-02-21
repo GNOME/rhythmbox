@@ -116,7 +116,9 @@ const RBQueryCreatorCriteriaOption string_criteria_options[] =
 {
 	{ N_("contains"), 0, RHYTHMDB_QUERY_PROP_LIKE },
 	{ N_("does not contain"), 0, RHYTHMDB_QUERY_PROP_NOT_LIKE },
-	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS }
+	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
+	{ N_("starts with"), 0, RHYTHMDB_QUERY_PROP_PREFIX },
+	{ N_("ends with"), 0, RHYTHMDB_QUERY_PROP_SUFFIX },
 };
 
 const RBQueryCreatorPropertyType string_property_type =
@@ -284,7 +286,7 @@ escapedStringCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 static void
 escapedStringCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 {
-	char *text = gnome_vfs_escape_path_string (gtk_entry_get_text (GTK_ENTRY (widget)));
+	char *text = gnome_vfs_escape_host_and_path_string (gtk_entry_get_text (GTK_ENTRY (widget)));
 
 	g_value_init (val, G_TYPE_STRING);
 	g_value_set_string (val, text);

@@ -54,6 +54,8 @@
 #define RB_PARSE_LIKE (xmlChar *) "like"
 #define RB_PARSE_PROP (xmlChar *) "prop"
 #define RB_PARSE_NOT_LIKE (xmlChar *) "not-like"
+#define RB_PARSE_PREFIX (xmlChar *) "prefix"
+#define RB_PARSE_SUFFIX (xmlChar *) "suffix"
 #define RB_PARSE_EQUALS (xmlChar *) "equals"
 #define RB_PARSE_DISJ (xmlChar *) "disjunction"
 #define RB_PARSE_GREATER (xmlChar *) "greater"
@@ -2840,6 +2842,8 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
+		case RHYTHMDB_QUERY_PROP_PREFIX:
+		case RHYTHMDB_QUERY_PROP_SUFFIX:
 		case RHYTHMDB_QUERY_PROP_GREATER:
 		case RHYTHMDB_QUERY_PROP_LESS:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
@@ -2972,6 +2976,8 @@ rhythmdb_query_free (GPtrArray *query)
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
+		case RHYTHMDB_QUERY_PROP_PREFIX:
+		case RHYTHMDB_QUERY_PROP_SUFFIX:
 		case RHYTHMDB_QUERY_PROP_GREATER:
 		case RHYTHMDB_QUERY_PROP_LESS:
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
@@ -3116,6 +3122,16 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
+		case RHYTHMDB_QUERY_PROP_PREFIX:
+			subnode = xmlNewChild (node, NULL, RB_PARSE_PREFIX, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
+		case RHYTHMDB_QUERY_PROP_SUFFIX:
+			subnode = xmlNewChild (node, NULL, RB_PARSE_SUFFIX, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_EQUALS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
@@ -3195,6 +3211,10 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			data->type = RHYTHMDB_QUERY_PROP_LIKE;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)) {
 			data->type = RHYTHMDB_QUERY_PROP_NOT_LIKE;
+		} else if (!xmlStrcmp (child->name, RB_PARSE_PREFIX)) {
+			data->type = RHYTHMDB_QUERY_PROP_PREFIX;
+		} else if (!xmlStrcmp (child->name, RB_PARSE_SUFFIX)) {
+			data->type = RHYTHMDB_QUERY_PROP_SUFFIX;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_EQUALS)) {
 			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
 				       (xmlChar *)"date")) 
@@ -3222,6 +3242,8 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 
 		if (!xmlStrcmp (child->name, RB_PARSE_LIKE)
 		    || !xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)
+		    || !xmlStrcmp (child->name, RB_PARSE_PREFIX)
+		    || !xmlStrcmp (child->name, RB_PARSE_SUFFIX)
 		    || !xmlStrcmp (child->name, RB_PARSE_EQUALS)
 		    || !xmlStrcmp (child->name, RB_PARSE_GREATER)
 		    || !xmlStrcmp (child->name, RB_PARSE_LESS)
@@ -3450,6 +3472,8 @@ rhythmdb_query_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_EQUALS, "Property equivalence"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LIKE, "Fuzzy property matching"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_NOT_LIKE, "Inverted fuzzy property matching"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_PREFIX, "Starts with"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_SUFFIX, "Ends with"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_GREATER, "True if property1 >= property2"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LESS, "True if property1 <= property2"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN, "True if property1 is within property2 of the current time"),

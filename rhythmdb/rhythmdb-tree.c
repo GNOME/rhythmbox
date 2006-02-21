@@ -1510,6 +1510,24 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 
 			break;
 		}
+		case RHYTHMDB_QUERY_PROP_PREFIX:
+		case RHYTHMDB_QUERY_PROP_SUFFIX:
+		{
+			const char *value_s;
+			const char *entry_s;
+			
+			g_assert (rhythmdb_get_property_type (db, data->propid) == G_TYPE_STRING);
+
+			value_s = g_value_get_string (data->val);
+			entry_s = rhythmdb_entry_get_string (entry, data->propid);
+
+			if (data->type == RHYTHMDB_QUERY_PROP_PREFIX && !g_str_has_prefix (entry_s, value_s))
+					return FALSE;
+			if (data->type == RHYTHMDB_QUERY_PROP_SUFFIX && !g_str_has_suffix (entry_s, value_s))
+					return FALSE;
+			
+			break;
+		}
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		{
