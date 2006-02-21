@@ -8,11 +8,9 @@ DOC_ENTITIES = fdl-appendix.xml legal.xml
 DOC_INCLUDES = 
 DOC_FIGURES = \
 	figures/rb-iradio-main.png		\
-	figures/rb-notification-area.png	\
 	figures/rb-notification-window.png	\
 	figures/rb-notification-zone.png	\
 	figures/rb-podcast-main.png		\
-	figures/rb-sidebar.png			\
 	figures/rb-statusbar.png		\
 	figures/rb-toolbar.png			\
 	figures/rb-toolbar-prevplaynext.png	\
