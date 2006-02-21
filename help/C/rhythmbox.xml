@@ -206,8 +206,48 @@
           </listitem>
         </itemizedlist>
   </sect1>
-
-<!-- ============= Rhythmbox Window ============================== -->
+  <sect1 id="rb-getting-started">
+  	<title>Getting Started</title>
+	
+		<sect2 id="rb-launch">
+			<title>To Launch Rhythmbox</title>
+			<para>
+				You can launch Rhythmbox Music Player in the following ways:
+				<variablelist>
+					<varlistentry>
+						<term><guimenu>Applications</guimenu> menu</term>
+						<listitem>
+							<para>
+						 		Choose
+								<menuchoice><guisubmenu>Multimedia</guisubmenu>
+								<guimenuitem>Rhythmbox Music
+								Player</guimenuitem></menuchoice>.
+							</para>
+						</listitem>
+					</varlistentry>
+					<varlistentry>
+						<term>Command Line</term>
+						<listitem>
+							<para>
+								Type <command>rhythmbox</command>, then press
+								<keycap>Return</keycap>.
+							</para>
+						</listitem>
+					</varlistentry>
+				</variablelist>
+			</para>
+		</sect2>
+		<sect2 id="rb">
+			<title>Running the Assistant</title>
+			<para>
+				The first time you launch Rhythmbox, an assistant will
+				help you import your music. On the second panel
+				of the assistant, click the button
+				<guilabel>Browse...</guilabel> and select the folder where your
+				music is stored.
+			</para>
+		</sect2>
+  </sect1>
   <sect1 id="rb-window">
     <title>&app; Window</title>
     <sect2 id="rb-window-intro">
@@ -262,10 +302,18 @@
             <row>
               <entry valign="top">3</entry>
               <entry valign="top">Time Slider</entry>
-              <entry valign="top">Displays the position of the read of a track; it enables to jump 								to another part of a track.</entry>
+              <entry valign="top">Displays the position of the read of a track; 
+							it enables to jump to another part of a track.</entry>
             </row>
             <row>
               <entry valign="top">4</entry>
+              <entry valign="top">Source List</entry>
+              <entry valign="top">Displays a list of available
+							sources.</entry>
+
+            </row>
+            <row>
+              <entry valign="top">5</entry>
               <entry valign="top">Browser</entry>
               <entry valign="top">Allows to browse and filter the
 							Library tracks by Genre, Artist or Album name. The
@@ -273,16 +321,10 @@
 							tracks that match your criterias.</entry>
             </row>
             <row>
-              <entry valign="top">5</entry>
+              <entry valign="top">6</entry>
               <entry valign="top">Tracks list</entry>
               <entry valign="top">Lists the tracks that belong to
 							the selected source.</entry>
-            </row>
-            <row>
-              <entry valign="top">6</entry>
-              <entry valign="top">Source List</entry>
-              <entry valign="top">Displays a list of available
-							sources.</entry>
             </row>
             <row>
               <entry valign="top">7</entry>
@@ -302,22 +344,8 @@
 				<itemizedlist><listitem><para>The <application>&app;</application> library, where all of the imported songs will appear.
 						</para></listitem><listitem><para>The iRadio source, with all internet radio stations.</para></listitem><listitem><para>Podcasts</para></listitem><listitem><para>All playlists (normal and smart).</para></listitem><listitem><para>Audio CD's inserted into the computer's CD
 						drives.</para></listitem><listitem><para>Portable players like iPod plugged to your computer.</para></listitem><listitem><para>The DAAP Music shares discovered on the local network.</para></listitem></itemizedlist>
-	<!--
-	<screenshot>
-	<mediaobject>
-		<imageobject>
-			<imagedata fileref="figures/rb-sidebar.png"
-			format="PNG"/>
-		</imageobject>
-		<textobject>
-		<phrase>Shows source list with library and playlist icons.
-		</phrase>
-		</textobject>
-	</mediaobject>
-	</screenshot>
-	-->
-			</para>
-      <para>
+		</para>
+      	<para>
 				The display of the source list can be toggled on or off by selecting
 				<menuchoice><guimenu>View</guimenu><guimenuitem>Source
 				List</guimenuitem></menuchoice>.
@@ -501,7 +529,7 @@
 			The Library can not only contains music files which is physically 
 			on your computer (in your HOME Directory for instance), but it can
 			also contains music files available over remote network services. 
-			Some examples on supported network service are :
+			Some examples of supported network services are :
 			<itemizedlist>
 				<listitem>
 					<para>Public FTP</para>
