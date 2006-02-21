@@ -1320,6 +1320,8 @@ rb_shell_constructor (GType type,
 				  shell);
 
 		gtk_widget_show_all (GTK_WIDGET (druid));
+	} else {
+		gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
 	}
 
 	return G_OBJECT (shell);

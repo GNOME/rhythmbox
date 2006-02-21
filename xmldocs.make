@@ -1,5 +1,4 @@
 #
-# arch-tag: Makefile rules for building GNOMEish Docbook documentation
 # No modifications of this Makefile should be necessary.
 #
 # To use this template:
@@ -34,22 +33,25 @@
 #
 
 
-# ************* Begin of section some packagers may need to modify  **************
+# **********  Begin of section some packagers may need to modify  **********
 # This variable (docdir) specifies where the documents should be installed.
 # This default value should work for most packages.
-# docdir = $(datadir)/@PACKAGE@/doc/$(docname)/$(lang)
 docdir = $(datadir)/gnome/help/$(docname)/$(lang)
 
-# **************  You should not have to edit below this line  *******************
+# **********  You should not have to edit below this line  **********
 xml_files = $(entities) $(docname).xml
 
 EXTRA_DIST = $(xml_files) $(omffile)
 CLEANFILES = omf_timestamp
 
-# If the following file is in a subdir (like help/) you need to add that to the path
 include $(top_srcdir)/omf.make
 
 all: omf
+
+$(docname).xml: $(entities)
+	-ourdir=`pwd`;  \
+	cd $(srcdir);   \
+	cp $(entities) $$ourdir
 
 app-dist-hook:
 	if test "$(figdir)"; then \
@@ -90,3 +92,10 @@ uninstall-local-doc:
 	done
 	-rmdir $(DESTDIR)$(docdir)
 
+clean-local: clean-local-doc clean-local-omf
+
+# for non-srcdir builds, remove the copied entities.
+clean-local-doc:
+	if test $(srcdir) != .; then \
+	  rm -f $(entities); \
+	fi
