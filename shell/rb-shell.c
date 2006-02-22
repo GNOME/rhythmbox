@@ -142,9 +142,6 @@ static void rb_shell_db_save_error_cb (RhythmDB *db,
 static void rb_shell_db_entry_added_cb (RhythmDB *db,
 					RhythmDBEntry *entry,
 					RBShell *shell);
-static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
-						      int response_id,
-						      RBShell *shell);
 static void rb_shell_druid_response_cb (GtkDialog *druid,
 					guint response,
 					 RBShell *shell);
