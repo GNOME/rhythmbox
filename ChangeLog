@@ -1,5 +1,76 @@
 2006-02-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* sources/rb-missing-files-source.h,
+	* sources/rb-missing-files-source.c,
+	* sources/rb-import-errors-source.h,
+	* sources/rb-import-errors-source.c:
+	Add library meta-sources, showing missing files and import errors.
+	Fixes #167763, #142322.
+
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_new):
+	* sources/rb-sourcelist-model.h:
+	* sources/rb-sourcelist.c: (rb_sourcelist_append),
+	(match_source_to_iter), (rb_sourcelist_source_to_iter),
+	(rb_sourcelist_visible_source_to_iter), (rb_sourcelist_remove),
+	(visibility_notify_cb):
+	Store source visibility in the sourcelist model, so we can determine
+	child source counts correctly and get the sourcelist expander column
+	right.
+	
+	* widgets/rb-entry-view.h:
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_append_column), (set_column_visibility):
+	Allow the creator of the entry view to specify which columns are
+	always visible.
+
+	* sources/rb-source.h:
+	* sources/rb-source.c: (_autohide_update_visibility),
+	(_rb_autohide_source_row_deleted_cb),
+	(_rb_autohide_source_row_inserted_cb),
+	(_rb_source_hide_when_empty):
+	Allow sources to automatically hide themselves when empty.
+	
+	* sources/rb-iradio-source.c: (rb_iradio_source_constructor):
+	* sources/rb-library-source.c: (rb_library_source_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	Explicitly specify which columns are always visible.
+	
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_playing_entry_changed_cb), (add_to_library_response_cb):
+	Remove load error signal handling and load failure dialog.
+	Create missing files and import errors sources for the library.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init),
+	(rhythmdb_add_import_error_entry), (rhythmdb_process_metadata_load):
+	Create DB entries for import errors rather than emitting the 'load
+	error' signal; mark loaded entries visible.
+	(rhythmdb_entry_sync_mirrored), (rhythmdb_prop_get_type),
+	(rhythmdb_entry_get_string), (rhythmdb_entry_set_visibility),
+	(rhythmdb_prop_get_type): Store string form of last seen time for
+	hidden entries, since it's used in the missing files source.
+	(rhythmdb_entry_import_error_get_type): 
+	Add entry type for import errors.
+	(rhythmdb_process_file_deleted), (rhythmdb_volume_mounted_cb),
+	(rhythmdb_volume_unmounted_cb): Add missing rhythmdb_commit calls.
+	(rhythmdb_entry_move_to_trash_set_error),
+	(rhythmdb_entry_move_to_trash):  
+	Correct spelling, add missing rhythmdb_commit.
+	* rhythmdb/rhythmdb.h:  
+	Add import error entry type and last seen string property.
+	* rhythmdb/rhythmdb-private.h:  Add string form of last seen time.
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):  Ignore string form of 'last seen' property.
+
+	* shell/rb-shell-player.c: (rb_shell_player_entry_activated_cb):
+	Don't try to play hidden entries or import error entries.
+
+	* data/ui/rhythmbox-ui.xml: Add popup for missing files source.
+	* sources/Makefile.am: Add meta-source files
+	* widgets/Makefile.am: Remove load failure dialog files
+
+2006-02-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	update by:  Baptiste Mille-Mathias  <bmm80@free.fr>
 	* help/C/rhythmbox.xml:  add a 'getting started' section, and fix a
 	few bits and pieces.

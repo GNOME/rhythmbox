@@ -245,7 +245,6 @@ enum
 	ENTRY_DELETED,
 	LOAD_COMPLETE,
 	SAVE_COMPLETE,
-	LOAD_ERROR,
 	SAVE_ERROR,
 	READ_ONLY,
 	LAST_SIGNAL
@@ -334,18 +333,6 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-
-	rhythmdb_signals[LOAD_ERROR] =
-		g_signal_new ("load-error",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, load_error),
-			      NULL, NULL,
-			      rhythmdb_marshal_VOID__STRING_STRING,
-			      G_TYPE_NONE,
-			      2,
-			      G_TYPE_STRING,
-			      G_TYPE_STRING);
 
 	rhythmdb_signals[SAVE_ERROR] =
 		g_signal_new ("save-error",
@@ -1487,15 +1474,44 @@ typedef struct
 	char *msg;
 } RhythmDBLoadErrorData;
 
-static gboolean
-emit_load_error_idle (RhythmDBLoadErrorData *data)
+static void
+rhythmdb_add_import_error_entry (RhythmDB *db, GError *error, const char *uri)
 {
-	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[LOAD_ERROR], 0, data->uri, data->msg);
-	g_object_unref (G_OBJECT (data->db));
-	g_free (data->uri);
-	g_free (data->msg);
-	g_free (data);
-	return FALSE;
+	RhythmDBEntry *entry;
+	GValue value = {0,};
+	
+	if (g_error_matches (error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
+		rb_debug ("found file which will be ignored %s", uri);
+		return;
+	}
+
+	entry = rhythmdb_entry_lookup_by_location (db, uri);
+	if (entry) {
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+			/* we've already got an error for this file, so just update it */
+			g_value_init (&value, G_TYPE_STRING);
+			g_value_set_string (&value, error->message);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+			g_value_unset (&value);
+
+			rhythmdb_commit_internal (db, FALSE);
+		} else {
+			/* FIXME we've successfully read this file before.. so what should we do? */
+			rb_debug ("%s already exists in the library.. ignoring import error?", uri);
+		}
+	} else {
+		/* create a new import error entry */
+		entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR, uri);
+		
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, error->message);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+		g_value_unset (&value);
+	
+		rhythmdb_entry_set_visibility (db, entry, TRUE);
+
+		rhythmdb_commit_internal (db, FALSE);
+	}
 }
 
 static gboolean
@@ -1506,31 +1522,18 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	const char *mime;
 	GTimeVal time;
 
-	if (event->error) {
-		if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
-			rb_debug ("found file which will be ignored %s", event->real_uri);
-			return TRUE;
-		} else {
-			RhythmDBLoadErrorData *data;
-
-			rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
-			data = g_new0 (RhythmDBLoadErrorData, 1);
-			g_object_ref (G_OBJECT (db));
-			data->db = db;
-			data->uri = g_strdup (event->real_uri);
-			data->msg = g_strdup (event->error->message);
-
-			g_idle_add ((GSourceFunc)emit_load_error_idle, data);
-			return TRUE;
-		}
-	}
-
 	if (rhythmdb_get_readonly (db)) {
 		rb_debug ("database is read-only right now, re-queuing event");
 		g_async_queue_push (db->priv->event_queue, event);
 		return FALSE;
 	}
 
+	if (event->error) {
+		rhythmdb_add_import_error_entry (db, event->error, event->real_uri);
+		return TRUE;
+	}
+
+	/* do we really need to do this? */
 	mime = rb_metadata_get_mime (event->metadata);
 	if (!mime) {
 		rb_debug ("unsupported file");
@@ -1575,6 +1578,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
 
 	/* we've seen this entry */
+	rhythmdb_entry_set_visibility (db, entry, TRUE);
+	
 	g_value_init (&value, G_TYPE_ULONG);
 	g_value_set_ulong (&value, time.tv_sec);
 	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_LAST_SEEN, &value);
@@ -1631,6 +1636,7 @@ rhythmdb_process_file_deleted (RhythmDB *db, RhythmDBEvent *event)
 	if (entry) {
 		rb_debug ("deleting entry for %s", event->uri);
 		rhythmdb_entry_set_visibility (db, entry, FALSE);
+		rhythmdb_commit (db);
 	}
 }
 
@@ -2609,11 +2615,23 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	}
 	case RHYTHMDB_PROP_FIRST_SEEN:
 	{
-			rb_refstring_unref (entry->first_seen_str);
-
+		rb_refstring_unref (entry->first_seen_str);
 		val = eel_strdup_strftime (format, localtime ((glong*)&entry->first_seen));
 		entry->first_seen_str = rb_refstring_new_full (val, FALSE);
 		g_free (val);
+		break;
+	}
+	case RHYTHMDB_PROP_LAST_SEEN:
+	{
+		/* only store last seen time as a string for hidden entries */
+		rb_refstring_unref (entry->last_seen_str);
+		if (entry->hidden) {
+			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_seen));
+			entry->last_seen_str = rb_refstring_new_full (val, FALSE);
+			g_free (val);
+		} else {
+			entry->last_seen_str = NULL;
+		}
 		break;
 	}
 	default:
@@ -2656,7 +2674,7 @@ rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info, gpointer data)
 }
 
 static void
-rhythmbd_entry_move_to_trash_set_error (RhythmDB *db, RhythmDBEntry *entry,
+rhythmdb_entry_move_to_trash_set_error (RhythmDB *db, RhythmDBEntry *entry,
 				        GnomeVFSResult res)
 {
 	GValue value = { 0, };
@@ -2682,7 +2700,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 
 	uri = gnome_vfs_uri_new (entry->location);
 	if (uri == NULL) {
-		rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
 		return;
 	}
 
@@ -2698,7 +2716,7 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 		    res == GNOME_VFS_ERROR_NOT_SUPPORTED) {
 			rhythmdb_entry_set_visibility (db, entry, FALSE);
 		} else {
-			rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+			rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
 		}
 
 		gnome_vfs_uri_unref (uri);
@@ -2720,7 +2738,8 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 
 	shortname = gnome_vfs_uri_extract_short_name (uri);
 	if (shortname == NULL) {
-		rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
+		rhythmdb_commit (db);
 		gnome_vfs_uri_unref (uri);
 		gnome_vfs_uri_unref (trash);
 		return;
@@ -2731,7 +2750,8 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 	gnome_vfs_uri_unref (trash);
 	g_free (shortname);
 	if (dest == NULL) {
-		rhythmbd_entry_move_to_trash_set_error (db, entry, -1);
+		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
+		rhythmdb_commit (db);
 		gnome_vfs_uri_unref (uri);
 		return;
 	}
@@ -2747,8 +2767,9 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
 	if (res == GNOME_VFS_OK) {
 		rhythmdb_entry_set_visibility (db, entry, FALSE);
 	} else {
-		rhythmbd_entry_move_to_trash_set_error (db, entry, res);
+		rhythmdb_entry_move_to_trash_set_error (db, entry, res);
 	}
+	rhythmdb_commit (db);
 
 	gnome_vfs_uri_unref (dest);
 	gnome_vfs_uri_unref (uri);
@@ -3544,6 +3565,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Hidden (gboolean) [hidden]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN_STR, "Time Added to Library (gchararray) [first-seen-str]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_LAST_SEEN_STR, "Last time the song was available (gchararray) [last-seen-str]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_SEARCH_MATCH, "Search matching key (gchararray) [search-match]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_YEAR, "Year of date (gulong) [year]"),
 
@@ -3758,6 +3780,19 @@ RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void)
 	return podcast_feed_type;
 }
 
+RhythmDBEntryType rhythmdb_entry_import_error_get_type (void) 
+{
+	static RhythmDBEntryType import_error_type = -1;
+       
+	g_static_mutex_lock (&entry_type_mutex);
+	if (import_error_type == -1) {
+		import_error_type = rhythmdb_entry_register_type ();
+	}
+	g_static_mutex_unlock (&entry_type_mutex);
+
+	return import_error_type;
+}
+
 
 typedef struct
 {
@@ -3813,6 +3848,7 @@ rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 	rhythmdb_entry_foreach (RHYTHMDB (data), 
 				(GFunc)entry_volume_mounted_or_unmounted, 
 				&ctxt);
+	rhythmdb_commit (RHYTHMDB (data));
 	g_free (ctxt.mount_point);
 }
 
@@ -3830,6 +3866,7 @@ rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 	rhythmdb_entry_foreach (RHYTHMDB (data), 
 				(GFunc)entry_volume_mounted_or_unmounted, 
 				&ctxt);
+	rhythmdb_commit (RHYTHMDB (data));
 	g_free (ctxt.mount_point);
 }
 
@@ -3872,6 +3909,8 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 		rhythmdb_entry_set_internal (db, entry, TRUE,
 					     RHYTHMDB_PROP_HIDDEN, &new_val);
 		g_value_unset (&new_val);
+
+		rhythmdb_entry_sync_mirrored (db, entry, RHYTHMDB_PROP_LAST_SEEN);
 	}
 	g_value_unset (&old_val);
 }
@@ -4227,6 +4266,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->playback_error;
 	case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		return rb_refstring_get (entry->first_seen_str);
+	case RHYTHMDB_PROP_LAST_SEEN_STR:
+		return rb_refstring_get (entry->last_seen_str);
 	case RHYTHMDB_PROP_SEARCH_MATCH:
 		return NULL;	/* synthetic property */
 	/* Podcast properties */

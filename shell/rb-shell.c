@@ -77,7 +77,6 @@
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
 #endif /* WITH_DAAP_SUPPORT */
-#include "rb-load-failure-dialog.h"
 #include "rb-iradio-source.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
@@ -85,6 +84,8 @@
 #include "rb-play-queue-source.h"
 #include "eel-gconf-extensions.h"
 #include "bacon-volume.h"
+#include "rb-missing-files-source.h"
+#include "rb-import-errors-source.h"
 
 #ifdef WITH_AUDIOSCROBBLER
 #include "rb-audioscrobbler.h"
@@ -135,9 +136,6 @@ static void rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
-static void rb_shell_db_load_error_cb (RhythmDB *db,
-				       const char *uri, const char *msg,
-				       RBShell *shell); 
 static void rb_shell_db_save_error_cb (RhythmDB *db,
 				       const char *uri, const GError *error,
 				       RBShell *shell); 
@@ -153,8 +151,6 @@ static void rb_shell_druid_response_cb (GtkDialog *druid,
 
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
-static void rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr, RBShell *shell);
-static void rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell);
 static void rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
@@ -380,14 +376,14 @@ struct RBShellPrivate
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
 
-	GtkWidget *load_error_dialog;
 	GList *supported_media_extensions;
-	gboolean show_db_errors;
 
 	RBLibrarySource *library_source;
 	RBIRadioSource *iradio_source;
 	RBPodcastSource *podcast_source;
 	RBPlaylistSource *queue_source;
+	RBSource *missing_files_source;
+	RBSource *import_errors_source;
 
 #ifdef WITH_AUDIOSCROBBLER
 	RBAudioscrobbler *audioscrobbler;
@@ -871,7 +867,6 @@ rb_shell_finalize (GObject *object)
 	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
 
-	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
@@ -1187,19 +1182,10 @@ rb_shell_constructor (GType type,
 	rb_shell_sync_sourcelist_visibility (shell);
 	rb_shell_sync_pane_visibility (shell);
 
-	shell->priv->load_error_dialog = rb_load_failure_dialog_new ();
-	shell->priv->show_db_errors = FALSE;
-	gtk_widget_hide (shell->priv->load_error_dialog);
-
-	g_signal_connect_object (G_OBJECT (shell->priv->db), "load-error",
-				 G_CALLBACK (rb_shell_db_load_error_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
 				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
 				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
-
-	g_signal_connect_object (G_OBJECT (shell->priv->load_error_dialog), "response",
-				 G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell, 0);
 
 
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
@@ -1209,6 +1195,10 @@ rb_shell_constructor (GType type,
 	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
 
+	shell->priv->missing_files_source = rb_missing_files_source_new (shell, shell->priv->library_source);
+	rb_shell_append_source (shell, shell->priv->missing_files_source, RB_SOURCE (shell->priv->library_source));
+	shell->priv->import_errors_source = rb_import_errors_source_new (shell, shell->priv->library_source);
+	rb_shell_append_source (shell, shell->priv->import_errors_source, RB_SOURCE (shell->priv->library_source));
 
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
@@ -1221,10 +1211,6 @@ rb_shell_constructor (GType type,
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_created",
 				 G_CALLBACK (rb_shell_playlist_created_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_start",
-				 G_CALLBACK (rb_shell_playlist_load_start_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_finish",
-				 G_CALLBACK (rb_shell_playlist_load_finish_cb), shell, 0);
 
 #ifdef WITH_DAAP_SUPPORT
 	rb_daap_sources_init (shell);
@@ -1313,7 +1299,6 @@ rb_shell_constructor (GType type,
 	/* Stop here if this is the first time. */
 	if (!eel_gconf_get_boolean (CONF_FIRST_TIME)) {
 		RBDruid *druid;
-		shell->priv->show_db_errors = TRUE;
 		druid = rb_druid_new (shell->priv->db);
 		g_signal_connect (G_OBJECT (druid),
 				  "response",
@@ -1591,28 +1576,6 @@ source_activated_cb (RBSourceList *sourcelist,
 }
 
 static void
-rb_shell_db_load_error_cb (RhythmDB *db,
-			   const char *uri, const char *msg,
-		  	   RBShell *shell)
-{
-	rb_debug ("got db error, showing: %s",
-		  shell->priv->show_db_errors ? "TRUE" : "FALSE");
-
-	if (shell->priv->pending_entry && 
-	    strcmp(uri, shell->priv->pending_entry) == 0) {
-		g_free (shell->priv->pending_entry);
-		shell->priv->pending_entry = NULL;
-	}
-	
-	if (!shell->priv->show_db_errors)
-		return;
-
-	rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
-				    uri, msg);
-	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
-}
-
-static void
 rb_shell_db_save_error_cb (RhythmDB *db,
 			   const char *uri, const GError *error,
 		  	   RBShell *shell)
@@ -1637,15 +1600,6 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
 		g_free (shell->priv->pending_entry);
 		shell->priv->pending_entry = NULL;
 	}
-}
-
-static void
-rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
-					  int response_id,
-					  RBShell *shell)
-{
-	rb_debug ("got response");
-	shell->priv->show_db_errors = FALSE;
 }
 
 static RBSource *
@@ -1709,20 +1663,6 @@ rb_shell_playlist_created_cb (RBPlaylistManager *mgr,
 	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN, shell->priv->window_small);
 
 	rb_shell_sync_window_state (shell, FALSE);
-}
-
-static void
-rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr,
-				 RBShell *shell)
-{
-	shell->priv->show_db_errors = TRUE;
-}
-
-static void
-rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr,
-				  RBShell *shell)
-{
-	shell->priv->show_db_errors = FALSE;
 }
 
 static void
@@ -1805,7 +1745,7 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 
 	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
 
-	// Translators: Trackname by Artist
+	/* Translators: Trackname by Artist */
 	notifytitle = g_strdup_printf (_("%s by %s"),
 				       song.title, song.artist);
 	rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, notifytitle);
@@ -2199,8 +2139,6 @@ add_to_library_response_cb (GtkDialog *dialog,
 	if (uri_list == NULL) {
 		uri_list = g_slist_prepend (uri_list, g_strdup (current_dir));
 	}
-
-	shell->priv->show_db_errors = TRUE;
 
 	for (uris = uri_list; uris; uris = uris->next) {
 			rb_shell_load_uri (shell, (char *)uris->data, FALSE, NULL);

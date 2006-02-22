@@ -187,6 +187,8 @@ G_DEFINE_TYPE (RBEntryView, rb_entry_view, GTK_TYPE_SCROLLED_WINDOW)
 
 static guint rb_entry_view_signals[LAST_SIGNAL] = { 0 };
 
+static GQuark rb_entry_view_column_always_visible;
+
 static gboolean
 type_ahead_search_func (GtkTreeModel *model, gint column,
 			const gchar *key, GtkTreeIter *iter,
@@ -350,6 +352,8 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      0);
 
 	g_type_class_add_private (klass, sizeof (RBEntryViewPrivate));
+
+	rb_entry_view_column_always_visible = g_quark_from_static_string ("rb_entry_view_column_always_visible");
 }
 
 static void
@@ -876,7 +880,7 @@ rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 }
 
 void
-rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
+rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gboolean always_visible)
 {
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer = NULL;
@@ -1043,6 +1047,35 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		strings[0] = title;
 		strings[1] = rb_entry_view_get_time_date_column_sample ();
 		break;
+	case RB_ENTRY_VIEW_COL_LAST_SEEN:
+		propid = RHYTHMDB_PROP_LAST_SEEN;
+		cell_data->propid = RHYTHMDB_PROP_LAST_SEEN_STR;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		sort_propid = RHYTHMDB_PROP_LAST_SEEN;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
+		title = _("Last _Seen");
+		key = "LastSeen";
+		strings[0] = title;
+		strings[1] = rb_entry_view_get_time_date_column_sample ();
+		break;
+	case RB_ENTRY_VIEW_COL_LOCATION:
+		propid = RHYTHMDB_PROP_LOCATION;
+		cell_data->propid = RHYTHMDB_PROP_LOCATION;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		sort_propid = RHYTHMDB_PROP_LOCATION;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_location_sort_func;
+		title = _("L_ocation");
+		key = "Location";
+		ellipsize = TRUE;
+		break;
+	case RB_ENTRY_VIEW_COL_ERROR:
+		propid = RHYTHMDB_PROP_PLAYBACK_ERROR;
+		cell_data->propid = RHYTHMDB_PROP_PLAYBACK_ERROR;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		title = _("Error");
+		key = "Error";
+		ellipsize = TRUE;
+		break;
 	default:
 		g_assert_not_reached ();
 		propid = -1;
@@ -1079,7 +1112,13 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_clickable (column, TRUE);
 
+	if (always_visible)
+		g_object_set_qdata (G_OBJECT (column), 
+				    rb_entry_view_column_always_visible, 
+				    GINT_TO_POINTER (1));
+
 	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
+
 	rb_entry_view_append_column_custom (view, column, title, key, sort_func, sort_propid);
 }
 
@@ -1699,11 +1738,12 @@ set_column_visibility (guint propid, GtkTreeViewColumn *column, GList *visible_p
 {
 	gboolean visible;
 
-	/* title is always visible */
-	if (propid == RHYTHMDB_PROP_TITLE)
-		return;
+	if (g_object_get_qdata (G_OBJECT (column), 
+				rb_entry_view_column_always_visible) == GINT_TO_POINTER (1))
+		visible = TRUE;
+	else
+		visible = (g_list_find (visible_props, GINT_TO_POINTER (propid)) != NULL);
 
-	visible = (g_list_find (visible_props, GINT_TO_POINTER (propid)) != NULL);
 	gtk_tree_view_column_set_visible (column, visible);
 }
 

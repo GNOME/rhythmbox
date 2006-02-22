@@ -52,7 +52,10 @@ typedef enum {
 	RB_ENTRY_VIEW_COL_PLAY_COUNT,
 	RB_ENTRY_VIEW_COL_YEAR,
 	RB_ENTRY_VIEW_COL_LAST_PLAYED,
-	RB_ENTRY_VIEW_COL_FIRST_SEEN
+	RB_ENTRY_VIEW_COL_FIRST_SEEN,
+	RB_ENTRY_VIEW_COL_LAST_SEEN,
+	RB_ENTRY_VIEW_COL_LOCATION,
+	RB_ENTRY_VIEW_COL_ERROR
 } RBEntryViewColumn;
 
 typedef enum {
@@ -93,7 +96,8 @@ RBEntryView *	rb_entry_view_new			(RhythmDB *db, GObject *shell_player,
 							 const char *sort_key, gboolean drag_source, 
 							 gboolean drag_dest);
 
-void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype);
+void		rb_entry_view_append_column		(RBEntryView *view, 
+							 RBEntryViewColumn coltype, gboolean always_visible);
 
 void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
 							 const char *title, const char *key,

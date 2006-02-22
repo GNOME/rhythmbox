@@ -517,6 +517,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
+		case RHYTHMDB_PROP_LAST_SEEN_STR:
 		case RHYTHMDB_PROP_SEARCH_MATCH:
 		case RHYTHMDB_PROP_YEAR:
 		case RHYTHMDB_NUM_PROPERTIES:
@@ -881,6 +882,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_PROP_FIRST_SEEN_STR:
+		case RHYTHMDB_PROP_LAST_SEEN_STR:
 		case RHYTHMDB_PROP_SEARCH_MATCH:
 		case RHYTHMDB_PROP_YEAR:
 		case RHYTHMDB_NUM_PROPERTIES:

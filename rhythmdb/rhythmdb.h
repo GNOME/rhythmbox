@@ -50,6 +50,7 @@ typedef gint32 RhythmDBEntryType;
 #define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_POST (rhythmdb_entry_podcast_post_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_FEED (rhythmdb_entry_podcast_feed_get_type ())
+#define RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR (rhythmdb_entry_import_error_get_type ())
 
 typedef enum
 {
@@ -117,6 +118,7 @@ typedef enum
 	RHYTHMDB_PROP_HIDDEN,
 	RHYTHMDB_PROP_PLAYBACK_ERROR,
 	RHYTHMDB_PROP_FIRST_SEEN_STR,
+	RHYTHMDB_PROP_LAST_SEEN_STR,
 
 	/* synthetic properties */
 	RHYTHMDB_PROP_SEARCH_MATCH,
@@ -338,6 +340,7 @@ RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
 RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
 RhythmDBEntryType rhythmdb_entry_podcast_post_get_type  (void);
 RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type  (void);
+RhythmDBEntryType rhythmdb_entry_import_error_get_type	(void);
 RhythmDBEntryType rhythmdb_entry_icecast_get_type        (void);
 
 extern GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];

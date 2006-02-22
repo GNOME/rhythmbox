@@ -192,6 +192,8 @@ GtkActionGroup *_rb_source_register_action_group (RBSource *source,
 						  GtkActionEntry *actions,
 						  int num_actions,
 						  gpointer user_data);
+void		_rb_source_hide_when_empty	(RBSource *source,
+						 RhythmDBQueryModel *model);
 
 G_END_DECLS
 

@@ -521,7 +521,7 @@ rb_podcast_source_constructor (GType type,
 					    (GCompareDataFunc) rb_podcast_source_post_date_cell_sort_func, 0);
 						    
 
-	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_TITLE);
+	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	
 	/* COLUMN FEED */
 	column = gtk_tree_view_column_new ();
@@ -543,10 +543,10 @@ rb_podcast_source_constructor (GType type,
 					    (GCompareDataFunc) rb_podcast_source_post_feed_cell_sort_func, 0);
 
 	
-	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_DURATION);
-	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_RATING);
-	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_PLAY_COUNT);
-	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_LAST_PLAYED);
+	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_DURATION, FALSE);
+	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_RATING, FALSE);
+	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
+	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 
 
 	/* Status column */

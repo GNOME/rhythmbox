@@ -255,17 +255,17 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 						    "PlaylistTrack", NULL, 0);
 	}
 
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_YEAR);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION);
- 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_QUALITY);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_FIRST_SEEN);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_YEAR, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION, FALSE);
+ 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_QUALITY, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
 	rb_entry_view_set_columns_clickable (source->priv->songs, FALSE);
 
 	rb_playlist_source_setup_entry_view (source, source->priv->songs);

@@ -304,12 +304,12 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	source->priv->stations = rb_entry_view_new (source->priv->db, shell_player,
 						    CONF_STATE_IRADIO_SORTING,
 						    FALSE, FALSE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE);
-/* 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_QUALITY); */
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING);
-/*	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT);*/
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE, FALSE);
+/* 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_QUALITY, FALSE); */
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING, FALSE);
+/*	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);*/
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 	g_signal_connect_object (G_OBJECT (source->priv->stations),
 				 "sort-order-changed",
 				 G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),

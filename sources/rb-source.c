@@ -967,3 +967,42 @@ _rb_source_register_action_group (RBSource *source,
 
 	return group;
 }
+
+static void
+_autohide_update_visibility (RBSource *source, GtkTreeModel *model, int adjust)
+{
+	gint count = gtk_tree_model_iter_n_children (model, NULL) + adjust;
+	/* only update the property if it will have actually changed */
+	if (count < 2)
+		g_object_set (G_OBJECT (source), "visibility", (count > 0), NULL);
+}
+
+static void
+_rb_autohide_source_row_deleted_cb (GtkTreeModel *model,
+				    GtkTreePath *path,
+				    RBSource *source)
+{
+	_autohide_update_visibility (source, model, -1);
+}
+
+static void
+_rb_autohide_source_row_inserted_cb (GtkTreeModel *model,
+				     GtkTreePath *path,
+				     GtkTreeIter *iter,
+				     RBSource *source)
+{
+	_autohide_update_visibility (source, model, 0);
+}
+
+void
+_rb_source_hide_when_empty (RBSource *source,
+			    RhythmDBQueryModel *model)
+{
+	g_signal_connect_object (G_OBJECT (model), "row-deleted",
+				 G_CALLBACK (_rb_autohide_source_row_deleted_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (model), "row-inserted",
+				 G_CALLBACK (_rb_autohide_source_row_inserted_cb),
+				 source, 0);
+}
+

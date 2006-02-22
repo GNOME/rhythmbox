@@ -216,6 +216,7 @@ rb_sourcelist_model_new (void)
 	column_types[RB_SOURCELIST_MODEL_COLUMN_NAME] = G_TYPE_STRING;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_SOURCE] = G_TYPE_POINTER;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES] = PANGO_TYPE_ATTR_LIST;
+	column_types[RB_SOURCELIST_MODEL_COLUMN_VISIBILITY] = G_TYPE_BOOLEAN;
 	store = gtk_tree_store_newv (RB_SOURCELIST_MODEL_N_COLUMNS, 
 				     column_types);
 

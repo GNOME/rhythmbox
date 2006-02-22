@@ -1764,6 +1764,14 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 
 	rb_debug  ("got entry %p activated", entry);
 
+	/* don't play hidden entries */
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+		return;
+
+	/* don't play import error entries */
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR)
+		return;
+
 	/* ensure the podcast has been downloaded */
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
 		if (!rb_podcast_manager_entry_downloaded (entry))

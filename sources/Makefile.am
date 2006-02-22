@@ -30,7 +30,11 @@ libsourcesimpl_la_SOURCES =		\
 	rb-generic-player-source.c	\
 	rb-generic-player-source.h	\
 	rb-play-queue-source.c		\
-	rb-play-queue-source.h
+	rb-play-queue-source.h		\
+	rb-missing-files-source.c	\
+	rb-missing-files-source.h	\
+	rb-import-errors-source.c	\
+	rb-import-errors-source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -345,21 +345,24 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 	PangoAttrList *attrs = pango_attr_list_new ();
 	const char *name;
 	GdkPixbuf *pixbuf;
+	gboolean visible;
 
 	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
 	g_return_if_fail (RB_IS_SOURCE (source));
 
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
 	g_object_get (G_OBJECT (source), "icon", &pixbuf, NULL);
+	g_object_get (G_OBJECT (source), "visibility", &visible, NULL);
 
 	if (parent) {
 		GtkTreeIter parent_iter;
 		g_assert (rb_sourcelist_source_to_iter (sourcelist, parent, &parent_iter));
 		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, &parent_iter);
 
-		/* !!! make the expander column visible */
-		sourcelist->priv->child_source_count++;
-		rb_sourcelist_update_expander_visibility (sourcelist);
+		if (visible) {
+			sourcelist->priv->child_source_count++;
+			rb_sourcelist_update_expander_visibility (sourcelist);
+		}
 	} else {
 		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, NULL);
 	}
@@ -369,6 +372,7 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, name,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, source,
 			    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, attrs,
+			    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, visible,
 			    -1);
 
 	if (pixbuf != NULL) {
@@ -395,7 +399,7 @@ match_source_to_iter (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter,
 	
 	gtk_tree_model_get (model, iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 	if (target == sp->source) {
-		sp->path = gtk_tree_path_copy(path);
+		sp->path = gtk_tree_path_copy (path);
 		return TRUE;
 	}
 
@@ -406,7 +410,7 @@ static gboolean
 rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 			      GtkTreeIter *iter)
 {
-	SourcePath *sp = g_new0(SourcePath,1);
+	SourcePath *sp = g_new0 (SourcePath,1);
 	gboolean ret = FALSE;
 	
 	sp->source = source;
@@ -418,8 +422,8 @@ rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 		ret = TRUE;
 	}
 
-	gtk_tree_path_free(sp->path);
-	g_free(sp);
+	gtk_tree_path_free (sp->path);
+	g_free (sp);
 	sp = NULL;
 
 	return ret;
@@ -429,7 +433,7 @@ static gboolean
 rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 				      GtkTreeIter *iter)
 {
-	SourcePath *sp = g_new0(SourcePath,1);
+	SourcePath *sp = g_new0 (SourcePath,1);
 	gboolean ret = FALSE;
 	
 	sp->source = source;
@@ -441,8 +445,8 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source
 		ret = TRUE;
 	}
 
-	gtk_tree_path_free(sp->path);
-	g_free(sp);
+	gtk_tree_path_free (sp->path);
+	g_free (sp);
 	sp = NULL;
 
 	return ret;
@@ -519,7 +523,11 @@ rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
 
 	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
-		sourcelist->priv->child_source_count--;
+		gboolean visible;
+
+		g_object_get (G_OBJECT (source), "visibility", &visible, NULL);
+		if (visible)
+			sourcelist->priv->child_source_count--;
 		rb_sourcelist_update_expander_visibility (sourcelist);
 	}
 
@@ -667,16 +675,27 @@ visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 	RBSourceList *sourcelist = RB_SOURCELIST (data);
 	RBSource *source = RB_SOURCE (obj);
 	GtkTreeIter iter;
+	gboolean old_visibility;
+	gboolean new_visibility;
 
 	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
 
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
 	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
-		gboolean visible;
 
-		g_object_get (obj, "visibility", &visible, NULL);
-		sourcelist->priv->child_source_count += visible ? 1 : -1;
-		rb_sourcelist_update_expander_visibility (sourcelist);
+		g_object_get (obj, "visibility", &new_visibility, NULL);
+		gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->real_model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, &old_visibility,
+				    -1);
+
+		if (old_visibility != new_visibility) {
+			sourcelist->priv->child_source_count += new_visibility ? 1 : -1;
+			rb_sourcelist_update_expander_visibility (sourcelist);
+
+			gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
+					    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, new_visibility,
+					    -1);
+		}
 	}
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));

@@ -89,6 +89,7 @@ struct RhythmDBEntry_ {
 	/* cached data */
 	RBRefString *last_played_str;
 	RBRefString *first_seen_str;
+	RBRefString *last_seen_str;
 
 	/* playback error string */
 	char *playback_error;
