@@ -205,7 +205,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint trac
 	gchar *str;
 	RhythmDBEntryType entry_type;
 
-	audio_path = g_strdup_printf ("cdda://%s:%d", priv->device_path, track_number);
+	audio_path = g_strdup_printf ("cdda://%d#%s", track_number, priv->device_path);
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rb_debug ("Audio CD - create entry for track %d from %s", track_number, audio_path);

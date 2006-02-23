@@ -1,3 +1,19 @@
+2006-02-23  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_execute_stat): execute the stats at a
+	lower priority.
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_create_track_entry): change
+	the internal audio cd URIs from "cdda://device:track" to
+	"cdda://track#device" as it makes processing much easier.
+
+	* shell/rb-shell-player.c: (rb_shell_player_open_location):
+	* player/rb-player-gst.c: don't have the shell close the player
+	between songs, as doing that should be backend-specific. Make the
+	gstreamer backend close before starting a new track, unless the old
+	and new ones are both tracks on the same audio cd. Just seek in that
+	case.
+
 2006-02-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* doc/reference/rhythmbox.types: Fix doc build a bit more.

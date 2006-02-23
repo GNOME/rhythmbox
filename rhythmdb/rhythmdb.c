@@ -1865,7 +1865,7 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 	
 		gnome_vfs_async_get_file_info (&event->handle, uri_list,
 				       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
-				       GNOME_VFS_PRIORITY_DEFAULT,
+				       GNOME_VFS_PRIORITY_MIN,
 				       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
 				       event);
 		g_list_free (uri_list);

@@ -952,9 +952,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 	was_playing = rb_player_playing (player->priv->mmplayer);
 
-	if (!rb_player_close (player->priv->mmplayer, error))
-		return FALSE;
-
 	g_free (player->priv->song);
 	player->priv->song = NULL;
 	g_object_notify (G_OBJECT (player), "stream-song");

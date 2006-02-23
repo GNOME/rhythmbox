@@ -708,11 +708,16 @@ gboolean
 rb_player_open (RBPlayer *mp,
 		const char *uri,
 		GError **error)
-{
+{	
+	gboolean cdda_seek = FALSE;
+
 	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	if (mp->priv->playbin == NULL) {
 		if (!rb_player_construct (mp, error))
+			return FALSE;
+	} else {
+		if (!rb_player_close (mp, error))
 			return FALSE;
 	}
 
@@ -726,35 +731,50 @@ rb_player_open (RBPlayer *mp,
 		return TRUE;
 	}
 
+	/* check if we are switching tracks on a cd, so we don't have to close the device */
+	if (mp->priv->uri && g_str_has_prefix (uri, "cdda://")) {
+		const char *old_device;
+		const char *new_device;
+
+		old_device = g_utf8_strchr (mp->priv->uri, -1, '#');
+		new_device = g_utf8_strchr (uri, -1, '#');
+	
+		if (strcmp (old_device, new_device) == 0) {
+			/* just seek, instead of having playbin close the device */
+			GstFormat track_format = gst_format_get_by_nick ("track");
+			char *track_str;
+			guint track;
+			guint cdda_len;
+
+			cdda_len = strlen ("cdda://");
+			track_str = g_strndup (uri + cdda_len, new_device - (uri + cdda_len));
+			track = atoi (track_str);
+			g_free (track_str);
+
+#ifdef HAVE_GSTREAMER_0_10
+			if (gst_element_seek (mp->priv->playbin, 1.0, 
+					      track_format, GST_SEEK_FLAG_FLUSH, 
+					      GST_SEEK_TYPE_SET, track,
+					      GST_SEEK_TYPE_NONE, -1))
+				cdda_seek = TRUE;
+#elif HAVE_GSTREAMER_0_8
+			{
+				GstEvent *event;
+
+				event = gst_event_new_seek (track_format | GST_SEEK_METHOD_SET | GST_SEEK_FLAG_FLUSH, 
+						    (guint64) track);
+				if (gst_element_send_event (mp->priv->playbin, event))
+					cdda_seek = TRUE;
+			}
+#endif
+
+		}
+	}
 
 	begin_gstreamer_operation (mp);
 	mp->priv->uri = g_strdup (uri);
 
-	if (g_str_has_prefix (uri, "cdda://")) {
-		gchar *copy, *temp, *split;
-		int l = strlen ("cdda://");
-
-		copy = g_strdup (uri);
-		split = g_utf8_strrchr (copy + l, -1, ':');
-
-		if (split == NULL) {
-			/* invalid URI, it doesn't contain a ':' */
-			end_gstreamer_operation (mp, TRUE, error);
-			return FALSE;
-		}
-
-		temp = g_strdup_printf ("cdda://%s", split + 1);
-		g_object_set (G_OBJECT (mp->priv->playbin), "uri", temp, NULL);
-		g_free (temp);
-
-		*split = 0;
-		temp = g_strdup (copy + l);
-		g_signal_connect (G_OBJECT (mp->priv->playbin),
-				  "notify::source",
-				  G_CALLBACK (cdda_got_source_cb),
-				  temp);
-		g_free (copy);
-	} else {
+	if (!cdda_seek) {
 		g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);
 	}
 
