@@ -285,7 +285,7 @@ static GtkActionEntry rb_podcast_source_actions [] =
 	{ "PodcastSrcDownloadPost", NULL, N_("Download _Episode"), NULL,
 	  N_("Download Podcast Episode"),
 	  G_CALLBACK (rb_podcast_source_cmd_download_post) },
-	{ "PodcastSrcCancelDownload", NULL, N_("_Cancel Download"), NULL,
+	{ "PodcastSrcCancelDownload", GTK_STOCK_CANCEL, N_("_Cancel Download"), NULL,
 	  N_("Cancel Episode Download"),
 	  G_CALLBACK (rb_podcast_source_cmd_cancel_download) },
 	{ "PodcastFeedProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
