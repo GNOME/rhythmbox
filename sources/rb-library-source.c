@@ -69,7 +69,8 @@ static void rb_library_source_cmd_choose_artist (GtkAction *action,
 static void rb_library_source_cmd_choose_album (GtkAction *action,
 						RBShell *shell);
 static void songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source);
-static void rb_library_source_library_location_cb (GtkFileChooser *chooser,
+static void rb_library_source_library_location_cb (GtkEntry *entry,
+						   GdkEventFocus *event,
 						   RBLibrarySource *source);
 static void rb_library_source_browser_changed_cb (RBLibraryBrowser *entry,
 						  RBLibrarySource *source);
@@ -89,8 +90,8 @@ static void rb_library_source_library_location_changed (GConfClient *client,
 							guint cnxn_id,
 							GConfEntry *entry,
 							RBLibrarySource *source);
-static void rb_library_source_prefs_update (RBShellPreferences *prefs,
-					    RBLibrarySource *source);
+static void rb_library_source_location_button_clicked_cb (GtkButton *button,
+							  RBLibrarySource *source);
 static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -153,9 +154,8 @@ struct RBLibrarySourcePrivate
 	GtkActionGroup *action_group;
 	GtkWidget *config_widget;
 
-	GtkFileChooser *library_location_widget;
+	GtkWidget *library_location_entry;
 	GtkWidget *watch_library_check;
-	gboolean library_location_change_pending, library_location_handle_pending;
 	
 	RhythmDBEntryType entry_type;
 
@@ -704,22 +704,22 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
 					       (GTK_RADIO_BUTTON (tmp))));
 
-	source->priv->library_location_widget =
-		(GtkFileChooser*) glade_xml_get_widget (xml, "library_location_chooser");
+	source->priv->library_location_entry = glade_xml_get_widget (xml, "library_location_entry");
 	source->priv->watch_library_check = glade_xml_get_widget (xml, "watch_library_check");
+	tmp = glade_xml_get_widget (xml, "library_location_button");
+	g_signal_connect (G_OBJECT (tmp),
+			  "clicked",
+			  G_CALLBACK (rb_library_source_location_button_clicked_cb),
+			  asource);
 
 	rb_glade_boldify_label (xml, "browser_views_label");
 	rb_glade_boldify_label (xml, "library_location_label");
 	g_object_unref (G_OBJECT (xml));
 	
 	rb_library_source_preferences_sync (source);
-	g_signal_connect (G_OBJECT (source->priv->library_location_widget),
-			  "selection-changed",
+	g_signal_connect (G_OBJECT (source->priv->library_location_entry),
+			  "focus-out-event",
 			  G_CALLBACK (rb_library_source_library_location_cb),
-			  asource);
-	g_signal_connect (G_OBJECT (source->priv->shell_prefs),
-			  "hide",
-			  G_CALLBACK (rb_library_source_prefs_update),
 			  asource);
 	g_signal_connect (G_OBJECT (source->priv->watch_library_check),
 			  "toggled",
@@ -727,6 +727,31 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  asource);
 
 	return source->priv->config_widget;
+}
+
+static void
+rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource *source)
+{
+	GtkWidget *dialog;
+	
+	/* TODO display file chooser */
+	dialog = rb_file_chooser_new (_("Choose library location"), GTK_WINDOW (source->priv->shell_prefs),
+				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, FALSE);
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		char *uri;
+
+		uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
+		if (uri == NULL) {
+			uri = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
+		}
+		
+		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), uri);
+		rb_library_source_library_location_cb (GTK_ENTRY (source->priv->library_location_entry),
+						       NULL, source);
+		g_free (uri);
+	}
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 static void
@@ -743,23 +768,27 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
 	/* don't trigger the change notification */
-	g_signal_handlers_block_by_func (G_OBJECT (source->priv->library_location_widget),
+	g_signal_handlers_block_by_func (G_OBJECT (source->priv->library_location_entry),
 					 G_CALLBACK (rb_library_source_library_location_cb),
 					 source);
 
 	if (g_slist_length (list) == 1) {
+		gtk_widget_set_sensitive (source->priv->library_location_entry, TRUE);
 		/* the uri might be missing the trailing slash */
 		gchar *s = g_strconcat (list->data, G_DIR_SEPARATOR_S, NULL);
-		gtk_file_chooser_set_uri (source->priv->library_location_widget, s);
-		rb_debug ("syncing library location %s", s);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), s);
 		g_free (s);
+	} else if (g_slist_length (list) == 0) {
+		/* no library directories */
+		gtk_widget_set_sensitive (source->priv->library_location_entry, TRUE);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), "");
 	} else {
-		/* either no or multiple folders are chosen. make the widget blank*/
-		/*gtk_file_chooser_set_uri (source->priv->library_location_widget,
-					  "");*/
+		/* multiple library directories */
+		gtk_widget_set_sensitive (source->priv->library_location_entry, FALSE);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), _("Multiple locations set"));
 	}
 
-	g_signal_handlers_unblock_by_func (G_OBJECT (source->priv->library_location_widget),
+	g_signal_handlers_unblock_by_func (G_OBJECT (source->priv->library_location_entry),
 					   G_CALLBACK (rb_library_source_library_location_cb),
 					   source);
 
@@ -769,6 +798,38 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check),
 				      eel_gconf_get_boolean (CONF_MONITOR_LIBRARY));
 }
+
+static void
+rb_library_source_library_location_cb (GtkEntry *entry,
+				       GdkEventFocus *event,
+				       RBLibrarySource *source)
+{
+	GSList *list = NULL;
+	const char *uri;
+
+	uri = gtk_entry_get_text (entry);
+
+	if (uri && uri[0])
+		list = g_slist_prepend (NULL, (gpointer)uri);
+
+	eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+	if (list)
+		g_slist_free (list);
+	
+	/* don't do the first-run druid if the user sets the library location */
+	if (list)
+		eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
+}
+
+static void
+rb_library_source_watch_toggled_cb (GtkToggleButton *button, RBLibrarySource *source)
+{
+	gboolean active;
+
+	active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check));
+	eel_gconf_set_boolean (CONF_MONITOR_LIBRARY, active);
+}
+
 
 void
 rb_library_source_browser_views_activated_cb (GtkWidget *widget,
@@ -1099,78 +1160,6 @@ songs_view_drag_data_received_cb (GtkWidget *widget,
 {
 	rb_debug ("data dropped on the library source song view");
 	rb_source_receive_drag (RB_SOURCE (source), selection_data);
-}
-
-static gboolean
-rb_library_source_process_library_location_change (RBLibrarySource *source)
-{
-	GSList *list;
-	
-	if (!source->priv->library_location_change_pending)
-		return FALSE;
-
-	/* process the change */
-	list = gtk_file_chooser_get_uris (source->priv->library_location_widget);
-	eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
-
-	g_slist_foreach (list, (GFunc) g_free, NULL);
-	g_slist_free (list);
-
-	source->priv->library_location_change_pending = FALSE;
-
-	return FALSE;
-}
-
-static void
-rb_library_source_prefs_update (RBShellPreferences *prefs,
-				RBLibrarySource *source)
-{
-	rb_library_source_process_library_location_change (source);
-}
-
-static gboolean
-rb_library_source_process_library_handle_selection (RBLibrarySource *source)
-{
-	GSList *list;
-	
-	if (!source->priv->library_location_handle_pending)
-		return FALSE;
-
-	/* this can't be processed immediately, because we sometimes get intemediate signals */
-	for (list = gtk_file_chooser_get_uris (source->priv->library_location_widget);
-	     list != NULL ; list = g_slist_next (list)) {
-		if ((strcmp (list->data, "file:///") == 0) ||
-		    (strcmp (list->data, "file://") == 0)) {
-			rb_error_dialog (GTK_WINDOW (source->priv->shell_prefs), _("Cannot select library location"),
-					 _("The root filesystem cannot be chosen as your library location. Please choose a different location"));
-		} else {
-			source->priv->library_location_change_pending = TRUE;
-		}
-	}
-
-	source->priv->library_location_handle_pending = FALSE;
-	return FALSE;
-}
-
-static void
-rb_library_source_library_location_cb (GtkFileChooser *chooser,
-				       RBLibrarySource *source)
-{
-	source->priv->library_location_handle_pending = TRUE;
-
-	g_idle_add ((GSourceFunc)rb_library_source_process_library_handle_selection, source);
-
-	/* don't do the first-run druid if the user sets the library location */
-	eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
-}
-
-static void
-rb_library_source_watch_toggled_cb (GtkToggleButton *button, RBLibrarySource *source)
-{
-	gboolean active;
-
-	active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check));
-	eel_gconf_set_boolean (CONF_MONITOR_LIBRARY, active);
 }
 
 static void

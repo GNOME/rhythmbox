@@ -1,5 +1,17 @@
 2006-02-23  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/library-prefs.glade:
+	* sources/rb-library-source.c: (impl_get_config_widget),
+	(rb_library_source_location_button_clicked_cb),
+	(rb_library_source_preferences_sync),
+	(rb_library_source_library_location_cb),
+	(rb_library_source_watch_toggled_cb): change the library-location
+	widgets from the file-chooser drop menu to a text entry and Browse
+	button. This is needed to prevent the location from chaning if the
+	directory cannot be found. Fixes bug 328414.
+
+2006-02-23  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-podcast-source.c: add icon to the Cancel Download menu
 	item. Fixes bug 329042.
 
