@@ -1,5 +1,12 @@
 2006-02-23  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_stat_event),
+	(rhythmdb_process_metadata_load), (monitor_subdirectory),
+	(rhythmdb_sync_library_location): don't monitor files at all if
+	watching is turned off. From bug 323096.
+
+2006-02-23  James Livingston  <jrl@ids.org.au>
+
 	* data/rhythmbox.schemas:
 	* lib/rb-preferences.h:
 	* shell/rb-shell.c: (rb_shell_constructor),

@@ -1442,7 +1442,8 @@ rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 			if (mtime == event->vfsinfo->mtime) {
 				rb_debug ("not modified: %s", event->real_uri);
 				/* monitor the file for changes */
-				rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
+				if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
+					rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
 			} else {
 				RhythmDBEvent *new_event;
 
@@ -1590,7 +1591,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
-	rhythmdb_monitor_uri_path (db, entry->location, NULL);
+	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
+		rhythmdb_monitor_uri_path (db, entry->location, NULL);
 
 	rhythmdb_commit_internal (db, FALSE);
 	
@@ -4084,7 +4086,7 @@ rhythmdb_idle_save (RhythmDB *db)
 }
 
 static void
-monitor_subdirectory (char *uri, RhythmDB *db)
+monitor_subdirectory (const char *uri, RhythmDB *db)
 {
 	GError *error = NULL;
 
@@ -4167,10 +4169,10 @@ rhythmdb_sync_library_location (RhythmDB *db)
 		if (db->priv->library_locations) {
 			g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
 		}
-	}
 
-	/* monitor every directory that contains a (TYPE_SONG) track */
-	rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
+		/* monitor every directory that contains a (TYPE_SONG) track */
+		rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
+	}
 }
 
 static void
