@@ -1,5 +1,12 @@
 2006-02-23  James Livingston  <jrl@ids.org.au>
 
+	patch by:  Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): deal with extra
+	comma in some podcast feeds. Fixes bug 332194.
+
+2006-02-23  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_execute_stat): execute the stats at a
 	lower priority.
 
