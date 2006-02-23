@@ -50,6 +50,17 @@
       </schema>
 
       <schema>
+        <key>/schemas/apps/rhythmbox/state/window_visible</key>
+        <applyto>/apps/rhythmbox/state/window_visible</applyto>
+        <owner>rhythmbox</owner>
+        <type>boolean</type>
+        <default>1</default>
+        <locale name="C">
+	<short>Whether the window is visible</short>
+	<long>When set to false, causes Rhythmbox to start only as a tray icon with the window hidden.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>
         <applyto>/apps/rhythmbox/state/paned_position</applyto>
         <owner>rhythmbox</owner>

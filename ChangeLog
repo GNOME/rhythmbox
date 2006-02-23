@@ -1,5 +1,13 @@
 2006-02-23  James Livingston  <jrl@ids.org.au>
 
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_set_visibility): remember main window visibility between
+	sessions. Fixes bug 127320.
+
+2006-02-23  James Livingston  <jrl@ids.org.au>
+
 	* data/glade/library-prefs.glade:
 	* sources/rb-library-source.c: (impl_get_config_widget),
 	(rb_library_source_location_button_clicked_cb),

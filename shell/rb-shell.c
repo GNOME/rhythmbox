@@ -208,6 +208,9 @@ static void rb_shell_sync_toolbar_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void rb_shell_sync_pane_visibility (RBShell *shell);
 static void rb_shell_sync_statusbar_visibility (RBShell *shell);
+static void rb_shell_set_visibility (RBShell *shell,
+				     gboolean visible,
+				     gboolean force);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
@@ -1304,7 +1307,8 @@ rb_shell_constructor (GType type,
 
 		gtk_widget_show_all (GTK_WIDGET (druid));
 	} else {
-		gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
+		gtk_widget_realize (GTK_WIDGET (shell->priv->window));
+		rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
 	}
 
 	return G_OBJECT (shell);
@@ -1425,6 +1429,8 @@ rb_shell_set_visibility (RBShell *shell,
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
 		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
 		g_signal_emit_by_name (shell, "visibility_changed", visible);
+
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
 	} else {
 		int x, y, width, height;
 
@@ -1443,6 +1449,8 @@ rb_shell_set_visibility (RBShell *shell,
 		 */
 		shell->priv->idle_hide_mainwindow_id =
 			g_timeout_add (250, idle_hide_mainwindow, g_object_ref (shell));
+
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, FALSE);
 	}
 
 }
