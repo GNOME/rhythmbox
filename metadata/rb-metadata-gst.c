@@ -920,7 +920,7 @@ rb_metadata_load (RBMetaData *md,
 #endif
 
 	/* report errors for various failure cases.
-	 * these don't include the URI as the load failure dialog
+	 * these don't include the URI as the import errors source
 	 * already displays it.
 	 */
 	if (md->priv->error) {
@@ -963,7 +963,7 @@ rb_metadata_load (RBMetaData *md,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
 			     _("There is no plugin installed to handle a %s file."),
-			     md->priv->type);
+			     report_type);
 	} else {
 		/* yay, it worked */
 		rb_debug ("successfully read metadata for %s", uri);
