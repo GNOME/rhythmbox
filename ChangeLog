@@ -1,3 +1,13 @@
+2006-02-24  James Livingston  <jrl@ids.org.au>
+
+	patch by: Baptiste Mille-Mathias  <bmm80@free.fr>
+
+	* sources/rb-library-source.c:
+	(rb_library_source_location_button_clicked_cb),
+	(rb_library_source_preferences_sync),
+	(rb_library_source_library_location_cb): convert the library URI to
+	for display, and back again. Fixes bug 332356.
+
 2006-02-23  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_stat_event),

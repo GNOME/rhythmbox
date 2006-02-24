@@ -739,16 +739,20 @@ rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource
 				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, FALSE);
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *uri;
+		char *path;
 
 		uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
 		if (uri == NULL) {
 			uri = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 		}
 		
-		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), uri);
+		path = gnome_vfs_format_uri_for_display (uri);
+		
+		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
 		rb_library_source_library_location_cb (GTK_ENTRY (source->priv->library_location_entry),
 						       NULL, source);
 		g_free (uri);
+		g_free (path);
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -773,11 +777,13 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 					 source);
 
 	if (g_slist_length (list) == 1) {
+		char *path;
+
 		gtk_widget_set_sensitive (source->priv->library_location_entry, TRUE);
-		/* the uri might be missing the trailing slash */
-		gchar *s = g_strconcat (list->data, G_DIR_SEPARATOR_S, NULL);
-		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), s);
-		g_free (s);
+
+		path = gnome_vfs_format_uri_for_display (list->data);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
+		g_free (path);
 	} else if (g_slist_length (list) == 0) {
 		/* no library directories */
 		gtk_widget_set_sensitive (source->priv->library_location_entry, TRUE);
@@ -805,14 +811,18 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 				       RBLibrarySource *source)
 {
 	GSList *list = NULL;
-	const char *uri;
+	const char *path;
+	char *uri;
 
-	uri = gtk_entry_get_text (entry);
+	path = gtk_entry_get_text (entry);
+	uri = gnome_vfs_make_uri_from_input (path);
 
 	if (uri && uri[0])
 		list = g_slist_prepend (NULL, (gpointer)uri);
 
 	eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+
+	g_free (uri);
 	if (list)
 		g_slist_free (list);
 	
