@@ -1105,7 +1105,18 @@ typedef struct {
 	RBAutoPlaylistSource *playlist;
 	RBPlaylistManager *mgr;
 	RBQueryCreator *creator;
+	gint playlist_deleted_id;
+	gint creator_response_id;
 } EditAutoPlaylistData;
+
+static void
+cleanup_edit_data (EditAutoPlaylistData *data)
+{
+	g_signal_handler_disconnect (data->playlist, data->playlist_deleted_id);
+	g_signal_handler_disconnect (data->creator, data->creator_response_id);
+	gtk_widget_destroy (GTK_WIDGET (data->creator));
+	g_free (data);
+}
 
 static void
 edit_auto_playlist_response_cb (RBQueryCreator *dialog,
@@ -1115,8 +1126,7 @@ edit_auto_playlist_response_cb (RBQueryCreator *dialog,
 	rb_playlist_manager_set_automatic_playlist (data->mgr, data->playlist, dialog);
 	g_object_set_data (G_OBJECT (data->playlist), "rhythmbox-playlist-editor", NULL);
 
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-	g_free (data);
+	cleanup_edit_data (data);
 }
 
 static void
@@ -1124,8 +1134,7 @@ edit_auto_playlist_deleted_cb (RBAutoPlaylistSource *playlist, EditAutoPlaylistD
 {
 	g_object_set_data (G_OBJECT (playlist), "rhythmbox-playlist-editor", NULL);
 
-	gtk_widget_destroy (GTK_WIDGET (data->creator));
-	g_free (data);
+	cleanup_edit_data (data);
 }
 
 static void
@@ -1154,16 +1163,18 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 		data->mgr = mgr;
 		data->playlist = playlist;
 		data->creator = creator;
-		g_signal_connect (G_OBJECT (creator),
-				  "response",
-				  G_CALLBACK (edit_auto_playlist_response_cb),
-				  data);
+		data->creator_response_id = 
+			g_signal_connect (G_OBJECT (creator),
+					  "response",
+					  G_CALLBACK (edit_auto_playlist_response_cb),
+					  data);
 		
 		g_object_set_data (G_OBJECT (playlist), "rhythmbox-playlist-editor", creator);
-		g_signal_connect (G_OBJECT (playlist),
-				  "deleted",
-				  G_CALLBACK (edit_auto_playlist_deleted_cb),
-				  data);
+		data->playlist_deleted_id = 
+			g_signal_connect (G_OBJECT (playlist),
+					  "deleted",
+					  G_CALLBACK (edit_auto_playlist_deleted_cb),
+					  data);
 	}
 	gtk_window_present (GTK_WINDOW (creator));
 }

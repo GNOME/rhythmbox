@@ -1,3 +1,12 @@
+2006-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-playlist-manager.c: (cleanup_edit_data),
+	(edit_auto_playlist_response_cb), (edit_auto_playlist_deleted_cb),
+	(rb_playlist_manager_cmd_edit_automatic_playlist):
+	Fix various crashes when deleting auto playlists previously edited
+	by disconnecting signal handlers when the query editor is closed or
+	the playlist is deleted.
+
 2006-02-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* metadata/rb-metadata-gst.c:  Correct comment referring to the now
