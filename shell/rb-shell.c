@@ -891,8 +891,10 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
 
 #ifdef WITH_AUDIOSCROBBLER
-	rb_debug ("unreffing audioscrobbler");
-	g_object_unref (G_OBJECT (shell->priv->audioscrobbler));
+	if (shell->priv->audioscrobbler) {
+		rb_debug ("unreffing audioscrobbler");
+		g_object_unref (G_OBJECT (shell->priv->audioscrobbler));
+	}
 #endif
 	
 	rb_debug ("unreffing clipboard shell");
@@ -1145,8 +1147,15 @@ rb_shell_constructor (GType type,
 	gtk_container_add (GTK_CONTAINER (win), vbox);
 
 #ifdef WITH_AUDIOSCROBBLER
-	rb_debug ("Audioscrobbler support enabled.");
-	shell->priv->audioscrobbler = rb_audioscrobbler_new (shell->priv->player_shell); 
+	/* 
+	 * Don't use audioscrobbler when the no-registration flag is set.
+	 * This flag is only used to run multiple instances at the same time, and
+	 * last.fm only allows one active client per user.
+	 */
+	if (!shell->priv->no_registration) {
+		rb_debug ("Audioscrobbler support enabled.");
+		shell->priv->audioscrobbler = rb_audioscrobbler_new (shell->priv->player_shell); 
+	}
 #endif /* WITH_AUDIOSCROBBLER */
 
 	rb_debug ("shell: adding gconf notification");

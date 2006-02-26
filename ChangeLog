@@ -1,5 +1,11 @@
 2006-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor):
+	Disable audioscrobbler when run with the --no-registration flag, since
+	last.fm doesn't allow multiple concurrent clients per user.
+
+2006-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-sourcelist.c: (rb_sourcelist_init), (key_release_cb):
 	Rename renamable sources when F2 is pressed when the sourcelist has
 	focus.  Fixes #330700.
