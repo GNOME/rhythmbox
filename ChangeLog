@@ -1,5 +1,11 @@
 2006-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* sources/rb-sourcelist.c: (rb_sourcelist_init), (key_release_cb):
+	Rename renamable sources when F2 is pressed when the sourcelist has
+	focus.  Fixes #330700.
+
+2006-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-playlist-manager.c: (cleanup_edit_data),
 	(edit_auto_playlist_response_cb), (edit_auto_playlist_deleted_cb),
 	(rb_playlist_manager_cmd_edit_automatic_playlist):

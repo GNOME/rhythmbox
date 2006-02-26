@@ -28,6 +28,7 @@
 
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
 #include "rb-sourcelist.h"
@@ -102,6 +103,9 @@ static void row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
 static gboolean button_press_cb (GtkTreeView *treeview,
 				 GdkEventButton *event,
 				 RBSourceList *sourcelist);
+static gboolean key_release_cb (GtkTreeView *treeview,
+				GdkEventKey *event,
+				RBSourceList *sourcelist);
 static gboolean popup_menu_cb (GtkTreeView *treeview, RBSourceList *sourcelist);
 static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
 static void visibility_notify_cb (GObject *obj, GParamSpec *pspec, 
@@ -222,6 +226,10 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
 				 "button_press_event",
 				 G_CALLBACK (button_press_cb),
+				 sourcelist, 0);
+	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+				 "key_release_event",
+				 G_CALLBACK (key_release_cb),
 				 sourcelist, 0);
 
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
@@ -643,6 +651,33 @@ button_press_cb (GtkTreeView *treeview,
 
 	return emit_show_popup (treeview, sourcelist);
 }
+
+static gboolean
+key_release_cb (GtkTreeView *treeview,
+		GdkEventKey *event,
+		RBSourceList *sourcelist)
+{
+	GtkTreeIter iter;
+	RBSource *target;
+
+	/* F2 = rename playlist */
+	if (event->keyval != GDK_F2)
+		return FALSE;
+
+	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection, NULL, &iter))
+		return FALSE;
+	
+	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
+	if (rb_source_can_rename (target)) {
+		rb_sourcelist_edit_source_name (sourcelist, target);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 
 static gboolean
 popup_menu_cb (GtkTreeView *treeview,
