@@ -1,3 +1,12 @@
+2006-02-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-dbus-service.c: (main):
+	Change argument handling so you can use --debug with the --load and
+	--can-save test modes.
+	* metadata/rb-metadata-dbus-client.c: (start_metadata_service):
+	Use a separate GMainContext, not the default one.  Probably fixes
+	#332344.
+
 2006-02-27  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: (rb_shell_constructor): focus the entry view when

@@ -432,6 +432,11 @@ main (int argc, char **argv)
 
 	g_type_init ();
 
+	if (argv[1] != NULL && strcmp(argv[1], "--debug") == 0) {
+		argv++;
+		debug = TRUE;
+	}
+
 	/* bug report modes */
 	if (argv[1] != NULL && strcmp(argv[1], "--load") == 0) {
 		return test_load (argv[2]);
@@ -440,10 +445,6 @@ main (int argc, char **argv)
 		return test_can_save (argv[2]);
 	}
 
-	if (argv[1] != NULL && strcmp(argv[1], "--debug") == 0) {
-		argv++;
-		debug = TRUE;
-	}
 	if (argv[1] != NULL && strcmp (argv[1], "--external") == 0) {
 		argv++;
 		svc.external = TRUE;

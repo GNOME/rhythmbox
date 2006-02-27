@@ -252,7 +252,7 @@ start_metadata_service (GError **error)
 	}
 	dbus_connection_set_exit_on_disconnect (dbus_connection, FALSE);
 
-	dbus_connection_setup_with_g_main (dbus_connection, g_main_context_default ());
+	dbus_connection_setup_with_g_main (dbus_connection, main_context);
 	
 	rb_debug ("Metadata process %d started", metadata_child);
 	return TRUE;
