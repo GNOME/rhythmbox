@@ -1,5 +1,10 @@
 2006-02-27  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_constructor): focus the entry view when
+	first starting up. Fixes bug 330342.
+
+2006-02-27  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-sourcelist-model.c:
 	(rb_sourcelist_model_set_dnd_targets):
 	* widgets/rb-entry-view.c: (rb_entry_view_constructor): only use the

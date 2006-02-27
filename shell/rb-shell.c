@@ -1320,6 +1320,19 @@ rb_shell_constructor (GType type,
 		rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
 	}
 
+	/* focus play if small, the entry view if not */
+	if (shell->priv->window_small) {
+		GtkWidget *play_button;
+		
+		play_button = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar/Play");
+		gtk_widget_grab_focus (play_button);
+	} else {
+		RBEntryView *view;
+
+		view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
+		gtk_widget_grab_focus (GTK_WIDGET (view));
+	}
+
 	return G_OBJECT (shell);
 }
 
