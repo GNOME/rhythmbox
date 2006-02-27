@@ -364,6 +364,28 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 				g_date_free (date);
 		}
 
+		/* Set rating */
+		if (song->rating != 0) {
+			GValue value = {0, };
+			g_value_init (&value, G_TYPE_DOUBLE);
+			g_value_set_double (&value, song->rating/20.0);
+			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+						       RHYTHMDB_PROP_RATING,
+						       &value);
+			g_value_unset (&value);
+		}
+		
+		/* Set last played */
+		if (song->time_played != 0) {
+			GValue value = {0, };
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value, itdb_time_mac_to_host (song->time_played));
+			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+						       RHYTHMDB_PROP_LAST_PLAYED,
+						       &value);
+			g_value_unset (&value);
+		}
+		
 		/* Set title */		
 		entry_set_string_prop (RHYTHMDB (db), entry, 
 				       RHYTHMDB_PROP_TITLE, song->title);

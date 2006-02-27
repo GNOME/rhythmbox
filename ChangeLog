@@ -1,3 +1,10 @@
+2006-02-27  James Livingston  <jrl@ids.org.au>
+
+	patch by: Gunnar Steinn Magnusson  <gsm@gunnarsteinn.com>
+
+	* sources/rb-ipod-source.c: (load_ipod_db_idle_cb): read the Rating
+	and Last Played metadata off iPods. Closes bug 324648.
+
 2006-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor):
