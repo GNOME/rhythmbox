@@ -1222,7 +1222,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 						     GDK_BUTTON1_MASK,
 						     rb_entry_view_drag_types,
 						     G_N_ELEMENTS (rb_entry_view_drag_types),
-						     GDK_ACTION_COPY | GDK_ACTION_MOVE);
+						     GDK_ACTION_COPY);
 	if (view->priv->is_drag_dest)
 		rb_tree_dnd_add_drag_dest_support (GTK_TREE_VIEW (view->priv->treeview),
 						   RB_TREE_DEST_CAN_DROP_BETWEEN | RB_TREE_DEST_EMPTY_VIEW_DROP,

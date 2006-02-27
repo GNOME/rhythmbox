@@ -1,5 +1,13 @@
 2006-02-27  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_set_dnd_targets):
+	* widgets/rb-entry-view.c: (rb_entry_view_constructor): only use the
+	COPY action for draging sources and tracks, not MOVE as well. Stops
+	Nautilus moving file away, and fixes bug 332488.
+
+2006-02-27  James Livingston  <jrl@ids.org.au>
+
 	patch by: Gunnar Steinn Magnusson  <gsm@gunnarsteinn.com>
 
 	* sources/rb-ipod-source.c: (load_ipod_db_idle_cb): read the Rating
