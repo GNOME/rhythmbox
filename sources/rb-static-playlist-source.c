@@ -29,6 +29,7 @@
 #include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-static-playlist-source.h"
+#include "rb-library-browser.h"
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-stock-icons.h"
@@ -44,12 +45,21 @@ static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
 static void impl_search (RBSource *asource, const char *search_text);
+static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
+
+
+/* browser stuff */
+static GList *impl_get_property_views (RBSource *source);
+void rb_static_playlist_source_browser_views_activated_cb (GtkWidget *widget,
+							 RBStaticPlaylistSource *source);
+static void rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *entry,
+							RBStaticPlaylistSource *source);
 
 static void rb_static_playlist_source_do_query (RBStaticPlaylistSource *source);
 
@@ -74,6 +84,10 @@ typedef struct
 {
 	RhythmDBQueryModel *base_model;
 	RhythmDBQueryModel *filter_model;
+
+	GtkWidget *paned;
+	RBLibraryBrowser *browser;
+	gboolean browser_shown;
 
 	char *search_text;
 } RBStaticPlaylistSourcePrivate;
@@ -101,6 +115,9 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_browser_toggled = impl_browser_toggled;
+	source_class->impl_get_property_views = impl_get_property_views;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 	
@@ -140,11 +157,28 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 			parent_class->constructor (type, n_construct_properties, construct_properties));
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
+	RBEntryView *songs;
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (G_OBJECT (priv->base_model), "show-hidden", TRUE, NULL);
-	
+
+	priv->paned = gtk_vpaned_new ();
+
+	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)));
+	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
+	g_signal_connect_object (G_OBJECT (priv->browser), "changed",
+				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
+				 source, 0);
+
+	rb_library_browser_set_model (priv->browser, priv->base_model);	
 	rb_static_playlist_source_do_query (source);
+			 
+	/* reparent the entry view */
+	songs = rb_source_get_entry_view (RB_SOURCE (source));
+	g_object_ref (G_OBJECT (songs));
+	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
+	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
+	gtk_container_add (GTK_CONTAINER (source), priv->paned);
 
 	/* watch these to find out when things are dropped into the entry view */
 	g_signal_connect_object (G_OBJECT (priv->base_model), "row-inserted",
@@ -153,6 +187,8 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (G_OBJECT (priv->base_model), "non-entry-dropped",
 			 G_CALLBACK (rb_static_playlist_source_non_entry_dropped),
 			 source, 0);
+
+	gtk_widget_show_all (GTK_WIDGET (source));
 
 	return G_OBJECT (source);
 }
@@ -248,6 +284,9 @@ impl_reset_filters (RBSource *source)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	gboolean changed = FALSE;
+	
+	if (rb_library_browser_reset (priv->browser))
+		changed = TRUE;
 
 	if (priv->search_text != NULL) {
 		changed = TRUE;
@@ -284,6 +323,30 @@ impl_search (RBSource *source, const char *search_text)
 	rb_source_notify_filter_changed (source);
 }
 
+static GList *
+impl_get_property_views (RBSource *source)
+{
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	GList *ret;
+
+	ret =  rb_library_browser_get_property_views (priv->browser);
+	return ret;
+}
+
+
+static void
+impl_browser_toggled (RBSource *source, gboolean enabled)
+{
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	priv->browser_shown = enabled;
+
+	if (enabled)
+		gtk_widget_show (GTK_WIDGET (priv->browser));
+	else
+		gtk_widget_hide (GTK_WIDGET (priv->browser));
+}
+
 static void
 rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 {
@@ -291,6 +354,7 @@ rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
 	RhythmDB *db = rb_playlist_source_get_db (psource);
 	GPtrArray *query = NULL;
+	GPtrArray *browser_query;
 	
 	if (priv->filter_model)
 		g_object_unref (priv->filter_model);
@@ -306,12 +370,22 @@ rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 				       RHYTHMDB_QUERY_END);
 	}
 
+	browser_query = rb_library_browser_construct_query (priv->browser);
+	rhythmdb_query_concatenate (query, browser_query);
+	rhythmdb_query_free (browser_query);
+
 	g_object_set (G_OBJECT (priv->filter_model), "query", query, NULL);
 	rhythmdb_query_free (query);
 	rhythmdb_query_model_reapply_query (priv->filter_model, TRUE);
 	rb_playlist_source_set_query_model (psource, priv->filter_model);
 }
 
+static void
+rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *entry, RBStaticPlaylistSource *source)
+{
+	rb_static_playlist_source_do_query (source);
+	rb_source_notify_filter_changed (RB_SOURCE (source));
+}
 
 static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *data)

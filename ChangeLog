@@ -1,3 +1,16 @@
+2006-02-28  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_constructor), (impl_reset_filters),
+	(impl_get_property_views), (impl_browser_toggled),
+	(rb_static_playlist_source_do_query),
+	(rb_static_playlist_source_browser_changed_cb): add browsers to static
+	playlists. From bug 118862.
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_class_init): disable them for the play queue.
+
 2006-02-27  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	* data/glade/library-prefs.glade:  Add a mnemonic.

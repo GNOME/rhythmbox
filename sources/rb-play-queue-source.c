@@ -106,6 +106,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_show_popup = impl_show_popup;
 
