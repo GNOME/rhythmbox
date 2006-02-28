@@ -273,6 +273,8 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 					else if (!strcmp (typename, "podcast-feed"))
 						type = RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
+					else if (!strcmp (typename, "ignore"))
+						type = RHYTHMDB_ENTRY_TYPE_IGNORE;
 					else
 						return;
 					type_set = TRUE;
@@ -742,8 +744,11 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		RHYTHMDB_FWRITE_STATICSTR ("podcast-post", ctx->handle, ctx->error);
 	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 		RHYTHMDB_FWRITE_STATICSTR ("podcast-feed", ctx->handle, ctx->error);
-	} else
+	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IGNORE) {
+		RHYTHMDB_FWRITE_STATICSTR ("ignore", ctx->handle, ctx->error);
+	} else {
 		g_assert_not_reached ();
+	}
 
 	RHYTHMDB_FWRITE_STATICSTR ("\">\n", ctx->handle, ctx->error);
 		
@@ -921,17 +926,20 @@ rhythmdb_tree_save (RhythmDB *rdb)
 				   "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">", 
 				   ctx.handle, ctx.error);
 
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_SONG, 
-				    (RBTreeEntryItFunc)save_entry, 
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_SONG,
+				    (RBTreeEntryItFunc)save_entry,
 				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, 
-				    (RBTreeEntryItFunc)save_entry, 
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
+				    (RBTreeEntryItFunc)save_entry,
 				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_POST, 
-				    (RBTreeEntryItFunc)save_entry, 
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+				    (RBTreeEntryItFunc)save_entry,
 				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED, 
-				    (RBTreeEntryItFunc)save_entry, 
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
+				    (RBTreeEntryItFunc)save_entry,
+				    NULL, NULL, NULL, &ctx);
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IGNORE,
+				    (RBTreeEntryItFunc)save_entry,
 				    NULL, NULL, NULL, &ctx);
 
 	RHYTHMDB_FWRITE_STATICSTR ("</rhythmdb>\n", ctx.handle, ctx.error);

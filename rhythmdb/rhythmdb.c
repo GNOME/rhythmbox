@@ -1286,12 +1286,6 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
-	/* mtime */
-	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, vfsinfo->mtime);
-	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &val);
-	g_value_unset (&val);
-
 	/* genre */
 	set_metadata_string_default_unknown (db, metadata, entry,
 					     RB_METADATA_FIELD_GENRE,
@@ -1395,6 +1389,9 @@ rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 		if ((event->entry_type != -1) && (entry->type != event->entry_type))
 			g_warning ("attempt to use same location in multiple entry types");
 
+		if (entry->type == RHYTHMDB_ENTRY_TYPE_IGNORE)
+			rb_debug ("ignoring %p", entry);
+
 		if (event->error) {
 			if (!is_ghost_entry (entry)) {
 				rhythmdb_entry_set_visibility (db, entry, FALSE);
@@ -1476,39 +1473,65 @@ typedef struct
 } RhythmDBLoadErrorData;
 
 static void
-rhythmdb_add_import_error_entry (RhythmDB *db, GError *error, const char *uri)
+rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
-	
-	if (g_error_matches (error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
-		rb_debug ("found file which will be ignored %s", uri);
-		return;
-	}
+	RhythmDBEntryType error_entry_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
 
-	entry = rhythmdb_entry_lookup_by_location (db, uri);
+	if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE))
+		error_entry_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
+	
+	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (entry) {
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+		RhythmDBEntryType entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		if (entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR &&
+		    entry_type != RHYTHMDB_ENTRY_TYPE_IGNORE) {
+			/* FIXME we've successfully read this file before.. so what should we do? */
+			rb_debug ("%s already exists in the library.. ignoring import error?", event->real_uri);
+			return;
+		}
+
+		if (entry_type != error_entry_type) {
+			/* delete the existing entry, then create a new one below */
+			rhythmdb_entry_delete (db, entry);
+			entry = NULL;
+		} else if (error_entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 			/* we've already got an error for this file, so just update it */
 			g_value_init (&value, G_TYPE_STRING);
-			g_value_set_string (&value, error->message);
+			g_value_set_string (&value, event->error->message);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
 			g_value_unset (&value);
-
-			rhythmdb_commit_internal (db, FALSE);
 		} else {
-			/* FIXME we've successfully read this file before.. so what should we do? */
-			rb_debug ("%s already exists in the library.. ignoring import error?", uri);
+			/* no need to update the ignored file entry */
 		}
-	} else {
-		/* create a new import error entry */
-		entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR, uri);
-		
-		g_value_init (&value, G_TYPE_STRING);
-		g_value_set_string (&value, error->message);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+
+		/* mtime */
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, event->vfsinfo->mtime);
+		rhythmdb_entry_set(db, entry, RHYTHMDB_PROP_MTIME, &value);
 		g_value_unset (&value);
+
+		rhythmdb_commit_internal (db, FALSE);
+	} 
+
+	if (entry == NULL) {
+		/* create a new import error or ignore entry */
+		entry = rhythmdb_entry_new (db, error_entry_type, event->real_uri);
+		
+		if (error_entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+			g_value_init (&value, G_TYPE_STRING);
+			g_value_set_string (&value, event->error->message);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+			g_value_unset (&value);
+		}
 	
+		/* mtime */
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, event->vfsinfo->mtime);
+		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MTIME, &value);
+		g_value_unset (&value);
+
 		rhythmdb_entry_set_visibility (db, entry, TRUE);
 
 		rhythmdb_commit_internal (db, FALSE);
@@ -1530,7 +1553,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	}
 
 	if (event->error) {
-		rhythmdb_add_import_error_entry (db, event->error, event->real_uri);
+		rhythmdb_add_import_error_entry (db, event);
 		return TRUE;
 	}
 
@@ -1544,6 +1567,15 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	g_get_current_time (&time);
 
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
+
+	if (entry) {
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != event->entry_type) {
+			/* switching from IGNORE to SONG or vice versa, recreate the entry */
+			rhythmdb_entry_delete (db, entry);
+			entry = NULL;
+		}
+	}
+	
 	if (!entry) {
 		if (event->entry_type == -1)
 			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
@@ -1576,7 +1608,16 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	if ((event->entry_type != -1) && (entry->type != event->entry_type))
 		g_warning ("attempt to use same location in multiple entry types");
 
-	set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
+	/* mtime */
+	g_value_init (&value, G_TYPE_ULONG);
+	g_value_set_ulong (&value, event->vfsinfo->mtime);
+	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
+	g_value_unset (&value);
+
+	if (event->entry_type != RHYTHMDB_ENTRY_TYPE_IGNORE &&
+	    event->entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+		set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
+	}
 
 	/* we've seen this entry */
 	rhythmdb_entry_set_visibility (db, entry, TRUE);
@@ -3741,6 +3782,20 @@ rhythmdb_entry_song_get_type (void)
 	g_static_mutex_unlock (&entry_type_mutex);
 
 	return song_type;
+}
+
+RhythmDBEntryType 
+rhythmdb_entry_ignore_get_type (void) 
+{
+	static RhythmDBEntryType ignore_type = -1;
+
+	g_static_mutex_lock (&entry_type_mutex);
+	if (ignore_type == -1) {
+		ignore_type = rhythmdb_entry_register_type ();
+	}
+	g_static_mutex_unlock (&entry_type_mutex);
+
+	return ignore_type;
 }
 
 RhythmDBEntryType rhythmdb_entry_iradio_get_type (void) 

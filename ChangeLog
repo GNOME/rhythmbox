@@ -1,5 +1,23 @@
 2006-02-28  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(save_entry), (rhythmdb_tree_save): add a new "Ignore" type, which is
+	saved to disk
+
+	* rhythmdb/rhythmdb.c: (set_props_from_metadata),
+	(rhythmdb_process_stat_event), (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load), (rhythmdb_entry_song_get_type),
+	(rhythmdb_entry_ignore_get_type): When loading a file, which is marked
+	IGNORE (e.g. known video stream) create an entry of the Ignore type.
+	This will make importing files quicker as we don't need to try files
+	that we know are not going to be interesting - especially useful when
+	using the library watching facility.
+
+	Fixes bug 323179.
+
+2006-02-28  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_constructor),
 	(rb_shell_set_visibility): fix browser and source-list pane
 	positioning, that I broke with the "remember visibility" patch.
