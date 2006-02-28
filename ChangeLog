@@ -1,5 +1,11 @@
 2006-02-28  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-auto-playlist-source.c:
+	(construct_query_from_selection): don't create a subquery for only one
+	criteria, as it's a silly effifiency degredation.
+
+2006-02-28  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.h:
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
 	(save_entry), (rhythmdb_tree_save): add a new "Ignore" type, which is

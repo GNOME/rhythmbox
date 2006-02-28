@@ -446,19 +446,12 @@ construct_query_from_selection (RBAutoPlaylistSource *source)
 	GPtrArray *browser_query;
 
 	if (priv->search_text) {
-		GPtrArray *subquery = rhythmdb_query_parse (db,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_SEARCH_MATCH,
-							    priv->search_text,
-							    RHYTHMDB_QUERY_END);
 		rhythmdb_query_append (db,
 				       query,
-				       RHYTHMDB_QUERY_SUBQUERY,
-				       subquery,
+				       RHYTHMDB_QUERY_PROP_LIKE,
+				       RHYTHMDB_PROP_SEARCH_MATCH,
+				       priv->search_text,
 				       RHYTHMDB_QUERY_END);
-		/* select where type="song" and
-		 *  (genre like "foo" or artist like "foo" or album like "foo")
-		 */
 	}
 
 	browser_query = rb_library_browser_construct_query (priv->browser);
