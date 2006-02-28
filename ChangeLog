@@ -1,5 +1,11 @@
 2006-02-28  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal): just check for the
+	file:// prefix, instead of using gnome_vfs_uri_is_local, since that
+	stats the file. Stops the UI blocking while stats are done.
+
+2006-02-28  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-static-playlist-source.c:
 	(rb_static_playlist_source_class_init),
 	(rb_static_playlist_source_constructor), (impl_reset_filters),

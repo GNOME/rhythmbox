@@ -827,7 +827,7 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 							 RHYTHMDB_PROP_LOCATION);
 
 			/* always start remote files hidden*/
-			if (!rb_uri_is_local (uri))
+			if (!g_str_has_prefix (uri, "file://"))
 				entry->hidden = TRUE;
 
 			queue_stat_uri (uri, db, -1);
