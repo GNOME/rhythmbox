@@ -1,5 +1,10 @@
 2006-03-01  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/gsequence.c: fix a typo in the last commit, that makes it
+	not work in glib 2.8 systems.
+
+2006-03-01  James Livingston  <jrl@ids.org.au>
+
 	* lib/rb-file-helpers.c: (rb_uri_is_local): just check for the file://
 	prefix instead of using gnome_vfs_uri_is_local, since the gnomevfs dev
 	say it is crap.
