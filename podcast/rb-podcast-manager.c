@@ -585,12 +585,6 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 		goto next_step;
 	}
 		
-	if (gnome_vfs_uri_is_local (remote_uri)) {	
-		rb_debug ("Error downloading podcast: uri is local");
-		goto next_step;
-	}
-
-
 	conf_dir_name = rb_podcast_manager_get_podcast_dir (pd);
 	dir_name = g_build_filename (conf_dir_name,
 				     album_name,
@@ -1290,7 +1284,7 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd, RhythmDBEntry *ent
 		
 		uri = gnome_vfs_uri_new (file_name);
 		
-		if ((uri != NULL) && (gnome_vfs_uri_is_local (uri) == TRUE)) {
+		if ((uri != NULL)) {
 			gnome_vfs_unlink (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT));
 		
 			/* remove dir */

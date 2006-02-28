@@ -1902,7 +1902,7 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 	/* we can't do this synchonously if the file is remote and hasn't been stat'd yet
 	 * because it may block indefinitely while
 	 */
-	if ((event->type == RHYTHMDB_ACTION_STAT) && !gnome_vfs_uri_is_local (vfs_uri)) {
+	if ((event->type == RHYTHMDB_ACTION_STAT)) {
 		GList *uri_list = g_list_append (NULL, vfs_uri);
 		event->real_uri = g_strdup (uri);
 	

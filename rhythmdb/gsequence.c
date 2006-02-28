@@ -22,6 +22,11 @@
 
 #include "gsequence.h"
 
+#ifndef g_slice_new0
+#define g_slice_new0(a) g_new0(a, 1)
+#define g_slice_free1(a, b) g_free(b)
+#endif
+
 typedef struct _GSequenceNode GSequenceNode;
 
 struct _GSequence {
@@ -639,7 +644,7 @@ splay (GSequenceNode *node)
 static GSequenceNode *
 g_sequence_node_new (gpointer          data)
 {
-    GSequenceNode *node = g_new0 (GSequenceNode, 1);
+    GSequenceNode *node = g_slice_new0 (GSequenceNode);
 
     node->parent = NULL;
     node->left = NULL;
@@ -820,7 +825,7 @@ g_sequence_node_free         (GSequenceNode    *node,
 
 	if (destroy && !node->is_end)
 	    destroy (node->data);
-	g_free (node);
+	g_slice_free (GSequenceNode, node);
 	
 	node = next;
     }

@@ -1,3 +1,20 @@
+2006-03-01  James Livingston  <jrl@ids.org.au>
+
+	* lib/rb-file-helpers.c: (rb_uri_is_local): just check for the file://
+	prefix instead of using gnome_vfs_uri_is_local, since the gnomevfs dev
+	say it is crap.
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post),
+	(rb_podcast_manager_db_entry_deleted_cb): don't stop people putting
+	podcasts on ion-local places
+
+	* rhythmdb/gsequence.c: (g_sequence_node_new),
+	(g_sequence_node_free): use gslice if we are building against glib
+	2.10.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_execute_stat): always async stats for
+	local files too, so it doesn't block.
+
 2006-02-28  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal): just check for the
