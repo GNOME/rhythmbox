@@ -1305,6 +1305,8 @@ rb_shell_constructor (GType type,
 	rb_shell_sync_paned (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
+	rb_shell_sync_window_state (shell, FALSE);
+
 	/* Stop here if this is the first time. */
 	if (!eel_gconf_get_boolean (CONF_FIRST_TIME)) {
 		RBDruid *druid;
@@ -1316,7 +1318,6 @@ rb_shell_constructor (GType type,
 
 		gtk_widget_show_all (GTK_WIDGET (druid));
 	} else {
-		gtk_widget_realize (GTK_WIDGET (shell->priv->window));
 		rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
 	}
 
@@ -1449,7 +1450,11 @@ rb_shell_set_visibility (RBShell *shell,
 			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
 		gtk_widget_show (GTK_WIDGET (shell->priv->window));
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
-		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
+		
+		if (GTK_WIDGET_REALIZED (GTK_WIDGET (shell->priv->window)))
+			rb_shell_present (shell, gtk_get_current_event_time (), NULL);
+		else
+			gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
 		g_signal_emit_by_name (shell, "visibility_changed", visible);
 
 		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
@@ -1459,8 +1464,9 @@ rb_shell_set_visibility (RBShell *shell,
 		rb_debug ("hiding main window");
 		rb_tray_icon_get_geom (shell->priv->tray_icon,
 				       &x, &y, &width, &height);
-		set_icon_geometry (GTK_WIDGET (shell->priv->window)->window,
-				   x, y, width, height);
+		if (GTK_WIDGET_REALIZED (GTK_WIDGET (shell->priv->window)))
+			set_icon_geometry (GTK_WIDGET (shell->priv->window)->window,
+					   x, y, width, height);
 		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
 			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), TRUE);
 		gtk_window_iconify (GTK_WINDOW (shell->priv->window));
