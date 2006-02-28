@@ -735,7 +735,7 @@ rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource
 	GtkWidget *dialog;
 	
 	/* TODO display file chooser */
-	dialog = rb_file_chooser_new (_("Choose library location"), GTK_WINDOW (source->priv->shell_prefs),
+	dialog = rb_file_chooser_new (_("Choose Library Location"), GTK_WINDOW (source->priv->shell_prefs),
 				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, FALSE);
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *uri;
