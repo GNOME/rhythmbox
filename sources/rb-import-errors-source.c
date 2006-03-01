@@ -37,8 +37,14 @@ static GObject *rb_import_errors_source_constructor (GType type, guint n_constru
 static void rb_import_errors_source_dispose (GObject *object);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
+static void impl_move_to_trash (RBSource *source);
 static void impl_delete (RBSource *source);
 static char *impl_get_status (RBSource *source);
+
+static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
+							 gboolean over_entry,
+							 RBImportErrorsSource *source);
+
 
 struct RBImportErrorsSourcePrivate
 {
@@ -66,11 +72,12 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 
 	source_class->impl_delete = impl_delete;
+	source_class->impl_move_to_trash = impl_move_to_trash;
 
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
@@ -142,6 +149,9 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_LOCATION, TRUE);
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_ERROR, TRUE);
 	
+	g_signal_connect_object (G_OBJECT (source->priv->view), "show_popup",
+				 G_CALLBACK (rb_import_errors_source_songs_show_popup_cb), source, 0);
+
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
 		
 	gtk_widget_show_all (GTK_WIDGET (source));
@@ -222,5 +232,28 @@ impl_get_status (RBSource *asource)
 	ret = g_strdup_printf (ngettext ("%d import errors", "%d import errors", count),
 			       count);
 	return ret;
+}
+
+static void
+impl_move_to_trash (RBSource *asource)
+{
+	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (asource);
+	GList *sel, *tem;
+
+	sel = rb_entry_view_get_selected_entries (source->priv->view);
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		rhythmdb_entry_move_to_trash (source->priv->db,
+					       (RhythmDBEntry *) tem->data);
+		rhythmdb_commit (source->priv->db);
+	}
+	g_list_free (sel);
+}
+
+static void
+rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
+					     gboolean over_entry,
+					     RBImportErrorsSource *source)
+{
+	_rb_source_show_popup (RB_SOURCE (source), "/ImportErrorsViewPopup");
 }
 

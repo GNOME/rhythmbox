@@ -1,5 +1,22 @@
 2006-03-01  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_execute_stat_info_cb): don't chaneg
+	the uri in the callback, since it causes symbols to not be escaped.
+	Fixes bug 332976.
+
+	* data/ui/rhythmbox-ui.xml:
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_class_init),
+	(rb_import_errors_source_constructor), (impl_get_status),
+	(impl_move_to_trash),
+	(rb_import_errors_source_songs_show_popup_cb): add move-to-trash for
+	import errors source
+	
+	* widgets/rb-entry-view.c: (rb_entry_view_location_cell_data_func),
+	(rb_entry_view_append_column): unescape the URI for display.
+
+2006-03-01  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry),
 	(rhythmdb_process_metadata_load): fix crashers when the vfs get info
 	function fails.

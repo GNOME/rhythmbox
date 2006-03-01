@@ -1875,17 +1875,11 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 {
 	/* this is in the main thread, so we can't do any long operation here */
 	GnomeVFSGetFileInfoResult *info_result = results->data;
-	char *uri = gnome_vfs_uri_to_string (info_result->uri, GNOME_VFS_URI_HIDE_NONE);
-	
-	if (uri) {
-		g_free (event->real_uri);
-		event->real_uri = uri;
-	}
 	
 	if (info_result->result == GNOME_VFS_OK) {
 		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 	} else {
-		char *unescaped = gnome_vfs_unescape_string_for_display (uri);
+		char *unescaped = gnome_vfs_unescape_string_for_display (event->real_uri);
 		event->error = g_error_new (RHYTHMDB_ERROR,
 					    RHYTHMDB_ERROR_ACCESS_FAILED,
 					    _("Couldn't access %s: %s"),

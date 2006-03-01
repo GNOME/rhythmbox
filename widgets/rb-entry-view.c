@@ -730,6 +730,23 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 	}
 }
 
+static void
+rb_entry_view_location_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+				       GtkTreeModel *tree_model, GtkTreeIter *iter,
+				       struct RBEntryViewCellDataFuncData *data)
+{
+	RhythmDBEntry *entry;
+	const char *location;
+	char *str;
+
+	entry = rhythmdb_query_model_iter_to_entry (data->view->priv->model, iter);
+
+	location = rhythmdb_entry_get_string (entry, data->propid);
+	str = gnome_vfs_unescape_string_for_display (location);
+
+	g_object_set (G_OBJECT (renderer), "text", str, NULL);
+	g_free (str);
+}
 
 static void
 rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -1061,7 +1078,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 	case RB_ENTRY_VIEW_COL_LOCATION:
 		propid = RHYTHMDB_PROP_LOCATION;
 		cell_data->propid = RHYTHMDB_PROP_LOCATION;
-		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_location_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_LOCATION;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_location_sort_func;
 		title = _("L_ocation");
