@@ -381,6 +381,12 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 
 				if (ctx->entry->last_played > entry->last_played)
 					entry->last_played = ctx->entry->last_played;
+
+				if (ctx->entry->first_seen > entry->first_seen)
+					entry->first_seen = ctx->entry->first_seen;
+
+				if (ctx->entry->last_seen > entry->last_seen)
+					entry->last_seen = ctx->entry->last_seen;
 				
 				rhythmdb_entry_unref (RHYTHMDB (ctx->db), ctx->entry);
 			}
