@@ -1,3 +1,14 @@
+2006-02-28  Dennis Cranston  <dennis_cranston@yahoo.com>
+
+	* shell/rb-shell-clipboard.c: Use lowercase "to" in "Move to Trash".
+	* shell/rb-shell.c: Use "Play Queue" and "Side Pane" terminology.
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_constructor), (rb_play_queue_source_new),
+	(rb_play_queue_source_update_count):  Use "Play Queue" instead
+	of "Queued Songs".
+
+	Fixes #331637.
+
 2006-03-01  James Livingston  <jrl@ids.org.au>
 
 	* data/rhythmbox.schemas: change "boolean" to "bool" in the schema.

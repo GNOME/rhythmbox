@@ -168,7 +168,7 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 						 rb_play_queue_source_track_info_cell_data_func,
 						 source, NULL);
 	rb_entry_view_append_column_custom (priv->sidebar, priv->sidebar_column,
-					    _("Queued songs"), "Title", NULL, 0);
+					    _("Play Queue"), "Title", NULL, 0);
 	rb_entry_view_set_columns_clickable (priv->sidebar, FALSE);
 	rb_playlist_source_setup_entry_view (RB_PLAYLIST_SOURCE (source), priv->sidebar);
 
@@ -217,7 +217,7 @@ RBSource *
 rb_play_queue_source_new (RBShell *shell)
 {
 	return RB_SOURCE (g_object_new (RB_TYPE_PLAY_QUEUE_SOURCE,
-					"name", _("Queued songs"),
+					"name", _("Play Queue"),
 					"shell", shell,
 					"is-local", TRUE,
 					NULL));
@@ -327,7 +327,7 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 {
 	gint count = gtk_tree_model_iter_n_children (model, NULL) + offset;
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
-	char *name = _("Queued songs");
+	char *name = _("Play Queue");
 	GtkAction *action;
 
 	/* update source name */

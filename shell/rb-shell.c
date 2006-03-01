@@ -486,7 +486,7 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewPartyMode", NULL, N_("_Party Mode"), NULL,
 	  N_("Change the status of the party mode"),
 	  G_CALLBACK (rb_shell_view_party_mode_changed_cb), FALSE },
-	{ "ViewQueueAsSidebar", NULL, N_("_Queue as Sidebar"), "<control>K",
+	{ "ViewQueueAsSidebar", NULL, N_("Play _Queue as Side Pane"), "<control>K",
 	  N_("Change whether the queue is visible as a source or a sidebar"),
 	  G_CALLBACK (rb_shell_view_queue_as_sidebar_changed_cb) },
         { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
