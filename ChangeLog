@@ -1,3 +1,9 @@
+2006-03-01  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-generic-player-source.c:
+	(rb_generic_player_source_constructor): don't get the parent class in
+	a dumb way, and it breaks when the class is derived from.
+
 2006-02-28  Abel Cheung  <maddog@linuxhall.org>
 
 	* configure.ac: Added "zh_HK" to ALL_LINGUAS.

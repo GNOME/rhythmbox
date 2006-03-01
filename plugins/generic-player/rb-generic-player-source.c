@@ -82,12 +82,10 @@ static GObject *
 rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
-	GObjectClass *klass, *parent_class; 
 	RBGenericPlayerSource *source; 
 
-	klass = G_OBJECT_CLASS (g_type_class_peek (type));
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	source = RB_GENERIC_PLAYER_SOURCE (parent_class->constructor (type, n_construct_properties, construct_properties));
+	source = RB_GENERIC_PLAYER_SOURCE (G_OBJECT_CLASS (rb_generic_player_source_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
 	rb_generic_player_source_load_songs (source);
 
