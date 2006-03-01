@@ -1,3 +1,8 @@
+2006-03-01  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_load_queue):
+	use gnome_vfs_read_entire_file with a URI, not a local filename
+
 2006-03-01  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element): handle

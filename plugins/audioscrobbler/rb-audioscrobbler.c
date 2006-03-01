@@ -1148,16 +1148,18 @@ rb_audioscrobbler_load_entry_from_string (const char *string)
 static gboolean
 rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 {
-	char *pathname;
+	char *pathname, *uri;
 	GnomeVFSResult result;
 	char *data;
 	int size;
 
 	pathname = g_build_filename (rb_dot_dir (), "audioscrobbler.queue", NULL);
-	rb_debug ("Loading Audioscrobbler queue from \"%s\"", pathname);
-
-	result = gnome_vfs_read_entire_file (pathname, &size, &data);
+	uri = g_filename_to_uri (pathname, NULL, NULL);
 	g_free (pathname);
+	rb_debug ("Loading Audioscrobbler queue from \"%s\"", uri);
+
+	result = gnome_vfs_read_entire_file (uri, &size, &data);
+	g_free (uri);
 	
 	/* do stuff */
 	if (result == GNOME_VFS_OK) {
