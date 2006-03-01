@@ -1,3 +1,16 @@
+2006-03-01  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-property-view.c: (rb_property_view_set_search_func):
+	* widgets/rb-property-view.h:  New function, allowing custom 
+	interactive search functions for property views.
+	
+	* sources/rb-podcast-source.c: 
+	(feed_select_change_cb): Only do a new query when the selection
+	actually changes.
+	(rb_podcast_source_constructor),
+	(rb_podcast_source_feed_title_search_func):
+	Interactive search function for podcast feed titles.  Fixes #327451.
+
 2006-03-01  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_execute_stat_info_cb): don't chaneg

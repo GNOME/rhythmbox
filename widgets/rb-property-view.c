@@ -747,4 +747,15 @@ rb_property_view_button_press_cb (GtkTreeView *tree,
 	return FALSE;
 }
 
+void
+rb_property_view_set_search_func (RBPropertyView *view,
+				  GtkTreeViewSearchEqualFunc func,
+				  gpointer func_data,
+				  GtkDestroyNotify notify)
+{
+	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
+					     func, func_data,
+					     notify);
+}
+
 

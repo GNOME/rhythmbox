@@ -176,6 +176,11 @@ static void rb_podcast_source_post_feed_cell_data_func  (GtkTreeViewColumn *colu
 							 GtkTreeIter *iter,
 						     	 RBPodcastSource *source);
 
+static gboolean rb_podcast_source_feed_title_search_func (GtkTreeModel *model,
+							  gint column,
+							  const gchar *key,
+							  GtkTreeIter *iter,
+							  RBPodcastSource *source);
 static void rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
 							 GtkCellRenderer *renderer,
 						     	 GtkTreeModel *tree_model,
@@ -652,6 +657,10 @@ rb_podcast_source_constructor (GType type,
 				 G_CALLBACK (feed_select_change_cb),
 				 source, 0);
 
+	rb_property_view_set_search_func (source->priv->feeds,
+					  (GtkTreeViewSearchEqualFunc) rb_podcast_source_feed_title_search_func,
+					  source,
+					  NULL);
 
 	g_object_ref (G_OBJECT (source->priv->feeds));
 
@@ -1008,6 +1017,9 @@ feed_select_change_cb (RBPropertyView *propview,
 		       GList *feeds,
 		       RBPodcastSource *source)
 {
+	if (rb_string_list_equal (feeds, source->priv->selected_feeds))
+		return;
+	
 	if (source->priv->selected_feeds) {
 		g_list_foreach (source->priv->selected_feeds, (GFunc) g_free, NULL);
 	        g_list_free (source->priv->selected_feeds);
@@ -1461,6 +1473,35 @@ rb_podcast_source_post_feed_cell_data_func (GtkTreeViewColumn *column,
 	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 		
 	g_object_set (G_OBJECT (renderer), "text", album, NULL);
+}
+
+static gboolean
+rb_podcast_source_feed_title_search_func (GtkTreeModel *model,
+					  gint column,
+					  const gchar *key,
+					  GtkTreeIter *iter,
+					  RBPodcastSource *source)
+{
+	char *title;
+	char *fold_key;
+	RhythmDBEntry *entry = NULL;
+	gboolean ret;
+
+	fold_key = rb_search_fold (key);
+	gtk_tree_model_get (model, iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title,
+			    -1);
+	entry = rhythmdb_entry_lookup_by_location (source->priv->db, title);
+	if (entry != NULL) {
+		g_free (title);
+		title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE_FOLDED);
+	}
+
+	ret = g_str_has_prefix (title, fold_key);
+
+	g_free (fold_key);
+	g_free (title);
+	return !ret;
 }
 
 static void

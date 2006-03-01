@@ -81,6 +81,11 @@ void		rb_property_view_set_model		(RBPropertyView *view,
 
 guint		rb_property_view_get_num_properties	(RBPropertyView *view);
 
+void		rb_property_view_set_search_func	(RBPropertyView *view,
+							 GtkTreeViewSearchEqualFunc func,
+							 gpointer func_data,
+							 GtkDestroyNotify notify);
+
 G_END_DECLS
 
 #endif /* __RB_PROPERTY_VIEW_H */
