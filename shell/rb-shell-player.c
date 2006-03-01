@@ -644,9 +644,10 @@ rb_shell_player_set_property (GObject *object,
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *property_views = rb_source_get_property_views (player->priv->selected_source);
 
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_player_entry_activated_cb),
-							      player);
+			if (songs)
+				g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+								      G_CALLBACK (rb_shell_player_entry_activated_cb),
+								      player);
 			for (; property_views; property_views = property_views->next)
 				g_signal_handlers_disconnect_by_func (G_OBJECT (property_views->data),
 								      G_CALLBACK (rb_shell_player_property_row_activated_cb),
@@ -666,10 +667,11 @@ rb_shell_player_set_property (GObject *object,
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *property_views = rb_source_get_property_views (player->priv->selected_source);
 
-			g_signal_connect_object (G_OBJECT (songs),
-						 "entry-activated",
-						 G_CALLBACK (rb_shell_player_entry_activated_cb),
-						 player, 0);
+			if (songs)
+				g_signal_connect_object (G_OBJECT (songs),
+							 "entry-activated",
+							 G_CALLBACK (rb_shell_player_entry_activated_cb),
+							 player, 0);
 			for (; property_views; property_views = property_views->next)
 				g_signal_connect_object (G_OBJECT (property_views->data),
 							 "property-activated",
@@ -1001,12 +1003,14 @@ rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError 
 static gboolean
 rb_shell_player_play (RBShellPlayer *player, GError **error)
 {
-	RBEntryView *songs = rb_source_get_entry_view (player->priv->current_playing_source);
+	RBEntryView *songs;
 
 	if (!rb_player_play (player->priv->mmplayer, error))
 		return FALSE;
 
-	rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PLAYING);
+	songs = rb_source_get_entry_view (player->priv->current_playing_source);
+	if (songs)
+		rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PLAYING);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -1274,11 +1278,13 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 
 	songs = rb_source_get_entry_view (source);
 	entry = rb_shell_player_get_playing_entry (player);	
-	if (entry) {
-		rb_entry_view_scroll_to_entry (songs, entry);
-		rb_entry_view_select_entry (songs, entry);
-	} else {
-		rb_entry_view_select_none (songs);
+	if (songs) {
+		if (entry) {
+			rb_entry_view_scroll_to_entry (songs, entry);
+			rb_entry_view_select_entry (songs, entry);
+		} else {
+			rb_entry_view_select_none (songs);
+		}
 	}
 }
 
@@ -1287,13 +1293,16 @@ swap_playing_source (RBShellPlayer *player, RBSource *new_source)
 {
 	if (player->priv->current_playing_source != NULL) {
 		RBEntryView *old_songs = rb_source_get_entry_view (player->priv->current_playing_source);
-		rb_entry_view_set_state (old_songs, RB_ENTRY_VIEW_NOT_PLAYING);
+		if (old_songs)
+			rb_entry_view_set_state (old_songs, RB_ENTRY_VIEW_NOT_PLAYING);
 	}
 	if (new_source != NULL) {
 		RBEntryView *new_songs = rb_source_get_entry_view (new_source);
-		rb_entry_view_set_state (new_songs, RB_ENTRY_VIEW_PLAYING);
 
-		rb_shell_player_set_playing_source (player, new_source);
+		if (new_songs) {
+			rb_entry_view_set_state (new_songs, RB_ENTRY_VIEW_PLAYING);
+			rb_shell_player_set_playing_source (player, new_source);
+		}
 	}
 }
 
@@ -1504,7 +1513,8 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 			rb_debug ("pausing mm player");
 			rb_player_pause (player->priv->mmplayer);
 			songs = rb_source_get_entry_view (player->priv->current_playing_source);
-			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PAUSED);
+			if (songs)
+				rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PAUSED);
 		} else if (!ignore_stop) {
 			rb_debug ("setting playing source to NULL");
 			rb_shell_player_set_playing_source (player, NULL);
@@ -1534,8 +1544,12 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 
 			/* selection takes precedence over first item in play order */
 			if (entry == NULL) {
+				GList *selection = NULL;
+
 				songs = rb_source_get_entry_view (player->priv->source);
-				GList* selection = rb_entry_view_get_selected_entries (songs);
+				if (songs)
+					selection = rb_entry_view_get_selected_entries (songs);
+
 				if (selection != NULL) {
 					rb_debug ("choosing first selected entry");
 					entry = (RhythmDBEntry*) selection->data;
@@ -1992,7 +2006,8 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	if (source) {
 		view = rb_source_get_entry_view (source);
-		rb_entry_view_set_state (view, entry_view_state);
+		if (view)
+			rb_entry_view_set_state (view, entry_view_state);
 	}
 }
 
@@ -2013,7 +2028,7 @@ actually_set_playing_source (RBShellPlayer *player,
 
 	if (source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
-		if (sync_entry_view) {
+		if (sync_entry_view && songs) {
 			rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PLAYING); 
 		}
 	}
@@ -2069,7 +2084,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 					if (player->priv->current_playing_source != RB_SOURCE (player->priv->queue_source))
 						rb_play_order_set_playing_entry (player->priv->play_order, NULL);
 
-					rb_entry_view_set_state (songs, RB_ENTRY_VIEW_NOT_PLAYING);
+					if (songs)
+						rb_entry_view_set_state (songs, RB_ENTRY_VIEW_NOT_PLAYING);
 				}
 			}
 		}
