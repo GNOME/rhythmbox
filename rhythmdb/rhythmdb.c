@@ -1506,11 +1506,13 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 			/* no need to update the ignored file entry */
 		}
 
-		/* mtime */
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, event->vfsinfo->mtime);
-		rhythmdb_entry_set(db, entry, RHYTHMDB_PROP_MTIME, &value);
-		g_value_unset (&value);
+		if (event->vfsinfo) {
+			/* mtime */
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value, event->vfsinfo->mtime);
+			rhythmdb_entry_set(db, entry, RHYTHMDB_PROP_MTIME, &value);
+			g_value_unset (&value);
+		}
 
 		rhythmdb_commit_internal (db, FALSE);
 	} 
@@ -1527,10 +1529,12 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 		}
 	
 		/* mtime */
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, event->vfsinfo->mtime);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MTIME, &value);
-		g_value_unset (&value);
+		if (event->vfsinfo) {
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value, event->vfsinfo->mtime);
+			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MTIME, &value);
+			g_value_unset (&value);
+		}
 
 		rhythmdb_entry_set_visibility (db, entry, TRUE);
 
@@ -1609,10 +1613,12 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		g_warning ("attempt to use same location in multiple entry types");
 
 	/* mtime */
-	g_value_init (&value, G_TYPE_ULONG);
-	g_value_set_ulong (&value, event->vfsinfo->mtime);
-	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
-	g_value_unset (&value);
+	if (event->vfsinfo) {
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, event->vfsinfo->mtime);
+		rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
+		g_value_unset (&value);
+	}
 
 	if (event->entry_type != RHYTHMDB_ENTRY_TYPE_IGNORE &&
 	    event->entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
