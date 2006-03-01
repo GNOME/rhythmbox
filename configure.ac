@@ -85,7 +85,7 @@ if test "x$with_hal" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_HAL_0_5, test x"$enable_hal05" = xyes)
 AM_CONDITIONAL(HAVE_HAL_0_2, test x"$enable_hal02" = xyes)
-AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal02" = xyes -o x"$enable_hal05" = xyes)
+AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
 
 dnl iPod support
 
