@@ -146,11 +146,9 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 {
 	RBQueryCreatorPrivate *priv;
 	RBQueryCreator *creator;
-	RBQueryCreatorClass *klass;
 	GladeXML *xml;
 	GtkWidget *mainbox;
 
-	klass = RB_QUERY_CREATOR_CLASS (g_type_class_peek (type));
 	creator = RB_QUERY_CREATOR (G_OBJECT_CLASS (rb_query_creator_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 	priv = QUERY_CREATOR_GET_PRIVATE (creator);

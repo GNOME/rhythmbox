@@ -86,14 +86,10 @@ enum
 
 G_DEFINE_TYPE(RBThread, rb_thread, G_TYPE_OBJECT)
 
-static GObjectClass *parent_class = NULL;
-
 static void
 rb_thread_class_init (RBThreadClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_thread_finalize;
 	object_class->constructor = rb_thread_constructor;
@@ -179,7 +175,7 @@ rb_thread_finalize (GObject *object)
 	g_async_queue_unref (thread->priv->action_queue);
 	g_async_queue_unref (thread->priv->result_queue);
 
-	(* G_OBJECT_CLASS (parent_class)->finalize) (object);
+	G_OBJECT_CLASS (rb_thread_parent_class)->finalize (object);
 }
 
 

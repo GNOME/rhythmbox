@@ -96,12 +96,10 @@ static GObject *
 rb_ipod_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
-	GObjectClass *klass, *parent_class; 
 	RBiPodSource *source; 
 
-	klass = G_OBJECT_CLASS (g_type_class_peek (type));
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	source = RB_IPOD_SOURCE (parent_class->constructor (type, n_construct_properties, construct_properties));
+	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
 	rb_ipod_load_songs (source);
 

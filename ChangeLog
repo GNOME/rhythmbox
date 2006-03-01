@@ -1,5 +1,26 @@
 2006-03-01  James Livingston  <jrl@ids.org.au>
 
+	* daapsharing/rb-daap-mdns-browser-howl.c:
+	(rb_daap_mdns_browser_class_init), (rb_daap_mdns_browser_finalize):
+	* daapsharing/rb-daap-mdns-publisher-avahi.c:
+	(rb_daap_mdns_publisher_class_init),
+	(rb_daap_mdns_publisher_finalize):
+	* lib/rb-thread.c: (rb_thread_class_init), (rb_thread_finalize):
+	* player/rb-recorder-gst.c: (rb_recorder_class_init),
+	(rb_recorder_finalize):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_constructor):
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_constructor):
+	* sources/rb-ipod-source.c: (rb_ipod_source_constructor):
+	* sources/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_style_set),
+	(rb_playlist_source_recorder_class_init),
+	(rb_playlist_source_recorder_finalize):
+	* widgets/rb-query-creator.c: (rb_query_creator_constructor): fix the
+	other classes in the same way, so they don't break when derived from.
+
+2006-03-01  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-generic-player-source.c:
 	(rb_generic_player_source_constructor): don't get the parent class in
 	a dumb way, and it breaks when the class is derived from.

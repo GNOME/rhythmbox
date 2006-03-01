@@ -589,14 +589,10 @@ rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
 				  GObjectConstructParam *construct_properties)
 {
 	RhythmDBQueryModel *model;
-	RhythmDBQueryModelClass *klass;
-	GObjectClass *parent_class;  
 
-	klass = RHYTHMDB_QUERY_MODEL_CLASS (g_type_class_peek (RHYTHMDB_TYPE_QUERY_MODEL));
+	model = RHYTHMDB_QUERY_MODEL (G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->
+			constructor (type, n_construct_properties, construct_properties));
 
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	model = RHYTHMDB_QUERY_MODEL (parent_class->constructor (type, n_construct_properties,
-								 construct_properties));
 	g_signal_connect_object (G_OBJECT (model->priv->db),
 				 "entry_added",
 				 G_CALLBACK (rhythmdb_query_model_entry_added_cb),

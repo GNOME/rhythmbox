@@ -118,8 +118,6 @@ typedef struct {
 
 static guint rb_recorder_signals [LAST_SIGNAL] = { 0 };
 
-static GObjectClass *parent_class = NULL;
-
 #define RB_RECORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RECORDER, RBRecorderPrivate))
 
 GQuark
@@ -139,7 +137,6 @@ rb_recorder_class_init (RBRecorderClass *klass)
 {
         GObjectClass *object_class;
 
-        parent_class = g_type_class_peek_parent (klass);
         object_class = (GObjectClass *) klass;
 
         object_class->finalize = rb_recorder_finalize;
@@ -682,7 +679,7 @@ rb_recorder_finalize (GObject *object)
                         NULL);
         g_list_free (recorder->priv->tracks);
 
-        G_OBJECT_CLASS (parent_class)->finalize (object);
+        G_OBJECT_CLASS (rb_recorder_parent_class)->finalize (object);
 }
 
 RBRecorder *

@@ -64,7 +64,6 @@ enum {
 	PROP_0
 };
 
-static GObjectClass *parent_class = NULL;
 static guint	     signals [LAST_SIGNAL] = { 0, };
 
 G_DEFINE_TYPE (RBDaapMdnsPublisher, rb_daap_mdns_publisher, G_TYPE_OBJECT)
@@ -360,8 +359,6 @@ rb_daap_mdns_publisher_class_init (RBDaapMdnsPublisherClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	parent_class = g_type_class_peek_parent (klass);
-
 	object_class->finalize	   = rb_daap_mdns_publisher_finalize;
 	object_class->get_property = rb_daap_mdns_publisher_get_property;
 	object_class->set_property = rb_daap_mdns_publisher_set_property;
@@ -425,7 +422,7 @@ rb_daap_mdns_publisher_finalize (GObject *object)
 
 	g_free (publisher->priv->name);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_daap_mdns_publisher_parent_class)->finalize (object);
 }
 
 RBDaapMdnsPublisher *
