@@ -69,6 +69,7 @@ if test "x$with_hal" != "xno"; then
   fi
   if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
       enable_hal=yes
+      AC_DEFINE(HAVE_HAL, 1, [Define if you HAL support])
       if test x$enable_hal05 == xyes; then
          AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
       else
@@ -82,8 +83,9 @@ if test "x$with_hal" != "xno"; then
     fi
   fi
 fi
-
-
+AM_CONDITIONAL(HAVE_HAL_0_5, test x"$enable_hal05" = xyes)
+AM_CONDITIONAL(HAVE_HAL_0_2, test x"$enable_hal02" = xyes)
+AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal02" = xyes -o x"$enable_hal05" = xyes)
 
 dnl iPod support
 

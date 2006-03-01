@@ -1,3 +1,16 @@
+2006-03-01  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac:
+	* lib/rb-file-helpers.c: (rb_uri_append_path):
+	* lib/rb-file-helpers.h:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume):
+	* sources/Makefile.am:
+	* sources/rb-ipod-source.c:
+	* sources/rb-psp-source.*:
+	Patch from James Livingston <jrl@ids.org.au> to add read-only Sony PSP
+	support, additional HAL < 0.5 support by yours truly (Closes: #332337)
+
 2006-03-02  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (rb_shell_player_set_property),

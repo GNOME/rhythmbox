@@ -20,9 +20,6 @@
  */
 
 #include <config.h>
-#if defined(HAVE_HAL_0_5) || defined(HAVE_HAL_0_2)
-#define HAVE_HAL 1
-#endif
 
 
 #include <gtk/gtktreeview.h>

@@ -34,7 +34,9 @@ libsourcesimpl_la_SOURCES =		\
 	rb-missing-files-source.c	\
 	rb-missing-files-source.h	\
 	rb-import-errors-source.c	\
-	rb-import-errors-source.h
+	rb-import-errors-source.h	\
+	rb-psp-source.c			\
+	rb-psp-source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -72,7 +74,6 @@ libsourcesimpl_la_SOURCES +=         \
 	rb-ipod-source.h
 INCLUDES += -I$(top_srcdir)/sources/ipod $(IPOD_CFLAGS)
 endif
-
 
 if USE_DAAP
 libsourcesimpl_la_SOURCES +=		\

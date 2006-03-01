@@ -32,6 +32,7 @@
 #include "rb-removable-media-source.h"
 #include "rb-generic-player-source.h"
 #include "rb-audiocd-source.h"
+#include "rb-psp-source.h"
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
 #endif
@@ -587,6 +588,8 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	if (source == NULL && rb_ipod_is_volume_ipod (volume))
 		source = rb_ipod_source_new (shell, volume);
 #endif
+	if (source == NULL && rb_psp_is_volume_player (volume))
+		source = rb_psp_source_new (shell, volume);
 	if (source == NULL && rb_generic_player_is_volume_player (volume))
 		source = rb_generic_player_source_new (shell, volume);
 

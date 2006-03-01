@@ -732,3 +732,18 @@ rb_canonicalise_uri (const char *uri)
 	return result;
 }
 
+char*
+rb_uri_append_path (const char *uri, const char *path)
+{
+	GnomeVFSURI *vfs_uri, *full_uri;
+	char *result;
+	
+	vfs_uri = gnome_vfs_uri_new (uri);
+	full_uri = gnome_vfs_uri_append_path (vfs_uri, path);
+	gnome_vfs_uri_unref (vfs_uri);
+	result = gnome_vfs_uri_to_string (full_uri, GNOME_VFS_URI_HIDE_NONE);
+	gnome_vfs_uri_unref (full_uri);
+
+	return result;
+}
+

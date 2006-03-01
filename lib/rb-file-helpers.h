@@ -48,6 +48,9 @@ void		rb_uri_handle_recursively(const char *uri,
 					  gboolean *cancelflag,
 					  gpointer user_data);
 
+char*		rb_uri_append_path	(const char *uri,
+					 const char *path);
+
 void		rb_file_helpers_init	(void);
 void		rb_file_helpers_shutdown(void);
 
