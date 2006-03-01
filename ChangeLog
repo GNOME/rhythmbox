@@ -1,3 +1,14 @@
+2006-03-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* data/glade/podcast-properties.glade:
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_init),
+	(rb_podcast_properties_dialog_update),
+	(rb_podcast_properties_dialog_update_location),
+	(rb_podcast_properties_dialog_update_download_location):
+	Add 'download location' field showing the path to the downloaded copy.
+	Fixes #330696.
+
 2006-03-01  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac: simplify HAVE_HAL define

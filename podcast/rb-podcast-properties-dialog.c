@@ -50,15 +50,16 @@ static void rb_podcast_properties_dialog_get_property (GObject *object,
 						       GValue *value, 
 						       GParamSpec *pspec);
 static gboolean rb_podcast_properties_dialog_get_current_entry (RBPodcastPropertiesDialog *dialog);
-static void rb_podcast_properties_dialog_update_title (RBPodcastPropertiesDialog *dialog);
-static void rb_podcast_properties_dialog_update_location (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_response_cb (GtkDialog *gtkdialog,
 						      int response_id,
 						      RBPodcastPropertiesDialog *dialog);
 
 static void rb_podcast_properties_dialog_update (RBPodcastPropertiesDialog *dialog);
+static void rb_podcast_properties_dialog_update_title (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_title_label (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_feed (RBPodcastPropertiesDialog *dialog);
+static void rb_podcast_properties_dialog_update_location (RBPodcastPropertiesDialog *dialog);
+static void rb_podcast_properties_dialog_update_download_location (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_duration (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_play_count (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_update_bitrate (RBPodcastPropertiesDialog *dialog);
@@ -80,6 +81,7 @@ struct RBPodcastPropertiesDialogPrivate
 	GtkWidget   *title;
 	GtkWidget   *feed;
 	GtkWidget   *location;
+	GtkWidget   *download_location;
 	GtkWidget   *duration;
 	GtkWidget   *lastplayed;
 	GtkWidget   *playcount;
@@ -90,8 +92,6 @@ struct RBPodcastPropertiesDialogPrivate
 	
 	GtkWidget   *close_button;
 };
-
-#define RB_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_PROPERTIES_DIALOG, RBPodcastPropertiesDialogPrivate))
 
 enum 
 {
@@ -129,7 +129,9 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
 	GladeXML *xml;
 	
-	dialog->priv = RB_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
+	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog, 
+						    RB_TYPE_PODCAST_PROPERTIES_DIALOG, 
+						    RBPodcastPropertiesDialogPrivate);
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
@@ -160,6 +162,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	dialog->priv->feed = glade_xml_get_widget (xml, "feedLabel");
 	dialog->priv->duration = glade_xml_get_widget (xml, "durationLabel");
 	dialog->priv->location = glade_xml_get_widget (xml, "locationLabel");
+	dialog->priv->download_location = glade_xml_get_widget (xml, "downloadLocationLabel");
 	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
 	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
 	dialog->priv->bitrate = glade_xml_get_widget (xml, "bitrateLabel");
@@ -169,6 +172,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	rb_glade_boldify_label (xml, "titleDescLabel");
 	rb_glade_boldify_label (xml, "feedDescLabel");
 	rb_glade_boldify_label (xml, "locationDescLabel");
+	rb_glade_boldify_label (xml, "downloadLocationDescLabel");
 	rb_glade_boldify_label (xml, "durationDescLabel");
 	rb_glade_boldify_label (xml, "ratingDescLabel");
 	rb_glade_boldify_label (xml, "lastplayedDescLabel");
@@ -293,6 +297,7 @@ rb_podcast_properties_dialog_update (RBPodcastPropertiesDialog *dialog)
 {
 	g_return_if_fail (dialog->priv->current_entry != NULL);
 	rb_podcast_properties_dialog_update_location (dialog);
+	rb_podcast_properties_dialog_update_download_location (dialog);
 	rb_podcast_properties_dialog_update_title (dialog);
 	rb_podcast_properties_dialog_update_title_label (dialog);
 	rb_podcast_properties_dialog_update_feed (dialog);
@@ -352,12 +357,28 @@ static void
 rb_podcast_properties_dialog_update_location (RBPodcastPropertiesDialog *dialog)
 {
 	const char *location;
-	char *unescaped;
+	char *display;
 
 	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION);
-	unescaped = gnome_vfs_unescape_string_for_display (location);
-	gtk_label_set_text (GTK_LABEL (dialog->priv->location), unescaped);
-	g_free (unescaped);
+	display = gnome_vfs_format_uri_for_display (location);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->location), display);
+	g_free (display);
+}
+
+static void
+rb_podcast_properties_dialog_update_download_location (RBPodcastPropertiesDialog *dialog)
+{
+	const char *location;
+
+	location = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (location != NULL && location[0] != '\0') {
+		char *display;
+		display = gnome_vfs_format_uri_for_display (location);
+		gtk_label_set_text (GTK_LABEL (dialog->priv->download_location), display);
+		g_free (display);
+	} else {
+		gtk_label_set_text (GTK_LABEL (dialog->priv->download_location), _("Not Downloaded"));
+	}
 }
 
 static void
