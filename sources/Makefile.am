@@ -36,9 +36,7 @@ libsourcesimpl_la_SOURCES =		\
 	rb-import-errors-source.c	\
 	rb-import-errors-source.h	\
 	rb-psp-source.c			\
-	rb-psp-source.h			\
-	rb-nokia770-source.c		\
-	rb-nokia77--source.h
+	rb-psp-source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -70,20 +68,31 @@ INCLUDES =						\
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
 
-if USE_IPOD
-libsourcesimpl_la_SOURCES +=         \
-	rb-ipod-source.c             \
+ipod_files =				\
+	rb-ipod-source.c		\
 	rb-ipod-source.h
+if USE_IPOD
+libsourcesimpl_la_SOURCES += $(ipod_files)
 INCLUDES += -I$(top_srcdir)/sources/ipod $(IPOD_CFLAGS)
 endif
 
-if USE_DAAP
-libsourcesimpl_la_SOURCES +=		\
-	rb-daap-source.c 		\
+hal_files =				\
+	rb-nokia770-source.c		\
+	rb-nokia770-source.h
+
+if HAVE_HAL
+libsourcesimpl_la_SOURCES += $(hal_files)
+endif
+
+daap_files =				\
+	rb-daap-source.c		\
 	rb-daap-source.h
+if USE_DAAP
+libsourcesimpl_la_SOURCES += $(daap_files)
 endif
 
 if USE_LIBSOUP
 INCLUDES += $(SOUP_CFLAGS)
 endif
 
+EXTRA_DIST = $(ipod_files) $(hal_files) $(daap_files)

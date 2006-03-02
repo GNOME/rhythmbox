@@ -1,3 +1,13 @@
+2006-03-02  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume):
+	* sources/Makefile.am:
+	* sources/rb-nokia770-source.c: (rb_nokia770_is_volume_player):
+	Fix missing files on make dist (conditional files), only build the
+	N770 support if there's HAL support, as we have no other ways of
+	detecting it
+
 2006-03-03  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-clipboard.c:

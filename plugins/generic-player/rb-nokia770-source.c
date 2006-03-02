@@ -27,11 +27,8 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
-
-#ifdef HAVE_HAL
 #include <libhal.h>
 #include <dbus/dbus.h>
-#endif
 
 #include "eel-gconf-extensions.h"
 #include "rb-nokia770-source.h"
@@ -230,7 +227,6 @@ rb_nokia770_is_volume_player (GnomeVFSVolume *volume)
 		return FALSE;
 	}
 
-#ifdef HAVE_HAL
 	str = gnome_vfs_volume_get_hal_udi (volume);
 	if (str != NULL) {
 		gboolean result;
@@ -239,7 +235,6 @@ rb_nokia770_is_volume_player (GnomeVFSVolume *volume)
 		g_free (str);
 		return result;
 	}
-#endif
 
 	return result;
 }
