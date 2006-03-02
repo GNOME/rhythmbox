@@ -292,7 +292,7 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 					 clipboard, 0);
 		g_signal_connect_object (G_OBJECT (songs),
 					 "entries-replaced",
-					 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+					 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 					 clipboard, 0);
 	}
 }
