@@ -36,7 +36,9 @@ libsourcesimpl_la_SOURCES =		\
 	rb-import-errors-source.c	\
 	rb-import-errors-source.h	\
 	rb-psp-source.c			\
-	rb-psp-source.h
+	rb-psp-source.h			\
+	rb-nokia770-source.c		\
+	rb-nokia77--source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

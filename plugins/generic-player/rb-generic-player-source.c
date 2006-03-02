@@ -31,7 +31,10 @@
 #endif
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
+#include <totem-pl-parser.h>
+
 #include "eel-gconf-extensions.h"
+#include "rb-static-playlist-source.h"
 #include "rb-generic-player-source.h"
 #include "rb-debug.h"
 #include "rb-util.h"
@@ -42,9 +45,14 @@ static GObject *rb_generic_player_source_constructor (GType type, guint n_constr
 						      GObjectConstructParam *construct_properties);
 static void rb_generic_player_source_dispose (GObject *object);
 
-static gboolean impl_show_popup (RBSource *source);
+static gboolean rb_generic_player_source_load_playlists (RBGenericPlayerSource *source);
 static void rb_generic_player_source_load_songs (RBGenericPlayerSource *source);
+
+static gboolean impl_show_popup (RBSource *source);
 static gchar *default_get_mount_path (RBGenericPlayerSource *source);
+static void default_load_playlists (RBGenericPlayerSource *source);
+static char * default_transform_playlist_uri (RBGenericPlayerSource *source,
+					      const char *uri);
 
 typedef struct
 {
@@ -68,6 +76,8 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 
 	klass->impl_get_mount_path = default_get_mount_path;
+	klass->impl_load_playlists = default_load_playlists;
+	klass->impl_transform_playlist_uri = default_transform_playlist_uri;
 
 	g_type_class_add_private (klass, sizeof (RBGenericPlayerSourcePrivate));
 }
@@ -88,6 +98,7 @@ rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 			constructor (type, n_construct_properties, construct_properties));
 
 	rb_generic_player_source_load_songs (source);
+	g_idle_add ((GSourceFunc)rb_generic_player_source_load_playlists, source);
 
 	return G_OBJECT (source);
 }
@@ -258,4 +269,139 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/GenericPlayerSourcePopup");
 	return TRUE;
+}
+
+
+/* code for playlist loading */
+
+static gboolean
+rb_generic_player_source_load_playlists (RBGenericPlayerSource *source)
+{
+	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
+
+	if (klass->impl_load_playlists)
+		klass->impl_load_playlists (source);
+
+	return FALSE;
+}
+
+static char *
+rb_generic_player_source_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
+{
+	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
+
+	return klass->impl_transform_playlist_uri (source, uri);
+}
+
+
+typedef struct {
+	RBGenericPlayerSource *player_source;
+	RBStaticPlaylistSource *source;
+} HandlePlaylistEntryData;
+
+static void
+handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri,
+			  const char *title,
+			  const char *genre, HandlePlaylistEntryData *data)
+{
+	char *local_uri;
+	const char *name;
+
+	local_uri = rb_generic_player_source_transform_playlist_uri (data->player_source, uri);
+	if (local_uri == NULL)
+		return;
+	
+	g_object_get (G_OBJECT (data->source), "name", &name, NULL);
+	rb_debug ("adding '%s' as '%s' to playlist '%s'", uri, local_uri, name);
+	rb_static_playlist_source_add_location (data->source, local_uri, -1);
+	g_free (local_uri);
+}
+
+static gboolean
+visit_playlist_dirs (const gchar *rel_path,
+		     GnomeVFSFileInfo *info,
+		     gboolean recursing_will_loop,
+		     RBGenericPlayerSource *source,
+		     gboolean *recurse)
+{
+	RBShell *shell;
+	RhythmDB *db;
+	RhythmDBEntryType entry_type;
+	char *main_path;
+	char *playlist_path;
+	TotemPlParser *parser;
+	RBStaticPlaylistSource *playlist;
+	HandlePlaylistEntryData *data;
+
+	*recurse = TRUE;
+
+	/* add playlist */
+	main_path = rb_generic_player_source_get_mount_path (source);
+	playlist_path = rb_uri_append_path (main_path, rel_path);
+	g_free (main_path);
+
+	if (!g_str_has_suffix (playlist_path, ".m3u") &&
+	    !g_str_has_suffix (playlist_path, ".pls")) {
+		g_free (playlist_path);
+		return TRUE;
+	}
+
+	g_object_get (G_OBJECT (source), 
+		      "shell", &shell, 
+		      "entry-type", &entry_type,
+		      NULL);
+	g_object_get (G_OBJECT (shell),
+		      "db", &db,
+		      NULL);
+
+	playlist = RB_STATIC_PLAYLIST_SOURCE (
+			rb_static_playlist_source_new (shell, 
+						      rel_path, 
+						      FALSE,
+						      entry_type));
+
+	data = g_new0 (HandlePlaylistEntryData, 1);
+	data->source = playlist;
+	data->player_source = source;
+	
+	parser = totem_pl_parser_new ();
+	g_signal_connect (parser,
+			  "entry", G_CALLBACK (handle_playlist_entry_cb),
+			  data);
+
+	if (totem_pl_parser_parse (parser, playlist_path, TRUE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
+		rb_debug ("unable to parse %s as playlist", playlist_path);
+		g_object_unref (G_OBJECT (source));
+	} else {
+		rb_shell_append_source (shell, RB_SOURCE (playlist), RB_SOURCE (source));
+	}
+
+	g_object_unref (G_OBJECT (parser));
+	g_free (playlist_path);
+	g_free (data);
+
+	g_object_unref (G_OBJECT (shell));
+	g_object_unref (G_OBJECT (db));
+
+	return TRUE;
+}
+
+static void
+default_load_playlists (RBGenericPlayerSource *source)
+{
+	char *mount_path;
+
+	mount_path = rb_generic_player_source_get_mount_path (source);
+	gnome_vfs_directory_visit (mount_path,
+				   GNOME_VFS_FILE_INFO_DEFAULT,
+				   GNOME_VFS_DIRECTORY_VISIT_DEFAULT,
+				   (GnomeVFSDirectoryVisitFunc) visit_playlist_dirs,
+				   source);
+	g_free (mount_path);
+}
+
+static char *
+default_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
+{
+	return g_strdup (uri);
 }

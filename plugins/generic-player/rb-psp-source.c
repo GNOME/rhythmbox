@@ -41,9 +41,7 @@
 #include "rb-auto-playlist-source.h"
 #include "rhythmdb.h"
 
-static GObject *rb_psp_source_constructor (GType type, guint n_construct_properties,
-						      GObjectConstructParam *construct_properties);
-static gboolean rb_psp_source_create_playlists (RBPspSource *source);
+static void rb_psp_source_create_playlists (RBGenericPlayerSource *source);
 static gchar *impl_get_mount_path (RBGenericPlayerSource *source);
 
 typedef struct
@@ -59,12 +57,10 @@ G_DEFINE_TYPE (RBPspSource, rb_psp_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
 static void
 rb_psp_source_class_init (RBPspSourceClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
 
-	object_class->constructor = rb_psp_source_constructor;
-
 	generic_class->impl_get_mount_path = impl_get_mount_path;
+	generic_class->impl_load_playlists = rb_psp_source_create_playlists;
 
 	g_type_class_add_private (klass, sizeof (RBPspSourcePrivate));
 }
@@ -73,20 +69,6 @@ static void
 rb_psp_source_init (RBPspSource *source)
 {
 
-}
-
-static GObject *
-rb_psp_source_constructor (GType type, guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
-{
-	RBPspSource *source; 
-
-	source = RB_PSP_SOURCE (G_OBJECT_CLASS (rb_psp_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
-
-	g_idle_add ((GSourceFunc)rb_psp_source_create_playlists, source);
-
-	return G_OBJECT (source);
 }
 
 RBRemovableMediaSource *
@@ -177,19 +159,18 @@ visit_playlist_dirs (const gchar *rel_path,
 }
 
 
-static gboolean
-rb_psp_source_create_playlists (RBPspSource *source)
+static void
+rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 {
 	char *mount_path;
 
-	mount_path = rb_generic_player_source_get_mount_path (RB_GENERIC_PLAYER_SOURCE (source));
+	mount_path = rb_generic_player_source_get_mount_path (source);
 	gnome_vfs_directory_visit (mount_path,
 				   GNOME_VFS_FILE_INFO_DEFAULT,
 				   GNOME_VFS_DIRECTORY_VISIT_DEFAULT,
 				   (GnomeVFSDirectoryVisitFunc) visit_playlist_dirs,
 				   source);
 	g_free (mount_path);
-	return FALSE;
 }
 
 #ifdef HAVE_HAL_0_5

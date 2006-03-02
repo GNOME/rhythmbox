@@ -1,3 +1,31 @@
+2006-03-02  James Livingston  <jrl@ids.org.au>
+
+	* lib/rb-file-helpers.c: (rb_uri_append_uri):
+	* lib/rb-file-helpers.h: Add uri concatenation function for when the
+	second fragment is already escaped.
+
+	* sources/rb-generic-player-source.c:
+	(rb_generic_player_source_class_init),
+	(rb_generic_player_source_constructor), (impl_show_popup),
+	(rb_generic_player_source_load_playlists),
+	(rb_generic_player_source_transform_playlist_uri),
+	(handle_playlist_entry_cb), (visit_playlist_dirs),
+	(default_load_playlists), (default_transform_playlist_uri):
+	* sources/rb-generic-player-source.h: scan for playlists (m3u, pls) on
+	the device. Allow subclasses to override the playlist loading, and
+	(playlist uri)->(actual uri) mapping. A lot of devices which have
+	playlists won't work right now, but people will see them and hopefully
+	file bugs.
+
+	* sources/rb-psp-source.c: (rb_psp_source_class_init),
+	(rb_psp_source_create_playlists): Adapt the PSP for the above change
+	
+	* sources/Makefile.am:
+	+ sources/rb-nokia770-source.{c,h}:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume): Add support for reading
+	playlists of Nokia 770s.
+
 2006-03-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* data/glade/podcast-properties.glade:

@@ -45,6 +45,10 @@ typedef struct
 	RBRemovableMediaSourceClass parent;
 
 	char *		(*impl_get_mount_path) (RBGenericPlayerSource *source);
+	void		(*impl_load_playlists) (RBGenericPlayerSource *source);
+
+	/* used internally in the base load_playlist implementation*/
+	char *		(*impl_transform_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
 } RBGenericPlayerSourceClass;
 
 RBRemovableMediaSource *	rb_generic_player_source_new		(RBShell *shell, GnomeVFSVolume *volume);
