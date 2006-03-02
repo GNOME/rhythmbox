@@ -1,5 +1,11 @@
 2006-03-02  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-library-browser.c: (rebuild_child_model): save and
+	restore the selections of later models. This means that selecting the
+	artist for the selected album does not reset the album selection.
+
+2006-03-02  James Livingston  <jrl@ids.org.au>
+
 	* data/ui/rhythmbox-ui.xml: add the missing UI for generic players.
 	Stops it emitting critical warnings.
 

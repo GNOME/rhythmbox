@@ -418,7 +418,7 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index)
 	RhythmDBQueryModel *base_model, *child_model;
 	RBPropertyView *view;
 	GPtrArray *query;
-	GList *selections;
+	GList *selections, *saved_selections;
 
 	g_assert (property_index >= 0);
 	g_assert (property_index < num_browser_properties);
@@ -426,6 +426,11 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index)
 	/* there is no model after the last one to update*/
 	if (property_index == num_browser_properties - 1)
 		return;
+
+	/* save the selections of the next model */
+	saved_selections = g_hash_table_lookup (priv->selections,
+						(gpointer)browser_properties[property_index+1].type);
+	saved_selections = rb_string_list_copy (saved_selections);
 			
 	/* get the query model for the previous property view */
 	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index].type);
@@ -455,6 +460,10 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index)
 	g_object_unref (G_OBJECT (child_model));
 
 	rebuild_child_model (widget, property_index + 1);
+
+	/* restore the old selection */
+	rb_property_view_set_selection (view, saved_selections);
+	rb_list_deep_free (saved_selections);
 }
 
 void
