@@ -1,5 +1,22 @@
 2006-03-02  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_have_complete_selection):
+	* widgets/rb-entry-view.h: add function for determining whether all
+	entries are selected.
+
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_init),
+	(rb_shell_clipboard_set_source_internal),
+	(rb_shell_clipboard_finalize),
+	(rb_shell_clipboard_idle_poll_deletions),
+	(rb_shell_clipboard_entryview_changed_cb),
+	(rb_shell_clipboard_entries_changed_cb): watch for entry additions and
+	removals, to update things.
+
+	(rb_shell_clipboard_sync): update the Select All and Select None
+	sensitivity, based on what is selected. Fixed bug 172220.
+
+2006-03-02  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-library-browser.c: (rebuild_child_model): save and
 	restore the selections of later models. This means that selecting the
 	artist for the selected album does not reset the album selection.

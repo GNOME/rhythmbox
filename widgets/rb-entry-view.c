@@ -1491,6 +1491,17 @@ rb_entry_view_have_selection (RBEntryView *view)
 	return view->priv->have_selection;
 }
 
+gboolean
+rb_entry_view_have_complete_selection (RBEntryView *view)
+{
+	gint sel_count, entry_count;
+
+	sel_count= gtk_tree_selection_count_selected_rows (view->priv->selection);
+	entry_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model), NULL);
+
+	return (sel_count == entry_count);
+}
+
 static void
 rb_entry_view_row_activated_cb (GtkTreeView *treeview,
 			       GtkTreePath *path,

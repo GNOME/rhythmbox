@@ -113,6 +113,7 @@ void		rb_entry_view_set_state			(RBEntryView *view,
 							 RBEntryViewState state);
 
 gboolean	rb_entry_view_have_selection		(RBEntryView *view);
+gboolean	rb_entry_view_have_complete_selection	(RBEntryView *view);
 GList *		rb_entry_view_get_selected_entries	(RBEntryView *view);
 
 void		rb_entry_view_select_all		(RBEntryView *view);

@@ -71,6 +71,9 @@ static void rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 						 RBShellClipboard *clipboard);
 static void rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 						     RBShellClipboard *clipboard);
+static void rb_shell_clipboard_entries_changed_cb (RBEntryView *view,
+						   gpointer stuff,
+						   RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_add_song_to_queue (GtkAction *action,
 						      RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_song_info (GtkAction *action,
@@ -90,7 +93,7 @@ struct RBShellClipboardPrivate
 
 	GAsyncQueue *deleted_queue;
 
-	guint idle_sync_id;
+	guint idle_deletion_id, idle_sync_id;
 
 	GList *entries;
 };
@@ -201,7 +204,7 @@ rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 
 	shell_clipboard->priv->deleted_queue = g_async_queue_new ();
 
-	shell_clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_idle_poll_deletions, shell_clipboard); 
+	shell_clipboard->priv->idle_deletion_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_idle_poll_deletions, shell_clipboard); 
 }
 
 static void
@@ -224,6 +227,8 @@ rb_shell_clipboard_finalize (GObject *object)
 
 	if (shell_clipboard->priv->idle_sync_id)
 		g_source_remove (shell_clipboard->priv->idle_sync_id);
+	if (shell_clipboard->priv->idle_deletion_id)
+		g_source_remove (shell_clipboard->priv->idle_deletion_id);
 	
 	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->finalize (object);
 }
@@ -261,6 +266,9 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 						      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 						      clipboard);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+						      G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+						      clipboard);
 	}
 	clipboard->priv->source = source;
 	rb_debug ("selected source %p", source);
@@ -273,6 +281,18 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 		g_signal_connect_object (G_OBJECT (songs),
 					 "selection-changed",
 					 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+					 clipboard, 0);
+		g_signal_connect_object (G_OBJECT (songs),
+					 "entry-added",
+					 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+					 clipboard, 0);
+		g_signal_connect_object (G_OBJECT (songs),
+					 "entry-deleted",
+					 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+					 clipboard, 0);
+		g_signal_connect_object (G_OBJECT (songs),
+					 "entries-replaced",
+					 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
 					 clipboard, 0);
 	}
 }
@@ -368,6 +388,7 @@ rb_shell_clipboard_new (GtkActionGroup *actiongroup, RhythmDB *db)
 static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
+	RBEntryView *view;
 	gboolean have_selection;
 	gboolean have_sidebar_selection = FALSE;
 	gboolean can_cut = FALSE;
@@ -376,12 +397,16 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	gboolean can_copy = FALSE;
 	gboolean can_add_to_queue = FALSE;
 	gboolean can_move_to_trash = FALSE;
+	gboolean can_select_all = FALSE;
 	GtkAction *action;
 
 	if (!clipboard->priv->source)
 		return;
 
-	have_selection = rb_entry_view_have_selection (rb_source_get_entry_view (clipboard->priv->source));
+	view = rb_source_get_entry_view (clipboard->priv->source);
+	have_selection = rb_entry_view_have_selection (view);
+	can_select_all = !rb_entry_view_have_complete_selection (view);
+
 	if (clipboard->priv->queue_source) {
 		RBEntryView *sidebar;
 		g_object_get (G_OBJECT (clipboard->priv->queue_source), "sidebar", &sidebar, NULL);
@@ -399,41 +424,43 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 		can_delete = rb_source_can_delete (clipboard->priv->source);
 		can_copy = rb_source_can_copy (clipboard->priv->source);
 		can_move_to_trash = rb_source_can_move_to_trash (clipboard->priv->source);
+
 		if (clipboard->priv->queue_source)
 			can_add_to_queue = rb_source_can_add_to_queue (clipboard->priv->source);
 	}
 
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "EditCut");
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCut");
 	g_object_set (G_OBJECT (action), "sensitive", can_cut, NULL);
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "EditDelete");
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditDelete");
 	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "EditMovetoTrash");
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditMovetoTrash");
 	g_object_set (G_OBJECT (action), "sensitive", can_move_to_trash, NULL);
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "EditCopy");
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCopy");
 	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
 
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "EditPaste");
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,"EditPaste");
 	g_object_set (G_OBJECT (action), "sensitive", can_paste, NULL);
 
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "AddToQueue");
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "AddToQueue");
 	g_object_set (G_OBJECT (action), "sensitive", can_add_to_queue, NULL);
 	
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "MusicProperties");
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "MusicProperties");
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
 	
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "QueueMusicProperties");
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueMusicProperties");
 	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
-	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
-					      "QueueDelete");
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueDelete");
 	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectAll");
+	g_object_set (G_OBJECT (action), "sensitive", can_select_all, NULL);
+	
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectNone");
+	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
 }
 
 static void
@@ -558,12 +585,12 @@ rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard)
 	did_sync = rb_shell_clipboard_process_deletions (clipboard);
 
 	if (did_sync)
-		clipboard->priv->idle_sync_id =
+		clipboard->priv->idle_deletion_id =
 			g_idle_add_full (G_PRIORITY_LOW,
 					 (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
 					 clipboard, NULL);
 	else
-		clipboard->priv->idle_sync_id =
+		clipboard->priv->idle_deletion_id =
 			g_timeout_add (300,
 				       (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
 				       clipboard);
@@ -587,8 +614,21 @@ static void
 rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 					 RBShellClipboard *clipboard)
 {
+	if (clipboard->priv->idle_sync_id == 0)
+		clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync,
+							    clipboard);
 	rb_debug ("entryview changed");
-	rb_shell_clipboard_sync (clipboard);
+}
+	
+static void
+rb_shell_clipboard_entries_changed_cb (RBEntryView *view,
+				       gpointer stuff,
+				       RBShellClipboard *clipboard)
+{
+	rb_debug ("entryview changed");
+	if (clipboard->priv->idle_sync_id == 0)
+		clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync,
+							    clipboard);
 }
 
 static void
