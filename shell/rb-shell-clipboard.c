@@ -46,7 +46,7 @@ static void rb_shell_clipboard_get_property (GObject *object,
 				   	     guint prop_id,
 					     GValue *value,
 					     GParamSpec *pspec);
-static void rb_shell_clipboard_sync (RBShellClipboard *clipboard);
+static gboolean rb_shell_clipboard_sync (RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_select_all (GtkAction *action,
 					       RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_select_none (GtkAction *action,
@@ -385,7 +385,7 @@ rb_shell_clipboard_new (GtkActionGroup *actiongroup, RhythmDB *db)
 			     NULL);
 }
 
-static void
+static gboolean
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
 	RBEntryView *view;
@@ -401,7 +401,9 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	GtkAction *action;
 
 	if (!clipboard->priv->source)
-		return;
+		return FALSE;
+
+	clipboard->priv->idle_sync_id = 0;
 
 	view = rb_source_get_entry_view (clipboard->priv->source);
 	have_selection = rb_entry_view_have_selection (view);
@@ -461,6 +463,8 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectNone");
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
+
+	return FALSE;
 }
 
 static void
