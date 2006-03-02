@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-02-01 19:42+0200\n"
-"PO-Revision-Date: 2006-02-01 19:50+0200\n"
+"POT-Creation-Date: 2006-03-01 20:57+0200\n"
+"PO-Revision-Date: 2006-03-02 06:30+0200\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -19,73 +19,113 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../daapsharing/rb-daap-connection.c:942
-#: ../iradio/rb-station-properties-dialog.c:404 ../lib/rb-util.c:561
-#: ../podcast/rb-feed-podcast-properties-dialog.c:288
-#: ../podcast/rb-podcast-manager.c:1458
-#: ../podcast/rb-podcast-properties-dialog.c:400
-#: ../podcast/rb-podcast-properties-dialog.c:447
-#: ../rhythmdb/rhythmdb-tree.c:939 ../rhythmdb/rhythmdb-tree.c:943
-#: ../rhythmdb/rhythmdb-tree.c:947 ../rhythmdb/rhythmdb-tree.c:951
-#: ../rhythmdb/rhythmdb.c:1203 ../shell/rb-audioscrobbler.c:470
-#: ../shell/rb-audioscrobbler.c:990 ../shell/rb-audioscrobbler.c:991
-#: ../shell/rb-shell-player.c:2337 ../sources/rb-audiocd-source.c:180
-#: ../sources/rb-ipod-source.c:157 ../sources/rb-iradio-source.c:219
-#: ../sources/rb-iradio-source.c:220 ../sources/rb-iradio-source.c:221
-#: ../sources/rb-iradio-source.c:444 ../sources/rb-podcast-source.c:1555
-#: ../widgets/rb-entry-view.c:696 ../widgets/rb-entry-view.c:715
-#: ../widgets/rb-entry-view.c:964 ../widgets/rb-entry-view.c:976
-#: ../widgets/rb-song-info.c:607 ../widgets/rb-song-info.c:760
-#: ../widgets/rb-song-info.c:949
+#: ../daapsharing/rb-daap-connection.c:1031
+#: ../iradio/rb-station-properties-dialog.c:411 ../lib/rb-util.c:561
+#: ../podcast/rb-feed-podcast-properties-dialog.c:302
+#: ../podcast/rb-podcast-manager.c:1464
+#: ../podcast/rb-podcast-properties-dialog.c:411
+#: ../podcast/rb-podcast-properties-dialog.c:464
+#: ../rhythmdb/rhythmdb-tree.c:1018 ../rhythmdb/rhythmdb-tree.c:1022
+#: ../rhythmdb/rhythmdb-tree.c:1026 ../rhythmdb/rhythmdb-tree.c:1030
+#: ../rhythmdb/rhythmdb.c:1182 ../shell/rb-audioscrobbler.c:470
+#: ../shell/rb-audioscrobbler.c:993 ../shell/rb-audioscrobbler.c:994
+#: ../shell/rb-shell-player.c:2424 ../sources/rb-audiocd-source.c:185
+#: ../sources/rb-ipod-source.c:152 ../sources/rb-iradio-source.c:484
+#: ../sources/rb-podcast-source.c:1571 ../widgets/rb-entry-view.c:708
+#: ../widgets/rb-entry-view.c:729 ../widgets/rb-entry-view.c:983
+#: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1007
+#: ../widgets/rb-song-info.c:670 ../widgets/rb-song-info.c:823
+#: ../widgets/rb-song-info.c:1018
 msgid "Unknown"
 msgstr "Tuntematon"
 
-#: ../daapsharing/rb-daap-dialog.c:95
+#: ../daapsharing/rb-daap-dialog.c:48
 msgid "Password Required"
 msgstr "Salasana vaaditaan"
 
-#: ../daapsharing/rb-daap-dialog.c:115
+#: ../daapsharing/rb-daap-dialog.c:70
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Musiikkijakoon '%s' yhteydenotto vaatii salasanan"
 
-#: ../daapsharing/rb-daap-dialog.c:123
+#: ../daapsharing/rb-daap-dialog.c:78
 #: ../data/glade/audioscrobbler-prefs.glade.h:5
 msgid "_Password:"
 msgstr "_Salasana:"
 
-#: ../daapsharing/rb-daap-dialog.c:174
+#: ../daapsharing/rb-daap-dialog.c:120
 msgid "Invalid share name"
 msgstr "Virheellinen jaon nimi"
 
-#: ../daapsharing/rb-daap-dialog.c:192
+#: ../daapsharing/rb-daap-dialog.c:139
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Jaetun musiikin nimi '%s' on jo käytössä. Valitse toinen nimi."
 
-#: ../daapsharing/rb-daap-dialog.c:200 ../data/glade/daap-prefs.glade.h:2
+#: ../daapsharing/rb-daap-dialog.c:147 ../data/glade/daap-prefs.glade.h:3
 msgid "Shared music _name:"
 msgstr "Jaetun musiikin _nimi:"
 
-#: ../daapsharing/rb-daap-mdns.c:49
-msgid "Unable to browse for remote shares"
-msgstr "Etäjakojen selaaminen ei onnistu"
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:292
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:337
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:318
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:365
+msgid "MDNS service is not running"
+msgstr "MDNS-palvelu ei ole käytössä"
 
-#: ../daapsharing/rb-daap-mdns.c:50
-#, c-format
-msgid ""
-"Could not start browsing for music servers on your network.  Rhythmbox will "
-"continue to function, without this feature.  Check your %s installation"
-msgstr ""
-"Verkkosi musiikkipalvelinten selauksen aloittaminen epäonnistui. Rhythmbox "
-"jatkaa toimintaansa ilman tätä toimintoa. Tarkista %s asennuksesi."
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:300
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:327
+msgid "Browser already active"
+msgstr "Selain on jo käynnissä"
 
-#: ../daapsharing/rb-daap-sharing.c:65
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:320
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:348
+msgid "Unable to activate browser"
+msgstr "Selainta ei voi käynnistää"
+
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:345
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:373
+msgid "Browser is not active"
+msgstr "Selain ei ole käynnissä"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:197
+msgid "Could not create AvahiEntryGroup for publishing"
+msgstr "AvahiEntryGroup:ia ei voitu luoda julkaisemista varten"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:233
+msgid "Could not add service"
+msgstr "Palvelua ei voitu lisätä"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:245
+msgid "Could not commit service"
+msgstr "Palvelun luonti ei voitu viimeistellä"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:350
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:370
+msgid "The avahi MDNS service is not running"
+msgstr "Avahi MDNS -palvelu ei ole käytössä"
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:379
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:272
+msgid "The MDNS service is not published"
+msgstr "MDNS-palvelu ei ole julkaistu"
+
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:176
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:211
+msgid "Error initializing Howl for publishing"
+msgstr "Virhe alustettaessa Howl:ia julkaisua varten"
+
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:238
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:263
+msgid "The howl MDNS service is not running"
+msgstr "Howl MDNS -palvelu ei ole käynnissä"
+
+#: ../daapsharing/rb-daap-sharing.c:68
 #, c-format
 msgid "%s's Music"
 msgstr "%s - musiikit"
 
-#: ../daapsharing/rb-daap-src.c:682
+#: ../daapsharing/rb-daap-src.c:683
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Yhteys %s:%d estetettiin."
@@ -148,11 +188,11 @@ msgstr "Minuuttia"
 
 #: ../data/glade/create-playlist.glade.h:6
 msgid "_Limit to: "
-msgstr "_Rajoita:"
+msgstr "_Rajaa tilaan:"
 
 #: ../data/glade/create-playlist.glade.h:7
 msgid "_When sorted by:"
-msgstr "_Milloin järjestetty kentällä:"
+msgstr "_Kun järjestetty kentän mukaan:"
 
 #: ../data/glade/create-playlist.glade.h:8
 msgid "songs"
@@ -162,7 +202,11 @@ msgstr "kappaletta"
 msgid "<b>Sharing</b>"
 msgstr "<b>Jakaminen</b>"
 
-#: ../data/glade/daap-prefs.glade.h:3
+#: ../data/glade/daap-prefs.glade.h:2
+msgid "Require _password:"
+msgstr "Vaadi _salasana:"
+
+#: ../data/glade/daap-prefs.glade.h:4
 msgid "_Share my music"
 msgstr "_Jaa musiikkini"
 
@@ -187,7 +231,7 @@ msgstr ""
 "musiikkiakirjastoosi milloin tahansa myöhemminkin.\n"
 "Valitse joku seuraavista vaihtoehdoista:"
 
-#: ../data/glade/druid.glade.h:5
+#: ../data/glade/druid.glade.h:5 ../data/glade/library-prefs.glade.h:5
 msgid "_Browse..."
 msgstr "_Selaa..."
 
@@ -227,7 +271,7 @@ msgstr "Näkyvät sarakkeet"
 msgid "_Artist"
 msgstr "_Esittäjä"
 
-#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:950
+#: ../data/glade/general-prefs.glade.h:7 ../widgets/rb-entry-view.c:969
 msgid "_Genre"
 msgstr "_Tyyli"
 
@@ -239,11 +283,15 @@ msgstr "_Soitettu viimeksi"
 msgid "_Play count"
 msgstr "_Soittokerrat"
 
-#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:998
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1003
+msgid "_Quality"
+msgstr "_Laatu"
+
+#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:1016
 msgid "_Rating"
 msgstr "_Arvostelu"
 
-#: ../data/glade/general-prefs.glade.h:11 ../widgets/rb-entry-view.c:972
+#: ../data/glade/general-prefs.glade.h:12 ../widgets/rb-entry-view.c:991
 msgid "_Year"
 msgstr "_Vuosi"
 
@@ -260,24 +308,20 @@ msgid "G_enres, artists and albums"
 msgstr "T_yylit, esittäjät ja levyt"
 
 #: ../data/glade/library-prefs.glade.h:4
-msgid "Select A Folder"
-msgstr "Valitse kansio"
-
-#: ../data/glade/library-prefs.glade.h:5
-msgid "Watch my library for new files"
-msgstr "Tarkkaile kirjastoa uusien tiedostojen varalta"
-
-#: ../data/glade/library-prefs.glade.h:6
 msgid "_Artists and albums"
 msgstr "_Esittäjät ja levyt"
 
-#: ../data/glade/library-prefs.glade.h:7
+#: ../data/glade/library-prefs.glade.h:6
 msgid "_Genres and artists"
 msgstr "_Tyylit ja esittäjät"
 
-#: ../data/glade/library-prefs.glade.h:8
+#: ../data/glade/library-prefs.glade.h:7
 msgid "_Library Location"
 msgstr "Kirjaston _sijainti"
+
+#: ../data/glade/library-prefs.glade.h:8
+msgid "_Watch my library for new files"
+msgstr "Tarkkaile kirjastoa uusien tiedostojen varalta"
 
 #: ../data/glade/load-failure.glade.h:1
 msgid "The following files couldn't be loaded:"
@@ -505,14 +549,14 @@ msgstr "Parhaiten arvostellut"
 
 #: ../data/playlists.xml.in.h:2
 msgid "Recently Added"
-msgstr "Äskettäin lisätyt"
+msgstr "Lisätty äskettäin"
 
 #: ../data/playlists.xml.in.h:3
 msgid "Recently Played"
 msgstr "Soitettu äskettäin"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:961
-#: ../shell/rb-shell.c:1893
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:970
+#: ../shell/rb-shell.c:1915
 msgid "Music Player"
 msgstr "Musiikkisoitin"
 
@@ -530,21 +574,21 @@ msgid "New Internet Radio Station"
 msgstr "Uusi radiokanava"
 
 #: ../iradio/rb-station-properties-dialog.c:321
-#: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:314 ../widgets/rb-song-info.c:700
+#: ../podcast/rb-feed-podcast-properties-dialog.c:210
+#: ../podcast/rb-podcast-properties-dialog.c:315 ../widgets/rb-song-info.c:764
 #, c-format
 msgid "%s Properties"
 msgstr "%s ominaisuudet"
 
-#: ../iradio/rb-station-properties-dialog.c:406
-#: ../podcast/rb-podcast-properties-dialog.c:398 ../widgets/rb-song-info.c:758
+#: ../iradio/rb-station-properties-dialog.c:413
+#: ../podcast/rb-podcast-properties-dialog.c:409 ../widgets/rb-song-info.c:821
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../iradio/rb-station-properties-dialog.c:415 ../rhythmdb/rhythmdb.c:2590
-#: ../widgets/rb-entry-view.c:650 ../widgets/rb-entry-view.c:1023
-#: ../widgets/rb-entry-view.c:1036 ../widgets/rb-song-info.c:925
+#: ../iradio/rb-station-properties-dialog.c:422 ../rhythmdb/rhythmdb.c:2644
+#: ../widgets/rb-entry-view.c:662 ../widgets/rb-entry-view.c:1041
+#: ../widgets/rb-entry-view.c:1054 ../widgets/rb-song-info.c:991
 msgid "Never"
 msgstr "Ei koskaan"
 
@@ -581,43 +625,43 @@ msgstr "%b %d %I:%M %p"
 msgid "%b %d %Y"
 msgstr "%b %d %Y"
 
-#: ../lib/rb-util.c:563 ../widgets/rb-header.c:750
+#: ../lib/rb-util.c:563 ../widgets/rb-header.c:752
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:565 ../widgets/rb-header.c:752
+#: ../lib/rb-util.c:565 ../widgets/rb-header.c:754
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:640 ../metadata/rb-metadata-gst.c:1175
-#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:633
+#: ../metadata/rb-metadata-gst.c:644 ../metadata/rb-metadata-gst.c:1183
+#: ../player/rb-player-gst.c:580 ../player/rb-recorder-gst.c:636
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Elementin %s luonti epäonnistui: tarkista asennuksesi"
 
-#: ../metadata/rb-metadata-gst.c:784
+#: ../metadata/rb-metadata-gst.c:788
 msgid "Failed to create a source element; check your installation"
 msgstr "Lähde-elementin luonti epäonnistui: tarkista asennuksesi"
 
-#: ../metadata/rb-metadata-gst.c:851
+#: ../metadata/rb-metadata-gst.c:859
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamerin virhe: tilaa ei voi vaihtaa"
 
-#: ../metadata/rb-metadata-gst.c:924
+#: ../metadata/rb-metadata-gst.c:932
 msgid "The MIME type of the file could not be identified"
 msgstr "Tiedoston MIME-tyyppiä ei voi tunnistaa"
 
-#: ../metadata/rb-metadata-gst.c:944
+#: ../metadata/rb-metadata-gst.c:952
 msgid "The file is not an audio stream"
 msgstr "Tiedosto ei ole äänivirta"
 
-#: ../metadata/rb-metadata-gst.c:949
+#: ../metadata/rb-metadata-gst.c:957
 msgid "The file is not an audio stream, but is being ignored"
 msgstr "Tiedosto ei ole äänivirta, mutta sitä ei oteta huomioon"
 
-#: ../metadata/rb-metadata-gst.c:957
+#: ../metadata/rb-metadata-gst.c:965
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "Tiedostotyypin %s käsittelyyn ei ole asennettu liitännäistä"
@@ -687,7 +731,7 @@ msgstr "Virheellistä metatietoa tälle CD-levylle.\n"
 msgid "Could not create CD lookup thread"
 msgstr "CD-levyn etsintäsäiettä ei voi luoda"
 
-#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:695
+#: ../player/rb-player-gst.c:606 ../player/rb-recorder-gst.c:698
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Skeduleria ei voi alustaa. Haluatko suorittaa käskyn gst-register?"
 
@@ -695,59 +739,63 @@ msgstr "Skeduleria ei voi alustaa. Haluatko suorittaa käskyn gst-register?"
 msgid "Unknown playback error"
 msgstr "Tuntematon virhe toistettaessa"
 
-#: ../player/rb-recorder-gst.c:520
+#: ../player/rb-recorder-gst.c:517
 msgid "Failed to create pipeline"
 msgstr "Liukuhihnan luonti epäonnistui"
 
-#: ../player/rb-recorder-gst.c:651 ../player/rb-recorder-gst.c:655
+#: ../player/rb-recorder-gst.c:547
+msgid "Could not access source pad"
+msgstr "Lähdettä ei voitu avata"
+
+#: ../player/rb-recorder-gst.c:654 ../player/rb-recorder-gst.c:658
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "'%s' poistaminen epäonnistui"
 
-#: ../player/rb-recorder-gst.c:727
+#: ../player/rb-recorder-gst.c:730
 msgid "Could not retrieve state from processing pipeline"
 msgstr "Tilaa ei voi hakea "
 
-#: ../player/rb-recorder-gst.c:742 ../player/rb-recorder-gst.c:750
+#: ../player/rb-recorder-gst.c:745 ../player/rb-recorder-gst.c:753
 msgid "Could not get current track position"
 msgstr "Soivan kappaleen kohtaa ei voi määrittää"
 
-#: ../player/rb-recorder-gst.c:806
+#: ../player/rb-recorder-gst.c:809
 msgid "Could not start pipeline playing"
 msgstr "Putkeen soittamisen aloitus epäonnistui"
 
-#: ../player/rb-recorder-gst.c:829
+#: ../player/rb-recorder-gst.c:832
 msgid "Could not pause playback"
 msgstr "Soiton pysäytys epäonnistui"
 
-#: ../player/rb-recorder-gst.c:1027
+#: ../player/rb-recorder-gst.c:1030
 msgid "Cannot find drive"
 msgstr "Asemaa ei löydy"
 
-#: ../player/rb-recorder-gst.c:1072
+#: ../player/rb-recorder-gst.c:1075
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Asemaa %s ei löydy"
 
-#: ../player/rb-recorder-gst.c:1081
+#: ../player/rb-recorder-gst.c:1084
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "Asema %s ei ole kirjoitin"
 
-#: ../player/rb-recorder-gst.c:1247 ../player/rb-recorder-gst.c:1425
+#: ../player/rb-recorder-gst.c:1250 ../player/rb-recorder-gst.c:1428
 msgid "No writable drives found."
 msgstr "Kirjoittavia asemia ei löytynyt."
 
-#: ../player/rb-recorder-gst.c:1375
+#: ../player/rb-recorder-gst.c:1378
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Kappaleen kestoa ei voi lukea tiedostosta: %s"
 
-#: ../player/rb-recorder-gst.c:1434
+#: ../player/rb-recorder-gst.c:1437
 msgid "Could not determine audio track durations."
 msgstr "Kappaleiden pituuksia ei voi määrittää."
 
-#: ../player/rb-recorder-gst.c:1482
+#: ../player/rb-recorder-gst.c:1485
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -756,7 +804,7 @@ msgstr ""
 "Virhe kirjoitettaessa CD-levylle:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1486
+#: ../player/rb-recorder-gst.c:1489
 msgid "There was an error writing to the CD"
 msgstr "Virhe kirjoitettaessa CD-levylle"
 
@@ -764,21 +812,21 @@ msgstr "Virhe kirjoitettaessa CD-levylle"
 msgid "New Podcast Feed"
 msgstr "Uusi Podcast-virta"
 
-#: ../podcast/rb-podcast-manager.c:755
+#: ../podcast/rb-podcast-manager.c:752
 msgid "Invalid URL"
 msgstr "Virheellinen URL"
 
-#: ../podcast/rb-podcast-manager.c:756
+#: ../podcast/rb-podcast-manager.c:753
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" ei ole kelvollinen, tarkista sen muotoilu."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:764
+#: ../podcast/rb-podcast-manager.c:761
 msgid "URL already added"
 msgstr "URL on jo lisätty"
 
-#: ../podcast/rb-podcast-manager.c:765
+#: ../podcast/rb-podcast-manager.c:762
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -787,11 +835,11 @@ msgstr ""
 "URL \"%s\" on jo lisätty radioasemaksi. Jos tämä on Podcast-virta, poista "
 "ensin vastaava radioasema."
 
-#: ../podcast/rb-podcast-manager.c:834
+#: ../podcast/rb-podcast-manager.c:831
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1589
+#: ../podcast/rb-podcast-manager.c:1595
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "Virhe lisättäessä Podcastia. Tarkista URL %s"
@@ -853,20 +901,20 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "Tapahtui poikkeus '%s'"
 
-#: ../rhythmdb/rhythmdb-property-model.c:394
+#: ../rhythmdb/rhythmdb-property-model.c:412
 msgid "All"
 msgstr "Kaikki"
 
-#: ../rhythmdb/rhythmdb.c:1186
+#: ../rhythmdb/rhythmdb.c:1165
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Kohdetta %s ei voi tarkkailla: %s"
 
-#: ../rhythmdb/rhythmdb.c:1295
+#: ../rhythmdb/rhythmdb.c:1277
 msgid "<invalid filename>"
 msgstr "<virheellinen tiedostonimi>"
 
-#: ../rhythmdb/rhythmdb.c:1841 ../rhythmdb/rhythmdb.c:1884
+#: ../rhythmdb/rhythmdb.c:1885 ../rhythmdb/rhythmdb.c:1928
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kohdetta %s ei voi avata: %s"
@@ -876,33 +924,33 @@ msgstr "Kohdetta %s ei voi avata: %s"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2588 ../sources/rb-podcast-source.c:1561
-#: ../widgets/rb-entry-view.c:1827
+#: ../rhythmdb/rhythmdb.c:2642 ../sources/rb-podcast-source.c:1577
+#: ../widgets/rb-entry-view.c:1883
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d, %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3574
+#: ../rhythmdb/rhythmdb.c:3684
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d kappale"
 msgstr[1] "%d kappaletta"
 
-#: ../rhythmdb/rhythmdb.c:3581
+#: ../rhythmdb/rhythmdb.c:3691
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuutti"
 msgstr[1] "%ld minuuttia"
 
-#: ../rhythmdb/rhythmdb.c:3582
+#: ../rhythmdb/rhythmdb.c:3692
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld tunti"
 msgstr[1] "%ld tuntia"
 
-#: ../rhythmdb/rhythmdb.c:3583
+#: ../rhythmdb/rhythmdb.c:3693
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -910,7 +958,7 @@ msgstr[0] "%ld päivä"
 msgstr[1] "%ld päivää"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3589
+#: ../rhythmdb/rhythmdb.c:3699
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ja %s"
@@ -918,127 +966,127 @@ msgstr "%s, %s ja %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3595 ../rhythmdb/rhythmdb.c:3603
-#: ../rhythmdb/rhythmdb.c:3614
+#: ../rhythmdb/rhythmdb.c:3705 ../rhythmdb/rhythmdb.c:3713
+#: ../rhythmdb/rhythmdb.c:3724
 #, c-format
 msgid "%s and %s"
 msgstr "%s ja %s"
 
-#: ../shell/main.c:142
+#: ../shell/main.c:144
 msgid "Print the playing song and exit"
 msgstr "Näytä soitettava kappale ja poistu"
 
-#: ../shell/main.c:143
+#: ../shell/main.c:145
 msgid "Print the playing song artist and exit"
 msgstr "Näytä soitettavan kappaleen esittäjä ja poistu"
 
-#: ../shell/main.c:144
+#: ../shell/main.c:146
 msgid "Print the playing song album and exit"
 msgstr "Näytä soitettavan kappaleen levy ja poistu"
 
-#: ../shell/main.c:145
+#: ../shell/main.c:147
 msgid "Print the playing song track and exit"
 msgstr "Näytä soitettavan kappaleen nimi ja poistu"
 
-#: ../shell/main.c:146
+#: ../shell/main.c:148
 msgid "Print the playing song genre and exit"
 msgstr "Näytä soitettavan kappaleen tyyli ja poistu"
 
-#: ../shell/main.c:147
+#: ../shell/main.c:149
 msgid "Print the playing song URI and exit"
 msgstr "Näytä soitettavan kappaleen URI ja poistu"
 
-#: ../shell/main.c:149
+#: ../shell/main.c:151
 msgid "Print the playing song length in seconds and exit"
 msgstr "Näytä soitettavan kappaleen pituus sekunteina ja poistu"
 
-#: ../shell/main.c:150
+#: ../shell/main.c:152
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Näytä soitettavan tiedoston soitettu aika ja poistu"
 
-#: ../shell/main.c:151
+#: ../shell/main.c:153
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Siirry annetuun aikaan soitettavassa kappalessa, jos mahdollista, ja poistu"
 
-#: ../shell/main.c:152
+#: ../shell/main.c:154
 msgid "Seek by the specified amount if possible and exit"
 msgstr "Siirry kappaleessa annetulla määrällä jos mahdollista ja poistu"
 
-#: ../shell/main.c:153
+#: ../shell/main.c:155
 msgid "Set the rating of the currently playing song and exit"
 msgstr "Arvostele soiva kappale ja poistu"
 
-#: ../shell/main.c:155
+#: ../shell/main.c:157
 msgid "Toggle play/pause mode"
 msgstr "Vaihtele soiton/pysäytyksen tilaa"
 
-#: ../shell/main.c:156
+#: ../shell/main.c:158
 msgid "Pause playback if currently playing"
 msgstr "Pysäytä toisto, jos ollaan soittamassa"
 
-#: ../shell/main.c:157
+#: ../shell/main.c:159
 msgid "Resume playback if currently paused"
 msgstr "Jatka toistoa, jos toisto on pysäytetty"
 
-#: ../shell/main.c:158
+#: ../shell/main.c:160
 msgid "Focus the running player"
 msgstr "Kohdista suoritettavana olevaan soittimeen"
 
-#: ../shell/main.c:159
+#: ../shell/main.c:161
 msgid "Jump to previous song"
 msgstr "Hyppää edelliseen kappaleeseen"
 
-#: ../shell/main.c:160
+#: ../shell/main.c:162
 msgid "Jump to next song"
 msgstr "Hyppää seuraavaan kappaleeseen"
 
-#: ../shell/main.c:162
+#: ../shell/main.c:164
 msgid "Toggle shuffling"
 msgstr "Vaihtele satunnaissoittoa"
 
-#: ../shell/main.c:163
+#: ../shell/main.c:165
 msgid "Toggle repeat"
 msgstr "Vaihtele uudelleensoittoa"
 
-#: ../shell/main.c:165
+#: ../shell/main.c:167
 msgid "Set the volume level"
 msgstr "Aseta äänenvoimakkuus"
 
-#: ../shell/main.c:166
+#: ../shell/main.c:168
 msgid "Mute or unmute playback"
 msgstr "Vaimenna tai palauta ääni"
 
-#: ../shell/main.c:167
+#: ../shell/main.c:169
 msgid "Change visibility of the main Rhythmbox window"
 msgstr "Muuta Rhythmboxin pääikkunan näkyvyyttä"
 
-#: ../shell/main.c:170
+#: ../shell/main.c:172
 msgid "Enable debugging code"
 msgstr "Ota käyttöön kehityskoodi"
 
-#: ../shell/main.c:171
+#: ../shell/main.c:173
 msgid "Do not update the library"
 msgstr "Älä päivitä kirjastoa"
 
-#: ../shell/main.c:172
+#: ../shell/main.c:174
 msgid "Do not register the shell"
 msgstr "Älä rekisteröi kuorta"
 
-#: ../shell/main.c:173
+#: ../shell/main.c:175
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Älä tallenna mitään tietoja pysyvästi (sivuvaikutuksena --no-registration)"
 
-#: ../shell/main.c:174
+#: ../shell/main.c:176
 msgid "Path for database file to use"
 msgstr "Käytettävän tietokantatiedoston polku"
 
-#: ../shell/main.c:175
+#: ../shell/main.c:177
 msgid "Quit Rhythmbox"
 msgstr "Lopeta musiikkisoitin"
 
-#: ../shell/main.c:206 ../widgets/rb-druid.c:190
+#: ../shell/main.c:208 ../widgets/rb-druid.c:185
 msgid "Rhythmbox"
 msgstr "Musiikkisoitin"
 
@@ -1079,107 +1127,131 @@ msgid "Linear, removing entries once played"
 msgstr "Lineaarinen, kappaleet poistetaan kun ne on soitettu"
 
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:150
 msgid "_Playlist"
 msgstr "_Soittolista"
 
-#: ../shell/rb-playlist-manager.c:150
+#: ../shell/rb-playlist-manager.c:152
 msgid "_New Playlist"
 msgstr "_Uusi soittolista"
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:153
 msgid "Create a new playlist"
 msgstr "Luo uusi soittolista"
 
-#: ../shell/rb-playlist-manager.c:153
+#: ../shell/rb-playlist-manager.c:155
 msgid "New _Automatic Playlist..."
 msgstr "Uusi _automaattinen soittolista..."
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:156
 msgid "Create a new automatically updating playlist"
 msgstr "Luo uusi automaattisesti päivittyvä soittolista"
 
-#: ../shell/rb-playlist-manager.c:156
+#: ../shell/rb-playlist-manager.c:158
 msgid "_Load from File..."
 msgstr "_Lataa tiedostosta..."
 
-#: ../shell/rb-playlist-manager.c:157
+#: ../shell/rb-playlist-manager.c:159
 msgid "Choose a playlist to be loaded"
 msgstr "Valitse ladattava soittolista"
 
-#: ../shell/rb-playlist-manager.c:159
+#: ../shell/rb-playlist-manager.c:161
 msgid "_Save to File..."
 msgstr "_Tallenna tiedostoon..."
 
-#: ../shell/rb-playlist-manager.c:160
+#: ../shell/rb-playlist-manager.c:162
 msgid "Save a playlist to a file"
 msgstr "Tallenna soittolista tiedostoon"
 
-#: ../shell/rb-playlist-manager.c:162
+#: ../shell/rb-playlist-manager.c:164
 msgid "_Create Audio CD..."
 msgstr "_Luo CD-levy..."
 
-#: ../shell/rb-playlist-manager.c:163
+#: ../shell/rb-playlist-manager.c:165
 msgid "Create an audio CD from playlist"
 msgstr "Luo CD-levy soittolistasta"
 
-#: ../shell/rb-playlist-manager.c:165
+#: ../shell/rb-playlist-manager.c:167
 msgid "_Rename"
 msgstr "Nimeä _uudestaan"
 
-#: ../shell/rb-playlist-manager.c:166
+#: ../shell/rb-playlist-manager.c:168
 msgid "Rename playlist"
 msgstr "Nimeä soittolista uudestaan"
 
-#: ../shell/rb-playlist-manager.c:168
+#: ../shell/rb-playlist-manager.c:170
 msgid "_Delete"
 msgstr "_Poista"
 
-#: ../shell/rb-playlist-manager.c:169
+#: ../shell/rb-playlist-manager.c:171
 msgid "Delete playlist"
 msgstr "Poista soittolista"
 
-#: ../shell/rb-playlist-manager.c:171
+#: ../shell/rb-playlist-manager.c:173
 msgid "_Edit..."
 msgstr "_Muokkaa..."
 
-#: ../shell/rb-playlist-manager.c:172
+#: ../shell/rb-playlist-manager.c:174
 msgid "Change this automatic playlist"
 msgstr "Muuta automaattista soittolistaa"
 
-#: ../shell/rb-playlist-manager.c:623
+#: ../shell/rb-playlist-manager.c:176
+msgid "_Queue All Tracks"
+msgstr "_Lisää kaikki kappaleen jonoon"
+
+#: ../shell/rb-playlist-manager.c:177
+msgid "Add all tracks in this playlist to the queue"
+msgstr "Lisää kaikki tämän soittolistan kappaleet jonoon"
+
+#: ../shell/rb-playlist-manager.c:666
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Soittolistatiedosto on tuntemattomassa muodossa tai viallinen."
 
-#: ../shell/rb-playlist-manager.c:978
+#: ../shell/rb-playlist-manager.c:1021
 msgid "Untitled Playlist"
 msgstr "Nimeämätön soittolista"
 
-#: ../shell/rb-playlist-manager.c:1167
+#: ../shell/rb-playlist-manager.c:1255
 msgid "Couldn't read playlist"
 msgstr "Soittlistaa ei voi lukea"
 
-#: ../shell/rb-playlist-manager.c:1182
+#: ../shell/rb-playlist-manager.c:1270
 msgid "Load Playlist"
 msgstr "Lataa soittolista"
 
-#: ../shell/rb-playlist-manager.c:1220
+#: ../shell/rb-playlist-manager.c:1309
 msgid "Save Playlist"
 msgstr "Tallenna soittolista"
 
-#: ../shell/rb-removable-media-manager.c:127
+#: ../shell/rb-playlist-manager.c:1469
+#, c-format
+msgid "Playlist %s already exists"
+msgstr "Soittolista %s on jo olemassa"
+
+#: ../shell/rb-playlist-manager.c:1486 ../shell/rb-playlist-manager.c:1506
+#: ../shell/rb-playlist-manager.c:1533 ../shell/rb-playlist-manager.c:1563
+#, c-format
+msgid "Unknown playlist: %s"
+msgstr "Tuntematon soittolista: %s"
+
+#: ../shell/rb-playlist-manager.c:1514 ../shell/rb-playlist-manager.c:1541
+#, c-format
+msgid "Playlist %s is an automatic playlist"
+msgstr "Soittolista %s on automaattinen soittolista"
+
+#: ../shell/rb-removable-media-manager.c:133
 msgid "_Eject"
 msgstr "_Poista asemasta"
 
-#: ../shell/rb-removable-media-manager.c:128
+#: ../shell/rb-removable-media-manager.c:134
 msgid "Eject this medium"
 msgstr "Poista levy asemasta"
 
-#: ../shell/rb-removable-media-manager.c:130
+#: ../shell/rb-removable-media-manager.c:136
 msgid "_Scan Removable Media"
-msgstr "_Etsi irroitettia laitteita"
+msgstr "_Etsi irroitettavia laitteita"
 
-#: ../shell/rb-removable-media-manager.c:131
+#: ../shell/rb-removable-media-manager.c:137
 msgid "Scan for new Removable Media"
 msgstr "Etsi uusia irroitettavia laitteita"
 
@@ -1232,7 +1304,7 @@ msgid "Remove selection"
 msgstr "Poista valinta"
 
 #: ../shell/rb-shell-clipboard.c:129
-msgid "_Move To Trash"
+msgid "_Move to Trash"
 msgstr "Siirrä _roskakoriin"
 
 #: ../shell/rb-shell-clipboard.c:130
@@ -1252,7 +1324,7 @@ msgid "Remove"
 msgstr "Poista"
 
 #: ../shell/rb-shell-clipboard.c:140 ../shell/rb-shell-clipboard.c:143
-#: ../sources/rb-podcast-source.c:288
+#: ../sources/rb-podcast-source.c:296
 msgid "_Properties"
 msgstr "_Ominaisuudet"
 
@@ -1260,101 +1332,105 @@ msgstr "_Ominaisuudet"
 msgid "Show information on the selected song"
 msgstr "Näytä tietoja valitusta kappaleesta"
 
-#: ../shell/rb-shell-player.c:234
+#: ../shell/rb-shell-player.c:237
 msgid "P_revious"
 msgstr "E_dellinen"
 
-#: ../shell/rb-shell-player.c:235
+#: ../shell/rb-shell-player.c:238
 msgid "Start playing the previous song"
 msgstr "Soita edellinen kappale "
 
-#: ../shell/rb-shell-player.c:237
+#: ../shell/rb-shell-player.c:240
 msgid "_Next"
 msgstr "_Seuraava"
 
-#: ../shell/rb-shell-player.c:238
+#: ../shell/rb-shell-player.c:241
 msgid "Start playing the next song"
 msgstr "Soita seuraava kappale"
 
-#: ../shell/rb-shell-player.c:246
+#: ../shell/rb-shell-player.c:249
 msgid "_Play"
 msgstr "_Soita"
 
-#: ../shell/rb-shell-player.c:247 ../shell/rb-shell-player.c:2583
+#: ../shell/rb-shell-player.c:250 ../shell/rb-shell-player.c:2673
 msgid "Start playback"
 msgstr "Aloita soitto"
 
-#: ../shell/rb-shell-player.c:249
+#: ../shell/rb-shell-player.c:252
 msgid "Sh_uffle"
 msgstr "_Satunnaistoisto"
 
-#: ../shell/rb-shell-player.c:250
+#: ../shell/rb-shell-player.c:253
 msgid "Play songs in a random order"
 msgstr "Soita kappaleita satunnaisessa järjestyksessä"
 
-#: ../shell/rb-shell-player.c:252
+#: ../shell/rb-shell-player.c:255
 msgid "_Repeat"
 msgstr "_Toista"
 
-#: ../shell/rb-shell-player.c:253
+#: ../shell/rb-shell-player.c:256
 msgid "Play first song again after all songs are played"
 msgstr "Soita ensimmäinen kappale uudestaan"
 
-#: ../shell/rb-shell-player.c:255
+#: ../shell/rb-shell-player.c:258
 msgid "_Song Position Slider"
 msgstr "_Levyn sijainnin osoitin"
 
-#: ../shell/rb-shell-player.c:256
+#: ../shell/rb-shell-player.c:259
 msgid "Change the visibility of the song position slider"
 msgstr "Valitse näytetäänkö kappaleen kohdan näytin"
 
-#: ../shell/rb-shell-player.c:534
+#: ../shell/rb-shell-player.c:545
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Soittimen luonti epäonnistui: %s"
 
-#: ../shell/rb-shell-player.c:1259
+#: ../shell/rb-shell-player.c:906
+msgid "Connecting"
+msgstr "Yhdistetään"
+
+#: ../shell/rb-shell-player.c:1319
 msgid "Not currently playing"
 msgstr "Soitto on pysäytetty"
 
-#: ../shell/rb-shell-player.c:1293
+#: ../shell/rb-shell-player.c:1353
 msgid "No previous song"
 msgstr "Ei edellistä kappaletta"
 
-#: ../shell/rb-shell-player.c:1345
+#: ../shell/rb-shell-player.c:1405
 msgid "No next song"
 msgstr "Ei seuraavaa kappaletta"
 
-#: ../shell/rb-shell-player.c:1435
+#: ../shell/rb-shell-player.c:1495
 #, c-format
 msgid "Couldn't start playback: %s"
 msgstr "Soiton aloitus epäonnistui: %s"
 
-#: ../shell/rb-shell-player.c:2036
+#: ../shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr "Soiton lopetus epäonnistui"
 
-#: ../shell/rb-shell-player.c:2092
+#: ../shell/rb-shell-player.c:2176
 msgid "Current song is not seekable"
 msgstr "Tämänhetkisessä kappaleessa ei voi kelata"
 
-#: ../shell/rb-shell-player.c:2155
+#: ../shell/rb-shell-player.c:2239
 msgid "Stream error"
 msgstr "Virhe virrassa"
 
-#: ../shell/rb-shell-player.c:2156
+#: ../shell/rb-shell-player.c:2240
 msgid "Unexpected end of stream!"
 msgstr "Äänivirta loppui yllättäen kesken."
 
-#: ../shell/rb-shell-player.c:2409
+#: ../shell/rb-shell-player.c:2499
 msgid "Buffering"
 msgstr "Puskuroidaan"
 
-#: ../shell/rb-shell-player.c:2581
+#: ../shell/rb-shell-player.c:2671
 msgid "Stop playback"
 msgstr "Lopeta soitto"
 
-#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2099
+#: ../shell/rb-shell-preferences.c:112 ../shell/rb-shell.c:2129
 msgid "Couldn't display help"
 msgstr "Ohjetta ei voi näyttää"
 
@@ -1366,207 +1442,191 @@ msgstr "Musiikkisoittimen asetukset"
 msgid "General"
 msgstr "Yleiset"
 
-#: ../shell/rb-shell-preferences.c:315
+#: ../shell/rb-shell-preferences.c:396
 msgid "Sharing"
-msgstr "Jaetaan"
+msgstr "Jakaminen"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:433
 msgid "_Music"
 msgstr "_Soitto"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:434
 msgid "_Edit"
 msgstr "_Muokkaa"
 
-#: ../shell/rb-shell.c:443
+#: ../shell/rb-shell.c:435
 msgid "_View"
 msgstr "_Näytä"
 
-#: ../shell/rb-shell.c:444
+#: ../shell/rb-shell.c:436
 msgid "_Control"
 msgstr "_Ohjaus"
 
-#: ../shell/rb-shell.c:445
+#: ../shell/rb-shell.c:437
 msgid "_Help"
 msgstr "O_hje"
 
-#: ../shell/rb-shell.c:447
-msgid "New Internet _Radio Station"
-msgstr "Uusi Internet-_radiokanava"
-
-#: ../shell/rb-shell.c:448
-msgid "Create a new Internet Radio station"
-msgstr "Luo uusi Internetradiokanava"
-
-#: ../shell/rb-shell.c:450
-msgid "_New Podcast Feed"
-msgstr "Uusi _Podcast-virta"
-
-#: ../shell/rb-shell.c:451
-msgid "Subscribe to a new Podcast Feed"
-msgstr "Tilaa uusi Podcast-virta"
-
-#: ../shell/rb-shell.c:454
+#: ../shell/rb-shell.c:439
 msgid "_Import Folder..."
 msgstr "_Tuo kansio..."
 
-#: ../shell/rb-shell.c:455
+#: ../shell/rb-shell.c:440
 msgid "Choose folder to be added to the Library"
 msgstr "Valitse kansio, joka lisätään musiikkikirjastoon"
 
-#: ../shell/rb-shell.c:457
+#: ../shell/rb-shell.c:442
 msgid "Import _File..."
 msgstr "_Tuo tiedosto..."
 
-#: ../shell/rb-shell.c:458
+#: ../shell/rb-shell.c:443
 msgid "Choose file to be added to the Library"
 msgstr "Valitse tiedosto, joka lisätään kirjastoon"
 
-#: ../shell/rb-shell.c:460
+#: ../shell/rb-shell.c:445
 msgid "Import _Audio CD..."
 msgstr "Tuo _CD-levy..."
 
-#: ../shell/rb-shell.c:461
+#: ../shell/rb-shell.c:446
 msgid "Extract and import songs from a CD"
 msgstr "Lue ja tuo kappaleita CD-levyltä"
 
-#: ../shell/rb-shell.c:463
+#: ../shell/rb-shell.c:448
 msgid "_About"
 msgstr "_Tietoja"
 
-#: ../shell/rb-shell.c:464
+#: ../shell/rb-shell.c:449
 msgid "Show information about the music player"
 msgstr "Näytä tietoja musiikkisoittimesta"
 
-#: ../shell/rb-shell.c:466
+#: ../shell/rb-shell.c:451
 msgid "_Contents"
 msgstr "_Sisältö"
 
-#: ../shell/rb-shell.c:467
+#: ../shell/rb-shell.c:452
 msgid "Display music player help"
 msgstr "Näytä musiikkisoittimen ohje"
 
-#: ../shell/rb-shell.c:469
+#: ../shell/rb-shell.c:454
 msgid "_Close"
 msgstr "_Sulje"
 
-#: ../shell/rb-shell.c:470
+#: ../shell/rb-shell.c:455
 msgid "Hide the music player window"
 msgstr "Piilota musiikkisoittimen ikkuna"
 
-#: ../shell/rb-shell.c:472
+#: ../shell/rb-shell.c:457
 msgid "_Quit"
 msgstr "_Lopeta"
 
-#: ../shell/rb-shell.c:473
+#: ../shell/rb-shell.c:458
 msgid "Quit the music player"
 msgstr "Lopeta musiikkisoitin"
 
-#: ../shell/rb-shell.c:475
+#: ../shell/rb-shell.c:460
 msgid "Prefere_nces"
 msgstr "_Asetukset"
 
-#: ../shell/rb-shell.c:476
+#: ../shell/rb-shell.c:461
 msgid "Edit music player preferences"
 msgstr "Muokkaa musiikkisoittimen asetuksia"
 
-#: ../shell/rb-shell.c:478
+#: ../shell/rb-shell.c:463
 msgid "Show _All"
 msgstr "Näytä k_aikki"
 
-#: ../shell/rb-shell.c:479
+#: ../shell/rb-shell.c:464
 msgid "Show all items in this music source"
 msgstr "Näytä kaikki kohteet tässä musiikkilähteessä"
 
-#: ../shell/rb-shell.c:481
+#: ../shell/rb-shell.c:466
 msgid "_Jump to Playing Song"
 msgstr "_Siirry soivaan kappaleeseen"
 
-#: ../shell/rb-shell.c:482
+#: ../shell/rb-shell.c:467
 msgid "Scroll the view to the currently playing song"
 msgstr "Siirrä näkymä soivaan kappaleeseen"
 
-#: ../shell/rb-shell.c:484
+#: ../shell/rb-shell.c:469
 msgid "_Disconnect"
 msgstr "_Katkaise yhteys"
 
-#: ../shell/rb-shell.c:485
+#: ../shell/rb-shell.c:470
 msgid "Disconnect from selected source"
 msgstr "Katkaise yhteys valittuun lähteeseen"
 
-#: ../shell/rb-shell.c:492
+#: ../shell/rb-shell.c:477
 msgid "Source _List"
 msgstr "Lähde_lista"
 
-#: ../shell/rb-shell.c:493
+#: ../shell/rb-shell.c:478
 msgid "Change the visibility of the source list"
 msgstr "Valitse näytetäänkö lähdelista"
 
-#: ../shell/rb-shell.c:495
+#: ../shell/rb-shell.c:480
 msgid "_Toolbar"
 msgstr "_Työkalupalkki"
 
-#: ../shell/rb-shell.c:496
+#: ../shell/rb-shell.c:481
 msgid "Change the visibility of the toolbar"
 msgstr "Valitse näytetäänkö työkalupalkki"
 
-#: ../shell/rb-shell.c:498
+#: ../shell/rb-shell.c:483
 msgid "_Small Display"
 msgstr "_Pieni näyttö"
 
-#: ../shell/rb-shell.c:499
+#: ../shell/rb-shell.c:484
 msgid "Make the main window smaller"
 msgstr "Pienennä pääikkuna"
 
-#: ../shell/rb-shell.c:501
-msgid "_Fullscreen"
-msgstr "_Kokoruutu"
+#: ../shell/rb-shell.c:486
+msgid "_Party Mode"
+msgstr ""
 
-#: ../shell/rb-shell.c:502
-msgid "Expand the window to fill the screen"
-msgstr "Laajenna ikkuna täyttämään ruutu"
+#: ../shell/rb-shell.c:487
+msgid "Change the status of the party mode"
+msgstr ""
 
-#: ../shell/rb-shell.c:504
-msgid "_Queue as Sidebar"
-msgstr "_Jono sivupalkkina"
+#: ../shell/rb-shell.c:489
+msgid "Play _Queue as Side Pane"
+msgstr "Soitto_lista sivupaneelina"
 
-#: ../shell/rb-shell.c:505
+#: ../shell/rb-shell.c:490
 msgid "Change whether the queue is visible as a source or a sidebar"
-msgstr "Määritä, näytetäänkö jono lähteenä vai sivupalkkina"
+msgstr "Määritä, näytetäänkö jono lähteenä vai sivupaneelina"
 
-#: ../shell/rb-shell.c:507
+#: ../shell/rb-shell.c:492
 msgid "S_tatusbar"
 msgstr "T_ilarivi"
 
-#: ../shell/rb-shell.c:508
+#: ../shell/rb-shell.c:493
 msgid "Change the visibility of the statusbar"
 msgstr "Valitse näytetäänkö tilarivi"
 
-#: ../shell/rb-shell.c:1281
+#: ../shell/rb-shell.c:1285
 msgid "Change the music volume"
 msgstr "Muuta äänen voimakkuutta"
 
-#: ../shell/rb-shell.c:1597
+#: ../shell/rb-shell.c:1617
 msgid "Error while saving song information"
 msgstr "Virhe tallennettaessa kappaleen tietoja"
 
 #. Translators: Trackname by Artist
-#: ../shell/rb-shell.c:1774
+#: ../shell/rb-shell.c:1782
 #, c-format
 msgid "%s by %s"
 msgstr "%s - %s"
 
-#: ../shell/rb-shell.c:1776 ../shell/rb-shell.c:1851
-#: ../widgets/rb-entry-view.c:1236
+#: ../shell/rb-shell.c:1784 ../shell/rb-shell.c:1871
+#: ../widgets/rb-entry-view.c:1289
 msgid "Now Playing"
 msgstr "Soitetaan"
 
-#: ../shell/rb-shell.c:1867 ../shell/rb-tray-icon.c:166
+#: ../shell/rb-shell.c:1888 ../shell/rb-tray-icon.c:166
 msgid "Not playing"
 msgstr "Soitto pysäytetty"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1870
+#: ../shell/rb-shell.c:1891
 #, c-format
 msgid ""
 "%s\n"
@@ -1576,7 +1636,7 @@ msgstr ""
 "Pysäytetty, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1874
+#: ../shell/rb-shell.c:1895
 #, c-format
 msgid ""
 "%s\n"
@@ -1586,19 +1646,19 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1913
+#: ../shell/rb-shell.c:1935
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: ../shell/rb-shell.c:2016
+#: ../shell/rb-shell.c:2046
 msgid "translator_credits"
 msgstr ""
 "Ilkka Tuohela, 2002-2005\n"
 "\n"
 "http://gnome.fi/"
 
-#: ../shell/rb-shell.c:2019
+#: ../shell/rb-shell.c:2049
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -1611,7 +1671,7 @@ msgstr ""
 "lisenssin version 2, tai (valinnan mukaan) minkä tahansa myöhemmän\n"
 "version mukaisesti.\n"
 
-#: ../shell/rb-shell.c:2023
+#: ../shell/rb-shell.c:2053
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -1623,68 +1683,68 @@ msgstr ""
 "hyväksyttävästä laadusta tai soveltuvuudesta tiettyyn tarkoitukseen. \n"
 "Katso GPL lisenssistä lisää yksityiskohtia.\n"
 
-#: ../shell/rb-shell.c:2027
+#: ../shell/rb-shell.c:2057
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
-"59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
+"51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
-"Tämän ohjelman mukana pitäisi tulla kopio GPL lisenssistä; jos näin\n"
+"Tämän ohjelman mukana pitäisi tulla kopio GPL-lisenssistä; jos näin\n"
 "ei ole, kirjoita osoitteeseen Free Software Foundation Inc., 59 Temple\n"
 "Place – Suite 330, Boston, MA 02111-1307, USA.\n"
 
-#: ../shell/rb-shell.c:2036
+#: ../shell/rb-shell.c:2066
 msgid "Maintainers:"
 msgstr "Ylläpitäjät:"
 
-#: ../shell/rb-shell.c:2039
+#: ../shell/rb-shell.c:2069
 msgid "Former Maintainers:"
 msgstr "Aikaisemmat ylläpitäjät:"
 
-#: ../shell/rb-shell.c:2042
+#: ../shell/rb-shell.c:2072
 msgid "Contributors:"
 msgstr "Avustajat:"
 
-#: ../shell/rb-shell.c:2044
+#: ../shell/rb-shell.c:2074
 msgid "Music management and playback software for GNOME."
 msgstr "Musiikin hallinta- ja soitto-ohjelma Gnomeen"
 
-#: ../shell/rb-shell.c:2169
+#: ../shell/rb-shell.c:2197
 msgid "Import Folder into Library"
 msgstr "Lisää kansio musiikkikirjastoon"
 
-#: ../shell/rb-shell.c:2191
+#: ../shell/rb-shell.c:2219
 msgid "Import File into Library"
 msgstr "Lisää tiedosto musiikkikirjastoon"
 
-#: ../shell/rb-shell.c:2256
+#: ../shell/rb-shell.c:2242
 msgid "CD Ripper not found"
 msgstr "CD-lukijaa ei löytynyt"
 
-#: ../shell/rb-shell.c:2257
+#: ../shell/rb-shell.c:2243
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "CD-levyjen tuonti vaatii, etää Sound Juicer ohjelma on asennettu."
 
-#: ../shell/rb-shell.c:2265
+#: ../shell/rb-shell.c:2251
 msgid "Couldn't run CD Ripper"
 msgstr "CD-lukijaa ei voi suorittaa"
 
-#: ../shell/rb-shell.c:2266
+#: ../shell/rb-shell.c:2252
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Virhe suoritettaessa sound-juiceria: %s"
 
-#: ../shell/rb-shell.c:3128 ../shell/rb-shell.c:3173
+#: ../shell/rb-shell.c:3200 ../shell/rb-shell.c:3245
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Tuntematon kappaleen URI: %s"
 
-#: ../shell/rb-shell.c:3182
+#: ../shell/rb-shell.c:3254
 #, c-format
 msgid "Unknown property %s"
 msgstr "Tuntematon ominaisuus %s"
 
-#: ../shell/rb-shell.c:3192
+#: ../shell/rb-shell.c:3264
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Virheellinen ominaisuuden tyyppi %s ominaisuudelle %s"
@@ -1730,150 +1790,151 @@ msgstr "Näytä _huomautukset"
 msgid "Show notifications of song changes and other events"
 msgstr "Näytä huomautuksia kappaleen vaihtumisesta ja muista tapahtumista"
 
-#: ../sources/rb-audiocd-source.c:221
+#: ../sources/rb-audiocd-source.c:226
 #, c-format
 msgid "Track %u"
 msgstr "Raita %u"
 
-#: ../sources/rb-audiocd-source.c:304 ../sources/rb-audiocd-source.c:314
-#: ../sources/rb-audiocd-source.c:322 ../sources/rb-audiocd-source.c:495
+#: ../sources/rb-audiocd-source.c:309 ../sources/rb-audiocd-source.c:319
+#: ../sources/rb-audiocd-source.c:327 ../sources/rb-audiocd-source.c:493
 msgid "Couldn't load Audio CD"
 msgstr "CD-levyä ei voi ladata"
 
-#: ../sources/rb-audiocd-source.c:305 ../sources/rb-audiocd-source.c:315
+#: ../sources/rb-audiocd-source.c:310 ../sources/rb-audiocd-source.c:320
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox ei voinut lukea CD-levyä."
 
-#: ../sources/rb-audiocd-source.c:323
+#: ../sources/rb-audiocd-source.c:328
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox ei voinut lukea CD-levyn tietoja."
 
-#: ../sources/rb-audiocd-source.c:496
+#: ../sources/rb-audiocd-source.c:494
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox ei voinut avata CD-levyä."
 
-#: ../sources/rb-iradio-source.c:331 ../sources/rb-library-source.c:584
+#: ../sources/rb-iradio-source.c:156
+msgid "New Internet _Radio Station"
+msgstr "Uusi Internet-_radiokanava"
+
+#: ../sources/rb-iradio-source.c:157
+msgid "Create a new Internet Radio station"
+msgstr "Luo uusi Internetradiokanava"
+
+#: ../sources/rb-iradio-source.c:341
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "Genre"
 msgstr "Tyyli"
 
-#: ../sources/rb-iradio-source.c:407
+#: ../sources/rb-iradio-source.c:418
 msgid "Radio"
 msgstr "Radio"
 
-#: ../sources/rb-iradio-source.c:548
+#: ../sources/rb-iradio-source.c:582
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d asema"
 msgstr[1] "%d asemaa"
 
-#: ../sources/rb-library-source.c:213
+#: ../sources/rb-library-source.c:174
 msgid "Browse This _Genre"
 msgstr "Selaa tätä _tyyliä"
 
-#: ../sources/rb-library-source.c:214
+#: ../sources/rb-library-source.c:175
 msgid "Set the browser to view only this genre"
 msgstr "Aseta selain näyttämään vain tämä tyyli"
 
-#: ../sources/rb-library-source.c:216
+#: ../sources/rb-library-source.c:177
 msgid "Browse This _Artist"
 msgstr "Selaa tätä _esittäjää"
 
-#: ../sources/rb-library-source.c:217
+#: ../sources/rb-library-source.c:178
 msgid "Set the browser to view only this artist"
 msgstr "Aseta selain näyttämään vain tämä esittäjä"
 
-#: ../sources/rb-library-source.c:219
+#: ../sources/rb-library-source.c:180
 msgid "Browse This A_lbum"
 msgstr "Selaa tätä _levyä"
 
-#: ../sources/rb-library-source.c:220
+#: ../sources/rb-library-source.c:181
 msgid "Set the browser to view only this album"
 msgstr "Aseta selain näyttämään vain tämän levyn"
 
-#: ../sources/rb-library-source.c:598
-#: ../widgets/rb-query-creator-properties.c:66
-#: ../widgets/rb-query-creator-properties.c:93
-msgid "Artist"
-msgstr "Esittäjä"
-
-#: ../sources/rb-library-source.c:612
-#: ../widgets/rb-query-creator-properties.c:67
-#: ../widgets/rb-query-creator-properties.c:94
-msgid "Album"
-msgstr "Levy"
-
-#: ../sources/rb-library-source.c:746
+#: ../sources/rb-library-source.c:545
 msgid "Library"
 msgstr "Kirjasto"
 
-#: ../sources/rb-library-source.c:1278
+#. TODO display file chooser
+#: ../sources/rb-library-source.c:738
+msgid "Choose Library Location"
+msgstr "Valitse kirjaston _sijainti"
+
+#: ../sources/rb-library-source.c:794
+msgid "Multiple locations set"
+msgstr "Useita sijainteja on asetettu"
+
+#: ../sources/rb-library-source.c:960
 msgid "Add Location"
 msgstr "Lisää sijainti"
 
-#: ../sources/rb-library-source.c:1690
-msgid "Cannot select library location"
-msgstr "Kirjaston sijaintia ei voi valita"
+#: ../sources/rb-play-queue-source.c:91
+msgid "Clear _Queue"
+msgstr "Tyhjennä _jono"
 
-#: ../sources/rb-library-source.c:1691
-msgid ""
-"The root filesystem cannot be chosen as your library location. Please choose "
-"a different location"
-msgstr ""
-"Tiedostojärjestelmän juurta ei voi valita kirjaston sijainnniksi. Valitse "
-"joku toinen kansio"
+#: ../sources/rb-play-queue-source.c:92
+msgid "Remove all songs from the play queue"
+msgstr "Poista kaikki kappaleet soittojonosta"
 
-#: ../sources/rb-play-queue-source.c:148 ../sources/rb-play-queue-source.c:197
-#: ../sources/rb-play-queue-source.c:303
-msgid "Queued songs"
-msgstr "Kappaleet jonossa"
+#: ../sources/rb-play-queue-source.c:171 ../sources/rb-play-queue-source.c:220
+#: ../sources/rb-play-queue-source.c:330
+msgid "Play Queue"
+msgstr "Soittojono"
 
-#: ../sources/rb-play-queue-source.c:262 ../widgets/rb-song-display-box.c:99
+#: ../sources/rb-play-queue-source.c:289 ../widgets/rb-song-display-box.c:100
 msgid "from"
 msgstr " "
 
-#: ../sources/rb-play-queue-source.c:262 ../widgets/rb-song-display-box.c:101
+#: ../sources/rb-play-queue-source.c:289 ../widgets/rb-song-display-box.c:102
 msgid "by"
 msgstr "-"
 
-#: ../sources/rb-playlist-source.c:240 ../widgets/rb-entry-view.c:909
+#: ../sources/rb-playlist-source.c:236 ../widgets/rb-entry-view.c:928
 msgid "Trac_k"
 msgstr "_Raita"
 
-#: ../sources/rb-playlist-source.c:508
+#: ../sources/rb-playlist-source.c:512
 msgid "Couldn't save playlist"
 msgstr "Soittlistaa ei voi tallentaa"
 
-#: ../sources/rb-playlist-source.c:559
+#: ../sources/rb-playlist-source.c:563
 msgid "Unable to create audio CD"
 msgstr "CD-levyä ei voi kirjoittaa"
 
-#: ../sources/rb-playlist-source-recorder.c:297
+#: ../sources/rb-playlist-source-recorder.c:293
 msgid "Maximum possible"
 msgstr "Suurin mahdollinen"
 
-#: ../sources/rb-playlist-source-recorder.c:368
+#: ../sources/rb-playlist-source-recorder.c:364
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Virheellinen kirjoitinlaite: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:468
+#: ../sources/rb-playlist-source-recorder.c:464
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d tunti"
 msgstr[1] "%d tuntia"
 
-#: ../sources/rb-playlist-source-recorder.c:470
+#: ../sources/rb-playlist-source-recorder.c:466
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d minuutti"
 msgstr[1] "%d minuuttia"
 
-#: ../sources/rb-playlist-source-recorder.c:473
+#: ../sources/rb-playlist-source-recorder.c:469
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -1881,94 +1942,94 @@ msgstr[0] "%d sekunti"
 msgstr[1] "%d sekuntia"
 
 #. hour:minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:478
+#: ../sources/rb-playlist-source-recorder.c:474
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:481
+#: ../sources/rb-playlist-source-recorder.c:477
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. seconds
-#: ../sources/rb-playlist-source-recorder.c:484
+#: ../sources/rb-playlist-source-recorder.c:480
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../sources/rb-playlist-source-recorder.c:487
+#: ../sources/rb-playlist-source-recorder.c:483
 msgid "0 seconds"
 msgstr "0 sekuntia"
 
-#: ../sources/rb-playlist-source-recorder.c:506
+#: ../sources/rb-playlist-source-recorder.c:502
 #, c-format
 msgid "About %s left"
 msgstr "Noin %s jäljellä"
 
-#: ../sources/rb-playlist-source-recorder.c:575
+#: ../sources/rb-playlist-source-recorder.c:571
 msgid "Could not determine media type because CD drive is busy"
 msgstr "Levyn tyyppiä ei voi määritellä, koska CD-asema on käytössä"
 
-#: ../sources/rb-playlist-source-recorder.c:577
+#: ../sources/rb-playlist-source-recorder.c:573
 msgid "Couldn't open media"
 msgstr "Aseman kelkkaa ei voi avata"
 
-#: ../sources/rb-playlist-source-recorder.c:579
+#: ../sources/rb-playlist-source-recorder.c:575
 msgid "Unknown Media"
 msgstr "Tuntematon levy"
 
-#: ../sources/rb-playlist-source-recorder.c:581
+#: ../sources/rb-playlist-source-recorder.c:577
 msgid "Commercial CD or Audio CD"
 msgstr "Kaupallinen CD tai poltettu CD"
 
-#: ../sources/rb-playlist-source-recorder.c:583
+#: ../sources/rb-playlist-source-recorder.c:579
 msgid "CD-R"
 msgstr "CD-R"
 
-#: ../sources/rb-playlist-source-recorder.c:585
+#: ../sources/rb-playlist-source-recorder.c:581
 msgid "CD-RW"
 msgstr "CD-RW"
 
-#: ../sources/rb-playlist-source-recorder.c:587
+#: ../sources/rb-playlist-source-recorder.c:583
 msgid "DVD"
 msgstr "DVD"
 
-#: ../sources/rb-playlist-source-recorder.c:589
+#: ../sources/rb-playlist-source-recorder.c:585
 msgid "DVD-R, or DVD-RAM"
 msgstr "DVD-R tai DVD-RAM"
 
-#: ../sources/rb-playlist-source-recorder.c:591
+#: ../sources/rb-playlist-source-recorder.c:587
 msgid "DVD-RW"
 msgstr "DVD-RW"
 
-#: ../sources/rb-playlist-source-recorder.c:593
+#: ../sources/rb-playlist-source-recorder.c:589
 msgid "DVD-RAM"
 msgstr "DVD-RAM"
 
-#: ../sources/rb-playlist-source-recorder.c:595
+#: ../sources/rb-playlist-source-recorder.c:591
 msgid "DVD+R"
 msgstr "DVD+R"
 
-#: ../sources/rb-playlist-source-recorder.c:597
+#: ../sources/rb-playlist-source-recorder.c:593
 msgid "DVD+RW"
 msgstr "DVD+RW"
 
-#: ../sources/rb-playlist-source-recorder.c:602
+#: ../sources/rb-playlist-source-recorder.c:598
 msgid "Broken media type"
 msgstr "Virheellinen levyn tyyppi"
 
-#: ../sources/rb-playlist-source-recorder.c:617
+#: ../sources/rb-playlist-source-recorder.c:613
 msgid "Writing audio to CD"
 msgstr "Kirjoitetaan kappaleita Cd-levylle"
 
-#: ../sources/rb-playlist-source-recorder.c:636
+#: ../sources/rb-playlist-source-recorder.c:632
 msgid "Finished creating audio CD."
 msgstr "CD-levyn kirjoitus päättyi."
 
-#: ../sources/rb-playlist-source-recorder.c:654
+#: ../sources/rb-playlist-source-recorder.c:650
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1976,162 +2037,162 @@ msgstr ""
 "CD-levyn kirjoitus päättyi.\n"
 "Luodaanok toinen kopio?"
 
-#: ../sources/rb-playlist-source-recorder.c:656
+#: ../sources/rb-playlist-source-recorder.c:652
 msgid "Writing cancelled.  Try again?"
 msgstr "Kirjoitus keskeyteyi? Yritetäänkö uudestaan"
 
-#: ../sources/rb-playlist-source-recorder.c:721
+#: ../sources/rb-playlist-source-recorder.c:717
 msgid "Audio recording error"
 msgstr "Virhe äänitettässä"
 
-#: ../sources/rb-playlist-source-recorder.c:749
+#: ../sources/rb-playlist-source-recorder.c:745
 msgid "Audio Conversion Error"
 msgstr "Virhe muunnettaessa"
 
-#: ../sources/rb-playlist-source-recorder.c:779
+#: ../sources/rb-playlist-source-recorder.c:775
 msgid "Recording error"
 msgstr "Äänitysvirhe"
 
-#: ../sources/rb-playlist-source-recorder.c:898
+#: ../sources/rb-playlist-source-recorder.c:894
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Haluatko keskeyttää tämän levyn kirjoituksen?"
 
-#: ../sources/rb-playlist-source-recorder.c:901
+#: ../sources/rb-playlist-source-recorder.c:897
 msgid "This may result in an unusable disc."
 msgstr "Tuloksena saattaa olla käyttökelvoton levy."
 
-#: ../sources/rb-playlist-source-recorder.c:908
+#: ../sources/rb-playlist-source-recorder.c:904
 msgid "_Cancel"
 msgstr "_Peru"
 
-#: ../sources/rb-playlist-source-recorder.c:909
+#: ../sources/rb-playlist-source-recorder.c:905
 msgid "_Interrupt"
 msgstr "_Keskeytä"
 
-#: ../sources/rb-playlist-source-recorder.c:931
+#: ../sources/rb-playlist-source-recorder.c:927
 msgid "Could not create audio CD"
 msgstr "CD-levyä ei voi kirjoittaa"
 
-#: ../sources/rb-playlist-source-recorder.c:953
+#: ../sources/rb-playlist-source-recorder.c:949
 msgid "Please make sure another application is not using the drive."
 msgstr "Varmista, ettei joku toinen ohjelma käytä asemaa."
 
-#: ../sources/rb-playlist-source-recorder.c:954
+#: ../sources/rb-playlist-source-recorder.c:950
 msgid "Drive is busy"
 msgstr "Asema on käytössä"
 
-#: ../sources/rb-playlist-source-recorder.c:956
+#: ../sources/rb-playlist-source-recorder.c:952
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Laita tyhjä tai uudelleenkirjoitettava levy asemaan."
 
-#: ../sources/rb-playlist-source-recorder.c:957
+#: ../sources/rb-playlist-source-recorder.c:953
 msgid "Insert a rewritable or blank CD"
 msgstr "Laita tyhjä tai uudelleenkirjoitettava levy"
 
-#: ../sources/rb-playlist-source-recorder.c:959
+#: ../sources/rb-playlist-source-recorder.c:955
 msgid "Please put a blank CD in the drive."
 msgstr "Laita tyhjä levy asemaan."
 
-#: ../sources/rb-playlist-source-recorder.c:960
+#: ../sources/rb-playlist-source-recorder.c:956
 msgid "Insert a blank CD"
 msgstr "Laita tyhjä levy"
 
-#: ../sources/rb-playlist-source-recorder.c:962
+#: ../sources/rb-playlist-source-recorder.c:958
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr ""
 "Vaihda asemassa olevan levyn tilalle uudelleenkirjoitettava tai tyhjä levy."
 
-#: ../sources/rb-playlist-source-recorder.c:963
+#: ../sources/rb-playlist-source-recorder.c:959
 msgid "Reload a rewritable or blank CD"
 msgstr "Laita asemaan tyhjä tai uudelleenkirjoitettava levy"
 
-#: ../sources/rb-playlist-source-recorder.c:965
+#: ../sources/rb-playlist-source-recorder.c:961
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Vaihda asemassa olevan levyn tilalle tyhjä levy."
 
-#: ../sources/rb-playlist-source-recorder.c:966
+#: ../sources/rb-playlist-source-recorder.c:962
 msgid "Reload a blank CD"
 msgstr "Lataa uudestaan tyhjä levy"
 
-#: ../sources/rb-playlist-source-recorder.c:1017
+#: ../sources/rb-playlist-source-recorder.c:1013
 msgid "Converting audio tracks"
 msgstr "Muunnetaan ääniraitoja"
 
-#: ../sources/rb-playlist-source-recorder.c:1020
+#: ../sources/rb-playlist-source-recorder.c:1016
 msgid "Preparing to write CD"
 msgstr "Valmistellaan levyn kirjoitusta"
 
-#: ../sources/rb-playlist-source-recorder.c:1023
+#: ../sources/rb-playlist-source-recorder.c:1019
 msgid "Writing CD"
 msgstr "Kirjoitetaan levyä"
 
-#: ../sources/rb-playlist-source-recorder.c:1026
+#: ../sources/rb-playlist-source-recorder.c:1022
 msgid "Finishing write"
 msgstr "Viimeistellään kirjoitusta"
 
-#: ../sources/rb-playlist-source-recorder.c:1029
+#: ../sources/rb-playlist-source-recorder.c:1025
 msgid "Erasing CD"
 msgstr "Tyhjennetään levyä"
 
-#: ../sources/rb-playlist-source-recorder.c:1032
+#: ../sources/rb-playlist-source-recorder.c:1028
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Käsittelemätön tapahtuma kohdassa burn_action_changed_cb"
 
-#: ../sources/rb-playlist-source-recorder.c:1054
+#: ../sources/rb-playlist-source-recorder.c:1050
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "%s näyttäisi sisältävän jo kirjoitettua tietoa."
 
-#: ../sources/rb-playlist-source-recorder.c:1062
+#: ../sources/rb-playlist-source-recorder.c:1058
 msgid "Erase information on this disc?"
 msgstr "Tyhjennä levyllä olevat tiedot?"
 
-#: ../sources/rb-playlist-source-recorder.c:1071
+#: ../sources/rb-playlist-source-recorder.c:1067
 msgid "_Try Another"
 msgstr "_Yritä toista"
 
-#: ../sources/rb-playlist-source-recorder.c:1078
+#: ../sources/rb-playlist-source-recorder.c:1074
 msgid "_Erase Disc"
 msgstr "_Tyhjennä levy"
 
-#: ../sources/rb-playlist-source-recorder.c:1182
+#: ../sources/rb-playlist-source-recorder.c:1178
 msgid "C_reate"
 msgstr "_Luo"
 
-#: ../sources/rb-playlist-source-recorder.c:1246
+#: ../sources/rb-playlist-source-recorder.c:1242
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Äänittäjän luonti epäonnistui: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1346
+#: ../sources/rb-playlist-source-recorder.c:1342
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Väliaikaishakemistoa '%s' ei voi poistaa: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1365
+#: ../sources/rb-playlist-source-recorder.c:1361
 msgid "Create Audio CD"
 msgstr "Luo CD-levy"
 
-#: ../sources/rb-playlist-source-recorder.c:1382
+#: ../sources/rb-playlist-source-recorder.c:1378
 #, c-format
 msgid "Create audio CD from '%s' playlist?"
 msgstr "Luo CD-levy soittolistasta '%s'?"
 
-#: ../sources/rb-playlist-source-recorder.c:1428
-#: ../sources/rb-playlist-source-recorder.c:1446
+#: ../sources/rb-playlist-source-recorder.c:1424
+#: ../sources/rb-playlist-source-recorder.c:1442
 msgid "Unable to build an audio track list."
 msgstr "Listaa kappaleista ei voi luoda."
 
-#: ../sources/rb-playlist-source-recorder.c:1456
+#: ../sources/rb-playlist-source-recorder.c:1452
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Tämä soittolista on liian pitkä kirjoitettavaksi ääni-CD:lle."
 
-#: ../sources/rb-playlist-source-recorder.c:1526
+#: ../sources/rb-playlist-source-recorder.c:1522
 #, c-format
 msgid "Cannot get free space at %s"
 msgstr "Ei riittävästi vapaata tilaa kohteessa %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1611
+#: ../sources/rb-playlist-source-recorder.c:1607
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -2142,15 +2203,15 @@ msgstr ""
 "Jos käytettävä aihio on pidempi kuin tavallinen CD-levy, aseta se "
 "kirjoittimeen ja yritä uudestaan."
 
-#: ../sources/rb-playlist-source-recorder.c:1622
+#: ../sources/rb-playlist-source-recorder.c:1618
 msgid "Playlist too long"
 msgstr "Soittolista on liian pitkä"
 
-#: ../sources/rb-playlist-source-recorder.c:1662
+#: ../sources/rb-playlist-source-recorder.c:1658
 msgid "Could not find temporary space!"
 msgstr "Väliaikaistilaa ei löytynyt!"
 
-#: ../sources/rb-playlist-source-recorder.c:1663
+#: ../sources/rb-playlist-source-recorder.c:1659
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -2159,95 +2220,100 @@ msgstr ""
 "Äänitiedostojen muuntamiseen tarvittavaa väliaikaista tilaa ei ole "
 "riittävästi. Vaaditaan %s MiB."
 
-#: ../sources/rb-podcast-source.c:282
+#: ../sources/rb-podcast-source.c:286
+msgid "_New Podcast Feed"
+msgstr "Uusi _Podcast-virta"
+
+#: ../sources/rb-podcast-source.c:287
+msgid "Subscribe to a new Podcast Feed"
+msgstr "Tilaa uusi Podcast-virta"
+
+#: ../sources/rb-podcast-source.c:290
 msgid "Download _Episode"
 msgstr "Nouda _jakso"
 
-#: ../sources/rb-podcast-source.c:283
+#: ../sources/rb-podcast-source.c:291
 msgid "Download Podcast Episode"
 msgstr "Nouda Podcast-jakso"
 
-#: ../sources/rb-podcast-source.c:285
+#: ../sources/rb-podcast-source.c:293
 msgid "_Cancel Download"
 msgstr "_keskeytä nouto"
 
-#: ../sources/rb-podcast-source.c:286
+#: ../sources/rb-podcast-source.c:294
 msgid "Cancel Episode Download"
 msgstr "Keskeytä jakson nouto"
 
-#: ../sources/rb-podcast-source.c:289
+#: ../sources/rb-podcast-source.c:297
 msgid "Episode Properties"
 msgstr "Jakson ominaisuudet"
 
-#: ../sources/rb-podcast-source.c:291
+#: ../sources/rb-podcast-source.c:299
 msgid "_Update Podcast Feed"
 msgstr "_Päivitä Podcast-virta"
 
-#: ../sources/rb-podcast-source.c:292
+#: ../sources/rb-podcast-source.c:300
 msgid "Update Feed"
 msgstr "Päivitä virta"
 
-#: ../sources/rb-podcast-source.c:294
+#: ../sources/rb-podcast-source.c:302
 msgid "_Delete Podcast Feed"
 msgstr "P_oista Podcast-virta"
 
-#: ../sources/rb-podcast-source.c:295
+#: ../sources/rb-podcast-source.c:303
 msgid "Delete Feed"
 msgstr "Poista virta"
 
-#: ../sources/rb-podcast-source.c:297
+#: ../sources/rb-podcast-source.c:305
 msgid "_Update All Feeds"
 msgstr "Päivitä _kaikki virrat"
 
-#: ../sources/rb-podcast-source.c:298
+#: ../sources/rb-podcast-source.c:306
 msgid "Update all feeds"
 msgstr "Päivitä kaikki virrat"
 
-#: ../sources/rb-podcast-source.c:494
+#: ../sources/rb-podcast-source.c:514
 msgid "Date"
 msgstr "Päiväys"
 
-#: ../sources/rb-podcast-source.c:505
+#: ../sources/rb-podcast-source.c:525
 msgid "_Date"
 msgstr "_Päiväys"
 
-#: ../sources/rb-podcast-source.c:527
+#: ../sources/rb-podcast-source.c:547
 msgid "_Feed"
 msgstr "_Virta"
 
-#: ../sources/rb-podcast-source.c:548 ../sources/rb-podcast-source.c:567
+#: ../sources/rb-podcast-source.c:568 ../sources/rb-podcast-source.c:586
 msgid "Status"
 msgstr "Tila"
 
-#: ../sources/rb-podcast-source.c:549 ../sources/rb-podcast-source.c:1446
+#: ../sources/rb-podcast-source.c:569 ../sources/rb-podcast-source.c:1427
 msgid "Downloaded"
 msgstr "Noudettu"
 
-#: ../sources/rb-podcast-source.c:550 ../sources/rb-podcast-source.c:1458
-msgid "Undownloaded"
-msgstr "Noutamaton"
-
-#: ../sources/rb-podcast-source.c:551 ../sources/rb-podcast-source.c:1454
+#: ../sources/rb-podcast-source.c:570 ../sources/rb-podcast-source.c:1435
 msgid "Waiting"
 msgstr "Odotetaan"
 
-#: ../sources/rb-podcast-source.c:552 ../sources/rb-podcast-source.c:1450
+#: ../sources/rb-podcast-source.c:571 ../sources/rb-podcast-source.c:1431
 msgid "Failed"
 msgstr "Epäonnistui"
 
-#: ../sources/rb-podcast-source.c:612 ../sources/rb-podcast-source.c:634
+#. configure feed view
+#: ../sources/rb-podcast-source.c:616 ../sources/rb-podcast-source.c:646
 msgid "Feed"
 msgstr "Virta"
 
-#: ../sources/rb-podcast-source.c:739
+#: ../sources/rb-podcast-source.c:758
 msgid "Podcasts"
 msgstr "Podcastit"
 
-#: ../sources/rb-podcast-source.c:828
+#: ../sources/rb-podcast-source.c:839
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Poista Podcastin jakso ja noudettu tiedosto?"
 
-#: ../sources/rb-podcast-source.c:831
+#: ../sources/rb-podcast-source.c:842
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2257,19 +2323,19 @@ msgstr ""
 "että voit poistaa pelkän jakson, mutta säilyttää noudetun tiedoston "
 "valitsemalla pelkän jakson poistamisen."
 
-#: ../sources/rb-podcast-source.c:839
+#: ../sources/rb-podcast-source.c:850
 msgid "Delete _Episode Only"
 msgstr "Poista pelkkä _jakso"
 
-#: ../sources/rb-podcast-source.c:845
+#: ../sources/rb-podcast-source.c:856
 msgid "_Delete Episode And File"
 msgstr "Poista jakso ja _tiedosto"
 
-#: ../sources/rb-podcast-source.c:1334
+#: ../sources/rb-podcast-source.c:1315
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Poistetaanko podcast-virta ja siihen liittyvät tiedostot?"
 
-#: ../sources/rb-podcast-source.c:1337
+#: ../sources/rb-podcast-source.c:1318
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2279,38 +2345,38 @@ msgstr ""
 "että voit poistaa virran, mutta säilyttää noudetut tiedostot valitsemalla "
 "pelkän virran poistamisen."
 
-#: ../sources/rb-podcast-source.c:1345
+#: ../sources/rb-podcast-source.c:1326
 msgid "Delete _Feed Only"
 msgstr "Poista _pelkkä virta"
 
-#: ../sources/rb-podcast-source.c:1352
+#: ../sources/rb-podcast-source.c:1333
 msgid "_Delete Feed And Files"
 msgstr "Poista virta ja tiedostot"
 
-#: ../sources/rb-podcast-source.c:1524
+#: ../sources/rb-podcast-source.c:1540
 #, c-format
 msgid "All %d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "%d virta"
 msgstr[1] "Kaikki %d virtaa"
 
-#: ../sources/rb-podcast-source.c:1668
+#: ../sources/rb-podcast-source.c:1684
 msgid "Downloading podcast"
 msgstr "Noudetaan podcastia"
 
-#: ../sources/rb-podcast-source.c:1680
+#: ../sources/rb-podcast-source.c:1696
 msgid "Finished downloading podcast"
 msgstr "Podcastin nouto päättyi"
 
-#: ../sources/rb-podcast-source.c:1692
+#: ../sources/rb-podcast-source.c:1708
 msgid "New updates avaliable from"
 msgstr "Uusi päivityksiä haettavissa lähteestä"
 
-#: ../sources/rb-podcast-source.c:1787
+#: ../sources/rb-podcast-source.c:1803
 msgid "Error in podcast"
 msgstr "Virhe podcastissa"
 
-#: ../sources/rb-sourcelist.c:239
+#: ../sources/rb-sourcelist.c:248
 msgid "S_ource"
 msgstr "Lähde"
 
@@ -2343,11 +2409,11 @@ msgstr "Pixbuf-olio"
 msgid "The pixbuf to render."
 msgstr "Piirrettävä pixbuf."
 
-#: ../widgets/rb-druid.c:211
+#: ../widgets/rb-druid.c:206
 msgid "Welcome to Rhythmbox"
 msgstr "Tervetuloa Rhythmboxiin"
 
-#: ../widgets/rb-druid.c:215
+#: ../widgets/rb-druid.c:210
 msgid ""
 "Rhythmbox is the GNOME music player that lets you do everything: play your "
 "music files, listen to Internet Radio, import music from CDs, and much "
@@ -2362,15 +2428,15 @@ msgstr ""
 "Tämä apulainen auttaa sinua pääsemään alkuun kysymällä muutamia "
 "yksinkertaisia kysymyksiä."
 
-#: ../widgets/rb-druid.c:221
+#: ../widgets/rb-druid.c:216
 msgid "Music library setup"
 msgstr "Musiikkikirjaston asetukset"
 
-#: ../widgets/rb-druid.c:230
+#: ../widgets/rb-druid.c:225
 msgid "Finish"
 msgstr "Viimeistele"
 
-#: ../widgets/rb-druid.c:232
+#: ../widgets/rb-druid.c:227
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
@@ -2382,67 +2448,60 @@ msgstr ""
 "Muista että voit lisätä musiikkia musiikkikirjastoon joko valitsemalla ensin "
 "\"Musiikki\" ja sieltä \"Tuo kansio\" tai tuomalla musiikkia CD:ltä."
 
-#: ../widgets/rb-druid.c:291
+#: ../widgets/rb-druid.c:289
 msgid "Load folder into Library"
 msgstr "Lisää kansio musiikkikirjastoon"
 
-#: ../widgets/rb-entry-view.c:717
-msgid "Very Low"
-msgstr "Hyvin matala"
-
-#: ../widgets/rb-entry-view.c:719
-msgid "Low"
-msgstr "Matala"
-
-#: ../widgets/rb-entry-view.c:721
-msgid "Regular"
-msgstr "Tavallinen"
-
-#: ../widgets/rb-entry-view.c:723
-msgid "High"
-msgstr "Korkea"
-
 #: ../widgets/rb-entry-view.c:725
-msgid "Very High"
-msgstr "Hyvin korkea"
+#, c-format
+msgid "%u kbps"
+msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:727
-msgid "Perfect"
-msgstr "Täydellinen"
-
-#: ../widgets/rb-entry-view.c:920
+#: ../widgets/rb-entry-view.c:939
 msgid "_Title"
 msgstr "_Kappale"
 
-#: ../widgets/rb-entry-view.c:930
+#: ../widgets/rb-entry-view.c:949
 msgid "Art_ist"
 msgstr "_Esittäjä"
 
-#: ../widgets/rb-entry-view.c:940
+#: ../widgets/rb-entry-view.c:959
 msgid "_Album"
 msgstr "_Levy"
 
-#: ../widgets/rb-entry-view.c:960
+#: ../widgets/rb-entry-view.c:979
 msgid "Tim_e"
 msgstr "_Aika"
 
-#: ../widgets/rb-entry-view.c:985
-msgid "_Quality"
-msgstr "_Laatu"
+#: ../widgets/rb-entry-view.c:1006
+msgid "000 kbps"
+msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1020
+#: ../widgets/rb-entry-view.c:1038
 msgid "_Play Count"
 msgstr "_Soittokerrat"
 
-#: ../widgets/rb-entry-view.c:1032
+#: ../widgets/rb-entry-view.c:1050
 msgid "_Last Played"
 msgstr "_Viimeksi soitettu"
 
-#: ../widgets/rb-entry-view.c:1044
+#: ../widgets/rb-entry-view.c:1062
 msgid "_Date Added"
 msgstr "_Lisäyspäivä"
 
-#: ../widgets/rb-entry-view.c:1303
+#: ../widgets/rb-entry-view.c:1073
+msgid "Last _Seen"
+msgstr "Viimeksi _nähty"
+
+#: ../widgets/rb-entry-view.c:1084
+msgid "L_ocation"
+msgstr "_Sijainti"
+
+#: ../widgets/rb-entry-view.c:1092
+msgid "Error"
+msgstr "Virhe"
+
+#: ../widgets/rb-entry-view.c:1358
 msgid "Playback Error"
 msgstr "Virhe toistettaessa"
 
@@ -2450,78 +2509,66 @@ msgstr "Virhe toistettaessa"
 msgid "Listening to "
 msgstr "Kuunnellaan"
 
-#: ../widgets/rb-header.c:451
+#: ../widgets/rb-header.c:453
 msgid "Not Playing"
 msgstr "Soitto pysäytetty"
 
-#: ../widgets/rb-header.c:724
+#: ../widgets/rb-header.c:726
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d %d:%02d"
 
-#: ../widgets/rb-header.c:728
+#: ../widgets/rb-header.c:730
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
 
-#: ../widgets/rb-header.c:740
+#: ../widgets/rb-header.c:742
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d jäljellä"
 
-#: ../widgets/rb-header.c:744
+#: ../widgets/rb-header.c:746
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d jäljellä"
 
-#: ../widgets/rb-load-failure-dialog.c:95
-msgid "Error loading files into library"
-msgstr "Virhe ladattaessa tiedostoja kirjastoon"
-
-#: ../widgets/rb-load-failure-dialog.c:112
-msgid "_Error"
-msgstr "_Virhe"
-
-#: ../widgets/rb-load-failure-dialog.c:120
-msgid "_File"
-msgstr "_Tiedosto"
-
-#: ../widgets/rb-property-view.c:479
+#: ../widgets/rb-property-view.c:496
 #, c-format
 msgid "All %d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "%d esittäjä (%d)"
 msgstr[1] "Kaikki %d esittäjää (%d)"
 
-#: ../widgets/rb-property-view.c:482
+#: ../widgets/rb-property-view.c:499
 #, c-format
 msgid "All %d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "%d levy (%d)"
 msgstr[1] "Kaikki %d levyä (%d)"
 
-#: ../widgets/rb-property-view.c:485
+#: ../widgets/rb-property-view.c:502
 #, c-format
 msgid "All %d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%d tyyli (%d)"
 msgstr[1] "Kaikki %d tyyliä (%d)"
 
-#: ../widgets/rb-property-view.c:488
-#, , c-format
+#: ../widgets/rb-property-view.c:505
+#, c-format
 msgid "All %d (%d)"
 msgstr "Kaikki %d (%d)"
 
-#: ../widgets/rb-property-view.c:494
+#: ../widgets/rb-property-view.c:511
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
 
-#: ../widgets/rb-query-creator.c:179
+#: ../widgets/rb-query-creator.c:177
 msgid "Create Automatic Playlist"
 msgstr "Luo automaattinen soittolista"
 
-#: ../widgets/rb-query-creator.c:181
+#: ../widgets/rb-query-creator.c:179
 msgid "Edit Automatic Playlist"
 msgstr "Muokkaa automaattista soittolistaa"
 
@@ -2529,6 +2576,16 @@ msgstr "Muokkaa automaattista soittolistaa"
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Title"
 msgstr "Kappale"
+
+#: ../widgets/rb-query-creator-properties.c:66
+#: ../widgets/rb-query-creator-properties.c:93
+msgid "Artist"
+msgstr "Esittäjä"
+
+#: ../widgets/rb-query-creator-properties.c:67
+#: ../widgets/rb-query-creator-properties.c:94
+msgid "Album"
+msgstr "Levy"
 
 #: ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:99
@@ -2573,7 +2630,7 @@ msgstr "Soitettu viimeksi"
 
 #: ../widgets/rb-query-creator-properties.c:81
 msgid "Time Added to Library"
-msgstr "Musiikkikirjastoon lisäyksen aika"
+msgstr "Musiikkikirjastoon lisäysaika"
 
 #: ../widgets/rb-query-creator-properties.c:93
 #: ../widgets/rb-query-creator-properties.c:94
@@ -2627,30 +2684,38 @@ msgid "does not contain"
 msgstr "ei sisällä"
 
 #: ../widgets/rb-query-creator-properties.c:119
-#: ../widgets/rb-query-creator-properties.c:147
+#: ../widgets/rb-query-creator-properties.c:149
 msgid "equals"
 msgstr "on sama kuin"
 
-#: ../widgets/rb-query-creator-properties.c:148
+#: ../widgets/rb-query-creator-properties.c:120
+msgid "starts with"
+msgstr "alkaa arvosta"
+
+#: ../widgets/rb-query-creator-properties.c:121
+msgid "ends with"
+msgstr "päättyy arvoon"
+
+#: ../widgets/rb-query-creator-properties.c:150
 msgid "at least"
 msgstr "vähintään"
 
 #. matches if A >= B
-#: ../widgets/rb-query-creator-properties.c:149
+#: ../widgets/rb-query-creator-properties.c:151
 msgid "at most"
 msgstr "enintään"
 
-#: ../widgets/rb-query-creator-properties.c:158
+#: ../widgets/rb-query-creator-properties.c:160
 msgid "in"
 msgstr "aikana"
 
 #. matches if within 1-JAN-YEAR to 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:160
+#: ../widgets/rb-query-creator-properties.c:162
 msgid "after"
 msgstr "jäljeen"
 
 #. matches if >= 31-DEC-YEAR
-#: ../widgets/rb-query-creator-properties.c:162
+#: ../widgets/rb-query-creator-properties.c:164
 msgid "before"
 msgstr "ennen"
 
@@ -2658,7 +2723,7 @@ msgstr "ennen"
 #. * Translators: this will match when within <value> of the current time
 #. * e.g. "in the last" "7 days" will match if within 7 days of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:219
+#: ../widgets/rb-query-creator-properties.c:221
 msgid "in the last"
 msgstr "viimeisimpinä"
 
@@ -2666,27 +2731,27 @@ msgstr "viimeisimpinä"
 #. * Translators: this is the opposite of the above, and will match if not
 #. * within <value> of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:225
+#: ../widgets/rb-query-creator-properties.c:227
 msgid "not in the last"
 msgstr "ei viimeisimpinä"
 
-#: ../widgets/rb-query-creator-properties.c:239
+#: ../widgets/rb-query-creator-properties.c:241
 msgid "seconds"
 msgstr "sekuntia"
 
-#: ../widgets/rb-query-creator-properties.c:240
+#: ../widgets/rb-query-creator-properties.c:242
 msgid "minutes"
 msgstr "minuuttia"
 
-#: ../widgets/rb-query-creator-properties.c:241
+#: ../widgets/rb-query-creator-properties.c:243
 msgid "hours"
 msgstr "tuntia"
 
-#: ../widgets/rb-query-creator-properties.c:242
+#: ../widgets/rb-query-creator-properties.c:244
 msgid "days"
 msgstr "päivää"
 
-#: ../widgets/rb-query-creator-properties.c:243
+#: ../widgets/rb-query-creator-properties.c:245
 msgid "weeks"
 msgstr "viikkoa"
 
@@ -2695,33 +2760,94 @@ msgstr "viikkoa"
 msgid "_Search:"
 msgstr "_Hae:"
 
-#: ../widgets/rb-song-display-box.c:324
+#: ../widgets/rb-song-display-box.c:340
 msgid "Get information on this album from the web"
 msgstr "Hae levystä tietoja verkosta"
 
-#: ../widgets/rb-song-display-box.c:336
+#: ../widgets/rb-song-display-box.c:352
 msgid "Get information on this artist from the web"
 msgstr "Hae esittäjästä tietoja verkosta"
 
-#: ../widgets/rb-song-info.c:250
+#: ../widgets/rb-song-info.c:255
 msgid "Song Properties"
 msgstr "Kappaleen ominaisuduet"
 
-#: ../widgets/rb-song-info.c:294
+#: ../widgets/rb-song-info.c:299
 msgid "Multiple Song Properties"
 msgstr "Monen kappaleen ominaisuudet"
 
-#: ../widgets/rb-song-info.c:803
+#: ../widgets/rb-song-info.c:866
 msgid "Unknown file name"
 msgstr "Tuntematon tiedostonimi"
 
-#: ../widgets/rb-song-info.c:822
+#: ../widgets/rb-song-info.c:885
 msgid "On the desktop"
 msgstr "Työpöydällä"
 
-#: ../widgets/rb-song-info.c:831
+#: ../widgets/rb-song-info.c:894
 msgid "Unknown location"
 msgstr "Tuntematon sijainti"
+
+#~ msgid "Select A Folder"
+#~ msgstr "Valitse kansio"
+
+#~ msgid "_Fullscreen"
+#~ msgstr "_Kokoruutu"
+
+#~ msgid "Expand the window to fill the screen"
+#~ msgstr "Laajenna ikkuna täyttämään ruutu"
+
+#~ msgid "Cannot select library location"
+#~ msgstr "Kirjaston sijaintia ei voi valita"
+
+#~ msgid ""
+#~ "The root filesystem cannot be chosen as your library location. Please "
+#~ "choose a different location"
+#~ msgstr ""
+#~ "Tiedostojärjestelmän juurta ei voi valita kirjaston sijainnniksi. Valitse "
+#~ "joku toinen kansio"
+
+#~ msgid "Queued songs"
+#~ msgstr "Kappaleet jonossa"
+
+#~ msgid "Very Low"
+#~ msgstr "Hyvin matala"
+
+#~ msgid "Low"
+#~ msgstr "Matala"
+
+#~ msgid "Regular"
+#~ msgstr "Tavallinen"
+
+#~ msgid "High"
+#~ msgstr "Korkea"
+
+#~ msgid "Very High"
+#~ msgstr "Hyvin korkea"
+
+#~ msgid "Perfect"
+#~ msgstr "Täydellinen"
+
+#~ msgid "Error loading files into library"
+#~ msgstr "Virhe ladattaessa tiedostoja kirjastoon"
+
+#~ msgid "_File"
+#~ msgstr "_Tiedosto"
+
+#~ msgid "Unable to browse for remote shares"
+#~ msgstr "Etäjakojen selaaminen ei onnistu"
+
+#~ msgid ""
+#~ "Could not start browsing for music servers on your network.  Rhythmbox "
+#~ "will continue to function, without this feature.  Check your %s "
+#~ "installation"
+#~ msgstr ""
+#~ "Verkkosi musiikkipalvelinten selauksen aloittaminen epäonnistui. "
+#~ "Rhythmbox jatkaa toimintaansa ilman tätä toimintoa. Tarkista %s "
+#~ "asennuksesi."
+
+#~ msgid "Undownloaded"
+#~ msgstr "Noutamaton"
 
 #~ msgid "Delete"
 #~ msgstr "Poista"
@@ -2758,9 +2884,6 @@ msgstr "Tuntematon sijainti"
 
 #~ msgid "Could not create audio output element; check your settings"
 #~ msgstr "Ääniulostulo-elementtiä ei pystytty luomaan: tarkista asetuksesi"
-
-#~ msgid "Could not determine default writer device"
-#~ msgstr "Oletuskirjoitinta ei voi päätellä"
 
 #~ msgid ""
 #~ "This playlist is %s minutes long.  This exceeds the %s minute length of "
