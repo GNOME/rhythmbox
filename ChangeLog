@@ -1,3 +1,13 @@
+2006-03-03  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_parse_file):
+	* shell/rb-shell.c: (rb_shell_load_uri):
+	* sources/rb-generic-player-source.c: (visit_playlist_dirs):
+	* sources/rb-iradio-source.c: (rb_iradio_source_add_from_playlist):
+	use the new "recurse" property from totem-plparser, if present. Stop
+	RB hanging for new users who don't have a 'net connection. From bug
+	331508.
+
 2006-03-02  Bastien Nocera  <hadess@hadess.net>
 
 	* shell/rb-removable-media-manager.c:

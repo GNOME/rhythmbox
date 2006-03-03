@@ -365,9 +365,12 @@ visit_playlist_dirs (const gchar *rel_path,
 	data->player_source = source;
 	
 	parser = totem_pl_parser_new ();
+
 	g_signal_connect (parser,
 			  "entry", G_CALLBACK (handle_playlist_entry_cb),
 			  data);
+	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
+		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
 	if (totem_pl_parser_parse (parser, playlist_path, TRUE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
 		rb_debug ("unable to parse %s as playlist", playlist_path);

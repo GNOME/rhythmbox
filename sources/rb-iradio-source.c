@@ -807,7 +807,10 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 	g_signal_connect_object (G_OBJECT (parser), "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
-	switch (totem_pl_parser_parse (parser, uri, FALSE)) {
+	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
+		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
+
+	switch (totem_pl_parser_parse (parser, uri, TRUE)) {
 	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
 	case TOTEM_PL_PARSER_RESULT_IGNORED:
 		/* maybe it's the actual stream URL, then */

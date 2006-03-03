@@ -658,7 +658,10 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 					 G_CALLBACK (playlist_load_end_cb),
 					 mgr, 0);
 		
-		if (totem_pl_parser_parse (parser, uri, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
+			g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
+
+		if (totem_pl_parser_parse (parser, uri, TRUE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
 			g_set_error (error,
 				     RB_PLAYLIST_MANAGER_ERROR,
 				     RB_PLAYLIST_MANAGER_ERROR_PARSE,
