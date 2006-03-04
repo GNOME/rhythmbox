@@ -571,8 +571,8 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	display_name = gnome_vfs_volume_get_display_name (volume);
 	hal_udi = gnome_vfs_volume_get_hal_udi (volume);
 	icon_name = gnome_vfs_volume_get_icon (volume);
-	rb_debug ("detecting new media - device_type=%d", device_type);
-	rb_debug ("detecting new media - volumd_type=%d", gnome_vfs_volume_get_volume_type (volume));
+	rb_debug ("detecting new media - device type=%d", device_type);
+	rb_debug ("detecting new media - volume type=%d", gnome_vfs_volume_get_volume_type (volume));
 	rb_debug ("detecting new media - fs type=%s", fs_type);
 	rb_debug ("detecting new media - device path=%s", device_path);
 	rb_debug ("detecting new media - display name=%s", display_name);
@@ -604,7 +604,7 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 		g_hash_table_insert (priv->volume_mapping, volume, source);
 		rb_removable_media_manager_append_media_source (mgr, source);
 	} else
-		rb_debug ("Unhanded media");
+		rb_debug ("Unhandled media");
 
 	g_free (fs_type);
 	g_free (device_path);

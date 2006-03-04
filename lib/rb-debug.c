@@ -35,7 +35,8 @@ static void log_handler (const char *domain,
 	                 const char *message,
 	                 gpointer data);
 
-static gboolean debugging = FALSE;
+static const char *debug_everything = "everything";
+static const char *debug_match = NULL;
 
 /* Our own funky debugging function, should only be used when something
  * is not going wrong, if something *is* wrong use g_warning.
@@ -51,7 +52,11 @@ rb_debug_real (const char *func,
 	char *str_time;
 	time_t the_time;
 
-	if (debugging == FALSE) return;
+	if (debug_match == NULL || 
+	   (debug_match != debug_everything &&
+	   (strstr (file, debug_match) == NULL) &&
+	   (strstr (func, debug_match) == NULL)))
+		return;
 
 	va_start (args, format);
 
@@ -63,14 +68,20 @@ rb_debug_real (const char *func,
 	str_time = g_new0 (char, 255);
 	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
 
-	g_printerr ("[%p] [%s] %s:%d (%s): %s\n", g_thread_self (),
-		    func, file, line, str_time, buffer);
+	g_printerr ("(%s) [%p] [%s] %s:%d: %s\n", str_time, g_thread_self (),
+		    func, file, line, buffer);
 	
 	g_free (str_time);
 }
 
 void
 rb_debug_init (gboolean debug)
+{
+	rb_debug_init_match (debug ? debug_everything : NULL);
+}
+
+void 
+rb_debug_init_match (const char *match)
 {
 	guint i;
 
@@ -120,9 +131,9 @@ rb_debug_init (gboolean debug)
 		"librsvg",
 	};
 
-	debugging = debug;
+	debug_match = match;
 
-	if (debugging)
+	if (debug_match != NULL)
 		for (i = 0; i < G_N_ELEMENTS (standard_log_domains); i++)
 			g_log_set_handler (standard_log_domains[i], G_LOG_LEVEL_MASK, log_handler, NULL);
 
@@ -171,7 +182,7 @@ rb_profiler_new (const char *name)
 {
 	RBProfiler *profiler;
 	
-	if (debugging == FALSE)
+	if (debug_match == FALSE)
 		return NULL;
 
 	profiler = g_new0 (RBProfiler, 1);
@@ -189,7 +200,7 @@ rb_profiler_dump (RBProfiler *profiler)
 	gulong elapsed;
 	double seconds;
 
-	if (debugging == FALSE)
+	if (debug_match == NULL)
 		return;
 	if (profiler == NULL)
 		return;
@@ -203,7 +214,7 @@ rb_profiler_dump (RBProfiler *profiler)
 void
 rb_profiler_reset (RBProfiler *profiler)
 {
-	if (debugging == FALSE)
+	if (debug_match == NULL)
 		return;
 	if (profiler == NULL)
 		return;
@@ -214,7 +225,7 @@ rb_profiler_reset (RBProfiler *profiler)
 void
 rb_profiler_free (RBProfiler *profiler)
 {
-	if (debugging == FALSE)
+	if (debug_match == NULL)
 		return;
 	if (profiler == NULL)
 		return;

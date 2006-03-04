@@ -1,3 +1,19 @@
+2006-03-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-debug.h:
+	* lib/rb-debug.c: (rb_debug_real), (rb_debug_init),
+	(rb_debug_init_match), (rb_profiler_new), (rb_profiler_dump),
+	(rb_profiler_reset), (rb_profiler_free):
+	Filter debug output by matching the file and function names against a
+	match string.
+
+	* shell/main.c: (main):
+	Add -D command line option to specify the debug match string.
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_mount_volume):
+	Fix some typos in debug output.
+
 2006-03-03  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_parse_file):

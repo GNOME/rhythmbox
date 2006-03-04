@@ -75,6 +75,7 @@
 #endif
 
 static gboolean debug           = FALSE;
+static char *debug_match        = NULL;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
@@ -169,7 +170,8 @@ main (int argc, char **argv)
 		{ "toggle-hide",		0,  POPT_ARG_NONE,	&toggle_hide,			0, N_("Change visibility of the main Rhythmbox window"), NULL },
 #endif
 
-		{ "debug",			'd',POPT_ARG_NONE,	&debug,				0, N_("Enable debugging code"), NULL },
+		{ "debug",			'd',POPT_ARG_NONE,	&debug,				0, N_("Enable debug output"), NULL },
+		{ "debug-match",		'D',POPT_ARG_STRING,	&debug_match,			0, N_("Enable debug output matching a specified string"), NULL },
 		{ "no-update",			0,  POPT_ARG_NONE,	&no_update,			0, N_("Do not update the library"), NULL },
 		{ "no-registration",		'n',POPT_ARG_NONE,	&no_registration,		0, N_("Do not register the shell"), NULL },
 		{ "dry-run",			0,  POPT_ARG_NONE,	&dry_run,			0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
@@ -228,7 +230,10 @@ main (int argc, char **argv)
 	gst_control_init (&argc, &argv);
 #endif
 
-	rb_debug_init (debug);
+	if (!debug && debug_match)
+		rb_debug_init_match (debug_match);
+	else
+		rb_debug_init (debug);
 	rb_debug ("initializing Rhythmbox %s", VERSION);
 	
 	/* TODO: kill this function */
