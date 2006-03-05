@@ -2274,10 +2274,12 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 			break;
 		}
 
-		rb_debug ("updating play statistics");
-		rb_source_update_play_statistics (source,
-						  player->priv->db,
-						  entry);
+		if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) == NULL) {
+			rb_debug ("updating play statistics");
+			rb_source_update_play_statistics (source,
+							  player->priv->db,
+							  entry);
+		}
 	}
 
 	GDK_THREADS_LEAVE ();

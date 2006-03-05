@@ -1,5 +1,13 @@
 2006-03-05  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
+	don't submit tracks which could not be played. Fixed bug 333013.
+
+	* shell/rb-shell-player.c: (eos_cb): Don't update statistics for
+	tracks which could not be played.
+
+2006-03-05  James Livingston  <jrl@ids.org.au>
+
 	Sync musicbrainz lookup code from Sound-Juicer cvs.
 
 	* metadata/sj-metadata-musicbrainz.c:

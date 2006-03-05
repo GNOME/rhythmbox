@@ -976,6 +976,9 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 		return;
 
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) != NULL)
+		return;
+
 	old_artist = audioscrobbler->priv->artist;
 	old_album = audioscrobbler->priv->album;
 	old_title = audioscrobbler->priv->title;
