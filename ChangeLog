@@ -1,3 +1,18 @@
+2006-03-05  James Livingston  <jrl@ids.org.au>
+
+	Sync musicbrainz lookup code from Sound-Juicer cvs.
+
+	* metadata/sj-metadata-musicbrainz.c:
+	(sj_metadata_musicbrainz_instance_init), (metadata_interface_init),
+	(get_offline_track_listing), (artist_and_title_from_title),
+	(cache_rdf), (get_cached_rdf), (get_rdf), (lookup_cd),
+	(mb_list_albums), (mb_get_submit_url):
+	* metadata/sj-metadata.c: (sj_metadata_get_submit_url):
+	* metadata/sj-metadata.h:
+	* metadata/sj-structures.c: (track_details_free),
+	(album_details_free):
+	* metadata/sj-structures.h:
+
 2006-03-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* lib/rb-debug.h:

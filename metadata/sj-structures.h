@@ -35,6 +35,7 @@ struct _TrackDetails {
   int number; /* track number */
   char *title;
   char *artist;
+  char* artist_sortname;
   int duration; /* seconds */
   char* track_id;
   char* artist_id;
@@ -51,6 +52,7 @@ struct _Date {
 struct _AlbumDetails {
   char* title;
   char* artist;
+  char* artist_sortname;
   char *genre;
   int   number; /* number of tracks in the album */
   GList* tracks;

@@ -98,3 +98,12 @@ sj_metadata_list_albums (SjMetadata *metadata, GError **error)
 {
   SJ_METADATA_GET_CLASS (metadata)->list_albums (metadata, error);
 }
+
+char *
+sj_metadata_get_submit_url (SjMetadata *metadata)
+{
+  if (SJ_METADATA_GET_CLASS (metadata)->get_submit_url)
+    return SJ_METADATA_GET_CLASS (metadata)->get_submit_url (metadata);
+  else
+    return NULL;
+}
