@@ -1363,30 +1363,49 @@ rb_shell_player_do_next (RBShellPlayer *player, GError **error)
 {
 	RBSource *new_source = NULL;
 	RhythmDBEntry *entry = NULL;
-	RhythmDBEntry *prev_entry = NULL;
 	gboolean rv = TRUE;
 
 	if (player->priv->source == NULL)
 		return TRUE;
 
-	prev_entry = rb_shell_player_get_playing_entry (player);
-
-	/* look for something to play in the queue. 
-	 * always call go_next to remove the current entry (if any) from the queue.
-	 */
-	if (player->priv->queue_play_order) {
+	if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source)) {
+		/* Look for another entry in the queue, and fall back to the playing
+		 * source if there isn't one.  Always call _get_next on the queue
+		 * so the current entry is removed.
+		 */
 		entry = rb_play_order_get_next (player->priv->queue_play_order);
 		rb_play_order_go_next (player->priv->queue_play_order);
-		if (entry)
+		if (entry) {
 			new_source = RB_SOURCE (player->priv->queue_source);
-	}
+		} else {
+			/* If we haven't played anything from the playing source yet, 
+			 * _get_playing_entry will return NULL, so we'll have to advance
+			 * the play order to get an entry to play.
+			 */
+			entry = rb_play_order_get_playing_entry (player->priv->play_order);
+			if (entry == NULL) {
+				entry = rb_play_order_get_next (player->priv->play_order);
+				rb_play_order_go_next (player->priv->play_order);
+			}
 
-	/* fall back to the playing source */
-	if (entry == NULL) {
+			new_source = player->priv->source;
+		}
+	} else {
+		/* Advance the play order, and then let the queue override it. */
 		entry = rb_play_order_get_next (player->priv->play_order);
 		if (entry) {
 			new_source = player->priv->source;
 			rb_play_order_go_next (player->priv->play_order);
+		}
+
+		if (player->priv->queue_play_order) {
+			RhythmDBEntry *queue_entry;
+			queue_entry = rb_play_order_get_next (player->priv->queue_play_order);
+			if (queue_entry) {
+				entry = queue_entry;
+				new_source = RB_SOURCE (player->priv->queue_source);
+				rb_play_order_go_next (player->priv->queue_play_order);
+			}
 		}
 	}
 

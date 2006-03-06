@@ -1,3 +1,14 @@
+2006-03-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_do_next):
+	When switching to the play queue, still call _go_next on the normal
+	play order, so self-emptying auto playlists ("play count = 0" etc.)
+	don't restart once the queue is empty.
+
+	* shell/rb-tray-icon.c:
+	Change shortcut for 'show notifications' to 'o' so it doesn't clash
+	with 'next'.
+
 2006-03-05  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):

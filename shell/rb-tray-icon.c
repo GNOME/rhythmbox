@@ -105,7 +105,7 @@ static GtkToggleActionEntry rb_tray_icon_toggle_entries [] =
 	{ "TrayShowWindow", NULL, N_("_Show Music Player"), NULL,
 	  N_("Choose music to play"),
 	  G_CALLBACK (rb_tray_icon_show_window_changed_cb) },
-	{ "TrayShowNotifications", NULL, N_("Show _Notifications"), NULL,
+	{ "TrayShowNotifications", NULL, N_("Show N_otifications"), NULL,
 	  N_("Show notifications of song changes and other events"),
 	  G_CALLBACK (rb_tray_icon_show_notifications_changed_cb) }
 };
