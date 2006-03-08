@@ -1,3 +1,10 @@
+2006-03-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_iter_from_string):
+	Return an iterator for the 'all' property when name == NULL,
+	and don't write to *iter if iter == NULL.
+
 2006-03-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.c: (rb_shell_player_do_next):

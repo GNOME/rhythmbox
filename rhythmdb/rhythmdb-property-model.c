@@ -635,13 +635,22 @@ rhythmdb_property_model_iter_from_string (RhythmDBPropertyModel *model,
 {
 	GSequencePtr ptr;
 
-	ptr = g_hash_table_lookup (model->priv->reverse_map, name);
+	if (name == NULL) {
+		if (iter) {
+			iter->stamp = model->priv->stamp;
+			iter->user_data = model->priv->all;
+		}
+		return TRUE;
+	}
 
+	ptr = g_hash_table_lookup (model->priv->reverse_map, name);
 	if (!ptr)
 		return FALSE;
 
-	iter->stamp = model->priv->stamp;
-	iter->user_data = ptr;
+	if (iter) {
+		iter->stamp = model->priv->stamp;
+		iter->user_data = ptr;
+	}
 
 	return TRUE;
 }
