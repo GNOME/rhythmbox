@@ -1,5 +1,14 @@
 2006-03-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by:  James Henstridge  <james@jamesh.id.au>
+
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_constructor):
+	Get the device name from the GnomeVFSDrive if possible,
+	since this is usually a more descriptive name.  Fixes #333080.
+
+2006-03-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by:  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):

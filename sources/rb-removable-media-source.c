@@ -122,6 +122,7 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 {
 	GObject *source; 
 	GnomeVFSVolume *volume;
+	GnomeVFSDrive *drive;
 	char *display_name;
 	gint size;
 	char *icon_name;
@@ -131,8 +132,14 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 	source = G_OBJECT_CLASS(rb_removable_media_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties);
 
-	g_object_get (source, "volume", &volume, NULL);	
-	display_name = gnome_vfs_volume_get_display_name (volume);
+	g_object_get (source, "volume", &volume, NULL);
+	drive = gnome_vfs_volume_get_drive (volume);
+	if (drive != NULL) {
+		display_name = gnome_vfs_drive_get_display_name (drive);
+		gnome_vfs_drive_unref (drive);
+	} else {
+		display_name = gnome_vfs_volume_get_display_name (volume);
+	}
 	g_object_set (source, "name", display_name, NULL);
 	g_free (display_name);
 
