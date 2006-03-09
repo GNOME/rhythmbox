@@ -1415,7 +1415,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue last_update_val = { 0, };
 	gulong last_post = 0;
 	gulong new_last_post;
-	gboolean new_feed, updated;
+	gboolean new_feed, updated, download_last;
 	RhythmDB *db = pd->priv->db;
 
 	RhythmDBEntry *entry;
@@ -1520,6 +1520,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	new_last_post = last_post;
 	
 	updated = FALSE;
+	download_last = (eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL) != UPDATE_MANUALLY);
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
 
@@ -1528,7 +1529,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 			updated = TRUE;
 
 			/* last episode gets status RHYTHMDB_PODCAST_STATUS_WAITING, so that it begins downloading */
-			if (lst_songs == (g_list_last (data->posts)))
+			if (lst_songs == (g_list_last (data->posts)) && download_last)
 				status = RHYTHMDB_PODCAST_STATUS_WAITING;
 			else
 				status = RHYTHMDB_PODCAST_STATUS_PAUSED;
