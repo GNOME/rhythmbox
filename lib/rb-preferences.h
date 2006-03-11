@@ -58,6 +58,9 @@ G_BEGIN_DECLS
 #define CONF_DAAP_SHARE_PASSWORD   CONF_PREFIX "/sharing/share_password"
 #define CONF_DAAP_REQUIRE_PASSWORD CONF_PREFIX "/sharing/require_password"
 
+#define CONF_PLUGINS_PREFIX	CONF_PREFIX "/plugins"
+#define CONF_PLUGIN_ACTIVE_KEY	CONF_PLUGINS_PREFIX "/%s/active"
+
 G_END_DECLS
 
 #endif /* __RB_PREFERENCES_H */

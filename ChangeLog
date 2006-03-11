@@ -1,3 +1,38 @@
+2006-03-11  James Livingston  <jrl@ids.org.au>
+
+	Add a plugin framework, with basic support for Python plugins (based
+	on gedit's). Closes bug 330523.
+
+	* Makefile.am:
+	* shell/Makefile.am:
+	* configure.ac: necessary autofoo.
+
+	* data/ui/rhythmbox-ui.xml: add Edit->Plugins...
+
+	* lib/rb-file-helpers.c: (rb_uri_get_dir_name):
+	* lib/rb-file-helpers.h:
+
+	* data/glade/plugins/glade:
+	* lib/rb-preferences.h:
+	* plugins/*:
+	* bindings/*: plugin framework
+
+	* plugins/sample/*:
+	* plugins/sample-python/*: sample plugins
+
+	* plugins/audioscrobbler/*:
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_class_init),
+	(rb_audioscrobbler_set_property),
+	(rb_audioscrobbler_gconf_changed_cb): turn audioscrobbler song
+	submission into a plugin. shell/audioscrobbler.* should really be
+	moved, but that sucks with cvs.
+
+	* shell/rb-shell.h:
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_cmd_preferences), (rb_shell_plugins_window_delete_cb),
+	(rb_shell_plugins_response_cb), (rb_shell_cmd_plugins),
+	(rb_shell_quit): start and stop plugin framework.
+
 2006-03-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal),

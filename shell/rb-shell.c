@@ -86,6 +86,8 @@
 #include "bacon-volume.h"
 #include "rb-missing-files-source.h"
 #include "rb-import-errors-source.h"
+#include "rb-plugins-engine.h"
+#include "rb-plugin-manager.h"
 
 #ifdef WITH_AUDIOSCROBBLER
 #include "rb-audioscrobbler.h"
@@ -171,6 +173,8 @@ static void rb_shell_cmd_quit (GtkAction *action,
 			       RBShell *shell);
 static void rb_shell_cmd_preferences (GtkAction *action,
 		                      RBShell *shell);
+static void rb_shell_cmd_plugins (GtkAction *action,
+		                  RBShell *shell);
 static void rb_shell_cmd_add_folder_to_library (GtkAction *action,
 						RBShell *shell);
 static void rb_shell_cmd_add_file_to_library (GtkAction *action,
@@ -392,6 +396,7 @@ struct RBShellPrivate
 	RBSource *selected_source;
 
 	GtkWidget *prefs;
+	GtkWidget *plugins;
 
 	RBTrayIcon *tray_icon;
 	GtkTooltips *tooltips;
@@ -457,9 +462,12 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "MusicQuit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q",
 	  N_("Quit the music player"),
 	  G_CALLBACK (rb_shell_cmd_quit) },
-	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces"), NULL,
+	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces..."), NULL,
 	  N_("Edit music player preferences"),
 	  G_CALLBACK (rb_shell_cmd_preferences) },
+	{ "EditPlugins", NULL, N_("P_lugins..."), NULL,
+	  N_("Change and configure plugins"),
+	  G_CALLBACK (rb_shell_cmd_plugins) },
 	{ "ViewAll", NULL, N_("Show _All"), "<control>Y",
 	  N_("Show all items in this music source"),
 	  G_CALLBACK (rb_shell_cmd_view_all) },
@@ -1296,6 +1304,7 @@ rb_shell_constructor (GType type,
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
+	rb_plugins_engine_init (shell);
 	
 	/* GO GO GO! */
 	rb_debug ("loading database");
@@ -2138,17 +2147,64 @@ rb_shell_cmd_preferences (GtkAction *action,
 {
 	if (shell->priv->prefs == NULL) {
 		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
-#ifdef WITH_AUDIOSCROBBLER
-		g_object_set (G_OBJECT (shell->priv->audioscrobbler),
-			      "shell_preferences", shell->priv->prefs,
-			      NULL);
-#endif
 
 		gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
 					      GTK_WINDOW (shell->priv->window));
+		gtk_widget_show_all (shell->priv->prefs);
 	}
 
-	gtk_widget_show_all (shell->priv->prefs);
+	gtk_window_present (GTK_WINDOW (shell->priv->prefs));
+}
+
+static gboolean
+rb_shell_plugins_window_delete_cb (GtkWidget *window,
+				   GdkEventAny *event,
+				   gpointer data)
+{
+	gtk_widget_hide (window);
+
+	return TRUE;
+}
+
+static void
+rb_shell_plugins_response_cb (GtkDialog *dialog,
+			      int response_id,
+			      gpointer data)
+{
+	if (response_id == GTK_RESPONSE_CLOSE)
+		gtk_widget_hide (GTK_WIDGET (dialog));
+}
+
+
+static void
+rb_shell_cmd_plugins (GtkAction *action,
+		      RBShell *shell)
+{
+	if (shell->priv->plugins == NULL) {
+		GtkWidget *manager;
+		
+		shell->priv->plugins = gtk_dialog_new_with_buttons (_("Configure Plugins"),
+								    GTK_WINDOW (shell->priv->window),
+								    GTK_DIALOG_DESTROY_WITH_PARENT,
+								    GTK_STOCK_CLOSE,
+								    GTK_RESPONSE_CLOSE,
+								    NULL);
+		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
+					 "delete_event",
+					 G_CALLBACK (rb_shell_plugins_window_delete_cb),
+					 NULL, 0);
+		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
+					 "response",
+					 G_CALLBACK (rb_shell_plugins_response_cb),
+					 NULL, 0);
+		
+		manager = rb_plugin_manager_new ();
+		gtk_widget_show_all (GTK_WIDGET (manager));
+		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (shell->priv->plugins)->vbox),
+				   manager);
+	}
+	
+	gtk_window_present (GTK_WINDOW (shell->priv->plugins));
 }
 
 static void
@@ -2259,6 +2315,8 @@ static void
 rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
+
+	rb_plugins_engine_shutdown ();
 
 	rb_podcast_source_shutdown (shell->priv->podcast_source);	
 	

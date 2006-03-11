@@ -42,7 +42,6 @@
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-preferences.h"
-#include "rb-shell-preferences.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-source.h"
@@ -188,7 +187,6 @@ enum
 {
 	PROP_0,
 	PROP_SHELL_PLAYER,
-	PROP_SHELL_PREFS,
 };
 
 enum
@@ -225,13 +223,6 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_SHELL_PREFS,
-					 g_param_spec_object ("shell-preferences",
-							      "RBShellPreferences",
-							      "RBShellPreferences object",
-							      RB_TYPE_SHELL_PREFERENCES,
-							      G_PARAM_WRITABLE));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
 }
@@ -365,7 +356,7 @@ rb_audioscrobbler_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_audioscrobbler_parent_class)->finalize (object);
 }
 
-RBAudioscrobbler *
+RBAudioscrobbler*
 rb_audioscrobbler_new (RBShellPlayer *shell_player)
 {
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER,
@@ -389,16 +380,6 @@ rb_audioscrobbler_set_property (GObject *object,
 						 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
 						 audioscrobbler, 0);
 			break;
-		case PROP_SHELL_PREFS:
-		{
-			RBShellPreferences *prefs = g_value_get_object (value);
-			GtkWidget *config_widget = rb_audioscrobbler_get_config_widget (audioscrobbler);
-
-			rb_shell_preferences_append_page (prefs,
-				       			  _("Audioscrobbler"),
-							  config_widget);
-			break;
-		}
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 	}
@@ -929,15 +910,19 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 	if (strcmp (entry->key, CONF_AUDIOSCROBBLER_USERNAME) == 0) {
 		g_free (audioscrobbler->priv->username);
 		audioscrobbler->priv->username = g_strdup (gconf_value_get_string (entry->value));
-		gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->username_entry),
-				    gconf_value_get_string (entry->value));
+
+		if (audioscrobbler->priv->username_entry)
+			gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->username_entry),
+					    gconf_value_get_string (entry->value));
 
 		audioscrobbler->priv->handshake = FALSE;
 	} else if (strcmp (entry->key, CONF_AUDIOSCROBBLER_PASSWORD) == 0) {
 		g_free (audioscrobbler->priv->password);
 		audioscrobbler->priv->password = g_strdup (gconf_value_get_string (entry->value));
-		gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->password_entry),
-				    gconf_value_get_string (entry->value));
+	
+		if (audioscrobbler->priv->password_entry)
+			gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->password_entry),
+					    gconf_value_get_string (entry->value));
 	} else if (strcmp (entry->key, CONF_AUDIOSCROBBLER_ENABLED) == 0) {
 		audioscrobbler->priv->enabled = gconf_value_get_bool (entry->value);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (audioscrobbler->priv->enabled_check),

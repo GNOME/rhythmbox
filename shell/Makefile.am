@@ -87,6 +87,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/rhythmdb/librhythmdb.la         \
+	$(top_builddir)/plugins/librbplugins.la		\
 	$(top_builddir)/lib/librb.la	                \
 	$(GDA_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
@@ -122,7 +123,7 @@ endif
 # i hate link order problems
 rhythmbox_LDADD += $(top_builddir)/remote/librbremote.la
 
-rhythmbox_LDFLAGS = -export-dynamic
+rhythmbox_LDFLAGS = -export-dynamic -no-undefined
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -138,6 +139,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/remote				\
 	-I$(top_builddir)/remote			\
+	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -171,6 +173,10 @@ endif
 if USE_NOTIFY
 rhythmbox_LDADD += $(NOTIFY_LIBS)
 INCLUDES += $(NOTIFY_CFLAGS)
+endif
+
+if ENABLE_PYTHON
+rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
 endif
 
 BUILT_SOURCES += $(tab_files)

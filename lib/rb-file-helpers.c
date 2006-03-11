@@ -762,3 +762,16 @@ rb_uri_append_uri (const char *uri, const char *fragment)
 	return result;
 }
 
+char *
+rb_uri_get_dir_name (const char *uri)
+{
+	GnomeVFSURI *vfs_uri;
+	char *dirname;
+
+	vfs_uri = gnome_vfs_uri_new (uri);
+	dirname = gnome_vfs_uri_extract_dirname (vfs_uri);
+	gnome_vfs_uri_unref (vfs_uri);
+
+	return dirname;
+}
+
