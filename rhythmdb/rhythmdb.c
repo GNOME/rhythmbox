@@ -103,6 +103,7 @@ struct RhythmDBPrivate
 	GMutex *change_mutex;
 	GList *added_entries;
 	GHashTable *changed_entries;
+	GList *deleted_entries;
 
 	GHashTable *propname_map;
 
@@ -837,8 +838,16 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 		entry->inserted = TRUE;
 	}
 
+	for (tem = db->priv->deleted_entries; tem; tem = tem->next) {
+		RhythmDBEntry *entry = tem->data;
+		rhythmdb_emit_entry_deleted (db, entry);
+		rhythmdb_entry_unref (db, entry);
+	}
+
 	g_list_free (db->priv->added_entries);
 	db->priv->added_entries = NULL;
+	g_list_free (db->priv->deleted_entries);
+	db->priv->deleted_entries = NULL;
 	g_mutex_unlock (db->priv->change_mutex);
 }
 
@@ -1576,6 +1585,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != event->entry_type) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
 			rhythmdb_entry_delete (db, entry);
+			rhythmdb_commit_internal (db, FALSE);
 			entry = NULL;
 		}
 	}
@@ -2696,10 +2706,13 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	
-	rhythmdb_emit_entry_deleted (db, entry);
-	
 	klass->impl_entry_delete (db, entry);
-	
+
+	rhythmdb_entry_ref (db, entry);
+	g_mutex_lock (db->priv->change_mutex);
+	db->priv->deleted_entries = g_list_prepend (db->priv->deleted_entries, entry);	
+	g_mutex_unlock (db->priv->change_mutex);
+
 	/* deleting an entry makes the db dirty */
 	db->priv->dirty = TRUE;
 }

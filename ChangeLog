@@ -1,3 +1,14 @@
+2006-03-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal),
+	(rhythmdb_entry_delete):
+	Emit entry-deleted signals when rhythmdb_commit is called, rather than
+	immediately, so we can't get change notifications afterwards.  
+	Fixes #331732.
+	(rhythmdb_process_metadata_load): Add a commit after removing an
+	entry so we can recreate it with a different type without getting
+	confused.
+
 2006-03-11  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-audiocd-source.c: (rb_audiocd_source_constructor): don't
