@@ -139,6 +139,8 @@ rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 	source = RB_AUDIOCD_SOURCE (G_OBJECT_CLASS (rb_audiocd_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
+	g_object_set (G_OBJECT (source), "name", "Unknown Audio", NULL);
+
 	/* we want audio cds to sort by track# by default */
 	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
