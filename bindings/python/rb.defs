@@ -1,0 +1,240 @@
+;; -*- scheme -*-
+; object definitions ...
+
+(define-object Plugin
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBPlugin")
+  (gtype-id "RB_TYPE_PLUGIN")
+)
+
+(define-object Shell
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBShell")
+  (gtype-id "RB_TYPE_SHELL")
+)
+
+;; Enumerations and flags ...
+
+
+;; From ../../plugins/rb-plugin.h
+
+(define-function rb_plugin_get_type
+  (c-name "rb_plugin_get_type")
+  (return-type "GType")
+)
+
+(define-method activate
+  (of-object "RBPlugin")
+  (c-name "rb_plugin_activate")
+  (return-type "none")
+  (parameters
+    '("RBShell*" "shell")
+  )
+)
+
+(define-method deactivate
+  (of-object "RBPlugin")
+  (c-name "rb_plugin_deactivate")
+  (return-type "none")
+  (parameters
+    '("RBShell*" "shell")
+  )
+)
+
+(define-method is_configurable
+  (of-object "RBPlugin")
+  (c-name "rb_plugin_is_configurable")
+  (return-type "gboolean")
+)
+
+(define-method create_configure_dialog
+  (of-object "RBPlugin")
+  (c-name "rb_plugin_create_configure_dialog")
+  (return-type "GtkWidget*")
+)
+
+
+
+;; From ../../shell/rb-shell.h
+
+(define-function rb_shell_error_quark
+  (c-name "rb_shell_error_quark")
+  (return-type "GQuark")
+)
+
+(define-function rb_shell_get_type
+  (c-name "rb_shell_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_shell_new
+  (c-name "rb_shell_new")
+  (is-constructor-of "RBShell")
+  (return-type "RBShell*")
+  (parameters
+    '("int" "argc")
+    '("char**" "argv")
+    '("gboolean" "no_registration")
+    '("gboolean" "no_update")
+    '("gboolean" "dry_run")
+    '("char*" "rhythmdb")
+  )
+)
+
+(define-method present
+  (of-object "RBShell")
+  (c-name "rb_shell_present")
+  (return-type "gboolean")
+  (parameters
+    '("guint32" "timestamp")
+    '("GError**" "error")
+  )
+)
+
+(define-method guess_type_for_uri
+  (of-object "RBShell")
+  (c-name "rb_shell_guess_type_for_uri")
+  (return-type "gint")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method add_uri
+  (of-object "RBShell")
+  (c-name "rb_shell_add_uri")
+  (return-type "gboolean")
+  (parameters
+    '("gint" "entry_type")
+    '("const-char*" "uri")
+    '("const-char*" "title")
+    '("const-char*" "genre")
+    '("GError**" "error")
+  )
+)
+
+(define-method load_uri
+  (of-object "RBShell")
+  (c-name "rb_shell_load_uri")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("gboolean" "play")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_player
+  (of-object "RBShell")
+  (c-name "rb_shell_get_player")
+  (return-type "GObject*")
+)
+
+(define-method get_player_path
+  (of-object "RBShell")
+  (c-name "rb_shell_get_player_path")
+  (return-type "const-char*")
+)
+
+(define-method get_playlist_manager
+  (of-object "RBShell")
+  (c-name "rb_shell_get_playlist_manager")
+  (return-type "GObject*")
+)
+
+(define-method get_playlist_manager_path
+  (of-object "RBShell")
+  (c-name "rb_shell_get_playlist_manager_path")
+  (return-type "const-char*")
+)
+
+(define-method toggle_visibility
+  (of-object "RBShell")
+  (c-name "rb_shell_toggle_visibility")
+  (return-type "none")
+)
+
+(define-method get_song_properties
+  (of-object "RBShell")
+  (c-name "rb_shell_get_song_properties")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("GHashTable**" "properties")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_song_property
+  (of-object "RBShell")
+  (c-name "rb_shell_set_song_property")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("const-char*" "propname")
+    '("const-GValue*" "value")
+    '("GError**" "error")
+  )
+)
+
+(define-method add_to_queue
+  (of-object "RBShell")
+  (c-name "rb_shell_add_to_queue")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "uri")
+    '("GError**" "error")
+  )
+)
+
+(define-method remove_from_queue
+  (of-object "RBShell")
+  (c-name "rb_shell_remove_from_queue")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "uri")
+    '("GError**" "error")
+  )
+)
+
+(define-method hidden_notify
+  (of-object "RBShell")
+  (c-name "rb_shell_hidden_notify")
+  (return-type "none")
+  (parameters
+    '("guint" "timeout")
+    '("const-char*" "primary")
+    '("GtkWidget*" "icon")
+    '("const-char*" "secondary")
+  )
+)
+
+(define-method register_entry_type_for_source
+  (of-object "RBShell")
+  (c-name "rb_shell_register_entry_type_for_source")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+    '("RhythmDBEntryType" "type")
+  )
+)
+
+(define-method get_party_mode
+  (of-object "RBShell")
+  (c-name "rb_shell_get_party_mode")
+  (return-type "gboolean")
+)
+
+(define-method append_source
+  (of-object "RBShell")
+  (c-name "rb_shell_append_source")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+    '("RBSource*" "parent")
+  )
+)
+
+

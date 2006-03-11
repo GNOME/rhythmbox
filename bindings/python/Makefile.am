@@ -1,0 +1,65 @@
+## Process this file with automake to produce Makefile.in
+
+noinst_LTLIBRARIES = rb.la
+
+nodist_rb_la_SOURCES = rb.c
+
+rb_la_LDFLAGS = \
+	-module -avoid-version
+
+rb_la_LIBADD = \
+	$(PYTHON_LIBS)		\
+	$(PYTHON_EXTRA_LIBS)	\
+	$(PYGTK_LIBS)
+
+rb_la_CFLAGS = \
+	-I$(top_srcdir)			\
+	-I$(top_srcdir)/lib             \
+	-I$(top_srcdir)/metadata                       	\
+	-I$(top_srcdir)/player                       	\
+	-I$(top_srcdir)/rhythmdb                       	\
+	-I$(top_srcdir)/widgets                    	\
+	-I$(top_srcdir)/sources                    	\
+	-I$(top_srcdir)/iradio                    	\
+	-I$(top_srcdir)/podcast                    	\
+	-I$(top_srcdir)/remote				\
+	-I$(top_builddir)/remote			\
+	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/shell		\
+	$(RHYTHMBOX_CFLAGS)		\
+	$(NO_STRICT_ALIASING_CFLAGS)	\
+	$(PYGTK_CFLAGS)			\
+	$(PYTHON_CFLAGS)		\
+	$(AM_CFLAGS)
+	
+rb.c: rb.defs rb.override
+	( cd $(srcdir) && $(PYGTK_CODEGEN) \
+		--register $(PYGTK_DEFSDIR)/pango-types.defs \
+		--register $(PYGTK_DEFSDIR)/gdk-types.defs \
+		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
+		--register $(PYGTK_DEFSDIR)/gtksourceview.defs \
+		--override $*.override \
+		--prefix py$* $(<F) ) > $@ 
+
+BINDING_HEADERS_SRCDIR_IN = \
+	plugins/rb-plugin.h			\
+	shell/rb-shell.h
+
+BINDING_HEADERS_BUILDDIR_IN = 
+
+BINDING_HEADERS_SRCDIR		:= $(addprefix $(top_srcdir)/,$(BINDING_HEADERS_SRCDIR_IN))
+BINDING_HEADERS_BUILDDIR	:= $(addprefix $(top_builddir)/,$(BINDING_HEADERS_BUILDDIR_IN))
+
+regenerate-python-binding:
+	$(PYGTK_H2DEF) $(sort $(BINDING_HEADERS_SRCDIR) $(BINDING_HEADERS_BUILDDIR)) > rb.defs.new
+
+BUILT_SOURCES = rb.c
+
+EXTRA_DIST = \
+	rb.override	\
+	rb.defs
+
+CLEANFILES = $(BUILT_SOURCES)
+
+dist-hook:
+	cd $(distdir); rm -f $(BUILT_SOURCES)
