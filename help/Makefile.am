@@ -20,4 +20,4 @@ DOC_FIGURES = \
 	figures/rb-window.png			\
 	figures/rb-window-small.png
 
-DOC_LINGUAS =
+DOC_LINGUAS = fr
