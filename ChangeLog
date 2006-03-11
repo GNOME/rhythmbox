@@ -1,5 +1,12 @@
 2006-03-11  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_window_state_cb),
+	(rb_shell_set_visibility), (rb_shell_window_configure_cb): don't
+	update the window width/height when iconified. Stops the window
+	changing size when it is restored from the tray, fixing bug 333824. 
+
+2006-03-11  James Livingston  <jrl@ids.org.au>
+
 	Try to get cvs to actually add the necessary files for plugin support
 
 2006-03-11  James Livingston  <jrl@ids.org.au>

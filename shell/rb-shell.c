@@ -1375,7 +1375,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 			  GdkEventWindowState *event,
 			  RBShell *shell)
 {
-	shell->priv->iconified = (event->new_window_state & GDK_WINDOW_STATE_ICONIFIED);
+	shell->priv->iconified = ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) != 0);
 	g_signal_emit_by_name (shell, "visibility_changed", 0);
 
 	/* don't save maximized state when is hidden */
@@ -1471,6 +1471,7 @@ rb_shell_set_visibility (RBShell *shell,
 		int x, y, width, height;
 
 		rb_debug ("hiding main window");
+		shell->priv->iconified = TRUE;
 		rb_tray_icon_get_geom (shell->priv->tray_icon,
 				       &x, &y, &width, &height);
 		if (GTK_WIDGET_REALIZED (GTK_WIDGET (shell->priv->window)))
@@ -1501,7 +1502,7 @@ rb_shell_window_configure_cb (GtkWidget *win,
 		rb_debug ("storing small window width of %d", event->width);
 		shell->priv->small_width = event->width;
 		eel_gconf_set_integer (CONF_STATE_SMALL_WIDTH, event->width);
-	} else if (!shell->priv->window_maximised) {
+	} else if (!shell->priv->window_maximised && !shell->priv->iconified) {
 		rb_debug ("storing window size of %d:%d", event->width, event->height);
 		shell->priv->window_width = event->width;
 		shell->priv->window_height = event->height;
