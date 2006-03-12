@@ -31,13 +31,13 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-plugin_in_files = audioscrobbler.rb-plugin.desktop.in as-powered.png
+plugin_in_files = audioscrobbler.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
-EXTRA_DIST = $(plugin_in_files)
+EXTRA_DIST = $(plugin_in_files) as-powered.png
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

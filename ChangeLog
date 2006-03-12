@@ -1,3 +1,13 @@
+2006-03-12  James Livingston  <jrl@ids.org.au>
+
+	* plugins/audioscrobbler/Makefile.am: don't delete as-powered.png when
+	doing a distclean. Fixes bug 334221.
+
+
+	Patch from Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* data/glade/Makefile.am: add plugins.glade. Fixes bug 334201.
+
 2006-03-11  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell.c: (rb_shell_window_state_cb),
