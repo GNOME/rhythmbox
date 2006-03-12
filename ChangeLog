@@ -1,5 +1,15 @@
 2006-03-12  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-clipboard.c:
+	(rb_shell_clipboard_set_source_internal),
+	(rb_shell_clipboard_sync): don't try to use the source's entry view if
+	it doesn't have one. Fixes bug 331673.
+
+	* sources/rb-source.c: (rb_source_class_init): provide a default
+	have_url implementation that returns FALSE.
+
+2006-03-12  James Livingston  <jrl@ids.org.au>
+
 	* plugins/audioscrobbler/Makefile.am: don't delete as-powered.png when
 	doing a distclean. Fixes bug 334221.
 

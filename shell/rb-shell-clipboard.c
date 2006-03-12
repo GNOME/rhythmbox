@@ -263,12 +263,14 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 	if (clipboard->priv->source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
 
-		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-						      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-						      clipboard);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-						      G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
-						      clipboard);
+		if (songs) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+							      clipboard);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+							      clipboard);
+		}
 	}
 	clipboard->priv->source = source;
 	rb_debug ("selected source %p", source);
@@ -278,22 +280,24 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 	if (clipboard->priv->source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
 
-		g_signal_connect_object (G_OBJECT (songs),
-					 "selection-changed",
-					 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-					 clipboard, 0);
-		g_signal_connect_object (G_OBJECT (songs),
-					 "entry-added",
-					 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
-					 clipboard, 0);
-		g_signal_connect_object (G_OBJECT (songs),
-					 "entry-deleted",
-					 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
-					 clipboard, 0);
-		g_signal_connect_object (G_OBJECT (songs),
-					 "entries-replaced",
-					 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-					 clipboard, 0);
+		if (songs) {
+			g_signal_connect_object (G_OBJECT (songs),
+						 "selection-changed",
+						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+						 clipboard, 0);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "entry-added",
+						 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+						 clipboard, 0);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "entry-deleted",
+						 G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+						 clipboard, 0);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "entries-replaced",
+						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+						 clipboard, 0);
+		}
 	}
 }
 
@@ -389,7 +393,7 @@ static gboolean
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
 	RBEntryView *view;
-	gboolean have_selection;
+	gboolean have_selection = FALSE;
 	gboolean have_sidebar_selection = FALSE;
 	gboolean can_cut = FALSE;
 	gboolean can_paste = FALSE;
@@ -406,8 +410,10 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	clipboard->priv->idle_sync_id = 0;
 
 	view = rb_source_get_entry_view (clipboard->priv->source);
-	have_selection = rb_entry_view_have_selection (view);
-	can_select_all = !rb_entry_view_have_complete_selection (view);
+	if (view) {
+		have_selection = rb_entry_view_have_selection (view);
+		can_select_all = !rb_entry_view_have_complete_selection (view);
+	}
 
 	if (clipboard->priv->queue_source) {
 		RBEntryView *sidebar;

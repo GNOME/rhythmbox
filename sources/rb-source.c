@@ -130,6 +130,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_song_properties = default_song_properties;
