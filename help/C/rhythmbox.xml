@@ -119,7 +119,7 @@
 		<revnumber>Rythmbox Music Player Manual V0.0.4</revnumber> 
 		<date>October 2005</date> 
 		<revdescription> 
-	  		<para role="author">Baptiste Mille-0Mathias
+	  		<para role="author">Baptiste Mille-Mathias
 	  		</para>
 	  		<para role="publisher">GNOME Documentation Project</para>
 		</revdescription> 
@@ -342,7 +342,7 @@
 			internet radio,	your playlists and audio CDs. The source list can contain	
 			the following sources:
 				<itemizedlist><listitem><para>The <application>&app;</application> library, where all of the imported songs will appear.
-						</para></listitem><listitem><para>The iRadio source, with all internet radio stations.</para></listitem><listitem><para>Podcasts</para></listitem><listitem><para>All playlists (normal and smart).</para></listitem><listitem><para>Audio CD's inserted into the computer's CD
+						</para></listitem><listitem><para>The iRadio source, with all internet radio stations.</para></listitem><listitem><para>Podcasts.</para></listitem><listitem><para>All playlists (normal and smart).</para></listitem><listitem><para>Audio CD's inserted into the computer's CD
 						drives.</para></listitem><listitem><para>Portable players like iPod plugged to your computer.</para></listitem><listitem><para>The DAAP Music shares discovered on the local network.</para></listitem></itemizedlist>
 		</para>
       	<para>
@@ -355,12 +355,12 @@
       <title>The Player Toolbar</title>
       <para>
 				The toolbar area provides access to details about the
-				currently playing track. When a track is not being played, this
+				currently playing track. When no track is being played, this
 				area shows no information. When a track is played is selected, the track name
 				is displayed, and underneath, the artist and the album names.
 			</para>
       <para>
-				A tracker is also displays, showing the progress of the
+				A tracker is also displayed, showing the progress of the
 				playing. When tracker has focus, the arrow keys can be used to
 				Fast-Forward or Rewind the playing track.
 			</para>
@@ -469,8 +469,8 @@
         <title>Repeat</title>
         <para>The option <guilabel>Repeat</guilabel> make Rhythmbox restart to play tracks
 		from the beginning of the list when it reach the last track.</para>
-        <para>To activate repeat, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Repeat</guimenuitem></menuchoice>
-		, or press the button <guilabel>Repeat</guilabel> on the toolbar.
+        <para>To activate repeat, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Repeat</guimenuitem></menuchoice>,
+		or press the button <guilabel>Repeat</guilabel> on the toolbar.
 			<screenshot>
 				<mediaobject>
 					<imageobject>
@@ -486,8 +486,8 @@
       <sect3 id="shuffle">
         <title>Shuffle</title>
         <para>The option <guilabel>Shuffle</guilabel> makes Rhythmbox play tracks in a random order.</para>
-        <para>To activate shuffle, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Shuffle</guimenuitem></menuchoice>
-		, or press the button <guilabel>Shuffle</guilabel> on the toolbar.
+        <para>To activate shuffle, choose <menuchoice><guimenu>Control</guimenu><guimenuitem>Shuffle</guimenuitem></menuchoice>,
+		or press the button <guilabel>Shuffle</guilabel> on the toolbar.
 			<screenshot>
 				<mediaobject>
 					<imageobject>
@@ -526,7 +526,7 @@
 			not the files themself).
 		</para>
     	<para>
-			The Library can not only contains music files which is physically 
+			The Library can not only contains music files which are physically 
 			on your computer (in your HOME Directory for instance), but it can
 			also contains music files available over remote network services. 
 			Some examples of supported network services are :
@@ -547,7 +547,7 @@
 		</para>
     	<para>
 			The files imported in the Library are displayed in the track list
-			with the information (like the Artist name or the album name) stored 
+			with the information (like the Artist name or the Album name) stored 
 			in the	tags embedded on the tracks.
 			Rhythmbox uses these tags to display the tracks in an organized manner.
 			<tip>
@@ -600,14 +600,14 @@
     	<title>Remove tracks from the Library</title>
       	<para>
 			To remove a track from the library but leave it on the disk, choose menu
-			<menuchoice><guimenu>Edit</guimenu><guimenu>Delete</guimenu></menuchoice>.
+			<menuchoice><guimenu>Edit</guimenu><guimenu>Remove</guimenu></menuchoice>.
 			The track and its properties (like rating or the play count) are
 			removed from the Rhythmbox database.
 		</para>
       	<para>
 			To delete a track from the Library but also from your disk, choose
 			menu <menuchoice><guimenu>Edit</guimenu><guimenuitem>Move to
-			Trash</guimenuitem></menuchoice>. The tracks will be remove in the
+			Trash</guimenuitem></menuchoice>. The track will be removed in the
 			same way as previous, but the file will be moved in the file
 			manager Trash.
 		</para>
@@ -661,13 +661,17 @@
     <figure id="fig-iradio">
       <title>Internet Radio in <application>&app;</application></title>
       <screenshot>
-        <graphic format="PNG" fileref="figures/rb-iradio-main.png"/>
+        <mediaobject>
+          <imageobject>
+	    <imagedata format="PNG" fileref="figures/rb-iradio-main.png"/>
+	  </imageobject>
+	</mediaobject>
       </screenshot>
     </figure>
     <sect2 id="iradio-adding">
       	<title>Adding a station</title>
       	<para>
-			To add a new station to the Internet Radio tuner, Choose <menuchoice><guimenu>Music</guimenu>
+			To add a new station to the Internet Radio tuner, choose <menuchoice><guimenu>Music</guimenu>
 			<guimenuitem>Add New Internet Radio Station</guimenuitem></menuchoice>, then enter the URL of
 			the Internet radio, then press the button <guibutton>Add</guibutton>.
 		</para>
@@ -748,7 +752,7 @@
       <sect3 id="podcast-feed-del">
         <title>Delete a podcast</title>
         <para>
-			To delete a podcast, right-click on the podcast feed's name, and choose
+			To delete a podcast, right-click on the podcast feed's name in the browser, and choose
 			<menuchoice><guimenuitem>Delete Podcast
 			Feed</guimenuitem></menuchoice>, then choose
 			<menuchoice><guimenuitem>Delete Feed Only</guimenuitem></menuchoice> if you want to keep the
@@ -810,8 +814,7 @@
 			</para>
         <tip>
           <para>
-			By default, podcasts are download in folder <filename class="directory">
-			Podcasts/</filename> in your home directory. To change location, 
+			By default, podcasts are downloaded in folder <filename class="directory">Podcasts/</filename> in your home directory. To change location, 
 			see <xref linkend="prefs-podscast"/>.
 			</para>
         </tip>
@@ -900,7 +903,7 @@
 					To create a new playlist, choose
 					<menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>New
 					Playlist</guimenuitem></menuchoice>. A empty playlist without name 
-					appears in the Source list, Enter a name for the playlist and press
+					appears in the Source list. Enter a name for the playlist and press
 					<keycombo><keycap>Enter</keycap></keycombo>.
 				</para>
       </sect3>
@@ -908,7 +911,7 @@
         <title>Add tracks to a playlist</title>
         <para>
 					To add tracks to a playlist, select tracks from the track
-					list from the library and drag and drop your select over the
+					list from the library and drag and drop your selection over the
 					playlist icon in the Source list.
 				</para>
         <para>
@@ -917,7 +920,7 @@
 					to the chosen category will be added to the playlist.
 				</para>
         <tip>
-          <para>You can create a playlist with tracks in one action. select tracks from the <guilabel>Tracks List</guilabel>, or directly one or more categories from the browser (<guilabel>genre</guilabel>, <guilabel>artist</guilabel> or <guilabel>album</guilabel>) and drop the selection over the <guilabel>Source List</guilabel>. It will create automatically a named playlist.</para>
+          <para>You can create a playlist with tracks in one action. Select tracks from the <guilabel>Tracks List</guilabel>, or directly one or more categories from the browser (<guilabel>Genre</guilabel>, <guilabel>Artist</guilabel> or <guilabel>Album</guilabel>) and drop the selection over the <guilabel>Source List</guilabel>. It will create automatically a named playlist.</para>
         </tip>
       </sect3>
       <sect3 id="playlist-static-tracks-del">
@@ -986,7 +989,7 @@
       <sect3 id="playlist-smart-del">
         <title>Delete a smart playlist</title>
         <para>
-					To delete a static playlist, select the playlist to delete,
+					To delete a smart playlist, select the playlist to delete,
 					then you have two ways to delete it:
 					<itemizedlist><listitem><para>
 								Choose
@@ -1008,7 +1011,7 @@
 		If you want to limit the number of tracks in the playlist,
 		tick <guilabel>Limit to:</guilabel>, and choose how to
 		limit. You can limit by songs, by total size (in
-		<guilabel>MB</guilabel> or <guilabel>GB</guilabel>), ot by
+		<guilabel>MB</guilabel> or <guilabel>GB</guilabel>), or by
 		duration (expressed in <guilabel>Minutes</guilabel>).
 		</para>
         <para>
@@ -1044,9 +1047,9 @@
     </sect2>
     <sect2 id="cd-burning">
       <title>Creating Audio CD</title>
-      <para>Rhythmbox enables you to create you own Audio CDs with the music stored in the rhythmbox Library.</para>
-      <para>To create an Audio CD : 
-				<orderedlist><listitem><para>Create a playlist, static or smart (see <xref linkend="playlist"/>) and add songs.</para></listitem><listitem><para>Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Create Audio CD...</guimenuitem></menuchoice></para></listitem><listitem><para>Insert a blank CD</para></listitem><listitem><para>Click the button <guibutton>Create</guibutton>, the burning process starts.</para></listitem></orderedlist>
+      <para>Rhythmbox enables you to create you own Audio CDs with the music stored in the Rhythmbox Library.</para>
+      <para>To create an Audio CD: 
+				<orderedlist><listitem><para>Create a playlist, static or smart (see <xref linkend="playlist"/>) and add songs.</para></listitem><listitem><para>Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Create Audio CD...</guimenuitem></menuchoice></para></listitem><listitem><para>Insert a blank CD.</para></listitem><listitem><para>Click the button <guibutton>Create</guibutton>, the burning process starts.</para></listitem></orderedlist>
 			</para>
     </sect2>
   </sect1>
@@ -1058,24 +1061,28 @@
   </sect1>
   <sect1 id="daap">
     <title>DAAP Share Source</title>
-    <para>DAAP is a network protocol that allow to share the music stored in Rhythmbox. DAAP stands for Digitial Audio Access Protocol.</para>
+    <para>DAAP is a network protocol that allow to share the music stored in Rhythmbox. DAAP stands for Digital Audio Access Protocol.</para>
     <para>As DAAP is a standard protocol for music sharing, you can listen and share music not only with others Rhythmbox users, but also with other users who uses DAAP compatible software like iTunes.</para>
-    <para>When you will start Rhythmbox, it will look for all DAAP shares published on your local network (your home or your office, not the whole Internet) by other users and will display them in the <guilabel>Source</guilabel> list; in the same time Rhythmbox will publish your library and your playlist. So you can read music stored on your friends'computer and they can listen your music.</para>
+    <para>When you will start Rhythmbox, it will look for all DAAP shares published on your local network (your home or your office, not the whole Internet) by other users and will display them in the <guilabel>Source</guilabel> list; in the same time Rhythmbox will publish your library and your playlists. So you can read music stored on your friends' computer and they can listen your music.</para>
     <para>If you want to disable Rhythmbox to share your music, see <xref linkend="prefs-sharing"/> in the preference.</para>
   </sect1>
   <sect1 id="notification">
-    <title>Notification Zone</title>
+    <title>Notification Area</title>
     <sect2 id="notification-overview">
       <title>Overview</title>
       <para>
-		The Notification Area is a Gnome feature that add a small icon to the panel while the program is running;
+		The Notification Area is a GNOME feature that adds a small icon to the panel while the program is running;
 		this allows you to control <application>&app;</application> from your tray, and received information when the Rhythmbox 
 		interface is not visible.
 		</para>
       <figure id="fig-notification-zone">
-        <title><application>&app;</application> in the Notification Zone</title>
+        <title><application>&app;</application> in the Notification Area</title>
         <screenshot>
-          <graphic format="PNG" fileref="figures/rb-notification-zone.png"/>
+          <mediaobject>
+            <imageobject>
+              <imagedata format="PNG" fileref="figures/rb-notification-zone.png"/>
+	    </imageobject>
+	  </mediaobject>
         </screenshot>
       </figure>
     </sect2>
@@ -1083,22 +1090,26 @@
       <title>Get information</title>
       <sect3 id="notification-info-tooltip">
         <title>Tooltip information</title>
-        <para>When you move the mouse cursur over the rhythmbox icon, you can see the track author,
+        <para>When you move the mouse cursor over the rhythmbox icon, you can see the track artist,
 			 the track name and the time position.</para>
       </sect3>
       <sect3 id="notification-info-window">
         <title>Notification window</title>
-        <para>Each time, the track has changed or a podcast episode was downloaded, Rhythmbox can inform you; 
+        <para>Each time the track has changed or a podcast episode was downloaded, Rhythmbox can inform you; 
 			it displays a notification window on the desktop, containing an information.</para>
         <figure id="fig-notification-window">
           <title>The notification window of <application>&app;</application></title>
           <screenshot>
-            <graphic format="PNG" fileref="figures/rb-notification-window.png"/>
+            <mediaobject>
+              <imageobject>
+                <imagedata format="PNG" fileref="figures/rb-notification-window.png"/>
+	      </imageobject>
+	    </mediaobject>
           </screenshot>
         </figure>
         <tip>
-          <para>Although the notification window is interesting it can ennoy you, so you can disabled 
-			the notification window. Right-click over the rhythmbox icon in the notification zone and untick
+          <para>Although the notification window is interesting it can annoy you, so you can disabled 
+			the notification window. Right-click over the rhythmbox icon in the notification area and untick
 			<guilabel>Show Notifications</guilabel>.</para>
         </tip>
       </sect3>
@@ -1112,13 +1123,17 @@
       <figure id="fig-notification-menu">
         <title>Notification Area (showing menu)</title>
         <screenshot>
-          <graphic format="PNG" fileref="figures/rb-notification-area-menu.png"/>
+          <mediaobject>
+            <imageobject>
+              <imagedata format="PNG" fileref="figures/rb-notification-area-menu.png"/>
+            </imageobject>
+           </mediaobject>
         </screenshot>
       </figure>
       <para>
         <itemizedlist>
           <listitem>
-            <para><guilabel>Play</guilabel> &mdash; If ticked, plays the currently selected song</para>
+            <para><guilabel>Play</guilabel> &mdash; If ticked, plays the currently selected song.</para>
           </listitem>
           <listitem>
             <para><guilabel>Previous</guilabel> &mdash; Skip to previous song in the selected source.</para>
@@ -1127,7 +1142,7 @@
             <para><guilabel>Next</guilabel> &mdash; Skip to next song in the selected source.</para>
           </listitem>
           <listitem>
-            <para><guilabel>Show Window Player</guilabel> &mdash; choose whether
+            <para><guilabel>Show Window Player</guilabel> &mdash; Choose whether
 			or not the <application>&app;</application>	window is visible or not on the desktop.</para>
           </listitem>
           <listitem>
@@ -1256,7 +1271,7 @@
         <para>
 			AudioScrobbler is a plugin that collect and send information
 			about played songs to website <ulink url="http://www.last.fm/">Last.fm</ulink>. 
-			Data sent, once	computed, allows to you	to :
+			Data sent, once	computed, allows to you	to:
 			<itemizedlist>
 				<listitem>
 					<para>consult statistics (like most played songs or most played artists).</para>
@@ -1269,7 +1284,7 @@
         <warning>
           <para>
 		  	Before use AudioScrobbler, you have to create an account on the website 
-			<ulink url="http://www.last.fm/signup.php">Last.fm</ulink>
+			<ulink url="http://www.last.fm/signup.php">Last.fm</ulink>.
 		  </para>
         </warning>
         <para>
