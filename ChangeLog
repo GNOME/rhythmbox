@@ -1,5 +1,13 @@
 2006-03-12  James Livingston  <jrl@ids.org.au>
 
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_thread_parse_feed):
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):
+	* podcast/rb-podcast-parse.h: ask the user before rejecting a feed for
+	having an invalid mime-type. Fixed bug 329813.
+
+2006-03-12  James Livingston  <jrl@ids.org.au>
+
 	Make ide tag-editing work on 0.10, if id3mux 0.10.2 is present.
 	Finally lets us close bug 309609.
 

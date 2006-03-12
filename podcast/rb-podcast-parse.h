@@ -53,7 +53,7 @@ typedef struct
 }RBPodcastChannel;
 
 
-void rb_podcast_parse_load_feed		(RBPodcastChannel *data, const char *file_name);
+gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data, const char *file_name);
 void rb_podcast_parse_channel_free 	(RBPodcastChannel *data);
 void rb_podcast_parse_item_free 	(RBPodcastItem *data);
 

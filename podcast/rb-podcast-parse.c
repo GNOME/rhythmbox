@@ -28,6 +28,8 @@
 #include <libxml/SAX.h>
 #include <libxml/parserInternals.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "rb-debug.h"
 #include "rb-podcast-parse.h" 
@@ -401,7 +403,7 @@ rb_podcast_parser_characters (struct RBPoadcastLoadContext *ctx,
 }
 
 
-void
+gboolean
 rb_podcast_parse_load_feed (RBPodcastChannel *data,
 			    const char *file_name)
 {
@@ -415,10 +417,6 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	struct RBPoadcastLoadContext *ctx = NULL;
 
 	data->url = xmlCharStrdup (file_name);
-
-	if (!gnome_vfs_initialized ()) {
-		return;
-	}
 
 	if (!g_str_has_suffix (file_name, ".rss") && !g_str_has_suffix (file_name, ".xml")) {
 		gboolean invalid_mime_type;
@@ -436,19 +434,41 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 			invalid_mime_type = FALSE;
 		}
 
-		if ((result != GNOME_VFS_OK) || invalid_mime_type) {
+		if ((result != GNOME_VFS_OK)) {
 			rb_debug ("Invalid mime-type in podcast feed %s", info->mime_type);
 			gnome_vfs_file_info_unref (info);
-			return;
+			return TRUE;
+		}
+
+		if (invalid_mime_type) {
+			GtkWidget *dialog;
+
+			GDK_THREADS_ENTER ();
+			dialog = gtk_message_dialog_new (NULL, 0,
+							 GTK_MESSAGE_QUESTION,
+							 GTK_BUTTONS_YES_NO,
+							 _("The URL '%s' does not appear to be a podcast feed. "
+							 "It may be the wrong URL, or the feed may be broken. "
+							 "Would you like Rhythmbox to attempt to use it anyway?"),
+							 file_name);
+			
+			if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES)
+				invalid_mime_type = FALSE;
+
+			gtk_widget_destroy (dialog);
+			GDK_THREADS_LEAVE ();
 		}
 
 		gnome_vfs_file_info_unref (info);
+
+		if (invalid_mime_type)
+			return FALSE;
 	}
     
 	/* first download file by gnome_vfs for use gnome network configuration */
 	result = gnome_vfs_read_entire_file (file_name, &file_size, &buffer);
 	if (result != GNOME_VFS_OK)
-		return;
+		return TRUE;
 	    
 
 	/* initializing parse */
@@ -478,6 +498,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	g_free (ctx);
 
 	data->posts = g_list_reverse (data->posts);
+	return TRUE;
 }
 
 static uintmax_t

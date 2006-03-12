@@ -782,13 +782,13 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 	RBPodcastManagerEvent *event = g_new0 (RBPodcastManagerEvent, 1);
 	RBPodcastChannel *feed = g_new0 (RBPodcastChannel, 1);
 
-	rb_podcast_parse_load_feed (feed, info->url);	
-	
-	event->channel = feed;
-	event->type = (feed->title == NULL) ? EVENT_ERROR_FEED : EVENT_INSERT_FEED;
+	if (rb_podcast_parse_load_feed (feed, info->url)) {
+		event->channel = feed;
+		event->type = (feed->title == NULL) ? EVENT_ERROR_FEED : EVENT_INSERT_FEED;
 
-	g_async_queue_push (info->pd->priv->event_queue, event);
-	g_idle_add ((GSourceFunc) rb_podcast_manager_event_loop, info->pd);
+		g_async_queue_push (info->pd->priv->event_queue, event);
+		g_idle_add ((GSourceFunc) rb_podcast_manager_event_loop, info->pd);
+	}
 	
 	g_free (info->url);
 	g_free (info);
