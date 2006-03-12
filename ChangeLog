@@ -1,5 +1,19 @@
 2006-03-12  James Livingston  <jrl@ids.org.au>
 
+	Make API doc generation work again. Fixes bug 334276.
+
+	* doc/reference/Makefile.am:
+	* doc/reference/tmpl/rb-debug.sgml:
+	* doc/reference/tmpl/rb-druid.sgml:
+	* doc/reference/tmpl/rb-entry-view.sgml:
+	* doc/reference/tmpl/rb-load-failure-dialog.sgml:
+	* doc/reference/tmpl/rb-metadata.sgml:
+	* doc/reference/tmpl/rb-shell.sgml:
+	* doc/reference/tmpl/rhythmbox-unused.sgml:
+	* doc/reference/tmpl/rhythmdb.sgml:
+
+2006-03-12  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-clipboard.c:
 	(rb_shell_clipboard_set_source_internal),
 	(rb_shell_clipboard_sync): don't try to use the source's entry view if

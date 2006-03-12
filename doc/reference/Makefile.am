@@ -47,6 +47,7 @@ INCLUDES=\
 	-I$(top_srcdir)/iradio \
 	-I$(top_srcdir)/remote \
 	-I$(top_srcdir)/daapsharing \
+	-I$(top_srcdir)/plugins \
 	$(DBUS_CFLAGS) \
 	$(IPOD_CFLAGS) \
 	$(RHYTHMBOX_CFLAGS)
@@ -64,6 +65,7 @@ GTKDOC_LIBS=\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/daapsharing/libdaapsharing.la	\
+	$(top_builddir)/plugins/librbplugins.la		\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\
@@ -73,6 +75,10 @@ GTKDOC_LIBS=\
 	$(IPOD_LIBS)					\
 	$(NOTIFY_LIBS)					\
 	$(RHYTHMBOX_LIBS)
+
+if ENABLE_PYTHON
+GTKDOC_LIBS += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
+endif
 
 content_files =
 HTML_IMAGES =
