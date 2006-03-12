@@ -139,67 +139,77 @@ rb_add_flac_tagger (GstBin *pipeline, GstElement *element)
 	return tagger;
 }
 
+
+#ifdef HAVE_GSTREAMER_0_10
+static void
+id3_pad_added_cb (GstElement *demux, GstPad *pad, GstElement *mux)
+{
+	GstPad *mux_pad;
+
+	mux_pad = gst_element_get_compatible_pad (mux, pad, NULL);
+	if (gst_pad_link (pad, mux_pad) != GST_PAD_LINK_OK)
+		rb_debug ("unable to link pad from id3demux to id3mux");
+	else
+		rb_debug ("linked pad from id3de to id3mux");
+}
+
 static GstElement *
 rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
 {
-        GstElement *tagger = NULL;
-	GstElement *spider = NULL;
-	GstElement *identity = NULL;
-#ifdef HAVE_GSTREAMER_0_10
-	GstElement *filter = NULL;
-#endif
+	GstElement *demux = NULL;
+	GstElement *mux = NULL;
+
+	demux = gst_element_factory_make ("id3demux", NULL);
+	mux =  gst_element_factory_make ("id3mux", NULL);
+
+	if (demux == NULL || mux == NULL)
+		goto error;
+
+	gst_bin_add_many (pipeline, demux, mux, NULL);
+	if (!gst_element_link (element, demux))
+		goto error;
+
+	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
+
+	return mux;
+
+error:
+	g_object_unref (demux);
+	g_object_unref (mux);
+	return NULL;
+}
+#elif HAVE_GSTREAMER_0_8
+static GstElement *
+rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
+{
+	GstElement *tagger, *identity;
 	GstCaps *filtercaps = NULL;
 
-        if (!(tagger = gst_element_factory_make("id3tag", "tagger"))) 
-                return NULL;
+	if (!(tagger = gst_element_factory_make ("id3tag", "tagger"))) 
+		return NULL;
 
-        if (!(identity = gst_element_factory_make("identity", "identity"))) {
-                gst_object_unref( GST_OBJECT(tagger) );
-                return NULL;
-        }
-	if (!(spider = gst_element_factory_make ("spider", "spider")) ||
-	    !(tagger = gst_element_factory_make ("id3mux", "id3mux")) ||
-	    !(filtercaps = gst_caps_new_simple ("application/x-id3", NULL))) {
-		gst_object_unref (GST_OBJECT (spider));
+	if (!(identity = gst_element_factory_make ("identity", "identity"))) {
 		gst_object_unref (GST_OBJECT (tagger));
-		gst_caps_unref (filtercaps);
 		return NULL;
 	}
 
-#ifdef HAVE_GSTREAMER_0_10
-	if (! (filter = gst_element_factory_make ("capsfilter", NULL))) {
-		gst_object_unref (GST_OBJECT (spider));
-		gst_object_unref (GST_OBJECT (tagger));
-		gst_caps_unref (filtercaps);
-		return NULL;
-	}
-	g_object_set (GST_OBJECT (tagger), "v1-tag", TRUE, NULL);
-#else
-	gst_element_set (tagger, "v1-tag", TRUE, NULL);
-#endif
-        
-        gst_bin_add_many (GST_BIN (pipeline), tagger, identity, NULL);
+	gst_bin_add_many (GST_BIN (pipeline), tagger, identity, NULL);
 
-#ifdef HAVE_GSTREAMER_0_8
+	filtercaps = gst_caps_new_simple ("application/x-id3", NULL);
 	if (!gst_element_link_filtered (tagger, identity, filtercaps)) {
-#endif
-#ifdef HAVE_GSTREAMER_0_10
-	g_object_set (G_OBJECT (filter), "filter-caps", filtercaps, NULL);
-	if (!gst_element_link_many (tagger, filter, identity, NULL)) {
-#endif
-
-		g_warning("Linking id3tag and identity failed");
-                gst_caps_unref(filtercaps);
-                gst_object_unref(GST_OBJECT(tagger));
-                gst_object_unref(GST_OBJECT(identity));
-                return NULL;
+		g_warning ("Linking id3tag and identity failed");
+		gst_caps_free (filtercaps);
+		gst_object_unref (GST_OBJECT(tagger));
+		gst_object_unref (GST_OBJECT(identity));
+		return NULL;
         }
-	gst_caps_unref (filtercaps);
+	gst_caps_free (filtercaps);
 
-        gst_element_link_many (element, tagger, NULL);
-        
+	gst_element_link_many(element, tagger, NULL);
+
 	return identity;
 }
+#endif
 
 static void
 add_supported_type (RBMetaData *md,
@@ -236,7 +246,12 @@ rb_metadata_init (RBMetaData *md)
  	 */
 	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
 			    gst_element_factory_find ("gnomevfssink") != NULL);
+#ifdef HAVE_GSTREAMER_0_10
+	has_id3 = (gst_default_registry_check_feature_version ("id3mux", 0, 10, 2) &&
+		   gst_element_factory_find ("id3demux") != NULL);
+#elif HAVE_GSTREAMER_0_8
 	has_id3 = (gst_element_factory_find ("id3tag") != NULL);
+#endif
 
 	tagger = (has_gnomevfssink && has_id3) ?  rb_add_id3_tagger : NULL;
 	add_supported_type (md, "application/x-id3", tagger, "MP3");
@@ -1005,23 +1020,23 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 		return;
 
 	if (tag) {
-		GValue newval = {0,};
+		if (field == RB_METADATA_FIELD_DATE && g_value_get_ulong (val) == 0) {
+			/* we should ask gstreamer to remove the tag,
+			 * but there is no easy way of doing so
+			 */
+		} else {
+			GValue newval = {0,};
 
-		g_value_init (&newval, gst_tag_get_type (tag));
-		if (g_value_transform (val, &newval)) {
-			rb_debug("Setting %s",tag);
+			g_value_init (&newval, gst_tag_get_type (tag));
+			if (g_value_transform (val, &newval)) {
+				rb_debug("Setting %s",tag);
 
-			if (field == RB_METADATA_FIELD_DATE && g_value_get_ulong (val) == 0) {
-				/* we should ask gstreamer to remove the tag,
-				 * but there is no easy way of doing so
-				 */
-			} else {
 				gst_tag_setter_add_tag_values (GST_TAG_SETTER (tagsetter),
-							   GST_TAG_MERGE_REPLACE,
+							   GST_TAG_MERGE_REPLACE_ALL,
 							   tag, &newval, NULL);
 			}
+			g_value_unset (&newval);
 		}
-		g_value_unset (&newval);
 	}
 }
 
@@ -1116,7 +1131,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_REPLACE);
+	gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_REPLACE_ALL);
 	g_hash_table_foreach (md->priv->metadata, 
 			      (GHFunc) rb_metadata_gst_add_tag_data,
 			      GST_TAG_SETTER (tagger));

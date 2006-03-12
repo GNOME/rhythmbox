@@ -1296,7 +1296,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 static void
 rb_song_info_sync_entries (RBSongInfo *dialog)
 {
-	if (dialog->priv->editable)
+	if (!dialog->priv->editable)
 		return;
 
 	if (dialog->priv->current_entry)

@@ -1,5 +1,17 @@
 2006-03-12  James Livingston  <jrl@ids.org.au>
 
+	Make ide tag-editing work on 0.10, if id3mux 0.10.2 is present.
+	Finally lets us close bug 309609.
+
+	* metadata/rb-metadata-gst.c: (id3_pad_added_cb),
+	(rb_add_id3_tagger), (rb_metadata_init): make id3 tag editing work on
+	0.10
+
+	* widgets/rb-song-info.c: (rb_song_info_sync_entries): fix the
+	inverted logic of the editable check.
+
+2006-03-12  James Livingston  <jrl@ids.org.au>
+
 	Make API doc generation work again. Fixes bug 334276.
 
 	* doc/reference/Makefile.am:
