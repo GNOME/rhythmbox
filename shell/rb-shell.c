@@ -1066,7 +1066,8 @@ rb_shell_constructor (GType type,
 				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->db);
-	shell->priv->source_header = rb_source_header_new (shell->priv->actiongroup);
+	shell->priv->source_header = rb_source_header_new (shell->priv->ui_manager,
+							   shell->priv->actiongroup);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->source_header));
 
 	shell->priv->paned = gtk_hpaned_new ();

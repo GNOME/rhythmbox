@@ -50,7 +50,6 @@
       <menuitem name="ViewBrowserMenu" action="ViewBrowser"/>
       <menuitem name="ViewStatusbarMenu" action="ViewStatusbar"/>
       <menuitem name="ViewToolbarMenu" action="ViewToolbar"/>
-      <menuitem name="ViewSongPositionSliderMenu" action="ViewSongPositionSlider"/>
       <separator name="ViewSep2"/>
       <menuitem name="ViewAllMenu" action="ViewAll"/>
       <separator name="ViewSep3"/>
@@ -82,6 +81,11 @@
     <toolitem name="Repeat" action="ControlRepeat"/>
     <toolitem name="Shuffle" action="ControlShuffle"/>
     <separator/>
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <separator/>
+  </toolbar>
+
+  <toolbar name="SearchBar">
   </toolbar>
 
   <popup name="RhythmboxTrayPopup">

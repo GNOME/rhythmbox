@@ -255,7 +255,7 @@ static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 	{ "ControlRepeat", GNOME_MEDIA_REPEAT, N_("_Repeat"), "<control>R",
 	  N_("Play first song again after all songs are played"),
 	  G_CALLBACK (rb_shell_player_repeat_changed_cb) },
-	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), "<control>S",
+	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), NULL,
 	  N_("Change the visibility of the song position slider"),
 	  G_CALLBACK (rb_shell_player_view_song_position_slider_changed_cb), TRUE }
 };

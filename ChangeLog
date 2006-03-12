@@ -1,3 +1,36 @@
+2006-03-12  William Jon McCann  <mccann@jhu.edu>
+
+	* data/ui/rhythmbox-ui.xml:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* shell/rb-shell-player.c:
+	* shell/rb-shell.c: (rb_shell_constructor):
+	* shell/rb-source-header.c: (force_no_shadow),
+	(ui_manager_add_widget_cb), (rb_source_header_constructor),
+	(rb_source_header_class_init), (rb_source_header_init),
+	(merge_source_ui_cb), (toolbar_set_homogeneous),
+	(rb_source_header_set_source_internal),
+	(rb_source_header_set_property), (rb_source_header_get_property),
+	(rb_source_header_set_source), (rb_source_header_new),
+	(rb_source_header_filter_changed_cb):
+	* shell/rb-source-header.h:
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_init), (search_action_to_prop),
+	(search_action_changed), (rb_library_source_constructor),
+	(impl_search), (impl_reset_filters), (impl_get_search_actions),
+	(construct_query_from_selection):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_init), (search_action_to_prop),
+	(search_action_changed), (rb_podcast_source_constructor),
+	(construct_query_from_selection), (impl_get_ui_actions),
+	(impl_get_search_actions):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_get_ui_actions), (default_get_search_actions),
+	(rb_source_get_search_actions):
+	* sources/rb-source.h:
+
+	Add a search bar.  Fixes #328618
+
 2006-03-12  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_commit_internal):

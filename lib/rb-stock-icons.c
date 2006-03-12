@@ -35,6 +35,7 @@ const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
 const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
 const char RB_STOCK_NO_STAR[] = "rhythmbox-no-star";
 const char RB_STOCK_PODCAST[] = "rhythmbox-podcast";
+const char RB_STOCK_BROWSER[] = "stock_music-library";
 const char GNOME_MEDIA_SHUFFLE[] = "stock_shuffle";
 const char GNOME_MEDIA_REPEAT[] = "stock_repeat";
 const char GNOME_MEDIA_PLAYLIST[] = "stock_playlist";
@@ -66,7 +67,8 @@ rb_stock_icons_init (void)
 		{GNOME_MEDIA_REPEAT, FALSE},
 		{GNOME_MEDIA_PLAYLIST, FALSE},
 		{GNOME_MEDIA_AUTO_PLAYLIST, FALSE},
-		{GNOME_MEDIA_EJECT, FALSE}
+		{GNOME_MEDIA_EJECT, FALSE},
+		{RB_STOCK_BROWSER, FALSE}
 	};
 
 	g_return_if_fail (factory == NULL);

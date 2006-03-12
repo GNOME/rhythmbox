@@ -50,7 +50,8 @@
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
-static GObject *rb_library_source_constructor (GType type, guint n_construct_properties,
+static GObject *rb_library_source_constructor (GType type,
+					       guint n_construct_properties,
 					       GObjectConstructParam *construct_properties);
 static void rb_library_source_dispose (GObject *object);
 static void rb_library_source_finalize (GObject *object);
@@ -108,6 +109,7 @@ static void impl_song_properties (RBSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 static const char * impl_get_paned_key (RBLibrarySource *source);
+static GList *impl_get_search_actions (RBSource *source);
 static void rb_library_source_do_query (RBLibrarySource *source);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
@@ -121,7 +123,6 @@ static void songs_view_drag_data_received_cb (GtkWidget *widget,
 					      RBLibrarySource *source);
 static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 						RBLibrarySource *source);
-
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
@@ -145,13 +146,16 @@ struct RBLibrarySourcePrivate
 
 	gboolean lock;
 
-	RhythmDBQueryModel *cached_all_query;
 	char *search_text;
-	
+	RhythmDBQueryModel *cached_all_query;
+	RhythmDBPropType search_prop;
+	gboolean initialized;
+
 	gboolean loading_prefs;
 	RBShellPreferences *shell_prefs;
 
 	GtkActionGroup *action_group;
+	GtkActionGroup *search_action_group;
 	GtkWidget *config_widget;
 
 	GtkWidget *library_location_entry;
@@ -180,6 +184,14 @@ static GtkActionEntry rb_library_source_actions [] =
 	{ "LibrarySrcChooseAlbum", NULL, N_("Browse This A_lbum"), NULL,
 	  N_("Set the browser to view only this album"),
 	  G_CALLBACK (rb_library_source_cmd_choose_album) }
+};
+
+static GtkRadioActionEntry rb_library_source_radio_actions [] =
+{
+	{ "LibrarySearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
+	{ "LibrarySearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), 1 },
+	{ "LibrarySearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), 2 },
+	{ "LibrarySearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
 };
 
 static const GtkTargetEntry songs_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
@@ -227,6 +239,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_get_search_actions = impl_get_search_actions;
 
 	klass->impl_get_paned_key = impl_get_paned_key;
 	klass->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_true_function;
@@ -284,6 +297,8 @@ static void
 rb_library_source_init (RBLibrarySource *source)
 {
 	source->priv = RB_LIBRARY_SOURCE_GET_PRIVATE (source);
+
+	source->priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 
 	/* Drag'n'Drop */
 
@@ -353,8 +368,54 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 		_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
 }
 
+static RhythmDBPropType
+search_action_to_prop (GtkAction *action)
+{
+	const char      *name;
+	RhythmDBPropType prop;
+
+	name = gtk_action_get_name (action);
+
+	if (name == NULL) {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	} else if (strcmp (name, "LibrarySearchAll") == 0) {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;		
+	} else if (strcmp (name, "LibrarySearchArtists") == 0) {
+		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
+	} else if (strcmp (name, "LibrarySearchAlbums") == 0) {
+		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
+	} else if (strcmp (name, "LibrarySearchTitles") == 0) {
+		prop = RHYTHMDB_PROP_TITLE_FOLDED;
+	} else {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	}
+
+	return prop;
+}
+
+static void
+search_action_changed (GtkRadioAction  *action,
+		       GtkRadioAction  *current,
+		       RBShell         *shell)
+{
+	gboolean         active;
+	RBLibrarySource *source;
+
+	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+
+	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
+
+	if (active) {
+		/* update query */
+		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
+		rb_library_source_do_query (source);
+		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+}
+
 static GObject *
-rb_library_source_constructor (GType type, guint n_construct_properties,
+rb_library_source_constructor (GType type,
+			       guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
 	RBLibrarySource *source;
@@ -377,6 +438,12 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 								       G_N_ELEMENTS (rb_library_source_actions),
 								       shell);
 
+	gtk_action_group_add_radio_actions (source->priv->action_group,
+					    rb_library_source_radio_actions,
+					    G_N_ELEMENTS (rb_library_source_radio_actions),
+					    0,
+					    (GCallback)search_action_changed,
+					    shell);
 	g_object_unref (G_OBJECT (shell));
 
 	source->priv->paned = gtk_vpaned_new ();
@@ -624,19 +691,26 @@ impl_search (RBSource *asource, const char *search_text)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
-	if (search_text == NULL && source->priv->search_text == NULL)
-		return;
-	if (search_text != NULL &&
-	    source->priv->search_text != NULL
-	    && !strcmp (search_text, source->priv->search_text))
-		return;
+	if (source->priv->initialized) {
+		if (search_text == NULL && source->priv->search_text == NULL)
+			return;
+		if (search_text != NULL &&
+		    source->priv->search_text != NULL
+		    && !strcmp (search_text, source->priv->search_text))
+			return;
+	}
 
-	if (search_text[0] == '\0')
+	source->priv->initialized = TRUE;
+	if (search_text != NULL && search_text[0] == '\0')
 		search_text = NULL;
 
 	rb_debug ("doing search for \"%s\"", search_text ? search_text : "(NULL)");
 
 	g_free (source->priv->search_text);
+	if (search_text)
+		source->priv->search_text = g_utf8_casefold (search_text, -1);
+	else
+		source->priv->search_text = NULL;
 	source->priv->search_text = g_strdup (search_text);
 	rb_library_source_do_query (source);
 
@@ -668,15 +742,17 @@ impl_reset_filters (RBSource *asource)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	gboolean changed = FALSE;
 
-	
+	rb_debug ("Resetting search filters");
+
 	if (rb_library_browser_reset (source->priv->browser))
 		changed = TRUE;
 
 	if (source->priv->search_text != NULL)
 		changed = TRUE;
+#if 0
 	g_free (source->priv->search_text);
 	source->priv->search_text = NULL;
-
+#endif
 	if (changed) {
 		rb_library_source_do_query (source);
 		rb_source_notify_filter_changed (RB_SOURCE (source));
@@ -1054,6 +1130,19 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	return TRUE;
 }
 
+static GList *
+impl_get_search_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "LibrarySearchTitles");
+	actions = g_list_prepend (actions, "LibrarySearchAlbums");
+	actions = g_list_prepend (actions, "LibrarySearchArtists");
+	actions = g_list_prepend (actions, "LibrarySearchAll");
+
+	return actions;
+}
+
 static gboolean
 impl_show_popup (RBSource *source)
 {
@@ -1106,11 +1195,13 @@ construct_query_from_selection (RBLibrarySource *source)
 	 */
 
 	if (source->priv->search_text) {
-		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_SEARCH_MATCH,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_END);
+		GPtrArray *subquery;
+
+		subquery = rhythmdb_query_parse (source->priv->db,
+						 RHYTHMDB_QUERY_PROP_LIKE,
+						 source->priv->search_prop,
+						 source->priv->search_text,
+						 RHYTHMDB_QUERY_END);
 		rhythmdb_query_append (source->priv->db,
 				       query,
 				       RHYTHMDB_QUERY_SUBQUERY,

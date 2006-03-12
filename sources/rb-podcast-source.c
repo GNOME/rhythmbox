@@ -213,8 +213,6 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 static void rb_podcast_source_cmd_new_podcast	 (GtkAction *action,
 						  RBPodcastSource *source);
 
-
-
 /* source methods */
 static const char *impl_get_browser_key 		(RBSource *source);
 static RBEntryView *impl_get_entry_view 		(RBSource *source);
@@ -233,6 +231,7 @@ static gboolean impl_receive_drag 			(RBSource *source,
 static gboolean impl_can_add_to_queue			(RBSource *source);
 static void impl_add_to_queue				(RBSource *source, RBSource *queue);
 static GList *impl_get_ui_actions			(RBSource *source);
+static GList *impl_get_search_actions			(RBSource *source);
 
 
 
@@ -272,6 +271,7 @@ struct RBPodcastSourcePrivate
 	char *search_text;
 	GList *selected_feeds;
 	RhythmDBQueryModel *cached_all_query;
+	RhythmDBPropType search_prop;
 
 	gboolean initialized;
 	
@@ -307,6 +307,12 @@ static GtkActionEntry rb_podcast_source_actions [] =
 	  G_CALLBACK (rb_podcast_source_cmd_update_all) },
 };
 
+static GtkRadioActionEntry rb_podcast_source_radio_actions [] =
+{
+	{ "PodcastSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
+	{ "PodcastSearchFeeds", NULL, N_("Feeds"), NULL, N_("Search podcast feeds"), 1 },
+	{ "PodcastSearchEpisodes", NULL, N_("Episodes"), NULL, N_("Search podcast episodes"), 2 }
+};
 
 static const GtkTargetEntry posts_view_drag_types[] = {
 	{  "text/uri-list", 0, 0 },
@@ -358,6 +364,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_can_add_to_queue = impl_can_add_to_queue;
 	source_class->impl_add_to_queue = impl_add_to_queue;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_get_search_actions = impl_get_search_actions;
 	
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -390,6 +397,7 @@ rb_podcast_source_init (RBPodcastSource *source)
 
 	source->priv = RB_PODCAST_SOURCE_GET_PRIVATE (source);
 
+	source->priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	source->priv->selected_feeds = NULL;
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
@@ -449,6 +457,49 @@ rb_podcast_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->finalize (object);
 }
 
+static RhythmDBPropType
+search_action_to_prop (GtkAction *action)
+{
+	const char      *name;
+	RhythmDBPropType prop;
+
+	name = gtk_action_get_name (action);
+
+	if (name == NULL) {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	} else if (strcmp (name, "PodcastSearchAll") == 0) {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;		
+	} else if (strcmp (name, "PodcastSearchFeeds") == 0) {
+		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
+	} else if (strcmp (name, "PodcastSearchEpisodes") == 0) {
+		prop = RHYTHMDB_PROP_TITLE_FOLDED;
+	} else {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	}
+
+	return prop;
+}
+
+static void
+search_action_changed (GtkRadioAction  *action,
+		       GtkRadioAction  *current,
+		       RBShell         *shell)
+{
+	gboolean active;
+	RBPodcastSource *source;
+
+	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+
+	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
+
+	if (active) {
+		/* update query */
+		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
+		rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_SEARCH);
+		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+}
+
 static GObject *
 rb_podcast_source_constructor (GType type,
 			       guint n_construct_properties,
@@ -459,10 +510,7 @@ rb_podcast_source_constructor (GType type,
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	RhythmDBPropertyModel *feed_model;
-
-
 	RBShell *shell;
-
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
 
@@ -471,16 +519,22 @@ rb_podcast_source_constructor (GType type,
 	source = RB_PODCAST_SOURCE (G_OBJECT_CLASS (rb_podcast_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "PodcastActions",
 								       rb_podcast_source_actions,
 								       G_N_ELEMENTS (rb_podcast_source_actions),
 								       source);
+	gtk_action_group_add_radio_actions (source->priv->action_group,
+					    rb_podcast_source_radio_actions,
+					    G_N_ELEMENTS (rb_podcast_source_radio_actions),
+					    0,
+					    (GCallback)search_action_changed,
+					    shell);
 
 	source->priv->paned = gtk_vpaned_new ();
-
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
 	
 	gtk_idle_add ((GtkFunction) rb_podcast_source_load_finish_cb, source);
 
@@ -1069,15 +1123,26 @@ construct_query_from_selection (RBPodcastSource *source)
 				      RHYTHMDB_QUERY_END);
 
 	if (source->priv->search_text) {
-		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_ALBUM_FOLDED,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_DISJUNCTION,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_TITLE_FOLDED,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_END);
+		GPtrArray *subquery;
+
+		if (source->priv->search_prop == RHYTHMDB_PROP_SEARCH_MATCH) {
+			subquery = rhythmdb_query_parse (source->priv->db,
+							 RHYTHMDB_QUERY_PROP_LIKE,
+							 RHYTHMDB_PROP_ALBUM_FOLDED,
+							 source->priv->search_text,
+							 RHYTHMDB_QUERY_DISJUNCTION,
+							 RHYTHMDB_QUERY_PROP_LIKE,
+							 RHYTHMDB_PROP_TITLE_FOLDED,
+							 source->priv->search_text,
+							 RHYTHMDB_QUERY_END);
+		} else {
+			subquery = rhythmdb_query_parse (source->priv->db,
+							 RHYTHMDB_QUERY_PROP_LIKE,
+							 source->priv->search_prop,
+							 source->priv->search_text,
+							 RHYTHMDB_QUERY_END);
+		}
+
 		rhythmdb_query_append (source->priv->db,
 				       query,
 				       RHYTHMDB_QUERY_SUBQUERY,
@@ -1866,13 +1931,25 @@ impl_add_to_queue (RBSource *source, RBSource *queue)
 	g_list_free (selection);
 }
 
-static GList*
+static GList *
 impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
 	actions = g_list_prepend (actions, "PodcastUpdateAllFeeds");
 	actions = g_list_prepend (actions, "MusicNewPodcast");
+
+	return actions;
+}
+
+static GList *
+impl_get_search_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "PodcastSearchEpisodes");
+	actions = g_list_prepend (actions, "PodcastSearchFeeds");
+	actions = g_list_prepend (actions, "PodcastSearchAll");
 
 	return actions;
 }

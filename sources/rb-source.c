@@ -65,7 +65,8 @@ static void default_deactivate (RBSource *source);
 static gboolean default_disconnect (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
 static char *default_get_status (RBSource *source);
-static GList* default_get_ui_actions (RBSource *source);
+static GList * default_get_ui_actions (RBSource *source);
+static GList * default_get_search_actions (RBSource *source);
 
 static void rb_source_row_deleted_cb (GtkTreeModel *model,
 				      GtkTreePath *path,
@@ -146,6 +147,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_add_to_queue = default_add_to_queue;
 	klass->impl_get_status = default_get_status;
 	klass->impl_get_ui_actions = default_get_ui_actions;
+	klass->impl_get_search_actions = default_get_search_actions;
 
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
@@ -854,18 +856,32 @@ gboolean rb_source_disconnect (RBSource *source)
 	return klass->impl_disconnect (source);
 }
 
-static GList*
+static GList *
 default_get_ui_actions (RBSource *source)
 {
 	return NULL;
 }
 
-GList*
+GList *
 rb_source_get_ui_actions (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_get_ui_actions (source);
+}
+
+static GList *
+default_get_search_actions (RBSource *source)
+{
+	return NULL;
+}
+
+GList *
+rb_source_get_search_actions (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_get_search_actions (source);
 }
 
 static void

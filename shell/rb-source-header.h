@@ -52,7 +52,8 @@ typedef struct
 
 GType			rb_source_header_get_type	(void);
 
-RBSourceHeader *	rb_source_header_new		(GtkActionGroup *actiongroup);
+RBSourceHeader *	rb_source_header_new		(GtkUIManager   *mgr,
+                                                         GtkActionGroup *actiongroup);
 
 void			rb_source_header_set_source	(RBSourceHeader *header,
 							 RBSource *player);

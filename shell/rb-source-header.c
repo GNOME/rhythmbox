@@ -68,11 +68,14 @@ struct RBSourceHeaderPrivate
 {
 	RBSource *selected_source;
 
+	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
+	guint source_ui_merge_id;
 
 	GtkTooltips *tooltips;
 
 	GtkWidget *search;
+	GtkWidget *search_bar;
 	GtkWidget *disclosure;
 
 	guint browser_notify_id;
@@ -91,19 +94,85 @@ enum
 {
 	PROP_0,
 	PROP_ACTION_GROUP,
+	PROP_UI_MANAGER,
 	PROP_SOURCE,
 };
 
 static GtkToggleActionEntry rb_source_header_toggle_entries [] =
 {
-	{ "ViewBrowser", NULL, N_("_Browser"), "<control>B",
+	{ "ViewBrowser", RB_STOCK_BROWSER, N_("_Browse"), "<control>B",
 	  N_("Change the visibility of the browser"),
-	  G_CALLBACK (rb_source_header_view_browser_changed_cb) }
+	  G_CALLBACK (rb_source_header_view_browser_changed_cb), FALSE }
 };
 static guint rb_source_header_n_toggle_entries = G_N_ELEMENTS (rb_source_header_toggle_entries);
 
-
 G_DEFINE_TYPE (RBSourceHeader, rb_source_header, GTK_TYPE_TABLE)
+
+static inline void
+force_no_shadow (GtkWidget *widget)
+{
+        gboolean first_time = TRUE;
+
+        if (first_time) {
+                gtk_rc_parse_string ("\n"
+                                     "   style \"search-toolbar-style\"\n"
+                                     "   {\n"
+                                     "      GtkToolbar::shadow-type=GTK_SHADOW_NONE\n"
+                                     "   }\n"
+                                     "\n"
+                                     "    widget \"*.search-toolbar\" style \"search-toolbar-style\"\n"
+                                     "\n");
+                first_time = FALSE;
+        }
+
+        gtk_widget_set_name (widget, "search-toolbar");
+}
+
+static void
+ui_manager_add_widget_cb (GtkUIManager *ui_manager,
+			  GtkWidget *widget,
+			  RBSourceHeader *header)
+{
+	if (header->priv->search_bar != NULL) {
+		return;
+	}
+
+	if (GTK_IS_TOOLBAR (widget)) {
+		header->priv->search_bar = gtk_ui_manager_get_widget (header->priv->ui_manager, "/SearchBar");
+		if (header->priv->search_bar != NULL) {
+			gtk_toolbar_set_style (GTK_TOOLBAR (header->priv->search_bar), GTK_TOOLBAR_TEXT);
+			force_no_shadow (header->priv->search_bar);
+			gtk_widget_show (header->priv->search_bar);
+			gtk_table_attach (GTK_TABLE (header),
+					  header->priv->search_bar,
+					  1, 3, 0, 1, 
+					  GTK_EXPAND | GTK_FILL,
+					  GTK_EXPAND | GTK_FILL,
+					  5, 0);
+		}
+	}
+}
+
+static GObject *
+rb_source_header_constructor (GType type,
+			      guint n_construct_properties,
+			      GObjectConstructParam *construct_properties)
+{
+	RBSourceHeader *header;
+	RBSourceHeaderClass *klass;
+
+	klass = RB_SOURCE_HEADER_CLASS (g_type_class_peek (RB_TYPE_SOURCE_HEADER));
+
+	header = RB_SOURCE_HEADER (G_OBJECT_CLASS (rb_source_header_parent_class)->
+				   constructor (type, n_construct_properties, construct_properties));
+
+	g_signal_connect (G_OBJECT (header->priv->ui_manager), "add_widget",
+			  G_CALLBACK (ui_manager_add_widget_cb), header);
+
+	header->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (header->priv->ui_manager);
+
+	return G_OBJECT (header);
+}
 
 static void
 rb_source_header_class_init (RBSourceHeaderClass *klass)
@@ -111,6 +180,7 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_source_header_finalize;
+	object_class->constructor = rb_source_header_constructor;
 
 	object_class->set_property = rb_source_header_set_property;
 	object_class->get_property = rb_source_header_get_property;
@@ -128,6 +198,13 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      "GtkActionGroup",
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager",
+							      "GtkUIManager",
+							      "GtkUIManager object",
+							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBSourceHeaderPrivate));
@@ -167,13 +244,16 @@ rb_source_header_init (RBSourceHeader *header)
 	g_signal_connect_object (G_OBJECT (header->priv->disclosure), "notify::expanded",
 				 G_CALLBACK (rb_source_header_disclosure_toggled_cb), header, 0);
 
+#if 0	
 	gtk_table_attach_defaults (GTK_TABLE (header),
-			           header->priv->disclosure, 0, 2, 0, 1);
+			           header->priv->disclosure, 2, 3, 0, 1);
+#endif
 
 	align = gtk_alignment_new (1.0, 0.5, 1.0, 1.0);
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (ebox));
 	gtk_table_attach (GTK_TABLE (header),
-			  align, 2, 3, 0, 1, 
+			  align,
+			  0, 1, 0, 1, 
 			  GTK_EXPAND | GTK_FILL,
 			  GTK_EXPAND | GTK_FILL,
 			  5, 0);
@@ -211,6 +291,88 @@ rb_source_header_finalize (GObject *object)
 }
 
 static void
+merge_source_ui_cb (const char *action,
+		    RBSourceHeader *header)
+{
+	gtk_ui_manager_add_ui (header->priv->ui_manager,
+			       header->priv->source_ui_merge_id,
+			       "/SearchBar",
+			       action,
+			       action,
+			       GTK_UI_MANAGER_AUTO,
+			       FALSE);
+}
+
+static void
+toolbar_set_homogeneous (GtkToolbar *toolbar,
+			 gboolean    same)
+{
+	int i;
+
+	for (i = 0; i < gtk_toolbar_get_n_items (toolbar); i++) {
+		GtkToolItem *item;
+		item = gtk_toolbar_get_nth_item (toolbar, i);
+		gtk_tool_item_set_homogeneous (item, same);
+	}
+}
+
+static void
+rb_source_header_set_source_internal (RBSourceHeader *header,
+				      RBSource *source)
+{
+	GList *actions;
+
+	if (header->priv->selected_source != NULL) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
+						      G_CALLBACK (rb_source_header_filter_changed_cb),
+						      header);
+		gtk_ui_manager_remove_ui (header->priv->ui_manager, header->priv->source_ui_merge_id);
+	}
+
+	header->priv->selected_source = source;
+	rb_debug ("selected source %p", source);
+
+	if (header->priv->selected_source != NULL) {
+		const char *text = g_hash_table_lookup (header->priv->source_search_text,
+							header->priv->selected_source);
+			
+		header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
+	
+		rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);
+		g_signal_connect_object (G_OBJECT (header->priv->selected_source),
+					 "filter_changed",
+					 G_CALLBACK (rb_source_header_filter_changed_cb),
+					 header, 0);
+	
+		gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
+					  rb_source_can_search (header->priv->selected_source));
+		header->priv->have_search = rb_source_can_search (header->priv->selected_source);
+		header->priv->have_browser = rb_source_can_browse (header->priv->selected_source);
+		if (!header->priv->have_browser)
+			header->priv->disclosed = FALSE;
+		else if (header->priv->browser_key)
+			header->priv->disclosed = eel_gconf_get_boolean (header->priv->browser_key);
+		else
+			/* FIXME: remember the previous state of the source*/
+			header->priv->disclosed = FALSE;
+	
+		if (!header->priv->have_browser && !header->priv->have_search)
+			gtk_widget_hide (GTK_WIDGET (header));
+		else
+			gtk_widget_show (GTK_WIDGET (header));
+	}
+
+	/* merge the source-specific UI */
+	actions = rb_source_get_search_actions (source);
+	g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
+	g_list_free (actions);
+
+	toolbar_set_homogeneous (GTK_TOOLBAR (header->priv->search_bar), FALSE);
+
+	rb_source_header_sync_control_state (header);
+}
+
+static void
 rb_source_header_set_property (GObject *object,
 			      guint prop_id,
 			      const GValue *value,
@@ -218,49 +380,10 @@ rb_source_header_set_property (GObject *object,
 {
 	RBSourceHeader *header = RB_SOURCE_HEADER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_SOURCE:
-		if (header->priv->selected_source != NULL)
-		{
-			g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
-							      G_CALLBACK (rb_source_header_filter_changed_cb),
-							      header);
-		}
+		rb_source_header_set_source_internal (header, g_value_get_object (value));
 
-		header->priv->selected_source = g_value_get_object (value);
-		rb_debug ("selected source %p", g_value_get_object (value));
-
-		if (header->priv->selected_source != NULL) {
-			const char *text = g_hash_table_lookup (header->priv->source_search_text,
-								header->priv->selected_source);
-			
-			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
-	
-			rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);
-			g_signal_connect_object (G_OBJECT (header->priv->selected_source),
-						 "filter_changed",
-						 G_CALLBACK (rb_source_header_filter_changed_cb),
-						 header, 0);
-	
-			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
-						  rb_source_can_search (header->priv->selected_source));
-			header->priv->have_search = rb_source_can_search (header->priv->selected_source);
-			header->priv->have_browser = rb_source_can_browse (header->priv->selected_source);
-			if (!header->priv->have_browser)
-				header->priv->disclosed = FALSE;
-			else if (header->priv->browser_key)
-				header->priv->disclosed = eel_gconf_get_boolean (header->priv->browser_key);
-			else
-				/* FIXME: remember the previous state of the source*/
-				header->priv->disclosed = FALSE;
-	
-			if (!header->priv->have_browser && !header->priv->have_search)
-				gtk_widget_hide (GTK_WIDGET (header));
-			else
-				gtk_widget_show (GTK_WIDGET (header));
-		}
-		rb_source_header_sync_control_state (header);
 		break;
 	case PROP_ACTION_GROUP:
 		header->priv->actiongroup = g_value_get_object (value);
@@ -268,6 +391,9 @@ rb_source_header_set_property (GObject *object,
 						     rb_source_header_toggle_entries,
 						     rb_source_header_n_toggle_entries,
 						     header);
+		break;
+	case PROP_UI_MANAGER:
+		header->priv->ui_manager = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -283,13 +409,15 @@ rb_source_header_get_property (GObject *object,
 {
 	RBSourceHeader *header = RB_SOURCE_HEADER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_SOURCE:
 		g_value_set_object (value, header->priv->selected_source);
 		break;
 	case PROP_ACTION_GROUP:
 		g_value_set_object (value, header->priv->actiongroup);
+		break;
+	case PROP_UI_MANAGER:
+		g_value_set_object (value, header->priv->ui_manager);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -299,7 +427,7 @@ rb_source_header_get_property (GObject *object,
 
 void
 rb_source_header_set_source (RBSourceHeader *header,
-			    RBSource *source)
+			     RBSource *source)
 {
 	g_return_if_fail (RB_IS_SOURCE_HEADER (header));
 	g_return_if_fail (RB_IS_SOURCE (source));
@@ -310,10 +438,12 @@ rb_source_header_set_source (RBSourceHeader *header,
 }
 
 RBSourceHeader *
-rb_source_header_new (GtkActionGroup *actiongroup)
+rb_source_header_new (GtkUIManager   *mgr,
+		      GtkActionGroup *actiongroup)
 {
 	RBSourceHeader *header = g_object_new (RB_TYPE_SOURCE_HEADER,
 					       "action-group", actiongroup,
+					       "ui-manager", mgr,
 					       NULL);
 
 	g_return_val_if_fail (header->priv != NULL, NULL);
@@ -323,7 +453,7 @@ rb_source_header_new (GtkActionGroup *actiongroup)
 
 static void
 rb_source_header_filter_changed_cb (RBSource *source,
-				   RBSourceHeader *header)
+				    RBSourceHeader *header)
 {
 	rb_debug  ("filter changed for %p", source);
 	/* To add this line back in, you need to add a search_changed signal,
