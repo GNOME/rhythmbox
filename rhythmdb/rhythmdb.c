@@ -821,7 +821,7 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 	for (tem = db->priv->added_entries; tem; tem = tem->next) {
 		RhythmDBEntry *entry = tem->data;
 
-		if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG && !db->priv->no_update) {
 			const gchar *uri;
 
 			uri = rhythmdb_entry_get_string (entry, 

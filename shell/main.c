@@ -172,7 +172,7 @@ main (int argc, char **argv)
 
 		{ "debug",			'd',POPT_ARG_NONE,	&debug,				0, N_("Enable debug output"), NULL },
 		{ "debug-match",		'D',POPT_ARG_STRING,	&debug_match,			0, N_("Enable debug output matching a specified string"), NULL },
-		{ "no-update",			0,  POPT_ARG_NONE,	&no_update,			0, N_("Do not update the library"), NULL },
+		{ "no-update",			0,  POPT_ARG_NONE,	&no_update,			0, N_("Do not update the library with file changes"), NULL },
 		{ "no-registration",		'n',POPT_ARG_NONE,	&no_registration,		0, N_("Do not register the shell"), NULL },
 		{ "dry-run",			0,  POPT_ARG_NONE,	&dry_run,			0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "rhythmdb-file",		0,  POPT_ARG_STRING,	&rhythmdb_file,			0, N_("Path for database file to use"), NULL },
