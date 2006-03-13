@@ -1,5 +1,88 @@
 2006-03-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init), (rhythmdb_query_model_dispose),
+	(rhythmdb_query_model_finalize):
+	Move object unrefs from _finalize into _dispose.
+	
+	* shell/rb-play-order.c: (rb_play_order_query_model_changed):
+	Remove extra g_object_ref that was causing query model leaks.
+	
+	* sources/rb-iradio-source.c: (rb_iradio_source_dispose),
+	(rb_iradio_source_constructor), (impl_search), (genre_selected_cb),
+	(genre_selection_reset_cb), (rb_iradio_source_do_query):
+	Remove the cached 'all' query, since it doesn't really help and it
+	makes the code more complicated.  Attach the genre property view to
+	the query model build from the search text, so only genres for
+	stations matching the search terms are displayed.  Preserve the genre
+	selection across searches.
+
+	* widgets/rb-library-browser.c: 
+	(rb_library_browser_class_init), (rb_library_browser_get_property):
+	Add properties for the input and output models for the browser, and
+	remove the 'changed' signal as we can just use notify::output-model.
+	(ignore_selection_changes),
+	(selection_restore_data_destroy), (query_complete_cb),
+	(restore_selection): Helper functions for preserving selections across
+	query model rebuilds.
+	(rebuild_output_model):  New function for creating a query model to
+	use as the display model for a source using the browser.
+	(rebuild_child_model): Add a call to rebuild_output_model, add missing
+	g_object_unrefs, reuse the parent's query model when there's no
+	selection, and use ignore_selection_changes and restore_selection.
+	(rb_library_browser_set_selection): rebuild_child_model emits the
+	changed signal, so no need to do it here.
+	(rb_library_browser_set_model): Add missing g_object_unrefs, and use
+	ignore_selection_changes and restore_selection. 
+	* widgets/rb-library-browser.h: Remove 'changed' signal, and add a
+	flag to rb_library_browser_set_model indicating whether the query is
+	asynchronous.
+
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_dispose):
+	(rb_static_playlist_source_constructor):  Add an extra reference on
+	the base model, so it doesn't vanish when we set a new display model
+	based on a search or browser selection.
+	(impl_search): Ensure the search_text field in the source is NULL if
+	the search box is empty.
+	(construct_query_from_selection),
+	(rb_static_playlist_source_do_query): Use the query model constructed
+	from the search as the input model for the browser.
+	(rb_static_playlist_source_browser_changed_cb): Use the browser's
+	output model as the query model for the source.
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_finalize): Free more stuff.
+	(rb_auto_playlist_source_constructor),
+	(rb_auto_playlist_source_browser_changed_cb):
+	Update for rb-library-browser changes, use the browser's output query
+	model as the query model for the source.
+	(impl_reset_filters), (impl_search), 
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query):
+	Use the query model constructed from the search text as the input to
+	the library browser, and when adding text to an existing search, apply
+	the new query to the existing query model.
+	
+	* sources/rb-library-source.c: (rb_library_source_dispose):
+	(rb_library_source_finalize): Chain dispose up to the parent class.
+	(rb_library_source_constructor): Update for rb-library-browser
+	changes. 
+	(impl_search): Ensure search_text is NULL if the search box is empty,
+	and use the subset flag to _do_query if text has been appended to an
+	existing search.
+	(search_action_changed), (impl_reset_filters):
+	(rb_library_source_browser_changed_cb),
+	(rb_library_source_do_query): Use the browser's output model as the
+	query model for the source.
+
+	Rework library and playlist sources to use a single query chain,
+	and to limit the entries shown in property views based on the search
+	terms.  Fixes bug #322787.
+
+2006-03-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* configure.ac:  Enable metadata helper by default, and fix a typo.
 
 2006-03-13  James Livingston  <jrl@ids.org.au>
