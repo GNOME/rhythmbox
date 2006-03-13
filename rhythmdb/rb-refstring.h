@@ -24,82 +24,23 @@
 #ifndef __RB_REFSTRING_H
 #define __RB_REFSTRING_H
 
-typedef struct
-{
-	gint refcount;
-	char *folded;
-	char *sortkey;
-	char value[1];
-} RBRefString;
+typedef struct RBRefString RBRefString;
 
 
-void				rb_refstring_system_init (void);
-void				rb_refstring_system_shutdown (void);
+void		rb_refstring_system_init (void);
+void		rb_refstring_system_shutdown (void);
 
-G_INLINE_FUNC RBRefString *	rb_refstring_new (const char *init);
-RBRefString *			rb_refstring_new_full (const char *init, gboolean compute_sortdata);
+RBRefString *	rb_refstring_new (const char *init);
 
-G_INLINE_FUNC RBRefString *	rb_refstring_ref (RBRefString *val);
-G_INLINE_FUNC void		rb_refstring_unref (RBRefString *val);
-
-
-G_INLINE_FUNC const char *	rb_refstring_get (const RBRefString *val);
-G_INLINE_FUNC const char *	rb_refstring_get_folded (const RBRefString *val);
-G_INLINE_FUNC const char *	rb_refstring_get_sort_key (const RBRefString *val);
-
-G_INLINE_FUNC guint		rb_refstring_hash (gconstpointer a);
-G_INLINE_FUNC gboolean		rb_refstring_equal (gconstpointer a, gconstpointer b);
+RBRefString *	rb_refstring_ref (RBRefString *val);
+void		rb_refstring_unref (RBRefString *val);
 
 
-#if defined (G_CAN_INLINE) || defined (G_HAVE_INLINE ) || defined (__RB_REFSTRING_C__)
+const char *	rb_refstring_get (const RBRefString *val);
+const char *	rb_refstring_get_folded (RBRefString *val);
+const char *	rb_refstring_get_sort_key (RBRefString *val);
 
-G_INLINE_FUNC RBRefString *
-rb_refstring_new (const char *init)
-{
-	return rb_refstring_new_full (init, TRUE);
-}
-
-G_INLINE_FUNC RBRefString *
-rb_refstring_ref (RBRefString *val)
-{
-	g_atomic_int_inc (&val->refcount);
-	return val;
-}
-
-G_INLINE_FUNC const char *
-rb_refstring_get (const RBRefString *val)
-{
-	return val ? val->value : NULL;
-}
-
-G_INLINE_FUNC const char *
-rb_refstring_get_folded (const RBRefString *val)
-{
-	return val ? val->folded : NULL;
-}
-
-G_INLINE_FUNC const char *
-rb_refstring_get_sort_key (const RBRefString *val)
-{
-	return val ? val->sortkey : NULL;
-}
-
-G_INLINE_FUNC guint
-rb_refstring_hash (gconstpointer p)
-{
-	const RBRefString *ref = p;
-	return g_str_hash (rb_refstring_get (ref));
-}
-
-G_INLINE_FUNC gboolean
-rb_refstring_equal (gconstpointer ap, gconstpointer bp)
-{
-	const RBRefString *a = ap;
-	const RBRefString *b = bp;
-	return g_str_equal (rb_refstring_get (a),
-			    rb_refstring_get (b));
-}
-
-#endif
+guint rb_refstring_hash (gconstpointer p);
+gboolean rb_refstring_equal (gconstpointer ap, gconstpointer bp);
 
 #endif

@@ -1,3 +1,18 @@
+2006-03-13  James Livingston  <jrl@ids.org.au>
+
+	Make RBRefStrings lazily create the folded and sort-key strings when
+	they are first used. This will same some memory by not creating ones
+	that are never used, and delaying some of the others to when the user
+	resorts or performs a similar action. Fixes bug 332992.
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_free),
+	(rb_refstring_system_init), (rb_refstring_new), (rb_refstring_ref),
+	(rb_refstring_get), (rb_refstring_get_folded),
+	(rb_refstring_get_sort_key), (rb_refstring_hash),
+	(rb_refstring_equal):
+	* rhythmdb/rb-refstring.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_sync_mirrored):
+
 2006-03-12  William Jon McCann  <mccann@jhu.edu>
 
 	* data/ui/rhythmbox-ui.xml:

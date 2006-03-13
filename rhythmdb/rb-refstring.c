@@ -25,26 +25,33 @@
 #include <string.h>
 #include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-refstring.h"
 
 GHashTable *rb_refstrings;
 GMutex *rb_refstrings_mutex;
 
-#define	G_IMPLEMENT_INLINES 1
-#define	__RB_REFSTRING_C__
-#include "rb-refstring.h"
-#undef G_IMPLEMENT_INLINES
+
+struct RBRefString
+{
+	gint refcount;
+	char *folded;
+	char *sortkey;
+	char value[1];
+};
 
 static void
 rb_refstring_free (RBRefString *refstr)
 {
 	refstr->refcount = 0xdeadbeef;
 	g_free (refstr->folded);
+	refstr->folded = NULL;
 	g_free (refstr->sortkey);
+	refstr->sortkey = NULL;
 	g_free (refstr);
 }
 
 void
-rb_refstring_system_init (void)
+rb_refstring_system_init ()
 {
 	rb_refstrings_mutex = g_mutex_new ();
 
@@ -53,34 +60,26 @@ rb_refstring_system_init (void)
 }
 
 RBRefString *
-rb_refstring_new_full (const char *init, gboolean compute_sortdata)
+rb_refstring_new (const char *init)
 {
 	RBRefString *ret;
 
 	g_mutex_lock (rb_refstrings_mutex);
 	ret = g_hash_table_lookup (rb_refstrings, init);
-	g_mutex_unlock (rb_refstrings_mutex);
 
 	if (ret) {
 		rb_refstring_ref (ret);
+		g_mutex_unlock (rb_refstrings_mutex);
 		return ret;
 	}
-	
-	ret = g_malloc (sizeof (RBRefString) + strlen (init));
-	
-	ret->refcount = 1;
-	
-	if (compute_sortdata) {
-		ret->folded = rb_search_fold (init);
-		ret->sortkey = rb_utf8_collate_key_for_filename (ret->folded, -1);
-	} else {
-		ret->folded = NULL;
-		ret->sortkey = NULL;
-	}
-	
-	strcpy (ret->value, init);
 
-	g_mutex_lock (rb_refstrings_mutex);
+	ret = g_malloc (sizeof (RBRefString) + strlen (init));
+
+	strcpy (ret->value, init);
+	ret->refcount = 1;
+	ret->folded = NULL;
+	ret->sortkey = NULL;
+
 	g_hash_table_insert (rb_refstrings, ret->value, ret);
 	g_mutex_unlock (rb_refstrings_mutex);
 	return ret;
@@ -106,3 +105,87 @@ rb_refstring_system_shutdown (void)
 	g_mutex_free (rb_refstrings_mutex);
 }
 	
+
+RBRefString *
+rb_refstring_ref (RBRefString *val)
+{
+	g_atomic_int_inc (&val->refcount);
+	return val;
+}
+
+const char *
+rb_refstring_get (const RBRefString *val)
+{
+	return val ? val->value : NULL;
+}
+
+
+/*
+ * The next two functions will compute the values if they haven't
+ * been already done. Using g_atomic_* is much more efficient than
+ * using mutexes (since mutexes may require kernel calls) and these
+ * get called often.
+ */
+
+const char *
+rb_refstring_get_folded (RBRefString *val)
+{
+	const char *string;
+
+	if (val == NULL)
+		return NULL;
+
+	string = (const char*)g_atomic_pointer_get (&val->folded);
+	if (string == NULL) {
+		char *newstring;
+
+		newstring = rb_search_fold (rb_refstring_get (val));
+		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&val->folded, NULL, newstring)) {
+			string = newstring;
+		} else {
+			g_free (newstring);
+			string = (const char *)g_atomic_pointer_get (&val->folded);
+			g_assert (string);
+		}
+	}
+
+	return string;
+}
+
+const char *
+rb_refstring_get_sort_key (RBRefString *val)
+{
+	const char *string;
+
+	if (val == NULL)
+		return NULL;
+
+	string = (const char*)g_atomic_pointer_get (&val->sortkey);
+	if (string == NULL) {
+		char *newstring;
+
+		newstring = rb_utf8_collate_key_for_filename (rb_refstring_get_folded (val), -1);
+		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&val->sortkey, NULL, newstring)) {
+			string = newstring;
+		} else {
+			g_free (newstring);
+			string = (const char*)g_atomic_pointer_get (&val->sortkey);
+			g_assert (string);
+		}
+	}
+
+	return string;
+}
+
+guint
+rb_refstring_hash (gconstpointer p)
+{
+	const RBRefString *ref = p;
+	return g_str_hash (rb_refstring_get (ref));
+}
+
+gboolean
+rb_refstring_equal (gconstpointer ap, gconstpointer bp)
+{
+	return (ap == bp);
+}

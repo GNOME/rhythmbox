@@ -2658,10 +2658,10 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	{
 			rb_refstring_unref (entry->last_played_str);
 		if (entry->last_played == 0)
-			entry->last_played_str = rb_refstring_new_full (never, FALSE);
+			entry->last_played_str = rb_refstring_new (never);
 		else {
 			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_played));
-			entry->last_played_str = rb_refstring_new_full (val, FALSE);
+			entry->last_played_str = rb_refstring_new (val);
 			g_free (val);
 		}
 		break;
@@ -2670,7 +2670,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	{
 		rb_refstring_unref (entry->first_seen_str);
 		val = eel_strdup_strftime (format, localtime ((glong*)&entry->first_seen));
-		entry->first_seen_str = rb_refstring_new_full (val, FALSE);
+		entry->first_seen_str = rb_refstring_new (val);
 		g_free (val);
 		break;
 	}
@@ -2680,7 +2680,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		rb_refstring_unref (entry->last_seen_str);
 		if (entry->hidden) {
 			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_seen));
-			entry->last_seen_str = rb_refstring_new_full (val, FALSE);
+			entry->last_seen_str = rb_refstring_new (val);
 			g_free (val);
 		} else {
 			entry->last_seen_str = NULL;
