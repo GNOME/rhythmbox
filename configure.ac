@@ -408,7 +408,7 @@ if test "x$enable_daap" != "xno"; then
 		enable_daap=no
 	elif test x"$have_mdns" = xno; then
 		if test "x$enable_daap" = "xyes"; then
-			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implentation found.  Install Howl or Avahi])
+			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Howl or Avahi])
 		fi
 		enable_daap=no
 	else
@@ -585,7 +585,8 @@ AC_ARG_WITH(metadata-helper,
 	    AC_HELP_STRING([--with-metadata-helper],
 	    		   [Use a separate process for metadata reading]),,
 	    with_metadata_helper=auto)
-if test "x$with_metadata_helper" = xyes; then
+enable_metadata_helper=no
+if test "x$with_metadata_helper" != xno; then
 	if test "x$enable_dbus" = xyes; then
 		AC_DEFINE(WITH_METADATA_HELPER, 1, [Define if the metadata helper process is enabled])
 		enable_metadata_helper=yes
