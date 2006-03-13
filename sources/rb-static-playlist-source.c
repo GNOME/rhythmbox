@@ -38,6 +38,7 @@
 
 static GObject *rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 						       GObjectConstructParam *construct_properties);
+static void rb_static_playlist_source_dispose (GObject *object);
 static void rb_static_playlist_source_finalize (GObject *object);
 
 /* source methods */
@@ -48,6 +49,7 @@ static void impl_search (RBSource *asource, const char *search_text);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
+static GPtrArray *construct_query_from_selection (RBStaticPlaylistSource *source);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
@@ -59,7 +61,8 @@ static GList *impl_get_property_views (RBSource *source);
 void rb_static_playlist_source_browser_views_activated_cb (GtkWidget *widget,
 							 RBStaticPlaylistSource *source);
 static void rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *entry,
-							RBStaticPlaylistSource *source);
+							  GParamSpec *pspec,
+							  RBStaticPlaylistSource *source);
 
 static void rb_static_playlist_source_do_query (RBStaticPlaylistSource *source);
 
@@ -103,6 +106,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 	
 	object_class->constructor = rb_static_playlist_source_constructor;
+	object_class->dispose = rb_static_playlist_source_dispose;
 	object_class->finalize = rb_static_playlist_source_finalize;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
@@ -139,6 +143,21 @@ rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 }
 
 static void
+rb_static_playlist_source_dispose (GObject *object)
+{
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
+	if (!priv)
+		return;
+
+	if (priv->base_model) {
+		g_object_unref (G_OBJECT (priv->base_model));
+		priv->base_model = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->finalize (object);
+}
+
+static void
 rb_static_playlist_source_finalize (GObject *object)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
@@ -161,16 +180,17 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (G_OBJECT (priv->base_model), "show-hidden", TRUE, NULL);
+	g_object_ref (G_OBJECT (priv->base_model));
 
 	priv->paned = gtk_vpaned_new ();
 
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)));
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
-	g_signal_connect_object (G_OBJECT (priv->browser), "changed",
+	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
 				 source, 0);
 
-	rb_library_browser_set_model (priv->browser, priv->base_model);	
+	rb_library_browser_set_model (priv->browser, priv->base_model, FALSE);
 	rb_static_playlist_source_do_query (source);
 			 
 	/* reparent the entry view */
@@ -304,23 +324,25 @@ static void
 impl_search (RBSource *source, const char *search_text)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	char *old_search_text = NULL;
 
 	if (search_text == NULL && priv->search_text == NULL)
 		return;
-	if (search_text != NULL && priv->search_text != NULL &&
-	    !strcmp (search_text, priv->search_text))
+	if (search_text != NULL && priv->search_text != NULL
+	    && !strcmp (search_text, priv->search_text))
 		return;
 
-	if (search_text[0] == '\0')
-		search_text = NULL;
+	rb_debug ("doing search for \"%s\"", search_text[0] != '\0' ? search_text : "(NULL)");
 
-	rb_debug ("doing search for \"%s\"", search_text ? search_text : "(NULL)");
+	old_search_text = priv->search_text;
+	if (search_text[0] == '\0') {
+		priv->search_text = NULL;
+	} else {
+		priv->search_text = g_strdup (search_text);
+	}
+	g_free (old_search_text);
 
-	g_free (priv->search_text);
-	priv->search_text = g_strdup (search_text);
 	rb_static_playlist_source_do_query (RB_STATIC_PLAYLIST_SOURCE (source));
-
-	rb_source_notify_filter_changed (source);
 }
 
 static GList *
@@ -347,43 +369,62 @@ impl_browser_toggled (RBSource *source, gboolean enabled)
 		gtk_widget_hide (GTK_WIDGET (priv->browser));
 }
 
-static void
-rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
+static GPtrArray *
+construct_query_from_selection (RBStaticPlaylistSource *source)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
-	RhythmDB *db = rb_playlist_source_get_db (psource);
+	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (psource));
 	GPtrArray *query = NULL;
-	GPtrArray *browser_query;
-	
-	if (priv->filter_model)
-		g_object_unref (priv->filter_model);
-	priv->filter_model = rhythmdb_query_model_new_empty (db);
-	g_object_set (G_OBJECT (priv->filter_model), "base-model", priv->base_model, NULL);
 
 	query = g_ptr_array_new();
 
 	if (priv->search_text) {
 		rhythmdb_query_append (db,
 				       query,
-				       RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_SEARCH_MATCH, priv->search_text,
+				       RHYTHMDB_QUERY_PROP_LIKE,
+				       RHYTHMDB_PROP_SEARCH_MATCH,
+				       priv->search_text,
 				       RHYTHMDB_QUERY_END);
 	}
 
-	browser_query = rb_library_browser_construct_query (priv->browser);
-	rhythmdb_query_concatenate (query, browser_query);
-	rhythmdb_query_free (browser_query);
-
-	g_object_set (G_OBJECT (priv->filter_model), "query", query, NULL);
-	rhythmdb_query_free (query);
-	rhythmdb_query_model_reapply_query (priv->filter_model, TRUE);
-	rb_playlist_source_set_query_model (psource, priv->filter_model);
+	return query;
 }
 
 static void
-rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *entry, RBStaticPlaylistSource *source)
+rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 {
-	rb_static_playlist_source_do_query (source);
+	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
+	RhythmDB *db = rb_playlist_source_get_db (psource);
+	GPtrArray *query;
+	
+	if (priv->filter_model)
+		g_object_unref (priv->filter_model);
+	priv->filter_model = rhythmdb_query_model_new_empty (db);
+	g_object_set (G_OBJECT (priv->filter_model), "base-model", priv->base_model, NULL);
+
+	query = construct_query_from_selection (source);
+	g_object_set (G_OBJECT (priv->filter_model), "query", query, NULL);
+	rhythmdb_query_free (query);
+
+	rhythmdb_query_model_reapply_query (priv->filter_model, TRUE);
+	rb_library_browser_set_model (priv->browser, priv->filter_model, FALSE);
+}
+
+static void
+rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *browser, 
+					      GParamSpec *pspec,
+					      RBStaticPlaylistSource *source)
+{
+	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
+	RhythmDBQueryModel *query_model;
+	
+	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
+	rb_entry_view_set_model (songs, query_model);
+	rb_playlist_source_set_query_model (RB_PLAYLIST_SOURCE (source), query_model);
+	g_object_unref (G_OBJECT (query_model));
+	
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 

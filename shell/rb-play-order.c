@@ -503,7 +503,6 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 
 	if (new_model != NULL) {
 		porder->priv->query_model = new_model;
-		g_object_ref (G_OBJECT (porder->priv->query_model));
 		g_signal_connect_object (G_OBJECT (porder->priv->query_model),
 					 "row-inserted",
 					 G_CALLBACK (rb_play_order_entry_added_cb),

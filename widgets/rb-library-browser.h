@@ -44,14 +44,14 @@ typedef struct
 typedef struct
 {
 	GtkHBoxClass parent;
-
-	void (*changed) (RBLibraryBrowser *entry);
 } RBLibraryBrowserClass;
 
-GType		rb_library_browser_get_type (void);
+GType			rb_library_browser_get_type (void);
 RBLibraryBrowser *	rb_library_browser_new      (RhythmDB *db);
 
-void rb_library_browser_set_model (RBLibraryBrowser *widget, RhythmDBQueryModel *model);
+void 			rb_library_browser_set_model (RBLibraryBrowser *widget, 
+						      RhythmDBQueryModel *model,
+						      gboolean query_pending);
 
 gboolean rb_library_browser_reset (RBLibraryBrowser *widget);
 GPtrArray* rb_library_browser_construct_query (RBLibraryBrowser *widget);

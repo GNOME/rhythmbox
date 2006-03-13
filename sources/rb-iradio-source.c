@@ -47,13 +47,6 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 
-typedef enum
-{
-	RB_IRADIO_QUERY_TYPE_ALL,
-	RB_IRADIO_QUERY_TYPE_GENRE,
-	RB_IRADIO_QUERY_TYPE_SEARCH,
-} RBIRadioQueryType;
-
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
 static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
@@ -102,7 +95,7 @@ static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
 
-static void rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType type);
+static void rb_iradio_source_do_query (RBIRadioSource *source);
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 					     RBIRadioSource *source);
@@ -136,6 +129,7 @@ struct RBIRadioSourcePrivate
 
 	RBPropertyView *genres;
 	RBEntryView *stations;
+	gboolean setting_new_query;
 
 	gboolean initialized;
 
@@ -145,8 +139,6 @@ struct RBIRadioSourcePrivate
 	gboolean firstrun_done;
 	
 	RhythmDBEntryType entry_type;
-
-	RhythmDBQueryModel *all_query;
 };
 
 #define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
@@ -244,10 +236,6 @@ rb_iradio_source_dispose (GObject *object)
 
 	source = RB_IRADIO_SOURCE (object);
 
-	if (source->priv->all_query) {
-		g_object_unref (source->priv->all_query);
-		source->priv->all_query = NULL;
-	}
 	if (source->priv->db) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
@@ -368,7 +356,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 				    source);
 	gtk_widget_show_all (GTK_WIDGET (source));
 
-	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_ALL);
+	rb_iradio_source_do_query (source);
 
 	return G_OBJECT (source);
 }
@@ -516,7 +504,7 @@ impl_search (RBSource *asource, const char *search_text)
 
 	g_free (source->priv->search_text);
 	source->priv->search_text = g_strdup (search_text);
-	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
+	rb_iradio_source_do_query (source);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
@@ -673,9 +661,12 @@ static void
 genre_selected_cb (RBPropertyView *propview, const char *name,
 		   RBIRadioSource *iradio_source)
 {
+	if (iradio_source->priv->setting_new_query)
+		return;
+
 	g_free (iradio_source->priv->selected_genre);
 	iradio_source->priv->selected_genre = g_strdup (name);
-	rb_iradio_source_do_query (iradio_source, RB_IRADIO_QUERY_TYPE_GENRE);
+	rb_iradio_source_do_query (iradio_source);
 
 	rb_source_notify_filter_changed (RB_SOURCE (iradio_source));
 }
@@ -683,10 +674,13 @@ genre_selected_cb (RBPropertyView *propview, const char *name,
 static void
 genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source)
 {
+	if (iradio_source->priv->setting_new_query)
+		return;
+	
 	g_free (iradio_source->priv->selected_genre);
 	iradio_source->priv->selected_genre = NULL;
 
-	rb_iradio_source_do_query (iradio_source, RB_IRADIO_QUERY_TYPE_GENRE);
+	rb_iradio_source_do_query (iradio_source);
 
 	rb_source_notify_filter_changed (RB_SOURCE (iradio_source));
 }
@@ -710,79 +704,105 @@ rb_iradio_source_show_browser (RBIRadioSource *source,
 }
 
 static void
-rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
+rb_iradio_source_do_query (RBIRadioSource *source)
 {
 	RhythmDBEntryType entry_type;
-	RhythmDBQueryModel *query_model;
+	RhythmDBQueryModel *genre_query_model = NULL;
+	RhythmDBQueryModel *station_query_model = NULL;
 	RhythmDBPropertyModel *genre_model;
-	GtkTreeModel *model;
 	GPtrArray *query;
 
-	if ((qtype == RB_IRADIO_QUERY_TYPE_ALL) && (source->priv->all_query)) {
-		rb_debug ("using cached query");
-		rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (source->priv->all_query));
-		return;
-	}
+	/* don't update the selection while we're rebuilding the query */
+	source->priv->setting_new_query = TRUE;
 
+	/* construct and run the query for the search box.
+	 * this is used as the model for the genre view.
+	 */
+	
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
 				      entry_type,
 				      RHYTHMDB_QUERY_END);
-	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	genre_query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
-	if (qtype == RB_IRADIO_QUERY_TYPE_ALL) {
-		rb_debug ("building new all query");
-		rb_property_view_reset (source->priv->genres);
-		g_free (source->priv->selected_genre);
-		source->priv->selected_genre = NULL;
-
-		genre_model = rb_property_view_get_model (source->priv->genres);
-		g_object_set (G_OBJECT (genre_model), "query-model", query_model, NULL);
-		g_object_unref (G_OBJECT (genre_model));
-
-		source->priv->all_query = query_model;
-	} else {
-		if (source->priv->search_text) {
-			GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
-								    RHYTHMDB_QUERY_PROP_LIKE,
-								    RHYTHMDB_PROP_GENRE_FOLDED,
-								    source->priv->search_text,
-								    RHYTHMDB_QUERY_DISJUNCTION,
-								    RHYTHMDB_QUERY_PROP_LIKE,
-								    RHYTHMDB_PROP_TITLE_FOLDED,
-								    source->priv->search_text,
-								    RHYTHMDB_QUERY_END);
-			rhythmdb_query_append (source->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_SUBQUERY,
-					       subquery,
-					       RHYTHMDB_QUERY_END);
-		}
-
-
-		if (source->priv->selected_genre)
-			rhythmdb_query_append (source->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_PROP_EQUALS,
-					       RHYTHMDB_PROP_GENRE,
-					       source->priv->selected_genre,
-					       RHYTHMDB_QUERY_END);
+	if (source->priv->search_text) {
+		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
+							    RHYTHMDB_QUERY_PROP_LIKE,
+							    RHYTHMDB_PROP_GENRE_FOLDED,
+							    source->priv->search_text,
+							    RHYTHMDB_QUERY_DISJUNCTION,
+							    RHYTHMDB_QUERY_PROP_LIKE,
+							    RHYTHMDB_PROP_TITLE_FOLDED,
+							    source->priv->search_text,
+							    RHYTHMDB_QUERY_END);
+		rb_debug ("searching for \"%s\"", source->priv->search_text);
+		rhythmdb_query_append (source->priv->db,
+				       query,
+				       RHYTHMDB_QUERY_SUBQUERY,
+				       subquery,
+				       RHYTHMDB_QUERY_END);
 	}
 
-
-	model = GTK_TREE_MODEL (query_model);
-	
-	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (query_model));
-	g_object_set (G_OBJECT (source), "query-model", query_model, NULL);
+	genre_model = rb_property_view_get_model (source->priv->genres);
+	g_object_set (G_OBJECT (genre_model), "query-model", genre_query_model, NULL);
 
 	rhythmdb_do_full_query_parsed (source->priv->db, 
-				       RHYTHMDB_QUERY_RESULTS (model), 
+				       RHYTHMDB_QUERY_RESULTS (genre_query_model), 
 				       query);
 
 	rhythmdb_query_free (query);
+	query = NULL;
+	
+	/* check the selected genre is still available, and if not, select 'all' */
+	if (source->priv->selected_genre != NULL) {
+		GList *sel = NULL;
+		if (!rhythmdb_property_model_iter_from_string (genre_model,
+							       source->priv->selected_genre,
+							       NULL)) {
+			g_free (source->priv->selected_genre);
+			source->priv->selected_genre = NULL;
+		}
 
+		sel = g_list_prepend (sel, source->priv->selected_genre);
+		rb_property_view_set_selection (source->priv->genres, sel);
+		g_list_free (sel);
+	} 
+	g_object_unref (G_OBJECT (genre_model));
+
+	/* if a genre is selected, construct a new query for it, and create
+	 * a new model based on the search box query model.  otherwise, just
+	 * reuse the search box query model.
+	 */
+	
+	if (source->priv->selected_genre != NULL) {
+		rb_debug ("matching on genre \"%s\"", source->priv->selected_genre);
+		station_query_model = rhythmdb_query_model_new_empty (source->priv->db);
+		query = rhythmdb_query_parse (source->priv->db,
+					      RHYTHMDB_QUERY_PROP_EQUALS,
+					      RHYTHMDB_PROP_GENRE,
+					      source->priv->selected_genre,
+					      RHYTHMDB_QUERY_END);
+
+		g_object_set (station_query_model, 
+			      "query", query,
+			      "base-model", genre_query_model,
+			      NULL);
+		rhythmdb_query_free (query);
+		query = NULL;
+	} else {
+		station_query_model = genre_query_model;
+	}
+
+	rb_entry_view_set_model (source->priv->stations, station_query_model);
+	g_object_set (G_OBJECT (source), "query-model", station_query_model, NULL);
+
+	g_object_unref (G_OBJECT (genre_query_model));
+	if (station_query_model != genre_query_model)
+		g_object_unref (G_OBJECT (station_query_model));
+
+	source->priv->setting_new_query = FALSE;
 }
 
 static void

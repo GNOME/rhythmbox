@@ -52,7 +52,6 @@ static void rb_library_browser_get_property (GObject *object,
 					     GValue *value,
 					     GParamSpec *pspec);
 
-static void rb_library_browser_notify_changed (RBLibraryBrowser *widget);
 static void view_property_selected_cb (RBPropertyView *view,
 				       GList *selection,
 				       RBLibraryBrowser *widget);
@@ -73,7 +72,8 @@ G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
 typedef struct
 {
 	RhythmDB *db;
-	RhythmDBQueryModel *model;
+	RhythmDBQueryModel *input_model;
+	RhythmDBQueryModel *output_model;
 
 	guint browser_view_notify_id;
 	GSList *browser_views_group;
@@ -85,17 +85,11 @@ typedef struct
 
 enum
 {
-	CHANGED,
-	LAST_SIGNAL
-};
-
-enum
-{
 	PROP_0,
-	PROP_DB
+	PROP_DB,
+	PROP_INPUT_MODEL,
+	PROP_OUTPUT_MODEL
 };
-
-static guint rb_library_browser_signals[LAST_SIGNAL] = { 0 };
 
 typedef struct {
 	RhythmDBPropType type;
@@ -126,16 +120,21 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "RhythmDB instance",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_INPUT_MODEL,
+					 g_param_spec_object ("input-model",
+							      "input-model",
+							      "input RhythmDBQueryModel instance",
+							      RHYTHMDB_TYPE_QUERY_MODEL,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_OUTPUT_MODEL,
+					 g_param_spec_object ("output-model",
+							      "output-model",
+							      "output RhythmDBQueryModel instance",
+							      RHYTHMDB_TYPE_QUERY_MODEL,
+							      G_PARAM_READABLE));
 
-	rb_library_browser_signals[CHANGED] =
-		g_signal_new ("changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryBrowserClass, changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 
 	g_type_class_add_private (klass, sizeof (RBLibraryBrowserPrivate));
 }
@@ -248,6 +247,12 @@ rb_library_browser_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, priv->db);
 		break;
+	case PROP_INPUT_MODEL:
+		g_value_set_object (value, priv->input_model);
+		break;
+	case PROP_OUTPUT_MODEL:
+		g_value_set_object (value, priv->output_model);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -332,12 +337,6 @@ view_selection_reset_cb (RBPropertyView *view, RBLibraryBrowser *widget)
 }
 
 static void
-rb_library_browser_notify_changed (RBLibraryBrowser *widget)
-{
-	g_signal_emit (G_OBJECT (widget), rb_library_browser_signals[CHANGED], 0);
-}
-
-static void
 reset_view_cb (RhythmDBPropType prop, RBPropertyView *view, RBLibraryBrowser *widget)
 {
 	rb_property_view_set_selection (view, NULL);
@@ -411,59 +410,179 @@ prop_to_index (RhythmDBPropType type)
 }
 
 static void
-rebuild_child_model (RBLibraryBrowser *widget, gint property_index)
+ignore_selection_changes (RBLibraryBrowser *widget, RBPropertyView *view, gboolean block)
+{
+	if (block) {
+		g_signal_handlers_block_by_func (view, view_selection_reset_cb, widget);
+		g_signal_handlers_block_by_func (view, view_property_selected_cb, widget);
+	} else {
+		g_signal_handlers_unblock_by_func (view, view_selection_reset_cb, widget);
+		g_signal_handlers_unblock_by_func (view, view_property_selected_cb, widget);
+	}
+}
+
+typedef struct {
+	RBLibraryBrowser *widget;
+	RBPropertyView *view;
+	GList *selections;
+	RhythmDBQueryModel *model;
+	guint handler_id;
+} SelectionRestoreData;
+
+static void
+selection_restore_data_destroy (SelectionRestoreData *data)
+{
+	g_object_unref (G_OBJECT (data->widget));
+	g_free (data);
+}
+
+static void
+query_complete_cb (RhythmDBQueryModel *model,
+		   SelectionRestoreData *data)
+{
+	ignore_selection_changes (data->widget, data->view, FALSE);
+	rb_property_view_set_selection (data->view, data->selections);
+
+	g_signal_handler_disconnect (data->model, data->handler_id);
+}
+
+static void
+restore_selection (RBLibraryBrowser *widget,
+		   gint property_index,
+		   gboolean query_pending)
+{
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+	RBPropertyView *view;
+	GList *selections;
+	SelectionRestoreData *data;
+
+	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index].type);
+	selections = g_hash_table_lookup (priv->selections, (gpointer)browser_properties[property_index].type);
+
+	if (query_pending) {
+		g_object_ref (G_OBJECT (widget));
+
+		data = g_new0 (SelectionRestoreData, 1);
+		data->widget = widget;
+		data->view = view;
+		data->selections = selections;
+		data->model = priv->input_model;
+
+		data->handler_id = 
+			g_signal_connect_data (priv->input_model,
+					       "complete",
+					       G_CALLBACK (query_complete_cb),
+					       data,
+					       (GClosureNotify) selection_restore_data_destroy,
+					       0);
+	} else {
+		ignore_selection_changes (widget, view, FALSE);
+		rb_property_view_set_selection (view, selections);
+	}
+}
+
+static void
+rebuild_output_model (RBLibraryBrowser *widget)
+{
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+	RBPropertyView *view;
+	RhythmDBPropertyModel *prop_model;
+	int prop_index = num_browser_properties - 1;
+	GList *selections;
+	RhythmDBQueryModel *base_model;
+	GPtrArray *query;
+
+	if (priv->output_model)
+		g_object_unref (G_OBJECT (priv->output_model));
+
+	/* get the query model for the previous property view */
+	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[prop_index].type);
+	prop_model = rb_property_view_get_model (view);
+	g_object_get (G_OBJECT (prop_model), "query-model", &base_model, NULL);
+	g_object_unref (G_OBJECT (prop_model));
+
+	selections = g_hash_table_lookup (priv->selections, (gpointer)browser_properties[prop_index].type);
+	if (selections != NULL) {
+		query = g_ptr_array_new ();
+		rhythmdb_query_append_prop_multiple (priv->db,
+						     query,
+						     browser_properties[prop_index].type,
+						     selections);
+
+		priv->output_model = rhythmdb_query_model_new_empty (priv->db);
+		g_object_set (G_OBJECT (priv->output_model), "base-model", base_model, NULL);
+
+
+		g_object_set (G_OBJECT (priv->output_model), "query", query, NULL);
+		rhythmdb_query_model_reapply_query (priv->output_model, TRUE);
+		rhythmdb_query_free (query);
+	} else {
+		priv->output_model = base_model;
+		g_object_ref (G_OBJECT (priv->output_model));
+	}
+
+	g_object_notify (G_OBJECT (widget), "output-model");
+	g_object_unref (G_OBJECT (base_model));
+}
+
+static void
+rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean query_pending)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	RhythmDBPropertyModel *prop_model;
 	RhythmDBQueryModel *base_model, *child_model;
 	RBPropertyView *view;
 	GPtrArray *query;
-	GList *selections, *saved_selections;
+	GList *selections;
 
 	g_assert (property_index >= 0);
 	g_assert (property_index < num_browser_properties);
 
 	/* there is no model after the last one to update*/
-	if (property_index == num_browser_properties - 1)
+	if (property_index == num_browser_properties - 1) {
+		rebuild_output_model (widget);
 		return;
+	}
 
-	/* save the selections of the next model */
-	saved_selections = g_hash_table_lookup (priv->selections,
-						(gpointer)browser_properties[property_index+1].type);
-	saved_selections = rb_string_list_copy (saved_selections);
-			
 	/* get the query model for the previous property view */
 	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index].type);
 	prop_model = rb_property_view_get_model (view);
 	g_object_get (G_OBJECT (prop_model), "query-model", &base_model, NULL);
+	g_object_unref (G_OBJECT (prop_model));
 
 	/* create a new query model based on it, filtered by the selections of the previous property view */
 	selections = g_hash_table_lookup (priv->selections, (gpointer)browser_properties[property_index].type);
-	query = g_ptr_array_new ();
-	rhythmdb_query_append_prop_multiple (priv->db,
-					     query,
-					     browser_properties[property_index].type,
-					     selections);
+	if (selections != NULL) {
+		query = g_ptr_array_new ();
+		rhythmdb_query_append_prop_multiple (priv->db,
+						     query,
+						     browser_properties[property_index].type,
+						     selections);
 
-	child_model = rhythmdb_query_model_new_empty (priv->db);
-	g_object_set (G_OBJECT (child_model), "base-model", base_model, NULL);
-	g_object_unref (G_OBJECT (base_model));
+		child_model = rhythmdb_query_model_new_empty (priv->db);
+		g_object_set (G_OBJECT (child_model), "base-model", base_model, NULL);
 
-	g_object_set (G_OBJECT (child_model), "query", query, NULL);
-	rhythmdb_query_model_reapply_query (child_model, TRUE);
-	rhythmdb_query_free (query);
+		g_object_set (G_OBJECT (child_model), "query", query, NULL);
+		rhythmdb_query_model_reapply_query (child_model, TRUE);
+		rhythmdb_query_free (query);
+	} else {
+		child_model = base_model;
+	}
 	
 	/* apply it as the query model of the current property view */
 	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index+1].type);
+	ignore_selection_changes (widget, view, TRUE);
+
 	prop_model = rb_property_view_get_model (view);
 	g_object_set (G_OBJECT (prop_model), "query-model", child_model, NULL);
-	g_object_unref (G_OBJECT (child_model));
+	g_object_unref (G_OBJECT (prop_model));
 
-	rebuild_child_model (widget, property_index + 1);
+	g_object_unref (G_OBJECT (base_model));
+	if (child_model != base_model)
+		g_object_unref (G_OBJECT (child_model));
 
-	/* restore the old selection */
-	rb_property_view_set_selection (view, saved_selections);
-	rb_list_deep_free (saved_selections);
+	rebuild_child_model (widget, property_index + 1, query_pending);
+	restore_selection (widget, property_index + 1, query_pending);
 }
 
 void
@@ -482,8 +601,7 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget, RhythmDBPropType typ
 	else
 		g_hash_table_remove (priv->selections, (gpointer)type);
 
-	rebuild_child_model (widget, prop_to_index (type));
-	rb_library_browser_notify_changed (widget);
+	rebuild_child_model (widget, prop_to_index (type), FALSE);
 }
 
 GList*
@@ -495,21 +613,28 @@ rb_library_browser_get_property_views (RBLibraryBrowser *widget)
 }
 
 void
-rb_library_browser_set_model (RBLibraryBrowser *widget, RhythmDBQueryModel *model)
+rb_library_browser_set_model (RBLibraryBrowser *widget, 
+			      RhythmDBQueryModel *model,
+			      gboolean query_pending)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	RBPropertyView *view;
 	RhythmDBPropertyModel *prop_model;
-	
-	if (priv->model)
-		g_object_unref (G_OBJECT (priv->model));
 
-	priv->model = model;
-	g_object_ref (model);
+	if (priv->input_model)
+		g_object_unref (G_OBJECT (priv->input_model));
+
+	priv->input_model = model;
+	g_object_ref (G_OBJECT (model));
 
 	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[0].type);
-	prop_model = rb_property_view_get_model (view);
-	g_object_set (G_OBJECT (prop_model), "query-model", priv->model, NULL);
+	ignore_selection_changes (widget, view, TRUE);
 
-	rebuild_child_model (widget, 0);
+	prop_model = rb_property_view_get_model (view);
+	g_object_set (G_OBJECT (prop_model), "query-model", priv->input_model, NULL);
+	g_object_unref (G_OBJECT (prop_model));
+
+	rebuild_child_model (widget, 0, query_pending);
+	restore_selection (widget, 0, query_pending);
 }
+

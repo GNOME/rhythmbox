@@ -54,6 +54,7 @@ G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryModel, rhythmdb_query_model, G_TYPE_OBJECT,
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
 static GObject *rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
 						  GObjectConstructParam *construct_properties);
+static void rhythmdb_query_model_dispose (GObject *object);
 static void rhythmdb_query_model_finalize (GObject *object);
 static void rhythmdb_query_model_set_property (GObject *object,
 					       guint prop_id,
@@ -252,6 +253,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 	object_class->set_property = rhythmdb_query_model_set_property;
 	object_class->get_property = rhythmdb_query_model_get_property;
 
+	object_class->dispose = rhythmdb_query_model_dispose;
 	object_class->finalize = rhythmdb_query_model_finalize;
 	object_class->constructor = rhythmdb_query_model_constructor;
 
@@ -616,7 +618,7 @@ _unref_entry (RhythmDBEntry *entry, gpointer stuff, RhythmDB *db)
 }
 
 static void
-rhythmdb_query_model_finalize (GObject *object)
+rhythmdb_query_model_dispose (GObject *object)
 {
 	RhythmDBQueryModel *model;
 
@@ -627,21 +629,8 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	g_return_if_fail (model->priv != NULL);
 
-	rb_debug ("finalizing query model");
-
-	g_hash_table_foreach (model->priv->reverse_map, (GHFunc) _unref_entry, model->priv->db);
-	g_hash_table_foreach (model->priv->limited_reverse_map, (GHFunc) _unref_entry, model->priv->db);
+	rb_debug ("disposing query model %p", object);
 		
-	g_hash_table_destroy (model->priv->reverse_map);
-	g_sequence_free (model->priv->entries);
-	g_hash_table_destroy (model->priv->limited_reverse_map);
-	g_sequence_free (model->priv->limited_entries);
-
-	if (model->priv->query)
-		rhythmdb_query_free (model->priv->query);
-	if (model->priv->original_query)
-		rhythmdb_query_free (model->priv->original_query);
-
 	if (model->priv->base_model) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_row_inserted),
@@ -662,8 +651,37 @@ rhythmdb_query_model_finalize (GObject *object)
 						      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 						      model);
 		g_object_unref (G_OBJECT (model->priv->base_model));
+		model->priv->base_model = NULL;
 	}
+	
+	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->dispose (object);
+}
 
+static void
+rhythmdb_query_model_finalize (GObject *object)
+{
+	RhythmDBQueryModel *model;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RHYTHMDB_IS_QUERY_MODEL (object));
+
+	model = RHYTHMDB_QUERY_MODEL (object);
+
+	g_return_if_fail (model->priv != NULL);
+
+	rb_debug ("finalizing query model %p", object);
+
+	g_hash_table_foreach (model->priv->reverse_map, (GHFunc) _unref_entry, model->priv->db);
+	g_hash_table_destroy (model->priv->reverse_map);
+	g_sequence_free (model->priv->entries);
+	g_hash_table_foreach (model->priv->limited_reverse_map, (GHFunc) _unref_entry, model->priv->db);
+	g_hash_table_destroy (model->priv->limited_reverse_map);
+	g_sequence_free (model->priv->limited_entries);
+
+	if (model->priv->query)
+		rhythmdb_query_free (model->priv->query);
+	if (model->priv->original_query)
+		rhythmdb_query_free (model->priv->original_query);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }

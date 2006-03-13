@@ -74,6 +74,7 @@ static void rb_library_source_library_location_cb (GtkEntry *entry,
 						   GdkEventFocus *event,
 						   RBLibrarySource *source);
 static void rb_library_source_browser_changed_cb (RBLibraryBrowser *entry,
+						  GParamSpec *param,
 						  RBLibrarySource *source);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
@@ -110,11 +111,9 @@ static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 static const char * impl_get_paned_key (RBLibrarySource *source);
 static GList *impl_get_search_actions (RBSource *source);
-static void rb_library_source_do_query (RBLibrarySource *source);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
-static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
 static void songs_view_drag_data_received_cb (GtkWidget *widget,
 					      GdkDragContext *dc,
 					      gint x, gint y,
@@ -123,6 +122,8 @@ static void songs_view_drag_data_received_cb (GtkWidget *widget,
 					      RBLibrarySource *source);
 static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 						RBLibrarySource *source);
+static void rb_library_source_do_query (RBLibrarySource *source,
+					gboolean subset);
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
@@ -327,6 +328,13 @@ rb_library_source_dispose (GObject *object)
 		g_free (source->priv->search_text);
 		source->priv->search_text = NULL;
 	}
+	
+	if (source->priv->cached_all_query) {
+		g_object_unref (G_OBJECT (source->priv->cached_all_query));
+		source->priv->cached_all_query = NULL;
+	}
+	
+	G_OBJECT_CLASS (rb_library_source_parent_class)->dispose (object);
 }
 
 static void
@@ -350,9 +358,6 @@ rb_library_source_finalize (GObject *object)
 	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
 
 	g_free (source->priv->sorting_key);
-
-	if (source->priv->cached_all_query)
-		g_object_unref (G_OBJECT (source->priv->cached_all_query));
 
 	G_OBJECT_CLASS (rb_library_source_parent_class)->finalize (object);
 }
@@ -408,7 +413,7 @@ search_action_changed (GtkRadioAction  *action,
 	if (active) {
 		/* update query */
 		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
-		rb_library_source_do_query (source);
+		rb_library_source_do_query (source, FALSE);
 		rb_source_notify_filter_changed (RB_SOURCE (source));
 	}
 }
@@ -450,7 +455,7 @@ rb_library_source_constructor (GType type,
 
 	source->priv->browser = rb_library_browser_new (source->priv->db);
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->browser), TRUE, FALSE);
-	g_signal_connect_object (G_OBJECT (source->priv->browser), "changed",
+	g_signal_connect_object (G_OBJECT (source->priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_library_source_browser_changed_cb),
 				 source, 0);
 
@@ -541,12 +546,11 @@ rb_library_source_constructor (GType type,
 				    (GConfClientNotifyFunc) rb_library_source_library_location_changed, source);
 
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
+	rb_library_browser_set_model (source->priv->browser, source->priv->cached_all_query, TRUE);
 	rhythmdb_do_full_query_async (source->priv->db,
 				      RHYTHMDB_QUERY_RESULTS (source->priv->cached_all_query),
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, source->priv->entry_type,
 				      RHYTHMDB_QUERY_END);
-	rb_library_browser_set_model (source->priv->browser, source->priv->cached_all_query);
-	rb_library_source_do_query (source);
 
 	return G_OBJECT (source);
 }
@@ -690,31 +694,23 @@ static void
 impl_search (RBSource *asource, const char *search_text)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	char *old_search_text = NULL;
+	gboolean subset = FALSE;
 
-	if (source->priv->initialized) {
-		if (search_text == NULL && source->priv->search_text == NULL)
-			return;
-		if (search_text != NULL &&
-		    source->priv->search_text != NULL
-		    && !strcmp (search_text, source->priv->search_text))
-			return;
-	}
+	rb_debug ("doing search for \"%s\"", search_text[0] != '\0' ? search_text : "(NULL)");
 
-	source->priv->initialized = TRUE;
-	if (search_text != NULL && search_text[0] == '\0')
-		search_text = NULL;
-
-	rb_debug ("doing search for \"%s\"", search_text ? search_text : "(NULL)");
-
-	g_free (source->priv->search_text);
-	if (search_text)
-		source->priv->search_text = g_utf8_casefold (search_text, -1);
-	else
+	old_search_text = source->priv->search_text;
+	if (search_text[0] == '\0') {
 		source->priv->search_text = NULL;
-	source->priv->search_text = g_strdup (search_text);
-	rb_library_source_do_query (source);
+	} else {
+		source->priv->search_text = g_strdup (search_text);
 
-	rb_source_notify_filter_changed (RB_SOURCE (source));
+		if (old_search_text != NULL)
+			subset = (g_str_has_prefix (source->priv->search_text, old_search_text));
+	}
+	g_free (old_search_text);
+
+	rb_library_source_do_query (source, subset);
 }
 
 
@@ -753,10 +749,8 @@ impl_reset_filters (RBSource *asource)
 	g_free (source->priv->search_text);
 	source->priv->search_text = NULL;
 #endif
-	if (changed) {
-		rb_library_source_do_query (source);
-		rb_source_notify_filter_changed (RB_SOURCE (source));
-	}
+	if (changed)
+		rb_library_source_do_query (source, FALSE);
 }
   
 static GtkWidget *
@@ -1177,80 +1171,6 @@ rb_library_source_has_drop_support (RBLibrarySource *source)
 	return klass->impl_has_drop_support (source);
 }
 
-static GPtrArray *
-construct_query_from_selection (RBLibrarySource *source)
-{
-	GPtrArray *query;
-	RhythmDBEntryType entry_type;
-	GPtrArray *browser_query;
-
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-	query = rhythmdb_query_parse (source->priv->db,
-				      RHYTHMDB_QUERY_PROP_EQUALS,
-				      RHYTHMDB_PROP_TYPE,
-				      entry_type,
-				      RHYTHMDB_QUERY_END);
-
-	/* select where type="song"
-	 */
-
-	if (source->priv->search_text) {
-		GPtrArray *subquery;
-
-		subquery = rhythmdb_query_parse (source->priv->db,
-						 RHYTHMDB_QUERY_PROP_LIKE,
-						 source->priv->search_prop,
-						 source->priv->search_text,
-						 RHYTHMDB_QUERY_END);
-		rhythmdb_query_append (source->priv->db,
-				       query,
-				       RHYTHMDB_QUERY_SUBQUERY,
-				       subquery,
-				       RHYTHMDB_QUERY_END);
-		/* select where type="song" and
-		 *  (genre like "foo" or artist like "foo" or album like "foo")
-		 */
-	}
-
-	
-	browser_query = rb_library_browser_construct_query (source->priv->browser);
-	rhythmdb_query_concatenate (query, browser_query);
-	rhythmdb_query_free (browser_query);
-
-	return query;
-}
-
-static void
-rb_library_source_do_query (RBLibrarySource *source)
-{
-	RhythmDBQueryModel *query_model;
-	gboolean is_all_query;
-
-	is_all_query = (!rb_library_browser_has_selection (source->priv->browser) &&
-			(source->priv->search_text == NULL));
-
-	if (is_all_query) {
-		g_object_ref (source->priv->cached_all_query);
-		query_model = source->priv->cached_all_query;
-	} else {
-		GPtrArray *query;
-	
-		query_model = rhythmdb_query_model_new_empty (source->priv->db);
-
-		query = construct_query_from_selection (source);
-		rhythmdb_do_full_query_async_parsed (source->priv->db, 
-						     RHYTHMDB_QUERY_RESULTS (query_model), 
-						     query);
-		rhythmdb_query_free (query);
-	}
-
-	rb_debug ("setting query model");
-	rb_entry_view_set_model (source->priv->songs, query_model);
-	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
-
-	g_object_unref (G_OBJECT (query_model));
-}
-
 static void
 songs_view_drag_data_received_cb (GtkWidget *widget,
 				  GdkDragContext *dc,
@@ -1264,8 +1184,63 @@ songs_view_drag_data_received_cb (GtkWidget *widget,
 }
 
 static void
-rb_library_source_browser_changed_cb (RBLibraryBrowser *entry, RBLibrarySource *source)
+rb_library_source_browser_changed_cb (RBLibraryBrowser *browser, 
+				      GParamSpec *pspec,
+				      RBLibrarySource *source)
 {
-	rb_library_source_do_query (source);
+	RhythmDBQueryModel *query_model;
+	
+	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
+	rb_entry_view_set_model (source->priv->songs, query_model);
+	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
+	g_object_unref (G_OBJECT (query_model));
+	
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
+
+static void
+rb_library_source_do_query (RBLibrarySource *source, gboolean subset)
+{
+	RhythmDBQueryModel *query_model;
+	GPtrArray *query;
+	RhythmDBEntryType entry_type;
+	
+	/* use the cached 'all' query to optimise the no-search case */
+	if (!source->priv->search_text) {
+		rb_library_browser_set_model (source->priv->browser, 
+					      source->priv->cached_all_query, 
+					      FALSE);
+		return;
+	}
+	
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	query = rhythmdb_query_parse (source->priv->db,
+				      RHYTHMDB_QUERY_PROP_EQUALS,
+				      RHYTHMDB_PROP_TYPE,
+				      entry_type,
+				      RHYTHMDB_QUERY_PROP_LIKE,
+				      source->priv->search_prop,
+				      source->priv->search_text,
+				      RHYTHMDB_QUERY_END);
+
+	if (subset) {
+		/* if we're appending text to an existing search string, the results will be a subset
+		 * of the existing results, so we can just change the query on the existing query 
+		 * model and reapply the query.
+		 */
+		g_object_get (G_OBJECT (source->priv->browser), "input-model", &query_model, NULL);
+		g_object_set (G_OBJECT (query_model), "query", query, NULL);
+		rhythmdb_query_model_reapply_query (query_model, FALSE);
+		g_object_unref (G_OBJECT (query_model));
+	} else {
+		/* otherwise build a query based on the search text and feed it to the browser */
+		query_model = rhythmdb_query_model_new_empty (source->priv->db);
+		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
+		rhythmdb_do_full_query_async_parsed (source->priv->db, 
+						     RHYTHMDB_QUERY_RESULTS (query_model), 
+						     query); 
+		g_object_unref (G_OBJECT (query_model));
+	}
+	rhythmdb_query_free (query); 
+}
+
