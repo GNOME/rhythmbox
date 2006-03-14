@@ -1,3 +1,12 @@
+2006-03-14  William Jon McCann  <mccann@jhu.edu>
+
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_source):
+	* widgets/rb-header.c: (rb_header_class_init), (rb_header_init),
+	(rb_header_set_property), (rb_header_get_property),
+	(rb_header_sync):
+	Remove the GnomeUrl song links until we can do it properly.
+	Fixes #334453.
+
 2006-03-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-source-header.c: (rb_source_header_clear_search):

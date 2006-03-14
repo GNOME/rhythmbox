@@ -1953,14 +1953,6 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 		artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
 	}
 
-	if (player->priv->have_url)
-		rb_header_set_urldata (player->priv->header_widget,
-				       entry_title,
-				       player->priv->url);
-	else
-		rb_header_set_urldata (player->priv->header_widget,
-				       NULL, NULL);
-
 	if (player->priv->song && entry_title)
 		title = g_strdup_printf ("%s (%s)", player->priv->song,
 					 entry_title);

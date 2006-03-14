@@ -28,9 +28,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libgnomeui/libgnomeui.h> /* for GnomeUrl */
 
-#include "rb-song-display-box.h"
 #include "rb-stock-icons.h"
 #include "rb-header.h"
 #include "rb-debug.h"
@@ -71,7 +69,6 @@ struct RBHeaderPrivate
 	RhythmDBEntry *entry;
 
 	char *title;
-	char *urltext, *urllink;
 
 	RBPlayer *mmplayer;
 	gulong tick_id;
@@ -92,12 +89,6 @@ struct RBHeaderPrivate
 	guint value_changed_update_handler;
 	GtkWidget *elapsed;
 
-	RBSongDisplayBox *displaybox;
-	gboolean displaybox_shown;
-	GtkWidget *urlline;
-	gboolean urlline_shown;
-	GnomeHRef *url;
-
 	RBHeaderState *state;
 };
 
@@ -110,11 +101,10 @@ enum
 	PROP_PLAYER,
 	PROP_ENTRY,
 	PROP_TITLE,
-	PROP_URLTEXT,
-	PROP_URLLINK,
 };
 
 #define SONG_MARKUP(xSONG) g_strdup_printf ("<big><b>%s</b></big>", xSONG);
+#define SONG_MARKUP_ALBUM_ARTIST(xSONG, xALBUM, xARTIST) g_strdup_printf ("<big><b>%s</b></big>  <span size=\"smaller\">%s <u>%s</u> %s <u>%s</u></span>", xSONG, _("from"), xALBUM, _("by"), xARTIST);
 
 G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
@@ -157,20 +147,6 @@ rb_header_class_init (RBHeaderClass *klass)
 							      "title",
 							      NULL,
 							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_URLTEXT,
-					 g_param_spec_string ("urltext",
-							      "urltext",
-							      "urltext",
-							      NULL,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_URLLINK,
-					 g_param_spec_string ("urllink",
-							      "urllink",
-							      "urllink",
-							      NULL,
-							      G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBHeaderPrivate));
 }
@@ -183,20 +159,12 @@ rb_header_init (RBHeader *header)
 	 * RBHeader
 	 *   GtkHBox
 	 *     GtkLabel			(priv->song)
-	 *     RBSongDisplayBox		(priv->displaybox)
-	 *       GtkLabel		("from")
-	 *       GtkWidget		(priv->displaybox->album)
-	 *       GtkLabel		("by")
-	 *       GtkWidget		(priv->displaybox->artist)
-	 *     GtkHBox			(priv->urlline)
-	 *       GtkLabel		("Listening to")
-	 *       GnomeHRef		(priv->url)
 	 *   GtkHBox			(priv->timeline)
 	 *     GtkHScale		(priv->scale)
 	 *     GtkAlignment
 	 *       GtkLabel		(priv->elapsed)
 	 */
-	GtkWidget *urlline, *label,  *hbox;
+	GtkWidget *hbox;
 	GtkWidget *vbox;
 	char *s;
 
@@ -217,26 +185,9 @@ rb_header_init (RBHeader *header)
 	header->priv->song = gtk_label_new ("");
  	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
  	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);	
-	gtk_box_pack_start (GTK_BOX (hbox), header->priv->song, FALSE, TRUE, 0);
+	gtk_label_set_ellipsize (GTK_LABEL (header->priv->song), PANGO_ELLIPSIZE_END);
+	gtk_box_pack_start (GTK_BOX (hbox), header->priv->song, TRUE, TRUE, 0);
 	gtk_widget_show (header->priv->song);
-
-	/* Construct the Artist/Album display */
-	header->priv->displaybox = RB_SONG_DISPLAY_BOX (rb_song_display_box_new ());
-	header->priv->displaybox_shown = FALSE;
-	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (header->priv->displaybox), TRUE, TRUE, 0);
-
-	/* Construct the URL display */
-
-	urlline = header->priv->urlline = gtk_hbox_new (FALSE, 2);
-	gtk_box_pack_start (GTK_BOX (hbox), header->priv->urlline, TRUE, TRUE, 0);
-
-	label = gtk_label_new (_("Listening to "));
-	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (label), FALSE, TRUE, 0);
-	header->priv->url = (GnomeHRef *) gnome_href_new ("", "");
-	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (header->priv->url), FALSE, TRUE, 0);
-	header->priv->urlline_shown = FALSE;
-	gtk_widget_show (header->priv->urlline);
-	gtk_widget_set_no_show_all (header->priv->urlline, TRUE);
 
 	/* construct the time display */
 	header->priv->timeline = gtk_hbox_new (FALSE, 3);
@@ -328,14 +279,6 @@ rb_header_set_property (GObject *object,
 		g_free (player->priv->title);
 		player->priv->title = g_value_dup_string (value);
 		break;
-	case PROP_URLTEXT:
-		g_free (player->priv->urltext);
-		player->priv->urltext = g_value_dup_string (value);
-		break;
-	case PROP_URLLINK:
-		g_free (player->priv->urllink);
-		player->priv->urllink = g_value_dup_string (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -362,12 +305,6 @@ rb_header_get_property (GObject *object,
 		break;
 	case PROP_TITLE:
 		g_value_set_string (value, player->priv->title);
-		break;
-	case PROP_URLTEXT:
-		g_value_set_string (value, player->priv->urltext);
-		break;
-	case PROP_URLLINK:
-		g_value_set_string (value, player->priv->urllink);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -413,49 +350,46 @@ rb_header_get_duration (RBHeader *player)
 void
 rb_header_sync (RBHeader *player)
 {
-	char *tmp;
+	char *label_text;
 
 	rb_debug ("syncing with node = %p", player->priv->entry);
-	rb_song_display_box_sync (player->priv->displaybox, player->priv->entry);
 	
 	if (player->priv->entry != NULL) {
+		char *escaped_song;
 		const char *song = player->priv->title;
-		char *escaped;
+		const char *album;
+		const char *artist; 
 		gboolean have_duration = rb_header_get_duration (player) > 0;
-		const char *album, *artist; 
 
 		album = rhythmdb_entry_get_string (player->priv->entry, RHYTHMDB_PROP_ALBUM);
 		artist = rhythmdb_entry_get_string (player->priv->entry, RHYTHMDB_PROP_ARTIST);
 
-		escaped = g_markup_escape_text (song, -1);
-		tmp = SONG_MARKUP (escaped);
-		g_free (escaped);
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
-		g_free (tmp);
+		escaped_song = g_markup_escape_text (song, -1);
 
-		rb_header_set_show_artist_album (player, (album != NULL && artist != NULL)
-						 && (strlen (album) > 0 && strlen (artist) > 0));
+		/* check for artist and album */
+		if ((album != NULL && artist != NULL)
+		    && (strlen (album) > 0 && strlen (artist) > 0)) {
+			label_text = SONG_MARKUP_ALBUM_ARTIST (escaped_song, album, artist);
 
-		if (player->priv->urlline_shown)
-		{
-			g_return_if_fail (player->priv->urltext != NULL);
-			rb_debug ("urlline shown, urltext: %s urllink: %s",
-				  player->priv->urltext, player->priv->urllink);
-			gnome_href_set_url (player->priv->url, player->priv->urllink);
-			gnome_href_set_text (player->priv->url, player->priv->urltext);
+		} else {
+			label_text = SONG_MARKUP (escaped_song);
 		}
+
+		g_free (escaped_song);
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), label_text);
+		g_free (label_text);
 
 		rb_header_set_show_timeline (player, have_duration);
 		if (have_duration)
 			rb_header_sync_time (player);
 	} else {
-		rb_debug ("not playing");
-		tmp = SONG_MARKUP (_("Not Playing"));
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
-		g_free (tmp);
+		char *tmp;
 
-		rb_header_set_urldata (player, NULL, NULL);
-		rb_header_set_show_artist_album (player, FALSE);
+		rb_debug ("not playing");
+		label_text = SONG_MARKUP (_("Not Playing"));
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), label_text);
+		g_free (label_text);
+
 		rb_header_set_show_timeline (player, FALSE);
 
 		player->priv->slider_locked = TRUE;
@@ -467,40 +401,6 @@ rb_header_sync (RBHeader *player)
 		gtk_label_set_text (GTK_LABEL (player->priv->elapsed), tmp);
 		g_free (tmp);
 	}
-}
-
-void
-rb_header_set_urldata (RBHeader *player,
-		       const char *urltext,
-		       const char *urllink)
-{
-	gboolean show = (urltext != NULL);
-	if (player->priv->urlline_shown == show)
-		return;
-
-	player->priv->urlline_shown = show;
-	g_object_set (G_OBJECT (player), "urltext", urltext,
-		      "urllink", urllink, NULL);
-
-	if (show)
-		gtk_widget_show (player->priv->urlline);
-	else
-		gtk_widget_hide (player->priv->urlline);
-}
-
-void
-rb_header_set_show_artist_album (RBHeader *player,
-				 gboolean show)
-{
-	if (player->priv->displaybox_shown == show)
-		return;
-
-	player->priv->displaybox_shown = show;
-
-	if (show)
-		gtk_widget_show (GTK_WIDGET (player->priv->displaybox));
-	else
-		gtk_widget_hide (GTK_WIDGET (player->priv->displaybox));
 }
 
 void
