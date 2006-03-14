@@ -369,8 +369,15 @@ rb_header_sync (RBHeader *player)
 		/* check for artist and album */
 		if ((album != NULL && artist != NULL)
 		    && (strlen (album) > 0 && strlen (artist) > 0)) {
-			label_text = SONG_MARKUP_ALBUM_ARTIST (escaped_song, album, artist);
+			char *escaped_album;
+			char *escaped_artist;
 
+			escaped_album = g_markup_escape_text (album, -1);
+			escaped_artist = g_markup_escape_text (artist, -1);
+			
+			label_text = SONG_MARKUP_ALBUM_ARTIST (escaped_song, escaped_album, escaped_artist);
+			g_free (escaped_album);
+			g_free (escaped_artist);
 		} else {
 			label_text = SONG_MARKUP (escaped_song);
 		}
