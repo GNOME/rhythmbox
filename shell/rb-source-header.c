@@ -499,8 +499,11 @@ rb_source_header_clear_search (RBSourceHeader *header)
 	if (!rb_search_entry_searching (RB_SEARCH_ENTRY (header->priv->search)))
 	    return;
 	
-	if (header->priv->selected_source)
+	if (header->priv->selected_source) {
 		rb_source_search (header->priv->selected_source, NULL);
+		g_hash_table_remove (header->priv->source_search_text, 
+				     header->priv->selected_source);
+	}
 	rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search));
 	rb_source_header_sync_control_state (header);
 }

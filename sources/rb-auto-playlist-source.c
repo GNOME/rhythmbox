@@ -292,16 +292,17 @@ impl_search (RBSource *source, const char *search_text)
 	char *old_search_text = NULL;
 	gboolean subset = FALSE;
 
+	if (search_text != NULL && search_text[0] == '\0')
+		search_text = NULL;
+	
 	if (search_text == NULL && priv->search_text == NULL)
 		return;
 	if (search_text != NULL && priv->search_text != NULL
 	    && !strcmp (search_text, priv->search_text))
 		return;
 
-	rb_debug ("doing search for \"%s\"", search_text[0] != '\0' ? search_text : "(NULL)");
-
 	old_search_text = priv->search_text;
-	if (search_text[0] == '\0') {
+	if (search_text == NULL) {
 		priv->search_text = NULL;
 	} else {
 		priv->search_text = g_strdup (search_text);
@@ -310,6 +311,8 @@ impl_search (RBSource *source, const char *search_text)
 			subset = (g_str_has_prefix (priv->search_text, old_search_text));
 	}
 	g_free (old_search_text);
+	
+	rb_debug ("doing search for \"%s\"", priv->search_text ? priv->search_text : "(NULL)");
 
 	rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source), subset);
 }

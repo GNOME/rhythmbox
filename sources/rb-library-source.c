@@ -697,10 +697,17 @@ impl_search (RBSource *asource, const char *search_text)
 	char *old_search_text = NULL;
 	gboolean subset = FALSE;
 
-	rb_debug ("doing search for \"%s\"", search_text[0] != '\0' ? search_text : "(NULL)");
+	if (search_text != NULL && search_text[0] == '\0')
+		search_text = NULL;
+
+	if (search_text == NULL && source->priv->search_text == NULL)
+		return;
+	if (search_text != NULL && source->priv->search_text != NULL 
+	    && !strcmp (search_text, source->priv->search_text))
+		return;
 
 	old_search_text = source->priv->search_text;
-	if (search_text[0] == '\0') {
+	if (search_text == NULL) {
 		source->priv->search_text = NULL;
 	} else {
 		source->priv->search_text = g_strdup (search_text);
@@ -709,6 +716,8 @@ impl_search (RBSource *asource, const char *search_text)
 			subset = (g_str_has_prefix (source->priv->search_text, old_search_text));
 	}
 	g_free (old_search_text);
+	
+	rb_debug ("doing search for \"%s\"", source->priv->search_text ? source->priv->search_text : "(NULL)");
 
 	rb_library_source_do_query (source, subset);
 }
@@ -745,10 +754,9 @@ impl_reset_filters (RBSource *asource)
 
 	if (source->priv->search_text != NULL)
 		changed = TRUE;
-#if 0
 	g_free (source->priv->search_text);
 	source->priv->search_text = NULL;
-#endif
+
 	if (changed)
 		rb_library_source_do_query (source, FALSE);
 }
