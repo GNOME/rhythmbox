@@ -154,7 +154,7 @@ rb_static_playlist_source_dispose (GObject *object)
 		priv->base_model = NULL;
 	}
 
-	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->dispose (object);
 }
 
 static void

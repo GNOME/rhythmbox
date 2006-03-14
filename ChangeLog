@@ -1,5 +1,10 @@
 2006-03-14  William Jon McCann  <mccann@jhu.edu>
 
+	* sources/rb-static-playlist-source.c (rb_static_playlist_source_dispose):
+	Chain up to parent's dispose instead of finalize.  Fixes #334479.
+
+2006-03-14  William Jon McCann  <mccann@jhu.edu>
+
 	* widgets/rb-header.c (rb_header_sync): Escape album and
 	artist before adding to markup.
 
