@@ -1,5 +1,11 @@
 2006-03-14  William Jon McCann  <mccann@jhu.edu>
 
+	* shell/rb-source-header.c (rb_source_header_set_source_internal):
+	Remove broken attempt at making the search bar buttons not
+	homogeneous.  It wasn't working and was causing some UI sizing weirdness.
+
+2006-03-14  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-static-playlist-source.c (rb_static_playlist_source_dispose):
 	Chain up to parent's dispose instead of finalize.  Fixes #334479.
 

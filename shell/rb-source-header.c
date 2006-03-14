@@ -304,19 +304,6 @@ merge_source_ui_cb (const char *action,
 }
 
 static void
-toolbar_set_homogeneous (GtkToolbar *toolbar,
-			 gboolean    same)
-{
-	int i;
-
-	for (i = 0; i < gtk_toolbar_get_n_items (toolbar); i++) {
-		GtkToolItem *item;
-		item = gtk_toolbar_get_nth_item (toolbar, i);
-		gtk_tool_item_set_homogeneous (item, same);
-	}
-}
-
-static void
 rb_source_header_set_source_internal (RBSourceHeader *header,
 				      RBSource *source)
 {
@@ -366,8 +353,6 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 	actions = rb_source_get_search_actions (source);
 	g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
 	g_list_free (actions);
-
-	toolbar_set_homogeneous (GTK_TOOLBAR (header->priv->search_bar), FALSE);
 
 	rb_source_header_sync_control_state (header);
 }
