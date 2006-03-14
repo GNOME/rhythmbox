@@ -101,7 +101,7 @@ struct RhythmDBPrivate
 	gboolean no_update;
 
 	GMutex *change_mutex;
-	GList *added_entries;
+	GHashTable *added_entries;
 	GHashTable *changed_entries;
 	GList *deleted_entries;
 
@@ -229,7 +229,6 @@ static gboolean rhythmdb_process_changed_files (RhythmDB *db);
 static void rhythmdb_monitor_uri_path (RhythmDB *db,
 				       const char *uri,
 				       GError **error);
-static gboolean timeout_rhythmdb_commit (RhythmDB *db);
 
 enum
 {
@@ -504,6 +503,7 @@ rhythmdb_init (RhythmDB *db)
 
 	db->priv->change_mutex = g_mutex_new ();
 	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
+	db->priv->added_entries = g_hash_table_new (NULL, NULL);
 	
 	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
 
@@ -805,50 +805,96 @@ sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 }
 
 
-static void
-rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
-{
-	GList *tem;
+typedef struct {
+	RhythmDB *db;
+	GList *entries;
+} EmitAddedEntriesData;
 
-	g_assert (rb_is_main_thread ());
+static gboolean
+rhythmdb_emit_entries_added_idle (EmitAddedEntriesData *data)
+{
+	GList *l;
+
+	for (l = data->entries; l != NULL; l = g_list_next (l))
+		g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ENTRY_ADDED], 0, l->data);
+
+	g_list_free (data->entries);
+	g_free (data);
+	return FALSE;
+}
+
+static gboolean
+process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntriesData *data)
+{
+	if (thread != g_thread_self ())
+		return FALSE;
+	
+	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		const gchar *uri;
+
+		uri = rhythmdb_entry_get_string (entry, 
+						 RHYTHMDB_PROP_LOCATION);
+
+		/* always start remote files hidden*/
+		if (!g_str_has_prefix (uri, "file://"))
+			entry->hidden = TRUE;
+
+		queue_stat_uri (uri, data->db, -1);
+	}
+
+	data->entries = g_list_prepend (data->entries, entry);
+	g_assert (entry->inserted == FALSE);
+	entry->inserted = TRUE;
+	return TRUE;
+}
+
+static void
+rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes, GThread *thread)
+{
+	EmitAddedEntriesData *data;
 
 	g_mutex_lock (db->priv->change_mutex);
+
 	g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
 	if (sync_changes)
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
 	g_hash_table_foreach_remove (db->priv->changed_entries, (GHRFunc) free_entry_changes, db);
 
-	for (tem = db->priv->added_entries; tem; tem = tem->next) {
-		RhythmDBEntry *entry = tem->data;
+	data = g_new0 (EmitAddedEntriesData, 1);
+	data->db = db;
+	data->entries = NULL;
+	g_hash_table_foreach_remove (db->priv->added_entries, (GHRFunc) process_added_entries_cb, data);
+	g_idle_add ((GSourceFunc)rhythmdb_emit_entries_added_idle, data);
 
-		if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG && !db->priv->no_update) {
-			const gchar *uri;
-
-			uri = rhythmdb_entry_get_string (entry, 
-							 RHYTHMDB_PROP_LOCATION);
-
-			/* always start remote files hidden*/
-			if (!g_str_has_prefix (uri, "file://"))
-				entry->hidden = TRUE;
-
-			queue_stat_uri (uri, db, -1);
-		}
-		rhythmdb_emit_entry_added (db, entry);
-		g_assert (entry->inserted == FALSE);
-		entry->inserted = TRUE;
-	}
-
-	for (tem = db->priv->deleted_entries; tem; tem = tem->next) {
-		RhythmDBEntry *entry = tem->data;
-		rhythmdb_emit_entry_deleted (db, entry);
-		rhythmdb_entry_unref (db, entry);
-	}
-
-	g_list_free (db->priv->added_entries);
-	db->priv->added_entries = NULL;
-	g_list_free (db->priv->deleted_entries);
-	db->priv->deleted_entries = NULL;
 	g_mutex_unlock (db->priv->change_mutex);
+}
+
+typedef struct {
+	RhythmDB *db;
+	gboolean sync;
+	GThread *thread;
+} RhythmDBTimeoutCommitData;
+
+static gboolean
+timeout_rhythmdb_commit (RhythmDBTimeoutCommitData *data)
+{
+	rhythmdb_commit_internal (data->db, data->sync, data->thread);
+	g_free (data);
+	return FALSE;
+}
+
+static void
+rhythmdb_add_timeout_commit (RhythmDB *db, gboolean sync)
+{
+	RhythmDBTimeoutCommitData *data;
+
+	g_assert (rb_is_main_thread ());
+
+	data = g_new0 (RhythmDBTimeoutCommitData, 1);
+	data->db = db;
+	data->sync = sync;
+	data->thread = g_thread_self ();
+	g_timeout_add (100, (GSourceFunc)timeout_rhythmdb_commit, data);
 }
 
 
@@ -863,23 +909,8 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes)
 void
 rhythmdb_commit (RhythmDB *db)
 {
-	if (rb_is_main_thread ())
-		rhythmdb_commit_internal (db, TRUE);
-	else {
-		if (!db->priv->commit_timeout_id)
-			db->priv->commit_timeout_id = g_timeout_add (100, (GSourceFunc)timeout_rhythmdb_commit, db);
-	}
+	rhythmdb_commit_internal (db, TRUE, g_thread_self ());
 }
-
-static gboolean
-timeout_rhythmdb_commit (RhythmDB *db)
-{
-	db->priv->commit_timeout_id = 0;
-	rhythmdb_commit_internal (RHYTHMDB (db), TRUE);
-
-	return FALSE;
-}
-
 
 GQuark
 rhythmdb_error_quark (void)
@@ -952,7 +983,7 @@ rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
 	g_return_if_fail (entry->location != NULL);
 	
 	g_mutex_lock (db->priv->change_mutex);
-	db->priv->added_entries = g_list_prepend (db->priv->added_entries, entry);	
+	g_hash_table_insert (db->priv->added_entries, entry, g_thread_self ());
 	g_mutex_unlock (db->priv->change_mutex);
 }
 
@@ -1523,7 +1554,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 			g_value_unset (&value);
 		}
 
-		rhythmdb_commit_internal (db, FALSE);
+		rhythmdb_add_timeout_commit (db, FALSE);
 	} 
 
 	if (entry == NULL) {
@@ -1547,7 +1578,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 
 		rhythmdb_entry_set_visibility (db, entry, TRUE);
 
-		rhythmdb_commit_internal (db, FALSE);
+		rhythmdb_add_timeout_commit (db, FALSE);
 	}
 }
 
@@ -1585,7 +1616,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != event->entry_type) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
 			rhythmdb_entry_delete (db, entry);
-			rhythmdb_commit_internal (db, FALSE);
+			rhythmdb_add_timeout_commit (db, FALSE);
 			entry = NULL;
 		}
 	}
@@ -1651,7 +1682,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
 		rhythmdb_monitor_uri_path (db, entry->location, NULL);
 
-	rhythmdb_commit_internal (db, FALSE);
+	rhythmdb_add_timeout_commit (db, FALSE);
 	
 	return TRUE;
 }
@@ -1668,9 +1699,7 @@ rhythmdb_process_queued_entry_set_event (RhythmDB *db,
 	 * we can run a single commit for several queued 
 	 * entry_set
 	 */
-	if (!db->priv->commit_timeout_id) {
-		db->priv->commit_timeout_id = g_timeout_add (100, (GSourceFunc)timeout_rhythmdb_commit, db);
-	}
+	rhythmdb_add_timeout_commit (db, TRUE);
 }
 
 static void
@@ -3640,12 +3669,6 @@ rhythmdb_prop_get_type (void)
 	}
 
 	return etype;
-}
-
-void
-rhythmdb_emit_entry_added (RhythmDB *db, RhythmDBEntry *entry)
-{
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
 }
 
 void

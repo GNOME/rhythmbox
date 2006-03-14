@@ -1,3 +1,20 @@
+2006-03-14  James Livingston  <jrl@ids.org.au>
+
+	Store which thread created new entries, and make rhythmdb_commit only
+	insert the entries for the thread that calls it. This stops one thread
+	calling rhythmdb_commit inserting entries that are half-way through
+	construction by another thread (as happens with audio cds). From bug
+	330226.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_init),
+	(rhythmdb_emit_entries_added_idle), (process_added_entries_cb),
+	(rhythmdb_commit_internal), (timeout_rhythmdb_commit),
+	(rhythmdb_add_timeout_commit), (rhythmdb_commit),
+	(rhythmdb_entry_insert), (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_queued_entry_set_event),
+	(rhythmdb_prop_get_type):
+
 2006-03-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:
