@@ -45,6 +45,7 @@ static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static void impl_search (RBSource *asource, const char *search_text);
 static void impl_reset_filters (RBSource *asource);
 static void impl_browser_toggled (RBSource *source, gboolean enabled);
+static GList *impl_get_search_actions (RBSource *source);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
@@ -62,6 +63,18 @@ void rb_auto_playlist_source_browser_views_activated_cb (GtkWidget *widget,
 static void rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *entry,
 							GParamSpec *pspec,
 							RBAutoPlaylistSource *source);
+static void search_action_changed (GtkRadioAction *action,
+				   GtkRadioAction *current,
+				   RBShell *shell);
+
+static GtkRadioActionEntry rb_auto_playlist_source_radio_actions [] =
+{
+	{ "AutoPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), 0 },
+	{ "AutoPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), 1 },
+	{ "AutoPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), 2 },
+	{ "AutoPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
+};
+
 
 
 #define AUTO_PLAYLIST_SOURCE_POPUP_PATH "/AutoPlaylistSourcePopup"
@@ -82,6 +95,9 @@ struct _RBAutoPlaylistSourcePrivate
 	gboolean browser_shown;
 
 	char *search_text;
+
+	GtkActionGroup *action_group;
+	RhythmDBPropType search_prop;
 };
 
 G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
@@ -109,6 +125,7 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_get_property_views = impl_get_property_views;
+	source_class->impl_get_search_actions = impl_get_search_actions;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 	
@@ -154,6 +171,7 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	RBAutoPlaylistSource *source;
 	GObjectClass *parent_class = G_OBJECT_CLASS (rb_auto_playlist_source_parent_class);
 	RBAutoPlaylistSourcePrivate *priv;
+	RBShell *shell;
 
 	source = RB_AUTO_PLAYLIST_SOURCE (
 			parent_class->constructor (type, n_construct_properties, construct_properties));
@@ -172,6 +190,21 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (G_OBJECT (songs), "sort-order-changed",
 				 G_CALLBACK (rb_auto_playlist_source_songs_sort_order_changed_cb),
 				 source, 0);
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
+							       "AutoPlaylistActions",
+							       NULL, 0,
+							       shell);
+	gtk_action_group_add_radio_actions (priv->action_group,
+					    rb_auto_playlist_source_radio_actions,
+					    G_N_ELEMENTS (rb_auto_playlist_source_radio_actions),
+					    0,
+					    (GCallback)search_action_changed,
+					    shell);
+	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	g_object_unref (G_OBJECT (shell));
+
 
 	/* reparent the entry view */
 	g_object_ref (G_OBJECT (songs));
@@ -470,11 +503,8 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 	}
 
 	query = rhythmdb_query_copy (priv->query);
-	rhythmdb_query_append (db,
-			       query,
-			       RHYTHMDB_QUERY_PROP_LIKE,
-			       RHYTHMDB_PROP_SEARCH_MATCH,
-			       priv->search_text,
+	rhythmdb_query_append (db, query,
+			       RHYTHMDB_QUERY_PROP_LIKE, priv->search_prop, priv->search_text,
 			       RHYTHMDB_QUERY_END);
 
 	if (subset) {
@@ -593,3 +623,62 @@ rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
+static GList *
+impl_get_search_actions (RBSource *source)
+{
+	GList *actions = NULL;
+
+	actions = g_list_prepend (actions, "AutoPlaylistSearchTitles");
+	actions = g_list_prepend (actions, "AutoPlaylistSearchAlbums");
+	actions = g_list_prepend (actions, "AutoPlaylistSearchArtists");
+	actions = g_list_prepend (actions, "AutoPlaylistSearchAll");
+
+	return actions;
+}
+
+static RhythmDBPropType
+search_action_to_prop (GtkAction *action)
+{
+	const char      *name;
+	RhythmDBPropType prop;
+
+	name = gtk_action_get_name (action);
+
+	if (name == NULL) {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	} else if (strcmp (name, "AutoPlaylistSearchAll") == 0) {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;		
+	} else if (strcmp (name, "AutoPlaylistSearchArtists") == 0) {
+		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
+	} else if (strcmp (name, "AutoPlaylistSearchAlbums") == 0) {
+		prop = RHYTHMDB_PROP_ALBUM_FOLDED;
+	} else if (strcmp (name, "AutoPlaylistSearchTitles") == 0) {
+		prop = RHYTHMDB_PROP_TITLE_FOLDED;
+	} else {
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
+	}
+
+	return prop;
+}
+
+static void
+search_action_changed (GtkRadioAction  *action,
+		       GtkRadioAction  *current,
+		       RBShell         *shell)
+{
+	RBAutoPlaylistSourcePrivate *priv;
+	gboolean active;
+	RBAutoPlaylistSource *source;
+
+	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+
+	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
+
+	if (active) {
+		/* update query */
+		priv->search_prop = search_action_to_prop (GTK_ACTION (current));
+		rb_auto_playlist_source_do_query (source, FALSE);
+		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+}

@@ -1,3 +1,18 @@
+2006-03-15  James Livingston  <jrl@ids.org.au>
+
+	Add search-bar options to playlists. Fixes bug 334407.
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_constructor),
+	(rb_auto_playlist_source_do_query), (impl_get_search_actions),
+	(search_action_to_prop), (search_action_changed):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_constructor),
+	(construct_query_from_selection), (impl_get_search_actions),
+	(search_action_to_prop), (search_action_changed):
+
 2006-03-14  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-source-header.c (rb_source_header_set_source_internal):
