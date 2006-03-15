@@ -199,7 +199,9 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 				(type, n_construct_properties,
 				 construct_properties));
 
+#ifdef HAVE_NOTIFY
 	tray->priv->show_notifications = eel_gconf_get_boolean (CONF_UI_SHOW_NOTIFICATIONS);
+#endif
 
 	tray->priv->actiongroup = gtk_action_group_new ("TrayActions");
 	gtk_action_group_set_translation_domain (tray->priv->actiongroup,
@@ -249,8 +251,12 @@ rb_tray_icon_sync_action (RBRemoteProxy *proxy, gboolean visible, RBTrayIcon *tr
 
 		action = gtk_action_group_get_action (tray->priv->actiongroup,
 						      "TrayShowNotifications");
+#ifdef HAVE_NOTIFY
 		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
 					      tray->priv->show_notifications);
+#else
+		gtk_action_set_visible (action, FALSE);
+#endif
 	}
 }
 

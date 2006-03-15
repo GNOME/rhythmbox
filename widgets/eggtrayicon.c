@@ -483,16 +483,6 @@ egg_tray_icon_send_message (EggTrayIcon *icon,
 		     
 #ifdef HAVE_NOTIFY
   egg_tray_icon_notify (icon, timeout, _("Notification"), NULL, message);
-#else
-  if (!icon->bubble)
-    {
-      icon->bubble = egg_notification_bubble_new ();
-      egg_notification_bubble_attach (icon->bubble, GTK_WIDGET (icon));
-    }
-
-  egg_notification_bubble_set (icon->bubble, _("Notification"),
-			       NULL, message);
-  egg_notification_bubble_show (icon->bubble, timeout);
 #endif
 
   return 1;
@@ -514,11 +504,6 @@ egg_tray_icon_cancel_message (EggTrayIcon *icon,
     icon->notify->handle = NULL;
 #endif
   }
-#else
-  g_return_if_fail (id > 0);
-  g_return_if_fail (icon->bubble != NULL);
-
-  egg_notification_bubble_hide (icon->bubble);
 #endif
 }
 
@@ -529,14 +514,6 @@ egg_tray_icon_get_orientation (EggTrayIcon *icon)
 
   return icon->orientation;
 }
-
-#ifndef HAVE_NOTIFY
-static void 
-egg_tray_icon_hide_notify_cb (EggNotificationBubble *bubble, gpointer data)
-{
-  egg_tray_icon_cancel_message (EGG_TRAY_ICON (data), 1);
-}
-#endif
 
 void
 egg_tray_icon_notify (EggTrayIcon *icon,
@@ -687,23 +664,5 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   g_free (esc_secondary);
   return;
 #endif
-#else
-  gint x, y;
-  gdk_window_get_origin (GTK_WIDGET (icon)->window,
-			 &x, &y);
-  if (!icon->bubble)
-    {
-      icon->bubble = egg_notification_bubble_new ();
-      egg_notification_bubble_attach (icon->bubble, GTK_WIDGET (icon));
-      g_signal_connect_object (icon->bubble,
-			       "clicked",
-			       G_CALLBACK (egg_tray_icon_hide_notify_cb),
-			       icon, 0);
-    }
-  
-  egg_notification_bubble_set (icon->bubble, primary,
-			       msgicon, secondary);
-  egg_notification_bubble_show (icon->bubble, timeout);
-  return;
 #endif
 }

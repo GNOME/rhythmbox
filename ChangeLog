@@ -1,5 +1,13 @@
 2006-03-15  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-tray-icon.c: (rb_tray_icon_constructor),
+	(rb_tray_icon_sync_action):
+	* widgets/eggtrayicon.c: (egg_tray_icon_send_message),
+	(egg_tray_icon_cancel_message), (egg_tray_icon_notify): remove support
+	for non-libnotify notification bubbles. Fixes bug 331721.
+
+2006-03-15  James Livingston  <jrl@ids.org.au>
+
 	Add search-bar options to playlists. Fixes bug 334407.
 
 	* sources/rb-auto-playlist-source.c:
