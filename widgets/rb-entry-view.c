@@ -477,6 +477,7 @@ rb_entry_view_set_property (GObject *object,
 					 view,
 					 0);
 
+		gtk_tree_selection_unselect_all (view->priv->selection);
 		view->priv->model = new_model;
 		if (view->priv->sorting_column)
 			rb_entry_view_resort_model (view);

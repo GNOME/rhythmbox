@@ -1,3 +1,9 @@
+2006-03-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_set_property):
+	Clear the selection before changing the active model.
+	Fixes crash reported in bug 334549.
+
 2006-03-15  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-tray-icon.c: (rb_tray_icon_constructor),
