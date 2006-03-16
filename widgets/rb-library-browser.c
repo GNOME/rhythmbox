@@ -590,6 +590,7 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget, RhythmDBPropType typ
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	GList *old_selection;
+	RBPropertyView *view;
 	
 	old_selection = g_hash_table_lookup (priv->selections, (gpointer)type);
 
@@ -601,7 +602,12 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget, RhythmDBPropType typ
 	else
 		g_hash_table_remove (priv->selections, (gpointer)type);
 
+	view = g_hash_table_lookup (priv->property_views, (gpointer)type);
+	if (view)
+		ignore_selection_changes (widget, view, TRUE);
+
 	rebuild_child_model (widget, prop_to_index (type), FALSE);
+	restore_selection (widget, prop_to_index (type), FALSE);
 }
 
 GList*
