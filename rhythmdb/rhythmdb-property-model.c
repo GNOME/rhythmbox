@@ -498,6 +498,7 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 					return;
 
 				rhythmdb_property_model_delete (propmodel, entry);
+				g_hash_table_remove (propmodel->priv->entries, entry);
 			}
 		}
 	} else {

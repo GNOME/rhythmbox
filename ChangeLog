@@ -1,3 +1,10 @@
+2006-03-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_prop_changed_cb):
+	Remove entries from the hash table after processing visible->hidden
+	changes.
+
 2006-03-16  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-daap-source.c (connection_connected_cb) 
