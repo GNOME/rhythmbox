@@ -46,6 +46,7 @@
 
 #include "rb-daap-source.h"
 #include "rb-daap-src.h"
+#include "rb-debug.h"
 
 #define RB_TYPE_DAAP_SRC (rb_daap_src_get_type())
 #define RB_DAAP_SRC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),RB_TYPE_DAAP_SRC,RBDAAPSrc))
@@ -661,6 +662,8 @@ rb_daap_src_open (RBDAAPSrc *src)
 		src->buffer_size = 0;
 	}
 
+	rb_debug ("Connecting to DAAP source: %s", src->daap_uri);
+
 	/* connect */
 	src->sock_fd = socket (AF_INET, SOCK_STREAM, 0);
 	if (src->sock_fd == -1) {
@@ -699,7 +702,14 @@ rb_daap_src_open (RBDAAPSrc *src)
 		return FALSE;
 	}
 
+	/* The following can fail if the source is no longer connected */
 	headers = rb_daap_source_get_headers (source, src->daap_uri, src->seek_time, &src->seek_bytes);
+	if (headers == NULL) {
+		g_free (host);
+		g_free (path);
+		return FALSE;
+	}
+
 	request = g_strdup_printf ("GET %s HTTP/1.1\r\nHost: %s\r\n%s\r\n",
 				   path, host, headers);
 	g_free (headers);

@@ -617,6 +617,8 @@ connection_connected_cb (RBDAAPConnection *connection,
 {
 	GdkPixbuf *icon;
 
+	rb_debug ("DAAP connection connected");
+
 	icon = rb_daap_get_icon (source->priv->password_protected, TRUE);
 	g_object_set (source, "icon", icon, NULL);
 	if (icon != NULL) {
@@ -629,6 +631,8 @@ connection_disconnected_cb (RBDAAPConnection *connection,
 			    RBDAAPSource     *source)
 {
 	GdkPixbuf *icon;
+
+	rb_debug ("DAAP connection disconnected");
 
 	icon = rb_daap_get_icon (source->priv->password_protected, FALSE);
 	g_object_set (source, "icon", icon, NULL);
@@ -728,6 +732,9 @@ rb_daap_source_disconnect_cb (RBDAAPConnection *connection,
 			      RBSource *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+
+	rb_debug ("DAAP source disconnected");
+
 	g_object_unref (G_OBJECT (connection));
 	daap_source->priv->connection = NULL;
 	g_object_unref (source);
@@ -826,6 +833,15 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 {
 	gint64 bytes = 0;
 
+	if (bytes_out != NULL) {
+		*bytes_out = 0;
+	}
+
+	/* If there is no connection then bail */
+	if (source->priv->connection == NULL) {
+		return NULL;
+	}
+
 	if (time != 0) {
 		RhythmDB *db;
 		RBShell *shell;
@@ -841,12 +857,15 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 		g_object_unref (G_OBJECT (db));
 		
 		bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE); 
-		// bitrate is kilobits per second
-		// a kilobit is 128 bytes
+		/* bitrate is kilobits per second */
+		/* a kilobit is 128 bytes */
 		bytes = (time * bitrate) * 128; 
 	}
 	
-	*bytes_out = bytes;
+	if (bytes_out != NULL) {
+		*bytes_out = bytes;
+	}
+
 	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
 }
 

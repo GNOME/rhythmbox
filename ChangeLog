@@ -1,3 +1,14 @@
+2006-03-16  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-daap-source.c (connection_connected_cb) 
+	(connection_disconnected_cb): Add debug.
+	(rb_daap_source_get_headers): Check for NULL connection.
+
+	* daapsharing/rb-daap-src.c (rb_daap_src_open):
+	Check return value of rb_daap_source_get_headers.
+
+	Fixes #332089
+
 2006-03-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-library-browser.c: (rb_library_browser_set_selection):
