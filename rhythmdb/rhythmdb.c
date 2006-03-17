@@ -103,7 +103,7 @@ struct RhythmDBPrivate
 	GMutex *change_mutex;
 	GHashTable *added_entries;
 	GHashTable *changed_entries;
-	GList *deleted_entries;
+	GHashTable *deleted_entries;
 
 	GHashTable *propname_map;
 
@@ -504,6 +504,7 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->change_mutex = g_mutex_new ();
 	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
 	db->priv->added_entries = g_hash_table_new (NULL, NULL);
+	db->priv->deleted_entries = g_hash_table_new (NULL, NULL);
 	
 	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
 
@@ -664,6 +665,10 @@ rhythmdb_finalize (GObject *object)
 	g_hash_table_destroy (db->priv->monitored_directories);
 	g_source_remove (db->priv->changed_files_id);
 	g_hash_table_destroy (db->priv->changed_files);
+
+	g_hash_table_destroy (db->priv->added_entries);
+	g_hash_table_destroy (db->priv->deleted_entries);
+	g_hash_table_destroy (db->priv->changed_entries);
 
 	rb_refstring_unref (db->priv->empty_string);
 	rb_refstring_unref (db->priv->octet_stream_str);
@@ -848,6 +853,30 @@ process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntrie
 	return TRUE;
 }
 
+static gboolean
+rhythmdb_emit_entries_deleted_idle (EmitAddedEntriesData *data)
+{
+	GList *l;
+
+	for (l = data->entries; l != NULL; l = g_list_next (l))
+		g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ENTRY_DELETED], 0, l->data);
+
+	g_list_free (data->entries);
+	g_free (data);
+	return FALSE;
+}
+
+static gboolean
+process_deleted_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntriesData *data)
+{
+	if (thread != g_thread_self ())
+		return FALSE;
+	
+	data->entries = g_list_prepend (data->entries, entry);
+
+	return TRUE;
+}
+
 static void
 rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes, GThread *thread)
 {
@@ -865,6 +894,12 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes, GThread *thread)
 	data->entries = NULL;
 	g_hash_table_foreach_remove (db->priv->added_entries, (GHRFunc) process_added_entries_cb, data);
 	g_idle_add ((GSourceFunc)rhythmdb_emit_entries_added_idle, data);
+
+	data = g_new0 (EmitAddedEntriesData, 1);
+	data->db = db;
+	data->entries = NULL;
+	g_hash_table_foreach_remove (db->priv->deleted_entries, (GHRFunc) process_deleted_entries_cb, data);
+	g_idle_add ((GSourceFunc)rhythmdb_emit_entries_deleted_idle, data);
 
 	g_mutex_unlock (db->priv->change_mutex);
 }
@@ -2739,7 +2774,7 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 
 	rhythmdb_entry_ref (db, entry);
 	g_mutex_lock (db->priv->change_mutex);
-	db->priv->deleted_entries = g_list_prepend (db->priv->deleted_entries, entry);	
+	g_hash_table_insert (db->priv->deleted_entries, entry, g_thread_self ());
 	g_mutex_unlock (db->priv->change_mutex);
 
 	/* deleting an entry makes the db dirty */

@@ -1,3 +1,18 @@
+2006-03-16  William Jon McCann  <mccann@jhu.edu>
+
+	* rhythmdb/rhythmdb.c (rhythmdb_init): Make deleted_entries a hash.
+	(rhythmdb_finalize): Don't leak the hash tables.
+	(rhythmdb_emit_entries_deleted_idle, process_deleted_entries_cb) 
+	(rhythmdb_commit_internal): Make sure to process the deletions.
+	(rhythmdb_entry_delete): Use a hash.
+
+	* podcast/rb-podcast-manager.c: Random analness about char*
+	(rb_podcast_manager_remove_feed): Add debugging.
+	(rb_podcast_manager_db_entry_deleted_cb): Ditto.  Check
+	the result of gnome_vfs_unlink.  Don't leak a uri.
+
+	Fixes #334786
+
 2006-03-18  James Livingston  <jrl@ids.org.au>
 
 	* NEWS: update NEWS file
