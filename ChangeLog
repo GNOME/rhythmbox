@@ -1,3 +1,12 @@
+2006-03-18  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_get_folded),
+	(rb_refstring_get_sort_key): fix type-punning warnings. Closes bug
+	332992.
+
+	* widgets/rb-header.c: don't make artist/album info in the header the
+	small size, since it's hard to read.
+
 2006-03-16  William Jon McCann  <mccann@jhu.edu>
 
 	* rhythmdb/rhythmdb.c (rhythmdb_init): Make deleted_entries a hash.

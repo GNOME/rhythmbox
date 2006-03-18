@@ -130,21 +130,23 @@ rb_refstring_get (const RBRefString *val)
 const char *
 rb_refstring_get_folded (RBRefString *val)
 {
+	gpointer *ptr;
 	const char *string;
 
 	if (val == NULL)
 		return NULL;
 
-	string = (const char*)g_atomic_pointer_get (&val->folded);
+	ptr = (gpointer*)&val->folded;
+	string = (const char*)g_atomic_pointer_get (ptr);
 	if (string == NULL) {
 		char *newstring;
 
 		newstring = rb_search_fold (rb_refstring_get (val));
-		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&val->folded, NULL, newstring)) {
+		if (g_atomic_pointer_compare_and_exchange (ptr, NULL, newstring)) {
 			string = newstring;
 		} else {
 			g_free (newstring);
-			string = (const char *)g_atomic_pointer_get (&val->folded);
+			string = (const char *)g_atomic_pointer_get (ptr);
 			g_assert (string);
 		}
 	}
@@ -155,21 +157,23 @@ rb_refstring_get_folded (RBRefString *val)
 const char *
 rb_refstring_get_sort_key (RBRefString *val)
 {
+	gpointer *ptr;
 	const char *string;
 
 	if (val == NULL)
 		return NULL;
 
-	string = (const char*)g_atomic_pointer_get (&val->sortkey);
+	ptr = (gpointer*)&val->sortkey;
+	string = (const char*)g_atomic_pointer_get (ptr);
 	if (string == NULL) {
 		char *newstring;
 
 		newstring = rb_utf8_collate_key_for_filename (rb_refstring_get_folded (val), -1);
-		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&val->sortkey, NULL, newstring)) {
+		if (g_atomic_pointer_compare_and_exchange (ptr, NULL, newstring)) {
 			string = newstring;
 		} else {
 			g_free (newstring);
-			string = (const char*)g_atomic_pointer_get (&val->sortkey);
+			string = (const char*)g_atomic_pointer_get (ptr);
 			g_assert (string);
 		}
 	}
