@@ -113,12 +113,14 @@ client_cb (AvahiClient         *client,
 		 }
 		 break;
              
+#ifdef HAVE_AVAHI_0_6
 	case AVAHI_CLIENT_FAILURE:
              
 		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
 		 break;
 	case AVAHI_CLIENT_CONNECTING:
 	case AVAHI_CLIENT_S_REGISTERING:
+#endif
 	default:
 		break;
 	}
@@ -139,7 +141,7 @@ avahi_client_init (RBDaapMdnsPublisher *publisher)
 
 #ifdef HAVE_AVAHI_0_5
 	publisher->priv->client = avahi_client_new (avahi_glib_poll_get (publisher->priv->poll),
-						    client_cb,
+						    (AvahiClientCallback) client_cb,
 						    publisher,
 						    &error);
 #endif

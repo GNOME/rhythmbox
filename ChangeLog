@@ -1,3 +1,11 @@
+2006-03-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* daapsharing/rb-daap-mdns-browser-avahi.c: (client_cb),
+	(avahi_client_init), (browse_cb):
+	* daapsharing/rb-daap-mdns-publisher-avahi.c: (client_cb),
+	(avahi_client_init):
+	Fix compilation with Avahi 0.5.x (bug #334551).
+
 2006-03-19  James Livingston  <jrl@ids.org.au>
 
 	Add Increase/Decrease Volume menu items and keybindings. From bug

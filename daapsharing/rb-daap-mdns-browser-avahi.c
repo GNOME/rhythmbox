@@ -42,6 +42,10 @@
 #include "rb-daap-marshal.h"
 #include "rb-debug.h"
 
+#ifdef HAVE_AVAHI_0_5
+#define AVAHI_ADDRESS_STR_MAX	(40)	/* IPv6 Max = 4*8 + 7 + 1 for NUL */
+#endif
+
 static void	rb_daap_mdns_browser_class_init (RBDaapMdnsBrowserClass *klass);
 static void	rb_daap_mdns_browser_init	(RBDaapMdnsBrowser	*browser);
 static void	rb_daap_mdns_browser_finalize   (GObject	        *object);
@@ -92,10 +96,12 @@ client_cb (AvahiClient         *client,
 	/* Called whenever the client or server state changes */
  
 	switch (state) {
+#ifdef HAVE_AVAHI_0_6
 	case AVAHI_CLIENT_FAILURE:
              
 		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
 		 break;
+#endif
 	default:
 		break;
 	}
@@ -116,7 +122,7 @@ avahi_client_init (RBDaapMdnsBrowser *browser)
 
 #ifdef HAVE_AVAHI_0_5
 	browser->priv->client = avahi_client_new (avahi_glib_poll_get (browser->priv->poll),
-						  client_cb,
+						  (AvahiClientCallback) client_cb,
 						  browser,
 						  &error);
 #endif
@@ -263,7 +269,7 @@ browse_cb (AvahiServiceBrowser   *service_browser,
 	gboolean local;
 
 #ifdef HAVE_AVAHI_0_5
-	local = avahi_client_is_service_local (get_avahi_client (NULL), interface, protocol, name, type, domain);
+	local = avahi_client_is_service_local (browser->priv->client, interface, protocol, name, type, domain);
 #endif
 #ifdef HAVE_AVAHI_0_6
 	local = ((flags & AVAHI_LOOKUP_RESULT_LOCAL) != 0);
