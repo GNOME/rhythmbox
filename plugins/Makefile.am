@@ -7,7 +7,7 @@ SUBDIRS += audioscrobbler
 endif
 
 if ENABLE_PYTHON
-SUBDIRS += sample-python
+SUBDIRS += pythonconsole sample-python
 endif
 
 noinst_LTLIBRARIES = librbplugins.la

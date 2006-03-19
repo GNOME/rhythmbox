@@ -439,6 +439,7 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "Edit", NULL, N_("_Edit") },
 	{ "View", NULL, N_("_View") },
 	{ "Control", NULL, N_("_Control") },
+	{ "Tools", NULL, N_("_Tools") },
 	{ "Help", NULL, N_("_Help") },
 
 	{ "MusicImportFolder", GTK_STOCK_DIRECTORY, N_("_Import Folder..."), "<control>O",

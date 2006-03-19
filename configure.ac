@@ -850,6 +850,7 @@ plugins/Makefile
 plugins/sample/Makefile
 plugins/audioscrobbler/Makefile
 plugins/sample-python/Makefile
+plugins/pythonconsole/Makefile
 bindings/Makefile
 bindings/python/Makefile
 help/Makefile
