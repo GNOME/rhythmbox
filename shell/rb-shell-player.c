@@ -93,6 +93,10 @@ static void rb_shell_player_cmd_play (GtkAction *action,
 			              RBShellPlayer *player);
 static void rb_shell_player_cmd_next (GtkAction *action,
 			              RBShellPlayer *player);
+static void rb_shell_player_cmd_volume_up (GtkAction *action,
+					   RBShellPlayer *player);
+static void rb_shell_player_cmd_volume_down (GtkAction *action,
+					     RBShellPlayer *player);
 static void rb_shell_player_shuffle_changed_cb (GtkAction *action,
 						RBShellPlayer *player);
 static void rb_shell_player_repeat_changed_cb (GtkAction *action,
@@ -240,6 +244,12 @@ static GtkActionEntry rb_shell_player_actions [] =
 	{ "ControlNext", GTK_STOCK_MEDIA_NEXT, N_("_Next"), "<alt>Right",
 	  N_("Start playing the next song"),
 	  G_CALLBACK (rb_shell_player_cmd_next) },
+	{ "ControlVolumeUp", NULL, N_("_Increase Volume"), "<control>Up",
+	  N_("Increase playback volume"),
+	  G_CALLBACK (rb_shell_player_cmd_volume_up) },
+	{ "ControlVolumeDown", NULL, N_("_Decrease Volume"), "<control>Down",
+	  N_("Decrease playback volume"),
+	  G_CALLBACK (rb_shell_player_cmd_volume_down) },
 };
 static guint rb_shell_player_n_actions = G_N_ELEMENTS (rb_shell_player_actions);
 
@@ -257,7 +267,7 @@ static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 	  G_CALLBACK (rb_shell_player_repeat_changed_cb) },
 	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), NULL,
 	  N_("Change the visibility of the song position slider"),
-	  G_CALLBACK (rb_shell_player_view_song_position_slider_changed_cb), TRUE }
+	  G_CALLBACK (rb_shell_player_view_song_position_slider_changed_cb), TRUE },
 };
 static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
@@ -477,6 +487,7 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 	rb_shell_player_set_playing_source (player, NULL);
 	rb_shell_player_sync_play_order (player);
 	rb_shell_player_sync_control_state (player);
+	rb_shell_player_sync_volume (player, FALSE);
 	player->priv->syncing_state = FALSE;
 
 	rb_shell_player_sync_song_position_slider_visibility (player);
@@ -591,7 +602,6 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
 	player->priv->volume = eel_gconf_get_float (CONF_STATE_VOLUME);
-	rb_shell_player_sync_volume (player, FALSE);
 
 	g_signal_connect (player, "notify::playing",
 			  G_CALLBACK (reemit_playing_signal), NULL);
@@ -1505,6 +1515,20 @@ rb_shell_player_play_entry (RBShellPlayer *player,
 }
 
 static void
+rb_shell_player_cmd_volume_up (GtkAction *action,
+			       RBShellPlayer *player)
+{
+	rb_shell_player_set_volume_relative (player, 0.1, NULL);
+}
+
+static void
+rb_shell_player_cmd_volume_down (GtkAction *action,
+				 RBShellPlayer *player)
+{
+	rb_shell_player_set_volume_relative (player, -0.1, NULL);
+}
+
+static void
 rb_shell_player_cmd_play (GtkAction *action,
 			  RBShellPlayer *player)
 {
@@ -1631,10 +1655,22 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 static void
 rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify)
 {
-	if (player->priv->volume < 0.0)
+	GtkAction *action;
+
+	if (player->priv->volume <= 0.0){
 		player->priv->volume = 0.0;
-	else if (player->priv->volume > 1.0)
+	} else if (player->priv->volume >= 1.0){
 		player->priv->volume = 1.0;
+	}
+
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlVolumeUp");
+	g_object_set (G_OBJECT (action), "sensitive", player->priv->volume < 0.9999, NULL);
+
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlVolumeDown");
+	g_object_set (G_OBJECT (action), "sensitive", player->priv->volume > 0.0001, NULL);
+
 
 	rb_player_set_volume (player->priv->mmplayer,
 			      player->priv->mute ? 0.0 : player->priv->volume);
@@ -1643,6 +1679,7 @@ rb_shell_player_sync_volume (RBShellPlayer *player, gboolean notify)
 
 	rb_shell_player_sync_replaygain (player, 
 					 rb_shell_player_get_playing_entry (player));
+
 
 	if (notify)
 		g_object_notify (G_OBJECT (player), "volume");

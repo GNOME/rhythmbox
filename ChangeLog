@@ -1,5 +1,15 @@
 2006-03-19  James Livingston  <jrl@ids.org.au>
 
+	Add Increase/Decrease Volume menu items and keybindings. From bug
+	123383.
+
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-shell-player.c: (rb_shell_player_constructor),
+	(rb_shell_player_init), (rb_shell_player_cmd_volume_up),
+	(rb_shell_player_cmd_volume_down), (rb_shell_player_sync_volume):
+
+2006-03-19  James Livingston  <jrl@ids.org.au>
+
 	patch by: Mikhail Zabaluev  <mhz@altlinux.org>
 
 	* shell/Makefile.am: fix the link order, so that we compile with
