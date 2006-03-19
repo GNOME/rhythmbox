@@ -95,7 +95,7 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 
-#define RHYTHMDB_TREE_XML_VERSION "1.1"
+#define RHYTHMDB_TREE_XML_VERSION "1.2"
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -237,10 +237,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				if (!strcmp (*attrs, "version")) {
 					const char *version = *(attrs+1);
 
-					if (!strcmp (version, "1.0")) {
+					if (!strcmp (version, "1.0") || !strcmp (version, "1.1")) {
 						ctx->canonicalise_uris = TRUE;
 						rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries");
-					} else if (!strcmp (version, "1.1")) {
+					} else if (!strcmp (version, "1.2")) {
 						/* current version*/
 					} else {
 						/* too new */
@@ -929,7 +929,7 @@ rhythmdb_tree_save (RhythmDB *rdb)
 	ctx.handle = f;
 	ctx.error = NULL;
 	RHYTHMDB_FWRITE_STATICSTR ("<?xml version=\"1.0\" standalone=\"yes\"?>\n"
-				   "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">", 
+				   "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">\n", 
 				   ctx.handle, ctx.error);
 
 	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_SONG,

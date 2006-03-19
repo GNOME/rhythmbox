@@ -1,5 +1,16 @@
 2006-03-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* lib/rb-file-helpers.c: (rb_canonicalise_uri):
+	Extra step to encode '&' and '=' to match what gnome-vfs does
+	internally.
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_save):
+	Increment rhythmdb xml version to 1.2, and force another uri
+	re-canonicalisation when loading v1.1 databases.
+	Fixes bug #333998.
+
+2006-03-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* daapsharing/rb-daap-mdns-browser-avahi.c: (client_cb),
 	(avahi_client_init), (browse_cb):
 	* daapsharing/rb-daap-mdns-publisher-avahi.c: (client_cb),

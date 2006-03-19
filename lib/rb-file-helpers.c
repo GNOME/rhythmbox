@@ -703,20 +703,24 @@ rb_canonicalise_uri (const char *uri)
 
 	if (uri[0] == '/') {
 		/* local path */
-		char *tmp;
+		char *tmp, *tmp2;
 		result = gnome_vfs_make_path_name_canonical (uri);
 		tmp = gnome_vfs_escape_path_string (result);
 		g_free (result);
-		result = g_strconcat ("file://", tmp, NULL);
+		tmp2 = gnome_vfs_escape_set (tmp, "&=");	/* extra characters gnome_vfs_uri_new escapes */
 		g_free (tmp);
+		result = g_strconcat ("file://", tmp2, NULL);
+		g_free (tmp2);
 	} else  if (g_str_has_prefix (uri, "file://")) {
 	    	/* local file, rhythmdb wants this path escaped */
 		char *tmp1, *tmp2;
 		tmp1  = gnome_vfs_unescape_string (uri + 7, NULL);  /* ignore "file://" */
 		tmp2 = gnome_vfs_escape_path_string (tmp1);
 		g_free (tmp1);
-		result = g_strconcat ("file://", tmp2, NULL); /* re-add scheme */
+		tmp1 = gnome_vfs_escape_set (tmp2, "&=");
 		g_free (tmp2);
+		result = g_strconcat ("file://", tmp1, NULL); /* re-add scheme */
+		g_free (tmp1);
 	} else {
 		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 
