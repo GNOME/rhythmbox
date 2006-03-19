@@ -1,5 +1,12 @@
 2006-03-19  James Livingston  <jrl@ids.org.au>
 
+	patch by: Mikhail Zabaluev  <mhz@altlinux.org>
+
+	* shell/Makefile.am: fix the link order, so that we compile with
+	"LDFLAGS=-Wl,--as-needed". Fixes bug 334852.
+
+2006-03-19  James Livingston  <jrl@ids.org.au>
+
 	patch by: Adam Petaccia  <adam@tpetaccia.com>
 
 	* data/ui/rhythmbox-ui.xml: move preferences below "configure

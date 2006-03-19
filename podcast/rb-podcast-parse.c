@@ -412,7 +412,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	GnomeVFSResult result;
 	GnomeVFSFileInfo *info;
 	gint file_size;
-	gchar *buffer;
+	gchar *buffer = NULL;
     
 	struct RBPoadcastLoadContext *ctx = NULL;
 
