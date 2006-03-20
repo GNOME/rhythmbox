@@ -1625,8 +1625,13 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 	GValue value = {0,};
 	RhythmDBEntryType error_entry_type = RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR;
 
-	if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE))
+	if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
+		/* only add an ignore entry for the main library */
+		if (event->entry_type != RHYTHMDB_ENTRY_TYPE_SONG)
+			return;
+
 		error_entry_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
+	}
 	
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (entry) {

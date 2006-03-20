@@ -1,5 +1,11 @@
 2006-03-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry):
+	Only create ignore entries when importing into the library.  
+	Ignore entries for files in removable media sources don't help.
+
+2006-03-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-source-header.c: (rb_source_header_focus_search_box):
 	* shell/rb-source-header.h:
 	* widgets/rb-search-entry.c: (rb_search_entry_grab_focus):
