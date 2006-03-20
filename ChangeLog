@@ -1,3 +1,13 @@
+2006-03-20  James Livingston  <jrl@ids.org.au>
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: add python bindings of RBRemoteProxy
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_set_visibility), (rb_shell_window_delete_cb): change
+	tray-icon detection slightly
+
 2006-03-19  Steve Frécinaux  <steve@istique.net>
 
 	* data/ui/rhythmbox-ui.xml:

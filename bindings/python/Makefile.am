@@ -43,6 +43,7 @@ rb.c: rb.defs rb.override
 
 BINDING_HEADERS_SRCDIR_IN = \
 	plugins/rb-plugin.h			\
+	remote/rb-remote-proxy.h		\
 	shell/rb-shell.h
 
 BINDING_HEADERS_BUILDDIR_IN = 

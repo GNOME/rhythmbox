@@ -988,9 +988,10 @@ rb_shell_constructor (GType type,
 				 G_CALLBACK (rb_shell_window_configure_cb),
 				 shell, 0);
 
+	/* connect after, so that things can affect behaviour */
 	g_signal_connect_object (G_OBJECT (win), "delete_event",
 				 G_CALLBACK (rb_shell_window_delete_cb),
-				 shell, 0);
+				 shell, G_CONNECT_AFTER);
   
 	shell->priv->ui_manager = gtk_ui_manager_new ();
 
@@ -1453,7 +1454,8 @@ rb_shell_set_visibility (RBShell *shell,
 		g_source_remove (shell->priv->idle_hide_mainwindow_id);
 	shell->priv->idle_hide_mainwindow_id = 0;
 
-	if (visible) {
+	/* don't minimise if we have no tray icon */
+	if (visible || !egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
 		rb_debug ("showing main window");
 		rb_shell_sync_window_state (shell, FALSE);
 
@@ -1533,18 +1535,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 		return TRUE;
 	}
 
-#if 0
-	if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
-		rb_debug ("window deleted, hiding");
-		rb_shell_set_visibility (shell, FALSE, TRUE);
-	} else {
-		rb_debug ("no tray icon to minimize to, quitting");
-		rb_shell_quit (shell);
-	}
-#else
-	rb_debug ("no tray icon to minimize to, quitting");
 	rb_shell_quit (shell);
-#endif
 
 	return TRUE;
 }

@@ -8,9 +8,16 @@
   (gtype-id "RB_TYPE_PLUGIN")
 )
 
+
+(define-interface RemoteProxy
+  (in-module "RB")
+  (c-name "RBRemoteProxy")
+  (gtype-id "RB_TYPE_REMOTE_PROXY")
+)
 (define-object Shell
   (in-module "RB")
   (parent "GObject")
+  (interface "RBRemoteProxy")
   (c-name "RBShell")
   (gtype-id "RB_TYPE_SHELL")
 )
@@ -237,4 +244,224 @@
   )
 )
 
+;; From ../../remote/rb-remote-proxy.h
 
+(define-function rb_remote_proxy_get_type
+  (c-name "rb_remote_proxy_get_type")
+  (return-type "GType")
+)
+
+(define-method load_uri
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_load_uri")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+    '("gboolean" "play")
+  )
+)
+
+(define-method select_uri
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_select_uri")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method play_uri
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_play_uri")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method grab_focus
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_grab_focus")
+  (return-type "none")
+)
+
+(define-method set_visibility
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_set_visibility")
+  (return-type "none")
+  (parameters
+    '("gboolean" "visible")
+  )
+)
+
+(define-method get_visibility
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_visibility")
+  (return-type "gboolean")
+)
+
+(define-method get_shuffle
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_shuffle")
+  (return-type "gboolean")
+)
+
+(define-method set_shuffle
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_set_shuffle")
+  (return-type "none")
+  (parameters
+    '("gboolean" "shuffle")
+  )
+)
+
+(define-method get_repeat
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_repeat")
+  (return-type "gboolean")
+)
+
+(define-method set_repeat
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_set_repeat")
+  (return-type "none")
+  (parameters
+    '("gboolean" "repeat")
+  )
+)
+
+(define-method play
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_play")
+  (return-type "none")
+)
+
+(define-method pause
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_pause")
+  (return-type "none")
+)
+
+(define-method playing
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_playing")
+  (return-type "gboolean")
+)
+
+(define-method get_playing_time
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_playing_time")
+  (return-type "long")
+)
+
+(define-method set_playing_time
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_set_playing_time")
+  (return-type "none")
+  (parameters
+    '("long" "time")
+  )
+)
+
+(define-method seek
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_seek")
+  (return-type "none")
+  (parameters
+    '("long" "offset")
+  )
+)
+
+(define-method set_rating
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_set_rating")
+  (return-type "none")
+  (parameters
+    '("double" "rating")
+  )
+)
+
+(define-method get_playing_uri
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_playing_uri")
+  (return-type "gchar*")
+)
+
+(define-method get_song_info
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_song_info")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "uri")
+    '("RBRemoteSong*" "song")
+  )
+)
+
+(define-method jump_next
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_jump_next")
+  (return-type "none")
+)
+
+(define-method jump_previous
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_jump_previous")
+  (return-type "none")
+)
+
+(define-method toggle_mute
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_toggle_mute")
+  (return-type "none")
+)
+
+(define-method quit
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_quit")
+  (return-type "none")
+)
+
+(define-method find_player_property
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_find_player_property")
+  (return-type "GParamSpec*")
+  (parameters
+    '("const-gchar*" "property")
+  )
+)
+
+(define-method player_notify_handler
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_player_notify_handler")
+  (return-type "none")
+  (parameters
+    '("GCallback" "c_handler")
+    '("gpointer" "gobject")
+  )
+)
+
+(define-method set_player_property
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_set_player_property")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "property")
+    '("GValue*" "value")
+  )
+)
+
+(define-method get_player_property
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_player_property")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "property")
+    '("GValue*" "value")
+  )
+)
+
+(define-method get_playing_source
+  (of-object "RBRemoteProxy")
+  (c-name "rb_remote_proxy_get_playing_source")
+  (return-type "gchar*")
+)
