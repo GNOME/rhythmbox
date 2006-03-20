@@ -1225,25 +1225,25 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 				      gboolean has_previous,
 				      RBShellPlayer *player)
 {
-	gboolean have_next;
-	gboolean have_previous;
-	gboolean not_empty;
+	gboolean have_next = FALSE;
+	gboolean have_previous = FALSE;
 	GtkAction *action;
 
 	if (rb_shell_player_get_playing_entry (player)) {
 		have_next = TRUE;
 		have_previous = TRUE;
 	} else {
-		have_next = rb_play_order_has_next (player->priv->play_order);
-		have_previous = rb_play_order_has_previous (player->priv->play_order);
+		if (player->priv->current_playing_source &&
+		    (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_NEXT)) {
+			have_next = rb_play_order_has_next (player->priv->play_order);
+			have_previous = rb_play_order_has_previous (player->priv->play_order);
+		}
 		if (player->priv->queue_play_order) {
 			have_next |= rb_play_order_has_next (player->priv->queue_play_order);
 			have_previous |= rb_play_order_has_previous (player->priv->queue_play_order);
 		}
 	}
 	
-	not_empty = have_next || have_previous;
-
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPrevious");
 	g_object_set (G_OBJECT (action), "sensitive", have_previous, NULL);

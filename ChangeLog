@@ -1,5 +1,11 @@
 2006-03-20  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (rb_shell_player_play_order_update_cb):
+	don't enable Next if the source has an EOS type other than
+	RB_SOURCE_EOF_NEXT. Fixes bug 315120.
+
+2006-03-20  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-song-info.c: (rb_song_info_backward_clicked_cb),
 	(rb_song_info_forward_clicked_cb): deal with there being no
 	next/previous entry.
