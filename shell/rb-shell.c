@@ -1455,7 +1455,7 @@ rb_shell_set_visibility (RBShell *shell,
 	shell->priv->idle_hide_mainwindow_id = 0;
 
 	/* don't minimise if we have no tray icon */
-	if (visible || !egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
+	if (visible || (!force && !egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))) {
 		rb_debug ("showing main window");
 		rb_shell_sync_window_state (shell, FALSE);
 
