@@ -526,7 +526,8 @@ volume_pre_unmount_cb (GnomeVFSVolumeMonitor *monitor,
 	uri_mount_point = rb_uri_get_mount_point (uri);
 	volume_mount_point = gnome_vfs_volume_get_activation_uri (volume);
 
-	if (!strcmp (uri_mount_point, volume_mount_point)) {
+	if (uri_mount_point && volume_mount_point &&
+	    (strcmp (uri_mount_point, volume_mount_point) == 0)) {
 		rb_shell_player_stop (player);
 	}
 	g_free (uri_mount_point);
