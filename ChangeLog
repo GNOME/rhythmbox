@@ -1,5 +1,17 @@
 2006-03-20  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-song-info.c: (rb_song_info_backward_clicked_cb),
+	(rb_song_info_forward_clicked_cb): deal with there being no
+	next/previous entry.
+
+	(rb_song_info_query_model_inserted_cb),
+	(rb_song_info_query_model_deleted_cb),
+	(rb_song_info_query_model_reordered_cb),
+	(rb_song_info_query_model_changed_cb): monitor the query for changes,
+	to update the button status. Fixes bug 333293.
+
+2006-03-20  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_set_visibility): fix minor sizing issue
 	caused by my last commit
 

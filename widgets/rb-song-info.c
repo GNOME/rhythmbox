@@ -901,15 +901,17 @@ static void
 rb_song_info_backward_clicked_cb (GtkWidget *button,
 				  RBSongInfo *song_info)
 {
+	RhythmDBEntry *new_entry;
+
 	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
-	song_info->priv->current_entry =
+	new_entry = 
 		rhythmdb_query_model_get_previous_from_entry (song_info->priv->query_model,
 							      song_info->priv->current_entry);
+	g_return_if_fail (new_entry != NULL);
 
-	rb_entry_view_select_entry (song_info->priv->entry_view,
-				    song_info->priv->current_entry);
-	rb_entry_view_scroll_to_entry (song_info->priv->entry_view,
-				       song_info->priv->current_entry);
+	song_info->priv->current_entry = new_entry;
+	rb_entry_view_select_entry (song_info->priv->entry_view, new_entry);
+	rb_entry_view_scroll_to_entry (song_info->priv->entry_view, new_entry);
 
 	rb_song_info_populate_dialog (song_info);
 }
@@ -918,15 +920,17 @@ static void
 rb_song_info_forward_clicked_cb (GtkWidget *button,
 				 RBSongInfo *song_info)
 {
+	RhythmDBEntry *new_entry;
+
 	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
-	song_info->priv->current_entry =
+	new_entry = 
 		rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
 							  song_info->priv->current_entry);
+	g_return_if_fail (new_entry != NULL);
 
-	rb_entry_view_select_entry (song_info->priv->entry_view,
-				    song_info->priv->current_entry);
-	rb_entry_view_scroll_to_entry (song_info->priv->entry_view,
-				       song_info->priv->current_entry);
+	song_info->priv->current_entry = new_entry;
+	rb_entry_view_select_entry (song_info->priv->entry_view, new_entry);
+	rb_entry_view_scroll_to_entry (song_info->priv->entry_view, new_entry);
 
 	rb_song_info_populate_dialog (song_info);
 }
@@ -958,14 +962,66 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 }
 
 static void
+rb_song_info_query_model_inserted_cb (RhythmDBQueryModel *model,
+				      GtkTreePath *path,
+				      GtkTreeIter *iter,
+				      RBSongInfo *song_info)
+{
+	rb_song_info_update_buttons (song_info);
+}
+
+static void
+rb_song_info_query_model_deleted_cb (RhythmDBQueryModel *model,
+				     RhythmDBEntry*entry,
+				     RBSongInfo *song_info)
+{
+	rb_song_info_update_buttons (song_info);
+}
+
+static void
+rb_song_info_query_model_reordered_cb (RhythmDBQueryModel *model,
+				       GtkTreePath *path,
+				       GtkTreeIter *iter,
+				       gpointer *map,
+				       RBSongInfo *song_info)
+{
+	rb_song_info_update_buttons (song_info);
+}
+
+static void
 rb_song_info_query_model_changed_cb (GObject *source,
 				     GParamSpec *whatever,
 				     RBSongInfo *song_info)
 {
-	if (song_info->priv->query_model)
+	if (song_info->priv->query_model) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (song_info->priv->query_model),
+						      G_CALLBACK (rb_song_info_query_model_inserted_cb),
+						      song_info);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (song_info->priv->query_model),
+						      G_CALLBACK (rb_song_info_query_model_deleted_cb),
+						      song_info);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (song_info->priv->query_model),
+						      G_CALLBACK (rb_song_info_query_model_reordered_cb),
+						      song_info);
+
 		g_object_unref (G_OBJECT (song_info->priv->query_model));
+	}
 
 	g_object_get (source, "query-model", &song_info->priv->query_model, NULL);
+
+	g_signal_connect_object (G_OBJECT (song_info->priv->query_model),
+				 "row-inserted", G_CALLBACK (rb_song_info_query_model_inserted_cb),
+				 song_info, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->query_model),
+				 "row-changed", G_CALLBACK (rb_song_info_query_model_inserted_cb),
+				 song_info, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->query_model),
+				 "entry-deleted", G_CALLBACK (rb_song_info_query_model_deleted_cb),
+				 song_info, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->query_model),
+				 "rows-reordered", G_CALLBACK (rb_song_info_query_model_reordered_cb),
+				 song_info, 0);
+	
 	/* update next button sensitivity */
 	rb_song_info_update_buttons (song_info);
 }
