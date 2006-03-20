@@ -46,7 +46,7 @@
 #include "rb-shell-player.h"
 #include "rb-source.h"
 #include "md5.h"
-
+#include "rb-proxy-config.h"
 
 
 #define CLIENT_ID "rbx"
@@ -123,15 +123,7 @@ struct _RBAudioscrobblerPrivate
 
 	/* HTTP requests session */
 	SoupSession *soup_session;
-
-	/* Proxy settings notifications (sigh, why do we need to monitor _SIX_ 
-	   fields?) */
-	guint notification_proxy_use_id;
-	guint notification_proxy_use_auth_id;
-	guint notification_proxy_host_id;
-	guint notification_proxy_port_id;
-	guint notification_proxy_user_id;
-	guint notification_proxy_password_id;
+	RBProxyConfig *proxy_config;
 };
 
 #define RB_AUDIOSCROBBLER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER, RBAudioscrobblerPrivate))
@@ -140,7 +132,7 @@ struct _RBAudioscrobblerPrivate
 static void	     audioscrobbler_entry_init (AudioscrobblerEntry *entry);
 static void	     audioscrobbler_entry_free (AudioscrobblerEntry *entry);
 
-static gboolean	 rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler);
+static gboolean	     rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler);
 static int	     rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_print_queue (RBAudioscrobbler *audioscrobbler, gboolean submission);
 static void	     rb_audioscrobbler_free_queue_entries (RBAudioscrobbler *audioscrobbler, GSList **queue);
@@ -158,35 +150,37 @@ static void	     rb_audioscrobbler_set_property (GObject *object,
 static void	     rb_audioscrobbler_finalize (GObject *object);
 
 static void	     rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler);
-static gboolean	 rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler);
+static gboolean	     rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler);
 
-static gchar *	 mkmd5 (char *string);
+static gchar *	     mkmd5 (char *string);
 static int	     rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg);
 static void	     rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 					       char *url,
 					       char *post_data,
 						   SoupMessageCallbackFn response_handler);
-static void		 rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler);
-static void		 rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data);
-static void		 rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler);
-static void		 rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data);
+static void	     rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data);
+static void	     rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data);
 
 static void	     rb_audioscrobbler_import_settings (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler);
 
-
-static SoupUri * get_proxy_uri (void);
-static void		 rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
-							    guint cnxn_id,
-					 		    GConfEntry *entry,
-					 		    RBAudioscrobbler *audioscrobbler);
-static void		 rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
-							    RhythmDBEntry *entry,
-							    RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
+							 guint cnxn_id,
+							 GConfEntry *entry,
+							 RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
+							RhythmDBEntry *entry,
+							RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_proxy_config_changed_cb (RBProxyConfig *config,
+								RBAudioscrobbler *audioscrobbler);
 enum
 {
 	PROP_0,
 	PROP_SHELL_PLAYER,
+	PROP_SHELL_PREFS,
+	PROP_PROXY_CONFIG
 };
 
 enum
@@ -218,11 +212,25 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_SHELL_PLAYER,
-					 g_param_spec_object ("shell_player",
+					 g_param_spec_object ("shell-player",
 							      "RBShellPlayer",
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_SHELL_PREFS,
+					 g_param_spec_object ("shell-preferences",
+							      "RBShellPreferences",
+							      "RBShellPreferences object",
+							      RB_TYPE_SHELL_PREFERENCES,
+							      G_PARAM_WRITABLE));
+	g_object_class_install_property (object_class,
+					 PROP_PROXY_CONFIG,
+					 g_param_spec_object ("proxy-config",
+							      "RBProxyConfig",
+							      "RBProxyConfig object",
+							      RB_TYPE_PROXY_CONFIG,
+							      G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
 }
@@ -230,8 +238,6 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 static void
 rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 {
-	SoupUri *uri = NULL;
-
 	rb_debug ("Initialising Audioscrobbler");
 	rb_debug ("Plugin ID: %s, Version %s (Protocol %s)",
 		  CLIENT_ID, CLIENT_VERSION, SCROBBLER_VERSION);
@@ -257,17 +263,6 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	audioscrobbler->priv->elapsed = 0;
 	audioscrobbler->priv->timeout_id = 0;
 
-	/* Setup soup session, with proxy if needed */
-	uri = get_proxy_uri ();
-	if (uri) {
-		audioscrobbler->priv->soup_session = soup_session_async_new_with_options (
-					"proxy-uri", uri,
-					NULL);
-		soup_uri_free (uri);
-	} else {
-		audioscrobbler->priv->soup_session = soup_session_async_new ();
-	}
-
 	rb_audioscrobbler_load_queue (audioscrobbler);
 
 	rb_audioscrobbler_import_settings (audioscrobbler);
@@ -285,32 +280,6 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_ENABLED,
 				    (GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
 				    audioscrobbler);
-
-	/* proxy notifications: */
-	audioscrobbler->priv->notification_proxy_use_id =
-		eel_gconf_notification_add ("/system/http_proxy/use_http_proxy",
-					(GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
-					audioscrobbler);
-	audioscrobbler->priv->notification_proxy_use_auth_id =
-		eel_gconf_notification_add ("/system/http_proxy/use_authentication",
-					(GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
-					audioscrobbler);
-	audioscrobbler->priv->notification_proxy_host_id =
-		eel_gconf_notification_add ("/system/http_proxy/host",
-					(GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
-					audioscrobbler);
-	audioscrobbler->priv->notification_proxy_port_id =
-		eel_gconf_notification_add ("/system/http_proxy/port",
-					(GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
-					audioscrobbler);
-	audioscrobbler->priv->notification_proxy_user_id =
-		eel_gconf_notification_add ("/system/http_proxy/authentication_user",
-					(GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
-					audioscrobbler);
-	audioscrobbler->priv->notification_proxy_password_id =
-		eel_gconf_notification_add ("/system/http_proxy/authentication_password",
-					(GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
-					audioscrobbler);
 }
 
 static void
@@ -334,13 +303,6 @@ rb_audioscrobbler_finalize (GObject *object)
 	eel_gconf_notification_remove (audioscrobbler->priv->notification_password_id);
 	eel_gconf_notification_remove (audioscrobbler->priv->notification_enabled_id);
 
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_proxy_use_id);
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_proxy_use_auth_id);
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_proxy_host_id);
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_proxy_port_id);
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_proxy_user_id);
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_proxy_password_id);
-
 	g_free (audioscrobbler->priv->md5_challenge);
 	g_free (audioscrobbler->priv->username);
 	g_free (audioscrobbler->priv->password);
@@ -348,7 +310,10 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->artist);
 	g_free (audioscrobbler->priv->album);
 	g_free (audioscrobbler->priv->title);
-	g_object_unref (G_OBJECT (audioscrobbler->priv->soup_session));
+	if (audioscrobbler->priv->soup_session)
+		g_object_unref (G_OBJECT (audioscrobbler->priv->soup_session));
+	g_object_unref (G_OBJECT (audioscrobbler->priv->proxy_config));
+	g_object_unref (G_OBJECT (audioscrobbler->priv->shell_player));
 
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->queue);
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);
@@ -357,10 +322,12 @@ rb_audioscrobbler_finalize (GObject *object)
 }
 
 RBAudioscrobbler*
-rb_audioscrobbler_new (RBShellPlayer *shell_player)
+rb_audioscrobbler_new (RBShellPlayer *shell_player,
+		       RBProxyConfig *proxy_config)
 {
 	return g_object_new (RB_TYPE_AUDIOSCROBBLER,
-			     "shell_player", shell_player,
+			     "shell-player", shell_player,
+			     "proxy-config", proxy_config,
 			     NULL);
 }
 
@@ -375,13 +342,33 @@ rb_audioscrobbler_set_property (GObject *object,
 	switch (prop_id) {
 		case PROP_SHELL_PLAYER:
 			audioscrobbler->priv->shell_player = g_value_get_object (value);
+			g_object_ref (G_OBJECT (audioscrobbler->priv->shell_player));
 			g_signal_connect_object (G_OBJECT (audioscrobbler->priv->shell_player),
 						 "playing-song-changed",
 						 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
 						 audioscrobbler, 0);
 			break;
+		case PROP_SHELL_PREFS:
+		{
+			RBShellPreferences *prefs = g_value_get_object (value);
+			GtkWidget *config_widget = rb_audioscrobbler_get_config_widget (audioscrobbler);
+
+			rb_shell_preferences_append_page (prefs,
+				       			  _("Audioscrobbler"),
+							  config_widget);
+			break;
+		}
+		case PROP_PROXY_CONFIG:
+			audioscrobbler->priv->proxy_config = g_value_get_object (value);
+			g_object_ref (G_OBJECT (audioscrobbler->priv->proxy_config));
+			g_signal_connect_object (G_OBJECT (audioscrobbler->priv->proxy_config),
+						 "config-changed",
+						 G_CALLBACK (rb_audioscrobbler_proxy_config_changed_cb),
+						 audioscrobbler, 0);
+			break;
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+			break;
 	}
 }
 
@@ -397,9 +384,9 @@ rb_audioscrobbler_get_property (GObject *object,
 		case PROP_SHELL_PLAYER:
 			g_value_set_object (value, audioscrobbler->priv->shell_player);
 			break;
-
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+			break;
 	}
 }
 
@@ -638,6 +625,18 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 					  strlen (post_data));
 	}
 
+	/* create soup session, if we haven't got one yet */
+	if (!audioscrobbler->priv->soup_session) {
+		SoupUri *uri;
+		
+		uri = rb_proxy_config_get_libsoup_uri (audioscrobbler->priv->proxy_config);
+		audioscrobbler->priv->soup_session = soup_session_async_new_with_options (
+					"proxy-uri", uri,
+					NULL);
+		if (uri)
+			soup_uri_free (uri);
+	}
+	
 	soup_session_queue_message (audioscrobbler->priv->soup_session,
 				    msg,
 				    response_handler,
@@ -828,8 +827,8 @@ rb_audioscrobbler_import_settings (RBAudioscrobbler *audioscrobbler)
 	/* import gconf settings. */
 	g_free (audioscrobbler->priv->username);
 	g_free (audioscrobbler->priv->password);
-	audioscrobbler->priv->username = g_strdup (eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME));
-	audioscrobbler->priv->password = g_strdup (eel_gconf_get_string (CONF_AUDIOSCROBBLER_PASSWORD));
+	audioscrobbler->priv->username = eel_gconf_get_string (CONF_AUDIOSCROBBLER_USERNAME);
+	audioscrobbler->priv->password = eel_gconf_get_string (CONF_AUDIOSCROBBLER_PASSWORD);
 	audioscrobbler->priv->enabled =  eel_gconf_get_boolean (CONF_AUDIOSCROBBLER_ENABLED);
 
 	if (eel_gconf_get_boolean (CONF_AUDIOSCROBBLER_ENABLED))
@@ -877,27 +876,21 @@ rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler)
 
 
 /* Callback functions: */
-static SoupUri *
-get_proxy_uri ()
+
+static void
+rb_audioscrobbler_proxy_config_changed_cb (RBProxyConfig *config,
+					   RBAudioscrobbler *audioscrobbler)
 {
-	SoupUri *uri = NULL;
+	SoupUri *uri;
 
-	if (!eel_gconf_get_boolean ("/system/http_proxy/use_http_proxy")) {
-		return NULL;
+	if (audioscrobbler->priv->soup_session) {
+		uri = rb_proxy_config_get_libsoup_uri (config);
+		g_object_set (G_OBJECT (audioscrobbler->priv->soup_session),
+					"proxy-uri", uri,
+					NULL);
+		if (uri)
+			soup_uri_free (uri);
 	}
-	
-	uri = g_new0 (SoupUri, 1);
-	uri->protocol = SOUP_PROTOCOL_HTTP;
-
-	uri->host = g_strdup (eel_gconf_get_string ("/system/http_proxy/host"));
-	uri->port = eel_gconf_get_integer ("/system/http_proxy/port");
-
-	if (eel_gconf_get_boolean ("/system/http_proxy/use_authentication")) {
-		uri->user = g_strdup (eel_gconf_get_string ("/system/http_proxy/authentication_user"));
-		uri->passwd = g_strdup (eel_gconf_get_string ("/system/http_proxy/authentication_password"));
-	}	
-
-	return uri;
 }
 
 static void
@@ -930,13 +923,6 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 
 		if (gconf_value_get_bool (entry->value))
 			rb_audioscrobbler_add_timeout (audioscrobbler);
-	} else if (g_str_has_prefix (entry->key, "/system/http_proxy/")) {
-		/* Update proxy */
-		SoupUri *uri = get_proxy_uri ();
-		g_object_set (G_OBJECT (audioscrobbler->priv->soup_session),
-					 "proxy-uri", uri,
-					 NULL);
-		soup_uri_free (uri);
 	} else {
 		rb_debug ("Unhandled GConf key updated: \"%s\"", entry->key);
 	}

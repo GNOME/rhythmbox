@@ -88,10 +88,7 @@
 #include "rb-import-errors-source.h"
 #include "rb-plugins-engine.h"
 #include "rb-plugin-manager.h"
-
-#ifdef WITH_AUDIOSCROBBLER
-#include "rb-audioscrobbler.h"
-#endif /* WITH_AUDIOSCROBBLER */
+#include "rb-proxy-config.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
@@ -315,6 +312,7 @@ enum
 	PROP_WINDOW,
 	PROP_PREFS,
 	PROP_QUEUE_SOURCE,
+	PROP_PROXY_CONFIG
 };
 
 /* prefs */
@@ -389,9 +387,7 @@ struct RBShellPrivate
 	RBSource *missing_files_source;
 	RBSource *import_errors_source;
 
-#ifdef WITH_AUDIOSCROBBLER
-	RBAudioscrobbler *audioscrobbler;
-#endif
+	RBProxyConfig *proxy_config;
 
 	RBSource *selected_source;
 
@@ -639,6 +635,13 @@ rb_shell_class_init (RBShellClass *klass)
 							      "Queue source", 
 							      RB_TYPE_PLAY_QUEUE_SOURCE,
 							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_PROXY_CONFIG,
+					 g_param_spec_object ("proxy-config",
+						 	      "proxy-config",
+							      "HTTP proxy configuration",
+							      RB_TYPE_PROXY_CONFIG,
+							      G_PARAM_READABLE));
 
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
@@ -800,7 +803,10 @@ rb_shell_get_property (GObject *object,
 		break;	
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, shell->priv->queue_source);
-		break;	
+		break;
+	case PROP_PROXY_CONFIG:
+		g_value_set_object (value, shell->priv->proxy_config);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -899,12 +905,7 @@ rb_shell_finalize (GObject *object)
 	rb_debug ("unreffing removable media manager");
 	g_object_unref (G_OBJECT (shell->priv->removable_media_manager));
 
-#ifdef WITH_AUDIOSCROBBLER
-	if (shell->priv->audioscrobbler) {
-		rb_debug ("unreffing audioscrobbler");
-		g_object_unref (G_OBJECT (shell->priv->audioscrobbler));
-	}
-#endif
+	g_object_unref (G_OBJECT (shell->priv->proxy_config));
 	
 	rb_debug ("unreffing clipboard shell");
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
@@ -1157,18 +1158,8 @@ rb_shell_constructor (GType type,
 
 	gtk_container_add (GTK_CONTAINER (win), vbox);
 
-#ifdef WITH_AUDIOSCROBBLER
-	/* 
-	 * Don't use audioscrobbler when the no-registration flag is set.
-	 * This flag is only used to run multiple instances at the same time, and
-	 * last.fm only allows one active client per user.
-	 */
-	if (!shell->priv->no_registration) {
-		rb_debug ("Audioscrobbler support enabled.");
-		shell->priv->audioscrobbler = rb_audioscrobbler_new (shell->priv->player_shell); 
-	}
-#endif /* WITH_AUDIOSCROBBLER */
-
+	shell->priv->proxy_config = rb_proxy_config_new ();
+	
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
 	shell->priv->sourcelist_visibility_notify_id =

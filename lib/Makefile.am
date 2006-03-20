@@ -20,14 +20,18 @@ librb_la_SOURCES =					\
 	rb-tree-dnd.h					\
 	rb-preferences.h				\
 	md5.c						\
-	md5.h
+	md5.h						\
+	rb-proxy-config.c				\
+	rb-proxy-config.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-I$(top_srcdir) 				\
+	-I$(top_srcdir)/widgets				\
 	$(WARN_CFLAGS)					\
+	$(SOUP_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 BUILT_SOURCES=

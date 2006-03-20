@@ -68,7 +68,7 @@ librbshell_la_SOURCES =              			\
 	rb-playlist-manager.c				\
 	rb-playlist-manager.h				\
 	rb-removable-media-manager.c			\
-	rb-removable-media-manager.h				\
+	rb-removable-media-manager.h			\
 	rb-history.c					\
 	rb-history.h					\
 	rb-play-order.c					\
@@ -109,12 +109,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/plugins/librbplugins.la		\
 	$(top_builddir)/lib/librb.la
-
-if WITH_AUDIOSCROBBLER
-librbshell_la_SOURCES +=				\
-	rb-audioscrobbler.c				\
-	rb-audioscrobbler.h
-endif
 
 if WITH_BONOBO
 rhythmbox_LDADD += $(top_builddir)/remote/bonobo/librbbonobo.la

@@ -2,10 +2,14 @@ plugindir = $(PLUGINDIR)
 plugin_LTLIBRARIES = libaudioscrobbler.la
 
 libaudioscrobbler_la_SOURCES = \
-	rb-audioscrobbler-plugin.c
+	rb-audioscrobbler-plugin.c			\
+	$(top_srcdir)/shell/rb-audioscrobbler.c		\
+	$(top_srcdir)/shell/rb-audioscrobbler.h
 	
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
-libaudioscrobbler_la_LD_ADD = $(SOUP_LIBS)
+libaudioscrobbler_la_LIBADD = 				\
+	$(top_builddir)/lib/librb.la			\
+	$(SOUP_LIBS)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -1,3 +1,28 @@
+2006-03-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	* lib/Makefile.am:
+	* lib/rb-proxy-config.c:
+	* lib/rb-proxy-config.h:
+	Add a new object to watch the HTTP proxy configuration and emit
+	signals when it changes.
+
+	* shell/rb-audioscrobbler.c:
+	* shell/rb-audioscrobbler.h:
+	Use rb-proxy-config to watch HTTP proxy configuration.
+
+	* shell/rb-shell.c:
+	Construct rb-proxy-config object on startup, and remove all
+	audioscrobbler references.
+
+	* shell/Makefile.am:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	Move all audioscrobbler code into the plugin.  We should move
+	rb-audioscrobbler.* from shell/ to plugins/audioscrobbler/ at some
+	point.  Don't use a private data structure in the plugin, since the
+	class definition isn't in a header file.  Fixes #335091.
+
 2006-03-20  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (rb_shell_player_play_order_update_cb):

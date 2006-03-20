@@ -37,22 +37,17 @@
 
 
 #define RB_TYPE_AUDIOSCROBBLER_PLUGIN		(rb_audioscrobbler_plugin_get_type ())
-#define RB_AUDIOSCROBBLER_PLUGIN(o)			(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPlugin))
-#define RB_AUDIOSCROBBLER_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
+#define RB_AUDIOSCROBBLER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPlugin))
+#define RB_AUDIOSCROBBLER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
 #define RB_IS_AUDIOSCROBBLER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
-#define RB_IS_AUDIOSCROBBLER_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
+#define RB_IS_AUDIOSCROBBLER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
 #define RB_AUDIOSCROBBLER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
 
 typedef struct
 {
+	RBPlugin parent;
 	RBAudioscrobbler *audioscrobbler;
 	GtkWidget *preferences;
-} RBAudioscrobblerPluginPrivate;
-
-typedef struct
-{
-	RBPlugin parent;
-	RBAudioscrobblerPluginPrivate *priv;
 } RBAudioscrobblerPlugin;
 
 typedef struct
@@ -73,8 +68,6 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 static GtkWidget* impl_create_configure_dialog (RBPlugin *plugin);
 
 RB_PLUGIN_REGISTER(RBAudioscrobblerPlugin, rb_audioscrobbler_plugin)
-#define RB_AUDIOSCROBBLER_PLUGIN_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginPrivate))
-
 
 static void
 rb_audioscrobbler_plugin_class_init (RBAudioscrobblerPluginClass *klass)
@@ -87,29 +80,25 @@ rb_audioscrobbler_plugin_class_init (RBAudioscrobblerPluginClass *klass)
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;
 	plugin_class->create_configure_dialog = impl_create_configure_dialog;
-	
-	g_type_class_add_private (object_class, sizeof (RBAudioscrobblerPluginPrivate));
 }
 
 static void
 rb_audioscrobbler_plugin_init (RBAudioscrobblerPlugin *plugin)
 {
-	plugin->priv = RB_AUDIOSCROBBLER_PLUGIN_GET_PRIVATE (plugin);
-
 	rb_debug ("RBAudioscrobblerPlugin initialising");
 }
 
 static void
 rb_audioscrobbler_plugin_finalize (GObject *object)
 {
-	RBAudioscrobblerPluginPrivate *priv = RB_AUDIOSCROBBLER_PLUGIN (object)->priv;
+	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (object);
 
 	rb_debug ("RBAudioscrobblerPlugin finalising");
 
-	g_assert (priv->audioscrobbler == NULL);
+	g_assert (plugin->audioscrobbler == NULL);
 
-	if (priv->preferences)
-		gtk_widget_destroy (priv->preferences);
+	if (plugin->preferences)
+		gtk_widget_destroy (plugin->preferences);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_plugin_parent_class)->finalize (object);
 }
@@ -117,24 +106,41 @@ rb_audioscrobbler_plugin_finalize (GObject *object)
 
 
 static void
-impl_activate (RBPlugin *plugin,
+impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
-	RBAudioscrobblerPluginPrivate *priv = RB_AUDIOSCROBBLER_PLUGIN (plugin)->priv;
+	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+	RBProxyConfig *proxy_config;
+	gboolean no_registration;
 
-	g_assert (priv->audioscrobbler == NULL);
-	priv->audioscrobbler = rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)));
+	g_assert (plugin->audioscrobbler == NULL);
+	g_object_get (G_OBJECT (shell), 
+		      "proxy-config", &proxy_config, 
+		      "no-registration", &no_registration,
+		      NULL);
+
+	/* 
+	 * Don't use audioscrobbler when the no-registration flag is set.
+	 * This flag is only used to run multiple instances at the same time, and
+	 * last.fm only allows one active client per user.
+	 */
+	if (!no_registration) {
+		plugin->audioscrobbler = rb_audioscrobbler_new (RB_SHELL_PLAYER (rb_shell_get_player (shell)),
+								proxy_config);
+	}
+	g_object_unref (G_OBJECT (proxy_config));
 }
 
 static void
-impl_deactivate	(RBPlugin *plugin,
+impl_deactivate	(RBPlugin *bplugin,
 		 RBShell *shell)
 {
-	RBAudioscrobblerPluginPrivate *priv = RB_AUDIOSCROBBLER_PLUGIN (plugin)->priv;
+	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
-	g_assert (priv->audioscrobbler != NULL);
-	g_object_unref (priv->audioscrobbler);
-	priv->audioscrobbler = NULL;
+	if (plugin->audioscrobbler) {
+		g_object_unref (plugin->audioscrobbler);
+		plugin->audioscrobbler = NULL;
+	}
 }
 
 static void
@@ -144,29 +150,32 @@ preferences_response_cb (GtkWidget *dialog, gint response, RBPlugin *plugin)
 }
 
 static GtkWidget*
-impl_create_configure_dialog (RBPlugin *plugin)
+impl_create_configure_dialog (RBPlugin *bplugin)
 {
-	RBAudioscrobblerPluginPrivate *priv = RB_AUDIOSCROBBLER_PLUGIN (plugin)->priv;
+	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+	if (plugin->audioscrobbler == NULL)
+		return NULL;
 
-	if (priv->preferences == NULL) {
+	if (plugin->preferences == NULL) {
 		GtkWidget *widget;
 
-		widget =  rb_audioscrobbler_get_config_widget (priv->audioscrobbler);
+		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler);
 
-		priv->preferences = gtk_dialog_new_with_buttons (_("Audioscrobbler preferences"),
-								 NULL,
-								 GTK_DIALOG_DESTROY_WITH_PARENT,
-								 GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-								 NULL);
-		g_signal_connect (G_OBJECT (priv->preferences),
+		plugin->preferences = gtk_dialog_new_with_buttons (_("Audioscrobbler preferences"),
+								   NULL,
+								   GTK_DIALOG_DESTROY_WITH_PARENT,
+								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+								   NULL);
+		g_signal_connect (G_OBJECT (plugin->preferences),
 				  "response",
 				  G_CALLBACK (preferences_response_cb),
 				  plugin);
-		gtk_widget_hide_on_delete (priv->preferences);
+		gtk_widget_hide_on_delete (plugin->preferences);
 		
-		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (priv->preferences)->vbox), widget);
+		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (plugin->preferences)->vbox), widget);
 	}
 	
-	gtk_widget_show_all (priv->preferences);
-	return priv->preferences;
+	gtk_widget_show_all (plugin->preferences);
+	return plugin->preferences;
 }
+
