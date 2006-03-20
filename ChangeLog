@@ -1,3 +1,19 @@
+2006-03-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init),
+	(rhythmdb_execute_multi_stat_info_cb),
+	(rhythmdb_start_action_thread), (rhythmdb_execute_stat_info_cb),
+	(rhythmdb_execute_stat), (queue_stat_uri), (rhythmdb_execute_load),
+	(action_thread_main):
+	Collect all the get_file_info requests on startup into one gnome-vfs
+	job to reduce overhead and avoid contention for the rhythmdb lock.
+	Add a new method to call when all initial query models are set up.
+	
+	* shell/rb-shell.c: (idle_handle_load_complete):
+	Call rhythmdb startup complete function when we've loaded all the
+	playlists.  Fixes #334106.
+
 2006-03-20  James Livingston  <jrl@ids.org.au>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_set_property),

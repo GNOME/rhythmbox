@@ -86,10 +86,16 @@ struct RhythmDBPrivate
 	RBRefString *empty_string;
 	RBRefString *octet_stream_str;
 
+	gboolean action_thread_running;
 	gint outstanding_threads;
 	GAsyncQueue *action_queue;
 	GAsyncQueue *event_queue;
 	GAsyncQueue *restored_queue;
+
+	GList *stat_list;
+	GHashTable *stat_events;
+	GnomeVFSAsyncHandle *stat_handle;
+	GMutex *stat_mutex;
 
 	GHashTable *monitored_directories;
 	GHashTable *changed_files;
@@ -501,6 +507,11 @@ rhythmdb_init (RhythmDB *db)
 							 (GDestroyNotify) g_free,
 							 NULL);
 
+ 	db->priv->stat_events = g_hash_table_new_full (gnome_vfs_uri_hash, (GEqualFunc) gnome_vfs_uri_equal,
+ 						       (GDestroyNotify) gnome_vfs_uri_unref,
+ 						       NULL);
+ 	db->priv->stat_mutex = g_mutex_new ();
+
 	db->priv->change_mutex = g_mutex_new ();
 	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
 	db->priv->added_entries = g_hash_table_new (NULL, NULL);
@@ -508,8 +519,6 @@ rhythmdb_init (RhythmDB *db)
 	
 	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
 
-	rhythmdb_thread_create (db, (GThreadFunc) action_thread_main, db);
-	
 	db->priv->saving_condition = g_cond_new ();
 	db->priv->saving_mutex = g_mutex_new ();
 
@@ -529,6 +538,68 @@ rhythmdb_init (RhythmDB *db)
 			  "volume-unmounted", 
 			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
 			  db);
+}
+
+static void
+rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
+				     GList *results, /* GnomeVFSGetFileInfoResult* items */
+				     RhythmDB *db)
+{
+	g_mutex_lock (db->priv->stat_mutex);
+	while (results != NULL) {
+		GnomeVFSGetFileInfoResult *info_result = results->data;
+		RhythmDBEvent *event;
+
+		event = g_hash_table_lookup (db->priv->stat_events, info_result->uri);
+		if (event == NULL) {
+			char *uri_string;
+			uri_string = gnome_vfs_uri_to_string (info_result->uri, GNOME_VFS_URI_HIDE_NONE);
+			rb_debug ("ignoring unexpected uri in gnome_vfs_async_get_file_info response: %s",
+				  uri_string);
+			g_free (uri_string);
+			results = results->next;
+			continue;
+		}
+		g_hash_table_remove (db->priv->stat_events, info_result->uri);
+		
+		if (info_result->result == GNOME_VFS_OK) {
+			event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
+		} else {
+			char *unescaped = gnome_vfs_unescape_string_for_display (event->real_uri);
+			event->error = g_error_new (RHYTHMDB_ERROR,
+						    RHYTHMDB_ERROR_ACCESS_FAILED,
+						    _("Couldn't access %s: %s"),
+						    unescaped,
+						    gnome_vfs_result_to_string (info_result->result));
+			rb_debug ("got error on %s: %s", unescaped, event->error->message);
+			g_free (unescaped);
+			event->vfsinfo = NULL;
+		}
+		g_async_queue_push (db->priv->event_queue, event);
+
+		results = results->next;
+	}
+	g_mutex_unlock (db->priv->stat_mutex);
+}
+
+void
+rhythmdb_start_action_thread (RhythmDB *db)
+{
+	g_mutex_lock (db->priv->stat_mutex);
+	db->priv->action_thread_running = TRUE;
+	rhythmdb_thread_create (db, (GThreadFunc) action_thread_main, db);
+
+	if (db->priv->stat_list != NULL) {
+		gnome_vfs_async_get_file_info (&db->priv->stat_handle, db->priv->stat_list,
+					       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
+					       GNOME_VFS_PRIORITY_MIN,
+					       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_multi_stat_info_cb,
+					       db);
+		g_list_free (db->priv->stat_list);
+		db->priv->stat_list = NULL;
+	}
+
+	g_mutex_unlock (db->priv->stat_mutex);
 }
 
 static void
@@ -1903,18 +1974,91 @@ read_queue (GAsyncQueue *queue, gboolean *cancel)
 }
 
 static void
+rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
+			       GList *results, /* GnomeVFSGetFileInfoResult* items */
+			       RhythmDBEvent *event)
+{
+	/* this is in the main thread, so we can't do any long operation here */
+	GnomeVFSGetFileInfoResult *info_result = results->data;
+	
+	if (info_result->result == GNOME_VFS_OK) {
+		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
+	} else {
+		char *unescaped = gnome_vfs_unescape_string_for_display (event->real_uri);
+		event->error = g_error_new (RHYTHMDB_ERROR,
+					    RHYTHMDB_ERROR_ACCESS_FAILED,
+					    _("Couldn't access %s: %s"),
+					    unescaped,
+					    gnome_vfs_result_to_string (info_result->result));
+		rb_debug ("got error on %s: %s", unescaped, event->error->message);
+		g_free (unescaped);
+		event->vfsinfo = NULL;
+	}
+	g_async_queue_push (event->db->priv->event_queue, event);
+}
+
+static void
+rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
+{
+	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+
+	GList *uri_list = g_list_append (NULL, vfs_uri);
+	event->real_uri = g_strdup (uri);
+
+	gnome_vfs_async_get_file_info (&event->handle, uri_list,
+			       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
+			       GNOME_VFS_PRIORITY_MIN,
+			       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
+			       event);
+	g_list_free (uri_list);
+}
+
+
+static void
 queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 {
-	RhythmDBAction *action;
+	RhythmDBEvent *result;
 
 	rb_debug ("queueing stat for \"%s\"", uri);
 	g_assert (uri && *uri);
 
-	action = g_new0 (RhythmDBAction, 1);
-	action->type = RHYTHMDB_ACTION_STAT;
-	action->uri = rb_canonicalise_uri (uri);
-	action->entry_type = type;
-	g_async_queue_push (db->priv->action_queue, action);
+	result = g_new0 (RhythmDBEvent, 1);
+	result->db = db;
+	result->type = RHYTHMDB_EVENT_STAT;
+	result->entry_type = type;
+
+	/*
+	 * before the action thread is started, we queue up stat events,
+	 * as we're still creating and running queries, as well as loading
+	 * the database.  when we start the action thread, we'll kick off
+	 * a gnome-vfs job to run all the stat events too.
+	 *
+	 * when the action thread is already running, we can start the
+	 * async_get_file_info job directly.
+	 */
+	g_mutex_lock (db->priv->stat_mutex);
+
+	if (db->priv->action_thread_running) {
+		rhythmdb_execute_stat (db, uri, result);
+	} else {
+		GnomeVFSURI *vfs_uri;
+
+		vfs_uri = gnome_vfs_uri_new (uri);
+		
+		/* construct a list of URIs and a hash table containing
+		 * stat events to fill in and post on the event queue.
+		 */
+		if (g_hash_table_lookup (db->priv->stat_events, vfs_uri)) {
+			g_free (result);
+			gnome_vfs_uri_unref (vfs_uri);
+		} else {
+			result->real_uri = g_strdup (uri);
+			g_hash_table_insert (db->priv->stat_events, vfs_uri, result);
+			db->priv->stat_list = g_list_prepend (db->priv->stat_list, vfs_uri);
+		}	
+	}
+	
+	g_mutex_unlock (db->priv->stat_mutex);
 }
 
 static void
@@ -1943,51 +2087,10 @@ add_thread_main (RhythmDBAddThreadData *data)
 }
 
 static void
-rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
-			       GList *results, /* GnomeVFSGetFileInfoResult* items */
-			       RhythmDBEvent *event)
-{
-	/* this is in the main thread, so we can't do any long operation here */
-	GnomeVFSGetFileInfoResult *info_result = results->data;
-	
-	if (info_result->result == GNOME_VFS_OK) {
-		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
-	} else {
-		char *unescaped = gnome_vfs_unescape_string_for_display (event->real_uri);
-		event->error = g_error_new (RHYTHMDB_ERROR,
-					    RHYTHMDB_ERROR_ACCESS_FAILED,
-					    _("Couldn't access %s: %s"),
-					    unescaped,
-					    gnome_vfs_result_to_string (info_result->result));
-		rb_debug ("got error on %s: %s", unescaped, event->error->message);
-		g_free (unescaped);
-		event->vfsinfo = NULL;
-	}
-	g_async_queue_push (event->db->priv->event_queue, event);
-}
-
-
-static void
-rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
+rhythmdb_execute_load (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 {
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	GnomeVFSResult vfsresult;
-
-	/* we can't do this synchonously if the file is remote and hasn't been stat'd yet
-	 * because it may block indefinitely while
-	 */
-	if ((event->type == RHYTHMDB_ACTION_STAT)) {
-		GList *uri_list = g_list_append (NULL, vfs_uri);
-		event->real_uri = g_strdup (uri);
-	
-		gnome_vfs_async_get_file_info (&event->handle, uri_list,
-				       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
-				       GNOME_VFS_PRIORITY_MIN,
-				       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
-				       event);
-		g_list_free (uri_list);
-		return;
-	}
 
 	event->real_uri = rb_uri_resolve_symlink (uri);
 	event->vfsinfo = gnome_vfs_file_info_new ();
@@ -2130,8 +2233,7 @@ action_thread_main (RhythmDB *db)
 
 			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", action->uri);
 
-			/* First do another stat */
-			rhythmdb_execute_stat (db, action->uri, result);
+			rhythmdb_execute_load (db, action->uri, result);
 		}
 		break;
 		case RHYTHMDB_ACTION_SYNC:

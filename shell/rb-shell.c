@@ -2325,6 +2325,8 @@ idle_handle_load_complete (RBShell *shell)
 	shell->priv->load_complete = TRUE;
 	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
 
+	rhythmdb_start_action_thread (shell->priv->db);
+
 	GDK_THREADS_LEAVE ();
 
 	return FALSE;

@@ -247,6 +247,8 @@ void		rhythmdb_load		(RhythmDB *db);
 void		rhythmdb_save		(RhythmDB *db);
 void		rhythmdb_save_async	(RhythmDB *db);
 
+void		rhythmdb_start_action_thread	(RhythmDB *db);
+
 void		rhythmdb_commit		(RhythmDB *db);
 
 gboolean	rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry);
