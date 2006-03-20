@@ -2626,6 +2626,7 @@ rb_shell_cmd_view_all (GtkAction *action,
 
 	rb_source_reset_filters (shell->priv->selected_source);
 	rb_source_header_clear_search (shell->priv->source_header);
+	rb_source_header_focus_search_box (shell->priv->source_header);
 }
 
 static void

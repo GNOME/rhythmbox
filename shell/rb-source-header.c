@@ -557,3 +557,9 @@ rb_source_header_search_activate_cb (RBSearchEntry *search,
 {
 	gtk_widget_grab_focus (GTK_WIDGET (header->priv->selected_source));
 }
+
+void
+rb_source_header_focus_search_box (RBSourceHeader *header)
+{
+	rb_search_entry_grab_focus (RB_SEARCH_ENTRY (header->priv->search));
+}

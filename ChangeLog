@@ -1,3 +1,14 @@
+2006-03-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-source-header.c: (rb_source_header_focus_search_box):
+	* shell/rb-source-header.h:
+	* widgets/rb-search-entry.c: (rb_search_entry_grab_focus):
+	* widgets/rb-search-entry.h:
+	Add functions to make the search box grab focus.
+
+	* shell/rb-shell.c: (rb_shell_cmd_view_all):
+	Focus the search box after handling the 'view all' action.
+
 2006-03-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.h:

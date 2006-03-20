@@ -61,6 +61,8 @@ void		rb_search_entry_set_text (RBSearchEntry *entry, const char *text);
 
 gboolean	rb_search_entry_searching(RBSearchEntry *entry);
 
+void		rb_search_entry_grab_focus (RBSearchEntry *entry);
+
 G_END_DECLS
 
 #endif /* __RB_SEARCH_ENTRY_H */

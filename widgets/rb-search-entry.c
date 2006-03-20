@@ -236,3 +236,9 @@ rb_search_entry_activate_cb (GtkEntry *gtkentry,
 {
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0);
 }
+
+void
+rb_search_entry_grab_focus (RBSearchEntry *entry)
+{
+	gtk_widget_grab_focus (GTK_WIDGET (entry->priv->entry));
+}
