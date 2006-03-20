@@ -147,7 +147,7 @@ struct RBEntryViewPrivate
 	gint sorting_order;
 	char *sorting_column_name;
 
-	gboolean have_selection;
+	gboolean have_selection, have_complete_selection;
 
 	GHashTable *column_key_map;
 
@@ -485,6 +485,7 @@ rb_entry_view_set_property (GObject *object,
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (new_model));
 		view->priv->have_selection = FALSE;
+		view->priv->have_complete_selection = FALSE;
 
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
 		break;
@@ -1477,6 +1478,12 @@ rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 	g_list_free (sel);
 
 	if (available != view->priv->have_selection) {
+		gint sel_count, entry_count;
+
+		sel_count= gtk_tree_selection_count_selected_rows (view->priv->selection);
+		entry_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model), NULL);
+		view->priv->have_complete_selection = (sel_count == entry_count);
+
 		view->priv->have_selection = available;
 
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[HAVE_SEL_CHANGED], 0, available);
@@ -1495,12 +1502,7 @@ rb_entry_view_have_selection (RBEntryView *view)
 gboolean
 rb_entry_view_have_complete_selection (RBEntryView *view)
 {
-	gint sel_count, entry_count;
-
-	sel_count= gtk_tree_selection_count_selected_rows (view->priv->selection);
-	entry_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model), NULL);
-
-	return (sel_count == entry_count);
+	return view->priv->have_complete_selection;
 }
 
 static void

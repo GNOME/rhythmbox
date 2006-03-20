@@ -1,5 +1,12 @@
 2006-03-20  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_set_property),
+	(rb_entry_view_selection_changed_cb),
+	(rb_entry_view_have_complete_selection): make has_complete_selection
+	not slow. Fixes a performance issue I added a week or so ago.
+
+2006-03-20  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell-player.c: (volume_pre_unmount_cb): check for NULL
 	before passing to strcmp. From bug 334559.
 
