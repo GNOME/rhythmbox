@@ -1,5 +1,12 @@
 2006-03-21  James Livingston  <jrl@ids.org.au>
 
+	Patch by:  Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* player/Makefile.am:
+	* shell/Makefile.am: work correctly with a separate build root.
+
+2006-03-21  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_monitor_uri_path): don't crash if we
 	get handed NULL.
 
