@@ -51,7 +51,7 @@ INCLUDES = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE
+	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
 
 librbshell_la_SOURCES =              			\
 	rb-shell.c					\

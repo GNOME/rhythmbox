@@ -2,7 +2,14 @@
 
 noinst_LTLIBRARIES = librb.la
 
+if MKDTEMP_MISSING
+MKDTEMP_FILES = mkdtemp.c mkdtemp.h
+else
+MKDTEMP_FILES =
+endif
+
 librb_la_SOURCES =					\
+	$(MKDTEMP_FILES)				\
 	rb-debug.c					\
 	rb-debug.h					\
 	rb-file-helpers.c				\

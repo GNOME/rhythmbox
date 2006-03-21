@@ -35,8 +35,10 @@
 #include "rb-marshal.h"
 #include "rb-playlist-source.h"
 
+/* Some compilers do not like empty structures, noop is not used */
 struct RBSourceListModelPrivate
 {
+   int noop;
 };
 
 #define RB_SOURCELIST_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCELIST_MODEL, RBSourceListModelPrivate))

@@ -146,7 +146,7 @@ rb_remote_proxy_get_repeat (RBRemoteProxy *proxy)
 void
 rb_remote_proxy_set_repeat (RBRemoteProxy *proxy, gboolean repeat)
 {
-	return (* RB_REMOTE_PROXY_GET_IFACE (proxy)->set_repeat) (proxy, repeat);
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->set_repeat) (proxy, repeat);
 }
 
 void

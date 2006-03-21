@@ -166,9 +166,9 @@ struct RhythmDBQueryModelUpdate
 		struct {
 			RhythmDBEntry *entry;
 			gint index;
-		};
+		} data;
 		GPtrArray *entries;
-	};
+	} entrydata;
 };
 
 static void rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update);
@@ -836,9 +836,9 @@ idle_process_update (struct RhythmDBQueryModelUpdate *update)
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
 	{
 		guint i;
-		rb_debug ("inserting %d rows", update->entries->len);
-		for (i = 0; i < update->entries->len; i++ ) {
-			RhythmDBEntry *entry = g_ptr_array_index (update->entries, i);
+		rb_debug ("inserting %d rows", update->entrydata.entries->len);
+		for (i = 0; i < update->entrydata.entries->len; i++ ) {
+			RhythmDBEntry *entry = g_ptr_array_index (update->entrydata.entries, i);
 
 			if (update->model->priv->show_hidden || !rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
 				RhythmDBQueryModel *base_model = update->model->priv->base_model;
@@ -851,14 +851,14 @@ idle_process_update (struct RhythmDBQueryModelUpdate *update)
 			
 			rhythmdb_entry_unref (update->model->priv->db, entry);
 		}
-		g_ptr_array_free (update->entries, TRUE);
+		g_ptr_array_free (update->entrydata.entries, TRUE);
 		break;
 	}
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED_INDEX:
 	{
-		rb_debug ("inserting row at index %d", update->index);
-		rhythmdb_query_model_do_insert (update->model, update->entry, update->index);
-		rhythmdb_entry_unref (update->model->priv->db, update->entry);
+		rb_debug ("inserting row at index %d", update->entrydata.data.index);
+		rhythmdb_query_model_do_insert (update->model, update->entrydata.data.entry, update->entrydata.data.index);
+		rhythmdb_entry_unref (update->model->priv->db, update->entrydata.data.entry);
 		break;
 	}
 	case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
@@ -893,8 +893,8 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry,
 	
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED_INDEX;
-	update->entry = entry;
-	update->index = index;
+	update->entrydata.data.entry = entry;
+	update->entrydata.data.index = index;
 	update->model = model;
 
 	g_object_ref (G_OBJECT (model));
@@ -1597,12 +1597,12 @@ rhythmdb_query_model_add_results (RhythmDBQueryResults *results, GPtrArray *entr
 
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED;
-	update->entries = entries;
+	update->entrydata.entries = entries;
 	update->model = model;
 	g_object_ref (G_OBJECT (model));
 
-	for (i = 0; i < update->entries->len; i++)
-		rhythmdb_entry_ref (model->priv->db, g_ptr_array_index (update->entries, i));
+	for (i = 0; i < update->entrydata.entries->len; i++)
+		rhythmdb_entry_ref (model->priv->db, g_ptr_array_index (update->entrydata.entries, i));
 
 	rhythmdb_query_model_process_update (update);
 }

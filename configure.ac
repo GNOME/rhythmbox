@@ -527,7 +527,10 @@ AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_unref,
     [AC_DEFINE([HAVE_BURN_DRIVE_UNREF], 1, [Have nautilus-burn 2.13 drive unref function])],
     ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
 AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_new_from_path,
-    [AC_DEFINE([HAVE_BURN_DRIVE_NEW_FROM_PATH], 1, [Have nautilus-burn 2.13 drive new-from-path function])],
+    [AC_DEFINE([HAVE_BURN_DRIVE_NEW_FROM_PATH], 1, [Have nautilus-burn 2.13 drive new_from_path function])],
+    ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_get_write_speeds,
+    [AC_DEFINE([HAVE_BURN_DRIVE_GET_WRITE_SPEEDS], 1, [Have nautilus-burn 2.13 drive get_write_speeds])],
     ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
 
 AC_SUBST(CFLAGS)

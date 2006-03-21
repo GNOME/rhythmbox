@@ -55,10 +55,6 @@
 extern char *mkdtemp (char *template);
 #endif
 
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
 /* NAUTILUS_BURN_DRIVE_SIZE_TO_TIME was added in 2.12 */
 #ifndef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
 #define nautilus_burn_drive_eject _nautilus_burn_drive_eject
@@ -249,22 +245,27 @@ get_speed_selection (GtkWidget *combobox)
         return speed;
 }
 
-#if !NAUTILUS_BURN_CHECK_VERSION(2,13,90)
-static int *
+#ifndef HAVE_BURN_DRIVE_GET_WRITE_SPEEDS
+
+#define nautilus_burn_drive_get_write_speeds get_write_speeds
+
+static const int *
 get_write_speeds (NautilusBurnDrive *drive)
 {
 	int  max_speed;
 	int  i;
-        int *write_speeds;
+        static int *write_speeds = NULL;
 
-	max_speed = drive->max_speed_write;
-	write_speeds = g_new0 (int, max_speed + 1);
+	if (write_speeds == NULL) {
+		max_speed = drive->max_speed_write;
+		write_speeds = g_new0 (int, max_speed + 1);
 
-	for (i = 0; i < max_speed; i++) {
-		write_speeds [i] = max_speed - i;
+		for (i = 0; i < max_speed; i++) {
+			write_speeds [i] = max_speed - i;
+		}
 	}
 
-        return write_speeds;
+        return (const int*)write_speeds;
 }
 #endif
 
@@ -299,15 +300,9 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
         default_speed_index = 0;
 
         if (drive) {
-#if NAUTILUS_BURN_CHECK_VERSION(2,13,90)
                 const int *write_speeds;
 
                 write_speeds = nautilus_burn_drive_get_write_speeds ((NautilusBurnDrive *)drive);
-#else
-                int *write_speeds;
-
-                write_speeds = get_write_speeds ((NautilusBurnDrive *)drive);
-#endif
 
                 for (i = 0; write_speeds [i] > 0; i++) {
 
@@ -327,10 +322,6 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
 
                 /* Disable speed if no items in list */
                 gtk_widget_set_sensitive (combobox, i > 0);
-
-#if !NAUTILUS_BURN_CHECK_VERSION(2,13,90)
-        g_free (write_speeds);
-#endif
         }
 
         /* for now assume equivalence between index in comboxbox and speed */

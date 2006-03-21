@@ -21,6 +21,7 @@
  */
 
 #define _XOPEN_SOURCE
+#define __EXTENSIONS__  /* get strptime */
 #include <string.h>
 #include <time.h>
 

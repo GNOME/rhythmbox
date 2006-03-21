@@ -72,4 +72,4 @@ CLEANFILES = $(rhythmbox_interface_idl_sources) $(server_DATA) $(server_in_files
 
 ## idl compiler generates an unused variable at the top of Rhythmbox-common.c,
 ## which breaks -Werror on Mac OSX.
-AM_CFLAGS = -Wno-error
+#AM_CFLAGS = -Wno-error

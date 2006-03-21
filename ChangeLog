@@ -1,5 +1,26 @@
 2006-03-21  James Livingston  <jrl@ids.org.au>
 
+	patch by: Brian Cameron  <brian.cameron@sun.com> to fix comilation
+	with Forte (on Solaris). Closes bug 335318.
+
+	* configure.ac:
+	* lib/Makefile.am:
+	* player/rb-recorder-gst.c:
+	* podcast/rb-podcast-parse.c:
+	* remote/bonobo/Makefile.am:
+	* remote/rb-remote-proxy.c: (rb_remote_proxy_set_repeat):
+	* rhythmdb/rhythmdb-query-model.c: (idle_process_update),
+	(rhythmdb_query_model_add_entry),
+	(rhythmdb_query_model_add_results):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_foreach):
+	* rhythmdb/rhythmdb.h:
+	* shell/Makefile.am:
+	* sources/rb-playlist-source-recorder.c: (get_write_speeds),
+	(update_speed_combobox):
+	* sources/rb-sourcelist-model.c:
+
+2006-03-21  James Livingston  <jrl@ids.org.au>
+
 	Patch by:  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* player/Makefile.am:

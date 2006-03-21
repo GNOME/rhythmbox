@@ -328,8 +328,8 @@ void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
 
 GPtrArray *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
 
-inline const xmlChar *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, RhythmDBPropType propid);
-inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *name);
+const xmlChar *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, RhythmDBPropType propid);
+int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *name);
 
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);

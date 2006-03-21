@@ -3249,13 +3249,13 @@ rhythmdb_query_free (GPtrArray *query)
 	g_ptr_array_free (query, TRUE);
 }
 
-inline const xmlChar *
+const xmlChar *
 rhythmdb_nice_elt_name_from_propid (RhythmDB *db, RhythmDBPropType propid)
 {
 	return db->priv->column_xml_names[propid];
 }
 
-inline int
+int
 rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const xmlChar *name)
 {
 	gpointer ret, orig;	
@@ -3551,7 +3551,7 @@ rhythmdb_entry_foreach (RhythmDB *db, GFunc func, gpointer data)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
-	return klass->impl_entry_foreach (db, func, data);
+	klass->impl_entry_foreach (db, func, data);
 }
 
 /**
