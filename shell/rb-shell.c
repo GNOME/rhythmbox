@@ -2919,7 +2919,7 @@ rb_shell_load_uri (RBShell *shell,
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 			g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
-		result = totem_pl_parser_parse (parser, uri, TRUE);
+		result = totem_pl_parser_parse (parser, uri, FALSE);
 		g_object_unref (parser);
 		
 		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {

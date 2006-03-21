@@ -1,5 +1,10 @@
 2006-03-21  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_load_uri): don't add a new playlist when
+	importing a single file. Fixes bug 335307.
+
+2006-03-21  James Livingston  <jrl@ids.org.au>
+
 	* shell/Makefile.am: remove the reference to backends/ that I
 	accidently included.
 
