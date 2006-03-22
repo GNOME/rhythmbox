@@ -90,6 +90,9 @@ struct _RBAutoPlaylistSourcePrivate
 	guint limit_mb;
 	guint limit_time;
 
+	gboolean query_active;
+	gboolean search_on_completion;
+
 	GtkWidget *paned;
 	RBLibraryBrowser *browser;
 	gboolean browser_shown;
@@ -324,6 +327,7 @@ impl_search (RBSource *source, const char *search_text)
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	char *old_search_text = NULL;
 	gboolean subset = FALSE;
+	const char *debug_search_text;
 
 	if (search_text != NULL && search_text[0] == '\0')
 		search_text = NULL;
@@ -337,17 +341,24 @@ impl_search (RBSource *source, const char *search_text)
 	old_search_text = priv->search_text;
 	if (search_text == NULL) {
 		priv->search_text = NULL;
+		debug_search_text = "(NULL)";
 	} else {
 		priv->search_text = g_strdup (search_text);
+		debug_search_text = priv->search_text;
 
 		if (old_search_text != NULL)
 			subset = (g_str_has_prefix (priv->search_text, old_search_text));
 	}
 	g_free (old_search_text);
 	
-	rb_debug ("doing search for \"%s\"", priv->search_text ? priv->search_text : "(NULL)");
-
-	rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source), subset);
+	/* we can only do subset searches once the original query is complete */
+	if (priv->query_active && subset) {
+		rb_debug ("deferring search for \"%s\" until query completion", debug_search_text);
+		priv->search_on_completion = TRUE;
+	} else {
+		rb_debug ("doing search for \"%s\"", debug_search_text);
+		rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source), subset);
+	}
 }
 
 static GList *
@@ -486,6 +497,21 @@ impl_save_contents_to_xml (RBPlaylistSource *psource, xmlNodePtr node)
 }
 
 static void
+rb_auto_playlist_source_query_complete_cb (RhythmDBQueryModel *model,
+					   RBAutoPlaylistSource *source)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	
+	priv->query_active = FALSE;
+	if (priv->search_on_completion) {
+		priv->search_on_completion = FALSE;
+		rb_debug ("performing deferred search");
+		/* this is only done for subset searches */
+		rb_auto_playlist_source_do_query (source, TRUE);
+	}
+}
+
+static void
 rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
@@ -510,6 +536,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 	if (subset) {
 		/* just apply the new query to the existing query model */
 		g_object_get (G_OBJECT (priv->browser), "input-model", &query_model, NULL);
+		g_assert (query_model != priv->cached_all_query);
 		g_object_set (G_OBJECT (query_model), "query", query, NULL);
 		rhythmdb_query_model_reapply_query (query_model, FALSE);
 		g_object_unref (G_OBJECT (query_model));
@@ -523,6 +550,11 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 					    NULL);
 		rb_library_browser_set_model (priv->browser, query_model, TRUE);
 
+		priv->query_active = TRUE;
+		priv->search_on_completion = FALSE;
+		g_signal_connect_object (G_OBJECT (query_model),
+					 "complete", G_CALLBACK (rb_auto_playlist_source_query_complete_cb),
+					 source, 0);
 		rhythmdb_do_full_query_async_parsed (db, 
 						     RHYTHMDB_QUERY_RESULTS (query_model), 
 						     query);

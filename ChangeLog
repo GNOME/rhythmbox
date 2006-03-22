@@ -1,3 +1,14 @@
+2006-03-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-auto-playlist-source.c: (impl_search),
+	(rb_auto_playlist_source_query_complete_cb),
+	(rb_auto_playlist_source_do_query):
+	* sources/rb-library-source.c: (impl_search),
+	(rb_library_source_query_complete_cb),
+	(rb_library_source_do_query):
+	Defer subset searches (where text is appended to an existing search)
+	until the original query is complete.
+
 2006-03-21  Ryan P Skadberg  <skadz@stigmata.org>
 
 	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>

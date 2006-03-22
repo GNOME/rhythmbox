@@ -151,6 +151,8 @@ struct RBLibrarySourcePrivate
 	RhythmDBQueryModel *cached_all_query;
 	RhythmDBPropType search_prop;
 	gboolean initialized;
+	gboolean query_active;
+	gboolean search_on_completion;
 
 	gboolean loading_prefs;
 	RBShellPreferences *shell_prefs;
@@ -696,6 +698,7 @@ impl_search (RBSource *asource, const char *search_text)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	char *old_search_text = NULL;
 	gboolean subset = FALSE;
+	const char *debug_search_text;
 
 	if (search_text != NULL && search_text[0] == '\0')
 		search_text = NULL;
@@ -709,17 +712,26 @@ impl_search (RBSource *asource, const char *search_text)
 	old_search_text = source->priv->search_text;
 	if (search_text == NULL) {
 		source->priv->search_text = NULL;
+		debug_search_text = "(NULL)";
 	} else {
 		source->priv->search_text = g_strdup (search_text);
+		debug_search_text = source->priv->search_text;
 
 		if (old_search_text != NULL)
 			subset = (g_str_has_prefix (source->priv->search_text, old_search_text));
 	}
 	g_free (old_search_text);
 	
-	rb_debug ("doing search for \"%s\"", source->priv->search_text ? source->priv->search_text : "(NULL)");
-
-	rb_library_source_do_query (source, subset);
+	/* we can't do subset searches until the original query is complete, because they
+	 * reuse the query model.
+	 */
+	if (source->priv->query_active && subset) {
+		rb_debug ("deferring search for \"%s\" until query completion", debug_search_text);
+		source->priv->search_on_completion = TRUE;
+	} else {
+		rb_debug ("doing search for \"%s\"", debug_search_text);
+		rb_library_source_do_query (source, subset);
+	}
 }
 
 
@@ -1207,6 +1219,19 @@ rb_library_source_browser_changed_cb (RBLibraryBrowser *browser,
 }
 
 static void
+rb_library_source_query_complete_cb (RhythmDBQueryModel *query_model,
+				     RBLibrarySource *source)
+{
+	source->priv->query_active = FALSE;
+	if (source->priv->search_on_completion) {
+		rb_debug ("performing deferred search");
+		source->priv->search_on_completion = FALSE;
+		/* this is only done for subset queries */
+		rb_library_source_do_query (source, TRUE);
+	}
+}
+
+static void
 rb_library_source_do_query (RBLibrarySource *source, gboolean subset)
 {
 	RhythmDBQueryModel *query_model;
@@ -1244,6 +1269,11 @@ rb_library_source_do_query (RBLibrarySource *source, gboolean subset)
 		/* otherwise build a query based on the search text and feed it to the browser */
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
 		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
+		source->priv->query_active = TRUE;
+		source->priv->search_on_completion = FALSE;
+		g_signal_connect_object (G_OBJECT (query_model),
+					 "complete", G_CALLBACK (rb_library_source_query_complete_cb), source, 
+					 0);
 		rhythmdb_do_full_query_async_parsed (source->priv->db, 
 						     RHYTHMDB_QUERY_RESULTS (query_model), 
 						     query); 
