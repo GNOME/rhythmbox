@@ -1322,6 +1322,7 @@ rb_shell_constructor (GType type,
 		gtk_widget_show_all (GTK_WIDGET (druid));
 	} else {
 		rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
+		gdk_notify_startup_complete ();
 	}
 
 	/* focus play if small, the entry view if not */

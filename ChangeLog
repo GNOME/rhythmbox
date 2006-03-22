@@ -1,5 +1,12 @@
 2006-03-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (rb_shell_constructor):
+	Issue startup notification after creating the main window, so
+	notification is issued whether the window is visible or not.
+	Fixes #335086.
+
+2006-03-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-auto-playlist-source.c: (impl_search),
 	(rb_auto_playlist_source_query_complete_cb),
 	(rb_auto_playlist_source_do_query):
