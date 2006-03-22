@@ -34,8 +34,8 @@ GMutex *rb_refstrings_mutex;
 struct RBRefString
 {
 	gint refcount;
-	char *folded;
-	char *sortkey;
+	gpointer folded;
+	gpointer sortkey;
 	char value[1];
 };
 
@@ -136,7 +136,7 @@ rb_refstring_get_folded (RBRefString *val)
 	if (val == NULL)
 		return NULL;
 
-	ptr = (gpointer*)&val->folded;
+	ptr = &val->folded;
 	string = (const char*)g_atomic_pointer_get (ptr);
 	if (string == NULL) {
 		char *newstring;
@@ -163,7 +163,7 @@ rb_refstring_get_sort_key (RBRefString *val)
 	if (val == NULL)
 		return NULL;
 
-	ptr = (gpointer*)&val->sortkey;
+	ptr = &val->sortkey;
 	string = (const char*)g_atomic_pointer_get (ptr);
 	if (string == NULL) {
 		char *newstring;
