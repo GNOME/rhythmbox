@@ -1,3 +1,10 @@
+2006-03-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-file-helpers.c: (escape_extra_gnome_vfs_chars),
+	(rb_uri_handle_recursively_cb), (rb_canonicalise_uri):
+	Escape '&' and '=' in the paths we get back from
+	gnome_vfs_directory_visit.  Fixes #333998 a bit more.
+
 2006-03-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell.c: (rb_shell_constructor):
