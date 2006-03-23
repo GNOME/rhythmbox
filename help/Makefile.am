@@ -21,4 +21,4 @@ DOC_FIGURES = \
 	figures/rb-window.png			\
 	figures/rb-window-small.png
 
-DOC_LINGUAS = fr
+DOC_LINGUAS = fr es
