@@ -1,5 +1,13 @@
 2006-03-24  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-player.c: (rb_shell_player_set_property),
+	(rb_shell_player_sync_play_order),
+	(rb_shell_player_play_order_update_cb),
+	(actually_set_playing_source): update the next/previous availablility
+	in places where it was missing. Fixes bug 335490.
+
+2006-03-24  James Livingston  <doclivingston@gmail.com>
+
 	* lib/rb-glade-helpers.c: (rb_glade_boldify_label): don't crash if we
 	can't find the widget
 

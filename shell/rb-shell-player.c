@@ -741,6 +741,9 @@ rb_shell_player_set_property (GObject *object,
 						 "have_next_previous_changed",
 						 G_CALLBACK (rb_shell_player_play_order_update_cb),
 						 player, 0);
+			rb_shell_player_play_order_update_cb (player->priv->play_order,
+							      FALSE, FALSE,
+							      player);
 			rb_play_order_playing_source_changed (player->priv->queue_play_order,
 							      RB_SOURCE (player->priv->queue_source));
 
@@ -1209,6 +1212,9 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 				 "have_next_previous_changed",
 				 G_CALLBACK (rb_shell_player_play_order_update_cb),
 				 player, 0);
+	rb_shell_player_play_order_update_cb (player->priv->play_order,
+					      FALSE, FALSE,
+					      player);
 
 	source = player->priv->current_playing_source;
 	if (!source)
@@ -1226,6 +1232,9 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 				      gboolean has_previous,
 				      RBShellPlayer *player)
 {
+	/* we cannot depend on the values of has_next, has_previous or porder
+	 * since this can be called for the main porder, queue porder, etc
+	 */
 	gboolean have_next = FALSE;
 	gboolean have_previous = FALSE;
 	GtkAction *action;
@@ -2087,6 +2096,10 @@ actually_set_playing_source (RBShellPlayer *player,
 			source = player->priv->selected_source;
 		rb_play_order_playing_source_changed (player->priv->play_order, source);
 	}
+
+	rb_shell_player_play_order_update_cb (player->priv->play_order,
+					      FALSE, FALSE,
+					      player);
 }
 
 static void
