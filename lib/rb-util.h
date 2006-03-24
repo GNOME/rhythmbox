@@ -59,6 +59,8 @@ GList* rb_string_list_copy (GList *list);
 GList* rb_collate_hash_table_keys (GHashTable *table);
 GList* rb_collate_hash_table_values (GHashTable *table);
 
+GList* rb_uri_list_parse (const char *uri_list);
+
 G_END_DECLS
 
 #endif /* __RB_UTIL_H */

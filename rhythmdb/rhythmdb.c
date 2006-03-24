@@ -1048,9 +1048,6 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	RhythmDBEntry *ret;
 	ret = g_new0 (RhythmDBEntry, 1);
 
-#ifndef G_DISABLE_ASSERT
-	ret->magic = 0xdeadb33f;
-#endif	
 	ret->type = type;
 	ret->title = rb_refstring_ref (db->priv->empty_string);
 	ret->genre = rb_refstring_ref (db->priv->empty_string);

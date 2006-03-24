@@ -101,8 +101,11 @@ rb_set_channel_value (struct RBPoadcastLoadContext *ctx,
 		ctx->channel_data->summary = dvalue;
 	} else if (!strcmp (name, "description")) {
 		ctx->channel_data->description = dvalue;
-	} else if (!strcmp (name, "generator") ||
-		   !strcmp (name, "itunes:author")) {
+	} else if (!strcmp (name, "generator")) {
+		if (ctx->channel_data->author == NULL)
+			ctx->channel_data->author = dvalue;
+	} else if (!strcmp (name, "itunes:author")) {
+		g_free (ctx->channel_data->author);
 		ctx->channel_data->author = dvalue;
 	} else if (!strcmp (name, "webMaster")) {
 		ctx->channel_data->contact = dvalue;

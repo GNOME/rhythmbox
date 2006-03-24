@@ -143,8 +143,6 @@ static void rb_podcast_manager_get_property 		(GObject *object,
 		                                	 GValue *value,
                 		                	 GParamSpec *pspec);
 static void rb_podcast_manager_copy_post 		(RBPodcastManager *pd);
-static int rb_podcast_manager_mkdir_with_parents 	(const gchar *pathname,
-					  		 int mode);
 static gboolean rb_podcast_manager_sync_head_cb 	(gpointer data);
 static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
 						   	 GtkTreePath *path, 
@@ -592,7 +590,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	g_free (conf_dir_name);
 
 	 if (!g_file_test (dir_name, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
-		if (rb_podcast_manager_mkdir_with_parents (dir_name, 0750) != 0) {
+		if (!g_mkdir_with_parents (dir_name, 0750)) {
 			rb_debug ("Error downloading podcast: could not create local dirs");
 			goto next_step;
 		}
@@ -684,62 +682,6 @@ next_step:
 
 	g_mutex_unlock (pd->priv->mutex_job);
 	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);	
-}
-
-
-static int
-rb_podcast_manager_mkdir_with_parents (const gchar *pathname,
-		   			int          mode)
-{
-  gchar *fn, *p;
-
-  if (pathname == NULL || *pathname == '\0')
-    {
-      return -1;
-    }
-
-  fn = g_strdup (pathname);
-
-  if (g_path_is_absolute (fn))
-    p = (gchar *) g_path_skip_root (fn);
-  else
-    p = fn;
-
-  do
-    {
-      while (*p && !G_IS_DIR_SEPARATOR (*p))
-	p++;
-      
-      if (!*p)
-	p = NULL;
-      else
-	*p = '\0';
-      
-      if (!g_file_test (fn, G_FILE_TEST_EXISTS))
-	{
-	  if (g_mkdir (fn, mode) == -1)
-	    {
-	      g_free (fn);
-	      return -1;
-	    }
-	}
-      else if (!g_file_test (fn, G_FILE_TEST_IS_DIR))
-	{
-	  g_free (fn);
-	  return -1;
-	}
-      if (p)
-	{
-	  *p++ = G_DIR_SEPARATOR;
-	  while (*p && G_IS_DIR_SEPARATOR (*p))
-	    p++;
-	}
-    }
-  while (p);
-
-  g_free (fn);
-
-  return 0;
 }
 
 gboolean

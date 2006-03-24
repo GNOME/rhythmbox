@@ -27,9 +27,8 @@ librbmetadata_la_SOURCES =				\
 	rb-metadata-dbus-client.c
 
 librbmetadata_la_LIBADD = 				\
+	$(DBUS_LIBS)					\
 	$(RHYTHMBOX_LIBS)
-
-librbmetadata_la_LDFLAGS = -export-dynamic
 
 # service
 
@@ -47,10 +46,10 @@ rhythmbox_metadata_SOURCES = 				\
 	rb-metadata-dbus-service.c
 
 rhythmbox_metadata_LDADD = 				\
-	$(RHYTHMBOX_LIBS)				\
-	$(DBUS_LIBS)					\
 	$(top_builddir)/metadata/librbmetadatasvc.la	\
-	$(top_builddir)/lib/librb.la
+	$(top_builddir)/lib/librb.la			\
+	$(RHYTHMBOX_LIBS)				\
+	$(DBUS_LIBS)
 
 # test program?
 noinst_PROGRAMS = test-metadata
@@ -58,10 +57,10 @@ test_metadata_SOURCES =					\
 	test-metadata.c
 
 test_metadata_LDADD =					\
-	$(RHYTHMBOX_LIBS)				\
-	$(DBUS_LIBS)					\
 	$(top_builddir)/metadata/librbmetadata.la	\
-	$(top_builddir)/lib/librb.la
+	$(top_builddir)/lib/librb.la			\
+	$(RHYTHMBOX_LIBS)				\
+	$(DBUS_LIBS)
 
 else
 
@@ -74,11 +73,11 @@ librbmetadata_la_SOURCES = \
 librbmetadata_la_LIBADD =			\
 	$(RHYTHMBOX_LIBS)
 
-librbmetadata_la_LDFLAGS = -export-dynamic
-
 endif
 
 MARSHALFILES = 
+
+librbmetadata_la_LDFLAGS = -export-dynamic
 
 if HAVE_MUSICBRAINZ
 librbmetadata_la_SOURCES += \

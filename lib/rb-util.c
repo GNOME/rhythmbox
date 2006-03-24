@@ -667,3 +667,51 @@ rb_collate_hash_table_values (GHashTable *table)
 
 	return list;
 }
+
+/*
+ * hacked up version of gnome_vfs_uri_list_parse,
+ * that it doesn't strip #s and and returns strings. 
+ */
+
+GList *
+rb_uri_list_parse (const char *uri_list)
+{
+	const gchar *p, *q;
+	gchar *retval;
+	GList *result = NULL;
+
+	g_return_val_if_fail (uri_list != NULL, NULL);
+
+	p = uri_list;
+
+	while (p != NULL) {
+		while (g_ascii_isspace (*p))
+			p++;
+
+		q = p;
+		while ((*q != '\0')
+		       && (*q != '\n')
+		       && (*q != '\r'))
+			q++;
+
+		if (q > p) {
+			q--;
+			while (q > p
+			       && g_ascii_isspace (*q))
+				q--;
+
+			retval = g_malloc (q - p + 2);
+			strncpy (retval, p, q - p + 1);
+			retval[q - p + 1] = '\0';
+
+			if (retval != NULL)
+				result = g_list_prepend (result, retval);
+		}
+		p = strchr (p, '\n');
+		if (p != NULL)
+			p++;
+	}
+
+	return g_list_reverse (result);
+}
+

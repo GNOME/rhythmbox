@@ -49,9 +49,6 @@ typedef struct {
 
 struct RhythmDBEntry_ {
 	/* internal bits */
-#ifndef G_DISABLE_ASSERT
-	guint magic;
-#endif	
 	gboolean inserted;
 	gint refcount;
 	void *data;

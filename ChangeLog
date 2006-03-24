@@ -1,3 +1,26 @@
+2006-03-24  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-glade-helpers.c: (rb_glade_boldify_label): don't crash if we
+	can't find the widget
+
+	* lib/rb-util.c: (rb_uri_list_parse):
+	* lib/rb-util.h: add function for parsing a URI list into strings.
+
+	* metadata/Makefile.am: make the metdata helper build when linking
+	with --as-needed
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post): use
+	g_mkdir_with_parents instead of coding our own.
+
+	* podcast/rb-podcast-parse.c: (rb_set_channel_value): prefer
+	<itunes:author> over <generator>, instead of using whichever comes
+	last.
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate): remove the "magic"
+	field, as we don't ever check it (to detect corruption). Saves a bit
+	of memory.
+
 2006-03-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* lib/rb-file-helpers.c: (escape_extra_gnome_vfs_chars),

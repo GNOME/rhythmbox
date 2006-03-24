@@ -114,6 +114,12 @@ void
 rb_glade_boldify_label (GladeXML *xml, const char *name)
 {
 	GtkLabel *label = GTK_LABEL (glade_xml_get_widget (xml, name));
+
+	if (label == NULL) {
+		g_warning ("widget '%s' not found", name);
+		return;
+	}
+
 	/* this way is probably better, but for some reason doesn't work with
 	 * labels with mnemonics.
 
