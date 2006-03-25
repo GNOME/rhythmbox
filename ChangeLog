@@ -1,3 +1,12 @@
+2006-03-25  James Livingston  <doclivingston@gmail.com>
+
+	* data/glade/audioscrobbler-prefs.glade:
+	* shell/rb-audioscrobbler.c:
+	(rb_audioscrobbler_enabled_check_changed_cb): move and rename the
+	"submit songs" checkbox, and make it not disable username/password
+	entry. This will be needed when we support other last.fm stuff
+	(profile access, radio, etc).
+
 2006-03-24  Dennis Cranston  <dennis_cranston@yahoo.com>
 
         * widgets/bacon-volume.c: (bacon_volume_scale_value_changed):

@@ -1015,26 +1015,6 @@ rb_audioscrobbler_enabled_check_changed_cb (GtkCheckButton *button,
 {
 	eel_gconf_set_boolean (CONF_AUDIOSCROBBLER_ENABLED,
 			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)));
-
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->username_entry),
-					  TRUE);
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->username_label),
-					  TRUE);
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->password_entry),
-					  TRUE);
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->password_label),
-					  TRUE);
-	} else {
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->username_entry),
-					  FALSE);
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->username_label),
-					  FALSE);
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->password_entry),
-					  FALSE);
-		gtk_widget_set_sensitive (GTK_WIDGET (audioscrobbler->priv->password_label),
-					  FALSE);
-	}
 }
 
 
