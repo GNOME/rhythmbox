@@ -1,5 +1,10 @@
 2006-03-26  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_sync_library_location): set the
+	library location list to NULL after we free it. Fixes bug 336047.
+
+2006-03-26  James Livingston  <doclivingston@gmail.com>
+
 	patch by:  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* sources/rb-audiocd-source.c: use the release-date that MusicBrainz

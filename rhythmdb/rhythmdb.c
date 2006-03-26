@@ -4394,6 +4394,7 @@ rhythmdb_sync_library_location (RhythmDB *db)
 					     db);
 		g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
 		g_slist_free (db->priv->library_locations);
+		db->priv->library_locations = NULL;
 	}
 
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY)) {
