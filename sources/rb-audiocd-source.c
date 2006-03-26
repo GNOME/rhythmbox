@@ -23,7 +23,6 @@
 /*
  * TODO
  *    * handle cases where MusicBrainz returns multiple albums
- *    * use release-date metadata (can have multiple values)
  */
 
 #include <config.h>
@@ -408,7 +407,17 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &value);
 			g_value_unset (&value);
 			
-			/*album->release_date (has multiple values)*/
+			/*album->release_date (could potentially have multiple values)*/
+			/* in current sj-structures.h, however, it does not */
+			
+			if (album->release_date) {
+				GType type = rhythmdb_get_property_type (db, RHYTHMDB_PROP_DATE);
+				g_value_init (&value, type);
+				g_value_set_ulong (&value, g_date_get_julian (album->release_date));
+				rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DATE, &value);
+				g_value_unset (&value);
+			}
+
 			rhythmdb_commit (db);
 
 			album->tracks = g_list_next (album->tracks);
