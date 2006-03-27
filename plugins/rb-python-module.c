@@ -238,12 +238,21 @@ GObject *
 rb_python_module_new_object (RBPythonModule *module)
 {
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (module);
-	rb_debug ("Creating object of type %s", g_type_name (priv->type));
+	RBPythonObject *object;
 
 	if (priv->type == 0)
 		return NULL;
 
-	return g_object_new (priv->type, NULL);
+	rb_debug ("Creating object of type %s", g_type_name (priv->type));
+	object = (RBPythonObject*) (g_object_new (priv->type, NULL));
+	if (object->instance)
+		return G_OBJECT (object);
+
+	/* object could not be instantiated */
+	g_warning ("could not instantiate python object");
+
+	g_object_unref (G_OBJECT (object));
+	return NULL;
 }
 
 static void
@@ -362,34 +371,46 @@ static gboolean
 run_gc (gpointer data)
 {
 	while (PyGC_Collect ())
-		;	
+		;
 
 	idle_garbage_collect_id = 0;
+
 	return FALSE;
 }
 
 void
 rb_python_garbage_collect ()
 {
-	if (Py_IsInitialized() && idle_garbage_collect_id == 0)
-	{
+	if (Py_IsInitialized() && idle_garbage_collect_id == 0) {
 		idle_garbage_collect_id = g_idle_add (run_gc, NULL);
 	}
+}
+
+static gboolean
+finalise_collect_cb (gpointer data)
+{
+	while (PyGC_Collect ())
+		;
+
+	/* useful if python is refusing to give up it's shell reference for some reason.
+	PyRun_SimpleString ("import gc, gobject\nfor o in gc.get_objects():\n\tif isinstance(o, gobject.GObject):\n\t\tprint o, gc.get_referrers(o)");
+	*/
+	
+	return TRUE;
 }
 
 void
 rb_python_shutdown ()
 {
-	if (Py_IsInitialized ())
-	{
-		if (idle_garbage_collect_id != 0)
-		{
+	if (Py_IsInitialized ()) {
+		if (idle_garbage_collect_id != 0) {
 			g_source_remove (idle_garbage_collect_id);
 			idle_garbage_collect_id = 0;
 		}
 
-		while (PyGC_Collect ())
-			;	
+		run_gc (NULL);
+		/* this helps to force python to give up it's shell reference */
+		g_timeout_add (1000, finalise_collect_cb, NULL);
 
 		/* disable for now, due to bug 334188
 		Py_Finalize ();*/

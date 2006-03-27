@@ -95,7 +95,8 @@ static void rb_plugins_engine_deactivate_plugin_real (RBPluginInfo *info,
 
 
 static GHashTable *rb_plugins = NULL;
-RBShell *rb_plugins_shell;
+guint garbage_collect_id = 0;
+RBShell *rb_plugins_shell = NULL;
 
 static RBPluginInfo *
 rb_plugins_engine_load (const gchar *file)
@@ -315,6 +316,13 @@ rb_plugins_engine_load_all (void)
 	rb_plugins_engine_load_dir (RB_PLUGIN_DIR);
 }
 
+static gboolean
+garbage_collect_cb (gpointer data)
+{
+	rb_plugins_engine_garbage_collect ();
+	return TRUE;
+}
+
 gboolean
 rb_plugins_engine_init (RBShell *shell)
 {
@@ -333,8 +341,11 @@ rb_plugins_engine_init (RBShell *shell)
 
 	rb_plugins_engine_load_all ();
 
+	garbage_collect_id = g_timeout_add_full (G_PRIORITY_LOW, 20000, garbage_collect_cb, NULL, NULL);
+
 	return TRUE;
 }
+
 
 void
 rb_plugins_engine_garbage_collect (void)
@@ -384,6 +395,9 @@ rb_plugins_engine_shutdown (void)
 
 	g_object_unref (rb_plugins_shell);
 	rb_plugins_shell = NULL;
+
+	g_source_remove (garbage_collect_id);
+	rb_plugins_engine_garbage_collect ();
 
 #ifdef ENABLE_PYTHON
 	rb_python_shutdown ();

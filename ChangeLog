@@ -1,5 +1,26 @@
 2006-03-27  James Livingston  <doclivingston@gmail.com>
 
+	* data/glade/plugins.glade: turn from a GtkDialog to a GtkWindow to
+	stop warnings, only the vbos is used anyway
+
+	* plugins/rb-plugins-engine.c: (garbage_collect_cb),
+	(rb_plugins_engine_init), (rb_plugins_engine_shutdown): run gabage
+	collection every now an then.
+
+	* plugins/rb-python-plugin.c: (rb_python_object_finalize): don't crash
+	if we are finalising because the python object couldn't be created.
+
+	* plugins/rb-python-module.c: (rb_python_module_new_object): return
+	NULL if the python-side object couldn't be created. Stops crashes when
+	the object is later used when it doesn't exist in Python.
+
+	(run_gc), (rb_python_garbage_collect), (finalise_collect_cb),
+	(rb_python_shutdown): do better garbage collection when shutting down.
+	Fixes the problem where Python was holding a reference to the shell,
+	causing RB not to exit.
+
+2006-03-27  James Livingston  <doclivingston@gmail.com>
+
 	* configure.ac: don't define HAVE_LIBSOUP when we don't. Fixes bug
 	336131.
 

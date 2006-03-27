@@ -201,7 +201,9 @@ rb_python_object_finalize (GObject *object)
 {
 	rb_debug ("Finalizing python plugin instance");
 
-	Py_DECREF (((RBPythonObject *) object)->instance);
+	if (((RBPythonObject *) object)->instance) {
+		Py_DECREF (((RBPythonObject *) object)->instance);
+	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
