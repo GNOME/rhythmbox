@@ -1,5 +1,12 @@
 2006-03-27  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-plugin-manager.c: (active_toggled_cb),
+	(row_activated_cb), (plugin_manager_set_active),
+	(plugin_manager_toggle_active), (plugin_manager_toggle_all): update
+	configure button sensitivity when a plugin is enabled/disabled.
+
+2006-03-27  James Livingston  <doclivingston@gmail.com>
+
 	* data/glade/plugins.glade: turn from a GtkDialog to a GtkWindow to
 	stop warnings, only the vbos is used anyway
 

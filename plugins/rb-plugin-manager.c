@@ -69,7 +69,7 @@ struct _RBPluginManagerPrivate
 G_DEFINE_TYPE(RBPluginManager, rb_plugin_manager, GTK_TYPE_VBOX)
 
 static RBPluginInfo *plugin_manager_get_selected_plugin (RBPluginManager *pm); 
-static void plugin_manager_toggle_active (GtkTreeIter *iter, GtkTreeModel *model); 
+static void plugin_manager_toggle_active (GtkTreeIter *iter, GtkTreeModel *model, RBPluginManager *pm); 
 static void plugin_manager_toggle_all (RBPluginManager *pm); 
 
 static void 
@@ -140,7 +140,7 @@ active_toggled_cb (GtkCellRendererToggle *cell,
 	gtk_tree_model_get_iter (model, &iter, path);
 
 	if (&iter != NULL)
-		plugin_manager_toggle_active (&iter, model);
+		plugin_manager_toggle_active (&iter, model, pm);
 
 	gtk_tree_path_free (path);
 }
@@ -199,7 +199,7 @@ row_activated_cb (GtkTreeView       *tree_view,
 
 	g_return_if_fail (&iter != NULL);
 
-	plugin_manager_toggle_active (&iter, model);
+	plugin_manager_toggle_active (&iter, model, pm);
 }
 
 static void
@@ -248,14 +248,15 @@ plugin_manager_populate_lists (RBPluginManager *pm)
 
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    NAME_COLUMN, &info, -1);
-		/*cursor_changed_cb (selection, info);*/
+		/*cursor_changed_cb (selection, pm);*/
 	}
 }
 
 static void
 plugin_manager_set_active (GtkTreeIter  *iter,
 			   GtkTreeModel *model,
-			   gboolean      active)
+			   gboolean      active,
+			   RBPluginManager *pm)
 {
 	RBPluginInfo *info;
 	
@@ -283,18 +284,22 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 			    ACTIVE_COLUMN,
 			    rb_plugins_engine_plugin_is_active (info), 
 			    -1);
+
+	/* cause the configure button sensitivity to be updated */
+	cursor_changed_cb (gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree)), pm);
 }
 
 static void
 plugin_manager_toggle_active (GtkTreeIter  *iter,
-			      GtkTreeModel *model)
+			      GtkTreeModel *model,
+			      RBPluginManager *pm)
 {
 	gboolean active;
 	
 	gtk_tree_model_get (model, iter, ACTIVE_COLUMN, &active, -1);
 
 	active ^= 1;
-	plugin_manager_set_active (iter, model, active);
+	plugin_manager_set_active (iter, model, active, pm);
 }
 
 static RBPluginInfo *
@@ -334,7 +339,7 @@ plugin_manager_toggle_all (RBPluginManager *pm)
 	gtk_tree_model_get_iter_first (model, &iter);
 
 	do {
-		plugin_manager_set_active (&iter, model, active);		
+		plugin_manager_set_active (&iter, model, active, pm);
 	}
 	while (gtk_tree_model_iter_next (model, &iter));
 }
