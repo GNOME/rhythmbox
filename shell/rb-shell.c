@@ -1308,8 +1308,6 @@ rb_shell_constructor (GType type,
 	rb_shell_sync_paned (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
-	rb_shell_sync_window_state (shell, FALSE);
-
 	/* Stop here if this is the first time. */
 	if (!eel_gconf_get_boolean (CONF_FIRST_TIME)) {
 		RBDruid *druid;
@@ -1554,6 +1552,13 @@ rb_shell_sync_window_state (RBShell *shell,
 		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
 		rb_debug ("syncing small window width to %d", shell->priv->small_width);
 	} else {
+		if (!dont_maximise) {
+			if (shell->priv->window_maximised)
+				gtk_window_maximize (GTK_WINDOW (shell->priv->window));
+			else
+				gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+		}
+
 		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
 					     shell->priv->window_width,
 					     shell->priv->window_height);
@@ -1564,12 +1569,6 @@ rb_shell_sync_window_state (RBShell *shell,
 						NULL,
 						&hints,
 						0);
-		if (!dont_maximise) {
-			if (shell->priv->window_maximised)
-				gtk_window_maximize (GTK_WINDOW (shell->priv->window));
-			else
-				gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
-		}
 	}
 	
 	gtk_window_move (GTK_WINDOW (shell->priv->window),

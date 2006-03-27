@@ -1,5 +1,12 @@
 2006-03-27  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_sync_window_state): fix a maximise-realise race that would
+	cause some widgets to be resized after we had explicity set theri
+	size. Hopefully fixes bug 331927.
+
+2006-03-27  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/rb-plugin-manager.c: (active_toggled_cb),
 	(row_activated_cb), (plugin_manager_set_active),
 	(plugin_manager_toggle_active), (plugin_manager_toggle_all): update
