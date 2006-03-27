@@ -1,3 +1,9 @@
+2006-03-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* daapsharing/rb-daap-connection.c: (entry_set_string_prop):
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_load_tag):
+	Ignore invalid UTF-8 strings.  Fixes most of #334167.
+
 2006-03-27  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-shell.c: (rb_shell_constructor),

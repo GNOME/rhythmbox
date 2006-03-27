@@ -483,9 +483,19 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 
 	switch (type) {
 	case G_TYPE_STRING: {
-		/* Remove leading and trailing whitespace */
+		/* Reject invalid utf-8 strings, and then
+		 * remove leading and trailing whitespace.
+		 */ 
 		char *str;
 		str = g_value_dup_string (newval);
+
+		if (!g_utf8_validate (str, -1, NULL)) {
+			rb_debug ("Got invalid UTF-8 tag data");
+			g_free (str);
+			g_value_unset (newval);
+			g_free (newval);
+			return;
+		}
 		str = g_strstrip (str);
 		g_value_take_string (newval, str);
 		break;

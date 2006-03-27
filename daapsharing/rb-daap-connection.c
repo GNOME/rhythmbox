@@ -1027,7 +1027,7 @@ entry_set_string_prop (RhythmDB *db,
 	GValue value = {0,};
 	gchar *tmp;
 
-	if (str == NULL || *str == '\0') {
+	if (str == NULL || *str == '\0' || !g_utf8_validate (str, -1, NULL)) {
 		tmp = g_strdup (_("Unknown"));
 	} else {
 		tmp = g_strdup (str);
