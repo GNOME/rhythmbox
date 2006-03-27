@@ -380,7 +380,9 @@ if test "x$enable_daap" = "xyes" || test "x$enable_audioscrobbler" != "xno"; the
 			have_libsoup=yes,
 			have_libsoup=no)
 	fi
-	AC_DEFINE(HAVE_LIBSOUP, 1, [Define if libsoup support is enabled])
+	if test x"$have_libsoup" = "xyes"; then
+		AC_DEFINE(HAVE_LIBSOUP, 1, [Define if libsoup support is enabled])
+	fi
 fi
 
 AM_CONDITIONAL(USE_LIBSOUP, test x"$have_libsoup" = "xyes")
