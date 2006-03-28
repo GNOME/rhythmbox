@@ -1,3 +1,10 @@
+2006-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_drag_data_received):
+	Increment the reference count for entries added by drag and drop.
+	Fixes #336045.
+
 2006-03-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* daapsharing/rb-daap-connection.c: (entry_set_string_prop):

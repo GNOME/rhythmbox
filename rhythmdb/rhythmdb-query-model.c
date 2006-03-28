@@ -1510,6 +1510,8 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 				GSequencePtr old_ptr = g_hash_table_lookup (model->priv->reverse_map,
 									    entry);
 
+				rhythmdb_entry_ref (model->priv->db, entry);
+
 				/* the entry already exists it is either a reorder drag and drop
 				   (or a drag and drop from another application), so we delete
 				   the existing one before adding it again. */
