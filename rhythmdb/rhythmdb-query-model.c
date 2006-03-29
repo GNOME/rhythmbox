@@ -2060,6 +2060,7 @@ rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter)
 	GSequencePtr next;
 	RhythmDBEntry *entry;
 	gboolean changed = FALSE;
+	GList *remove = NULL;
 
 	/* process limited list first, so entries that don't match can't sneak in 
 	 * to the main list from there
@@ -2072,11 +2073,22 @@ rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter)
 			if (!rhythmdb_evaluate_query (model->priv->db, 
 						      model->priv->query, 
 						      entry)) {
-				rhythmdb_query_model_remove_from_limited_list (model, entry);
-				changed = TRUE;
+				remove = g_list_prepend (remove, entry);
 			}
 
 			ptr = next;
+		}
+
+		if (remove) {
+			GList *t;
+			for (t = remove; t; t = t->next) {
+				RhythmDBEntry *entry = t->data;
+				rhythmdb_query_model_remove_from_limited_list (model, entry);
+			}
+			
+			changed = TRUE;
+			g_list_free (remove);
+			remove = NULL;
 		}
 	}
 
@@ -2088,16 +2100,27 @@ rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter)
 			if (!rhythmdb_evaluate_query (model->priv->db, 
 						      model->priv->query, 
 						      entry)) {
+				remove = g_list_prepend (remove, entry);
+			}
+
+			ptr = next;
+		}
+
+		if (remove) {
+			GList *t;
+			for (t = remove; t; t = t->next) {
+				RhythmDBEntry *entry = t->data;
 				if (!filter) {
 					g_signal_emit (G_OBJECT (model),
 						       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
 						       entry);
 				}
 				rhythmdb_query_model_remove_from_main_list (model, entry);
-				changed = TRUE;
 			}
-
-			ptr = next;
+			
+			changed = TRUE;
+			g_list_free (remove);
+			remove = NULL;
 		}
 	}
 

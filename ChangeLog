@@ -1,3 +1,11 @@
+2006-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_reapply_query):
+	Don't remove entries while iterating, as it breaks the sequence
+	nodes.  Instead, collect a list of removed entries and process it
+	after iterating the sequence.  Fixes #334642.
+
 2006-03-29  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/rb-plugin-manager.c: (active_toggled_cb),
