@@ -1,3 +1,12 @@
+2006-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* data/ui/rhythmbox-ui.xml: Add 'add to queue' menu item.
+	* metadata/rb-metadata-dbus-service.c: (main): Call rb_debug_init
+	before running any of the debug/test modes.
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load_all):
+	Make plugin loading work when running uninstalled from the shell/
+	directory.
+
 2006-03-29  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-property-model.c:

@@ -436,6 +436,7 @@ main (int argc, char **argv)
 		argv++;
 		debug = TRUE;
 	}
+	rb_debug_init (debug);
 
 	/* bug report modes */
 	if (argv[1] != NULL && strcmp(argv[1], "--load") == 0) {
@@ -455,7 +456,6 @@ main (int argc, char **argv)
 		address = argv[1];
 	}
 
-	rb_debug_init (debug);
 	rb_debug ("initializing metadata service; pid = %d; address = %s", getpid (), address);
 	
 	gnome_vfs_init ();

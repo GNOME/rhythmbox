@@ -308,8 +308,9 @@ rb_plugins_engine_load_all (void)
 	g_free (pdir);
 
 #ifdef SHARE_UNINSTALLED_DIR
-	/* load plugins when running  uninstalled */
+	/* load plugins when running uninstalled */
 	rb_plugins_engine_load_dir (UNINSTALLED_PLUGINS_LOCATION);
+	rb_plugins_engine_load_dir ("../" UNINSTALLED_PLUGINS_LOCATION);
 #endif
 	
 	/* load system-wide plugins */
