@@ -50,9 +50,14 @@ enum
 	PROP_MODULE
 };
 
+/* Exported by pyrhythmdb module */
+void pyrhythmdb_register_classes (PyObject *d);
+void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
+extern PyMethodDef pyrhythmdb_functions[];
+
 /* Exported by pyrb module */
 void pyrb_register_classes (PyObject *d);
-/*void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);*/
+void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
 extern PyMethodDef pyrb_functions[];
 
 /* We retreive this to check for correct class hierarchy */
@@ -64,11 +69,11 @@ static void
 rb_python_module_init_python ()
 {
 	PyObject *pygtk, *mdict, *require;
-	PyObject *rb, *gtk, *pygtk_version, *pygtk_required_version;
+	PyObject *rb, *rhythmdb, *gtk, *pygtk_version, *pygtk_required_version;
 	PyObject *gettext, *install, *gettext_args;
 	struct sigaction old_sigint;
 	gint res;
-	char *argv[] = { "rb", NULL };
+	char *argv[] = { "rb", "rhythmdb", NULL };
 	
 	if (Py_IsInitialized ())
 	{
@@ -143,6 +148,13 @@ rb_python_module_init_python ()
 		return;
 	}
 	Py_DECREF (pygtk_required_version);
+
+	/* import rhythmdb */
+	rhythmdb = Py_InitModule ("rhythmdb", pyrhythmdb_functions);
+	mdict = PyModule_GetDict (rhythmdb);
+
+	pyrhythmdb_register_classes (mdict);
+	pyrhythmdb_add_constants (rhythmdb, "RHYTHMDB_");
 
 	/* import rb */
 	rb = Py_InitModule ("rb", pyrb_functions);

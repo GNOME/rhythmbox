@@ -36,6 +36,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libgnomeui/libgnomeui.h> /* for GnomeUrl */
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-song-display-box.h"
 #include "rb-debug.h"

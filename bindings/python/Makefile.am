@@ -2,7 +2,9 @@
 
 noinst_LTLIBRARIES = rb.la
 
-nodist_rb_la_SOURCES = rb.c
+nodist_rb_la_SOURCES = rb.c rhythmdb.c
+
+rb_la_SOURCES = override_common.c override_common.h
 
 rb_la_LDFLAGS = \
 	-module -avoid-version
@@ -27,12 +29,21 @@ rb_la_CFLAGS = \
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell		\
 	$(RHYTHMBOX_CFLAGS)		\
-	$(NO_STRICT_ALIASING_CFLAGS)	\
 	$(PYGTK_CFLAGS)			\
 	$(PYTHON_CFLAGS)		\
-	$(AM_CFLAGS)
-	
+	$(AM_CFLAGS)			\
+	$(NO_STRICT_ALIASING_CFLAGS)
+
 rb.c: rb.defs rb.override
+	( cd $(srcdir) && $(PYGTK_CODEGEN) \
+		--register $(PYGTK_DEFSDIR)/pango-types.defs \
+		--register $(PYGTK_DEFSDIR)/gdk-types.defs \
+		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
+		--register $(PYGTK_DEFSDIR)/gtksourceview.defs \
+		--override $*.override \
+		--prefix py$* $(<F) ) > $@
+
+rhythmdb.c: rhythmdb.defs rhythmdb.override
 	( cd $(srcdir) && $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/pango-types.defs \
 		--register $(PYGTK_DEFSDIR)/gdk-types.defs \
@@ -44,6 +55,10 @@ rb.c: rb.defs rb.override
 BINDING_HEADERS_SRCDIR_IN = \
 	plugins/rb-plugin.h			\
 	remote/rb-remote-proxy.h		\
+	rhythmdb/rhythmdb.h			\
+	rhythmdb/rhythmdb-property-model.h	\
+	rhythmdb/rhythmdb-query-model.h		\
+	rhythmdb/rhythmdb-query-results.h	\
 	shell/rb-shell.h
 
 BINDING_HEADERS_BUILDDIR_IN = 
@@ -52,13 +67,15 @@ BINDING_HEADERS_SRCDIR		:= $(addprefix $(top_srcdir)/,$(BINDING_HEADERS_SRCDIR_I
 BINDING_HEADERS_BUILDDIR	:= $(addprefix $(top_builddir)/,$(BINDING_HEADERS_BUILDDIR_IN))
 
 regenerate-python-binding:
-	$(PYGTK_H2DEF) $(sort $(BINDING_HEADERS_SRCDIR) $(BINDING_HEADERS_BUILDDIR)) > rb.defs.new
+	$(PYGTK_H2DEF) $(sort $(BINDING_HEADERS_SRCDIR) $(BINDING_HEADERS_BUILDDIR)) > rhythmbox.defs.new
 
-BUILT_SOURCES = rb.c
+BUILT_SOURCES = rb.c rhythmdb.c
 
 EXTRA_DIST = \
-	rb.override	\
-	rb.defs
+	rb.override		\
+	rb.defs			\
+	rhythmdb.override	\
+	rhythmdb.defs
 
 CLEANFILES = $(BUILT_SOURCES)
 

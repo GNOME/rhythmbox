@@ -47,6 +47,9 @@ typedef enum
 	RHYTHMDB_PROPERTY_MODEL_COLUMN_LAST,
 } RhythmDBPropertyModelColumn;
 
+GType rhythmdb_property_model_column_get_type (void);
+#define RHYTHMDB_TYPE_PROPERTY_MODEL_COLUMN (rhythmdb_property_model_column_get_type ())
+
 typedef struct RhythmDBPropertyModelPrivate RhythmDBPropertyModelPrivate;
 
 typedef struct

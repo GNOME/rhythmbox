@@ -1,5 +1,31 @@
 2006-03-29  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_sync),
+	(rhythmdb_property_model_column_get_type):
+	* rhythmdb/rhythmdb-property-model.h: make the column enum a GType
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init):
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init),
+	(rhythmdb_compute_status_normal), (rhythmdb_get_property_type),
+	(rhythmdb_entry_get_type):
+	* rhythmdb/rhythmdb.h: make RhythmDBEntry a GType.
+
+	* widgets/rb-query-creator-properties.c:
+	* widgets/rb-song-display-box.c: #include <gnome-vfs-utils.h>, which
+	was missing.
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* plugins/rb-python-module.c: (rb_python_module_init_python): add
+	Python bindings for RhythmDB.
+
+2006-03-29  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell.c: (rb_shell_constructor): don't activate DAAP
 	sharing when using --no-registration
 

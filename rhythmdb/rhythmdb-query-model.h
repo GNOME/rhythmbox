@@ -22,6 +22,7 @@
 #include "config.h"
 #include <glib-object.h>
 #include <glib.h>
+#include <gtk/gtk.h>
 
 #include "rhythmdb.h"
 
@@ -76,7 +77,7 @@ gboolean		rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDB
 
 void			rhythmdb_query_model_move_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
 
-GnomeVFSFileSize	rhythmdb_query_model_get_size	(RhythmDBQueryModel *model);
+guint64	rhythmdb_query_model_get_size	(RhythmDBQueryModel *model);
 
 long			rhythmdb_query_model_get_duration(RhythmDBQueryModel *model);
 

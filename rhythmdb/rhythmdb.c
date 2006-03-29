@@ -128,6 +128,7 @@ struct RhythmDBPrivate
 };
 
 #define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
+G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
 
 typedef struct
 {
@@ -189,8 +190,6 @@ typedef struct
 	gboolean signal_change;
 	RhythmDBEntryChange change;
 } RhythmDBEvent;
-
-G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
 
 static void rhythmdb_finalize (GObject *object);
 static void rhythmdb_set_property (GObject *object,
@@ -298,7 +297,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
+			      1, RHYTHMDB_TYPE_ENTRY);
 
 	rhythmdb_signals[ENTRY_DELETED] =
 		g_signal_new ("entry_deleted",
@@ -308,7 +307,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
+			      1, RHYTHMDB_TYPE_ENTRY);
 
 	rhythmdb_signals[ENTRY_CHANGED] =
 		g_signal_new ("entry_changed",
@@ -318,7 +317,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      NULL, NULL,
 			      rhythmdb_marshal_VOID__POINTER_POINTER,
 			      G_TYPE_NONE, 2, 
-			      G_TYPE_POINTER, G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
 
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
@@ -3848,7 +3847,7 @@ rhythmdb_is_busy (RhythmDB *db)
  * Returns: the string, which should be freed with g_free.
  **/
 char *
-rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize size)
+rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size)
 {
 	long days, hours, minutes, seconds;
 	char *songcount = NULL;
@@ -4637,3 +4636,23 @@ rhythmdb_entry_get_double (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return 0.0;
 	}
 }
+
+GType
+rhythmdb_get_property_type (RhythmDB *db, guint property_id)
+{
+	g_assert (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES);
+	return rhythmdb_property_type_map[property_id];
+}
+
+GType
+rhythmdb_entry_get_type (void)
+{
+	static GType type = 0;
+
+	if (G_UNLIKELY (type == 0)) {
+		type = g_pointer_type_register_static ("RhythmDBEntry");
+	}
+
+	return type;
+}
+

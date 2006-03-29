@@ -22,6 +22,7 @@
 
 #include <libgnome/gnome-i18n.h>
 #include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rhythmdb.h"
 #include "rb-query-creator-private.h"

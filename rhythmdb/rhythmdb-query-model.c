@@ -194,12 +194,12 @@ struct RhythmDBQueryModelPrivate
 
 	guint stamp;
 
-	GnomeVFSFileSize max_size;
+	guint max_size;
 	guint max_count;
 	guint max_time;
 
 	glong total_duration;
-	GnomeVFSFileSize total_size;
+	guint total_size;
 
 	GSequence *entries;
 	GHashTable *reverse_map;
@@ -334,8 +334,8 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_prop_changed),
 			      NULL, NULL,
 			      rhythmdb_marshal_VOID__POINTER_INT_POINTER_POINTER,
-			      G_TYPE_NONE, 4, G_TYPE_POINTER,
-			      G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
+			      G_TYPE_NONE,
+			      4, RHYTHMDB_TYPE_ENTRY, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
 	rhythmdb_query_model_signals[ENTRY_REMOVED] =
 		g_signal_new ("entry-removed",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -343,7 +343,8 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_removed),
 			      NULL, NULL,
 			      rhythmdb_marshal_VOID__POINTER,
-			      G_TYPE_NONE, 1, G_TYPE_POINTER);
+			      G_TYPE_NONE,
+			      1, RHYTHMDB_TYPE_ENTRY);
 	rhythmdb_query_model_signals[NON_ENTRY_DROPPED] =
 		g_signal_new ("non-entry-dropped",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -902,7 +903,7 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry,
 	rhythmdb_query_model_process_update (update);
 }
 
-GnomeVFSFileSize
+guint64
 rhythmdb_query_model_get_size (RhythmDBQueryModel *model)
 {
 	return model->priv->total_size;

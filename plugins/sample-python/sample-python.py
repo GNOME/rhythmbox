@@ -10,3 +10,4 @@ class SamplePython(rb.Plugin):
 	
 	def deactivate(self, shell):
 		print "deactivating sample python plugin"
+

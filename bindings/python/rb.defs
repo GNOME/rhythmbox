@@ -8,12 +8,12 @@
   (gtype-id "RB_TYPE_PLUGIN")
 )
 
-
 (define-interface RemoteProxy
   (in-module "RB")
   (c-name "RBRemoteProxy")
   (gtype-id "RB_TYPE_REMOTE_PROXY")
 )
+
 (define-object Shell
   (in-module "RB")
   (parent "GObject")
@@ -74,20 +74,6 @@
 (define-function rb_shell_get_type
   (c-name "rb_shell_get_type")
   (return-type "GType")
-)
-
-(define-function rb_shell_new
-  (c-name "rb_shell_new")
-  (is-constructor-of "RBShell")
-  (return-type "RBShell*")
-  (parameters
-    '("int" "argc")
-    '("char**" "argv")
-    '("gboolean" "no_registration")
-    '("gboolean" "no_update")
-    '("gboolean" "dry_run")
-    '("char*" "rhythmdb")
-  )
 )
 
 (define-method present

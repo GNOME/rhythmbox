@@ -24,14 +24,10 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtktreemodel.h>
 #include <stdarg.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-file-info.h>
 #include <libxml/tree.h>
 
 #include "config.h"
-#include "rb-refstring.h"
 #include "rhythmdb-query-results.h"
 
 G_BEGIN_DECLS
@@ -42,6 +38,14 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE))
 #define RHYTHMDB_IS_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE))
 #define RHYTHMDB_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE, RhythmDBClass))
+
+struct RhythmDBEntry_;
+typedef struct RhythmDBEntry_ RhythmDBEntry;
+GType rhythmdb_entry_get_type (void);
+
+#define RHYTHMDB_TYPE_ENTRY      (rhythmdb_entry_get_type ())
+#define RHYTHMDB_ENTRY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY, RhythmDBEntry))
+#define RHYTHMDB_IS_ENTRY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY))
 
 
 typedef gint32 RhythmDBEntryType;
@@ -163,9 +167,6 @@ typedef struct {
 	GValue old;
 	GValue new;
 } RhythmDBEntryChange;
-
-struct RhythmDBEntry_;
-typedef struct RhythmDBEntry_ RhythmDBEntry;
 
 void rhythmdb_entry_get (RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
 const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
@@ -336,7 +337,9 @@ void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
 
 gboolean	rhythmdb_is_busy			(RhythmDB *db);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
-							 GnomeVFSFileSize size);
+							 guint64 size);
+
+
 RhythmDBEntryType rhythmdb_entry_register_type          (void);
 
 RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
@@ -346,22 +349,9 @@ RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type  (void);
 RhythmDBEntryType rhythmdb_entry_import_error_get_type	(void);
 RhythmDBEntryType rhythmdb_entry_ignore_get_type        (void);
 
-extern GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
-G_INLINE_FUNC GType rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
-
-#if defined (G_CAN_INLINE) || defined (__RHYTHMDB_C__)
-
-G_INLINE_FUNC GType
-rhythmdb_get_property_type (RhythmDB *db, guint property_id)
-{
-	g_assert (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES);
-	return rhythmdb_property_type_map[property_id];
-}
-
-#endif
+GType rhythmdb_get_property_type (RhythmDB *db, guint property_id);
 
 void rhythmdb_entry_ref (RhythmDB *db, RhythmDBEntry *entry);
-
 void rhythmdb_entry_unref (RhythmDB *db, RhythmDBEntry *entry);
 
 G_END_DECLS

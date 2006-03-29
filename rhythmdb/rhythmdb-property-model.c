@@ -24,11 +24,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <glib/gi18n.h>
+
 #include "rhythmdb-property-model.h"
 #include "rb-debug.h"
 #include "gsequence.h"
+#include "rb-refstring.h"
 #include "rb-tree-dnd.h"
 
 static void rhythmdb_property_model_tree_model_init (GtkTreeModelIface *iface);
@@ -1116,5 +1117,27 @@ rhythmdb_property_model_sync (RhythmDBPropertyModel *model)
 		return;
 
 	model->priv->syncing_id = g_idle_add ((GSourceFunc)rhythmdb_property_model_perform_sync, model);
+}
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rhythmdb_property_model_column_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, "Property title"),
+			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, "Value priority"),
+			ENUM_ENTRY (RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, "Track count"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RhythmDBPropertyModelColumn", values);
+	}
+
+	return etype;
 }
 

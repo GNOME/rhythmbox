@@ -4,12 +4,14 @@ headers
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
 
+#include "override_common.h"
+
 #include "rb-plugin.h"
 #include "rb-remote-proxy.h"
 #include "rb-shell.h"
 
 void pyrb_register_classes (PyObject *d); 
-/*void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);*/
+void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
 
 %%
 modulename rb 
@@ -18,6 +20,7 @@ import gtk.Widget as PyGtkWidget_Type
 import gobject.GObject as PyGObject_Type 
 import gtk.VBox as PyGtkVBox_Type
 import gtk.Window as PyGtkWindow_Type
+import gtk.TreeView as PyGtkTreeView_Type
 %%
 ignore-glob
   *_get_type
