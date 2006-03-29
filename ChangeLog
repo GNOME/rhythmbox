@@ -1,3 +1,17 @@
+2006-03-29  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/rb-plugin-manager.c: (active_toggled_cb),
+	(row_activated_cb), (plugin_manager_toggle_all):
+	* sources/rb-sourcelist.c: (rb_sourcelist_source_to_iter),
+	(rb_sourcelist_visible_source_to_iter), (row_activated_cb),
+	(button_press_cb), (source_name_edited_cb):
+	* widgets/rb-property-view.c: (rb_property_view_set_property),
+	(rb_property_view_post_row_deleted_cb),
+	(rb_property_view_row_activated_cb),
+	(rb_property_view_selection_changed_cb),
+	(rb_property_view_button_press_cb): fix warnings with GTK HEAD, about
+	ignoring the return value of gtk_tree_model_get_iter. Fixes bug 335516.
+
 2006-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:

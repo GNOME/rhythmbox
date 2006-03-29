@@ -426,8 +426,7 @@ rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 	gtk_tree_model_foreach (sourcelist->priv->real_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
 	
 	if (sp->path) {
-		gtk_tree_model_get_iter (sourcelist->priv->real_model, iter, sp->path);
-		ret = TRUE;
+		ret = gtk_tree_model_get_iter (sourcelist->priv->real_model, iter, sp->path);
 	}
 
 	gtk_tree_path_free (sp->path);
@@ -449,8 +448,7 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source
 	gtk_tree_model_foreach (sourcelist->priv->filter_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
 
 	if (sp->path) {
-		gtk_tree_model_get_iter (sourcelist->priv->filter_model, iter, sp->path);
-		ret = TRUE;
+		ret = gtk_tree_model_get_iter (sourcelist->priv->filter_model, iter, sp->path);
 	}
 
 	gtk_tree_path_free (sp->path);
@@ -598,7 +596,7 @@ row_activated_cb (GtkTreeView *treeview,
 	RBSource *target;
 
 	model = gtk_tree_view_get_model (treeview);
-	gtk_tree_model_get_iter (model, &iter, path);
+	g_return_if_fail (gtk_tree_model_get_iter (model, &iter, path));
 	gtk_tree_model_get (model, &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
@@ -646,8 +644,8 @@ button_press_cb (GtkTreeView *treeview,
 		return TRUE;
 	}
 
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model), &iter, path);
-	gtk_tree_selection_select_iter (gtk_tree_view_get_selection (treeview), &iter);
+	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model), &iter, path))
+		gtk_tree_selection_select_iter (gtk_tree_view_get_selection (treeview), &iter);
 
 	return emit_show_popup (treeview, sourcelist);
 }
@@ -792,8 +790,8 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 	
 	path = gtk_tree_path_new_from_string (pathstr);	
 	
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model),
-				 &iter, path);
+	g_return_if_fail (gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model),
+						   &iter, path));
 	gtk_tree_model_get (sourcelist->priv->filter_model,
 			    &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 	g_object_set (G_OBJECT (source), "name", text, NULL);

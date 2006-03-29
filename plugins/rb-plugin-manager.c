@@ -137,9 +137,7 @@ active_toggled_cb (GtkCellRendererToggle *cell,
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (pm->priv->tree));
 	g_return_if_fail (model != NULL);
 
-	gtk_tree_model_get_iter (model, &iter, path);
-
-	if (&iter != NULL)
+	if (gtk_tree_model_get_iter (model, &iter, path))
 		plugin_manager_toggle_active (&iter, model, pm);
 
 	gtk_tree_path_free (path);
@@ -190,14 +188,13 @@ row_activated_cb (GtkTreeView       *tree_view,
 	RBPluginManager *pm = data;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
+	gboolean found;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (pm->priv->tree));
-
 	g_return_if_fail (model != NULL);
 
-	gtk_tree_model_get_iter (model, &iter, path);
-
-	g_return_if_fail (&iter != NULL);
+	found = gtk_tree_model_get_iter (model, &iter, path);
+	g_return_if_fail (found);
 
 	plugin_manager_toggle_active (&iter, model, pm);
 }
@@ -336,12 +333,11 @@ plugin_manager_toggle_all (RBPluginManager *pm)
 
 	g_return_if_fail (model != NULL);
 
-	gtk_tree_model_get_iter_first (model, &iter);
-
-	do {
-		plugin_manager_set_active (&iter, model, active, pm);
+	if (gtk_tree_model_get_iter_first (model, &iter)) {
+		do {
+			plugin_manager_set_active (&iter, model, active, pm);
+		} while (gtk_tree_model_iter_next (model, &iter));
 	}
-	while (gtk_tree_model_iter_next (model, &iter));
 }
 
 /* Callback used as the interactive search comparison function */
