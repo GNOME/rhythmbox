@@ -607,7 +607,8 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget, RhythmDBPropType typ
 		ignore_selection_changes (widget, view, TRUE);
 
 	rebuild_child_model (widget, prop_to_index (type), FALSE);
-	restore_selection (widget, prop_to_index (type), FALSE);
+	if (view)
+		ignore_selection_changes (widget, view, FALSE);
 }
 
 GList*

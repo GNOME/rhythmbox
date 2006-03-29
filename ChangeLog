@@ -1,3 +1,9 @@
+2006-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-library-browser.c: (rb_library_browser_set_selection):
+	No need to restore the selection after rebuilding the child model,
+	since that can't have changed the selection.
+
 2006-03-29  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/override_common.c:
