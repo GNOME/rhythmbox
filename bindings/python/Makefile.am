@@ -45,10 +45,7 @@ rb.c: rb.defs rb.override
 
 rhythmdb.c: rhythmdb.defs rhythmdb.override
 	( cd $(srcdir) && $(PYGTK_CODEGEN) \
-		--register $(PYGTK_DEFSDIR)/pango-types.defs \
-		--register $(PYGTK_DEFSDIR)/gdk-types.defs \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
-		--register $(PYGTK_DEFSDIR)/gtksourceview.defs \
 		--override $*.override \
 		--prefix py$* $(<F) ) > $@ 
 

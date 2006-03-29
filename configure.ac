@@ -769,11 +769,9 @@ fi
 
 if test "x$have_python" != "xno"; then
 	PYGTK_REQUIRED=2.8.0
-	GNOME_PYTHON_DESKTOP_REQUIRED=2.13.3
 
 	PKG_CHECK_MODULES([PYGTK], [
-		pygtk-2.0 >= $PYGTK_REQUIRED
-		gnome-python-desktop-2.0 >= $GNOME_PYTHON_DESKTOP_REQUIRED],
+		pygtk-2.0 >= $PYGTK_REQUIRED],
 		[],[have_python=no])
 
 	AC_SUBST([PYGTK_CFLAGS])

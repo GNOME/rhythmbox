@@ -1,0 +1,768 @@
+;; -*- scheme -*-
+; object definitions ...
+
+(define-object QueryResults
+  (in-module "RhythmDB")
+  (c-name "RhythmDBQueryResults")
+  (gtype-id "RHYTHMDB_TYPE_QUERY_RESULTS")
+)
+
+(define-object RhythmDB
+  (in-module "RhythmDB")
+  (parent "GObject")
+  (c-name "RhythmDB")
+  (gtype-id "RHYTHMDB_TYPE_RHYTHMDB")
+)
+
+(define-pointer Entry
+  (in-module "RhythmDB")
+  (c-name "RhythmDBEntry")
+  (gtype-id "RHYTHMDB_TYPE_ENTRY")
+)
+
+(define-object PropertyModel
+  (in-module "RhythmDB")
+  (parent "GObject")
+  (interface "GtkTreeModel")
+  (c-name "RhythmDBPropertyModel")
+  (gtype-id "RHYTHMDB_TYPE_PROPERTY_MODEL")
+)
+
+(define-object QueryModel
+  (in-module "RhythmDB")
+  (parent "GObject")
+  (interface "GtkTreeModel")
+  (interface "RhythmDBQueryResults")
+  (c-name "RhythmDBQueryModel")
+  (gtype-id "RHYTHMDB_TYPE_QUERY_MODEL")
+)
+
+
+;; Enumerations and flags ...
+
+(define-enum QueryType
+  (in-module "RhythmDB")
+  (c-name "RhythmDBQueryType")
+  (gtype-id "RHYTHMDB_TYPE_QUERY")
+  (values
+    '("end" "RHYTHMDB_QUERY_END")
+    '("disjunction" "RHYTHMDB_QUERY_DISJUNCTION")
+    '("subquery" "RHYTHMDB_QUERY_SUBQUERY")
+    '("prop-equals" "RHYTHMDB_QUERY_PROP_EQUALS")
+    '("prop-like" "RHYTHMDB_QUERY_PROP_LIKE")
+    '("prop-not-like" "RHYTHMDB_QUERY_PROP_NOT_LIKE")
+    '("prop-prefix" "RHYTHMDB_QUERY_PROP_PREFIX")
+    '("prop-suffix" "RHYTHMDB_QUERY_PROP_SUFFIX")
+    '("prop-greater" "RHYTHMDB_QUERY_PROP_GREATER")
+    '("prop-less" "RHYTHMDB_QUERY_PROP_LESS")
+    '("prop-current-time-within" "RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN")
+    '("prop-current-time-not-within" "RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN")
+    '("prop-year-equals" "RHYTHMDB_QUERY_PROP_YEAR_EQUALS")
+    '("prop-year-greater" "RHYTHMDB_QUERY_PROP_YEAR_GREATER")
+    '("prop-year-less" "RHYTHMDB_QUERY_PROP_YEAR_LESS")
+  )
+)
+
+(define-enum PropType
+  (in-module "RhythmDB")
+  (c-name "RhythmDBPropType")
+  (gtype-id "RHYTHMDB_TYPE_PROP")
+  (values
+    '("prop-type" "RHYTHMDB_PROP_TYPE")
+    '("prop-title" "RHYTHMDB_PROP_TITLE")
+    '("prop-genre" "RHYTHMDB_PROP_GENRE")
+    '("prop-artist" "RHYTHMDB_PROP_ARTIST")
+    '("prop-album" "RHYTHMDB_PROP_ALBUM")
+    '("prop-track-number" "RHYTHMDB_PROP_TRACK_NUMBER")
+    '("prop-disc-number" "RHYTHMDB_PROP_DISC_NUMBER")
+    '("prop-duration" "RHYTHMDB_PROP_DURATION")
+    '("prop-file-size" "RHYTHMDB_PROP_FILE_SIZE")
+    '("prop-location" "RHYTHMDB_PROP_LOCATION")
+    '("prop-mountpoint" "RHYTHMDB_PROP_MOUNTPOINT")
+    '("prop-mtime" "RHYTHMDB_PROP_MTIME")
+    '("prop-first-seen" "RHYTHMDB_PROP_FIRST_SEEN")
+    '("prop-last-seen" "RHYTHMDB_PROP_LAST_SEEN")
+    '("prop-rating" "RHYTHMDB_PROP_RATING")
+    '("prop-play-count" "RHYTHMDB_PROP_PLAY_COUNT")
+    '("prop-last-played" "RHYTHMDB_PROP_LAST_PLAYED")
+    '("prop-bitrate" "RHYTHMDB_PROP_BITRATE")
+    '("prop-date" "RHYTHMDB_PROP_DATE")
+    '("prop-track-gain" "RHYTHMDB_PROP_TRACK_GAIN")
+    '("prop-track-peak" "RHYTHMDB_PROP_TRACK_PEAK")
+    '("prop-album-gain" "RHYTHMDB_PROP_ALBUM_GAIN")
+    '("prop-album-peak" "RHYTHMDB_PROP_ALBUM_PEAK")
+    '("prop-mimetype" "RHYTHMDB_PROP_MIMETYPE")
+    '("prop-title-sort-key" "RHYTHMDB_PROP_TITLE_SORT_KEY")
+    '("prop-genre-sort-key" "RHYTHMDB_PROP_GENRE_SORT_KEY")
+    '("prop-artist-sort-key" "RHYTHMDB_PROP_ARTIST_SORT_KEY")
+    '("prop-album-sort-key" "RHYTHMDB_PROP_ALBUM_SORT_KEY")
+    '("prop-title-folded" "RHYTHMDB_PROP_TITLE_FOLDED")
+    '("prop-genre-folded" "RHYTHMDB_PROP_GENRE_FOLDED")
+    '("prop-artist-folded" "RHYTHMDB_PROP_ARTIST_FOLDED")
+    '("prop-album-folded" "RHYTHMDB_PROP_ALBUM_FOLDED")
+    '("prop-last-played-str" "RHYTHMDB_PROP_LAST_PLAYED_STR")
+    '("prop-hidden" "RHYTHMDB_PROP_HIDDEN")
+    '("prop-playback-error" "RHYTHMDB_PROP_PLAYBACK_ERROR")
+    '("prop-first-seen-str" "RHYTHMDB_PROP_FIRST_SEEN_STR")
+    '("prop-last-seen-str" "RHYTHMDB_PROP_LAST_SEEN_STR")
+    '("prop-search-match" "RHYTHMDB_PROP_SEARCH_MATCH")
+    '("prop-year" "RHYTHMDB_PROP_YEAR")
+    '("prop-status" "RHYTHMDB_PROP_STATUS")
+    '("prop-description" "RHYTHMDB_PROP_DESCRIPTION")
+    '("prop-subtitle" "RHYTHMDB_PROP_SUBTITLE")
+    '("prop-summary" "RHYTHMDB_PROP_SUMMARY")
+    '("prop-lang" "RHYTHMDB_PROP_LANG")
+    '("prop-copyright" "RHYTHMDB_PROP_COPYRIGHT")
+    '("prop-image" "RHYTHMDB_PROP_IMAGE")
+    '("prop-post-time" "RHYTHMDB_PROP_POST_TIME")
+    '("num-properties" "RHYTHMDB_NUM_PROPERTIES")
+  )
+)
+
+(define-enum PropertyModelColumn
+  (in-module "RhythmDB")
+  (c-name "RhythmDBPropertyModelColumn")
+  (gtype-id "RHYTHMDB_TYPE_PROPERTY_MODEL_COLUMN")
+  (values
+    '("title" "RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE")
+    '("priority" "RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY")
+    '("number" "RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER")
+    '("last" "RHYTHMDB_PROPERTY_MODEL_COLUMN_LAST")
+  )
+)
+
+
+;; From ../../rhythmdb/rhythmdb-query-results.h
+
+(define-function rhythmdb_query_results_get_type
+  (c-name "rhythmdb_query_results_get_type")
+  (return-type "GType")
+)
+
+(define-method set_query
+  (of-object "RhythmDBQueryResults")
+  (c-name "rhythmdb_query_results_set_query")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query")
+  )
+)
+
+(define-method add_results
+  (of-object "RhythmDBQueryResults")
+  (c-name "rhythmdb_query_results_add_results")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "entries")
+  )
+)
+
+(define-method query_complete
+  (of-object "RhythmDBQueryResults")
+  (c-name "rhythmdb_query_results_query_complete")
+  (return-type "none")
+)
+
+
+;; From ../../rhythmdb/rhythmdb.h
+
+(define-function rhythmdb_query_get_type
+  (c-name "rhythmdb_query_get_type")
+  (return-type "GType")
+)
+
+(define-function rhythmdb_prop_get_type
+  (c-name "rhythmdb_prop_get_type")
+  (return-type "GType")
+)
+
+(define-method get
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get")
+  (return-type "none")
+  (parameters
+    '("RhythmDBPropType" "propid")
+    '("GValue*" "val")
+  )
+)
+
+(define-method get_string
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_string")
+  (return-type "const-char*")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method dup_string
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_dup_string")
+  (return-type "char*")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method get_boolean
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_boolean")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method get_uint64
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_uint64")
+  (return-type "guint64")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method get_ulong
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_ulong")
+  (return-type "gulong")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method get_double
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_double")
+  (return-type "double")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-function rhythmdb_get_type
+  (c-name "rhythmdb_get_type")
+  (return-type "GType")
+)
+
+(define-method commit
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_commit")
+  (return-type "none")
+)
+
+(define-method entry_is_editable
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_is_editable")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_new
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_new")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("RhythmDBEntryType" "type")
+    '("const-char*" "uri")
+  )
+)
+
+(define-method add_uri
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_add_uri")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method add_uri_with_type
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_add_uri_with_type")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+    '("RhythmDBEntryType" "type")
+  )
+)
+
+(define-method set
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_set")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("guint" "propid")
+    '("const-GValue*" "value")
+  )
+)
+
+(define-method entry_set_nonotify
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_set_nonotify")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("guint" "propid")
+    '("const-GValue*" "value")
+  )
+)
+
+(define-method entry_set_uninserted
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_set_uninserted")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("guint" "propid")
+    '("const-GValue*" "value")
+  )
+)
+
+(define-method entry_delete
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_delete")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_delete_by_type
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_delete_by_type")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntryType" "type")
+  )
+)
+
+(define-method entry_move_to_trash
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_move_to_trash")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_lookup_by_location
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_lookup_by_location")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method evaluate_query
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_evaluate_query")
+  (return-type "gboolean")
+  (parameters
+    '("GPtrArray*" "query")
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_foreach
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_foreach")
+  (return-type "none")
+  (parameters
+    '("GFunc" "func")
+    '("gpointer" "data")
+  )
+)
+
+(define-method do_full_query_parsed
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_do_full_query_parsed")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryResults*" "results")
+    '("GPtrArray*" "query")
+  )
+)
+
+(define-method do_full_query_async_parsed
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_do_full_query_async_parsed")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryResults*" "results")
+    '("GPtrArray*" "query")
+  )
+)
+
+(define-method query_parse
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_parse")
+  (return-type "GPtrArray*")
+  (parameters
+  )
+  (varargs #t)
+)
+
+(define-method query_append
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_append")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query")
+  )
+  (varargs #t)
+)
+
+(define-method query_append_prop_multiple
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_append_prop_multiple")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query")
+    '("RhythmDBPropType" "propid")
+    '("GList*" "items")
+  )
+)
+
+(define-function rhythmdb_query_concatenate
+  (c-name "rhythmdb_query_concatenate")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query1")
+    '("GPtrArray*" "query2")
+  )
+)
+
+(define-function rhythmdb_query_free
+  (c-name "rhythmdb_query_free")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query")
+  )
+)
+
+(define-function rhythmdb_query_copy
+  (c-name "rhythmdb_query_copy")
+  (return-type "GPtrArray*")
+  (parameters
+    '("GPtrArray*" "array")
+  )
+)
+
+(define-method is_busy
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_is_busy")
+  (return-type "gboolean")
+)
+
+(define-function rhythmdb_compute_status_normal
+  (c-name "rhythmdb_compute_status_normal")
+  (return-type "char*")
+  (parameters
+    '("gint" "n_songs")
+    '("glong" "duration")
+    '("guint64" "size")
+  )
+)
+
+(define-method get_property_type
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_get_property_type")
+  (return-type "GType")
+  (parameters
+    '("guint" "property_id")
+  )
+)
+
+(define-method entry_ref
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_ref")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_unref
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_unref")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+
+;; From ../../rhythmdb/rhythmdb-property-model.h
+
+(define-function rhythmdb_property_model_get_type
+  (c-name "rhythmdb_property_model_get_type")
+  (return-type "GType")
+)
+
+(define-method property_model_new
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_property_model_new")
+  (return-type "RhythmDBPropertyModel*")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
+(define-method iter_from_string
+  (of-object "RhythmDBPropertyModel")
+  (c-name "rhythmdb_property_model_iter_from_string")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "name")
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method enable_drag
+  (of-object "RhythmDBPropertyModel")
+  (c-name "rhythmdb_property_model_enable_drag")
+  (return-type "none")
+  (parameters
+    '("GtkTreeView*" "view")
+  )
+)
+
+;; From ../../rhythmdb/rhythmdb-query-model.h
+
+(define-function rhythmdb_query_model_get_type
+  (c-name "rhythmdb_query_model_get_type")
+  (return-type "GType")
+)
+
+(define-method query_model_new
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_model_new")
+  (return-type "RhythmDBQueryModel*")
+  (parameters
+    '("GPtrArray*" "query")
+    '("GCompareDataFunc" "sort_func")
+    '("RhythmDBPropType" "sort_prop_id")
+    '("gboolean" "sort_reverse")
+  )
+)
+
+(define-method query_model_new_empty
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_model_new_empty")
+  (return-type "RhythmDBQueryModel*")
+)
+
+(define-method add_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_add_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("gint" "index")
+  )
+)
+
+(define-method remove_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_remove_entry")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method move_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_move_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("gint" "index")
+  )
+)
+
+(define-method get_size
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_get_size")
+  (return-type "guint64")
+)
+
+(define-method get_duration
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_get_duration")
+  (return-type "long")
+)
+
+(define-method entry_to_iter
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_entry_to_iter")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method has_pending_changes
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_has_pending_changes")
+  (return-type "gboolean")
+)
+
+(define-method iter_to_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_iter_to_entry")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("GtkTreeIter*" "entry_iter")
+  )
+)
+
+(define-method get_next_from_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_get_next_from_entry")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method get_previous_from_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_get_previous_from_entry")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method compute_status_normal
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_compute_status_normal")
+  (return-type "char*")
+)
+
+(define-method set_sort_order
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_set_sort_order")
+  (return-type "none")
+  (parameters
+    '("GCompareDataFunc" "sort_func")
+    '("RhythmDBPropType" "sort_prop_id")
+    '("gboolean" "sort_reverse")
+  )
+)
+
+(define-method reapply_query
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_reapply_query")
+  (return-type "none")
+  (parameters
+    '("gboolean" "filter")
+  )
+)
+
+(define-function rhythmdb_query_model_location_sort_func
+  (c-name "rhythmdb_query_model_location_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_string_sort_func
+  (c-name "rhythmdb_query_model_string_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_title_sort_func
+  (c-name "rhythmdb_query_model_title_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_album_sort_func
+  (c-name "rhythmdb_query_model_album_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_artist_sort_func
+  (c-name "rhythmdb_query_model_artist_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_genre_sort_func
+  (c-name "rhythmdb_query_model_genre_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_track_sort_func
+  (c-name "rhythmdb_query_model_track_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_double_ceiling_sort_func
+  (c-name "rhythmdb_query_model_double_ceiling_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_ulong_sort_func
+  (c-name "rhythmdb_query_model_ulong_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-function rhythmdb_query_model_date_sort_func
+  (c-name "rhythmdb_query_model_date_sort_func")
+  (return-type "gint")
+  (parameters
+    '("RhythmDBEntry*" "a")
+    '("RhythmDBEntry*" "b")
+    '("RhythmDBQueryModel*" "model")
+  )
+)

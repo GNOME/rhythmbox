@@ -1,0 +1,31 @@
+%%
+headers
+#define NO_IMPORT_PYGOBJECT
+#include <pygobject.h>
+#include <pygtk/pygtk.h>
+
+#include "override_common.h"
+
+#include "rhythmdb.h"
+#include "rhythmdb-property-model.h"
+#include "rhythmdb-query-model.h"
+#include "rhythmdb-query-results.h"
+
+void pyrhythmdb_register_classes (PyObject *d); 
+void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
+
+/* hacks to deal with the nonstandard class name RHYTHMDB */
+#define RHYTHMDB_TYPE_RHYTHMDB RHYTHMDB_TYPE
+#define RHYTHMDB_RHYTHMDB(o) RHYTHMDB(o)
+
+%%
+modulename rhythmdb 
+%%
+import gtk.Widget as PyGtkWidget_Type
+import gobject.GObject as PyGObject_Type 
+import gtk.TreeView as PyGtkTreeView_Type
+%%
+ignore-glob
+  *_get_type
+  *_quark
+
