@@ -3257,7 +3257,7 @@ rb_shell_get_song_properties (RBShell *shell,
 					     NULL,
 					     unset_and_free_g_value);
 
-	klass = g_type_class_ref (RHYTHMDB_TYPE_PROP);
+	klass = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 	for (i = 0; i < klass->n_values; i++) {
 		GValue *value;
 		gint prop;

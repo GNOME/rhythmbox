@@ -476,7 +476,7 @@ rhythmdb_init (RhythmDB *db)
 
 	db->priv->metadata = rb_metadata_new ();
 	
-	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
+	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 
 	g_assert (prop_class->n_values == RHYTHMDB_NUM_PROPERTIES);
 	db->priv->column_xml_names = g_new (xmlChar *, RHYTHMDB_NUM_PROPERTIES);
@@ -3704,7 +3704,7 @@ rhythmdb_do_full_query (RhythmDB *db,
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
 
 GType
-rhythmdb_query_get_type (void)
+rhythmdb_query_type_get_type (void)
 {
 	static GType etype = 0;
 
@@ -3738,7 +3738,7 @@ rhythmdb_query_get_type (void)
 }
 
 GType
-rhythmdb_prop_get_type (void)
+rhythmdb_prop_type_get_type (void)
 {
 	static GType etype = 0;
 
@@ -4651,6 +4651,20 @@ rhythmdb_entry_get_type (void)
 
 	if (G_UNLIKELY (type == 0)) {
 		type = g_pointer_type_register_static ("RhythmDBEntry");
+	}
+
+	return type;
+}
+
+GType
+rhythmdb_query_get_type (void)
+{
+	static GType type = 0;
+
+	if (G_UNLIKELY (type == 0)) {
+		type = g_boxed_type_register_static ("RhythmDBQuery",
+						     (GBoxedCopyFunc)rhythmdb_query_copy,
+						     (GBoxedFreeFunc)rhythmdb_query_free);
 	}
 
 	return type;

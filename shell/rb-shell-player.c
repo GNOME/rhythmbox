@@ -441,7 +441,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY);
 
 	rb_shell_player_signals[PLAYING_URI_CHANGED] =
 		g_signal_new ("playing-uri-changed",
@@ -2746,3 +2746,27 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
 	g_idle_add (_idle_unblock_signal_cb, player);
 }
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_shell_player_error_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR, "Playing parsing error"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST, "End of playlist reached"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_PLAYING, "Not playing"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE, "Not seekable"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBShellPlayerError", values);
+	}
+
+	return etype;
+}
+

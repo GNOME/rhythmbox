@@ -47,6 +47,9 @@ typedef enum
         RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE,
 } RBShellPlayerError;
 
+GType rb_shell_player_error_get_type (void);
+#define RB_TYPE_SHELL_PLAYER_ERROR	(rb_shell_player_error_get_type())
+
 #define RB_SHELL_PLAYER_ERROR rb_shell_player_error_quark ()
 
 GQuark rb_shell_player_error_quark (void);

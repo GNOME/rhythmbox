@@ -1752,7 +1752,7 @@ rb_entry_view_columns_config_changed_cb (GConfClient* client,
 static gint
 propid_from_name (const char *name)
 {
-	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
+	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 	GEnumValue *ev;
 	int ret;
 

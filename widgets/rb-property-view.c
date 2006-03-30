@@ -157,7 +157,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 					 g_param_spec_enum ("prop",
 							    "PropertyId",
 							    "RhythmDBPropType",
-							    RHYTHMDB_TYPE_PROP,
+							    RHYTHMDB_TYPE_PROP_TYPE,
 							    RHYTHMDB_PROP_TYPE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 

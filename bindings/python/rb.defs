@@ -22,8 +22,25 @@
   (gtype-id "RB_TYPE_SHELL")
 )
 
+(define-object ShellPlayer
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBShellPlayer")
+  (gtype-id "RB_TYPE_SHELL_PLAYER")
+)
 ;; Enumerations and flags ...
 
+(define-enum ShellPlayerError
+  (in-module "RB")
+  (c-name "RBShellPlayerError")
+  (gtype-id "RB_TYPE_SHELL_PLAYER_ERROR")
+  (values
+    '("playlist-parse-error" "RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR")
+    '("end-of-playlist" "RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST")
+    '("not-playing" "RB_SHELL_PLAYER_ERROR_NOT_PLAYING")
+    '("not-seekable" "RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE")
+  )
+)
 
 ;; From ../../plugins/rb-plugin.h
 
@@ -450,4 +467,250 @@
   (of-object "RBRemoteProxy")
   (c-name "rb_remote_proxy_get_playing_source")
   (return-type "gchar*")
+)
+
+
+;; From ../../shell/rb-shell-player.h
+
+(define-function rb_shell_player_error_quark
+  (c-name "rb_shell_player_error_quark")
+  (return-type "GQuark")
+)
+
+(define-function rb_shell_player_get_type
+  (c-name "rb_shell_player_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_shell_player_new
+  (c-name "rb_shell_player_new")
+  (is-constructor-of "RbShellPlayer")
+  (return-type "RBShellPlayer*")
+  (parameters
+    '("RhythmDB*" "db")
+    '("GtkUIManager*" "mgr")
+    '("GtkActionGroup*" "actiongroup")
+  )
+)
+
+(define-method set_selected_source
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_selected_source")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "player")
+  )
+)
+
+(define-method set_playing_source
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_playing_source")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+  )
+)
+
+(define-method get_playing_source
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing_source")
+  (return-type "RBSource*")
+)
+
+(define-method jump_to_current
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_jump_to_current")
+  (return-type "none")
+)
+
+(define-method play_entry
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_play_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method playpause
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_playpause")
+  (return-type "gboolean")
+  (parameters
+    '("gboolean" "ignore_stop")
+    '("GError**" "error")
+  )
+)
+
+(define-method stop
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_stop")
+  (return-type "none")
+)
+
+(define-method do_previous
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_do_previous")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method do_next
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_do_next")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method get_playing_time_string
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing_time_string")
+  (return-type "char*")
+)
+
+(define-method get_playing_time
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing_time")
+  (return-type "gboolean")
+  (parameters
+    '("guint*" "time")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_playing_time
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_playing_time")
+  (return-type "gboolean")
+  (parameters
+    '("guint" "time")
+    '("GError**" "error")
+  )
+)
+
+(define-method seek
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_seek")
+  (return-type "none")
+  (parameters
+    '("long" "offset")
+  )
+)
+
+(define-method get_playing_song_duration
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing_song_duration")
+  (return-type "long")
+)
+
+(define-method get_playing
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing")
+  (return-type "gboolean")
+  (parameters
+    '("gboolean*" "playing")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_playing_path
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing_path")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar**" "path")
+    '("GError**" "error")
+  )
+)
+
+(define-method sync_buttons
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_sync_buttons")
+  (return-type "none")
+)
+
+(define-method set_playback_state
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_playback_state")
+  (return-type "none")
+  (parameters
+    '("gboolean" "shuffle")
+    '("gboolean" "repeat")
+  )
+)
+
+(define-method get_playback_state
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playback_state")
+  (return-type "gboolean")
+  (parameters
+    '("gboolean*" "shuffle")
+    '("gboolean*" "repeat")
+  )
+)
+
+(define-method get_playing_entry
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_playing_entry")
+  (return-type "RhythmDBEntry*")
+)
+
+(define-method toggle_mute
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_toggle_mute")
+  (return-type "none")
+)
+
+(define-method set_volume
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_volume")
+  (return-type "gboolean")
+  (parameters
+    '("gdouble" "volume")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_volume
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_volume")
+  (return-type "gboolean")
+  (parameters
+    '("gdouble*" "volume")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_volume_relative
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_volume_relative")
+  (return-type "gboolean")
+  (parameters
+    '("gdouble" "volume")
+    '("GError**" "error")
+  )
+)
+
+(define-method set_mute
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_set_mute")
+  (return-type "gboolean")
+  (parameters
+    '("gboolean" "mute")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_mute
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_get_mute")
+  (return-type "gboolean")
+  (parameters
+    '("gboolean*" "mute")
+    '("GError**" "error")
+  )
 )

@@ -1,3 +1,31 @@
+2006-03-30  James Livingston  <doclivingston@gmail.com>
+
+	* configure.ac: lower pygtk deps to 2.6, and add a makefile variable
+	for "-Wno-error".
+
+	* bindings/python/rb.override:
+	* bindings/python/Makefile.am: make the RB python bindings depend on
+	the RhythmDB ones, and use "-Wno-error" since the machine-generated
+	code sometimes emits warnings.
+
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_error_get_type):
+	* shell/rb-shell-player.h:
+	* bindings/python/rb.defs: add bindings for RBShellPlayer
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_init),
+	(rhythmdb_query_type_get_type), (rhythmdb_prop_type_get_type),
+	(rhythmdb_entry_get_type), (rhythmdb_query_get_type):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-shell.c: (rb_shell_get_song_properties):
+	* widgets/rb-entry-view.c: (propid_from_name):
+	* widgets/rb-property-view.c: (rb_property_view_class_init):
+	* bindings/python/rhythmdb.defs: make RhythmDBQuery a type (rather
+	than just plain GPtrArray, and add bindings for it.
+
+	* bindings/python/rhythmdb.override: wrap some functions that use
+	GValues
+
 2006-03-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load):

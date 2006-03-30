@@ -47,6 +47,12 @@ GType rhythmdb_entry_get_type (void);
 #define RHYTHMDB_ENTRY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY, RhythmDBEntry))
 #define RHYTHMDB_IS_ENTRY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY))
 
+typedef GPtrArray RhythmDBQuery;
+GType rhythmdb_query_get_type (void);
+#define RHYTHMDB_TYPE_QUERY	(rhythmdb_query_get_type ())
+#define RHYTHMDB_QUERY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_QUERY, RhythmDBQuery))
+#define RHYTHMDB_IS_QUERY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_QUERY))
+
 
 typedef gint32 RhythmDBEntryType;
 
@@ -149,11 +155,11 @@ enum {
 	RHYTHMDB_PODCAST_STATUS_PAUSED = 103,
 };
 
-GType rhythmdb_query_get_type (void);
-GType rhythmdb_prop_get_type (void);
+GType rhythmdb_query_type_get_type (void);
+GType rhythmdb_prop_type_get_type (void);
 
-#define RHYTHMDB_TYPE_QUERY (rhythmdb_query_get_type ())
-#define RHYTHMDB_TYPE_PROP (rhythmdb_prop_get_type ())
+#define RHYTHMDB_TYPE_QUERY_TYPE (rhythmdb_query_type_get_type ())
+#define RHYTHMDB_TYPE_PROP_TYPE (rhythmdb_prop_type_get_type ())
 
 typedef struct {
 	guint type;

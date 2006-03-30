@@ -20,6 +20,12 @@
   (gtype-id "RHYTHMDB_TYPE_ENTRY")
 )
 
+(define-boxed Query
+  (in-module "RhythmDB")
+  (c-name "RhythmDBQuery")
+  (gtype-id "RHYTHMDB_TYPE_QUERY")
+)
+
 (define-object PropertyModel
   (in-module "RhythmDB")
   (parent "GObject")
@@ -43,7 +49,7 @@
 (define-enum QueryType
   (in-module "RhythmDB")
   (c-name "RhythmDBQueryType")
-  (gtype-id "RHYTHMDB_TYPE_QUERY")
+  (gtype-id "RHYTHMDB_TYPE_QUERY_TYPE")
   (values
     '("end" "RHYTHMDB_QUERY_END")
     '("disjunction" "RHYTHMDB_QUERY_DISJUNCTION")
@@ -63,10 +69,11 @@
   )
 )
 
+
 (define-enum PropType
   (in-module "RhythmDB")
   (c-name "RhythmDBPropType")
-  (gtype-id "RHYTHMDB_TYPE_PROP")
+  (gtype-id "RHYTHMDB_TYPE_PROP_TYPE")
   (values
     '("prop-type" "RHYTHMDB_PROP_TYPE")
     '("prop-title" "RHYTHMDB_PROP_TITLE")
@@ -144,7 +151,7 @@
   (c-name "rhythmdb_query_results_set_query")
   (return-type "none")
   (parameters
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
   )
 )
 
@@ -190,15 +197,6 @@
   (of-object "RhythmDBEntry")
   (c-name "rhythmdb_entry_get_string")
   (return-type "const-char*")
-  (parameters
-    '("RhythmDBPropType" "propid")
-  )
-)
-
-(define-method dup_string
-  (of-object "RhythmDBEntry")
-  (c-name "rhythmdb_entry_dup_string")
-  (return-type "char*")
   (parameters
     '("RhythmDBPropType" "propid")
   )
@@ -363,7 +361,7 @@
   (c-name "rhythmdb_evaluate_query")
   (return-type "gboolean")
   (parameters
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
     '("RhythmDBEntry*" "entry")
   )
 )
@@ -384,7 +382,7 @@
   (return-type "none")
   (parameters
     '("RhythmDBQueryResults*" "results")
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
   )
 )
 
@@ -394,62 +392,42 @@
   (return-type "none")
   (parameters
     '("RhythmDBQueryResults*" "results")
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
   )
 )
 
 (define-method query_parse
   (of-object "RhythmDB")
   (c-name "rhythmdb_query_parse")
-  (return-type "GPtrArray*")
+  (return-type "RhythmDBQuery*")
   (parameters
   )
   (varargs #t)
 )
 
-(define-method query_append
-  (of-object "RhythmDB")
+(define-method append
+  (of-object "RhythmDBQuery")
   (c-name "rhythmdb_query_append")
   (return-type "none")
-  (parameters
-    '("GPtrArray*" "query")
-  )
   (varargs #t)
 )
 
-(define-method query_append_prop_multiple
-  (of-object "RhythmDB")
+(define-method append_prop_multiple
+  (of-object "RhythmDBQuery")
   (c-name "rhythmdb_query_append_prop_multiple")
   (return-type "none")
   (parameters
-    '("GPtrArray*" "query")
     '("RhythmDBPropType" "propid")
     '("GList*" "items")
   )
 )
 
-(define-function rhythmdb_query_concatenate
+(define-method concatenate
+  (of-object "RhythmDBQuery")
   (c-name "rhythmdb_query_concatenate")
   (return-type "none")
   (parameters
-    '("GPtrArray*" "query1")
-    '("GPtrArray*" "query2")
-  )
-)
-
-(define-function rhythmdb_query_free
-  (c-name "rhythmdb_query_free")
-  (return-type "none")
-  (parameters
-    '("GPtrArray*" "query")
-  )
-)
-
-(define-function rhythmdb_query_copy
-  (c-name "rhythmdb_query_copy")
-  (return-type "GPtrArray*")
-  (parameters
-    '("GPtrArray*" "array")
+    '("RhythmDBQuery*" "query2")
   )
 )
 
@@ -544,7 +522,7 @@
   (c-name "rhythmdb_query_model_new")
   (return-type "RhythmDBQueryModel*")
   (parameters
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
     '("GCompareDataFunc" "sort_func")
     '("RhythmDBPropType" "sort_prop_id")
     '("gboolean" "sort_reverse")

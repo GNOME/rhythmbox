@@ -686,6 +686,15 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 		unset SAVE_CFLAGS
 	done
 	unset option
+
+	SAVE_CFLAGS="$CFLAGS"
+	CFLAGS="$CFLAGS -Wno-error"
+	AC_TRY_COMPILE([], [],
+		WNOERROR_CFALGS="-Wno-error",
+		WNOERROR_CFALGS="")
+	AC_SUBST(WNOERROR_CFLAGS)
+	unset SAVE_CFLAGS
+	unset has_wnoerror
 else
 	AC_MSG_RESULT(no)
 fi
@@ -768,7 +777,7 @@ EOF
 fi
 
 if test "x$have_python" != "xno"; then
-	PYGTK_REQUIRED=2.8.0
+	PYGTK_REQUIRED=2.6.0
 
 	PKG_CHECK_MODULES([PYGTK], [
 		pygtk-2.0 >= $PYGTK_REQUIRED],
