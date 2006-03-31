@@ -1,5 +1,10 @@
 2006-03-31  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-python-module.c: (rb_python_module_load): add a missing
+	"*" which caused compilation to fail
+
+2006-03-31  James Livingston  <doclivingston@gmail.com>
+
 	* configure.ac:
 	* Makefile.am:
 	* backends/Makefile.am:

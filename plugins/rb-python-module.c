@@ -191,7 +191,7 @@ rb_python_module_load (GTypeModule *gmodule)
 {
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (gmodule);
 	PyObject *main_module, *main_locals, *locals, *key, *value;
-	PyObject *module, fromlist;
+	PyObject *module, *fromlist;
 	int pos = 0;
 
 	main_module = PyImport_AddModule ("__main__");
@@ -219,9 +219,8 @@ rb_python_module_load (GTypeModule *gmodule)
 	fromlist = PyTuple_New(0);
 	module = PyImport_ImportModuleEx (priv->module, main_locals,
 					  main_locals, fromlist); 
-	Py_DECREF(fromlist);
-	if (!module)
-	{
+	Py_DECREF (fromlist);
+	if (!module) {
 		PyErr_Print ();
 		return FALSE;
 	}
