@@ -60,7 +60,7 @@ static void rb_daap_source_connection_cb (RBDAAPConnection *connection,
 static gboolean rb_daap_source_disconnect (RBSource *source);
 static gboolean rb_daap_source_show_popup (RBSource *source);
 static const char * rb_daap_source_get_browser_key (RBSource *source);
-static const char * rb_daap_source_get_paned_key (RBLibrarySource *source);
+static const char * rb_daap_source_get_paned_key (RBBrowserSource *source);
 
 
 #define CONF_ENABLE_BROWSING CONF_PREFIX "/sharing/enable_browsing"
@@ -99,7 +99,7 @@ enum {
 	PROP_PASSWORD_PROTECTED
 };
 
-G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_LIBRARY_SOURCE)
+G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE)
 
 
 static RhythmDBEntryType
@@ -113,7 +113,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
-	RBLibrarySourceClass *library_source_class = RB_LIBRARY_SOURCE_CLASS (klass);
+	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_daap_source_dispose;
 	object_class->get_property = rb_daap_source_get_property;
@@ -132,9 +132,9 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	source_class->impl_get_config_widget = NULL;
 	source_class->impl_get_browser_key = rb_daap_source_get_browser_key;
 
-	library_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
-	library_source_class->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_false_function;
-	library_source_class->impl_has_drop_support = (RBLibrarySourceFeatureFunc) rb_false_function;
+	browser_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
+	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_false_function;
+	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 
 	g_object_class_install_property (object_class,
@@ -877,7 +877,7 @@ rb_daap_source_get_browser_key (RBSource *source)
 }
 
 static const char * 
-rb_daap_source_get_paned_key (RBLibrarySource *source)
+rb_daap_source_get_paned_key (RBBrowserSource *source)
 {
 	return CONF_STATE_PANED_POSITION;
 }

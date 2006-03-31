@@ -26,7 +26,7 @@
 #include <gtk/gtkactiongroup.h>
 
 #include "rb-shell.h"
-#include "rb-source.h"
+#include "rb-browser-source.h"
 #include "rhythmdb.h"
 
 G_BEGIN_DECLS
@@ -43,34 +43,21 @@ typedef struct RBLibrarySourcePrivate RBLibrarySourcePrivate;
 
 typedef struct
 {
-	RBSource parent;
+	RBBrowserSource parent;
 
 	RBLibrarySourcePrivate *priv;
 } RBLibrarySource;
 
 typedef struct
 {
-	RBSourceClass parent;
-
-	const char *	(*impl_get_paned_key)		(RBLibrarySource *source);
-	gboolean	(*impl_has_first_added_column)	(RBLibrarySource *source);
-	gboolean	(*impl_has_drop_support)	(RBLibrarySource *source);
+	RBBrowserSourceClass parent;
 } RBLibrarySourceClass;
-
-typedef gboolean (*RBLibrarySourceFeatureFunc) (RBLibrarySource *source);
 
 GType		rb_library_source_get_type		(void);
 
 RBSource *      rb_library_source_new			(RBShell *shell);
 
 void		rb_library_source_add_location		(RBLibrarySource *source, GtkWindow *win);
-
-void            rb_library_source_class_add_actions	(RBShell *shell, 
-							GtkActionGroup *uimgr);
-
-const char *	rb_library_source_get_paned_key		(RBLibrarySource *source);
-gboolean	rb_library_source_has_first_added_column (RBLibrarySource *source);
-gboolean	rb_library_source_has_drop_support	(RBLibrarySource *source);
 
 
 G_END_DECLS

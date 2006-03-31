@@ -1,5 +1,30 @@
 2006-03-31  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-library-source.c: 
+	* sources/rb-library-source.h:
+	* sources/rb-browser-source.c:
+	* sources/rb-browser-source.h: Split RBLibrarySource into two.
+	RBBrowserSource now contains all the stuff for having a source which
+	views a particular entry type (including browsers and searching).
+	RBLibrarySource derives from this, and includes the library-specific
+	stuff, like importing and library watching. Fixes some issues where
+	library-derived sources were doing things that should be
+	library-specific. Fixes bug 335185.
+
+	* data/ui/rhythmbox-ui.xml:
+	* sources/Makefile.am: modifications for the above
+
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_source_get_paned_key):
+	* sources/rb-daap-source.h:
+	* sources/rb-ipod-source.c: (rb_ipod_source_constructor):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init):
+	* sources/rb-removable-media-source.h: derive from RBBrowserSource
+	instead of RBLibrarySource.
+
+2006-03-31  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb-query-model.c: use guin64 instead of guint, which
 	I buggered up when changing from GnomeVFSFileSize.
 

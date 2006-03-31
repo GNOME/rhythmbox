@@ -62,7 +62,7 @@ typedef struct
 	GnomeVFSVolume *volume;
 } RBRemovableMediaSourcePrivate;
 
-G_DEFINE_TYPE (RBRemovableMediaSource, rb_removable_media_source, RB_TYPE_LIBRARY_SOURCE)
+G_DEFINE_TYPE (RBRemovableMediaSource, rb_removable_media_source, RB_TYPE_BROWSER_SOURCE)
 #define REMOVABLE_MEDIA_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_REMOVABLE_MEDIA_SOURCE, RBRemovableMediaSourcePrivate))
 
 enum
@@ -78,7 +78,7 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
-	RBLibrarySourceClass *library_source_class = RB_LIBRARY_SOURCE_CLASS (klass);
+	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_removable_media_source_constructor;
 	object_class->dispose = rb_removable_media_source_dispose;
@@ -96,9 +96,9 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_get_config_widget = NULL;
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
 
-	library_source_class->impl_get_paned_key = NULL;
-	library_source_class->impl_has_first_added_column = (RBLibrarySourceFeatureFunc) rb_false_function;
-	library_source_class->impl_has_drop_support = (RBLibrarySourceFeatureFunc) rb_false_function;
+	browser_source_class->impl_get_paned_key = NULL;
+	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_false_function;
+	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,

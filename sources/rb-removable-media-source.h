@@ -23,7 +23,7 @@
 #define __RB_REMOVABLE_MEDIA_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-library-source.h"
+#include "rb-browser-source.h"
 #include "rhythmdb.h"
 
 G_BEGIN_DECLS
@@ -37,12 +37,12 @@ G_BEGIN_DECLS
 
 typedef struct
 {
-	RBLibrarySource parent;
+	RBBrowserSource parent;
 } RBRemovableMediaSource;
 
 typedef struct
 {
-	RBLibrarySourceClass parent;
+	RBBrowserSourceClass parent;
 } RBRemovableMediaSourceClass;
 
 GType			rb_removable_media_source_get_type	(void);

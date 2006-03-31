@@ -8,6 +8,8 @@ libsourcesimpl_la_SOURCES =		\
 	rb-sourcelist.h			\
 	rb-sourcelist-model.c		\
 	rb-sourcelist-model.h		\
+	rb-browser-source.c	\
+	rb-browser-source.h	\
 	rb-library-source.c		\
 	rb-library-source.h		\
 	rb-iradio-source.c		\

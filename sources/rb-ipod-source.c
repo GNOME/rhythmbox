@@ -93,10 +93,15 @@ static GObject *
 rb_ipod_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
-	RBiPodSource *source; 
+	RBiPodSource *source;
+	RBEntryView *songs;
 
 	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
+
+	songs = rb_source_get_entry_view (RB_SOURCE (source));
+	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
+	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 
 	rb_ipod_load_songs (source);
 

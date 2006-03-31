@@ -23,7 +23,7 @@
 #define __RB_DAAP_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-library-source.h"
+#include "rb-browser-source.h"
 #include "rhythmdb.h"
 
 G_BEGIN_DECLS
@@ -38,13 +38,13 @@ G_BEGIN_DECLS
 typedef struct RBDAAPSourcePrivate RBDAAPSourcePrivate;
 
 typedef struct {
-	RBLibrarySource parent;
+	RBBrowserSource parent;
 
 	RBDAAPSourcePrivate *priv;
 } RBDAAPSource;
 
 typedef struct {
-	RBLibrarySourceClass parent;
+	RBBrowserSourceClass parent;
 } RBDAAPSourceClass;
 
 RBSource * 
