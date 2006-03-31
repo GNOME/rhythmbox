@@ -191,7 +191,7 @@ rb_python_module_load (GTypeModule *gmodule)
 {
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (gmodule);
 	PyObject *main_module, *main_locals, *locals, *key, *value;
-	PyObject *module;
+	PyObject *module, fromlist;
 	int pos = 0;
 
 	main_module = PyImport_AddModule ("__main__");
@@ -214,7 +214,12 @@ rb_python_module_load (GTypeModule *gmodule)
 	}
 	
 	main_locals = PyModule_GetDict (main_module);
-	module = PyImport_ImportModuleEx (priv->module, main_locals, main_locals, NULL);
+	/* we need a fromlist to be able to import modules with a '.' in the
+	   name. */
+	fromlist = PyTuple_New(0);
+	module = PyImport_ImportModuleEx (priv->module, main_locals,
+					  main_locals, fromlist); 
+	Py_DECREF(fromlist);
 	if (!module)
 	{
 		PyErr_Print ();
