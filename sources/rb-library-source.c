@@ -481,7 +481,8 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 
 	/* preferred format */
 	str = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
-	gm_audio_profile_choose_set_active (source->priv->preferred_format_menu, str);
+	if (str)
+		gm_audio_profile_choose_set_active (source->priv->preferred_format_menu, str);
 
 	source->priv->layout_path_notify_id =
 		eel_gconf_notification_add (CONF_LIBRARY_LAYOUT_PATH,

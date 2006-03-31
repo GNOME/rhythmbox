@@ -1,3 +1,10 @@
+2006-03-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-library-source.c:
+	(rb_library_source_preferences_sync):
+	Don't crash if no audio profile is selected and the gconf schemas are 
+	not installed.
+
 2006-03-31  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/rb-python-module.c: (rb_python_module_load): add a missing
