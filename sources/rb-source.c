@@ -127,6 +127,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_search = default_can_search;
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
@@ -578,6 +579,14 @@ rb_source_can_cut (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_can_cut (source);
+}
+
+gboolean
+rb_source_can_paste (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_paste (source);
 }
 
 gboolean

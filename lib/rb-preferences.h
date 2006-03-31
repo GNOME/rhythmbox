@@ -29,8 +29,6 @@ G_BEGIN_DECLS
 
 #define CONF_FIRST_TIME CONF_PREFIX   "/first_time_flag"
 #define CONF_GRACE_PERIOD CONF_PREFIX "/grace_period"
-#define CONF_LIBRARY_LOCATION	CONF_PREFIX "/library_locations"
-#define CONF_MONITOR_LIBRARY	CONF_PREFIX "/monitor_library"
 #define CONF_UI_DIR               CONF_PREFIX "/ui"
 #define CONF_UI_STATUSBAR_HIDDEN  CONF_PREFIX "/ui/statusbar_hidden"
 #define CONF_UI_TOOLBAR_HIDDEN  CONF_PREFIX "/ui/toolbar_hidden"
@@ -57,6 +55,13 @@ G_BEGIN_DECLS
 #define CONF_DAAP_SHARE_NAME       CONF_PREFIX "/sharing/share_name"
 #define CONF_DAAP_SHARE_PASSWORD   CONF_PREFIX "/sharing/share_password"
 #define CONF_DAAP_REQUIRE_PASSWORD CONF_PREFIX "/sharing/require_password"
+
+#define CONF_LIBRARY_LOCATION	CONF_PREFIX "/library_locations"
+#define CONF_MONITOR_LIBRARY	CONF_PREFIX "/monitor_library"
+#define CONF_LIBRARY_STRIP_CHARS	CONF_PREFIX "/library_strip_chars"
+#define CONF_LIBRARY_LAYOUT_PATH	CONF_PREFIX "/library_layout_path"
+#define CONF_LIBRARY_LAYOUT_FILENAME	CONF_PREFIX "/library_layout_filename"
+#define CONF_LIBRARY_PREFERRED_FORMAT	CONF_PREFIX "/library_preferred_format"
 
 #define CONF_PLUGINS_PREFIX	CONF_PREFIX "/plugins"
 #define CONF_PLUGIN_ACTIVE_KEY	CONF_PLUGINS_PREFIX "/%s/active"

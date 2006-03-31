@@ -90,6 +90,7 @@ struct _RBSourceClass
 	gboolean	(*impl_can_delete)	(RBSource *source);
 	gboolean	(*impl_can_move_to_trash) (RBSource *source);
 	gboolean	(*impl_can_copy)	(RBSource *source);
+	gboolean	(*impl_can_paste)	(RBSource *source);
 	gboolean	(*impl_can_add_to_queue)(RBSource *source);
 	
 	GList *		(*impl_cut)		(RBSource *source);
@@ -153,6 +154,7 @@ gboolean	rb_source_can_cut		(RBSource *source);
 gboolean	rb_source_can_delete		(RBSource *source);
 gboolean	rb_source_can_move_to_trash	(RBSource *source);
 gboolean	rb_source_can_copy		(RBSource *source);
+gboolean	rb_source_can_paste		(RBSource *source);
 gboolean	rb_source_can_add_to_queue	(RBSource *source);
 
 GList *		rb_source_cut			(RBSource *source);

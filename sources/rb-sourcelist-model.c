@@ -347,7 +347,7 @@ path_is_droppable (RBSourceListModel *model,
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 		
-		return rb_source_can_cut (source);
+		return rb_source_can_paste (source);
 
 	}
 	return FALSE;

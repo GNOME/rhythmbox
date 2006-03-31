@@ -52,6 +52,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libgnomeui-2.0			\
 		  libglade-2.0				\
 		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
+		  gnome-media-profiles			\
 		  gnome-vfs-module-2.0)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
@@ -871,6 +872,8 @@ po/Makefile.in
 tests/Makefile
 doc/Makefile
 doc/reference/Makefile
+backends/Makefile
+backends/gstreamer/Makefile
 ])
 
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])

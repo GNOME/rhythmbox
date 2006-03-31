@@ -39,6 +39,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/remote				\
+ 	-I$(top_srcdir)/backends			\
 	-I$(top_builddir)/remote			\
 	-I$(top_builddir)/lib				\
 	-I$(top_srcdir)/plugins				\
@@ -101,6 +102,7 @@ rhythmbox_LDADD =					\
 	librbshell.la					\
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
+ 	$(top_builddir)/backends/librbbackends.la       \
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/podcast/librbpodcast.la	        \
 	$(top_builddir)/remote/librbremote.la	        \

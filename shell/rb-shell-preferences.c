@@ -56,6 +56,8 @@ static void rb_shell_preferences_sync (RBShellPreferences *shell_preferences);
 
 void rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 						   RBShellPreferences *shell_preferences);
+void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
+						      RBShellPreferences *shell_preferences);
 
 
 enum
@@ -81,6 +83,8 @@ struct RBShellPreferencesPrivate
 	GtkWidget *first_seen_check;
 	GtkWidget *quality_check;
 	GtkWidget *year_check;
+
+	GSList *browser_views_group;
 
 	gboolean loading;
 };
@@ -119,7 +123,7 @@ help_cb (GtkWidget *widget,
 static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
-	GtkWidget *help;
+	GtkWidget *tmp;
 	GladeXML *xml;
 
 	shell_preferences->priv = RB_SHELL_PREFERENCES_GET_PRIVATE (shell_preferences);
@@ -136,10 +140,10 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
 			       GTK_STOCK_CLOSE,
 			       GTK_RESPONSE_CLOSE);
-	help = gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
+	tmp = gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
 			              GTK_STOCK_HELP,
 			              GTK_RESPONSE_HELP);
-	g_signal_connect_object (G_OBJECT (help), "clicked",
+	g_signal_connect_object (G_OBJECT (tmp), "clicked",
 				 G_CALLBACK (help_cb), shell_preferences, 0);
 	gtk_dialog_set_default_response (GTK_DIALOG (shell_preferences),
 					 GTK_RESPONSE_CLOSE);
@@ -186,6 +190,14 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "year_check");
 	shell_preferences->priv->first_seen_check =
 		glade_xml_get_widget (xml, "first_seen_check");
+
+	/* browser options */
+	rb_glade_boldify_label (xml, "browser_views_label");
+
+	tmp = glade_xml_get_widget (xml, "library_browser_views_radio");
+	shell_preferences->priv->browser_views_group =
+		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
+					       (GTK_RADIO_BUTTON (tmp))));
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
 				  glade_xml_get_widget (xml, "general_vbox"),
@@ -533,6 +545,8 @@ static void
 rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
 	char *columns;
+	GSList  *l;
+	gint view, i;
 
 	shell_preferences->priv->loading = TRUE;
 
@@ -578,5 +592,25 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 
 	g_free (columns);
 
+	view = eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS);
+	for (l = shell_preferences->priv->browser_views_group, i = 0; l != NULL; l = g_slist_next (l), i++)
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (l->data), (i == view));
+
 	shell_preferences->priv->loading = FALSE;
 }
+
+void
+rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
+						 RBShellPreferences *shell_preferences)
+{
+	int index;
+
+	if (shell_preferences->priv->loading)
+		return;
+
+	index = g_slist_index (shell_preferences->priv->browser_views_group, widget);
+
+	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
+}
+
+

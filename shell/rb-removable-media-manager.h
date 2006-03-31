@@ -36,6 +36,12 @@ G_BEGIN_DECLS
 #define RB_IS_REMOVABLE_MEDIA_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_REMOVABLE_MEDIA_MANAGER))
 #define RB_REMOVABLE_MEDIA_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_REMOVABLE_MEDIA_MANAGER, RBRemovableMediaManagerClass))
 
+
+typedef void (*RBTranferCompleteCallback) (RhythmDBEntry *entry,
+					   const char *dest,
+					   gpointer userdata);
+				      
+
 typedef struct
 {
 	GObject parent;
@@ -46,7 +52,12 @@ typedef struct
 	GObjectClass parent_class;
 
 	/* signals */
-	void	(*medium_added) (RBSource *source);
+	void	(*medium_added)		(RBRemovableMediaManager *mgr,
+					 RBSource *source);
+	void	(*transfer_progress)	(RBRemovableMediaManager *mgr,
+					 gint done,
+					 gint total,
+					 double fraction);
 } RBRemovableMediaManagerClass;
 
 
@@ -54,6 +65,13 @@ RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell, RBSour
 GType			rb_removable_media_manager_get_type	(void);
 
 gboolean		rb_removable_media_manager_load_media	(RBRemovableMediaManager *mgr);
+
+void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *mgr,
+						   RhythmDBEntry *entry,
+						   const char *dest,
+						   const char *mime_type,
+						   RBTranferCompleteCallback callback,
+						   gpointer userdata);
 
 G_END_DECLS
 

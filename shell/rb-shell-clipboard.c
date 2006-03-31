@@ -425,7 +425,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	rb_debug ("syncing clipboard");
 	
 	if (g_list_length (clipboard->priv->entries) > 0)
-		can_paste = rb_source_can_cut (clipboard->priv->source);
+		can_paste = rb_source_can_paste (clipboard->priv->source);
 
 	if (have_selection) {
 		can_cut = rb_source_can_cut (clipboard->priv->source);

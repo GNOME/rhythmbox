@@ -38,6 +38,39 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/library_layout_path</key>
+        <applyto>/apps/rhythmbox/library_layout_path</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>%aa/%at</default>
+        <locale name="C">
+          <short>Directory heirarchy of library</short>
+          <long>The path used to store track in, under the chosen library. Various substitutions are done</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/library_layout_filename</key>
+        <applyto>/apps/rhythmbox/library_layout_filename</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>%tN - %tt</default>
+        <locale name="C">
+          <short>File name of tracks</short>
+          <long>The path used to store track in, under the chosen library. Various substitutions are done</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/library_preferred_format</key>
+        <applyto>/apps/rhythmbox/library_preferred_format</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>cdlossy</default>
+        <locale name="C">
+          <short>id of gnome-media audio profile</short>
+          <long>The ID of the preferred gnome audio profile, used for ripping CDs</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/monitor_library</key>
         <applyto>/apps/rhythmbox/monitor_library</applyto>
         <owner>rhythmbox</owner>

@@ -261,6 +261,7 @@ void		rhythmdb_commit		(RhythmDB *db);
 gboolean	rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry);
 
 RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, RhythmDBEntryType type, const char *uri);
+RhythmDBEntry *	rhythmdb_entry_example_new	(RhythmDB *db, RhythmDBEntryType type, const char *uri);
 
 void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 void		rhythmdb_add_uri_with_type	(RhythmDB *db, const char *uri, RhythmDBEntryType type);

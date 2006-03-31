@@ -489,7 +489,7 @@ rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *
                 statusbar->priv->progress_text = NULL;
         }
         
-        if (progress > 0.0) {
+        if (progress >= 0.0) {
                 statusbar->priv->progress_fraction = progress;
                 statusbar->priv->progress_changed = TRUE;
                 statusbar->priv->progress_text = g_strdup (text);

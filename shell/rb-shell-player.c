@@ -917,7 +917,7 @@ open_location_thread (OpenLocationThreadData *data)
 	GError *error = NULL;
 
 	GDK_THREADS_ENTER ();
-	rb_statusbar_set_progress (data->player->priv->statusbar_widget, 0.01, _("Connecting"));
+	rb_statusbar_set_progress (data->player->priv->statusbar_widget, 0.0, _("Connecting"));
 	GDK_THREADS_LEAVE ();
 
 	playlist = totem_pl_parser_new ();

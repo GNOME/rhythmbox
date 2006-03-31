@@ -148,6 +148,11 @@ static void rb_shell_druid_response_cb (GtkDialog *druid,
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_medium_added_cb (RBRemovableMediaManager *mgr, RBSource *source, RBShell *shell);
+static void rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
+					   gint done,
+					   gint total,
+					   double fraction,
+					   RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
 static void rb_shell_set_elapsed (RBShell *shell, guint elapsed);
@@ -312,7 +317,8 @@ enum
 	PROP_WINDOW,
 	PROP_PREFS,
 	PROP_QUEUE_SOURCE,
-	PROP_PROXY_CONFIG
+	PROP_PROXY_CONFIG,
+	PROP_LIBRARY_SOURCE
 };
 
 /* prefs */
@@ -612,7 +618,7 @@ rb_shell_class_init (RBShellClass *klass)
 					 g_param_spec_object ("removable-media-manager",
 						 	      "RBRemovableMediaManager",
 							      "RBRemovableMediaManager object",
-							      RB_TYPE_SHELL_PLAYER,
+							      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
 							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,
 					 PROP_WINDOW,
@@ -641,6 +647,13 @@ rb_shell_class_init (RBShellClass *klass)
 						 	      "proxy-config",
 							      "HTTP proxy configuration",
 							      RB_TYPE_PROXY_CONFIG,
+							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_LIBRARY_SOURCE,
+					 g_param_spec_object ("library-source", 
+							      "library-source", 
+							      "Library source", 
+							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READABLE));
 
 
@@ -807,6 +820,9 @@ rb_shell_get_property (GObject *object,
 	case PROP_PROXY_CONFIG:
 		g_value_set_object (value, shell->priv->proxy_config);
 		break;
+ 	case PROP_LIBRARY_SOURCE:
+ 		g_value_set_object (value, shell->priv->library_source);
+ 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1237,6 +1253,8 @@ rb_shell_constructor (GType type,
 
 	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "medium_added",
 				 G_CALLBACK (rb_shell_medium_added_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "transfer-progress",
+				 G_CALLBACK (rb_shell_transfer_progress_cb), shell, 0);
 
 	rb_debug ("shell: loading ui");
 	gtk_ui_manager_insert_action_group (shell->priv->ui_manager,
@@ -1699,6 +1717,33 @@ rb_shell_medium_added_cb (RBRemovableMediaManager *mgr,
 			  RBShell *shell)
 {
 	rb_shell_append_source (shell, source, NULL);
+}
+
+static void
+rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
+			       gint done,
+			       gint total,
+			       double fraction,
+			       RBShell *shell)
+{
+	rb_debug ("transferred %d tracks out of %d", done, total);
+
+	if (total > 0) {
+		char *s;
+
+		if (fraction >= 0)
+			s = g_strdup_printf (_("Transferring track %d out of %d (%.0f%%)"),
+						   done + 1, total, fraction * 100);
+		else
+			s = g_strdup_printf (_("Transferring track %d out of %d"),
+						   done + 1, total);
+			
+		rb_statusbar_set_progress (shell->priv->statusbar,
+					   (((double)(done) + fraction)/total),
+					   s);
+	} else {
+		rb_statusbar_set_progress (shell->priv->statusbar, -1, NULL);
+	}
 }
 
 static void
@@ -2313,6 +2358,8 @@ rb_shell_quit (RBShell *shell)
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
 	g_object_unref (G_OBJECT (shell));
+
+	g_timeout_add (10000, (GSourceFunc)gtk_main_quit, NULL);
 }
 
 static gboolean

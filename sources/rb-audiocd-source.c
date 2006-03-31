@@ -91,6 +91,9 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	/* don't bother showing the browser/search bits */
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
@@ -268,6 +271,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint trac
 	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ARTIST, NULL);
 	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_ALBUM, NULL);
 	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_GENRE, NULL);
+	entry_set_string_prop (db, entry, FALSE, RHYTHMDB_PROP_MIMETYPE, "audio/x-raw-int");
 
 	rhythmdb_commit (db);
 	g_free (audio_path);
@@ -593,7 +597,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "MusicImportCD");
+	actions = g_list_prepend (actions, "RemovableSourceCopyAllTracks");
 	actions = g_list_prepend (actions, "RemovableSourceEject");
 
 	return actions;

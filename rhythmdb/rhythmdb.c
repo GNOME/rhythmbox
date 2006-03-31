@@ -1127,6 +1127,41 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 }
 
 /**
+ * rhythmdb_entry_example_new:
+ * @db: a #RhythmDB.
+ * @type: type of entry to create
+ * @uri: the location of the entry, this be unique amongst all entries.
+ *
+ * Creates a new sample entry of type @type and location @uri, it does not insert
+ * it into the database.  This is indended for use as a example entry.
+ *
+ * This may return NULL if entry creation fails.
+ * 
+ * Returns: the newly created #RhythmDBEntry
+ **/
+RhythmDBEntry *
+rhythmdb_entry_example_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
+{
+	RhythmDBEntry *ret;
+	
+	ret = rhythmdb_entry_allocate (db, type);
+	ret->location = g_strdup (uri);
+
+	if (type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		rb_refstring_unref (ret->artist);
+		ret->artist = rb_refstring_new ("The Beatles");
+		rb_refstring_unref (ret->album);
+		ret->album = rb_refstring_new ("Help!");
+		rb_refstring_unref (ret->title);
+		ret->title = rb_refstring_new ("Ticket To Ride");
+		ret->tracknum = 7;
+	} else {
+	}
+
+	return ret;
+}
+
+/**
  * rhythmdb_entry_ref:
  * @db: a #RhythmDB.
  * @entry: a #RhythmDBEntry.

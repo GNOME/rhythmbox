@@ -87,7 +87,8 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = NULL;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;

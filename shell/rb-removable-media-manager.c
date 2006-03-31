@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "rb-removable-media-manager.h"
+#include "rb-library-source.h"
 #include "rb-sourcelist.h"
 #include "rb-removable-media-source.h"
 #include "rb-generic-player-source.h"
@@ -46,6 +47,9 @@
 #include "rb-dialog.h"
 #include "rb-stock-icons.h"
 #include "rhythmdb.h"
+#include "rb-marshal.h"
+#include "rb-encoder.h"
+#include "rb-util.h"
 
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
@@ -54,6 +58,7 @@
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_dispose (GObject *object);
+static void rb_removable_media_manager_finalize (GObject *object);
 static void rb_removable_media_manager_set_property (GObject *object,
 					      guint prop_id,
 					      const GValue *value,
@@ -67,6 +72,8 @@ static void rb_removable_media_manager_cmd_scan_media (GtkAction *action,
 						       RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_eject_medium (GtkAction *action,
 					       RBRemovableMediaManager *mgr);
+static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
+							RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr, 
 					     GtkUIManager *uimanager);
 
@@ -84,6 +91,7 @@ static void  rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonit
 				GnomeVFSVolume *volume, 
 				gpointer data);
 static void rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
+static void do_transfer (RBRemovableMediaManager *manager);
 
 typedef struct
 {
@@ -110,6 +118,12 @@ typedef struct
 	GList *cur_volume_list;
 
 	char *playing_uri;
+
+	GAsyncQueue *transfer_queue;
+	gboolean transfer_running;
+	gint transfer_total;
+	gint transfer_done;
+	double transfer_fraction;
 } RBRemovableMediaManagerPrivate;
 
 G_DEFINE_TYPE (RBRemovableMediaManager, rb_removable_media_manager, G_TYPE_OBJECT)
@@ -126,6 +140,7 @@ enum
 enum
 {
 	MEDIUM_ADDED,
+	TRANSFER_PROGRESS,
 	LAST_SIGNAL
 };
 
@@ -136,6 +151,9 @@ static GtkActionEntry rb_removable_media_manager_actions [] =
 	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
 	  N_("Eject this medium"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
+	{ "RemovableSourceCopyAllTracks", GTK_STOCK_CDROM, N_("_Copy to library"), NULL,
+	  N_("Copy all tracks to the library"),
+	  G_CALLBACK (rb_removable_media_manager_cmd_copy_tracks) },
 	{ "MusicScanMedia", NULL, N_("_Scan Removable Media"), NULL,
 	  N_("Scan for new Removable Media"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_scan_media) },
@@ -149,7 +167,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = rb_removable_media_manager_dispose;
-
+	object_class->finalize = rb_removable_media_manager_finalize;
 	object_class->set_property = rb_removable_media_manager_set_property;
 	object_class->get_property = rb_removable_media_manager_get_property;
 
@@ -186,6 +204,17 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
+	rb_removable_media_manager_signals[TRANSFER_PROGRESS] =
+		g_signal_new ("transfer-progress",
+			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, transfer_progress),
+			      NULL, NULL,
+			      rb_marshal_VOID__INT_INT_DOUBLE,
+			      G_TYPE_NONE,
+			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
+
+
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaManagerPrivate));
 }
 
@@ -195,6 +224,7 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
 
 	priv->volume_mapping = g_hash_table_new (NULL, NULL);
+	priv->transfer_queue = g_async_queue_new ();
 }
 
 static void
@@ -219,18 +249,22 @@ rb_removable_media_manager_dispose (GObject *object)
 		g_list_free (priv->sources);
 		priv->sources = NULL;
 	}
-	if (priv->volume_mapping) {
-		g_hash_table_destroy (priv->volume_mapping);
-		priv->volume_mapping = NULL;
-	}
-	if (priv->cd_drive_mapping) {
-		g_hash_table_destroy (priv->cd_drive_mapping);
-		priv->cd_drive_mapping = NULL;
-	}
 
 	priv->disposed = TRUE;
 
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->dispose (object);
+}
+
+static void
+rb_removable_media_manager_finalize (GObject *object)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (object);
+
+	g_hash_table_destroy (priv->volume_mapping);
+	g_hash_table_destroy (priv->cd_drive_mapping);
+	g_async_queue_unref (priv->transfer_queue);
+	
+	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->finalize (object);
 }
 
 static void
@@ -779,4 +813,166 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 		}
 	}
 	g_list_free (list);
+}
+
+
+
+/* Track transfer */
+
+typedef struct {
+	RBRemovableMediaManager *manager;
+	RhythmDBEntry *entry;
+	char *dest;
+	char *mime_type;
+	gboolean failed;
+	RBTranferCompleteCallback callback;
+	gpointer userdata;
+} TransferData;
+
+static void
+emit_progress (RBRemovableMediaManager *mgr)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+
+	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[TRANSFER_PROGRESS], 0,
+		       priv->transfer_done,
+		       priv->transfer_total,
+		       priv->transfer_fraction);
+}
+
+static void
+error_cb (RBEncoder *encoder, GError *error, TransferData *data)
+{
+	rb_debug ("Error transferring track to %s: %s", data->dest, error->message);
+	rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
+
+	data->failed = TRUE;
+	rb_encoder_cancel (encoder);
+}
+
+static void
+progress_cb (RBEncoder *encoder, double fraction, TransferData *data)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (data->manager);
+
+	rb_debug ("transfer progress %f", (float)fraction);
+	priv->transfer_fraction = fraction;
+	emit_progress (data->manager);
+}
+
+static void
+completed_cb (RBEncoder *encoder, TransferData *data)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (data->manager);
+
+	rb_debug ("completed transferring track to %s", data->dest);
+	if (!data->failed)
+		(data->callback) (data->entry, data->dest, data->userdata);
+
+	priv->transfer_running = FALSE;
+	priv->transfer_done++;
+	priv->transfer_fraction = 0.0;
+	do_transfer (data->manager);
+
+	g_object_unref (G_OBJECT (encoder));
+	g_free (data->dest);
+	g_free (data->mime_type);
+	g_free (data);
+}
+
+static void
+do_transfer (RBRemovableMediaManager *manager)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
+	TransferData *data;
+	RBEncoder *encoder;
+
+	g_assert (rb_is_main_thread ());
+	
+	emit_progress (manager);
+
+	if (priv->transfer_running)
+		return;
+
+	data = g_async_queue_try_pop (priv->transfer_queue);
+	if (data == NULL) {
+		priv->transfer_total = 0;
+		priv->transfer_done = 0;
+		emit_progress (manager);
+		return;
+	}
+
+	priv->transfer_running = TRUE;
+	priv->transfer_fraction = 0.0;
+
+	encoder = rb_encoder_new ();
+	g_signal_connect (G_OBJECT (encoder),
+			  "error", G_CALLBACK (error_cb),
+			  data);
+	g_signal_connect (G_OBJECT (encoder),
+			  "progress", G_CALLBACK (progress_cb),
+			  data);
+	g_signal_connect (G_OBJECT (encoder),
+			  "completed", G_CALLBACK (completed_cb),
+			  data);
+	rb_encoder_encode (encoder, data->entry, data->dest, NULL);
+}
+
+void
+rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
+					  RhythmDBEntry *entry,
+					  const char *dest,
+					  const char *mime_type,
+					  RBTranferCompleteCallback callback,
+					  gpointer userdata)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
+	TransferData *data;
+
+	g_assert (rb_is_main_thread ());
+
+	data = g_new0 (TransferData, 1);
+	data->manager = manager;
+	data->entry = entry;
+	data->dest = g_strdup (dest);
+	data->mime_type = g_strdup (mime_type);
+	data->callback = callback;
+	data->userdata = userdata;
+
+	g_async_queue_push (priv->transfer_queue, data);
+	priv->transfer_total++;
+	do_transfer (manager);
+}
+
+static gboolean
+copy_entry (RhythmDBQueryModel *model,
+	    GtkTreePath *path,
+	    GtkTreeIter *iter,
+	    GList **list)
+{
+	GList *l;
+	l = g_list_append (*list, rhythmdb_query_model_iter_to_entry (model, iter));
+	*list = l;
+	return FALSE;
+}
+
+static void
+rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaManager *mgr)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	RBRemovableMediaSource *source;
+	RBLibrarySource *library;
+	RhythmDBQueryModel *model;
+	GList *list = NULL;
+
+	source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
+	g_object_get (G_OBJECT (source), "query-model", &model, NULL);
+	g_object_get (G_OBJECT (priv->shell), "library-source", &library, NULL);
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc)copy_entry, &list);
+	rb_source_paste (RB_SOURCE (library), list);
+	g_list_free (list);
+
+	g_object_unref (G_OBJECT (model));
+	g_object_unref (G_OBJECT (library));
 }

@@ -27,7 +27,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <glib-object.h>
+#include <profiles/gnome-media-profiles.h>
+#include <profiles/audio-profile-choose.h>
 
+#include "rhythmdb.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-glade-helpers.h"
@@ -35,6 +38,7 @@
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
 #include "rb-library-source.h"
+#include "rb-removable-media-manager.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -49,14 +53,26 @@ static GtkWidget *impl_get_config_widget (RBSource *source, RBShellPreferences *
 static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_paned_key (RBBrowserSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
+static gboolean impl_can_paste (RBSource *asource);
+static void impl_paste (RBSource *source, GList *entries);
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 
 static void rb_library_source_library_location_changed (GConfClient *client,
-							guint cnxn_id,
-							GConfEntry *entry,
-							RBLibrarySource *source);
+						    guint cnxn_id,
+						    GConfEntry *entry,
+						    RBLibrarySource *source);
+static void rb_library_source_layout_path_changed (GConfClient *client,
+						   guint cnxn_id,
+						   GConfEntry *entry,
+						   RBLibrarySource *source);
+static void rb_library_source_layout_filename_changed (GConfClient *client,
+						       guint cnxn_id,
+						       GConfEntry *entry,
+						       RBLibrarySource *source);
+static void rb_library_source_edit_profile_clicked_cb (GtkButton *button,
+						       RBLibrarySource *source);
 static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
@@ -68,17 +84,43 @@ static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 						RBLibrarySource *source);
 static void rb_library_source_songs_show_popup_cb (RBEntryView *view,
 						   gboolean over_entry,
+						   RBLibrarySource *source);						
+static void rb_library_source_path_changed_cb (GtkComboBox *box,
+						RBLibrarySource *source);
+static void rb_library_source_filename_changed_cb (GtkComboBox *box,
 						   RBLibrarySource *source);
-
-/* glade callback */
-void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
-						   RBLibrarySource *source);
+static void rb_library_source_format_changed_cb (GtkWidget *widget,
+						 RBLibrarySource *source);
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
 #define CONF_STATE_LIBRARY_SORTING CONF_PREFIX "/state/library/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
+
+typedef struct {
+	char *title;
+	char *path;
+} LibraryPathElement;
+
+const LibraryPathElement library_layout_paths[] = {
+	{N_("Artist/Artist - Album"), "%aa/%aa - %at"},
+	{N_("Artist/Album"), "%aa/%at"},
+	{N_("Artist - Album"), "%aa - %at"},
+	{N_("Album"), "%at"},
+	{N_("Artist"), "%aa"},
+};
+const int num_library_layout_paths = G_N_ELEMENTS (library_layout_paths);
+
+const LibraryPathElement library_layout_filenames[] = {
+	{N_("Number - Title"), "%tN - %tt"},
+	{N_("Artist - Title"), "%ta - %tt"},
+	{N_("Artist - Number - Title"), "%ta - %tN - %tt"},
+	{N_("Artist (Album) - Number - Title"), "%ta (%at) - %tN - %tt"},
+	{N_("Title"), "%tt"},
+	{N_("Number. Artist - Title"), "%tN. %ta - %tt"},
+};
+const int num_library_layout_filenames = G_N_ELEMENTS (library_layout_filenames);
 
 struct RBLibrarySourcePrivate
 {
@@ -91,10 +133,15 @@ struct RBLibrarySourcePrivate
 
 	GtkWidget *library_location_entry;
 	GtkWidget *watch_library_check;
-	GSList *browser_views_group;
+	GtkWidget *layout_path_menu;
+	GtkWidget *layout_filename_menu;
+	GtkWidget *preferred_format_menu;
+	GtkWidget *layout_example_label;
 
 	guint library_location_notify_id;
 	guint ui_dir_notify_id;
+	guint layout_path_notify_id;
+	guint layout_filename_notify_id;
 };
 
 #define RB_LIBRARY_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_SOURCE, RBLibrarySourcePrivate))
@@ -114,12 +161,16 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_receive_drag = impl_receive_drag;
+	source_class->impl_can_paste = (RBSourceFeatureFunc) impl_can_paste;
+	source_class->impl_paste = impl_paste;
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_true_function;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
 
 	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
+
+	gnome_media_profiles_init (eel_gconf_client_get_global ());
 }
 
 static void
@@ -162,6 +213,8 @@ rb_library_source_finalize (GObject *object)
 	rb_debug ("finalizing library source");
 	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
 	eel_gconf_notification_remove (source->priv->library_location_notify_id);
+	eel_gconf_notification_remove (source->priv->layout_path_notify_id);
+	eel_gconf_notification_remove (source->priv->layout_filename_notify_id);
 
 	G_OBJECT_CLASS (rb_library_source_parent_class)->finalize (object);
 }
@@ -231,6 +284,17 @@ rb_library_source_new (RBShell *shell)
 }
 
 static void
+rb_library_source_edit_profile_clicked_cb (GtkButton *button, RBLibrarySource *source)
+{
+	GtkWidget *dialog;
+
+	dialog = gm_audio_profiles_edit_new (eel_gconf_client_get_global (),
+					     GTK_WINDOW (source->priv->shell_prefs));
+	gtk_widget_show_all (dialog);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+}
+
+static void
 rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource *source)
 {
 	GtkWidget *dialog;
@@ -264,6 +328,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
 	GladeXML *xml;
+	int i;
 
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
@@ -274,32 +339,69 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
 	source->priv->config_widget =
 		glade_xml_get_widget (xml, "library_vbox");
-	tmp = glade_xml_get_widget (xml, "library_browser_views_radio");
-	source->priv->browser_views_group =
-		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group
-					       (GTK_RADIO_BUTTON (tmp))));
 
 	source->priv->library_location_entry = glade_xml_get_widget (xml, "library_location_entry");
-	source->priv->watch_library_check = glade_xml_get_widget (xml, "watch_library_check");
 	tmp = glade_xml_get_widget (xml, "library_location_button");
 	g_signal_connect (G_OBJECT (tmp),
 			  "clicked",
 			  G_CALLBACK (rb_library_source_location_button_clicked_cb),
 			  asource);
-
-	rb_glade_boldify_label (xml, "browser_views_label");
-	rb_glade_boldify_label (xml, "library_location_label");
-	g_object_unref (G_OBJECT (xml));
-	
-	rb_library_source_preferences_sync (source);
 	g_signal_connect (G_OBJECT (source->priv->library_location_entry),
 			  "focus-out-event",
 			  G_CALLBACK (rb_library_source_library_location_cb),
 			  asource);
+
+	source->priv->watch_library_check = glade_xml_get_widget (xml, "watch_library_check");
 	g_signal_connect (G_OBJECT (source->priv->watch_library_check),
 			  "toggled",
 			  G_CALLBACK (rb_library_source_watch_toggled_cb),
 			  asource);
+
+	tmp = glade_xml_get_widget (xml, "layout_path_menu_box");
+	source->priv->layout_path_menu = gtk_combo_box_new_text ();
+	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->layout_path_menu);
+	g_signal_connect (G_OBJECT (source->priv->layout_path_menu),
+			  "changed",
+			  G_CALLBACK (rb_library_source_path_changed_cb),
+			  asource);
+	for (i = 0; i < num_library_layout_paths; i++) {
+		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->layout_path_menu),
+					   _(library_layout_paths[i].title));
+	}
+
+	tmp = glade_xml_get_widget (xml, "layout_filename_menu_box");
+	source->priv->layout_filename_menu = gtk_combo_box_new_text ();
+	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->layout_filename_menu);
+	g_signal_connect (G_OBJECT (source->priv->layout_filename_menu),
+			  "changed",
+			  G_CALLBACK (rb_library_source_filename_changed_cb),
+			  asource);
+	for (i = 0; i < num_library_layout_filenames; i++) {
+		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->layout_filename_menu),
+					   _(library_layout_filenames[i].title));
+	}
+
+	tmp = glade_xml_get_widget (xml, "edit_profile_button");
+	g_signal_connect (G_OBJECT (tmp),
+			  "clicked",
+			  G_CALLBACK (rb_library_source_edit_profile_clicked_cb),
+			  asource);
+
+	tmp = glade_xml_get_widget (xml, "preferred_format_menu_box");
+	source->priv->preferred_format_menu = gm_audio_profile_choose_new ();
+	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->preferred_format_menu);
+	g_signal_connect (G_OBJECT (source->priv->preferred_format_menu),
+			  "changed",
+			  G_CALLBACK (rb_library_source_format_changed_cb),
+			  asource);
+
+	source->priv->layout_example_label = glade_xml_get_widget (xml, "layout_example_label");
+
+	rb_glade_boldify_label (xml, "library_location_label");
+	rb_glade_boldify_label (xml, "library_structure_label");
+	g_object_unref (G_OBJECT (xml));
+	
+	rb_library_source_preferences_sync (source);
 
 	return source->priv->config_widget;
 }
@@ -335,13 +437,12 @@ static void
 rb_library_source_preferences_sync (RBLibrarySource *source)
 {
 	GSList *list;
+	const char *str;
+	GConfClient *gconf_client;
 
 	rb_debug ("syncing pref dialog state");
 
-	list = g_slist_nth (source->priv->browser_views_group,
-			    eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (list->data), TRUE);
-
+	/* library location */
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
 	/* don't trigger the change notification */
@@ -374,8 +475,30 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 	g_slist_foreach (list, (GFunc) g_free, NULL);
 	g_slist_free (list);
 
+	/* watch checkbox */
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check),
 				      eel_gconf_get_boolean (CONF_MONITOR_LIBRARY));
+
+	/* preferred format */
+	str = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
+	gm_audio_profile_choose_set_active (source->priv->preferred_format_menu, str);
+
+	source->priv->layout_path_notify_id =
+		eel_gconf_notification_add (CONF_LIBRARY_LAYOUT_PATH,
+				    (GConfClientNotifyFunc) rb_library_source_layout_path_changed, source);
+	source->priv->layout_filename_notify_id =
+		eel_gconf_notification_add (CONF_LIBRARY_LAYOUT_FILENAME,
+				    (GConfClientNotifyFunc) rb_library_source_layout_filename_changed, source);
+
+	gconf_client = eel_gconf_client_get_global ();
+	/* layout path */
+	rb_library_source_layout_path_changed (gconf_client, -1,
+					       gconf_client_get_entry (gconf_client, CONF_LIBRARY_LAYOUT_PATH, NULL, TRUE, NULL),
+					       source);
+	/* layout filename */
+	rb_library_source_layout_filename_changed (gconf_client, -1,
+						   gconf_client_get_entry (gconf_client, CONF_LIBRARY_LAYOUT_FILENAME, NULL, TRUE, NULL),
+						   source);
 }
 
 static void
@@ -411,21 +534,6 @@ rb_library_source_watch_toggled_cb (GtkToggleButton *button, RBLibrarySource *so
 
 	active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check));
 	eel_gconf_set_boolean (CONF_MONITOR_LIBRARY, active);
-}
-
-
-void
-rb_library_source_browser_views_activated_cb (GtkWidget *widget,
-					      RBLibrarySource *source)
-{
-	int index;
-
-	if (source->priv->loading_prefs == TRUE)
-		return;
-
-	index = g_slist_index (source->priv->browser_views_group, widget);
-
-	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
 }
 
 static const char *
@@ -514,36 +622,39 @@ static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	GList *list, *uri_list, *i;
+	GList *list, *i;
+	GList *entries = NULL;
 
 	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse ((char *) data->data);
+	list = rb_uri_list_parse ((const char *) data->data);
 
-	if (list == NULL)
-		return FALSE;
+	for (i = list; i != NULL; i = g_list_next (i)) {
+		if (i->data != NULL) {
+			char *uri = i->data;
+			RhythmDBEntry *entry;
 
-	uri_list = NULL;
+			entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
 
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+			if (entry == NULL) {
+				/* add to the library */
+				rhythmdb_add_uri (source->priv->db, uri);
+			} else {
+				/* add to list of entries to copy */
+				entries = g_list_prepend (entries, entry);
+			}
 
-	gnome_vfs_uri_list_free (list);
-
-	if (uri_list == NULL)
-		return FALSE;
-	
-	rb_debug ("adding uris");
-
-	for (i = uri_list; i != NULL; i = i->next) {
-		char *uri = i->data;
-
-		if (uri != NULL)
-			rhythmdb_add_uri (source->priv->db, uri);
-
-		g_free (uri);
+			g_free (uri);
+		}
 	}
 
-	g_list_free (uri_list);
+	if (entries) {
+		entries = g_list_reverse (entries);
+		if (rb_source_can_paste (asource))
+			rb_source_paste (asource, entries);
+		g_list_free (entries);
+	}
+
+	g_list_free (list);
 	return TRUE;
 }
 
@@ -556,3 +667,447 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 		_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
 }
 
+static void
+rb_library_source_path_changed_cb (GtkComboBox *box, RBLibrarySource *source)
+{
+	const char *path;
+	gint index;
+
+	index = gtk_combo_box_get_active (box);
+	path = (index >= 0) ? library_layout_paths[index].path : "";
+	eel_gconf_set_string (CONF_LIBRARY_LAYOUT_PATH, path);
+}
+
+static void
+rb_library_source_filename_changed_cb (GtkComboBox *box, RBLibrarySource *source)
+{
+	const char *filename;
+	gint index;
+
+	index = gtk_combo_box_get_active (box);
+	filename = (index >= 0) ? library_layout_filenames[index].path : "";
+	eel_gconf_set_string (CONF_LIBRARY_LAYOUT_FILENAME, filename);
+}
+
+static void
+rb_library_source_format_changed_cb (GtkWidget *widget, RBLibrarySource *source)
+{
+	GMAudioProfile *profile;
+
+	profile = gm_audio_profile_choose_get_active (widget);
+	eel_gconf_set_string (CONF_LIBRARY_PREFERRED_FORMAT, gm_audio_profile_get_id (profile));
+}
+
+/**
+ * Perform magic on a path to make it safe.
+ *
+ * This will always replace '/' with ' ', and optionally make the file name
+ * shell-friendly. This involves removing [?*\ ] and replacing with '_'.  Also
+ * any leading periods are removed so that the files don't end up being hidden.
+ */
+static char *
+sanitize_path (const char *str)
+{
+	gchar *res = NULL;
+	gchar *s;
+
+	/* Skip leading periods, otherwise files disappear... */
+	while (*str == '.')
+		str++;
+  
+	s = g_strdup(str);
+	/* Replace path seperators with a hyphen */
+	g_strdelimit (s, "/", '-');
+	if (eel_gconf_get_boolean (CONF_LIBRARY_STRIP_CHARS)) {
+		/* Replace separators with a hyphen */
+		g_strdelimit (s, "\\:|", '-');
+		/* Replace all other weird characters to whitespace */
+		g_strdelimit (s, "*?&!\'\"$()`>{}", ' ');
+		/* Replace all whitespace with underscores */
+		/* TODO: I'd like this to compress whitespace aswell */
+		g_strdelimit (s, "\t ", '_');
+	}
+	res = g_filename_from_utf8(s, -1, NULL, NULL, NULL);
+	g_free(s);
+	return res ? res : g_strdup(str);
+}
+
+/**
+ * Parse a filename pattern and replace markers with values from a TrackDetails
+ * structure.
+ *
+ * Valid markers so far are:
+ * %at -- album title
+ * %aa -- album artist
+ * %aA -- album artist (lowercase)
+ * %as -- album artist sortname
+ * %aS -- album artist sortname (lowercase)
+ * %tn -- track number (i.e 8)
+ * %tN -- track number, zero padded (i.e 08)
+ * %tt -- track title
+ * %ta -- track artist
+ * %tA -- track artist (lowercase)
+ * %ts -- track artist sortname
+ * %tS -- track artist sortname (lowercase)
+ */
+static char *
+filepath_parse_pattern (const char *pattern, RhythmDBEntry *entry)
+{
+	/* p is the pattern iterator, i is a general purpose iterator */
+	const char *p;
+	char *temp;
+	GString *s;
+
+	if (pattern == NULL || pattern[0] == 0)
+		return g_strdup (" ");
+
+	s = g_string_new (NULL);
+
+	p = pattern;
+	while (*p) {
+		char *string = NULL;
+
+		/* If not a % marker, copy and continue */
+		if (*p != '%') {
+			g_string_append_c (s, *p++);
+			/* Explicit increment as we continue past the increment */
+			continue;
+		}
+
+		/* Is a % marker, go to next and see what to do */
+		switch (*++p) {
+		case '%':
+			/*
+			 * Literal %
+			 */
+			g_string_append_c (s, '%');
+			break;
+		case 'a':
+			/*
+			 * Album tag
+			 */
+			switch (*++p) {
+			case 't':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+				break;
+			case 'T':
+				temp = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_FOLDED));
+				break;
+			case 'a':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+				break;
+			case 'A':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_FOLDED));
+				break;
+			/*case 's':
+				string = sanitize_path (album sort name);
+				break;
+			case 'S':
+				char *t = g_utf8_strdown (album sort name)
+				string = sanitize_path (t);
+				g_free (t);
+				break;*/
+			default:
+				string = g_strdup_printf ("%%a%c", *p);
+			}
+			
+			break;
+
+		case 't':
+			/*
+			 * Track tag
+			 */
+			switch (*++p) {
+			case 't':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+				break;
+			case 'T':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_FOLDED));
+				break;
+			case 'a':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+				break;
+			case 'A':
+				string = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_FOLDED));
+				break;
+			/*case 's':
+				string = sanitize_path (artist sort name);
+				break;
+			case 'S':
+				char *t = g_utf8_strdown (artist sort name)
+				string = sanitize_path (t);
+				g_free (t);
+				break;*/
+			case 'n':
+				/* Track number */
+				string = g_strdup_printf ("%u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));
+				break;
+			case 'N':
+				/* Track number, zero-padded */
+				string = g_strdup_printf ("%02u", (guint)rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));
+				break;
+			default:
+				string = g_strdup_printf ("%%t%c", *p);
+ 			}
+
+			break;
+			
+		default:
+			string = g_strdup_printf ("%%%c", *p);
+		}
+
+		if (string)
+			g_string_append (s, string);
+		g_free (string);
+
+		++p;
+	}
+
+	temp = s->str;
+	g_string_free (s, FALSE);
+	return temp;
+}
+
+static void
+layout_example_label_update (RBLibrarySource *source)
+{
+	char *file_pattern;
+	char *path_pattern;
+	char *file_value;
+	char *path_value;
+	char *example;
+	char *format;
+	GMAudioProfile *profile;
+	RhythmDBEntry *sample_entry;
+
+  	profile = gm_audio_profile_choose_get_active (source->priv->preferred_format_menu);
+
+	/* TODO: sucky. Replace with get-gconf-key-with-default mojo */
+	file_pattern = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME);
+	if (file_pattern == NULL) {
+		file_pattern = g_strdup (library_layout_filenames[0].path);
+	}
+	path_pattern = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH);
+	if (path_pattern == NULL) {
+		path_pattern = g_strdup (library_layout_paths[0].path);
+	}
+
+	sample_entry = rhythmdb_entry_example_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_SONG, NULL);
+	file_value = filepath_parse_pattern (file_pattern, sample_entry);
+	path_value = filepath_parse_pattern (path_pattern, sample_entry);
+	rhythmdb_entry_unref (source->priv->db, sample_entry);
+
+	example = g_build_filename (G_DIR_SEPARATOR_S, path_value, file_value, NULL);
+	g_free (file_value);
+	g_free (file_pattern);
+	g_free (path_value);
+	g_free (path_pattern);
+
+	format = g_strconcat ("<small><i><b>Example Path:</b> ",
+			      example,
+			      ".",
+			      gm_audio_profile_get_extension (profile),
+			      "</i></small>", NULL);
+	g_free (example);
+  
+	gtk_label_set_markup (GTK_LABEL (source->priv->layout_example_label), format);
+	g_free (format);
+}
+
+static void
+rb_library_source_layout_path_changed (GConfClient *client,
+				       guint cnxn_id,
+				       GConfEntry *entry,
+				       RBLibrarySource *source)
+{
+	char *value;
+	int i = 0;
+
+	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_PATH) == 0);
+
+	rb_debug ("layout path changed");
+
+	if (entry->value == NULL) {
+		value = g_strdup (library_layout_paths[0].path);
+	} else if (entry->value->type == GCONF_VALUE_STRING) {
+		value = g_strdup (gconf_value_get_string (entry->value));
+	} else {
+		return;
+	}
+
+	while (library_layout_paths[i].path && strcmp (library_layout_paths[i].path, value) != 0) {
+		i++;
+	}
+
+	g_free (value);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_path_menu), i);
+
+	layout_example_label_update (source);
+}
+
+static void
+rb_library_source_layout_filename_changed (GConfClient *client,
+					   guint cnxn_id,
+					   GConfEntry *entry,
+					   RBLibrarySource *source)
+{
+	char *value;
+	int i = 0;
+  
+	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_FILENAME) == 0);
+
+	rb_debug ("layout filename changed");
+  
+	if (entry->value == NULL) {
+		value = g_strdup (library_layout_filenames[0].path);
+	} else if (entry->value->type == GCONF_VALUE_STRING) {
+		value = g_strdup (gconf_value_get_string (entry->value));
+	} else {
+		return;
+	}
+
+	while (library_layout_filenames[i].path && strcmp (library_layout_filenames[i].path, value) != 0) {
+		i++;
+	}
+
+	g_free (value);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_filename_menu), i);
+
+	layout_example_label_update (source);
+}
+
+/**
+ * Build the absolute filename for the specified track.
+ *
+ * The base path is the extern variable 'base_path', the format to use
+ * is the extern variable 'file_pattern'. Free the result when you
+ * have finished with it.
+ *
+ * Stolen from Sound-Juicer
+ */
+static char*
+build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
+{
+	GnomeVFSURI *uri;
+	GnomeVFSURI *new;
+	char *realfile;
+	char *realpath;
+	char *filename;
+	char *string;
+	char *extension;
+	GSList *list;
+	const char *layout_path;
+	const char *layout_filename;
+	const char *preferred_format;
+
+	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+	layout_path = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH);
+	layout_filename = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME);
+	preferred_format = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
+
+	if (list == NULL || layout_path == NULL || layout_filename == NULL || preferred_format == NULL) {
+		/* emit warning */
+		rb_debug ("Could not retrieve settings from GConf");
+		return NULL;
+	}
+
+	uri = gnome_vfs_uri_new ((const char *)list->data);
+	g_slist_free (list);
+
+	realpath = filepath_parse_pattern (layout_path, entry);
+	new = gnome_vfs_uri_append_path (uri, realpath);
+	gnome_vfs_uri_unref (uri);
+	uri = new;
+	g_free (realpath);
+
+	if (g_str_has_prefix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE), "audio/x-raw")) {
+		GMAudioProfile *profile;
+		profile = gm_audio_profile_lookup (preferred_format);
+		extension = g_strdup (gm_audio_profile_get_extension (profile));
+	} else {
+		char *tmp;
+		
+		/* use the old extension. strip anything after a '?' for http/daap/etc */
+		extension = g_strdup (g_utf8_strrchr (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), -1, '.') + 1);
+
+		tmp = g_utf8_strchr (extension, -1, '?');
+		if (tmp)
+			*tmp = '\0';
+	}
+	
+	realfile = filepath_parse_pattern (layout_filename, entry);
+	if (extension) {
+		filename = g_strdup_printf ("%s.%s", realfile, extension);
+		g_free (realfile);
+	} else {
+		filename = realfile;
+	}
+
+	new = gnome_vfs_uri_append_file_name (uri, filename);
+	gnome_vfs_uri_unref (uri);
+	uri = new;
+	g_free (extension);
+	g_free (filename);
+
+	string = gnome_vfs_uri_to_string (uri, 0);
+	gnome_vfs_uri_unref (uri);
+	return string;
+}
+
+static gboolean
+impl_can_paste (RBSource *asource)
+{
+	GSList *list;
+
+	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+	if (list == NULL)
+		return FALSE;
+
+	g_slist_free (list);
+	return TRUE;
+}
+
+static void
+completed_cb (RhythmDBEntry *entry, const char *dest, RBLibrarySource *source)
+{
+	rhythmdb_add_uri (source->priv->db, dest);
+}
+
+static void
+impl_paste (RBSource *asource, GList *entries)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	RBRemovableMediaManager *rm_mgr;
+	GList *l;
+	RBShell *shell;
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "removable-media-manager", &rm_mgr, NULL);
+	g_object_unref (G_OBJECT (shell));
+
+	for (l = entries; l != NULL; l = g_list_next (l)) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
+		RhythmDBEntryType entry_type;
+		char *dest;
+
+		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+
+		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		if (entry_type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
+		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
+		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+			continue;
+
+		dest = build_filename (source, entry);
+		if (dest == NULL) {
+			rb_debug ("could not create destination path for entry");
+			continue;
+		}
+
+		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
+							  dest, NULL,
+							  (RBTranferCompleteCallback)completed_cb, source);
+	}
+
+	g_object_unref (G_OBJECT (rm_mgr));
+}

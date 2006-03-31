@@ -1,3 +1,84 @@
+2006-03-31  James Livingston  <doclivingston@gmail.com>
+
+	* configure.ac:
+	* Makefile.am:
+	* backends/Makefile.am:
+	* backends/gstreamer/Makefile.am:
+	* backends/gstreamer/rb-encoder-gst.c:
+	* backends/gstreamer/rb-encoder-gst.h:
+	* backends/rb-encoder.c:
+	* backends/rb-encoder.h: add a interface for transcoding, and a
+	GStreamer implementation of it (based on Sound-Juicer's code).
+
+	* shell/Makefile.am:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_class_init),
+	(rb_removable_media_manager_init),
+	(rb_removable_media_manager_dispose),
+	(rb_removable_media_manager_finalize),
+	(rb_removable_media_manager_scan), (emit_progress), (error_cb),
+	(progress_cb), (completed_cb), (do_transfer),
+	(rb_removable_media_manager_queue_transfer), (copy_entry),
+	(rb_removable_media_manager_cmd_copy_tracks):
+	* shell/rb-removable-media-manager.h: use the encoder interface to
+	perform transfers of entries to other locations
+
+	* shell/rb-shell-player.c: (open_location_thread):
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property),
+	(rb_shell_constructor), (rb_shell_transfer_progress_cb),
+	(rb_shell_quit):
+	* shell/rb-statusbar.c: (rb_statusbar_set_progress): display transfer
+	progress in the status bar.
+
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync),
+	(rb_shell_preferences_browser_views_activated_cb):
+	* data/glade/general-prefs.glade: move the browser views setting from
+	the library tab to the general one.
+
+	* data/glade/library-prefs.glade: add settings for the layout of the
+	user's library, and their preferred encoding format (e.g. for CD
+	ripping).
+
+	* lib/rb-preferences.h:
+	* data/rhythmbox.schemas: add keys for the above options (and a few
+	other minor ones)
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_example_new):
+	* rhythmdb/rhythmdb.h: add a new function for creating an "example"
+	entry, that isn't inserted into the database.
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_class_init),
+	(rb_audiocd_create_track_entry):
+	* data/ui/rhythmbox-ui.xml: add a toolbar button for ripping audio
+	cds, and set the mime-type of audio cd tracks correctly.
+
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_finalize),
+	(rb_library_source_edit_profile_clicked_cb),
+	(impl_get_config_widget), (rb_library_source_preferences_sync),
+	(impl_receive_drag), (rb_library_source_path_changed_cb),
+	(rb_library_source_filename_changed_cb),
+	(rb_library_source_format_changed_cb), (sanitize_path),
+	(filepath_parse_pattern), (layout_example_label_update),
+	(rb_library_source_layout_path_changed),
+	(rb_library_source_layout_filename_changed), (build_filename),
+	(impl_can_paste), (completed_cb), (impl_paste): allow the copying of
+	entries to the library. Large chunks of code for determining the
+	destination file name stolen from Sound-Juicer.
+
+	* sources/rb-sourcelist-model.c: (path_is_droppable):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init), (rb_source_can_cut),
+	(rb_source_can_paste):
+	* sources/rb-source.h: add a new _can_paste method, and use it (rather
+	than _can_copy) to determine whether we can paste into the source.
+
+
 2006-03-31  Steve Frécinaux  <steve@istique.net>
 
 	* plugins/rb-python-module.c: allow import of python modules with a '.'

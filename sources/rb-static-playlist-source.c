@@ -126,7 +126,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	object_class->finalize = rb_static_playlist_source_finalize;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_cut = impl_cut;
 	source_class->impl_paste = impl_paste;
