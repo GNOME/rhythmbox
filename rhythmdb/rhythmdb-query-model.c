@@ -194,12 +194,12 @@ struct RhythmDBQueryModelPrivate
 
 	guint stamp;
 
-	guint max_size;
+	guint64 max_size;
 	guint max_count;
 	guint max_time;
 
 	glong total_duration;
-	guint total_size;
+	guint64 total_size;
 
 	GSequence *entries;
 	GHashTable *reverse_map;
