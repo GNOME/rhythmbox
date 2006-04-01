@@ -176,22 +176,22 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	object_class->set_property = rb_iradio_source_set_property;
 	object_class->get_property = rb_iradio_source_get_property;
 
-	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_get_browser_key  = impl_get_browser_key;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_search = impl_search;
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_delete = impl_delete;
+	source_class->impl_get_browser_key  = impl_get_browser_key;
+	source_class->impl_get_entry_view = impl_get_entry_view;
+	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_handle_eos = impl_handle_eos;
+	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_search = impl_search;
+	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_song_properties = impl_song_properties;
+	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,

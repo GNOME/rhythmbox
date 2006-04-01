@@ -118,8 +118,6 @@ static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
 static void rb_shell_sync_party_mode (RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
-static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
-						    RhythmDBEntryType type);
 static void source_selected_cb (RBSourceList *sourcelist,
 				RBSource *source,
 				RBShell *shell);
@@ -1648,7 +1646,7 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
 	}
 }
 
-static RBSource *
+RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
 				   RhythmDBEntryType type)
 {

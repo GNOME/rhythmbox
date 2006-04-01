@@ -122,6 +122,8 @@ void		rb_shell_construct	(RBShell *shell);
 void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,
 							 RhythmDBEntryType type);
+RBSource * rb_shell_get_source_by_entry_type (RBShell *shell,
+					      RhythmDBEntryType type);
 
 gboolean        rb_shell_get_party_mode (RBShell *shell);
 

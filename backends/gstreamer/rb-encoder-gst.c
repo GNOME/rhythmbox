@@ -363,10 +363,11 @@ add_tags_from_entry (RBEncoderGst *encoder,
 
 	
 	gst_tag_list_add (tags, GST_TAG_MERGE_REPLACE_ALL,
-			  /* FIXME: add the rest of them */
+			  /* TODO: compute replay-gain */
 			  GST_TAG_TITLE, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
 			  GST_TAG_ARTIST, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
 			  GST_TAG_TRACK_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
+			  GST_TAG_ALBUM_VOLUME_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER),
 			  GST_TAG_ALBUM, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
 			  GST_TAG_GENRE, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE),
                           GST_TAG_DATE, date,

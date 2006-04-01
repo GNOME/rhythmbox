@@ -161,6 +161,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_receive_drag = impl_receive_drag;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) impl_can_paste;
 	source_class->impl_paste = impl_paste;
 
@@ -1094,9 +1095,8 @@ impl_paste (RBSource *asource, GList *entries)
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
-		if (entry_type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
-		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
-		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+		/* see if the responsible source lets us copy */
+		if (!rb_source_can_copy (rb_shell_get_source_by_entry_type (shell, entry_type)))
 			continue;
 
 		dest = build_filename (source, entry);

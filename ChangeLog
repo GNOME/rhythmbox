@@ -1,3 +1,22 @@
+2006-04-01  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-encoder-gst.c: (add_tags_from_entry): add disc
+	number tag.
+
+	* shell/rb-shell.c:
+	* shell/rb-shell.h: export rb_shell_get_source_by_entry_type.
+
+	* sources/rb-daap-source.c: (rb_daap_source_class_init): set _can_copy
+	to true.
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init): reorder
+	method assigning, so it's understandable
+
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(impl_paste): rather than hard-coding the types to ignore, use
+	rb_source_can_copy.
+
 2006-03-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-library-source.c:
