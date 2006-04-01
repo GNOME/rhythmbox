@@ -1,3 +1,10 @@
+2006-04-02  James Livingston  <doclivingston@gmail.com>
+
+	* sources/rb-podcast-source.c: (impl_delete),
+	(rb_podcast_source_cmd_delete_feed),
+	(rb_podcast_source_cmd_update_feed): copy the list before traversing
+	it, since it may change during traversal. Fixes bug 336204.
+
 2006-04-01  James Livingston  <doclivingston@gmail.com>
 
 	* data/art/media-eject.png: add the media-eject icon from Banshee

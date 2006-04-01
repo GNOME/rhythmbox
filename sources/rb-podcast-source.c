@@ -925,8 +925,8 @@ impl_delete (RBSource *asource)
 	for (l = rb_entry_view_get_selected_entries (source->priv->posts); l != NULL;
 	     l = g_list_next (l)) {
 		rhythmdb_entry_delete (source->priv->db, l->data);
-		rhythmdb_commit (source->priv->db);
 	}
+	rhythmdb_commit (source->priv->db);
 }
 
 static void
@@ -1360,7 +1360,7 @@ static void
 rb_podcast_source_cmd_delete_feed (GtkAction *action,
 			     	   RBPodcastSource *source)
 {
-	GList *lst;
+	GList *feeds, *l;
 	gint ret;
 	GtkWidget *dialog;
 	GtkWidget *button;
@@ -1407,21 +1407,17 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
 		return;
 	
-	lst = source->priv->selected_feeds;
-
-	while (lst != NULL && lst->data != NULL) {
-		const char *location;
-
-		location = (char *) lst->data;
+	feeds = rb_string_list_copy (source->priv->selected_feeds);
+	for (l = feeds; l != NULL; l = g_list_next (l)) {
+		const char *location = l->data;
 
 		rb_debug ("Removing podcast location: %s", location);
-
 		rb_podcast_manager_remove_feed (source->priv->podcast_mg,
 						location,
 						(ret == GTK_RESPONSE_YES));
-
-		lst = lst->next;
 	}
+
+	rb_list_deep_free (feeds);
 }
 
 static void
@@ -1451,21 +1447,19 @@ static void
 rb_podcast_source_cmd_update_feed (GtkAction *action,
 			     	   RBPodcastSource *source)
 {
-	GList *lst;
+	GList *feeds, *l;
 	
 	rb_debug ("Update action");
-	lst = source->priv->selected_feeds;
 
-	while (lst != NULL) {
-		const char *location;
-
-		location = (char *) lst->data;
+	feeds = rb_string_list_copy (source->priv->selected_feeds);
+	for (l = feeds; l != NULL; l = g_list_next (l)) {
+		const char *location = l->data;
 
 		rb_podcast_manager_subscribe_feed (source->priv->podcast_mg,
 						   location);
-
-		lst = lst->next;
 	}
+
+	rb_list_deep_free (feeds);
 }
 
 static void
