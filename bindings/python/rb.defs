@@ -142,22 +142,15 @@
   (return-type "GObject*")
 )
 
-(define-method get_player_path
-  (of-object "RBShell")
-  (c-name "rb_shell_get_player_path")
-  (return-type "const-char*")
-)
-
 (define-method get_playlist_manager
   (of-object "RBShell")
   (c-name "rb_shell_get_playlist_manager")
   (return-type "GObject*")
 )
-
-(define-method get_playlist_manager_path
+(define-method get_ui_manager
   (of-object "RBShell")
-  (c-name "rb_shell_get_playlist_manager_path")
-  (return-type "const-char*")
+  (c-name "rb_shell_get_ui_manager")
+  (return-type "GObject*")
 )
 
 (define-method toggle_visibility
@@ -542,6 +535,24 @@
   )
 )
 
+(define-method play
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_play")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method pause
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_pause")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
 (define-method stop
   (of-object "RBShellPlayer")
   (c-name "rb_shell_player_stop")
@@ -625,12 +636,6 @@
     '("const-gchar**" "path")
     '("GError**" "error")
   )
-)
-
-(define-method sync_buttons
-  (of-object "RBShellPlayer")
-  (c-name "rb_shell_player_sync_buttons")
-  (return-type "none")
 )
 
 (define-method set_playback_state

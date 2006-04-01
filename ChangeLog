@@ -1,5 +1,20 @@
 2006-04-01  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-player.c: (rb_shell_player_play),
+	(rb_shell_player_stop), (rb_shell_player_pause), (filter_mmkeys): add
+	new rb_shell_player_{play,pause} functions, so everyone doesn't have
+	to do rb_shell_player_playing followed by rb_shell_player_playpause.
+
+	* shell/rb-shell.c: (rb_shell_sync_smalldisplay),
+	(rb_shell_get_playlist_manager_path), (rb_shell_get_ui_manager):
+	* shell/rb-shell.h: add rb_shell_get_ui_manager.
+
+	* bindings/python/rb.defs: bind the above to Python, and remove some
+	useless stuff from the bindings.
+
+2006-04-01  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-encoder-gst.c: (add_tags_from_entry): add disc
 	number tag.
 

@@ -142,6 +142,7 @@ static void rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
 static void rb_shell_player_sync_control_state (RBShellPlayer *player);
 static void rb_shell_player_sync_song_position_slider_visibility (RBShellPlayer *player);
+static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 
 static void gconf_play_order_changed (GConfClient *client,guint cnxn_id,
 				      GConfEntry *entry, RBShellPlayer *player);
@@ -1014,10 +1015,24 @@ rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError 
 	return rb_shell_player_open_location (player, location, error);
 }
 
-static gboolean
+
+/**
+ * rb_shell_player_play:
+ * @player: a #RBShellPlayer
+ * @error: error return
+ *
+ * Starts playback, if it is not already playing.
+ *
+ * @return: whether playback is now occurring (TRUE when successfully started
+ * or already playing).
+ **/
+gboolean
 rb_shell_player_play (RBShellPlayer *player, GError **error)
 {
 	RBEntryView *songs;
+
+	if (rb_player_playing (player->priv->mmplayer))
+			return TRUE;
 
 	if (!rb_player_play (player->priv->mmplayer, error))
 		return FALSE;
@@ -2028,7 +2043,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	rb_header_sync (player->priv->header_widget);
 }
 
-void
+static void
 rb_shell_player_sync_buttons (RBShellPlayer *player)
 {
 	GtkAction *action;
@@ -2174,6 +2189,16 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	}
 }
 
+/**
+ * rb_shell_player_stop:
+ * @player: a #RBShellPlayer.
+ *
+ * Completely stops playback, freeing resources and unloading the file.
+ *
+ * In general rb_shell_player_pause() should be used instead, as it stops the
+ * audio, but does not completely free resources.
+ **/
+
 void
 rb_shell_player_stop (RBShellPlayer *player)
 {
@@ -2182,9 +2207,9 @@ rb_shell_player_stop (RBShellPlayer *player)
 
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 
-	if (rb_player_playing (player->priv->mmplayer))
-		rb_player_pause (player->priv->mmplayer);
-	rb_player_close (player->priv->mmplayer, &error);
+	rb_shell_player_pause (player, &error);
+	if (error == NULL)
+		rb_player_close (player->priv->mmplayer, &error);
 	if (error) {
 		rb_error_dialog (NULL,
 				 _("Couldn't stop playback"),
@@ -2195,6 +2220,36 @@ rb_shell_player_stop (RBShellPlayer *player)
 	rb_shell_player_sync_buttons (player);
 }
 
+/**
+ * rb_shell_player_pause:
+ * @player: a #RBShellPlayer
+ * @error: error return
+ *
+ * Pauses playback if possible, completely stopping if not.
+ *
+ * @return: whether playback is not occurring (TRUE when successfully
+ * paused/stopped or playback was not occurring).
+ **/
+
+gboolean
+rb_shell_player_pause (RBShellPlayer *player, GError **error)
+{
+	if (rb_player_playing (player->priv->mmplayer))
+		return rb_shell_player_playpause (player, FALSE, error);
+	else
+		return TRUE;
+}
+
+/**
+ * rb_shell_player_get_playing:
+ * @player: a #RBShellPlayer
+ * @playing: playback state return
+ * @error: error return
+ *
+ * Reports whether playback is occuring by setting playing.
+ *
+ * @return: whether the playback state could be reported successfully.
+ **/
 gboolean
 rb_shell_player_get_playing (RBShellPlayer *player,
 			     gboolean *playing,
@@ -2646,14 +2701,10 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 		rb_shell_player_playpause (player, TRUE, NULL);
 		return GDK_FILTER_REMOVE;
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause) == key->keycode) {	
-		gboolean playing;
-		rb_shell_player_get_playing (player, &playing, NULL);
-		if (playing) {
-			rb_shell_player_playpause (player, TRUE, NULL);
-		}
+		rb_shell_player_pause (player, NULL);
 		return GDK_FILTER_REMOVE;
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop) == key->keycode) {
-		rb_shell_player_set_playing_source (player, NULL);
+		rb_shell_player_stop (player);
 		return GDK_FILTER_REMOVE;		
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode) {
 		rb_shell_player_cmd_previous (NULL, player);

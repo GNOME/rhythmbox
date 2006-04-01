@@ -83,12 +83,10 @@ gboolean        rb_shell_add_uri        (RBShell *shell,
 gboolean        rb_shell_load_uri       (RBShell *shell, const char *uri, gboolean play, GError **error);
 
 GObject *       rb_shell_get_player     (RBShell *shell);
-
 const char *    rb_shell_get_player_path(RBShell *shell);
-
 GObject *	rb_shell_get_playlist_manager (RBShell *shell);
-
 const char *	rb_shell_get_playlist_manager_path (RBShell *shell);
+GObject *	rb_shell_get_ui_manager (RBShell *shell);
 
 void            rb_shell_toggle_visibility (RBShell *shell);
 

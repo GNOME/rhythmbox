@@ -2539,7 +2539,6 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	rb_shell_sync_statusbar_visibility (shell);
 
 	rb_source_header_sync_control_state (shell->priv->source_header);
-	rb_shell_player_sync_buttons (shell->priv->player_shell);
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
 					      "ViewSmallDisplay");
@@ -3024,6 +3023,12 @@ const char *
 rb_shell_get_playlist_manager_path (RBShell *shell)
 {
 	return "/org/gnome/Rhythmbox/PlaylistManager";
+}
+
+GObject *
+rb_shell_get_ui_manager (RBShell *shell)
+{
+	return G_OBJECT (shell->priv->ui_manager);
 }
 
 static void
