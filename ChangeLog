@@ -1,5 +1,13 @@
 2006-04-01  James Livingston  <doclivingston@gmail.com>
 
+	* data/art/media-eject.png: add the media-eject icon from Banshee
+	(BSD-licensed), for use when the user's icon theme doesn't have one.
+
+	* lib/rb-stock-icons.c: (rb_stock_icons_init): use the above. Fixes
+	bug 334897.
+
+2006-04-01  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-player.h:
 	* shell/rb-shell-player.c: (rb_shell_player_play),
 	(rb_shell_player_stop), (rb_shell_player_pause), (filter_mmkeys): add
