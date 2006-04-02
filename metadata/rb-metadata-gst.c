@@ -591,7 +591,7 @@ rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *c
 	if (md->priv->non_audio)
 		return;
 	
-	if (gst_caps_is_empty (caps) || gst_caps_is_any (caps)) {
+	if (!(gst_caps_is_empty (caps) || gst_caps_is_any (caps))) {
 		g_free (md->priv->type);
 		md->priv->type = g_strdup (gst_structure_get_name (gst_caps_get_structure (caps, 0)));
 		rb_debug ("found type %s", md->priv->type);
