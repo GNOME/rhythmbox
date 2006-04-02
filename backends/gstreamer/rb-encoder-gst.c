@@ -41,6 +41,12 @@
 #include "rb-encoder-gst.h"
 #include "rb-debug.h"
 
+#ifdef HAVE_GSTREAMER_0_8
+#define GstStateChangeReturn GstElementStateReturn
+#define GstState GstElementState
+#define GST_STATE_CHANGE_FAILURE GST_STATE_FAILURE
+#endif
+
 
 static void rb_encoder_gst_class_init (RBEncoderGstClass *klass);
 static void rb_encoder_gst_init       (RBEncoderGst *encoder);
@@ -218,12 +224,13 @@ progress_timeout_cb (RBEncoderGst *encoder)
 {
 	gint64 nanos;
 	gint secs;
-	GstState state;
 	static GstFormat format = GST_FORMAT_TIME;
+	GstState state;
 
 	if (encoder->priv->pipeline == NULL)
 		return FALSE;
 
+#ifdef HAVE_GSTREAMER_0_10
 	gst_element_get_state (encoder->priv->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
 	if (state != GST_STATE_PLAYING)
 		return FALSE;
@@ -232,6 +239,16 @@ progress_timeout_cb (RBEncoderGst *encoder)
 		g_warning ("Could not get current track position");
 		return TRUE;
 	}
+#elif HAVE_GSTREAMER_0_8
+	state = gst_element_get_state (encoder->priv->pipeline);
+	if (state != GST_STATE_PLAYING)
+		return FALSE;
+
+	if (!gst_element_query (encoder->priv->pipeline, GST_QUERY_POSITION, &format, &nanos)) {
+		g_warning ("Could not get current track position");
+		return TRUE;
+	}
+#endif
 
 	secs = nanos / GST_SECOND;
 	rb_debug ("encoding progress at %d out of %d", secs, encoder->priv->total_length);
@@ -244,7 +261,6 @@ static gboolean
 start_pipeline (RBEncoderGst *encoder, GError **error)
 {
 	GstStateChangeReturn result;
-	
 #ifdef HAVE_GSTREAMER_0_10
 	GstBus *bus;
 
@@ -252,6 +268,8 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 	
 	bus = gst_pipeline_get_bus (GST_PIPELINE (encoder->priv->pipeline));
 	gst_bus_add_watch (bus, bus_watch_cb, encoder);
+
+	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
 #elif HAVE_GSTREAMER_0_8
 	g_signal_connect_object (G_OBJECT (encoder->priv->pipeline),
 				 "error", G_CALLBACK (gst_error_cb),
@@ -259,10 +277,9 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 	g_signal_connect_object (G_OBJECT (encoder->priv->pipeline),
 				 "eos", G_CALLBACK (gst_eos_cb),
 				 encoder, 0);
+	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
 #endif
 
-	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
-	
 	if (result != GST_STATE_CHANGE_FAILURE) {
 		/* start reporting progress */
 		if (encoder->priv->total_length > 0) {

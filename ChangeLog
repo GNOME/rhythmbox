@@ -1,5 +1,10 @@
 2006-04-02  James Livingston  <doclivingston@gmail.com>
 
+	* backends/gstreamer/rb-encoder-gst.c: (progress_timeout_cb),
+	(start_pipeline): fix building with gstreamer 0.8
+
+2006-04-02  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-podcast-source.c: (impl_delete),
 	(rb_podcast_source_cmd_delete_feed),
 	(rb_podcast_source_cmd_update_feed): copy the list before traversing
