@@ -60,6 +60,8 @@ GList* rb_collate_hash_table_keys (GHashTable *table);
 GList* rb_collate_hash_table_values (GHashTable *table);
 
 GList* rb_uri_list_parse (const char *uri_list);
+const gchar* rb_mime_get_friendly_name (const gchar *mime_type);
+
 
 G_END_DECLS
 

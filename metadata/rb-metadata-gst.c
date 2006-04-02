@@ -40,6 +40,7 @@
 
 #include "rb-metadata.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 #include "rb-file-helpers.h"
 
 G_DEFINE_TYPE(RBMetaData, rb_metadata, G_TYPE_OBJECT)
@@ -257,7 +258,9 @@ rb_metadata_init (RBMetaData *md)
 	add_supported_type (md, "application/x-id3", tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", tagger, "MP3");
 
-	add_supported_type (md, "application/ogg", NULL, "Ogg");
+	add_supported_type (md, "application/ogg", NULL, "Ogg Vorbis");
+	add_supported_type (md, "audio/x-vorbis", NULL, "Ogg Vorbis");
+
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
 	add_supported_type (md, "audio/x-wav", NULL, "WAV");
 
@@ -585,7 +588,11 @@ rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
 static void
 rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *caps, RBMetaData *md)
 {
-	if (gst_caps_get_size (caps) > 0) {
+	if (md->priv->non_audio)
+		return;
+	
+	if (gst_caps_is_empty (caps) || gst_caps_is_any (caps)) {
+		g_free (md->priv->type);
 		md->priv->type = g_strdup (gst_structure_get_name (gst_caps_get_structure (caps, 0)));
 		rb_debug ("found type %s", md->priv->type);
 	}
@@ -655,8 +662,22 @@ static void
 rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *caps, RBMetaData *md)
 {
 	/* try to shortcut it a bit */
-	rb_debug ("decodebin emitted unknown type signal");
 	md->priv->non_audio = TRUE;
+
+	if (!gst_caps_is_empty (caps) && !gst_caps_is_any (caps)) {
+		GstStructure *structure;
+		const gchar *mimetype;
+
+		structure = gst_caps_get_structure (caps, 0);
+		mimetype = gst_structure_get_name (structure);
+
+		g_free (md->priv->type);
+		md->priv->type = g_strdup (mimetype);
+		
+		rb_debug ("decodebin emitted unknown type signal for %s", mimetype);
+	} else {
+		rb_debug ("decodebin emitted unknown type signal");
+	}
 }
 
 static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
@@ -875,7 +896,7 @@ rb_metadata_load (RBMetaData *md,
 			    &state, NULL, 1 * GST_SECOND);
 	    change_timeout--;
 	}
-	if (state_ret == GST_STATE_CHANGE_ASYNC) {
+	if (state_ret != GST_STATE_CHANGE_SUCCESS) {
 		rb_debug ("failed to go to PAUSED for %s", uri);
 		if (!md->priv->non_audio)
 			g_set_error (error,
@@ -885,7 +906,7 @@ rb_metadata_load (RBMetaData *md,
 	} else
 		rb_debug ("gone to PAUSED for %s", uri);
 
-	if (state_ret != GST_STATE_CHANGE_FAILURE && state_ret != GST_STATE_CHANGE_ASYNC) {
+	if (state_ret == GST_STATE_CHANGE_SUCCESS) {
 		/* Post application specific message so we'll know when to stop
 		 * the message loop */
 		GstBus *bus;
@@ -970,16 +991,31 @@ rb_metadata_load (RBMetaData *md,
 			}
 		}
 
-		if (!ignore)
-			g_set_error (error,
-				     RB_METADATA_ERROR,
-				     RB_METADATA_ERROR_NOT_AUDIO,
-				     _("The file is not an audio stream"));
-		else
+
+		if (!ignore) {
+			const char *human_name;
+
+			human_name= rb_metadata_gst_type_to_name (md, md->priv->type);
+			if (human_name == NULL)
+				human_name = rb_mime_get_friendly_name (md->priv->type);
+			
+			if (human_name)
+				g_set_error (error,
+					     RB_METADATA_ERROR,
+					     RB_METADATA_ERROR_NOT_AUDIO,
+					     _("The GStreamer plugins to decode \"%s\" files cannot be found"),
+					     human_name);
+			else
+				g_set_error (error,
+					     RB_METADATA_ERROR,
+					     RB_METADATA_ERROR_NOT_AUDIO,
+					     _("The file contains a stream of type %s, which is not decodable"),
+					     md->priv->type);
+		} else
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
-				     _("The file is not an audio stream, but is being ignored"));
+				     NULL);
 	} else if (!md->priv->handoff) {
 		const char *report_type = rb_metadata_gst_type_to_name (md, md->priv->type);
 		if (report_type == NULL)

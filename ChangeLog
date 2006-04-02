@@ -1,5 +1,16 @@
 2006-04-02  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-util.c: (rb_mime_get_friendly_name):
+	* lib/rb-util.h: add helper function to get the "friendly" name for a
+	mime-type
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_init),
+	(rb_metadata_gst_typefind_cb), (rb_metadata_gst_unknown_type_cb): give
+	the user better error messages about undecodable streams, using the
+	"friendly" name if possible. Fixes bug 128109.
+
+2006-04-02  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-encoder-gst.c: (progress_timeout_cb),
 	(start_pipeline): fix building with gstreamer 0.8
 

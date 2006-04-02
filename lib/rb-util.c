@@ -24,6 +24,7 @@
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include "rb-debug.h"
 
 static GPrivate * private_is_primary_thread;
@@ -713,5 +714,18 @@ rb_uri_list_parse (const char *uri_list)
 	}
 
 	return g_list_reverse (result);
+}
+
+const gchar*
+rb_mime_get_friendly_name (const gchar *mime_type)
+{
+	const gchar *name = NULL;
+	
+	if (name == NULL && mime_type)
+		name = gnome_vfs_mime_get_description (mime_type);
+	if (name == NULL)
+		name = _("Unknown");
+
+	return name;
 }
 
