@@ -359,7 +359,7 @@ main (int argc, char **argv)
 			dbus_g_connection_register_g_object (session_bus, path, obj);
 		}
 #endif
-	} else if (!no_registration) {
+	} else if (!no_registration && session_bus != NULL) {
 #ifdef WITH_DBUS
 		DBusGProxy *shell_proxy;
 		guint32 current_time;

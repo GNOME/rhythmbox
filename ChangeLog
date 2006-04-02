@@ -1,5 +1,10 @@
 2006-04-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/main.c: (main): Check if we got a dbus connection before
+	trying to create a proxy for the shell object.  Fixes #336634.
+
+2006-04-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* doc/reference/Makefile.am:
 	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_class_init):
 	* shell/rb-source-header.c:
