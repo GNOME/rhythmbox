@@ -27,7 +27,6 @@ IGNORE_HFILES= \
 	rb-remote-client-proxy.h \
 	rb-remote-common.h \
 	rb-remote-dbus.h \
-	rb-remote.h \
 	rb-remote-proxy.h \
 	Rhythmbox.h \
 	rhythmdb-gda.h \
@@ -66,6 +65,7 @@ GTKDOC_LIBS=\
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/daapsharing/libdaapsharing.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
+	$(top_builddir)/backends/librbbackends.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\

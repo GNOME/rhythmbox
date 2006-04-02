@@ -79,9 +79,7 @@ RB_PLUGIN_REGISTER(RBLircPlugin, rb_lirc_plugin)
 static void
 rb_lirc_plugin_class_init (RBLircPluginClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;
 }

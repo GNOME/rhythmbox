@@ -35,7 +35,6 @@
 #include "rb-preferences.h"
 #include "rb-search-entry.h"
 #include "rb-debug.h"
-#include "rb-remote.h"
 #include "rb-entry-view.h"
 #include "eel-gconf-extensions.h"
 

@@ -406,5 +406,5 @@ default_load_playlists (RBGenericPlayerSource *source)
 static char *
 default_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 {
-	return local_uri = rb_uri_append_uri (rb_generic_player_source_get_mount_path (source), uri);
+	return rb_uri_append_uri (rb_generic_player_source_get_mount_path (source), uri);
 }
