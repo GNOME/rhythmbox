@@ -52,13 +52,6 @@
 #define nautilus_burn_drive_ref nautilus_burn_drive_copy
 #endif
 
-#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-#define GNUC_PACKED                             \
-  __attribute__((packed))
-#else   /* !__GNUC__ */
-#define GNUC_PACKED
-#endif
-
 static void rb_recorder_class_init (RBRecorderClass *klass);
 static void rb_recorder_init       (RBRecorder      *recorder);
 static void rb_recorder_finalize   (GObject         *object);
@@ -1272,6 +1265,13 @@ rb_recorder_get_media_length (RBRecorder *recorder,
         return secs;
 }
 
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#define GNUC_PACKED                             \
+  __attribute__((packed))
+#else   /* !__GNUC__ */
+#pragma pack(2)
+#endif
+
 /* Copyright (C) Bastien Nocera */
 /* From xine-lib, whoop */
 typedef struct GNUC_PACKED {
@@ -1283,7 +1283,8 @@ typedef struct GNUC_PACKED {
 	gint16   wBitsPerSample;
 	gint16   cbSize;
 } waveformat;
-#ifndef ATTRIBUTE_PACKED
+
+#ifndef GNUC_PACKED
 #pragma pack()
 #endif
 

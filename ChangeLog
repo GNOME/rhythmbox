@@ -1,3 +1,9 @@
+2006-04-02  Christophe Fergeau  <teuf@gnome.org>
+
+	* player/rb-recorder-gst.c: fix packing of the C struct holding a
+	wav header for non-gcc compilers (not tested much, was only written
+	according to docs)
+
 2006-04-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/main.c: (main): Check if we got a dbus connection before
