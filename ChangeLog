@@ -1,5 +1,11 @@
 2006-04-02  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-generic-player-source.c:
+	(default_transform_playlist_uri): consider playlist paths as relative
+	to the volume root by default, since that is what most players use.
+
+2006-04-02  James Livingston  <doclivingston@gmail.com>
+
 	* lib/rb-util.c: (rb_mime_get_friendly_name):
 	* lib/rb-util.h: add helper function to get the "friendly" name for a
 	mime-type
