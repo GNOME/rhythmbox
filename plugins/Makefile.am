@@ -6,6 +6,10 @@ if WITH_AUDIOSCROBBLER
 SUBDIRS += audioscrobbler
 endif
 
+if WITH_LIRC
+SUBDIRS += lirc
+endif
+
 if ENABLE_PYTHON
 SUBDIRS += pythonconsole sample-python
 endif

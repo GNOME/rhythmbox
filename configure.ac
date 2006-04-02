@@ -634,6 +634,22 @@ AM_CONDITIONAL(WITH_BONOBO, test "x$enable_bonobo" = "xyes")
 	      
 AM_GCONF_SOURCE_2
 
+dnl LIRC
+AC_ARG_ENABLE(lirc,
+	AC_HELP_STRING([--enable-lirc],[enable lirc support]))
+with_lirc=no
+if test x"$enable_lirc" != xno; then
+	AC_CHECK_HEADER(lirc/lirc_client.h,[with_lirc=yes],[with_lirc=no])
+	if test x"$with_lirc" = xyes; then
+		AC_CHECK_LIB(lirc_client,lirc_init,[with_lirc=yes],[with_lirc=no])
+	fi
+	if test x"$with_lirc" = xno -a x"$enable_lirc" = xyes; then
+		AC_MSG_ERROR([lirc explicitly requested but no support found])
+	fi
+fi
+AM_CONDITIONAL(WITH_LIRC, test x"$with_lirc" = xyes)
+
+
 AC_ARG_ENABLE(uninstalled-build,
               AC_HELP_STRING([--enable-uninstalled-build],
 			     [Search for files in build directory as well]),
@@ -863,6 +879,7 @@ daapsharing/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audioscrobbler/Makefile
+plugins/lirc/Makefile
 plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
 bindings/Makefile
