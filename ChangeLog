@@ -1,3 +1,8 @@
+2006-04-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_playpause):
+	Don't crash if source is already NULL.  Hackishly fixes bug #336912.
+
 2006-04-02  James Livingston  <doclivingston@gmail.com>
 
 	* metadata/rb-metadata-gst.c: (rb_metadata_gst_typefind_cb): fix the

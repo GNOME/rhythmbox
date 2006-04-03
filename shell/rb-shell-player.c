@@ -1577,7 +1577,9 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 	ret = TRUE;
 
 	if (rb_player_playing (player->priv->mmplayer)) {
-		if (rb_source_can_pause (player->priv->source)) {
+		if (player->priv->source == NULL) {
+			rb_debug ("playing source is already NULL");
+		} else if (rb_source_can_pause (player->priv->source)) {
 			rb_debug ("pausing mm player");
 			rb_player_pause (player->priv->mmplayer);
 			songs = rb_source_get_entry_view (player->priv->current_playing_source);
