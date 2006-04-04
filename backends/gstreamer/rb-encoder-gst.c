@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  * arch-tag: Implementation of GStreamer encoding backend
  * 
@@ -372,12 +372,9 @@ add_tags_from_entry (RBEncoderGst *encoder,
 {
 	GstTagList *tags;
 	gboolean result = TRUE;
-	gulong day = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
-	GDate *date = g_date_new_julian (day);
+	gulong day;
 
 	tags = gst_tag_list_new ();
-
-
 	
 	gst_tag_list_add (tags, GST_TAG_MERGE_REPLACE_ALL,
 			  /* TODO: compute replay-gain */
@@ -387,51 +384,65 @@ add_tags_from_entry (RBEncoderGst *encoder,
 			  GST_TAG_ALBUM_VOLUME_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER),
 			  GST_TAG_ALBUM, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
 			  GST_TAG_GENRE, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE),
-                          GST_TAG_DATE, date,
 			  GST_TAG_ENCODER, "Rhythmbox",
 			  GST_TAG_ENCODER_VERSION, VERSION,
 			  NULL);
-	g_date_free (date);
+
+	day = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
+
+	if (day > 0) {
+		GDate *date;
+
+		date = g_date_new_julian (day);
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_DATE, date,
+				  NULL);
+		g_date_free (date);
+	}
 
 #ifdef HAVE_GSTREAMER_0_10
-	GstIterator *iter;
-	gboolean done;
+	{
+		GstIterator *iter;
+		gboolean done;
 
-	iter = gst_bin_iterate_all_by_interface (GST_BIN (encoder->priv->pipeline), GST_TYPE_TAG_SETTER);
-	done = FALSE;
-	while (!done) {
-		GstTagSetter *tagger = NULL;
-		GstTagSetter **tagger_ptr = &tagger;
+		iter = gst_bin_iterate_all_by_interface (GST_BIN (encoder->priv->pipeline), GST_TYPE_TAG_SETTER);
+		done = FALSE;
+		while (!done) {
+			GstTagSetter *tagger = NULL;
+			GstTagSetter **tagger_ptr = &tagger;
 
-		switch (gst_iterator_next (iter, (gpointer*)tagger_ptr)) {
-		case GST_ITERATOR_OK:
-			gst_tag_setter_merge_tags (tagger, tags, GST_TAG_MERGE_REPLACE_ALL);
-			break;
-		case GST_ITERATOR_RESYNC:
-			gst_iterator_resync (iter);
-			break;
-		case GST_ITERATOR_ERROR:
-			g_set_error (error,
-				     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-				     "Could not add tags to tag-setter");
-			result = FALSE;
-			done = TRUE;
-			break;
-		case GST_ITERATOR_DONE:
-			done = TRUE;
-			break;
-		}
+			switch (gst_iterator_next (iter, (gpointer*)tagger_ptr)) {
+			case GST_ITERATOR_OK:
+				gst_tag_setter_merge_tags (tagger, tags, GST_TAG_MERGE_REPLACE_ALL);
+				break;
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync (iter);
+				break;
+			case GST_ITERATOR_ERROR:
+				g_set_error (error,
+					     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
+					     "Could not add tags to tag-setter");
+				result = FALSE;
+				done = TRUE;
+				break;
+			case GST_ITERATOR_DONE:
+				done = TRUE;
+				break;
+			}
 		
-		if (tagger)
-			gst_object_unref (tagger);
+			if (tagger)
+				gst_object_unref (tagger);
+		}
+		gst_iterator_free (iter);
 	}
-	gst_iterator_free (iter);
 #elif HAVE_GSTREAMER_0_8
-	GstElement *tagger;
+	{
+		GstElement *tagger;
 
-        tagger = gst_bin_get_by_interface (GST_BIN (encoder->priv->pipeline), GST_TYPE_TAG_SETTER);
-	if (tagger)
-		gst_tag_setter_merge (GST_TAG_SETTER (tagger), tags, GST_TAG_MERGE_REPLACE_ALL);
+		tagger = gst_bin_get_by_interface (GST_BIN (encoder->priv->pipeline), GST_TYPE_TAG_SETTER);
+		if (tagger)
+			gst_tag_setter_merge (GST_TAG_SETTER (tagger), tags, GST_TAG_MERGE_REPLACE_ALL);
+	}
 #endif
 
 	gst_tag_list_free (tags);

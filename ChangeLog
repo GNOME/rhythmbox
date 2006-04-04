@@ -1,3 +1,10 @@
+2006-04-04  William Jon McCann  <mccann@jhu.edu>
+
+	* backends/gstreamer/rb-encoder-gst.c (add_tags_from_entry):
+	Don't try to add a date when we don't have one.  Fixes #336741.
+
+	Also fix variable declaration in middle of block.
+
 2006-04-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.c: (rb_shell_player_playpause):
