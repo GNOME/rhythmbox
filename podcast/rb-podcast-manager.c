@@ -865,6 +865,8 @@ rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char
 		rhythmdb_commit (db);
 		
 		g_object_unref (md);
+		g_error_free (error);
+
 		return FALSE;
 	}
 

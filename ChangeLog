@@ -1,3 +1,11 @@
+2006-04-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	Patch by: William Jon McCann  <mccann@jhu.edu>
+
+	* metadata/test-metadata.c: (main): Use GOption to parse arguments.
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_save_metadata):
+	Fix GError leak.
+
 2006-04-04  William Jon McCann  <mccann@jhu.edu>
 
 	* backends/gstreamer/rb-encoder-gst.c (add_tags_from_entry):

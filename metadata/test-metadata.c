@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  Copyright (C) 2006 Jonathan Matthew <jonathan@kaolin.hn.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,6 +23,7 @@
  */
 
 #include <config.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -31,6 +33,15 @@
 #include "rb-debug.h"
 
 static RBMetaData *md = NULL;
+
+static gboolean debug = FALSE;
+static gboolean can_save = FALSE;
+
+static GOptionEntry entries [] = {
+	{ "debug", 0, 0, G_OPTION_ARG_NONE, &debug, NULL, NULL },
+	{ "can-save", 0, 0, G_OPTION_ARG_NONE, &can_save, NULL, NULL },
+	{ NULL }
+};
 
 static void 
 print_metadata_string (RBMetaData *md, RBMetaDataField field, const char *name)
@@ -103,16 +114,30 @@ int main(int argc, char **argv)
 {
 	GMainLoop *loop;
 	int filecount = 0;
+	GOptionContext *context;
+	gboolean retval;
+	GError *error = NULL;
 
 	g_type_init ();
-	if (strcmp (argv[1], "--debug") == 0) {
-		rb_debug_init (TRUE);
-		argv++;
+
+	context = g_option_context_new (NULL);
+	g_option_context_add_main_entries (context, entries, NULL);
+	retval = g_option_context_parse (context, &argc, &argv, &error);
+
+	g_option_context_free (context);
+
+	if (! retval) {
+		g_warning ("%s", error->message);
+		g_error_free (error);
+		exit (1);
 	}
 
-	if (strcmp (argv[1], "--can-save") == 0) {
+	if (debug) {
+		rb_debug_init (TRUE);
+	}
+
+	if (can_save) {
 		g_idle_add (check_can_save_cb, argv[2]);
-		argv += 2;
 	}
 	
 	loop = g_main_loop_new (NULL, FALSE);
