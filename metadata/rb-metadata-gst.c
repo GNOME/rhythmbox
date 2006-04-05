@@ -588,9 +588,6 @@ rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
 static void
 rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *caps, RBMetaData *md)
 {
-	if (md->priv->non_audio)
-		return;
-	
 	if (!(gst_caps_is_empty (caps) || gst_caps_is_any (caps))) {
 		g_free (md->priv->type);
 		md->priv->type = g_strdup (gst_structure_get_name (gst_caps_get_structure (caps, 0)));
@@ -898,7 +895,8 @@ rb_metadata_load (RBMetaData *md,
 	}
 	if (state_ret != GST_STATE_CHANGE_SUCCESS) {
 		rb_debug ("failed to go to PAUSED for %s", uri);
-		if (!md->priv->non_audio)
+		rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
+		if (!md->priv->non_audio && md->priv->error == NULL)
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_INTERNAL,

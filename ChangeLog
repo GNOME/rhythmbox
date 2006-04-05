@@ -1,3 +1,13 @@
+2006-04-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-dbus-service.c: (test_can_save),
+	(test_load), (main): Call g_set_prgname, report errors more
+	usefully in test mode.
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_typefind_cb),
+	(rb_metadata_load): Don't ignore the have-type signal for non-audio
+	files.  Run the event loop when the state change fails so we get the
+	error messages from the bus.  Fixes #336921.
+
 2006-04-05  William Jon McCann  <mccann@jhu.edu>
 
 	* data/art/Makefile.am: Install media-eject.

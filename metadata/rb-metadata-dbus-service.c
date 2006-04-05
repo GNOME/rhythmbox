@@ -374,9 +374,6 @@ test_can_save (const char *mimetype)
 	RBMetaData *md;
 	gboolean can_save;
 
-#ifdef HAVE_GSTREAMER
-	gst_init (NULL, NULL);
-#endif
 	md = rb_metadata_new ();
 	can_save = rb_metadata_can_save (md, mimetype);
 	g_print ("%s save %s\n", can_save ? "Can" : "Can't", mimetype);
@@ -391,14 +388,16 @@ test_load (const char *uri)
 	GError *error = NULL;
 	int rv = 0;
 
-#ifdef HAVE_GSTREAMER
-	gst_init (NULL, NULL);
-#endif
-
 	md = rb_metadata_new ();
 	rb_metadata_load (md, uri, &error);
 	if (error) {
-		g_print ("Error loading metadata from %s: %s\n", uri, error->message);
+		if (error->code == RB_METADATA_ERROR_NOT_AUDIO_IGNORE) {
+			g_print ("%s is not an audio stream (ignored)\n", uri);
+		} else if (error->code == RB_METADATA_ERROR_NOT_AUDIO) {
+			g_print ("%s is not an audio stream\n", uri);
+		} else {
+			g_print ("Error loading metadata from %s: %s\n", uri, error->message);
+		}
 		g_clear_error (&error);
 		rv = -1;
 	} else {
@@ -431,6 +430,12 @@ main (int argc, char **argv)
 	const char *address = NULL;
 
 	g_type_init ();
+	gnome_vfs_init ();
+	gnome_authentication_manager_init ();
+#ifdef HAVE_GSTREAMER
+	gst_init (NULL, NULL);
+	g_set_prgname ("rhythmbox-metadata");
+#endif
 
 	if (argv[1] != NULL && strcmp(argv[1], "--debug") == 0) {
 		argv++;
@@ -457,12 +462,6 @@ main (int argc, char **argv)
 	}
 
 	rb_debug ("initializing metadata service; pid = %d; address = %s", getpid (), address);
-	
-	gnome_vfs_init ();
-	gnome_authentication_manager_init ();
-#ifdef HAVE_GSTREAMER
-	gst_init (NULL, NULL);
-#endif
 	svc.metadata = rb_metadata_new ();
 
 	/* set up D-BUS server */
