@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Rhythmbox icon loading
  *
  *  Copyright (C) 2002 Jorn Baayen
@@ -84,8 +85,14 @@ rb_stock_icons_init (void)
 						   0,
 						   NULL);
 		if (pixbuf == NULL) {
-			char *fn = g_strconcat (items[i], ".png", NULL);
-			pixbuf = gdk_pixbuf_new_from_file (rb_file (fn), NULL);
+			char *fn;
+			const char *path;
+
+			fn = g_strconcat (items[i], ".png", NULL);
+			path = rb_file (fn);
+			if (path != NULL) {
+				pixbuf = gdk_pixbuf_new_from_file (path, NULL);
+			}
 			g_free (fn);
 		}
 
