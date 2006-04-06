@@ -1,5 +1,27 @@
 2006-04-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_get_property),
+	(rb_shell_player_get_active_source),
+	(rb_shell_player_set_playing_source_internal):
+	* shell/rb-shell-player.h:
+	Change 'playing-from-queue' from being a signal to being a property.
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_playing_from_queue_cb),
+	(rb_shell_view_queue_as_sidebar_changed_cb),
+	(rb_shell_jump_to_entry_with_source):
+	When the queue side pane is used, make 'jump to current' jump to the
+	entry in the registered source for its type, rather than in the queue,
+	and show it as playing in that source.
+	
+	* sources/rb-sourcelist.c: (rb_sourcelist_set_playing_source):
+	* sources/rb-sourcelist.h:
+	Remove the 'preempted source' stuff, since it wasn't doing anything
+	anyway.
+
+2006-04-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post),
 	(download_progress_cb): Canonicalise downloaded file location before
 	setting the mountpoint property of the corresponding entry.

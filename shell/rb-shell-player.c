@@ -222,7 +222,8 @@ enum
 	PROP_STATUSBAR,
 	PROP_QUEUE_SOURCE,
 	PROP_QUEUE_ONLY,
-	PROP_STREAM_SONG
+	PROP_STREAM_SONG,
+	PROP_PLAYING_FROM_QUEUE
 };
 
 enum
@@ -230,7 +231,6 @@ enum
 	WINDOW_TITLE_CHANGED,
 	ELAPSED_CHANGED,
 	PLAYING_SOURCE_CHANGED,
-	PLAYING_FROM_QUEUE,
 	PLAYING_CHANGED,
 	PLAYING_SONG_CHANGED,
 	PLAYING_URI_CHANGED,
@@ -336,6 +336,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       FALSE,
 							       G_PARAM_READWRITE));
 	
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING_FROM_QUEUE,
+					 g_param_spec_boolean ("playing-from-queue",
+							       "Playing from queue",
+							       "Whether playing from the play queue or not",
+							       FALSE,
+							       G_PARAM_READABLE));
+	
 	/* If you change these, be sure to update the CORBA interface
 	 * in rb-remote-bonobo.c! */
 	g_object_class_install_property (object_class,
@@ -410,17 +418,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_SOURCE);
-
-	rb_shell_player_signals[PLAYING_FROM_QUEUE] =
-		g_signal_new ("playing-from-queue",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_from_queue),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_BOOLEAN);
 
 	rb_shell_player_signals[PLAYING_CHANGED] =
 		g_signal_new ("playing-changed",
@@ -812,6 +809,9 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_STREAM_SONG:
 		g_value_set_string (value, player->priv->song);
 		break;
+	case PROP_PLAYING_FROM_QUEUE:
+		g_value_set_boolean (value, player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -846,6 +846,11 @@ rb_shell_player_get_playing_source (RBShellPlayer *player)
 	return player->priv->current_playing_source;
 }
 
+RBSource *
+rb_shell_player_get_active_source (RBShellPlayer *player)
+{
+	return player->priv->source;
+}
 
 RBShellPlayer *
 rb_shell_player_new (RhythmDB *db, GtkUIManager *mgr, 
@@ -2126,6 +2131,7 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 
 {
 	gboolean emit_source_changed = TRUE;
+	gboolean emit_playing_from_queue_changed = FALSE;
 
 	if (player->priv->source == source && 
 	    player->priv->current_playing_source == source &&
@@ -2136,10 +2142,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 
 	if (RB_SOURCE (player->priv->queue_source) == source) {
 
-		if (player->priv->current_playing_source != source) {
-			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_FROM_QUEUE],
-				       0, TRUE);
-		}
+		if (player->priv->current_playing_source != source)
+			emit_playing_from_queue_changed = TRUE;
 
 		if (player->priv->source == NULL) {
 			actually_set_playing_source (player, source, sync_entry_view);
@@ -2150,8 +2154,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 
 	} else {
 		if (player->priv->current_playing_source != source) {
-			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_FROM_QUEUE],
-				       0, FALSE);
+			if (player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source))
+				emit_playing_from_queue_changed = TRUE;
 
 			/* stop the old source */
 			if (player->priv->current_playing_source != NULL) {
@@ -2188,6 +2192,9 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	if (emit_source_changed) {
 		g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_SOURCE_CHANGED],
 			       0, player->priv->source);
+	}
+	if (emit_playing_from_queue_changed) {
+		g_object_notify (G_OBJECT (player), "playing-from-queue");
 	}
 }
 

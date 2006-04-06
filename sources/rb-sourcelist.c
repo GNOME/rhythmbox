@@ -54,8 +54,6 @@ struct RBSourceListPrivate
 	GtkTreeViewColumn *hidden_column;
 	GtkTreeViewColumn *main_column;
 
-	RBSource *preempted_source;
-
 	RBShell *shell;
 };
 
@@ -497,28 +495,6 @@ rb_sourcelist_set_playing_source (RBSourceList *sourcelist, RBSource *source)
 	sourcelist->priv->playing_source = source;
 	if (source)
 		set_source_playing (sourcelist, source, TRUE);
-}
-
-void
-rb_sourcelist_preempt_playing_source (RBSourceList *sourcelist, RBSource *source)
-{
-	if (source == NULL) {
-		if (sourcelist->priv->preempted_source) {
-			set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
-			set_source_playing (sourcelist, sourcelist->priv->preempted_source, TRUE);
-
-			sourcelist->priv->playing_source = sourcelist->priv->preempted_source;
-			sourcelist->priv->preempted_source = NULL;
-		}
-	} else {
-		if (sourcelist->priv->playing_source) {
-			set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
-			set_source_playing (sourcelist, source, TRUE);
-
-			sourcelist->priv->preempted_source = sourcelist->priv->playing_source;
-			sourcelist->priv->playing_source = source;
-		}
-	}
 }
 
 void

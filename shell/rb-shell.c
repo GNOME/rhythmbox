@@ -128,7 +128,7 @@ static void rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 					       RhythmDBEntry *entry,
 					       RBShell *shell);
 static void rb_shell_playing_from_queue_cb (RBShellPlayer *player,
-					    gboolean from_queue,
+					    GParamSpec *arg,
 					    RBShell *shell);
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
@@ -1066,7 +1066,7 @@ rb_shell_constructor (GType type,
 				 G_CALLBACK (rb_shell_playing_entry_changed_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
-				 "playing-from-queue",
+				 "notify::playing-from-queue",
 				 G_CALLBACK (rb_shell_playing_from_queue_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
@@ -1779,14 +1779,35 @@ rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 
 static void
 rb_shell_playing_from_queue_cb (RBShellPlayer *player,
-				gboolean from_queue,
+			 	GParamSpec *param,
 				RBShell *shell)
 {
-	rb_debug ("playing from queue changed");
+	gboolean from_queue;
+	g_object_get (G_OBJECT (player), "playing-from-queue", &from_queue, NULL);
 	if (!shell->priv->queue_as_sidebar) {
-		/* show queue as playing source, selected source as 'paused' */
-		rb_sourcelist_preempt_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
-						      from_queue ? RB_SOURCE (shell->priv->queue_source) : NULL);
+		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
+						  rb_shell_player_get_playing_source (shell->priv->player_shell));
+	} else {
+		RBSource *source;
+		RBEntryView *songs;
+		RhythmDBEntry *entry;
+		RhythmDBEntryType entry_type;
+		
+		/* if playing from the queue, show the playing entry as playing in the
+		 * registered source for its type, so it makes sense when 'jump to current'
+		 * jumps to it there.
+		 */
+		entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+		if (entry == NULL)
+			return;
+
+		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		source = rb_shell_get_source_by_entry_type (shell, entry_type);
+		songs = rb_source_get_entry_view (source);
+
+		rb_entry_view_set_state (songs, from_queue ? RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_NOT_PLAYING);
+		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
+						  rb_shell_player_get_active_source (shell->priv->player_shell));
 	}
 }
 
@@ -2028,6 +2049,7 @@ static void
 rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 					   RBShell *shell)
 {
+	gboolean playing_from_queue;
 	shell->priv->queue_as_sidebar = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
 	eel_gconf_set_boolean (CONF_UI_QUEUE_AS_SIDEBAR, shell->priv->queue_as_sidebar);
 
@@ -2037,13 +2059,7 @@ rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 		rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 	}
 
-	if (rb_shell_player_get_playing_source (shell->priv->player_shell) == RB_SOURCE (shell->priv->queue_source)) {
-		/* for queue as sidebar, show the preempted source as playing;
-		 * otherwise, show the queue as playing.
-		 */
-		rb_sourcelist_preempt_playing_source (RB_SOURCELIST (shell->priv->sourcelist), 
-								     shell->priv->queue_as_sidebar ? NULL : RB_SOURCE (shell->priv->queue_source));
-	}
+	rb_shell_playing_from_queue_cb (shell->priv->player_shell, NULL, shell);
 	
 	rb_shell_sync_pane_visibility (shell);
 }
@@ -2683,17 +2699,18 @@ rb_shell_jump_to_entry_with_source (RBShell *shell,
 
 	g_return_if_fail (entry != NULL);
 
-	if (source == NULL)
-		source = rb_shell_get_source_by_entry_type (shell, entry->type); 
+	if ((source == RB_SOURCE (shell->priv->queue_source) && 
+	     shell->priv->queue_as_sidebar) ||
+	     source == NULL) {
+		RhythmDBEntryType entry_type;
+		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		source = rb_shell_get_source_by_entry_type (shell, entry_type); 
+	}
 	if (source == NULL)
 		return;
 
-	if (source == RB_SOURCE (shell->priv->queue_source) && shell->priv->queue_as_sidebar) {
-		songs = RB_ENTRY_VIEW (shell->priv->queue_sidebar);
-	} else {
-		songs = rb_source_get_entry_view (source);
-		rb_shell_select_source (shell, source);
-	}
+	songs = rb_source_get_entry_view (source);
+	rb_shell_select_source (shell, source);
 
 	rb_entry_view_scroll_to_entry (songs, entry);
 	rb_entry_view_select_entry (songs, entry);
