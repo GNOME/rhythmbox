@@ -596,7 +596,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 		}
 	 }
 		 		 
-	short_name = gnome_vfs_uri_extract_short_name (remote_uri);	
+	short_name = gnome_vfs_uri_extract_short_name (remote_uri);
 	local_file_name = g_build_filename (dir_name,
 	 				    short_name,
 					   NULL);
@@ -631,6 +631,8 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 		} else if (remote_size == info->size) {
 			GValue val = {0,};
 			char *uri = gnome_vfs_uri_to_string (local_uri, GNOME_VFS_URI_HIDE_NONE);
+			char *canon_uri = rb_canonicalise_uri (uri);
+			g_free (uri);
 		
 			rb_debug ("podcast %s already downloaded", location);
 
@@ -640,12 +642,13 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 			g_value_unset (&val);
 
 			g_value_init (&val, G_TYPE_STRING);
-			g_value_set_string (&val, uri);
+			g_value_set_string (&val, canon_uri);
 			rhythmdb_entry_set (pd->priv->db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
 			g_value_unset (&val);
 
-			rb_podcast_manager_save_metadata (pd->priv->db, data->entry, uri);
+			rb_podcast_manager_save_metadata (pd->priv->db, data->entry, canon_uri);
 			rhythmdb_commit (pd->priv->db);
+			g_free (canon_uri);
 				
 			goto next_step;
 		} else if (remote_size > info->size) {
@@ -1107,13 +1110,16 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 	if (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
 		GValue val = {0,};
 		RhythmDB *db = data->pd->priv->db;
+		char *uri = gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE);
+		char *canon_uri = rb_canonicalise_uri (uri);
+		g_free (uri);
 
 		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val,  
-				    gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE));
+		g_value_set_string (&val, canon_uri);
 		rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
 		g_value_unset (&val);
 		rhythmdb_commit (db);
+		g_free (canon_uri);
 	}
 	
 	if (info->phase  == GNOME_VFS_XFER_PHASE_COMPLETED) {
