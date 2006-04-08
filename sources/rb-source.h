@@ -38,6 +38,8 @@ typedef enum {
 	RB_SOURCE_EOF_NEXT,
 } RBSourceEOFType;
 
+GType rb_source_eof_type_get_type (void);
+#define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
 
 #define RB_TYPE_SOURCE         (rb_source_get_type ())
 #define RB_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SOURCE, RBSource))

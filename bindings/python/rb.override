@@ -10,9 +10,15 @@ headers
 #include "rb-remote-proxy.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
+#include "rb-source.h"
+#include "rb-sourcelist.h"
 
 void pyrb_register_classes (PyObject *d); 
 void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
+
+/* hacks to deal with the nonstandard class name RHYTHMDB */
+#define RHYTHMDB_TYPE_RHYTHMDB RHYTHMDB_TYPE
+#define RHYTHMDB_RHYTHMDB(o) RHYTHMDB(o)
 
 %%
 modulename rb 
@@ -20,8 +26,11 @@ modulename rb
 import gtk.Widget as PyGtkWidget_Type
 import gobject.GObject as PyGObject_Type 
 import gtk.VBox as PyGtkVBox_Type
+import gtk.HBox as PyGtkHBox_Type
 import gtk.Window as PyGtkWindow_Type
+import gtk.ScrolledWindow as PyGtkScrolledWindow_Type
 import gtk.TreeView as PyGtkTreeView_Type
+import gdk.Pixbuf as PyGdkPixbuf_Type
 
 import rhythmdb.Entry as PyRhythmDBEntry_Type
 import rhythmdb.PropertyModel as PyRhythmDBPropertyModel_Type
@@ -31,7 +40,7 @@ import rhythmdb.Query as PyRhythmDBQuery_Type
 import rhythmdb.QueryModel as PyRhythmDBQueryModel_Type
 import rhythmdb.QueryResults as PyRhythmDBQueryResults_Type
 import rhythmdb.QueryType as PyRhythmDBQueryType_Type
-import rhythmdb.RhythmDB as PyRhythmDBRhythmDB_Type
+import rhythmdb.RhythmDB as PyRhythmDB_Type
 %%
 ignore-glob
   *_get_type

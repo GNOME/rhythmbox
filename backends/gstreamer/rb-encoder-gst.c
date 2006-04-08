@@ -146,7 +146,7 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 {
 	RBEncoderGst *encoder = RB_ENCODER_GST (data);
 	char *string;
-	GError *error;
+	GError *error = NULL;
 
 	/* ref ourselves, in case one of the signal handler unrefs us */
 	g_object_ref (G_OBJECT (encoder));

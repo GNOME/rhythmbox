@@ -1032,3 +1032,26 @@ _rb_source_hide_when_empty (RBSource *source,
 				 source, 0);
 }
 
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_source_eof_type_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SOURCE_EOF_ERROR, "Display error when playing entry ends"),
+			ENUM_ENTRY (RB_SOURCE_EOF_STOP, "Stop playback when playing entry ends"),
+			ENUM_ENTRY (RB_SOURCE_EOF_RETRY, "Restart playing when playing entry ends"),
+			ENUM_ENTRY (RB_SOURCE_EOF_NEXT, "Start next entry when playing entry ends"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBSourceEOFType", values);
+	}
+
+	return etype;
+}
+

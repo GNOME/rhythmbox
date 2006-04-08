@@ -1,3 +1,15 @@
+2006-04-08  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-encoder-gst.c: (bus_watch_cb): add a missing
+	initialiser for a GError
+
+	* sources/rb-source.c: (rb_source_eof_type_get_type):
+	* sources/rb-source.h: add a GType for RBSourceEOFType
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: bind RBSource and RBSourceList
+
 2006-04-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.c: (rb_shell_player_class_init),

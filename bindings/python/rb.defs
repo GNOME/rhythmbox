@@ -28,6 +28,22 @@
   (c-name "RBShellPlayer")
   (gtype-id "RB_TYPE_SHELL_PLAYER")
 )
+
+(define-object Source
+  (in-module "RB")
+  (parent "GtkHBox")
+  (c-name "RBSource")
+  (gtype-id "RB_TYPE_SOURCE")
+)
+
+(define-object SourceList
+  (in-module "RB")
+  (parent "GtkScrolledWindow")
+  (c-name "RBSourceList")
+  (gtype-id "RB_TYPE_SOURCELIST")
+)
+
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -39,6 +55,18 @@
     '("end-of-playlist" "RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST")
     '("not-playing" "RB_SHELL_PLAYER_ERROR_NOT_PLAYING")
     '("not-seekable" "RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE")
+  )
+)
+
+(define-enum SourceEOFType
+  (in-module "RB")
+  (c-name "RBSourceEOFType")
+  (gtype-id "RB_TYPE_SOURCE_EOF_TYPE")
+  (values
+    '("error" "RB_SOURCE_EOF_ERROR")
+    '("stop" "RB_SOURCE_EOF_STOP")
+    '("retry" "RB_SOURCE_EOF_RETRY")
+    '("next" "RB_SOURCE_EOF_NEXT")
   )
 )
 
@@ -717,5 +745,349 @@
   (parameters
     '("gboolean*" "mute")
     '("GError**" "error")
+  )
+)
+
+;; From ../../sources/rb-source.h
+
+(define-function rb_source_get_type
+  (c-name "rb_source_get_type")
+  (return-type "GType")
+)
+
+(define-method notify_filter_changed
+  (of-object "RBSource")
+  (c-name "rb_source_notify_filter_changed")
+  (return-type "none")
+)
+
+(define-method notify_status_changed
+  (of-object "RBSource")
+  (c-name "rb_source_notify_status_changed")
+  (return-type "none")
+)
+
+(define-method update_play_statistics
+  (of-object "RBSource")
+  (c-name "rb_source_update_play_statistics")
+  (return-type "none")
+  (parameters
+    '("RhythmDB*" "db")
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method set_pixbuf
+  (of-object "RBSource")
+  (c-name "rb_source_set_pixbuf")
+  (return-type "none")
+  (parameters
+    '("GdkPixbuf*" "pixbuf")
+  )
+)
+
+(define-method get_status
+  (of-object "RBSource")
+  (c-name "rb_source_get_status")
+  (return-type "char*")
+)
+
+(define-method can_browse
+  (of-object "RBSource")
+  (c-name "rb_source_can_browse")
+  (return-type "gboolean")
+)
+
+(define-method get_browser_key
+  (of-object "RBSource")
+  (c-name "rb_source_get_browser_key")
+  (return-type "const-char*")
+)
+
+(define-method browser_toggled
+  (of-object "RBSource")
+  (c-name "rb_source_browser_toggled")
+  (return-type "none")
+  (parameters
+    '("gboolean" "enabled")
+  )
+)
+
+(define-method get_entry_view
+  (of-object "RBSource")
+  (c-name "rb_source_get_entry_view")
+  (return-type "RBEntryView*")
+)
+
+(define-method get_property_views
+  (of-object "RBSource")
+  (c-name "rb_source_get_property_views")
+  (return-type "GList*")
+)
+
+(define-method can_rename
+  (of-object "RBSource")
+  (c-name "rb_source_can_rename")
+  (return-type "gboolean")
+)
+
+(define-method can_search
+  (of-object "RBSource")
+  (c-name "rb_source_can_search")
+  (return-type "gboolean")
+)
+
+(define-method search
+  (of-object "RBSource")
+  (c-name "rb_source_search")
+  (return-type "none")
+  (parameters
+    '("const-char*" "text")
+  )
+)
+
+(define-method reset_filters
+  (of-object "RBSource")
+  (c-name "rb_source_reset_filters")
+  (return-type "none")
+)
+
+(define-method get_config_widget
+  (of-object "RBSource")
+  (c-name "rb_source_get_config_widget")
+  (return-type "GtkWidget*")
+  (parameters
+    '("RBShellPreferences*" "prefs")
+  )
+)
+
+(define-method can_cut
+  (of-object "RBSource")
+  (c-name "rb_source_can_cut")
+  (return-type "gboolean")
+)
+
+(define-method can_delete
+  (of-object "RBSource")
+  (c-name "rb_source_can_delete")
+  (return-type "gboolean")
+)
+
+(define-method can_move_to_trash
+  (of-object "RBSource")
+  (c-name "rb_source_can_move_to_trash")
+  (return-type "gboolean")
+)
+
+(define-method can_copy
+  (of-object "RBSource")
+  (c-name "rb_source_can_copy")
+  (return-type "gboolean")
+)
+
+(define-method can_paste
+  (of-object "RBSource")
+  (c-name "rb_source_can_paste")
+  (return-type "gboolean")
+)
+
+(define-method can_add_to_queue
+  (of-object "RBSource")
+  (c-name "rb_source_can_add_to_queue")
+  (return-type "gboolean")
+)
+
+(define-method cut
+  (of-object "RBSource")
+  (c-name "rb_source_cut")
+  (return-type "GList*")
+)
+
+(define-method copy
+  (of-object "RBSource")
+  (c-name "rb_source_copy")
+  (return-type "GList*")
+)
+
+(define-method paste
+  (of-object "RBSource")
+  (c-name "rb_source_paste")
+  (return-type "none")
+  (parameters
+    '("GList*" "entries")
+  )
+)
+
+(define-method delete
+  (of-object "RBSource")
+  (c-name "rb_source_delete")
+  (return-type "none")
+)
+
+(define-method add_to_queue
+  (of-object "RBSource")
+  (c-name "rb_source_add_to_queue")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "queue")
+  )
+)
+
+(define-method move_to_trash
+  (of-object "RBSource")
+  (c-name "rb_source_move_to_trash")
+  (return-type "none")
+)
+
+(define-method song_properties
+  (of-object "RBSource")
+  (c-name "rb_source_song_properties")
+  (return-type "none")
+)
+
+(define-method try_playlist
+  (of-object "RBSource")
+  (c-name "rb_source_try_playlist")
+  (return-type "gboolean")
+)
+
+(define-method can_pause
+  (of-object "RBSource")
+  (c-name "rb_source_can_pause")
+  (return-type "gboolean")
+)
+
+(define-method handle_eos
+  (of-object "RBSource")
+  (c-name "rb_source_handle_eos")
+  (return-type "RBSourceEOFType")
+)
+
+(define-method have_url
+  (of-object "RBSource")
+  (c-name "rb_source_have_url")
+  (return-type "gboolean")
+)
+
+(define-method receive_drag
+  (of-object "RBSource")
+  (c-name "rb_source_receive_drag")
+  (return-type "gboolean")
+  (parameters
+    '("GtkSelectionData*" "data")
+  )
+)
+
+(define-method show_popup
+  (of-object "RBSource")
+  (c-name "rb_source_show_popup")
+  (return-type "gboolean")
+)
+
+(define-method delete_thyself
+  (of-object "RBSource")
+  (c-name "rb_source_delete_thyself")
+  (return-type "none")
+)
+
+(define-method activate
+  (of-object "RBSource")
+  (c-name "rb_source_activate")
+  (return-type "none")
+)
+
+(define-method deactivate
+  (of-object "RBSource")
+  (c-name "rb_source_deactivate")
+  (return-type "none")
+)
+
+(define-method disconnect
+  (of-object "RBSource")
+  (c-name "rb_source_disconnect")
+  (return-type "gboolean")
+)
+
+(define-method get_ui_actions
+  (of-object "RBSource")
+  (c-name "rb_source_get_ui_actions")
+  (return-type "GList*")
+)
+
+(define-method get_search_actions
+  (of-object "RBSource")
+  (c-name "rb_source_get_search_actions")
+  (return-type "GList*")
+)
+
+(define-method gather_selected_properties
+  (of-object "RBSource")
+  (c-name "rb_source_gather_selected_properties")
+  (return-type "GList*")
+  (parameters
+    '("RhythmDBPropType" "prop")
+  )
+)
+
+
+;; From ../../sources/rb-sourcelist.h
+
+(define-function rb_sourcelist_get_type
+  (c-name "rb_sourcelist_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_sourcelist_new
+  (c-name "rb_sourcelist_new")
+  (is-constructor-of "RbSourcelist")
+  (return-type "GtkWidget*")
+  (parameters
+    '("RBShell*" "shell")
+  )
+)
+
+(define-method append
+  (of-object "RBSourceList")
+  (c-name "rb_sourcelist_append")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+    '("RBSource*" "parent")
+  )
+)
+
+(define-method set_playing_source
+  (of-object "RBSourceList")
+  (c-name "rb_sourcelist_set_playing_source")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+  )
+)
+
+(define-method edit_source_name
+  (of-object "RBSourceList")
+  (c-name "rb_sourcelist_edit_source_name")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+  )
+)
+
+(define-method remove
+  (of-object "RBSourceList")
+  (c-name "rb_sourcelist_remove")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
+  )
+)
+
+(define-method select
+  (of-object "RBSourceList")
+  (c-name "rb_sourcelist_select")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "source")
   )
 )

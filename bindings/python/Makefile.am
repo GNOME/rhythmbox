@@ -55,7 +55,11 @@ BINDING_HEADERS_SRCDIR_IN = \
 	rhythmdb/rhythmdb-query-model.h		\
 	rhythmdb/rhythmdb-query-results.h	\
 	shell/rb-shell.h			\
-	shell/rb-shell-player.h
+	shell/rb-shell-player.h			\
+	sources/rb-source.h			\
+	sources/rb-sourcelist.h			\
+	sources/rb-sourcelist-model.h		\
+	$(NULL)
 
 BINDING_HEADERS_BUILDDIR_IN = 
 
