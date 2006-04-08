@@ -1,3 +1,10 @@
+2006-04-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-dbus-service.c: (_send_error):
+	Send NULL error messages as empty strings, so _NOT_AUDIO_IGNORE errors
+	are sent properly and we don't get 'method doesn't exist' messages
+	from dbus instead.
+
 2006-04-08  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/override_common.h:

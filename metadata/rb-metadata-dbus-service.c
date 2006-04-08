@@ -59,9 +59,12 @@ _send_error (DBusConnection *connection,
 {
 	DBusMessage *reply = dbus_message_new_method_return (request);
 
-	rb_debug ("attempting to return error: %s", message);
-	if (!message)
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	if (!message) {
+		message = "";
+		rb_debug ("attempting to return error with no message");
+	} else {
+		rb_debug ("attempting to return error: %s", message);
+	}
 
 	if (include_flag) {
 		gboolean ok = FALSE;
