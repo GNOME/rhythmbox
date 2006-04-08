@@ -58,11 +58,17 @@ typedef enum {
 	RB_ENTRY_VIEW_COL_ERROR
 } RBEntryViewColumn;
 
+GType rb_entry_view_column_get_type (void);
+#define RB_TYPE_ENTRY_VIEW_COLUMN	(rb_entry_view_column_get_type())
+
 typedef enum {
 	RB_ENTRY_VIEW_NOT_PLAYING,
 	RB_ENTRY_VIEW_PLAYING,
 	RB_ENTRY_VIEW_PAUSED
 } RBEntryViewState;
+
+GType rb_entry_view_state_get_type (void);
+#define RB_TYPE_ENTRY_VIEW_STATE	(rb_entry_view_state_get_type())
 
 typedef struct RBEntryViewPrivate RBEntryViewPrivate;
 

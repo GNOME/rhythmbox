@@ -1,5 +1,22 @@
 2006-04-08  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/override_common.h:
+	* bindings/python/override_common.c: (_helper_wrap_pointer_glist),
+	(_helper_wrap_boxed_glist), (_helper_unwrap_string_pylist): add some
+	more utility functions for C<->Python conversions
+
+	* widgets/rb-entry-view.c: (rb_entry_view_column_get_type),
+	(rb_entry_view_state_get_type):
+	* widgets/rb-entry-view.h: make the colume type and entry view state
+	GTypes
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: bind RBEntryView, RBPropertyView and
+	RBSource.
+
+2006-04-08  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-encoder-gst.c: (bus_watch_cb): add a missing
 	initialiser for a GError
 

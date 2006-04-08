@@ -5,8 +5,11 @@ headers
 #include <pygtk/pygtk.h>
 
 #include "override_common.h"
+#include "rb-util.h"
 
+#include "rb-entry-view.h"
 #include "rb-plugin.h"
+#include "rb-property-view.h"
 #include "rb-remote-proxy.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -30,7 +33,8 @@ import gtk.HBox as PyGtkHBox_Type
 import gtk.Window as PyGtkWindow_Type
 import gtk.ScrolledWindow as PyGtkScrolledWindow_Type
 import gtk.TreeView as PyGtkTreeView_Type
-import gdk.Pixbuf as PyGdkPixbuf_Type
+import gtk.TreeViewColumn as PyGtkTreeViewColumn_Type
+import gtk.gdk.Pixbuf as PyGdkPixbuf_Type
 
 import rhythmdb.Entry as PyRhythmDBEntry_Type
 import rhythmdb.PropertyModel as PyRhythmDBPropertyModel_Type
@@ -45,4 +49,148 @@ import rhythmdb.RhythmDB as PyRhythmDB_Type
 ignore-glob
   *_get_type
   *_quark
+%%
+override rb_entry_view_get_selected_entries noargs
+static PyObject *
+_wrap_rb_entry_view_get_selected_entries(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_entry_view_get_selected_entries (RB_ENTRY_VIEW(self->obj));
+    py_list = _helper_wrap_pointer_glist (list, RHYTHMDB_TYPE_ENTRY);
+    g_list_free (list);
+
+    return py_list;
+}
+%%
+override rb_source_get_property_views noargs
+static PyObject *
+_wrap_rb_source_get_property_views(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_source_get_property_views (RB_SOURCE(self->obj));
+    py_list = _helper_wrap_gobject_glist (list);
+    g_list_free (list);
+
+    return py_list;
+}
+%%
+override rb_source_get_search_actions noargs
+static PyObject *
+_wrap_rb_source_get_search_actions(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_source_get_search_actions (RB_SOURCE(self->obj));
+    py_list = _helper_wrap_string_glist (list);
+    g_list_free (list);
+
+    return py_list;
+}
+%%
+override rb_source_get_ui_actions noargs
+static PyObject *
+_wrap_rb_source_get_ui_actions(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_source_get_ui_actions (RB_SOURCE(self->obj));
+    py_list = _helper_wrap_string_glist (list);
+    g_list_free (list);
+
+    return py_list;
+}
+%%
+override rb_source_cut noargs
+static PyObject *
+_wrap_rb_source_cut(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_source_cut (RB_SOURCE(self->obj));
+    py_list = _helper_wrap_pointer_glist (list, RHYTHMDB_TYPE_ENTRY);
+    g_list_free (list);
+
+    return py_list;
+}
+%%
+override rb_source_copy noargs
+static PyObject *
+_wrap_rb_source_copy(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_source_copy (RB_SOURCE(self->obj));
+    py_list = _helper_wrap_pointer_glist (list, RHYTHMDB_TYPE_ENTRY);
+    g_list_free (list);
+
+    return py_list;
+}
+%%
+override rb_source_paste kwargs
+static PyObject *
+_wrap_rb_source_paste(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "entries", NULL };
+    PyObject *py_entries = NULL;
+    GList *entries;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBSource.copy", kwlist, &py_entries))
+        return NULL;
+
+    entries = _helper_unwrap_string_pylist (py_entries);
+    rb_source_paste (RB_SOURCE(self->obj), entries);
+    rb_list_deep_free (entries);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+%%
+override rb_source_gather_selected_properties kwargs
+static PyObject *
+_wrap_rb_source_gather_selected_properties(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "keys", NULL };
+    PyObject *py_propid, *py_list;
+    RhythmDBPropType propid;
+    GList *list;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBSource.gather_selected_properties", kwlist, &py_propid))
+        return NULL;
+    if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
+        return NULL;
+
+    list = rb_source_gather_selected_properties (RB_SOURCE(self->obj), propid);
+    py_list = _helper_wrap_string_glist (list);
+    rb_list_deep_free (list);
+
+    return py_list;
+}
+%%
+override rb_property_view_set_selection kwargs
+static PyObject *
+_wrap_rb_property_view_set_selection(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "strings", NULL };
+    PyObject *py_strings = NULL;
+    GList *strings;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBPropertyView.set_selection", kwlist, &py_strings))
+        return NULL;
+
+    strings = _helper_unwrap_string_pylist (py_strings);
+    rb_property_view_set_selection (RB_PROPERTY_VIEW(self->obj), strings);
+    rb_list_deep_free (strings);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 

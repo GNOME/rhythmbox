@@ -1914,3 +1914,57 @@ rb_entry_view_resort_model (RBEntryView *view)
 					     sort_data->prop_id,
 					     (view->priv->sorting_order == GTK_SORT_DESCENDING));
 }
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_entry_view_column_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_TRACK_NUMBER, "Track Number"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_TITLE, "Title"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ARTIST, "Artist"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ALBUM, "Album"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_GENRE, "Genre"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_DURATION, "Duration"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_QUALITY, "Quality"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_RATING, "Rating"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_PLAY_COUNT, "Play Count"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_YEAR, "Year"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_LAST_PLAYED, "Last Played"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_FIRST_SEEN, "First Seen"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_LAST_SEEN, "Last Seen"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_LOCATION, "Location"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ERROR, "Error"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBEntryViewColumn", values);
+	}
+
+	return etype;
+}
+
+GType
+rb_entry_view_state_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_ENTRY_VIEW_NOT_PLAYING, "Not Playing"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_PLAYING, "Playing"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_PAUSED, "Paused"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBEntryViewState", values);
+	}
+
+	return etype;
+}
+

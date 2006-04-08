@@ -43,6 +43,19 @@
   (gtype-id "RB_TYPE_SOURCELIST")
 )
 
+(define-object EntryView
+  (in-module "RB")
+  (parent "GtkScrolledWindow")
+  (c-name "RBEntryView")
+  (gtype-id "RB_TYPE_ENTRY_VIEW")
+)
+
+(define-object PropertyView
+  (in-module "RB")
+  (parent "GtkScrolledWindow")
+  (c-name "RBPropertyView")
+  (gtype-id "RB_TYPE_PROPERTY_VIEW")
+)
 
 ;; Enumerations and flags ...
 
@@ -67,6 +80,40 @@
     '("stop" "RB_SOURCE_EOF_STOP")
     '("retry" "RB_SOURCE_EOF_RETRY")
     '("next" "RB_SOURCE_EOF_NEXT")
+  )
+)
+
+(define-enum EntryViewColumn
+  (in-module "RB")
+  (c-name "RBEntryViewColumn")
+  (gtype-id "RB_TYPE_ENTRY_VIEW_COLUMN")
+  (values
+    '("track-number" "RB_ENTRY_VIEW_COL_TRACK_NUMBER")
+    '("title" "RB_ENTRY_VIEW_COL_TITLE")
+    '("artist" "RB_ENTRY_VIEW_COL_ARTIST")
+    '("album" "RB_ENTRY_VIEW_COL_ALBUM")
+    '("genre" "RB_ENTRY_VIEW_COL_GENRE")
+    '("duration" "RB_ENTRY_VIEW_COL_DURATION")
+    '("quality" "RB_ENTRY_VIEW_COL_QUALITY")
+    '("rating" "RB_ENTRY_VIEW_COL_RATING")
+    '("play-count" "RB_ENTRY_VIEW_COL_PLAY_COUNT")
+    '("year" "RB_ENTRY_VIEW_COL_YEAR")
+    '("last-played" "RB_ENTRY_VIEW_COL_LAST_PLAYED")
+    '("first-seen" "RB_ENTRY_VIEW_COL_FIRST_SEEN")
+    '("last-seen" "RB_ENTRY_VIEW_COL_LAST_SEEN")
+    '("location" "RB_ENTRY_VIEW_COL_LOCATION")
+    '("error" "RB_ENTRY_VIEW_COL_ERROR")
+  )
+)
+
+(define-enum EntryViewState
+  (in-module "RB")
+  (c-name "RBEntryViewState")
+  (gtype-id "RB_TYPE_ENTRY_VIEW_STATE")
+  (values
+    '("not-playing" "RB_ENTRY_VIEW_NOT_PLAYING")
+    '("playing" "RB_ENTRY_VIEW_PLAYING")
+    '("paused" "RB_ENTRY_VIEW_PAUSED")
   )
 )
 
@@ -185,29 +232,6 @@
   (of-object "RBShell")
   (c-name "rb_shell_toggle_visibility")
   (return-type "none")
-)
-
-(define-method get_song_properties
-  (of-object "RBShell")
-  (c-name "rb_shell_get_song_properties")
-  (return-type "gboolean")
-  (parameters
-    '("const-char*" "uri")
-    '("GHashTable**" "properties")
-    '("GError**" "error")
-  )
-)
-
-(define-method set_song_property
-  (of-object "RBShell")
-  (c-name "rb_shell_set_song_property")
-  (return-type "gboolean")
-  (parameters
-    '("const-char*" "uri")
-    '("const-char*" "propname")
-    '("const-GValue*" "value")
-    '("GError**" "error")
-  )
 )
 
 (define-method add_to_queue
@@ -411,16 +435,6 @@
   (return-type "gchar*")
 )
 
-(define-method get_song_info
-  (of-object "RBRemoteProxy")
-  (c-name "rb_remote_proxy_get_song_info")
-  (return-type "gboolean")
-  (parameters
-    '("const-gchar*" "uri")
-    '("RBRemoteSong*" "song")
-  )
-)
-
 (define-method jump_next
   (of-object "RBRemoteProxy")
   (c-name "rb_remote_proxy_jump_next")
@@ -443,45 +457,6 @@
   (of-object "RBRemoteProxy")
   (c-name "rb_remote_proxy_quit")
   (return-type "none")
-)
-
-(define-method find_player_property
-  (of-object "RBRemoteProxy")
-  (c-name "rb_remote_proxy_find_player_property")
-  (return-type "GParamSpec*")
-  (parameters
-    '("const-gchar*" "property")
-  )
-)
-
-(define-method player_notify_handler
-  (of-object "RBRemoteProxy")
-  (c-name "rb_remote_proxy_player_notify_handler")
-  (return-type "none")
-  (parameters
-    '("GCallback" "c_handler")
-    '("gpointer" "gobject")
-  )
-)
-
-(define-method set_player_property
-  (of-object "RBRemoteProxy")
-  (c-name "rb_remote_proxy_set_player_property")
-  (return-type "none")
-  (parameters
-    '("const-gchar*" "property")
-    '("GValue*" "value")
-  )
-)
-
-(define-method get_player_property
-  (of-object "RBRemoteProxy")
-  (c-name "rb_remote_proxy_get_player_property")
-  (return-type "none")
-  (parameters
-    '("const-gchar*" "property")
-    '("GValue*" "value")
-  )
 )
 
 (define-method get_playing_source
@@ -1089,5 +1064,292 @@
   (return-type "none")
   (parameters
     '("RBSource*" "source")
+  )
+)
+
+
+;; From ../../widgets/rb-entry-view.h
+
+(define-function rb_entry_view_get_type
+  (c-name "rb_entry_view_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_entry_view_new
+  (c-name "rb_entry_view_new")
+  (is-constructor-of "RbEntryView")
+  (return-type "RBEntryView*")
+  (parameters
+    '("RhythmDB*" "db")
+    '("GObject*" "shell_player")
+    '("const-char*" "sort_key")
+    '("gboolean" "drag_source")
+    '("gboolean" "drag_dest")
+  )
+)
+
+(define-method append_column
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_append_column")
+  (return-type "none")
+  (parameters
+    '("RBEntryViewColumn" "coltype")
+    '("gboolean" "always_visible")
+  )
+)
+
+(define-method append_column_custom
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_append_column_custom")
+  (return-type "none")
+  (parameters
+    '("GtkTreeViewColumn*" "column")
+    '("const-char*" "title")
+    '("const-char*" "key")
+    '("GCompareDataFunc" "sort_func")
+    '("RhythmDBPropType" "sort_propid")
+  )
+)
+
+(define-method set_columns_clickable
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_columns_clickable")
+  (return-type "none")
+  (parameters
+    '("gboolean" "clickable")
+  )
+)
+
+(define-method set_model
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_model")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-method set_state
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_state")
+  (return-type "none")
+  (parameters
+    '("RBEntryViewState" "state")
+  )
+)
+
+(define-method have_selection
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_have_selection")
+  (return-type "gboolean")
+)
+
+(define-method have_complete_selection
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_have_complete_selection")
+  (return-type "gboolean")
+)
+
+(define-method get_selected_entries
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_get_selected_entries")
+  (return-type "GList*")
+)
+
+(define-method select_all
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_select_all")
+  (return-type "none")
+)
+
+(define-method select_none
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_select_none")
+  (return-type "none")
+)
+
+(define-method select_entry
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_select_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method get_entry_contained
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_get_entry_contained")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method get_entry_visible
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_get_entry_visible")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method scroll_to_entry
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_scroll_to_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method enable_drag_source
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_enable_drag_source")
+  (return-type "none")
+  (parameters
+    '("const-GtkTargetEntry*" "targets")
+    '("int" "n_targets")
+  )
+)
+
+(define-method get_sorting_order
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_get_sorting_order")
+  (return-type "none")
+  (parameters
+    '("const-char**" "column_name")
+    '("gint*" "sort_order")
+  )
+)
+
+(define-method set_sorting_order
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_sorting_order")
+  (return-type "none")
+  (parameters
+    '("const-char*" "column_name")
+    '("gint" "sort_order")
+  )
+)
+
+(define-method get_sorting_type
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_get_sorting_type")
+  (return-type "const-char*")
+)
+
+(define-method set_sorting_type
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_sorting_type")
+  (return-type "none")
+  (parameters
+    '("const-char*" "sorttype")
+  )
+)
+
+(define-method set_fixed_column_width
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_set_fixed_column_width")
+  (return-type "none")
+  (parameters
+    '("GtkTreeViewColumn*" "column")
+    '("GtkCellRenderer*" "renderer")
+    '("const-gchar**" "strings")
+  )
+)
+
+(define-function rb_entry_view_get_time_date_column_sample
+  (c-name "rb_entry_view_get_time_date_column_sample")
+  (return-type "const-char*")
+)
+
+(define-method resort_model
+  (of-object "RBEntryView")
+  (c-name "rb_entry_view_resort_model")
+  (return-type "none")
+)
+
+;; From ../../widgets/rb-property-view.h
+
+(define-function rb_property_view_get_type
+  (c-name "rb_property_view_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_property_view_new
+  (c-name "rb_property_view_new")
+  (is-constructor-of "RbPropertyView")
+  (return-type "RBPropertyView*")
+  (parameters
+    '("RhythmDB*" "db")
+    '("guint" "propid")
+    '("const-char*" "title")
+  )
+)
+
+(define-method append_column_custom
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_append_column_custom")
+  (return-type "none")
+  (parameters
+    '("GtkTreeViewColumn*" "column")
+  )
+)
+
+(define-method set_selection_mode
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_set_selection_mode")
+  (return-type "none")
+  (parameters
+    '("GtkSelectionMode" "mode")
+  )
+)
+
+(define-method reset
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_reset")
+  (return-type "none")
+)
+
+(define-method set_selection
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_set_selection")
+  (return-type "none")
+  (parameters
+    '("const-GList*" "names")
+  )
+)
+
+(define-method get_model
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_get_model")
+  (return-type "RhythmDBPropertyModel*")
+)
+
+(define-method set_model
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_set_model")
+  (return-type "none")
+  (parameters
+    '("RhythmDBPropertyModel*" "model")
+  )
+)
+
+(define-method get_num_properties
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_get_num_properties")
+  (return-type "guint")
+)
+
+(define-method set_search_func
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_set_search_func")
+  (return-type "none")
+  (parameters
+    '("GtkTreeViewSearchEqualFunc" "func")
+    '("gpointer" "func_data")
+    '("GtkDestroyNotify" "notify")
   )
 )

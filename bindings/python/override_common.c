@@ -52,6 +52,53 @@ _helper_wrap_gobject_glist (const GList *list)
 }
 
 PyObject *
+_helper_wrap_pointer_glist (const GList *list, GType boxed_type)
+{
+    PyObject *py_list;
+    const GList *tmp;
+
+    if ((py_list = PyList_New(0)) == NULL) {
+        return NULL;
+    }
+    for (tmp = list; tmp != NULL; tmp = tmp->next) {
+        PyObject *py_obj = pyg_pointer_new(boxed_type, G_OBJECT(tmp->data));
+
+        if (py_obj == NULL) {
+            Py_DECREF(py_list);
+            return NULL;
+        }
+        PyList_Append(py_list, py_obj);
+        Py_DECREF(py_obj);
+    }
+    return py_list;
+}
+
+PyObject *
+_helper_wrap_boxed_glist (const GList *list,
+			  GType boxed_type,
+			  gboolean copy_boxed,
+			  gboolean own_ref)
+{
+    PyObject *py_list;
+    const GList *tmp;
+
+    if ((py_list = PyList_New(0)) == NULL) {
+        return NULL;
+    }
+    for (tmp = list; tmp != NULL; tmp = tmp->next) {
+        PyObject *py_obj = pyg_boxed_new(boxed_type, G_OBJECT(tmp->data), copy_boxed, own_ref);
+
+        if (py_obj == NULL) {
+            Py_DECREF(py_list);
+            return NULL;
+        }
+        PyList_Append(py_list, py_obj);
+        Py_DECREF(py_obj);
+    }
+    return py_list;
+}
+
+PyObject *
 _helper_wrap_string_glist (const GList *list)
 {
     const GList *tmp;
@@ -90,3 +137,24 @@ _helper_wrap_boxed_gptrarray (GType type, GPtrArray *list, gboolean own_ref, gbo
     if (dealloc) g_ptr_array_free (list, TRUE);
     return py_list;
 }
+
+GList *
+_helper_unwrap_string_pylist (PyObject *py_list)
+{
+    int size, i;
+    GList *list = NULL;
+
+    size = PyList_Size (py_list);
+    for (i = 0; i < size; i++) {
+        PyObject *py_str;
+        char *str;
+
+	py_str = PyList_GetItem (py_list, i);
+	str = PyString_AsString (py_str);
+	list = g_list_prepend (list, str);
+    }
+
+    list = g_list_reverse (list);
+    return list;
+}
+
