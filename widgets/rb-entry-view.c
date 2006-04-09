@@ -1594,6 +1594,8 @@ rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 
 	g_list_foreach (selected_rows, (GFunc) gtk_tree_path_free, NULL);
 	g_list_free (selected_rows);
+
+	gtk_widget_queue_draw (GTK_WIDGET (view));
 }
 
 void
