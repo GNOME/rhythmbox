@@ -1,3 +1,21 @@
+2006-04-09  James Livingston  <doclivingston@gmail.com>
+
+	* lib/Makefile.am:
+	* lib/rb-enums.h:
+	* widgets/Makefile.am:
+	* widgets/eggnotificationbubble.c:
+	* widgets/eggnotificationbubble.h:
+	* widgets/rb-song-info.c: remove lib/rb-enums.h and
+	widgets/eggnotificationbubble.{c,h}, since they aren't used any more
+
+	* rhythmdb/rhythmdb-property-model.h:
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-playlist-manager.h:
+	* widgets/rb-cell-renderer-pixbuf.h:
+	* widgets/rb-cell-renderer-rating.h:
+	* widgets/rb-rating.h: fix the prototypes of various class-closures.
+
 2006-04-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/libsexy/Makefile.am: Actually use internal libsexy headers,

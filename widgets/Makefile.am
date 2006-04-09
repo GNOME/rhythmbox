@@ -26,8 +26,6 @@ librbwidgets_la_SOURCES =				\
 	rb-druid.h					\
 	disclosure-widget.c				\
 	disclosure-widget.h				\
-	eggnotificationbubble.c				\
-	eggnotificationbubble.h				\
 	eggtrayicon.c					\
 	eggtrayicon.h					\
 	rb-dialog.c					\

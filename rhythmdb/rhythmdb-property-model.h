@@ -63,7 +63,7 @@ typedef struct
 {
 	GObjectClass parent;
 
-	void (*pre_row_deletion) (void);
+	void (*pre_row_deletion) (RhythmDBPropertyModel *model);
 } RhythmDBPropertyModelClass;
 
 GType			rhythmdb_property_model_get_type	(void);

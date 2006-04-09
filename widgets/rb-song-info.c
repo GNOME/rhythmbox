@@ -39,7 +39,6 @@
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"
 #include "rb-song-info.h"
-#include "rb-enums.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"

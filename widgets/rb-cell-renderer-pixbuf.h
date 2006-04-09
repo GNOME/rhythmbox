@@ -51,7 +51,7 @@ struct _RBCellRendererPixbufClass
 {
   GtkCellRendererClass parent_class;
 
-  void (*pixbuf_clicked) (GtkTreePath *path);
+  void (*pixbuf_clicked) (RBCellRendererPixbuf *renderer, GtkTreePath *path);
 };
 
 GtkType          rb_cell_renderer_pixbuf_get_type (void);

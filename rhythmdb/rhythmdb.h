@@ -206,14 +206,14 @@ typedef struct
 	GObjectClass parent;
 
 	/* signals */
-	void	(*entry_added)		(RhythmDBEntry *entry);
-	void	(*entry_changed)	(RhythmDBEntry *entry, GSList *changes); /* list of RhythmDBEntryChanges */
-	void	(*entry_deleted)	(RhythmDBEntry *entry);
-	void	(*load_complete)	(void);
-	void	(*save_complete)	(void);
-	void	(*load_error)		(const char *uri, const char *msg);
-	void	(*save_error)		(const char *uri, const GError *error);
-	void	(*read_only)		(gboolean readonly);
+	void	(*entry_added)		(RhythmDB *db, RhythmDBEntry *entry);
+	void	(*entry_changed)	(RhythmDB *db, RhythmDBEntry *entry, GSList *changes); /* list of RhythmDBEntryChanges */
+	void	(*entry_deleted)	(RhythmDB *db, RhythmDBEntry *entry);
+	void	(*load_complete)	(RhythmDB *db);
+	void	(*save_complete)	(RhythmDB *db);
+	void	(*load_error)		(RhythmDB *db, const char *uri, const char *msg);
+	void	(*save_error)		(RhythmDB *db, const char *uri, const GError *error);
+	void	(*read_only)		(RhythmDB *db, gboolean readonly);
 
 	/* virtual methods */
 

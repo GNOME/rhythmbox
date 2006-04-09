@@ -54,11 +54,17 @@ typedef struct
 	GObjectClass parent;
 
 	/* signals */
-	void	(*complete)		(void);
-	void	(*entry_prop_changed)	(RhythmDBEntry *entry, RhythmDBPropType prop,
-					 const GValue *old, const GValue *new);
-	void    (*non_entry_dropped)    (const char *uri, int position);
-	void    (*entry_removed)        (RhythmDBEntry *entry);
+	void	(*complete)		(RhythmDBQueryModel *model);
+	void	(*entry_prop_changed)	(RhythmDBQueryModel *model,
+					 RhythmDBEntry *entry,
+					 RhythmDBPropType prop,
+					 const GValue *old,
+					 const GValue *new_value);
+	void    (*non_entry_dropped)    (RhythmDBQueryModel *model,
+					 const char *uri,
+					 int position);
+	void    (*entry_removed)        (RhythmDBQueryModel *model,
+					 RhythmDBEntry *entry);
 
 } RhythmDBQueryModelClass;
 

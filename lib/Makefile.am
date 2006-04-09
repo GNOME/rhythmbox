@@ -22,7 +22,6 @@ librb_la_SOURCES =					\
 	rb-cut-and-paste-code.h				\
 	rb-util.c					\
 	rb-util.h					\
-	rb-enums.h					\
 	rb-tree-dnd.c					\
 	rb-tree-dnd.h					\
 	rb-preferences.h				\

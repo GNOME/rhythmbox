@@ -62,10 +62,10 @@ typedef struct
 	GObjectClass parent_class;
 
 	/* signals */
-	void	(*playlist_added) (RBSource *source);
-	void	(*playlist_created) (RBSource *source);
-	void	(*load_start) (void);
-	void	(*load_finish) (void);
+	void	(*playlist_added) (RBPlaylistManager *manager, RBSource *source);
+	void	(*playlist_created) (RBPlaylistManager *manager, RBSource *source);
+	void	(*load_start) (RBPlaylistManager *manager);
+	void	(*load_finish) (RBPlaylistManager *manager);
 } RBPlaylistManagerClass;
 
 GType			rb_playlist_manager_get_type	(void);
@@ -82,8 +82,6 @@ gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
 
 void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,
 							 RBSource *player);
-
-void			rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr);
 
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
