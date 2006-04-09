@@ -192,5 +192,78 @@ _wrap_rb_property_view_set_selection(PyGObject *self, PyObject *args, PyObject *
     Py_INCREF(Py_None);
     return Py_None;
 }
+%%
+override rb_shell_player_get_volume noargs
+static PyObject *
+_wrap_rb_shell_player_get_volume(PyGObject *self)
+{
+    gdouble vol = 0.0;
+    GError *error = NULL;
 
+    rb_shell_player_get_volume(RB_SHELL_PLAYER(self->obj), &vol, &error);
 
+    if (pyg_error_check(&error))
+        return NULL;
+
+    return PyFloat_FromDouble(vol);
+}
+%%
+override rb_shell_player_get_mute noargs
+static PyObject *
+_wrap_rb_shell_player_get_mute(PyGObject *self)
+{
+    gboolean muted = FALSE;
+    GError *error = NULL;
+
+    rb_shell_player_get_mute(RB_SHELL_PLAYER(self->obj), &muted, &error);
+
+    if (pyg_error_check(&error))
+        return NULL;
+
+    return PyBool_FromLong((long) muted);
+}
+%%
+override rb_shell_player_get_playing noargs
+static PyObject *
+_wrap_rb_shell_player_get_playing(PyGObject *self)
+{
+    gboolean playing = FALSE;
+    GError *error = NULL;
+
+    rb_shell_player_get_playing(RB_SHELL_PLAYER(self->obj), &playing, &error);
+
+    if (pyg_error_check(&error))
+        return NULL;
+
+    return PyBool_FromLong((long) playing);
+}
+%%
+override rb_shell_player_get_playing_time noargs
+static PyObject *
+_wrap_rb_shell_player_get_playing_time(PyGObject *self)
+{
+    guint time = 0;
+    GError *error = NULL;
+
+    rb_shell_player_get_playing_time(RB_SHELL_PLAYER(self->obj), &time, &error);
+
+    if (pyg_error_check(&error))
+        return NULL;
+
+    return PyLong_FromLong((long) time);
+}
+%%
+override rb_shell_player_get_playing_path noargs
+static PyObject *
+_wrap_rb_shell_player_get_playing_path(PyGObject *self)
+{
+    char *path = NULL;
+    GError *error = NULL;
+
+    rb_shell_player_get_playing_path(RB_SHELL_PLAYER(self->obj), &path, &error);
+
+    if (pyg_error_check(&error))
+        return NULL;
+
+    return PyString_FromString (path);
+}

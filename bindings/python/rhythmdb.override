@@ -153,3 +153,39 @@ _wrap_rhythmdb_entry_set_uninserted(PyGObject *self, PyObject *args, PyObject *k
     Py_INCREF(Py_None);
     return Py_None;
 }
+%%
+override rhythmdb_query_results_add_results kwargs
+static PyObject*
+_wrap_rhythmdb_query_results_add_results (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "entries", NULL };
+    PyObject *py_entries = NULL;
+    int size, i;
+    GPtrArray *array;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDBQueryResults.add_results", kwlist, &py_entries))
+        return NULL;
+
+    array = g_ptr_array_new();
+    size = PyList_Size(py_entries);
+    for (i = 0; i < size; i++) {
+        PyObject *py_entry;
+        RhythmDBEntry *entry;
+
+        py_entry = PyList_GetItem(py_entries, i);
+        if (!pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+            g_ptr_array_free(array, FALSE);
+            return NULL;
+        }
+
+	entry = pyg_pointer_get(py_entry, RhythmDBEntry);
+        g_ptr_array_add(array, entry);
+    }
+
+    rhythmdb_query_results_add_results (RHYTHMDB_QUERY_RESULTS(self->obj), array);
+    g_ptr_array_free(array, FALSE);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+
+}

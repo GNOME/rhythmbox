@@ -38,6 +38,9 @@ PyObject * _helper_wrap_boxed_gptrarray (GType type,
 					 GPtrArray *list,
 					 gboolean own_ref,
 					 gboolean dealloc);
+
 GList * _helper_unwrap_string_pylist (PyObject *py_list);
+GPtrArray* _helper_unwrap_boxed_gptrarray (GType type,
+					   PyObject *list);
 #endif /* __OVERRIDE_COMMON_H */
 
