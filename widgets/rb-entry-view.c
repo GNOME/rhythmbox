@@ -137,6 +137,7 @@ struct RBEntryViewPrivate
 	gboolean is_drag_source;
 	gboolean is_drag_dest;
 
+	GdkPixbuf *playing_col_pixbuf;
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
 	GdkPixbuf *error_pixbuf;
@@ -365,13 +366,19 @@ rb_entry_view_init (RBEntryView *view)
 
 	icon_theme = gtk_icon_theme_get_default ();
 
-	view->priv->playing_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+	view->priv->playing_col_pixbuf = gtk_icon_theme_load_icon (icon_theme,
                                    			       "stock_volume-max", 
                                    			       16,
                                    			       0, 
                                    			       NULL);
+
+	view->priv->playing_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+                                   			       "stock_media-play", 
+                                   			       16,
+                                   			       0, 
+                                   			       NULL);
 	view->priv->paused_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			      "stock_volume-0", 
+                                   			      "stock_media-pause", 
                                    			      16,
                                    			      0, 
                                    			      NULL);
@@ -409,6 +416,8 @@ rb_entry_view_finalize (GObject *object)
 
 	if (view->priv->playing_pixbuf)
 		g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
+	if (view->priv->playing_col_pixbuf)
+		g_object_unref (G_OBJECT (view->priv->playing_col_pixbuf));
 	if (view->priv->paused_pixbuf)
 		g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
 	if (view->priv->error_pixbuf)
@@ -1270,7 +1279,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 							 view,
 							 NULL);
 
-		image_widget = gtk_image_new_from_pixbuf (view->priv->playing_pixbuf);
+		image_widget = gtk_image_new_from_pixbuf (view->priv->playing_col_pixbuf);
 		g_object_ref (G_OBJECT (image_widget));
 		gtk_object_sink (GTK_OBJECT (image_widget));
 		gtk_tree_view_column_set_widget (column, image_widget);
