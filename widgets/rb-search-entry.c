@@ -27,6 +27,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include "libsexy/sexy-icon-entry.h"
 
 #include "rb-search-entry.h"
 
@@ -106,7 +107,8 @@ rb_search_entry_init (RBSearchEntry *entry)
 	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_RIGHT);
 	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
 
-	entry->priv->entry = gtk_entry_new ();
+	entry->priv->entry = sexy_icon_entry_new ();
+	sexy_icon_entry_add_clear_button (SEXY_ICON_ENTRY (entry->priv->entry));
 
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label),
 				       entry->priv->entry);
@@ -190,7 +192,11 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 		entry->priv->timeout = 0;
 	}
 
-	entry->priv->timeout = g_timeout_add (300, (GSourceFunc) rb_search_entry_timeout_cb, entry);
+	/* emit it now if we're clearing the entry */
+	if (gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)))
+		entry->priv->timeout = g_timeout_add (300, (GSourceFunc) rb_search_entry_timeout_cb, entry);
+	else
+		rb_search_entry_timeout_cb (entry);
 }
 
 static gboolean

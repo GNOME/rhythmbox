@@ -659,6 +659,18 @@ if test x"$enable_uninstalled" = xyes; then
 	AC_DEFINE_UNQUOTED(METADATA_UNINSTALLED_DIR,"`pwd`/metadata",[path to metadata build dir])
 fi
 
+AC_ARG_WITH(internal-libsexy,
+            AC_HELP_STRING([--with-internal-libsexy],
+			   [Build using internal libsexy library]),,
+	      with_internal_libsexy=no)
+if test "x$with_internal_libsexy" == "xno"; then
+	PKG_CHECK_MODULES(LIBSEXY, libsexy >= 0.1.5, with_internal_libsexy=no,
+		          with_internal_libsexy=yes)
+fi
+AC_SUBST(LIBSEXY_CFLAGS)
+AC_SUBST(LIBSEXY_LIBS)
+AM_CONDITIONAL(WITH_INTERNAL_LIBSEXY, test "x$with_internal_libsexy" = "xyes")
+
 dnl warnings bits, copied from gnome-keyring configure.in
 dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
 
@@ -863,6 +875,7 @@ metadata/Makefile
 player/Makefile
 rhythmdb/Makefile
 widgets/Makefile
+widgets/libsexy/Makefile
 iradio/Makefile
 podcast/Makefile
 remote/Makefile
@@ -975,6 +988,11 @@ if test x"$enable_metadata_helper" = xyes; then
 	AC_MSG_NOTICE([** Separate metadata helper process enabled])
 else
 	AC_MSG_NOTICE([   Separate metadata helper process disabled])
+fi
+if test x"$with_internal_libsexy" = xyes; then
+	AC_MSG_NOTICE([   using internal libsexy])
+else
+	AC_MSG_NOTICE([** using system-wide libsexy])
 fi
 
 AC_MSG_NOTICE([End options])

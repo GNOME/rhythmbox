@@ -1,5 +1,20 @@
 2006-04-09  James Livingston  <doclivingston@gmail.com>
 
+	* configure.ac:
+	* widgets/Makefile.am:
+	* widgets/libsexy/Makefile.am:
+	* widgets/libsexy/sexy-icon-entry.c:
+	* widgets/libsexy/sexy-icon-entry.h: add an internal copy of part of
+	libsexy, and allow building against it or a system-wide installed
+	copy.
+
+
+	* widgets/rb-search-entry.c: (rb_search_entry_init),
+	(rb_search_entry_changed_cb): use libsexy to add a clear button to the
+	search box. Fixes bug 128109.
+
+2006-04-09  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_init),

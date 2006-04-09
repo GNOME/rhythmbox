@@ -2,6 +2,11 @@
 
 noinst_LTLIBRARIES = librbwidgets.la
 
+if WITH_INTERNAL_LIBSEXY
+SUBDIRS = libsexy
+LIBSEXY_LIBS =$(top_builddir)/widgets/libsexy/libsexy.la
+endif
+
 librbwidgets_la_SOURCES =				\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
@@ -59,6 +64,9 @@ INCLUDES =						\
 	-I$(top_srcdir)/shell				\
 	$(WARN_CFLAGS)					\
 	$(NOTIFY_CFLAGS)				\
+	$(LIBSEXY_CFLAGS)				\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
+librbwidgets_la_LIBADD = $(LIBSEXY_LIBS)
+
