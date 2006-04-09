@@ -86,7 +86,7 @@ static char *guess_uri_scheme (const char *uri);
 
 /* source methods */
 static char *impl_get_status (RBSource *source);
-static const char *impl_get_browser_key (RBSource *source);
+static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_delete (RBSource *source);
@@ -572,10 +572,10 @@ impl_get_status (RBSource *asource)
 	return ret;
 }
 
-static const char *
+static char *
 impl_get_browser_key (RBSource *asource)
 {
-	return CONF_STATE_SHOW_BROWSER;
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
 static void

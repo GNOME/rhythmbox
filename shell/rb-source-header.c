@@ -286,6 +286,8 @@ rb_source_header_finalize (GObject *object)
 			      header);
 	g_hash_table_destroy (header->priv->source_search_text);
 
+	g_free (header->priv->browser_key);
+
 	G_OBJECT_CLASS (rb_source_header_parent_class)->finalize (object);
 }
 
@@ -322,6 +324,7 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 		const char *text = g_hash_table_lookup (header->priv->source_search_text,
 							header->priv->selected_source);
 			
+		g_free (header->priv->browser_key);
 		header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
 	
 		rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);

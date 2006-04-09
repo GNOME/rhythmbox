@@ -1,5 +1,30 @@
 2006-04-09  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: add bindings for most RBSource virtual
+	functions.
+
+	* sources/rb-source.h:
+	* sources/rb-source.c: (rb_source_class_init): make
+	impl_get_browser_key return a non-consht string, since Python can't
+	really give us constant strings.
+
+	* shell/rb-source-header.c: (rb_source_header_finalize),
+	(rb_source_header_set_source_internal):
+	* sources/rb-daap-source.c: (rb_daap_source_get_browser_key):
+	* sources/rb-iradio-source.c: (impl_get_browser_key):
+	* sources/rb-library-source.c: (impl_get_browser_key):
+	* sources/rb-playlist-source.c:
+	* sources/rb-browser-source.c: (rb_browser_source_constructor),
+	(rb_browser_source_state_prefs_sync):
+	* sources/rb-podcast-source.c: (impl_get_browser_key): Adapt to the
+	above change.
+
+	* plugins/sample-python/sample-python.py: show how to add a new
+	source.
+
+2006-04-09  James Livingston  <doclivingston@gmail.com>
+
 	* daapsharing/Makefile.am:
 	* daapsharing/rb-daap-connection.c:
 	(rb_daap_connection_class_init):

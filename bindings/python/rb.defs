@@ -288,7 +288,7 @@
   (return-type "none")
   (parameters
     '("RBSource*" "source")
-    '("RBSource*" "parent")
+    '("RBSource*" "parent" (null-ok) (default "NULL"))
   )
 )
 
@@ -1002,6 +1002,191 @@
   (parameters
     '("RhythmDBPropType" "prop")
   )
+)
+
+(define-virtual impl_get_status
+  (of-object "RBSource")
+  (return-type "char*")
+)
+
+(define-virtual impl_can_browse
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_get_browser_key
+  (of-object "RBSource")
+  (return-type "char*")
+)
+
+(define-virtual impl_browser_toggled
+  (of-object "RBSource")
+  (return-type "none")
+  (parameters
+    '("gboolean" "visible")
+  )
+)
+
+(define-virtual impl_get_entry_view
+  (of-object "RBSource")
+  (return-type "RBEntryView*")
+)
+
+(define-virtual impl_get_property_views
+  (of-object "RBSource")
+  (return-type "GList*")
+)
+
+(define-virtual impl_can_rename
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_search
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_search
+  (of-object "RBSource")
+  (return-type "none")
+  (parameters
+    '("const-char*" "text")
+  )
+)
+
+(define-virtual impl_reset_filters
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_can_cut
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_copy
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_paste
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_delete
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_move_to_trash
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_add_to_queue
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_cut
+  (of-object "RBSource")
+  (return-type "GList*")
+)
+
+(define-virtual impl_copy
+  (of-object "RBSource")
+  (return-type "GList*")
+)
+
+(define-virtual impl_paste
+  (of-object "RBSource")
+  (return-type "none")
+  (parameters
+    '("GList*" "entries")
+  )
+)
+
+(define-virtual impl_delete
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_move_to_trash
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_add_to_queue
+  (of-object "RBSource")
+  (return-type "none")
+  (parameters
+    '("RBSource*" "queue_source")
+  )
+)
+
+(define-virtual impl_song_properties
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_try_playlist
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_can_pause
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_handle_eos
+  (of-object "RBSource")
+  (return-type "RBSourceEOFType")
+)
+
+(define-virtual impl_have_url
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_receive_drag
+  (of-object "RBSource")
+  (return-type "RBSourceEOFType")
+  (parameters
+    '("GtkSelectionData*" "selection")
+  )
+)
+
+(define-virtual impl_show_popup
+  (of-object "RBSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_delete_thyself
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_activate
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_deactivate
+  (of-object "RBSource")
+  (return-type "none")
+)
+
+(define-virtual impl_get_ui_actions
+  (of-object "RBSource")
+  (return-type "GList*")
+)
+
+(define-virtual impl_get_search_actions
+  (of-object "RBSource")
+  (return-type "GList*")
 )
 
 

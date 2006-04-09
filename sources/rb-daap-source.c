@@ -59,7 +59,7 @@ static void rb_daap_source_connection_cb (RBDAAPConnection *connection,
 					  RBSource *source);
 static gboolean rb_daap_source_disconnect (RBSource *source);
 static gboolean rb_daap_source_show_popup (RBSource *source);
-static const char * rb_daap_source_get_browser_key (RBSource *source);
+static char * rb_daap_source_get_browser_key (RBSource *source);
 static const char * rb_daap_source_get_paned_key (RBBrowserSource *source);
 
 
@@ -870,10 +870,10 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 }
 
 
-static const char * 
+static char * 
 rb_daap_source_get_browser_key (RBSource *source)
 {
-	return CONF_STATE_SHOW_BROWSER;
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
 static const char * 

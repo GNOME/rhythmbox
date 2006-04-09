@@ -257,7 +257,7 @@ override rb_shell_player_get_playing_path noargs
 static PyObject *
 _wrap_rb_shell_player_get_playing_path(PyGObject *self)
 {
-    char *path = NULL;
+    const char *path = NULL;
     GError *error = NULL;
 
     rb_shell_player_get_playing_path(RB_SHELL_PLAYER(self->obj), &path, &error);

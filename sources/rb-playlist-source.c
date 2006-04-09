@@ -65,7 +65,7 @@ static void rb_playlist_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 /* source methods */
-static const char *impl_get_browser_key (RBSource *source);
+static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_move_to_trash (RBSource *asource);
 static void impl_song_properties (RBSource *source);
@@ -378,7 +378,7 @@ rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 }
 
 
-static const char *
+static char *
 impl_get_browser_key (RBSource *source)
 {
 	return NULL;

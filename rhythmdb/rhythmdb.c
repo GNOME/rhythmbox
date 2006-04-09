@@ -534,7 +534,7 @@ rhythmdb_init (RhythmDB *db)
 			  db);
 
 	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-unmounted", 
+			  "volume-pre-unmount", 
 			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
 			  db);
 }

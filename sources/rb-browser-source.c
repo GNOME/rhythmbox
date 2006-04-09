@@ -349,6 +349,7 @@ rb_browser_source_constructor (GType type,
 	RBBrowserSourceClass *klass;
 	RBShell *shell;
 	GObject *shell_player;
+	char *browser_key;
 
 	klass = RB_BROWSER_SOURCE_CLASS (g_type_class_peek (RB_TYPE_BROWSER_SOURCE));
 
@@ -415,11 +416,13 @@ rb_browser_source_constructor (GType type,
 					    (GConfClientNotifyFunc) rb_browser_source_state_pref_changed,
 					    source);
 	}
-	if (rb_source_get_browser_key (RB_SOURCE (source))) {
+	browser_key = rb_source_get_browser_key (RB_SOURCE (source));
+	if (browser_key) {
 		source->priv->state_browser_notify_id =
-			eel_gconf_notification_add (rb_source_get_browser_key (RB_SOURCE (source)),
+			eel_gconf_notification_add (browser_key,
 					    (GConfClientNotifyFunc) rb_browser_source_state_pref_changed,
 					    source);
+		g_free (browser_key);
 	}
 
 	rb_browser_source_state_prefs_sync (source);
@@ -716,19 +719,22 @@ rb_browser_source_state_pref_changed (GConfClient *client,
 static void
 rb_browser_source_state_prefs_sync (RBBrowserSource *source)
 {
-	const char *key;
+	const char *paned_key;
+	char *browser_key;
 
 	rb_debug ("syncing state");
-	key = rb_browser_source_get_paned_key (source);
-	if (key)
+	paned_key = rb_browser_source_get_paned_key (source);
+	if (paned_key)
 		gtk_paned_set_position (GTK_PANED (source->priv->paned),
-					eel_gconf_get_integer (key));
+					eel_gconf_get_integer (paned_key));
 
-	key = rb_source_get_browser_key (RB_SOURCE (source));
-	if (key && eel_gconf_get_boolean (key))
-			gtk_widget_show (GTK_WIDGET (source->priv->browser));
-		else
-			gtk_widget_hide (GTK_WIDGET (source->priv->browser));
+	browser_key = rb_source_get_browser_key (RB_SOURCE (source));
+	if (browser_key && eel_gconf_get_boolean (browser_key)) {
+		gtk_widget_show (GTK_WIDGET (source->priv->browser));
+	} else {
+		gtk_widget_hide (GTK_WIDGET (source->priv->browser));
+	}
+	g_free (browser_key);
 }
 
 static GList *

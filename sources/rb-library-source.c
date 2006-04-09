@@ -50,7 +50,7 @@ static void rb_library_source_finalize (GObject *object);
 
 /* RBSource implementations */
 static GtkWidget *impl_get_config_widget (RBSource *source, RBShellPreferences *prefs);
-static const char *impl_get_browser_key (RBSource *source);
+static char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_paned_key (RBBrowserSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
@@ -538,10 +538,10 @@ rb_library_source_watch_toggled_cb (GtkToggleButton *button, RBLibrarySource *so
 	eel_gconf_set_boolean (CONF_MONITOR_LIBRARY, active);
 }
 
-static const char *
+static char *
 impl_get_browser_key (RBSource *source)
 {
-	return CONF_STATE_SHOW_BROWSER;
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
 static const char *

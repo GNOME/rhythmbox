@@ -49,7 +49,7 @@ static void rb_source_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
-static const char * default_get_browser_key (RBSource *source);
+static char * default_get_browser_key (RBSource *source);
 static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
@@ -132,6 +132,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	klass->impl_get_entry_view = rb_null_function;
 	klass->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
@@ -425,13 +426,13 @@ rb_source_get_status (RBSource *source)
 	return klass->impl_get_status (source);
 }
 
-static const char *
+static char *
 default_get_browser_key (RBSource *source)
 {
 	return NULL;
 }
 
-const char *
+char *
 rb_source_get_browser_key (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);

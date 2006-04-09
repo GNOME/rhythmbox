@@ -214,7 +214,7 @@ static void rb_podcast_source_cmd_new_podcast	 (GtkAction *action,
 						  RBPodcastSource *source);
 
 /* source methods */
-static const char *impl_get_browser_key 		(RBSource *source);
+static char *impl_get_browser_key	 		(RBSource *source);
 static RBEntryView *impl_get_entry_view 		(RBSource *source);
 static void impl_search 				(RBSource *source,
 							 const char *text);
@@ -863,10 +863,10 @@ impl_handle_eos (RBSource *asource)
 	return RB_SOURCE_EOF_STOP;
 }
 
-static const char *
+static char *
 impl_get_browser_key (RBSource *asource)
 {
-	return CONF_STATE_SHOW_BROWSER;
+	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
 static void
