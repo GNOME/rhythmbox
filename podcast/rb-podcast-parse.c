@@ -488,6 +488,14 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	ctx->prop_value = g_string_sized_new (512);
                             
 	ctxt = xmlCreateMemoryParserCtxt (buffer, file_size);
+	if (ctx == NULL) {
+		g_free (sax_handler);
+		g_free (buffer);
+		g_string_free (ctx->prop_value, TRUE);
+		g_free (ctx);
+		return FALSE;
+	}
+
 	ctx->xmlctx = ctxt;
 	ctxt->userData = ctx;
 	ctxt->sax = sax_handler;
