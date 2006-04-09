@@ -34,7 +34,7 @@
 #include "rb-podcast-manager.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
-#include "rb-podcast-marshal.h"
+#include "rb-marshal.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-podcast-parse.h"
@@ -212,7 +212,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		GTK_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, status_changed),
 				NULL, NULL,
-				rb_podcast_marshal_VOID__POINTER_ULONG,
+				rb_marshal_VOID__POINTER_ULONG,
 				G_TYPE_NONE,
 				2,
 				G_TYPE_POINTER,

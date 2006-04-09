@@ -33,7 +33,7 @@
 #include "rb-debug.h"
 #include "gsequence.h"
 #include "rb-tree-dnd.h"
-#include "rhythmdb-marshal.h"
+#include "rb-marshal.h"
 #include "rb-util.h"
 
 static void rhythmdb_query_model_query_results_init (RhythmDBQueryResultsIface *iface);
@@ -333,7 +333,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_prop_changed),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__POINTER_INT_POINTER_POINTER,
+			      rb_marshal_VOID__POINTER_INT_POINTER_POINTER,
 			      G_TYPE_NONE,
 			      4, RHYTHMDB_TYPE_ENTRY, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
 	rhythmdb_query_model_signals[ENTRY_REMOVED] =
@@ -342,7 +342,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_removed),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__POINTER,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 	rhythmdb_query_model_signals[NON_ENTRY_DROPPED] =
@@ -351,7 +351,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, non_entry_dropped),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__POINTER_INT,
+			      rb_marshal_VOID__POINTER_INT,
 			      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_INT);
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",

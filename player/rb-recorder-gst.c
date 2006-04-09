@@ -40,9 +40,9 @@
 #endif
 
 #include "rb-recorder.h"
-#include "rb-recorder-marshal.h"
 
 #include "rb-debug.h"
+#include "rb-marshal.h"
 
 #ifdef HAVE_GSTREAMER_0_8
 #define gst_caps_unref gst_caps_free
@@ -155,7 +155,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_SIGNAL_RUN_LAST,
                               0,
                               NULL, NULL,
-                              rb_recorder_marshal_VOID__DOUBLE_LONG,
+                              rb_marshal_VOID__DOUBLE_LONG,
                               G_TYPE_NONE,
                               2,
                               G_TYPE_DOUBLE,
@@ -166,7 +166,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_SIGNAL_RUN_LAST,
                               0,
                               NULL, NULL,
-                              rb_recorder_marshal_VOID__DOUBLE_LONG,
+                              rb_marshal_VOID__DOUBLE_LONG,
                               G_TYPE_NONE,
                               2,
                               G_TYPE_DOUBLE,
@@ -187,7 +187,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_SIGNAL_RUN_LAST,
                               0,
                               NULL, NULL,
-                              rb_recorder_marshal_BOOLEAN__BOOLEAN_BOOLEAN_BOOLEAN,
+                              rb_marshal_BOOLEAN__BOOLEAN_BOOLEAN_BOOLEAN,
                               G_TYPE_BOOLEAN,
                               3,
                               G_TYPE_BOOLEAN,
@@ -199,7 +199,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      rb_recorder_marshal_INT__VOID,
+			      rb_marshal_INT__VOID,
 			      G_TYPE_INT, 0);
         rb_recorder_signals [ERROR] =
                 g_signal_new ("error",

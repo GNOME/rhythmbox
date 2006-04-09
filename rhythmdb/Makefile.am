@@ -16,7 +16,6 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)
 
 librhythmdb_la_SOURCES =				\
-	$(BUILT_SOURCES)				\
 	gsequence.c					\
 	gsequence.h					\
 	rb-refstring.c					\
@@ -40,14 +39,3 @@ if USE_GDADB
 librhythmdb_la_SOURCES += rhythmdb-gda.h rhythmdb-gda.c
 endif
 
-BUILT_SOURCES=rhythmdb-marshal.c rhythmdb-marshal.h
-
-CLEAN_FILES = $(BUILT_SOURCES)
-
-rhythmdb-marshal.c: rhythmdb-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rhythmdb_marshal $(srcdir)/rhythmdb-marshal.list --header --body > rhythmdb-marshal.c
-
-rhythmdb-marshal.h: rhythmdb-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rhythmdb_marshal $(srcdir)/rhythmdb-marshal.list --header > rhythmdb-marshal.h
-
-EXTRA_DIST = rhythmdb-marshal.list

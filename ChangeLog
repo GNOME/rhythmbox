@@ -1,5 +1,27 @@
 2006-04-09  James Livingston  <doclivingston@gmail.com>
 
+	* daapsharing/Makefile.am:
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_class_init):
+	* daapsharing/rb-daap-marshal.list:
+	* daapsharing/rb-daap-mdns-browser-avahi.c:
+	(rb_daap_mdns_browser_class_init):
+	* lib/rb-marshal.list:
+	* player/Makefile.am:
+	* player/rb-recorder-gst.c: (rb_recorder_class_init):
+	* player/rb-recorder-marshal.list:
+	* podcast/Makefile.am:
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init):
+	* podcast/rb-podcast-marshal.list:
+	* rhythmdb/Makefile.am:
+	* rhythmdb/rhythmdb-marshal.list:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init):
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init): merge all the marshalers
+	into one file, as there is no point having several of them.
+
+2006-04-09  James Livingston  <doclivingston@gmail.com>
+
 	* lib/Makefile.am:
 	* lib/rb-enums.h:
 	* widgets/Makefile.am:

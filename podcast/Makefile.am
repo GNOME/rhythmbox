@@ -3,7 +3,6 @@
 noinst_LTLIBRARIES = librbpodcast.la
 
 librbpodcast_la_SOURCES =				\
-	$(BUILT_SOURCES)				\
 	rb-new-podcast-dialog.c				\
 	rb-new-podcast-dialog.h				\
 	rb-feed-podcast-properties-dialog.c		\
@@ -30,14 +29,3 @@ INCLUDES =						\
 
 librbpodcast_la_LDFLAGS = -export-dynamic
 
-BUILT_SOURCES=rb-podcast-marshal.c rb-podcast-marshal.h
-
-CLEAN_FILES = $(BUILT_SOURCES)
-
-rb-podcast-marshal.c: rb-podcast-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rb_podcast_marshal $(srcdir)/rb-podcast-marshal.list --header --body > rb-podcast-marshal.c
-
-rb-podcast-marshal.h: rb-podcast-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rb_podcast_marshal $(srcdir)/rb-podcast-marshal.list --header > rb-podcast-marshal.h
-
-EXTRA_DIST = rb-podcast-marshal.list

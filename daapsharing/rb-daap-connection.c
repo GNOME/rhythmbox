@@ -39,7 +39,7 @@
 
 #include "rb-daap-connection.h"
 #include "rb-daap-structure.h"
-#include "rb-daap-marshal.h"
+#include "rb-marshal.h"
 
 #include "rb-debug.h"
 
@@ -694,7 +694,7 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 					       G_STRUCT_OFFSET (RBDAAPConnectionClass, authenticate),
 					       NULL,
 					       NULL,
-					       rb_daap_marshal_STRING__STRING,
+					       rb_marshal_STRING__STRING,
 					       G_TYPE_STRING,
 					       1, G_TYPE_STRING);
 	signals [CONNECTED] = g_signal_new ("connected",

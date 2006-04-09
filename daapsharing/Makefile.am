@@ -6,7 +6,6 @@ libdaapsharing_la_SOURCES =
 
 if USE_DAAP
 libdaapsharing_la_SOURCES += \
-		$(BUILT_SOURCES)	\
 		rb-daap-sharing.c	\
 		rb-daap-sharing.h 	\
 		rb-daap-share.c		\
@@ -62,14 +61,3 @@ INCLUDES =						\
 
 libdaapsharing_la_LDFLAGS = -export-dynamic
 
-BUILT_SOURCES = rb-daap-marshal.c rb-daap-marshal.h
-
-CLEAN_FILES = $(BUILT_SOURCES)
-
-rb-daap-marshal.c: rb-daap-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rb_daap_marshal $(srcdir)/rb-daap-marshal.list --header --body > rb-daap-marshal.c
-
-rb-daap-marshal.h: rb-daap-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rb_daap_marshal $(srcdir)/rb-daap-marshal.list --header > rb-daap-marshal.h
-
-EXTRA_DIST = rb-daap-marshal.list

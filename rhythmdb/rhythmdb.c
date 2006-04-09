@@ -41,7 +41,7 @@
 #include <libgnomevfs/gnome-vfs-file-info.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <glib/gi18n.h>
-#include "rhythmdb-marshal.h"
+#include "rb-marshal.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-util.h"
@@ -315,7 +315,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__POINTER_POINTER,
+			      rb_marshal_VOID__POINTER_POINTER,
 			      G_TYPE_NONE, 2, 
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
 
@@ -345,7 +345,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, save_error),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__STRING_POINTER,
+			      rb_marshal_VOID__STRING_POINTER,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING,
