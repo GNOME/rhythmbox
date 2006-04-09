@@ -188,6 +188,11 @@ entry_set_string_prop (RhythmDB *db, RhythmDBEntry *entry, gboolean is_inserted,
 	if (!str)
 		str = _("Unknown");
 
+	if (!g_utf8_validate (str, -1, NULL)) {
+		rb_debug ("Got invalid UTF-8 tag data");
+		str = _("<Invalid unicode>");
+	}
+
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, str);
 	if (is_inserted)

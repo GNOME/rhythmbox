@@ -1,5 +1,10 @@
 2006-04-09  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-audiocd-source.c: (entry_set_string_prop): validate the
+	data that MusicBrainz returns to us. Last part of bug 334167.
+
+2006-04-09  James Livingston  <doclivingston@gmail.com>
+
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed): fix a
 	crasher if xmlCreateMemoryParserCtxt returns NULL. Fixes bug 336842.
 
