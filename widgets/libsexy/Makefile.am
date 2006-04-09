@@ -12,3 +12,8 @@ INCLUDES = 						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"			\
 	$(RHYTHMBOX_CFLAGS)
+
+if WITH_INTERNAL_LIBSEXY
+INCLUDES += -I$(top_srcdir)/widgets
+endif
+
