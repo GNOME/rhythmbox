@@ -58,6 +58,8 @@ void rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 						   RBShellPreferences *shell_preferences);
 void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						      RBShellPreferences *shell_preferences);
+static void rb_shell_preferences_toolbar_style_cb (GtkComboBox *box,
+						   RBShellPreferences *preferences);
 
 
 enum
@@ -85,6 +87,8 @@ struct RBShellPreferencesPrivate
 	GtkWidget *year_check;
 
 	GSList *browser_views_group;
+
+	GtkWidget *toolbar_style_menu;
 
 	gboolean loading;
 };
@@ -203,12 +207,21 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				  glade_xml_get_widget (xml, "general_vbox"),
 				  gtk_label_new (_("General")));
 
-	g_object_unref (G_OBJECT (xml));
+	/* toolbar button style */
+	rb_glade_boldify_label (xml, "toolbar_style_label");
+	shell_preferences->priv->toolbar_style_menu =
+		glade_xml_get_widget (xml, "toolbar_style_menu");
+	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (shell_preferences->priv->toolbar_style_menu),
+					      rb_combo_box_hyphen_separator_func,
+					      NULL, NULL);
+	g_signal_connect_object (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
+				 "changed", G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
+				 shell_preferences, 0);
 	
 	eel_gconf_notification_add (CONF_UI_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
 				    shell_preferences);
-
+	g_object_unref (G_OBJECT (xml));
 	rb_shell_preferences_sync (shell_preferences);
 }
 
@@ -596,7 +609,36 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	for (l = shell_preferences->priv->browser_views_group, i = 0; l != NULL; l = g_slist_next (l), i++)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (l->data), (i == view));
 
+	/* toolbar style */
+	g_signal_handlers_block_by_func (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
+					 G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
+					 shell_preferences);
+
+	view = eel_gconf_get_integer (CONF_UI_TOOLBAR_STYLE);
+	/* skip the separator row */
+	if (view >= 1)
+		view++;
+	gtk_combo_box_set_active (GTK_COMBO_BOX (shell_preferences->priv->toolbar_style_menu), view);
+
+	g_signal_handlers_unblock_by_func (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
+					   G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
+					   shell_preferences);
+
 	shell_preferences->priv->loading = FALSE;
+}
+
+static void
+rb_shell_preferences_toolbar_style_cb (GtkComboBox *box, RBShellPreferences *preferences)
+{
+	int selection;
+
+	selection = gtk_combo_box_get_active (box);
+
+	/* skip the separator row */
+	if (selection >= 1)
+		selection--;
+
+	eel_gconf_set_integer (CONF_UI_TOOLBAR_STYLE, selection);
 }
 
 void
@@ -612,5 +654,4 @@ rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 
 	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
 }
-
 

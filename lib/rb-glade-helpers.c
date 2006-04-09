@@ -113,9 +113,11 @@ glade_signal_connect_func (const gchar *cb_name, GObject *obj,
 void
 rb_glade_boldify_label (GladeXML *xml, const char *name)
 {
-	GtkLabel *label = GTK_LABEL (glade_xml_get_widget (xml, name));
+	GtkWidget *widget;
 
-	if (label == NULL) {
+	widget = glade_xml_get_widget (xml, name);
+
+	if (widget == NULL) {
 		g_warning ("widget '%s' not found", name);
 		return;
 	}
@@ -134,12 +136,27 @@ rb_glade_boldify_label (GladeXML *xml, const char *name)
 		attr->end_index = G_MAXINT;
 		pango_attr_list_insert (pattrlist, attr);
 	}
-	gtk_label_set_attributes (label, pattrlist);*/
+	gtk_label_set_attributes (GTK_LABEL (widget), pattrlist);*/
 
 	gchar *str_final;
-	str_final = g_strdup_printf ("<b>%s</b>", gtk_label_get_label (label));
-	gtk_label_set_markup_with_mnemonic (label, str_final);
+	str_final = g_strdup_printf ("<b>%s</b>", gtk_label_get_label (GTK_LABEL (widget)));
+	gtk_label_set_markup_with_mnemonic (GTK_LABEL (widget), str_final);
 	g_free (str_final);
+}
+
+gboolean
+rb_combo_box_hyphen_separator_func (GtkTreeModel *model,
+				    GtkTreeIter *iter,
+				    gpointer data)
+{
+	const char *s;
+
+	gtk_tree_model_get (model, iter, 0, &s, -1);
+
+	if (s == NULL)
+		return FALSE;
+
+	return (strcmp (s, "-") == 0);
 }
 
 

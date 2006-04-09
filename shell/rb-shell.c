@@ -208,7 +208,7 @@ static void rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 						       RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
-static void rb_shell_sync_toolbar_visibility (RBShell *shell);
+static void rb_shell_sync_toolbar_state (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void rb_shell_sync_pane_visibility (RBShell *shell);
 static void rb_shell_sync_statusbar_visibility (RBShell *shell);
@@ -219,10 +219,10 @@ static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShell *shell);
-static void toolbar_visibility_changed_cb (GConfClient *client,
-					   guint cnxn_id,
-					   GConfEntry *entry,
-					   RBShell *shell);
+static void toolbar_state_changed_cb (GConfClient *client,
+				      guint cnxn_id,
+				      GConfEntry *entry,
+				      RBShell *shell);
 static void smalldisplay_changed_cb (GConfClient *client,
 				     guint cnxn_id,
 				     GConfEntry *entry,
@@ -409,6 +409,7 @@ struct RBShellPrivate
 
 	guint sourcelist_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
+	guint toolbar_style_notify_id;
 	guint smalldisplay_notify_id;
 
 	glong last_small_time; /* when we last changed small mode */
@@ -894,6 +895,7 @@ rb_shell_finalize (GObject *object)
 	eel_gconf_monitor_remove (CONF_PREFIX);
 	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
+	eel_gconf_notification_remove (shell->priv->toolbar_style_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
 
 	g_list_free (shell->priv->supported_media_extensions);
@@ -1182,7 +1184,11 @@ rb_shell_constructor (GType type,
 					    shell);
 	shell->priv->toolbar_visibility_notify_id =
 		eel_gconf_notification_add (CONF_UI_TOOLBAR_HIDDEN,
-					    (GConfClientNotifyFunc) toolbar_visibility_changed_cb,
+					    (GConfClientNotifyFunc) toolbar_state_changed_cb,
+					    shell);
+	shell->priv->toolbar_style_notify_id =
+		eel_gconf_notification_add (CONF_UI_TOOLBAR_STYLE,
+					    (GConfClientNotifyFunc) toolbar_state_changed_cb,
 					    shell);
 	shell->priv->smalldisplay_notify_id =
 		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
@@ -1272,7 +1278,6 @@ rb_shell_constructor (GType type,
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 	gtk_box_pack_start_defaults (GTK_BOX (hbox), toolbar);
-	rb_shell_sync_toolbar_visibility (shell);
 
 	shell->priv->volume_button = bacon_volume_button_new (GTK_ICON_SIZE_LARGE_TOOLBAR,
 							       0.0, 1.0, 0.02);
@@ -1312,6 +1317,7 @@ rb_shell_constructor (GType type,
 	rb_shell_sync_window_state (shell, FALSE);
 	rb_shell_sync_smalldisplay (shell);
 	rb_shell_sync_party_mode (shell);
+	rb_shell_sync_toolbar_state (shell);
 
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
@@ -2448,11 +2454,12 @@ rb_shell_sync_pane_visibility (RBShell *shell)
 
 
 static void
-rb_shell_sync_toolbar_visibility (RBShell *shell)
+rb_shell_sync_toolbar_state (RBShell *shell)
 {
 	GtkWidget *toolbar;
 	gboolean visible;
 	GtkAction *action;
+	guint toolbar_style;
 
 	visible = !eel_gconf_get_boolean (CONF_UI_TOOLBAR_HIDDEN);
 
@@ -2466,6 +2473,33 @@ rb_shell_sync_toolbar_visibility (RBShell *shell)
 					      "ViewToolbar");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
 				      visible);
+
+	toolbar_style = eel_gconf_get_integer (CONF_UI_TOOLBAR_STYLE);
+	switch (toolbar_style) {
+	case 0:
+		/* default*/
+		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
+		break;
+	case 1:
+		/* text below icons */
+		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH);
+		break;
+	case 2:
+		/* text beside icons */
+		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH_HORIZ);
+		break;
+	case 3:
+		/* icons only */
+		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
+		break;
+	case 4:
+		/* test only */
+		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_TEXT);
+		break;
+	default:
+		g_warning ("unknown toolbar style type");
+		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
+	}
 }
 
 static gboolean
@@ -2583,13 +2617,13 @@ sourcelist_visibility_changed_cb (GConfClient *client,
 }
 
 static void
-toolbar_visibility_changed_cb (GConfClient *client,
+toolbar_state_changed_cb (GConfClient *client,
 			       guint cnxn_id,
 			       GConfEntry *entry,
 			       RBShell *shell)
 {
-	rb_debug ("toolbar visibility changed"); 
-	rb_shell_sync_toolbar_visibility (shell);
+	rb_debug ("toolbar state changed"); 
+	rb_shell_sync_toolbar_state (shell);
 }
 
 static void

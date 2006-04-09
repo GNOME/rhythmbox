@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 #define CONF_UI_DIR               CONF_PREFIX "/ui"
 #define CONF_UI_STATUSBAR_HIDDEN  CONF_PREFIX "/ui/statusbar_hidden"
 #define CONF_UI_TOOLBAR_HIDDEN  CONF_PREFIX "/ui/toolbar_hidden"
+#define CONF_UI_TOOLBAR_STYLE	CONF_PREFIX "/ui/toolbar_style"
 #define CONF_UI_SONG_POSITION_SLIDER_HIDDEN  CONF_PREFIX "/ui/song_position_slider_hidden"
 #define CONF_UI_SOURCELIST_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
 #define CONF_UI_QUEUE_AS_SIDEBAR  CONF_PREFIX "/ui/queue_as_sidebar" 

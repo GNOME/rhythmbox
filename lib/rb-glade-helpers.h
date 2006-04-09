@@ -33,6 +33,9 @@ GladeXML *rb_glade_xml_new (const char *file,
 void rb_glade_boldify_label (GladeXML *xml,
 			     const char *name);
 
+gboolean rb_combo_box_hyphen_separator_func (GtkTreeModel *model,
+					     GtkTreeIter *iter,
+					     gpointer data);
 G_END_DECLS
 
 #endif /* __RB_GLADE_HELPERS_H */

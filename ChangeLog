@@ -1,5 +1,21 @@
 2006-04-09  James Livingston  <doclivingston@gmail.com>
 
+	* data/glade/general-prefs.glade:
+	* data/rhythmbox.schemas:
+	* lib/rb-glade-helpers.c: (rb_glade_boldify_label),
+	(rb_combo_box_hyphen_separator_func):
+	* lib/rb-glade-helpers.h:
+	* lib/rb-preferences.h:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync),
+	(rb_shell_preferences_toolbar_style_cb),
+	(rb_shell_preferences_browser_views_activated_cb):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_sync_toolbar_state), (toolbar_state_changed_cb): Allow the
+	overriding of th toolbar style, as the HIG suggests. Fixes bug 336797.
+
+2006-04-09  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-audiocd-source.c: (entry_set_string_prop): validate the
 	data that MusicBrainz returns to us. Last part of bug 334167.
 
