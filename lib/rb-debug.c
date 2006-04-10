@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of simple Rhythmbox debugging interface
  *
  *  Copyright (C) 2002 Jorn Baayen
@@ -21,12 +22,14 @@
  *
  */
 
-#include <glib.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <signal.h>
 #include <time.h>
+
+#include <glib.h>
 
 #include "rb-debug.h"
 
@@ -233,4 +236,46 @@ rb_profiler_free (RBProfiler *profiler)
 	g_timer_destroy (profiler->timer);
 	g_free (profiler->name);
 	g_free (profiler);
+}
+
+/* Profiling */
+
+static int profile_indent;
+
+static void
+profile_add_indent (int indent)
+{
+	profile_indent += indent;
+	if (profile_indent < 0) {
+		g_error ("You screwed up your indentation");
+	}
+}
+
+void
+_rb_profile_log (const char *func,
+		 const char *file,
+		 int         line,
+		 int	     indent,
+		 const char *msg1,
+		 const char *msg2)
+{
+	char *str;
+
+	if (indent < 0) {
+		profile_add_indent (indent);
+	}
+
+	if (profile_indent == 0) {
+		str = g_strdup_printf ("MARK: [%s]: [%s %d] %s %s", file, func, line, msg1 ? msg1 : "", msg2 ? msg2 : "");
+	} else {
+		str = g_strdup_printf ("MARK: [%s]: %*c [%s %d] %s %s", file, profile_indent - 1, ' ', func, line, msg1 ? msg1 : "", msg2 ? msg2 : "");
+	}
+
+	access (str, F_OK);
+
+	g_free (str);
+
+	if (indent > 0) {
+		profile_add_indent (indent);
+	}
 }

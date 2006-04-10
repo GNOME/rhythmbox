@@ -1,5 +1,14 @@
 2006-04-10  William Jon McCann  <mccann@jhu.edu>
 
+	* lib/rb-debug.c: (rb_profiler_free), (profile_add_indent),
+	(_rb_profile_log):
+	* lib/rb-debug.h:
+	* shell/rb-shell.c: (construct_db), (construct_widgets),
+	(construct_sources), (construct_load_ui), (rb_shell_constructor):
+	Add profiling.  Fixes #337387
+
+2006-04-10  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-play-queue-source.c (rb_play_queue_source_track_info_cell_data_func): 
 	* widgets/rb-header.c:
 	Use italics for artist and album. Fixes #336748

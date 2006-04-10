@@ -349,6 +349,7 @@ struct RBShellPrivate
 	GtkActionGroup *actiongroup;
 	guint source_ui_merge_id;
 
+	GtkWidget *main_vbox;
 	GtkWidget *paned;
 	GtkWidget *sourcelist;
 	GtkWidget *notebook;
@@ -972,24 +973,45 @@ rb_shell_new (int argc,
 	return s;
 }
 
-static GObject *
-rb_shell_constructor (GType type,
-		      guint n_construct_properties,
-		      GObjectConstructParam *construct_properties)
+static void
+construct_db (RBShell *shell)
 {
-	RBShell *shell;
+	char *pathname;
+
+	/* Initialize the database */
+	rb_debug ("creating database object");
+	rb_profile_start ("creating database object");
+
+	if (shell->priv->rhythmdb_file)
+		pathname = g_strdup (shell->priv->rhythmdb_file);
+	else
+		pathname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
+
+#ifdef WITH_RHYTHMDB_TREE
+	shell->priv->db = rhythmdb_tree_new (pathname);
+#elif defined(WITH_RHYTHMDB_GDA)
+	shell->priv->db = rhythmdb_gda_new (pathname);
+#endif
+	g_free (pathname);
+
+	if (shell->priv->dry_run)
+		g_object_set (G_OBJECT (shell->priv->db), "dry-run", TRUE, NULL);
+	if (shell->priv->no_update)
+		g_object_set (G_OBJECT (shell->priv->db), "no-update", TRUE, NULL);
+
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
+				 G_CALLBACK (rb_shell_load_complete_cb), shell,
+				 0);
+
+	rb_profile_end ("creating database object");
+}
+
+static void
+construct_widgets (RBShell *shell)
+{
 	GtkWindow *win;
-	GtkWidget *menubar;
-	GtkWidget *vbox;
-	GError *error = NULL;
-	GtkWidget *toolbar;
- 	GtkWidget *hbox;
- 	GtkToolItem *tool_item;
 
-	shell = RB_SHELL (((GObjectClass*)rb_shell_parent_class)
-		->constructor (type, n_construct_properties, construct_properties));
-
-	rb_debug ("Constructing shell");
+	rb_profile_start ("constructing widgets");
 
 	/* initialize UI */
 	win = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
@@ -1009,52 +1031,11 @@ rb_shell_constructor (GType type,
 	g_signal_connect_object (G_OBJECT (win), "delete_event",
 				 G_CALLBACK (rb_shell_window_delete_cb),
 				 shell, G_CONNECT_AFTER);
-  
-	shell->priv->ui_manager = gtk_ui_manager_new ();
 
-	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
-	gtk_action_group_set_translation_domain (shell->priv->actiongroup,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (shell->priv->actiongroup,
-				      rb_shell_actions,
-				      rb_shell_n_actions, shell);
-	gtk_action_group_add_toggle_actions (shell->priv->actiongroup,
-					     rb_shell_toggle_entries,
-					     rb_shell_n_toggle_entries,
-					     shell);
-	shell->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (shell->priv->ui_manager);
-	/* Initialize the database */
-	rb_debug ("creating database object");
-	{
-		char *pathname;
-
-		if (shell->priv->rhythmdb_file)
-			pathname = g_strdup (shell->priv->rhythmdb_file);
-		else
-			pathname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
-
-#ifdef WITH_RHYTHMDB_TREE
-		shell->priv->db = rhythmdb_tree_new (pathname);
-#elif defined(WITH_RHYTHMDB_GDA)
-		shell->priv->db = rhythmdb_gda_new (pathname);
-#endif
-		g_free (pathname);
-
-		if (shell->priv->dry_run)
-			g_object_set (G_OBJECT (shell->priv->db), "dry-run", TRUE, NULL);
-		if (shell->priv->no_update)
-			g_object_set (G_OBJECT (shell->priv->db), "no-update", TRUE, NULL);
-
-		g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
-					 G_CALLBACK (rb_shell_load_complete_cb), shell,
-					 0);
-	}
-
-	rb_debug ("shell: setting up tray icon");
-	tray_destroy_cb (NULL, shell);
-
-	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
+
+	shell->priv->ui_manager = gtk_ui_manager_new ();
+	shell->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (shell->priv->ui_manager);
 
 	shell->priv->player_shell = rb_shell_player_new (shell->priv->db,
 							 shell->priv->ui_manager,
@@ -1108,9 +1089,7 @@ rb_shell_constructor (GType type,
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "selected",
 				 G_CALLBACK (source_selected_cb), shell, 0);
 
-	vbox = gtk_vbox_new (FALSE, 4);
 	shell->priv->notebook = gtk_notebook_new ();
-	gtk_widget_show (vbox);
 	gtk_widget_show (shell->priv->notebook);
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
@@ -1130,94 +1109,58 @@ rb_shell_constructor (GType type,
 	/* set up sidebars */
 	shell->priv->paned = gtk_hpaned_new ();
 	{
+		GtkWidget *vbox2 = gtk_vbox_new (FALSE, 0);
+
 		shell->priv->queue_paned = gtk_vpaned_new ();
-		{
-			gtk_paned_pack1 (GTK_PANED (shell->priv->queue_paned),
-					 shell->priv->sourcelist, 
-					 FALSE, TRUE);
-			gtk_paned_pack2 (GTK_PANED (shell->priv->queue_paned), 
-					 shell->priv->queue_sidebar,
-					 TRUE, TRUE);
-		}
-		GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
-		{
-			gtk_box_pack_start (GTK_BOX (vbox),
-					    GTK_WIDGET (shell->priv->source_header),
-					    FALSE, FALSE, 0);
-			gtk_box_pack_start (GTK_BOX (vbox),
-					    shell->priv->notebook,
-					    TRUE, TRUE, 0);
-		}
+		gtk_paned_pack1 (GTK_PANED (shell->priv->queue_paned),
+				 shell->priv->sourcelist, 
+				 FALSE, TRUE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->queue_paned), 
+				 shell->priv->queue_sidebar,
+				 TRUE, TRUE);
+
+		gtk_box_pack_start (GTK_BOX (vbox2),
+				    GTK_WIDGET (shell->priv->source_header),
+				    FALSE, FALSE, 0);
+		gtk_box_pack_start (GTK_BOX (vbox2),
+				    shell->priv->notebook,
+				    TRUE, TRUE, 0);
 
 		gtk_paned_pack1 (GTK_PANED (shell->priv->paned),
 				 shell->priv->queue_paned,
 				 FALSE, TRUE);
 		gtk_paned_pack2 (GTK_PANED (shell->priv->paned),
-				 vbox,
+				 vbox2,
 				 TRUE, TRUE);
-		gtk_widget_show (vbox);
+		gtk_widget_show (vbox2);
 	}
+
 	g_signal_connect_object (G_OBJECT (shell->priv->queue_paned),
 				 "size-allocate",
 				 G_CALLBACK (sidebar_paned_size_allocate_cb),
 				 shell, 0);
 	gtk_widget_show (shell->priv->paned);
 
-	vbox = gtk_vbox_new (FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 0);
- 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);	
+	shell->priv->main_vbox = gtk_vbox_new (FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->main_vbox), 0);
+ 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);	
 	gtk_widget_show (GTK_WIDGET (shell->priv->player_shell));
 
-	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
-	gtk_widget_show (vbox);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), shell->priv->paned, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
+	gtk_widget_show (shell->priv->main_vbox);
 
-	gtk_container_add (GTK_CONTAINER (win), vbox);
+	gtk_container_add (GTK_CONTAINER (win), shell->priv->main_vbox);
 
 	shell->priv->proxy_config = rb_proxy_config_new ();
-	
-	rb_debug ("shell: adding gconf notification");
-	/* sync state */
-	shell->priv->sourcelist_visibility_notify_id =
-		eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
-					    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
-					    shell);
-	shell->priv->toolbar_visibility_notify_id =
-		eel_gconf_notification_add (CONF_UI_TOOLBAR_HIDDEN,
-					    (GConfClientNotifyFunc) toolbar_state_changed_cb,
-					    shell);
-	shell->priv->toolbar_style_notify_id =
-		eel_gconf_notification_add (CONF_UI_TOOLBAR_STYLE,
-					    (GConfClientNotifyFunc) toolbar_state_changed_cb,
-					    shell);
-	shell->priv->smalldisplay_notify_id =
-		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
-					    (GConfClientNotifyFunc) smalldisplay_changed_cb,
-					    shell);
+ 
+	rb_profile_end ("constructing widgets");
+}
 
-	/* read the cached copies of the gconf keys */
-	shell->priv->window_width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
-	shell->priv->window_height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
-	shell->priv->small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
-	shell->priv->window_maximised = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
-	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
-	shell->priv->queue_as_sidebar = eel_gconf_get_boolean (CONF_UI_QUEUE_AS_SIDEBAR); 
-	shell->priv->window_x = eel_gconf_get_integer (CONF_STATE_WINDOW_X_POSITION);
-	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
-	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
-	shell->priv->sourcelist_height = eel_gconf_get_integer (CONF_STATE_SOURCELIST_HEIGHT);
-	shell->priv->statusbar_hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
-
-	
-	rb_debug ("shell: syncing with gconf");
-	rb_shell_sync_sourcelist_visibility (shell);
-	rb_shell_sync_pane_visibility (shell);
-
-	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
-				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
-				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
-
+static void
+construct_sources (RBShell *shell)
+{
+	rb_profile_start ("constructing sources");
 
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
@@ -1260,21 +1203,37 @@ rb_shell_constructor (GType type,
 	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "transfer-progress",
 				 G_CALLBACK (rb_shell_transfer_progress_cb), shell, 0);
 
+	rb_profile_end ("constructing sources");
+}
+
+static void
+construct_load_ui (RBShell *shell)
+{
+	GtkWidget *menubar;
+	GtkWidget *toolbar;
+ 	GtkWidget *hbox;
+ 	GtkToolItem *tool_item;
+	GError *error = NULL;
+
 	rb_debug ("shell: loading ui");
+	rb_profile_start ("loading ui");
+
 	gtk_ui_manager_insert_action_group (shell->priv->ui_manager,
 					    shell->priv->actiongroup, 0);
 	gtk_ui_manager_add_ui_from_file (shell->priv->ui_manager,
 					 rb_file ("rhythmbox-ui.xml"), &error);
+
 	gtk_ui_manager_ensure_update (shell->priv->ui_manager);
 	gtk_window_add_accel_group (GTK_WINDOW (shell->priv->window),
 				    gtk_ui_manager_get_accel_group (shell->priv->ui_manager));
 	menubar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/MenuBar");
-	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
-	gtk_box_reorder_child (GTK_BOX (vbox), menubar, 0);
+
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), menubar, FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), menubar, 0);
 
 	hbox = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-	gtk_box_reorder_child (GTK_BOX (vbox), hbox, 1);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), hbox, FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), hbox, 1);
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 	gtk_box_pack_start_defaults (GTK_BOX (hbox), toolbar);
@@ -1313,6 +1272,87 @@ rb_shell_constructor (GType type,
 			   rb_file ("rhythmbox-ui.xml"), error->message);
 		g_clear_error (&error);
 	}
+
+	rb_profile_end ("loading ui");
+}
+
+static GObject *
+rb_shell_constructor (GType type,
+		      guint n_construct_properties,
+		      GObjectConstructParam *construct_properties)
+{
+	RBShell *shell;
+
+	shell = RB_SHELL (((GObjectClass*)rb_shell_parent_class)
+		->constructor (type, n_construct_properties, construct_properties));
+
+	rb_debug ("Constructing shell");
+	rb_profile_start ("constructing shell");
+  
+	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
+	gtk_action_group_set_translation_domain (shell->priv->actiongroup,
+						 GETTEXT_PACKAGE);
+	gtk_action_group_add_actions (shell->priv->actiongroup,
+				      rb_shell_actions,
+				      rb_shell_n_actions, shell);
+	gtk_action_group_add_toggle_actions (shell->priv->actiongroup,
+					     rb_shell_toggle_entries,
+					     rb_shell_n_toggle_entries,
+					     shell);
+
+	construct_db (shell);
+
+	/* initialize shell services */
+	construct_widgets (shell);
+
+	rb_debug ("shell: setting up tray icon");
+	tray_destroy_cb (NULL, shell);
+
+	rb_debug ("shell: adding gconf notification");
+	/* sync state */
+	shell->priv->sourcelist_visibility_notify_id =
+		eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
+					    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
+					    shell);
+	shell->priv->toolbar_visibility_notify_id =
+		eel_gconf_notification_add (CONF_UI_TOOLBAR_HIDDEN,
+					    (GConfClientNotifyFunc) toolbar_state_changed_cb,
+					    shell);
+	shell->priv->toolbar_style_notify_id =
+		eel_gconf_notification_add (CONF_UI_TOOLBAR_STYLE,
+					    (GConfClientNotifyFunc) toolbar_state_changed_cb,
+					    shell);
+	shell->priv->smalldisplay_notify_id =
+		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
+					    (GConfClientNotifyFunc) smalldisplay_changed_cb,
+					    shell);
+
+	/* read the cached copies of the gconf keys */
+	shell->priv->window_width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
+	shell->priv->window_height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
+	shell->priv->small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
+	shell->priv->window_maximised = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
+	shell->priv->window_small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	shell->priv->queue_as_sidebar = eel_gconf_get_boolean (CONF_UI_QUEUE_AS_SIDEBAR); 
+	shell->priv->window_x = eel_gconf_get_integer (CONF_STATE_WINDOW_X_POSITION);
+	shell->priv->window_y = eel_gconf_get_integer (CONF_STATE_WINDOW_Y_POSITION);
+	shell->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+	shell->priv->sourcelist_height = eel_gconf_get_integer (CONF_STATE_SOURCELIST_HEIGHT);
+	shell->priv->statusbar_hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
+
+	
+	rb_debug ("shell: syncing with gconf");
+	rb_shell_sync_sourcelist_visibility (shell);
+	rb_shell_sync_pane_visibility (shell);
+
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
+				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
+				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
+
+	construct_sources (shell);
+
+	construct_load_ui (shell);
 
 	rb_shell_sync_window_state (shell, FALSE);
 	rb_shell_sync_smalldisplay (shell);
@@ -1358,6 +1398,8 @@ rb_shell_constructor (GType type,
 		view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
 		gtk_widget_grab_focus (GTK_WIDGET (view));
 	}
+
+	rb_profile_end ("constructing shell");
 
 	return G_OBJECT (shell);
 }

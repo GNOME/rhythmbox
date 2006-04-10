@@ -53,6 +53,30 @@ void        rb_profiler_dump  (RBProfiler *profiler);
 void        rb_profiler_reset (RBProfiler *profiler);
 void        rb_profiler_free  (RBProfiler *profiler);
 
+void        _rb_profile_log    (const char *func,
+                                const char *file,
+                                int         line,
+                                int	    indent,
+                                const char *msg1,
+                                const char *msg2);
+#define ENABLE_PROFILING 1
+#ifdef ENABLE_PROFILING
+#define RB_PROFILE_INDENTATION 4
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#define rb_profile_start(msg) _rb_profile_log (__func__, __FILE__, __LINE__, RB_PROFILE_INDENTATION, "START", msg)
+#define rb_profile_end(msg)   _rb_profile_log (__func__, __FILE__, __LINE__, -RB_PROFILE_INDENTATION, "END", msg)
+#elif defined(__GNUC__) && __GNUC__ >= 3
+#define rb_profile_start(msg) _rb_profile_log (__FUNCTION__, __FILE__, __LINE__, RB_PROFILE_INDENTATION, "START", msg)
+#define rb_profile_end(msg)   _rb_profile_log (__FUNCTION__, __FILE__, __LINE__, -RB_PROFILE_INDENTATION, "END", msg)
+#else
+#define rb_profile_start(msg)
+#define rb_profile_end(msg)
+#endif
+#else
+#define rb_profile_start(msg)
+#define rb_profile_end(msg)
+#endif
+
 G_END_DECLS
 
 #endif /* __RB_DEBUG_H */
