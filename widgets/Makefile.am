@@ -4,7 +4,7 @@ noinst_LTLIBRARIES = librbwidgets.la
 
 if WITH_INTERNAL_LIBSEXY
 SUBDIRS = libsexy
-LIBSEXY_LIBS =$(top_builddir)/widgets/libsexy/libsexy.la
+LIBSEXY_LIBS += $(top_builddir)/widgets/libsexy/libsexy.la
 endif
 
 librbwidgets_la_SOURCES =				\
