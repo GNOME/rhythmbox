@@ -1,5 +1,11 @@
 2006-04-10  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-player.c: (rb_shell_player_shuffle_changed_cb),
+	(rb_shell_player_repeat_changed_cb): don't fail to set the play order
+	if the gconf key is missing. Fixes bug 337742.
+
+2006-04-10  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
 	to fix build problems I caused with a commit yesterday. Fixed bug
 	337806.

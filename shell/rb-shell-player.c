@@ -1808,15 +1808,16 @@ rb_shell_player_shuffle_changed_cb (GtkAction *action,
 				    RBShellPlayer *player)
 {
 	const char *neworder;
-	gboolean shuffle, repeat;
+	gboolean shuffle = FALSE;
+	gboolean repeat = FALSE;
 
 	if (player->priv->syncing_state)
 		return;
 
 	rb_debug ("shuffle changed");
 
-	if (!rb_shell_player_get_playback_state (player, &shuffle, &repeat))
-		return;
+	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
+
 	shuffle = !shuffle;
 	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
 	rb_shell_player_set_play_order (player, neworder);
@@ -1827,14 +1828,15 @@ rb_shell_player_repeat_changed_cb (GtkAction *action,
 				   RBShellPlayer *player)
 {
 	const char *neworder;
-	gboolean shuffle, repeat;
+	gboolean shuffle = FALSE;
+	gboolean repeat = FALSE;
 	rb_debug ("repeat changed");
 
 	if (player->priv->syncing_state)
 		return;
 
-	if (!rb_shell_player_get_playback_state (player, &shuffle, &repeat))
-		return;
+	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
+
 	repeat = !repeat;
 	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
 	rb_shell_player_set_play_order (player, neworder);
