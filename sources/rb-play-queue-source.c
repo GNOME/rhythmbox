@@ -285,7 +285,7 @@ rb_play_queue_source_track_info_cell_data_func (GtkTreeViewColumn *column,
 	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 
 	/* Translators: format is "<title> from <album> by <artist>" */
-	markup = g_markup_printf_escaped("%s\n<span size=\"smaller\">%s <u>%s</u>\n%s <u>%s</u></span>",
+	markup = g_markup_printf_escaped("%s\n<span size=\"smaller\">%s <i>%s</i>\n%s <i>%s</i></span>",
 				         title, _("from"), album, _("by"), artist);
 
 	g_object_set (G_OBJECT (renderer), "markup", markup, NULL);

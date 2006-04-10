@@ -104,7 +104,7 @@ enum
 };
 
 #define SONG_MARKUP(xSONG) g_strdup_printf ("<big><b>%s</b></big>", xSONG);
-#define SONG_MARKUP_ALBUM_ARTIST(xSONG, xALBUM, xARTIST) g_strdup_printf ("<big><b>%s</b></big> %s <u>%s</u> %s <u>%s</u>", xSONG, _("by"), xARTIST, _("from"), xALBUM);
+#define SONG_MARKUP_ALBUM_ARTIST(xSONG, xALBUM, xARTIST) g_strdup_printf ("<big><b>%s</b></big> %s <i>%s</i> %s <i>%s</i>", xSONG, _("by"), xARTIST, _("from"), xALBUM);
 
 G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
