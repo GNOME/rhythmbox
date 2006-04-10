@@ -27,8 +27,11 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <glib-object.h>
+
+#ifdef ENABLE_TRACK_TRANSFER
 #include <profiles/gnome-media-profiles.h>
 #include <profiles/audio-profile-choose.h>
+#endif
 
 #include "rhythmdb.h"
 #include "rb-debug.h"
@@ -54,7 +57,9 @@ static char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_paned_key (RBBrowserSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
+#ifdef ENABLE_TRACK_TRANSFER
 static void impl_paste (RBSource *source, GList *entries);
+#endif
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -63,6 +68,7 @@ static void rb_library_source_library_location_changed (GConfClient *client,
 						    guint cnxn_id,
 						    GConfEntry *entry,
 						    RBLibrarySource *source);
+#ifdef ENABLE_TRACK_TRANSFER
 static void rb_library_source_layout_path_changed (GConfClient *client,
 						   guint cnxn_id,
 						   GConfEntry *entry,
@@ -73,6 +79,7 @@ static void rb_library_source_layout_filename_changed (GConfClient *client,
 						       RBLibrarySource *source);
 static void rb_library_source_edit_profile_clicked_cb (GtkButton *button,
 						       RBLibrarySource *source);
+#endif
 static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
@@ -85,12 +92,14 @@ static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 static void rb_library_source_songs_show_popup_cb (RBEntryView *view,
 						   gboolean over_entry,
 						   RBLibrarySource *source);						
+#ifdef ENABLE_TRACK_TRANSFER
 static void rb_library_source_path_changed_cb (GtkComboBox *box,
 						RBLibrarySource *source);
 static void rb_library_source_filename_changed_cb (GtkComboBox *box,
 						   RBLibrarySource *source);
 static void rb_library_source_format_changed_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
+#endif
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
@@ -98,6 +107,7 @@ static void rb_library_source_format_changed_cb (GtkWidget *widget,
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
 
+#ifdef ENABLE_TRACK_TRANSFER
 typedef struct {
 	char *title;
 	char *path;
@@ -121,6 +131,7 @@ const LibraryPathElement library_layout_filenames[] = {
 	{N_("Number. Artist - Title"), "%tN. %ta - %tt"},
 };
 const int num_library_layout_filenames = G_N_ELEMENTS (library_layout_filenames);
+#endif
 
 struct RBLibrarySourcePrivate
 {
@@ -133,15 +144,19 @@ struct RBLibrarySourcePrivate
 
 	GtkWidget *library_location_entry;
 	GtkWidget *watch_library_check;
+#ifdef ENABLE_TRACK_TRANSFER
 	GtkWidget *layout_path_menu;
 	GtkWidget *layout_filename_menu;
 	GtkWidget *preferred_format_menu;
 	GtkWidget *layout_example_label;
+#endif
 
 	guint library_location_notify_id;
 	guint ui_dir_notify_id;
+#ifdef ENABLE_TRACK_TRANSFER
 	guint layout_path_notify_id;
 	guint layout_filename_notify_id;
+#endif
 };
 
 #define RB_LIBRARY_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_SOURCE, RBLibrarySourcePrivate))
@@ -163,7 +178,9 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) impl_can_paste;
+#ifdef ENABLE_TRACK_TRANSFER
 	source_class->impl_paste = impl_paste;
+#endif
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_true_function;
@@ -171,7 +188,9 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
 
+#ifdef ENABLE_TRACK_TRANSFER
 	gnome_media_profiles_init (eel_gconf_client_get_global ());
+#endif
 }
 
 static void
@@ -214,8 +233,10 @@ rb_library_source_finalize (GObject *object)
 	rb_debug ("finalizing library source");
 	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
 	eel_gconf_notification_remove (source->priv->library_location_notify_id);
+#ifdef ENABLE_TRACK_TRANSFER
 	eel_gconf_notification_remove (source->priv->layout_path_notify_id);
 	eel_gconf_notification_remove (source->priv->layout_filename_notify_id);
+#endif
 
 	G_OBJECT_CLASS (rb_library_source_parent_class)->finalize (object);
 }
@@ -284,6 +305,7 @@ rb_library_source_new (RBShell *shell)
 	return source;
 }
 
+#ifdef ENABLE_TRACK_TRANSFER
 static void
 rb_library_source_edit_profile_clicked_cb (GtkButton *button, RBLibrarySource *source)
 {
@@ -294,6 +316,7 @@ rb_library_source_edit_profile_clicked_cb (GtkButton *button, RBLibrarySource *s
 	gtk_widget_show_all (dialog);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 }
+#endif
 
 static void
 rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource *source)
@@ -329,7 +352,9 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
 	GladeXML *xml;
+#ifdef ENABLE_TRACK_TRANSFER
 	int i;
+#endif
 
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
@@ -340,6 +365,8 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
 	source->priv->config_widget =
 		glade_xml_get_widget (xml, "library_vbox");
+
+	rb_glade_boldify_label (xml, "library_location_label");
 
 	source->priv->library_location_entry = glade_xml_get_widget (xml, "library_location_entry");
 	tmp = glade_xml_get_widget (xml, "library_location_button");
@@ -357,6 +384,9 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  "toggled",
 			  G_CALLBACK (rb_library_source_watch_toggled_cb),
 			  asource);
+
+#ifdef ENABLE_TRACK_TRANSFER
+	rb_glade_boldify_label (xml, "library_structure_label");
 
 	tmp = glade_xml_get_widget (xml, "layout_path_menu_box");
 	source->priv->layout_path_menu = gtk_combo_box_new_text ();
@@ -397,9 +427,12 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  asource);
 
 	source->priv->layout_example_label = glade_xml_get_widget (xml, "layout_example_label");
+#else
+	tmp = glade_xml_get_widget (xml, "library_structure_vbox");
+	gtk_widget_set_no_show_all (tmp, TRUE);
+	gtk_widget_hide (tmp);
+#endif
 
-	rb_glade_boldify_label (xml, "library_location_label");
-	rb_glade_boldify_label (xml, "library_structure_label");
 	g_object_unref (G_OBJECT (xml));
 	
 	rb_library_source_preferences_sync (source);
@@ -438,8 +471,10 @@ static void
 rb_library_source_preferences_sync (RBLibrarySource *source)
 {
 	GSList *list;
+#ifdef ENABLE_TRACK_TRANSFER
 	const char *str;
 	GConfClient *gconf_client;
+#endif
 
 	rb_debug ("syncing pref dialog state");
 
@@ -480,6 +515,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check),
 				      eel_gconf_get_boolean (CONF_MONITOR_LIBRARY));
 
+#ifdef ENABLE_TRACK_TRANSFER
 	/* preferred format */
 	str = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
 	if (str)
@@ -501,6 +537,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 	rb_library_source_layout_filename_changed (gconf_client, -1,
 						   gconf_client_get_entry (gconf_client, CONF_LIBRARY_LAYOUT_FILENAME, NULL, TRUE, NULL),
 						   source);
+#endif
 }
 
 static void
@@ -669,6 +706,7 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 		_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
 }
 
+#ifdef ENABLE_TRACK_TRANSFER
 static void
 rb_library_source_path_changed_cb (GtkComboBox *box, RBLibrarySource *source)
 {
@@ -1055,10 +1093,12 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	gnome_vfs_uri_unref (uri);
 	return string;
 }
+#endif
 
 static gboolean
 impl_can_paste (RBSource *asource)
 {
+#ifdef ENABLE_TRACK_TRANSFER
 	GSList *list;
 
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
@@ -1067,8 +1107,12 @@ impl_can_paste (RBSource *asource)
 
 	g_slist_free (list);
 	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
+#ifdef ENABLE_TRACK_TRANSFER
 static void
 completed_cb (RhythmDBEntry *entry, const char *dest, RBLibrarySource *source)
 {
@@ -1112,3 +1156,5 @@ impl_paste (RBSource *asource, GList *entries)
 
 	g_object_unref (G_OBJECT (rm_mgr));
 }
+#endif
+

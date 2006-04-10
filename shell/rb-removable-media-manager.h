@@ -66,12 +66,14 @@ GType			rb_removable_media_manager_get_type	(void);
 
 gboolean		rb_removable_media_manager_load_media	(RBRemovableMediaManager *mgr);
 
+#ifdef ENABLE_TRACK_TRANSFER
 void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *mgr,
 						   RhythmDBEntry *entry,
 						   const char *dest,
 						   const char *mime_type,
 						   RBTranferCompleteCallback callback,
 						   gpointer userdata);
+#endif
 
 G_END_DECLS
 

@@ -6,7 +6,11 @@ DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install --enable-gtk-doc --disable
 distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper'
 
 SUBDIRS = macros lib metadata player rhythmdb widgets sources iradio podcast remote \
-	daapsharing backends plugins bindings shell data po help tests doc
+	daapsharing
+if ENABLE_TRACK_TRANSFER
+SUBDIRS += backends
+endif
+SUBDIRS += plugins bindings shell data po help tests doc
 
 EXTRA_DIST = 			\
 	autogen.sh		\

@@ -97,4 +97,8 @@ if USE_LIBSOUP
 INCLUDES += $(SOUP_CFLAGS)
 endif
 
+if ENABLE_TRACK_TRANSFER
+INCLUDES +=$(GNOME_MEDIA_PROFILES_CFLAGS)
+endif
+
 EXTRA_DIST = $(ipod_files) $(hal_files) $(daap_files)

@@ -60,6 +60,7 @@ static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
 static gboolean default_show_popup  (RBSource *source);
 static void default_delete_thyself (RBSource *source);
+static RBEntryView* default_get_entry_view (RBSource *source);
 static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static gboolean default_disconnect (RBSource *source);
@@ -132,7 +133,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	klass->impl_get_entry_view = rb_null_function;
+	klass->impl_get_entry_view = default_get_entry_view;
 	klass->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
@@ -824,6 +825,12 @@ rb_source_delete_thyself (RBSource *source)
 
 	klass->impl_delete_thyself (source);
 	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
+}
+
+static RBEntryView*
+default_get_entry_view (RBSource *source)
+{
+	return NULL;
 }
 
 static void default_activate (RBSource *source)

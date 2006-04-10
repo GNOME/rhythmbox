@@ -52,7 +52,6 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libgnomeui-2.0			\
 		  libglade-2.0				\
 		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
-		  gnome-media-profiles			\
 		  gnome-vfs-module-2.0)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
@@ -219,6 +218,25 @@ if test x"$enable_tag_writing" = xyes; then
    AC_MSG_WARN([Tag writing support is experimental, and may corrupt files, use at your own risk])
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
+
+dnl transfers
+AC_ARG_ENABLE(track-transfer,
+	      AC_HELP_STRING([--enable-track-transfer],
+			     [Enable track transfer support in rhythmbox **EXPERIMENTAL**]))
+if test x"$enable_track_transfer" = xyes; then
+   AC_MSG_WARN([Track transfer support is experimental, and may corrupt files, use at your own risk])
+   PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
+   gnome-media-profiles, 
+   have_gnome_media_profiles=yes,
+   have_gnome_media_profiles=no)
+
+   if test x$have_gnome_media_profiles == xno; then
+      AC_MSG_ERROR([Track transfer support explicitly requested but gnome-media-profiles not found.])
+   fi
+
+   AC_DEFINE(ENABLE_TRACK_TRANSFER, 1, [Define if track transfer should be enabled])
+fi
+AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$have_gnome_media_profiles" = "xyes")
 
 
 dnl Audioscrobbler
@@ -707,10 +725,11 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 		AC_TRY_COMPILE([], [],
 			has_option=yes,
 			has_option=no,)
-		if test $has_option = no; then
-			CFLAGS="$SAVE_CFLAGS"
+		if test x$has_option = xyes; then
+			RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $option"
 		fi
 		AC_MSG_RESULT($has_option)
+		CFLAGS="$SAVE_CFLAGS"
 		unset has_option
 		unset SAVE_CFLAGS
 	done
@@ -719,9 +738,10 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	SAVE_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS -Wno-error"
 	AC_TRY_COMPILE([], [],
-		WNOERROR_CFALGS="-Wno-error",
-		WNOERROR_CFALGS="")
+		WNOERROR_CFLAGS="-Wno-error",
+		WNOERROR_CFLAGS="")
 	AC_SUBST(WNOERROR_CFLAGS)
+	CFLAGS="$SAVE_CFLAGS"
 	unset SAVE_CFLAGS
 	unset has_wnoerror
 else
@@ -923,6 +943,11 @@ if test x"$enable_tag_writing" = xyes; then
         AC_MSG_NOTICE([** Tag writing is enabled - USE AT YOUR OWN RISK])
 else
 	AC_MSG_NOTICE([   Tag writing is disabled])
+fi
+if test x"$enable_track_transfer" = xyes; then
+        AC_MSG_NOTICE([** Track transfer is enabled - USE AT YOUR OWN RISK])
+else
+	AC_MSG_NOTICE([   Track transfer is disabled])
 fi
 if test x"$enable_mmkeys" != "xyes"; then
 	AC_MSG_NOTICE([   Multimedia keys support is disabled])

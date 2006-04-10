@@ -2055,7 +2055,6 @@ static void
 rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 					   RBShell *shell)
 {
-	gboolean playing_from_queue;
 	shell->priv->queue_as_sidebar = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
 	eel_gconf_set_boolean (CONF_UI_QUEUE_AS_SIDEBAR, shell->priv->queue_as_sidebar);
 

@@ -82,7 +82,7 @@ struct RBSourceHeaderPrivate
 	gboolean have_search;
 	gboolean have_browser;
 	gboolean disclosed;
-	const char *browser_key;
+	char *browser_key;
 
 	GHashTable *source_search_text;
 };

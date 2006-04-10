@@ -21,6 +21,7 @@
 
 #include <gmodule.h>
 #include <gtk/gtk.h>
+#include <string.h>
 
 #include "rb-glade-helpers.h"
 #include "rb-file-helpers.h"

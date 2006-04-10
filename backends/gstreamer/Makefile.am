@@ -21,7 +21,9 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/widgets				\
-	$(LIBJUICER_CFLAGS)				\
 	$(RHYTHMBOX_CFLAGS)
 
+if ENABLE_TRACK_TRANSFER
+INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
+endif
 

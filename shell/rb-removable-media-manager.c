@@ -48,8 +48,11 @@
 #include "rb-stock-icons.h"
 #include "rhythmdb.h"
 #include "rb-marshal.h"
-#include "rb-encoder.h"
 #include "rb-util.h"
+
+#ifdef ENABLE_TRACK_TRANSFER
+#include "rb-encoder.h"
+#endif
 
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
@@ -72,8 +75,6 @@ static void rb_removable_media_manager_cmd_scan_media (GtkAction *action,
 						       RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_eject_medium (GtkAction *action,
 					       RBRemovableMediaManager *mgr);
-static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
-							RBRemovableMediaManager *mgr);
 static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr, 
 					     GtkUIManager *uimanager);
 
@@ -91,7 +92,12 @@ static void  rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonit
 				GnomeVFSVolume *volume, 
 				gpointer data);
 static void rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
+
+#ifdef ENABLE_TRACK_TRANSFER
 static void do_transfer (RBRemovableMediaManager *manager);
+#endif
+static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
+							RBRemovableMediaManager *mgr);
 
 typedef struct
 {
@@ -816,7 +822,7 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 }
 
 
-
+#ifdef ENABLE_TRACK_TRANSFER
 /* Track transfer */
 
 typedef struct {
@@ -955,10 +961,12 @@ copy_entry (RhythmDBQueryModel *model,
 	*list = l;
 	return FALSE;
 }
+#endif
 
 static void
 rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaManager *mgr)
 {
+#ifdef ENABLE_TRACK_TRANSFER
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source;
 	RBLibrarySource *library;
@@ -975,4 +983,6 @@ rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaM
 
 	g_object_unref (G_OBJECT (model));
 	g_object_unref (G_OBJECT (library));
+#endif
 }
+

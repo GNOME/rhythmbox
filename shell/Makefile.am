@@ -141,6 +141,11 @@ if ENABLE_PYTHON
 rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
 endif
 
+if ENABLE_TRACK_TRANSFER
+rhythmbox_LDADD += $(GNOME_MEDIA_PROFILES_LIBS)
+INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
+endif
+
 
 if WITH_DBUS
 rb-shell-glue.h: rb-shell.xml Makefile

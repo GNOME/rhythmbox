@@ -1,5 +1,29 @@
 2006-04-10  James Livingston  <doclivingston@gmail.com>
 
+	* Makefile.am:
+	* backends/gstreamer/Makefile.am:
+	* configure.ac:
+	* data/glade/library-prefs.glade:
+	* shell/Makefile.am:
+	* shell/rb-removable-media-manager.c:
+	* shell/rb-removable-media-manager.h:
+	* sources/Makefile.am:
+	* sources/rb-audiocd-source.c:
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_finalize), (impl_get_config_widget),
+	(rb_library_source_preferences_sync), (impl_can_paste): add a
+	--enable-track-transfer configure option, abd make cd ripping disabled
+	by default.
+
+	* shell/rb-source-header.c:
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_delete_thyself), (default_get_entry_view):
+	* lib/rb-glade-helpers.c:
+	* shell/rb-shell.c: (rb_shell_view_queue_as_sidebar_changed_cb): Fix
+	some compiler warnings, and also bug 337427.
+
+2006-04-10  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-player.c: (rb_shell_player_shuffle_changed_cb),
 	(rb_shell_player_repeat_changed_cb): don't fail to set the play order
 	if the gconf key is missing. Fixes bug 337742.
