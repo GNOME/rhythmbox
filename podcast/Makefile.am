@@ -25,6 +25,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_srcdir)/library				\
+	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)
 
 librbpodcast_la_LDFLAGS = -export-dynamic

@@ -29,8 +29,6 @@
 #endif
 #ifdef HAVE_NOTIFY
 #include <libnotify/notify.h>
-#else
-#include "eggnotificationbubble.h"
 #endif
 
 G_BEGIN_DECLS
@@ -64,8 +62,6 @@ struct _EggTrayIcon
   GtkOrientation orientation;
 #ifdef HAVE_NOTIFY
   Notify *notify;
-#else
-  EggNotificationBubble *bubble;
 #endif
 };
 

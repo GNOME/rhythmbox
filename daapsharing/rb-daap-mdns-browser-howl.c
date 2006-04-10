@@ -38,7 +38,7 @@
 #include <howl.h>
 
 #include "rb-daap-mdns-browser.h"
-#include "rb-daap-marshal.h"
+#include "rb-marshal.h"
 #include "rb-debug.h"
 
 static void	rb_daap_mdns_browser_class_init (RBDaapMdnsBrowserClass *klass);
@@ -425,7 +425,7 @@ rb_daap_mdns_browser_class_init (RBDaapMdnsBrowserClass *klass)
 			      G_STRUCT_OFFSET (RBDaapMdnsBrowserClass, service_added),
 			      NULL,
 			      NULL,
-			      rb_daap_marshal_VOID__STRING_STRING_STRING_UINT_BOOLEAN,
+			      rb_marshal_VOID__STRING_STRING_STRING_UINT_BOOLEAN,
 			      G_TYPE_NONE,
 			      5, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_BOOLEAN);
 	signals [SERVICE_REMOVED] =
