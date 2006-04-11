@@ -1,5 +1,11 @@
 2006-04-11  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell.c: (rb_shell_sync_toolbar_state),
+	(rb_shell_sync_smalldisplay): fix toolbar-style/small-mode
+	interaction. Fixes bug 337999.
+
+2006-04-11  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Christohpe Fergeau  <teuf@gnome.org> to fix building without
 	track transfer. Fixes bug 338056.
 

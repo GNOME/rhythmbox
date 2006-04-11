@@ -2515,7 +2515,12 @@ rb_shell_sync_toolbar_state (RBShell *shell)
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
 				      visible);
 
-	toolbar_style = eel_gconf_get_integer (CONF_UI_TOOLBAR_STYLE);
+	/* icons-only in small mode */
+	if (shell->priv->window_small)
+		toolbar_style = 3;
+	else
+		toolbar_style = eel_gconf_get_integer (CONF_UI_TOOLBAR_STYLE);
+
 	switch (toolbar_style) {
 	case 0:
 		/* default*/
@@ -2618,16 +2623,15 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 		g_object_set (G_OBJECT (party_mode_action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
- 		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	} else {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (party_mode_action), "sensitive", TRUE, NULL);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
-		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
 	}
 	rb_shell_sync_statusbar_visibility (shell);
+	rb_shell_sync_toolbar_state (shell);
 
 	rb_source_header_sync_control_state (shell->priv->source_header);
 
