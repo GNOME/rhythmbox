@@ -1,3 +1,14 @@
+2006-04-12  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load): fix an issue
+	which caused the first-seen time to be reset when a metadata load was
+	done. Fixes bug 336874.
+
+	* shell/rb-shell.h: remove old function declaration.
+
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override: Fix some python binding stuff.
+
 2006-04-11  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-shell.c: (rb_shell_sync_toolbar_state),

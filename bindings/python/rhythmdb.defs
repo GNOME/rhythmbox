@@ -183,6 +183,73 @@
   (return-type "GType")
 )
 
+(define-function rhythmdb_new
+  (c-name "rhythmdb_new")
+  (is-constructor-of "Rhythmdb")
+  (return-type "RhythmDB*")
+  (parameters
+    '("const-char*" "name")
+  )
+)
+
+(define-method shutdown
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_shutdown")
+  (return-type "none")
+)
+
+(define-method load
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_load")
+  (return-type "none")
+)
+
+(define-method save
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_save")
+  (return-type "none")
+)
+
+(define-method save_async
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_save_async")
+  (return-type "none")
+)
+
+(define-method start_action_thread
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_start_action_thread")
+  (return-type "none")
+)
+
+(define-method query_preprocess
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_preprocess")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query")
+  )
+)
+
+(define-method query_serialize
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_serialize")
+  (return-type "none")
+  (parameters
+    '("GPtrArray*" "query")
+    '("xmlNodePtr" "node")
+  )
+)
+
+(define-method query_deserialize
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_deserialize")
+  (return-type "GPtrArray*")
+  (parameters
+    '("xmlNodePtr" "node")
+  )
+)
+
 (define-method get
   (of-object "RhythmDBEntry")
   (c-name "rhythmdb_entry_get")
@@ -474,6 +541,41 @@
   )
 )
 
+(define-function rhythmdb_entry_register_type
+  (c-name "rhythmdb_entry_register_type")
+  (return-type "RhythmDBEntryType")
+)
+
+(define-function rhythmdb_entry_song_get_type
+  (c-name "rhythmdb_entry_song_get_type")
+  (return-type "RhythmDBEntryType")
+)
+
+(define-function rhythmdb_entry_iradio_get_type
+  (c-name "rhythmdb_entry_iradio_get_type")
+  (return-type "RhythmDBEntryType")
+)
+
+(define-function rhythmdb_entry_podcast_post_get_type
+  (c-name "rhythmdb_entry_podcast_post_get_type")
+  (return-type "RhythmDBEntryType")
+)
+
+(define-function rhythmdb_entry_podcast_feed_get_type
+  (c-name "rhythmdb_entry_podcast_feed_get_type")
+  (return-type "RhythmDBEntryType")
+)
+
+(define-function rhythmdb_entry_import_error_get_type
+  (c-name "rhythmdb_entry_import_error_get_type")
+  (return-type "RhythmDBEntryType")
+)
+
+(define-function rhythmdb_entry_ignore_get_type
+  (c-name "rhythmdb_entry_ignore_get_type")
+  (return-type "RhythmDBEntryType")
+)
+
 
 ;; From ../../rhythmdb/rhythmdb-property-model.h
 
@@ -583,6 +685,24 @@
   (parameters
     '("RhythmDBEntry*" "entry")
     '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method tree_path_to_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_tree_path_to_entry")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("GtkTreePath*" "path")
+  )
+)
+
+(define-method iter_to_entry
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_iter_to_entry")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("GtkTreeIter*" "entry_iter")
   )
 )
 

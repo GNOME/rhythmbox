@@ -115,8 +115,6 @@ void            rb_shell_hidden_notify  (RBShell *shell,
 					 GtkWidget *icon,
 					 const char *secondary);
 
-void		rb_shell_construct	(RBShell *shell);
-
 void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,
 							 RhythmDBEntryType type);

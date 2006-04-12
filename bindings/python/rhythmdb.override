@@ -29,6 +29,15 @@ ignore-glob
   *_get_type
   *_quark
 %%
+ignore
+  rhythmdb_entry_get_string
+  rhythmdb_entry_get_boolean
+  rhythmdb_entry_get_uint64
+  rhythmdb_entry_get_ulong
+  rhythmdb_entry_get_double
+  rhythmdb_query_model_tree_path_to_entry
+  rhythmdb_query_model_iter_to_entry
+%%
 override rhythmdb_entry_get kwargs
 static PyObject *
 _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)

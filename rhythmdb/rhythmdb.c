@@ -1758,7 +1758,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 
 	if (entry) {
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != event->entry_type) {
+		if ((event->entry_type != -1) &&
+		    (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != event->entry_type)) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
 			rhythmdb_entry_delete (db, entry);
 			rhythmdb_add_timeout_commit (db, FALSE);
