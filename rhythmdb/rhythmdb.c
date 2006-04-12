@@ -2862,10 +2862,10 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	switch (propid) {
 	case RHYTHMDB_PROP_LAST_PLAYED:
 	{
-			rb_refstring_unref (entry->last_played_str);
-		if (entry->last_played == 0)
+		rb_refstring_unref (entry->last_played_str);
+		if (entry->last_played == 0) {
 			entry->last_played_str = rb_refstring_new (never);
-		else {
+		} else {
 			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_played));
 			entry->last_played_str = rb_refstring_new (val);
 			g_free (val);
@@ -2881,6 +2881,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		break;
 	}
 	case RHYTHMDB_PROP_LAST_SEEN:
+	case RHYTHMDB_PROP_HIDDEN:
 	{
 		/* only store last seen time as a string for hidden entries */
 		rb_refstring_unref (entry->last_seen_str);
