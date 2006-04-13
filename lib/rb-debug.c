@@ -266,9 +266,9 @@ _rb_profile_log (const char *func,
 	}
 
 	if (profile_indent == 0) {
-		str = g_strdup_printf ("MARK: [%s]: [%s %d] %s %s", file, func, line, msg1 ? msg1 : "", msg2 ? msg2 : "");
+		str = g_strdup_printf ("MARK: [%s %s %d] %s %s", file, func, line, msg1 ? msg1 : "", msg2 ? msg2 : "");
 	} else {
-		str = g_strdup_printf ("MARK: [%s]: %*c [%s %d] %s %s", file, profile_indent - 1, ' ', func, line, msg1 ? msg1 : "", msg2 ? msg2 : "");
+		str = g_strdup_printf ("MARK: %*c [%s %s %d] %s %s", profile_indent - 1, ' ', file, func, line, msg1 ? msg1 : "", msg2 ? msg2 : "");
 	}
 
 	access (str, F_OK);

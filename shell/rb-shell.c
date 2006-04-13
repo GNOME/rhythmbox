@@ -1362,7 +1362,7 @@ rb_shell_constructor (GType type,
 	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
 	rb_plugins_engine_init (shell);
-	
+
 	/* GO GO GO! */
 	rb_debug ("loading database");
 	rhythmdb_load (shell->priv->db);
@@ -1499,10 +1499,13 @@ rb_shell_set_visibility (RBShell *shell,
 {
 	gboolean current_visible;
 
+	rb_profile_start ("changing shell visibility");
 
 	current_visible = rb_shell_get_visibility (shell);
-	if (!force && visible == current_visible)
+	if (!force && visible == current_visible) {
+		rb_profile_end ("changing shell visibility");
 		return;
+	}
 
 	/* FIXME - see below */
 	if (shell->priv->idle_hide_mainwindow_id > 0)
@@ -1550,6 +1553,7 @@ rb_shell_set_visibility (RBShell *shell,
 		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, FALSE);
 	}
 
+	rb_profile_end ("changing shell visibility");
 }
 
 static gboolean
@@ -1601,6 +1605,8 @@ rb_shell_sync_window_state (RBShell *shell,
 {
 	GdkGeometry hints;
 
+	rb_profile_start ("syncing window state");
+
 	if (shell->priv->window_small) {
 		hints.min_height = -1;
 		hints.min_width = -1;
@@ -1639,6 +1645,7 @@ rb_shell_sync_window_state (RBShell *shell,
 	gtk_window_move (GTK_WINDOW (shell->priv->window),
 			 shell->priv->window_x,
 			 shell->priv->window_y);
+	rb_profile_end ("syncing window state");
 }
 
 static void
@@ -3184,6 +3191,8 @@ rb_shell_present (RBShell *shell,
 		  guint32 timestamp,
 		  GError **error)
 {
+	rb_profile_start ("presenting shell");
+
 	rb_debug ("presenting with timestamp %u", timestamp);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 #if GTK_MINOR_VERSION >= 8
@@ -3192,6 +3201,8 @@ rb_shell_present (RBShell *shell,
 	gtk_window_present (GTK_WINDOW (shell->priv->window));
 	gdk_window_focus (GTK_WIDGET (shell->priv->window)->window, timestamp);
 #endif
+
+	rb_profile_end ("presenting shell");
 
 	return TRUE;
 }

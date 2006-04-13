@@ -137,6 +137,7 @@ main (int argc, char **argv)
 #if WITH_DBUS || WITH_BONOBO
 	GError *error = NULL;
 #endif
+	rb_profile_start ("starting rhythmbox");
 
 	struct poptOption popt_options[] =
 	{
@@ -197,25 +198,34 @@ main (int argc, char **argv)
         /* To pass options to GStreamer in 0.10, RB needs to use GOption, for
          * now, GStreamer can live without them (people can still use env
          * vars, after all) */
+	rb_profile_start ("initializing gstreamer");
         gst_init (NULL, NULL);
+	rb_profile_end ("initializing gstreamer");
 #endif
 #ifdef WITH_BONOBO
+	rb_profile_start ("initializing bonobo remote");
 	rb_remote_bonobo_preinit ();
+	rb_profile_end ("initializing bonobo remote");
 #endif
 
 	gtk_set_locale ();
+	rb_profile_start ("initializing gnome program");
 	program = gnome_program_init (PACKAGE, VERSION,
 				      LIBGNOMEUI_MODULE, argc+1, new_argv,
 				      GNOME_PARAM_POPT_TABLE, popt_options,
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
+	rb_profile_end ("initializing gnome program");
+
 	g_object_get_property (G_OBJECT (program),
                                GNOME_PARAM_POPT_CONTEXT,
                                g_value_init (&context_as_value, G_TYPE_POINTER));
         poptContext = g_value_get_pointer (&context_as_value);
 
+	rb_profile_start ("initializing gnome auth manager");
 	gnome_authentication_manager_init ();
+	rb_profile_end ("initializing gnome auth manager");
 
 	g_random_set_seed (time(0));
 
@@ -242,6 +252,7 @@ main (int argc, char **argv)
 	activated = FALSE;
 
 #ifdef WITH_BONOBO
+	rb_profile_start ("creating bonobo remote");
 	rb_debug ("going to create Bonobo object");
 	bonobo = rb_remote_bonobo_new ();
 	client_proxy = NULL;
@@ -251,6 +262,7 @@ main (int argc, char **argv)
 			client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
 		}
 	}
+	rb_profile_end ("creating bonobo remote");
 #endif
 #ifdef WITH_DBUS
 	rb_debug ("going to create DBus object");
@@ -407,12 +419,14 @@ main (int argc, char **argv)
 		gdk_notify_startup_complete ();
 	} else {
 
+		rb_profile_start ("mainloop");
 #ifdef WITH_BONOBO
                 /* Unfortunately Bonobo takes over the main loop ... */
 		bonobo_main ();
 #else
 		gtk_main ();
 #endif
+		rb_profile_end ("mainloop");
 
 		rb_debug ("out of toplevel loop");
 
@@ -426,6 +440,7 @@ main (int argc, char **argv)
 	g_strfreev (new_argv);
 
 	rb_debug ("THE END");
+	rb_profile_end ("starting rhythmbox");
 	exit (0);
 }
 

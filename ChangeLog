@@ -1,3 +1,15 @@
+2006-04-13  William Jon McCann  <mccann@jhu.edu>
+
+	* lib/rb-debug.c: (_rb_profile_log):
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_init):
+	* rhythmdb/rhythmdb.c: (rhythmdb_load):
+	* shell/main.c: (main):
+	* shell/rb-shell.c: (rb_shell_constructor),
+	(rb_shell_set_visibility), (rb_shell_sync_window_state),
+	(rb_shell_present):
+	Fix profile output indentation.  Add more profiling points.
+	Fixes part of #338114
+
 2006-04-13  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-shell.c: (rb_shell_source_deleted_cb): deal with the

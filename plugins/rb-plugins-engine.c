@@ -334,6 +334,7 @@ rb_plugins_engine_init (RBShell *shell)
 		g_warning ("rb is not able to initialize the plugins engine.");
 		return FALSE;
 	}
+	rb_profile_start ("plugins engine init");
 
 	rb_plugins = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)rb_plugin_info_free);
 
@@ -343,6 +344,8 @@ rb_plugins_engine_init (RBShell *shell)
 	rb_plugins_engine_load_all ();
 
 	garbage_collect_id = g_timeout_add_full (G_PRIORITY_LOW, 20000, garbage_collect_cb, NULL, NULL);
+
+	rb_profile_end ("plugins engine init");
 
 	return TRUE;
 }

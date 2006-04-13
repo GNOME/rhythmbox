@@ -2427,6 +2427,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 void
 rhythmdb_load (RhythmDB *db)
 {
+	rb_profile_start ("loading db");
 	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_load_thread_main, db);
 
 #if 0
@@ -2448,6 +2449,7 @@ rhythmdb_load (RhythmDB *db)
 	result->type = RHYTHMDB_EVENT_DB_LOAD;
 	g_async_queue_push (db->priv->event_queue, result);
 #endif
+	rb_profile_end ("loading db");
 }
 
 static gpointer
