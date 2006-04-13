@@ -1802,7 +1802,10 @@ rb_shell_source_deleted_cb (RBSource *source,
 		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
 	}
 	if (source == shell->priv->selected_source) {
-		rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
+		if (source != RB_SOURCE (shell->priv->library_source))
+			rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
+		else
+			rb_shell_select_source (shell, NULL);
 	}
 
 	shell->priv->sources = g_list_remove (shell->priv->sources, source);

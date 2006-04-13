@@ -1,3 +1,9 @@
+2006-04-13  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-shell.c: (rb_shell_source_deleted_cb): deal with the
+	library source being deleted, by setting the active source to NULL.
+	From bug 338116.
+
 2006-04-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_sync_mirrored):
