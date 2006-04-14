@@ -50,7 +50,7 @@ _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)
     GValue value = {0,};
     PyObject *ret;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDB.entry_get", kwlist, &entry, &py_propid))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO:RhythmDB.entry_get", kwlist, &entry, &py_propid))
         return NULL;
     if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
         return NULL;
@@ -78,7 +78,7 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
     RhythmDBPropType propid;
     GValue value = {0,};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDBEntry.set", kwlist, &py_entry, &py_propid, &py_value))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set", kwlist, &py_entry, &py_propid, &py_value))
         return NULL;
     if (pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY))
         entry = pyg_pointer_get(py_entry, RhythmDBEntry);
@@ -112,7 +112,7 @@ _wrap_rhythmdb_entry_set_nonotify(PyGObject *self, PyObject *args, PyObject *kwa
     RhythmDBPropType propid;
     GValue value = {0,};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDBEntry.set_nonotify", kwlist, &py_entry, &py_propid, &py_value))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set_nonotify", kwlist, &py_entry, &py_propid, &py_value))
         return NULL;
     if (pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY))
         entry = pyg_pointer_get(py_entry, RhythmDBEntry);
@@ -146,7 +146,7 @@ _wrap_rhythmdb_entry_set_uninserted(PyGObject *self, PyObject *args, PyObject *k
     RhythmDBPropType propid;
     GValue value = {0,};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDBEntry.set_uninserted", kwlist, &py_entry, &py_propid, &py_value))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set_uninserted", kwlist, &py_entry, &py_propid, &py_value))
         return NULL;
     if (pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY))
         entry = pyg_pointer_get(py_entry, RhythmDBEntry);
