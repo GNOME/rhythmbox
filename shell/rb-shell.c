@@ -3426,7 +3426,7 @@ rb_shell_get_song_properties (RBShell *shell,
 
 		value = g_new0 (GValue, 1);
 		g_value_init (value, rhythmdb_get_property_type (shell->priv->db, prop));
-		rhythmdb_entry_get (entry, prop, value);
+		rhythmdb_entry_get (shell->priv->db, entry, prop, value);
 		g_hash_table_insert (*properties,
 				     (gpointer) rhythmdb_nice_elt_name_from_propid (shell->priv->db, prop),
 				     value);

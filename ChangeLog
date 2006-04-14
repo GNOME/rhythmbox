@@ -1,3 +1,17 @@
+2006-04-14  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_get),
+	(entry_to_rb_metadata), (record_entry_change),
+	(rhythmdb_entry_set_visibility):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-shell.c: (rb_shell_get_song_properties): change
+	rhythmdb_entry_get to take the db as the first parameter. Fixes the
+	python bindings of it. The rhythmdb_entry_get_* ones are left the same
+	since they are used in too many places, and not in the Python
+	bindings.
+
 2006-04-13  William Jon McCann  <mccann@jhu.edu>
 
 	* lib/rb-debug.c: (_rb_profile_log):

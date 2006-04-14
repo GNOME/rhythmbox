@@ -174,7 +174,6 @@ typedef struct {
 	GValue new;
 } RhythmDBEntryChange;
 
-void rhythmdb_entry_get (RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
 const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 char *rhythmdb_entry_dup_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
@@ -266,6 +265,7 @@ RhythmDBEntry *	rhythmdb_entry_example_new	(RhythmDB *db, RhythmDBEntryType type
 void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 void		rhythmdb_add_uri_with_type	(RhythmDB *db, const char *uri, RhythmDBEntryType type);
 
+void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, const GValue *value);
 void		rhythmdb_entry_set_nonotify	(RhythmDB *db, RhythmDBEntry *entry,

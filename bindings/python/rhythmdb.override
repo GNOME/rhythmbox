@@ -42,17 +42,22 @@ override rhythmdb_entry_get kwargs
 static PyObject *
 _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
-    static char *kwlist[] = { "propid", NULL };
+    static char *kwlist[] = { "entry", "propid", NULL };
     PyObject *py_propid = NULL;
+    PyObject *entry = NULL;
+    RhythmDB *db;
     RhythmDBPropType propid;
     GValue value = {0,};
     PyObject *ret;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDBEntry.get", kwlist, &py_propid))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDB.entry_get", kwlist, &entry, &py_propid))
         return NULL;
     if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
         return NULL;
-    rhythmdb_entry_get(pyg_pointer_get(self, RhythmDBEntry), propid, &value);
+
+    db = RHYTHMDB (self->obj);
+    g_value_init (&value, rhythmdb_get_property_type (db, propid));
+    rhythmdb_entry_get(db, pyg_pointer_get (entry, RhythmDBEntry), propid, &value);
     ret = pyg_value_as_pyobject (&value, TRUE);
     g_value_unset (&value);
     if (ret)

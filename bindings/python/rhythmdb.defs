@@ -251,10 +251,11 @@
 )
 
 (define-method get
-  (of-object "RhythmDBEntry")
+  (of-object "RhythmDB")
   (c-name "rhythmdb_entry_get")
   (return-type "none")
   (parameters
+    '("RhythmDBEntry*" "entry")
     '("RhythmDBPropType" "propid")
     '("GValue*" "val")
   )

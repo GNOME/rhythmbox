@@ -2172,10 +2172,10 @@ rhythmdb_execute_load (RhythmDB *db, const char *uri, RhythmDBEvent *event)
  * Gets a property of an entry, storing it in the given #GValue.
  **/
 void
-rhythmdb_entry_get (RhythmDBEntry *entry, 
+rhythmdb_entry_get (RhythmDB *db, RhythmDBEntry *entry, 
 		    RhythmDBPropType propid, GValue *val)
 {
-	g_assert (G_VALUE_TYPE (val) == rhythmdb_property_type_map[propid]);
+	g_assert (G_VALUE_TYPE (val) == rhythmdb_get_property_type (db, propid));
 	switch (rhythmdb_property_type_map[propid]) {
 	case G_TYPE_STRING:
 		g_value_set_string (val, rhythmdb_entry_get_string (entry, propid));
@@ -2212,7 +2212,7 @@ entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry, RBMetaData *metadata)
 		}
 
 		g_value_init (&val, rhythmdb_property_type_map[i]);
-		rhythmdb_entry_get (entry, i, &val);
+		rhythmdb_entry_get (db, entry, i, &val);
 		rb_metadata_set (metadata, 
 				 field,
 				 &val);
@@ -2624,7 +2624,7 @@ record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
 	{
 		GValue tem = {0,};
 		g_value_init (&tem, G_VALUE_TYPE (value));
-		rhythmdb_entry_get (entry, propid, &tem);
+		rhythmdb_entry_get (db, entry, propid, &tem);
 		g_value_init (&changedata->old, G_VALUE_TYPE (value));
 		g_value_copy (&tem, &changedata->old);
 		g_value_unset (&tem);
@@ -4171,7 +4171,7 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 
 	g_value_init (&old_val, G_TYPE_BOOLEAN);
 	
-	rhythmdb_entry_get (entry, RHYTHMDB_PROP_HIDDEN, &old_val);
+	rhythmdb_entry_get (db, entry, RHYTHMDB_PROP_HIDDEN, &old_val);
 	old_visible = !g_value_get_boolean (&old_val);
 	
 	if ((old_visible && !visible) || (!old_visible && visible)) {
