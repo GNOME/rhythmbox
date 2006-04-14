@@ -931,7 +931,7 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "MusicNewInternetRadioStation");
+	actions = g_list_prepend (actions, g_strdup ("MusicNewInternetRadioStation"));
 
 	return actions;
 }

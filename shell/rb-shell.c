@@ -89,6 +89,7 @@
 #include "rb-plugins-engine.h"
 #include "rb-plugin-manager.h"
 #include "rb-proxy-config.h"
+#include "rb-util.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
@@ -1958,7 +1959,7 @@ rb_shell_select_source (RBShell *shell,
 	/* merge the source-specific UI */
 	actions = rb_source_get_ui_actions (source);
 	g_list_foreach (actions, (GFunc)merge_source_ui_cb, shell);
-	g_list_free (actions);
+	rb_list_deep_free (actions);
 }
 
 static void

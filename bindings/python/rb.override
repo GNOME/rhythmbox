@@ -267,3 +267,358 @@ _wrap_rb_shell_player_get_playing_path(PyGObject *self)
 
     return PyString_FromString (path);
 }
+%%
+override RBSource__do_impl_cut
+static PyObject *
+_wrap_RBSource__do_impl_cut(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", NULL };
+	PyGObject *self;
+	GList *ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_cut", kwlist, &PyRBSource_Type, &self))
+		return NULL;
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_SOURCE_CLASS(klass)->impl_cut)
+		ret = RB_SOURCE_CLASS(klass)->impl_cut(RB_SOURCE(self->obj));
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_cut not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+	return _helper_wrap_pointer_glist (ret, RHYTHMDB_TYPE_ENTRY);
+}
+%%
+override RBSource__proxy_do_impl_cut
+static GList *
+_wrap_RBSource__proxy_do_impl_cut (RBSource *self)
+{
+	PyGILState_STATE __py_state;
+	PyObject *py_self;
+	PyObject *py_method;
+	PyObject *py_retval;
+	GList *ret = NULL;
+
+	__py_state = pyg_gil_state_ensure();
+	py_self = pygobject_new((GObject *)self);
+	if (!py_self) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_method = PyObject_GetAttrString(py_self, "do_impl_cut");
+	if (!py_method) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return FALSE;
+	}
+
+	py_retval = PyObject_CallObject(py_method, NULL);
+	if (!py_retval) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_method);
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	ret = _helper_unwrap_pointer_pylist (RHYTHMDB_TYPE_ENTRY, py_retval);
+    
+	Py_DECREF(py_retval);
+	Py_DECREF(py_method);
+	Py_DECREF(py_self);
+	pyg_gil_state_release(__py_state);
+
+	return ret;
+}
+%%
+override RBSource__do_impl_copy
+static PyObject *
+_wrap_RBSource__do_impl_copy(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", NULL };
+	PyGObject *self;
+	GList *ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_copy", kwlist, &PyRBSource_Type, &self))
+		return NULL;
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_SOURCE_CLASS(klass)->impl_copy)
+		ret = RB_SOURCE_CLASS(klass)->impl_copy(RB_SOURCE(self->obj));
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_copy not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+	return _helper_wrap_pointer_glist (ret, RHYTHMDB_TYPE_ENTRY);
+}
+%%
+override RBSource__proxy_do_impl_copy
+static GList *
+_wrap_RBSource__proxy_do_impl_copy (RBSource *self)
+{
+	PyGILState_STATE __py_state;
+	PyObject *py_self;
+	PyObject *py_method;
+	PyObject *py_retval;
+	GList *ret = NULL;
+
+	__py_state = pyg_gil_state_ensure();
+	py_self = pygobject_new((GObject *)self);
+	if (!py_self) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_method = PyObject_GetAttrString(py_self, "do_impl_copy");
+	if (!py_method) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return FALSE;
+	}
+
+	py_retval = PyObject_CallObject(py_method, NULL);
+	if (!py_retval) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_method);
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	ret = _helper_unwrap_pointer_pylist (RHYTHMDB_TYPE_ENTRY, py_retval);
+    
+	Py_DECREF(py_retval);
+	Py_DECREF(py_method);
+	Py_DECREF(py_self);
+	pyg_gil_state_release(__py_state);
+
+	return ret;
+}
+%%
+override RBSource__do_impl_get_property_views
+static PyObject *
+_wrap_RBSource__do_impl_get_property_views(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", NULL };
+	PyGObject *self;
+	GList *ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_property_views", kwlist, &PyRBSource_Type, &self))
+		return NULL;
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_SOURCE_CLASS(klass)->impl_get_property_views)
+		ret = RB_SOURCE_CLASS(klass)->impl_get_property_views(RB_SOURCE(self->obj));
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_property_views not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+	return _helper_wrap_pointer_glist (ret, RHYTHMDB_TYPE_ENTRY);
+}
+%%
+override RBSource__proxy_do_impl_get_property_views
+static GList *
+_wrap_RBSource__proxy_do_impl_get_property_views (RBSource *self)
+{
+	PyGILState_STATE __py_state;
+	PyObject *py_self;
+	PyObject *py_method;
+	PyObject *py_retval;
+	GList *ret = NULL;
+
+	__py_state = pyg_gil_state_ensure();
+	py_self = pygobject_new((GObject *)self);
+	if (!py_self) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_method = PyObject_GetAttrString(py_self, "do_impl_get_property_views");
+	if (!py_method) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return FALSE;
+	}
+
+	py_retval = PyObject_CallObject(py_method, NULL);
+	if (!py_retval) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_method);
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	ret = _helper_unwrap_pointer_pylist (RB_TYPE_PROPERTY_VIEW, py_retval);
+    
+	Py_DECREF(py_retval);
+	Py_DECREF(py_method);
+	Py_DECREF(py_self);
+	pyg_gil_state_release(__py_state);
+
+	return ret;
+}
+%%
+override RBSource__do_impl_get_ui_actions
+static PyObject *
+_wrap_RBSource__do_impl_get_ui_actions(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", NULL };
+	PyGObject *self;
+	GList *ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_ui_actions", kwlist, &PyRBSource_Type, &self))
+		return NULL;
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_SOURCE_CLASS(klass)->impl_get_ui_actions)
+		ret = RB_SOURCE_CLASS(klass)->impl_get_ui_actions(RB_SOURCE(self->obj));
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_ui_actions not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+	return _helper_wrap_string_glist (ret);
+}
+%%
+override RBSource__proxy_do_impl_get_ui_actions
+static GList *
+_wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
+{
+	PyGILState_STATE __py_state;
+	PyObject *py_self;
+	PyObject *py_method;
+	PyObject *py_retval;
+	GList *ret = NULL;
+
+	__py_state = pyg_gil_state_ensure();
+	py_self = pygobject_new((GObject *)self);
+	if (!py_self) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_method = PyObject_GetAttrString(py_self, "do_impl_get_ui_actions");
+	if (!py_method) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return FALSE;
+	}
+
+	py_retval = PyObject_CallObject(py_method, NULL);
+	if (!py_retval) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_method);
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	ret = _helper_unwrap_string_pylist (py_retval);
+    
+	Py_DECREF(py_retval);
+	Py_DECREF(py_method);
+	Py_DECREF(py_self);
+	pyg_gil_state_release(__py_state);
+
+	return ret;
+}
+%%
+override RBSource__do_impl_get_search_actions
+static PyObject *
+_wrap_RBSource__do_impl_get_search_actions(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", NULL };
+	PyGObject *self;
+	GList *ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_search_actions", kwlist, &PyRBSource_Type, &self))
+		return NULL;
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_SOURCE_CLASS(klass)->impl_get_search_actions)
+		ret = RB_SOURCE_CLASS(klass)->impl_get_search_actions(RB_SOURCE(self->obj));
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_search_actions not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+	return _helper_wrap_string_glist (ret);
+}
+%%
+override RBSource__proxy_do_impl_get_search_actions
+static GList *
+_wrap_RBSource__proxy_do_impl_get_search_actions (RBSource *self)
+{
+	PyGILState_STATE __py_state;
+	PyObject *py_self;
+	PyObject *py_method;
+	PyObject *py_retval;
+	GList *ret = NULL;
+
+	__py_state = pyg_gil_state_ensure();
+	py_self = pygobject_new((GObject *)self);
+	if (!py_self) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_method = PyObject_GetAttrString(py_self, "do_impl_get_search_actions");
+	if (!py_method) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return FALSE;
+	}
+
+	py_retval = PyObject_CallObject(py_method, NULL);
+	if (!py_retval) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_method);
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	ret = _helper_unwrap_string_pylist (py_retval);
+    
+	Py_DECREF(py_retval);
+	Py_DECREF(py_method);
+	Py_DECREF(py_self);
+	pyg_gil_state_release(__py_state);
+
+	return ret;
+}

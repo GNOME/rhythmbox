@@ -1930,8 +1930,8 @@ impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "PodcastUpdateAllFeeds");
-	actions = g_list_prepend (actions, "MusicNewPodcast");
+	actions = g_list_prepend (actions, g_strdup ("PodcastUpdateAllFeeds"));
+	actions = g_list_prepend (actions, g_strdup ("MusicNewPodcast"));
 
 	return actions;
 }
@@ -1941,9 +1941,9 @@ impl_get_search_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "PodcastSearchEpisodes");
-	actions = g_list_prepend (actions, "PodcastSearchFeeds");
-	actions = g_list_prepend (actions, "PodcastSearchAll");
+	actions = g_list_prepend (actions, g_strdup ("PodcastSearchEpisodes"));
+	actions = g_list_prepend (actions, g_strdup ("PodcastSearchFeeds"));
+	actions = g_list_prepend (actions, g_strdup ("PodcastSearchAll"));
 
 	return actions;
 }

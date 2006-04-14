@@ -227,7 +227,7 @@
   (c-name "rhythmdb_query_preprocess")
   (return-type "none")
   (parameters
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
   )
 )
 
@@ -236,7 +236,7 @@
   (c-name "rhythmdb_query_serialize")
   (return-type "none")
   (parameters
-    '("GPtrArray*" "query")
+    '("RhythmDBQuery*" "query")
     '("xmlNodePtr" "node")
   )
 )
@@ -244,7 +244,7 @@
 (define-method query_deserialize
   (of-object "RhythmDB")
   (c-name "rhythmdb_query_deserialize")
-  (return-type "GPtrArray*")
+  (return-type "RhythmDBQuery*")
   (parameters
     '("xmlNodePtr" "node")
   )

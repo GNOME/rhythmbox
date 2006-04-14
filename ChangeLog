@@ -1,5 +1,29 @@
 2006-04-14  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/override_common.c:
+	(_helper_unwrap_pointer_pylist):
+	* bindings/python/override_common.h:
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.override: Bind some more functions and
+	virtual functions.
+
+	* shell/rb-shell.c: (rb_shell_select_source):
+	* shell/rb-source-header.c: (rb_source_header_set_source_internal):
+	* sources/rb-audiocd-source.c:
+	* sources/rb-auto-playlist-source.c: (impl_get_search_actions):
+	* sources/rb-browser-source.c: (impl_get_search_actions):
+	* sources/rb-iradio-source.c: (impl_get_ui_actions):
+	* sources/rb-play-queue-source.c: (impl_get_ui_actions):
+	* sources/rb-playlist-source.c: (impl_get_ui_actions):
+	* sources/rb-podcast-source.c: (impl_get_ui_actions),
+	(impl_get_search_actions):
+	* sources/rb-static-playlist-source.c: (impl_get_search_actions): Make
+	the impl_get_ui_actions and impl_get_search_actions functions return
+	lists that contain copies of the strings, instead of constant ones.
+	Needed to bindings
+
+2006-04-14  James Livingston  <doclivingston@gmail.com>
+
 	* bindings/python/rhythmdb.defs:
 	* bindings/python/rhythmdb.override: fix the method argument format
 	specifiers.

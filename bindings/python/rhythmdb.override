@@ -203,3 +203,51 @@ _wrap_rhythmdb_query_results_add_results (PyGObject *self, PyObject *args, PyObj
     return Py_None;
 
 }
+%%
+override rhythmdb_entry_foreach kwargs
+
+typedef struct {
+	PyObject *func;
+	PyObject *data;
+} PyRhythmDBEntryForeachData;
+
+static void
+_rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  *data)
+{
+	PyObject *args;
+	PyObject *result;
+	PyObject *py_entry;
+
+	py_entry = pyg_pointer_new (RHYTHMDB_TYPE_ENTRY, entry);
+	if (data->data)
+		args = Py_BuildValue ("(OO)", py_entry, data->data);
+	else
+		args = Py_BuildValue ("(O)", py_entry);
+
+	result = PyEval_CallObject (data->func, args);
+	Py_DECREF (args);
+
+	Py_DECREF (result);
+}
+
+static PyObject*
+_wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = {"func", NULL};
+	PyRhythmDBEntryForeachData data;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O:RhythmDB.entry_foreach",
+					 kwlist, &data.func, &data.data))
+		return NULL;
+
+	/* verify arguments' integrity */
+	if (!PyCallable_Check (data.func)) {
+		PyErr_SetString (PyExc_TypeError, "func must be callable");
+		return NULL;
+	}
+
+	rhythmdb_entry_foreach (RHYTHMDB (self->obj), (GFunc)_rhythmdb_entry_foreach_func, &data);
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}

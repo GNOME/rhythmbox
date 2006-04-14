@@ -37,6 +37,7 @@
 #include "rb-debug.h"
 #include "rb-entry-view.h"
 #include "eel-gconf-extensions.h"
+#include "rb-util.h"
 
 static void rb_source_header_class_init (RBSourceHeaderClass *klass);
 static void rb_source_header_init (RBSourceHeader *shell_player);
@@ -354,7 +355,7 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 	/* merge the source-specific UI */
 	actions = rb_source_get_search_actions (source);
 	g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
-	g_list_free (actions);
+	rb_list_deep_free (actions);
 
 	rb_source_header_sync_control_state (header);
 }

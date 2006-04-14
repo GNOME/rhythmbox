@@ -706,10 +706,10 @@ impl_get_search_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "StaticPlaylistSearchTitles");
-	actions = g_list_prepend (actions, "StaticPlaylistSearchAlbums");
-	actions = g_list_prepend (actions, "StaticPlaylistSearchArtists");
-	actions = g_list_prepend (actions, "StaticPlaylistSearchAll");
+	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchTitles"));
+	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchAlbums"));
+	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchArtists"));
+	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchAll"));
 
 	return actions;
 }

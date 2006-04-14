@@ -660,10 +660,10 @@ impl_get_search_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "AutoPlaylistSearchTitles");
-	actions = g_list_prepend (actions, "AutoPlaylistSearchAlbums");
-	actions = g_list_prepend (actions, "AutoPlaylistSearchArtists");
-	actions = g_list_prepend (actions, "AutoPlaylistSearchAll");
+	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchTitles"));
+	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchAlbums"));
+	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchArtists"));
+	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchAll"));
 
 	return actions;
 }

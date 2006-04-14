@@ -139,6 +139,31 @@ _helper_wrap_boxed_gptrarray (GType type, GPtrArray *list, gboolean own_ref, gbo
 }
 
 GList *
+_helper_unwrap_pointer_pylist (GType type,
+			       PyObject *py_list)
+{
+	int size, i;
+	GList *list = NULL;
+
+	size = PyList_Size (py_list);
+	for (i = 0; i < size; i++) {
+        	PyObject *py_ptr;
+        	gpointer ptr;
+
+		py_ptr = PyList_GetItem (py_list, i);
+		if (!pyg_pointer_check (py_ptr, type)) {
+			g_list_free (list);
+			return NULL;
+		}
+		ptr = pyg_pointer_get (py_ptr, void);
+		list = g_list_prepend (list, ptr);
+	}
+
+	list = g_list_reverse (list);
+	return list;
+}
+
+GList *
 _helper_unwrap_string_pylist (PyObject *py_list)
 {
     int size, i;

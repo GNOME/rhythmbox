@@ -742,10 +742,10 @@ impl_get_search_actions (RBSource *source)
 {
 	GList *actions = NULL;
 
-	actions = g_list_prepend (actions, "BrowserSourceSearchTitles");
-	actions = g_list_prepend (actions, "BrowserSourceSearchAlbums");
-	actions = g_list_prepend (actions, "BrowserSourceSearchArtists");
-	actions = g_list_prepend (actions, "BrowserSourceSearchAll");
+	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchTitles"));
+	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchAlbums"));
+	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchArtists"));
+	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchAll"));
 
 	return actions;
 }
