@@ -1,5 +1,11 @@
 2006-04-14  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_constructor): make
+	the track-loading thread hold a reference on the source, so it doesn't
+	explode if the cd is removed before it is done. Fixes bug 337237.
+
+2006-04-14  James Livingston  <doclivingston@gmail.com>
+
 	* bindings/python/override_common.c:
 	(_helper_unwrap_pointer_pylist):
 	* bindings/python/override_common.h:

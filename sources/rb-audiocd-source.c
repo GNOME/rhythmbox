@@ -147,6 +147,7 @@ rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 	entry_view = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
 
+	g_object_ref (G_OBJECT (source));
 	g_thread_create ((GThreadFunc)rb_audiocd_load_songs, source, FALSE, NULL);
 
 	return G_OBJECT (source);
@@ -532,6 +533,7 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 
 error_out:
 	g_object_unref (G_OBJECT (db));
+	g_object_unref (G_OBJECT (source));
 
 	return NULL;
 }
