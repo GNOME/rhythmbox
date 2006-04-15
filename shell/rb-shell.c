@@ -90,6 +90,7 @@
 #include "rb-plugin-manager.h"
 #include "rb-proxy-config.h"
 #include "rb-util.h"
+#include "rb-sourcelist-model.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
@@ -317,7 +318,8 @@ enum
 	PROP_PREFS,
 	PROP_QUEUE_SOURCE,
 	PROP_PROXY_CONFIG,
-	PROP_LIBRARY_SOURCE
+	PROP_LIBRARY_SOURCE,
+	PROP_SOURCELIST_MODEL,
 };
 
 /* prefs */
@@ -656,6 +658,14 @@ rb_shell_class_init (RBShellClass *klass)
 							      "Library source", 
 							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_SOURCELIST_MODEL,
+					 g_param_spec_object ("sourcelist-model", 
+							      "sourcelist-model", 
+							      "RBSourcelistModel", 
+							      RB_TYPE_SOURCELIST_MODEL,
+							      G_PARAM_READABLE));
+
 
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
@@ -823,6 +833,14 @@ rb_shell_get_property (GObject *object,
 		break;
  	case PROP_LIBRARY_SOURCE:
  		g_value_set_object (value, shell->priv->library_source);
+ 		break;
+ 	case PROP_SOURCELIST_MODEL:
+		{
+			GtkTreeModel *model = NULL;
+			
+			g_object_get (G_OBJECT (shell->priv->sourcelist), "model", &model, NULL);
+ 			g_value_set_object (value, model);
+		}
  		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
