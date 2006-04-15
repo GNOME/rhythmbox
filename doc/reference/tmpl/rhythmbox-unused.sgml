@@ -4,6 +4,12 @@
 </para>
 
 
+<!-- ##### STRUCT EggNotificationBubbleData ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### TYPEDEF RBDAAPmDNSBrowser ##### -->
 <para>
 
@@ -79,6 +85,14 @@
 
 @RB_DAAP_MDNS_RESOLVER_FOUND: 
 @RB_DAAP_MDNS_RESOLVER_TIMEOUT: 
+
+<!-- ##### ENUM RBDirection ##### -->
+<para>
+
+</para>
+
+@RB_DIRECTION_UP: 
+@RB_DIRECTION_DOWN: 
 
 <!-- ##### TYPEDEF RBLoadFailureDialogPrivate ##### -->
 <para>
@@ -263,6 +277,56 @@
 
 </para>
 
+
+<!-- ##### FUNCTION egg_notification_bubble_attach ##### -->
+<para>
+
+</para>
+
+@bubble: 
+@widget: 
+
+<!-- ##### FUNCTION egg_notification_bubble_get_info_from_tip_window ##### -->
+<para>
+
+</para>
+
+@window: 
+@bubble: 
+@current_widget: 
+@Returns: 
+
+<!-- ##### FUNCTION egg_notification_bubble_hide ##### -->
+<para>
+
+</para>
+
+@bubble: 
+
+<!-- ##### FUNCTION egg_notification_bubble_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION egg_notification_bubble_set ##### -->
+<para>
+
+</para>
+
+@bubble: 
+@notification_header: 
+@icon: 
+@notification_body: 
+
+<!-- ##### FUNCTION egg_notification_bubble_show ##### -->
+<para>
+
+</para>
+
+@bubble: 
+@timeout: 
 
 <!-- ##### FUNCTION g_str_equal ##### -->
 <para>
@@ -527,6 +591,13 @@
 @porder: 
 @Returns: 
 
+<!-- ##### FUNCTION rb_playlist_manager_load_legacy_playlists ##### -->
+<para>
+
+</para>
+
+@mgr: 
+
 <!-- ##### FUNCTION rb_playlist_source_add_entry ##### -->
 <para>
 
@@ -619,6 +690,13 @@
 @init: 
 @compute_sortdata: 
 @Returns: 
+
+<!-- ##### FUNCTION rb_shell_construct ##### -->
+<para>
+
+</para>
+
+@shell: 
 
 <!-- ##### FUNCTION rb_shell_player_get_mm_player ##### -->
 <para>

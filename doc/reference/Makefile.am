@@ -22,7 +22,6 @@ IGNORE_HFILES= \
 	rb-commander.h \
 	rb-marshal.h \
 	rb-nautilus-context-menu.h \
-	rb-recorder-marshal.h \
 	rb-remote-bonobo.h \
 	rb-remote-client-proxy.h \
 	rb-remote-common.h \
@@ -30,7 +29,6 @@ IGNORE_HFILES= \
 	rb-remote-proxy.h \
 	Rhythmbox.h \
 	rhythmdb-gda.h \
-	rhythmdb-marshal.h \
 	rhythmdb-private.h
 
 INCLUDES=\
@@ -65,7 +63,6 @@ GTKDOC_LIBS=\
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/daapsharing/libdaapsharing.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
-	$(top_builddir)/backends/librbbackends.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\
@@ -75,6 +72,10 @@ GTKDOC_LIBS=\
 	$(IPOD_LIBS)					\
 	$(NOTIFY_LIBS)					\
 	$(RHYTHMBOX_LIBS)
+
+if ENABLE_TRACK_TRANSFER
+GTKDOC_LIBS +=	$(GNOME_MEDIA_PROFILES_LIBS) $(top_builddir)/backends/librbbackends.la
+endif
 
 if ENABLE_PYTHON
 GTKDOC_LIBS += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la

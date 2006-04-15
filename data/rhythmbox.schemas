@@ -649,5 +649,38 @@
 	<long>When enabled, Rhythmbox will display notification bubbles when the playing track changes, a podcast is downloaded, a CD finished burning, etc.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/rblirc/enabled</key>
+        <applyto>/apps/rhythmbox/plugins/rblirc/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>True if the LIRC plugin is enabled.</short>
+	<long>True if the LIRC plugin is enabled.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/audioscrobbler/enabled</key>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>True if the AudioScrobbler plugin is enabled.</short>
+	<long>True if the AudioScrobbler plugin is enabled.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/pythonconsole/enabled</key>
+        <applyto>/apps/rhythmbox/plugins/pythonconsole/enabled</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>True if the Python console plugin is enabled.</short>
+	<long>True if the Python console plugin is enabled.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>
