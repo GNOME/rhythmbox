@@ -1,3 +1,10 @@
+2006-04-16  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Christian Kirbach  <Christian.Kirbach@student.uni-siegen.de>
+
+	* po/LINGUAS: don't split the variable across two lines, as it breaks
+	the build. Fixes bug 338625.
+
 2006-04-15  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property):
