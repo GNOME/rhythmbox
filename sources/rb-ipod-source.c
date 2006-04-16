@@ -462,6 +462,23 @@ rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
 	return result;
 }
 
+static gboolean
+rb_ipod_volume_has_ipod_db (GnomeVFSVolume *volume)
+{
+	char *itunesdb_path;
+	gboolean result;
+
+	itunesdb_path = rb_ipod_get_itunesdb_path (volume);
+	if (itunesdb_path != NULL) {
+		result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
+	} else {
+		result = FALSE;
+	}
+	g_free (itunesdb_path);
+
+	return result;
+}
+
 gboolean
 rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 {
@@ -481,17 +498,13 @@ rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 
 		result = hal_udi_is_ipod (udi);
 		g_free (udi);
-		return result;
+		if (result == FALSE) {
+			return FALSE;
+		}
 	}
 #endif
 	
-	itunesdb_path = rb_ipod_get_itunesdb_path (volume);
-	if (itunesdb_path != NULL) {
-		result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
-		g_free (itunesdb_path);
-	}
-
-	return result;
+	return rb_ipod_volume_has_ipod_db (volume);
 }
 
 #ifdef HAVE_HAL_0_5

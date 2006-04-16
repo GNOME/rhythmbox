@@ -1,3 +1,9 @@
+2006-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* sources/rb-ipod-source.c: when hal tells us a partition is on an
+	iPod, check if it contains an iPod database before using it (in case
+	the iPod was repartitionned somehow). Should fix bug #325034
+
 2006-04-16  Steve Frécinaux  <steve@istique.net>
 
 	* configure.ac: bump GTK+ version requirement from 2.5.4 to 2.6.0.
