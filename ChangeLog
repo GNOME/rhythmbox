@@ -1,4 +1,14 @@
-============ Version 0.9.4
+2006-04-16  Steve Frécinaux  <steve@istique.net>
+
+	* configure.ac: bump GTK+ version requirement from 2.5.4 to 2.6.0.
+
+	* data/Makefile.am: install application icon into the default theme.
+	
+	* shell/main.c: (main): set default window icon from theme.
+	
+	* shell/rb-shell.c: (rb_shell_init, rb_shell_cmd_about): remove legacy
+	code concerning	window icon, and fix leak by unreferencing the about
+	logo pixbuf once it's not used anymore.
 
 2006-04-16  James Livingston  <doclivingston@gmail.com>
 

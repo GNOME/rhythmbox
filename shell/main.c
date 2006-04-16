@@ -333,6 +333,8 @@ main (int argc, char **argv)
 		glade_gnome_init ();
 	
 		rb_stock_icons_init ();
+		
+		gtk_window_set_default_icon_name ("rhythmbox");
 	
 		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);

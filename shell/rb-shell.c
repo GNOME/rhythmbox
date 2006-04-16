@@ -716,22 +716,13 @@ rb_shell_remote_proxy_init (RBRemoteProxyIface *iface)
 static void
 rb_shell_init (RBShell *shell) 
 {
-	char *file;
-	
 	shell->priv = RB_SHELL_GET_PRIVATE (shell);
 
 	rb_dot_dir ();
 
-	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_APP_PIXMAP, "rhythmbox.png", TRUE, NULL);
-	if (file) {
-		gnome_window_icon_set_default_from_file (file);
-		g_free (file);
-	}
-
         rb_shell_session_init (shell);
 
 	eel_gconf_monitor_add (CONF_PREFIX);
-
 }
 
 static void
@@ -2218,7 +2209,8 @@ rb_shell_cmd_about (GtkAction *action,
 			       "translator-credits", strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
 			       "logo", pixbuf,
 			       NULL);
-
+	if (pixbuf)
+		g_object_unref (pixbuf);
 	g_string_free (comment, TRUE);
 	g_free (license_trans);
 }
