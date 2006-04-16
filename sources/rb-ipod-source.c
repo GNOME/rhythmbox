@@ -546,8 +546,6 @@ rb_ipod_volume_has_ipod_db (GnomeVFSVolume *volume)
 gboolean
 rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 {
-	gchar *itunesdb_path;
-	gboolean result = FALSE;
 #ifdef HAVE_HAL
 	gchar *udi;
 #endif
