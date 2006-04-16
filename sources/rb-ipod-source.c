@@ -298,6 +298,160 @@ load_ipod_playlists (RBiPodSource *source)
 
 }
 
+
+static void
+add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
+{	
+	RhythmDBEntry *entry;
+	RhythmDBEntryType entry_type;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	char *pc_path;
+
+	/* Set URI */
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, 
+		      NULL);
+
+	pc_path = ipod_path_to_uri (priv->ipod_mount_path, 
+				    song->ipod_path);
+	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type,
+				    pc_path);
+
+	if (entry == NULL) {
+		rb_debug ("cannot create entry %s", pc_path);
+		g_free (pc_path);
+		return;
+	}
+		
+	rb_debug ("Adding %s from iPod", pc_path);
+	g_free (pc_path);
+
+	/* Set track number */
+	if (song->track_nr != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, song->track_nr);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
+					       RHYTHMDB_PROP_TRACK_NUMBER, 
+					       &value);
+		g_value_unset (&value);
+	}
+
+	/* Set disc number */
+	if (song->cd_nr != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, song->cd_nr);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
+					       RHYTHMDB_PROP_DISC_NUMBER, 
+					       &value);
+		g_value_unset (&value);
+	}
+		
+	/* Set bitrate */
+	if (song->bitrate != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, song->bitrate);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
+					       RHYTHMDB_PROP_BITRATE, 
+					       &value);
+		g_value_unset (&value);
+	}
+		
+	/* Set length */
+	if (song->tracklen != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, song->tracklen/1000);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
+					       RHYTHMDB_PROP_DURATION, 
+					       &value);
+		g_value_unset (&value);
+	}
+		
+	/* Set file size */
+	if (song->size != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_UINT64);
+		g_value_set_uint64 (&value, song->size);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
+					       RHYTHMDB_PROP_FILE_SIZE, 
+					       &value);
+		g_value_unset (&value);
+	}
+
+	/* Set playcount */
+	if (song->playcount != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, song->playcount);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_PLAY_COUNT,
+					       &value);
+		g_value_unset (&value);
+	}
+
+	/* Set year */
+	if (song->year != 0) {
+		GDate *date = NULL;
+		GType type;
+		GValue value = {0, };
+			
+		date = g_date_new_dmy (1, G_DATE_JANUARY, song->year);
+
+		type = rhythmdb_get_property_type (RHYTHMDB(db),
+						   RHYTHMDB_PROP_DATE);
+			
+		g_value_init (&value, type);
+		g_value_set_ulong (&value, (date ? g_date_get_julian (date) : 0));
+			
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_DATE,
+					       &value);
+		g_value_unset (&value);
+		if (date)
+			g_date_free (date);
+	}
+
+	/* Set rating */
+	if (song->rating != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_DOUBLE);
+		g_value_set_double (&value, song->rating/20.0);
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_RATING,
+					       &value);
+		g_value_unset (&value);
+	}
+		
+	/* Set last played */
+	if (song->time_played != 0) {
+		GValue value = {0, };
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, itdb_time_mac_to_host (song->time_played));
+		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
+					       RHYTHMDB_PROP_LAST_PLAYED,
+					       &value);
+		g_value_unset (&value);
+	}
+		
+	/* Set title */		
+	entry_set_string_prop (RHYTHMDB (db), entry, 
+			       RHYTHMDB_PROP_TITLE, song->title);
+		
+	/* Set album, artist and genre from iTunesDB */
+	entry_set_string_prop (RHYTHMDB (db), entry, 
+			       RHYTHMDB_PROP_ARTIST, song->artist);
+		
+	entry_set_string_prop (RHYTHMDB (db), entry, 
+			       RHYTHMDB_PROP_ALBUM, song->album);
+		
+	entry_set_string_prop (RHYTHMDB (db), entry, 
+			       RHYTHMDB_PROP_GENRE, song->genre);
+		
+	rhythmdb_commit (RHYTHMDB (db));
+}
+
 static gboolean
 load_ipod_db_idle_cb (RBiPodSource *source)
 {
@@ -312,157 +466,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
   
   	g_assert (db != NULL);
  	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
- 		Itdb_Track *song;
- 		RhythmDBEntry *entry;
-		RhythmDBEntryType entry_type;
- 		char *pc_path;
-
- 		song = (Itdb_Track *)it->data;
-  		
-  		/* Set URI */
-		g_object_get (G_OBJECT (source), "entry-type", &entry_type, 
-			      NULL);
-
- 		pc_path = ipod_path_to_uri (priv->ipod_mount_path, 
- 					    song->ipod_path);
-  		entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type,
- 					    pc_path);
-
-		if (entry == NULL) {
-			rb_debug ("cannot create entry %s", pc_path);
- 			g_free (pc_path);
-			continue;
-		}
-		
-		rb_debug ("Adding %s from iPod", pc_path);
- 		g_free (pc_path);
-
-		/* Set track number */
-		if (song->track_nr != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, song->track_nr);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
-						       RHYTHMDB_PROP_TRACK_NUMBER, 
-						       &value);
-			g_value_unset (&value);
-		}
-
-		/* Set disc number */
-		if (song->cd_nr != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, song->cd_nr);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
-						       RHYTHMDB_PROP_DISC_NUMBER, 
-						       &value);
-			g_value_unset (&value);
-		}
-		
-		/* Set bitrate */
-		if (song->bitrate != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, song->bitrate);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
-						       RHYTHMDB_PROP_BITRATE, 
-						       &value);
-			g_value_unset (&value);
-		}
-		
-		/* Set length */
-		if (song->tracklen != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, song->tracklen/1000);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
-						       RHYTHMDB_PROP_DURATION, 
-						       &value);
-			g_value_unset (&value);
-		}
-		
-		/* Set file size */
-		if (song->size != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_UINT64);
-			g_value_set_uint64 (&value, song->size);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, 
-						       RHYTHMDB_PROP_FILE_SIZE, 
-						       &value);
-			g_value_unset (&value);
-		}
-
-		/* Set playcount */
-		if (song->playcount != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, song->playcount);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
-						       RHYTHMDB_PROP_PLAY_COUNT,
-						       &value);
-			g_value_unset (&value);
-		}
-
-		/* Set year */
-		if (song->year != 0) {
-			GDate *date = NULL;
-			GType type;
-			GValue value = {0, };
-			
-			date = g_date_new_dmy (1, G_DATE_JANUARY, song->year);
-
-			type = rhythmdb_get_property_type (RHYTHMDB(db),
-							    RHYTHMDB_PROP_DATE);
-			
-			g_value_init (&value, type);
-			g_value_set_ulong (&value, (date ? g_date_get_julian (date) : 0));
-			
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
-						       RHYTHMDB_PROP_DATE,
-						       &value);
-			g_value_unset (&value);
-			if (date)
-				g_date_free (date);
-		}
-
-		/* Set rating */
-		if (song->rating != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_DOUBLE);
-			g_value_set_double (&value, song->rating/20.0);
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
-						       RHYTHMDB_PROP_RATING,
-						       &value);
-			g_value_unset (&value);
-		}
-		
-		/* Set last played */
-		if (song->time_played != 0) {
-			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, itdb_time_mac_to_host (song->time_played));
-			rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry,
-						       RHYTHMDB_PROP_LAST_PLAYED,
-						       &value);
-			g_value_unset (&value);
-		}
-		
-		/* Set title */		
-		entry_set_string_prop (RHYTHMDB (db), entry, 
-				       RHYTHMDB_PROP_TITLE, song->title);
-		
-		/* Set album, artist and genre from iTunesDB */
-		entry_set_string_prop (RHYTHMDB (db), entry, 
-				       RHYTHMDB_PROP_ARTIST, song->artist);
-		
-		entry_set_string_prop (RHYTHMDB (db), entry, 
-				       RHYTHMDB_PROP_ALBUM, song->album);
-		
-		entry_set_string_prop (RHYTHMDB (db), entry, 
-				       RHYTHMDB_PROP_GENRE, song->genre);
-		
-		rhythmdb_commit (RHYTHMDB (db));
-	
+		add_ipod_song_to_db (source, db, (Itdb_Track *)it->data);
 	}
 
 	load_ipod_playlists (source);

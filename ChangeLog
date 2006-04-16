@@ -1,5 +1,11 @@
 2006-04-16  Christophe Fergeau  <teuf@gnome.org>
 
+	* sources/rb-ipod-source.c: (add_ipod_song_to_db),
+	(load_ipod_db_idle_cb): moved RhythmDBEntry creation from
+	load_ipod_db_idle_cb to a new separate function
+
+2006-04-16  Christophe Fergeau  <teuf@gnome.org>
+
 	* sources/rb-ipod-source.c: added 'move to trash' support to the iPod
 	source
 
