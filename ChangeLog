@@ -1,3 +1,15 @@
+2006-04-16  James Livingston  <doclivingston@gmail.com>
+
+	Patch from: Alessandro Decina  <alessandro@nnva.org> to add support
+	for transcoding to RBEncoderGst.
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_emit_error),
+	(rb_encoder_gst_emit_completed), (bus_watch_cb), (gst_error_cb),
+	(start_pipeline), (add_encoding_pipeline), (new_decoded_pad_cb),
+	(add_decoding_pipeline), (encoder_match_mime),
+	(get_profile_from_mime_type), (extract_track), (transcode_track),
+	(rb_encoder_gst_cancel), (rb_encoder_gst_encode):
+
 2006-04-16  Christophe Fergeau  <teuf@gnome.org>
 
 	* sources/rb-ipod-source.c: (add_ipod_song_to_db),

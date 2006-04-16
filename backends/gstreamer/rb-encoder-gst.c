@@ -45,6 +45,7 @@
 #define GstStateChangeReturn GstElementStateReturn
 #define GstState GstElementState
 #define GST_STATE_CHANGE_FAILURE GST_STATE_FAILURE
+#define gst_caps_unref gst_caps_free
 #endif
 
 
@@ -55,8 +56,13 @@ static void rb_encoder_init (RBEncoderIface *iface);
 
 
 struct _RBEncoderGstPrivate {
+	GstElement *enc;
 	GstElement *pipeline;
 	
+	gboolean transcoding;
+	gint decoded_pads;
+	
+	gboolean error_emitted;
 	gboolean completion_emitted;
 
 	gulong total_length;
@@ -128,12 +134,37 @@ rb_encoder_gst_new (void)
 }
 
 static void
+rb_encoder_gst_emit_error (RBEncoderGst *encoder, GError *error)
+{
+	encoder->priv->error_emitted = TRUE;
+	_rb_encoder_emit_error (RB_ENCODER (encoder), error);
+}
+
+static void
 rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 {
+	GError *error = NULL;
+
 	g_return_if_fail (encoder->priv->completion_emitted == FALSE);
 
 	if (encoder->priv->progress_id != 0)
 		g_source_remove (encoder->priv->progress_id);	
+
+
+	/* emit an error if no audio pad has been found and it wasn't due to an
+	 * error */
+	if (encoder->priv->error_emitted == FALSE &&
+			encoder->priv->transcoding &&
+			encoder->priv->decoded_pads == 0) {
+		rb_debug ("received EOS and no decoded pad");
+		g_set_error (&error,
+				RB_ENCODER_ERROR,
+				RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
+				"no decodable audio pad found");
+
+		rb_encoder_gst_emit_error (encoder, error);
+		g_error_free (error);
+	}
 
 	encoder->priv->completion_emitted = TRUE;
 	_rb_encoder_emit_completed (RB_ENCODER (encoder));
@@ -154,7 +185,7 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR:
 		gst_message_parse_error (message, &error, &string);
-		_rb_encoder_emit_error (RB_ENCODER (encoder), error);
+		rb_encoder_gst_emit_error (encoder, error);
 		rb_debug ("received error %s", string);
 		g_error_free (error);
 		g_free (string);
@@ -211,7 +242,7 @@ gst_error_cb (GstElement *element,
 			  gchar *debug,
 			  RBEncoderGst *encoder)
 {
-	_rb_encoder_emit_error (RB_ENCODER (encoder), error);
+	rb_encoder_gst_emit_error (encoder, error);
 	rb_debug ("received error %s", debug);
 		
 	rb_encoder_cancel (RB_ENCODER (encoder));
@@ -264,13 +295,16 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 #ifdef HAVE_GSTREAMER_0_10
 	GstBus *bus;
 
-	g_assert (encoder->priv->pipeline);
+	g_return_val_if_fail (encoder->priv->pipeline != NULL, FALSE);
 	
 	bus = gst_pipeline_get_bus (GST_PIPELINE (encoder->priv->pipeline));
 	gst_bus_add_watch (bus, bus_watch_cb, encoder);
 
 	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
 #elif HAVE_GSTREAMER_0_8
+	
+	g_return_val_if_fail (encoder->priv->pipeline != NULL, FALSE);
+	
 	g_signal_connect_object (G_OBJECT (encoder->priv->pipeline),
 				 "error", G_CALLBACK (gst_error_cb),
 				 encoder, 0);
@@ -327,7 +361,6 @@ const char *GST_ENCODING_PROFILE = "audioresample ! audioconvert ! %s";
 
 static GstElement*
 add_encoding_pipeline (RBEncoderGst *encoder,
-		       GstElement *start,
 		       GMAudioProfile *profile,
 		       GError **error)
 {
@@ -338,10 +371,13 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	queue = gst_element_factory_make ("queue", NULL);
 	if (queue == NULL)
 		return NULL;
+	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue);
+	
 	queue2 = gst_element_factory_make ("queue", NULL);
 	if (queue2 == NULL)
 		return NULL;
-
+	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue2);
+	
 	/* Nice big buffers... */
 	g_object_set (queue, "max-size-time", 120 * GST_SECOND, NULL);
 
@@ -359,9 +395,15 @@ add_encoding_pipeline (RBEncoderGst *encoder,
 	if ((pad = gst_bin_find_unconnected_pad (GST_BIN (encoding_bin), GST_PAD_SINK)))
 		gst_element_add_pad (encoding_bin, gst_ghost_pad_new ("sink", pad));
 
-	gst_bin_add_many (GST_BIN (encoder->priv->pipeline), queue, encoding_bin, queue2, NULL);
-	gst_element_link_many (start, queue, encoding_bin, queue2, NULL);
+	gst_bin_add (GST_BIN (encoder->priv->pipeline), encoding_bin);
 
+	if (gst_element_link_many (queue, encoding_bin, queue2, NULL) == FALSE)
+		return NULL;
+
+	/* store the first element of the encoding graph. new_decoded_pad_cb
+	 * will link to this once a decoded pad is found */
+	encoder->priv->enc = queue;
+	
 	return queue2;
 }
 
@@ -473,6 +515,67 @@ gnomevfs_allow_overwrite_cb (GstElement *element, GnomeVFSURI *uri, RBEncoderGst
 	return (response == GTK_RESPONSE_YES);				 
 }
 
+static void
+new_decoded_pad_cb (GstElement *decodebin,
+		GstPad *new_pad, gboolean arg1,
+		RBEncoderGst *encoder)
+{
+	GstPad *enc_sinkpad;
+	GstCaps *caps;
+	gchar *caps_string;
+
+	rb_debug ("new decoded pad");
+
+	/* transcode only the first audio track. multitrack audio files are not
+	 * so common anyway */
+	if (encoder->priv->decoded_pads > 0)
+		return;
+	
+	caps = gst_pad_get_caps (new_pad);
+	caps_string = gst_caps_to_string (caps);
+	gst_caps_unref (caps);
+
+	/* only process audio data */
+	if (strncmp (caps_string, "audio/", 6) == 0) {
+		encoder->priv->decoded_pads++;
+		enc_sinkpad = gst_element_get_pad (encoder->priv->enc,
+				"sink");
+		if (gst_pad_link (new_pad, enc_sinkpad) != GST_PAD_LINK_OK)
+			rb_debug ("error linking pads");
+	}
+
+	g_free (caps_string);
+}
+
+static GstElement *
+add_decoding_pipeline (RBEncoderGst *encoder,
+			GError **error)
+{
+	GstElement *decodebin;
+
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	encoder->priv->transcoding = TRUE;
+	decodebin = gst_element_factory_make ("decodebin", NULL);
+	if (decodebin == NULL) {
+		g_set_error (error,
+				RB_ENCODER_ERROR,
+				RB_ENCODER_ERROR_INTERNAL,
+				"Could not create decodebin");
+		
+		return NULL;
+	}
+	
+	gst_bin_add (GST_BIN (encoder->priv->pipeline), decodebin);
+	
+	g_signal_connect_object (decodebin, 
+			"new-decoded-pad",
+			G_CALLBACK (new_decoded_pad_cb),
+			encoder, 0);
+
+	return decodebin;
+}
+
 static gboolean
 attach_output_pipeline (RBEncoderGst *encoder,
 			GstElement *end,
@@ -498,11 +601,68 @@ attach_output_pipeline (RBEncoderGst *encoder,
 	return TRUE;
 }
 
+static gboolean
+encoder_match_mime (GstElement *encoder, const gchar *mime_type)
+{
+	GstPad *srcpad;
+	GstCaps *caps;
+	GstStructure *structure;
+	const gchar *pad_mime;
+	gboolean match;
+
+	srcpad = gst_element_get_pad (encoder, "src");
+	caps = gst_pad_get_caps (srcpad);
+	structure = gst_caps_get_structure (caps, 0);
+	pad_mime = gst_structure_get_name (structure);
+	match = strcmp (mime_type, pad_mime) == 0;
+	gst_caps_unref (caps);
+	gst_object_unref (srcpad);
+
+	return match;
+}
+
 static GMAudioProfile*
 get_profile_from_mime_type (const char *mime_type)
 {
-	/* TODO */
-	return NULL;
+	GList *profiles, *walk;
+	gchar *pipeline_description;
+	GstElement *pipeline;
+	GstElement *encoder;
+	GMAudioProfile *profile;
+	GMAudioProfile *matching_profile = NULL;
+	GError *error = NULL;
+	
+	profiles = gm_audio_profile_get_active_list ();
+	for (walk = profiles; walk; walk = g_list_next (walk)) {
+		profile = (GMAudioProfile *) walk->data;
+		pipeline_description =
+			g_strdup_printf ("fakesrc ! %s ! fakesink", 
+				gm_audio_profile_get_pipeline (profile));
+		pipeline = gst_parse_launch (pipeline_description, &error);	
+		g_free (pipeline_description);
+		if (error) {
+			g_error_free (error);
+			continue;
+		}
+
+		encoder = gst_bin_get_by_name (GST_BIN (pipeline), "enc");
+		if (encoder == NULL) {
+			g_object_unref (pipeline);
+			continue;
+		}
+		
+		if (encoder_match_mime (encoder, mime_type)) {
+			matching_profile = profile;
+			gst_object_unref (encoder);
+			gst_object_unref (pipeline);
+			break;
+		}
+		
+		gst_object_unref (encoder);
+		gst_object_unref (pipeline);
+	}
+
+	return matching_profile;
 }
 
 static GstElement *
@@ -582,8 +742,6 @@ extract_track (RBEncoderGst *encoder,
 	if (src == NULL)
 		return FALSE;
 
-	g_assert (encoder->priv->pipeline != NULL);
-
 	/* setup cd extraction properties */
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
@@ -599,10 +757,12 @@ extract_track (RBEncoderGst *encoder,
 		g_object_set (G_OBJECT (src), "paranoia-mode", paranoia_mode, NULL);
 	}
 
-	end = add_encoding_pipeline (encoder, src, profile, error);
+	end = add_encoding_pipeline (encoder, profile, error);
 	if (end == NULL)
 		return FALSE;
-
+	if (gst_element_link (src, encoder->priv->enc) == FALSE)
+		return FALSE;
+	
 	if (!attach_output_pipeline (encoder, end, dest, error))
 		return FALSE;
 	if (!add_tags_from_entry (encoder, entry, error))
@@ -620,17 +780,19 @@ transcode_track (RBEncoderGst *encoder,
 		 const char *mime_type,
 		 GError **error)
 {
-	/* cdsrc ! encoder ! sink */
+	/* src ! decodebin ! queue ! encoding_profile ! queue ! sink */
 	GMAudioProfile *profile;
-	GstElement *src, *spider, *end;
-
+	GstElement *src, *decoder, *end;
+	
 	g_assert (encoder->priv->pipeline == NULL);
-
+	
 	profile = get_profile_from_mime_type (mime_type);
 	if (profile == NULL) {
 		g_set_error (error,
-			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
-			     "Unable to locate encoding profile for mime-type '%s'", mime_type);
+			     RB_ENCODER_ERROR,
+			     RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
+			     "Unable to locate encoding profile for mime-type "
+			     "'%s'", mime_type);
 		return FALSE;
 	}
 
@@ -638,17 +800,14 @@ transcode_track (RBEncoderGst *encoder,
 	if (src == NULL)
 		return FALSE;
 
-	spider = gst_element_factory_make ("spider", "spider");
-	if (spider == NULL) {
-		g_set_error (error,
-			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-			     "Could not create encoding profile '%s'", gm_audio_profile_get_id (profile));
+	decoder = add_decoding_pipeline (encoder, error);
+	if (decoder == NULL)
 		return FALSE;
-	}
-	gst_bin_add (GST_BIN (encoder->priv->pipeline), spider);
-	gst_element_link (src, spider);
 
-	end = add_encoding_pipeline (encoder, spider, profile, error);
+	if (gst_element_link (src, decoder) == FALSE)
+		return FALSE;
+
+	end = add_encoding_pipeline (encoder, profile, error);
 	if (end == NULL)
 		return FALSE;
 
@@ -703,6 +862,8 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 	gst_element_set_state (priv->pipeline, GST_STATE_NULL);
 	g_object_unref (priv->pipeline);
 	priv->pipeline = NULL;
+
+	rb_encoder_gst_emit_completed (RB_ENCODER_GST (encoder));
 }
 
 static gboolean
@@ -737,10 +898,9 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	}
 
 	if (error) {
-		rb_encoder_cancel (encoder);
-		_rb_encoder_emit_error (encoder, error);
+		rb_encoder_gst_emit_error (RB_ENCODER_GST (encoder), error);
 		g_error_free (error);
-		rb_encoder_gst_emit_completed (RB_ENCODER_GST (encoder));
+		rb_encoder_cancel (encoder);
 	}
 
 	return result;
