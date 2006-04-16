@@ -67,10 +67,10 @@ if test "x$with_hal" != "xno"; then
   if test x$enable_hal05 != xyes; then
      PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5, enable_hal02=yes, enable_hal02=no)
   fi
-  if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
+  if test x$enable_hal05 = xyes || test x$enable_hal02 = xyes; then
       enable_hal=yes
       AC_DEFINE(HAVE_HAL, 1, [Define if you HAL support])
-      if test x$enable_hal05 == xyes; then
+      if test x$enable_hal05 = xyes; then
          AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
       else
          AC_DEFINE(HAVE_HAL_0_2, 1, [Define if you have HAL 0.2 or later])
@@ -230,7 +230,7 @@ if test x"$enable_track_transfer" = xyes; then
    have_gnome_media_profiles=yes,
    have_gnome_media_profiles=no)
 
-   if test x$have_gnome_media_profiles == xno; then
+   if test x$have_gnome_media_profiles = xno; then
       AC_MSG_ERROR([Track transfer support explicitly requested but gnome-media-profiles not found.])
    fi
 
@@ -272,7 +272,7 @@ if test x$have_avahi_06 != xyes; then
       have_avahi_05=yes,
       have_avahi_05=no)
 fi
-if test x$have_avahi_06 == xyes || test x$have_avahi_05 == xyes; then
+if test x$have_avahi_06 = xyes || test x$have_avahi_05 = xyes; then
    have_avahi=yes
 else
    have_avahi=no
@@ -290,7 +290,7 @@ if test x"$with_mdns" = xauto; then
       AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
       use_avahi=yes
       AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
-      if test x$have_avahi_06 == xyes; then
+      if test x$have_avahi_06 = xyes; then
          AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
       else
          AC_DEFINE(HAVE_AVAHI_0_5, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.5])
@@ -332,7 +332,7 @@ if test x"$with_mdns" = xavahi; then
    use_avahi=yes
    AC_MSG_NOTICE([Using Avahi for mDNS/DNS-SD])
 
-   if test x$have_avahi_06 == xyes; then
+   if test x$have_avahi_06 = xyes; then
       AC_DEFINE(HAVE_AVAHI_0_6, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.6])
    else
       AC_DEFINE(HAVE_AVAHI_0_5, 1, [Define if mDNS/DNS-SD implementation uses Avahi 0.5])
@@ -681,7 +681,7 @@ AC_ARG_WITH(internal-libsexy,
             AC_HELP_STRING([--with-internal-libsexy],
 			   [Build using internal libsexy library]),,
 	      with_internal_libsexy=no)
-if test "x$with_internal_libsexy" == "xno"; then
+if test "x$with_internal_libsexy" = "xno"; then
 	PKG_CHECK_MODULES(LIBSEXY, libsexy >= 0.1.5, with_internal_libsexy=no,
 		          with_internal_libsexy=yes)
 fi

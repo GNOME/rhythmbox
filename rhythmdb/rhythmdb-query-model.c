@@ -2191,8 +2191,8 @@ rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 {
 	const char *a_val;
 	const char *b_val;
-	ulong a_num;
-	ulong b_num;
+	gulong a_num;
+	gulong b_num;
 	gint ret;
 
 	/* Sort by album name */

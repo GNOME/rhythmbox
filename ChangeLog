@@ -1,5 +1,20 @@
 2006-04-16  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-library-source.c:
+	(rb_library_source_library_location_cb): return FALSE like we are
+	supposed to, not void.
+
+	patch by: FreeBSD GNOME Project
+	* configure.ac: fix some bash-isms.
+
+	patch by: Pawel Worach  <pawel.worach@gmail.com>
+	* metadata/rb-metadata-dbus-client.c:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_album_sort_func): fix build issues on FreeBSD
+
+
+2006-04-16  James Livingston  <doclivingston@gmail.com>
+
 	Patch from: Alessandro Decina  <alessandro@nnva.org> to add support
 	for transcoding to RBEncoderGst.
 

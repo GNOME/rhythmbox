@@ -84,9 +84,9 @@ static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
 					       RBLibrarySource *source);
-static void rb_library_source_library_location_cb (GtkEntry *entry,
-						   GdkEventFocus *event,
-						   RBLibrarySource *source);
+static gboolean rb_library_source_library_location_cb (GtkEntry *entry,
+						       GdkEventFocus *event,
+						       RBLibrarySource *source);
 static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 						RBLibrarySource *source);
 static void rb_library_source_songs_show_popup_cb (RBEntryView *view,
@@ -540,7 +540,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 #endif
 }
 
-static void
+static gboolean
 rb_library_source_library_location_cb (GtkEntry *entry,
 				       GdkEventFocus *event,
 				       RBLibrarySource *source)
@@ -564,6 +564,8 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 	/* don't do the first-run druid if the user sets the library location */
 	if (list)
 		eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
+
+	return FALSE;
 }
 
 static void
