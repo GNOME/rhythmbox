@@ -278,8 +278,12 @@ rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
 	GtkWidget *menu;
 
 	menu = gtk_ui_manager_get_widget (uimanager, path);
+	if (menu == NULL) {
+		g_warning ("Couldn't get menu widget for %s", path);
+	} else {
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, 
 			gtk_get_current_event_time ());
+	}
 }
 
 static GList *

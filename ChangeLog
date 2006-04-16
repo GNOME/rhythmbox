@@ -1,5 +1,15 @@
 2006-04-16  Christophe Fergeau  <teuf@gnome.org>
 
+	* data/ui/Makefile.am:
+	* data/ui/ipod-ui.xml: added new ui file containing the iPod context
+	menu
+	* lib/rb-util.c: check if the widget we got from the UI manager isn't
+	NULL before using it as a popup menu
+	* sources/rb-ipod-source.c: added the possibility to 'rename' and 
+	'eject' an iPod
+
+2006-04-16  Christophe Fergeau  <teuf@gnome.org>
+
 	* sources/rb-ipod-source.c: when hal tells us a partition is on an
 	iPod, check if it contains an iPod database before using it (in case
 	the iPod was repartitionned somehow). Should fix bug #325034
