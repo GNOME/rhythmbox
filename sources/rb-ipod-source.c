@@ -68,6 +68,7 @@ typedef struct
 {
 	Itdb_iTunesDB *ipod_db;
 	gchar *ipod_mount_path;
+	GHashTable *entry_map;
 	GtkActionGroup *action_group;	
 } RBiPodSourcePrivate;
 
@@ -183,6 +184,11 @@ rb_ipod_source_dispose (GObject *object)
 		g_free (priv->ipod_mount_path);
 		priv->ipod_mount_path = NULL;
 	}
+
+	if (priv->entry_map) {
+		g_hash_table_destroy (priv->entry_map);
+		priv->entry_map = NULL;
+ 	}
 
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
 }
@@ -448,7 +454,10 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 		
 	entry_set_string_prop (RHYTHMDB (db), entry, 
 			       RHYTHMDB_PROP_GENRE, song->genre);
-		
+
+
+	g_hash_table_insert (priv->entry_map, entry, song);
+
 	rhythmdb_commit (RHYTHMDB (db));
 }
 
@@ -485,7 +494,8 @@ rb_ipod_load_songs (RBiPodSource *source)
 	priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
 
  	priv->ipod_db = itdb_parse (priv->ipod_mount_path, NULL);
-	if (priv->ipod_db != NULL) {
+	priv->entry_map = g_hash_table_new (g_direct_hash, g_direct_equal);
+	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
 		/* FIXME: we could set a different icon depending on the iPod
 		 * model
 		 */
@@ -692,37 +702,6 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-static Itdb_Track *
-itdb_track_find_by_uri (Itdb_iTunesDB *ipod_db, const char *uri)
-{
-	GList *it;
-
-	/* FIXME: if RhythmDBEntry had a few opaque pointers that can be set by
-	 * specific source, we could stick a pointer to the Itdb_Track there 
-	 * and avoid all this work 
-	 */
-	for (it = ipod_db->tracks; it != NULL; it = it->next) {
-		Itdb_Track *track;
-		gchar *ipod_uri;
-		gboolean matches;
-
-		track = (Itdb_Track *)it->data;
-		ipod_uri = ipod_path_to_uri (itdb_get_mountpoint (ipod_db), 
-					     track->ipod_path);
-		matches = (strcmp (ipod_uri, uri) == 0);
-
-		g_free (ipod_uri);
-		if (matches) {
-			break;
-		}
-	}
-
-	if (it != NULL) {
-		return (Itdb_Track *)it->data;
-	} 
-
-	return NULL;
-}
 
 static void
 remove_track_from_db (Itdb_Track *track)
@@ -759,14 +738,15 @@ impl_move_to_trash (RBSource *asource)
 		entry = (RhythmDBEntry *)tem->data;
 		uri = rhythmdb_entry_get_string (entry, 
 						 RHYTHMDB_PROP_LOCATION);
-		track = itdb_track_find_by_uri (priv->ipod_db, uri);
+		track = g_hash_table_lookup (priv->entry_map, entry);
 		if (track == NULL) {
 			g_warning ("Couldn't find track on ipod! (%s)", uri);
 			continue;
 		}
 
  		remove_track_from_db (track);
-		rhythmdb_entry_move_to_trash (db, (RhythmDBEntry *) tem->data);
+		g_hash_table_remove (priv->entry_map, entry);
+		rhythmdb_entry_move_to_trash (db, entry);
 		rhythmdb_commit (db);
 	}
 	if (sel != NULL) {

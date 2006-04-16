@@ -1,3 +1,10 @@
+2006-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* sources/rb-ipod-source.c: use a GHashTable for the
+	RhythmDBEntry=>Itdb_Track mapping, this is better imo, and at the same
+	time, this fixes compilation breakage for people not having libgpod
+	CVS HEAD
+
 2006-04-16  Ryan P Skadberg  <skadz@stigmata.org>
 
 	patch by:  Jonathan Matthew  <jonathan@kaolin.wh9.net>
