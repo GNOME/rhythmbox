@@ -43,8 +43,9 @@
 #include "rb-util.h"
 #include "rhythmdb.h"
 
-static GObject *rb_ipod_source_constructor (GType type, guint n_construct_properties,
-			       GObjectConstructParam *construct_properties);
+static GObject *rb_ipod_source_constructor (GType type, 
+					    guint n_construct_properties,
+					    GObjectConstructParam *construct_properties);
 static void rb_ipod_source_dispose (GObject *object);
 
 static GObject *rb_ipod_source_constructor (GType type, guint n_construct_properties,
@@ -52,7 +53,7 @@ static GObject *rb_ipod_source_constructor (GType type, guint n_construct_proper
 static void rb_ipod_source_dispose (GObject *object);
 
 static gboolean impl_show_popup (RBSource *source);
-
+static void impl_move_to_trash (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
 static gchar *rb_ipod_get_mount_path (GnomeVFSVolume *volume);
 static void impl_delete_thyself (RBSource *source);
@@ -94,6 +95,8 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
+   	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
+   	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
@@ -683,6 +686,90 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/iPodSourcePopup");
 	return TRUE;
+}
+
+static Itdb_Track *
+itdb_track_find_by_uri (Itdb_iTunesDB *ipod_db, const char *uri)
+{
+	GList *it;
+
+	/* FIXME: if RhythmDBEntry had a few opaque pointers that can be set by
+	 * specific source, we could stick a pointer to the Itdb_Track there 
+	 * and avoid all this work 
+	 */
+	for (it = ipod_db->tracks; it != NULL; it = it->next) {
+		Itdb_Track *track;
+		gchar *ipod_uri;
+		gboolean matches;
+
+		track = (Itdb_Track *)it->data;
+		ipod_uri = ipod_path_to_uri (itdb_get_mountpoint (ipod_db), 
+					     track->ipod_path);
+		matches = (strcmp (ipod_uri, uri) == 0);
+
+		g_free (ipod_uri);
+		if (matches) {
+			break;
+		}
+	}
+
+	if (it != NULL) {
+		return (Itdb_Track *)it->data;
+	} 
+
+	return NULL;
+}
+
+static void
+remove_track_from_db (Itdb_Track *track)
+{
+	GList *it;
+
+	for (it = track->itdb->playlists; it != NULL; it = it->next) {
+		itdb_playlist_remove_track ((Itdb_Playlist *)it->data, track);
+	}
+	itdb_track_remove (track);
+}
+
+static void
+impl_move_to_trash (RBSource *asource)
+{
+	GList *sel, *tem;
+	RBEntryView *songs;
+	RBShell *shell;
+	RhythmDB *db;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (asource);
+	RBiPodSource *source = RB_IPOD_SOURCE (asource);
+
+  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+  	g_object_unref (G_OBJECT (shell));
+
+	songs = rb_source_get_entry_view (RB_SOURCE (asource));
+	sel = rb_entry_view_get_selected_entries (songs);
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		RhythmDBEntry *entry;
+		const gchar *uri;
+		Itdb_Track *track;
+
+		entry = (RhythmDBEntry *)tem->data;
+		uri = rhythmdb_entry_get_string (entry, 
+						 RHYTHMDB_PROP_LOCATION);
+		track = itdb_track_find_by_uri (priv->ipod_db, uri);
+		if (track == NULL) {
+			g_warning ("Couldn't find track on ipod! (%s)", uri);
+			continue;
+		}
+
+ 		remove_track_from_db (track);
+		rhythmdb_entry_move_to_trash (db, (RhythmDBEntry *) tem->data);
+		rhythmdb_commit (db);
+	}
+	if (sel != NULL) {
+		itdb_write (priv->ipod_db, NULL);
+	}
+
+	g_list_free (sel);
 }
 
 static void
