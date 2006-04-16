@@ -740,7 +740,7 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 	return NULL;
 }
 
-gboolean
+RhythmDBEntry *
 rb_podcast_manager_add_post (RhythmDB *db,
 			      const char *name,
 			      const char *title,
@@ -748,98 +748,96 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			      const char *generator,
 			      const char *uri,
 			      const char *description,
-			      gulong status,
 			      gulong date,
 			      gulong duration,
 			      guint64 filesize)
 {
+	RhythmDBEntry *entry;
+	GValue val = {0,};
+	GTimeVal time;
 
-	if (uri && name && title && date && g_utf8_validate(uri, -1, NULL)) {
-		RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (db, uri);
-		GValue val = {0,};
-		GTimeVal time;
-
-		if (entry)
-			return FALSE;
-
-		entry = rhythmdb_entry_new (db,
-					    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-				    	    uri);
-		if (entry == NULL)
-			return FALSE;
-
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, name);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
-		
-		g_value_reset (&val);
-		g_value_set_static_string (&val, _("Podcast"));
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
-
-		g_value_reset (&val);
-		g_value_set_string (&val, title);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &val);
-
-		g_value_reset (&val);
-		if (subtitle)
-			g_value_set_string (&val, subtitle);
-		else
-			g_value_set_static_string (&val, "");
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
-
-		g_value_reset (&val);
-		if (description)
-			g_value_set_string (&val, description);
-		else
-			g_value_set_static_string (&val, "");
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
-
-		g_value_reset (&val);
-		if (generator) 
-			g_value_set_string (&val, generator);
-		else
-			g_value_set_static_string (&val, "");
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &val);
-		g_value_unset (&val);
-
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, status);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &val);
-
-		g_value_reset (&val);
-		g_value_set_ulong (&val, date);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
-
-		g_value_reset (&val);
-		g_value_set_ulong (&val, duration);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DURATION, &val);
-	
-		g_value_reset (&val);
-		g_value_set_ulong (&val, 0);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
-
-		/* first seen */
-		g_get_current_time (&time);
-		g_value_reset (&val);
-		g_value_set_ulong (&val, time.tv_sec);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
-		g_value_unset (&val);
-		
-		/* initialize the rating */
-		g_value_init (&val, G_TYPE_DOUBLE);
-		g_value_set_double (&val, 2.5);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &val);
-		g_value_unset (&val);
-
-		g_value_init (&val, G_TYPE_UINT64);
-		g_value_set_uint64 (&val, filesize);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
-		g_value_unset (&val);
-
-		return TRUE;
-	} else {
-		return FALSE;
+	if (!uri || !name || !title || !date || !g_utf8_validate(uri, -1, NULL)) {
+		return NULL;
 	}
+	entry = rhythmdb_entry_lookup_by_location (db, uri);
+	if (entry)
+		return NULL;
+
+	entry = rhythmdb_entry_new (db,
+				    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+				    uri);
+	if (entry == NULL)
+		return NULL;
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, name);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	
+	g_value_reset (&val);
+	g_value_set_static_string (&val, _("Podcast"));
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
+
+	g_value_reset (&val);
+	g_value_set_string (&val, title);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &val);
+
+	g_value_reset (&val);
+	if (subtitle)
+		g_value_set_string (&val, subtitle);
+	else
+		g_value_set_static_string (&val, "");
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
+
+	g_value_reset (&val);
+	if (description)
+		g_value_set_string (&val, description);
+	else
+		g_value_set_static_string (&val, "");
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
+
+	g_value_reset (&val);
+	if (generator) 
+		g_value_set_string (&val, generator);
+	else
+		g_value_set_static_string (&val, "");
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &val);
+
+	g_value_reset (&val);
+	g_value_set_ulong (&val, date);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
+
+	g_value_reset (&val);
+	g_value_set_ulong (&val, duration);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DURATION, &val);
+
+	g_value_reset (&val);
+	g_value_set_ulong (&val, 0);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
+
+	/* first seen */
+	g_get_current_time (&time);
+	g_value_reset (&val);
+	g_value_set_ulong (&val, time.tv_sec);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
+	g_value_unset (&val);
+	
+	/* initialize the rating */
+	g_value_init (&val, G_TYPE_DOUBLE);
+	g_value_set_double (&val, 2.5);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_UINT64);
+	g_value_set_uint64 (&val, filesize);
+	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+	g_value_unset (&val);
+
+	return entry;
 }
 
 static gboolean
@@ -1371,6 +1369,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	GValue last_update_val = { 0, };
 	gulong last_post = 0;
 	gulong new_last_post;
+	GList *download_entries = NULL;
 	gboolean new_feed, updated, download_last;
 	RhythmDB *db = pd->priv->db;
 
@@ -1479,32 +1478,50 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	download_last = (eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL) != UPDATE_MANUALLY);
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
+		RhythmDBEntry *post_entry;
 
 		if (item->pub_date > last_post || item->pub_date == 0) {
-			gulong status;
 			updated = TRUE;
 
-			/* last episode gets status RHYTHMDB_PODCAST_STATUS_WAITING, so that it begins downloading */
-			if (lst_songs == (g_list_last (data->posts)) && download_last)
-				status = RHYTHMDB_PODCAST_STATUS_WAITING;
-			else
-				status = RHYTHMDB_PODCAST_STATUS_PAUSED;
-			
-			rb_podcast_manager_add_post (db, 
-						     (gchar *) data->title,
-						     (gchar *) item->title, 
-					 	     (gchar *) data->url,
-						     (gchar *) (item->author ? item->author : data->author),
-						     (gchar *) item->url,
-						     (gchar *) item->description,
-						     status,
-						     (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
-						     (gulong) item->duration,
-						     item->filesize);
-			if (item->pub_date > new_last_post)
+			post_entry = 
+				rb_podcast_manager_add_post (db, 
+							     (gchar *) data->title,
+							     (gchar *) item->title, 
+							     (gchar *) data->url,
+							     (gchar *) (item->author ? item->author : data->author),
+							     (gchar *) item->url,
+							     (gchar *) item->description,
+							     (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
+							     (gulong) item->duration,
+							     item->filesize);
+			if (item->pub_date >= new_last_post) {
+				if (item->pub_date > new_last_post) {
+					g_list_free (download_entries);
+					download_entries = NULL;
+				}
+				download_entries = g_list_prepend (download_entries, post_entry);
 				new_last_post = item->pub_date;
+			}
 		}
 	}
+
+	if (download_last) {
+		GValue status = {0,};
+		GList *t;
+
+		g_value_init (&status, G_TYPE_ULONG);
+		g_value_set_ulong (&status, RHYTHMDB_PODCAST_STATUS_WAITING);
+		t = download_entries;
+		while (t) {
+			rhythmdb_entry_set_uninserted (db, 
+						       (RhythmDBEntry*) t->data,
+						       RHYTHMDB_PROP_STATUS, 
+						       &status);
+			t = t->next;
+		}
+		g_value_unset (&status);
+	}
+	g_list_free (download_entries);
 
 	if (updated)
 		g_signal_emit (pd, rb_podcast_manager_signals[FEED_UPDATES_AVALIABLE],

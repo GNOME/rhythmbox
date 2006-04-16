@@ -75,14 +75,13 @@ gchar *                 rb_podcast_manager_get_podcast_dir	(RBPodcastManager *pd
 gboolean                rb_podcast_manager_subscribe_feed    	(RBPodcastManager *pd, const gchar* url);
 void            	rb_podcast_manager_unsubscribe_feed    	(RhythmDB *db, const gchar* url);
 void			rb_podcast_manager_shutdown 		(RBPodcastManager *pd);
-gboolean                rb_podcast_manager_add_post  	  	(RhythmDB *db,
+RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
                                			         	 const char *name,
 	                                                 	 const char *title,
 	                                                 	 const char *subtitle,
 	                                                 	 const char *generator,
 	                                                 	 const char *uri,
 		        	                               	 const char *description,
-								 gulong status,
 	        	                                       	 gulong date,
 								 gulong duration,
 								 guint64 filesize);
