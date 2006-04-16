@@ -85,6 +85,7 @@ class PythonConsolePlugin(rb.Plugin):
 		if not self.window:
 			ns = {'__builtins__' : __builtins__, 
 			      'rb' : rb,
+			      'rhythmdb' : rhythmdb,
 			      'shell' : shell}
 			console = PythonConsole(namespace = ns, 
 			                        destroy_cb = self.destroy_console)
