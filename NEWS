@@ -1,6 +1,5 @@
 Overview of Changes in Rhythmbox 0.9.4
 ======================================
-(last updated 2006-02-21)
 
 * add support for source-specific toolbar items (James Livingston: 329041)
 * make the status column blank for undownloaded podcasts (Jonathan Matthew)
@@ -32,10 +31,8 @@ Overview of Changes in Rhythmbox 0.9.4
 * add support for out-of-process metadata service (Jonathan Matthew: 329597)
 * port to using gnome-doc-utils (Luca Ferretti)
 * indicate pre-empted source when playing from queue (Jonathan Matthew: 330819)
-* don't block initialisation while druid is being shown (James Livingston: 318766)
 * add "starts with" and "ends with" string criteria (James Livingston)
 * don't choke on podcast feeds which use timezone names (Alex Lancaster: 331691)
-* other podcast parsing fixes (Alex Lancaster, James Livingston: 332194)
 * make auto playlist editor non-modal (James Livingston: 320030)
 * add "missing files" and "import errors" sources (Jonathan Matthew: 167763, 142322)
 * use entry and button for Library Location preference (James Livingston: 328414)
@@ -53,11 +50,49 @@ Overview of Changes in Rhythmbox 0.9.4
 * add filtering support to debug output (Jonathan Matthew)
 * add plugin support (James Livingston: 330523)
 * add search bar (William Jon McCann: 328618, 334407)
-* lazily create RBRefString components (James Livingston: 332992)
 * filter browsers with search terms (Jonathan Matthew: 322787)
 * remove non-libnotify notifications (James Livingston: 331721)
 * update documentation (Baptiste Mille-Mathias)
-* assorted other bug fixes (Dennis Cranston, Christophe Fergeau, Alex Lancaster, James Livingston, Jonathan Matthew, William Jon McCann, Baptiste Mille-Mathias: 327452, 330135, 329621, 329816, 330301, 329993, 330514, 330527, 330514, 330919, 330601, 331026, 327059, 330014, 331395, 331211, 331165, 325997, 331762, 331770, 331922, 329042, 332210, 332064, 332001, 323096, 332356, 330700, 332488, 330342, 332344, 331637, 332976, 327451, 172220, 333013, 331564, 331732, 333824, 331013, 331562, 334201, 334221, 334276, 329813, 125177, 330226, 334525, 334453, 334479, 334549, 332089, others)
+* add Increase and Decrease volume menu items (James Livingston: 123383)
+* add Python Console plugin (Steve Frécinaux)
+* add HTTP proxy support (Jonathan Matthew: 335091)
+* do all gnomevfs stats in one batch (Jonathan Matthew: 334106)
+* build properly on Solaris (Brian Cameron: 335318)
+* borrow Banshee's Eject icon, because g-i-t doesn't have one
+* have better "no GStreamer plugin found" messages (James Livingston: 128109)
+* add LIRC plugin (Jonathan Matthew)
+* use libsexy to add a clear button to the search box (James Livingston: 128109)
+* allow overriding of the toolbar button style (James Livingston: 336797)
+* add profiling hooks (William Jon McCann: 337387, 338114)
+
+
+and a whole heap of other bugs fixes and minor improvements (too many to list...)
+
+
+Updated Translations
+--------------------
+
+* cs	Miloslav Trmac
+* el	Nikos Charonitakis, vyruss
+* es	Francisco Javier F. Serrador
+* eu	Inaki Larranaga
+* fi	Ilkka Tuohela
+* gl	Ignacio Casal Quinteiro
+* hu	Gabor Kelemen
+* it	Luca Ferretti
+* ja	Takeshi AIHANA
+* lt	Žygimantas Beručka
+* nb	Øivind Hoel, Kjartan Maraas
+* nl	Tino Meinen, Reinout en Tino
+* no	Kjartan Maraas
+* pt_BR	Raphael Higino
+* ru	Nickolay V. Shmyrev
+* sv	Daniel Nylander
+* th	Isriya Paireepairit
+* vi	Nguyễn Thái Ngọc Duy, Clytie Siddall
+* zh_HK	Abel Cheung
+* zh_TW	Abel Cheung, Lin-Chieh Shangkuan
+
 
 Overview of Changes in Rhythmbox 0.9.3.1
 ========================================
