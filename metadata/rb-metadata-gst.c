@@ -60,6 +60,13 @@ const char * ignore_mime_types[] = {
 	"application/xml"
 };
 
+/*
+ * File size below which we will simply ignore files that can't be identified.
+ * This is mostly here so we ignore the various text files that are packaged
+ * with many netlabel releases and other downloads.
+ */
+#define REALLY_SMALL_FILE_SIZE	(4096)
+
 struct RBMetadataGstType
 {
 	char *mimetype;
@@ -263,6 +270,7 @@ rb_metadata_init (RBMetaData *md)
 
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
 	add_supported_type (md, "audio/x-wav", NULL, "WAV");
+	add_supported_type (md, "video/x-ms-asf", NULL, "ASF");
 
 	tagger = (has_gnomevfssink && gst_element_factory_find ("flactag")) ?  rb_add_flac_tagger : NULL;
 	add_supported_type (md, "audio/x-flac", tagger, "FLAC");
@@ -451,6 +459,24 @@ rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
 	return NULL;
 }
 
+static char *
+make_undecodable_error (RBMetaData *md)
+{
+	const char *human_name;
+
+	human_name= rb_metadata_gst_type_to_name (md, md->priv->type);
+	if (human_name == NULL)
+		human_name = rb_mime_get_friendly_name (md->priv->type);
+	
+	if (human_name) {
+		return g_strdup_printf (_("The GStreamer plugins to decode \"%s\" files cannot be found"),
+					human_name);
+	} else {
+		return g_strdup_printf (_("The file contains a stream of type %s, which is not decodable"),
+					md->priv->type);
+	}
+}
+
 static void
 rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *md)
 {
@@ -565,10 +591,16 @@ rb_metadata_gst_error_cb (GstElement *element,
 			  gchar *debug,
 			  RBMetaData *md)
 {
-	rb_debug ("caught error: %s ", error->message);
-	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
-					       RB_METADATA_ERROR_GENERAL,
-					       error->message);
+	if (error->domain == GST_STREAM_ERROR &&
+	    error->code == GST_STREAM_ERROR_TYPE_NOT_FOUND) {
+		rb_debug ("caught type not found error");
+
+	} else {
+		rb_debug ("caught error: %s ", error->message);
+		md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
+						       RB_METADATA_ERROR_GENERAL,
+						       error->message);
+	}
 }
 
 static void
@@ -614,19 +646,17 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 		md->priv->non_audio = TRUE;
 		cancel = TRUE;
 	} else {
+		GstPad *sink_pad;
+
+		sink_pad = gst_element_get_pad (md->priv->sink, "sink");
+		gst_pad_link (pad, sink_pad);
+
 		/* is this pad audio? */
 		structure = gst_caps_get_structure (caps, 0);
 		mimetype = gst_structure_get_name (structure);
-		if (g_str_has_prefix (mimetype, "audio/x-raw")) {
-			/* link this to the fake sink */
-			GstPad *sink_pad;
-			rb_debug ("linking new decoded pad of type %s to fakesink", mimetype);
-			sink_pad = gst_element_get_pad (md->priv->sink, "sink");
-			gst_pad_link (pad, sink_pad);
 
-			/* what happens if we get two audio pads from the same stream? 
-			 * can this happen?
-			 */
+		if (g_str_has_prefix (mimetype, "audio/x-raw")) {
+			rb_debug ("got decoded audio pad of type %s", mimetype);
 		} else if (g_str_has_prefix (mimetype, "video/")) {
 			rb_debug ("got decoded video pad of type %s", mimetype);
 			md->priv->non_audio = TRUE;
@@ -675,6 +705,16 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 	} else {
 		rb_debug ("decodebin emitted unknown type signal");
 	}
+
+#ifdef HAVE_GSTREAMER_0_10
+	{
+		char *msg;
+
+		msg = make_undecodable_error (md);
+		GST_ELEMENT_ERROR (md->priv->pipeline, STREAM, CODEC_NOT_FOUND, ("%s", msg), (NULL));
+		g_free (msg);
+	}
+#endif
 }
 
 static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
@@ -708,10 +748,19 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 		gchar *debug;
 
 		gst_message_parse_error (message, &gerror, &debug);
-		rb_debug ("caught error: %s ", gerror->message);
-		md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
-						       RB_METADATA_ERROR_GENERAL,
-						       gerror->message);
+		if (gerror->domain == GST_STREAM_ERROR &&
+		    gerror->code == GST_STREAM_ERROR_TYPE_NOT_FOUND) {
+			rb_debug ("caught type not found error");
+		} else if (md->priv->error) {
+			rb_debug ("caught error: %s, but we've already got one", gerror->message);
+		} else {
+			rb_debug ("caught error: %s ", gerror->message);
+			
+			g_clear_error (&md->priv->error);
+			md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
+							       RB_METADATA_ERROR_GENERAL,
+							       gerror->message);
+		}
 
 		g_error_free (gerror);
 		g_free (debug);
@@ -781,6 +830,8 @@ rb_metadata_load (RBMetaData *md,
 	GstElement *urisrc = NULL;
 	GstElement *decodebin = NULL;
 	GstElement *typefind = NULL;
+	gint64 file_size = -1;
+	GstFormat file_size_format = GST_FORMAT_BYTES;
 #ifdef HAVE_GSTREAMER_0_10
 	GstStateChangeReturn state_ret;
 	int change_timeout;
@@ -888,7 +939,7 @@ rb_metadata_load (RBMetaData *md,
 	       !md->priv->non_audio &&
 	       change_timeout > 0) {
 	    GstState state;
-	    rb_debug ("element state changing asyncronously: %d, %d", state_ret, state);
+	    rb_debug ("element state changing asynchronously: %d, %d", state_ret, state);
 	    state_ret = gst_element_get_state (GST_ELEMENT (pipeline),
 			    &state, NULL, 1 * GST_SECOND);
 	    change_timeout--;
@@ -952,13 +1003,22 @@ rb_metadata_load (RBMetaData *md,
 	else if (md->priv->eos) {
 		g_warning ("caught eos without handoff!");
 	}
+#endif
 
+	/* Get the file size, since it might be interesting, and return
+	 * the pipeline to NULL state.
+	 */
+#ifdef HAVE_GSTREAMER_0_8
+	gst_element_query (urisrc, GST_QUERY_TOTAL, &file_size_format, &file_size);
 	gst_element_set_state (pipeline, GST_STATE_NULL);
 #endif
 #ifdef HAVE_GSTREAMER_0_10
+	if (gst_element_query_duration (urisrc, &file_size_format, &file_size))
+		g_assert (file_size_format == GST_FORMAT_BYTES);
+	
 	state_ret = gst_element_set_state (pipeline, GST_STATE_NULL);
 	if (state_ret == GST_STATE_CHANGE_ASYNC) {
-	    g_warning ("Failed to return metadata reader to NULL state");
+		g_warning ("Failed to return metadata reader to NULL state");
 	}
 	md->priv->handoff = (state_ret == GST_STATE_CHANGE_SUCCESS);
 #endif
@@ -970,11 +1030,19 @@ rb_metadata_load (RBMetaData *md,
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
 	} else if (!md->priv->type) {
+		/* ignore really small files that can't be identified */
+		gint error_code = RB_METADATA_ERROR_UNRECOGNIZED;
+		if (file_size > 0 && file_size < REALLY_SMALL_FILE_SIZE) {
+			rb_debug ("ignoring %s because it's too small to care about", md->priv->uri);
+			error_code = RB_METADATA_ERROR_NOT_AUDIO_IGNORE;
+		}
+		
+		g_clear_error (error);
 		g_set_error (error,
 			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_UNRECOGNIZED,
+			     error_code,
 			     _("The MIME type of the file could not be identified"));
-	} else if (md->priv->non_audio) {
+	} else if (md->priv->non_audio || !md->priv->handoff) {
 		gboolean ignore = FALSE;
 		int i;
 
@@ -989,40 +1057,19 @@ rb_metadata_load (RBMetaData *md,
 			}
 		}
 
-
 		if (!ignore) {
-			const char *human_name;
-
-			human_name= rb_metadata_gst_type_to_name (md, md->priv->type);
-			if (human_name == NULL)
-				human_name = rb_mime_get_friendly_name (md->priv->type);
-			
-			if (human_name)
-				g_set_error (error,
-					     RB_METADATA_ERROR,
-					     RB_METADATA_ERROR_NOT_AUDIO,
-					     _("The GStreamer plugins to decode \"%s\" files cannot be found"),
-					     human_name);
-			else
-				g_set_error (error,
-					     RB_METADATA_ERROR,
-					     RB_METADATA_ERROR_NOT_AUDIO,
-					     _("The file contains a stream of type %s, which is not decodable"),
-					     md->priv->type);
-		} else
+			char *msg = make_undecodable_error (md);
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_NOT_AUDIO,
+				     "%s", msg);
+			g_free (msg);
+		} else {
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
 				     NULL);
-	} else if (!md->priv->handoff) {
-		const char *report_type = rb_metadata_gst_type_to_name (md, md->priv->type);
-		if (report_type == NULL)
-			report_type = md->priv->type;
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_UNSUPPORTED,
-			     _("There is no plugin installed to handle a %s file."),
-			     report_type);
+		}
 	} else {
 		/* yay, it worked */
 		rb_debug ("successfully read metadata for %s", uri);

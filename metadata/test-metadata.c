@@ -89,7 +89,14 @@ load_metadata_cb (gpointer file)
 	rb_metadata_load (md, (const char *)uri, &error);
 	
 	if (error) {
-		printf ("error: %s\n", error->message);
+		switch (error->code) {
+		case RB_METADATA_ERROR_NOT_AUDIO_IGNORE:
+			printf ("file ignored: %s\n", error->message);
+			break;
+		default:
+			printf ("error: %s\n", error->message);
+			break;
+		}
 		g_clear_error (&error);
 	} else {
 		printf ("type: %s\n", rb_metadata_get_mime (md));

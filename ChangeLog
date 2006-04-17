@@ -1,5 +1,19 @@
 2006-04-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* metadata/test-metadata.c: (load_metadata_cb): Report ignored files
+	more obviously.
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_init),
+	(make_undecodable_error), (rb_metadata_gst_error_cb),
+	(rb_metadata_gst_new_decoded_pad_cb),
+	(rb_metadata_gst_unknown_type_cb), (rb_metadata_bus_handler):
+	Ignore really small files (<4kB) for which typefinding fails.
+	Always link decoded pads from decodebin to fakesink.
+	Shut the pipeline down by posting an error on the bus when decodebin
+	emits unknown-type signals.  Fixes bug #338062.
+
+2006-04-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: (rb_shell_load_uri):
 	Fix glaring mistakes in previous commit: actually pass arguments to
 	rb_debug, and specify the right entry type when adding a new iradio
