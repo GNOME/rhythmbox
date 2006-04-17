@@ -596,13 +596,13 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 				      RBEntryView *view)
 {
 	RhythmDBEntry *entry;
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *pixbuf = NULL;
 
 	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
 
 	if (entry == view->priv->playing_entry) {
 		switch (view->priv->playing_state) {
-		case RB_ENTRY_VIEW_PLAYING:	
+		case RB_ENTRY_VIEW_PLAYING:
 			pixbuf = view->priv->playing_pixbuf;
 			break;
 		case RB_ENTRY_VIEW_PAUSED:
@@ -612,10 +612,10 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 			pixbuf = NULL;
 			break;
 		}
-	} else if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
+	}
+
+	if (pixbuf == NULL && rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
 		pixbuf = view->priv->error_pixbuf;
-	} else {
-		pixbuf = NULL;
 	}
 
 	g_object_set (G_OBJECT (renderer), "pixbuf", pixbuf, NULL);

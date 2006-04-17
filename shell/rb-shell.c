@@ -2343,8 +2343,8 @@ add_to_library_response_cb (GtkDialog *dialog,
 	}
 
 	for (uris = uri_list; uris; uris = uris->next) {
-			rb_shell_load_uri (shell, (char *)uris->data, FALSE, NULL);
-			g_free (uris->data);
+		rb_shell_load_uri (shell, (char *)uris->data, FALSE, NULL);
+		g_free (uris->data);
 	}
 	g_slist_free (uri_list);
 	g_free (current_dir);
@@ -2976,6 +2976,10 @@ rb_shell_guess_type_for_uri (RBShell *shell,
 			     const char *uri)
 {
 	GnomeVFSURI *vfs_uri;
+	gint entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+	const char *scheme;
+	const char *path;
+	const char *pathend;
 
 	if (uri == NULL)
 		return -1;
@@ -2985,20 +2989,27 @@ rb_shell_guess_type_for_uri (RBShell *shell,
 		rb_debug ("Invalid uri: %s", uri);
 		return -1;
 	}
+	scheme = gnome_vfs_uri_get_scheme (vfs_uri);
+	path = gnome_vfs_uri_get_scheme (vfs_uri);
+	pathend = path + strlen (path);
 
-	if (strncmp ("http", uri, 4) == 0) {
-		const char *uriend = uri + strlen(uri);
-		if ((strcasecmp (".xml", uriend-4) == 0)
-		    || strcasecmp (".rss", uriend-4) == 0)
-			return RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
-		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+	if (strcmp ("file", scheme) == 0) {
+		entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+	} else if (strcmp ("http", scheme) == 0) {
+		if ((strcasecmp (".xml", pathend-4) == 0)
+		    || strcasecmp (".rss", pathend-4) == 0)
+			entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
+		else
+			entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+	} else if ((strcmp ("pnm", scheme) == 0) ||
+		  (strcmp ("rtsp", scheme) == 0) ||
+		  (strcmp ("mms", scheme) == 0) ||
+		  (strcmp ("mmsh", scheme) == 0)) {
+		entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
 	}
 
-	if (strncmp ("pnm", uri, 3) == 0
-	    || strncmp ("rtsp", uri, 4) == 0) {
-		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
-	}
-	return RHYTHMDB_ENTRY_TYPE_SONG;
+	gnome_vfs_uri_unref (vfs_uri);
+	return entry_type;
 }
 
 /* Load a URI representing an element of the given type, with
@@ -3017,10 +3028,15 @@ rb_shell_add_uri (RBShell *shell,
 	/* FIXME should abstract this... */
 	source = rb_shell_get_source_by_entry_type (shell, entrytype);
 	if (source == RB_SOURCE (shell->priv->iradio_source)) {
-		rb_iradio_source_add_station (shell->priv->iradio_source,
-					      uri,
-					      title,
-					      genre);
+		if (rb_uri_is_local (uri)) {
+			rb_iradio_source_add_from_playlist (shell->priv->iradio_source,
+							    uri);
+		} else {
+			rb_iradio_source_add_station (shell->priv->iradio_source,
+						      uri,
+						      title,
+						      genre);
+		}
 		return TRUE;
 	} else if (source == RB_SOURCE (shell->priv->podcast_source)) {
 		rb_podcast_source_add_feed (shell->priv->podcast_source, uri);
@@ -3035,29 +3051,38 @@ rb_shell_add_uri (RBShell *shell,
 	}
 }
 
-static gboolean
-handle_one_uri_with_possible_metadata (RBShell *shell,
-				       const char *uri,
-				       const char *title,
-				       const char *genre)
+typedef struct {
+	RBShell *shell;
+	gboolean iradio_playlist;
+} PlaylistParseData;
+
+static void
+handle_playlist_entry_cb (TotemPlParser *playlist,
+			  const char *uri,
+			  const char *title,
+			  const char *genre,
+			  PlaylistParseData *data)
 {
-	gint entrytype;
+	gint entry_type;
 
-	entrytype = rb_shell_guess_type_for_uri (shell, uri);
-	if (entrytype < 0)
-		return FALSE;
-
-	if (title && !g_utf8_validate (title, -1, NULL))
-		return FALSE;
-	if (genre && !g_utf8_validate (genre, -1, NULL))
-		return FALSE;
-
-	rb_shell_add_uri (shell, entrytype, uri, title, genre, NULL);
-	return TRUE;
+	g_return_if_fail (uri != NULL);
+	
+	entry_type = rb_shell_guess_type_for_uri (data->shell, uri);
+	g_return_if_fail (entry_type >= 0);
+	
+	if (entry_type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION)
+		data->iradio_playlist = FALSE;
 }
 
 /* Load a URI representing a single song, a directory, a playlist, or
  * an internet radio station, and optionally start playing it.
+ *
+ * For playlists containing only stream URLs, we either add the playlist 
+ * itself (if it's remote) or each URL from it (if it's local).  The main
+ * reason for this is so clicking on stream playlist links in web browsers
+ * works properly - the playlist file will be downloaded to /tmp/, and
+ * we can't add that to the database, so we need to add the stream URLs
+ * instead.
  */
 gboolean
 rb_shell_load_uri (RBShell *shell,
@@ -3066,17 +3091,29 @@ rb_shell_load_uri (RBShell *shell,
 		   GError **error)
 {
 	RhythmDBEntry *entry;
-	gboolean handled;
 	
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-	handled = FALSE;
 
 	if (entry == NULL) {
 		TotemPlParser *parser;
 		TotemPlParserResult result;
+		PlaylistParseData data;
+
+		data.shell = shell;
+		if (rb_uri_is_local (uri)) {
+			/* TODO: we'd need to grab the first stream URL from the playlist
+			 * to be able to play stations added this way.
+			 */
+			play = FALSE;
+		}
 		
+		rb_debug ("adding uri %s", uri);
 		parser = totem_pl_parser_new ();
 		
+		g_signal_connect_data (G_OBJECT (parser), "entry",
+				       G_CALLBACK (handle_playlist_entry_cb),
+				       &data, NULL, 0);
+
 		totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 			g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
@@ -3084,29 +3121,39 @@ rb_shell_load_uri (RBShell *shell,
 		result = totem_pl_parser_parse (parser, uri, FALSE);
 		g_object_unref (parser);
 		
-		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS && data.iradio_playlist == FALSE) {
+			rb_debug ("adding %s as a static playlist");
 			if (!rb_playlist_manager_parse_file (shell->priv->playlist_manager,
 							     uri, error))
 				return FALSE;
 		} else {
-			handled = handle_one_uri_with_possible_metadata (shell, uri, NULL, NULL);
+			gint entrytype;
+
+			if (result == TOTEM_PL_PARSER_RESULT_SUCCESS)
+				rb_debug ("adding %s as an iradio playlist");
+			else
+				rb_debug ("%s didn't parse as a playlist");
+
+			entrytype = rb_shell_guess_type_for_uri (shell, uri);
+			if (entrytype < 0)
+				return FALSE;
+			rb_shell_add_uri (shell, entrytype, uri, NULL, NULL, NULL);
 		}
-	} else {
-		handled = TRUE;
 	}
 	
-	if (play && handled) {
-		RhythmDBEntry *entry;
-		
-		entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-		if (entry)
+	if (play) {
+		if (entry == NULL)
+			entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+
+		if (entry) {
 			rb_shell_play_entry (shell, entry);
-	} else if (entry == NULL) {
-		/* Do nothing here; we will have set the pending entry,
-		 * it should play when it's loaded.  This should really
-		 * do a recursive mainloop and wait for the entry to
-		 * load.
-		 */
+		} else {
+			/* wait for the entry to be added, and then play it */
+			if (shell->priv->pending_entry)
+				g_free (shell->priv->pending_entry);
+
+			shell->priv->pending_entry = g_strdup (uri);
+		}
 	}
 
 	return TRUE;

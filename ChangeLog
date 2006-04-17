@@ -1,3 +1,41 @@
+2006-04-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/main.c: (load_uri_args):  Don't check that remote URLs exist
+	before trying to add them, as iradio streams often fail rb_uri_exists().
+
+	* shell/rb-shell-player.c: (notify_playing_idle),
+	(rb_shell_player_open_playlist_url), (playlist_entry_cb),
+	(open_location_thread), (rb_shell_player_open_location),
+	(rb_shell_player_play), (rb_shell_player_set_playing_entry),
+	(eos_cb):  When playing an iradio stream using a playlist, keep a list
+	of all the stream URLs, and try them in turn.  If we get through the
+	whole playlist too quickly, error out.  Various other fixes that make
+	iradio work a lot better.
+
+	* shell/rb-shell.c: (add_to_library_response_cb),
+	(rb_shell_guess_type_for_uri), (rb_shell_add_uri),
+	(handle_playlist_entry_cb), (rb_shell_load_uri):
+	Add playlists containing streams as iradio stations.  If the playlist
+	is local, add each stream URL, but if the playlist is remote, just add
+	the playlist URL.
+	
+	* sources/rb-iradio-source.c: (new_station_location_added):
+	Add new station URLs as-is, rather than parsing the playlist and
+	adding the streams.
+	
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_emit_reorder),
+	(rhythmdb_query_model_do_reorder):
+	Emit row-changed notifications when an entry changes but is not
+	reordered.
+
+	* widgets/rb-entry-view.c: (rb_entry_view_playing_cell_data_func):
+	Display the playback error icon when the entry has an error and
+	there's nothing else to display.
+	
+	Fixes bug #320336 and some of #324402.
+	
 2006-04-16  Christophe Fergeau  <teuf@gnome.org>
 
 	* sources/rb-ipod-source.c: use a GHashTable for the

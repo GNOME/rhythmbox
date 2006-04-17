@@ -461,7 +461,7 @@ load_uri_args (const char **args, GFunc handler, gpointer user_data)
 
 		uri = gnome_vfs_make_uri_from_shell_arg (args[i]);
 			
-		if (rb_uri_exists (uri) == TRUE) {
+		if (rb_uri_is_local (uri) == FALSE || rb_uri_exists (uri)) {
 			handler (uri, user_data);
 		}
 		g_free (uri);

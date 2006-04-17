@@ -941,7 +941,7 @@ new_station_location_added (RBNewStationDialog *dialog,
 			    const char         *uri,
 			    RBIRadioSource     *source)
 {
-	rb_iradio_source_add_from_playlist (source, uri);
+	rb_iradio_source_add_station (source, uri, NULL, NULL);
 }
 
 static void

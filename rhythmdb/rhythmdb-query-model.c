@@ -76,8 +76,8 @@ static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *
 
 static void rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
 						   RhythmDBEntry *entry);
-static void rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry);
-static void rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint new_pos);
+static gboolean rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry);
+static gboolean rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint new_pos);
 static gboolean rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 							  GList *paths,
 							  GtkSelectionData *selection_data);
@@ -807,7 +807,19 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 	}
 
 	/* it may have moved, so we can't just emit a changed entry */
-	rhythmdb_query_model_do_reorder (model, entry);
+	if (!rhythmdb_query_model_do_reorder (model, entry)) {
+		/* but if it didn't, we can */
+		GtkTreeIter iter;
+		GtkTreePath *path;
+
+		if (rhythmdb_query_model_entry_to_iter (model, entry, &iter)) {
+			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
+							      &iter);
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (model),
+						     path, &iter);
+			gtk_tree_path_free (path);
+		}
+	}
 }
 
 static void
@@ -1059,7 +1071,7 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 	}
 }
 
-static void
+static gboolean
 rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint new_pos)
 {
 	int length, i;
@@ -1069,7 +1081,7 @@ rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint
 
 	if (new_pos == old_pos) {
 		/* it hasn't moved, don't emit a re-order */
-		return;
+		return FALSE;
 	}
 
 	length = g_sequence_get_length (model->priv->entries);
@@ -1103,9 +1115,10 @@ rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model, gint old_pos, gint
 				       reorder_map);
 	gtk_tree_path_free (path);
 	free (reorder_map);
+	return TRUE;
 }
 
-static void
+static gboolean
 rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
 	GSequencePtr ptr;
@@ -1115,7 +1128,7 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 	GCompareDataFunc sort_func = model->priv->sort_func;
 
 	if (sort_func == NULL)
-		return;
+		return FALSE;
 	if (model->priv->sort_reverse)
 		sort_func = (GCompareDataFunc) _reverse_sorting_func;
 
@@ -1129,7 +1142,7 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 			/* the entry belongs in the limited list, so we don't need a re-order */
 			rhythmdb_query_model_remove_entry (model, entry);
 			rhythmdb_query_model_do_insert (model, entry, -1);
-			return;
+			return TRUE;
 		}
 	}
 
@@ -1153,7 +1166,7 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 	new_pos = g_sequence_ptr_get_position (ptr);
 	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
 
-	rhythmdb_query_model_emit_reorder (model, old_pos, new_pos);
+	return rhythmdb_query_model_emit_reorder (model, old_pos, new_pos);
 }
 
 static void

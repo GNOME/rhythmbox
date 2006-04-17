@@ -193,7 +193,7 @@ struct RBShellPlayerPrivate
 	RBPlayOrder *play_order;
 	RBPlayOrder *queue_play_order;
 
-	GError *playlist_parse_error;
+	GQueue *playlist_urls;
 
 	RBHeader *header_widget;
 	RBStatusbar *statusbar_widget;
@@ -882,79 +882,90 @@ rb_shell_player_get_playing_entry (RBShellPlayer *player)
 	return rb_play_order_get_playing_entry (porder);
 }
 
-static void
-rb_shell_player_open_playlist_location (TotemPlParser *playlist, const char *uri,
-					const char *title, const char *genre,
-					RBShellPlayer *player)
+static gboolean
+notify_playing_idle (RBShellPlayer *player)
 {
-	GError *error = NULL;
-
-	if (rb_player_playing (player->priv->mmplayer))
-		return;
-
-	if (!rb_player_open (player->priv->mmplayer, uri, &error)) {
-		if (player->priv->playlist_parse_error != NULL) {
-			g_error_free (player->priv->playlist_parse_error);
-			player->priv->playlist_parse_error = NULL;
-		}
-		player->priv->playlist_parse_error = g_error_copy (error);
-		return;
-	}
-
-	rb_player_play (player->priv->mmplayer, &error);
-	if (error)
-		player->priv->playlist_parse_error = g_error_copy (error);
-
+	rb_debug ("emitting playing notification: %d", rb_player_playing (player->priv->mmplayer));
 	g_object_notify (G_OBJECT (player), "playing");
+	rb_shell_player_sync_buttons (player);
+	return FALSE;
 }
 
+static void
+rb_shell_player_open_playlist_url (RBShellPlayer *player, 
+				   const char *location)
+{
+	GError *error = NULL;
+	
+	rb_debug ("playing stream url %s", location);
+	rb_player_open (player->priv->mmplayer, location, &error);
+	if (error == NULL)
+		rb_player_play (player->priv->mmplayer, &error);
+
+	if (error) {
+		GDK_THREADS_ENTER ();
+		rb_shell_player_error (player, TRUE, error);
+		g_error_free (error);
+		GDK_THREADS_LEAVE ();
+	}
+	g_idle_add ((GSourceFunc) notify_playing_idle, player);
+}
 
 typedef struct {
 	RBShellPlayer *player;
 	char *location;
 } OpenLocationThreadData;
 
+static void
+playlist_entry_cb (TotemPlParser *playlist, const char *uri,
+		   const char *title, const char *genre,
+		   RBShellPlayer *player)
+{
+	rb_debug ("adding stream url %s", uri);
+	g_queue_push_tail (player->priv->playlist_urls, g_strdup (uri));
+}
+
 static gpointer
 open_location_thread (OpenLocationThreadData *data)
 {
 	TotemPlParser *playlist;
 	TotemPlParserResult playlist_result;
-	gboolean playlist_parsed;
-	GError *error = NULL;
 
 	GDK_THREADS_ENTER ();
 	rb_statusbar_set_progress (data->player->priv->statusbar_widget, 0.0, _("Connecting"));
 	GDK_THREADS_LEAVE ();
 
 	playlist = totem_pl_parser_new ();
-	g_signal_connect_object (G_OBJECT (playlist), "entry",
-				 G_CALLBACK (rb_shell_player_open_playlist_location),
-				 data->player, 0);
+	g_signal_connect_data (G_OBJECT (playlist), "entry",
+			       G_CALLBACK (playlist_entry_cb),
+			       data->player, NULL, 0);
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 
 	playlist_result = totem_pl_parser_parse (playlist, data->location, FALSE);
-	playlist_parsed = (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS);
 	g_object_unref (playlist);
 
-	if (!playlist_parsed) {
-		/* We get here if we failed to parse as a playlist */
-		rb_player_open (data->player->priv->mmplayer, data->location, &error);
-		if (error == NULL)
-			rb_player_play (data->player->priv->mmplayer, &error);
-	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_ERROR
-		   && data->player->priv->playlist_parse_error) {
-		error = data->player->priv->playlist_parse_error;
-		data->player->priv->playlist_parse_error = NULL;
-	} else {
-		rb_player_play (data->player->priv->mmplayer, &error);
-		g_object_notify (G_OBJECT (data->player), "playing");
-	}
+	if (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+		if (g_queue_is_empty (data->player->priv->playlist_urls)) {
+			GError *error = g_error_new (RB_SHELL_PLAYER_ERROR,
+						     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
+						     _("Playlist was empty"));
+			GDK_THREADS_ENTER ();
+			rb_shell_player_error (data->player, TRUE, error);
+			g_error_free (error);
+			GDK_THREADS_LEAVE ();
+		} else {
+			char *location;
 
-	GDK_THREADS_ENTER ();
-	if (error)
-		rb_shell_player_error (data->player, TRUE, error);
-	rb_shell_player_sync_buttons (data->player);
-	GDK_THREADS_LEAVE ();
+			location = g_queue_pop_head (data->player->priv->playlist_urls);
+			rb_debug ("playing first stream url %s", data->location);
+			rb_shell_player_open_playlist_url (data->player, location);
+			g_free (location);
+		}
+	} else {
+		/* if we can't parse it as a playlist, just try playing it */
+		rb_debug ("playlist parser failed, playing %s directly", data->location);
+		rb_shell_player_open_playlist_url (data->player, data->location);
+	}
 
 	g_free (data);
 	return NULL;
@@ -983,6 +994,16 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	       
 		data = g_new0 (OpenLocationThreadData, 1);
 		data->player = player;
+
+		/* dispose of any existing playlist urls */
+		if (player->priv->playlist_urls) {
+			g_queue_foreach (player->priv->playlist_urls,
+					 (GFunc) g_free,
+					 NULL);
+			g_queue_free (player->priv->playlist_urls);
+			player->priv->playlist_urls = NULL;
+		}
+		player->priv->playlist_urls = g_queue_new ();
 
 		/* add http:// as a prefix, if it doesn't have a URI scheme */
 		if (strstr (location, "://"))
@@ -1037,7 +1058,7 @@ rb_shell_player_play (RBShellPlayer *player, GError **error)
 	RBEntryView *songs;
 
 	if (rb_player_playing (player->priv->mmplayer))
-			return TRUE;
+		return TRUE;
 
 	if (!rb_player_play (player->priv->mmplayer, error))
 		return FALSE;
@@ -1124,7 +1145,6 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player,
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
-	g_object_notify (G_OBJECT (player), "playing");
 
 	return TRUE;
  lose:
@@ -2373,16 +2393,26 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 			break;
 		case RB_SOURCE_EOF_RETRY: {
 			GTimeVal current;
+			gint diff;
+
 			g_get_current_time (&current);
-			if (player->priv->did_retry
-			    && (current.tv_sec - player->priv->last_retry.tv_sec) < 4) {
-				rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
-				player->priv->did_retry = FALSE;
-				rb_shell_player_set_playing_source (player, NULL);
+			diff = current.tv_sec - player->priv->last_retry.tv_sec;
+			player->priv->last_retry = current;
+
+			if (rb_source_try_playlist (player->priv->current_playing_source) &&
+			    !g_queue_is_empty (player->priv->playlist_urls)) {
+				char *location = g_queue_pop_head (player->priv->playlist_urls);
+				rb_debug ("trying next radio stream url: %s", location);
+
+				rb_shell_player_open_playlist_url (player, location);
+				g_free (location);
 				break;
+			}
+
+			if (diff < 4) {
+				rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
+				rb_shell_player_set_playing_source (player, NULL);
 			} else {
-				player->priv->did_retry = TRUE;
-				g_get_current_time (&(player->priv->last_retry));
 				rb_shell_player_play_entry (player, entry);
 			}
 		}
