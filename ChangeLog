@@ -1,5 +1,12 @@
 2006-04-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (rb_shell_load_uri):
+	Fix glaring mistakes in previous commit: actually pass arguments to
+	rb_debug, and specify the right entry type when adding a new iradio
+	station so we don't try to add local playlist files to the library.
+
+2006-04-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/main.c: (load_uri_args):  Don't check that remote URLs exist
 	before trying to add them, as iradio streams often fail rb_uri_exists().
 

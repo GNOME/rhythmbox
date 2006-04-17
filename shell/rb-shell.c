@@ -3122,21 +3122,23 @@ rb_shell_load_uri (RBShell *shell,
 		g_object_unref (parser);
 		
 		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS && data.iradio_playlist == FALSE) {
-			rb_debug ("adding %s as a static playlist");
+			rb_debug ("adding %s as a static playlist", uri);
 			if (!rb_playlist_manager_parse_file (shell->priv->playlist_manager,
 							     uri, error))
 				return FALSE;
 		} else {
 			gint entrytype;
 
-			if (result == TOTEM_PL_PARSER_RESULT_SUCCESS)
-				rb_debug ("adding %s as an iradio playlist");
-			else
-				rb_debug ("%s didn't parse as a playlist");
+			if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+				rb_debug ("adding %s as an iradio playlist", uri);
+				entrytype = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+			} else {
+				rb_debug ("%s didn't parse as a playlist", uri);
+				entrytype = rb_shell_guess_type_for_uri (shell, uri);
+				if (entrytype < 0)
+					return FALSE;
+			}
 
-			entrytype = rb_shell_guess_type_for_uri (shell, uri);
-			if (entrytype < 0)
-				return FALSE;
 			rb_shell_add_uri (shell, entrytype, uri, NULL, NULL, NULL);
 		}
 	}
