@@ -37,9 +37,6 @@
 #ifdef HAVE_HAL
 #include "rb-nokia770-source.h"
 #endif
-#ifdef WITH_IPOD_SUPPORT
-#include "rb-ipod-source.h"
-#endif
 
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -91,7 +88,7 @@ static void  rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor
 static void  rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 				GnomeVFSVolume *volume, 
 				gpointer data);
-static void rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
+static gboolean rb_removable_media_manager_load_media (RBRemovableMediaManager *manager);
 
 #ifdef ENABLE_TRACK_TRANSFER
 static void do_transfer (RBRemovableMediaManager *manager);
@@ -147,6 +144,7 @@ enum
 {
 	MEDIUM_ADDED,
 	TRANSFER_PROGRESS,
+	CREATE_SOURCE,
 	LAST_SIGNAL
 };
 
@@ -219,7 +217,16 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      rb_marshal_VOID__INT_INT_DOUBLE,
 			      G_TYPE_NONE,
 			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
-
+	
+	rb_removable_media_manager_signals[CREATE_SOURCE] =
+		g_signal_new ("create-source",
+			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source),
+			      rb_signal_accumulator_object_handled, NULL,
+			      rb_marshal_OBJECT__OBJECT,
+			      RB_TYPE_SOURCE,
+			      1, GNOME_VFS_TYPE_VOLUME);
 
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaManagerPrivate));
 }
@@ -231,6 +238,8 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 
 	priv->volume_mapping = g_hash_table_new (NULL, NULL);
 	priv->transfer_queue = g_async_queue_new ();
+
+	g_idle_add ((GSourceFunc)rb_removable_media_manager_load_media, mgr);
 }
 
 static void
@@ -507,7 +516,7 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 }
 
 	
-gboolean
+static gboolean
 rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
@@ -567,6 +576,25 @@ rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 }
 
 
+static gboolean 
+remove_volume_by_source (GnomeVFSVolume *volume, RBSource *source, 
+			 RBSource *ref_source)
+{
+	return (ref_source == source);
+}
+
+static void
+rb_removable_media_manager_source_deleted_cb (RBSource *source, RBRemovableMediaManager *mgr)
+{
+	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+
+	rb_debug ("removing source %p", source);
+	g_hash_table_foreach_remove (priv->volume_mapping, 
+				     (GHRFunc)remove_volume_by_source,
+				     source);
+	priv->sources = g_list_remove (priv->sources, source);
+}
+
 static void
 rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 			     GnomeVFSVolume *volume, 
@@ -578,13 +606,11 @@ rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 	rb_removable_media_manager_unmount_volume (mgr, volume);
 }
 
-
 static void
 rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSVolume *volume)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
 	RBRemovableMediaSource *source = NULL;
-	RBShell *shell;
 	char *fs_type, *device_path, *display_name, *hal_udi, *icon_name;
 	GnomeVFSDeviceType device_type;
 
@@ -603,8 +629,6 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	    device_type == GNOME_VFS_DEVICE_TYPE_SMB ||
 	    device_type == GNOME_VFS_DEVICE_TYPE_NETWORK)
 		return;
-
-	g_object_get (G_OBJECT (mgr), "shell", &shell, NULL);
 
 	fs_type = gnome_vfs_volume_get_filesystem_type (volume);
 	device_path = gnome_vfs_volume_get_device_path (volume);
@@ -625,33 +649,33 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	 * When volume is of the appropriate type, it creates a new source
 	 * to handle this volume
 	 */
+
+	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE], 0,
+		       volume, &source);
+
 	if (source == NULL && rb_audiocd_is_volume_audiocd (volume))
-		source = rb_audiocd_source_new (shell, volume);
-#ifdef WITH_IPOD_SUPPORT
-	if (source == NULL && rb_ipod_is_volume_ipod (volume))
-		source = rb_ipod_source_new (shell, volume);
-#endif
+		source = rb_audiocd_source_new (priv->shell, volume);
 	if (source == NULL && rb_psp_is_volume_player (volume))
-		source = rb_psp_source_new (shell, volume);
+		source = rb_psp_source_new (priv->shell, volume);
 #ifdef HAVE_HAL
 	if (source == NULL && rb_nokia770_is_volume_player (volume))
-		source = rb_nokia770_source_new (shell, volume);
+		source = rb_nokia770_source_new (priv->shell, volume);
 #endif
 	if (source == NULL && rb_generic_player_is_volume_player (volume))
-		source = rb_generic_player_source_new (shell, volume);
+		source = rb_generic_player_source_new (priv->shell, volume);
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
 		rb_removable_media_manager_append_media_source (mgr, source);
-	} else
+	} else {
 		rb_debug ("Unhandled media");
+	}
 
 	g_free (fs_type);
 	g_free (device_path);
 	g_free (display_name);
 	g_free (hal_udi);
 	g_free (icon_name);
-	g_object_unref (G_OBJECT (shell));
 }
 
 static void
@@ -666,18 +690,9 @@ rb_removable_media_manager_unmount_volume (RBRemovableMediaManager *mgr, GnomeVF
 	source = g_hash_table_lookup (priv->volume_mapping, volume);
 	if (source) {
 		rb_source_delete_thyself (RB_SOURCE (source));
-		g_hash_table_remove (priv->volume_mapping, volume);
 	}
 }
 
-static void
-rb_removable_media_manager_source_deleted_cb (RBSource *source, RBRemovableMediaManager *mgr)
-{
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
-
-	rb_debug ("removing source %p", source);
-	priv->sources = g_list_remove (priv->sources, source);
-}
 
 static void
 rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source)
@@ -687,6 +702,7 @@ rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RB
 	priv->sources = g_list_prepend (priv->sources, source);
 	g_signal_connect_object (G_OBJECT (source), "deleted",
 				 G_CALLBACK (rb_removable_media_manager_source_deleted_cb), mgr, 0);
+
 	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[MEDIUM_ADDED], 0,
 		       source);
 }
@@ -777,7 +793,7 @@ rb_removable_media_manager_unmount_volume_swap (GnomeVFSVolume *volume, RBRemova
 	rb_removable_media_manager_unmount_volume (manager, volume);
 }
 
-static void
+void
 rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);

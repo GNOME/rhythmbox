@@ -14,6 +14,10 @@ if ENABLE_PYTHON
 SUBDIRS += pythonconsole sample-python
 endif
 
+if USE_IPOD
+SUBDIRS += ipod
+endif
+
 noinst_LTLIBRARIES = librbplugins.la
 
 librbplugins_la_SOURCES =				\

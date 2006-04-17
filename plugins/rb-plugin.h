@@ -93,6 +93,7 @@ GtkWidget	*rb_plugin_create_configure_dialog
 #define RB_PLUGIN_REGISTER(PluginName, plugin_name)				\
 										\
 static GType plugin_name##_type = 0;						\
+static GTypeModule *plugin_module_type = 0;		                \
 										\
 GType										\
 plugin_name##_get_type (void)							\
@@ -131,12 +132,67 @@ register_rb_plugin (GTypeModule *module)					\
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);			\
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");			\
 										\
+	plugin_module_type = module;						\
 	plugin_name##_type = g_type_module_register_type (module,		\
 					    RB_TYPE_PLUGIN,			\
 					    #PluginName,			\
 					    &our_info,				\
 					    0);					\
 	return plugin_name##_type;						\
+}
+
+
+#define RB_PLUGIN_REGISTER_TYPE(type_name)                                      \
+        type_name##_register_type (plugin_module_type)
+
+#define RB_PLUGIN_DEFINE_TYPE(TypeName, type_name, TYPE_PARENT)			\
+static void type_name##_init (TypeName *self); 				\
+static void type_name##_class_init (TypeName##Class *klass); 			\
+static gpointer type_name##_parent_class = ((void *)0); 			\
+static GType type_name##_type_id = 0;						\
+										\
+static void 									\
+type_name##_class_intern_init (gpointer klass) 					\
+{ 										\
+	type_name##_parent_class = g_type_class_peek_parent (klass);		\
+	type_name##_class_init ((TypeName##Class*) klass); 			\
+}										\
+										\
+										\
+GType 										\
+type_name##_get_type (void)							\
+{										\
+	g_assert (type_name##_type_id != 0);					\
+										\
+	return type_name##_type_id;						\
+}										\
+										\
+GType 										\
+type_name##_register_type (GTypeModule *module) 				\
+{ 										\
+										\
+	if ((type_name##_type_id == 0)) { 					\
+		static const GTypeInfo g_define_type_info = { 			\
+			sizeof (TypeName##Class), 				\
+			(GBaseInitFunc) ((void *)0), 				\
+			(GBaseFinalizeFunc) ((void *)0), 			\
+			(GClassInitFunc) type_name##_class_intern_init, 	\
+			(GClassFinalizeFunc) ((void *)0), 			\
+			((void *)0), 						\
+			sizeof (TypeName), 					\
+			0, 							\
+			(GInstanceInitFunc) type_name##_init,			\
+			((void *)0) 						\
+		}; 								\
+		type_name##_type_id = 						\
+			g_type_module_register_type (module, 			\
+						     TYPE_PARENT, 		\
+						     g_intern_static_string (#TypeName), \
+						     &g_define_type_info, 	\
+						     (GTypeFlags) 0); 		\
+	} 									\
+										\
+	return type_name##_type_id;						\
 }
 
 

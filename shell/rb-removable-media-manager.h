@@ -22,6 +22,8 @@
 #ifndef __RB_REMOVABLE_MEDIA_MANAGER_H
 #define __RB_REMOVABLE_MEDIA_MANAGER_H
 
+#include <libgnomevfs/gnome-vfs.h>
+
 #include "rb-source.h"
 #include "rhythmdb.h"
 #include "rb-shell.h"
@@ -58,13 +60,15 @@ typedef struct
 					 gint done,
 					 gint total,
 					 double fraction);
+	RBSource * (*create_source)	(RBRemovableMediaManager *mgr,
+					 GnomeVFSVolume *volume);
 } RBRemovableMediaManagerClass;
 
 
 RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell, RBSourceList *sourcelist);
 GType			rb_removable_media_manager_get_type	(void);
 
-gboolean		rb_removable_media_manager_load_media	(RBRemovableMediaManager *mgr);
+void			rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
 
 #ifdef ENABLE_TRACK_TRANSFER
 void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *mgr,

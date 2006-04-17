@@ -1206,7 +1206,6 @@ construct_sources (RBShell *shell)
 	rb_debug ("shell: creating removable media manager");
 	shell->priv->removable_media_manager = rb_removable_media_manager_new (shell,
 								 RB_SOURCELIST (shell->priv->sourcelist));
-	g_idle_add ((GSourceFunc)rb_removable_media_manager_load_media, shell->priv->removable_media_manager);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "medium_added",
 				 G_CALLBACK (rb_shell_medium_added_cb), shell, 0);

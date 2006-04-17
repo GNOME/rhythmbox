@@ -70,14 +70,6 @@ INCLUDES =						\
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
 
-ipod_files =				\
-	rb-ipod-source.c		\
-	rb-ipod-source.h
-if USE_IPOD
-libsourcesimpl_la_SOURCES += $(ipod_files)
-INCLUDES += -I$(top_srcdir)/sources/ipod $(IPOD_CFLAGS)
-endif
-
 hal_files =				\
 	rb-nokia770-source.c		\
 	rb-nokia770-source.h
@@ -101,4 +93,4 @@ if ENABLE_TRACK_TRANSFER
 INCLUDES +=$(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
-EXTRA_DIST = $(ipod_files) $(hal_files) $(daap_files)
+EXTRA_DIST = $(hal_files) $(daap_files)

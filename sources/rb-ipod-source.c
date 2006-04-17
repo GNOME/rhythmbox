@@ -38,6 +38,7 @@
 #include "rb-ipod-source.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
+#include "rb-plugin.h"
 #include "rb-removable-media-manager.h"
 #include "rb-static-playlist-source.h"
 #include "rb-util.h"
@@ -58,8 +59,6 @@ static void rb_ipod_load_songs (RBiPodSource *source);
 static gchar *rb_ipod_get_mount_path (GnomeVFSVolume *volume);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
-static void rb_ipod_source_cmd_rename (GtkAction *action,
-				       RBiPodSource *source);
 #ifdef HAVE_HAL
 static gboolean hal_udi_is_ipod (const char *udi);
 #endif
@@ -69,19 +68,13 @@ typedef struct
 	Itdb_iTunesDB *ipod_db;
 	gchar *ipod_mount_path;
 	GHashTable *entry_map;
-	GtkActionGroup *action_group;	
 } RBiPodSourcePrivate;
 
 
-static GtkActionEntry rb_ipod_source_actions [] =
-{
-	{ "iPodSourceRename", NULL, N_("_Rename"), NULL,
-	  N_("Rename iPod"),
-	  G_CALLBACK (rb_ipod_source_cmd_rename) }
-};
+RB_PLUGIN_DEFINE_TYPE(RBiPodSource, 
+		      rb_ipod_source, 
+		      RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 
-
-G_DEFINE_TYPE (RBiPodSource, rb_ipod_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
 
 
@@ -112,6 +105,10 @@ rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 
 	mpl = itdb_playlist_mpl (priv->ipod_db);
 	rb_debug ("Renaming iPod from %s to %s", mpl->name, name);
+	if (strcmp (mpl->name, name) == 0) {
+		rb_debug ("iPod is already named %s", name);
+		return;
+	}
 	g_free (mpl->name);
 	mpl->name = g_strdup (name);
 	itdb_write (priv->ipod_db, NULL);
@@ -137,33 +134,19 @@ rb_ipod_source_init (RBiPodSource *source)
 
 static GObject *
 rb_ipod_source_constructor (GType type, guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+			    GObjectConstructParam *construct_properties)
 {
 	RBiPodSource *source;
 	RBEntryView *songs;
 	RBiPodSourcePrivate *priv;
-	GtkUIManager *uimanager;
 
 	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 	priv = IPOD_SOURCE_GET_PRIVATE (source);
+
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
-
-	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
-							       "iPodActions",
-							       rb_ipod_source_actions,
-							       G_N_ELEMENTS (rb_ipod_source_actions),
-							       source);
-
-	/* FIXME: shouldn't it be done only once for the class instead of 
-	 * being done for every RBiPodSource object created?
-	 */
-	g_object_get (G_OBJECT (source), "ui-manager", &uimanager, NULL);
-	gtk_ui_manager_add_ui_from_file (uimanager,
-					 rb_file ("ipod-ui.xml"), NULL);
-	g_object_unref (G_OBJECT (uimanager));
 
 	rb_ipod_load_songs (source);
 
@@ -767,30 +750,3 @@ impl_delete_thyself (RBSource *source)
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }
 
-static void 
-rb_ipod_source_cmd_rename (GtkAction *action,
-			   RBiPodSource *source)
-{
-	RBShell *shell;
-	RBRemovableMediaManager *manager;
-	RBSourceList *sourcelist;
-
-	/* FIXME: this is pretty ugly, the sourcelist should automatically add
-	 * a "rename" menu item for sources that have can_rename == TRUE.
-	 * This is a bit trickier to handle though, since playlists want 
-	 * to make rename sensitive/unsensitive instead of showing/hiding it
-	 */
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), 
-		      "removable-media-manager", &manager, 
-		      NULL);
-	g_object_get (G_OBJECT (manager), "sourcelist", &sourcelist, NULL);
-	g_object_unref (G_OBJECT (manager));
-	g_object_unref (G_OBJECT (shell));
-	
-	rb_sourcelist_edit_source_name (sourcelist, RB_SOURCE (source)); 
-	/* Once editing is done, notify::name will be fired on the source, and
-	 * we'll catch that in our rename callback
-	 */
-	g_object_unref (sourcelist);
-}

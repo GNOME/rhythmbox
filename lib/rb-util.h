@@ -62,6 +62,10 @@ GList* rb_collate_hash_table_values (GHashTable *table);
 GList* rb_uri_list_parse (const char *uri_list);
 const gchar* rb_mime_get_friendly_name (const gchar *mime_type);
 
+gboolean rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
+					       GValue *return_accu,
+					       const GValue *handler_return,
+					       gpointer dummy);
 
 G_END_DECLS
 

@@ -18,13 +18,15 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  */
+#include "config.h"
 
-#include "rb-util.h"
 #include <gtk/gtk.h>
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
+
+#include "rb-util.h"
 #include "rb-debug.h"
 
 static GPrivate * private_is_primary_thread;
@@ -733,3 +735,20 @@ rb_mime_get_friendly_name (const gchar *mime_type)
 	return name;
 }
 
+gboolean
+rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
+				      GValue *return_accu,
+				      const GValue *handler_return,
+				      gpointer dummy)
+{
+	if (handler_return == NULL ||
+	    !G_VALUE_HOLDS_OBJECT (handler_return) ||
+	    g_value_get_object (handler_return) == NULL)
+		return TRUE;
+
+	g_value_unset (return_accu);
+	g_value_init (return_accu, G_VALUE_TYPE (handler_return));
+	g_value_copy (handler_return, return_accu);
+	
+	return FALSE;
+}

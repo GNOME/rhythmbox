@@ -114,10 +114,6 @@ rhythmbox_LDADD += $(top_builddir)/remote/bonobo/librbbonobo.la
 INCLUDES += -I$(top_srcdir)/remote/bonobo
 endif
 
-if USE_IPOD
-rhythmbox_LDADD += $(IPOD_LIBS)
-endif
-
 if USE_DAAP
 INCLUDES += -I$(top_srcdir)/daapsharing
 

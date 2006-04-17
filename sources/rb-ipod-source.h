@@ -47,6 +47,7 @@ typedef struct
 
 RBRemovableMediaSource *	rb_ipod_source_new		(RBShell *shell, GnomeVFSVolume *volume);
 GType			rb_ipod_source_get_type		(void);
+GType                   rb_ipod_source_register_type    (GTypeModule *module);
 
 gboolean		rb_ipod_is_volume_ipod		(GnomeVFSVolume *volume);
 

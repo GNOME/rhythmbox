@@ -912,6 +912,7 @@ daapsharing/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audioscrobbler/Makefile
+plugins/ipod/Makefile
 plugins/lirc/Makefile
 plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
