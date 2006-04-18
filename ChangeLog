@@ -1,5 +1,10 @@
 2006-04-18  Christophe Fergeau  <teuf@gnome.org>
 
+	* sources/rb-ipod-source.c: (generate_ipod_filename): fixed wrong loop
+	condition
+
+2006-04-18  Christophe Fergeau  <teuf@gnome.org>
+
 	* sources/rb-ipod-source.c: ipod music dirs can be lower or upper
 	case. Moreover, they may not exist yet, so take that into account when
 	generating the iPod filename.

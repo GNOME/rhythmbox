@@ -1130,9 +1130,11 @@ generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 		g_free (ipod_filename);
 		ipod_filename = get_ipod_filename (mount_point, pc_filename);
 		tries++;
-	} while ((ipod_filename != NULL) 
-		 &&(g_file_test (ipod_filename, G_FILE_TEST_EXISTS))
-		 && tries <= MAX_TRIES);
+		if (tries > MAX_TRIES) {
+			break;
+		}
+	} while ((ipod_filename == NULL) 
+		 || (g_file_test (ipod_filename, G_FILE_TEST_EXISTS)));
 
 	g_free (pc_filename);
 
