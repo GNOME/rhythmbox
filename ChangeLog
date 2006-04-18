@@ -1,3 +1,9 @@
+2006-04-18  Christophe Fergeau  <teuf@gnome.org>
+
+	* sources/rb-ipod-source.c: ipod music dirs can be lower or upper
+	case. Moreover, they may not exist yet, so take that into account when
+	generating the iPod filename.
+
 2006-04-18  Christophe Fergeau  <christophe@anevia.com>
 
 	* sources/rb-ipod-source.c: added support for drag and drop from the

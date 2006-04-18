@@ -811,10 +811,13 @@ build_filename (RBSource *asource, RhythmDBEntry *entry)
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	dest = ipod_get_filename_for_uri (priv->ipod_mount_path,  uri);
-	dest_uri = g_filename_to_uri (dest, NULL, NULL);
-	g_free (dest);
+	if (dest != NULL) {
+		dest_uri = g_filename_to_uri (dest, NULL, NULL);
+		g_free (dest);
+		return dest_uri;
+	}
 
-	return dest_uri;
+	return NULL;
 }
 
 static void
@@ -944,6 +947,70 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 #define IPOD_MAX_PATH_LEN 56
 
+static gboolean
+test_dir_on_ipod (const char *mountpoint, const char *dirname)
+{
+	char *fullpath;
+	gboolean result;
+
+	fullpath  = g_build_filename (mountpoint, dirname, NULL);
+	result = g_file_test (fullpath, G_FILE_TEST_IS_DIR);
+	g_free (fullpath);
+	
+	return result;
+}
+
+static int
+ipod_mkdir_with_parents (const char *mountpoint, const char *dirname)
+{
+	char *fullpath;
+	int result;
+
+	fullpath  = g_build_filename (mountpoint, dirname, NULL);
+	result = g_mkdir_with_parents (fullpath, 0770);
+	g_free (fullpath);
+	
+	return result;
+}
+
+static gchar *
+build_ipod_dir_name (const char *mountpoint)
+{
+	/* FAT sucks, filename can be lowercase or uppercase, and if we try to
+	 * open the wrong one, we lose :-/
+	 */
+	char *dirname;
+	char *relpath;
+	gint32 suffix;
+	
+	suffix = g_random_int_range (0, 100);
+	dirname = g_strdup_printf ("F%02d", suffix);
+	relpath = g_build_filename (G_DIR_SEPARATOR_S, "iPod_Control",
+				    "Music", dirname, NULL);
+	g_free (dirname);
+
+	if (test_dir_on_ipod (mountpoint, relpath) != FALSE) {
+		return relpath;
+	}
+
+	g_free (relpath);
+	dirname = g_strdup_printf ("f%02d", g_random_int_range (0, 100));
+	relpath = g_build_filename (G_DIR_SEPARATOR_S, "iPod_Control",
+				    "Music", dirname, NULL);
+	g_free (dirname);
+
+	if (test_dir_on_ipod (mountpoint, relpath) != FALSE) {
+		return relpath;
+	}
+
+	if (ipod_mkdir_with_parents (mountpoint, relpath) == 0) {
+		return relpath;
+	}
+
+	g_free (relpath);
+	return NULL;
+}
+
 static gchar *
 get_ipod_filename (const char *mount_point, const char *filename)
 {
@@ -951,9 +1018,11 @@ get_ipod_filename (const char *mount_point, const char *filename)
 	char *result;
 	char *tmp;
 
-	dirname = g_strdup_printf ("f%02d", g_random_int_range (0, 100));
-	result =  g_build_filename (G_DIR_SEPARATOR_S, "iPod_Control",
-				    "Music", dirname, filename, NULL);
+	dirname = build_ipod_dir_name (mount_point);
+	if (dirname == NULL) {
+		return NULL;
+	}
+	result = g_build_filename (dirname, filename, NULL);
 	g_free (dirname);
 
 	if (strlen (result) >= IPOD_MAX_PATH_LEN) {
@@ -1061,8 +1130,9 @@ generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 		g_free (ipod_filename);
 		ipod_filename = get_ipod_filename (mount_point, pc_filename);
 		tries++;
-	} while ((g_file_test (ipod_filename, G_FILE_TEST_EXISTS))
-		 && tries <= MAX_TRIES) ;
+	} while ((ipod_filename != NULL) 
+		 &&(g_file_test (ipod_filename, G_FILE_TEST_EXISTS))
+		 && tries <= MAX_TRIES);
 
 	g_free (pc_filename);
 
