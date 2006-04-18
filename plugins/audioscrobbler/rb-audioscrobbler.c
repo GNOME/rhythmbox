@@ -1125,6 +1125,8 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 
 			/* find the end of the line, to terminate the string */
 			end = g_utf8_strchr (start, -1, '\n');
+			if (end == NULL)
+				break;
 			*end = 0;
 
 			entry = rb_audioscrobbler_load_entry_from_string (start);

@@ -1,3 +1,11 @@
+2006-04-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	Patch by: Mikael Olenfalk  <mikael.olenfalk@gmail.com>
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_load_queue):
+	Don't crash if the queue file contains no newlines.
+	Fixes #338924.
+
 2006-04-18  Christophe Fergeau  <teuf@gnome.org>
 
 	* sources/rb-ipod-source.c: (generate_ipod_filename): fixed wrong loop
