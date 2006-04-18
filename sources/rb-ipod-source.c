@@ -63,6 +63,17 @@ static GList* impl_get_ui_actions (RBSource *source);
 static gboolean hal_udi_is_ipod (const char *udi);
 #endif
 
+#ifdef ENABLE_TRACK_TRANSFER
+static void impl_paste (RBSource *source, GList *entries);
+static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
+static gchar *
+ipod_get_filename_for_uri (const gchar *mount_point, const gchar *uri_str);
+static gchar *
+ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path);
+#endif
+static void itdb_schedule_save (Itdb_iTunesDB *db);
+
+
 typedef struct
 {
 	Itdb_iTunesDB *ipod_db;
@@ -93,6 +104,11 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
    	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+#ifdef ENABLE_TRACK_TRANSFER
+  	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
+  	source_class->impl_paste = impl_paste;
+  	source_class->impl_receive_drag = impl_receive_drag;
+#endif
 
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
@@ -111,7 +127,7 @@ rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 	}
 	g_free (mpl->name);
 	mpl->name = g_strdup (name);
-	itdb_write (priv->ipod_db, NULL);
+	itdb_schedule_save (priv->ipod_db);
 }
 
 static void
@@ -287,6 +303,36 @@ load_ipod_playlists (RBiPodSource *source)
 
 }
 
+#ifdef ENABLE_TRACK_TRANSFER
+static Itdb_Track *
+create_ipod_song_from_entry (RhythmDBEntry *entry)
+{
+	Itdb_Track *track;
+
+	track = itdb_track_new ();
+
+	track->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	track->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
+	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
+	/*	track->filetype = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP);*/
+	track->size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+	track->tracklen = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+	track->tracklen *= 1000;
+	track->cd_nr = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
+	track->track_nr = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
+	track->bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
+	track->year = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE);
+	track->time_added = itdb_time_get_mac_time ();
+	track->time_played = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_PLAYED);
+	track->time_played = itdb_time_host_to_mac (track->time_played);
+	track->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING);
+	track->app_rating = track->rating;
+	track->playcount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
+
+	return track;
+}
+#endif
 
 static void
 add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
@@ -738,6 +784,356 @@ impl_move_to_trash (RBSource *asource)
 
 	g_list_free (sel);
 }
+
+static void
+itdb_schedule_save (Itdb_iTunesDB *db)
+{
+       /* FIXME: should probably be delayed a bit to avoid doing
+        * it after each file when we are copying several files
+        * consecutively
+        * FIXME: or this function could be called itdb_set_dirty, and we'd
+        * have a timeout firing every 5 seconds and saving the db if it's
+        * dirty
+        */
+       itdb_write (db, NULL);
+}
+
+
+#ifdef ENABLE_TRACK_TRANSFER
+static char *
+build_filename (RBSource *asource, RhythmDBEntry *entry)
+{
+	const char *uri;
+	char *dest;
+	char *dest_uri;
+
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (asource);
+
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	dest = ipod_get_filename_for_uri (priv->ipod_mount_path,  uri);
+	dest_uri = g_filename_to_uri (dest, NULL, NULL);
+	g_free (dest);
+
+	return dest_uri;
+}
+
+static void
+completed_cb (RhythmDBEntry *entry, const char *dest, RBiPodSource *source)
+{
+	RBShell *shell;
+	RhythmDB *db;
+	Itdb_Track *song;
+
+  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+  	g_object_unref (G_OBJECT (shell));
+
+	song = create_ipod_song_from_entry (entry);
+	if (song != NULL) {
+		RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+		char *filename;
+
+		filename = g_filename_from_uri (dest, NULL, NULL);
+		song->ipod_path = ipod_path_from_unix_path (priv->ipod_mount_path, filename);
+		g_free (filename);
+		itdb_track_add (priv->ipod_db, song, -1);
+		itdb_playlist_add_track (itdb_playlist_mpl (priv->ipod_db),
+					 song, -1);
+
+		add_ipod_song_to_db (source, db, song);
+		itdb_schedule_save (priv->ipod_db);
+	}
+
+	g_object_unref (db);
+}
+
+static void
+impl_paste (RBSource *asource, GList *entries)
+{
+	RBRemovableMediaManager *rm_mgr;
+	GList *l;
+	RBShell *shell;
+
+	g_object_get (G_OBJECT (asource), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell),
+		      "removable-media-manager", &rm_mgr,
+		      NULL);
+	g_object_unref (G_OBJECT (shell));
+
+	for (l = entries; l != NULL; l = l->next) {
+		RhythmDBEntry *entry;
+		RhythmDBEntryType entry_type;
+		RhythmDBEntryType ipod_entry_type;
+		char *dest;
+
+		entry = (RhythmDBEntry *)l->data;
+		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		g_object_get (G_OBJECT (asource),
+			      "entry-type", &ipod_entry_type,
+			      NULL);
+		if (entry_type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
+		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
+//		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_EPISODE ||
+		    entry_type == ipod_entry_type)
+			continue;
+
+		dest = build_filename (asource, entry);
+		if (dest == NULL) {
+			rb_debug ("could not create destination path for entry");
+			continue;
+		}
+		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
+							   dest, NULL,
+							   (RBTranferCompleteCallback)completed_cb, asource);
+		g_free (dest);
+	}
+	g_object_unref (G_OBJECT (rm_mgr));
+}
+
+
+static gboolean
+impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+{
+	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
+	GList *list, *i;
+	GList *entries = NULL;
+	RBShell *shell;
+	RhythmDB *db;
+
+	rb_debug ("parsing uri list");
+	list = rb_uri_list_parse ((const char *) data->data);
+
+  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+  	g_object_unref (G_OBJECT (shell));
+
+	for (i = list; i != NULL; i = g_list_next (i)) {
+		if (i->data != NULL) {
+			char *uri = i->data;
+			RhythmDBEntry *entry;
+
+			entry = rhythmdb_entry_lookup_by_location (db, uri);
+
+			if (entry == NULL) {
+				/* add to the library */
+				g_print ("Where does that come from?\n");
+			} else {
+				/* add to list of entries to copy */
+				entries = g_list_prepend (entries, entry);
+			}
+
+			g_free (uri);
+		}
+	}
+	g_object_unref (db);
+	g_list_free (list);
+
+	if (entries) {
+		entries = g_list_reverse (entries);
+		if (rb_source_can_paste (asource))
+			rb_source_paste (asource, entries);
+		g_list_free (entries);
+	}
+
+
+	return TRUE;
+}
+
+
+/* Generation of the filename for the ipod */
+
+#define IPOD_MAX_PATH_LEN 56
+
+static gchar *
+get_ipod_filename (const char *mount_point, const char *filename)
+{
+	char *dirname;
+	char *result;
+	char *tmp;
+
+	dirname = g_strdup_printf ("f%02d", g_random_int_range (0, 100));
+	result =  g_build_filename (G_DIR_SEPARATOR_S, "iPod_Control",
+				    "Music", dirname, filename, NULL);
+	g_free (dirname);
+
+	if (strlen (result) >= IPOD_MAX_PATH_LEN) {
+		char *ext;
+
+		ext = strrchr (result, '.');
+		if (ext == NULL) {
+			result [IPOD_MAX_PATH_LEN - 1] = '\0';
+		} else {
+			memmove (&result[IPOD_MAX_PATH_LEN - strlen (ext) - 1] ,
+				 ext, strlen (ext) + 1);
+		}
+	}
+
+	tmp = g_build_filename (mount_point, result, NULL);
+	g_free (result);
+	return tmp;
+}
+
+#define MAX_TRIES 5
+
+/* Strips non UTF8 characters from a string replacing them with _ */
+static gchar *
+utf8_to_ascii (const gchar *utf8)
+{
+	GString *string;
+	const guchar *it = (const guchar *)utf8;
+
+	string = g_string_new ("");
+	while ((it != NULL) && (*it != '\0')) {
+		/* Do we have a 7 bit char ? */
+		if (*it < 0x80) {
+			g_string_append_c (string, *it);
+		} else {
+			g_string_append_c (string, '_');
+		}
+		it = (const guchar *)g_utf8_next_char (it);
+	}
+
+	return g_string_free (string, FALSE);
+}
+
+/* Copied from eel-vfs-extensions.c from eel CVS HEAD on 2004-05-09
+ * This function is (C) 1999, 2000 Eazel, Inc.
+ */
+static char *
+eel_make_valid_utf8 (const char *name)
+{
+	GString *string;
+	const char *remainder, *invalid;
+	int remaining_bytes, valid_bytes;
+
+	string = NULL;
+	remainder = name;
+	remaining_bytes = strlen (name);
+
+	while (remaining_bytes != 0) {
+		if (g_utf8_validate (remainder, remaining_bytes, &invalid)) {
+			break;
+		}
+		valid_bytes = invalid - remainder;
+
+		if (string == NULL) {
+			string = g_string_sized_new (remaining_bytes);
+		}
+		g_string_append_len (string, remainder, valid_bytes);
+		g_string_append_c (string, '_');
+
+		remaining_bytes -= valid_bytes + 1;
+		remainder = invalid + 1;
+	}
+
+	if (string == NULL) {
+		return g_strdup (name);
+	}
+
+	g_string_append (string, remainder);
+	g_assert (g_utf8_validate (string->str, -1, NULL));
+
+	return g_string_free (string, FALSE);
+}
+
+
+static gchar *
+generate_ipod_filename (const gchar *mount_point, const gchar *filename)
+{
+	gchar *ipod_filename = NULL;
+	gchar *pc_filename;
+	gchar *tmp;
+	gint tries = 0;
+
+	/* First, we need a valid UTF-8 filename, strip all non-UTF-8 chars */
+	tmp = eel_make_valid_utf8 (filename);
+	/* The iPod doesn't seem to recognize non-ascii chars in filenames,
+	 * so we strip them
+	 */
+	pc_filename = utf8_to_ascii (tmp);
+	g_free (tmp);
+
+	g_assert (g_utf8_validate (pc_filename, -1, NULL));
+	/* Now we have a valid UTF-8 filename, try to find out where to put
+	 * it on the iPod
+	 */
+	do {
+		g_free (ipod_filename);
+		ipod_filename = get_ipod_filename (mount_point, pc_filename);
+		tries++;
+	} while ((g_file_test (ipod_filename, G_FILE_TEST_EXISTS))
+		 && tries <= MAX_TRIES) ;
+
+	g_free (pc_filename);
+
+	if (tries > MAX_TRIES) {
+		/* FIXME: should create a unique filename */
+		return NULL;
+	} else {
+		return ipod_filename;
+	}
+}
+
+static gchar *
+ipod_get_filename_for_uri (const gchar *mount_point, const gchar *uri_str)
+{
+	GnomeVFSURI *uri;
+	gchar *escaped;
+	gchar *filename;
+	gchar *result;
+
+	uri = gnome_vfs_uri_new (uri_str);
+	if (uri == NULL) {
+		return NULL;
+	}
+	escaped = gnome_vfs_uri_extract_short_path_name (uri);
+	gnome_vfs_uri_unref (uri);
+	if (escaped == NULL) {
+		return NULL;
+	}
+	filename = gnome_vfs_unescape_string (escaped, G_DIR_SEPARATOR_S);
+	g_free (escaped);
+	if (filename == NULL) {
+		return NULL;
+	}
+
+	result = generate_ipod_filename (mount_point, filename);
+	g_free (filename);
+
+	return result;
+}
+
+/* End of generation of the filename on the iPod */
+
+static gchar *
+ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
+{
+        gchar *ipod_path;
+
+        g_assert (g_utf8_validate (unix_path, -1, NULL));
+
+        if (!g_str_has_prefix (unix_path, mount_point)) {
+                return NULL;
+        }
+
+        ipod_path = g_strdup (unix_path + strlen (mount_point));
+        if (*ipod_path != G_DIR_SEPARATOR) {
+                gchar *tmp;
+                tmp = g_strdup_printf ("/%s", ipod_path);
+                g_free (ipod_path);
+                ipod_path = tmp;
+        }
+
+        /* Make sure the filename doesn't contain any ':' */
+        g_strdelimit (ipod_path, ":", ';');
+
+
+        /* Convert path to a Mac path where the dir separator is ':' */
+	itdb_filename_fs2ipod (ipod_path);
+
+        return ipod_path;
+}
+#endif
 
 static void
 impl_delete_thyself (RBSource *source)
