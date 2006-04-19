@@ -388,12 +388,6 @@ metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
 	case RHYTHMDB_PROP_DISC_NUMBER:
 		*field = RB_METADATA_FIELD_DISC_NUMBER; 
 		return TRUE;
-	case RHYTHMDB_PROP_DURATION:
-		*field = RB_METADATA_FIELD_DURATION; 
-		return TRUE;
-	case RHYTHMDB_PROP_BITRATE:
-		*field = RB_METADATA_FIELD_BITRATE; 
-		return TRUE;
 	case RHYTHMDB_PROP_DATE:
 		*field = RB_METADATA_FIELD_DATE;
 		return TRUE;
