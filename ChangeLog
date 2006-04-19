@@ -1,5 +1,10 @@
 2006-04-19  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: (sync_entry_changed): emit a warning if we try
+	to sync data to a file which is uneditable.
+
+2006-04-19  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Gavin Stewart  <gavin@brokentrain.net>
 
 	* data/glade/playlist-save.glade:

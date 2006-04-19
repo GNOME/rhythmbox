@@ -869,7 +869,14 @@ sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 			RBMetaDataField field;
 			RhythmDBEntryChange *change = t->data;
 			if (metadata_field_from_prop (change->prop, &field)) {
-				RhythmDBAction *action = g_new0 (RhythmDBAction, 1);
+				RhythmDBAction *action;
+
+				if (!rhythmdb_entry_is_editable (db, entry)) {
+					g_warning ("trying to sync properties of non-editable file");
+					break;
+				}
+				
+				action = g_new0 (RhythmDBAction, 1);
 				action->type = RHYTHMDB_ACTION_SYNC;
 				action->uri = g_strdup (entry->location);
 				g_async_queue_push (db->priv->action_queue, action);
