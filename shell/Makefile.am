@@ -145,11 +145,11 @@ endif
 
 if WITH_DBUS
 rb-shell-glue.h: rb-shell.xml Makefile
-	libtool --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
+	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
 rb-shell-player-glue.h: rb-shell-player.xml Makefile
-	libtool --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell_player --mode=glib-server --output=$@ $<
+	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell_player --mode=glib-server --output=$@ $<
 rb-playlist-manager-glue.h: rb-playlist-manager.xml Makefile
-	libtool --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_playlist_manager --mode=glib-server --output=$@ $<
+	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_playlist_manager --mode=glib-server --output=$@ $<
 
 BUILT_SOURCES += rb-shell-glue.h rb-shell-player-glue.h rb-playlist-manager-glue.h
 EXTRA_DIST += rb-shell.xml rb-shell-player.xml rb-playlist-manager.xml

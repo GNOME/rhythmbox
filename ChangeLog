@@ -1,5 +1,13 @@
 2006-04-19  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Götz Waschk  <waschk@mandriva.org> to use $(LIBTOOL) instead
+	of libtool, to fix builds which are using a different version. Fixes
+	bug 338996.
+
+	* shell/Makefile.am:
+
+2006-04-19  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb.c: (sync_entry_changed): emit a warning if we try
 	to sync data to a file which is uneditable.
 
