@@ -68,6 +68,13 @@ typedef struct
 	void	(*load_finish) (RBPlaylistManager *manager);
 } RBPlaylistManagerClass;
 
+typedef enum
+{
+	RB_PLAYLIST_EXPORT_TYPE_UNKNOWN,
+	RB_PLAYLIST_EXPORT_TYPE_M3U,
+	RB_PLAYLIST_EXPORT_TYPE_PLS,
+} RBPlaylistExportType;
+
 GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,

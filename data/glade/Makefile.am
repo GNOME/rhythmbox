@@ -17,7 +17,9 @@ glade_DATA =	general-prefs.glade	  	\
 		daap-prefs.glade		\
 		uri.glade			\
 		plugins.glade			\
-		audioscrobbler-prefs.glade
+		audioscrobbler-prefs.glade	\
+		playlist-save.glade		\
+		$(NULL)
 
 gladedir = $(pkgdatadir)/glade
 

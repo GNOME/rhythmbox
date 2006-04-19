@@ -1,5 +1,19 @@
 2006-04-19  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Gavin Stewart  <gavin@brokentrain.net>
+
+	* data/glade/playlist-save.glade:
+	* data/glade/Makefile.am:
+	* po/POTFILES.in: add the playlist saving dialog.
+
+	* shell/rb-playlist-manager.c: (save_playlist_response_cb),
+	(export_set_extension_cb), (filter_get_export_filter_label),
+	(setup_format_menu), (rb_playlist_manager_cmd_save_playlist):
+	* shell/rb-playlist-manager.h: Allow saving of playlists in alternate
+	formats (PLS and M3U at the moment). Fixes bug 316295.
+
+2006-04-19  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_set_source_internal): don't let you edit remove
 	auto playlists.

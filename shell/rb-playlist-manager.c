@@ -49,6 +49,7 @@
 #include "rhythmdb.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
+#include "rb-glade-helpers.h"
 
 #define RB_PLAYLIST_MGR_VERSION (xmlChar *) "1.0"
 #define RB_PLAYLIST_MGR_PL (xmlChar *) "rhythmdb-playlists"
@@ -1280,44 +1281,183 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
 }
 
+
+
+typedef struct {
+  const gchar *description;
+  /* NULL terminated array of extensions for this file format.  The first
+   * one is the prefered extension for files of this type. */
+  const gchar **extensions;
+  const RBPlaylistExportType type;
+} RBPlaylistExportFilter;
+
+static const char *m3u_extensions [] = {"m3u", NULL};
+static const char *pls_extensions [] = {"pls", NULL};
+
+static RBPlaylistExportFilter playlist_export_formats[] = {
+	{N_("MPEG Version 3.0 URL"), m3u_extensions, RB_PLAYLIST_EXPORT_TYPE_M3U},
+	{N_("Shoutcast playlist"), pls_extensions, RB_PLAYLIST_EXPORT_TYPE_PLS},
+};
+
 static void
 save_playlist_response_cb (GtkDialog *dialog,
 			   int response_id,
 			   RBPlaylistManager *mgr)
 {
 	char *file = NULL;
+	GtkWidget *menu;
+	gint index;
+	RBPlaylistExportType export_type = RB_PLAYLIST_EXPORT_TYPE_UNKNOWN;
 
-	if (response_id != GTK_RESPONSE_ACCEPT) {
+	if (response_id != GTK_RESPONSE_OK) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
 	file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
-
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	if (file == NULL)
+	if (file == NULL || file[0] == '\0')
 		return;
 
-	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), 
-					  file, FALSE);
+	menu = g_object_get_data (G_OBJECT(dialog), "export-menu");
+	index = gtk_combo_box_get_active (GTK_COMBO_BOX (menu));
+
+	/* by extension selected */
+	if (index <= 0) {
+		int i;
+
+		for (i = 0; i < G_N_ELEMENTS (playlist_export_formats); i++) {
+			int j;
+
+			/* determine the playlist type from the extension */
+			for (j = 0; playlist_export_formats[i].extensions[j] != NULL; j++) {
+				if (g_str_has_prefix (file, playlist_export_formats[i].extensions[j])) {
+					export_type = playlist_export_formats[i].type;
+					break;
+				}
+			}
+		}
+	} else {
+		export_type = playlist_export_formats[index-1].type;
+	}
+
+	if (export_type == RB_PLAYLIST_EXPORT_TYPE_UNKNOWN) {
+			rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
+	} else {
+		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), 
+						  file, (export_type == RB_PLAYLIST_EXPORT_TYPE_M3U));
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+	}
+
 	g_free (file);
+}
+
+static void
+export_set_extension_cb (GtkWidget* widget, GtkDialog *dialog)
+{
+	gint index;
+	gchar *text;
+	gchar *last_dot;
+	const char *extension;
+	gchar *basename;
+	GString *basename_str;
+  
+	index = gtk_combo_box_get_active (GTK_COMBO_BOX (widget));
+	if (index <= 0)
+		return;
+
+	extension = playlist_export_formats[index-1].extensions[0];
+	if (extension == NULL)
+		return;
+	
+	text = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+	if (text == NULL || text[0] == '\0') {
+		g_free (text);
+		return;
+	}
+
+	basename = g_path_get_basename (text);
+	basename_str = g_string_new (basename);
+	last_dot = g_utf8_strrchr (basename, -1, '.');
+	if (last_dot)
+		g_string_truncate (basename_str, (last_dot-basename));
+	g_free (basename);
+	g_free (text);
+  
+	g_string_append_printf (basename_str, ".%s", extension);
+	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), basename_str->str);
+	g_string_free (basename_str, TRUE);
+}
+
+static gchar *
+filter_get_export_filter_label (RBPlaylistExportFilter *efilter)
+{
+	GString *str;
+	gint ext;
+
+	str = g_string_new (_(efilter->description));
+	for (ext = 0; efilter->extensions[ext] != NULL; ext++) {
+		if (ext == 0)
+			g_string_append (str, " (*.");
+		else
+			g_string_append (str, ", *.");
+		g_string_append (str, efilter->extensions[ext]);
+	}
+    
+	if (ext > 0)
+		g_string_append (str, ")");
+    
+	return g_string_free (str, FALSE);
+}
+
+static void
+setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
+{
+	GtkTreeModel *model;
+	int i;
+
+	model = gtk_combo_box_get_model (GTK_COMBO_BOX (menu));
+	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (menu), rb_combo_box_hyphen_separator_func,
+					      NULL, NULL);
+
+	for (i = 0; i < G_N_ELEMENTS (playlist_export_formats); i++) {
+		gchar *filter_label;
+		GtkTreeIter iter;
+    
+		filter_label = filter_get_export_filter_label (&playlist_export_formats[i]);
+		gtk_list_store_insert_with_values (GTK_LIST_STORE (model), &iter, -1,
+						   0, filter_label, -1);
+
+		g_free (filter_label);
+	}
+    
+	g_signal_connect_object (GTK_OBJECT (menu),
+				 "changed", G_CALLBACK (export_set_extension_cb),
+				 dialog, 0);
 }
 
 static void
 rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 				       RBPlaylistManager *mgr)
 {
-	GtkWidget *dialog;
-    
-	dialog = rb_file_chooser_new (_("Save Playlist"),
-				      GTK_WINDOW (mgr->priv->window),
-				      GTK_FILE_CHOOSER_ACTION_SAVE,
-				      FALSE);
+	GladeXML *xml;
+	GtkWidget *dialog, *menu;
 
+	xml = rb_glade_xml_new ("playlist-save.glade",
+				"playlist_save_dialog",
+				mgr);
+	dialog = glade_xml_get_widget (xml, "playlist_save_dialog");
+
+	menu = glade_xml_get_widget (xml, "playlist_format_menu");
+	setup_format_menu (menu, dialog);
+	g_object_set_data (G_OBJECT (dialog), "export-menu", menu);
+	
+	/* FIXME: always has "by extension" as default (it should probably remember the last selection) */
+	gtk_combo_box_set_active (GTK_COMBO_BOX (menu), 0);
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (save_playlist_response_cb),
 				 mgr, 0);
+
+	g_object_unref (G_OBJECT (xml));
 }
 
 static void
