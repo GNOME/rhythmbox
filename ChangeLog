@@ -1,3 +1,13 @@
+2006-04-19  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_set_source_internal): don't let you edit remove
+	auto playlists.
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_set_query): correctly handle time-limited
+	playlists.
+
 2006-04-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	Patch by: Mikael Olenfalk  <mikael.olenfalk@gmail.com>

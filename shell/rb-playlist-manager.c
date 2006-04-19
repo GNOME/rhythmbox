@@ -435,7 +435,8 @@ rb_playlist_manager_set_source_internal (RBPlaylistManager *mgr,
 					      "MusicPlaylistSavePlaylist");
 	g_object_set (G_OBJECT (action), "sensitive", can_save, NULL);
 
-	can_delete = playlist_local && !party_mode && !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source);
+	can_delete = (playlist_local && !party_mode &&
+		      !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source));
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "MusicPlaylistDeletePlaylist");
 	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
