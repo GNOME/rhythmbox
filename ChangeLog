@@ -1,3 +1,15 @@
+2006-04-20  James Livingston  <doclivingston@gmail.com>
+
+	* data/glade/Makefile.am: remove the use of $(NULL) since it causes
+	issues for some people.
+
+	* shell/rb-playlist-manager.c: (save_playlist_response_cb): fix an
+	accidental s/suffix/prefix/
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_set_query): fix the invered logic preventing
+	you from sorting playlists which aren't limited by time.
+
 2006-04-19  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb.c: (metadata_field_from_prop): don't try to write

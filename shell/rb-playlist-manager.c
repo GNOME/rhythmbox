@@ -1330,7 +1330,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 
 			/* determine the playlist type from the extension */
 			for (j = 0; playlist_export_formats[i].extensions[j] != NULL; j++) {
-				if (g_str_has_prefix (file, playlist_export_formats[i].extensions[j])) {
+				if (g_str_has_suffix (file, playlist_export_formats[i].extensions[j])) {
 					export_type = playlist_export_formats[i].type;
 					break;
 				}

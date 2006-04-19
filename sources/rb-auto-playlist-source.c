@@ -583,7 +583,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 		g_object_unref (G_OBJECT (priv->cached_all_query));
 
 	/* playlists that aren't limited, with a particular sort order, are user-orderable */
-	rb_entry_view_set_columns_clickable (songs, (limit_count == 0 && limit_mb == 0 && limit_time));
+	rb_entry_view_set_columns_clickable (songs, (limit_count == 0 && limit_mb == 0 && limit_time == 0));
 	rb_entry_view_set_sorting_order (songs, sort_key, sort_direction);
 
 	priv->query = query;
