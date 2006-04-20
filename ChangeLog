@@ -1,5 +1,10 @@
 2006-04-20  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-library-source.c: (impl_paste): ignore attempts to paste
+	library entries back into the library. Fixes bug 339065.
+
+2006-04-20  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/rb-plugin.h: remove the use of g_intern_static_string as it
 	only exists in glib 2.10.
 

@@ -1141,6 +1141,10 @@ impl_paste (RBSource *asource, GList *entries)
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
+			/* copying to ourselves would be silly */
+			continue;
+		
 		/* see if the responsible source lets us copy */
 		if (!rb_source_can_copy (rb_shell_get_source_by_entry_type (shell, entry_type)))
 			continue;
