@@ -1,5 +1,10 @@
 2006-04-20  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-plugin.h: remove the use of g_intern_static_string as it
+	only exists in glib 2.10.
+
+2006-04-20  James Livingston  <doclivingston@gmail.com>
+
 	patch by Brian Cameron  <brian.cameron@sun.com> to fix building on
 	Solaris. From bug 335318.
 

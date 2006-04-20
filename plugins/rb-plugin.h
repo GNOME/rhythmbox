@@ -146,7 +146,7 @@ register_rb_plugin (GTypeModule *module)					\
         type_name##_register_type (plugin_module_type)
 
 #define RB_PLUGIN_DEFINE_TYPE(TypeName, type_name, TYPE_PARENT)			\
-static void type_name##_init (TypeName *self); 				\
+static void type_name##_init (TypeName *self); 					\
 static void type_name##_class_init (TypeName##Class *klass); 			\
 static gpointer type_name##_parent_class = ((void *)0); 			\
 static GType type_name##_type_id = 0;						\
@@ -187,7 +187,7 @@ type_name##_register_type (GTypeModule *module) 				\
 		type_name##_type_id = 						\
 			g_type_module_register_type (module, 			\
 						     TYPE_PARENT, 		\
-						     g_intern_static_string (#TypeName), \
+						     #TypeName,			\
 						     &g_define_type_info, 	\
 						     (GTypeFlags) 0); 		\
 	} 									\
@@ -199,5 +199,4 @@ type_name##_register_type (GTypeModule *module) 				\
 G_END_DECLS
 
 #endif  /* __GEDIT_PLUGIN_H__ */
-
 
