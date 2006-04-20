@@ -411,8 +411,6 @@ rb_podcast_source_init (RBPodcastSource *source)
 	}
 
 	gtk_widget_destroy (dummy);
-
-	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 }
 
 static void
@@ -673,6 +671,10 @@ rb_podcast_source_constructor (GType type,
 	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
 	g_object_set (G_OBJECT (feed_model), "query-model", query_model, NULL);
 	g_object_unref (G_OBJECT (feed_model));
+	
+	if (source->priv->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID ||
+	    source->priv->entry_type == NULL)
+		source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 	
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,

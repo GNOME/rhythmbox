@@ -225,7 +225,6 @@ rb_iradio_source_init (RBIRadioSource *source)
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
-	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
 }
 
 static void
@@ -354,6 +353,10 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 				    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
 				    source);
 	gtk_widget_show_all (GTK_WIDGET (source));
+
+	if (source->priv->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID ||
+	    source->priv->entry_type == NULL)
+		source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
 
 	rb_iradio_source_do_query (source);
 
@@ -705,7 +708,6 @@ rb_iradio_source_show_browser (RBIRadioSource *source,
 static void
 rb_iradio_source_do_query (RBIRadioSource *source)
 {
-	RhythmDBEntryType entry_type;
 	RhythmDBQueryModel *genre_query_model = NULL;
 	RhythmDBQueryModel *station_query_model = NULL;
 	RhythmDBPropertyModel *genre_model;
@@ -718,11 +720,10 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	 * this is used as the model for the genre view.
 	 */
 	
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
-				      entry_type,
+				      source->priv->entry_type,
 				      RHYTHMDB_QUERY_END);
 	genre_query_model = rhythmdb_query_model_new_empty (source->priv->db);
 

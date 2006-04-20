@@ -1,3 +1,13 @@
+2006-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_init),
+	(rb_iradio_source_constructor), (rb_iradio_source_do_query):
+	* sources/rb-podcast-source.c: (rb_podcast_source_init),
+	(rb_podcast_source_constructor):
+	Set default values for entry-type after base class construction,
+	rather than in _init, because gobject will set the entry-type property
+	to NULL after _init if no value is provided.  Fixes #339206.
+
 2006-04-20  Ryan P Skadberg  <skadz@stigmata.org>
 
 	patch by: Gunnar Steinn Magnusson
