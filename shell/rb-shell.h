@@ -47,6 +47,18 @@ enum
 
 GQuark rb_shell_error_quark (void);
 
+
+typedef enum
+{
+	RB_SHELL_UI_LOCATION_SIDEBAR,
+	RB_SHELL_UI_LOCATION_MAIN_TOP,
+	RB_SHELL_UI_LOCATION_MAIN_BOTTOM,
+} RBShellUILocation;
+
+GType rb_shell_ui_location_get_type (void);
+#define RB_TYPE_SHELL_UI_LOCATION	(rb_shell_ui_location_get_type())
+
+
 typedef struct RBShellPrivate RBShellPrivate;
 
 typedef struct
@@ -124,6 +136,9 @@ RBSource * rb_shell_get_source_by_entry_type (RBShell *shell,
 gboolean        rb_shell_get_party_mode (RBShell *shell);
 
 void rb_shell_append_source (RBShell *shell, RBSource *source, RBSource *parent);
+
+void rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
+void rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
 
 G_END_DECLS
 

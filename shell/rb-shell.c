@@ -359,6 +359,10 @@ struct RBShellPrivate
 	GtkWidget *queue_paned;
 	GtkWidget *queue_sidebar;
 
+	GtkBox *sidebar_container;
+	GtkBox *top_container;
+	GtkBox *bottom_container;
+
 	GList *sources;
 	GHashTable *sources_hash;
 
@@ -1116,6 +1120,11 @@ construct_widgets (RBShell *shell)
 	gtk_widget_show_all (shell->priv->queue_sidebar);
 	gtk_widget_set_no_show_all (shell->priv->queue_sidebar, TRUE);
 
+	/* places for plugins to put UI */
+	shell->priv->top_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
+	shell->priv->bottom_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
+	shell->priv->sidebar_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
+
 	/* set up sidebars */
 	shell->priv->paned = gtk_hpaned_new ();
 	{
@@ -1136,8 +1145,9 @@ construct_widgets (RBShell *shell)
 				    shell->priv->notebook,
 				    TRUE, TRUE, 0);
 
+		gtk_box_pack_start_defaults (shell->priv->sidebar_container, shell->priv->queue_paned);
 		gtk_paned_pack1 (GTK_PANED (shell->priv->paned),
-				 shell->priv->queue_paned,
+				 GTK_WIDGET (shell->priv->sidebar_container),
 				 FALSE, TRUE);
 		gtk_paned_pack2 (GTK_PANED (shell->priv->paned),
 				 vbox2,
@@ -1156,9 +1166,11 @@ construct_widgets (RBShell *shell)
  	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);	
 	gtk_widget_show (GTK_WIDGET (shell->priv->player_shell));
 
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->top_container), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), shell->priv->paned, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->bottom_container), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
-	gtk_widget_show (shell->priv->main_vbox);
+	gtk_widget_show_all (shell->priv->main_vbox);
 
 	gtk_container_add (GTK_CONTAINER (win), shell->priv->main_vbox);
 
@@ -3679,5 +3691,69 @@ rb_shell_druid_response_cb (GtkDialog *druid,
 {
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
 	gtk_widget_destroy (GTK_WIDGET (druid));
+}
+
+static GtkBox*
+rb_shell_get_box_for_ui_location (RBShell *shell, RBShellUILocation location)
+{
+	GtkBox *box = NULL;
+
+	switch (location) {
+	case RB_SHELL_UI_LOCATION_SIDEBAR:
+		box = shell->priv->sidebar_container;
+		break;
+	case RB_SHELL_UI_LOCATION_MAIN_TOP:
+		box = shell->priv->top_container;
+		break;
+	case RB_SHELL_UI_LOCATION_MAIN_BOTTOM:
+		box = shell->priv->bottom_container;
+		break;
+	}
+
+	return box;
+}
+
+void
+rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location)
+{
+	GtkBox *box;
+
+	box = rb_shell_get_box_for_ui_location (shell, location);
+	g_return_if_fail (box != NULL);
+
+	gtk_box_pack_start (box, widget, FALSE, TRUE, 0);
+}
+
+void
+rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location)
+{
+	GtkBox *box;
+
+	box = rb_shell_get_box_for_ui_location (shell, location);
+	g_return_if_fail (box != NULL);
+
+	gtk_container_remove (GTK_CONTAINER (box), widget);
+}
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_shell_ui_location_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_SIDEBAR, "Sidebar"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_TOP, "Main Top"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_BOTTOM, "Main Bottom"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBShellUILocation", values);
+	}
+
+	return etype;
 }
 

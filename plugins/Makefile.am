@@ -11,7 +11,7 @@ SUBDIRS += lirc
 endif
 
 if ENABLE_PYTHON
-SUBDIRS += pythonconsole sample-python
+SUBDIRS += pythonconsole sample-python artdisplay
 endif
 
 if USE_IPOD

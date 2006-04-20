@@ -117,6 +117,17 @@
   )
 )
 
+(define-enum ShellUILocation
+  (in-module "RB")
+  (c-name "RBShellUILocation")
+  (gtype-id "RB_TYPE_SHELL_UI_LOCATION")
+  (values
+    '("sidebar" "RB_SHELL_UI_LOCATION_SIDEBAR")
+    '("main-top" "RB_SHELL_UI_LOCATION_MAIN_TOP")
+    '("main-bottom" "RB_SHELL_UI_LOCATION_MAIN_BOTTOM")
+  )
+)
+
 ;; From ../../plugins/rb-plugin.h
 
 (define-function rb_plugin_get_type
@@ -1213,6 +1224,26 @@
   (parameters
     '("RBSource*" "source")
     '("RBSource*" "parent")
+  )
+)
+
+(define-method add_widget
+  (of-object "RBShell")
+  (c-name "rb_shell_add_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("RBShellUILocation" "location")
+  )
+)
+
+(define-method remove_widget
+  (of-object "RBShell")
+  (c-name "rb_shell_remove_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("RBShellUILocation" "location")
   )
 )
 

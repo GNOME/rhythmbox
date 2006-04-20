@@ -1,3 +1,20 @@
+2006-04-20  Ryan P Skadberg  <skadz@stigmata.org>
+
+	patch by: Gareth Murphy, James Livingston
+
+	* bindings/python/rb.defs:
+	* configure.ac:
+	* plugins/Makefile.am:
+	* plugins/artdisplay/Makefile.am:
+	* plugins/artdisplay/artdisplay.py:
+	* plugins/artdisplay/artdisplay.rb-plugin.desktop.in:
+	* plugins/rb-python-module.c: (rb_python_module_init_python):
+	* shell/rb-shell.c: (construct_widgets),
+	(rb_shell_druid_response_cb), (rb_shell_get_box_for_ui_location),
+	(rb_shell_add_widget), (rb_shell_remove_widget),
+	(rb_shell_ui_location_get_type):
+	* shell/rb-shell.h:  Initial Art Display (and Download) Plugin Support
+
 2006-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (entry_volume_mounted_or_unmounted):

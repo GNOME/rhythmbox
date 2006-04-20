@@ -161,7 +161,7 @@ rb_python_module_init_python ()
 	mdict = PyModule_GetDict (rb);
 
 	pyrb_register_classes (mdict);
-	/*pyrb_add_constants (rb, "RB_");*/
+	pyrb_add_constants (rb, "RB_");
 
 	/* Retreive the Python type for rb.Plugin */
 	PyRBPlugin_Type = (PyTypeObject *) PyDict_GetItemString (mdict, "Plugin"); 
