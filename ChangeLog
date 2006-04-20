@@ -1,5 +1,14 @@
 2006-04-20  James Livingston  <doclivingston@gmail.com>
 
+	patch by Brian Cameron  <brian.cameron@sun.com> to fix building on
+	Solaris. From bug 335318.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_append_prop_multiple):
+	* shell/rb-audioscrobbler.c:
+	* sources/rb-psp-source.c:
+
+2006-04-20  James Livingston  <doclivingston@gmail.com>
+
 	* data/glade/Makefile.am: remove the use of $(NULL) since it causes
 	issues for some people.
 

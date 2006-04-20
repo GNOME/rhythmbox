@@ -46,7 +46,9 @@ static gchar *impl_get_mount_path (RBGenericPlayerSource *source);
 
 typedef struct
 {
-
+#ifdef __SUNPRO_C
+  char x; /* To build with Solaris forte compiler. */
+#endif
 } RBPspSourcePrivate;
 
 

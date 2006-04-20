@@ -21,6 +21,8 @@
  *
  */
 
+#define __EXTENSIONS__
+
 #include <errno.h>
 
 #include <string.h>

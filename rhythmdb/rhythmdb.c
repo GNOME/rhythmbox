@@ -4305,7 +4305,7 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 }
 
 void
-rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, guint propid, GList *items)
+rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, RhythmDBPropType propid, GList *items)
 {
 	GPtrArray *subquery;
 
