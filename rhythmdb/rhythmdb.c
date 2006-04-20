@@ -861,7 +861,7 @@ emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 static void
 sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 {
-	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
+	if (rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_SONG) {
 		GSList *t;
 		for (t = changes; t; t = t->next) {
 			RBMetaDataField field;
@@ -919,7 +919,7 @@ process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntrie
 		if (!g_str_has_prefix (uri, "file://"))
 			entry->hidden = TRUE;
 
-		queue_stat_uri (uri, data->db, -1);
+		queue_stat_uri (uri, data->db, RHYTHMDB_ENTRY_TYPE_INVALID);
 	}
 
 	data->entries = g_list_prepend (data->entries, entry);
@@ -1070,6 +1070,10 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	
 	/* The refcount is initially 0, we want to set it to 1 */
 	g_atomic_int_inc (&ret->refcount);
+
+	if (type->post_entry_create)
+		(type->post_entry_create)(ret);
+
 	return ret;
 }
 
@@ -1180,8 +1184,14 @@ rhythmdb_entry_ref (RhythmDB *db, RhythmDBEntry *entry)
 }
 
 static void
-rhythmdb_entry_finalize (RhythmDBEntry *entry)
+rhythmdb_entry_finalize (RhythmDB *db, RhythmDBEntry *entry)
 {
+	RhythmDBEntryType type;
+
+	type = rhythmdb_entry_get_entry_type (entry);
+	if (type->pre_entry_destroy)
+		(type->pre_entry_destroy)(entry);
+
 	g_free (entry->location);
 	g_free (entry->playback_error);
 	if (entry->date)
@@ -1191,7 +1201,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->artist);
 	rb_refstring_unref (entry->album);
 	rb_refstring_unref (entry->mimetype);
-	
+
 	if (entry->podcast) {
 		rb_refstring_unref (entry->podcast->description);
 		rb_refstring_unref (entry->podcast->subtitle);
@@ -1202,12 +1212,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 		g_free (entry->podcast);
 		entry->podcast = NULL;
 	}
-}
 
-static void
-rhythmdb_entry_destroy (RhythmDB *db, RhythmDBEntry *entry)
-{
-	rhythmdb_entry_finalize (entry);
 	g_free (entry);
 }
 
@@ -1223,7 +1228,7 @@ void
 rhythmdb_entry_unref (RhythmDB *db, RhythmDBEntry *entry)
 {
 	if (g_atomic_int_dec_and_test (&entry->refcount))
-		rhythmdb_entry_destroy (db, entry);
+		rhythmdb_entry_finalize (db, entry);
 }
 
 /**
@@ -1571,7 +1576,7 @@ rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
 	if (entry) {
 		time_t mtime = (time_t) entry->mtime;
 
-		if ((event->entry_type != -1) && (entry->type != event->entry_type))
+		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) && (entry->type != event->entry_type))
 			g_warning ("attempt to use same location in multiple entry types");
 
 		if (entry->type == RHYTHMDB_ENTRY_TYPE_IGNORE)
@@ -1674,7 +1679,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 	
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (entry) {
-		RhythmDBEntryType entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		RhythmDBEntryType entry_type = rhythmdb_entry_get_entry_type (entry);
 		if (entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR &&
 		    entry_type != RHYTHMDB_ENTRY_TYPE_IGNORE) {
 			/* FIXME we've successfully read this file before.. so what should we do? */
@@ -1766,8 +1771,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 
 	if (entry) {
-		if ((event->entry_type != -1) &&
-		    (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != event->entry_type)) {
+		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) &&
+		    (rhythmdb_entry_get_entry_type (entry) != event->entry_type)) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
 			rhythmdb_entry_delete (db, entry);
 			rhythmdb_add_timeout_commit (db, FALSE);
@@ -1776,7 +1781,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	}
 	
 	if (!entry) {
-		if (event->entry_type == -1)
+		if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
 			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 		entry = rhythmdb_entry_new (db, event->entry_type, event->real_uri);
 		if (entry == NULL) {
@@ -1804,7 +1809,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		g_value_unset (&value);
 	}
 
-	if ((event->entry_type != -1) && (entry->type != event->entry_type))
+	if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) && (entry->type != event->entry_type))
 		g_warning ("attempt to use same location in multiple entry types");
 
 	/* mtime */
@@ -1864,7 +1869,7 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db, RhythmDBEvent *event)
 	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_LOAD;
 	action->uri = g_strdup (event->uri);
-	action->entry_type = -1;
+	action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 	g_async_queue_push (db->priv->action_queue, action);
 }
 
@@ -2322,7 +2327,7 @@ action_thread_main (RhythmDB *db)
 				load_action = g_new0 (RhythmDBAction, 1);
 				load_action->type = RHYTHMDB_ACTION_LOAD;
 				load_action->uri = g_strdup (action->uri);
-				load_action->entry_type = -1;
+				load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 				g_async_queue_push (db->priv->action_queue, load_action);
 				
 				data = g_new0 (RhythmDBSaveErrorData, 1);
@@ -2366,7 +2371,7 @@ action_thread_main (RhythmDB *db)
 void
 rhythmdb_add_uri (RhythmDB *db, const char *uri)
 {
-	rhythmdb_add_uri_with_type (db, uri, -1);
+	rhythmdb_add_uri_with_type (db, uri, RHYTHMDB_ENTRY_TYPE_INVALID);
 }
 
 void
@@ -3309,6 +3314,40 @@ rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const xmlChar *name)
 	return -1;
 }
 
+static char *
+entry_type_to_string (RhythmDBEntryType type)
+{
+	if (type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		return g_strdup ("0");
+	} else if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
+		return g_strdup ("1");
+	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+		return g_strdup ("2");
+	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+		return g_strdup ("3");
+	}
+	g_assert_not_reached ();
+}
+
+static RhythmDBEntryType
+entry_type_from_uint (unsigned int type) 
+{
+	switch (type) {
+	case 0:
+		return RHYTHMDB_ENTRY_TYPE_SONG;
+	case 1:
+		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+	case 2:
+		return RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
+	case 3:
+		return RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
+	default:
+		g_assert_not_reached ();
+	}
+
+	return RHYTHMDB_ENTRY_TYPE_INVALID;
+}
+
 static void
 write_encoded_gvalue (xmlNodePtr node,
 		      GValue *val)
@@ -3340,6 +3379,9 @@ write_encoded_gvalue (xmlNodePtr node,
 		break;
 	case G_TYPE_DOUBLE:
 		strval = g_strdup_printf ("%f", g_value_get_double (val));
+		break;
+	case G_TYPE_POINTER:
+		strval = entry_type_to_string (g_value_get_pointer (val));
 		break;
 	default:
 		g_assert_not_reached ();
@@ -3381,7 +3423,25 @@ read_encoded_property (RhythmDB *db,
 	case G_TYPE_DOUBLE:
 		g_value_set_double (val, g_ascii_strtod (content, NULL));
 		break;
+	case G_TYPE_POINTER:
+		if (propid == RHYTHMDB_PROP_TYPE) {
+			RhythmDBEntryType entry_type;
+			entry_type = entry_type_from_uint (g_ascii_strtoull (content, NULL, 10));
+			if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
+				g_value_set_pointer (val, entry_type);
+				break;
+			} else {
+				g_warning ("Unexpected entry type");
+				/* Fall through */
+			}
+		}
+		/* Falling through on purpose to get an assert for unexpected 
+		 * cases 
+		 */
 	default:
+		g_warning ("Attempt to read '%s' of unhandled type %s", 
+			   rhythmdb_nice_elt_name_from_propid (db, propid),
+			   g_type_name (G_VALUE_TYPE (val)));
 		g_assert_not_reached ();
 		break;
 	}
@@ -3800,7 +3860,7 @@ rhythmdb_prop_type_get_type (void)
 			* parenthesis.
 			* Finally, there is the XML element name in brackets.
 			*/
-			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gulong) [type]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gpointer) [type]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title (gchararray) [title]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray) [genre]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray) [artist]"),
@@ -3976,8 +4036,6 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size)
 	return ret;
 }
 
-static gint last_entry_type = 0;
-
 /**
  * rhythmdb_entry_register_type:
  *
@@ -3989,7 +4047,7 @@ static gint last_entry_type = 0;
 RhythmDBEntryType
 rhythmdb_entry_register_type (void)
 {
-	return g_atomic_int_exchange_and_add (&last_entry_type, 1);		
+	return g_new0(RhythmDBEntryType_, 1);
 }
 
 static GStaticMutex entry_type_mutex = G_STATIC_MUTEX_INIT;
@@ -3997,10 +4055,10 @@ static GStaticMutex entry_type_mutex = G_STATIC_MUTEX_INIT;
 RhythmDBEntryType 
 rhythmdb_entry_song_get_type (void) 
 {
-	static RhythmDBEntryType song_type = -1;
+	static RhythmDBEntryType song_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
 	g_static_mutex_lock (&entry_type_mutex);
-	if (song_type == -1) {
+	if (song_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		song_type = rhythmdb_entry_register_type ();
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
@@ -4011,10 +4069,10 @@ rhythmdb_entry_song_get_type (void)
 RhythmDBEntryType 
 rhythmdb_entry_ignore_get_type (void) 
 {
-	static RhythmDBEntryType ignore_type = -1;
+	static RhythmDBEntryType ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
 	g_static_mutex_lock (&entry_type_mutex);
-	if (ignore_type == -1) {
+	if (ignore_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		ignore_type = rhythmdb_entry_register_type ();
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
@@ -4024,10 +4082,10 @@ rhythmdb_entry_ignore_get_type (void)
 
 RhythmDBEntryType rhythmdb_entry_iradio_get_type (void) 
 {
-	static RhythmDBEntryType iradio_type = -1;
+	static RhythmDBEntryType iradio_type = RHYTHMDB_ENTRY_TYPE_INVALID;
        
 	g_static_mutex_lock (&entry_type_mutex);
-	if (iradio_type == -1) {
+	if (iradio_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		iradio_type = rhythmdb_entry_register_type ();
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
@@ -4037,10 +4095,10 @@ RhythmDBEntryType rhythmdb_entry_iradio_get_type (void)
 
 RhythmDBEntryType rhythmdb_entry_podcast_post_get_type (void) 
 {
-	static RhythmDBEntryType podcast_post_type = -1;
+	static RhythmDBEntryType podcast_post_type = RHYTHMDB_ENTRY_TYPE_INVALID;
        
 	g_static_mutex_lock (&entry_type_mutex);
-	if (podcast_post_type == -1) {
+	if (podcast_post_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		podcast_post_type = rhythmdb_entry_register_type ();
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
@@ -4050,10 +4108,10 @@ RhythmDBEntryType rhythmdb_entry_podcast_post_get_type (void)
 
 RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void) 
 {
-	static RhythmDBEntryType podcast_feed_type = -1;
+	static RhythmDBEntryType podcast_feed_type = RHYTHMDB_ENTRY_TYPE_INVALID;
        
 	g_static_mutex_lock (&entry_type_mutex);
-	if (podcast_feed_type == -1) {
+	if (podcast_feed_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		podcast_feed_type = rhythmdb_entry_register_type ();
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
@@ -4063,10 +4121,10 @@ RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void)
 
 RhythmDBEntryType rhythmdb_entry_import_error_get_type (void) 
 {
-	static RhythmDBEntryType import_error_type = -1;
+	static RhythmDBEntryType import_error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
        
 	g_static_mutex_lock (&entry_type_mutex);
-	if (import_error_type == -1) {
+	if (import_error_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		import_error_type = rhythmdb_entry_register_type ();
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
@@ -4633,12 +4691,28 @@ rhythmdb_entry_get_uint64 (RhythmDBEntry *entry, RhythmDBPropType propid)
 	}
 }
 
-gulong
-rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
+RhythmDBEntryType
+rhythmdb_entry_get_entry_type (RhythmDBEntry *entry)
+{
+	return entry->type;
+}
+
+gpointer
+rhythmdb_entry_get_pointer (RhythmDBEntry *entry, RhythmDBPropType propid)
 {
 	switch (propid) {
 	case RHYTHMDB_PROP_TYPE:
 		return entry->type;
+	default:
+		g_assert_not_reached ();
+		return NULL;
+	}
+}
+
+gulong
+rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
+{
+	switch (propid) {
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		return entry->tracknum;
 	case RHYTHMDB_PROP_DISC_NUMBER:
@@ -4717,6 +4791,18 @@ rhythmdb_entry_get_type (void)
 
 	if (G_UNLIKELY (type == 0)) {
 		type = g_pointer_type_register_static ("RhythmDBEntry");
+	}
+
+	return type;
+}
+
+GType
+rhythmdb_entry_type_get_type (void)
+{
+	static GType type = 0;
+
+	if (G_UNLIKELY (type == 0)) {
+		type = g_pointer_type_register_static ("RhythmDBEntryType");
 	}
 
 	return type;

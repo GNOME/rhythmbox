@@ -562,8 +562,8 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 		RhythmDBEntryType entry_type;
 
 		g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-		if (entry_type != -1 &&
-		    rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != entry_type) {
+		if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID &&
+		    rhythmdb_entry_get_entry_type (entry) != entry_type) {
 			rb_debug ("attempting to add an entry of the wrong type to playlist");
 			return;
 		}

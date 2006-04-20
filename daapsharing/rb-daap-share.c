@@ -1472,7 +1472,7 @@ db_entry_added_cb (RhythmDB *db,
 		   RhythmDBEntry *entry,
 		   RBDAAPShare *share)
 {
-	RhythmDBEntryType type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
 	gboolean hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
 
 	if (type == rhythmdb_entry_song_get_type () && !hidden && g_hash_table_lookup (share->priv->entry_to_id, entry) == NULL) {

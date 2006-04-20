@@ -181,7 +181,7 @@
 (define-method guess_type_for_uri
   (of-object "RBShell")
   (c-name "rb_shell_guess_type_for_uri")
-  (return-type "gint")
+  (return-type "RhythmDBEntryType_*")
   (parameters
     '("const-char*" "uri")
   )
@@ -192,7 +192,7 @@
   (c-name "rb_shell_add_uri")
   (return-type "gboolean")
   (parameters
-    '("gint" "entry_type")
+    '("RhythmDBEntryType_*" "entry_type")
     '("const-char*" "uri")
     '("const-char*" "title")
     '("const-char*" "genre")
@@ -272,7 +272,7 @@
   (return-type "none")
   (parameters
     '("RBSource*" "source")
-    '("RhythmDBEntryType" "type")
+    '("RhythmDBEntryType_*" "type")
   )
 )
 

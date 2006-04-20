@@ -1029,10 +1029,10 @@ rb_shell_player_open_location (RBShellPlayer *player,
 static gboolean
 rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	gulong type;
+	RhythmDBEntryType type;
 	const char *location;
 
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	type = rhythmdb_entry_get_entry_type (entry);
 	if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	else
@@ -1880,6 +1880,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	RhythmDBEntry *prev_entry = NULL;
 	GError *error = NULL;
 	gboolean source_set = FALSE;
+	RhythmDBEntryType entry_type;
 
 	g_return_if_fail (entry != NULL);
 
@@ -1889,12 +1890,14 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
 		return;
 
+	entry_type = rhythmdb_entry_get_entry_type (entry);
+
 	/* don't play import error entries */
-	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR)
+	if (entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR)
 		return;
 
 	/* ensure the podcast has been downloaded */
-	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+	if (entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
 		if (!rb_podcast_manager_entry_downloaded (entry))
 			return;
 	}
@@ -2521,7 +2524,7 @@ info_available_cb (RBPlayer *mmplayer,
         RhythmDBPropType entry_field = 0;
         gboolean changed = FALSE;
         gboolean set_field = FALSE;
-	gulong type;
+	RhythmDBEntryType type;
 	
         rb_debug ("info: %d", field);
 
@@ -2541,7 +2544,7 @@ info_available_cb (RBPlayer *mmplayer,
                 goto out_unlock;
         }
 
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	type = rhythmdb_entry_get_entry_type (entry);
 	if (type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
 		rb_debug ("Got info_available but entry isn't an iradio station");
 		goto out_unlock;

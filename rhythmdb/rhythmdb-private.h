@@ -54,7 +54,7 @@ struct RhythmDBEntry_ {
 	gboolean inserted;
 	gint refcount;
 	void *data;
-	gulong type;
+	RhythmDBEntryType type;
 	
 	/* metadata */
 	RBRefString *title;

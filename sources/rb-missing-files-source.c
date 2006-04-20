@@ -109,15 +109,13 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_status = impl_get_status;
 	
+
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_uint ("entry-type",
-							    "Entry type",
-							    "Type of the entries which should be displayed by this source",
-							    0,
-							    G_MAXINT,
-							    RHYTHMDB_ENTRY_TYPE_SONG,
-							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_pointer ("entry-type",
+							       "Entry type",
+							       "Type of the entries which should be displayed by this source",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	
 	g_type_class_add_private (klass, sizeof (RBMissingFilesSourcePrivate));
 }
@@ -139,6 +137,8 @@ rb_missing_files_source_init (RBMissingFilesSource *source)
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
+
+	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 }
 
 static GObject *
@@ -247,7 +247,7 @@ rb_missing_files_source_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_uint (value);
+		source->priv->entry_type = g_value_get_pointer (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -266,7 +266,7 @@ rb_missing_files_source_get_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ENTRY_TYPE:
-		g_value_set_uint (value, source->priv->entry_type);
+		g_value_set_pointer (value, source->priv->entry_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

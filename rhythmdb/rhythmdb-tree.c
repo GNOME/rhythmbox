@@ -260,7 +260,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	case RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB:
 	{
 		if (!strcmp (name, "entry")) {
-			RhythmDBEntryType type = -1;
+			RhythmDBEntryType type = RHYTHMDB_ENTRY_TYPE_INVALID;
 			gboolean type_set = FALSE;
 			for (; *attrs; attrs +=2) {
 				if (!strcmp (*attrs, "type")) {
@@ -1432,7 +1432,13 @@ rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 				    g_value_get_double (data->val)) \
 					return FALSE; \
 				break; \
+                        case G_TYPE_POINTER: \
+                                if (rhythmdb_entry_get_pointer (entry, data->propid) OP \
+                                    g_value_get_pointer (data->val)) \
+                                        return FALSE; \
+                                break; \
 			default: \
+                                g_warning ("Unexpected type: %s", g_type_name (rhythmdb_get_property_type (db, data->propid))); \
 				g_assert_not_reached (); \
 			}
 
@@ -1791,7 +1797,7 @@ conjunctive_query (RhythmDBTree *db, GPtrArray *query,
 		
 		g_ptr_array_remove_index_fast (query, type_query_idx);
 		
-		etype = g_value_get_ulong (qdata->val);
+		etype = g_value_get_pointer (qdata->val);
 		genres = get_genres_hash_for_type (db, etype);
 		if (genres != NULL) {
 			conjunctive_query_genre (db, genres, traversal_data);

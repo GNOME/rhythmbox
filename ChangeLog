@@ -1,3 +1,82 @@
+2006-04-20  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Christophe Fergeau  <teuf@gnome.org> to make
+	RhythmDBEntryTypes be a structure rather than a uint. Add a vfunc
+	table to the entry types, which will allow us to get rid of some of
+	the "if entry type == WHATEVER" code everywhere. From bug 
+
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override:
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_class_init), (rb_daap_connection_init),
+	(rb_daap_connection_set_property),
+	(rb_daap_connection_get_property):
+	* daapsharing/rb-daap-share.c: (db_entry_added_cb):
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_entry_downloaded),
+	(rb_podcast_manager_subscribe_feed),
+	(rb_podcast_manager_db_entry_added_cb),
+	(rb_podcast_manager_db_entry_deleted_cb),
+	(rb_podcast_manager_insert_feed):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(conjunctive_query):
+	* rhythmdb/rhythmdb.c: (sync_entry_changed),
+	(process_added_entries_cb), (rhythmdb_entry_allocate),
+	(rhythmdb_entry_finalize), (rhythmdb_entry_unref),
+	(rhythmdb_process_stat_event), (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_file_created_or_modified), (action_thread_main),
+	(rhythmdb_add_uri), (entry_type_to_string), (entry_type_from_uint),
+	(write_encoded_gvalue), (read_encoded_property),
+	(rhythmdb_prop_type_get_type), (rhythmdb_entry_register_type),
+	(rhythmdb_entry_song_get_type), (rhythmdb_entry_ignore_get_type),
+	(rhythmdb_entry_iradio_get_type),
+	(rhythmdb_entry_podcast_post_get_type),
+	(rhythmdb_entry_podcast_feed_get_type),
+	(rhythmdb_entry_import_error_get_type),
+	(rhythmdb_entry_get_entry_type), (rhythmdb_entry_get_pointer),
+	(rhythmdb_entry_get_ulong), (rhythmdb_entry_get_type),
+	(rhythmdb_entry_type_get_type):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
+	* shell/rb-playlist-manager.c: (handle_playlist_entry_cb):
+	* shell/rb-shell-player.c: (rb_shell_player_open_entry),
+	(rb_shell_player_entry_activated_cb), (info_available_cb):
+	* shell/rb-shell.c: (rb_shell_get_source_by_entry_type),
+	(rb_shell_register_entry_type_for_source),
+	(rb_shell_playing_from_queue_cb),
+	(rb_shell_playing_entry_changed_cb),
+	(rb_shell_player_stream_song_changed_cb),
+	(rb_shell_jump_to_entry_with_source),
+	(rb_shell_guess_type_for_uri), (rb_shell_add_uri),
+	(handle_playlist_entry_cb), (rb_shell_load_uri):
+	* shell/rb-shell.h:
+	* sources/rb-auto-playlist-source.c: (impl_receive_drag):
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_init), (rb_browser_source_set_property),
+	(rb_browser_source_get_property):
+	* sources/rb-ipod-source.c: (impl_paste):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_init), (rb_iradio_source_set_property),
+	(rb_iradio_source_get_property):
+	* sources/rb-library-source.c: (impl_paste):
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_class_init),
+	(rb_missing_files_source_init),
+	(rb_missing_files_source_set_property),
+	(rb_missing_files_source_get_property):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_init), (rb_playlist_source_set_property),
+	(rb_playlist_source_get_property):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_init), (rb_podcast_source_set_property),
+	(rb_podcast_source_get_property):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_add_location_internal):
+
 2006-04-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_init),

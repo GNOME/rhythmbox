@@ -1714,7 +1714,7 @@ RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
 				   RhythmDBEntryType type)
 {
-	return g_hash_table_lookup (shell->priv->sources_hash, GINT_TO_POINTER (type));
+	return g_hash_table_lookup (shell->priv->sources_hash, type);
 }
 
 void
@@ -1726,9 +1726,8 @@ rb_shell_register_entry_type_for_source (RBShell *shell,
 		shell->priv->sources_hash = g_hash_table_new (g_direct_hash, 
 							      g_direct_equal);
 	}
-	g_assert (g_hash_table_lookup (shell->priv->sources_hash, GINT_TO_POINTER (type)) == NULL);
-	g_hash_table_insert (shell->priv->sources_hash, 
-			     GINT_TO_POINTER (type), source);
+	g_assert (g_hash_table_lookup (shell->priv->sources_hash, type) == NULL);
+	g_hash_table_insert (shell->priv->sources_hash, type, source);
 }
 
 
@@ -1868,7 +1867,7 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 		if (entry == NULL)
 			return;
 
-		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		entry_type = rhythmdb_entry_get_entry_type (entry);
 		source = rb_shell_get_source_by_entry_type (shell, entry_type);
 		songs = rb_source_get_entry_view (source);
 
@@ -1904,10 +1903,10 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 
 	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
 
-	/* Translators: Trackname by Artist */
-	notifytitle = g_strdup_printf (_("%s by %s"),
-				       song.title, song.artist);
-	rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, notifytitle);
+	/* Translators: by Artist from Album*/
+	notifytitle = g_strdup_printf (_("by %s from %s"),
+				       song.artist, song.album);
+	rb_shell_hidden_notify (shell, 4000, song.title, NULL, notifytitle);
 	g_free (notifytitle);
 }
 
@@ -1992,9 +1991,9 @@ rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
 					RBShell *shell)
 {
 	char *song;
-	g_object_get (G_OBJECT (player), "stream-song", &song, NULL);
+	g_object_get (G_OBJECT (player), "stream-song", &song, NULL);	
 	if (song) {
-		rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, song);
+		rb_shell_hidden_notify (shell, 4000, song, NULL, NULL);
 		g_free (song);
 	}
 }
@@ -2802,7 +2801,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell,
 	     shell->priv->queue_as_sidebar) ||
 	     source == NULL) {
 		RhythmDBEntryType entry_type;
-		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		entry_type = rhythmdb_entry_get_entry_type (entry);
 		source = rb_shell_get_source_by_entry_type (shell, entry_type); 
 	}
 	if (source == NULL)
@@ -2970,23 +2969,23 @@ rb_shell_load_uri_impl (RBRemoteProxy *proxy,
 	rb_shell_load_uri (shell, uri, play, NULL);
 }
 
-gint
+RhythmDBEntryType
 rb_shell_guess_type_for_uri (RBShell *shell,
 			     const char *uri)
 {
 	GnomeVFSURI *vfs_uri;
-	gint entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+	RhythmDBEntryType entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 	const char *scheme;
 	const char *path;
 	const char *pathend;
 
 	if (uri == NULL)
-		return -1;
+		return RHYTHMDB_ENTRY_TYPE_INVALID;
 
 	vfs_uri = gnome_vfs_uri_new (uri);
 	if (vfs_uri == NULL) {
 		rb_debug ("Invalid uri: %s", uri);
-		return -1;
+		return RHYTHMDB_ENTRY_TYPE_INVALID;
 	}
 	scheme = gnome_vfs_uri_get_scheme (vfs_uri);
 	path = gnome_vfs_uri_get_scheme (vfs_uri);
@@ -3016,7 +3015,7 @@ rb_shell_guess_type_for_uri (RBShell *shell,
  */
 gboolean
 rb_shell_add_uri (RBShell *shell,
-		  gint entrytype,
+		  RhythmDBEntryType entrytype,
 		  const char *uri,
 		  const char *title,
 		  const char *genre,
@@ -3062,12 +3061,11 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 			  const char *genre,
 			  PlaylistParseData *data)
 {
-	gint entry_type;
+	RhythmDBEntryType entry_type;
 
 	g_return_if_fail (uri != NULL);
 	
 	entry_type = rb_shell_guess_type_for_uri (data->shell, uri);
-	g_return_if_fail (entry_type >= 0);
 	
 	if (entry_type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION)
 		data->iradio_playlist = FALSE;
@@ -3126,7 +3124,7 @@ rb_shell_load_uri (RBShell *shell,
 							     uri, error))
 				return FALSE;
 		} else {
-			gint entrytype;
+			RhythmDBEntryType entrytype;
 
 			if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
 				rb_debug ("adding %s as an iradio playlist", uri);

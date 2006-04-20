@@ -20,6 +20,12 @@
   (gtype-id "RHYTHMDB_TYPE_ENTRY")
 )
 
+(define-pointer EntryType
+  (in-module "RhythmDB")
+  (c-name "RhythmDBEntryType_")
+  (gtype-id "RHYTHMDB_TYPE_ENTRY_TYPE")
+)
+
 (define-boxed Query
   (in-module "RhythmDB")
   (c-name "RhythmDBQuery")
@@ -183,6 +189,12 @@
   (return-type "GType")
 )
 
+(define-method get_entry_type
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_entry_type")
+  (return-type "RhythmDBEntryType_*")
+)
+
 (define-function rhythmdb_new
   (c-name "rhythmdb_new")
   (is-constructor-of "Rhythmdb")
@@ -270,6 +282,15 @@
   )
 )
 
+(define-method get_pointer
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_pointer")
+  (return-type "gpointer")
+  (parameters
+    '("RhythmDBPropType" "propid")
+  )
+)
+
 (define-method get_boolean
   (of-object "RhythmDBEntry")
   (c-name "rhythmdb_entry_get_boolean")
@@ -331,7 +352,7 @@
   (c-name "rhythmdb_entry_new")
   (return-type "RhythmDBEntry*")
   (parameters
-    '("RhythmDBEntryType" "type")
+    '("RhythmDBEntryType_*" "type")
     '("const-char*" "uri")
   )
 )
@@ -351,7 +372,7 @@
   (return-type "none")
   (parameters
     '("const-char*" "uri")
-    '("RhythmDBEntryType" "type")
+    '("RhythmDBEntryType_*" "type")
   )
 )
 
@@ -402,7 +423,7 @@
   (c-name "rhythmdb_entry_delete_by_type")
   (return-type "none")
   (parameters
-    '("RhythmDBEntryType" "type")
+    '("RhythmDBEntryType_*" "type")
   )
 )
 
@@ -544,37 +565,37 @@
 
 (define-function rhythmdb_entry_register_type
   (c-name "rhythmdb_entry_register_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 (define-function rhythmdb_entry_song_get_type
   (c-name "rhythmdb_entry_song_get_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 (define-function rhythmdb_entry_iradio_get_type
   (c-name "rhythmdb_entry_iradio_get_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 (define-function rhythmdb_entry_podcast_post_get_type
   (c-name "rhythmdb_entry_podcast_post_get_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 (define-function rhythmdb_entry_podcast_feed_get_type
   (c-name "rhythmdb_entry_podcast_feed_get_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 (define-function rhythmdb_entry_import_error_get_type
   (c-name "rhythmdb_entry_import_error_get_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 (define-function rhythmdb_entry_ignore_get_type
   (c-name "rhythmdb_entry_ignore_get_type")
-  (return-type "RhythmDBEntryType")
+  (return-type "RhythmDBEntryType_*")
 )
 
 

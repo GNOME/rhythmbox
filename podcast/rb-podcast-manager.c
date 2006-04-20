@@ -435,9 +435,8 @@ rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
 {
 	gulong status;
 	const gchar *file_name;
-	gulong type;
+	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
 
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
 	g_assert (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
@@ -701,7 +700,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url)
 
 	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, valid_url);
 	if (entry) {
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+		if (rhythmdb_entry_get_entry_type (entry) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			/* added as something else, probably iradio */
 			rb_error_dialog (NULL, _("URL already added"),
 					 _("The URL \"%s\" has already been added as a radio station. "
@@ -902,8 +901,8 @@ rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char
 static void
 rb_podcast_manager_db_entry_added_cb (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
+	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
 
-	gulong type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
 	if (type != RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		return;
 	
@@ -1215,8 +1214,7 @@ static void
 rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 					RhythmDBEntry *entry)
 {
-
-	gulong type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
 
 	if ((type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) && (pd->priv->remove_files == TRUE)) {
 		const char *file_name;
@@ -1388,7 +1386,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	/* processing podcast head */
 	entry = rhythmdb_entry_lookup_by_location (db, (gchar *)data->url);
 	if (entry) {
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
+		if (rhythmdb_entry_get_entry_type (entry) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 			return;
 			
 		rb_debug ("Head found");

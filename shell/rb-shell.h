@@ -71,10 +71,10 @@ RBShell *	rb_shell_new		(int argc, char **argv,
 
 gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);
 
-gint            rb_shell_guess_type_for_uri (RBShell *shell, const char *uri);
+RhythmDBEntryType rb_shell_guess_type_for_uri (RBShell *shell, const char *uri);
 
 gboolean        rb_shell_add_uri        (RBShell *shell,
-					 gint entry_type,
+					 RhythmDBEntryType entry_type,
 					 const char *uri,
 					 const char *title,
 					 const char *genre,

@@ -590,12 +590,12 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
 			  const char *genre, RBPlaylistManager *mgr)
 {
 	char *uri = rb_canonicalise_uri (uri_maybe);
-	gint entry_type;
+	RhythmDBEntryType entry_type;
 
 	g_return_if_fail (uri != NULL);
 
 	entry_type = rb_shell_guess_type_for_uri (mgr->priv->shell, uri);
-	if (entry_type < 0) {
+	if (entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		return;
 	}
 

@@ -442,7 +442,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		GPtrArray *query;
 		
 		g_object_get (G_OBJECT (source), "entry-type", &qtype, NULL);
-		if (qtype == -1)
+		if (qtype == RHYTHMDB_ENTRY_TYPE_INVALID)
 			qtype = RHYTHMDB_ENTRY_TYPE_SONG;
 
 		query = rhythmdb_query_parse (db,

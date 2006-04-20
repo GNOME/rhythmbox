@@ -870,7 +870,7 @@ impl_paste (RBSource *asource, GList *entries)
 		char *dest;
 
 		entry = (RhythmDBEntry *)l->data;
-		entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+		entry_type = rhythmdb_entry_get_entry_type (entry);
 		g_object_get (G_OBJECT (asource),
 			      "entry-type", &ipod_entry_type,
 			      NULL);

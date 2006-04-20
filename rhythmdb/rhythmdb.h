@@ -53,8 +53,17 @@ GType rhythmdb_query_get_type (void);
 #define RHYTHMDB_QUERY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_QUERY, RhythmDBQuery))
 #define RHYTHMDB_IS_QUERY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_QUERY))
 
+typedef struct {
+	/* virtual functions here */
+	void (*post_entry_create) (RhythmDBEntry *entry);
+	void (*pre_entry_destroy) (RhythmDBEntry *entry);
+} RhythmDBEntryType_;
+typedef RhythmDBEntryType_ *RhythmDBEntryType;
 
-typedef gint32 RhythmDBEntryType;
+GType rhythmdb_entry_type_get_type (void);
+#define RHYTHMDB_TYPE_ENTRY_TYPE	(rhythmdb_entry_type_get_type ())
+#define RHYTHMDB_ENTRY_TYPE(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY_TYPE, RhythmDBEntryType_))
+#define RHYTHMDB_IS_ENTRY_TYPE(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY_TYPE))
 
 #define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
@@ -62,6 +71,7 @@ typedef gint32 RhythmDBEntryType;
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_FEED (rhythmdb_entry_podcast_feed_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR (rhythmdb_entry_import_error_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IGNORE (rhythmdb_entry_ignore_get_type ())
+#define RHYTHMDB_ENTRY_TYPE_INVALID (GINT_TO_POINTER (-1))
 
 typedef enum
 {
@@ -177,9 +187,13 @@ typedef struct {
 const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 char *rhythmdb_entry_dup_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
-guint64 rhythmdb_entry_get_uint64		(RhythmDBEntry *entry, RhythmDBPropType propid);
+guint64 rhythmdb_entry_get_uint64	(RhythmDBEntry *entry, RhythmDBPropType propid);
 gulong rhythmdb_entry_get_ulong		(RhythmDBEntry *entry, RhythmDBPropType propid);
-double rhythmdb_entry_get_double		(RhythmDBEntry *entry, RhythmDBPropType propid);
+double rhythmdb_entry_get_double	(RhythmDBEntry *entry, RhythmDBPropType propid);
+gpointer rhythmdb_entry_get_pointer     (RhythmDBEntry *entry, RhythmDBPropType propid);
+
+RhythmDBEntryType rhythmdb_entry_get_entry_type (RhythmDBEntry *entry);
+
 
 
 typedef enum

@@ -368,13 +368,10 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_uint ("entry-type",
-							    "Entry type",
-							    "Type of the entries which should be displayed by this source",
-							    0,
-							    G_MAXINT,
-							    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_pointer ("entry-type",
+							       "Entry type",
+							       "Type of the entries which should be displayed by this source",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_PODCAST_MANAGER,
@@ -414,6 +411,8 @@ rb_podcast_source_init (RBPodcastSource *source)
 	}
 
 	gtk_widget_destroy (dummy);
+
+	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 }
 
 static void
@@ -772,7 +771,7 @@ rb_podcast_source_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_uint (value);
+		source->priv->entry_type = g_value_get_pointer (value);
 		break;
 	case PROP_PODCAST_MANAGER:
 		source->priv->podcast_mg = g_value_get_object (value);
@@ -793,7 +792,7 @@ rb_podcast_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		g_value_set_uint (value, source->priv->entry_type);
+		g_value_set_pointer (value, source->priv->entry_type);
 		break;
 	case PROP_PODCAST_MANAGER:
 		g_value_set_object (value, source->priv->podcast_mg);

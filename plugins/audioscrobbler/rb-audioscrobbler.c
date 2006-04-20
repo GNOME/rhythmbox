@@ -935,7 +935,7 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBAudioscrobbler *audioscrobbler)
 {
-	gulong type;
+	RhythmDBEntryType type;
 	gchar *old_artist;
 	gchar *old_album;
 	gchar *old_title;
@@ -943,7 +943,7 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	if (entry == NULL)
 		return;
 
-	type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	type = rhythmdb_entry_get_entry_type (entry);
 	if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
 	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
 	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)

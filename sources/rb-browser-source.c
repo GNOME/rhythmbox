@@ -211,13 +211,10 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_uint ("entry-type",
-							    "Entry type",
-							    "Type of the entries which should be displayed by this source",
-							    0,
-							    G_MAXINT,
-							    RHYTHMDB_ENTRY_TYPE_SONG,
-							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_pointer ("entry-type",
+							       "Entry type",
+							       "Type of the entries which should be displayed by this source",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_SORTING_KEY,
@@ -238,6 +235,12 @@ rb_browser_source_init (RBBrowserSource *source)
 	source->priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
+
+	/* Default value, should be overridden at object construction by the 
+	 * "entry-type" property
+	 */
+	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 }
 
@@ -477,7 +480,7 @@ rb_browser_source_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_uint (value);
+		source->priv->entry_type = g_value_get_pointer (value);
 		break;
 	case PROP_SORTING_KEY:
 		g_free (source->priv->sorting_key);
@@ -499,7 +502,7 @@ rb_browser_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		g_value_set_uint (value, source->priv->entry_type);
+		g_value_set_pointer (value, source->priv->entry_type);
 		break;
 	case PROP_SORTING_KEY:
 		g_value_set_string (value, source->priv->sorting_key);
