@@ -531,6 +531,10 @@ rhythmdb_init (RhythmDB *db)
 			  "volume-pre-unmount", 
 			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
 			  db);
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
+			  "volume-unmounted", 
+			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
+			  db);
 }
 
 static void
@@ -1721,6 +1725,9 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MTIME, &value);
 			g_value_unset (&value);
 		}
+
+		/* record the mount point so we can delete entries for unmounted volumes */
+		rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
 
 		rhythmdb_entry_set_visibility (db, entry, TRUE);
 
@@ -4080,31 +4087,49 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 				   MountCtxt *ctxt)
 {
 	const char *mount_point;
+	const char *location;
+	RhythmDBEntryType entry_type;
 	
-	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG) {
+	entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
+	
+	if (entry_type != RHYTHMDB_ENTRY_TYPE_SONG &&
+	    entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 		return;
 	}
 	
-	mount_point = rhythmdb_entry_get_string (entry, 
-						 RHYTHMDB_PROP_MOUNTPOINT);
-	if (mount_point == NULL) {
+	mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (mount_point == NULL || strcmp (mount_point, ctxt->mount_point) != 0) {
 		return;
 	}
-	if (!strcmp (mount_point, ctxt->mount_point)) {
-		GTimeVal time;
-		GValue val = {0, };
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
-		/* We don't care if the song appears or disappears, this
-		 * is really the latest time we have seen it 
-		*/
-		g_get_current_time (&time);
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, time.tv_sec);
-		rhythmdb_entry_set_internal (ctxt->db, entry, FALSE,
-					     RHYTHMDB_PROP_LAST_SEEN, &val);
-		g_value_unset (&val);
+	if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		if (ctxt->mounted) {
+			rb_debug ("queueing stat for entry %s (mounted)", location);
+			queue_stat_uri (location, 
+					ctxt->db,
+					RHYTHMDB_ENTRY_TYPE_SONG);
+		} else {
+			GTimeVal time;
+			GValue val = {0, };
 
-		rhythmdb_entry_set_visibility (ctxt->db, entry, ctxt->mounted);
+			rb_debug ("hiding entry %s (unmounted)", location);
+			
+			g_get_current_time (&time);
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, time.tv_sec);
+			rhythmdb_entry_set_internal (ctxt->db, entry, FALSE,
+						     RHYTHMDB_PROP_LAST_SEEN, &val);
+			g_value_unset (&val);
+
+			rhythmdb_entry_set_visibility (ctxt->db, entry, FALSE);
+		}
+	} else if (entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+		/* delete import errors for files on unmounted volumes */
+		if (ctxt->mounted == FALSE) {
+			rb_debug ("removing import error for %s (unmounted)", location);
+			rhythmdb_entry_delete (ctxt->db, entry);
+		}
 	}
 }
 
@@ -4137,6 +4162,7 @@ rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 	ctxt.db = RHYTHMDB (data);
 	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
 	ctxt.mounted = FALSE;
+	rb_debug ("volume %s unmounted", ctxt.mount_point);
 	rhythmdb_entry_foreach (RHYTHMDB (data), 
 				(GFunc)entry_volume_mounted_or_unmounted, 
 				&ctxt);

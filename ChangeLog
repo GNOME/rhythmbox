@@ -1,3 +1,13 @@
+2006-04-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_init),
+	(rhythmdb_add_import_error_entry),
+	(entry_volume_mounted_or_unmounted),
+	(rhythmdb_volume_unmounted_cb):
+	When a volume is unmounted, delete import errors for files stored on
+	it.  When a volume is mounted, stat all tracks stored on it, rather
+	than assuming they're present.  Fixes #339023.
+
 2006-04-20  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net> to remember
