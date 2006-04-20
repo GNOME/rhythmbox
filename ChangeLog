@@ -1,5 +1,21 @@
 2006-04-20  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Alex Lancaster  <alexl@users.sourceforge.net> to remember
+	browser visibility for non-gconf-using sources (like playlists). Part
+	of bug 118862.
+
+	* shell/rb-source-header.c: (sourcestate_free),
+	(rb_source_header_init), (rb_source_header_finalize),
+	(rb_source_header_source_weak_destroy_cb): switch from storing the
+	search string to storing a "source state" structure
+
+	(rb_source_header_set_source_internal),  (rb_source_state_sync),
+	(rb_source_header_search_cb), (rb_source_header_clear_search),
+	(rb_source_header_disclosure_toggled_cb): as well as storing the
+	string, stop the visibility of the source's browser.
+
+2006-04-20  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-library-source.c: (impl_paste): ignore attempts to paste
 	library entries back into the library. Fixes bug 339065.
 

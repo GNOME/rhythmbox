@@ -64,6 +64,18 @@ static void rb_source_header_view_browser_changed_cb (GtkAction *action,
 						      RBSourceHeader *header);
 static void rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source);
 
+typedef struct {
+	gboolean disclosed;
+	char     *search_text;
+}  SourceState;
+
+static void
+sourcestate_free (SourceState *state)
+{
+        g_free (state->search_text);
+        g_free (state);
+}
+
 struct RBSourceHeaderPrivate
 {
 	RBSource *selected_source;
@@ -85,7 +97,8 @@ struct RBSourceHeaderPrivate
 	gboolean disclosed;
 	char *browser_key;
 
-	GHashTable *source_search_text;
+	GHashTable *source_states;
+	
 };
 
 #define RB_SOURCE_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCE_HEADER, RBSourceHeaderPrivate))
@@ -258,8 +271,8 @@ rb_source_header_init (RBSourceHeader *header)
 			  GTK_EXPAND | GTK_FILL,
 			  5, 0);
 
-	header->priv->source_search_text = g_hash_table_new_full (g_direct_hash, g_direct_equal,
-								  NULL, (GDestroyNotify)g_free);
+	header->priv->source_states = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+							    NULL, (GDestroyNotify)sourcestate_free);
 }
 
 static void
@@ -282,10 +295,10 @@ rb_source_header_finalize (GObject *object)
 
 	g_return_if_fail (header->priv != NULL);
 
-	g_hash_table_foreach (header->priv->source_search_text,
+	g_hash_table_foreach (header->priv->source_states,
 			      (GHFunc) rb_source_header_source_weak_unref,
 			      header);
-	g_hash_table_destroy (header->priv->source_search_text);
+	g_hash_table_destroy (header->priv->source_states);
 
 	g_free (header->priv->browser_key);
 
@@ -322,9 +335,21 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 	rb_debug ("selected source %p", source);
 
 	if (header->priv->selected_source != NULL) {
-		const char *text = g_hash_table_lookup (header->priv->source_search_text,
-							header->priv->selected_source);
-			
+		SourceState *source_state;
+		char        *text;
+		gboolean    disclosed;
+
+		source_state = g_hash_table_lookup (header->priv->source_states,
+						    header->priv->selected_source);
+		
+		if (source_state) {
+			text = g_strdup (source_state->search_text);
+			disclosed = source_state->disclosed;
+		} else {
+			text = NULL;
+			disclosed = FALSE;
+		}
+
 		g_free (header->priv->browser_key);
 		header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
 	
@@ -343,8 +368,8 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 		else if (header->priv->browser_key)
 			header->priv->disclosed = eel_gconf_get_boolean (header->priv->browser_key);
 		else
-			/* FIXME: remember the previous state of the source*/
-			header->priv->disclosed = FALSE;
+			/* restore the previous state of the source*/
+			header->priv->disclosed = disclosed;
 	
 		if (!header->priv->have_browser && !header->priv->have_search)
 			gtk_widget_hide (GTK_WIDGET (header));
@@ -455,7 +480,41 @@ rb_source_header_filter_changed_cb (RBSource *source,
 static void
 rb_source_header_source_weak_destroy_cb (RBSourceHeader *header, RBSource *source)
 {
-	g_hash_table_remove (header->priv->source_search_text, source);
+	g_hash_table_remove (header->priv->source_states, source);
+}
+
+static void
+rb_source_state_sync (RBSourceHeader *header,
+		      gboolean set_text,
+		      const char *text,
+		      gboolean set_disclosure,
+		      gboolean disclosed)
+{
+	SourceState *old_state;
+
+	old_state = g_hash_table_lookup (header->priv->source_states,
+					 header->priv->selected_source);
+
+	if (old_state) {
+		if (set_text)
+			old_state->search_text = text ? g_strdup (text) : NULL;	
+		if (set_disclosure)
+			old_state->disclosed = disclosed;
+	} else {
+		SourceState *new_state;
+
+		/* if we haven't seen the source before, monitor it for deletion */
+		g_object_weak_ref (G_OBJECT (header->priv->selected_source),
+				   (GWeakNotify)rb_source_header_source_weak_destroy_cb,
+				   header);
+
+		new_state = g_new (SourceState, 1);
+		new_state->search_text = text ? g_strdup (text) : NULL;	
+		new_state->disclosed = disclosed;
+		g_hash_table_insert (header->priv->source_states,
+				     header->priv->selected_source,
+				     new_state); 
+	}
 }
 
 static void
@@ -463,18 +522,11 @@ rb_source_header_search_cb (RBSearchEntry *search,
 			    const char *text,
 			    RBSourceHeader *header)
 {
+
 	rb_debug  ("searching for \"%s\"", text);
 
-	/* if we haven't seen the source before, monitor it for deletion */
-	if (g_hash_table_lookup (header->priv->source_search_text, header->priv->selected_source) == NULL) {
-		g_object_weak_ref (G_OBJECT (header->priv->selected_source),
-				   (GWeakNotify)rb_source_header_source_weak_destroy_cb,
-				   header);
-	}
+	rb_source_state_sync (header, TRUE, text, FALSE, FALSE);
 
-	g_hash_table_insert (header->priv->source_search_text,
-			     header->priv->selected_source,
-			     g_strdup (text));
 	rb_source_search (header->priv->selected_source, text);
 	rb_source_header_sync_control_state (header);
 }
@@ -489,8 +541,8 @@ rb_source_header_clear_search (RBSourceHeader *header)
 	
 	if (header->priv->selected_source) {
 		rb_source_search (header->priv->selected_source, NULL);
-		g_hash_table_remove (header->priv->source_search_text, 
-				     header->priv->selected_source);
+		rb_source_state_sync (header, TRUE, NULL, FALSE, FALSE);
+
 	}
 	rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search));
 	rb_source_header_sync_control_state (header);
@@ -509,7 +561,12 @@ rb_source_header_disclosure_toggled_cb (GObject *object,
 	if (header->priv->browser_key)
 		eel_gconf_set_boolean (header->priv->browser_key, 
 				       header->priv->disclosed);
+	else {
+		rb_source_state_sync (header, FALSE, NULL, TRUE, header->priv->disclosed);
+	}
 
+	rb_debug ("got view browser toggle");
+	
 	rb_source_header_sync_control_state (header);
 }
 
