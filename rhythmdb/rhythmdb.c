@@ -4146,12 +4146,9 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 {
 	const char *mount_point;
 	const char *location;
-	RhythmDBEntryType entry_type;
 	
-	entry_type = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE);
-	
-	if (entry_type != RHYTHMDB_ENTRY_TYPE_SONG &&
-	    entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG &&
+	    entry->type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 		return;
 	}
 	
@@ -4161,7 +4158,7 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 	}
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG) {
+	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		if (ctxt->mounted) {
 			rb_debug ("queueing stat for entry %s (mounted)", location);
 			queue_stat_uri (location, 
@@ -4182,7 +4179,7 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 
 			rhythmdb_entry_set_visibility (ctxt->db, entry, FALSE);
 		}
-	} else if (entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 		/* delete import errors for files on unmounted volumes */
 		if (ctxt->mounted == FALSE) {
 			rb_debug ("removing import error for %s (unmounted)", location);
