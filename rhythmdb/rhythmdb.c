@@ -2205,6 +2205,9 @@ rhythmdb_entry_get (RhythmDB *db, RhythmDBEntry *entry,
 	case G_TYPE_DOUBLE:
 		g_value_set_double (val, rhythmdb_entry_get_double (entry, propid));
 		break;
+	case G_TYPE_POINTER:
+		g_value_set_pointer (val, rhythmdb_entry_get_pointer (entry, propid));
+		break;
 	default:
 		g_assert_not_reached ();
 		break;

@@ -201,10 +201,6 @@ rb_playlist_source_init (RBPlaylistSource *source)
 {
 	source->priv = RB_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
-	/* Default value, should be overridden at object construction by the 
-	 * "entry-type" property
-	 */
-	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 }
 
 static GObject *
@@ -220,6 +216,9 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	source = RB_PLAYLIST_SOURCE (G_OBJECT_CLASS (rb_playlist_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
+
+	if (source->priv->entry_type == NULL)
+		source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);

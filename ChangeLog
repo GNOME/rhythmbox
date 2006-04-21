@@ -1,5 +1,17 @@
 2006-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (rb_shell_get_song_properties):
+	Don't try to include entry-type (or anything else not easily
+	marshallable) in the song properties hash table.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_get): Handle G_TYPE_POINTER
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_init),
+	(rb_playlist_source_constructor): Fix entry-type initialization as
+	with previous commit.
+
+2006-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-iradio-source.c: (rb_iradio_source_init),
 	(rb_iradio_source_constructor), (rb_iradio_source_do_query):
 	* sources/rb-podcast-source.c: (rb_podcast_source_init),

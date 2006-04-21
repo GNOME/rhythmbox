@@ -3490,11 +3490,25 @@ rb_shell_get_song_properties (RBShell *shell,
 	for (i = 0; i < klass->n_values; i++) {
 		GValue *value;
 		gint prop;
+		GType value_type;
 
 		prop = klass->values[i].value;
 
+		/* only include easily marshallable types in the hash table */
+		value_type = rhythmdb_get_property_type (shell->priv->db, prop);
+		switch (value_type) {
+		case G_TYPE_STRING:
+		case G_TYPE_BOOLEAN:
+		case G_TYPE_ULONG:
+		case G_TYPE_UINT64:
+		case G_TYPE_DOUBLE:
+			break;
+		default:
+			continue;
+		}
+		
 		value = g_new0 (GValue, 1);
-		g_value_init (value, rhythmdb_get_property_type (shell->priv->db, prop));
+		g_value_init (value, value_type);
 		rhythmdb_entry_get (shell->priv->db, entry, prop, value);
 		g_hash_table_insert (*properties,
 				     (gpointer) rhythmdb_nice_elt_name_from_propid (shell->priv->db, prop),
