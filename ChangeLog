@@ -1,5 +1,18 @@
 2006-04-22  James Livingston  <doclivingston@gmail.com>
 
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-shell.c:
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(remove_source), (rb_daap_sources_init),
+	(rb_daap_sources_shutdown), (rb_daap_source_cmd_disconnect),
+	(rb_daap_source_disconnect):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_deactivate):
+	* sources/rb-source.h: move the "disconnect" functionality from into
+	RBSource to RBDaapSource where it belongs. Fixes bug 338464.
+
+2006-04-22  James Livingston  <doclivingston@gmail.com>
+
 	* widgets/rb-library-browser.c: (rb_library_browser_constructor):
 	actually get the translated strings for browser headers (they were
 	already marked as translatable). Fixes bug 339380.

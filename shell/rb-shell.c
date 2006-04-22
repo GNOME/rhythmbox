@@ -186,8 +186,6 @@ static void rb_shell_cmd_extract_cd (GtkAction *action,
 				     RBShell *shell);
 static void rb_shell_cmd_current_song (GtkAction *action,
 				       RBShell *shell);
-static void rb_shell_cmd_source_disconnect (GtkAction *action,
-					    RBShell *shell);
 static void rb_shell_jump_to_current (RBShell *shell);
 static void rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
@@ -484,9 +482,6 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "ViewJumpToPlaying", GTK_STOCK_JUMP_TO, N_("_Jump to Playing Song"), "<control>J",
 	  N_("Scroll the view to the currently playing song"),
 	  G_CALLBACK (rb_shell_cmd_current_song) },
-	{ "SourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL, 
-	  N_("Disconnect from selected source"), 
-	  G_CALLBACK (rb_shell_cmd_source_disconnect) },
 };
 static guint rb_shell_n_actions = G_N_ELEMENTS (rb_shell_actions);
 
@@ -2768,26 +2763,6 @@ rb_shell_cmd_current_song (GtkAction *action,
 	rb_shell_jump_to_current (shell);
 }
 
-static void
-rb_shell_cmd_source_disconnect (GtkAction *action,
-				RBShell *shell)
-{
-	rb_debug ("disconnect from source");
-
-	if (shell->priv->selected_source) {
-		RBSource *library_source;
-
-		rb_source_disconnect (shell->priv->selected_source);
-		
-		library_source = rb_shell_get_source_by_entry_type (shell, 
-								    RHYTHMDB_ENTRY_TYPE_SONG);
-		rb_shell_select_source (shell, library_source);
-	}
-	
-
-	
-	return;
-}
 
 static void
 rb_shell_cmd_view_all (GtkAction *action,

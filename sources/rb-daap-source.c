@@ -57,10 +57,11 @@ static void rb_daap_source_activate (RBSource *source);
 static void rb_daap_source_connection_cb (RBDAAPConnection *connection,
 					  gboolean result,
 					  RBSource *source);
-static gboolean rb_daap_source_disconnect (RBSource *source);
 static gboolean rb_daap_source_show_popup (RBSource *source);
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static const char * rb_daap_source_get_paned_key (RBBrowserSource *source);
+static void rb_daap_source_cmd_disconnect (GtkAction *action, RBShell *shell);
+static void rb_daap_source_disconnect (RBDAAPSource *daap_source);
 
 
 #define CONF_ENABLE_BROWSING CONF_PREFIX "/sharing/enable_browsing"
@@ -80,6 +81,8 @@ static GdkPixbuf *daap_share_pixbuf_locked = NULL;
 
 struct RBDAAPSourcePrivate
 {
+	GtkActionGroup *action_group;
+
 	char *service_name;
 	char *host;
 	guint port;
@@ -101,6 +104,13 @@ enum {
 
 G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE)
 
+static GtkActionEntry rb_daap_source_actions [] =
+{
+	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL, 
+	  N_("Disconnect from DAAP share"), 
+	  G_CALLBACK (rb_daap_source_cmd_disconnect) },
+};
+GtkActionGroup *daap_action_group;
 
 static RhythmDBEntryType
 rhythmdb_entry_daap_type_new (void)
@@ -120,7 +130,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	object_class->set_property = rb_daap_source_set_property;
 
 	source_class->impl_activate = rb_daap_source_activate;
-	source_class->impl_disconnect = rb_daap_source_disconnect;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
@@ -178,7 +187,6 @@ rb_daap_source_init (RBDAAPSource *source)
 {
 	source->priv = RB_DAAP_SOURCE_GET_PRIVATE (source);
 }
-
 
 static void
 rb_daap_source_dispose (GObject *object)
@@ -379,7 +387,7 @@ mdns_service_removed (RBDaapMdnsBrowser *browser,
 static void
 remove_source (RBSource *source)
 {
-	rb_daap_source_disconnect (source);
+	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
 	rb_source_delete_thyself (source);
 }
 
@@ -556,6 +564,7 @@ rb_daap_sources_init (RBShell *shell)
 	gboolean enabled = TRUE;
 	GConfValue *value;
 	GConfClient *client = eel_gconf_client_get_global ();
+	GtkUIManager *uimanager = NULL;
 
 	value = gconf_client_get_without_default (client,
 						  CONF_ENABLE_BROWSING, NULL);
@@ -577,12 +586,31 @@ rb_daap_sources_init (RBShell *shell)
 
 	create_pixbufs ();
 
+	/* add UI */
+	g_object_get (G_OBJECT (shell),
+		      "ui-manager", &uimanager, 
+		      NULL);
+	daap_action_group = gtk_action_group_new ("DaapActions");
+	gtk_action_group_set_translation_domain (daap_action_group,
+						 GETTEXT_PACKAGE);
+	gtk_action_group_add_actions (daap_action_group,
+				      rb_daap_source_actions, G_N_ELEMENTS (rb_daap_source_actions),
+				      shell);
+	gtk_ui_manager_insert_action_group (uimanager, daap_action_group, 0);
+	g_object_unref (G_OBJECT (uimanager));
+
 	return NULL;
 }
 
 void
 rb_daap_sources_shutdown (RBShell *shell)
 {
+	GtkUIManager *uimanager = NULL;
+
+	g_object_get (G_OBJECT (shell),
+		      "ui-manager", &uimanager, 
+		      NULL);
+
 	if (mdns_browser) {
 		stop_browsing (shell);
 	}
@@ -593,7 +621,9 @@ rb_daap_sources_shutdown (RBShell *shell)
 	}
 
 	destroy_pixbufs ();
+	gtk_ui_manager_remove_action_group (uimanager, daap_action_group);
 
+	g_object_unref (G_OBJECT (uimanager));
 	g_object_unref (shell);
 }
 
@@ -740,11 +770,27 @@ rb_daap_source_disconnect_cb (RBDAAPConnection *connection,
 	g_object_unref (source);
 }
 
-static gboolean
-rb_daap_source_disconnect (RBSource *source)
+static void
+rb_daap_source_cmd_disconnect (GtkAction *action,
+			       RBShell *shell)
 {
-	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	RBSource *source;
 
+	g_object_get (G_OBJECT (shell), 
+		      "selected-source", &source,
+		      NULL);
+
+	if (!RB_IS_DAAP_SOURCE (source)) {
+		g_critical ("got non-Daap source for Daap action");
+		return;
+	}
+		
+	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
+}
+
+static void
+rb_daap_source_disconnect (RBDAAPSource *daap_source)
+{
 	if (daap_source->priv->connection) {
 		GSList *l;
 		RBShell *shell;
@@ -753,7 +799,7 @@ rb_daap_source_disconnect (RBSource *source)
 
 		rb_debug ("Disconnecting source");
 
-		g_object_get (G_OBJECT (source), "shell", &shell, "entry-type", &type, NULL);
+		g_object_get (G_OBJECT (daap_source), "shell", &shell, "entry-type", &type, NULL);
 		g_object_get (G_OBJECT (shell), "db", &db, NULL);
 		g_object_unref (G_OBJECT (shell));
 
@@ -776,8 +822,6 @@ rb_daap_source_disconnect (RBSource *source)
 					   (RBDAAPConnectionCallback) rb_daap_source_disconnect_cb,
 					   daap_source);
 	}
-
-	return TRUE;
 }
 
 static gboolean

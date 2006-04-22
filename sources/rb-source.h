@@ -116,7 +116,6 @@ struct _RBSourceClass
 	void		(*impl_delete_thyself)	(RBSource *source);
 	void		(*impl_activate)	(RBSource *source);
 	void		(*impl_deactivate)	(RBSource *source);
-	gboolean	(*impl_disconnect)	(RBSource *source);
 	GList *		(*impl_get_ui_actions)	(RBSource *source);
 	GList *		(*impl_get_search_actions) (RBSource *source);
 };
@@ -183,7 +182,6 @@ void		rb_source_delete_thyself	(RBSource *source);
 
 void		rb_source_activate		(RBSource *source);
 void		rb_source_deactivate		(RBSource *source);
-gboolean	rb_source_disconnect		(RBSource *source);
 
 GList *		rb_source_get_ui_actions	(RBSource *source);
 GList *		rb_source_get_search_actions	(RBSource *source);

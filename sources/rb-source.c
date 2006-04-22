@@ -63,7 +63,6 @@ static void default_delete_thyself (RBSource *source);
 static RBEntryView* default_get_entry_view (RBSource *source);
 static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
-static gboolean default_disconnect (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
 static char *default_get_status (RBSource *source);
 static GList * default_get_ui_actions (RBSource *source);
@@ -145,7 +144,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_delete_thyself = default_delete_thyself;
 	klass->impl_activate = default_activate;
 	klass->impl_deactivate = default_deactivate;
-	klass->impl_disconnect = default_disconnect;
 	klass->impl_try_playlist = default_try_playlist;
 	klass->impl_add_to_queue = default_add_to_queue;
 	klass->impl_get_status = default_get_status;
@@ -843,11 +841,6 @@ static void default_deactivate (RBSource *source)
 	return;
 }
 
-static gboolean default_disconnect (RBSource *source)
-{
-	return TRUE;
-}
-
 void rb_source_activate (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
@@ -864,13 +857,6 @@ void rb_source_deactivate (RBSource *source)
 	klass->impl_deactivate (source);
 
 	return;
-}
-
-gboolean rb_source_disconnect (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_disconnect (source);
 }
 
 static GList *
