@@ -305,6 +305,8 @@ rb_audioscrobbler_finalize (GObject *object)
 	eel_gconf_notification_remove (audioscrobbler->priv->notification_password_id);
 	eel_gconf_notification_remove (audioscrobbler->priv->notification_enabled_id);
 
+	g_source_remove (audioscrobbler->priv->timeout_id);
+
 	g_free (audioscrobbler->priv->md5_challenge);
 	g_free (audioscrobbler->priv->username);
 	g_free (audioscrobbler->priv->password);

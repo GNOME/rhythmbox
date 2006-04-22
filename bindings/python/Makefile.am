@@ -60,6 +60,7 @@ BINDING_HEADERS_SRCDIR_IN = \
 	sources/rb-sourcelist.h			\
 	sources/rb-sourcelist-model.h		\
 	widgets/rb-entry-view.h			\
+	widgets/rb-library-browser.h		\
 	widgets/rb-property-view.h		\
 	$(NULL)
 

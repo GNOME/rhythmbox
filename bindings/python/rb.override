@@ -8,6 +8,7 @@ headers
 #include "rb-util.h"
 
 #include "rb-entry-view.h"
+#include "rb-library-browser.h"
 #include "rb-plugin.h"
 #include "rb-property-view.h"
 #include "rb-remote-proxy.h"
@@ -26,14 +27,16 @@ void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
 %%
 modulename rb 
 %%
-import gtk.Widget as PyGtkWidget_Type
 import gobject.GObject as PyGObject_Type 
-import gtk.VBox as PyGtkVBox_Type
+import gtk.ActionGroup as PyGtkActionGroup_Type
 import gtk.HBox as PyGtkHBox_Type
-import gtk.Window as PyGtkWindow_Type
 import gtk.ScrolledWindow as PyGtkScrolledWindow_Type
 import gtk.TreeView as PyGtkTreeView_Type
 import gtk.TreeViewColumn as PyGtkTreeViewColumn_Type
+import gtk.UIManager as PyGtkUIManager_Type
+import gtk.VBox as PyGtkVBox_Type
+import gtk.Widget as PyGtkWidget_Type
+import gtk.Window as PyGtkWindow_Type
 import gtk.gdk.Pixbuf as PyGdkPixbuf_Type
 
 import rhythmdb.Entry as PyRhythmDBEntry_Type
@@ -622,4 +625,160 @@ _wrap_RBSource__proxy_do_impl_get_search_actions (RBSource *self)
 	pyg_gil_state_release(__py_state);
 
 	return ret;
+}
+%%
+override rb_shell_player_get_playback_state noargs
+static PyObject *
+_wrap_rb_shell_player_get_playback_state(PyGObject *self)
+{
+    gboolean shuffle = FALSE;
+    gboolean repeat = FALSE;
+
+    if (!rb_shell_player_get_playback_state(RB_SHELL_PLAYER(self->obj), &shuffle, &repeat))
+        return NULL;
+
+    return Py_BuildValue ("bb", shuffle, repeat);
+}
+%%
+override rb_entry_view_get_sorting_order noargs
+static PyObject *
+_wrap_rb_entry_view_get_sorting_order(PyGObject *self)
+{
+    const char *column = NULL;
+    gint order = 0;
+
+    rb_entry_view_get_sorting_order(RB_ENTRY_VIEW(self->obj), &column, &order);
+    return Py_BuildValue ("si", column, order);
+}
+%%
+override rb_entry_view_set_fixed_column_width kwargs
+static PyObject *
+_wrap_rb_entry_view_set_fixed_column_width(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "column", "renderer", "strings", NULL };
+	PyGObject *py_column = NULL;
+	PyGObject *py_renderer = NULL;
+	PyObject *py_strings = NULL;
+	const char **strings;
+	int length, i;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBEntryView.set_fixed_column_width", kwlist,
+	    &py_column, &py_renderer, &py_strings))
+		return NULL;
+
+	/* build the string list */
+	length = PySequence_Length (py_strings);
+	if (length < 0)
+		return NULL;
+	strings = g_new0(const char*, length);
+	for (i = 0; i < length; i++) {
+		PyObject *o;
+
+		o = PySequence_GetItem (py_strings, i);
+		strings[i] = PyString_AsString (o);
+		Py_DECREF (o);
+	}
+
+	rb_entry_view_set_fixed_column_width (RB_ENTRY_VIEW (self->obj),
+					      GTK_TREE_VIEW_COLUMN (py_column->obj),
+					      GTK_CELL_RENDERER (py_renderer->obj),
+					      strings);
+	g_free (strings);
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+%%
+override RBSource__do_impl_paste
+static PyObject *
+_wrap_RBSource__do_impl_paste(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", "entries",NULL };
+	PyGObject *self;
+	PyObject *py_entries;
+	GList *entries;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O:RBSource.impl_paste", kwlist, &PyRBSource_Type, &self, &py_entries))
+		return NULL;
+
+	entries = _helper_unwrap_pointer_pylist (RHYTHMDB_TYPE_ENTRY, py_entries);
+
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_SOURCE_CLASS(klass)->impl_cut)
+		RB_SOURCE_CLASS(klass)->impl_paste(RB_SOURCE(self->obj), entries);
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_paste not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+
+	g_list_free (entries);
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+%%
+override RBSource__proxy_do_impl_paste
+static void
+_wrap_RBSource__proxy_do_impl_paste(RBSource *self, GList *entries)
+{
+    PyGILState_STATE __py_state;
+    PyObject *py_self;
+    PyObject *py_entries;
+    PyObject *py_retval;
+    PyObject *py_args;
+    PyObject *py_method;
+    
+    __py_state = pyg_gil_state_ensure();
+    py_self = pygobject_new((GObject *) self);
+    if (!py_self) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    py_entries = _helper_wrap_pointer_glist (entries, RHYTHMDB_TYPE_ENTRY);
+    
+    py_args = PyTuple_New(1);
+    Py_INCREF(py_entries);
+    PyTuple_SET_ITEM(py_args, 0, py_entries);
+    
+    py_method = PyObject_GetAttrString(py_self, "do_impl_paste");
+    if (!py_method) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    py_retval = PyObject_CallObject(py_method, py_args);
+    if (!py_retval) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_method);
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    if (py_retval != Py_None) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        PyErr_SetString(PyExc_TypeError, "retval should be None");
+        Py_DECREF(py_retval);
+        Py_DECREF(py_method);
+        Py_DECREF(py_args);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    
+    Py_DECREF(py_retval);
+    Py_DECREF(py_method);
+    Py_DECREF(py_args);
+    Py_DECREF(py_self);
+    pyg_gil_state_release(__py_state);
 }

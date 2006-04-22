@@ -358,7 +358,7 @@ rb_library_browser_reset (RBLibraryBrowser *widget)
 typedef struct {
 	RBLibraryBrowser *widget;
 	RhythmDB *db;
-	GPtrArray *query;
+	RhythmDBQuery *query;
 } ConstructQueryData;
 
 static void
@@ -370,11 +370,11 @@ construct_query_cb (RhythmDBPropType type, GList *selections, ConstructQueryData
 					     selections);
 }
 
-GPtrArray*
+RhythmDBQuery*
 rb_library_browser_construct_query (RBLibraryBrowser *widget)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
-	GPtrArray *query;
+	RhythmDBQuery *query;
 	ConstructQueryData *data;
 	
 	query = g_ptr_array_new ();
@@ -490,7 +490,7 @@ rebuild_output_model (RBLibraryBrowser *widget)
 	int prop_index = num_browser_properties - 1;
 	GList *selections;
 	RhythmDBQueryModel *base_model;
-	GPtrArray *query;
+	RhythmDBQuery *query;
 
 	if (priv->output_model)
 		g_object_unref (G_OBJECT (priv->output_model));
@@ -532,7 +532,7 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean que
 	RhythmDBPropertyModel *prop_model;
 	RhythmDBQueryModel *base_model, *child_model;
 	RBPropertyView *view;
-	GPtrArray *query;
+	RhythmDBQuery *query;
 	GList *selections;
 
 	g_assert (property_index >= 0);

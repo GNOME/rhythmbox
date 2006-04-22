@@ -1,3 +1,19 @@
+2006-04-22  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_finalize): remove the
+	submission timeout when the object is finalised.
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.defs: fix some python binding stuff.
+
+	* widgets/rb-library-browser.c:
+	(rb_library_browser_construct_query), (rebuild_output_model),
+	(rebuild_child_model):
+	* widgets/rb-library-browser.h: change from GPtrArray to
+	RhythmDBQuery (which in C is the same thing).
+
 2006-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell.c: (rb_shell_get_song_properties):

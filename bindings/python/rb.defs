@@ -57,6 +57,13 @@
   (gtype-id "RB_TYPE_PROPERTY_VIEW")
 )
 
+(define-object LibraryBrowser
+  (in-module "RB")
+  (parent "GtkHBox")
+  (c-name "RBLibraryBrowser")
+  (gtype-id "RB_TYPE_LIBRARY_BROWSER")
+)
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -489,9 +496,10 @@
   (return-type "GType")
 )
 
-(define-function rb_shell_player_new
+(define-function shell_player_new
+  (in-module "rb")
   (c-name "rb_shell_player_new")
-  (is-constructor-of "RbShellPlayer")
+  (is-constructor-of "RBShellPlayer")
   (return-type "RBShellPlayer*")
   (parameters
     '("RhythmDB*" "db")
@@ -838,15 +846,6 @@
   (return-type "none")
 )
 
-(define-method get_config_widget
-  (of-object "RBSource")
-  (c-name "rb_source_get_config_widget")
-  (return-type "GtkWidget*")
-  (parameters
-    '("RBShellPreferences*" "prefs")
-  )
-)
-
 (define-method can_cut
   (of-object "RBSource")
   (c-name "rb_source_can_cut")
@@ -986,12 +985,6 @@
   (of-object "RBSource")
   (c-name "rb_source_deactivate")
   (return-type "none")
-)
-
-(define-method disconnect
-  (of-object "RBSource")
-  (c-name "rb_source_disconnect")
-  (return-type "gboolean")
 )
 
 (define-method get_ui_actions
@@ -1208,9 +1201,10 @@
   (return-type "GType")
 )
 
-(define-function rb_sourcelist_new
+(define-function sourcelist_new
+  (in-module "rb")
   (c-name "rb_sourcelist_new")
-  (is-constructor-of "RbSourcelist")
+  (is-constructor-of "RBSourcelist")
   (return-type "GtkWidget*")
   (parameters
     '("RBShell*" "shell")
@@ -1291,9 +1285,10 @@
   (return-type "GType")
 )
 
-(define-function rb_entry_view_new
+(define-function entry_view_new
+  (in-module "rb")
   (c-name "rb_entry_view_new")
-  (is-constructor-of "RbEntryView")
+  (is-constructor-of "RBEntryView")
   (return-type "RBEntryView*")
   (parameters
     '("RhythmDB*" "db")
@@ -1494,9 +1489,10 @@
   (return-type "GType")
 )
 
-(define-function rb_property_view_new
+(define-function property_view_new
+  (in-module "rb")
   (c-name "rb_property_view_new")
-  (is-constructor-of "RbPropertyView")
+  (is-constructor-of "RBPropertyView")
   (return-type "RBPropertyView*")
   (parameters
     '("RhythmDB*" "db")
@@ -1567,5 +1563,66 @@
     '("GtkTreeViewSearchEqualFunc" "func")
     '("gpointer" "func_data")
     '("GtkDestroyNotify" "notify")
+  )
+)
+
+;; From ../../widgets/rb-library-browser.h
+
+(define-function rb_library_browser_get_type
+  (c-name "rb_library_browser_get_type")
+  (return-type "GType")
+)
+
+(define-function library_browser_new
+  (in-module "rb")
+  (c-name "rb_library_browser_new")
+  (is-constructor-of "RBLibraryBrowser")
+  (return-type "RBLibraryBrowser*")
+  (parameters
+    '("RhythmDB*" "db")
+  )
+)
+
+(define-method set_model
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_set_model")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryModel*" "model")
+    '("gboolean" "query_pending")
+  )
+)
+
+(define-method reset
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_reset")
+  (return-type "gboolean")
+)
+
+(define-method construct_query
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_construct_query")
+  (return-type "RhythmDBQuery*")
+)
+
+(define-method get_property_views
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_get_property_views")
+  (return-type "GList*")
+)
+
+(define-method has_selection
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_has_selection")
+  (return-type "gboolean")
+)
+
+(define-method set_selection
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_set_selection")
+  (return-type "none")
+  (parameters
+    '("RhythmDBPropType" "type")
+    '("GList*" "list")
   )
 )

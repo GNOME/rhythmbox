@@ -1,7 +1,7 @@
 ;; -*- scheme -*-
 ; object definitions ...
 
-(define-object QueryResults
+(define-interface QueryResults
   (in-module "RhythmDB")
   (c-name "RhythmDBQueryResults")
   (gtype-id "RHYTHMDB_TYPE_QUERY_RESULTS")
@@ -193,15 +193,6 @@
   (of-object "RhythmDBEntry")
   (c-name "rhythmdb_entry_get_entry_type")
   (return-type "RhythmDBEntryType_*")
-)
-
-(define-function rhythmdb_new
-  (c-name "rhythmdb_new")
-  (is-constructor-of "Rhythmdb")
-  (return-type "RhythmDB*")
-  (parameters
-    '("const-char*" "name")
-  )
 )
 
 (define-method shutdown

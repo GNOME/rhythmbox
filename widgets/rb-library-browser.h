@@ -54,7 +54,7 @@ void 			rb_library_browser_set_model (RBLibraryBrowser *widget,
 						      gboolean query_pending);
 
 gboolean rb_library_browser_reset (RBLibraryBrowser *widget);
-GPtrArray* rb_library_browser_construct_query (RBLibraryBrowser *widget);
+RhythmDBQuery* rb_library_browser_construct_query (RBLibraryBrowser *widget);
 GList* rb_library_browser_get_property_views (RBLibraryBrowser *widget);
 
 gboolean rb_library_browser_has_selection (RBLibraryBrowser *widget);
