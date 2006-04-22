@@ -170,7 +170,7 @@ rb_library_browser_constructor (GType type, guint n_construct_properties,
 
 		view = rb_property_view_new (priv->db,
 					     browser_properties[i].type,
-					     browser_properties[i].name);
+					     _(browser_properties[i].name));
 		g_hash_table_insert (priv->property_views, (gpointer)(browser_properties[i].type), view);
 	
 		rb_property_view_set_selection_mode (view, GTK_SELECTION_MULTIPLE);

@@ -1,5 +1,11 @@
 2006-04-22  James Livingston  <doclivingston@gmail.com>
 
+	* widgets/rb-library-browser.c: (rb_library_browser_constructor):
+	actually get the translated strings for browser headers (they were
+	already marked as translatable). Fixes bug 339380.
+
+2006-04-22  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_finalize): remove the
 	submission timeout when the object is finalised.
 
