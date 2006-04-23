@@ -1,3 +1,14 @@
+2006-04-23  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-statusbar.c: (rb_statusbar_finalize),
+	(rb_statusbar_sync_with_source),
+	(rb_statusbar_source_status_changed_cb): do the sync in an idle
+	callback, rather than immediately every time. Takes ~5% off my warm-cache
+	startup time.
+
+	* bindings/python/rhythmdb.defs: fix the types using for
+	RhythmDBEntryTypes.
+
 2006-04-22  James Livingston  <doclivingston@gmail.com>
 
 	* data/ui/rhythmbox-ui.xml:

@@ -373,7 +373,7 @@
   (return-type "none")
   (parameters
     '("RhythmDBEntry*" "entry")
-    '("guint" "propid")
+    '("RhythmDBPropType" "propid")
     '("const-GValue*" "value")
   )
 )
@@ -384,7 +384,7 @@
   (return-type "none")
   (parameters
     '("RhythmDBEntry*" "entry")
-    '("guint" "propid")
+    '("RhythmDBPropType" "propid")
     '("const-GValue*" "value")
   )
 )
@@ -395,7 +395,7 @@
   (return-type "none")
   (parameters
     '("RhythmDBEntry*" "entry")
-    '("guint" "propid")
+    '("RhythmDBPropType" "propid")
     '("const-GValue*" "value")
   )
 )
@@ -532,7 +532,7 @@
   (c-name "rhythmdb_get_property_type")
   (return-type "GType")
   (parameters
-    '("guint" "property_id")
+    '("RhythmDBPropType" "property_id")
   )
 )
 

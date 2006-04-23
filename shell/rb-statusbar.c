@@ -49,7 +49,7 @@ static void rb_statusbar_get_property (GObject *object,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *pspec);
-static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
+static gboolean rb_statusbar_sync_with_source (RBStatusbar *statusbar);
 
 static void rb_statusbar_sync_status (RBStatusbar *status);
 static gboolean poll_status (RBStatusbar *status);
@@ -76,6 +76,7 @@ struct RBStatusbarPrivate
 
         gboolean idle;
         guint idle_tick_id;
+	guint sync_id;
 };
 
 #define RB_STATUSBAR_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_STATUSBAR, RBStatusbarPrivate))
@@ -187,6 +188,10 @@ rb_statusbar_finalize (GObject *object)
         if (statusbar->priv->idle_tick_id) {
                 g_source_remove (statusbar->priv->idle_tick_id);
                 statusbar->priv->idle_tick_id = 0;
+        }
+        if (statusbar->priv->sync_id) {
+                g_source_remove (statusbar->priv->sync_id);
+                statusbar->priv->sync_id = 0;
         }
         if (statusbar->priv->status_poll_id)
                 g_source_remove (statusbar->priv->status_poll_id);
@@ -501,7 +506,7 @@ rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *
         rb_statusbar_sync_status (statusbar);
 }
 
-static void
+static gboolean
 rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 {
 	char *status_str;
@@ -510,12 +515,15 @@ rb_statusbar_sync_with_source (RBStatusbar *statusbar)
         gtk_statusbar_pop (GTK_STATUSBAR (statusbar), 0);
         gtk_statusbar_push (GTK_STATUSBAR (statusbar), 0, status_str);
 	g_free (status_str);
+
+	statusbar->priv->sync_id = 0;
+	return FALSE;
 }
 
 static void
 rb_statusbar_source_status_changed_cb (RBSource *source, RBStatusbar *statusbar)
 {
 	rb_debug ("source status changed");
-	if (statusbar->priv->idle)
-		rb_statusbar_sync_with_source (statusbar);
+	if (statusbar->priv->sync_id == 0)
+		statusbar->priv->sync_id = g_idle_add ((GSourceFunc)rb_statusbar_sync_with_source, statusbar);
 }
