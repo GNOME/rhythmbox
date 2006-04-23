@@ -61,7 +61,7 @@ _helper_wrap_pointer_glist (const GList *list, GType boxed_type)
         return NULL;
     }
     for (tmp = list; tmp != NULL; tmp = tmp->next) {
-        PyObject *py_obj = pyg_pointer_new(boxed_type, G_OBJECT(tmp->data));
+        PyObject *py_obj = pyg_pointer_new(boxed_type, tmp->data);
 
         if (py_obj == NULL) {
             Py_DECREF(py_list);
@@ -121,7 +121,7 @@ _helper_wrap_string_glist (const GList *list)
 }
 
 PyObject *
-_helper_wrap_boxed_gptrarray (GType type, GPtrArray *list, gboolean own_ref, gboolean dealloc)
+_helper_wrap_boxed_gptrarray (GPtrArray *list, GType type, gboolean own_ref, gboolean dealloc)
 {
     PyObject *py_list;
     int i;
@@ -139,8 +139,7 @@ _helper_wrap_boxed_gptrarray (GType type, GPtrArray *list, gboolean own_ref, gbo
 }
 
 GList *
-_helper_unwrap_pointer_pylist (GType type,
-			       PyObject *py_list)
+_helper_unwrap_pointer_pylist (PyObject *py_list, GType type)
 {
 	int size, i;
 	GList *list = NULL;

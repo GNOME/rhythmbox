@@ -34,15 +34,14 @@ PyObject * _helper_wrap_boxed_glist (const GList *list,
 				     GType boxed_type,
 				     gboolean copy_boxed,
 				     gboolean own_ref);
-PyObject * _helper_wrap_boxed_gptrarray (GType type,
-					 GPtrArray *list,
+PyObject * _helper_wrap_boxed_gptrarray (GPtrArray *list,
+					 GType type,
 					 gboolean own_ref,
 					 gboolean dealloc);
-
 GList * _helper_unwrap_string_pylist (PyObject *py_list);
-GList * _helper_unwrap_pointer_pylist (GType type,
-				       PyObject *py_list);
-GPtrArray* _helper_unwrap_boxed_gptrarray (GType type,
-					   PyObject *list);
+GList * _helper_unwrap_pointer_pylist (PyObject *py_list,
+				       GType type);
+GPtrArray* _helper_unwrap_boxed_gptrarray (PyObject *list,
+					   GType type);
 #endif /* __OVERRIDE_COMMON_H */
 

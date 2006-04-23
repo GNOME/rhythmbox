@@ -1,5 +1,12 @@
 2006-04-23  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/override_common.c: (_helper_wrap_pointer_glist),
+	(_helper_wrap_boxed_gptrarray), (_helper_unwrap_pointer_pylist):
+	* bindings/python/override_common.h:
+	* bindings/python/rb.override: python binding fixes
+
+2006-04-23  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-statusbar.c: (rb_statusbar_finalize),
 	(rb_statusbar_sync_with_source),
 	(rb_statusbar_source_status_changed_cb): do the sync in an idle

@@ -149,9 +149,9 @@ _wrap_rb_source_paste(PyGObject *self, PyObject *args, PyObject *kwargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBSource.copy", kwlist, &py_entries))
         return NULL;
 
-    entries = _helper_unwrap_string_pylist (py_entries);
+    entries = _helper_unwrap_pointer_pylist (py_entries, RHYTHMDB_TYPE_ENTRY);
     rb_source_paste (RB_SOURCE(self->obj), entries);
-    rb_list_deep_free (entries);
+    g_list_free (entries);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -333,7 +333,7 @@ _wrap_RBSource__proxy_do_impl_cut (RBSource *self)
 		return NULL;
 	}
 
-	ret = _helper_unwrap_pointer_pylist (RHYTHMDB_TYPE_ENTRY, py_retval);
+	ret = _helper_unwrap_pointer_pylist (py_retval, RHYTHMDB_TYPE_ENTRY);
     
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
@@ -404,7 +404,7 @@ _wrap_RBSource__proxy_do_impl_copy (RBSource *self)
 		return NULL;
 	}
 
-	ret = _helper_unwrap_pointer_pylist (RHYTHMDB_TYPE_ENTRY, py_retval);
+	ret = _helper_unwrap_pointer_pylist (py_retval, RHYTHMDB_TYPE_ENTRY);
     
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
@@ -475,7 +475,7 @@ _wrap_RBSource__proxy_do_impl_get_property_views (RBSource *self)
 		return NULL;
 	}
 
-	ret = _helper_unwrap_pointer_pylist (RB_TYPE_PROPERTY_VIEW, py_retval);
+	ret = _helper_unwrap_pointer_pylist (py_retval, RB_TYPE_PROPERTY_VIEW);
     
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
@@ -702,7 +702,7 @@ _wrap_RBSource__do_impl_paste(PyObject *cls, PyObject *args, PyObject *kwargs)
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O:RBSource.impl_paste", kwlist, &PyRBSource_Type, &self, &py_entries))
 		return NULL;
 
-	entries = _helper_unwrap_pointer_pylist (RHYTHMDB_TYPE_ENTRY, py_entries);
+	entries = _helper_unwrap_pointer_pylist (py_entries, RHYTHMDB_TYPE_ENTRY);
 
 	klass = g_type_class_ref(pyg_type_from_object(cls));
 	if (RB_SOURCE_CLASS(klass)->impl_cut)
@@ -781,4 +781,43 @@ _wrap_RBSource__proxy_do_impl_paste(RBSource *self, GList *entries)
     Py_DECREF(py_args);
     Py_DECREF(py_self);
     pyg_gil_state_release(__py_state);
+}
+
+%%
+override rb_library_browser_get_property_views noargs
+static PyObject *
+_wrap_rb_library_browser_get_property_views(PyGObject *self)
+{
+	PyObject *py_list;
+	GList *list;
+
+	list = rb_library_browser_get_property_views (RB_LIBRARY_BROWSER(self->obj));
+	py_list = _helper_wrap_gobject_glist (list);
+	g_list_free (list);
+
+	return py_list;
+}
+
+%%
+override rb_library_browser_set_selection kwargs
+static PyObject *
+_wrap_rb_library_browser_set_selection(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "type", "keys", NULL };
+    PyObject *py_keys = NULL;
+    PyObject *py_propid = NULL;
+    RhythmDBPropType propid;
+    GList *keys;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO:RBLibraryBrowser.set_selection", kwlist, &py_propid, &py_keys))
+        return NULL;
+    if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
+        return NULL;
+
+    keys = _helper_unwrap_string_pylist (py_keys);
+    rb_library_browser_set_selection (RB_LIBRARY_BROWSER(self->obj), propid, keys);
+    rb_list_deep_free (keys);
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
