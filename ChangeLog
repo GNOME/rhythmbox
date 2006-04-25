@@ -1,3 +1,17 @@
+2006-04-25  James Livingston  <doclivingston@gmail.com>
+
+	patch by Alessandro Decina  <alessandro@nnva.org> to fix some
+	transcoding-related issues. From bug 322268.
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_finalize):
+	don't emit the signal, since the object is being finalised, which os a
+	Bad Thing To Do.
+
+	(profile_bin_find_encoder), (get_profile_from_mime_type),
+	(transcode_track): find the encoding element by iterating looking for
+	element in the class Codec/Encoder/Audio rather than the one named
+	"enc".
+
 2006-04-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.xml:

@@ -109,11 +109,6 @@ static void
 rb_encoder_gst_finalize (GObject *object)
 {
 	RBEncoderGst *encoder = RB_ENCODER_GST (object);
-
-	if (encoder->priv->completion_emitted == FALSE) {
-		g_warning ("completion not emitted for encoder");
-		rb_encoder_gst_emit_completed (encoder);
-	}
 	
 	if (encoder->priv->progress_id != 0)
 		g_source_remove (encoder->priv->progress_id);	
@@ -621,6 +616,43 @@ encoder_match_mime (GstElement *encoder, const gchar *mime_type)
 	return match;
 }
 
+static GstElement *
+profile_bin_find_encoder (GstBin *profile_bin)
+{
+	GstElementFactory *factory;
+	GstElement *element, *encoder = NULL;
+	GstIterator *iter;
+	gboolean done = FALSE;
+	
+	iter = gst_bin_iterate_elements (profile_bin);
+	while (!done) {
+		switch (gst_iterator_next (iter, (gpointer *) &element)) {
+			case GST_ITERATOR_OK:
+				factory = gst_element_get_factory (element);
+				if (strcmp (factory->details.klass,
+						"Codec/Encoder/Audio") == 0) {
+					encoder = element;
+					done = TRUE;
+				}
+				break;
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync (iter);
+				break;
+			case GST_ITERATOR_ERROR:
+				/* !?? */
+				rb_debug ("iterator error");
+				done = TRUE;
+				break;
+			case GST_ITERATOR_DONE:
+				done = TRUE;
+				break;
+		}
+	}
+	gst_iterator_free (iter);
+	
+	return encoder;
+}
+
 static GMAudioProfile*
 get_profile_from_mime_type (const char *mime_type)
 {
@@ -645,7 +677,7 @@ get_profile_from_mime_type (const char *mime_type)
 			continue;
 		}
 
-		encoder = gst_bin_get_by_name (GST_BIN (pipeline), "enc");
+		encoder = profile_bin_find_encoder (GST_BIN (pipeline));
 		if (encoder == NULL) {
 			g_object_unref (pipeline);
 			continue;
@@ -794,6 +826,9 @@ transcode_track (RBEncoderGst *encoder,
 			     "Unable to locate encoding profile for mime-type "
 			     "'%s'", mime_type);
 		return FALSE;
+	} else {
+		rb_debug ("selected profile %s",
+				gm_audio_profile_get_name (profile));
 	}
 
 	src = create_pipeline_and_source (encoder, entry, error);
