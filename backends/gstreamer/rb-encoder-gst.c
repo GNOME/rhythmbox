@@ -620,18 +620,20 @@ static GstElement *
 profile_bin_find_encoder (GstBin *profile_bin)
 {
 	GstElementFactory *factory;
-	GstElement *element, *encoder = NULL;
+	GstElement *encoder = NULL;
 	GstIterator *iter;
 	gboolean done = FALSE;
 	
 	iter = gst_bin_iterate_elements (profile_bin);
 	while (!done) {
-		switch (gst_iterator_next (iter, (gpointer *) &element)) {
+		gpointer data;
+
+		switch (gst_iterator_next (iter, &data)) {
 			case GST_ITERATOR_OK:
-				factory = gst_element_get_factory (element);
+				factory = gst_element_get_factory (GST_ELEMENT (data));
 				if (strcmp (factory->details.klass,
 						"Codec/Encoder/Audio") == 0) {
-					encoder = element;
+					encoder = GST_ELEMENT (data);
 					done = TRUE;
 				}
 				break;
