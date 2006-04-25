@@ -1,3 +1,25 @@
+2006-04-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_create_configure_dialog):
+	* data/glade/audioscrobbler-prefs.glade:
+	* shell/rb-audioscrobbler.c (*):
+	* lib/rb-preferences.h:
+	* data/rhythmbox.schemas:
+	Remove 'audioscrobbler' from the UI, replacing it with 'last.fm'.
+	Add status information (# tracks submitted, # queued, last submit
+	time, result of last submission) to the plugin config window.
+	Remove 'enabled' setting, since it's easier to just disable the
+	plugin.  Call the plugin 'last.fm profile', to distinguish it from the
+	nonexistant (so far) 'last.fm streaming' plugin.
+	
+	* help/C/rhythmbox.xml: Update documentation for last.fm profile
+	plugin
+
+	Fixes some of #325848.  We still don't provide a way to view the
+	submission queue.
+
 2006-04-25  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Anders Petersson  <demitar@worldforge.org>

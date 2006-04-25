@@ -50,7 +50,6 @@ G_BEGIN_DECLS
 
 #define CONF_AUDIOSCROBBLER_USERNAME CONF_PREFIX "/audioscrobbler/username"
 #define CONF_AUDIOSCROBBLER_PASSWORD CONF_PREFIX "/audioscrobbler/password"
-#define CONF_AUDIOSCROBBLER_ENABLED CONF_PREFIX "/audioscrobbler/enabled"
 
 #define CONF_DAAP_ENABLE_SHARING   CONF_PREFIX "/sharing/enable_sharing"
 #define CONF_DAAP_SHARE_NAME       CONF_PREFIX "/sharing/share_name"

@@ -1388,31 +1388,36 @@
           </listitem>
         </itemizedlist>
       </sect3>
-      <sect3 id="prefs-audioscrobbler">
-        <title>AudioScrobbler</title>
+      <sect3 id="prefs-lastfm">
+        <title>Last.fm profile</title>
         <para>
-			AudioScrobbler is a plugin that collect and send information about played 
-			songs to the <ulink url="http://www.last.fm/">Last.fm</ulink> website. 
-			The sent data, once	computed, allows to you to:
+			The Last.fm profile plugin collects information about the songs you listen to
+			and sends it to the <ulink url="http://www.last.fm/">Last.fm</ulink> website,
+			building up a profile of your listening habits.  With this profile, you can:
 			<itemizedlist>
 				<listitem>
-					<para>consult statistics (like most played songs or most played artists).</para>
+					<para>consult statistics, such as most played songs or most played artists.</para>
 				</listitem>
 				<listitem>
-					<para>receive recommendation about artists that you could like.</para>
+					<para>receive recommendations about artists that you might like.</para>
 				</listitem>
 			</itemizedlist>
 		</para>
         <warning>
           <para>
-		  	Before use AudioScrobbler, you have to create an account on the website 
-			<ulink url="http://www.last.fm/signup.php">Last.fm</ulink>.
+		    In order to use the Last.fm profile plugin, you must have a Last.fm account.  
+			If you don't already have one, use the 
+			<ulink url="http://www.last.fm/signup.php">Last.fm signup page</ulink> to 
+			create one.  Enter your Last.fm account details in the <guilabel>Username</guilabel>
+			and <guilabel>Password</guilabel> fields in the Last.fm profile plugin 
+			configuration window.
 		  </para>
         </warning>
-        <para>
-			Select <guilabel>Enable AudioScrobbler</guilabel> to allow AudioScrobbler to collect
-			and send data about the songs played in <application>&app;</application>, 
-			and enter	your last.fm <guilabel>Username</guilabel> and <guilabel>Password</guilabel>.
+		<para>
+		    The configuration window for the Last.fm profile plugin also displays 
+			status information.  If your Last.fm profile page shows that your 
+			profile is not being updated, the information displayed here may 
+			help you to diagnose the problem.
 		</para>
       </sect3>
     </sect2>

@@ -161,7 +161,7 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 
 		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler);
 
-		plugin->preferences = gtk_dialog_new_with_buttons (_("Audioscrobbler preferences"),
+		plugin->preferences = gtk_dialog_new_with_buttons (_("Last.fm profile preferences"),
 								   NULL,
 								   GTK_DIALOG_DESTROY_WITH_PARENT,
 								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
