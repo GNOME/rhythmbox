@@ -1,3 +1,19 @@
+2006-04-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_emit_entry_signals_idle),
+	(process_added_entries_cb), (process_deleted_entries_cb),
+	(rhythmdb_commit_internal): 
+	Combine the idle functions to emit entry-added and entry-deleted,
+	and combine as many invocations of same as possible.  Another
+	significant reduction in startup time.
+	
+	(rhythmdb_process_events), (rhythmdb_idle_poll_events):
+	Delay the next call to rhythmdb_process_events if the queue is
+	empty or if we can't process any of the events in the queue because
+	the database is read only.
+
+	This patch brought to you by the numbers 3, 2, 5, 2, 1, and 5.
+
 2006-04-25  William Jon McCann  <mccann@jhu.edu>
 
 	* player/rb-recorder-gst.c (rb_recorder_burn): Add debug.

@@ -123,6 +123,10 @@ struct RhythmDBPrivate
 	guint commit_timeout_id;
 	guint save_timeout_id;
 
+	guint emit_entry_signals_id;
+	GList *added_entries_to_emit;
+	GList *deleted_entries_to_emit;
+
 	gboolean saving;
 	gboolean dirty;
 };
@@ -885,26 +889,49 @@ sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 }
 
 
-typedef struct {
-	RhythmDB *db;
-	GList *entries;
-} EmitAddedEntriesData;
 
 static gboolean
-rhythmdb_emit_entries_added_idle (EmitAddedEntriesData *data)
+rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 {
+	GList *added_entries;
+	GList *deleted_entries;
 	GList *l;
 
-	for (l = data->entries; l != NULL; l = g_list_next (l))
-		g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ENTRY_ADDED], 0, l->data);
+	/* get lists of entries to emit, reset source id value */
+	g_mutex_lock (db->priv->change_mutex);
 
-	g_list_free (data->entries);
-	g_free (data);
+	added_entries = db->priv->added_entries_to_emit;
+	db->priv->added_entries_to_emit = NULL;
+
+	deleted_entries = db->priv->deleted_entries_to_emit;
+	db->priv->deleted_entries_to_emit = NULL;
+
+	db->priv->emit_entry_signals_id = 0;
+	
+	g_mutex_unlock (db->priv->change_mutex);
+
+
+	/* emit added entries */
+	for (l = added_entries; l; l = g_list_next (l)) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
+		rhythmdb_entry_unref (db, entry);
+	}
+
+	/* emit deleted entries */
+	for (l = deleted_entries; l; l = g_list_next (l)) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
+		rhythmdb_entry_unref (db, entry);
+	}
+
+	g_list_free (added_entries);
+	g_list_free (deleted_entries);
 	return FALSE;
 }
 
 static gboolean
-process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntriesData *data)
+process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
 {
 	if (thread != g_thread_self ())
 		return FALSE;
@@ -919,44 +946,31 @@ process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntrie
 		if (!g_str_has_prefix (uri, "file://"))
 			entry->hidden = TRUE;
 
-		queue_stat_uri (uri, data->db, RHYTHMDB_ENTRY_TYPE_INVALID);
+		queue_stat_uri (uri, db, RHYTHMDB_ENTRY_TYPE_INVALID);
 	}
 
-	data->entries = g_list_prepend (data->entries, entry);
 	g_assert (entry->inserted == FALSE);
 	entry->inserted = TRUE;
+	
+	rhythmdb_entry_ref (db, entry);
+	db->priv->added_entries_to_emit = g_list_prepend (db->priv->added_entries_to_emit, entry);
 	return TRUE;
 }
 
 static gboolean
-rhythmdb_emit_entries_deleted_idle (EmitAddedEntriesData *data)
-{
-	GList *l;
-
-	for (l = data->entries; l != NULL; l = g_list_next (l))
-		g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ENTRY_DELETED], 0, l->data);
-
-	g_list_free (data->entries);
-	g_free (data);
-	return FALSE;
-}
-
-static gboolean
-process_deleted_entries_cb (RhythmDBEntry *entry, GThread *thread, EmitAddedEntriesData *data)
+process_deleted_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
 {
 	if (thread != g_thread_self ())
 		return FALSE;
 	
-	data->entries = g_list_prepend (data->entries, entry);
-
+	rhythmdb_entry_ref (db, entry);
+	db->priv->deleted_entries_to_emit = g_list_prepend (db->priv->deleted_entries_to_emit, entry);
 	return TRUE;
 }
 
 static void
 rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes, GThread *thread)
 {
-	EmitAddedEntriesData *data;
-
 	g_mutex_lock (db->priv->change_mutex);
 
 	g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
@@ -964,17 +978,15 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes, GThread *thread)
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
 	g_hash_table_foreach_remove (db->priv->changed_entries, (GHRFunc) free_entry_changes, db);
 
-	data = g_new0 (EmitAddedEntriesData, 1);
-	data->db = db;
-	data->entries = NULL;
-	g_hash_table_foreach_remove (db->priv->added_entries, (GHRFunc) process_added_entries_cb, data);
-	g_idle_add ((GSourceFunc)rhythmdb_emit_entries_added_idle, data);
+	/* update the lists of entry added/deleted signals to emit */
+	g_hash_table_foreach_remove (db->priv->added_entries, (GHRFunc) process_added_entries_cb, db);
+	g_hash_table_foreach_remove (db->priv->deleted_entries, (GHRFunc) process_deleted_entries_cb, db);
 
-	data = g_new0 (EmitAddedEntriesData, 1);
-	data->db = db;
-	data->entries = NULL;
-	g_hash_table_foreach_remove (db->priv->deleted_entries, (GHRFunc) process_deleted_entries_cb, data);
-	g_idle_add ((GSourceFunc)rhythmdb_emit_entries_deleted_idle, data);
+	/* if there are some signals to emit, add a new idle callback if required */
+	if (db->priv->added_entries_to_emit || db->priv->deleted_entries_to_emit) {
+		if (db->priv->emit_entry_signals_id == 0)
+			db->priv->emit_entry_signals_id = g_idle_add ((GSourceFunc) rhythmdb_emit_entry_signals_idle, db);
+	}
 
 	g_mutex_unlock (db->priv->change_mutex);
 }
@@ -1891,13 +1903,10 @@ static gboolean
 rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 {
 	RhythmDBEvent *event;
-	gboolean processed = FALSE;
 	guint count = 0;
 	
 	while ((event = g_async_queue_try_pop (db->priv->event_queue)) != NULL) {
 		gboolean free = TRUE;
-
-		processed = TRUE;
 
 		/* if the database is read-only, we can't process those events
 		 * since they call rhythmdb_entry_set. Doing it this way
@@ -1909,6 +1918,11 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 		    ((event->type == RHYTHMDB_EVENT_STAT) 
 		     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD) 
 		     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
+			if (count >= g_async_queue_length (db->priv->event_queue)) {
+				rb_debug ("Database is read-only, and we can't process any more events");
+				/* give the running query some time to complete */
+				return FALSE;
+			}
 			rb_debug ("Database is read-only, delaying event processing\n");
 			g_async_queue_push (db->priv->event_queue, event);
 			goto next_event;
@@ -1969,18 +1983,21 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 		if (timeout && (count % 8 == 0)) {
 			GTimeVal now;
 			g_get_current_time (&now);
-			if (rb_compare_gtimeval (timeout,&now) < 0)
-				break;
+			if (rb_compare_gtimeval (timeout,&now) < 0) {
+				/* probably more work to do, so try to come back as soon as possible */
+				return TRUE;
+			}
 		}
 	}
 
-	return processed;
+	/* queue is empty, so we can wait a while before checking it again */
+	return FALSE;
 }
 
 static gboolean
 rhythmdb_idle_poll_events (RhythmDB *db)
 {
-	gboolean did_sync;
+	gboolean poll_soon;
 	GTimeVal timeout;
 
 	g_get_current_time (&timeout);
@@ -1988,9 +2005,9 @@ rhythmdb_idle_poll_events (RhythmDB *db)
 
 	GDK_THREADS_ENTER ();
 
-	did_sync = rhythmdb_process_events (db, &timeout);
+	poll_soon = rhythmdb_process_events (db, &timeout);
 
-	if (did_sync)
+	if (poll_soon)
 		db->priv->event_poll_id =
 			g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) rhythmdb_idle_poll_events,
 					 db, NULL);
