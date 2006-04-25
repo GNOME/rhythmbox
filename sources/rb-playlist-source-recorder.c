@@ -297,8 +297,9 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
 
 
         default_speed = eel_gconf_get_integer (CONF_STATE_BURN_SPEED);
-        default_speed_index = 0;
+        default_speed_index = -1;
 
+        i = 0;
         if (drive) {
                 const int *write_speeds;
 
@@ -306,7 +307,11 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
 
                 for (i = 0; write_speeds [i] > 0; i++) {
 
+#ifdef NAUTILUS_BURN_DRIVE_CD_SPEED
+                        name = g_strdup_printf ("%d \303\227", NAUTILUS_BURN_DRIVE_CD_SPEED (write_speeds [i]));
+#else
                         name = g_strdup_printf ("%d \303\227", write_speeds [i]);
+#endif
 
                         if (write_speeds [i] == default_speed) {
                                 default_speed_index = i + 1;
@@ -320,8 +325,14 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
                         g_free (name);
                 }
 
-                /* Disable speed if no items in list */
-                gtk_widget_set_sensitive (combobox, i > 0);
+        }
+
+        /* Disable speed if no items in list */
+        gtk_widget_set_sensitive (combobox, i > 0);
+
+        /* if the default speed was not set then make it the minimum for safety */
+        if (default_speed_index == -1) {
+                default_speed_index = i;
         }
 
         /* for now assume equivalence between index in comboxbox and speed */

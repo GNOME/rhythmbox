@@ -1,5 +1,13 @@
 2006-04-25  William Jon McCann  <mccann@jhu.edu>
 
+	* data/rhythmbox.schemas: Remove default speed.
+
+	* sources/rb-playlist-source-recorder.c (update_speed_combobox):
+	Add n-c-b 2.15 support.  Make the default speed to slowest since
+	that is all that works reliably.
+
+2006-04-25  William Jon McCann  <mccann@jhu.edu>
+
 	* backends/gstreamer/rb-encoder-gst.c (profile_bin_find_encoder):
 	Fix compiler error from last commit.
 
