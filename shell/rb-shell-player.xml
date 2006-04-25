@@ -64,9 +64,15 @@
     </method>
 
     <!-- <property name="playing" access="readwrite"/> -->
-    <signal name="playingChanged"/>
-    <signal name="playingUriChanged"/>
-    <signal name="elapsedChanged"/>
+    <signal name="playingChanged">
+      <arg type="b" name="playing"/>
+    </signal>
+    <signal name="playingUriChanged">
+      <arg type="s" name="playingUri"/>
+    </signal>
+    <signal name="elapsedChanged">
+      <arg type="u" name="elapsed"/>
+    </signal>
 
   </interface>
 </node>

@@ -1,5 +1,16 @@
 2006-04-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell-player.xml:
+	* shell/rb-shell.xml:
+	Add signal argument information.  
+	Patch by Tim Moloney  <t.moloney@verizon.net>
+
+	* shell/rb-shell.c: (rb_shell_window_state_cb):
+	Use the right value for the visibility_changed signal.  Most of the
+	time, anyway.
+
+2006-04-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in:
 	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
 	(impl_create_configure_dialog):

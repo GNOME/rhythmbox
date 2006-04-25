@@ -46,7 +46,9 @@
       <arg type="s" name="uri"/>
     </method>
 
-    <signal name="visibilityChanged"/>
+    <signal name="visibilityChanged">
+      <arg type="b" name="visibility"/>
+    </signal>
 
   </interface>
 </node>

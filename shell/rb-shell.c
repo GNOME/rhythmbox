@@ -107,6 +107,7 @@ static void rb_shell_get_property (GObject *object,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *pspec);
+static gboolean rb_shell_get_visibility (RBShell *shell);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEventWindowState *event,
 					  RBShell *shell);
@@ -1450,7 +1451,12 @@ rb_shell_window_state_cb (GtkWidget *widget,
 			  RBShell *shell)
 {
 	shell->priv->iconified = ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) != 0);
-	g_signal_emit_by_name (shell, "visibility_changed", 0);
+
+	if (event->changed_mask & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED)) {
+		g_signal_emit_by_name (shell, 
+				       "visibility_changed", 
+				       rb_shell_get_visibility (shell));
+	}
 
 	/* don't save maximized state when is hidden */
 	if (!GTK_WIDGET_VISIBLE(shell->priv->window))
