@@ -1,5 +1,12 @@
 2006-04-25  William Jon McCann  <mccann@jhu.edu>
 
+	* player/rb-recorder-gst.c (rb_recorder_burn): Add debug.
+
+	* sources/rb-playlist-source-recorder.c (burn_cd_idle, burn_cd):
+	Don't special case errors quite so much.
+
+2006-04-25  William Jon McCann  <mccann@jhu.edu>
+
 	* data/rhythmbox.schemas: Remove default speed.
 
 	* sources/rb-playlist-source-recorder.c (update_speed_combobox):

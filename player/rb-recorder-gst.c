@@ -1496,6 +1496,8 @@ rb_recorder_burn (RBRecorder *recorder,
                         msg = g_strdup (_("There was an error writing to the CD"));
                 }
 
+                rb_debug ("Recorder error: %s", msg);
+
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
@@ -1509,6 +1511,8 @@ rb_recorder_burn (RBRecorder *recorder,
         
         g_object_unref (cdrecorder);
         recorder->priv->recorder = NULL;
+
+        rb_debug ("Recorder done: %d", result);
 
         return result;
 }

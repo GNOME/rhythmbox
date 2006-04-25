@@ -623,9 +623,6 @@ burn_cd (RBPlaylistSourceRecorder *source,
         res = rb_recorder_burn (source->priv->recorder, speed, error);
         source->priv->burning = FALSE;
 
-        if (error && *error)
-                return RB_RECORDER_RESULT_ERROR;
-
         if (res == RB_RECORDER_RESULT_FINISHED) {
                 NautilusBurnDrive *drive;
                 gboolean           do_another;
@@ -650,6 +647,8 @@ burn_cd (RBPlaylistSourceRecorder *source,
                         return res;
                 }
                 set_message_text (source, _("Finished creating audio CD.\nCreate another copy?"));
+        } else if (res == RB_RECORDER_RESULT_ERROR) {
+                set_message_text (source, _("Writing failed.  Try again?"));  
         } else {
                 set_message_text (source, _("Writing cancelled.  Try again?"));  
         }
@@ -712,8 +711,9 @@ static gboolean
 burn_cd_idle (RBPlaylistSourceRecorder *source)
 {
         GError *error = NULL;
+        int     res;
 
-        burn_cd (source, &error);
+        res = burn_cd (source, &error);
         if (error) {
                 error_dialog (source,
                               _("Audio recording error"),
