@@ -552,6 +552,12 @@ rb_podcast_parse_date (const char *date_str)
 		result = strptime (date_str, "%Y-%m-%d %T", &tm);
 	}
 
+	/* ISO date like without timezone */
+	if (result == NULL) {
+	memset (&tm, 0, sizeof (struct tm));
+		result = strptime (date_str, "%Y-%m-%d", &tm);
+	}
+
 	/* Broken weekday short names */
 	if (result == NULL) {
 		char *tmp;
