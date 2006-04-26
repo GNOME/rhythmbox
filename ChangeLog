@@ -1,5 +1,11 @@
 2006-04-26  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_set_uimanager): fix compilation with
+	-Werror and --enable-track-transfer.
+
+2006-04-26  James Livingston  <doclivingston@gmail.com>
+
 	Turn RBPlayer into a full gobject interface, with RBPlayerGst as an
 	implementing class. In theory allows alternate player implementations
 	to be selected at run-time rather than compile-time. Fixes bug 338667.
