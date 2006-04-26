@@ -853,7 +853,7 @@ rb_shell_sync_state (RBShell *shell)
 	}
 	
 	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, TRUE);
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, TRUE, TRUE);
 
 	rb_debug ("saving db");
 	rhythmdb_save (shell->priv->db);
@@ -873,7 +873,7 @@ idle_save_rhythmdb (RBShell *shell)
 static gboolean
 idle_save_playlist_manager (RBPlaylistManager *mgr)
 {
-	rb_playlist_manager_save_playlists_async (mgr, FALSE);
+	rb_playlist_manager_save_playlists (mgr, FALSE, FALSE);
 
 	return TRUE;
 }
@@ -1195,9 +1195,7 @@ construct_sources (RBShell *shell)
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
-								 RB_SOURCELIST (shell->priv->sourcelist),
-								 shell->priv->library_source,
-								 shell->priv->iradio_source);
+								 RB_SOURCELIST (shell->priv->sourcelist));
 
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
@@ -1973,7 +1971,7 @@ rb_shell_select_source (RBShell *shell,
 	rb_shell_player_set_selected_source (shell->priv->player_shell, source);
 	rb_source_header_set_source (shell->priv->source_header, source);
 	rb_statusbar_set_source (shell->priv->statusbar, source);
-	rb_playlist_manager_set_source (shell->priv->playlist_manager, source);
+	g_object_set (G_OBJECT (shell->priv->playlist_manager), "source", source, NULL);
 	g_object_set (G_OBJECT (shell->priv->removable_media_manager), "source", source, NULL);
 
 	/* merge the source-specific UI */
@@ -2614,7 +2612,7 @@ rb_shell_sync_party_mode (RBShell *shell)
 
 	/* Set playlist manager source to the current source to update properties */
 	if (shell->priv->selected_source) {
-		rb_playlist_manager_set_source (shell->priv->playlist_manager, shell->priv->selected_source);
+		g_object_set (G_OBJECT (shell->priv->playlist_manager), "source", shell->priv->selected_source, NULL);
 		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, shell->priv->selected_source);
 	}
 

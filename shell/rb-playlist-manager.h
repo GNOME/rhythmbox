@@ -25,8 +25,6 @@
 #include "rb-source.h"
 #include "rhythmdb.h"
 #include "rb-sourcelist.h"
-#include "rb-library-source.h"
-#include "rb-iradio-source.h"
 
 G_BEGIN_DECLS
 
@@ -78,22 +76,18 @@ typedef enum
 GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
-							 RBSourceList *sourcelist,
-							 RBLibrarySource *libsource,
-							 RBIRadioSource *iradio_source);
+							 RBSourceList *sourcelist);
 
 void			rb_playlist_manager_shutdown	(RBPlaylistManager *mgr);
 gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
 							 const char *uri,
 							 GError **error);
 
-void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,
-							 RBSource *player);
-
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
-void			rb_playlist_manager_save_playlists_async (RBPlaylistManager *mgr, gboolean force);
-void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force);
+gboolean		rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, 
+							    gboolean force, 
+							    gboolean async);
 
 RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  const char *suggested_name,

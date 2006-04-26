@@ -1,3 +1,14 @@
+2006-04-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-playlist-manager.c: 
+	* shell/rb-playlist-manager.h:
+	Remove dead code, add gtk-doc, remove threading insanity (mostly).
+	
+	* shell/rb-shell.c: (rb_shell_sync_state),
+	(idle_save_playlist_manager), (construct_sources),
+	(rb_shell_select_source), (rb_shell_sync_party_mode):
+	Adjustments for above changes.
+
 2006-04-26  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-browser-source.c (impl_browser_toggled):
