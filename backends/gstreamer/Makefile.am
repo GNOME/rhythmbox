@@ -23,6 +23,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/player				\
+	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)
 
 if ENABLE_TRACK_TRANSFER

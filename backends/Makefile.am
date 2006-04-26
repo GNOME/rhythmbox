@@ -26,6 +26,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/player				\
 	-I$(top_srcdir)/backends/gstreamer		\
+	-I$(top_builddir)/lib 				\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 
