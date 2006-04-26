@@ -758,10 +758,12 @@ impl_browser_toggled (RBSource *asource, gboolean disclosed)
 {
 	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
 
-	if (disclosed)
+	if (disclosed) {
 		gtk_widget_show (GTK_WIDGET (source->priv->browser));
-	else
+	} else {
 		gtk_widget_hide (GTK_WIDGET (source->priv->browser));
+		rb_library_browser_reset (source->priv->browser);
+	}
 }
 
 static gboolean
