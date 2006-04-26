@@ -1,5 +1,15 @@
 2006-04-26  James Livingston  <doclivingston@gmail.com>
 
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):
+	don't try to download an episode if it couldn't be parsed. Fixes bug
+	339712.
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_set_uimanager): don't show the "Copy to
+	Library" option when track transfer is disabled. Fixes bug 339728.
+
+2006-04-26  James Livingston  <doclivingston@gmail.com>
+
 	* data/ui/Makefile.am:
 	* data/ui/daap-ui.xml:
 	* data/ui/rhythmbox-ui.xml:

@@ -712,6 +712,7 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					  GtkUIManager *uimanager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
+	GtkAction *action;
 
 	if (priv->uimanager != NULL) {
 		if (priv->actiongroup != NULL) {
@@ -733,6 +734,11 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					      rb_removable_media_manager_n_actions,
 					      mgr);
 	}
+
+#ifndef ENABLE_TRACK_TRANSFER
+	action = gtk_action_group_get_action (priv->actiongroup, "RemovableSourceCopyAllTracks");
+	gtk_action_set_visible (action, FALSE);
+#endif
 
 	gtk_ui_manager_insert_action_group (priv->uimanager,
 					    priv->actiongroup,

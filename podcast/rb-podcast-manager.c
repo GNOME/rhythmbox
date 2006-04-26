@@ -1492,7 +1492,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 							     (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
 							     (gulong) item->duration,
 							     item->filesize);
-			if (item->pub_date >= new_last_post) {
+			if (post_entry && item->pub_date >= new_last_post) {
 				if (item->pub_date > new_last_post) {
 					g_list_free (download_entries);
 					download_entries = NULL;
@@ -1509,13 +1509,11 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 		g_value_init (&status, G_TYPE_ULONG);
 		g_value_set_ulong (&status, RHYTHMDB_PODCAST_STATUS_WAITING);
-		t = download_entries;
-		while (t) {
+		for (t = download_entries; t != NULL; t = g_list_next (t)) {
 			rhythmdb_entry_set_uninserted (db, 
 						       (RhythmDBEntry*) t->data,
 						       RHYTHMDB_PROP_STATUS, 
 						       &status);
-			t = t->next;
 		}
 		g_value_unset (&status);
 	}
