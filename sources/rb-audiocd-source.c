@@ -42,7 +42,6 @@
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rb-player.h"
 #include "rhythmdb.h"
 #ifdef HAVE_MUSICBRAINZ
 #include "sj-metadata-musicbrainz.h"

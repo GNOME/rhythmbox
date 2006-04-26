@@ -3,8 +3,9 @@
 noinst_LTLIBRARIES = librbbackendsgstreamer.la
 
 librbbackendsgstreamer_la_SOURCES =	\
-	rb-encoder-gst.h		\
-	rb-encoder-gst.c
+	rb-player-gst.h			\
+	$(top_srcdir)/player/rb-player-gst.c	\
+	$(NULL)
 
 librbbackendsgstreamer_la_LIBADD =				\
 	$(RHYTHMBOX_LIBS)
@@ -21,9 +22,17 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/widgets				\
+	-I$(top_srcdir)/player				\
 	$(RHYTHMBOX_CFLAGS)
 
 if ENABLE_TRACK_TRANSFER
 INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
+librbbackendsgstreamer_la_SOURCES +=	\
+	rb-encoder-gst.h		\
+	rb-encoder-gst.c
+endif
+
+if USE_DAAP
+INCLUDES += -I$(top_srcdir)/daapsharing			
 endif
 

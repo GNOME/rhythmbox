@@ -60,6 +60,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/library				\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/backends			\
 	$(WARN_CFLAGS)					\
 	$(NOTIFY_CFLAGS)				\
 	$(LIBSEXY_CFLAGS)				\

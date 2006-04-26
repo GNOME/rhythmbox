@@ -42,6 +42,7 @@ INCLUDES = 						\
 	-I$(top_builddir)/remote			\
 	-I$(top_builddir)/lib				\
 	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/backends			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -106,6 +107,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/rhythmdb/librhythmdb.la         \
+	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
 	$(top_builddir)/lib/librb.la
 
@@ -136,10 +138,8 @@ rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
 endif
 
 if ENABLE_TRACK_TRANSFER
-rhythmbox_LDADD += $(GNOME_MEDIA_PROFILES_LIBS)  \
-                   $(top_builddir)/backends/librbbackends.la
-
-INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS) -I$(top_srcdir)/backends
+rhythmbox_LDADD += $(GNOME_MEDIA_PROFILES_LIBS)
+INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
 

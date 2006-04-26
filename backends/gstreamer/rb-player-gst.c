@@ -37,6 +37,7 @@
 
 #include "rb-debug.h"
 #include "rb-player.h"
+#include "rb-player-gst.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
@@ -44,11 +45,36 @@
 #include "rb-daap-src.h"
 #endif
 
-G_DEFINE_TYPE(RBPlayer, rb_player, G_TYPE_OBJECT)
 
-static void rb_player_finalize (GObject *object);
+static void rb_player_init (RBPlayerIface *iface);
+static void rb_player_gst_finalize (GObject *object);
 
-struct RBPlayerPrivate
+static gboolean rb_player_gst_open (RBPlayer *player,
+				    const char *uri,
+				    GError **error);
+static gboolean rb_player_gst_opened (RBPlayer *player);
+static gboolean rb_player_gst_close (RBPlayer *player, GError **error);
+static gboolean rb_player_gst_play (RBPlayer *player, GError **error);
+static void rb_player_gst_pause (RBPlayer *player);
+static gboolean rb_player_gst_playing (RBPlayer *player);
+static void rb_player_gst_set_volume (RBPlayer *player, float volume);
+static float rb_player_gst_get_volume (RBPlayer *player);
+static void rb_player_gst_set_replaygain (RBPlayer *player,
+				      double track_gain, double track_peak,
+				      double album_gain, double album_peak);
+static gboolean rb_player_gst_seekable (RBPlayer *player);
+static void rb_player_gst_set_time (RBPlayer *player, long time);
+static long rb_player_gst_get_time (RBPlayer *player);
+
+G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER,
+					      rb_player_init))
+#define RB_PLAYER_GST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYER_GST, RBPlayerGstPrivate))
+
+#define RB_PLAYER_GST_TICK_HZ 5
+
+
+struct _RBPlayerGstPrivate
 {
 	char *uri;
 
@@ -74,7 +100,6 @@ struct RBPlayerPrivate
 	guint tick_timeout_id;
 };
 
-#define RB_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYER, RBPlayerPrivate))
 
 typedef enum
 {
@@ -83,101 +108,65 @@ typedef enum
 	ERROR,
 	TICK,
 	BUFFERING,
-	LAST_SIGNAL
-} RBPlayerSignalType;
+} RBPlayerGstSignalType;
 
 typedef struct
 {
 	int type;
-	RBPlayer *object;
+	RBPlayerGst *object;
 	RBMetaDataField info_field;
 	GError *error;
 	GValue *info;
 	guint id;
-} RBPlayerSignal;
+} RBPlayerGstSignal;
 
-static guint rb_player_signals[LAST_SIGNAL] = { 0 };
-
-static gboolean rb_player_sync_pipeline (RBPlayer *mp);
-static void rb_player_gst_free_playbin (RBPlayer *player);
+static gboolean rb_player_gst_sync_pipeline (RBPlayerGst *mp);
+static void rb_player_gst_gst_free_playbin (RBPlayerGst *player);
 
 static void
-rb_player_class_init (RBPlayerClass *klass)
+rb_player_gst_class_init (RBPlayerGstClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->finalize = rb_player_finalize;
+	object_class->finalize = rb_player_gst_finalize;
 
-	rb_player_signals[EOS] =
-		g_signal_new ("eos",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, eos),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-	rb_player_signals[INFO] =
-		g_signal_new ("info",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, info),
-			      NULL, NULL,
-			      rb_marshal_VOID__INT_POINTER,
-			      G_TYPE_NONE,
-			      2, G_TYPE_INT, G_TYPE_POINTER);
-	rb_player_signals[ERROR] =
-		g_signal_new ("error",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, error),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_POINTER);
-	rb_player_signals[TICK] =
-		g_signal_new ("tick",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, tick),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__LONG,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_LONG);
-	rb_player_signals[BUFFERING] =
-		g_signal_new ("buffering",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, buffering),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__UINT,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_UINT);
+	g_type_class_add_private (klass, sizeof (RBPlayerGstPrivate));
+}
 
-	g_type_class_add_private (klass, sizeof (RBPlayerPrivate));
+static void
+rb_player_init (RBPlayerIface *iface)
+{
+	iface->open = rb_player_gst_open;
+	iface->opened = rb_player_gst_opened;
+	iface->close = rb_player_gst_close;
+	iface->play = rb_player_gst_play;
+	iface->pause = rb_player_gst_pause;
+	iface->playing = rb_player_gst_playing;
+	iface->set_volume = rb_player_gst_set_volume;
+	iface->get_volume = rb_player_gst_get_volume;
+	iface->set_replaygain = rb_player_gst_set_replaygain;
+	iface->seekable = rb_player_gst_seekable;
+	iface->set_time = rb_player_gst_set_time;
+	iface->get_time = rb_player_gst_get_time;
 }
 
 static gboolean
-tick_timeout (RBPlayer *mp)
+tick_timeout (RBPlayerGst *mp)
 {
 	if (mp->priv->playing == FALSE)
 		return TRUE;
 
-	g_signal_emit (G_OBJECT (mp), rb_player_signals[TICK], 0,
-		       rb_player_get_time (mp));
+	_rb_player_emit_tick (RB_PLAYER (mp), rb_player_get_time (RB_PLAYER (mp)));
 
 	return TRUE;
 }
 
 static void
-rb_player_init (RBPlayer *mp)
+rb_player_gst_init (RBPlayerGst *mp)
 {
-	gint ms_period = 1000 / RB_PLAYER_TICK_HZ;
+	gint ms_period = 1000 / RB_PLAYER_GST_TICK_HZ;
 
-	mp->priv = RB_PLAYER_GET_PRIVATE (mp);
+	mp->priv = RB_PLAYER_GST_GET_PRIVATE (mp);
 
 	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
 	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
@@ -185,11 +174,11 @@ rb_player_init (RBPlayer *mp)
 }
 
 static void
-rb_player_finalize (GObject *object)
+rb_player_gst_finalize (GObject *object)
 {
-	RBPlayer *mp;
+	RBPlayerGst *mp;
 
-	mp = RB_PLAYER (object);
+	mp = RB_PLAYER_GST (object);
 
 	g_source_remove (mp->priv->tick_timeout_id);
 	g_hash_table_destroy (mp->priv->idle_info_ids);
@@ -205,14 +194,14 @@ rb_player_finalize (GObject *object)
 		gst_element_set_state (mp->priv->playbin,
 				       GST_STATE_NULL);
 		
-		rb_player_gst_free_playbin (mp);
+		rb_player_gst_gst_free_playbin (mp);
 	}
 
-	G_OBJECT_CLASS (rb_player_parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_player_gst_parent_class)->finalize (object);
 }
 
 static void
-rb_player_gst_free_playbin (RBPlayer *player)
+rb_player_gst_gst_free_playbin (RBPlayerGst *player)
 {
 	if (player->priv->playbin == NULL)
 		return;
@@ -224,7 +213,7 @@ rb_player_gst_free_playbin (RBPlayer *player)
 static void
 destroy_idle_signal (gpointer signal_pointer)
 {
-	RBPlayerSignal *signal = signal_pointer;
+	RBPlayerGstSignal *signal = signal_pointer;
 
 	if (signal->error)
 		g_error_free (signal->error);
@@ -245,35 +234,29 @@ destroy_idle_signal (gpointer signal_pointer)
 }
 
 static gboolean
-emit_signal_idle (RBPlayerSignal *signal)
+emit_signal_idle (RBPlayerGstSignal *signal)
 {
 	switch (signal->type) {
 	case ERROR:
-		g_signal_emit (G_OBJECT (signal->object),
-			       rb_player_signals[ERROR], 0,
-			       signal->error);
+		_rb_player_emit_error (RB_PLAYER (signal->object), signal->error);
 
 		/* close if not already closing */
 		if (signal->object->priv->uri != NULL)
-			rb_player_close (signal->object, NULL);
+			rb_player_close (RB_PLAYER (signal->object), NULL);
 
 		break;
 
 	case EOS:
-		g_signal_emit (G_OBJECT (signal->object), rb_player_signals[EOS], 0);
+		_rb_player_emit_eos (RB_PLAYER (signal->object));
 		signal->object->priv->idle_eos_id = 0;
 		break;
 
 	case INFO:
-		g_signal_emit (G_OBJECT (signal->object),
-			       rb_player_signals[INFO], 0,
-			       signal->info_field, signal->info);
+		_rb_player_emit_info (RB_PLAYER (signal->object), signal->info_field, signal->info);
 		break;
 
 	case BUFFERING:
-		g_signal_emit (G_OBJECT (signal->object),
-			       rb_player_signals[BUFFERING], 0,
-			       g_value_get_uint (signal->info));
+		_rb_player_emit_buffering (RB_PLAYER (signal->object), g_value_get_uint (signal->info));
 		signal->object->priv->idle_buffering_id = 0;
 		break;
 	}
@@ -284,10 +267,10 @@ emit_signal_idle (RBPlayerSignal *signal)
 #ifdef HAVE_GSTREAMER_0_8
 static void
 eos_cb (GstElement *element,
-	RBPlayer *mp)
+	RBPlayerGst *mp)
 {
-	RBPlayerSignal *signal;
-	signal = g_new0 (RBPlayerSignal, 1);
+	RBPlayerGstSignal *signal;
+	signal = g_new0 (RBPlayerGstSignal, 1);
 	signal->type = EOS;
 	signal->object = mp;
 	g_object_ref (G_OBJECT (mp));
@@ -304,10 +287,10 @@ error_cb (GstElement *element,
 	  GstElement *source,
 	  const GError *error,
 	  gchar *debug,
-	  RBPlayer *mp)
+	  RBPlayerGst *mp)
 {
 	int code;
-	RBPlayerSignal *signal;
+	RBPlayerGstSignal *signal;
 
 	/* the handler shouldn't get called with error=NULL, but sometimes it does */
 	if (error == NULL)
@@ -316,9 +299,9 @@ error_cb (GstElement *element,
 	if ((error->domain == GST_CORE_ERROR)
 	    || (error->domain == GST_LIBRARY_ERROR)
 	    || (error->code == GST_RESOURCE_ERROR_BUSY)) {
-		code = RB_PLAYER_ERROR_NO_AUDIO;
+		code = RB_PLAYER_GST_ERROR_NO_AUDIO;
 	} else {
-		code = RB_PLAYER_ERROR_GENERAL;
+		code = RB_PLAYER_GST_ERROR_GENERAL;
 	}
 
 	/* If we're in a synchronous op, we can signal the error directly */
@@ -333,10 +316,10 @@ error_cb (GstElement *element,
 		return;
 	}
 
-	signal = g_new0 (RBPlayerSignal, 1);
+	signal = g_new0 (RBPlayerGstSignal, 1);
 	signal->type = ERROR;
 	signal->object = mp;
-	signal->error = g_error_new_literal (RB_PLAYER_ERROR,
+	signal->error = g_error_new_literal (RB_PLAYER_GST_ERROR,
 					     code,
 					     error->message);
 
@@ -352,11 +335,11 @@ error_cb (GstElement *element,
 #endif
 
 static void
-process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
+process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 {
 	int count;
 	RBMetaDataField field;
-	RBPlayerSignal *signal;
+	RBPlayerGstSignal *signal;
 	const GValue *val;
 	GValue *newval;
 
@@ -398,7 +381,7 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
 		return;
 	}
 
-	signal = g_new0 (RBPlayerSignal, 1);
+	signal = g_new0 (RBPlayerGstSignal, 1);
 	signal->object = player;
 	signal->info_field = field;
 	signal->info = newval;
@@ -414,17 +397,17 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
 
 #ifdef HAVE_GSTREAMER_0_8
 static void
-found_tag_cb (GObject *pipeline, GstElement *source, GstTagList *tags, RBPlayer *player)
+found_tag_cb (GObject *pipeline, GstElement *source, GstTagList *tags, RBPlayerGst *player)
 {
 	gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, player);
 }
 
 static void
-buffering_cb (GstElement *element, gint progress, RBPlayer *mp)
+buffering_cb (GstElement *element, gint progress, RBPlayerGst *mp)
 {
-	RBPlayerSignal *signal;
+	RBPlayerGstSignal *signal;
 
-	signal = g_new0 (RBPlayerSignal, 1);
+	signal = g_new0 (RBPlayerGstSignal, 1);
 	signal->type = BUFFERING;
 
 	g_object_ref (G_OBJECT (mp));
@@ -439,7 +422,7 @@ buffering_cb (GstElement *element, gint progress, RBPlayer *mp)
 }
 #elif HAVE_GSTREAMER_0_10
 static gboolean
-rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
+rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 {
 	g_return_val_if_fail (mp != NULL, FALSE);
 
@@ -462,20 +445,18 @@ rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
 		sig_error = g_error_new_literal (RB_PLAYER_ERROR,
 						 code,
 						 error->message);
-		g_signal_emit (G_OBJECT (mp),
-			       rb_player_signals[ERROR], 0,
-			       sig_error);
+		_rb_player_emit_error (RB_PLAYER (mp), sig_error);
 
 		/* close if not already closing */
 		if (mp->priv->uri != NULL)
-			rb_player_close (mp, NULL);
+			rb_player_close (RB_PLAYER (mp), NULL);
 
 		g_error_free (error);
 		g_free (debug);
 		break;
 	}
 	case GST_MESSAGE_EOS:
-		g_signal_emit (G_OBJECT (mp), rb_player_signals[EOS], 0);
+		_rb_player_emit_eos (RB_PLAYER (mp));
 		break;
 	case GST_MESSAGE_TAG: {
 		GstTagList *tags;
@@ -486,7 +467,7 @@ rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
 		break;
 	}
 	case GST_MESSAGE_BUFFERING: {
-		RBPlayerSignal *signal;
+		RBPlayerGstSignal *signal;
 		const GstStructure *s;
 		gint progress;
 
@@ -495,7 +476,7 @@ rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
 			g_warning ("Could not get value from BUFFERING message");
 			break;
 		}
-		signal = g_new0 (RBPlayerSignal, 1);
+		signal = g_new0 (RBPlayerGstSignal, 1);
 		signal->type = BUFFERING;
 
 		g_object_ref (G_OBJECT (mp));
@@ -516,7 +497,7 @@ rb_player_bus_cb (GstBus * bus, GstMessage * message, RBPlayer *mp)
 #endif
 
 static gboolean
-rb_player_construct (RBPlayer *mp, GError **error)
+rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 {
 	char *element_name = NULL;
 	GstElement *sink, *fakesink;
@@ -557,7 +538,7 @@ rb_player_construct (RBPlayer *mp, GError **error)
 #endif
 #ifdef HAVE_GSTREAMER_0_10
 	gst_bus_add_watch (gst_element_get_bus (GST_ELEMENT (mp->priv->playbin)),
-			     (GstBusFunc) rb_player_bus_cb, mp);
+			     (GstBusFunc) rb_player_gst_bus_cb, mp);
 
 	/* Output sink */
 	sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
@@ -571,7 +552,7 @@ rb_player_construct (RBPlayer *mp, GError **error)
 		mp->priv->cur_volume = 1.0;
 	if (mp->priv->cur_volume < 0.0)
 		mp->priv->cur_volume = 0;
-	rb_player_set_volume (mp, mp->priv->cur_volume);
+	rb_player_set_volume (RB_PLAYER (mp), mp->priv->cur_volume);
 
 	rb_debug ("pipeline construction complete");
 	return TRUE;
@@ -584,47 +565,23 @@ missing_element:
 			     RB_PLAYER_ERROR_GENERAL,
 			     err);
 		g_free (err);
-		rb_player_gst_free_playbin (mp);
+		rb_player_gst_gst_free_playbin (mp);
 		return FALSE;
 	}
 }
 
 RBPlayer *
-rb_player_new (GError **error)
+rb_player_gst_new (GError **error)
 {
-	RBPlayer *mp;
+	RBPlayerGst *mp;
 
-#ifdef HAVE_GSTREAMER_0_8
-	GstElement *dummy;
+	mp = RB_PLAYER_GST (g_object_new (RB_TYPE_PLAYER_GST, NULL, NULL));
 
-	dummy = gst_element_factory_make ("fakesink", "fakesink");
-	if (!dummy
-	    || !gst_scheduler_factory_make (NULL, GST_ELEMENT (dummy))) {
-		g_set_error (error, RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_GENERAL,
-			     "%s",
-			     _("Couldn't initialize scheduler.  Did you run gst-register?"));
-		return NULL;
-	}
-#endif
-
-	mp = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL, NULL));
-
-	return mp;
-}
-
-GQuark
-rb_player_error_quark (void)
-{
-	static GQuark quark = 0;
-	if (!quark)
-		quark = g_quark_from_static_string ("rb_player_error");
-
-	return quark;
+	return RB_PLAYER (mp);
 }
 
 static gboolean
-rb_player_sync_pipeline (RBPlayer *mp)
+rb_player_gst_sync_pipeline (RBPlayerGst *mp)
 {
 	rb_debug ("syncing pipeline");
 	if (mp->priv->playing) {
@@ -658,7 +615,7 @@ rb_player_sync_pipeline (RBPlayer *mp)
  * can receive an error signal.
  */
 static void
-begin_gstreamer_operation (RBPlayer *mp)
+begin_gstreamer_operation (RBPlayerGst *mp)
 {
 	g_assert (mp->priv->error == NULL);
 	mp->priv->can_signal_direct_error = TRUE;
@@ -668,7 +625,7 @@ begin_gstreamer_operation (RBPlayer *mp)
  * error from the sequence into error.
  */
 static void
-end_gstreamer_operation (RBPlayer *mp, gboolean op_failed, GError **error)
+end_gstreamer_operation (RBPlayerGst *mp, gboolean op_failed, GError **error)
 {
 	mp->priv->can_signal_direct_error = FALSE;
 	if (mp->priv->error) {
@@ -704,20 +661,19 @@ cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *uri)
 	}
 }
 
-gboolean
-rb_player_open (RBPlayer *mp,
+static gboolean
+rb_player_gst_open (RBPlayer *player,
 		const char *uri,
 		GError **error)
-{	
+{
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	gboolean cdda_seek = FALSE;
 
-	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
-
 	if (mp->priv->playbin == NULL) {
-		if (!rb_player_construct (mp, error))
+		if (!rb_player_gst_construct (mp, error))
 			return FALSE;
 	} else {
-		if (!rb_player_close (mp, error))
+		if (!rb_player_close (player, error))
 			return FALSE;
 	}
 
@@ -778,9 +734,9 @@ rb_player_open (RBPlayer *mp,
 		g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);
 	}
 
-	if (!rb_player_sync_pipeline (mp)) {
+	if (!rb_player_gst_sync_pipeline (mp)) {
 		end_gstreamer_operation (mp, TRUE, error);
-		rb_player_close (mp, NULL);
+		rb_player_gst_close (player, NULL);
 		return FALSE;
 	}
 
@@ -796,11 +752,11 @@ remove_idle_source (gpointer key, gpointer value, gpointer user_data)
 	g_source_remove (id);
 }
 
-gboolean
-rb_player_close (RBPlayer *mp, GError **error)
+static gboolean
+rb_player_gst_close (RBPlayer *player, GError **error)
 {
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	gboolean ret;
-	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	mp->priv->playing = FALSE;
 
@@ -834,34 +790,34 @@ rb_player_close (RBPlayer *mp, GError **error)
 	return ret;
 }
 
-gboolean
-rb_player_opened (RBPlayer *mp)
+static gboolean
+rb_player_gst_opened (RBPlayer *player)
 {
-	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	return mp->priv->uri != NULL;
 }
 
-gboolean
-rb_player_play (RBPlayer *mp, GError **error)
+static gboolean
+rb_player_gst_play (RBPlayer *player, GError **error)
 {
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	gboolean ret;
-	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	mp->priv->playing = TRUE;
 
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 
 	begin_gstreamer_operation (mp);
-	ret = rb_player_sync_pipeline (mp);
+	ret = rb_player_gst_sync_pipeline (mp);
 	end_gstreamer_operation (mp, !ret, error);
 	return ret;
 }
 
-void
-rb_player_pause (RBPlayer *mp)
+static void
+rb_player_gst_pause (RBPlayer *player)
 {
-	g_return_if_fail (RB_IS_PLAYER (mp));
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (!mp->priv->playing)
 		return;
@@ -870,26 +826,26 @@ rb_player_pause (RBPlayer *mp)
 
 	g_return_if_fail (mp->priv->playbin != NULL);
 
-	rb_player_sync_pipeline (mp);
+	rb_player_gst_sync_pipeline (mp);
 }
 
-gboolean
-rb_player_playing (RBPlayer *mp)
+static gboolean
+rb_player_gst_playing (RBPlayer *player)
 {
-	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	return mp->priv->playing;
 }
 
-void
-rb_player_set_replaygain (RBPlayer *mp,
-				    double track_gain, double track_peak, double album_gain, double album_peak)
+static void
+rb_player_gst_set_replaygain (RBPlayer *player,
+			      double track_gain, double track_peak,
+			      double album_gain, double album_peak)
 {
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	double scale;
 	double gain = 0;
 	double peak = 0;
-
-	g_return_if_fail (RB_IS_PLAYER (mp));
 
 	if (album_gain != 0)
 	  gain = album_gain;
@@ -933,11 +889,11 @@ rb_player_set_replaygain (RBPlayer *mp,
 	}
 }
 
-void
-rb_player_set_volume (RBPlayer *mp,
-		      float volume)
+static void
+rb_player_gst_set_volume (RBPlayer *player,
+			  float volume)
 {
-	g_return_if_fail (RB_IS_PLAYER (mp));
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	g_return_if_fail (volume >= 0.0 && volume <= 1.0);
 
 	if (mp->priv->playbin != NULL) {
@@ -950,17 +906,18 @@ rb_player_set_volume (RBPlayer *mp,
 	mp->priv->cur_volume = volume;
 }
 
-float
-rb_player_get_volume (RBPlayer *mp)
+static float
+rb_player_gst_get_volume (RBPlayer *player)
 {
-	g_return_val_if_fail (RB_IS_PLAYER (mp), 0.0);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	return mp->priv->cur_volume;
 }
 
-gboolean
-rb_player_seekable (RBPlayer *mp)
+static gboolean
+rb_player_gst_seekable (RBPlayer *player)
 {
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 #ifdef HAVE_GSTREAMER_0_8
 	/* FIXME we're lying here,
 	 * (0.8) trying a seek might disrupt playback */
@@ -971,7 +928,6 @@ rb_player_seekable (RBPlayer *mp)
 	GstQuery *query;
 #endif
 
-	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 #ifdef HAVE_GSTREAMER_0_10
 	query = gst_query_new_seeking (GST_FORMAT_TIME);
@@ -984,10 +940,10 @@ rb_player_seekable (RBPlayer *mp)
 	return can_seek;
 }
 
-void
-rb_player_set_time (RBPlayer *mp, long time)
+static void
+rb_player_gst_set_time (RBPlayer *player, long time)
 {
-	g_return_if_fail (RB_IS_PLAYER (mp));
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 	g_return_if_fail (time >= 0);
 
 	g_return_if_fail (mp->priv->playbin != NULL);
@@ -1042,10 +998,10 @@ rb_player_set_time (RBPlayer *mp, long time)
 	}
 }
 
-long
-rb_player_get_time (RBPlayer *mp)
+static long
+rb_player_gst_get_time (RBPlayer *player)
 {
-	g_return_val_if_fail (RB_IS_PLAYER (mp), -1);
+	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->playbin != NULL) {
 		gint64 position = -1;
@@ -1078,3 +1034,4 @@ rb_player_get_time (RBPlayer *mp)
 	} else
 		return -1;
 }
+

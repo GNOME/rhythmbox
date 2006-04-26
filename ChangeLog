@@ -1,5 +1,38 @@
 2006-04-26  James Livingston  <doclivingston@gmail.com>
 
+	Turn RBPlayer into a full gobject interface, with RBPlayerGst as an
+	implementing class. In theory allows alternate player implementations
+	to be selected at run-time rather than compile-time. Fixes bug 338667.
+
+	* Makefile.am:
+	* backends/Makefile.am:
+	* backends/gstreamer/Makefile.am:
+	* backends/gstreamer/rb-player-gst.h:
+	* backends/rb-player.c: (rb_player_interface_init),
+	(rb_player_get_type), (rb_player_open), (rb_player_opened),
+	(rb_player_close), (rb_player_play), (rb_player_pause),
+	(rb_player_playing), (rb_player_set_volume),
+	(rb_player_get_volume), (rb_player_set_replaygain),
+	(rb_player_seekable), (rb_player_set_time), (rb_player_get_time),
+	(rb_player_new), (_rb_player_emit_eos), (_rb_player_emit_info),
+	(_rb_player_emit_buffering), (_rb_player_emit_error),
+	(_rb_player_emit_tick), (rb_player_error_quark):
+	* player/Makefile.am:
+	* player/rb-player-gst.c: (rb_player_gst_class_init),
+	(rb_player_init), (tick_timeout), (rb_player_gst_init),
+	(rb_player_gst_finalize), (rb_player_gst_gst_free_playbin),
+	(destroy_idle_signal), (emit_signal_idle), (eos_cb), (error_cb),
+	(process_tag), (found_tag_cb), (buffering_cb),
+	(rb_player_gst_bus_cb), (rb_player_gst_construct),
+	(rb_player_gst_new):
+	* player/rb-player.h:
+	* shell/Makefile.am:
+	* sources/rb-audiocd-source.c:
+	* widgets/Makefile.am:
+	* widgets/rb-header.c: (rb_header_class_init):
+
+2006-04-26  James Livingston  <doclivingston@gmail.com>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):
 	don't try to download an episode if it couldn't be parsed. Fixes bug
 	339712.

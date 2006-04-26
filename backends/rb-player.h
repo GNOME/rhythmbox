@@ -30,18 +30,10 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-	RB_PLAYER_ERROR_NO_INPUT_PLUGIN,
-	RB_PLAYER_ERROR_NO_QUEUE_PLUGIN,
-	RB_PLAYER_ERROR_NO_TYPEFIND_PLUGIN,
-	RB_PLAYER_ERROR_NO_DEMUX_PLUGIN,
-	RB_PLAYER_ERROR_NO_VOLUME_PLUGIN,
-	RB_PLAYER_ERROR_DEMUX_FAILED,
 	RB_PLAYER_ERROR_NO_AUDIO,
 	RB_PLAYER_ERROR_GENERAL,
 	RB_PLAYER_ERROR_INTERNAL
 } RBPlayerError;
-
-#define RB_PLAYER_TICK_HZ 5
 
 #define RB_PLAYER_ERROR rb_player_error_quark ()
 
@@ -49,61 +41,85 @@ GQuark rb_player_error_quark (void);
 
 #define RB_TYPE_PLAYER         (rb_player_get_type ())
 #define RB_PLAYER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_PLAYER, RBPlayer))
-#define RB_PLAYER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_PLAYER, RBPlayerClass))
 #define RB_IS_PLAYER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_PLAYER))
-#define RB_IS_PLAYER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PLAYER))
-#define RB_PLAYER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PLAYER, RBPlayerClass))
+#define RB_PLAYER_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), RB_TYPE_PLAYER, RBPlayerIface))
 
-typedef struct RBPlayerPrivate RBPlayerPrivate;
-
-typedef struct
-{
-	GObject parent;
-
-	RBPlayerPrivate *priv;
-} RBPlayer;
+typedef struct _RBPlayer RBPlayer;
 
 typedef struct
 {
-	GObjectClass parent_class;
+	GTypeInterface	g_iface;
 
-	void (*eos)             	(RBPlayer *mp);
-	void (*info)            	(RBPlayer *mp, RBMetaDataField field, GValue *value);
-	void (*buffering)		(RBPlayer *mp, guint progress);
-	void (*error)           	(RBPlayer *mp, GError *error);
-	void (*tick)            	(RBPlayer *mp, long elapsed);
-} RBPlayerClass;
+	/* virtual functions */
+	gboolean        (*open)			(RBPlayer *player,
+						 const char *uri,
+						 GError **error);
+	gboolean	(*opened)		(RBPlayer *player);
+	gboolean        (*close)		(RBPlayer *player,
+						 GError **error);
+
+	gboolean	(*play)			(RBPlayer *player,
+						 GError **error);
+	void		(*pause)		(RBPlayer *player);
+	gboolean	(*playing)		(RBPlayer *player);
+
+	void		(*set_volume)		(RBPlayer *player,
+						 float volume);
+	float		(*get_volume)		(RBPlayer *player);
+	void		(*set_replaygain)	(RBPlayer *player,
+						 double track_gain,
+						 double track_peak,
+						 double album_gain,
+						 double album_peak);
+
+	gboolean	(*seekable)		(RBPlayer *player);
+	void		(*set_time)		(RBPlayer *player,
+						 long time);
+	long		(*get_time)		(RBPlayer *player);
+
+	/* signals */
+	void		(*eos)			(RBPlayer *player);
+	void		(*info)			(RBPlayer *player,
+						 RBMetaDataField field,
+						 GValue *value);
+	void		(*buffering)		(RBPlayer *player,
+						 guint progress);
+	void		(*error)           	(RBPlayer *player,
+						 GError *error);
+	void		(*tick)            	(RBPlayer *player,
+						 long elapsed);
+} RBPlayerIface;
 
 GType		rb_player_get_type   (void);
-
 RBPlayer *	rb_player_new        (GError **error);
 
-gboolean        rb_player_open       (RBPlayer *mp,
+gboolean        rb_player_open       (RBPlayer *player,
 				      const char *uri,
 				      GError **error);
+gboolean	rb_player_opened     (RBPlayer *player);
+gboolean        rb_player_close      (RBPlayer *player, GError **error);
 
-gboolean	rb_player_opened     (RBPlayer *mp);
+gboolean	rb_player_play       (RBPlayer *player, GError **error);
+void		rb_player_pause      (RBPlayer *player);
+gboolean	rb_player_playing    (RBPlayer *player);
 
-gboolean        rb_player_close      (RBPlayer *mp, GError **error);
+void		rb_player_set_volume (RBPlayer *player, float volume);
+float		rb_player_get_volume (RBPlayer *player);
+void		rb_player_set_replaygain (RBPlayer *player,
+					  double track_gain, double track_peak,
+					  double album_gain, double album_peak);
 
-gboolean	rb_player_play       (RBPlayer *mp, GError **error);
+gboolean	rb_player_seekable   (RBPlayer *player);
+void		rb_player_set_time   (RBPlayer *player, long time);
+long		rb_player_get_time   (RBPlayer *player);
 
-void		rb_player_pause      (RBPlayer *mp);
 
-gboolean	rb_player_playing    (RBPlayer *mp);
-
-void		rb_player_set_volume (RBPlayer *mp,
-				      float volume);
-float		rb_player_get_volume (RBPlayer *mp);
-
-void		rb_player_set_replaygain (RBPlayer *mp,
-					  double track_gain, double track_peak, double album_gain, double album_peak);
-
-gboolean	rb_player_seekable   (RBPlayer *mp);
-
-void		rb_player_set_time   (RBPlayer *mp,
-				      long time);
-long		rb_player_get_time   (RBPlayer *mp);
+/* only to be used by subclasses */
+void	_rb_player_emit_eos (RBPlayer *player);
+void	_rb_player_emit_info (RBPlayer *player, RBMetaDataField field, GValue *value);
+void	_rb_player_emit_buffering (RBPlayer *player, guint progress);
+void	_rb_player_emit_error (RBPlayer *player, GError *error);
+void	_rb_player_emit_tick (RBPlayer *player, long elapsed);
 
 G_END_DECLS
 

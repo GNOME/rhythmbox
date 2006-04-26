@@ -5,12 +5,13 @@ noinst_LTLIBRARIES = librbbackends.la
 SUBDIRS = gstreamer
 
 librbbackends_la_SOURCES =	\
-	rb-encoder.h 		\
-	rb-encoder.c
+	$(top_srcdir)/player/rb-player.h	\
+	rb-player.c		\
+	$(NULL)
 
 librbbackends_la_LIBADD =				\
-	$(RHYTHMBOX_LIBS)				\
-	$(top_builddir)/backends/gstreamer/librbbackendsgstreamer.la
+	gstreamer/librbbackendsgstreamer.la		\
+	$(RHYTHMBOX_LIBS)
 
 librbbackends_la_LDFLAGS = -export-dynamic
 
@@ -23,7 +24,14 @@ INCLUDES = 						\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/widgets				\
+	-I$(top_srcdir)/player				\
 	-I$(top_srcdir)/backends/gstreamer		\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
+
+if ENABLE_TRACK_TRANSFER
+librbbackends_la_SOURCES +=	\
+	rb-encoder.h 		\
+	rb-encoder.c
+endif
 

@@ -3,8 +3,6 @@
 noinst_LTLIBRARIES = librbplayer.la
 
 librbplayer_la_SOURCES =	\
-	rb-player.h 		\
-	rb-player-gst.c		\
 	rb-recorder.h		\
 	rb-recorder-gst.c
 
@@ -27,9 +25,4 @@ INCLUDES = 						\
 	-I$(top_builddir)/lib                           \
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
-
-
-if USE_DAAP
-INCLUDES += -I$(top_srcdir)/daapsharing			
-endif
 
