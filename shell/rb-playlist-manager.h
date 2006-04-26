@@ -86,8 +86,7 @@ gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
 gboolean		rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, 
-							    gboolean force, 
-							    gboolean async);
+							    gboolean force);
 
 RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  const char *suggested_name,

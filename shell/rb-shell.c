@@ -853,7 +853,7 @@ rb_shell_sync_state (RBShell *shell)
 	}
 	
 	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, TRUE, TRUE);
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, TRUE);
 
 	rb_debug ("saving db");
 	rhythmdb_save (shell->priv->db);
@@ -873,7 +873,7 @@ idle_save_rhythmdb (RBShell *shell)
 static gboolean
 idle_save_playlist_manager (RBPlaylistManager *mgr)
 {
-	rb_playlist_manager_save_playlists (mgr, FALSE, FALSE);
+	rb_playlist_manager_save_playlists (mgr, FALSE);
 
 	return TRUE;
 }

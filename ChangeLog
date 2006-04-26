@@ -1,5 +1,15 @@
 2006-04-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_init),
+	(rb_playlist_manager_save_data),
+	(rb_playlist_manager_save_playlists):
+	* shell/rb-playlist-manager.h:
+	* shell/rb-shell.c: (rb_shell_sync_state),
+	(idle_save_playlist_manager):
+	Remove a bit more threading insanity from the playlist manager.
+
+2006-04-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-playlist-manager.c: 
 	* shell/rb-playlist-manager.h:
 	Remove dead code, add gtk-doc, remove threading insanity (mostly).

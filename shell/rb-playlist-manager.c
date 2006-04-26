@@ -104,6 +104,7 @@ struct RBPlaylistManagerPrivate
 	RBStaticPlaylistSource *loading_playlist;
 
 	gint dirty;
+	gint saving;
 	GMutex *saving_mutex;
 };
 
@@ -248,6 +249,7 @@ rb_playlist_manager_init (RBPlaylistManager *mgr)
 
 	mgr->priv->saving_mutex = g_mutex_new ();
 	mgr->priv->dirty = 0;
+	mgr->priv->saving = 0;
 }
 
 void
@@ -713,14 +715,6 @@ rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 	return dirty;
 }
 
-static gboolean
-unlock_saving_mutex (RBPlaylistManager *mgr)
-{
-	g_mutex_unlock (mgr->priv->saving_mutex);
-	g_object_unref (G_OBJECT (mgr));
-	return FALSE;
-}
-
 struct RBPlaylistManagerSaveData
 {
 	RBPlaylistManager *mgr;
@@ -732,6 +726,8 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 {
 	char *file;
 	char *tmpname;
+
+	g_mutex_lock (data->mgr->priv->saving_mutex);
 
 	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
 	tmpname = g_strconcat (file, ".tmp", NULL);
@@ -747,12 +743,10 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 	g_free (tmpname);
 	g_free (file);
 
-	if (rb_is_main_thread ()) {
-		unlock_saving_mutex (data->mgr);
-	} else {
-		/* unlock the mutex on the same thread that locked it */
-		g_idle_add ((GSourceFunc) unlock_saving_mutex, data->mgr);
-	}
+	g_atomic_int_compare_and_exchange (&data->mgr->priv->saving, 1, 0);
+	g_mutex_unlock (data->mgr->priv->saving_mutex);
+
+	g_object_unref (G_OBJECT (data->mgr));
 
 	g_free (data);
 	return NULL;
@@ -761,11 +755,9 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 /**
  * rb_playlist_manager_save_playlists
  * @mgr: the #RBPlaylistManager
- * @force: if FALSE, only save playlists if something has changed
- *  and not already saving.
- * @async: if TRUE, perform the file write operation asynchronously
+ * @force: if TRUE, save playlists synchronously and unconditionally
  *
- * Saves the user's playlists asynchronously.  If the force flag is
+ * Saves the user's playlists.  If the force flag is
  * TRUE, the playlists will always be saved.  Otherwise, the playlists
  * will only be saved if a playlist has been created, modified, or deleted
  * since the last time the playlists were saved, and no save operation is
@@ -774,7 +766,7 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
  * Returns TRUE if a playlist save operation has been started
  **/
 gboolean
-rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force, gboolean async)
+rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveData *data;
@@ -782,17 +774,14 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force, gboo
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
 
-	if (!force) {
-		if (!rb_playlist_manager_is_dirty (mgr)) {
-			/* playlists already in sync, so don't bother */
-			return FALSE;
-		}
-		if (!g_mutex_trylock (mgr->priv->saving_mutex)) {
-			/* already saving, so don't bother */
-			return FALSE;
-		}
-	} else {
-		g_mutex_lock (mgr->priv->saving_mutex);
+	if (!force && !rb_playlist_manager_is_dirty (mgr)) {
+		/* playlists already in sync, so don't bother */
+		return FALSE;
+	}
+
+	if (!g_atomic_int_compare_and_exchange (&mgr->priv->saving, 0, 1) && !force) {
+		/* already saving, so don't bother */
+		return FALSE;
 	}
 	
 	data = g_new0 (struct RBPlaylistManagerSaveData, 1);
@@ -830,10 +819,10 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force, gboo
 	/* mark clean here.  if the save fails, we'll mark it dirty again */
 	rb_playlist_manager_set_dirty (data->mgr, FALSE);
 
-	if (async)
-		g_thread_create ((GThreadFunc) rb_playlist_manager_save_data, data, FALSE, NULL);
-	else
+	if (force)
 		rb_playlist_manager_save_data (data);
+	else
+		g_thread_create ((GThreadFunc) rb_playlist_manager_save_data, data, FALSE, NULL);
 
 	return TRUE;
 }
