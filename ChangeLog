@@ -1,3 +1,12 @@
+2006-04-26  James Livingston  <doclivingston@gmail.com>
+
+	* data/ui/Makefile.am:
+	* data/ui/daap-ui.xml:
+	* data/ui/rhythmbox-ui.xml:
+	* sources/rb-daap-source.c: (rb_daap_sources_init),
+	(rb_daap_sources_shutdown): separate the DAAP ui stuff out in the same
+	way that the ipod ui is. Fixes bug 339743.
+
 2006-04-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_emit_entry_signals_idle),

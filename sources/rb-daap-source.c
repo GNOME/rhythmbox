@@ -34,6 +34,7 @@
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-util.h"
+#include "rb-file-helpers.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
 
@@ -111,6 +112,7 @@ static GtkActionEntry rb_daap_source_actions [] =
 	  G_CALLBACK (rb_daap_source_cmd_disconnect) },
 };
 GtkActionGroup *daap_action_group;
+guint daap_ui_merge_id;
 
 static RhythmDBEntryType
 rhythmdb_entry_daap_type_new (void)
@@ -597,6 +599,9 @@ rb_daap_sources_init (RBShell *shell)
 				      rb_daap_source_actions, G_N_ELEMENTS (rb_daap_source_actions),
 				      shell);
 	gtk_ui_manager_insert_action_group (uimanager, daap_action_group, 0);
+	daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
+							    rb_file ("daap-ui.xml"),
+							    NULL);
 	g_object_unref (G_OBJECT (uimanager));
 
 	return NULL;
@@ -621,6 +626,8 @@ rb_daap_sources_shutdown (RBShell *shell)
 	}
 
 	destroy_pixbufs ();
+
+	gtk_ui_manager_remove_ui (uimanager, daap_ui_merge_id);
 	gtk_ui_manager_remove_action_group (uimanager, daap_action_group);
 
 	g_object_unref (G_OBJECT (uimanager));
