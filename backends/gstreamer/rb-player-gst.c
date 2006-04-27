@@ -299,9 +299,9 @@ error_cb (GstElement *element,
 	if ((error->domain == GST_CORE_ERROR)
 	    || (error->domain == GST_LIBRARY_ERROR)
 	    || (error->code == GST_RESOURCE_ERROR_BUSY)) {
-		code = RB_PLAYER_GST_ERROR_NO_AUDIO;
+		code = RB_PLAYER_ERROR_NO_AUDIO;
 	} else {
-		code = RB_PLAYER_GST_ERROR_GENERAL;
+		code = RB_PLAYER_ERROR_GENERAL;
 	}
 
 	/* If we're in a synchronous op, we can signal the error directly */
@@ -319,7 +319,7 @@ error_cb (GstElement *element,
 	signal = g_new0 (RBPlayerGstSignal, 1);
 	signal->type = ERROR;
 	signal->object = mp;
-	signal->error = g_error_new_literal (RB_PLAYER_GST_ERROR,
+	signal->error = g_error_new_literal (RB_PLAYER_ERROR,
 					     code,
 					     error->message);
 
