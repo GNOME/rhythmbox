@@ -611,7 +611,7 @@ encoder_match_mime (GstElement *encoder, const gchar *mime_type)
 	pad_mime = gst_structure_get_name (structure);
 	match = strcmp (mime_type, pad_mime) == 0;
 	gst_caps_unref (caps);
-	gst_object_unref (srcpad);
+	gst_object_unref (GST_OBJECT (srcpad));
 
 	return match;
 }
@@ -619,6 +619,7 @@ encoder_match_mime (GstElement *encoder, const gchar *mime_type)
 static GstElement *
 profile_bin_find_encoder (GstBin *profile_bin)
 {
+#ifdef HAVE_GSTREAMER_0_10
 	GstElementFactory *factory;
 	GstElement *encoder = NULL;
 	GstIterator *iter;
@@ -653,6 +654,9 @@ profile_bin_find_encoder (GstBin *profile_bin)
 	gst_iterator_free (iter);
 	
 	return encoder;
+#else
+	return NULL;
+#endif
 }
 
 static GMAudioProfile*
@@ -687,13 +691,13 @@ get_profile_from_mime_type (const char *mime_type)
 		
 		if (encoder_match_mime (encoder, mime_type)) {
 			matching_profile = profile;
-			gst_object_unref (encoder);
-			gst_object_unref (pipeline);
+			gst_object_unref (GST_OBJECT (encoder));
+			gst_object_unref (GST_OBJECT (pipeline));
 			break;
 		}
 		
-		gst_object_unref (encoder);
-		gst_object_unref (pipeline);
+		gst_object_unref (GST_OBJECT (encoder));
+		gst_object_unref (GST_OBJECT (pipeline));
 	}
 
 	return matching_profile;
