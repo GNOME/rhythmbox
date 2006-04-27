@@ -915,24 +915,19 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (dragsource);
 	guint target;
 	GtkTargetList *drag_target_list;
-	GCompareDataFunc sort_func = NULL;
 
 	switch (model->priv->propid) {
 	case RHYTHMDB_PROP_GENRE:
 		drag_target_list = rhythmdb_property_model_genre_drag_target_list;
-		sort_func = (GCompareDataFunc) rhythmdb_query_model_genre_sort_func;
 		break;
 	case RHYTHMDB_PROP_ALBUM:
 		drag_target_list = rhythmdb_property_model_album_drag_target_list;
-		sort_func = (GCompareDataFunc) rhythmdb_query_model_album_sort_func;
 		break;
 	case RHYTHMDB_PROP_ARTIST:
 		drag_target_list = rhythmdb_property_model_artist_drag_target_list;
-		sort_func = (GCompareDataFunc) rhythmdb_query_model_artist_sort_func;
 		break;
 	case RHYTHMDB_PROP_LOCATION:
 		drag_target_list = rhythmdb_property_model_location_drag_target_list;
-		sort_func = (GCompareDataFunc) rhythmdb_query_model_title_sort_func;
 		break;
 	default:
 		g_assert_not_reached ();
@@ -946,15 +941,27 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 
 	if (target == TARGET_URIS) {
 		RhythmDB *db = model->priv->db;
- 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
+ 		RhythmDBQueryModel *query_model;
  		GString* reply = g_string_new ("");
  		GtkTreeIter iter;
  		gboolean is_all;
  		struct QueryModelCbStruct tmp;
 		GtkTreePath *path;
+		GCompareDataFunc sort_func = NULL;
+		RhythmDBPropType sort_prop_id;
+		gboolean sort_reverse;
 
+		query_model = rhythmdb_query_model_new_empty (db);
+		/* FIXME the sort order on the query model at this point is usually
+		 * not the user's selected sort order.
+		 */
+		g_object_get (G_OBJECT (model->priv->query_model),
+			      "sort-func", &sort_func,
+			      "sort-prop", &sort_prop_id,
+			      "sort-reverse", &sort_reverse,
+			      NULL);
 		rhythmdb_query_model_set_sort_order (RHYTHMDB_QUERY_MODEL (query_model),
-						     sort_func, 0, FALSE);
+						     sort_func, sort_prop_id, sort_reverse);
 
 		rb_debug ("getting drag data as uri list");
 		/* check if first selected row is 'All' */
@@ -965,16 +972,13 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 				    &is_all, -1);
 		gtk_tree_path_free (path);
 		if (is_all) {
- 			/*filter out radios*/
- 			rhythmdb_do_full_query (db, 
-						RHYTHMDB_QUERY_RESULTS (query_model),
- 						RHYTHMDB_QUERY_PROP_EQUALS,
- 						RHYTHMDB_PROP_TYPE, 
- 						RHYTHMDB_ENTRY_TYPE_SONG,
- 						RHYTHMDB_QUERY_END);
+			g_object_set (G_OBJECT (query_model), 
+				      "base-model", model->priv->query_model, 
+				      NULL);
 		} else {
  			GList *row;
-			GPtrArray* subquery = g_ptr_array_new();
+			GPtrArray *query;
+			GPtrArray *subquery = g_ptr_array_new ();
  
  			for (row = paths; row; row = row->next) {
  				char* name;
@@ -983,31 +987,31 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
  				gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
  						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, 
 						    &name, -1);
- 				if (row->next) {
- 					rhythmdb_query_append (db, subquery,
- 							       RHYTHMDB_QUERY_PROP_EQUALS,
- 							       model->priv->propid, name,
- 							       RHYTHMDB_QUERY_DISJUNCTION,
- 							       RHYTHMDB_QUERY_END);
- 				} else {
+ 				if (row == paths) {
  					rhythmdb_query_append (db, subquery,
  							       RHYTHMDB_QUERY_PROP_EQUALS,
  							       model->priv->propid, name,
 							       RHYTHMDB_QUERY_END);
+				} else {
+ 					rhythmdb_query_append (db, subquery,
+ 							       RHYTHMDB_QUERY_DISJUNCTION,
+ 							       RHYTHMDB_QUERY_PROP_EQUALS,
+ 							       model->priv->propid, name,
+ 							       RHYTHMDB_QUERY_END);
  				}
  
 				gtk_tree_path_free (path);
  				g_free (name);
  			}
- 			/*filter out radios*/
- 			rhythmdb_do_full_query (db,
-						RHYTHMDB_QUERY_RESULTS (query_model),
- 						RHYTHMDB_QUERY_PROP_EQUALS,
- 						RHYTHMDB_PROP_TYPE, 
- 						RHYTHMDB_ENTRY_TYPE_SONG,
- 						RHYTHMDB_QUERY_SUBQUERY,
- 						subquery,
- 						RHYTHMDB_QUERY_END);
+			query = rhythmdb_query_parse (db,
+						      RHYTHMDB_QUERY_SUBQUERY, subquery,
+						      RHYTHMDB_QUERY_END);
+
+			g_object_set (G_OBJECT (query_model), 
+				      "query", query,
+				      "base-model", model->priv->query_model, 
+				      NULL);
+			rhythmdb_query_free (query);
 		}
  		
 		tmp.db = db; 
@@ -1018,11 +1022,11 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		 * and prepare the query using do_full_query_async. The query would be 
 		 * hooked to the drag context.
 		 */
- 		gtk_tree_model_foreach (query_model,
- 					(GtkTreeModelForeachFunc)query_model_cb,
+ 		gtk_tree_model_foreach (GTK_TREE_MODEL (query_model),
+ 					(GtkTreeModelForeachFunc) query_model_cb,
  					&tmp);
  		
- 		g_object_unref (query_model);
+		g_object_unref (query_model);
  
  		gtk_selection_data_set (selection_data,
  		                        selection_data->target,

@@ -1,3 +1,12 @@
+2006-04-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_drag_data_get):
+	When creating uri list drag data, create a new query model based on
+	the query model the property model is attached to.  Makes the
+	resulting query use the right entry type and include the upstream
+	query criteria.  Fixes half of #327540.
+
 2006-04-27  James Livingston  <doclivingston@gmail.com>
 
 	* backends/gstreamer/rb-encoder-gst.c: (encoder_match_mime),
