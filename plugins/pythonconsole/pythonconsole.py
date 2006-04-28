@@ -32,7 +32,7 @@ import gobject
 import gtk
 import pango
 from gettext import gettext as _
-import rb
+import rhythmdb, rb
 
 ui_str = """
 <ui>
