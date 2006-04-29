@@ -540,6 +540,15 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       notify_notification_close (icon->notify->handle, NULL);
     }
 
+  if (primary == NULL)
+    {
+      primary = "";
+    }
+  if (secondary == NULL)
+    {
+      secondary = "";
+    }
+
   esc_primary = g_markup_escape_text (primary, strlen (primary));
   esc_secondary = g_markup_escape_text (secondary, strlen (secondary));
   icon->notify->handle = notify_notification_new (esc_primary,
