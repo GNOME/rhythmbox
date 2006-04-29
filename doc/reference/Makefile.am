@@ -61,6 +61,7 @@ GTKDOC_LIBS=\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/lib/librb.la	                \
+	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/daapsharing/libdaapsharing.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
 	$(TOTEM_PLPARSER_LIBS)				\
@@ -74,7 +75,7 @@ GTKDOC_LIBS=\
 	$(RHYTHMBOX_LIBS)
 
 if ENABLE_TRACK_TRANSFER
-GTKDOC_LIBS +=	$(GNOME_MEDIA_PROFILES_LIBS) $(top_builddir)/backends/librbbackends.la
+GTKDOC_LIBS +=	$(GNOME_MEDIA_PROFILES_LIBS) 
 endif
 
 if ENABLE_PYTHON
