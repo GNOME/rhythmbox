@@ -1057,7 +1057,7 @@ get_genres_hash_for_type (RhythmDBTree *db, RhythmDBEntryType type)
 {
 	GHashTable *table;
 
-	table = g_hash_table_lookup (db->priv->genres, GINT_TO_POINTER (type));
+	table = g_hash_table_lookup (db->priv->genres, type);
 	if (table == NULL) {
 		table = g_hash_table_new_full (rb_refstring_hash,
 					       rb_refstring_equal,
@@ -1068,7 +1068,7 @@ get_genres_hash_for_type (RhythmDBTree *db, RhythmDBEntryType type)
 			return NULL;
 		}
 		g_hash_table_insert (db->priv->genres, 
-				     GINT_TO_POINTER (type), 
+				     type,
 				     table);
 	} 
 	return table;
@@ -1525,11 +1525,13 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			relative_time = g_value_get_ulong (data->val);
 			g_get_current_time  (&current_time);
 
-			if (data->type == RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN)
-				return (rhythmdb_entry_get_ulong (entry, data->propid) >= (current_time.tv_sec - relative_time));
-			else
-				return (rhythmdb_entry_get_ulong (entry, data->propid) < (current_time.tv_sec - relative_time));
-
+			if (data->type == RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN) {
+				if (!(rhythmdb_entry_get_ulong (entry, data->propid) >= (current_time.tv_sec - relative_time)))
+					return FALSE;
+			} else {
+				if (!(rhythmdb_entry_get_ulong (entry, data->propid) < (current_time.tv_sec - relative_time)))
+					return FALSE;
+			}
 			break;
 		}
 		case RHYTHMDB_QUERY_PROP_PREFIX:
@@ -1544,9 +1546,9 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			entry_s = rhythmdb_entry_get_string (entry, data->propid);
 
 			if (data->type == RHYTHMDB_QUERY_PROP_PREFIX && !g_str_has_prefix (entry_s, value_s))
-					return FALSE;
+				return FALSE;
 			if (data->type == RHYTHMDB_QUERY_PROP_SUFFIX && !g_str_has_suffix (entry_s, value_s))
-					return FALSE;
+				return FALSE;
 			
 			break;
 		}
@@ -1580,10 +1582,8 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			/* Fall through */
 		}
 		case RHYTHMDB_QUERY_PROP_EQUALS:
-		{
 			RHYTHMDB_PROPERTY_COMPARE (!=)
 			break;
-		}
 		case RHYTHMDB_QUERY_PROP_GREATER:
 			RHYTHMDB_PROPERTY_COMPARE (<)
 			break;
@@ -1801,6 +1801,8 @@ conjunctive_query (RhythmDBTree *db, GPtrArray *query,
 		genres = get_genres_hash_for_type (db, etype);
 		if (genres != NULL) {
 			conjunctive_query_genre (db, genres, traversal_data);
+		} else {
+			g_assert_not_reached ();
 		}
 	} else {
 		/* FIXME */

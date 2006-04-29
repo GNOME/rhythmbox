@@ -1,3 +1,12 @@
+2006-04-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-tree.c: (get_genres_hash_for_type):
+	RhythmDBEntryType is a pointer now, so GINT_TO_POINTER is unnecessary.
+	(conjunctive_query): Sanity check.
+	(evaluate_conjunctive_subquery): 
+	Don't return TRUE immediately when a relative-time query criterion
+	matches.  Fixes #339972.
+
 2006-04-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
