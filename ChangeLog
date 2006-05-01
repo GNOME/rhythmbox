@@ -1,3 +1,15 @@
+2006-05-01  William Jon McCann  <mccann@jhu.edu>
+
+	* plugins/artdisplay/artdisplay.py: Use set_from_pixbuf
+	instead of clear.  Use regex matching to strip "disc N"
+	from album.  Match titles in ProductName.  Perform
+	fallback queries including various artist compilations.
+	Include "us" locale.  Improve queries when artist or album
+	is unknown.  Use medium size image if large is unavailable.
+
+	patch by: Alex Lancaster  <alexl@users.sourceforge.net>,
+	William Jon McCann  <mccann@jhu.edu>
+	
 2006-04-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-tree.c: (get_genres_hash_for_type):
