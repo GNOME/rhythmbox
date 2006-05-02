@@ -1,5 +1,13 @@
 2006-05-02  James Livingston  <doclivingston@gmail.com>
 
+	patch from Alessandro Decina  <alessandro@nnva.org>
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_encode): fix
+	the signal emission in the case of fatal-on-init errors. From bug
+	322268.
+
+2006-05-02  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb.h:
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate),
 	(rhythmdb_entry_finalize), (_get_podcast_playback_uri),

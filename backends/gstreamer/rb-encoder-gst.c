@@ -948,9 +948,16 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	}
 
 	if (error) {
-		rb_encoder_gst_emit_error (RB_ENCODER_GST (encoder), error);
+		RBEncoderGst *enc = RB_ENCODER_GST (encoder);
+		
+		rb_encoder_gst_emit_error (enc, error);
 		g_error_free (error);
-		rb_encoder_cancel (encoder);
+		if (enc->priv->pipeline == NULL)
+			rb_encoder_gst_emit_completed (enc);
+		else
+			/* this will unref the pipeline and call emit_completed
+			 */
+			rb_encoder_gst_cancel (encoder);
 	}
 
 	return result;
