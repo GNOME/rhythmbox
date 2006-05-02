@@ -42,6 +42,9 @@ static char * impl_transform_playlist_uri (RBGenericPlayerSource *source, const 
 
 
 typedef struct {
+#ifdef __SUNPRO_C
+   int x;  /* To build with Solaris forte compiler */
+#endif
 } RBNokia770SourcePrivate;
 
 G_DEFINE_TYPE (RBNokia770Source, rb_nokia770_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
