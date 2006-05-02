@@ -1,5 +1,20 @@
 2006-05-02  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate),
+	(rhythmdb_entry_finalize), (_get_podcast_playback_uri),
+	(rhythmdb_entry_podcast_post_get_type),
+	(rhythmdb_entry_get_double), (rhythmdb_entry_get_playback_uri): add a
+	virtual function to entry-types for getting the playback URI. From bug
+	330226.
+
+	* backends/gstreamer/rb-encoder-gst.c:
+	(create_pipeline_and_source), (extract_track):
+	* shell/rb-shell-player.c: (rb_shell_player_open_entry): use the above
+	to get the URI.
+
+2006-05-02  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Brian Cameron  <brian.cameron@sun.com>
 
 	* sources/rb-nokia770-source.c: more Solaris build fixes, from bug

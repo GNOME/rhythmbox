@@ -708,15 +708,19 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 			    RhythmDBEntry *entry,
 			    GError **error)
 {
-	const char *uri;
+	char *uri;
 	GstElement *src;
 
-	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	uri = rhythmdb_entry_get_playback_uri (entry);
+	if (uri == NULL)
+		return NULL;
+
 	src = gst_element_make_from_uri (GST_URI_SRC, uri, "source");
 	if (src == NULL) {
 		g_set_error (error,
 			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
 			     "could not create source element for '%s'", uri);
+		g_free (uri);
 		return NULL;
 	}
 
@@ -724,6 +728,8 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), src);
 
 	/* TODO: add progress reporting */
+
+	g_free (uri);
 
 	return src;
 }
@@ -759,7 +765,7 @@ extract_track (RBEncoderGst *encoder,
 	       GError **error)
 {
 	/* cdsrc ! encoder ! sink */
-	const char *uri;
+	char *uri;
 	const char *device;
 	const char *profile_name;
 	GMAudioProfile *profile;
@@ -781,7 +787,9 @@ extract_track (RBEncoderGst *encoder,
 		return FALSE;
 
 	/* setup cd extraction properties */
-	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	uri = rhythmdb_entry_get_playback_uri (entry);
+	if (uri == NULL)
+		return FALSE;
 
 	device = g_utf8_strrchr (uri, -1, '#');
 	g_object_set (G_OBJECT (src),
@@ -794,6 +802,7 @@ extract_track (RBEncoderGst *encoder,
 		paranoia_mode = 255; /* TODO: make configurable */
 		g_object_set (G_OBJECT (src), "paranoia-mode", paranoia_mode, NULL);
 	}
+	g_free (uri);
 
 	end = add_encoding_pipeline (encoder, profile, error);
 	if (end == NULL)

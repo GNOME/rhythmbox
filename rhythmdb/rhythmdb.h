@@ -32,6 +32,9 @@
 
 G_BEGIN_DECLS
 
+struct RhythmDB_;
+typedef struct RhythmDB_ RhythmDB;
+
 #define RHYTHMDB_TYPE      (rhythmdb_get_type ())
 #define RHYTHMDB(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE, RhythmDB))
 #define RHYTHMDB_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RHYTHMDB_TYPE, RhythmDBClass))
@@ -47,16 +50,23 @@ GType rhythmdb_entry_get_type (void);
 #define RHYTHMDB_ENTRY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY, RhythmDBEntry))
 #define RHYTHMDB_IS_ENTRY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY))
 
-typedef GPtrArray RhythmDBQuery;
-GType rhythmdb_query_get_type (void);
-#define RHYTHMDB_TYPE_QUERY	(rhythmdb_query_get_type ())
-#define RHYTHMDB_QUERY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_QUERY, RhythmDBQuery))
-#define RHYTHMDB_IS_QUERY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_QUERY))
+
+typedef void (*RhythmDBEntryActionFunc) (RhythmDBEntry *entry, gpointer data);
+typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 
 typedef struct {
 	/* virtual functions here */
-	void (*post_entry_create) (RhythmDBEntry *entry);
-	void (*pre_entry_destroy) (RhythmDBEntry *entry);
+	RhythmDBEntryActionFunc		post_entry_create;
+	gpointer			post_entry_create_data;
+	GDestroyNotify			post_entry_create_destroy;
+
+	RhythmDBEntryActionFunc		pre_entry_destroy;
+	gpointer			pre_entry_destroy_data;
+	GDestroyNotify			pre_entry_destroy_destroy;
+
+	RhythmDBEntryStringFunc		get_playback_uri;
+	gpointer			get_playback_uri_data;
+	GDestroyNotify			get_playback_uri_destroy;
 } RhythmDBEntryType_;
 typedef RhythmDBEntryType_ *RhythmDBEntryType;
 
@@ -64,6 +74,15 @@ GType rhythmdb_entry_type_get_type (void);
 #define RHYTHMDB_TYPE_ENTRY_TYPE	(rhythmdb_entry_type_get_type ())
 #define RHYTHMDB_ENTRY_TYPE(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY_TYPE, RhythmDBEntryType_))
 #define RHYTHMDB_IS_ENTRY_TYPE(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY_TYPE))
+
+
+
+typedef GPtrArray RhythmDBQuery;
+GType rhythmdb_query_get_type (void);
+#define RHYTHMDB_TYPE_QUERY	(rhythmdb_query_get_type ())
+#define RHYTHMDB_QUERY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_QUERY, RhythmDBQuery))
+#define RHYTHMDB_IS_QUERY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_QUERY))
+
 
 #define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
@@ -207,12 +226,12 @@ GQuark rhythmdb_error_quark (void);
 
 typedef struct RhythmDBPrivate RhythmDBPrivate;
 
-typedef struct
+struct RhythmDB_
 {
 	GObject parent;
 
 	RhythmDBPrivate *priv;
-} RhythmDB;
+};
 
 typedef struct
 {
@@ -256,6 +275,7 @@ typedef struct
 						 gboolean *cancel);
 } RhythmDBClass;
 
+
 GType		rhythmdb_get_type	(void);
 
 RhythmDB *	rhythmdb_new		(const char *name);
@@ -286,6 +306,8 @@ void		rhythmdb_entry_set_nonotify	(RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, const GValue *value);
 void		rhythmdb_entry_set_uninserted   (RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, const GValue *value);
+
+char *		rhythmdb_entry_get_playback_uri	(RhythmDBEntry *entry);
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 void            rhythmdb_entry_delete_by_type (RhythmDB *db, 

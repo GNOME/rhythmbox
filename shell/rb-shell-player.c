@@ -1029,16 +1029,17 @@ rb_shell_player_open_location (RBShellPlayer *player,
 static gboolean
 rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	RhythmDBEntryType type;
-	const char *location;
+	char *location;
+	gboolean result;
 
-	type = rhythmdb_entry_get_entry_type (entry);
-	if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
-		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-	else
-		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	location = rhythmdb_entry_get_playback_uri (entry);
+	if (location == NULL)
+		return FALSE;
 
-	return rb_shell_player_open_location (player, location, error);
+	result = rb_shell_player_open_location (player, location, error);
+	g_free (location);
+
+	return result;
 }
 
 

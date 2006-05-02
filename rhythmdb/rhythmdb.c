@@ -1084,7 +1084,7 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	g_atomic_int_inc (&ret->refcount);
 
 	if (type->post_entry_create)
-		(type->post_entry_create)(ret);
+		(type->post_entry_create)(ret, type->post_entry_create_data);
 
 	return ret;
 }
@@ -1202,7 +1202,7 @@ rhythmdb_entry_finalize (RhythmDB *db, RhythmDBEntry *entry)
 
 	type = rhythmdb_entry_get_entry_type (entry);
 	if (type->pre_entry_destroy)
-		(type->pre_entry_destroy)(entry);
+		(type->pre_entry_destroy)(entry, type->pre_entry_destroy_data);
 
 	g_free (entry->location);
 	g_free (entry->playback_error);
@@ -4113,6 +4113,12 @@ RhythmDBEntryType rhythmdb_entry_iradio_get_type (void)
 	return iradio_type;
 }
 
+static char *
+_get_podcast_playback_uri (RhythmDBEntry *entry, gpointer data)
+{
+	return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+}
+
 RhythmDBEntryType rhythmdb_entry_podcast_post_get_type (void) 
 {
 	static RhythmDBEntryType podcast_post_type = RHYTHMDB_ENTRY_TYPE_INVALID;
@@ -4120,6 +4126,8 @@ RhythmDBEntryType rhythmdb_entry_podcast_post_get_type (void)
 	g_static_mutex_lock (&entry_type_mutex);
 	if (podcast_post_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		podcast_post_type = rhythmdb_entry_register_type ();
+
+		podcast_post_type->get_playback_uri = _get_podcast_playback_uri;
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
 
@@ -4792,6 +4800,18 @@ rhythmdb_entry_get_double (RhythmDBEntry *entry, RhythmDBPropType propid)
 		g_assert_not_reached ();
 		return 0.0;
 	}
+}
+
+char *
+rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
+{
+	RhythmDBEntryType type;
+
+	type = rhythmdb_entry_get_entry_type (entry);
+	if (type->get_playback_uri)
+		return (type->get_playback_uri) (entry, type->get_playback_uri_data);
+	else
+		return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
 }
 
 GType
