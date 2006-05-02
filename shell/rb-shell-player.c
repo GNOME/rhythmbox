@@ -1881,7 +1881,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	RhythmDBEntry *prev_entry = NULL;
 	GError *error = NULL;
 	gboolean source_set = FALSE;
-	RhythmDBEntryType entry_type;
+	char *playback_uri;
 
 	g_return_if_fail (entry != NULL);
 
@@ -1891,18 +1891,13 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
 		return;
 
-	entry_type = rhythmdb_entry_get_entry_type (entry);
-
-	/* don't play import error entries */
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR)
+	/* skip entries with no playback uri */
+	playback_uri = rhythmdb_entry_get_playback_uri (entry);
+	if (playback_uri == NULL) {
 		return;
-
-	/* ensure the podcast has been downloaded */
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
-		if (!rb_podcast_manager_entry_downloaded (entry))
-			return;
 	}
-	
+	g_free (playback_uri);
+
 	/* figure out where the previous entry came from */
 	if ((playa->priv->queue_source != NULL) &&
 	    (playa->priv->current_playing_source == RB_SOURCE (playa->priv->queue_source))) {

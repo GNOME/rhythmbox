@@ -4147,6 +4147,12 @@ RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void)
 	return podcast_feed_type;
 }
 
+static char *
+_get_import_error_playback_uri (RhythmDBEntry *entry, gpointer data)
+{
+	return NULL;
+}
+
 RhythmDBEntryType rhythmdb_entry_import_error_get_type (void) 
 {
 	static RhythmDBEntryType import_error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
@@ -4154,6 +4160,8 @@ RhythmDBEntryType rhythmdb_entry_import_error_get_type (void)
 	g_static_mutex_lock (&entry_type_mutex);
 	if (import_error_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		import_error_type = rhythmdb_entry_register_type ();
+		
+		import_error_type->get_playback_uri = _get_import_error_playback_uri;
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
 

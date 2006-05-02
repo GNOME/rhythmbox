@@ -1,3 +1,17 @@
+2006-05-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load):
+	* plugins/sample/sample.rb-plugin.desktop.in:
+	Finish changing 'Author' to 'Authors'
+	
+	* rhythmdb/rhythmdb.c: (_get_import_error_playback_uri),
+	(rhythmdb_entry_import_error_get_type):
+	Implement get_playback_uri for import errors (returns NULL)
+
+	* shell/rb-shell-player.c: (rb_shell_player_entry_activated_cb):
+	Use rhythmdb_entry_get_playback_uri to figure out if we can play the
+	entry, rather than doing entry type checks.
+
 2006-05-02  James Livingston  <doclivingston@gmail.com>
 
 	patch from Alessandro Decina  <alessandro@nnva.org>

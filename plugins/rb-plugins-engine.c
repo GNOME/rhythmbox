@@ -213,7 +213,7 @@ rb_plugins_engine_load (const gchar *file)
 						    "Authors",
 						    NULL, NULL);
 	if (info->authors == NULL)
-		rb_debug ("Could not find 'Author' in %s", file);
+		rb_debug ("Could not find 'Authors' in %s", file);
 
 
 	/* Get Copyright */
