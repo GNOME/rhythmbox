@@ -33,6 +33,7 @@
 #define gst_caps_unref gst_caps_free
 #define gst_tag_setter_add_tag_values gst_tag_setter_add_values
 #define gst_tag_setter_set_tag_merge_mode gst_tag_setter_set_merge_mode
+#define gst_tag_setter_merge_tags gst_tag_setter_merge
 #endif
 #ifdef HAVE_GSTREAMER_0_10
 #include <gst/gsttagsetter.h>
@@ -47,7 +48,7 @@ G_DEFINE_TYPE(RBMetaData, rb_metadata, G_TYPE_OBJECT)
 
 static void rb_metadata_finalize (GObject *object);
 
-typedef GstElement *(*RBAddTaggerElem) (GstBin *, GstElement *);
+typedef GstElement *(*RBAddTaggerElem) (RBMetaData *, GstElement *);
 
 
 /*
@@ -83,6 +84,7 @@ struct RBMetaDataPrivate
 	GstElement *pipeline;
 	GstElement *sink;
 	gulong typefind_cb_id;
+	GstTagList *tags;
 
 	/* Array of RBMetadataGstType */
 	GPtrArray *supported_types;
@@ -134,15 +136,17 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 
 
 static GstElement *
-rb_add_flac_tagger (GstBin *pipeline, GstElement *element)
+rb_add_flac_tagger (RBMetaData *md, GstElement *element)
 {
 	GstElement *tagger = NULL;
 
 	if (!(tagger = gst_element_factory_make ("flactag", "flactag")))
 		return NULL;
 
-	gst_bin_add (GST_BIN (pipeline), tagger);
+	gst_bin_add (GST_BIN (md->priv->pipeline), tagger);
 	gst_element_link_many (element, tagger, NULL);
+
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
 
 	return tagger;
 }
@@ -162,7 +166,7 @@ id3_pad_added_cb (GstElement *demux, GstPad *pad, GstElement *mux)
 }
 
 static GstElement *
-rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
+rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 {
 	GstElement *demux = NULL;
 	GstElement *mux = NULL;
@@ -173,11 +177,14 @@ rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
 	if (demux == NULL || mux == NULL)
 		goto error;
 
-	gst_bin_add_many (pipeline, demux, mux, NULL);
+	gst_bin_add_many (GST_BIN (md->priv->pipeline), demux, mux, NULL);
 	if (!gst_element_link (element, demux))
 		goto error;
 
 	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
+
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
+	gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
 
 	return mux;
 
@@ -186,9 +193,86 @@ error:
 	g_object_unref (mux);
 	return NULL;
 }
+
+
+static void
+ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
+{
+	GstCaps *caps;
+	GstStructure *structure;
+	const gchar *mimetype;
+	GstPad *conn_pad = NULL;
+	GstElement *mux;
+
+	caps = gst_pad_get_caps (pad);
+	structure = gst_caps_get_structure (caps, 0);
+	mimetype = gst_structure_get_name (structure);
+
+	mux = g_object_get_data (G_OBJECT (demux), "mux");
+
+	if (strcmp (mimetype, "audio/x-vorbis") == 0) {
+		GstElement *tagger, *parser;
+		GstBin *bin;
+		GstState state;
+
+		rb_debug ("found vorbis stream in ogg container, using vorbistag");
+
+		parser = gst_element_factory_make ("vorbisparse", NULL);
+		tagger = gst_element_factory_make ("vorbistag", NULL);
+
+		bin = GST_BIN (gst_element_get_parent (mux));
+		gst_bin_add_many (bin, tagger, parser, NULL);
+		gst_object_unref (GST_OBJECT (bin));
+
+		/* connect and bring them up to the same state */
+		gst_element_link_many (tagger, parser, mux, NULL);
+		gst_element_get_state (mux, &state, NULL, 0);
+		gst_element_set_state (parser, state);
+		gst_element_set_state (tagger, state);
+	
+		conn_pad = gst_element_get_compatible_pad (tagger, pad, NULL);
+		gst_pad_link (pad, conn_pad);
+
+		gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
+	} else {
+		conn_pad = gst_element_get_compatible_pad (mux, pad, NULL);
+		gst_pad_link (pad, conn_pad);
+		rb_debug ("found stream in ogg container with no known tagging element");
+	}
+
+	gst_caps_unref (caps);
+}
+
+static GstElement *
+rb_add_ogg_tagger (RBMetaData *md, GstElement *element)
+{
+	GstElement *demux = NULL;
+	GstElement *mux = NULL;
+
+	demux = gst_element_factory_make ("oggdemux", NULL);
+	mux =  gst_element_factory_make ("oggmux", NULL);
+
+	if (demux == NULL || mux == NULL)
+		goto error;
+
+	gst_bin_add_many (GST_BIN (md->priv->pipeline), demux, mux, NULL);
+	if (!gst_element_link (element, demux))
+		goto error;
+
+	g_object_set_data (G_OBJECT (demux), "mux", mux);
+	g_signal_connect (demux, "pad-added", (GCallback)ogg_pad_added_cb, md);
+
+	return mux;
+
+error:
+	g_object_unref (demux);
+	g_object_unref (mux);
+	return NULL;
+}
+
 #elif HAVE_GSTREAMER_0_8
 static GstElement *
-rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
+rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 {
 	GstElement *tagger, *identity;
 	GstCaps *filtercaps = NULL;
@@ -201,7 +285,7 @@ rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
 		return NULL;
 	}
 
-	gst_bin_add_many (GST_BIN (pipeline), tagger, identity, NULL);
+	gst_bin_add_many (GST_BIN (md->priv->pipeline), tagger, identity, NULL);
 
 	filtercaps = gst_caps_new_simple ("application/x-id3", NULL);
 	if (!gst_element_link_filtered (tagger, identity, filtercaps)) {
@@ -214,6 +298,8 @@ rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
 	gst_caps_free (filtercaps);
 
 	gst_element_link_many(element, tagger, NULL);
+
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
 
 	return identity;
 }
@@ -236,8 +322,8 @@ static void
 rb_metadata_init (RBMetaData *md)
 {
 	RBAddTaggerElem tagger;
-	gboolean has_gnomevfssink;
-	gboolean has_id3;
+	gboolean has_gnomevfssink = FALSE;
+	gboolean has_id3 = FALSE;
         
 	md->priv = RB_METADATA_GET_PRIVATE (md);
 
@@ -256,7 +342,7 @@ rb_metadata_init (RBMetaData *md)
 			    gst_element_factory_find ("gnomevfssink") != NULL);
 #ifdef HAVE_GSTREAMER_0_10
 	has_id3 = (gst_default_registry_check_feature_version ("id3mux", 0, 10, 2) &&
-		   gst_element_factory_find ("id3demux") != NULL);
+		  (gst_element_factory_find ("id3demux") != NULL));
 #elif HAVE_GSTREAMER_0_8
 	has_id3 = (gst_element_factory_find ("id3tag") != NULL);
 #endif
@@ -265,8 +351,21 @@ rb_metadata_init (RBMetaData *md)
 	add_supported_type (md, "application/x-id3", tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", tagger, "MP3");
 
-	add_supported_type (md, "application/ogg", NULL, "Ogg Vorbis");
-	add_supported_type (md, "audio/x-vorbis", NULL, "Ogg Vorbis");
+#ifdef HAVE_GSTREAMER_0_10
+	{
+		gboolean has_vorbis;
+
+		has_vorbis = ((gst_element_factory_find ("vorbistag") != NULL) &&
+			      gst_default_registry_check_feature_version ("vorbisparse", 0, 10, 6) &&
+			      gst_default_registry_check_feature_version ("oggmux", 0, 10, 6) &&
+			      gst_default_registry_check_feature_version ("oggdemux", 0, 10, 6));
+		tagger = (has_gnomevfssink && has_vorbis) ?  rb_add_ogg_tagger : NULL;
+	}
+#else
+	tagger = NULL;
+#endif
+	add_supported_type (md, "application/ogg", tagger, "Ogg Vorbis");
+	add_supported_type (md, "audio/x-vorbis", tagger, "Ogg Vorbis");
 
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
 	add_supported_type (md, "audio/x-wav", NULL, "WAV");
@@ -1101,7 +1200,7 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 }
 
 static void
-rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tagsetter)
+rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, RBMetaData *md)
 {
 	RBMetaDataField field = GPOINTER_TO_INT (key);
 	const char *tag = rb_metadata_gst_field_to_gst_tag (field);
@@ -1122,14 +1221,16 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 			if (g_value_transform (val, &newval)) {
 				rb_debug("Setting %s",tag);
 
-				gst_tag_setter_add_tag_values (GST_TAG_SETTER (tagsetter),
-							   GST_TAG_MERGE_REPLACE_ALL,
-							   tag, &newval, NULL);
+				gst_tag_list_add_values (md->priv->tags,
+							 GST_TAG_MERGE_APPEND,
+							 tag, &newval,
+							 NULL);
 			}
 			g_value_unset (&newval);
 		}
 	}
 }
+
 
 static gboolean
 rb_metadata_file_valid (char *original, char *newfile)
@@ -1155,7 +1256,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	GstElement *pipeline = NULL;
 	GstElement *gnomevfssrc = NULL;
         GstElement *retag_end = NULL; /* the last elemet after retagging subpipeline */
-	GstElement *tagger = NULL;
 	const char *plugin_name = NULL;
 	char *tmpname = NULL;
 	GnomeVFSHandle *handle = NULL;
@@ -1171,6 +1271,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto vfs_error;
 
 	pipeline = gst_pipeline_new ("pipeline");
+	md->priv->pipeline = pipeline;
 
 #ifdef HAVE_GSTREAMER_0_8
 	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
@@ -1193,6 +1294,11 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 #endif
 
+	md->priv->tags = gst_tag_list_new ();
+	g_hash_table_foreach (md->priv->metadata, 
+			      (GHFunc) rb_metadata_gst_add_tag_data,
+			      md);
+
 	/* Tagger element(s) */
 	add_tagger_func = rb_metadata_gst_type_to_tag_function (md, md->priv->type);
 	
@@ -1204,7 +1310,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	retag_end = add_tagger_func (GST_BIN (pipeline), gnomevfssrc);
+	retag_end = add_tagger_func (md, gnomevfssrc);
 	if (!retag_end) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -1213,25 +1319,11 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-        tagger = gst_bin_get_by_interface (GST_BIN (pipeline), GST_TYPE_TAG_SETTER);
-	if (!tagger) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_UNSUPPORTED,
-			     "Unable to find tag-writing element");
-		goto out_error;
-	}
-
-	gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_REPLACE_ALL);
-	g_hash_table_foreach (md->priv->metadata, 
-			      (GHFunc) rb_metadata_gst_add_tag_data,
-			      GST_TAG_SETTER (tagger));
-	
 	gst_bin_add (GST_BIN (pipeline), md->priv->sink); 
 	gst_element_link_many (retag_end, md->priv->sink, NULL);
 
-	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
+
 #ifdef HAVE_GSTREAMER_0_8
 	while (gst_bin_iterate (GST_BIN (pipeline))
 	       && md->priv->error == NULL
@@ -1293,7 +1385,12 @@ out_error:
 		gnome_vfs_close (handle);
 	if (tmpname != NULL)
 		gnome_vfs_unlink (tmpname);
+
 out:
+	if (md->priv->tags)
+		gst_tag_list_free (md->priv->tags);
+	md->priv->tags = NULL;
+
 	if (pipeline != NULL)
 		gst_object_unref (GST_OBJECT (pipeline));
 	md->priv->pipeline = NULL;

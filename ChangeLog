@@ -1,5 +1,17 @@
 2006-05-03  James Livingston  <doclivingston@gmail.com>
 
+	* metadata/rb-metadata-gst.c: (rb_add_flac_tagger),
+	(rb_add_id3_tagger), (rb_metadata_save):
+	Set the tags on the tagging element when it is
+	created, not during pipeline creation - which is required for
+	dynamically created elements.
+
+	(ogg_pad_added_cb), (rb_add_ogg_tagger), (rb_metadata_init): add
+	support for using the "vorbistag" element to re-tag ogg vorbis files.
+	Fixes bug 339878.
+
+2006-05-03  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Martin Szulecki  <gnomebugzilla@sukimashita.com>
 
 	* plugins/artdisplay/artdisplay.py:
