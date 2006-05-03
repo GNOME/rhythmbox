@@ -1,5 +1,20 @@
 2006-05-03  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Martin Szulecki  <gnomebugzilla@sukimashita.com>
+
+	* plugins/artdisplay/artdisplay.py:
+	- Fix small bug callback of data loader getting overwritten on fast
+	connections.
+	- Add asynchronous loading with gnomevfs and urllib fallback (thx to
+	Jonathan Matthew)
+	- Fix Rhythmbox UI blocking while loading/searching cover art
+	- Split logic into CoverArtDatabase, AmazonCoverArtSearch
+	- Initial approach to allow additional "art search engines"
+	- Further modularization in a couple of places
+	- Minor fixes for empty entries (iradio, album, artist etc.)
+
+2006-05-03  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_playlist_entries_changed),
 	(rb_playlist_manager_set_source): don't show the edit/delete/rename
