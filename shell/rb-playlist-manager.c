@@ -319,7 +319,7 @@ rb_playlist_manager_playlist_entries_changed (GtkTreeModel *model, RhythmDBEntry
 	num_tracks = gtk_tree_model_iter_n_children (model, NULL);
 
 	action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
-	g_object_set (G_OBJECT (action), "sensitive", (num_tracks > 0), NULL);
+	gtk_action_set_visible (action, (num_tracks > 0));
 }
 
 static void
@@ -372,23 +372,24 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	can_save = playlist_local && !party_mode;
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "MusicPlaylistSavePlaylist");
-	g_object_set (G_OBJECT (action), "sensitive", can_save, NULL);
+	gtk_action_set_visible (action, can_save);
 
 	can_delete = (playlist_local && !party_mode &&
 		      !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source));
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "MusicPlaylistDeletePlaylist");
-	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
+	gtk_action_set_visible (action, can_delete);
 
-	can_edit = !party_mode && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	can_edit = (playlist_local && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source) &&
+		    !party_mode);
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "EditAutomaticPlaylist");
-	g_object_set (G_OBJECT (action), "sensitive", can_edit, NULL);
+	gtk_action_set_visible (action, can_edit);
 
-	can_rename = rb_source_can_rename (mgr->priv->selected_source);
+	can_rename = playlist_local && rb_source_can_rename (mgr->priv->selected_source);
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "MusicPlaylistRenamePlaylist");
-	g_object_set (G_OBJECT (action), "sensitive", playlist_local && can_rename, NULL);
+	gtk_action_set_visible (action, can_rename);
 
 	if (playlist_active && rb_recorder_enabled ()) {
 		RhythmDBQueryModel *model;
@@ -409,7 +410,7 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	} else {
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistBurnPlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
+		gtk_action_set_visible (action, FALSE);
 	}
 }
 

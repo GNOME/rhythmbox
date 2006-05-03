@@ -42,6 +42,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-library-source.h"
 #include "rb-removable-media-manager.h"
+#include "rb-auto-playlist-source.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -92,6 +93,7 @@ static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 static void rb_library_source_songs_show_popup_cb (RBEntryView *view,
 						   gboolean over_entry,
 						   RBLibrarySource *source);						
+static void rb_library_source_sync_child_sources (RBLibrarySource *source);
 #ifdef ENABLE_TRACK_TRANSFER
 static void rb_library_source_path_changed_cb (GtkComboBox *box,
 						RBLibrarySource *source);
@@ -141,6 +143,8 @@ struct RBLibrarySourcePrivate
 	RBShellPreferences *shell_prefs;
 
 	GtkWidget *config_widget;
+
+	GList *child_sources;
 
 	GtkWidget *library_location_entry;
 	GtkWidget *watch_library_check;
@@ -241,6 +245,14 @@ rb_library_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_library_source_parent_class)->finalize (object);
 }
 
+static gboolean
+add_child_sources_idle (RBLibrarySource *source)
+{
+	rb_library_source_sync_child_sources (source);
+
+	return FALSE;
+}
+
 static GObject *
 rb_library_source_constructor (GType type,
 			       guint n_construct_properties,
@@ -275,6 +287,8 @@ rb_library_source_constructor (GType type,
 	g_signal_connect_object (G_OBJECT (rb_source_get_entry_view (RB_SOURCE (source))), "show_popup",
 				 G_CALLBACK (rb_library_source_songs_show_popup_cb), source, 0);
 
+	g_idle_add ((GSourceFunc)add_child_sources_idle, source);
+
 	g_object_unref (G_OBJECT (shell));
 
 	return G_OBJECT (source);
@@ -302,6 +316,7 @@ rb_library_source_new (RBShell *shell)
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source,
 						 RHYTHMDB_ENTRY_TYPE_SONG);
+
 	return source;
 }
 
@@ -448,6 +463,8 @@ rb_library_source_library_location_changed (GConfClient *client,
 {
 	if (source->priv->config_widget)
 		rb_library_source_preferences_sync (source);
+
+	rb_library_source_sync_child_sources (source);
 }
 
 static void
@@ -1163,4 +1180,55 @@ impl_paste (RBSource *asource, GList *entries)
 	g_object_unref (G_OBJECT (rm_mgr));
 }
 #endif
+
+static void
+rb_library_source_add_child_source (const char *path, RBLibrarySource *library_source)
+{
+	RBSource *source;
+	GPtrArray *query;
+	RBShell *shell;
+	GnomeVFSURI *uri;
+	char *name;
+	GdkPixbuf *icon;
+
+	g_object_get (G_OBJECT (library_source), "shell", &shell, NULL);
+	uri = gnome_vfs_uri_new (path);
+	name = gnome_vfs_uri_extract_short_name (uri);
+	gnome_vfs_uri_unref (uri);
+	
+	source = rb_auto_playlist_source_new (shell, name, FALSE);
+	query = rhythmdb_query_parse (library_source->priv->db,
+				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_LOCATION, path,
+				      RHYTHMDB_QUERY_END);
+	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (source), query, 0, 0, 0, NULL, 0);
+	rhythmdb_query_free (query);
+
+	g_object_get (G_OBJECT (library_source), "icon", &icon, NULL);
+	g_object_set (G_OBJECT (source), "icon", g_object_ref (icon), NULL);
+
+	rb_shell_append_source (shell, source, RB_SOURCE (library_source));
+	library_source->priv->child_sources = g_list_prepend (library_source->priv->child_sources, source);
+
+	g_object_unref (shell);
+	g_free (name);
+}
+
+static void
+rb_library_source_sync_child_sources (RBLibrarySource *source)
+{
+	GSList *list;
+
+	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+
+	/* FIXME: don't delete and re-create sources that are still there */
+	g_list_foreach (source->priv->child_sources, (GFunc)rb_source_delete_thyself, NULL);
+	g_list_free (source->priv->child_sources);
+	source->priv->child_sources = NULL;
+
+	if (g_slist_length (list) > 1)
+		g_slist_foreach (list, (GFunc)rb_library_source_add_child_source, source);
+	g_slist_foreach (list, (GFunc) g_free, NULL);
+	g_slist_free (list);
+}
 

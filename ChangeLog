@@ -1,3 +1,17 @@
+2006-05-03  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_playlist_entries_changed),
+	(rb_playlist_manager_set_source): don't show the edit/delete/rename
+	options for non-local sources, rather than showing disabled ones.
+
+	* sources/rb-library-source.c: (add_child_sources_idle),
+	(rb_library_source_constructor), (rb_library_source_new),
+	(rb_library_source_library_location_changed),
+	(rb_library_source_add_child_source),
+	(rb_library_source_sync_child_sources): Create "child library" sources
+	when the user has multiple library locations set. Fixes bug 100552.
+
 2006-05-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load):
