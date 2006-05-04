@@ -1,3 +1,9 @@
+2006-05-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_drag_data_get):
+	Use playback URI, not location, for drag data.  Fixes #322597.
+
 2006-05-03  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	* data/glade/general-prefs.glade:  HIG fixes from bug 340588.
