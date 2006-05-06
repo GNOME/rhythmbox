@@ -580,7 +580,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   if (pixbuf)
     {
-#if (LIBNOTIFY_VERSION_MICRO < 2)
+#if (LIBNOTIFY_VERSION_MINOR <=3 && LIBNOTIFY_VERSION_MICRO < 2)
       notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
 #else
       notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
