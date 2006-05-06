@@ -36,6 +36,8 @@ LICENSE_KEY = "18C3VZN9HCECM5G3HQG2"
 DEFAULT_LOCALE = "en_US"
 ASSOCIATE = "webservices-20"
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
+FADE_STEPS = 10
+FADE_TOTAL_TIME = 1000
 
 class GnomeVFSAsyncSrc(object):  
     def __init__(self):
@@ -170,7 +172,7 @@ class CoverArtDatabase (object):
 				pic_url = str(self.best_match.ImageUrlMedium)
 				self.image_loader.get_url (pic_url, self.on_image_data_received)
 				return
-			blist_location = self.build_art_cache_filename(self.search_engine.st_album, self.search_engine.st_artist, "rb-list")
+			blist_location = self.build_art_cache_filename(self.search_engine.st_album, self.search_engine.st_artist, "rb-blist")
 			f = file (blist_location, 'w')
 			f.close ()
 			self.search_engine.search_next()
@@ -381,6 +383,9 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.resize_id = 0
 		self.resize_in_progress = False
 		self.old_width = 0
+		self.fade_step = 0
+		self.fade_id = 0
+		self.current_entry = None
 		entry = sp.get_playing_entry ()
 		self.playing_entry_changed (sp, entry)
 	
@@ -399,6 +404,8 @@ class ArtDisplayPlugin (rb.Plugin):
 
 		if self.resize_id != 0:
 			gobject.source_remove (self.resize_id)
+		if self.fade_id != 0:
+			gobject.source_remove (self.fade_id)
 
 	def playing_changed (self, sp, playing):
 		self.set_entry(sp.get_playing_entry ())
@@ -426,18 +433,58 @@ class ArtDisplayPlugin (rb.Plugin):
 		return ret
 
 	def set_entry (self, entry):
-		db = self.shell.get_property ("db")
+		if entry != self.current_entry:
+			db = self.shell.get_property ("db")
 
-		# Intitates search in the database (which checks art cache, internet etc.)
-		self.art_db.get_pixbuf(db, entry, self.on_get_pixbuf_completed)
+			# Intitates search in the database (which checks art cache, internet etc.)
+			self.current_entry = entry
+			self.art_db.get_pixbuf(db, entry, self.on_get_pixbuf_completed)
 
 	def on_get_pixbuf_completed(self, db, entry, pixbuf):
 		# Set the pixbuf for the entry returned from the art db
 		self.set_current_art (pixbuf)
 
-	def set_current_art (self, pixmap):
-		self.current_pixbuf = pixmap;
-		self.update_displayed_art (False);
+	def fade_art (self, old_pixbuf, new_pixbuf):
+		self.fade_step += 1.0 / FADE_STEPS
+
+		if self.fade_step <= 0.999:
+			# get pixbuf size
+			ow = old_pixbuf.get_width ()
+			nw = new_pixbuf.get_width ()
+			oh = old_pixbuf.get_height ()
+			nh = new_pixbuf.get_height ()
+
+			# find scale, widget size and alpha
+			ww = self.art_widget.parent.allocation.width 
+			wh = oh * ww / ow
+			sw = float(ww)/nw
+			sh = float(wh)/nh
+			alpha = int (self.fade_step * 255)
+
+			self.current_pixbuf = old_pixbuf.scale_simple (ww, wh, gtk.gdk.INTERP_NEAREST)
+			new_pixbuf.composite (self.current_pixbuf, 0, 0, ow, oh, 0, 0, sw, sh, gtk.gdk.INTERP_NEAREST, alpha)
+			self.art_widget.set_from_pixbuf (self.current_pixbuf)
+			self.art_widget.show ()
+			return True
+		else:
+			self.current_pixbuf = new_pixbuf
+			self.update_displayed_art (False);
+			self.fade_id = 0
+			return False
+
+	def set_current_art (self, pixbuf):
+		current_pb = self.art_widget.get_pixbuf ()
+		if self.fade_id != 0:
+			gobject.source_remove (self.fade_id)
+			self.fade_id = 0
+
+		if current_pb is not None and pixbuf is not None:
+			self.fade_step = 0.0
+			self.fade_art (current_pb, pixbuf)
+			self.fade_id = gobject.timeout_add ((FADE_TOTAL_TIME / FADE_STEPS), self.fade_art, current_pb, pixbuf)
+		else:
+			self.current_pixbuf = pixbuf;
+			self.update_displayed_art (False);
 
 	def update_displayed_art (self, quick):
 		if self.current_pixbuf is None:
