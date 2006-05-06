@@ -44,6 +44,11 @@
 #include "rb-util.h"
 #include "rhythmdb.h"
 
+#ifdef IPOD_PHONE_SUPPORT
+#define PHONE_VENDOR_ID 0x22b8
+#define PHONE_PRODUCT_ID 0x4810
+#endif
+
 static GObject *rb_ipod_source_constructor (GType type, 
 					    guint n_construct_properties,
 					    GObjectConstructParam *construct_properties);
@@ -565,9 +570,15 @@ rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
 	if (mount_point == NULL) {
 		return NULL;
 	}
+	
+#ifdef IPOD_PHONE_SUPPORT
+	result = itdb_get_itunesdb_path (mount_point);
+#else
 	result = g_build_filename (mount_point, 
 				   "iPod_Control/iTunes/iTunesDB",
 				   NULL);
+#endif
+	
 	g_free (mount_point);
 	return result;
 }
@@ -579,6 +590,7 @@ rb_ipod_volume_has_ipod_db (GnomeVFSVolume *volume)
 	gboolean result;
 
 	itunesdb_path = rb_ipod_get_itunesdb_path (volume);
+
 	if (itunesdb_path != NULL) {
 		result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
 	} else {
@@ -653,6 +665,47 @@ hal_udi_is_ipod (const char *udi)
 		
 	parent_name = libhal_device_get_property_string (ctx, parent_udi,
 			"storage.model", &error);
+#ifdef IPOD_PHONE_SUPPORT
+	{
+		char *spider_udi;
+		int vnd_id = 0;
+		int product_id = 0;
+
+		spider_udi = g_strdup(parent_udi);
+		while (vnd_id == 0 && product_id == 0 && spider_udi != NULL) {
+			char *old_udi = spider_udi;
+			spider_udi =  libhal_device_get_property_string (ctx, spider_udi,
+					"info.parent", &error);
+			if (dbus_error_is_set (&error)) {
+				dbus_error_free (&error);
+				dbus_error_init (&error);
+				spider_udi = NULL;
+				break;
+			}
+			g_free(old_udi);
+
+			vnd_id = libhal_device_get_property_int (ctx, spider_udi,
+				"usb.vendor_id", &error);
+			if (dbus_error_is_set(&error)) {
+				dbus_error_free (&error);
+				dbus_error_init (&error);
+				vnd_id = 0;
+			}
+
+			product_id = libhal_device_get_property_int (ctx, spider_udi,
+				"usb.product_id", &error);
+			if (dbus_error_is_set(&error)) {
+				dbus_error_free (&error);
+				dbus_error_init (&error);
+				product_id = 0;
+			}
+		}
+		g_free(spider_udi);
+
+		if (vnd_id == PHONE_VENDOR_ID && product_id == PHONE_PRODUCT_ID) {
+			result = TRUE;
+		}
+#endif
 	g_free (parent_udi);
 	if (parent_name == NULL || dbus_error_is_set (&error))
 		goto end;

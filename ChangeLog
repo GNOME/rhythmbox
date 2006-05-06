@@ -1,3 +1,15 @@
+2006-05-06  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Joe Barnett  <thejoe@gmail.com>
+
+	* configure.ac: check if we're using a version of libgpod that
+	supports the Motorola ROKR
+
+	* sources/rb-ipod-source.c: (rb_ipod_get_itunesdb_path): ask libgpod
+	for the db path, if we using the newer version.
+
+	(rb_ipod_volume_has_ipod_db): detect Motorola ROKR phones.
+
 2006-05-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:

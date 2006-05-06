@@ -106,6 +106,11 @@ if test "x$with_ipod" != "xno"; then
           if test "x$enable_hal" = xyes; then
 	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
 	     use_ipod=yes
+
+	     PKG_CHECK_MODULES(IPOD_PHONE, libgpod-1.0 >= 0.3.3, support_phone=yes, support_phone=no)
+	     if test "x$support_phone" = xyes; then
+	        AC_DEFINE(IPOD_PHONE_SUPPORT, 1, [iPod support for phone])
+	     fi
 	  fi
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
