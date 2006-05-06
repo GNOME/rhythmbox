@@ -705,6 +705,7 @@ hal_udi_is_ipod (const char *udi)
 		if (vnd_id == PHONE_VENDOR_ID && product_id == PHONE_PRODUCT_ID) {
 			result = TRUE;
 		}
+	}
 #endif
 	g_free (parent_udi);
 	if (parent_name == NULL || dbus_error_is_set (&error))
