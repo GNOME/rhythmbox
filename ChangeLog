@@ -1,5 +1,10 @@
 2006-05-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* metadata/rb-metadata-gst.c: (rb_metadata_finalize):
+	Ignore zip files and ignore errors for files we've decided to ignore.
+
+2006-05-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-ipod-source.c: (hal_udi_is_ipod):
 	Add missing }, should fix #340844.
 

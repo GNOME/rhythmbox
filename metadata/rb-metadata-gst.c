@@ -58,7 +58,8 @@ typedef GstElement *(*RBAddTaggerElem) (RBMetaData *, GstElement *);
 const char * ignore_mime_types[] = {
 	"image/",
 	"text/",
-	"application/xml"
+	"application/xml",
+	"application/zip"
 };
 
 /*
@@ -400,6 +401,7 @@ rb_metadata_finalize (GObject *object)
 
 	g_free (md->priv->type);
 	g_free (md->priv->uri);
+	g_clear_error (&md->priv->error);
 
 	G_OBJECT_CLASS (rb_metadata_parent_class)->finalize (object);
 }
@@ -1126,22 +1128,7 @@ rb_metadata_load (RBMetaData *md,
 	 * these don't include the URI as the import errors source
 	 * already displays it.
 	 */
-	if (md->priv->error) {
-		g_propagate_error (error, md->priv->error);
-	} else if (!md->priv->type) {
-		/* ignore really small files that can't be identified */
-		gint error_code = RB_METADATA_ERROR_UNRECOGNIZED;
-		if (file_size > 0 && file_size < REALLY_SMALL_FILE_SIZE) {
-			rb_debug ("ignoring %s because it's too small to care about", md->priv->uri);
-			error_code = RB_METADATA_ERROR_NOT_AUDIO_IGNORE;
-		}
-		
-		g_clear_error (error);
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     error_code,
-			     _("The MIME type of the file could not be identified"));
-	} else if (md->priv->non_audio || !md->priv->handoff) {
+	if (md->priv->non_audio || !md->priv->handoff) {
 		gboolean ignore = FALSE;
 		int i;
 
@@ -1169,6 +1156,21 @@ rb_metadata_load (RBMetaData *md,
 				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
 				     NULL);
 		}
+	} else if (md->priv->error) {
+		g_propagate_error (error, md->priv->error);
+	} else if (!md->priv->type) {
+		/* ignore really small files that can't be identified */
+		gint error_code = RB_METADATA_ERROR_UNRECOGNIZED;
+		if (file_size > 0 && file_size < REALLY_SMALL_FILE_SIZE) {
+			rb_debug ("ignoring %s because it's too small to care about", md->priv->uri);
+			error_code = RB_METADATA_ERROR_NOT_AUDIO_IGNORE;
+		}
+		
+		g_clear_error (error);
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     error_code,
+			     _("The MIME type of the file could not be identified"));
 	} else {
 		/* yay, it worked */
 		rb_debug ("successfully read metadata for %s", uri);
