@@ -4197,6 +4197,11 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		if (ctxt->mounted) {
 			rb_debug ("queueing stat for entry %s (mounted)", location);
+
+			/* make files visible immediately, 
+			 * then hide any that turn out to be missing.
+			 */
+			rhythmdb_entry_set_visibility (ctxt->db, entry, TRUE);
 			queue_stat_uri (location, 
 					ctxt->db,
 					RHYTHMDB_ENTRY_TYPE_SONG);

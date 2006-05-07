@@ -1,3 +1,9 @@
+2006-05-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (entry_volume_mounted_or_unmounted):
+	Make entries on newly mounted volumes visible immediately, hiding them
+	later if they turn out to be missing.  Fixes #340068.
+
 2006-05-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* metadata/rb-metadata-gst.c: (rb_metadata_finalize):
