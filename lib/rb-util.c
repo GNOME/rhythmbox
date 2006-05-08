@@ -20,11 +20,14 @@
  */
 #include "config.h"
 
-#include <gtk/gtk.h>
 #include <string.h>
+#include <stdarg.h>
+
+#include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#include <gobject/gvaluecollector.h>
 
 #include "rb-util.h"
 #include "rb-debug.h"
@@ -752,3 +755,23 @@ rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 	
 	return FALSE;
 }
+
+void
+rb_value_array_append_data (GValueArray *array, GType type, ...)
+{
+	GValue val = {0,};
+	va_list va;
+	gchar *err = NULL;
+
+	va_start (va, type);
+
+	g_value_init (&val, type);
+	G_VALUE_COLLECT (&val, va, 0, &err);
+	g_value_array_append (array, &val);
+
+	if (err)
+		rb_debug ("unable to collect GValue: %s", err);
+
+	va_end (va);
+}
+

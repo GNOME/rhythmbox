@@ -152,7 +152,8 @@ visit_playlist_dirs (const gchar *rel_path,
 
 	playlist = rb_auto_playlist_source_new (shell, rel_path, FALSE);
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist), query,
-					  0, 0, 0, NULL, 0);
+					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
+					   NULL, 0);
 	rb_shell_append_source (shell, playlist, RB_SOURCE (source));
 	g_object_unref (G_OBJECT (shell));
 	g_object_unref (G_OBJECT (db));

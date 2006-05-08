@@ -58,17 +58,15 @@ RBSource *	rb_auto_playlist_source_new_from_xml	(RBShell *shell,
 
 void		rb_auto_playlist_source_set_query	(RBAutoPlaylistSource *source,
 							 GPtrArray *query,
-							 guint limit_count,
-							 guint limit_mb,
-							 guint limit_time,
+							 RhythmDBQueryModelLimitType limit_type,
+							 GValueArray *limit_value,
 							 const char *sort_key,
 						 	 gint sort_order);
 
 void		rb_auto_playlist_source_get_query	(RBAutoPlaylistSource *source,
 							 GPtrArray **query,
-							 guint *limit_count,
-							 guint *limit_mb,
-							 guint *limit_time,
+							 RhythmDBQueryModelLimitType *limit_type,
+							 GValueArray **limit_value,
 							 const char **sort_key,
 							 gint *sort_order);
 

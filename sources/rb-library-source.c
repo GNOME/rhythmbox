@@ -1201,7 +1201,9 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
 				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_LOCATION, path,
 				      RHYTHMDB_QUERY_END);
-	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (source), query, 0, 0, 0, NULL, 0);
+	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (source), query,
+					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
+					   NULL, 0);
 	rhythmdb_query_free (query);
 
 	g_object_get (G_OBJECT (library_source), "icon", &icon, NULL);

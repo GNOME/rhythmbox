@@ -1002,26 +1002,17 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 					    RBAutoPlaylistSource *playlist,
 					    RBQueryCreator *creator)
 {
-	RBQueryCreatorLimitType type;
-	guint limit, limit_count = 0, limit_size = 0, limit_time = 0;
+	RhythmDBQueryModelLimitType limit_type;
+	GValueArray *limit_value = NULL;
 	const char *sort_key;
 	gint sort_direction;
 
-	rb_query_creator_get_limit (creator, &type, &limit);
-	if (type == RB_QUERY_CREATOR_LIMIT_COUNT)
-		limit_count = limit;
-	else if (type == RB_QUERY_CREATOR_LIMIT_MB)
-		limit_size = limit;
-	else if (type == RB_QUERY_CREATOR_LIMIT_SECONDS)
-		limit_time = limit;
-	else
-		g_assert_not_reached ();
-
+	rb_query_creator_get_limit (creator, &limit_type, &limit_value);
 	rb_query_creator_get_sort_order (creator, &sort_key, &sort_direction);
 
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist),
 					   rb_query_creator_get_query (creator),
-					   limit_count, limit_size, limit_time,
+					   limit_type, limit_value,
 					   sort_key, sort_direction);
 }
 
@@ -1090,21 +1081,26 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 {
 	RBQueryCreator *creator;
 	RBAutoPlaylistSource *playlist;
-	GPtrArray *query;
-	guint limit_count = 0, limit_size = 0, limit_time = 0;
-	const char *sort_key;
-	gint sort_direction;
-	EditAutoPlaylistData *data;
 
 	playlist = RB_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source);
 	creator = g_object_get_data (G_OBJECT (playlist), "rhythmbox-playlist-editor");
 	if (creator == NULL) {
-		rb_auto_playlist_source_get_query (playlist, &query, &limit_count, &limit_size, &limit_time, &sort_key, &sort_direction);
+		RhythmDBQueryModelLimitType limit_type;
+		GValueArray *limit_value = NULL;
+		GPtrArray *query;
+		const char *sort_key;
+		gint sort_direction;
+		EditAutoPlaylistData *data;
+
+		rb_auto_playlist_source_get_query (playlist, &query,
+						   &limit_type, &limit_value,
+						   &sort_key, &sort_direction);
 
 		creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
 									     query,
-									     limit_count, limit_size, limit_time,
+									     limit_type, limit_value,
 									     sort_key, sort_direction));
+		g_value_array_free (limit_value);
 		rhythmdb_query_free (query);
 
 		data = g_new0 (EditAutoPlaylistData, 1);

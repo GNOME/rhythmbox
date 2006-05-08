@@ -38,6 +38,18 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS_QUERY_MODEL_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE_QUERY_MODEL))
 #define RHYTHMDB_QUERY_MODEL_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE_QUERY_MODEL, RhythmDBQueryModelClass))
 
+
+GType rhythmdb_query_model_limit_type_get_type (void);
+#define RHYTHMDB_TYPE_QUERY_MODEL_LIMIT_TYPE (rhythmdb_query_model_limit_type_get_type ())
+
+typedef enum {
+	RHYTHMDB_QUERY_MODEL_LIMIT_NONE,
+	RHYTHMDB_QUERY_MODEL_LIMIT_COUNT,
+	RHYTHMDB_QUERY_MODEL_LIMIT_SIZE,
+	RHYTHMDB_QUERY_MODEL_LIMIT_TIME,
+} RhythmDBQueryModelLimitType;
+
+
 typedef struct RhythmDBQueryModelPrivate RhythmDBQueryModelPrivate;
 
 #define RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK 32

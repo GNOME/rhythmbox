@@ -1,5 +1,43 @@
 2006-05-08  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-util.c: (rb_value_array_append_data):
+	* lib/rb-util.h: add function which is basically a combination of
+	G_VALUE_COLLECT and g_value_array_append.
+
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property),
+	(rhythmdb_query_model_finalize),
+	(rhythmdb_query_model_update_limited_entries),
+	(rhythmdb_query_model_set_sort_order),
+	(rhythmdb_query_model_within_limit),
+	(rhythmdb_query_model_limit_type_get_type): Make query model limits
+	saner. Rather than having <count=N, time=N, size=N> we now have a
+	<type, value> pair. This will also make it much easier to add new
+	limit types in the future.
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_set_automatic_playlist),
+	(rb_playlist_manager_cmd_edit_automatic_playlist):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_finalize),
+	(rb_auto_playlist_source_new_from_xml), (impl_receive_drag),
+	(_save_write_ulong), (_save_write_uint64),
+	(impl_save_contents_to_xml), (rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_get_query):
+	* sources/rb-auto-playlist-source.h:
+	* sources/rb-library-source.c:
+	(rb_library_source_add_child_source):
+	* sources/rb-psp-source.c: (visit_playlist_dirs):
+	* widgets/rb-query-creator.c: (rb_query_creator_load_query),
+	(rb_query_creator_new_from_query), (rb_query_creator_get_limit):
+	* widgets/rb-query-creator.h: Adapt to the above change.
+
+2006-05-08  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_cmd_edit_automatic_playlist):
 	* sources/rb-auto-playlist-source.c: (impl_save_contents_to_xml),

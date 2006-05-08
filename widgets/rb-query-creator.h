@@ -20,7 +20,9 @@
  */
 
 #include <gtk/gtkdialog.h>
+
 #include "rhythmdb.h"
+#include "rhythmdb-query-model.h"
 
 #ifndef __RB_QUERY_CREATOR_H
 #define __RB_QUERY_CREATOR_H
@@ -44,27 +46,20 @@ typedef struct
 	GtkDialogClass parent_class;
 } RBQueryCreatorClass;
 
-typedef enum
-{
-	RB_QUERY_CREATOR_LIMIT_COUNT,
-	RB_QUERY_CREATOR_LIMIT_MB,
-	RB_QUERY_CREATOR_LIMIT_SECONDS,
-} RBQueryCreatorLimitType;	
-
 GType		rb_query_creator_get_type	(void);
 
 GtkWidget *	rb_query_creator_new		(RhythmDB *db);
 
 GtkWidget *	rb_query_creator_new_from_query	(RhythmDB *db, GPtrArray *query,
-						 int limit_count, int limit_size, int limit_time,
+						 RhythmDBQueryModelLimitType limit_type, GValueArray *limit_value,
 						 const char *sort_column, gint sort_direction);
 
 
 GPtrArray *	rb_query_creator_get_query	(RBQueryCreator *creator);
 
 void		rb_query_creator_get_limit	(RBQueryCreator *creator,
-						 RBQueryCreatorLimitType *type,
-						 guint *limit);
+						 RhythmDBQueryModelLimitType *limit_type,
+						 GValueArray **limit_value);
 
 void		rb_query_creator_get_sort_order (RBQueryCreator *creator, const char **sort_key, gint *sort_direction);
 

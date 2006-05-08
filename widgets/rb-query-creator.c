@@ -32,6 +32,7 @@
 #include "rb-debug.h"
 #include "rb-preferences.h"
 #include "rb-glade-helpers.h"
+#include "rb-util.h"
 
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
@@ -301,7 +302,7 @@ rb_query_creator_new (RhythmDB *db)
 
 static gboolean
 rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
-			     int limit_count, int limit_size, int limit_time)
+			     RhythmDBQueryModelLimitType limit_type, GValueArray *limit_value)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	int i;
@@ -355,25 +356,38 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 
 	/* setup the limits */
 	{
-		int limit;
+		guint64 limit;
 
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->disjunction_check),
 					      disjunction);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->limit_check),
-					      limit_count || limit_size || limit_time);
-				
-		if (limit_count > 0) {
+					      limit_type != RHYTHMDB_QUERY_MODEL_LIMIT_NONE);
+
+		switch (limit_type) {
+		case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
 			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 0);
-			limit = limit_count;
-		} else if (limit_time > 0) {
+			limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0));
+			break;
+
+		case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
 			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 3);
-			limit = limit_time / 60;
-		} else if (limit_size % 1000 == 0) {
-			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 2);
-			limit = limit_size / 1000;
-		} else {
-			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 1);
-			limit = limit_size;
+			/* convert to minutes */
+			limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0)) / 60;
+			break;
+
+		case RHYTHMDB_QUERY_MODEL_LIMIT_SIZE:
+			limit = g_value_get_uint64 (g_value_array_get_nth (limit_value, 0));
+
+			if (limit % 1000 == 0) {
+				gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 2);
+				limit /= 1000;
+			} else {
+				gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 1);
+			}
+
+			break;
+		default:
+			g_assert_not_reached ();
 		}
 
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON (priv->limit_entry), limit);
@@ -411,7 +425,7 @@ rb_query_creator_set_sorting (RBQueryCreator *creator, const char *sort_column, 
 
 GtkWidget *
 rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
-				 int limit_count, int limit_size, int limit_time,
+				 RhythmDBQueryModelLimitType limit_type, GValueArray *limit_value,
 				 const char *sort_column, gint sort_direction)
 {
 	RBQueryCreator *creator = g_object_new (RB_TYPE_QUERY_CREATOR, "db", db,
@@ -419,7 +433,7 @@ rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
 	if (!creator)
 		return NULL;
 
-	if ( !rb_query_creator_load_query (creator, query, limit_count, limit_size, limit_time)
+	if ( !rb_query_creator_load_query (creator, query, limit_type, limit_value)
 	   | !rb_query_creator_set_sorting (creator, sort_column, sort_direction)) {
 		gtk_widget_destroy (GTK_WIDGET (creator));
 		return NULL;
@@ -520,35 +534,43 @@ rb_query_creator_get_query (RBQueryCreator *creator)
 }
 
 void
-rb_query_creator_get_limit (RBQueryCreator *creator, RBQueryCreatorLimitType *type,
-			    guint *limit)
+rb_query_creator_get_limit (RBQueryCreator *creator,
+			    RhythmDBQueryModelLimitType *type, GValueArray **limit)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
-	guint limitpos;
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->limit_check)))
-		*limit = (guint) gtk_spin_button_get_value(GTK_SPIN_BUTTON (priv->limit_entry));
-	else
-		*limit = 0;
-	limitpos = gtk_option_menu_get_history (GTK_OPTION_MENU (priv->limit_option));
-	switch (limitpos)
-	{
-	case 0:
-		*type = RB_QUERY_CREATOR_LIMIT_COUNT;
-		break;
-	case 1:
-		*type = RB_QUERY_CREATOR_LIMIT_MB;
-		break;
-	case 2:
-		*type = RB_QUERY_CREATOR_LIMIT_MB;
-		*limit *= 1000;
-		break;
-	case 3:
-		*type = RB_QUERY_CREATOR_LIMIT_SECONDS;
-		*limit *= 60;
-		break;
-	default:
-		g_assert_not_reached ();
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->limit_check))) {
+		guint64 l;
+
+		l = gtk_spin_button_get_value(GTK_SPIN_BUTTON (priv->limit_entry));
+		*limit = g_value_array_new (0);
+
+		switch (gtk_option_menu_get_history (GTK_OPTION_MENU (priv->limit_option))) {
+		case 0:
+			*type = RHYTHMDB_QUERY_MODEL_LIMIT_COUNT;
+			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l);
+			break;
+		case 1:
+			*type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
+			rb_value_array_append_data (*limit, G_TYPE_UINT64, l);
+			break;
+
+		case 2:
+			*type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
+			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l);
+			break;
+
+		case 3:
+			*type = RHYTHMDB_QUERY_MODEL_LIMIT_TIME;
+			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l * 60);
+			break;
+
+		default:
+			g_assert_not_reached ();
+		}
+	} else {
+		*type = RHYTHMDB_QUERY_MODEL_LIMIT_NONE;
+		*limit = NULL;
 	}
 }
 

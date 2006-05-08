@@ -152,6 +152,8 @@ static void rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_mo
 static int rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *model, int index);
 
 static gint _reverse_sorting_func (gpointer a, gpointer b, RhythmDBQueryModel *model);
+static gboolean rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
+						   RhythmDBEntry *entry);
 
 struct RhythmDBQueryModelUpdate
 {
@@ -194,9 +196,8 @@ struct RhythmDBQueryModelPrivate
 
 	guint stamp;
 
-	guint64 max_size;
-	guint max_count;
-	guint max_time;
+	RhythmDBQueryModelLimitType limit_type;
+	GValueArray *limit_value;
 
 	glong total_duration;
 	guint64 total_size;
@@ -222,9 +223,8 @@ enum
 	PROP_SORT_FUNC,
 	PROP_SORT_PROP_ID,
 	PROP_SORT_REVERSE,
-	PROP_MAX_SIZE,
-	PROP_MAX_COUNT,
-	PROP_MAX_TIME,
+	PROP_LIMIT_TYPE,
+	PROP_LIMIT_VALUE,
 	PROP_SHOW_HIDDEN,
 	PROP_BASE_MODEL,
 };
@@ -291,26 +291,20 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							      FALSE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_MAX_SIZE,
-					 g_param_spec_int ("max-size",
-							   "maxsize",
-							   "maximum size (MB)",
-							   0, G_MAXINT, 0,
-							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 PROP_LIMIT_TYPE,
+					 g_param_spec_enum ("limit-type",
+							    "limit-type",
+							    "type of limit",
+							    RHYTHMDB_TYPE_QUERY_MODEL_LIMIT_TYPE,
+							    RHYTHMDB_QUERY_MODEL_LIMIT_NONE,
+							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_MAX_COUNT,
-					 g_param_spec_int ("max-count",
-							   "maxcount",
-							   "maximum count (songs)",
-							   0, G_MAXINT, 0,
-							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_MAX_TIME,
-					 g_param_spec_int ("max-time",
-							   "maxtime",
-							   "maximum time (seconds)",
-							   0, G_MAXINT, 0,
-							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 PROP_LIMIT_VALUE,
+					 g_param_spec_boxed ("limit-value",
+							     "limit-value",
+							     "value of limit",
+							     G_TYPE_VALUE_ARRAY,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_SHOW_HIDDEN,
 					 g_param_spec_boolean ("show-hidden",
@@ -433,14 +427,13 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_SORT_REVERSE:
 		model->priv->sort_reverse  = g_value_get_boolean (value);
 		break;
-	case PROP_MAX_SIZE:
-		model->priv->max_size = g_value_get_int (value) * 1024 * 1024;
+	case PROP_LIMIT_TYPE:
+		model->priv->limit_type = g_value_get_enum (value);
 		break;
-	case PROP_MAX_COUNT:
-		model->priv->max_count = g_value_get_int (value);
-		break;
-	case PROP_MAX_TIME:
-		model->priv->max_time = g_value_get_int (value);
+	case PROP_LIMIT_VALUE:
+		if (model->priv->limit_value)
+			g_value_array_free (model->priv->limit_value);
+		model->priv->limit_value = (GValueArray*)g_value_dup_boxed (value);
 		break;
 	case PROP_SHOW_HIDDEN:
 		model->priv->show_hidden = g_value_get_boolean (value);
@@ -551,14 +544,11 @@ rhythmdb_query_model_get_property (GObject *object,
 	case PROP_SORT_REVERSE:
 		g_value_set_boolean (value, model->priv->sort_reverse);
 		break;
-	case PROP_MAX_SIZE:
-		g_value_set_int (value, model->priv->max_size / (1024 * 1024));
+	case PROP_LIMIT_TYPE:
+		g_value_set_enum (value, model->priv->limit_type);
 		break;
-	case PROP_MAX_COUNT:
-		g_value_set_int (value, model->priv->max_count);
-		break;
-	case PROP_MAX_TIME:
-		g_value_set_int (value, model->priv->max_time);
+	case PROP_LIMIT_VALUE:
+		g_value_set_boxed (value, model->priv->limit_value);
 		break;
 	case PROP_SHOW_HIDDEN:
 		g_value_set_boolean (value, model->priv->show_hidden);
@@ -683,6 +673,9 @@ rhythmdb_query_model_finalize (GObject *object)
 		rhythmdb_query_free (model->priv->query);
 	if (model->priv->original_query)
 		rhythmdb_query_free (model->priv->original_query);
+
+	if (model->priv->limit_value)
+		g_value_array_free (model->priv->limit_value);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }
@@ -1024,10 +1017,7 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 	GSequencePtr ptr;
 
 	/* make it fit inside the limits */
-	while ((model->priv->max_count > 0 && g_hash_table_size (model->priv->reverse_map) > model->priv->max_count) ||
-	      (model->priv->max_size > 0 && model->priv->total_size > model->priv->max_size) ||
-	      (model->priv->max_time > 0 && model->priv->total_duration > model->priv->max_time)) {
-
+	while (!rhythmdb_query_model_within_limit (model, NULL)) {
 		ptr = g_sequence_ptr_prev (g_sequence_get_end_ptr (model->priv->entries));
 		entry = (RhythmDBEntry*) g_sequence_ptr_get_data (ptr);
 
@@ -1037,8 +1027,6 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 
 	/* move entries that were previously limited, back to the main list */
 	while (TRUE) {
-		int size;
-		int duration;
 		GtkTreePath *path;
 		GtkTreeIter iter;
 
@@ -1049,12 +1037,7 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 		if (!entry)
 			break;
 
-		size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
-		duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
-
-		if ((model->priv->max_count > 0 && (g_hash_table_size (model->priv->reverse_map) + 1) > model->priv->max_count) ||
-		    (model->priv->max_size > 0 && model->priv->total_size + size > model->priv->max_size) ||
-		    (model->priv->max_time > 0 && model->priv->total_duration + duration > model->priv->max_time))
+		if (!rhythmdb_query_model_within_limit (model, entry))
 			break;
 
 		rhythmdb_query_model_remove_from_limited_list (model, entry);
@@ -1875,9 +1858,7 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 	    (model->priv->sort_reverse == sort_reverse))
 		return;
 	
-	g_return_if_fail (((model->priv->max_count == 0) &&
-			  (model->priv->max_time == 0) &&
-			  (model->priv->max_size == 0)) ||
+	g_return_if_fail ((model->priv->limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE) ||
 			  (model->priv->sort_func == NULL));
 	if (model->priv->sort_func == NULL)
 		g_assert (g_sequence_get_length (model->priv->limited_entries) == 0);
@@ -2393,5 +2374,89 @@ rhythmdb_query_model_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 		return rhythmdb_query_model_location_sort_func (a, b, model);
 }
 
+static gboolean
+rhythmdb_query_model_within_limit (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+{
+	gboolean result = TRUE;
 
+	switch (model->priv->limit_type) {
+	case RHYTHMDB_QUERY_MODEL_LIMIT_NONE:
+		result = TRUE;
+		break;
+
+	case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
+		{
+			gulong limit_count;
+			gulong current_count;
+			
+			limit_count = g_value_get_ulong (g_value_array_get_nth (model->priv->limit_value, 0));
+			current_count = g_hash_table_size (model->priv->reverse_map);
+
+			if (entry)
+				current_count++;
+
+			result = (current_count <= limit_count);
+			break;
+		}
+
+	case RHYTHMDB_QUERY_MODEL_LIMIT_SIZE:
+		{
+			guint64 limit_size;
+			guint64 current_size;
+			
+			limit_size = g_value_get_uint64 (g_value_array_get_nth (model->priv->limit_value, 0));
+			current_size = model->priv->total_size;
+
+			if (entry)
+				current_size += rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+
+			/* the limit is in MB */
+			result = (current_size / (1024 * 1024) <= limit_size);
+			break;
+		}
+
+	case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
+		{
+			gulong limit_time;
+			gulong current_time;
+			
+			limit_time = g_value_get_ulong (g_value_array_get_nth (model->priv->limit_value, 0));
+			current_time = model->priv->total_duration;
+
+			if (entry)
+				current_time += rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+
+			result = (current_time <= limit_time);
+			break;
+		}
+	}
+
+	return result;
+}
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rhythmdb_query_model_limit_type_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)
+	{
+		static const GEnumValue values[] =
+		{
+
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_NONE, "No limit"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_COUNT, "Limit by number of entries (count)"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, "Limit by data size (Mb)"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_MODEL_LIMIT_TIME, "Limit by duration (seconds)"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RhythmDBQueryModelLimitType", values);
+	}
+
+	return etype;
+}
 
