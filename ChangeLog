@@ -1,5 +1,10 @@
 2006-05-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/rb-query-creator.c: (rb_query_creator_load_query):
+	Don't explode when trying to edit a query with no limit set.
+
+2006-05-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
 	Clear the should_queue flag when switching to a non-submittable entry,
 	so we don't submit songs that played for three seconds before

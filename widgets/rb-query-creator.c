@@ -364,6 +364,10 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 					      limit_type != RHYTHMDB_QUERY_MODEL_LIMIT_NONE);
 
 		switch (limit_type) {
+		case RHYTHMDB_QUERY_MODEL_LIMIT_NONE:
+			limit = 0;
+			break;
+
 		case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
 			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 0);
 			limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0));
