@@ -998,17 +998,19 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	gchar *old_album;
 	gchar *old_title;
 
-	if (entry == NULL)
+	if (entry == NULL) {
+		audioscrobbler->priv->should_queue = FALSE;
 		return;
+	}
 
 	type = rhythmdb_entry_get_entry_type (entry);
 	if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
 	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
-	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
+	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
+	    rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) != NULL) {
+		audioscrobbler->priv->should_queue = FALSE;
 		return;
-
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) != NULL)
-		return;
+	}
 
 	old_artist = audioscrobbler->priv->artist;
 	old_album = audioscrobbler->priv->album;

@@ -1394,6 +1394,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 		RhythmDBEntry *entry;
 		GList *tem;
 		GString *data;
+		gboolean need_newline = FALSE;
 
 		data = g_string_new ("");
 
@@ -1409,10 +1410,14 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 			entry = g_sequence_ptr_get_data (iter.user_data);
 
 			location = rhythmdb_entry_get_playback_uri (entry);
-			g_string_append (data, location);
+			if (location == NULL)
+				continue;
 
-			if (tem->next)
+			if (need_newline)
 				g_string_append (data, "\r\n");
+
+			g_string_append (data, location);
+			need_newline = TRUE;
 		}
 
 		gtk_selection_data_set (selection_data,

@@ -1,3 +1,14 @@
+2006-05-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_song_changed_cb):
+	Clear the should_queue flag when switching to a non-submittable entry,
+	so we don't submit songs that played for three seconds before
+	switching to a podcast episode.
+
+	* rhythmdb/rhythmdb-query-model.c
+	(rhythmdb_query_model_drag_data_get): Don't try to include NULL uris
+	in the drag data list.
+
 2006-05-08  James Livingston  <doclivingston@gmail.com>
 
 	* lib/rb-util.c: (rb_value_array_append_data):
