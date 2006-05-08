@@ -1,3 +1,12 @@
+2006-05-08  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_edit_automatic_playlist):
+	* sources/rb-auto-playlist-source.c: (impl_save_contents_to_xml),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_get_query): copy the query in the _get method
+	and free it in things calling that. Fixes a crasher.
+
 2006-05-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (entry_volume_mounted_or_unmounted):

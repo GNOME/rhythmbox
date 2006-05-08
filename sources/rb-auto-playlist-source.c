@@ -494,6 +494,7 @@ impl_save_contents_to_xml (RBPlaylistSource *psource, xmlNodePtr node)
 	}
 
 	rhythmdb_query_serialize (rb_playlist_source_get_db (psource), query, node);
+	rhythmdb_query_free (query);
 }
 
 static void
@@ -586,7 +587,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 	rb_entry_view_set_columns_clickable (songs, (limit_count == 0 && limit_mb == 0 && limit_time == 0));
 	rb_entry_view_set_sorting_order (songs, sort_key, sort_direction);
 
-	priv->query = query;
+	priv->query = rhythmdb_query_copy (query);
 	priv->limit_count = limit_count;
 	priv->limit_mb = limit_mb;
 	priv->limit_time = limit_time;
@@ -618,7 +619,7 @@ rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 
-	*query = priv->query;
+	*query = rhythmdb_query_copy (priv->query);
 	*limit_count = priv->limit_count;
 	*limit_mb = priv->limit_mb;
 	*limit_time = priv->limit_time;
