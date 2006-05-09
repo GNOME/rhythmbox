@@ -36,6 +36,27 @@
   (gtype-id "RB_TYPE_SOURCE")
 )
 
+(define-object BrowserSource
+  (in-module "RB")
+  (parent "RBSource")
+  (c-name "RBBrowserSource")
+  (gtype-id "RB_TYPE_BROWSER_SOURCE")
+)
+
+(define-object RemovableMediaSource
+  (in-module "RB")
+  (parent "RBBrowserSource")
+  (c-name "RBRemovableMediaSource")
+  (gtype-id "RB_TYPE_REMOVABLE_MEDIA_SOURCE")
+)
+
+(define-object RemovableMediaManager
+  (in-module "RB")
+  (parent "GObject")
+  (c-name "RBRemovableMediaManager")
+  (gtype-id "RB_TYPE_REMOVABLE_MEDIA_MANAGER")
+)
+
 (define-object SourceList
   (in-module "RB")
   (parent "GtkScrolledWindow")
@@ -1629,12 +1650,6 @@
   (return-type "const-char*")
 )
 
-(define-method has_first_added_column
-  (of-object "RBBrowserSource")
-  (c-name "rb_browser_source_has_first_added_column")
-  (return-type "gboolean")
-)
-
 (define-method has_drop_support
   (of-object "RBBrowserSource")
   (c-name "rb_browser_source_has_drop_support")
@@ -1644,11 +1659,6 @@
 (define-virtual impl_get_paned_key
   (of-object "RBBrowserSource")
   (return-type "const-char*")
-)
-
-(define-virtual impl_has_first_added_column
-  (of-object "RBBrowserSource")
-  (return-type "gboolean")
 )
 
 (define-virtual impl_has_drop_support

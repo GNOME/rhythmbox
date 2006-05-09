@@ -144,7 +144,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	source_class->impl_get_browser_key = rb_daap_source_get_browser_key;
 
 	browser_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
-	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_false_function;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 

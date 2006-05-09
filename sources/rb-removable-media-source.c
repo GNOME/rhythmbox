@@ -98,7 +98,6 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
 
 	browser_source_class->impl_get_paned_key = NULL;
-	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_false_function;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,

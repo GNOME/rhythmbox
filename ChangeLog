@@ -1,5 +1,18 @@
 2006-05-09  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-browser-source.h: remove the _has_first_added_column
+	stuff since it isn't actually used anywhere. Sources that want it
+	should just add it themselves, as the library already does
+
+	* bindings/python/rb.defs:
+	* sources/rb-daap-source.c: (rb_daap_source_class_init):
+	* sources/rb-library-source.c: (rb_library_source_class_init):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init): Remove the remanants of the
+	above.
+
+2006-05-09  James Livingston  <doclivingston@gmail.com>
+
 	* bindings/python/rb.defs:
 	* sources/rb-browser-source.h: remove a function that was declared in
 	the header, but not defined anywhere.

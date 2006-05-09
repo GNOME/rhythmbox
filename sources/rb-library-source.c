@@ -187,7 +187,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 #endif
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
-	browser_source_class->impl_has_first_added_column = (RBBrowserSourceFeatureFunc) rb_true_function;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
 
 	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
