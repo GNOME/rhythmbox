@@ -496,18 +496,6 @@
   (return-type "GType")
 )
 
-(define-function shell_player_new
-  (in-module "rb")
-  (c-name "rb_shell_player_new")
-  (is-constructor-of "RBShellPlayer")
-  (return-type "RBShellPlayer*")
-  (parameters
-    '("RhythmDB*" "db")
-    '("GtkUIManager*" "mgr")
-    '("GtkActionGroup*" "actiongroup")
-  )
-)
-
 (define-method set_selected_source
   (of-object "RBShellPlayer")
   (c-name "rb_shell_player_set_selected_source")
@@ -1624,5 +1612,91 @@
   (parameters
     '("RhythmDBPropType" "type")
     '("GList*" "list")
+  )
+)
+
+
+;; From ../../sources/rb-browser-source.h
+
+(define-function rb_browser_source_get_type
+  (c-name "rb_browser_source_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_browser_source_class_add_actions
+  (c-name "rb_browser_source_class_add_actions")
+  (return-type "none")
+  (parameters
+    '("RBShell*" "shell")
+    '("GtkActionGroup*" "uimgr")
+  )
+)
+
+(define-method get_paned_key
+  (of-object "RBBrowserSource")
+  (c-name "rb_browser_source_get_paned_key")
+  (return-type "const-char*")
+)
+
+(define-method has_first_added_column
+  (of-object "RBBrowserSource")
+  (c-name "rb_browser_source_has_first_added_column")
+  (return-type "gboolean")
+)
+
+(define-method has_drop_support
+  (of-object "RBBrowserSource")
+  (c-name "rb_browser_source_has_drop_support")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_get_paned_key
+  (of-object "RBBrowserSource")
+  (return-type "const-char*")
+)
+
+(define-virtual impl_has_first_added_column
+  (of-object "RBBrowserSource")
+  (return-type "gboolean")
+)
+
+(define-virtual impl_has_drop_support
+  (of-object "RBBrowserSource")
+  (return-type "gboolean")
+)
+
+
+
+;; From ../../sources/rb-removable-media-source.h
+
+(define-function rb_removable_media_source_get_type
+  (c-name "rb_removable_media_source_get_type")
+  (return-type "GType")
+)
+
+
+;; From ../../shell/rb-removable-media-manager.h
+
+(define-function rb_removable_media_manager_get_type
+  (c-name "rb_removable_media_manager_get_type")
+  (return-type "GType")
+)
+
+(define-method scan
+  (of-object "RBRemovableMediaManager")
+  (c-name "rb_removable_media_manager_scan")
+  (return-type "none")
+)
+
+(define-method queue_transfer
+  (of-object "RBRemovableMediaManager")
+  (c-name "rb_removable_media_manager_queue_transfer")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-char*" "dest")
+    '("const-char*" "mime_type")
+    '("RBTranferCompleteCallback" "callback")
+    '("gpointer" "userdata")
   )
 )
