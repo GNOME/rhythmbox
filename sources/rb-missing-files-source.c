@@ -51,7 +51,7 @@ static void rb_missing_files_source_get_property (GObject *object,
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static void impl_delete (RBSource *source);
-static char *impl_get_status (RBSource *source);
+static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static void rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
@@ -336,16 +336,14 @@ rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view,
 	rb_entry_view_resort_model (view);
 }
 
-static char *
-impl_get_status (RBSource *asource)
+static void
+impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
 	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (asource);
 	gint count;
-	char *ret;
 	
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL);
-	ret = g_strdup_printf (ngettext ("%d missing file", "%d missing files", count),
-			       count);
-	return ret;
+	*text = g_strdup_printf (ngettext ("%d missing file", "%d missing files", count),
+				 count);
 }
 

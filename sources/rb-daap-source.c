@@ -61,9 +61,9 @@ static void rb_daap_source_connection_cb (RBDAAPConnection *connection,
 static gboolean rb_daap_source_show_popup (RBSource *source);
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static const char * rb_daap_source_get_paned_key (RBBrowserSource *source);
+static void rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 static void rb_daap_source_cmd_disconnect (GtkAction *action, RBShell *shell);
 static void rb_daap_source_disconnect (RBDAAPSource *daap_source);
-
 
 #define CONF_ENABLE_BROWSING CONF_PREFIX "/sharing/enable_browsing"
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
@@ -91,9 +91,10 @@ struct RBDAAPSourcePrivate
 
 	RBDAAPConnection *connection;
 	GSList *playlist_sources;
-};
 
-#define RB_DAAP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DAAP_SOURCE, RBDAAPSourcePrivate))
+	const char *connection_status;
+	float connection_progress;
+};
 
 enum {
 	PROP_0,
@@ -142,6 +143,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	source_class->impl_show_popup = rb_daap_source_show_popup;
 	source_class->impl_get_config_widget = NULL;
 	source_class->impl_get_browser_key = rb_daap_source_get_browser_key;
+	source_class->impl_get_status = rb_daap_source_get_status;
 
 	browser_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -186,7 +188,9 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 static void
 rb_daap_source_init (RBDAAPSource *source)
 {
-	source->priv = RB_DAAP_SOURCE_GET_PRIVATE (source);
+	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, 
+						    RB_TYPE_DAAP_SOURCE, 
+						    RBDAAPSourcePrivate);
 }
 
 static void
@@ -648,18 +652,46 @@ connection_auth_cb (RBDAAPConnection *connection,
 }
 
 static void
-connection_connected_cb (RBDAAPConnection *connection,
-			 RBDAAPSource     *source)
+connection_connecting_cb (RBDAAPConnection *connection,
+			  RBDAAPConnectionState state,
+			  float		    progress,
+			  RBDAAPSource     *source)
 {
 	GdkPixbuf *icon;
 
-	rb_debug ("DAAP connection connected");
+	rb_debug ("DAAP connection status: %d/%f", state, progress);
+
+	switch (state) {
+	case DAAP_GET_INFO:
+	case DAAP_GET_PASSWORD:
+	case DAAP_LOGIN:
+		source->priv->connection_status = _("Connecting to music share");
+		break;
+	case DAAP_GET_REVISION_NUMBER:
+	case DAAP_GET_DB_INFO:
+	case DAAP_GET_SONGS:
+	case DAAP_GET_PLAYLISTS:
+	case DAAP_GET_PLAYLIST_ENTRIES:
+		source->priv->connection_status = _("Retrieving songs from music share");
+		break;
+	case DAAP_LOGOUT:
+	case DAAP_DONE:
+		source->priv->connection_status = NULL;
+		break;
+	}
+
+	source->priv->connection_progress = progress;
+
+	GDK_THREADS_ENTER ();
+	rb_source_notify_status_changed (RB_SOURCE (source));
 
 	icon = rb_daap_get_icon (source->priv->password_protected, TRUE);
 	g_object_set (source, "icon", icon, NULL);
 	if (icon != NULL) {
 		g_object_unref (icon);
 	}
+	GDK_THREADS_LEAVE ();
+
 }
 
 static void
@@ -719,8 +751,8 @@ rb_daap_source_activate (RBSource *source)
                           G_CALLBACK (connection_auth_cb),
 			  source);
         g_signal_connect (daap_source->priv->connection,
-			  "connected",
-                          G_CALLBACK (connection_connected_cb),
+			  "connecting",
+                          G_CALLBACK (connection_connecting_cb),
 			  source);
         g_signal_connect (daap_source->priv->connection,
 			  "disconnected",
@@ -930,5 +962,18 @@ static const char *
 rb_daap_source_get_paned_key (RBBrowserSource *source)
 {
 	return CONF_STATE_PANED_POSITION;
+}
+
+static void
+rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+{
+	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
+	if (daap_source->priv->connection_status) {
+		*text = g_strdup (daap_source->priv->connection_status);
+		*progress = daap_source->priv->connection_progress;
+		return;
+	}
+	
+	RB_SOURCE_CLASS (rb_daap_source_parent_class)->impl_get_status (source, text, progress_text, progress);
 }
 

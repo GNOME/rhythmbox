@@ -64,7 +64,7 @@ static RBEntryView* default_get_entry_view (RBSource *source);
 static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
-static char *default_get_status (RBSource *source);
+static void default_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 static GList * default_get_ui_actions (RBSource *source);
 static GList * default_get_search_actions (RBSource *source);
 
@@ -398,31 +398,37 @@ rb_source_get_property (GObject *object,
 	}
 }
 
-static char *
-default_get_status (RBSource *source)
+static void
+default_get_status (RBSource *source, char **text, char **progress_text, float *progress)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-	if (priv->query_model)
-		return rhythmdb_query_model_compute_status_normal (priv->query_model);
-
-	return g_strdup ("");
+	if (priv->query_model) {
+		*text = rhythmdb_query_model_compute_status_normal (priv->query_model);
+		if (rhythmdb_query_model_has_pending_changes (priv->query_model))
+			*progress = -1.0f;
+	} else {
+		*text = g_strdup ("");
+	}
 }
 
 /**
  * rb_source_get_status:
  * @status: a #RBSource
+ * @text: holds the returned status text (allocated)
+ * @progress_text: holds the returned text for the progress bar (allocated)
+ * @progress: holds the progress value
  *
- * FIXME:
- * Some Random comments
- *
- * Returns: The status string
+ * Returns the details to display in the status bar for the source.
+ * If the progress value returned is less than zero, the progress bar
+ * will pulse.  If the progress value is greater than or equal to 1,
+ * the progress bar will be hidden.
  **/
-char *
-rb_source_get_status (RBSource *source)
+void
+rb_source_get_status (RBSource *source, char **text, char **progress_text, float *progress)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_status (source);
+	klass->impl_get_status (source, text, progress_text, progress);
 }
 
 static char *

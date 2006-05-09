@@ -85,7 +85,7 @@ static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view
 static char *guess_uri_scheme (const char *uri);
 
 /* source methods */
-static char *impl_get_status (RBSource *source);
+static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
@@ -558,10 +558,9 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 }
 #endif
 
-static char *
-impl_get_status (RBSource *asource)
+static void
+impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
-	char *ret;
 	RhythmDBQueryModel *model;
 	guint num_entries;
 
@@ -569,9 +568,8 @@ impl_get_status (RBSource *asource)
 	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (G_OBJECT (model));
 
-	ret = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
-			       num_entries);
-	return ret;
+	*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
+				 num_entries);
 }
 
 static char *

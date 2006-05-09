@@ -3960,7 +3960,7 @@ queue_is_empty (GAsyncQueue *queue)
 gboolean
 rhythmdb_is_busy (RhythmDB *db)
 {
-	return (!queue_is_empty (db->priv->event_queue));
+	return (!db->priv->action_thread_running || !queue_is_empty (db->priv->event_queue));
 }
 
 /**

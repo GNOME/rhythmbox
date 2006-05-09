@@ -708,7 +708,7 @@ _wrap_RBSource__do_impl_paste(PyObject *cls, PyObject *args, PyObject *kwargs)
 	entries = _helper_unwrap_pointer_pylist (py_entries, RHYTHMDB_TYPE_ENTRY);
 
 	klass = g_type_class_ref(pyg_type_from_object(cls));
-	if (RB_SOURCE_CLASS(klass)->impl_cut)
+	if (RB_SOURCE_CLASS(klass)->impl_paste)
 		RB_SOURCE_CLASS(klass)->impl_paste(RB_SOURCE(self->obj), entries);
 	else {
 		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_paste not implemented");
@@ -823,4 +823,108 @@ _wrap_rb_library_browser_set_selection(PyGObject *self, PyObject *args, PyObject
 
     Py_INCREF(Py_None);
     return Py_None;
+}
+
+%%
+override rb_source_get_status noargs
+static PyObject *
+_wrap_rb_source_get_status(PyGObject *self)
+{
+    char *status_text = NULL;
+    char *progress_text = NULL;
+    float progress = 0.0f;
+    PyObject *tuple;
+
+    rb_source_get_status (RB_SOURCE (self->obj), &status_text, &progress_text, &progress);
+    tuple = Py_BuildValue ("(ssf)", status_text, progress_text, progress);
+    g_free (status_text);
+    g_free (progress_text);
+    return tuple;
+}
+
+%%
+override RBSource__proxy_do_impl_get_status
+static void
+_wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, char **progress_text, float *progress)
+{
+    PyGILState_STATE __py_state;
+    PyObject *py_self;
+    PyObject *py_retval;
+    PyObject *py_method;
+    
+    __py_state = pyg_gil_state_ensure();
+    py_self = pygobject_new((GObject *) self);
+    if (!py_self) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    
+    py_method = PyObject_GetAttrString(py_self, "do_impl_get_status");
+    if (!py_method) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    py_retval = PyObject_CallObject(py_method, NULL);
+    if (!py_retval) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_method);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+    if (py_retval == Py_None) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        PyErr_SetString(PyExc_TypeError, "retval was None");
+        Py_DECREF(py_retval);
+        Py_DECREF(py_method);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return;
+    }
+
+    PyArg_ParseTuple (py_retval, "(zzf)", status_text, progress_text, progress);
+    
+    Py_DECREF(py_retval);
+    Py_DECREF(py_method);
+    Py_DECREF(py_self);
+    pyg_gil_state_release(__py_state);
+}
+
+%%
+override RBSource__do_impl_get_status
+static PyObject *
+_wrap_RBSource__do_impl_get_status(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+    gpointer klass;
+    static char *kwlist[] = { "self", NULL };
+    PyGObject *self;
+    PyObject *tuple;
+    char **status_text = NULL;
+    char **progress_text = NULL;
+    float progress = 0.0f;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_status", kwlist, &PyRBSource_Type, &self))
+	return NULL;
+
+    klass = g_type_class_ref(pyg_type_from_object(cls));
+    if (RB_SOURCE_CLASS(klass)->impl_get_status) {
+	RB_SOURCE_CLASS(klass)->impl_get_status(RB_SOURCE(self->obj), &status_text, &progress_text, &progress);
+    } else {
+	PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_status not implemented");
+	g_type_class_unref(klass);
+	return NULL;
+    }
+    g_type_class_unref(klass);
+
+    tuple = Py_BuildValue ("(ssf)", status_text, progress_text, progress);
+    g_free (status_text);
+    g_free (progress_text);
+    return tuple;
 }

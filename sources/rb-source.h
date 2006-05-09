@@ -71,7 +71,7 @@ struct _RBSourceClass
 	void (*artistalbum_changed)	(RBSource *source);
 
 	/* methods */
-	char *	        (*impl_get_status)	(RBSource *source);
+	void		(*impl_get_status)	(RBSource *source, char **text, char **progress_text, float *progress);
 
 	gboolean	(*impl_can_browse)	(RBSource *source);
 	char *		(*impl_get_browser_key)	(RBSource *source);
@@ -131,7 +131,7 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 
 /* general interface */
 void	        rb_source_set_pixbuf		(RBSource *source, GdkPixbuf *pixbuf);
-char *	        rb_source_get_status		(RBSource *source);
+void	        rb_source_get_status		(RBSource *source, char **text, char **progress_text, float *progress);
 
 gboolean	rb_source_can_browse		(RBSource *source);
 char *		rb_source_get_browser_key	(RBSource *source);

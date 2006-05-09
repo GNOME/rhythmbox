@@ -39,7 +39,7 @@ static void rb_import_errors_source_dispose (GObject *object);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_move_to_trash (RBSource *source);
 static void impl_delete (RBSource *source);
-static char *impl_get_status (RBSource *source);
+static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
@@ -221,17 +221,15 @@ impl_delete (RBSource *asource)
 	g_list_free (sel);
 }
 
-static char *
-impl_get_status (RBSource *asource)
+static void
+impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
 	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (asource);
 	gint count;
-	char *ret;
 	
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL);
-	ret = g_strdup_printf (ngettext ("%d import errors", "%d import errors", count),
-			       count);
-	return ret;
+	*text = g_strdup_printf (ngettext ("%d import errors", "%d import errors", count),
+				 count);
 }
 
 static void

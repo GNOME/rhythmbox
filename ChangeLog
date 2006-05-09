@@ -1,3 +1,30 @@
+2006-05-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* rhythmdb/rhythmdb.c: (rhythmdb_is_busy):
+	* shell/rb-statusbar.c: (*),
+	* sources/rb-import-errors-source.c: (impl_get_status):
+	* sources/rb-iradio-source.c: (impl_get_status):
+	* sources/rb-missing-files-source.c: (impl_get_status):
+	* sources/rb-source.c: (default_get_status),
+	(rb_source_get_status):
+	* sources/rb-source.h:
+	Allow sources to provide a progress value for the status bar.
+	Simplify status bar processing (much less polling).
+	Consider rhythmdb busy while it's still loading the database.
+
+	* daapsharing/rb-daap-connection.c: (*)
+	* daapsharing/rb-daap-connection.h:
+	* lib/rb-marshal.list:
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_source_init), (connection_connecting_cb),
+	(rb_daap_source_activate), (rb_daap_source_get_paned_key),
+	(rb_daap_source_get_status):
+	Provide status information for DAAP connections, and move processing
+	of large responses into a separate thread.
+	Fixes bugs #322020 and #338978.
+
 2006-05-09  James Livingston  <doclivingston@gmail.com>
 
 	Split the artdisplay plugin into several files.

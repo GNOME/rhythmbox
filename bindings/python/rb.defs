@@ -792,7 +792,12 @@
 (define-method get_status
   (of-object "RBSource")
   (c-name "rb_source_get_status")
-  (return-type "char*")
+  (return-type "none")
+  (parameters
+    '("char **" "text")
+    '("char **" "progress_text")
+    '("float *" "progress")
+  )
 )
 
 (define-method can_browse
@@ -1019,7 +1024,12 @@
 
 (define-virtual impl_get_status
   (of-object "RBSource")
-  (return-type "char*")
+  (return-type "none")
+  (parameters
+    '("char **" "text")
+    '("char **" "progress_text")
+    '("float *" "progress")
+  )
 )
 
 (define-virtual impl_can_browse

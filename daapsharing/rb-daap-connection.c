@@ -31,6 +31,7 @@
 #endif
 
 #include <glib/gi18n.h>
+#include <gdk/gdk.h>
 
 #include <libsoup/soup.h>
 #include <libsoup/soup-connection.h>
@@ -42,6 +43,7 @@
 #include "rb-marshal.h"
 
 #include "rb-debug.h"
+#include "rb-util.h"
 
 #define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
 
@@ -541,9 +543,10 @@ static void rb_daap_connection_get_property (GObject *object,
 					     GValue *value,
 					     GParamSpec *pspec);
 
-static void rb_daap_connection_do_something (RBDAAPConnection *connection);
+static gboolean rb_daap_connection_do_something (RBDAAPConnection *connection);
 static void rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result);
 
+static gboolean emit_progress_idle (RBDAAPConnection *connection);
 
 G_DEFINE_TYPE (RBDAAPConnection, rb_daap_connection, G_TYPE_OBJECT)
 
@@ -579,19 +582,11 @@ struct RBDAAPConnectionPrivate {
 	RhythmDB *db;
 	RhythmDBEntryType db_type;
 
-	enum {
-		DAAP_GET_INFO = 0,
-		DAAP_GET_PASSWORD,
-		DAAP_LOGIN,
-		DAAP_GET_REVISION_NUMBER,
-		DAAP_GET_DB_INFO,
-		DAAP_GET_SONGS,
-		DAAP_GET_PLAYLISTS,
-		DAAP_GET_PLAYLIST_ENTRIES,
-		DAAP_LOGOUT,
-		DAAP_DONE
-	} state;
+	RBDAAPConnectionState state;
 	RBDAAPResponseHandler response_handler;
+	gboolean use_response_handler_thread;
+	float progress;
+	gint emit_progress_id;
 
 	gboolean result;
 	RBDAAPConnectionCallback callback;
@@ -613,7 +608,7 @@ enum {
 
 enum { 
 	AUTHENTICATE,
-	CONNECTED,
+	CONNECTING,
 	DISCONNECTED,
 	LAST_SIGNAL
 };
@@ -697,15 +692,15 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 					       rb_marshal_STRING__STRING,
 					       G_TYPE_STRING,
 					       1, G_TYPE_STRING);
-	signals [CONNECTED] = g_signal_new ("connected",
-					    G_TYPE_FROM_CLASS (object_class),
-					    G_SIGNAL_RUN_LAST,
-					    G_STRUCT_OFFSET (RBDAAPConnectionClass, connected),
-					    NULL,
-					    NULL,
-					    g_cclosure_marshal_VOID__VOID,
-					    G_TYPE_NONE,
-					    0);
+	signals [CONNECTING] = g_signal_new ("connecting",
+					     G_TYPE_FROM_CLASS (object_class),
+					     G_SIGNAL_RUN_LAST,
+					     G_STRUCT_OFFSET (RBDAAPConnectionClass, connecting),
+					     NULL,
+					     NULL,
+					     rb_marshal_VOID__ULONG_FLOAT,
+					     G_TYPE_NONE,
+					     2, G_TYPE_ULONG, G_TYPE_FLOAT);
 	signals [DISCONNECTED] = g_signal_new ("disconnected",
 					       G_TYPE_FROM_CLASS (object_class),
 					       G_SIGNAL_RUN_LAST,
@@ -740,14 +735,6 @@ connection_get_password (RBDAAPConnection *connection)
 		       &password);
 
 	return password;
-}
-
-static void
-connection_connected (RBDAAPConnection *connection)
-{
-	g_signal_emit (connection,
-		       signals [CONNECTED],
-		       0);
 }
 
 static void
@@ -843,44 +830,40 @@ g_zfree_wrapper (voidpf opaque, voidpf address)
 }
 #endif
 
+typedef struct {
+	SoupMessage *message;
+	int status;
+	RBDAAPConnection *connection;
+} DAAPResponseData;
+
 static void
-http_response_handler (SoupMessage *message,
-		       RBDAAPConnection *connection)
+actual_http_response_handler (DAAPResponseData *data)
 {
 	RBDAAPConnectionPrivate *priv;
 	GNode *structure;
-	guint status;
 	char *response;
-	int response_length;
 	const char *encoding_header;
 	char *message_path;
-
-	priv = connection->priv;
+	int response_length;
+	
+	priv = data->connection->priv;
 	structure = NULL;
-	status = message->status_code;
-	response = message->response.body;
-	response_length = message->response.length;
+	response = data->message->response.body;
 	encoding_header = NULL;
-
-	message_path = soup_uri_to_string (soup_message_get_uri (message), FALSE);
+	response_length = data->message->response.length;
+	
+	message_path = soup_uri_to_string (soup_message_get_uri (data->message), FALSE);
 
 	rb_debug ("Received response from %s: %d, %s\n", 
 		  message_path,
-		  message->status_code,
-		  message->reason_phrase);
+		  data->message->status_code,
+		  data->message->reason_phrase);
 
-	if (response_length >= G_MAXUINT/4 - 1) {
-		/* If response_length is too big, 
-		 * the g_malloc (unc_size + 1) below would overflow 
-		 */
-		status = SOUP_STATUS_MALFORMED;
+	if (data->message->response_headers) {
+		encoding_header = soup_message_get_header (data->message->response_headers, "Content-Encoding");
 	}
 
-	if (message->response_headers) {
-		encoding_header = soup_message_get_header (message->response_headers, "Content-Encoding");
-	}
-
-	if (SOUP_STATUS_IS_SUCCESSFUL (status) && encoding_header && strcmp (encoding_header, "gzip") == 0) {
+	if (SOUP_STATUS_IS_SUCCESSFUL (data->status) && encoding_header && strcmp (encoding_header, "gzip") == 0) {
 #ifdef HAVE_LIBZ
 		z_stream stream;
 		char *new_response;
@@ -899,35 +882,46 @@ http_response_handler (SoupMessage *message,
 		stream.zfree = g_zfree_wrapper;
 		stream.opaque = NULL;
 
+		rb_profile_start ("decompressing DAAP response");
+		
 		if (inflateInit2 (&stream, 32 /* auto-detect */ + 15 /* max */ ) != Z_OK) {
 			inflateEnd (&stream);
 			g_free (new_response);
 			rb_debug ("Unable to decompress response from %s",
 				  message_path);
-			status = SOUP_STATUS_MALFORMED;
+			data->status = SOUP_STATUS_MALFORMED;
+			rb_profile_end ("decompressing DAAP response (failed)");
 		} else {
 			do {
-				int z_res = inflate (&stream, Z_FINISH);
-				if (z_res == Z_STREAM_END)
+				int z_res;
+			       
+				rb_profile_start ("attempting inflate");
+				z_res = inflate (&stream, Z_FINISH);
+				if (z_res == Z_STREAM_END) {
+					rb_profile_end ("attempting inflate (done)");
 					break;
+				}
 				if ((z_res != Z_OK && z_res != Z_BUF_ERROR) || stream.avail_out != 0 || unc_size > 40*1000*1000) {
 					inflateEnd (&stream);
 					g_free (new_response);
 					new_response = NULL;
+					rb_profile_end ("attempting inflate (error)");
 					break;
 				}
 
 				factor *= 4;
 				unc_size = (response_length * factor);
-				/* unc_size can't grow bigger than 40KB, so
+				/* unc_size can't grow bigger than 40MB, so
 				 * unc_size can't overflow, and this realloc
 				 * call is safe
 				 */
 				new_response = g_realloc (new_response, unc_size + 1);
 				stream.next_out = (unsigned char *)(new_response + stream.total_out);
 				stream.avail_out = unc_size - stream.total_out;
+				rb_profile_end ("attempting inflate (incomplete)");
 			} while (1);
 		}
+		rb_profile_end ("decompressing DAAP response (successful)");
 
 		if (new_response) {
 			response = new_response;
@@ -936,19 +930,25 @@ http_response_handler (SoupMessage *message,
 #else
 		rb_debug ("Received compressed response from %s but can't handle it",
 			  message_path);
-		status = SOUP_STATUS_MALFORMED;
+		data->status = SOUP_STATUS_MALFORMED;
 #endif
 	}
 
-	if (SOUP_STATUS_IS_SUCCESSFUL (status)) {
+	if (SOUP_STATUS_IS_SUCCESSFUL (data->status)) {
 		RBDAAPItem *item;
 
+		if (!rb_is_main_thread ()) {
+			priv->progress = -1.0f;
+			g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
+		}
+		rb_profile_start ("parsing DAAP response");
 		structure = rb_daap_structure_parse (response, response_length);
 		if (structure == NULL) {
 			rb_debug ("No daap structure returned from %s",
 				  message_path);
 
-			status = SOUP_STATUS_MALFORMED;
+			data->status = SOUP_STATUS_MALFORMED;
+			rb_profile_end ("parsing DAAP response (failed)");
 		} else {
 			int dmap_status = 0;
 			item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MSTT);
@@ -959,31 +959,79 @@ http_response_handler (SoupMessage *message,
 				rb_debug ("Error, dmap.status is not 200 in response from %s",
 					  message_path);
 
-				status = SOUP_STATUS_MALFORMED;
+				data->status = SOUP_STATUS_MALFORMED;
 			}
+			rb_profile_end ("parsing DAAP response (successful)");
+		}
+		if (!rb_is_main_thread ()) {
+			priv->progress = 1.0f;
+			g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
 		}
 	} else {
 		rb_debug ("Error getting %s: %d, %s\n", 
 			  message_path,
-			  message->status_code,
-			  message->reason_phrase);
+			  data->message->status_code,
+			  data->message->reason_phrase);
 	}
 
 	if (priv->response_handler) {
 		RBDAAPResponseHandler h = priv->response_handler;
 		priv->response_handler = NULL;
-		(*h) (connection, status, structure);
+		(*h) (data->connection, data->status, structure);
 	}
 
 	if (structure) {
 		rb_daap_structure_destroy (structure);
 	}
 
-	if (response != message->response.body) {
+	if (response != data->message->response.body) {
 		g_free (response);
 	}
 
 	g_free (message_path);
+	g_object_unref (G_OBJECT (data->connection));
+	g_object_unref (G_OBJECT (data->message));
+	g_free (data);
+}
+
+static void
+http_response_handler (SoupMessage *message,
+		       RBDAAPConnection *connection)
+{
+	DAAPResponseData *data;
+	int response_length;
+
+	data = g_new0 (DAAPResponseData, 1);
+	data->status = message->status_code;
+	response_length = message->response.length;
+
+	g_object_ref (G_OBJECT (connection));
+	data->connection = connection;
+	
+	g_object_ref (G_OBJECT (message));
+	data->message = message;
+
+	if (response_length >= G_MAXUINT/4 - 1) {
+		/* If response_length is too big, 
+		 * the g_malloc (unc_size + 1) below would overflow 
+		 */
+		data->status = SOUP_STATUS_MALFORMED;
+	}
+
+	/* to avoid blocking the UI, handle big responses in a separate thread */
+	if (SOUP_STATUS_IS_SUCCESSFUL (data->status) && connection->priv->use_response_handler_thread) {
+		GError *error = NULL;
+		rb_debug ("creating thread to handle daap response");
+		g_thread_create ((GThreadFunc) actual_http_response_handler,
+				 data,
+				 FALSE,
+				 &error);
+		if (error) {
+			g_warning ("fuck");
+		}
+	} else {
+		actual_http_response_handler (data);
+	}
 }
 
 static gboolean
@@ -993,7 +1041,8 @@ http_get (RBDAAPConnection *connection,
 	  gdouble version, 
 	  gint req_id, 
 	  gboolean send_close,
-	  RBDAAPResponseHandler handler)
+	  RBDAAPResponseHandler handler,
+	  gboolean use_thread)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message;
@@ -1007,6 +1056,7 @@ http_get (RBDAAPConnection *connection,
 		return FALSE;
 	}
 	
+	priv->use_response_handler_thread = use_thread;
 	priv->response_handler = handler;
 	soup_session_queue_message (priv->session, message,
 				    (SoupMessageCallbackFn) http_response_handler, 
@@ -1038,6 +1088,18 @@ entry_set_string_prop (RhythmDB *db,
 	g_value_set_string_take_ownership (&value, tmp);
 	rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, propid, &value);
 	g_value_unset (&value);
+}
+
+static gboolean
+emit_progress_idle (RBDAAPConnection *connection)
+{
+	GDK_THREADS_ENTER ();
+	g_signal_emit (G_OBJECT (connection), signals[CONNECTING], 0, 
+		       connection->priv->state,
+		       connection->priv->progress);
+	connection->priv->emit_progress_id = 0;
+	GDK_THREADS_LEAVE ();
+	return FALSE;
 }
 
 static void
@@ -1075,7 +1137,7 @@ handle_login (RBDAAPConnection *connection,
 	if (status == SOUP_STATUS_UNAUTHORIZED || status == SOUP_STATUS_FORBIDDEN) {
 		rb_debug ("Incorrect password");
 		priv->state = DAAP_GET_PASSWORD;
-		rb_daap_connection_do_something (connection);
+		g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
 	}
 
 	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
@@ -1089,8 +1151,6 @@ handle_login (RBDAAPConnection *connection,
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
 	}
-
-	connection_connected (connection);
 
 	priv->session_id = (guint32) g_value_get_int (&(item->content));
 	rb_daap_connection_state_done (connection, TRUE);
@@ -1181,6 +1241,7 @@ handle_song_listing (RBDAAPConnection *connection,
 	GNode *n;
 	gint specified_total_count;
 	gboolean update_type;
+	gint commit_batch;
 
 	/* get the songs */
 	
@@ -1197,6 +1258,7 @@ handle_song_listing (RBDAAPConnection *connection,
 		return;
 	}
 	returned_count = g_value_get_int (&(item->content));
+	commit_batch = returned_count / 20;
 	
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MTCO);
 	if (item == NULL) {
@@ -1226,6 +1288,9 @@ handle_song_listing (RBDAAPConnection *connection,
 
 	priv->item_id_to_uri = g_hash_table_new_full ((GHashFunc)g_direct_hash,(GEqualFunc)g_direct_equal, NULL, g_free);
 	
+	rb_profile_start ("handling song listing");
+	priv->progress = 0.0f;
+	connection->priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, connection);
 	for (i = 0, n = listing_node->children; n; i++, n = n->next) {
 		GNode *n2;
 		RhythmDBEntry *entry = NULL;
@@ -1371,9 +1436,14 @@ handle_song_listing (RBDAAPConnection *connection,
 
 		/* genre */
 		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_GENRE, genre);
-	}
 
-	rhythmdb_commit (priv->db);
+		if (i % commit_batch == 0) {
+			priv->progress = ((float)i / (float)returned_count);
+			connection->priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, connection);
+			rhythmdb_commit (priv->db);
+		}
+	}
+	rb_profile_end ("handling song listing");
 		
 	rb_daap_connection_state_done (connection, TRUE);
 }
@@ -1474,6 +1544,7 @@ handle_playlist_entries (RBDAAPConnection *connection,
 		return;
 	}
 
+	rb_profile_start ("handling playlist entries");
 	for (i = 0, node = listing_node->children; node; node = node->next, i++) {
 		gchar *item_uri;
 		gint playlist_item_id;
@@ -1496,6 +1567,7 @@ handle_playlist_entries (RBDAAPConnection *connection,
 		
 		playlist_uris = g_list_prepend (playlist_uris, g_strdup (item_uri));
 	}
+	rb_profile_end ("handling playlist entries");
 
 	playlist->uris = playlist_uris;
 	rb_daap_connection_state_done (connection, TRUE);
@@ -1591,7 +1663,7 @@ rb_daap_connection_logout (RBDAAPConnection *connection,
 		priv->callback_user_data = user_data;
 		priv->result = TRUE;
 		
-		rb_daap_connection_do_something (connection);
+		g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
 	}
 }
 
@@ -1636,12 +1708,16 @@ rb_daap_connection_state_done (RBDAAPConnection *connection,
 			priv->state++;
 			break;
 		}
+
+		priv->progress = 1.0f;
+		connection->priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, connection);
 	}
 
-	rb_daap_connection_do_something (connection);
+
+	g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
 }
 
-static void
+static gboolean
 rb_daap_connection_do_something (RBDAAPConnection *connection)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
@@ -1651,7 +1727,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	case DAAP_GET_INFO:
 		rb_debug ("Getting DAAP server info");
 		if (!http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_server_info)) {
+			       (RBDAAPResponseHandler) handle_server_info, FALSE)) {
 			rb_debug ("Could not get DAAP connection info");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1669,14 +1745,14 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 				priv->result = FALSE;
 				priv->state = DAAP_DONE;
 				rb_daap_connection_do_something (connection);
-				return;
+				return FALSE;
 			}
 
 			/* If the share went away while we were asking for the password,
 			 * don't bother trying to log in.
 			 */
 			if (priv->state != DAAP_GET_PASSWORD) {
-				return;
+				return FALSE;
 			}
 		}
 
@@ -1686,7 +1762,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	case DAAP_LOGIN:
 		rb_debug ("Logging into DAAP server");
 		if (!http_get (connection, "/login", FALSE, 0.0, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_login)) {
+			       (RBDAAPResponseHandler) handle_login, FALSE)) {
 			rb_debug ("Could not login to DAAP server");
 			/* FIXME: set state back to GET_PASSWORD to try again */
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1698,7 +1774,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		rb_debug ("Getting DAAP server database revision number");
 		path = g_strdup_printf ("/update?session-id=%u&revision-number=1", priv->session_id);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_update)) {
+			       (RBDAAPResponseHandler) handle_update, FALSE)) {
 			rb_debug ("Could not get server database revision number");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1710,7 +1786,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		path = g_strdup_printf ("/databases?session-id=%u&revision-number=%d", 
 					priv->session_id, priv->revision_number);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_database_info)) {
+			       (RBDAAPResponseHandler) handle_database_info, FALSE)) {
 			rb_debug ("Could not get DAAP database info");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1729,7 +1805,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					priv->session_id, 
 					priv->revision_number);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_song_listing)) {
+			       (RBDAAPResponseHandler) handle_song_listing, TRUE)) {
 			rb_debug ("Could not get DAAP song listing");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1743,7 +1819,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					priv->session_id, 
 					priv->revision_number);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_playlists)) {
+			       (RBDAAPResponseHandler) handle_playlists, TRUE)) {
 			rb_debug ("Could not get DAAP playlists");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1762,7 +1838,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 						playlist->id,
 						priv->session_id, priv->revision_number);
 			if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
-				       (RBDAAPResponseHandler) handle_playlist_entries)) {
+				       (RBDAAPResponseHandler) handle_playlist_entries, TRUE)) {
 				rb_debug ("Could not get entries for DAAP playlist %d", 
 					  priv->reading_playlist);
 				rb_daap_connection_state_done (connection, FALSE);
@@ -1775,7 +1851,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		rb_debug ("Logging out of DAAP server");
 		path = g_strdup_printf ("/logout?session-id=%u", priv->session_id);
 		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
-			       (RBDAAPResponseHandler) handle_logout)) {
+			       (RBDAAPResponseHandler) handle_logout, FALSE)) {
 			rb_debug ("Could not log out of DAAP server");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1789,9 +1865,15 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 			RBDAAPConnectionCallback callback = priv->callback;
 			priv->callback = NULL;
 			(*callback) (connection, priv->result, priv->callback_user_data);
+		
+			priv->state = DAAP_DONE;
+			priv->progress = 1.0f;
+			emit_progress_idle (connection);
 		}
 		break;
 	}
+
+	return FALSE;
 }
 
 gchar * 

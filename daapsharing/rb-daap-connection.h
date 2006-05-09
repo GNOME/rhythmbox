@@ -46,6 +46,19 @@ typedef struct {
 
 typedef struct RBDAAPConnectionPrivate RBDAAPConnectionPrivate;
 
+typedef enum {
+	DAAP_GET_INFO = 0,
+	DAAP_GET_PASSWORD,
+	DAAP_LOGIN,
+	DAAP_GET_REVISION_NUMBER,
+	DAAP_GET_DB_INFO,
+	DAAP_GET_SONGS,
+	DAAP_GET_PLAYLISTS,
+	DAAP_GET_PLAYLIST_ENTRIES,
+	DAAP_LOGOUT,
+	DAAP_DONE
+} RBDAAPConnectionState;
+
 typedef struct {
 	GObject parent;
 	RBDAAPConnectionPrivate *priv;
@@ -56,8 +69,10 @@ typedef struct {
 
 	char * (* authenticate) (RBDAAPConnection *connection,
 				 const char       *name);
-	void   (* connected   ) (RBDAAPConnection *connection);
-	void   (* disconnected) (RBDAAPConnection *connection);
+	void   (* connecting)   (RBDAAPConnection *connection,
+				 RBDAAPConnectionState state,
+				 float		   progress);
+	void   (* disconnected) (RBDAAPConnection *connection); 
 
 } RBDAAPConnectionClass;
 
