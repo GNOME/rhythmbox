@@ -1623,15 +1623,6 @@
   (return-type "GType")
 )
 
-(define-function rb_browser_source_class_add_actions
-  (c-name "rb_browser_source_class_add_actions")
-  (return-type "none")
-  (parameters
-    '("RBShell*" "shell")
-    '("GtkActionGroup*" "uimgr")
-  )
-)
-
 (define-method get_paned_key
   (of-object "RBBrowserSource")
   (c-name "rb_browser_source_get_paned_key")

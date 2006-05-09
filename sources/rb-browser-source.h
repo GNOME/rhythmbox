@@ -62,9 +62,6 @@ typedef const char*	(*RBBrowserSourceStringFunc) (RBBrowserSource *source);
 
 GType		rb_browser_source_get_type		(void);
 
-void            rb_browser_source_class_add_actions	(RBShell *shell, 
-							GtkActionGroup *uimgr);
-
 const char *	rb_browser_source_get_paned_key		(RBBrowserSource *source);
 gboolean	rb_browser_source_has_first_added_column (RBBrowserSource *source);
 gboolean	rb_browser_source_has_drop_support	(RBBrowserSource *source);
