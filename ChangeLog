@@ -1,5 +1,20 @@
 2006-05-09  James Livingston  <doclivingston@gmail.com>
 
+	Split the artdisplay plugin into several files.
+	Fix loader and amazon-search re-use issues.
+	Add some better search heuristics.
+
+	* configure.ac:
+	* plugins/artdisplay/Makefile.am:
+	* plugins/artdisplay/artdisplay.py:
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	* plugins/artdisplay/artdisplay/Loader.py:
+	* plugins/artdisplay/artdisplay/Makefile.am:
+	* plugins/artdisplay/artdisplay/__init__.py:
+
+2006-05-09  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-browser-source.h: remove the _has_first_added_column
 	stuff since it isn't actually used anywhere. Sources that want it
 	should just add it themselves, as the library already does

@@ -922,6 +922,7 @@ plugins/lirc/Makefile
 plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
+plugins/artdisplay/artdisplay/Makefile
 bindings/Makefile
 bindings/python/Makefile
 help/Makefile
