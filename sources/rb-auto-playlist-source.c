@@ -261,38 +261,47 @@ rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 	if (!tmp) /* Backwards compatibility */
 		tmp = xmlGetProp (node, RB_PLAYLIST_LIMIT);
 	if (tmp) {
-		limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_COUNT;
-
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, atoi ((char*) tmp));
-		g_value_array_append (limit_value, &val);
-		g_free (tmp);
-		g_value_unset (&val);
-	}
-
-	if (limit_value == NULL) {
-		tmp = xmlGetProp (node, RB_PLAYLIST_LIMIT_SIZE);
-		if (tmp) {
-			limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
+		gulong l = strtoul ((char *)tmp, NULL, 0);
+		if (l > 0) {
+			limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_COUNT;
 
 			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_uint64 (&val, g_ascii_strtoull ((char*) tmp, NULL, 0));
+			g_value_set_ulong (&val, l);
 			g_value_array_append (limit_value, &val);
 			g_free (tmp);
 			g_value_unset (&val);
 		}
 	}
 
-	if (limit_value == NULL) {
+	if (limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE) {
+		tmp = xmlGetProp (node, RB_PLAYLIST_LIMIT_SIZE);
+		if (tmp) {
+			guint64 l = g_ascii_strtoull ((char *)tmp, NULL, 0);
+			if (l > 0) {
+				limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
+
+				g_value_init (&val, G_TYPE_ULONG);
+				g_value_set_uint64 (&val, l);
+				g_value_array_append (limit_value, &val);
+				g_free (tmp);
+				g_value_unset (&val);
+			}
+		}
+	}
+
+	if (limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE) {
 		tmp = xmlGetProp (node, RB_PLAYLIST_LIMIT_TIME);
 		if (tmp) {
-			limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_TIME;
+			gulong l = strtoul ((char *)tmp, NULL, 0);
+			if (l > 0) {
+				limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_TIME;
 
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, atoi ((char*) tmp));
-			g_value_array_append (limit_value, &val);
-			g_free (tmp);
-			g_value_unset (&val);
+				g_value_init (&val, G_TYPE_ULONG);
+				g_value_set_ulong (&val, l);
+				g_value_array_append (limit_value, &val);
+				g_free (tmp);
+				g_value_unset (&val);
+			}
 		}
 	}
 

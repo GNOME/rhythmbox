@@ -1,3 +1,10 @@
+2006-05-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_new_from_xml):
+	Fix reading of older playlist files where all three limits were
+	specified so we take the first nonzero limit.  From #341053.
+
 2006-05-09  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/Makefile.am:
