@@ -1630,6 +1630,15 @@
   (return-type "GList*")
 )
 
+(define-method get_property_view
+  (of-object "RBLibraryBrowser")
+  (c-name "rb_library_browser_get_property_view")
+  (return-type "RBPropertyView*")
+  (parameters
+    '("RhythmDBPropType" "type")
+  )
+)
+
 (define-method has_selection
   (of-object "RBLibraryBrowser")
   (c-name "rb_library_browser_has_selection")

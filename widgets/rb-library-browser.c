@@ -619,6 +619,17 @@ rb_library_browser_get_property_views (RBLibraryBrowser *widget)
 	return rb_collate_hash_table_values (priv->property_views);
 }
 
+RBPropertyView*
+rb_library_browser_get_property_view (RBLibraryBrowser *widget,
+				      RhythmDBPropType type)
+{
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+	RBPropertyView *view;
+
+	view = g_hash_table_lookup (priv->property_views, GINT_TO_POINTER (type));
+	return view;
+}
+
 void
 rb_library_browser_set_model (RBLibraryBrowser *widget, 
 			      RhythmDBQueryModel *model,

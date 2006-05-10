@@ -519,12 +519,16 @@ rb_browser_source_cmd_choose_genre (GtkAction *action,
 {
 	GList *props;
 	RBBrowserSource *source;
+	RBPropertyView *view;
 
 	rb_debug ("choosing genre");
 
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_GENRE);
-	rb_library_browser_set_selection (source->priv->browser, RHYTHMDB_PROP_GENRE, props);
+	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_GENRE);
+	if (view)
+		rb_property_view_set_selection (view, props);
+	
 	rb_list_deep_free (props);
 	g_object_unref (source);
 }
@@ -535,12 +539,16 @@ rb_browser_source_cmd_choose_artist (GtkAction *action,
 {
 	GList *props;	
 	RBBrowserSource *source;
+	RBPropertyView *view;
 
 	rb_debug ("choosing artist");
 
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_ARTIST);
-	rb_library_browser_set_selection (source->priv->browser, RHYTHMDB_PROP_ARTIST, props);
+	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_ARTIST);
+	if (view)
+		rb_property_view_set_selection (view, props);
+
 	rb_list_deep_free (props);
 	g_object_unref (source);
 }
@@ -551,12 +559,16 @@ rb_browser_source_cmd_choose_album (GtkAction *action,
 {
 	GList *props;	
 	RBBrowserSource *source;
+	RBPropertyView *view;
 
 	rb_debug ("choosing album");
 
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_ALBUM);
-	rb_library_browser_set_selection (source->priv->browser, RHYTHMDB_PROP_ALBUM, props);
+	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_ALBUM);
+	if (view)
+		rb_property_view_set_selection (view, props);
+
 	rb_list_deep_free (props);
 	g_object_unref (source);
 }

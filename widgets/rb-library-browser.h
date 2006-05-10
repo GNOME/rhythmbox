@@ -26,6 +26,7 @@
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
+#include "rb-property-view.h"
 
 G_BEGIN_DECLS
 
@@ -53,12 +54,16 @@ void 			rb_library_browser_set_model (RBLibraryBrowser *widget,
 						      RhythmDBQueryModel *model,
 						      gboolean query_pending);
 
-gboolean rb_library_browser_reset (RBLibraryBrowser *widget);
-RhythmDBQuery* rb_library_browser_construct_query (RBLibraryBrowser *widget);
-GList* rb_library_browser_get_property_views (RBLibraryBrowser *widget);
+gboolean 		rb_library_browser_reset (RBLibraryBrowser *widget);
+RhythmDBQuery* 		rb_library_browser_construct_query (RBLibraryBrowser *widget);
+GList* 			rb_library_browser_get_property_views (RBLibraryBrowser *widget);
+RBPropertyView*		rb_library_browser_get_property_view (RBLibraryBrowser *widget,
+							      RhythmDBPropType type);
 
-gboolean rb_library_browser_has_selection (RBLibraryBrowser *widget);
-void rb_library_browser_set_selection (RBLibraryBrowser *widget, RhythmDBPropType type, GList *list);
+gboolean 		rb_library_browser_has_selection (RBLibraryBrowser *widget);
+void 			rb_library_browser_set_selection (RBLibraryBrowser *widget, 
+							  RhythmDBPropType type, 
+							  GList *list);
 
 
 G_END_DECLS

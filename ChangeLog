@@ -1,6 +1,21 @@
 2006-05-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* bindings/python/rb.defs:
+	* widgets/rb-library-browser.c:
+	(rb_library_browser_get_property_view):
+	* widgets/rb-library-browser.h:
+	Add a method to get the property view for a given property.
+
+	* sources/rb-browser-source.c:
+	(rb_browser_source_cmd_choose_genre),
+	(rb_browser_source_cmd_choose_artist),
+	(rb_browser_source_cmd_choose_album):
+	Change the browser selection by changing the property view selection. 
+	Makes the selection change visible, fixing #331740.
+
+2006-05-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* bindings/python/rb.defs:
 	* bindings/python/rb.override:
 	* rhythmdb/rhythmdb.c: (rhythmdb_is_busy):
 	* shell/rb-statusbar.c: (*),
