@@ -906,8 +906,8 @@ _wrap_RBSource__do_impl_get_status(PyObject *cls, PyObject *args, PyObject *kwar
     static char *kwlist[] = { "self", NULL };
     PyGObject *self;
     PyObject *tuple;
-    char **status_text = NULL;
-    char **progress_text = NULL;
+    char *status_text = NULL;
+    char *progress_text = NULL;
     float progress = 0.0f;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_status", kwlist, &PyRBSource_Type, &self))
