@@ -44,8 +44,6 @@ INCLUDES =						\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/widgets                    	\
-	-I$(top_srcdir)/remote				\
-	-I$(top_builddir)/remote			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-DRB_PLUGIN_DIR=\"$(PLUGINDIR)\"

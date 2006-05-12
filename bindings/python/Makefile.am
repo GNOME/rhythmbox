@@ -24,8 +24,6 @@ rb_la_CFLAGS = \
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
-	-I$(top_srcdir)/remote				\
-	-I$(top_builddir)/remote			\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell		\
 	$(RHYTHMBOX_CFLAGS)		\
@@ -49,7 +47,6 @@ rb.c: rb.defs rb.override
 
 BINDING_HEADERS_SRCDIR_IN = \
 	plugins/rb-plugin.h			\
-	remote/rb-remote-proxy.h		\
 	rhythmdb/rhythmdb.h			\
 	rhythmdb/rhythmdb-property-model.h	\
 	rhythmdb/rhythmdb-query-model.h		\

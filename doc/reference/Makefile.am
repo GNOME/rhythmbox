@@ -22,11 +22,6 @@ IGNORE_HFILES= \
 	rb-commander.h \
 	rb-marshal.h \
 	rb-nautilus-context-menu.h \
-	rb-remote-bonobo.h \
-	rb-remote-client-proxy.h \
-	rb-remote-common.h \
-	rb-remote-dbus.h \
-	rb-remote-proxy.h \
 	Rhythmbox.h \
 	rhythmdb-gda.h \
 	rhythmdb-private.h
@@ -42,7 +37,6 @@ INCLUDES=\
 	-I$(top_srcdir)/widgets \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/iradio \
-	-I$(top_srcdir)/remote \
 	-I$(top_srcdir)/daapsharing \
 	-I$(top_srcdir)/plugins \
 	$(DBUS_CFLAGS) \
@@ -56,7 +50,6 @@ GTKDOC_LIBS=\
 	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/podcast/librbpodcast.la		\
-	$(top_builddir)/remote/librbremote.la		\
 	$(top_builddir)/player/librbplayer.la		\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \

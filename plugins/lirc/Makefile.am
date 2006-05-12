@@ -18,8 +18,6 @@ INCLUDES = 						\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
-	-I$(top_srcdir)/remote				\
-	-I$(top_builddir)/remote			\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\

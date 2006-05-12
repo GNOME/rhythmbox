@@ -38,8 +38,6 @@ INCLUDES = 						\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
-	-I$(top_srcdir)/remote				\
-	-I$(top_builddir)/remote			\
 	-I$(top_builddir)/lib				\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/backends			\
@@ -102,7 +100,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/podcast/librbpodcast.la	        \
-	$(top_builddir)/remote/librbremote.la	        \
 	$(top_builddir)/player/librbplayer.la		\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
@@ -110,11 +107,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
 	$(top_builddir)/lib/librb.la
-
-if WITH_BONOBO
-rhythmbox_LDADD += $(top_builddir)/remote/bonobo/librbbonobo.la
-INCLUDES += -I$(top_srcdir)/remote/bonobo
-endif
 
 if USE_DAAP
 INCLUDES += -I$(top_srcdir)/daapsharing
@@ -154,12 +146,8 @@ rb-playlist-manager-glue.h: rb-playlist-manager.xml Makefile
 BUILT_SOURCES += rb-shell-glue.h rb-shell-player-glue.h rb-playlist-manager-glue.h
 EXTRA_DIST += rb-shell.xml rb-shell-player.xml rb-playlist-manager.xml
 
-INCLUDES += -I$(top_srcdir)/remote/dbus
 rhythmbox_LDADD += $(DBUS_LIBS)
 endif
-
-# i hate link order problems
-rhythmbox_LDADD += $(top_builddir)/remote/librbremote.la
 
 rhythmbox_LDADD += \
 	$(GDA_LIBS)					\

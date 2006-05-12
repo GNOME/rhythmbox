@@ -38,13 +38,14 @@
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
 #include "rb-shell.h"
+#include "rb-shell-player.h"
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
 static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
 					  GObjectConstructParam *construct_properties);
 static void rb_tray_icon_finalize (GObject *object);
-static void rb_tray_icon_sync_action (RBRemoteProxy *proxy, 
+static void rb_tray_icon_sync_action (RBShell *shell, 
 				      gboolean visible, 
 				      RBTrayIcon *tray);
 static void rb_tray_icon_set_property (GObject *object,
@@ -80,7 +81,8 @@ struct RBTrayIconPrivate
 
 	GtkWidget *ebox;
 
-	RBRemoteProxy *proxy;
+	RBShell *shell;
+	RBShellPlayer *shell_player;
 
 	gboolean show_notifications;
 };
@@ -92,7 +94,7 @@ enum
 	PROP_0,
 	PROP_UI_MANAGER,
 	PROP_ACTION_GROUP,
-	PROP_REMOTE
+	PROP_SHELL
 };
 
 enum
@@ -127,11 +129,11 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 	object_class->get_property = rb_tray_icon_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_REMOTE,
-					 g_param_spec_object ("remote",
-							      "RBRemoteProxy",
-							      "RBRemoteProxy object",
-							      RB_TYPE_REMOTE_PROXY,
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							      "RBShell",
+							      "RBShell object",
+							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
@@ -240,14 +242,16 @@ rb_tray_icon_finalize (GObject *object)
 }
 
 static void
-rb_tray_icon_sync_action (RBRemoteProxy *proxy, gboolean visible, RBTrayIcon *tray)
+rb_tray_icon_sync_action (RBShell *shell, gboolean visible, RBTrayIcon *tray)
 {
 	GtkAction *action;
-	if ((tray->priv->actiongroup != NULL) && (tray->priv->proxy != NULL)) {
+	if ((tray->priv->actiongroup != NULL) && (tray->priv->shell != NULL)) {
+		gboolean visible;
+
 		action = gtk_action_group_get_action (tray->priv->actiongroup,
 						      "TrayShowWindow");
-		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
-					      rb_remote_proxy_get_visibility (tray->priv->proxy));
+		g_object_get (G_OBJECT (tray->priv->shell), "visibility", &visible, NULL);
+		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), visible);
 
 		action = gtk_action_group_get_action (tray->priv->actiongroup,
 						      "TrayShowNotifications");
@@ -270,12 +274,15 @@ rb_tray_icon_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_REMOTE:
-		tray->priv->proxy = g_value_get_object (value);
-		g_signal_connect_object (G_OBJECT (tray->priv->proxy),
+	case PROP_SHELL:
+		tray->priv->shell = g_value_get_object (value);
+		g_signal_connect_object (G_OBJECT (tray->priv->shell),
 					 "visibility_changed",
 					 G_CALLBACK (rb_tray_icon_sync_action),
 					 tray, 0);
+		g_object_get (G_OBJECT (tray->priv->shell), 
+			      "shell-player", &tray->priv->shell_player, 
+			      NULL);
 		rb_tray_icon_sync_action (NULL, FALSE, tray);
 		break;
 	case PROP_UI_MANAGER:
@@ -297,8 +304,8 @@ rb_tray_icon_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_REMOTE:
-		g_value_set_object (value, tray->priv->proxy);
+	case PROP_SHELL:
+		g_value_set_object (value, tray->priv->shell);
 		break;
 	case PROP_UI_MANAGER:
 		g_value_set_object (value, tray->priv->ui_manager);
@@ -314,12 +321,12 @@ rb_tray_icon_get_property (GObject *object,
 
 RBTrayIcon *
 rb_tray_icon_new (GtkUIManager *mgr,
-		  RBRemoteProxy *remote)
+		  RBShell *shell)
 {
 	return g_object_new (RB_TYPE_TRAY_ICON,
 			     "title", "Rhythmbox tray icon",
 			     "ui-manager", mgr,
-			     "remote", remote,
+			     "shell", shell,
 			     NULL);
 }
 
@@ -367,20 +374,13 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 	rb_debug ("tray button press");
 
 	switch (event->button) {
-	case 1: {
-		gboolean visible = rb_remote_proxy_get_visibility (icon->priv->proxy);
-		rb_remote_proxy_set_visibility (icon->priv->proxy, !visible);
+	case 1:
+		rb_shell_toggle_visibility (icon->priv->shell);
 		break;
-	}
-	case 2: {
-		if (rb_remote_proxy_playing (icon->priv->proxy))
-			rb_remote_proxy_pause (icon->priv->proxy);
-		else
-			rb_remote_proxy_play (icon->priv->proxy);
+	case 2:
+		rb_shell_player_playpause (icon->priv->shell_player, FALSE, NULL);
 		break;
-	}
-		
-	case 3: {
+	case 3:
 		popup = gtk_ui_manager_get_widget (GTK_UI_MANAGER (icon->priv->ui_manager),
 						   "/RhythmboxTrayPopup");
 		gtk_menu_set_screen (GTK_MENU (popup), gtk_widget_get_screen (GTK_WIDGET (icon)));
@@ -389,40 +389,26 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 				gtk_get_current_event_time ());
 		break;
 	}
-	}
 }
 
 static void
 rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 				    RBTrayIcon *icon)
 {
-	float volume;
-	GValue volume_val = {0,};
-	rb_debug ("tray button scroll");
-
-	g_value_init (&volume_val, G_TYPE_FLOAT);
-	rb_remote_proxy_get_player_property (icon->priv->proxy, "volume", &volume_val);
-	volume = g_value_get_float (&volume_val);
+	gdouble adjust;
 
 	switch (event->scroll.direction) {
 	case GDK_SCROLL_UP:
-		volume += 0.1;
-		if (volume > 1.0)
-			volume = 1.0;
+		adjust = 0.1;
 		break;
 	case GDK_SCROLL_DOWN:
-		volume -= 0.1;
-		if (volume < 0)
-			volume = 0;
+		adjust = -0.1;
 		break;
-	case GDK_SCROLL_LEFT:
-	case GDK_SCROLL_RIGHT:
-		break;
+	default:
+		return;
 	}
-	
-	rb_debug ("got scroll, setting volume to %f", volume);
-	g_value_set_float (&volume_val, volume);
-	rb_remote_proxy_set_player_property (icon->priv->proxy, "volume", &volume_val);
+
+	rb_shell_player_set_volume_relative (icon->priv->shell_player, adjust, NULL);
 }
 
 static void
@@ -468,7 +454,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 		if (uri != NULL)
-			rb_remote_proxy_load_uri (icon->priv->proxy, uri, FALSE);
+			rb_shell_load_uri (icon->priv->shell, uri, FALSE, NULL);
 
 		g_free (uri);
 	}
@@ -483,8 +469,9 @@ rb_tray_icon_show_window_changed_cb (GtkAction *action,
 				     RBTrayIcon *icon)
 {
 	rb_debug ("show window clicked for %p", icon);
-	rb_remote_proxy_set_visibility (icon->priv->proxy,
-					gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+	g_object_set (G_OBJECT (icon->priv->shell), 
+		      "visibility", gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)), 
+		      NULL);
 }
 
 static void

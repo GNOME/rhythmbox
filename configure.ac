@@ -586,28 +586,16 @@ AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
 AS_AC_EXPAND(DATADIR, $datadir)
 
-AC_MSG_CHECKING([for D-BUS])
-AC_ARG_WITH(dbus,
-            AC_HELP_STRING([--with-dbus],
-			   [Enable D-BUS support]),,
-	      with_dbus=auto)
-if test "x$with_dbus" != "xno"; then
-	PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
-        if test "x$with_dbus" = xyes && test "x$enable_dbus" = xno; then
-	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
-	fi
-        if test "x$enable_dbus" = xyes; then
-		AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
-		DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
-		AC_MSG_RESULT([we're getting on D-BUS])
+dnl DBUS
+PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
+if test "x$enable_dbus" = xno; then
+   AC_MSG_ERROR([DBUS not found or too old])	   
+fi
 
-		DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
-		AC_SUBST(DBUS_GLIB_BIN)
-	else
-		AC_MSG_RESULT([not found])
-	fi
-
-fi			  
+AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
+DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
+DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
+AC_SUBST(DBUS_GLIB_BIN)
 AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
 
 dnl out-of-process metadata reader (requires dbus)
@@ -626,35 +614,6 @@ if test "x$with_metadata_helper" != xno; then
 fi
 AM_CONDITIONAL(WITH_METADATA_HELPER, test "x$enable_metadata_helper" = "xyes")
 
-AC_MSG_CHECKING([for Bonobo])
-AC_ARG_WITH(bonobo,
-            AC_HELP_STRING([--with-bonobo],
-			   [Enable bonobo support]),,
-	      with_bonobo=auto)
-if test "x$with_bonobo" != "xno"; then
-	PKG_CHECK_MODULES(BONOBO, libbonobo-2.0 >= 2.0.0, enable_bonobo=yes,
-		          enable_bonobo=no)
-        if test "x$with_bonobo" = xyes && test "x$enable_bonobo" = xno; then
-	   AC_MSG_ERROR([Bonobo explicitly requested but no support found])	   
-	fi
-        if test "x$enable_bonobo" = xyes; then
-		AC_DEFINE(WITH_BONOBO, 1, [Define if Bonobo is enabled])	   
-		ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
-		AC_SUBST(ORBIT_IDL)
-
-		LIBBONOBO_IDL="`$PKG_CONFIG --variable=idldir libbonobo-2.0`"
-		AC_SUBST(LIBBONOBO_IDL)
-
-		BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
-		AC_SUBST(BONOBO_ACTIVATION_IDL)
-		AC_MSG_RESULT([found])
-	else
-		AC_MSG_RESULT([not found])
-	fi
-	
-fi			  
-AM_CONDITIONAL(WITH_BONOBO, test "x$enable_bonobo" = "xyes")
-	      
 AM_GCONF_SOURCE_2
 
 dnl LIRC
@@ -903,9 +862,6 @@ widgets/Makefile
 widgets/libsexy/Makefile
 iradio/Makefile
 podcast/Makefile
-remote/Makefile
-remote/bonobo/Makefile
-remote/dbus/Makefile
 shell/Makefile
 data/Makefile
 data/ui/Makefile
@@ -990,11 +946,6 @@ if test x"$have_libnotify" = xyes; then
 	AC_MSG_NOTICE([** libnotify support is enabled])
 else
 	AC_MSG_NOTICE([   libnotify support is disabled])
-fi
-if test x"$enable_bonobo" = xyes; then
-	AC_MSG_NOTICE([** Bonobo control/activation enabled])
-else
-	AC_MSG_NOTICE([   Bonobo control/activation disabled])
 fi
 if test x"$enable_hal" = xyes; then
 	AC_MSG_NOTICE([** HAL support enabled])

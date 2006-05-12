@@ -1,3 +1,39 @@
+2006-05-12  William Jon McCann  <mccann@jhu.edu>
+
+	* Makefile.am:
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* configure.ac:
+	* doc/reference/Makefile.am:
+	* plugins/Makefile.am:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/ipod/Makefile.am:
+	* plugins/lirc/Makefile.am:
+	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_read_code),
+	(impl_activate), (impl_deactivate):
+	* plugins/sample/Makefile.am:
+	* remote/Makefile.am:
+	* shell/Makefile.am:
+	* shell/main.c: (main), (main_shell_weak_ref_cb):
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_set_property),
+	(rb_shell_get_property), (rb_shell_window_state_cb),
+	(idle_hide_mainwindow), (rb_shell_set_visibility),
+	(rb_shell_playing_entry_changed_cb), (tray_destroy_cb),
+	(rb_shell_set_song_property):
+	* shell/rb-shell.h:
+	* shell/rb-tray-icon.c: (rb_tray_icon_class_init),
+	(rb_tray_icon_sync_action), (rb_tray_icon_set_property),
+	(rb_tray_icon_get_property), (rb_tray_icon_new),
+	(rb_tray_icon_button_press_event_cb),
+	(rb_tray_icon_scroll_event_cb), (rb_tray_icon_drop_cb),
+	(rb_tray_icon_show_window_changed_cb):
+	* shell/rb-tray-icon.h:
+
+	Remove bonobo, require DBUS.
+	Patch from Jonathan Matthew  <jonathan@kaolin.wh9.net>
+	Fixes #339720
+
 2006-05-13  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rb.override: fix some pointer-type warnings

@@ -1,13 +1,7 @@
 ## arch-tag: Automake rules for remote interfaces
 
-if WITH_BONOBO
-MAYBE_BONOBO = bonobo
-else
-MAYBE_BONOBO =
-endif
-
-SUBDIRS = dbus $(MAYBE_BONOBO)
-DIST_SUBDIRS = dbus bonobo
+SUBDIRS = dbus
+DIST_SUBDIRS = dbus
 
 noinst_LTLIBRARIES = librbremote.la
 

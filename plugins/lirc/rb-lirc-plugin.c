@@ -33,17 +33,18 @@
 #include "rb-plugin.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
-#include "rb-remote-proxy.h"
+#include "rb-shell-player.h"
 
 #define RB_TYPE_LIRC_PLUGIN		(rb_lirc_plugin_get_type ())
-#define RB_LIRC_PLUGIN(o)			(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIRC_PLUGIN, RBLircPlugin))
+#define RB_LIRC_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIRC_PLUGIN, RBLircPlugin))
 #define RB_LIRC_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_LIRC_PLUGIN, RBLircPluginClass))
 #define RB_IS_LIRC_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_LIRC_PLUGIN))
-#define RB_IS_LIRC_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIRC_PLUGIN))
+#define RB_IS_LIRC_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIRC_PLUGIN))
 #define RB_LIRC_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIRC_PLUGIN, RBLircPluginClass))
 
 #define RB_IR_COMMAND_PLAY "play"
 #define RB_IR_COMMAND_PAUSE "pause"
+#define RB_IR_COMMAND_STOP "stop"
 #define RB_IR_COMMAND_SHUFFLE "shuffle"
 #define RB_IR_COMMAND_REPEAT "repeat"
 #define RB_IR_COMMAND_NEXT "next"
@@ -57,7 +58,7 @@
 typedef struct
 {
 	RBPlugin parent;
-	RBRemoteProxy *proxy;
+	RBShellPlayer *shell_player;
 	struct lirc_config *lirc_config;
 	GIOChannel *lirc_channel;
 } RBLircPlugin;
@@ -90,25 +91,6 @@ rb_lirc_plugin_init (RBLircPlugin *plugin)
 	rb_debug ("RBLircPlugin initialising");
 }
 
-static void
-rb_lirc_plugin_adjust_volume (RBLircPlugin *plugin, float adjust)
-{
-	GValue value = {0,};
-	float volume;
-
-	g_value_init (&value, G_TYPE_FLOAT);
-	rb_remote_proxy_get_player_property (plugin->proxy, "volume", &value);
-	volume = g_value_get_float (&value) + adjust;
-
-	if (volume < 0.0f)
-		volume = 0.0f;
-	else if (volume > 1.0f)
-		volume = 1.0f;
-	g_value_set_float (&value, volume);
-	rb_remote_proxy_set_player_property (plugin->proxy, "volume", &value);
-	g_value_unset (&value);
-}
-
 static gboolean
 rb_lirc_plugin_read_code (GIOChannel *source, 
 			  GIOCondition condition,
@@ -131,29 +113,40 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 	} else if (str == NULL) {
 		rb_debug ("unknown LIRC code");
 	} else if (strcmp (str, RB_IR_COMMAND_PLAY) == 0) {
-		rb_remote_proxy_play (plugin->proxy);
+		rb_shell_player_play (plugin->shell_player, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_PAUSE) == 0) {
-		rb_remote_proxy_pause (plugin->proxy);
+		rb_shell_player_pause (plugin->shell_player, NULL);
+	} else if (strcmp (str, RB_IR_COMMAND_STOP) == 0) {
+		rb_shell_player_stop (plugin->shell_player);
 	} else if (strcmp (str, RB_IR_COMMAND_SHUFFLE) == 0) {
-		gboolean shuffle = rb_remote_proxy_get_shuffle (plugin->proxy);
-		rb_remote_proxy_set_shuffle (plugin->proxy, !shuffle);
+		gboolean shuffle;
+		gboolean repeat;
+		if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
+			rb_shell_player_set_playback_state (plugin->shell_player, !shuffle, repeat);
+		}
 	} else if (strcmp (str, RB_IR_COMMAND_REPEAT) == 0) {
-		gboolean repeat = rb_remote_proxy_get_repeat (plugin->proxy);
-		rb_remote_proxy_set_repeat (plugin->proxy, !repeat);
+		gboolean shuffle;
+		gboolean repeat;
+		if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
+			rb_shell_player_set_playback_state (plugin->shell_player, shuffle, !repeat);
+		}
 	} else if (strcmp (str, RB_IR_COMMAND_NEXT) == 0) {
-		rb_remote_proxy_jump_next (plugin->proxy);
+		rb_shell_player_do_next (plugin->shell_player, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_PREVIOUS) == 0) {
-		rb_remote_proxy_jump_previous (plugin->proxy);
+		rb_shell_player_do_previous (plugin->shell_player, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_SEEK_FORWARD) == 0) {
-		rb_remote_proxy_seek (plugin->proxy, 10);
+		rb_shell_player_seek (plugin->shell_player, 10);
 	} else if (strcmp (str, RB_IR_COMMAND_SEEK_BACKWARD) == 0) {
-		rb_remote_proxy_seek (plugin->proxy, -10);
+		rb_shell_player_seek (plugin->shell_player, -10);
 	} else if (strcmp (str, RB_IR_COMMAND_VOLUME_UP) == 0) {
-		rb_lirc_plugin_adjust_volume (plugin, 0.1);
+		rb_shell_player_set_volume_relative (plugin->shell_player, 0.1, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_VOLUME_DOWN) == 0) {
-		rb_lirc_plugin_adjust_volume (plugin, -0.1);
+		rb_shell_player_set_volume_relative (plugin->shell_player, -0.1, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_MUTE) == 0) {
-		rb_remote_proxy_toggle_mute (plugin->proxy);
+		gboolean mute;
+		if (rb_shell_player_get_mute (plugin->shell_player, &mute, NULL)) {
+			rb_shell_player_set_mute (plugin->shell_player, !mute, NULL);
+		}
 	}
 	g_free (code);
 
@@ -168,8 +161,7 @@ impl_activate (RBPlugin *rbplugin,
 	int fd;
 	RBLircPlugin *plugin = RB_LIRC_PLUGIN (rbplugin);
 
-	plugin->proxy = RB_REMOTE_PROXY (shell);
-	g_object_ref (G_OBJECT (shell));
+	g_object_get (G_OBJECT (shell), "shell-player", &plugin->shell_player, NULL);
 
 	rb_debug ("Activating lirc plugin");
 
@@ -215,9 +207,9 @@ impl_deactivate	(RBPlugin *rbplugin,
 		lirc_deinit ();
 	}
 
-	if (plugin->proxy) {
-		g_object_unref (G_OBJECT (plugin->proxy));
-		plugin->proxy = NULL;
+	if (plugin->shell_player) {
+		g_object_unref (G_OBJECT (plugin->shell_player));
+		plugin->shell_player = NULL;
 	}
 }
 

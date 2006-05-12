@@ -71,6 +71,9 @@ typedef struct
 typedef struct
 {
         GObjectClass parent_class;
+
+	/* signals */
+	void	(*visibility_changed)	(RBShell *shell, gboolean visible);
 } RBShellClass;
 
 GType		rb_shell_get_type	(void);

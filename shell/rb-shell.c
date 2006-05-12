@@ -65,7 +65,6 @@
 #include "rb-druid.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
-#include "rb-remote-proxy.h"
 #include "rb-source-header.h"
 #include "rb-tray-icon.h"
 #include "rb-statusbar.h"
@@ -93,7 +92,6 @@
 #include "rb-sourcelist-model.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
-static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
 static void rb_shell_init (RBShell *shell);
 static GObject *rb_shell_constructor (GType type,
 				      guint n_construct_properties,
@@ -188,7 +186,6 @@ static void rb_shell_cmd_extract_cd (GtkAction *action,
 static void rb_shell_cmd_current_song (GtkAction *action,
 				       RBShell *shell);
 static void rb_shell_jump_to_current (RBShell *shell);
-static void rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 						RhythmDBEntry *entry);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
@@ -236,44 +233,6 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
 static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
-static void rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play);
-static void rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri);
-static void rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri);
-static void rb_shell_grab_focus_impl (RBRemoteProxy *proxy);
-static gboolean rb_shell_get_visibility_impl (RBRemoteProxy *proxy);
-static void rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible);
-static gboolean rb_shell_get_shuffle_impl (RBRemoteProxy *proxy);
-static void rb_shell_set_shuffle_impl (RBRemoteProxy *proxy, gboolean shuffle);
-static gboolean rb_shell_get_repeat_impl (RBRemoteProxy *proxy);
-static void rb_shell_set_repeat_impl (RBRemoteProxy *proxy, gboolean repeat);
-static void rb_shell_play_impl (RBRemoteProxy *proxy);
-static void rb_shell_pause_impl (RBRemoteProxy *proxy);
-static gboolean rb_shell_playing_impl (RBRemoteProxy *proxy);
-static long rb_shell_get_playing_time_impl (RBRemoteProxy *proxy);
-static void rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time);
-static void rb_shell_seek_impl (RBRemoteProxy *proxy, long offset);
-static gchar *rb_shell_get_playing_uri_impl (RBRemoteProxy *proxy);
-static gboolean rb_shell_get_song_info_impl (RBRemoteProxy *proxy,
-                                             const gchar *uri,
-                                             RBRemoteSong *song);
-static void rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating);
-static void rb_shell_jump_next_impl (RBRemoteProxy *proxy);
-static void rb_shell_jump_previous_impl (RBRemoteProxy *proxy);
-static void rb_shell_remote_quit_impl (RBRemoteProxy *proxy);
-static GParamSpec *rb_shell_find_player_property_impl (RBRemoteProxy *proxy,
-						       const gchar *property);
-static void rb_shell_player_notify_handler_impl (RBRemoteProxy *proxy, 
-						 GCallback c_handler, 
-						 gpointer gobject);
-static void rb_shell_set_player_property_impl (RBRemoteProxy *proxy,
-					       const gchar *property,
-					       GValue *value);
-static void rb_shell_get_player_property_impl (RBRemoteProxy *proxy,
-					       const gchar *property,
-					       GValue *value);
-static gchar *rb_shell_get_playing_source_impl (RBRemoteProxy *proxy);
-
-static void rb_shell_toggle_mute_impl (RBRemoteProxy *proxy);
 
 static gboolean save_yourself_cb (GnomeClient *client, 
                                   gint phase,
@@ -319,6 +278,7 @@ enum
 	PROP_PROXY_CONFIG,
 	PROP_LIBRARY_SOURCE,
 	PROP_SOURCELIST_MODEL,
+	PROP_VISIBILITY,
 };
 
 /* prefs */
@@ -332,13 +292,15 @@ enum
 #define CONF_STATE_WINDOW_Y_POSITION CONF_PREFIX "/state/window_y_position"
 #define CONF_STATE_SOURCELIST_HEIGHT CONF_PREFIX "/state/sourcelist_height"
 
+enum
+{
+	VISIBILITY_CHANGED,
+	LAST_SIGNAL
+};
 
-G_DEFINE_TYPE_EXTENDED (RBShell, 
-                        rb_shell, 
-                        G_TYPE_OBJECT,
-                        0, 
-                        G_IMPLEMENT_INTERFACE (RB_TYPE_REMOTE_PROXY, 
-                                               rb_shell_remote_proxy_init));
+static guint rb_shell_signals[LAST_SIGNAL] = { 0 };
+
+G_DEFINE_TYPE (RBShell, rb_shell, G_TYPE_OBJECT)
 
 
 struct RBShellPrivate
@@ -666,51 +628,26 @@ rb_shell_class_init (RBShellClass *klass)
 							      RB_TYPE_SOURCELIST_MODEL,
 							      G_PARAM_READABLE));
 
+	g_object_class_install_property (object_class,
+					 PROP_VISIBILITY,
+					 g_param_spec_boolean ("visibility", 
+							       "visibility", 
+							       "Current window visibility",
+							       TRUE,
+							       G_PARAM_READWRITE));
 
+	rb_shell_signals[VISIBILITY_CHANGED] =
+		g_signal_new ("visibility_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, visibility_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
-}
-
-static void
-rb_shell_remote_proxy_init (RBRemoteProxyIface *iface)
-{
-	iface->load_uri = rb_shell_load_uri_impl;
-	iface->select_uri = rb_shell_select_uri_impl;
-	iface->play_uri = rb_shell_play_uri_impl;
-	iface->grab_focus = rb_shell_grab_focus_impl;
-
-	iface->get_visibility = rb_shell_get_visibility_impl;
-	iface->set_visibility = rb_shell_set_visibility_impl;
-	iface->get_shuffle = rb_shell_get_shuffle_impl;
-	iface->set_shuffle = rb_shell_set_shuffle_impl;
-	iface->get_repeat = rb_shell_get_repeat_impl;
-	iface->set_repeat = rb_shell_set_repeat_impl;
-
-	iface->play = rb_shell_play_impl;
-	iface->pause = rb_shell_pause_impl;
-	iface->playing = rb_shell_playing_impl;
-
-	iface->get_playing_time = rb_shell_get_playing_time_impl;
-	iface->set_playing_time = rb_shell_set_playing_time_impl;
-	iface->seek = rb_shell_seek_impl;
-
-	iface->get_playing_uri = rb_shell_get_playing_uri_impl;
-	iface->get_song_info = rb_shell_get_song_info_impl;
-	iface->set_rating = rb_shell_set_rating_impl;
-
-	iface->jump_next = rb_shell_jump_next_impl;
-	iface->jump_previous = rb_shell_jump_previous_impl;
-
-	iface->quit = rb_shell_remote_quit_impl;
-
-	iface->find_player_property = rb_shell_find_player_property_impl;
-	iface->player_notify_handler = rb_shell_player_notify_handler_impl;
-	iface->set_player_property = rb_shell_set_player_property_impl;
-	iface->get_player_property = rb_shell_get_player_property_impl;
-
-	iface->get_playing_source = rb_shell_get_playing_source_impl;
-
-	iface->toggle_mute = rb_shell_toggle_mute_impl;
 }
 
 static void
@@ -754,6 +691,9 @@ rb_shell_set_property (GObject *object,
 		break;
 	case PROP_RHYTHMDB_FILE:
 		shell->priv->rhythmdb_file = g_value_dup_string (value);
+		break;
+	case PROP_VISIBILITY:
+		rb_shell_set_visibility (shell, g_value_get_boolean (value), FALSE);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -833,6 +773,9 @@ rb_shell_get_property (GObject *object,
  			g_value_set_object (value, model);
 		}
  		break;
+	case PROP_VISIBILITY:
+		g_value_set_boolean (value, rb_shell_get_visibility (shell));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1451,9 +1394,8 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	shell->priv->iconified = ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) != 0);
 
 	if (event->changed_mask & (GDK_WINDOW_STATE_WITHDRAWN | GDK_WINDOW_STATE_ICONIFIED)) {
-		g_signal_emit_by_name (shell, 
-				       "visibility_changed", 
-				       rb_shell_get_visibility (shell));
+		g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGED], 0,
+			       rb_shell_get_visibility (shell));
 	}
 
 	/* don't save maximized state when is hidden */
@@ -1503,7 +1445,7 @@ idle_hide_mainwindow (gpointer data)
 
 	gtk_widget_hide (GTK_WIDGET (shell->priv->window));
 
-	g_signal_emit_by_name (shell, "visibility_changed", 0);
+	g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGED], 0, FALSE);
 
 	g_object_unref (shell);
 
@@ -1546,7 +1488,8 @@ rb_shell_set_visibility (RBShell *shell,
 			rb_shell_present (shell, gtk_get_current_event_time (), NULL);
 		else
 			gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
-		g_signal_emit_by_name (shell, "visibility_changed", visible);
+
+		g_signal_emit (shell, rb_shell_signals[VISIBILITY_CHANGED], 0, visible);
 
 		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
 	} else {
@@ -1893,10 +1836,11 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBShell *shell)
 {
-	RBRemoteSong song;
+/*	RBRemoteSong song; */
 	char *notifytitle;
 
 	/* emit remote song_changed notification */
+	/*
 	song.title = g_strdup (rb_refstring_get (entry->title));
 	song.artist = g_strdup (rb_refstring_get (entry->artist));
 	song.genre = g_strdup (rb_refstring_get (entry->genre));
@@ -1913,11 +1857,17 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 	song.last_played = entry->last_played;
 
 	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
+	*/
 
 	/* Translators: by Artist from Album*/
 	notifytitle = g_strdup_printf (_("by %s from %s"),
-				       song.artist, song.album);
-	rb_shell_hidden_notify (shell, 4000, song.title, NULL, notifytitle);
+				       rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
+				       rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+	rb_shell_hidden_notify (shell, 
+				4000, 
+				rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), 
+				NULL, 
+				notifytitle);
 	g_free (notifytitle);
 }
 
@@ -2806,13 +2756,6 @@ rb_shell_jump_to_entry_with_source (RBShell *shell,
 }
 
 static void
-rb_shell_jump_to_entry (RBShell *shell,
-			RhythmDBEntry *entry)
-{
-	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
-}
-
-static void
 rb_shell_play_entry (RBShell *shell,
 		     RhythmDBEntry *entry)
 {
@@ -2870,8 +2813,7 @@ tray_destroy_cb (GtkObject *object,
 	}
 
 	rb_debug ("creating new tray icon");
-	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->ui_manager,
-						   RB_REMOTE_PROXY (shell));
+	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->ui_manager, shell);
 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy",
 				 G_CALLBACK (tray_destroy_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "embedded",
@@ -2949,15 +2891,6 @@ rb_shell_session_init (RBShell *shell)
 				 "die",
 				 G_CALLBACK (session_die_cb),
 				 shell, 0);
-}
-
-static void
-rb_shell_load_uri_impl (RBRemoteProxy *proxy,
-			const char *uri,
-			gboolean play)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	rb_shell_load_uri (shell, uri, play, NULL);
 }
 
 RhythmDBEntryType
@@ -3185,33 +3118,6 @@ rb_shell_get_ui_manager (RBShell *shell)
 	return G_OBJECT (shell->priv->ui_manager);
 }
 
-static void
-rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	RhythmDBEntry *entry;
-
-	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-	if (entry != NULL) {
-		rb_shell_jump_to_entry (shell, entry);
-	}
-}
-
-static void
-rb_shell_play_uri_impl (RBRemoteProxy *proxy,
-			const char *uri)
-{
-	RBShell       *shell = RB_SHELL (proxy);
-	RhythmDBEntry *entry;
-
-	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-
-	if (entry != NULL) {
-		rb_shell_player_play_entry (RB_SHELL_PLAYER (shell->priv->player_shell),
-					    entry);
-	}
-}
-
 gboolean
 rb_shell_add_to_queue (RBShell *shell,
 		       const gchar *uri,
@@ -3251,183 +3157,6 @@ rb_shell_present (RBShell *shell,
 #endif
 
 	rb_profile_end ("presenting shell");
-
-	return TRUE;
-}
-
-static void
-rb_shell_grab_focus_impl (RBRemoteProxy *proxy)
-{
-	rb_shell_present (RB_SHELL (proxy), gtk_get_current_event_time (), NULL);
-}
-
-static gboolean
-rb_shell_get_visibility_impl (RBRemoteProxy *proxy)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	return rb_shell_get_visibility (shell);
-}
-
-static void
-rb_shell_set_visibility_impl (RBRemoteProxy *proxy,
-			      gboolean visible)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	rb_shell_set_visibility (shell, visible, FALSE);
-}
-
-static gboolean
-rb_shell_get_shuffle_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	gboolean       shuffle, repeat;
-
-	rb_shell_player_get_playback_state (player,
-					    &shuffle,
-					    &repeat);
-
-	return shuffle;
-}
-
-static void
-rb_shell_set_shuffle_impl (RBRemoteProxy *proxy,
-			   gboolean shuffle)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	gboolean       shuffle_old, repeat;
-
-	rb_shell_player_get_playback_state (player,
-					    &shuffle_old,
-					    &repeat);
-
-	rb_shell_player_set_playback_state (player,
-					    shuffle,
-					    repeat);
-}
-
-static gboolean
-rb_shell_get_repeat_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	gboolean       shuffle, repeat;
-
-	rb_shell_player_get_playback_state (player,
-					    &shuffle,
-					    &repeat);
-
-	return repeat;
-}
-
-static void
-rb_shell_set_repeat_impl (RBRemoteProxy *proxy,
-			  gboolean repeat)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	gboolean       shuffle, repeat_old;
-
-	rb_shell_player_get_playback_state (player,
-					    &shuffle,
-					    &repeat_old);
-
-	rb_shell_player_set_playback_state (player,
-					    shuffle,
-					    repeat);
-}
-
-static void
-rb_shell_play_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	/* These interfaces are busted...need a way to signal errors */
-	rb_shell_player_playpause (player, TRUE, NULL);
-}
-
-static void
-rb_shell_pause_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	/* These interfaces are busted...need a way to signal errors */
-	rb_shell_player_playpause (player, TRUE, NULL);
-}
-
-static gboolean
-rb_shell_playing_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	gboolean playing;
-	rb_shell_player_get_playing (player, &playing, NULL);
-	return playing;
-}
-
-static long
-rb_shell_get_playing_time_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	guint time;
-	rb_shell_player_get_playing_time (player, &time, NULL);
-	return (long) time;
-}
-
-static void
-rb_shell_set_playing_time_impl (RBRemoteProxy *proxy,
-				long time)
-{
-	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	rb_shell_player_set_playing_time (player, (guint) time, NULL);
-}
-
-static gchar*
-rb_shell_get_playing_uri_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player;
-	RhythmDBEntry *entry;
-
-	player = RB_SHELL (proxy)->priv->player_shell;
-
-	entry = rb_shell_player_get_playing_entry (player);
-
-	if (entry != NULL && entry->location != NULL)
-	    return g_strdup (entry->location);
-	else
-	    return NULL;
-}
-
-static gboolean
-rb_shell_get_song_info_impl (RBRemoteProxy *proxy,
-			     const gchar *uri,
-			     RBRemoteSong *song)
-{
-	RBShell       *shell;
-	RhythmDBEntry *entry;
-
-	shell = RB_SHELL (proxy);
-
-	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-
-	if (entry == NULL)
-		return FALSE;
-
-	song->title = g_strdup (rb_refstring_get (entry->title));
-	song->artist = g_strdup (rb_refstring_get (entry->artist));
-	song->album = g_strdup (rb_refstring_get (entry->album));
-	song->genre = g_strdup (rb_refstring_get (entry->genre));
-
-	/* Should be the same as parameter uri */
-	song->uri = g_strdup (entry->location);
-
-	song->track_number = entry->tracknum;
-	song->disc_number = entry->discnum;
-	song->duration = entry->duration;
-	song->bitrate = entry->bitrate;
-	song->filesize = entry->file_size;
-	song->rating = entry->rating;
-	song->play_count = entry->play_count;
-	song->last_played = entry->last_played;
-
-	song->track_gain = entry->track_gain;
-	song->track_peak = entry->track_peak;
-	song->album_gain = entry->album_gain;
-	song->album_peak = entry->album_peak;
 
 	return TRUE;
 }
@@ -3542,115 +3271,6 @@ rb_shell_set_song_property (RBShell *shell,
 
 	rhythmdb_entry_set (shell->priv->db, entry, propid, value);
 	return TRUE;
-}
-
-static void
-rb_shell_jump_next_impl (RBRemoteProxy *proxy)
-{
-	rb_shell_player_do_next (RB_SHELL (proxy)->priv->player_shell, NULL);
-}
-
-static void
-rb_shell_jump_previous_impl (RBRemoteProxy *proxy)
-{
-	rb_shell_player_do_previous (RB_SHELL (proxy)->priv->player_shell, NULL);
-}
-
-static void
-rb_shell_remote_quit_impl (RBRemoteProxy *proxy)
-{
-	rb_shell_quit (RB_SHELL (proxy));
-}
-
-static GParamSpec *
-rb_shell_find_player_property_impl (RBRemoteProxy *proxy,
-				    const gchar *property)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	GObjectClass *klass = G_OBJECT_CLASS (RB_SHELL_PLAYER_GET_CLASS (shell->priv->player_shell));
-	return g_object_class_find_property (klass, property);
-}
-
-static void
-rb_shell_player_notify_handler_impl (RBRemoteProxy *proxy,
-				     GCallback c_handler,
-				     gpointer gobject)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
-				 "notify",
-				 c_handler,
-				 gobject, 0);
-}
-
-static void
-rb_shell_set_player_property_impl (RBRemoteProxy *proxy,
-				   const gchar *property,
-				   GValue *value)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	g_object_set_property (G_OBJECT (shell->priv->player_shell), property, value);
-}
-
-static void
-rb_shell_get_player_property_impl (RBRemoteProxy *proxy,
-				   const gchar *property,
-				   GValue *value)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	g_object_get_property (G_OBJECT (shell->priv->player_shell), property, value);
-}
-
-static gchar *
-rb_shell_get_playing_source_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player;
-	RBSource *source;
-	gchar *source_name;
-
-	player = RB_SHELL (proxy)->priv->player_shell;
-	source = rb_shell_player_get_playing_source (player);
-	g_object_get (G_OBJECT (source), "name", &source_name, NULL);
-	return source_name;
-}
-
-static void
-rb_shell_seek_impl (RBRemoteProxy *proxy,
-		    long offset)
-{
-	RBShellPlayer *player;
-	player = RB_SHELL (proxy)->priv->player_shell;
-	rb_shell_player_seek (player, offset);
-}
-
-static void
-rb_shell_set_rating_impl (RBRemoteProxy *proxy,
-			  double rating)
-{
-	RBShell *shell = RB_SHELL (proxy);
-	RhythmDBEntry *entry;
-
-	rb_debug ("setting rating of playing entry to %f", rating);
-
-	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-	if (entry != NULL) {
-		GValue value = {0, };
-		g_value_init (&value, G_TYPE_DOUBLE);
-		g_value_set_double (&value, rating);
-
-		rhythmdb_entry_set (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
-
-		g_value_unset (&value);
-		rhythmdb_commit (shell->priv->db);
-	}
-}
-
-static void
-rb_shell_toggle_mute_impl (RBRemoteProxy *proxy)
-{
-	RBShellPlayer *player;
-	player = RB_SHELL (proxy)->priv->player_shell;
-	rb_shell_player_toggle_mute (player);
 }
 
 static void

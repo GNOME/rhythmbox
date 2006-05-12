@@ -23,7 +23,7 @@
 #include <gtk/gtkuimanager.h>
 #include "eggtrayicon.h"
 #include "rhythmdb.h"
-#include "rb-remote-proxy.h"
+#include "rb-shell.h"
 
 #ifndef __RB_TRAY_ICON_H
 #define __RB_TRAY_ICON_H
@@ -53,8 +53,7 @@ typedef struct
 
 GType			rb_tray_icon_get_type	(void);
 
-RBTrayIcon *		rb_tray_icon_new	(GtkUIManager *mgr,
-						 RBRemoteProxy *remote);
+RBTrayIcon *		rb_tray_icon_new	(GtkUIManager *mgr, RBShell *shell);
 
 void                    rb_tray_icon_get_geom   (RBTrayIcon *icon, int *x, int *y, int *width, int *height);
 
