@@ -322,7 +322,7 @@ rb_metadata_load (RBMetaData *md,
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
-	md->priv->metadata = g_hash_table_new (g_direct_hash, g_direct_equal);
+	md->priv->metadata = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_value_free);
 
 	
 	if (!start_metadata_service (error))

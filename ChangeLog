@@ -1,3 +1,32 @@
+2006-05-12  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-util.c: (rb_value_free):
+	* lib/rb-util.h: Add function to unset and free a GValue* that was
+	allocated in the heap.
+
+	* metadata/rb-metadata-dbus-client.c: (rb_metadata_load): don't leak
+	the metadata hastable values
+	* metadata/rb-metadata-dbus-service.c: (rb_metadata_dbus_save): don't
+	leak the metadata hashtable structure
+	* metadata/rb-metadata-dbus.c:
+	(rb_metadata_dbus_read_from_message):use g_value_set_string instead of
+	using g_strdup and then _take_string
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_start_action_thread),
+	(rhythmdb_execute_stat): Don't leak the GnomeVFSURIs every time we
+	stat something.
+
+	* shell/rb-audioscrobbler.c: (rb_audioscrobbler_do_handshake): don't
+	leak the encoded string
+
+	* widgets/rb-property-view.c:
+	(rb_property_view_selection_changed_cb): set some variables to have
+	inital values, because some code paths may not set them before we use
+	them.
+
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load): turn the "you
+	don't have python warning into a debug message".
+
 2006-05-10  William Jon McCann  <mccann@jhu.edu>
 
 	* data/rhythmbox.schemas: Use zero instead of null for

@@ -228,7 +228,7 @@ rb_metadata_dbus_read_from_message (RBMetaData *md, GHashTable *metadata, DBusMe
 				const gchar *n;
 				dbus_message_iter_get_basic (&v_iter, &n);
 				g_value_init (val, G_TYPE_STRING);
-				g_value_take_string (val, g_strdup (n));
+				g_value_set_string (val, n);
 				break;
 			}
 

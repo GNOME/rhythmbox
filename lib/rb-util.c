@@ -775,3 +775,10 @@ rb_value_array_append_data (GValueArray *array, GType type, ...)
 	va_end (va);
 }
 
+void
+rb_value_free (GValue *val)
+{
+	g_value_unset (val);
+	g_free (val);
+}
+

@@ -2080,6 +2080,7 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 			       GNOME_VFS_PRIORITY_MIN,
 			       (GnomeVFSAsyncGetFileInfoCallback) rhythmdb_execute_stat_info_cb,
 			       event);
+	gnome_vfs_uri_unref (vfs_uri);
 	g_list_free (uri_list);
 }
 

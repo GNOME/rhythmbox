@@ -37,6 +37,7 @@
 #include "rb-metadata.h"
 #include "rb-metadata-dbus.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 
 /* number of seconds to hang around doing nothing */
 #define ATTENTION_SPAN		30
@@ -212,14 +213,6 @@ _set_metadata (gpointer key, GValue *data, RBMetaData *metadata)
 	return TRUE;
 }
 
-static void
-_metadata_value_free (gpointer data)
-{
-	GValue *v = (GValue *)data;
-	g_value_unset (v);
-	g_free (v);
-}
-
 static DBusHandlerResult
 rb_metadata_dbus_save (DBusConnection *connection,
 		       DBusMessage *message,
@@ -234,7 +227,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 	if (!dbus_message_iter_init (message, &iter)) {
 		return DBUS_HANDLER_RESULT_NEED_MEMORY;
 	}
-	data = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, _metadata_value_free);
+	data = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_value_free);
 	if (!rb_metadata_dbus_read_from_message (svc->metadata,
 						 data,
 						 &iter)) {
@@ -246,6 +239,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 	
 	/* pass to real metadata instance, and save it */
 	g_hash_table_foreach_remove (data, (GHRFunc) _set_metadata, svc->metadata);
+	g_hash_table_destroy (data);
 
 	rb_metadata_save (svc->metadata, &error);
 

@@ -162,7 +162,7 @@ rb_plugins_engine_load (const gchar *file)
 	{
 		info->lang = RB_PLUGIN_LOADER_PY;
 #ifndef ENABLE_PYTHON
-		g_warning ("Cannot load python extension '%s', Rhythmbox was not "
+		rb_debug ("Cannot load python extension '%s', Rhythmbox was not "
 					"compiled with python support", file);
 		goto error;
 #endif

@@ -641,8 +641,8 @@ static void
 rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				       RBPropertyView *view)
 {
-	const char *selected_prop;
-	gboolean is_all;
+	char *selected_prop = NULL;
+	gboolean is_all = TRUE;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 
@@ -695,6 +695,8 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				       is_all ? NULL : selected_prop);
 		}
 	}
+
+	g_free (selected_prop);
 }
 
 static gboolean 

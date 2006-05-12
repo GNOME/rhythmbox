@@ -640,13 +640,17 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 	if (! audioscrobbler->priv->handshake &&
 	    time (NULL) >= audioscrobbler->priv->handshake_next &&
 	    strcmp (audioscrobbler->priv->username, "") != 0) {
-		char *username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
-		gchar *url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s",
-					      SCROBBLER_URL,
-					      SCROBBLER_VERSION,
-					      CLIENT_ID,
-					      CLIENT_VERSION,
-					      username);
+		gchar *username;
+		gchar *url;
+
+		username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
+		url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s",
+				       SCROBBLER_URL,
+				       SCROBBLER_VERSION,
+				       CLIENT_ID,
+				       CLIENT_VERSION,
+				       username);
+		g_free (username);
 
 		/* Make sure we wait at least 30 minutes between handshakes. */
 		audioscrobbler->priv->handshake_next = time (NULL) + 1800;
