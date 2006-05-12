@@ -26,7 +26,7 @@ from Loader import Loader
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
 class CoverArtDatabase (object):
-	def __init__(self):
+	def __init__ (self):
 		self.loader = Loader()
 
 	def create_search (self):
@@ -62,7 +62,8 @@ class CoverArtDatabase (object):
 			return
 
 		# replace quote characters
-		for char in ["\"", "'"]:
+		# don't replace single quote: could be important punctuation
+		for char in ["\""]:
 			st_artist = st_artist.replace (char, '')
 			st_album = st_album.replace (char, '')
 
@@ -83,37 +84,57 @@ class CoverArtDatabase (object):
 
 	def on_search_engine_results (self, search_engine, entry, results, callback):
 		if results is None:
-			callback (entry, None)
+			self._do_blacklist_and_callback (search_engine, callback)
 			return
 
 		# Get best match from results
 		best_match = search_engine.get_best_match (results)
 
+		if best_match is None:
+			self._do_blacklist_and_callback (search_engine, callback)
+			return
+
 		# Attempt to download image for best match
-		pic_url = str(best_match.ImageUrlLarge)
+		pic_url = str (best_match.ImageUrlLarge)
 		self.loader.get_url (pic_url, self.on_image_data_received, search_engine, "large", callback, best_match)
+
+	def _do_blacklist_and_callback (self, search_engine, callback):
+		self._create_blacklist (search_engine.st_artist, search_engine.st_album)
+		callback (search_engine.entry, None)
+
+	def _create_blacklist (self, artist, album):
+		location = self.build_art_cache_filename (album, artist, "rb-blist")
+		f = file (location, 'w')
+		f.close ()
+		return location
+
+	def _create_artwork (self, artist, album, image_data):
+		location = self.build_art_cache_filename (album, artist, "jpg")
+		f = file (location, 'wb')
+		f.write (image_data)
+		f.close ()
+		return location
 
 	def on_image_data_received (self, image_data, search_engine, image_version, callback, best_match):
 		if image_data is None:
-			search_engine.search_next()
+			res = search_engine.search_next ()
+			if not res:
+				self._do_blacklist_and_callback (search_engine, callback)
 			return
 
-		if len(image_data) < 1000:
-			if image_version == "large":
+		if len (image_data) < 1000:
+			if image_version == "large" and best_match is not None:
 				# Fallback and try to load medium one
-				best_match = search_engine.get_best_match (best_match)
-				pic_url = str(best_match.ImageUrlMedium)
-				self.loader.get_url (pic_url, self.on_image_data_received, search_engine, "medium", callback)
+				pic_url = str (best_match.ImageUrlMedium)
+				self.loader.get_url (pic_url, self.on_image_data_received, search_engine, "medium", callback, best_match)
 				return
 
-			blist_location = self.build_art_cache_filename(search_engine.st_album, search_engine.st_artist, "rb-blist")
-			f = file (blist_location, 'w')
-			f.close ()
-			search_engine.search_next()
+			res = search_engine.search_next ()
+			if not res:
+				# only write the blist if there are no more queries to try
+				self._do_blacklist_and_callback (search_engine, callback)
+
 		else:
-			art_location = self.build_art_cache_filename(search_engine.st_album, search_engine.st_artist, "jpg")
-			f = file (art_location, 'wb')
-			f.write (image_data)
-			f.close ()
-			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)
+			location = self._create_artwork (search_engine.st_artist, search_engine.st_album, image_data)
+			pixbuf = gtk.gdk.pixbuf_new_from_file (location)
 			callback (search_engine.entry, pixbuf)

@@ -26,11 +26,11 @@ except:
 	use_gnomevfs = False
 
 
-class GnomeVFSAsyncSrc(object):  
-	def __init__(self):
+class GnomeVFSAsyncSrc (object):  
+	def __init__ (self):
 	    	self.chunk = 4096
 
-	def read_cb(self, handle, buffer, exc_type, bytes_requested, (data, callback, args)):
+	def read_cb (self, handle, buffer, exc_type, bytes_requested, (data, callback, args)):
 		if exc_type:
 			if issubclass (exc_type, gnomevfs.EOFError):
 				gobject.idle_add (callback, data, *args)
@@ -43,19 +43,19 @@ class GnomeVFSAsyncSrc(object):
 		data += buffer
 		handle.read (self.chunk, self.read_cb, (data, callback, args))
 
-	def open_cb(self, handle, exc_type, (data, callback, args)):
+	def open_cb (self, handle, exc_type, (data, callback, args)):
 		if exc_type:
 			gobject.idle_add (callback, None, *args)
 			return
 
 		handle.read (self.chunk, self.read_cb, (data, callback, args))
     
-	def get_url(self, url, callback, *args):
-		gnomevfs.async.open(url, self.open_cb, data=("", callback, args))
+	def get_url (self, url, callback, *args):
+		gnomevfs.async.open (url, self.open_cb, data=("", callback, args))
 
 
-class URLLibSrc(object):
-    def get_url(self, url, callback, *args):
+class URLLibSrc (object):
+    def get_url (self, url, callback, *args):
 			try:
 				sock = urllib.urlopen (url)
 				data = sock.read ()
@@ -66,8 +66,8 @@ class URLLibSrc(object):
 				raise
 
 
-def Loader():
+def Loader ():
 	if use_gnomevfs:
-		return GnomeVFSAsyncSrc()
+		return GnomeVFSAsyncSrc ()
 	else:
-		return URLLibSrc()
+		return URLLibSrc ()

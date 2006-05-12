@@ -1,5 +1,16 @@
 2006-05-12  William Jon McCann  <mccann@jhu.edu>
 
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	* plugins/artdisplay/artdisplay/Loader.py:
+	Correct fallback to medium size.  Convert & to "and" when doing comparisons.
+	Only call the first artist the best match when album==Unknown.
+	Don't perform each query twice if album doesn't include "Vol N".
+	Fix searching for compilations.  Fix blacklisting.
+	Part of bug #307848
+
+2006-05-12  William Jon McCann  <mccann@jhu.edu>
+
 	* Makefile.am:
 	* bindings/python/Makefile.am:
 	* bindings/python/rb.defs:

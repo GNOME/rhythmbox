@@ -32,7 +32,7 @@ ASSOCIATE = "webservices-20"
 class Bag: pass
 
 class AmazonCoverArtSearch (object):
-	def __init__(self, loader):
+	def __init__ (self, loader):
 		self.searching = False
 		self.cancel = False
 		self.loader = loader
@@ -71,7 +71,8 @@ class AmazonCoverArtSearch (object):
 		# Tidy up
 
 		# Replace quote characters
-		for char in ["\"", "'"]:
+		# don't replace single quote: could be important punctuation
+		for char in ["\""]:
 			st_artist = st_artist.replace (char, '')
 			st_album = st_album.replace (char, '')
 
@@ -112,9 +113,10 @@ class AmazonCoverArtSearch (object):
 		else:
 			if st_album != st_artist:
 				self.keywords.append ("%s %s" % (st_artist, st_album))
-				if st_album_no_vol != st_artist:
+				if st_album_no_vol != st_album:
 					self.keywords.append ("%s %s" % (st_artist, st_album_no_vol))
-				self.keywords.append ("%s" % (st_album))
+				if (st_album != "Unknown"):
+					self.keywords.append ("Various %s" % (st_album))
 			self.keywords.append ("%s" % (st_artist))
 
 		# Initiate asynchronous search
@@ -136,18 +138,22 @@ class AmazonCoverArtSearch (object):
 	def search_next (self):
 		self.searching = True
 		
-		if len(self.keywords)==0:
+		if len (self.keywords)==0:
 			keyword = None
 		else:
-			keyword = self.keywords.pop(0)
+			keyword = self.keywords.pop (0)
 
 		if keyword is None:
 			# No keywords left to search -> no results
 			self.on_search_completed (None)
+			ret = False
 		else:
 			# Retrieve search for keyword
-			url = self.__build_url (keyword.strip())
+			url = self.__build_url (keyword.strip ())
 			self.loader.get_url (url, self.on_search_response)
+			ret = True
+
+		return ret
 
 	def __unmarshal (self, element):
 		rc = Bag ()
@@ -158,9 +164,9 @@ class AmazonCoverArtSearch (object):
 			for child in childElements:
 				key = child.tagName
 				if hasattr (rc, key):
-					if type (getattr (rc, key)) <> type([]):
-						setattr (rc, key, [getattr(rc, key)])
-					setattr (rc, key, getattr (rc, key) + [self.__unmarshal(child)])
+					if type (getattr (rc, key)) <> type ([]):
+						setattr (rc, key, [getattr (rc, key)])
+					setattr (rc, key, getattr (rc, key) + [self.__unmarshal (child)])
 				elif isinstance(child, minidom.Element) and (child.tagName == 'Details'):
 					setattr (rc,key,[self.__unmarshal(child)])
 				else:
@@ -207,8 +213,9 @@ class AmazonCoverArtSearch (object):
 		s = s.strip ()
 
 		# TODO: Convert accented to unaccented (fixes matching Salomé vs Salome)
-		s = s.replace (" - "," ")	
-		s = s.replace (": "," ")
+		s = s.replace (" - ", " ")	
+		s = s.replace (": ", " ")
+		s = s.replace (" & ", " and ")
 
 		return s
 
@@ -216,38 +223,43 @@ class AmazonCoverArtSearch (object):
 		# Default to "no match", our results must match our criteria
 		best_match = None
 
-		if self.search_album!="Unknown":
-			album_check = self.__tidy_up_string(self.search_album)
-			for item in search_results:
-				# Check for album name in ProductName
-				product_name = self.__tidy_up_string(item.ProductName)
-				if product_name == album_check:
-					# Found exact album, can not get better than that
-					best_match = item
-					break
-				# If we already found a best_match, just keep checking for exact one
-				elif (best_match is None) and (product_name.find (album_check) != -1):
-					best_match = item
-
-		# If we still have no definite hit, use first result where artist matches
-		if (self.search_artist!="Unknown"):
-			artist_check = self.__tidy_up_string(self.search_artist)
-			if best_match is None:
-				# Check if artist appears in the Artists list
-				hit = False
+		try:
+			if self.search_album != "Unknown":
+				album_check = self.__tidy_up_string (self.search_album)
 				for item in search_results:
-					if type(item.Artists.Artist) <> type([]):
-						artists = [item.Artists.Artist]
-					else:
-						artists = item.Artists.Artist
+					# Check for album name in ProductName
+					product_name = self.__tidy_up_string (item.ProductName)
 
-					for artist in artists:
-						artist = self.__tidy_up_string(artist)
-						if artist.find(artist_check) != -1:
-							best_match = item
-							hit = True						
-							break
-					if hit:
+					if product_name == album_check:
+						# Found exact album, can not get better than that
+						best_match = item
 						break
- 
-		return best_match
+					# If we already found a best_match, just keep checking for exact one
+					elif (best_match is None) and (product_name.find (album_check) != -1):
+						best_match = item
+
+			# If we still have no definite hit, use first result where artist matches
+			if (self.search_album == "Unknown" and self.search_artist != "Unknown"):
+				artist_check = self.__tidy_up_string (self.search_artist)
+				if best_match is None:
+					# Check if artist appears in the Artists list
+					hit = False
+					for item in search_results:
+						if type (item.Artists.Artist) <> type ([]):
+							artists = [item.Artists.Artist]
+						else:
+							artists = item.Artists.Artist
+
+						for artist in artists:
+							artist = self.__tidy_up_string (artist)
+							if artist.find (artist_check) != -1:
+								best_match = item
+								hit = True						
+								break
+						if hit:
+							break
+
+			return best_match
+
+		except TypeError:
+			return None
