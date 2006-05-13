@@ -36,6 +36,12 @@
 #include "rb-marshal.h"
 #include "rb-util.h"
 
+struct ReverseSortData
+{
+	GCompareDataFunc	func;
+	gpointer		data;
+};
+
 static void rhythmdb_query_model_query_results_init (RhythmDBQueryResultsIface *iface);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
@@ -151,7 +157,7 @@ static void rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_mo
 						     RhythmDBQueryModel *model);
 static int rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *model, int index);
 
-static gint _reverse_sorting_func (gpointer a, gpointer b, RhythmDBQueryModel *model);
+static gint _reverse_sorting_func (gpointer a, gpointer b, struct ReverseSortData *model);
 static gboolean rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 						   RhythmDBEntry *entry);
 
@@ -189,7 +195,8 @@ struct RhythmDBQueryModelPrivate
 	RhythmDBQueryModel *base_model;
 
 	GCompareDataFunc sort_func;
-	RhythmDBPropType sort_prop_id;
+	gpointer sort_data;
+	GDestroyNotify sort_data_destroy;
 	gboolean sort_reverse;
 
 	GPtrArray *query, *original_query;
@@ -221,7 +228,8 @@ enum
 	PROP_RHYTHMDB,
 	PROP_QUERY,
 	PROP_SORT_FUNC,
-	PROP_SORT_PROP_ID,
+	PROP_SORT_DATA,
+	PROP_SORT_DATA_DESTROY,
 	PROP_SORT_REVERSE,
 	PROP_LIMIT_TYPE,
 	PROP_LIMIT_VALUE,
@@ -277,12 +285,17 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							      "Sort function",
 							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_SORT_PROP_ID,
-					 g_param_spec_int ("sort-prop",
-							   "SortProp",
-							   "Sort property ID",
-							   0, RHYTHMDB_NUM_PROPERTIES, 0,
-							   G_PARAM_READWRITE));
+					 PROP_SORT_DATA,
+					 g_param_spec_pointer ("sort-data",
+							       "Sort data",
+							       "Sort data",
+							       G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_SORT_DATA_DESTROY,
+					 g_param_spec_pointer ("sort-data-destroy",
+							       "Sort data destroy",
+							       "Sort data destroy function",
+							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_SORT_REVERSE,
 					 g_param_spec_boolean ("sort-reverse",
@@ -421,8 +434,13 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_SORT_FUNC:
 		model->priv->sort_func = g_value_get_pointer (value);
 		break;
-	case PROP_SORT_PROP_ID:
-		model->priv->sort_prop_id = g_value_get_int (value);
+	case PROP_SORT_DATA:
+		if (model->priv->sort_data_destroy && model->priv->sort_data)
+			model->priv->sort_data_destroy (model->priv->sort_data);
+		model->priv->sort_data = g_value_get_pointer (value);
+		break;
+	case PROP_SORT_DATA_DESTROY:
+		model->priv->sort_data_destroy = g_value_get_pointer (value);
 		break;
 	case PROP_SORT_REVERSE:
 		model->priv->sort_reverse  = g_value_get_boolean (value);
@@ -538,8 +556,11 @@ rhythmdb_query_model_get_property (GObject *object,
 	case PROP_SORT_FUNC:
 		g_value_set_pointer (value, model->priv->sort_func);
 		break;
-	case PROP_SORT_PROP_ID:
-		g_value_set_int (value, model->priv->sort_prop_id);
+	case PROP_SORT_DATA:
+		g_value_set_pointer (value, model->priv->sort_data);
+		break;
+	case PROP_SORT_DATA_DESTROY:
+		g_value_set_pointer (value, model->priv->sort_data_destroy);
 		break;
 	case PROP_SORT_REVERSE:
 		g_value_set_boolean (value, model->priv->sort_reverse);
@@ -674,6 +695,9 @@ rhythmdb_query_model_finalize (GObject *object)
 	if (model->priv->original_query)
 		rhythmdb_query_free (model->priv->original_query);
 
+	if (model->priv->sort_data_destroy && model->priv->sort_data)
+		model->priv->sort_data_destroy (model->priv->sort_data);
+
 	if (model->priv->limit_value)
 		g_value_array_free (model->priv->limit_value);
 
@@ -683,13 +707,15 @@ rhythmdb_query_model_finalize (GObject *object)
 RhythmDBQueryModel *
 rhythmdb_query_model_new (RhythmDB *db, GPtrArray *query,
 			  GCompareDataFunc sort_func,
-			  RhythmDBPropType sort_prop_id,
+			  gpointer sort_data,
+			  GDestroyNotify sort_data_destroy,
 			  gboolean sort_reverse)
 {
 	RhythmDBQueryModel *model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
 						  "db", db, "query", query,
 						  "sort-func", sort_func,
-						  "sort-prop", sort_prop_id,
+						  "sort-data", sort_data,
+						  "sort-data-destroy", sort_data_destroy,
 						  "sort-reverse", sort_reverse,
 						  NULL);
 
@@ -924,17 +950,26 @@ static void
 rhythmdb_query_model_insert_into_main_list (RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index)
 {
 	GSequencePtr ptr;
-	GCompareDataFunc sort_func = model->priv->sort_func;
-
 	rhythmdb_entry_ref (model->priv->db, entry);
 
-	if (sort_func) {
-		if (model->priv->sort_reverse)
+	if (model->priv->sort_func) {
+		GCompareDataFunc sort_func;
+		gpointer sort_data;
+		struct ReverseSortData reverse_data;
+
+		if (model->priv->sort_reverse) {
 			sort_func = (GCompareDataFunc) _reverse_sorting_func;
+			sort_data = &reverse_data;
+			reverse_data.func = model->priv->sort_func;
+			reverse_data.data = model->priv->sort_data;
+		} else {
+			sort_func = model->priv->sort_func;
+			sort_data = model->priv->sort_data;
+		}
 
 		ptr = g_sequence_insert_sorted (model->priv->entries, entry,
 						sort_func,
-						model);
+						sort_data);
 	} else {
 		if (index == -1) {
 			ptr = g_sequence_get_end_ptr (model->priv->entries);
@@ -956,17 +991,27 @@ static void
 rhythmdb_query_model_insert_into_limited_list (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
 	GSequencePtr ptr;
-	GCompareDataFunc sort_func = model->priv->sort_func;
 
 	rhythmdb_entry_ref (model->priv->db, entry);
 
-	if (sort_func) {
-		if (model->priv->sort_reverse)
+	if (model->priv->sort_func) {
+		GCompareDataFunc sort_func;
+		gpointer sort_data;
+		struct ReverseSortData reverse_data;
+
+		if (model->priv->sort_reverse) {
 			sort_func = (GCompareDataFunc) _reverse_sorting_func;
+			sort_data = &reverse_data;
+			reverse_data.func = model->priv->sort_func;
+			reverse_data.data = model->priv->sort_data;
+		} else {
+			sort_func = model->priv->sort_func;
+			sort_data = model->priv->sort_data;
+		}
 
 		ptr = g_sequence_insert_sorted (model->priv->limited_entries, entry,
 						sort_func,
-						model);
+						sort_data);
 	} else {
 		ptr = g_sequence_get_end_ptr (model->priv->limited_entries);
 		g_sequence_insert (ptr, entry);
@@ -1108,18 +1153,28 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 	int old_pos, new_pos;
 	GtkTreePath *path;
 	GtkTreeIter iter;
-	GCompareDataFunc sort_func = model->priv->sort_func;
+	GCompareDataFunc sort_func;
+	gpointer sort_data;
+	struct ReverseSortData reverse_data;
 
-	if (sort_func == NULL)
+	if (model->priv->sort_func == NULL)
 		return FALSE;
-	if (model->priv->sort_reverse)
+
+	if (model->priv->sort_reverse) {
 		sort_func = (GCompareDataFunc) _reverse_sorting_func;
+		sort_data = &reverse_data;
+		reverse_data.func = model->priv->sort_func;
+		reverse_data.data = model->priv->sort_data;
+	} else {
+		sort_func = model->priv->sort_func;
+		sort_data = model->priv->sort_data;
+	}
 
 	ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
 
 	if (ptr != NULL && !g_sequence_ptr_is_end (ptr)) {
 		RhythmDBEntry *first_limited = g_sequence_ptr_get_data (ptr);
-		int cmp = (sort_func) (entry, first_limited, model);
+		int cmp = (sort_func) (entry, first_limited, sort_data);
 
 		if (cmp > 0) {
 			/* the entry belongs in the limited list, so we don't need a re-order */
@@ -1145,7 +1200,7 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 
 	ptr = g_sequence_insert_sorted (model->priv->entries, entry,
 					sort_func,
-					model);
+					sort_data);
 	new_pos = g_sequence_ptr_get_position (ptr);
 	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
 
@@ -1851,15 +1906,18 @@ apply_updated_entry_sequence (RhythmDBQueryModel *model, GSequence *new_entries)
 void
 rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 				     GCompareDataFunc sort_func,
-				     RhythmDBPropType sort_prop_id,
+				     gpointer sort_data,
+				     GDestroyNotify sort_data_destroy,
 				     gboolean sort_reverse)
 {
 	GSequence *new_entries;
 	GSequencePtr ptr;
 	int length, i;
+	struct ReverseSortData reverse_data;
 
 	if ((model->priv->sort_func == sort_func) &&
-	    (model->priv->sort_prop_id == sort_prop_id) &&
+	    (model->priv->sort_data == sort_data) &&
+	    (model->priv->sort_data_destroy == sort_data_destroy) &&
 	    (model->priv->sort_reverse == sort_reverse))
 		return;
 	
@@ -1868,12 +1926,20 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 	if (model->priv->sort_func == NULL)
 		g_assert (g_sequence_get_length (model->priv->limited_entries) == 0);
 	
+	if (model->priv->sort_data_destroy && model->priv->sort_data)
+		model->priv->sort_data_destroy (model->priv->sort_data);
+	
 	model->priv->sort_func = sort_func;
-	model->priv->sort_prop_id = sort_prop_id;
+	model->priv->sort_data = sort_data;
+	model->priv->sort_data_destroy = sort_data_destroy;
 	model->priv->sort_reverse = sort_reverse;
 
-	if (sort_reverse)
+	if (model->priv->sort_reverse) {
+		reverse_data.func = sort_func;
+		reverse_data.data = sort_data;
 		sort_func = (GCompareDataFunc) _reverse_sorting_func;
+		sort_data = &reverse_data;
+	}
 
 	/* create the new sorted entry sequence */
 	length = g_sequence_get_length (model->priv->entries);
@@ -1885,7 +1951,7 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 
 			g_sequence_insert_sorted (new_entries, entry,
 						  sort_func,
-						  model);
+						  sort_data);
 			ptr = g_sequence_ptr_next (ptr);
 		}
 
@@ -2130,14 +2196,14 @@ rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter)
 
 static gint
 _reverse_sorting_func (gpointer a, gpointer b, 
-		       RhythmDBQueryModel *model)
+		       struct ReverseSortData *reverse_data)
 {
-	return - model->priv->sort_func (a, b, model);
+	return - reverse_data->func (a, b, reverse_data->data);
 }
 
 gint
 rhythmdb_query_model_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-					 RhythmDBQueryModel *model)
+					 gpointer data)
 {
 	const char *a_val;
 	const char *b_val;
@@ -2158,7 +2224,7 @@ rhythmdb_query_model_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 
 gint
 rhythmdb_query_model_title_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				      RhythmDBQueryModel *model)
+				      gpointer data)
 {
 	const char *a_val;
 	const char *b_val;
@@ -2181,12 +2247,12 @@ rhythmdb_query_model_title_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	if (ret != 0)
 		return ret;
 	else
-		return rhythmdb_query_model_location_sort_func (a, b, model);
+		return rhythmdb_query_model_location_sort_func (a, b, data);
 }
 
 gint
 rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				      RhythmDBQueryModel *model)
+				      gpointer data)
 {
 	const char *a_val;
 	const char *b_val;
@@ -2235,13 +2301,13 @@ rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	} else if (b_val == NULL)
 		return 1;
 	else
-		return rhythmdb_query_model_location_sort_func (a, b, model);
+		return rhythmdb_query_model_location_sort_func (a, b, data);
 }
 
 
 gint
 rhythmdb_query_model_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				       RhythmDBQueryModel *model)
+				       gpointer data)
 {
 	const char *a_val;
 	const char *b_val;
@@ -2263,12 +2329,12 @@ rhythmdb_query_model_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	if (ret != 0)
 		return ret;
 	else
-		return rhythmdb_query_model_album_sort_func (a, b, model);
+		return rhythmdb_query_model_album_sort_func (a, b, data);
 }
 
 gint
 rhythmdb_query_model_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				      RhythmDBQueryModel *model)
+				      gpointer data)
 {
 	const char *a_val;
 	const char *b_val;
@@ -2290,51 +2356,56 @@ rhythmdb_query_model_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	if (ret != 0)
 		return ret;
 	else
-		return rhythmdb_query_model_artist_sort_func (a, b, model);
+		return rhythmdb_query_model_artist_sort_func (a, b, data);
 }
 
 
 gint
 rhythmdb_query_model_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				      RhythmDBQueryModel *model)
+				      gpointer data)
 {
-	return rhythmdb_query_model_album_sort_func (a, b, model);
+	return rhythmdb_query_model_album_sort_func (a, b, data);
 }
 
 
 gint
 rhythmdb_query_model_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-					       RhythmDBQueryModel *model)
+					       gpointer data)
 {
 	gdouble a_val, b_val;
+	RhythmDBPropType prop_id;
 
-	a_val = ceil (rhythmdb_entry_get_double (a, model->priv->sort_prop_id));
-	b_val = ceil (rhythmdb_entry_get_double (b, model->priv->sort_prop_id));
+	prop_id = (RhythmDBPropType) GPOINTER_TO_INT (data);
+
+	a_val = ceil (rhythmdb_entry_get_double (a, prop_id));
+	b_val = ceil (rhythmdb_entry_get_double (b, prop_id));
 
 	if (a_val != b_val)
 		return (a_val > b_val ? 1 : -1);
 	else
-		return rhythmdb_query_model_location_sort_func (a, b, model);
+		return rhythmdb_query_model_location_sort_func (a, b, data);
 }
 
 gint
 rhythmdb_query_model_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				      RhythmDBQueryModel *model)
+				      gpointer data)
 {
 	gulong a_val, b_val;
+	RhythmDBPropType prop_id;
 
-	a_val = rhythmdb_entry_get_ulong (a, model->priv->sort_prop_id);
-	b_val = rhythmdb_entry_get_ulong (b, model->priv->sort_prop_id);
+	prop_id = (RhythmDBPropType) GPOINTER_TO_INT (data);
+	a_val = rhythmdb_entry_get_ulong (a, prop_id);
+	b_val = rhythmdb_entry_get_ulong (b, prop_id);
 
 	if (a_val != b_val)
 		return (a_val > b_val ? 1 : -1);
 	else
-		return rhythmdb_query_model_location_sort_func (a, b, model);
+		return rhythmdb_query_model_location_sort_func (a, b, data);
 }
 
 gint
 rhythmdb_query_model_date_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				     RhythmDBQueryModel *model)
+				     gpointer data)
 			      
 {
 	gulong a_val, b_val;
@@ -2349,19 +2420,21 @@ rhythmdb_query_model_date_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	else if (a_val < b_val)
 		return -1;
 	else
-		return rhythmdb_query_model_album_sort_func (a, b, model);
+		return rhythmdb_query_model_album_sort_func (a, b, data);
 }
 
 gint
 rhythmdb_query_model_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				       RhythmDBQueryModel *model)
+				       gpointer data)
 {
 	const char *a_val;
 	const char *b_val;
 	gint ret;
+	RhythmDBPropType prop_id;
 
-	a_val = rhythmdb_entry_get_string (a, model->priv->sort_prop_id);
-	b_val = rhythmdb_entry_get_string (b, model->priv->sort_prop_id);
+	prop_id = (RhythmDBPropType) GPOINTER_TO_INT (data);
+	a_val = rhythmdb_entry_get_string (a, prop_id);
+	b_val = rhythmdb_entry_get_string (b, prop_id);
 
 	if (a_val == NULL) {
 		if (b_val == NULL)
@@ -2376,7 +2449,7 @@ rhythmdb_query_model_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	if (ret != 0)
 		return ret;
 	else
-		return rhythmdb_query_model_location_sort_func (a, b, model);
+		return rhythmdb_query_model_location_sort_func (a, b, data);
 }
 
 static gboolean

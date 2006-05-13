@@ -948,7 +948,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
  		struct QueryModelCbStruct tmp;
 		GtkTreePath *path;
 		GCompareDataFunc sort_func = NULL;
-		RhythmDBPropType sort_prop_id;
+		gpointer sort_data;
 		gboolean sort_reverse;
 
 		query_model = rhythmdb_query_model_new_empty (db);
@@ -957,11 +957,11 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		 */
 		g_object_get (G_OBJECT (model->priv->query_model),
 			      "sort-func", &sort_func,
-			      "sort-prop", &sort_prop_id,
+			      "sort-data", &sort_data,
 			      "sort-reverse", &sort_reverse,
 			      NULL);
 		rhythmdb_query_model_set_sort_order (RHYTHMDB_QUERY_MODEL (query_model),
-						     sort_func, sort_prop_id, sort_reverse);
+						     sort_func, GUINT_TO_POINTER (sort_data), NULL, sort_reverse);
 
 		rb_debug ("getting drag data as uri list");
 		/* check if first selected row is 'All' */

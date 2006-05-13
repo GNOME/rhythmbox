@@ -84,7 +84,8 @@ GType			rhythmdb_query_model_get_type	(void);
 
 RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 							 GCompareDataFunc sort_func,
-							 RhythmDBPropType sort_prop_id,
+							 gpointer sort_data,
+							 GDestroyNotify sort_data_destroy,
 							 gboolean sort_reverse);
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
@@ -117,40 +118,41 @@ char *			rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model);
 
 void			rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 							     GCompareDataFunc sort_func,
-							     RhythmDBPropType sort_prop_id,
+							     gpointer sort_data,
+							     GDestroyNotify sort_data_destroy,
 							     gboolean sort_reverse);
 
 void			rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model, gboolean filter);
 
 gint 			rhythmdb_query_model_location_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-								 RhythmDBQueryModel *model);
+								 gpointer data);
 
 gint 			rhythmdb_query_model_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							       RhythmDBQueryModel *model);
+							       gpointer data);
 
 gint 			rhythmdb_query_model_title_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							      RhythmDBQueryModel *model);
+							      gpointer data);
 
 gint 			rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							      RhythmDBQueryModel *model);
+							      gpointer data);
 
 gint 			rhythmdb_query_model_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							       RhythmDBQueryModel *model);
+							       gpointer data);
 				
 gint 			rhythmdb_query_model_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							      RhythmDBQueryModel *model); 
+							      gpointer data); 
 
 gint 			rhythmdb_query_model_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							      RhythmDBQueryModel *model);
+							      gpointer data);
 
 gint 			rhythmdb_query_model_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-								       RhythmDBQueryModel *model);
+								       gpointer data);
 
 gint 			rhythmdb_query_model_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							      RhythmDBQueryModel *model);
+							      gpointer data);
 
 gint 			rhythmdb_query_model_date_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							     RhythmDBQueryModel *model);
+							     gpointer data);
 G_END_DECLS
 
 #endif /* __RHYTHMDB_QUERY_MODEL_H */

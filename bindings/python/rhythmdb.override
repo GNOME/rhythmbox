@@ -18,6 +18,45 @@ void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
 #define RHYTHMDB_TYPE_RHYTHMDB RHYTHMDB_TYPE
 #define RHYTHMDB_RHYTHMDB(o) RHYTHMDB(o)
 
+
+/* query model sorting stuff */
+typedef struct {
+	PyObject *func;
+	PyObject *data;
+} PyRhythmDBQueryModelSortData;
+
+static void
+_rhythmdb_query_model_sort_data_free (PyRhythmDBQueryModelSortData *data)
+{
+	Py_DECREF (data->func);
+	Py_DECREF (data->data);
+	g_free (data);
+}
+
+static int
+_rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQueryModelSortData *data)
+{
+	PyObject *args;
+	PyObject *py_result;
+	PyObject *py_a, *py_b;
+	int result;
+
+	py_a = pyg_pointer_new (RHYTHMDB_TYPE_ENTRY, a);
+	py_b = pyg_pointer_new (RHYTHMDB_TYPE_ENTRY, b);
+	if (data->data)
+		args = Py_BuildValue ("(OOO)", py_a, py_b, data->data);
+	else
+		args = Py_BuildValue ("(O)", py_a, py_b);
+
+	py_result = PyEval_CallObject (data->func, args);
+	result = PyInt_AsLong (py_result);
+
+	Py_DECREF (args);
+	Py_DECREF (py_result);
+	return result;
+}
+/* end query model sorting stuff */
+
 %%
 modulename rhythmdb 
 %%
@@ -248,6 +287,86 @@ _wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
 	}
 
 	rhythmdb_entry_foreach (RHYTHMDB (self->obj), (GFunc)_rhythmdb_entry_foreach_func, &data);
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+%%
+override rhythmdb_query_model_new kwargs
+
+static PyObject*
+_wrap_rhythmdb_query_model_new (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = {"query", "func", "reverse", NULL};
+	PyObject *py_query;
+	int reverse;
+	PyRhythmDBQueryModelSortData *data;
+	RhythmDBQueryModel *query_model;
+
+	data = g_new0 (PyRhythmDBQueryModelSortData, 1);
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOi|O:RhythmDB.query_model_new", kwlist,
+					 &py_query, &data->func, &reverse, &data->data)) {
+		g_free (data);
+		return NULL;
+	}
+
+	/* verify arguments' integrity */
+	if (!PyCallable_Check (data->func)) {
+		PyErr_SetString (PyExc_TypeError, "func must be callable");
+		g_free (data);
+		return NULL;
+	}
+
+	if (!pyg_boxed_check(py_query, RHYTHMDB_TYPE_QUERY)) {
+		PyErr_SetString(PyExc_TypeError, "query should be a RhythmDBQuery");
+		g_free (data);
+		return NULL;
+	}
+
+	Py_INCREF (data->func);
+	Py_INCREF (data->data);
+
+	query_model = rhythmdb_query_model_new (RHYTHMDB (self->obj), pyg_boxed_get (py_query, RhythmDBQuery),
+						(GCompareDataFunc) _rhythmdb_query_model_sort_func,
+						data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
+						(reverse != 0));
+
+	return pygobject_new (G_OBJECT (query_model));
+}
+%%
+override rhythmdb_query_model_set_sort_order kwargs
+
+static PyObject*
+_wrap_rhythmdb_query_model_set_sort_order (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = {"func", "reverse", NULL};
+	int reverse;
+	PyRhythmDBQueryModelSortData *data;
+	RhythmDBQueryModel *query_model;
+
+	data = g_new0 (PyRhythmDBQueryModelSortData, 1);
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|O:RhythmDB.query_model_set_sort_order", kwlist,
+					 &data->func, &reverse, &data->data)) {
+		g_free (data);
+		return NULL;
+	}
+
+	/* verify arguments' integrity */
+	if (!PyCallable_Check (data->func)) {
+		PyErr_SetString (PyExc_TypeError, "func must be callable");
+		g_free (data);
+		return NULL;
+	}
+
+	Py_INCREF (data->func);
+	Py_INCREF (data->data);
+
+	rhythmdb_query_model_set_sort_order (RHYTHMDB (self->obj),
+					     (GCompareDataFunc) _rhythmdb_query_model_sort_func,
+					     data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
+					     (reverse != 0));
 
 	Py_INCREF(Py_None);
 	return Py_None;

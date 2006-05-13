@@ -51,7 +51,7 @@ static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0,
 struct RBEntryViewColumnSortData
 {
 	GCompareDataFunc func;
-	RhythmDBPropType prop_id;
+	gpointer data;
 };
 
 static void rb_entry_view_class_init (RBEntryViewClass *klass);
@@ -1147,7 +1147,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 
 	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
 
-	rb_entry_view_append_column_custom (view, column, title, key, sort_func, sort_propid);
+	rb_entry_view_append_column_custom (view, column, title, key, sort_func, GINT_TO_POINTER (sort_propid));
 }
 
 void
@@ -1156,7 +1156,7 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 				    const char *title,
 				    const char *key,
 				    GCompareDataFunc sort_func,
-				    RhythmDBPropType sort_prop_id)
+				    gpointer data)
 {
 	struct RBEntryViewColumnSortData *sortdata;
 
@@ -1177,7 +1177,7 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 	if (sort_func != NULL) {
 		sortdata = g_new (struct RBEntryViewColumnSortData, 1);
 		sortdata->func = (GCompareDataFunc) sort_func;
-		sortdata->prop_id = sort_prop_id;
+		sortdata->data = data;
 		g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
 	}
 	g_hash_table_insert (view->priv->column_key_map, g_strdup (key), column);
@@ -1922,7 +1922,8 @@ rb_entry_view_resort_model (RBEntryView *view)
 
 	rhythmdb_query_model_set_sort_order (view->priv->model,
 					     sort_data->func,
-					     sort_data->prop_id,
+					     sort_data->data,
+					     NULL,
 					     (view->priv->sorting_order == GTK_SORT_DESCENDING));
 }
 

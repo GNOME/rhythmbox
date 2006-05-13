@@ -1,3 +1,42 @@
+2006-05-13  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property),
+	(rhythmdb_query_model_finalize), (rhythmdb_query_model_new),
+	(rhythmdb_query_model_insert_into_main_list),
+	(rhythmdb_query_model_insert_into_limited_list),
+	(rhythmdb_query_model_do_reorder),
+	(rhythmdb_query_model_set_sort_order), (_reverse_sorting_func),
+	(rhythmdb_query_model_location_sort_func),
+	(rhythmdb_query_model_title_sort_func),
+	(rhythmdb_query_model_album_sort_func),
+	(rhythmdb_query_model_artist_sort_func),
+	(rhythmdb_query_model_genre_sort_func),
+	(rhythmdb_query_model_track_sort_func),
+	(rhythmdb_query_model_double_ceiling_sort_func),
+	(rhythmdb_query_model_ulong_sort_func),
+	(rhythmdb_query_model_date_sort_func),
+	(rhythmdb_query_model_string_sort_func):
+	* rhythmdb/rhythmdb-query-model.h: Make the sorting data be a gpointer
+	instead of a RhythmDBPropType (which can be put in a gpointer). Add a
+	"data destroy" property. Fixed bug 341543.
+
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override: bind rhythmdb_query_model_new and
+	rhythmdb_query_model_set_sorting_order
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_drag_data_get):
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_constructor):
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_constructor):
+	* widgets/rb-entry-view.c: (rb_entry_view_append_column),
+	(rb_entry_view_append_column_custom), (rb_entry_view_resort_model):
+	* widgets/rb-entry-view.h: adapt to the above change.
+
 2006-05-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),

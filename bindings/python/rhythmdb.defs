@@ -639,7 +639,7 @@
   (parameters
     '("RhythmDBQuery*" "query")
     '("GCompareDataFunc" "sort_func")
-    '("RhythmDBPropType" "sort_prop_id")
+    '("gpointer" "sort_data")
     '("gboolean" "sort_reverse")
   )
 )
@@ -764,7 +764,7 @@
   (return-type "none")
   (parameters
     '("GCompareDataFunc" "sort_func")
-    '("RhythmDBPropType" "sort_prop_id")
+    '("gpointer" "sort_data")
     '("gboolean" "sort_reverse")
   )
 )

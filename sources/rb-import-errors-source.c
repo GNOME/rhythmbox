@@ -135,7 +135,7 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 				      RHYTHMDB_QUERY_END);
 	source->priv->model = rhythmdb_query_model_new (source->priv->db, query,
 							(GCompareDataFunc) rhythmdb_query_model_string_sort_func,
-							RHYTHMDB_PROP_LOCATION, FALSE);
+							GUINT_TO_POINTER (RHYTHMDB_PROP_LOCATION), NULL, FALSE);
 	_rb_source_hide_when_empty (RB_SOURCE (source), source->priv->model);
 
 	g_ptr_array_free (query, TRUE);

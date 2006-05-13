@@ -171,7 +171,7 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 					TRUE,
 				      RHYTHMDB_QUERY_END);
 	source->priv->model = rhythmdb_query_model_new (source->priv->db, query,
-							NULL, 0, FALSE);
+							NULL, NULL, NULL, FALSE);
 	g_ptr_array_free (query, TRUE);
 
 	g_object_set (G_OBJECT (source->priv->model), "show-hidden", TRUE, NULL);
