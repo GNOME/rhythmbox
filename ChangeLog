@@ -1,3 +1,10 @@
+2006-05-14  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-shell.c: (construct_widgets):
+	* sources/rb-browser-source.c: (rb_browser_source_constructor): Never
+	resize the browser and queue-sidebar section of their panes, unless
+	the other section is below the minimum size. Fixes bug 331927.
+
 2006-05-13  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-query-model.c:

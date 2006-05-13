@@ -1076,6 +1076,10 @@ construct_widgets (RBShell *shell)
 		gtk_paned_pack2 (GTK_PANED (shell->priv->queue_paned), 
 				 shell->priv->queue_sidebar,
 				 TRUE, TRUE);
+		gtk_container_child_set (GTK_CONTAINER (shell->priv->queue_paned),
+					 GTK_WIDGET (shell->priv->queue_sidebar),
+					 "resize", FALSE,
+					 NULL);
 
 		gtk_box_pack_start (GTK_BOX (vbox2),
 				    GTK_WIDGET (shell->priv->source_header),

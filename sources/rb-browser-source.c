@@ -381,6 +381,10 @@ rb_browser_source_constructor (GType type,
 
 	source->priv->browser = rb_library_browser_new (source->priv->db);
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->browser), TRUE, FALSE);
+	gtk_container_child_set (GTK_CONTAINER (source->priv->paned),
+				 GTK_WIDGET (source->priv->browser),
+				 "resize", FALSE,
+				 NULL);
 	g_signal_connect_object (G_OBJECT (source->priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_browser_source_browser_changed_cb),
 				 source, 0);
