@@ -1,3 +1,10 @@
+2006-05-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(rhythmdb_tree_load):
+	Commit loaded entries in batches, rather than individually.  
+	More startup time reduction.
+
 2006-05-12  Ryan P Skadberg  <skadz@stigmata.org>
 
 	* doc/reference/Makefile.am: fix gtk-doc compilation

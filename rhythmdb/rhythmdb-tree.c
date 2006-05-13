@@ -209,6 +209,7 @@ struct RhythmDBTreeLoadContext
 	RhythmDBEntry *entry;
 	GString *buf;
 	RhythmDBPropType propid;
+	gint batch_count;
 
 	/* updating */
 	gboolean has_date;
@@ -369,7 +370,10 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			if (entry == NULL) {
 				rhythmdb_tree_entry_new (RHYTHMDB (ctx->db), ctx->entry);
 				rhythmdb_entry_insert (RHYTHMDB (ctx->db), ctx->entry);
-				rhythmdb_commit (RHYTHMDB (ctx->db));
+				if (++ctx->batch_count == RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK) {
+					rhythmdb_commit (RHYTHMDB (ctx->db));
+					ctx->batch_count = 0;
+				}
 			} else {
 				rb_debug ("found entry with duplicate location %s. merging metadata", ctx->entry->location);
 				entry->play_count += ctx->entry->play_count;
@@ -595,6 +599,9 @@ rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
 		xmlParseDocument (ctxt);
 		ctxt->sax = NULL;
 		xmlFreeParserCtxt (ctxt);
+
+		if (ctx->batch_count)
+			rhythmdb_commit (RHYTHMDB (ctx->db));
 			
 	}
 	g_string_free (ctx->buf, TRUE);
