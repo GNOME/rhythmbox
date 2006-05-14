@@ -1,3 +1,13 @@
+2006-05-15  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* data/glade/song-info.glade:
+	* widgets/rb-song-info.c: (rb_song_info_construct_single),
+	(rb_song_info_populate_dialog), (rb_song_info_update_duration),
+	(rb_song_info_update_filesize): Add the file size into the song info
+	window. Fixes bug 340861.
+
 2006-05-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* bindings/python/rhythmdb.defs:

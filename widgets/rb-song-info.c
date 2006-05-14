@@ -68,6 +68,7 @@ static void rb_song_info_populate_dialog (RBSongInfo *song_info);
 static void rb_song_info_populate_dialog_multiple (RBSongInfo *song_info);
 static void rb_song_info_update_duration (RBSongInfo *song_info);
 static void rb_song_info_update_location (RBSongInfo *song_info);
+static void rb_song_info_update_filesize (RBSongInfo *song_info);
 static void rb_song_info_update_play_count (RBSongInfo *song_info);
 static void rb_song_info_update_last_played (RBSongInfo *song_info);
 static void rb_song_info_update_bitrate (RBSongInfo *song_info);
@@ -120,6 +121,7 @@ struct RBSongInfoPrivate
 	GtkWidget   *duration;
 	GtkWidget   *name;
 	GtkWidget   *location;
+	GtkWidget   *filesize;
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
 	GtkWidget   *rating;
@@ -259,6 +261,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
 	song_info->priv->location = glade_xml_get_widget (xml, "song_info_location");
+	song_info->priv->filesize = glade_xml_get_widget (xml, "song_info_filesize");
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
 	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
@@ -267,6 +270,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	rb_glade_boldify_label (xml, "trackn_label");
 	rb_glade_boldify_label (xml, "name_label");
 	rb_glade_boldify_label (xml, "location_label");
+	rb_glade_boldify_label (xml, "filesize_label");
 	rb_glade_boldify_label (xml, "last_played_label");
 	rb_glade_boldify_label (xml, "play_count_label");
 	rb_glade_boldify_label (xml, "duration_label");
@@ -778,6 +782,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
+	rb_song_info_update_filesize (song_info);
 	rb_song_info_update_play_count (song_info);
 	rb_song_info_update_last_played (song_info);
 	rb_song_info_update_bitrate (song_info);
@@ -836,6 +841,17 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 	seconds = duration % 60;
 	text = g_strdup_printf ("%d:%02d", minutes, seconds);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->duration), text);
+	g_free (text);
+}
+
+static void
+rb_song_info_update_filesize (RBSongInfo *song_info)
+{
+	char *text = NULL;
+	guint64 filesize = 0;
+	filesize = rhythmdb_entry_get_uint64 (song_info->priv->current_entry, RHYTHMDB_PROP_FILE_SIZE);
+	text = gnome_vfs_format_file_size_for_display (filesize);
+	gtk_label_set_text (GTK_LABEL (song_info->priv->filesize), text);
 	g_free (text);
 }
 
