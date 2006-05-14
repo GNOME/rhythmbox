@@ -1,3 +1,21 @@
+2006-05-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	* shell/Makefile.am:
+	* shell/main.c: (main), (load_uri_args), (send_present_message),
+	(unregister_dbus_handler), (handle_dbus_message),
+	(register_dbus_handler):
+	Add minimal support for dbus 0.31 - 0.35.
+
+	* doc/reference/Makefile.am:
+	* doc/reference/rhythmbox.types:
+	* data/Makefile.am:
+	* data/GNOME_Rhythmbox.server.in:
+	* data/rhythmbox.pc.in:
+	* remote/*:
+	* remote/bonobo/*:
+	Remove remaining bonobo and generic remote interface files.
+
 2006-05-14  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-shell.c: (construct_widgets):

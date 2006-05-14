@@ -19,10 +19,7 @@ IGNORE_HFILES= \
 	config.h \
 	itunesdb.h \
 	rb-cut-and-paste-code.h \
-	rb-commander.h \
 	rb-marshal.h \
-	rb-nautilus-context-menu.h \
-	Rhythmbox.h \
 	rhythmdb-gda.h \
 	rhythmdb-private.h
 
@@ -39,7 +36,6 @@ INCLUDES=\
 	-I$(top_srcdir)/iradio \
 	-I$(top_srcdir)/daapsharing \
 	-I$(top_srcdir)/plugins \
-	-I$(top_srcdir)/remote \
 	$(DBUS_CFLAGS) \
 	$(IPOD_CFLAGS) \
 	$(RHYTHMBOX_CFLAGS)

@@ -19,6 +19,7 @@ AC_CHECK_SIZEOF(long)
 GTK_REQS=2.6.0
 GNOME_VFS_REQS=2.7.4
 NCB_MIN_REQS=2.9.0
+OLD_DBUS_MIN_REQS=0.31
 DBUS_MIN_REQS=0.35
 TOTEM_PLPARSER_REQS=1.1.5
 
@@ -589,14 +590,20 @@ AS_AC_EXPAND(DATADIR, $datadir)
 dnl DBUS
 PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
 if test "x$enable_dbus" = xno; then
-   AC_MSG_ERROR([DBUS not found or too old])	   
+   PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $OLD_DBUS_MIN_REQS, enable_old_dbus=yes, enable_old_dbus=no)
+   if test "x$enable_old_dbus" = xno; then
+      AC_MSG_ERROR([DBUS not found or too old])
+   fi
+   AC_DEFINE(WITH_OLD_DBUS, 1, [Define if old D-BUS is enabled])	   
+else
+   AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
 fi
 
-AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
 DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
 DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
 AC_SUBST(DBUS_GLIB_BIN)
 AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
+AM_CONDITIONAL(WITH_OLD_DBUS, test "x$enable_old_dbus" = "xyes")
 
 dnl out-of-process metadata reader (requires dbus)
 AC_ARG_WITH(metadata-helper,
@@ -952,10 +959,8 @@ if test x"$enable_hal" = xyes; then
 else
 	AC_MSG_NOTICE([   HAL support disabled])
 fi
-if test x"$enable_dbus" = xyes; then
-	AC_MSG_NOTICE([** D-BUS control/activation enabled])
-else
-	AC_MSG_NOTICE([   D-BUS control/activation disabled])
+if test x"$enable_old_dbus" = xyes; then
+	AC_MSG_NOTICE([** using D-BUS < 0.35 control/activation])
 fi
 if test x"$enable_python" != xno; then
 	AC_MSG_NOTICE([** Python support enabled])

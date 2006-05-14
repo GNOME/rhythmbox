@@ -148,6 +148,9 @@ EXTRA_DIST += rb-shell.xml rb-shell-player.xml rb-playlist-manager.xml
 
 rhythmbox_LDADD += $(DBUS_LIBS)
 endif
+if WITH_OLD_DBUS
+rhythmbox_LDADD += $(DBUS_LIBS)
+endif
 
 rhythmbox_LDADD += \
 	$(GDA_LIBS)					\

@@ -61,12 +61,16 @@
 #include "rb-util.h"
 
 
-#ifdef WITH_DBUS
+#if WITH_DBUS
 #include <dbus/dbus-glib.h>
 #include "rb-shell-glue.h"
 #include "rb-shell-player-glue.h"
 #include "rb-playlist-manager.h"
 #include "rb-playlist-manager-glue.h"
+#elif WITH_OLD_DBUS
+#include <dbus/dbus.h>
+#include <dbus/dbus-glib.h>
+#include <dbus/dbus-glib-lowlevel.h>
 #endif
 
 static gboolean debug           = FALSE;
@@ -86,21 +90,26 @@ static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
 
 static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
 
+#if WITH_OLD_DBUS
+static void register_dbus_handler (DBusConnection *connection, RBShell *shell);
+static gboolean send_present_message (DBusConnection *connection, guint32 current_time);
+
+#endif
+
 int
 main (int argc, char **argv)
 {
 	GnomeProgram *program;
-#ifdef WITH_DBUS
+#if WITH_DBUS || WITH_OLD_DBUS
 	DBusGConnection *session_bus;
+	GError *error = NULL;
 #endif
 	RBShell *rb_shell;
 	char **new_argv;
 	gboolean activated;
 	poptContext poptContext;
         GValue context_as_value = { 0 };
-#if WITH_DBUS
-	GError *error = NULL;
-#endif
+
 	rb_profile_start ("starting rhythmbox");
 
 	struct poptOption popt_options[] =
@@ -180,7 +189,7 @@ main (int argc, char **argv)
 
 	activated = FALSE;
 
-#ifdef WITH_DBUS
+#if WITH_DBUS || WITH_OLD_DBUS
 	rb_debug ("going to create DBus object");
 
 	dbus_g_thread_init ();
@@ -192,18 +201,19 @@ main (int argc, char **argv)
 	} else if (!no_registration) {
 		guint request_name_reply;
 		int flags;
+#ifndef DBUS_NAME_FLAG_DO_NOT_QUEUE
+		flags = DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT;
+#else
+		flags = DBUS_NAME_FLAG_DO_NOT_QUEUE;
+#endif                
+
+#ifndef WITH_OLD_DBUS
 		DBusGProxy *bus_proxy;
 
 		bus_proxy = dbus_g_proxy_new_for_name (session_bus,
 						       "org.freedesktop.DBus",
 						       "/org/freedesktop/DBus",
 						       "org.freedesktop.DBus");
-
-#ifndef DBUS_NAME_FLAG_DO_NOT_QUEUE
-		flags = DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT;
-#else
-		flags = DBUS_NAME_FLAG_DO_NOT_QUEUE;
-#endif                
 
 		if (!dbus_g_proxy_call (bus_proxy,
 					"RequestName",
@@ -221,16 +231,34 @@ main (int argc, char **argv)
 		}
 		g_object_unref (bus_proxy);
 
+#else
+		DBusError dbus_error = {0,};
+		DBusConnection *connection;
+
+		connection = dbus_g_connection_get_connection (session_bus);
+		request_name_reply = dbus_bus_request_name (connection,
+			       				    "org.gnome.Rhythmbox",
+							    flags,
+							    &dbus_error);
+		if (dbus_error_is_set (&dbus_error)) {
+			g_warning ("Failed to invoke RequestName: %s",
+				   dbus_error.message);
+		}
+		dbus_error_free (&dbus_error);
+#endif
 		if (request_name_reply == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER
 		    || request_name_reply == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER)
 			activated = FALSE;
-		else if (request_name_reply == DBUS_REQUEST_NAME_REPLY_EXISTS)
+		else if (request_name_reply == DBUS_REQUEST_NAME_REPLY_EXISTS
+			 || request_name_reply == DBUS_REQUEST_NAME_REPLY_IN_QUEUE)
 			activated = TRUE;
 		else {
 			g_warning ("Got unhandled reply %u from RequestName",
 				   request_name_reply);
 			activated = FALSE;
 		}
+		
+						
 	}
 		
 #endif
@@ -254,8 +282,8 @@ main (int argc, char **argv)
 	
 		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
-#ifdef WITH_DBUS
 		if (!no_registration && session_bus != NULL) {
+#if WITH_DBUS
 			GObject *obj;
 			const char *path;
 
@@ -273,24 +301,16 @@ main (int argc, char **argv)
 			obj = rb_shell_get_playlist_manager (rb_shell);
 			path = rb_shell_get_playlist_manager_path (rb_shell);
 			dbus_g_connection_register_g_object (session_bus, path, obj);
+#elif WITH_OLD_DBUS
+			register_dbus_handler (dbus_g_connection_get_connection (session_bus), 
+					       rb_shell);
+#endif /* WITH_DBUS */
 		}
-#endif
-#ifdef WITH_DBUS
 	} else if (!no_registration && session_bus != NULL) {
+#if WITH_DBUS
 		DBusGProxy *shell_proxy;
+#endif
 		guint32 current_time;
-
-		shell_proxy = dbus_g_proxy_new_for_name_owner (session_bus,
-							       "org.gnome.Rhythmbox",
-							       "/org/gnome/Rhythmbox/Shell",
-							       "org.gnome.Rhythmbox.Shell",
-							       &error);
-		if (!shell_proxy) {
-			g_warning ("Couldn't create proxy for Rhythmbox shell: %s",
-				   error->message);
-		} else {
-			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
-		}
 #if GTK_MINOR_VERSION >= 8
 		current_time = gdk_x11_display_get_user_time (gdk_display_get_default ());
 #else
@@ -303,9 +323,26 @@ main (int argc, char **argv)
 		 */
 		current_time = GDK_CURRENT_TIME;
 #endif	/* GTK_MINOR_VERSION */
+
+#if WITH_DBUS
+		shell_proxy = dbus_g_proxy_new_for_name_owner (session_bus,
+							       "org.gnome.Rhythmbox",
+							       "/org/gnome/Rhythmbox/Shell",
+							       "org.gnome.Rhythmbox.Shell",
+							       &error);
+		if (!shell_proxy) {
+			g_warning ("Couldn't create proxy for Rhythmbox shell: %s",
+				   error->message);
+		} else {
+			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
+		}
 		dbus_g_proxy_call_no_reply (shell_proxy, "present",
 					    G_TYPE_UINT, current_time,
 					    G_TYPE_INVALID);
+#elif WITH_OLD_DBUS
+		if (!send_present_message (dbus_g_connection_get_connection (session_bus), 
+					   current_time))
+			g_warning ("Unable to send dbus message to existing rhythmbox instance");
 #endif /* WITH_DBUS */
 	}
 
@@ -357,9 +394,7 @@ load_uri_args (const char **args, GFunc handler, gpointer user_data)
 	}
 	return handled;
 }
-#endif
 
-#ifdef WITH_DBUS
 static void
 dbus_load_uri (const char *filename, DBusGProxy *proxy)
 {
@@ -381,3 +416,84 @@ main_shell_weak_ref_cb (gpointer data, GObject *objptr)
 	rb_debug ("caught shell finalization");
 	gtk_main_quit ();
 }
+
+
+#ifdef WITH_OLD_DBUS
+/* old dbus support (0.31-0.34) */
+
+static gboolean
+send_present_message (DBusConnection *connection, guint32 current_time)
+{
+	DBusMessage *message;
+	gboolean result;
+
+	message = dbus_message_new_method_call ("org.gnome.Rhythmbox",
+						"/org/gnome/Rhythmbox/Shell",
+						"org.gnome.Rhythmbox.Shell",
+						"present");
+	if (!message)
+		return FALSE;
+
+	if (!dbus_message_append_args (message,
+				       DBUS_TYPE_UINT32, &current_time,
+				       DBUS_TYPE_INVALID)) {
+		dbus_message_unref (message);
+		return FALSE;
+	}
+
+	result = dbus_connection_send (connection, message, NULL);
+	dbus_message_unref (message);
+
+	return result;
+}
+
+static void
+unregister_dbus_handler (DBusConnection *connection, void *data)
+{
+	/* nothing */
+}
+
+static DBusHandlerResult
+handle_dbus_message (DBusConnection *connection, DBusMessage *message, void *data)
+{
+	RBShell *shell = (RBShell *)data;
+
+	rb_debug ("Handling dbus message");
+	if (dbus_message_is_method_call (message, "org.gnome.Rhythmbox.Shell", "present")) {
+		DBusMessageIter iter;
+		guint32 current_time;
+		
+		if (!dbus_message_iter_init (message, &iter))
+			return DBUS_HANDLER_RESULT_NEED_MEMORY;
+
+		if (dbus_message_iter_get_arg_type (&iter) != DBUS_TYPE_UINT32)
+			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+
+		dbus_message_iter_get_basic (&iter, &current_time);
+
+		rb_shell_present (shell, current_time, NULL);
+		return DBUS_HANDLER_RESULT_HANDLED;
+	} else {
+		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+}
+
+static void
+register_dbus_handler (DBusConnection *connection, RBShell *shell)
+{
+	DBusObjectPathVTable vt = {
+		unregister_dbus_handler,
+		handle_dbus_message,
+		NULL, NULL, NULL, NULL
+	};
+
+	dbus_connection_register_object_path (connection,
+					      "/org/gnome/Rhythmbox/Shell",
+					      &vt,
+					      shell);
+	dbus_connection_ref (connection);
+	dbus_connection_setup_with_g_main (connection, NULL);
+}
+
+#endif
+

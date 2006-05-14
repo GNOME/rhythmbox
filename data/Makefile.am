@@ -3,15 +3,7 @@
 SUBDIRS = ui glade art
 
 @INTLTOOL_XML_RULE@
-@INTLTOOL_SERVER_RULE@
 @INTLTOOL_DESKTOP_RULE@
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = rhythmbox.pc
-
-server_in_files = GNOME_Rhythmbox.server.in
-server_DATA = GNOME_Rhythmbox.server
-serverdir = $(libdir)/bonobo/servers
 
 Multimediadir = $(datadir)/applications
 Multimedia_in_files = rhythmbox.desktop.in
@@ -67,8 +59,7 @@ install-data-hook:
 		echo "***   $(gtk_update_icon_cache)"; \
 	fi
 
-EXTRA_DIST = $(server_in_files)     \
-	     $(service_in_files)    \
+EXTRA_DIST = $(service_in_files)    \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
 	     $(applications_DATA)   \
@@ -77,4 +68,4 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(playlists_in_files)  \
 		generate-keys.sh
 
-CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server org.gnome.Rhythmbox.service playlists.xml
+CLEANFILES = rhythmbox.desktop rhythmbox.keys org.gnome.Rhythmbox.service playlists.xml
