@@ -650,6 +650,16 @@
   (return-type "RhythmDBQueryModel*")
 )
 
+(define-method chain
+  (of-object "RhythmDBQueryModel")
+  (c-name "rhythmdb_query_model_chain")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryModel*" "base")
+    '("gboolean" "import_entries")
+  )
+)
+
 (define-method add_entry
   (of-object "RhythmDBQueryModel")
   (c-name "rhythmdb_query_model_add_entry")

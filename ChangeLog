@@ -1,5 +1,35 @@
 2006-05-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* bindings/python/rhythmdb.defs:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_new_empty), (rhythmdb_query_model_chain):
+	* rhythmdb/rhythmdb-query-model.h:
+	Add a new method to chain query models without importing entries from
+	the parent into the child.  This is useful when the subset of entries
+	in the child can be more easily determined by running a query than by
+	filtering entries from the parent.
+
+	* bindings/python/rb.defs:
+	* widgets/rb-library-browser.c: (rb_library_browser_class_init),
+	(rb_library_browser_set_property),
+	(rb_library_browser_get_property), (rb_library_browser_new),
+	(rebuild_child_model):
+	* widgets/rb-library-browser.h:
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_constructor):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_constructor):
+	* sources/rb-browser-source.c: (rb_browser_source_constructor):
+	Use more efficient queries for constructing the browser query model
+	chain.  Include the entry type at each level (allowing the rhythmdb-tree 
+	backend to optimise the query) and run new queries rather than
+	filtering entries from the parent.  Fixes #341402.
+
+	* configure.ac: remove reference to rhythmbox.pc that I missed earlier.
+
+2006-05-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* configure.ac:
 	* shell/Makefile.am:
 	* shell/main.c: (main), (load_uri_args), (send_present_message),

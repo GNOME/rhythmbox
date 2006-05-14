@@ -195,6 +195,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
 	RBEntryView *songs;
 	RBShell *shell;
+	RhythmDBEntryType entry_type;
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (G_OBJECT (priv->base_model), "show-hidden", TRUE, NULL);
@@ -216,7 +217,9 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	g_object_unref (G_OBJECT (shell));
 
-	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)));
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)), 
+						entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
 	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),

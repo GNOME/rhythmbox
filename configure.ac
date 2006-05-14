@@ -874,7 +874,6 @@ data/Makefile
 data/ui/Makefile
 data/art/Makefile
 data/glade/Makefile
-data/rhythmbox.pc
 sources/Makefile
 daapsharing/Makefile
 plugins/Makefile

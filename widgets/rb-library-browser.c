@@ -72,6 +72,7 @@ G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
 typedef struct
 {
 	RhythmDB *db;
+	RhythmDBEntryType entry_type;
 	RhythmDBQueryModel *input_model;
 	RhythmDBQueryModel *output_model;
 
@@ -88,7 +89,8 @@ enum
 	PROP_0,
 	PROP_DB,
 	PROP_INPUT_MODEL,
-	PROP_OUTPUT_MODEL
+	PROP_OUTPUT_MODEL,
+	PROP_ENTRY_TYPE
 };
 
 typedef struct {
@@ -134,7 +136,12 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "output RhythmDBQueryModel instance",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READABLE));
-
+	g_object_class_install_property (object_class,
+					 PROP_ENTRY_TYPE,
+					 g_param_spec_pointer ("entry-type",
+						 	       "Entry type",
+							       "Type of entry to display in this browser",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBLibraryBrowserPrivate));
 }
@@ -228,6 +235,9 @@ rb_library_browser_set_property (GObject *object,
 		if (priv->db)
 			g_object_ref (priv->db);
 		break;
+	case PROP_ENTRY_TYPE:
+		priv->entry_type = g_value_get_pointer (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -253,6 +263,9 @@ rb_library_browser_get_property (GObject *object,
 	case PROP_OUTPUT_MODEL:
 		g_value_set_object (value, priv->output_model);
 		break;
+	case PROP_ENTRY_TYPE:
+		g_value_set_pointer (value, priv->entry_type);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -260,13 +273,14 @@ rb_library_browser_get_property (GObject *object,
 }
 
 RBLibraryBrowser *
-rb_library_browser_new (RhythmDB *db)
+rb_library_browser_new (RhythmDB *db, RhythmDBEntryType entry_type)
 {
 	RBLibraryBrowser *widget;
 
 	g_assert (db);
 	widget = RB_LIBRARY_BROWSER (g_object_new (RB_TYPE_LIBRARY_BROWSER,
 						   "db", db,
+						   "entry-type", entry_type,
 						   NULL));
 	return widget;
 }
@@ -482,50 +496,6 @@ restore_selection (RBLibraryBrowser *widget,
 }
 
 static void
-rebuild_output_model (RBLibraryBrowser *widget)
-{
-	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
-	RBPropertyView *view;
-	RhythmDBPropertyModel *prop_model;
-	int prop_index = num_browser_properties - 1;
-	GList *selections;
-	RhythmDBQueryModel *base_model;
-	RhythmDBQuery *query;
-
-	if (priv->output_model)
-		g_object_unref (G_OBJECT (priv->output_model));
-
-	/* get the query model for the previous property view */
-	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[prop_index].type);
-	prop_model = rb_property_view_get_model (view);
-	g_object_get (G_OBJECT (prop_model), "query-model", &base_model, NULL);
-	g_object_unref (G_OBJECT (prop_model));
-
-	selections = g_hash_table_lookup (priv->selections, (gpointer)browser_properties[prop_index].type);
-	if (selections != NULL) {
-		query = g_ptr_array_new ();
-		rhythmdb_query_append_prop_multiple (priv->db,
-						     query,
-						     browser_properties[prop_index].type,
-						     selections);
-
-		priv->output_model = rhythmdb_query_model_new_empty (priv->db);
-		g_object_set (G_OBJECT (priv->output_model), "base-model", base_model, NULL);
-
-
-		g_object_set (G_OBJECT (priv->output_model), "query", query, NULL);
-		rhythmdb_query_model_reapply_query (priv->output_model, TRUE);
-		rhythmdb_query_free (query);
-	} else {
-		priv->output_model = base_model;
-		g_object_ref (G_OBJECT (priv->output_model));
-	}
-
-	g_object_notify (G_OBJECT (widget), "output-model");
-	g_object_unref (G_OBJECT (base_model));
-}
-
-static void
 rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean query_pending)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
@@ -538,51 +508,75 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean que
 	g_assert (property_index >= 0);
 	g_assert (property_index < num_browser_properties);
 
-	/* there is no model after the last one to update*/
-	if (property_index == num_browser_properties - 1) {
-		rebuild_output_model (widget);
-		return;
-	}
-
 	/* get the query model for the previous property view */
 	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index].type);
 	prop_model = rb_property_view_get_model (view);
 	g_object_get (G_OBJECT (prop_model), "query-model", &base_model, NULL);
 	g_object_unref (G_OBJECT (prop_model));
 
-	/* create a new query model based on it, filtered by the selections of the previous property view */
 	selections = g_hash_table_lookup (priv->selections, (gpointer)browser_properties[property_index].type);
 	if (selections != NULL) {
-		query = g_ptr_array_new ();
+
+		/* create a new query model based on it, filtered by 
+		 * the selections of the previous property view.
+		 * we need the entry type query criteria to allow the
+		 * backend to optimise the query.
+		 */
+		query = rhythmdb_query_parse (priv->db, 
+				              RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, priv->entry_type,
+					      RHYTHMDB_QUERY_END);
 		rhythmdb_query_append_prop_multiple (priv->db,
 						     query,
 						     browser_properties[property_index].type,
 						     selections);
 
 		child_model = rhythmdb_query_model_new_empty (priv->db);
-		g_object_set (G_OBJECT (child_model), "base-model", base_model, NULL);
-
-		g_object_set (G_OBJECT (child_model), "query", query, NULL);
-		rhythmdb_query_model_reapply_query (child_model, TRUE);
+		if (query_pending) {
+			rb_debug ("rebuilding child model for browser %d; query is pending", property_index);
+			g_object_set (G_OBJECT (child_model), 
+				      "query", query,
+				      "base-model", base_model,
+				      NULL);
+		} else {
+			rb_debug ("rebuilding child model for browser %d; running new query", property_index);
+			rhythmdb_query_model_chain (child_model, base_model, FALSE);
+			rhythmdb_do_full_query_parsed (priv->db,
+						       RHYTHMDB_QUERY_RESULTS (child_model),
+						       query);
+		}
 		rhythmdb_query_free (query);
 	} else {
+		rb_debug ("no selection for browser %d - reusing parent model", property_index);
 		child_model = base_model;
 	}
 	
-	/* apply it as the query model of the current property view */
-	view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index+1].type);
-	ignore_selection_changes (widget, view, TRUE);
+	/* If this is the last property, use the child model as the output model
+	 * for the browser.  Otherwise, use it as the input for the next property
+	 * view.
+	 */
+	if (property_index == num_browser_properties-1) {
+		if (priv->output_model)
+			g_object_unref (G_OBJECT (priv->output_model));
 
-	prop_model = rb_property_view_get_model (view);
-	g_object_set (G_OBJECT (prop_model), "query-model", child_model, NULL);
-	g_object_unref (G_OBJECT (prop_model));
+		priv->output_model = child_model;
+		g_object_notify (G_OBJECT (widget), "output-model");
 
-	g_object_unref (G_OBJECT (base_model));
+	} else {
+		view = g_hash_table_lookup (priv->property_views, (gpointer)browser_properties[property_index+1].type);
+		ignore_selection_changes (widget, view, TRUE);
+
+		prop_model = rb_property_view_get_model (view);
+		g_object_set (G_OBJECT (prop_model), "query-model", child_model, NULL);
+		g_object_unref (G_OBJECT (prop_model));
+
+		g_object_unref (G_OBJECT (base_model));
+
+		rebuild_child_model (widget, property_index + 1, query_pending);
+		restore_selection (widget, property_index + 1, query_pending);
+	}
+
 	if (child_model != base_model)
 		g_object_unref (G_OBJECT (child_model));
-
-	rebuild_child_model (widget, property_index + 1, query_pending);
-	restore_selection (widget, property_index + 1, query_pending);
 }
 
 void

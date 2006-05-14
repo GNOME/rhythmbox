@@ -458,78 +458,7 @@ rhythmdb_query_model_set_property (GObject *object,
 		/* FIXME: this will have funky issues if this is changed after entries are added */
 		break;
 	case PROP_BASE_MODEL:
-		if (model->priv->base_model) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_row_inserted),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_row_deleted),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_non_entry_dropped),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_complete),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
-							      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
-							      model);
-			g_object_unref (model->priv->base_model);
-		}
-
-		model->priv->base_model = g_value_get_object (value);
-
-		if (model->priv->base_model) {
-			g_object_ref (model->priv->base_model);
-			g_assert (model->priv->base_model->priv->db == model->priv->db);
-
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "row-inserted",
-						 G_CALLBACK (rhythmdb_query_model_base_row_inserted),
-						 model, 0);
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "row-deleted",
-						 G_CALLBACK (rhythmdb_query_model_base_row_deleted),
-						 model, 0);
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "non-entry-dropped",
-						 G_CALLBACK (rhythmdb_query_model_base_non_entry_dropped),
-						 model, 0);
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "complete",
-						 G_CALLBACK (rhythmdb_query_model_base_complete),
-						 model, 0);
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "rows-reordered",
-						 G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
-						 model, 0);
-			g_signal_connect_object (G_OBJECT (model->priv->base_model),
-						 "entry-removed",
-						 G_CALLBACK (rhythmdb_query_model_base_entry_removed),
-						 model, 0);
-
-			if (model->priv->base_model->priv->entries) {
-				GSequencePtr ptr, next;
-				RhythmDBEntry *entry;
-
-				ptr = g_sequence_get_begin_ptr (model->priv->base_model->priv->entries);
-				while (!g_sequence_ptr_is_end (ptr)) {
-					next = g_sequence_ptr_next (ptr);
-					entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
-					if (model->priv->query == NULL ||
-					    rhythmdb_evaluate_query (model->priv->db, model->priv->query, entry)) {
-						if (model->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
-							rhythmdb_query_model_do_insert (model, entry, -1);
-					}
-
-					ptr = next;
-				}
-			}
-		}
-		
+		rhythmdb_query_model_chain (model, g_value_get_object (value), TRUE);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -729,6 +658,86 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 {
 	return g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
 			     "db", db, NULL);
+}
+
+void
+rhythmdb_query_model_chain (RhythmDBQueryModel *model,
+			    RhythmDBQueryModel *base,
+			    gboolean import_entries)
+{
+	rb_debug ("query model %p chaining to base model %p", model, base);
+	
+	if (model->priv->base_model) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_row_inserted),
+						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_row_deleted),
+						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_non_entry_dropped),
+						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_complete),
+						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
+						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
+						      model);
+		g_object_unref (model->priv->base_model);
+	}
+
+	model->priv->base_model = base;
+
+	if (model->priv->base_model) {
+		g_object_ref (model->priv->base_model);
+		g_assert (model->priv->base_model->priv->db == model->priv->db);
+
+		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+					 "row-inserted",
+					 G_CALLBACK (rhythmdb_query_model_base_row_inserted),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+					 "row-deleted",
+					 G_CALLBACK (rhythmdb_query_model_base_row_deleted),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+					 "non-entry-dropped",
+					 G_CALLBACK (rhythmdb_query_model_base_non_entry_dropped),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+					 "complete",
+					 G_CALLBACK (rhythmdb_query_model_base_complete),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+					 "rows-reordered",
+					 G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+					 "entry-removed",
+					 G_CALLBACK (rhythmdb_query_model_base_entry_removed),
+					 model, 0);
+
+		if (import_entries && model->priv->base_model->priv->entries) {
+			GSequencePtr ptr, next;
+			RhythmDBEntry *entry;
+
+			ptr = g_sequence_get_begin_ptr (model->priv->base_model->priv->entries);
+			while (!g_sequence_ptr_is_end (ptr)) {
+				next = g_sequence_ptr_next (ptr);
+				entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
+				if (model->priv->query == NULL ||
+				    rhythmdb_evaluate_query (model->priv->db, model->priv->query, entry)) {
+					if (model->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
+						rhythmdb_query_model_do_insert (model, entry, -1);
+				}
+
+				ptr = next;
+			}
+		}
+	}
 }
 
 gboolean

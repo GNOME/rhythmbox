@@ -90,6 +90,10 @@ RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
+void			rhythmdb_query_model_chain	(RhythmDBQueryModel *child, 
+							 RhythmDBQueryModel *base, 
+							 gboolean import_entries);
+
 void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
 
 gboolean		rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);

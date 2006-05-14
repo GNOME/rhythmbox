@@ -176,6 +176,7 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	GObjectClass *parent_class = G_OBJECT_CLASS (rb_auto_playlist_source_parent_class);
 	RBAutoPlaylistSourcePrivate *priv;
 	RBShell *shell;
+	RhythmDBEntryType entry_type;
 
 	source = RB_AUTO_PLAYLIST_SOURCE (
 			parent_class->constructor (type, n_construct_properties, construct_properties));
@@ -183,7 +184,9 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	priv->paned = gtk_vpaned_new ();
 
-	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)));
+	g_object_get (RB_PLAYLIST_SOURCE (source), "entry-type", &entry_type, NULL);
+	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),
+						entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
 	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_auto_playlist_source_browser_changed_cb),

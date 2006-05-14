@@ -379,7 +379,7 @@ rb_browser_source_constructor (GType type,
 
 	source->priv->paned = gtk_vpaned_new ();
 
-	source->priv->browser = rb_library_browser_new (source->priv->db);
+	source->priv->browser = rb_library_browser_new (source->priv->db, source->priv->entry_type);
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->browser), TRUE, FALSE);
 	gtk_container_child_set (GTK_CONTAINER (source->priv->paned),
 				 GTK_WIDGET (source->priv->browser),
