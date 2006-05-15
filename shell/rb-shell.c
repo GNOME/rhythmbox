@@ -192,7 +192,7 @@ static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_cmd_view_all (GtkAction *action,
  				   RBShell *shell);
-static void rb_shell_view_sourcelist_changed_cb (GtkAction *action,
+static void rb_shell_view_sidepane_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_toolbar_changed_cb (GtkAction *action,
 					      RBShell *shell);
@@ -205,7 +205,7 @@ static void rb_shell_view_statusbar_changed_cb (GtkAction *action,
 static void rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 						       RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
-static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
+static void rb_shell_sync_sidepane_visibility (RBShell *shell);
 static void rb_shell_sync_toolbar_state (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void rb_shell_sync_pane_visibility (RBShell *shell);
@@ -213,10 +213,10 @@ static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void rb_shell_set_visibility (RBShell *shell,
 				     gboolean visible,
 				     gboolean force);
-static void sourcelist_visibility_changed_cb (GConfClient *client,
-					      guint cnxn_id,
-					      GConfEntry *entry,
-					      RBShell *shell);
+static void sidepane_visibility_changed_cb (GConfClient *client,
+					    guint cnxn_id,
+					    GConfEntry *entry,
+					    RBShell *shell);
 static void toolbar_state_changed_cb (GConfClient *client,
 				      guint cnxn_id,
 				      GConfEntry *entry,
@@ -376,7 +376,7 @@ struct RBShellPrivate
 	char *cached_duration;
 	gboolean cached_playing;
 
-	guint sourcelist_visibility_notify_id;
+	guint sidepane_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
 	guint toolbar_style_notify_id;
 	guint smalldisplay_notify_id;
@@ -450,9 +450,9 @@ static guint rb_shell_n_actions = G_N_ELEMENTS (rb_shell_actions);
 
 static GtkToggleActionEntry rb_shell_toggle_entries [] =
 {
-	{ "ViewSourceList", NULL, N_("Source _List"), "<control>L",
-	  N_("Change the visibility of the source list"),
-	  G_CALLBACK (rb_shell_view_sourcelist_changed_cb), TRUE },
+	{ "ViewSidePane", NULL, N_("Side _Pane"), "<control>P",
+	  N_("Change the visibility of the side pane"),
+	  G_CALLBACK (rb_shell_view_sidepane_changed_cb), TRUE },
 	{ "ViewToolbar", NULL, N_("_Toolbar"), NULL,
 	  N_("Change the visibility of the toolbar"),
 	  G_CALLBACK (rb_shell_view_toolbar_changed_cb), TRUE },
@@ -847,7 +847,7 @@ rb_shell_finalize (GObject *object)
 	rb_shell_player_stop (shell->priv->player_shell);
 
 	eel_gconf_monitor_remove (CONF_PREFIX);
-	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
+	eel_gconf_notification_remove (shell->priv->sidepane_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->toolbar_visibility_notify_id);
 	eel_gconf_notification_remove (shell->priv->toolbar_style_notify_id);
 	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
@@ -1272,9 +1272,9 @@ rb_shell_constructor (GType type,
 
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
-	shell->priv->sourcelist_visibility_notify_id =
-		eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
-					    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
+	shell->priv->sidepane_visibility_notify_id =
+		eel_gconf_notification_add (CONF_UI_SIDEPANE_HIDDEN,
+					    (GConfClientNotifyFunc) sidepane_visibility_changed_cb,
 					    shell);
 	shell->priv->toolbar_visibility_notify_id =
 		eel_gconf_notification_add (CONF_UI_TOOLBAR_HIDDEN,
@@ -1304,7 +1304,7 @@ rb_shell_constructor (GType type,
 
 	
 	rb_debug ("shell: syncing with gconf");
-	rb_shell_sync_sourcelist_visibility (shell);
+	rb_shell_sync_sidepane_visibility (shell);
 	rb_shell_sync_pane_visibility (shell);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
@@ -1725,7 +1725,7 @@ rb_shell_playlist_created_cb (RBPlaylistManager *mgr,
 {
 	shell->priv->window_small = FALSE;
 	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY, shell->priv->window_small);
-	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN, shell->priv->window_small);
+	eel_gconf_set_boolean (CONF_UI_SIDEPANE_HIDDEN, shell->priv->window_small);
 
 	rb_shell_sync_window_state (shell, FALSE);
 }
@@ -2034,10 +2034,10 @@ rb_shell_set_window_title (RBShell *shell,
 }
 
 static void
-rb_shell_view_sourcelist_changed_cb (GtkAction *action,
-				     RBShell *shell)
+rb_shell_view_sidepane_changed_cb (GtkAction *action,
+				   RBShell *shell)
 {
-	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN,
+	eel_gconf_set_boolean (CONF_UI_SIDEPANE_HIDDEN,
 			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
@@ -2433,20 +2433,21 @@ rb_shell_load_complete_cb (RhythmDB *db,
 }
 
 static void
-rb_shell_sync_sourcelist_visibility (RBShell *shell)
+rb_shell_sync_sidepane_visibility (RBShell *shell)
 {
 	gboolean visible;
 	GtkAction *action;
 
-	visible = !eel_gconf_get_boolean (CONF_UI_SOURCELIST_HIDDEN);
+	visible = !eel_gconf_get_boolean (CONF_UI_SIDEPANE_HIDDEN);
 
-	if (visible)
-		gtk_widget_show (GTK_WIDGET (shell->priv->sourcelist));
-	else
-		gtk_widget_hide (GTK_WIDGET (shell->priv->sourcelist));
+	if (visible) {
+		gtk_widget_show (GTK_WIDGET (shell->priv->sidebar_container));
+	} else {
+		gtk_widget_hide (GTK_WIDGET (shell->priv->sidebar_container));
+	}
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
-					      "ViewSourceList");
+					      "ViewSidePane");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
 				      visible);
 }
@@ -2454,22 +2455,17 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 static void
 rb_shell_sync_pane_visibility (RBShell *shell)
 {
-	gboolean sourcelist_visible;
 	GtkAction *action;
 
-	g_object_get (G_OBJECT (shell->priv->sourcelist), "visible", &sourcelist_visible, NULL);
-	if (shell->priv->queue_source)
+	if (shell->priv->queue_source != NULL) {
 		g_object_set (G_OBJECT (shell->priv->queue_source), "visibility", !shell->priv->queue_as_sidebar, NULL);
+	}
 
-	if (shell->priv->queue_as_sidebar)
+	if (shell->priv->queue_as_sidebar) {
 		gtk_widget_show (shell->priv->queue_sidebar);
-	else
+	} else {
 		gtk_widget_hide (shell->priv->queue_sidebar);
-
-	if (sourcelist_visible == FALSE && shell->priv->queue_as_sidebar == FALSE)
-		gtk_widget_hide (GTK_WIDGET (shell->priv->queue_paned));
-	else
-		gtk_widget_show (GTK_WIDGET (shell->priv->queue_paned));
+	}
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
 					      "ViewQueueAsSidebar");
@@ -2593,7 +2589,7 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	rb_shell_sync_window_state (shell, FALSE);
 
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
-					      "ViewSourceList");
+					      "ViewSidePane");
 	queue_action = gtk_action_group_get_action (shell->priv->actiongroup,
 						    "ViewQueueAsSidebar");
 	party_mode_action = gtk_action_group_get_action (shell->priv->actiongroup,
@@ -2635,14 +2631,13 @@ rb_shell_sync_statusbar_visibility (RBShell *shell)
 }
 
 static void
-sourcelist_visibility_changed_cb (GConfClient *client,
-				  guint cnxn_id,
-				  GConfEntry *entry,
-				  RBShell *shell)
+sidepane_visibility_changed_cb (GConfClient *client,
+				guint cnxn_id,
+				GConfEntry *entry,
+				RBShell *shell)
 {
-	rb_debug ("sourcelist visibility changed"); 
-	rb_shell_sync_sourcelist_visibility (shell);
-	rb_shell_sync_pane_visibility (shell);
+	rb_debug ("sidepane visibility changed"); 
+	rb_shell_sync_sidepane_visibility (shell);
 }
 
 static void

@@ -1,3 +1,17 @@
+2006-05-15  William Jon McCann  <mccann@jhu.edu>
+
+	* data/ui/rhythmbox-ui.xml:
+	* lib/rb-preferences.h:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_playlist_created_cb),
+	(rb_shell_view_sidepane_changed_cb),
+	(rb_shell_sync_sidepane_visibility),
+	(rb_shell_sync_pane_visibility), (rb_shell_sync_smalldisplay),
+	(sidepane_visibility_changed_cb):
+	* sources/rb-podcast-source.c:
+	Convert sourcelist visibility to side-pane visbility.
+	Fixes #339733
+
 2006-05-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-header.c:
