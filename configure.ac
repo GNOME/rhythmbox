@@ -612,7 +612,7 @@ AC_ARG_WITH(metadata-helper,
 	    with_metadata_helper=auto)
 enable_metadata_helper=no
 if test "x$with_metadata_helper" != xno; then
-	if test "x$enable_dbus" = xyes; then
+	if test "x$enable_dbus" = xyes || test "x$enable_old_dbus" = xyes; then
 		AC_DEFINE(WITH_METADATA_HELPER, 1, [Define if the metadata helper process is enabled])
 		enable_metadata_helper=yes
 	elif test "x$with_metadata_helper" = xyes; then
