@@ -1,5 +1,11 @@
 2006-05-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/rb-header.c:
+	* widgets/rb-header.h: Stop RBHeader from referring to itself as
+	'player', and make it use the private data structure allocated for it.
+
+2006-05-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* configure.ac: enable metadata helper with dbus < 0.35.
 
 2006-05-15  James Livingston  <doclivingston@gmail.com>

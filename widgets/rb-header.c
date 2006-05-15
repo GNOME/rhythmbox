@@ -36,7 +36,7 @@
 #include "eel-gconf-extensions.h"
 
 static void rb_header_class_init (RBHeaderClass *klass);
-static void rb_header_init (RBHeader *player);
+static void rb_header_init (RBHeader *header);
 static void rb_header_finalize (GObject *object);
 static void rb_header_set_property (GObject *object,
 				    guint prop_id,
@@ -46,14 +46,14 @@ static void rb_header_get_property (GObject *object,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *pspec);
-static long rb_header_get_duration (RBHeader *player);
-static void rb_header_set_show_timeline (RBHeader *player,
+static long rb_header_get_duration (RBHeader *header);
+static void rb_header_set_show_timeline (RBHeader *header,
 			                 gboolean show);
-static void rb_header_update_elapsed (RBHeader *player);
-static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *player);
-static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBHeader *player);
-static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *player);
-static void slider_changed_callback (GtkWidget *widget, RBHeader *player);
+static void rb_header_update_elapsed (RBHeader *header);
+static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
+static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBHeader *header);
+static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
+static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 
 static void rb_header_tick_cb (RBPlayer *mmplayer, long time, RBHeader *header);
 
@@ -91,8 +91,6 @@ struct RBHeaderPrivate
 
 	RBHeaderState *state;
 };
-
-#define RB_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_HEADER, RBHeaderPrivate))
 
 enum
 {
@@ -168,7 +166,9 @@ rb_header_init (RBHeader *header)
 	GtkWidget *vbox;
 	char *s;
 
-	header->priv = g_new0 (RBHeaderPrivate, 1);
+	header->priv = G_TYPE_INSTANCE_GET_PRIVATE (header, 
+						    RB_TYPE_HEADER,
+						    RBHeaderPrivate);
 	header->priv->state = g_new0 (RBHeaderState, 1);
 
 	gtk_box_set_spacing (GTK_BOX (header), 3);
@@ -234,16 +234,15 @@ rb_header_init (RBHeader *header)
 static void
 rb_header_finalize (GObject *object)
 {
-	RBHeader *player;
+	RBHeader *header;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_HEADER (object));
 
-	player = RB_HEADER (object);
-	g_return_if_fail (player->priv != NULL);
+	header = RB_HEADER (object);
+	g_return_if_fail (header->priv != NULL);
 
-	g_free (player->priv->state);
-	g_free (player->priv);
+	g_free (header->priv->state);
 
 	G_OBJECT_CLASS (rb_header_parent_class)->finalize (object);
 }
@@ -254,30 +253,30 @@ rb_header_set_property (GObject *object,
 			const GValue *value,
 			GParamSpec *pspec)
 {
-	RBHeader *player = RB_HEADER (object);
+	RBHeader *header = RB_HEADER (object);
 
 	switch (prop_id) {
 	case PROP_DB:
-		player->priv->db = g_value_get_object (value);
+		header->priv->db = g_value_get_object (value);
 		break;
 	case PROP_ENTRY:
-		player->priv->entry = g_value_get_pointer (value);
+		header->priv->entry = g_value_get_pointer (value);
 		break;
 	case PROP_PLAYER:
-		if (player->priv->mmplayer) {
-			g_signal_handler_disconnect (player->priv->mmplayer,
-						     player->priv->tick_id);
-			player->priv->tick_id = 0;
+		if (header->priv->mmplayer) {
+			g_signal_handler_disconnect (header->priv->mmplayer,
+						     header->priv->tick_id);
+			header->priv->tick_id = 0;
 		}
-		player->priv->mmplayer = g_value_get_object (value);
-		player->priv->tick_id = g_signal_connect (G_OBJECT (player->priv->mmplayer),
+		header->priv->mmplayer = g_value_get_object (value);
+		header->priv->tick_id = g_signal_connect (G_OBJECT (header->priv->mmplayer),
 							  "tick", 
 							  (GCallback) rb_header_tick_cb,
-							  player);
+							  header);
 		break;
 	case PROP_TITLE:
-		g_free (player->priv->title);
-		player->priv->title = g_value_dup_string (value);
+		g_free (header->priv->title);
+		header->priv->title = g_value_dup_string (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -291,20 +290,20 @@ rb_header_get_property (GObject *object,
 			GValue *value,
 			GParamSpec *pspec)
 {
-	RBHeader *player = RB_HEADER (object);
+	RBHeader *header = RB_HEADER (object);
 
 	switch (prop_id) {
 	case PROP_DB:
-		g_value_set_object (value, player->priv->db);
+		g_value_set_object (value, header->priv->db);
 		break;
 	case PROP_ENTRY:
-		g_value_set_object (value, player->priv->entry);
+		g_value_set_object (value, header->priv->entry);
 		break;
 	case PROP_PLAYER:
-		g_value_set_object (value, player->priv->mmplayer);
+		g_value_set_object (value, header->priv->mmplayer);
 		break;
 	case PROP_TITLE:
-		g_value_set_string (value, player->priv->title);
+		g_value_set_string (value, header->priv->title);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -315,54 +314,54 @@ rb_header_get_property (GObject *object,
 RBHeader *
 rb_header_new (RBPlayer *mmplayer)
 {
-	RBHeader *player;
+	RBHeader *header;
 
-	player = RB_HEADER (g_object_new (RB_TYPE_HEADER, "player", mmplayer,
+	header = RB_HEADER (g_object_new (RB_TYPE_HEADER, "player", mmplayer,
 					  "title", NULL,
 					  "spacing", 6, NULL));
 
-	g_return_val_if_fail (player->priv != NULL, NULL);
+	g_return_val_if_fail (header->priv != NULL, NULL);
 
-	return player;
+	return header;
 }
 
 void
-rb_header_set_playing_entry (RBHeader *player, RhythmDBEntry *entry)
+rb_header_set_playing_entry (RBHeader *header, RhythmDBEntry *entry)
 {
-	g_object_set (G_OBJECT (player), "entry", entry, NULL);
+	g_object_set (G_OBJECT (header), "entry", entry, NULL);
 }
 
 void
-rb_header_set_title (RBHeader *player, const char *title)
+rb_header_set_title (RBHeader *header, const char *title)
 {
-	g_object_set (G_OBJECT (player), "title", title, NULL);
+	g_object_set (G_OBJECT (header), "title", title, NULL);
 }
 
 static long
-rb_header_get_duration (RBHeader *player)
+rb_header_get_duration (RBHeader *header)
 {
-	if (player->priv->entry) {
-		return rhythmdb_entry_get_ulong (player->priv->entry, RHYTHMDB_PROP_DURATION);
+	if (header->priv->entry) {
+		return rhythmdb_entry_get_ulong (header->priv->entry, RHYTHMDB_PROP_DURATION);
 	}
 	return -1;
 }
 
 void
-rb_header_sync (RBHeader *player)
+rb_header_sync (RBHeader *header)
 {
 	char *label_text;
 
-	rb_debug ("syncing with node = %p", player->priv->entry);
+	rb_debug ("syncing with node = %p", header->priv->entry);
 	
-	if (player->priv->entry != NULL) {
+	if (header->priv->entry != NULL) {
 		char *escaped_song;
-		const char *song = player->priv->title;
+		const char *song = header->priv->title;
 		const char *album;
 		const char *artist; 
-		gboolean have_duration = rb_header_get_duration (player) > 0;
+		gboolean have_duration = rb_header_get_duration (header) > 0;
 
-		album = rhythmdb_entry_get_string (player->priv->entry, RHYTHMDB_PROP_ALBUM);
-		artist = rhythmdb_entry_get_string (player->priv->entry, RHYTHMDB_PROP_ARTIST);
+		album = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ALBUM);
+		artist = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ARTIST);
 
 		escaped_song = g_markup_escape_text (song, -1);
 
@@ -383,75 +382,75 @@ rb_header_sync (RBHeader *player)
 		}
 
 		g_free (escaped_song);
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), label_text);
+		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
-		rb_header_set_show_timeline (player, have_duration);
+		rb_header_set_show_timeline (header, have_duration);
 		if (have_duration)
-			rb_header_sync_time (player);
+			rb_header_sync_time (header);
 	} else {
 		char *tmp;
 
 		rb_debug ("not playing");
 		label_text = SONG_MARKUP (_("Not Playing"));
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), label_text);
+		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
-		rb_header_set_show_timeline (player, FALSE);
+		rb_header_set_show_timeline (header, FALSE);
 
-		player->priv->slider_locked = TRUE;
-		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
-		player->priv->slider_locked = FALSE;
-		gtk_widget_set_sensitive (player->priv->scale, FALSE);
+		header->priv->slider_locked = TRUE;
+		gtk_adjustment_set_value (header->priv->adjustment, 0.0);
+		header->priv->slider_locked = FALSE;
+		gtk_widget_set_sensitive (header->priv->scale, FALSE);
 
-		tmp = rb_header_get_elapsed_string (player);
-		gtk_label_set_text (GTK_LABEL (player->priv->elapsed), tmp);
+		tmp = rb_header_get_elapsed_string (header);
+		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), tmp);
 		g_free (tmp);
 	}
 }
 
 void
-rb_header_set_show_position_slider (RBHeader *player,
+rb_header_set_show_position_slider (RBHeader *header,
 				    gboolean show)
 {
-	if (player->priv->scaleline_shown == show)
+	if (header->priv->scaleline_shown == show)
 		return;
 
-	player->priv->scaleline_shown = show;
+	header->priv->scaleline_shown = show;
 
 	if (show) {
-		gtk_widget_show_all (GTK_WIDGET (player->priv->scaleline));
-		rb_header_sync_time (player);
+		gtk_widget_show_all (GTK_WIDGET (header->priv->scaleline));
+		rb_header_sync_time (header);
 	} else {
-		gtk_widget_hide (GTK_WIDGET (player->priv->scaleline));
+		gtk_widget_hide (GTK_WIDGET (header->priv->scaleline));
 	}
 }
 
 static void
-rb_header_set_show_timeline (RBHeader *player,
+rb_header_set_show_timeline (RBHeader *header,
 			     gboolean show)
 {
-	gtk_widget_set_sensitive (player->priv->timeline, show);
-	gtk_widget_set_sensitive (player->priv->scaleline, show);
+	gtk_widget_set_sensitive (header->priv->timeline, show);
+	gtk_widget_set_sensitive (header->priv->scaleline, show);
 }
 
 gboolean
-rb_header_sync_time (RBHeader *player)
+rb_header_sync_time (RBHeader *header)
 {
 	int seconds;
 	long duration;
 
-	if (player->priv->mmplayer == NULL)
+	if (header->priv->mmplayer == NULL)
 		return TRUE;
 
-	if (player->priv->slider_dragging == TRUE) {
+	if (header->priv->slider_dragging == TRUE) {
 		rb_debug ("slider is dragging, not syncing");
 		return TRUE;
 	}
 
-	player->priv->state->duration = duration =
-		rb_header_get_duration (player);
-	seconds = player->priv->state->elapsed;
+	header->priv->state->duration = duration =
+		rb_header_get_duration (header);
+	seconds = header->priv->state->elapsed;
 
 	if (duration > -1) {
 		double progress = 0.0;
@@ -459,22 +458,22 @@ rb_header_sync_time (RBHeader *player)
 		if (seconds > 0)
 			progress = (double) (long) seconds;
 		else {
-			player->priv->adjustment->upper = duration;
-			g_signal_emit_by_name (G_OBJECT (player->priv->adjustment), "changed");
+			header->priv->adjustment->upper = duration;
+			g_signal_emit_by_name (G_OBJECT (header->priv->adjustment), "changed");
 		}
 
-		player->priv->slider_locked = TRUE;
-		gtk_adjustment_set_value (player->priv->adjustment, progress);
-		player->priv->slider_locked = FALSE;
-		gtk_widget_set_sensitive (player->priv->scale, TRUE);
+		header->priv->slider_locked = TRUE;
+		gtk_adjustment_set_value (header->priv->adjustment, progress);
+		header->priv->slider_locked = FALSE;
+		gtk_widget_set_sensitive (header->priv->scale, TRUE);
 	} else {
-		player->priv->slider_locked = TRUE;
-		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
-		player->priv->slider_locked = FALSE;
-		gtk_widget_set_sensitive (player->priv->scale, FALSE);
+		header->priv->slider_locked = TRUE;
+		gtk_adjustment_set_value (header->priv->adjustment, 0.0);
+		header->priv->slider_locked = FALSE;
+		gtk_widget_set_sensitive (header->priv->scale, FALSE);
 	}
 
-	rb_header_update_elapsed (player);
+	rb_header_update_elapsed (header);
 
 	return TRUE;
 }
@@ -482,29 +481,29 @@ rb_header_sync_time (RBHeader *player)
 static gboolean
 slider_press_callback (GtkWidget *widget,
 		       GdkEventButton *event,
-		       RBHeader *player)
+		       RBHeader *header)
 {
-	player->priv->slider_dragging = TRUE;
-	player->priv->latest_set_time = -1;
+	header->priv->slider_dragging = TRUE;
+	header->priv->latest_set_time = -1;
 	return FALSE;
 }
 
 static gboolean
-slider_moved_timeout (RBHeader *player)
+slider_moved_timeout (RBHeader *header)
 {
 	double progress;
 	long new;
 
 	GDK_THREADS_ENTER ();
 	
-	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (player->priv->scale)));
+	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (header->priv->scale)));
 	new = (long) (progress+0.5);
 	
 	rb_debug ("setting time to %ld", new);
-	rb_player_set_time (player->priv->mmplayer, new);
+	rb_player_set_time (header->priv->mmplayer, new);
 
-	player->priv->latest_set_time = new;
-	player->priv->slider_moved_timeout = 0;
+	header->priv->latest_set_time = new;
+	header->priv->slider_moved_timeout = 0;
 	
 	GDK_THREADS_LEAVE ();
 
@@ -514,12 +513,12 @@ slider_moved_timeout (RBHeader *player)
 static gboolean
 slider_moved_callback (GtkWidget *widget,
 		       GdkEventMotion *event,
-		       RBHeader *player)
+		       RBHeader *header)
 {
 	GtkAdjustment *adjustment;
 	double progress;
 
-	if (player->priv->slider_dragging == FALSE) {
+	if (header->priv->slider_dragging == FALSE) {
 		rb_debug ("slider is not dragging");
 		return FALSE;
 	}
@@ -527,17 +526,17 @@ slider_moved_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	player->priv->state->elapsed = (long) (progress+0.5);
+	header->priv->state->elapsed = (long) (progress+0.5);
 
-	rb_header_update_elapsed (player);
+	rb_header_update_elapsed (header);
 
-	if (player->priv->slider_moved_timeout != 0) {
+	if (header->priv->slider_moved_timeout != 0) {
 		rb_debug ("removing old timer");
-		g_source_remove (player->priv->slider_moved_timeout);
-		player->priv->slider_moved_timeout = 0;
+		g_source_remove (header->priv->slider_moved_timeout);
+		header->priv->slider_moved_timeout = 0;
 	}
-	player->priv->slider_moved_timeout =
-		g_timeout_add (40, (GSourceFunc) slider_moved_timeout, player);
+	header->priv->slider_moved_timeout =
+		g_timeout_add (40, (GSourceFunc) slider_moved_timeout, header);
 	
 	return FALSE;
 }
@@ -545,13 +544,13 @@ slider_moved_callback (GtkWidget *widget,
 static gboolean
 slider_release_callback (GtkWidget *widget,
 			 GdkEventButton *event,
-			 RBHeader *player)
+			 RBHeader *header)
 {
 	double progress;
 	long new;
 	GtkAdjustment *adjustment;
 
-	if (player->priv->slider_dragging == FALSE) {
+	if (header->priv->slider_dragging == FALSE) {
 		rb_debug ("slider is not dragging");
 		return FALSE;
 	}
@@ -561,32 +560,32 @@ slider_release_callback (GtkWidget *widget,
 	progress = gtk_adjustment_get_value (adjustment);
 	new = (long) (progress+0.5);
 
-	if (new != player->priv->latest_set_time) {
+	if (new != header->priv->latest_set_time) {
 		rb_debug ("setting time to %ld", new);
-		rb_player_set_time (player->priv->mmplayer, new);
+		rb_player_set_time (header->priv->mmplayer, new);
 	}
 
-	player->priv->slider_dragging = FALSE;
+	header->priv->slider_dragging = FALSE;
 
-	rb_header_sync_time (player);
+	rb_header_sync_time (header);
 
-	if (player->priv->slider_moved_timeout != 0) {
-		g_source_remove (player->priv->slider_moved_timeout);
-		player->priv->slider_moved_timeout = 0;
+	if (header->priv->slider_moved_timeout != 0) {
+		g_source_remove (header->priv->slider_moved_timeout);
+		header->priv->slider_moved_timeout = 0;
 	}
 
 	return FALSE;
 }
 
 static gboolean
-changed_idle_callback (RBHeader *player)
+changed_idle_callback (RBHeader *header)
 {
 
 	GDK_THREADS_ENTER ();
 
-	slider_release_callback (player->priv->scale, NULL, player);
+	slider_release_callback (header->priv->scale, NULL, header);
 
-	player->priv->value_changed_update_handler = 0;
+	header->priv->value_changed_update_handler = 0;
 	rb_debug ("in changed_idle_callback"); 
 
 	GDK_THREADS_LEAVE ();
@@ -596,34 +595,34 @@ changed_idle_callback (RBHeader *player)
 
 static void
 slider_changed_callback (GtkWidget *widget,
-		         RBHeader *player)
+		         RBHeader *header)
 {
-	if (player->priv->slider_dragging == FALSE &&
-	    player->priv->slider_locked == FALSE &&
-	    player->priv->value_changed_update_handler == 0) {
-		player->priv->slider_dragging = TRUE;
-		player->priv->value_changed_update_handler =
-			g_idle_add ((GSourceFunc) changed_idle_callback, player);
+	if (header->priv->slider_dragging == FALSE &&
+	    header->priv->slider_locked == FALSE &&
+	    header->priv->value_changed_update_handler == 0) {
+		header->priv->slider_dragging = TRUE;
+		header->priv->value_changed_update_handler =
+			g_idle_add ((GSourceFunc) changed_idle_callback, header);
 	}
 }
 
 char *
-rb_header_get_elapsed_string (RBHeader *player)
+rb_header_get_elapsed_string (RBHeader *header)
 {
 	int seconds = 0, minutes = 0, hours = 0, seconds2 = -1, minutes2 = -1, hours2 = -1;
 
-	if (player->priv->state->elapsed > 0) {
-		hours = player->priv->state->elapsed / (60 * 60);
-		minutes = (player->priv->state->elapsed - (hours * 60 * 60)) / 60;
-		seconds = player->priv->state->elapsed % 60;
+	if (header->priv->state->elapsed > 0) {
+		hours = header->priv->state->elapsed / (60 * 60);
+		minutes = (header->priv->state->elapsed - (hours * 60 * 60)) / 60;
+		seconds = header->priv->state->elapsed % 60;
 	}
 
 	/* use this if entry==NULL, so that it doesn't shift when you first start playback */
-	if (player->priv->entry == NULL || player->priv->state->duration > 0) {
-		if (player->priv->state->duration > 0) {
-			hours2 = player->priv->state->duration / (60 * 60);
-			minutes2 = (player->priv->state->duration - (hours2 * 60 * 60)) / 60;
-			seconds2 = player->priv->state->duration % 60;
+	if (header->priv->entry == NULL || header->priv->state->duration > 0) {
+		if (header->priv->state->duration > 0) {
+			hours2 = header->priv->state->duration / (60 * 60);
+			minutes2 = (header->priv->state->duration - (hours2 * 60 * 60)) / 60;
+			seconds2 = header->priv->state->duration % 60;
 		} else {
 			hours2 = minutes2 = seconds2 = 0;
 		}
@@ -638,7 +637,7 @@ rb_header_get_elapsed_string (RBHeader *player)
 							hours, minutes, seconds,
 							hours2, minutes2, seconds2);
 		} else {
-			int remaining = player->priv->state->duration - player->priv->state->elapsed;
+			int remaining = header->priv->state->duration - header->priv->state->elapsed;
 			int remaining_hours = remaining / (60 * 60);
 			int remaining_minutes = (remaining - (remaining_hours * 60 * 60)) / 60;
 			/* remaining could conceivably be negative. This would
@@ -663,17 +662,17 @@ rb_header_get_elapsed_string (RBHeader *player)
 }
 
 static void
-rb_header_update_elapsed (RBHeader *player)
+rb_header_update_elapsed (RBHeader *header)
 {
 	char *elapsed_text;
 
 	/* sanity check */
-	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
+	if ((header->priv->state->elapsed > header->priv->state->duration) || (header->priv->state->elapsed < 0))
 		return;
 
-	elapsed_text = rb_header_get_elapsed_string (player);
+	elapsed_text = rb_header_get_elapsed_string (header);
 
-	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
+	gtk_label_set_text (GTK_LABEL (header->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);
 }
 

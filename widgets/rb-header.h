@@ -55,27 +55,27 @@ GType		rb_header_get_type		(void);
 
 RBHeader *	rb_header_new			(RBPlayer *player);
 
-void		rb_header_set_playing_entry	(RBHeader *player,
+void		rb_header_set_playing_entry	(RBHeader *header,
 						 RhythmDBEntry *entry);
 
-void		rb_header_set_title		(RBHeader *player,
+void		rb_header_set_title		(RBHeader *header,
 						 const char *title);
 
-void		rb_header_set_show_artist_album	(RBHeader *player,
+void		rb_header_set_show_artist_album	(RBHeader *header,
 						 gboolean show);
 
-void		rb_header_set_show_position_slider (RBHeader *player,
+void		rb_header_set_show_position_slider (RBHeader *header,
                                                     gboolean show);
 
-void		rb_header_set_urldata		(RBHeader *player,
+void		rb_header_set_urldata		(RBHeader *header,
 						 const char *urltext,
 						 const char *urllink);
 
-void		rb_header_sync			(RBHeader *player);
+void		rb_header_sync			(RBHeader *header);
 
-gboolean	rb_header_sync_time		(RBHeader *player);
+gboolean	rb_header_sync_time		(RBHeader *header);
 
-char *		rb_header_get_elapsed_string	(RBHeader *player);
+char *		rb_header_get_elapsed_string	(RBHeader *header);
 
 G_END_DECLS
 
