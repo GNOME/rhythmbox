@@ -1,3 +1,22 @@
+2006-05-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-util.c: (rb_make_duration_string),
+	(rb_make_elapsed_time_string):
+	* lib/rb-util.h:
+	Add a function for formatting an elapsed time string.
+
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_sync_with_source),
+	(rb_shell_player_get_playing_time_string), (tick_cb):
+	Store elapsed time in the private data structure, and use the above
+	function.
+	
+	* widgets/rb-header.c:
+	* widgets/rb-header.h:
+	Make RBHeader use the RBShellPlayer object, rather than the RBPlayer
+	object, so everything has the same idea of the elapsed time.
+	Fixes #339693.
+
 2006-05-16  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rhythmdb.defs:

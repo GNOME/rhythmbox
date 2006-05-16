@@ -26,7 +26,7 @@
 #include <gtk/gtkhbox.h>
 
 #include "rhythmdb.h"
-#include "rb-player.h"
+#include "rb-shell-player.h"
 
 G_BEGIN_DECLS
 
@@ -53,7 +53,7 @@ typedef struct
 
 GType		rb_header_get_type		(void);
 
-RBHeader *	rb_header_new			(RBPlayer *player);
+RBHeader *	rb_header_new			(RBShellPlayer *header);
 
 void		rb_header_set_playing_entry	(RBHeader *header,
 						 RhythmDBEntry *entry);
@@ -61,15 +61,8 @@ void		rb_header_set_playing_entry	(RBHeader *header,
 void		rb_header_set_title		(RBHeader *header,
 						 const char *title);
 
-void		rb_header_set_show_artist_album	(RBHeader *header,
-						 gboolean show);
-
 void		rb_header_set_show_position_slider (RBHeader *header,
                                                     gboolean show);
-
-void		rb_header_set_urldata		(RBHeader *header,
-						 const char *urltext,
-						 const char *urllink);
 
 void		rb_header_sync			(RBHeader *header);
 

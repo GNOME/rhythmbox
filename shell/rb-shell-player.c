@@ -189,6 +189,7 @@ struct RBShellPlayerPrivate
 	char *song;
 	gboolean have_url;
 	char *url;
+	long elapsed;
 
 	RBPlayOrder *play_order;
 	RBPlayOrder *queue_play_order;
@@ -596,7 +597,7 @@ rb_shell_player_init (RBShellPlayer *player)
 					    (GConfClientNotifyFunc)gconf_play_order_changed,
 					    player);
 
-	player->priv->header_widget = rb_header_new (player->priv->mmplayer);
+	player->priv->header_widget = rb_header_new (player);
 	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
 	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
@@ -2033,7 +2034,6 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	const char *artist = NULL;	
 	char *title;
 	RhythmDBEntry *entry;
-	glong elapsed;
 
 	entry = rb_shell_player_get_playing_entry (player);
 	rb_debug ("playing source: %p, active entry: %p", player->priv->current_playing_source, entry);
@@ -2053,14 +2053,14 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	else
 		title = NULL;
 
-	elapsed = rb_player_get_time (player->priv->mmplayer);
+	player->priv->elapsed = rb_player_get_time (player->priv->mmplayer);
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED], 0,
-		       (guint) elapsed);
+		       (guint) player->priv->elapsed);
 
-	/* Sync the player */
+	/* Sync the header */
 	if (player->priv->song)
 		rb_header_set_title (player->priv->header_widget, title);
 	else
@@ -2294,7 +2294,9 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 char *
 rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 {
-	return rb_header_get_elapsed_string (player->priv->header_widget);
+	return rb_make_elapsed_time_string (player->priv->elapsed,
+					    rb_shell_player_get_playing_song_duration (player),
+					    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 }
 
 gboolean
@@ -2494,17 +2496,13 @@ tick_cb (RBPlayer *mmplayer, long elapsed, gpointer data)
 
 	GDK_THREADS_ENTER ();
 
-	rb_header_sync_time (player->priv->header_widget);
-
 	if (rb_player_playing (mmplayer)) {
-		static long last_elapsed = -1;
-		if (last_elapsed != elapsed) {
+		if (player->priv->elapsed != elapsed) {
+			player->priv->elapsed = elapsed;
 			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED],
 				       0, (guint) elapsed);
-			last_elapsed = elapsed;
 		}
 	}
-
 
 	GDK_THREADS_LEAVE ();
 }

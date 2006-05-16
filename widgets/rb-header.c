@@ -33,7 +33,9 @@
 #include "rb-header.h"
 #include "rb-debug.h"
 #include "rb-preferences.h"
+#include "rb-shell-player.h"
 #include "eel-gconf-extensions.h"
+#include "rb-util.h"
 
 static void rb_header_class_init (RBHeaderClass *klass);
 static void rb_header_init (RBHeader *header);
@@ -46,7 +48,6 @@ static void rb_header_get_property (GObject *object,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *pspec);
-static long rb_header_get_duration (RBHeader *header);
 static void rb_header_set_show_timeline (RBHeader *header,
 			                 gboolean show);
 static void rb_header_update_elapsed (RBHeader *header);
@@ -55,13 +56,7 @@ static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event,
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 
-static void rb_header_tick_cb (RBPlayer *mmplayer, long time, RBHeader *header);
-
-typedef struct
-{
-	long elapsed;
-	long duration;
-} RBHeaderState;
+static void rb_header_elapsed_changed_cb (RBShellPlayer *player, guint elapsed, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -70,8 +65,7 @@ struct RBHeaderPrivate
 
 	char *title;
 
-	RBPlayer *mmplayer;
-	gulong tick_id;
+	RBShellPlayer *shell_player;
 
 	GtkWidget *image;
 	GtkWidget *song;
@@ -89,20 +83,21 @@ struct RBHeaderPrivate
 	guint value_changed_update_handler;
 	GtkWidget *elapsed;
 
-	RBHeaderState *state;
+	long elapsed_time;
+	long duration;
 };
 
 enum
 {
 	PROP_0,
 	PROP_DB,
-	PROP_PLAYER,
+	PROP_SHELL_PLAYER,
 	PROP_ENTRY,
 	PROP_TITLE,
 };
 
-#define SONG_MARKUP(xSONG) g_strdup_printf ("<big><b>%s</b></big>", xSONG);
-#define SONG_MARKUP_ALBUM_ARTIST(xSONG, xALBUM, xARTIST) g_strdup_printf ("<big><b>%s</b></big> %s <i>%s</i> %s <i>%s</i>", xSONG, _("by"), xARTIST, _("from"), xALBUM);
+#define SONG_MARKUP(xSONG) g_markup_printf_escaped ("<big><b>%s</b></big>", xSONG);
+#define SONG_MARKUP_ALBUM_ARTIST(xSONG, xALBUM, xARTIST) g_markup_printf_escaped ("<big><b>%s</b></big> %s <i>%s</i> %s <i>%s</i>", xSONG, _("by"), xARTIST, _("from"), xALBUM);
 
 G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
@@ -132,12 +127,12 @@ rb_header_class_init (RBHeaderClass *klass)
 							       "RhythmDBEntry pointer",
 							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_PLAYER,
-					 g_param_spec_object ("player",
-							      "Player",
-							      "RBPlayer object",
-							      G_TYPE_OBJECT,
-							      G_PARAM_READWRITE));
+					 PROP_SHELL_PLAYER,
+					 g_param_spec_object ("shell-player",
+							      "shell player",
+							      "RBShellPlayer object",
+							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_TITLE,
 					 g_param_spec_string ("title",
@@ -164,12 +159,8 @@ rb_header_init (RBHeader *header)
 	 */
 	GtkWidget *hbox;
 	GtkWidget *vbox;
-	char *s;
 
-	header->priv = G_TYPE_INSTANCE_GET_PRIVATE (header, 
-						    RB_TYPE_HEADER,
-						    RBHeaderPrivate);
-	header->priv->state = g_new0 (RBHeaderState, 1);
+	header->priv = G_TYPE_INSTANCE_GET_PRIVATE (header, RB_TYPE_HEADER, RBHeaderPrivate);
 
 	gtk_box_set_spacing (GTK_BOX (header), 3);
 
@@ -191,10 +182,7 @@ rb_header_init (RBHeader *header)
 
 	/* construct the time display */
 	header->priv->timeline = gtk_hbox_new (FALSE, 3);
-
-	s = rb_header_get_elapsed_string (header);
-	header->priv->elapsed = gtk_label_new (s);
-	g_free (s);
+	header->priv->elapsed = gtk_label_new ("");
 
 	gtk_misc_set_padding (GTK_MISC (header->priv->elapsed), 2, 0);
 	gtk_box_pack_start (GTK_BOX (header->priv->timeline), header->priv->elapsed, FALSE, FALSE, 0);
@@ -228,7 +216,6 @@ rb_header_init (RBHeader *header)
 	gtk_scale_set_draw_value (GTK_SCALE (header->priv->scale), FALSE);
 	gtk_widget_set_size_request (header->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (header->priv->scaleline), header->priv->scale, TRUE, TRUE, 0);
-
 }
 
 static void
@@ -241,8 +228,6 @@ rb_header_finalize (GObject *object)
 
 	header = RB_HEADER (object);
 	g_return_if_fail (header->priv != NULL);
-
-	g_free (header->priv->state);
 
 	G_OBJECT_CLASS (rb_header_parent_class)->finalize (object);
 }
@@ -261,18 +246,19 @@ rb_header_set_property (GObject *object,
 		break;
 	case PROP_ENTRY:
 		header->priv->entry = g_value_get_pointer (value);
-		break;
-	case PROP_PLAYER:
-		if (header->priv->mmplayer) {
-			g_signal_handler_disconnect (header->priv->mmplayer,
-						     header->priv->tick_id);
-			header->priv->tick_id = 0;
+		if (header->priv->entry) {
+			header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
+									   RHYTHMDB_PROP_DURATION);
+		} else {
+			header->priv->duration = -1;
 		}
-		header->priv->mmplayer = g_value_get_object (value);
-		header->priv->tick_id = g_signal_connect (G_OBJECT (header->priv->mmplayer),
-							  "tick", 
-							  (GCallback) rb_header_tick_cb,
-							  header);
+		break;
+	case PROP_SHELL_PLAYER:
+		header->priv->shell_player = g_value_get_object (value);
+		g_signal_connect (G_OBJECT (header->priv->shell_player),
+				  "elapsed-changed", 
+				  (GCallback) rb_header_elapsed_changed_cb,
+				  header);
 		break;
 	case PROP_TITLE:
 		g_free (header->priv->title);
@@ -299,8 +285,8 @@ rb_header_get_property (GObject *object,
 	case PROP_ENTRY:
 		g_value_set_object (value, header->priv->entry);
 		break;
-	case PROP_PLAYER:
-		g_value_set_object (value, header->priv->mmplayer);
+	case PROP_SHELL_PLAYER:
+		g_value_set_object (value, header->priv->shell_player);
 		break;
 	case PROP_TITLE:
 		g_value_set_string (value, header->priv->title);
@@ -312,11 +298,11 @@ rb_header_get_property (GObject *object,
 }
 
 RBHeader *
-rb_header_new (RBPlayer *mmplayer)
+rb_header_new (RBShellPlayer *shell_player)
 {
 	RBHeader *header;
 
-	header = RB_HEADER (g_object_new (RB_TYPE_HEADER, "player", mmplayer,
+	header = RB_HEADER (g_object_new (RB_TYPE_HEADER, "shell-player", shell_player,
 					  "title", NULL,
 					  "spacing", 6, NULL));
 
@@ -337,51 +323,31 @@ rb_header_set_title (RBHeader *header, const char *title)
 	g_object_set (G_OBJECT (header), "title", title, NULL);
 }
 
-static long
-rb_header_get_duration (RBHeader *header)
-{
-	if (header->priv->entry) {
-		return rhythmdb_entry_get_ulong (header->priv->entry, RHYTHMDB_PROP_DURATION);
-	}
-	return -1;
-}
-
 void
 rb_header_sync (RBHeader *header)
 {
 	char *label_text;
 
-	rb_debug ("syncing with node = %p", header->priv->entry);
+	rb_debug ("syncing with entry = %p", header->priv->entry);
 	
 	if (header->priv->entry != NULL) {
-		char *escaped_song;
 		const char *song = header->priv->title;
 		const char *album;
 		const char *artist; 
-		gboolean have_duration = rb_header_get_duration (header) > 0;
+
+		gboolean have_duration = (header->priv->duration > 0);
 
 		album = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ALBUM);
 		artist = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ARTIST);
 
-		escaped_song = g_markup_escape_text (song, -1);
-
 		/* check for artist and album */
 		if ((album != NULL && artist != NULL)
 		    && (strlen (album) > 0 && strlen (artist) > 0)) {
-			char *escaped_album;
-			char *escaped_artist;
-
-			escaped_album = g_markup_escape_text (album, -1);
-			escaped_artist = g_markup_escape_text (artist, -1);
-			
-			label_text = SONG_MARKUP_ALBUM_ARTIST (escaped_song, escaped_album, escaped_artist);
-			g_free (escaped_album);
-			g_free (escaped_artist);
+			label_text = SONG_MARKUP_ALBUM_ARTIST (song, album, artist);
 		} else {
-			label_text = SONG_MARKUP (escaped_song);
+			label_text = SONG_MARKUP (song);
 		}
 
-		g_free (escaped_song);
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
@@ -403,7 +369,7 @@ rb_header_sync (RBHeader *header)
 		header->priv->slider_locked = FALSE;
 		gtk_widget_set_sensitive (header->priv->scale, FALSE);
 
-		tmp = rb_header_get_elapsed_string (header);
+		tmp = rb_make_elapsed_time_string (0, 0, !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), tmp);
 		g_free (tmp);
 	}
@@ -438,9 +404,8 @@ gboolean
 rb_header_sync_time (RBHeader *header)
 {
 	int seconds;
-	long duration;
 
-	if (header->priv->mmplayer == NULL)
+	if (header->priv->shell_player == NULL)
 		return TRUE;
 
 	if (header->priv->slider_dragging == TRUE) {
@@ -448,17 +413,15 @@ rb_header_sync_time (RBHeader *header)
 		return TRUE;
 	}
 
-	header->priv->state->duration = duration =
-		rb_header_get_duration (header);
-	seconds = header->priv->state->elapsed;
+	seconds = header->priv->elapsed_time;
 
-	if (duration > -1) {
+	if (header->priv->duration > -1) {
 		double progress = 0.0;
 
-		if (seconds > 0)
+		if (seconds > 0) {
 			progress = (double) (long) seconds;
-		else {
-			header->priv->adjustment->upper = duration;
+		} else {
+			header->priv->adjustment->upper = header->priv->duration;
 			g_signal_emit_by_name (G_OBJECT (header->priv->adjustment), "changed");
 		}
 
@@ -500,7 +463,7 @@ slider_moved_timeout (RBHeader *header)
 	new = (long) (progress+0.5);
 	
 	rb_debug ("setting time to %ld", new);
-	rb_player_set_time (header->priv->mmplayer, new);
+	rb_shell_player_set_playing_time (header->priv->shell_player, new, NULL);
 
 	header->priv->latest_set_time = new;
 	header->priv->slider_moved_timeout = 0;
@@ -526,7 +489,7 @@ slider_moved_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	header->priv->state->elapsed = (long) (progress+0.5);
+	header->priv->elapsed_time = (long) (progress+0.5);
 
 	rb_header_update_elapsed (header);
 
@@ -562,7 +525,7 @@ slider_release_callback (GtkWidget *widget,
 
 	if (new != header->priv->latest_set_time) {
 		rb_debug ("setting time to %ld", new);
-		rb_player_set_time (header->priv->mmplayer, new);
+		rb_shell_player_set_playing_time (header->priv->shell_player, new, NULL);
 	}
 
 	header->priv->slider_dragging = FALSE;
@@ -580,7 +543,6 @@ slider_release_callback (GtkWidget *widget,
 static gboolean
 changed_idle_callback (RBHeader *header)
 {
-
 	GDK_THREADS_ENTER ();
 
 	slider_release_callback (header->priv->scale, NULL, header);
@@ -606,86 +568,30 @@ slider_changed_callback (GtkWidget *widget,
 	}
 }
 
-char *
-rb_header_get_elapsed_string (RBHeader *header)
-{
-	int seconds = 0, minutes = 0, hours = 0, seconds2 = -1, minutes2 = -1, hours2 = -1;
-
-	if (header->priv->state->elapsed > 0) {
-		hours = header->priv->state->elapsed / (60 * 60);
-		minutes = (header->priv->state->elapsed - (hours * 60 * 60)) / 60;
-		seconds = header->priv->state->elapsed % 60;
-	}
-
-	/* use this if entry==NULL, so that it doesn't shift when you first start playback */
-	if (header->priv->entry == NULL || header->priv->state->duration > 0) {
-		if (header->priv->state->duration > 0) {
-			hours2 = header->priv->state->duration / (60 * 60);
-			minutes2 = (header->priv->state->duration - (hours2 * 60 * 60)) / 60;
-			seconds2 = header->priv->state->duration % 60;
-		} else {
-			hours2 = minutes2 = seconds2 = 0;
-		}
-
-		if (eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY)) {
-			if (hours == 0 && hours2 == 0)
-				return g_strdup_printf (_("%d:%02d of %d:%02d"),
-							minutes, seconds,
-							minutes2, seconds2);
-			else
-				return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d"),
-							hours, minutes, seconds,
-							hours2, minutes2, seconds2);
-		} else {
-			int remaining = header->priv->state->duration - header->priv->state->elapsed;
-			int remaining_hours = remaining / (60 * 60);
-			int remaining_minutes = (remaining - (remaining_hours * 60 * 60)) / 60;
-			/* remaining could conceivably be negative. This would
-			 * be a bug, but the elapsed time will display right
-			 * with the abs(). */
-			int remaining_seconds = abs (remaining % 60);
-			if (hours2 == 0)
-				return g_strdup_printf (_("%d:%02d of %d:%02d remaining"),
-							remaining_minutes, remaining_seconds,
-							minutes2, seconds2);
-			else
-				return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d remaining"),
-							remaining_hours, remaining_minutes, remaining_seconds,
-							hours2, minutes2, seconds2);
-		}
-	} else {
-		if (hours == 0)
-			return g_strdup_printf (_("%d:%02d"), minutes, seconds);
-		else
-			return g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
-	}
-}
-
 static void
 rb_header_update_elapsed (RBHeader *header)
 {
 	char *elapsed_text;
 
 	/* sanity check */
-	if ((header->priv->state->elapsed > header->priv->state->duration) || (header->priv->state->elapsed < 0))
+	if ((header->priv->elapsed_time > header->priv->duration) || (header->priv->elapsed_time < 0))
 		return;
 
-	elapsed_text = rb_header_get_elapsed_string (header);
+	elapsed_text = rb_make_elapsed_time_string (header->priv->elapsed_time,
+						    header->priv->duration,
+						    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 
 	gtk_label_set_text (GTK_LABEL (header->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);
 }
 
-static void rb_header_tick_cb (RBPlayer *mmplayer, long elapsed, RBHeader *header)
+
+static void 
+rb_header_elapsed_changed_cb (RBShellPlayer *player,
+			      guint elapsed,
+			      RBHeader *header)
 {
-	gboolean sync = (elapsed != header->priv->state->elapsed);
-	header->priv->state->elapsed = elapsed;
-	
-	if (sync) {
-		GDK_THREADS_ENTER ();
-
-		rb_header_sync_time (header);
-
-		GDK_THREADS_LEAVE ();
-	}
+	header->priv->elapsed_time = elapsed;
+	rb_header_sync_time (header);
 }
+

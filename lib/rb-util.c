@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
@@ -575,6 +576,55 @@ rb_make_duration_string (guint duration)
 		str = g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
 
 	return str;
+}
+
+char *
+rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remaining)
+{
+	int seconds = 0, minutes = 0, hours = 0;
+	int seconds2 = 0, minutes2 = 0, hours2 = 0;
+
+	if (duration == 0)
+		return rb_make_duration_string (elapsed);
+
+	if (duration > 0) {
+		hours2 = duration / (60 * 60);
+		minutes2 = (duration - (hours2 * 60 * 60)) / 60;
+		seconds2 = duration % 60;
+	}
+
+	if (elapsed > 0) {
+		hours = elapsed / (60 * 60);
+		minutes = (elapsed - (hours * 60 * 60)) / 60;
+		seconds = elapsed % 60;
+	}
+
+	if (show_remaining) {
+		int remaining = duration - elapsed;
+		int remaining_hours = remaining / (60 * 60);
+		int remaining_minutes = (remaining - (remaining_hours * 60 * 60)) / 60;
+		/* remaining could conceivably be negative. This would
+		 * be a bug, but the elapsed time will display right
+		 * with the abs(). */
+		int remaining_seconds = abs (remaining % 60);
+		if (hours2 == 0)
+			return g_strdup_printf (_("%d:%02d of %d:%02d remaining"),
+						remaining_minutes, remaining_seconds,
+						minutes2, seconds2);
+		else
+			return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d remaining"),
+						remaining_hours, remaining_minutes, remaining_seconds,
+						hours2, minutes2, seconds2);
+	} else {
+		if (hours == 0 && hours2 == 0)
+			return g_strdup_printf (_("%d:%02d of %d:%02d"),
+						minutes, seconds,
+						minutes2, seconds2);
+		else
+			return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d"),
+						hours, minutes, seconds,
+						hours2, minutes2, seconds2);
+	}
 }
 
 gboolean
