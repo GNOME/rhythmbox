@@ -41,5 +41,7 @@ plugin_in_files = ipod.rb-plugin.desktop.in
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
+EXTRA_DIST = $(plugin_in_files)
+
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
