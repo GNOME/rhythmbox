@@ -1,5 +1,22 @@
 2006-05-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* bindings/python/rhythmdb.defs:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_compute_status_normal):
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_compute_status_normal):
+	* rhythmdb/rhythmdb.h:
+	Change the various compute_status methods to accept a singular/plural
+	pair to use in the status string.
+	
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_cmd_new_podcast), (impl_get_status):
+	* sources/rb-source.c: (default_get_status):
+	Call entries 'songs' by default, and 'episodes' in the podcast source.
+	Fixes #340227.
+
+2006-05-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by:  Paul Drain
 
 	* plugins/ipod/Makefile.am: add $(plugin_in_files) to EXTRA_DIST.

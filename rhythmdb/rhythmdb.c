@@ -3969,13 +3969,17 @@ rhythmdb_is_busy (RhythmDB *db)
  * @n_songs: the number of tracks.
  * @duration: the total duration of the tracks.
  * @size: the total size of the tracks.
+ * @singular: singular form of the format string to use for entries (eg "%d song")
+ * @plural: plural form of the format string to use for entries (eg "%d songs")
  *
  * Creates a string containing the "status" information about a list of tracks.
+ * The singular and plural strings must be used in a direct ngettext call
+ * elsewhere in order for them to be marked for translation correctly.
  * 
  * Returns: the string, which should be freed with g_free.
  **/
 char *
-rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size)
+rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size, const char *singular, const char *plural)
 {
 	long days, hours, minutes, seconds;
 	char *songcount = NULL;
@@ -3986,7 +3990,7 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size)
 	const char *hourfmt;	
 	const char *dayfmt;
 
-	songcount = g_strdup_printf (ngettext ("%d song", "%d songs", n_songs), n_songs);
+	songcount = g_strdup_printf (ngettext (singular, plural, n_songs), n_songs);
 
 	days    = duration / (60 * 60 * 24); 
 	hours   = (duration / (60 * 60)) - (days * 24);

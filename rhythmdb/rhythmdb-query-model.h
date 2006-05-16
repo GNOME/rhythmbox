@@ -118,7 +118,9 @@ RhythmDBEntry *		rhythmdb_query_model_get_next_from_entry(RhythmDBQueryModel *mo
 								 RhythmDBEntry *entry);
 RhythmDBEntry *		rhythmdb_query_model_get_previous_from_entry(RhythmDBQueryModel *model,
 								     RhythmDBEntry *entry);
-char *			rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model);
+char *			rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model,
+								    const char *singular,
+								    const char *plural);
 
 void			rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 							     GCompareDataFunc sort_func,

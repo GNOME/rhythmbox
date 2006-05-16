@@ -524,6 +524,8 @@
     '("gint" "n_songs")
     '("glong" "duration")
     '("guint64" "size")
+    '("const-char*" "singular")
+    '("const-char*" "plural")
   )
 )
 
@@ -766,6 +768,10 @@
   (of-object "RhythmDBQueryModel")
   (c-name "rhythmdb_query_model_compute_status_normal")
   (return-type "char*")
+  (parameters
+    '("const-char*" "singular")
+    '("const-char*" "plural")
+  )
 )
 
 (define-method set_sort_order

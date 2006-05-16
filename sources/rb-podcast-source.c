@@ -50,7 +50,6 @@
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-playlist-manager.h"
 #include "rb-debug.h"
-#include "rb-statusbar.h"
 #include "eel-gconf-extensions.h"
 #include "rb-podcast-manager.h"
 #include "rb-static-playlist-source.h"
@@ -232,6 +231,10 @@ static gboolean impl_can_add_to_queue			(RBSource *source);
 static void impl_add_to_queue				(RBSource *source, RBSource *queue);
 static GList *impl_get_ui_actions			(RBSource *source);
 static GList *impl_get_search_actions			(RBSource *source);
+static void impl_get_status				(RBSource *source, 
+							 char **text, 
+							 char **progress_text, 
+							 float *progress);
 
 
 
@@ -365,6 +368,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_search = impl_search;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_song_properties = impl_song_properties;
+	source_class->impl_get_status = impl_get_status;
 	
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -1961,5 +1965,28 @@ rb_podcast_source_cmd_new_podcast (GtkAction *action,
 	dialog = rb_new_podcast_dialog_new (RB_PODCAST_MANAGER (object));
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
+}
+
+static void
+impl_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+{
+	RhythmDBQueryModel *query_model;
+
+	/* hack to get these strings marked for translation */
+	if (0) {
+		ngettext ("%d episode", "%d episodes", 0);
+	}
+
+	g_object_get (G_OBJECT (source), "query-model", &query_model, NULL);
+	if (query_model) {
+		*text = rhythmdb_query_model_compute_status_normal (query_model, 
+								    "%d episode", 
+								    "%d episodes");
+		if (rhythmdb_query_model_has_pending_changes (query_model))
+			*progress = -1.0f;
+		g_object_unref (G_OBJECT (query_model));
+	} else {
+		*text = g_strdup ("");
+	}
 }
 

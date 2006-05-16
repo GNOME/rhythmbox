@@ -380,7 +380,9 @@ void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
 
 gboolean	rhythmdb_is_busy			(RhythmDB *db);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
-							 guint64 size);
+							 guint64 size,
+							 const char *singular,
+							 const char *plural);
 
 
 RhythmDBEntryType rhythmdb_entry_register_type          (void);

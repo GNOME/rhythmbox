@@ -402,8 +402,14 @@ static void
 default_get_status (RBSource *source, char **text, char **progress_text, float *progress)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+	/* hack to get these strings marked for translation */
+	if (0) {
+		ngettext ("%d song", "%d songs", 0);
+	}
 	if (priv->query_model) {
-		*text = rhythmdb_query_model_compute_status_normal (priv->query_model);
+		*text = rhythmdb_query_model_compute_status_normal (priv->query_model, 
+								    "%d song", 
+								    "%d songs");
 		if (rhythmdb_query_model_has_pending_changes (priv->query_model))
 			*progress = -1.0f;
 	} else {

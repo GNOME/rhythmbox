@@ -1867,11 +1867,15 @@ rhythmdb_query_model_iter_parent (GtkTreeModel *tree_model,
 }
 
 char *
-rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model)
+rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model, 
+					    const char *singular, 
+					    const char *plural)
 {
 	return rhythmdb_compute_status_normal (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL),
 					       rhythmdb_query_model_get_duration (model),
-					       rhythmdb_query_model_get_size (model));
+					       rhythmdb_query_model_get_size (model),
+					       singular,
+					       plural);
 }
 
 static void
