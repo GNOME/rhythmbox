@@ -1,3 +1,11 @@
+2006-05-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c: (apply_updated_entry_sequence):
+	Generate reorder maps correctly.
+	* widgets/rb-entry-view.c: (rb_entry_view_rows_reordered_cb):
+	Scroll to the first entry from the old selection.
+	Fixes #322992.
+
 2006-05-15  William Jon McCann  <mccann@jhu.edu>
 
 	* data/ui/rhythmbox-ui.xml:

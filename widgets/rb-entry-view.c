@@ -1563,6 +1563,8 @@ rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 	GList *selected_rows;
 	GList *i;
 	gint model_size;
+	gboolean scrolled = FALSE;
+	
 	rb_debug ("rows reordered");
 
 	model_size = gtk_tree_model_iter_n_children (model, NULL);
@@ -1584,6 +1586,14 @@ rb_entry_view_rows_reordered_cb (GtkTreeModel *model,
 				if (order[newindex] == index) {
 					newpath = gtk_tree_path_new_from_indices (newindex, -1);
 					gtk_tree_selection_select_path (view->priv->selection, newpath);
+					if (!scrolled) {
+						GtkTreeViewColumn *col;
+						GtkTreeView *treeview = GTK_TREE_VIEW (view->priv->treeview);
+
+						col = gtk_tree_view_get_column (treeview, 0);
+						gtk_tree_view_scroll_to_cell (treeview, newpath, col, TRUE, 0.5, 0.0);
+						scrolled = TRUE;
+					}
 					gtk_tree_path_free (newpath);
 					break;
 				}

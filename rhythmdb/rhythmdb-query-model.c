@@ -1893,11 +1893,13 @@ apply_updated_entry_sequence (RhythmDBQueryModel *model, GSequence *new_entries)
 		GSequencePtr old_ptr;
 
 		old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-		reorder_map[i] = g_sequence_ptr_get_position (ptr);
+		reorder_map[i] = g_sequence_ptr_get_position (old_ptr);
 		g_hash_table_replace (model->priv->reverse_map, entry, ptr);
 
 		ptr = g_sequence_ptr_next (ptr);
 	}
+	g_sequence_free (model->priv->entries);
+	model->priv->entries = new_entries;
 
 	/* emit the re-order and clean up */
 	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
@@ -1908,8 +1910,6 @@ apply_updated_entry_sequence (RhythmDBQueryModel *model, GSequence *new_entries)
 
 	gtk_tree_path_free (path);
 	free (reorder_map);
-	g_sequence_free (model->priv->entries);
-	model->priv->entries = new_entries;
 }
 
 void
