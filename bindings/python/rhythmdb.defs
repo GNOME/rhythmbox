@@ -480,8 +480,6 @@
   (of-object "RhythmDB")
   (c-name "rhythmdb_query_parse")
   (return-type "RhythmDBQuery*")
-  (parameters
-  )
   (varargs #t)
 )
 
@@ -640,9 +638,9 @@
   (return-type "RhythmDBQueryModel*")
   (parameters
     '("RhythmDBQuery*" "query")
-    '("GCompareDataFunc" "sort_func")
-    '("gpointer" "sort_data")
-    '("gboolean" "sort_reverse")
+    '("GCompareDataFunc" "sort_func" (default "NULL"))
+    '("gpointer" "sort_data" (default "NULL"))
+    '("gboolean" "sort_reverse" (default "FALSE"))
   )
 )
 
@@ -780,8 +778,8 @@
   (return-type "none")
   (parameters
     '("GCompareDataFunc" "sort_func")
-    '("gpointer" "sort_data")
-    '("gboolean" "sort_reverse")
+    '("gpointer" "sort_data" (default "NULL"))
+    '("gboolean" "sort_reverse" (default "FALSE"))
   )
 )
 

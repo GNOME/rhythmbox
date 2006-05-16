@@ -299,13 +299,13 @@ _wrap_rhythmdb_query_model_new (PyGObject *self, PyObject *args, PyObject *kwarg
 {
 	static char *kwlist[] = {"query", "func", "reverse", NULL};
 	PyObject *py_query;
-	int reverse;
+	int reverse = 0;
 	PyRhythmDBQueryModelSortData *data;
 	RhythmDBQueryModel *query_model;
 
 	data = g_new0 (PyRhythmDBQueryModelSortData, 1);
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOi|O:RhythmDB.query_model_new", kwlist,
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|OiO:RhythmDB.query_model_new", kwlist,
 					 &py_query, &data->func, &reverse, &data->data)) {
 		g_free (data);
 		return NULL;
@@ -327,10 +327,15 @@ _wrap_rhythmdb_query_model_new (PyGObject *self, PyObject *args, PyObject *kwarg
 	Py_INCREF (data->func);
 	Py_INCREF (data->data);
 
-	query_model = rhythmdb_query_model_new (RHYTHMDB (self->obj), pyg_boxed_get (py_query, RhythmDBQuery),
-						(GCompareDataFunc) _rhythmdb_query_model_sort_func,
-						data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
-						(reverse != 0));
+	if (data->func) {
+		query_model = rhythmdb_query_model_new (RHYTHMDB (self->obj), pyg_boxed_get (py_query, RhythmDBQuery),
+							(GCompareDataFunc) _rhythmdb_query_model_sort_func,
+							data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
+							(reverse != 0));
+	} else {
+		query_model = rhythmdb_query_model_new (RHYTHMDB (self->obj), pyg_boxed_get (py_query, RhythmDBQuery),
+							NULL, NULL, NULL, FALSE);
+	}
 
 	return pygobject_new (G_OBJECT (query_model));
 }
@@ -341,13 +346,13 @@ static PyObject*
 _wrap_rhythmdb_query_model_set_sort_order (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
 	static char *kwlist[] = {"func", "reverse", NULL};
-	int reverse;
+	int reverse = 0;
 	PyRhythmDBQueryModelSortData *data;
 	RhythmDBQueryModel *query_model;
 
 	data = g_new0 (PyRhythmDBQueryModelSortData, 1);
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|O:RhythmDB.query_model_set_sort_order", kwlist,
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|iO:RhythmDB.query_model_set_sort_order", kwlist,
 					 &data->func, &reverse, &data->data)) {
 		g_free (data);
 		return NULL;
