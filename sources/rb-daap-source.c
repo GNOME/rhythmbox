@@ -651,14 +651,29 @@ connection_auth_cb (RBDAAPConnection *connection,
 	return password;
 }
 
+static gboolean
+update_connection_status (RBDAAPSource *source)
+{
+	GdkPixbuf *icon;
+
+	GDK_THREADS_ENTER ();
+	rb_source_notify_status_changed (RB_SOURCE (source));
+
+	icon = rb_daap_get_icon (source->priv->password_protected, TRUE);
+	g_object_set (source, "icon", icon, NULL);
+	if (icon != NULL) {
+		g_object_unref (icon);
+	}
+	GDK_THREADS_LEAVE ();
+	return TRUE;
+}
+
 static void
 connection_connecting_cb (RBDAAPConnection *connection,
 			  RBDAAPConnectionState state,
 			  float		    progress,
 			  RBDAAPSource     *source)
 {
-	GdkPixbuf *icon;
-
 	rb_debug ("DAAP connection status: %d/%f", state, progress);
 
 	switch (state) {
@@ -682,16 +697,7 @@ connection_connecting_cb (RBDAAPConnection *connection,
 
 	source->priv->connection_progress = progress;
 
-	GDK_THREADS_ENTER ();
-	rb_source_notify_status_changed (RB_SOURCE (source));
-
-	icon = rb_daap_get_icon (source->priv->password_protected, TRUE);
-	g_object_set (source, "icon", icon, NULL);
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
-	GDK_THREADS_LEAVE ();
-
+	g_idle_add ((GSourceFunc) update_connection_status, source);
 }
 
 static void

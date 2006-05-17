@@ -1,3 +1,10 @@
+2006-05-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-daap-source.c: (update_connection_status),
+	(connection_connecting_cb):
+	Update status in an idle handler so we don't rely on the gdk lock
+	being recursive (because it isn't any more).  Fixes #342047.
+
 2006-05-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* lib/rb-util.c: (rb_make_duration_string),
