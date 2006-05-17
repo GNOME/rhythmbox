@@ -657,6 +657,8 @@ connection_connecting_cb (RBDAAPConnection *connection,
 			  float		    progress,
 			  RBDAAPSource     *source)
 {
+	GdkPixbuf *icon;
+
 	rb_debug ("DAAP connection status: %d/%f", state, progress);
 
 	switch (state) {
