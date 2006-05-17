@@ -665,7 +665,7 @@ update_connection_status (RBDAAPSource *source)
 		g_object_unref (icon);
 	}
 	GDK_THREADS_LEAVE ();
-	return TRUE;
+	return FALSE;
 }
 
 static void
