@@ -1,5 +1,33 @@
 2006-05-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (rb_shell_class_init):
+	* shell/rb-shell.h:
+	* widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_construct_single), (rb_song_info_construct_multiple),
+	(rb_song_info_constructor), (rb_song_info_get_property),
+	(rb_song_info_append_page), (rb_song_info_backward_clicked_cb),
+	(rb_song_info_forward_clicked_cb):
+	* widgets/rb-song-info.h:
+	* data/glade/song-info-multiple.glade:
+	* lib/rb-marshal.list:
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	Allow plugins to add pages to the notebooks used in song info windows,
+	and to track the current song displayed in single-entry windows.
+	
+	* configure.ac:
+	* plugins/Makefile.am:
+	* plugins/lyrics/Loader.py:
+	* plugins/lyrics/Makefile.am:
+	* plugins/lyrics/lyrics.py:
+	* plugins/lyrics/lyrics.rb-plugin.desktop.in:
+	Add a plugin that retrieves song lyrics from leoslyrics.com, displayed
+	as a separate window (for the playing song) or as a page in the song
+	info window.  A few TODO items left, but this fixes #319320.
+
+2006-05-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	Patch by:  Roozbeh Pournader
 
 	* configure.ac:

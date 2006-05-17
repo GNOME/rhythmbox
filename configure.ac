@@ -896,6 +896,7 @@ plugins/sample/Makefile
 plugins/audioscrobbler/Makefile
 plugins/ipod/Makefile
 plugins/lirc/Makefile
+plugins/lyrics/Makefile
 plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile

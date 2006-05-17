@@ -25,6 +25,7 @@
 
 #include "rb-source.h"
 #include "rhythmdb.h"
+#include "rb-song-info.h"
 
 G_BEGIN_DECLS
 
@@ -74,6 +75,7 @@ typedef struct
 
 	/* signals */
 	void	(*visibility_changed)	(RBShell *shell, gboolean visible);
+	void	(*create_song_info)	(RBShell *shell, RBSongInfo *song_info, gboolean multi);
 } RBShellClass;
 
 GType		rb_shell_get_type	(void);

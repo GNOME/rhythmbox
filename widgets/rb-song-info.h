@@ -57,6 +57,8 @@ GType      rb_song_info_get_type (void);
 
 GtkWidget *rb_song_info_new      (RBSource *source, RBEntryView *entry_view);
 
+guint      rb_song_info_append_page (RBSongInfo *info, const char *title, GtkWidget *page);
+
 G_END_DECLS
 
 #endif /* __RB_SONG_INFO_H */

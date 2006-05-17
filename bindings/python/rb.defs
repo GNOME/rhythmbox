@@ -78,6 +78,13 @@
   (gtype-id "RB_TYPE_LIBRARY_BROWSER")
 )
 
+(define-object SongInfo
+  (in-module "RB")
+  (parent "GtkDialog")
+  (c-name "RBSongInfo")
+  (gtype-id "RB_TYPE_SONG_INFO")
+)
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -1540,3 +1547,32 @@
     '("gpointer" "userdata")
   )
 )
+
+
+;; From ../../widgets/rb-song-info.h
+
+(define-function rb_song_info_get_type
+  (c-name "rb_song_info_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_song_info_new
+  (c-name "rb_song_info_new")
+  (is-constructor-of "RBSongInfo")
+  (return-type "GtkWidget*")
+  (parameters
+    '("RBSource*" "source")
+    '("RBEntryView*" "entry_view")
+  )
+)
+
+(define-method append_page
+  (of-object "RBSongInfo")
+  (c-name "rb_song_info_append_page")
+  (return-type "guint")
+  (parameters
+    '("const-char*" "title")
+    '("GtkWidget*" "page")
+  )
+)
+

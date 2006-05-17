@@ -62,6 +62,7 @@ BINDING_HEADERS_SRCDIR_IN = \
 	widgets/rb-entry-view.h			\
 	widgets/rb-library-browser.h		\
 	widgets/rb-property-view.h		\
+	widgets/rb-song-info.h			\
 	$(NULL)
 
 BINDING_HEADERS_BUILDDIR_IN = 

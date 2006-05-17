@@ -90,6 +90,8 @@
 #include "rb-proxy-config.h"
 #include "rb-util.h"
 #include "rb-sourcelist-model.h"
+#include "rb-song-info.h"
+#include "rb-marshal.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
@@ -295,6 +297,7 @@ enum
 enum
 {
 	VISIBILITY_CHANGED,
+	CREATE_SONG_INFO,
 	LAST_SIGNAL
 };
 
@@ -646,6 +649,17 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+
+	rb_shell_signals[CREATE_SONG_INFO] =
+		g_signal_new ("create_song_info",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, create_song_info),
+			      NULL, NULL,
+			      rb_marshal_VOID__OBJECT_BOOLEAN,
+			      G_TYPE_NONE,
+			      2,
+			      RB_TYPE_SONG_INFO, G_TYPE_BOOLEAN);
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }

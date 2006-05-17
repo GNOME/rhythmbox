@@ -45,6 +45,7 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 #include "rb-source.h"
+#include "rb-shell.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -106,6 +107,7 @@ struct RBSongInfoPrivate
 	/* the dialog widgets */
 	GtkWidget   *backward;
 	GtkWidget   *forward;
+	GtkWidget   *notebook;
 
 	GtkWidget   *title;
 	GtkWidget   *artist;
@@ -144,7 +146,8 @@ enum
 {
 	PROP_0,
 	PROP_SOURCE,
-	PROP_ENTRY_VIEW
+	PROP_ENTRY_VIEW,
+	PROP_CURRENT_ENTRY
 };
 
 static guint rb_song_info_signals[LAST_SIGNAL] = { 0 };
@@ -177,6 +180,12 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 					                      "RBEntryView object",
 					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_CURRENT_ENTRY,
+					 g_param_spec_pointer ("current-entry",
+					                       "RhythmDBEntry",
+					                       "RhythmDBEntry object",
+					                       G_PARAM_READABLE));
 
 	object_class->finalize = rb_song_info_finalize;
 
@@ -256,6 +265,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	gtk_window_set_title (GTK_WINDOW (song_info), _("Song Properties"));
 
 	/* get the widgets from the XML */
+	song_info->priv->notebook      = glade_xml_get_widget (xml, "song_info_vbox");
 	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
 	song_info->priv->track_cur     = glade_xml_get_widget (xml, "song_info_track_cur");
 	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
@@ -301,6 +311,8 @@ rb_song_info_construct_multiple (RBSongInfo *song_info, GladeXML *xml,
 	gtk_window_set_title (GTK_WINDOW (song_info),
 			      _("Multiple Song Properties"));
 	gtk_widget_grab_focus (song_info->priv->artist);
+
+	song_info->priv->notebook = glade_xml_get_widget (xml, "song_info_notebook");
 }
 
 static void
@@ -325,6 +337,7 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	GList *selected_entries;
 	GList *tem;
 	gboolean editable = TRUE;
+	RBShell *shell;
 
 	klass = RB_SONG_INFO_CLASS (g_type_class_peek (RB_TYPE_SONG_INFO));
 
@@ -360,12 +373,11 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 				   glade_xml_get_widget (xml, "song_info_vbox"));
 	} else {
 		xml = rb_glade_xml_new ("song-info-multiple.glade",
-					"song_info_basic",
+					"song_info_notebook",
 					song_info);
 		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
-				   glade_xml_get_widget (xml, "song_info_basic"));
+				   glade_xml_get_widget (xml, "song_info_notebook"));
 	}
-		
 	
 	glade_xml_signal_autoconnect (xml);
 
@@ -431,6 +443,9 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 		rb_song_info_construct_multiple (song_info, xml, editable);
 		rb_song_info_populate_dialog_multiple (song_info);
 	}
+	g_object_get (G_OBJECT (song_info->priv->source), "shell", &shell, NULL);
+	g_signal_emit_by_name (G_OBJECT (shell), "create_song_info", song_info, (song_info->priv->current_entry == NULL));
+	g_object_unref (G_OBJECT (shell));
 
 	gtk_dialog_add_button (GTK_DIALOG (song_info),
 			       GTK_STOCK_CLOSE,
@@ -557,6 +572,9 @@ rb_song_info_get_property (GObject *object,
 	case PROP_ENTRY_VIEW:
 		g_value_set_object (value, song_info->priv->entry_view);
 		break;
+	case PROP_CURRENT_ENTRY:
+		g_value_set_pointer (value, song_info->priv->current_entry);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -584,6 +602,21 @@ rb_song_info_new (RBSource *source, RBEntryView *entry_view)
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
 	return GTK_WIDGET (song_info);
+}
+
+guint
+rb_song_info_append_page (RBSongInfo *info, const char *title, GtkWidget *page)
+{
+	GtkWidget *label;
+	guint page_num;
+
+	label = gtk_label_new (title);
+	page_num = gtk_notebook_append_page (GTK_NOTEBOOK (info->priv->notebook),
+					     page,
+					     label);
+	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (info->priv->notebook), TRUE);
+
+	return page_num;
 }
 
 typedef void (*RBSongInfoSelectionFunc)(RBSongInfo *info,
@@ -929,6 +962,7 @@ rb_song_info_backward_clicked_cb (GtkWidget *button,
 	rb_entry_view_scroll_to_entry (song_info->priv->entry_view, new_entry);
 
 	rb_song_info_populate_dialog (song_info);
+	g_object_notify (G_OBJECT (song_info), "current-entry");
 }
 
 static void
@@ -948,6 +982,7 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 	rb_entry_view_scroll_to_entry (song_info->priv->entry_view, new_entry);
 
 	rb_song_info_populate_dialog (song_info);
+	g_object_notify (G_OBJECT (song_info), "current-entry");
 }
 
 /*
