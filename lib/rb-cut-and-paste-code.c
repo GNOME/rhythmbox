@@ -2,6 +2,7 @@
  *
  *  arch-tag: File containing code cut and pasted from elsewhere
  *
+ *  Copyright (C) 2000 Eazel, Inc.
  *  Copyright (C) 2002 Jorn Baayen
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,6 +19,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
  *
+ *  Authors: John Sullivan <sullivan@eazel.com>
+ *           Jorn Baayen
  */
 
 #include <config.h>
@@ -80,6 +83,7 @@ eel_create_colorized_pixbuf (GdkPixbuf *src,
 /* Legal conversion specifiers, as specified in the C standard. */
 #define C_STANDARD_STRFTIME_CHARACTERS "aAbBcdHIjmMpSUwWxXyYZ"
 #define C_STANDARD_NUMERIC_STRFTIME_CHARACTERS "dHIjmMSUwWyY"
+#define SUS_EXTENDED_STRFTIME_MODIFIERS "EO"
 
 /**
  * eel_strdup_strftime:
@@ -109,10 +113,12 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 {
 	GString *string;
 	const char *remainder, *percent;
-	char code[3], buffer[512];
+	char code[4], buffer[512];
 	char *piece, *result, *converted;
 	size_t string_length;
 	gboolean strip_leading_zeros, turn_leading_zeros_to_spaces;
+	char modifier;
+	int i;
 
 	/* Format could be translated, and contain UTF-8 chars,
 	 * so convert to locale encoding which strftime uses */
@@ -158,6 +164,17 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 			turn_leading_zeros_to_spaces = FALSE;
 			break;
 		}
+
+		modifier = 0;
+		if (strchr (SUS_EXTENDED_STRFTIME_MODIFIERS, *remainder) != NULL) {
+			modifier = *remainder;
+			remainder++;
+
+			if (*remainder == 0) {
+				g_warning ("Unfinished %%%c modifier passed to eel_strdup_strftime", modifier);
+				break;
+			}
+		} 
 		
 		if (strchr (C_STANDARD_STRFTIME_CHARACTERS, *remainder) == NULL) {
 			g_warning ("eel_strdup_strftime does not support "
@@ -170,9 +187,15 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 		 * of 512 bytes, which is probably OK. There's no
 		 * limit on the total size of the result string.
 		 */
-		code[0] = '%';
-		code[1] = *remainder;
-		code[2] = '\0';
+		i = 0;
+		code[i++] = '%';
+		if (modifier != 0) {
+#ifdef HAVE_STRFTIME_EXTENSION
+			code[i++] = modifier;
+#endif
+		}
+		code[i++] = *remainder;
+		code[i++] = '\0';
 		string_length = strftime (buffer, sizeof (buffer),
 					  code, time_pieces);
 		if (string_length == 0) {

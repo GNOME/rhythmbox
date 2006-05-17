@@ -569,6 +569,21 @@ AC_PATH_PROG(GCONFTOOL, gconftool-2)
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
 
+AC_TRY_RUN([#include <time.h>
+                int main ()
+                {
+                  char buf[100];
+                  struct tm tm = {0};
+                  tm.tm_year = 99;
+                  if (strftime(buf, 100, "%EY", &tm) == 4 &&
+                      strcmp (buf, "1999")==0)
+                    return 0;
+                  return 1;
+                }
+            ],
+            AC_DEFINE(HAVE_STRFTIME_EXTENSION, 1, [Define if strftime supports %E and %O modifiers.])
+            )
+
 GETTEXT_PACKAGE=rhythmbox
 AC_SUBST(GETTEXT_PACKAGE)
 AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/po/LINGUAS'])
