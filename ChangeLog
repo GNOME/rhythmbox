@@ -1,3 +1,10 @@
+2006-05-17  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-playlist-source-recorder.c (get_song_description):
+	Reverse artist and title in song description.  This
+	is useful because at least the title will be visible
+	when there is limited space.
+
 2006-05-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* daapsharing/rb-daap-connection.c: (connection_get_password):

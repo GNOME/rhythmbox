@@ -668,7 +668,7 @@ get_song_description (RBRecorderSong *song)
         char *desc = NULL;
 
         if (song->artist && song->title)
-                desc = g_strdup_printf ("%s - %s", song->artist, song->title);
+                desc = g_strdup_printf ("%s - %s", song->title, song->artist);
         else if (song->title)
                 desc = g_strdup (song->title);
         else if (song->artist)
