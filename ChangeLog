@@ -1,5 +1,13 @@
 2006-05-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* daapsharing/rb-daap-connection.c: (connection_get_password):
+	Take gdk lock before emitting authenticate signal.
+	* sources/rb-daap-source.c: (connection_connecting_cb):
+	Get rid of the unnecessary idle handler (it's already called from one)
+	Fixes #342047 once more.
+
+2006-05-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: (rb_shell_class_init):
 	* shell/rb-shell.h:
 	* widgets/rb-song-info.c: (rb_song_info_class_init),

@@ -725,14 +725,15 @@ rb_daap_connection_init (RBDAAPConnection *connection)
 static char *
 connection_get_password (RBDAAPConnection *connection)
 {
-	char *password;
+	char *password = NULL;;
 
-	password = NULL;
+	GDK_THREADS_ENTER ();
 	g_signal_emit (connection,
 		       signals [AUTHENTICATE],
 		       0,
 		       connection->priv->name,
 		       &password);
+	GDK_THREADS_LEAVE ();
 
 	return password;
 }
