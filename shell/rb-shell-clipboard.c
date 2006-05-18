@@ -133,7 +133,7 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  N_("Move selection to the trash"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
 
-	{ "AddToQueue", GTK_STOCK_ADD, N_("Add _to Play Queue"), "<control>T",
+	{ "AddToQueue", GTK_STOCK_ADD, N_("Add _to Play Queue"), NULL,
 	  N_("Add the selected songs to the play queue"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_add_song_to_queue) },
 	{ "QueueDelete", GTK_STOCK_REMOVE, N_("Remove"), NULL,

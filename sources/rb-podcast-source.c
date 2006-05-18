@@ -286,7 +286,7 @@ struct RBPodcastSourcePrivate
 
 static GtkActionEntry rb_podcast_source_actions [] =
 {
-	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), NULL,
+	{ "MusicNewPodcast", GTK_STOCK_NEW, N_("_New Podcast Feed"), "<control>P",
 	  N_("Subscribe to a new Podcast Feed"),
 	  G_CALLBACK (rb_podcast_source_cmd_new_podcast) },
 
