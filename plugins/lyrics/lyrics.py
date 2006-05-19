@@ -74,6 +74,7 @@ class LyricWindow(gtk.Window):
 	(lyrics_view, buffer) = create_lyrics_view()
 	self.buffer = buffer
         bbox = gtk.HButtonBox()
+        bbox.set_layout(gtk.BUTTONBOX_END)
         bbox.pack_start(close)
         lyrics_view.pack_start(bbox, expand=False)
 
