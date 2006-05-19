@@ -1,8 +1,8 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*-
+ *
  * arch-tag: Implementation of GStreamer recorder backend
  *
- * Copyright (C) 2004-2005 William Jon McCann <mccann@jhu.edu>
+ * Copyright (C) 2004-2006 William Jon McCann <mccann@jhu.edu>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,7 +20,8 @@
  * Boston, MA 02110-1301  USA.
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -50,6 +51,10 @@
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
 #define nautilus_burn_drive_ref nautilus_burn_drive_copy
+#endif
+
+#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
 #endif
 
 static void rb_recorder_class_init (RBRecorderClass *klass);
@@ -123,8 +128,9 @@ GQuark
 rb_recorder_error_quark (void)
 {
         static GQuark quark = 0;
-        if (!quark)
+        if (! quark) {
                 quark = g_quark_from_static_string ("rb_recorder_error");
+        }
 
         return quark;
 }
@@ -223,8 +229,9 @@ rb_recorder_get_default_drive (void)
 
         drives = nautilus_burn_drive_get_list (TRUE, FALSE);
 
-        if (drives)
+        if (drives) {
                 drive = nautilus_burn_drive_ref ((NautilusBurnDrive*) drives->data);
+        }
 
         g_list_foreach (drives, (GFunc)nautilus_burn_drive_unref, NULL);
         g_list_free (drives);
@@ -264,8 +271,9 @@ rb_recorder_gst_free_pipeline (RBRecorder *recorder)
 {
         rb_debug ("Freeing rb_recorder pipeline");
 
-        if (recorder->priv->pipeline == NULL)
+        if (recorder->priv->pipeline == NULL) {
                 return;
+        }
 
         if (recorder->priv->tick_timeout_id > 0) {
                 g_source_remove (recorder->priv->tick_timeout_id);
@@ -322,8 +330,9 @@ add_track (RBRecorder *recorder,
 
         track->type = NAUTILUS_BURN_RECORDER_TRACK_TYPE_AUDIO;
         track->contents.audio.filename = filename;
-        if (cdtext)
+        if (cdtext) {
                 track->contents.audio.cdtext = g_strdup (cdtext);
+        }
 
         recorder->priv->tracks = g_list_append (recorder->priv->tracks, track);
 
@@ -337,8 +346,9 @@ eos_cb (GstElement *element,
 {
         rb_debug ("EOS");
 
-        if (recorder->priv->pipeline)
+        if (recorder->priv->pipeline) {
                 gst_element_set_state (recorder->priv->pipeline, GST_STATE_NULL);
+        }
 
         g_signal_emit (G_OBJECT (recorder), rb_recorder_signals [EOS], 0);
 }
@@ -352,8 +362,9 @@ error_signal_idle (RBRecorderSignal *signal)
                        signal->error);
 
         /* close if not already closing */
-        if (signal->object->priv->src_uri != NULL)
+        if (signal->object->priv->src_uri != NULL) {
                 rb_recorder_close (signal->object, NULL);
+        }
 
         g_object_unref (signal->object);
         g_error_free (signal->error);
@@ -406,8 +417,9 @@ rb_recorder_gst_signal_error (RBRecorder *recorder,
 		       error);
 
 	/* close if not already closing */
-	if (recorder->priv->src_uri != NULL)
+	if (recorder->priv->src_uri != NULL) {
 		rb_recorder_close (recorder, NULL);
+        }
 
 	g_object_unref (recorder);
 	g_error_free (error);
@@ -470,15 +482,16 @@ rb_recorder_new_pad_cb (GstElement *decodebin,
 	/* Only link audio. */
 	caps = gst_pad_get_caps (pad);
 	str = gst_caps_get_structure (caps, 0);
-	if (!g_strrstr (gst_structure_get_name (str), "audio")) {
+	if (! g_strrstr (gst_structure_get_name (str), "audio")) {
 		gst_caps_unref (caps);
 		return;
 	}
 
 	gst_caps_unref (caps);
 #ifdef HAVE_GSTREAMER_0_10
-	if (gst_pad_link (pad, audio_pad))
+	if (gst_pad_link (pad, audio_pad)) {
 		recorder->priv->got_audio_pad = TRUE;
+        }
 #endif
 }
 
@@ -509,7 +522,7 @@ rb_recorder_construct (RBRecorder *recorder,
          */
 
         recorder->priv->pipeline = gst_pipeline_new ("pipeline");
-        if (!recorder->priv->pipeline) {
+        if (! recorder->priv->pipeline) {
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
@@ -649,8 +662,10 @@ recorder_track_free (NautilusBurnRecorderTrack *track)
                                               ext - track->contents.audio.filename);
 
                 if (g_file_test (track->contents.audio.filename, G_FILE_TEST_EXISTS)
-                    && unlink (track->contents.audio.filename) != 0)
+                    && unlink (track->contents.audio.filename) != 0) {
                         g_warning (_("Unable to unlink '%s'"), track->contents.audio.filename);
+                }
+
                 if (lockfile) {
                         /* remove lockfile created by mkstemp */
                         if (unlink (lockfile) != 0)
@@ -670,8 +685,9 @@ rb_recorder_finalize (GObject *object)
 
         rb_recorder_close (recorder, NULL);
 
-        if (recorder->priv->recorder)
+        if (recorder->priv->recorder != NULL) {
                 nautilus_burn_recorder_cancel (recorder->priv->recorder, FALSE);
+        }
 
         g_list_foreach (recorder->priv->tracks,
                         (GFunc)recorder_track_free,
@@ -764,10 +780,11 @@ tick_timeout_cb (RBRecorder *recorder)
 
         rate = (double)(position - recorder->priv->start_pos) / elapsed;
 
-        if (rate >= 1)
+        if (rate >= 1) {
                 secs = ceil ((total - position) / rate);
-        else
+        } else {
                 secs = -1;
+        }
 
         if (fraction != recorder->priv->progress) {
                 recorder->priv->progress = fraction;
@@ -868,8 +885,9 @@ rb_recorder_close (RBRecorder *recorder,
         g_free (recorder->priv->dest_file);
         recorder->priv->dest_file = NULL;
 
-        if (recorder->priv->pipeline == NULL)
+        if (recorder->priv->pipeline == NULL) {
                 return;
+        }
 
         rb_recorder_gst_free_pipeline (recorder);
 }
@@ -932,8 +950,9 @@ rb_recorder_open (RBRecorder   *recorder,
         }
 
         rb_recorder_construct (recorder, src_uri, error);
-        if (error && *error)
+        if (error && *error) {
                 return;
+        }
                 
 #ifdef HAVE_GSTREAMER_0_8
         if (recorder->priv->idle_id > 0) {
@@ -963,7 +982,7 @@ rb_recorder_open (RBRecorder   *recorder,
 
         add_track (recorder, cdtext);
 
-        if (!rb_recorder_sync_pipeline (recorder, error)) {
+        if (! rb_recorder_sync_pipeline (recorder, error)) {
                 rb_recorder_close (recorder, NULL);
         }
 }
@@ -998,8 +1017,9 @@ rb_recorder_pause (RBRecorder *recorder,
         g_return_if_fail (RB_IS_RECORDER (recorder));
         g_return_if_fail (recorder->priv != NULL);
 
-        if (!recorder->priv->playing)
+        if (! recorder->priv->playing) {
                 return;
+        }
 
         recorder->priv->playing = FALSE;
 
@@ -1017,8 +1037,9 @@ rb_recorder_get_device (RBRecorder  *recorder,
         g_return_val_if_fail (recorder != NULL, NULL);
         g_return_val_if_fail (RB_IS_RECORDER (recorder), NULL);
 
-        if (error)
+        if (error) {
                 *error = NULL;
+        }
 
         drive = recorder->priv->drive;
 
@@ -1045,8 +1066,9 @@ rb_recorder_set_device (RBRecorder  *recorder,
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
         g_return_val_if_fail (device != NULL, FALSE);
 
-        if (error)
+        if (error) {
                 *error = NULL;
+        }
 
         if (recorder->priv->drive) {
                 nautilus_burn_drive_unref (recorder->priv->drive);
@@ -1251,7 +1273,12 @@ rb_recorder_get_media_length (RBRecorder *recorder,
                 return -1;
         }
 
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+        size = nautilus_burn_drive_get_media_capacity (recorder->priv->drive);
+#else
         size = nautilus_burn_drive_get_media_size (recorder->priv->drive);
+#endif
+
         if (size > 0) {
 #ifdef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
                 secs = NAUTILUS_BURN_DRIVE_SIZE_TO_TIME (size);
@@ -1373,8 +1400,9 @@ get_tracks_length (RBRecorder *recorder,
         GList *l;
         gint64 total = 0;
 
-        if (!recorder->priv->tracks)
+        if (! recorder->priv->tracks) {
                 return -1;
+        }
 
         for (l = recorder->priv->tracks; l; l = l->next) {
                 NautilusBurnRecorderTrack *track = l->data;

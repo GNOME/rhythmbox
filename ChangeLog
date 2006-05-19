@@ -1,5 +1,17 @@
 2006-05-19  William Jon McCann  <mccann@jhu.edu>
 
+	* player/rb-recorder-gst.c: (rb_recorder_error_quark),
+	(rb_recorder_get_default_drive), (rb_recorder_gst_free_pipeline),
+	(add_track), (eos_cb), (error_signal_idle),
+	(rb_recorder_gst_signal_error), (rb_recorder_new_pad_cb),
+	(rb_recorder_construct), (recorder_track_free),
+	(rb_recorder_finalize):
+	* sources/rb-playlist-source-recorder.c:
+	Support libnautilus-burn size -> capacity API change.  Add
+	some braces to blocks.
+
+2006-05-19  William Jon McCann  <mccann@jhu.edu>
+
 	* metadata/sj-metadata-musicbrainz.c:
 	(sj_metadata_musicbrainz_instance_init), (get_rdf), (lookup_cd):
 	Sync with sound-juicer in CVS.  Fixes #342177
