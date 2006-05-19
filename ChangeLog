@@ -1,5 +1,13 @@
 2006-05-19  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Hendrik Richter  <hendi@gnome-de.org>
+
+	* shell/rb-shell.c: (rb_shell_cmd_about): change the separator in
+	"translator_credits" to a hyphen, so it doesn't cause problems for
+	tools that check access keys. Fixes bug 341832.
+
+2006-05-19  James Livingston  <doclivingston@gmail.com>
+
 	* po/POTFILES.in: remove references to files that don't exist any more
 	(fixes make distcheck).
 

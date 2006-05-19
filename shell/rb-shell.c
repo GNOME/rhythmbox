@@ -2141,7 +2141,7 @@ rb_shell_cmd_about (GtkAction *action,
 		NULL
 	};
 
-	const char *translator_credits = _("translator_credits");
+	const char *translator_credits = _("translator-credits");
 
 	const char *license[] = {
 		N_("Rhythmbox is free software; you can redistribute it and/or modify\n"
@@ -2183,7 +2183,7 @@ rb_shell_cmd_about (GtkAction *action,
 			       "comments", comment->str,
 			       "authors", (const char **) authors,
 			       "documenters", (const char **) documenters,
-			       "translator-credits", strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
+			       "translator-credits", strcmp (translator_credits, "translator-credits") != 0 ? translator_credits : NULL,
 			       "logo", pixbuf,
 			       NULL);
 	if (pixbuf)
