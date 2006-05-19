@@ -18,7 +18,10 @@
  * Boston, MA 02110-1301  USA.
  */
 
+#include "config.h"
+
 #include <string.h>
+#include <stdio.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <glib/gerror.h>
@@ -30,15 +33,12 @@
 #include <musicbrainz/queries.h>
 #include <musicbrainz/mb_c.h>
 #include <nautilus-burn-drive.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
 #include "sj-error.h"
-
-#define GCONF_MUSICBRAINZ_SERVER "/apps/sound-juicer" "/musicbrainz_server"
 
 struct SjMetadataMusicbrainzPrivate {
   GError *construct_error;
@@ -58,6 +58,7 @@ static void mb_set_proxy_port (SjMetadata *metadata, const int port);
 static void mb_list_albums (SjMetadata *metadata, GError **error);
 static char *mb_get_submit_url (SjMetadata *metadata);
 
+#define GCONF_MUSICBRAINZ_SERVER "/apps/sound-juicer/musicbrainz_server"
 #define GCONF_PROXY_USE_PROXY "/system/http_proxy/use_http_proxy"
 #define GCONF_PROXY_HOST "/system/http_proxy/host"
 #define GCONF_PROXY_PORT "/system/http_proxy/port"
@@ -130,9 +131,7 @@ sj_metadata_musicbrainz_instance_init (GTypeInstance *instance, gpointer g_class
 
   g_object_unref (gconf_client);
 
-  //mb_SetDepth (self->priv->mb, 1);
-
-  if (g_getenv("MUSICBRAINZ_DEBUG")) {
+  if (g_getenv ("MUSICBRAINZ_DEBUG")) {
     mb_SetDebug (self->priv->mb, TRUE);
   }
 }
@@ -420,12 +419,13 @@ get_rdf (SjMetadata *metadata)
 {
   SjMetadataMusicbrainzPrivate *priv;
   char data[256];
-  char *cdindex, *cachepath;
+  char *cdindex = NULL, *cachepath = NULL;
 
   g_assert (metadata != NULL);
 
   priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
 
+#if WITH_CACHE
   /* Get the Table of Contents */
   if (!mb_Query (priv->mb, MBQ_GetCDTOC)) {
     mb_GetQueryError (priv->mb, data, sizeof (data));
@@ -442,9 +442,13 @@ get_rdf (SjMetadata *metadata)
   cdindex = g_strdup (data);
 
   cachepath = g_build_filename (g_get_home_dir (), ".gnome2", "sound-juicer", "cache", cdindex, NULL);
-  
+#endif
+
   if (!get_cached_rdf (priv->mb, cachepath)) {
-    if (!mb_QueryWithArgs (priv->mb, MBQ_GetCDInfoFromCDIndexId, (char*[]) {cdindex, NULL})) {
+    /* Don't re-use the CD Index as that doesn't send enough data to the server.
+       By doing this we also pass track lengths, which can be proxied to FreeDB
+       if required. */
+    if (!mb_Query (priv->mb, MBQ_GetCDInfo)) {
       mb_GetQueryError (priv->mb, data, sizeof (data));
       g_print (_("This CD could not be queried: %s\n"), data);
       goto done;
@@ -521,7 +525,6 @@ lookup_cd (SjMetadata *metadata)
       album->artist_id = g_strdup (data);
       if (g_ascii_strncasecmp (MBI_VARIOUS_ARTIST_ID, data, 64) == 0) {
         album->artist = g_strdup (_("Various"));
-        album->artist_sortname = g_strdup (album->artist);
       } else {
         if (data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistName, data, sizeof (data), 1)) {
           album->artist = g_strdup (data);
@@ -530,8 +533,6 @@ lookup_cd (SjMetadata *metadata)
         }
         if (data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistSortName, data, sizeof (data), 1)) {
           album->artist_sortname = g_strdup (data);
-        } else {
-          album->artist_sortname = g_strdup (album->artist);
         }
       }
     }
@@ -614,7 +615,7 @@ lookup_cd (SjMetadata *metadata)
 
     albums = g_list_append (albums, album);
 
-    mb_Select (priv->mb, MBS_Back);
+    mb_Select (priv->mb, MBS_Rewind);
   }
 
   /* For each album, we need to insert the duration data if necessary

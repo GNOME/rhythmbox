@@ -1,3 +1,13 @@
+2006-05-19  William Jon McCann  <mccann@jhu.edu>
+
+	* metadata/sj-metadata-musicbrainz.c:
+	(sj_metadata_musicbrainz_instance_init), (get_rdf), (lookup_cd):
+	Sync with sound-juicer in CVS.  Fixes #342177
+	* sources/rb-audiocd-source.c: Don't declare variables
+	in the middle of a block (c99ism).  Fix order of #includes.
+	Use gi18n.h.  Don't include rhythmdb.h twice.  Declare
+	one variable per line.  Update copyright date.
+
 2006-05-19  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Hendrik Richter  <hendi@gnome-de.org>

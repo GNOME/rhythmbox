@@ -1,7 +1,8 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of audiocd source object (based of the ipod source)
  *
- *  Copyright (C) 2005 James Livingston  <jrl@ids.org.au>
+ *  Copyright (C) 2005-2006 James Livingston  <jrl@ids.org.au>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,24 +26,24 @@
  *    * handle cases where MusicBrainz returns multiple albums
  */
 
-#include <config.h>
+#include "config.h"
 
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkicontheme.h>
 #include <string.h>
-#include "rhythmdb.h"
-#include <libgnome/gnome-i18n.h>
+#include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
 #include <gst/gst.h>
 #include <totem-disc.h>
+
+#include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
 #include "rb-audiocd-source.h"
 #include "rb-util.h"
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rhythmdb.h"
+
 #ifdef HAVE_MUSICBRAINZ
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
@@ -66,7 +67,9 @@ typedef struct
 	gchar *device_path;
 	GList *tracks;
 
-	GstElement *pipeline, *cdda, *fakesink;
+	GstElement *pipeline;
+	GstElement *cdda;
+	GstElement *fakesink;
 	
 #ifdef HAVE_MUSICBRAINZ
 	SjMetadata *metadata;
@@ -131,7 +134,8 @@ rb_audiocd_source_dispose (GObject *object)
 
 
 static GObject *
-rb_audiocd_source_constructor (GType type, guint n_construct_properties,
+rb_audiocd_source_constructor (GType type,
+			       guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
 	RBAudioCdSource *source; 
@@ -153,7 +157,8 @@ rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 }
 
 RBRemovableMediaSource *
-rb_audiocd_source_new (RBShell *shell, GnomeVFSVolume *volume)
+rb_audiocd_source_new (RBShell *shell,
+		       GnomeVFSVolume *volume)
 {
 	char *device_path;
 	GObject *source;
@@ -180,8 +185,11 @@ rb_audiocd_source_new (RBShell *shell, GnomeVFSVolume *volume)
 }
 
 static void 
-entry_set_string_prop (RhythmDB *db, RhythmDBEntry *entry, gboolean is_inserted,
-		       RhythmDBPropType propid, const char *str)
+entry_set_string_prop (RhythmDB *db,
+		       RhythmDBEntry *entry,
+		       gboolean is_inserted,
+		       RhythmDBPropType propid,
+		       const char *str)
 {
 	GValue value = {0,};
 
@@ -202,8 +210,10 @@ entry_set_string_prop (RhythmDB *db, RhythmDBEntry *entry, gboolean is_inserted,
 	g_value_unset (&value);
 }
 
-static RhythmDBEntry*
-rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint track_number)
+static RhythmDBEntry *
+rb_audiocd_create_track_entry (RBAudioCdSource *source,
+			       RhythmDB *db,
+			       guint track_number)
 {
 	RhythmDBEntry *entry;
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
@@ -285,7 +295,8 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source, RhythmDB *db, guint trac
 }
 
 static gboolean
-rb_audiocd_get_cd_info (RBAudioCdSource *source, gint64 *num_tracks)
+rb_audiocd_get_cd_info (RBAudioCdSource *source,
+			gint64 *num_tracks)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	GstFormat fmt = gst_format_get_by_nick ("track");
@@ -305,7 +316,8 @@ rb_audiocd_get_cd_info (RBAudioCdSource *source, gint64 *num_tracks)
 }
 
 static gboolean
-rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
+rb_audiocd_scan_songs (RBAudioCdSource *source,
+		       RhythmDB *db)
 {
 	gint64 i, num_tracks;
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
@@ -332,8 +344,7 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 	}
 #endif
 
-	if (ok && !rb_audiocd_get_cd_info (source, &num_tracks))
-	{
+	if (ok && !rb_audiocd_get_cd_info (source, &num_tracks)) {
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
 					_("Rhythmbox couldn't read the CD information."));
 		ok = FALSE;
@@ -365,7 +376,10 @@ rb_audiocd_scan_songs (RBAudioCdSource *source, RhythmDB *db)
 
 #ifdef HAVE_MUSICBRAINZ
 static void
-metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource *source)
+metadata_cb (SjMetadata *metadata,
+	     GList *albums,
+	     GError *error,
+	     RBAudioCdSource *source)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	GList *cd_track = priv->tracks;
@@ -395,8 +409,9 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 	g_value_set_boolean (&true_value, TRUE);
 
 	/*while (albums) {*/
+	{
 		AlbumDetails *album;
-		album = (AlbumDetails*)albums->data;
+		album = (AlbumDetails *)albums->data;
 
 		g_object_set (G_OBJECT (source), "name", album->title, NULL);
 
@@ -404,6 +419,8 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 			TrackDetails *track = (TrackDetails*)album->tracks->data;
 			RhythmDBEntry *entry = cd_track->data;
 			GValue value = {0, };
+
+			rb_debug ("storing metadata for %s - %s - %s", track->artist, album->title, track->title);
 
 			/* record track info in entry*/
 			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
@@ -444,8 +461,8 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 			cd_track = g_list_next (cd_track);
 		}
 
-		/*albums = g_list_next (albums);
-	}*/
+		/*albums = g_list_next (albums);*/
+	}
 
 	g_object_unref (metadata);
 	priv->metadata = NULL;
@@ -453,7 +470,10 @@ metadata_cb (SjMetadata *metadata, GList *albums, GError *error, RBAudioCdSource
 }
 
 static void
-metadata_cancelled_cb (SjMetadata *metadata, GList *albums, GError *error, gpointer old_source)
+metadata_cancelled_cb (SjMetadata *metadata,
+		       GList *albums,
+		       GError *error,
+		       gpointer old_source)
 {
 	/* NOTE: the source may have been finalised, and so should NOT be used*/
 	g_object_unref (metadata);
@@ -461,12 +481,13 @@ metadata_cancelled_cb (SjMetadata *metadata, GList *albums, GError *error, gpoin
 #endif
 
 static void
-rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db)
+rb_audiocd_load_metadata (RBAudioCdSource *source,
+			  RhythmDB *db)
 {
 #ifdef HAVE_MUSICBRAINZ
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 
-	priv->metadata = (SjMetadata*)sj_metadata_musicbrainz_new();
+	priv->metadata = (SjMetadata*)sj_metadata_musicbrainz_new ();
 	sj_metadata_set_cdrom (priv->metadata, priv->device_path);
 
 	g_signal_connect (G_OBJECT (priv->metadata), "metadata",
@@ -598,7 +619,7 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-static GList*
+static GList *
 impl_get_ui_actions (RBSource *source)
 {
 	GList *actions = NULL;
