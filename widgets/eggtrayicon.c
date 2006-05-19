@@ -62,11 +62,11 @@ enum {
 
 #ifdef HAVE_NOTIFY
 struct _Notify {
-#if (LIBNOTIFY_VERSION_MINOR == 2)
+#if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR == 2)
   NotifyHints *hints;
   NotifyIcon *icon;
   NotifyHandle *handle;
-#elif (LIBNOTIFY_VERSION_MINOR >= 3)
+#elif (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
   NotifyNotification *handle;
 #endif
 };
@@ -289,7 +289,7 @@ egg_tray_icon_unrealize (GtkWidget *widget)
 #ifdef HAVE_NOTIFY
 
   if (EGG_TRAY_ICON (widget)->notify->handle) {
-#if (LIBNOTIFY_VERSION_MINOR >= 3)
+#if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
     notify_notification_close (EGG_TRAY_ICON (widget)->notify->handle, NULL);
 #elif (LIBNOTIFY_VERSION_MINOR == 2)
     notify_close (EGG_TRAY_ICON (widget)->notify->handle);
@@ -497,7 +497,7 @@ egg_tray_icon_cancel_message (EggTrayIcon *icon,
 #ifdef HAVE_NOTIFY
   if (icon->notify->handle)
   {
-#if (LIBNOTIFY_VERSION_MINOR >= 3)
+#if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
     notify_notification_close (icon->notify->handle, NULL);
 #elif (LIBNOTIFY_VERSION_MINOR == 2)
     notify_close (icon->notify->handle);
@@ -523,7 +523,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 		      const char *secondary)
 {
 #ifdef HAVE_NOTIFY
-#if (LIBNOTIFY_VERSION_MINOR >= 3)
+#if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
   GtkRequisition size;
   GdkPixbuf *pixbuf;
   int x;
@@ -580,7 +580,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   if (pixbuf)
     {
-#if (LIBNOTIFY_VERSION_MINOR <=3 && LIBNOTIFY_VERSION_MICRO < 2)
+#if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR <=3 && LIBNOTIFY_VERSION_MICRO < 2)
       notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
 #else
       notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
@@ -601,7 +601,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
     }
 
   return;
-#elif (LIBNOTIFY_VERSION_MINOR == 2)
+#elif (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR == 2)
   gint x, y;
   GtkRequisition size;
   NotifyIcon *icon_notify = NULL;
