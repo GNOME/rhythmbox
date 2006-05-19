@@ -17,15 +17,6 @@ rb-query-creator
 <!-- ##### SECTION Stability_Level ##### -->
 
 
-<!-- ##### ENUM RBQueryCreatorLimitType ##### -->
-<para>
-
-</para>
-
-@RB_QUERY_CREATOR_LIMIT_COUNT: 
-@RB_QUERY_CREATOR_LIMIT_MB: 
-@RB_QUERY_CREATOR_LIMIT_SECONDS: 
-
 <!-- ##### FUNCTION rb_query_creator_new ##### -->
 <para>
 
@@ -42,9 +33,8 @@ rb-query-creator
 
 @db: 
 @query: 
-@limit_count: 
-@limit_size: 
-@limit_time: 
+@limit_type: 
+@limit_value: 
 @sort_column: 
 @sort_direction: 
 @Returns: 
@@ -65,8 +55,8 @@ rb-query-creator
 </para>
 
 @creator: 
-@type: 
-@limit: 
+@limit_type: 
+@limit_value: 
 
 
 <!-- ##### FUNCTION rb_query_creator_get_sort_order ##### -->

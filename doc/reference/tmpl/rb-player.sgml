@@ -22,22 +22,9 @@ rb-player
 
 </para>
 
-@RB_PLAYER_ERROR_NO_INPUT_PLUGIN: 
-@RB_PLAYER_ERROR_NO_QUEUE_PLUGIN: 
-@RB_PLAYER_ERROR_NO_TYPEFIND_PLUGIN: 
-@RB_PLAYER_ERROR_NO_DEMUX_PLUGIN: 
-@RB_PLAYER_ERROR_NO_VOLUME_PLUGIN: 
-@RB_PLAYER_ERROR_DEMUX_FAILED: 
 @RB_PLAYER_ERROR_NO_AUDIO: 
 @RB_PLAYER_ERROR_GENERAL: 
 @RB_PLAYER_ERROR_INTERNAL: 
-
-<!-- ##### MACRO RB_PLAYER_TICK_HZ ##### -->
-<para>
-
-</para>
-
-
 
 <!-- ##### MACRO RB_PLAYER_ERROR ##### -->
 <para>
@@ -54,12 +41,6 @@ rb-player
 @Returns: 
 
 
-<!-- ##### TYPEDEF RBPlayerPrivate ##### -->
-<para>
-
-</para>
-
-
 <!-- ##### FUNCTION rb_player_new ##### -->
 <para>
 
@@ -74,7 +55,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @uri: 
 @error: 
 @Returns: 
@@ -85,7 +66,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @Returns: 
 
 
@@ -94,7 +75,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @error: 
 @Returns: 
 
@@ -104,7 +85,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @error: 
 @Returns: 
 
@@ -114,7 +95,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 
 
 <!-- ##### FUNCTION rb_player_playing ##### -->
@@ -122,7 +103,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @Returns: 
 
 
@@ -131,7 +112,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @volume: 
 
 
@@ -140,7 +121,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @Returns: 
 
 
@@ -149,7 +130,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @track_gain: 
 @track_peak: 
 @album_gain: 
@@ -161,7 +142,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @Returns: 
 
 
@@ -170,7 +151,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @Param2: 
 
 
@@ -179,7 +160,7 @@ rb-player
 
 </para>
 
-@mp: 
+@player: 
 @Returns: 
 
 

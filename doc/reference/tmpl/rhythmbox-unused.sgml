@@ -4,6 +4,12 @@
 </para>
 
 
+<!-- ##### MACRO CONF_UI_SOURCELIST_HIDDEN ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### STRUCT EggNotificationBubbleData ##### -->
 <para>
 
@@ -100,6 +106,21 @@
 </para>
 
 
+<!-- ##### TYPEDEF RBPlayerPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM RBQueryCreatorLimitType ##### -->
+<para>
+
+</para>
+
+@RB_QUERY_CREATOR_LIMIT_COUNT: 
+@RB_QUERY_CREATOR_LIMIT_MB: 
+@RB_QUERY_CREATOR_LIMIT_SECONDS: 
+
 <!-- ##### ENUM RBShellError ##### -->
 <para>
 
@@ -123,6 +144,12 @@
 
 
 <!-- ##### TYPEDEF RBTreeModelSortPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO RB_PLAYER_TICK_HZ ##### -->
 <para>
 
 </para>
@@ -551,6 +578,23 @@
 @string: 
 @Returns: 
 
+<!-- ##### FUNCTION rb_header_set_show_artist_album ##### -->
+<para>
+
+</para>
+
+@player: 
+@show: 
+
+<!-- ##### FUNCTION rb_header_set_urldata ##### -->
+<para>
+
+</para>
+
+@player: 
+@urltext: 
+@urllink: 
+
 <!-- ##### FUNCTION rb_library_source_class_add_actions ##### -->
 <para>
 
@@ -597,6 +641,14 @@
 </para>
 
 @mgr: 
+
+<!-- ##### FUNCTION rb_playlist_manager_set_source ##### -->
+<para>
+
+</para>
+
+@mgr: 
+@player: 
 
 <!-- ##### FUNCTION rb_playlist_source_add_entry ##### -->
 <para>
@@ -691,6 +743,14 @@
 @compute_sortdata: 
 @Returns: 
 
+<!-- ##### FUNCTION rb_removable_media_manager_load_media ##### -->
+<para>
+
+</para>
+
+@mgr: 
+@Returns: 
+
 <!-- ##### FUNCTION rb_shell_construct ##### -->
 <para>
 
@@ -721,6 +781,14 @@
 </para>
 
 @player: 
+
+<!-- ##### FUNCTION rb_source_disconnect ##### -->
+<para>
+
+</para>
+
+@source: 
+@Returns: 
 
 <!-- ##### FUNCTION rb_source_get_extra_views ##### -->
 <para>
