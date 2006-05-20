@@ -372,6 +372,8 @@ void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
 
 GPtrArray *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
 
+gboolean	rhythmdb_query_is_time_relative		(RhythmDB *db, GPtrArray *query);
+
 const xmlChar *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, RhythmDBPropType propid);
 int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *name);
 

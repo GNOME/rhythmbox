@@ -4421,7 +4421,7 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 				break;
 		}
 
-		/* re-do this criteria, in case it needs furthur transformation */
+		/* re-do this criteria, in case it needs further transformation */
 		if (restart_criteria)
 			i--;
 	}
@@ -4466,6 +4466,35 @@ rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, RhythmDBPro
 	}
 	rhythmdb_query_append (db, query, RHYTHMDB_QUERY_SUBQUERY, subquery,
 			       RHYTHMDB_QUERY_END);
+}
+
+gboolean
+rhythmdb_query_is_time_relative (RhythmDB *db, GPtrArray *query)
+{
+	int i;
+	if (query == NULL)
+		return FALSE;
+
+	for (i=0; i < query->len; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (query, i);
+
+		if (data->subquery) {
+			if (rhythmdb_query_is_time_relative (db, data->subquery))
+				return TRUE;
+			else
+				continue;
+		}
+
+		switch (data->type) {
+		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
+		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
+			return TRUE;
+		default:
+			break;
+		}
+	}
+
+	return FALSE;
 }
 
 

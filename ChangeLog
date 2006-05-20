@@ -1,5 +1,19 @@
 2006-05-20  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_finalize),
+	(rhythmdb_query_model_reapply_query_cb):
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_preprocess),
+	(rhythmdb_query_append_prop_multiple),
+	(rhythmdb_query_is_time_relative):
+	* rhythmdb/rhythmdb.h: re-run queries every minutes if they have
+	time-based criteria, fixes bug 341131.
+
+2006-05-20  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/artdisplay/artdisplay/__init__.py: don't display the art if
 	we have already changed playing entries. Interpolate the art size so
 	it doesn't jump when the old and new images have different aspect

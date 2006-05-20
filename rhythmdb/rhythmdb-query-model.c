@@ -160,6 +160,7 @@ static int rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *m
 static gint _reverse_sorting_func (gpointer a, gpointer b, struct ReverseSortData *model);
 static gboolean rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 						   RhythmDBEntry *entry);
+static gboolean rhythmdb_query_model_reapply_query_cb (RhythmDBQueryModel *model);
 
 struct RhythmDBQueryModelUpdate
 {
@@ -218,6 +219,8 @@ struct RhythmDBQueryModelPrivate
 
 	gboolean reorder_drag_and_drop;
 	gboolean show_hidden;
+
+	gint query_reapply_timeout_id;
 };
 
 #define RHYTHMDB_QUERY_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_QUERY_MODEL, RhythmDBQueryModelPrivate))
@@ -430,6 +433,21 @@ rhythmdb_query_model_set_property (GObject *object,
 		model->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
 		model->priv->original_query = rhythmdb_query_copy (model->priv->query);
 		rhythmdb_query_preprocess (model->priv->db, model->priv->query);
+
+		/* if the query contains time-relative criteria, re-run it periodically.
+		 * currently it's just every half hour, but perhaps it could be smarter.
+		 */
+		if (rhythmdb_query_is_time_relative (model->priv->db, model->priv->query)) {
+			if (model->priv->query_reapply_timeout_id == 0) {
+				model->priv->query_reapply_timeout_id = 
+					g_timeout_add (1 * 60 * 1000,
+						       (GSourceFunc) rhythmdb_query_model_reapply_query_cb,
+						       model);
+			}
+		} else if (model->priv->query_reapply_timeout_id) {
+			g_source_remove (model->priv->query_reapply_timeout_id);
+			model->priv->query_reapply_timeout_id = 0;
+		}
 		break;
 	case PROP_SORT_FUNC:
 		model->priv->sort_func = g_value_get_pointer (value);
@@ -629,6 +647,9 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	if (model->priv->limit_value)
 		g_value_array_free (model->priv->limit_value);
+
+	if (model->priv->query_reapply_timeout_id)
+		g_source_remove (model->priv->query_reapply_timeout_id);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }
@@ -2551,3 +2572,12 @@ rhythmdb_query_model_limit_type_get_type (void)
 	return etype;
 }
 
+static gboolean
+rhythmdb_query_model_reapply_query_cb (RhythmDBQueryModel *model)
+{
+	rhythmdb_query_model_reapply_query (model, FALSE);
+	rhythmdb_do_full_query_async_parsed (model->priv->db,
+					     RHYTHMDB_QUERY_RESULTS (model),
+					     model->priv->query);
+	return TRUE;
+}
