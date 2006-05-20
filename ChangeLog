@@ -1,3 +1,15 @@
+2006-05-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_finalize),
+	(rhythmdb_entry_set_internal), (rhythmdb_query_preprocess),
+	(rhythmdb_entry_get_ulong):
+	Include the GDate directly in RhythmDBEntry (it's only 8 bytes) 
+	and elsewhere, use them on the stack rather than allocating on 
+	the heap.  From bug #342333.
+
 2006-05-19  William Jon McCann  <mccann@jhu.edu>
 
 	* player/rb-recorder-gst.c: (rb_recorder_error_quark),

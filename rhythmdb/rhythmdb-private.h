@@ -69,7 +69,7 @@ struct RhythmDBEntry_ {
 	double track_peak;
 	double album_gain;
 	double album_peak;
-	GDate *date;
+	GDate date;
 
 	/* filesystem */
 	char *location;

@@ -432,9 +432,9 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			gulong value = parse_ulong (ctx->buf->str);
 			
 			if (value > 0)
-				ctx->entry->date = g_date_new_julian (value);
+				g_date_set_julian (&ctx->entry->date, value);
 			else
-				;
+				g_date_clear (&ctx->entry->date, 1);
 			ctx->has_date = TRUE;
 			break;
 		}
@@ -797,8 +797,8 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_ulong (ctx, elt_name, entry->discnum, FALSE);
 			break;
 		case RHYTHMDB_PROP_DATE:
-			if (entry->date)
-				save_entry_ulong (ctx, elt_name, g_date_get_julian (entry->date), TRUE);
+			if (g_date_valid (&entry->date))
+				save_entry_ulong (ctx, elt_name, g_date_get_julian (&entry->date), TRUE);
 			else
 				save_entry_ulong (ctx, elt_name, 0, TRUE);
 			break;

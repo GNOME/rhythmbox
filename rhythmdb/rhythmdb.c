@@ -1206,8 +1206,6 @@ rhythmdb_entry_finalize (RhythmDB *db, RhythmDBEntry *entry)
 
 	g_free (entry->location);
 	g_free (entry->playback_error);
-	if (entry->date)
-		g_date_free (entry->date);
 	rb_refstring_unref (entry->title);
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
@@ -2763,12 +2761,11 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 		case RHYTHMDB_PROP_DATE:
 		{
 			gulong julian;
-			
-			if (entry->date)
-				g_date_free (entry->date);
-			
 			julian = g_value_get_ulong (value);
-			entry->date = (julian > 0) ? g_date_new_julian (julian) : NULL;
+			if (julian > 0)
+				g_date_set_julian (&entry->date, julian);
+			else
+				g_date_clear (&entry->date, 1);
 			break;
 		}
 		case RHYTHMDB_PROP_TRACK_GAIN:
@@ -4370,26 +4367,25 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 
 			case RHYTHMDB_PROP_DATE:
 			{
-				GDate *date;
-				gulong search_date;		
-				gulong begin;			
+				GDate date = {0,};
+				gulong search_date;
+				gulong begin;
 				gulong end;
 				gulong year;
 
 				search_date = g_value_get_ulong (data->val);
-				date = g_date_new_julian (search_date);		
-				year = g_date_get_year (date);	
-				g_date_free (date);				
+				g_date_set_julian (&date, search_date);
+				year = g_date_get_year (&date);
+				g_date_clear (&date, 1);
 
-				/* get Julian dates for beginning and end of year */ 
-				date = g_date_new_dmy (1, G_DATE_JANUARY, year); 
-				begin = g_date_get_julian (date);	
-				g_date_free (date);				
+				/* get Julian dates for beginning and end of year */
+				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year);
+				begin = g_date_get_julian (&date);
+				g_date_clear (&date, 1);
 
-				/* end the dat before the beginning of the next year */
-				date = g_date_new_dmy (1, G_DATE_JANUARY, year + 1); 
-				end =  g_date_get_julian (date) - 1;
-				g_date_free (date);				
+				/* and the day before the beginning of the next year */
+				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year + 1);
+				end =  g_date_get_julian (&date) - 1;
 				
 				switch (data->type)
 				{
@@ -4775,13 +4771,13 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 	case RHYTHMDB_PROP_BITRATE:
 		return entry->bitrate;		
 	case RHYTHMDB_PROP_DATE:
-		if (entry->date)
-			return g_date_get_julian (entry->date);
+		if (g_date_valid (&entry->date))
+			return g_date_get_julian (&entry->date);
 		else
 			return 0;
 	case RHYTHMDB_PROP_YEAR:
-		if (entry->date)
-			return g_date_get_year (entry->date);
+		if (g_date_valid (&entry->date))
+			return g_date_get_year (&entry->date);
 		else
 			return 0;
 	case RHYTHMDB_PROP_POST_TIME:
