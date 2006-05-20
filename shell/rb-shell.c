@@ -1032,6 +1032,7 @@ construct_widgets (RBShell *shell)
 				 G_CALLBACK (rb_shell_player_stream_song_changed_cb),
 				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
+							       shell->priv->ui_manager,
 							       shell->priv->db);
 	shell->priv->source_header = rb_source_header_new (shell->priv->ui_manager,
 							   shell->priv->actiongroup);
@@ -1091,7 +1092,7 @@ construct_widgets (RBShell *shell)
 				 shell->priv->queue_sidebar,
 				 TRUE, TRUE);
 		gtk_container_child_set (GTK_CONTAINER (shell->priv->queue_paned),
-					 GTK_WIDGET (shell->priv->queue_sidebar),
+					 GTK_WIDGET (shell->priv->sourcelist),
 					 "resize", FALSE,
 					 NULL);
 
@@ -1157,6 +1158,8 @@ construct_sources (RBShell *shell)
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
 								 RB_SOURCELIST (shell->priv->sourcelist));
+
+	g_object_set (G_OBJECT(shell->priv->clipboard_shell), "playlist-manager", shell->priv->playlist_manager, NULL);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);

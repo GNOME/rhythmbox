@@ -1,5 +1,25 @@
 2006-05-20  James Livingston  <doclivingston@gmail.com>
 
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_class_init),
+	(rb_shell_clipboard_finalize), (rb_shell_clipboard_set_property),
+	(rb_shell_clipboard_get_property), (rb_shell_clipboard_new),
+	(rb_shell_clipboard_sync),
+	(rb_shell_clipboard_cmd_add_to_playlist_new),
+	(rb_shell_clipboard_cmd_queue_song_info),
+	(rb_shell_clipboard_playlist_add_cb), (generate_action_name),
+	(rb_shell_clipboard_playlist_deleted_cb),
+	(rb_shell_clipboard_playlist_renamed_cb),
+	(rb_shell_clipboard_playlist_visible_cb), (add_playlist_to_menu),
+	(rebuild_playlist_menu), (rb_shell_clipboard_playlist_added_cb):
+	* shell/rb-shell-clipboard.h: add an "add to playlist" menu, which is
+	dynamically generated with all the static playlists. Fixes bug 323364.
+
+	* shell/rb-shell.c: (construct_widgets), (construct_sources): use the
+	right child, so it doesn't go weird when art appears and disappears.
+
+2006-05-20  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:

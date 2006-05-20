@@ -36,6 +36,13 @@
       <menuitem name="EditSelectAllMenu" action="EditSelectAll"/>
       <menuitem name="EditSelectNoneMenu" action="EditSelectNone"/>
       <separator/> 
+      <menuitem name="EditAddToQueueMenu" action="AddToQueue"/>
+      <menu name="EditPlaylistAddMenu" action="EditPlaylistAdd">
+        <menuitem name="EditPlaylistAddNew" action="EditPlaylistAddNew"/>
+        <separator/> 
+        <placeholder name="EditPlaylistAddPlaceholder"/>
+      </menu>
+      <separator/> 
       <menuitem name="EditMovetoTrash" action="EditMovetoTrash"/>
       <separator/>
       <menuitem name="EditPluginsMenu" action="EditPlugins"/> 
@@ -118,6 +125,11 @@
 
   <popup name="BrowserSourceViewPopup">
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
+    <menu name="BrowserSourcePopupPlaylistAdd" action="EditPlaylistAdd">
+      <placeholder name="BrowserSourcePopupPlaylistAddPlaceholder"/>
+      <separator/> 
+      <menuitem name="BrowserSourcePopupPlaylistAddNew" action="EditPlaylistAddNew"/>
+    </menu>
     <menuitem name="CopyLibraryPopup" action="EditCopy"/>
     <separator/>
     <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
@@ -136,6 +148,11 @@
 
   <popup name="PlaylistViewPopup">
     <menuitem name="AddToQueuePlaylistPopup" action="AddToQueue"/>
+    <menu name="PlaylistPopupPlaylistAdd" action="EditPlaylistAdd">
+      <menuitem name="PlaylistPopupPlaylistAddNew" action="EditPlaylistAddNew"/>
+      <separator/> 
+      <placeholder name="PlaylistPopupPlaylistAddPlaceholder"/>
+    </menu>
     <menuitem name="CopyPlaylistPopup" action="EditCopy"/>
     <menuitem name="CutPlaylistPopup" action="EditCut"/>
     <menuitem name="DeletePlaylistPopup" action="EditDelete"/>

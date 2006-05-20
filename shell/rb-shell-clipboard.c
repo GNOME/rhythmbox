@@ -25,13 +25,14 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gtk/gtkstock.h>
 
 #include "rb-shell-clipboard.h"
+#include "rb-playlist-manager.h"
+#include "rb-play-queue-source.h"
+#include "rb-sourcelist-model.h"
 #include "rhythmdb.h"
 #include "rb-debug.h"
-#include "rb-static-playlist-source.h"
-#include "rb-play-queue-source.h"
-#include <gtk/gtkstock.h>
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
@@ -66,6 +67,9 @@ static void rb_shell_clipboard_cmd_move_to_trash (GtkAction *action,
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static gboolean rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard);
+static void rb_shell_clipboard_playlist_added_cb (RBPlaylistManager *mgr,
+						  RBPlaylistSource *source,
+						  RBShellClipboard *clipboard);
 static void rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 RBShellClipboard *clipboard);
@@ -74,26 +78,32 @@ static void rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 static void rb_shell_clipboard_entries_changed_cb (RBEntryView *view,
 						   gpointer stuff,
 						   RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_add_to_playlist_new (GtkAction *action,
+							RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_add_song_to_queue (GtkAction *action,
 						      RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_song_info (GtkAction *action,
 					      RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_queue_song_info (GtkAction *action,
 						    RBShellClipboard *clipboard);
+static gboolean rebuild_playlist_menu (RBShellClipboard *clipboard);
 
 struct RBShellClipboardPrivate
 {
 	RhythmDB *db;
 	RBSource *source;
 	RBStaticPlaylistSource *queue_source;
+	RBPlaylistManager *playlist_manager;
 
+	GtkUIManager *ui_mgr;
 	GtkActionGroup *actiongroup;
+	guint playlist_menu_ui_id;
 
 	GHashTable *signal_hash;
 
 	GAsyncQueue *deleted_queue;
 
-	guint idle_deletion_id, idle_sync_id;
+	guint idle_deletion_id, idle_sync_id, idle_playlist_id;
 
 	GList *entries;
 };
@@ -107,6 +117,8 @@ enum
 	PROP_ACTION_GROUP,
 	PROP_DB,
 	PROP_QUEUE_SOURCE,
+	PROP_PLAYLIST_MANAGER,
+	PROP_UI_MANAGER,
 };
 
 static GtkActionEntry rb_shell_clipboard_actions [] =
@@ -133,6 +145,10 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  N_("Move selection to the trash"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
 
+	{ "EditPlaylistAdd", NULL, N_("Add to P_laylist") },
+	{ "EditPlaylistAddNew", GTK_STOCK_ADD, N_("_New Playlist..."), NULL,
+	  N_("Add the selected songs to a new playlist"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_add_to_playlist_new) },
 	{ "AddToQueue", GTK_STOCK_ADD, N_("Add _to Play Queue"), NULL,
 	  N_("Add the selected songs to the play queue"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_add_song_to_queue) },
@@ -148,6 +164,14 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  G_CALLBACK (rb_shell_clipboard_cmd_queue_song_info) },
 };
 static guint rb_shell_clipboard_n_actions = G_N_ELEMENTS (rb_shell_clipboard_actions);
+
+static const char *playlist_menu_paths[] = {
+	"/MenuBar/EditMenu/EditPlaylistAddMenu/EditPlaylistAddPlaceholder",
+	"/BrowserSourceViewPopup/BrowserSourcePopupPlaylistAdd/BrowserSourcePopupPlaylistAddPlaceholder",
+	"/PlaylistViewPopup/PlaylistPopupPlaylistAdd/PlaylistPopupPlaylistAddPlaceholder",
+};
+static guint num_playlist_menu_paths = G_N_ELEMENTS (playlist_menu_paths);
+
 
 G_DEFINE_TYPE (RBShellClipboard, rb_shell_clipboard, G_TYPE_OBJECT)
 
@@ -190,6 +214,20 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      "RBPlaylistSource object",
 							      RB_TYPE_PLAYLIST_SOURCE,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_MANAGER,
+					 g_param_spec_object ("playlist-manager",
+						 	      "RBPlaylistManager",
+							      "RBPlaylistManager object",
+							      RB_TYPE_PLAYLIST_MANAGER,
+							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager",
+						 	      "GtkUIManager",
+							      "GtkUIManager object",
+							      GTK_TYPE_UI_MANAGER,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBShellClipboardPrivate));
 }
@@ -229,6 +267,8 @@ rb_shell_clipboard_finalize (GObject *object)
 		g_source_remove (shell_clipboard->priv->idle_sync_id);
 	if (shell_clipboard->priv->idle_deletion_id)
 		g_source_remove (shell_clipboard->priv->idle_deletion_id);
+	if (shell_clipboard->priv->idle_playlist_id)
+		g_source_remove (shell_clipboard->priv->idle_playlist_id);
 	
 	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->finalize (object);
 }
@@ -324,6 +364,20 @@ rb_shell_clipboard_set_property (GObject *object,
 	case PROP_DB:
 		clipboard->priv->db = g_value_get_object (value);
 		break;
+	case PROP_UI_MANAGER:
+		clipboard->priv->ui_mgr = g_value_get_object (value);
+		break;
+	case PROP_PLAYLIST_MANAGER:
+		clipboard->priv->playlist_manager = g_value_get_object (value);
+		if (clipboard->priv->playlist_manager) {
+			g_signal_connect_object (G_OBJECT (clipboard->priv->playlist_manager),
+						 "playlist-added", G_CALLBACK (rb_shell_clipboard_playlist_added_cb),
+						 clipboard, 0);
+
+			rebuild_playlist_menu (clipboard);
+		}
+
+		break;
 	case PROP_QUEUE_SOURCE:
 		clipboard->priv->queue_source = g_value_get_object (value);
 		if (clipboard->priv->queue_source) {
@@ -360,6 +414,12 @@ rb_shell_clipboard_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, clipboard->priv->db);
 		break;
+	case PROP_UI_MANAGER:
+		g_value_set_object (value, clipboard->priv->ui_mgr);
+		break;
+	case PROP_PLAYLIST_MANAGER:
+		g_value_set_object (value, clipboard->priv->playlist_manager);
+		break;
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, clipboard->priv->queue_source);
 		break;
@@ -381,10 +441,11 @@ rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 }
 
 RBShellClipboard *
-rb_shell_clipboard_new (GtkActionGroup *actiongroup, RhythmDB *db)
+rb_shell_clipboard_new (GtkActionGroup *actiongroup,GtkUIManager *ui_mgr, RhythmDB *db)
 {
 	return g_object_new (RB_TYPE_SHELL_CLIPBOARD,
 			     "action-group", actiongroup,
+			     "ui-manager", ui_mgr,
 			     "db", db,
 			     NULL);
 }
@@ -452,6 +513,9 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup,"EditPaste");
 	g_object_set (G_OBJECT (action), "sensitive", can_paste, NULL);
 
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
+	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
+	
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "AddToQueue");
 	g_object_set (G_OBJECT (action), "sensitive", can_add_to_queue, NULL);
 	
@@ -642,6 +706,22 @@ rb_shell_clipboard_entries_changed_cb (RBEntryView *view,
 }
 
 static void
+rb_shell_clipboard_cmd_add_to_playlist_new (GtkAction *action,
+					    RBShellClipboard *clipboard)
+{
+	GList *entries;
+	RBSource *playlist_source;
+
+	rb_debug ("add to new playlist");
+	
+	entries = rb_source_copy (clipboard->priv->source);
+	playlist_source = rb_playlist_manager_new_playlist (clipboard->priv->playlist_manager,
+							    NULL, FALSE);
+	rb_source_paste (playlist_source, entries);
+	g_list_free (entries);
+}
+
+static void
 rb_shell_clipboard_cmd_add_song_to_queue (GtkAction *action,
 					  RBShellClipboard *clipboard)
 {
@@ -665,5 +745,184 @@ rb_shell_clipboard_cmd_queue_song_info (GtkAction *action,
 {
 	rb_debug ("song info");
 	rb_play_queue_source_sidebar_song_info (RB_PLAY_QUEUE_SOURCE (clipboard->priv->queue_source));
+}
+
+static void
+rb_shell_clipboard_playlist_add_cb (GtkAction *action,
+				    RBShellClipboard *clipboard)
+{
+	RBSource *playlist_source;
+	GList *entries;
+
+	rb_debug ("add to exisintg playlist");
+	playlist_source = g_object_get_data (G_OBJECT (action), "playlist-source");
+	
+	entries = rb_source_copy (clipboard->priv->source);
+	rb_source_paste (playlist_source, entries);
+	g_list_free (entries);
+}
+
+static char *
+generate_action_name (RBStaticPlaylistSource *source,
+		      RBShellClipboard *clipboard)
+{
+	return g_strdup_printf ("AddToPlaylistClipboardAction%p", source);
+}
+
+static void
+rb_shell_clipboard_playlist_deleted_cb (RBStaticPlaylistSource *source,
+					RBShellClipboard *clipboard)
+{
+	char *action_name;
+	GtkAction *action;
+	
+	action_name = generate_action_name (source, clipboard);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
+	g_assert (action);
+	gtk_action_group_remove_action (clipboard->priv->actiongroup, action);
+	g_free (action_name);
+	g_object_unref (G_OBJECT (action));
+
+	/* this will update the menu */
+	if (clipboard->priv->idle_playlist_id == 0) {
+		clipboard->priv->idle_playlist_id =
+			g_idle_add ((GSourceFunc)rebuild_playlist_menu, clipboard);
+	}
+}
+
+static void
+rb_shell_clipboard_playlist_renamed_cb (RBStaticPlaylistSource *source,
+					GParamSpec *spec,
+					RBShellClipboard *clipboard)
+{
+	char *name, *action_name;
+	GtkAction *action;
+
+	g_object_get (G_OBJECT (source), "name", &name, NULL);
+
+	action_name = generate_action_name (source, clipboard);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
+	g_assert (action);
+	g_free (action_name);
+	
+	g_object_set (G_OBJECT (action), "label", name, NULL);
+	g_free (name);
+	g_object_unref (G_OBJECT (action));
+}
+
+static void
+rb_shell_clipboard_playlist_visible_cb (RBStaticPlaylistSource *source,
+					GParamSpec *spec,
+					RBShellClipboard *clipboard)
+{
+	gboolean visible = FALSE;
+	char *action_name;
+	GtkAction *action;
+
+	g_object_get (G_OBJECT (source), "visibility", &visible, NULL);
+
+	action_name = generate_action_name (source, clipboard);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
+	g_assert (action);
+	g_free (action_name);
+	
+	gtk_action_set_visible (action, visible);
+	g_object_unref (G_OBJECT (action));
+}
+
+static gboolean
+add_playlist_to_menu (GtkTreeModel *model,
+		      GtkTreePath *path,
+		      GtkTreeIter *iter,
+		      RBShellClipboard *clipboard)
+{
+	RhythmDBEntryType entry_type, source_entry_type;
+	RBSource *source = NULL;
+	char *action_name;
+	GtkAction *action;
+	int i;
+
+	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+
+	if (!RB_IS_STATIC_PLAYLIST_SOURCE (source))
+		return FALSE;
+	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+	g_object_get (G_OBJECT (source), "entry-type", &source_entry_type, NULL);
+	if (source_entry_type != entry_type)
+		return FALSE;
+
+	action_name = generate_action_name (RB_STATIC_PLAYLIST_SOURCE (source), clipboard);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
+	if (action == NULL) {
+		char *name;
+
+		g_object_get (G_OBJECT (source), "name", &name, NULL);
+		action = gtk_action_new (action_name, name, NULL, NULL);
+		gtk_action_group_add_action (clipboard->priv->actiongroup, action);
+		g_free (name);
+
+		g_object_set_data (G_OBJECT (action), "playlist-source", source);
+		g_signal_connect_object (G_OBJECT (action),
+					 "activate", G_CALLBACK (rb_shell_clipboard_playlist_add_cb),
+					 clipboard, 0);
+
+		g_signal_connect_object (G_OBJECT (source),
+					 "deleted", G_CALLBACK (rb_shell_clipboard_playlist_deleted_cb),
+					 clipboard, 0);
+		g_signal_connect_object (G_OBJECT (source),
+					 "notify::name", G_CALLBACK (rb_shell_clipboard_playlist_renamed_cb),
+					 clipboard, 0);
+		g_signal_connect_object (G_OBJECT (source),
+					 "notify::visibility", G_CALLBACK (rb_shell_clipboard_playlist_visible_cb),
+					 clipboard, 0);
+	}
+
+	for (i = 0; i < num_playlist_menu_paths; i++) {
+		gtk_ui_manager_add_ui (clipboard->priv->ui_mgr, clipboard->priv->playlist_menu_ui_id,
+				       playlist_menu_paths[i],
+				       action_name, action_name,
+				       GTK_UI_MANAGER_AUTO, FALSE);
+	}
+
+	return FALSE;
+}
+
+static gboolean
+rebuild_playlist_menu (RBShellClipboard *clipboard)
+{
+	GtkTreeModel *model = NULL;
+	GObject *sourcelist = NULL;
+
+	if (clipboard->priv->playlist_menu_ui_id != 0) {
+		gtk_ui_manager_remove_ui (clipboard->priv->ui_mgr,
+					  clipboard->priv->playlist_menu_ui_id);
+	} else {
+		clipboard->priv->playlist_menu_ui_id =
+			gtk_ui_manager_new_merge_id (clipboard->priv->ui_mgr);
+	}
+
+	g_object_get (G_OBJECT (clipboard->priv->playlist_manager), "sourcelist", &sourcelist, NULL);
+	g_object_get (sourcelist, "model", &model, NULL);
+	g_object_unref (sourcelist);
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)add_playlist_to_menu, clipboard);
+	g_object_unref (G_OBJECT (model));
+
+	clipboard->priv->idle_playlist_id = 0;
+	return FALSE;
+}
+
+static void
+rb_shell_clipboard_playlist_added_cb (RBPlaylistManager *mgr,
+				      RBPlaylistSource *source,
+				      RBShellClipboard *clipboard)
+{
+	if (!RB_IS_STATIC_PLAYLIST_SOURCE (source))
+		return;
+
+	if (clipboard->priv->idle_playlist_id == 0) {
+		clipboard->priv->idle_playlist_id =
+			g_idle_add ((GSourceFunc)rebuild_playlist_menu, clipboard);
+	}
 }
 
