@@ -102,7 +102,8 @@ class ArtDisplayPlugin (rb.Plugin):
 
 	def on_get_pixbuf_completed(self, entry, pixbuf):
 		# Set the pixbuf for the entry returned from the art db
-		self.set_current_art (pixbuf)
+		if entry == self.current_entry:
+			self.set_current_art (pixbuf)
 
 	def fade_art (self, old_pixbuf, new_pixbuf):
 		self.fade_step += 1.0 / FADE_STEPS
@@ -116,13 +117,13 @@ class ArtDisplayPlugin (rb.Plugin):
 
 			# find scale, widget size and alpha
 			ww = self.art_widget.parent.allocation.width 
-			wh = oh * ww / ow
+			wh = ww * (self.fade_step * (float(nh)/nw) + (1 - self.fade_step) * (float(oh)/ow))
 			sw = float(ww)/nw
 			sh = float(wh)/nh
 			alpha = int (self.fade_step * 255)
 
-			self.current_pixbuf = old_pixbuf.scale_simple (ww, wh, gtk.gdk.INTERP_NEAREST)
-			new_pixbuf.composite (self.current_pixbuf, 0, 0, ow, oh, 0, 0, sw, sh, gtk.gdk.INTERP_NEAREST, alpha)
+			self.current_pixbuf = old_pixbuf.scale_simple (int(ww), int(wh), gtk.gdk.INTERP_BILINEAR)
+			new_pixbuf.composite (self.current_pixbuf, 0, 0, int(ww), int(wh), 0, 0, sw, sh, gtk.gdk.INTERP_BILINEAR, alpha)
 			self.art_widget.set_from_pixbuf (self.current_pixbuf)
 			self.art_widget.show ()
 			return True
@@ -155,7 +156,7 @@ class ArtDisplayPlugin (rb.Plugin):
 			width = self.art_widget.parent.allocation.width 
 			height = self.current_pixbuf.get_height () * width / self.current_pixbuf.get_width ()
 			if quick:
-				mode = gtk.gdk.INTERP_NEAREST
+				mode = gtk.gdk.INTERP_BILINEAR
 			else:
 				mode = gtk.gdk.INTERP_HYPER
 			self.art_widget.set_from_pixbuf (self.current_pixbuf.scale_simple (width, height, mode))

@@ -1,3 +1,10 @@
+2006-05-20  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/artdisplay/artdisplay/__init__.py: don't display the art if
+	we have already changed playing entries. Interpolate the art size so
+	it doesn't jump when the old and new images have different aspect
+	ratios.
+
 2006-05-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-private.h:
