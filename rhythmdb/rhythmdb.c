@@ -29,7 +29,6 @@
 
 #include "rhythmdb-private.h"
 #include "rhythmdb-property-model.h"
-#include "rb-metadata.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 #include <glib.h>
@@ -37,9 +36,6 @@
 #include <gconf/gconf-client.h>
 #include <gdk/gdk.h>
 #include <libxml/tree.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-file-info.h>
-#include <libgnomevfs/gnome-vfs-ops.h>
 #include <glib/gi18n.h>
 #include "rb-marshal.h"
 #include "rb-file-helpers.h"
@@ -49,87 +45,13 @@
 #include "rb-preferences.h"
 #include "widgets/eel-gconf-extensions.h"
 
-#define RB_PARSE_CONJ (xmlChar *) "conjunction"
-#define RB_PARSE_SUBQUERY (xmlChar *) "subquery"
-#define RB_PARSE_LIKE (xmlChar *) "like"
-#define RB_PARSE_PROP (xmlChar *) "prop"
-#define RB_PARSE_NOT_LIKE (xmlChar *) "not-like"
-#define RB_PARSE_PREFIX (xmlChar *) "prefix"
-#define RB_PARSE_SUFFIX (xmlChar *) "suffix"
-#define RB_PARSE_EQUALS (xmlChar *) "equals"
-#define RB_PARSE_DISJ (xmlChar *) "disjunction"
-#define RB_PARSE_GREATER (xmlChar *) "greater"
-#define RB_PARSE_LESS (xmlChar *) "less"
-#define RB_PARSE_CURRENT_TIME_WITHIN (xmlChar *) "current-time-within"
-#define RB_PARSE_CURRENT_TIME_NOT_WITHIN (xmlChar *) "current-time-not-within"
-#define RB_PARSE_YEAR_EQUALS RB_PARSE_EQUALS
-#define RB_PARSE_YEAR_GREATER RB_PARSE_GREATER
-#define RB_PARSE_YEAR_LESS RB_PARSE_LESS
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
 
-#define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2
 
 GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
 
-struct RhythmDBPrivate
-{
-	char *name;
-
-	gint read_counter;
-
-	RBMetaData *metadata;
-
-	xmlChar **column_xml_names;
-
-	RBRefString *empty_string;
-	RBRefString *octet_stream_str;
-
-	gboolean action_thread_running;
-	gint outstanding_threads;
-	GAsyncQueue *action_queue;
-	GAsyncQueue *event_queue;
-	GAsyncQueue *restored_queue;
-
-	GList *stat_list;
-	GHashTable *stat_events;
-	GnomeVFSAsyncHandle *stat_handle;
-	GMutex *stat_mutex;
-
-	GHashTable *monitored_directories;
-	GHashTable *changed_files;
-	guint library_location_notify_id;
-	guint changed_files_id;
-	GSList *library_locations;
-
-	gboolean dry_run;
-	gboolean no_update;
-
-	GMutex *change_mutex;
-	GHashTable *added_entries;
-	GHashTable *changed_entries;
-	GHashTable *deleted_entries;
-
-	GHashTable *propname_map;
-
-	GMutex *exit_mutex;
-	gboolean exiting;
-	
-	GCond *saving_condition;
-	GMutex *saving_mutex;
-
-	guint event_poll_id;
-	guint commit_timeout_id;
-	guint save_timeout_id;
-
-	guint emit_entry_signals_id;
-	GList *added_entries_to_emit;
-	GList *deleted_entries_to_emit;
-
-	gboolean saving;
-	gboolean dirty;
-};
 
 #define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
 G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
@@ -161,39 +83,6 @@ typedef struct
  	RhythmDBEntryType entry_type;
 } RhythmDBAction;
 
-typedef struct
-{
-	enum {
-		RHYTHMDB_EVENT_STAT,
-		RHYTHMDB_EVENT_METADATA_LOAD,
-		RHYTHMDB_EVENT_DB_LOAD,
-		RHYTHMDB_EVENT_THREAD_EXITED,
-		RHYTHMDB_EVENT_DB_SAVED,
-		RHYTHMDB_EVENT_QUERY_COMPLETE,
-		RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED,
-		RHYTHMDB_EVENT_FILE_DELETED,
-		RHYTHMDB_EVENT_ENTRY_SET
-	} type;
-	char *uri;
-	char *real_uri; /* Target of a symlink, if any */
-	RhythmDBEntryType entry_type;
-
-	GError *error;
-	RhythmDB *db;
-
-	/* STAT */
-	GnomeVFSFileInfo *vfsinfo;
-	GnomeVFSAsyncHandle *handle;
-	/* LOAD */
-	RBMetaData *metadata;
-	/* QUERY_COMPLETE */
-	RhythmDBQueryResults *results;
-	/* ENTRY_SET */
-	RhythmDBEntry *entry;
-	/* ENTRY_SET */
-	gboolean signal_change;
-	RhythmDBEntryChange change;
-} RhythmDBEvent;
 
 static void rhythmdb_finalize (GObject *object);
 static void rhythmdb_set_property (GObject *object,
@@ -211,20 +100,10 @@ static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
 static gpointer add_thread_main (RhythmDBAddThreadData *data);
 static gpointer action_thread_main (RhythmDB *db);
 static gpointer query_thread_main (RhythmDBQueryThreadData *data);
-static void queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type);
-static void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry, gboolean notify_if_inserted, guint propid, const GValue *value);
 static void rhythmdb_entry_set_mount_point (RhythmDB *db, 
  					    RhythmDBEntry *entry, 
  					    const gchar *realuri);
-static void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry, 
- 					   gboolean visibility);
  
-static void rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
- 					GnomeVFSVolume *volume, 
- 					gpointer data);
-static void rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
- 					  GnomeVFSVolume *volume, 
- 					  gpointer data);
 static gboolean free_entry_changes (RhythmDBEntry *entry, 
 				    GSList *changes,
 				    RhythmDB *db);
@@ -234,10 +113,6 @@ static void library_location_changed_cb (GConfClient *client,
 					  GConfEntry *entry,
 					  RhythmDB *db);
 static void rhythmdb_sync_library_location (RhythmDB *db);
-static gboolean rhythmdb_process_changed_files (RhythmDB *db);
-static void rhythmdb_monitor_uri_path (RhythmDB *db,
-				       const char *uri,
-				       GError **error);
 
 enum
 {
@@ -497,13 +372,6 @@ rhythmdb_init (RhythmDB *db)
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
 
-	db->priv->monitored_directories = g_hash_table_new_full (g_str_hash, g_str_equal,
-								 (GDestroyNotify) g_free,
-								 NULL);
-	db->priv->changed_files = g_hash_table_new_full (g_str_hash, g_str_equal,
-							 (GDestroyNotify) g_free,
-							 NULL);
-
  	db->priv->stat_events = g_hash_table_new_full (gnome_vfs_uri_hash, (GEqualFunc) gnome_vfs_uri_equal,
  						       (GDestroyNotify) gnome_vfs_uri_unref,
  						       NULL);
@@ -526,19 +394,7 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->empty_string = rb_refstring_new ("");
 	db->priv->octet_stream_str = rb_refstring_new ("application/octet-stream");      
 
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-mounted", 
-			  G_CALLBACK (rhythmdb_volume_mounted_cb), 
-			  db);
-
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-pre-unmount", 
-			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
-			  db);
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-unmounted", 
-			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
-			  db);
+	rhythmdb_init_monitoring (db);
 }
 
 static void
@@ -659,13 +515,6 @@ rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
 	g_free (result);
 }
 
-static gboolean
-rhythmdb_unmonitor_directories (char *dir, GnomeVFSMonitorHandle *handle, RhythmDB *db)
-{
-	gnome_vfs_monitor_cancel (handle);
-	return TRUE;
-}
-
 
 /**
  * rhythmdb_shutdown:
@@ -684,8 +533,6 @@ rhythmdb_shutdown (RhythmDB *db)
 	db->priv->exiting = TRUE;
 
 	eel_gconf_notification_remove (db->priv->library_location_notify_id);
-	g_hash_table_foreach_remove (db->priv->monitored_directories, (GHRFunc) rhythmdb_unmonitor_directories,
-				     db);
 	g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
 	g_slist_free (db->priv->library_locations);
 	db->priv->library_locations = NULL;
@@ -718,6 +565,8 @@ rhythmdb_finalize (GObject *object)
 
 	g_return_if_fail (db->priv != NULL);
 
+	rhythmdb_finalize_monitoring (db);
+
 	g_source_remove (db->priv->event_poll_id);
 	if (db->priv->save_timeout_id > 0) {
 		g_source_remove (db->priv->save_timeout_id);
@@ -733,10 +582,6 @@ rhythmdb_finalize (GObject *object)
 	g_mutex_free (db->priv->change_mutex);
 
 	g_hash_table_destroy (db->priv->propname_map);
-
-	g_hash_table_destroy (db->priv->monitored_directories);
-	g_source_remove (db->priv->changed_files_id);
-	g_hash_table_destroy (db->priv->changed_files);
 
 	g_hash_table_destroy (db->priv->added_entries);
 	g_hash_table_destroy (db->priv->deleted_entries);
@@ -1260,117 +1105,6 @@ rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry)
 				     rb_refstring_get (entry->mimetype));
 }
 
-static void
-rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
-			      const char *monitor_uri,
-			      const char *info_uri,
-			      GnomeVFSMonitorEventType vfsevent,
-			      RhythmDB *db)
-{
-	rb_debug ("directory event %d for %s: %s", (int) vfsevent,
-		  monitor_uri, info_uri);
-
-	switch (vfsevent) {
-        case GNOME_VFS_MONITOR_EVENT_CREATED:
-		{
-			GSList *cur;
-			gboolean in_library = FALSE;
-			
-			if (!eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
-				return;
-
-			/* don't notices new files outside of the library locations */
-			for (cur = db->priv->library_locations; cur != NULL; cur = g_slist_next (cur)) {
-				if (g_str_has_prefix (info_uri, cur->data)) {
-					in_library = TRUE;
-					break;
-				}
-			}
-		
-			if (!in_library)
-				return;	
-		}
-		
-		/* process directories immediately */
-		if (rb_uri_is_directory (info_uri)) {
-			rhythmdb_monitor_uri_path (db, info_uri, NULL);
-			rhythmdb_add_uri (db, info_uri);
-			return;
-		}
-		/* fall through*/
-	case GNOME_VFS_MONITOR_EVENT_CHANGED:
-        case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
-		{
-			GTimeVal time;
-
-			g_get_current_time (&time);
-			g_hash_table_replace (db->priv->changed_files,
-					      g_strdup (info_uri),
-					      GINT_TO_POINTER (time.tv_sec));
-		}
-		break;
-	case GNOME_VFS_MONITOR_EVENT_DELETED:
-		{
-			RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
-			event->db = db;
-			event->type = RHYTHMDB_EVENT_FILE_DELETED;
-			event->uri = g_strdup (info_uri);
-			g_async_queue_push (db->priv->event_queue, event);
-		}
-		break;
-	case GNOME_VFS_MONITOR_EVENT_STARTEXECUTING:
-	case GNOME_VFS_MONITOR_EVENT_STOPEXECUTING:
-		break;
-	}
-}
-
-static void
-rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
-{
-	char *directory;
-
-	if (rb_uri_is_directory (uri))
-		if (g_str_has_suffix(uri, G_DIR_SEPARATOR_S))
-			directory = g_strdup (uri);
-		else
-			directory = g_strconcat (uri, G_DIR_SEPARATOR_S, NULL);
-	else {
-		GnomeVFSURI *vfsuri, *parent;
-		
-		vfsuri = gnome_vfs_uri_new (uri);
-		parent = gnome_vfs_uri_get_parent (vfsuri);
-		directory = gnome_vfs_uri_to_string (parent, GNOME_VFS_URI_HIDE_NONE);
-		gnome_vfs_uri_unref (vfsuri);
-		gnome_vfs_uri_unref (parent);
-	}
-
-	if (directory == NULL)
-		return;
-
-	if (!g_hash_table_lookup (db->priv->monitored_directories, directory)) {
-		GnomeVFSResult vfsresult;
-		GnomeVFSMonitorHandle **handle = g_new0 (GnomeVFSMonitorHandle *, 1);
-		vfsresult = gnome_vfs_monitor_add (handle, directory,
-						   GNOME_VFS_MONITOR_DIRECTORY,
-						   (GnomeVFSMonitorCallback) rhythmdb_directory_change_cb,
-						   db);
-		if (vfsresult == GNOME_VFS_OK) {
-			rb_debug ("monitoring: %s", directory);
-			g_hash_table_insert (db->priv->monitored_directories,
-					     directory, *handle);
-		} else {
-			g_set_error (error,
-				     RHYTHMDB_ERROR,
-				     RHYTHMDB_ERROR_ACCESS_FAILED,
-				     _("Couldn't monitor %s: %s"),
-				     directory,
-				     gnome_vfs_result_to_string (vfsresult));
-			rb_debug ("failed to monitor %s", directory);
-			g_free (directory);
-			g_free (handle);
-		}
-	}
-}
 
 static void
 set_metadata_string_default_unknown (RhythmDB *db,
@@ -2083,7 +1817,7 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 }
 
 
-static void
+void
 queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 {
 	RhythmDBEvent *result;
@@ -2434,8 +2168,6 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	g_mutex_unlock (db->priv->saving_mutex);
 
 	g_timeout_add (10000, (GSourceFunc) rhythmdb_sync_library_idle, db);
-	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
-						    (GSourceFunc) rhythmdb_process_changed_files, db);
 
 	rb_debug ("queuing db load complete signal"); 	 
 	result = g_new0 (RhythmDBEvent, 1); 	 
@@ -2693,7 +2425,7 @@ rhythmdb_entry_set_uninserted (RhythmDB *db, RhythmDBEntry *entry,
 	rhythmdb_entry_set_internal (db, entry, FALSE, propid, value);
 }
 
-static void
+void
 rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			     gboolean notify_if_inserted,
 			     guint propid, const GValue *value)
@@ -3092,229 +2824,6 @@ rhythmdb_entry_delete_by_type (RhythmDB *db, RhythmDBEntryType type)
 	}
 }
 
-/**
- * rhythmdb_query_copy:
- * @array: the query to copy.
- *
- * Creates a copy of a query.
- *
- * Return value: a copy of the passed query. It must be freed with rhythmdb_query_free()
- **/
-GPtrArray *
-rhythmdb_query_copy (GPtrArray *array)
-{
-	GPtrArray *ret;
-
-	if (!array)
-		return NULL;
-	
-	ret = g_ptr_array_sized_new (array->len);
-	rhythmdb_query_concatenate (ret, array);
-
-	return ret;
-}
-
-void
-rhythmdb_query_concatenate (GPtrArray *query1, GPtrArray *query2)
-{
-	guint i;
-
-	g_assert (query2);
-	if (!query2)
-		return;
-	
-	for (i = 0; i < query2->len; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (query2, i);
-		RhythmDBQueryData *new_data = g_new0 (RhythmDBQueryData, 1);
-		new_data->type = data->type;
-		new_data->propid = data->propid;
-		if (data->val) {
-			new_data->val = g_new0 (GValue, 1);
-			g_value_init (new_data->val, G_VALUE_TYPE (data->val));
-			g_value_copy (data->val, new_data->val);
-		}
-		if (data->subquery)
-			new_data->subquery = rhythmdb_query_copy (data->subquery);
-		g_ptr_array_add (query1, new_data);
-	}
-}
-
-
-static GPtrArray *
-rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
-{
-	RhythmDBQueryType query;
-	GPtrArray *ret = g_ptr_array_new ();
-	char *error;
-	
-	while ((query = va_arg (args, RhythmDBQueryType)) != RHYTHMDB_QUERY_END) {
-		RhythmDBQueryData *data = g_new0 (RhythmDBQueryData, 1);
-		data->type = query;
-		switch (query) {
-		case RHYTHMDB_QUERY_DISJUNCTION:
-			break;
-		case RHYTHMDB_QUERY_SUBQUERY:
-			data->subquery = va_arg (args, GPtrArray *);
-			break;
-		case RHYTHMDB_QUERY_PROP_EQUALS:
-		case RHYTHMDB_QUERY_PROP_LIKE:
-		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
-		case RHYTHMDB_QUERY_PROP_PREFIX:
-		case RHYTHMDB_QUERY_PROP_SUFFIX:
-		case RHYTHMDB_QUERY_PROP_GREATER:
-		case RHYTHMDB_QUERY_PROP_LESS:
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
-		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
-		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
-		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
-			data->propid = va_arg (args, guint);
-			data->val = g_new0 (GValue, 1);
-			g_value_init (data->val, rhythmdb_get_property_type (db, data->propid));
-			G_VALUE_COLLECT (data->val, args, 0, &error);
-			break;
-		case RHYTHMDB_QUERY_END:
-			g_assert_not_reached ();
-			break;
-		}
-		g_ptr_array_add (ret, data);
-	}
-	return ret;
-}
-
-/**
- * rhythmdb_query_parse:
- * @db: a #RhythmDB instance
- *
- * Creates a query from a list of criteria.
- *
- * Most criteria consists of an operator (#RhythmDBQueryType),
- * a property (#RhythmDBPropType) and the data to compare with. An entry
- * matches a criteria if the operator returns true with the value of the
- * entries property as the first argument, and the given data as the second
- * argument.
- *
- * Three types criteria are special. Passing RHYTHMDB_QUERY_END indicates the
- * end of the list of criteria, and must be the last passes parameter.
- *
- * The second special criteria is a subquery which is defined by passing
- * RHYTHMDB_QUERY_SUBQUERY, followed by a query (#GPtrArray). An entry will
- * match a subquery criteria if it matches all criteria in the subquery.
- *
- * The third special criteria is a disjunction which is defined by passing
- * RHYTHMDB_QUERY_DISJUNCTION, which will make an entry match the query if
- * it matches the criteria before the disjunction, the criteria after the
- * disjunction, or both.
- *
- * Example:
- * 	rhythmdb_query_parse (db,
- * 		RHYTHMDB_QUERY_SUBQUERY, subquery,
- * 		RHYTHMDB_QUERY_DISJUNCTION
- * 		RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "cat",
- *		RHYTHMDB_QUERY_DISJUNCTION
- *		RHYTHMDB_QUERY_PROP_GREATER, RHYTHMDB_PROP_RATING, 2.5,
- *		RHYTHMDB_QUERY_PROP_LESS, RHYTHMDB_PROP_PLAY_COUNT, 10,
- * 		RHYTHMDB_QUERY_END);
- *
- * 	will create a query that matches entries:
- * 	a) that match the query "subquery", or
- * 	b) that have "cat" in their title, or
- * 	c) have a rating of at least 2.5, and a play count of at most 10
- * 
- * Returns: a the newly created query. It must be freed with rhythmdb_query_free()
- **/
-GPtrArray *
-rhythmdb_query_parse (RhythmDB *db, ...)
-{
-	GPtrArray *ret;
-	va_list args;
-
-	va_start (args, db);
-
-	ret = rhythmdb_query_parse_valist (db, args);
-
-	va_end (args);
-
-	return ret;
-}
-
-
-/**
- * rhythmdb_query_append:
- * @db: a #RhythmDB instance
- * @query: a query.
- *
- * Appends new criteria to the query @query.
- *
- * The list of criteria must be in the same format as for rhythmdb_query_parse,
- * and ended by RHYTHMDB_QUERY_END.
- **/
-void
-rhythmdb_query_append (RhythmDB *db, GPtrArray *query, ...)
-{
-	va_list args;
-	guint i;
-	GPtrArray *new = g_ptr_array_new ();
-
-	va_start (args, query);
-
-	new = rhythmdb_query_parse_valist (db, args);
-
-	for (i = 0; i < new->len; i++)
-		g_ptr_array_add (query, g_ptr_array_index (new, i));
-
-	g_ptr_array_free (new, TRUE);
-
-	va_end (args);
-}
-
-/**
- * rhythmdb_query_free:
- * @query: a query.
- *
- * Frees the query @query
- **/
-void
-rhythmdb_query_free (GPtrArray *query)
-{
-	guint i;
-
-	if (query == NULL)
-		return;
-	
-	for (i = 0; i < query->len; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (query, i);
-		switch (data->type) {
-		case RHYTHMDB_QUERY_DISJUNCTION:
-			break;
-		case RHYTHMDB_QUERY_SUBQUERY:
-			rhythmdb_query_free (data->subquery);
-			break;
-		case RHYTHMDB_QUERY_PROP_EQUALS:
-		case RHYTHMDB_QUERY_PROP_LIKE:
-		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
-		case RHYTHMDB_QUERY_PROP_PREFIX:
-		case RHYTHMDB_QUERY_PROP_SUFFIX:
-		case RHYTHMDB_QUERY_PROP_GREATER:
-		case RHYTHMDB_QUERY_PROP_LESS:
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
-		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
-		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
-		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
-			g_value_unset (data->val);
-			g_free (data->val);
-			break;
-		case RHYTHMDB_QUERY_END:
-			g_assert_not_reached ();
-			break;
-		}
-		g_free (data);
-	}
-
-	g_ptr_array_free (query, TRUE);
-}
-
 const xmlChar *
 rhythmdb_nice_elt_name_from_propid (RhythmDB *db, RhythmDBPropType propid)
 {
@@ -3330,316 +2839,6 @@ rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const xmlChar *name)
 		return GPOINTER_TO_INT (ret);
 	}
 	return -1;
-}
-
-static char *
-entry_type_to_string (RhythmDBEntryType type)
-{
-	if (type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		return g_strdup ("0");
-	} else if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
-		return g_strdup ("1");
-	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
-		return g_strdup ("2");
-	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		return g_strdup ("3");
-	}
-	g_assert_not_reached ();
-}
-
-static RhythmDBEntryType
-entry_type_from_uint (unsigned int type) 
-{
-	switch (type) {
-	case 0:
-		return RHYTHMDB_ENTRY_TYPE_SONG;
-	case 1:
-		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
-	case 2:
-		return RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
-	case 3:
-		return RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
-	default:
-		g_assert_not_reached ();
-	}
-
-	return RHYTHMDB_ENTRY_TYPE_INVALID;
-}
-
-static void
-write_encoded_gvalue (xmlNodePtr node,
-		      GValue *val)
-{
-	char *strval;
-	xmlChar *quoted;
-
-	switch (G_VALUE_TYPE (val)) {
-	case G_TYPE_STRING:
-		strval = g_value_dup_string (val);
-		break;
-	case G_TYPE_BOOLEAN:
-		strval = g_strdup_printf ("%d", g_value_get_boolean (val));
-		break;
-	case G_TYPE_INT:
-		strval = g_strdup_printf ("%d", g_value_get_int (val));
-		break;
-	case G_TYPE_LONG:
-		strval = g_strdup_printf ("%ld", g_value_get_long (val));
-		break;
-	case G_TYPE_ULONG:
-		strval = g_strdup_printf ("%lu", g_value_get_ulong (val));
-		break;
-	case G_TYPE_UINT64:
-		strval = g_strdup_printf ("%" G_GUINT64_FORMAT, g_value_get_uint64 (val));
-		break;
-	case G_TYPE_FLOAT:
-		strval = g_strdup_printf ("%f", g_value_get_float (val));
-		break;
-	case G_TYPE_DOUBLE:
-		strval = g_strdup_printf ("%f", g_value_get_double (val));
-		break;
-	case G_TYPE_POINTER:
-		strval = entry_type_to_string (g_value_get_pointer (val));
-		break;
-	default:
-		g_assert_not_reached ();
-		strval = NULL;
-		break;
-	}
-
-	quoted = xmlEncodeEntitiesReentrant (NULL, BAD_CAST strval);
-	g_free (strval);
-	xmlNodeSetContent (node, quoted);
-	g_free (quoted);
-}
-
-static void
-read_encoded_property (RhythmDB *db,
-		       xmlNodePtr node,
-		       guint propid,
-		       GValue *val)
-{
-	char *content;
-
-	g_value_init (val, rhythmdb_get_property_type (db, propid));
-
-	content = (char *)xmlNodeGetContent (node);
-	
-	switch (G_VALUE_TYPE (val)) {
-	case G_TYPE_STRING:
-		g_value_set_string (val, content);
-		break;
-	case G_TYPE_BOOLEAN:
-		g_value_set_boolean (val, g_ascii_strtoull (content, NULL, 10));
-		break;
-	case G_TYPE_ULONG:
-		g_value_set_ulong (val, g_ascii_strtoull (content, NULL, 10));
-		break;
-	case G_TYPE_UINT64:
-		g_value_set_uint64 (val, g_ascii_strtoull (content, NULL, 10));
-		break;
-	case G_TYPE_DOUBLE:
-		g_value_set_double (val, g_ascii_strtod (content, NULL));
-		break;
-	case G_TYPE_POINTER:
-		if (propid == RHYTHMDB_PROP_TYPE) {
-			RhythmDBEntryType entry_type;
-			entry_type = entry_type_from_uint (g_ascii_strtoull (content, NULL, 10));
-			if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
-				g_value_set_pointer (val, entry_type);
-				break;
-			} else {
-				g_warning ("Unexpected entry type");
-				/* Fall through */
-			}
-		}
-		/* Falling through on purpose to get an assert for unexpected 
-		 * cases 
-		 */
-	default:
-		g_warning ("Attempt to read '%s' of unhandled type %s", 
-			   rhythmdb_nice_elt_name_from_propid (db, propid),
-			   g_type_name (G_VALUE_TYPE (val)));
-		g_assert_not_reached ();
-		break;
-	}
-
-	g_free (content);
-}
-
-
-void
-rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
-			  xmlNodePtr parent)
-{
-	guint i;
-	xmlNodePtr node = xmlNewChild (parent, NULL, RB_PARSE_CONJ, NULL);
-	xmlNodePtr subnode;
-
-	for (i = 0; i < query->len; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (query, i);
-		
-		switch (data->type) {
-		case RHYTHMDB_QUERY_SUBQUERY:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_SUBQUERY, NULL);
-			rhythmdb_query_serialize (db, data->subquery, subnode);
-			break;
-		case RHYTHMDB_QUERY_PROP_LIKE:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_LIKE, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_NOT_LIKE, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_PREFIX:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_PREFIX, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_SUFFIX:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_SUFFIX, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_EQUALS:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_EQUALS, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_EQUALS, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_DISJUNCTION:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_DISJ, NULL);
-			break;
-		case RHYTHMDB_QUERY_END:
-			break;
-		case RHYTHMDB_QUERY_PROP_GREATER:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_GREATER, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_GREATER, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_LESS:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_LESS, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
-			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_LESS, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_CURRENT_TIME_WITHIN, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
-			subnode = xmlNewChild (node, NULL, RB_PARSE_CURRENT_TIME_NOT_WITHIN, NULL);
-			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
-			break;
-		}		
-	}
-}
-
-GPtrArray *
-rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
-{
-	GPtrArray *query = g_ptr_array_new ();
-	xmlNodePtr child;
-
-	g_assert (!xmlStrcmp (parent->name, RB_PARSE_CONJ));
-	
-	for (child = parent->children; child; child = child->next) {
-		RhythmDBQueryData *data;
-
-		if (xmlNodeIsText (child))
-			continue;
-
-		data = g_new0 (RhythmDBQueryData, 1);
-
-		if (!xmlStrcmp (child->name, RB_PARSE_SUBQUERY)) {
-			xmlNodePtr subquery;
-			data->type = RHYTHMDB_QUERY_SUBQUERY;
-			subquery = child->children;
-			while (xmlNodeIsText (subquery))
-				subquery = subquery->next;
-			
-			data->subquery = rhythmdb_query_deserialize (db, subquery);
-		} else if (!xmlStrcmp (child->name, RB_PARSE_DISJ)) {
-			data->type = RHYTHMDB_QUERY_DISJUNCTION;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_LIKE)) {
-			data->type = RHYTHMDB_QUERY_PROP_LIKE;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)) {
-			data->type = RHYTHMDB_QUERY_PROP_NOT_LIKE;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_PREFIX)) {
-			data->type = RHYTHMDB_QUERY_PROP_PREFIX;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_SUFFIX)) {
-			data->type = RHYTHMDB_QUERY_PROP_SUFFIX;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_EQUALS)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
-				       (xmlChar *)"date")) 
-				data->type = RHYTHMDB_QUERY_PROP_YEAR_EQUALS;
-			else 
-				data->type = RHYTHMDB_QUERY_PROP_EQUALS;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_GREATER)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
-				       (xmlChar *)"date")) 
-				data->type = RHYTHMDB_QUERY_PROP_YEAR_GREATER;
-			else 
-				data->type = RHYTHMDB_QUERY_PROP_GREATER;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_LESS)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
-				       (xmlChar *)"date")) 
-				data->type = RHYTHMDB_QUERY_PROP_YEAR_LESS;
-			else 
-				data->type = RHYTHMDB_QUERY_PROP_LESS;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)) {
-			data->type = RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN;
-		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_NOT_WITHIN)) {
-			data->type = RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN;
-		} else
- 			g_assert_not_reached ();
-
-		if (!xmlStrcmp (child->name, RB_PARSE_LIKE)
-		    || !xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)
-		    || !xmlStrcmp (child->name, RB_PARSE_PREFIX)
-		    || !xmlStrcmp (child->name, RB_PARSE_SUFFIX)
-		    || !xmlStrcmp (child->name, RB_PARSE_EQUALS)
-		    || !xmlStrcmp (child->name, RB_PARSE_GREATER)
-		    || !xmlStrcmp (child->name, RB_PARSE_LESS)
-		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_EQUALS)
-		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_GREATER)
-		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_LESS)
-		    || !xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)
-		    || !xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_NOT_WITHIN)) {
-			xmlChar *propstr = xmlGetProp (child, RB_PARSE_PROP);
-			gint propid = rhythmdb_propid_from_nice_elt_name (db, propstr);
-			g_free (propstr);
-
-			g_assert (propid >= 0 && propid < RHYTHMDB_NUM_PROPERTIES);
-
-			data->propid = propid;
-			data->val = g_new0 (GValue, 1);
-
-			read_encoded_property (db, child, data->propid, data->val);
-		} 
-
-		g_ptr_array_add (query, data);
-	}
-
-	return query;
 }
 
 /**
@@ -4170,105 +3369,6 @@ RhythmDBEntryType rhythmdb_entry_import_error_get_type (void)
 	return import_error_type;
 }
 
-
-typedef struct
-{
-	RhythmDB *db;
-	char *mount_point;
-	gboolean mounted;
-} MountCtxt;
-
-static void 
-entry_volume_mounted_or_unmounted (RhythmDBEntry *entry, 
-				   MountCtxt *ctxt)
-{
-	const char *mount_point;
-	const char *location;
-	
-	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG &&
-	    entry->type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
-		return;
-	}
-	
-	mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-	if (mount_point == NULL || strcmp (mount_point, ctxt->mount_point) != 0) {
-		return;
-	}
-	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		if (ctxt->mounted) {
-			rb_debug ("queueing stat for entry %s (mounted)", location);
-
-			/* make files visible immediately, 
-			 * then hide any that turn out to be missing.
-			 */
-			rhythmdb_entry_set_visibility (ctxt->db, entry, TRUE);
-			queue_stat_uri (location, 
-					ctxt->db,
-					RHYTHMDB_ENTRY_TYPE_SONG);
-		} else {
-			GTimeVal time;
-			GValue val = {0, };
-
-			rb_debug ("hiding entry %s (unmounted)", location);
-			
-			g_get_current_time (&time);
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, time.tv_sec);
-			rhythmdb_entry_set_internal (ctxt->db, entry, FALSE,
-						     RHYTHMDB_PROP_LAST_SEEN, &val);
-			g_value_unset (&val);
-
-			rhythmdb_entry_set_visibility (ctxt->db, entry, FALSE);
-		}
-	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
-		/* delete import errors for files on unmounted volumes */
-		if (ctxt->mounted == FALSE) {
-			rb_debug ("removing import error for %s (unmounted)", location);
-			rhythmdb_entry_delete (ctxt->db, entry);
-		}
-	}
-}
-
-
-static void 
-rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-			    GnomeVFSVolume *volume, 
-			    gpointer data)
-{
-	MountCtxt ctxt;
-
-	ctxt.db = RHYTHMDB (data);
-	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
-	ctxt.mounted = TRUE;
-	rhythmdb_entry_foreach (RHYTHMDB (data), 
-				(GFunc)entry_volume_mounted_or_unmounted, 
-				&ctxt);
-	rhythmdb_commit (RHYTHMDB (data));
-	g_free (ctxt.mount_point);
-}
-
-
-static void 
-rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-			      GnomeVFSVolume *volume, 
-			      gpointer data)
-{
-	MountCtxt ctxt;
-
-	ctxt.db = RHYTHMDB (data);
-	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
-	ctxt.mounted = FALSE;
-	rb_debug ("volume %s unmounted", ctxt.mount_point);
-	rhythmdb_entry_foreach (RHYTHMDB (data), 
-				(GFunc)entry_volume_mounted_or_unmounted, 
-				&ctxt);
-	rhythmdb_commit (RHYTHMDB (data));
-	g_free (ctxt.mount_point);
-}
-
-
 static void
 rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry, 
 				const gchar *realuri)
@@ -4287,7 +3387,7 @@ rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry,
 	}
 }
 
-static void
+void
 rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry, 
 			       gboolean visible)
 {
@@ -4313,191 +3413,6 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 	g_value_unset (&old_val);
 }
 
-/**
- * This is used to "process" queries, before using them. It is mainly used to two things:
- *
- * 1) performing expensive data transformations once per query, rather than
- *    once per entry we try to match against. e.g. RHYTHMDB_PROP_SEARCH_MATCH
- *
- * 2) defining criteria in terms of other lower-level ones that the db backend
- *    actually implements. e.g. RHYTHMDB_QUERY_YEAR_*
- **/
-
-void
-rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
-{
-	int i;	
-
-	if (query == NULL)
-		return;
-
-	for (i = 0; i < query->len; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (query, i);
-		gboolean restart_criteria = FALSE;
-		
-		if (data->subquery) {
-			rhythmdb_query_preprocess (db, data->subquery);
-		} else switch (data->propid) {
-			case RHYTHMDB_PROP_TITLE_FOLDED:
-			case RHYTHMDB_PROP_GENRE_FOLDED:
-			case RHYTHMDB_PROP_ARTIST_FOLDED:
-			case RHYTHMDB_PROP_ALBUM_FOLDED:
-			{
-				/* as we are matching against a folded property, the string needs to also be folded */
-				const char *orig = g_value_get_string (data->val);
-				char *folded = rb_search_fold (orig);
-
-				g_value_reset (data->val);
-				g_value_take_string (data->val, folded);
-				break;
-			}
-
-			case RHYTHMDB_PROP_SEARCH_MATCH:
-			{
-				const char *orig = g_value_get_string (data->val);
-				char *folded = rb_search_fold (orig);
-				char **words = rb_string_split_words (folded);
-
-				g_free (folded);
-				g_value_unset (data->val);
-				g_value_init (data->val, G_TYPE_STRV);
-				g_value_take_boxed (data->val, words);
-				break;
-			}
-
-			case RHYTHMDB_PROP_DATE:
-			{
-				GDate date = {0,};
-				gulong search_date;
-				gulong begin;
-				gulong end;
-				gulong year;
-
-				search_date = g_value_get_ulong (data->val);
-				g_date_set_julian (&date, search_date);
-				year = g_date_get_year (&date);
-				g_date_clear (&date, 1);
-
-				/* get Julian dates for beginning and end of year */
-				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year);
-				begin = g_date_get_julian (&date);
-				g_date_clear (&date, 1);
-
-				/* and the day before the beginning of the next year */
-				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year + 1);
-				end =  g_date_get_julian (&date) - 1;
-				
-				switch (data->type)
-				{
-				case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
-					restart_criteria = TRUE;
-					data->type = RHYTHMDB_QUERY_SUBQUERY;
-					data->subquery = rhythmdb_query_parse (db,
-									       RHYTHMDB_QUERY_PROP_GREATER, data->propid, begin,
-									       RHYTHMDB_QUERY_PROP_LESS, data->propid, end,
-									       RHYTHMDB_QUERY_END);
-					break;
-
-				case RHYTHMDB_QUERY_PROP_YEAR_LESS:
-					restart_criteria = TRUE;
-					data->type = RHYTHMDB_QUERY_PROP_LESS;
-					g_value_set_ulong (data->val, end);
-					break;
-
-				case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
-					restart_criteria = TRUE;
-					data->type = RHYTHMDB_QUERY_PROP_GREATER;
-					g_value_set_ulong (data->val, begin);
-					break;
-
-				default:
-					break;
-				}
-				
-				break;
-			}
-			
-			default:
-				break;
-		}
-
-		/* re-do this criteria, in case it needs further transformation */
-		if (restart_criteria)
-			i--;
-	}
-}
-
-void
-rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, RhythmDBPropType propid, GList *items)
-{
-	GPtrArray *subquery;
-
-	if (items == NULL)
-		return;
-
-	if (items->next == NULL) {
-		rhythmdb_query_append (db,
-				       query,
-				       RHYTHMDB_QUERY_PROP_EQUALS,
-				       propid,
-				       items->data,
-				       RHYTHMDB_QUERY_END);
-		return;
-	}
-
-	subquery = g_ptr_array_new ();
-
-	rhythmdb_query_append (db,
-			       subquery,
-			       RHYTHMDB_QUERY_PROP_EQUALS,
-			       propid,
-			       items->data,
-			       RHYTHMDB_QUERY_END);
-	items = items->next;
-	while (items) {
-		rhythmdb_query_append (db,
-				       subquery,
-				       RHYTHMDB_QUERY_DISJUNCTION,
-				       RHYTHMDB_QUERY_PROP_EQUALS,
-				       propid,
-				       items->data,
-				       RHYTHMDB_QUERY_END);
-		items = items->next;
-	}
-	rhythmdb_query_append (db, query, RHYTHMDB_QUERY_SUBQUERY, subquery,
-			       RHYTHMDB_QUERY_END);
-}
-
-gboolean
-rhythmdb_query_is_time_relative (RhythmDB *db, GPtrArray *query)
-{
-	int i;
-	if (query == NULL)
-		return FALSE;
-
-	for (i=0; i < query->len; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (query, i);
-
-		if (data->subquery) {
-			if (rhythmdb_query_is_time_relative (db, data->subquery))
-				return TRUE;
-			else
-				continue;
-		}
-
-		switch (data->type) {
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
-		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
-			return TRUE;
-		default:
-			break;
-		}
-	}
-
-	return FALSE;
-}
-
-
 static gboolean
 rhythmdb_idle_save (RhythmDB *db)
 {
@@ -4507,61 +3422,6 @@ rhythmdb_idle_save (RhythmDB *db)
 	}
 
 	return TRUE;
-}
-
-static void
-monitor_subdirectory (const char *uri, RhythmDB *db)
-{
-	GError *error = NULL;
-
-	if (!rb_uri_is_directory (uri))
-		return;
-
-	rhythmdb_monitor_uri_path (db, uri, &error);
-
-	if (error) {
-		/* FIXME: should we complain to the user? */
-		rb_debug ("error while attempting to monitor the library directory: %s", error->message);
-	}
-}
-
-static void
-monitor_library_directory (const char *uri, RhythmDB *db)
-{
-	GError *error = NULL;
-
-	if ((strcmp (uri, "file:///") == 0) ||
-	    (strcmp (uri, "file://") == 0)) {
-		/* display an error to the user? */
-		return;
-	}
-	
-	rb_debug ("beginning monitor of the library directory %s", uri);
-	rhythmdb_monitor_uri_path (db, uri, &error);
-	rb_uri_handle_recursively (uri, (GFunc) monitor_subdirectory, NULL, db);
-
-	if (error) {
-		/* FIXME: should we complain to the user? */
-		rb_debug ("error while attempting to monitor the library directory: %s", error->message);
-	}
-
-	rb_debug ("loading new tracks from library directory %s", uri);
-	rhythmdb_add_uri (db, uri);
-}
-
-static void
-monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
-{
-	GError *error = NULL;
-
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		rhythmdb_monitor_uri_path (db, entry->location, &error);
-	}
-
-	if (error) {
-		/* FIXME: should we complain to the user? */
-		rb_debug ("error while attempting to monitor library track: %s", error->message);
-	} 
 }
 
 static void
@@ -4580,9 +3440,8 @@ rhythmdb_sync_library_location (RhythmDB *db)
 	if (reload) {
 		rb_debug ("ending monitor of old library directories");
 
-		g_hash_table_foreach_remove (db->priv->monitored_directories,
-					     (GHRFunc) rhythmdb_unmonitor_directories,
-					     db);
+		rhythmdb_stop_monitoring (db);
+
 		g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
 		g_slist_free (db->priv->library_locations);
 		db->priv->library_locations = NULL;
@@ -4591,12 +3450,7 @@ rhythmdb_sync_library_location (RhythmDB *db)
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY)) {
 		db->priv->library_locations = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
-		if (db->priv->library_locations) {
-			g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
-		}
-
-		/* monitor every directory that contains a (TYPE_SONG) track */
-		rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
+		rhythmdb_start_monitoring (db);
 	}
 }
 
@@ -4607,38 +3461,6 @@ library_location_changed_cb (GConfClient *client,
 			     RhythmDB *db)
 {
 	rhythmdb_sync_library_location (db);
-}
-
-static gboolean
-rhythmdb_check_changed_file (const char *uri, gpointer data, RhythmDB *db)
-{
-	GTimeVal time;
-	glong time_sec = GPOINTER_TO_INT (data);
-
-	g_get_current_time (&time);
-	if (time.tv_sec >= time_sec + RHYTHMDB_FILE_MODIFY_PROCESS_TIME) {
-		/* process and remove from table */
-		RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
-		event->db = db;
-		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
-		event->uri = g_strdup (uri);
-		
-		g_async_queue_push (db->priv->event_queue, event);
-		rb_debug ("adding newly located file %s", uri);
-		return TRUE;
-	}
-	
-	rb_debug ("waiting to add newly located file %s", uri);
-	
-	return FALSE;
-}
-
-static gboolean
-rhythmdb_process_changed_files (RhythmDB *db)
-{
-	g_hash_table_foreach_remove (db->priv->changed_files,
-				     (GHRFunc)rhythmdb_check_changed_file, db);
-	return TRUE;
 }
 
 char *
@@ -4883,20 +3705,6 @@ rhythmdb_entry_type_get_type (void)
 
 	if (G_UNLIKELY (type == 0)) {
 		type = g_pointer_type_register_static ("RhythmDBEntryType");
-	}
-
-	return type;
-}
-
-GType
-rhythmdb_query_get_type (void)
-{
-	static GType type = 0;
-
-	if (G_UNLIKELY (type == 0)) {
-		type = g_boxed_type_register_static ("RhythmDBQuery",
-						     (GBoxedCopyFunc)rhythmdb_query_copy,
-						     (GBoxedFreeFunc)rhythmdb_query_free);
 	}
 
 	return type;

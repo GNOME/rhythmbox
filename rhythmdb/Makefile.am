@@ -24,6 +24,8 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb.h					\
 	rhythmdb-private.h				\
 	rhythmdb.c					\
+	rhythmdb-monitor.c				\
+	rhythmdb-query.c				\
 	rhythmdb-property-model.h			\
 	rhythmdb-property-model.c			\
 	rhythmdb-query-model.h				\
