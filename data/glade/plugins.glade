@@ -30,7 +30,7 @@
 	  <property name="border_width">6</property>
 	  <property name="visible">True</property>
 	  <property name="homogeneous">False</property>
-	  <property name="spacing">0</property>
+	  <property name="spacing">12</property>
 
 	  <child>
 	    <widget class="GtkScrolledWindow" id="scrolledwindow1">
@@ -68,19 +68,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkVSeparator" id="vseparator1">
-	      <property name="visible">True</property>
-	    </widget>
-	    <packing>
-	      <property name="padding">3</property>
-	      <property name="expand">False</property>
-	      <property name="fill">False</property>
-	    </packing>
-	  </child>
-
-	  <child>
 	    <widget class="GtkVBox" id="vbox1">
-	      <property name="border_width">12</property>
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">6</property>
@@ -465,7 +453,7 @@
 			      <child>
 				<widget class="GtkLabel" id="label2">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">Configure...</property>
+				  <property name="label" translatable="yes">C_onfigure...</property>
 				  <property name="use_underline">True</property>
 				  <property name="use_markup">False</property>
 				  <property name="justify">GTK_JUSTIFY_LEFT</property>

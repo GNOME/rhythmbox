@@ -1,5 +1,18 @@
 2006-05-20  Dennis Cranston  <dennis_cranston@yahoo.com>
 
+	* plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in:
+	Capitalization fix.
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_create_configure_dialog):  UI layout fixes, remove
+	dialog separator, and capitalization fix for window title.
+	* shell/rb-shell.c: (rb_shell_cmd_plugins):  UI layout fixes, 
+	and remove dialog separator.
+	* data/glade/plugins.glade:  UI layout fixes.
+	* data/glade/audioscrobbler-prefs.glade:  UI layout fixes,
+	and capitalization fix.  Fixes #342438.
+
+2006-05-20  Dennis Cranston  <dennis_cranston@yahoo.com>
+
 	* data/glade/podcast-properties.glade:  Fix layout of the download 
 	location.  Fixes #342431.
 

@@ -2282,6 +2282,10 @@ rb_shell_cmd_plugins (GtkAction *action,
 								    GTK_STOCK_CLOSE,
 								    GTK_RESPONSE_CLOSE,
 								    NULL);
+	    	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->plugins), 5);
+		gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell->priv->plugins)->vbox), 2);
+		gtk_dialog_set_has_separator (GTK_DIALOG (shell->priv->plugins), FALSE);
+								    
 		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
 					 "delete_event",
 					 G_CALLBACK (rb_shell_plugins_window_delete_cb),

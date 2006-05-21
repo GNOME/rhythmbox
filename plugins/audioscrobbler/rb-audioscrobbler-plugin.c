@@ -161,11 +161,15 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 
 		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler);
 
-		plugin->preferences = gtk_dialog_new_with_buttons (_("Last.fm profile preferences"),
+		plugin->preferences = gtk_dialog_new_with_buttons (_("Last.fm Profile Preferences"),
 								   NULL,
 								   GTK_DIALOG_DESTROY_WITH_PARENT,
 								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
 								   NULL);
+		gtk_container_set_border_width (GTK_CONTAINER (plugin->preferences), 5);
+		gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (plugin->preferences)->vbox), 2);
+		gtk_dialog_set_has_separator (GTK_DIALOG (plugin->preferences), FALSE);
+		
 		g_signal_connect (G_OBJECT (plugin->preferences),
 				  "response",
 				  G_CALLBACK (preferences_response_cb),
