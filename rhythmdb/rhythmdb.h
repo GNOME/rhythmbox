@@ -53,6 +53,8 @@ GType rhythmdb_entry_get_type (void);
 
 typedef void (*RhythmDBEntryActionFunc) (RhythmDBEntry *entry, gpointer data);
 typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
+typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
+typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
 
 typedef struct {
 	/* virtual functions here */
@@ -67,6 +69,14 @@ typedef struct {
 	RhythmDBEntryStringFunc		get_playback_uri;
 	gpointer			get_playback_uri_data;
 	GDestroyNotify			get_playback_uri_destroy;
+
+	RhythmDBEntryCanSyncFunc	can_sync_metadata;
+	gpointer			can_sync_metadata_data;
+	GDestroyNotify			can_sync_metadata_destroy;
+
+	RhythmDBEntrySyncFunc		sync_metadata;
+	gpointer			sync_metadata_data;
+	GDestroyNotify			sync_metadata_destroy;
 } RhythmDBEntryType_;
 typedef RhythmDBEntryType_ *RhythmDBEntryType;
 

@@ -24,6 +24,7 @@
 /*
  * TODO
  *    * handle cases where MusicBrainz returns multiple albums
+ *    * save user-edited metadata somewhere (use S-J stuff?)
  */
 
 #include "config.h"
@@ -167,6 +168,9 @@ rb_audiocd_source_new (RBShell *shell,
 	g_assert (rb_audiocd_is_volume_audiocd (volume));
 
 	entry_type =  rhythmdb_entry_register_type ();
+	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
+	/* TODO same the metadata somewhere */
+	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
 
 	device_path = gnome_vfs_volume_get_device_path (volume);
 

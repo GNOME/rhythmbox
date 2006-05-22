@@ -710,25 +710,25 @@ emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 static void
 sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 {
-	if (rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_SONG) {
-		GSList *t;
-		for (t = changes; t; t = t->next) {
-			RBMetaDataField field;
-			RhythmDBEntryChange *change = t->data;
-			if (metadata_field_from_prop (change->prop, &field)) {
-				RhythmDBAction *action;
+	GSList *t;
 
-				if (!rhythmdb_entry_is_editable (db, entry)) {
-					g_warning ("trying to sync properties of non-editable file");
-					break;
-				}
-				
-				action = g_new0 (RhythmDBAction, 1);
-				action->type = RHYTHMDB_ACTION_SYNC;
-				action->uri = g_strdup (entry->location);
-				g_async_queue_push (db->priv->action_queue, action);
+	for (t = changes; t; t = t->next) {
+		RBMetaDataField field;
+		RhythmDBEntryChange *change = t->data;
+
+		if (metadata_field_from_prop (change->prop, &field)) {
+			RhythmDBAction *action;
+
+			if (!rhythmdb_entry_is_editable (db, entry)) {
+				g_warning ("trying to sync properties of non-editable file");
 				break;
 			}
+
+			action = g_new0 (RhythmDBAction, 1);
+			action->type = RHYTHMDB_ACTION_SYNC;
+			action->uri = g_strdup (entry->location);
+			g_async_queue_push (db->priv->action_queue, action);
+			break;
 		}
 	}
 }
@@ -1101,8 +1101,10 @@ rhythmdb_entry_unref (RhythmDB *db, RhythmDBEntry *entry)
 gboolean
 rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry)
 {
-	return rb_metadata_can_save (db->priv->metadata,
-				     rb_refstring_get (entry->mimetype));
+	RhythmDBEntryType entry_type;
+
+	entry_type = rhythmdb_entry_get_entry_type (entry);
+	return entry_type->can_sync_metadata (db, entry, entry_type->can_sync_metadata_data);
 }
 
 
@@ -2045,24 +2047,11 @@ action_thread_main (RhythmDB *db)
 		case RHYTHMDB_ACTION_SYNC:
 		{
 			GError *error = NULL;
-			RhythmDBSaveErrorData *data;
 			RhythmDBEntry *entry;
+			RhythmDBEntryType entry_type;
 
 			if (db->priv->dry_run) {
 				rb_debug ("dry run is enabled, not syncing metadata");
-				break;
-			}
-
-			rb_metadata_load (db->priv->metadata,
-					  action->uri, &error);
-			if (error != NULL) {
-				data = g_new0 (RhythmDBSaveErrorData, 1);
-				g_object_ref (G_OBJECT (db));
-				data->db = db;
-				data->uri = g_strdup (action->uri);
-				data->error = error;
-		
-				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
 				break;
 			}
 
@@ -2070,26 +2059,18 @@ action_thread_main (RhythmDB *db)
 			if (!entry)
 				break;
 
-			entry_to_rb_metadata (db, entry, db->priv->metadata);
+			entry_type = rhythmdb_entry_get_entry_type (entry);
+			entry_type->sync_metadata (db, entry, &error, entry_type->sync_metadata_data);
 
-			rb_metadata_save (db->priv->metadata, &error);
 			if (error != NULL) {
-				RhythmDBAction *load_action;
+				RhythmDBSaveErrorData *data;
 
-				/* reload the metadata, to revert the db changes */
-				load_action = g_new0 (RhythmDBAction, 1);
-				load_action->type = RHYTHMDB_ACTION_LOAD;
-				load_action->uri = g_strdup (action->uri);
-				load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-				g_async_queue_push (db->priv->action_queue, load_action);
-				
 				data = g_new0 (RhythmDBSaveErrorData, 1);
 				g_object_ref (G_OBJECT (db));
 				data->db = db;
 				data->uri = g_strdup (action->uri);
 				data->error = error;
 				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
-
 				break;
 			}
 			break;
@@ -3257,6 +3238,46 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size, cons
 	return ret;
 }
 
+static gboolean
+song_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, gpointer data)
+{
+	const char *mimetype;
+
+	mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);	
+	return rb_metadata_can_save (db->priv->metadata, mimetype);
+}
+
+static void
+default_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data)
+{
+	const char *uri;
+	GError *local_error = NULL;
+
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	rb_metadata_load (db->priv->metadata,
+			  uri, &local_error);
+	if (local_error != NULL) {
+		g_propagate_error (error, local_error);
+		return;
+	}
+
+	entry_to_rb_metadata (db, entry, db->priv->metadata);
+
+	rb_metadata_save (db->priv->metadata, &local_error);
+	if (local_error != NULL) {
+		RhythmDBAction *load_action;
+
+		/* reload the metadata, to revert the db changes */
+		load_action = g_new0 (RhythmDBAction, 1);
+		load_action->type = RHYTHMDB_ACTION_LOAD;
+		load_action->uri = g_strdup (uri);
+		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+		g_async_queue_push (db->priv->action_queue, load_action);
+
+		g_propagate_error (error, local_error);
+	}
+}
+
 /**
  * rhythmdb_entry_register_type:
  *
@@ -3268,7 +3289,13 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size, cons
 RhythmDBEntryType
 rhythmdb_entry_register_type (void)
 {
-	return g_new0(RhythmDBEntryType_, 1);
+	RhythmDBEntryType et;
+	
+	et = g_new0 (RhythmDBEntryType_, 1);
+	et->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_false_function;
+	et->sync_metadata = default_sync_metadata;
+
+	return et;
 }
 
 static GStaticMutex entry_type_mutex = G_STATIC_MUTEX_INIT;
@@ -3281,6 +3308,7 @@ rhythmdb_entry_song_get_type (void)
 	g_static_mutex_lock (&entry_type_mutex);
 	if (song_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		song_type = rhythmdb_entry_register_type ();
+		song_type->can_sync_metadata = song_can_sync_metadata;
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
 
@@ -3308,6 +3336,8 @@ RhythmDBEntryType rhythmdb_entry_iradio_get_type (void)
 	g_static_mutex_lock (&entry_type_mutex);
 	if (iradio_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		iradio_type = rhythmdb_entry_register_type ();
+		iradio_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
+		iradio_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
 
@@ -3348,12 +3378,6 @@ RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void)
 	return podcast_feed_type;
 }
 
-static char *
-_get_import_error_playback_uri (RhythmDBEntry *entry, gpointer data)
-{
-	return NULL;
-}
-
 RhythmDBEntryType rhythmdb_entry_import_error_get_type (void) 
 {
 	static RhythmDBEntryType import_error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
@@ -3362,7 +3386,7 @@ RhythmDBEntryType rhythmdb_entry_import_error_get_type (void)
 	if (import_error_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
 		import_error_type = rhythmdb_entry_register_type ();
 		
-		import_error_type->get_playback_uri = _get_import_error_playback_uri;
+		import_error_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_null_function;
 	}
 	g_static_mutex_unlock (&entry_type_mutex);
 

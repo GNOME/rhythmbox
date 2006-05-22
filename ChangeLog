@@ -1,3 +1,19 @@
+2006-05-22  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (sync_entry_changed),
+	(rhythmdb_entry_is_editable), (action_thread_main),
+	(song_can_sync_metadata), (default_sync_metadata): Add entry-type
+	vfuncs for can_sync_metadata, and sync_metadata. The default is always
+	false, and syncing into the file.
+
+	(rhythmdb_entry_register_type), (rhythmdb_entry_song_get_type),
+	(rhythmdb_entry_iradio_get_type),
+	(rhythmdb_entry_import_error_get_type):
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new): Set the above
+	vfuncs to do the right thing. IRADIO and Audio-cd entry-type just
+	change the DB.
+
 2006-05-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/Makefile.am:
