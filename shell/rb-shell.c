@@ -191,7 +191,6 @@ static void rb_shell_jump_to_current (RBShell *shell);
 static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 						RhythmDBEntry *entry);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
-static void rb_shell_quit (RBShell *shell);
 static void rb_shell_cmd_view_all (GtkAction *action,
  				   RBShell *shell);
 static void rb_shell_view_sidepane_changed_cb (GtkAction *action,
@@ -1578,7 +1577,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 		return TRUE;
 	}
 
-	rb_shell_quit (shell);
+	rb_shell_quit (shell, NULL);
 
 	return TRUE;
 }
@@ -2216,7 +2215,7 @@ static void
 rb_shell_cmd_quit (GtkAction *action,
 		   RBShell *shell)
 {
-	rb_shell_quit (shell);
+	rb_shell_quit (shell, NULL);
 }
 
 static void
@@ -2408,8 +2407,9 @@ rb_shell_cmd_extract_cd (GtkAction *action,
 	g_clear_error (&error);
 }
 
-static void
-rb_shell_quit (RBShell *shell)
+gboolean
+rb_shell_quit (RBShell *shell,
+	       GError **error)
 {
 	rb_debug ("Quitting");
 
@@ -2426,6 +2426,7 @@ rb_shell_quit (RBShell *shell)
 	g_object_unref (G_OBJECT (shell));
 
 	g_timeout_add (10000, (GSourceFunc)gtk_main_quit, NULL);
+	return TRUE;
 }
 
 static gboolean
@@ -2868,7 +2869,7 @@ session_die_cb (GnomeClient *client,
                 RBShell *shell)
 {
         rb_debug ("session die");
-        rb_shell_quit (shell);
+        rb_shell_quit (shell, NULL);
 }
 
 GQuark

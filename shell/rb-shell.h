@@ -126,6 +126,9 @@ gboolean	rb_shell_remove_from_queue (RBShell *shell,
 					    const gchar *uri,
 					    GError **error);
 
+gboolean	rb_shell_quit (RBShell *shell,
+			       GError **error);
+
 void            rb_shell_hidden_notify  (RBShell *shell,
 					 guint timeout,
 					 const char *primary,

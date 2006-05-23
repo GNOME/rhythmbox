@@ -42,6 +42,8 @@
       <arg type="s" name="uri"/>
     </method>
 
+    <method name="quit"/>
+
     <method name="removeFromQueue">
       <arg type="s" name="uri"/>
     </method>
@@ -49,6 +51,8 @@
     <signal name="visibilityChanged">
       <arg type="b" name="visibility"/>
     </signal>
+
+    <property name="visibility" type="b" access="readwrite"/>
 
   </interface>
 </node>

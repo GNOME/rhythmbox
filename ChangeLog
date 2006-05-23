@@ -1,3 +1,12 @@
+2006-05-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell.c: (rb_shell_window_delete_cb),
+	(rb_shell_cmd_quit), (rb_shell_quit), (session_die_cb):
+	* shell/rb-shell.h:
+	* shell/rb-shell.xml:
+	Convert rb_shell_quit into a dbus method, and add visibility dbus
+	property.
+
 2006-05-22  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb.h:
