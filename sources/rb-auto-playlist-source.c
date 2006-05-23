@@ -283,7 +283,7 @@ rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 			if (l > 0) {
 				limit_type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
 
-				g_value_init (&val, G_TYPE_ULONG);
+				g_value_init (&val, G_TYPE_UINT64);
 				g_value_set_uint64 (&val, l);
 				g_value_array_append (limit_value, &val);
 				g_free (tmp);

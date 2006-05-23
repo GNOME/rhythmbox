@@ -1,3 +1,10 @@
+2006-05-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_new_from_xml):
+	Initialize the gvalue used to hold the size limit correctly.
+	Fixes #342744.
+
 2006-05-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell.c: (rb_shell_window_delete_cb),
