@@ -1,3 +1,47 @@
+2006-05-24  William Jon McCann  <mccann@jhu.edu>
+
+	* daapsharing/Makefile.am:
+	* daapsharing/rb-daap-connection.c: (rb_daap_connection_finalize),
+	(rb_daap_connection_class_init), (connection_connected),
+	(connection_disconnected), (connection_operation_done),
+	(build_message), (connection_set_error_message),
+	(actual_http_response_handler), (http_get),
+	(entry_set_string_prop), (emit_progress_idle),
+	(handle_server_info), (handle_login), (handle_update),
+	(handle_database_info), (handle_song_listing), (handle_playlists),
+	(handle_playlist_entries), (handle_logout),
+	(rb_daap_connection_new), (rb_daap_connection_is_connected),
+	(connection_response_data_free), (connected_cb),
+	(rb_daap_connection_connect), (disconnected_cb),
+	(rb_daap_connection_finish), (rb_daap_connection_disconnect),
+	(rb_daap_connection_state_done), (rb_daap_connection_do_something),
+	(rb_daap_connection_dispose), (rb_daap_connection_set_property),
+	(rb_daap_connection_get_property):
+	* daapsharing/rb-daap-connection.h:
+	* daapsharing/rb-daap-hash.c: (byteReverse), (OpenDaap_MD5Init),
+	(OpenDaap_MD5Update), (OpenDaap_MD5Final), (MD5Transform),
+	(DigestToString), (GenerateStatic_42), (GenerateStatic_45),
+	(rb_daap_hash_generate):
+	* daapsharing/rb-daap-hash.h:
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_get_icon), (remove_source), (stop_browsing),
+	(create_pixbufs), (destroy_pixbufs), (rb_daap_sources_shutdown),
+	(connection_connecting_cb), (connection_disconnected_cb),
+	(release_connection), (rb_daap_source_connection_cb),
+	(rb_daap_source_activate), (rb_daap_source_disconnect_cb),
+	(rb_daap_source_cmd_disconnect), (rb_daap_source_disconnect):
+
+	Adds a better async API for connect and disconnect.  Doesn't share
+	callback data for every async call.  Adds a connect signal.  Uses
+	an operation-done signal to trigger the callbacks.  Displays an
+	error when connections fail.  A few refcounting fixes to fix
+	crashes.  Uses a weak pointer to set the connection to NULL so we
+	don't clobber references.  Wait for each disconnect when shutting
+	down sources.  Split out DAAP hash stuff into its own file.  Fix
+	typo in header.
+
+	Fixes #342643
+	
 2006-05-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-auto-playlist-source.c:

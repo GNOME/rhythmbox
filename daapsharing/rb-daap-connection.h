@@ -2,7 +2,7 @@
  *
  *  Header for DAAP (iTunes Music Sharing) hashing, connection
  *
- *  Copyright (C) 2004,2005 Charles Schmidt <cschmidt2@emich.edu>
+ *  Copyright (C) 2004-2005 Charles Schmidt <cschmidt2@emich.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  */
 
 #ifndef __RB_DAAP_CONNECTION_H
-#define __RB_DAAP_CONNECTIONH
+#define __RB_DAAP_CONNECTION_H
 
 #include <glib.h>
 #include <glib-object.h>
@@ -29,10 +29,9 @@
 
 G_BEGIN_DECLS
 
-
 typedef struct {
-	gchar *name;
-	gint id;
+	char  *name;
+	int    id;
 	GList *uris;
 } RBDAAPPlaylist;
 
@@ -67,47 +66,48 @@ typedef struct {
 typedef struct {
 	GObjectClass parent;
 
-	char * (* authenticate) (RBDAAPConnection *connection,
-				 const char       *name);
-	void   (* connecting)   (RBDAAPConnection *connection,
-				 RBDAAPConnectionState state,
-				 float		   progress);
-	void   (* disconnected) (RBDAAPConnection *connection); 
+	void   (* connected)      (RBDAAPConnection     *connection);
+	void   (* disconnected)   (RBDAAPConnection     *connection); 
+
+	char * (* authenticate)   (RBDAAPConnection     *connection,
+				   const char           *name);
+	void   (* connecting)     (RBDAAPConnection     *connection,
+				   RBDAAPConnectionState state,
+				   float		 progress);
+
+	void   (* operation_done) (RBDAAPConnection     *connection);
 
 } RBDAAPConnectionClass;
 
 
 /* hmm, maybe should give more error information? */
-typedef gboolean (*RBDAAPConnectionCallback) (RBDAAPConnection *connection,
-					      gboolean result,
-					      gpointer user_data);
+typedef gboolean (* RBDAAPConnectionCallback)  (RBDAAPConnection *connection,
+						gboolean          result,
+						const char       *reason,
+						gpointer          user_data);
 
-RBDAAPConnection * 
-rb_daap_connection_new (const gchar *name,
-			const gchar *host,
-		        gint port,
-			gboolean password_protected,
-			RhythmDB *db,
-			RhythmDBEntryType type,
-			RBDAAPConnectionCallback callback,
-			gpointer user_data);
+GType              rb_daap_connection_get_type        (void);
 
-/* will cause an assertion failure if the login has not completed yet (probably should FIXME) */
-void
-rb_daap_connection_logout (RBDAAPConnection *connection,
-			   RBDAAPConnectionCallback callback,
-			   gpointer user_data);
+RBDAAPConnection * rb_daap_connection_new             (const char              *name,
+						       const char              *host,
+						       int                      port,
+						       gboolean                 password_protected,
+						       RhythmDB                *db,
+						       RhythmDBEntryType        type);
 
-gchar * 
-rb_daap_connection_get_headers (RBDAAPConnection *connection,
-				const gchar *uri,
-				gint64 bytes);
+gboolean           rb_daap_connection_is_connected    (RBDAAPConnection        *connection);
+void               rb_daap_connection_connect         (RBDAAPConnection        *connection,
+						       RBDAAPConnectionCallback callback,
+						       gpointer                 user_data);
+void               rb_daap_connection_disconnect      (RBDAAPConnection        *connection,
+						       RBDAAPConnectionCallback callback,
+						       gpointer                 user_data);
 
-GSList * 
-rb_daap_connection_get_playlists (RBDAAPConnection *connection);
+char *             rb_daap_connection_get_headers     (RBDAAPConnection         *connection,
+						       const char               *uri,
+						       gint64                    bytes);
 
-GType 
-rb_daap_connection_get_type (void);
+GSList *           rb_daap_connection_get_playlists   (RBDAAPConnection         *connection);
 
 G_END_DECLS
 

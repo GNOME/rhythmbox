@@ -16,6 +16,8 @@ libdaapsharing_la_SOURCES += \
 		rb-daap-mdns-browser.h 	\
 		rb-daap-connection.c 	\
 		rb-daap-connection.h 	\
+		rb-daap-hash.c	 	\
+		rb-daap-hash.h	 	\
 		rb-daap-src.c 		\
 		rb-daap-src.h		\
 		rb-daap-dialog.c	\

@@ -2,7 +2,7 @@
  *
  *  Implementation of DAAP (iTunes Music Sharing) hashing, parsing, connection
  *
- *  Copyright (C) 2004,2005 Charles Schmidt <cschmidt2@emich.edu>
+ *  Copyright (C) 2004-2005 Charles Schmidt <cschmidt2@emich.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include <libsoup/soup-session-sync.h>
 #include <libsoup/soup-uri.h>
 
+#include "rb-daap-hash.h"
 #include "rb-daap-connection.h"
 #include "rb-daap-structure.h"
 #include "rb-marshal.h"
@@ -47,504 +48,19 @@
 
 #define RB_DAAP_USER_AGENT "iTunes/4.6 (Windows; N)"
 
-/* hashing - based on/copied from libopendaap
- * Copyright (c) 2004 David Hammerton
- */
-
-typedef struct {
-    guint32 buf[4];
-    guint32 bits[2];
-    unsigned char in[64];
-    int version;
-} MD5_CTX;
-
-/*
-* This code implements the MD5 message-digest algorithm.
-* The algorithm is due to Ron Rivest.  This code was
-* written by Colin Plumb in 1993, no copyright is claimed.
-* This code is in the public domain; do with it what you wish.
-*
-* Equivalent code is available from RSA Data Security, Inc.
-* This code has been tested against that, and is equivalent,
-* except that you don't need to include two pages of legalese
-* with every copy.
-*
-* To compute the message digest of a chunk of bytes, declare an MD5Context
-* structure, pass it to OpenDaap_MD5Init, call OpenDaap_MD5Update as needed
-* on buffers full of bytes, and then call OpenDaap_MD5Final, which will fill
-* a supplied 16-byte array with the digest.
-*/
-static void 
-MD5Transform (guint32 buf[4], 
-	      guint32 const in[16], 
-	      gint version);
-/* for some reason we still have to reverse bytes on bigendian machines
- * I don't really know why... but otherwise it fails..
- * Any MD5 gurus out there know why???
- */
-#if 0 //ndef WORDS_BIGENDIAN /* was: HIGHFIRST */
-#define byteReverse(buf, len)     /* Nothing */
-#else
-static void 
-byteReverse (unsigned char *buf, 
-	     unsigned longs);
-
-#ifndef ASM_MD5
-/*
-* Note: this code is harmless on little-endian machines.
-*/
-static void 
-byteReverse (unsigned char *buf, 
-	     unsigned longs)
-{
-     guint32 t;
-     do {
-          t = (guint32) ((unsigned) buf[3] << 8 | buf[2]) << 16 |
-               ((unsigned) buf[1] << 8 | buf[0]);
-          *(guint32 *) buf = t;
-          buf += 4;
-     } while (--longs);
-}
-#endif /* ! ASM_MD5 */
-#endif /* #if 0 */
-
-static void 
-OpenDaap_MD5Init (MD5_CTX *ctx, 
-		  gint version)
-{
-    memset (ctx, 0, sizeof (MD5_CTX));
-    ctx->buf[0] = 0x67452301;
-    ctx->buf[1] = 0xefcdab89;
-    ctx->buf[2] = 0x98badcfe;
-    ctx->buf[3] = 0x10325476;
-
-    ctx->bits[0] = 0;
-    ctx->bits[1] = 0;
-
-    ctx->version = version;
-}
-
-static void 
-OpenDaap_MD5Update (MD5_CTX *ctx, 
-		    unsigned char const *buf, 
-		    unsigned int len)
-{
-    guint32 t;
-
-    /* Update bitcount */
-
-    t = ctx->bits[0];
-    if ((ctx->bits[0] = t + ((guint32) len << 3)) < t)
-        ctx->bits[1]++;          /* Carry from low to high */
-    ctx->bits[1] += len >> 29;
-
-    t = (t >> 3) & 0x3f;     /* Bytes already in shsInfo->data */
-
-    /* Handle any leading odd-sized chunks */
-
-    if (t) {
-        unsigned char *p = (unsigned char *) ctx->in + t;
-
-        t = 64 - t;
-        if (len < t) {
-            memcpy (p, buf, len);
-            return;
-        }
-        memcpy (p, buf, t);
-        byteReverse (ctx->in, 16);
-        MD5Transform (ctx->buf, (guint32 *) ctx->in, ctx->version);
-        buf += t;
-        len -= t;
-    }
-    /* Process data in 64-byte chunks */
-
-    while (len >= 64) {
-        memcpy (ctx->in, buf, 64);
-        byteReverse (ctx->in, 16);
-        MD5Transform (ctx->buf, (guint32 *) ctx->in, ctx->version);
-        buf += 64;
-        len -= 64;
-    }
-
-    /* Handle any remaining bytes of data. */
-
-    memcpy (ctx->in, buf, len);
-
-}
-
-static void 
-OpenDaap_MD5Final (MD5_CTX *ctx, 
-		   unsigned char digest[16])
-{
-    unsigned count;
-    unsigned char *p;
-
-    /* Compute number of bytes mod 64 */
-    count = (ctx->bits[0] >> 3) & 0x3F;
-
-    /* Set the first char of padding to 0x80.  This is safe since there is
-    always at least one byte free */
-    p = ctx->in + count;
-    *p++ = 0x80;
-
-    /* Bytes of padding needed to make 64 bytes */
-    count = 64 - 1 - count;
-
-    /* Pad out to 56 mod 64 */
-    if (count < 8) {
-        /* Two lots of padding:  Pad the first block to 64 bytes */
-        memset (p, 0, count);
-        byteReverse (ctx->in, 16);
-        MD5Transform (ctx->buf, (guint32 *) ctx->in, ctx->version);
-
-        /* Now fill the next block with 56 bytes */
-        memset (ctx->in, 0, 56);
-    } else {
-        /* Pad block to 56 bytes */
-        memset (p, 0, count - 8);
-    }
-    byteReverse (ctx->in, 14);
-
-    /* Append length in bits and transform */
-    ((guint32 *) ctx->in)[14] = ctx->bits[0];
-    ((guint32 *) ctx->in)[15] = ctx->bits[1];
-
-    MD5Transform (ctx->buf, (guint32 *) ctx->in, ctx->version);
-    byteReverse ((unsigned char *) ctx->buf, 4);
-    memcpy (digest, ctx->buf, 16);
-    memset (ctx, 0, sizeof(ctx));     /* In case it's sensitive */
-
-    return;
-}
-
-#ifndef ASM_MD5
-
-/* The four core functions - F1 is optimized somewhat */
-
-/* #define F1(x, y, z) (x & y | ~x & z) */
-#define F1(x, y, z) (z ^ (x & (y ^ z)))
-#define F2(x, y, z) F1(z, x, y)
-#define F3(x, y, z) (x ^ y ^ z)
-#define F4(x, y, z) (y ^ (x | ~z))
-
-/* This is the central step in the MD5 algorithm. */
-#define MD5STEP(f, w, x, y, z, data, s) \
-( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
-
-/*
-* The core of the MD5 algorithm, this alters an existing MD5 hash to reflect
-* the addition of 16 longwords of new data.  OpenDaap_MD5Update blocks the
-* data and converts bytes into longwords for this routine.
-*/
-static void 
-MD5Transform (guint32 buf[4], 
-	      guint32 const in[16], 
-	      gint version)
-{
-    guint32 a, b, c, d;
-
-    a = buf[0];
-    b = buf[1];
-    c = buf[2];
-    d = buf[3];
-
-    MD5STEP(F1, a, b, c, d, in[0] + 0xd76aa478, 7);
-    MD5STEP(F1, d, a, b, c, in[1] + 0xe8c7b756, 12);
-    MD5STEP(F1, c, d, a, b, in[2] + 0x242070db, 17);
-    MD5STEP(F1, b, c, d, a, in[3] + 0xc1bdceee, 22);
-    MD5STEP(F1, a, b, c, d, in[4] + 0xf57c0faf, 7);
-    MD5STEP(F1, d, a, b, c, in[5] + 0x4787c62a, 12);
-    MD5STEP(F1, c, d, a, b, in[6] + 0xa8304613, 17);
-    MD5STEP(F1, b, c, d, a, in[7] + 0xfd469501, 22);
-    MD5STEP(F1, a, b, c, d, in[8] + 0x698098d8, 7);
-    MD5STEP(F1, d, a, b, c, in[9] + 0x8b44f7af, 12);
-    MD5STEP(F1, c, d, a, b, in[10] + 0xffff5bb1, 17);
-    MD5STEP(F1, b, c, d, a, in[11] + 0x895cd7be, 22);
-    MD5STEP(F1, a, b, c, d, in[12] + 0x6b901122, 7);
-    MD5STEP(F1, d, a, b, c, in[13] + 0xfd987193, 12);
-    MD5STEP(F1, c, d, a, b, in[14] + 0xa679438e, 17);
-    MD5STEP(F1, b, c, d, a, in[15] + 0x49b40821, 22);
-
-    MD5STEP(F2, a, b, c, d, in[1] + 0xf61e2562, 5);
-    MD5STEP(F2, d, a, b, c, in[6] + 0xc040b340, 9);
-    MD5STEP(F2, c, d, a, b, in[11] + 0x265e5a51, 14);
-    MD5STEP(F2, b, c, d, a, in[0] + 0xe9b6c7aa, 20);
-    MD5STEP(F2, a, b, c, d, in[5] + 0xd62f105d, 5);
-    MD5STEP(F2, d, a, b, c, in[10] + 0x02441453, 9);
-    MD5STEP(F2, c, d, a, b, in[15] + 0xd8a1e681, 14);
-    MD5STEP(F2, b, c, d, a, in[4] + 0xe7d3fbc8, 20);
-    MD5STEP(F2, a, b, c, d, in[9] + 0x21e1cde6, 5);
-    MD5STEP(F2, d, a, b, c, in[14] + 0xc33707d6, 9);
-    MD5STEP(F2, c, d, a, b, in[3] + 0xf4d50d87, 14);
-
-    if (version == 1)
-    {
-        MD5STEP(F2, b, c, d, a, in[8] + 0x445a14ed, 20);
-    }
-    else
-    {
-        MD5STEP(F2, b, c, d, a, in[8] + 0x455a14ed, 20);
-    }
-    MD5STEP(F2, a, b, c, d, in[13] + 0xa9e3e905, 5);
-    MD5STEP(F2, d, a, b, c, in[2] + 0xfcefa3f8, 9);
-    MD5STEP(F2, c, d, a, b, in[7] + 0x676f02d9, 14);
-    MD5STEP(F2, b, c, d, a, in[12] + 0x8d2a4c8a, 20);
-
-    MD5STEP(F3, a, b, c, d, in[5] + 0xfffa3942, 4);
-    MD5STEP(F3, d, a, b, c, in[8] + 0x8771f681, 11);
-    MD5STEP(F3, c, d, a, b, in[11] + 0x6d9d6122, 16);
-    MD5STEP(F3, b, c, d, a, in[14] + 0xfde5380c, 23);
-    MD5STEP(F3, a, b, c, d, in[1] + 0xa4beea44, 4);
-    MD5STEP(F3, d, a, b, c, in[4] + 0x4bdecfa9, 11);
-    MD5STEP(F3, c, d, a, b, in[7] + 0xf6bb4b60, 16);
-    MD5STEP(F3, b, c, d, a, in[10] + 0xbebfbc70, 23);
-    MD5STEP(F3, a, b, c, d, in[13] + 0x289b7ec6, 4);
-    MD5STEP(F3, d, a, b, c, in[0] + 0xeaa127fa, 11);
-    MD5STEP(F3, c, d, a, b, in[3] + 0xd4ef3085, 16);
-    MD5STEP(F3, b, c, d, a, in[6] + 0x04881d05, 23);
-    MD5STEP(F3, a, b, c, d, in[9] + 0xd9d4d039, 4);
-    MD5STEP(F3, d, a, b, c, in[12] + 0xe6db99e5, 11);
-    MD5STEP(F3, c, d, a, b, in[15] + 0x1fa27cf8, 16);
-    MD5STEP(F3, b, c, d, a, in[2] + 0xc4ac5665, 23);
-
-    MD5STEP(F4, a, b, c, d, in[0] + 0xf4292244, 6);
-    MD5STEP(F4, d, a, b, c, in[7] + 0x432aff97, 10);
-    MD5STEP(F4, c, d, a, b, in[14] + 0xab9423a7, 15);
-    MD5STEP(F4, b, c, d, a, in[5] + 0xfc93a039, 21);
-    MD5STEP(F4, a, b, c, d, in[12] + 0x655b59c3, 6);
-    MD5STEP(F4, d, a, b, c, in[3] + 0x8f0ccc92, 10);
-    MD5STEP(F4, c, d, a, b, in[10] + 0xffeff47d, 15);
-    MD5STEP(F4, b, c, d, a, in[1] + 0x85845dd1, 21);
-    MD5STEP(F4, a, b, c, d, in[8] + 0x6fa87e4f, 6);
-    MD5STEP(F4, d, a, b, c, in[15] + 0xfe2ce6e0, 10);
-    MD5STEP(F4, c, d, a, b, in[6] + 0xa3014314, 15);
-    MD5STEP(F4, b, c, d, a, in[13] + 0x4e0811a1, 21);
-    MD5STEP(F4, a, b, c, d, in[4] + 0xf7537e82, 6);
-    MD5STEP(F4, d, a, b, c, in[11] + 0xbd3af235, 10);
-    MD5STEP(F4, c, d, a, b, in[2] + 0x2ad7d2bb, 15);
-    MD5STEP(F4, b, c, d, a, in[9] + 0xeb86d391, 21);
-
-    buf[0] += a;
-    buf[1] += b;
-    buf[2] += c;
-    buf[3] += d;
-}
-
-#endif
-
-
-
-
-
-static int staticHashDone = 0;
-static unsigned char staticHash_42[256*65] = {0};
-static unsigned char staticHash_45[256*65] = {0};
-
-static const char hexchars[] = "0123456789ABCDEF";
-static char ac[] = "Dpqzsjhiu!3114!Bqqmf!Dpnqvufs-!Jod/"; /* +1 */
-static gboolean ac_unfudged = FALSE;
-
-static void 
-DigestToString (const unsigned char *digest, 
-		char *string)
-{
-    int i;
-    for (i = 0; i < 16; i++)
-    {
-        unsigned char tmp = digest[i];
-        string[i*2+1] = hexchars[tmp & 0x0f];
-        string[i*2] = hexchars[(tmp >> 4) & 0x0f];
-    }
-}
-
-static void 
-GenerateStatic_42 ()
-{
-    MD5_CTX ctx;
-    unsigned char *p = staticHash_42;
-    int i;
-    unsigned char buf[16];
-
-    for (i = 0; i < 256; i++)
-    {
-        OpenDaap_MD5Init (&ctx, 0);
-
-#define MD5_STRUPDATE(str) OpenDaap_MD5Update(&ctx, (unsigned char const *)str, strlen(str))
-
-        if ((i & 0x80) != 0)
-            MD5_STRUPDATE("Accept-Language");
-        else
-            MD5_STRUPDATE("user-agent");
-
-        if ((i & 0x40) != 0)
-            MD5_STRUPDATE("max-age");
-        else
-            MD5_STRUPDATE("Authorization");
-
-        if ((i & 0x20) != 0)
-            MD5_STRUPDATE("Client-DAAP-Version");
-        else
-            MD5_STRUPDATE("Accept-Encoding");
-
-        if ((i & 0x10) != 0)
-            MD5_STRUPDATE("daap.protocolversion");
-        else
-            MD5_STRUPDATE("daap.songartist");
-
-        if ((i & 0x08) != 0)
-            MD5_STRUPDATE("daap.songcomposer");
-        else
-            MD5_STRUPDATE("daap.songdatemodified");
-
-        if ((i & 0x04) != 0)
-            MD5_STRUPDATE("daap.songdiscnumber");
-        else
-            MD5_STRUPDATE("daap.songdisabled");
-
-        if ((i & 0x02) != 0)
-            MD5_STRUPDATE("playlist-item-spec");
-        else
-            MD5_STRUPDATE("revision-number");
-
-        if ((i & 0x01) != 0)
-            MD5_STRUPDATE("session-id");
-        else
-            MD5_STRUPDATE("content-codes");
-#undef MD5_STRUPDATE
-
-        OpenDaap_MD5Final (&ctx, buf);
-        DigestToString (buf, (char *)p);
-        p += 65;
-    }
-}
-
-static void GenerateStatic_45()
-{
-    MD5_CTX ctx;
-    unsigned char *p = staticHash_45;
-    int i;
-    unsigned char buf[16];
-
-    for (i = 0; i < 256; i++)
-    {
-        OpenDaap_MD5Init (&ctx, 1);
-
-#define MD5_STRUPDATE(str) OpenDaap_MD5Update(&ctx, (unsigned char const *)str, strlen(str))
-
-        if ((i & 0x40) != 0)
-            MD5_STRUPDATE("eqwsdxcqwesdc");
-        else
-            MD5_STRUPDATE("op[;lm,piojkmn");
-
-        if ((i & 0x20) != 0)
-            MD5_STRUPDATE("876trfvb 34rtgbvc");
-        else
-            MD5_STRUPDATE("=-0ol.,m3ewrdfv");
-
-        if ((i & 0x10) != 0)
-            MD5_STRUPDATE("87654323e4rgbv ");
-        else
-            MD5_STRUPDATE("1535753690868867974342659792");
-
-        if ((i & 0x08) != 0)
-            MD5_STRUPDATE("Song Name");
-        else
-            MD5_STRUPDATE("DAAP-CLIENT-ID:");
-
-        if ((i & 0x04) != 0)
-            MD5_STRUPDATE("111222333444555");
-        else
-            MD5_STRUPDATE("4089961010");
-
-        if ((i & 0x02) != 0)
-            MD5_STRUPDATE("playlist-item-spec");
-        else
-            MD5_STRUPDATE("revision-number");
-
-        if ((i & 0x01) != 0)
-            MD5_STRUPDATE("session-id");
-        else
-            MD5_STRUPDATE("content-codes");
-
-        if ((i & 0x80) != 0)
-            MD5_STRUPDATE("IUYHGFDCXWEDFGHN");
-        else
-            MD5_STRUPDATE("iuytgfdxwerfghjm");
-
-#undef MD5_STRUPDATE
-
-        OpenDaap_MD5Final (&ctx, buf);
-        DigestToString (buf, (char *)p);
-        p += 65;
-    }
-}
-
-static void 
-rb_daap_hash_generate (short version_major, 
-		       const guchar *url, 
-		       guchar hash_select, 
-		       guchar *out, 
-		       gint request_id)
-{
-    unsigned char buf[16];
-    MD5_CTX ctx;
-    int i;
-    
-    unsigned char *hashTable = (version_major == 3) ?
-                      staticHash_45 : staticHash_42;
-
-    if (!staticHashDone)
-    {
-        GenerateStatic_42 ();
-        GenerateStatic_45 ();
-        staticHashDone = 1;
-    }
-
-    OpenDaap_MD5Init (&ctx, (version_major == 3) ? 1 : 0);
-
-    OpenDaap_MD5Update (&ctx, url, strlen ((const gchar*)url));
-    if (ac_unfudged == FALSE) {
-	    for (i = 0; i < strlen (ac); i++) {
-		ac[i] = ac[i]-1;
-	    }
-    	    ac_unfudged = TRUE;
-    }
-    OpenDaap_MD5Update (&ctx, (const guchar*)ac, strlen (ac));
-
-    OpenDaap_MD5Update (&ctx, &hashTable[hash_select * 65], 32);
-
-    if (request_id && version_major == 3)
-    {
-        char scribble[20];
-        sprintf (scribble, "%u", request_id);
-        OpenDaap_MD5Update (&ctx, (const guchar*)scribble, strlen (scribble));
-    }
-
-    OpenDaap_MD5Final (&ctx, buf);
-    DigestToString (buf, (char *)out);
-
-    return;
-}
-
-/* end hashing */
-
-
-/* connection */
-
-static GObject * rb_daap_connection_constructor (GType type, guint n_construct_properties,
-						 GObjectConstructParam *construct_properties);
-static void rb_daap_connection_dispose (GObject *obj);
-static void rb_daap_connection_set_property (GObject *object,
-					     guint prop_id,
-					     const GValue *value,
-					     GParamSpec *pspec);
-static void rb_daap_connection_get_property (GObject *object,
-					     guint prop_id,
-					     GValue *value,
-					     GParamSpec *pspec);
-
-static gboolean rb_daap_connection_do_something (RBDAAPConnection *connection);
-static void rb_daap_connection_state_done (RBDAAPConnection *connection, gboolean result);
+static void      rb_daap_connection_dispose      (GObject *obj);
+static void      rb_daap_connection_set_property (GObject *object,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *pspec);
+static void      rb_daap_connection_get_property (GObject *object,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *pspec);
+
+static gboolean rb_daap_connection_do_something  (RBDAAPConnection *connection);
+static void     rb_daap_connection_state_done    (RBDAAPConnection *connection,
+						  gboolean           result);
 
 static gboolean emit_progress_idle (RBDAAPConnection *connection);
 
@@ -552,9 +68,9 @@ G_DEFINE_TYPE (RBDAAPConnection, rb_daap_connection, G_TYPE_OBJECT)
 
 #define RB_DAAP_CONNECTION_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_DAAP_CONNECTION, RBDAAPConnectionPrivate))
 
-typedef void (*RBDAAPResponseHandler) (RBDAAPConnection *connection,
-				       guint status,
-				       GNode *structure);
+typedef void (* RBDAAPResponseHandler) (RBDAAPConnection *connection,
+					guint status,
+					GNode *structure);
 
 struct RBDAAPConnectionPrivate {
 	char *name;
@@ -564,6 +80,9 @@ struct RBDAAPConnectionPrivate {
 	char *host;
 	guint port;
 	
+	gboolean is_connected;
+	gboolean is_connecting;
+
 	SoupSession *session;
 	SoupUri *base_uri;
 	gchar *daap_base_uri;
@@ -586,11 +105,12 @@ struct RBDAAPConnectionPrivate {
 	RBDAAPResponseHandler response_handler;
 	gboolean use_response_handler_thread;
 	float progress;
-	gint emit_progress_id;
+
+	guint emit_progress_id;
+	guint do_something_id;
 
 	gboolean result;
-	RBDAAPConnectionCallback callback;
-	gpointer callback_user_data;
+	char *last_error_message;
 };
 
 
@@ -598,8 +118,6 @@ enum {
 	PROP_0,
 	PROP_DB,
 	PROP_NAME,
-	PROP_CALLBACK,
-	PROP_CALLBACK_DATA,
 	PROP_ENTRY_TYPE,
 	PROP_PASSWORD_PROTECTED,
 	PROP_HOST,
@@ -609,19 +127,38 @@ enum {
 enum { 
 	AUTHENTICATE,
 	CONNECTING,
+	CONNECTED,
 	DISCONNECTED,
+	OPERATION_DONE,
 	LAST_SIGNAL
 };
 
 static guint signals [LAST_SIGNAL] = { 0, };
 
 static void
+rb_daap_connection_finalize (GObject *object)
+{
+	RBDAAPConnection *connection;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_DAAP_CONNECTION (object));
+
+	connection = RB_DAAP_CONNECTION (object);
+
+	g_return_if_fail (connection->priv != NULL);
+
+	rb_debug ("Finalize");
+
+	G_OBJECT_CLASS (rb_daap_connection_parent_class)->finalize (object);
+}
+
+static void
 rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->constructor = rb_daap_connection_constructor;
-	object_class->dispose = rb_daap_connection_dispose;
+	object_class->finalize	   = rb_daap_connection_finalize;
+	object_class->dispose       = rb_daap_connection_dispose;
 	object_class->set_property = rb_daap_connection_set_property;
 	object_class->get_property = rb_daap_connection_get_property;
 
@@ -634,19 +171,6 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_CALLBACK,
-					 g_param_spec_pointer ("callback",
-							      "callback",
-							      "callback function",
-							       G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class,
-					 PROP_CALLBACK_DATA,
-					 g_param_spec_pointer ("callback-data",
-							      "Callback Data",
-							      "callback user data",
-							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_pointer ("entry-type",
@@ -701,6 +225,15 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 					     rb_marshal_VOID__ULONG_FLOAT,
 					     G_TYPE_NONE,
 					     2, G_TYPE_ULONG, G_TYPE_FLOAT);
+	signals [CONNECTED] = g_signal_new ("connected",
+					    G_TYPE_FROM_CLASS (object_class),
+					    G_SIGNAL_RUN_LAST,
+					    G_STRUCT_OFFSET (RBDAAPConnectionClass, connected),
+					    NULL,
+					    NULL,
+					    g_cclosure_marshal_VOID__VOID,
+					       G_TYPE_NONE,
+					    0);
 	signals [DISCONNECTED] = g_signal_new ("disconnected",
 					       G_TYPE_FROM_CLASS (object_class),
 					       G_SIGNAL_RUN_LAST,
@@ -710,6 +243,15 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 					       g_cclosure_marshal_VOID__VOID,
 					       G_TYPE_NONE,
 					       0);
+	signals [OPERATION_DONE] = g_signal_new ("operation-done",
+						 G_TYPE_FROM_CLASS (object_class),
+						 G_SIGNAL_RUN_FIRST,
+						 G_STRUCT_OFFSET (RBDAAPConnectionClass, operation_done),
+						 NULL,
+						 NULL,
+						 g_cclosure_marshal_VOID__VOID,
+						 G_TYPE_NONE,
+						 0);
 }
 
 static void
@@ -739,21 +281,46 @@ connection_get_password (RBDAAPConnection *connection)
 }
 
 static void
+connection_connected (RBDAAPConnection *connection)
+{
+	rb_debug ("Emitting connected");
+
+	connection->priv->is_connected = TRUE;
+
+	g_signal_emit (connection,
+		       signals [CONNECTED],
+		       0);
+}
+
+static void
 connection_disconnected (RBDAAPConnection *connection)
 {
+	rb_debug ("Emitting disconnected");
+
+	connection->priv->is_connected = FALSE;
+
 	g_signal_emit (connection,
 		       signals [DISCONNECTED],
 		       0);
 }
 
+static void
+connection_operation_done (RBDAAPConnection *connection)
+{
+	rb_debug ("Emitting operation done");
+
+	g_signal_emit (connection,
+		       signals [OPERATION_DONE],
+		       0);
+}
 
 static SoupMessage * 
 build_message (RBDAAPConnection *connection, 
-	       const gchar *path, 
-	       gboolean need_hash, 
-	       gdouble version, 
-	       gint req_id, 
-	       gboolean send_close)
+	       const char       *path, 
+	       gboolean          need_hash, 
+	       gdouble           version, 
+	       gint              req_id, 
+	       gboolean          send_close)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message = NULL;
@@ -830,6 +397,17 @@ g_zfree_wrapper (voidpf opaque, voidpf address)
 	g_free (address);
 }
 #endif
+
+static void
+connection_set_error_message (RBDAAPConnection *connection,
+			      const char       *message)
+{
+	/* FIXME: obtain a lock */
+	if (connection->priv->last_error_message != NULL) {
+		g_free (connection->priv->last_error_message);
+	}
+	connection->priv->last_error_message = g_strdup (message);
+}
 
 typedef struct {
 	SoupMessage *message;
@@ -940,7 +518,10 @@ actual_http_response_handler (DAAPResponseData *data)
 
 		if (!rb_is_main_thread ()) {
 			priv->progress = -1.0f;
-			g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
+			if (priv->emit_progress_id != 0) {
+				g_source_remove (priv->emit_progress_id);
+			}
+			priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
 		}
 		rb_profile_start ("parsing DAAP response");
 		structure = rb_daap_structure_parse (response, response_length);
@@ -964,15 +545,19 @@ actual_http_response_handler (DAAPResponseData *data)
 			}
 			rb_profile_end ("parsing DAAP response (successful)");
 		}
-		if (!rb_is_main_thread ()) {
+		if (! rb_is_main_thread ()) {
 			priv->progress = 1.0f;
-			g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
+			if (priv->emit_progress_id != 0) {
+				g_source_remove (priv->emit_progress_id);
+			}
+			priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
 		}
 	} else {
 		rb_debug ("Error getting %s: %d, %s\n", 
 			  message_path,
 			  data->message->status_code,
 			  data->message->reason_phrase);
+		connection_set_error_message (data->connection, data->message->reason_phrase);
 	}
 
 	if (priv->response_handler) {
@@ -1036,14 +621,14 @@ http_response_handler (SoupMessage *message,
 }
 
 static gboolean
-http_get (RBDAAPConnection *connection, 
-	  const gchar *path, 
-	  gboolean need_hash, 
-	  gdouble version, 
-	  gint req_id, 
-	  gboolean send_close,
+http_get (RBDAAPConnection     *connection, 
+	  const char           *path, 
+	  gboolean              need_hash, 
+	  gdouble               version, 
+	  gint                  req_id, 
+	  gboolean              send_close,
 	  RBDAAPResponseHandler handler,
-	  gboolean use_thread)
+	  gboolean              use_thread)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message;
@@ -1069,12 +654,11 @@ http_get (RBDAAPConnection *connection,
 	return TRUE;
 }
 
-
 static void 
-entry_set_string_prop (RhythmDB *db, 
-		       RhythmDBEntry *entry,
+entry_set_string_prop (RhythmDB        *db, 
+		       RhythmDBEntry   *entry,
 		       RhythmDBPropType propid, 
-		       const char *str)
+		       const char      *str)
 {
 	GValue value = {0,};
 	gchar *tmp;
@@ -1094,6 +678,8 @@ entry_set_string_prop (RhythmDB *db,
 static gboolean
 emit_progress_idle (RBDAAPConnection *connection)
 {
+	rb_debug ("Emitting progress");
+
 	GDK_THREADS_ENTER ();
 	g_signal_emit (G_OBJECT (connection), signals[CONNECTING], 0, 
 		       connection->priv->state,
@@ -1105,8 +691,8 @@ emit_progress_idle (RBDAAPConnection *connection)
 
 static void
 handle_server_info (RBDAAPConnection *connection,
-		    guint status,
-		    GNode *structure)
+		    guint             status,
+		    GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1129,8 +715,8 @@ handle_server_info (RBDAAPConnection *connection,
 
 static void
 handle_login (RBDAAPConnection *connection,
-	      guint status,
-	      GNode *structure)
+	      guint             status,
+	      GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1138,7 +724,10 @@ handle_login (RBDAAPConnection *connection,
 	if (status == SOUP_STATUS_UNAUTHORIZED || status == SOUP_STATUS_FORBIDDEN) {
 		rb_debug ("Incorrect password");
 		priv->state = DAAP_GET_PASSWORD;
-		g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
+		if (priv->do_something_id != 0) {
+			g_source_remove (priv->do_something_id);
+		}
+		priv->do_something_id = g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
 	}
 
 	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
@@ -1154,13 +743,16 @@ handle_login (RBDAAPConnection *connection,
 	}
 
 	priv->session_id = (guint32) g_value_get_int (&(item->content));
+
+	connection_connected (connection);
+
 	rb_daap_connection_state_done (connection, TRUE);
 }
 
 static void
 handle_update (RBDAAPConnection *connection,
-	       guint status,
-	       GNode *structure)
+	       guint             status,
+	       GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item;
@@ -1184,8 +776,8 @@ handle_update (RBDAAPConnection *connection,
 
 static void 
 handle_database_info (RBDAAPConnection *connection,
-		      guint status,
-		      GNode *structure)
+		      guint             status,
+		      GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1231,8 +823,8 @@ handle_database_info (RBDAAPConnection *connection,
 
 static void
 handle_song_listing (RBDAAPConnection *connection,
-		     guint status,
-		     GNode *structure)
+		     guint             status,
+		     GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPItem *item = NULL;
@@ -1291,7 +883,11 @@ handle_song_listing (RBDAAPConnection *connection,
 	
 	rb_profile_start ("handling song listing");
 	priv->progress = 0.0f;
+	if (priv->emit_progress_id != 0) {
+		g_source_remove (priv->emit_progress_id);
+	}
 	connection->priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, connection);
+
 	for (i = 0, n = listing_node->children; n; i++, n = n->next) {
 		GNode *n2;
 		RhythmDBEntry *entry = NULL;
@@ -1439,7 +1035,10 @@ handle_song_listing (RBDAAPConnection *connection,
 		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_GENRE, genre);
 
 		if (i % commit_batch == 0) {
-			priv->progress = ((float)i / (float)returned_count);
+			connection->priv->progress = ((float)i / (float)returned_count);
+			if (priv->emit_progress_id != 0) {
+				g_source_remove (connection->priv->emit_progress_id);
+			}
 			connection->priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, connection);
 			rhythmdb_commit (priv->db);
 		}
@@ -1458,8 +1057,8 @@ handle_song_listing (RBDAAPConnection *connection,
 
 static void
 handle_playlists (RBDAAPConnection *connection,
-		  guint status,
-		  GNode *structure)
+		  guint             status,
+		  GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	GNode *listing_node;
@@ -1519,8 +1118,8 @@ handle_playlists (RBDAAPConnection *connection,
 
 static void
 handle_playlist_entries (RBDAAPConnection *connection,
-			 guint status,
-			 GNode *structure)
+			 guint             status,
+			 GNode            *structure)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	RBDAAPPlaylist *playlist;
@@ -1576,8 +1175,8 @@ handle_playlist_entries (RBDAAPConnection *connection,
 
 static void
 handle_logout (RBDAAPConnection *connection,
-	       guint status,
-	       GNode *structure)
+	       guint             status,
+	       GNode            *structure)
 {
 	connection_disconnected (connection);
 
@@ -1586,93 +1185,206 @@ handle_logout (RBDAAPConnection *connection,
 }
 	
 RBDAAPConnection * 
-rb_daap_connection_new (const gchar *name,
-			const gchar *host,
-			gint port, 
-			gboolean password_protected,
-			RhythmDB *db, 
-			RhythmDBEntryType type,
-			RBDAAPConnectionCallback callback,
-			gpointer user_data)
+rb_daap_connection_new (const char       *name,
+			const char       *host,
+			int               port, 
+			gboolean          password_protected,
+			RhythmDB         *db, 
+			RhythmDBEntryType type)
 {
 	return g_object_new (RB_TYPE_DAAP_CONNECTION,
 			     "name", name,
 			     "entry-type", type,
 			     "password-protected", password_protected,
-			     "callback", callback,
-			     "callback-data", user_data,
 			     "db", db,
 			     "host", host,
 			     "port", port,
 			     NULL);
 }
 
-static GObject *
-rb_daap_connection_constructor (GType type,
-				guint n_construct_properties,
-				GObjectConstructParam *construct_properties)
+gboolean
+rb_daap_connection_is_connected (RBDAAPConnection *connection)
 {
-	RBDAAPConnection *connection;
-	RBDAAPConnectionPrivate *priv;
-	gchar *path = NULL;
+	g_return_val_if_fail (RB_IS_DAAP_CONNECTION (connection), FALSE);
 
-	connection = RB_DAAP_CONNECTION (G_OBJECT_CLASS(rb_daap_connection_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+	return connection->priv->is_connected;
+}
 
-	priv = connection->priv;
-	priv->result = TRUE;
+typedef struct {
+	RBDAAPConnection        *connection;
+	RBDAAPConnectionCallback callback;
+	gpointer                 data;
+	GDestroyNotify           destroy;
+} ConnectionResponseData;
 
-	rb_debug ("Creating new DAAP connection to %s:%d", priv->host, priv->port);
+static void
+connection_response_data_free (gpointer data)
+{
+	ConnectionResponseData *rdata = data;
 
-	priv->session = soup_session_async_new ();
-	path = g_strdup_printf ("http://%s:%d", priv->host, priv->port);
-	priv->base_uri = soup_uri_new (path);
-	g_free (path);
+	g_object_unref (rdata->connection);
+	g_free (rdata);
+}
 
-	if (priv->base_uri == NULL) {
-		rb_debug ("Error parsing http://%s:%d", priv->host, priv->port);
-		g_object_unref (G_OBJECT (connection));
-		return NULL;
+static void
+connected_cb (RBDAAPConnection       *connection,
+	      ConnectionResponseData *rdata)
+{
+	gboolean result;
+
+	rb_debug ("Connected callback");
+
+	connection->priv->is_connecting = FALSE;
+
+	g_signal_handlers_disconnect_by_func (connection,
+					      G_CALLBACK (connected_cb),
+					      rdata);
+
+	/* if connected then we succeeded */
+	result = rb_daap_connection_is_connected (connection);
+	
+	if (rdata->callback) {
+		rdata->callback (rdata->connection,
+				 result,
+				 rdata->connection->priv->last_error_message,
+				 rdata->data);
 	}
 
-	priv->daap_base_uri = g_strdup_printf ("daap://%s:%d", priv->host, priv->port);
-
-	priv->state = DAAP_GET_INFO;
-	rb_daap_connection_do_something (connection);
-
-	return G_OBJECT (connection);
+	if (rdata->destroy) {
+		rdata->destroy (rdata);
+	}
 }
 
 void
-rb_daap_connection_logout (RBDAAPConnection *connection,
-			   RBDAAPConnectionCallback callback,
-			   gpointer user_data)
+rb_daap_connection_connect (RBDAAPConnection        *connection,
+			    RBDAAPConnectionCallback callback,
+			    gpointer                 user_data)
+{
+	ConnectionResponseData *rdata;
+	char                   *path;
+
+	g_return_if_fail (RB_IS_DAAP_CONNECTION (connection));
+	g_return_if_fail (connection->priv->state == DAAP_GET_INFO);
+
+	rb_debug ("Creating new DAAP connection to %s:%d", connection->priv->host, connection->priv->port);
+
+	connection->priv->session = soup_session_async_new ();
+
+	path = g_strdup_printf ("http://%s:%d", connection->priv->host, connection->priv->port);
+	connection->priv->base_uri = soup_uri_new (path);
+	g_free (path);
+
+	if (connection->priv->base_uri == NULL) {
+		rb_debug ("Error parsing http://%s:%d", connection->priv->host, connection->priv->port);
+		/* FIXME: do callback */
+		return;
+	}
+
+	connection->priv->daap_base_uri = g_strdup_printf ("daap://%s:%d", connection->priv->host, connection->priv->port);
+
+	rdata = g_new (ConnectionResponseData, 1);
+	rdata->connection = g_object_ref (connection);
+	rdata->callback = callback;
+	rdata->data = user_data;
+	rdata->destroy = connection_response_data_free;
+	g_signal_connect (connection, "operation-done", G_CALLBACK (connected_cb), rdata);
+
+	if (connection->priv->do_something_id != 0) {
+		g_source_remove (connection->priv->do_something_id);
+	}
+
+	connection->priv->is_connecting = TRUE;
+	connection->priv->do_something_id = g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
+}
+
+static void
+disconnected_cb (RBDAAPConnection       *connection,
+		 ConnectionResponseData *rdata)
+{
+	gboolean result;
+
+	rb_debug ("Disconnected callback");
+
+	g_signal_handlers_disconnect_by_func (connection,
+					      G_CALLBACK (disconnected_cb),
+					      rdata);
+
+	/* if not connected then we succeeded */
+	result = ! rb_daap_connection_is_connected (connection);
+
+	if (rdata->callback) {
+		rdata->callback (rdata->connection,
+				 result,
+				 rdata->connection->priv->last_error_message,
+				 rdata->data);
+	}
+
+	if (rdata->destroy) {
+		rdata->destroy (rdata);
+	}
+}
+
+static void
+rb_daap_connection_finish (RBDAAPConnection *connection)
+{
+	g_return_if_fail (RB_IS_DAAP_CONNECTION (connection));
+
+	rb_debug ("DAAP finish");
+	connection->priv->state = DAAP_DONE;
+	connection->priv->progress = 1.0f;
+
+	connection_operation_done (connection);
+}
+
+void
+rb_daap_connection_disconnect (RBDAAPConnection        *connection,
+			       RBDAAPConnectionCallback callback,
+			       gpointer                 user_data)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
-	int old_state = priv->state;
+	ConnectionResponseData  *rdata;
 
-	if (priv->state == DAAP_LOGOUT)
-		return;
-	
-	priv->state = DAAP_LOGOUT;
+	g_return_if_fail (RB_IS_DAAP_CONNECTION (connection));
 
-	if (old_state <= DAAP_LOGIN) {
-		/* we haven't logged in yet, so we don't need to do anything here */
-		rb_daap_connection_state_done (connection, TRUE);
+	rb_debug ("Disconnecting");
+
+	if (connection->priv->is_connecting) {
+		/* this is a special case where the async connection
+		   hasn't returned yet so we need to force the connection
+		   to finish */
+		priv->state = DAAP_DONE;
+		rb_daap_connection_finish (connection);
+	}
+
+	rdata = g_new (ConnectionResponseData, 1);
+	rdata->connection = g_object_ref (connection);
+	rdata->callback = callback;
+	rdata->data = user_data;
+	rdata->destroy = connection_response_data_free;
+
+	g_signal_connect (connection, "operation-done", G_CALLBACK (disconnected_cb), rdata);
+
+	if (priv->do_something_id != 0) {
+		g_source_remove (priv->do_something_id);
+	}
+
+	if (! connection->priv->is_connected) {
+		priv->state = DAAP_DONE;
+		rb_daap_connection_finish (connection);
 	} else {
-		priv->callback = callback;
-		priv->callback_user_data = user_data;
-		priv->result = TRUE;
-		
-		g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
+		priv->state = DAAP_LOGOUT;
+
+		priv->do_something_id = g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
 	}
 }
 
 static void
 rb_daap_connection_state_done (RBDAAPConnection *connection,
-			       gboolean result)
+			       gboolean          result)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
+
+	rb_debug ("Transitioning to next state from %d", priv->state);
 
 	if (result == FALSE) {
 		priv->state = DAAP_DONE;
@@ -1711,11 +1423,16 @@ rb_daap_connection_state_done (RBDAAPConnection *connection,
 		}
 
 		priv->progress = 1.0f;
+		if (connection->priv->emit_progress_id != 0) {
+			g_source_remove (connection->priv->emit_progress_id);
+		}
 		connection->priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, connection);
 	}
 
-
-	g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
+	if (priv->do_something_id != 0) {
+		g_source_remove (priv->do_something_id);
+	}
+	priv->do_something_id = g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
 }
 
 static gboolean
@@ -1724,11 +1441,15 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	char *path;
 
+	rb_debug ("Doing something for state: %d", priv->state);
+
+	priv->do_something_id = 0;
+
 	switch (priv->state) {
 	case DAAP_GET_INFO:
 		rb_debug ("Getting DAAP server info");
-		if (!http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, 
-			       (RBDAAPResponseHandler) handle_server_info, FALSE)) {
+		if (! http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, 
+				(RBDAAPResponseHandler) handle_server_info, FALSE)) {
 			rb_debug ("Could not get DAAP connection info");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
@@ -1742,7 +1463,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 			priv->password = connection_get_password (connection);
 
 			if (priv->password == NULL || priv->password[0] == '\0') {
-				rb_debug ("Password entry canceled");
+				rb_debug ("Password entry cancelled");
 				priv->result = FALSE;
 				priv->state = DAAP_DONE;
 				rb_daap_connection_do_something (connection);
@@ -1762,7 +1483,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		
 	case DAAP_LOGIN:
 		rb_debug ("Logging into DAAP server");
-		if (!http_get (connection, "/login", FALSE, 0.0, 0, FALSE, 
+		if (! http_get (connection, "/login", FALSE, 0.0, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_login, FALSE)) {
 			rb_debug ("Could not login to DAAP server");
 			/* FIXME: set state back to GET_PASSWORD to try again */
@@ -1774,7 +1495,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	case DAAP_GET_REVISION_NUMBER:
 		rb_debug ("Getting DAAP server database revision number");
 		path = g_strdup_printf ("/update?session-id=%u&revision-number=1", priv->session_id);
-		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_update, FALSE)) {
 			rb_debug ("Could not get server database revision number");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1786,7 +1507,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		rb_debug ("Getting DAAP database info");
 		path = g_strdup_printf ("/databases?session-id=%u&revision-number=%d", 
 					priv->session_id, priv->revision_number);
-		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_database_info, FALSE)) {
 			rb_debug ("Could not get DAAP database info");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1805,7 +1526,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					priv->database_id, 
 					priv->session_id, 
 					priv->revision_number);
-		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_song_listing, TRUE)) {
 			rb_debug ("Could not get DAAP song listing");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1819,7 +1540,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					priv->database_id, 
 					priv->session_id, 
 					priv->revision_number);
-		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 			       (RBDAAPResponseHandler) handle_playlists, TRUE)) {
 			rb_debug ("Could not get DAAP playlists");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1838,7 +1559,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 						priv->database_id, 
 						playlist->id,
 						priv->session_id, priv->revision_number);
-			if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+			if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
 				       (RBDAAPResponseHandler) handle_playlist_entries, TRUE)) {
 				rb_debug ("Could not get entries for DAAP playlist %d", 
 					  priv->reading_playlist);
@@ -1851,7 +1572,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	case DAAP_LOGOUT:
 		rb_debug ("Logging out of DAAP server");
 		path = g_strdup_printf ("/logout?session-id=%u", priv->session_id);
-		if (!http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_logout, FALSE)) {
 			rb_debug ("Could not log out of DAAP server");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1861,23 +1582,17 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 		break;
 
 	case DAAP_DONE:
-		if (priv->callback) {
-			/* do it this way, in case the callback sets another one or destroys the object */
-			RBDAAPConnectionCallback callback = priv->callback;
-			priv->callback = NULL;
-			(*callback) (connection, priv->result, priv->callback_user_data);
-		
-			priv->state = DAAP_DONE;
-			priv->progress = 1.0f;
-			emit_progress_idle (connection);
-		}
+		rb_debug ("DAAP done");
+
+		rb_daap_connection_finish (connection);
+
 		break;
 	}
 
 	return FALSE;
 }
 
-gchar * 
+char * 
 rb_daap_connection_get_headers (RBDAAPConnection *connection, 
 				const gchar *uri, 
 				gint64 bytes)
@@ -1944,7 +1659,17 @@ rb_daap_connection_dispose (GObject *object)
 	RBDAAPConnectionPrivate *priv = RB_DAAP_CONNECTION (object)->priv;
 	GSList *l;
 
-	g_assert (priv->callback == NULL);
+	rb_debug ("DAAP connection dispose");
+
+	if (priv->emit_progress_id != 0) {
+		g_source_remove (priv->emit_progress_id);
+		priv->emit_progress_id = 0;
+	}
+
+	if (priv->do_something_id != 0) {
+		g_source_remove (priv->do_something_id);
+		priv->do_something_id = 0;
+	}
 
 	if (priv->name) {
 		g_free (priv->name);
@@ -2004,6 +1729,11 @@ rb_daap_connection_dispose (GObject *object)
 		g_object_unref (G_OBJECT (priv->db));
 		priv->db = NULL;
 	}
+
+	if (priv->last_error_message != NULL) {
+		g_free (priv->last_error_message);
+		priv->last_error_message = NULL;
+	}
 	
 	G_OBJECT_CLASS (rb_daap_connection_parent_class)->dispose (object);
 }
@@ -2029,12 +1759,6 @@ rb_daap_connection_set_property (GObject *object,
 		break;
 	case PROP_ENTRY_TYPE:
 		priv->db_type = g_value_get_pointer (value);
-		break;
-	case PROP_CALLBACK:
-		priv->callback = g_value_get_pointer (value);
-		break;
-	case PROP_CALLBACK_DATA:
-		priv->callback_user_data = g_value_get_pointer (value);
 		break;
 	case PROP_HOST:
 		g_free (priv->host);
@@ -2063,12 +1787,6 @@ rb_daap_connection_get_property (GObject *object,
 		break;
 	case PROP_NAME:
 		g_value_set_string (value, priv->name);
-		break;
-	case PROP_CALLBACK:
-		g_value_set_pointer (value, priv->callback);
-		break;
-	case PROP_CALLBACK_DATA:
-		g_value_set_pointer (value, priv->callback_user_data);
 		break;
 	case PROP_ENTRY_TYPE:
 		g_value_set_pointer (value, priv->db_type);
