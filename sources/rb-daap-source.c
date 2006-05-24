@@ -94,6 +94,8 @@ struct RBDAAPSourcePrivate
 
 	const char *connection_status;
 	float connection_progress;
+
+	gboolean disconnecting;
 };
 
 enum {
@@ -752,7 +754,8 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 			rb_error_dialog	(NULL, _("Could not connect to shared music"), "%s", reason);
 		}
 
-		if (! daap_was_shutdown) {
+		/* Don't release the connection if we are already disconnecting */
+		if (! daap_source->priv->disconnecting) {
 			release_connection (daap_source);
 		}
 
@@ -869,6 +872,8 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 		RhythmDBEntryType type;
 
 		rb_debug ("Disconnecting source");
+
+		daap_source->priv->disconnecting = TRUE;
 
 		g_object_get (G_OBJECT (daap_source), "shell", &shell, "entry-type", &type, NULL);
 		g_object_get (G_OBJECT (shell), "db", &db, NULL);
