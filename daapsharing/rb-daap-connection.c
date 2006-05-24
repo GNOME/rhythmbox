@@ -581,11 +581,16 @@ actual_http_response_handler (DAAPResponseData *data)
 }
 
 static void
-http_response_handler (SoupMessage *message,
+http_response_handler (SoupMessage      *message,
 		       RBDAAPConnection *connection)
 {
 	DAAPResponseData *data;
 	int response_length;
+
+	if (message->status_code == SOUP_STATUS_CANCELLED) {
+		rb_debug ("Message cancelled");
+		return;
+	}
 
 	data = g_new0 (DAAPResponseData, 1);
 	data->status = message->status_code;
@@ -1711,6 +1716,8 @@ rb_daap_connection_dispose (GObject *object)
 	}
 	
 	if (priv->session) {
+		rb_debug ("Aborting all pending requests");
+		soup_session_abort (priv->session);
 		g_object_unref (G_OBJECT (priv->session));
 		priv->session = NULL;
 	}

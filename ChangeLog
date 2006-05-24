@@ -1,5 +1,20 @@
 2006-05-24  William Jon McCann  <mccann@jhu.edu>
 
+	* daapsharing/rb-daap-connection.c (http_response_handler) 
+	(rb_daap_connection_dispose):
+	Call soup_session_abort to make sure there are no outstanding
+	requests when we dispose of the connection.  Ignore cancelled
+	messages in the callback.
+
+2006-05-24  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-daap-source.c (rb_daap_source_connection_cb) 
+	(rb_daap_source_disconnect): Set a flag when disconnecting
+	the source.  Check this flag in connection callback
+	to see if we should release the connection.
+
+2006-05-24  William Jon McCann  <mccann@jhu.edu>
+
 	* daapsharing/Makefile.am:
 	* daapsharing/rb-daap-connection.c: (rb_daap_connection_finalize),
 	(rb_daap_connection_class_init), (connection_connected),
