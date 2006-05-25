@@ -1,3 +1,42 @@
+2006-05-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_class_init):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init):
+	* sources/rb-browser-source.c: (rb_browser_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init),
+	(default_move_to_trash):
+	Implement the basic move-to-trash operation once in rb-source.c, 
+	rather than in each source type that supports it.
+
+	* plugins/ipod/rb-ipod-plugin.c:
+	* shell/rb-removable-media-manager.c:
+	* shell/rb-shell.c: (rb_shell_constructor):
+	Only scan removable media once after loading plugins.  Add a flag
+	plugins can use to check if the initial scan has been done.
+
+	* data/rhythmbox.schemas:
+	Enable ipod and generic-player plugins by default.
+	
+	* configure.ac:
+	* data/ui/Makefile.am:
+	* data/ui/generic-player-ui.xml:
+	* data/ui/rhythmbox-ui.xml:
+	* plugins/Makefile.am:
+	* plugins/generic-player/Makefile.am:
+	* plugins/generic-player/generic-player.rb-plugin.desktop.in:
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	* sources/Makefile.am:
+	* sources/rb-generic-player-source.c:
+	* sources/rb-generic-player-source.h:
+	* sources/rb-nokia770-source.c:
+	* sources/rb-nokia770-source.h:
+	* sources/rb-psp-source.c: (visit_playlist_dirs):
+	* sources/rb-psp-source.h:
+	Pluginise generic player (and nokia770 and PSP) support and add
+	move-to-trash for players not mounted read-only.
+	Fixes #342868.
+
 2006-05-24  William Jon McCann  <mccann@jhu.edu>
 
 	* daapsharing/rb-daap-connection.c (handle_song_listing):

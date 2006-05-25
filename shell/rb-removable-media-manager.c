@@ -31,12 +31,7 @@
 #include "rb-library-source.h"
 #include "rb-sourcelist.h"
 #include "rb-removable-media-source.h"
-#include "rb-generic-player-source.h"
 #include "rb-audiocd-source.h"
-#include "rb-psp-source.h"
-#ifdef HAVE_HAL
-#include "rb-nokia770-source.h"
-#endif
 
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -119,6 +114,7 @@ typedef struct
 	GHashTable *volume_mapping;
 	GHashTable *cd_drive_mapping;
 	GList *cur_volume_list;
+	gboolean scanned;
 
 	char *playing_uri;
 
@@ -138,6 +134,7 @@ enum
 	PROP_SHELL,
 	PROP_SOURCELIST,
 	PROP_SOURCE,
+	PROP_SCANNED
 };
 
 enum
@@ -197,6 +194,13 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 							      "RBSourceList",
 							      RB_TYPE_SOURCELIST,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_SCANNED,
+					 g_param_spec_boolean ("scanned",
+						 	       "scanned",
+							       "Whether a scan has been performed",
+							       FALSE,
+							       G_PARAM_READABLE));
 
 	rb_removable_media_manager_signals[MEDIUM_ADDED] =
 		g_signal_new ("medium_added",
@@ -335,6 +339,9 @@ rb_removable_media_manager_get_property (GObject *object,
 		break;
 	case PROP_SOURCELIST:
 		g_value_set_object (value, priv->sourcelist);
+		break;
+	case PROP_SCANNED:
+		g_value_set_boolean (value, priv->scanned);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -559,9 +566,6 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 			  G_CALLBACK (rb_removable_media_manager_playing_uri_changed_cb),
 			  manager);
 
-	/* scan for media */
-	rb_removable_media_manager_scan (manager);
-
 	return FALSE;
 }
 
@@ -655,14 +659,6 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 
 	if (source == NULL && rb_audiocd_is_volume_audiocd (volume))
 		source = rb_audiocd_source_new (priv->shell, volume);
-	if (source == NULL && rb_psp_is_volume_player (volume))
-		source = rb_psp_source_new (priv->shell, volume);
-#ifdef HAVE_HAL
-	if (source == NULL && rb_nokia770_is_volume_player (volume))
-		source = rb_nokia770_source_new (priv->shell, volume);
-#endif
-	if (source == NULL && rb_generic_player_is_volume_player (volume))
-		source = rb_generic_player_source_new (priv->shell, volume);
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
@@ -810,6 +806,8 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	GList *list, *it;
 	GnomeVFSVolume *volume;
 	struct VolumeCheckData check_data;
+
+	priv->scanned = TRUE;
 		
 	list = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
 	

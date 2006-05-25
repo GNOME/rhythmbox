@@ -87,7 +87,6 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_property_views (RBSource *source);
 static void impl_delete (RBSource *source);
-static void impl_move_to_trash (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_reset_filters (RBSource *source);
 static void impl_song_properties (RBSource *source);
@@ -200,7 +199,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_search_actions = impl_get_search_actions;
@@ -674,21 +672,6 @@ impl_delete (RBSource *asource)
 	sel = rb_entry_view_get_selected_entries (source->priv->songs);
 	for (tem = sel; tem != NULL; tem = tem->next) {
 		rhythmdb_entry_delete (source->priv->db, tem->data);
-		rhythmdb_commit (source->priv->db);
-	}
-	g_list_free (sel);
-}
-
-static void
-impl_move_to_trash (RBSource *asource)
-{
-	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
-	GList *sel, *tem;
-
-	sel = rb_entry_view_get_selected_entries (source->priv->songs);
-	for (tem = sel; tem != NULL; tem = tem->next) {
-		rhythmdb_entry_move_to_trash (source->priv->db,
-					       (RhythmDBEntry *) tem->data);
 		rhythmdb_commit (source->priv->db);
 	}
 	g_list_free (sel);

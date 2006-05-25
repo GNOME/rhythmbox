@@ -40,6 +40,7 @@
 #include "rb-file-helpers.h"
 #include "rb-auto-playlist-source.h"
 #include "rhythmdb.h"
+#include "rb-plugin.h"
 
 static void rb_psp_source_create_playlists (RBGenericPlayerSource *source);
 static gchar *impl_get_mount_path (RBGenericPlayerSource *source);
@@ -52,7 +53,7 @@ typedef struct
 } RBPspSourcePrivate;
 
 
-G_DEFINE_TYPE (RBPspSource, rb_psp_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
+RB_PLUGIN_DEFINE_TYPE (RBPspSource, rb_psp_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
 #define PSP_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PSP_SOURCE, RBPspSourcePrivate))
 
 
@@ -154,7 +155,7 @@ visit_playlist_dirs (const gchar *rel_path,
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist), query,
 					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
 					   NULL, 0);
-	rb_shell_append_source (shell, playlist, RB_SOURCE (source));
+	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source), shell, RB_SOURCE (playlist));
 	g_object_unref (G_OBJECT (shell));
 	g_object_unref (G_OBJECT (db));
 

@@ -40,6 +40,8 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rhythmdb.h"
+#include "rb-dialog.h"
+#include "rb-plugin.h"
 
 static GObject *rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 						      GObjectConstructParam *construct_properties);
@@ -49,6 +51,9 @@ static gboolean rb_generic_player_source_load_playlists (RBGenericPlayerSource *
 static void rb_generic_player_source_load_songs (RBGenericPlayerSource *source);
 
 static gboolean impl_show_popup (RBSource *source);
+static void impl_delete_thyself (RBSource *source);
+static gboolean impl_can_move_to_trash (RBSource *source);
+
 static gchar *default_get_mount_path (RBGenericPlayerSource *source);
 static void default_load_playlists (RBGenericPlayerSource *source);
 static char * default_transform_playlist_uri (RBGenericPlayerSource *source,
@@ -57,12 +62,18 @@ static char * default_transform_playlist_uri (RBGenericPlayerSource *source,
 typedef struct
 {
 	char *mount_path;
+
+	RhythmDB *db;
+
+	GList *playlists;
+	gboolean read_only;
+	gboolean handles_trash;
+
 } RBGenericPlayerSourcePrivate;
 
 
-G_DEFINE_TYPE (RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
+RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define GENERIC_PLAYER_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
-
 
 static void
 rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
@@ -74,6 +85,8 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	object_class->dispose = rb_generic_player_source_dispose;
 
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_delete_thyself = impl_delete_thyself;
+	source_class->impl_can_move_to_trash = impl_can_move_to_trash;
 
 	klass->impl_get_mount_path = default_get_mount_path;
 	klass->impl_load_playlists = default_load_playlists;
@@ -93,11 +106,27 @@ rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
 	RBGenericPlayerSource *source; 
+	RBGenericPlayerSourcePrivate *priv;
+	GnomeVFSVolume *volume;
+	RBShell *shell;
 
 	source = RB_GENERIC_PLAYER_SOURCE (G_OBJECT_CLASS (rb_generic_player_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
+	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+
+	g_object_get (G_OBJECT (shell), "db", &priv->db, NULL);
+	g_object_unref (G_OBJECT (shell));
+
+	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
+	priv->handles_trash = gnome_vfs_volume_handles_trash (volume);
+	priv->read_only = gnome_vfs_volume_is_read_only (volume);
+	g_object_unref (G_OBJECT (volume));
+
 	rb_generic_player_source_load_songs (source);
+	
 	g_idle_add ((GSourceFunc)rb_generic_player_source_load_playlists, source);
 
 	return G_OBJECT (source);
@@ -111,6 +140,10 @@ rb_generic_player_source_dispose (GObject *object)
 	if (priv->mount_path) {
 		g_free (priv->mount_path);
 		priv->mount_path = NULL;
+	}
+	if (priv->db) {
+		g_object_unref (G_OBJECT (priv->db));
+		priv->db = NULL;
 	}
 	
 	G_OBJECT_CLASS (rb_generic_player_source_parent_class)->dispose (object);
@@ -138,20 +171,31 @@ rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
 }
 
 static void
+impl_delete_thyself (RBSource *source)
+{
+	GList *p;
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	
+	for (p = priv->playlists; p != NULL; p = p->next) {
+		RBSource *playlist = RB_SOURCE (p->data);
+		rb_source_delete_thyself (playlist);
+	}
+	g_list_free (priv->playlists);
+	priv->playlists = NULL;
+
+	RB_SOURCE_CLASS (rb_generic_player_source_parent_class)->impl_delete_thyself (source);
+}
+
+static void
 rb_generic_player_source_load_songs (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	RBShell *shell;
-	RhythmDB *db;
 	RhythmDBEntryType entry_type;
 
 	priv->mount_path = rb_generic_player_source_get_mount_path (source);
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
 
-	rhythmdb_add_uri_with_type (db, priv->mount_path, entry_type);
+	rhythmdb_add_uri_with_type (priv->db, priv->mount_path, entry_type);
 }
 
 char *
@@ -271,8 +315,25 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
+static gboolean
+impl_can_move_to_trash (RBSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	return priv->handles_trash;
+}
 
 /* code for playlist loading */
+
+void
+rb_generic_player_source_add_playlist (RBGenericPlayerSource *source,
+				       RBShell *shell,
+				       RBSource *playlist)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	priv->playlists = g_list_prepend (priv->playlists, playlist);
+
+	rb_shell_append_source (shell, playlist, RB_SOURCE (source));
+}
 
 static gboolean
 rb_generic_player_source_load_playlists (RBGenericPlayerSource *source)
@@ -325,7 +386,6 @@ visit_playlist_dirs (const gchar *rel_path,
 		     gboolean *recurse)
 {
 	RBShell *shell;
-	RhythmDB *db;
 	RhythmDBEntryType entry_type;
 	char *main_path;
 	char *playlist_path;
@@ -350,9 +410,6 @@ visit_playlist_dirs (const gchar *rel_path,
 		      "shell", &shell, 
 		      "entry-type", &entry_type,
 		      NULL);
-	g_object_get (G_OBJECT (shell),
-		      "db", &db,
-		      NULL);
 
 	playlist = RB_STATIC_PLAYLIST_SOURCE (
 			rb_static_playlist_source_new (shell, 
@@ -376,7 +433,7 @@ visit_playlist_dirs (const gchar *rel_path,
 		rb_debug ("unable to parse %s as playlist", playlist_path);
 		g_object_unref (G_OBJECT (source));
 	} else {
-		rb_shell_append_source (shell, RB_SOURCE (playlist), RB_SOURCE (source));
+		rb_generic_player_source_add_playlist (source, shell, RB_SOURCE (playlist));
 	}
 
 	g_object_unref (G_OBJECT (parser));
@@ -384,7 +441,6 @@ visit_playlist_dirs (const gchar *rel_path,
 	g_free (data);
 
 	g_object_unref (G_OBJECT (shell));
-	g_object_unref (G_OBJECT (db));
 
 	return TRUE;
 }

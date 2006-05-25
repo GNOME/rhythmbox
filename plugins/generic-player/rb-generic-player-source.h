@@ -53,10 +53,16 @@ typedef struct
 
 RBRemovableMediaSource *	rb_generic_player_source_new		(RBShell *shell, GnomeVFSVolume *volume);
 GType			rb_generic_player_source_get_type		(void);
+GType			rb_generic_player_source_register_type		(GTypeModule *module);
 
 char *			rb_generic_player_source_get_mount_path		(RBGenericPlayerSource *source);
 
 gboolean		rb_generic_player_is_volume_player		(GnomeVFSVolume *volume);
+
+/* for subclasses */
+void			rb_generic_player_source_add_playlist		(RBGenericPlayerSource *source,
+									 RBShell *shell,
+									 RBSource *playlist);
 
 G_END_DECLS
 

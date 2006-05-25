@@ -47,6 +47,7 @@ typedef struct
 
 RBRemovableMediaSource *	rb_psp_source_new		(RBShell *shell, GnomeVFSVolume *volume);
 GType			rb_psp_source_get_type		(void);
+GType			rb_psp_source_register_type	(GTypeModule *module);
 
 gboolean		rb_psp_is_volume_player		(GnomeVFSVolume *volume);
 

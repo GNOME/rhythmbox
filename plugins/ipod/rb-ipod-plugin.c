@@ -126,6 +126,7 @@ impl_activate (RBPlugin *bplugin,
 	RBIpodPlugin *plugin = RB_IPOD_PLUGIN (bplugin);
 	RBRemovableMediaManager *rmm = NULL;
 	GtkUIManager *uimanager = NULL;
+	gboolean scanned;
 
 	plugin->shell = shell;
 
@@ -150,7 +151,11 @@ impl_activate (RBPlugin *bplugin,
 	g_signal_connect (G_OBJECT (rmm),
 			  "create-source", G_CALLBACK (create_source_cb),
 			  plugin);
-	rb_removable_media_manager_scan (rmm);
+
+	/* only scan if we're being loaded after the initial scan has been done */
+	g_object_get (G_OBJECT (rmm), "scanned", &scanned, NULL);
+	if (scanned)
+		rb_removable_media_manager_scan (rmm);
 
 	g_object_unref (G_OBJECT (rmm));
 	g_object_unref (G_OBJECT (uimanager));

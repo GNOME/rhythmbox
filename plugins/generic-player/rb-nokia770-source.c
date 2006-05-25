@@ -36,6 +36,7 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rhythmdb.h"
+#include "rb-plugin.h"
 
 
 static char * impl_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri);
@@ -47,7 +48,7 @@ typedef struct {
 #endif
 } RBNokia770SourcePrivate;
 
-G_DEFINE_TYPE (RBNokia770Source, rb_nokia770_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
+RB_PLUGIN_DEFINE_TYPE (RBNokia770Source, rb_nokia770_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
 #define NOKIA770_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NOKIA770_SOURCE, RBNokia770SourcePrivate))
 
 

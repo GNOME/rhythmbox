@@ -671,5 +671,27 @@
 	<long>True if the Python console plugin is enabled.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/generic-player/enabled</key>
+	<applyto>/apps/rhythmbox/plugins/generic-player/enabled</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>True if the generic audio player plugin is enabled.</short>
+	<long>True if the generic audio player plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/ipod/enabled</key>
+	<applyto>/apps/rhythmbox/plugins/ipod/enabled</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>True if the iPod plugin is enabled.</short>
+	<long>True if the iPod plugin is enabled.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

@@ -37,7 +37,6 @@ static GObject *rb_import_errors_source_constructor (GType type, guint n_constru
 static void rb_import_errors_source_dispose (GObject *object);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
-static void impl_move_to_trash (RBSource *source);
 static void impl_delete (RBSource *source);
 static void impl_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
@@ -77,7 +76,6 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 
 	source_class->impl_delete = impl_delete;
-	source_class->impl_move_to_trash = impl_move_to_trash;
 
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
@@ -230,21 +228,6 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL);
 	*text = g_strdup_printf (ngettext ("%d import errors", "%d import errors", count),
 				 count);
-}
-
-static void
-impl_move_to_trash (RBSource *asource)
-{
-	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (asource);
-	GList *sel, *tem;
-
-	sel = rb_entry_view_get_selected_entries (source->priv->view);
-	for (tem = sel; tem != NULL; tem = tem->next) {
-		rhythmdb_entry_move_to_trash (source->priv->db,
-					       (RhythmDBEntry *) tem->data);
-		rhythmdb_commit (source->priv->db);
-	}
-	g_list_free (sel);
 }
 
 static void

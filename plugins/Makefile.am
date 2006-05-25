@@ -1,6 +1,8 @@
 ## arch-tag: Automake rules for Rhythmbox's plugin system
 
-SUBDIRS = sample
+SUBDIRS = 						\
+	generic-player					\
+	sample
 
 if WITH_AUDIOSCROBBLER
 SUBDIRS += audioscrobbler

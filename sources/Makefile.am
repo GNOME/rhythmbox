@@ -29,16 +29,12 @@ libsourcesimpl_la_SOURCES =		\
 	rb-auto-playlist-source.h	\
 	rb-static-playlist-source.c	\
 	rb-static-playlist-source.h	\
-	rb-generic-player-source.c	\
-	rb-generic-player-source.h	\
 	rb-play-queue-source.c		\
 	rb-play-queue-source.h		\
 	rb-missing-files-source.c	\
 	rb-missing-files-source.h	\
 	rb-import-errors-source.c	\
-	rb-import-errors-source.h	\
-	rb-psp-source.c			\
-	rb-psp-source.h
+	rb-import-errors-source.h
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -46,9 +42,7 @@ INCLUDES =						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_builddir)/lib 				\
-	-I$(top_srcdir)/corba 				\
-	-I$(top_builddir)/corba				\
-	-I$(top_srcdir)/rhythmdb				\
+	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/metadata 			\
 	-I$(top_srcdir)/widgets 			\
 	-I$(top_srcdir)/library 			\
@@ -57,7 +51,6 @@ INCLUDES =						\
 	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/daapsharing			\
-	-I$(top_srcdir)/metadata			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -69,14 +62,6 @@ INCLUDES =						\
 
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
-
-hal_files =				\
-	rb-nokia770-source.c		\
-	rb-nokia770-source.h
-
-if HAVE_HAL
-libsourcesimpl_la_SOURCES += $(hal_files)
-endif
 
 daap_files =				\
 	rb-daap-source.c		\
@@ -93,4 +78,10 @@ if ENABLE_TRACK_TRANSFER
 INCLUDES +=$(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
-EXTRA_DIST = $(hal_files) $(daap_files)
+EXTRA_DIST = $(daap_files)				\
+	rb-nokia770-source.c				\
+	rb-nokia770-source.h				\
+	rb-psp-source.c					\
+	rb-psp-source.h					\
+	rb-generic-player-source.c			\
+	rb-generic-player-source.h

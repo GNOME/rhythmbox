@@ -65,6 +65,7 @@ static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
 static void default_get_status (RBSource *source, char **text, char **progress_text, float *progress);
+static void default_move_to_trash (RBSource *source);
 static GList * default_get_ui_actions (RBSource *source);
 static GList * default_get_search_actions (RBSource *source);
 
@@ -149,6 +150,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_get_status = default_get_status;
 	klass->impl_get_ui_actions = default_get_ui_actions;
 	klass->impl_get_search_actions = default_get_search_actions;
+	klass->impl_move_to_trash = default_move_to_trash;
 
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
@@ -704,6 +706,27 @@ rb_source_delete (RBSource *source)
 
 	klass->impl_delete (source);
 }
+
+static void
+default_move_to_trash (RBSource *source)
+{
+	GList *sel, *tem;
+	RBEntryView *entry_view;
+	RhythmDB *db;
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	g_object_get (G_OBJECT (priv->shell), "db", &db, NULL);
+
+	entry_view = rb_source_get_entry_view (source);
+	sel = rb_entry_view_get_selected_entries (entry_view);
+	for (tem = sel; tem != NULL; tem = tem->next) {
+		rhythmdb_entry_move_to_trash (db, (RhythmDBEntry *)tem->data);
+		rhythmdb_commit (db);
+	}
+	g_list_free (sel);
+	g_object_unref (G_OBJECT (db));
+}
+
 
 void
 rb_source_move_to_trash (RBSource *source)

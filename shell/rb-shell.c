@@ -1341,6 +1341,8 @@ rb_shell_constructor (GType type,
 
 	rb_plugins_engine_init (shell);
 
+	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
+
 	/* GO GO GO! */
 	rb_debug ("loading database");
 	rhythmdb_load (shell->priv->db);

@@ -901,6 +901,7 @@ plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
+plugins/generic-player/Makefile
 bindings/Makefile
 bindings/python/Makefile
 help/Makefile
