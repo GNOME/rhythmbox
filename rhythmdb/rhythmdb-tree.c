@@ -1046,6 +1046,7 @@ rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntry *entry)
 	artist = get_or_create_artist (db, genre, entry->artist);
 	set_entry_album (db, entry, artist, entry->album);
 
+	/* this accounts for the initial reference on the entry */
 	g_hash_table_insert (db->priv->entries, entry->location, entry);
 }
 
@@ -1332,6 +1333,7 @@ rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *entry)
 	g_assert (g_hash_table_lookup (db->priv->entries, entry->location) != NULL);
 
 	g_hash_table_remove (db->priv->entries, entry->location);
+	rhythmdb_entry_unref (adb, entry);
 }
 
 typedef struct {
@@ -1348,6 +1350,7 @@ remove_one_song (gchar *uri, RhythmDBEntry *entry,
 	if (entry->type == ctxt->type) {
 		rhythmdb_emit_entry_deleted (ctxt->db, entry);
 		remove_entry_from_album (RHYTHMDB_TREE (ctxt->db), entry); 
+		rhythmdb_entry_unref (ctxt->db, entry);
 		return TRUE;
 	}
 	return FALSE;

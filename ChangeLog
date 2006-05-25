@@ -1,3 +1,14 @@
+2006-05-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_new),
+	(rhythmdb_tree_entry_delete), (remove_one_song):
+	* rhythmdb/rhythmdb.c: (process_deleted_entries_cb):
+	Fix two db entry reference counting problems.
+	The initial reference on the entry is held by the db backend, but it
+	was never being dropped.  The reference count was incremented when
+	adding an entry to the deleted_entries map and to the
+	deleted_entries_to_emit list, but only decremented for one of those.
+
 2006-05-24  William Jon McCann  <mccann@jhu.edu>
 
 	* daapsharing/rb-daap-connection.c (http_response_handler) 

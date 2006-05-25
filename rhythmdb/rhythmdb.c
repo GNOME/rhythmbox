@@ -807,8 +807,8 @@ process_deleted_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
 {
 	if (thread != g_thread_self ())
 		return FALSE;
-	
-	rhythmdb_entry_ref (db, entry);
+
+	/* carry reference over from deleted_entries hash table */
 	db->priv->deleted_entries_to_emit = g_list_prepend (db->priv->deleted_entries_to_emit, entry);
 	return TRUE;
 }
