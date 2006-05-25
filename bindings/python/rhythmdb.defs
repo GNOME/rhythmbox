@@ -557,6 +557,9 @@
 (define-function rhythmdb_entry_register_type
   (c-name "rhythmdb_entry_register_type")
   (return-type "RhythmDBEntryType_*")
+  (parameters
+    '("const-char*" "name")
+  )
 )
 
 (define-function rhythmdb_entry_song_get_type

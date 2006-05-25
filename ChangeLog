@@ -1,3 +1,47 @@
+2006-05-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* bindings/python/rhythmdb.defs:
+	* rhythmdb/rhythmdb-query.c: (write_encoded_gvalue),
+	(rhythmdb_read_encoded_property), (rhythmdb_query_serialize),
+	(rhythmdb_query_deserialize):
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_entry_allocate),
+	(rhythmdb_entry_get_type_data), (rhythmdb_entry_finalize),
+	(rhythmdb_entry_set_internal), (rhythmdb_entry_register_type),
+	(rhythmdb_entry_register_type_alias),
+	(rhythmdb_entry_type_get_by_name), (rhythmdb_entry_song_get_type),
+	(rhythmdb_entry_ignore_get_type), (rhythmdb_entry_iradio_get_type),
+	(_podcast_data_destroy), (rhythmdb_entry_podcast_post_get_type),
+	(rhythmdb_entry_podcast_feed_get_type),
+	(rhythmdb_entry_import_error_get_type),
+	(rhythmdb_entry_get_string), (rhythmdb_entry_get_ulong):
+	* rhythmdb/rhythmdb.h:
+	Allocate a specified amount of extra memory for each db entry, to be
+	used to store fields specific to the entry type.  Optionally associate
+	a name with each entry type, to be used when saving entries and
+	auto playlists to disk.  Allow entry types to have multiple names
+	to handle older playlist files that used '0' to represent 'song'.
+	Use private data to store podcast fields.
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (save_entry),
+	(rhythmdb_tree_entry_set):
+	Simplify property handling by using existing code to convert
+	properties from strings to GValues and to set properties on entries.
+	Other assorted changes due to the above.
+
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* sources/rb-daap-source.c: (rhythmdb_entry_daap_type_new):
+	* sources/rb-generic-player-source.c:
+	(rb_generic_player_source_new):
+	* sources/rb-ipod-source.c: (rb_ipod_source_new):
+	* sources/rb-nokia770-source.c: (rb_nokia770_source_new):
+	* sources/rb-psp-source.c: (rb_psp_source_new):
+	Update for changes to rhythmdb_entry_register_type.  None of these
+	entry types need names or use private data.
+
+	Fixes #337429.
+
 2006-05-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry):

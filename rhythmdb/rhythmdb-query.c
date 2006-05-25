@@ -271,99 +271,75 @@ rhythmdb_query_free (GPtrArray *query)
 	g_ptr_array_free (query, TRUE);
 }
 
-static char *
-entry_type_to_string (RhythmDBEntryType type)
-{
-	if (type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		return g_strdup ("0");
-	} else if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
-		return g_strdup ("1");
-	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
-		return g_strdup ("2");
-	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		return g_strdup ("3");
-	}
-	g_assert_not_reached ();
-}
-
-static RhythmDBEntryType
-entry_type_from_uint (unsigned int type) 
-{
-	switch (type) {
-	case 0:
-		return RHYTHMDB_ENTRY_TYPE_SONG;
-	case 1:
-		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
-	case 2:
-		return RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
-	case 3:
-		return RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
-	default:
-		g_assert_not_reached ();
-	}
-
-	return RHYTHMDB_ENTRY_TYPE_INVALID;
-}
-
-
 static void
-write_encoded_gvalue (xmlNodePtr node,
+write_encoded_gvalue (RhythmDB *db,
+		      xmlNodePtr node,
+		      RhythmDBPropType propid,
 		      GValue *val)
 {
-	char *strval;
+	char *strval = NULL;
 	xmlChar *quoted;
 
-	switch (G_VALUE_TYPE (val)) {
-	case G_TYPE_STRING:
-		strval = g_value_dup_string (val);
-		break;
-	case G_TYPE_BOOLEAN:
-		strval = g_strdup_printf ("%d", g_value_get_boolean (val));
-		break;
-	case G_TYPE_INT:
-		strval = g_strdup_printf ("%d", g_value_get_int (val));
-		break;
-	case G_TYPE_LONG:
-		strval = g_strdup_printf ("%ld", g_value_get_long (val));
-		break;
-	case G_TYPE_ULONG:
-		strval = g_strdup_printf ("%lu", g_value_get_ulong (val));
-		break;
-	case G_TYPE_UINT64:
-		strval = g_strdup_printf ("%" G_GUINT64_FORMAT, g_value_get_uint64 (val));
-		break;
-	case G_TYPE_FLOAT:
-		strval = g_strdup_printf ("%f", g_value_get_float (val));
-		break;
-	case G_TYPE_DOUBLE:
-		strval = g_strdup_printf ("%f", g_value_get_double (val));
-		break;
-	case G_TYPE_POINTER:
-		strval = entry_type_to_string (g_value_get_pointer (val));
+	/* special-case some properties */
+	switch (propid) {
+	case RHYTHMDB_PROP_TYPE:
+		{
+			RhythmDBEntryType type = g_value_get_pointer (val);
+			strval = g_strdup (type->name);
+		}
 		break;
 	default:
-		g_assert_not_reached ();
-		strval = NULL;
 		break;
+	}
+
+	/* otherwise just convert numbers to strings */
+	if (!strval) {
+		switch (G_VALUE_TYPE (val)) {
+		case G_TYPE_STRING:
+			strval = g_value_dup_string (val);
+			break;
+		case G_TYPE_BOOLEAN:
+			strval = g_strdup_printf ("%d", g_value_get_boolean (val));
+			break;
+		case G_TYPE_INT:
+			strval = g_strdup_printf ("%d", g_value_get_int (val));
+			break;
+		case G_TYPE_LONG:
+			strval = g_strdup_printf ("%ld", g_value_get_long (val));
+			break;
+		case G_TYPE_ULONG:
+			strval = g_strdup_printf ("%lu", g_value_get_ulong (val));
+			break;
+		case G_TYPE_UINT64:
+			strval = g_strdup_printf ("%" G_GUINT64_FORMAT, g_value_get_uint64 (val));
+			break;
+		case G_TYPE_FLOAT:
+			strval = g_strdup_printf ("%f", g_value_get_float (val));
+			break;
+		case G_TYPE_DOUBLE:
+			strval = g_strdup_printf ("%f", g_value_get_double (val));
+			break;
+		default:
+			g_assert_not_reached ();
+			strval = NULL;
+			break;
+		}
 	}
 
 	quoted = xmlEncodeEntitiesReentrant (NULL, BAD_CAST strval);
 	g_free (strval);
+
 	xmlNodeSetContent (node, quoted);
 	g_free (quoted);
 }
 
-static void
-read_encoded_property (RhythmDB *db,
-		       xmlNodePtr node,
-		       guint propid,
-		       GValue *val)
+void
+rhythmdb_read_encoded_property (RhythmDB *db,
+				const char *content,
+				RhythmDBPropType propid,
+				GValue *val)
 {
-	char *content;
-
 	g_value_init (val, rhythmdb_get_property_type (db, propid));
-
-	content = (char *)xmlNodeGetContent (node);
 	
 	switch (G_VALUE_TYPE (val)) {
 	case G_TYPE_STRING:
@@ -384,7 +360,7 @@ read_encoded_property (RhythmDB *db,
 	case G_TYPE_POINTER:
 		if (propid == RHYTHMDB_PROP_TYPE) {
 			RhythmDBEntryType entry_type;
-			entry_type = entry_type_from_uint (g_ascii_strtoull (content, NULL, 10));
+			entry_type = rhythmdb_entry_type_get_by_name (content);
 			if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
 				g_value_set_pointer (val, entry_type);
 				break;
@@ -403,9 +379,8 @@ read_encoded_property (RhythmDB *db,
 		g_assert_not_reached ();
 		break;
 	}
-
-	g_free (content);
 }
+
 
 void
 rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
@@ -426,32 +401,32 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 		case RHYTHMDB_QUERY_PROP_LIKE:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_LIKE, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_NOT_LIKE, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_PREFIX:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_PREFIX, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_SUFFIX:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_SUFFIX, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_EQUALS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_EQUALS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_DISJUNCTION:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_DISJ, NULL);
@@ -461,32 +436,32 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 		case RHYTHMDB_QUERY_PROP_GREATER:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_GREATER, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_GREATER, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_LESS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_LESS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
 			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_LESS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_CURRENT_TIME_WITHIN, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_CURRENT_TIME_NOT_WITHIN, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
-			write_encoded_gvalue (subnode, data->val);
+			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
 		}		
 	}
@@ -563,6 +538,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 		    || !xmlStrcmp (child->name, RB_PARSE_YEAR_LESS)
 		    || !xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)
 		    || !xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_NOT_WITHIN)) {
+			char *content;
 			xmlChar *propstr = xmlGetProp (child, RB_PARSE_PROP);
 			gint propid = rhythmdb_propid_from_nice_elt_name (db, propstr);
 			g_free (propstr);
@@ -572,7 +548,9 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			data->propid = propid;
 			data->val = g_new0 (GValue, 1);
 
-			read_encoded_property (db, child, data->propid, data->val);
+			content = (char *)xmlNodeGetContent (child);
+			rhythmdb_read_encoded_property (db, content, data->propid, data->val);
+			g_free (content);
 		} 
 
 		g_ptr_array_add (query, data);

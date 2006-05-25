@@ -82,7 +82,7 @@ rb_psp_source_new (RBShell *shell, GnomeVFSVolume *volume)
 
 	g_assert (rb_psp_is_volume_player (volume));
 
-	entry_type =  rhythmdb_entry_register_type ();
+	entry_type =  rhythmdb_entry_register_type (NULL);
 
 	source = RB_PSP_SOURCE (g_object_new (RB_TYPE_PSP_SOURCE,
 					  "entry-type", entry_type,

@@ -101,9 +101,6 @@ struct RhythmDBEntry_ {
 
 	/* visibility (to hide entries on unmounted volumes) */
 	gboolean hidden;
-
-	/*Podcast*/
-	RhythmDBPodcastFields *podcast;
 };
 
 struct RhythmDBPrivate
@@ -215,7 +212,7 @@ void rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error);
 
 /* from rhythmdb-query.c */
 GPtrArray *rhythmdb_query_parse_valist (RhythmDB *db, va_list args);
-
+void       rhythmdb_read_encoded_property (RhythmDB *db, const char *data, RhythmDBPropType propid, GValue *val);
 
 G_END_DECLS
 

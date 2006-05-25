@@ -120,7 +120,7 @@ guint daap_ui_merge_id;
 static RhythmDBEntryType
 rhythmdb_entry_daap_type_new (void)
 {
-	return rhythmdb_entry_register_type ();
+	return rhythmdb_entry_register_type (NULL);
 }
 
 static void

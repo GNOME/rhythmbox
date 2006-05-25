@@ -266,17 +266,8 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 			for (; *attrs; attrs +=2) {
 				if (!strcmp (*attrs, "type")) {
 					const char *typename = *(attrs+1);
-					if (!strcmp (typename, "song"))
-						type = RHYTHMDB_ENTRY_TYPE_SONG;
-					else if (!strcmp (typename, "iradio"))
-						type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
-					else if (!strcmp (typename, "podcast-post"))
-						type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
-					else if (!strcmp (typename, "podcast-feed"))
-						type = RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
-					else if (!strcmp (typename, "ignore"))
-						type = RHYTHMDB_ENTRY_TYPE_IGNORE;
-					else
+					type = rhythmdb_entry_type_get_by_name (typename);
+					if (!type)
 						return;
 					type_set = TRUE;
 					break;
@@ -309,24 +300,6 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	}
 }
 
-static gulong
-parse_ulong (const char *buffer)
-{
-	guint64 val;
-
-	val = g_ascii_strtoull (buffer, NULL, 10);
-	if (val == G_MAXUINT64)
-		return 0;
-	else
-		return MIN (val, G_MAXUINT32);
-}
-
-static gboolean
-parse_boolean (const char *buffer)
-{
-	return (parse_ulong (buffer) > 0);
-}
-
 static void
 rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const char *name)
 {
@@ -354,13 +327,16 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			rb_debug ("pre-Date entry found, causing re-read");
 			ctx->entry->mtime = 0;
 		}
-		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED && ctx->entry->podcast->post_time == 0) {
+		if (ctx->entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+			RhythmDBPodcastFields *podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (ctx->entry, RhythmDBPodcastFields);
 			/* Handle upgrades from 0.9.2.
 			 * Previously, last-seen for podcast feeds was the time of the last post,
 			 * and post-time was unused.  Now, we want last-seen to be the time we
 			 * last updated the feed, and post-time to be the time of the last post.
 			 */
-			ctx->entry->podcast->post_time = ctx->entry->last_seen;
+			if (podcast->post_time == 0) {
+				podcast->post_time = ctx->entry->last_seen;
+			}
 		}
 		
 		if (ctx->entry->location != NULL) {
@@ -403,141 +379,41 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
 	{
-		/* Handle indexed properties. */
-		switch (ctx->propid)
-		{
-		case RHYTHMDB_PROP_TYPE:
-			g_assert_not_reached ();
-			break;
-		case RHYTHMDB_PROP_TITLE:
-			ctx->entry->title = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_GENRE:
-			ctx->entry->genre = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_ARTIST:
-			ctx->entry->artist = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_ALBUM:
-			ctx->entry->album = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_TRACK_NUMBER:
-			ctx->entry->tracknum = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_DISC_NUMBER:
-			ctx->entry->discnum = parse_ulong (ctx->buf->str);
-			break;
+		GValue value = {0,};
+		gboolean set = FALSE;
+		gboolean skip = FALSE;
+
+		/* special case some properties for upgrade handling etc. */
+		switch (ctx->propid) {
 		case RHYTHMDB_PROP_DATE:
-		{
-			gulong value = parse_ulong (ctx->buf->str);
-			
-			if (value > 0)
-				g_date_set_julian (&ctx->entry->date, value);
-			else
-				g_date_clear (&ctx->entry->date, 1);
 			ctx->has_date = TRUE;
 			break;
-		}
-		case RHYTHMDB_PROP_DURATION:
-			ctx->entry->duration = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_FILE_SIZE:
-			ctx->entry->file_size = parse_ulong (ctx->buf->str);
-			break;
 		case RHYTHMDB_PROP_LOCATION:
-			if (ctx->canonicalise_uris)
-				ctx->entry->location = rb_canonicalise_uri (ctx->buf->str);
-			else
-				ctx->entry->location = g_strdup (ctx->buf->str);
+			if (ctx->canonicalise_uris) {
+				char *canon = rb_canonicalise_uri (ctx->buf->str);
+
+				g_value_init (&value, G_TYPE_STRING);
+				g_value_take_string (&value, canon);
+				set = TRUE;
+			}
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			/* remove this from old podcast-post entries */
-			if (!g_str_has_prefix (ctx->buf->str, "http://"))
-				ctx->entry->mountpoint = rb_refstring_new (ctx->buf->str);
+			/* fix old podcast posts */
+			if (g_str_has_prefix (ctx->buf->str, "http://"))
+				skip = TRUE;
 			break;
-		case RHYTHMDB_PROP_MTIME:
-			ctx->entry->mtime = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_FIRST_SEEN:
-			ctx->entry->first_seen = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_LAST_SEEN:
-			ctx->entry->last_seen = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_RATING:
-			ctx->entry->rating = g_ascii_strtod (ctx->buf->str, NULL);
-			break;
-		case RHYTHMDB_PROP_PLAY_COUNT:
-			ctx->entry->play_count = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_LAST_PLAYED:
-			ctx->entry->last_played = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_BITRATE:
-			ctx->entry->bitrate = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_TRACK_GAIN:
-			ctx->entry->track_gain = g_ascii_strtod (ctx->buf->str, NULL);
-			break;
-		case RHYTHMDB_PROP_TRACK_PEAK:
-			ctx->entry->track_peak = g_ascii_strtod (ctx->buf->str, NULL);
-			break;
-		case RHYTHMDB_PROP_ALBUM_GAIN:
-			ctx->entry->album_gain = g_ascii_strtod (ctx->buf->str, NULL);
-			break;
-		case RHYTHMDB_PROP_ALBUM_PEAK:
-			ctx->entry->album_peak = g_ascii_strtod (ctx->buf->str, NULL);
-			break;
-		case RHYTHMDB_PROP_MIMETYPE:
-			ctx->entry->mimetype = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_HIDDEN:
-			ctx->entry->hidden = parse_boolean (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_STATUS:
-			ctx->entry->podcast->status = parse_ulong (ctx->buf->str);
-			break;			
-		case RHYTHMDB_PROP_DESCRIPTION:
-			ctx->entry->podcast->description = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_SUBTITLE:
-			ctx->entry->podcast->subtitle = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_SUMMARY:
-			ctx->entry->podcast->summary = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_LANG:
-			ctx->entry->podcast->lang = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_COPYRIGHT:
-			ctx->entry->podcast->copyright = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_IMAGE:
-			ctx->entry->podcast->image = rb_refstring_new (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_POST_TIME:			
-			ctx->entry->podcast->post_time = parse_ulong (ctx->buf->str);
-			break;
-		case RHYTHMDB_PROP_TITLE_SORT_KEY:
-		case RHYTHMDB_PROP_GENRE_SORT_KEY:
-		case RHYTHMDB_PROP_ARTIST_SORT_KEY:
-		case RHYTHMDB_PROP_ALBUM_SORT_KEY:
-		case RHYTHMDB_PROP_TITLE_FOLDED:
-		case RHYTHMDB_PROP_GENRE_FOLDED:
-		case RHYTHMDB_PROP_ARTIST_FOLDED:
-		case RHYTHMDB_PROP_ALBUM_FOLDED:
-		case RHYTHMDB_PROP_LAST_PLAYED_STR:
-		case RHYTHMDB_PROP_PLAYBACK_ERROR:
-		case RHYTHMDB_PROP_FIRST_SEEN_STR:
-		case RHYTHMDB_PROP_LAST_SEEN_STR:
-		case RHYTHMDB_PROP_SEARCH_MATCH:
-		case RHYTHMDB_PROP_YEAR:
-		case RHYTHMDB_NUM_PROPERTIES:
-			g_assert_not_reached ();
+		default:
 			break;
 		}
-			
-		rhythmdb_entry_sync_mirrored (RHYTHMDB (ctx->db), ctx->entry, ctx->propid);
+
+		if (!skip) {
+			if (!set) {
+				rhythmdb_read_encoded_property (RHYTHMDB (ctx->db), ctx->buf->str, ctx->propid, &value);
+			}
+
+			rhythmdb_entry_set_internal (RHYTHMDB (ctx->db), ctx->entry, FALSE, ctx->propid, &value);
+			g_value_unset (&value);
+		}
 
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
 		break;
@@ -743,9 +619,14 @@ static void
 save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveContext *ctx)
 {
 	RhythmDBPropType i;
+	RhythmDBPodcastFields *podcast = NULL;
 
 	if (ctx->error)
 		return;
+
+	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 
 	RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle, ctx->error);
 
@@ -858,36 +739,36 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_boolean (ctx, elt_name, entry->hidden);
 			break;
 		case RHYTHMDB_PROP_STATUS:
-			if (entry->podcast)
-				save_entry_ulong (ctx, elt_name, entry->podcast->status, FALSE);
+			if (podcast)
+				save_entry_ulong (ctx, elt_name, podcast->status, FALSE);
 			break;
 		case RHYTHMDB_PROP_DESCRIPTION:
-			if (entry->podcast && entry->podcast->description)
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->description));
+			if (podcast && podcast->description)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->description));
 			break;
 		case RHYTHMDB_PROP_SUBTITLE:
-			if (entry->podcast && entry->podcast->subtitle)
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->subtitle));
+			if (podcast && podcast->subtitle)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->subtitle));
 			break;
 		case RHYTHMDB_PROP_SUMMARY:
-			if (entry->podcast && entry->podcast->summary)
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->summary));
+			if (podcast && podcast->summary)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->summary));
 			break;
 		case RHYTHMDB_PROP_LANG:
-			if (entry->podcast && entry->podcast->lang)
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->lang));
+			if (podcast && podcast->lang)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->lang));
 			break;
 		case RHYTHMDB_PROP_COPYRIGHT:
-			if (entry->podcast && entry->podcast->copyright)
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->copyright));
+			if (podcast && podcast->copyright)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->copyright));
 			break;
 		case RHYTHMDB_PROP_IMAGE:
-			if (entry->podcast && entry->podcast->image)
-				save_entry_string(ctx, elt_name, rb_refstring_get (entry->podcast->image));
+			if (podcast && podcast->image)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->image));
 			break;
 		case RHYTHMDB_PROP_POST_TIME:
-			if (entry->podcast)
-				save_entry_ulong (ctx, elt_name, entry->podcast->post_time, FALSE);
+			if (podcast)
+				save_entry_ulong (ctx, elt_name, podcast->post_time, FALSE);
 			break;			
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
@@ -1221,6 +1102,9 @@ rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
 	RhythmDBEntryType type;
 
 	type = entry->type;
+
+	if (!entry->inserted)
+		return FALSE;
 
 	/* Handle special properties */
 	switch (propid)

@@ -57,6 +57,10 @@ typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry
 typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
 
 typedef struct {
+	char 				*name;
+
+	guint				entry_type_data_size;
+
 	/* virtual functions here */
 	RhythmDBEntryActionFunc		post_entry_create;
 	gpointer			post_entry_create_data;
@@ -319,6 +323,9 @@ void		rhythmdb_entry_set_uninserted   (RhythmDB *db, RhythmDBEntry *entry,
 
 char *		rhythmdb_entry_get_playback_uri	(RhythmDBEntry *entry);
 
+gpointer	rhythmdb_entry_get_type_data (RhythmDBEntry *entry, guint expected_size);
+#define		RHYTHMDB_ENTRY_GET_TYPE_DATA(e,t)	((t*)rhythmdb_entry_get_type_data((e),sizeof(t)))
+
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 void            rhythmdb_entry_delete_by_type (RhythmDB *db, 
 					       RhythmDBEntryType type);
@@ -397,7 +404,8 @@ char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
 							 const char *plural);
 
 
-RhythmDBEntryType rhythmdb_entry_register_type          (void);
+RhythmDBEntryType rhythmdb_entry_register_type          (const char *name);
+RhythmDBEntryType rhythmdb_entry_type_get_by_name       (const char *name);
 
 RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
 RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
