@@ -856,7 +856,11 @@ handle_song_listing (RBDAAPConnection *connection,
 		return;
 	}
 	returned_count = g_value_get_int (&(item->content));
-	commit_batch = returned_count / 20;
+	if (returned_count > 20) {
+		commit_batch = returned_count / 20;
+	} else {
+		commit_batch = 1;
+	}
 	
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MTCO);
 	if (item == NULL) {

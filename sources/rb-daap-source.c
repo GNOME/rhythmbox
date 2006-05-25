@@ -1018,12 +1018,32 @@ rb_daap_source_get_paned_key (RBBrowserSource *source)
 }
 
 static void
-rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+rb_daap_source_get_status (RBSource *source,
+			   char    **text,
+			   char    **progress_text,
+			   float    *progress)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
-	if (daap_source->priv->connection_status) {
-		*text = g_strdup (daap_source->priv->connection_status);
-		*progress = daap_source->priv->connection_progress;
+
+	if (text != NULL) {
+		*text = NULL;
+	}
+	if (progress_text != NULL) {
+		*progress_text = NULL;
+	}
+	if (progress != NULL) {
+		*progress = 0.0;
+	}
+
+	if (daap_source->priv->connection_status != NULL) {
+		if (text != NULL) {
+			*text = g_strdup (daap_source->priv->connection_status);
+		}
+
+		if (progress != NULL) {
+			*progress = daap_source->priv->connection_progress;
+		}
+
 		return;
 	}
 	

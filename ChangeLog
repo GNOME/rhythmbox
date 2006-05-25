@@ -1,3 +1,11 @@
+2006-05-24  William Jon McCann  <mccann@jhu.edu>
+
+	* daapsharing/rb-daap-connection.c (handle_song_listing):
+	Lower bound check for batch commit.  Fixes #342848
+
+	* sources/rb-daap-source.c (rb_daap_source_get_status):
+	Always set output variables if provided.
+
 2006-05-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_new),
