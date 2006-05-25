@@ -27,6 +27,7 @@
 import os 
 import gtk, gobject
 import urllib
+import re
 from xml.dom import minidom
 from gettext import gettext as _
 import rb
@@ -43,6 +44,11 @@ ui_str = """
   </menubar>
 </ui>
 """
+
+LYRICS_FOLDER="~/.gnome2/rhythmbox/lyrics"
+LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)", "\([^\)]*mix\)", "\([^\)]*version\)", "\([^\)]*edit\)", "\(feat[^\)]*\)"]
+LYRIC_TITLE_REPLACE=[("/", "-"), ("&", "and")]
+LYRIC_ARTIST_REPLACE=[("/", "-"), ("&", "and")]
 
 
 def create_lyrics_view():
@@ -129,10 +135,40 @@ class LyricGrabber(object):
     def __init__(self):
     	self.loader = Loader ()
 
+    def _build_cache_path(self, artist, title):
+        lyrics_folder = os.path.expanduser (LYRICS_FOLDER)
+        if not os.path.exists (lyrics_folder):
+            os.mkdir (lyrics_folder)
+
+        return lyrics_folder + '/%s - %s.txt' % (artist, title)
+
     def get_lyrics(self, db, entry, callback):
 	self.callback = callback
-        artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
-        title = db.entry_get(entry, rhythmdb.PROP_TITLE)
+        artist = db.entry_get(entry, rhythmdb.PROP_ARTIST).lower()
+        title = db.entry_get(entry, rhythmdb.PROP_TITLE).lower()
+
+	# replace ampersands and the like
+	for exp in LYRIC_ARTIST_REPLACE:
+		p = re.compile (exp[0])
+		artist = p.sub(exp[1], artist)
+	for exp in LYRIC_TITLE_REPLACE:
+		p = re.compile (exp[0])
+		title = p.sub(exp[1], title)
+
+        # strip things like "(live at Somewhere)", "(accoustic)", etc
+        for exp in LYRIC_TITLE_STRIP:
+            p = re.compile (exp)
+            title = p.sub ('', title)
+
+	# compress spaces
+	title = title.strip()
+	artist = artist.strip()
+
+	self.cache_path = self._build_cache_path(artist, title)
+
+	if os.path.exists (self.cache_path):
+            self.loader.get_url(self.cache_path, callback)
+            return;
         
 	url = "http://api.leoslyrics.com/api_search.php?auth=Rhythmbox&artist=%s&songtitle=%s" % (
 		urllib.quote(artist.encode('utf-8')),
@@ -199,9 +235,12 @@ class LyricGrabber(object):
 
 	text += "\n\nLyrics provided by leoslyrics.com"
 
+
+        f = file (self.cache_path, 'w')
+        f.write (text)
+        f.close ()
+
 	self.callback(text)
-
-
 
 
 
