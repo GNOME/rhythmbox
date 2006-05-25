@@ -1,3 +1,9 @@
+2006-05-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry):
+	Fix creation of ignored-file db entries - need to check for
+	RHYTHMDB_ENTRY_TYPE_INVALID as well as _SONG.
+
 2006-05-25  James Livingston  <doclivingston@gmail.com>
 
 	* AUTHORS:

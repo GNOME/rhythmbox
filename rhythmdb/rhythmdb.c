@@ -1417,7 +1417,8 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 
 	if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE)) {
 		/* only add an ignore entry for the main library */
-		if (event->entry_type != RHYTHMDB_ENTRY_TYPE_SONG)
+		if (event->entry_type != RHYTHMDB_ENTRY_TYPE_SONG &&
+		    event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID)
 			return;
 
 		error_entry_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
