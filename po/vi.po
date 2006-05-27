@@ -7,15 +7,142 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox Gnome HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-27 10:27+0700\n"
+"POT-Creation-Date: 2006-05-27 23:43+0700\n"
 "PO-Revision-Date: 2006-05-26 18:18+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 "X-Generator: LocFactoryEditor 1.6b36\n"
+
+#: ../backends/gstreamer/rb-encoder-gst.c:502
+#, c-format
+msgid "Do you want to overwrite the file \"%s\"?"
+msgstr "Bạn có muốn ghi đè tập tin \"%s\" không?"
+
+#: ../backends/gstreamer/rb-player-gst.c:561 ../metadata/rb-metadata-gst.c:828
+#: ../metadata/rb-metadata-gst.c:1383 ../player/rb-recorder-gst.c:648
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Lỗi tạo phần tử %s; hãy kiểm tra lại bản cài đặt."
+
+#: ../backends/gstreamer/rb-player-gst.c:638
+msgid "Unknown playback error"
+msgstr "Lỗi phát lại lạ"
+
+#: ../daapsharing/rb-daap-connection.c:672
+#: ../iradio/rb-station-properties-dialog.c:411 ../lib/rb-util.c:572
+#: ../lib/rb-util.c:786 ../plugins/audioscrobbler/rb-audioscrobbler.c:421
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1033
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1034
+#: ../podcast/rb-feed-podcast-properties-dialog.c:302
+#: ../podcast/rb-podcast-manager.c:1417
+#: ../podcast/rb-podcast-properties-dialog.c:432
+#: ../podcast/rb-podcast-properties-dialog.c:485 ../rhythmdb/rhythmdb.c:1141
+#: ../rhythmdb/rhythmdb-tree.c:906 ../rhythmdb/rhythmdb-tree.c:910
+#: ../rhythmdb/rhythmdb-tree.c:914 ../rhythmdb/rhythmdb-tree.c:918
+#: ../shell/rb-shell-player.c:2581 ../sources/rb-audiocd-source.c:201
+#: ../sources/rb-ipod-source.c:228 ../sources/rb-iradio-source.c:474
+#: ../sources/rb-podcast-source.c:1635 ../widgets/rb-entry-view.c:719
+#: ../widgets/rb-entry-view.c:740 ../widgets/rb-entry-view.c:994
+#: ../widgets/rb-entry-view.c:1006 ../widgets/rb-entry-view.c:1018
+#: ../widgets/rb-song-info.c:706 ../widgets/rb-song-info.c:860
+#: ../widgets/rb-song-info.c:1124
+msgid "Unknown"
+msgstr "Không biết"
+
+#: ../daapsharing/rb-daap-dialog.c:48
+msgid "Password Required"
+msgstr "Cần mật mã"
+
+#: ../daapsharing/rb-daap-dialog.c:70
+#, c-format
+msgid "The music share '%s' requires a password to connect"
+msgstr "Chia sẻ nhạc « %s » yêu cầu mật mã để kết nối"
+
+#: ../daapsharing/rb-daap-dialog.c:78
+#: ../data/glade/audioscrobbler-prefs.glade.h:12
+msgid "_Password:"
+msgstr "_Mật mã:"
+
+#: ../daapsharing/rb-daap-dialog.c:120
+msgid "Invalid share name"
+msgstr "Tên chia sẻ không hợp lệ"
+
+#: ../daapsharing/rb-daap-dialog.c:139
+#, c-format
+msgid "The shared music name '%s' is already taken. Please choose another."
+msgstr "Tên chia sẻ nhạc « %s » đã được chọn. Vui lòng chọn tên khác."
+
+#: ../daapsharing/rb-daap-dialog.c:147 ../data/glade/daap-prefs.glade.h:3
+msgid "Shared music _name:"
+msgstr "T_ên nhạc chia sẻ:"
+
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:298
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:343
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:318
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:365
+msgid "MDNS service is not running"
+msgstr "Dịch vụ MDNS không đang chạy."
+
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:306
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:327
+msgid "Browser already active"
+msgstr "Bộ duyệt đang hoạt động."
+
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:326
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:348
+msgid "Unable to activate browser"
+msgstr "Không thể kích hoạt bộ duyệt."
+
+#: ../daapsharing/rb-daap-mdns-browser-avahi.c:351
+#: ../daapsharing/rb-daap-mdns-browser-howl.c:373
+msgid "Browser is not active"
+msgstr "Bộ duyệt không hoạt động."
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:199
+msgid "Could not create AvahiEntryGroup for publishing"
+msgstr "Không thể tạo AvahiEntryGroup (nhóm vào Avahi) để xuất bản."
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:235
+msgid "Could not add service"
+msgstr "Không thể tạo dịch vụ."
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:247
+msgid "Could not commit service"
+msgstr "Không thể gài vào dịch vụ."
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:352
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:372
+msgid "The avahi MDNS service is not running"
+msgstr "Dịch vụ MDNS Avahi không đang chạy."
+
+#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:381
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:272
+msgid "The MDNS service is not published"
+msgstr "Dịch vụ MDNS chưa được xuất bản."
+
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:176
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:211
+msgid "Error initializing Howl for publishing"
+msgstr "Gặp lỗi khi sở khởi Howl để xuất bản."
+
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:238
+#: ../daapsharing/rb-daap-mdns-publisher-howl.c:263
+msgid "The howl MDNS service is not running"
+msgstr "Dịch vụ MDNS Howl không đang chạy."
+
+#: ../daapsharing/rb-daap-sharing.c:68
+#, c-format
+msgid "%s's Music"
+msgstr "Nhạc của %s"
+
+#: ../daapsharing/rb-daap-src.c:686
+#, c-format
+msgid "Connection to %s:%d refused."
+msgstr "Kết nối đến %s:%d bị từ chối."
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:1
 msgid "0"
@@ -46,8 +173,9 @@ msgid "Last.fm Profile"
 msgstr "Hồ sơ Last.fm"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
-#: ../iradio/rb-station-properties-dialog.c:422 ../rhythmdb/rhythmdb.c:2643
-#: ../shell/rb-audioscrobbler.c:844 ../widgets/rb-entry-view.c:673
+#: ../iradio/rb-station-properties-dialog.c:422
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:844
+#: ../rhythmdb/rhythmdb.c:2643 ../widgets/rb-entry-view.c:673
 #: ../widgets/rb-entry-view.c:1052 ../widgets/rb-entry-view.c:1065
 #: ../widgets/rb-song-info.c:1097
 msgid "Never"
@@ -64,11 +192,6 @@ msgstr "Trạng thái:"
 #: ../data/glade/audioscrobbler-prefs.glade.h:11
 msgid "Tracks submitted:"
 msgstr "Rãnh đã gửi:"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:12
-#: ../daapsharing/rb-daap-dialog.c:78
-msgid "_Password:"
-msgstr "_Mật mã:"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:13
 msgid "_Username:"
@@ -118,6 +241,18 @@ msgstr "_Khi sắp xếp theo :"
 msgid "songs"
 msgstr "bài hát"
 
+#: ../data/glade/daap-prefs.glade.h:1
+msgid "<b>Sharing</b>"
+msgstr "<b>Chia sẻ</b>"
+
+#: ../data/glade/daap-prefs.glade.h:2
+msgid "Require _password:"
+msgstr "Cần _mật khẩu :"
+
+#: ../data/glade/daap-prefs.glade.h:4
+msgid "_Share my music"
+msgstr "_Chia sẻ nhạc của tôi"
+
 #: ../data/glade/druid.glade.h:1 ../data/glade/song-info.glade.h:1
 #: ../data/glade/uri.glade.h:1
 msgid "*"
@@ -154,22 +289,6 @@ msgstr "Đường _dẫn:"
 #: ../data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "_Bỏ qua bước này:"
-
-#: ../data/glade/daap-prefs.glade.h:1
-msgid "<b>Sharing</b>"
-msgstr "<b>Chia sẻ</b>"
-
-#: ../data/glade/daap-prefs.glade.h:2
-msgid "Require _password:"
-msgstr "Cần _mật khẩu :"
-
-#: ../data/glade/daap-prefs.glade.h:3 ../daapsharing/rb-daap-dialog.c:147
-msgid "Shared music _name:"
-msgstr "T_ên nhạc chia sẻ:"
-
-#: ../data/glade/daap-prefs.glade.h:4
-msgid "_Share my music"
-msgstr "_Chia sẻ nhạc của tôi"
 
 #: ../data/glade/general-prefs.glade.h:1
 msgid "A_lbum"
@@ -571,107 +690,6 @@ msgstr "Phát nhạc và tổ chức các tập nhạc của bạn."
 msgid "Rhythmbox Music Player"
 msgstr "Bộ phát nhạc Rhythmbox"
 
-#: ../daapsharing/rb-daap-connection.c:672
-#: ../iradio/rb-station-properties-dialog.c:411 ../lib/rb-util.c:572
-#: ../lib/rb-util.c:786 ../podcast/rb-feed-podcast-properties-dialog.c:302
-#: ../podcast/rb-podcast-manager.c:1417
-#: ../podcast/rb-podcast-properties-dialog.c:432
-#: ../podcast/rb-podcast-properties-dialog.c:485 ../rhythmdb/rhythmdb.c:1141
-#: ../rhythmdb/rhythmdb-tree.c:906 ../rhythmdb/rhythmdb-tree.c:910
-#: ../rhythmdb/rhythmdb-tree.c:914 ../rhythmdb/rhythmdb-tree.c:918
-#: ../shell/rb-audioscrobbler.c:421 ../shell/rb-audioscrobbler.c:1033
-#: ../shell/rb-audioscrobbler.c:1034 ../shell/rb-shell-player.c:2581
-#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:228
-#: ../sources/rb-iradio-source.c:474 ../sources/rb-podcast-source.c:1635
-#: ../widgets/rb-entry-view.c:719 ../widgets/rb-entry-view.c:740
-#: ../widgets/rb-entry-view.c:994 ../widgets/rb-entry-view.c:1006
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:706
-#: ../widgets/rb-song-info.c:860 ../widgets/rb-song-info.c:1124
-msgid "Unknown"
-msgstr "Không biết"
-
-#: ../daapsharing/rb-daap-dialog.c:48
-msgid "Password Required"
-msgstr "Cần mật mã"
-
-#: ../daapsharing/rb-daap-dialog.c:70
-#, c-format
-msgid "The music share '%s' requires a password to connect"
-msgstr "Chia sẻ nhạc « %s » yêu cầu mật mã để kết nối"
-
-#: ../daapsharing/rb-daap-dialog.c:120
-msgid "Invalid share name"
-msgstr "Tên chia sẻ không hợp lệ"
-
-#: ../daapsharing/rb-daap-dialog.c:139
-#, c-format
-msgid "The shared music name '%s' is already taken. Please choose another."
-msgstr "Tên chia sẻ nhạc « %s » đã được chọn. Vui lòng chọn tên khác."
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:300
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:345
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:318
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:365
-msgid "MDNS service is not running"
-msgstr "Dịch vụ MDNS không đang chạy."
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:308
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:327
-msgid "Browser already active"
-msgstr "Bộ duyệt đang hoạt động."
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:328
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:348
-msgid "Unable to activate browser"
-msgstr "Không thể kích hoạt bộ duyệt."
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:353
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:373
-msgid "Browser is not active"
-msgstr "Bộ duyệt không hoạt động."
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:199
-msgid "Could not create AvahiEntryGroup for publishing"
-msgstr "Không thể tạo AvahiEntryGroup (nhóm vào Avahi) để xuất bản."
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:235
-msgid "Could not add service"
-msgstr "Không thể tạo dịch vụ."
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:247
-msgid "Could not commit service"
-msgstr "Không thể gài vào dịch vụ."
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:352
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:372
-msgid "The avahi MDNS service is not running"
-msgstr "Dịch vụ MDNS Avahi không đang chạy."
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:381
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:272
-msgid "The MDNS service is not published"
-msgstr "Dịch vụ MDNS chưa được xuất bản."
-
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:176
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:211
-msgid "Error initializing Howl for publishing"
-msgstr "Gặp lỗi khi sở khởi Howl để xuất bản."
-
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:238
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:263
-msgid "The howl MDNS service is not running"
-msgstr "Dịch vụ MDNS Howl không đang chạy."
-
-#: ../daapsharing/rb-daap-sharing.c:68
-#, c-format
-msgid "%s's Music"
-msgstr "Nhạc của %s"
-
-#: ../daapsharing/rb-daap-src.c:686
-#, c-format
-msgid "Connection to %s:%d refused."
-msgstr "Kết nối đến %s:%d bị từ chối."
-
 #: ../iradio/rb-new-station-dialog.c:134
 #: ../iradio/rb-station-properties-dialog.c:325
 msgid "New Internet Radio Station"
@@ -689,6 +707,10 @@ msgstr "Thuộc tính %s"
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
+
+#: ../lib/eel-gconf-extensions.c:68
+msgid "Configuration system error"
+msgstr "Lỗi hệ thống cấu hình"
 
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:269
@@ -779,12 +801,6 @@ msgstr ""
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Tập tin chứa một luồng kiểu %s, mà không thể được giải mã."
 
-#: ../metadata/rb-metadata-gst.c:828 ../metadata/rb-metadata-gst.c:1383
-#: ../player/rb-player-gst.c:561 ../player/rb-recorder-gst.c:648
-#, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "Lỗi tạo phần tử %s; hãy kiểm tra lại bản cài đặt."
-
 #: ../metadata/rb-metadata-gst.c:983
 msgid "Failed to create a source element; check your installation"
 msgstr "Lỗi tạo phần tử nguồn; hãy kiểm tra lại bản cài đặt."
@@ -861,10 +877,6 @@ msgstr "Siêu dữ liệu không hoàn chỉnh cho đĩa CD này."
 msgid "Could not create CD lookup thread"
 msgstr "Không thể tạo mạch tra tìm CD"
 
-#: ../player/rb-player-gst.c:638
-msgid "Unknown playback error"
-msgstr "Lỗi phát lại lạ"
-
 #: ../player/rb-recorder-gst.c:529
 msgid "Failed to create pipeline"
 msgstr "Lỗi tạo ống dẫn"
@@ -940,6 +952,112 @@ msgstr ""
 msgid "There was an error writing to the CD"
 msgstr "Gặp lỗi khi ghi vào đĩa CD"
 
+#. -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#.
+#. Copyright (C) 2006 - Gareth Murphy, Martin Szulecki
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#. Tidy up
+#. Replace quote characters
+#. don't replace single quote: could be important punctuation
+#. Remove variants of Disc/CD [1-9] from album title before search
+#. Save current search's entry properties
+#. TODO: Improve to decrease wrong cover downloads, maybe add severity?
+#. Assemble list of search keywords (and thus search queries)
+#. Initiate asynchronous search
+#. No keywords left to search -> no results
+#. Retrieve search for keyword
+#. Search was unsuccessful, try next keyword
+#. We got some search results
+#. Lowercase
+#. Strip
+#. TODO: Convert accented to unaccented (fixes matching SalomÃ© vs Salome)
+#. Default to "no match", our results must match our criteria
+#. Check for album name in ProductName
+#. Found exact album, can not get better than that
+#. If we already found a best_match, just keep checking for exact one
+#. If we still have no definite hit, use first result where artist matches
+#. Check if artist appears in the Artists list
+#. -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#.
+#. Copyright (C) 2006 - Gareth Murphy, Martin Szulecki
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#. FIXME: the following block of code is messy and needs to be redone ASAP
+#. Handle special case
+#. If unknown artist and album there is no point continuing
+#. replace quote characters
+#. don't replace single quote: could be important punctuation
+#. Check local cache
+#. Check for unsuccessful previous image download to prevent overhead search
+#. Otherwise spawn (online) search-engine search
+#. Get best match from results
+#. Attempt to download image for best match
+#. Fallback and try to load medium one
+#. only write the blist if there are no more queries to try
+#. -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#.
+#. Copyright (C) 2006 - James Livingston
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#. Intitates search in the database (which checks art cache, internet etc.)
+#. Set the pixbuf for the entry returned from the art db
+#. get pixbuf size
+#. find scale, widget size and alpha
+#. don't use  Image.clear(), not pygtk 2.6-compatible
+#. -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#.
+#. Copyright (C) 2006 - Jonathan Matthew
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
 msgid "Art Display"
 msgstr "Ảnh bìa"
@@ -955,6 +1073,46 @@ msgstr "Hồ sơ Last.fm "
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
 msgid "Submits songs to last.fm"
 msgstr "Gửi bài hát lên last.fm"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:864
+msgid "OK"
+msgstr "OK"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:867
+msgid "Logging in"
+msgstr "Đang đăng nhập"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:870
+msgid "Request failed"
+msgstr "Yêu cầu thất bại"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:873
+msgid "Incorrect username"
+msgstr "Tên người dùng sai"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:876
+msgid "Incorrect password"
+msgstr "Mật khẩu sai"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:879
+msgid "Handshake failed"
+msgstr "Kết nối thất bại"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:882
+msgid "Client update required"
+msgstr "Cần cập nhật client"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:885
+msgid "Track submission failed"
+msgstr "Gửi rãnh thất bại"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:888
+msgid "Queue is too long"
+msgstr "Hàng đợi nhạc quá dài"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:891
+msgid "Track submission failed too many times"
+msgstr "Lỗi gửi rãnh quá nhiều lần"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:164
 msgid "Last.fm Profile Preferences"
@@ -995,6 +1153,48 @@ msgstr "Điều khiển Rhythmbox bằng bộ điều khiển từ xa"
 msgid "LIRC "
 msgstr "LIRC "
 
+#. -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#.
+#. Copyright (C) 2006 - Jonathan Matthew
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#. -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#.
+#. Copyright 2005 Eduardo Gonzalez
+#. Copyright (C) 2006 Jonathan Matthew
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#.
+#. TODO:
+#. - multiple lyrics sites (lyrc.com.ar, etc.)
+#. - handle multiple results usefully
+#. - save lyrics to disk?
+#. - check that the lyrics returned even remotely match the request?
+#. - share URL grabbing code with other plugins
 #: ../plugins/lyrics/lyrics.py:87 ../plugins/lyrics/lyrics.py:128
 msgid "Searching for lyrics..."
 msgstr "Đang tìm lời nhạc..."
@@ -1004,6 +1204,20 @@ msgstr "Đang tìm lời nhạc..."
 msgid "Lyrics"
 msgstr "Lời nhạc"
 
+#. replace ampersands and the like
+#. strip things like "(live at Somewhere)", "(accoustic)", etc
+#. compress spaces
+#. We don't really need the top 100 matches, so I'm limiting it to ten
+#. songs = map(lambda x:
+#. x.getElementsByTagName('name')[0].firstChild.nodeValue
+#. + " - " +
+#. x.getElementsByTagName('title')[0].firstChild.nodeValue,
+#. matches)
+#. exacts = map(lambda x: x.getAttribute('exactMatch'), matches)
+#. FIXME show other matches
+#. songlist = []
+#. for i in range(len(hids)):
+#. songlist.append((songs[i], hids[i], exacts[i]))
 #: ../plugins/lyrics/lyrics.py:236
 msgid "Lyrics provided by leoslyrics.com"
 msgstr "Lời nhạc được cung cấp bởi leoslyrics.com"
@@ -1020,26 +1234,65 @@ msgstr "Hiển thị lời nhạc khi nghe nhạc"
 msgid "Displays song lyrics"
 msgstr "Hiển thị lời nhạc"
 
+#. -*- coding: utf-8 -*-
+#. pythonconsole.py
+#.
+#. Copyright (C) 2006 - Steve FrÃ©cinaux
+#.
+#. This program is free software; you can redistribute it and/or modify
+#. it under the terms of the GNU General Public License as published by
+#. the Free Software Foundation; either version 2, or (at your option)
+#. any later version.
+#.
+#. This program is distributed in the hope that it will be useful,
+#. but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#. GNU General Public License for more details.
+#.
+#. You should have received a copy of the GNU General Public License
+#. along with this program; if not, write to the Free Software
+#. Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+#. Parts from "Interactive Python-GTK Console" (stolen from epiphany's console.py)
+#. Copyright (C), 1998 James Henstridge <james@daa.com.au>
+#. Copyright (C), 2005 Adam Hooper <adamh@densi.com>
+#. Bits from gedit Python Console Plugin
+#. Copyrignt (C), 2005 RaphaÃ«l Slinckx
 #: ../plugins/pythonconsole/pythonconsole.py:58
 msgid "_Python Console"
-msgstr ""
+msgstr "Console _Python"
 
 #: ../plugins/pythonconsole/pythonconsole.py:59
 msgid "Show Rhythmbox's python console"
-msgstr ""
+msgstr "Hiện console điều khiển Rhythmbox bằng Python"
 
 #: ../plugins/pythonconsole/pythonconsole.py:94
 msgid "You can access the main window through the 'shell' variable :"
-msgstr ""
+msgstr "Bạn có thể truy cập cửa sổ chỉnh thông qua biến 'shell' :"
 
+#. Init first line
+#. Init history
+#. Set up hooks for standard output.
+#. Signals
+#. Get the command
+#. Prepare the new line
+#. Keep indentation of precendent line
+#. Get the marks
+#. Get the command line
+#. Make the line blue
+#. Eval the command
+#. Prepare the new line
+#. Next entry from history
+#. Previous entry from history
+#. Go to the begin of the command instead of the begin of
+#. the line
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:1
 msgid "Interactive python console"
-msgstr ""
+msgstr "Console điều khiển bằng Python"
 
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:2
 msgid "Python Console"
-msgstr ""
+msgstr "Console Python"
 
 #: ../plugins/rb-plugin-manager.c:46
 msgid "Plugin"
@@ -1176,16 +1429,20 @@ msgid "%s, %s and %s"
 msgstr "%s, %s, %s"
 
 #. Translators: the format is "X days and X hours"
-#. Translators: the format is "X days and X minutes"
-#. Translators: the format is "X hours and X minutes"
 #: ../rhythmdb/rhythmdb.c:3228 ../rhythmdb/rhythmdb.c:3236
 #: ../rhythmdb/rhythmdb.c:3247
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
 
+#: ../rhythmdb/rhythmdb-monitor.c:304
+#, c-format
+msgid "Couldn't monitor %s: %s"
+msgstr "Không thể theo dõi %s: %s"
+
 #: ../rhythmdb/rhythmdb-property-model.c:413
-#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-podcast-source.c:315
+#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:157
+#: ../sources/rb-podcast-source.c:315
 #: ../sources/rb-static-playlist-source.c:87
 msgid "All"
 msgstr "Tất cả"
@@ -1223,46 +1480,6 @@ msgstr "Thoát khỏi RhythmBox"
 #: ../shell/main.c:154 ../widgets/rb-druid.c:185
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: ../shell/rb-audioscrobbler.c:864
-msgid "OK"
-msgstr "OK"
-
-#: ../shell/rb-audioscrobbler.c:867
-msgid "Logging in"
-msgstr "Đang đăng nhập"
-
-#: ../shell/rb-audioscrobbler.c:870
-msgid "Request failed"
-msgstr "Yêu cầu thất bại"
-
-#: ../shell/rb-audioscrobbler.c:873
-msgid "Incorrect username"
-msgstr "Tên người dùng sai"
-
-#: ../shell/rb-audioscrobbler.c:876
-msgid "Incorrect password"
-msgstr "Mật khẩu sai"
-
-#: ../shell/rb-audioscrobbler.c:879
-msgid "Handshake failed"
-msgstr "Kết nối thất bại"
-
-#: ../shell/rb-audioscrobbler.c:882
-msgid "Client update required"
-msgstr "Cần cập nhật client"
-
-#: ../shell/rb-audioscrobbler.c:885
-msgid "Track submission failed"
-msgstr "Gửi rãnh thất bại"
-
-#: ../shell/rb-audioscrobbler.c:888
-msgid "Queue is too long"
-msgstr "Hàng đợi nhạc quá dài"
-
-#: ../shell/rb-audioscrobbler.c:891
-msgid "Track submission failed too many times"
-msgstr "Lỗi gửi rãnh quá nhiều lần"
 
 #. Submenu of Music
 #: ../shell/rb-playlist-manager.c:133
@@ -2071,40 +2288,85 @@ msgstr "Rhythmbox không thể đọc thông tin về đĩa CD."
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox không thể truy cập thiết bị CD."
 
-#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-podcast-source.c:315
+#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:157
+#: ../sources/rb-podcast-source.c:315
 #: ../sources/rb-static-playlist-source.c:87
 msgid "Search all fields"
 msgstr "Tìm kiếm qua mọi trường"
 
-#: ../sources/rb-auto-playlist-source.c:73
+#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:158
 #: ../sources/rb-static-playlist-source.c:88
 msgid "Artists"
 msgstr "Nghệ sĩ"
 
-#: ../sources/rb-auto-playlist-source.c:73
+#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:158
 #: ../sources/rb-static-playlist-source.c:88
 msgid "Search artists"
 msgstr "Tìm kiếm nghệ sĩ"
 
-#: ../sources/rb-auto-playlist-source.c:74
+#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:159
 #: ../sources/rb-static-playlist-source.c:89
 msgid "Albums"
 msgstr "Tập nhạc"
 
-#: ../sources/rb-auto-playlist-source.c:74
+#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:159
 #: ../sources/rb-static-playlist-source.c:89
 msgid "Search albums"
 msgstr "Tìm kiếm tập nhạc"
 
-#: ../sources/rb-auto-playlist-source.c:75
+#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:160
 #: ../sources/rb-static-playlist-source.c:90
 msgid "Titles"
 msgstr "Tựa"
 
-#: ../sources/rb-auto-playlist-source.c:75
+#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:160
 #: ../sources/rb-static-playlist-source.c:90
 msgid "Search titles"
 msgstr "Tìm kiếm tựa"
+
+#: ../sources/rb-browser-source.c:144
+msgid "Browse This _Genre"
+msgstr "Duyệt theo _thể loại này"
+
+#: ../sources/rb-browser-source.c:145
+msgid "Set the browser to view only this genre"
+msgstr "Điều chỉnh bộ duyệt chỉ hiện thể loại này"
+
+#: ../sources/rb-browser-source.c:147
+msgid "Browse This _Artist"
+msgstr "Duyệt theo _nghệ sĩ này"
+
+#: ../sources/rb-browser-source.c:148
+msgid "Set the browser to view only this artist"
+msgstr "Điều chỉnh bộ duyệt chỉ hiện nghệ sĩ này"
+
+#: ../sources/rb-browser-source.c:150
+msgid "Browse This A_lbum"
+msgstr "Duyệt theo _tập nhạc này"
+
+#: ../sources/rb-browser-source.c:151
+msgid "Set the browser to view only this album"
+msgstr "Điều chỉnh bộ duyệt chỉ hiển thị tập nhạc này"
+
+#: ../sources/rb-daap-source.c:113
+msgid "_Disconnect"
+msgstr "_Ngắt kết nối"
+
+#: ../sources/rb-daap-source.c:114
+msgid "Disconnect from DAAP share"
+msgstr "Đang ngắt kết nối khỏi chia sẻ nhạc"
+
+#: ../sources/rb-daap-source.c:682
+msgid "Connecting to music share"
+msgstr "Đang kết nối đến chia sẻ nhạc"
+
+#: ../sources/rb-daap-source.c:689
+msgid "Retrieving songs from music share"
+msgstr "Đang nhận bài hát từ chia sẻ nhạc"
+
+#: ../sources/rb-daap-source.c:754
+msgid "Could not connect to shared music"
+msgstr "Không thể kết nối đến chia sẻ nhạc"
 
 #: ../sources/rb-import-errors-source.c:201
 msgid "Import Errors"
@@ -2748,10 +3010,6 @@ msgstr "_Nguồn"
 #: ../widgets/bacon-volume.c:187
 msgid "+"
 msgstr "+"
-
-#: ../widgets/eel-gconf-extensions.c:68
-msgid "Configuration system error"
-msgstr "Lỗi hệ thống cấu hình"
 
 #: ../widgets/eggtrayicon.c:147
 msgid "Orientation"
