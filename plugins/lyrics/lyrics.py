@@ -84,7 +84,7 @@ class LyricWindow(gtk.Window):
         bbox.pack_start(close)
         lyrics_view.pack_start(bbox, expand=False)
 
-        self.buffer.set_text("Searching for lyrics...")
+        self.buffer.set_text(_("Searching for lyrics..."))
         self.add(lyrics_view)
         self.set_default_size(400, 300)
         self.show_all()
@@ -93,7 +93,7 @@ class LyricPane(object):
     def __init__(self, db, song_info):
     	(self.view, self.buffer) = create_lyrics_view()
 	self.view.show_all()
-	self.page_num = song_info.append_page("Lyrics", self.view)
+	self.page_num = song_info.append_page(_("Lyrics"), self.view)
 	self.db = db
 	self.song_info = song_info
 	self.have_lyrics = 0
@@ -125,7 +125,7 @@ class LyricPane(object):
         if self.entry is None:
 	    return
 
-	self.buffer.set_text("Searching for lyrics...");
+	self.buffer.set_text(_("Searching for lyrics..."));
 	lyrics_grabber = LyricGrabber()
 	lyrics_grabber.get_lyrics(self.db, self.entry, self.buffer.set_text)
 	
@@ -233,7 +233,7 @@ class LyricGrabber(object):
 	text += xmldoc.getElementsByTagName('text')[0].firstChild.nodeValue
 	xmldoc.unlink()
 
-	text += "\n\nLyrics provided by leoslyrics.com"
+	text += "\n\n"+_("Lyrics provided by leoslyrics.com")
 
 
         f = file (self.cache_path, 'w')
