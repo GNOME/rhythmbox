@@ -1,3 +1,5 @@
+backends/rb-player.c
+backends/gstreamer/rb-player-gst.c
 data/glade/audioscrobbler-prefs.glade
 data/glade/create-playlist.glade
 data/glade/druid.glade
@@ -29,6 +31,7 @@ daapsharing/rb-daap-sharing.c
 daapsharing/rb-daap-src.c
 iradio/rb-new-station-dialog.c
 iradio/rb-station-properties-dialog.c
+lib/eel-gconf-extensions.c
 lib/rb-cut-and-paste-code.c
 lib/rb-file-helpers.c
 lib/rb-util.c
@@ -38,9 +41,8 @@ metadata/sj-error.c
 metadata/sj-metadata.c
 metadata/sj-metadata-musicbrainz.c
 metadata/sj-structures.c
-player/rb-player-gst.c
 player/rb-recorder-gst.c
-# Please keep this file sorted alphabetically.
+plugins/audioscrobbler/rb-audioscrobbler.c
 podcast/rb-feed-podcast-properties-dialog.c
 podcast/rb-new-podcast-dialog.c
 podcast/rb-podcast-manager.c
@@ -50,7 +52,6 @@ rhythmdb/rhythmdb.c
 rhythmdb/rhythmdb-property-model.c
 rhythmdb/rhythmdb-tree.c
 shell/main.c
-shell/rb-audioscrobbler.c
 shell/rb-playlist-manager.c
 shell/rb-play-order.c
 shell/rb-play-order.c
@@ -78,7 +79,6 @@ sources/rb-sourcelist.c
 sources/rb-static-playlist-source.c
 widgets/bacon-volume.c
 widgets/disclosure-widget.c
-widgets/eel-gconf-extensions.c
 widgets/eggtrayicon.c
 widgets/rb-cell-renderer-pixbuf.c
 widgets/rb-dialog.c

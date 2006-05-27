@@ -12,6 +12,8 @@ librb_la_SOURCES =					\
 	$(MKDTEMP_FILES)				\
 	rb-debug.c					\
 	rb-debug.h					\
+	eel-gconf-extensions.c				\
+	eel-gconf-extensions.h				\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
 	rb-glade-helpers.c				\

@@ -78,10 +78,4 @@ if ENABLE_TRACK_TRANSFER
 INCLUDES +=$(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
-EXTRA_DIST = $(daap_files)				\
-	rb-nokia770-source.c				\
-	rb-nokia770-source.h				\
-	rb-psp-source.c					\
-	rb-psp-source.h					\
-	rb-generic-player-source.c			\
-	rb-generic-player-source.h
+EXTRA_DIST = $(daap_files)

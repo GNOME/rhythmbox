@@ -43,7 +43,7 @@
 #include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-preferences.h"
-#include "widgets/eel-gconf-extensions.h"
+#include "eel-gconf-extensions.h"
 
 
 #define RB_PARSE_NICK_START (xmlChar *) "["

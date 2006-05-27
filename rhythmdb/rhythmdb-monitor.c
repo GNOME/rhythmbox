@@ -33,7 +33,7 @@
 #include "rhythmdb-private.h"
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
-#include "widgets/eel-gconf-extensions.h"
+#include "eel-gconf-extensions.h"
 
 
 #define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2

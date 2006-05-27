@@ -1,17 +1,17 @@
 plugindir = $(PLUGINDIR)
 plugin_LTLIBRARIES = libgeneric-player.la
 
-libgeneric_player_la_SOURCES = \
+libgeneric_player_la_SOURCES =				\
 	rb-generic-player-plugin.c			\
-	$(top_srcdir)/sources/rb-generic-player-source.c \
-	$(top_srcdir)/sources/rb-generic-player-source.h \
-	$(top_srcdir)/sources/rb-psp-source.c		 \
-	$(top_srcdir)/sources/rb-psp-source.h
+	rb-generic-player-source.c 			\
+	rb-generic-player-source.h	 		\
+	rb-psp-source.c					\
+	rb-psp-source.h
 
 if HAVE_HAL
-libgeneric_player_la_SOURCES +=			\
-	$(top_srcdir)/sources/rb-nokia770-source.c	\
-	$(top_srcdir)/sources/rb-nokia770-source.h
+libgeneric_player_la_SOURCES +=				\
+	rb-nokia770-source.c				\
+	rb-nokia770-source.h
 endif
 
 	

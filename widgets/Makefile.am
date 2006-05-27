@@ -8,8 +8,6 @@ LIBSEXY_LIBS += $(top_builddir)/widgets/libsexy/libsexy.la
 endif
 
 librbwidgets_la_SOURCES =				\
-	eel-gconf-extensions.c				\
-	eel-gconf-extensions.h				\
 	rb-song-display-box.c				\
 	rb-song-display-box.h				\
 	rb-entry-view.c					\
