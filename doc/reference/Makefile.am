@@ -36,6 +36,7 @@ INCLUDES=\
 	-I$(top_srcdir)/iradio \
 	-I$(top_srcdir)/daapsharing \
 	-I$(top_srcdir)/plugins \
+	-I$(top_srcdir)/backends \
 	$(DBUS_CFLAGS) \
 	$(IPOD_CFLAGS) \
 	$(RHYTHMBOX_CFLAGS)
