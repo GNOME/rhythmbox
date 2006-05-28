@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-25 12:37+0200\n"
-"PO-Revision-Date: 2006-05-25 20:29+0200\n"
+"POT-Creation-Date: 2006-05-28 04:24+0200\n"
+"PO-Revision-Date: 2006-05-28 11:31+0200\n"
 "Last-Translator: Arangel Angov <ufo@linux.net.mk>\n"
 "Language-Team: Macedonian <ossm-members@hedona.on.net.mk>\n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural= n==1 || n%10==1 ? 0 : 1\n"
 "X-Generator: KBabel 1.11.2\n"
+
+#: ../backends/gstreamer/rb-player-gst.c:561 ../metadata/rb-metadata-gst.c:828
+#: ../metadata/rb-metadata-gst.c:1383 ../player/rb-recorder-gst.c:648
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Не успеав да креирам %s елемент; проверете ја Вашата инсталација"
+
+#: ../backends/gstreamer/rb-player-gst.c:638
+msgid "Unknown playback error"
+msgstr "Грешка при плејбек"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:1
 msgid "0"
@@ -39,7 +49,7 @@ msgstr "_Дознајте повеќе за Last.fm на "
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:5
 msgid "Join the Rhythmbox group at "
-msgstr "Приклучете се на групата Ритамбокс на "
+msgstr "Приклучете се на групата Rhythmbox на "
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:6
 msgid "Last submission time:"
@@ -50,8 +60,9 @@ msgid "Last.fm Profile"
 msgstr "Профил на Last.fm"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
-#: ../iradio/rb-station-properties-dialog.c:422 ../rhythmdb/rhythmdb.c:2606
-#: ../shell/rb-audioscrobbler.c:844 ../widgets/rb-entry-view.c:673
+#: ../iradio/rb-station-properties-dialog.c:422
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:844
+#: ../rhythmdb/rhythmdb.c:2643 ../widgets/rb-entry-view.c:673
 #: ../widgets/rb-entry-view.c:1052 ../widgets/rb-entry-view.c:1065
 #: ../widgets/rb-song-info.c:1097
 msgid "Never"
@@ -136,10 +147,10 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Ритамбокс се справува си цела Ваша музика во централна музичка \"библиотека"
-"\" и затоа можете лесно да ги прегледувате, пребарувате и организирате "
+"Rhythmbox се справува сo цела Ваша музика во централна музичка \"библиотека"
+"\" за да можете лесно да ги прегледувате, пребарувате и организирате "
 "Вашите музички датотеки.\n"
-"За да ја користите оваа опција треба да му кажете на Ритамбокс каде да ја "
+"За да ја користите оваа опција треба да му кажете на Rhythmbox каде да ја "
 "најде Вашата музика.  Можете да го прескокнете ово чекор и да додадете "
 "музика подоцна.\n"
 "Ве молам одберете една од опциите подолу:"
@@ -312,15 +323,39 @@ msgstr "Зачувај плејлиста"
 msgid "Select playlist format:"
 msgstr "Изберете формат на листа:"
 
+#: ../data/glade/plugins.glade.h:1
+#: ../data/glade/podcast-feed-properties.glade.h:2
+msgid "Author:"
+msgstr "Автор:"
+
+#: ../data/glade/plugins.glade.h:2
+msgid "C_onfigure..."
+msgstr "К_онфигурирај..."
+
+#: ../data/glade/plugins.glade.h:3
+#: ../data/glade/podcast-feed-properties.glade.h:4
+msgid "Copyright:"
+msgstr "Copyright:"
+
+#: ../data/glade/plugins.glade.h:4
+#: ../data/glade/podcast-feed-properties.glade.h:5
+#: ../data/glade/podcast-properties.glade.h:5
+msgid "Description:"
+msgstr "Опис:"
+
+#: ../data/glade/plugins.glade.h:5
+msgid "Rhythmbox Plugins"
+msgstr "Додатоци за Rhythmbox"
+
+#: ../data/glade/plugins.glade.h:6
+msgid "Site:"
+msgstr "Сајт:"
+
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
 #: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:203
 msgid "-"
 msgstr "-"
-
-#: ../data/glade/podcast-feed-properties.glade.h:2
-msgid "Author:"
-msgstr "Автор:"
 
 #: ../data/glade/podcast-feed-properties.glade.h:3
 #: ../data/glade/podcast-properties.glade.h:2
@@ -328,15 +363,6 @@ msgstr "Автор:"
 #: ../data/glade/station-properties.glade.h:1
 msgid "Basic"
 msgstr "Основно"
-
-#: ../data/glade/podcast-feed-properties.glade.h:4
-msgid "Copyright:"
-msgstr "Copyright:"
-
-#: ../data/glade/podcast-feed-properties.glade.h:5
-#: ../data/glade/podcast-properties.glade.h:5
-msgid "Description:"
-msgstr "Опис:"
 
 #: ../data/glade/podcast-feed-properties.glade.h:6
 #: ../data/glade/podcast-properties.glade.h:6
@@ -559,24 +585,26 @@ msgstr "Свири и организирај ја твојата музичка 
 
 #: ../data/rhythmbox.desktop.in.h:3
 msgid "Rhythmbox Music Player"
-msgstr "Ритамбокс - Пуштач на музика"
+msgstr "Rhythmbox - Пуштач на музика"
 
 #: ../daapsharing/rb-daap-connection.c:672
 #: ../iradio/rb-station-properties-dialog.c:411 ../lib/rb-util.c:572
-#: ../lib/rb-util.c:786 ../podcast/rb-feed-podcast-properties-dialog.c:302
+#: ../lib/rb-util.c:786 ../plugins/audioscrobbler/rb-audioscrobbler.c:421
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1033
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1034
+#: ../podcast/rb-feed-podcast-properties-dialog.c:302
 #: ../podcast/rb-podcast-manager.c:1417
 #: ../podcast/rb-podcast-properties-dialog.c:432
-#: ../podcast/rb-podcast-properties-dialog.c:485 ../rhythmdb/rhythmdb.c:1118
-#: ../rhythmdb/rhythmdb-tree.c:1025 ../rhythmdb/rhythmdb-tree.c:1029
-#: ../rhythmdb/rhythmdb-tree.c:1033 ../rhythmdb/rhythmdb-tree.c:1037
-#: ../shell/rb-audioscrobbler.c:421 ../shell/rb-audioscrobbler.c:1033
-#: ../shell/rb-audioscrobbler.c:1034 ../shell/rb-shell-player.c:2581
-#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:228
-#: ../sources/rb-iradio-source.c:474 ../sources/rb-podcast-source.c:1635
-#: ../widgets/rb-entry-view.c:719 ../widgets/rb-entry-view.c:740
-#: ../widgets/rb-entry-view.c:994 ../widgets/rb-entry-view.c:1006
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:706
-#: ../widgets/rb-song-info.c:860 ../widgets/rb-song-info.c:1124
+#: ../podcast/rb-podcast-properties-dialog.c:485 ../rhythmdb/rhythmdb.c:1141
+#: ../rhythmdb/rhythmdb-tree.c:906 ../rhythmdb/rhythmdb-tree.c:910
+#: ../rhythmdb/rhythmdb-tree.c:914 ../rhythmdb/rhythmdb-tree.c:918
+#: ../shell/rb-shell-player.c:2581 ../sources/rb-audiocd-source.c:201
+#: ../sources/rb-ipod-source.c:228 ../sources/rb-iradio-source.c:474
+#: ../sources/rb-podcast-source.c:1635 ../widgets/rb-entry-view.c:719
+#: ../widgets/rb-entry-view.c:740 ../widgets/rb-entry-view.c:994
+#: ../widgets/rb-entry-view.c:1006 ../widgets/rb-entry-view.c:1018
+#: ../widgets/rb-song-info.c:706 ../widgets/rb-song-info.c:860
+#: ../widgets/rb-song-info.c:1124
 msgid "Unknown"
 msgstr "Непознато"
 
@@ -682,6 +710,10 @@ msgstr "%s својства"
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
+#: ../lib/eel-gconf-extensions.c:68
+msgid "Configuration system error"
+msgstr "Конфигурациска системска грешка"
+
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:269
 msgid "Today %I:%M %p"
@@ -772,12 +804,6 @@ msgstr ""
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Датотеката содржи проток од типот %s. овој проток не може да се декодира."
 
-#: ../metadata/rb-metadata-gst.c:828 ../metadata/rb-metadata-gst.c:1383
-#: ../player/rb-player-gst.c:561 ../player/rb-recorder-gst.c:648
-#, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "Не успеав да креирам %s елемент; проверете ја Вашата инсталација"
-
 #: ../metadata/rb-metadata-gst.c:983
 msgid "Failed to create a source element; check your installation"
 msgstr "Не успеав да креирам изворен елемент; Проверете ја Вашата инсталација"
@@ -852,10 +878,6 @@ msgstr "_Некомплетни податоци за ова CD"
 msgid "Could not create CD lookup thread"
 msgstr "Не можам да креирам нишка за барање на CD-то"
 
-#: ../player/rb-player-gst.c:638
-msgid "Unknown playback error"
-msgstr "Грешка при плејбек"
-
 #: ../player/rb-recorder-gst.c:529
 msgid "Failed to create pipeline"
 msgstr "Не успеав да креирам pipeline"
@@ -929,6 +951,187 @@ msgstr ""
 msgid "There was an error writing to the CD"
 msgstr "Се појави грешка при запишување на CD"
 
+#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
+msgid "Art Display"
+msgstr "Приказ за слика"
+
+#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
+msgid "Displays art for the playing track"
+msgstr "Прикажи слика за песната што свири"
+
+#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
+msgid "Last.fm Profile "
+msgstr "Профил на Last.fm "
+
+#: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
+msgid "Submits songs to last.fm"
+msgstr "Испраќа песни на last.fm"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:864
+msgid "OK"
+msgstr "Во ред"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:867
+msgid "Logging in"
+msgstr "Се најавувам"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:870
+msgid "Request failed"
+msgstr "Барањето беше неуспешно"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:873
+msgid "Incorrect username"
+msgstr "Погрешно корисничко име"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:876
+msgid "Incorrect password"
+msgstr "Неточна лозинка"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:879
+msgid "Handshake failed"
+msgstr "Поврзувањето не успеа"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:882
+msgid "Client update required"
+msgstr "Потребно е ажурирање на клиентот"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:885
+msgid "Track submission failed"
+msgstr "Испраќањето на песната не успеа"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:888
+msgid "Queue is too long"
+msgstr "Редот е премногу долг"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:891
+msgid "Track submission failed too many times"
+msgstr "Испраќањето на песната не успеа премногу пати"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:164
+msgid "Last.fm Profile Preferences"
+msgstr "Преференци на профил на Last.fm"
+
+#: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
+msgid "Generic Audio Player"
+msgstr "Генерички аудио пуштач"
+
+#: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:2
+msgid "Support for generic audio player devices (and PSP and Nokia 770)"
+msgstr "Поддршка за генерички уреди за аудио  (како и PSP и Nokia 770)"
+
+#: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:1
+msgid ""
+"Adds iPod support to Rhythmbox so that it can show an iPod content, and play "
+"from there"
+msgstr ""
+"Додава поддршка за iPod во Rhythmbox за да може да прикажва содржина од iPod, "
+"како и да ја пушта истата"
+
+#: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
+msgid "iPod support"
+msgstr "Поддршка за iPod"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:85 ../shell/rb-playlist-manager.c:150
+msgid "_Rename"
+msgstr "_Реименувај"
+
+#: ../plugins/ipod/rb-ipod-plugin.c:86
+msgid "Rename iPod"
+msgstr "Реименувај iPod"
+
+#: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:1
+msgid "Control Rhythmbox using an infrared remote control"
+msgstr "Контролирај го Rhythmbox со инфраред далечински управувач"
+
+#: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:2
+msgid "LIRC "
+msgstr "LIRC "
+
+#: ../plugins/lyrics/lyrics.py:87 ../plugins/lyrics/lyrics.py:128
+msgid "Searching for lyrics..."
+msgstr "Пребарувам текстови на песни..."
+
+#: ../plugins/lyrics/lyrics.py:96
+#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+msgid "Lyrics"
+msgstr "Текстови од песни"
+
+#: ../plugins/lyrics/lyrics.py:236
+msgid "Lyrics provided by leoslyrics.com"
+msgstr "Текстови од leoslyrics.com"
+
+#: ../plugins/lyrics/lyrics.py:254
+msgid "Song L_yrics"
+msgstr "Текстови од п_есни"
+
+#: ../plugins/lyrics/lyrics.py:255
+msgid "Display lyrics for the playing song"
+msgstr "Прикажи текст за песната што свири"
+
+#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
+msgid "Displays song lyrics"
+msgstr "Прикажува текст за песни"
+
+#: ../plugins/pythonconsole/pythonconsole.py:58
+msgid "_Python Console"
+msgstr "_Python конзола"
+
+#: ../plugins/pythonconsole/pythonconsole.py:59
+msgid "Show Rhythmbox's python console"
+msgstr "Покажи ја python конзолата за Rhythmbox"
+
+#: ../plugins/pythonconsole/pythonconsole.py:94
+msgid "You can access the main window through the 'shell' variable :"
+msgstr "Можете да му пристапите на главниот прозорец преку променливата за 'школката' :"
+
+#. ex:noet:ts=8:
+#: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:1
+msgid "Interactive python console"
+msgstr "Интерактивна python конзола"
+
+#: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:2
+msgid "Python Console"
+msgstr "Python конзола"
+
+#: ../plugins/rb-plugin-manager.c:46
+msgid "Plugin"
+msgstr "Додаток"
+
+#: ../plugins/rb-plugin-manager.c:47
+msgid "Enabled"
+msgstr "Вклучено"
+
+#: ../plugins/rb-plugins-engine.c:542
+msgid "Plugin Error"
+msgstr "Грешка со додатокот"
+
+#: ../plugins/rb-plugins-engine.c:542
+#, c-format
+msgid "Unable to activate plugin %s"
+msgstr "Не успеав да го активирам додатокот %s"
+
+#: ../plugins/sample-python/sample-python.py:15
+msgid "Python Source"
+msgstr "Изворен код од Python "
+
+#: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
+msgid " doesn't do much"
+msgstr " не прави баш многу"
+
+#: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
+msgid "Python Sample"
+msgstr "Python пример"
+
+#: ../plugins/sample/rb-sample-plugin.c:115
+#: ../plugins/sample/rb-sample-plugin.c:122
+#: ../plugins/sample/sample.rb-plugin.desktop.in.h:2
+msgid "Sample Plugin"
+msgstr "Пример додаток"
+
+#: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
+msgid "Does a whole lot of not much"
+msgstr "Прави многу од ништо посебно"
+
 #: ../podcast/rb-new-podcast-dialog.c:113
 msgid "New Podcast Feed"
 msgstr "Нов podcast фид"
@@ -975,20 +1178,20 @@ msgid ""
 "anyway?"
 msgstr ""
 "Адресата '%s' изгледа дека не е podcast фид. Можеби се работи за погрена "
-"адреса, или пак може фидот да е расипан. Дали сакате Ритамбокс да проба да "
+"адреса, или пак може фидот да е расипан. Дали сакате Rhythmbox да проба да "
 "го искористи?"
 
 #: ../podcast/rb-podcast-properties-dialog.c:380
 msgid "Not Downloaded"
 msgstr "Не се преземени"
 
-#: ../rhythmdb/rhythmdb.c:428 ../rhythmdb/rhythmdb.c:1794
-#: ../rhythmdb/rhythmdb.c:1910
+#: ../rhythmdb/rhythmdb.c:438 ../rhythmdb/rhythmdb.c:1818
+#: ../rhythmdb/rhythmdb.c:1934
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Не можам да пристапам на %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1213
+#: ../rhythmdb/rhythmdb.c:1236
 msgid "<invalid filename>"
 msgstr "<невалидно име на датотека>"
 
@@ -997,12 +1200,12 @@ msgstr "<невалидно име на датотека>"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2604 ../sources/rb-podcast-source.c:1641
+#: ../rhythmdb/rhythmdb.c:2641 ../sources/rb-podcast-source.c:1641
 #: ../widgets/rb-entry-view.c:1918
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3177
+#: ../rhythmdb/rhythmdb.c:3214
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -1010,7 +1213,7 @@ msgstr[0] "%ld минута"
 msgstr[1] "%ld минути"
 msgstr[2] "%ld минути"
 
-#: ../rhythmdb/rhythmdb.c:3178
+#: ../rhythmdb/rhythmdb.c:3215
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -1018,7 +1221,7 @@ msgstr[0] "%ld час"
 msgstr[1] "%ld часа"
 msgstr[2] "%ld часа"
 
-#: ../rhythmdb/rhythmdb.c:3179
+#: ../rhythmdb/rhythmdb.c:3216
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1027,7 +1230,7 @@ msgstr[1] "%ld дена"
 msgstr[2] "%ld дена"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3185
+#: ../rhythmdb/rhythmdb.c:3222
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s и %s"
@@ -1035,8 +1238,8 @@ msgstr "%s, %s и %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3191 ../rhythmdb/rhythmdb.c:3199
-#: ../rhythmdb/rhythmdb.c:3210
+#: ../rhythmdb/rhythmdb.c:3228 ../rhythmdb/rhythmdb.c:3236
+#: ../rhythmdb/rhythmdb.c:3247
 #, c-format
 msgid "%s and %s"
 msgstr "%s и %s"
@@ -1078,46 +1281,6 @@ msgstr "Излези од Rhytmbox"
 #: ../shell/main.c:154 ../widgets/rb-druid.c:185
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: ../shell/rb-audioscrobbler.c:864
-msgid "OK"
-msgstr "Во ред"
-
-#: ../shell/rb-audioscrobbler.c:867
-msgid "Logging in"
-msgstr "Се најавувам"
-
-#: ../shell/rb-audioscrobbler.c:870
-msgid "Request failed"
-msgstr "Барањето беше неуспешно"
-
-#: ../shell/rb-audioscrobbler.c:873
-msgid "Incorrect username"
-msgstr "Погрешно корисничко име"
-
-#: ../shell/rb-audioscrobbler.c:876
-msgid "Incorrect password"
-msgstr "Неточна лозинка"
-
-#: ../shell/rb-audioscrobbler.c:879
-msgid "Handshake failed"
-msgstr "Поврзувањето не успеа"
-
-#: ../shell/rb-audioscrobbler.c:882
-msgid "Client update required"
-msgstr "Потребно е ажурирање на клиентот"
-
-#: ../shell/rb-audioscrobbler.c:885
-msgid "Track submission failed"
-msgstr "Испраќањето на песната не успеа"
-
-#: ../shell/rb-audioscrobbler.c:888
-msgid "Queue is too long"
-msgstr "Редот е премногу долг"
-
-#: ../shell/rb-audioscrobbler.c:891
-msgid "Track submission failed too many times"
-msgstr "Испраќањето на песната не успеа премногу пати"
 
 #. Submenu of Music
 #: ../shell/rb-playlist-manager.c:133
@@ -1163,10 +1326,6 @@ msgstr "_Креирај аудио CD"
 #: ../shell/rb-playlist-manager.c:148
 msgid "Create an audio CD from playlist"
 msgstr "Креирај аудио CD од плејлистата"
-
-#: ../shell/rb-playlist-manager.c:150
-msgid "_Rename"
-msgstr "_Реименувај"
 
 #: ../shell/rb-playlist-manager.c:151
 msgid "Rename playlist"
@@ -1553,7 +1712,7 @@ msgid ""
 "the Free Software Foundation; either version 2 of the License, or\n"
 "(at your option) any later version.\n"
 msgstr ""
-"Ритамбокс е слободен софтвер, можете да го редистрибуирате и/или\n"
+"Rhythmbox е слободен софтвер, можете да го редистрибуирате и/или\n"
 "менувате под условите на GNU General Public License објавена од страна\n"
 "на Фондацијата за слободен софтвер; без разлика дали се работи за\n"
 "верзијата 2 или некоја понова верзија.\n"
@@ -1577,7 +1736,7 @@ msgid ""
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
 "Би требало да имате копија од ГНУ општата јавна лиценца заедно со\n"
-"Ритамбокс; Доколку немате, пишете на Free Software Foundation, Inc.,\n"
+"Rhythmbox; Доколку немате, пишете на Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
 #: ../shell/rb-shell.c:2168
@@ -1921,15 +2080,15 @@ msgstr "Не можам да го вчитам аудио CD-тo"
 
 #: ../sources/rb-audiocd-source.c:336 ../sources/rb-audiocd-source.c:346
 msgid "Rhythmbox couldn't access the CD."
-msgstr "Ритамбокс не може да му пристапи на CD-то."
+msgstr "Rhythmbox не може да му пристапи на CD-то."
 
 #: ../sources/rb-audiocd-source.c:353
 msgid "Rhythmbox couldn't read the CD information."
-msgstr "Ритамбокс не може да прочита информации од CD-то."
+msgstr "Rhythmbox не може да прочита информации од CD-то."
 
 #: ../sources/rb-audiocd-source.c:539
 msgid "Rhythmbox could not get access to the CD device."
-msgstr "Ритамбокс не може да добие пристап до уредот за CD-а."
+msgstr "Rhythmbox не може да добие пристап до уредот за CD-а."
 
 #: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-podcast-source.c:315
 #: ../sources/rb-static-playlist-source.c:87
@@ -2627,10 +2786,6 @@ msgstr "И_звор"
 msgid "+"
 msgstr "+"
 
-#: ../widgets/eel-gconf-extensions.c:68
-msgid "Configuration system error"
-msgstr "Конфигурациска системска грешка"
-
 #: ../widgets/eggtrayicon.c:147
 msgid "Orientation"
 msgstr "Ориентација"
@@ -2663,7 +2818,7 @@ msgid ""
 "\n"
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
-"Ритамбокс е пуштач на музика кој што Ви овозможува се: пуштање на Вашите "
+"Rhythmbox е пуштач на музика кој што Ви овозможува се: пуштање на Вашите "
 "музички датотеки, слушање на радио станици, увоз на музика од CD-иња и уште "
 "многу повеќе.\n"
 "\n"
@@ -2685,7 +2840,7 @@ msgid ""
 "Remember that you may add music to the library using \"Music\" then \"Import "
 "Folder\", or by importing it from CDs."
 msgstr ""
-"Сега сте спремни да го подигнете Ритамбокс.\n"
+"Сега сте спремни да го подигнете Rhythmbox.\n"
 "\n"
 "Запомнете дека можете да додавате музика во библиотеката со одбирање на "
 "\"Музика\" па \"Увези папка\" или пак преку увезување од CD."
