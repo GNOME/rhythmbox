@@ -431,7 +431,7 @@ visit_playlist_dirs (const gchar *rel_path,
 
 	if (totem_pl_parser_parse (parser, playlist_path, TRUE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
 		rb_debug ("unable to parse %s as playlist", playlist_path);
-		g_object_unref (G_OBJECT (source));
+		g_object_unref (G_OBJECT (playlist));
 	} else {
 		rb_generic_player_source_add_playlist (source, shell, RB_SOURCE (playlist));
 	}
@@ -462,5 +462,11 @@ default_load_playlists (RBGenericPlayerSource *source)
 static char *
 default_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 {
-	return rb_uri_append_uri (rb_generic_player_source_get_mount_path (source), uri);
+	char *mount_uri;
+	char *full_uri;
+
+	mount_uri = rb_generic_player_source_get_mount_path (source);
+	full_uri = rb_uri_append_uri (mount_uri, uri);
+	g_free (mount_uri);
+	return full_uri;
 }

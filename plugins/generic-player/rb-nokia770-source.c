@@ -96,6 +96,7 @@ impl_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 {
 	const char *path;
 	char *local_uri;
+	char *mount_uri;
 
 	if (!g_str_has_prefix (uri, NOKIA_INTERNAL_MOUNTPOINT)) {
 		rb_debug ("found playlist uri with unexpected mountpoint");
@@ -103,7 +104,9 @@ impl_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 	}
 
 	path = uri + strlen (NOKIA_INTERNAL_MOUNTPOINT);
-	local_uri = rb_uri_append_uri (rb_generic_player_source_get_mount_path (source), path);
+	mount_uri = rb_generic_player_source_get_mount_path (source);
+	local_uri = rb_uri_append_uri (mount_uri, path);
+	g_free (mount_uri);
 	return local_uri;
 }
 
