@@ -95,7 +95,7 @@ void			rb_shell_player_play_entry	(RBShellPlayer *player,
 							 RhythmDBEntry *entry);
 gboolean		rb_shell_player_play		(RBShellPlayer *player, GError **error);
 gboolean		rb_shell_player_pause		(RBShellPlayer *player, GError **error);
-gboolean                rb_shell_player_playpause	(RBShellPlayer *player, gboolean ignore_stop, GError **error);
+gboolean                rb_shell_player_playpause	(RBShellPlayer *player, gboolean unused, GError **error);
 void			rb_shell_player_stop		(RBShellPlayer *player);
 gboolean                rb_shell_player_do_previous	(RBShellPlayer *player, GError **error);
 gboolean		rb_shell_player_do_next		(RBShellPlayer *player, GError **error);

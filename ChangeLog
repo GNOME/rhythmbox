@@ -1,5 +1,15 @@
 2006-05-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* bindings/python/rb.defs:
+	* shell/rb-shell-player.c: (rb_shell_player_playpause),
+	(filter_mmkeys):
+	* shell/rb-shell-player.h:
+	Deprecate the useless 'ignore_stop' parameter to
+	rb_shell_player_playpause, leaving it in place to avoid breaking dbus
+	API.  From bug #334829.
+
+2006-05-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/generic-player/rb-generic-player-source.c:
 	(visit_playlist_dirs), (default_transform_playlist_uri):
 	When playlist parsing fails, unref the playlist, not the parent

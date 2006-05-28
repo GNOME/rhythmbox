@@ -1591,8 +1591,9 @@ rb_shell_player_cmd_play (GtkAction *action,
 	g_clear_error (&error);
 }
 
+/* unused parameter can't be removed without breaking dbus interface compatibility */
 gboolean
-rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError **error)
+rb_shell_player_playpause (RBShellPlayer *player, gboolean unused, GError **error)
 {
 	gboolean ret;
 	RBEntryView *songs;
@@ -1612,7 +1613,7 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean ignore_stop, GError *
 			songs = rb_source_get_entry_view (player->priv->current_playing_source);
 			if (songs)
 				rb_entry_view_set_state (songs, RB_ENTRY_VIEW_PAUSED);
-		} else if (!ignore_stop) {
+		} else {
 			rb_debug ("setting playing source to NULL");
 			rb_shell_player_set_playing_source (player, NULL);
 		}
@@ -2736,7 +2737,7 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 	player = (RBShellPlayer *)data;
 
 	if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay) == key->keycode) {	
-		rb_shell_player_playpause (player, TRUE, NULL);
+		rb_shell_player_playpause (player, FALSE, NULL);
 		return GDK_FILTER_REMOVE;
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause) == key->keycode) {	
 		rb_shell_player_pause (player, NULL);

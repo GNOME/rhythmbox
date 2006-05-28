@@ -387,7 +387,7 @@
   (c-name "rb_shell_player_playpause")
   (return-type "gboolean")
   (parameters
-    '("gboolean" "ignore_stop")
+    '("gboolean" "unused" (default "FALSE"))
     '("GError**" "error")
   )
 )
