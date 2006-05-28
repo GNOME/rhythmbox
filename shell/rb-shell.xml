@@ -52,7 +52,9 @@
       <arg type="b" name="visibility"/>
     </signal>
 
-    <property name="visibility" type="b" access="readwrite"/>
+    <!-- Until a version of dbus with bug #7057 fixed is widely available,
+         this does more harm than good.  -->
+    <!-- <property name="visibility" type="b" access="readwrite"/> -->
 
   </interface>
 </node>
