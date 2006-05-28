@@ -54,10 +54,17 @@ typedef struct {
 	gulong post_time;
 } RhythmDBPodcastFields;
 
+enum {
+	RHYTHMDB_ENTRY_HIDDEN = 1,
+	RHYTHMDB_ENTRY_INSERTED = 2,
+
+	/* the backend can use the top 16 bits for private flags */
+	RHYTHMDB_ENTRY_PRIVATE_FLAG_BASE = 65536,
+};
 
 struct RhythmDBEntry_ {
 	/* internal bits */
-	gboolean inserted;
+	guint flags;
 	gint refcount;
 	void *data;
 	RhythmDBEntryType type;
@@ -98,9 +105,6 @@ struct RhythmDBEntry_ {
 
 	/* playback error string */
 	char *playback_error;
-
-	/* visibility (to hide entries on unmounted volumes) */
-	gboolean hidden;
 };
 
 struct RhythmDBPrivate

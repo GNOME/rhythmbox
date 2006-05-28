@@ -276,6 +276,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 			g_assert (type_set);
 			ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
 			ctx->entry = rhythmdb_entry_allocate (RHYTHMDB (ctx->db), type);
+			ctx->entry->flags |= RHYTHMDB_ENTRY_TREE_LOADING;
 			ctx->has_date = FALSE;
 		} else
 			ctx->in_unknown_elt = TRUE;
@@ -736,7 +737,10 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_ulong (ctx, elt_name, entry->last_played, FALSE);
 			break;
 		case RHYTHMDB_PROP_HIDDEN:
-			save_entry_boolean (ctx, elt_name, entry->hidden);
+			{
+				gboolean hidden = ((entry->flags & RHYTHMDB_ENTRY_HIDDEN) != 0);
+				save_entry_boolean (ctx, elt_name, hidden);
+			}
 			break;
 		case RHYTHMDB_PROP_STATUS:
 			if (podcast)
@@ -929,6 +933,8 @@ rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntry *entry)
 
 	/* this accounts for the initial reference on the entry */
 	g_hash_table_insert (db->priv->entries, entry->location, entry);
+	
+	entry->flags &= ~RHYTHMDB_ENTRY_TREE_LOADING;
 }
 
 static RhythmDBTreeProperty *
@@ -1103,7 +1109,10 @@ rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
 
 	type = entry->type;
 
-	if (!entry->inserted)
+	/* don't process changes to entries we're loading, we'll get them
+	 * when the entry is complete.
+	 */
+	if (entry->flags & RHYTHMDB_ENTRY_TREE_LOADING)
 		return FALSE;
 
 	/* Handle special properties */

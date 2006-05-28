@@ -37,6 +37,11 @@ G_BEGIN_DECLS
 
 typedef struct RhythmDBTreePrivate RhythmDBTreePrivate;
 
+/* RhythmDBEntry flags */
+enum {
+	RHYTHMDB_ENTRY_TREE_LOADING = RHYTHMDB_ENTRY_PRIVATE_FLAG_BASE,
+};
+
 typedef struct
 {
 	RhythmDB parent;

@@ -1,3 +1,23 @@
+2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.h:
+	* rhythmdb/rhythmdb.c: (process_added_entries_cb),
+	(rhythmdb_entry_insert), (rhythmdb_entry_set),
+	(rhythmdb_entry_set_nonotify), (rhythmdb_entry_set_uninserted),
+	(rhythmdb_entry_set_internal), (rhythmdb_entry_sync_mirrored),
+	(rhythmdb_entry_get_boolean):
+	Replace 'visibility' and 'inserted' in RhythmDBEntry with a flag
+	bitmask, giving the db backend anything past the first 16 bits for 
+	its own private use.
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(save_entry), (rhythmdb_tree_entry_new), (rhythmdb_tree_entry_set):
+	Add a 'loading' flag to indicate that an entry is being loaded from
+	disk, and use that to ignore entry_set operations on such entries
+	rather than the 'inserted' flag, which doesn't quite mean the same
+	thing.  Fixes #342694.
+
 2006-05-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell.xml: Remove visibility property, since it causes

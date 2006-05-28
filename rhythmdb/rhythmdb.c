@@ -798,14 +798,15 @@ process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
 						 RHYTHMDB_PROP_LOCATION);
 
 		/* always start remote files hidden*/
-		if (!g_str_has_prefix (uri, "file://"))
-			entry->hidden = TRUE;
+		if (!g_str_has_prefix (uri, "file://")) {
+			entry->flags |= RHYTHMDB_ENTRY_HIDDEN;
+		}
 
 		queue_stat_uri (uri, db, RHYTHMDB_ENTRY_TYPE_INVALID);
 	}
 
-	g_assert (entry->inserted == FALSE);
-	entry->inserted = TRUE;
+	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
+	entry->flags |= RHYTHMDB_ENTRY_INSERTED;
 	
 	rhythmdb_entry_ref (db, entry);
 	db->priv->added_entries_to_emit = g_list_prepend (db->priv->added_entries_to_emit, entry);
@@ -981,7 +982,7 @@ rhythmdb_entry_get_type_data (RhythmDBEntry *entry, guint expected_size)
 void
 rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
 {
-	g_assert (entry->inserted == FALSE);
+	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
 	g_return_if_fail (entry->location != NULL);
 	
 	g_mutex_lock (db->priv->change_mutex);
@@ -2353,7 +2354,7 @@ void
 rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
 		    guint propid, const GValue *value)
 {
-	g_return_if_fail (entry->inserted == TRUE);
+	g_return_if_fail ((entry->flags & RHYTHMDB_ENTRY_INSERTED) != 0);
 	threadsafe_entry_set (db, entry, TRUE, propid, value);
 }
 
@@ -2374,7 +2375,7 @@ void
 rhythmdb_entry_set_nonotify (RhythmDB *db, RhythmDBEntry *entry, 
 			     guint propid, const GValue *value)
 {
-	g_return_if_fail (!entry->inserted);
+	g_return_if_fail ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
 	threadsafe_entry_set (db, entry, FALSE, propid, value);
 }
 
@@ -2425,7 +2426,7 @@ void
 rhythmdb_entry_set_uninserted (RhythmDB *db, RhythmDBEntry *entry,
 			       guint propid, const GValue *value)
 {
-	g_return_if_fail (entry->inserted == FALSE);
+	g_return_if_fail ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
 
 	rhythmdb_entry_set_internal (db, entry, FALSE, propid, value);
 }
@@ -2457,7 +2458,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	}
 #endif
 
-	if (entry->inserted && notify_if_inserted) {
+	if ((entry->flags & RHYTHMDB_ENTRY_INSERTED) && notify_if_inserted) {
 		record_entry_change (db, entry, propid, value);
 	}
 
@@ -2564,7 +2565,11 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			entry->last_played = g_value_get_ulong (value);
 			break;
 		case RHYTHMDB_PROP_HIDDEN:
-			entry->hidden = g_value_get_boolean (value);
+			if (g_value_get_boolean (value)) {
+				entry->flags |= RHYTHMDB_ENTRY_HIDDEN;
+			} else {
+				entry->flags &= ~RHYTHMDB_ENTRY_HIDDEN;
+			}
 			break;
 		case RHYTHMDB_PROP_STATUS:
 			g_assert (podcast);
@@ -2668,7 +2673,7 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 	{
 		/* only store last seen time as a string for hidden entries */
 		rb_refstring_unref (entry->last_seen_str);
-		if (entry->hidden) {
+		if (entry->flags & RHYTHMDB_ENTRY_HIDDEN) {
 			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_seen));
 			entry->last_seen_str = rb_refstring_new (val);
 			g_free (val);
@@ -3701,7 +3706,7 @@ rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
 {
 	switch (propid) {
 	case RHYTHMDB_PROP_HIDDEN:
-		return entry->hidden;
+		return ((entry->flags & RHYTHMDB_ENTRY_HIDDEN) != 0);
 	default:
 		g_assert_not_reached ();
 		return FALSE;
