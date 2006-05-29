@@ -1,5 +1,16 @@
 2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (rb_shell_clear_queue):
+	* shell/rb-shell.h:
+	* shell/rb-shell.xml:
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_clear_queue),
+	(rb_play_queue_source_cmd_clear):
+	* sources/rb-play-queue-source.h:
+	Add clearQueue dbus method.
+
+2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/main.c: (main):  Implement --quit option.
 
 2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>

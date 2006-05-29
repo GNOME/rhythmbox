@@ -3162,6 +3162,14 @@ rb_shell_remove_from_queue (RBShell *shell,
 	return TRUE;
 }
 
+gboolean
+rb_shell_clear_queue (RBShell *shell,
+		      GError **error)
+{
+	rb_play_queue_source_clear_queue (RB_PLAY_QUEUE_SOURCE (shell->priv->queue_source));
+	return TRUE;
+}
+
 
 gboolean
 rb_shell_present (RBShell *shell,

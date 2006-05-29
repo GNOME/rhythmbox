@@ -52,6 +52,7 @@ RBSource *	rb_play_queue_source_new		(RBShell *shell);
 
 void		rb_play_queue_source_sidebar_song_info	(RBPlayQueueSource *source);
 void		rb_play_queue_source_sidebar_delete	(RBPlayQueueSource *source);
+void		rb_play_queue_source_clear_queue	(RBPlayQueueSource *source);
 
 G_END_DECLS
 

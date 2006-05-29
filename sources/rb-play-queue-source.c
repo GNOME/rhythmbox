@@ -252,6 +252,21 @@ rb_play_queue_source_sidebar_delete (RBPlayQueueSource *source)
 	g_list_free (sel);
 }
 
+void
+rb_play_queue_source_clear_queue (RBPlayQueueSource *source)
+{
+	GtkTreeIter iter;
+	RhythmDBEntry *entry;
+	RhythmDBQueryModel *model;
+
+	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
+	while (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
+		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
+		if (entry)
+			rhythmdb_query_model_remove_entry (model, entry);
+	}
+}
+
 static void
 impl_show_entry_view_popup (RBPlaylistSource *source, 
 			    RBEntryView *view,
@@ -358,16 +373,7 @@ static void
 rb_play_queue_source_cmd_clear (GtkAction *action,
 				RBPlayQueueSource *source)
 {
-	GtkTreeIter iter;
-	RhythmDBEntry *entry;
-	RhythmDBQueryModel *model;
-
-	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
-	while (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
-		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
-		if (entry)
-			rhythmdb_query_model_remove_entry (model, entry);
-	}
+	rb_play_queue_source_clear_queue (source);
 }
 
 static gboolean
