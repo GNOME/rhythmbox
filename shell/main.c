@@ -82,9 +82,6 @@ static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
 #if WITH_DBUS
 static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
-#endif
-
-#ifdef WITH_DBUS
 static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
 #endif
 
@@ -264,6 +261,11 @@ main (int argc, char **argv)
 #endif
 
 	if (!activated) {
+		if (quit) {
+			rb_debug ("was asked to quit, but no instance was running");
+			gdk_notify_startup_complete ();
+			exit (0);
+		}
 #ifdef WITH_RHYTHMDB_GDA
 		gda_init (PACKAGE, VERSION, argc, argv);
 #endif
@@ -334,11 +336,17 @@ main (int argc, char **argv)
 			g_warning ("Couldn't create proxy for Rhythmbox shell: %s",
 				   error->message);
 		} else {
-			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
+			if (quit) {
+				dbus_g_proxy_call_no_reply (shell_proxy, "quit",
+							    G_TYPE_INVALID);
+			} else {
+				load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
+				dbus_g_proxy_call_no_reply (shell_proxy, "present",
+							    G_TYPE_UINT, current_time,
+							    G_TYPE_INVALID);
+			}
+			g_object_unref (G_OBJECT (shell_proxy));
 		}
-		dbus_g_proxy_call_no_reply (shell_proxy, "present",
-					    G_TYPE_UINT, current_time,
-					    G_TYPE_INVALID);
 #elif WITH_OLD_DBUS
 		if (!send_present_message (dbus_g_connection_get_connection (session_bus), 
 					   current_time))
