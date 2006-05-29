@@ -1,5 +1,11 @@
 2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* sources/rb-library-source.c: (layout_example_label_update),
+	(build_filename):  Fix crash when no audio profile is selected.
+	Fixes #341447.
+
+2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: (rb_shell_clear_queue):
 	* shell/rb-shell.h:
 	* shell/rb-shell.xml:

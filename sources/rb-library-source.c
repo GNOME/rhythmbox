@@ -964,7 +964,7 @@ layout_example_label_update (RBLibrarySource *source)
 	format = g_strconcat ("<small><i><b>Example Path:</b> ",
 			      example,
 			      ".",
-			      gm_audio_profile_get_extension (profile),
+			      profile ? gm_audio_profile_get_extension (profile) : "ogg"
 			      "</i></small>", NULL);
 	g_free (example);
   
@@ -1052,7 +1052,7 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	char *realpath;
 	char *filename;
 	char *string;
-	char *extension;
+	char *extension = NULL;
 	GSList *list;
 	const char *layout_path;
 	const char *layout_filename;
@@ -1081,8 +1081,11 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	if (g_str_has_prefix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE), "audio/x-raw")) {
 		GMAudioProfile *profile;
 		profile = gm_audio_profile_lookup (preferred_format);
-		extension = g_strdup (gm_audio_profile_get_extension (profile));
-	} else {
+		if (profile)
+			extension = g_strdup (gm_audio_profile_get_extension (profile));
+	}
+
+	if (extension == NULL) {
 		char *tmp;
 		
 		/* use the old extension. strip anything after a '?' for http/daap/etc */
