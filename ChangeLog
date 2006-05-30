@@ -1,3 +1,8 @@
+2006-05-30  James Livingston  <doclivingston@gmail.com>
+
+	* daapsharing/rb-daap-connection.c: (handle_login): add a missing
+	"return" to that it asks for the password again if it was wrong.
+
 2006-05-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* metadata/rb-metadata-gst.c:  Don't leak a reference to decodebin's

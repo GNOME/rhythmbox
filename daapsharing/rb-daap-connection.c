@@ -733,6 +733,7 @@ handle_login (RBDAAPConnection *connection,
 			g_source_remove (priv->do_something_id);
 		}
 		priv->do_something_id = g_idle_add ((GSourceFunc) rb_daap_connection_do_something, connection);
+		return;
 	}
 
 	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
