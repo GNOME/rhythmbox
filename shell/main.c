@@ -73,6 +73,15 @@
 #include <dbus/dbus-glib-lowlevel.h>
 #endif
 
+#include <nautilus-burn-drive.h>
+#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#endif
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+#include <nautilus-burn.h>
+#endif
+
 static gboolean debug           = FALSE;
 static char *debug_match        = NULL;
 static gboolean quit            = FALSE;
@@ -279,7 +288,11 @@ main (int argc, char **argv)
 		glade_gnome_init ();
 	
 		rb_stock_icons_init ();
-		
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+		nautilus_burn_init ();
+#endif
+
 		gtk_window_set_default_icon_name ("rhythmbox");
 	
 		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file);
@@ -369,6 +382,10 @@ main (int argc, char **argv)
 		rb_refstring_system_shutdown ();
 
 		gnome_vfs_shutdown ();
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+		nautilus_burn_shutdown ();
+#endif
 	}
 
 	g_strfreev (new_argv);

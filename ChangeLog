@@ -1,3 +1,23 @@
+2006-05-30  William Jon McCann  <mccann@jhu.edu>
+
+	* metadata/sj-metadata-musicbrainz.c: (lookup_cd):
+	* player/rb-recorder-gst.c: (rb_recorder_get_default_drive),
+	(tick_timeout_cb), (rb_recorder_sync_pipeline),
+	(nautilus_burn_drive_get_device), (rb_recorder_get_device),
+	(rb_recorder_set_device), (rb_recorder_get_default_device):
+	* shell/main.c: (main):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_finalize),
+	(get_nautilus_burn_drive_for_path),
+	(rb_removable_media_manager_playing_uri_changed_cb),
+	(rb_removable_media_manager_load_media),
+	(nautilus_burn_drive_get_device),
+	(rb_removable_media_manager_scan):
+	* sources/rb-playlist-source-recorder.c: (ask_rewrite_disc):
+
+	Update for libnautilus-burn 2.15.3 API changes.
+	Fixes #342604
+
 2006-05-30  James Livingston  <doclivingston@gmail.com>
 
 	* daapsharing/rb-daap-connection.c: (handle_login): add a missing

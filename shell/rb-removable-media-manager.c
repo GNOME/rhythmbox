@@ -20,12 +20,22 @@
  *
  */
 
-#include <config.h>
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs.h>
-#include <nautilus-burn-drive.h>
+#include "config.h"
+
 #include <string.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+
+#include <libgnomevfs/gnome-vfs.h>
+
+#include <nautilus-burn-drive.h>
+#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#endif
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+#include <nautilus-burn.h>
+#endif
 
 #include "rb-removable-media-manager.h"
 #include "rb-library-source.h"
@@ -93,14 +103,6 @@ static void rb_removable_media_manager_cmd_copy_tracks (GtkAction *action,
 
 typedef struct
 {
-	gboolean removed;
-	gboolean tray_opened;
-	RBRemovableMediaManager *manager;
-	NautilusBurnDrive *drive;
-} RbCdDriveInfo;
-
-typedef struct
-{
 	RBShell *shell;
 	gboolean disposed;
 
@@ -112,7 +114,9 @@ typedef struct
 
 	GList *sources;
 	GHashTable *volume_mapping;
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	GHashTable *cd_drive_mapping;
+#endif
 	GList *cur_volume_list;
 	gboolean scanned;
 
@@ -280,7 +284,9 @@ rb_removable_media_manager_finalize (GObject *object)
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (object);
 
 	g_hash_table_destroy (priv->volume_mapping);
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	g_hash_table_destroy (priv->cd_drive_mapping);
+#endif
 	g_async_queue_unref (priv->transfer_queue);
 	
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->finalize (object);
@@ -359,6 +365,15 @@ rb_removable_media_manager_new (RBShell *shell,
 			     NULL);
 }
 
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+typedef struct
+{
+	gboolean removed;
+	gboolean tray_opened;
+	RBRemovableMediaManager *manager;
+	NautilusBurnDrive *drive;
+} RbCdDriveInfo;
+
 #ifdef HAVE_BURN_DRIVE_DOOR
 static
 gboolean poll_tray_opened (RbCdDriveInfo *info)
@@ -427,6 +442,32 @@ void begin_cd_drive_monitor (NautilusBurnDrive *drive, RBRemovableMediaManager *
 #endif
 }
 
+static NautilusBurnDrive *
+get_nautilus_burn_drive_for_path (const char *path)
+{
+#ifdef HAVE_BURN_DRIVE_NEW_FROM_PATH
+	return nautilus_burn_drive_new_from_path (path);
+#else
+	GList *drives, *l;
+	NautilusBurnDrive *path_drive = NULL;
+
+	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
+	for (l = drives; l != NULL; l = g_list_next (l)) {
+		NautilusBurnDrive *drive = (NautilusBurnDrive*)l->data;
+
+		if (path_drive == NULL && strcmp (drive->device, path) == 0) {
+			path_drive = drive;
+		} else {
+			nautilus_burn_drive_unref (drive);
+		}
+	}
+	g_list_free (drives);
+
+	return path_drive;
+#endif
+}
+#endif /* NAUTILUS_BURN < 2.15.3 */
+
 static char *
 split_drive_from_cdda_uri (const char *uri)
 {
@@ -454,31 +495,6 @@ split_drive_from_cdda_uri (const char *uri)
 	return temp;
 }
 
-static NautilusBurnDrive *
-get_nautilus_burn_drive_for_path (const char *path)
-{
-#ifdef HAVE_BURN_DRIVE_NEW_FROM_PATH
-	return nautilus_burn_drive_new_from_path (path);
-#else
-	GList *drives, *l;
-	NautilusBurnDrive *path_drive = NULL;
-
-	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
-	for (l = drives; l != NULL; l = g_list_next (l)) {
-		NautilusBurnDrive *drive = (NautilusBurnDrive*)l->data;
-
-		if (path_drive == NULL && strcmp (drive->device, path) == 0) {
-			path_drive = drive;
-		} else {
-			nautilus_burn_drive_unref (drive);
-		}
-	}
-	g_list_free (drives);
-
-	return path_drive;
-#endif
-}
-
 static void
 rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 						   const char *uri,
@@ -495,7 +511,7 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 	if (uri)
 		new_drive = split_drive_from_cdda_uri (uri);
 
-
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	/* if the drive we're playing from has changed, adjust the polling */
 	if (old_drive == NULL || new_drive == NULL || strcmp (old_drive, new_drive) != 0) {
 		if (old_drive) {
@@ -517,6 +533,7 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 			nautilus_burn_drive_unref (drive);
 		}
 	}
+#endif
 
 	g_free (priv->playing_uri);
 	priv->playing_uri = (uri) ? g_strdup (uri) : NULL;
@@ -528,7 +545,9 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
 	GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	GList *drives;
+#endif
 	GObject *shell_player;
 
 	/*
@@ -555,10 +574,12 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 	 * This needs to be done seperately from the above, because non-HAL systems don't
 	 * (currently) report audio cd insertions as mount events.
 	 */
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 	priv->cd_drive_mapping = g_hash_table_new_full (NULL, NULL, NULL, (GDestroyNotify)end_cd_drive_monitor);
 	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
 	g_list_foreach (drives, (GFunc)begin_cd_drive_monitor, manager);
 	g_list_free (drives);
+#endif
 
 	/* monitor the playing song, to disable cd drive polling */
 	shell_player = rb_shell_get_player (priv->shell);
@@ -798,6 +819,16 @@ rb_removable_media_manager_unmount_volume_swap (GnomeVFSVolume *volume, RBRemova
 	rb_removable_media_manager_unmount_volume (manager, volume);
 }
 
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+static const char *
+nautilus_burn_drive_get_device (NautilusBurnDrive *drive)
+{
+	g_return_val_if_fail (drive != NULL, NULL);
+
+	return drive->device;
+}
+#endif
+
 void
 rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 {
@@ -832,10 +863,15 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	g_list_free (list);
 
 	/* scan cd drives */
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+	list = nautilus_burn_drive_monitor_get_drives (nautilus_burn_get_drive_monitor ());
+#else
 	list = nautilus_burn_drive_get_list (FALSE, FALSE);
+#endif
 	for  (it = list; it != NULL; it = g_list_next (it)) {
-		NautilusBurnDrive *drive = (NautilusBurnDrive*)it->data;
-		volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, drive->device);
+		NautilusBurnDrive *drive = (NautilusBurnDrive *)it->data;
+
+		volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, nautilus_burn_drive_get_device (drive));
 		if (volume) {
 			rb_removable_media_manager_mount_volume (manager, volume);
 			gnome_vfs_volume_unref (volume);

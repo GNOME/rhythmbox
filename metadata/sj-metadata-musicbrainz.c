@@ -32,9 +32,17 @@
 #include <gconf/gconf-client.h>
 #include <musicbrainz/queries.h>
 #include <musicbrainz/mb_c.h>
-#include <nautilus-burn-drive.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <nautilus-burn-drive.h>
+#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#endif
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+#include <nautilus-burn.h>
+#endif
 
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
@@ -471,6 +479,9 @@ lookup_cd (SjMetadata *metadata)
   char data[256];
   int num_albums, i, j;
   NautilusBurnMediaType type;
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+  NautilusBurnDrive *drive;
+#endif
 
   /* TODO: fire error signal */
   g_return_val_if_fail (metadata != NULL, NULL);
@@ -479,7 +490,18 @@ lookup_cd (SjMetadata *metadata)
   g_return_val_if_fail (priv->cdrom != NULL, NULL);
   priv->error = NULL; /* TODO: hack */
 
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+  drive = nautilus_burn_drive_monitor_get_drive_for_device (nautilus_burn_get_drive_monitor (),
+                                                            priv->cdrom);
+  if (drive == NULL) {
+    return NULL;
+  }
+  type = nautilus_burn_drive_get_media_type (drive);
+  nautilus_burn_drive_unref (drive);
+#else
   type = nautilus_burn_drive_get_media_type_from_path (priv->cdrom);
+#endif
+
   if (type == NAUTILUS_BURN_MEDIA_TYPE_ERROR) {
     char *msg;
     SjError err;

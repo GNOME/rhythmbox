@@ -38,6 +38,14 @@
 #include <nautilus-burn-drive.h>
 #include <nautilus-burn-drive-selection.h>
 
+#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#endif
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+#include <nautilus-burn.h>
+#endif
+
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-preferences.h"
@@ -1046,7 +1054,13 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
         char                 *msg;
         NautilusBurnDrive    *drive;
 
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+        drive = nautilus_burn_drive_monitor_get_drive_for_device (nautilus_burn_get_drive_monitor (),
+                                                                  device);
+#else
         drive = nautilus_burn_drive_new_from_path (device);
+#endif
+
         type = nautilus_burn_drive_get_media_type (drive);
 
         msg = g_strdup_printf (_("This %s appears to have information already recorded on it."),

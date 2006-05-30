@@ -33,11 +33,19 @@
 
 #include <glib/gi18n.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
-#include <nautilus-burn-recorder.h>
 #include <gst/gst.h>
 #ifdef HAVE_GSTREAMER_0_8
 #include <gst/gconf/gconf.h>
 #include <gst/play/play.h>
+#endif
+
+#include <nautilus-burn-drive.h>
+#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#endif
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+#include <nautilus-burn.h>
 #endif
 
 #include "rb-recorder.h"
@@ -51,10 +59,6 @@
 #ifndef HAVE_BURN_DRIVE_UNREF
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
 #define nautilus_burn_drive_ref nautilus_burn_drive_copy
-#endif
-
-#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
 #endif
 
 static void rb_recorder_class_init (RBRecorderClass *klass);
@@ -227,7 +231,13 @@ rb_recorder_get_default_drive (void)
         NautilusBurnDrive *drive  = NULL;
         GList             *drives = NULL;
 
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+        NautilusBurnDriveMonitor *monitor;
+        monitor = nautilus_burn_get_drive_monitor ();
+        drives = nautilus_burn_drive_monitor_get_recorder_drives (monitor);
+#else
         drives = nautilus_burn_drive_get_list (TRUE, FALSE);
+#endif
 
         if (drives) {
                 drive = nautilus_burn_drive_ref ((NautilusBurnDrive*) drives->data);
@@ -720,6 +730,7 @@ rb_recorder_new (GError **error)
         return recorder;
 }
 
+#ifdef HAVE_GSTREAMER_0_8
 static gboolean
 tick_timeout_cb (RBRecorder *recorder)
 {
@@ -729,24 +740,13 @@ tick_timeout_cb (RBRecorder *recorder)
         double elapsed;
         double secs;
         GstFormat format = GST_FORMAT_BYTES;
-#ifdef HAVE_GSTREAMER_0_10
-	GstState  state;
-#endif
 
         g_return_val_if_fail (recorder != NULL, FALSE);
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
         g_return_val_if_fail (recorder->priv != NULL, FALSE);
         g_return_val_if_fail (recorder->priv->pipeline != NULL, FALSE);
 
-#ifdef HAVE_GSTREAMER_0_8
         if (gst_element_get_state (recorder->priv->pipeline) != GST_STATE_PLAYING) {
-#elif HAVE_GSTREAMER_0_10
-	if (!gst_element_get_state (recorder->priv->pipeline, &state,  NULL, 3 * GST_SECOND)) {
-		g_warning (_("Could not retrieve state from processing pipeline"));
-		return TRUE;
-	}
-	if (state != GST_STATE_PLAYING) {		
-#endif
                 recorder->priv->tick_timeout_id = 0;
                 if (recorder->priv->start_timer) {
                         g_timer_destroy (recorder->priv->start_timer);
@@ -755,16 +755,12 @@ tick_timeout_cb (RBRecorder *recorder)
                 return FALSE;
         }
 
-#ifdef  HAVE_GSTREAMER_0_8
         if (!gst_pad_query (recorder->priv->src_pad, GST_QUERY_POSITION, &format, &position)) {
                 g_warning (_("Could not get current track position"));
                 return TRUE;
         }
 
         if (!gst_pad_query (recorder->priv->src_pad, GST_QUERY_TOTAL, &format, &total)) {
-#elif HAVE_GSTREAMER_0_10
-		if (!gst_element_query_position (recorder->priv->src, &format, &position) || !gst_element_query_duration (recorder->priv->src, &format, &total)) {
-#endif
                 g_warning (_("Could not get current track position"));
                 return TRUE;
         }
@@ -794,13 +790,129 @@ tick_timeout_cb (RBRecorder *recorder)
                                fraction, (long)secs);
         }
 
-#ifdef HAVE_GSTREAMER_0_8
         /* Extra kick in the pants to keep things moving on a busy system */
         gst_bin_iterate (GST_BIN (recorder->priv->pipeline));
-#endif
 
         return TRUE;
 }
+#elif HAVE_GSTREAMER_0_10
+static gboolean
+tick_timeout_cb (RBRecorder *recorder)
+{
+        gint64 position, total;
+        double fraction;
+        double rate;
+        double elapsed;
+        double secs;
+        GstFormat format = GST_FORMAT_BYTES;
+	GstState  state;
+
+        g_return_val_if_fail (recorder != NULL, FALSE);
+        g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
+        g_return_val_if_fail (recorder->priv != NULL, FALSE);
+        g_return_val_if_fail (recorder->priv->pipeline != NULL, FALSE);
+
+	if (!gst_element_get_state (recorder->priv->pipeline, &state,  NULL, 3 * GST_SECOND)) {
+		g_warning (_("Could not retrieve state from processing pipeline"));
+		return TRUE;
+	}
+
+	if (state != GST_STATE_PLAYING) {		
+                recorder->priv->tick_timeout_id = 0;
+                if (recorder->priv->start_timer) {
+                        g_timer_destroy (recorder->priv->start_timer);
+                        recorder->priv->start_timer = NULL;
+                }
+                return FALSE;
+        }
+
+        if (!gst_element_query_position (recorder->priv->src, &format, &position) || !gst_element_query_duration (recorder->priv->src, &format, &total)) {
+                g_warning (_("Could not get current track position"));
+                return TRUE;
+        }
+
+        if (! recorder->priv->start_timer) {
+                recorder->priv->start_timer = g_timer_new ();
+                recorder->priv->start_pos = position;
+        }
+
+        fraction = (float)position / (float)total;
+
+        elapsed = g_timer_elapsed (recorder->priv->start_timer, NULL);
+
+        rate = (double)(position - recorder->priv->start_pos) / elapsed;
+
+        if (rate >= 1) {
+                secs = ceil ((total - position) / rate);
+        } else {
+                secs = -1;
+        }
+
+        if (fraction != recorder->priv->progress) {
+                recorder->priv->progress = fraction;
+                g_signal_emit (G_OBJECT (recorder),
+                               rb_recorder_signals [TRACK_PROGRESS_CHANGED],
+                               0,
+                               fraction, (long)secs);
+        }
+
+        return TRUE;
+}
+#endif
+
+
+#ifdef HAVE_GSTREAMER_0_8
+static gboolean
+rb_recorder_sync_pipeline (RBRecorder *recorder,
+                           GError    **error)
+{
+        g_return_val_if_fail (recorder != NULL, FALSE);
+        g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
+        g_return_val_if_fail (recorder->priv != NULL, FALSE);
+        g_return_val_if_fail (recorder->priv->pipeline != NULL, FALSE);
+        
+        rb_debug ("Syncing pipeline");
+        if (recorder->priv->playing) {
+                rb_debug ("Playing pipeline");
+                if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PLAYING) == GST_STATE_FAILURE) {
+                        g_set_error (error,
+                                     RB_RECORDER_ERROR,
+                                     RB_RECORDER_ERROR_GENERAL,
+                                     _("Could not start pipeline playing"));
+                        return FALSE;
+                }
+
+                recorder->priv->idle_id = g_idle_add ((GSourceFunc)gst_bin_iterate,
+                                                      GST_BIN (recorder->priv->pipeline));
+                recorder->priv->tick_timeout_id = g_timeout_add (200,
+                                                                 (GSourceFunc)tick_timeout_cb,
+                                                                 recorder);
+        } else {
+                rb_debug ("Pausing pipeline");
+                if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PAUSED) == GST_STATE_FAILURE) {
+                        g_set_error (error,
+                                     RB_RECORDER_ERROR,
+                                     RB_RECORDER_ERROR_GENERAL,
+                                     _("Could not pause playback"));
+                        return FALSE;
+                }
+                if (recorder->priv->idle_id > 0) {
+                        g_source_remove (recorder->priv->idle_id);
+                        recorder->priv->idle_id = 0;
+                }
+                if (recorder->priv->tick_timeout_id > 0) {
+                        g_source_remove (recorder->priv->tick_timeout_id);
+                        recorder->priv->tick_timeout_id = 0;
+                        if (recorder->priv->start_timer) {
+                                g_timer_destroy (recorder->priv->start_timer);
+                                recorder->priv->start_timer = NULL;
+                        }
+                }
+        }
+        return TRUE;
+}
+
+#elif HAVE_GSTREAMER_0_10
 
 static gboolean
 rb_recorder_sync_pipeline (RBRecorder *recorder,
@@ -814,46 +926,24 @@ rb_recorder_sync_pipeline (RBRecorder *recorder,
         rb_debug ("Syncing pipeline");
         if (recorder->priv->playing) {
                 rb_debug ("Playing pipeline");
-#ifdef HAVE_GSTREAMER_0_8
-                if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PLAYING) == GST_STATE_FAILURE) {
-#elif HAVE_GSTREAMER_0_10
                 if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
-#endif
                         g_set_error (error,
                                      RB_RECORDER_ERROR,
                                      RB_RECORDER_ERROR_GENERAL,
                                      _("Could not start pipeline playing"));
                         return FALSE;
                 }
-#ifdef HAVE_GSTREAMER_0_8
-                recorder->priv->idle_id = g_idle_add ((GSourceFunc)gst_bin_iterate,
-                                                      GST_BIN (recorder->priv->pipeline));
-                recorder->priv->tick_timeout_id = g_timeout_add (200,
-                                                                 (GSourceFunc)tick_timeout_cb,
-                                                                 recorder);
-#elif HAVE_GSTREAMER_0_10
-		recorder->priv->tick_timeout_id = 
-			g_timeout_add (200, (GSourceFunc)tick_timeout_cb, recorder);
-#endif
+
+		recorder->priv->tick_timeout_id = g_timeout_add (200, (GSourceFunc)tick_timeout_cb, recorder);
         } else {
                 rb_debug ("Pausing pipeline");
-#ifdef HAVE_GSTREAMER_0_8
-                if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PAUSED) == GST_STATE_FAILURE) {
-#elif HAVE_GSTREAMER_0_10
                 if (gst_element_set_state (recorder->priv->pipeline, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
-#endif
                         g_set_error (error,
                                      RB_RECORDER_ERROR,
                                      RB_RECORDER_ERROR_GENERAL,
                                      _("Could not pause playback"));
                         return FALSE;
                 }
-#ifdef HAVE_GSTREAMER_0_8
-                if (recorder->priv->idle_id > 0) {
-                        g_source_remove (recorder->priv->idle_id);
-                        recorder->priv->idle_id = 0;
-                }
-#endif
                 if (recorder->priv->tick_timeout_id > 0) {
                         g_source_remove (recorder->priv->tick_timeout_id);
                         recorder->priv->tick_timeout_id = 0;
@@ -865,6 +955,7 @@ rb_recorder_sync_pipeline (RBRecorder *recorder,
         }
         return TRUE;
 }
+#endif
 
 void
 rb_recorder_close (RBRecorder *recorder,
@@ -1028,6 +1119,16 @@ rb_recorder_pause (RBRecorder *recorder,
         rb_recorder_sync_pipeline (recorder, NULL);
 }
 
+#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+static const char *
+nautilus_burn_drive_get_device (NautilusBurnDrive *drive)
+{
+	g_return_val_if_fail (drive != NULL, NULL);
+
+	return drive->device;
+}
+#endif
+
 char *
 rb_recorder_get_device (RBRecorder  *recorder,
                         GError     **error)
@@ -1051,7 +1152,7 @@ rb_recorder_get_device (RBRecorder  *recorder,
                 return NULL;
         }
 
-        return g_strdup (drive->device);
+        return g_strdup (nautilus_burn_drive_get_device (drive));
 }
 
 gboolean
@@ -1059,8 +1160,13 @@ rb_recorder_set_device (RBRecorder  *recorder,
                         const char  *device,
                         GError     **error)
 {
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+        NautilusBurnDriveMonitor *monitor;
+#else
         GList *drives;
         GList *tmp;
+#endif
+        int type;
 
         g_return_val_if_fail (recorder != NULL, FALSE);
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
@@ -1075,6 +1181,13 @@ rb_recorder_set_device (RBRecorder  *recorder,
                 recorder->priv->drive = NULL;
         }
 
+        type = 0;
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+        monitor = nautilus_burn_get_drive_monitor ();
+        recorder->priv->drive = nautilus_burn_drive_monitor_get_drive_for_device (monitor, device);
+        type = nautilus_burn_drive_get_drive_type (recorder->priv->drive);
+#else
         drives = nautilus_burn_drive_get_list (TRUE, FALSE);
 
         for (tmp = drives; tmp != NULL; tmp = tmp->next) {
@@ -1089,6 +1202,9 @@ rb_recorder_set_device (RBRecorder  *recorder,
         }
         g_list_free (drives);
 
+        type = recorder->priv->drive->type;
+#endif
+
         if (! recorder->priv->drive) {
                 g_set_error (error,
                              RB_RECORDER_ERROR,
@@ -1098,7 +1214,7 @@ rb_recorder_set_device (RBRecorder  *recorder,
                 return FALSE;
         }
 
-        if (! (recorder->priv->drive->type & NAUTILUS_BURN_DRIVE_TYPE_CD_RECORDER)) {
+        if (! (type & NAUTILUS_BURN_DRIVE_TYPE_CD_RECORDER)) {
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
@@ -1246,7 +1362,7 @@ rb_recorder_get_default_device (void)
         drive = rb_recorder_get_default_drive ();
 
         if (drive) {
-                device = g_strdup (drive->device);
+                device = g_strdup (nautilus_burn_drive_get_device (drive));
                 nautilus_burn_drive_unref (drive);
         }
 
