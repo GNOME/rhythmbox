@@ -590,7 +590,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 
 	 if (!g_file_test (dir_name, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
 		if (!g_mkdir_with_parents (dir_name, 0750)) {
-			rb_debug ("Error downloading podcast: could not create local dirs");
+			rb_debug ("Error downloading podcast: could not create local dirs %s", dir_name);
 			goto next_step;
 		}
 	 }
@@ -1089,7 +1089,8 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
 	}
 
-	if (info->status != GNOME_VFS_XFER_PROGRESS_STATUS_OK) {
+	if (info->status != GNOME_VFS_XFER_PROGRESS_STATUS_OK ||
+	    ((info->phase == GNOME_VFS_XFER_PHASE_COMPLETED) && (info->file_size == 0))) {
 		GValue val = {0, };
 		rb_debug ("error on download");
 		g_value_init (&val, G_TYPE_ULONG);
@@ -1119,7 +1120,7 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 		g_free (canon_uri);
 	}
 	
-	if (info->phase  == GNOME_VFS_XFER_PHASE_COMPLETED) {
+	if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED) {
 		if (data->canceled != TRUE)  {
 			rb_debug ("download completed");
 			data->total_size = info->file_size;

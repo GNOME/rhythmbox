@@ -1,3 +1,9 @@
+2006-05-30  James Livingston  <doclivingston@gmail.com>
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post),
+	(download_progress_cb): don't do wonky things if the transfer
+	"suceeds" without transferring any data.
+
 2006-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-library-source.c: (layout_example_label_update),
