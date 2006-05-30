@@ -1017,6 +1017,7 @@ rb_metadata_load (RBMetaData *md,
 							    G_CALLBACK (rb_metadata_gst_typefind_cb), 
 							    md, 
 							    0);
+	gst_object_unref (GST_OBJECT (typefind));
  
  	gst_element_link (urisrc, decodebin);
 
