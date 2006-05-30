@@ -40,6 +40,7 @@
 #endif
 
 #include <nautilus-burn-drive.h>
+#include <nautilus-burn-recorder.h>
 #ifndef NAUTILUS_BURN_CHECK_VERSION 	 
 #define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
 #endif
