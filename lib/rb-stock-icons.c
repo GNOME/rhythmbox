@@ -31,6 +31,7 @@
 
 static GtkIconFactory *factory = NULL;
 
+const char RB_APP_ICON[] = "rhythmbox";
 const char RB_STOCK_TRAY_ICON[] = "rhythmbox-tray-icon";
 const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
 const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
@@ -48,6 +49,7 @@ rb_stock_icons_init (void)
 {
 	GtkIconTheme *theme = gtk_icon_theme_get_default ();
 	int i;
+	int icon_size;
 
 	static const char* items[] =
 	{
@@ -72,16 +74,16 @@ rb_stock_icons_init (void)
 	factory = gtk_icon_factory_new ();
 	gtk_icon_factory_add_default (factory);
 
+	/* we should really add all the sizes */
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
+
 	for (i = 0; i < (int) G_N_ELEMENTS (items); i++) {
 		GtkIconSet *icon_set;
 		GdkPixbuf *pixbuf;
-		gint size;
 
-		/* we should really add all the sizes */
-		gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 		pixbuf = gtk_icon_theme_load_icon (theme,
 						   items[i],
-						   size,
+						   icon_size,
 						   0,
 						   NULL);
 		if (pixbuf == NULL) {
@@ -105,6 +107,35 @@ rb_stock_icons_init (void)
 		} else {
 			g_warning ("Unable to load icon %s", items[i]);
 		}
+	}
+
+	/* register the app icon as a builtin if the theme can't find it */
+	if (!gtk_icon_theme_has_icon (theme, RB_APP_ICON)) {
+		int i;
+		GdkPixbuf *pixbuf;
+		char *path;
+		static char *search_paths[] = {
+#ifdef SHARE_UNINSTALLED_DIR
+			SHARE_UNINSTALLED_DIR "/",
+#endif
+			DATADIR "/icons/hicolor/48x48/apps/",
+		};
+
+		for (i = 0; i < (int) G_N_ELEMENTS (search_paths); i++) {
+			path = g_strconcat (search_paths[i], RB_APP_ICON, ".png", NULL);
+			if (g_file_test (path, G_FILE_TEST_EXISTS) == TRUE)
+				break;
+			g_free (path);
+			path = NULL;
+		}
+
+		if (path) {
+			pixbuf = gdk_pixbuf_new_from_file (path, NULL);
+			if (pixbuf) {
+				gtk_icon_theme_add_builtin_icon (RB_APP_ICON, icon_size, pixbuf);
+			}
+		}
+		g_free (path);
 	}
 }
 

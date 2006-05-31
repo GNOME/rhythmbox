@@ -1,3 +1,9 @@
+2006-05-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/Makefile.am:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	Register the app icon as a builtin if the icon theme can't find it.
+
 2006-05-31  James Livingston  <doclivingston@gmail.com>
 
 	* player/rb-recorder-gst.c: add missing include.
