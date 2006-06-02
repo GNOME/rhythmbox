@@ -166,6 +166,31 @@ id3_pad_added_cb (GstElement *demux, GstPad *pad, GstElement *mux)
 		rb_debug ("linked pad from id3de to id3mux");
 }
 
+static gboolean
+rb_gst_plugin_greater (const char *plugin, gint major, gint minor, gint micro)
+{
+	const char *version;
+	GstPlugin *p;
+	guint i;
+	guint count;
+
+	if (gst_default_registry_check_feature_version (plugin, major, minor, micro + 1))
+		return TRUE;
+	
+	if (!gst_default_registry_check_feature_version (plugin, major, minor, micro))
+		return FALSE;
+
+	p = gst_default_registry_find_plugin (plugin);
+	if (p == NULL)
+		return FALSE;
+
+	version = gst_plugin_get_version (p);
+
+	/* check if it's not a release */
+	count = sscanf (version, "%u.%u.%u.%u", &i, &i, &i, &i);
+	return (count > 3);
+}
+
 static GstElement *
 rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 {
@@ -173,7 +198,15 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 	GstElement *mux = NULL;
 
 	demux = gst_element_factory_make ("id3demux", NULL);
-	mux =  gst_element_factory_make ("id3mux", NULL);
+
+	/*mux = gst_element_factory_make ("id3v2mux", NULL);*/
+	if (mux == NULL) {
+		mux =  gst_element_factory_make ("id3mux", NULL);
+
+		/* check for backwards id3mux merge-mode */
+		if (mux && !rb_gst_plugin_greater ("mad", 0, 10, 3))
+			gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
+	}
 
 	if (demux == NULL || mux == NULL)
 		goto error;
@@ -185,7 +218,6 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
 
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
-	gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
 
 	return mux;
 
@@ -342,8 +374,9 @@ rb_metadata_init (RBMetaData *md)
 	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
 			    gst_element_factory_find ("gnomevfssink") != NULL);
 #ifdef HAVE_GSTREAMER_0_10
-	has_id3 = (gst_default_registry_check_feature_version ("id3mux", 0, 10, 2) &&
-		  (gst_element_factory_find ("id3demux") != NULL));
+	has_id3 = (gst_element_factory_find ("id3demux") != NULL) &&
+			(gst_default_registry_check_feature_version ("id3mux", 0, 10, 2) ||
+			 (gst_element_factory_find ("id3v2mux") != NULL));
 #elif HAVE_GSTREAMER_0_8
 	has_id3 = (gst_element_factory_find ("id3tag") != NULL);
 #endif

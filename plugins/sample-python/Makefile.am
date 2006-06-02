@@ -7,7 +7,7 @@ plugin_in_files = sample-python.rb-plugin.desktop.in
 
 #plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
-EXTRA_DIST = $(plugin_in_files)
+EXTRA_DIST = $(plugin_in_files) sample-python.py
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

@@ -77,7 +77,8 @@ rhythmdb_finalize_monitoring (RhythmDB *db)
 	rhythmdb_stop_monitoring (db);
 	
 	g_hash_table_destroy (db->priv->monitored_directories);
-	g_source_remove (db->priv->changed_files_id);
+	if (db->priv->changed_files_id)
+		g_source_remove (db->priv->changed_files_id);
 	g_hash_table_destroy (db->priv->changed_files);
 }
 

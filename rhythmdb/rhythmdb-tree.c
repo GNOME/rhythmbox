@@ -1300,7 +1300,7 @@ rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 			if (evaluate_conjunctive_subquery (db, query, last_disjunction, i, entry))
 				return TRUE;
 
-			last_disjunction = i;
+			last_disjunction = i + 1;
 		}
 	}
 	if (evaluate_conjunctive_subquery (db, query, last_disjunction, query->len, entry))

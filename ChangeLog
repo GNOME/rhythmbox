@@ -1,3 +1,19 @@
+2006-06-02  James Livingston  <doclivingston@gmail.com>
+
+	* metadata/rb-metadata-gst.c: (rb_gst_plugin_greater),
+	(rb_add_id3_tagger), (rb_metadata_init): add support for using
+	id3v2mux, and check whether we are using a version of id3mux that has
+	the correct merge-mode behaviour.
+
+	* plugins/sample-python/Makefile.am: fix distcheck.
+
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_finalize_monitoring): check
+	the changed-files source was added before trying to remove it.
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_evaluate_query): fix an
+	*old* bug which would crash if a query with top-level disjunctions
+	tried to check later disjunctive parts. Hooray for unit-testing.
+
 2006-06-02  William Jon McCann  <mccann@jhu.edu>
 
 	* player/rb-recorder-gst.c (rb_recorder_set_device):
