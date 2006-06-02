@@ -868,6 +868,10 @@ fi
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"])
 
 
+dnl check, for unit tests
+AM_PATH_CHECK([], have_check=yes, have_check=no)
+AM_CONDITIONAL([HAVE_CHECK],[test "x$have_check" = "xyes"])
+
 
 dnl ================================================================
 dnl end-game

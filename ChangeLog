@@ -1,5 +1,28 @@
 2006-06-02  James Livingston  <doclivingston@gmail.com>
 
+	* configure.ac:
+	+ macros/check.m4: add support for using check for unit tests, the .m4
+	files is so autogen can run without check being installed
+
+	* tests/Makefile.am:
+	+ tests/test-rhythmdb.c: update the tests to new rhythmdb API, port
+	some of the old tests, and add some new ones. Currently
+	deserialisation tests 2 and 3 fail, for reasons I haven't figured out
+	yet (the query doesn't return any entries).
+
+	- tests/deserialization-test1.xml:
+	- tests/deserialization-test2.xml:
+	- tests/deserialization-test3.xml:
+	- tests/test-rhythmdb-indexing.c:
+	- tests/test-rhythmdb-simple.c:
+	- tests/test-rhythmdb-tree-deserialization.c: remove old tests that
+	have been ported
+
+	- tests/test-cd.c:
+	- tests/test-cmdline.c: remove obsolete tests
+
+2006-06-02  James Livingston  <doclivingston@gmail.com>
+
 	* metadata/rb-metadata-gst.c: (rb_gst_plugin_greater),
 	(rb_add_id3_tagger), (rb_metadata_init): add support for using
 	id3v2mux, and check whether we are using a version of id3mux that has
