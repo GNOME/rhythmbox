@@ -1177,7 +1177,7 @@ rb_recorder_set_device (RBRecorder  *recorder,
                 *error = NULL;
         }
 
-        if (recorder->priv->drive) {
+        if (recorder->priv->drive != NULL) {
                 nautilus_burn_drive_unref (recorder->priv->drive);
                 recorder->priv->drive = NULL;
         }
@@ -1187,7 +1187,9 @@ rb_recorder_set_device (RBRecorder  *recorder,
 #if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
         monitor = nautilus_burn_get_drive_monitor ();
         recorder->priv->drive = nautilus_burn_drive_monitor_get_drive_for_device (monitor, device);
-        type = nautilus_burn_drive_get_drive_type (recorder->priv->drive);
+        if (recorder->priv->drive != NULL) {
+                type = nautilus_burn_drive_get_drive_type (recorder->priv->drive);
+        }
 #else
         drives = nautilus_burn_drive_get_list (TRUE, FALSE);
 
