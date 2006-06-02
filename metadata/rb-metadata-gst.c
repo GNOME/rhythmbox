@@ -1185,10 +1185,15 @@ rb_metadata_load (RBMetaData *md,
 				     "%s", msg);
 			g_free (msg);
 		} else {
+			/* we don't need an error message here (it'll never be
+			 * displayed).  using NULL causes crashes with some C
+			 * libraries, and gcc doesn't like zero-length format
+			 * strings, so we use a single space instead.
+			 */
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
-				     NULL);
+				     " ");
 		}
 	} else if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);

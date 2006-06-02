@@ -1,5 +1,11 @@
 2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* metadata/rb-metadata-gst.c:
+	Don't use NULL as the error message for ignored files, as it crashes
+	with some C libraries.  Fixes #343713.
+
+2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* widgets/rb-dialog.c: (rb_error_dialog):
 	* widgets/rb-dialog.h:
 	Mark rb_error_dialog as taking printf-like arguments, and use a format
