@@ -355,7 +355,7 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 	}
 
 	if (ok) {
-		rb_debug ("importing Audio Cd %s - %d tracks", priv->device_path, num_tracks);
+		rb_debug ("importing Audio Cd %s - %d tracks", priv->device_path, (int)num_tracks);
 		for (i = 1; i <= num_tracks; i++) {
 			RhythmDBEntry* entry = rb_audiocd_create_track_entry (source, db, i);
 

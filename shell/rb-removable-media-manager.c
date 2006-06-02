@@ -774,7 +774,7 @@ rb_removable_media_manager_eject_medium_cb (gboolean succeeded,
 	if (succeeded)
 		return;
 
-	rb_error_dialog (NULL, error, detailed_error);
+	rb_error_dialog (NULL, error, "%s", detailed_error);
 }
 
 static void

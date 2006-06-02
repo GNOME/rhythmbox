@@ -668,7 +668,7 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 		if (audioscrobbler->priv->handshake)
 			rb_debug ("We already have a valid handshake");
 		if (time (NULL) < audioscrobbler->priv->handshake_next)
-			rb_debug ("time=%d; handshake_next=%d",
+			rb_debug ("time=%lu; handshake_next=%lu",
 				  time (NULL),
 				  audioscrobbler->priv->handshake_next);
 		if (strcmp (audioscrobbler->priv->username, "") == 0)
@@ -777,7 +777,7 @@ rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
 		if (strcmp (audioscrobbler->priv->md5_challenge, "") == 0)
 			rb_debug ("Blank md5_challenge");
 		if (now <= audioscrobbler->priv->submit_next)
-			rb_debug ("Too soon (next submission in %d seconds)", audioscrobbler->priv->submit_next - now);
+			rb_debug ("Too soon (next submission in %ld seconds)", audioscrobbler->priv->submit_next - now);
 		if (!audioscrobbler->priv->queue)
 			rb_debug ("Queue is empty");
 	}

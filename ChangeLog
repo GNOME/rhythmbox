@@ -1,3 +1,28 @@
+2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-dialog.c: (rb_error_dialog):
+	* widgets/rb-dialog.h:
+	Mark rb_error_dialog as taking printf-like arguments, and use a format
+	string for the primary message rather than passing in the message
+	directly.
+
+	* lib/eel-gconf-extensions.c: (eel_gconf_handle_error):
+	* shell/rb-shell-player.c: (rb_shell_player_cmd_play),
+	(info_available_cb):
+	* shell/rb-playlist-manager.c: (load_playlist_response_cb):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_eject_medium_cb):
+	Make sure all calls to rb_error_dialog use string constants for the
+	format string rather than passing the error message directly.  Remove
+	an extra %s from the message used when playback fails.  Fixes #343562.
+
+	* lib/rb-debug.h:
+	* sources/rb-audiocd-source.c:
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_do_handshake), (rb_audioscrobbler_submit_queue):
+	Mark rb_debug as taking printf-like arguments and fix a few resulting
+	warnings.
+
 2006-06-02  James Livingston  <doclivingston@gmail.com>
 
 	* configure.ac:

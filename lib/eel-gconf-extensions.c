@@ -66,7 +66,7 @@ eel_gconf_handle_error (GError **error)
 	if (*error != NULL) {
 		rb_error_dialog (NULL,
 				 _("Configuration system error"),
-				 (*error)->message);
+				 "%s", (*error)->message);
 		g_error_free (*error);
 		*error = NULL;
 

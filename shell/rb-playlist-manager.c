@@ -1197,7 +1197,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 
 	if (!rb_playlist_manager_parse_file (mgr, escaped_file, &error)) {
 		rb_error_dialog (NULL, _("Couldn't read playlist"),
-				 error->message);
+				 "%s", error->message);
 		g_error_free (error);
 	}
 

@@ -1587,7 +1587,9 @@ rb_shell_player_cmd_play (GtkAction *action,
 	GError *error = NULL;
 	rb_debug ("play!");
 	if (!rb_shell_player_playpause (player, FALSE, &error))
-		rb_error_dialog (NULL, _("Couldn't start playback: %s"), (error) ? error->message : "(null)");
+		rb_error_dialog (NULL, 
+				 _("Couldn't start playback"), 
+				 "%s", (error) ? error->message : "(null)");
 	g_clear_error (&error);
 }
 
@@ -2626,7 +2628,7 @@ info_available_cb (RBPlayer *mmplayer,
 			bitrate = g_value_get_ulong (value);
 			g_value_set_ulong (value, bitrate/1000);
 			
-			rb_debug ("setting bitrate of iradio station to %d", 
+			rb_debug ("setting bitrate of iradio station to %lu", 
 				  g_value_get_ulong (value));
 			entry_field = RHYTHMDB_PROP_BITRATE;
 			set_field = TRUE;

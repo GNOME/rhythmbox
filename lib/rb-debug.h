@@ -42,7 +42,7 @@ void rb_debug_init_match       (const char *match);
 void rb_debug_real             (const char *func,
 				const char *file,
 				int line,
-				const char *format, ...);
+				const char *format, ...) G_GNUC_PRINTF (4, 5);
 
 void rb_debug_stop_in_debugger (void);
 
