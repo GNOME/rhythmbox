@@ -1,5 +1,10 @@
 2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* backends/gstreamer/rb-encoder-gst.c: (progress_timeout_cb):
+	Fix rb_debug call I missed previously.
+
+2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* metadata/rb-metadata-gst.c:
 	Don't use NULL as the error message for ignored files, as it crashes
 	with some C libraries.  Fixes #343713.

@@ -277,7 +277,7 @@ progress_timeout_cb (RBEncoderGst *encoder)
 #endif
 
 	secs = nanos / GST_SECOND;
-	rb_debug ("encoding progress at %d out of %d", secs, encoder->priv->total_length);
+	rb_debug ("encoding progress at %d out of %lu", secs, encoder->priv->total_length);
 	_rb_encoder_emit_progress (RB_ENCODER (encoder), ((double)secs) / encoder->priv->total_length);
 
 	return TRUE;
