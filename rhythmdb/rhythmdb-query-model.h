@@ -77,6 +77,8 @@ typedef struct
 					 int position);
 	void    (*entry_removed)        (RhythmDBQueryModel *model,
 					 RhythmDBEntry *entry);
+	void	(*post_entry_delete)	(RhythmDBQueryModel *model,
+					 RhythmDBEntry *entry);
 
 } RhythmDBQueryModelClass;
 

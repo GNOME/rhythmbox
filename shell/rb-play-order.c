@@ -63,9 +63,9 @@ static void rb_play_order_entry_added_cb (GtkTreeModel *model,
 					  GtkTreePath *path,
 					  GtkTreeIter *iter,
 					  RBPlayOrder *porder);
-static void rb_play_order_entry_deleted_cb (GtkTreeModel *model,
-					    GtkTreePath *path,
-					    RBPlayOrder *porder);
+static void rb_play_order_post_entry_delete_cb (GtkTreeModel *model,
+						RhythmDBEntry *entry,
+						RBPlayOrder *porder);
 static void rb_play_order_query_model_changed_cb (GObject *source, 
 						  GParamSpec *arg,
 						  RBPlayOrder *porder);
@@ -187,7 +187,7 @@ rb_play_order_finalize (GObject *object)
 						      G_CALLBACK (rb_play_order_entry_added_cb),
 						      porder);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
-						      G_CALLBACK (rb_play_order_entry_deleted_cb),
+						      G_CALLBACK (rb_play_order_post_entry_delete_cb),
 						      porder);
 	}
 
@@ -495,7 +495,7 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 						      rb_play_order_entry_added_cb,
 						      porder);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
-						      rb_play_order_entry_deleted_cb,
+						      rb_play_order_post_entry_delete_cb,
 						      porder);
 		g_object_unref (porder->priv->query_model);
 		porder->priv->query_model = NULL;
@@ -508,8 +508,8 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 					 G_CALLBACK (rb_play_order_entry_added_cb),
 					 porder, 0);
 		g_signal_connect_object (G_OBJECT (porder->priv->query_model),
-					 "row-deleted",
-					 G_CALLBACK (rb_play_order_entry_deleted_cb),
+					 "post-entry-delete",
+					 G_CALLBACK (rb_play_order_post_entry_delete_cb),
 					 porder, 0);
 	}
 
@@ -544,12 +544,12 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
 }
 
 /**
- * rb_play_order_entry_removed_cb:
+ * rb_play_order_post_entry_delete_cb:
  * @model: #GtkTreeModel
- * @path: #GtkTreePath for removed entry
+ * @entry: the #RhythmDBEntry removed from the model
  * @porder: #RBPlayOrder instance
  *
- * Called when a new entry is removed from the active #RhythmDBQueryModel.
+ * Called when an entry is removed from the active #RhythmDBQueryModel.
  * Subclasses should implement entry_removed() to make any necessary 
  * changes if they store any state based on the contents of the 
  * #RhythmDBQueryModel.
@@ -558,15 +558,8 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
  * signal is emitted.
  */
 static void
-rb_play_order_entry_deleted_cb (GtkTreeModel *model, GtkTreePath *path, RBPlayOrder *porder)
+rb_play_order_post_entry_delete_cb (GtkTreeModel *model, RhythmDBEntry *entry, RBPlayOrder *porder)
 {
-	RhythmDBEntry *entry;
-	GtkTreeIter iter;
-	
-	gtk_tree_model_get_iter (model, &iter, path);
-	entry = rhythmdb_query_model_iter_to_entry(RHYTHMDB_QUERY_MODEL (model),
-						   &iter);
-
 	if (entry == porder->priv->playing_entry) {
 		rb_debug ("signaling playing_entry_removed");
 		g_signal_emit (G_OBJECT (porder), rb_play_order_signals[PLAYING_ENTRY_REMOVED],

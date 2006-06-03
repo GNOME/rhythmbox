@@ -246,6 +246,7 @@ enum
 	ENTRY_PROP_CHANGED,
 	ENTRY_REMOVED,
 	NON_ENTRY_DROPPED,
+	POST_ENTRY_DELETE,
 	LAST_SIGNAL
 };
 
@@ -371,6 +372,15 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+	rhythmdb_query_model_signals[POST_ENTRY_DELETE] =
+		g_signal_new ("post-entry-delete",
+			      RHYTHMDB_TYPE_QUERY_MODEL,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, post_entry_delete),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1, RHYTHMDB_TYPE_ENTRY);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBQueryModelPrivate));
 }
@@ -1071,6 +1081,8 @@ rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model, RhythmDBE
 
 	g_sequence_remove (ptr);
 	g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
+
+	g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[POST_ENTRY_DELETE], 0, entry);
 	
 	rhythmdb_entry_unref (model->priv->db, entry);
 }

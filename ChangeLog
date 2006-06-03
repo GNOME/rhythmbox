@@ -1,5 +1,21 @@
 2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_remove_from_main_list):
+	* rhythmdb/rhythmdb-query-model.h:
+	Add a new 'post-entry-delete' signal, emitted when the entry has been
+	removed from the model's data structures.
+
+	* shell/rb-play-order.c: (rb_play_order_finalize),
+	(rb_play_order_query_model_changed),
+	(rb_play_order_post_entry_delete_cb):
+	Use the new signal to update the play order, so the queue play order
+	doesn't try to scroll to entries that don't exist in a way that causes
+	the tree view to crash.  Fixes #340216.
+
+2006-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* backends/gstreamer/rb-encoder-gst.c: (progress_timeout_cb):
 	Fix rb_debug call I missed previously.
 
