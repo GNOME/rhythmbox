@@ -787,7 +787,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 {
 	const char *text;
 	char *tmp;
-	ulong num;
+	gulong num;
 	
 	g_assert (song_info->priv->current_entry);
 
@@ -1114,7 +1114,7 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 static void
 rb_song_info_update_year (RBSongInfo *song_info)
 {
-	ulong year;
+	gulong year;
 	char *text;
 
 	year = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_YEAR);
@@ -1234,7 +1234,7 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_set_ulong (&val, discn);
 
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
-			ulong entry_disc_num;
+			gulong entry_disc_num;
 			
 			entry = (RhythmDBEntry *)tem->data;
 			entry_disc_num = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
