@@ -70,6 +70,11 @@ GtkTreeModel *	rb_sourcelist_model_new		(void);
 
 void		rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
 						     GtkTreeView *treeview);
+GtkTreePath *	rb_sourcelist_model_get_group_path (RBSourceListModel *sourcelist,
+						    RBSourceListGroup group);
+gboolean	rb_sourcelist_model_row_is_separator (GtkTreeModel *model,
+						      GtkTreeIter *iter,
+						      RBSourceListModel *sourcelist);
 
 G_END_DECLS
 

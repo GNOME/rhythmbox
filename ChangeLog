@@ -1,3 +1,47 @@
+2006-06-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* bindings/python/rb.defs:
+	* sources/rb-source.h:
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_set_property), (rb_source_get_property),
+	(rb_sourcelist_group_get_type):
+	Add 'sourcelist-group' property on the RBSource class, describing how
+	sources should be grouped in the source list.
+
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_finalize),
+	(rb_sourcelist_model_new), (real_row_is_separator),
+	(rb_sourcelist_model_is_row_visible),
+	(rb_sourcelist_model_row_is_separator), (get_group_for_path),
+	(rb_sourcelist_model_drag_data_received), (path_is_reorderable),
+	(rb_sourcelist_model_row_draggable),
+	(rb_sourcelist_model_row_inserted_cb),
+	(rb_sourcelist_model_row_deleted_cb),
+	(rb_sourcelist_model_get_group_path):
+	* sources/rb-sourcelist-model.h:
+	* sources/rb-sourcelist.c: (rb_sourcelist_init),
+	(rb_sourcelist_append):
+	Add group marker rows for each sourcelist group, and use these to
+	insert sources in the right place.  Sort transient sources (DAAP
+	shares) by name.  Show the group marker rows as separators when the
+	next visible row is a source.  Make persistant sources (playlists) and
+	removable sources reorderable using drag and drop, restricting them
+	within the source groups.
+	
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* sources/rb-auto-playlist-source.c: (rb_auto_playlist_source_new):
+	* sources/rb-daap-source.c: (rb_daap_source_new):
+	* sources/rb-ipod-source.c: (rb_ipod_source_new):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_new):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_new):
+	* plugins/generic-player/rb-nokia770-source.c:
+	(rb_nokia770_source_new):
+	* plugins/generic-player/rb-psp-source.c: (rb_psp_source_new):
+	Add source list group information to existing source classes.
+
+	Fixes #318754 and #336492.
+
 2006-06-04  James Livingston  <doclivingston@gmail.com>
 
 	* widgets/rb-song-info.c: (rb_song_info_populate_dialog),

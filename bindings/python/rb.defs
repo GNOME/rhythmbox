@@ -111,6 +111,18 @@
   )
 )
 
+(define-enum SourceListGroup
+  (in-module "RB")
+  (c-name "RBSourceListGroup")
+  (gtype-id "RB_TYPE_SOURCELIST_GROUP")
+  (values
+    '("fixed" "RB_SOURCELIST_GROUP_FIXED")
+    '("persistant" "RB_SOURCELIST_GROUP_PERSISTANT")
+    '("removable" "RB_SOURCELIST_GROUP_REMOVABLE")
+    '("transient" "RB_SOURCELIST_GROUP_TRANSIENT")
+  )
+)
+
 (define-enum EntryViewColumn
   (in-module "RB")
   (c-name "RBEntryViewColumn")
@@ -1573,6 +1585,24 @@
   (parameters
     '("const-char*" "title")
     '("GtkWidget*" "page")
+  )
+)
+
+;; From ../../lib/rb-debug.h
+
+(define-function rb_debug_enabled
+  (c-name "rb_debug_enabled")
+  (return-type "gboolean")
+)
+
+(define-function rb_debug_real
+  (c-name "rb_debug_real")
+  (return-type "none")
+  (parameters
+    '("const-char*" "func")
+    '("const-char*" "file")
+    '("int" "line")
+    '("const-char*" "format")
   )
 )
 

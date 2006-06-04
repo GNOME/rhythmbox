@@ -215,6 +215,9 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (sourcelist->priv->treeview), FALSE);
 	rb_sourcelist_model_set_dnd_targets (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
 					     GTK_TREE_VIEW (sourcelist->priv->treeview));
+	gtk_tree_view_set_row_separator_func (GTK_TREE_VIEW (sourcelist->priv->treeview),
+					      (GtkTreeViewRowSeparatorFunc) rb_sourcelist_model_row_is_separator,
+					      sourcelist->priv->filter_model, NULL);
 
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
 				 "row_activated",
@@ -362,6 +365,8 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 
 	if (parent) {
 		GtkTreeIter parent_iter;
+
+		rb_debug ("inserting source %p with parent", source);
 		g_assert (rb_sourcelist_source_to_iter (sourcelist, parent, &parent_iter));
 		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, &parent_iter);
 
@@ -370,7 +375,54 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			rb_sourcelist_update_expander_visibility (sourcelist);
 		}
 	} else {
-		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, NULL);
+		GtkTreePath *group_path;
+		GtkTreePath *prev_group_path = NULL;
+		RBSourceListGroup group;
+		GtkTreeIter group_iter;
+
+		/* get the marker rows before and after the group for this source */
+		g_object_get (G_OBJECT (source), "sourcelist-group", &group, NULL);
+		group_path = rb_sourcelist_model_get_group_path (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
+								 group);
+		g_assert (group_path);
+
+		if (group > 0) {
+			/* there's no marker row before the fixed source group, but we
+			 * don't need one anyway.
+			 */
+			prev_group_path = rb_sourcelist_model_get_group_path (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
+									      group-1);
+			g_assert (prev_group_path);
+		}
+
+		/* find the location to insert the source */
+		if (group == RB_SOURCELIST_GROUP_TRANSIENT) {
+			char *check_name = NULL;
+
+			rb_debug ("inserting source %p in group %d in sorted order", source, group);
+			g_assert (prev_group_path);
+
+			gtk_tree_model_get_iter (sourcelist->priv->real_model, &group_iter, prev_group_path);
+			do {
+				g_free (check_name);
+
+				if (!gtk_tree_model_iter_next (sourcelist->priv->real_model, &group_iter))
+					break;
+
+				gtk_tree_model_get (sourcelist->priv->real_model, 
+						    &group_iter, 
+						    RB_SOURCELIST_MODEL_COLUMN_NAME, &check_name,
+						    -1);
+
+			} while (check_name && (strlen (check_name)) > 0 && (g_utf8_collate (name, check_name) > 0));
+			g_free (check_name);
+
+		} else {
+			rb_debug ("inserting source %p in group %d", source, group);
+			gtk_tree_model_get_iter (sourcelist->priv->real_model, &group_iter, group_path);
+		}
+		gtk_tree_store_insert_before (GTK_TREE_STORE (sourcelist->priv->real_model), 
+					      &iter, NULL, &group_iter);
 	}
 
 	gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,

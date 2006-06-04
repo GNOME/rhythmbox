@@ -322,6 +322,7 @@ rb_daap_source_new (RBShell *shell,
 					  "visibility", TRUE,
 					  "sorting-key", CONF_STATE_SORTING,
 					  "password-protected", password_protected,
+					  "sourcelist-group", RB_SOURCELIST_GROUP_TRANSIENT,
 					  NULL));
 
 	if (icon != NULL) {

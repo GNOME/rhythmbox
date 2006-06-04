@@ -179,6 +179,7 @@ rb_audiocd_source_new (RBShell *shell,
 			       "volume", volume,
 			       "shell", shell,
 			       "sorting-key", NULL,
+			       "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
 			       NULL);
 
 	g_free (device_path);

@@ -38,8 +38,22 @@ typedef enum {
 	RB_SOURCE_EOF_NEXT,
 } RBSourceEOFType;
 
+/* groupings in the source list */
+typedef enum {
+	RB_SOURCELIST_GROUP_FIXED,	/* library, iradio, podcast, queue */
+	RB_SOURCELIST_GROUP_PERSISTANT,	/* playlists */
+	RB_SOURCELIST_GROUP_REMOVABLE,	/* ipod, generic audio player, audio CD */
+	RB_SOURCELIST_GROUP_TRANSIENT,	/* DAAP shares */
+
+	RB_SOURCELIST_GROUP_LAST
+} RBSourceListGroup;
+
+
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
+
+GType rb_sourcelist_group_get_type (void);
+#define RB_TYPE_SOURCELIST_GROUP (rb_sourcelist_group_get_type())
 
 #define RB_TYPE_SOURCE         (rb_source_get_type ())
 #define RB_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SOURCE, RBSource))

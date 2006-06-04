@@ -88,6 +88,7 @@ struct _RBSourcePrivate
 	RhythmDBQueryModel *query_model;
 	guint idle_status_changed_id;
 	GdkPixbuf *pixbuf;
+	RBSourceListGroup sourcelist_group;
 };
 
 enum
@@ -98,7 +99,8 @@ enum
 	PROP_SHELL,
 	PROP_UI_MANAGER,
 	PROP_VISIBLE,
-	PROP_QUERY_MODEL
+	PROP_QUERY_MODEL,
+	PROP_SOURCELIST_GROUP
 };
 
 enum
@@ -205,6 +207,14 @@ rb_source_class_init (RBSourceClass *klass)
 							      "RhythmDBQueryModel object",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_SOURCELIST_GROUP,
+					 g_param_spec_enum ("sourcelist-group",
+						 	    "sourcelist group",
+							    "sourcelist group",
+							    RB_TYPE_SOURCELIST_GROUP,
+							    RB_SOURCELIST_GROUP_FIXED,
+							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
@@ -354,6 +364,9 @@ rb_source_set_property (GObject *object,
 		/* g_object_notify (G_OBJECT (source), "query-model"); */
 		rb_source_notify_status_changed (source);
 		break;
+	case PROP_SOURCELIST_GROUP:
+		priv->sourcelist_group = g_value_get_enum (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -393,6 +406,9 @@ rb_source_get_property (GObject *object,
 	}
 	case PROP_QUERY_MODEL:
 		g_value_set_object (value, priv->query_model);
+		break;
+	case PROP_SOURCELIST_GROUP:
+		g_value_set_enum (value, priv->sourcelist_group);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1084,3 +1100,22 @@ rb_source_eof_type_get_type (void)
 	return etype;
 }
 
+GType
+rb_sourcelist_group_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0) {
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SOURCELIST_GROUP_FIXED, "Fixed single instance source"),
+			ENUM_ENTRY (RB_SOURCELIST_GROUP_PERSISTANT, "Persistant multiple-instance source"),
+			ENUM_ENTRY (RB_SOURCELIST_GROUP_REMOVABLE, "Source representing a removable device"),
+			ENUM_ENTRY (RB_SOURCELIST_GROUP_TRANSIENT, "Transient source (eg. network shares)"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBSourcelistGroupType", values);
+	}
+
+	return etype;
+}
