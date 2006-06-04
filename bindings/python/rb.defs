@@ -1588,21 +1588,3 @@
   )
 )
 
-;; From ../../lib/rb-debug.h
-
-(define-function rb_debug_enabled
-  (c-name "rb_debug_enabled")
-  (return-type "gboolean")
-)
-
-(define-function rb_debug_real
-  (c-name "rb_debug_real")
-  (return-type "none")
-  (parameters
-    '("const-char*" "func")
-    '("const-char*" "file")
-    '("int" "line")
-    '("const-char*" "format")
-  )
-)
-
