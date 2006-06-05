@@ -5,7 +5,6 @@ glade_DATA =	general-prefs.glade	  	\
 		podcast-prefs.glade		\
 		song-info.glade			\
 		song-info-multiple.glade	\
-		load-failure.glade		\
 		station-new.glade		\
 		station-properties.glade	\
 		podcast-feed-properties.glade	\
