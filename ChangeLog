@@ -1,5 +1,12 @@
 2006-06-06  James Livingston  <doclivingston@gmail.com>
 
+	* tests/test-rhythmdb.c: (test_rhythmdb_setup),
+	(test_rhythmdb_shutdown), (START_TEST): add message strings to all
+	fail_{if/unless} calls, as some versions of check need them (they are
+	optional in others). Should fix bug 343718.
+
+2006-06-06  James Livingston  <doclivingston@gmail.com>
+
 	* lib/rb-debug.c: (rb_profiler_new): fix if statement, from bug
 	343836.
 	
