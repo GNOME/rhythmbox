@@ -1,5 +1,11 @@
 2006-06-06  James Livingston  <doclivingston@gmail.com>
 
+	* lib/Makefile.am:
+	* tests/test-rhythmdb.c: undo accidental commit which caused
+	rb-thread.c to be built (which it isn't normally)
+
+2006-06-06  James Livingston  <doclivingston@gmail.com>
+
 	* tests/test-rhythmdb.c: (test_rhythmdb_setup),
 	(test_rhythmdb_shutdown), (START_TEST): add message strings to all
 	fail_{if/unless} calls, as some versions of check need them (they are

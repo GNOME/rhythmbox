@@ -4,7 +4,6 @@
 
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
-#include "rb-thread.h"
 #include "rb-util.h"
 
 #include "rhythmdb.h"

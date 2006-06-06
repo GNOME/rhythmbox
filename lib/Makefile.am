@@ -29,8 +29,6 @@ librb_la_SOURCES =					\
 	rb-preferences.h				\
 	md5.c						\
 	md5.h						\
-	rb-thread.h					\
-	rb-thread.c					\
 	rb-proxy-config.c				\
 	rb-proxy-config.h
 
