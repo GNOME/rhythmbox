@@ -338,10 +338,8 @@ process_actions (gpointer data)
 {
 	RBThread *thread = data;
 	gpointer action;
-	guint actions;
 	GPtrArray *results;
 	GSource *source;
-	guint id;
 	struct RBThreadResultData *resultdata;
 
 	/* Invoke the action function on our queued actions, gathering results */

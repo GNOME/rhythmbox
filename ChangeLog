@@ -1,3 +1,13 @@
+2006-06-06  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-debug.c: (rb_profiler_new): fix if statement, from bug
+	343836.
+	
+	* lib/Makefile.am:
+	* lib/rb-thread.c: (process_actions):
+	* tests/test-rhythmdb.c: (START_TEST): fix distcheck, and disable
+	tests that don't pass.
+
 2006-06-05  James Livingston  <doclivingston@gmail.com>
 
 	* data/glade/Makefile.am:

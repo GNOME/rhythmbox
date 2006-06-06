@@ -185,7 +185,7 @@ rb_profiler_new (const char *name)
 {
 	RBProfiler *profiler;
 	
-	if (debug_match == FALSE)
+	if (debug_match == NULL)
 		return NULL;
 
 	profiler = g_new0 (RBProfiler, 1);
