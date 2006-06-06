@@ -4,7 +4,7 @@ AC_PREREQ(2.53)
 AC_INIT(shell)
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.9.4)
+AM_INIT_AUTOMAKE(rhythmbox, 0.9.4.90)
 
 AM_MAINTAINER_MODE
 
@@ -227,22 +227,23 @@ fi
 
 dnl transfers
 AC_ARG_ENABLE(track-transfer,
-	      AC_HELP_STRING([--enable-track-transfer],
-			     [Enable track transfer support in rhythmbox **EXPERIMENTAL**]))
-if test x"$enable_track_transfer" = xyes; then
-   AC_MSG_WARN([Track transfer support is experimental, and may corrupt files, use at your own risk])
+	      AC_HELP_STRING([--disable-track-transfer],
+			     [Enable track transfer support in rhythmbox]))
+if test x"$enable_track_transfer" != xno; then
    PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
-   gnome-media-profiles, 
-   have_gnome_media_profiles=yes,
-   have_gnome_media_profiles=no)
+      gnome-media-profiles >= 2.8, 
+      with_track_transfer=yes,
+      with_track_transfer=no)
 
-   if test x$have_gnome_media_profiles = xno; then
+   if test "x$with_track_transfer" = xno -a "x$enable_track_transfer" = xyes; then
       AC_MSG_ERROR([Track transfer support explicitly requested but gnome-media-profiles not found.])
    fi
 
-   AC_DEFINE(ENABLE_TRACK_TRANSFER, 1, [Define if track transfer should be enabled])
+   if test "x$with_track_transfer" = xyes; then
+      AC_DEFINE(ENABLE_TRACK_TRANSFER, 1, [Define if track transfer should be enabled])
+   fi
 fi
-AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$have_gnome_media_profiles" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
 
 
 dnl Audioscrobbler
@@ -252,8 +253,8 @@ AC_ARG_ENABLE(audioscrobbler,
 
 dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
-	      AC_HELP_STRING([--enable-daap],
-			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox **EXPERIMENTAL**]))
+	      AC_HELP_STRING([--disable-daap],
+			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox]))
 
 AC_ARG_WITH(mdns,
    AC_HELP_STRING([--with-mdns=auto|howl|avahi],
@@ -935,8 +936,8 @@ if test x"$enable_tag_writing" = xyes; then
 else
 	AC_MSG_NOTICE([   Tag writing is disabled])
 fi
-if test x"$enable_track_transfer" = xyes; then
-        AC_MSG_NOTICE([** Track transfer is enabled - USE AT YOUR OWN RISK])
+if test x"$with_track_transfer" = xyes; then
+        AC_MSG_NOTICE([** Track transfer is enabled])
 else
 	AC_MSG_NOTICE([   Track transfer is disabled])
 fi

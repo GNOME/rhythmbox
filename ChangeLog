@@ -1,5 +1,14 @@
 2006-06-06  James Livingston  <doclivingston@gmail.com>
 
+	* configure.ac: bump version for a prerelease, turn on track transfer
+	by default.
+
+	* sources/rb-ipod-source.c: (rb_ipod_source_class_init): disable the
+	ipod transfer stuff, since it has big issues and we'll hopefully land
+	real support (bug 310774) after 0.9.5
+
+2006-06-06  James Livingston  <doclivingston@gmail.com>
+
 	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger): actually use
 	id3v2mux once we've detected it.
 
