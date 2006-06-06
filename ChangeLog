@@ -1,5 +1,10 @@
 2006-06-06  James Livingston  <doclivingston@gmail.com>
 
+	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger): actually use
+	id3v2mux once we've detected it.
+
+2006-06-06  James Livingston  <doclivingston@gmail.com>
+
 	* lib/Makefile.am:
 	* tests/test-rhythmdb.c: undo accidental commit which caused
 	rb-thread.c to be built (which it isn't normally)

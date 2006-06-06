@@ -199,7 +199,7 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 
 	demux = gst_element_factory_make ("id3demux", NULL);
 
-	/*mux = gst_element_factory_make ("id3v2mux", NULL);*/
+	mux = gst_element_factory_make ("id3v2mux", NULL);
 	if (mux == NULL) {
 		mux =  gst_element_factory_make ("id3mux", NULL);
 
