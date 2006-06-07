@@ -319,7 +319,7 @@ rb_playlist_manager_playlist_entries_changed (GtkTreeModel *model, RhythmDBEntry
 	num_tracks = gtk_tree_model_iter_n_children (model, NULL);
 
 	action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
-	gtk_action_set_visible (action, (num_tracks > 0));
+	gtk_action_set_sensitive (action, (num_tracks > 0));
 }
 
 static void
@@ -391,6 +391,8 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 					      "MusicPlaylistRenamePlaylist");
 	gtk_action_set_visible (action, can_rename);
 
+	action = gtk_action_group_get_action (mgr->priv->actiongroup,
+					      "MusicPlaylistBurnPlaylist");
 	if (playlist_active && rb_recorder_enabled ()) {
 		RhythmDBQueryModel *model;
 
@@ -401,15 +403,14 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 					 G_CALLBACK (rb_playlist_manager_playlist_row_inserted_cb),
 					 mgr, 0);
 		g_signal_connect_object (G_OBJECT (model),
-					 "entry-removed",
+					 "post-entry-delete",
 					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
 					 mgr, 0);
 
 		rb_playlist_manager_playlist_entries_changed (GTK_TREE_MODEL (model), NULL, mgr);
 		g_object_unref (model);
+		gtk_action_set_visible (action, TRUE);
 	} else {
-		action = gtk_action_group_get_action (mgr->priv->actiongroup,
-						      "MusicPlaylistBurnPlaylist");
 		gtk_action_set_visible (action, FALSE);
 	}
 }

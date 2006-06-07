@@ -1,5 +1,13 @@
 2006-06-07  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_playlist_entries_changed),
+	(rb_playlist_manager_set_source): use the "post-entry-delete" signal
+	instead of "row-removed", which fixes updating "burn playlist"
+	sensitivity. Fixes #331119.
+
+2006-06-07  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-player.c: (rb_shell_player_error): display errors
 	rather than restarting if the source uses _RETRY and there is an
 	actual error (like an undecodable stream) rather than it just dropping
