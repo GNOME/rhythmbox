@@ -10,6 +10,12 @@
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
 
+#ifndef fail_if
+#define fail_if(expr, ...)\
+        _fail_unless(!(expr), __FILE__, __LINE__,\
+        "Failure '"#expr"' occured" , ## __VA_ARGS__, NULL)
+#endif
+
 
 /* test utils */
 gboolean waiting, signaled;

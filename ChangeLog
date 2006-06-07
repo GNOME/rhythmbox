@@ -1,5 +1,10 @@
 2006-06-07  James Livingston  <doclivingston@gmail.com>
 
+	* tests/test-rhythmdb.c: #define fail_if for old version of check
+	which don't have it. Hopefully fixes #343718.
+
+2006-06-07  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_cmd_edit_automatic_playlist): don't call
 	g_value_array_free with NULL. Fixes #341053.
