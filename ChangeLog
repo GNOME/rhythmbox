@@ -1,3 +1,8 @@
+2006-06-08  James Livingston  <doclivingston@gmail.com>
+
+	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger): check for backwards
+	tag-merging with id3v2mux as well as id3mux. From #342330.
+
 2006-06-07  James Livingston  <doclivingston@gmail.com>
 
 	* tests/test-rhythmdb.c: #define fail_if for old version of check

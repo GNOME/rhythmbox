@@ -200,7 +200,11 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 	demux = gst_element_factory_make ("id3demux", NULL);
 
 	mux = gst_element_factory_make ("id3v2mux", NULL);
-	if (mux == NULL) {
+	if (mux != NULL) {
+		/* check for backwards id3v2mux merge-mode */
+		if (!rb_gst_plugin_greater ("id3v2mux", 0, 10, 3))
+			gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
+	} else {
 		mux =  gst_element_factory_make ("id3mux", NULL);
 
 		/* check for backwards id3mux merge-mode */
