@@ -931,9 +931,14 @@ rb_player_gst_seekable (RBPlayer *player)
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 #ifdef HAVE_GSTREAMER_0_10
 	query = gst_query_new_seeking (GST_FORMAT_TIME);
-	g_return_val_if_fail (gst_element_query (mp->priv->playbin, query),
-	    FALSE);
-	gst_query_parse_seeking (query, NULL, &can_seek, NULL, NULL);
+	if (gst_element_query (mp->priv->playbin, query)) {
+		gst_query_parse_seeking (query, NULL, &can_seek, NULL, NULL);
+	} else {
+		gst_query_unref (query);
+
+		query = gst_query_new_duration (GST_FORMAT_TIME);
+		can_seek = gst_element_query (mp->priv->playbin, query);
+	}
 	gst_query_unref (query);
 #endif
 

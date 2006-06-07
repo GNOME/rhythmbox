@@ -1,3 +1,9 @@
+2006-06-07  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-player-gst.c: check if we have a duration if
+	the seeking query fails. This is needed because many gst elements
+	don't implement the seeking query yet. Should fix 329977.
+
 2006-06-06  James Livingston  <doclivingston@gmail.com>
 
 	* configure.ac: bump version for a prerelease, turn on track transfer
