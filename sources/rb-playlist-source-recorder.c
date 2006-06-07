@@ -885,12 +885,13 @@ response_cb (GtkDialog *dialog,
 
         /* Act only on response IDs we recognize */
         if (!(response_id == GTK_RESPONSE_ACCEPT
-              || response_id == GTK_RESPONSE_CANCEL)) {
+              || response_id == GTK_RESPONSE_CANCEL
+	      || response_id == GTK_RESPONSE_DELETE_EVENT)) {
                 g_signal_stop_emission_by_name (dialog, "response");
                 return;
         }
 
-        if (response_id == GTK_RESPONSE_CANCEL) {
+        if (response_id == GTK_RESPONSE_CANCEL || response_id == GTK_RESPONSE_DELETE_EVENT) {
                 if (source->priv->burning
                     && !source->priv->confirmed_exit) {
                         GtkWidget *interrupt_dialog;
