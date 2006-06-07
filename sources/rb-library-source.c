@@ -1066,6 +1066,7 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	if (list == NULL || layout_path == NULL || layout_filename == NULL || preferred_format == NULL) {
 		/* emit warning */
 		rb_debug ("Could not retrieve settings from GConf");
+		g_slist_free (list);
 		return NULL;
 	}
 
@@ -1121,13 +1122,17 @@ impl_can_paste (RBSource *asource)
 {
 #ifdef ENABLE_TRACK_TRANSFER
 	GSList *list;
+	gboolean can_paste = TRUE;
 
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
-	if (list == NULL)
-		return FALSE;
+	can_paste = ((list != NULL) &&
+		     (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH) != NULL ) &&
+		     (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME) != NULL) &&
+		     (eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT) != NULL));
+
 
 	g_slist_free (list);
-	return TRUE;
+	return can_paste;
 #else
 	return FALSE;
 #endif
@@ -1146,7 +1151,18 @@ impl_paste (RBSource *asource, GList *entries)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	RBRemovableMediaManager *rm_mgr;
 	GList *l;
+	GSList *sl;
 	RBShell *shell;
+
+	sl = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+	if ((sl == NULL) ||
+	    (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH) == NULL )||
+	    (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME) == NULL) ||
+	    (eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT) == NULL)) {
+		g_slist_free (sl);
+		g_warning ("RBLibrarySource impl_paste called when gconf keys unset");
+		return;
+	}
 
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "removable-media-manager", &rm_mgr, NULL);

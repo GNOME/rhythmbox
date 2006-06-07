@@ -2463,10 +2463,18 @@ rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 	if (entry && async)
 		rb_shell_player_set_entry_playback_error (player, entry, err->message);
 
-	if (err->code == RB_PLAYER_ERROR_NO_AUDIO)
+	if (err->code == RB_PLAYER_ERROR_NO_AUDIO) {
+		/* stream has completely ended */
 		rb_shell_player_set_playing_source (player, NULL);
-	else if (player->priv->do_next_idle_id == 0)
+	} else if (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_RETRY) {
+		/* receiving an error means a broken stream or non-audio stream, so abort */
+		rb_error_dialog (NULL, 
+				 _("Couldn't start playback"), 
+				 "%s", (err) ? err->message : "(null)");
+		rb_shell_player_set_playing_source (player, NULL);
+	} else if (player->priv->do_next_idle_id == 0) {
 		player->priv->do_next_idle_id = g_idle_add ((GSourceFunc)do_next_idle, player);
+	}
 
 	player->priv->handling_error = FALSE;
 }

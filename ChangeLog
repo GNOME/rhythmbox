@@ -1,5 +1,12 @@
 2006-06-07  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-player.c: (rb_shell_player_error): display errors
+	rather than restarting if the source uses _RETRY and there is an
+	actual error (like an undecodable stream) rather than it just dropping
+	out and causing EOS.
+
+2006-06-07  James Livingston  <doclivingston@gmail.com>
+
 	* widgets/rb-rating-helper.c: (rb_rating_pixbufs_free): don't try to
 	free the pixbufs if they couldn't be loaded. Fixed #343852.
 
