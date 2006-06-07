@@ -33,9 +33,12 @@ struct _RBRatingPixbufs {
 void
 rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs)
 {
-	g_object_unref (G_OBJECT (pixbufs->pix_star));
-	g_object_unref (G_OBJECT (pixbufs->pix_dot));
-	g_object_unref (G_OBJECT (pixbufs->pix_blank));
+	if (pixbufs->pix_star)
+		g_object_unref (G_OBJECT (pixbufs->pix_star));
+	if (pixbufs->pix_dot)
+		g_object_unref (G_OBJECT (pixbufs->pix_dot));
+	if (pixbufs->pix_blank)
+		g_object_unref (G_OBJECT (pixbufs->pix_blank));
 }
 
 void 
