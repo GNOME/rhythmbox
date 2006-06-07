@@ -964,7 +964,7 @@ layout_example_label_update (RBLibrarySource *source)
 	format = g_strconcat ("<small><i><b>Example Path:</b> ",
 			      example,
 			      ".",
-			      profile ? gm_audio_profile_get_extension (profile) : "ogg"
+			      profile ? gm_audio_profile_get_extension (profile) : "ogg",
 			      "</i></small>", NULL);
 	g_free (example);
   
