@@ -1,3 +1,13 @@
+2006-06-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-sourcelist-model.c: (path_is_droppable),
+	(path_is_reorderable):
+	* sources/rb-sourcelist.c: (rb_sourcelist_selection_changed_cb),
+	(row_activated_cb), (emit_show_popup), (key_release_cb),
+	(rb_sourcelist_title_cell_data_func), (source_name_edited_cb):
+	Ignore group marker rows in the source list.  Fixes #344089, a couple
+	of other crashers, and some weird UI glitches too.
+
 2006-06-07  James Livingston  <doclivingston@gmail.com>
 
 	* backends/gstreamer/rb-player-gst.c: check if we have a duration if

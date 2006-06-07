@@ -599,6 +599,8 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 	
 	gtk_tree_model_get (cindy, &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	if (target == NULL)
+		return;
 	g_return_if_fail (RB_IS_SOURCE (target));
 	source = target;
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SELECTED], 0, source);
@@ -627,7 +629,8 @@ row_activated_cb (GtkTreeView *treeview,
 	g_return_if_fail (gtk_tree_model_get_iter (model, &iter, path));
 	gtk_tree_model_get (model, &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 
-	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
+	if (target)
+		g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
 }
 
 static gboolean
@@ -644,6 +647,8 @@ emit_show_popup (GtkTreeView *treeview,
 
 	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	if (target == NULL)
+		return FALSE;
 	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
 
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
@@ -695,6 +700,9 @@ key_release_cb (GtkTreeView *treeview,
 	
 	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	if (target == NULL)
+		return FALSE;
+
 	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
 	if (rb_source_can_rename (target)) {
 		rb_sourcelist_edit_source_name (sourcelist, target);
@@ -788,13 +796,11 @@ rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *
 				    GtkTreeModel *tree_model, GtkTreeIter *iter,
 				    RBSourceList *sourcelist)
 {
-	RBSource *source;
 	char *str;
 	gboolean playing;
 	
 	gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->filter_model), iter,
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
 			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, &playing,
 			    -1);
 
@@ -822,6 +828,9 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 						   &iter, path));
 	gtk_tree_model_get (sourcelist->priv->filter_model,
 			    &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+	if (source == NULL)
+		return;
+
 	g_object_set (G_OBJECT (source), "name", text, NULL);
 
 	gtk_tree_path_free (path);
