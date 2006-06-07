@@ -1,6 +1,12 @@
 2006-06-07  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_edit_automatic_playlist): don't call
+	g_value_array_free with NULL. Fixes #341053.
+
+2006-06-07  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_playlist_entries_changed),
 	(rb_playlist_manager_set_source): use the "post-entry-delete" signal
 	instead of "row-removed", which fixes updating "burn playlist"

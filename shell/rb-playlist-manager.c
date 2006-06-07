@@ -1101,7 +1101,8 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 									     query,
 									     limit_type, limit_value,
 									     sort_key, sort_direction));
-		g_value_array_free (limit_value);
+		if (limit_value)
+			g_value_array_free (limit_value);
 		rhythmdb_query_free (query);
 
 		data = g_new0 (EditAutoPlaylistData, 1);
