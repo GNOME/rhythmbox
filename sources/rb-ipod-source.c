@@ -68,7 +68,7 @@ static GList* impl_get_ui_actions (RBSource *source);
 static gboolean hal_udi_is_ipod (const char *udi);
 #endif
 
-#if 0
+#ifdef ENABKE_IPOD_WRITING
 static void impl_paste (RBSource *source, GList *entries);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static gchar *
@@ -109,7 +109,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
    	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
-#if 0
+#ifdef ENABLE_IPOD_WRITING
   	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
   	source_class->impl_paste = impl_paste;
   	source_class->impl_receive_drag = impl_receive_drag;
@@ -309,7 +309,7 @@ load_ipod_playlists (RBiPodSource *source)
 
 }
 
-#if 0
+#ifdef ENABLE_IPOD_WRITING
 static Itdb_Track *
 create_ipod_song_from_entry (RhythmDBEntry *entry)
 {
@@ -854,7 +854,7 @@ itdb_schedule_save (Itdb_iTunesDB *db)
 }
 
 
-#if 0
+#ifdef ENABLE_IPOD_WRITING
 static char *
 build_filename (RBSource *asource, RhythmDBEntry *entry)
 {

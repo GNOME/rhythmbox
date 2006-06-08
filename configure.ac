@@ -245,6 +245,21 @@ if test x"$enable_track_transfer" != xno; then
 fi
 AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
 
+dnl ipod writing
+AC_ARG_ENABLE(ipod-writing,
+	      AC_HELP_STRING([--enable-ipod-writing],
+			     [Enable support for writing to ipods in rhythmbox **EXPERIMENTAL**]))
+if test x"$enable_ipod_writing" = xyes; then
+   if test "x$use_ipod" != xyes -a "x$enable_ipod_writing" = xyes; then
+      AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
+   fi
+   if test "x$with_track_transfer" != xyes -a "x$enable_ipod_writing" = xyes; then
+      AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
+   fi
+   AC_MSG_WARN([iPod writing support is experimental, and may corrupt iPod databases, use at your own risk])
+   AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
+fi
+
 
 dnl Audioscrobbler
 AC_ARG_ENABLE(audioscrobbler,
@@ -940,6 +955,11 @@ if test x"$with_track_transfer" = xyes; then
         AC_MSG_NOTICE([** Track transfer is enabled])
 else
 	AC_MSG_NOTICE([   Track transfer is disabled])
+fi
+if test x"$enable_ipod_writing" = xyes; then
+        AC_MSG_NOTICE([** iPod write support is enabled])
+else
+	AC_MSG_NOTICE([   iPod write support is disabled])
 fi
 if test x"$enable_mmkeys" != "xyes"; then
 	AC_MSG_NOTICE([   Multimedia keys support is disabled])
