@@ -433,7 +433,9 @@ scroll_row_timeout (gpointer data)
 	value = CLAMP (vadj->value + offset, vadj->lower, vadj->upper - vadj->page_size);
 	gtk_adjustment_set_value (vadj, value);
 
-	remove_select_on_drag_timeout(tree_view);
+	/* don't remove it if we're on the edge and not scrolling */
+	if (ABS (vadj->value - value) > 0.0001)
+		remove_select_on_drag_timeout(tree_view);
 
 	GDK_THREADS_LEAVE ();
 

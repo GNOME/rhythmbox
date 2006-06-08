@@ -68,7 +68,7 @@ static GList* impl_get_ui_actions (RBSource *source);
 static gboolean hal_udi_is_ipod (const char *udi);
 #endif
 
-#ifdef ENABKE_IPOD_WRITING
+#ifdef ENABLE_IPOD_WRITING
 static void impl_paste (RBSource *source, GList *entries);
 static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 static gchar *

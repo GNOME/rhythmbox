@@ -1,5 +1,12 @@
 2006-06-08  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-tree-dnd.c: (scroll_row_timeout): fix "select on drag hover"
+	for sources on the edge (i.e. the queue). Fixes #328409.
+
+	* sources/rb-ipod-source.c: fix typo
+
+2006-06-08  James Livingston  <doclivingston@gmail.com>
+
 	* configure.ac:
 	* sources/rb-ipod-source.c: (rb_ipod_source_class_init): add a
 	--enable-ipod-writing to enable the ipod syncing code.
