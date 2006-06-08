@@ -1,3 +1,12 @@
+2006-06-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-file-helpers.c: (rb_canonicalise_uri):
+	Return input string untouched if gnome_vfs_uri_new returns NULL.
+	* sources/rb-static-playlist-source.c: (impl_receive_drag),
+	(rb_static_playlist_source_add_list_uri):
+	Use rb_uri_list_parse rather than gnome_vfs_uri_list_parse so DAAP
+	URIs don't break it.  Fixes #339033.
+
 2006-06-08  James Livingston  <doclivingston@gmail.com>
 
 	* lib/rb-tree-dnd.c: (scroll_row_timeout): fix "select on drag hover"

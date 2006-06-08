@@ -472,12 +472,11 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);
 
         if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
-                list = gnome_vfs_uri_list_parse ((char *) data->data);
-
-                if (list != NULL)
-                        rb_static_playlist_source_add_list_uri (source, list);
-                else
-                        return FALSE;
+		list = rb_uri_list_parse ((char *)data->data);
+		if (list != NULL) {
+			rb_static_playlist_source_add_list_uri (source, list);
+		} else 
+			return FALSE;
 	}
 
         return TRUE;
@@ -522,13 +521,12 @@ rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
 	g_return_if_fail (list != NULL);
 
 	for (i = list; i != NULL; i = g_list_next (i)) {
-		char *uri = gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0);
+		char *uri = (char *) i->data;
 		uri_list = g_list_prepend (uri_list, rb_canonicalise_uri (uri));
-		g_free (uri);
 	}
 	uri_list = g_list_reverse (uri_list);
 
-	gnome_vfs_uri_list_free (list);
+	rb_list_deep_free (list);
 
 	if (uri_list == NULL)
 		return;

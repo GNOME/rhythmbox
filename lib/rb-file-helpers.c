@@ -746,7 +746,10 @@ rb_canonicalise_uri (const char *uri)
 			gnome_vfs_uri_unref (vfsuri);
 			result = g_strdup (uri);
 		} else {
+			/* this may just mean that gnome-vfs doesn't recognise the
+			 * uri scheme, so return it as is */
 			rb_debug ("Error processing probable URI %s", uri);
+			result = g_strdup (uri);
 		}
 	}
 
