@@ -1506,7 +1506,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 
 			entry = g_sequence_ptr_get_data (iter.user_data);
 
-			location = rhythmdb_entry_get_playback_uri (entry);
+			location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 			if (location == NULL)
 				continue;
 
