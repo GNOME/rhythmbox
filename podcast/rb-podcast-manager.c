@@ -589,7 +589,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	g_free (conf_dir_name);
 
 	 if (!g_file_test (dir_name, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
-		if (!g_mkdir_with_parents (dir_name, 0750)) {
+		if (g_mkdir_with_parents (dir_name, 0750) == -1) {
 			rb_debug ("Error downloading podcast: could not create local dirs %s", dir_name);
 			goto next_step;
 		}
