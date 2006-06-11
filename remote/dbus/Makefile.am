@@ -13,6 +13,7 @@ INCLUDES = 						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
 	-I$(top_srcdir)/shell                        	\
+	-I$(top_builddir)/shell                        	\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
