@@ -48,6 +48,8 @@ AC_CHECK_LIB(glib-2.0, g_utf8_collate_key_for_filename,
 
 PKG_PROG_PKG_CONFIG
 
+PKG_CHECK_MODULES(RB_CLIENT, gnome-vfs-2.0 >= $GNOME_VFS_REQS)
+
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
 		  libgnomeui-2.0			\
@@ -584,6 +586,8 @@ AC_PATH_PROG(GCONFTOOL, gconftool-2)
 
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
+AC_SUBST(RB_CLIENT_CFLAGS)
+AC_SUBST(RB_CLIENT_LIBS)
 
 AC_TRY_RUN([#include <time.h>
                 int main ()
@@ -613,8 +617,6 @@ AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
   MKINSTALLDIRS="mkinstalldirs"
 fi
 AC_SUBST(MKINSTALLDIRS)
-
-AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
 AS_AC_EXPAND(DATADIR, $datadir)
 
@@ -931,6 +933,8 @@ doc/Makefile
 doc/reference/Makefile
 backends/Makefile
 backends/gstreamer/Makefile
+remote/Makefile
+remote/dbus/Makefile
 ])
 
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])

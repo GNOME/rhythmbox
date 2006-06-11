@@ -1,5 +1,16 @@
 2006-06-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* Makefile.am:
+	* configure.ac:
+	* remote/Makefile.am:
+	* remote/dbus/Makefile.am:
+	* remote/dbus/rb-client.c:
+	* shell/Makefile.am:
+	New dbus client program providing --play/--next etc. arguments.
+	Fixes #340863, #155763.
+
+2006-06-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post):
 	g_mkdir_with_parents returns -1 on error, not 0.  Fixes #344316.
 
