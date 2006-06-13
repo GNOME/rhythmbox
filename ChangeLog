@@ -1,3 +1,13 @@
+2006-06-13  William Jon McCann  <mccann@jhu.edu>
+
+	* widgets/rb-rating-helper.c: (rb_rating_render_stars),
+	(rb_rating_get_rating_from_widget):
+	* widgets/rb-rating.c: (rb_rating_class_init),
+	(rb_rating_finalize), (rb_rating_get_property),
+	(rb_rating_set_property), (rb_rating_new), (rb_rating_expose),
+	(rb_rating_button_press_cb):
+	Don't crash when ratings icons can't be found.  Fixes #344533.
+
 2006-06-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* remote/dbus/Makefile.am: Fix build with builddir != srcdir.

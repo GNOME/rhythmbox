@@ -20,10 +20,10 @@
  *
  */
 
+#include "config.h"
+
 #include <string.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkiconfactory.h>
+#include <gtk/gtk.h>
 
 #include "rb-rating.h"
 #include "rb-rating-helper.h"
@@ -54,8 +54,8 @@ static void rb_rating_set_property (GObject *object,
 				    GParamSpec *pspec);
 static void rb_rating_size_request (GtkWidget *widget,
 				    GtkRequisition *requisition);
-static gboolean rb_rating_expose(GtkWidget *widget, 
-				 GdkEventExpose *event);
+static gboolean rb_rating_expose (GtkWidget *widget,
+				  GdkEventExpose *event);
 static gboolean rb_rating_button_press_cb (GtkWidget *widget,
 					   GdkEventButton *event,
 					   RBRating *rating);
@@ -91,7 +91,7 @@ rb_rating_class_init (RBRatingClass *klass)
 	GtkWidgetClass *widget_class;
 
 	widget_class = (GtkWidgetClass*) klass;
-	
+
 	object_class->finalize = rb_rating_finalize;
 	object_class->get_property = rb_rating_get_property;
 	object_class->set_property = rb_rating_set_property;
@@ -101,7 +101,7 @@ rb_rating_class_init (RBRatingClass *klass)
 
 	rb_rating_install_rating_property (object_class, PROP_RATING);
 
-	rb_rating_signals[RATED] = 
+	rb_rating_signals[RATED] =
 		g_signal_new ("rated",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
@@ -136,7 +136,10 @@ rb_rating_finalize (GObject *object)
 	RBRating *rating;
 
 	rating = RB_RATING (object);
-	rb_rating_pixbufs_free (rating->priv->pixbufs);
+
+	if (rating->priv->pixbufs != NULL) {
+		rb_rating_pixbufs_free (rating->priv->pixbufs);
+	}
 
 	G_OBJECT_CLASS (rb_rating_parent_class)->finalize (object);
 }
@@ -148,7 +151,7 @@ rb_rating_get_property (GObject *object,
 			GParamSpec *pspec)
 {
 	RBRating *rating = RB_RATING (object);
-  
+
 	switch (param_id) {
 	case PROP_RATING:
 		g_value_set_double (value, rating->priv->rating);
@@ -167,7 +170,7 @@ rb_rating_set_property (GObject *object,
 			GParamSpec *pspec)
 {
 	RBRating *rating= RB_RATING (object);
-  
+
 	switch (param_id) {
 	case PROP_RATING:
 		rating->priv->rating = g_value_get_double (value);
@@ -183,11 +186,11 @@ RBRating *
 rb_rating_new ()
 {
 	RBRating *rating;
-  
+
 	rating = g_object_new (RB_TYPE_RATING, NULL, NULL);
 
 	g_return_val_if_fail (rating->priv != NULL, NULL);
-  
+
 	return rating;
 }
 
@@ -206,24 +209,27 @@ rb_rating_size_request (GtkWidget *widget,
 }
 
 static gboolean
-rb_rating_expose (GtkWidget *widget, 
+rb_rating_expose (GtkWidget *widget,
 		  GdkEventExpose *event)
 {
 	int icon_size;
+	gboolean ret;
 
 	g_return_val_if_fail (RB_IS_RATING (widget), FALSE);
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
+
+	ret = FALSE;
 
 	if (GTK_WIDGET_DRAWABLE (widget) == TRUE) {
 		RBRating *rating = RB_RATING (widget);
 
 		/* make the widget prettier */
 		gtk_paint_flat_box (widget->style, widget->window,
-				  GTK_STATE_NORMAL, GTK_SHADOW_IN,
-				  NULL, widget, "entry_bg", 0, 0,
-				  widget->allocation.width,
-				  widget->allocation.height);
+				    GTK_STATE_NORMAL, GTK_SHADOW_IN,
+				    NULL, widget, "entry_bg", 0, 0,
+				    widget->allocation.width,
+				    widget->allocation.height);
 
 		gtk_paint_shadow (widget->style, widget->window,
 				  GTK_STATE_NORMAL, GTK_SHADOW_IN,
@@ -233,13 +239,18 @@ rb_rating_expose (GtkWidget *widget,
 
 
 		/* draw the stars */
-		return rb_rating_render_stars (widget, widget->window, 
-					       rating->priv->pixbufs, 0, 0, 
-					       X_OFFSET, Y_OFFSET,
-					       rating->priv->rating, FALSE);
+		if (rating->priv->pixbufs != NULL) {
+			ret = rb_rating_render_stars (widget,
+						      widget->window,
+						      rating->priv->pixbufs,
+						      0, 0,
+						      X_OFFSET, Y_OFFSET,
+						      rating->priv->rating,
+						      FALSE);
+		}
 	}
 
-	return FALSE;
+	return ret;
 }
 
 static gboolean
@@ -255,15 +266,15 @@ rb_rating_button_press_cb (GtkWidget *widget,
 
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
 
-	new_rating = rb_rating_get_rating_from_widget (widget, mouse_x, 
-						       widget->allocation.width, 
+	new_rating = rb_rating_get_rating_from_widget (widget, mouse_x,
+						       widget->allocation.width,
 						       rating->priv->rating);
 
 	if (new_rating == -1.0) {
 		return FALSE;
 	} else {
-		g_signal_emit (G_OBJECT (rating), 
-			       rb_rating_signals[RATED], 
+		g_signal_emit (G_OBJECT (rating),
+			       rb_rating_signals[RATED],
 			       0, new_rating);
 		return TRUE;
 	}

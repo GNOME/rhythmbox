@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of functions shared by the rating widget and cell renderer.
  *
  *  Copyright (C) 2004 Christophe Fergeau <teuf@gnome.org>
@@ -41,7 +42,7 @@ rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs)
 		g_object_unref (G_OBJECT (pixbufs->pix_blank));
 }
 
-void 
+void
 rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
 {
 	g_object_class_install_property (klass, prop,
@@ -109,13 +110,22 @@ rb_rating_pixbufs_new (void)
 }
 
 gboolean
-rb_rating_render_stars (GtkWidget *widget, GdkWindow *window, 
+rb_rating_render_stars (GtkWidget *widget,
+			GdkWindow *window,
 			RBRatingPixbufs *pixbufs,
-			gulong x, gulong y, gulong x_offset, gulong y_offset,
-			gdouble rating, gboolean selected)
+			gulong x,
+			gulong y,
+			gulong x_offset,
+			gulong y_offset,
+			gdouble rating,
+			gboolean selected)
 {
 	int i, icon_width;
 	gboolean rtl;
+
+	g_return_val_if_fail (widget != NULL, FALSE);
+	g_return_val_if_fail (window != NULL, FALSE);
+	g_return_val_if_fail (pixbufs != NULL, FALSE);
 
 	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
@@ -147,15 +157,20 @@ rb_rating_render_stars (GtkWidget *widget, GdkWindow *window,
 		else
 			buf = pixbufs->pix_blank;
 
+		if (buf == NULL) {
+			return FALSE;
+		}
+
 		buf = eel_create_colorized_pixbuf (buf,
 						   (widget->style->text[state].red + offset) >> 8,
 						   (widget->style->text[state].green + offset) >> 8,
 						   (widget->style->text[state].blue + offset) >> 8);
-		if (buf == NULL)
+		if (buf == NULL) {
 			return FALSE;
+		}
 
 		if (rtl) {
-			star_offset = (RB_RATING_MAX_SCORE-i-1) * icon_width;
+			star_offset = (RB_RATING_MAX_SCORE - i - 1) * icon_width;
 		} else {
 			star_offset = i * icon_width;
 		}
@@ -163,7 +178,7 @@ rb_rating_render_stars (GtkWidget *widget, GdkWindow *window,
 
 		gdk_pixbuf_render_to_drawable_alpha (buf,
 						     window,
-						     x, y, 
+						     x, y,
 						     x_offset + star_offset,
 						     y_offset,
 						     icon_width,
@@ -180,7 +195,8 @@ rb_rating_render_stars (GtkWidget *widget, GdkWindow *window,
 
 double
 rb_rating_get_rating_from_widget (GtkWidget *widget,
-				  gint widget_x, gint widget_width,
+				  gint widget_x,
+				  gint widget_width,
 				  double current_rating)
 {
 	int icon_width;
@@ -199,12 +215,12 @@ rb_rating_get_rating_from_widget (GtkWidget *widget,
 			rating = RB_RATING_MAX_SCORE - rating + 1;
 		}
 
-		if (rating < 0) 
+		if (rating < 0)
 			rating = 0;
 
 		if (rating > RB_RATING_MAX_SCORE)
 			rating = RB_RATING_MAX_SCORE;
-		
+
 		if (rating == current_rating) {
 			/* Make it possible to give a 0 rating to a song */
 			rating--;
