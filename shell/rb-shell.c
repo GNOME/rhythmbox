@@ -2415,10 +2415,13 @@ rb_shell_quit (RBShell *shell,
 {
 	rb_debug ("Quitting");
 
+	/* Stop the playing source, if any */
+	rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
+
 	rb_plugins_engine_shutdown ();
 
-	rb_podcast_source_shutdown (shell->priv->podcast_source);	
-	
+	rb_podcast_source_shutdown (shell->priv->podcast_source);
+
 #ifdef WITH_DAAP_SUPPORT
 	rb_daap_sources_shutdown (shell);
 	rb_daap_sharing_shutdown (shell);

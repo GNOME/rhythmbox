@@ -1,3 +1,8 @@
+2006-06-15  William Jon McCann  <mccann@jhu.edu>
+
+	* shell/rb-shell.c (rb_shell_quit): Unset the playing source
+	when quitting.  Fixes #344875.
+
 2006-06-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-play-order.c: (rb_play_order_post_entry_delete_cb):
