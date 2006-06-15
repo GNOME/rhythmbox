@@ -560,17 +560,19 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
 static void
 rb_play_order_post_entry_delete_cb (GtkTreeModel *model, RhythmDBEntry *entry, RBPlayOrder *porder)
 {
-	if (entry == porder->priv->playing_entry) {
-		rb_debug ("signaling playing_entry_removed");
-		g_signal_emit (G_OBJECT (porder), rb_play_order_signals[PLAYING_ENTRY_REMOVED],
-			       0, entry);
-	}
-	
+	gboolean is_playing_entry = (entry == porder->priv->playing_entry);
+
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
 
 	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
 		rb_play_order_update_have_next_previous (porder);
+
+	if (is_playing_entry) {
+		rb_debug ("signaling playing_entry_removed");
+		g_signal_emit (G_OBJECT (porder), rb_play_order_signals[PLAYING_ENTRY_REMOVED],
+			       0, entry);
+	}
 }
 
 static gboolean

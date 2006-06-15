@@ -1,3 +1,10 @@
+2006-06-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-play-order.c: (rb_play_order_post_entry_delete_cb):
+	Move the playing-entry-removed handling to after the normal entry
+	delete handling, since we're called after the entry has been removed
+	from the query model now.  Fixes crashes described in #344627.
+
 2006-06-13  William Jon McCann  <mccann@jhu.edu>
 
 	* widgets/rb-rating-helper.c: (rb_rating_render_stars),
