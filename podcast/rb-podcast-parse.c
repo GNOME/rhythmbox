@@ -303,6 +303,10 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
         case RB_PODCAST_PARSER_STATE_CHANNEL_PROPERTY:
         case RB_PODCAST_PARSER_STATE_ITEM_PROPERTY:
         case RB_PODCAST_PARSER_STATE_IMG_PROPERTY:
+		rb_debug ("nested element inside property; treating as unknown");
+		ctx->in_unknown_elt++;
+		break;
+
         case RB_PODCAST_PARSER_STATE_END:
 		break;
 	default:

@@ -1,3 +1,9 @@
+2006-06-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parser_start_element):
+	Treat nested elements inside properties as unknown.  Fixes parsing of
+	podcast feeds with unescaped HTML in description tags, bug #344532.
+
 2006-06-15  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c (rb_shell_quit): Unset the playing source
