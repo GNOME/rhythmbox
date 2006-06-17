@@ -633,7 +633,7 @@ rb_recorder_construct (RBRecorder *recorder,
                 g_signal_connect_object (G_OBJECT (recorder->priv->pipeline), "eos",
                                          G_CALLBACK (eos_cb), recorder, 0);
 #elif HAVE_GSTREAMER_0_10
-	g_object_set (recorder->priv->capsfilter, "filter-caps",  filtercaps, NULL);
+	g_object_set (recorder->priv->capsfilter, "caps",  filtercaps, NULL);
 
 	gst_element_link_many (recorder->priv->src,
 			       recorder->priv->typefind,

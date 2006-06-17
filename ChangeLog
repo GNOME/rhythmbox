@@ -1,3 +1,8 @@
+2006-06-17  James Livingston  <doclivingston@gmail.com>
+
+	* player/rb-recorder-gst.c: (rb_recorder_construct): use the right
+	name for capsfilter's "caps" property. Fixes #344968.
+
 2006-06-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.c: (rb_shell_player_playpause):
