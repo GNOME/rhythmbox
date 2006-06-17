@@ -133,6 +133,7 @@ struct RBEntryViewPrivate
 	RhythmDBQueryModel *playing_model;
 	RhythmDBEntry *playing_entry;
 	gboolean playing_entry_in_view;
+	guint selection_changed_id;
 
 	gboolean is_drag_source;
 	gboolean is_drag_dest;
@@ -1475,21 +1476,18 @@ rb_entry_view_popup_menu_cb (GtkTreeView *treeview,
 	return TRUE;
 }
 
-static void
-rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
-				   RBEntryView *view)
+static gboolean
+rb_entry_view_emit_selection_changed (RBEntryView *view)
 {
 	gboolean available;
-	GList *sel;
+	gint sel_count;
 
-	sel = rb_entry_view_get_selected_entries (view);
-	available = (sel != NULL);
-	g_list_free (sel);
+	sel_count = gtk_tree_selection_count_selected_rows (view->priv->selection);
+	available = (sel_count > 0);
 
 	if (available != view->priv->have_selection) {
-		gint sel_count, entry_count;
+		gint entry_count;
 
-		sel_count= gtk_tree_selection_count_selected_rows (view->priv->selection);
 		entry_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model), NULL);
 		view->priv->have_complete_selection = (sel_count == entry_count);
 
@@ -1498,8 +1496,17 @@ rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[HAVE_SEL_CHANGED], 0, available);
 	}
 
+	view->priv->selection_changed_id = 0;
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SELECTION_CHANGED], 0);
+	return FALSE;
+}
 
+static void
+rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
+				    RBEntryView *view)
+{
+	if (view->priv->selection_changed_id == 0)
+		view->priv->selection_changed_id = g_idle_add ((GSourceFunc)rb_entry_view_emit_selection_changed, view);
 }
 
 gboolean

@@ -5,6 +5,13 @@
 
 2006-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_emit_selection_changed),
+	(rb_entry_view_selection_changed_cb): don't do O(n) operations here,
+	as a O(1) one works fine, and it will get called often when the user
+	deleted multiple tracks. Part of #344922.
+
+2006-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-player.c: (rb_shell_player_stop): make
 	rb_shell_player_stop and rb_shell_player_playpause not mutually
 	recursive. Fixed #336912.
