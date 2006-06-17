@@ -11,9 +11,7 @@
 #include "rhythmdb-query-model.h"
 
 #ifndef fail_if
-#define fail_if(expr, ...)\
-        _fail_unless(!(expr), __FILE__, __LINE__,\
-        "Failure '"#expr"' occured" , ## __VA_ARGS__, NULL)
+#define fail_if(expr, ...) fail_unless(!(expr), "Failure '"#expr"' occured")
 #endif
 
 
