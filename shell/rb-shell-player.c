@@ -1655,6 +1655,8 @@ rb_shell_player_playpause (RBShellPlayer *player, gboolean unused, GError **erro
 					entry = (RhythmDBEntry*) selection->data;
 					if (entry)
 						out_of_order = TRUE;
+				
+					g_list_free (selection);
 				}
 			}
 
