@@ -1,3 +1,9 @@
+2006-06-17  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-shell-player.c: (rb_shell_player_stop): make
+	rb_shell_player_stop and rb_shell_player_playpause not mutually
+	recursive. Fixed #336912.
+
 2006-06-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parser_start_element):

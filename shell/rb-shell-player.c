@@ -2240,7 +2240,6 @@ rb_shell_player_stop (RBShellPlayer *player)
 
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 
-	rb_shell_player_pause (player, &error);
 	if (error == NULL)
 		rb_player_close (player->priv->mmplayer, &error);
 	if (error) {
@@ -2250,6 +2249,8 @@ rb_shell_player_stop (RBShellPlayer *player)
 		g_error_free (error);
 	}
 
+	rb_shell_player_sync_with_source (player);
+	g_object_notify (G_OBJECT (player), "playing");
 	rb_shell_player_sync_buttons (player);
 }
 
