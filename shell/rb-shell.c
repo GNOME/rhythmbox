@@ -2787,7 +2787,7 @@ rb_shell_play_entry (RBShell *shell,
 {
 	rb_shell_player_stop (shell->priv->player_shell);
 	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
-	rb_shell_player_play_entry (shell->priv->player_shell, entry);
+	rb_shell_player_play_entry (shell->priv->player_shell, entry, NULL);
 }
 
 static void

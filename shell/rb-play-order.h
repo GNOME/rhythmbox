@@ -75,6 +75,7 @@ typedef struct
 	void (*entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
 	void (*query_model_changed) (RBPlayOrder *porder);
 	void (*db_entry_deleted) (RBPlayOrder *porder, RhythmDBEntry *entry);
+	void (*playing_entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
 
 	/* QUERIES */
 	/**
@@ -128,7 +129,6 @@ typedef struct
 
 	/* SIGNALS */
 	void (*have_next_previous_changed) (RBPlayOrder *porder, gboolean have_next, gboolean have_previous);
-	void (*playing_entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
 } RBPlayOrderClass;
 
 GType			rb_play_order_get_type		(void);

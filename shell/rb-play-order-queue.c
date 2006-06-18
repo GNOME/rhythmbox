@@ -142,8 +142,10 @@ rb_queue_play_order_playing_entry_changed (RBPlayOrder *porder,
 	if (model == NULL)
 		return;
 
-	if (old_entry && old_entry != new_entry && !priv->playing_entry_removed)
+	if (old_entry && old_entry != new_entry && !priv->playing_entry_removed) {
 		rhythmdb_query_model_remove_entry (model, old_entry);
+	}
+	priv->playing_entry_removed = FALSE;
 }
 
 static void
@@ -151,13 +153,8 @@ rb_queue_play_order_playing_entry_removed (RBPlayOrder *porder,
 					   RhythmDBEntry *entry)
 {
 	RBQueuePlayOrderPrivate *priv = RB_QUEUE_PLAY_ORDER_GET_PRIVATE (porder);
-	GError *error = NULL;
-
 	priv->playing_entry_removed = TRUE;
-	if (!rb_shell_player_do_next (rb_play_order_get_player (porder), &error)) {
-		if (error->domain != RB_SHELL_PLAYER_ERROR ||
-		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
-			g_warning ("rb_queue_play_order_playing_entry_removed: Unhandled error: %s", error->message);
-	}
-	priv->playing_entry_removed = FALSE;
+
+	RB_PLAY_ORDER_CLASS (rb_queue_play_order_parent_class)->playing_entry_removed (porder, entry);
 }
+

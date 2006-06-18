@@ -1,3 +1,32 @@
+2006-06-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* bindings/python/rb.defs:
+	* shell/rb-shell-player.c: (rb_shell_player_play_entry), (eos_cb):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_play_entry):
+	Add source parameter to rb_shell_player_play_entry, using the selected
+	source if not specified.
+
+	* shell/rb-play-order.c: (rb_play_order_class_init),
+	(rb_play_order_finalize), (rb_play_order_query_model_changed),
+	(rb_play_order_row_deleted_cb), (sync_playing_entry_cb),
+	(default_playing_entry_removed):
+	* shell/rb-play-order.h:
+	Move entry removal handling back to the row-deleted signal, as we need
+	the entry to be present in the model.  When changing to the next entry
+	after the playing entry is deleted, set the new entry as the playing
+	entry and then sync it to the player in an idle handler, so we don't
+	end up playing it if it was removed too.
+	* shell/rb-play-order-queue.c:
+	(rb_queue_play_order_playing_entry_changed),
+	(rb_queue_play_order_playing_entry_removed):
+	Use the playing-entry-removed handler from the play order class,
+	setting a flag so we don't try to remove the already-removed entry
+	from the model.
+
+	This makes removal of the playing entry from playlists etc. work more
+	or less correctly for all play orders.  Fixes #344627.
+
 2006-06-17  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Elijah Newren  <newren@gmail.com>

@@ -92,7 +92,8 @@ RBSource *		rb_shell_player_get_active_source (RBShellPlayer *shell_player);
 void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 
 void			rb_shell_player_play_entry	(RBShellPlayer *player,
-							 RhythmDBEntry *entry);
+							 RhythmDBEntry *entry,
+							 RBSource *source);
 gboolean		rb_shell_player_play		(RBShellPlayer *player, GError **error);
 gboolean		rb_shell_player_pause		(RBShellPlayer *player, GError **error);
 gboolean                rb_shell_player_playpause	(RBShellPlayer *player, gboolean unused, GError **error);

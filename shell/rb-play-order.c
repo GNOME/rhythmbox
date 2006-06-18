@@ -63,9 +63,9 @@ static void rb_play_order_entry_added_cb (GtkTreeModel *model,
 					  GtkTreePath *path,
 					  GtkTreeIter *iter,
 					  RBPlayOrder *porder);
-static void rb_play_order_post_entry_delete_cb (GtkTreeModel *model,
-						RhythmDBEntry *entry,
-						RBPlayOrder *porder);
+static void rb_play_order_row_deleted_cb (GtkTreeModel *model,
+					  GtkTreePath *path,
+					  RBPlayOrder *porder);
 static void rb_play_order_query_model_changed_cb (GObject *source, 
 						  GParamSpec *arg,
 						  RBPlayOrder *porder);
@@ -79,6 +79,7 @@ struct RBPlayOrderPrivate
 	RhythmDBQueryModel *query_model;
 	RhythmDBEntry *playing_entry;
 	gulong query_model_change_id;
+	gulong sync_playing_entry_id;
 	gboolean have_next;
 	gboolean have_previous;
 };
@@ -94,7 +95,6 @@ enum
 
 enum
 {
-	PLAYING_ENTRY_REMOVED,
 	HAVE_NEXT_PREVIOUS_CHANGED,
 	LAST_SIGNAL
 };
@@ -132,15 +132,6 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 						 	       "Playing entry",
 						 	       G_PARAM_READWRITE));
 	
-	rb_play_order_signals[PLAYING_ENTRY_REMOVED] =
-		g_signal_new ("playing_entry_removed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayOrderClass, playing_entry_removed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
 	rb_play_order_signals[HAVE_NEXT_PREVIOUS_CHANGED] =
 		g_signal_new ("have_next_previous_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -187,7 +178,7 @@ rb_play_order_finalize (GObject *object)
 						      G_CALLBACK (rb_play_order_entry_added_cb),
 						      porder);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
-						      G_CALLBACK (rb_play_order_post_entry_delete_cb),
+						      G_CALLBACK (rb_play_order_row_deleted_cb),
 						      porder);
 	}
 
@@ -495,7 +486,7 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 						      rb_play_order_entry_added_cb,
 						      porder);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
-						      rb_play_order_post_entry_delete_cb,
+						      rb_play_order_row_deleted_cb,
 						      porder);
 		g_object_unref (porder->priv->query_model);
 		porder->priv->query_model = NULL;
@@ -508,8 +499,8 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 					 G_CALLBACK (rb_play_order_entry_added_cb),
 					 porder, 0);
 		g_signal_connect_object (G_OBJECT (porder->priv->query_model),
-					 "post-entry-delete",
-					 G_CALLBACK (rb_play_order_post_entry_delete_cb),
+					 "row-deleted",
+					 G_CALLBACK (rb_play_order_row_deleted_cb),
 					 porder, 0);
 	}
 
@@ -544,7 +535,7 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
 }
 
 /**
- * rb_play_order_post_entry_delete_cb:
+ * rb_play_order_row_deleted_cb:
  * @model: #GtkTreeModel
  * @entry: the #RhythmDBEntry removed from the model
  * @porder: #RBPlayOrder instance
@@ -558,9 +549,14 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
  * signal is emitted.
  */
 static void
-rb_play_order_post_entry_delete_cb (GtkTreeModel *model, RhythmDBEntry *entry, RBPlayOrder *porder)
+rb_play_order_row_deleted_cb (GtkTreeModel *model, GtkTreePath *row, RBPlayOrder *porder)
 {
-	gboolean is_playing_entry = (entry == porder->priv->playing_entry);
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model), row);
+	if (entry == porder->priv->playing_entry) {
+		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_removed (porder, entry);
+	}
 
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
@@ -568,11 +564,6 @@ rb_play_order_post_entry_delete_cb (GtkTreeModel *model, RhythmDBEntry *entry, R
 	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
 		rb_play_order_update_have_next_previous (porder);
 
-	if (is_playing_entry) {
-		rb_debug ("signaling playing_entry_removed");
-		g_signal_emit (G_OBJECT (porder), rb_play_order_signals[PLAYING_ENTRY_REMOVED],
-			       0, entry);
-	}
 }
 
 static gboolean
@@ -587,16 +578,26 @@ default_has_previous (RBPlayOrder *porder)
 	return rb_play_order_get_previous (porder) != NULL;
 }
 
-typedef struct {
-	RBShellPlayer *player;
-	RhythmDBEntry *entry;
-} DoNextIdleData;
-
 static gboolean
-do_next_idle_cb (DoNextIdleData *data)
+sync_playing_entry_cb (RBPlayOrder *porder)
 {
-	rb_shell_player_play_entry (data->player, data->entry);
-	g_free (data);
+	RBShellPlayer *player = rb_play_order_get_player (porder);
+	if (porder->priv->playing_entry) {
+		rb_shell_player_play_entry (player,
+					    porder->priv->playing_entry,
+					    rb_play_order_get_source (porder));
+	} else {
+		/* Just try to play something.  This is mostly here to make
+		 * the play queue work correctly, but it might be helpful otherwise.
+		 */
+		GError *error = NULL;
+		if (!rb_shell_player_do_next (player, &error)) {
+			if (error->domain != RB_SHELL_PLAYER_ERROR ||
+			    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST)
+				g_warning ("sync_playing_entry_cb: Unhandled error: %s", error->message);
+		}
+	}
+	porder->priv->sync_playing_entry_id = 0;
 	return FALSE;
 }
 
@@ -605,6 +606,8 @@ default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 {
 	RBShellPlayer *player = rb_play_order_get_player (porder);
 	RBSource *source = rb_shell_player_get_playing_source (player);
+
+	rb_debug ("playing entry removed");
 
 	/* only clear the playing source if the source this play order is using
 	 * is currently playing.
@@ -619,18 +622,20 @@ default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 			break;
 		case RB_SOURCE_EOF_NEXT:
 			{
-				RhythmDBEntry *entry;
+				RhythmDBEntry *next_entry;
 
-				entry = rb_play_order_get_next (porder);
-				if (entry != NULL) {
-					DoNextIdleData *data = g_new0 (DoNextIdleData, 1);
-				
-					/* go to next song, do in an idle function so that other handler run first */
-					data->player = player;
-					data->entry = entry;
-					g_idle_add_full (G_PRIORITY_HIGH_IDLE, (GSourceFunc)do_next_idle_cb, data, NULL);
-				} else {
-					rb_shell_player_set_playing_source (player, NULL);
+				/* go to next song, in an idle function so that other handlers run first */
+				next_entry = rb_play_order_get_next (porder);
+				if (next_entry == entry)
+					next_entry = NULL;
+
+				g_object_set (G_OBJECT (porder), "playing-entry", next_entry, NULL);
+				if (porder->priv->sync_playing_entry_id == 0) {
+					porder->priv->sync_playing_entry_id = 
+						g_idle_add_full (G_PRIORITY_HIGH_IDLE, 
+								 (GSourceFunc) sync_playing_entry_cb, 
+								 porder, 
+								 NULL);
 				}
 				break;
 			}

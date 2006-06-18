@@ -1555,10 +1555,14 @@ rb_shell_player_cmd_next (GtkAction *action,
 
 void
 rb_shell_player_play_entry (RBShellPlayer *player,
-			    RhythmDBEntry *entry)
+			    RhythmDBEntry *entry,
+			    RBSource *source)
 {
 	GError *error = NULL;
-	rb_shell_player_set_playing_source (player, player->priv->selected_source);
+
+	if (source == NULL)
+		source = player->priv->selected_source;
+	rb_shell_player_set_playing_source (player, source);
 
 	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, &error)) {
 		rb_shell_player_error (player, FALSE, error);
@@ -2420,7 +2424,7 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 				rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
 				rb_shell_player_set_playing_source (player, NULL);
 			} else {
-				rb_shell_player_play_entry (player, entry);
+				rb_shell_player_play_entry (player, entry, NULL);
 			}
 		}
 			break;
