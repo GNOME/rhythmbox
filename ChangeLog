@@ -1,3 +1,12 @@
+2006-06-18  Dennis Cranston  <dennis_cranston@yahoo.com>
+
+	* data/glade/library-prefs.glade: Capitalization fixes.  Fix
+	a mnemonic conflict.  Add ellipses to the edit button.
+	* sources/rb-library-source.c:
+	(rb_library_source_edit_profile_clicked_cb),
+	(impl_get_config_widget):  Hide dialog separator.  Assign a 
+	mnemonic widget to the labels. Fixes #344114.
+
 2006-06-18  James Livingston  <doclivingston@gmail.com>
 
 	* configure.ac: bump version

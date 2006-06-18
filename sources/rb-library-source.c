@@ -327,6 +327,7 @@ rb_library_source_edit_profile_clicked_cb (GtkButton *button, RBLibrarySource *s
 
 	dialog = gm_audio_profiles_edit_new (eel_gconf_client_get_global (),
 					     GTK_WINDOW (source->priv->shell_prefs));
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_widget_show_all (dialog);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 }
@@ -365,6 +366,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
+	GtkWidget *label;
 	GladeXML *xml;
 #ifdef ENABLE_TRACK_TRANSFER
 	int i;
@@ -403,8 +405,10 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	rb_glade_boldify_label (xml, "library_structure_label");
 
 	tmp = glade_xml_get_widget (xml, "layout_path_menu_box");
+	label = glade_xml_get_widget (xml, "layout_path_menu_label");
 	source->priv->layout_path_menu = gtk_combo_box_new_text ();
 	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->layout_path_menu);
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_path_menu);
 	g_signal_connect (G_OBJECT (source->priv->layout_path_menu),
 			  "changed",
 			  G_CALLBACK (rb_library_source_path_changed_cb),
@@ -415,8 +419,10 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	}
 
 	tmp = glade_xml_get_widget (xml, "layout_filename_menu_box");
+	label = glade_xml_get_widget (xml, "layout_filename_menu_label");
 	source->priv->layout_filename_menu = gtk_combo_box_new_text ();
 	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->layout_filename_menu);
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_filename_menu);
 	g_signal_connect (G_OBJECT (source->priv->layout_filename_menu),
 			  "changed",
 			  G_CALLBACK (rb_library_source_filename_changed_cb),
@@ -433,8 +439,10 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 			  asource);
 
 	tmp = glade_xml_get_widget (xml, "preferred_format_menu_box");
+	label = glade_xml_get_widget (xml, "preferred_format_menu_label");
 	source->priv->preferred_format_menu = gm_audio_profile_choose_new ();
 	gtk_box_pack_start_defaults (GTK_BOX (tmp), source->priv->preferred_format_menu);
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->preferred_format_menu);
 	g_signal_connect (G_OBJECT (source->priv->preferred_format_menu),
 			  "changed",
 			  G_CALLBACK (rb_library_source_format_changed_cb),
