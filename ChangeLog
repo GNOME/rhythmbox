@@ -1,3 +1,10 @@
+2006-06-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb),
+	(rb_uri_handle_recursively):
+	Don't attempt to recurse into directories we can't open.  
+	Fixes #341485.
+
 2006-06-18  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Jaap A. Haitsma  <jaap@haitsma.org>

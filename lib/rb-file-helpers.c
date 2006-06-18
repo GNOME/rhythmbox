@@ -647,7 +647,11 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 	if (data->cancel_flag && *data->cancel_flag)
 		return TRUE;
 	
-	if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) && g_str_has_prefix (rel_path, ".Trash")) {
+	/* skip trash and unreadable directories */
+	if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) && 
+	    (g_str_has_prefix (rel_path, ".Trash") ||
+	     ((info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_ACCESS) &&
+	      !(info->permissions & GNOME_VFS_PERM_ACCESS_READABLE)))) {
 		*recurse = FALSE;
 		return TRUE;
 	}
@@ -682,7 +686,8 @@ rb_uri_handle_recursively (const char *text_uri,
 
 	flags = GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
 		GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
-		GNOME_VFS_FILE_INFO_FOLLOW_LINKS;
+		GNOME_VFS_FILE_INFO_FOLLOW_LINKS |
+		GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS;
 	result = gnome_vfs_directory_visit (text_uri,
 					    flags,
 					    GNOME_VFS_DIRECTORY_VISIT_LOOPCHECK,
