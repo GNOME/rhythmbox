@@ -1159,6 +1159,18 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 				    GCompareDataFunc sort_func,
 				    gpointer data)
 {
+	rb_entry_view_insert_column_custom (view, column, title, key, sort_func, data, -1);
+}
+
+void
+rb_entry_view_insert_column_custom (RBEntryView *view,
+				    GtkTreeViewColumn *column,
+				    const char *title,
+				    const char *key,
+				    GCompareDataFunc sort_func,
+				    gpointer data,
+				    gint position)
+{
 	struct RBEntryViewColumnSortData *sortdata;
 
 	gtk_tree_view_column_set_title (column, title);
@@ -1173,7 +1185,7 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 
 	rb_debug ("appending column: %p (%s)", column, title);
 
-	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
+	gtk_tree_view_insert_column (GTK_TREE_VIEW (view->priv->treeview), column, position);
 
 	if (sort_func != NULL) {
 		sortdata = g_new (struct RBEntryViewColumnSortData, 1);

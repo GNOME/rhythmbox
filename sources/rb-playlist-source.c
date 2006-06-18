@@ -235,11 +235,18 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	rb_playlist_source_set_query_model (source, rhythmdb_query_model_new_empty (source->priv->db));
 
 	{
-		const char *title = _("Trac_k");
+		const char *title = _("");
 		const char *strings[3] = {0};
 
 		GtkTreeViewColumn *column = gtk_tree_view_column_new ();
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+		
+		g_object_set(renderer,
+			     "style", PANGO_STYLE_OBLIQUE,
+			     "weight", PANGO_WEIGHT_LIGHT,
+			     "xalign", 1.0,
+			     NULL);
+
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 
 		gtk_tree_view_column_set_resizable (column, TRUE);
@@ -253,10 +260,12 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 							 (GtkTreeCellDataFunc)
 							 rb_playlist_source_track_cell_data_func,
 							 source, NULL);
-		rb_entry_view_append_column_custom (source->priv->songs, column, title,
-						    "PlaylistTrack", NULL, 0);
+		rb_entry_view_insert_column_custom (source->priv->songs, column, title,
+						    "PlaylistTrack", NULL, 0, 0);
 	}
 
+
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER, TRUE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST, FALSE);

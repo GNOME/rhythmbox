@@ -1,3 +1,17 @@
+2006-06-18  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* widgets/rb-entry-view.h:
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_append_column_custom),
+	(rb_entry_view_insert_column_custom): add support for inserting custom
+	columns at arbitrary locations, rather than just appending to the end.
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor): make
+	the playlists "track number" column go at the start, and add a normal
+	track number column. Fixes #329986.
+
 2006-06-18  Dennis Cranston  <dennis_cranston@yahoo.com>
 
 	* data/glade/library-prefs.glade: Capitalization fixes.  Fix
