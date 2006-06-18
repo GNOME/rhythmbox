@@ -461,7 +461,7 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
 	  N_("Make the main window smaller"),
 	  G_CALLBACK (rb_shell_view_smalldisplay_changed_cb), },
-	{ "ViewPartyMode", NULL, N_("_Party Mode"), NULL,
+	{ "ViewPartyMode", NULL, N_("_Party Mode"), "F11",
 	  N_("Change the status of the party mode"),
 	  G_CALLBACK (rb_shell_view_party_mode_changed_cb), FALSE },
 	{ "ViewQueueAsSidebar", NULL, N_("Play _Queue as Side Pane"), "<control>K",
