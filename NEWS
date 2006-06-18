@@ -1,3 +1,56 @@
+Overview of Changes in Rhythmbox 0.9.5
+======================================
+
+* fix icon themability (Steve Frécinaux)
+* handle iPods that have been repartitioned (Christophe Fergeau: 325034)
+* allow ipod renaming, ejection, deletion and transfer (Christophe Fergeau)
+* make iradio handling work much better (Jonathan Matthew: 320336, 324402)
+* improve out-of-process metadata loader (Jonathan Matthew: 338062)
+* update documentation (Baptiste Mille-Mathias, )
+* pluginise iPod and Generic players (Christophe Fergeau, Jonathan Matthew)
+* support saving playlists as M3U (Gavin Stewart: 316295)
+* remember browser visibility when changing sources (Alex Lancaster: 118862)
+* handle media unmounts better (Jonathan Matthew: 339023)
+* make entry types be a structure, and add support for extended data, and
+  various method implementations (Christophe Fergeau, James Livingston)
+* album art view&download plugin (Alex Lancaster, James Livingston,
+  Gareth Murphy, William Jon McCann, Martin Szulecki)
+* update the FSF's address (Gunnar Steinn Magnusson)
+* much improved Python bindings (James Livingston, Jonathan Matthew)
+* fix some translation issues (Nguyễn Thái Ngọc Duy, James Livingston: 339380, 343081)
+* improve startup time (James Livingston, Jonathan Matthew)
+* fix audioscrobbler submission, and allow viewing of info (Jonathan Matthew: 325848)
+* improve DBus interface (Jonathan Matthew, Tim Moloney)
+* allow transcoding during track transfer (Alessandro Decina: 322268)
+* cd burning fixes and improvements (William Jon McCann)
+* podcast feed parsing and download fixes (James Livingston: 339728)
+* turn the playback backend into a full GObject interface (James Livingston: 338667)
+* add more API documentation (Jonathan Mattjew)
+* add vorbis tag editing (James Livingston: 339878)
+* fix various threading insanities (Jonathan Matthew)
+* display "child libraries" with multiple library locations (James Livingston: 100552)
+* improve drag-and-drop from browsers (Jonathan Matthew: 327540)
+* support Motorola ROKR phones (Joe Barnett)
+* make query model limits saner (Janes Livingston)
+* source cleanup and API improvement (James Livingston, Jonathan Matthew)
+* improve status feedback for DAAP (Jonathan Matthew: 322020 and 338978)
+* memory improvement and leak fixed (James Livingston, Jonathan Matthew)
+* kill Bonobo support, require DBus, support DBus 0.3.0 (Jonathan Matthew: 339720)
+* add lyric download and view plugin (Jonathan Matthew: 319320)
+* add "add to playlist" menu (James Livingston: 323364)
+* allow changing of audio cd metadata (James Livingston)
+* improve DAAP handling (William Jon McCann: 342643)
+* update and write new unit tests (James Livingston)
+* group sources (Jonathan Matthew)
+* add new "rhythmbox-client" program (Jonathan Matthew: 340863, 155763)
+* assorted build fixes (Brian Cameron, Paul Drain, Elijah Newren,
+  Hendrik Richter, Ryan P Skadberg, Götz Waschk, Pawel Worach,
+  FreeBSD GNOME project, others)
+* HIG and UI improvements (Dennis Cranston, Baptiste Mille-Mathias)
+* many other bug fixed (Christophe Fergeau, Jaap A. Haitsma, James Livingston,
+  Jonathan Matthew, Mikael Olenfalk, Roozbeh Pournader)
+
+
 Overview of Changes in Rhythmbox 0.9.4
 ======================================
 
