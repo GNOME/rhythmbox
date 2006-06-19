@@ -1,3 +1,104 @@
+2006-06-19  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-util.c: (rb_copy_function):
+	* lib/rb-util.h: add a function that returns the same pointer it was
+	passed.
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_ref), (rhythmdb_entry_unref),
+	(rhythmdb_entry_get_type), (rhythmdb_entry_type_get_type): drop the
+	"db" parameter to rhythmdb_entry_{ref,unref}, and change RhythmDBEntry
+	and RhythmDBEntryType into boxed types. This allows them to be used
+	from python. Note that entry-types aren't actually reference counted
+	(yet).
+
+	* bindings/python/rb.defs:
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override: Adapt to the above, and fix the
+	return types of some bindings.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_emit_entry_signals_idle),
+	(process_added_entries_cb), (rhythmdb_entry_finalize),
+	(rhythmdb_entry_delete):
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_class_init), (rb_daap_connection_set_property),
+	(rb_daap_connection_get_property):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_load_songs), (load_playlist_file):
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init):
+	* rhythmdb/rhythmdb-property-model.c: (query_model_cb):
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_finalize),
+	(idle_process_update), (rhythmdb_query_model_add_entry),
+	(rhythmdb_query_model_insert_into_main_list),
+	(rhythmdb_query_model_insert_into_limited_list),
+	(rhythmdb_query_model_remove_from_main_list),
+	(rhythmdb_query_model_remove_from_limited_list),
+	(rhythmdb_query_model_drag_data_received),
+	(rhythmdb_query_model_add_results),
+	(rhythmdb_query_model_get_column_type),
+	(rhythmdb_query_model_get_value):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(rhythmdb_tree_entry_delete), (remove_one_song):
+	* shell/rb-play-order-linear-loop.c:
+	(rb_linear_play_order_loop_get_next),
+	(rb_linear_play_order_loop_get_previous):
+	* shell/rb-play-order-linear.c: (rb_linear_play_order_get_next),
+	(rb_linear_play_order_get_previous):
+	* shell/rb-play-order-queue.c: (rb_queue_play_order_get_next),
+	(rb_queue_play_order_get_previous):
+	* shell/rb-play-order-random.c: (rb_random_play_order_init),
+	(rb_random_filter_history), (rb_random_play_order_get_next),
+	(rb_random_play_order_go_next), (rb_random_db_changed),
+	(rb_random_playing_entry_changed):
+	* shell/rb-play-order-shuffle.c: (rb_shuffle_play_order_init),
+	(remove_from_history), (add_randomly_to_history),
+	(rb_shuffle_db_changed), (rb_shuffle_playing_entry_changed):
+	* shell/rb-play-order.c: (rb_play_order_class_init),
+	(rb_play_order_set_property), (rb_play_order_get_property),
+	(rb_play_order_update_have_next_previous):
+	* shell/rb-play-order.h:
+	* shell/rb-shell-clipboard.c:
+	(rb_shell_clipboard_process_deletions),
+	(rb_shell_clipboard_entry_deleted_cb), (add_playlist_to_menu):
+	* sources/rb-audiocd-source.c: (rb_audiocd_create_track_entry):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_constructor):
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_set_property), (rb_browser_source_get_property),
+	(rb_browser_source_do_query):
+	* sources/rb-daap-source.c: (rb_daap_source_connection_cb):
+	* sources/rb-import-errors-source.c: (rb_import_errors_source_new):
+	* sources/rb-ipod-source.c: (add_rb_playlist),
+	(add_ipod_song_to_db), (impl_paste):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_set_property), (rb_iradio_source_get_property):
+	* sources/rb-library-source.c: (layout_example_label_update):
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_class_init),
+	(rb_missing_files_source_set_property),
+	(rb_missing_files_source_get_property),
+	(rb_missing_files_source_new):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_set_property),
+	(rb_playlist_source_get_property):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_set_property), (rb_podcast_source_get_property),
+	(construct_query_from_selection):
+	* sources/rb-removable-media-source.c: (impl_delete_thyself):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_add_location_internal):
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init):
+	* widgets/rb-header.c: (rb_header_class_init),
+	(rb_header_set_property), (rb_header_get_property):
+	* widgets/rb-library-browser.c: (rb_library_browser_class_init),
+	(rb_library_browser_set_property),
+	(rb_library_browser_get_property):
+	* widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_get_property): Adjust for the _ref/_unref prototype
+	change, do s/pointer/boxed/ in many places and free entry-types
+	properly.
+
 2006-06-18  James Livingston  <doclivingston@gmail.com>
 
 	* lib/rb-util.c: (purge_useless_threads), (rb_threads_init): purge

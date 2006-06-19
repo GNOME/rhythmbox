@@ -779,6 +779,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
 	}
 	g_object_unref (G_OBJECT (shell));
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 }
 
 static void

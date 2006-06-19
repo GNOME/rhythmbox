@@ -416,8 +416,8 @@ RhythmDBEntryType rhythmdb_entry_ignore_get_type        (void);
 
 GType rhythmdb_get_property_type (RhythmDB *db, guint property_id);
 
-void rhythmdb_entry_ref (RhythmDB *db, RhythmDBEntry *entry);
-void rhythmdb_entry_unref (RhythmDB *db, RhythmDBEntry *entry);
+RhythmDBEntry* rhythmdb_entry_ref (RhythmDBEntry *entry);
+void rhythmdb_entry_unref (RhythmDBEntry *entry);
 
 G_END_DECLS
 

@@ -69,6 +69,8 @@ ignore-glob
   *_quark
 %%
 ignore
+  rhythmdb_entry_ref
+  rhythmdb_entry_unref
   rhythmdb_entry_get_pointer
   rhythmdb_entry_get_string
   rhythmdb_entry_get_boolean
@@ -348,7 +350,6 @@ _wrap_rhythmdb_query_model_set_sort_order (PyGObject *self, PyObject *args, PyOb
 	static char *kwlist[] = {"func", "reverse", NULL};
 	int reverse = 0;
 	PyRhythmDBQueryModelSortData *data;
-	RhythmDBQueryModel *query_model;
 
 	data = g_new0 (PyRhythmDBQueryModelSortData, 1);
 
@@ -368,7 +369,7 @@ _wrap_rhythmdb_query_model_set_sort_order (PyGObject *self, PyObject *args, PyOb
 	Py_INCREF (data->func);
 	Py_INCREF (data->data);
 
-	rhythmdb_query_model_set_sort_order (RHYTHMDB (self->obj),
+	rhythmdb_query_model_set_sort_order (RHYTHMDB_QUERY_MODEL (self->obj),
 					     (GCompareDataFunc) _rhythmdb_query_model_sort_func,
 					     data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
 					     (reverse != 0));

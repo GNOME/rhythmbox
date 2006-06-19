@@ -269,6 +269,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 							 playlist->name, 
 							 FALSE,
 							 entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	for (it = playlist->members; it != NULL; it = it->next) {
 		Itdb_Track *song;
@@ -356,6 +357,7 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 				    song->ipod_path);
 	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type,
 				    pc_path);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	if (entry == NULL) {
 		rb_debug ("cannot create entry %s", pc_path);
@@ -931,19 +933,23 @@ impl_paste (RBSource *asource, GList *entries)
 			      NULL);
 		if (entry_type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
 		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
-//		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_EPISODE ||
-		    entry_type == ipod_entry_type)
+		    /*entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_EPISODE ||*/
+		    entry_type == ipod_entry_type) {
+			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 			continue;
+		}
 
 		dest = build_filename (asource, entry);
 		if (dest == NULL) {
 			rb_debug ("could not create destination path for entry");
+			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 			continue;
 		}
 		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
 							   dest, NULL,
 							   (RBTranferCompleteCallback)completed_cb, asource);
 		g_free (dest);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	}
 	g_object_unref (G_OBJECT (rm_mgr));
 }

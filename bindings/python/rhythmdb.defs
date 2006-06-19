@@ -14,13 +14,13 @@
   (gtype-id "RHYTHMDB_TYPE_RHYTHMDB")
 )
 
-(define-pointer Entry
+(define-boxed Entry
   (in-module "RhythmDB")
   (c-name "RhythmDBEntry")
   (gtype-id "RHYTHMDB_TYPE_ENTRY")
 )
 
-(define-pointer EntryType
+(define-boxed EntryType
   (in-module "RhythmDB")
   (c-name "RhythmDBEntryType_")
   (gtype-id "RHYTHMDB_TYPE_ENTRY_TYPE")
@@ -554,7 +554,7 @@
   )
 )
 
-(define-function rhythmdb_entry_register_type
+(define-function entry_register_type
   (c-name "rhythmdb_entry_register_type")
   (return-type "RhythmDBEntryType_*")
   (parameters

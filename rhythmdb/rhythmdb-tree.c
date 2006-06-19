@@ -369,11 +369,11 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 				if (ctx->entry->last_seen > entry->last_seen)
 					entry->last_seen = ctx->entry->last_seen;
 				
-				rhythmdb_entry_unref (RHYTHMDB (ctx->db), ctx->entry);
+				rhythmdb_entry_unref (ctx->entry);
 			}
 		} else {
 			rb_debug ("found entry without location");
-			rhythmdb_entry_unref (RHYTHMDB (ctx->db), ctx->entry);
+			rhythmdb_entry_unref (ctx->entry);
 		}
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
 		break;
@@ -1226,7 +1226,7 @@ rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *entry)
 	g_assert (g_hash_table_lookup (db->priv->entries, entry->location) != NULL);
 
 	g_hash_table_remove (db->priv->entries, entry->location);
-	rhythmdb_entry_unref (adb, entry);
+	rhythmdb_entry_unref (entry);
 }
 
 typedef struct {
@@ -1243,7 +1243,7 @@ remove_one_song (gchar *uri, RhythmDBEntry *entry,
 	if (entry->type == ctxt->type) {
 		rhythmdb_emit_entry_deleted (ctxt->db, entry);
 		remove_entry_from_album (RHYTHMDB_TREE (ctxt->db), entry); 
-		rhythmdb_entry_unref (ctxt->db, entry);
+		rhythmdb_entry_unref (entry);
 		return TRUE;
 	}
 	return FALSE;

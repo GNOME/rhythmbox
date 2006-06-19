@@ -637,14 +637,14 @@ rb_shell_clipboard_process_deletions (RBShellClipboard *clipboard)
 			rb_shell_clipboard_sync (clipboard);
 
 		for (tem = finished; tem; tem = tem->next)
-			rhythmdb_entry_unref (clipboard->priv->db, tem->data);
+			rhythmdb_entry_unref (tem->data);
 		g_list_free (finished);
 
 		return processed;
 	} else {
 		/* Fast path for when there's nothing in the clipboard */
 		while ((entry = g_async_queue_try_pop (clipboard->priv->deleted_queue)) != NULL)
-			rhythmdb_entry_unref (clipboard->priv->db, entry);
+			rhythmdb_entry_unref (entry);
 		return FALSE;
 	}
 }
@@ -680,7 +680,7 @@ rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 				     RhythmDBEntry *entry,
 				     RBShellClipboard *clipboard)
 {
-	rhythmdb_entry_ref (db, entry);
+	rhythmdb_entry_ref (entry);
 	g_async_queue_push (clipboard->priv->deleted_queue, entry);
 }
 
@@ -849,8 +849,10 @@ add_playlist_to_menu (GtkTreeModel *model,
 		return FALSE;
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 	g_object_get (G_OBJECT (source), "entry-type", &source_entry_type, NULL);
-	if (source_entry_type != entry_type)
+	if (source_entry_type != entry_type) {
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 		return FALSE;
+	}
 
 	action_name = generate_action_name (RB_STATIC_PLAYLIST_SOURCE (source), clipboard);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
@@ -885,6 +887,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 				       GTK_UI_MANAGER_AUTO, FALSE);
 	}
 
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 	return FALSE;
 }
 

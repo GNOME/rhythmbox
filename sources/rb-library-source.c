@@ -961,7 +961,7 @@ layout_example_label_update (RBLibrarySource *source)
 	sample_entry = rhythmdb_entry_example_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_SONG, NULL);
 	file_value = filepath_parse_pattern (file_pattern, sample_entry);
 	path_value = filepath_parse_pattern (path_pattern, sample_entry);
-	rhythmdb_entry_unref (source->priv->db, sample_entry);
+	rhythmdb_entry_unref (sample_entry);
 
 	example = g_build_filename (G_DIR_SEPARATOR_S, path_value, file_value, NULL);
 	g_free (file_value);

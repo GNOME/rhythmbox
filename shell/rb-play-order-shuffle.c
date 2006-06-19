@@ -113,7 +113,7 @@ rb_shuffle_play_order_init (RBShufflePlayOrder *sorder)
 	sorder->priv = RB_SHUFFLE_PLAY_ORDER_GET_PRIVATE (sorder);
 
 	sorder->priv->history = rb_history_new (FALSE,
-						(GFunc) rb_play_order_unref_entry_swapped,
+						(GFunc) rhythmdb_entry_unref,
 					       	rb_play_order_get_db (RB_PLAY_ORDER (sorder)));
 
 	sorder->priv->query_model_changed = FALSE;
@@ -293,8 +293,8 @@ remove_from_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOrder 
 	if (rb_history_contains_entry (get_history (sorder), entry)) {
 		if (sorder->priv->tentative_history == NULL) {
 			sorder->priv->tentative_history = rb_history_clone (sorder->priv->history,
-									    (GFunc) rb_play_order_ref_entry_swapped, 
-									    rb_play_order_get_db (RB_PLAY_ORDER (sorder)));
+									    (GFunc) rhythmdb_entry_ref, 
+									    NULL);
 		}
 		rb_history_remove_entry (sorder->priv->tentative_history, entry);
 	}
@@ -312,15 +312,15 @@ add_randomly_to_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOr
 	
 	if (sorder->priv->tentative_history == NULL) {
 		sorder->priv->tentative_history = rb_history_clone (sorder->priv->history,
-								    (GFunc) rb_play_order_ref_entry_swapped, 
-								    rb_play_order_get_db (RB_PLAY_ORDER (sorder)));
+								    (GFunc) rhythmdb_entry_ref, 
+								    NULL);
 	}
 
 	history_size = rb_history_length (sorder->priv->tentative_history);
 	current_index = rb_history_get_current_index (sorder->priv->tentative_history);
 	/* Insert entry into the history at a random position between
 	 * just after current and the very end. */
-	rhythmdb_entry_ref (rb_play_order_get_db (RB_PLAY_ORDER (sorder)), entry);
+	rhythmdb_entry_ref (entry);
 	rb_history_insert_at_index (sorder->priv->tentative_history,
 				    entry,
 				    g_random_int_range (MIN (current_index, history_size-1) + 1,
@@ -384,8 +384,8 @@ rb_shuffle_db_changed (RBPlayOrder *porder, RhythmDB *db)
 	rb_history_clear (RB_SHUFFLE_PLAY_ORDER (porder)->priv->history);
 
 	rb_history_set_destroy_notify (RB_SHUFFLE_PLAY_ORDER (porder)->priv->history,
-				       (GFunc) rb_play_order_unref_entry_swapped,
-				       db);
+				       (GFunc) rhythmdb_entry_unref,
+				       NULL);
 }
 
 static void
@@ -417,7 +417,7 @@ rb_shuffle_playing_entry_changed (RBPlayOrder *porder,
 		if (new_entry == rb_history_current (get_history (sorder))) {
 			/* Do nothing */
 		} else {
-			rhythmdb_entry_ref (rb_play_order_get_db (porder), new_entry);
+			rhythmdb_entry_ref (new_entry);
 
 			rb_history_set_playing (get_history (sorder), new_entry);
 		}

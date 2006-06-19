@@ -227,6 +227,7 @@ impl_delete_thyself (RBSource *source)
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	rhythmdb_commit (db);
 	g_object_unref (db);
 }

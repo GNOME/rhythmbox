@@ -336,6 +336,7 @@ rb_generic_player_source_load_songs (RBGenericPlayerSource *source)
 	} else {
 		rhythmdb_add_uri_with_type (priv->db, priv->mount_path, entry_type);
 	}
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 }
 
 char *
@@ -500,6 +501,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 						      rel_path, 
 						      FALSE,
 						      entry_type));
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	data = g_new0 (HandlePlaylistEntryData, 1);
 	data->source = playlist;

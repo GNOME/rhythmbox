@@ -182,10 +182,11 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_CURRENT_ENTRY,
-					 g_param_spec_pointer ("current-entry",
-					                       "RhythmDBEntry",
-					                       "RhythmDBEntry object",
-					                       G_PARAM_READABLE));
+					 g_param_spec_boxed ("current-entry",
+					                     "RhythmDBEntry",
+					                     "RhythmDBEntry object",
+							     RHYTHMDB_TYPE_ENTRY,
+					                     G_PARAM_READABLE));
 
 	object_class->finalize = rb_song_info_finalize;
 
@@ -198,7 +199,7 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY);
 
 	rb_song_info_signals[POST_METADATA_CHANGE] =
 		g_signal_new ("post-metadata-change",
@@ -209,7 +210,7 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY);
 
 	g_type_class_add_private (klass, sizeof (RBSongInfoPrivate));
 }
@@ -573,7 +574,7 @@ rb_song_info_get_property (GObject *object,
 		g_value_set_object (value, song_info->priv->entry_view);
 		break;
 	case PROP_CURRENT_ENTRY:
-		g_value_set_pointer (value, song_info->priv->current_entry);
+		g_value_set_boxed (value, song_info->priv->current_entry);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

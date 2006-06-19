@@ -220,6 +220,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)), 
 						entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
 	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
@@ -566,13 +567,15 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 		g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 		if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID &&
 		    rhythmdb_entry_get_entry_type (entry) != entry_type) {
+			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 			rb_debug ("attempting to add an entry of the wrong type to playlist");
 			return;
 		}
 
-		rhythmdb_entry_ref (db, entry);
+		rhythmdb_entry_ref (entry);
 		rhythmdb_query_model_add_entry (priv->base_model, entry, index);
-		rhythmdb_entry_unref (db, entry);
+		rhythmdb_entry_unref (entry);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	}
 
 	rb_playlist_source_add_to_map (psource, location);

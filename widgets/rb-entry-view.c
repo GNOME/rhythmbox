@@ -284,7 +284,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY);
 	rb_entry_view_signals[ENTRY_DELETED] =
 		g_signal_new ("entry-deleted",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -294,7 +294,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY);
 	rb_entry_view_signals[ENTRIES_REPLACED] =
 		g_signal_new ("entries-replaced",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -313,7 +313,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_POINTER);
+			      RHYTHMDB_TYPE_ENTRY);
 	rb_entry_view_signals[SELECTION_CHANGED] =
 		g_signal_new ("selection-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),

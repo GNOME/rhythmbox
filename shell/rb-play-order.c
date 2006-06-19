@@ -127,10 +127,11 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 	
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_ENTRY,
-					 g_param_spec_pointer ("playing-entry",
-						 	       "RhythmDBEntry",
-						 	       "Playing entry",
-						 	       G_PARAM_READWRITE));
+					 g_param_spec_boxed ("playing-entry",
+						 	     "RhythmDBEntry",
+						 	     "Playing entry",
+							     RHYTHMDB_TYPE_ENTRY,
+						 	     G_PARAM_READWRITE));
 	
 	rb_play_order_signals[HAVE_NEXT_PREVIOUS_CHANGED] =
 		g_signal_new ("have_next_previous_changed",
@@ -201,15 +202,13 @@ rb_play_order_set_property (GObject *object,
 		break;
 	case PROP_PLAYING_ENTRY:
 		old_entry = porder->priv->playing_entry;
-		entry = g_value_get_pointer (value); 
+		entry = g_value_dup_boxed (value); 
 		porder->priv->playing_entry = entry;
 
 		if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
 			RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, old_entry, entry);
 		if (old_entry)
-			rhythmdb_entry_unref (porder->priv->db, old_entry);
-		if (entry)
-			rhythmdb_entry_ref (porder->priv->db, entry);
+			rhythmdb_entry_unref (old_entry);
 
 		rb_play_order_update_have_next_previous (porder);
 		break;
@@ -233,7 +232,7 @@ rb_play_order_get_property (GObject *object,
 		g_value_set_object (value, porder->priv->player);
 		break;
 	case PROP_PLAYING_ENTRY:
-		g_value_set_pointer (value, porder->priv->playing_entry);
+		g_value_set_boxed (value, porder->priv->playing_entry);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -777,32 +776,4 @@ rb_play_order_update_have_next_previous (RBPlayOrder *porder)
 		porder->priv->have_next = have_next;
 		porder->priv->have_previous = have_previous;
 	}
-}
-
-/**
- * rb_play_order_ref_entry_swapped:
- * @entry: #RhythmDBEntry to reference
- * @db: #RhythmDB instance
- *
- * Utility function that can be used with #RBHistory to implement play orders
- * that maintain an internal list of entries.
- */
-void
-rb_play_order_ref_entry_swapped (RhythmDBEntry *entry, RhythmDB *db)
-{
-	rhythmdb_entry_ref (db, entry);
-}
-
-/**
- * rb_play_order_unref_entry_swapped:
- * @entry: #RhythmDBEntry to unreference
- * @db: #RhythmDB instance
- *
- * Utility function that can be used with #RBHistory to implement play orders
- * that maintain an internal list of entries.
- */
-void
-rb_play_order_unref_entry_swapped (RhythmDBEntry *entry, RhythmDB *db)
-{
-	rhythmdb_entry_unref (db, entry);
 }

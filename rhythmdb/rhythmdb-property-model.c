@@ -903,7 +903,7 @@ query_model_cb (GtkTreeModel *query_model,
  	g_string_append (data->reply, uri);
  	g_string_append (data->reply, "\r\n");
 	
- 	rhythmdb_entry_unref (data->db, entry);
+ 	rhythmdb_entry_unref (entry);
  	return FALSE;
 }
 

@@ -122,10 +122,11 @@ rb_header_class_init (RBHeaderClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY,
-					 g_param_spec_pointer ("entry",
-							       "RhythmDBEntry",
-							       "RhythmDBEntry pointer",
-							       G_PARAM_READWRITE));
+					 g_param_spec_boxed ("entry",
+							     "RhythmDBEntry",
+							     "RhythmDBEntry pointer",
+							     RHYTHMDB_TYPE_ENTRY,
+							     G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_SHELL_PLAYER,
 					 g_param_spec_object ("shell-player",
@@ -245,7 +246,7 @@ rb_header_set_property (GObject *object,
 		header->priv->db = g_value_get_object (value);
 		break;
 	case PROP_ENTRY:
-		header->priv->entry = g_value_get_pointer (value);
+		header->priv->entry = g_value_get_boxed (value);
 		if (header->priv->entry) {
 			header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
 									   RHYTHMDB_PROP_DURATION);
@@ -283,7 +284,7 @@ rb_header_get_property (GObject *object,
 		g_value_set_object (value, header->priv->db);
 		break;
 	case PROP_ENTRY:
-		g_value_set_object (value, header->priv->entry);
+		g_value_set_boxed (value, header->priv->entry);
 		break;
 	case PROP_SHELL_PLAYER:
 		g_value_set_object (value, header->priv->shell_player);

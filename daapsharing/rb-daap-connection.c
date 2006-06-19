@@ -173,10 +173,11 @@ rb_daap_connection_class_init (RBDAAPConnectionClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_pointer ("entry-type",
-							       "entry type",
-							       "RhythmDBEntryType",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_boxed ("entry-type",
+							     "entry type",
+							     "RhythmDBEntryType",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_PASSWORD_PROTECTED,
@@ -1770,7 +1771,7 @@ rb_daap_connection_set_property (GObject *object,
 		priv->password_protected = g_value_get_boolean (value);
 		break;
 	case PROP_ENTRY_TYPE:
-		priv->db_type = g_value_get_pointer (value);
+		priv->db_type = g_value_get_boxed (value);
 		break;
 	case PROP_HOST:
 		g_free (priv->host);
@@ -1801,7 +1802,7 @@ rb_daap_connection_get_property (GObject *object,
 		g_value_set_string (value, priv->name);
 		break;
 	case PROP_ENTRY_TYPE:
-		g_value_set_pointer (value, priv->db_type);
+		g_value_set_boxed (value, priv->db_type);
 		break;
 	case PROP_PASSWORD_PROTECTED:
 		g_value_set_boolean (value, priv->password_protected);

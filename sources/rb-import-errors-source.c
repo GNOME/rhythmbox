@@ -202,6 +202,7 @@ rb_import_errors_source_new (RBShell *shell,
 					  "shell", shell,
 					  "visibility", FALSE,
 					  NULL));
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	return source;
 }
 

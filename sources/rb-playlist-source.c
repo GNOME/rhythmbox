@@ -186,10 +186,11 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_pointer ("entry-type",
-							       "Entry type",
-							       "Type of the entries which should be displayed by this playlist",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_boxed ("entry-type",
+							     "Entry type",
+							     "Type of the entries which should be displayed by this playlist",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBPlaylistSourcePrivate));
 }
@@ -333,7 +334,7 @@ rb_playlist_source_set_property (GObject *object,
 		source->priv->is_local = g_value_get_boolean (value);
 		break;
 	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_pointer (value);
+		source->priv->entry_type = g_value_get_boxed (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -361,7 +362,7 @@ rb_playlist_source_get_property (GObject *object,
 		g_value_set_boolean (value, source->priv->is_local);
 		break;
 	case PROP_ENTRY_TYPE:
-		g_value_set_pointer (value, source->priv->entry_type);
+		g_value_set_boxed (value, source->priv->entry_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

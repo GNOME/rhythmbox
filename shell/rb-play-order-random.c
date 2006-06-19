@@ -104,8 +104,8 @@ rb_random_play_order_init (RBRandomPlayOrder *rorder)
 	rorder->priv = RB_RANDOM_PLAY_ORDER_GET_PRIVATE (rorder);
 
 	rorder->priv->history = rb_history_new (TRUE,
-						(GFunc) rb_play_order_unref_entry_swapped,
-					       	rb_play_order_get_db (RB_PLAY_ORDER (rorder)));
+						(GFunc) rhythmdb_entry_unref,
+					       	NULL);
 	rb_history_set_maximum_size (rorder->priv->history, 50);
 
 	rorder->priv->query_model_changed = TRUE;
@@ -229,8 +229,8 @@ rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 			if (!rorder->priv->tentative_history)
 				rorder->priv->tentative_history
 				       	= rb_history_clone (rorder->priv->history,
-							    (GFunc) rb_play_order_ref_entry_swapped,
-							    rb_play_order_get_db (RB_PLAY_ORDER (rorder)));
+							    (GFunc) rhythmdb_entry_unref,
+							    NULL);
 			rb_history_remove_entry (rorder->priv->tentative_history, 
 						 g_ptr_array_index (history_contents, i));
 		}
@@ -333,7 +333,7 @@ rb_random_play_order_get_next (RBPlayOrder* porder)
 		rb_debug ("choosing random entry");
 		entry = rb_random_play_order_pick_entry (rorder);
 		if (entry) {
-			rhythmdb_entry_ref (rb_play_order_get_db (porder), entry);
+			rhythmdb_entry_ref (entry);
 			rb_history_append (history, entry);
 		}
 	} else {
@@ -369,6 +369,7 @@ rb_random_play_order_go_next (RBPlayOrder* porder)
 	else
 		rb_history_go_next (history);
 	rb_play_order_set_playing_entry (porder, rb_history_current (history));
+	rhythmdb_entry_unref (entry);
 }
 
 static RhythmDBEntry*
@@ -413,8 +414,8 @@ rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db)
 	rb_history_clear (RB_RANDOM_PLAY_ORDER (porder)->priv->history); 
 
 	rb_history_set_destroy_notify (RB_RANDOM_PLAY_ORDER (porder)->priv->history,
-				       (GFunc) rb_play_order_unref_entry_swapped,
-				       db);
+				       (GFunc) rhythmdb_entry_unref,
+				       NULL);
 }
 
 static void
@@ -433,7 +434,7 @@ rb_random_playing_entry_changed (RBPlayOrder *porder,
 		if (new_entry == rb_history_current (get_history (rorder))) {
 			/* Do nothing */
 		} else {
-			rhythmdb_entry_ref (rb_play_order_get_db (porder), new_entry);
+			rhythmdb_entry_ref (new_entry);
 			rb_history_set_playing (get_history (rorder), new_entry);
 		}
 	}

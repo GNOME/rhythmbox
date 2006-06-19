@@ -1000,7 +1000,7 @@
 
 (define-virtual impl_can_pause
   (of-object "RBSource")
-  (return-type "none")
+  (return-type "gboolean")
 )
 
 (define-virtual impl_handle_eos
@@ -1015,7 +1015,7 @@
 
 (define-virtual impl_receive_drag
   (of-object "RBSource")
-  (return-type "RBSourceEOFType")
+  (return-type "gboolean")
   (parameters
     '("GtkSelectionData*" "selection")
   )

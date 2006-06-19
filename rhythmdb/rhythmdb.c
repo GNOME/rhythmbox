@@ -775,14 +775,14 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 	for (l = added_entries; l; l = g_list_next (l)) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
-		rhythmdb_entry_unref (db, entry);
+		rhythmdb_entry_unref (entry);
 	}
 
 	/* emit deleted entries */
 	for (l = deleted_entries; l; l = g_list_next (l)) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
-		rhythmdb_entry_unref (db, entry);
+		rhythmdb_entry_unref (entry);
 	}
 
 	g_list_free (added_entries);
@@ -813,7 +813,7 @@ process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
 	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
 	entry->flags |= RHYTHMDB_ENTRY_INSERTED;
 	
-	rhythmdb_entry_ref (db, entry);
+	rhythmdb_entry_ref (entry);
 	db->priv->added_entries_to_emit = g_list_prepend (db->priv->added_entries_to_emit, entry);
 	return TRUE;
 }
@@ -1074,14 +1074,16 @@ rhythmdb_entry_example_new (RhythmDB *db, RhythmDBEntryType type, const char *ur
  *
  * Increase the reference count of the entry.
  **/
-void
-rhythmdb_entry_ref (RhythmDB *db, RhythmDBEntry *entry)
+RhythmDBEntry *
+rhythmdb_entry_ref (RhythmDBEntry *entry)
 {
-	g_atomic_int_inc (&entry->refcount);
+	if (entry != NULL)
+		g_atomic_int_inc (&entry->refcount);
+	return entry;
 }
 
 static void
-rhythmdb_entry_finalize (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_entry_finalize (RhythmDBEntry *entry)
 {
 	RhythmDBEntryType type;
 
@@ -1109,10 +1111,10 @@ rhythmdb_entry_finalize (RhythmDB *db, RhythmDBEntry *entry)
  * no references left.
  **/
 void
-rhythmdb_entry_unref (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_entry_unref (RhythmDBEntry *entry)
 {
-	if (g_atomic_int_dec_and_test (&entry->refcount))
-		rhythmdb_entry_finalize (db, entry);
+	if (entry && g_atomic_int_dec_and_test (&entry->refcount))
+		rhythmdb_entry_finalize (entry);
 }
 
 /**
@@ -2708,7 +2710,7 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 	
 	klass->impl_entry_delete (db, entry);
 
-	rhythmdb_entry_ref (db, entry);
+	rhythmdb_entry_ref (entry);
 	g_mutex_lock (db->priv->change_mutex);
 	g_hash_table_insert (db->priv->deleted_entries, entry, g_thread_self ());
 	g_mutex_unlock (db->priv->change_mutex);
@@ -3850,7 +3852,9 @@ rhythmdb_entry_get_type (void)
 	static GType type = 0;
 
 	if (G_UNLIKELY (type == 0)) {
-		type = g_pointer_type_register_static ("RhythmDBEntry");
+		type = g_boxed_type_register_static ("RhythmDBEntry",
+						     (GBoxedCopyFunc)rhythmdb_entry_ref,
+						     (GBoxedFreeFunc)rhythmdb_entry_unref);
 	}
 
 	return type;
@@ -3862,7 +3866,9 @@ rhythmdb_entry_type_get_type (void)
 	static GType type = 0;
 
 	if (G_UNLIKELY (type == 0)) {
-		type = g_pointer_type_register_static ("RhythmDBEntryType");
+		type = g_boxed_type_register_static ("RhythmDBEntryType",
+						     (GBoxedCopyFunc)rb_copy_function,
+						     (GBoxedFreeFunc)rb_null_function);
 	}
 
 	return type;

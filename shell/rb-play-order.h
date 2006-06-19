@@ -180,9 +180,6 @@ gboolean		rb_play_order_player_is_playing	(RBPlayOrder *porder);
 
 void			rb_play_order_check_if_empty (RBPlayOrder *porder, RhythmDBEntry *entry);
 
-void			rb_play_order_ref_entry_swapped		(RhythmDBEntry *entry, RhythmDB *db);
-void			rb_play_order_unref_entry_swapped	(RhythmDBEntry *entry, RhythmDB *db);
-
 G_END_DECLS
 
 #endif /* __RB_PLAY_ORDER_H */

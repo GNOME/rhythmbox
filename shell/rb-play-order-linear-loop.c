@@ -73,8 +73,13 @@ rb_linear_play_order_loop_get_next (RBPlayOrder* porder)
 		return NULL;
 
 	g_object_get (porder, "playing-entry", &entry, NULL);
-	if (entry)
-		entry = rhythmdb_query_model_get_next_from_entry (model, entry);
+	if (entry) {
+		RhythmDBEntry *next;
+	
+		next = rhythmdb_query_model_get_next_from_entry (model, entry);
+		rhythmdb_entry_unref (entry);
+		entry = next;
+	}
 	if (entry == NULL) {
 		/* loop back to (or start from) the first entry */
 		GtkTreeIter iter;
@@ -101,8 +106,10 @@ rb_linear_play_order_loop_get_previous (RBPlayOrder* porder)
 		return NULL;
 
 	g_object_get (porder, "playing-entry", &entry, NULL);
-	if (entry)
+	if (entry) {
 		prev = rhythmdb_query_model_get_previous_from_entry (model, entry);
+		rhythmdb_entry_unref (entry);
+	}
 
 	if (prev == NULL) {
 		/* loop to last entry */

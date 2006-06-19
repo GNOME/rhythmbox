@@ -53,6 +53,13 @@ rb_null_function (gpointer dummy)
 	return NULL;
 }
 
+gpointer
+rb_copy_function (gpointer data)
+{
+	return data;
+}
+
+
 int
 rb_gvalue_compare (GValue *a, GValue *b)
 {

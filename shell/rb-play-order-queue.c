@@ -95,7 +95,11 @@ rb_queue_play_order_get_next (RBPlayOrder* porder)
 			return NULL;
 		return rhythmdb_query_model_iter_to_entry (model, &iter);
 	} else {
-		return rhythmdb_query_model_get_next_from_entry (model, entry);
+		RhythmDBEntry *next;
+
+		next = rhythmdb_query_model_get_next_from_entry (model, entry);
+		rhythmdb_entry_unref (entry);
+		return next;
 	}
 }
 
@@ -117,7 +121,7 @@ static RhythmDBEntry*
 rb_queue_play_order_get_previous (RBPlayOrder* porder)
 {
 	RhythmDBQueryModel *model;
-	RhythmDBEntry *entry;
+	RhythmDBEntry *entry, *prev;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_QUEUE_PLAY_ORDER (porder), NULL);
@@ -129,7 +133,9 @@ rb_queue_play_order_get_previous (RBPlayOrder* porder)
 	g_object_get (porder, "playing-entry", &entry, NULL);
 	if (entry == NULL)
 		return NULL;
-	return rhythmdb_query_model_get_previous_from_entry (model, entry);
+	prev = rhythmdb_query_model_get_previous_from_entry (model, entry);
+	rhythmdb_entry_unref (entry);
+	return prev;
 }
 
 static void

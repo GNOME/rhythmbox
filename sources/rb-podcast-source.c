@@ -372,10 +372,11 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
-					 g_param_spec_pointer ("entry-type",
-							       "Entry type",
-							       "Type of the entries which should be displayed by this source",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_boxed ("entry-type",
+							     "Entry type",
+							     "Type of the entries which should be displayed by this source",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_PODCAST_MANAGER,
@@ -777,7 +778,7 @@ rb_podcast_source_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_pointer (value);
+		source->priv->entry_type = g_value_get_boxed (value);
 		break;
 	case PROP_PODCAST_MANAGER:
 		source->priv->podcast_mg = g_value_get_object (value);
@@ -798,7 +799,7 @@ rb_podcast_source_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_TYPE:
-		g_value_set_pointer (value, source->priv->entry_type);
+		g_value_set_boxed (value, source->priv->entry_type);
 		break;
 	case PROP_PODCAST_MANAGER:
 		g_value_set_object (value, source->priv->podcast_mg);
@@ -1126,6 +1127,7 @@ construct_query_from_selection (RBPodcastSource *source)
 				      RHYTHMDB_PROP_TYPE,
 				      entry_type,
 				      RHYTHMDB_QUERY_END);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	if (source->priv->search_text) {
 		GPtrArray *subquery;

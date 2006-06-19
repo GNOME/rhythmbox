@@ -215,7 +215,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				rb_marshal_VOID__POINTER_ULONG,
 				G_TYPE_NONE,
 				2,
-				G_TYPE_POINTER,
+				RHYTHMDB_TYPE_ENTRY,
 				G_TYPE_ULONG);
 
 	rb_podcast_manager_signals[START_DOWNLOAD] = 
@@ -227,7 +227,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				g_cclosure_marshal_VOID__POINTER,
 				G_TYPE_NONE,
 				1,
-				G_TYPE_POINTER);
+				RHYTHMDB_TYPE_ENTRY);
 
 	rb_podcast_manager_signals[FINISH_DOWNLOAD] = 
 	       g_signal_new ("finish_download",
@@ -238,7 +238,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				g_cclosure_marshal_VOID__POINTER,
 				G_TYPE_NONE,
 				1,
-				G_TYPE_POINTER);
+				RHYTHMDB_TYPE_ENTRY);
 
 	rb_podcast_manager_signals[FEED_UPDATES_AVALIABLE] = 
 	       g_signal_new ("feed_updates_avaliable",
@@ -249,7 +249,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				g_cclosure_marshal_VOID__POINTER,
 				G_TYPE_NONE,
 				1,
-				G_TYPE_POINTER);
+				RHYTHMDB_TYPE_ENTRY);
 
 	rb_podcast_manager_signals[PROCESS_ERROR] = 
 	       g_signal_new ("process_error",

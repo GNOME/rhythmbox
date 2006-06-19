@@ -232,6 +232,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rb_debug ("Audio CD - create entry for track %d from %s", track_number, audio_path);
 	entry = rhythmdb_entry_new (db, entry_type, audio_path);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	if (entry == NULL) {
 		g_free (audio_path);
 		return NULL;
@@ -580,6 +581,7 @@ impl_delete_thyself (RBSource *source)
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	rhythmdb_commit (db);
 	g_object_unref (db);
 }
