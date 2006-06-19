@@ -381,6 +381,12 @@ rb_is_main_thread (void)
 	}
 }
 
+static gboolean
+purge_useless_threads (gpointer data)
+{
+	g_thread_pool_stop_unused_threads ();
+	return TRUE;
+}
 
 void
 rb_threads_init (void)
@@ -392,6 +398,9 @@ rb_threads_init (void)
 	 * set up lock functions some day..
 	 */
 	gdk_threads_init ();
+
+	/* purge useless thread-pool threads occasionally */
+	g_timeout_add (30 * 1000, purge_useless_threads, NULL);
 }
 
 gchar **

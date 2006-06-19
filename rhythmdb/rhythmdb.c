@@ -347,6 +347,10 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->event_queue = g_async_queue_new ();
 	db->priv->restored_queue = g_async_queue_new ();
 
+	db->priv->query_thread_pool = g_thread_pool_new ((GFunc)query_thread_main,
+							 NULL,
+							 -1, FALSE, NULL);
+
 	db->priv->metadata = rb_metadata_new ();
 	
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
@@ -582,6 +586,7 @@ rhythmdb_finalize (GObject *object)
 		g_source_remove (db->priv->save_timeout_id);
 	}
 
+	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
 	g_async_queue_unref (db->priv->action_queue);
 	g_async_queue_unref (db->priv->event_queue);
 	g_async_queue_unref (db->priv->restored_queue);
@@ -2976,7 +2981,11 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db,
 	rhythmdb_query_results_set_query (results, query);
 
 	g_object_ref (G_OBJECT (results));
-	rhythmdb_thread_create (db, (GThreadFunc) query_thread_main, data);
+	g_object_ref (G_OBJECT (db));
+	g_atomic_int_inc (&db->priv->outstanding_threads);
+	g_async_queue_ref (db->priv->action_queue);
+	g_async_queue_ref (db->priv->event_queue);
+	g_thread_pool_push (db->priv->query_thread_pool, data, NULL);
 }
 
 void

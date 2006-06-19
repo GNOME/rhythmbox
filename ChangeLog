@@ -1,3 +1,13 @@
+2006-06-18  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-util.c: (purge_useless_threads), (rb_threads_init): purge
+	unushed GThreadPool non-exclusive threads every now and then.
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_finalize),
+	(rhythmdb_do_full_query_async_parsed): Use a thread pool for query
+	threads. Fixes #341593
+
 2006-06-19  James Livingston  <doclivingston@gmail.com>
 
 	* sources/rb-playlist-source.c: (rb_playlist_source_constructor): make
