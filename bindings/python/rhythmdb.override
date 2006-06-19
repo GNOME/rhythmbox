@@ -41,8 +41,8 @@ _rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQ
 	PyObject *py_a, *py_b;
 	int result;
 
-	py_a = pyg_pointer_new (RHYTHMDB_TYPE_ENTRY, a);
-	py_b = pyg_pointer_new (RHYTHMDB_TYPE_ENTRY, b);
+	py_a = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, a, TRUE, TRUE);
+	py_b = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, b, TRUE, TRUE);
 	if (data->data)
 		args = Py_BuildValue ("(OOO)", py_a, py_b, data->data);
 	else
@@ -99,7 +99,7 @@ _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)
 
     db = RHYTHMDB (self->obj);
     g_value_init (&value, rhythmdb_get_property_type (db, propid));
-    rhythmdb_entry_get(db, pyg_pointer_get (entry, RhythmDBEntry), propid, &value);
+    rhythmdb_entry_get(db, pyg_boxed_get (entry, RhythmDBEntry), propid, &value);
     ret = pyg_value_as_pyobject (&value, TRUE);
     g_value_unset (&value);
     if (ret)
@@ -122,8 +122,8 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set", kwlist, &py_entry, &py_propid, &py_value))
         return NULL;
-    if (pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY))
-        entry = pyg_pointer_get(py_entry, RhythmDBEntry);
+    if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY))
+        entry = pyg_boxed_get(py_entry, RhythmDBEntry);
     else {
         PyErr_SetString(PyExc_TypeError, "entry should be a RhythmDBEntry");
         return NULL;
@@ -156,8 +156,8 @@ _wrap_rhythmdb_entry_set_nonotify(PyGObject *self, PyObject *args, PyObject *kwa
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set_nonotify", kwlist, &py_entry, &py_propid, &py_value))
         return NULL;
-    if (pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY))
-        entry = pyg_pointer_get(py_entry, RhythmDBEntry);
+    if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY))
+        entry = pyg_boxed_get(py_entry, RhythmDBEntry);
     else {
         PyErr_SetString(PyExc_TypeError, "entry should be a RhythmDBEntry");
         return NULL;
@@ -190,8 +190,8 @@ _wrap_rhythmdb_entry_set_uninserted(PyGObject *self, PyObject *args, PyObject *k
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set_uninserted", kwlist, &py_entry, &py_propid, &py_value))
         return NULL;
-    if (pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY))
-        entry = pyg_pointer_get(py_entry, RhythmDBEntry);
+    if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY))
+        entry = pyg_boxed_get(py_entry, RhythmDBEntry);
     else {
         PyErr_SetString(PyExc_TypeError, "entry should be a RhythmDBEntry");
         return NULL;
@@ -229,12 +229,12 @@ _wrap_rhythmdb_query_results_add_results (PyGObject *self, PyObject *args, PyObj
         RhythmDBEntry *entry;
 
         py_entry = PyList_GetItem(py_entries, i);
-        if (!pyg_pointer_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+        if (!pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
             g_ptr_array_free(array, FALSE);
             return NULL;
         }
 
-	entry = pyg_pointer_get(py_entry, RhythmDBEntry);
+	entry = pyg_boxed_get(py_entry, RhythmDBEntry);
         g_ptr_array_add(array, entry);
     }
 
@@ -260,7 +260,7 @@ _rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  
 	PyObject *result;
 	PyObject *py_entry;
 
-	py_entry = pyg_pointer_new (RHYTHMDB_TYPE_ENTRY, entry);
+	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, TRUE, TRUE);
 	if (data->data)
 		args = Py_BuildValue ("(OO)", py_entry, data->data);
 	else
