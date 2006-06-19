@@ -1,5 +1,12 @@
 2006-06-19  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Nguyễn Thái Ngọc Duy  <pclouds@gmail.com>
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	don't try to translate the empty string. Fixes #345285.
+
+2006-06-19  James Livingston  <doclivingston@gmail.com>
+
 	* bindings/python/rhythmdb.override: more python binding fixes
 
 2006-06-19  James Livingston  <doclivingston@gmail.com>
