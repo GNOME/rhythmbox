@@ -69,9 +69,9 @@ static void default_move_to_trash (RBSource *source);
 static GList * default_get_ui_actions (RBSource *source);
 static GList * default_get_search_actions (RBSource *source);
 
-static void rb_source_row_deleted_cb (GtkTreeModel *model,
-				      GtkTreePath *path,
-				      RBSource *source);
+static void rb_source_post_entry_deleted_cb (GtkTreeModel *model,
+					     RhythmDBEntry *entry,
+					     RBSource *source);
 static void rb_source_row_inserted_cb (GtkTreeModel *model,
 				       GtkTreePath *path,
 				       GtkTreeIter *iter,
@@ -86,7 +86,6 @@ struct _RBSourcePrivate
 	RBShell *shell;
 	gboolean visible;
 	RhythmDBQueryModel *query_model;
-	guint idle_status_changed_id;
 	GdkPixbuf *pixbuf;
 	RBSourceListGroup sourcelist_group;
 };
@@ -275,9 +274,6 @@ rb_source_finalize (GObject *object)
 
 	rb_debug ("Finalizing view %p", source);
 
-	if (priv->idle_status_changed_id)
-		g_source_remove (priv->idle_status_changed_id);
-	
 	g_object_unref (G_OBJECT (priv->query_model));
 
 	if (priv->pixbuf != NULL) {
@@ -342,7 +338,7 @@ rb_source_set_property (GObject *object,
 
 		if (priv->query_model) {
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
-							      G_CALLBACK (rb_source_row_deleted_cb),
+							      G_CALLBACK (rb_source_post_entry_deleted_cb),
 							      source);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
 							      G_CALLBACK (rb_source_row_inserted_cb),
@@ -353,8 +349,8 @@ rb_source_set_property (GObject *object,
 		priv->query_model = model;
 		if (priv->query_model) {
 			g_object_ref (G_OBJECT (model));
-			g_signal_connect_object (G_OBJECT (model), "row_deleted",
-						 G_CALLBACK (rb_source_row_deleted_cb),
+			g_signal_connect_object (G_OBJECT (model), "post-entry-delete",
+						 G_CALLBACK (rb_source_post_entry_deleted_cb),
 						 source, 0);
 			g_signal_connect_object (G_OBJECT (model), "row_inserted",
 						 G_CALLBACK (rb_source_row_inserted_cb),
@@ -947,28 +943,12 @@ rb_source_row_inserted_cb (GtkTreeModel *model,
 	rb_source_notify_status_changed (source);
 }
 
-static gboolean
-idle_emit_status_changed (RBSource *source)
-{
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-	rb_source_notify_status_changed (source);
-	priv->idle_status_changed_id = 0;
-	return FALSE;
-}
-
 static void
-rb_source_row_deleted_cb (GtkTreeModel *model,
-			  GtkTreePath *path,
-			  RBSource *source)
+rb_source_post_entry_deleted_cb (GtkTreeModel *model,
+				 RhythmDBEntry *entry,
+				 RBSource *source)
 {
-	/* Emit the signal after the deletion has actually been processed,
-	 * since if we update the status now it'll show the old state.
-	 */
-	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-	if (priv->idle_status_changed_id == 0) {
-		priv->idle_status_changed_id = 
-			g_idle_add ((GSourceFunc) idle_emit_status_changed, source);
-	}
+	rb_source_notify_status_changed (source);
 }
 
 static void
@@ -1040,20 +1020,20 @@ _rb_source_register_action_group (RBSource *source,
 }
 
 static void
-_autohide_update_visibility (RBSource *source, GtkTreeModel *model, int adjust)
+_autohide_update_visibility (RBSource *source, GtkTreeModel *model)
 {
-	gint count = gtk_tree_model_iter_n_children (model, NULL) + adjust;
+	gint count = gtk_tree_model_iter_n_children (model, NULL);
 	/* only update the property if it will have actually changed */
 	if (count < 2)
 		g_object_set (G_OBJECT (source), "visibility", (count > 0), NULL);
 }
 
 static void
-_rb_autohide_source_row_deleted_cb (GtkTreeModel *model,
-				    GtkTreePath *path,
-				    RBSource *source)
+_rb_autohide_source_post_entry_deleted_cb (GtkTreeModel *model,
+					   RhythmDBEntry *entry,
+					   RBSource *source)
 {
-	_autohide_update_visibility (source, model, -1);
+	_autohide_update_visibility (source, model);
 }
 
 static void
@@ -1062,15 +1042,15 @@ _rb_autohide_source_row_inserted_cb (GtkTreeModel *model,
 				     GtkTreeIter *iter,
 				     RBSource *source)
 {
-	_autohide_update_visibility (source, model, 0);
+	_autohide_update_visibility (source, model);
 }
 
 void
 _rb_source_hide_when_empty (RBSource *source,
 			    RhythmDBQueryModel *model)
 {
-	g_signal_connect_object (G_OBJECT (model), "row-deleted",
-				 G_CALLBACK (_rb_autohide_source_row_deleted_cb),
+	g_signal_connect_object (G_OBJECT (model), "post-entry-delete",
+				 G_CALLBACK (_rb_autohide_source_post_entry_deleted_cb),
 				 source, 0);
 	g_signal_connect_object (G_OBJECT (model), "row-inserted",
 				 G_CALLBACK (_rb_autohide_source_row_inserted_cb),
