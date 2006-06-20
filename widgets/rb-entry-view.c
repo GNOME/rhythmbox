@@ -411,6 +411,9 @@ rb_entry_view_finalize (GObject *object)
 	if (view->priv->sorting_gconf_notification_id > 0)
 		eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
 
+	if (view->priv->selection_changed_id > 0)
+		g_source_remove (view->priv->selection_changed_id);
+
 	g_hash_table_destroy (view->priv->propid_column_map);
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 	g_hash_table_destroy (view->priv->column_key_map);
