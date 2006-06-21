@@ -167,17 +167,17 @@ id3_pad_added_cb (GstElement *demux, GstPad *pad, GstElement *mux)
 }
 
 static gboolean
-rb_gst_plugin_greater (const char *plugin, gint major, gint minor, gint micro)
+rb_gst_plugin_greater (const char *plugin, const char *element, gint major, gint minor, gint micro)
 {
 	const char *version;
 	GstPlugin *p;
 	guint i;
 	guint count;
 
-	if (gst_default_registry_check_feature_version (plugin, major, minor, micro + 1))
+	if (gst_default_registry_check_feature_version (element, major, minor, micro + 1))
 		return TRUE;
-	
-	if (!gst_default_registry_check_feature_version (plugin, major, minor, micro))
+
+	if (!gst_default_registry_check_feature_version (element, major, minor, micro))
 		return FALSE;
 
 	p = gst_default_registry_find_plugin (plugin);
@@ -202,14 +202,22 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 	mux = gst_element_factory_make ("id3v2mux", NULL);
 	if (mux != NULL) {
 		/* check for backwards id3v2mux merge-mode */
-		if (!rb_gst_plugin_greater ("id3v2mux", 0, 10, 3))
+		if (!rb_gst_plugin_greater ("taglib", "id3v2mux", 0, 10, 3)) {
+			rb_debug ("using id3v2mux with backwards merge mode");
 			gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
+		} else {
+			rb_debug ("using id3v2mux");
+		}
 	} else {
 		mux =  gst_element_factory_make ("id3mux", NULL);
 
 		/* check for backwards id3mux merge-mode */
-		if (mux && !rb_gst_plugin_greater ("mad", 0, 10, 3))
+		if (mux && !rb_gst_plugin_greater ("mad", "id3mux", 0, 10, 3)) {
+			rb_debug ("using id3mux with backwards merge mode");
 			gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
+		} else {
+			rb_debug ("using id3mux");
+		}
 	}
 
 	if (demux == NULL || mux == NULL)
