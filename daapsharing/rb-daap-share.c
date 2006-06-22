@@ -1048,7 +1048,7 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 	if (client_requested (mb->bits, SONG_USER_RATING))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASUR, 0); /* FIXME */
 	if (client_requested (mb->bits, SONG_YEAR))
-		rb_daap_structure_add (mlit, RB_DAAP_CC_ASYR, 0);
+		rb_daap_structure_add (mlit, RB_DAAP_CC_ASYR, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR));
 	
 	return;
 }
