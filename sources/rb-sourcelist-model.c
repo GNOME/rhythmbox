@@ -134,10 +134,10 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSourceListModelClass, drop_received),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_INT_POINTER,
+			      rb_marshal_VOID__OBJECT_INT_POINTER,
 			      G_TYPE_NONE,
 			      3,
-			      G_TYPE_POINTER, G_TYPE_INT, G_TYPE_POINTER);
+			      RB_TYPE_SOURCE, G_TYPE_INT, G_TYPE_POINTER);
 
 	if (!sourcelist_drag_target_list)
 		sourcelist_drag_target_list = 

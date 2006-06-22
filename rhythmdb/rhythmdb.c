@@ -174,7 +174,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
@@ -184,7 +184,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
@@ -194,7 +194,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_POINTER,
+			      rb_marshal_VOID__BOXED_POINTER,
 			      G_TYPE_NONE, 2, 
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
 

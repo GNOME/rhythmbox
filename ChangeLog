@@ -1,3 +1,19 @@
+2006-06-22  James Livingston  <doclivingston@gmail.com>
+
+	* backends/rb-player.c: (rb_player_interface_init):
+	* lib/rb-marshal.list:
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init):
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init):
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_class_init):
+	* sources/rb-sourcelist.c: (rb_sourcelist_class_init):
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init):
+	* widgets/rb-song-info.c: (rb_song_info_class_init): fix the C
+	marshallers to use s/POINTER/BOXED/. Could fix #345384 but quite
+	possible not.
+
 2006-06-20  James Livingston  <doclivingston@gmail.com>
 
 	patch by Alex Lancaster  <alexl@users.sourceforge.net>

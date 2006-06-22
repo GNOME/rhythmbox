@@ -437,7 +437,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);

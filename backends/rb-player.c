@@ -56,7 +56,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      NULL, NULL,
 			      rb_marshal_VOID__INT_POINTER,
 			      G_TYPE_NONE,
-			      2, G_TYPE_INT, G_TYPE_POINTER);
+			      2, G_TYPE_INT, G_TYPE_VALUE);
 	signals[ERROR] =
 		g_signal_new ("error",
 			      G_TYPE_FROM_INTERFACE (iface),

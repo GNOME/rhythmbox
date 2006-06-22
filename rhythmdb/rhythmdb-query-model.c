@@ -344,7 +344,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_prop_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_INT_POINTER_POINTER,
+			      rb_marshal_VOID__BOXED_INT_POINTER_POINTER,
 			      G_TYPE_NONE,
 			      4, RHYTHMDB_TYPE_ENTRY, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
 	rhythmdb_query_model_signals[ENTRY_REMOVED] =
@@ -353,7 +353,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_removed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 	rhythmdb_query_model_signals[NON_ENTRY_DROPPED] =
@@ -378,7 +378,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, post_entry_delete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      g_cclosure_marshal_VOID__BOXED,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 

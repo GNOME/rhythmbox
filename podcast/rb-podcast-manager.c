@@ -212,7 +212,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		GTK_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, status_changed),
 				NULL, NULL,
-				rb_marshal_VOID__POINTER_ULONG,
+				rb_marshal_VOID__BOXED_ULONG,
 				G_TYPE_NONE,
 				2,
 				RHYTHMDB_TYPE_ENTRY,
@@ -224,7 +224,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		GTK_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, start_download),
 				NULL, NULL,
-				g_cclosure_marshal_VOID__POINTER,
+				g_cclosure_marshal_VOID__BOXED,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);
@@ -235,7 +235,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		GTK_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, finish_download),
 				NULL, NULL,
-				g_cclosure_marshal_VOID__POINTER,
+				g_cclosure_marshal_VOID__BOXED,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);
@@ -246,7 +246,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		GTK_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, feed_updates_avaliable),
 				NULL, NULL,
-				g_cclosure_marshal_VOID__POINTER,
+				g_cclosure_marshal_VOID__BOXED,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);

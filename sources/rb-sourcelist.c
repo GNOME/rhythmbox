@@ -191,7 +191,7 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      rb_marshal_BOOLEAN__POINTER,
 			      G_TYPE_BOOLEAN,
 			      1,
-			      G_TYPE_POINTER);
+			      RB_TYPE_SOURCE);
 
 	g_type_class_add_private (class, sizeof (RBSourceListPrivate));
 }
