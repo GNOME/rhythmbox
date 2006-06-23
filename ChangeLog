@@ -1,5 +1,13 @@
 2006-06-23  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-clipboard.c:
+	(rb_shell_clipboard_set_source_internal),
+	(rb_shell_clipboard_sync), (add_playlist_to_menu),
+	(rebuild_playlist_menu): don't use the add-to-playlist menu for
+	non-library tracks, as we don't supprot it yet. From #345248.
+
+2006-06-23  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Brian Cameron  <brian.cameron@sun.com>
 
 	* plugins/generic-player/rb-generic-player-plugin.c:

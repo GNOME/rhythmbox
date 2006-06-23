@@ -339,6 +339,8 @@ rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 						 clipboard, 0);
 		}
 	}
+
+	rebuild_playlist_menu (clipboard);
 }
 
 static void
@@ -464,6 +466,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	gboolean can_move_to_trash = FALSE;
 	gboolean can_select_all = FALSE;
 	GtkAction *action;
+	RhythmDBEntryType entry_type;
 
 	if (!clipboard->priv->source)
 		return FALSE;
@@ -533,6 +536,15 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectNone");
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
+
+
+	/* disable the whole add-to-playlist menu if we can't add to a playlist
+	 * FIXME: change this when we support non-library playilst adding
+	 */
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
+	g_object_get (G_OBJECT (clipboard->priv->source), "entry-type", &entry_type, NULL);
+	gtk_action_set_sensitive (action, (entry_type == RHYTHMDB_ENTRY_TYPE_SONG));
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	return FALSE;
 }
@@ -847,6 +859,10 @@ add_playlist_to_menu (GtkTreeModel *model,
 
 	if (!RB_IS_STATIC_PLAYLIST_SOURCE (source))
 		return FALSE;
+
+	/* FIXME: allow add-to-playlist for iPods and the like,
+	 * based on the currently selected source
+	 */
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 	g_object_get (G_OBJECT (source), "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
@@ -896,6 +912,8 @@ rebuild_playlist_menu (RBShellClipboard *clipboard)
 {
 	GtkTreeModel *model = NULL;
 	GObject *sourcelist = NULL;
+
+	rb_debug ("rebuilding add-to-playlist menu");
 
 	if (clipboard->priv->playlist_menu_ui_id != 0) {
 		gtk_ui_manager_remove_ui (clipboard->priv->ui_mgr,
