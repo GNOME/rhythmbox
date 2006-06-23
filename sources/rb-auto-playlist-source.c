@@ -627,6 +627,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 					    "limit-type", priv->limit_type,
 					    "limit-value", priv->limit_value,
 					    NULL);
+		g_object_set (G_OBJECT (query_model), "base-model", priv->cached_all_query, NULL);
 		rb_library_browser_set_model (priv->browser, query_model, TRUE);
 
 		priv->query_active = TRUE;

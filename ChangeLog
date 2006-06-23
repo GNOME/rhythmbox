@@ -1,5 +1,11 @@
 2006-06-23  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_do_query): stop the search box being applied
+	for limits in auto playlists. Fixes #345307.
+
+2006-06-23  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-clipboard.c:
 	(rb_shell_clipboard_set_source_internal),
 	(rb_shell_clipboard_sync), (add_playlist_to_menu),
