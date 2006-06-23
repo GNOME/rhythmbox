@@ -19,6 +19,8 @@
  *
  */
 
+#define __EXTENSIONS__
+
 #include <config.h>
 
 #include <gtk/gtktreeview.h>

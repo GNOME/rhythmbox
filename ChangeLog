@@ -1,3 +1,13 @@
+2006-06-23  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Brian Cameron  <brian.cameron@sun.com>
+
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	* plugins/generic-player/rb-generic-player-source.c:
+	* plugins/generic-player/rb-nokia770-source.c:
+	* plugins/generic-player/rb-psp-source.c: Fix the build on Solaris.
+	Fixes 345673.
+
 2006-06-22  James Livingston  <doclivingston@gmail.com>
 
 	* backends/rb-player.c: (rb_player_interface_init):
