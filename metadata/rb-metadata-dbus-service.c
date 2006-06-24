@@ -26,6 +26,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <glib/gi18n.h>
 #include <libgnomeui/gnome-authentication-manager.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <gst/gst.h>
