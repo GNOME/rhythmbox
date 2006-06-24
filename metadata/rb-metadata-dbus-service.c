@@ -426,6 +426,12 @@ main (int argc, char **argv)
 	gboolean debug = FALSE;
 	const char *address = NULL;
 
+#ifdef ENABLE_NLS
+	/* initialize i18n */
+	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+	textdomain (GETTEXT_PACKAGE);
+#endif
 	g_type_init ();
 	gnome_vfs_init ();
 	gnome_authentication_manager_init ();

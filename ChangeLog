@@ -1,5 +1,14 @@
 2006-06-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by: Nguyễn Thái Ngọc Duy  <pclouds@gmail.com>
+
+	* metadata/rb-metadata-dbus-service.c: (main):
+	Initialize gettext in the metadata helper.
+	* metadata/rb-metadata-gst.c:
+	Make some strings translatable.  Fixes #345286.
+
+2006-06-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* configure.ac:
 	* lib/Makefile.am:
 	* lib/rb-stock-icons.c: (rb_stock_icons_init):

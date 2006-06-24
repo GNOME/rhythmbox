@@ -1359,7 +1359,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
-			     "Unsupported file type: %s", md->priv->type);
+			     _("Unsupported file type: %s"), md->priv->type);
 		goto out_error;
 	}
 
@@ -1368,7 +1368,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
-			     "Unable to create tag-writing elements");
+			     _("Unable to create tag-writing elements"));
 		goto out_error;
 	}
 
@@ -1391,7 +1391,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_INTERNAL,
-				     "Timeout while setting pipeline to NULL");
+				     _("Timeout while setting pipeline to NULL"));
 			goto out_error;
 		}
 	}
@@ -1411,7 +1411,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_INTERNAL,
-				     "File corrupted during write");
+				     _("File corrupted during write"));
 			goto out_error;
 		}
 		
