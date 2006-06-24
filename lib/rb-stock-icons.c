@@ -29,6 +29,19 @@
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 
+/* inline pixbuf data */
+#include "rhythmbox-set-star-inline.h"
+#include "rhythmbox-unset-star-inline.h"
+#include "rhythmbox-no-star-inline.h"
+#include "rhythmbox-podcast-inline.h"
+#include "rhythmbox-tray-icon-inline.h"
+#include "media-eject-inline.h"
+
+typedef struct {
+	const guint8 *data;
+	const char *name;
+} RBInlineIconData;
+
 static GtkIconFactory *factory = NULL;
 
 const char RB_APP_ICON[] = "rhythmbox";
@@ -44,30 +57,39 @@ const char GNOME_MEDIA_PLAYLIST[] = "stock_playlist";
 const char GNOME_MEDIA_AUTO_PLAYLIST[] = "stock_smart-playlist";
 const char GNOME_MEDIA_EJECT[] = "media-eject";
 
+static RBInlineIconData inline_icons[] = {
+	{ rhythmbox_set_star_inline, RB_STOCK_SET_STAR },
+	{ rhythmbox_unset_star_inline, RB_STOCK_UNSET_STAR },
+	{ rhythmbox_no_star_inline, RB_STOCK_NO_STAR },
+	{ rhythmbox_podcast_inline, RB_STOCK_PODCAST },
+	{ rhythmbox_tray_icon_inline, RB_STOCK_TRAY_ICON },
+	{ media_eject_inline, GNOME_MEDIA_EJECT }
+};
+
+static const char* icons[] =
+{
+	/* Rhythmbox custom icons */
+	RB_STOCK_TRAY_ICON,
+	RB_STOCK_SET_STAR,
+	RB_STOCK_UNSET_STAR,
+	RB_STOCK_PODCAST,
+	RB_STOCK_NO_STAR,
+	
+	/* gnome-icon-theme icons */
+	GNOME_MEDIA_SHUFFLE,
+	GNOME_MEDIA_REPEAT,
+	GNOME_MEDIA_PLAYLIST,
+	GNOME_MEDIA_AUTO_PLAYLIST,
+	GNOME_MEDIA_EJECT,
+	RB_STOCK_BROWSER
+};
+
 void
 rb_stock_icons_init (void)
 {
 	GtkIconTheme *theme = gtk_icon_theme_get_default ();
 	int i;
 	int icon_size;
-
-	static const char* items[] =
-	{
-		/* Rhythmbox custom icons */
-		RB_STOCK_TRAY_ICON,
-		RB_STOCK_SET_STAR,
-		RB_STOCK_UNSET_STAR,
-		RB_STOCK_PODCAST,
-		RB_STOCK_NO_STAR,
-		
-		/* gnome-icon-theme icons */
-		GNOME_MEDIA_SHUFFLE,
-		GNOME_MEDIA_REPEAT,
-		GNOME_MEDIA_PLAYLIST,
-		GNOME_MEDIA_AUTO_PLAYLIST,
-		GNOME_MEDIA_EJECT,
-		RB_STOCK_BROWSER
-	};
 
 	g_return_if_fail (factory == NULL);
 
@@ -77,12 +99,27 @@ rb_stock_icons_init (void)
 	/* we should really add all the sizes */
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
 
-	for (i = 0; i < (int) G_N_ELEMENTS (items); i++) {
+	/* add inline icons */
+	for (i = 0; i < (int) G_N_ELEMENTS (inline_icons); i++) {
+		GdkPixbuf *pixbuf;
+
+		pixbuf = gdk_pixbuf_new_from_inline (-1,
+						     inline_icons[i].data,
+						     FALSE,
+						     NULL);
+		g_assert (pixbuf);
+
+		gtk_icon_theme_add_builtin_icon (inline_icons[i].name,
+						 icon_size,
+						 pixbuf);
+	}
+
+	for (i = 0; i < (int) G_N_ELEMENTS (icons); i++) {
 		GtkIconSet *icon_set;
 		GdkPixbuf *pixbuf;
 
 		pixbuf = gtk_icon_theme_load_icon (theme,
-						   items[i],
+						   icons[i],
 						   icon_size,
 						   0,
 						   NULL);
@@ -90,7 +127,7 @@ rb_stock_icons_init (void)
 			char *fn;
 			const char *path;
 
-			fn = g_strconcat (items[i], ".png", NULL);
+			fn = g_strconcat (icons[i], ".png", NULL);
 			path = rb_file (fn);
 			if (path != NULL) {
 				pixbuf = gdk_pixbuf_new_from_file (path, NULL);
@@ -100,12 +137,12 @@ rb_stock_icons_init (void)
 
 		if (pixbuf) {
 			icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
-			gtk_icon_factory_add (factory, items[i], icon_set);
+			gtk_icon_factory_add (factory, icons[i], icon_set);
 			gtk_icon_set_unref (icon_set);
 			
 			g_object_unref (G_OBJECT (pixbuf));
 		} else {
-			g_warning ("Unable to load icon %s", items[i]);
+			g_warning ("Unable to load icon %s", icons[i]);
 		}
 	}
 

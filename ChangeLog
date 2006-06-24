@@ -1,3 +1,11 @@
+2006-06-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	* lib/Makefile.am:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	Inline the custom icons so they can always be loaded, but are still
+	themable.  Fixes #345796.
+
 2006-06-23  James Livingston  <doclivingston@gmail.com>
 
 	* sources/rb-auto-playlist-source.c:
