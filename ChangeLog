@@ -1,5 +1,15 @@
 2006-06-25  James Livingston  <doclivingston@gmail.com>
 
+	patch by Nguyễn Thái Ngọc Duy  <pclouds@gmail.com>
+
+	* widgets/rb-search-entry.c: (rb_search_entry_init),
+	(rb_search_entry_check_style), (rb_search_entry_changed_cb): make the
+	search box have a pale yellow background when it's in use, except for
+	when the user has an "accessability" theme. Code based heavily on
+	Epiphany's. Fixes #344416.
+
+2006-06-25  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/lyrics/lyrics.py:
 	* plugins/pythonconsole/pythonconsole.py:
 	* plugins/sample-python/sample-python.py: don't import gettext stuff

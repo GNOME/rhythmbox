@@ -50,6 +50,8 @@ struct RBSearchEntryPrivate
 	gboolean clearing;
 
 	guint timeout;
+
+	gboolean is_a11y_theme;
 };
 
 G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
@@ -99,8 +101,16 @@ static void
 rb_search_entry_init (RBSearchEntry *entry)
 {
 	GtkWidget *label;
+	GtkSettings *settings;
+	char *theme;
 
 	entry->priv = RB_SEARCH_ENTRY_GET_PRIVATE (entry);
+
+	settings = gtk_settings_get_for_screen (gtk_widget_get_screen (GTK_WIDGET (entry)));
+	g_object_get (settings, "gtk-theme-name", &theme, NULL);
+	entry->priv->is_a11y_theme = strncmp (theme, "HighContrast", strlen ("HighContrast")) == 0 ||
+					strncmp (theme, "LowContrast", strlen ("LowContrast")) == 0;
+	g_free (theme);
 
 	/* this string can only be so long, or there wont be a search entry :) */
 	label = gtk_label_new_with_mnemonic (_("_Search:"));
@@ -181,6 +191,32 @@ rb_search_entry_set_text (RBSearchEntry *entry, const char *text)
 }
 
 static void
+rb_search_entry_check_style (RBSearchEntry *entry)
+{
+	/*GdkColor fg_colour;*/
+	GdkColor bg_colour;
+	static const GdkColor fallback_bg_colour = { 0, 0xf7f7, 0xf7f7, 0xbebe }; /* yellow-ish */
+	const gchar* text;
+
+	if (entry->priv->is_a11y_theme)
+		return;
+
+	/*fg_colour = GTK_WIDGET(entry)->style->text[GTK_STATE_NORMAL];*/
+	bg_colour = fallback_bg_colour;
+
+	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
+	if (text && *text) {
+		/*gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, &fg_colour);*/
+		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, &bg_colour);
+	} else {
+		/*gtk_widget_modify_text (entry->priv->entry, GTK_STATE_NORMAL, NULL);*/
+		gtk_widget_modify_base (entry->priv->entry, GTK_STATE_NORMAL, NULL);
+	}
+
+	gtk_widget_queue_draw (GTK_WIDGET (entry));
+}
+
+static void
 rb_search_entry_changed_cb (GtkEditable *editable,
 			    RBSearchEntry *entry)
 {
@@ -191,6 +227,8 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 		g_source_remove (entry->priv->timeout);
 		entry->priv->timeout = 0;
 	}
+
+	rb_search_entry_check_style (entry);
 
 	/* emit it now if we're clearing the entry */
 	if (gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)))
