@@ -1601,7 +1601,8 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 			} else {
 				GSequencePtr old_ptr;
 				GtkTreePath *tem_path;
-				gint old_pos, new_pos;
+				gint old_pos = 0;
+				gint new_pos;
 
 				old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 				/* trying to drag drop an entry on itself ! */
