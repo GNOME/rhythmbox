@@ -1,9 +1,18 @@
-2006-06-25  James Livingston,,,  <doclivingston@gmail.com>
+2006-06-25  James Livingston  <doclivingston@gmail.com>
 
-	reviewed by: <delete if not using a buddy>
+	* plugins/lyrics/lyrics.py:
+	* plugins/pythonconsole/pythonconsole.py:
+	* plugins/sample-python/sample-python.py: don't import gettext stuff
+	as _, as the C code does this for us. Fixes i18n for python plugins,
+	#343081
+
+2006-06-25  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-query-model.c:
-	(rhythmdb_query_model_drag_data_received):
+	(rhythmdb_query_model_drag_data_received): Make drag-and-drop withing
+	a model use a reorder rather then deleting and re-adding the entry.
+	This means it does do weird things like stop playback of a track that
+	is dragged, fixing #337657.
 
 2006-06-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 

@@ -31,7 +31,6 @@ import traceback
 import gobject
 import gtk
 import pango
-from gettext import gettext as _
 import rhythmdb, rb
 
 ui_str = """

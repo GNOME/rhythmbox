@@ -29,7 +29,6 @@ import gtk, gobject
 import urllib
 import re
 from xml.dom import minidom
-from gettext import gettext as _
 import rb
 import rhythmdb
 

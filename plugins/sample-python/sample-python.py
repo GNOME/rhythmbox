@@ -1,6 +1,5 @@
 import rhythmdb, rb
 import gobject, gtk
-from gettext import gettext as _
 
 class SamplePython(rb.Plugin):
 
