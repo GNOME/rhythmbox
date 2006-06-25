@@ -353,7 +353,7 @@ rhythmdb_property_model_set_property (GObject *object,
 						 model,
 						 0);
 			g_signal_connect_object (G_OBJECT (model->priv->query_model),
-						 "entry-removed",
+						 "post-entry-delete",
 						 G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
 						 model,
 						 0);

@@ -1,3 +1,10 @@
+2006-06-25  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_set_property): connect to the
+	"post-entry-delete" signal, rather than "entry-deleted". This ensures
+	things get removed correctly, fixes #338183.
+
 2006-06-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:
