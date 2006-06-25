@@ -1580,7 +1580,6 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 		for (; strv[i]; i++) {
 			GSequencePtr tem_ptr;
 			GtkTreeIter tem_iter;
-			GtkTreePath *tem_path;
 
 			if (g_utf8_strlen (strv[i], -1) == 0)
 				continue;
@@ -1600,9 +1599,14 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 					       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
 					       0, strv[i], pos);
 			} else {
-				GSequencePtr old_ptr = g_hash_table_lookup (model->priv->reverse_map,
-									    entry);
+				GSequencePtr old_ptr;
+				GtkTreePath *tem_path;
+				gint old_pos, new_pos;
 
+				old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+				/* trying to drag drop an entry on itself ! */
+				if (old_ptr == ptr)
+					continue;
 				rhythmdb_entry_ref (entry);
 
 				/* the entry already exists it is either a reorder drag and drop
@@ -1611,32 +1615,33 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 				if (old_ptr) {
 					model->priv->reorder_drag_and_drop = TRUE;
 
-					/* trying to drag drop an entry on itself ! */
-					if (old_ptr == ptr)
-						continue;
-
-					rhythmdb_query_model_remove_entry (model, entry);
-
+					old_pos = g_sequence_ptr_get_position (old_ptr);
+					g_sequence_remove (old_ptr);
+					g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
+					rhythmdb_entry_unref (entry);
 				} else {
-
 					model->priv->reorder_drag_and_drop = FALSE;
 				}
 
 				g_sequence_insert (ptr, entry);
 
 				tem_ptr = g_sequence_ptr_prev (ptr);
+				new_pos = g_sequence_ptr_get_position (tem_ptr);
 
 				tem_iter.stamp = model->priv->stamp;
 				tem_iter.user_data = tem_ptr;
-				g_hash_table_insert (model->priv->reverse_map,
-						     entry, tem_ptr);
+				g_hash_table_insert (model->priv->reverse_map, entry, tem_ptr);
 
-				tem_path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
-									  &tem_iter);
-
-				gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
-							     tem_path, &tem_iter);
-				gtk_tree_path_free (tem_path);
+				if (old_ptr) {
+					rb_debug ("moving entry %p from %d to %d", entry, old_pos, new_pos);
+					rhythmdb_query_model_emit_reorder (model, old_pos, new_pos);
+				} else {
+					tem_path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
+										  &tem_iter);
+					gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
+								     tem_path, &tem_iter);
+					gtk_tree_path_free (tem_path);
+				}
 			}
 		}
 
