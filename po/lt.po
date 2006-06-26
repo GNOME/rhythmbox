@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-22 12:28+0300\n"
-"PO-Revision-Date: 2006-06-22 12:29+0300\n"
+"POT-Creation-Date: 2006-06-26 15:01+0300\n"
+"PO-Revision-Date: 2006-06-26 15:03+0300\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
 "MIME-Version: 1.0\n"
@@ -809,9 +809,26 @@ msgstr "GStreamer klaida: nepavyko pakeisti būsenos"
 msgid "The MIME type of the file could not be identified"
 msgstr "Nepavyko atpažinti rinkmenos MIME tipo"
 
+#: ../metadata/rb-metadata-gst.c:1362
+#, c-format
+msgid "Unsupported file type: %s"
+msgstr "Pateiktas rinkmenos tipas: %s"
+
+#: ../metadata/rb-metadata-gst.c:1371
+msgid "Unable to create tag-writing elements"
+msgstr "Nepavyko sukurti žymų rašymo elementų"
+
+#: ../metadata/rb-metadata-gst.c:1394
+msgid "Timeout while setting pipeline to NULL"
+msgstr "Pasibaigęs laikas nustatant konvejerį į NULL"
+
+#: ../metadata/rb-metadata-gst.c:1414
+msgid "File corrupted during write"
+msgstr "Rinkmena rašymo metu sugadinta"
+
 #: ../metadata/sj-metadata-musicbrainz.c:109
 msgid "Cannot create MusicBrainz client"
-msgstr "Negalima sukurti MusicBrainz kliento"
+msgstr "Nepavyko sukurti MusicBrainz kliento"
 
 #: ../metadata/sj-metadata-musicbrainz.c:231
 #: ../metadata/sj-metadata-musicbrainz.c:516
@@ -1043,24 +1060,24 @@ msgstr "Valdo Rhythmbox naudojant infraraudonujų spindulių nuotolinį valdymą
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/lyrics.py:87 ../plugins/lyrics/lyrics.py:128
+#: ../plugins/lyrics/lyrics.py:86 ../plugins/lyrics/lyrics.py:127
 msgid "Searching for lyrics..."
 msgstr "Ieškoma žodžių..."
 
-#: ../plugins/lyrics/lyrics.py:96
+#: ../plugins/lyrics/lyrics.py:95
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
 msgid "Lyrics"
 msgstr "Dainos žodžiai"
 
-#: ../plugins/lyrics/lyrics.py:236
+#: ../plugins/lyrics/lyrics.py:235
 msgid "Lyrics provided by leoslyrics.com"
 msgstr "Dainos žodžius suteikė leoslyrics.com"
 
-#: ../plugins/lyrics/lyrics.py:254
+#: ../plugins/lyrics/lyrics.py:253
 msgid "Song L_yrics"
 msgstr "Dainos ž_odžiai"
 
-#: ../plugins/lyrics/lyrics.py:255
+#: ../plugins/lyrics/lyrics.py:254
 msgid "Display lyrics for the playing song"
 msgstr "Rodyti grojamų dainų žodžius"
 
@@ -1068,15 +1085,15 @@ msgstr "Rodyti grojamų dainų žodžius"
 msgid "Displays song lyrics"
 msgstr "Rodo dainų žodžius"
 
-#: ../plugins/pythonconsole/pythonconsole.py:58
+#: ../plugins/pythonconsole/pythonconsole.py:57
 msgid "_Python Console"
 msgstr "_Python konsolė"
 
-#: ../plugins/pythonconsole/pythonconsole.py:59
+#: ../plugins/pythonconsole/pythonconsole.py:58
 msgid "Show Rhythmbox's python console"
 msgstr "Rodyti Rhythmbox python konsolę"
 
-#: ../plugins/pythonconsole/pythonconsole.py:94
+#: ../plugins/pythonconsole/pythonconsole.py:93
 msgid "You can access the main window through the 'shell' variable :"
 msgstr "Galite pasiekti pagrindinį langą per „shell“ kintamąjį:"
 
@@ -1106,7 +1123,7 @@ msgstr "Įskiepio klaida"
 msgid "Unable to activate plugin %s"
 msgstr "Nepavyko aktyvuoti įskiepio %s"
 
-#: ../plugins/sample-python/sample-python.py:15
+#: ../plugins/sample-python/sample-python.py:14
 msgid "Python Source"
 msgstr "Python šaltinis"
 
@@ -3162,7 +3179,7 @@ msgid "weeks"
 msgstr "savaites"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:106
+#: ../widgets/rb-search-entry.c:116
 msgid "_Search:"
 msgstr "I_eškoti:"
 
