@@ -20,9 +20,14 @@
 
 #include "config.h"
 
+#include <string.h>
+#include <glib/gi18n.h>
+
 #include "rb-proxy-config.h"
 #include "eel-gconf-extensions.h"
+#include "rb-preferences.h"
 #include "rb-debug.h"
+#include "rb-dialog.h"
 
 enum
 {
@@ -38,6 +43,7 @@ static void	rb_proxy_config_gconf_changed_cb (GConfClient *client,
 						  guint cnxn_id,
 				 		  GConfEntry *entry,
 				 		  RBProxyConfig *config);
+static void	check_auto_proxy_config (RBProxyConfig *config);
 static void	get_proxy_config (RBProxyConfig *config);
 
 static guint	rb_proxy_config_signals[LAST_SIGNAL] = { 0 };
@@ -109,6 +115,8 @@ rb_proxy_config_init (RBProxyConfig *config)
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
 
+	check_auto_proxy_config (config);
+
 	get_proxy_config (config);
 }
 
@@ -168,6 +176,27 @@ rb_proxy_config_gconf_changed_cb (GConfClient *client,
 	g_signal_emit (config, rb_proxy_config_signals[CONFIG_CHANGED], 0);
 }
 
+static void
+check_auto_proxy_config (RBProxyConfig *config)
+{
+	char *mode;
+
+	/* complain once if auto proxy mode is enabled */
+	mode = eel_gconf_get_string ("/system/proxy/mode");
+	if (strcmp (mode, "auto") == 0) {
+		if (eel_gconf_get_boolean (CONF_UI_AUTO_PROXY_COMPLAINT) == FALSE) {
+			rb_error_dialog (NULL,
+					 _("HTTP proxy configuration error"),
+					 "%s", _("Rhythmbox does not support automatic proxy configuration"));
+		}
+		eel_gconf_set_boolean (CONF_UI_AUTO_PROXY_COMPLAINT, TRUE);
+	} else {
+		eel_gconf_set_boolean (CONF_UI_AUTO_PROXY_COMPLAINT, FALSE);
+	}
+
+	g_free (mode);
+}
+
 static void	
 get_proxy_config (RBProxyConfig *config)
 {
@@ -184,7 +213,10 @@ get_proxy_config (RBProxyConfig *config)
 	config->password = eel_gconf_get_string ("/system/http_proxy/authentication_password");
 
 	if (config->enabled) {
-		if (config->auth_enabled)
+		if (config->host == NULL || config->host[0] == '\0') {
+			rb_debug ("HTTP proxy is enabled, but no proxy host is specified");
+			config->enabled = FALSE;
+		} else if (config->auth_enabled)
 			rb_debug ("HTTP proxy URL is http://%s:<password>@%s:%u/", 
 				  config->username, config->host, config->port);
 		else

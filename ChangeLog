@@ -1,3 +1,12 @@
+2006-06-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-preferences.h:
+	* lib/rb-proxy-config.c: (rb_proxy_config_init),
+	(check_auto_proxy_config), (get_proxy_config):
+	Don't try to use a HTTP proxy if no proxy host is specified.
+	Alert the user to the fact that we don't support automatic proxy
+	configuration as infrequently as possible.  From #345712.
+
 2006-06-25  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-property-model.c:
