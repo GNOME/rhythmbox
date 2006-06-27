@@ -598,7 +598,6 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 	SoupMessage *msg;
 
 	msg = soup_message_new (post_data == NULL ? "GET" : "POST", url);
-	soup_message_set_http_version (msg, SOUP_HTTP_1_0);
 
 	if (post_data != NULL) {
 		rb_debug ("Submitting to Audioscrobbler: %s", post_data);
