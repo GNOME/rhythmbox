@@ -997,9 +997,6 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 				   RBAudioscrobbler *audioscrobbler)
 {
 	RhythmDBEntryType type;
-	gchar *old_artist;
-	gchar *old_album;
-	gchar *old_title;
 
 	if (entry == NULL) {
 		audioscrobbler->priv->should_queue = FALSE;
@@ -1015,10 +1012,6 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 		return;
 	}
 
-	old_artist = audioscrobbler->priv->artist;
-	old_album = audioscrobbler->priv->album;
-	old_title = audioscrobbler->priv->title;
-
 	audioscrobbler->priv->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	audioscrobbler->priv->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
 	audioscrobbler->priv->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
@@ -1032,15 +1025,12 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	    ! strcmp (audioscrobbler->priv->artist, _("Unknown")) ||
 	    ! strcmp (audioscrobbler->priv->title, _("Unknown"))) {
 		audioscrobbler->priv->should_queue = FALSE;
-	} else if (strcmp(audioscrobbler->priv->artist, old_artist) ||
-		   strcmp(audioscrobbler->priv->album, old_album) ||
-		   strcmp(audioscrobbler->priv->title, old_title)) {
+	} else if (time < 15) {
+		/* even if it's the same song, it's being played again from
+		 * the start so we can queue it again.
+		 */
 		audioscrobbler->priv->should_queue = TRUE;
 	}
-
-	g_free (old_artist);
-	g_free (old_album);
-	g_free (old_title);
 }
 
 

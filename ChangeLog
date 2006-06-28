@@ -1,5 +1,12 @@
 2006-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_song_changed_cb):
+	Just check if the elapsed time has been reset, rather
+	than checking if it's a different track.  Fixes #344827.
+
+2006-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* backends/gstreamer/rb-player-gst.c:
 	Set cdda source read-speed to 1.  Fixes gaps in playback while the
 	drive spins up, #344576.
