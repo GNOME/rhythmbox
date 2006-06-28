@@ -640,7 +640,7 @@ end_gstreamer_operation (RBPlayerGst *mp, gboolean op_failed, GError **error)
 }
 
 static void
-cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *uri)
+cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *device)
 {
 	GstElement *source;
 
@@ -651,13 +651,16 @@ cdda_got_source_cb (GObject *object, GParamSpec *pspec, char *uri)
 #endif
 	rb_debug ("got source %p", source);
 	if (source) {
-		g_signal_handlers_disconnect_by_func (object, cdda_got_source_cb, uri);
+		g_signal_handlers_disconnect_by_func (object, cdda_got_source_cb, device);
 
-		g_object_set (G_OBJECT (source), "device", uri, NULL);
-		g_free (uri);
+		g_object_set (G_OBJECT (source), "device", device, NULL);
+		g_free (device);
 
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
 			g_object_set (G_OBJECT (source), "paranoia-mode", 0, NULL);
+
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
+			g_object_set (G_OBJECT (source), "read-speed", 1, NULL);
 	}
 }
 
@@ -679,23 +682,24 @@ rb_player_gst_open (RBPlayer *player,
 
 	g_assert (mp->priv->playbin != NULL);
 
-	g_free (mp->priv->uri);
-	mp->priv->uri = NULL;
 
 	if (uri == NULL) {
+		g_free (mp->priv->uri);
+		mp->priv->uri = NULL;
 		mp->priv->playing = FALSE;
 		return TRUE;
 	}
 
 	/* check if we are switching tracks on a cd, so we don't have to close the device */
-	if (mp->priv->uri && g_str_has_prefix (uri, "cdda://")) {
-		const char *old_device;
+	if (g_str_has_prefix (uri, "cdda://")) {
+		const char *old_device = NULL;
 		const char *new_device;
 
-		old_device = g_utf8_strchr (mp->priv->uri, -1, '#');
+		if (mp->priv->uri && g_str_has_prefix (mp->priv->uri, "cdda://"))
+			old_device = g_utf8_strchr (mp->priv->uri, -1, '#');
 		new_device = g_utf8_strchr (uri, -1, '#');
 	
-		if (strcmp (old_device, new_device) == 0) {
+		if (old_device && strcmp (old_device, new_device) == 0) {
 			/* just seek, instead of having playbin close the device */
 			GstFormat track_format = gst_format_get_by_nick ("track");
 			char *track_str;
@@ -706,6 +710,8 @@ rb_player_gst_open (RBPlayer *player,
 			track_str = g_strndup (uri + cdda_len, new_device - (uri + cdda_len));
 			track = atoi (track_str);
 			g_free (track_str);
+
+			rb_debug ("seeking to track %d on CD device %s", track, new_device);
 
 #ifdef HAVE_GSTREAMER_0_10
 			if (gst_element_seek (mp->priv->playbin, 1.0, 
@@ -723,11 +729,20 @@ rb_player_gst_open (RBPlayer *player,
 					cdda_seek = TRUE;
 			}
 #endif
+		} else {
+			/* +1 to skip the '#' */
+			char *device = g_strdup (new_device + 1);
 
+			rb_debug ("waiting for source element for CD device %s", device);
+			g_signal_connect (G_OBJECT (mp->priv->playbin),
+					  "notify::source",
+					  G_CALLBACK (cdda_got_source_cb),
+					  device);
 		}
 	}
 
 	begin_gstreamer_operation (mp);
+	g_free (mp->priv->uri);
 	mp->priv->uri = g_strdup (uri);
 
 	if (!cdda_seek) {

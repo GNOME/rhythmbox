@@ -1,5 +1,11 @@
 2006-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* backends/gstreamer/rb-player-gst.c:
+	Set cdda source read-speed to 1.  Fixes gaps in playback while the
+	drive spins up, #344576.
+
+2006-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
 	(rb_audioscrobbler_perform):
 	Use HTTP/1.1.  Fixes #345895.
