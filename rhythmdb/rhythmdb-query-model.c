@@ -2590,6 +2590,6 @@ rhythmdb_query_model_reapply_query_cb (RhythmDBQueryModel *model)
 	rhythmdb_query_model_reapply_query (model, FALSE);
 	rhythmdb_do_full_query_async_parsed (model->priv->db,
 					     RHYTHMDB_QUERY_RESULTS (model),
-					     model->priv->query);
+					     model->priv->original_query);
 	return TRUE;
 }

@@ -1,3 +1,11 @@
+2006-06-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_reapply_query_cb):
+	Use the original query, not the preprocessed query, when redoing
+	the query to pick up entries that previously didn't match.
+	Preprocessing the query twice is bad.  Fixes #346186.
+
 2006-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
