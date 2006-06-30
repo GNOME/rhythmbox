@@ -861,6 +861,16 @@
   )
 )
 
+(define-method show_source_popup
+  (of-object "RBSource")
+  (c-name "_rb_source_show_popup")
+  (return-type "none")
+  (parameters
+    '("const-char*" "ui_path")
+  )
+)
+
+
 (define-virtual impl_get_status
   (of-object "RBSource")
   (return-type "none")
