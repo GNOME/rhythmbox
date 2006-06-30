@@ -1525,6 +1525,11 @@
   (return-type "gboolean")
 )
 
+(define-virtual impl_show_entry_popup
+  (of-object "RBBrowserSource")
+  (return-type "none")
+)
+
 
 
 ;; From ../../sources/rb-removable-media-source.h

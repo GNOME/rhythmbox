@@ -1,3 +1,16 @@
+2006-06-30  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/rb.defs:
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_songs_show_popup_cb),
+	(default_show_entry_popup):
+	* sources/rb-browser-source.h:
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_constructor), (impl_show_popup): allow
+	RBBrowserSource-derived sources to override the entry context menu
+	properly - by making it a virtual function, rather than relying on
+	signal handler order (which doesn't really work).
+
 2006-06-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:

@@ -54,6 +54,7 @@ typedef struct
 
 	const char *	(*impl_get_paned_key)		(RBBrowserSource *source);
 	gboolean	(*impl_has_drop_support)	(RBBrowserSource *source);
+	void		(*impl_show_entry_popup)	(RBBrowserSource *source);
 } RBBrowserSourceClass;
 
 typedef gboolean	(*RBBrowserSourceFeatureFunc) (RBBrowserSource *source);

@@ -53,6 +53,7 @@ static void rb_library_source_dispose (GObject *object);
 static void rb_library_source_finalize (GObject *object);
 
 /* RBSource implementations */
+static gboolean impl_show_popup (RBSource *source);
 static GtkWidget *impl_get_config_widget (RBSource *source, RBShellPreferences *prefs);
 static char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_paned_key (RBBrowserSource *source);
@@ -90,9 +91,6 @@ static gboolean rb_library_source_library_location_cb (GtkEntry *entry,
 						       RBLibrarySource *source);
 static void rb_library_source_watch_toggled_cb (GtkToggleButton *button,
 						RBLibrarySource *source);
-static void rb_library_source_songs_show_popup_cb (RBEntryView *view,
-						   gboolean over_entry,
-						   RBLibrarySource *source);						
 static void rb_library_source_sync_child_sources (RBLibrarySource *source);
 #ifdef ENABLE_TRACK_TRANSFER
 static void rb_library_source_path_changed_cb (GtkComboBox *box,
@@ -177,6 +175,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	object_class->finalize = rb_library_source_finalize;
 	object_class->constructor = rb_library_source_constructor;
 
+	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_receive_drag = impl_receive_drag;
@@ -282,9 +281,6 @@ rb_library_source_constructor (GType type,
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
-
-	g_signal_connect_object (G_OBJECT (rb_source_get_entry_view (RB_SOURCE (source))), "show_popup",
-				 G_CALLBACK (rb_library_source_songs_show_popup_cb), source, 0);
 
 	g_idle_add ((GSourceFunc)add_child_sources_idle, source);
 
@@ -723,13 +719,11 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	return TRUE;
 }
 
-static void
-rb_library_source_songs_show_popup_cb (RBEntryView *view,
-				       gboolean over_entry,
-				       RBLibrarySource *source)
+static gboolean
+impl_show_popup (RBSource *source)
 {
-	if (!over_entry)
-		_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
+	_rb_source_show_popup (source, "/LibrarySourcePopup");
+	return TRUE;
 }
 
 #ifdef ENABLE_TRACK_TRANSFER

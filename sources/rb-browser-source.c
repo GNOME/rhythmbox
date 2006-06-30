@@ -93,6 +93,7 @@ static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_search_actions (RBSource *source);
 static void impl_browser_toggled (RBSource *asource, gboolean disclosed);
+static void default_show_entry_popup (RBBrowserSource *source);
 
 void rb_browser_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBBrowserSource *source);
@@ -206,6 +207,7 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 
 	klass->impl_get_paned_key = (RBBrowserSourceStringFunc)rb_null_function;
 	klass->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
+	klass->impl_show_entry_popup = default_show_entry_popup;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -293,8 +295,19 @@ rb_browser_source_songs_show_popup_cb (RBEntryView *view,
 				       gboolean over_entry,
 				       RBBrowserSource *source)
 {
-	if (over_entry)
-		_rb_source_show_popup (RB_SOURCE (source), "/BrowserSourceViewPopup");
+	if (over_entry) {
+		RBBrowserSourceClass *klass = RB_BROWSER_SOURCE_GET_CLASS (source);
+
+		klass->impl_show_entry_popup (source);
+	} else {
+		rb_source_show_popup (RB_SOURCE (source));
+	}
+}
+
+static void
+default_show_entry_popup (RBBrowserSource *source)
+{
+	_rb_source_show_popup (RB_SOURCE (source), "/BrowserSourceViewPopup");
 }
 
 static RhythmDBPropType
