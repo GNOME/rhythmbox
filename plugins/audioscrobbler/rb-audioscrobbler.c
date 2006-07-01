@@ -133,6 +133,7 @@ struct _RBAudioscrobblerPrivate
 	gchar *artist;
 	gchar *album;
 	gchar *title;
+	gchar *mbid;
 	guint duration;
 	guint elapsed;
 
@@ -259,6 +260,7 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	audioscrobbler->priv->artist = g_strdup ("");
 	audioscrobbler->priv->album = g_strdup ("");
 	audioscrobbler->priv->title = g_strdup ("");
+	audioscrobbler->priv->mbid = g_strdup ("");
 	audioscrobbler->priv->duration = 0;
 	audioscrobbler->priv->elapsed = 0;
 	audioscrobbler->priv->timeout_id = 0;
@@ -309,6 +311,7 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->artist);
 	g_free (audioscrobbler->priv->album);
 	g_free (audioscrobbler->priv->title);
+	g_free (audioscrobbler->priv->mbid);
 	if (audioscrobbler->priv->soup_session)
 		g_object_unref (G_OBJECT (audioscrobbler->priv->soup_session));
 	g_object_unref (G_OBJECT (audioscrobbler->priv->proxy_config));
@@ -423,8 +426,8 @@ rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler)
 				else
 					entry->album = g_strdup ("");
 				entry->title = soup_uri_encode (audioscrobbler->priv->title, EXTRA_URI_ENCODE_CHARS);
+				entry->mbid = soup_uri_encode (audioscrobbler->priv->mbid, EXTRA_URI_ENCODE_CHARS);
 				entry->length = audioscrobbler->priv->duration;
-				entry->mbid = g_strdup ("");
 				entry->timestamp = g_new0 (gchar, 30);
 				strftime (entry->timestamp, 30, "%Y%%2D%m%%2D%d%%20%H%%3A%M%%3A%S", gmtime (&tt));
 
@@ -1016,6 +1019,7 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	audioscrobbler->priv->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
 	audioscrobbler->priv->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
 	audioscrobbler->priv->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+	audioscrobbler->priv->mbid = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
 	guint time;
 	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &time, NULL);
 	audioscrobbler->priv->elapsed = (int) time;

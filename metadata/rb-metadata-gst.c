@@ -25,7 +25,7 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
-#include <gst/gst.h>
+#include <gst/tag/tag.h>
 #include <gst/gsturi.h>
 
 #ifdef HAVE_GSTREAMER_0_8
@@ -517,6 +517,10 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_ALBUM_GAIN;
 	else if (!strcmp (tag, GST_TAG_ALBUM_PEAK))
 		return RB_METADATA_FIELD_ALBUM_PEAK;
+#ifdef GST_TAG_MUSICBRAINZ_TRACKID
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
+		return RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
+#endif
 	else
 		return -1;
 }
@@ -576,6 +580,10 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_ALBUM_GAIN;
 	case RB_METADATA_FIELD_ALBUM_PEAK:
 		return GST_TAG_ALBUM_PEAK;
+#ifdef GST_TAG_MUSICBRAINZ_TRACKID
+	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
+		return GST_TAG_MUSICBRAINZ_TRACKID;
+#endif
 	default:
 		return NULL;
 	}

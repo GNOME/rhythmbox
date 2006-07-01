@@ -282,6 +282,9 @@ metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
 	case RHYTHMDB_PROP_ALBUM_PEAK:
 		*field = RB_METADATA_FIELD_ALBUM_PEAK;
 		return TRUE;
+	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
+		*field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
+		return TRUE;
 	default:
 		return FALSE;
 	}
@@ -940,6 +943,7 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	ret->genre = rb_refstring_ref (db->priv->empty_string);
 	ret->artist = rb_refstring_ref (db->priv->empty_string);
 	ret->album = rb_refstring_ref (db->priv->empty_string);
+	ret->musicbrainz_trackid = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
 
 	rhythmdb_entry_sync_mirrored (db, ret, RHYTHMDB_PROP_LAST_PLAYED);
@@ -1097,6 +1101,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
 	rb_refstring_unref (entry->album);
+	rb_refstring_unref (entry->musicbrainz_trackid);
 	rb_refstring_unref (entry->mimetype);
 
 	g_free (entry);
@@ -1225,6 +1230,15 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 			     &val)) {
 		rhythmdb_entry_set_internal (db, entry, TRUE,
 					     RHYTHMDB_PROP_DATE, &val);
+		g_value_unset (&val);
+	}
+
+	/* musicbrainz trackid */
+	if (rb_metadata_get (metadata,
+			     RB_METADATA_FIELD_MUSICBRAINZ_TRACKID,
+			     &val)) {
+		rhythmdb_entry_set_internal (db, entry, TRUE,
+					     RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, &val);
 		g_value_unset (&val);
 	}
 
@@ -2571,6 +2585,10 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 		case RHYTHMDB_PROP_LAST_PLAYED:
 			entry->last_played = g_value_get_ulong (value);
 			break;
+		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
+			rb_refstring_unref (entry->musicbrainz_trackid);
+			entry->musicbrainz_trackid = rb_refstring_new (g_value_get_string (value));
+			break;
 		case RHYTHMDB_PROP_HIDDEN:
 			if (g_value_get_boolean (value)) {
 				entry->flags |= RHYTHMDB_ENTRY_HIDDEN;
@@ -3118,6 +3136,7 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album (gchararray) [album]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number (gulong) [track-number]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_DISC_NUMBER, "Disc Number (gulong) [disc-number]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, "Musicbrainz Track ID (gchararray) [mb-trackid]"),
 
 			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (gulong) [duration]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64) [file-size]"),
@@ -3642,6 +3661,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return rb_refstring_get (entry->artist);
 	case RHYTHMDB_PROP_GENRE:
 		return rb_refstring_get (entry->genre);
+	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
+		return rb_refstring_get (entry->musicbrainz_trackid);
 	case RHYTHMDB_PROP_MIMETYPE:
 		return rb_refstring_get (entry->mimetype);
 	case RHYTHMDB_PROP_TITLE_SORT_KEY:

@@ -28,7 +28,7 @@
 
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
-#include <gst/gst.h>
+#include <gst/tag/tag.h>
 #ifdef HAVE_GSTREAMER_0_8
 #include <gst/gconf/gconf.h>
 #endif
@@ -356,6 +356,10 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 		field = RB_METADATA_FIELD_COMMENT;
 	else if (!strcmp (tag, GST_TAG_BITRATE))
 		field = RB_METADATA_FIELD_BITRATE;
+#ifdef GST_TAG_MUSICBRAINZ_TRACKID
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
+		field = RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
+#endif
 	else
 		return;
 
@@ -369,6 +373,7 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 	case RB_METADATA_FIELD_TITLE:
 	case RB_METADATA_FIELD_GENRE:
 	case RB_METADATA_FIELD_COMMENT:
+	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
 	default:
 		g_value_init (newval, G_TYPE_STRING);
 		break;

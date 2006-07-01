@@ -60,7 +60,8 @@ static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
 	/* RB_METADATA_FIELD_TRACK_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-track-peak" },
 	/* RB_METADATA_FIELD_ALBUM_GAIN */ 		{ G_TYPE_DOUBLE, "replaygain-album-gain" },
 	/* RB_METADATA_FIELD_ALBUM_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-album-peak" },
-	/* RB_METADATA_FIELD_LANGUAGE_CODE */		{ G_TYPE_STRING, "language-code" }
+	/* RB_METADATA_FIELD_LANGUAGE_CODE */		{ G_TYPE_STRING, "language-code" },
+	/* RB_METADATA_FIELD_MUSICBRAINZ-TRACKID */	{ G_TYPE_STRING, "musicbrainz-trackid" }
 };
 
 GType

@@ -56,6 +56,7 @@ typedef enum
 	RB_METADATA_FIELD_ALBUM_GAIN,		   /* double */
 	RB_METADATA_FIELD_ALBUM_PEAK,		   /* double */
 	RB_METADATA_FIELD_LANGUAGE_CODE,	   /* string */
+	RB_METADATA_FIELD_MUSICBRAINZ_TRACKID,     /* string */
 
 	RB_METADATA_FIELD_LAST			   /* nothing */
 } RBMetaDataField;

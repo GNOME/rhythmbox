@@ -95,7 +95,7 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 
-#define RHYTHMDB_TREE_XML_VERSION "1.2"
+#define RHYTHMDB_TREE_XML_VERSION "1.3"
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -214,6 +214,7 @@ struct RhythmDBTreeLoadContext
 	/* updating */
 	gboolean has_date;
 	gboolean canonicalise_uris;
+	gboolean reload_all_metadata;
 };
 
 static void
@@ -243,8 +244,12 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries");
 					} else if (!strcmp (version, "1.2")) {
 						/* current version*/
+						rb_debug ("reloading all file metadata to get MusicBrainz tags");
+						ctx->reload_all_metadata = TRUE;
+					} else if (!strcmp (version, "1.3")) {
+						/* current version*/
 					} else {
-						/* too new */
+						/* too new. FIXME quit gracefully with error */
 						g_assert_not_reached ();
 					}
 				} else {
@@ -321,7 +326,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		break;
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
-		if (!ctx->has_date) {
+		if (!ctx->has_date | ctx->reload_all_metadata) {
 			/* there is no date metadata, so this is from an old version
 			 * reset the last-modified timestamp, so that the file is re-read
 			 */
@@ -671,6 +676,9 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			break;
 		case RHYTHMDB_PROP_GENRE:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->genre));
+			break;
+		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_trackid));
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);

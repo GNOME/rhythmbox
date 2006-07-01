@@ -1,3 +1,30 @@
+2006-07-01  James Livingston  <doclivingston@gmail.com>
+
+	Patch from Ståle Lyngaas  <staale@lyngaas.com>
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (save_entry):
+	* rhythmdb/rhythmdb.c: (metadata_field_from_prop),
+	(rhythmdb_entry_allocate), (rhythmdb_entry_finalize),
+	(set_props_from_metadata), (rhythmdb_entry_set_internal),
+	(rhythmdb_prop_type_get_type), (rhythmdb_entry_get_string): store
+	MusicBrainz track IDs in the database, and bump the on-disk version
+	number to trigger a metadata reload.
+
+	* backends/gstreamer/rb-player-gst.c: (process_tag):
+	* metadata/rb-metadata-common.c:
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_tag_to_field),
+	(rb_metadata_gst_field_to_gst_tag):
+	* metadata/rb-metadata.h: grab MB track IDs and use them.
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_init), (rb_audioscrobbler_finalize),
+	(rb_audioscrobbler_timeout_cb),
+	(rb_audioscrobbler_song_changed_cb): send the MB track id along with
+	the other metadata. Fixes #343491.
+
 2006-06-30  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rb.defs: bind RBSource's convenienve "show popup"
