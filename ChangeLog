@@ -1,3 +1,9 @@
+2006-07-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-dbus-client.c: (rb_metadata_load),
+	(rb_metadata_can_save), (rb_metadata_save):
+	Protect the dbus connection with a mutex.
+
 2006-07-03  James Livingston  <doclivingston@gmail.com>
 
 	* metadata/rb-metadata-gst.c: (ogg_pad_added_cb): correctly handle the

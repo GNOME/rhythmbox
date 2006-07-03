@@ -65,6 +65,7 @@ static gboolean tried_env_address = FALSE;
 static DBusConnection *dbus_connection = NULL;
 static GPid metadata_child = 0;
 static GMainContext *main_context = NULL;
+static GStaticMutex conn_mutex = G_STATIC_MUTEX_INIT;
 
 struct RBMetaDataPrivate
 {
@@ -306,11 +307,15 @@ rb_metadata_load (RBMetaData *md,
 		  const char *uri,
 		  GError **error)
 {
-	DBusMessage *message;
-	DBusMessage *response;
+	DBusMessage *message = NULL;
+	DBusMessage *response = NULL;
 	DBusMessageIter iter;
 	DBusError dbus_error = {0,};
 	gboolean ok;
+	GError *fake_error = NULL;
+
+	if (error == NULL)
+		error = &fake_error;
 
 	g_free (md->priv->mimetype);
 	md->priv->mimetype = NULL;
@@ -324,78 +329,82 @@ rb_metadata_load (RBMetaData *md,
 		g_hash_table_destroy (md->priv->metadata);
 	md->priv->metadata = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_value_free);
 
-	
-	if (!start_metadata_service (error))
-		return;
+	g_static_mutex_lock (&conn_mutex);
 
-	message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
-						RB_METADATA_DBUS_OBJECT_PATH,
-						RB_METADATA_DBUS_INTERFACE,
-						"load");
-	if (!message) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		return;
-	}
-	if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &uri, DBUS_TYPE_INVALID)) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		return;
-	}
+	start_metadata_service (error);
 
-	rb_debug ("sending metadata load request");
-	response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-							      message, 
-							      RB_METADATA_DBUS_TIMEOUT, 
-							      &dbus_error);
-
-	dbus_message_unref (message);
-	if (!response) {
-		handle_dbus_error (md, &dbus_error, error);
-		return;
-	}
-
-	if (!dbus_message_iter_init (response, &iter)) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		rb_debug ("couldn't read response message");
-		dbus_message_unref (response);
-		return;
-	}
-
-	if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		rb_debug ("couldn't get success flag from response message");
-		dbus_message_unref (response);
-		return;
-	}
-
-	if (ok) {
-		/* get mime type */
-		if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
+	if (*error == NULL) {
+		message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+							RB_METADATA_DBUS_OBJECT_PATH,
+							RB_METADATA_DBUS_INTERFACE,
+							"load");
+		if (!message) {
 			g_set_error (error,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_INTERNAL,
 				     _("D-BUS communication error"));
-		} else {
-			/* get metadata */
-			rb_debug ("got mimetype: %s", md->priv->mimetype);
-			rb_metadata_dbus_read_from_message (md, md->priv->metadata, &iter);
+		} else if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &uri, DBUS_TYPE_INVALID)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
 		}
-	} else {
-		read_error_from_message (md, &iter, error);
 	}
 
-	dbus_message_unref (response);
+	if (*error == NULL) {
+		rb_debug ("sending metadata load request");
+		response = dbus_connection_send_with_reply_and_block (dbus_connection, 
+								      message, 
+								      RB_METADATA_DBUS_TIMEOUT, 
+								      &dbus_error);
+
+		if (!response)
+			handle_dbus_error (md, &dbus_error, error);
+	}
+
+
+	if (*error == NULL) {
+		if (!dbus_message_iter_init (response, &iter)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+			rb_debug ("couldn't read response message");
+		}
+	}
+
+	if (*error == NULL) {
+		if (!rb_metadata_dbus_get_boolean (&iter, &ok)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+			rb_debug ("couldn't get success flag from response message");
+		} else if (ok) {
+			/* get mime type */
+			if (!rb_metadata_dbus_get_string (&iter, &md->priv->mimetype)) {
+				g_set_error (error,
+					     RB_METADATA_ERROR,
+					     RB_METADATA_ERROR_INTERNAL,
+					     _("D-BUS communication error"));
+			} else {
+				/* get metadata */
+				rb_debug ("got mimetype: %s", md->priv->mimetype);
+				rb_metadata_dbus_read_from_message (md, md->priv->metadata, &iter);
+			}
+		} else {
+			read_error_from_message (md, &iter, error);
+		}
+	}
+
+	if (message)
+		dbus_message_unref (message);
+	if (response)
+		dbus_message_unref (response);
+	if (fake_error)
+		g_error_free (fake_error);
+	
+	g_static_mutex_unlock (&conn_mutex);
 }
 
 const char *
@@ -444,90 +453,113 @@ gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
 	GError *error = NULL;
-	DBusMessage *message;
-	DBusMessage *response;
+	DBusMessage *message = NULL;
+	DBusMessage *response = NULL;
 	gboolean can_save = FALSE;
 	DBusError dbus_error = {0,};
 	DBusMessageIter iter;
+	gboolean ok = TRUE;
+
+	g_static_mutex_lock (&conn_mutex);
 
 	if (start_metadata_service (&error) == FALSE) {
 		g_error_free (error);
-		return FALSE;
+		ok = FALSE;
 	}
 
-	message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
-						RB_METADATA_DBUS_OBJECT_PATH,
-						RB_METADATA_DBUS_INTERFACE,
-						"canSave");
-	if (!message) {
-		return FALSE;
-	}
-	if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &mimetype, DBUS_TYPE_INVALID)) {
-		return FALSE;
-	}
-
-	response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-							      message, 
-							      RB_METADATA_DBUS_TIMEOUT, 
-							      &dbus_error);
-	dbus_message_unref (message);
-	if (!response) {
-		dbus_error_free (&dbus_error);
-		return FALSE;
+	if (ok) {
+		message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+							RB_METADATA_DBUS_OBJECT_PATH,
+							RB_METADATA_DBUS_INTERFACE,
+							"canSave");
+		if (!message) {
+			ok = FALSE;
+		} else if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &mimetype, DBUS_TYPE_INVALID)) {
+			ok = FALSE;
+		}
 	}
 
-	if (dbus_message_iter_init (response, &iter)) {
-		rb_metadata_dbus_get_boolean (&iter, &can_save);
+	if (ok) {
+		response = dbus_connection_send_with_reply_and_block (dbus_connection, 
+								      message, 
+								      RB_METADATA_DBUS_TIMEOUT, 
+								      &dbus_error);
+		if (!response) {
+			dbus_error_free (&dbus_error);
+			ok = FALSE;
+		} else if (dbus_message_iter_init (response, &iter)) {
+			rb_metadata_dbus_get_boolean (&iter, &can_save);
+		}
 	}
-	dbus_message_unref (response);
+
+	if (message)
+		dbus_message_unref (message);
+	if (response)
+		dbus_message_unref (response);
+	g_static_mutex_unlock (&conn_mutex);
+
 	return can_save;
 }
 
 void
 rb_metadata_save (RBMetaData *md, GError **error)
 {
-	DBusMessage *message;
-	DBusMessage *response;
+	GError *fake_error = NULL;
+	DBusMessage *message = NULL;
+	DBusMessage *response = NULL;
 	DBusError dbus_error = {0,};
 	DBusMessageIter iter;
 
-	if (start_metadata_service (error) == FALSE)
-		return;
+	if (error == NULL)
+		error = &fake_error;
 
-	message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
-						RB_METADATA_DBUS_OBJECT_PATH,
-						RB_METADATA_DBUS_INTERFACE,
-						"save");
-	if (!message) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		return;
+	g_static_mutex_lock (&conn_mutex);
+
+	start_metadata_service (error);
+
+	if (*error == NULL) {
+		message = dbus_message_new_method_call (RB_METADATA_DBUS_NAME,
+							RB_METADATA_DBUS_OBJECT_PATH,
+							RB_METADATA_DBUS_INTERFACE,
+							"save");
+		if (!message) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+		}
 	}
 
-	dbus_message_iter_init_append (message, &iter);
-	if (!rb_metadata_dbus_add_to_message (md, &iter)) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_INTERNAL,
-			     _("D-BUS communication error"));
-		return;
+	if (*error == NULL) {
+		dbus_message_iter_init_append (message, &iter);
+		if (!rb_metadata_dbus_add_to_message (md, &iter)) {
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_INTERNAL,
+				     _("D-BUS communication error"));
+		}
 	}
 
-	response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-							      message, 
-							      RB_METADATA_DBUS_TIMEOUT, 
-							      &dbus_error);
-	dbus_message_unref (message);
-	if (!response) {
-		handle_dbus_error (md, &dbus_error, error);
-		return;
+	if (*error == NULL) {
+		response = dbus_connection_send_with_reply_and_block (dbus_connection, 
+								      message, 
+								      RB_METADATA_DBUS_TIMEOUT, 
+								      &dbus_error);
+		if (!response) {
+			handle_dbus_error (md, &dbus_error, error);
+		} else if (dbus_message_iter_init (response, &iter)) {
+			/* if there's any return data at all, it'll be an error */
+			read_error_from_message (md, &iter, error);
+		}
 	}
+	
+	if (message)
+		dbus_message_unref (message);
+	if (response)
+		dbus_message_unref (response);
+	if (fake_error)
+		g_error_free (fake_error);
 
-	/* if there's any return data at all, it'll be an error */
-	if (dbus_message_iter_init (response, &iter)) {
-		read_error_from_message (md, &iter, error);
-	}
+	g_static_mutex_unlock (&conn_mutex);
 }
 
