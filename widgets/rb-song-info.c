@@ -229,6 +229,7 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
 
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
+	gtk_window_set_resizable (GTK_WINDOW (song_info), TRUE);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
 }
 
