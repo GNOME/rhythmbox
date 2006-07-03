@@ -1,5 +1,10 @@
 2006-07-03  James Livingston  <doclivingston@gmail.com>
 
+	* metadata/rb-metadata-gst.c: (ogg_pad_added_cb): correctly handle the
+	case of the parser/tagger not being able to be created.
+
+2006-07-03  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Nguyễn Thái Ngọc Duy  <pclouds@gmail.com>
 
 	* widgets/rb-song-info.c: (rb_song_info_init): make the Song Info

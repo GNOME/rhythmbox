@@ -263,7 +263,17 @@ ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
 		rb_debug ("found vorbis stream in ogg container, using vorbistag");
 
 		parser = gst_element_factory_make ("vorbisparse", NULL);
+		if (parser == NULL) {
+			rb_debug ("could not create vorbisparse element");
+			goto end;
+		}
+	
 		tagger = gst_element_factory_make ("vorbistag", NULL);
+		if (tagger == NULL) {
+			rb_debug ("could not create vorbistag element");
+			gst_object_unref (parser);
+			goto end;
+		}
 
 		bin = GST_BIN (gst_element_get_parent (mux));
 		gst_bin_add_many (bin, tagger, parser, NULL);
@@ -285,6 +295,7 @@ ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
 		rb_debug ("found stream in ogg container with no known tagging element");
 	}
 
+end:
 	gst_caps_unref (caps);
 }
 
