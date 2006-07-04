@@ -646,16 +646,15 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 
 	if (data->cancel_flag && *data->cancel_flag)
 		return TRUE;
-	
-	/* skip trash and unreadable directories */
-	if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) && 
-	    (g_str_has_prefix (rel_path, ".Trash") ||
-	     ((info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_ACCESS) &&
-	      !(info->permissions & GNOME_VFS_PERM_ACCESS_READABLE)))) {
+
+	/* skip hidden and unreadable files and directories */
+	if (g_str_has_prefix (rel_path, ".") ||
+	    ((info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_ACCESS) &&
+	    !(info->permissions & GNOME_VFS_PERM_ACCESS_READABLE))) {
 		*recurse = FALSE;
 		return TRUE;
 	}
-	
+
 	if (info->type == GNOME_VFS_FILE_TYPE_REGULAR) {
 		char *escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
 		escaped_rel_path = escape_extra_gnome_vfs_chars (escaped_rel_path);

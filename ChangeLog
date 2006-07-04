@@ -1,3 +1,11 @@
+2006-07-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb):
+	Skip all hidden directories, not just trash, and skip unreadable
+	files.  Fixes #346322.
+
 2006-07-04  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/rb-module.h:
