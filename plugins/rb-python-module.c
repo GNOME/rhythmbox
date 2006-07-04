@@ -260,15 +260,25 @@ rb_python_module_new_object (RBPythonModule *module)
 		return NULL;
 
 	rb_debug ("Creating object of type %s", g_type_name (priv->type));
-	object = (RBPythonObject*) (g_object_new (priv->type, NULL));
-	if (object->instance)
-		return G_OBJECT (object);
+	object = (RBPythonObject*) (g_object_new (priv->type,
+						  "name", priv->module,
+						  NULL));
+	if (object->instance == NULL) {
+		g_warning ("could not instantiate python object");
+		return NULL;
+	}
 
-	/* object could not be instantiated */
-	g_warning ("could not instantiate python object");
+	/* FIXME, HACK: this is a hack because the gobject object->instance references
+	 * isn't the same gobject as we think it is. Which Causes Issues.
+	 *
+	 * This still has issues, notably that it isn't safe to call any rb.Plugin methods
+	 * from python before we get here.
+	 *
+	 * The solution is to not have weird proxy objects.
+	 */
+	g_object_set (((PyGObject*)(object->instance))->obj, "name", priv->module, NULL);
 
-	g_object_unref (G_OBJECT (object));
-	return NULL;
+	return G_OBJECT (object);
 }
 
 static void
@@ -364,14 +374,17 @@ rb_python_module_new (const gchar *path,
 			 const gchar *module)
 {
 	RBPythonModule *result;
+	gchar *dir;			
 
 	if (module == NULL || module[0] == '\0')
 		return NULL;
 
+	dir = g_path_get_dirname (path);
 	result = g_object_new (RB_TYPE_PYTHON_MODULE,
 			       "module", module,
-			       "path", path,
+			       "path", dir,
 			       NULL);
+	g_free (dir);
 
 	g_type_module_set_name (G_TYPE_MODULE (result), module);
 

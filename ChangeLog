@@ -1,3 +1,27 @@
+2006-07-04  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/rb-module.h:
+	* plugins/rb-module.c: (rb_module_load), (rb_module_new_object),
+	(rb_module_new):
+	* plugins/rb-plugin.h:
+	* plugins/rb-plugin.c: (is_configurable), (rb_plugin_class_init),
+	(rb_plugin_finalise), (rb_plugin_set_property),
+	(rb_plugin_get_property), (rb_plugin_activate),
+	(rb_plugin_deactivate), (rb_plugin_create_configure_dialog),
+	(rb_plugin_find_file):
+	* plugins/rb-plugins-engine.c: (load_plugin_module):
+	* plugins/rb-python-module.c: (rb_python_module_new_object),
+	(rb_python_module_new):
+	* plugins/rb-python-plugin.c: (rb_python_object_class_init): add a new
+	rb_plugin_find_file method for locating plugin-specific data. Fixes
+	346473.
+
+	* bindings/python/rb.defs:
+	* plugins/Makefile.am:
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	(create_source_cb):
+	* plugins/ipod/rb-ipod-plugin.c: (impl_activate): Use the above.
+
 2006-07-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* metadata/rb-metadata-dbus-client.c: (rb_metadata_load),

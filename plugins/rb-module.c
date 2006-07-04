@@ -42,6 +42,7 @@ struct _RBModule
 	GModule *library;
 
 	gchar *path;
+	gchar *name;
 	GType type;
 };
 
@@ -65,29 +66,23 @@ rb_module_load (GTypeModule *gmodule)
 
 	module->library = g_module_open (module->path, 0);
 
-	if (module->library == NULL)
-	{
+	if (module->library == NULL) {
 		g_warning (g_module_error());
 
 		return FALSE;
 	}
 
 	/* extract symbols from the lib */
-	if (!g_module_symbol (module->library, "register_rb_plugin",
-			      (void *) &register_func))
-	{
-		g_warning (g_module_error());
+	if (!g_module_symbol (module->library, "register_rb_plugin", (void *)&register_func)) {
+		g_warning (g_module_error ());
 		g_module_close (module->library);
-
 		return FALSE;
 	}
 
 	g_assert (register_func);
 
 	module->type = register_func (gmodule);
-
-	if (module->type == 0)
-	{
+	if (module->type == 0) {
 		g_warning ("Invalid rb plugin contained by module %s", module->path);
 		return FALSE;
 	}
@@ -119,14 +114,17 @@ rb_module_get_path (RBModule *module)
 GObject *
 rb_module_new_object (RBModule *module)
 {
+	GObject *obj;
 	rb_debug ("Creating object of type %s", g_type_name (module->type));
 
-	if (module->type == 0)
-	{
+	if (module->type == 0) {
 		return NULL;
 	}
 
-	return g_object_new (module->type, NULL);
+	obj = g_object_new (module->type,
+			    "name", module->name,
+			    NULL);
+	return obj;
 }
 
 static void
@@ -162,12 +160,11 @@ rb_module_class_init (RBModuleClass *class)
 }
 
 RBModule *
-rb_module_new (const gchar *path)
+rb_module_new (const gchar *path, const char *module)
 {
 	RBModule *result;
 
-	if (path == NULL || path[0] == '\0')
-	{
+	if (path == NULL || path[0] == '\0') {
 		return NULL;
 	}
 
@@ -175,6 +172,7 @@ rb_module_new (const gchar *path)
 
 	g_type_module_set_name (G_TYPE_MODULE (result), path);
 	result->path = g_strdup (path);
+	result->name = g_strdup (module);
 
 	return result;
 }

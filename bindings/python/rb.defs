@@ -205,6 +205,15 @@
   (return-type "GtkWidget*")
 )
 
+(define-method find_file
+  (of-object "RBPlugin")
+  (c-name "rb_plugin_find_file")
+  (return-type "char*")
+  (parameters
+    '("const-char*" "file")
+  )
+)
+
 
 
 ;; From ../../shell/rb-shell.h

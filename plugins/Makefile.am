@@ -38,6 +38,7 @@ librbplugins_la_SOURCES =				\
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
+	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\

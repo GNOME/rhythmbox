@@ -40,7 +40,7 @@ typedef struct _RBModule	RBModule;
 
 GType		 rb_module_get_type		(void) G_GNUC_CONST;;
 
-RBModule	*rb_module_new		(const gchar *path);
+RBModule	*rb_module_new		(const gchar *path, const char *module);
 
 const gchar	*rb_module_get_path		(RBModule *module);
 

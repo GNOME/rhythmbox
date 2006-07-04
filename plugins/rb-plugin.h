@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 #define RB_IS_PLUGIN_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), RB_TYPE_PLUGIN))
 #define RB_PLUGIN_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS((obj), RB_TYPE_PLUGIN, RBPluginClass))
 
+
 /*
  * Main object structure
  */
@@ -46,6 +47,11 @@ typedef struct
 {
 	GObject parent;
 } RBPlugin;
+
+
+typedef void		(*RBPluginActivationFunc)	(RBPlugin *plugin, RBShell *shell);
+typedef GtkWidget *	(*RBPluginWidgetFunc)		(RBPlugin *plugin);
+typedef gboolean	(*RBPluginBooleanFunc)		(RBPlugin *plugin);
 
 /*
  * Class definition
@@ -56,18 +62,13 @@ typedef struct
 
 	/* Virtual public methods */
 	
-	void 		(*activate)		(RBPlugin *plugin,
-						 RBShell *shell);
-	void 		(*deactivate)		(RBPlugin *plugin,
-						 RBShell *shell);
-
-	GtkWidget*	(*create_configure_dialog)
-						(RBPlugin *plugin);
+	RBPluginActivationFunc		activate;
+	RBPluginActivationFunc		deactivate;
+	RBPluginWidgetFunc		create_configure_dialog;
 
 	/* Plugins should not override this, it's handled automatically by
 	   the RbPluginClass */
-	gboolean 	(*is_configurable)
-						(RBPlugin *plugin);
+	RBPluginBooleanFunc		is_configurable;
 } RBPluginClass;
 
 /*
@@ -83,6 +84,17 @@ void 		 rb_plugin_deactivate		(RBPlugin *plugin,
 gboolean	 rb_plugin_is_configurable	(RBPlugin *plugin);
 GtkWidget	*rb_plugin_create_configure_dialog		
 						(RBPlugin *plugin);
+
+char*		rb_plugin_find_file		(RBPlugin *plugin,
+						 const char *file);
+
+
+#define USER_RB_PLUGINS_LOCATION "rhythmbox/plugins/"
+#define UNINSTALLED_PLUGINS_LOCATION "plugins"
+
+#define RB_PLUGINS_ENGINE_BASE_KEY CONF_PREFIX "/plugins"
+#define RB_PLUGINS_ENGINE_KEY RB_PLUGINS_ENGINE_BASE_KEY "/active-plugins"
+
 
 /*
  * Utility macro used to register plugins

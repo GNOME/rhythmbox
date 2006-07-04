@@ -127,6 +127,7 @@ impl_activate (RBPlugin *bplugin,
 	RBRemovableMediaManager *rmm = NULL;
 	GtkUIManager *uimanager = NULL;
 	gboolean scanned;
+	char *file;
 
 	plugin->shell = shell;
 
@@ -143,9 +144,11 @@ impl_activate (RBPlugin *bplugin,
 				      rb_ipod_plugin_actions, G_N_ELEMENTS (rb_ipod_plugin_actions),
 				      plugin);
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
+	file = rb_plugin_find_file (bplugin, "ipod-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-							       rb_file ("ipod-ui.xml"),
+							       file,
 							       NULL);
+	g_free (file);
 
 	/* watch for new removable media, and cause a rescan */
 	g_signal_connect (G_OBJECT (rmm),

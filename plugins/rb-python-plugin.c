@@ -213,12 +213,13 @@ rb_python_object_class_init (RBPythonObjectClass *klass,
 			     gpointer                class_data)
 {
 	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
 	klass->type = (PyObject*) class_data;
 
-	G_OBJECT_CLASS (klass)->finalize = rb_python_object_finalize;
+	object_class->finalize = rb_python_object_finalize;
 
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;

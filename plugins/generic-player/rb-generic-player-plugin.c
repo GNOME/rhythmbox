@@ -134,11 +134,15 @@ create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBGeneri
 
 	if (source) {
 		if (plugin->ui_merge_id == 0) {
-			GtkUIManager *uimanager;
+			GtkUIManager *uimanager = NULL;
+			char *file = NULL;
+
 			g_object_get (G_OBJECT (plugin->shell), "ui-manager", &uimanager, NULL);
+			file = rb_plugin_find_file (RB_PLUGIN (plugin), "generic-player-ui.xml");
 			plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-									       rb_file ("generic-player-ui.xml"),
+									       file,
 									       NULL);
+			g_free (file);
 			g_object_unref (G_OBJECT (uimanager));
 		}
 

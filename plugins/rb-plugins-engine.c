@@ -46,12 +46,6 @@
 
 #include "rb-plugins-engine.h"
 
-#define USER_RB_PLUGINS_LOCATION "rhythmbox/plugins/"
-#define UNINSTALLED_PLUGINS_LOCATION "plugins"
-
-#define RB_PLUGINS_ENGINE_BASE_KEY CONF_PREFIX "/plugins"
-#define RB_PLUGINS_ENGINE_KEY RB_PLUGINS_ENGINE_BASE_KEY "/active-plugins"
-
 #define PLUGIN_EXT	".rb-plugin"
 
 typedef enum
@@ -425,8 +419,7 @@ load_plugin_module (RBPluginInfo *info)
 	g_return_val_if_fail (info->location != NULL, FALSE);
 	g_return_val_if_fail (info->plugin == NULL, FALSE);
 	
-	switch (info->lang)
-	{
+	switch (info->lang) {
 		case RB_PLUGIN_LOADER_C:
 			dirname = g_path_get_dirname (info->file);	
 			g_return_val_if_fail (dirname != NULL, FALSE);
@@ -447,45 +440,29 @@ load_plugin_module (RBPluginInfo *info)
 			g_free (dirname);
 			g_return_val_if_fail (path != NULL, FALSE);
 	
-			info->module = G_TYPE_MODULE (rb_module_new (path));
+			info->module = G_TYPE_MODULE (rb_module_new (path, info->location));
 			g_free (path);
 			break;
 		case RB_PLUGIN_LOADER_PY:
-		{
 #ifdef ENABLE_PYTHON
-			gchar *dir = g_path_get_dirname (info->file);
-			
-			info->module = G_TYPE_MODULE (
-					rb_python_module_new (dir, info->location));
-					
-			g_free (dir);
+			info->module = G_TYPE_MODULE (rb_python_module_new (info->file, info->location));
+#else
+			rb_debug ("cannot load plugin %s, python plugin support is disabled", info->location);
 #endif
 			break;
-		}
 	}
 
 	
-	if (g_type_module_use (info->module) == FALSE)
-	{
-		switch (info->lang)
-		{
-			case RB_PLUGIN_LOADER_C:
-				g_warning ("Could not load plugin file at %s\n",
-				   rb_module_get_path (RB_MODULE (info->module)));
-				break;
-			case RB_PLUGIN_LOADER_PY:
-				g_warning ("Could not load python module %s\n", info->location);
-				break;
-		}
-			   
+	if (g_type_module_use (info->module) == FALSE) {
+		g_warning ("Could not load plugin %s\n", info->location);
+
 		g_object_unref (G_OBJECT (info->module));
 		info->module = NULL;
-		
+
 		return FALSE;
 	}
 	
-	switch (info->lang)
-	{
+	switch (info->lang) {
 		case RB_PLUGIN_LOADER_C:
 			info->plugin = RB_PLUGIN (rb_module_new_object (RB_MODULE (info->module)));
 			break;
@@ -495,11 +472,7 @@ load_plugin_module (RBPluginInfo *info)
 #endif
 			break;
 	}
-	
-	g_type_module_unuse (info->module);
 
-	rb_debug ("End");
-	
 	return TRUE;
 }
 
