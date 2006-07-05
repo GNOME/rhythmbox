@@ -318,10 +318,6 @@ void		rhythmdb_add_uri_with_type	(RhythmDB *db, const char *uri, RhythmDBEntryTy
 void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, const GValue *value);
-void		rhythmdb_entry_set_nonotify	(RhythmDB *db, RhythmDBEntry *entry,
-						 guint propid, const GValue *value);
-void		rhythmdb_entry_set_uninserted   (RhythmDB *db, RhythmDBEntry *entry,
-						 guint propid, const GValue *value);
 
 char *		rhythmdb_entry_get_playback_uri	(RhythmDBEntry *entry);
 

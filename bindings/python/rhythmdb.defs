@@ -378,28 +378,6 @@
   )
 )
 
-(define-method entry_set_nonotify
-  (of-object "RhythmDB")
-  (c-name "rhythmdb_entry_set_nonotify")
-  (return-type "none")
-  (parameters
-    '("RhythmDBEntry*" "entry")
-    '("RhythmDBPropType" "propid")
-    '("const-GValue*" "value")
-  )
-)
-
-(define-method entry_set_uninserted
-  (of-object "RhythmDB")
-  (c-name "rhythmdb_entry_set_uninserted")
-  (return-type "none")
-  (parameters
-    '("RhythmDBEntry*" "entry")
-    '("RhythmDBPropType" "propid")
-    '("const-GValue*" "value")
-  )
-)
-
 (define-method entry_delete
   (of-object "RhythmDB")
   (c-name "rhythmdb_entry_delete")

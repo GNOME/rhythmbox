@@ -211,7 +211,7 @@ entry_set_string_prop (RhythmDB *db,
 	if (is_inserted)
 		rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
 	else
-		rhythmdb_entry_set_uninserted (RHYTHMDB (db), entry, propid, &value);
+		rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
 	g_value_unset (&value);
 }
 
@@ -241,7 +241,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	/* generate track # */
 	g_value_init (&value, G_TYPE_ULONG);
 	g_value_set_ulong (&value, track_number);
-	rhythmdb_entry_set_uninserted (db, entry,
+	rhythmdb_entry_set (db, entry,
 			    RHYTHMDB_PROP_TRACK_NUMBER, 
 			    &value);
 	g_value_unset (&value);
@@ -250,7 +250,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	g_value_init (&value, G_TYPE_STRING);
 	str = g_strdup_printf (_("Track %u"), track_number);
 	g_value_take_string (&value, str);
-	rhythmdb_entry_set_uninserted (db, entry,
+	rhythmdb_entry_set (db, entry,
 			    RHYTHMDB_PROP_TITLE, 
 			    &value);
 	g_value_unset (&value);
@@ -280,7 +280,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 		if (result) {
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, (gulong)(duration / GST_SECOND));
-			rhythmdb_entry_set_uninserted (db, entry,
+			rhythmdb_entry_set (db, entry,
 					    RHYTHMDB_PROP_DURATION, 
 					    &value);
 			g_value_unset (&value);

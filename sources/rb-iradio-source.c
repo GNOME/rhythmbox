@@ -468,18 +468,18 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 		g_value_take_string (&val,
 				     gnome_vfs_format_uri_for_display (uri));
 
-	rhythmdb_entry_set_uninserted (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &val);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_reset (&val);
 		
 	if ((!genre) || (strcmp (genre, "") == 0))
 		genre = _("Unknown");
 	g_value_set_string (&val, genre);
-	rhythmdb_entry_set_uninserted (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &val);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
 	
 	g_value_init (&val, G_TYPE_DOUBLE);
 	g_value_set_double (&val, 0.0);
-	rhythmdb_entry_set_uninserted (source->priv->db, entry, RHYTHMDB_PROP_RATING, &val);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 	
 	rhythmdb_commit (source->priv->db);

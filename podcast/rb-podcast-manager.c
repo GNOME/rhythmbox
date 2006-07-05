@@ -416,7 +416,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 			GValue status_val = { 0, };
 			g_value_init (&status_val, G_TYPE_ULONG);
 			g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_STATUS_WAITING);
-			rhythmdb_entry_set_nonotify (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
+			rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 			g_value_unset (&status_val);
 		}
 		rb_debug ("Try insert entry for download.");
@@ -770,70 +770,70 @@ rb_podcast_manager_add_post (RhythmDB *db,
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, name);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 	
 	g_value_reset (&val);
 	g_value_set_static_string (&val, _("Podcast"));
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
 
 	g_value_reset (&val);
 	g_value_set_string (&val, title);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
 
 	g_value_reset (&val);
 	if (subtitle)
 		g_value_set_string (&val, subtitle);
 	else
 		g_value_set_static_string (&val, "");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
 
 	g_value_reset (&val);
 	if (description)
 		g_value_set_string (&val, description);
 	else
 		g_value_set_static_string (&val, "");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
 
 	g_value_reset (&val);
 	if (generator) 
 		g_value_set_string (&val, generator);
 	else
 		g_value_set_static_string (&val, "");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_ULONG);
 	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
 
 	g_value_reset (&val);
 	g_value_set_ulong (&val, date);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
 
 	g_value_reset (&val);
 	g_value_set_ulong (&val, duration);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DURATION, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
 
 	g_value_reset (&val);
 	g_value_set_ulong (&val, 0);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
 
 	/* first seen */
 	g_get_current_time (&time);
 	g_value_reset (&val);
 	g_value_set_ulong (&val, time.tv_sec);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
 	g_value_unset (&val);
 	
 	/* initialize the rating */
 	g_value_init (&val, G_TYPE_DOUBLE);
 	g_value_set_double (&val, 2.5);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_UINT64);
 	g_value_set_uint64 (&val, filesize);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
 	g_value_unset (&val);
 
 	return entry;
@@ -1408,7 +1408,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	
 		g_value_init (&title_val, G_TYPE_STRING);
 		g_value_set_string (&title_val, (gchar * ) data->title);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 		g_value_unset (&title_val);
 	
 		g_value_init (&author_val, G_TYPE_STRING);
@@ -1416,55 +1416,55 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 			g_value_set_string (&author_val, (gchar *) data->author);
 		else
 			g_value_set_static_string (&author_val, _("Unknown"));
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
 		g_value_unset (&author_val);
 	
 	
 		if (data->subtitle) {
 			g_value_init (&subtitle_val, G_TYPE_STRING);
 			g_value_set_string (&subtitle_val, (gchar *) data->subtitle);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
 			g_value_unset (&subtitle_val);
 		}
 	
 		if (data->description) {
 			g_value_init (&description_val, G_TYPE_STRING);
 			g_value_set_string (&description_val, (gchar *) data->description);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
 			g_value_unset (&description_val);
 		}
 	
 		if (data->summary) {
 			g_value_init (&summary_val, G_TYPE_STRING);
 			g_value_set_string (&summary_val, (gchar *) data->summary);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
 			g_value_unset (&summary_val);
 		}
 
 		if (data->lang) {
 			g_value_init (&lang_val, G_TYPE_STRING);
 			g_value_set_string (&lang_val, (gchar *) data->lang);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
 			g_value_unset (&lang_val);
 		}
 
 		if (data->copyright) { 
 			g_value_init (&copyright_val, G_TYPE_STRING);
 			g_value_set_string (&copyright_val, (gchar *) data->copyright);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
 			g_value_unset (&copyright_val);
 		}
 
 		if (data->img) {
 			g_value_init (&image_val, G_TYPE_STRING);
 			g_value_set_string (&image_val, (gchar *) data->img);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
 			g_value_unset (&image_val);
 		}
 
 		g_value_init (&status_val, G_TYPE_ULONG);
 		g_value_set_ulong (&status_val, 1);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		g_value_unset (&status_val);
 
 		rb_debug("Podcast head Inserted");
@@ -1511,7 +1511,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		g_value_init (&status, G_TYPE_ULONG);
 		g_value_set_ulong (&status, RHYTHMDB_PODCAST_STATUS_WAITING);
 		for (t = download_entries; t != NULL; t = g_list_next (t)) {
-			rhythmdb_entry_set_uninserted (db, 
+			rhythmdb_entry_set (db, 
 						       (RhythmDBEntry*) t->data,
 						       RHYTHMDB_PROP_STATUS, 
 						       &status);
@@ -1531,7 +1531,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	g_value_set_ulong (&last_post_val, new_last_post);
 
 	if (new_feed) 
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
 	else
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
 	g_value_unset (&last_post_val);
@@ -1540,7 +1540,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	g_value_set_ulong (&last_update_val, time(NULL));
 
 	if (new_feed)
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
 	else
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
 	g_value_unset (&last_update_val);

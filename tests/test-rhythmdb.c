@@ -100,22 +100,22 @@ START_TEST (test_rhythmdb_indexing)
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Rock");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Nine Inch Nails");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Pretty Hate Machine");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Sin");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
 	rhythmdb_commit (db);
@@ -234,7 +234,7 @@ START_TEST (test_rhythmdb_mirroring)
 	/* check the last-played date is mirrored */
 	g_value_init (&val, G_TYPE_ULONG);
 	g_value_set_ulong (&val, 1354285);
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
 	g_value_unset (&val);
 	rhythmdb_commit (db);
 
@@ -279,22 +279,22 @@ START_TEST (test_rhythmdb_db_queries)
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Rock");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_GENRE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Nine Inch Nails");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Pretty Hate Machine");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Sin");
-	rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
 	rhythmdb_commit (db);

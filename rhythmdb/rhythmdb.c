@@ -919,7 +919,7 @@ rhythmdb_error_quark (void)
  * @type: type of entry to allocate
  *
  * Allocate and initialise memory for a new #RhythmDBEntry of the type @type.
- * The entry's initial properties needs to be set with rhythmdb_entry_set_uninserted(),
+ * The entry's initial properties needs to be set with rhythmdb_entry_set (),
  * the entry added to the database with rhythmdb_entry_insert(), and committed with
  * rhythmdb_commit().
  *
@@ -1511,7 +1511,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 		if (error_entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 			g_value_init (&value, G_TYPE_STRING);
 			g_value_set_string (&value, event->error->message);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
 			g_value_unset (&value);
 		}
 	
@@ -1519,7 +1519,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 		if (event->vfsinfo) {
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, event->vfsinfo->mtime);
-			rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_MTIME, &value);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &value);
 			g_value_unset (&value);
 		}
 
@@ -1584,20 +1584,20 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		/* initialize the last played date to 0=never */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, 0);
-		rhythmdb_entry_set_uninserted (db, entry,
+		rhythmdb_entry_set (db, entry,
 					       RHYTHMDB_PROP_LAST_PLAYED, &value);
 		g_value_unset (&value);
 
 		/* initialize the rating */
 		g_value_init (&value, G_TYPE_DOUBLE);
 		g_value_set_double (&value, 0);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_RATING, &value);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
 		g_value_unset (&value);
 
 	        /* first seen */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, time.tv_sec);
-		rhythmdb_entry_set_uninserted (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
 		g_value_unset (&value);
 	}
 
@@ -2326,30 +2326,6 @@ rhythmdb_save (RhythmDB *db)
 	g_mutex_unlock (db->priv->saving_mutex);
 }
 
-static void
-threadsafe_entry_set (RhythmDB *db, RhythmDBEntry *entry,
-		      gboolean notify, guint propid, const GValue *value)
-{
-	if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
-		rhythmdb_entry_set_internal (db, entry, notify, propid, value);
-	} else {
-		RhythmDBEvent *result;
-
-		result = g_new0 (RhythmDBEvent, 1);
-		result->db = db;
-		result->type = RHYTHMDB_EVENT_ENTRY_SET;
-
-		rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
-
-		result->entry = entry;
-		result->change.prop = propid;
-		result->signal_change = notify;
-		g_value_init (&result->change.new, G_VALUE_TYPE (value));
-		g_value_copy (value, &result->change.new);
-		g_async_queue_push (db->priv->event_queue, result);
-	}
-}
-
 /**
  * rhythmdb_entry_set:
  * @db:# a RhythmDB.
@@ -2375,29 +2351,28 @@ void
 rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
 		    guint propid, const GValue *value)
 {
-	g_return_if_fail ((entry->flags & RHYTHMDB_ENTRY_INSERTED) != 0);
-	threadsafe_entry_set (db, entry, TRUE, propid, value);
-}
+	if ((entry->flags & RHYTHMDB_ENTRY_INSERTED) != 0) {
+		if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
+			rhythmdb_entry_set_internal (db, entry, TRUE, propid, value);
+		} else {
+			RhythmDBEvent *result;
 
-/**
- * rhythmdb_entry_set_nonotify:
- * @db: a #RhythmDB.
- * @entry: a #RhythmDBEntry.
- * @propid: the id of the property to set.
- * @value: the property value.
- *
- * This function is like rhythmdb_entry_set(), except no notification
- * of the change will be sent.  This is useful if you know no
- * one could possibly be listening for the change.
- * 
- * Note that you do not need to call rhythmdb_commit() after this.
- **/
-void 
-rhythmdb_entry_set_nonotify (RhythmDB *db, RhythmDBEntry *entry, 
-			     guint propid, const GValue *value)
-{
-	g_return_if_fail ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
-	threadsafe_entry_set (db, entry, FALSE, propid, value);
+			result = g_new0 (RhythmDBEvent, 1);
+			result->db = db;
+			result->type = RHYTHMDB_EVENT_ENTRY_SET;
+
+			rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
+
+			result->entry = entry;
+			result->change.prop = propid;
+			result->signal_change = TRUE;
+			g_value_init (&result->change.new, G_VALUE_TYPE (value));
+			g_value_copy (value, &result->change.new);
+			g_async_queue_push (db->priv->event_queue, result);
+		}
+	} else {
+		rhythmdb_entry_set_internal (db, entry, FALSE, propid, value);
+	}
 }
 
 static void
@@ -2430,27 +2405,6 @@ record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
 	g_mutex_unlock (db->priv->change_mutex);
 }
 
-/**
- * rhythmdb_entry_set_uninserted:
- * @db: a #RhythmDB.
- * @entry: a #RhythmDBEntry.
- * @propid: the id of the property to set.
- * @value: the property value.
- *
- * This function is like rhythmdb_entry_set(), except that it should only
- * be called for entries that have been created with rhythmdb_entry_new()
- * but not yet committed to the database (i.e. before rhythmdb_commit()).
- *
- * Note that you need to call rhythmdb_commit() after all properties are set.
- **/
-void
-rhythmdb_entry_set_uninserted (RhythmDB *db, RhythmDBEntry *entry,
-			       guint propid, const GValue *value)
-{
-	g_return_if_fail ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
-
-	rhythmdb_entry_set_internal (db, entry, FALSE, propid, value);
-}
 
 void
 rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,

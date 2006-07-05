@@ -1,3 +1,27 @@
+2006-07-06  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb.c:
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load), (rhythmdb_entry_set): remove
+	rhythmdb_entry_set_uninserted and rhythmdb_entry_set_nonotify. The
+	former is pointless (as rhythmdb already knows which it should use)
+	and the latter doesn't seem useful at all, and possibly bad. From
+	#330226.
+
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override:
+	* daapsharing/rb-daap-connection.c: (entry_set_string_prop),
+	(handle_song_listing):
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_download_entry), (rb_podcast_manager_add_post),
+	(rb_podcast_manager_insert_feed):
+	* sources/rb-audiocd-source.c: (entry_set_string_prop),
+	(rb_audiocd_create_track_entry):
+	* sources/rb-ipod-source.c: (entry_set_string_prop),
+	(add_ipod_song_to_db):
+	* sources/rb-iradio-source.c: (rb_iradio_source_add_station):
+	* tests/test-rhythmdb.c: (START_TEST): adapt to the above.
+
 2006-07-05  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-playlist-manager.c: (playlist_load_start_cb),
