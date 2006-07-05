@@ -531,17 +531,19 @@ playlist_load_start_cb (TotemPlParser *parser, const char *title, RBPlaylistMana
 {
 	rb_debug ("loading new playlist %s", title);
 
-	if (!mgr->priv->loading_playlist) {
-		mgr->priv->loading_playlist =
+	mgr->priv->loading_playlist =
 			RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
-	}
 }
 
 static void
 playlist_load_end_cb (TotemPlParser *parser, const char *title, RBPlaylistManager *mgr)
 {
 	rb_debug ("finished loading playlist %s", title);
-	mgr->priv->loading_playlist = NULL;
+
+	if (title) {
+		g_object_set (G_OBJECT (mgr->priv->loading_playlist), "name", title, NULL);
+		mgr->priv->loading_playlist = NULL;
+	}
 }
 
 /**
@@ -589,7 +591,26 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 				     _("The playlist file may be in an unknown format or corrupted."));
 			return FALSE;
 		}
-		mgr->priv->loading_playlist = NULL;
+		if (mgr->priv->loading_playlist != NULL) {
+			char *name = NULL;
+
+			/* totem-plparser may not have given us the playlist name */
+			g_object_get (mgr->priv->loading_playlist, "name", &name, NULL);
+			if (name == NULL || name[0] == '\0') {
+				char *path;
+
+				rb_debug ("setting playlist name from file name");
+				path = g_filename_from_uri (uri, NULL, NULL);
+				if (path) {
+					name = g_path_get_basename (path);
+					g_object_set (mgr->priv->loading_playlist, "name", name, NULL);
+					g_free (path);
+				}
+			}
+
+			g_free (name);
+			mgr->priv->loading_playlist = NULL;
+		}
 
 		g_object_unref (G_OBJECT (parser));
 	}
@@ -1382,6 +1403,7 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 {
 	GladeXML *xml;
 	GtkWidget *dialog, *menu;
+	char *name, *tmp;
 
 	xml = rb_glade_xml_new ("playlist-save.glade",
 				"playlist_save_dialog",
@@ -1392,6 +1414,12 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	setup_format_menu (menu, dialog);
 	g_object_set_data (G_OBJECT (dialog), "export-menu", menu);
 	
+	g_object_get (G_OBJECT (mgr->priv->selected_source), "name", &name, NULL);
+	tmp = g_strconcat (name, ".pls", NULL);
+	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), tmp);
+	g_free (tmp);
+	g_free (name);
+
 	/* FIXME: always has "by extension" as default (it should probably remember the last selection) */
 	gtk_combo_box_set_active (GTK_COMBO_BOX (menu), 0);
 	g_signal_connect_object (G_OBJECT (dialog), "response",

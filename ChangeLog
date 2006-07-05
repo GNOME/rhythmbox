@@ -1,3 +1,11 @@
+2006-07-05  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-playlist-manager.c: (playlist_load_start_cb),
+	(playlist_load_end_cb), (rb_playlist_manager_parse_file),
+	(rb_playlist_manager_cmd_save_playlist): set the playlist name to what
+	totem-plparser gives us, or the file name if it doesn't give us
+	anything. Set the default file name when saving too. Fixes #345261
+
 2006-07-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Ed Catmur  <ed@catmur.co.uk>
