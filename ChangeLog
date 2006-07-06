@@ -1,5 +1,11 @@
 2006-07-06  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: some more fixes, so that
+	python classes derived from RBSource work correctly.
+
+2006-07-06  James Livingston  <doclivingston@gmail.com>
+
 	* configure.ac: bump pygtk requirements to 2.8, since we're already
 	using some features of it, and weird things will happen if people are
 	actually trying to use pygtk 2.6.

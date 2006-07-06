@@ -606,6 +606,19 @@
   (return-type "GType")
 )
 
+; this is fake
+(define-function rb_source_new
+  (is-constructor-of "RBSource")
+  (c-name "rb_browser_new")
+  (return-type "RBSource*")
+  (properties
+    '("name" (argname "name") (optional))
+    '("icon" (argname "icon") (optional))
+    '("query-model" (argname "query-model") (optional))
+    '("sourcelist-group" (argname "sourcelist-group") (optional))
+  )
+)
+
 (define-method notify_filter_changed
   (of-object "RBSource")
   (c-name "rb_source_notify_filter_changed")
@@ -1520,6 +1533,23 @@
 (define-function rb_browser_source_get_type
   (c-name "rb_browser_source_get_type")
   (return-type "GType")
+)
+
+; this is fake
+(define-function rb_browser_source_new
+  (is-constructor-of "RBBrowserSource")
+  (c-name "rb_browser_source_new")
+  (return-type "RBBrowserSource*")
+  (properties
+    '("entry-type" (argname "entry-type") (optional))
+    '("sorting-key" (argname "sorting-key") (optional))
+
+    ; from RBSource
+    '("name" (argname "name") (optional))
+    '("icon" (argname "icon") (optional))
+    '("query-model" (argname "query-model") (optional))
+    '("sourcelist-group" (argname "sourcelist-group") (optional))
+  )
 )
 
 (define-method get_paned_key
