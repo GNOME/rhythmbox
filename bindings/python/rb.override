@@ -836,7 +836,7 @@ _wrap_rb_source_get_status(PyGObject *self)
     PyObject *tuple;
 
     rb_source_get_status (RB_SOURCE (self->obj), &status_text, &progress_text, &progress);
-    tuple = Py_BuildValue ("(ssf)", status_text, progress_text, progress);
+    tuple = Py_BuildValue ("ssf", status_text, progress_text, progress);
     g_free (status_text);
     g_free (progress_text);
     return tuple;
@@ -851,6 +851,7 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
     PyObject *py_self;
     PyObject *py_retval;
     PyObject *py_method;
+    const char *st, *pt;
     
     __py_state = pyg_gil_state_ensure();
     py_self = pygobject_new((GObject *) self);
@@ -889,7 +890,11 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
         return;
     }
 
-    PyArg_ParseTuple (py_retval, "(zzf)", status_text, progress_text, progress);
+    PyArg_ParseTuple (py_retval, "zzf", &st, &pt, progress);
+    if (st)
+      *status_text = g_strdup (st);
+    if (pt)
+      *progress_text = g_strdup (pt);
     
     Py_DECREF(py_retval);
     Py_DECREF(py_method);

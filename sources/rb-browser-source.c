@@ -113,12 +113,8 @@ struct RBBrowserSourcePrivate
 	RBLibraryBrowser *browser;
 	GtkWidget *vbox;
 
-	GdkPixbuf *pixbuf;
-
 	RBEntryView *songs;
 	GtkWidget *paned;
-
-	gboolean lock;
 
 	char *search_text;
 	RhythmDBQueryModel *cached_all_query;

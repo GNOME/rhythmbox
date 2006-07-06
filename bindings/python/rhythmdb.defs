@@ -24,6 +24,13 @@
   (in-module "RhythmDB")
   (c-name "RhythmDBEntryType_")
   (gtype-id "RHYTHMDB_TYPE_ENTRY_TYPE")
+  (fields
+    '("gpointer" "post_entry_create" (access readwrite))
+    '("gpointer" "pre_entry_destroy" (access readwrite))
+    '("gpointer" "get_playback_uri" (access readwrite))
+    '("char*" "can_sync_metadata" (access readwrite))
+    '("char*" "sync_metadata" (access readwrite))
+  )
 )
 
 (define-boxed Query

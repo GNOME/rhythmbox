@@ -831,7 +831,7 @@ EOF
 fi
 
 if test "x$have_python" != "xno"; then
-	PYGTK_REQUIRED=2.6.0
+	PYGTK_REQUIRED=2.8.0
 
 	PKG_CHECK_MODULES([PYGTK], [
 		pygtk-2.0 >= $PYGTK_REQUIRED],

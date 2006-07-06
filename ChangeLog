@@ -1,5 +1,18 @@
 2006-07-06  James Livingston  <doclivingston@gmail.com>
 
+	* configure.ac: bump pygtk requirements to 2.8, since we're already
+	using some features of it, and weird things will happen if people are
+	actually trying to use pygtk 2.6.
+
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override: allow python to set
+	RhythmDBEntryType's can_sync_metadata and sync_metadata vfuncs
+
+	* sources/rb-browser-source.c: remove some left over member variables
+
+2006-07-06  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb.c:
 	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry),
 	(rhythmdb_process_metadata_load), (rhythmdb_entry_set): remove
