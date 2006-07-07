@@ -1,5 +1,11 @@
 2006-07-07  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb-monitor.c (rhythmdb_start_monitoring):
+	remove an extraneous !, which caused it not to monitor folders in the
+	library with no tracks in them. Fixes #346759.
+
+2006-07-07  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb-private.h:
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate),
 	(rhythmdb_entry_get), (rhythmdb_entry_set_internal),

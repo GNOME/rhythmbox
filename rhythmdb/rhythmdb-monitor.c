@@ -191,7 +191,7 @@ rhythmdb_start_monitoring (RhythmDB *db)
 	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
 						    (GSourceFunc) rhythmdb_process_changed_files, db);
 
-	if (!db->priv->library_locations) {
+	if (db->priv->library_locations) {
 		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
 	}
 		
