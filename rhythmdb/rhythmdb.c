@@ -2651,7 +2651,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 			g_free (val);
 		}
 
-		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&entry->last_played_str, old, new))
+		if (g_atomic_pointer_compare_and_exchange (&entry->last_played_str, old, new))
 			rb_refstring_unref (old);
 		else
 			rb_refstring_unref (new);
@@ -2670,7 +2670,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 		new = rb_refstring_new (val);
 		g_free (val);
 
-		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&entry->first_seen_str, old, new))
+		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new))
 			rb_refstring_unref (old);
 		else
 			rb_refstring_unref (new);
@@ -2693,7 +2693,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 			new = NULL;
 		}
 
-		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&entry->first_seen_str, old, new))
+		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new))
 			rb_refstring_unref (old);
 		else
 			rb_refstring_unref (new);

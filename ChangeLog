@@ -1,3 +1,10 @@
+2006-07-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_sync_mirrored):
+	Fix build break with gcc 4.1 by changing RBRefString pointers into
+	gpointers.
+
 2006-07-07  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-monitor.c (rhythmdb_start_monitoring):
