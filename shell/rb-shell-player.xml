@@ -76,6 +76,9 @@
 
     <signal name="playingSongPropertyChanged">
       <arg type="s" name="uri"/>
+      <arg type="s" name="property"/>
+      <arg type="v" name="old"/>
+      <arg type="v" name="new"/>
     </signal>
   </interface>
 </node>
