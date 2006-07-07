@@ -64,6 +64,7 @@
 #include "rb-play-queue-source.h"
 #include "rhythmdb.h"
 #include "rb-podcast-manager.h"
+#include "rb-marshal.h"
 
 #ifdef HAVE_XIDLE_EXTENSION
 #include <X11/extensions/xidle.h>
@@ -235,6 +236,7 @@ enum
 	PLAYING_CHANGED,
 	PLAYING_SONG_CHANGED,
 	PLAYING_URI_CHANGED,
+	PLAYING_SONG_PROPERTY_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -452,6 +454,18 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
+
+	rb_shell_player_signals[PLAYING_SONG_PROPERTY_CHANGED] =
+		g_signal_new ("playing-song-property-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_property_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_STRING_POINTER_POINTER,
+			      G_TYPE_NONE,
+			      4,
+			      G_TYPE_STRING, G_TYPE_STRING,
+			      G_TYPE_VALUE, G_TYPE_VALUE);
 
 	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
 }
@@ -2012,26 +2026,49 @@ rb_shell_player_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       GSList *changes, RBShellPlayer *player)
 {
 	GSList *t;
+	gboolean synced = FALSE;
+	const char *location;
 	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (player);
 	
 	/* We try to update only if the changed entry is currently playing */
 	if (entry != playing_entry) {
 		return;
 	}
-	
-	/* We update only if the artist, title or album has changed */
-	for (t = changes; t; t = t->next)
-	{
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	for (t = changes; t; t = t->next) {
 		RhythmDBEntryChange *change = t->data;
-		switch (change->prop)
-		{
-			case RHYTHMDB_PROP_TITLE:
-			case RHYTHMDB_PROP_ARTIST:
-			case RHYTHMDB_PROP_ALBUM:
+
+		/* update UI if the artist, title or album has changed */
+		switch (change->prop) {
+		case RHYTHMDB_PROP_TITLE:
+		case RHYTHMDB_PROP_ARTIST:
+		case RHYTHMDB_PROP_ALBUM:
+			if (!synced) {
 				rb_shell_player_sync_with_source (player);
-				return;
-			default:
-				break;
+				synced = TRUE;
+			}
+			break;
+		default:
+			break;
+		}
+	
+		/* emit dbus signals for changes with easily marshallable types */
+		switch (rhythmdb_get_property_type (db, change->prop)) {
+		case G_TYPE_STRING:
+		case G_TYPE_BOOLEAN:
+		case G_TYPE_ULONG:
+		case G_TYPE_UINT64:
+		case G_TYPE_DOUBLE:
+			g_signal_emit (G_OBJECT (player), 
+				       rb_shell_player_signals[PLAYING_SONG_PROPERTY_CHANGED], 0,
+				       location,
+				       rhythmdb_nice_elt_name_from_propid (db, change->prop),
+				       &change->old,
+				       &change->new);
+			break;
+		default:
+			break;
 		}
 	}
 }

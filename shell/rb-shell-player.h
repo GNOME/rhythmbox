@@ -73,6 +73,7 @@ typedef struct
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
 	void (*playing_uri_changed) (RBShellPlayer *player, const char *uri);
 	void (*playing_song_changed) (RBShellPlayer *player, RhythmDBEntry *entry);
+	void (*playing_song_property_changed) (RBShellPlayer *player, const char *uri, GValue *old, GValue *newValue);
 } RBShellPlayerClass;
 
 GType			rb_shell_player_get_type   (void);
