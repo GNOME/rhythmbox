@@ -1,3 +1,19 @@
+2006-07-07  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_allocate),
+	(rhythmdb_entry_get), (rhythmdb_entry_set_internal),
+	(rhythmdb_entry_sync_mirrored), (rhythmdb_entry_set_visibility),
+	(rhythmdb_entry_get_string):
+	* rhythmdb/rhythmdb.h: make _sync_mirrored private, and have "dirty"
+	flags for the affected properties. _sync_mirrored will get run
+	automatically when a dirty property is accessed, which improves
+	performance a bit (especially during startup) as we don't need to sync
+	every time they change. From #325215.
+
+	* tests/bench-rhythmdb-load.c
+	* tests/Makefile.am: add a RhythmDB loading benchmark.
+
 2006-07-06  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rb.defs:

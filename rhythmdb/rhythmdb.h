@@ -372,8 +372,6 @@ void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db,
 							 RhythmDBQueryResults *results,
 							 GPtrArray *query);
 
-void		rhythmdb_entry_sync_mirrored		(RhythmDB *db, RhythmDBEntry *entry, guint propid);
-
 GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
 void		rhythmdb_query_append_prop_multiple	(RhythmDB *db, GPtrArray *query, RhythmDBPropType propid, GList *items);

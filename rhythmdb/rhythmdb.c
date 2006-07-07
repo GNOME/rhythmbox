@@ -113,6 +113,8 @@ static void library_location_changed_cb (GConfClient *client,
 					  GConfEntry *entry,
 					  RhythmDB *db);
 static void rhythmdb_sync_library_location (RhythmDB *db);
+static void rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
+					  guint propid);
 
 enum
 {
@@ -946,9 +948,10 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 	ret->musicbrainz_trackid = rb_refstring_ref (db->priv->empty_string);
 	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
 
-	rhythmdb_entry_sync_mirrored (db, ret, RHYTHMDB_PROP_LAST_PLAYED);
-	rhythmdb_entry_sync_mirrored (db, ret, RHYTHMDB_PROP_FIRST_SEEN);
-	
+	ret->flags |= RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY |
+		      RHYTHMDB_ENTRY_FIRST_SEEN_DIRTY |
+		      RHYTHMDB_ENTRY_LAST_SEEN_DIRTY;
+
 	/* The refcount is initially 0, we want to set it to 1 */
 	g_atomic_int_inc (&ret->refcount);
 
@@ -1986,6 +1989,8 @@ void
 rhythmdb_entry_get (RhythmDB *db, RhythmDBEntry *entry, 
 		    RhythmDBPropType propid, GValue *val)
 {
+	rhythmdb_entry_sync_mirrored (entry, propid);
+
 	g_assert (G_VALUE_TYPE (val) == rhythmdb_get_property_type (db, propid));
 	switch (rhythmdb_property_type_map[propid]) {
 	case G_TYPE_STRING:
@@ -2526,9 +2531,11 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			break;
 		case RHYTHMDB_PROP_FIRST_SEEN:
 			entry->first_seen = g_value_get_ulong (value);
+			entry->flags |= RHYTHMDB_ENTRY_FIRST_SEEN_DIRTY;
 			break;
 		case RHYTHMDB_PROP_LAST_SEEN:
 			entry->last_seen = g_value_get_ulong (value);
+			entry->flags |= RHYTHMDB_ENTRY_LAST_SEEN_DIRTY;
 			break;
 		case RHYTHMDB_PROP_RATING:
 			entry->rating = g_value_get_double (value);
@@ -2538,6 +2545,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			break;
 		case RHYTHMDB_PROP_LAST_PLAYED:
 			entry->last_played = g_value_get_ulong (value);
+			entry->flags |= RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY;
 			break;
 		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 			rb_refstring_unref (entry->musicbrainz_trackid);
@@ -2549,6 +2557,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			} else {
 				entry->flags &= ~RHYTHMDB_ENTRY_HIDDEN;
 			}
+			entry->flags |= RHYTHMDB_ENTRY_LAST_SEEN_DIRTY;
 			break;
 		case RHYTHMDB_PROP_STATUS:
 			g_assert (podcast);
@@ -2593,7 +2602,6 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			break;
 		}
 	}
-	rhythmdb_entry_sync_mirrored (db, entry, propid);
 	
 	/* set the dirty state */
 	db->priv->dirty = TRUE;
@@ -2613,8 +2621,8 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
  **/
 
 
-void
-rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
+static void
+rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 {
 	static const char *format;
 	static const char *never;
@@ -2627,38 +2635,68 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 		never = _("Never");
 	
 	switch (propid) {
-	case RHYTHMDB_PROP_LAST_PLAYED:
+	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 	{
-		rb_refstring_unref (entry->last_played_str);
+		RBRefString *old, *new;
+
+		if (!(entry->flags & RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY))
+			break;
+
+		old = g_atomic_pointer_get (&entry->last_played_str);
 		if (entry->last_played == 0) {
-			entry->last_played_str = rb_refstring_new (never);
+			new = rb_refstring_new (never);
 		} else {
 			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_played));
-			entry->last_played_str = rb_refstring_new (val);
+			new = rb_refstring_new (val);
 			g_free (val);
 		}
+
+		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&entry->last_played_str, old, new))
+			rb_refstring_unref (old);
+		else
+			rb_refstring_unref (new);
+
 		break;
 	}
-	case RHYTHMDB_PROP_FIRST_SEEN:
+	case RHYTHMDB_PROP_FIRST_SEEN_STR:
 	{
-		rb_refstring_unref (entry->first_seen_str);
+		RBRefString *old, *new;
+
+		if (!(entry->flags & RHYTHMDB_ENTRY_FIRST_SEEN_DIRTY))
+			break;
+
+		old = g_atomic_pointer_get (&entry->first_seen_str);
 		val = eel_strdup_strftime (format, localtime ((glong*)&entry->first_seen));
-		entry->first_seen_str = rb_refstring_new (val);
+		new = rb_refstring_new (val);
 		g_free (val);
+
+		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&entry->first_seen_str, old, new))
+			rb_refstring_unref (old);
+		else
+			rb_refstring_unref (new);
 		break;
 	}
-	case RHYTHMDB_PROP_LAST_SEEN:
-	case RHYTHMDB_PROP_HIDDEN:
+	case RHYTHMDB_PROP_LAST_SEEN_STR:
 	{
+		RBRefString *old, *new;
+
+		if (!(entry->flags & RHYTHMDB_ENTRY_LAST_SEEN_DIRTY))
+			break;
+
+		old = g_atomic_pointer_get (&entry->last_seen_str);
 		/* only store last seen time as a string for hidden entries */
-		rb_refstring_unref (entry->last_seen_str);
 		if (entry->flags & RHYTHMDB_ENTRY_HIDDEN) {
 			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_seen));
-			entry->last_seen_str = rb_refstring_new (val);
+			new = rb_refstring_new (val);
 			g_free (val);
 		} else {
-			entry->last_seen_str = NULL;
+			new = NULL;
 		}
+
+		if (g_atomic_pointer_compare_and_exchange ((gpointer*)&entry->first_seen_str, old, new))
+			rb_refstring_unref (old);
+		else
+			rb_refstring_unref (new);
 		break;
 	}
 	default:
@@ -3530,8 +3568,6 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 		rhythmdb_entry_set_internal (db, entry, TRUE,
 					     RHYTHMDB_PROP_HIDDEN, &new_val);
 		g_value_unset (&new_val);
-
-		rhythmdb_entry_sync_mirrored (db, entry, RHYTHMDB_PROP_LAST_SEEN);
 	}
 	g_value_unset (&old_val);
 }
@@ -3605,6 +3641,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
 	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
+
+	rhythmdb_entry_sync_mirrored (entry, propid);
 
 	switch (propid) {
 	case RHYTHMDB_PROP_TITLE:

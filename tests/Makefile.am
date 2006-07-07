@@ -1,10 +1,19 @@
 ## arch-tag: Automake rules for test programs
 ## Process this file with automake to produce Makefile.in
 
-TESTS =
+TESTS = bench-rhythmdb-load
 
 test_rhythmdb_SOURCES = test-rhythmdb.c
 test_rhythmdb_LDADD = \
+	$(CHECK_LIBS)						\
+	$(top_builddir)/rhythmdb/librhythmdb.la 		\
+	$(top_builddir)/lib/librb.la				\
+	$(top_builddir)/metadata/librbmetadata.la		\
+	$(top_builddir)/widgets/librbwidgets.la			\
+	$(RHYTHMBOX_LIBS)
+
+bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
+bench_rhythmdb_load_LDADD = \
 	$(CHECK_LIBS)						\
 	$(top_builddir)/rhythmdb/librhythmdb.la 		\
 	$(top_builddir)/lib/librb.la				\
