@@ -42,10 +42,10 @@ ui_str = """
 </ui>
 """
 
-LYRICS_FOLDER="~/.gnome2/rhythmbox/lyrics"
+LYRICS_FOLDER="~/.lyrics"
 LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)", "\([^\)]*mix\)", "\([^\)]*version\)", "\([^\)]*edit\)", "\(feat[^\)]*\)"]
-LYRIC_TITLE_REPLACE=[("/", "-"), ("&", "and")]
-LYRIC_ARTIST_REPLACE=[("/", "-"), ("&", "and")]
+LYRIC_TITLE_REPLACE=[("/", "-"), (" & ", " and ")]
+LYRIC_ARTIST_REPLACE=[("/", "-"), (" & ", " and ")]
 
 
 def create_lyrics_view():
@@ -137,7 +137,11 @@ class LyricGrabber(object):
         if not os.path.exists (lyrics_folder):
             os.mkdir (lyrics_folder)
 
-        return lyrics_folder + '/%s - %s.txt' % (artist, title)
+	artist_folder = lyrics_folder + '/' + artist[:128]
+	if not os.path.exists (artist_folder):
+	    os.mkdir (artist_folder)
+
+	return artist_folder + '/' + title[:128] + '.lyric'
 
     def get_lyrics(self, db, entry, callback):
 	self.callback = callback
