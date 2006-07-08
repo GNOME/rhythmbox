@@ -22,7 +22,6 @@ import locale
 import urllib
 
 import rhythmdb
-from Loader import Loader
 
 LICENSE_KEY = "18C3VZN9HCECM5G3HQG2"
 DEFAULT_LOCALE = "en_US"

@@ -16,18 +16,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import rhythmdb
+import rhythmdb, rb
 import os
 import gtk
 
 from AmazonCoverArtSearch import AmazonCoverArtSearch
-from Loader import Loader
 
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
 class CoverArtDatabase (object):
 	def __init__ (self):
-		self.loader = Loader()
+		self.loader = rb.Loader()
 
 	def create_search (self):
 		return AmazonCoverArtSearch (self.loader)

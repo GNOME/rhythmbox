@@ -1,3 +1,32 @@
+2006-07-08  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: bind rb_debug_real to rb._debug
+
+	* configure.ac:
+	* plugins/Makefile.am:
+	* plugins/rb-python-module.c: (rb_python_module_init_python):
+	* plugins/rb/Makefile.am: add a place to put common python classes.
+	plugins/rb/ and $prefix/rhythmbox/plugins/rb will be imported into the
+	rb module/
+
+	* plugins/lyrics/Makefile.am:
+	* plugins/lyrics/Loader.py:
+	* plugins/artdisplay/artdisplay/Makefile.am:
+	* plugins/artdisplay/artdisplay/Loader.py:
+	* plugins/rb/Loader.py: move the loader class to rb.Loader
+
+	* plugins/rb/__init__.py: redirect stdout from python (e.g.
+	"print ...") to rb_debug. error output (e.g. exceptions) are still
+	printed on stderr.
+
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	* plugins/lyrics/lyrics.py: adapt to the above by using rb.Loader
+	instead of Loader.
+
+	Fixes #346895.
+
 2006-07-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.xml:

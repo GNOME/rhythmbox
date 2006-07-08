@@ -17,7 +17,8 @@ SUBDIRS += 						\
 	pythonconsole					\
 	sample-python					\
 	artdisplay					\
-	lyrics
+	lyrics						\
+	rb
 endif
 
 if USE_IPOD

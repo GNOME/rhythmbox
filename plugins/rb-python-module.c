@@ -71,12 +71,12 @@ rb_python_module_init_python ()
 	PyObject *pygtk, *mdict, *require;
 	PyObject *rb, *rhythmdb, *gtk, *pygtk_version, *pygtk_required_version;
 	PyObject *gettext, *install, *gettext_args;
+	PyObject *sys_path, *path;
 	struct sigaction old_sigint;
 	gint res;
 	char *argv[] = { "rb", "rhythmdb", NULL };
 	
-	if (Py_IsInitialized ())
-	{
+	if (Py_IsInitialized ()) {
 		g_warning ("Python Should only be initialized once, since it's in class_init");
 		g_return_if_reached ();
 	}
@@ -86,8 +86,7 @@ rb_python_module_init_python ()
 	
 	/* Save old handler */
 	res = sigaction (SIGINT, NULL, &old_sigint);  
-	if (res != 0)
-	{
+	if (res != 0) {
 		g_warning ("Error initializing Python interpreter: cannot get "
 		           "handler to SIGINT signal (%s)",
 		           strerror (errno));
@@ -100,8 +99,7 @@ rb_python_module_init_python ()
 
 	/* Restore old handler */
 	res = sigaction (SIGINT, &old_sigint, NULL);
-	if (res != 0)
-	{
+	if (res != 0) {
 		g_warning ("Error initializing Python interpreter: cannot restore "
 		           "handler to SIGINT signal (%s)",
 		           strerror (errno));
@@ -110,17 +108,17 @@ rb_python_module_init_python ()
 
 	PySys_SetArgv (1, argv);
 
-	/* pygtk.require("2.0") */
+	/* pygtk.require("2.8") */
 	pygtk = PyImport_ImportModule ("pygtk");
-	if (pygtk == NULL)
-	{
+	if (pygtk == NULL) {
 		g_warning ("Could not import pygtk");
+		PyErr_Print();
 		return;
 	}
 
 	mdict = PyModule_GetDict (pygtk);
 	require = PyDict_GetItemString (mdict, "require");
-	PyObject_CallObject (require, Py_BuildValue ("(S)", PyString_FromString ("2.0")));
+	PyObject_CallObject (require, Py_BuildValue ("(S)", PyString_FromString ("2.8")));
 
 	/* import gobject */
 	init_pygobject ();
@@ -128,19 +126,17 @@ rb_python_module_init_python ()
 	/* import gtk */
 	init_pygtk ();
 
-	/* gtk.pygtk_version < (2, 4, 0) */
 	gtk = PyImport_ImportModule ("gtk");
-	if (gtk == NULL)
-	{
+	if (gtk == NULL) {
 		g_warning ("Could not import gtk");
+		PyErr_Print();
 		return;
 	}
 
 	mdict = PyModule_GetDict (gtk);
 	pygtk_version = PyDict_GetItemString (mdict, "pygtk_version");
 	pygtk_required_version = Py_BuildValue ("(iii)", 2, 4, 0);
-	if (PyObject_Compare (pygtk_version, pygtk_required_version) == -1)
-	{
+	if (PyObject_Compare (pygtk_version, pygtk_required_version) == -1) {
 		g_warning("PyGTK %s required, but %s found.",
 				  PyString_AsString (PyObject_Repr (pygtk_required_version)),
 				  PyString_AsString (PyObject_Repr (pygtk_version)));
@@ -157,7 +153,42 @@ rb_python_module_init_python ()
 	pyrhythmdb_add_constants (rhythmdb, "RHYTHMDB_");
 
 	/* import rb */
-	rb = Py_InitModule ("rb", pyrb_functions);
+	sys_path = PySys_GetObject ("path");
+#ifdef SHARE_UNINSTALLED_DIR
+	path = PyString_FromString ("plugins/");
+	if (PySequence_Contains(sys_path, path) == 0);
+		PyList_Insert (sys_path, 0, path);
+	Py_DECREF(path);
+#endif
+	path = PyString_FromString (SHARE_DIR "/plugins/");
+	if (PySequence_Contains(sys_path, path) == 0);
+		PyList_Insert (sys_path, 0, path);
+	Py_DECREF(path);
+
+	rb = PyImport_ImportModule ("rb");
+
+	if (rb == NULL) {
+		g_warning ("could not import python module 'rb'");
+		PyErr_Print ();
+		return;
+	}
+
+	/* add pyrb_functions */
+	for (res = 0; pyrb_functions[res].ml_name != NULL; res++) {
+		PyObject *func;
+
+		func = PyCFunction_New (&pyrb_functions[res], rb);
+		if (func == NULL) {
+			g_warning ("unable object for function '%s' create", pyrb_functions[res].ml_name);
+			PyErr_Print ();
+			return;
+		}
+		if (PyModule_AddObject (rb, pyrb_functions[res].ml_name, func) < 0) {
+			g_warning ("unable to insert function '%s' in 'rb' module", pyrb_functions[res].ml_name);
+			PyErr_Print ();
+			return;
+		}
+	}
 	mdict = PyModule_GetDict (rb);
 
 	pyrb_register_classes (mdict);
@@ -165,17 +196,16 @@ rb_python_module_init_python ()
 
 	/* Retreive the Python type for rb.Plugin */
 	PyRBPlugin_Type = (PyTypeObject *) PyDict_GetItemString (mdict, "Plugin"); 
-	if (PyRBPlugin_Type == NULL)
-	{
+	if (PyRBPlugin_Type == NULL) {
 		PyErr_Print ();
 		return;
 	}
 
 	/* i18n support */
 	gettext = PyImport_ImportModule ("gettext");
-	if (gettext == NULL)
-	{
+	if (gettext == NULL) {
 		g_warning ("Could not import gettext");
+		PyErr_Print();
 		return;
 	}
 

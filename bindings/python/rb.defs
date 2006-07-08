@@ -1643,3 +1643,17 @@
   )
 )
 
+
+;; extra stuff
+
+(define-function _debug
+  (in-module "rb")
+  (c-name "rb_debug_real")
+  (return-type "none")
+  (parameters
+    '("const-char*" "function")
+    '("const-char*" "file")
+    '("int" "line")
+    '("const-char*" "str")
+  )
+)

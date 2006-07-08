@@ -6,6 +6,7 @@ headers
 
 #include "override_common.h"
 #include "rb-util.h"
+#include "rb-debug.h"
 
 #include "rb-browser-source.h"
 #include "rb-entry-view.h"
@@ -936,3 +937,20 @@ _wrap_RBSource__do_impl_get_status(PyObject *cls, PyObject *args, PyObject *kwar
     g_free (progress_text);
     return tuple;
 }
+%%
+override _wrap_rb__debug_real kwargs
+
+static PyObject *
+_wrap_rb__debug_real(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "function", "file", "line", "str", NULL };
+    char *function, *file, *str;
+    int line;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssis:debug_real", kwlist, &function, &file, &line, &str))
+        return NULL;
+    rb_debug_real(function, file, line, "%s", str);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+

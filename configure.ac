@@ -925,6 +925,7 @@ plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
 plugins/generic-player/Makefile
+plugins/rb/Makefile
 bindings/Makefile
 bindings/python/Makefile
 help/Makefile

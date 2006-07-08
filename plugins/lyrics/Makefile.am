@@ -1,8 +1,6 @@
 # Lyric display plugin
 plugindir = $(PLUGINDIR)
-plugin_PYTHON = 		\
-	lyrics.py		\
-	Loader.py
+plugin_PYTHON = lyrics.py
 
 plugin_in_files = lyrics.rb-plugin.desktop.in
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache

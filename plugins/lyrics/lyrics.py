@@ -32,8 +32,6 @@ from xml.dom import minidom
 import rb
 import rhythmdb
 
-from Loader import Loader
-    
 ui_str = """
 <ui>
   <menubar name="MenuBar">
@@ -132,7 +130,7 @@ class LyricPane(object):
 
 class LyricGrabber(object):
     def __init__(self):
-    	self.loader = Loader ()
+    	self.loader = rb.Loader ()
 
     def _build_cache_path(self, artist, title):
         lyrics_folder = os.path.expanduser (LYRICS_FOLDER)
