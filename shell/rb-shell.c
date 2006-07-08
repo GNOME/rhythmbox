@@ -183,8 +183,6 @@ static void rb_shell_cmd_add_folder_to_library (GtkAction *action,
 static void rb_shell_cmd_add_file_to_library (GtkAction *action,
 					      RBShell *shell);
 
-static void rb_shell_cmd_extract_cd (GtkAction *action,
-				     RBShell *shell);
 static void rb_shell_cmd_current_song (GtkAction *action,
 				       RBShell *shell);
 static void rb_shell_jump_to_current (RBShell *shell);
@@ -420,9 +418,6 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "MusicImportFile", GTK_STOCK_FILE, N_("Import _File..."), NULL,
 	  N_("Choose file to be added to the Library"),
 	  G_CALLBACK (rb_shell_cmd_add_file_to_library) },
-	{ "MusicImportCD", GTK_STOCK_CDROM, N_("Import _Audio CD..."), "<control>E",
-	  N_("Extract and import songs from a CD"),
-	  G_CALLBACK (rb_shell_cmd_extract_cd) },
 	{ "HelpAbout", GTK_STOCK_ABOUT, N_("_About"), NULL,
 	  N_("Show information about the music player"),
 	  G_CALLBACK (rb_shell_cmd_about) },
@@ -2383,30 +2378,6 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 				 "response",
 				 G_CALLBACK (add_to_library_response_cb),
 				 shell, 0);
-}
-
-static void
-rb_shell_cmd_extract_cd (GtkAction *action,
-			 RBShell *shell)
-{
-	GError *error = NULL;
-
-	if (g_find_program_in_path ("sound-juicer") == NULL) {
-		rb_error_dialog (GTK_WINDOW (shell->priv->window),
-				 _("CD Ripper not found"),
-				 _("To extract CDs you must install the Sound Juicer CD Ripper package."));
-		return;
-	}
-
-	g_spawn_command_line_async ("sound-juicer", &error);
-
-	if (error != NULL)
-		rb_error_dialog (GTK_WINDOW (shell->priv->window),
-				 _("Couldn't run CD Ripper"),
-				 _("An error occurred while running sound-juicer: %s"),
-				 error->message);
-
-	g_clear_error (&error);
 }
 
 gboolean
