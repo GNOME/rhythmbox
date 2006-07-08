@@ -48,10 +48,12 @@ print_metadata_string (RBMetaData *md, RBMetaDataField field, const char *name)
 {
 	GValue v = {0,};
 	if (rb_metadata_get (md, field, &v)) {
-		printf ("%s: %s\n", name, g_value_get_string (&v));
+		char *s;
+
+		s = g_strdup_value_contents (&v);
+		printf ("%s: %s\n", name, s);
+		g_free (s);
 		g_value_unset (&v);
-	} else {
-		printf ("%s: unknown\n", name);
 	}
 }
 
@@ -99,11 +101,11 @@ load_metadata_cb (gpointer file)
 		}
 		g_clear_error (&error);
 	} else {
+		RBMetaDataField f;
+
 		printf ("type: %s\n", rb_metadata_get_mime (md));
-		print_metadata_string (md, RB_METADATA_FIELD_TITLE, "title");
-		print_metadata_string (md, RB_METADATA_FIELD_ARTIST, "artist");
-		print_metadata_string (md, RB_METADATA_FIELD_ALBUM, "album");
-		print_metadata_string (md, RB_METADATA_FIELD_GENRE, "genre");
+		for (f =(RBMetaDataField)0; f < RB_METADATA_FIELD_LAST; f++)
+			print_metadata_string (md, f, rb_metadata_get_field_name (f));
 	}
 	printf ("---\n");
 	return FALSE;

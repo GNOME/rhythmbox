@@ -1,3 +1,12 @@
+2006-07-08  James Livingston  <doclivingston@gmail.com>
+
+	* metadata/test-metadata.c: (print_metadata_string),
+	(load_metadata_cb): print out all the metadata we have read, not just
+	a few.
+
+	* sources/rb-playlist-source-recorder.c: (insert_media_request_cb),
+	(ask_rewrite_disc), (warn_data_loss_cb): Fix some GDK lock issues.
+
 2006-07-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/lyrics/lyrics.py:

@@ -973,6 +973,7 @@ insert_media_request_cb (RBRecorder *recorder,
                 title = N_("Reload a blank CD");
         }
 
+        GDK_THREADS_ENTER ();
         dialog = gtk_message_dialog_new (GTK_WINDOW (source),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_MESSAGE_ERROR,
@@ -985,11 +986,10 @@ insert_media_request_cb (RBRecorder *recorder,
 
         gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 
-        GDK_THREADS_ENTER ();
         res = gtk_dialog_run (GTK_DIALOG (dialog));
-        GDK_THREADS_LEAVE ();
 
         gtk_widget_destroy (dialog);
+        GDK_THREADS_LEAVE ();
 
         if (res == GTK_RESPONSE_CANCEL)
                 return FALSE;
@@ -1094,9 +1094,7 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
         gtk_dialog_set_default_response (GTK_DIALOG (dialog),
                                          RB_RECORDER_RESPONSE_CANCEL);
 
-        GDK_THREADS_ENTER ();
         res = gtk_dialog_run (GTK_DIALOG (dialog));
-        GDK_THREADS_LEAVE ();
 
         gtk_widget_destroy (dialog);
 
@@ -1117,7 +1115,9 @@ warn_data_loss_cb (RBRecorder               *recorder,
         int   res;
 
         device = rb_recorder_get_device (recorder, NULL);
+	GDK_THREADS_ENTER();
         res = ask_rewrite_disc (source, device);
+	GDK_THREADS_LEAVE();
 
         g_free (device);
 
