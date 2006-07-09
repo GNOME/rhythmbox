@@ -29,6 +29,9 @@
 
 #include <string.h>
 #include <time.h>
+#include <math.h>
+
+#define EPSILON 0.0001
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
@@ -718,11 +721,13 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 	gboolean mixed_genres = FALSE;
 	gboolean mixed_years = FALSE;
 	gboolean mixed_disc_numbers = FALSE;
+	gboolean mixed_ratings = FALSE;
 	const char *artist = NULL;
 	const char *album = NULL;
 	const char *genre = NULL;
 	int year = 0;
 	int disc_number = 0;
+	double rating = 0.0; /* Zero is used for both "unrated" and "mixed ratings" too */
 	GList *l;
 
 	g_assert (song_info->priv->selected_entries);
@@ -734,6 +739,7 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		const char *entry_genre;
 		int entry_year;
 		int entry_disc_number;
+		double entry_rating;
 
 		entry = (RhythmDBEntry*)l->data;
 		entry_artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
@@ -741,6 +747,7 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		entry_genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
 		entry_year = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
 		entry_disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
+		entry_rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING);
 
 		/* grab first valid values */
 		if (artist == NULL)
@@ -753,6 +760,8 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 			year = entry_year;
 		if (disc_number == 0)
 			disc_number = entry_disc_number;
+		if (fabs(rating) < EPSILON)
+			rating = entry_rating;
 
 		/* locate mixed values */
 		if (artist != entry_artist)
@@ -765,10 +774,12 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 			mixed_years = TRUE;
 		if (disc_number != entry_disc_number)
 			mixed_disc_numbers = TRUE;
+		if (fabs(rating - entry_rating) >= EPSILON)
+			mixed_ratings = TRUE;
 
 		/* don't continue search if everything is mixed */
 		if (mixed_artists && mixed_albums && mixed_genres &&
-		    mixed_years && mixed_disc_numbers)
+		    mixed_years && mixed_disc_numbers && mixed_ratings)
 			break;
 	}
 
@@ -782,6 +793,8 @@ rb_song_info_populate_dialog_multiple (RBSongInfo *song_info)
 		rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->year), year);
 	if (!mixed_disc_numbers && disc_number != 0)
 		rb_song_info_populate_num_field (GTK_ENTRY (song_info->priv->disc_cur), disc_number);
+	if (!mixed_ratings && fabs(rating) >= EPSILON)
+		g_object_set (G_OBJECT (song_info->priv->rating), "rating", rating, NULL);
 }
 
 static void 
