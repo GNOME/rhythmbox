@@ -1,3 +1,12 @@
+2006-07-09  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/artdisplay/artdisplay/__init__.py: some minor changes to try
+	to prevent #343345:
+		- don't ever scale to 1x1, just hide the image in that case
+		- don't fade when the window is minimised
+		- use the last-good allocation width, not the current one - as
+		  it sometimes get weird values.
+
 2006-07-08  William Jon McCann  <mccann@jhu.edu>
 
 	* data/ui/rhythmbox-ui.xml:

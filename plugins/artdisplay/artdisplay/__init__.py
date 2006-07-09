@@ -116,7 +116,7 @@ class ArtDisplayPlugin (rb.Plugin):
 			nh = new_pixbuf.get_height ()
 
 			# find scale, widget size and alpha
-			ww = self.art_widget.parent.allocation.width 
+			ww = self.old_width 
 			wh = ww * (self.fade_step * (float(nh)/nw) + (1 - self.fade_step) * (float(oh)/ow))
 			sw = float(ww)/nw
 			sh = float(wh)/nh
@@ -139,7 +139,8 @@ class ArtDisplayPlugin (rb.Plugin):
 			gobject.source_remove (self.fade_id)
 			self.fade_id = 0
 
-		if current_pb is not None and pixbuf is not None:
+		visible = (self.art_widget.parent.allocation.width > 1) # don't fade if the user can't see
+		if current_pb is not None and pixbuf is not None and visible:
 			self.fade_step = 0.0
 			self.fade_art (current_pb, pixbuf)
 			self.fade_id = gobject.timeout_add ((FADE_TOTAL_TIME / FADE_STEPS), self.fade_art, current_pb, pixbuf)
@@ -153,11 +154,16 @@ class ArtDisplayPlugin (rb.Plugin):
 			self.art_widget.set_from_pixbuf (None)
 			self.art_widget.hide ()
 		else:
-			width = self.art_widget.parent.allocation.width 
+			width = self.old_width 
 			height = self.current_pixbuf.get_height () * width / self.current_pixbuf.get_width ()
-			if quick:
-				mode = gtk.gdk.INTERP_BILINEAR
+
+			if width > 2 and height > 2:
+				if quick:
+					mode = gtk.gdk.INTERP_BILINEAR
+				else:
+					mode = gtk.gdk.INTERP_HYPER
+				self.art_widget.set_from_pixbuf (self.current_pixbuf.scale_simple (width, height, mode))
 			else:
-				mode = gtk.gdk.INTERP_HYPER
-			self.art_widget.set_from_pixbuf (self.current_pixbuf.scale_simple (width, height, mode))
+				self.art_widget.set_from_pixbuf (None)
 			self.art_widget.show ()
+
