@@ -17,7 +17,7 @@ class _rbdebugfile:
 		import sys, rb
 		fr = sys._getframe(1)
 		co = fr.f_code
-		rb._debug (co.co_name, co.co_filename, co.co_firstlineno + fr.f_lineno,  str)
+		rb._debug (co.co_name, co.co_filename, co.co_firstlineno + fr.f_lineno,  False, str)
 
 	def close(self):         pass
 	def flush(self):         pass

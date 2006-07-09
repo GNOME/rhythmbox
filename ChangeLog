@@ -1,5 +1,14 @@
 2006-07-09  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* lib/rb-debug.c: (rb_debug_real):
+	* lib/rb-debug.h:
+	* plugins/rb/__init__.py: don't print out an extra newline when
+	diverting python print statements to RB's debug log.
+
+2006-07-09  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb-property-model.c:
 	(rhythmdb_property_model_drag_data_get):
 	* sources/rb-sourcelist-model.c:

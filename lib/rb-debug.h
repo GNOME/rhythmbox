@@ -29,9 +29,9 @@
 G_BEGIN_DECLS
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#define rb_debug(...) rb_debug_real (__func__, __FILE__, __LINE__, __VA_ARGS__)
+#define rb_debug(...) rb_debug_real (__func__, __FILE__, __LINE__, TRUE, __VA_ARGS__)
 #elif defined(__GNUC__) && __GNUC__ >= 3
-#define rb_debug(...) rb_debug_real (__FUNCTION__, __FILE__, __LINE__, __VA_ARGS__)
+#define rb_debug(...) rb_debug_real (__FUNCTION__, __FILE__, __LINE__, TRUE, __VA_ARGS__)
 #else
 #define rb_debug
 #endif
@@ -42,7 +42,8 @@ void rb_debug_init_match       (const char *match);
 void rb_debug_real             (const char *func,
 				const char *file,
 				int line,
-				const char *format, ...) G_GNUC_PRINTF (4, 5);
+				gboolean newline,
+				const char *format, ...) G_GNUC_PRINTF (5, 6);
 
 void rb_debug_stop_in_debugger (void);
 

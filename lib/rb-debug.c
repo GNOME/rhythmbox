@@ -48,6 +48,7 @@ void
 rb_debug_real (const char *func,
 	       const char *file,
 	       const int line,
+	       gboolean newline,
 	       const char *format, ...)
 {
 	va_list args;
@@ -71,8 +72,8 @@ rb_debug_real (const char *func,
 	str_time = g_new0 (char, 255);
 	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
 
-	g_printerr ("(%s) [%p] [%s] %s:%d: %s\n", str_time, g_thread_self (),
-		    func, file, line, buffer);
+	g_printerr (newline ? "(%s) [%p] [%s] %s:%d: %s\n" : "(%s) [%p] [%s] %s:%d: %s",
+		    str_time, g_thread_self (), func, file, line, buffer);
 	
 	g_free (str_time);
 }

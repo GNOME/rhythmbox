@@ -945,11 +945,11 @@ _wrap_rb__debug_real(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     static char *kwlist[] = { "function", "file", "line", "str", NULL };
     char *function, *file, *str;
-    int line;
+    int line, newline;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssis:debug_real", kwlist, &function, &file, &line, &str))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ssiis:debug_real", kwlist, &function, &file, &line, &newline, &str))
         return NULL;
-    rb_debug_real(function, file, line, "%s", str);
+    rb_debug_real(function, file, line, (newline != 0), "%s", str);
     Py_INCREF(Py_None);
     return Py_None;
 }
