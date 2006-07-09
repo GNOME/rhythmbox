@@ -1,3 +1,12 @@
+2006-07-09  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_drag_data_get):
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_row_draggable),
+	(rb_sourcelist_model_drag_data_get): check that the path/iter we get
+	from the row reference is still valid. Fixes #346709.
+
 2006-07-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Peter  <bugzilla-gnome-org@maubp.freeserve.org.uk>

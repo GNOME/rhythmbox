@@ -944,7 +944,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
  		RhythmDBQueryModel *query_model;
  		GString* reply = g_string_new ("");
  		GtkTreeIter iter;
- 		gboolean is_all;
+ 		gboolean is_all = FALSE;
  		struct QueryModelCbStruct tmp;
 		GtkTreePath *path;
 		GCompareDataFunc sort_func = NULL;
@@ -966,10 +966,10 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		rb_debug ("getting drag data as uri list");
 		/* check if first selected row is 'All' */
 		path = gtk_tree_row_reference_get_path (paths->data);
-		gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-				    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY,
-				    &is_all, -1);
+		if (path && gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path))
+			gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+					    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY,
+					    &is_all, -1);
 		gtk_tree_path_free (path);
 		if (is_all) {
 			g_object_set (G_OBJECT (query_model), 
@@ -977,41 +977,38 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 				      NULL);
 		} else {
  			GList *row;
-			GPtrArray *query;
 			GPtrArray *subquery = g_ptr_array_new ();
  
  			for (row = paths; row; row = row->next) {
  				char* name;
 				path = gtk_tree_row_reference_get_path (row->data);
- 				gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
- 				gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
- 						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, 
-						    &name, -1);
- 				if (row == paths) {
- 					rhythmdb_query_append (db, subquery,
- 							       RHYTHMDB_QUERY_PROP_EQUALS,
- 							       model->priv->propid, name,
-							       RHYTHMDB_QUERY_END);
-				} else {
- 					rhythmdb_query_append (db, subquery,
- 							       RHYTHMDB_QUERY_DISJUNCTION,
- 							       RHYTHMDB_QUERY_PROP_EQUALS,
- 							       model->priv->propid, name,
- 							       RHYTHMDB_QUERY_END);
- 				}
+ 				if (path && gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
+	 				gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+	 						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, 
+							    &name, -1);
+	 				if (row == paths) {
+	 					rhythmdb_query_append (db, subquery,
+	 							       RHYTHMDB_QUERY_PROP_EQUALS,
+	 							       model->priv->propid, name,
+								       RHYTHMDB_QUERY_END);
+					} else {
+	 					rhythmdb_query_append (db, subquery,
+	 							       RHYTHMDB_QUERY_DISJUNCTION,
+	 							       RHYTHMDB_QUERY_PROP_EQUALS,
+	 							       model->priv->propid, name,
+	 							       RHYTHMDB_QUERY_END);
+	 				}
+				}
  
 				gtk_tree_path_free (path);
  				g_free (name);
  			}
-			query = rhythmdb_query_parse (db,
-						      RHYTHMDB_QUERY_SUBQUERY, subquery,
-						      RHYTHMDB_QUERY_END);
 
 			g_object_set (G_OBJECT (query_model), 
-				      "query", query,
+				      "query", subquery,
 				      "base-model", model->priv->query_model, 
 				      NULL);
-			rhythmdb_query_free (query);
+			rhythmdb_query_free (subquery);
 		}
  		
 		tmp.db = db; 
@@ -1046,13 +1043,14 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 			GtkTreePath *path;
 
 			path = gtk_tree_row_reference_get_path (p->data);
-			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
-			gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-					    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title, -1);
-			g_string_append (reply, title);
-			if (p->next)
-				g_string_append (reply, "\r\n");
-			g_free (title);
+			if (path && gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
+				gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title, -1);
+				g_string_append (reply, title);
+				if (p->next)
+					g_string_append (reply, "\r\n");
+				g_free (title);
+			}
 			gtk_tree_path_free (path);
 		}
 		gtk_selection_data_set (selection_data,

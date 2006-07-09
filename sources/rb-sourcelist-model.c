@@ -621,7 +621,7 @@ rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
 
 	path = gtk_tree_row_reference_get_path (path_list->data);
 
-	if (gtk_tree_model_get_iter (model, &iter, path)) {
+	if (path && gtk_tree_model_get_iter (model, &iter, path)) {
 		RBSource *source;
 		RBSourceListGroup group;
 
@@ -647,6 +647,9 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 	guint target;
 
 	path = gtk_tree_row_reference_get_path (path_list->data);
+	if (path == NULL)
+		return FALSE;
+
 	if (!gtk_target_list_find (sourcelist_drag_target_list,
 				   selection_data->target,
 				   &target)) {
