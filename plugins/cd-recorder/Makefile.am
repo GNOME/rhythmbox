@@ -23,6 +23,7 @@ INCLUDES = 						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
+	-I$(top_builddir)/lib				\
 	-I$(top_srcdir)/metadata                       	\
 	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\
@@ -50,7 +51,6 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
 EXTRA_DIST = 			\
 	$(plugin_in_files)	\
-	$(uixml_DATA)		\
 	$(NULL)
 
 CLEANFILES = $(plugin_DATA)

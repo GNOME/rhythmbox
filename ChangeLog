@@ -1,3 +1,19 @@
+2006-07-10  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/cd-recorder/Makefile.am: build fixes
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry): don't
+	attempt to change properties if we couldn't create an entry.
+
+	* shell/rb-source-header.c: (rb_source_header_init),
+	(rb_source_header_view_browser_changed_cb),
+	(rb_source_header_sync_control_state):
+	* shell/rb-tray-icon.c:
+	* widgets/Makefile.am:
+	* widgets/disclosure-widget.c:
+	* widgets/disclosure-widget.h: remove the remanents of the disclosure
+	widget, as it hasn't been used for a while.
+
 2006-07-09  William Jon McCann  <mccann@jhu.edu>
 
 	* Makefile.am:

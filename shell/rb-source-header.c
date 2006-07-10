@@ -29,7 +29,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "disclosure-widget.h"
 #include "rb-source-header.h"
 #include "rb-stock-icons.h"
 #include "rb-preferences.h"
@@ -55,9 +54,6 @@ static void rb_source_header_filter_changed_cb (RBSource *source,
 static void rb_source_header_search_cb (RBSearchEntry *search,
 					const char *text,
 					RBSourceHeader *header);
-static void rb_source_header_disclosure_toggled_cb (GObject *object,
-						    GParamSpec *param_spec,
-						    gpointer data);
 static void rb_source_header_search_activate_cb (RBSearchEntry *search,
 						 RBSourceHeader *header);
 static void rb_source_header_view_browser_changed_cb (GtkAction *action,
@@ -88,7 +84,6 @@ struct RBSourceHeaderPrivate
 
 	GtkWidget *search;
 	GtkWidget *search_bar;
-	GtkWidget *disclosure;
 
 	guint browser_notify_id;
 	guint search_notify_id;
@@ -250,17 +245,6 @@ rb_source_header_init (RBSourceHeader *header)
 				 G_CALLBACK (rb_source_header_search_cb), header, 0);
 	g_signal_connect_object (G_OBJECT (header->priv->search), "activate",
 				 G_CALLBACK (rb_source_header_search_activate_cb), header, 0);
-
-	header->priv->disclosure = cddb_disclosure_new (_("Show _Browser"),
-							_("Hide _Browser"));
-	gtk_widget_set_sensitive (header->priv->disclosure, FALSE);
-	g_signal_connect_object (G_OBJECT (header->priv->disclosure), "notify::expanded",
-				 G_CALLBACK (rb_source_header_disclosure_toggled_cb), header, 0);
-
-#if 0	
-	gtk_table_attach_defaults (GTK_TABLE (header),
-			           header->priv->disclosure, 2, 3, 0, 1);
-#endif
 
 	align = gtk_alignment_new (1.0, 0.5, 1.0, 1.0);
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (ebox));
@@ -549,14 +533,11 @@ rb_source_header_clear_search (RBSourceHeader *header)
 }
 
 static void
-rb_source_header_disclosure_toggled_cb (GObject *object,
-					GParamSpec *param_spec,
-					gpointer data)
+rb_source_header_view_browser_changed_cb (GtkAction *action,
+					  RBSourceHeader *header)
 {
-	RBSourceHeader *header = RB_SOURCE_HEADER (data);
-	GtkExpander *expander = GTK_EXPANDER (object);
-
-	header->priv->disclosed = gtk_expander_get_expanded (expander);
+	rb_debug ("got view browser toggle");
+	header->priv->disclosed = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
 
 	if (header->priv->browser_key)
 		eel_gconf_set_boolean (header->priv->browser_key, 
@@ -570,15 +551,6 @@ rb_source_header_disclosure_toggled_cb (GObject *object,
 	rb_source_header_sync_control_state (header);
 }
 
-static void
-rb_source_header_view_browser_changed_cb (GtkAction *action,
-					  RBSourceHeader *header)
-{
-	rb_debug ("got view browser toggle");
-	gtk_expander_set_expanded (GTK_EXPANDER (header->priv->disclosure),
-				   gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
-}
-
 void
 rb_source_header_sync_control_state (RBSourceHeader *header)
 {
@@ -587,8 +559,6 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	GtkAction *viewall_action;
 	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 
-	gtk_widget_set_sensitive (header->priv->disclosure,
-				  header->priv->have_browser);
 	viewbrowser_action = gtk_action_group_get_action (header->priv->actiongroup,
 							  "ViewBrowser");
 	g_object_set (G_OBJECT (viewbrowser_action), "sensitive",
@@ -602,8 +572,6 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	g_object_set (G_OBJECT (viewall_action), "sensitive",
 		      (header->priv->have_browser || header->priv->have_search) && not_small, NULL);
 
-	gtk_expander_set_expanded (GTK_EXPANDER (header->priv->disclosure),
-				   header->priv->disclosed);
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
 				      header->priv->disclosed);
 

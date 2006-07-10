@@ -31,7 +31,6 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 
-#include "disclosure-widget.h"
 #include "rb-tray-icon.h"
 #include "rb-stock-icons.h"
 #include "rb-debug.h"

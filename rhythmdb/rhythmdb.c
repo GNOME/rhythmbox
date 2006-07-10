@@ -1510,6 +1510,8 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 	if (entry == NULL) {
 		/* create a new import error or ignore entry */
 		entry = rhythmdb_entry_new (db, error_entry_type, event->real_uri);
+		if (entry == NULL)
+			return;
 		
 		if (error_entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 			g_value_init (&value, G_TYPE_STRING);
