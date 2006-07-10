@@ -117,7 +117,7 @@ class CoverArtDatabase (object):
 			blist_file.writelines ("%s\n" % b for b in blist)
 			blist_file.close ()
 		elif os.path.exists (blist_location):
-			os.path.unlink (blist_location)
+			os.unlink (blist_location)
 
 	def image_data_load (self, data):
 		if data and len (data) >= 1000:
