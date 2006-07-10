@@ -1,6 +1,6 @@
 <ui>
   <menubar name="MenuBar">
-    <menu name="MusicMenu" action="Music">  
+    <menu name="MusicMenu" action="Music">
       <menuitem name="MusicImportFileMenu" action="MusicImportFile"/>
       <menuitem name="MusicImportFolderMenu" action="MusicImportFolder"/>
       <separator/>
@@ -11,8 +11,8 @@
 	<menuitem name="MusicPlaylistNewAutomaticPlaylistMenu" action="MusicPlaylistNewAutomaticPlaylist"/>
 	<menuitem name="MusicPlaylistLoadPlaylistMenu" action="MusicPlaylistLoadPlaylist"/>
 	<menuitem name="MusicPlaylistSavePlaylistMenu" action="MusicPlaylistSavePlaylist"/>
-	<menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
 	<menuitem name="MusicPlaylistEditAutoPlaylistMenu" action="EditAutomaticPlaylist"/>
+	<placeholder name="MusicPlaylistPlaylistMenuPluginPlaceholder" />
 	<separator name="MusicPlaylistSeparator1"/>
 	<menuitem name="MusicPlaylistDeletePlaylistMenu" action="MusicPlaylistDeletePlaylist"/>
       </menu>
@@ -30,21 +30,21 @@
       <menuitem name="EditCopyMenu" action="EditCopy"/>
       <menuitem name="EditPasteMenu" action="EditPaste"/>
       <menuitem name="EditDeleteMenu" action="EditDelete"/>
-      <separator/> 
+      <separator/>
       <menuitem name="EditSelectAllMenu" action="EditSelectAll"/>
       <menuitem name="EditSelectNoneMenu" action="EditSelectNone"/>
-      <separator/> 
+      <separator/>
       <menuitem name="EditAddToQueueMenu" action="AddToQueue"/>
       <menu name="EditPlaylistAddMenu" action="EditPlaylistAdd">
         <menuitem name="EditPlaylistAddNew" action="EditPlaylistAddNew"/>
-        <separator/> 
+        <separator/>
         <placeholder name="EditPlaylistAddPlaceholder"/>
       </menu>
-      <separator/> 
+      <separator/>
       <menuitem name="EditMovetoTrash" action="EditMovetoTrash"/>
       <separator/>
-      <menuitem name="EditPluginsMenu" action="EditPlugins"/> 
-      <menuitem name="EditPreferencesMenu" action="EditPreferences"/> 
+      <menuitem name="EditPluginsMenu" action="EditPlugins"/>
+      <menuitem name="EditPreferencesMenu" action="EditPreferences"/>
     </menu>
 
     <menu name="ViewMenu" action="View">
@@ -104,6 +104,7 @@
     <separator/>
     <toolitem name="Browse" action="ViewBrowser"/>
     <separator/>
+    <placeholder name="ToolBarPluginPlaceholder" />
   </toolbar>
 
   <toolbar name="SearchBar">
@@ -125,7 +126,7 @@
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
     <menu name="BrowserSourcePopupPlaylistAdd" action="EditPlaylistAdd">
       <placeholder name="BrowserSourcePopupPlaylistAddPlaceholder"/>
-      <separator/> 
+      <separator/>
       <menuitem name="BrowserSourcePopupPlaylistAddNew" action="EditPlaylistAddNew"/>
     </menu>
     <menuitem name="CopyLibraryPopup" action="EditCopy"/>
@@ -148,7 +149,7 @@
     <menuitem name="AddToQueuePlaylistPopup" action="AddToQueue"/>
     <menu name="PlaylistPopupPlaylistAdd" action="EditPlaylistAdd">
       <menuitem name="PlaylistPopupPlaylistAddNew" action="EditPlaylistAddNew"/>
-      <separator/> 
+      <separator/>
       <placeholder name="PlaylistPopupPlaylistAddPlaceholder"/>
     </menu>
     <menuitem name="CopyPlaylistPopup" action="EditCopy"/>
@@ -165,7 +166,7 @@
     <separator/>
     <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
   </popup>
-  
+
   <popup name="QueueSidebarViewPopup">
     <menuitem name="DeletePlaylistPopup" action="QueueDelete"/>
     <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
@@ -175,8 +176,8 @@
 
   <popup name="QueueSourcePopup">
     <menuitem name="ClearPlaylistPopup" action="ClearQueue"/>
+    <placeholder name="QueueSourcePopupPluginPlaceholder" />
     <separator/>
-    <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
   </popup>
 
   <popup name="SourceListPopup">
@@ -232,7 +233,7 @@
     <menuitem name="RenameAutoPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>
     <separator/>
     <menuitem name="QueuePlaylistPopup" action="QueuePlaylist"/>
-    <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
+    <placeholder name="PlaylistSourcePopupPluginPlaceholder" />
     <separator/>
     <menuitem name="DeletePlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
   </popup>
@@ -242,7 +243,7 @@
     <menuitem name="RenameAutoPlaylistPopup" action="MusicPlaylistRenamePlaylist"/>
     <separator/>
     <menuitem name="QueuePlaylistPopup" action="QueuePlaylist"/>
-    <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
+    <placeholder name="AutoPlaylistSourcePopupPluginPlaceholder" />
     <separator/>
     <menuitem name="DeleteAutoPlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
   </popup>

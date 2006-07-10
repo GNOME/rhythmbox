@@ -25,6 +25,10 @@ if USE_IPOD
 SUBDIRS += ipod
 endif
 
+if USE_CD_BURNING
+SUBDIRS += cd-recorder
+endif
+
 noinst_LTLIBRARIES = librbplugins.la
 
 librbplugins_la_SOURCES =				\

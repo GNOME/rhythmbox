@@ -1,3 +1,31 @@
+2006-07-09  William Jon McCann  <mccann@jhu.edu>
+
+	* Makefile.am:
+	* configure.ac:
+	* data/ui/rhythmbox-ui.xml:
+	* plugins/Makefile.am:
+	* plugins/cd-recorder/.cvsignore:
+	* plugins/cd-recorder/Makefile.am:
+	* plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in:
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c:
+	(rb_cd_recorder_plugin_class_init), (rb_cd_recorder_plugin_init),
+	(rb_cd_recorder_plugin_finalize), (burn_source_iter_func),
+	(source_burn), (cmd_burn_source), (playlist_entries_changed),
+	(playlist_row_inserted_cb), (update_source),
+	(shell_selected_source_notify_cb), (impl_activate),
+	(impl_deactivate):
+	* shell/Makefile.am:
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_source),
+	(rb_playlist_manager_cmd_save_playlist):
+	* shell/rb-shell.c: (rb_shell_select_source):
+	* sources/Makefile.am:
+	* sources/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_new):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_add_to_map):
+	* sources/rb-playlist-source.h:
+	Move cd burning into a plugin.  Fixes #344300.
+
 2006-07-10  James Livingston  <doclivingston@gmail.com>
 
 	* lib/eel-gconf-extensions.c:

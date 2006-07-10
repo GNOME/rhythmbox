@@ -37,7 +37,6 @@
 #include "rb-static-playlist-source.h"
 #include "rb-auto-playlist-source.h"
 #include "rb-play-queue-source.h"
-#include "rb-recorder.h"
 #include "rb-sourcelist.h"
 #include "rb-sourcelist-model.h"
 #include "rb-query-creator.h"
@@ -70,8 +69,6 @@ static void rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
-						   RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 						  RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
@@ -84,9 +81,6 @@ static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 							     RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
 						    RBPlaylistManager *mgr);
-static void rb_playlist_manager_playlist_entries_changed (GtkTreeModel *entry_view,
-							  RhythmDBEntry *entry,
-							  RBPlaylistManager *mgr);
 
 struct RBPlaylistManagerPrivate
 {
@@ -144,9 +138,6 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "MusicPlaylistSavePlaylist", GTK_STOCK_SAVE_AS, N_("_Save to File..."), NULL,
 	  N_("Save a playlist to a file"),
 	  G_CALLBACK (rb_playlist_manager_cmd_save_playlist) },
-	{ "MusicPlaylistBurnPlaylist", GTK_STOCK_CDROM, N_("_Create Audio CD..."), NULL,
-	  N_("Create an audio CD from playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_burn_playlist) },
 	{ "MusicPlaylistRenamePlaylist", NULL, N_("_Rename"), NULL,
 	  N_("Rename playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_rename_playlist) },
@@ -311,30 +302,6 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 }
 
 static void
-rb_playlist_manager_playlist_entries_changed (GtkTreeModel *model, RhythmDBEntry *entry, RBPlaylistManager *mgr)
-{
-	int num_tracks;
-	GtkAction *action;
-
-	num_tracks = gtk_tree_model_iter_n_children (model, NULL);
-
-	action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
-	gtk_action_set_sensitive (action, (num_tracks > 0));
-}
-
-static void
-rb_playlist_manager_playlist_row_inserted_cb (GtkTreeModel *model,
-					      GtkTreePath *path,
-					      GtkTreeIter *iter,
-					      RBPlaylistManager *mgr)
-{
-	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
-
-	rb_playlist_manager_playlist_entries_changed (model, entry, mgr);
-}
-
-
-static void
 rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 				RBSource *source)
 {
@@ -346,20 +313,6 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	gboolean can_edit;
 	gboolean can_rename;
 	GtkAction *action;
-
-	if (mgr->priv->selected_source != NULL) {
-		RhythmDBQueryModel *model;
-
-		g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
-		
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model),
-						      G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
-						      mgr);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model),
-						      G_CALLBACK (rb_playlist_manager_playlist_row_inserted_cb),
-						      mgr);
-		g_object_unref (G_OBJECT (model));
-	}
 
 	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
 
@@ -390,29 +343,6 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	action = gtk_action_group_get_action (mgr->priv->actiongroup,
 					      "MusicPlaylistRenamePlaylist");
 	gtk_action_set_visible (action, can_rename);
-
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistBurnPlaylist");
-	if (playlist_active && rb_recorder_enabled ()) {
-		RhythmDBQueryModel *model;
-
-		g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
-		/* monitor for changes, to enable/disable the burn menu item */
-		g_signal_connect_object (G_OBJECT (model),
-					 "row_inserted",
-					 G_CALLBACK (rb_playlist_manager_playlist_row_inserted_cb),
-					 mgr, 0);
-		g_signal_connect_object (G_OBJECT (model),
-					 "post-entry-delete",
-					 G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
-					 mgr, 0);
-
-		rb_playlist_manager_playlist_entries_changed (GTK_TREE_MODEL (model), NULL, mgr);
-		g_object_unref (model);
-		gtk_action_set_visible (action, TRUE);
-	} else {
-		gtk_action_set_visible (action, FALSE);
-	}
 }
 
 static void
@@ -1427,13 +1357,6 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 				 mgr, 0);
 
 	g_object_unref (G_OBJECT (xml));
-}
-
-static void
-rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
-				       RBPlaylistManager *mgr)
-{
-	rb_playlist_source_burn_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source));
 }
 
 /**

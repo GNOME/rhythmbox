@@ -70,12 +70,10 @@ void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
 						 xmlNodePtr node);
 
-void		rb_playlist_source_burn_playlist(RBPlaylistSource *source);
-
 /* methods for subclasses to call */
 
 void		rb_playlist_source_setup_entry_view (RBPlaylistSource *source,
-						     RBEntryView *entry_view);	
+						     RBEntryView *entry_view);
 
 void		rb_playlist_source_set_query_model (RBPlaylistSource *source,
 						    RhythmDBQueryModel *model);

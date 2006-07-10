@@ -32,7 +32,6 @@ INCLUDES = 						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
 	-I$(top_srcdir)/metadata                       	\
-	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
@@ -100,7 +99,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/podcast/librbpodcast.la	        \
-	$(top_builddir)/player/librbplayer.la		\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/rhythmdb/librhythmdb.la         \

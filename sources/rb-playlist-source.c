@@ -40,7 +40,6 @@
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-playlist-source.h"
-#include "rb-playlist-source-recorder.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
@@ -69,7 +68,6 @@ static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
-static GList *impl_get_ui_actions (RBSource *source);
 
 static void rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 						    gboolean over_entry,
@@ -158,7 +156,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_get_ui_actions = impl_get_ui_actions;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
 
@@ -510,70 +507,6 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 				 "%s", error->message);
 }
 
-static gboolean
-burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **artist, char **title, gulong *duration)
-{
-	RhythmDBEntry *entry;
-
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
-
-	*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
-	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	*artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
-	*duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
-
-	return TRUE;
-}
-
-void
-rb_playlist_source_burn_playlist (RBPlaylistSource *source)
-{
-	GtkWidget *recorder;
-	GtkWidget *parent;
-	char *name;
-	RBShell *shell;
-	gboolean res;
-	GError *error;
-
-	/* don't burn if the playlist is empty */
-	if (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL) == 0)
-		return;
-
-	rb_debug ("burning playlist");
-
-	g_object_get (source, "name", &name, "shell", &shell, NULL);
-
-	parent = gtk_widget_get_toplevel (GTK_WIDGET (source));
-	recorder = rb_playlist_source_recorder_new (parent,
-						    shell,
-						    name);
-	g_object_unref (shell);
-	g_free (name);
-
-	error = NULL;
-	res = rb_playlist_source_recorder_add_from_model (RB_PLAYLIST_SOURCE_RECORDER (recorder),
-							  GTK_TREE_MODEL (source->priv->model),
-							  burn_playlist_iter_func,
-							  &error);
-	if (! res) {
-		rb_error_dialog (GTK_WINDOW (parent),
-				 _("Unable to create audio CD"),
-				 "%s", error->message);
-		g_error_free (error);
-
-		gtk_widget_destroy (recorder);
-
-		return;
-	}
-
-        g_signal_connect (recorder,
-			  "response",
-			  G_CALLBACK (gtk_widget_destroy),
-			  NULL);
-
-	gtk_widget_show (recorder);
-}
-
 /* Adapted from yelp-toc-pager.c */
 static xmlChar *
 xml_get_and_trim_names (xmlNodePtr node)
@@ -833,16 +766,6 @@ rb_playlist_source_add_to_map (RBPlaylistSource *source,
 	g_hash_table_insert (source->priv->entries,
 			     g_strdup (location), GINT_TO_POINTER (1));
 	return TRUE;
-}
-
-static GList*
-impl_get_ui_actions (RBSource *source)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("MusicPlaylistBurnPlaylist"));
-
-	return actions;
 }
 
 

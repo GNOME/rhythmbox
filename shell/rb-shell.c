@@ -1945,6 +1945,8 @@ rb_shell_select_source (RBShell *shell,
 	actions = rb_source_get_ui_actions (source);
 	g_list_foreach (actions, (GFunc)merge_source_ui_cb, shell);
 	rb_list_deep_free (actions);
+
+	g_object_notify (G_OBJECT (shell), "selected-source");
 }
 
 static void

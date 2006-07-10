@@ -1392,7 +1392,7 @@ rb_playlist_source_recorder_new (GtkWidget  *parent,
         if (name) {
                 source->priv->name = g_strdup (name);
 
-                set_message_text (source, _("Create audio CD from '%s' playlist?"), name);
+                set_message_text (source, _("Create audio CD from '%s'?"), name);
         }
 
         return result;

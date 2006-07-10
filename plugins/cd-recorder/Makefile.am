@@ -1,0 +1,57 @@
+NULL =
+
+plugindir = $(PLUGINDIR)
+plugin_LTLIBRARIES = libcd-recorder.la
+
+libcd_recorder_la_SOURCES =					\
+	rb-cd-recorder-plugin.c					\
+	$(top_srcdir)/player/rb-recorder.h			\
+	$(top_srcdir)/player/rb-recorder-gst.c			\
+	$(top_srcdir)/sources/rb-playlist-source-recorder.c	\
+	$(top_srcdir)/sources/rb-playlist-source-recorder.h	\
+	$(NULL)
+
+libcd_recorder_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libcd_recorder_la_LIBADD = 				\
+	$(top_builddir)/lib/librb.la			\
+	$(HAL_LIBS)					\
+	$(LIBNAUTILUS_BURN_LIBS)			\
+	$(NULL)
+
+INCLUDES = 						\
+        -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
+	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
+	-I$(top_srcdir) 				\
+	-I$(top_srcdir)/lib                        	\
+	-I$(top_srcdir)/metadata                       	\
+	-I$(top_srcdir)/player                       	\
+	-I$(top_srcdir)/rhythmdb                       	\
+	-I$(top_srcdir)/widgets                    	\
+	-I$(top_srcdir)/sources                    	\
+	-I$(top_srcdir)/iradio                    	\
+	-I$(top_srcdir)/podcast                    	\
+	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/shell				\
+	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
+	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
+	-DDATADIR=\""$(datadir)"\"			\
+	$(RHYTHMBOX_CFLAGS)				\
+	$(WARN_CFLAGS)					\
+	$(HAL_CFLAGS)					\
+	$(LIBNAUTILUS_BURN_CFLAGS)			\
+	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
+	$(NULL)
+
+plugin_in_files = cd-recorder.rb-plugin.desktop.in
+
+%.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+
+plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+
+EXTRA_DIST = 			\
+	$(plugin_in_files)	\
+	$(uixml_DATA)		\
+	$(NULL)
+
+CLEANFILES = $(plugin_DATA)
+DISTCLEANFILES = $(plugin_DATA)

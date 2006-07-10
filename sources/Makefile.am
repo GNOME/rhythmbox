@@ -20,8 +20,6 @@ libsourcesimpl_la_SOURCES =		\
 	rb-removable-media-source.h	\
 	rb-audiocd-source.c		\
 	rb-audiocd-source.h		\
-	rb-playlist-source-recorder.c   \
-	rb-playlist-source-recorder.h	\
 	rb-playlist-source.c            \
 	rb-playlist-source.h		\
 	rb-playlist-xml.h		\
@@ -57,7 +55,6 @@ INCLUDES =						\
 	$(WARN_CFLAGS)					\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(HAL_CFLAGS)					\
-	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 
 libsources_la_LDFLAGS = -export-dynamic

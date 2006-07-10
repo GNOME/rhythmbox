@@ -559,24 +559,35 @@ int main(int argc,char **argv) {
 fi
 AM_CONDITIONAL(HAVE_LINUX_CDROM, test "x$enable_linux_cdrom" = "xyes")
 
-NCB_DRIVE_DOOR_VERSION=2.11.3
 dnl CD burner support
-PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_cd_burner=yes, have_cd_burner=no)
-if test "x$have_cd_burner" = xno; then
-   AC_MSG_ERROR([libnautilus-burn not found or too cold])	   
+AC_ARG_WITH(cd-burning,
+            AC_HELP_STRING([--with-cd-burning],
+			   [Enable CD burning support]),,
+	      with_cd_burning=auto)
+if test "x$with_cd_burning" != "xno"; then
+    NCB_DRIVE_DOOR_VERSION=2.11.3
+    PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_cd_burner=yes, have_cd_burner=no)
+    if test "x$have_cd_burner" = xno; then
+       AC_MSG_ERROR([libnautilus-burn not found or too cold])
+    fi
+
+    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_door_is_open,
+       [AC_DEFINE([HAVE_BURN_DRIVE_DOOR], 1, [Have nautilus-burn function to check drive door state])],
+       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_unref,
+       [AC_DEFINE([HAVE_BURN_DRIVE_UNREF], 1, [Have nautilus-burn 2.13 drive unref function])],
+       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_new_from_path,
+       [AC_DEFINE([HAVE_BURN_DRIVE_NEW_FROM_PATH], 1, [Have nautilus-burn 2.13 drive new_from_path function])],
+       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+    AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_get_write_speeds,
+       [AC_DEFINE([HAVE_BURN_DRIVE_GET_WRITE_SPEEDS], 1, [Have nautilus-burn 2.13 drive get_write_speeds])],
+       ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+
+    AC_DEFINE([HAVE_NAUTILUS_BURN], 1, [Have nautilus-burn])
+
 fi
-AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_door_is_open,
-    [AC_DEFINE([HAVE_BURN_DRIVE_DOOR], 1, [Have nautilus-burn function to check drive door state])],
-    ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_unref,
-    [AC_DEFINE([HAVE_BURN_DRIVE_UNREF], 1, [Have nautilus-burn 2.13 drive unref function])],
-    ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_new_from_path,
-    [AC_DEFINE([HAVE_BURN_DRIVE_NEW_FROM_PATH], 1, [Have nautilus-burn 2.13 drive new_from_path function])],
-    ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
-AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_get_write_speeds,
-    [AC_DEFINE([HAVE_BURN_DRIVE_GET_WRITE_SPEEDS], 1, [Have nautilus-burn 2.13 drive get_write_speeds])],
-    ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
+AM_CONDITIONAL(USE_CD_BURNING, test "x$with_cd_burning" != "xno")
 
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
@@ -901,7 +912,6 @@ Makefile
 macros/Makefile
 lib/Makefile
 metadata/Makefile
-player/Makefile
 rhythmdb/Makefile
 widgets/Makefile
 widgets/libsexy/Makefile
@@ -917,6 +927,7 @@ daapsharing/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audioscrobbler/Makefile
+plugins/cd-recorder/Makefile
 plugins/ipod/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
@@ -990,6 +1001,11 @@ if test x"$use_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+if test x"$with_cd_burning" != xno; then
+	AC_MSG_NOTICE([** CD burning support enabled])
+else
+	AC_MSG_NOTICE([   CD burning support disabled])
 fi
 if test x"$enable_daap" = xyes; then
 	AC_MSG_NOTICE([** DAAP (music sharing) support is enabled])
