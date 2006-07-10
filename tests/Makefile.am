@@ -1,7 +1,7 @@
 ## arch-tag: Automake rules for test programs
 ## Process this file with automake to produce Makefile.in
 
-TESTS = bench-rhythmdb-load
+TESTS = 
 
 test_rhythmdb_SOURCES = test-rhythmdb.c
 test_rhythmdb_LDADD = \
@@ -41,7 +41,9 @@ OLD_TESTS = \
 	test-rhythmdb-tree-serialization.c			\
 	test-rhythmdb-view.c
 
-noinst_PROGRAMS = $(TESTS)
+noinst_PROGRAMS = \
+		bench-rhythmdb-load				\
+		$(TESTS)
 
 
 EXTRA_DIST = deserialization-test1.xml deserialization-test2.xml deserialization-test3.xml $(OLD_TESTS)

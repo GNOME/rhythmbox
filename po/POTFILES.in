@@ -46,11 +46,12 @@ player/rb-recorder-gst.c
 plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py
 plugins/artdisplay/artdisplay/CoverArtDatabase.py
 plugins/artdisplay/artdisplay/__init__.py
-plugins/artdisplay/artdisplay/Loader.py
 plugins/artdisplay/artdisplay.rb-plugin.desktop.in
 plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in
 plugins/audioscrobbler/rb-audioscrobbler.c
 plugins/audioscrobbler/rb-audioscrobbler-plugin.c
+plugins/cd-recorder/rb-cd-recorder-plugin.c
+plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in
 plugins/generic-player/generic-player.rb-plugin.desktop.in
 plugins/generic-player/rb-generic-player-plugin.c
 plugins/generic-player/rb-generic-player-source.c
@@ -60,11 +61,11 @@ plugins/ipod/ipod.rb-plugin.desktop.in
 plugins/ipod/rb-ipod-plugin.c
 plugins/lirc/lirc.rb-plugin.desktop.in
 plugins/lirc/rb-lirc-plugin.c
-plugins/lyrics/Loader.py
 plugins/lyrics/lyrics.py
 plugins/lyrics/lyrics.rb-plugin.desktop.in
 plugins/pythonconsole/pythonconsole.py
 plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in
+plugins/rb/__init__.py
 plugins/rb-module.c
 plugins/rb-plugin.c
 plugins/rb-plugin-manager.c
@@ -112,7 +113,6 @@ sources/rb-source.c
 sources/rb-sourcelist.c
 sources/rb-static-playlist-source.c
 widgets/bacon-volume.c
-widgets/disclosure-widget.c
 widgets/eggtrayicon.c
 widgets/rb-cell-renderer-pixbuf.c
 widgets/rb-dialog.c
@@ -124,5 +124,4 @@ widgets/rb-property-view.c
 widgets/rb-query-creator.c
 widgets/rb-query-creator-properties.c
 widgets/rb-search-entry.c
-widgets/rb-song-display-box.c
 widgets/rb-song-info.c
