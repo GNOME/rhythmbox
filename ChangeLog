@@ -1,5 +1,22 @@
 2006-07-10  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+	      and Peter  <bugzilla-gnome-org@maubp.freeserve.co.uk>
+
+	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py:
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:
+	* plugins/artdisplay/artdisplay/Makefile.am: Redesign much of the
+	internals of the cover database and Amazon lookup engine, and add
+	support for loading art from the local file system. Fixes #345688.
+
+	* plugins/rb/Coroutine.py:
+	* plugins/rb/Makefile.am:
+	* plugins/rb/__init__.py: Add the Coroutine class to the common python
+	plugin classes.
+
+2006-07-10  James Livingston  <doclivingston@gmail.com>
+
 	* tests/Makefile.am: don't run the benchmark when doing "make check"
 
 	* po/POTFILES.in: more build fixes, from Matti Lindell

@@ -1,6 +1,7 @@
 # -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*- 
 #
-# Copyright (C) 2006 - Gareth Murphy, Martin Szulecki
+# Copyright (C) 2006 - Gareth Murphy, Martin Szulecki, 
+# Ed Catmur <ed@catmur.co.uk>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,15 +22,15 @@ import os
 import gtk
 
 from AmazonCoverArtSearch import AmazonCoverArtSearch
+from LocalCoverArtSearch import LocalCoverArtSearch
 
+ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
+ART_SEARCHES_REMOTE = [AmazonCoverArtSearch]
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
 class CoverArtDatabase (object):
 	def __init__ (self):
 		self.loader = rb.Loader()
-
-	def create_search (self):
-		return AmazonCoverArtSearch (self.loader)
 
 	def build_art_cache_filename (self, album, artist, extension):
 		art_folder = os.path.expanduser (ART_FOLDER)
@@ -41,20 +42,20 @@ class CoverArtDatabase (object):
 		# FIXME: the following block of code is messy and needs to be redone ASAP
 		return art_folder + '/%s - %s.%s' % (artist.replace ('/', '-'), album.replace ('/', '-'), extension)	
 
+	def engines (self, blist):
+		for Engine in ART_SEARCHES_LOCAL:
+			yield Engine (self.loader), Engine.__name__, False
+		for Engine in ART_SEARCHES_REMOTE:
+			if Engine.__name__ not in blist:
+				yield Engine (self.loader), Engine.__name__, True
+  
 	def get_pixbuf (self, db, entry, callback):
 		if entry is None:
 			callback (entry, None)
 			return
             
-		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
-		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
-
-		# Handle special case
-		if st_album == "":
-			st_album = "Unknown"
-		if st_artist == "":
-			st_artist = "Unknown"
-
+		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or "Unknown"
+		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or "Unknown"
 		# If unknown artist and album there is no point continuing
 		if st_album == "Unknown" and st_artist == "Unknown":
 			callback (entry, None)
@@ -66,6 +67,9 @@ class CoverArtDatabase (object):
 			st_artist = st_artist.replace (char, '')
 			st_album = st_album.replace (char, '')
 
+		rb.Coroutine (self.image_search, db, st_album, st_artist, entry, callback).begin ()
+
+	def image_search (self, plexer, db, st_album, st_artist, entry, callback):
 		art_location = self.build_art_cache_filename (st_album, st_artist, "jpg")
 		blist_location = self.build_art_cache_filename (st_album, st_artist, "rb-blist")
 
@@ -73,67 +77,54 @@ class CoverArtDatabase (object):
 		if os.path.exists (art_location):
 			pixbuf = gtk.gdk.pixbuf_new_from_file (art_location)	
 			callback (entry, pixbuf)
-		# Check for unsuccessful previous image download to prevent overhead search
+			return
+
+		blist = self.read_blist (blist_location)
+		for engine, engine_name, engine_remote in self.engines (blist):
+			plexer.clear ()
+			engine.search (db, entry, plexer.send ())
+			while True:
+				yield None
+				_, (engine, entry, results) = plexer.receive ()
+				if not results:
+					break
+				for url in engine.get_best_match_urls (results):
+					yield self.loader.get_url (str (url), plexer.send ())
+					_, (data, ) = plexer.receive ()
+					pixbuf = self.image_data_load (data)
+					if pixbuf:
+						if engine_remote:
+							pixbuf.save (art_location, "jpeg", {"quality": "100"})
+						self.write_blist (blist_location, blist)
+						callback (entry, pixbuf)
+						return
+				if not engine.search_next ():
+					if engine_remote:
+						blist.append (engine_name)
+					break
+		self.write_blist (blist_location, blist)
+		callback (entry, None)
+
+	def read_blist (self, blist_location):
+		if os.path.exists (blist_location):
+			return [line.strip () for line in file (blist_location)]
+		else:
+			return []
+
+	def write_blist (self, blist_location, blist):
+		if blist:
+			blist_file = file (blist_location, 'w')
+			blist_file.writelines ("%s\n" % b for b in blist)
+			blist_file.close ()
 		elif os.path.exists (blist_location):
-			callback (entry, None)
-		else:
-			# Otherwise spawn (online) search-engine search
-			se = self.create_search ()
-			se.search (db, entry, self.on_search_engine_results, callback)
+			os.path.unlink (blist_location)
 
-	def on_search_engine_results (self, search_engine, entry, results, callback):
-		if results is None:
-			self._do_blacklist_and_callback (search_engine, callback)
-			return
-
-		# Get best match from results
-		best_match = search_engine.get_best_match (results)
-
-		if best_match is None:
-			self._do_blacklist_and_callback (search_engine, callback)
-			return
-
-		# Attempt to download image for best match
-		pic_url = str (best_match.ImageUrlLarge)
-		self.loader.get_url (pic_url, self.on_image_data_received, search_engine, "large", callback, best_match)
-
-	def _do_blacklist_and_callback (self, search_engine, callback):
-		self._create_blacklist (search_engine.st_artist, search_engine.st_album)
-		callback (search_engine.entry, None)
-
-	def _create_blacklist (self, artist, album):
-		location = self.build_art_cache_filename (album, artist, "rb-blist")
-		f = file (location, 'w')
-		f.close ()
-		return location
-
-	def _create_artwork (self, artist, album, image_data):
-		location = self.build_art_cache_filename (album, artist, "jpg")
-		f = file (location, 'wb')
-		f.write (image_data)
-		f.close ()
-		return location
-
-	def on_image_data_received (self, image_data, search_engine, image_version, callback, best_match):
-		if image_data is None:
-			res = search_engine.search_next ()
-			if not res:
-				self._do_blacklist_and_callback (search_engine, callback)
-			return
-
-		if len (image_data) < 1000:
-			if image_version == "large" and best_match is not None:
-				# Fallback and try to load medium one
-				pic_url = str (best_match.ImageUrlMedium)
-				self.loader.get_url (pic_url, self.on_image_data_received, search_engine, "medium", callback, best_match)
-				return
-
-			res = search_engine.search_next ()
-			if not res:
-				# only write the blist if there are no more queries to try
-				self._do_blacklist_and_callback (search_engine, callback)
-
-		else:
-			location = self._create_artwork (search_engine.st_artist, search_engine.st_album, image_data)
-			pixbuf = gtk.gdk.pixbuf_new_from_file (location)
-			callback (search_engine.entry, pixbuf)
+	def image_data_load (self, data):
+		if data and len (data) >= 1000:
+			pbl = gtk.gdk.PixbufLoader ()
+			try:
+				if pbl.write (data) and pbl.close ():
+					return pbl.get_pixbuf ()
+			except GError:
+				pass
+		return None

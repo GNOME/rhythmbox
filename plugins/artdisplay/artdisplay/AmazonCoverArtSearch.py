@@ -218,7 +218,7 @@ class AmazonCoverArtSearch (object):
 
 		return s
 
-	def get_best_match (self, search_results):
+	def get_best_match_urls (self, search_results):
 		# Default to "no match", our results must match our criteria
 		best_match = None
 
@@ -258,7 +258,10 @@ class AmazonCoverArtSearch (object):
 						if hit:
 							break
 
-			return best_match
+			if best_match: 
+				return [best_match.ImageUrlLarge, best_match.ImageUrlMedium]
+			else:
+				return []
 
 		except TypeError:
-			return None
+			return []

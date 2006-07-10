@@ -2,6 +2,7 @@ import sys
 
 # rb classes
 from Loader import Loader
+from Coroutine import Coroutine
 
 def _excepthandler (exc_class, exc_inst, trace):
 	import sys
