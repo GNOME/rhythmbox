@@ -36,10 +36,10 @@
 #include <X11/Xatom.h>
 
 #include <libgnome/libgnome.h>
-#include <libgnomeui/gnome-stock-icons.h>
+/*#include <libgnomeui/gnome-stock-icons.h>*/
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
-#include <libgnomeui/gnome-window-icon.h>
+/*#include <libgnomeui/gnome-window-icon.h>*/
 #include <libgnomeui/gnome-client.h>
 
 #include <libgnomevfs/gnome-vfs.h>
