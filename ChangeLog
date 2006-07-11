@@ -1,5 +1,10 @@
 2006-07-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry):
+	Don't try to set mtime if we've deleted the entry.
+
+2006-07-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* bindings/python/rhythmdb.defs:
 	* rhythmdb/rhythmdb.c:
 	* rhythmdb/rhythmdb.h:

@@ -1492,7 +1492,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 			/* no need to update the ignored file entry */
 		}
 
-		if (event->vfsinfo) {
+		if (entry && event->vfsinfo) {
 			/* mtime */
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, event->vfsinfo->mtime);
