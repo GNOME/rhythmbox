@@ -1,3 +1,29 @@
+2006-07-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* bindings/python/rhythmdb.defs:
+	* rhythmdb/rhythmdb.c:
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-query.c:
+	Move data structures holding registered entry types inside the
+	RhythmDB object, and add a vfunc called when new types are registered.
+	Add a flag to RhythmDBEntryType specifying whether entries of the type
+	should be saved to the on-disk database.
+
+	* sources/rb-audiocd-source.c:
+	* sources/rb-daap-source.c:
+	* sources/rb-ipod-source.c:
+	* plugins/generic-player/rb-generic-player-source.c:
+	* plugins/generic-player/rb-nokia770-source.c:
+	* plugins/generic-player/rb-psp-source.c:
+	Adjust to the above changes.
+
+	* rhythmdb/rhythmdb-tree.c:
+	If the type for an entry hasn't been registered yet, store the entry's
+	properties as-is, and convert them to a real entry when the type is
+	registered.  If the type doesn't get registered, save the entry back
+	to the database unmodified.  From #330226.
+
 2006-07-10  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/artdisplay/artdisplay/CoverArtDatabase.py: change

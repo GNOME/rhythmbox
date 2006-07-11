@@ -60,6 +60,7 @@ typedef struct {
 	char 				*name;
 
 	guint				entry_type_data_size;
+	gboolean			save_to_disk;
 
 	/* virtual functions here */
 	RhythmDBEntryActionFunc		post_entry_create;
@@ -289,6 +290,10 @@ typedef struct
 	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
 						 RhythmDBQueryResults *results,
 						 gboolean *cancel);
+
+	void		(*impl_entry_type_registered) (RhythmDB *db, 
+						       const char *name, 
+						       RhythmDBEntryType type);
 } RhythmDBClass;
 
 
@@ -400,8 +405,8 @@ char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
 							 const char *plural);
 
 
-RhythmDBEntryType rhythmdb_entry_register_type          (const char *name);
-RhythmDBEntryType rhythmdb_entry_type_get_by_name       (const char *name);
+RhythmDBEntryType rhythmdb_entry_register_type          (RhythmDB *db, const char *name);
+RhythmDBEntryType rhythmdb_entry_type_get_by_name       (RhythmDB *db, const char *name);
 
 RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
 RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);

@@ -164,10 +164,14 @@ rb_audiocd_source_new (RBShell *shell,
 	char *device_path;
 	GObject *source;
 	RhythmDBEntryType entry_type;
+	RhythmDB *db;
 
 	g_assert (rb_audiocd_is_volume_audiocd (volume));
 
-	entry_type =  rhythmdb_entry_register_type (NULL);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	entry_type =  rhythmdb_entry_register_type (db, NULL);
+	g_object_unref (G_OBJECT (db));
+
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
 	/* TODO same the metadata somewhere */
 	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;

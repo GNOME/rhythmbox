@@ -202,10 +202,13 @@ rb_ipod_source_new (RBShell *shell, GnomeVFSVolume *volume)
 {
 	RBiPodSource *source;
 	RhythmDBEntryType entry_type;
+	RhythmDB *db;
 
 	g_assert (rb_ipod_is_volume_ipod (volume));
 
-	entry_type =  rhythmdb_entry_register_type (NULL);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	entry_type =  rhythmdb_entry_register_type (db, NULL);
+	g_object_unref (G_OBJECT (shell));
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "entry-type", entry_type,

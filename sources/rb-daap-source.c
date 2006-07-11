@@ -117,12 +117,6 @@ static GtkActionEntry rb_daap_source_actions [] =
 GtkActionGroup *daap_action_group;
 guint daap_ui_merge_id;
 
-static RhythmDBEntryType
-rhythmdb_entry_daap_type_new (void)
-{
-	return rhythmdb_entry_register_type (NULL);
-}
-
 static void
 rb_daap_source_class_init (RBDAAPSourceClass *klass)
 {
@@ -306,8 +300,11 @@ rb_daap_source_new (RBShell *shell,
 	RBSource *source;
 	RhythmDBEntryType type;
 	GdkPixbuf *icon;
+	RhythmDB *db;
 
-	type = rhythmdb_entry_daap_type_new ();
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	type = rhythmdb_entry_register_type (db, NULL);
+	g_object_unref (G_OBJECT (db));
 
 	icon = rb_daap_get_icon (password_protected, FALSE);
 

@@ -78,6 +78,9 @@ static void rhythmdb_tree_do_full_query (RhythmDB *db, GPtrArray *query,
 					 gboolean *cancel);
 static gboolean rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 				       RhythmDBEntry *aentry);
+static void rhythmdb_tree_entry_type_registered (RhythmDB *db,
+						 const char *name,
+						 RhythmDBEntryType type);
 
 typedef void (*RBTreeEntryItFunc)(RhythmDBTree *db, 
 				  RhythmDBEntry *entry, 
@@ -115,11 +118,24 @@ struct RhythmDBTreePrivate
 {
 	GHashTable *entries;
 	GHashTable *genres;
+	GHashTable *unknown_entry_types;
 	GMutex *genres_lock;
 	gboolean finalizing;
 
 	guint idle_load_id;
 };
+
+typedef struct 
+{
+	char *name;
+	char *value;
+} RhythmDBUnknownEntryProperty;
+
+typedef struct 
+{
+	char *typename;
+	GList *properties;
+} RhythmDBUnknownEntry;
 
 #define RHYTHMDB_TREE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_TREE, RhythmDBTreePrivate))
 
@@ -149,6 +165,7 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_entry_foreach = rhythmdb_tree_entry_foreach;
 	rhythmdb_class->impl_evaluate_query = rhythmdb_tree_evaluate_query;
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
+	rhythmdb_class->impl_entry_type_registered = rhythmdb_tree_entry_type_registered;
 
 	g_type_class_add_private (klass, sizeof (RhythmDBTreePrivate));
 }
@@ -162,12 +179,39 @@ rhythmdb_tree_init (RhythmDBTree *db)
 
 	db->priv->genres = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 						  NULL, (GDestroyNotify)g_hash_table_destroy);
+	db->priv->unknown_entry_types = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
 static void
 unparent_entries (const char *uri, RhythmDBEntry *entry, RhythmDBTree *db)
 {
 	remove_entry_from_album (db, entry);
+}
+
+static void
+free_unknown_entries (const char *name,
+		      GList *entries,
+		      gpointer nah)
+{
+	GList *e;
+	for (e = entries; e != NULL; e = e->next) {
+		RhythmDBUnknownEntry *entry;
+		GList *p;
+
+		entry = (RhythmDBUnknownEntry *)e->data;
+		g_free (entry->typename);
+		for (p = entry->properties; p != NULL; p = p->next) {
+			RhythmDBUnknownEntryProperty *prop;
+
+			prop = (RhythmDBUnknownEntryProperty *)p->data;
+			g_free (prop->name);
+			g_free (prop->value);
+			g_free (prop);
+		}
+
+		g_list_free (entry->properties);
+	}
+	g_list_free (entries);
 }
 
 static void
@@ -190,6 +234,11 @@ rhythmdb_tree_finalize (GObject *object)
 
 	g_hash_table_destroy (db->priv->genres);
 
+	g_hash_table_foreach (db->priv->unknown_entry_types, 
+			      (GHFunc) free_unknown_entries, 
+			      NULL);
+	g_hash_table_destroy (db->priv->unknown_entry_types);
+
 	G_OBJECT_CLASS (rhythmdb_tree_parent_class)->finalize (object);
 }
 
@@ -203,10 +252,13 @@ struct RhythmDBTreeLoadContext
 		RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB,
 		RHYTHMDB_TREE_PARSER_STATE_ENTRY,
 		RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY,
+		RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY,
+		RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY,
 		RHYTHMDB_TREE_PARSER_STATE_END,
 	} state;
-	gboolean in_unknown_elt;
+	guint in_unknown_elt;
 	RhythmDBEntry *entry;
+	RhythmDBUnknownEntry *unknown_entry;
 	GString *buf;
 	RhythmDBPropType propid;
 	gint batch_count;
@@ -226,8 +278,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		return;
 	}
 
-	if (ctx->in_unknown_elt)
+	if (ctx->in_unknown_elt) {
+		ctx->in_unknown_elt++;
 		return;
+	}
 
 	switch (ctx->state)
 	{
@@ -258,7 +312,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 			}
 
 		} else {
-			ctx->in_unknown_elt = TRUE;
+			ctx->in_unknown_elt++;
 		}
 
 		break;
@@ -267,31 +321,37 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	{
 		if (!strcmp (name, "entry")) {
 			RhythmDBEntryType type = RHYTHMDB_ENTRY_TYPE_INVALID;
-			gboolean type_set = FALSE;
+			const char *typename = NULL;
 			for (; *attrs; attrs +=2) {
 				if (!strcmp (*attrs, "type")) {
-					const char *typename = *(attrs+1);
-					type = rhythmdb_entry_type_get_by_name (typename);
-					if (!type)
-						return;
-					type_set = TRUE;
+					typename = *(attrs+1);
+					type = rhythmdb_entry_type_get_by_name (RHYTHMDB (ctx->db), typename);
 					break;
 				}
 			}
-			g_assert (type_set);
-			ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
-			ctx->entry = rhythmdb_entry_allocate (RHYTHMDB (ctx->db), type);
-			ctx->entry->flags |= RHYTHMDB_ENTRY_TREE_LOADING;
-			ctx->has_date = FALSE;
-		} else
-			ctx->in_unknown_elt = TRUE;
+
+			g_assert (typename);
+			if (type != RHYTHMDB_ENTRY_TYPE_INVALID) {
+				ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
+				ctx->entry = rhythmdb_entry_allocate (RHYTHMDB (ctx->db), type);
+				ctx->entry->flags |= RHYTHMDB_ENTRY_TREE_LOADING;
+				ctx->has_date = FALSE;
+			} else {
+				rb_debug ("reading unknown entry");
+				ctx->state = RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY;
+				ctx->unknown_entry = g_new0 (RhythmDBUnknownEntry, 1);
+				ctx->unknown_entry->typename = g_strdup (typename);
+			}
+		} else {
+			ctx->in_unknown_elt++;
+		}
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
 		int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), BAD_CAST name);
 		if (val < 0) {
-			ctx->in_unknown_elt = TRUE;
+			ctx->in_unknown_elt++;
 			break;
 		}
 		
@@ -300,6 +360,19 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		g_string_truncate (ctx->buf, 0);
 		break;
 	}
+	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY:
+	{
+		RhythmDBUnknownEntryProperty *prop;
+		
+		prop = g_new0 (RhythmDBUnknownEntryProperty, 1);
+		prop->name = g_strdup (name);
+
+		ctx->unknown_entry->properties = g_list_prepend (ctx->unknown_entry->properties, prop);
+		ctx->state = RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY;
+		g_string_truncate (ctx->buf, 0);
+		break;
+	}
+	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY:
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
 	case RHYTHMDB_TREE_PARSER_STATE_END:
 	break;
@@ -315,7 +388,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 	}
 
 	if (ctx->in_unknown_elt) {
-		ctx->in_unknown_elt = FALSE;		
+		ctx->in_unknown_elt--;
 		return;
 	}
 	
@@ -381,6 +454,22 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			rhythmdb_entry_unref (ctx->entry);
 		}
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
+		ctx->entry = NULL;
+		break;
+	}
+	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY:
+	{
+		GList *entry_list;
+
+		rb_debug ("finished reading unknown entry");
+		ctx->unknown_entry->properties = g_list_reverse (ctx->unknown_entry->properties);
+
+		entry_list = g_hash_table_lookup (ctx->db->priv->unknown_entry_types, ctx->unknown_entry->typename);
+		entry_list = g_list_prepend (entry_list, ctx->unknown_entry);
+		g_hash_table_insert (ctx->db->priv->unknown_entry_types, ctx->unknown_entry->typename, entry_list);
+
+		ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
+		ctx->unknown_entry = NULL;
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
@@ -424,6 +513,19 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
 		break;
 	}
+	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY:
+	{
+		RhythmDBUnknownEntryProperty *prop;
+		
+		g_assert (ctx->unknown_entry->properties);
+		prop = ctx->unknown_entry->properties->data;
+		g_assert (prop->value == NULL);
+		prop->value = g_strdup (ctx->buf->str);
+		rb_debug ("unknown entry property: %s = %s", prop->name, prop->value);
+
+		ctx->state = RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY;
+		break;
+	}
 	case RHYTHMDB_TREE_PARSER_STATE_START:
 	case RHYTHMDB_TREE_PARSER_STATE_END:
 	break;
@@ -442,9 +544,11 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx, const char
 	switch (ctx->state)
 	{
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
+	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY:
 		g_string_append_len (ctx->buf, data, len);
 		break;
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
+	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY:
 	case RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB:
 	case RHYTHMDB_TREE_PARSER_STATE_START:
 	case RHYTHMDB_TREE_PARSER_STATE_END:
@@ -626,6 +730,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 {
 	RhythmDBPropType i;
 	RhythmDBPodcastFields *podcast = NULL;
+	xmlChar *encoded;
 
 	if (ctx->error)
 		return;
@@ -635,20 +740,9 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 
 	RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle, ctx->error);
-
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		RHYTHMDB_FWRITE_STATICSTR ("song", ctx->handle, ctx->error);
-	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
-		RHYTHMDB_FWRITE_STATICSTR ("iradio", ctx->handle, ctx->error);
-	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
-		RHYTHMDB_FWRITE_STATICSTR ("podcast-post", ctx->handle, ctx->error);
-	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		RHYTHMDB_FWRITE_STATICSTR ("podcast-feed", ctx->handle, ctx->error);
-	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IGNORE) {
-		RHYTHMDB_FWRITE_STATICSTR ("ignore", ctx->handle, ctx->error);
-	} else {
-		g_assert_not_reached ();
-	}
+	encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST entry->type->name);
+	RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle, ctx->error);
+	g_free (encoded);
 
 	RHYTHMDB_FWRITE_STATICSTR ("\">\n", ctx->handle, ctx->error);
 		
@@ -805,6 +899,54 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 }
 
 static void
+save_entry_type (const char *name, 
+		 RhythmDBEntryType entry_type, 
+		 struct RhythmDBTreeSaveContext *ctx)
+{
+	if (entry_type->save_to_disk == FALSE)
+		return;
+
+	rb_debug ("saving entries of type %s", name);
+	rhythmdb_hash_tree_foreach (RHYTHMDB (ctx->db), entry_type, 
+				    (RBTreeEntryItFunc) save_entry,
+				    NULL, NULL, NULL, ctx);
+}
+
+static void
+save_unknown_entry_type (const char *typename,
+			 GList *entries,
+			 struct RhythmDBTreeSaveContext *ctx)
+{
+	GList *t;
+
+	for (t = entries; t != NULL; t = t->next) {
+		RhythmDBUnknownEntry *entry;
+		xmlChar *encoded;
+		GList *p;
+
+		if (ctx->error)
+			return;
+		
+		entry = (RhythmDBUnknownEntry *)t->data;
+
+		RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle, ctx->error);
+		encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST entry->typename);
+		RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle, ctx->error);
+		g_free (encoded);
+
+		RHYTHMDB_FWRITE_STATICSTR ("\">\n", ctx->handle, ctx->error);
+
+		for (p = entry->properties; p != NULL; p = p->next) {
+			RhythmDBUnknownEntryProperty *prop;
+			prop = (RhythmDBUnknownEntryProperty *) p->data;
+			save_entry_string(ctx, (const xmlChar *)prop->name, prop->value);
+		}
+		
+		RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
+	}
+}
+
+static void
 rhythmdb_tree_save (RhythmDB *rdb)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
@@ -832,21 +974,10 @@ rhythmdb_tree_save (RhythmDB *rdb)
 				   "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">\n", 
 				   ctx.handle, ctx.error);
 
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_SONG,
-				    (RBTreeEntryItFunc)save_entry,
-				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
-				    (RBTreeEntryItFunc)save_entry,
-				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-				    (RBTreeEntryItFunc)save_entry,
-				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
-				    (RBTreeEntryItFunc)save_entry,
-				    NULL, NULL, NULL, &ctx);
-	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IGNORE,
-				    (RBTreeEntryItFunc)save_entry,
-				    NULL, NULL, NULL, &ctx);
+	rhythmdb_entry_type_foreach (rdb, (GHFunc) save_entry_type, &ctx);
+	g_hash_table_foreach (db->priv->unknown_entry_types, 
+			      (GHFunc) save_unknown_entry_type, 
+			      &ctx);
 
 	RHYTHMDB_FWRITE_STATICSTR ("</rhythmdb>\n", ctx.handle, ctx.error);
 
@@ -1978,3 +2109,54 @@ rhythmdb_hash_tree_foreach (RhythmDB *adb,
 		g_hash_table_foreach (table, hash_tree_genres_foreach, &ctxt);
 	}
 }
+
+static void
+rhythmdb_tree_entry_type_registered (RhythmDB *db, 
+				     const char *name, 
+				     RhythmDBEntryType entry_type)
+{
+	GList *entries;
+	GList *e;
+	gint count = 0;
+	RhythmDBTree *rdb;
+	if (name == NULL)
+		return;
+
+	rdb = RHYTHMDB_TREE (db);
+	entries = g_hash_table_lookup (rdb->priv->unknown_entry_types, name);
+	if (entries == NULL) {
+		rb_debug ("no entries of newly registered type %s loaded from db", name);
+		return;
+	}
+
+	for (e = entries; e != NULL; e = e->next) {
+		RhythmDBUnknownEntry *data;
+		RhythmDBEntry *entry;
+		GList *p;
+
+		data = (RhythmDBUnknownEntry *)e->data;
+		entry = rhythmdb_entry_allocate (db, entry_type);
+		entry->flags |= RHYTHMDB_ENTRY_TREE_LOADING;
+		for (p = data->properties; p != NULL; p = p->next) {
+			RhythmDBUnknownEntryProperty *prop;
+			RhythmDBPropType propid;
+			GValue value = {0,};
+
+			prop = (RhythmDBUnknownEntryProperty *) p->data;
+			propid = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *) prop->name);
+
+			rhythmdb_read_encoded_property (db, prop->value, propid, &value);
+			rhythmdb_entry_set_internal (db, entry, FALSE, propid, &value);
+			g_value_unset (&value);
+		}
+		rhythmdb_tree_entry_new (db, entry);
+		rhythmdb_entry_insert (db, entry);
+		count++;
+	}
+	rb_debug ("handled %d entries of newly registered type %s", count, name);
+	rhythmdb_commit (db);
+	
+	g_hash_table_remove (rdb->priv->unknown_entry_types, name);
+	free_unknown_entries (name, entries, NULL);
+}
+

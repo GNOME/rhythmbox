@@ -539,7 +539,8 @@
   )
 )
 
-(define-function entry_register_type
+(define-method entry_register_type
+  (of-object "RhythmDB")
   (c-name "rhythmdb_entry_register_type")
   (return-type "RhythmDBEntryType_*")
   (parameters

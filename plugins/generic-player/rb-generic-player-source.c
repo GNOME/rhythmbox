@@ -281,10 +281,13 @@ rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
 {
 	RBGenericPlayerSource *source;
 	RhythmDBEntryType entry_type;
+	RhythmDB *db;
 
 	g_assert (rb_generic_player_is_volume_player (volume));
 
-	entry_type = rhythmdb_entry_register_type (NULL);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	entry_type = rhythmdb_entry_register_type (db, NULL);
+	g_object_unref (G_OBJECT (db));
 
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
 					  "entry-type", entry_type,

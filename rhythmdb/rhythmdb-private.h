@@ -168,6 +168,10 @@ struct RhythmDBPrivate
 
 	gboolean saving;
 	gboolean dirty;
+
+	GHashTable *entry_type_map;
+	GMutex *entry_type_map_mutex;
+	GMutex *entry_type_mutex;
 };
 
 typedef struct
@@ -211,6 +215,7 @@ void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry, 
 				  gboolean notify_if_inserted, guint propid, 
 				  const GValue *value);
+void rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data);
 
 /* from rhythmdb-monitor.c */
 void rhythmdb_init_monitoring (RhythmDB *db);

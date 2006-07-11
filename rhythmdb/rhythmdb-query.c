@@ -360,7 +360,7 @@ rhythmdb_read_encoded_property (RhythmDB *db,
 	case G_TYPE_POINTER:
 		if (propid == RHYTHMDB_PROP_TYPE) {
 			RhythmDBEntryType entry_type;
-			entry_type = rhythmdb_entry_type_get_by_name (content);
+			entry_type = rhythmdb_entry_type_get_by_name (db, content);
 			if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
 				g_value_set_pointer (val, entry_type);
 				break;

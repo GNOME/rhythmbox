@@ -115,6 +115,7 @@ static void library_location_changed_cb (GConfClient *client,
 static void rhythmdb_sync_library_location (RhythmDB *db);
 static void rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 					  guint propid);
+static void rhythmdb_register_core_entry_types (RhythmDB *db);
 
 enum
 {
@@ -381,15 +382,10 @@ rhythmdb_init (RhythmDB *db)
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
 
-	/* register core entry types */
-	rhythmdb_entry_song_get_type ();
-	rhythmdb_entry_ignore_get_type ();
-	rhythmdb_entry_import_error_get_type ();
-	
-	/* and other types we haven't kicked out of the rhythmdb core yet */
-	rhythmdb_entry_iradio_get_type ();
-	rhythmdb_entry_podcast_post_get_type ();
-	rhythmdb_entry_podcast_feed_get_type ();
+	db->priv->entry_type_map = g_hash_table_new (g_str_hash, g_str_equal);
+	db->priv->entry_type_map_mutex = g_mutex_new ();
+	db->priv->entry_type_mutex = g_mutex_new ();
+	rhythmdb_register_core_entry_types (db);
 
  	db->priv->stat_events = g_hash_table_new_full (gnome_vfs_uri_hash, (GEqualFunc) gnome_vfs_uri_equal,
  						       (GDestroyNotify) gnome_vfs_uri_unref,
@@ -3304,16 +3300,6 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size, cons
 	return ret;
 }
 
-
-static gboolean
-song_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, gpointer data)
-{
-	const char *mimetype;
-
-	mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);	
-	return rb_metadata_can_save (db->priv->metadata, mimetype);
-}
-
 static void
 default_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data)
 {
@@ -3345,12 +3331,10 @@ default_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpoin
 	}
 }
 
-static GHashTable *entry_type_map = NULL;
-static GStaticMutex entry_type_map_mutex = G_STATIC_MUTEX_INIT;
-static GStaticMutex entry_type_mutex = G_STATIC_MUTEX_INIT;
 
 /**
  * rhythmdb_entry_register_type:
+ * @db: a #RhythmDB
  * @name: optional name for the entry type
  *
  * Registers a new #RhythmDBEntryType. This should be called to create a new
@@ -3359,39 +3343,84 @@ static GStaticMutex entry_type_mutex = G_STATIC_MUTEX_INIT;
  * Returns: the new #RhythmDBEntryType.
  **/
 RhythmDBEntryType
-rhythmdb_entry_register_type (const char *name)
+rhythmdb_entry_register_type (RhythmDB *db, const char *name)
 {
 	RhythmDBEntryType type;
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
 	type = g_new0 (RhythmDBEntryType_, 1);
 	type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_false_function;
 	type->sync_metadata = default_sync_metadata;
 	if (name) {
 		type->name = g_strdup (name);
-		g_static_mutex_lock (&entry_type_map_mutex);
-		if (entry_type_map == NULL) {
-			entry_type_map = g_hash_table_new (g_str_hash, g_str_equal);
-		}
-		g_hash_table_insert (entry_type_map, type->name, type);
-		g_static_mutex_unlock (&entry_type_map_mutex);
+		g_mutex_lock (db->priv->entry_type_map_mutex);
+		g_hash_table_insert (db->priv->entry_type_map, type->name, type);
+		g_mutex_unlock (db->priv->entry_type_map_mutex);
 	}
+
+	if (klass->impl_entry_type_registered)
+		klass->impl_entry_type_registered (db, name, type);
 
 	return type;
 }
 
 static void
-rhythmdb_entry_register_type_alias (RhythmDBEntryType type, const char *name)
+rhythmdb_entry_register_type_alias (RhythmDB *db, 
+				    RhythmDBEntryType type, 
+				    const char *name)
 {
 	/* yes, we leak the string */
 	char *dn = g_strdup (name);
 
-	g_static_mutex_lock (&entry_type_map_mutex);
-	g_hash_table_insert (entry_type_map, dn, type);
-	g_static_mutex_unlock (&entry_type_map_mutex);
+	g_mutex_lock (db->priv->entry_type_map_mutex);
+	g_hash_table_insert (db->priv->entry_type_map, dn, type);
+	g_mutex_unlock (db->priv->entry_type_map_mutex);
+}
+
+typedef struct {
+	GHFunc func;
+	gpointer data;
+} RhythmDBEntryTypeForeachData;
+
+static void
+rhythmdb_entry_type_foreach_cb (const char *name,
+				RhythmDBEntryType entry_type,
+				RhythmDBEntryTypeForeachData *data)
+{
+	/* skip aliases */
+	if (strcmp (entry_type->name, name))
+		return;
+
+	data->func ((gpointer) name, entry_type, data->data);
 }
 
 /**
+ * rhythmdb_entry_type_foreach:
+ * @db: a #RhythmDB
+ * @func: callback function to call for each registered entry type
+ * @data: data to pass to the callback
+ *
+ * Calls a function for each registered entry type.
+ */
+void
+rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data)
+{
+	RhythmDBEntryTypeForeachData d;
+
+	d.func = func;
+	d.data = data;
+
+	g_mutex_lock (db->priv->entry_type_mutex);
+	g_hash_table_foreach (db->priv->entry_type_map,
+			      (GHFunc) rhythmdb_entry_type_foreach_cb, 
+			      &d);
+	g_mutex_unlock (db->priv->entry_type_mutex);
+}
+
+
+/**
  * rhythmdb_entry_type_get_by_name:
+ * @db: a #RhythmDB
  * @name: name of the type to look for
  *
  * Locates a #RhythmDBEntryType by name. Returns 
@@ -3401,15 +3430,15 @@ rhythmdb_entry_register_type_alias (RhythmDBEntryType type, const char *name)
  * Returns: the #RhythmDBEntryType
  */
 RhythmDBEntryType
-rhythmdb_entry_type_get_by_name (const char *name)
+rhythmdb_entry_type_get_by_name (RhythmDB *db, const char *name)
 {
 	gpointer t = NULL;
 
-	g_static_mutex_lock (&entry_type_map_mutex);
-	if (entry_type_map) {
-		t = g_hash_table_lookup (entry_type_map, name);
+	g_mutex_lock (db->priv->entry_type_map_mutex);
+	if (db->priv->entry_type_map) {
+		t = g_hash_table_lookup (db->priv->entry_type_map, name);
 	}
-	g_static_mutex_unlock (&entry_type_map_mutex);
+	g_mutex_unlock (db->priv->entry_type_map_mutex);
 
 	if (t)
 		return (RhythmDBEntryType) t;
@@ -3417,61 +3446,25 @@ rhythmdb_entry_type_get_by_name (const char *name)
 	return RHYTHMDB_ENTRY_TYPE_INVALID;
 }
 
-
-RhythmDBEntryType 
-rhythmdb_entry_song_get_type (void) 
+static gboolean
+song_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, gpointer data)
 {
-	static RhythmDBEntryType song_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+	const char *mimetype;
 
-	g_static_mutex_lock (&entry_type_mutex);
-	if (song_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		song_type = rhythmdb_entry_register_type ("song");
-		rhythmdb_entry_register_type_alias (song_type, "0");
-		song_type->can_sync_metadata = song_can_sync_metadata;
-	}
-	g_static_mutex_unlock (&entry_type_mutex);
-
-	return song_type;
+	mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);	
+	return rb_metadata_can_save (db->priv->metadata, mimetype);
 }
 
-RhythmDBEntryType 
-rhythmdb_entry_ignore_get_type (void) 
-{
-	static RhythmDBEntryType ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-
-	g_static_mutex_lock (&entry_type_mutex);
-	if (ignore_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		ignore_type = rhythmdb_entry_register_type ("ignore");
-	}
-	g_static_mutex_unlock (&entry_type_mutex);
-
-	return ignore_type;
-}
-
-RhythmDBEntryType rhythmdb_entry_iradio_get_type (void) 
-{
-	static RhythmDBEntryType iradio_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-       
-	g_static_mutex_lock (&entry_type_mutex);
-	if (iradio_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		iradio_type = rhythmdb_entry_register_type ("iradio");
-		rhythmdb_entry_register_type_alias (iradio_type, "1");
-		iradio_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
-		iradio_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
-	}
-	g_static_mutex_unlock (&entry_type_mutex);
-
-	return iradio_type;
-}
 
 static char *
-_get_podcast_playback_uri (RhythmDBEntry *entry, gpointer data)
+podcast_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 {
 	return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 }
 
+
 static void
-_podcast_data_destroy (RhythmDBEntry *entry, gpointer something)
+podcast_data_destroy (RhythmDBEntry *entry, gpointer something)
 {
 	RhythmDBPodcastFields *podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 	rb_refstring_unref (podcast->description);
@@ -3482,55 +3475,90 @@ _podcast_data_destroy (RhythmDBEntry *entry, gpointer something)
 	rb_refstring_unref (podcast->image);
 }
 
-RhythmDBEntryType rhythmdb_entry_podcast_post_get_type (void) 
+static RhythmDBEntryType song_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+static RhythmDBEntryType ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+static RhythmDBEntryType import_error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+
+/* to be evicted */
+static RhythmDBEntryType iradio_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+static RhythmDBEntryType podcast_post_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+static RhythmDBEntryType podcast_feed_type = RHYTHMDB_ENTRY_TYPE_INVALID;
+
+static void
+rhythmdb_register_core_entry_types (RhythmDB *db)
 {
-	static RhythmDBEntryType podcast_post_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-       
-	g_static_mutex_lock (&entry_type_mutex);
-	if (podcast_post_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		podcast_post_type = rhythmdb_entry_register_type ("podcast-post");
-		rhythmdb_entry_register_type_alias (podcast_post_type, "2");
+	/* regular songs */
+	song_type = rhythmdb_entry_register_type (db, "song");
+	rhythmdb_entry_register_type_alias (db, song_type, "0");
+	song_type->save_to_disk = TRUE;
+	song_type->can_sync_metadata = song_can_sync_metadata;
 
-		podcast_post_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
-		podcast_post_type->pre_entry_destroy = (RhythmDBEntryActionFunc) _podcast_data_destroy;
-		podcast_post_type->get_playback_uri = _get_podcast_playback_uri;
-	}
-	g_static_mutex_unlock (&entry_type_mutex);
+	/* import errors */
+	import_error_type = rhythmdb_entry_register_type (db, "import-error");
+	import_error_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_null_function;
 
+	/* ignored files */
+	ignore_type = rhythmdb_entry_register_type (db, "ignore");
+	ignore_type->save_to_disk = TRUE;
+
+	/* iradio streams */
+	iradio_type = rhythmdb_entry_register_type (db, "iradio");
+	iradio_type->save_to_disk = TRUE;
+	iradio_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
+	iradio_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
+
+	/* podcast posts */
+	podcast_post_type = rhythmdb_entry_register_type (db, "podcast-post");
+	podcast_post_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
+	podcast_post_type->save_to_disk = TRUE;
+	podcast_post_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
+	podcast_post_type->get_playback_uri = podcast_get_playback_uri;
+
+	/* podcast feeds */
+	podcast_feed_type = rhythmdb_entry_register_type (db, "podcast-feed");
+	podcast_feed_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
+	podcast_feed_type->save_to_disk = TRUE;
+	podcast_feed_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
+}
+
+RhythmDBEntryType 
+rhythmdb_entry_song_get_type (void) 
+{
+	return song_type;
+}
+
+RhythmDBEntryType 
+rhythmdb_entry_ignore_get_type (void) 
+{
+	return ignore_type;
+}
+
+RhythmDBEntryType 
+rhythmdb_entry_import_error_get_type (void) 
+{
+	return import_error_type;
+}
+
+RhythmDBEntryType
+rhythmdb_entry_iradio_get_type (void)
+{
+	return iradio_type;
+}
+
+RhythmDBEntryType 
+rhythmdb_entry_podcast_post_get_type (void) 
+{
 	return podcast_post_type;
 }
 
-RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type (void) 
+RhythmDBEntryType 
+rhythmdb_entry_podcast_feed_get_type (void) 
 {
-	static RhythmDBEntryType podcast_feed_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-       
-	g_static_mutex_lock (&entry_type_mutex);
-	if (podcast_feed_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		podcast_feed_type = rhythmdb_entry_register_type ("podcast-feed");
-		rhythmdb_entry_register_type_alias (podcast_feed_type, "3");
-
-		podcast_feed_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
-		podcast_feed_type->pre_entry_destroy = (RhythmDBEntryActionFunc) _podcast_data_destroy;
-	}
-	g_static_mutex_unlock (&entry_type_mutex);
-
 	return podcast_feed_type;
 }
 
-RhythmDBEntryType rhythmdb_entry_import_error_get_type (void) 
-{
-	static RhythmDBEntryType import_error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
-       
-	g_static_mutex_lock (&entry_type_mutex);
-	if (import_error_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		import_error_type = rhythmdb_entry_register_type ("import-error");
-		
-		import_error_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_null_function;
-	}
-	g_static_mutex_unlock (&entry_type_mutex);
 
-	return import_error_type;
-}
+
 
 static void
 rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry, 
