@@ -21,7 +21,6 @@
 #include "rb-player.h"
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
-#include "rb-playlist-source-recorder.h"
 #include "rb-play-order.h"
 #include "rb-play-order-linear.h"
 #include "rb-play-order-linear-loop.h"
@@ -36,14 +35,12 @@
 #include "rb-query-creator.h"
 #include "rb-rating.h"
 #include "rb-rating-helper.h"
-#include "rb-recorder.h"
 #include "rb-refstring.h"
 #include "rb-search-entry.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-shell-preferences.h"
-#include "rb-song-display-box.h"
 #include "rb-song-info.h"
 #include "rb-source.h"
 #include "rb-source-header.h"
@@ -73,7 +70,6 @@ rb_metadata_get_type
 rb_player_get_type
 rb_playlist_manager_get_type
 rb_playlist_source_get_type
-rb_playlist_source_recorder_get_type
 rb_play_order_get_type
 rb_property_view_get_type
 rb_query_creator_get_type
@@ -82,14 +78,12 @@ rb_random_play_order_by_age_get_type
 rb_random_play_order_by_rating_get_type
 rb_random_play_order_equal_weights_get_type
 rb_random_play_order_get_type
-rb_recorder_get_type
 rb_search_entry_get_type
 rb_shell_clipboard_get_type
 rb_shell_get_type
 rb_shell_player_get_type
 rb_shell_preferences_get_type
 rb_shuffle_play_order_get_type
-rb_song_display_box_get_type
 rb_song_info_get_type
 rb_source_get_type
 rb_source_header_get_type
