@@ -44,11 +44,9 @@ static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
 							 RBImportErrorsSource *source);
 
-
 struct RBImportErrorsSourcePrivate
 {
 	RhythmDB *db;
-	RhythmDBQueryModel *model;
 	RBEntryView *view;
 	RhythmDBEntryType entry_type;
 };
@@ -82,7 +80,7 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_status = impl_get_status;
-	
+
 	g_type_class_add_private (klass, sizeof (RBImportErrorsSourcePrivate));
 }
 
@@ -93,7 +91,7 @@ rb_import_errors_source_init (RBImportErrorsSource *source)
 	GdkPixbuf *pixbuf;
 
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_IMPORT_ERRORS_SOURCE, RBImportErrorsSourcePrivate);
-	
+
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					   GTK_STOCK_DIALOG_ERROR,
@@ -114,6 +112,7 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	RBImportErrorsSourceClass *klass;
 	RBShell *shell;
 	GPtrArray *query;
+	RhythmDBQueryModel *model;
 
 	klass = RB_IMPORT_ERRORS_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IMPORT_ERRORS_SOURCE));
 
@@ -124,42 +123,36 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
-	
+
 	/* construct real query */
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      	RHYTHMDB_PROP_TYPE,
 					RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
 				      RHYTHMDB_QUERY_END);
-	source->priv->model = rhythmdb_query_model_new (source->priv->db, query,
-							(GCompareDataFunc) rhythmdb_query_model_string_sort_func,
-							GUINT_TO_POINTER (RHYTHMDB_PROP_LOCATION), NULL, FALSE);
-	_rb_source_hide_when_empty (RB_SOURCE (source), source->priv->model);
-
+	model = rhythmdb_query_model_new (source->priv->db, query,
+					  (GCompareDataFunc) rhythmdb_query_model_string_sort_func,
+					  GUINT_TO_POINTER (RHYTHMDB_PROP_LOCATION), NULL, FALSE);
 	g_ptr_array_free (query, TRUE);
 
 	/* set up entry view */
-	source->priv->view = rb_entry_view_new (source->priv->db, shell_player, 
+	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,
 						NULL, FALSE, FALSE);
 
-	rb_entry_view_set_model (source->priv->view, source->priv->model);
+	rb_entry_view_set_model (source->priv->view, model);
 
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_LOCATION, TRUE);
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_ERROR, TRUE);
-	
+
 	g_signal_connect_object (G_OBJECT (source->priv->view), "show_popup",
 				 G_CALLBACK (rb_import_errors_source_songs_show_popup_cb), source, 0);
 
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
-		
+
 	gtk_widget_show_all (GTK_WIDGET (source));
 
-	/* use a fake model for the source's query model property, so we can't try to play
-	 * any of the hidden entries.
-	 */
-	g_object_set (G_OBJECT (source), 
-		      "query-model", rhythmdb_query_model_new_empty (source->priv->db), 
-		      NULL);
+	g_object_set (G_OBJECT (source), "query-model", model, NULL);
+	g_object_unref (model);
 
 	return G_OBJECT (source);
 }
@@ -173,14 +166,9 @@ rb_import_errors_source_dispose (GObject *object)
 		g_object_unref (G_OBJECT (source->priv->db));
 		source->priv->db = NULL;
 	}
-	if (source->priv->model) {
-		g_object_unref (G_OBJECT (source->priv->model));
-		source->priv->model = NULL;
-	}
 
 	G_OBJECT_CLASS (rb_import_errors_source_parent_class)->dispose (object);
 }
-
 
 static RBEntryView *
 impl_get_entry_view (RBSource *asource)
@@ -201,6 +189,7 @@ rb_import_errors_source_new (RBShell *shell,
 					  "name", _("Import Errors"),
 					  "shell", shell,
 					  "visibility", FALSE,
+					  "hidden-when-empty", TRUE,
 					  NULL));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	return source;
@@ -223,10 +212,13 @@ impl_delete (RBSource *asource)
 static void
 impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
-	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (asource);
+	RhythmDBQueryModel *model;
 	gint count;
-	
-	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL);
+
+	g_object_get (G_OBJECT (asource), "query-model", &model, NULL);
+	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+	g_object_unref (model);
+
 	*text = g_strdup_printf (ngettext ("%d import errors", "%d import errors", count),
 				 count);
 }
@@ -238,4 +230,3 @@ rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/ImportErrorsViewPopup");
 }
-

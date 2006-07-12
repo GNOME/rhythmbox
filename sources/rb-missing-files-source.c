@@ -19,7 +19,7 @@
  */
 
 /*
- * This source lists files rhythmbox cannot find, and maybe tries to stop 
+ * This source lists files rhythmbox cannot find, and maybe tries to stop
  * you from trying to play them.
  */
 
@@ -32,7 +32,6 @@
 #include "rb-song-info.h"
 #include "rb-util.h"
 #include "rb-debug.h"
-
 
 static void rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass);
 static void rb_missing_files_source_init (RBMissingFilesSource *source);
@@ -56,15 +55,14 @@ static void impl_get_status (RBSource *source, char **text, char **progress_text
 static void rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
 							 RBMissingFilesSource *source);
-static void rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view, 
-								 RBMissingFilesSource *source); 
+static void rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view,
+								 RBMissingFilesSource *source);
 
 #define MISSING_FILES_SOURCE_SONGS_POPUP_PATH "/MissingFilesViewPopup"
 
 struct RBMissingFilesSourcePrivate
 {
 	RhythmDB *db;
-	RhythmDBQueryModel *model;
 	RBEntryView *view;
 	RhythmDBEntryType entry_type;
 };
@@ -108,7 +106,6 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_status = impl_get_status;
-	
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -117,7 +114,7 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 							     "Type of the entries which should be displayed by this source",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	
+
 	g_type_class_add_private (klass, sizeof (RBMissingFilesSourcePrivate));
 }
 
@@ -128,7 +125,7 @@ rb_missing_files_source_init (RBMissingFilesSource *source)
 	GdkPixbuf *pixbuf;
 
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_MISSING_FILES_SOURCE, RBMissingFilesSourcePrivate);
-	
+
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					   GTK_STOCK_MISSING_IMAGE,
@@ -151,6 +148,7 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	RBMissingFilesSourceClass *klass;
 	RBShell *shell;
 	GPtrArray *query;
+	RhythmDBQueryModel *model;
 
 	klass = RB_MISSING_FILES_SOURCE_CLASS (g_type_class_peek (RB_TYPE_MISSING_FILES_SOURCE));
 
@@ -161,7 +159,7 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (G_OBJECT (shell));
-	
+
 	/* construct real query */
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -171,18 +169,17 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 				      	RHYTHMDB_PROP_HIDDEN,
 					TRUE,
 				      RHYTHMDB_QUERY_END);
-	source->priv->model = rhythmdb_query_model_new (source->priv->db, query,
-							NULL, NULL, NULL, FALSE);
+	model = rhythmdb_query_model_new (source->priv->db, query,
+					  NULL, NULL, NULL, FALSE);
 	g_ptr_array_free (query, TRUE);
 
-	g_object_set (G_OBJECT (source->priv->model), "show-hidden", TRUE, NULL);
-	_rb_source_hide_when_empty (RB_SOURCE (source), source->priv->model);
+	g_object_set (G_OBJECT (model), "show-hidden", TRUE, NULL);
 
 	/* set up entry view */
-	source->priv->view = rb_entry_view_new (source->priv->db, shell_player, 
+	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,
 						NULL, FALSE, FALSE);
 
-	rb_entry_view_set_model (source->priv->view, source->priv->model);
+	rb_entry_view_set_model (source->priv->view, model);
 
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_TRACK_NUMBER, FALSE);
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
@@ -193,21 +190,17 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_LAST_SEEN, TRUE);
 
 	rb_entry_view_set_columns_clickable (source->priv->view, TRUE);
-	
+
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
 	g_signal_connect_object (G_OBJECT (source->priv->view), "show_popup",
 				 G_CALLBACK (rb_missing_files_source_songs_show_popup_cb), source, 0);
 	g_signal_connect_object (G_OBJECT (source->priv->view), "sort-order-changed",
 				 G_CALLBACK (rb_missing_files_source_songs_sort_order_changed_cb), source, 0);
-		
+
 	gtk_widget_show_all (GTK_WIDGET (source));
 
-	/* use a fake model for the source's query model property, so we can't try to play
-	 * any of the hidden entries.
-	 */
-	g_object_set (G_OBJECT (source), 
-		      "query-model", rhythmdb_query_model_new_empty (source->priv->db), 
-		      NULL);
+	g_object_set (G_OBJECT (source), "query-model", model, NULL);
+	g_object_unref (model);
 
 	return G_OBJECT (source);
 }
@@ -221,14 +214,9 @@ rb_missing_files_source_dispose (GObject *object)
 		g_object_unref (G_OBJECT (source->priv->db));
 		source->priv->db = NULL;
 	}
-	if (source->priv->model) {
-		g_object_unref (G_OBJECT (source->priv->model));
-		source->priv->model = NULL;
-	}
 
 	G_OBJECT_CLASS (rb_missing_files_source_parent_class)->dispose (object);
 }
-
 
 static RBEntryView *
 impl_get_entry_view (RBSource *asource)
@@ -237,7 +225,7 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->view;
 }
 
-static void 
+static void
 rb_missing_files_source_set_property (GObject *object,
 				      guint prop_id,
 				      const GValue *value,
@@ -256,7 +244,7 @@ rb_missing_files_source_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_missing_files_source_get_property (GObject *object,
 				      guint prop_id,
 				      GValue *value,
@@ -288,12 +276,13 @@ rb_missing_files_source_new (RBShell *shell,
 					  "entry-type", entry_type,
 					  "shell", shell,
 					  "visibility", FALSE,
+					  "hidden-when-empty", TRUE,
 					  NULL));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	return source;
 }
 
-static void 
+static void
 rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 					     gboolean over_entry,
 					     RBMissingFilesSource *source)
@@ -302,7 +291,7 @@ rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 		_rb_source_show_popup (RB_SOURCE (source), MISSING_FILES_SOURCE_SONGS_POPUP_PATH);
 }
 
-static void 
+static void
 impl_song_properties (RBSource *asource)
 {
 	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (asource);
@@ -331,8 +320,8 @@ impl_delete (RBSource *asource)
 	g_list_free (sel);
 }
 
-static void 
-rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view, 
+static void
+rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view,
 						     RBMissingFilesSource *source)
 {
 	rb_entry_view_resort_model (view);
@@ -341,11 +330,13 @@ rb_missing_files_source_songs_sort_order_changed_cb (RBEntryView *view,
 static void
 impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
-	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (asource);
+	RhythmDBQueryModel *model;
 	gint count;
-	
-	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL);
+
+	g_object_get (G_OBJECT (asource), "query-model", &model, NULL);
+	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+	g_object_unref (model);
+
 	*text = g_strdup_printf (ngettext ("%d missing file", "%d missing files", count),
 				 count);
 }
-

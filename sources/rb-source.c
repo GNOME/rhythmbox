@@ -82,12 +82,14 @@ G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, GTK_TYPE_HBOX)
 struct _RBSourcePrivate
 {
 	char *name;
-	
+
 	RBShell *shell;
 	gboolean visible;
 	RhythmDBQueryModel *query_model;
 	GdkPixbuf *pixbuf;
 	RBSourceListGroup sourcelist_group;
+	guint hidden_when_empty : 1;
+	guint update_visibility_id;
 };
 
 enum
@@ -99,6 +101,7 @@ enum
 	PROP_UI_MANAGER,
 	PROP_VISIBLE,
 	PROP_QUERY_MODEL,
+	PROP_HIDDEN_WHEN_EMPTY,
 	PROP_SOURCELIST_GROUP
 };
 
@@ -184,8 +187,7 @@ rb_source_class_init (RBSourceClass *klass)
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READABLE));
 
-
-	g_object_class_install_property (object_class, 
+	g_object_class_install_property (object_class,
 					 PROP_VISIBLE,
 					 /* FIXME: This property could probably
 					  * be named better, there's already
@@ -193,10 +195,18 @@ rb_source_class_init (RBSourceClass *klass)
 					  * since RBSource derives from
 					  * GtkWidget, this can be confusing
 					  */
-					 g_param_spec_boolean ("visibility", 
+					 g_param_spec_boolean ("visibility",
 							       "visibility",
 							       "Whether the source should be displayed in the source list",
 							       TRUE,
+							       G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_HIDDEN_WHEN_EMPTY,
+					 g_param_spec_boolean ("hidden-when-empty",
+							       "hidden-when-empty",
+							       "Whether the source should be displayed in the source list when it is empty",
+							       FALSE,
 							       G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
@@ -249,7 +259,7 @@ rb_source_class_init (RBSourceClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	
+
 	g_type_class_add_private (object_class, sizeof (RBSourcePrivate));
 }
 
@@ -264,7 +274,7 @@ rb_source_finalize (GObject *object)
 {
 	RBSource *source;
 	RBSourcePrivate *priv;
-	
+
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_SOURCE (object));
 
@@ -273,6 +283,10 @@ rb_source_finalize (GObject *object)
 	g_return_if_fail (priv != NULL);
 
 	rb_debug ("Finalizing view %p", source);
+
+	if (priv->update_visibility_id != 0) {
+		g_source_remove (priv->update_visibility_id);
+	}
 
 	g_object_unref (G_OBJECT (priv->query_model));
 
@@ -304,6 +318,50 @@ rb_source_set_pixbuf (RBSource  *source,
 	}
 }
 
+static gboolean
+update_visibility_idle (RBSource *source)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	gboolean visibility;
+
+	gint count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (priv->query_model), NULL);
+
+	visibility = (count > 0);
+
+	if (visibility != priv->visible) {
+		g_object_set (G_OBJECT (source), "visibility", visibility, NULL);
+	}
+
+	priv->update_visibility_id = 0;
+	return FALSE;
+}
+
+static void
+queue_update_visibility (RBSource *source)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	if (priv->update_visibility_id != 0) {
+		g_source_remove (priv->update_visibility_id);
+	}
+	priv->update_visibility_id = g_idle_add ((GSourceFunc) update_visibility_idle, source);
+}
+
+void
+rb_source_set_hidden_when_empty (RBSource *source,
+				 gboolean  hidden)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	g_return_if_fail (RB_IS_SOURCE (source));
+
+	if (priv->hidden_when_empty != hidden) {
+		priv->hidden_when_empty = hidden;
+		queue_update_visibility (source);
+	}
+}
+
 static void
 rb_source_set_property (GObject *object,
 			guint prop_id,
@@ -327,12 +385,15 @@ rb_source_set_property (GObject *object,
 		break;
 	case PROP_VISIBLE:
 		priv->visible = g_value_get_boolean (value);
-		rb_debug ("Setting %s visibility to %u", 
-			  priv->name, 
+		rb_debug ("Setting %s visibility to %u",
+			  priv->name,
 			  priv->visible);
 		break;
+	case PROP_HIDDEN_WHEN_EMPTY:
+		rb_source_set_hidden_when_empty (source, g_value_get_boolean (value));
+		break;
 	case PROP_QUERY_MODEL:
-		model = g_value_get_object (value); 
+		model = g_value_get_object (value);
 		if (priv->query_model == model)
 			return;
 
@@ -345,7 +406,7 @@ rb_source_set_property (GObject *object,
 							      source);
 			g_object_unref (G_OBJECT (priv->query_model));
 		}
-		
+
 		priv->query_model = model;
 		if (priv->query_model) {
 			g_object_ref (G_OBJECT (model));
@@ -369,7 +430,7 @@ rb_source_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_source_get_property (GObject *object,
 			guint prop_id,
 			GValue *value,
@@ -393,7 +454,7 @@ rb_source_get_property (GObject *object,
 	case PROP_UI_MANAGER:
 	{
 		GtkUIManager *manager;
-		g_object_get (G_OBJECT (priv->shell), 
+		g_object_get (G_OBJECT (priv->shell),
 			      "ui-manager", &manager,
 			      NULL);
 		g_value_set_object (value, manager);
@@ -421,8 +482,8 @@ default_get_status (RBSource *source, char **text, char **progress_text, float *
 		ngettext ("%d song", "%d songs", 0);
 	}
 	if (priv->query_model) {
-		*text = rhythmdb_query_model_compute_status_normal (priv->query_model, 
-								    "%d song", 
+		*text = rhythmdb_query_model_compute_status_normal (priv->query_model,
+								    "%d song",
 								    "%d songs");
 		if (rhythmdb_query_model_has_pending_changes (priv->query_model))
 			*progress = -1.0f;
@@ -510,7 +571,7 @@ rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry 
 	/* Increment current play count */
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
 	g_value_unset (&value);
-	
+
 	/* Reset the last played time */
 	time (&now);
 
@@ -662,7 +723,7 @@ default_copy (RBSource *source)
 {
 	return rb_entry_view_get_selected_entries (rb_source_get_entry_view (source));
 }
-	
+
 GList *
 rb_source_copy (RBSource *source)
 {
@@ -693,11 +754,11 @@ default_add_to_queue (RBSource *source, RBSource *queue)
 	GList *selection = rb_entry_view_get_selected_entries (songs);
 	GList *iter;
 
-	if (selection == NULL) 
+	if (selection == NULL)
 		return;
 
 	for (iter = selection; iter; iter = iter->next) {
-		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (queue), 
+		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (queue),
 						     (RhythmDBEntry *)iter->data, -1);
 	}
 
@@ -738,7 +799,6 @@ default_move_to_trash (RBSource *source)
 	g_list_free (sel);
 	g_object_unref (G_OBJECT (db));
 }
-
 
 void
 rb_source_move_to_trash (RBSource *source)
@@ -836,7 +896,7 @@ _rb_source_show_popup (RBSource *source, const char *ui_path)
 {
 	GtkUIManager *uimanager;
 
-	g_object_get (G_OBJECT (RB_SOURCE_GET_PRIVATE (source)->shell), 
+	g_object_get (G_OBJECT (RB_SOURCE_GET_PRIVATE (source)->shell),
 		      "ui-manager", &uimanager, NULL);
 	rb_gtk_action_popup_menu (uimanager, ui_path);
 	g_object_unref (G_OBJECT (uimanager));
@@ -856,7 +916,6 @@ rb_source_show_popup (RBSource *source)
 
 	return klass->impl_show_popup (source);
 }
-
 
 static void
 default_delete_thyself (RBSource *source)
@@ -940,7 +999,13 @@ rb_source_row_inserted_cb (GtkTreeModel *model,
 			   GtkTreeIter *iter,
 			   RBSource *source)
 {
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
 	rb_source_notify_status_changed (source);
+
+	if (priv->hidden_when_empty) {
+		queue_update_visibility (source);
+	}
 }
 
 static void
@@ -948,7 +1013,13 @@ rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 				 RhythmDBEntry *entry,
 				 RBSource *source)
 {
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
 	rb_source_notify_status_changed (source);
+
+	if (priv->hidden_when_empty) {
+		queue_update_visibility (source);
+	}
 }
 
 static void
@@ -973,7 +1044,7 @@ rb_source_gather_selected_properties (RBSource *source,
 	}
 
 	g_list_free (selected);
-	
+
 	tem = NULL;
 	g_hash_table_foreach (selected_set, (GHFunc) rb_source_gather_hash_keys,
 			      &tem);
@@ -1017,44 +1088,6 @@ _rb_source_register_action_group (RBSource *source,
 	g_object_unref (G_OBJECT (uimanager));
 
 	return group;
-}
-
-static void
-_autohide_update_visibility (RBSource *source, GtkTreeModel *model)
-{
-	gint count = gtk_tree_model_iter_n_children (model, NULL);
-	/* only update the property if it will have actually changed */
-	if (count < 2)
-		g_object_set (G_OBJECT (source), "visibility", (count > 0), NULL);
-}
-
-static void
-_rb_autohide_source_post_entry_deleted_cb (GtkTreeModel *model,
-					   RhythmDBEntry *entry,
-					   RBSource *source)
-{
-	_autohide_update_visibility (source, model);
-}
-
-static void
-_rb_autohide_source_row_inserted_cb (GtkTreeModel *model,
-				     GtkTreePath *path,
-				     GtkTreeIter *iter,
-				     RBSource *source)
-{
-	_autohide_update_visibility (source, model);
-}
-
-void
-_rb_source_hide_when_empty (RBSource *source,
-			    RhythmDBQueryModel *model)
-{
-	g_signal_connect_object (G_OBJECT (model), "post-entry-delete",
-				 G_CALLBACK (_rb_autohide_source_post_entry_deleted_cb),
-				 source, 0);
-	g_signal_connect_object (G_OBJECT (model), "row-inserted",
-				 G_CALLBACK (_rb_autohide_source_row_inserted_cb),
-				 source, 0);
 }
 
 /* This should really be standard. */

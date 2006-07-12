@@ -202,6 +202,9 @@ GList *		rb_source_get_search_actions	(RBSource *source);
 
 GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropType prop);
 
+void            rb_source_set_hidden_when_empty (RBSource *source,
+                                                 gboolean  hidden);
+
 /* Protected methods, should only be used by objects inheriting from RBSource */
 void            _rb_source_show_popup           (RBSource *source, 
 						 const char *ui_path);
@@ -210,8 +213,6 @@ GtkActionGroup *_rb_source_register_action_group (RBSource *source,
 						  GtkActionEntry *actions,
 						  int num_actions,
 						  gpointer user_data);
-void		_rb_source_hide_when_empty	(RBSource *source,
-						 RhythmDBQueryModel *model);
 
 G_END_DECLS
 

@@ -746,13 +746,20 @@ visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 	GtkTreeIter iter;
 	gboolean old_visibility;
 	gboolean new_visibility;
+	char *name;
+
+	g_object_get (obj,
+		      "visibility", &new_visibility,
+		      "name", &name,
+		      NULL);
+	rb_debug ("Source visibility changed: %s", name);
+	g_free (name);
 
 	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
 
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
 	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
 
-		g_object_get (obj, "visibility", &new_visibility, NULL);
 		gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->real_model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, &old_visibility,
 				    -1);
