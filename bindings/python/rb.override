@@ -9,6 +9,7 @@ headers
 #include "rb-debug.h"
 
 #include "rb-browser-source.h"
+#include "rb-dialog.h"
 #include "rb-entry-view.h"
 #include "rb-library-browser.h"
 #include "rb-plugin.h"
@@ -953,4 +954,3 @@ _wrap_rb__debug_real(PyObject *self, PyObject *args, PyObject *kwargs)
     Py_INCREF(Py_None);
     return Py_None;
 }
-

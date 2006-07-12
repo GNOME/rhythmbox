@@ -1658,3 +1658,15 @@
     '("const-char*" "str")
   )
 )
+
+(define-function error_dialog
+  (in-module "rb")
+  (c-name "rb_error_dialog")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "window" (default "NULL"))
+    '("const-char*" "title")
+    '("const-char*" "message")
+  )
+)
+

@@ -4,10 +4,10 @@ import sys
 from Loader import Loader
 from Coroutine import Coroutine
 
-def _excepthandler (exc_class, exc_inst, trace):
-	import sys
-	# print out stuff
-	sys.__excepthook__ (exc_class, exc_inst, trace)
+#def _excepthandler (exc_class, exc_inst, trace):
+#	import sys
+#	# print out stuff ignoring our debug redirect
+#	sys.__excepthook__ (exc_class, exc_inst, trace)
 
 
 class _rbdebugfile:
@@ -15,10 +15,27 @@ class _rbdebugfile:
 		self.fn = fn
 
 	def write(self, str):
-		import sys, rb
+		if str == '\n':
+			return
+		import sys, os, rb
 		fr = sys._getframe(1)
+
 		co = fr.f_code
-		rb._debug (co.co_name, co.co_filename, co.co_firstlineno + fr.f_lineno,  False, str)
+		filename = co.co_filename
+
+		# strip off the cwd, for if running uninstalled
+		cwd = os.getcwd()
+		if cwd[-1] != os.sep:
+			cwd += os.sep
+		if filename[:len(cwd)] == cwd:
+			filename = filename[len(cwd):]
+
+		# add the class name to the method, if 'self' exists
+		methodname = co.co_name
+		if fr.f_locals.has_key('self'):
+			methodname = '%s.%s' % (fr.f_locals['self'].__class__.__name__, methodname)
+
+		rb._debug (methodname, filename, co.co_firstlineno + fr.f_lineno,  True, str)
 
 	def close(self):         pass
 	def flush(self):         pass
@@ -33,5 +50,5 @@ class _rbdebugfile:
 	truncate = tell
 
 sys.stdout = _rbdebugfile(sys.stdout.fileno())
-sys.excepthook = _excepthandler
+#sys.excepthook = _excepthandler
 

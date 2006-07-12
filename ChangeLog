@@ -1,5 +1,14 @@
 2006-07-12  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: bind rb_error_dialog
+
+	* plugins/rb/__init__.py: improve the stdout->debug mapping. Strip off
+	the current working directory for uninstalled plugins, and add the
+	class name to the method name.
+
+2006-07-12  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-player.c: (rb_shell_player_error): don't try to check
 	the sources EOF type if it's NULL. Fixes #346284.
 
