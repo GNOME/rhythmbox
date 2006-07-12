@@ -54,12 +54,8 @@ class CoverArtDatabase (object):
 			callback (entry, None)
 			return
             
-		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or "Unknown"
-		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or "Unknown"
-		# If unknown artist and album there is no point continuing
-		if st_album == "Unknown" and st_artist == "Unknown":
-			callback (entry, None)
-			return
+		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or _("Unknown")
+		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or _("Unknown")
 
 		# replace quote characters
 		# don't replace single quote: could be important punctuation

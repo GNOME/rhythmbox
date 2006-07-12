@@ -64,8 +64,8 @@ class AmazonCoverArtSearch (object):
 		self.args = args
 		self.keywords = []
 
-		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST)
-		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM)
+		st_artist = db.entry_get (entry, rhythmdb.PROP_ARTIST) or _("Unknown")
+		st_album = db.entry_get (entry, rhythmdb.PROP_ALBUM) or _("Unknown")
 
 		# Tidy up
 
@@ -98,13 +98,13 @@ class AmazonCoverArtSearch (object):
 		
 		# TODO: Improve to decrease wrong cover downloads, maybe add severity?
 		# Assemble list of search keywords (and thus search queries)
-		if st_album == "Unknown":
+		if st_album == _("Unknown"):
 			self.keywords.append ("%s Best of" % (st_artist))
 			self.keywords.append ("%s Greatest Hits" % (st_artist))
 			self.keywords.append ("%s Essential" % (st_artist))
 			self.keywords.append ("%s Collection" % (st_artist))
 			self.keywords.append ("%s" % (st_artist))
-		elif st_artist == "Unknown":
+		elif st_artist == _("Unknown"):
 			self.keywords.append ("%s" % (st_album))
 			if st_album_no_vol != st_artist:
 				self.keywords.append ("%s" % (st_album_no_vol))
@@ -114,7 +114,7 @@ class AmazonCoverArtSearch (object):
 				self.keywords.append ("%s %s" % (st_artist, st_album))
 				if st_album_no_vol != st_album:
 					self.keywords.append ("%s %s" % (st_artist, st_album_no_vol))
-				if (st_album != "Unknown"):
+				if (st_album != _("Unknown")):
 					self.keywords.append ("Various %s" % (st_album))
 			self.keywords.append ("%s" % (st_artist))
 
@@ -223,7 +223,7 @@ class AmazonCoverArtSearch (object):
 		best_match = None
 
 		try:
-			if self.search_album != "Unknown":
+			if self.search_album != _("Unknown"):
 				album_check = self.__tidy_up_string (self.search_album)
 				for item in search_results:
 					# Check for album name in ProductName
@@ -238,7 +238,7 @@ class AmazonCoverArtSearch (object):
 						best_match = item
 
 			# If we still have no definite hit, use first result where artist matches
-			if (self.search_album == "Unknown" and self.search_artist != "Unknown"):
+			if (self.search_album == _("Unknown") and self.search_artist != _("Unknown")):
 				artist_check = self.__tidy_up_string (self.search_artist)
 				if best_match is None:
 					# Check if artist appears in the Artists list
