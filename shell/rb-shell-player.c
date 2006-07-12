@@ -2510,7 +2510,8 @@ rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 	if (err->code == RB_PLAYER_ERROR_NO_AUDIO) {
 		/* stream has completely ended */
 		rb_shell_player_set_playing_source (player, NULL);
-	} else if (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_RETRY) {
+	} else if ((player->priv->current_playing_source != NULL) &&
+		   (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_RETRY)) {
 		/* receiving an error means a broken stream or non-audio stream, so abort */
 		rb_error_dialog (NULL, 
 				 _("Couldn't start playback"), 

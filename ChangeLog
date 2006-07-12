@@ -1,5 +1,10 @@
 2006-07-12  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-player.c: (rb_shell_player_error): don't try to check
+	the sources EOF type if it's NULL. Fixes #346284.
+
+2006-07-12  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rb-refstring.c: (rb_refstring_get_sort_key): reverse a bit
 	I accidently committed. Nothing to see here, move along...
 
