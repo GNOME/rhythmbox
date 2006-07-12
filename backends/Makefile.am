@@ -2,7 +2,7 @@
 
 noinst_LTLIBRARIES = librbbackends.la
 
-SUBDIRS = gstreamer dbus
+SUBDIRS = gstreamer 
 
 librbbackends_la_SOURCES =				\
 	rb-player.h					\

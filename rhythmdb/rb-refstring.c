@@ -170,11 +170,7 @@ rb_refstring_get_sort_key (RBRefString *val)
 		const char *s;
 
 		s = rb_refstring_get_folded (val);
-		if (g_str_has_prefix (s, "the ")) {
-			newstring = rb_utf8_collate_key_for_filename (s + strlen ("the "), -1);
-		} else {
-			newstring = rb_utf8_collate_key_for_filename (s, -1);
-		}
+		newstring = rb_utf8_collate_key_for_filename (s, -1);
 
 		if (g_atomic_pointer_compare_and_exchange (ptr, NULL, newstring)) {
 			string = newstring;
