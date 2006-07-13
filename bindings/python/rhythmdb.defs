@@ -325,6 +325,12 @@
   )
 )
 
+(define-method get_playback_uri
+  (of-object "RhythmDBEntry")
+  (c-name "rhythmdb_entry_get_playback_uri")
+  (return-type "char*")
+)
+
 (define-function rhythmdb_get_type
   (c-name "rhythmdb_get_type")
   (return-type "GType")

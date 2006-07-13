@@ -1509,9 +1509,12 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 		if (entry == NULL)
 			return;
 		
-		if (error_entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
+		if (error_entry_type == RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR &&  event->error->message) {
 			g_value_init (&value, G_TYPE_STRING);
-			g_value_set_string (&value, event->error->message);
+			if (g_utf8_validate (event->error->message, -1, NULL))
+				g_value_set_string (&value, event->error->message);
+			else
+				g_value_set_static_string (&value, _("invalid unicode in error message"));
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
 			g_value_unset (&value);
 		}

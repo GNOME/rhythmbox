@@ -1,3 +1,14 @@
+2006-07-13  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/rhythmdb.defs: bind rhythmdb_entry_get_playback_uri
+
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py: use the above
+	instead of the LOCATION, and don't try to get the directory listing
+	for http URI schemes
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_add_import_error_entry): check for
+	invalid utf8 in the error message, since apparently it can happen.
+
 2006-07-12  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-import-errors-source.c:
