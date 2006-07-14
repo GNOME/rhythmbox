@@ -629,54 +629,30 @@ rb_shell_player_init (RBShellPlayer *player)
 }
 
 static void
-rb_shell_player_finalize (GObject *object)
+rb_shell_player_set_source_internal (RBShellPlayer *player,
+				     RBSource      *source)
 {
-	RBShellPlayer *player;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
-
-	player = RB_SHELL_PLAYER (object);
-
-	g_return_if_fail (player->priv != NULL);
-
-	eel_gconf_notification_remove (player->priv->gconf_play_order_id);
-
-	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
-
-	g_object_unref (G_OBJECT (player->priv->mmplayer));
-	g_object_unref (G_OBJECT (player->priv->play_order));
-
-	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
-}
-
-static void
-rb_shell_player_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (object);
-
-	switch (prop_id) {
-	case PROP_SOURCE:
 		if (player->priv->selected_source != NULL) {
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *property_views = rb_source_get_property_views (player->priv->selected_source);
 
-			if (songs)
+			if (songs != NULL) {
 				g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 								      G_CALLBACK (rb_shell_player_entry_activated_cb),
 								      player);
-			for (; property_views; property_views = property_views->next)
+			}
+
+			for (; property_views; property_views = property_views->next) {
 				g_signal_handlers_disconnect_by_func (G_OBJECT (property_views->data),
 								      G_CALLBACK (rb_shell_player_property_row_activated_cb),
 								      player);
-			g_list_free (property_views);
+			}
 
+			g_list_free (property_views);
 		}
 
-		player->priv->selected_source = g_value_get_object (value);
+		player->priv->selected_source = source;
+
 		rb_debug ("selected source %p", player->priv->selected_source);
 
 		rb_shell_player_sync_with_selected_source (player);
@@ -711,19 +687,119 @@ rb_shell_player_set_property (GObject *object,
 
 			rb_play_order_playing_source_changed (player->priv->play_order, source);
 		}
+}
 
+static void
+rb_shell_player_set_db_internal (RBShellPlayer *player,
+				 RhythmDB      *db)
+{
+	if (player->priv->db != NULL) {
+		g_signal_handlers_disconnect_by_func (player->priv->db,
+						      G_CALLBACK (rb_shell_player_entry_changed_cb),
+						      player);
+	}
+
+	player->priv->db = db;
+
+	if (player->priv->db != NULL) {
+		/* Listen for changed entries to update metadata display */
+		g_signal_connect_object (G_OBJECT (player->priv->db),
+					 "entry_changed",
+					 G_CALLBACK (rb_shell_player_entry_changed_cb),
+					 player, 0);
+	}
+}
+
+static void
+rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
+					   RBPlayQueueSource *source)
+{
+	if (player->priv->queue_source != NULL) {
+		RBEntryView *sidebar;
+
+		g_object_get (G_OBJECT (player->priv->queue_source), "sidebar", &sidebar, NULL);
+		g_signal_handlers_disconnect_by_func (sidebar,
+						      G_CALLBACK (rb_shell_player_entry_activated_cb),
+						      player);
+		g_object_unref (sidebar);
+
+		if (player->priv->queue_play_order != NULL) {
+			g_signal_handlers_disconnect_by_func (player->priv->queue_play_order,
+							      G_CALLBACK (rb_shell_player_play_order_update_cb),
+							      player);
+			g_object_unref (player->priv->queue_play_order);
+		}
+
+	}
+
+	player->priv->queue_source = source;
+
+	if (player->priv->queue_source != NULL) {
+		RBEntryView *sidebar;
+
+		player->priv->queue_play_order = rb_play_order_new ("queue", player);
+		g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
+					 "have_next_previous_changed",
+					 G_CALLBACK (rb_shell_player_play_order_update_cb),
+					 player, 0);
+		rb_shell_player_play_order_update_cb (player->priv->play_order,
+						      FALSE, FALSE,
+						      player);
+		rb_play_order_playing_source_changed (player->priv->queue_play_order,
+						      RB_SOURCE (player->priv->queue_source));
+
+		g_object_get (G_OBJECT (player->priv->queue_source), "sidebar", &sidebar, NULL);
+		g_signal_connect_object (G_OBJECT (sidebar),
+					 "entry-activated",
+					 G_CALLBACK (rb_shell_player_entry_activated_cb),
+					 player, 0);
+		g_object_unref (sidebar);
+	}
+}
+
+static void
+rb_shell_player_finalize (GObject *object)
+{
+	RBShellPlayer *player;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
+
+	player = RB_SHELL_PLAYER (object);
+
+	g_return_if_fail (player->priv != NULL);
+
+	rb_shell_player_set_source_internal (player, NULL);
+	rb_shell_player_set_queue_source_internal (player, NULL);
+	rb_shell_player_set_db_internal (player, NULL);
+
+	eel_gconf_notification_remove (player->priv->gconf_play_order_id);
+
+	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
+
+	g_object_unref (G_OBJECT (player->priv->mmplayer));
+	g_object_unref (G_OBJECT (player->priv->play_order));
+
+	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
+}
+
+static void
+rb_shell_player_set_property (GObject *object,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *pspec)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (object);
+
+	switch (prop_id) {
+	case PROP_SOURCE:
+		rb_shell_player_set_source_internal (player, g_value_get_object (value));
 		break;
 	case PROP_UI_MANAGER:
 		player->priv->ui_manager = g_value_get_object (value);
 		break;
 	case PROP_DB:
-		player->priv->db = g_value_get_object (value);
-
-		/* Listen for changed entries to update metadata display */
-		g_signal_connect_object (G_OBJECT (player->priv->db),
-			 "entry_changed",
-			 G_CALLBACK (rb_shell_player_entry_changed_cb),
-			 player, 0);
+		rb_shell_player_set_db_internal (player, g_value_get_object (value));
 		break;
 	case PROP_ACTION_GROUP:
 		player->priv->actiongroup = g_value_get_object (value);
@@ -740,28 +816,7 @@ rb_shell_player_set_property (GObject *object,
 		player->priv->statusbar_widget = g_value_get_object (value);
 		break;
 	case PROP_QUEUE_SOURCE:
-		player->priv->queue_source = g_value_get_object (value);
-		if (player->priv->queue_source) {
-			RBEntryView *sidebar;
-
-			player->priv->queue_play_order = rb_play_order_new ("queue", player);
-			g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
-						 "have_next_previous_changed",
-						 G_CALLBACK (rb_shell_player_play_order_update_cb),
-						 player, 0);
-			rb_shell_player_play_order_update_cb (player->priv->play_order,
-							      FALSE, FALSE,
-							      player);
-			rb_play_order_playing_source_changed (player->priv->queue_play_order,
-							      RB_SOURCE (player->priv->queue_source));
-
-			g_object_get (G_OBJECT (player->priv->queue_source), "sidebar", &sidebar, NULL);
-			g_signal_connect_object (G_OBJECT (sidebar),
-						 "entry-activated",
-						 G_CALLBACK (rb_shell_player_entry_activated_cb),
-						 player, 0);
-			g_object_unref (sidebar);
-		}
+		rb_shell_player_set_queue_source_internal (player, g_value_get_object (value));
 		break;
 	case PROP_QUEUE_ONLY:
 		player->priv->queue_only = g_value_get_boolean (value);

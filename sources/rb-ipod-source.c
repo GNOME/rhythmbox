@@ -19,12 +19,12 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
-#include <gtk/gtktreeview.h>
 #include <string.h>
-#include "rhythmdb.h"
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #ifdef HAVE_HAL
 #include <libhal.h>
 #include <dbus/dbus.h>
@@ -33,6 +33,7 @@
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
 #include <gpod/itdb.h>
+
 #include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
 #include "rb-debug.h"

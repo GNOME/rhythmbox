@@ -137,7 +137,6 @@ struct RBEntryViewPrivate
 	gboolean is_drag_source;
 	gboolean is_drag_dest;
 
-	GdkPixbuf *playing_col_pixbuf;
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
 	GdkPixbuf *error_pixbuf;
@@ -359,17 +358,11 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 static void
 rb_entry_view_init (RBEntryView *view)
 {
-	GtkIconTheme* icon_theme;
+	GtkIconTheme *icon_theme;
 
 	view->priv = RB_ENTRY_VIEW_GET_PRIVATE (view);
 
 	icon_theme = gtk_icon_theme_get_default ();
-
-	view->priv->playing_col_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                   			       "stock_volume-max",
-                                   			       16,
-                                   			       0,
-                                   			       NULL);
 
 	view->priv->playing_pixbuf = gtk_icon_theme_load_icon (icon_theme,
                                    			       "stock_media-play",
@@ -418,14 +411,13 @@ rb_entry_view_finalize (GObject *object)
 
 	if (view->priv->playing_pixbuf)
 		g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
-	if (view->priv->playing_col_pixbuf)
-		g_object_unref (G_OBJECT (view->priv->playing_col_pixbuf));
 	if (view->priv->paused_pixbuf)
 		g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
 	if (view->priv->error_pixbuf)
 		g_object_unref (G_OBJECT (view->priv->error_pixbuf));
 
 	g_free (view->priv->sorting_key);
+	g_free (view->priv->sorting_column_name);
 
 	G_OBJECT_CLASS (rb_entry_view_parent_class)->finalize (object);
 }
@@ -1118,6 +1110,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 cell_data_func, cell_data, g_free);
+	} else {
+		g_free (cell_data);
 	}
 
 	/*
@@ -1291,9 +1285,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 							 view,
 							 NULL);
 
-		image_widget = gtk_image_new_from_pixbuf (view->priv->playing_col_pixbuf);
-		g_object_ref (G_OBJECT (image_widget));
-		gtk_object_sink (GTK_OBJECT (image_widget));
+		image_widget = gtk_image_new_from_icon_name ("stock_volume-max", GTK_ICON_SIZE_MENU);
 		gtk_tree_view_column_set_widget (column, image_widget);
 		gtk_widget_show (image_widget);
 

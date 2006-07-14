@@ -421,6 +421,8 @@ rb_podcast_source_dispose (GObject *object)
 		return;
 
 	source->priv->disposed = TRUE;
+
+	G_OBJECT_CLASS (rb_podcast_source_parent_class)->dispose (object);
 }
 
 static void
@@ -437,6 +439,7 @@ rb_podcast_source_finalize (GObject *object)
 
 	rb_debug ("finalizing podcast source");
 
+	g_object_unref (source->priv->feeds);
 	g_object_unref (source->priv->podcast_mg);
 
 	if (source->priv->selected_feeds) {
@@ -540,6 +543,7 @@ rb_podcast_source_constructor (GType type,
 						 rb_shell_get_player (shell),
 						 CONF_STATE_PODCAST_SORTING_POSTS,
 						 TRUE, FALSE);
+
 	g_signal_connect_object (G_OBJECT (source->priv->posts),
 				 "entry-activated",
 				 G_CALLBACK (rb_podcast_source_entry_activated_cb),
@@ -1856,10 +1860,13 @@ static void rb_podcast_source_entry_activated_cb (RBEntryView *view,
 static gboolean
 impl_can_add_to_queue (RBSource *source)
 {
-	RBEntryView *songs = rb_source_get_entry_view (source);
-	GList *selection = rb_entry_view_get_selected_entries (songs);
+	RBEntryView *songs;
+	GList *selection;
 	GList *iter;
 	gboolean ok = FALSE;
+
+	songs = rb_source_get_entry_view (source);
+	selection = rb_entry_view_get_selected_entries (songs);
 
 	if (selection == NULL)
 		return FALSE;
@@ -1879,9 +1886,12 @@ impl_can_add_to_queue (RBSource *source)
 static void
 impl_add_to_queue (RBSource *source, RBSource *queue)
 {
-	RBEntryView *songs = rb_source_get_entry_view (source);
-	GList *selection = rb_entry_view_get_selected_entries (songs);
+	RBEntryView *songs;
+	GList *selection;
 	GList *iter;
+
+	songs = rb_source_get_entry_view (source);
+	selection = rb_entry_view_get_selected_entries (songs);
 
 	if (selection == NULL)
 		return;

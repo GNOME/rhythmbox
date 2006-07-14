@@ -231,6 +231,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
 	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
 	gtk_container_add (GTK_CONTAINER (source), priv->paned);
+	g_object_unref (songs);
 
 	/* watch these to find out when things are dropped into the entry view */
 	g_signal_connect_object (G_OBJECT (priv->base_model), "row-inserted",
@@ -277,6 +278,7 @@ rb_static_playlist_source_load_from_xml (RBStaticPlaylistSource *source, xmlNode
 		location = xmlNodeGetContent (child);
 		rb_static_playlist_source_add_location (source,
 						        (char *) location, -1);
+		xmlFree (location);
 	}
 }
 

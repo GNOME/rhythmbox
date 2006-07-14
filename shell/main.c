@@ -390,6 +390,8 @@ main (int argc, char **argv)
 
 	rb_debug ("THE END");
 	rb_profile_end ("starting rhythmbox");
+	g_object_unref (program);
+
 	exit (0);
 }
 

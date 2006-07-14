@@ -227,7 +227,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player,
 					 	 NULL, TRUE, TRUE);
-
 	rb_playlist_source_set_query_model (source, rhythmdb_query_model_new_empty (source->priv->db));
 
 	{

@@ -245,6 +245,24 @@ rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 }
 
 static void
+unset_source_internal (RBShellClipboard *clipboard)
+{
+	if (clipboard->priv->source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
+
+		if (songs) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+							      clipboard);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
+							      clipboard);
+		}
+	}
+	clipboard->priv->source = NULL;
+}
+
+static void
 rb_shell_clipboard_finalize (GObject *object)
 {
 	RBShellClipboard *shell_clipboard;
@@ -255,6 +273,9 @@ rb_shell_clipboard_finalize (GObject *object)
 	shell_clipboard = RB_SHELL_CLIPBOARD (object);
 
 	g_return_if_fail (shell_clipboard->priv != NULL);
+
+	/* release references to the source */
+	unset_source_internal (shell_clipboard);
 
 	g_hash_table_destroy (shell_clipboard->priv->signal_hash);
 
@@ -299,18 +320,8 @@ static void
 rb_shell_clipboard_set_source_internal (RBShellClipboard *clipboard,
 					RBSource *source)
 {
-	if (clipboard->priv->source != NULL) {
-		RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
+	unset_source_internal (clipboard);
 
-		if (songs) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-							      clipboard);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_clipboard_entries_changed_cb),
-							      clipboard);
-		}
-	}
 	clipboard->priv->source = source;
 	rb_debug ("selected source %p", source);
 
@@ -369,8 +380,14 @@ rb_shell_clipboard_set_property (GObject *object,
 		clipboard->priv->ui_mgr = g_value_get_object (value);
 		break;
 	case PROP_PLAYLIST_MANAGER:
+		if (clipboard->priv->playlist_manager != NULL) {
+			g_signal_handlers_disconnect_by_func (clipboard->priv->playlist_manager,
+							      G_CALLBACK (rb_shell_clipboard_playlist_added_cb),
+							      clipboard);
+		}
+
 		clipboard->priv->playlist_manager = g_value_get_object (value);
-		if (clipboard->priv->playlist_manager) {
+		if (clipboard->priv->playlist_manager != NULL) {
 			g_signal_connect_object (G_OBJECT (clipboard->priv->playlist_manager),
 						 "playlist-added", G_CALLBACK (rb_shell_clipboard_playlist_added_cb),
 						 clipboard, 0);
@@ -380,14 +397,23 @@ rb_shell_clipboard_set_property (GObject *object,
 
 		break;
 	case PROP_QUEUE_SOURCE:
-		clipboard->priv->queue_source = g_value_get_object (value);
-		if (clipboard->priv->queue_source) {
+		if (clipboard->priv->queue_source != NULL) {
 			RBEntryView *sidebar;
-			g_object_get (G_OBJECT (clipboard->priv->queue_source), "sidebar", &sidebar, NULL);
+			g_object_get (clipboard->priv->queue_source, "sidebar", &sidebar, NULL);
+			g_signal_handlers_disconnect_by_func (sidebar,
+							      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+							      clipboard);
+			g_object_unref (sidebar);
+		}
+
+		clipboard->priv->queue_source = g_value_get_object (value);
+		if (clipboard->priv->queue_source != NULL) {
+			RBEntryView *sidebar;
+			g_object_get (clipboard->priv->queue_source, "sidebar", &sidebar, NULL);
 			g_signal_connect_object (G_OBJECT (sidebar), "selection-changed",
 						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 						 clipboard, 0);
-			g_object_unref (G_OBJECT (sidebar));
+			g_object_unref (sidebar);
 		}
 		break;
 	default:
@@ -920,11 +946,19 @@ rebuild_playlist_menu (RBShellClipboard *clipboard)
 			gtk_ui_manager_new_merge_id (clipboard->priv->ui_mgr);
 	}
 
-	g_object_get (G_OBJECT (clipboard->priv->playlist_manager), "sourcelist", &sourcelist, NULL);
-	g_object_get (sourcelist, "model", &model, NULL);
-	g_object_unref (sourcelist);
-	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)add_playlist_to_menu, clipboard);
-	g_object_unref (G_OBJECT (model));
+	if (clipboard->priv->playlist_manager != NULL) {
+		g_object_get (clipboard->priv->playlist_manager, "sourcelist", &sourcelist, NULL);
+	}
+
+	if (sourcelist != NULL) {
+		g_object_get (sourcelist, "model", &model, NULL);
+		g_object_unref (sourcelist);
+	}
+
+	if (model != NULL) {
+		gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)add_playlist_to_menu, clipboard);
+		g_object_unref (G_OBJECT (model));
+	}
 
 	clipboard->priv->idle_playlist_id = 0;
 	return FALSE;

@@ -1,5 +1,46 @@
 2006-07-14  William Jon McCann  <mccann@jhu.edu>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property):
+	* shell/main.c: (main):
+	* shell/rb-shell-clipboard.c: (unset_source_internal),
+	(rb_shell_clipboard_finalize),
+	(rb_shell_clipboard_set_source_internal),
+	(rb_shell_clipboard_set_property), (rebuild_playlist_menu):
+	* shell/rb-shell-player.c: (rb_shell_player_set_source_internal),
+	(rb_shell_player_set_db_internal),
+	(rb_shell_player_set_queue_source_internal),
+	(rb_shell_player_finalize), (rb_shell_player_set_property):
+	* shell/rb-shell.c: (rb_shell_finalize), (construct_sources):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_constructor),
+	(rb_auto_playlist_source_new_from_xml):
+	* sources/rb-daap-source.c: (create_pixbufs):
+	* sources/rb-ipod-source.c:
+	* sources/rb-iradio-source.c: (rb_iradio_source_constructor):
+	* sources/rb-library-source.c:
+	(rb_library_source_add_child_source):
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_sync_playing_state),
+	(rb_play_queue_source_track_info_cell_data_func):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_dispose),
+	(rb_podcast_source_finalize), (rb_podcast_source_constructor),
+	(impl_can_add_to_queue), (impl_add_to_queue):
+	* sources/rb-source.c: (rb_source_set_property):
+	* sources/rb-sourcelist.c: (rb_sourcelist_append):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_load_from_xml):
+	* widgets/bacon-volume.c: (bacon_volume_scale_value_changed):
+	* widgets/rb-entry-view.c: (rb_entry_view_init),
+	(rb_entry_view_finalize), (rb_entry_view_append_column),
+	(rb_entry_view_constructor):
+	* widgets/rb-song-info.c: (rb_song_info_set_property):
+	Fix leaks.  From bug #347446.
+
+2006-07-14  William Jon McCann  <mccann@jhu.edu>
+
 	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_finalize),
 	(rb_encoder_gst_emit_completed), (bus_watch_cb), (gst_error_cb),
 	(start_pipeline), (add_encoding_pipeline), (add_tags_from_entry),

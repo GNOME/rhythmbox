@@ -598,6 +598,9 @@ bacon_volume_scale_value_changed (GtkRange * range)
   gtk_icon_size_lookup (button->size, &w, &h);
   buf = gtk_icon_theme_load_icon (button->theme, s, w, 0, NULL);
   gtk_image_set_from_pixbuf (GTK_IMAGE (button->image), buf);
+  if (buf != NULL) {
+    g_object_unref (buf);
+  }
 #endif
 
   /* signal */

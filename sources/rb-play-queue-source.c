@@ -18,11 +18,12 @@
  *
  */
 
-#include <config.h>
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
+#include "config.h"
+
 #include <libxml/tree.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-play-queue-source.h"
 #include "rb-playlist-xml.h"
@@ -41,9 +42,6 @@ static void rb_play_queue_source_track_info_cell_data_func (GtkTreeViewColumn *c
 							    GtkTreeModel *tree_model,
 							    GtkTreeIter *iter,
 							    RBPlaylistSource *source);
-static void rb_play_queue_sync_playing_state (GObject *entry_view,
-					      GParamSpec *pspec,
-					      RBPlayQueueSource *source);
 static void rb_play_queue_source_row_inserted_cb (GtkTreeModel *model,
 						  GtkTreePath *path,
 						  GtkTreeIter *iter,
@@ -92,6 +90,17 @@ static GtkActionEntry rb_play_queue_source_actions [] =
 	  N_("Remove all songs from the play queue"),
 	  G_CALLBACK (rb_play_queue_source_cmd_clear) }
 };
+
+static void
+rb_play_queue_sync_playing_state (GObject *entry_view,
+				  GParamSpec *pspec,
+				  RBPlayQueueSource *source)
+{
+	int state;
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	g_object_get (entry_view, "playing-state", &state, NULL);
+	rb_entry_view_set_state (priv->sidebar, state);
+}
 
 static void
 rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
@@ -305,17 +314,6 @@ rb_play_queue_source_track_info_cell_data_func (GtkTreeViewColumn *column,
 
 	g_object_set (G_OBJECT (renderer), "markup", markup, NULL);
 	g_free (markup);
-}
-
-static void
-rb_play_queue_sync_playing_state (GObject *entry_view,
-				  GParamSpec *pspec,
-				  RBPlayQueueSource *source)
-{
-	int state;
-	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
-	g_object_get (entry_view, "playing-state", &state, NULL);
-	rb_entry_view_set_state (priv->sidebar, state);
 }
 
 static void

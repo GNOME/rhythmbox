@@ -394,14 +394,15 @@ rb_source_set_property (GObject *object,
 		break;
 	case PROP_QUERY_MODEL:
 		model = g_value_get_object (value);
+
 		if (priv->query_model == model)
 			return;
 
 		if (priv->query_model) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
+			g_signal_handlers_disconnect_by_func (G_OBJECT (priv->query_model),
 							      G_CALLBACK (rb_source_post_entry_deleted_cb),
 							      source);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model),
+			g_signal_handlers_disconnect_by_func (G_OBJECT (priv->query_model),
 							      G_CALLBACK (rb_source_row_inserted_cb),
 							      source);
 			g_object_unref (G_OBJECT (priv->query_model));

@@ -502,12 +502,23 @@ rb_song_info_set_property (GObject *object,
 	{
 	case PROP_SOURCE:
 	{
-		RhythmDB* old_db = song_info->priv->db;
+		RhythmDB *old_db = song_info->priv->db;
+
+		if (song_info->priv->source != NULL) {
+			g_signal_handlers_disconnect_by_func (song_info->priv->source,
+							      rb_song_info_query_model_changed_cb,
+							      song_info);
+			g_object_unref (song_info->priv->source);
+			g_object_unref (song_info->priv->query_model);
+			g_object_unref (song_info->priv->db);
+		}
 
 		song_info->priv->source = g_value_get_object (value);
+
 		g_object_ref (G_OBJECT (song_info->priv->source));
 		g_object_get (G_OBJECT (song_info->priv->source),
 			      "query-model", &song_info->priv->query_model, NULL);
+
 		g_signal_connect_object (G_OBJECT (song_info->priv->source),
 					 "notify::query-model",
 					 G_CALLBACK (rb_song_info_query_model_changed_cb),
@@ -516,24 +527,24 @@ rb_song_info_set_property (GObject *object,
 		g_object_get (G_OBJECT (song_info->priv->query_model), "db",
 			      &song_info->priv->db, NULL);
 
-		if(old_db != song_info->priv->db) {
-			if(song_info->priv->albums) {
-				g_object_unref(song_info->priv->albums);
+		if (old_db != song_info->priv->db) {
+			if (song_info->priv->albums) {
+				g_object_unref (song_info->priv->albums);
 			}
-			if(song_info->priv->artists) {
-				g_object_unref(song_info->priv->artists);
+			if (song_info->priv->artists) {
+				g_object_unref (song_info->priv->artists);
 			}
-			if(song_info->priv->genres) {
-				g_object_unref(song_info->priv->genres);
+			if (song_info->priv->genres) {
+				g_object_unref (song_info->priv->genres);
 			}
 
-			song_info->priv->albums  = rhythmdb_property_model_new(song_info->priv->db, RHYTHMDB_PROP_ALBUM);
-			song_info->priv->artists = rhythmdb_property_model_new(song_info->priv->db, RHYTHMDB_PROP_ARTIST);
-			song_info->priv->genres  = rhythmdb_property_model_new(song_info->priv->db, RHYTHMDB_PROP_GENRE);
+			song_info->priv->albums  = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_ALBUM);
+			song_info->priv->artists = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_ARTIST);
+			song_info->priv->genres  = rhythmdb_property_model_new (song_info->priv->db, RHYTHMDB_PROP_GENRE);
 
-			g_object_set(song_info->priv->albums,  "query-model", song_info->priv->query_model, NULL);
-			g_object_set(song_info->priv->artists, "query-model", song_info->priv->query_model, NULL);
-			g_object_set(song_info->priv->genres,  "query-model", song_info->priv->query_model, NULL);
+			g_object_set (song_info->priv->albums,  "query-model", song_info->priv->query_model, NULL);
+			g_object_set (song_info->priv->artists, "query-model", song_info->priv->query_model, NULL);
+			g_object_set (song_info->priv->genres,  "query-model", song_info->priv->query_model, NULL);
 
 			if(song_info->priv->album) {
 				GtkEntryCompletion* comp = gtk_entry_get_completion (GTK_ENTRY (song_info->priv->album));

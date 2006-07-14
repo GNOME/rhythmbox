@@ -19,12 +19,13 @@
  *
  */
 
-#include <config.h>
-#include <gtk/gtk.h>
-#include <libgnome/gnome-i18n.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <libxml/tree.h>
+#include "config.h"
+
 #include <string.h>
+#include <libxml/tree.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 
 #include "rb-auto-playlist-source.h"
 #include "rb-library-browser.h"
@@ -210,10 +211,11 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_object_unref (G_OBJECT (shell));
 
 	/* reparent the entry view */
-	g_object_ref (G_OBJECT (songs));
+	g_object_ref (songs);
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
 	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
 	gtk_container_add (GTK_CONTAINER (source), priv->paned);
+	g_object_unref (songs);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
@@ -239,7 +241,6 @@ RBSource *
 rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 {
 	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (rb_auto_playlist_source_new (shell, NULL, TRUE));
-
 	xmlNodePtr child;
 	xmlChar *tmp;
 	GPtrArray *query;
@@ -325,6 +326,7 @@ rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 					   sort_direction);
 	g_free (sort_key);
 	g_value_array_free (limit_value);
+	rhythmdb_query_free (query);
 
 	return RB_SOURCE (source);
 }

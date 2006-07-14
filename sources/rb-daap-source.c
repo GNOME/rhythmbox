@@ -549,6 +549,10 @@ create_pixbufs (void)
 	emblem = gtk_icon_theme_load_icon (theme, "stock_lock", size, 0, NULL);
 
 	daap_share_locked_pixbuf = composite_icons (daap_share_pixbuf, emblem);
+
+	if (emblem != NULL) {
+		g_object_unref (emblem);
+	}
 }
 
 static void

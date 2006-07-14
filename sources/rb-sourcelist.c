@@ -349,7 +349,7 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 		      RBSource *parent)
 {
 	GtkTreeIter iter;
-	PangoAttrList *attrs = pango_attr_list_new ();
+	PangoAttrList *attrs;
 	const char *name;
 	GdkPixbuf *pixbuf;
 	gboolean visible;
@@ -419,9 +419,14 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			rb_debug ("inserting source %p in group %d", source, group);
 			gtk_tree_model_get_iter (sourcelist->priv->real_model, &group_iter, group_path);
 		}
+
 		gtk_tree_store_insert_before (GTK_TREE_STORE (sourcelist->priv->real_model),
 					      &iter, NULL, &group_iter);
+
+		gtk_tree_path_free (group_path);
 	}
+
+	attrs = pango_attr_list_new ();
 
 	gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, pixbuf,
@@ -430,6 +435,8 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, attrs,
 			    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, visible,
 			    -1);
+
+	pango_attr_list_unref (attrs);
 
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);

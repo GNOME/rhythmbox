@@ -1225,7 +1225,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	rhythmdb_query_free (query);
 
 	g_object_get (G_OBJECT (library_source), "icon", &icon, NULL);
-	g_object_set (G_OBJECT (source), "icon", g_object_ref (icon), NULL);
+	g_object_set (G_OBJECT (source), "icon", icon, NULL);
 
 	rb_shell_append_source (shell, source, RB_SOURCE (library_source));
 	library_source->priv->child_sources = g_list_prepend (library_source->priv->child_sources, source);
