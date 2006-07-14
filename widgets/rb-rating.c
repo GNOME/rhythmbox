@@ -83,7 +83,6 @@ enum
 
 static guint rb_rating_signals[LAST_SIGNAL] = { 0 };
 
-
 static void
 rb_rating_class_init (RBRatingClass *klass)
 {
@@ -162,7 +161,6 @@ rb_rating_get_property (GObject *object,
 	}
 }
 
-
 static void
 rb_rating_set_property (GObject *object,
 			guint param_id,
@@ -236,7 +234,6 @@ rb_rating_expose (GtkWidget *widget,
 				  NULL, widget, "text", 0, 0,
 				  widget->allocation.width,
 				  widget->allocation.height);
-
 
 		/* draw the stars */
 		if (rating->priv->pixbufs != NULL) {

@@ -71,7 +71,7 @@ struct RhythmDBEntry_ {
 	gint refcount;
 	void *data;
 	RhythmDBEntryType type;
-	
+
 	/* metadata */
 	RBRefString *title;
 	RBRefString *artist;
@@ -154,7 +154,7 @@ struct RhythmDBPrivate
 
 	GMutex *exit_mutex;
 	gboolean exiting;
-	
+
 	GCond *saving_condition;
 	GMutex *saving_mutex;
 
@@ -210,10 +210,10 @@ typedef struct
 
 /* from rhythmdb.c */
 void queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type);
-void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry, 
+void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 				    gboolean visibility);
-void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry, 
-				  gboolean notify_if_inserted, guint propid, 
+void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
+				  gboolean notify_if_inserted, guint propid,
 				  const GValue *value);
 void rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data);
 

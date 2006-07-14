@@ -132,7 +132,6 @@ static const GtkTargetEntry targets_artist [] = {
 
 G_DEFINE_TYPE (RBPropertyView, rb_property_view, GTK_TYPE_SCROLLED_WINDOW)
 
-
 static void
 rb_property_view_class_init (RBPropertyViewClass *klass)
 {
@@ -235,7 +234,6 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
-
 	g_type_class_add_private (klass, sizeof (RBPropertyViewPrivate));
 }
 
@@ -261,7 +259,6 @@ rb_property_view_finalize (GObject *object)
 
 	G_OBJECT_CLASS (rb_property_view_parent_class)->finalize (object);
 }
-
 
 static void
 rb_property_view_set_property (GObject *object,
@@ -319,7 +316,7 @@ rb_property_view_set_property (GObject *object,
 		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
 						 G_CALLBACK (rb_property_view_selection_changed_cb),
 						 view);
-		
+
 		gtk_tree_selection_unselect_all (view->priv->selection);
 		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter))
 			gtk_tree_selection_select_iter (view->priv->selection, &iter);
@@ -338,7 +335,7 @@ rb_property_view_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_property_view_get_property (GObject *object,
 			       guint prop_id,
 			       GValue *value,
@@ -406,7 +403,7 @@ void
 rb_property_view_reset (RBPropertyView *view)
 {
 	RhythmDBPropertyModel *model;
-	
+
 	model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 
 	g_object_set (G_OBJECT (view), "property-model", model, NULL);
@@ -417,7 +414,7 @@ RhythmDBPropertyModel *
 rb_property_view_get_model (RBPropertyView *view)
 {
 	RhythmDBPropertyModel *model;
-	
+
 	g_object_get (G_OBJECT (view), "property-model", &model, NULL);
 	return model;
 }
@@ -546,7 +543,7 @@ rb_property_view_constructor (GType type,
 			         G_CALLBACK (rb_property_view_row_activated_cb),
 			         view,
 				 0);
-	
+
 	view->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview));
 	g_signal_connect_object (G_OBJECT (view->priv->selection),
 			         "changed",
@@ -558,19 +555,18 @@ rb_property_view_constructor (GType type,
 				 G_CALLBACK (rb_property_view_popup_menu_cb),
 				 view,
 				 0);
-	
+
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "button_press_event",
 			         G_CALLBACK (rb_property_view_button_press_cb),
 			         view,
 				 0);
 
-
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_SINGLE);
-	
+
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
@@ -612,12 +608,12 @@ void
 rb_property_view_set_selection (RBPropertyView *view, const GList *vals)
 {
 	view->priv->handling_row_deletion = TRUE;
-	
+
 	gtk_tree_selection_unselect_all (view->priv->selection);
-	
+
 	for (; vals ; vals = vals->next) {
 		GtkTreeIter iter;
-		
+
 		if (rhythmdb_property_model_iter_from_string (view->priv->prop_model, vals->data, &iter)) {
 			GtkTreePath *path;
 
@@ -632,7 +628,7 @@ rb_property_view_set_selection (RBPropertyView *view, const GList *vals)
 
 		}
 	}
-		
+
 	view->priv->handling_row_deletion = FALSE;
 	rb_property_view_selection_changed_cb (view->priv->selection, view);
 }
@@ -653,7 +649,7 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 	if (gtk_tree_selection_get_mode (selection) == GTK_SELECTION_MULTIPLE) {
 		GList *selected_rows, *tem;
 		GList *selected_properties = NULL;
-		
+
 		selected_rows = gtk_tree_selection_get_selected_rows (view->priv->selection, &model);
 		for (tem = selected_rows; tem; tem = tem->next) {
 			g_assert (gtk_tree_model_get_iter (model, &iter, tem->data));
@@ -699,7 +695,7 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 	g_free (selected_prop);
 }
 
-static gboolean 
+static gboolean
 rb_property_view_popup_menu_cb (GtkTreeView *treeview,
 				RBPropertyView *view)
 {
@@ -707,7 +703,7 @@ rb_property_view_popup_menu_cb (GtkTreeView *treeview,
 	return TRUE;
 }
 
-void		
+void
 rb_property_view_append_column_custom (RBPropertyView *view,
 				       GtkTreeViewColumn *column)
 {
@@ -734,7 +730,7 @@ rb_property_view_button_press_cb (GtkTreeView *tree,
 			GtkTreeIter iter;
 			const char *val;
 			GList *lst = NULL;
-			
+
 			model = gtk_tree_view_get_model (GTK_TREE_VIEW (view->priv->treeview));
 			if (gtk_tree_model_get_iter (model, &iter, path)) {
 				gtk_tree_model_get (model, &iter, 0, &val, -1);
@@ -759,5 +755,3 @@ rb_property_view_set_search_func (RBPropertyView *view,
 					     func, func_data,
 					     notify);
 }
-
-

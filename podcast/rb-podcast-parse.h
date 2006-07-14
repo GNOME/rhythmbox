@@ -35,7 +35,7 @@ typedef struct
 	guint64 filesize;
 }RBPodcastItem;
 
-typedef struct 
+typedef struct
 {
 	xmlChar* url;
 	xmlChar* title;
@@ -46,16 +46,14 @@ typedef struct
 	xmlChar* author;
 	xmlChar* contact;
 	xmlChar* img;
-	uintmax_t pub_date;	
+	uintmax_t pub_date;
     	xmlChar* copyright;
-    
+
 	GList *posts;
 }RBPodcastChannel;
-
 
 gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data, const char *file_name);
 void rb_podcast_parse_channel_free 	(RBPodcastChannel *data);
 void rb_podcast_parse_item_free 	(RBPodcastItem *data);
-
 
 #endif /* RB_PODCAST_PARSE_H */

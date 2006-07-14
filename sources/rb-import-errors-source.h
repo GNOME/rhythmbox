@@ -55,4 +55,3 @@ RBSource *      rb_import_errors_source_new			(RBShell *shell,
 G_END_DECLS
 
 #endif /* __RB_IMPORT_ERRORS_SOURCE_H */
-

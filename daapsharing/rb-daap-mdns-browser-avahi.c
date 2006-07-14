@@ -61,7 +61,7 @@ struct RBDaapMdnsBrowserPrivate
 	GSList              *resolvers;
 };
 
-enum { 
+enum {
 	SERVICE_ADDED,
 	SERVICE_REMOVED,
 	LAST_SIGNAL
@@ -94,11 +94,11 @@ client_cb (AvahiClient         *client,
 	   RBDaapMdnsBrowser   *browser)
 {
 	/* Called whenever the client or server state changes */
- 
+
 	switch (state) {
 #ifdef HAVE_AVAHI_0_6
 	case AVAHI_CLIENT_FAILURE:
-             
+
 		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
 		 break;
 #endif
@@ -161,7 +161,7 @@ resolve_cb (AvahiServiceResolver  *service_resolver,
 		char    *name = NULL;
 		char     host [AVAHI_ADDRESS_STR_MAX];
 		gboolean pp = FALSE;
-		
+
 		if (text) {
 			AvahiStringList *l;
 
@@ -192,7 +192,7 @@ resolve_cb (AvahiServiceResolver  *service_resolver,
 		if (name == NULL) {
 			name = g_strdup (service_name);
 		}
-		
+
 		avahi_address_snprint (host, AVAHI_ADDRESS_STR_MAX, address);
 
 		g_signal_emit (browser,
@@ -278,7 +278,7 @@ browse_cb (AvahiServiceBrowser   *service_browser,
 		rb_debug ("Ignoring local service %s", name);
 		return;
 	}
-	
+
 	if (event == AVAHI_BROWSER_NEW) {
 		browser_add_service (browser, name);
 	} else if (event == AVAHI_BROWSER_REMOVE) {

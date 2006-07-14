@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- *  Implementation of DAAP (iTunes Music Sharing) dialogs 
+ *  Implementation of DAAP (iTunes Music Sharing) dialogs
  *  (password & name collision)
  *
  *  Copyright (C) 2005 Charles Schmidt <cschmidt2@emich.edu>
@@ -31,7 +31,7 @@
 
 #include "rb-daap-dialog.h"
 
-char * 
+char *
 rb_daap_password_dialog_new_run (GtkWindow  *parent,
 				 const char *name)
 {
@@ -60,10 +60,10 @@ rb_daap_password_dialog_new_run (GtkWindow  *parent,
 	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE, 0);
-	
+
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_AUTHENTICATION, GTK_ICON_SIZE_DIALOG);
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
-	
+
 	vbox = gtk_vbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
@@ -74,10 +74,10 @@ rb_daap_password_dialog_new_run (GtkWindow  *parent,
 
 	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-	
+
 	label = gtk_label_new_with_mnemonic (_("_Password:"));
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-	
+
 	entry = gtk_entry_new ();
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), entry);
 	gtk_entry_set_visibility (GTK_ENTRY (entry), FALSE);
@@ -100,7 +100,7 @@ rb_daap_password_dialog_new_run (GtkWindow  *parent,
 	}
 
 	gtk_widget_destroy (dialog);
-	
+
 	return ret;
 }
 
@@ -129,10 +129,10 @@ rb_daap_collision_dialog_new_run (GtkWindow  *parent,
 	hbox = gtk_hbox_new (FALSE, 6);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 12);
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox, TRUE, TRUE, 0);
-	
+
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_ERROR, GTK_ICON_SIZE_DIALOG);
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
-	
+
 	vbox = gtk_vbox_new (FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
@@ -140,10 +140,10 @@ rb_daap_collision_dialog_new_run (GtkWindow  *parent,
 	label = gtk_label_new (s);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
 	g_free (s);
-			
+
 	hbox = gtk_hbox_new (FALSE, 12);
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-			
+
 	label = gtk_label_new_with_mnemonic (_("Shared music _name:"));
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 
@@ -152,15 +152,15 @@ rb_daap_collision_dialog_new_run (GtkWindow  *parent,
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), entry);
 	gtk_entry_set_text (GTK_ENTRY (entry), old_name);
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
-		
+
 	gtk_widget_show_all (dialog);
 
 	do {
 		resp = gtk_dialog_run (GTK_DIALOG (dialog));
 	} while (resp != GTK_RESPONSE_OK);
 
-	s = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));			
+	s = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
 	gtk_widget_destroy (dialog);
 
-	return s; 
+	return s;
 }

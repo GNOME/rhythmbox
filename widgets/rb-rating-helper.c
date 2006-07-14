@@ -20,7 +20,6 @@
  *
  */
 
-
 #include "rb-cut-and-paste-code.h"
 #include "rb-rating-helper.h"
 #include "rb-stock-icons.h"
@@ -49,7 +48,7 @@ rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
 					 g_param_spec_double ("rating",
 							     ("Rating Value"),
 							     ("Rating Value"),
-							     0.0, (double)RB_RATING_MAX_SCORE, 
+							     0.0, (double)RB_RATING_MAX_SCORE,
 							      (double)RB_RATING_MAX_SCORE/2.0,
 							     G_PARAM_READWRITE));
 
@@ -174,7 +173,6 @@ rb_rating_render_stars (GtkWidget *widget,
 		} else {
 			star_offset = i * icon_width;
 		}
-
 
 		gdk_pixbuf_render_to_drawable_alpha (buf,
 						     window,

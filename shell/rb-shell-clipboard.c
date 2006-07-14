@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Implementation of song cut/paste handler object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -172,7 +172,6 @@ static const char *playlist_menu_paths[] = {
 };
 static guint num_playlist_menu_paths = G_N_ELEMENTS (playlist_menu_paths);
 
-
 G_DEFINE_TYPE (RBShellClipboard, rb_shell_clipboard, G_TYPE_OBJECT)
 
 static void
@@ -242,7 +241,7 @@ rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 
 	shell_clipboard->priv->deleted_queue = g_async_queue_new ();
 
-	shell_clipboard->priv->idle_deletion_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_idle_poll_deletions, shell_clipboard); 
+	shell_clipboard->priv->idle_deletion_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_idle_poll_deletions, shell_clipboard);
 }
 
 static void
@@ -269,7 +268,7 @@ rb_shell_clipboard_finalize (GObject *object)
 		g_source_remove (shell_clipboard->priv->idle_deletion_id);
 	if (shell_clipboard->priv->idle_playlist_id)
 		g_source_remove (shell_clipboard->priv->idle_playlist_id);
-	
+
 	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->finalize (object);
 }
 
@@ -279,7 +278,7 @@ rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
 {
 	RBShellClipboard *clip;
 	RBShellClipboardClass *klass;
-	GObjectClass *parent_class;  
+	GObjectClass *parent_class;
 
 	klass = RB_SHELL_CLIPBOARD_CLASS (g_type_class_peek (RB_TYPE_SHELL_CLIPBOARD));
 
@@ -287,7 +286,7 @@ rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
 	clip = RB_SHELL_CLIPBOARD (parent_class->constructor (type,
 							      n_construct_properties,
 							      construct_properties));
-	
+
 	g_signal_connect_object (G_OBJECT (clip->priv->db),
 				 "entry_deleted",
 				 G_CALLBACK (rb_shell_clipboard_entry_deleted_cb),
@@ -397,7 +396,7 @@ rb_shell_clipboard_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_shell_clipboard_get_property (GObject *object,
 			         guint prop_id,
 			         GValue *value,
@@ -487,7 +486,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	}
 
 	rb_debug ("syncing clipboard");
-	
+
 	if (g_list_length (clipboard->priv->entries) > 0)
 		can_paste = rb_source_can_paste (clipboard->priv->source);
 
@@ -503,13 +502,13 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCut");
 	g_object_set (G_OBJECT (action), "sensitive", can_cut, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditDelete");
 	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditMovetoTrash");
 	g_object_set (G_OBJECT (action), "sensitive", can_move_to_trash, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditCopy");
 	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
 
@@ -518,25 +517,24 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
 	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "AddToQueue");
 	g_object_set (G_OBJECT (action), "sensitive", can_add_to_queue, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "MusicProperties");
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueMusicProperties");
 	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueDelete");
 	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectAll");
 	g_object_set (G_OBJECT (action), "sensitive", can_select_all, NULL);
-	
+
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectNone");
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
-
 
 	/* disable the whole add-to-playlist menu if we can't add to a playlist
 	 * FIXME: change this when we support non-library playilst adding
@@ -681,7 +679,6 @@ rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard)
 				       (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
 				       clipboard);
 
-
 	GDK_THREADS_LEAVE ();
 
 	return FALSE;
@@ -705,7 +702,7 @@ rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 							    clipboard);
 	rb_debug ("entryview changed");
 }
-	
+
 static void
 rb_shell_clipboard_entries_changed_cb (RBEntryView *view,
 				       gpointer stuff,
@@ -725,7 +722,7 @@ rb_shell_clipboard_cmd_add_to_playlist_new (GtkAction *action,
 	RBSource *playlist_source;
 
 	rb_debug ("add to new playlist");
-	
+
 	entries = rb_source_copy (clipboard->priv->source);
 	playlist_source = rb_playlist_manager_new_playlist (clipboard->priv->playlist_manager,
 							    NULL, FALSE);
@@ -768,7 +765,7 @@ rb_shell_clipboard_playlist_add_cb (GtkAction *action,
 
 	rb_debug ("add to exisintg playlist");
 	playlist_source = g_object_get_data (G_OBJECT (action), "playlist-source");
-	
+
 	entries = rb_source_copy (clipboard->priv->source);
 	rb_source_paste (playlist_source, entries);
 	g_list_free (entries);
@@ -787,7 +784,7 @@ rb_shell_clipboard_playlist_deleted_cb (RBStaticPlaylistSource *source,
 {
 	char *action_name;
 	GtkAction *action;
-	
+
 	action_name = generate_action_name (source, clipboard);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
 	g_assert (action);
@@ -816,7 +813,7 @@ rb_shell_clipboard_playlist_renamed_cb (RBStaticPlaylistSource *source,
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
 	g_assert (action);
 	g_free (action_name);
-	
+
 	g_object_set (G_OBJECT (action), "label", name, NULL);
 	g_free (name);
 	g_object_unref (G_OBJECT (action));
@@ -837,7 +834,7 @@ rb_shell_clipboard_playlist_visible_cb (RBStaticPlaylistSource *source,
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
 	g_assert (action);
 	g_free (action_name);
-	
+
 	gtk_action_set_visible (action, visible);
 	g_object_unref (G_OBJECT (action));
 }
@@ -946,4 +943,3 @@ rb_shell_clipboard_playlist_added_cb (RBPlaylistManager *mgr,
 			g_idle_add ((GSourceFunc)rebuild_playlist_menu, clipboard);
 	}
 }
-

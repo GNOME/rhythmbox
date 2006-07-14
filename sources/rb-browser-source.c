@@ -109,7 +109,7 @@ static void rb_browser_source_do_query (RBBrowserSource *source,
 struct RBBrowserSourcePrivate
 {
 	RhythmDB *db;
-	
+
 	RBLibraryBrowser *browser;
 	GtkWidget *vbox;
 
@@ -125,7 +125,7 @@ struct RBBrowserSourcePrivate
 
 	GtkActionGroup *action_group;
 	GtkActionGroup *search_action_group;
-	
+
 	RhythmDBEntryType entry_type;
 
 	char *sorting_key;
@@ -165,7 +165,6 @@ enum
 	PROP_ENTRY_TYPE,
 	PROP_SORTING_KEY
 };
-
 
 G_DEFINE_ABSTRACT_TYPE (RBBrowserSource, rb_browser_source, RB_TYPE_SOURCE)
 
@@ -233,7 +232,7 @@ rb_browser_source_init (RBBrowserSource *source)
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
-	/* Default value, should be overridden at object construction by the 
+	/* Default value, should be overridden at object construction by the
 	 * "entry-type" property
 	 */
 	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
@@ -256,12 +255,12 @@ rb_browser_source_dispose (GObject *object)
 		g_free (source->priv->search_text);
 		source->priv->search_text = NULL;
 	}
-	
+
 	if (source->priv->cached_all_query) {
 		g_object_unref (G_OBJECT (source->priv->cached_all_query));
 		source->priv->cached_all_query = NULL;
 	}
-	
+
 	G_OBJECT_CLASS (rb_browser_source_parent_class)->dispose (object);
 }
 
@@ -317,7 +316,7 @@ search_action_to_prop (GtkAction *action)
 	if (name == NULL) {
 		prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	} else if (strcmp (name, "BrowserSourceSearchAll") == 0) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;		
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	} else if (strcmp (name, "BrowserSourceSearchArtists") == 0) {
 		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
 	} else if (strcmp (name, "BrowserSourceSearchAlbums") == 0) {
@@ -370,7 +369,7 @@ rb_browser_source_constructor (GType type,
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
-	
+
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "BrowserSourceActions",
 								       rb_browser_source_actions,
@@ -459,7 +458,6 @@ rb_browser_source_constructor (GType type,
 					 source, 0);
 	}
 
-
 	/* this gets emitted when the paned thingie is moved */
 	g_signal_connect_object (G_OBJECT (source->priv->songs),
 				 "size_allocate",
@@ -480,7 +478,6 @@ rb_browser_source_constructor (GType type,
 
 	return G_OBJECT (source);
 }
-
 
 static void
 rb_browser_source_set_property (GObject *object,
@@ -540,7 +537,7 @@ rb_browser_source_cmd_choose_genre (GtkAction *action,
 	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_GENRE);
 	if (view)
 		rb_property_view_set_selection (view, props);
-	
+
 	rb_list_deep_free (props);
 	g_object_unref (source);
 }
@@ -549,7 +546,7 @@ static void
 rb_browser_source_cmd_choose_artist (GtkAction *action,
 				     RBShell *shell)
 {
-	GList *props;	
+	GList *props;
 	RBBrowserSource *source;
 	RBPropertyView *view;
 
@@ -569,7 +566,7 @@ static void
 rb_browser_source_cmd_choose_album (GtkAction *action,
 				    RBShell *shell)
 {
-	GList *props;	
+	GList *props;
 	RBBrowserSource *source;
 	RBPropertyView *view;
 
@@ -621,7 +618,7 @@ impl_search (RBSource *asource, const char *search_text)
 			subset = (g_str_has_prefix (source->priv->search_text, old_search_text));
 	}
 	g_free (old_search_text);
-	
+
 	/* we can't do subset searches until the original query is complete, because they
 	 * reuse the query model.
 	 */
@@ -633,7 +630,6 @@ impl_search (RBSource *asource, const char *search_text)
 		rb_browser_source_do_query (source, subset);
 	}
 }
-
 
 static RBEntryView *
 impl_get_entry_view (RBSource *asource)
@@ -819,12 +815,12 @@ rb_browser_source_browser_changed_cb (RBLibraryBrowser *browser,
 				      RBBrowserSource *source)
 {
 	RhythmDBQueryModel *query_model;
-	
+
 	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
 	rb_entry_view_set_model (source->priv->songs, query_model);
 	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
 	g_object_unref (G_OBJECT (query_model));
-	
+
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
@@ -847,7 +843,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
 	RhythmDBEntryType entry_type;
-	
+
 	/* use the cached 'all' query to optimise the no-search case */
 	if (!source->priv->search_text) {
 		rb_library_browser_set_model (source->priv->browser,
@@ -855,7 +851,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 					      FALSE);
 		return;
 	}
-	
+
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -891,4 +887,3 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 	}
 	rhythmdb_query_free (query);
 }
-

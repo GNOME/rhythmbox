@@ -1,3 +1,651 @@
+2006-07-14  William Jon McCann  <mccann@jhu.edu>
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_finalize),
+	(rb_encoder_gst_emit_completed), (bus_watch_cb), (gst_error_cb),
+	(start_pipeline), (add_encoding_pipeline), (add_tags_from_entry),
+	(gnomevfs_allow_overwrite_cb), (new_decoded_pad_cb),
+	(add_decoding_pipeline), (profile_bin_find_encoder),
+	(get_profile_from_mime_type), (extract_track), (transcode_track),
+	(rb_encoder_gst_encode):
+	* backends/gstreamer/rb-encoder-gst.h:
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_init),
+	(rb_player_gst_finalize), (rb_player_gst_gst_free_playbin),
+	(destroy_idle_signal), (process_tag), (rb_player_gst_bus_cb),
+	(rb_player_gst_construct):
+	* backends/gstreamer/rb-player-gst.h:
+	* backends/rb-encoder.c: (rb_encoder_encode), (rb_encoder_cancel):
+	* backends/rb-encoder.h:
+	* backends/rb-player.c: (_rb_player_emit_tick):
+	* backends/rb-player.h:
+	* daapsharing/rb-daap-connection.c: (build_message),
+	(actual_http_response_handler), (http_response_handler),
+	(http_get), (entry_set_string_prop), (emit_progress_idle),
+	(handle_server_info), (handle_database_info),
+	(handle_song_listing), (handle_playlists),
+	(handle_playlist_entries), (rb_daap_connection_new),
+	(connected_cb), (rb_daap_connection_do_something),
+	(rb_daap_connection_get_headers), (rb_daap_connection_dispose),
+	(rb_daap_connection_get_property):
+	* daapsharing/rb-daap-connection.h:
+	* daapsharing/rb-daap-dialog.c: (rb_daap_password_dialog_new_run),
+	(rb_daap_collision_dialog_new_run):
+	* daapsharing/rb-daap-dialog.h:
+	* daapsharing/rb-daap-hash.c: (byteReverse), (OpenDaap_MD5Init),
+	(OpenDaap_MD5Update), (OpenDaap_MD5Final), (MD5Transform),
+	(DigestToString), (rb_daap_hash_generate):
+	* daapsharing/rb-daap-hash.h:
+	* daapsharing/rb-daap-mdns-browser-avahi.c: (client_cb),
+	(resolve_cb), (browse_cb):
+	* daapsharing/rb-daap-mdns-browser-howl.c: (howl_in_cb),
+	(resolve_cb), (rb_daap_mdns_browser_resolve),
+	(rb_daap_mdns_browser_start), (resolver_free):
+	* daapsharing/rb-daap-mdns-browser.h:
+	* daapsharing/rb-daap-mdns-publisher-avahi.c: (client_cb):
+	* daapsharing/rb-daap-mdns-publisher-howl.c: (howl_in_cb),
+	(publish_cb):
+	* daapsharing/rb-daap-mdns-publisher.h:
+	* daapsharing/rb-daap-share.c: (name_collision_cb),
+	(rb_daap_share_process_playlist), (rb_daap_share_dispose),
+	(message_set_from_rb_daap_structure), (content_codes_cb),
+	(session_id_validate), (logout_cb), (update_cb),
+	(add_entry_to_mlcl), (add_playlist_to_mlcl),
+	(add_playlist_entry_to_mlcl), (parse_meta), (databases_cb),
+	(rb_daap_share_server_start), (rb_daap_share_server_stop),
+	(rb_daap_share_publish_start):
+	* daapsharing/rb-daap-share.h:
+	* daapsharing/rb-daap-sharing.c: (share_name_changed_cb),
+	(share_password_changed_cb), (rb_daap_sharing_shutdown):
+	* daapsharing/rb-daap-sharing.h:
+	* daapsharing/rb-daap-src.c: (_do_init), (rb_daap_src_class_init),
+	(rb_daap_src_finalize), (_split_uri), (rb_daap_src_getcaps),
+	(rb_daap_src_open):
+	* daapsharing/rb-daap-structure.c: (rb_daap_structure_add),
+	(rb_daap_structure_node_serialize), (rb_daap_structure_serialize),
+	(rb_daap_structure_parse_container_buffer),
+	(rb_daap_structure_parse), (gnode_find_node),
+	(rb_daap_structure_find_item), (rb_daap_structure_find_node),
+	(print_rb_daap_item):
+	* daapsharing/rb-daap-structure.h:
+	* iradio/rb-new-station-dialog.c:
+	(rb_new_station_dialog_class_init), (rb_new_station_dialog_init),
+	(rb_new_station_dialog_new), (rb_new_station_dialog_response_cb),
+	(rb_new_station_dialog_text_changed):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_init),
+	(rb_station_properties_dialog_new),
+	(rb_station_properties_dialog_response_cb),
+	(rb_station_properties_dialog_get_current_entry),
+	(rb_station_properties_dialog_rated_cb),
+	(rb_station_properties_dialog_update_rating),
+	(rb_station_properties_dialog_update_playback_error),
+	(rb_station_properties_dialog_sync_entries):
+	* metadata/rb-metadata-common.c: (rb_metadata_error_quark):
+	* metadata/rb-metadata-dbus-client.c: (ping_metadata_service),
+	(start_metadata_service), (rb_metadata_load), (rb_metadata_set),
+	(rb_metadata_can_save), (rb_metadata_save):
+	* metadata/rb-metadata-dbus-service.c: (rb_metadata_dbus_load),
+	(rb_metadata_dbus_can_save), (rb_metadata_dbus_save),
+	(_handle_message), (_new_connection), (main):
+	* metadata/rb-metadata-dbus.c: (rb_metadata_dbus_add_to_message),
+	(rb_metadata_dbus_read_from_message):
+	* metadata/rb-metadata-dbus.h:
+	* metadata/rb-metadata-gst.c: (ogg_pad_added_cb),
+	(rb_add_id3_tagger), (rb_metadata_init),
+	(rb_metadata_gst_tag_to_field), (make_undecodable_error),
+	(rb_metadata_gst_load_tag), (rb_metadata_gst_fakesink_handoff_cb),
+	(rb_metadata_gst_new_decoded_pad_cb),
+	(rb_metadata_gst_unknown_type_cb), (rb_metadata_bus_handler):
+	* metadata/sj-error.c: (sj_error_quark):
+	* metadata/sj-error.h:
+	* metadata/sj-metadata-musicbrainz.c:
+	(sj_metadata_musicbrainz_instance_init),
+	(get_offline_track_listing), (cache_rdf), (get_cached_rdf),
+	(get_rdf), (lookup_cd):
+	* metadata/sj-metadata.c: (sj_metadata_get_type):
+	* metadata/sj-structures.c:
+	* metadata/sj-structures.h:
+	* metadata/test-metadata.c: (load_metadata_cb), (main):
+	* podcast/rb-feed-podcast-properties-dialog.c:
+	(rb_feed_podcast_properties_dialog_init),
+	(rb_feed_podcast_properties_dialog_update_title):
+	* podcast/rb-feed-podcast-properties-dialog.h:
+	* podcast/rb-new-podcast-dialog.c: (rb_new_podcast_dialog_init),
+	(rb_new_podcast_dialog_new), (rb_new_podcast_dialog_response_cb),
+	(rb_new_podcast_dialog_text_changed):
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_class_init),
+	(rb_podcast_manager_constructor), (rb_podcast_manager_finalize),
+	(rb_podcast_manager_set_property),
+	(rb_podcast_manager_get_property), (rb_podcast_manager_new),
+	(rb_podcast_manager_download_entry),
+	(rb_podcast_manager_update_feeds),
+	(rb_podcast_manager_head_query_cb), (rb_podcast_manager_next_file),
+	(rb_podcast_manager_copy_post),
+	(rb_podcast_manager_thread_parse_feed),
+	(rb_podcast_manager_add_post), (rb_podcast_manager_save_metadata),
+	(rb_podcast_manager_db_entry_added_cb), (write_job_data),
+	(download_info_free), (download_info_new), (start_job),
+	(rb_podcast_manager_cancel_all), (end_job), (cancel_job),
+	(download_progress_cb), (download_progress_update_cb),
+	(rb_podcast_manager_remove_feed),
+	(rb_podcast_manager_db_entry_deleted_cb),
+	(rb_podcast_manager_cancel_download),
+	(rb_podcast_manager_update_synctime),
+	(rb_podcast_manager_set_remove_files),
+	(rb_podcast_manager_insert_feed), (rb_podcast_manager_event_loop),
+	(rb_podcast_manager_abort_subscribe),
+	(rb_podcast_manager_get_podcast_dir):
+	* podcast/rb-podcast-manager.h:
+	* podcast/rb-podcast-parse.c: (rb_set_channel_value),
+	(rb_validate_channel_propert), (rb_validate_item_propert),
+	(rb_podcast_parser_start_element), (rb_podcast_parser_end_element),
+	(rb_podcast_parser_characters), (rb_podcast_parse_load_feed),
+	(rb_podcast_parse_date), (rb_podcast_parse_time),
+	(rb_podcast_parse_channel_free), (rb_podcast_parse_item_free):
+	* podcast/rb-podcast-parse.h:
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_init),
+	(rb_podcast_properties_dialog_get_current_entry),
+	(rb_podcast_properties_dialog_update_title),
+	(rb_podcast_properties_dialog_update_duration),
+	(rb_podcast_properties_dialog_update_date):
+	* podcast/rb-podcast-properties-dialog.h:
+	* rhythmdb/gsequence.c: (g_sequence_new), (g_sequence_prepend),
+	(g_sequence_insert), (g_sequence_remove), (g_sequence_concatenate),
+	(g_sequence_remove_range), (g_sequence_get_ptr_at_pos),
+	(g_sequence_ptr_move), (g_sequence_ptr_sort_changed),
+	(g_sequence_search), (g_sequence_set_aggregate_data),
+	(g_sequence_node_update_fields), (g_sequence_node_rotate),
+	(find_min), (g_sequence_node_find_by_pos),
+	(g_sequence_node_find_closest), (g_sequence_node_free),
+	(g_sequence_node_split), (g_sequence_node_insert_before),
+	(g_sequence_node_get_length), (g_sequence_node_remove),
+	(g_sequence_node_calc_height), (g_sequence_node_insert_sorted),
+	(g_sequence_calc_tree_height):
+	* rhythmdb/rb-refstring.c: (rb_refstring_system_shutdown),
+	(rb_refstring_get):
+	* rhythmdb/rb-refstring.h:
+	* rhythmdb/rhythmdb-gda.c: (rhythmdb_gda_class_init),
+	(rhythmdb_gda_init), (dump_model), (execute_query),
+	(execute_nonquery), (ensure_table_exists), (collect_value_for_sql),
+	(collect_value_from_sql), (_initialize), (rhythmdb_gda_new),
+	(rhythmdb_gda_load), (rhythmdb_gda_entry_new),
+	(rhythmdb_gda_entry_set), (rhythmdb_gda_entry_get),
+	(rhythmdb_gda_ref), (rhythmdb_gda_entry_lookup_by_location),
+	(translate_query), (do_query), (rhythmdb_gda_do_full_query):
+	* rhythmdb/rhythmdb-gda.h:
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_init_monitoring),
+	(rhythmdb_finalize_monitoring), (monitor_entry_file),
+	(monitor_library_directory), (rhythmdb_check_changed_file),
+	(rhythmdb_start_monitoring), (rhythmdb_directory_change_cb),
+	(rhythmdb_monitor_uri_path), (entry_volume_mounted_or_unmounted),
+	(rhythmdb_volume_mounted_cb), (rhythmdb_volume_unmounted_cb):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_set_property),
+	(rhythmdb_property_model_row_inserted_cb),
+	(rhythmdb_property_model_prop_changed_cb),
+	(rhythmdb_property_model_compare),
+	(rhythmdb_property_model_get_value),
+	(rhythmdb_property_model_iter_nth_child),
+	(rhythmdb_property_model_drag_data_delete), (query_model_cb),
+	(rhythmdb_property_model_drag_data_get),
+	(rhythmdb_property_model_enable_drag),
+	(rhythmdb_property_model_column_get_type):
+	* rhythmdb/rhythmdb-property-model.h:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_dispose), (rhythmdb_query_model_chain),
+	(rhythmdb_query_model_has_pending_changes),
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_entry_deleted_cb), (idle_process_update),
+	(rhythmdb_query_model_add_entry),
+	(rhythmdb_query_model_remove_from_main_list),
+	(rhythmdb_query_model_remove_entry),
+	(rhythmdb_query_model_drag_data_received),
+	(rhythmdb_query_model_row_drop_possible),
+	(rhythmdb_query_model_compute_status_normal),
+	(rhythmdb_query_model_set_sort_order),
+	(rhythmdb_query_model_get_entry_index),
+	(rhythmdb_query_model_base_row_inserted),
+	(rhythmdb_query_model_base_row_deleted),
+	(rhythmdb_query_model_reapply_query), (_reverse_sorting_func),
+	(rhythmdb_query_model_date_sort_func),
+	(rhythmdb_query_model_within_limit):
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb-query-results.c:
+	(rhythmdb_query_results_query_complete):
+	* rhythmdb/rhythmdb-query-results.h:
+	* rhythmdb/rhythmdb-query.c: (rhythmdb_query_copy),
+	(rhythmdb_query_concatenate), (rhythmdb_query_parse_valist),
+	(rhythmdb_query_free), (rhythmdb_read_encoded_property),
+	(rhythmdb_query_serialize), (rhythmdb_query_deserialize),
+	(rhythmdb_query_preprocess), (rhythmdb_query_get_type):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_finalize),
+	(rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (rhythmdb_tree_load),
+	(save_entry), (save_entry_type), (save_unknown_entry_type),
+	(rhythmdb_tree_save), (rhythmdb_tree_entry_new),
+	(rhythmdb_tree_property_new), (get_genres_hash_for_type),
+	(get_or_create_genre), (remove_entry_from_album),
+	(rhythmdb_tree_entry_set), (rhythmdb_tree_entry_delete),
+	(remove_one_song), (rhythmdb_tree_entry_delete_by_type),
+	(search_match_properties), (evaluate_conjunctive_subquery),
+	(clone_remove_ptr_array_index), (conjunctive_query_albums),
+	(conjunctive_query_artists), (conjunctive_query_genre),
+	(conjunctive_query), (split_query_by_disjunctions),
+	(do_query_recurse), (rhythmdb_tree_entry_foreach),
+	(hash_tree_entries_foreach), (hash_tree_albums_foreach),
+	(hash_tree_artists_foreach), (hash_tree_genres_foreach),
+	(rhythmdb_hash_tree_foreach),
+	(rhythmdb_tree_entry_type_registered):
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init),
+	(metadata_field_from_prop), (extract_gtype_from_enum_entry),
+	(extract_nice_name_from_enum_entry), (rhythmdb_init),
+	(rhythmdb_execute_multi_stat_info_cb), (rhythmdb_event_free),
+	(rhythmdb_shutdown), (rhythmdb_finalize),
+	(rhythmdb_emit_entry_signals_idle), (process_added_entries_cb),
+	(rhythmdb_entry_insert), (rhythmdb_entry_new),
+	(rhythmdb_entry_example_new),
+	(set_metadata_string_default_unknown), (is_ghost_entry),
+	(rhythmdb_process_stat_event), (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_queued_entry_set_event),
+	(rhythmdb_process_events), (rhythmdb_execute_stat_info_cb),
+	(queue_stat_uri), (rhythmdb_entry_get), (entry_to_rb_metadata),
+	(rhythmdb_add_uri_with_type), (rhythmdb_load_thread_main),
+	(rhythmdb_load), (rhythmdb_save_thread_main), (rhythmdb_save),
+	(rhythmdb_entry_set), (rhythmdb_entry_set_internal),
+	(rhythmdb_entry_sync_mirrored), (rhythmdb_entry_delete),
+	(rhythmdb_entry_delete_by_type),
+	(rhythmdb_propid_from_nice_elt_name),
+	(rhythmdb_do_full_query_async_parsed), (rhythmdb_do_full_query),
+	(rhythmdb_compute_status_normal),
+	(rhythmdb_entry_register_type_alias),
+	(rhythmdb_entry_type_foreach), (song_can_sync_metadata),
+	(rhythmdb_entry_song_get_type), (rhythmdb_entry_ignore_get_type),
+	(rhythmdb_entry_import_error_get_type),
+	(rhythmdb_entry_podcast_post_get_type),
+	(rhythmdb_entry_podcast_feed_get_type),
+	(rhythmdb_entry_set_mount_point), (rhythmdb_entry_set_visibility),
+	(rhythmdb_sync_library_location), (rhythmdb_entry_get_string),
+	(rhythmdb_entry_get_ulong), (rhythmdb_entry_type_get_type):
+	* rhythmdb/rhythmdb.h:
+	* shell/main.c: (main), (load_uri_args), (handle_dbus_message):
+	* shell/rb-history.c: (rb_history_new), (rb_history_set_playing),
+	(rb_history_limit_size):
+	* shell/rb-history.h:
+	* shell/rb-play-order-linear-loop.c:
+	(rb_linear_play_order_loop_get_next):
+	* shell/rb-play-order-linear-loop.h:
+	* shell/rb-play-order-linear.c:
+	* shell/rb-play-order-linear.h:
+	* shell/rb-play-order-queue.c:
+	(rb_queue_play_order_playing_entry_removed):
+	* shell/rb-play-order-queue.h:
+	* shell/rb-play-order-random-by-age-and-rating.c:
+	* shell/rb-play-order-random-by-age-and-rating.h:
+	* shell/rb-play-order-random-by-age.c:
+	(rb_random_by_age_get_entry_weight):
+	* shell/rb-play-order-random-by-age.h:
+	* shell/rb-play-order-random-by-rating.c:
+	* shell/rb-play-order-random-by-rating.h:
+	* shell/rb-play-order-random-equal-weights.c:
+	* shell/rb-play-order-random-equal-weights.h:
+	* shell/rb-play-order-random.c: (rb_random_filter_history),
+	(rb_random_get_total_weight), (rb_random_play_order_get_next),
+	(rb_random_db_changed), (rb_random_playing_entry_changed),
+	(rb_random_db_entry_deleted):
+	* shell/rb-play-order-shuffle.c: (remove_from_history),
+	(add_randomly_to_history), (get_query_model_contents),
+	(rb_shuffle_playing_entry_changed):
+	* shell/rb-play-order-shuffle.h:
+	* shell/rb-play-order.c: (rb_play_order_class_init),
+	(rb_play_order_set_property),
+	(rb_play_order_playing_source_changed),
+	(rb_play_order_query_model_changed_cb),
+	(rb_play_order_query_model_changed),
+	(rb_play_order_entry_added_cb), (default_playing_entry_removed):
+	* shell/rb-play-order.h:
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_class_init),
+	(rb_playlist_manager_init), (rb_playlist_manager_set_uimanager),
+	(rb_playlist_manager_set_property),
+	(rb_playlist_manager_parse_file),
+	(rb_playlist_manager_load_playlists),
+	(rb_playlist_manager_is_dirty), (rb_playlist_manager_save_data),
+	(rb_playlist_manager_save_playlists),
+	(rb_playlist_manager_new_playlist),
+	(rb_playlist_manager_new_playlist_from_selection_data),
+	(rb_playlist_manager_cmd_new_automatic_playlist),
+	(rb_playlist_manager_cmd_edit_automatic_playlist),
+	(_queue_track_cb), (rb_playlist_manager_cmd_delete_playlist),
+	(save_playlist_response_cb), (export_set_extension_cb),
+	(filter_get_export_filter_label), (setup_format_menu),
+	(rb_playlist_manager_cmd_save_playlist),
+	(rb_playlist_manager_get_playlists),
+	(rb_playlist_manager_get_playlist_names), (_get_playlist_by_name),
+	(rb_playlist_manager_delete_playlist),
+	(rb_playlist_manager_export_playlist):
+	* shell/rb-playlist-manager.h:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_class_init),
+	(rb_removable_media_manager_dispose),
+	(rb_removable_media_manager_finalize),
+	(rb_removable_media_manager_set_property),
+	(split_drive_from_cdda_uri),
+	(rb_removable_media_manager_playing_uri_changed_cb),
+	(rb_removable_media_manager_load_media),
+	(rb_removable_media_manager_volume_mounted_cb),
+	(remove_volume_by_source),
+	(rb_removable_media_manager_source_deleted_cb),
+	(rb_removable_media_manager_volume_unmounted_cb),
+	(rb_removable_media_manager_mount_volume),
+	(rb_removable_media_manager_set_uimanager),
+	(rb_removable_media_manager_scan), (do_transfer),
+	(rb_removable_media_manager_cmd_copy_tracks):
+	* shell/rb-removable-media-manager.h:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_init),
+	(rb_shell_clipboard_finalize), (rb_shell_clipboard_constructor),
+	(rb_shell_clipboard_sync),
+	(rb_shell_clipboard_idle_poll_deletions),
+	(rb_shell_clipboard_cmd_add_to_playlist_new),
+	(rb_shell_clipboard_playlist_add_cb),
+	(rb_shell_clipboard_playlist_deleted_cb),
+	(rb_shell_clipboard_playlist_renamed_cb),
+	(rb_shell_clipboard_playlist_visible_cb),
+	(rb_shell_clipboard_playlist_added_cb):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_constructor), (volume_pre_unmount_cb),
+	(rb_shell_player_init), (rb_shell_player_set_property),
+	(rb_shell_player_new), (rb_shell_player_open_playlist_url),
+	(rb_shell_player_open_location),
+	(rb_shell_player_set_playing_entry),
+	(rb_shell_player_play_order_update_cb),
+	(rb_shell_player_jump_to_current), (rb_shell_player_do_previous),
+	(rb_shell_player_do_next), (rb_shell_player_do_previous_or_seek),
+	(rb_shell_player_cmd_previous), (rb_shell_player_cmd_next),
+	(rb_shell_player_cmd_play), (rb_shell_player_playpause),
+	(rb_shell_player_sync_volume), (rb_shell_player_sync_replaygain),
+	(gconf_song_position_slider_visibility_changed),
+	(rb_shell_player_entry_activated_cb),
+	(rb_shell_player_property_row_activated_cb),
+	(rb_shell_player_entry_changed_cb),
+	(rb_shell_player_sync_with_source), (rb_shell_player_sync_buttons),
+	(actually_set_playing_source),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_get_playing_song_duration), (eos_cb),
+	(rb_shell_player_error), (error_cb), (info_available_cb),
+	(grab_mmkey), (filter_mmkeys), (_idle_unblock_signal_cb),
+	(rb_shell_player_error_get_type):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_append_page),
+	(share_check_button_toggled_cb),
+	(password_check_button_toggled_cb), (add_daap_preferences),
+	(rb_shell_preferences_column_check_changed_cb),
+	(rb_shell_preferences_sync_column_button),
+	(rb_shell_preferences_sync),
+	(rb_shell_preferences_browser_views_activated_cb):
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_init),
+	(rb_shell_set_property), (rb_shell_get_property),
+	(rb_shell_sync_state), (idle_save_rhythmdb), (rb_shell_finalize),
+	(construct_widgets), (construct_load_ui), (rb_shell_constructor),
+	(rb_shell_get_visibility), (rb_shell_set_visibility),
+	(rb_shell_sync_window_state), (rb_shell_db_entry_added_cb),
+	(rb_shell_register_entry_type_for_source),
+	(rb_shell_transfer_progress_cb), (rb_shell_playing_from_queue_cb),
+	(rb_shell_playing_entry_changed_cb), (rb_shell_select_source),
+	(rb_shell_player_stream_song_changed_cb),
+	(rb_shell_set_window_title),
+	(rb_shell_view_smalldisplay_changed_cb),
+	(rb_shell_view_queue_as_sidebar_changed_cb),
+	(rb_shell_cmd_plugins), (add_to_library_response_cb),
+	(rb_shell_cmd_add_folder_to_library),
+	(rb_shell_cmd_add_file_to_library),
+	(rb_shell_sync_pane_visibility), (rb_shell_sync_smalldisplay),
+	(sidepane_visibility_changed_cb), (toolbar_state_changed_cb),
+	(rb_shell_jump_to_entry_with_source), (tray_embedded_cb),
+	(session_die_cb), (save_yourself_cb), (rb_shell_session_init),
+	(handle_playlist_entry_cb), (rb_shell_load_uri),
+	(rb_shell_add_to_queue), (rb_shell_present),
+	(rb_shell_get_song_properties), (rb_shell_set_song_property),
+	(rb_shell_volume_widget_changed_cb),
+	(rb_shell_player_volume_changed_cb),
+	(rb_shell_ui_location_get_type):
+	* shell/rb-shell.h:
+	* shell/rb-source-header.c: (ui_manager_add_widget_cb),
+	(rb_source_header_init), (rb_source_header_set_source_internal),
+	(rb_source_state_sync), (rb_source_header_clear_search),
+	(rb_source_header_view_browser_changed_cb):
+	* shell/rb-source-header.h:
+	* shell/rb-statusbar.c: (rb_statusbar_construct),
+	(rb_statusbar_init), (rb_statusbar_finalize),
+	(rb_statusbar_set_property), (rb_statusbar_set_progress),
+	(rb_statusbar_source_status_changed_cb):
+	* shell/rb-statusbar.h:
+	* shell/rb-tray-icon.c: (rb_tray_icon_init),
+	(rb_tray_icon_constructor), (rb_tray_icon_finalize),
+	(rb_tray_icon_set_property), (rb_tray_icon_show_window_changed_cb),
+	(rb_tray_icon_get_geom), (rb_tray_icon_notify):
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_constructor),
+	(rb_audiocd_create_track_entry):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_constructor),
+	(rb_auto_playlist_source_new_from_xml), (impl_reset_filters),
+	(impl_search), (impl_receive_drag), (impl_save_contents_to_xml),
+	(rb_auto_playlist_source_query_complete_cb),
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_browser_changed_cb),
+	(search_action_to_prop):
+	* sources/rb-auto-playlist-source.h:
+	* sources/rb-browser-source.c: (rb_browser_source_init),
+	(rb_browser_source_dispose), (search_action_to_prop),
+	(rb_browser_source_constructor),
+	(rb_browser_source_cmd_choose_genre),
+	(rb_browser_source_cmd_choose_artist),
+	(rb_browser_source_cmd_choose_album), (impl_search),
+	(rb_browser_source_browser_changed_cb),
+	(rb_browser_source_do_query):
+	* sources/rb-browser-source.h:
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_source_init), (rb_daap_source_dispose),
+	(rb_daap_source_set_property), (start_browsing),
+	(rb_daap_sources_init), (rb_daap_sources_shutdown),
+	(rb_daap_source_connection_cb), (rb_daap_source_activate),
+	(rb_daap_source_cmd_disconnect), (rb_daap_source_find_for_uri),
+	(rb_daap_source_get_headers), (rb_daap_source_get_status):
+	* sources/rb-daap-source.h:
+	* sources/rb-import-errors-source.h:
+	* sources/rb-ipod-source.c: (rb_ipod_source_name_changed_cb),
+	(rb_ipod_source_init), (ipod_path_to_uri), (add_rb_playlist),
+	(add_ipod_song_to_db), (load_ipod_db_idle_cb),
+	(rb_ipod_load_songs), (rb_ipod_get_itunesdb_path),
+	(rb_ipod_is_volume_ipod), (hal_udi_is_ipod), (impl_get_ui_actions),
+	(impl_move_to_trash), (impl_receive_drag), (test_dir_on_ipod),
+	(ipod_mkdir_with_parents), (build_ipod_dir_name),
+	(generate_ipod_filename), (ipod_path_from_unix_path),
+	(impl_delete_thyself):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_init), (rb_iradio_source_constructor),
+	(rb_iradio_source_new), (guess_uri_scheme),
+	(rb_iradio_source_add_station),
+	(rb_iradio_source_async_update_play_statistics),
+	(genre_selection_reset_cb), (rb_iradio_source_do_query),
+	(stations_view_drag_data_received_cb),
+	(rb_iradio_source_cmd_new_station):
+	* sources/rb-iradio-source.h:
+	* sources/rb-library-source.c: (rb_library_source_dispose),
+	(rb_library_source_constructor),
+	(rb_library_source_location_button_clicked_cb),
+	(impl_get_config_widget), (rb_library_source_library_location_cb),
+	(sanitize_path), (filepath_parse_pattern),
+	(layout_example_label_update),
+	(rb_library_source_layout_filename_changed), (build_filename),
+	(impl_can_paste), (impl_paste),
+	(rb_library_source_add_child_source),
+	(rb_library_source_sync_child_sources):
+	* sources/rb-library-source.h:
+	* sources/rb-missing-files-source.h:
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_constructor), (impl_show_entry_view_popup):
+	* sources/rb-play-queue-source.h:
+	* sources/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_class_init), (update_speed_combobox),
+	(_nautilus_burn_drive_eject), (burn_cd), (ask_rewrite_disc),
+	(rb_playlist_source_recorder_init),
+	(rb_playlist_source_recorder_new):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor),
+	(rb_playlist_source_save_playlist),
+	(rb_playlist_source_entry_added_cb),
+	(rb_playlist_source_set_query_model),
+	(rb_playlist_source_add_to_map):
+	* sources/rb-podcast-source.c: (rb_podcast_source_class_init),
+	(rb_podcast_source_init), (rb_podcast_source_dispose),
+	(rb_podcast_source_finalize), (search_action_to_prop),
+	(rb_podcast_source_constructor), (rb_podcast_source_set_property),
+	(rb_podcast_source_get_property), (rb_podcast_source_new),
+	(impl_delete), (rb_podcast_source_songs_show_popup_cb),
+	(rb_podcast_source_feeds_show_popup_cb), (feed_select_change_cb),
+	(rb_podcast_source_show_browser), (construct_query_from_selection),
+	(rb_podcast_source_do_query), (impl_get_config_widget),
+	(rb_podcast_source_btn_file_change_cb),
+	(posts_view_drag_data_received_cb),
+	(rb_podcast_source_cmd_download_post),
+	(rb_podcast_source_cmd_cancel_download),
+	(rb_podcast_source_cmd_delete_feed),
+	(rb_podcast_source_cmd_properties_feed),
+	(rb_podcast_source_cmd_update_feed),
+	(rb_podcast_source_post_status_cell_data_func),
+	(rb_podcast_source_post_feed_cell_data_func),
+	(rb_podcast_source_post_date_cell_data_func),
+	(rb_podcast_source_load_finish_cb), (impl_receive_drag),
+	(rb_podcast_source_entry_activated_cb), (impl_can_add_to_queue),
+	(impl_add_to_queue), (rb_podcast_source_cmd_new_podcast),
+	(impl_get_status):
+	* sources/rb-podcast-source.h:
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_constructor):
+	* sources/rb-removable-media-source.h:
+	* sources/rb-source.h:
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_class_init),
+	(rb_sourcelist_model_new), (rb_sourcelist_model_is_row_visible),
+	(rb_sourcelist_model_row_is_separator),
+	(rb_sourcelist_model_drag_data_received),
+	(rb_sourcelist_model_row_drop_possible), (path_is_droppable),
+	(rb_sourcelist_model_row_drop_position),
+	(rb_sourcelist_model_get_drag_target),
+	(rb_sourcelist_model_row_draggable),
+	(rb_sourcelist_model_drag_data_get),
+	(rb_sourcelist_model_row_inserted_cb),
+	(rb_sourcelist_model_get_group_path):
+	* sources/rb-sourcelist.c: (rb_sourcelist_append),
+	(match_source_to_iter), (rb_sourcelist_source_to_iter),
+	(rb_sourcelist_visible_source_to_iter),
+	(rb_sourcelist_edit_source_name),
+	(rb_sourcelist_selection_changed_cb), (button_press_cb),
+	(key_release_cb), (name_notify_cb), (icon_notify_cb),
+	(rb_sourcelist_title_cell_data_func), (source_name_edited_cb):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_load_from_xml), (impl_reset_filters),
+	(impl_search), (rb_static_playlist_source_do_query),
+	(rb_static_playlist_source_browser_changed_cb),
+	(impl_receive_drag), (impl_save_contents_to_xml),
+	(rb_static_playlist_source_add_location_swapped),
+	(search_action_to_prop):
+	* sources/rb-static-playlist-source.h:
+	* widgets/bacon-volume.c: (bacon_volume_button_get_type):
+	* widgets/eggtrayicon.c: (egg_tray_icon_init),
+	(egg_tray_icon_get_orientation_property),
+	(egg_tray_icon_send_manager_message),
+	(egg_tray_icon_update_manager_window),
+	(egg_tray_icon_manager_window_destroyed), (egg_tray_icon_realize),
+	(egg_tray_icon_send_message), (egg_tray_icon_notify):
+	* widgets/eggtrayicon.h:
+	* widgets/rb-cell-renderer-pixbuf.c:
+	(rb_cell_renderer_pixbuf_get_property),
+	(rb_cell_renderer_pixbuf_set_property),
+	(rb_cell_renderer_pixbuf_get_size),
+	(rb_cell_renderer_pixbuf_render),
+	(rb_cell_renderer_pixbuf_activate):
+	* widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_class_init),
+	(rb_cell_renderer_rating_get_property),
+	(rb_cell_renderer_rating_set_property),
+	(rb_cell_renderer_rating_get_size),
+	(rb_cell_renderer_rating_render),
+	(rb_cell_renderer_rating_activate):
+	* widgets/rb-dialog.c:
+	* widgets/rb-dialog.h:
+	* widgets/rb-druid.c: (rb_druid_init_widgets), (rb_druid_new),
+	(path_dialog_response_cb), (idle_set_sensitive), (do_response),
+	(rb_druid_page3_finish_cb):
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_init), (rb_entry_view_set_property),
+	(rb_entry_view_new), (rb_entry_view_play_count_cell_data_func),
+	(rb_entry_view_year_cell_data_func), (rb_entry_view_sync_sorting),
+	(rb_entry_view_get_sorting_type), (rb_entry_view_set_sorting_type),
+	(rb_entry_view_set_sorting_order),
+	(rb_entry_view_column_clicked_cb), (rb_entry_view_append_column),
+	(rb_entry_view_set_columns_clickable), (rb_entry_view_constructor),
+	(rb_entry_view_playing_song_changed),
+	(rb_entry_view_button_press_cb), (rb_entry_view_rows_reordered_cb),
+	(rb_entry_view_scroll_to_entry), (set_column_visibility),
+	(rb_entry_view_set_fixed_column_width),
+	(rb_entry_view_get_time_date_column_sample),
+	(rb_entry_view_state_get_type):
+	* widgets/rb-entry-view.h:
+	* widgets/rb-header.c: (rb_header_init), (rb_header_set_property),
+	(rb_header_sync), (slider_moved_timeout), (slider_moved_callback),
+	(changed_idle_callback), (rb_header_elapsed_changed_cb):
+	* widgets/rb-library-browser.c: (rb_library_browser_constructor),
+	(update_browser_property_visibilty),
+	(rb_library_browser_construct_query), (restore_selection),
+	(rebuild_child_model), (rb_library_browser_set_selection),
+	(rb_library_browser_set_model):
+	* widgets/rb-library-browser.h:
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_set_property), (rb_property_view_reset),
+	(rb_property_view_get_model), (rb_property_view_constructor),
+	(rb_property_view_set_selection),
+	(rb_property_view_selection_changed_cb),
+	(rb_property_view_button_press_cb),
+	(rb_property_view_set_search_func):
+	* widgets/rb-query-creator-private.h:
+	* widgets/rb-query-creator-properties.c:
+	(integerCriteriaSetWidgetData), (yearCriteriaSetWidgetData),
+	(durationCriteriaCreateWidget), (durationCriteriaSetWidgetData),
+	(durationCriteriaGetWidgetData), (create_time_unit_option_menu),
+	(relativeTimeCriteriaCreateWidget),
+	(relativeTimeCriteriaSetWidgetData):
+	* widgets/rb-query-creator.c: (rb_query_creator_constructor),
+	(rb_query_creator_dispose), (rb_query_creator_load_query),
+	(rb_query_creator_new_from_query), (rb_query_creator_get_query),
+	(get_property_index_from_proptype), (select_criteria_from_value),
+	(create_property_option_menu), (create_criteria_option_menu),
+	(sort_option_menu_changed), (setup_sort_option_menu):
+	* widgets/rb-query-creator.h:
+	* widgets/rb-rating-helper.c: (rb_rating_install_rating_property),
+	(rb_rating_render_stars):
+	* widgets/rb-rating-helper.h:
+	* widgets/rb-rating.c: (rb_rating_expose):
+	* widgets/rb-rating.h:
+	* widgets/rb-search-entry.c: (rb_search_entry_clear),
+	(rb_search_entry_timeout_cb):
+	* widgets/rb-search-entry.h:
+	* widgets/rb-song-info.c: (rb_song_info_construct_single),
+	(rb_song_info_constructor), (rb_song_info_new),
+	(rb_song_info_set_entry_rating), (rb_song_info_populate_dialog),
+	(rb_song_info_update_location), (rb_song_info_backward_clicked_cb),
+	(rb_song_info_forward_clicked_cb), (rb_song_info_update_buttons),
+	(rb_song_info_query_model_changed_cb),
+	(rb_song_info_sync_entries_multiple),
+	(rb_song_info_sync_entry_single):
+	Strip all trailing whitespace.  Fixes #344293.
+
 2006-07-13  Ryan P Skadberg  <skadz@stigmata.org>
 
 	* doc/reference/Makefile.am: Fix GTK Doc Build

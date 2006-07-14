@@ -48,7 +48,6 @@ typedef enum {
 	RB_SOURCELIST_GROUP_LAST
 } RBSourceListGroup;
 
-
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
 
@@ -77,7 +76,7 @@ struct _RBSource
 struct _RBSourceClass
 {
 	GtkHBoxClass parent;
-	
+
 	/* signals */
 	void (*status_changed)	(RBSource *source);
 	void (*filter_changed)	(RBSource *source);
@@ -108,7 +107,7 @@ struct _RBSourceClass
 	gboolean	(*impl_can_copy)	(RBSource *source);
 	gboolean	(*impl_can_paste)	(RBSource *source);
 	gboolean	(*impl_can_add_to_queue)(RBSource *source);
-	
+
 	GList *		(*impl_cut)		(RBSource *source);
 	GList *		(*impl_copy)		(RBSource *source);
 	void		(*impl_paste)		(RBSource *source, GList *entries);
@@ -122,11 +121,11 @@ struct _RBSourceClass
 
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
-	
+
 	gboolean	(*impl_have_url)	(RBSource *source);
 	gboolean	(*impl_receive_drag)	(RBSource *source, GtkSelectionData *data);
 	gboolean	(*impl_show_popup)	(RBSource *source);
-				   
+
 	void		(*impl_delete_thyself)	(RBSource *source);
 	void		(*impl_activate)	(RBSource *source);
 	void		(*impl_deactivate)	(RBSource *source);
@@ -206,7 +205,7 @@ void            rb_source_set_hidden_when_empty (RBSource *source,
                                                  gboolean  hidden);
 
 /* Protected methods, should only be used by objects inheriting from RBSource */
-void            _rb_source_show_popup           (RBSource *source, 
+void            _rb_source_show_popup           (RBSource *source,
 						 const char *ui_path);
 GtkActionGroup *_rb_source_register_action_group (RBSource *source,
 						  const char *group_name,

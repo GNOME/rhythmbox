@@ -81,7 +81,6 @@ static void rb_playlist_source_drop_cb (GtkWidget *widget,
 				     guint time,
 				     gpointer user_data);
 
-
 static void rb_playlist_source_row_deleted (GtkTreeModel *model,
 					    GtkTreePath *path,
 					    RBPlaylistSource *playlist);
@@ -128,7 +127,6 @@ enum
 static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
 
 G_DEFINE_ABSTRACT_TYPE (RBPlaylistSource, rb_playlist_source, RB_TYPE_SOURCE);
-
 
 static void
 rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
@@ -227,7 +225,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_playlist_source_entry_added_cb),
 				 source, 0);
 
-	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player, 
+	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player,
 					 	 NULL, TRUE, TRUE);
 
 	rb_playlist_source_set_query_model (source, rhythmdb_query_model_new_empty (source->priv->db));
@@ -238,7 +236,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 		GtkTreeViewColumn *column = gtk_tree_view_column_new ();
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
-		
+
 		g_object_set(renderer,
 			     "style", PANGO_STYLE_OBLIQUE,
 			     "weight", PANGO_WEIGHT_LIGHT,
@@ -262,7 +260,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 						    "PlaylistTrack", NULL, 0, 0);
 	}
 
-
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE, FALSE);
@@ -280,7 +277,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	rb_playlist_source_setup_entry_view (source, source->priv->songs);
 
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->songs));
-		
+
 	gtk_widget_show_all (GTK_WIDGET (source));
 
 	return G_OBJECT (source);
@@ -386,7 +383,6 @@ rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 		klass->impl_show_entry_view_popup (source, view, over_entry);
 }
 
-
 static char *
 impl_get_browser_key (RBSource *source)
 {
@@ -484,7 +480,7 @@ playlist_iter_func (GtkTreeModel *model,
 #endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
 void
-rb_playlist_source_save_playlist (RBPlaylistSource *source, 
+rb_playlist_source_save_playlist (RBPlaylistSource *source,
 				  const char *uri,
 				  gboolean m3u_format)
 {
@@ -498,7 +494,7 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
 
 	totem_pl_parser_write_with_title (playlist, GTK_TREE_MODEL (source->priv->model),
-					  playlist_iter_func, uri, name, 
+					  playlist_iter_func, uri, name,
 					  m3u_format ? TOTEM_PL_PARSER_M3U : TOTEM_PL_PARSER_PLS,
 					  NULL, &error);
 	g_free (name);
@@ -640,7 +636,6 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 	source->priv->dirty = FALSE;
 }
 
-
 static void
 rb_playlist_source_row_deleted (GtkTreeModel *model,
 				GtkTreePath *path,
@@ -658,7 +653,7 @@ rb_playlist_source_row_deleted (GtkTreeModel *model,
 }
 
 static void
-rb_playlist_source_entry_added_cb (RhythmDB *db, 
+rb_playlist_source_entry_added_cb (RhythmDB *db,
 				   RhythmDBEntry *entry,
 				   RBPlaylistSource *source)
 {
@@ -726,7 +721,7 @@ rb_playlist_source_set_query_model (RBPlaylistSource *source,
 	}
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
-	
+
 	g_object_set (G_OBJECT (source), "query-model", source->priv->model, NULL);
 }
 
@@ -767,5 +762,3 @@ rb_playlist_source_add_to_map (RBPlaylistSource *source,
 			     g_strdup (location), GINT_TO_POINTER (1));
 	return TRUE;
 }
-
-

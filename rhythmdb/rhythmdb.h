@@ -50,7 +50,6 @@ GType rhythmdb_entry_get_type (void);
 #define RHYTHMDB_ENTRY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY, RhythmDBEntry))
 #define RHYTHMDB_IS_ENTRY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY))
 
-
 typedef void (*RhythmDBEntryActionFunc) (RhythmDBEntry *entry, gpointer data);
 typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
@@ -90,14 +89,11 @@ GType rhythmdb_entry_type_get_type (void);
 #define RHYTHMDB_ENTRY_TYPE(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY_TYPE, RhythmDBEntryType_))
 #define RHYTHMDB_IS_ENTRY_TYPE(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY_TYPE))
 
-
-
 typedef GPtrArray RhythmDBQuery;
 GType rhythmdb_query_get_type (void);
 #define RHYTHMDB_TYPE_QUERY	(rhythmdb_query_get_type ())
 #define RHYTHMDB_QUERY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_QUERY, RhythmDBQuery))
 #define RHYTHMDB_IS_QUERY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_QUERY))
-
 
 #define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
@@ -130,8 +126,8 @@ typedef enum
 	RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN,
 	RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN,
 	RHYTHMDB_QUERY_PROP_YEAR_EQUALS,
-	RHYTHMDB_QUERY_PROP_YEAR_GREATER,   
-	RHYTHMDB_QUERY_PROP_YEAR_LESS,   
+	RHYTHMDB_QUERY_PROP_YEAR_GREATER,
+	RHYTHMDB_QUERY_PROP_YEAR_LESS,
 } RhythmDBQueryType;
 
 /* If you modify this enum, don't forget to modify rhythmdb_prop_get_type */
@@ -190,7 +186,7 @@ typedef enum
 	RHYTHMDB_PROP_POST_TIME,
 
 	RHYTHMDB_PROP_MUSICBRAINZ_TRACKID,
-	
+
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
 
@@ -230,8 +226,6 @@ gpointer rhythmdb_entry_get_pointer     (RhythmDBEntry *entry, RhythmDBPropType 
 
 RhythmDBEntryType rhythmdb_entry_get_entry_type (RhythmDBEntry *entry);
 
-
-
 typedef enum
 {
 	RHYTHMDB_ERROR_ACCESS_FAILED,
@@ -268,7 +262,7 @@ typedef struct
 
 	void		(*impl_load)		(RhythmDB *db, gboolean *dead);
 	void		(*impl_save)		(RhythmDB *db);
-	
+
 	void		(*impl_entry_new)	(RhythmDB *db, RhythmDBEntry *entry);
 
 	gboolean	(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
@@ -282,7 +276,7 @@ typedef struct
 	void            (*impl_entry_delete_by_type) (RhythmDB *db, RhythmDBEntryType type);
 
 	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, const char *uri);
-	
+
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
 
 	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
@@ -291,11 +285,10 @@ typedef struct
 						 RhythmDBQueryResults *results,
 						 gboolean *cancel);
 
-	void		(*impl_entry_type_registered) (RhythmDB *db, 
-						       const char *name, 
+	void		(*impl_entry_type_registered) (RhythmDB *db,
+						       const char *name,
 						       RhythmDBEntryType type);
 } RhythmDBClass;
-
 
 GType		rhythmdb_get_type	(void);
 
@@ -330,11 +323,10 @@ gpointer	rhythmdb_entry_get_type_data (RhythmDBEntry *entry, guint expected_size
 #define		RHYTHMDB_ENTRY_GET_TYPE_DATA(e,t)	((t*)rhythmdb_entry_get_type_data((e),sizeof(t)))
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
-void            rhythmdb_entry_delete_by_type (RhythmDB *db, 
+void            rhythmdb_entry_delete_by_type (RhythmDB *db,
 					       RhythmDBEntryType type);
 void		rhythmdb_entry_move_to_trash (RhythmDB *db,
 					      RhythmDBEntry *entry);
-
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);
 
@@ -403,7 +395,6 @@ char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
 							 guint64 size,
 							 const char *singular,
 							 const char *plural);
-
 
 RhythmDBEntryType rhythmdb_entry_register_type          (RhythmDB *db, const char *name);
 RhythmDBEntryType rhythmdb_entry_type_get_by_name       (RhythmDB *db, const char *name);

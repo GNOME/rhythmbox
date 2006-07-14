@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003 Ross Burton <ross@burtonini.com>
  *
  * Sound Juicer - sj-structures.c

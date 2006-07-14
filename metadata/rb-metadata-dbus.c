@@ -41,7 +41,7 @@ _get_basic_checked (DBusMessageIter *iter, gpointer value, int type)
 	return TRUE;
 }
 
-gboolean 
+gboolean
 rb_metadata_dbus_get_boolean (DBusMessageIter *iter, gboolean *value)
 {
 	return _get_basic_checked (iter, value, DBUS_TYPE_BOOLEAN);
@@ -53,8 +53,7 @@ rb_metadata_dbus_get_uint32 (DBusMessageIter *iter, guint32 *value)
 	return _get_basic_checked (iter, value, DBUS_TYPE_UINT32);
 }
 
-
-gboolean 
+gboolean
 rb_metadata_dbus_get_string (DBusMessageIter *iter, gchar **value)
 {
 	gchar *msg_value;
@@ -64,14 +63,14 @@ rb_metadata_dbus_get_string (DBusMessageIter *iter, gchar **value)
 	return TRUE;
 }
 
-gboolean 
+gboolean
 rb_metadata_dbus_add_to_message (RBMetaData *md, DBusMessageIter *iter)
 {
 	DBusMessageIter a_iter;
 	RBMetaDataField field;
-	const char *etype = 
-		DBUS_DICT_ENTRY_BEGIN_CHAR_AS_STRING 
-			DBUS_TYPE_UINT32_AS_STRING DBUS_TYPE_VARIANT_AS_STRING 
+	const char *etype =
+		DBUS_DICT_ENTRY_BEGIN_CHAR_AS_STRING
+			DBUS_TYPE_UINT32_AS_STRING DBUS_TYPE_VARIANT_AS_STRING
 		DBUS_DICT_ENTRY_END_CHAR_AS_STRING;
 	rb_debug ("opening container type %s", etype);
 	if (!dbus_message_iter_open_container (iter, DBUS_TYPE_ARRAY, etype, &a_iter)) {
@@ -84,7 +83,7 @@ rb_metadata_dbus_add_to_message (RBMetaData *md, DBusMessageIter *iter)
 		DBusMessageIter d_iter;
 		DBusMessageIter v_iter;
 		const char *v_sig = NULL;
-		
+
 		if (!rb_metadata_get (md, field, &v))
 			continue;
 
@@ -156,7 +155,7 @@ rb_metadata_dbus_add_to_message (RBMetaData *md, DBusMessageIter *iter)
 			return FALSE;
 		}
 	}
-	
+
 	if (!dbus_message_iter_close_container (iter, &a_iter)) {
 		return FALSE;
 	}
@@ -164,12 +163,12 @@ rb_metadata_dbus_add_to_message (RBMetaData *md, DBusMessageIter *iter)
 	return TRUE;
 }
 
-gboolean 
+gboolean
 rb_metadata_dbus_read_from_message (RBMetaData *md, GHashTable *metadata, DBusMessageIter *iter)
 {
 	DBusMessageIter a_iter;
 	int current_type;
-	
+
 	if (dbus_message_iter_get_arg_type (iter) != DBUS_TYPE_ARRAY) {
 		rb_debug ("Expected D-BUS array, got type '%c'",
 			  dbus_message_iter_get_arg_type (iter));
@@ -177,7 +176,7 @@ rb_metadata_dbus_read_from_message (RBMetaData *md, GHashTable *metadata, DBusMe
 	}
 
 	dbus_message_iter_recurse (iter, &a_iter);
-	
+
 	current_type = dbus_message_iter_get_arg_type (&a_iter);
 	if (current_type != DBUS_TYPE_INVALID && current_type != DBUS_TYPE_DICT_ENTRY) {
 		rb_debug ("Expected D-BUS dict entry, got type '%c'", (guchar) current_type);
@@ -238,11 +237,10 @@ rb_metadata_dbus_read_from_message (RBMetaData *md, GHashTable *metadata, DBusMe
 		}
 
 		g_hash_table_insert (metadata, GINT_TO_POINTER (field), val);
-		
+
 		dbus_message_iter_next (&a_iter);
 		current_type = dbus_message_iter_get_arg_type (&a_iter);
 	}
 
 	return TRUE;
 }
-

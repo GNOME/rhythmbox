@@ -54,7 +54,7 @@ struct RBDaapMdnsPublisherPrivate
 	gboolean          password_required;
 };
 
-enum { 
+enum {
 	PUBLISHED,
 	NAME_COLLISION,
 	LAST_SIGNAL
@@ -92,7 +92,7 @@ howl_in_cb (GIOChannel          *io_channel,
 		sw_discovery_read_socket (*publisher->priv->discovery);
 		sw_salt_unlock (salt);
 	}
-	
+
 	return TRUE;
 }
 
@@ -136,7 +136,7 @@ publish_cb (sw_discovery                discovery,
 
 		g_signal_emit (publisher, signals [NAME_COLLISION], 0, publisher->priv->name);
 	}
-	
+
 	return SW_OKAY;
 }
 

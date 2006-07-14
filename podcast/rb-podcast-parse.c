@@ -33,7 +33,7 @@
 #include <gtk/gtk.h>
 
 #include "rb-debug.h"
-#include "rb-podcast-parse.h" 
+#include "rb-podcast-parse.h"
 
 #define BUFFER_SIZE 256
 
@@ -44,7 +44,7 @@ struct RBPoadcastLoadContext
 	GString *prop_value;
 	RBPodcastChannel *channel_data;
 	RBPodcastItem *item_data;
-    
+
 	enum {
 		RB_PODCAST_PARSER_STATE_START,
 		RB_PODCAST_PARSER_STATE_RSS,
@@ -90,14 +90,14 @@ rb_set_channel_value (struct RBPoadcastLoadContext *ctx,
 
 	dvalue = xmlCharStrdup (value);
 	g_strstrip ((char *)dvalue);
-   
+
 	if (!strcmp (name, "title")) {
 		ctx->channel_data->title = dvalue;
-	} else if (!strcmp (name, "language")) { 
+	} else if (!strcmp (name, "language")) {
 		ctx->channel_data->lang = dvalue;
 	} else if (!strcmp (name, "itunes:subtitle")) {
 		ctx->channel_data->subtitle = dvalue;
-	} else if (!strcmp (name, "itunes:summary")) { 
+	} else if (!strcmp (name, "itunes:summary")) {
 		ctx->channel_data->summary = dvalue;
 	} else if (!strcmp (name, "description")) {
 		ctx->channel_data->description = dvalue;
@@ -120,7 +120,6 @@ rb_set_channel_value (struct RBPoadcastLoadContext *ctx,
 		g_free (dvalue);
 	}
 }
-
 
 static void
 rb_set_item_value (struct RBPoadcastLoadContext *ctx,
@@ -153,7 +152,6 @@ rb_set_item_value (struct RBPoadcastLoadContext *ctx,
 	}
 }
 
-
 static void
 rb_insert_item (struct RBPoadcastLoadContext *ctx)
 {
@@ -176,11 +174,11 @@ rb_validate_channel_propert (const char *name)
 		return FALSE;
 	}
 
-	if (!strcmp (name, "title") || 
+	if (!strcmp (name, "title") ||
 	    !strcmp (name, "language") ||
 	    !strcmp (name, "itunes:subtitle") ||
 	    !strcmp (name, "itunes:summary") ||
-	    !strcmp (name, "description") || 
+	    !strcmp (name, "description") ||
 	    !strcmp (name, "generator") ||
 	    !strcmp (name, "itunes:author") ||
 	    !strcmp (name, "webMaster") ||
@@ -191,7 +189,7 @@ rb_validate_channel_propert (const char *name)
 	} else {
 		return FALSE;
 	}
-    
+
 }
 
 static gboolean
@@ -207,15 +205,14 @@ rb_validate_item_propert (const char *name)
 	    !strcmp (name, "description") ||
 	    !strcmp (name, "author") ||
 	    !strcmp (name, "itunes:duration") ) {
-	    
+
 		return TRUE;
 	} else {
 		return FALSE;
 	}
 }
 
-
-static void 
+static void
 rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 				 const char *name,
 				 const char **attrs)
@@ -234,7 +231,7 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 
 			break;
 		}
-        
+
         case RB_PODCAST_PARSER_STATE_RSS:
 		{
 			if (!strcmp (name, "channel")) {
@@ -248,7 +245,7 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 
         case RB_PODCAST_PARSER_STATE_CHANNEL:
 		{
- 
+
 			if (strcmp (name, "image") == 0
 			    || strcmp (name, "itunes:image") == 0) {
 				ctx->state = RB_PODCAST_PARSER_STATE_IMG;
@@ -315,9 +312,8 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 	}
 }
 
-
 static void
-rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx, 
+rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
 			       const char *name)
 {
 	rb_debug ("End element: %s state: %d", name, ctx->state);
@@ -327,12 +323,12 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
 		rb_debug ("Unknown element");
 		return;
 	}
-               
+
 	switch (ctx->state) {
         case RB_PODCAST_PARSER_STATE_START:
 		ctx->state = RB_PODCAST_PARSER_STATE_END;
 		break;
-            
+
         case RB_PODCAST_PARSER_STATE_RSS:
 		ctx->state = RB_PODCAST_PARSER_STATE_START;
 		break;
@@ -340,7 +336,7 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
         case RB_PODCAST_PARSER_STATE_CHANNEL:
 		ctx->state = RB_PODCAST_PARSER_STATE_RSS;
 		break;
-            
+
         case RB_PODCAST_PARSER_STATE_CHANNEL_PROPERTY:
 		{
 			rb_set_channel_value (ctx, name, ctx->prop_value->str);
@@ -384,7 +380,6 @@ rb_podcast_parser_end_element (struct RBPoadcastLoadContext *ctx,
 		break;
 	}
 }
-    
 
 static void
 rb_podcast_parser_characters (struct RBPoadcastLoadContext *ctx,
@@ -394,7 +389,7 @@ rb_podcast_parser_characters (struct RBPoadcastLoadContext *ctx,
 	switch (ctx->state) {
         case RB_PODCAST_PARSER_STATE_CHANNEL_PROPERTY:
         case RB_PODCAST_PARSER_STATE_ITEM_PROPERTY:
-        case RB_PODCAST_PARSER_STATE_IMG_PROPERTY:            
+        case RB_PODCAST_PARSER_STATE_IMG_PROPERTY:
 		g_string_append_len (ctx->prop_value, data, len);
            	break;
         case RB_PODCAST_PARSER_STATE_START:
@@ -410,7 +405,6 @@ rb_podcast_parser_characters (struct RBPoadcastLoadContext *ctx,
 	}
 }
 
-
 gboolean
 rb_podcast_parse_load_feed (RBPodcastChannel *data,
 			    const char *file_name)
@@ -421,7 +415,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	GnomeVFSFileInfo *info;
 	gint file_size;
 	gchar *buffer = NULL;
-    
+
 	struct RBPoadcastLoadContext *ctx = NULL;
 
 	data->url = xmlCharStrdup (file_name);
@@ -459,7 +453,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 							 "It may be the wrong URL, or the feed may be broken. "
 							 "Would you like Rhythmbox to attempt to use it anyway?"),
 							 file_name);
-			
+
 			if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES)
 				invalid_mime_type = FALSE;
 
@@ -472,12 +466,11 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 		if (invalid_mime_type)
 			return FALSE;
 	}
-    
+
 	/* first download file by gnome_vfs for use gnome network configuration */
 	result = gnome_vfs_read_entire_file (file_name, &file_size, &buffer);
 	if (result != GNOME_VFS_OK)
 		return TRUE;
-	    
 
 	/* initializing parse */
 	sax_handler = g_new0 (xmlSAXHandler, 1);
@@ -490,7 +483,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	ctx->in_unknown_elt = 0;
 	ctx->channel_data = data;
 	ctx->prop_value = g_string_sized_new (512);
-                            
+
 	ctxt = xmlCreateMemoryParserCtxt (buffer, file_size);
 	if (ctx == NULL) {
 		g_free (sax_handler);
@@ -586,7 +579,7 @@ rb_podcast_parse_date (const char *date_str)
 		char *tmp;
 
 		memset (&tm, 0, sizeof (struct tm));
-	
+
 		/* match first part of time string */
 		result = strptime (date_str, "%a %b %d %T ", &tm);
 
@@ -599,16 +592,16 @@ rb_podcast_parse_date (const char *date_str)
 			tmp = result+n;
 
 			/* make sure there was at least one character that matched */
-			if ((tmp != NULL) && n > 0) 
+			if ((tmp != NULL) && n > 0)
 				/* remaining part must be the year */
 				result = strptime (tmp, "%Y", &tm);
-			else 
+			else
 				result = NULL;
 		}
 	}
 
 	if (result == NULL) {
-		memset (&tm, 0, sizeof (struct tm));	
+		memset (&tm, 0, sizeof (struct tm));
 		rb_debug ("unable to convert date string %s", date_str);
 	}
 
@@ -628,10 +621,10 @@ rb_podcast_parse_time (const char *time_str)
 		result = strptime (time_str, "%M:%S", &tm);
 	}
 	if (result == NULL) {
-		memset (&tm, 0, sizeof (struct tm));	
+		memset (&tm, 0, sizeof (struct tm));
 		rb_debug ("unable to convert duration string %s", time_str);
 	}
-	
+
 	return ((tm.tm_hour * 60 + tm.tm_min) * 60 + tm.tm_sec);
 }
 
@@ -639,7 +632,7 @@ void
 rb_podcast_parse_channel_free (RBPodcastChannel *data)
 {
 	g_return_if_fail (data != NULL);
-	
+
 	g_list_foreach (data->posts, (GFunc) rb_podcast_parse_item_free, NULL);
 	g_list_free (data->posts);
 	data->posts = NULL;
@@ -654,16 +647,16 @@ rb_podcast_parse_channel_free (RBPodcastChannel *data)
 	g_free (data->contact);
 	g_free (data->img);
 	g_free (data->copyright);
-	
+
 	g_free (data);
 	data = NULL;
 }
-		
-void 
+
+void
 rb_podcast_parse_item_free (RBPodcastItem *item)
 {
 	g_return_if_fail (item != NULL);
-	
+
 	g_free (item->title);
 	g_free (item->url);
 	g_free (item->description);

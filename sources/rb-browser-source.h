@@ -38,7 +38,6 @@ G_BEGIN_DECLS
 #define RB_IS_BROWSER_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_BROWSER_SOURCE))
 #define RB_BROWSER_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_BROWSER_SOURCE, RBBrowserSourceClass))
 
-
 typedef struct RBBrowserSourcePrivate RBBrowserSourcePrivate;
 
 typedef struct
@@ -64,7 +63,6 @@ GType		rb_browser_source_get_type		(void);
 
 const char *	rb_browser_source_get_paned_key		(RBBrowserSource *source);
 gboolean	rb_browser_source_has_drop_support	(RBBrowserSource *source);
-
 
 G_END_DECLS
 

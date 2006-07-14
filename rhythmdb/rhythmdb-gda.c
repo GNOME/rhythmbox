@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of RhythmDB libgda/SQLite database
  *
  *  Copyright (C) 2004 Benjamin Otte <otte@gnome.org>
@@ -51,13 +51,11 @@ static gboolean rhythmdb_gda_evaluate_query (RhythmDB * adb, GPtrArray * query,
 
 G_DEFINE_TYPE (RhythmDBGda, rhythmdb_gda, RHYTHMDB_TYPE)
 
-
 static void
 rhythmdb_gda_class_init (RhythmDBGdaClass * klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   RhythmDBClass *rhythmdb_class = RHYTHMDB_CLASS (klass);
-
 
   object_class->finalize = rhythmdb_gda_finalize;
 
@@ -86,7 +84,7 @@ rhythmdb_gda_init (RhythmDBGda * db)
       mod ++;
     }
   }
-  
+
   /* we'll set up the Db in the _new function when we actually know the filename */
 }
 
@@ -113,7 +111,7 @@ dump_model (GdaDataModel *model)
   for (i = 0; i < gda_data_model_get_n_rows (model); i++) {
     for (j = 0; j < gda_data_model_get_n_columns (model); j++) {
       const GdaValue *value = gda_data_model_get_value_at (model, j, i);
-      
+
       if (value) {
 	gchar *str = gda_value_stringify (value);
 	g_print ("(%4u, %4u) - %s (%d)\n", i, j, str, gda_value_get_type (value));
@@ -132,7 +130,7 @@ execute_query (RhythmDBGda *db, const gchar *query)
 {
   GdaDataModel *model;
   GdaCommand *command;
-  
+
   g_print ("Executing Query:    %s\n", query);
   command = gda_command_new (query, GDA_COMMAND_TYPE_SQL, GDA_COMMAND_OPTION_STOP_ON_ERRORS);
   g_static_mutex_lock (&my_mutex);
@@ -144,7 +142,7 @@ execute_query (RhythmDBGda *db, const gchar *query)
   } else {
     g_warning ("query '%s' failed", query);
   }
-  
+
   return model;
 }
 
@@ -153,7 +151,7 @@ execute_nonquery (RhythmDBGda *db, const gchar *query)
 {
   gboolean ret;
   GdaCommand *command;
-  
+
   g_print ("Executing NonQuery: %s\n", query);
   command = gda_command_new (query, GDA_COMMAND_TYPE_SQL, GDA_COMMAND_OPTION_STOP_ON_ERRORS);
   g_static_mutex_lock (&my_mutex);
@@ -174,7 +172,7 @@ ensure_table_exists (RhythmDBGda *db)
   guint i;
   GString *s;
   gboolean ret;
-  
+
   model = gda_connection_get_schema (db->conn, GDA_CONNECTION_SCHEMA_TABLES, NULL);
   g_assert (model);
   dump_model (model);
@@ -218,7 +216,7 @@ ensure_table_exists (RhythmDBGda *db)
   /* optimizations */
   if (i == RHYTHMDB_PROP_LOCATION) {
     /* location is unique */
-    g_string_append (s, " UNIQUE"); 
+    g_string_append (s, " UNIQUE");
   }
   g_string_append (s, ")");
   ret =  execute_nonquery (db, s->str);
@@ -226,17 +224,17 @@ ensure_table_exists (RhythmDBGda *db)
   if (ret) {
     /* refcounting with autodelete (woohoo!) */
     ret = execute_nonquery (db, "create trigger delete_track after update of refcount on "
-	TABLE " when new.refcount = 0 begin delete from " TABLE 
+	TABLE " when new.refcount = 0 begin delete from " TABLE
 	" where _rowid_ = new._rowid_; end");
   }
   return ret;
 }
 
 static gchar *
-collect_value_for_sql (const GValue *val) 
+collect_value_for_sql (const GValue *val)
 {
   gchar *value;
-  
+
   switch (G_VALUE_TYPE (val)) {
     case G_TYPE_STRING:
       value = escape_string (g_value_get_string (val));
@@ -270,12 +268,12 @@ static void
 collect_value_from_sql (GValue *dest, const GdaValue *src)
 {
   const gchar *str;
-  
+
   if (gda_value_isa (src, GDA_VALUE_TYPE_NULL))
     return;
   g_assert (gda_value_isa (src, GDA_VALUE_TYPE_STRING));
   str = gda_value_get_string (src);
-  
+
   /* keep in sync with create table */
   switch (G_VALUE_TYPE (dest)) {
     case G_TYPE_STRING:
@@ -304,14 +302,14 @@ collect_value_from_sql (GValue *dest, const GdaValue *src)
       break;
   }
 }
-  
+
 static gboolean
 _initialize (RhythmDBGda *db)
 {
   /* check songs table */
   if (!ensure_table_exists (db))
     return FALSE;
-  
+
   return execute_nonquery (db, "update " TABLE " set refcount=1");
 }
 
@@ -340,11 +338,11 @@ rhythmdb_gda_new (const char *name)
     g_object_unref (db);
     return NULL;
   }
-  
+
   return RHYTHMDB (db);
 }
 
-static void 
+static void
 rhythmdb_gda_finalize (GObject * object)
 {
   RhythmDBGda *db = RHYTHMDB_GDA (object);
@@ -359,12 +357,12 @@ static void
 rhythmdb_gda_load (RhythmDB * rdb, gboolean * die)
 {
   guint i, j;
-  static guint types[] = { RHYTHMDB_PROP_TITLE, RHYTHMDB_PROP_ARTIST, 
+  static guint types[] = { RHYTHMDB_PROP_TITLE, RHYTHMDB_PROP_ARTIST,
       RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_LAST_PLAYED };
   RhythmDBGda *db = RHYTHMDB_GDA (rdb);
   GdaDataModel *model = execute_query (db, "select _rowid_, title, artist, album, last_played from " TABLE);
   g_return_if_fail (model);
-    
+
   for (i = 0; i < gda_data_model_get_n_rows (model); i++) {
     gpointer entry = GINT_TO_POINTER ((gint) strtol (gda_value_get_string (
 	    gda_data_model_get_value_at (model, 0, i)), NULL, 10));
@@ -389,9 +387,9 @@ static RhythmDBEntry *
 rhythmdb_gda_entry_new (RhythmDB * rdb, RhythmDBEntryType type, const char *uri)
 {
   RhythmDBGda *db = RHYTHMDB_GDA (rdb);
-  gchar *query = g_strdup_printf ("insert into " TABLE 
+  gchar *query = g_strdup_printf ("insert into " TABLE
       " (type, refcount, location) values (%d, 1, \"%s\")", (gint) type, uri);
-  
+
   if (!execute_nonquery (db, query)) {
     g_free (query);
     return NULL;
@@ -411,7 +409,7 @@ rhythmdb_gda_entry_set (RhythmDB * rdb, RhythmDBEntry * entry,
       GPOINTER_TO_INT (entry));
 
   execute_nonquery (db, query);
-  g_free (query);  
+  g_free (query);
 }
 
 static void
@@ -419,14 +417,14 @@ rhythmdb_gda_entry_get (RhythmDB * rdb, RhythmDBEntry * entry,
     guint propid, GValue * value)
 {
   RhythmDBGda *db = RHYTHMDB_GDA (rdb);
-  gchar *query = g_strdup_printf ("select %s from " TABLE 
+  gchar *query = g_strdup_printf ("select %s from " TABLE
       " where _ROWID_ = %d", rhythmdb_nice_elt_name_from_propid (rdb, propid),
       GPOINTER_TO_INT (entry));
   GdaDataModel *model = execute_query (db, query);
 
   g_free (query);
   if (!model) return;
-  
+
   if (gda_data_model_get_n_rows (model) > 0) {
     g_assert (gda_data_model_get_n_rows (model) == 1);
     collect_value_from_sql (value, gda_data_model_get_value_at (model, 0, 0));
@@ -437,18 +435,18 @@ rhythmdb_gda_entry_get (RhythmDB * rdb, RhythmDBEntry * entry,
 void
 rhythmdb_gda_ref (RhythmDBGda *db, gint id, gint count)
 {
-  gchar *query = g_strdup_printf ("select refcount from " TABLE 
+  gchar *query = g_strdup_printf ("select refcount from " TABLE
       " where _ROWID_ = %d", id);
   GdaDataModel *model = execute_query (db, query);
 
   g_free (query);
   g_assert (model);
-  
+
   g_assert (gda_data_model_get_n_rows (model) == 1);
   count += strtol (gda_value_get_string (
 	gda_data_model_get_value_at (model, 0, 0)), NULL, 10);
   g_object_unref (model);
-  
+
   query = g_strdup_printf ("update " TABLE " set refcount = %d where _ROWID_ = %d",
       count, id);
   execute_nonquery (db, query);
@@ -473,14 +471,14 @@ rhythmdb_gda_entry_lookup_by_location (RhythmDB * rdb, const char *uri)
   gpointer ret;
   RhythmDBGda *db = RHYTHMDB_GDA (rdb);
   gchar *escaped_uri = escape_string (uri);
-  gchar *query = g_strdup_printf ("select _ROWID_ from " TABLE 
+  gchar *query = g_strdup_printf ("select _ROWID_ from " TABLE
       " where location = %s", escaped_uri);
   GdaDataModel *model = execute_query (db, query);
 
   g_free (escaped_uri);
   g_free (query);
   if (!model) return NULL;
-  
+
   if (gda_data_model_get_n_rows (model) > 0) {
     g_assert (gda_data_model_get_n_rows (model) == 1);
     ret = GINT_TO_POINTER (strtol (gda_value_get_string (
@@ -497,7 +495,7 @@ static gchar *
 translate_query (RhythmDBGda *db, RhythmDBQueryData *data)
 {
   gchar *operation = NULL, *value, *ret;
-  
+
   switch (data->type) {
     case RHYTHMDB_QUERY_DISJUNCTION:
     case RHYTHMDB_QUERY_SUBQUERY:
@@ -526,7 +524,7 @@ translate_query (RhythmDBGda *db, RhythmDBQueryData *data)
   ret = g_strdup_printf (operation, rhythmdb_nice_elt_name_from_propid (RHYTHMDB (db), data->propid),
       value);
   g_free (value);
-  
+
   return ret;
 }
 
@@ -539,7 +537,7 @@ do_query (RhythmDBGda *db, GPtrArray * query, gint rowid)
   GString *s = g_string_new (NULL);
   GdaDataModel *model;
   gchar *tmp;
-  
+
   g_assert (query->len == 1);
   g_string_append (s, "select _ROWID_ from " TABLE " where ");
   if (rowid)
@@ -572,7 +570,7 @@ rhythmdb_gda_do_full_query (RhythmDB * rdb, GPtrArray * query,
   {
     int j;
     GPtrArray *queue;
-    
+
     queue = g_ptr_array_sized_new (gda_data_model_get_n_rows (model));
     for (j = 0; j < gda_data_model_get_n_rows (model); j++) {
       g_ptr_array_add (queue, GINT_TO_POINTER (strtol (gda_value_get_string (

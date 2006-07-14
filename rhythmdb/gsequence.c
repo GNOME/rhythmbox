@@ -46,7 +46,7 @@ struct _GSequenceNode {
     GSequenceNode *right;
 
     GSequence *sequence;
-    
+
     gpointer data;
 };
 
@@ -80,7 +80,6 @@ static void           g_sequence_node_insert_sorted (GSequenceNode *node,
 						     GCompareDataFunc cmp_func,
 						     gpointer cmp_data);
 
-
 /* GSequence */
 GSequence *
 g_sequence_new                (GDestroyNotify           data_destroy)
@@ -91,7 +90,7 @@ g_sequence_new                (GDestroyNotify           data_destroy)
     seq->node = g_sequence_node_new (NULL);
     seq->node->is_end = TRUE;
     seq->node->sequence = seq;
-    
+
     return seq;
 }
 
@@ -169,11 +168,11 @@ g_sequence_prepend            (GSequence               *seq,
     GSequenceNode *node, *second;
 
     g_return_if_fail (seq != NULL);
-    
+
     node = g_sequence_node_new (data);
     node->sequence = seq;
     second = g_sequence_node_next (g_sequence_node_find_first (seq->node));
-    
+
     g_sequence_node_insert_before (second, node);
 }
 
@@ -182,7 +181,7 @@ g_sequence_insert             (GSequencePtr             ptr,
 			       gpointer                 data)
 {
     GSequenceNode *node;
-    
+
     g_return_if_fail (ptr != NULL);
 
     node = g_sequence_node_new (data);
@@ -209,11 +208,11 @@ void
 g_sequence_remove             (GSequencePtr             ptr)
 {
     GSequence *seq;
-    
+
     g_return_if_fail (ptr != NULL);
     g_return_if_fail (!ptr->is_end);
 
-    seq = g_sequence_node_get_sequence (ptr); 
+    seq = g_sequence_node_get_sequence (ptr);
     g_sequence_unlink (seq, ptr);
     g_sequence_node_free (ptr, seq->data_destroy_notify);
 }
@@ -291,7 +290,7 @@ g_sequence_concatenate        (GSequence               *seq1,
 
     g_return_if_fail (seq1 != NULL);
     g_return_if_fail (seq2 != NULL);
-    
+
     last = g_sequence_node_find_last (seq1->node);
     g_sequence_insert_sequence (last, seq2);
 }
@@ -311,7 +310,7 @@ g_sequence_remove_range       (GSequencePtr             begin,
     seq = g_sequence_node_get_sequence (begin);
 
     g_assert (end != NULL);
-    
+
     g_return_if_fail (seq == g_sequence_node_get_sequence (end));
 
     g_sequence_node_split (begin, &s1, &s2);
@@ -361,7 +360,7 @@ g_sequence_get_ptr_at_pos     (GSequence               *seq,
 			       gint                     pos)
 {
     gint len;
-    
+
     g_return_val_if_fail (seq != NULL, NULL);
 
     len = g_sequence_get_length (seq);
@@ -371,7 +370,6 @@ g_sequence_get_ptr_at_pos     (GSequence               *seq,
 
     return g_sequence_node_find_by_pos (seq->node, pos);
 }
-
 
 /* GSequencePtr */
 gboolean
@@ -416,11 +414,11 @@ g_sequence_ptr_move           (GSequencePtr             ptr,
 			       guint                    delta)
 {
     gint new_pos;
-    
+
     g_return_val_if_fail (ptr != NULL, NULL);
 
     new_pos = g_sequence_node_get_pos (ptr) + delta;
-    
+
     return g_sequence_node_find_by_pos (ptr, new_pos);
 }
 
@@ -430,10 +428,10 @@ g_sequence_ptr_sort_changed  (GSequencePtr	     ptr,
 			      gpointer		     cmp_data)
 {
     GSequence *seq;
-    
+
     g_return_if_fail (!ptr->is_end);
-    
-    seq = g_sequence_node_get_sequence (ptr); 
+
+    seq = g_sequence_node_get_sequence (ptr);
     g_sequence_unlink (seq, ptr);
     g_sequence_node_insert_sorted (seq->node, ptr, cmp_func, cmp_data);
 }
@@ -458,7 +456,7 @@ g_sequence_search             (GSequence               *seq,
     {
 	GSequenceNode *begin = g_queue_pop_head (intervals);
 	GSequenceNode *end   = g_queue_pop_head (intervals);
-	
+
 	if (f (begin, end, data))
 	{
 	    gint begin_pos = g_sequence_node_get_pos (begin);
@@ -483,8 +481,6 @@ g_sequence_search             (GSequence               *seq,
 
     g_queue_free (intervals);
 }
-
-
 
 #if 0
 /* aggregates */
@@ -512,7 +508,7 @@ g_sequence_set_aggregate_data (GSequencePtr             ptr,
 			       gpointer                 data)
 {
     /* FIXME */
-    
+
 }
 
 gpointer
@@ -525,16 +521,15 @@ g_sequence_get_aggregate_data (GSequencePtr             begin,
 }
 #endif
 
-
 /* Nodes
  */
 static void
 g_sequence_node_update_fields (GSequenceNode *node)
 {
     g_assert (node != NULL);
-    
+
     node->n_nodes = 1;
-    
+
     if (node->left)
 	node->n_nodes += node->left->n_nodes;
 
@@ -557,12 +552,12 @@ g_sequence_node_rotate (GSequenceNode *node)
 
     g_assert (node->parent);
     g_assert (node->parent != node);
-    
+
     if (NODE_LEFT_CHILD (node))
     {
 	/* rotate right */
 	tmp = node->right;
-	
+
 	node->right = node->parent;
 	node->parent = node->parent->parent;
 	if (node->parent)
@@ -572,22 +567,22 @@ g_sequence_node_rotate (GSequenceNode *node)
 	    else
 		node->parent->right = node;
 	}
-	
+
 	g_assert (node->right);
-	
+
 	node->right->parent = node;
 	node->right->left = tmp;
-	
+
 	if (node->right->left)
 	    node->right->left->parent = node->right;
-	
+
 	old = node->right;
     }
     else
     {
 	/* rotate left */
 	tmp = node->left;
-	
+
 	node->left = node->parent;
 	node->parent = node->parent->parent;
 	if (node->parent)
@@ -599,16 +594,16 @@ g_sequence_node_rotate (GSequenceNode *node)
 	}
 
 	g_assert (node->left);
-	
+
 	node->left->parent = node;
 	node->left->right = tmp;
-	
+
 	if (node->left->right)
 	    node->left->right->parent = node->left;
-	
+
 	old = node->left;
     }
-    
+
     g_sequence_node_update_fields (old);
     g_sequence_node_update_fields (node);
 }
@@ -664,7 +659,7 @@ find_min (GSequenceNode *node)
 
     while (node->left)
 	node = node->left;
-    
+
     return node;
 }
 
@@ -707,9 +702,9 @@ g_sequence_node_find_by_pos  (GSequenceNode    *node,
     gint i;
 
     g_assert (node != NULL);
-    
+
     splay (node);
-    
+
     while ((i = get_n_nodes (node->left)) != pos)
     {
 	if (i < pos)
@@ -783,7 +778,7 @@ g_sequence_node_find_closest (GSequenceNode    *node,
     gint c;
 
     splay (node);
-    
+
     do
     {
 	best = node;
@@ -826,7 +821,7 @@ g_sequence_node_free         (GSequenceNode    *node,
 	if (destroy && !node->is_end)
 	    destroy (node->data);
 	g_slice_free (GSequenceNode, node);
-	
+
 	node = next;
     }
 }
@@ -850,7 +845,7 @@ g_sequence_node_split        (GSequenceNode    *node,
 			      GSequenceNode   **right)
 {
     GSequenceNode *left_tree;
-    
+
     splay (node);
 
     left_tree = node->left;
@@ -859,7 +854,7 @@ g_sequence_node_split        (GSequenceNode    *node,
 	left_tree->parent = NULL;
 	g_sequence_node_update_fields (left_tree);
     }
-    
+
     node->left = NULL;
     g_sequence_node_update_fields (node);
 
@@ -876,7 +871,7 @@ g_sequence_node_insert_before (GSequenceNode *node,
 {
     g_assert (node != NULL);
     g_assert (new != NULL);
-    
+
     splay (node);
 
     new = splay (find_min (new));
@@ -898,7 +893,7 @@ static gint
 g_sequence_node_get_length (GSequenceNode    *node)
 {
     g_assert (node != NULL);
-    
+
     splay (node);
     return node->n_nodes;
 }
@@ -907,7 +902,7 @@ static void
 g_sequence_node_remove        (GSequenceNode *node)
 {
     GSequenceNode *right, *left;
-    
+
     splay (node);
 
     left = node->left;
@@ -918,10 +913,10 @@ g_sequence_node_remove        (GSequenceNode *node)
     if (right)
     {
 	right->parent = NULL;
-	
+
 	right = g_sequence_node_find_first (right);
 	g_assert (right->left == NULL);
-	
+
 	right->left = left;
 	if (left)
 	{
@@ -959,7 +954,7 @@ g_sequence_node_calc_height (GSequenceNode *node)
 	}
 
 	g_queue_free (nodes);
-	
+
 	nodes = tmp;
     }
     g_queue_free (nodes);
@@ -978,7 +973,7 @@ g_sequence_node_insert_sorted (GSequenceNode *node,
     GSequenceNode *closest;
     info.cmp = cmp_func;
     info.data = cmp_data;
-    
+
     closest =
 	g_sequence_node_find_closest (node, new, node_compare, &info);
 
@@ -1033,4 +1028,3 @@ g_sequence_calc_tree_height   (GSequence               *seq)
     else
 	return 0;
 }
-

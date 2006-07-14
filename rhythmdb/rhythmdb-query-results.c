@@ -71,4 +71,3 @@ rhythmdb_query_results_query_complete (RhythmDBQueryResults *results)
 	if (iface->query_complete)
 		iface->query_complete (results);
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for search entry/browse toggle container
  *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>

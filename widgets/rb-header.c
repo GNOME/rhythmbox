@@ -101,7 +101,6 @@ enum
 
 G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
-
 static void
 rb_header_class_init (RBHeaderClass *klass)
 {
@@ -176,7 +175,7 @@ rb_header_init (RBHeader *header)
 
 	header->priv->song = gtk_label_new ("");
  	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
- 	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);	
+ 	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->song), PANGO_ELLIPSIZE_END);
 	gtk_box_pack_start (GTK_BOX (hbox), header->priv->song, TRUE, TRUE, 0);
 	gtk_widget_show (header->priv->song);
@@ -257,7 +256,7 @@ rb_header_set_property (GObject *object,
 	case PROP_SHELL_PLAYER:
 		header->priv->shell_player = g_value_get_object (value);
 		g_signal_connect (G_OBJECT (header->priv->shell_player),
-				  "elapsed-changed", 
+				  "elapsed-changed",
 				  (GCallback) rb_header_elapsed_changed_cb,
 				  header);
 		break;
@@ -271,7 +270,7 @@ rb_header_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_header_get_property (GObject *object,
 			guint prop_id,
 			GValue *value,
@@ -330,11 +329,11 @@ rb_header_sync (RBHeader *header)
 	char *label_text;
 
 	rb_debug ("syncing with entry = %p", header->priv->entry);
-	
+
 	if (header->priv->entry != NULL) {
 		const char *song = header->priv->title;
 		const char *album;
-		const char *artist; 
+		const char *artist;
 
 		gboolean have_duration = (header->priv->duration > 0);
 
@@ -459,16 +458,16 @@ slider_moved_timeout (RBHeader *header)
 	long new;
 
 	GDK_THREADS_ENTER ();
-	
+
 	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (header->priv->scale)));
 	new = (long) (progress+0.5);
-	
+
 	rb_debug ("setting time to %ld", new);
 	rb_shell_player_set_playing_time (header->priv->shell_player, new, NULL);
 
 	header->priv->latest_set_time = new;
 	header->priv->slider_moved_timeout = 0;
-	
+
 	GDK_THREADS_LEAVE ();
 
 	return FALSE;
@@ -501,7 +500,7 @@ slider_moved_callback (GtkWidget *widget,
 	}
 	header->priv->slider_moved_timeout =
 		g_timeout_add (40, (GSourceFunc) slider_moved_timeout, header);
-	
+
 	return FALSE;
 }
 
@@ -549,7 +548,7 @@ changed_idle_callback (RBHeader *header)
 	slider_release_callback (header->priv->scale, NULL, header);
 
 	header->priv->value_changed_update_handler = 0;
-	rb_debug ("in changed_idle_callback"); 
+	rb_debug ("in changed_idle_callback");
 
 	GDK_THREADS_LEAVE ();
 
@@ -586,8 +585,7 @@ rb_header_update_elapsed (RBHeader *header)
 	g_free (elapsed_text);
 }
 
-
-static void 
+static void
 rb_header_elapsed_changed_cb (RBShellPlayer *player,
 			      guint elapsed,
 			      RBHeader *header)
@@ -595,4 +593,3 @@ rb_header_elapsed_changed_cb (RBShellPlayer *player,
 	header->priv->elapsed_time = elapsed;
 	rb_header_sync_time (header);
 }
-

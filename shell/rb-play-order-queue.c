@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ rb_queue_play_order_init (RBQueuePlayOrder *porder)
 {
 }
 
-static RhythmDBEntry* 
+static RhythmDBEntry*
 rb_queue_play_order_get_next (RBPlayOrder* porder)
 {
 	RhythmDBQueryModel *model;
@@ -163,4 +163,3 @@ rb_queue_play_order_playing_entry_removed (RBPlayOrder *porder,
 
 	RB_PLAY_ORDER_CLASS (rb_queue_play_order_parent_class)->playing_entry_removed (porder, entry);
 }
-

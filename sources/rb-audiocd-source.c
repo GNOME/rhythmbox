@@ -20,7 +20,6 @@
  *
  */
 
-
 /*
  * TODO
  *    * handle cases where MusicBrainz returns multiple albums
@@ -50,7 +49,6 @@
 #include "sj-structures.h"
 #endif
 
-
 static void rb_audiocd_source_dispose (GObject *object);
 static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_properties,
 					        GObjectConstructParam *construct_properties);
@@ -71,16 +69,14 @@ typedef struct
 	GstElement *pipeline;
 	GstElement *cdda;
 	GstElement *fakesink;
-	
+
 #ifdef HAVE_MUSICBRAINZ
 	SjMetadata *metadata;
 #endif
 } RBAudioCdSourcePrivate;
 
-
 G_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
-
 
 static void
 rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
@@ -111,7 +107,7 @@ rb_audiocd_source_init (RBAudioCdSource *self)
 
 }
 
-static void 
+static void
 rb_audiocd_source_dispose (GObject *object)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (object);
@@ -132,14 +128,12 @@ rb_audiocd_source_dispose (GObject *object)
 	G_OBJECT_CLASS (rb_audiocd_source_parent_class)->dispose (object);
 }
 
-
-
 static GObject *
 rb_audiocd_source_constructor (GType type,
 			       guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
-	RBAudioCdSource *source; 
+	RBAudioCdSource *source;
 	RBEntryView *entry_view;
 
 	source = RB_AUDIOCD_SOURCE (G_OBJECT_CLASS (rb_audiocd_source_parent_class)->
@@ -193,7 +187,7 @@ rb_audiocd_source_new (RBShell *shell,
 	return RB_REMOVABLE_MEDIA_SOURCE (source);
 }
 
-static void 
+static void
 entry_set_string_prop (RhythmDB *db,
 		       RhythmDBEntry *entry,
 		       gboolean is_inserted,
@@ -246,7 +240,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	g_value_init (&value, G_TYPE_ULONG);
 	g_value_set_ulong (&value, track_number);
 	rhythmdb_entry_set (db, entry,
-			    RHYTHMDB_PROP_TRACK_NUMBER, 
+			    RHYTHMDB_PROP_TRACK_NUMBER,
 			    &value);
 	g_value_unset (&value);
 
@@ -255,7 +249,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	str = g_strdup_printf (_("Track %u"), track_number);
 	g_value_take_string (&value, str);
 	rhythmdb_entry_set (db, entry,
-			    RHYTHMDB_PROP_TITLE, 
+			    RHYTHMDB_PROP_TITLE,
 			    &value);
 	g_value_unset (&value);
 
@@ -268,7 +262,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 #ifdef HAVE_GSTREAMER_0_8
 		GstEvent *event;
 
-		event = gst_event_new_seek (track_format | GST_SEEK_METHOD_SET | GST_SEEK_FLAG_FLUSH, 
+		event = gst_event_new_seek (track_format | GST_SEEK_METHOD_SET | GST_SEEK_FLAG_FLUSH,
 					    (guint64) track_number - 1);
 		result = gst_element_send_event (priv->fakesink, event);
 
@@ -285,7 +279,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, (gulong)(duration / GST_SECOND));
 			rhythmdb_entry_set (db, entry,
-					    RHYTHMDB_PROP_DURATION, 
+					    RHYTHMDB_PROP_DURATION,
 					    &value);
 			g_value_unset (&value);
 		} else {
@@ -442,10 +436,10 @@ metadata_cb (SjMetadata *metadata,
 			g_value_set_ulong (&value, track->duration);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &value);
 			g_value_unset (&value);
-			
+
 			/*album->release_date (could potentially have multiple values)*/
 			/* in current sj-structures.h, however, it does not */
-			
+
 			if (album->release_date) {
 				GType type = rhythmdb_get_property_type (db, RHYTHMDB_PROP_DATE);
 				g_value_init (&value, type);
@@ -528,11 +522,11 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 	RBShell *shell;
 	RhythmDB *db;
 	GnomeVFSVolume *volume;
-	
+
 	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 	priv->device_path = gnome_vfs_volume_get_device_path (volume);
 	g_object_unref (G_OBJECT (volume));
-	
+
 	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 	g_object_unref (G_OBJECT (shell));
@@ -552,12 +546,12 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 #elif HAVE_GSTREAMER_0_10
 	g_object_set (G_OBJECT (priv->cdda), "device", priv->device_path, NULL);
 #endif
-	
+
 	priv->pipeline = gst_pipeline_new ("pipeline");
 	priv->fakesink = gst_element_factory_make ("fakesink", "fakesink");
 	gst_bin_add_many (GST_BIN (priv->pipeline), priv->cdda, priv->fakesink, NULL);
 	gst_element_link (priv->cdda, priv->fakesink);
-	
+
 	if (rb_audiocd_scan_songs (source, db))
 		rb_audiocd_load_metadata (source, db);
 
@@ -590,7 +584,6 @@ impl_delete_thyself (RBSource *source)
 	g_object_unref (db);
 }
 
-
 gboolean
 rb_audiocd_is_volume_audiocd (GnomeVFSVolume *volume)
 {
@@ -622,7 +615,6 @@ rb_audiocd_is_volume_audiocd (GnomeVFSVolume *volume)
 	return result;
 }
 
-
 static gboolean
 impl_show_popup (RBSource *source)
 {
@@ -642,4 +634,3 @@ impl_get_ui_actions (RBSource *source)
 
 	return actions;
 }
-

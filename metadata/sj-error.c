@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003 Ross Burton <ross@burtonini.com>
  *
  * Sound Juicer - sj-error.c
@@ -25,9 +25,9 @@
 #include "sj-error.h"
 
 GQuark
-sj_error_quark (void) 
+sj_error_quark (void)
 {
-  static GQuark q = 0; 
+  static GQuark q = 0;
   if (q == 0) {
     q = g_quark_from_static_string ("sj-error-quark");
   }

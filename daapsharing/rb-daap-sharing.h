@@ -26,13 +26,12 @@
 
 G_BEGIN_DECLS
 
-void 
+void
 rb_daap_sharing_init (RBShell *shell);
 
-void 
+void
 rb_daap_sharing_shutdown (RBShell *shell);
 
 G_END_DECLS
 
 #endif /* __DAAP_SHARING_H */
-

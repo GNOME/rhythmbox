@@ -54,7 +54,6 @@ GtkWidget *	rb_query_creator_new_from_query	(RhythmDB *db, GPtrArray *query,
 						 RhythmDBQueryModelLimitType limit_type, GValueArray *limit_value,
 						 const char *sort_column, gint sort_direction);
 
-
 GPtrArray *	rb_query_creator_get_query	(RBQueryCreator *creator);
 
 void		rb_query_creator_get_limit	(RBQueryCreator *creator,

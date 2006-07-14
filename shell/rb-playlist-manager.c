@@ -181,7 +181,6 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE));
 
-
 	g_object_class_install_property (object_class,
 					 PROP_SOURCELIST,
 					 g_param_spec_object ("sourcelist",
@@ -198,7 +197,7 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
-	
+
 	rb_playlist_manager_signals[PLAYLIST_CREATED] =
 		g_signal_new ("playlist_created",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -234,8 +233,8 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 static void
 rb_playlist_manager_init (RBPlaylistManager *mgr)
 {
-	mgr->priv = G_TYPE_INSTANCE_GET_PRIVATE (mgr, 
-						 RB_TYPE_PLAYLIST_MANAGER, 
+	mgr->priv = G_TYPE_INSTANCE_GET_PRIVATE (mgr,
+						 RB_TYPE_PLAYLIST_MANAGER,
 						 RBPlaylistManagerPrivate);
 
 	mgr->priv->saving_mutex = g_mutex_new ();
@@ -272,7 +271,7 @@ rb_playlist_manager_finalize (GObject *object)
 }
 
 static void
-rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr, 
+rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 				   GtkUIManager *uimanager)
 {
 	if (mgr->priv->uimanager != NULL) {
@@ -295,7 +294,7 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 					      rb_playlist_manager_n_actions,
 					      mgr);
 	}
-	
+
 	gtk_ui_manager_insert_action_group (mgr->priv->uimanager,
 					    mgr->priv->actiongroup,
 					    0);
@@ -361,8 +360,8 @@ rb_playlist_manager_set_property (GObject *object,
 	{
 		GtkUIManager *uimanager;
 		mgr->priv->shell = g_value_get_object (value);
-		g_object_get (G_OBJECT (mgr->priv->shell), 
-			      "ui-manager", &uimanager, 
+		g_object_get (G_OBJECT (mgr->priv->shell),
+			      "ui-manager", &uimanager,
 			      "db", &mgr->priv->db,
 			      NULL);
 		rb_playlist_manager_set_uimanager (mgr, uimanager);
@@ -378,7 +377,7 @@ rb_playlist_manager_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_playlist_manager_get_property (GObject *object,
 			      guint prop_id,
 			      GValue *value,
@@ -509,7 +508,7 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 		g_signal_connect_object (G_OBJECT (parser), "playlist-end",
 					 G_CALLBACK (playlist_load_end_cb),
 					 mgr, 0);
-		
+
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 			g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
@@ -571,7 +570,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 	xmlNodePtr root;
 	xmlNodePtr child;
 	gboolean exists;
-	
+
 	exists = FALSE;
 	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
 
@@ -598,7 +597,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 		goto out;
 
 	root = xmlDocGetRootElement (doc);
-	
+
 	for (child = root->children; child; child = child->next) {
 		RBSource *playlist;
 
@@ -649,7 +648,7 @@ rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 				continue;
 
-			g_object_get (G_OBJECT (source), 
+			g_object_get (G_OBJECT (source),
 				      "is-local", &local,
 				      NULL);
 			if (local) {
@@ -684,7 +683,7 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 
 	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
 	tmpname = g_strconcat (file, ".tmp", NULL);
-	
+
 	if (xmlSaveFormatFile (tmpname, data->doc, 1) != -1) {
 		rename (tmpname, file);
 	} else {
@@ -736,7 +735,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 		/* already saving, so don't bother */
 		return FALSE;
 	}
-	
+
 	data = g_new0 (struct RBPlaylistManagerSaveData, 1);
 	data->mgr = mgr;
 	data->doc = xmlNewDoc (RB_PLAYLIST_MGR_VERSION);
@@ -744,7 +743,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 
 	root = xmlNewDocNode (data->doc, NULL, RB_PLAYLIST_MGR_PL, NULL);
 	xmlDocSetRootElement (data->doc, root);
-	
+
 	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
@@ -792,24 +791,24 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
  **/
 RBSource *
 rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
-				  const char *suggested_name, 
+				  const char *suggested_name,
 				  gboolean automatic)
 {
 	RBSource *playlist;
 	if (automatic)
-		playlist = rb_auto_playlist_source_new (mgr->priv->shell, 
-							suggested_name, 
+		playlist = rb_auto_playlist_source_new (mgr->priv->shell,
+							suggested_name,
 							TRUE);
 	else
-		playlist = rb_static_playlist_source_new (mgr->priv->shell, 
-							  suggested_name, 
-							  TRUE, 
+		playlist = rb_static_playlist_source_new (mgr->priv->shell,
+							  suggested_name,
+							  TRUE,
 							  RHYTHMDB_ENTRY_TYPE_SONG);
-	
+
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
 	rb_playlist_manager_set_dirty (mgr, TRUE);
-	
+
 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_CREATED], 0,
 		       playlist);
 
@@ -935,7 +934,7 @@ rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
 	suggested_name = create_name_from_selection_data (mgr, data);
 
 	playlist = rb_playlist_manager_new_playlist (mgr,
-						     suggested_name, 
+						     suggested_name,
 						     automatic);
 	g_free (suggested_name);
 
@@ -974,21 +973,21 @@ rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 {
 	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
 	RBSource *playlist;
-	
+
 	switch (gtk_dialog_run (GTK_DIALOG (creator))) {
 	case GTK_RESPONSE_NONE:
 	case GTK_RESPONSE_CLOSE:
-		gtk_widget_destroy (GTK_WIDGET (creator));	
+		gtk_widget_destroy (GTK_WIDGET (creator));
 		return;
 	}
 
 	playlist = rb_playlist_manager_new_playlist (mgr, NULL, TRUE);
 
-	rb_playlist_manager_set_automatic_playlist (mgr, RB_AUTO_PLAYLIST_SOURCE (playlist), creator); 
+	rb_playlist_manager_set_automatic_playlist (mgr, RB_AUTO_PLAYLIST_SOURCE (playlist), creator);
 
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 
-	gtk_widget_destroy (GTK_WIDGET (creator));	
+	gtk_widget_destroy (GTK_WIDGET (creator));
 }
 
 typedef struct {
@@ -1060,14 +1059,14 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 		data->mgr = mgr;
 		data->playlist = playlist;
 		data->creator = creator;
-		data->creator_response_id = 
+		data->creator_response_id =
 			g_signal_connect (G_OBJECT (creator),
 					  "response",
 					  G_CALLBACK (edit_auto_playlist_response_cb),
 					  data);
-		
+
 		g_object_set_data (G_OBJECT (playlist), "rhythmbox-playlist-editor", creator);
-		data->playlist_deleted_id = 
+		data->playlist_deleted_id =
 			g_signal_connect (G_OBJECT (playlist),
 					  "deleted",
 					  G_CALLBACK (edit_auto_playlist_deleted_cb),
@@ -1083,10 +1082,10 @@ _queue_track_cb (RhythmDBQueryModel *model,
 		 RBStaticPlaylistSource *queue_source)
 {
 	RhythmDBEntry *entry;
-	
+
 	entry = rhythmdb_query_model_iter_to_entry (model, iter);
 	rb_static_playlist_source_add_entry (queue_source, entry, -1);
-	
+
 	return FALSE;
 }
 
@@ -1123,7 +1122,7 @@ rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
 					 RBPlaylistManager *mgr)
 {
 	rb_debug ("Deleting playlist %p", mgr->priv->selected_source);
-	
+
 	rb_source_delete_thyself (mgr->priv->selected_source);
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 }
@@ -1172,8 +1171,6 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
 }
-
-
 
 typedef struct {
   const gchar *description;
@@ -1235,7 +1232,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (export_type == RB_PLAYLIST_EXPORT_TYPE_UNKNOWN) {
 			rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
 	} else {
-		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), 
+		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source),
 						  file, (export_type == RB_PLAYLIST_EXPORT_TYPE_M3U));
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 	}
@@ -1252,7 +1249,7 @@ export_set_extension_cb (GtkWidget* widget, GtkDialog *dialog)
 	const char *extension;
 	gchar *basename;
 	GString *basename_str;
-  
+
 	index = gtk_combo_box_get_active (GTK_COMBO_BOX (widget));
 	if (index <= 0)
 		return;
@@ -1260,7 +1257,7 @@ export_set_extension_cb (GtkWidget* widget, GtkDialog *dialog)
 	extension = playlist_export_formats[index-1].extensions[0];
 	if (extension == NULL)
 		return;
-	
+
 	text = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 	if (text == NULL || text[0] == '\0') {
 		g_free (text);
@@ -1274,7 +1271,7 @@ export_set_extension_cb (GtkWidget* widget, GtkDialog *dialog)
 		g_string_truncate (basename_str, (last_dot-basename));
 	g_free (basename);
 	g_free (text);
-  
+
 	g_string_append_printf (basename_str, ".%s", extension);
 	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), basename_str->str);
 	g_string_free (basename_str, TRUE);
@@ -1294,10 +1291,10 @@ filter_get_export_filter_label (RBPlaylistExportFilter *efilter)
 			g_string_append (str, ", *.");
 		g_string_append (str, efilter->extensions[ext]);
 	}
-    
+
 	if (ext > 0)
 		g_string_append (str, ")");
-    
+
 	return g_string_free (str, FALSE);
 }
 
@@ -1314,14 +1311,14 @@ setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
 	for (i = 0; i < G_N_ELEMENTS (playlist_export_formats); i++) {
 		gchar *filter_label;
 		GtkTreeIter iter;
-    
+
 		filter_label = filter_get_export_filter_label (&playlist_export_formats[i]);
 		gtk_list_store_insert_with_values (GTK_LIST_STORE (model), &iter, -1,
 						   0, filter_label, -1);
 
 		g_free (filter_label);
 	}
-    
+
 	g_signal_connect_object (GTK_OBJECT (menu),
 				 "changed", G_CALLBACK (export_set_extension_cb),
 				 dialog, 0);
@@ -1343,7 +1340,7 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	menu = glade_xml_get_widget (xml, "playlist_format_menu");
 	setup_format_menu (menu, dialog);
 	g_object_set_data (G_OBJECT (dialog), "export-menu", menu);
-	
+
 	g_object_get (G_OBJECT (mgr->priv->selected_source), "name", &name, NULL);
 	tmp = g_strconcat (name, ".pls", NULL);
 	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), tmp);
@@ -1372,11 +1369,11 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 	GtkTreeIter iter;
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
-	
+
 	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
-	
+
 	if (gtk_tree_model_get_iter_first (model, &iter)) {
 		do {
 			RBSource *source;
@@ -1392,7 +1389,7 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 				continue;
 			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
 				continue;
-			g_object_get (G_OBJECT (source), "is-local", &local, 
+			g_object_get (G_OBJECT (source), "is-local", &local,
 				      NULL);
 			if (local) {
 				playlists = g_list_prepend (playlists, source);
@@ -1400,7 +1397,7 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
-	
+
 	return playlists;
 }
 
@@ -1412,7 +1409,7 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
  *
  * Allocates and returns an array containing the names of all local
  * playlists.  This is part of the playlist manager dbus interface.
- * 
+ *
  * Returns TRUE if successful.
  **/
 gboolean
@@ -1424,11 +1421,11 @@ rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
 	int i;
-	
+
 	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
-	
+
 	if (!gtk_tree_model_get_iter_first (model, &iter)) {
 		*playlists = NULL;
 		return TRUE;
@@ -1457,7 +1454,7 @@ rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 		(*playlists)[i++] = source_name;
 	} while (gtk_tree_model_iter_next (model, &iter));
 
-	return TRUE;	
+	return TRUE;
 }
 
 static RBSource *
@@ -1480,7 +1477,7 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
 		RBSource *source;
 		GValue v = {0,};
 		char *source_name;
-		
+
 		gtk_tree_model_get_value (model, &iter,
 					  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
 					  &v);
@@ -1507,7 +1504,7 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
  * Creates a new static playlist source with the given name.
  * Will fail if a playlist with that name already exists.
  * This is part of the playlist manager dbus interface.
- * 
+ *
  * Returns TRUE if successful.
  **/
 gboolean
@@ -1540,8 +1537,8 @@ rb_playlist_manager_create_static_playlist (RBPlaylistManager *mgr,
  * Returns TRUE if successful.
  */
 gboolean
-rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr, 
-				     const gchar *name, 
+rb_playlist_manager_delete_playlist (RBPlaylistManager *mgr,
+				     const gchar *name,
 				     GError **error)
 {
 	RBSource *playlist = _get_playlist_by_name (mgr, name);
@@ -1675,4 +1672,3 @@ rb_playlist_manager_export_playlist (RBPlaylistManager *mgr,
 					  m3u_format);
 	return TRUE;
 }
-

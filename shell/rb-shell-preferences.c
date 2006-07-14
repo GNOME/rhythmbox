@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Implementation of preferences dialog object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -60,7 +60,6 @@ void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						      RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_toolbar_style_cb (GtkComboBox *box,
 						   RBShellPreferences *preferences);
-
 
 enum
 {
@@ -170,7 +169,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				shell_preferences);
 
 	rb_glade_boldify_label (xml, "visible_columns_label");
-	
+
 	/* Columns */
 	shell_preferences->priv->artist_check =
 		glade_xml_get_widget (xml, "artist_check");
@@ -200,7 +199,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	tmp = glade_xml_get_widget (xml, "library_browser_views_radio");
 	shell_preferences->priv->browser_views_group =
-		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
+		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group
 					       (GTK_RADIO_BUTTON (tmp))));
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
@@ -217,7 +216,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	g_signal_connect_object (G_OBJECT (shell_preferences->priv->toolbar_style_menu),
 				 "changed", G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
 				 shell_preferences, 0);
-	
+
 	eel_gconf_notification_add (CONF_UI_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
 				    shell_preferences);
@@ -246,7 +245,7 @@ rb_shell_preferences_append_page (RBShellPreferences *prefs,
 				  GtkWidget *widget)
 {
 	GtkWidget *label;
-		
+
 	label = gtk_label_new (name);
 	gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
 				  widget,
@@ -283,7 +282,7 @@ share_check_button_toggled_cb (GtkToggleButton *button,
 	eel_gconf_set_boolean (CONF_DAAP_ENABLE_SHARING, b);
 
 	gtk_widget_set_sensitive (widget, b);
-	
+
 	return;
 }
 
@@ -298,7 +297,7 @@ password_check_button_toggled_cb (GtkToggleButton *button,
 	eel_gconf_set_boolean (CONF_DAAP_REQUIRE_PASSWORD, b);
 
 	gtk_widget_set_sensitive (widget, b);
-	
+
 	return;
 }
 
@@ -388,7 +387,7 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 	name_entry = glade_xml_get_widget (xml, "daap_name_entry");
 	password_entry = glade_xml_get_widget (xml, "daap_password_entry");
 	box = glade_xml_get_widget (xml, "daap_box");
-	
+
 	sharing_enabled = eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), sharing_enabled);
 	g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), box);
@@ -396,14 +395,14 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (password_check), require_password);
 	g_signal_connect (password_check, "toggled", G_CALLBACK (password_check_button_toggled_cb), password_entry);
-	
+
 	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
 	if (name != NULL) {
 		gtk_entry_set_text (GTK_ENTRY (name_entry), name);
 	}
 	g_free (name);
 	g_signal_connect (name_entry, "focus-out-event",
-			  G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);	
+			  G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);
 
 	password = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
 	if (password != NULL) {
@@ -411,7 +410,7 @@ add_daap_preferences (RBShellPreferences *shell_preferences)
 	}
 	g_free (password);
 	g_signal_connect (password_entry, "focus-out-event",
-			  G_CALLBACK (share_password_entry_focus_out_event_cb), NULL);	
+			  G_CALLBACK (share_password_entry_focus_out_event_cb), NULL);
 
 	gtk_widget_set_sensitive (box, sharing_enabled);
 	gtk_widget_set_sensitive (password_entry, require_password);
@@ -516,7 +515,7 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		g_assert_not_reached ();
 
 	rb_debug ("\"%s\" changed, current cols are \"%s\"", colname, currentcols);
-	
+
 	/* Append this if we want it */
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (butt))) {
 		g_string_append (newcolumns, colname);
@@ -528,7 +527,7 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		if (strcmp (colnames[i], colname)) {
 			g_string_append (newcolumns, colnames[i]);
 			if (colnames[i+1] != NULL)
-				g_string_append (newcolumns, ",");				
+				g_string_append (newcolumns, ",");
 		}
 	}
 
@@ -545,8 +544,8 @@ rb_shell_preferences_sync_column_button (RBShellPreferences *preferences,
 	g_signal_handlers_block_by_func (G_OBJECT (button),
 					 rb_shell_preferences_column_check_changed_cb,
 					 preferences);
-	
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), 
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button),
 				      strstr (columns, propid) != NULL);
 
 	g_signal_handlers_unblock_by_func (G_OBJECT (button),
@@ -564,7 +563,7 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	shell_preferences->priv->loading = TRUE;
 
 	rb_debug ("syncing prefs");
-	
+
 	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 	if (columns != NULL)
 	{
@@ -654,4 +653,3 @@ rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 
 	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
 }
-

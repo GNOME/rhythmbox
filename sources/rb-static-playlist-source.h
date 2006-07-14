@@ -18,7 +18,7 @@
  *
  */
 
-/* 
+/*
  * Header for static playlist class
  */
 
@@ -83,4 +83,3 @@ void		rb_static_playlist_source_move_entry	(RBStaticPlaylistSource *source,
 G_END_DECLS
 
 #endif /* __RB_STATIC_PLAYLIST_SOURCE_H */
-

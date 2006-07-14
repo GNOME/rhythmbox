@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of podcast properties dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org>

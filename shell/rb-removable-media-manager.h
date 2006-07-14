@@ -38,11 +38,9 @@ G_BEGIN_DECLS
 #define RB_IS_REMOVABLE_MEDIA_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_REMOVABLE_MEDIA_MANAGER))
 #define RB_REMOVABLE_MEDIA_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_REMOVABLE_MEDIA_MANAGER, RBRemovableMediaManagerClass))
 
-
 typedef void (*RBTranferCompleteCallback) (RhythmDBEntry *entry,
 					   const char *dest,
 					   gpointer userdata);
-				      
 
 typedef struct
 {
@@ -63,7 +61,6 @@ typedef struct
 	RBSource * (*create_source)	(RBRemovableMediaManager *mgr,
 					 GnomeVFSVolume *volume);
 } RBRemovableMediaManagerClass;
-
 
 RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell, RBSourceList *sourcelist);
 GType			rb_removable_media_manager_get_type	(void);

@@ -47,7 +47,6 @@ typedef struct
 
 GType			rb_removable_media_source_get_type	(void);
 
-
 G_END_DECLS
 
 #endif /* __RB_REMOVABLE_MEDIA_SOURCE_H */

@@ -29,7 +29,7 @@
  * For each request, the parent checks if the dbus connection is still alive,
  * and pings the child to see if it's still responding.  If the child has
  * exited or is not responding, the parent starts a new metadata helper as
- * described above.  
+ * described above.
  *
  * The child process exits after a certain period of inactivity (30s
  * currently), so the ping message serves two purposes - it checks that the
@@ -151,9 +151,9 @@ ping_metadata_service (GError **error)
 	if (!message) {
 		return FALSE;
 	}
-	response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-							      message, 
-							      RB_METADATA_DBUS_TIMEOUT, 
+	response = dbus_connection_send_with_reply_and_block (dbus_connection,
+							      message,
+							      RB_METADATA_DBUS_TIMEOUT,
 							      &dbus_error);
 	dbus_message_unref (message);
 	if (dbus_error_is_set (&dbus_error)) {
@@ -176,13 +176,13 @@ start_metadata_service (GError **error)
 	 * but when --enable-uninstalled-build is specified, we look
 	 * in the directory it's built in.
 	 */
-	char *argv[] = { 
+	char *argv[] = {
 #ifdef METADATA_UNINSTALLED_DIR
 		METADATA_UNINSTALLED_DIR "/rhythmbox-metadata",
 #else
-		LIBEXEC_DIR "/rhythmbox-metadata", 
+		LIBEXEC_DIR "/rhythmbox-metadata",
 #endif
-		"unix:tmpdir=/tmp", NULL 
+		"unix:tmpdir=/tmp", NULL
 	};
 	DBusError dbus_error = {0,};
 	GIOChannel *stdout_channel;
@@ -197,7 +197,7 @@ start_metadata_service (GError **error)
 		 * into any errors yet, we can try to restart it.
 		 */
 		kill_metadata_service ();
-		
+
 		if (*error)
 			return FALSE;
 	}
@@ -210,7 +210,7 @@ start_metadata_service (GError **error)
 			dbus_address = g_strdup (addr);
 			metadata_child = 0;
 		}
-	} 
+	}
 
 	if (dbus_address == NULL) {
 		gint metadata_stdout;
@@ -230,7 +230,7 @@ start_metadata_service (GError **error)
 
 		/* hmm, probably shouldn't do this */
 		signal (SIGPIPE, SIG_IGN);
-		
+
 		stdout_channel = g_io_channel_unix_new (metadata_stdout);
 		status = g_io_channel_read_line (stdout_channel, &dbus_address, NULL, NULL, error);
 		g_io_channel_unref (stdout_channel);
@@ -255,7 +255,7 @@ start_metadata_service (GError **error)
 	dbus_connection_set_exit_on_disconnect (dbus_connection, FALSE);
 
 	dbus_connection_setup_with_g_main (dbus_connection, main_context);
-	
+
 	rb_debug ("Metadata process %d started", metadata_child);
 	return TRUE;
 }
@@ -353,15 +353,14 @@ rb_metadata_load (RBMetaData *md,
 
 	if (*error == NULL) {
 		rb_debug ("sending metadata load request");
-		response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-								      message, 
-								      RB_METADATA_DBUS_TIMEOUT, 
+		response = dbus_connection_send_with_reply_and_block (dbus_connection,
+								      message,
+								      RB_METADATA_DBUS_TIMEOUT,
 								      &dbus_error);
 
 		if (!response)
 			handle_dbus_error (md, &dbus_error, error);
 	}
-
 
 	if (*error == NULL) {
 		if (!dbus_message_iter_init (response, &iter)) {
@@ -403,7 +402,7 @@ rb_metadata_load (RBMetaData *md,
 		dbus_message_unref (response);
 	if (fake_error)
 		g_error_free (fake_error);
-	
+
 	g_static_mutex_unlock (&conn_mutex);
 }
 
@@ -436,7 +435,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 {
 	GValue *newval;
 	GType type;
-	
+
 	type = rb_metadata_get_field_type (field);
 	g_return_val_if_fail (type == G_VALUE_TYPE (val), FALSE);
 
@@ -480,9 +479,9 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 	}
 
 	if (ok) {
-		response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-								      message, 
-								      RB_METADATA_DBUS_TIMEOUT, 
+		response = dbus_connection_send_with_reply_and_block (dbus_connection,
+								      message,
+								      RB_METADATA_DBUS_TIMEOUT,
 								      &dbus_error);
 		if (!response) {
 			dbus_error_free (&dbus_error);
@@ -541,9 +540,9 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	}
 
 	if (*error == NULL) {
-		response = dbus_connection_send_with_reply_and_block (dbus_connection, 
-								      message, 
-								      RB_METADATA_DBUS_TIMEOUT, 
+		response = dbus_connection_send_with_reply_and_block (dbus_connection,
+								      message,
+								      RB_METADATA_DBUS_TIMEOUT,
 								      &dbus_error);
 		if (!response) {
 			handle_dbus_error (md, &dbus_error, error);
@@ -552,7 +551,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 			read_error_from_message (md, &iter, error);
 		}
 	}
-	
+
 	if (message)
 		dbus_message_unref (message);
 	if (response)
@@ -562,4 +561,3 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	g_static_mutex_unlock (&conn_mutex);
 }
-

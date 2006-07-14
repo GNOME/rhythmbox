@@ -55,4 +55,3 @@ RBSource *      rb_missing_files_source_new			(RBShell *shell,
 G_END_DECLS
 
 #endif /* __RB_MISSING_FILES_SOURCE_H */
-

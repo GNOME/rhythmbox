@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of linear navigation method
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -57,7 +57,7 @@ rb_linear_play_order_init (RBLinearPlayOrder *porder)
 {
 }
 
-static RhythmDBEntry* 
+static RhythmDBEntry*
 rb_linear_play_order_get_next (RBPlayOrder* porder)
 {
 	RhythmDBQueryModel *model;

@@ -26,7 +26,6 @@
 #ifndef RB_PODCAST_MANAGER_H
 #define RB_PODCAST_MANAGER_H
 
-
 G_BEGIN_DECLS
 
 #define RB_TYPE_PODCAST_MANAGER            (rb_podcast_manager_get_type ())
@@ -55,7 +54,7 @@ typedef struct
     void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
     void        (*feed_updates_avaliable)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
     void        (*process_error)	   	(RBPodcastManager* pd, const char *error);
-    
+
 } RBPodcastManagerClass;
 
 GType                   rb_podcast_manager_get_type    		(void);
@@ -67,8 +66,8 @@ void 			rb_podcast_manager_update_feeds 	(RBPodcastManager *pd);
 void                    rb_podcast_manager_start_sync  		(RBPodcastManager *pd);
 void            	rb_podcast_manager_set_remove_files    	(RBPodcastManager *pd, gboolean flag);
 gboolean 		rb_podcast_manager_get_remove_files	(RBPodcastManager *pd);
-gboolean                rb_podcast_manager_remove_feed 		(RBPodcastManager *pd, 
-								 const gchar* url, 
+gboolean                rb_podcast_manager_remove_feed 		(RBPodcastManager *pd,
+								 const gchar* url,
 								 gboolean remove_files);
 gchar *                 rb_podcast_manager_get_podcast_dir	(RBPodcastManager *pd);
 

@@ -87,4 +87,3 @@ rb_metadata_error_quark (void)
 
 	return quark;
 }
-

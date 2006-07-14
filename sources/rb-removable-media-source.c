@@ -56,7 +56,6 @@ static void rb_removable_media_source_get_property (GObject *object,
 
 static void impl_delete_thyself (RBSource *source);
 
-
 typedef struct
 {
 	GnomeVFSVolume *volume;
@@ -70,8 +69,6 @@ enum
 	PROP_0,
 	PROP_VOLUME,
 };
-
-
 
 static void
 rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
@@ -120,7 +117,7 @@ static GObject *
 rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 				       GObjectConstructParam *construct_properties)
 {
-	GObject *source; 
+	GObject *source;
 	GnomeVFSVolume *volume;
 	GnomeVFSDrive *drive;
 	char *display_name;
@@ -159,8 +156,7 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 	return source;
 }
 
-
-static void 
+static void
 rb_removable_media_source_dispose (GObject *object)
 {
 	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (object);

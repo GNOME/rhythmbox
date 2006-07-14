@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Implementation of search entry/browse toggle container
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -93,7 +93,7 @@ struct RBSourceHeaderPrivate
 	char *browser_key;
 
 	GHashTable *source_states;
-	
+
 };
 
 #define RB_SOURCE_HEADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCE_HEADER, RBSourceHeaderPrivate))
@@ -153,7 +153,7 @@ ui_manager_add_widget_cb (GtkUIManager *ui_manager,
 			gtk_widget_show (header->priv->search_bar);
 			gtk_table_attach (GTK_TABLE (header),
 					  header->priv->search_bar,
-					  1, 3, 0, 1, 
+					  1, 3, 0, 1,
 					  GTK_EXPAND | GTK_FILL,
 					  GTK_EXPAND | GTK_FILL,
 					  5, 0);
@@ -235,8 +235,8 @@ rb_source_header_init (RBSourceHeader *header)
 
 	ebox = GTK_EVENT_BOX (gtk_event_box_new ());
 	header->priv->search = GTK_WIDGET (rb_search_entry_new ());
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (header->priv->tooltips), 
-			      GTK_WIDGET (ebox), 
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (header->priv->tooltips),
+			      GTK_WIDGET (ebox),
 			      _("Filter music display by genre, artist, album, or title"),
 			      NULL);
 	gtk_container_add (GTK_CONTAINER (ebox), GTK_WIDGET (header->priv->search));
@@ -250,7 +250,7 @@ rb_source_header_init (RBSourceHeader *header)
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (ebox));
 	gtk_table_attach (GTK_TABLE (header),
 			  align,
-			  0, 1, 0, 1, 
+			  0, 1, 0, 1,
 			  GTK_EXPAND | GTK_FILL,
 			  GTK_EXPAND | GTK_FILL,
 			  5, 0);
@@ -325,7 +325,7 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 
 		source_state = g_hash_table_lookup (header->priv->source_states,
 						    header->priv->selected_source);
-		
+
 		if (source_state) {
 			text = g_strdup (source_state->search_text);
 			disclosed = source_state->disclosed;
@@ -336,13 +336,13 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 
 		g_free (header->priv->browser_key);
 		header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
-	
+
 		rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), text);
 		g_signal_connect_object (G_OBJECT (header->priv->selected_source),
 					 "filter_changed",
 					 G_CALLBACK (rb_source_header_filter_changed_cb),
 					 header, 0);
-	
+
 		gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
 					  rb_source_can_search (header->priv->selected_source));
 		header->priv->have_search = rb_source_can_search (header->priv->selected_source);
@@ -354,7 +354,7 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 		else
 			/* restore the previous state of the source*/
 			header->priv->disclosed = disclosed;
-	
+
 		if (!header->priv->have_browser && !header->priv->have_search)
 			gtk_widget_hide (GTK_WIDGET (header));
 		else
@@ -398,7 +398,7 @@ rb_source_header_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_source_header_get_property (GObject *object,
 			      guint prop_id,
 			      GValue *value,
@@ -481,7 +481,7 @@ rb_source_state_sync (RBSourceHeader *header,
 
 	if (old_state) {
 		if (set_text)
-			old_state->search_text = text ? g_strdup (text) : NULL;	
+			old_state->search_text = text ? g_strdup (text) : NULL;
 		if (set_disclosure)
 			old_state->disclosed = disclosed;
 	} else {
@@ -493,11 +493,11 @@ rb_source_state_sync (RBSourceHeader *header,
 				   header);
 
 		new_state = g_new (SourceState, 1);
-		new_state->search_text = text ? g_strdup (text) : NULL;	
+		new_state->search_text = text ? g_strdup (text) : NULL;
 		new_state->disclosed = disclosed;
 		g_hash_table_insert (header->priv->source_states,
 				     header->priv->selected_source,
-				     new_state); 
+				     new_state);
 	}
 }
 
@@ -522,7 +522,7 @@ rb_source_header_clear_search (RBSourceHeader *header)
 
 	if (!rb_search_entry_searching (RB_SEARCH_ENTRY (header->priv->search)))
 	    return;
-	
+
 	if (header->priv->selected_source) {
 		rb_source_search (header->priv->selected_source, NULL);
 		rb_source_state_sync (header, TRUE, NULL, FALSE, FALSE);
@@ -540,14 +540,14 @@ rb_source_header_view_browser_changed_cb (GtkAction *action,
 	header->priv->disclosed = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
 
 	if (header->priv->browser_key)
-		eel_gconf_set_boolean (header->priv->browser_key, 
+		eel_gconf_set_boolean (header->priv->browser_key,
 				       header->priv->disclosed);
 	else {
 		rb_source_state_sync (header, FALSE, NULL, TRUE, header->priv->disclosed);
 	}
 
 	rb_debug ("got view browser toggle");
-	
+
 	rb_source_header_sync_control_state (header);
 }
 

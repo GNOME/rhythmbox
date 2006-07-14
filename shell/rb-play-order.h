@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for base class for play order classes
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>

@@ -35,14 +35,13 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
-
 #define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2
 
 static void rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
- 					GnomeVFSVolume *volume, 
+ 					GnomeVFSVolume *volume,
  					gpointer data);
 static void rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
- 					  GnomeVFSVolume *volume, 
+ 					  GnomeVFSVolume *volume,
  					  gpointer data);
 
 void
@@ -56,18 +55,18 @@ rhythmdb_init_monitoring (RhythmDB *db)
 							 (GDestroyNotify) g_free,
 							 NULL);
 
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-mounted", 
-			  G_CALLBACK (rhythmdb_volume_mounted_cb), 
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
+			  "volume-mounted",
+			  G_CALLBACK (rhythmdb_volume_mounted_cb),
 			  db);
 
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-pre-unmount", 
-			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
+			  "volume-pre-unmount",
+			  G_CALLBACK (rhythmdb_volume_unmounted_cb),
 			  db);
-	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
-			  "volume-unmounted", 
-			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
+			  "volume-unmounted",
+			  G_CALLBACK (rhythmdb_volume_unmounted_cb),
 			  db);
 }
 
@@ -75,7 +74,7 @@ void
 rhythmdb_finalize_monitoring (RhythmDB *db)
 {
 	rhythmdb_stop_monitoring (db);
-	
+
 	g_hash_table_destroy (db->priv->monitored_directories);
 	if (db->priv->changed_files_id)
 		g_source_remove (db->priv->changed_files_id);
@@ -109,7 +108,7 @@ monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 	if (error) {
 		/* FIXME: should we complain to the user? */
 		rb_debug ("error while attempting to monitor library track: %s", error->message);
-	} 
+	}
 }
 
 static void
@@ -138,7 +137,7 @@ monitor_library_directory (const char *uri, RhythmDB *db)
 		/* display an error to the user? */
 		return;
 	}
-	
+
 	rb_debug ("beginning monitor of the library directory %s", uri);
 	rhythmdb_monitor_uri_path (db, uri, &error);
 	rb_uri_handle_recursively (uri, (GFunc) monitor_subdirectory, NULL, db);
@@ -165,14 +164,14 @@ rhythmdb_check_changed_file (const char *uri, gpointer data, RhythmDB *db)
 		event->db = db;
 		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 		event->uri = g_strdup (uri);
-		
+
 		g_async_queue_push (db->priv->event_queue, event);
 		rb_debug ("adding newly located file %s", uri);
 		return TRUE;
 	}
-	
+
 	rb_debug ("waiting to add newly located file %s", uri);
-	
+
 	return FALSE;
 }
 
@@ -184,7 +183,6 @@ rhythmdb_process_changed_files (RhythmDB *db)
 	return TRUE;
 }
 
-
 void
 rhythmdb_start_monitoring (RhythmDB *db)
 {
@@ -194,7 +192,7 @@ rhythmdb_start_monitoring (RhythmDB *db)
 	if (db->priv->library_locations) {
 		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
 	}
-		
+
 	/* monitor every directory that contains a (TYPE_SONG) track */
 	rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
 }
@@ -214,7 +212,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 		{
 			GSList *cur;
 			gboolean in_library = FALSE;
-			
+
 			if (!eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
 				return;
 
@@ -225,11 +223,11 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 					break;
 				}
 			}
-		
+
 			if (!in_library)
-				return;	
+				return;
 		}
-		
+
 		/* process directories immediately */
 		if (rb_uri_is_directory (info_uri)) {
 			rhythmdb_monitor_uri_path (db, info_uri, NULL);
@@ -278,7 +276,7 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 		}
 	} else {
 		GnomeVFSURI *vfsuri, *parent;
-		
+
 		vfsuri = gnome_vfs_uri_new (uri);
 		parent = gnome_vfs_uri_get_parent (vfsuri);
 		directory = gnome_vfs_uri_to_string (parent, GNOME_VFS_URI_HIDE_NONE);
@@ -311,7 +309,6 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 	}
 }
 
-
 typedef struct
 {
 	RhythmDB *db;
@@ -319,18 +316,18 @@ typedef struct
 	gboolean mounted;
 } MountCtxt;
 
-static void 
-entry_volume_mounted_or_unmounted (RhythmDBEntry *entry, 
+static void
+entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 				   MountCtxt *ctxt)
 {
 	const char *mount_point;
 	const char *location;
-	
+
 	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG &&
 	    entry->type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR) {
 		return;
 	}
-	
+
 	mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	if (mount_point == NULL || strcmp (mount_point, ctxt->mount_point) != 0) {
 		return;
@@ -341,11 +338,11 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 		if (ctxt->mounted) {
 			rb_debug ("queueing stat for entry %s (mounted)", location);
 
-			/* make files visible immediately, 
+			/* make files visible immediately,
 			 * then hide any that turn out to be missing.
 			 */
 			rhythmdb_entry_set_visibility (ctxt->db, entry, TRUE);
-			queue_stat_uri (location, 
+			queue_stat_uri (location,
 					ctxt->db,
 					RHYTHMDB_ENTRY_TYPE_SONG);
 		} else {
@@ -353,7 +350,7 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 			GValue val = {0, };
 
 			rb_debug ("hiding entry %s (unmounted)", location);
-			
+
 			g_get_current_time (&time);
 			g_value_init (&val, G_TYPE_ULONG);
 			g_value_set_ulong (&val, time.tv_sec);
@@ -372,10 +369,9 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 	}
 }
 
-
-static void 
+static void
 rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-			    GnomeVFSVolume *volume, 
+			    GnomeVFSVolume *volume,
 			    gpointer data)
 {
 	MountCtxt ctxt;
@@ -383,17 +379,16 @@ rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 	ctxt.db = RHYTHMDB (data);
 	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
 	ctxt.mounted = TRUE;
-	rhythmdb_entry_foreach (RHYTHMDB (data), 
-				(GFunc)entry_volume_mounted_or_unmounted, 
+	rhythmdb_entry_foreach (RHYTHMDB (data),
+				(GFunc)entry_volume_mounted_or_unmounted,
 				&ctxt);
 	rhythmdb_commit (RHYTHMDB (data));
 	g_free (ctxt.mount_point);
 }
 
-
-static void 
+static void
 rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-			      GnomeVFSVolume *volume, 
+			      GnomeVFSVolume *volume,
 			      gpointer data)
 {
 	MountCtxt ctxt;
@@ -402,10 +397,9 @@ rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
 	ctxt.mounted = FALSE;
 	rb_debug ("volume %s unmounted", ctxt.mount_point);
-	rhythmdb_entry_foreach (RHYTHMDB (data), 
-				(GFunc)entry_volume_mounted_or_unmounted, 
+	rhythmdb_entry_foreach (RHYTHMDB (data),
+				(GFunc)entry_volume_mounted_or_unmounted,
 				&ctxt);
 	rhythmdb_commit (RHYTHMDB (data));
 	g_free (ctxt.mount_point);
 }
-

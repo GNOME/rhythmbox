@@ -1,5 +1,5 @@
 /*
- *  arch-tag: Header for reference-counted string functions 
+ *  arch-tag: Header for reference-counted string functions
  *
  *  Copyright (C) 2004 Colin Walters <walters@verbum.org>
  *
@@ -26,7 +26,6 @@
 
 typedef struct RBRefString RBRefString;
 
-
 void		rb_refstring_system_init (void);
 void		rb_refstring_system_shutdown (void);
 
@@ -34,7 +33,6 @@ RBRefString *	rb_refstring_new (const char *init);
 
 RBRefString *	rb_refstring_ref (RBRefString *val);
 void		rb_refstring_unref (RBRefString *val);
-
 
 const char *	rb_refstring_get (const RBRefString *val);
 const char *	rb_refstring_get_folded (RBRefString *val);

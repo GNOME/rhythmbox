@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of linear, looping navigation method
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -59,7 +59,7 @@ rb_linear_play_order_loop_init (RBLinearPlayOrderLoop *porder)
 {
 }
 
-static RhythmDBEntry* 
+static RhythmDBEntry*
 rb_linear_play_order_loop_get_next (RBPlayOrder* porder)
 {
 	RhythmDBQueryModel *model;
@@ -75,7 +75,7 @@ rb_linear_play_order_loop_get_next (RBPlayOrder* porder)
 	g_object_get (porder, "playing-entry", &entry, NULL);
 	if (entry) {
 		RhythmDBEntry *next;
-	
+
 		next = rhythmdb_query_model_get_next_from_entry (model, entry);
 		rhythmdb_entry_unref (entry);
 		entry = next;

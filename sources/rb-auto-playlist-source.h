@@ -18,7 +18,7 @@
  *
  */
 
-/* 
+/*
  * Header for auto playlist class
  */
 
@@ -73,4 +73,3 @@ void		rb_auto_playlist_source_get_query	(RBAutoPlaylistSource *source,
 G_END_DECLS
 
 #endif /* __RB_AUTO_PLAYLIST_SOURCE_H */
-

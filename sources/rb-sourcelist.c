@@ -86,10 +86,10 @@ static void rb_sourcelist_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
-static gboolean rb_sourcelist_source_to_iter (RBSourceList *sourcelist, 
+static gboolean rb_sourcelist_source_to_iter (RBSourceList *sourcelist,
 					      RBSource *source,
 					      GtkTreeIter *iter);
-static gboolean rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, 
+static gboolean rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
 						      RBSource *source,
 						      GtkTreeIter *iter);
 static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
@@ -106,7 +106,7 @@ static gboolean key_release_cb (GtkTreeView *treeview,
 				RBSourceList *sourcelist);
 static gboolean popup_menu_cb (GtkTreeView *treeview, RBSourceList *sourcelist);
 static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
-static void visibility_notify_cb (GObject *obj, GParamSpec *pspec, 
+static void visibility_notify_cb (GObject *obj, GParamSpec *pspec,
 				  gpointer data);
 static void icon_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
 static void source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
@@ -118,8 +118,7 @@ static void rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist);
 
 static guint rb_sourcelist_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBSourceList, rb_sourcelist, GTK_TYPE_SCROLLED_WINDOW) 
-
+G_DEFINE_TYPE (RBSourceList, rb_sourcelist, GTK_TYPE_SCROLLED_WINDOW)
 
 static void
 rb_sourcelist_class_init (RBSourceListClass *class)
@@ -303,7 +302,7 @@ rb_sourcelist_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_sourcelist_get_property (GObject *object,
 			    guint prop_id,
 			    GValue *value,
@@ -323,7 +322,6 @@ rb_sourcelist_get_property (GObject *object,
 		break;
 	}
 }
-
 
 GtkWidget *
 rb_sourcelist_new (RBShell *shell)
@@ -409,8 +407,8 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 				if (!gtk_tree_model_iter_next (sourcelist->priv->real_model, &group_iter))
 					break;
 
-				gtk_tree_model_get (sourcelist->priv->real_model, 
-						    &group_iter, 
+				gtk_tree_model_get (sourcelist->priv->real_model,
+						    &group_iter,
 						    RB_SOURCELIST_MODEL_COLUMN_NAME, &check_name,
 						    -1);
 
@@ -421,7 +419,7 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			rb_debug ("inserting source %p in group %d", source, group);
 			gtk_tree_model_get_iter (sourcelist->priv->real_model, &group_iter, group_path);
 		}
-		gtk_tree_store_insert_before (GTK_TREE_STORE (sourcelist->priv->real_model), 
+		gtk_tree_store_insert_before (GTK_TREE_STORE (sourcelist->priv->real_model),
 					      &iter, NULL, &group_iter);
 	}
 
@@ -454,7 +452,7 @@ match_source_to_iter (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter,
 		      SourcePath *sp)
 {
 	RBSource *target = NULL;
-	
+
 	gtk_tree_model_get (model, iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 	if (target == sp->source) {
 		sp->path = gtk_tree_path_copy (path);
@@ -470,11 +468,11 @@ rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 {
 	SourcePath *sp = g_new0 (SourcePath,1);
 	gboolean ret = FALSE;
-	
+
 	sp->source = source;
-	
+
 	gtk_tree_model_foreach (sourcelist->priv->real_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
-	
+
 	if (sp->path) {
 		ret = gtk_tree_model_get_iter (sourcelist->priv->real_model, iter, sp->path);
 	}
@@ -492,9 +490,9 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source
 {
 	SourcePath *sp = g_new0 (SourcePath,1);
 	gboolean ret = FALSE;
-	
+
 	sp->source = source;
-	
+
 	gtk_tree_model_foreach (sourcelist->priv->filter_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
 
 	if (sp->path) {
@@ -513,20 +511,20 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	
+
 	g_assert (rb_sourcelist_visible_source_to_iter (sourcelist, source, &iter));
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (sourcelist->priv->filter_model),
 					&iter);
-	
+
 	/* Make cell editable just for the moment.
 	   We'll turn it off once editing is done. */
 	g_object_set (G_OBJECT (sourcelist->priv->title_renderer), "editable", TRUE, NULL);
-	
+
 	gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (sourcelist->priv->treeview),
 					  path, sourcelist->priv->main_column,
 					  sourcelist->priv->title_renderer,
 					  TRUE);
-	
+
 	gtk_tree_path_free (path);
 }
 
@@ -596,7 +594,7 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection,
 					      &cindy, &iter))
 		return;
-	
+
 	gtk_tree_model_get (cindy, &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 	if (target == NULL)
@@ -663,7 +661,7 @@ button_press_cb (GtkTreeView *treeview,
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	
+
 	if (event->button != 3)
 		return FALSE;
 
@@ -697,7 +695,7 @@ key_release_cb (GtkTreeView *treeview,
 
 	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection, NULL, &iter))
 		return FALSE;
-	
+
 	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 	if (target == NULL)
@@ -711,7 +709,6 @@ key_release_cb (GtkTreeView *treeview,
 
 	return FALSE;
 }
-
 
 static gboolean
 popup_menu_cb (GtkTreeView *treeview,
@@ -727,7 +724,7 @@ name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 	RBSource *source = RB_SOURCE (obj);
 	GtkTreeIter iter;
 	gchar *name;
-	
+
 	if (rb_sourcelist_source_to_iter (sourcelist, source, &iter)) {
 		g_object_get (obj, "name", &name, NULL);
 		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model),
@@ -737,7 +734,7 @@ name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
-	
+
 static void
 visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 {
@@ -784,7 +781,7 @@ icon_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 	RBSource *source = RB_SOURCE (obj);
 	GtkTreeIter iter;
 	GdkPixbuf *pixbuf;
-	
+
 	if (rb_sourcelist_source_to_iter (sourcelist, source, &iter)) {
 		g_object_get (obj, "icon", &pixbuf, NULL);
 		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model),
@@ -805,7 +802,7 @@ rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *
 {
 	char *str;
 	gboolean playing;
-	
+
 	gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->filter_model), iter,
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
 			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, &playing,
@@ -828,9 +825,9 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 
 	if (text[0] == '\0')
 		return;
-	
-	path = gtk_tree_path_new_from_string (pathstr);	
-	
+
+	path = gtk_tree_path_new_from_string (pathstr);
+
 	g_return_if_fail (gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model),
 						   &iter, path));
 	gtk_tree_model_get (sourcelist->priv->filter_model,

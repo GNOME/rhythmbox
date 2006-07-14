@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  * arch-tag: Implementation of Rhythmbox first-time druid
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@debian.org>
@@ -73,7 +73,6 @@ enum
 	PROP_0,
 	PROP_DB,
 };
-
 
 static void
 rb_druid_class_init (RBDruidClass *klass)
@@ -156,7 +155,7 @@ rb_druid_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_druid_get_property (GObject *object,
 			      guint prop_id,
 			      GValue *value,
@@ -181,7 +180,7 @@ rb_druid_init_widgets (RBDruid *druid)
 	GnomeDruidPage *page;
 
 	g_return_if_fail (RB_IS_DRUID (druid));
-	
+
 	gtk_window_set_title (GTK_WINDOW (druid),_("Rhythmbox"));
 	gtk_window_set_modal (GTK_WINDOW (druid), TRUE);
 
@@ -202,7 +201,7 @@ rb_druid_init_widgets (RBDruid *druid)
 	/* page 1 */
 	page = GNOME_DRUID_PAGE (gnome_druid_page_edge_new (GNOME_EDGE_START));
 	gtk_widget_show (GTK_WIDGET (page));
-	gnome_druid_page_edge_set_title (GNOME_DRUID_PAGE_EDGE (page), 
+	gnome_druid_page_edge_set_title (GNOME_DRUID_PAGE_EDGE (page),
 					 _("Welcome to Rhythmbox"));
 	gnome_druid_append_page (druid->priv->druid, page);
 	gnome_druid_set_page (druid->priv->druid, page);
@@ -212,13 +211,13 @@ rb_druid_init_widgets (RBDruid *druid)
 	/* page 2 */
 	page = GNOME_DRUID_PAGE (gnome_druid_page_standard_new ());
 	gtk_widget_show (GTK_WIDGET (page));
-	gnome_druid_page_standard_set_title (GNOME_DRUID_PAGE_STANDARD (page), 
+	gnome_druid_page_standard_set_title (GNOME_DRUID_PAGE_STANDARD (page),
 					     _("Music library setup"));
 	gtk_container_add (GTK_CONTAINER (GNOME_DRUID_PAGE_STANDARD (page)->vbox),
 			   druid->priv->page2_vbox);
 	gnome_druid_append_page (druid->priv->druid, page);
 	g_signal_connect_object (G_OBJECT (page), "prepare", G_CALLBACK (rb_druid_page2_prepare_cb), druid, 0);
-	
+
 	/* page 3 */
 	page = GNOME_DRUID_PAGE (gnome_druid_page_edge_new (GNOME_EDGE_FINISH));
 	gtk_widget_show (GTK_WIDGET (page));
@@ -236,14 +235,13 @@ rb_druid_init_widgets (RBDruid *druid)
 }
 
 RBDruid *
-rb_druid_new (RhythmDB *db) 
+rb_druid_new (RhythmDB *db)
 {
 	RBDruid *druid = g_object_new (RB_TYPE_DRUID, "db", db, NULL);
 
 	g_return_val_if_fail (druid->priv != NULL, NULL);
 
 	rb_druid_init_widgets (druid);
-
 
 	return druid;
 }
@@ -272,13 +270,12 @@ path_dialog_response_cb (GtkDialog *dialog,
 
 	if (uri == NULL)
 		return;
-	
+
 	path = gnome_vfs_format_uri_for_display (uri);
 	gtk_entry_set_text (GTK_ENTRY (druid->priv->path_entry), path);
 	g_free (uri);
 	g_free (path);
 }
-
 
 static void
 rb_druid_browse_clicked_cb (GtkButton *button, RBDruid *druid)
@@ -335,7 +332,7 @@ idle_set_sensitive (RBDruid *druid)
 	g_return_val_if_fail (RB_IS_DRUID (druid), FALSE);
 
 	rb_druid_page2_sync_sensitive (druid);
-	
+
 	return FALSE;
 }
 
@@ -358,7 +355,7 @@ do_response (RBDruid *druid)
 {
 	g_return_if_fail (RB_IS_DRUID (druid));
 	gtk_dialog_response (GTK_DIALOG (druid), GTK_RESPONSE_OK);
-}	
+}
 
 static void
 rb_druid_page3_finish_cb (GnomeDruidPage *druid_page, GtkWidget *druid_widget,
@@ -367,7 +364,7 @@ rb_druid_page3_finish_cb (GnomeDruidPage *druid_page, GtkWidget *druid_widget,
 	rb_debug ("druid finished!");
 	if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (druid->priv->page2_skip_radiobutton))) {
 		const char *uri = gtk_entry_get_text (GTK_ENTRY (druid->priv->path_entry));
-		
+
 		rb_debug ("page2 next; adding %s to library", uri);
 		rhythmdb_add_uri (druid->priv->db, uri);
 	}

@@ -18,7 +18,7 @@
  *
  */
 
-/* 
+/*
  * Header for play queue source class
  */
 
@@ -57,4 +57,3 @@ void		rb_play_queue_source_clear_queue	(RBPlayQueueSource *source);
 G_END_DECLS
 
 #endif /* __RB_PLAY_QUEUE_SOURCE_H */
-

@@ -65,7 +65,7 @@ struct RBNewStationDialogPrivate
 
 #define RB_NEW_STATION_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NEW_STATION_DIALOG, RBNewStationDialogPrivate))
 
-enum 
+enum
 {
 	PROP_0,
 	PROP_ENTRY_VIEW
@@ -80,7 +80,6 @@ enum
 static guint rb_new_station_dialog_signals [LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBNewStationDialog, rb_new_station_dialog, GTK_TYPE_DIALOG)
-
 
 static void
 rb_new_station_dialog_class_init (RBNewStationDialogClass *klass)
@@ -109,7 +108,6 @@ rb_new_station_dialog_class_init (RBNewStationDialogClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
-
 
 	g_type_class_add_private (klass, sizeof (RBNewStationDialogPrivate));
 }
@@ -148,7 +146,6 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "newstation"));
 
-	
 	/* get the widgets from the XML */
 	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
 	gtk_entry_set_activates_default (GTK_ENTRY (dialog->priv->url), TRUE);
@@ -160,7 +157,7 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 
 	/* default focus */
 	gtk_widget_grab_focus (dialog->priv->url);
-	
+
 	/* FIXME */
 	gtk_widget_set_sensitive (dialog->priv->okbutton, FALSE);
 
@@ -224,7 +221,7 @@ GtkWidget *
 rb_new_station_dialog_new (RBEntryView *view)
 {
 	RBNewStationDialog *dialog;
-	
+
 	g_return_val_if_fail (RB_ENTRY_VIEW (view), NULL);
 
 	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG,
@@ -260,7 +257,7 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 
 	rb_new_station_dialog_create_station (dialog);
 
-	gtk_widget_hide (GTK_WIDGET (gtkdialog));	
+	gtk_widget_hide (GTK_WIDGET (gtkdialog));
 }
 
 static void
@@ -272,6 +269,5 @@ rb_new_station_dialog_text_changed (GtkEditable *buffer,
 
 	g_free (text);
 
-	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);	
+	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);
 }
-

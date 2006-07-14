@@ -36,8 +36,8 @@
 #include <unistd.h>
 
 #include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#ifndef NAUTILUS_BURN_CHECK_VERSION
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
 #endif
 
 #if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
@@ -120,7 +120,7 @@ sj_metadata_musicbrainz_instance_init (GTypeInstance *instance, gpointer g_class
     mb_SetServer (self->priv->mb, server_name, 80);
     g_free (server_name);
   }
-  
+
   /* Set the HTTP proxy */
   if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_PROXY, NULL)) {
     mb_SetProxy (self->priv->mb,
@@ -231,7 +231,7 @@ get_offline_track_listing(SjMetadata *metadata, GError **error)
                  _("Cannot read CD: %s"), message);
     return NULL;
   }
-  
+
   num_tracks = mb_GetResultInt (priv->mb, MBE_TOCGetLastTrack);
 
   album = g_new0 (AlbumDetails, 1);
@@ -360,7 +360,7 @@ cache_rdf (musicbrainz_t mb, const char *filename)
   path = g_path_get_dirname (filename);
   g_mkdir_with_parents (path, 0755); /* Handle errors in set_contents() */
   g_free (path);
-  
+
   /* How much data is there to save? */
   len = mb_GetResultRDFLen (mb);
   rdf = g_malloc0 (len);
@@ -391,18 +391,18 @@ get_cached_rdf (musicbrainz_t mb, const char *cachepath)
 
   if (!g_file_test (cachepath, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
     goto done;
-  
+
   /* Cache file exists, open it */
   if (!g_file_get_contents (cachepath, &rdf, NULL, &error)) {
     g_warning ("Cannot open cache file %s: %s", cachepath, error->message);
     g_error_free (error);
     goto done;
   }
-  
+
   /* Set the RDF */
   if (mb_SetResultRDF (mb, rdf))
     ret = TRUE;
-  
+
   done:
     g_free (rdf);
     return ret;
@@ -463,7 +463,7 @@ get_rdf (SjMetadata *metadata)
     }
     cache_rdf (priv->mb, cachepath);
   }
-  
+
  done:
   g_free (cachepath);
   g_free (cdindex);
@@ -630,7 +630,7 @@ lookup_cd (SjMetadata *metadata)
       if (mb_GetResultData1(priv->mb, MBE_AlbumGetTrackDuration, data, sizeof (data), j)) {
         track->duration = atoi (data) / 1000;
       }
-      
+
       album->tracks = g_list_append (album->tracks, track);
       album->number++;
     }
@@ -648,12 +648,12 @@ lookup_cd (SjMetadata *metadata)
   mb_Query (priv->mb, MBQ_GetCDTOC);
   for (al = albums; al; al = al->next) {
     AlbumDetails *album = al->data;
-    
+
     j = 1;
     for (tl = album->tracks; tl; tl = tl->next) {
       TrackDetails *track = tl->data;
       int sectors;
-      
+
       if (track->duration == 0) {
         sectors = mb_GetResultInt1 (priv->mb, MBE_TOCGetTrackNumSectors, j+1);
         track->duration = get_duration_from_sectors (sectors);

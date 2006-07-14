@@ -46,10 +46,10 @@ typedef enum {
 	RB_DAAP_CC_MLCL,
 	RB_DAAP_CC_MLIT,
 	RB_DAAP_CC_MBCL,
-	RB_DAAP_CC_MSRV, 
+	RB_DAAP_CC_MSRV,
 	RB_DAAP_CC_MSAU,
 	RB_DAAP_CC_MSLR, // 20
-	RB_DAAP_CC_MPRO, 
+	RB_DAAP_CC_MPRO,
 	RB_DAAP_CC_APRO,
 	RB_DAAP_CC_MSAL,
 	RB_DAAP_CC_MSUP,
@@ -59,7 +59,7 @@ typedef enum {
 	RB_DAAP_CC_MSQY,
 	RB_DAAP_CC_MSIX,
 	RB_DAAP_CC_MSRS, // 30
-	RB_DAAP_CC_MSTM, 
+	RB_DAAP_CC_MSTM,
 	RB_DAAP_CC_MSDC,
 	RB_DAAP_CC_MCCR,
 	RB_DAAP_CC_MCNM,
@@ -69,7 +69,7 @@ typedef enum {
 	RB_DAAP_CC_MLID,
 	RB_DAAP_CC_MUPD,
 	RB_DAAP_CC_MUSR, // 40
-	RB_DAAP_CC_MUTY, 
+	RB_DAAP_CC_MUTY,
 	RB_DAAP_CC_MUDL,
 	RB_DAAP_CC_AVDB,
 	RB_DAAP_CC_ABRO,
@@ -79,7 +79,7 @@ typedef enum {
 	RB_DAAP_CC_ABGN,
 	RB_DAAP_CC_ADBS,
 	RB_DAAP_CC_ASAL, // 50
-	RB_DAAP_CC_ASAR, 
+	RB_DAAP_CC_ASAR,
 	RB_DAAP_CC_ASBT,
 	RB_DAAP_CC_ASBR,
 	RB_DAAP_CC_ASCM,
@@ -99,7 +99,7 @@ typedef enum {
 	RB_DAAP_CC_ASST,
 	RB_DAAP_CC_ASSP,
 	RB_DAAP_CC_ASTM, // 70
-	RB_DAAP_CC_ASTC, 
+	RB_DAAP_CC_ASTC,
 	RB_DAAP_CC_ASTN,
 	RB_DAAP_CC_ASUR,
 	RB_DAAP_CC_ASYR,
@@ -109,7 +109,7 @@ typedef enum {
 	RB_DAAP_CC_ABPL,
 	RB_DAAP_CC_APSO,
 	RB_DAAP_CC_PRSV, // 80
-	RB_DAAP_CC_ARIF, 
+	RB_DAAP_CC_ARIF,
 	RB_DAAP_CC_AESV,
 	RB_DAAP_CC_MSAS,
 	RB_DAAP_CC_AGRP,
@@ -124,31 +124,31 @@ struct _RBDAAPItem {
 	guint size;
 };
 
-GNode * 
-rb_daap_structure_add (GNode *parent, 
-		       RBDAAPContentCode cc, 
+GNode *
+rb_daap_structure_add (GNode *parent,
+		       RBDAAPContentCode cc,
 		       ...);
 
-gchar * 
-rb_daap_structure_serialize (GNode *structure, 
+gchar *
+rb_daap_structure_serialize (GNode *structure,
 			     guint *length);
 
-GNode * 
-rb_daap_structure_parse (const gchar *buf, 
+GNode *
+rb_daap_structure_parse (const gchar *buf,
 			 gint buf_length);
 
-RBDAAPItem * 
-rb_daap_structure_find_item (GNode *structure, 
+RBDAAPItem *
+rb_daap_structure_find_item (GNode *structure,
 			     RBDAAPContentCode code);
 
-GNode * 
-rb_daap_structure_find_node (GNode *structure, 
+GNode *
+rb_daap_structure_find_node (GNode *structure,
 			     RBDAAPContentCode code);
 
-void 
+void
 rb_daap_structure_print (GNode *structure);
 
-void 
+void
 rb_daap_structure_destroy (GNode *structure);
 
 typedef enum {
@@ -173,19 +173,19 @@ struct _RBDAAPContentCodeDefinition {
 	RBDAAPType type;
 };
 
-const RBDAAPContentCodeDefinition * 
+const RBDAAPContentCodeDefinition *
 rb_daap_content_codes (guint *number);
 
-gint32 
+gint32
 rb_daap_content_code_string_as_int32 (const gchar *str);
 
-const gchar * 
+const gchar *
 rb_daap_content_code_name (RBDAAPContentCode code);
 
-RBDAAPType 
+RBDAAPType
 rb_daap_content_code_rb_daap_type (RBDAAPContentCode code);
 
-const gchar * 
+const gchar *
 rb_daap_content_code_string (RBDAAPContentCode code);
 
 G_END_DECLS

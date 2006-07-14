@@ -44,8 +44,8 @@ static void rb_tray_icon_init (RBTrayIcon *shell_player);
 static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
 					  GObjectConstructParam *construct_properties);
 static void rb_tray_icon_finalize (GObject *object);
-static void rb_tray_icon_sync_action (RBShell *shell, 
-				      gboolean visible, 
+static void rb_tray_icon_sync_action (RBShell *shell,
+				      gboolean visible,
 				      RBTrayIcon *tray);
 static void rb_tray_icon_set_property (GObject *object,
 					  guint prop_id,
@@ -182,7 +182,7 @@ rb_tray_icon_init (RBTrayIcon *icon)
 	image = gtk_image_new_from_stock (RB_STOCK_TRAY_ICON,
 					  GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), image);
-	
+
 	gtk_container_add (GTK_CONTAINER (icon), icon->priv->ebox);
 	gtk_widget_show_all (GTK_WIDGET (icon->priv->ebox));
 }
@@ -196,7 +196,7 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 
 	klass = RB_TRAY_ICON_CLASS (g_type_class_peek (RB_TYPE_TRAY_ICON));
 
-	tray = RB_TRAY_ICON (G_OBJECT_CLASS (rb_tray_icon_parent_class)->constructor 
+	tray = RB_TRAY_ICON (G_OBJECT_CLASS (rb_tray_icon_parent_class)->constructor
 				(type, n_construct_properties,
 				 construct_properties));
 
@@ -234,7 +234,7 @@ rb_tray_icon_finalize (GObject *object)
 	gtk_ui_manager_remove_action_group (tray->priv->ui_manager, tray->priv->actiongroup);
 
 	g_return_if_fail (tray->priv != NULL);
-	
+
 	gtk_object_destroy (GTK_OBJECT (tray->priv->tooltips));
 
 	G_OBJECT_CLASS (rb_tray_icon_parent_class)->finalize (object);
@@ -279,8 +279,8 @@ rb_tray_icon_set_property (GObject *object,
 					 "visibility_changed",
 					 G_CALLBACK (rb_tray_icon_sync_action),
 					 tray, 0);
-		g_object_get (G_OBJECT (tray->priv->shell), 
-			      "shell-player", &tray->priv->shell_player, 
+		g_object_get (G_OBJECT (tray->priv->shell),
+			      "shell-player", &tray->priv->shell_player,
 			      NULL);
 		rb_tray_icon_sync_action (NULL, FALSE, tray);
 		break;
@@ -293,7 +293,7 @@ rb_tray_icon_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_tray_icon_get_property (GObject *object,
 			      guint prop_id,
 			      GValue *value,
@@ -468,8 +468,8 @@ rb_tray_icon_show_window_changed_cb (GtkAction *action,
 				     RBTrayIcon *icon)
 {
 	rb_debug ("show window clicked for %p", icon);
-	g_object_set (G_OBJECT (icon->priv->shell), 
-		      "visibility", gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)), 
+	g_object_set (G_OBJECT (icon->priv->shell),
+		      "visibility", gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)),
 		      NULL);
 }
 
@@ -489,11 +489,11 @@ rb_tray_icon_get_geom (RBTrayIcon *icon, int *x, int *y, int *width, int *height
 	GtkRequisition requisition;
 
 	widget = GTK_WIDGET (icon->priv->ebox);
-  
+
 	gtk_widget_size_request (widget, &requisition);
-  
+
 	gdk_window_get_origin (widget->window, x, y);
-  
+
 	*width = widget->allocation.x;
 	*height = widget->allocation.y;
 }
@@ -521,7 +521,7 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 		rb_debug ("ignoring notification: %s", primary);
 		return;
 	}
-	
+
 	rb_debug ("doing notify: %s", primary);
 	egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout, primary, msgicon, secondary);
 }

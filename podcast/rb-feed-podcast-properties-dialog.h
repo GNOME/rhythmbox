@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of feed_podcast feed properties dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org>

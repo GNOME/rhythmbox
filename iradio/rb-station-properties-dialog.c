@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Implementation of internet radio station properties dialog
  *
  *  Copyright (C) 2002 Colin Walters <walters@gnu.org>
@@ -39,13 +39,13 @@
 static void rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass);
 static void rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_finalize (GObject *object);
-static void rb_station_properties_dialog_set_property (GObject *object, 
+static void rb_station_properties_dialog_set_property (GObject *object,
 						       guint prop_id,
-						       const GValue *value, 
+						       const GValue *value,
 						       GParamSpec *pspec);
-static void rb_station_properties_dialog_get_property (GObject *object, 
+static void rb_station_properties_dialog_get_property (GObject *object,
 						       guint prop_id,
-						       GValue *value, 
+						       GValue *value,
 						       GParamSpec *pspec);
 static gboolean rb_station_properties_dialog_get_current_entry (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog);
@@ -69,7 +69,6 @@ static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog
 static void rb_station_properties_dialog_show (GtkWidget *widget);
 static void rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
 							      RBStationPropertiesDialog *dialog);
-						  
 
 struct RBStationPropertiesDialogPrivate
 {
@@ -92,14 +91,14 @@ struct RBStationPropertiesDialogPrivate
 
 #define RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_STATION_PROPERTIES_DIALOG, RBStationPropertiesDialogPrivate))
 
-enum 
+enum
 {
 	PROP_0,
 	PROP_ENTRY_VIEW
 };
 
-G_DEFINE_TYPE (RBStationPropertiesDialog, 
-	       rb_station_properties_dialog, 
+G_DEFINE_TYPE (RBStationPropertiesDialog,
+	       rb_station_properties_dialog,
 	       GTK_TYPE_DIALOG)
 
 static void
@@ -130,7 +129,7 @@ static void
 rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 {
 	GladeXML *xml;
-	
+
         dialog->priv = RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
 
 	g_signal_connect_object (G_OBJECT (dialog),
@@ -180,7 +179,7 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 				 dialog, 0);
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
-	g_signal_connect_object (dialog->priv->rating, 
+	g_signal_connect_object (dialog->priv->rating,
 				 "rated",
 				 G_CALLBACK (rb_station_properties_dialog_rated_cb),
 				 G_OBJECT (dialog), 0);
@@ -250,7 +249,7 @@ rb_station_properties_dialog_new (RBEntryView *entry_view)
 	g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
 
 	dialog = g_object_new (RB_TYPE_STATION_PROPERTIES_DIALOG,
-			       "entry-view", entry_view, 
+			       "entry-view", entry_view,
 			       NULL);
 
 	if (!rb_station_properties_dialog_get_current_entry (dialog)) {
@@ -270,7 +269,7 @@ rb_station_properties_dialog_response_cb (GtkDialog *gtkdialog,
 {
 	if (dialog->priv->current_entry)
 		rb_station_properties_dialog_sync_entries (dialog);
-	
+
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
@@ -278,7 +277,7 @@ static gboolean
 rb_station_properties_dialog_get_current_entry (RBStationPropertiesDialog *dialog)
 {
 	GList *selected_entries;
-	
+
 	/* get the entry */
 	selected_entries = rb_entry_view_get_selected_entries (dialog->priv->entry_view);
 
@@ -362,7 +361,7 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 				       RBStationPropertiesDialog *dialog)
 {
 	GValue value = {0, };
-	
+
 	g_return_if_fail (RB_IS_RATING (rating));
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 	g_return_if_fail (score >= 0 && score <= 5 );
@@ -434,7 +433,7 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 
 	if (dialog->priv->current_entry)
 		rating = rhythmdb_entry_get_double (dialog->priv->current_entry, RHYTHMDB_PROP_RATING);
-	
+
 	g_object_set (G_OBJECT (dialog->priv->rating), "rating", rating, NULL);
 }
 
@@ -442,7 +441,7 @@ static void
 rb_station_properties_dialog_update_playback_error (RBStationPropertiesDialog *dialog)
 {
 	const char *error;
-	
+
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
 	error = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_PLAYBACK_ERROR);
@@ -474,7 +473,7 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	if (strcmp (title, string)) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, title);
-		rhythmdb_entry_set (dialog->priv->db, entry, 
+		rhythmdb_entry_set (dialog->priv->db, entry,
 				    RHYTHMDB_PROP_TITLE,
 				    &val);
 		g_value_unset (&val);
@@ -485,7 +484,7 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	if (strcmp (genre, string)) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, genre);
-		rhythmdb_entry_set (dialog->priv->db, entry, 
+		rhythmdb_entry_set (dialog->priv->db, entry,
 				    RHYTHMDB_PROP_GENRE, &val);
 		g_value_unset (&val);
 		changed = TRUE;

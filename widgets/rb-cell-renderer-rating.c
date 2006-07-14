@@ -59,7 +59,7 @@ static void rb_cell_renderer_rating_render (GtkCellRenderer *cell,
 					    GdkRectangle *expose_area,
 					    GtkCellRendererState flags);
 static gboolean rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
-					          GdkEvent *event, 
+					          GdkEvent *event,
 					          GtkWidget *widget,
 					          const gchar *path,
 					          GdkRectangle *background_area,
@@ -74,7 +74,7 @@ struct RBCellRendererRatingPrivate
 
 struct RBCellRendererRatingClassPrivate
 {
-	RBRatingPixbufs *pixbufs;	
+	RBRatingPixbufs *pixbufs;
 };
 
 G_DEFINE_TYPE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_RENDERER)
@@ -82,8 +82,7 @@ G_DEFINE_TYPE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_REND
 						RB_TYPE_CELL_RENDERER_RATING, \
 						RBCellRendererRatingPrivate))
 
-
-enum 
+enum
 {
 	PROP_0,
 	PROP_RATING
@@ -96,7 +95,6 @@ enum
 };
 
 static guint rb_cell_renderer_rating_signals[LAST_SIGNAL] = { 0 };
-
 
 static void
 rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
@@ -130,7 +128,7 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 
 	rb_rating_install_rating_property (object_class, PROP_RATING);
 
-	rb_cell_renderer_rating_signals[RATED] = 
+	rb_cell_renderer_rating_signals[RATED] =
 		g_signal_new ("rated",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
@@ -162,7 +160,7 @@ rb_cell_renderer_rating_get_property (GObject *object,
 				      GParamSpec *pspec)
 {
 	RBCellRendererRating *cellrating = RB_CELL_RENDERER_RATING (object);
-  
+
 	switch (param_id) {
 	case PROP_RATING:
 		g_value_set_double (value, cellrating->priv->rating);
@@ -173,7 +171,6 @@ rb_cell_renderer_rating_get_property (GObject *object,
 	}
 }
 
-
 static void
 rb_cell_renderer_rating_set_property (GObject *object,
 				      guint param_id,
@@ -181,7 +178,7 @@ rb_cell_renderer_rating_set_property (GObject *object,
 				      GParamSpec *pspec)
 {
 	RBCellRendererRating *cellrating= RB_CELL_RENDERER_RATING (object);
-  
+
 	switch (param_id) {
 	case PROP_RATING:
 		cellrating->priv->rating = g_value_get_double (value);
@@ -195,10 +192,10 @@ rb_cell_renderer_rating_set_property (GObject *object,
 }
 
 /**
- * rb_cell_renderer_rating_new: create a cell renderer that will 
+ * rb_cell_renderer_rating_new: create a cell renderer that will
  * display some pixbufs for representing the rating of a song.
  * It is also able to update the rating.
- *  
+ *
  * Return value: the new cell renderer
  **/
 
@@ -224,7 +221,7 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 
 	if (x_offset)
 		*x_offset = 0;
-	
+
 	if (y_offset)
 		*y_offset = 0;
 
@@ -257,30 +254,27 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 					  &pix_rect.y,
 					  &pix_rect.width,
 					  &pix_rect.height);
-  
+
 	pix_rect.x += cell_area->x;
 	pix_rect.y += cell_area->y;
 	pix_rect.width -= cell->xpad * 2;
 	pix_rect.height -= cell->ypad * 2;
-	
-	
+
 	if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect) == FALSE)
 		return;
 
-
-
 	selected = (flags & GTK_CELL_RENDERER_SELECTED);
 
-	rb_rating_render_stars (widget, window, cell_class->priv->pixbufs, 
-				draw_rect.x - pix_rect.x, 
-				draw_rect.y - pix_rect.y, 
+	rb_rating_render_stars (widget, window, cell_class->priv->pixbufs,
+				draw_rect.x - pix_rect.x,
+				draw_rect.y - pix_rect.y,
 				draw_rect.x, draw_rect.y,
-				cellrating->priv->rating, selected);	
+				cellrating->priv->rating, selected);
 }
 
 static gboolean
 rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
-				  GdkEvent *event, 
+				  GdkEvent *event,
 				  GtkWidget *widget,
 				  const gchar *path,
 				  GdkRectangle *background_area,
@@ -301,13 +295,13 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 					     &mouse_x,
 					     &mouse_y);
 
-	rating = rb_rating_get_rating_from_widget (widget, 
+	rating = rb_rating_get_rating_from_widget (widget,
 						   mouse_x - cell_area->x,
 						   cell_area->width,
 						   cellrating->priv->rating);
 
 	if (rating != -1.0) {
-		g_signal_emit (G_OBJECT (cellrating), 
+		g_signal_emit (G_OBJECT (cellrating),
 			       rb_cell_renderer_rating_signals[RATED],
 			       0, path, rating);
 	}

@@ -29,8 +29,8 @@
 #include <libgnomevfs/gnome-vfs.h>
 
 #include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#ifndef NAUTILUS_BURN_CHECK_VERSION
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
 #endif
 
 #if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
@@ -77,7 +77,7 @@ static void rb_removable_media_manager_cmd_scan_media (GtkAction *action,
 						       RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_eject_medium (GtkAction *action,
 					       RBRemovableMediaManager *mgr);
-static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr, 
+static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					     GtkUIManager *uimanager);
 
 static void rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source);
@@ -88,10 +88,10 @@ static void rb_removable_media_manager_unmount_volume (RBRemovableMediaManager *
 				GnomeVFSVolume *volume);
 
 static void  rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-				GnomeVFSVolume *volume, 
+				GnomeVFSVolume *volume,
 				gpointer data);
 static void  rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-				GnomeVFSVolume *volume, 
+				GnomeVFSVolume *volume,
 				gpointer data);
 static gboolean rb_removable_media_manager_load_media (RBRemovableMediaManager *manager);
 
@@ -165,7 +165,6 @@ static GtkActionEntry rb_removable_media_manager_actions [] =
 };
 static guint rb_removable_media_manager_n_actions = G_N_ELEMENTS (rb_removable_media_manager_actions);
 
-
 static void
 rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 {
@@ -225,7 +224,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      rb_marshal_VOID__INT_INT_DOUBLE,
 			      G_TYPE_NONE,
 			      3, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
-	
+
 	rb_removable_media_manager_signals[CREATE_SOURCE] =
 		g_signal_new ("create-source",
 			      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
@@ -260,11 +259,11 @@ rb_removable_media_manager_dispose (GObject *object)
 	{
 		GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
 
-		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor), 
-						      G_CALLBACK (rb_removable_media_manager_volume_mounted_cb), 
+		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor),
+						      G_CALLBACK (rb_removable_media_manager_volume_mounted_cb),
 						      mgr);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor), 
-						      G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb), 
+		g_signal_handlers_disconnect_by_func (G_OBJECT (monitor),
+						      G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
 						      mgr);
 	}
 
@@ -288,7 +287,7 @@ rb_removable_media_manager_finalize (GObject *object)
 	g_hash_table_destroy (priv->cd_drive_mapping);
 #endif
 	g_async_queue_unref (priv->transfer_queue);
-	
+
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->finalize (object);
 }
 
@@ -312,8 +311,8 @@ rb_removable_media_manager_set_property (GObject *object,
 		GtkUIManager *uimanager;
 
 		priv->shell = g_value_get_object (value);
-		g_object_get (G_OBJECT (priv->shell), 
-			      "ui-manager", &uimanager, 
+		g_object_get (G_OBJECT (priv->shell),
+			      "ui-manager", &uimanager,
 			      NULL);
 		rb_removable_media_manager_set_uimanager (RB_REMOVABLE_MEDIA_MANAGER (object), uimanager);
 		break;
@@ -327,7 +326,7 @@ rb_removable_media_manager_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_removable_media_manager_get_property (GObject *object,
 			      guint prop_id,
 			      GValue *value,
@@ -478,7 +477,7 @@ split_drive_from_cdda_uri (const char *uri)
 		return NULL;
 
 	len = strlen ("cdda://");
-	
+
 	copy = g_strdup (uri);
 	split = g_utf8_strrchr (copy + len, -1, ':');
 
@@ -522,7 +521,7 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 			begin_cd_drive_monitor (drive, manager);
 			nautilus_burn_drive_unref (drive);
 		}
-		
+
 		if (new_drive) {
 			NautilusBurnDrive *drive;
 
@@ -539,7 +538,6 @@ rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
 	priv->playing_uri = (uri) ? g_strdup (uri) : NULL;
 }
 
-	
 static gboolean
 rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 {
@@ -558,14 +556,14 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 	 * (e.g. someone pressing the eject button on a cd drive). If we get the
 	 * pre-unmount signal, the corrosponding unmounted signal is ignored
 	 */
-	g_signal_connect (G_OBJECT (monitor), "volume-mounted", 
-			  G_CALLBACK (rb_removable_media_manager_volume_mounted_cb), 
+	g_signal_connect (G_OBJECT (monitor), "volume-mounted",
+			  G_CALLBACK (rb_removable_media_manager_volume_mounted_cb),
 			  manager);
-	g_signal_connect (G_OBJECT (monitor), "volume-pre-unmount", 
-			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb), 
+	g_signal_connect (G_OBJECT (monitor), "volume-pre-unmount",
+			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
 			  manager);
-	g_signal_connect (G_OBJECT (monitor), "volume-unmounted", 
-			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb), 
+	g_signal_connect (G_OBJECT (monitor), "volume-unmounted",
+			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
 			  manager);
 
 	/*
@@ -590,9 +588,9 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 	return FALSE;
 }
 
-static void 
+static void
 rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
-			   GnomeVFSVolume *volume, 
+			   GnomeVFSVolume *volume,
 			   gpointer data)
 {
 	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (data);
@@ -600,9 +598,8 @@ rb_removable_media_manager_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 	rb_removable_media_manager_mount_volume (mgr, volume);
 }
 
-
-static gboolean 
-remove_volume_by_source (GnomeVFSVolume *volume, RBSource *source, 
+static gboolean
+remove_volume_by_source (GnomeVFSVolume *volume, RBSource *source,
 			 RBSource *ref_source)
 {
 	return (ref_source == source);
@@ -614,7 +611,7 @@ rb_removable_media_manager_source_deleted_cb (RBSource *source, RBRemovableMedia
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
 
 	rb_debug ("removing source %p", source);
-	g_hash_table_foreach_remove (priv->volume_mapping, 
+	g_hash_table_foreach_remove (priv->volume_mapping,
 				     (GHRFunc)remove_volume_by_source,
 				     source);
 	priv->sources = g_list_remove (priv->sources, source);
@@ -622,7 +619,7 @@ rb_removable_media_manager_source_deleted_cb (RBSource *source, RBRemovableMedia
 
 static void
 rb_removable_media_manager_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
-			     GnomeVFSVolume *volume, 
+			     GnomeVFSVolume *volume,
 			     gpointer data)
 {
 	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (data);
@@ -640,7 +637,7 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	GnomeVFSDeviceType device_type;
 
 	g_assert (volume != NULL);
-	
+
 	if (g_hash_table_lookup (priv->volume_mapping, volume) != NULL)
 		return;
 
@@ -668,7 +665,6 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 	rb_debug ("detecting new media - hal udi=%s", hal_udi);
 	rb_debug ("detecting new media - icon=%s", icon_name);
 
-	
 	/* rb_xxx_source_new first checks if the 'volume' parameter corresponds
 	 * to a medium of type 'xxx', and returns NULL if it doesn't.
 	 * When volume is of the appropriate type, it creates a new source
@@ -710,7 +706,6 @@ rb_removable_media_manager_unmount_volume (RBRemovableMediaManager *mgr, GnomeVF
 	}
 }
 
-
 static void
 rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBRemovableMediaSource *source)
 {
@@ -725,7 +720,7 @@ rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RB
 }
 
 static void
-rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr, 
+rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 					  GtkUIManager *uimanager)
 {
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (mgr);
@@ -839,9 +834,9 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	struct VolumeCheckData check_data;
 
 	priv->scanned = TRUE;
-		
+
 	list = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
-	
+
 	/* see if any removable media has gone */
 	check_data.volume_list = list;
 	check_data.manager = manager;
@@ -853,7 +848,7 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 			(GFunc) rb_removable_media_manager_unmount_volume_swap,
 			manager);
 	g_list_free (check_data.volumes_to_remove);
-	
+
 	/* look for new volume media */
 	for (it = list; it != NULL; it = g_list_next (it)) {
 		volume = GNOME_VFS_VOLUME (it->data);
@@ -879,7 +874,6 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	}
 	g_list_free (list);
 }
-
 
 #ifdef ENABLE_TRACK_TRANSFER
 /* Track transfer */
@@ -953,7 +947,7 @@ do_transfer (RBRemovableMediaManager *manager)
 	RBEncoder *encoder;
 
 	g_assert (rb_is_main_thread ());
-	
+
 	emit_progress (manager);
 
 	if (priv->transfer_running)
@@ -1044,4 +1038,3 @@ rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaM
 	g_object_unref (G_OBJECT (library));
 #endif
 }
-

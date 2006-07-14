@@ -111,7 +111,7 @@ rb_metadata_dbus_load (DBusConnection *connection,
 				    RB_METADATA_ERROR_INTERNAL,
 				    "Unable to read URI from request");
 	}
-	
+
 	rb_debug ("loading metadata from %s", uri);
 
 	rb_metadata_load (svc->metadata, uri, &error);
@@ -200,7 +200,7 @@ rb_metadata_dbus_can_save (DBusConnection *connection,
 		rb_debug ("failed to send return message");
 		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
-	
+
 	dbus_message_unref (reply);
 
 	return DBUS_HANDLER_RESULT_HANDLED;
@@ -237,7 +237,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 				    RB_METADATA_ERROR_INTERNAL,
 				    "Unable to read metadata from message");
 	}
-	
+
 	/* pass to real metadata instance, and save it */
 	g_hash_table_foreach_remove (data, (GHRFunc) _set_metadata, svc->metadata);
 	g_hash_table_destroy (data);
@@ -252,7 +252,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 		g_clear_error (&error);
 		return r;
 	}
-	
+
 	reply = dbus_message_new_method_return (message);
 	if (!reply) {
 		rb_debug ("out of memory creating return message");
@@ -263,7 +263,7 @@ rb_metadata_dbus_save (DBusConnection *connection,
 		rb_debug ("failed to send return message");
 		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
-	
+
 	dbus_message_unref (reply);
 
 	return DBUS_HANDLER_RESULT_HANDLED;
@@ -323,13 +323,13 @@ _handle_message (DBusConnection *connection, DBusMessage *message, void *data)
 
 	svc->last_active = time (NULL);
 	if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "load")) {
-		return rb_metadata_dbus_load (connection, message, svc);		
+		return rb_metadata_dbus_load (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "canSave")) {
-		return rb_metadata_dbus_can_save (connection, message, svc);		
+		return rb_metadata_dbus_can_save (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "save")) {
-		return rb_metadata_dbus_save (connection, message, svc);		
+		return rb_metadata_dbus_save (connection, message, svc);
 	} else if (dbus_message_is_method_call (message, RB_METADATA_DBUS_INTERFACE, "ping")) {
-		return rb_metadata_dbus_ping (connection, message, svc);		
+		return rb_metadata_dbus_ping (connection, message, svc);
 	} else {
 		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
@@ -360,7 +360,7 @@ _new_connection (DBusServer *server,
 					      &vt,
 					      svc);
 	dbus_connection_ref (connection);
-	dbus_connection_setup_with_g_main (connection, 
+	dbus_connection_setup_with_g_main (connection,
 					   g_main_loop_get_context (svc->loop));
 	if (!svc->external)
 		dbus_connection_set_exit_on_disconnect (connection, TRUE);
@@ -494,7 +494,7 @@ main (int argc, char **argv)
 	svc.loop = g_main_loop_new (NULL, TRUE);
 	dbus_server_setup_with_g_main (svc.server,
 				       g_main_loop_get_context (svc.loop));
-	
+
 	if (!svc.external)
 		g_timeout_add (ATTENTION_SPAN * 500, (GSourceFunc) electromagnetic_shotgun, &svc);
 
@@ -512,4 +512,3 @@ main (int argc, char **argv)
 #endif
 	return 0;
 }
-

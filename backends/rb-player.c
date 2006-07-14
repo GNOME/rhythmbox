@@ -113,7 +113,6 @@ rb_player_get_type (void)
 	return our_type;
 }
 
-
 gboolean
 rb_player_open (RBPlayer *player, const char *uri, GError **error)
 {
@@ -212,13 +211,11 @@ rb_player_get_time (RBPlayer *player)
 	return iface->get_time (player);
 }
 
-
 RBPlayer*
 rb_player_new (GError **error)
 {
 	return rb_player_gst_new (error);
 }
-
 
 void
 _rb_player_emit_eos (RBPlayer *player)
@@ -251,7 +248,6 @@ _rb_player_emit_tick (RBPlayer *player, long elapsed)
 {
 	g_signal_emit (player, signals[TICK], 0, elapsed);
 }
-
 
 GQuark
 rb_player_error_quark (void)

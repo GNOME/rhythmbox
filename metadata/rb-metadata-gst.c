@@ -50,7 +50,6 @@ static void rb_metadata_finalize (GObject *object);
 
 typedef GstElement *(*RBAddTaggerElem) (RBMetaData *, GstElement *);
 
-
 /*
  * The list of mine type prefixes for files that shouldn't display errors about being non-audio.
  * Useful for people who have cover art, et cetera, in their music directories
@@ -79,7 +78,7 @@ struct RBMetadataGstType
 struct RBMetaDataPrivate
 {
 	char *uri;
-  
+
 	GHashTable *metadata;
 
 	GstElement *pipeline;
@@ -135,7 +134,6 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 #endif
 }
 
-
 static GstElement *
 rb_add_flac_tagger (RBMetaData *md, GstElement *element)
 {
@@ -151,7 +149,6 @@ rb_add_flac_tagger (RBMetaData *md, GstElement *element)
 
 	return tagger;
 }
-
 
 #ifdef HAVE_GSTREAMER_0_10
 static void
@@ -239,7 +236,6 @@ error:
 	return NULL;
 }
 
-
 static void
 ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
 {
@@ -267,7 +263,7 @@ ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
 			rb_debug ("could not create vorbisparse element");
 			goto end;
 		}
-	
+
 		tagger = gst_element_factory_make ("vorbistag", NULL);
 		if (tagger == NULL) {
 			rb_debug ("could not create vorbistag element");
@@ -284,7 +280,7 @@ ogg_pad_added_cb (GstElement *demux, GstPad *pad, RBMetaData *md)
 		gst_element_get_state (mux, &state, NULL, 0);
 		gst_element_set_state (parser, state);
 		gst_element_set_state (tagger, state);
-	
+
 		conn_pad = gst_element_get_compatible_pad (tagger, pad, NULL);
 		gst_pad_link (pad, conn_pad);
 
@@ -333,7 +329,7 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 	GstElement *tagger, *identity;
 	GstCaps *filtercaps = NULL;
 
-	if (!(tagger = gst_element_factory_make ("id3tag", "tagger"))) 
+	if (!(tagger = gst_element_factory_make ("id3tag", "tagger")))
 		return NULL;
 
 	if (!(identity = gst_element_factory_make ("identity", "identity"))) {
@@ -380,18 +376,18 @@ rb_metadata_init (RBMetaData *md)
 	RBAddTaggerElem tagger;
 	gboolean has_gnomevfssink = FALSE;
 	gboolean has_id3 = FALSE;
-        
+
 	md->priv = RB_METADATA_GET_PRIVATE (md);
 
 	md->priv->supported_types = g_ptr_array_new ();
-	
+
  	/* the list of supported types serves two purposes:
  	 * - it knows how to construct elements for tag writing
  	 * - it knows human-readable names for MIME types so we can say
  	 *     "There is no plugin available to play WMV files"
  	 *     rather than " .. play video/x-ms-asf files".
  	 *
- 	 * only registering types we have plugins for defeats the second 
+ 	 * only registering types we have plugins for defeats the second
 	 * purpose.
  	 */
 	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
@@ -492,7 +488,7 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_COMMENT;
 	else if (!strcmp (tag, GST_TAG_TRACK_NUMBER))
 		return RB_METADATA_FIELD_TRACK_NUMBER;
-	else if (!strcmp (tag, GST_TAG_TRACK_COUNT)) 
+	else if (!strcmp (tag, GST_TAG_TRACK_COUNT))
 		return RB_METADATA_FIELD_MAX_TRACK_NUMBER;
 	else if (!strcmp (tag, GST_TAG_ALBUM_VOLUME_NUMBER))
 		return RB_METADATA_FIELD_DISC_NUMBER;
@@ -632,7 +628,7 @@ make_undecodable_error (RBMetaData *md)
 	human_name= rb_metadata_gst_type_to_name (md, md->priv->type);
 	if (human_name == NULL)
 		human_name = rb_mime_get_friendly_name (md->priv->type);
-	
+
 	if (human_name) {
 		return g_strdup_printf (_("The GStreamer plugins to decode \"%s\" files cannot be found"),
 					human_name);
@@ -666,9 +662,9 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 	newval = g_new0 (GValue, 1);
 	g_value_init (newval, type);
 	if (!g_value_transform (val, newval)) {
-		
+
 		rb_debug ("Could not transform tag value type %s into %s",
-			  g_type_name (G_VALUE_TYPE (val)), 
+			  g_type_name (G_VALUE_TYPE (val)),
 			  g_type_name (G_VALUE_TYPE (newval)));
 		g_value_unset (newval);
 		g_free (newval);
@@ -679,7 +675,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 	case G_TYPE_STRING: {
 		/* Reject invalid utf-8 strings, and then
 		 * remove leading and trailing whitespace.
-		 */ 
+		 */
 		char *str;
 		str = g_value_dup_string (newval);
 
@@ -708,7 +704,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 	}
 
 	case RB_METADATA_FIELD_DURATION: {
-		/* GStreamer sends us duration in ns, 
+		/* GStreamer sends us duration in ns,
 		 * but we need it in seconds
 		 */
 		guint64 duration;
@@ -721,7 +717,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		break;
 	}
 
-	g_hash_table_insert (md->priv->metadata, 
+	g_hash_table_insert (md->priv->metadata,
 			     GINT_TO_POINTER (field),
 			     newval);
 }
@@ -744,7 +740,7 @@ rb_metadata_gst_fakesink_handoff_cb (GstElement *fakesink, GstBuffer *buf, GstPa
 		rb_debug ("caught handoff after eos!");
 		return;
 	}
-		
+
 	rb_debug ("in fakesink handoff");
 	md->priv->handoff = TRUE;
 }
@@ -794,7 +790,6 @@ rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *c
 	g_signal_handler_disconnect (typefind, md->priv->typefind_cb_id);
 }
 
-
 static void
 rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean last, RBMetaData *md)
 {
@@ -842,7 +837,7 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	 * under 0.8 this causes assertion faliures when a pad with no caps in found
 	 * it isn't /needed/ under 0.8, so we don't do it.
 	 *
-	 * This seems to cause some deadlocks with video files, so only do it 
+	 * This seems to cause some deadlocks with video files, so only do it
 	 * when we get no/any caps.
 	 */
 	if (cancel)
@@ -865,7 +860,7 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 
 		g_free (md->priv->type);
 		md->priv->type = g_strdup (mimetype);
-		
+
 		rb_debug ("decodebin emitted unknown type signal for %s", mimetype);
 	} else {
 		rb_debug ("decodebin emitted unknown type signal");
@@ -920,7 +915,7 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 			rb_debug ("caught error: %s, but we've already got one", gerror->message);
 		} else {
 			rb_debug ("caught error: %s ", gerror->message);
-			
+
 			g_clear_error (&md->priv->error);
 			md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
 							       RB_METADATA_ERROR_GENERAL,
@@ -957,7 +952,7 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 	return FALSE;
 }
 
-static void 
+static void
 rb_metadata_event_loop (RBMetaData *md, GstElement *element, gboolean block)
 {
 	GstBus *bus;
@@ -1059,7 +1054,7 @@ rb_metadata_load (RBMetaData *md,
 
 #ifdef HAVE_GSTREAMER_0_8
 	g_object_set (G_OBJECT (md->priv->sink), "signal-handoffs", TRUE, NULL);
- 
+
  	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
  	g_signal_connect_object (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md, 0);
 
@@ -1068,21 +1063,21 @@ rb_metadata_load (RBMetaData *md,
 #endif
  	g_signal_connect_object (decodebin, "new-decoded-pad", G_CALLBACK (rb_metadata_gst_new_decoded_pad_cb), md, 0);
  	g_signal_connect_object (decodebin, "unknown-type", G_CALLBACK (rb_metadata_gst_unknown_type_cb), md, 0);
-  
+
  	/* locate the decodebin's typefind, so we can get the have_type signal too.
- 	 * this is kind of nasty, since it relies on an essentially arbitrary string 
+ 	 * this is kind of nasty, since it relies on an essentially arbitrary string
  	 * in the decodebin code not changing.  the alternative is to have our own
  	 * typefind instance before the decodebin.  it might not like that.
  	 */
  	typefind = gst_bin_get_by_name (GST_BIN (decodebin), "typefind");
  	g_assert (typefind != NULL);
-	md->priv->typefind_cb_id = g_signal_connect_object (typefind, 
-							    "have_type", 
-							    G_CALLBACK (rb_metadata_gst_typefind_cb), 
-							    md, 
+	md->priv->typefind_cb_id = g_signal_connect_object (typefind,
+							    "have_type",
+							    G_CALLBACK (rb_metadata_gst_typefind_cb),
+							    md,
 							    0);
 	gst_object_unref (GST_OBJECT (typefind));
- 
+
  	gst_element_link (urisrc, decodebin);
 
 	md->priv->pipeline = pipeline;
@@ -1127,7 +1122,7 @@ rb_metadata_load (RBMetaData *md,
 		GstBus *bus;
 		bus = gst_element_get_bus (GST_ELEMENT (pipeline));
 		if (bus) {
-			gst_bus_post (bus, 
+			gst_bus_post (bus,
 			gst_message_new_application (GST_OBJECT (pipeline), NULL));
 			gst_object_unref (bus);
 		}
@@ -1143,7 +1138,7 @@ rb_metadata_load (RBMetaData *md,
 			GstFormat format = GST_FORMAT_TIME;
 			gint64 length;
 			GValue *newval;
-			
+
 #ifdef HAVE_GSTREAMER_0_8
 			if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL, &format, &length)) {
 #endif
@@ -1152,9 +1147,9 @@ rb_metadata_load (RBMetaData *md,
 				g_assert (format == GST_FORMAT_TIME);
 #endif
 				newval = g_new0 (GValue, 1);
-				
+
 				rb_debug ("duration query succeeded");
-				
+
 				g_value_init (newval, G_TYPE_ULONG);
 				/* FIXME - use guint64 for duration? */
 				g_value_set_ulong (newval, (long) (length / GST_SECOND));
@@ -1181,7 +1176,7 @@ rb_metadata_load (RBMetaData *md,
 #ifdef HAVE_GSTREAMER_0_10
 	if (gst_element_query_duration (urisrc, &file_size_format, &file_size))
 		g_assert (file_size_format == GST_FORMAT_BYTES);
-	
+
 	state_ret = gst_element_set_state (pipeline, GST_STATE_NULL);
 	if (state_ret == GST_STATE_CHANGE_ASYNC) {
 		g_warning ("Failed to return metadata reader to NULL state");
@@ -1235,7 +1230,7 @@ rb_metadata_load (RBMetaData *md,
 			rb_debug ("ignoring %s because it's too small to care about", md->priv->uri);
 			error_code = RB_METADATA_ERROR_NOT_AUDIO_IGNORE;
 		}
-		
+
 		g_clear_error (error);
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -1244,7 +1239,7 @@ rb_metadata_load (RBMetaData *md,
 	} else {
 		/* yay, it worked */
 		rb_debug ("successfully read metadata for %s", uri);
-	
+
 		/* it doesn't matter if we don't recognise the format,
 		 * as long as gstreamer can play it, we can put it in
 		 * the library.
@@ -1266,7 +1261,7 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
 #ifdef ENABLE_TAG_WRITING
 	return rb_metadata_gst_type_to_tag_function (md, mimetype) != NULL;
-#else 
+#else
 	return FALSE;
 #endif
 }
@@ -1303,7 +1298,6 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, RBMetaData *md)
 	}
 }
 
-
 static gboolean
 rb_metadata_file_valid (char *original, char *newfile)
 {
@@ -1316,7 +1310,7 @@ rb_metadata_file_valid (char *original, char *newfile)
 
 	/* TODO: check that the tags are correct? */
 
-	if (error != NULL)	
+	if (error != NULL)
 		g_error_free (error);
 	g_object_unref (G_OBJECT (md));
 	return ret;
@@ -1353,7 +1347,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	plugin_name = "gnomevfssrc";
 	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
+	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);
 	g_object_set (G_OBJECT (gnomevfssrc), "location", md->priv->uri, NULL);
 
 	/* Sink */
@@ -1367,13 +1361,13 @@ rb_metadata_save (RBMetaData *md, GError **error)
 #endif
 
 	md->priv->tags = gst_tag_list_new ();
-	g_hash_table_foreach (md->priv->metadata, 
+	g_hash_table_foreach (md->priv->metadata,
 			      (GHFunc) rb_metadata_gst_add_tag_data,
 			      md);
 
 	/* Tagger element(s) */
 	add_tagger_func = rb_metadata_gst_type_to_tag_function (md, md->priv->type);
-	
+
 	if (!add_tagger_func) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -1391,7 +1385,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	gst_bin_add (GST_BIN (pipeline), md->priv->sink); 
+	gst_bin_add (GST_BIN (pipeline), md->priv->sink);
 	gst_element_link_many (retag_end, md->priv->sink, NULL);
 
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -1433,7 +1427,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 				     _("File corrupted during write"));
 			goto out_error;
 		}
-		
+
 		if ((result = gnome_vfs_move (tmpname, md->priv->uri, TRUE)) != GNOME_VFS_OK)
 				goto vfs_error;
 	}
@@ -1444,14 +1438,14 @@ vfs_error:
 		     RB_METADATA_ERROR,
 		     RB_METADATA_ERROR_GNOMEVFS,
 		     "%s",
-		     gnome_vfs_result_to_string (result)); 
+		     gnome_vfs_result_to_string (result));
 	goto out_error;
 missing_plugin:
 	g_set_error (error,
 		     RB_METADATA_ERROR,
 		     RB_METADATA_ERROR_MISSING_PLUGIN,
 		     _("Failed to create %s element; check your installation"),
-		     plugin_name); 
+		     plugin_name);
 out_error:
 	if (handle != NULL)
 		gnome_vfs_close (handle);
@@ -1494,7 +1488,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 {
 	GValue *newval;
 	GType type;
-	
+
 	if (rb_metadata_gst_field_to_gst_tag (field) == NULL) {
 		return FALSE;
 	}
@@ -1510,4 +1504,3 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 			     newval);
 	return TRUE;
 }
-

@@ -43,7 +43,7 @@ static GOptionEntry entries [] = {
 	{ NULL }
 };
 
-static void 
+static void
 print_metadata_string (RBMetaData *md, RBMetaDataField field, const char *name)
 {
 	GValue v = {0,};
@@ -87,9 +87,9 @@ load_metadata_cb (gpointer file)
 		}
 	}
 	printf ("%s\n", (const char *)uri);
-	
+
 	rb_metadata_load (md, (const char *)uri, &error);
-	
+
 	if (error) {
 		switch (error->code) {
 		case RB_METADATA_ERROR_NOT_AUDIO_IGNORE:
@@ -117,7 +117,6 @@ bye (gpointer nah)
 	g_main_loop_quit ((GMainLoop *)nah);
 	return FALSE;
 }
-
 
 int main(int argc, char **argv)
 {
@@ -148,7 +147,7 @@ int main(int argc, char **argv)
 	if (can_save) {
 		g_idle_add (check_can_save_cb, argv[2]);
 	}
-	
+
 	loop = g_main_loop_new (NULL, FALSE);
 	md = rb_metadata_new ();
 	while (argv[1] != NULL) {
@@ -159,9 +158,8 @@ int main(int argc, char **argv)
 	g_idle_add (bye, loop);
 
 	g_main_loop_run (loop);
-	
+
 	printf ("%d file(s) read\n", filecount);
 	g_object_unref (G_OBJECT (md));
 	return 0;
 }
-

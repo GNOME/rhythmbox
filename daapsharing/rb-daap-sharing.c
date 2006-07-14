@@ -41,7 +41,7 @@ static guint require_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 static guint share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 static guint share_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 
-static void 
+static void
 create_share (RBShell *shell)
 {
 	RhythmDB *db;
@@ -84,7 +84,7 @@ create_share (RBShell *shell)
 	g_free (password);
 }
 
-static void 
+static void
 enable_sharing_changed_cb (GConfClient *client,
 			   guint cnxn_id,
 		     	   GConfEntry *entry,
@@ -108,7 +108,7 @@ enable_sharing_changed_cb (GConfClient *client,
 	}
 }
 
-static void 
+static void
 require_password_changed_cb (GConfClient *client,
 			     guint cnxn_id,
 			     GConfEntry *entry,
@@ -133,10 +133,10 @@ require_password_changed_cb (GConfClient *client,
 	g_free (password);
 }
 
-static void 
-share_name_changed_cb (GConfClient *client, 
-		       guint cnxn_id, 
-		       GConfEntry *entry, 
+static void
+share_name_changed_cb (GConfClient *client,
+		       guint cnxn_id,
+		       GConfEntry *entry,
 		       RBShell *shell)
 {
 	char *name;
@@ -150,10 +150,10 @@ share_name_changed_cb (GConfClient *client,
 	g_free (name);
 }
 
-static void 
-share_password_changed_cb (GConfClient *client, 
-			   guint cnxn_id, 
-			   GConfEntry *entry, 
+static void
+share_password_changed_cb (GConfClient *client,
+			   guint cnxn_id,
+			   GConfEntry *entry,
 			   RBShell *shell)
 {
 	gboolean require_password;
@@ -175,8 +175,7 @@ share_password_changed_cb (GConfClient *client,
 	g_free (password);
 }
 
-
-void 
+void
 rb_daap_sharing_init (RBShell *shell)
 {
 	g_object_ref (shell);
@@ -203,7 +202,7 @@ rb_daap_sharing_init (RBShell *shell)
 					    shell);
 }
 
-void 
+void
 rb_daap_sharing_shutdown (RBShell *shell)
 {
 	if (share) {
@@ -232,4 +231,3 @@ rb_daap_sharing_shutdown (RBShell *shell)
 
 	g_object_unref (shell);
 }
-

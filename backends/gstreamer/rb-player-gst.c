@@ -45,7 +45,6 @@
 #include "rb-daap-src.h"
 #endif
 
-
 static void rb_player_init (RBPlayerIface *iface);
 static void rb_player_gst_finalize (GObject *object);
 
@@ -73,7 +72,6 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
 
 #define RB_PLAYER_GST_TICK_HZ 5
 
-
 struct _RBPlayerGstPrivate
 {
 	char *uri;
@@ -99,7 +97,6 @@ struct _RBPlayerGstPrivate
 
 	guint tick_timeout_id;
 };
-
 
 typedef enum
 {
@@ -170,7 +167,7 @@ rb_player_gst_init (RBPlayerGst *mp)
 
 	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
 	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
-	
+
 }
 
 static void
@@ -190,10 +187,10 @@ rb_player_gst_finalize (GObject *object)
 		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
 					     mp->priv->buffering_signal_id);
 #endif
-		
+
 		gst_element_set_state (mp->priv->playbin,
 				       GST_STATE_NULL);
-		
+
 		rb_player_gst_gst_free_playbin (mp);
 	}
 
@@ -205,7 +202,7 @@ rb_player_gst_gst_free_playbin (RBPlayerGst *player)
 {
 	if (player->priv->playbin == NULL)
 		return;
-	
+
 	gst_object_unref (GST_OBJECT (player->priv->playbin));
 	player->priv->playbin = NULL;
 }
@@ -227,7 +224,7 @@ destroy_idle_signal (gpointer signal_pointer)
 		g_hash_table_remove (signal->object->priv->idle_info_ids,
 				     GUINT_TO_POINTER (signal->id));
 	}
-	
+
 	g_object_unref (G_OBJECT (signal->object));
 	g_free (signal);
 
@@ -346,7 +343,7 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 	count = gst_tag_list_get_tag_size (list, tag);
 	if (count < 1)
 		return;
-	
+
 	/* only handle the subset of fields we use for iradio */
 	if (!strcmp (tag, GST_TAG_TITLE))
 		field = RB_METADATA_FIELD_TITLE;
@@ -491,14 +488,14 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		g_value_set_uint (signal->info, (guint)progress);
 		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 		break;
-	} 
+	}
 	default:
 		break;
 	}
 
 	return TRUE;
 }
- 
+
 #endif
 
 static gboolean
@@ -528,7 +525,7 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 					 "buffering",
 					 G_CALLBACK (buffering_cb),
 					 mp, 0);
-	
+
 	mp->priv->error_signal_id =
 		g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 					 "error",
@@ -548,7 +545,7 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 	/* Output sink */
 	sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
 #endif
-	
+
 	/* if we could create the gconf sink use that, otherwise let playbin decide */
 	if (sink != NULL)
 		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
@@ -609,7 +606,7 @@ rb_player_gst_sync_pipeline (RBPlayerGst *mp)
 		}
 	}
 #ifdef HAVE_GSTREAMER_0_10
-	/* FIXME: Set up a timeout to watch if the pipeline doesn't 
+	/* FIXME: Set up a timeout to watch if the pipeline doesn't
          * go to PAUSED/PLAYING within some time (5 secs maybe?)
 	 */
 #endif
@@ -687,7 +684,6 @@ rb_player_gst_open (RBPlayer *player,
 
 	g_assert (mp->priv->playbin != NULL);
 
-
 	if (uri == NULL) {
 		g_free (mp->priv->uri);
 		mp->priv->uri = NULL;
@@ -703,7 +699,7 @@ rb_player_gst_open (RBPlayer *player,
 		if (mp->priv->uri && g_str_has_prefix (mp->priv->uri, "cdda://"))
 			old_device = g_utf8_strchr (mp->priv->uri, -1, '#');
 		new_device = g_utf8_strchr (uri, -1, '#');
-	
+
 		if (old_device && strcmp (old_device, new_device) == 0) {
 			/* just seek, instead of having playbin close the device */
 			GstFormat track_format = gst_format_get_by_nick ("track");
@@ -719,8 +715,8 @@ rb_player_gst_open (RBPlayer *player,
 			rb_debug ("seeking to track %d on CD device %s", track, new_device);
 
 #ifdef HAVE_GSTREAMER_0_10
-			if (gst_element_seek (mp->priv->playbin, 1.0, 
-					      track_format, GST_SEEK_FLAG_FLUSH, 
+			if (gst_element_seek (mp->priv->playbin, 1.0,
+					      track_format, GST_SEEK_FLAG_FLUSH,
 					      GST_SEEK_TYPE_SET, track,
 					      GST_SEEK_TYPE_NONE, -1))
 				cdda_seek = TRUE;
@@ -728,7 +724,7 @@ rb_player_gst_open (RBPlayer *player,
 			{
 				GstEvent *event;
 
-				event = gst_event_new_seek (track_format | GST_SEEK_METHOD_SET | GST_SEEK_FLAG_FLUSH, 
+				event = gst_event_new_seek (track_format | GST_SEEK_METHOD_SET | GST_SEEK_FLAG_FLUSH,
 						    (guint64) track);
 				if (gst_element_send_event (mp->priv->playbin, event))
 					cdda_seek = TRUE;
@@ -874,7 +870,7 @@ rb_player_gst_set_replaygain (RBPlayer *player,
 
 	if (gain == 0)
 		return;
-	  
+
 	scale = pow (10., gain / 20);
 
 	/* anti clip */
@@ -885,25 +881,25 @@ rb_player_gst_set_replaygain (RBPlayer *player,
 
 	if (peak != 0 && (scale * peak) > 1)
 		scale = 1.0 / peak;
-		
+
 	/* For security */
 	if (scale > 15)
 		scale = 15;
-	
+
         rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
 
 	if (mp->priv->playbin != NULL) {
 		GParamSpec *volume_pspec;
 		GValue val = {0,};
-		
+
 		volume_pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (mp->priv->playbin),
 							     "volume");
 		g_value_init (&val, G_TYPE_DOUBLE);
-		
+
 		g_value_set_double (&val, mp->priv->cur_volume * scale);
 		if (g_param_value_validate (volume_pspec, &val))
 			rb_debug ("replay gain too high, reducing value to %f", g_value_get_double (&val));
-	
+
 		g_object_set_property (G_OBJECT (mp->priv->playbin), "volume", &val);
 		g_value_unset (&val);
 	}
@@ -988,7 +984,7 @@ rb_player_gst_set_time (RBPlayer *player, long time)
 	/* FIXME?
 	 * This is sorta hack/sorta best way to do it.
 	 * If we set up the daapsrc to do regular GStreamer seeking,
-	 * GStreamer goes ape-shit and tries to seek all over the 
+	 * GStreamer goes ape-shit and tries to seek all over the
 	 * place (typefinding), which can cause iTunes to return errors
 	 * (probably cause we're requesting the same file too often)
  	 *
@@ -1003,18 +999,18 @@ rb_player_gst_set_time (RBPlayer *player, long time)
 	} else {
 #endif
 #ifdef HAVE_GSTREAMER_0_8
-	gst_element_seek (mp->priv->playbin, 
-			  GST_FORMAT_TIME 
-			  | GST_SEEK_METHOD_SET 
-			  | GST_SEEK_FLAG_FLUSH, 
+	gst_element_seek (mp->priv->playbin,
+			  GST_FORMAT_TIME
+			  | GST_SEEK_METHOD_SET
+			  | GST_SEEK_FLAG_FLUSH,
 			  time * GST_SECOND);
 #elif HAVE_GSTREAMER_0_10
-	gst_element_seek (mp->priv->playbin, 1.0, 
-			  GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH, 
+	gst_element_seek (mp->priv->playbin, 1.0,
+			  GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
 			  GST_SEEK_TYPE_SET, time * GST_SECOND,
 			  GST_SEEK_TYPE_NONE, -1);
 #endif
-	
+
 #ifdef WITH_DAAP_SUPPORT
 	}
 #endif
@@ -1031,7 +1027,7 @@ rb_player_gst_get_time (RBPlayer *player)
 	if (mp->priv->playbin != NULL) {
 		gint64 position = -1;
 		GstFormat fmt = GST_FORMAT_TIME;
-		
+
 #ifdef HAVE_GSTREAMER_0_8
 		gst_element_query (mp->priv->playbin, GST_QUERY_POSITION, &fmt, &position);
 #elif HAVE_GSTREAMER_0_10
@@ -1040,8 +1036,8 @@ rb_player_gst_get_time (RBPlayer *player)
 		if (position != -1)
 			position /= GST_SECOND;
 
-		/* FIXME whether this is a good idea or not depends on gstreamer version 
-		 * and filetype.  ugh.  for now, disabling it with gstreamer 0.8 seems to 
+		/* FIXME whether this is a good idea or not depends on gstreamer version
+		 * and filetype.  ugh.  for now, disabling it with gstreamer 0.8 seems to
 		 * give the best results.
 		 */
 #ifdef HAVE_GSTREAMER_0_8
@@ -1049,7 +1045,7 @@ rb_player_gst_get_time (RBPlayer *player)
 		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
 			GstElement *src;
 			g_object_get (G_OBJECT (mp->priv->playbin), "source", &src, NULL);
-			if (src) 
+			if (src)
 				position += rb_daap_src_get_time (src);
 		}
 #endif
@@ -1059,4 +1055,3 @@ rb_player_gst_get_time (RBPlayer *player)
 	} else
 		return -1;
 }
-

@@ -81,5 +81,3 @@ gboolean           rb_daap_mdns_browser_stop        (RBDaapMdnsBrowser *browser,
 G_END_DECLS
 
 #endif /* __RB_DAAP_MDNS_BROWSER_H */
-
-

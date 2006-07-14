@@ -38,7 +38,6 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS_QUERY_MODEL_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE_QUERY_MODEL))
 #define RHYTHMDB_QUERY_MODEL_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE_QUERY_MODEL, RhythmDBQueryModelClass))
 
-
 GType rhythmdb_query_model_limit_type_get_type (void);
 #define RHYTHMDB_TYPE_QUERY_MODEL_LIMIT_TYPE (rhythmdb_query_model_limit_type_get_type ())
 
@@ -48,7 +47,6 @@ typedef enum {
 	RHYTHMDB_QUERY_MODEL_LIMIT_SIZE,
 	RHYTHMDB_QUERY_MODEL_LIMIT_TIME,
 } RhythmDBQueryModelLimitType;
-
 
 typedef struct RhythmDBQueryModelPrivate RhythmDBQueryModelPrivate;
 
@@ -92,8 +90,8 @@ RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
-void			rhythmdb_query_model_chain	(RhythmDBQueryModel *child, 
-							 RhythmDBQueryModel *base, 
+void			rhythmdb_query_model_chain	(RhythmDBQueryModel *child,
+							 RhythmDBQueryModel *base,
 							 gboolean import_entries);
 
 void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry, gint index);
@@ -146,9 +144,9 @@ gint 			rhythmdb_query_model_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b
 
 gint 			rhythmdb_query_model_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 							       gpointer data);
-				
+
 gint 			rhythmdb_query_model_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-							      gpointer data); 
+							      gpointer data);
 
 gint 			rhythmdb_query_model_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 							      gpointer data);

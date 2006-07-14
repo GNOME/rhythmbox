@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Implementation of Song History List
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -8,7 +8,7 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,8 +17,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
- *  
- */ 
+ *
+ */
 
 #include <string.h>
 
@@ -110,7 +110,7 @@ rb_history_new (gboolean truncate_on_play, GFunc destroyer, gpointer destroy_use
 {
 	RBHistory *history;
 
-	history = g_object_new (RB_TYPE_HISTORY, 
+	history = g_object_new (RB_TYPE_HISTORY,
 				"truncate-on-play", truncate_on_play,
 				NULL);
 
@@ -133,7 +133,7 @@ rb_history_init (RBHistory *hist)
 	hist->priv->current = g_sequence_get_begin_ptr (hist->priv->seq);
 }
 
-static void 
+static void
 rb_history_finalize (GObject *object)
 {
 	RBHistory *hist;
@@ -276,7 +276,7 @@ rb_history_previous (RBHistory *hist)
 	return prev == hist->priv->current ? NULL : g_sequence_ptr_get_data (prev);
 }
 
-RhythmDBEntry * 
+RhythmDBEntry *
 rb_history_current (RBHistory *hist)
 {
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
@@ -284,7 +284,7 @@ rb_history_current (RBHistory *hist)
 	return g_sequence_ptr_is_end (hist->priv->current) ? NULL : g_sequence_ptr_get_data (hist->priv->current);
 }
 
-RhythmDBEntry * 
+RhythmDBEntry *
 rb_history_next (RBHistory *hist)
 {
 	GSequencePtr next;
@@ -342,7 +342,6 @@ rb_history_go_last (RBHistory *hist)
 	hist->priv->current = last ? last : g_sequence_get_end_ptr (hist->priv->seq);
 }
 
-
 void
 rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 {
@@ -352,7 +351,7 @@ rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 		hist->priv->current = g_sequence_get_end_ptr (hist->priv->seq);
 		return;
 	}
-	
+
 	rb_history_remove_entry (hist, entry);
 
 	g_sequence_insert (g_sequence_ptr_next (hist->priv->current), entry);
@@ -425,15 +424,15 @@ rb_history_insert_at_index (RBHistory *hist, RhythmDBEntry *entry, guint index)
 }
 
 /**
- * Cuts nodes off of the history from the desired end until it is smaller than max_size. 
+ * Cuts nodes off of the history from the desired end until it is smaller than max_size.
  * Never cuts off the current node.
  */
 static void
 rb_history_limit_size (RBHistory *hist, gboolean cut_from_beginning)
 {
-	if (hist->priv->maximum_size != 0) 
+	if (hist->priv->maximum_size != 0)
 		while (g_sequence_get_length (hist->priv->seq) > hist->priv->maximum_size) {
-			if (cut_from_beginning 
+			if (cut_from_beginning
 					|| hist->priv->current == g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq))) {
 				rb_history_remove_entry (hist, rb_history_first (hist));
 			} else {

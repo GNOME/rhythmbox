@@ -87,9 +87,9 @@ struct _RBDAAPSrc
 	guint32 bytes_per_read;
 	gboolean chunked;
 	gboolean first_chunk;
-	
+
 	gint64 size;
-	
+
 	/* Seek stuff */
 	gint64 curoffset;
 	glong seek_time;
@@ -137,8 +137,8 @@ _do_init (GType daap_src_type)
 		NULL,
 		NULL
 	};
-	GST_DEBUG_CATEGORY_INIT (rb_daap_src_debug, 
-				 "daapsrc", GST_DEBUG_FG_WHITE, 
+	GST_DEBUG_CATEGORY_INIT (rb_daap_src_debug,
+				 "daapsrc", GST_DEBUG_FG_WHITE,
 				 "Rhythmbox built in DAAP source element");
 
 	g_type_add_interface_static (daap_src_type, GST_TYPE_URI_HANDLER,
@@ -184,7 +184,6 @@ static gboolean rb_daap_src_is_seekable (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_get_size (GstBaseSrc *src, guint64 *size);
 static GstFlowReturn rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf);
 #endif
-
 
 #ifdef HAVE_GSTREAMER_0_8
 
@@ -234,7 +233,7 @@ enum
 	PROP_BYTESPERREAD
 };
 
-static void 
+static void
 rb_daap_src_base_init (gpointer g_class)
 {
 	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
@@ -245,7 +244,7 @@ rb_daap_src_base_init (gpointer g_class)
 	gst_element_class_set_details (element_class, &rb_daap_src_details);
 }
 
-static void 
+static void
 rb_daap_src_class_init (RBDAAPSrcClass *klass)
 {
 #ifdef HAVE_GSTREAMER_0_8
@@ -293,7 +292,7 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 	gobject_class->finalize = rb_daap_src_finalize;
 
 	g_object_class_install_property (gobject_class, PROP_LOCATION,
-			g_param_spec_string ("location", 
+			g_param_spec_string ("location",
 					     "file location",
 					     "location of the file to read",
 					     NULL,
@@ -307,7 +306,6 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 	gstpushsrc_class->create = GST_DEBUG_FUNCPTR (rb_daap_src_create);
 #endif
 }
-
 
 #ifdef HAVE_GSTREAMER_0_8
 static void
@@ -352,13 +350,13 @@ rb_daap_src_finalize (GObject *object)
 {
 	RBDAAPSrc *src;
 	src = RB_DAAP_SRC (object);
-	
+
 #ifdef HAVE_GSTREAMER_0_8
 	if (GST_FLAG_IS_SET (src, RB_DAAP_SRC_OPEN)) {
 		rb_daap_src_close_file (src);
 	}
 #endif
-	
+
 	g_free (src->daap_uri);
 	src->daap_uri = NULL;
 
@@ -367,7 +365,6 @@ rb_daap_src_finalize (GObject *object)
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-
 
 static void
 rb_daap_src_set_property (GObject *object,
@@ -504,7 +501,7 @@ _expect_char (RBDAAPSrc *src, guchar expected)
 	return TRUE;
 }
 
-static gboolean 
+static gboolean
 rb_daap_src_read_chunk_size (RBDAAPSrc *src, gboolean first_chunk, gint64 *chunk_size)
 {
 	gchar chunk_buf[30];
@@ -570,7 +567,7 @@ _split_uri (const gchar *daap_uri, gchar **host, guint *port, gchar **path)
 		*path = g_strdup ("/");
 		pathstart = daap_uri + locationlen;
 	}
-	
+
 	portstart = strrchr (hostport, ':');
 	if (portstart) {
 		*host = g_strndup (hostport, portstart - hostport);
@@ -580,7 +577,6 @@ _split_uri (const gchar *daap_uri, gchar **host, guint *port, gchar **path)
 		*port = 3869;
 	}
 }
-
 
 #ifdef HAVE_GSTREAMER_0_8
 /* I tell you, it'd be nice if Gstreamer's typefind element actually listened
@@ -631,7 +627,7 @@ rb_daap_src_getcaps (GstPad *pad)
 	if ((g_strncasecmp (extension, "aac", 3) == 0)) {
 		return gst_caps_copy (gst_static_caps_get(&aac_caps));
 	}
-	
+
 	return gst_caps_new_any ();
 }
 #endif
@@ -672,7 +668,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 
 	_split_uri (src->daap_uri, &host, &port, &path);
-	
+
 	server.sin_family = AF_INET;
 	server.sin_port = htons (port);
 	server.sin_addr.s_addr = inet_addr (host);
@@ -740,7 +736,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 
 	end_headers = strstr (response, "\r\n\r\n");
 	if (!end_headers) {
-		/* this means the DAAP server returned more than 4k of headers.  
+		/* this means the DAAP server returned more than 4k of headers.
 		 * not terribly likely.
 		 */
 		g_free (response);
@@ -785,10 +781,10 @@ rb_daap_src_open (RBDAAPSrc *src)
 					}
 				}
 			}
-			
+
 		} else {
-			GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ, 
-					   ("HTTP error: %s", http_status_phrase), 
+			GST_ELEMENT_ERROR (src, RESOURCE, OPEN_READ,
+					   ("HTTP error: %s", http_status_phrase),
 					   (NULL));
 			ok = FALSE;
 		}
@@ -824,7 +820,7 @@ rb_daap_src_start (GstBaseSrc *bsrc)
 	if (src->sock_fd != -1) {
 		close (src->sock_fd);
 	}
-	
+
 	src->curoffset = 0;
 
 	if (rb_daap_src_open (src)) {
@@ -848,7 +844,7 @@ rb_daap_src_start (GstBaseSrc *bsrc)
 		return FALSE;
 	}
 }
-	
+
 #ifdef HAVE_GSTREAMER_0_8
 static void
 rb_daap_src_close_file (RBDAAPSrc *src)
@@ -868,7 +864,7 @@ rb_daap_src_close_file (RBDAAPSrc *src)
 static gboolean
 rb_daap_src_stop (GstBaseSrc *bsrc)
 {
-	/* don't do anything - this seems to get called during setup, but 
+	/* don't do anything - this seems to get called during setup, but
 	 * we don't get started again afterwards.
 	 */
 	return TRUE;
@@ -927,7 +923,7 @@ rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf)
 		src->need_flush = FALSE;
 		return GST_DATA (event);
 	}
-	
+
 	if (src->send_discont) {
 		GstEvent *event;
 
@@ -956,11 +952,11 @@ rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf)
 		}
 		src->first_chunk = FALSE;
 	}
-	
+
 	readsize = src->bytes_per_read;
 	if (src->chunked && readsize > src->size)
 		readsize = src->size;
-	
+
 #ifdef HAVE_GSTREAMER_0_8
 	buf = gst_buffer_new ();
 	g_return_val_if_fail (buf, NULL);
@@ -992,7 +988,7 @@ rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf)
 		return GST_FLOW_UNEXPECTED;
 #endif
 	}
-	
+
 	if (src->chunked)
 		src->size -= readsize;
 
@@ -1048,7 +1044,6 @@ rb_daap_src_change_state (GstElement *element)
 	return GST_STATE_SUCCESS;
 }
 
-			  
 static gboolean
 rb_daap_src_srcpad_event (GstPad *pad,
 			  GstEvent *event)
@@ -1107,10 +1102,10 @@ rb_daap_src_srcpad_event (GstPad *pad,
 	return TRUE;
 }
 
-static gboolean 
-rb_daap_src_srcpad_query (GstPad *pad, 
-			  GstQueryType type, 
-			  GstFormat *format, 
+static gboolean
+rb_daap_src_srcpad_query (GstPad *pad,
+			  GstQueryType type,
+			  GstFormat *format,
 			  gint64 *value)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (gst_pad_get_parent (pad));
@@ -1142,7 +1137,7 @@ rb_daap_src_srcpad_query (GstPad *pad,
 			return FALSE;
 			break;
 	}
-	
+
 	return TRUE;
 }
 #else
@@ -1226,7 +1221,7 @@ rb_daap_src_uri_get_uri (GstURIHandler *handler)
 }
 
 static gboolean
-rb_daap_src_uri_set_uri (GstURIHandler *handler, 
+rb_daap_src_uri_set_uri (GstURIHandler *handler,
 			 const gchar *uri)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (handler);
@@ -1240,9 +1235,8 @@ rb_daap_src_uri_set_uri (GstURIHandler *handler,
 	return TRUE;
 }
 
-
-static void 
-rb_daap_src_uri_handler_init (gpointer g_iface, 
+static void
+rb_daap_src_uri_handler_init (gpointer g_iface,
 			      gpointer iface_data)
 {
 	GstURIHandlerInterface *iface = (GstURIHandlerInterface *) g_iface;

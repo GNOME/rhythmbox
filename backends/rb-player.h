@@ -1,5 +1,5 @@
 /*
- *  arch-tag: Interface to audio backend  
+ *  arch-tag: Interface to audio backend
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
@@ -112,7 +112,6 @@ void		rb_player_set_replaygain (RBPlayer *player,
 gboolean	rb_player_seekable   (RBPlayer *player);
 void		rb_player_set_time   (RBPlayer *player, long time);
 long		rb_player_get_time   (RBPlayer *player);
-
 
 /* only to be used by subclasses */
 void	_rb_player_emit_eos (RBPlayer *player);

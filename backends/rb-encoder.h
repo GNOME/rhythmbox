@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
- * arch-tag: Interface to audio encoder backend  
+ * arch-tag: Interface to audio encoder backend
  *
  * Copyright (C) 2006 James Livingston <jrl@ids.org.au>
  *
@@ -33,7 +33,6 @@ G_BEGIN_DECLS
 #define RB_ENCODER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_ENCODER, RBEncoder))
 #define RB_IS_ENCODER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_ENCODER))
 #define RB_ENCODER_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), RB_TYPE_ENCODER, RBEncoderIface))
-
 
 enum
 {

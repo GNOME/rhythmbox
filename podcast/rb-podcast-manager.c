@@ -46,7 +46,7 @@
 #define CONF_STATE_PODCAST_DOWNLOAD_INTERVAL	CONF_STATE_PODCAST_PREFIX "/download_interval"
 #define CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME	CONF_STATE_PODCAST_PREFIX "/download_next_time"
 
-enum 
+enum
 {
 	PROP_0,
 	PROP_DB
@@ -70,13 +70,11 @@ enum
 	LAST_SIGNAL
 };
 
-typedef enum 
+typedef enum
 {
 	EVENT_INSERT_FEED,
 	EVENT_ERROR_FEED
 }RBPodcastEventType;
-
-
 
 struct RBPodcastManagerPrivate
 {
@@ -102,9 +100,8 @@ typedef struct
 	RBPodcastChannel 	*channel;
 } RBPodcastManagerEvent;
 
-
 /* used on donwload thread */
-typedef struct 
+typedef struct
 {
 	RBPodcastManager *pd;
 	RhythmDBEntry *entry;
@@ -112,7 +109,7 @@ typedef struct
 	GnomeVFSURI *write_uri;
 	GnomeVFSURI *read_uri;
 	GMutex *mutex_working;
-	
+
 	guint total_size;
 	guint progress;
 	gboolean canceled;
@@ -124,7 +121,6 @@ typedef struct
 	RBPodcastManager *pd;
 	char *url;
 } RBPodcastThreadInfo;
-
 
 static guint rb_podcast_manager_signals[LAST_SIGNAL] = { 0 };
 
@@ -145,15 +141,15 @@ static void rb_podcast_manager_get_property 		(GObject *object,
 static void rb_podcast_manager_copy_post 		(RBPodcastManager *pd);
 static gboolean rb_podcast_manager_sync_head_cb 	(gpointer data);
 static gboolean rb_podcast_manager_head_query_cb 	(GtkTreeModel *query_model,
-						   	 GtkTreePath *path, 
+						   	 GtkTreePath *path,
 							 GtkTreeIter *iter,
 						   	 RBPodcastManager *data);
-static gboolean rb_podcast_manager_save_metadata	(RhythmDB *db, 
-						  	 RhythmDBEntry *entry, 
+static gboolean rb_podcast_manager_save_metadata	(RhythmDB *db,
+						  	 RhythmDBEntry *entry,
 						  	 const char *uri);
-static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd, 
+static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
-static void rb_podcast_manager_db_entry_deleted_cb 	(RBPodcastManager *pd, 
+static void rb_podcast_manager_db_entry_deleted_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static gboolean rb_podcast_manager_next_file 		(RBPodcastManager * pd);
 static void rb_podcast_manager_insert_feed 		(RBPodcastManager *pd, RBPodcastChannel *data);
@@ -162,7 +158,6 @@ static void rb_podcast_manager_abort_subscribe 		(RBPodcastManager *pd);
 /* event loop */
 static gboolean rb_podcast_manager_event_loop		(RBPodcastManager *pd) ;
 static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastThreadInfo *info);
-	
 
 /* async read file functions */
 static guint download_progress_cb			(GnomeVFSXferProgressInfo *info,
@@ -186,13 +181,12 @@ static void  rb_podcast_manager_config_changed		(GConfClient* client,
 
 G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
 
-
 static void
 rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	
-	object_class->constructor = rb_podcast_manager_constructor;	
+
+	object_class->constructor = rb_podcast_manager_constructor;
 	object_class->finalize = rb_podcast_manager_finalize;
 
 	object_class->set_property = rb_podcast_manager_set_property;
@@ -206,7 +200,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 							       RHYTHMDB_TYPE,
 							       G_PARAM_READWRITE));
 
-	rb_podcast_manager_signals[STATUS_CHANGED] = 
+	rb_podcast_manager_signals[STATUS_CHANGED] =
 	       g_signal_new ("status_changed",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		GTK_RUN_LAST,
@@ -218,7 +212,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				RHYTHMDB_TYPE_ENTRY,
 				G_TYPE_ULONG);
 
-	rb_podcast_manager_signals[START_DOWNLOAD] = 
+	rb_podcast_manager_signals[START_DOWNLOAD] =
 	       g_signal_new ("start_download",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		GTK_RUN_LAST,
@@ -229,7 +223,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				1,
 				RHYTHMDB_TYPE_ENTRY);
 
-	rb_podcast_manager_signals[FINISH_DOWNLOAD] = 
+	rb_podcast_manager_signals[FINISH_DOWNLOAD] =
 	       g_signal_new ("finish_download",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		GTK_RUN_LAST,
@@ -240,7 +234,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				1,
 				RHYTHMDB_TYPE_ENTRY);
 
-	rb_podcast_manager_signals[FEED_UPDATES_AVALIABLE] = 
+	rb_podcast_manager_signals[FEED_UPDATES_AVALIABLE] =
 	       g_signal_new ("feed_updates_avaliable",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		GTK_RUN_LAST,
@@ -251,7 +245,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				1,
 				RHYTHMDB_TYPE_ENTRY);
 
-	rb_podcast_manager_signals[PROCESS_ERROR] = 
+	rb_podcast_manager_signals[PROCESS_ERROR] =
 	       g_signal_new ("process_error",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 				GTK_RUN_LAST,
@@ -263,7 +257,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
-}	
+}
 
 static void
 rb_podcast_manager_init (RBPodcastManager *pd)
@@ -291,7 +285,6 @@ rb_podcast_manager_constructor (GType type, guint n_construct_properties,
 	                    			       			  rb_podcast_manager_config_changed,
 	                            		       			  pd);
 
-
 	return G_OBJECT (pd);
 
 }
@@ -304,36 +297,32 @@ rb_podcast_manager_finalize (GObject *object)
         g_return_if_fail (RB_IS_PODCAST_MANAGER (object));
 
 	pd = RB_PODCAST_MANAGER(object);
-	
+
 	g_return_if_fail (pd->priv != NULL);
 
-
 	eel_gconf_monitor_remove (CONF_STATE_PODCAST_PREFIX);
-	
+
 	if (pd->priv->source_sync) {
 		g_source_remove (pd->priv->source_sync);
 		pd->priv->source_sync = 0;
 	}
 
-
-	eel_gconf_notification_remove (pd->priv->update_interval_notify_id);	
-	
+	eel_gconf_notification_remove (pd->priv->update_interval_notify_id);
 
 	if (pd->priv->download_list) {
 		g_list_foreach (pd->priv->download_list, (GFunc)g_free, NULL);
 		g_list_free (pd->priv->download_list);
 	}
 
-
-	g_mutex_free (pd->priv->mutex_job);	
-	g_mutex_free (pd->priv->download_list_mutex);	
+	g_mutex_free (pd->priv->mutex_job);
+	g_mutex_free (pd->priv->download_list_mutex);
 	g_async_queue_unref (pd->priv->event_queue);
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->finalize (object);
 	rb_debug ("Podcast Manager END");
 }
 
-static void 
+static void
 rb_podcast_manager_set_property (GObject *object,
 				 guint prop_id,
 				 const GValue *value,
@@ -351,16 +340,16 @@ rb_podcast_manager_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (pd->priv->db),
 							      G_CALLBACK (rb_podcast_manager_db_entry_deleted_cb),
 							      pd);
-			
+
 		}
-		
+
 		pd->priv->db = g_value_get_object (value);
 
 	        g_signal_connect_object (G_OBJECT (pd->priv->db),
 	                                 "entry-added",
 	                                 G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
 	                                 pd, G_CONNECT_SWAPPED);
-		
+
 	        g_signal_connect_object (G_OBJECT (pd->priv->db),
 	                                 "entry_deleted",
 	                                 G_CALLBACK (rb_podcast_manager_db_entry_deleted_cb),
@@ -372,7 +361,7 @@ rb_podcast_manager_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rb_podcast_manager_get_property (GObject *object,
 					guint prop_id,
 		                        GValue *value,
@@ -388,7 +377,6 @@ rb_podcast_manager_get_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 	}
 
-	
 }
 
 RBPodcastManager *
@@ -397,9 +385,8 @@ rb_podcast_manager_new (RhythmDB *db)
 	RBPodcastManager *pd;
 
 	pd = g_object_new (RB_TYPE_PODCAST_MANAGER, "db", db, NULL);
-	return pd; 
+	return pd;
 }
-
 
 void
 rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
@@ -421,7 +408,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
 		}
 		rb_debug ("Try insert entry for download.");
 		data  = download_info_new();
-		data->pd = pd;	
+		data->pd = pd;
 		data->entry = entry;
         	g_mutex_lock (pd->priv->download_list_mutex);
 		pd->priv->download_list =  g_list_append (pd->priv->download_list, data);
@@ -486,21 +473,21 @@ rb_podcast_manager_sync_head_cb (gpointer data)
 void
 rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 {
-	GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
+	GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));
 
-	rhythmdb_do_full_query (pd->priv->db, 
+	rhythmdb_do_full_query (pd->priv->db,
 				RHYTHMDB_QUERY_RESULTS (query_model),
                                 RHYTHMDB_QUERY_PROP_EQUALS,
                                 RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
                                 RHYTHMDB_QUERY_END);
-	
+
  	gtk_tree_model_foreach (query_model,
 		                (GtkTreeModelForeachFunc) rb_podcast_manager_head_query_cb,
                                 pd);
-	
+
 	g_object_unref (query_model);
 }
-	
+
 static gboolean
 rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
  	   			  GtkTreePath *path, GtkTreeIter *iter,
@@ -515,7 +502,7 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 	if (status == 1)
 		rb_podcast_manager_subscribe_feed (manager, uri);
-	
+
         return FALSE;
 }
 
@@ -526,11 +513,11 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	rb_debug ("try lock file_process mutex");
 	if (g_mutex_trylock (pd->priv->mutex_job) == TRUE) {
 		gint size;
-		
+
 		g_mutex_lock (pd->priv->download_list_mutex);
 		size = g_list_length (pd->priv->download_list);
 		g_mutex_unlock (pd->priv->download_list_mutex);
-			
+
 		if (size > 0)
 			rb_podcast_manager_copy_post (pd);
 		else
@@ -542,7 +529,7 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	return FALSE;
 }
 
-static void 
+static void
 rb_podcast_manager_copy_post (RBPodcastManager *pd)
 {
 	GnomeVFSURI *remote_uri = NULL;
@@ -551,37 +538,35 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 	const char *location, *album_name;
 	char *short_name, *local_file_name;
 	char *dir_name, *conf_dir_name;
-	RBPodcastManagerInfo *data = NULL; 
+	RBPodcastManagerInfo *data = NULL;
 	RhythmDBEntry *entry;
 
 	rb_debug ("Stating copy file");
 	g_value_init (&location_val, G_TYPE_STRING);
 
-		
 	/* get first element of list */
 	g_mutex_lock (pd->priv->download_list_mutex);
 	data = (RBPodcastManagerInfo *) g_list_first(pd->priv->download_list)->data;
 	g_mutex_unlock (pd->priv->download_list_mutex);
-	
-	if (data == NULL)
-		return;		
 
+	if (data == NULL)
+		return;
 
 	entry = data->entry;
-			
+
 	g_assert (entry != NULL);
-		
+
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);	
-	
+	album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+
 	rb_debug ("processing %s", location);
-	
+
 	remote_uri = gnome_vfs_uri_new (location);
 	if (!remote_uri) {
 		rb_debug ("Error downloading podcast: could not create remote uri");
 		goto next_step;
 	}
-		
+
 	conf_dir_name = rb_podcast_manager_get_podcast_dir (pd);
 	dir_name = g_build_filename (conf_dir_name,
 				     album_name,
@@ -594,7 +579,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 			goto next_step;
 		}
 	 }
-		 		 
+
 	short_name = gnome_vfs_uri_extract_short_name (remote_uri);
 	local_file_name = g_build_filename (dir_name,
 	 				    short_name,
@@ -619,7 +604,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 		if (result != GNOME_VFS_OK) {
 			rb_debug ("unable to retrieve info on remote of podcast");
 			goto next_step;
-		} else { 
+		} else {
 			remote_size = info->size;
 		}
 
@@ -632,7 +617,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 			char *uri = gnome_vfs_uri_to_string (local_uri, GNOME_VFS_URI_HIDE_NONE);
 			char *canon_uri = rb_canonicalise_uri (uri);
 			g_free (uri);
-		
+
 			rb_debug ("podcast %s already downloaded", location);
 
 			g_value_init (&val, G_TYPE_ULONG);
@@ -648,27 +633,27 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 			rb_podcast_manager_save_metadata (pd->priv->db, data->entry, canon_uri);
 			rhythmdb_commit (pd->priv->db);
 			g_free (canon_uri);
-				
+
 			goto next_step;
 		} else if (remote_size > info->size) {
 			/* TODO: suport resume file */
 		} else {
 			/* the local file is larger. replace it */
 		}
-		
+
 		gnome_vfs_file_info_unref (info);
 	}
 
 	g_free (local_file_name);
-	
+
 	data->read_uri = remote_uri;
 	data->write_uri = local_uri;
-	
+
 	start_job (data);
 	return;
-	
+
 next_step:
-	
+
 	if (remote_uri)
 		gnome_vfs_uri_unref (remote_uri);
 
@@ -683,7 +668,7 @@ next_step:
 	data = NULL;
 
 	g_mutex_unlock (pd->priv->mutex_job);
-	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);	
+	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);
 }
 
 gboolean
@@ -720,7 +705,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url)
 	return TRUE;
 }
 
-static gpointer 
+static gpointer
 rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 {
 	RBPodcastManagerEvent *event = g_new0 (RBPodcastManagerEvent, 1);
@@ -733,7 +718,7 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 		g_async_queue_push (info->pd->priv->event_queue, event);
 		g_idle_add ((GSourceFunc) rb_podcast_manager_event_loop, info->pd);
 	}
-	
+
 	g_free (info->url);
 	g_free (info);
 	return NULL;
@@ -771,7 +756,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, name);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
-	
+
 	g_value_reset (&val);
 	g_value_set_static_string (&val, _("Podcast"));
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
@@ -795,7 +780,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
 
 	g_value_reset (&val);
-	if (generator) 
+	if (generator)
 		g_value_set_string (&val, generator);
 	else
 		g_value_set_static_string (&val, "");
@@ -824,7 +809,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	g_value_set_ulong (&val, time.tv_sec);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
 	g_value_unset (&val);
-	
+
 	/* initialize the rating */
 	g_value_init (&val, G_TYPE_DOUBLE);
 	g_value_set_double (&val, 2.5);
@@ -846,9 +831,9 @@ rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char
 	GError *error = NULL;
 	GValue val = { 0, };
 	const char *mime;
-	
+
 	rb_debug("Loading podcast metadata");
-        rb_metadata_load (md, uri, &error);	
+        rb_metadata_load (md, uri, &error);
 
 	if (error != NULL) {
 		/* this probably isn't an audio enclosure. or some other error */
@@ -861,9 +846,9 @@ rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char
 		g_value_set_string (&val, error->message);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
 		g_value_unset (&val);
-			
+
 		rhythmdb_commit (db);
-		
+
 		g_object_unref (md);
 		g_error_free (error);
 
@@ -885,7 +870,7 @@ rb_podcast_manager_save_metadata (RhythmDB *db, RhythmDBEntry *entry, const char
 		g_value_unset (&val);
 	}
 
-	if (rb_metadata_get (md, 
+	if (rb_metadata_get (md,
 			     RB_METADATA_FIELD_BITRATE,
 			     &val)) {
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_BITRATE, &val);
@@ -905,11 +890,11 @@ rb_podcast_manager_db_entry_added_cb (RBPodcastManager *pd, RhythmDBEntry *entry
 
 	if (type != RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		return;
-	
+
         rb_podcast_manager_download_entry (pd, entry);
 }
 
-static void 
+static void
 write_job_data (RBPodcastManagerInfo *data)
 {
 
@@ -917,18 +902,18 @@ write_job_data (RBPodcastManagerInfo *data)
 	RhythmDB *db = data->pd->priv->db;
 
 	rb_debug ("in the write_job");
-	
+
 	g_value_init (&val, G_TYPE_UINT64);
 	g_value_set_uint64 (&val, data->total_size);
 	rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
 	g_value_unset (&val);
-	
+
 	g_value_init (&val, G_TYPE_ULONG);
 	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
 	rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_STATUS, &val);
 	g_value_unset (&val);
 
-	rb_podcast_manager_save_metadata (db, data->entry, 
+	rb_podcast_manager_save_metadata (db, data->entry,
 		       			   gnome_vfs_uri_to_string (data->write_uri, GNOME_VFS_URI_HIDE_NONE));
 
 	rhythmdb_commit (db);
@@ -947,7 +932,6 @@ download_info_free (RBPodcastManagerInfo *data)
 		data->read_uri = NULL;
 	}
 
-	
 	g_mutex_free (data->mutex_working);
 
 	g_free (data);
@@ -963,16 +947,16 @@ download_info_new (void)
 	data->read_uri = NULL;
 	data->mutex_working = g_mutex_new ();
 	data->total_size = 0;
-	data->progress = 0;	
+	data->progress = 0;
 	data->canceled = FALSE;
 
 	return data;
 }
 
-static void 
+static void
 start_job (RBPodcastManagerInfo *data)
 {
-	
+
 	GList *source_uri_list = NULL;
 	GList *target_uri_list = NULL;
 
@@ -1003,54 +987,53 @@ start_job (RBPodcastManagerInfo *data)
 
 }
 
-void 
+void
 rb_podcast_manager_cancel_all	(RBPodcastManager *pd)
 {
 	guint i;
 	guint lst_len;
 	GList *lst;
-	
+
 	g_mutex_lock (pd->priv->download_list_mutex);
 	lst = g_list_reverse (pd->priv->download_list);
 	g_mutex_unlock (pd->priv->download_list_mutex);
 
 	rb_debug ("cancel all job %d", g_list_length (lst));
 	lst_len = g_list_length (lst);
-	
+
 	for (i=0; i < lst_len; i++) {
 		RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) lst->data;
 		lst = lst->next;
 		cancel_job (data);
 		rb_debug ("cancel next job");
 	}
-	
+
 	if (lst_len > 0) {
 		g_mutex_lock (pd->priv->mutex_job);
 		g_mutex_unlock (pd->priv->mutex_job);
 	}
 }
 
-static void 
+static void
 end_job	(RBPodcastManagerInfo *data)
 {
 	RBPodcastManager *pd = data->pd;
-	
+
 	rb_debug ("end_job");
-	
+
 	g_mutex_lock (data->pd->priv->download_list_mutex);
 	data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, (gconstpointer) data);
 	g_mutex_unlock (data->pd->priv->download_list_mutex);
-	
+
 	g_mutex_unlock (data->mutex_working);
 
-	
 	if (data->canceled != TRUE) {
 		GDK_THREADS_ENTER ();
 
-		g_signal_emit (data->pd, rb_podcast_manager_signals[FINISH_DOWNLOAD], 
+		g_signal_emit (data->pd, rb_podcast_manager_signals[FINISH_DOWNLOAD],
 			       0, data->entry);
 
-		GDK_THREADS_LEAVE ();	
+		GDK_THREADS_LEAVE ();
 	}
 
 	download_info_free (data);
@@ -1068,19 +1051,19 @@ cancel_job (RBPodcastManagerInfo *data)
 	}
 	else {
 		rb_debug ("job cancel");
-		
+
 		g_mutex_lock (data->pd->priv->download_list_mutex);
 		data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, (gconstpointer ) data);
 		g_mutex_unlock (data->pd->priv->download_list_mutex);
 
 		g_mutex_unlock (data->mutex_working);
-		
+
 		download_info_free (data);
 		data = NULL;
 	}
 }
 
-static guint 
+static guint
 download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 {
 	RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) cb_data;
@@ -1104,7 +1087,7 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 		data = NULL;
 		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
 	}
-	
+
 	if (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL) {
 		GValue val = {0,};
 		RhythmDB *db = data->pd->priv->db;
@@ -1119,7 +1102,7 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 		rhythmdb_commit (db);
 		g_free (canon_uri);
 	}
-	
+
 	if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED) {
 		if (data->canceled != TRUE)  {
 			rb_debug ("download completed");
@@ -1137,11 +1120,10 @@ download_progress_cb (GnomeVFSXferProgressInfo *info, gpointer cb_data)
 		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
 	}
 
-
 	return 1;
 }
 
-static guint 
+static guint
 download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressInfo *info, gpointer cb_data)
 {
 
@@ -1151,11 +1133,10 @@ download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressIn
 		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
 	}
 
-	
 	if ((info->phase == GNOME_VFS_XFER_PHASE_COPYING) &&
 	    (data->entry != NULL)) {
 		guint local_progress = 0;
-	       
+
 		if (info->file_size > 0)
 			local_progress = (gint) 100 * info->total_bytes_copied / info->file_size;
 
@@ -1168,15 +1149,15 @@ download_progress_update_cb (GnomeVFSAsyncHandle *handle, GnomeVFSXferProgressIn
 			g_value_unset (&val);
 
 			GDK_THREADS_ENTER ();
-			
+
 			g_signal_emit (data->pd, rb_podcast_manager_signals[STATUS_CHANGED],
 				       0, data->entry, local_progress);
-			
+
 			GDK_THREADS_LEAVE ();
 			data->progress = local_progress;
 		}
 	}
-	
+
 	return GNOME_VFS_XFER_ERROR_ACTION_SKIP;
 }
 
@@ -1207,11 +1188,11 @@ rb_podcast_manager_remove_feed (RBPodcastManager *pd, const char *url, gboolean 
 		rhythmdb_commit (pd->priv->db);
 		return TRUE;
 	}
-	
+
 	return FALSE;
 }
 
-static void 
+static void
 rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 					RhythmDBEntry *entry)
 {
@@ -1244,24 +1225,24 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 		/* remove dir */
 		rb_debug ("removing dir");
 		conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
-			
+
 		dir_name = g_build_filename (conf_dir_name,
 					     rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
 					     NULL);
 		gnome_vfs_remove_directory (dir_name);
 
 	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));	
+		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));
 		GtkTreeIter iter;
 
-		rhythmdb_do_full_query (pd->priv->db, 
+		rhythmdb_do_full_query (pd->priv->db,
 					RHYTHMDB_QUERY_RESULTS (query_model),
                 	                RHYTHMDB_QUERY_PROP_EQUALS,
                         	        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
                 	                RHYTHMDB_QUERY_PROP_LIKE,
 					RHYTHMDB_PROP_SUBTITLE, rhythmdb_entry_get_string (entry,  RHYTHMDB_PROP_LOCATION),
                                 	RHYTHMDB_QUERY_END);
-	
+
 		if (gtk_tree_model_get_iter_first (query_model, &iter)) {
 			gboolean has_next;
 			do {
@@ -1275,12 +1256,11 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 	}
 }
 
-
 void
 rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
 	GList *lst;
-       
+
 	g_mutex_lock (pd->priv->download_list_mutex);
 
 	lst = pd->priv->download_list;
@@ -1294,29 +1274,28 @@ rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 	}
 	g_mutex_unlock (pd->priv->download_list_mutex);
 
-	if (lst) 
+	if (lst)
 		cancel_job (lst->data);
 }
 
-
-static void 
+static void
 rb_podcast_manager_update_synctime (RBPodcastManager *pd)
 {
 	gint value;
 	gint index = eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL);
-	
-	switch (index) 
+
+	switch (index)
 	{
 	case UPDATE_EVERY_HOUR:
 		value = time (NULL) + 3600;
 		break;
 	case UPDATE_EVERY_DAY:
 		value = time (NULL) + (3600 * 24);
-		break;		
+		break;
 	case UPDATE_EVERY_WEEK:
 		value = time (NULL) + (3600 * 24 * 7);
 		break;
-	case UPDATE_MANUALLY:		
+	case UPDATE_MANUALLY:
 		value = 0;
 		break;
 	default:
@@ -1338,12 +1317,11 @@ rb_podcast_manager_config_changed (GConfClient* client,
 	rb_podcast_manager_update_synctime (RB_PODCAST_MANAGER (user_data));
 }
 
-
-void 
+void
 rb_podcast_manager_set_remove_files (RBPodcastManager *pd, gboolean flag)
 {
 	pd->priv->remove_files = flag;
-	
+
 }
 
 gboolean
@@ -1389,7 +1367,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	if (entry) {
 		if (rhythmdb_entry_get_entry_type (entry) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED)
 			return;
-			
+
 		rb_debug ("Head found");
 		g_value_init (&status_val, G_TYPE_ULONG);
 		g_value_set_ulong (&status_val, 1);
@@ -1405,12 +1383,12 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		if (entry == NULL)
 			return;
 		rb_debug("New entry create\n");
-	
+
 		g_value_init (&title_val, G_TYPE_STRING);
 		g_value_set_string (&title_val, (gchar * ) data->title);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 		g_value_unset (&title_val);
-	
+
 		g_value_init (&author_val, G_TYPE_STRING);
 		if (data->author)
 			g_value_set_string (&author_val, (gchar *) data->author);
@@ -1418,22 +1396,21 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 			g_value_set_static_string (&author_val, _("Unknown"));
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
 		g_value_unset (&author_val);
-	
-	
+
 		if (data->subtitle) {
 			g_value_init (&subtitle_val, G_TYPE_STRING);
 			g_value_set_string (&subtitle_val, (gchar *) data->subtitle);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
 			g_value_unset (&subtitle_val);
 		}
-	
+
 		if (data->description) {
 			g_value_init (&description_val, G_TYPE_STRING);
 			g_value_set_string (&description_val, (gchar *) data->description);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
 			g_value_unset (&description_val);
 		}
-	
+
 		if (data->summary) {
 			g_value_init (&summary_val, G_TYPE_STRING);
 			g_value_set_string (&summary_val, (gchar *) data->summary);
@@ -1448,7 +1425,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 			g_value_unset (&lang_val);
 		}
 
-		if (data->copyright) { 
+		if (data->copyright) {
 			g_value_init (&copyright_val, G_TYPE_STRING);
 			g_value_set_string (&copyright_val, (gchar *) data->copyright);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
@@ -1472,7 +1449,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 	/* insert episodes */
 	new_last_post = last_post;
-	
+
 	updated = FALSE;
 	download_last = (eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_INTERVAL) != UPDATE_MANUALLY);
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
@@ -1482,10 +1459,10 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		if (item->pub_date > last_post || item->pub_date == 0) {
 			updated = TRUE;
 
-			post_entry = 
-				rb_podcast_manager_add_post (db, 
+			post_entry =
+				rb_podcast_manager_add_post (db,
 							     (gchar *) data->title,
-							     (gchar *) item->title, 
+							     (gchar *) item->title,
 							     (gchar *) data->url,
 							     (gchar *) (item->author ? item->author : data->author),
 							     (gchar *) item->url,
@@ -1511,9 +1488,9 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		g_value_init (&status, G_TYPE_ULONG);
 		g_value_set_ulong (&status, RHYTHMDB_PODCAST_STATUS_WAITING);
 		for (t = download_entries; t != NULL; t = g_list_next (t)) {
-			rhythmdb_entry_set (db, 
+			rhythmdb_entry_set (db,
 						       (RhythmDBEntry*) t->data,
-						       RHYTHMDB_PROP_STATUS, 
+						       RHYTHMDB_PROP_STATUS,
 						       &status);
 		}
 		g_value_unset (&status);
@@ -1526,11 +1503,11 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 	if (data->pub_date > new_last_post)
 		new_last_post = data->pub_date;
-	
+
 	g_value_init (&last_post_val, G_TYPE_ULONG);
 	g_value_set_ulong (&last_post_val, new_last_post);
 
-	if (new_feed) 
+	if (new_feed)
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
 	else
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
@@ -1544,13 +1521,12 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	else
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
 	g_value_unset (&last_update_val);
-	
+
 	rhythmdb_commit (db);
 }
 
-
-static gboolean 
-rb_podcast_manager_event_loop (RBPodcastManager *pd) 
+static gboolean
+rb_podcast_manager_event_loop (RBPodcastManager *pd)
 {
 	RBPodcastManagerEvent *event;
 
@@ -1565,20 +1541,20 @@ rb_podcast_manager_event_loop (RBPodcastManager *pd)
 				gchar *error_msg;
 				error_msg = g_strdup_printf (_("There was a problem adding this podcast. Please verify the URL: %s"),
 							     (gchar *) event->channel->url);
-				g_signal_emit (G_OBJECT (pd), 
-					       rb_podcast_manager_signals[PROCESS_ERROR], 
+				g_signal_emit (G_OBJECT (pd),
+					       rb_podcast_manager_signals[PROCESS_ERROR],
 					       0, error_msg);
 				g_free (error_msg);
 				break;
 			}
 		}
-			
+
 		rb_podcast_parse_channel_free (event->channel);
 		g_free (event);
 	}
 
 	g_async_queue_unref (pd->priv->event_queue);
-	
+
 	return FALSE;
 }
 
@@ -1586,11 +1562,11 @@ static void
 rb_podcast_manager_abort_subscribe (RBPodcastManager *pd)
 {
 	RBPodcastManagerEvent *event;
-	
+
 	/* remove all event processing functions */
 	while (g_idle_remove_by_data (pd))
 		;
-	
+
 	/* purge the event queue */
 	while ((event = g_async_queue_try_pop (pd->priv->event_queue))) {
 		rb_podcast_parse_channel_free (event->channel);
@@ -1609,7 +1585,7 @@ gchar *
 rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 {
 	gchar *conf_dir_name = eel_gconf_get_string (CONF_STATE_PODCAST_DOWNLOAD_DIR);
-	
+
 	if (conf_dir_name == NULL || (strcmp (conf_dir_name, "") == 0)) {
 		conf_dir_name = g_build_filename (g_get_home_dir (),
 						  "Podcasts",
@@ -1619,4 +1595,3 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 
 	return conf_dir_name;
 }
-

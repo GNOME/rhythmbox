@@ -38,8 +38,8 @@
 #include <nautilus-burn-drive.h>
 #include <nautilus-burn-drive-selection.h>
 
-#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#ifndef NAUTILUS_BURN_CHECK_VERSION
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
 #endif
 
 #if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
@@ -166,7 +166,6 @@ rb_playlist_source_recorder_style_set (GtkWidget *widget,
         gtk_box_set_spacing (GTK_BOX (dialog->action_area), 6);
 }
 
-
 static void
 rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
 {
@@ -187,7 +186,7 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
                               G_TYPE_NONE,
                               1,
                               G_TYPE_STRING);
-        
+
         rb_playlist_source_recorder_signals [FILE_ADDED] =
                 g_signal_new ("file_added",
                               G_OBJECT_CLASS_TYPE (object_class),
@@ -223,7 +222,6 @@ rb_playlist_source_recorder_device_menu_create (void)
 
         return widget;
 }
-
 
 static const NautilusBurnDrive *
 lookup_current_recorder (RBPlaylistSourceRecorder *source)
@@ -302,7 +300,6 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
                             0, _("Maximum possible"),
                             1, 0,
                             -1);
-
 
         default_speed = eel_gconf_get_integer (CONF_STATE_BURN_SPEED);
         default_speed_index = -1;
@@ -538,7 +535,7 @@ _nautilus_burn_drive_eject (NautilusBurnDrive *drive)
 
         if (drive->device == NULL)
                 return FALSE;
-        
+
         cmd = g_strdup_printf ("eject %s", drive->device);
         res = g_spawn_command_line_sync (cmd, NULL, NULL, NULL, NULL);
         g_free (cmd);
@@ -656,9 +653,9 @@ burn_cd (RBPlaylistSourceRecorder *source,
                 }
                 set_message_text (source, _("Finished creating audio CD.\nCreate another copy?"));
         } else if (res == RB_RECORDER_RESULT_ERROR) {
-                set_message_text (source, _("Writing failed.  Try again?"));  
+                set_message_text (source, _("Writing failed.  Try again?"));
         } else {
-                set_message_text (source, _("Writing cancelled.  Try again?"));  
+                set_message_text (source, _("Writing cancelled.  Try again?"));
         }
 
         progress_set_fraction (source->priv->progress, 0);
@@ -1067,7 +1064,6 @@ ask_rewrite_disc (RBPlaylistSourceRecorder *source,
         msg = g_strdup_printf (_("This %s appears to have information already recorded on it."),
                                nautilus_burn_drive_media_type_get_string (type));
 
-
         dialog = gtk_message_dialog_new (GTK_WINDOW (source),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_MESSAGE_WARNING,
@@ -1201,7 +1197,6 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         gtk_widget_show (source->priv->burn_button);
 
         gtk_dialog_set_default_response (GTK_DIALOG (source), GTK_RESPONSE_ACCEPT);
-
 
         xml = rb_glade_xml_new ("recorder.glade",
                                 "recorder_vbox",
@@ -1373,11 +1368,11 @@ rb_playlist_source_recorder_new (GtkWidget  *parent,
 {
         GtkWidget *result;
         RBPlaylistSourceRecorder *source;
-        
+
         result = g_object_new (RB_TYPE_PLAYLIST_SOURCE_RECORDER,
                                "title", _("Create Audio CD"),
                                NULL);
-        
+
         source = RB_PLAYLIST_SOURCE_RECORDER (result);
         if (parent) {
                 source->priv->parent = gtk_widget_get_toplevel (parent);

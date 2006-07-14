@@ -63,7 +63,7 @@ rhythmdb_query_copy (GPtrArray *array)
 
 	if (!array)
 		return NULL;
-	
+
 	ret = g_ptr_array_sized_new (array->len);
 	rhythmdb_query_concatenate (ret, array);
 
@@ -78,7 +78,7 @@ rhythmdb_query_concatenate (GPtrArray *query1, GPtrArray *query2)
 	g_assert (query2);
 	if (!query2)
 		return;
-	
+
 	for (i = 0; i < query2->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query2, i);
 		RhythmDBQueryData *new_data = g_new0 (RhythmDBQueryData, 1);
@@ -95,14 +95,13 @@ rhythmdb_query_concatenate (GPtrArray *query1, GPtrArray *query2)
 	}
 }
 
-
 GPtrArray *
 rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 {
 	RhythmDBQueryType query;
 	GPtrArray *ret = g_ptr_array_new ();
 	char *error;
-	
+
 	while ((query = va_arg (args, RhythmDBQueryType)) != RHYTHMDB_QUERY_END) {
 		RhythmDBQueryData *data = g_new0 (RhythmDBQueryData, 1);
 		data->type = query;
@@ -123,7 +122,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
 		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
-		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 			data->propid = va_arg (args, guint);
 			data->val = g_new0 (GValue, 1);
 			g_value_init (data->val, rhythmdb_get_property_type (db, data->propid));
@@ -176,7 +175,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
  * 	a) that match the query "subquery", or
  * 	b) that have "cat" in their title, or
  * 	c) have a rating of at least 2.5, and a play count of at most 10
- * 
+ *
  * Returns: a the newly created query. It must be freed with rhythmdb_query_free()
  **/
 GPtrArray *
@@ -193,7 +192,6 @@ rhythmdb_query_parse (RhythmDB *db, ...)
 
 	return ret;
 }
-
 
 /**
  * rhythmdb_query_append:
@@ -237,7 +235,7 @@ rhythmdb_query_free (GPtrArray *query)
 
 	if (query == NULL)
 		return;
-	
+
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
 		switch (data->type) {
@@ -257,7 +255,7 @@ rhythmdb_query_free (GPtrArray *query)
 		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
 		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
 		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
-		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 			g_value_unset (data->val);
 			g_free (data->val);
 			break;
@@ -340,7 +338,7 @@ rhythmdb_read_encoded_property (RhythmDB *db,
 				GValue *val)
 {
 	g_value_init (val, rhythmdb_get_property_type (db, propid));
-	
+
 	switch (G_VALUE_TYPE (val)) {
 	case G_TYPE_STRING:
 		g_value_set_string (val, content);
@@ -369,18 +367,17 @@ rhythmdb_read_encoded_property (RhythmDB *db,
 				/* Fall through */
 			}
 		}
-		/* Falling through on purpose to get an assert for unexpected 
-		 * cases 
+		/* Falling through on purpose to get an assert for unexpected
+		 * cases
 		 */
 	default:
-		g_warning ("Attempt to read '%s' of unhandled type %s", 
+		g_warning ("Attempt to read '%s' of unhandled type %s",
 			   rhythmdb_nice_elt_name_from_propid (db, propid),
 			   g_type_name (G_VALUE_TYPE (val)));
 		g_assert_not_reached ();
 		break;
 	}
 }
-
 
 void
 rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
@@ -392,7 +389,7 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
-		
+
 		switch (data->type) {
 		case RHYTHMDB_QUERY_SUBQUERY:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_SUBQUERY, NULL);
@@ -448,7 +445,7 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
-		case RHYTHMDB_QUERY_PROP_YEAR_LESS:  
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
 			subnode = xmlNewChild (node, NULL, RB_PARSE_YEAR_LESS, NULL);
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (db, subnode, data->propid, data->val);
@@ -463,7 +460,7 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (db, subnode, data->propid, data->val);
 			break;
-		}		
+		}
 	}
 }
 
@@ -474,7 +471,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 	xmlNodePtr child;
 
 	g_assert (!xmlStrcmp (parent->name, RB_PARSE_CONJ));
-	
+
 	for (child = parent->children; child; child = child->next) {
 		RhythmDBQueryData *data;
 
@@ -489,7 +486,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			subquery = child->children;
 			while (xmlNodeIsText (subquery))
 				subquery = subquery->next;
-			
+
 			data->subquery = rhythmdb_query_deserialize (db, subquery);
 		} else if (!xmlStrcmp (child->name, RB_PARSE_DISJ)) {
 			data->type = RHYTHMDB_QUERY_DISJUNCTION;
@@ -502,22 +499,22 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 		} else if (!xmlStrcmp (child->name, RB_PARSE_SUFFIX)) {
 			data->type = RHYTHMDB_QUERY_PROP_SUFFIX;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_EQUALS)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
-				       (xmlChar *)"date")) 
+			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP),
+				       (xmlChar *)"date"))
 				data->type = RHYTHMDB_QUERY_PROP_YEAR_EQUALS;
-			else 
+			else
 				data->type = RHYTHMDB_QUERY_PROP_EQUALS;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_GREATER)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
-				       (xmlChar *)"date")) 
+			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP),
+				       (xmlChar *)"date"))
 				data->type = RHYTHMDB_QUERY_PROP_YEAR_GREATER;
-			else 
+			else
 				data->type = RHYTHMDB_QUERY_PROP_GREATER;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_LESS)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP), 
-				       (xmlChar *)"date")) 
+			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP),
+				       (xmlChar *)"date"))
 				data->type = RHYTHMDB_QUERY_PROP_YEAR_LESS;
-			else 
+			else
 				data->type = RHYTHMDB_QUERY_PROP_LESS;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)) {
 			data->type = RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN;
@@ -551,7 +548,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			content = (char *)xmlNodeGetContent (child);
 			rhythmdb_read_encoded_property (db, content, data->propid, data->val);
 			g_free (content);
-		} 
+		}
 
 		g_ptr_array_add (query, data);
 	}
@@ -572,7 +569,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 void
 rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 {
-	int i;	
+	int i;
 
 	if (query == NULL)
 		return;
@@ -580,7 +577,7 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
 		gboolean restart_criteria = FALSE;
-		
+
 		if (data->subquery) {
 			rhythmdb_query_preprocess (db, data->subquery);
 		} else switch (data->propid) {
@@ -632,7 +629,7 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 				/* and the day before the beginning of the next year */
 				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year + 1);
 				end =  g_date_get_julian (&date) - 1;
-				
+
 				switch (data->type)
 				{
 				case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
@@ -659,10 +656,10 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 				default:
 					break;
 				}
-				
+
 				break;
 			}
-			
+
 			default:
 				break;
 		}
@@ -743,7 +740,6 @@ rhythmdb_query_is_time_relative (RhythmDB *db, GPtrArray *query)
 	return FALSE;
 }
 
-
 GType
 rhythmdb_query_get_type (void)
 {
@@ -757,4 +753,3 @@ rhythmdb_query_get_type (void)
 
 	return type;
 }
-

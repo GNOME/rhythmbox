@@ -134,18 +134,17 @@ rb_statusbar_construct (GType                  type,
 					(type,
 					 n_construct_properties,
 					 construct_properties);
-        
+
         statusbar = RB_STATUSBAR (object);
 
         return object;
 }
 
-
 static void
 rb_statusbar_init (RBStatusbar *statusbar)
 {
-	statusbar->priv = G_TYPE_INSTANCE_GET_PRIVATE (statusbar, 
-						       RB_TYPE_STATUSBAR, 
+	statusbar->priv = G_TYPE_INSTANCE_GET_PRIVATE (statusbar,
+						       RB_TYPE_STATUSBAR,
 						       RBStatusbarPrivate);
 
         statusbar->priv->tooltips = gtk_tooltips_new ();
@@ -182,10 +181,9 @@ rb_statusbar_finalize (GObject *object)
 
         if (statusbar->priv->status_poll_id)
                 g_source_remove (statusbar->priv->status_poll_id);
-        
+
         G_OBJECT_CLASS (rb_statusbar_parent_class)->finalize (object);
 }
-
 
 typedef struct {
         GtkWidget *statusbar;
@@ -274,7 +272,7 @@ rb_statusbar_set_property (GObject *object,
 							      G_CALLBACK (rb_statusbar_source_status_changed_cb),
 							      statusbar);
                 }
-                
+
                 statusbar->priv->selected_source = g_value_get_object (value);
                 rb_debug ("selected source %p", g_value_get_object (value));
 
@@ -307,7 +305,7 @@ rb_statusbar_set_property (GObject *object,
         }
 }
 
-static void 
+static void
 rb_statusbar_get_property (GObject *object,
                               guint prop_id,
                               GValue *value,
@@ -444,7 +442,7 @@ rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *
                 g_free (statusbar->priv->progress_text);
                 statusbar->priv->progress_text = NULL;
         }
-        
+
         if (progress > (0.0 - EPSILON)) {
                 statusbar->priv->progress_fraction = progress;
                 statusbar->priv->progress_changed = TRUE;
@@ -463,6 +461,6 @@ rb_statusbar_source_status_changed_cb (RBSource *source, RBStatusbar *statusbar)
 {
 	rb_debug ("source status changed");
         if (statusbar->priv->status_poll_id == 0)
-                statusbar->priv->status_poll_id = 
+                statusbar->priv->status_poll_id =
                         g_idle_add ((GSourceFunc) poll_status, statusbar);
 }

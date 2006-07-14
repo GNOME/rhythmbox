@@ -56,7 +56,6 @@ static GPtrArray *construct_query_from_selection (RBStaticPlaylistSource *source
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
 
-
 /* browser stuff */
 static GList *impl_get_property_views (RBSource *source);
 void rb_static_playlist_source_browser_views_activated_cb (GtkWidget *widget,
@@ -95,7 +94,6 @@ G_DEFINE_TYPE (RBStaticPlaylistSource, rb_static_playlist_source, RB_TYPE_PLAYLI
 								RB_TYPE_STATIC_PLAYLIST_SOURCE, \
 								RBStaticPlaylistSourcePrivate))
 
-
 typedef struct
 {
 	RhythmDBQueryModel *base_model;
@@ -111,8 +109,6 @@ typedef struct
 	RhythmDBPropType search_prop;
 } RBStaticPlaylistSourcePrivate;
 
-
-	
 static void
 rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 {
@@ -120,7 +116,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
-	
+
 	object_class->constructor = rb_static_playlist_source_constructor;
 	object_class->dispose = rb_static_playlist_source_dispose;
 	object_class->finalize = rb_static_playlist_source_finalize;
@@ -141,13 +137,13 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_get_search_actions = impl_get_search_actions;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
-	
+
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	klass->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 						  GNOME_MEDIA_PLAYLIST,
 						  size,
 						  0, NULL);
-	
+
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
 
@@ -218,7 +214,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	g_object_unref (G_OBJECT (shell));
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)), 
+	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),
 						entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
@@ -228,7 +224,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	rb_library_browser_set_model (priv->browser, priv->base_model, FALSE);
 	rb_static_playlist_source_do_query (source);
-			 
+
 	/* reparent the entry view */
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	g_object_ref (G_OBJECT (songs));
@@ -274,18 +270,17 @@ rb_static_playlist_source_load_from_xml (RBStaticPlaylistSource *source, xmlNode
 
 		if (xmlNodeIsText (child))
 			continue;
-	
+
 		if (xmlStrcmp (child->name, RB_PLAYLIST_LOCATION))
 			continue;
-	
+
 		location = xmlNodeGetContent (child);
 		rb_static_playlist_source_add_location (source,
 						        (char *) location, -1);
 	}
 }
 
-
-RBSource *	
+RBSource *
 rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
 {
 	RBSource *psource = rb_static_playlist_source_new (shell,
@@ -341,7 +336,7 @@ impl_reset_filters (RBSource *source)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	gboolean changed = FALSE;
-	
+
 	if (rb_library_browser_reset (priv->browser))
 		changed = TRUE;
 
@@ -379,7 +374,7 @@ impl_search (RBSource *source, const char *search_text)
 		priv->search_text = g_strdup (search_text);
 	}
 	g_free (old_search_text);
-	
+
 	rb_debug ("doing search for \"%s\"", priv->search_text ? priv->search_text : "(NULL)");
 
 	rb_static_playlist_source_do_query (RB_STATIC_PLAYLIST_SOURCE (source));
@@ -394,7 +389,6 @@ impl_get_property_views (RBSource *source)
 	ret =  rb_library_browser_get_property_views (priv->browser);
 	return ret;
 }
-
 
 static void
 impl_browser_toggled (RBSource *source, gboolean enabled)
@@ -436,7 +430,7 @@ rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
 	RhythmDB *db = rb_playlist_source_get_db (psource);
 	GPtrArray *query;
-	
+
 	if (priv->filter_model)
 		g_object_unref (priv->filter_model);
 	priv->filter_model = rhythmdb_query_model_new_empty (db);
@@ -451,18 +445,18 @@ rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 }
 
 static void
-rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *browser, 
+rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 					      GParamSpec *pspec,
 					      RBStaticPlaylistSource *source)
 {
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 	RhythmDBQueryModel *query_model;
-	
+
 	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
 	rb_entry_view_set_model (songs, query_model);
 	rb_playlist_source_set_query_model (RB_PLAYLIST_SOURCE (source), query_model);
 	g_object_unref (G_OBJECT (query_model));
-	
+
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
@@ -476,14 +470,14 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		list = rb_uri_list_parse ((char *)data->data);
 		if (list != NULL) {
 			rb_static_playlist_source_add_list_uri (source, list);
-		} else 
+		} else
 			return FALSE;
 	}
 
         return TRUE;
 }
 
-static void 
+static void
 impl_save_contents_to_xml (RBPlaylistSource *source,
 			   xmlNodePtr node)
 {
@@ -491,11 +485,11 @@ impl_save_contents_to_xml (RBPlaylistSource *source,
 	GtkTreeIter iter;
 
 	xmlSetProp (node, RB_PLAYLIST_TYPE, RB_PLAYLIST_STATIC);
-	
+
 	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (priv->base_model), &iter))
 		return;
 
-	do { 
+	do {
 		xmlNodePtr child_node = xmlNewChild (node, NULL, RB_PLAYLIST_LOCATION, NULL);
 		RhythmDBEntry *entry;
 		xmlChar *encoded;
@@ -584,12 +578,11 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 }
 
 static void
-rb_static_playlist_source_add_location_swapped (const char *uri, 
+rb_static_playlist_source_add_location_swapped (const char *uri,
 						RBStaticPlaylistSource *source)
 {
 	rb_static_playlist_source_add_location_internal (source, uri, -1);
 }
-
 
 void
 rb_static_playlist_source_add_location (RBStaticPlaylistSource *source,
@@ -680,7 +673,6 @@ rb_static_playlist_source_move_entry (RBStaticPlaylistSource *source,
 	rb_playlist_source_mark_dirty (psource);
 }
 
-
 static void
 rb_static_playlist_source_non_entry_dropped (GtkTreeModel *model,
 					     const char *uri,
@@ -730,7 +722,7 @@ search_action_to_prop (GtkAction *action)
 	if (name == NULL) {
 		prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	} else if (strcmp (name, "StaticPlaylistSearchAll") == 0) {
-		prop = RHYTHMDB_PROP_SEARCH_MATCH;		
+		prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	} else if (strcmp (name, "StaticPlaylistSearchArtists") == 0) {
 		prop = RHYTHMDB_PROP_ARTIST_FOLDED;
 	} else if (strcmp (name, "StaticPlaylistSearchAlbums") == 0) {

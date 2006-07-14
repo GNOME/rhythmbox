@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
- *  
+ *
  */
 
 #ifndef __RB_SHELL_H
@@ -48,7 +48,6 @@ enum
 
 GQuark rb_shell_error_quark (void);
 
-
 typedef enum
 {
 	RB_SHELL_UI_LOCATION_SIDEBAR,
@@ -58,7 +57,6 @@ typedef enum
 
 GType rb_shell_ui_location_get_type (void);
 #define RB_TYPE_SHELL_UI_LOCATION	(rb_shell_ui_location_get_type())
-
 
 typedef struct RBShellPrivate RBShellPrivate;
 

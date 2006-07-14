@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for random play order weighted by the time since last play
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>

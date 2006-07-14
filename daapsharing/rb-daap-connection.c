@@ -79,14 +79,14 @@ struct RBDAAPConnectionPrivate {
 	char *password;
 	char *host;
 	guint port;
-	
+
 	gboolean is_connected;
 	gboolean is_connecting;
 
 	SoupSession *session;
 	SoupUri *base_uri;
 	gchar *daap_base_uri;
-	
+
 	gdouble daap_version;
 	guint32 session_id;
 	gint revision_number;
@@ -113,7 +113,6 @@ struct RBDAAPConnectionPrivate {
 	char *last_error_message;
 };
 
-
 enum {
 	PROP_0,
 	PROP_DB,
@@ -124,7 +123,7 @@ enum {
 	PROP_PORT,
 };
 
-enum { 
+enum {
 	AUTHENTICATE,
 	CONNECTING,
 	CONNECTED,
@@ -264,7 +263,6 @@ rb_daap_connection_init (RBDAAPConnection *connection)
 	connection->priv->db_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 }
 
-
 static char *
 connection_get_password (RBDAAPConnection *connection)
 {
@@ -315,26 +313,26 @@ connection_operation_done (RBDAAPConnection *connection)
 		       0);
 }
 
-static SoupMessage * 
-build_message (RBDAAPConnection *connection, 
-	       const char       *path, 
-	       gboolean          need_hash, 
-	       gdouble           version, 
-	       gint              req_id, 
+static SoupMessage *
+build_message (RBDAAPConnection *connection,
+	       const char       *path,
+	       gboolean          need_hash,
+	       gdouble           version,
+	       gint              req_id,
 	       gboolean          send_close)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message = NULL;
 	SoupUri *uri = NULL;
-	
+
 	uri = soup_uri_new_with_base (priv->base_uri, path);
 	if (uri == NULL) {
 		return NULL;
 	}
-	
+
 	message = soup_message_new_from_uri (SOUP_METHOD_GET, uri);
 	soup_message_set_http_version (message, SOUP_HTTP_1_1);
-	
+
 	soup_message_add_header (message->request_headers, "Client-DAAP-Version", 	"3.0");
 	soup_message_add_header (message->request_headers, "Accept-Language", 		"en-us, en;q=5.0");
 #ifdef HAVE_LIBZ
@@ -357,11 +355,11 @@ build_message (RBDAAPConnection *connection,
 		soup_message_add_header (message->request_headers, "Authorization", h);
 		g_free (h);
 	}
-	
+
 	if (need_hash) {
 		gchar hash[33] = {0};
 		gchar *no_daap_path = (gchar *)path;
-		
+
 		if (g_strncasecmp (path, "daap://", 7) == 0) {
 			no_daap_path = strstr (path, "/data");
 		}
@@ -375,7 +373,7 @@ build_message (RBDAAPConnection *connection,
 	}
 
 	soup_uri_free (uri);
-	
+
 	return message;
 }
 
@@ -425,16 +423,16 @@ actual_http_response_handler (DAAPResponseData *data)
 	const char *encoding_header;
 	char *message_path;
 	int response_length;
-	
+
 	priv = data->connection->priv;
 	structure = NULL;
 	response = data->message->response.body;
 	encoding_header = NULL;
 	response_length = data->message->response.length;
-	
+
 	message_path = soup_uri_to_string (soup_message_get_uri (data->message), FALSE);
 
-	rb_debug ("Received response from %s: %d, %s\n", 
+	rb_debug ("Received response from %s: %d, %s\n",
 		  message_path,
 		  data->message->status_code,
 		  data->message->reason_phrase);
@@ -463,7 +461,7 @@ actual_http_response_handler (DAAPResponseData *data)
 		stream.opaque = NULL;
 
 		rb_profile_start ("decompressing DAAP response");
-		
+
 		if (inflateInit2 (&stream, 32 /* auto-detect */ + 15 /* max */ ) != Z_OK) {
 			inflateEnd (&stream);
 			g_free (new_response);
@@ -474,7 +472,7 @@ actual_http_response_handler (DAAPResponseData *data)
 		} else {
 			do {
 				int z_res;
-			       
+
 				rb_profile_start ("attempting inflate");
 				z_res = inflate (&stream, Z_FINISH);
 				if (z_res == Z_STREAM_END) {
@@ -554,7 +552,7 @@ actual_http_response_handler (DAAPResponseData *data)
 			priv->emit_progress_id = g_idle_add ((GSourceFunc) emit_progress_idle, data->connection);
 		}
 	} else {
-		rb_debug ("Error getting %s: %d, %s\n", 
+		rb_debug ("Error getting %s: %d, %s\n",
 			  message_path,
 			  data->message->status_code,
 			  data->message->reason_phrase);
@@ -599,13 +597,13 @@ http_response_handler (SoupMessage      *message,
 
 	g_object_ref (G_OBJECT (connection));
 	data->connection = connection;
-	
+
 	g_object_ref (G_OBJECT (message));
 	data->message = message;
 
 	if (response_length >= G_MAXUINT/4 - 1) {
-		/* If response_length is too big, 
-		 * the g_malloc (unc_size + 1) below would overflow 
+		/* If response_length is too big,
+		 * the g_malloc (unc_size + 1) below would overflow
 		 */
 		data->status = SOUP_STATUS_MALFORMED;
 	}
@@ -627,31 +625,31 @@ http_response_handler (SoupMessage      *message,
 }
 
 static gboolean
-http_get (RBDAAPConnection     *connection, 
-	  const char           *path, 
-	  gboolean              need_hash, 
-	  gdouble               version, 
-	  gint                  req_id, 
+http_get (RBDAAPConnection     *connection,
+	  const char           *path,
+	  gboolean              need_hash,
+	  gdouble               version,
+	  gint                  req_id,
 	  gboolean              send_close,
 	  RBDAAPResponseHandler handler,
 	  gboolean              use_thread)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
 	SoupMessage *message;
-       
+
 	message = build_message (connection, path, need_hash, version, req_id, send_close);
 	if (message == NULL) {
-		rb_debug ("Error building message for http://%s:%d/%s", 
+		rb_debug ("Error building message for http://%s:%d/%s",
 			  priv->base_uri->host,
 			  priv->base_uri->port,
 			  path);
 		return FALSE;
 	}
-	
+
 	priv->use_response_handler_thread = use_thread;
 	priv->response_handler = handler;
 	soup_session_queue_message (priv->session, message,
-				    (SoupMessageCallbackFn) http_response_handler, 
+				    (SoupMessageCallbackFn) http_response_handler,
 				    connection);
 	rb_debug ("Queued message for http://%s:%d/%s",
 		  priv->base_uri->host,
@@ -660,10 +658,10 @@ http_get (RBDAAPConnection     *connection,
 	return TRUE;
 }
 
-static void 
-entry_set_string_prop (RhythmDB        *db, 
+static void
+entry_set_string_prop (RhythmDB        *db,
 		       RhythmDBEntry   *entry,
-		       RhythmDBPropType propid, 
+		       RhythmDBPropType propid,
 		       const char      *str)
 {
 	GValue value = {0,};
@@ -687,7 +685,7 @@ emit_progress_idle (RBDAAPConnection *connection)
 	rb_debug ("Emitting progress");
 
 	GDK_THREADS_ENTER ();
-	g_signal_emit (G_OBJECT (connection), signals[CONNECTING], 0, 
+	g_signal_emit (G_OBJECT (connection), signals[CONNECTING], 0,
 		       connection->priv->state,
 		       connection->priv->progress);
 	connection->priv->emit_progress_id = 0;
@@ -707,7 +705,7 @@ handle_server_info (RBDAAPConnection *connection,
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
 	}
-	
+
 	/* get the daap version number */
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_APRO);
 	if (item == NULL) {
@@ -781,7 +779,7 @@ handle_update (RBDAAPConnection *connection,
 	rb_daap_connection_state_done (connection, TRUE);
 }
 
-static void 
+static void
 handle_database_info (RBDAAPConnection *connection,
 		      guint             status,
 		      GNode            *structure)
@@ -809,7 +807,7 @@ handle_database_info (RBDAAPConnection *connection,
 	if (n_databases != 1) {
 		rb_debug ("Host seems to have more than 1 database, how strange\n");
 	}
-	
+
 	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
 	if (listing_node == NULL) {
 		rb_debug ("Could not find dmap.listing item in /databases");
@@ -823,7 +821,7 @@ handle_database_info (RBDAAPConnection *connection,
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
 	}
-	
+
 	priv->database_id = g_value_get_int (&(item->content));
 	rb_daap_connection_state_done (connection, TRUE);
 }
@@ -844,7 +842,7 @@ handle_song_listing (RBDAAPConnection *connection,
 	gint commit_batch;
 
 	/* get the songs */
-	
+
 	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
@@ -863,7 +861,7 @@ handle_song_listing (RBDAAPConnection *connection,
 	} else {
 		commit_batch = 1;
 	}
-	
+
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MTCO);
 	if (item == NULL) {
 		rb_debug ("Could not find dmap.specifiedtotalcount item in /databases/%d/items",
@@ -872,7 +870,7 @@ handle_song_listing (RBDAAPConnection *connection,
 		return;
 	}
 	specified_total_count = g_value_get_int (&(item->content));
-	
+
 	item = rb_daap_structure_find_item (structure, RB_DAAP_CC_MUTY);
 	if (item == NULL) {
 		rb_debug ("Could not find dmap.updatetype item in /databases/%d/items",
@@ -891,7 +889,7 @@ handle_song_listing (RBDAAPConnection *connection,
 	}
 
 	priv->item_id_to_uri = g_hash_table_new_full ((GHashFunc)g_direct_hash,(GEqualFunc)g_direct_equal, NULL, g_free);
-	
+
 	rb_profile_start ("handling song listing");
 	priv->progress = 0.0f;
 	if (priv->emit_progress_id != 0) {
@@ -916,10 +914,10 @@ handle_song_listing (RBDAAPConnection *connection,
 		gint year = 0;
 		gint size = 0;
 		gint bitrate = 0;
-		
+
 		for (n2 = n->children; n2; n2 = n2->next) {
 			RBDAAPItem *meta_item;
-			
+
 			meta_item = n2->data;
 
 			switch (meta_item->content_code) {
@@ -966,17 +964,17 @@ handle_song_listing (RBDAAPConnection *connection,
 
 		/*if (connection->daap_version == 3.0) {*/
 			uri = g_strdup_printf ("%s/databases/%d/items/%d.%s?session-id=%u",
-					       priv->daap_base_uri, 
-					       priv->database_id, 
-					       item_id, format, 
+					       priv->daap_base_uri,
+					       priv->database_id,
+					       item_id, format,
 					       priv->session_id);
 		/*} else {*/
-		/* uri should be 
+		/* uri should be
 		 * "/databases/%d/items/%d.%s?session-id=%u&revision-id=%d";
-		 * but its not going to work cause the other parts of the code 
+		 * but its not going to work cause the other parts of the code
 		 * depend on the uri to have the ip address so that the
 		 * RBDAAPSource can be found to ++request_id
-		 * maybe just /dont/ support older itunes.  doesn't seem 
+		 * maybe just /dont/ support older itunes.  doesn't seem
 		 * unreasonable to me, honestly
 		 */
 		/*}*/
@@ -993,7 +991,7 @@ handle_song_listing (RBDAAPConnection *connection,
 			gulong julian;
 
 			/* create dummy date with given year */
-			date = g_date_new_dmy (1, G_DATE_JANUARY, year); 
+			date = g_date_new_dmy (1, G_DATE_JANUARY, year);
 			julian = g_date_get_julian (date);
 			g_date_free (date);
 
@@ -1001,7 +999,7 @@ handle_song_listing (RBDAAPConnection *connection,
 			g_value_set_ulong (&value,julian);
 			rhythmdb_entry_set (priv->db, entry, RHYTHMDB_PROP_DATE, &value);
 			g_value_unset (&value);
-		} 
+		}
 
 		/* track number */
 		g_value_init (&value, G_TYPE_ULONG);
@@ -1020,7 +1018,7 @@ handle_song_listing (RBDAAPConnection *connection,
 		g_value_set_ulong (&value,(gulong)bitrate);
 		rhythmdb_entry_set (priv->db, entry, RHYTHMDB_PROP_BITRATE, &value);
 		g_value_unset (&value);
-		
+
 		/* length */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value,(gulong)length / 1000);
@@ -1055,14 +1053,14 @@ handle_song_listing (RBDAAPConnection *connection,
 		}
 	}
 	rb_profile_end ("handling song listing");
-		
+
 	rb_daap_connection_state_done (connection, TRUE);
 }
 
 /* FIXME
  * what we really should do is only get a list of playlists and their ids
  * then when they are clicked on ('activate'd) by the user, get a list of
- * the files that are actually in them.  This will speed up initial daap 
+ * the files that are actually in them.  This will speed up initial daap
  * connection times and reduce memory consumption.
  */
 
@@ -1075,7 +1073,7 @@ handle_playlists (RBDAAPConnection *connection,
 	GNode *listing_node;
 	gint i;
 	GNode *n;
-	
+
 	if (structure == NULL || SOUP_STATUS_IS_SUCCESSFUL (status) == FALSE) {
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
@@ -1083,7 +1081,7 @@ handle_playlists (RBDAAPConnection *connection,
 
 	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
 	if (listing_node == NULL) {
-		rb_debug ("Could not find dmap.listing item in /databases/%d/containers", 
+		rb_debug ("Could not find dmap.listing item in /databases/%d/containers",
 			  priv->database_id);
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
@@ -1094,7 +1092,7 @@ handle_playlists (RBDAAPConnection *connection,
 		gint id;
 		gchar *name;
 		RBDAAPPlaylist *playlist;
-		
+
 		item = rb_daap_structure_find_item (n, RB_DAAP_CC_ABPL);
 		if (item != NULL) {
 			continue;
@@ -1149,7 +1147,7 @@ handle_playlist_entries (RBDAAPConnection *connection,
 
 	listing_node = rb_daap_structure_find_node (structure, RB_DAAP_CC_MLCL);
 	if (listing_node == NULL) {
-		rb_debug ("Could not find dmap.listing item in /databases/%d/containers/%d/items", 
+		rb_debug ("Could not find dmap.listing item in /databases/%d/containers/%d/items",
 			  priv->database_id, playlist->id);
 		rb_daap_connection_state_done (connection, FALSE);
 		return;
@@ -1168,14 +1166,14 @@ handle_playlist_entries (RBDAAPConnection *connection,
 			continue;
 		}
 		playlist_item_id = g_value_get_int (&(item->content));
-	
+
 		item_uri = g_hash_table_lookup (priv->item_id_to_uri, GINT_TO_POINTER (playlist_item_id));
 		if (item_uri == NULL) {
-			rb_debug ("Entry %d in playlist %s doesn't exist in the database\n", 
+			rb_debug ("Entry %d in playlist %s doesn't exist in the database\n",
 				  playlist_item_id, playlist->name);
 			continue;
 		}
-		
+
 		playlist_uris = g_list_prepend (playlist_uris, g_strdup (item_uri));
 	}
 	rb_profile_end ("handling playlist entries");
@@ -1194,13 +1192,13 @@ handle_logout (RBDAAPConnection *connection,
 	/* is there any point handling errors here? */
 	rb_daap_connection_state_done (connection, TRUE);
 }
-	
-RBDAAPConnection * 
+
+RBDAAPConnection *
 rb_daap_connection_new (const char       *name,
 			const char       *host,
-			int               port, 
+			int               port,
 			gboolean          password_protected,
-			RhythmDB         *db, 
+			RhythmDB         *db,
 			RhythmDBEntryType type)
 {
 	return g_object_new (RB_TYPE_DAAP_CONNECTION,
@@ -1253,7 +1251,7 @@ connected_cb (RBDAAPConnection       *connection,
 
 	/* if connected then we succeeded */
 	result = rb_daap_connection_is_connected (connection);
-	
+
 	if (rdata->callback) {
 		rdata->callback (rdata->connection,
 				 result,
@@ -1459,13 +1457,13 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	switch (priv->state) {
 	case DAAP_GET_INFO:
 		rb_debug ("Getting DAAP server info");
-		if (! http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE, 
+		if (! http_get (connection, "/server-info", FALSE, 0.0, 0, FALSE,
 				(RBDAAPResponseHandler) handle_server_info, FALSE)) {
 			rb_debug ("Could not get DAAP connection info");
 			rb_daap_connection_state_done (connection, FALSE);
 		}
 		break;
-	
+
 	case DAAP_GET_PASSWORD:
 		if (priv->password_protected) {
 			/* FIXME this bit is still synchronous */
@@ -1491,10 +1489,10 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 		/* otherwise, fall through */
 		priv->state = DAAP_LOGIN;
-		
+
 	case DAAP_LOGIN:
 		rb_debug ("Logging into DAAP server");
-		if (! http_get (connection, "/login", FALSE, 0.0, 0, FALSE, 
+		if (! http_get (connection, "/login", FALSE, 0.0, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_login, FALSE)) {
 			rb_debug ("Could not login to DAAP server");
 			/* FIXME: set state back to GET_PASSWORD to try again */
@@ -1506,7 +1504,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	case DAAP_GET_REVISION_NUMBER:
 		rb_debug ("Getting DAAP server database revision number");
 		path = g_strdup_printf ("/update?session-id=%u&revision-number=1", priv->session_id);
-		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_update, FALSE)) {
 			rb_debug ("Could not get server database revision number");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1516,9 +1514,9 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_DB_INFO:
 		rb_debug ("Getting DAAP database info");
-		path = g_strdup_printf ("/databases?session-id=%u&revision-number=%d", 
+		path = g_strdup_printf ("/databases?session-id=%u&revision-number=%d",
 					priv->session_id, priv->revision_number);
-		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_database_info, FALSE)) {
 			rb_debug ("Could not get DAAP database info");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1533,11 +1531,11 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					"daap.songartist,daap.daap.songgenre,daap.songsize,"
 					"daap.songtime,daap.songtrackcount,daap.songtracknumber,"
 					"daap.songyear,daap.songformat,daap.songgenre,"
-					"daap.songbitrate", 
-					priv->database_id, 
-					priv->session_id, 
+					"daap.songbitrate",
+					priv->database_id,
+					priv->session_id,
 					priv->revision_number);
-		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_song_listing, TRUE)) {
 			rb_debug ("Could not get DAAP song listing");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1547,11 +1545,11 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_PLAYLISTS:
 		rb_debug ("Getting DAAP playlists");
-		path = g_strdup_printf ("/databases/%d/containers?session-id=%u&revision-number=%d", 
-					priv->database_id, 
-					priv->session_id, 
+		path = g_strdup_printf ("/databases/%d/containers?session-id=%u&revision-number=%d",
+					priv->database_id,
+					priv->session_id,
 					priv->revision_number);
-		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+		if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 			       (RBDAAPResponseHandler) handle_playlists, TRUE)) {
 			rb_debug ("Could not get DAAP playlists");
 			rb_daap_connection_state_done (connection, FALSE);
@@ -1561,18 +1559,18 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 
 	case DAAP_GET_PLAYLIST_ENTRIES:
 		{
-			RBDAAPPlaylist *playlist = 
-				(RBDAAPPlaylist *) g_slist_nth_data (priv->playlists, 
+			RBDAAPPlaylist *playlist =
+				(RBDAAPPlaylist *) g_slist_nth_data (priv->playlists,
 								     priv->reading_playlist);
 			g_assert (playlist);
 			rb_debug ("Reading DAAP playlist %d entries", priv->reading_playlist);
-			path = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%u&revision-number=%d&meta=dmap.itemid", 
-						priv->database_id, 
+			path = g_strdup_printf ("/databases/%d/containers/%d/items?session-id=%u&revision-number=%d&meta=dmap.itemid",
+						priv->database_id,
 						playlist->id,
 						priv->session_id, priv->revision_number);
-			if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE, 
+			if (! http_get (connection, path, TRUE, priv->daap_version, 0, FALSE,
 				       (RBDAAPResponseHandler) handle_playlist_entries, TRUE)) {
-				rb_debug ("Could not get entries for DAAP playlist %d", 
+				rb_debug ("Could not get entries for DAAP playlist %d",
 					  priv->reading_playlist);
 				rb_daap_connection_state_done (connection, FALSE);
 			}
@@ -1603,9 +1601,9 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 	return FALSE;
 }
 
-char * 
-rb_daap_connection_get_headers (RBDAAPConnection *connection, 
-				const gchar *uri, 
+char *
+rb_daap_connection_get_headers (RBDAAPConnection *connection,
+				const gchar *uri,
 				gint64 bytes)
 {
 	RBDAAPConnectionPrivate *priv = connection->priv;
@@ -1613,16 +1611,16 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 	char hash[33] = {0};
 	char *norb_daap_uri = (char *)uri;
 	char *s;
-	
+
 	priv->request_id++;
-	
+
 	if (g_strncasecmp (uri, "daap://", 7) == 0) {
 		norb_daap_uri = strstr (uri, "/data");
 	}
 
-	rb_daap_hash_generate ((short)floorf (priv->daap_version), 
-			       (const guchar*)norb_daap_uri, 2, 
-			       (guchar*)hash, 
+	rb_daap_hash_generate ((short)floorf (priv->daap_version),
+			       (const guchar*)norb_daap_uri, 2,
+			       (guchar*)hash,
 			       priv->request_id);
 
 	headers = g_string_new ("Accept: */*\r\n"
@@ -1631,10 +1629,10 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 				"Accept-Language: en-us, en;q=5.0\r\n"
 				"Client-DAAP-Access-Index: 2\r\n"
 				"Client-DAAP-Version: 3.0\r\n");
-	g_string_append_printf (headers, 
+	g_string_append_printf (headers,
 				"Client-DAAP-Validation: %s\r\n"
 				"Client-DAAP-Request-ID: %d\r\n"
-				"Connection: close\r\n", 
+				"Connection: close\r\n",
 				hash, priv->request_id);
 
 	if (priv->password_protected) {
@@ -1651,20 +1649,20 @@ rb_daap_connection_get_headers (RBDAAPConnection *connection,
 	if (bytes != 0) {
 		g_string_append_printf (headers,"Range: bytes=%"G_GINT64_FORMAT"-\r\n", bytes);
 	}
-	
+
 	s = headers->str;
 	g_string_free (headers, FALSE);
 
 	return s;
 }
 
-GSList * 
+GSList *
 rb_daap_connection_get_playlists (RBDAAPConnection *connection)
 {
 	return connection->priv->playlists;
 }
 
-static void 
+static void
 rb_daap_connection_dispose (GObject *object)
 {
 	RBDAAPConnectionPrivate *priv = RB_DAAP_CONNECTION (object)->priv;
@@ -1686,7 +1684,7 @@ rb_daap_connection_dispose (GObject *object)
 		g_free (priv->name);
 		priv->name = NULL;
 	}
-	
+
 	if (priv->username) {
 		g_free (priv->username);
 		priv->username = NULL;
@@ -1696,12 +1694,12 @@ rb_daap_connection_dispose (GObject *object)
 		g_free (priv->password);
 		priv->password = NULL;
 	}
-	
+
 	if (priv->host) {
 		g_free (priv->host);
 		priv->host = NULL;
 	}
-	
+
 	if (priv->playlists) {
 		for (l = priv->playlists; l; l = l->next) {
 			RBDAAPPlaylist *playlist = l->data;
@@ -1720,7 +1718,7 @@ rb_daap_connection_dispose (GObject *object)
 		g_hash_table_destroy (priv->item_id_to_uri);
 		priv->item_id_to_uri = NULL;
 	}
-	
+
 	if (priv->session) {
 		rb_debug ("Aborting all pending requests");
 		soup_session_abort (priv->session);
@@ -1747,7 +1745,7 @@ rb_daap_connection_dispose (GObject *object)
 		g_free (priv->last_error_message);
 		priv->last_error_message = NULL;
 	}
-	
+
 	G_OBJECT_CLASS (rb_daap_connection_parent_class)->dispose (object);
 }
 
@@ -1818,4 +1816,3 @@ rb_daap_connection_get_property (GObject *object,
 		break;
 	}
 }
-

@@ -51,7 +51,7 @@ GType			rb_library_browser_get_type (void);
 RBLibraryBrowser *	rb_library_browser_new      (RhythmDB *db,
 						     RhythmDBEntryType entry_type);
 
-void 			rb_library_browser_set_model (RBLibraryBrowser *widget, 
+void 			rb_library_browser_set_model (RBLibraryBrowser *widget,
 						      RhythmDBQueryModel *model,
 						      gboolean query_pending);
 
@@ -62,10 +62,9 @@ RBPropertyView*		rb_library_browser_get_property_view (RBLibraryBrowser *widget,
 							      RhythmDBPropType type);
 
 gboolean 		rb_library_browser_has_selection (RBLibraryBrowser *widget);
-void 			rb_library_browser_set_selection (RBLibraryBrowser *widget, 
-							  RhythmDBPropType type, 
+void 			rb_library_browser_set_selection (RBLibraryBrowser *widget,
+							  RhythmDBPropType type,
 							  GList *list);
-
 
 G_END_DECLS
 

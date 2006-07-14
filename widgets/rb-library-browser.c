@@ -64,8 +64,6 @@ static void rb_library_browser_views_changed (GConfClient *client,
 					      GConfEntry *entry,
 					      RBLibraryBrowser *widget);
 
-
-
 G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
 #define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserPrivate))
 
@@ -82,7 +80,6 @@ typedef struct
 	GHashTable *property_views;
 	GHashTable *selections;
 } RBLibraryBrowserPrivate;
-
 
 enum
 {
@@ -180,7 +177,7 @@ rb_library_browser_constructor (GType type, guint n_construct_properties,
 					     browser_properties[i].type,
 					     _(browser_properties[i].name));
 		g_hash_table_insert (priv->property_views, (gpointer)(browser_properties[i].type), view);
-	
+
 		rb_property_view_set_selection_mode (view, GTK_SELECTION_MULTIPLE);
 		g_signal_connect_object (G_OBJECT (view),
 					 "properties-selected",
@@ -192,7 +189,7 @@ rb_library_browser_constructor (GType type, guint n_construct_properties,
 					 browser, 0);
 		gtk_widget_show_all (GTK_WIDGET (view));
 		gtk_widget_set_no_show_all (GTK_WIDGET (view), TRUE);
-		gtk_box_pack_start_defaults (GTK_BOX (browser), GTK_WIDGET (view));	     
+		gtk_box_pack_start_defaults (GTK_BOX (browser), GTK_WIDGET (view));
 	}
 
 	update_browser_views_visibility (browser);
@@ -290,7 +287,7 @@ static void
 update_browser_property_visibilty (RhythmDBPropType prop, RBPropertyView *view, GList *properties)
 {
 	gboolean old_vis, new_vis;
-	
+
 	old_vis = GTK_WIDGET_VISIBLE (view);
 	new_vis = (g_list_find (properties, (gpointer)prop) != NULL);
 
@@ -391,7 +388,7 @@ rb_library_browser_construct_query (RBLibraryBrowser *widget)
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	RhythmDBQuery *query;
 	ConstructQueryData *data;
-	
+
 	query = g_ptr_array_new ();
 	data = g_new0 (ConstructQueryData, 1);
 	data->widget = widget;
@@ -483,7 +480,7 @@ restore_selection (RBLibraryBrowser *widget,
 		data->selections = selections;
 		data->model = priv->input_model;
 
-		data->handler_id = 
+		data->handler_id =
 			g_signal_connect_data (priv->input_model,
 					       "complete",
 					       G_CALLBACK (query_complete_cb),
@@ -518,12 +515,12 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean que
 	selections = g_hash_table_lookup (priv->selections, (gpointer)browser_properties[property_index].type);
 	if (selections != NULL) {
 
-		/* create a new query model based on it, filtered by 
+		/* create a new query model based on it, filtered by
 		 * the selections of the previous property view.
 		 * we need the entry type query criteria to allow the
 		 * backend to optimise the query.
 		 */
-		query = rhythmdb_query_parse (priv->db, 
+		query = rhythmdb_query_parse (priv->db,
 				              RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, priv->entry_type,
 					      RHYTHMDB_QUERY_END);
 		rhythmdb_query_append_prop_multiple (priv->db,
@@ -534,7 +531,7 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean que
 		child_model = rhythmdb_query_model_new_empty (priv->db);
 		if (query_pending) {
 			rb_debug ("rebuilding child model for browser %d; query is pending", property_index);
-			g_object_set (G_OBJECT (child_model), 
+			g_object_set (G_OBJECT (child_model),
 				      "query", query,
 				      "base-model", base_model,
 				      NULL);
@@ -550,7 +547,7 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean que
 		rb_debug ("no selection for browser %d - reusing parent model", property_index);
 		child_model = base_model;
 	}
-	
+
 	/* If this is the last property, use the child model as the output model
 	 * for the browser.  Otherwise, use it as the input for the next property
 	 * view.
@@ -586,7 +583,7 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget, RhythmDBPropType typ
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	GList *old_selection;
 	RBPropertyView *view;
-	
+
 	old_selection = g_hash_table_lookup (priv->selections, (gpointer)type);
 
 	if (rb_string_list_equal (old_selection, selection))
@@ -626,7 +623,7 @@ rb_library_browser_get_property_view (RBLibraryBrowser *widget,
 }
 
 void
-rb_library_browser_set_model (RBLibraryBrowser *widget, 
+rb_library_browser_set_model (RBLibraryBrowser *widget,
 			      RhythmDBQueryModel *model,
 			      gboolean query_pending)
 {
@@ -650,4 +647,3 @@ rb_library_browser_set_model (RBLibraryBrowser *widget,
 	rebuild_child_model (widget, 0, query_pending);
 	restore_selection (widget, 0, query_pending);
 }
-

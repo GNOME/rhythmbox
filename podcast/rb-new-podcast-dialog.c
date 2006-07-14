@@ -63,14 +63,13 @@ struct RBNewPodcastDialogPrivate
 
 #define RB_NEW_PODCAST_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NEW_PODCAST_DIALOG, RBNewPodcastDialogPrivate))
 
-enum 
+enum
 {
 	PROP_0,
 	PROP_PODCAST_MANAGER
 };
 
 G_DEFINE_TYPE (RBNewPodcastDialog, rb_new_podcast_dialog, GTK_TYPE_DIALOG)
-
 
 static void
 rb_new_podcast_dialog_class_init (RBNewPodcastDialogClass *klass)
@@ -127,7 +126,6 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "newpodcast"));
 
-	
 	/* get the widgets from the XML */
 	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
 	gtk_entry_set_activates_default (GTK_ENTRY (dialog->priv->url), TRUE);
@@ -139,7 +137,7 @@ rb_new_podcast_dialog_init (RBNewPodcastDialog *dialog)
 
 	/* default focus */
 	gtk_widget_grab_focus (dialog->priv->url);
-	
+
 	/* FIXME */
 	gtk_widget_set_sensitive (dialog->priv->okbutton, FALSE);
 
@@ -203,9 +201,9 @@ GtkWidget *
 rb_new_podcast_dialog_new (RBPodcastManager *pd)
 {
 	RBNewPodcastDialog *dialog;
-	
+
 	g_return_val_if_fail (RB_PODCAST_MANAGER (pd), NULL);
-	
+
 	dialog = g_object_new (RB_TYPE_NEW_PODCAST_DIALOG, "podcast-manager", pd, NULL);
 
 	g_return_val_if_fail (dialog->priv != NULL, NULL);
@@ -230,7 +228,7 @@ rb_new_podcast_dialog_response_cb (GtkDialog *gtkdialog,
 
 	rb_podcast_manager_subscribe_feed (dialog->priv->pd, valid_url);
 
-	gtk_widget_hide (GTK_WIDGET (gtkdialog));	
+	gtk_widget_hide (GTK_WIDGET (gtkdialog));
 
 	g_free (str);
 }
@@ -244,6 +242,5 @@ rb_new_podcast_dialog_text_changed (GtkEditable *buffer,
 
 	g_free (text);
 
-	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);	
+	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);
 }
-

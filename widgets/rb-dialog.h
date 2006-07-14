@@ -40,7 +40,7 @@ void		rb_error_dialog		(GtkWindow *parent,
 					 const char *primary,
 					 const char *secondary,
 					 ...) G_GNUC_PRINTF (3, 4);
-					 
+
 GtkWidget *	rb_file_chooser_new	(const char *title,
 					 GtkWindow *parent,
 					 GtkFileChooserAction action,

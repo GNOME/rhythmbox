@@ -26,7 +26,6 @@
 #ifndef __RB_QUERY_CREATOR_PRIVATE_H
 #define __RB_QUERY_CREATOR_PRIVATE_H
 
-
 typedef struct
 {
 	const char *name;
@@ -40,7 +39,6 @@ typedef struct
 	const char *sort_key;
 	const char *sort_descending_name;
 } RBQueryCreatorSortOption;
-
 
 typedef GtkWidget*	(*CriteriaCreateWidget)		(gboolean *constrain);
 typedef void		(*CriteriaSetWidgetData)	(GtkWidget *widget, GValue *val);
@@ -72,6 +70,5 @@ extern const int DEFAULT_SORTING_COLUMN;
 extern const gint DEFAULT_SORTING_ORDER;
 
 GtkWidget * get_box_widget_at_pos (GtkBox *box, guint pos);
-
 
 #endif /* __RB_QUERY_CREATOR_H */

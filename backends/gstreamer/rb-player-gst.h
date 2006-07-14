@@ -27,7 +27,6 @@
 
 G_BEGIN_DECLS
 
-
 #define RB_TYPE_PLAYER_GST            (rb_player_gst_get_type ())
 #define RB_PLAYER_GST(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_PLAYER, RBPlayerGst))
 #define RB_IS_PLAYERER_GST(obj)       (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_PLAYER))
@@ -47,7 +46,6 @@ typedef struct
 
 RBPlayer*	rb_player_gst_new (GError **error);
 GType		rb_player_gst_get_type (void);
-
 
 G_END_DECLS
 

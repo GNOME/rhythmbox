@@ -60,7 +60,6 @@
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
 
-
 #if WITH_DBUS
 #include <dbus/dbus-glib.h>
 #include "rb-shell-glue.h"
@@ -74,8 +73,8 @@
 #endif
 
 #include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION 	 
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE 	 
+#ifndef NAUTILUS_BURN_CHECK_VERSION
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
 #endif
 
 #if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
@@ -189,7 +188,7 @@ main (int argc, char **argv)
 	else
 		rb_debug_init (debug);
 	rb_debug ("initializing Rhythmbox %s", VERSION);
-	
+
 	/* TODO: kill this function */
 	rb_threads_init ();
 
@@ -211,7 +210,7 @@ main (int argc, char **argv)
 		flags = DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT;
 #else
 		flags = DBUS_NAME_FLAG_DO_NOT_QUEUE;
-#endif                
+#endif
 
 #ifndef WITH_OLD_DBUS
 		DBusGProxy *bus_proxy;
@@ -263,10 +262,9 @@ main (int argc, char **argv)
 				   request_name_reply);
 			activated = FALSE;
 		}
-		
-						
+
 	}
-		
+
 #endif
 
 	if (!activated) {
@@ -278,15 +276,15 @@ main (int argc, char **argv)
 #ifdef WITH_RHYTHMDB_GDA
 		gda_init (PACKAGE, VERSION, argc, argv);
 #endif
- 	
+
 		rb_refstring_system_init ();
 
 		rb_file_helpers_init ();
 
 		rb_debug ("Going to create a new shell");
-	
+
 		glade_gnome_init ();
-	
+
 		rb_stock_icons_init ();
 
 #if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
@@ -294,7 +292,7 @@ main (int argc, char **argv)
 #endif
 
 		gtk_window_set_default_icon_name ("rhythmbox");
-	
+
 		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 		if (!no_registration && session_bus != NULL) {
@@ -310,14 +308,14 @@ main (int argc, char **argv)
 			obj = rb_shell_get_player (rb_shell);
 			path = rb_shell_get_player_path (rb_shell);
 			dbus_g_connection_register_g_object (session_bus, path, obj);
-			
+
 			/* register playlist manager object */
 			dbus_g_object_type_install_info (RB_TYPE_PLAYLIST_MANAGER, &dbus_glib_rb_playlist_manager_object_info);
 			obj = rb_shell_get_playlist_manager (rb_shell);
 			path = rb_shell_get_playlist_manager_path (rb_shell);
 			dbus_g_connection_register_g_object (session_bus, path, obj);
 #elif WITH_OLD_DBUS
-			register_dbus_handler (dbus_g_connection_get_connection (session_bus), 
+			register_dbus_handler (dbus_g_connection_get_connection (session_bus),
 					       rb_shell);
 #endif /* WITH_DBUS */
 		}
@@ -361,7 +359,7 @@ main (int argc, char **argv)
 			g_object_unref (G_OBJECT (shell_proxy));
 		}
 #elif WITH_OLD_DBUS
-		if (!send_present_message (dbus_g_connection_get_connection (session_bus), 
+		if (!send_present_message (dbus_g_connection_get_connection (session_bus),
 					   current_time))
 			g_warning ("Unable to send dbus message to existing rhythmbox instance");
 #endif /* WITH_DBUS */
@@ -409,12 +407,12 @@ load_uri_args (const char **args, GFunc handler, gpointer user_data)
 		rb_debug ("examining argument %s", args[i]);
 
 		uri = gnome_vfs_make_uri_from_shell_arg (args[i]);
-			
+
 		if (rb_uri_is_local (uri) == FALSE || rb_uri_exists (uri)) {
 			handler (uri, user_data);
 		}
 		g_free (uri);
-		
+
 		handled = TRUE;
 	}
 	return handled;
@@ -441,7 +439,6 @@ main_shell_weak_ref_cb (gpointer data, GObject *objptr)
 	rb_debug ("caught shell finalization");
 	gtk_main_quit ();
 }
-
 
 #ifdef WITH_OLD_DBUS
 /* old dbus support (0.31-0.34) */
@@ -487,7 +484,7 @@ handle_dbus_message (DBusConnection *connection, DBusMessage *message, void *dat
 	if (dbus_message_is_method_call (message, "org.gnome.Rhythmbox.Shell", "present")) {
 		DBusMessageIter iter;
 		guint32 current_time;
-		
+
 		if (!dbus_message_iter_init (message, &iter))
 			return DBUS_HANDLER_RESULT_NEED_MEMORY;
 
@@ -521,4 +518,3 @@ register_dbus_handler (DBusConnection *connection, RBShell *shell)
 }
 
 #endif
-

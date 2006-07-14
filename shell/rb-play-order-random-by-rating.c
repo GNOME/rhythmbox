@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of random play order weighted by rating
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>

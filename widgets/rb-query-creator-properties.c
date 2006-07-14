@@ -57,7 +57,6 @@ static GtkWidget * relativeTimeCriteriaCreateWidget (gboolean *constrain);
 static void relativeTimeCriteriaSetWidgetData (GtkWidget *widget, GValue *val);
 static void relativeTimeCriteriaGetWidgetData (GtkWidget *widget, GValue *val);
 
-
 /*
  * This table is the list of properties that are displayed in the query-creator
  */
@@ -84,7 +83,6 @@ const RBQueryCreatorPropertyOption property_options[] =
 
 const int num_property_options = G_N_ELEMENTS (property_options);
 
-
 /*
  * This table describes which properties can be used for sorting a playlist
  * All entries MUST have column keys column keys listed in rb-entry-view.c
@@ -107,7 +105,6 @@ const RBQueryCreatorSortOption sort_options[] =
 const int num_sort_options = G_N_ELEMENTS (sort_options);
 const int DEFAULT_SORTING_COLUMN = 0;
 const gint DEFAULT_SORTING_ORDER = GTK_SORT_ASCENDING;
-
 
 /*
  * This is the property type for string properties
@@ -140,7 +137,6 @@ const RBQueryCreatorPropertyType escaped_string_property_type =
 	escapedStringCriteriaGetWidgetData
 };
 
-
 /*
  * This are the property types for numeric quantities, such as rating and playcounts
  */
@@ -153,16 +149,16 @@ const RBQueryCreatorCriteriaOption numeric_criteria_options[] =
 };
 
 /*
- * Property type for date quantities 
+ * Property type for date quantities
  */
 
 const RBQueryCreatorCriteriaOption year_criteria_options[] =
 {
-	{ N_("in"), 1, RHYTHMDB_QUERY_PROP_YEAR_EQUALS }, 
+	{ N_("in"), 1, RHYTHMDB_QUERY_PROP_YEAR_EQUALS },
 	/* matches if within 1-JAN-YEAR to 31-DEC-YEAR */
-	{ N_("after"), 1, RHYTHMDB_QUERY_PROP_YEAR_GREATER },	
+	{ N_("after"), 1, RHYTHMDB_QUERY_PROP_YEAR_GREATER },
 	/* matches if >= 31-DEC-YEAR */
-	{ N_("before"), 1, RHYTHMDB_QUERY_PROP_YEAR_LESS }		
+	{ N_("before"), 1, RHYTHMDB_QUERY_PROP_YEAR_LESS }
 	/* matches if < 1-DEC-YEAR */
 };
 
@@ -202,7 +198,6 @@ const RBQueryCreatorPropertyType duration_property_type =
 	durationCriteriaGetWidgetData
 };
 
-
 /*
  * This is the property type for relative time properties, such as last played and first seen
  */
@@ -220,7 +215,7 @@ const RBQueryCreatorCriteriaOption relative_time_criteria_options[] =
 	 * e.g. "in the last" "7 days" will match if within 7 days of the current time
 	 */
 	{ N_("in the last"), 1, RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN },
-	
+
 	/*
 	 * Translators: this is the opposite of the above, and will match if not
 	 * within <value> of the current time
@@ -247,7 +242,6 @@ const RBQueryCreatorTimeUnitOption time_unit_options[] =
 };
 
 const int time_unit_options_default = 4; /* days */
-
 
 /*
  * Implementation for the string properties, using a single GtkEntry.
@@ -293,7 +287,6 @@ escapedStringCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 	g_value_set_string (val, text);
 }
 
-
 /*
  * Implementation for the ratings property, using the RbRating widget
  */
@@ -330,7 +323,6 @@ ratingCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 	g_value_set_double (val, rating);
 }
 
-
 /*
  * Implementation for the integer properties, using a single GtkSpinButton.
  */
@@ -346,7 +338,7 @@ integerCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 {
 	gulong num = g_value_get_ulong (val);
 	g_assert (num <= G_MAXINT);
-		
+
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), (gint)num );
 }
 
@@ -378,7 +370,7 @@ yearCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 	/* Create a date structure to get year from */
 	date = g_date_new();
 	g_date_set_julian (date, num);
-	
+
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), (gint)g_date_get_year(date));
 	g_date_free(date);
 }
@@ -398,8 +390,6 @@ yearCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 	g_date_free(date);
 }
 
-
-
 /*
  * Implementation for the duration property, using two single GtkSpinButtons.
  */
@@ -414,16 +404,16 @@ durationCriteriaCreateWidget (gboolean *constrain)
 
 	/* the widget for Duration is set out like the following [ 2] : [30] */
 	box = GTK_BOX (gtk_hbox_new (FALSE, 3));
-	
+
 	minutesSpin = gtk_spin_button_new_with_range (0.0, G_MAXINT, 1.0);
 	gtk_box_pack_start (box, minutesSpin, FALSE, FALSE, 0);
-	
+
 	minutesLabel = gtk_label_new (":");
 	gtk_box_pack_start (box, minutesLabel, FALSE, FALSE, 0);
-	
+
 	secondsSpin = gtk_spin_button_new_with_range (0.0, 59.0, 1.0);
 	gtk_box_pack_start (box, secondsSpin, FALSE, FALSE, 0);
-	
+
 	gtk_widget_show_all (GTK_WIDGET (box));
 	return GTK_WIDGET (box);
 }
@@ -433,7 +423,7 @@ durationCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 {
 	GtkSpinButton *minutesSpinner = GTK_SPIN_BUTTON (get_box_widget_at_pos (GTK_BOX (widget), 0));
 	GtkSpinButton *secondsSpinner = GTK_SPIN_BUTTON (get_box_widget_at_pos (GTK_BOX (widget), 2));
-	
+
 	gtk_spin_button_set_value (minutesSpinner, (gdouble) (g_value_get_ulong (val) / 60));
 	gtk_spin_button_set_value (secondsSpinner, (gdouble) (g_value_get_ulong (val) % 60));
 }
@@ -441,10 +431,10 @@ durationCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 static void
 durationCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 {
-	
+
 	GtkSpinButton *minutesSpinner = GTK_SPIN_BUTTON (get_box_widget_at_pos (GTK_BOX (widget), 0));
 	GtkSpinButton *secondsSpinner = GTK_SPIN_BUTTON (get_box_widget_at_pos (GTK_BOX (widget), 2));
-	
+
 	gint value = gtk_spin_button_get_value_as_int (minutesSpinner) * 60
 		   + gtk_spin_button_get_value_as_int (secondsSpinner);
 	g_assert (value >= 0);
@@ -452,7 +442,6 @@ durationCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 	g_value_init (val, G_TYPE_ULONG);
 	g_value_set_ulong (val, (gulong) value);
 }
-
 
 /*
  * Implementation for the relative time properties, using a spin button and a menu.
@@ -473,7 +462,7 @@ create_time_unit_option_menu (const RBQueryCreatorTimeUnitOption *options,
 
 	gtk_widget_show_all (menu);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
-  
+
 	return option_menu;
 }
 
@@ -486,14 +475,14 @@ relativeTimeCriteriaCreateWidget (gboolean *constrain)
 	GtkWidget *timeOption;
 
 	box = GTK_BOX (gtk_hbox_new (FALSE, 6));
-	
+
 	timeSpin = gtk_spin_button_new_with_range (1.0, G_MAXINT, 1.0);
 	gtk_box_pack_start_defaults (box, timeSpin);
-	
+
 	timeOption = create_time_unit_option_menu (time_unit_options, G_N_ELEMENTS (time_unit_options));
 	gtk_option_menu_set_history(GTK_OPTION_MENU (timeOption), time_unit_options_default);
 	gtk_box_pack_start_defaults (box, timeOption);
-		
+
 	gtk_widget_show_all (GTK_WIDGET (box));
 	return GTK_WIDGET (box);
 }
@@ -502,10 +491,10 @@ static void
 relativeTimeCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 {
 	GtkBox *box = GTK_BOX (widget);
-	
+
 	GtkSpinButton *timeSpin = GTK_SPIN_BUTTON (get_box_widget_at_pos (box, 0));
 	GtkOptionMenu *unitMenu = GTK_OPTION_MENU (get_box_widget_at_pos (box, 1));
-	
+
 	gulong time = g_value_get_ulong (val);
 	gulong unit = 0;
 	int i;

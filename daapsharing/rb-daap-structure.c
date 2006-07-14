@@ -123,25 +123,24 @@ static const RBDAAPContentCodeDefinition cc_defs[] = {
 	{RB_DAAP_CC_ASCP, MAKE_CONTENT_CODE('a','s','c','p'), "daap.songcomposer", "ascp", RB_DAAP_TYPE_STRING}
 	};
 
-
-const gchar * 
+const gchar *
 rb_daap_content_code_name (RBDAAPContentCode code)
 {
 	return cc_defs[code-1].name;
 }
 
-RBDAAPType 
+RBDAAPType
 rb_daap_content_code_rb_daap_type (RBDAAPContentCode code)
 {
 	return cc_defs[code-1].type;
 }
 
-const gchar * 
+const gchar *
 rb_daap_content_code_string (RBDAAPContentCode code)
 {
 	return cc_defs[code-1].string;
 }
-			
+
 static GType
 rb_daap_content_code_gtype (RBDAAPContentCode code)
 {
@@ -165,9 +164,9 @@ rb_daap_content_code_gtype (RBDAAPContentCode code)
 	}
 }
 
-GNode * 
-rb_daap_structure_add (GNode *parent, 
-		       RBDAAPContentCode cc, 
+GNode *
+rb_daap_structure_add (GNode *parent,
+		       RBDAAPContentCode cc,
 		       ...)
 {
 	RBDAAPType rb_daap_type;
@@ -176,7 +175,7 @@ rb_daap_structure_add (GNode *parent,
 	va_list list;
 	GNode *node;
 	gchar *error = NULL;
-	
+
 	va_start (list, cc);
 
 	rb_daap_type = rb_daap_content_code_rb_daap_type (cc);
@@ -184,7 +183,7 @@ rb_daap_structure_add (GNode *parent,
 
 	item = g_new0(RBDAAPItem, 1);
 	item->content_code = cc;
-	
+
 	if (gtype != G_TYPE_NONE) {
 		g_value_init (&(item->content), gtype);
 	}
@@ -198,11 +197,11 @@ rb_daap_structure_add (GNode *parent,
 	}
 
 	switch (rb_daap_type) {
-		case RB_DAAP_TYPE_BYTE: 
+		case RB_DAAP_TYPE_BYTE:
 		case RB_DAAP_TYPE_SIGNED_INT:
 			item->size = 1;
 			break;
-		case RB_DAAP_TYPE_SHORT: 
+		case RB_DAAP_TYPE_SHORT:
 			item->size = 2;
 			break;
 		case RB_DAAP_TYPE_DATE:
@@ -210,7 +209,7 @@ rb_daap_structure_add (GNode *parent,
 		case RB_DAAP_TYPE_VERSION:
 			item->size = 4;
 			break;
-		case RB_DAAP_TYPE_INT64: 
+		case RB_DAAP_TYPE_INT64:
 			item->size = 8;
 			break;
 		case RB_DAAP_TYPE_STRING: {
@@ -227,9 +226,9 @@ rb_daap_structure_add (GNode *parent,
 		default:
 			break;
 	}
-	
+
 	node = g_node_new (item);
-	
+
 	if (parent) {
 		g_node_append (parent, node);
 
@@ -245,8 +244,8 @@ rb_daap_structure_add (GNode *parent,
 	return node;
 }
 
-static gboolean 
-rb_daap_structure_node_serialize (GNode *node, 
+static gboolean
+rb_daap_structure_node_serialize (GNode *node,
 				  GByteArray *array)
 {
 	RBDAAPItem *item = node->data;
@@ -255,33 +254,33 @@ rb_daap_structure_node_serialize (GNode *node,
 
 	g_byte_array_append (array, (const guint8 *)rb_daap_content_code_string (item->content_code), 4);
 	g_byte_array_append (array, (const guint8 *)&size, 4);
-	
+
 	rb_daap_type = rb_daap_content_code_rb_daap_type (item->content_code);
 
 	switch (rb_daap_type) {
-		case RB_DAAP_TYPE_BYTE: 
+		case RB_DAAP_TYPE_BYTE:
 		case RB_DAAP_TYPE_SIGNED_INT: {
 			gchar c = g_value_get_char (&(item->content));
-			
+
 			g_byte_array_append (array, (const guint8 *)&c, 1);
-			
+
 			break;
 		}
 		case RB_DAAP_TYPE_SHORT: {
 			gint32 i = g_value_get_int (&(item->content));
 			gint16 s = GINT16_TO_BE ((gint16) i);
-			
+
 			g_byte_array_append (array, (const guint8 *)&s, 2);
 
 			break;
 	        }
-		case RB_DAAP_TYPE_DATE: 
+		case RB_DAAP_TYPE_DATE:
 		case RB_DAAP_TYPE_INT: {
 			gint32 i = g_value_get_int (&(item->content));
 			gint32 s = GINT32_TO_BE (i);
 
 			g_byte_array_append (array, (const guint8 *)&s, 4);
-			
+
 			break;
 		}
 		case RB_DAAP_TYPE_VERSION: {
@@ -298,22 +297,22 @@ rb_daap_structure_node_serialize (GNode *node,
 			g_byte_array_append (array, (const guint8 *)&major, 2);
 			g_byte_array_append (array, (const guint8 *)&minor, 1);
 			g_byte_array_append (array, (const guint8 *)&patch, 1);
-			
+
 			break;
-		}		
+		}
 		case RB_DAAP_TYPE_INT64: {
 			gint64 i = g_value_get_int64 (&(item->content));
 			gint64 s = GINT64_TO_BE (i);
 
 			g_byte_array_append (array, (const guint8 *)&s, 8);
-			
+
 			break;
 		}
 		case RB_DAAP_TYPE_STRING: {
 			const gchar *s = g_value_get_string (&(item->content));
 
 			g_byte_array_append (array, (const guint8 *)s, strlen (s));
-			
+
 			break;
 		}
 		case RB_DAAP_TYPE_CONTAINER:
@@ -323,28 +322,28 @@ rb_daap_structure_node_serialize (GNode *node,
 
 	return FALSE;
 }
-	
-gchar * 
-rb_daap_structure_serialize (GNode *structure, 
+
+gchar *
+rb_daap_structure_serialize (GNode *structure,
 			     guint *length)
 {
 	GByteArray *array;
 	gchar *data;
 
 	array = g_byte_array_new ();
-	
+
 	if (structure) {
 		g_node_traverse (structure, G_PRE_ORDER, G_TRAVERSE_ALL, -1, (GNodeTraverseFunc)rb_daap_structure_node_serialize, array);
 	}
-	
+
 	data = (gchar *) array->data;
 	*length = array->len;
 	g_byte_array_free (array, FALSE);
-	
+
 	return data;
 }
 
-static RBDAAPContentCode 
+static RBDAAPContentCode
 rb_daap_buffer_read_content_code (const gchar *buf)
 {
 	gint32 c = MAKE_CONTENT_CODE (buf[0], buf[1], buf[2], buf[3]);
@@ -383,9 +382,9 @@ rb_daap_buffer_read_string (const gchar *buf, gssize size)
 #include <fcntl.h>
 #endif
 
-static void 
-rb_daap_structure_parse_container_buffer (GNode *parent, 
-					  const guchar *buf, 
+static void
+rb_daap_structure_parse_container_buffer (GNode *parent,
+					  const guchar *buf,
 					  gint buf_length)
 {
 	gint l = 0;
@@ -396,10 +395,10 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 		RBDAAPItem *item = NULL;
 		GNode *node = NULL;
 		GType gtype;
-		
+
 #ifdef PARSE_DEBUG
 		g_print ("l is %d and buf_length is %d\n", l, buf_length);
-#endif		
+#endif
 
 		/* we need at least 8 bytes, 4 of content_code and 4 of size */
 		if (buf_length - l < 8) {
@@ -408,7 +407,7 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 #endif
 			return;
 		}
-		
+
 		cc = rb_daap_buffer_read_content_code ((const gchar*)&(buf[l]));
 		if (cc == RB_DAAP_CC_INVALID) {
 #ifdef PARSE_DEBUG
@@ -436,19 +435,19 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 #ifdef PARSE_DEBUG
 		g_print ("content_code = %d, codesize is %d, l is %d\n", cc, codesize, l);
 #endif
-		
+
 		item = g_new0 (RBDAAPItem, 1);
 		item->content_code = cc;
 		node = g_node_new (item);
 		g_node_append (parent, node);
-		
+
 		gtype = rb_daap_content_code_gtype (item->content_code);
 
 		if (gtype != G_TYPE_NONE) {
 			g_value_init (&(item->content), gtype);
 		}
-		
-#ifdef PARSE_DEBUG 
+
+#ifdef PARSE_DEBUG
 		{
 			guint i;
 
@@ -457,17 +456,17 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 			}
 		}
 #endif
-		
+
 // FIXME USE THE G_TYPE CONVERTOR FUNCTION rb_daap_type_to_gtype
 		switch (rb_daap_content_code_rb_daap_type (item->content_code)) {
 			case RB_DAAP_TYPE_SIGNED_INT:
 			case RB_DAAP_TYPE_BYTE: {
 				gchar c = 0;
-				
+
 				if (codesize == 1) {
 					c = (gchar) rb_daap_buffer_read_int8(&(buf[l]));
 				}
-				
+
 				g_value_set_char (&(item->content), c);
 #ifdef PARSE_DEBUG
 				g_print ("Code: %s, content (%d): \"%c\"\n", rb_daap_content_code_string (item->content_code), codesize, (gchar)c);
@@ -496,7 +495,7 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 				if (codesize == 4) {
 					i = rb_daap_buffer_read_int32(&(buf[l]));
 				}
-				
+
 				g_value_set_int (&(item->content), i);
 #ifdef PARSE_DEBUG
 				g_print ("Code: %s, content (%d): %d\n", rb_daap_content_code_string (item->content_code), codesize, i);
@@ -505,11 +504,11 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 			}
 			case RB_DAAP_TYPE_INT64: {
 				gint64 i = 0;
-		
+
 				if (codesize == 8) {
 					i = rb_daap_buffer_read_int16(&(buf[l]));
 				}
-				
+
 				g_value_set_int64 (&(item->content), i);
 #ifdef PARSE_DEBUG
 				g_print ("Code: %s, content (%d): %"G_GINT64_FORMAT"\n", rb_daap_content_code_string (item->content_code), codesize, i);
@@ -542,7 +541,7 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 				v = (gdouble)major;
 				v += (gdouble)(minor * 0.1);
 				v += (gdouble)(patch * 0.01);
-				
+
 				g_value_set_double (&(item->content), v);
 #ifdef PARSE_DEBUG
 				g_print ("Code: %s, content: %f\n", rb_daap_content_code_string (item->content_code), v);
@@ -565,8 +564,8 @@ rb_daap_structure_parse_container_buffer (GNode *parent,
 	return;
 }
 
-GNode * 
-rb_daap_structure_parse (const gchar *buf, 
+GNode *
+rb_daap_structure_parse (const gchar *buf,
 			 gint buf_length)
 {
 	GNode *root = NULL;
@@ -581,7 +580,7 @@ rb_daap_structure_parse (const gchar *buf,
 		close (fd);
 	}
 #endif
-	
+
 	root = g_node_new (NULL);
 
 	rb_daap_structure_parse_container_buffer (root, (guchar *)buf, buf_length);
@@ -591,7 +590,7 @@ rb_daap_structure_parse (const gchar *buf,
 		g_node_unlink (child);
 	}
 	g_node_destroy (root);
-	
+
 	return child;
 }
 
@@ -600,8 +599,8 @@ struct NodeFinder {
 	GNode *node;
 };
 
-static gboolean 
-gnode_find_node (GNode *node, 
+static gboolean
+gnode_find_node (GNode *node,
 		 gpointer data)
 {
 	struct NodeFinder *finder = (struct NodeFinder *)data;
@@ -615,12 +614,12 @@ gnode_find_node (GNode *node,
 	return FALSE;
 }
 
-RBDAAPItem * 
-rb_daap_structure_find_item (GNode *structure, 
+RBDAAPItem *
+rb_daap_structure_find_item (GNode *structure,
 			     RBDAAPContentCode code)
 {
 	GNode *node = NULL;
-	
+
 	node = rb_daap_structure_find_node (structure, code);
 
 	if (node) {
@@ -630,8 +629,8 @@ rb_daap_structure_find_item (GNode *structure,
 	return NULL;
 }
 
-GNode * 
-rb_daap_structure_find_node (GNode *structure, 
+GNode *
+rb_daap_structure_find_node (GNode *structure,
 			     RBDAAPContentCode code)
 {
 	struct NodeFinder *finder;
@@ -648,8 +647,6 @@ rb_daap_structure_find_node (GNode *structure,
 
 	return node;
 }
-
-
 
 static void
 rb_daap_item_free (RBDAAPItem *item)
@@ -670,7 +667,7 @@ gnode_free_rb_daap_item (GNode *node,
 	return FALSE;
 }
 
-void 
+void
 rb_daap_structure_destroy (GNode *structure)
 {
 	if (structure) {
@@ -690,7 +687,7 @@ rb_daap_content_codes (guint *number)
 	return cc_defs;
 }
 
-gint32 
+gint32
 rb_daap_content_code_string_as_int32 (const gchar *str)
 {
 	union {
@@ -703,8 +700,8 @@ rb_daap_content_code_string_as_int32 (const gchar *str)
 	return g_htonl (u.i);
 }
 
-static gboolean 
-print_rb_daap_item (GNode *node, 
+static gboolean
+print_rb_daap_item (GNode *node,
 		    gpointer data)
 {
 	RBDAAPItem *item;

@@ -27,13 +27,12 @@
 
 G_BEGIN_DECLS
 
-void rb_daap_hash_generate (short         version_major, 
-			    const guchar *url, 
-			    guchar        hash_select, 
-			    guchar       *out, 
+void rb_daap_hash_generate (short         version_major,
+			    const guchar *url,
+			    guchar        hash_select,
+			    guchar       *out,
 			    gint          request_id);
 
 G_END_DECLS
 
 #endif /* __RB_DAAP_HASH_H */
-

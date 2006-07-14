@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for Song History List
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -93,7 +93,7 @@ void			rb_history_go_previous	(RBHistory *hist);
 void			rb_history_go_next	(RBHistory *hist);
 void			rb_history_go_last	(RBHistory *hist);
 
-/** 
+/**
  * Sets the song after "current" to @entry and, depending on the value of the
  * "truncate-on-play" property, may remove the entries after this.
  */
@@ -106,7 +106,7 @@ void			rb_history_append	(RBHistory *hist, RhythmDBEntry *entry);
 
 /**
  * Gets the index of the current entry. This is guaranteed to be < the
- * history's size, so if the history is empty, it returns -1. 
+ * history's size, so if the history is empty, it returns -1.
  */
 gint			rb_history_get_current_index	(RBHistory *hist);
 

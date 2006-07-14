@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for Internet Radio source object
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org.br>

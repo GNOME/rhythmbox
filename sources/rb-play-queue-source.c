@@ -136,7 +136,7 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 	GObjectClass *parent_class = G_OBJECT_CLASS (rb_play_queue_source_parent_class);
 	RBPlayQueueSource *source = RB_PLAY_QUEUE_SOURCE (
 			parent_class->constructor (type, n_construct_properties, construct_properties));
-	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source); 
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	GObject *shell_player;
 	RBShell *shell;
 	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
@@ -152,7 +152,7 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 							       rb_play_queue_source_actions,
 							       G_N_ELEMENTS (rb_play_queue_source_actions),
 							       source);
-		
+
 	priv->sidebar = rb_entry_view_new (db, shell_player, NULL, TRUE, TRUE);
 
 	g_object_set (G_OBJECT (priv->sidebar), "vscrollbar-policy", GTK_POLICY_AUTOMATIC, NULL);
@@ -190,7 +190,7 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 				 source, 0);
 
 	rb_play_queue_source_update_count (source, GTK_TREE_MODEL (model), 0);
-	
+
 	return G_OBJECT (source);
 }
 
@@ -268,7 +268,7 @@ rb_play_queue_source_clear_queue (RBPlayQueueSource *source)
 }
 
 static void
-impl_show_entry_view_popup (RBPlaylistSource *source, 
+impl_show_entry_view_popup (RBPlaylistSource *source,
 			    RBEntryView *view,
 			    gboolean over_entry)
 {
@@ -307,7 +307,7 @@ rb_play_queue_source_track_info_cell_data_func (GtkTreeViewColumn *column,
 	g_free (markup);
 }
 
-static void 
+static void
 rb_play_queue_sync_playing_state (GObject *entry_view,
 				  GParamSpec *pspec,
 				  RBPlayQueueSource *source)
@@ -318,7 +318,7 @@ rb_play_queue_sync_playing_state (GObject *entry_view,
 	rb_entry_view_set_state (priv->sidebar, state);
 }
 
-static void 
+static void
 rb_play_queue_source_row_inserted_cb (GtkTreeModel *model,
 				      GtkTreePath *path,
 				      GtkTreeIter *iter,
@@ -327,7 +327,7 @@ rb_play_queue_source_row_inserted_cb (GtkTreeModel *model,
 	rb_play_queue_source_update_count (source, model, 0);
 }
 
-static void 
+static void
 rb_play_queue_source_row_deleted_cb (GtkTreeModel *model,
 				     GtkTreePath *path,
 				     RBPlayQueueSource *source)
@@ -335,7 +335,7 @@ rb_play_queue_source_row_deleted_cb (GtkTreeModel *model,
 	rb_play_queue_source_update_count (source, model, -1);
 }
 
-static void 
+static void
 rb_play_queue_source_update_count (RBPlayQueueSource *source,
 				   GtkTreeModel *model,
 				   gint offset)
@@ -361,7 +361,7 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 	g_object_set (G_OBJECT (action), "sensitive", (count > 0), NULL);
 }
 
-static void 
+static void
 impl_save_contents_to_xml (RBPlaylistSource *source,
 			   xmlNodePtr node)
 {

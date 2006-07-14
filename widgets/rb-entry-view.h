@@ -99,10 +99,10 @@ typedef struct
 GType		rb_entry_view_get_type			(void);
 
 RBEntryView *	rb_entry_view_new			(RhythmDB *db, GObject *shell_player,
-							 const char *sort_key, gboolean drag_source, 
+							 const char *sort_key, gboolean drag_source,
 							 gboolean drag_dest);
 
-void		rb_entry_view_append_column		(RBEntryView *view, 
+void		rb_entry_view_append_column		(RBEntryView *view,
 							 RBEntryViewColumn coltype, gboolean always_visible);
 
 void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
@@ -115,7 +115,6 @@ void		rb_entry_view_insert_column_custom	(RBEntryView *view, GtkTreeViewColumn *
 							 GCompareDataFunc sort_func,
 							 gpointer data,
 							 gint position);
-
 
 void		rb_entry_view_set_columns_clickable	(RBEntryView *view, gboolean clickable);
 

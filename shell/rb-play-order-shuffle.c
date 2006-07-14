@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Implementation of shuffle play order
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -42,7 +42,7 @@ static void rb_shuffle_sync_history_with_query_model (RBShufflePlayOrder *sorder
 static GPtrArray *get_query_model_contents (RhythmDBQueryModel *model);
 
 static void rb_shuffle_db_changed (RBPlayOrder *porder, RhythmDB *db);
-static void rb_shuffle_playing_entry_changed (RBPlayOrder *porder, 
+static void rb_shuffle_playing_entry_changed (RBPlayOrder *porder,
 					      RhythmDBEntry *old_entry,
 					      RhythmDBEntry *new_entry);
 static void rb_shuffle_entry_added (RBPlayOrder *porder, RhythmDBEntry *entry);
@@ -149,7 +149,7 @@ get_history (RBShufflePlayOrder *sorder)
 		return sorder->priv->history;
 }
 
-static RhythmDBEntry* 
+static RhythmDBEntry*
 rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 {
 	RBShufflePlayOrder *sorder;
@@ -293,7 +293,7 @@ remove_from_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOrder 
 	if (rb_history_contains_entry (get_history (sorder), entry)) {
 		if (sorder->priv->tentative_history == NULL) {
 			sorder->priv->tentative_history = rb_history_clone (sorder->priv->history,
-									    (GFunc) rhythmdb_entry_ref, 
+									    (GFunc) rhythmdb_entry_ref,
 									    NULL);
 		}
 		rb_history_remove_entry (sorder->priv->tentative_history, entry);
@@ -309,10 +309,10 @@ add_randomly_to_history (RhythmDBEntry *entry, gpointer *unused, RBShufflePlayOr
 
 	if (rb_history_contains_entry (get_history (sorder), entry))
 		return TRUE;
-	
+
 	if (sorder->priv->tentative_history == NULL) {
 		sorder->priv->tentative_history = rb_history_clone (sorder->priv->history,
-								    (GFunc) rhythmdb_entry_ref, 
+								    (GFunc) rhythmdb_entry_ref,
 								    NULL);
 	}
 
@@ -372,7 +372,7 @@ get_query_model_contents (RhythmDBQueryModel *model)
 		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
 		g_ptr_array_index (result, i++) = entry;
 	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
-	
+
 	return result;
 }
 
@@ -399,8 +399,8 @@ rb_shuffle_commit_history (RBShufflePlayOrder *sorder)
 }
 
 static void
-rb_shuffle_playing_entry_changed (RBPlayOrder *porder, 
-				  RhythmDBEntry *old_entry, 
+rb_shuffle_playing_entry_changed (RBPlayOrder *porder,
+				  RhythmDBEntry *old_entry,
 				  RhythmDBEntry *new_entry)
 {
 	RBShufflePlayOrder *sorder;

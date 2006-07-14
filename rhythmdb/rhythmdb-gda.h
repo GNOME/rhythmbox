@@ -27,7 +27,6 @@
 
 G_BEGIN_DECLS
 
-
 #define RHYTHMDB_TYPE_GDA         (rhythmdb_gda_get_type ())
 #define RHYTHMDB_GDA(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_GDA, RhythmDBGda))
 #define RHYTHMDB_GDA_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RHYTHMDB_GDA_TYPE, RhythmDBGdaClass))

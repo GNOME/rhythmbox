@@ -49,8 +49,8 @@ static RhythmDBEntry* rb_random_play_order_get_previous (RBPlayOrder* porder);
 static void rb_random_play_order_go_previous (RBPlayOrder* porder);
 
 static void rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db);
-static void rb_random_playing_entry_changed (RBPlayOrder *porder, 
-					     RhythmDBEntry *old_entry, 
+static void rb_random_playing_entry_changed (RBPlayOrder *porder,
+					     RhythmDBEntry *old_entry,
 					     RhythmDBEntry *new_entry);
 static void rb_random_query_model_changed (RBPlayOrder *porder);
 static void rb_random_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry);
@@ -71,7 +71,6 @@ struct RBRandomPlayOrderPrivate
 
 G_DEFINE_TYPE (RBRandomPlayOrder, rb_random_play_order, RB_TYPE_PLAY_ORDER)
 #define RB_RANDOM_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RANDOM_PLAY_ORDER, RBRandomPlayOrderPrivate))
-
 
 static void
 rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
@@ -231,7 +230,7 @@ rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 				       	= rb_history_clone (rorder->priv->history,
 							    (GFunc) rhythmdb_entry_unref,
 							    NULL);
-			rb_history_remove_entry (rorder->priv->tentative_history, 
+			rb_history_remove_entry (rorder->priv->tentative_history,
 						 g_ptr_array_index (history_contents, i));
 		}
 	}
@@ -253,7 +252,7 @@ static inline double
 rb_random_get_total_weight (GArray *weights)
 {
 	EntryWeight *last;
-       
+
 	g_return_val_if_fail (weights, 0.0);
 	if (weights->len == 0)
 		return 0.0;
@@ -310,7 +309,7 @@ rb_random_play_order_pick_entry (RBRandomPlayOrder *rorder)
 	return entry;
 }
 
-static RhythmDBEntry* 
+static RhythmDBEntry*
 rb_random_play_order_get_next (RBPlayOrder* porder)
 {
 	RBRandomPlayOrder *rorder;
@@ -326,7 +325,7 @@ rb_random_play_order_get_next (RBPlayOrder* porder)
 	history = get_history (rorder);
 
 	entry = rb_play_order_get_playing_entry (porder);
-	if (rb_history_length (history) == 0 
+	if (rb_history_length (history) == 0
 	    || (entry == rb_history_current (history)
 	        && rb_history_current (history) == rb_history_last (history))) {
 
@@ -411,7 +410,7 @@ rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db)
 {
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
 
-	rb_history_clear (RB_RANDOM_PLAY_ORDER (porder)->priv->history); 
+	rb_history_clear (RB_RANDOM_PLAY_ORDER (porder)->priv->history);
 
 	rb_history_set_destroy_notify (RB_RANDOM_PLAY_ORDER (porder)->priv->history,
 				       (GFunc) rhythmdb_entry_unref,
@@ -419,7 +418,7 @@ rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db)
 }
 
 static void
-rb_random_playing_entry_changed (RBPlayOrder *porder, 
+rb_random_playing_entry_changed (RBPlayOrder *porder,
 				 RhythmDBEntry *old_entry,
 				 RhythmDBEntry *new_entry)
 {
@@ -456,7 +455,7 @@ rb_random_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry)
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
-	rb_history_remove_entry (rorder->priv->history, entry); 
+	rb_history_remove_entry (rorder->priv->history, entry);
 	if (rorder->priv->tentative_history)
-		rb_history_remove_entry (rorder->priv->tentative_history, entry); 
+		rb_history_remove_entry (rorder->priv->tentative_history, entry);
 }

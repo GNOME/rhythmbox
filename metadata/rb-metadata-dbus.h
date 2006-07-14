@@ -28,7 +28,7 @@
 
 G_BEGIN_DECLS
 
-#define RB_METADATA_DBUS_NAME		"org.gnome.rhythmbox.Metadata"	
+#define RB_METADATA_DBUS_NAME		"org.gnome.rhythmbox.Metadata"
 #define RB_METADATA_DBUS_OBJECT_PATH	"/org/gnome/rhythmbox/MetadataService"
 #define RB_METADATA_DBUS_INTERFACE	"org.gnome.rhythmbox.Metadata"
 
@@ -50,8 +50,6 @@ gboolean	rb_metadata_dbus_read_from_message (RBMetaData *md,
 						    GHashTable *metadata,
 						    DBusMessageIter *iter);
 
-
 G_END_DECLS
 
 #endif /* __RB_METADATA_DBUS_H */
-

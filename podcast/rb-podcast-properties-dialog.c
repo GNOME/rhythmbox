@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Headfile of podcast properties dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org>
@@ -41,13 +41,13 @@
 static void rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass);
 static void rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_finalize (GObject *object);
-static void rb_podcast_properties_dialog_set_property (GObject *object, 
+static void rb_podcast_properties_dialog_set_property (GObject *object,
 						       guint prop_id,
-						       const GValue *value, 
+						       const GValue *value,
 						       GParamSpec *pspec);
-static void rb_podcast_properties_dialog_get_property (GObject *object, 
+static void rb_podcast_properties_dialog_get_property (GObject *object,
 						       guint prop_id,
-						       GValue *value, 
+						       GValue *value,
 						       GParamSpec *pspec);
 static gboolean rb_podcast_properties_dialog_get_current_entry (RBPodcastPropertiesDialog *dialog);
 static void rb_podcast_properties_dialog_response_cb (GtkDialog *gtkdialog,
@@ -89,11 +89,11 @@ struct RBPodcastPropertiesDialogPrivate
 	GtkWidget   *rating;
 	GtkWidget   *date;
 	GtkWidget   *description;
-	
+
 	GtkWidget   *close_button;
 };
 
-enum 
+enum
 {
 	PROP_0,
 	PROP_ENTRY_VIEW,
@@ -101,7 +101,6 @@ enum
 };
 
 G_DEFINE_TYPE (RBPodcastPropertiesDialog, rb_podcast_properties_dialog, GTK_TYPE_DIALOG)
-
 
 static void
 rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
@@ -128,9 +127,9 @@ static void
 rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
 	GladeXML *xml;
-	
-	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog, 
-						    RB_TYPE_PODCAST_PROPERTIES_DIALOG, 
+
+	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog,
+						    RB_TYPE_PODCAST_PROPERTIES_DIALOG,
 						    RBPodcastPropertiesDialogPrivate);
 
 	g_signal_connect_object (G_OBJECT (dialog),
@@ -182,7 +181,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	rb_glade_boldify_label (xml, "descriptionDescLabel");
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
-	g_signal_connect_object (dialog->priv->rating, 
+	g_signal_connect_object (dialog->priv->rating,
 				 "rated",
 				 G_CALLBACK (rb_podcast_properties_dialog_rated_cb),
 				 G_OBJECT (dialog), 0);
@@ -278,7 +277,7 @@ static gboolean
 rb_podcast_properties_dialog_get_current_entry (RBPodcastPropertiesDialog *dialog)
 {
 	GList *selected_entries;
-	
+
 	/* get the entry */
 	selected_entries = rb_entry_view_get_selected_entries (dialog->priv->entry_view);
 
@@ -315,7 +314,7 @@ rb_podcast_properties_dialog_update_title (RBPodcastPropertiesDialog *dialog)
 {
 	const char *name;
 	char *tmp;
-	
+
 	name = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_TITLE);
 	tmp = g_strdup_printf (_("%s Properties"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
@@ -345,7 +344,7 @@ rb_podcast_properties_dialog_update_duration (RBPodcastPropertiesDialog *dialog)
 {
         char *text;
         gulong duration = 0;
-	
+
         duration = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_DURATION);
 
 	text = rb_make_duration_string (duration);
@@ -458,7 +457,7 @@ rb_podcast_properties_dialog_update_date (RBPodcastPropertiesDialog *dialog)
 {
 	gulong post_time;
 	char *time;
-	
+
 	post_time = rhythmdb_entry_get_ulong (dialog->priv->current_entry, RHYTHMDB_PROP_POST_TIME);
 	time = rb_podcast_properties_dialog_parse_time (post_time);
 

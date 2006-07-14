@@ -216,7 +216,7 @@ rb_library_source_dispose (GObject *object)
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
 	}
-	
+
 	G_OBJECT_CLASS (rb_library_source_parent_class)->dispose (object);
 }
 
@@ -277,7 +277,7 @@ rb_library_source_constructor (GType type,
 				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
-	
+
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
@@ -333,7 +333,7 @@ static void
 rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource *source)
 {
 	GtkWidget *dialog;
-	
+
 	dialog = rb_file_chooser_new (_("Choose Library Location"), GTK_WINDOW (source->priv->shell_prefs),
 				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, FALSE);
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
@@ -344,9 +344,9 @@ rb_library_source_location_button_clicked_cb (GtkButton *button, RBLibrarySource
 		if (uri == NULL) {
 			uri = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 		}
-		
+
 		path = gnome_vfs_format_uri_for_display (uri);
-		
+
 		gtk_entry_set_text (GTK_ENTRY (source->priv->library_location_entry), path);
 		rb_library_source_library_location_cb (GTK_ENTRY (source->priv->library_location_entry),
 						       NULL, source);
@@ -370,10 +370,10 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
-	
+
 	g_object_ref (G_OBJECT (prefs));
 	source->priv->shell_prefs = prefs;
-	
+
 	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
 	source->priv->config_widget =
 		glade_xml_get_widget (xml, "library_vbox");
@@ -452,7 +452,7 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 #endif
 
 	g_object_unref (G_OBJECT (xml));
-	
+
 	rb_library_source_preferences_sync (source);
 
 	return source->priv->config_widget;
@@ -580,7 +580,7 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 	g_free (uri);
 	if (list)
 		g_slist_free (list);
-	
+
 	/* don't do the first-run druid if the user sets the library location */
 	if (list)
 		eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
@@ -608,7 +608,6 @@ impl_get_paned_key (RBBrowserSource *status)
 {
 	return CONF_STATE_PANED_POSITION;
 }
-
 
 static void
 rb_library_source_add_location_entry_changed_cb (GtkEntry *entry,
@@ -774,7 +773,7 @@ sanitize_path (const char *str)
 	/* Skip leading periods, otherwise files disappear... */
 	while (*str == '.')
 		str++;
-  
+
 	s = g_strdup(str);
 	/* Replace path seperators with a hyphen */
 	g_strdelimit (s, "/", '-');
@@ -870,7 +869,7 @@ filepath_parse_pattern (const char *pattern, RhythmDBEntry *entry)
 			default:
 				string = g_strdup_printf ("%%a%c", *p);
 			}
-			
+
 			break;
 
 		case 't':
@@ -911,7 +910,7 @@ filepath_parse_pattern (const char *pattern, RhythmDBEntry *entry)
  			}
 
 			break;
-			
+
 		default:
 			string = g_strdup_printf ("%%%c", *p);
 		}
@@ -969,7 +968,7 @@ layout_example_label_update (RBLibrarySource *source)
 			      profile ? gm_audio_profile_get_extension (profile) : "ogg",
 			      "</i></small>", NULL);
 	g_free (example);
-  
+
 	gtk_label_set_markup (GTK_LABEL (source->priv->layout_example_label), format);
 	g_free (format);
 }
@@ -1013,11 +1012,11 @@ rb_library_source_layout_filename_changed (GConfClient *client,
 {
 	char *value;
 	int i = 0;
-  
+
 	g_return_if_fail (strcmp (entry->key, CONF_LIBRARY_LAYOUT_FILENAME) == 0);
 
 	rb_debug ("layout filename changed");
-  
+
 	if (entry->value == NULL) {
 		value = g_strdup (library_layout_filenames[0].path);
 	} else if (entry->value->type == GCONF_VALUE_STRING) {
@@ -1090,7 +1089,7 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 
 	if (extension == NULL) {
 		char *tmp;
-		
+
 		/* use the old extension. strip anything after a '?' for http/daap/etc */
 		extension = g_strdup (g_utf8_strrchr (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), -1, '.') + 1);
 
@@ -1098,7 +1097,7 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 		if (tmp)
 			*tmp = '\0';
 	}
-	
+
 	realfile = filepath_parse_pattern (layout_filename, entry);
 	if (extension) {
 		filename = g_strdup_printf ("%s.%s", realfile, extension);
@@ -1131,7 +1130,6 @@ impl_can_paste (RBSource *asource)
 		     (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH) != NULL ) &&
 		     (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME) != NULL) &&
 		     (eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT) != NULL));
-
 
 	g_slist_free (list);
 	return can_paste;
@@ -1181,7 +1179,7 @@ impl_paste (RBSource *asource, GList *entries)
 		if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
 			/* copying to ourselves would be silly */
 			continue;
-		
+
 		/* see if the responsible source lets us copy */
 		if (!rb_source_can_copy (rb_shell_get_source_by_entry_type (shell, entry_type)))
 			continue;
@@ -1215,7 +1213,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	uri = gnome_vfs_uri_new (path);
 	name = gnome_vfs_uri_extract_short_name (uri);
 	gnome_vfs_uri_unref (uri);
-	
+
 	source = rb_auto_playlist_source_new (shell, name, FALSE);
 	query = rhythmdb_query_parse (library_source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
@@ -1253,4 +1251,3 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 	g_slist_foreach (list, (GFunc) g_free, NULL);
 	g_slist_free (list);
 }
-

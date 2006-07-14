@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of random play order weighted by the time since last play
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
@@ -68,7 +68,7 @@ rb_random_by_age_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, Rhyt
 	/* This returns the log of the number of seconds since the last play.
 	 * It handles never played automatically, since now-0 is a valid
 	 * argument to log(). */
-	
+
 	time (&now);
 	last_play = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_PLAYED);
 	seconds_since_last_play = now - last_play;

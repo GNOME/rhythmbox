@@ -49,7 +49,7 @@ struct _RhythmDBQueryResultsIface
 				 	 GPtrArray *entries);
 
 	void 	(*query_complete)	(RhythmDBQueryResults *results);
-}; 
+};
 
 GType	rhythmdb_query_results_get_type	(void);
 
@@ -64,4 +64,3 @@ void	rhythmdb_query_results_query_complete (RhythmDBQueryResults *results);
 G_END_DECLS
 
 #endif /* RHYTHMDB_QUERY_RESULTS_H */
-

@@ -61,9 +61,9 @@ typedef struct {
 * on buffers full of bytes, and then call OpenDaap_MD5Final, which will fill
 * a supplied 16-byte array with the digest.
 */
-static void 
-MD5Transform (guint32 buf[4], 
-	      guint32 const in[16], 
+static void
+MD5Transform (guint32 buf[4],
+	      guint32 const in[16],
 	      gint version);
 /* for some reason we still have to reverse bytes on bigendian machines
  * I don't really know why... but otherwise it fails..
@@ -72,16 +72,16 @@ MD5Transform (guint32 buf[4],
 #if 0 //ndef WORDS_BIGENDIAN /* was: HIGHFIRST */
 #define byteReverse(buf, len)     /* Nothing */
 #else
-static void 
-byteReverse (unsigned char *buf, 
+static void
+byteReverse (unsigned char *buf,
 	     unsigned longs);
 
 #ifndef ASM_MD5
 /*
 * Note: this code is harmless on little-endian machines.
 */
-static void 
-byteReverse (unsigned char *buf, 
+static void
+byteReverse (unsigned char *buf,
 	     unsigned longs)
 {
      guint32 t;
@@ -95,8 +95,8 @@ byteReverse (unsigned char *buf,
 #endif /* ! ASM_MD5 */
 #endif /* #if 0 */
 
-static void 
-OpenDaap_MD5Init (MD5_CTX *ctx, 
+static void
+OpenDaap_MD5Init (MD5_CTX *ctx,
 		  gint version)
 {
     memset (ctx, 0, sizeof (MD5_CTX));
@@ -111,9 +111,9 @@ OpenDaap_MD5Init (MD5_CTX *ctx,
     ctx->version = version;
 }
 
-static void 
-OpenDaap_MD5Update (MD5_CTX *ctx, 
-		    unsigned char const *buf, 
+static void
+OpenDaap_MD5Update (MD5_CTX *ctx,
+		    unsigned char const *buf,
 		    unsigned int len)
 {
     guint32 t;
@@ -159,8 +159,8 @@ OpenDaap_MD5Update (MD5_CTX *ctx,
 
 }
 
-static void 
-OpenDaap_MD5Final (MD5_CTX *ctx, 
+static void
+OpenDaap_MD5Final (MD5_CTX *ctx,
 		   unsigned char digest[16])
 {
     unsigned count;
@@ -223,9 +223,9 @@ OpenDaap_MD5Final (MD5_CTX *ctx,
 * the addition of 16 longwords of new data.  OpenDaap_MD5Update blocks the
 * data and converts bytes into longwords for this routine.
 */
-static void 
-MD5Transform (guint32 buf[4], 
-	      guint32 const in[16], 
+static void
+MD5Transform (guint32 buf[4],
+	      guint32 const in[16],
 	      gint version)
 {
     guint32 a, b, c, d;
@@ -319,10 +319,6 @@ MD5Transform (guint32 buf[4],
 
 #endif
 
-
-
-
-
 static int staticHashDone = 0;
 static unsigned char staticHash_42[256*65] = {0};
 static unsigned char staticHash_45[256*65] = {0};
@@ -331,8 +327,8 @@ static const char hexchars[] = "0123456789ABCDEF";
 static char ac[] = "Dpqzsjhiu!3114!Bqqmf!Dpnqvufs-!Jod/"; /* +1 */
 static gboolean ac_unfudged = FALSE;
 
-static void 
-DigestToString (const unsigned char *digest, 
+static void
+DigestToString (const unsigned char *digest,
 		char *string)
 {
     int i;
@@ -344,7 +340,7 @@ DigestToString (const unsigned char *digest,
     }
 }
 
-static void 
+static void
 GenerateStatic_42 ()
 {
     MD5_CTX ctx;
@@ -466,17 +462,17 @@ static void GenerateStatic_45()
     }
 }
 
-void 
-rb_daap_hash_generate (short         version_major, 
-		       const guchar *url, 
-		       guchar        hash_select, 
-		       guchar       *out, 
+void
+rb_daap_hash_generate (short         version_major,
+		       const guchar *url,
+		       guchar        hash_select,
+		       guchar       *out,
 		       gint          request_id)
 {
     unsigned char buf[16];
     MD5_CTX ctx;
     int i;
-    
+
     unsigned char *hashTable = (version_major == 3) ?
                       staticHash_45 : staticHash_42;
 
@@ -512,4 +508,3 @@ rb_daap_hash_generate (short         version_major,
 
     return;
 }
-

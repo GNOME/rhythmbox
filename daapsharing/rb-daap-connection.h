@@ -35,7 +35,6 @@ typedef struct {
 	GList *uris;
 } RBDAAPPlaylist;
 
-
 #define RB_TYPE_DAAP_CONNECTION		(rb_daap_connection_get_type ())
 #define RB_DAAP_CONNECTION(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DAAP_CONNECTION, RBDAAPConnection))
 #define RB_DAAP_CONNECTION_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DAAP_CONNECTION, RBDAAPConnectionClass))
@@ -67,7 +66,7 @@ typedef struct {
 	GObjectClass parent;
 
 	void   (* connected)      (RBDAAPConnection     *connection);
-	void   (* disconnected)   (RBDAAPConnection     *connection); 
+	void   (* disconnected)   (RBDAAPConnection     *connection);
 
 	char * (* authenticate)   (RBDAAPConnection     *connection,
 				   const char           *name);
@@ -78,7 +77,6 @@ typedef struct {
 	void   (* operation_done) (RBDAAPConnection     *connection);
 
 } RBDAAPConnectionClass;
-
 
 /* hmm, maybe should give more error information? */
 typedef gboolean (* RBDAAPConnectionCallback)  (RBDAAPConnection *connection,
@@ -112,4 +110,3 @@ GSList *           rb_daap_connection_get_playlists   (RBDAAPConnection         
 G_END_DECLS
 
 #endif /* __RB_DAAP_CONNECTION_H */
-

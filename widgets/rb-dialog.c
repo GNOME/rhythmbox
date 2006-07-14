@@ -69,7 +69,6 @@ rb_error_dialog (GtkWindow *parent,
 	g_free (text);
 }
 
-
 GtkWidget *
 rb_file_chooser_new (const char *title,
 		     GtkWindow *parent,

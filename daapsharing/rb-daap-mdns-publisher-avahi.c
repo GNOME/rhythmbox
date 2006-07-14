@@ -57,7 +57,7 @@ struct RBDaapMdnsPublisherPrivate
 	gboolean         password_required;
 };
 
-enum { 
+enum {
 	PUBLISHED,
 	NAME_COLLISION,
 	LAST_SIGNAL
@@ -94,17 +94,17 @@ client_cb (AvahiClient         *client,
 	 */
 
 	/* Called whenever the client or server state changes */
- 
+
 	switch (state) {
 	case AVAHI_CLIENT_S_RUNNING:
-         
+
 		/* The server has startup successfully and registered its host
 		 * name on the network, so it's time to create our services */
-		
+
 		break;
- 
+
 	case AVAHI_CLIENT_S_COLLISION:
-         
+
 		 /* Let's drop our registered services. When the server is back
 		  * in AVAHI_SERVER_RUNNING state we will register them
 		  * again with the new host name. */
@@ -112,10 +112,10 @@ client_cb (AvahiClient         *client,
 			 avahi_entry_group_reset (publisher->priv->entry_group);
 		 }
 		 break;
-             
+
 #ifdef HAVE_AVAHI_0_6
 	case AVAHI_CLIENT_FAILURE:
-             
+
 		 g_warning ("Client failure: %s\n", avahi_strerror (avahi_client_errno (client)));
 		 break;
 	case AVAHI_CLIENT_CONNECTING:

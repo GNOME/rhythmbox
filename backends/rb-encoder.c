@@ -90,7 +90,6 @@ rb_encoder_get_type (void)
 	return our_type;
 }
 
-
 gboolean
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
@@ -99,15 +98,15 @@ rb_encoder_encode (RBEncoder *encoder,
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	return iface->encode (encoder, entry, dest, mime_type);	  	 
+	return iface->encode (encoder, entry, dest, mime_type);
 }
-	
+
 void
 rb_encoder_cancel (RBEncoder *encoder)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	iface->cancel (encoder);	  	 
+	iface->cancel (encoder);
 }
 
 RBEncoder*

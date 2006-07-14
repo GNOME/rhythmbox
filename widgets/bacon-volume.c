@@ -85,7 +85,7 @@ bacon_volume_button_get_type (void)
     };
 
     bacon_volume_button_type =
-	g_type_register_static (GTK_TYPE_BUTTON, 
+	g_type_register_static (GTK_TYPE_BUTTON,
 				"BaconVolumeButton",
 				&bacon_volume_button_info, 0);
   }

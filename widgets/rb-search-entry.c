@@ -66,7 +66,6 @@ enum
 
 static guint rb_search_entry_signals[LAST_SIGNAL] = { 0 };
 
-
 static void
 rb_search_entry_class_init (RBSearchEntryClass *klass)
 {
@@ -175,9 +174,9 @@ rb_search_entry_clear (RBSearchEntry *entry)
 		g_source_remove (entry->priv->timeout);
 		entry->priv->timeout = 0;
 	}
-		
+
 	entry->priv->clearing = TRUE;
-	
+
 	gtk_entry_set_text (GTK_ENTRY (entry->priv->entry), "");
 
 	entry->priv->clearing = FALSE;
@@ -241,7 +240,7 @@ static gboolean
 rb_search_entry_timeout_cb (RBSearchEntry *entry)
 {
 	gdk_threads_enter ();
-	
+
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 	entry->priv->timeout = 0;

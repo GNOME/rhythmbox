@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2003 Ross Burton <ross@burtonini.com>
  *
  * Sound Juicer - sj-structures.h
@@ -28,7 +28,6 @@
 
 typedef struct _AlbumDetails AlbumDetails;
 typedef struct _TrackDetails TrackDetails;
-
 
 struct _TrackDetails {
   AlbumDetails *album;

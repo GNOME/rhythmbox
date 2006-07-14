@@ -30,7 +30,6 @@
 GHashTable *rb_refstrings;
 GMutex *rb_refstrings_mutex;
 
-
 struct RBRefString
 {
 	gint refcount;
@@ -104,7 +103,6 @@ rb_refstring_system_shutdown (void)
 	g_hash_table_destroy (rb_refstrings);
 	g_mutex_free (rb_refstrings_mutex);
 }
-	
 
 RBRefString *
 rb_refstring_ref (RBRefString *val)
@@ -118,7 +116,6 @@ rb_refstring_get (const RBRefString *val)
 {
 	return val ? val->value : NULL;
 }
-
 
 /*
  * The next two functions will compute the values if they haven't

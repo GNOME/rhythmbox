@@ -44,7 +44,6 @@
 
 #include "rb-static-playlist-source.h"
 
-
 static void rb_daap_source_dispose (GObject *object);
 static void rb_daap_source_set_property  (GObject *object,
 					  guint prop_id,
@@ -67,7 +66,6 @@ static void rb_daap_source_disconnect (RBDAAPSource *daap_source);
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
 #define CONF_STATE_SHOW_BROWSER CONF_PREFIX "/state/daap/show_browser"
-
 
 static RBDaapMdnsBrowser *mdns_browser = NULL;
 
@@ -110,8 +108,8 @@ G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE)
 
 static GtkActionEntry rb_daap_source_actions [] =
 {
-	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL, 
-	  N_("Disconnect from DAAP share"), 
+	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL,
+	  N_("Disconnect from DAAP share"),
 	  G_CALLBACK (rb_daap_source_cmd_disconnect) },
 };
 GtkActionGroup *daap_action_group;
@@ -144,7 +142,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	browser_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
-
 	g_object_class_install_property (object_class,
 					 PROP_SERVICE_NAME,
 					 g_param_spec_string ("service-name",
@@ -152,7 +149,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 							      "mDNS/DNS-SD service name of the share",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	
+
 	g_object_class_install_property (object_class,
 					 PROP_HOST,
 					 g_param_spec_string ("host",
@@ -184,8 +181,8 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 static void
 rb_daap_source_init (RBDAAPSource *source)
 {
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, 
-						    RB_TYPE_DAAP_SOURCE, 
+	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
+						    RB_TYPE_DAAP_SOURCE,
 						    RBDAAPSourcePrivate);
 }
 
@@ -197,7 +194,7 @@ rb_daap_source_dispose (GObject *object)
 	if (source->priv) {
 		/* we should already have been disconnected */
 		g_assert (source->priv->connection == NULL);
-	
+
 		g_free (source->priv->service_name);
 		g_free (source->priv->host);
 	}
@@ -214,7 +211,7 @@ rb_daap_source_set_property (GObject *object,
 	RBDAAPSource *source = RB_DAAP_SOURCE (object);
 
 	switch (prop_id) {
-		case PROP_SERVICE_NAME: 
+		case PROP_SERVICE_NAME:
 			source->priv->service_name = g_value_dup_string (value);
 			break;
 		case PROP_HOST:
@@ -332,7 +329,6 @@ rb_daap_source_new (RBShell *shell,
 	return source;
 }
 
-
 static RBSource *
 find_source_by_service_name (const char *service_name)
 {
@@ -434,8 +430,8 @@ start_browsing (RBShell *shell)
 	}
 
 	source_lookup = g_hash_table_new_full ((GHashFunc)g_str_hash,
-					       (GEqualFunc)g_str_equal, 
-					       (GDestroyNotify)g_free, 
+					       (GEqualFunc)g_str_equal,
+					       (GDestroyNotify)g_free,
 					       (GDestroyNotify)remove_source);
 
 }
@@ -599,7 +595,7 @@ rb_daap_sources_init (RBShell *shell)
 
 	/* add UI */
 	g_object_get (G_OBJECT (shell),
-		      "ui-manager", &uimanager, 
+		      "ui-manager", &uimanager,
 		      NULL);
 	daap_action_group = gtk_action_group_new ("DaapActions");
 	gtk_action_group_set_translation_domain (daap_action_group,
@@ -627,7 +623,7 @@ rb_daap_sources_shutdown (RBShell *shell)
 	daap_was_shutdown = TRUE;
 
 	g_object_get (G_OBJECT (shell),
-		      "ui-manager", &uimanager, 
+		      "ui-manager", &uimanager,
 		      NULL);
 
 	if (mdns_browser) {
@@ -760,8 +756,8 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		return;
 	}
 
-	g_object_get (G_OBJECT (daap_source), 
-		      "shell", &shell, 
+	g_object_get (G_OBJECT (daap_source),
+		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
 	playlists = rb_daap_connection_get_playlists (RB_DAAP_CONNECTION (daap_source->priv->connection));
@@ -792,10 +788,10 @@ rb_daap_source_activate (RBSource *source)
 		return;
 	}
 
-	g_object_get (G_OBJECT (daap_source), 
-		      "shell", &shell, 
-		      "entry-type", &type, 
-		      "name", &name, 
+	g_object_get (G_OBJECT (daap_source),
+		      "shell", &shell,
+		      "entry-type", &type,
+		      "name", &name,
 		      NULL);
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
 
@@ -849,7 +845,7 @@ rb_daap_source_cmd_disconnect (GtkAction *action,
 {
 	RBSource *source;
 
-	g_object_get (G_OBJECT (shell), 
+	g_object_get (G_OBJECT (shell),
 		      "selected-source", &source,
 		      NULL);
 
@@ -857,7 +853,7 @@ rb_daap_source_cmd_disconnect (GtkAction *action,
 		g_critical ("got non-Daap source for Daap action");
 		return;
 	}
-		
+
 	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
 }
 
@@ -955,7 +951,7 @@ rb_daap_source_find_for_uri (const char *uri)
 	source = (RBDAAPSource *)g_hash_table_find (source_lookup, (GHRFunc)source_host_find, ip);
 
 	g_free (ip);
-	
+
 	return source;
 }
 
@@ -981,7 +977,7 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 		RBShell *shell;
 		RhythmDBEntry *entry;
 		gulong bitrate;
-		
+
 		g_object_get (G_OBJECT (source), "shell", &shell, NULL);
 		g_object_get (G_OBJECT (shell), "db", &db, NULL);
 
@@ -989,13 +985,13 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 
 		g_object_unref (G_OBJECT (shell));
 		g_object_unref (G_OBJECT (db));
-		
-		bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE); 
+
+		bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
 		/* bitrate is kilobits per second */
 		/* a kilobit is 128 bytes */
-		bytes = (time * bitrate) * 128; 
+		bytes = (time * bitrate) * 128;
 	}
-	
+
 	if (bytes_out != NULL) {
 		*bytes_out = bytes;
 	}
@@ -1003,14 +999,13 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
 }
 
-
-static char * 
+static char *
 rb_daap_source_get_browser_key (RBSource *source)
 {
 	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
-static const char * 
+static const char *
 rb_daap_source_get_paned_key (RBBrowserSource *source)
 {
 	return CONF_STATE_PANED_POSITION;
@@ -1045,7 +1040,6 @@ rb_daap_source_get_status (RBSource *source,
 
 		return;
 	}
-	
+
 	RB_SOURCE_CLASS (rb_daap_source_parent_class)->impl_get_status (source, text, progress_text, progress);
 }
-

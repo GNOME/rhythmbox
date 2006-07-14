@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
- * 
+ *
  *  arch-tag: Headfile of feed_podcast feed properties dialog
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho <renato.filho@indt.org>
@@ -70,20 +70,19 @@ struct RBFeedPodcastPropertiesDialogPrivate
 	GtkWidget   *last_episode;
 	GtkWidget   *copyright;
 	GtkWidget   *summary;
-	
+
 	GtkWidget   *close_button;
 };
 
 #define RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_FEED_PODCAST_PROPERTIES_DIALOG, RBFeedPodcastPropertiesDialogPrivate))
 
-enum 
+enum
 {
 	PROP_0,
 	PROP_BACKEND
 };
 
 G_DEFINE_TYPE (RBFeedPodcastPropertiesDialog, rb_feed_podcast_properties_dialog, GTK_TYPE_DIALOG)
-
 
 static void
 rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass *klass)
@@ -99,9 +98,9 @@ static void
 rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 {
 	GladeXML *xml;
-	
+
 	dialog->priv = RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
-	
+
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
 				 G_CALLBACK (rb_feed_podcast_properties_dialog_response_cb),
@@ -120,7 +119,7 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "podcastproperties"));
-	
+
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CLOSE,
 							    GTK_RESPONSE_CLOSE);
@@ -205,7 +204,7 @@ static void
 rb_feed_podcast_properties_dialog_update_title (RBFeedPodcastPropertiesDialog *dialog)
 {
 	const char *name;
-	char *tmp;	
+	char *tmp;
 	name = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_TITLE);
 	tmp = g_strdup_printf (_("%s Properties"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);

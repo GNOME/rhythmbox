@@ -35,4 +35,3 @@ char * rb_daap_collision_dialog_new_run (GtkWindow  *parent,
 G_END_DECLS
 
 #endif /* __RB_DAAP_DIALOG_H */
-

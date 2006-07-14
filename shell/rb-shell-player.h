@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for object implementing main playback logic
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
@@ -73,10 +73,10 @@ typedef struct
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
 	void (*playing_uri_changed) (RBShellPlayer *player, const char *uri);
 	void (*playing_song_changed) (RBShellPlayer *player, RhythmDBEntry *entry);
-	void (*playing_song_property_changed) (RBShellPlayer *player, 
-					       const char *uri, 
-					       const char *property, 
-					       GValue *old, 
+	void (*playing_song_property_changed) (RBShellPlayer *player,
+					       const char *uri,
+					       const char *property,
+					       GValue *old,
 					       GValue *newValue);
 } RBShellPlayerClass;
 
@@ -154,7 +154,6 @@ gboolean		rb_shell_player_set_mute	(RBShellPlayer *player,
 gboolean		rb_shell_player_get_mute	(RBShellPlayer *player,
 							 gboolean *mute,
 							 GError **error);
-
 
 G_END_DECLS
 

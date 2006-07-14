@@ -88,5 +88,3 @@ gboolean             rb_daap_mdns_publisher_withdraw               (RBDaapMdnsPu
 G_END_DECLS
 
 #endif /* __RB_DAAP_MDNS_PUBLISHER_H */
-
-

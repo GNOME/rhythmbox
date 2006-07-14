@@ -119,7 +119,6 @@ typedef struct {
 	gint32 id;
 } RBPlaylistID;
 
-
 enum {
 	PROP_0,
 	PROP_NAME,
@@ -128,9 +127,7 @@ enum {
 	PROP_PLAYLIST_MANAGER
 };
 
-
 G_DEFINE_TYPE (RBDAAPShare, rb_daap_share, G_TYPE_OBJECT)
-
 
 static void
 rb_daap_share_class_init (RBDAAPShareClass *klass)
@@ -221,13 +218,13 @@ name_collision_cb (RBDaapMdnsPublisher *publisher,
 
 	if (strcmp (name, share->priv->name) == 0) {
 		rb_debug ("Duplicate share name on mDNS");
-		
+
 		new_name = rb_daap_collision_dialog_new_run (NULL, share->priv->name);
 
 		rb_daap_share_set_name (share, new_name);
 		g_free (new_name);
 	}
-	
+
 	return;
 }
 
@@ -379,10 +376,10 @@ rb_daap_share_process_playlist (RBSource *source,
 				RBDAAPShare *share)
 {
 	RBPlaylistID *id;
-	
+
 	/* make sure we're not going insane.. */
-	g_assert (g_list_find_custom (share->priv->playlist_ids, 
-				      source, 
+	g_assert (g_list_find_custom (share->priv->playlist_ids,
+				      source,
 				      _find_by_source) == NULL);
 
 	g_object_weak_ref (G_OBJECT (source),
@@ -437,7 +434,7 @@ rb_daap_share_dispose (GObject *object)
 	g_free (share->priv->name);
 	g_object_unref (share->priv->db);
 	g_object_unref (share->priv->playlist_manager);
-		
+
 	g_list_foreach (share->priv->playlist_ids, (GFunc) rb_daap_share_forget_playlist, share);
 	g_list_foreach (share->priv->playlist_ids, (GFunc) g_free, NULL);
 
@@ -447,7 +444,6 @@ rb_daap_share_dispose (GObject *object)
 
 	G_OBJECT_CLASS (rb_daap_share_parent_class)->dispose (object);
 }
-
 
 RBDAAPShare *
 rb_daap_share_new (const char *name,
@@ -506,9 +502,9 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 	message->response.owner = SOUP_BUFFER_SYSTEM_OWNED;
 	message->response.length = length;
 	message->response.body = resp;
-	
+
 	message_add_standard_headers (message);
-	
+
 	soup_message_set_status (message, SOUP_STATUS_OK);
 	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
 }
@@ -519,7 +515,7 @@ message_set_from_rb_daap_structure (SoupMessage *message,
 #define DAAP_VERSION 3.0
 #define DMAP_TIMEOUT 1800
 
-static void 
+static void
 server_info_cb (RBDAAPShare *share,
 		SoupServerContext *context,
 		SoupMessage *message)
@@ -597,7 +593,7 @@ content_codes_cb (RBDAAPShare *share,
 	guint num_defs = 0;
 	guint i;
 	GNode *mccr;
-	
+
 	defs = rb_daap_content_codes (&num_defs);
 
 	mccr = rb_daap_structure_add (NULL, RB_DAAP_CC_MCCR);
@@ -698,7 +694,7 @@ session_id_validate (RBDAAPShare       *share,
 	if (id) {
 		*id = 0;
 	}
-	
+
 	res = message_get_session_id (message, &session_id);
 	if (! res) {
 		rb_debug ("Validation failed: Unable to parse session id from message");
@@ -770,7 +766,7 @@ session_id_remove (RBDAAPShare       *share,
 	g_hash_table_remove (share->priv->session_ids, GUINT_TO_POINTER (id));
 }
 
-static void 
+static void
 login_cb (RBDAAPShare *share,
 	  SoupServerContext *context,
 	  SoupMessage *message)
@@ -794,8 +790,8 @@ login_cb (RBDAAPShare *share,
 	rb_daap_structure_destroy (mlog);
 }
 
-static void 
-logout_cb (RBDAAPShare *share, 
+static void
+logout_cb (RBDAAPShare *share,
 	   SoupServerContext *context,
 	   SoupMessage *message)
 {
@@ -831,7 +827,7 @@ update_cb (RBDAAPShare *share,
 		 * 	MUSR server revision
 		 */
 		GNode *mupd;
-		
+
 		mupd = rb_daap_structure_add (NULL, RB_DAAP_CC_MUPD);
 		rb_daap_structure_add (mupd, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
 		rb_daap_structure_add (mupd, RB_DAAP_CC_MUSR, (gint32) share->priv->revision_number);
@@ -887,11 +883,11 @@ struct DAAPMetaDataMap {
 };
 
 struct DAAPMetaDataMap meta_data_map[] = {
-	{"dmap.itemid",			ITEM_ID},			
-    	{"dmap.itemname",		ITEM_NAME},		
-    	{"dmap.itemkind",		ITEM_KIND},			
-    	{"dmap.persistentid",		PERSISTENT_ID},	
-	{"dmap.containeritemid",	CONTAINER_ITEM_ID},	
+	{"dmap.itemid",			ITEM_ID},
+    	{"dmap.itemname",		ITEM_NAME},
+    	{"dmap.itemkind",		ITEM_KIND},
+    	{"dmap.persistentid",		PERSISTENT_ID},
+	{"dmap.containeritemid",	CONTAINER_ITEM_ID},
     	{"daap.songalbum",		SONG_ALBUM},
     	{"daap.songartist",		SONG_ARTIST},
     	{"daap.songbitrate",		SONG_BITRATE},
@@ -930,7 +926,7 @@ struct MLCL_Bits {
 	gpointer pointer;
 };
 
-static gboolean 
+static gboolean
 client_requested (bitwise bits,
 		  gint field)
 {
@@ -940,18 +936,18 @@ client_requested (bitwise bits,
 #define DMAP_ITEM_KIND_AUDIO 2
 #define DAAP_SONG_DATA_KIND_NONE 0
 
-static void 
-add_entry_to_mlcl (RhythmDBEntry *entry, 
-		   gint id, 
+static void
+add_entry_to_mlcl (RhythmDBEntry *entry,
+		   gint id,
 		   struct MLCL_Bits *mb)
 {
 	GNode *mlit;
-	
+
 	mlit = rb_daap_structure_add (mb->mlcl, RB_DAAP_CC_MLIT);
-	
+
 	if (client_requested (mb->bits, ITEM_KIND))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIKD, (gchar) DMAP_ITEM_KIND_AUDIO);
-	if (client_requested (mb->bits, ITEM_ID)) 
+	if (client_requested (mb->bits, ITEM_ID))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) id);
 	if (client_requested (mb->bits, ITEM_NAME))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
@@ -971,23 +967,23 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASAR, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 	if (client_requested (mb->bits, SONG_BITRATE)) {
 		gulong bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
-		
+
 		if (bitrate == 0) { /* because gstreamer is stupid */
 		/* bitrate needs to be sent in kbps, kb/s
 		 * a kilobit is 128 bytes
-		 * if the length is L seconds, 
+		 * if the length is L seconds,
 		 * and the file is S bytes
-		 * then 
+		 * then
 		 * (S / 128) / L is kbps */
 			gulong length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 			guint64 file_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
-			
+
 			if (length > 0)
 				bitrate = (file_size / 128) / length;
 			else
 				bitrate = 0;
 		}
-		
+
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASBR, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE));
 	}
 	if (client_requested (mb->bits, SONG_BPM))
@@ -1013,7 +1009,7 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 	if (client_requested (mb->bits, SONG_FORMAT)) {
 		const gchar *filename;
 		gchar *ext;
-		
+
 		filename = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		ext = strrchr (filename, '.');
 		if (ext == NULL) {
@@ -1049,12 +1045,12 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASUR, 0); /* FIXME */
 	if (client_requested (mb->bits, SONG_YEAR))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASYR, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR));
-	
+
 	return;
 }
 
-static void 
-add_playlist_to_mlcl (RBPlaylistID *playlist_id, 
+static void
+add_playlist_to_mlcl (RBPlaylistID *playlist_id,
 		      GNode *mlcl)
 {
  /* 	MLIT listing item
@@ -1067,52 +1063,52 @@ add_playlist_to_mlcl (RBPlaylistID *playlist_id,
 	gchar *name;
 	guint num_songs;
 	RhythmDBQueryModel *model;
-	
+
 	g_object_get (G_OBJECT (playlist_id->source), "name", &name, NULL);
 	g_object_get (G_OBJECT (playlist_id->source), "query-model", &model, NULL);
 
 	num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (G_OBJECT (model));
-	
+
 	mlit = rb_daap_structure_add (mlcl, RB_DAAP_CC_MLIT);
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, playlist_id->id);
 	/* we don't have a persistant ID for playlists, unfortunately */
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64) playlist_id->id);
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, name);
 	rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) num_songs);
-	
+
 	g_free (name);
-	
+
 	return;
 }
 
-static gboolean 
+static gboolean
 add_playlist_entry_to_mlcl (GtkTreeModel *model,
-			    GtkTreePath *path, 
-			    GtkTreeIter *iter, 
+			    GtkTreePath *path,
+			    GtkTreeIter *iter,
 			    struct MLCL_Bits *mb)
 {
 	GNode *mlit;
 	RhythmDBEntry *entry;
 	gint id;
-	
+
 	mlit = rb_daap_structure_add (mb->mlcl, RB_DAAP_CC_MLIT);
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
-	
+
 	id = GPOINTER_TO_INT (g_hash_table_lookup ((GHashTable *)mb->pointer, entry));
 
 	if (client_requested (mb->bits, ITEM_KIND))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIKD, (gchar) DMAP_ITEM_KIND_AUDIO);
-	if (client_requested (mb->bits, ITEM_ID)) 
+	if (client_requested (mb->bits, ITEM_ID))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) id);
 	if (client_requested (mb->bits, CONTAINER_ITEM_ID))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MCTI, (gint32) id);
-		
-	return FALSE;
-}	
 
-static bitwise 
+	return FALSE;
+}
+
+static bitwise
 parse_meta (const gchar *s)
 {
 	gchar *start_of_attrs;
@@ -1136,7 +1132,7 @@ parse_meta (const gchar *s)
 	}
 
 	attrsv = g_strsplit (attrs,",",-1);
-	
+
 	for (i = 0; attrsv[i]; i++) {
 		guint j;
 
@@ -1149,7 +1145,7 @@ parse_meta (const gchar *s)
 
 	g_free (attrs);
 	g_strfreev (attrsv);
-	
+
 	return bits;
 }
 
@@ -1175,8 +1171,8 @@ message_finished (SoupMessage *message, GnomeVFSHandle *handle)
 	gnome_vfs_close (handle);
 }
 
-static void 
-databases_cb (RBDAAPShare *share, 
+static void
+databases_cb (RBDAAPShare *share,
 	      SoupServerContext *context,
 	      SoupMessage *message)
 {
@@ -1189,11 +1185,11 @@ databases_cb (RBDAAPShare *share,
 		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CONTENT_LENGTH);
 		return;
 	}
-	
+
 	path = soup_uri_to_string (soup_message_get_uri (message), TRUE);
 
 	rest_of_path = strchr (path + 1, '/');
-	
+
 	if (rest_of_path == NULL) {
 	/* AVDB server databases
 	 * 	MSTT status
@@ -1224,7 +1220,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, share->priv->name);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->entry_to_id));
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MCTC, (gint32) 1);
-	
+
 		message_set_from_rb_daap_structure (message, avdb);
 		rb_daap_structure_destroy (avdb);
 	} else if (g_ascii_strncasecmp ("/1/items?", rest_of_path, 9) == 0) {
@@ -1244,14 +1240,14 @@ databases_cb (RBDAAPShare *share,
 		struct MLCL_Bits mb = {NULL,0};
 
 		mb.bits = parse_meta (rest_of_path);
-		
+
 		adbs = rb_daap_structure_add (NULL, RB_DAAP_CC_ADBS);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MUTY, 0);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MTCO, (gint32) num_songs);
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MRCO, (gint32) num_songs);
 		mb.mlcl = rb_daap_structure_add (adbs, RB_DAAP_CC_MLCL);
-		
+
 		g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
 
 		message_set_from_rb_daap_structure (message, adbs);
@@ -1291,7 +1287,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ABPL, (gchar) 1); /* base playlist */
 
 		g_list_foreach (share->priv->playlist_ids, (GFunc) add_playlist_to_mlcl, mlcl);
-	
+
 		message_set_from_rb_daap_structure (message, aply);
 		rb_daap_structure_destroy (aply);
 	} else if (g_ascii_strncasecmp ("/1/containers/", rest_of_path, 14) == 0) {
@@ -1313,7 +1309,7 @@ databases_cb (RBDAAPShare *share,
 		gint pl_id = atoi (rest_of_path + 14);
 
 		mb.bits = parse_meta (rest_of_path);
-		
+
 		apso = rb_daap_structure_add (NULL, RB_DAAP_CC_APSO);
 		rb_daap_structure_add (apso, RB_DAAP_CC_MSTT, (gint32) DMAP_STATUS_OK);
 		rb_daap_structure_add (apso, RB_DAAP_CC_MUTY, 0);
@@ -1323,7 +1319,7 @@ databases_cb (RBDAAPShare *share,
 			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);
 			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) num_songs);
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
-		
+
 			g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
 		} else {
 			RBPlaylistID *id;
@@ -1331,12 +1327,12 @@ databases_cb (RBDAAPShare *share,
 			guint num_songs;
 			RhythmDBQueryModel *model;
 
-			idl = g_list_find_custom (share->priv->playlist_ids, 
-						  GINT_TO_POINTER (pl_id), 
+			idl = g_list_find_custom (share->priv->playlist_ids,
+						  GINT_TO_POINTER (pl_id),
 						  _find_by_id);
 			if (idl == NULL) {
 				soup_message_set_status (message, SOUP_STATUS_NOT_FOUND);
-				soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), 
+				soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message),
 								  SOUP_TRANSFER_CONTENT_LENGTH);
 				soup_message_set_response (message, "text/plain", SOUP_BUFFER_USER_OWNED, "", 0);
 				goto out;
@@ -1346,17 +1342,17 @@ databases_cb (RBDAAPShare *share,
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
 
 			mb.pointer = share->priv->entry_to_id;
-			
+
 			g_object_get (G_OBJECT (id->source), "query-model", &model, NULL);
 			num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
-				
+
 			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);
 			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) num_songs);
 
 			gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc) add_playlist_entry_to_mlcl, &mb);
 			g_object_unref (model);
 		}
-		
+
 		message_set_from_rb_daap_structure (message, apso);
 		rb_daap_structure_destroy (apso);
 	} else if (g_ascii_strncasecmp ("/1/items/", rest_of_path, 9) == 0) {
@@ -1370,7 +1366,7 @@ databases_cb (RBDAAPShare *share,
 		GnomeVFSHandle *handle;
 		const gchar *range_header;
 		guint status_code = SOUP_STATUS_OK;
-		
+
 		id_str = rest_of_path + 9;
 		id = atoi (id_str);
 
@@ -1389,12 +1385,12 @@ databases_cb (RBDAAPShare *share,
 			const gchar *s;
 			GnomeVFSFileOffset range;
 			gchar *content_range;
-			
+
 			s = range_header + 6; /* bytes= */
 			range = atoll (s);
-			
+
 			result = gnome_vfs_seek (handle, GNOME_VFS_SEEK_START, range);
-			
+
 			if (result != GNOME_VFS_OK) {
 				g_warning ("Error seeking: %s", gnome_vfs_result_to_string (result));
 				soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
@@ -1413,14 +1409,14 @@ databases_cb (RBDAAPShare *share,
 		g_signal_connect (message, "wrote_chunk", G_CALLBACK (write_next_chunk), handle);
 		g_signal_connect (message, "finished", G_CALLBACK (message_finished), handle);
 		write_next_chunk (message, handle);
-		 
+
 		soup_message_set_status (message, status_code);
 		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
 
 	} else {
 		rb_debug ("unhandled: %s\n", path);
 	}
-	
+
 out:
 	g_free (path);
 }
@@ -1488,7 +1484,6 @@ add_db_entry (RhythmDBEntry *entry,
 {
 	db_entry_added_cb (share->priv->db, entry, share);
 }
-
 
 static void
 db_entry_deleted_cb (RhythmDB *db,
@@ -1584,34 +1579,33 @@ rb_daap_share_server_start (RBDAAPShare *share)
 		auth_ctx.user_data = share;
 		auth_ctx.basic_info.realm = "Music Sharing";
 
-		soup_server_add_handler (share->priv->server, 
+		soup_server_add_handler (share->priv->server,
 					 "/login",
-					 &auth_ctx, 
+					 &auth_ctx,
 					 (SoupServerCallbackFn)server_cb,
 					 NULL,
 					 share);
-		soup_server_add_handler (share->priv->server, 
+		soup_server_add_handler (share->priv->server,
 					 "/update",
-					 &auth_ctx, 
+					 &auth_ctx,
 					 (SoupServerCallbackFn)server_cb,
 					 NULL,
 					 share);
 		soup_server_add_handler (share->priv->server,
 					 "/databases",
-					 &auth_ctx, 
+					 &auth_ctx,
 					 (SoupServerCallbackFn)server_cb,
 					 NULL,
 					 share);
 	}
 
-	soup_server_add_handler (share->priv->server, 
-				 NULL, 
-				 NULL, 
+	soup_server_add_handler (share->priv->server,
+				 NULL,
+				 NULL,
 				 (SoupServerCallbackFn)server_cb,
 				 NULL,
 				 share);
 	soup_server_run_async (share->priv->server);
-	
 
 	share->priv->id_to_entry = g_hash_table_new (NULL, NULL);
 	share->priv->entry_to_id = g_hash_table_new (NULL, NULL);
@@ -1650,7 +1644,7 @@ rb_daap_share_server_stop (RBDAAPShare *share)
 		g_object_unref (share->priv->server);
 		share->priv->server = NULL;
 	}
-	
+
 	if (share->priv->id_to_entry) {
 		g_hash_table_destroy (share->priv->id_to_entry);
 		share->priv->id_to_entry = NULL;
@@ -1665,7 +1659,7 @@ rb_daap_share_server_stop (RBDAAPShare *share)
 		g_hash_table_destroy (share->priv->entry_to_id);
 		share->priv->entry_to_id = NULL;
 	}
-	
+
 	if (share->priv->entry_added_id != 0) {
 		g_signal_handler_disconnect (share->priv->db, share->priv->entry_added_id);
 		share->priv->entry_added_id = 0;
@@ -1675,7 +1669,7 @@ rb_daap_share_server_stop (RBDAAPShare *share)
 		g_signal_handler_disconnect (share->priv->db, share->priv->entry_deleted_id);
 		share->priv->entry_deleted_id = 0;
 	}
-	
+
 	if (share->priv->entry_changed_id != 0) {
 		g_signal_handler_disconnect (share->priv->db, share->priv->entry_changed_id);
 		share->priv->entry_changed_id = 0;
@@ -1701,7 +1695,7 @@ rb_daap_share_publish_start (RBDAAPShare *share)
 					      share->priv->port,
 					      password_required,
 					      &error);
-	
+
 	if (res == FALSE) {
 		if (error != NULL) {
 			g_warning ("Unable to notify network of music sharing: %s", error->message);

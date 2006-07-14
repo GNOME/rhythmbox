@@ -85,7 +85,7 @@ gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
 
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
-gboolean		rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, 
+gboolean		rb_playlist_manager_save_playlists (RBPlaylistManager *mgr,
 							    gboolean force);
 
 RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
@@ -96,7 +96,7 @@ RBSource *		rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistMana
 
 GList *			rb_playlist_manager_get_playlists (RBPlaylistManager *manager);
 
-gboolean		rb_playlist_manager_get_playlist_names (RBPlaylistManager *manager, 
+gboolean		rb_playlist_manager_get_playlist_names (RBPlaylistManager *manager,
 								gchar ***playlists,
 								GError **error);
 gboolean		rb_playlist_manager_create_static_playlist (RBPlaylistManager *manager,

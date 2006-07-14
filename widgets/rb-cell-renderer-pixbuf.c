@@ -56,7 +56,7 @@ static void rb_cell_renderer_pixbuf_render     (GtkCellRenderer            *cell
 						GdkRectangle               *expose_area,
 						guint                       flags);
 static gboolean rb_cell_renderer_pixbuf_activate (GtkCellRenderer     *cell,
-						  GdkEvent            *event, 
+						  GdkEvent            *event,
 						  GtkWidget           *widget,
 						  const gchar         *path,
 						  GdkRectangle        *background_area,
@@ -77,7 +77,6 @@ enum
 G_DEFINE_TYPE (RBCellRendererPixbuf, rb_cell_renderer_pixbuf, GTK_TYPE_CELL_RENDERER)
 
 static guint rb_cell_renderer_pixbuf_signals [LAST_SIGNAL] = { 0 };
-
 
 static void
 rb_cell_renderer_pixbuf_init (RBCellRendererPixbuf *cellpixbuf)
@@ -128,7 +127,7 @@ rb_cell_renderer_pixbuf_get_property (GObject        *object,
 				      GParamSpec     *pspec)
 {
   RBCellRendererPixbuf *cellpixbuf = RB_CELL_RENDERER_PIXBUF (object);
-  
+
   switch (param_id)
     {
     case PROP_PIXBUF:
@@ -141,7 +140,6 @@ rb_cell_renderer_pixbuf_get_property (GObject        *object,
     }
 }
 
-
 static void
 rb_cell_renderer_pixbuf_set_property (GObject      *object,
 				      guint         param_id,
@@ -150,7 +148,7 @@ rb_cell_renderer_pixbuf_set_property (GObject      *object,
 {
   GdkPixbuf *pixbuf;
   RBCellRendererPixbuf *cellpixbuf = RB_CELL_RENDERER_PIXBUF (object);
-  
+
   switch (param_id)
     {
     case PROP_PIXBUF:
@@ -169,7 +167,7 @@ rb_cell_renderer_pixbuf_set_property (GObject      *object,
 
 /**
  * rb_cell_renderer_pixbuf_new:
- * 
+ *
  * Creates a new #RBCellRendererPixbuf. Adjust rendering
  * parameters using object properties. Object properties can be set
  * globally (with g_object_set()). Also, with #RBTreeViewColumn, you
@@ -177,7 +175,7 @@ rb_cell_renderer_pixbuf_set_property (GObject      *object,
  * can bind the "pixbuf" property on the cell renderer to a pixbuf value
  * in the model, thus rendering a different image in each row of the
  * #RBTreeView.
- * 
+ *
  * Return value: the new cell renderer
  **/
 GtkCellRenderer *
@@ -206,10 +204,10 @@ rb_cell_renderer_pixbuf_get_size (GtkCellRenderer *cell,
       pixbuf_width = gdk_pixbuf_get_width (cellpixbuf->pixbuf);
       pixbuf_height = gdk_pixbuf_get_height (cellpixbuf->pixbuf);
     }
-  
+
   calc_width = (gint) GTK_CELL_RENDERER (cellpixbuf)->xpad * 2 + pixbuf_width;
   calc_height = (gint) GTK_CELL_RENDERER (cellpixbuf)->ypad * 2 + pixbuf_height;
-  
+
   if (x_offset) *x_offset = 0;
   if (y_offset) *y_offset = 0;
 
@@ -229,7 +227,7 @@ rb_cell_renderer_pixbuf_get_size (GtkCellRenderer *cell,
 
   if (calc_width)
     *width = calc_width;
-  
+
   if (height)
     *height = calc_height;
 }
@@ -272,12 +270,12 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
 				     &pix_rect.y,
 				     &pix_rect.width,
 				     &pix_rect.height);
-  
+
   pix_rect.x += cell_area->x;
   pix_rect.y += cell_area->y;
   pix_rect.width -= cell->xpad * 2;
   pix_rect.height -= cell->ypad * 2;
-  
+
   if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect))
     gdk_pixbuf_render_to_drawable_alpha (cellpixbuf->pixbuf,
                                          window,
@@ -294,10 +292,9 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
                                          0, 0);
 }
 
-
 static gboolean
 rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
-				  GdkEvent *event, 
+				  GdkEvent *event,
 				  GtkWidget *widget,
 				  const gchar *path,
 				  GdkRectangle *background_area,

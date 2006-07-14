@@ -57,7 +57,7 @@ struct RBDaapMdnsBrowserPrivate
 	GSList           *resolvers;
 };
 
-enum { 
+enum {
 	SERVICE_ADDED,
 	SERVICE_REMOVED,
 	LAST_SIGNAL
@@ -95,7 +95,7 @@ howl_in_cb (GIOChannel        *io_channel,
 		sw_discovery_read_socket (*browser->priv->discovery);
 		sw_salt_unlock (salt);
 	}
-	
+
 	return TRUE;
 }
 
@@ -186,22 +186,22 @@ set_local_address (RBDaapMdnsBrowser *browser)
 
 static sw_result
 resolve_cb (sw_discovery       discovery,
-	    sw_discovery_oid   oid, 
-	    sw_uint32          interface_index, 
-	    sw_const_string    service_name, 
-	    sw_const_string    type, 
-	    sw_const_string    domain, 
-	    sw_ipv4_address    address, 
-	    sw_port            port, 
-	    sw_octets          text_record, 
-	    sw_ulong           text_record_length, 
+	    sw_discovery_oid   oid,
+	    sw_uint32          interface_index,
+	    sw_const_string    service_name,
+	    sw_const_string    type,
+	    sw_const_string    domain,
+	    sw_ipv4_address    address,
+	    sw_port            port,
+	    sw_octets          text_record,
+	    sw_ulong           text_record_length,
 	    RBDaapMdnsBrowser *browser)
 {
 	char                   *host;
 	char                   *name;
 	sw_text_record_iterator it;
 	gboolean                pp = FALSE;
-	
+
 	host = g_malloc (16);
 	name = NULL;
 
@@ -216,7 +216,7 @@ resolve_cb (sw_discovery       discovery,
 		sw_char  key [SW_TEXT_RECORD_MAX_LEN];
 		sw_octet val [SW_TEXT_RECORD_MAX_LEN];
 		sw_ulong val_len;
-		
+
 		while (sw_text_record_iterator_next (it, (char *)key, val, &val_len) == SW_OKAY) {
 			if (strcmp ((char *)key, "Password") == 0) {
 				if (val_len >= 4 && strncmp ((char *)val, "true", 4) == 0) {
@@ -229,7 +229,7 @@ resolve_cb (sw_discovery       discovery,
 				name = g_strdup ((char *)val);
 			}
 		}
-		
+
 		sw_text_record_iterator_fina (it);
 	}
 
@@ -248,7 +248,7 @@ resolve_cb (sw_discovery       discovery,
  done:
 	g_free (host);
 	g_free (name);
-	
+
 	return SW_OKAY;
 }
 
@@ -261,8 +261,8 @@ rb_daap_mdns_browser_resolve (RBDaapMdnsBrowser *browser,
 
        	result = sw_discovery_resolve (*browser->priv->discovery,
 				       0,
-				       name, 
-				       "_daap._tcp", 
+				       name,
+				       "_daap._tcp",
 				       "local",
 				       (sw_discovery_resolve_reply) resolve_cb,
 	       			       (sw_opaque) browser,
@@ -332,12 +332,11 @@ rb_daap_mdns_browser_start (RBDaapMdnsBrowser *browser,
 
        	result = sw_discovery_browse (*browser->priv->discovery,
 				      0,
-				      "_daap._tcp", 
-				      "local", 
-				      (sw_discovery_browse_reply) browse_cb, 
+				      "_daap._tcp",
+				      "local",
+				      (sw_discovery_browse_reply) browse_cb,
 				      (sw_opaque) browser,
 				      (sw_discovery_oid *) browser->priv->oid);
-
 
 	if (result != SW_OKAY) {
 		rb_debug ("Error starting mDNS discovery using Howl");
@@ -460,7 +459,6 @@ resolver_free (sw_discovery_oid  *oid,
 			     *oid);
 	g_free (oid);
 }
-
 
 static void
 rb_daap_mdns_browser_finalize (GObject *object)

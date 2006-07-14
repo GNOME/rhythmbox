@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
- * arch-tag: Interface to audio encoder backend  
+ * arch-tag: Interface to audio encoder backend
  *
  * Copyright (C) 2006 James Livingston <jrl@ids.org.au>
  *
@@ -29,7 +29,6 @@
 
 G_BEGIN_DECLS
 
-
 #define RB_TYPE_ENCODER_GST            (rb_encoder_gst_get_type ())
 #define RB_ENCODER_GST(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_ENCODER, RBEncoderGst))
 #define RB_IS_ENCODER_GST(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_ENCODER))
@@ -49,7 +48,6 @@ typedef struct
 
 RBEncoder*	rb_encoder_gst_new		(void);
 GType rb_encoder_gst_get_type (void);
-
 
 G_END_DECLS
 
