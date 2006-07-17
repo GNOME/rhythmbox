@@ -362,9 +362,9 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GtkWidget *tmp;
-	GtkWidget *label;
 	GladeXML *xml;
 #ifdef ENABLE_TRACK_TRANSFER
+	GtkWidget *label;
 	int i;
 #endif
 
