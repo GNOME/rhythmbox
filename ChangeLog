@@ -1,5 +1,11 @@
 2006-07-17  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell.c: (rb_shell_quit): don't stop DAAP sharing when
+	running with -n, because we don't start it then. Fixes a crash on
+	exit.
+
+2006-07-17  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Przemysław Grzegorczyk  <pgrzegorczyk@gmail.com>
 
 	* data/glade/playlist-save.glade: Make the "playlist save" dialog use

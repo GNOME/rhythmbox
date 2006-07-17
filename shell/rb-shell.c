@@ -2392,7 +2392,8 @@ rb_shell_quit (RBShell *shell,
 
 #ifdef WITH_DAAP_SUPPORT
 	rb_daap_sources_shutdown (shell);
-	rb_daap_sharing_shutdown (shell);
+	if (!shell->priv->no_registration)
+		rb_daap_sharing_shutdown (shell);
 #endif /* WITH_DAAP_SUPPORT */
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
