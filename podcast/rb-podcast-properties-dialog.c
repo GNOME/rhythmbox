@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include <time.h>
@@ -202,7 +202,27 @@ rb_podcast_properties_dialog_finalize (GObject *object)
 
 	g_return_if_fail (dialog->priv != NULL);
 
+	if (dialog->priv->db != NULL) {
+		g_object_unref (dialog->priv->db);
+	}
+
 	G_OBJECT_CLASS (rb_podcast_properties_dialog_parent_class)->finalize (object);
+}
+
+static void
+rb_podcast_properties_dialog_set_entry_view (RBPodcastPropertiesDialog *dialog,
+					     RBEntryView               *view)
+{
+	if (dialog->priv->db != NULL) {
+		g_object_unref (dialog->priv->db);
+	}
+
+	dialog->priv->entry_view = view;
+
+	if (dialog->priv->entry_view != NULL) {
+		g_object_get (dialog->priv->entry_view,
+			      "db", &dialog->priv->db, NULL);
+	}
 }
 
 static void
@@ -215,9 +235,7 @@ rb_podcast_properties_dialog_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_ENTRY_VIEW:
-		dialog->priv->entry_view = g_value_get_object (value);
-		g_object_get (G_OBJECT (dialog->priv->entry_view), "db",
-			      &dialog->priv->db, NULL);
+		rb_podcast_properties_dialog_set_entry_view (dialog, g_value_get_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

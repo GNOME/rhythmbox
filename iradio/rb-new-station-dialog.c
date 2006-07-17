@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include <time.h>
@@ -39,14 +39,6 @@
 static void rb_new_station_dialog_class_init (RBNewStationDialogClass *klass);
 static void rb_new_station_dialog_init (RBNewStationDialog *dialog);
 static void rb_new_station_dialog_finalize (GObject *object);
-static void rb_new_station_dialog_set_property (GObject *object,
-						guint prop_id,
-						const GValue *value,
-						GParamSpec *pspec);
-static void rb_new_station_dialog_get_property (GObject *object,
-						guint prop_id,
-						GValue *value,
-						GParamSpec *pspec);
 static void rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 					       int response_id,
 					       RBNewStationDialog *dialog);
@@ -55,21 +47,12 @@ static void rb_new_station_dialog_text_changed (GtkEditable *buffer,
 
 struct RBNewStationDialogPrivate
 {
-	RBEntryView *entry_view;
-	RhythmDB    *db;
-
 	GtkWidget   *url;
 	GtkWidget   *okbutton;
 	GtkWidget   *cancelbutton;
 };
 
 #define RB_NEW_STATION_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NEW_STATION_DIALOG, RBNewStationDialogPrivate))
-
-enum
-{
-	PROP_0,
-	PROP_ENTRY_VIEW
-};
 
 enum
 {
@@ -86,17 +69,7 @@ rb_new_station_dialog_class_init (RBNewStationDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->set_property = rb_new_station_dialog_set_property;
-	object_class->get_property = rb_new_station_dialog_get_property;
 	object_class->finalize = rb_new_station_dialog_finalize;
-
-	g_object_class_install_property (object_class,
-					 PROP_ENTRY_VIEW,
-					 g_param_spec_object ("entry-view",
-					                      "RBEntryView",
-					                      "RBEntryView object",
-					                      RB_TYPE_ENTRY_VIEW,
-					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_new_station_dialog_signals [LOCATION_ADDED] =
 		g_signal_new ("location-added",
@@ -179,55 +152,12 @@ rb_new_station_dialog_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_new_station_dialog_parent_class)->finalize (object);
 }
 
-static void
-rb_new_station_dialog_set_property (GObject *object,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *pspec)
-{
-	RBNewStationDialog *dialog = RB_NEW_STATION_DIALOG (object);
-
-	switch (prop_id) {
-	case PROP_ENTRY_VIEW:
-		dialog->priv->entry_view = g_value_get_object (value);
-		g_object_get (G_OBJECT (dialog->priv->entry_view), "db",
-			      &dialog->priv->db, NULL);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-rb_new_station_dialog_get_property (GObject *object,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *pspec)
-{
-	RBNewStationDialog *dialog = RB_NEW_STATION_DIALOG (object);
-
-	switch (prop_id) {
-	case PROP_ENTRY_VIEW:
-		g_value_set_object (value, dialog->priv->entry_view);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
 GtkWidget *
 rb_new_station_dialog_new (RBEntryView *view)
 {
 	RBNewStationDialog *dialog;
 
-	g_return_val_if_fail (RB_ENTRY_VIEW (view), NULL);
-
-	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG,
-			       "entry-view", view, NULL);
-
-	g_return_val_if_fail (dialog->priv != NULL, NULL);
+	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, NULL);
 
 	return GTK_WIDGET (dialog);
 }

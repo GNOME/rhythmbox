@@ -40,7 +40,6 @@
 #include "eel-gconf-extensions.h"
 #include "rb-audiocd-source.h"
 #include "rb-util.h"
-#include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 
@@ -162,9 +161,9 @@ rb_audiocd_source_new (RBShell *shell,
 
 	g_assert (rb_audiocd_is_volume_audiocd (volume));
 
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_get (shell, "db", &db, NULL);
 	entry_type =  rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
 
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
 	/* TODO same the metadata somewhere */
@@ -378,6 +377,19 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 	return ok;
 }
 
+static RhythmDB *
+get_db_for_source (RBAudioCdSource *source)
+{
+	RBShell *shell;
+	RhythmDB *db;
+
+  	g_object_get (source, "shell", &shell, NULL);
+  	g_object_get (shell, "db", &db, NULL);
+  	g_object_unref (shell);
+
+        return db;
+}
+
 #ifdef HAVE_MUSICBRAINZ
 static void
 metadata_cb (SjMetadata *metadata,
@@ -387,7 +399,6 @@ metadata_cb (SjMetadata *metadata,
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
 	GList *cd_track = priv->tracks;
-	RBShell *shell;
 	RhythmDB *db;
 	GValue true_value = {0,};
 
@@ -405,9 +416,7 @@ metadata_cb (SjMetadata *metadata,
 		return;
 	}
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
+	db = get_db_for_source (source);
 
 	g_value_init (&true_value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&true_value, TRUE);
@@ -470,7 +479,8 @@ metadata_cb (SjMetadata *metadata,
 
 	g_object_unref (metadata);
 	priv->metadata = NULL;
-	g_object_unref (G_OBJECT (db));
+
+	g_object_unref (db);
 }
 
 static void
@@ -519,17 +529,14 @@ static gpointer
 rb_audiocd_load_songs (RBAudioCdSource *source)
 {
 	RBAudioCdSourcePrivate *priv = AUDIOCD_SOURCE_GET_PRIVATE (source);
-	RBShell *shell;
 	RhythmDB *db;
 	GnomeVFSVolume *volume;
 
-	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
+	g_object_get (source, "volume", &volume, NULL);
 	priv->device_path = gnome_vfs_volume_get_device_path (volume);
-	g_object_unref (G_OBJECT (volume));
+	g_object_unref (volume);
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
+	db = get_db_for_source (source);
 
 	rb_debug ("loading Audio CD from %s", priv->device_path);
 	/* create a cdda gstreamer element, to get cd info from */
@@ -556,8 +563,8 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 		rb_audiocd_load_metadata (source, db);
 
 error_out:
-	g_object_unref (G_OBJECT (db));
-	g_object_unref (G_OBJECT (source));
+	g_object_unref (db);
+	g_object_unref (source);
 
 	return NULL;
 }
@@ -566,20 +573,19 @@ static void
 impl_delete_thyself (RBSource *source)
 {
 	RhythmDB *db;
-	RBShell *shell;
 	RhythmDBEntryType entry_type;
+
 	rb_debug ("audio cd ejected\n");
 
 	/* cancel the loading of metadata */
 	rb_audiocd_load_metadata_cancel (RB_AUDIOCD_SOURCE (source));
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
+	db = get_db_for_source (RB_AUDIOCD_SOURCE (source));
 
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
 	rhythmdb_commit (db);
 	g_object_unref (db);
 }

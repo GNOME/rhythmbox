@@ -20,6 +20,8 @@
  *
  */
 
+#include "config.h"
+
 #include <string.h>
 #define __USE_XOPEN
 #include <time.h>

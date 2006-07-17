@@ -19,10 +19,11 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 #include <string.h>
 #include <stdlib.h>
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 #include "rhythmdb.h"
@@ -425,8 +426,10 @@ rb_query_creator_set_sorting (RBQueryCreator *creator, const char *sort_column, 
 
 GtkWidget *
 rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
-				 RhythmDBQueryModelLimitType limit_type, GValueArray *limit_value,
-				 const char *sort_column, gint sort_direction)
+				 RhythmDBQueryModelLimitType limit_type,
+                                 GValueArray *limit_value,
+				 const char *sort_column,
+                                 gint sort_direction)
 {
 	RBQueryCreator *creator = g_object_new (RB_TYPE_QUERY_CREATOR, "db", db,
 						"creating", FALSE, NULL);
@@ -464,7 +467,8 @@ get_box_widget_at_pos (GtkBox *box, guint pos)
 }
 
 static GtkWidget *
-get_entry_for_property (RBQueryCreator *creator, RhythmDBPropType prop,
+get_entry_for_property (RBQueryCreator *creator,
+                        RhythmDBPropType prop,
 			gboolean *constrain)
 {
 	const RBQueryCreatorPropertyType *property_type;
@@ -689,7 +693,8 @@ append_row (RBQueryCreator *creator)
 
 static int
 get_property_index_from_proptype (const RBQueryCreatorPropertyOption *options,
-			    int length, RhythmDBPropType prop)
+                                  int length,
+                                  RhythmDBPropType prop)
 {
 	int i;
 

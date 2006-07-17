@@ -1883,6 +1883,8 @@ split_query_by_disjunctions (RhythmDBTree *db, GPtrArray *query)
 
 	if (subquery->len > 0)
 		conjunctions = g_list_prepend (conjunctions, subquery);
+	else
+		g_ptr_array_free (subquery, TRUE);
 
 	return conjunctions;
 }

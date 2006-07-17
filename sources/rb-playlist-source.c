@@ -21,7 +21,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <unistd.h>
 #include <string.h>
@@ -32,7 +32,6 @@
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <totem-pl-parser.h>
 
-#include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
@@ -194,17 +193,41 @@ static void
 rb_playlist_source_init (RBPlaylistSource *source)
 {
 	source->priv = RB_PLAYLIST_SOURCE_GET_PRIVATE (source);
+}
+
+static void
+rb_playlist_source_set_db (RBPlaylistSource *source,
+			   RhythmDB         *db)
+{
+	if (source->priv->db != NULL) {
+		g_signal_handlers_disconnect_by_func (source->priv->db,
+						      rb_playlist_source_entry_added_cb,
+						      source);
+		g_object_unref (source->priv->db);
+
+	}
+
+	source->priv->db = db;
+
+	if (source->priv->db != NULL) {
+		g_object_ref (source->priv->db);
+		g_signal_connect_object (G_OBJECT (source->priv->db), "entry_added",
+					 G_CALLBACK (rb_playlist_source_entry_added_cb),
+					 source, 0);
+	}
 
 }
 
 static GObject *
-rb_playlist_source_constructor (GType type, guint n_construct_properties,
+rb_playlist_source_constructor (GType type,
+				guint n_construct_properties,
 				GObjectConstructParam *construct_properties)
 {
 	GObject *shell_player;
 	RBPlaylistSource *source;
 	RBPlaylistSourceClass *klass;
 	RBShell *shell;
+	RhythmDB *db;
 
 	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
 
@@ -214,16 +237,14 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	if (source->priv->entry_type == NULL)
 		source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
 	shell_player = rb_shell_get_player (shell);
-	g_object_unref (G_OBJECT (shell));
+	rb_playlist_source_set_db (source, db);
+	g_object_unref (db);
+	g_object_unref (shell);
 
 	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-
-	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_added",
-				 G_CALLBACK (rb_playlist_source_entry_added_cb),
-				 source, 0);
 
 	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player,
 					 	 NULL, TRUE, TRUE);
@@ -286,6 +307,7 @@ static void
 rb_playlist_source_dispose (GObject *object)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
+
 	if (source->priv->db) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
@@ -490,7 +512,7 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 	rb_debug ("saving playlist");
 	playlist = totem_pl_parser_new ();
 
-	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	g_object_get (source, "name", &name, NULL);
 
 	totem_pl_parser_write_with_title (playlist, GTK_TREE_MODEL (source->priv->model),
 					  playlist_iter_func, uri, name,
@@ -595,6 +617,7 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	name = get_playlist_name_from_xml (node);
 
 	tmp = xmlGetProp (node, RB_PLAYLIST_TYPE);
+
 	if (!xmlStrcmp (tmp, RB_PLAYLIST_AUTOMATIC))
 		source = rb_auto_playlist_source_new_from_xml (shell, node);
 	else if (!xmlStrcmp (tmp, RB_PLAYLIST_STATIC))
@@ -604,16 +627,17 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 
 		g_object_get (shell, "queue-source", &queue, NULL);
 		rb_static_playlist_source_load_from_xml (queue, node);
-		g_object_unref (G_OBJECT (queue));
-		return NULL;
+		g_object_unref (queue);
 	} else {
 		g_warning ("attempting to load playlist '%s' of unknown type '%s'", name, tmp);
 	}
 
-	if (source)
+	if (source != NULL) {
 		g_object_set (G_OBJECT (source), "name", name, NULL);
+	}
 
-	g_free (name);
+	xmlFree (name);
+	xmlFree (tmp);
 
 	return source;
 }
@@ -626,7 +650,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 	RBPlaylistSourceClass *klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
 
 	node = xmlNewChild (parent_node, NULL, RB_PLAYLIST_PLAYLIST, NULL);
-	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	g_object_get (source, "name", &name, NULL);
 	xmlSetProp (node, RB_PLAYLIST_NAME, name);
 	g_free (name);
 

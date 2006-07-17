@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of generic audio player source object
  *
  *  Copyright (C) 2004 James Livingston  <jrl@ids.org.au>
@@ -21,12 +22,13 @@
 
 #define __EXTENSIONS__
 
-#include <config.h>
+#include "config.h"
 
-#include <gtk/gtktreeview.h>
 #include <string.h>
-#include "rhythmdb.h"
-#include <libgnome/gnome-i18n.h>
+
+#include <gtk/gtk.h>
+#include <glib/gi18n.h>
+
 #ifdef HAVE_HAL_0_5
 #include <libhal.h>
 #include <dbus/dbus.h>
@@ -81,7 +83,7 @@ typedef struct
 	/* information derived from gnome-vfs volume */
 	gboolean read_only;
 	gboolean handles_trash;
-	
+
 	/* information derived from HAL */
 	char **audio_folders;
 	gboolean playlist_format_unknown;
@@ -250,7 +252,7 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 #endif
 }
 
-static void 
+static void
 rb_generic_player_source_dispose (GObject *object)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
@@ -259,7 +261,7 @@ rb_generic_player_source_dispose (GObject *object)
 		g_object_unref (G_OBJECT (priv->db));
 		priv->db = NULL;
 	}
-	
+
 	G_OBJECT_CLASS (rb_generic_player_source_parent_class)->dispose (object);
 }
 
@@ -290,11 +292,11 @@ rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
 	g_object_unref (G_OBJECT (db));
 
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
-					  "entry-type", entry_type,
-					  "volume", volume,
-					  "shell", shell,
-					  "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
-					  NULL));
+							 "entry-type", entry_type,
+							 "volume", volume,
+							 "shell", shell,
+							 "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
+							 NULL));
 
 	rb_generic_player_source_get_device_info (source);
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
@@ -473,19 +475,20 @@ handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri,
 			  const char *genre, HandlePlaylistEntryData *data)
 {
 	char *local_uri;
-	const char *name;
+	char *name;
 
 	local_uri = rb_generic_player_source_transform_playlist_uri (data->player_source, uri);
 	if (local_uri == NULL)
 		return;
-	
+
 	g_object_get (G_OBJECT (data->source), "name", &name, NULL);
 	rb_debug ("adding '%s' as '%s' to playlist '%s'", uri, local_uri, name);
 	rb_static_playlist_source_add_location (data->source, local_uri, -1);
 	g_free (local_uri);
+	g_free (name);
 }
 
-static void 
+static void
 load_playlist_file (RBGenericPlayerSource *source,
 		    const char *playlist_path,
 		    const char *rel_path)
@@ -713,4 +716,3 @@ free_dbus_error (const char *what, DBusError *error)
 
 
 #endif
-

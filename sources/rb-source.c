@@ -455,11 +455,11 @@ rb_source_get_property (GObject *object,
 	case PROP_UI_MANAGER:
 	{
 		GtkUIManager *manager;
-		g_object_get (G_OBJECT (priv->shell),
+		g_object_get (priv->shell,
 			      "ui-manager", &manager,
 			      NULL);
 		g_value_set_object (value, manager);
-		g_object_unref (G_OBJECT(manager));
+		g_object_unref (manager);
 		break;
 	}
 	case PROP_QUERY_MODEL:
@@ -763,6 +763,7 @@ default_add_to_queue (RBSource *source, RBSource *queue)
 						     (RhythmDBEntry *)iter->data, -1);
 	}
 
+	g_list_foreach (selection, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (selection);
 }
 
@@ -789,16 +790,19 @@ default_move_to_trash (RBSource *source)
 	RhythmDB *db;
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
 
-	g_object_get (G_OBJECT (priv->shell), "db", &db, NULL);
+	g_object_get (priv->shell, "db", &db, NULL);
 
 	entry_view = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (entry_view);
+
 	for (tem = sel; tem != NULL; tem = tem->next) {
 		rhythmdb_entry_move_to_trash (db, (RhythmDBEntry *)tem->data);
 		rhythmdb_commit (db);
 	}
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
 }
 
 void
@@ -897,10 +901,10 @@ _rb_source_show_popup (RBSource *source, const char *ui_path)
 {
 	GtkUIManager *uimanager;
 
-	g_object_get (G_OBJECT (RB_SOURCE_GET_PRIVATE (source)->shell),
+	g_object_get (RB_SOURCE_GET_PRIVATE (source)->shell,
 		      "ui-manager", &uimanager, NULL);
 	rb_gtk_action_popup_menu (uimanager, ui_path);
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (uimanager);
 
 }
 
@@ -1038,12 +1042,14 @@ rb_source_gather_selected_properties (RBSource *source,
 
 	selected_set = g_hash_table_new (g_str_hash, g_str_equal);
 	selected = rb_entry_view_get_selected_entries (rb_source_get_entry_view (RB_SOURCE (source)));
+
 	for (tem = selected; tem; tem = tem->next) {
 		RhythmDBEntry *entry = tem->data;
 		char *val = g_strdup (rhythmdb_entry_get_string (entry, prop));
 		g_hash_table_insert (selected_set, val, NULL);
 	}
 
+	g_list_foreach (selected, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (selected);
 
 	tem = NULL;
@@ -1065,17 +1071,21 @@ _rb_source_register_action_group (RBSource *source,
 	GList *i;
 	GtkActionGroup *group;
 
-	g_object_get (G_OBJECT (source), "ui-manager", &uimanager, NULL);
+	g_return_val_if_fail (group_name != NULL, NULL);
+
+	g_object_get (source, "ui-manager", &uimanager, NULL);
 	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
 
 	/* Don't create the action group if it's already registered */
 	for (i = actiongroups; i != NULL; i = i->next) {
-		const gchar *name;
+		const char *name;
 
 		name = gtk_action_group_get_name (GTK_ACTION_GROUP (i->data));
-		if (strcmp (name, group_name) == 0) {
-			g_object_unref (G_OBJECT (uimanager));
-			return GTK_ACTION_GROUP (i->data);
+		if (name != NULL && strcmp (name, group_name) == 0) {
+			group = GTK_ACTION_GROUP (i->data);
+			/* Add a reference */
+			g_object_ref (group);
+			goto out;
 		}
 	}
 
@@ -1086,7 +1096,9 @@ _rb_source_register_action_group (RBSource *source,
 				      actions, num_actions,
 				      user_data);
 	gtk_ui_manager_insert_action_group (uimanager, group, 0);
-	g_object_unref (G_OBJECT (uimanager));
+
+ out:
+	g_object_unref (uimanager);
 
 	return group;
 }

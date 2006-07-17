@@ -270,7 +270,7 @@ init_rb_tree_dnd_data (GtkWidget *widget)
 	{
 		priv_data = g_new0 (RbTreeDndData, 1);
 		priv_data->pending_event = FALSE;
-		g_object_set_data (G_OBJECT (widget), RB_TREE_DND_STRING, priv_data);
+		g_object_set_data_full (G_OBJECT (widget), RB_TREE_DND_STRING, priv_data, g_free);
 		priv_data->drag_motion_handler = 0;
 		priv_data->drag_leave_handler = 0;
 		priv_data->button_press_event_handler = 0;

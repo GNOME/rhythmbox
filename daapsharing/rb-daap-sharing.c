@@ -69,7 +69,9 @@ create_share (RBShell *shell)
 		eel_gconf_set_string (CONF_DAAP_SHARE_NAME, name);
 	}
 
-	g_object_get (G_OBJECT (shell), "db", &db, "playlist-manager", &playlist_manager, NULL);
+	g_object_get (shell,
+		      "db", &db,
+		      "playlist-manager", &playlist_manager, NULL);
 
 	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
 	if (require_password) {
@@ -79,6 +81,9 @@ create_share (RBShell *shell)
 	}
 
 	share = rb_daap_share_new (name, password, db, playlist_manager);
+
+	g_object_unref (db);
+	g_object_unref (playlist_manager);
 
 	g_free (name);
 	g_free (password);

@@ -23,7 +23,8 @@
  * you from trying to play them.
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
@@ -317,6 +318,8 @@ impl_delete (RBSource *asource)
 		rhythmdb_entry_delete (source->priv->db, tem->data);
 		rhythmdb_commit (source->priv->db);
 	}
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }
 
@@ -333,7 +336,7 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 	RhythmDBQueryModel *model;
 	gint count;
 
-	g_object_get (G_OBJECT (asource), "query-model", &model, NULL);
+	g_object_get (asource, "query-model", &model, NULL);
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (model);
 

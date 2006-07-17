@@ -263,8 +263,8 @@ rb_library_source_constructor (GType type,
 	source = RB_LIBRARY_SOURCE (G_OBJECT_CLASS (rb_library_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &source->priv->db, NULL);
 
 	rb_library_source_ui_prefs_sync (source);
 
@@ -284,7 +284,7 @@ rb_library_source_constructor (GType type,
 
 	g_idle_add ((GSourceFunc)add_child_sources_idle, source);
 
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	return G_OBJECT (source);
 }
@@ -301,7 +301,6 @@ rb_library_source_new (RBShell *shell)
 					 "stock_music-library",
 					 size,
 					 0, NULL);
-
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
@@ -309,6 +308,10 @@ rb_library_source_new (RBShell *shell)
 					  "shell", shell,
 					  "icon", icon,
 					  NULL));
+	if (icon != NULL) {
+		g_object_unref (icon);
+	}
+
 	rb_shell_register_entry_type_for_source (shell, source,
 						 RHYTHMDB_ENTRY_TYPE_SONG);
 
@@ -1164,9 +1167,9 @@ impl_paste (RBSource *asource, GList *entries)
 		return;
 	}
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "removable-media-manager", &rm_mgr, NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "removable-media-manager", &rm_mgr, NULL);
+	g_object_unref (shell);
 
 	for (l = entries; l != NULL; l = g_list_next (l)) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
@@ -1195,7 +1198,7 @@ impl_paste (RBSource *asource, GList *entries)
 							  (RBTranferCompleteCallback)completed_cb, source);
 	}
 
-	g_object_unref (G_OBJECT (rm_mgr));
+	g_object_unref (rm_mgr);
 }
 #endif
 
@@ -1209,7 +1212,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	char *name;
 	GdkPixbuf *icon;
 
-	g_object_get (G_OBJECT (library_source), "shell", &shell, NULL);
+	g_object_get (library_source, "shell", &shell, NULL);
 	uri = gnome_vfs_uri_new (path);
 	name = gnome_vfs_uri_extract_short_name (uri);
 	gnome_vfs_uri_unref (uri);
@@ -1224,8 +1227,11 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 					   NULL, 0);
 	rhythmdb_query_free (query);
 
-	g_object_get (G_OBJECT (library_source), "icon", &icon, NULL);
-	g_object_set (G_OBJECT (source), "icon", icon, NULL);
+	g_object_get (library_source, "icon", &icon, NULL);
+	g_object_set (source, "icon", icon, NULL);
+	if (icon != NULL) {
+		g_object_unref (icon);
+	}
 
 	rb_shell_append_source (shell, source, RB_SOURCE (library_source));
 	library_source->priv->child_sources = g_list_prepend (library_source->priv->child_sources, source);

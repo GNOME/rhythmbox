@@ -109,10 +109,11 @@ typedef struct
 	RhythmDBPropType search_prop;
 } RBStaticPlaylistSourcePrivate;
 
+static gpointer playlist_pixbuf = NULL;
+
 static void
 rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 {
-	gint size;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
@@ -138,21 +139,29 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	klass->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						  GNOME_MEDIA_PLAYLIST,
-						  size,
-						  0, NULL);
-
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
 
 static void
 rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 {
-	RBStaticPlaylistSourceClass *klass = RB_STATIC_PLAYLIST_SOURCE_GET_CLASS (source);
+	if (playlist_pixbuf == NULL) {
+		gint size;
+		gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+		playlist_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+							    GNOME_MEDIA_PLAYLIST,
+							    size,
+							    0, NULL);
+		g_object_add_weak_pointer (playlist_pixbuf,
+					   (gpointer *) &playlist_pixbuf);
 
-	rb_source_set_pixbuf (RB_SOURCE (source), klass->pixbuf);
+		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+
+		/* drop the initial reference to the icon */
+		g_object_unref (playlist_pixbuf);
+	} else {
+		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+	}
 }
 
 static void
@@ -177,6 +186,10 @@ rb_static_playlist_source_finalize (GObject *object)
 
 	g_free (priv->search_text);
 
+	if (priv->action_group != NULL) {
+		g_object_unref (priv->action_group);
+	}
+
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->finalize (object);
 }
 
@@ -199,7 +212,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	priv->paned = gtk_vpaned_new ();
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (source, "shell", &shell, NULL);
 	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 							       "StaticPlaylistActions",
 							       NULL, 0,
@@ -211,9 +224,10 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 					    (GCallback)search_action_changed,
 					    shell);
 	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	g_object_unref (G_OBJECT (shell));
 
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_unref (shell);
+
+	g_object_get (source, "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),
 						entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
@@ -330,6 +344,7 @@ impl_delete (RBSource *asource)
 	for (tem = sel; tem != NULL; tem = tem->next) {
 		rb_static_playlist_source_remove_entry (source, (RhythmDBEntry *) tem->data);
 	}
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }
 
@@ -454,10 +469,10 @@ rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 	RhythmDBQueryModel *query_model;
 
-	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
+	g_object_get (browser, "output-model", &query_model, NULL);
 	rb_entry_view_set_model (songs, query_model);
 	rb_playlist_source_set_query_model (RB_PLAYLIST_SOURCE (source), query_model);
-	g_object_unref (G_OBJECT (query_model));
+	g_object_unref (query_model);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
@@ -560,7 +575,7 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 		RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 		RhythmDBEntryType entry_type;
 
-		g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+		g_object_get (source, "entry-type", &entry_type, NULL);
 		if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID &&
 		    rhythmdb_entry_get_entry_type (entry) != entry_type) {
 			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
@@ -747,7 +762,7 @@ search_action_changed (GtkRadioAction  *action,
 	RBStaticPlaylistSourcePrivate *priv;
 	gboolean active;
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+	g_object_get (shell, "selected-source", &source, NULL);
 	priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
@@ -757,5 +772,9 @@ search_action_changed (GtkRadioAction  *action,
 		priv->search_prop = search_action_to_prop (GTK_ACTION (current));
 		rb_static_playlist_source_do_query (source);
 		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+
+	if (source != NULL) {
+		g_object_unref (source);
 	}
 }

@@ -499,23 +499,32 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 		} else if (!xmlStrcmp (child->name, RB_PARSE_SUFFIX)) {
 			data->type = RHYTHMDB_QUERY_PROP_SUFFIX;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_EQUALS)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP),
-				       (xmlChar *)"date"))
+			xmlChar* prop;
+
+			prop = xmlGetProp(child, RB_PARSE_PROP);
+			if (!xmlStrcmp(prop, (xmlChar *)"date"))
 				data->type = RHYTHMDB_QUERY_PROP_YEAR_EQUALS;
 			else
 				data->type = RHYTHMDB_QUERY_PROP_EQUALS;
+			xmlFree (prop);
 		} else if (!xmlStrcmp (child->name, RB_PARSE_GREATER)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP),
-				       (xmlChar *)"date"))
+			xmlChar* prop;
+
+			prop = xmlGetProp(child, RB_PARSE_PROP);
+			if (!xmlStrcmp(prop, (xmlChar *)"date"))
 				data->type = RHYTHMDB_QUERY_PROP_YEAR_GREATER;
 			else
 				data->type = RHYTHMDB_QUERY_PROP_GREATER;
+			xmlFree (prop);
 		} else if (!xmlStrcmp (child->name, RB_PARSE_LESS)) {
-			if (!xmlStrcmp(xmlGetProp(child, RB_PARSE_PROP),
-				       (xmlChar *)"date"))
+			xmlChar* prop;
+
+			prop = xmlGetProp(child, RB_PARSE_PROP);
+			if (!xmlStrcmp(prop, (xmlChar *)"date"))
 				data->type = RHYTHMDB_QUERY_PROP_YEAR_LESS;
 			else
 				data->type = RHYTHMDB_QUERY_PROP_LESS;
+			xmlFree (prop);
 		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_WITHIN)) {
 			data->type = RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN;
 		} else if (!xmlStrcmp (child->name, RB_PARSE_CURRENT_TIME_NOT_WITHIN)) {

@@ -206,7 +206,7 @@ rb_library_browser_finalize (GObject *object)
 
 	eel_gconf_notification_remove (priv->browser_view_notify_id);
 
-	g_object_unref (G_OBJECT (priv->db));
+	g_object_unref (priv->db);
 
 	g_hash_table_destroy (priv->property_views);
 	g_hash_table_destroy (priv->selections);
@@ -222,16 +222,16 @@ rb_library_browser_set_property (GObject *object,
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
-		if (priv->db) {
-			g_object_unref (G_OBJECT (priv->db));
+		if (priv->db != NULL) {
+			g_object_unref (priv->db);
 		}
 		priv->db = g_value_get_object (value);
 
-		if (priv->db)
+		if (priv->db != NULL) {
 			g_object_ref (priv->db);
+		}
 		break;
 	case PROP_ENTRY_TYPE:
 		priv->entry_type = g_value_get_boxed (value);
@@ -250,8 +250,7 @@ rb_library_browser_get_property (GObject *object,
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, priv->db);
 		break;
@@ -382,7 +381,7 @@ construct_query_cb (RhythmDBPropType type, GList *selections, ConstructQueryData
 					     selections);
 }
 
-RhythmDBQuery*
+RhythmDBQuery *
 rb_library_browser_construct_query (RBLibraryBrowser *widget)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);

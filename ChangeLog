@@ -1,3 +1,182 @@
+2006-07-17  William Jon McCann  <mccann@jhu.edu>
+
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_set_property):
+	* daapsharing/rb-daap-share.c: (rb_daap_share_set_db),
+	(rb_daap_share_set_playlist_manager), (rb_daap_share_set_property),
+	(add_playlist_to_mlcl), (databases_cb):
+	* daapsharing/rb-daap-sharing.c: (create_share):
+	* iradio/rb-new-station-dialog.c:
+	(rb_new_station_dialog_class_init), (rb_new_station_dialog_new):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_finalize),
+	(rb_station_properties_dialog_set_property),
+	(rb_station_properties_dialog_get_current_entry):
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb):
+	* lib/rb-tree-dnd.c: (init_rb_tree_dnd_data):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_dispose), (rb_generic_player_source_new),
+	(handle_playlist_entry_cb):
+	* plugins/generic-player/rb-nokia770-source.c:
+	(rb_nokia770_source_new), (hal_udi_is_nokia770):
+	* plugins/generic-player/rb-psp-source.c: (impl_get_mount_path),
+	(visit_playlist_dirs), (hal_udi_is_psp):
+	* podcast/rb-podcast-manager.c:
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_finalize),
+	(rb_podcast_properties_dialog_set_entry_view),
+	(rb_podcast_properties_dialog_set_property):
+	* rhythmdb/rhythmdb-property-model.c:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_reapply_query_cb):
+	* rhythmdb/rhythmdb-query.c: (rhythmdb_query_deserialize):
+	* rhythmdb/rhythmdb-tree.c: (split_query_by_disjunctions):
+	* rhythmdb/rhythmdb.c: (rhythmdb_action_free),
+	(rhythmdb_event_free), (rhythmdb_shutdown),
+	(rhythmdb_thread_create), (action_thread_main),
+	(rhythmdb_do_full_query_async_parsed),
+	(rhythmdb_do_full_query_internal):
+	* shell/main.c: (main):
+	* shell/rb-play-order-random.c: (rb_random_play_order_go_next):
+	* shell/rb-play-order.c: (rb_play_order_finalize),
+	(rb_play_order_set_player),
+	(rb_play_order_set_playing_entry_internal),
+	(rb_play_order_set_property),
+	(rb_play_order_playing_source_changed),
+	(rb_play_order_query_model_changed):
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_finalize),
+	(rb_playlist_manager_set_source),
+	(rb_playlist_manager_set_shell_internal),
+	(rb_playlist_manager_set_property):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_set_property),
+	(rb_removable_media_manager_set_uimanager),
+	(rb_removable_media_manager_cmd_eject_medium),
+	(rb_removable_media_manager_cmd_copy_tracks):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_finalize),
+	(rb_shell_clipboard_new), (rb_shell_clipboard_sync),
+	(rb_shell_clipboard_set),
+	(rb_shell_clipboard_cmd_add_to_playlist_new),
+	(rb_shell_clipboard_playlist_add_cb),
+	(rb_shell_clipboard_playlist_renamed_cb),
+	(rb_shell_clipboard_playlist_visible_cb), (add_playlist_to_menu),
+	(rebuild_playlist_menu):
+	* shell/rb-shell-player.c: (rb_shell_player_set_source_internal),
+	(rb_shell_player_set_queue_source_internal),
+	(rb_shell_player_finalize), (rb_shell_player_set_play_order),
+	(rb_shell_player_entry_activated_cb),
+	(rb_shell_player_property_row_activated_cb),
+	(_idle_unblock_signal_cb), (rb_shell_player_playing_changed_cb):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_new):
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property),
+	(rb_shell_finalize), (construct_widgets),
+	(rb_shell_playing_from_queue_cb),
+	(rb_shell_player_stream_song_changed_cb),
+	(rb_shell_player_volume_changed_cb):
+	* shell/rb-statusbar.c: (rb_statusbar_new):
+	* shell/rb-tray-icon.c: (rb_tray_icon_finalize),
+	(rb_tray_icon_sync_action), (rb_tray_icon_set_property):
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_init), (rb_auto_playlist_source_finalize),
+	(rb_auto_playlist_source_constructor), (impl_receive_drag),
+	(rb_auto_playlist_source_do_query),
+	(rb_auto_playlist_source_set_query),
+	(rb_auto_playlist_source_browser_changed_cb),
+	(search_action_changed):
+	* sources/rb-auto-playlist-source.h:
+	* sources/rb-browser-source.c: (rb_browser_source_finalize),
+	(search_action_changed), (rb_browser_source_constructor),
+	(rb_browser_source_cmd_choose_artist), (impl_delete),
+	(rb_browser_source_browser_changed_cb),
+	(rb_browser_source_do_query):
+	* sources/rb-daap-source.c: (rb_daap_source_dispose),
+	(rb_daap_source_finalize), (rb_daap_source_class_init),
+	(rb_daap_get_icon), (rb_daap_source_new), (destroy_pixbufs),
+	(rb_daap_sources_init), (rb_daap_sources_shutdown),
+	(rb_daap_source_connection_cb), (rb_daap_source_activate),
+	(rb_daap_source_cmd_disconnect), (rb_daap_source_disconnect),
+	(rb_daap_source_get_headers):
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_constructor),
+	(rb_import_errors_source_new), (impl_delete), (impl_get_status):
+	* sources/rb-ipod-source.c: (rb_ipod_source_name_changed_cb),
+	(rb_ipod_source_new), (add_rb_playlist), (add_ipod_song_to_db),
+	(get_db_for_source), (load_ipod_db_idle_cb), (rb_ipod_load_songs),
+	(hal_udi_is_ipod), (impl_move_to_trash), (completed_cb),
+	(impl_paste), (impl_receive_drag):
+	* sources/rb-iradio-source.c: (rb_iradio_source_finalize),
+	(rb_iradio_source_constructor), (impl_get_status), (impl_delete),
+	(impl_song_properties):
+	* sources/rb-library-source.c: (rb_library_source_constructor),
+	(rb_library_source_new), (impl_paste),
+	(rb_library_source_add_child_source):
+	* sources/rb-missing-files-source.c: (impl_delete),
+	(impl_get_status):
+	* sources/rb-play-queue-source.c: (rb_play_queue_source_finalize),
+	(rb_play_queue_source_class_init),
+	(rb_play_queue_source_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_init),
+	(rb_playlist_source_set_db), (rb_playlist_source_constructor),
+	(rb_playlist_source_dispose), (rb_playlist_source_save_playlist),
+	(rb_playlist_source_new_from_xml),
+	(rb_playlist_source_save_to_xml):
+	* sources/rb-podcast-source.c: (rb_podcast_source_init),
+	(rb_podcast_source_dispose), (rb_podcast_source_finalize),
+	(search_action_changed), (rb_podcast_source_constructor),
+	(impl_delete), (rb_podcast_source_songs_show_popup_cb),
+	(construct_query_from_selection),
+	(rb_podcast_source_cmd_download_post),
+	(rb_podcast_source_cmd_cancel_download),
+	(rb_podcast_source_cmd_delete_feed),
+	(rb_podcast_source_start_download_cb),
+	(rb_podcast_source_finish_download_cb),
+	(rb_podcast_source_feed_updates_avaliable_cb),
+	(rb_podcast_source_get_shell), (impl_can_add_to_queue),
+	(impl_add_to_queue), (rb_podcast_source_cmd_new_podcast),
+	(impl_get_status):
+	* sources/rb-removable-media-source.c: (impl_delete_thyself):
+	* sources/rb-source.c: (rb_source_get_property),
+	(default_add_to_queue), (default_move_to_trash),
+	(_rb_source_show_popup), (rb_source_gather_selected_properties),
+	(_rb_source_register_action_group):
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_new),
+	(rb_sourcelist_model_is_row_visible),
+	(rb_sourcelist_model_drag_data_received), (path_is_reorderable),
+	(rb_sourcelist_model_row_draggable),
+	(rb_sourcelist_model_drag_data_get):
+	* sources/rb-sourcelist.c: (rb_sourcelist_finalize),
+	(icon_notify_cb), (rb_sourcelist_append), (set_source_playing),
+	(rb_sourcelist_remove), (button_press_cb), (name_notify_cb),
+	(visibility_notify_cb):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_class_init),
+	(rb_static_playlist_source_init),
+	(rb_static_playlist_source_finalize),
+	(rb_static_playlist_source_constructor), (impl_delete),
+	(rb_static_playlist_source_browser_changed_cb),
+	(rb_static_playlist_source_add_location_internal),
+	(search_action_changed):
+	* sources/rb-static-playlist-source.h:
+	* widgets/rb-druid.c:
+	* widgets/rb-entry-view.c:
+	(rb_entry_view_set_shell_player_internal),
+	(rb_entry_view_set_model_internal), (rb_entry_view_set_property),
+	(rb_entry_view_get_property), (rb_entry_view_new),
+	(rb_entry_view_button_press_cb):
+	* widgets/rb-library-browser.c: (rb_library_browser_finalize),
+	(rb_library_browser_set_property),
+	(rb_library_browser_get_property):
+	* widgets/rb-query-creator.c: (rb_query_creator_new_from_query),
+	(get_entry_for_property), (get_property_index_from_proptype):
+	* widgets/rb-song-info.c: (rb_song_info_constructor),
+	(rb_song_info_finalize), (rb_song_info_set_source_internal),
+	(rb_song_info_set_property), (rb_song_info_get_property):
+
+	More leak and reference counting fixes.  From bug #347446.
+
 2006-07-17  James Livingston  <doclivingston@gmail.com>
 
 	* sources/rb-auto-playlist-source.c:

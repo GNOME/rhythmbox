@@ -21,7 +21,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -423,7 +423,8 @@ rb_statusbar_sync_status (RBStatusbar *status)
 }
 
 RBStatusbar *
-rb_statusbar_new (RhythmDB *db, GtkActionGroup *actions)
+rb_statusbar_new (RhythmDB *db,
+                  GtkActionGroup *actions)
 {
         RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
                                                "db", db,

@@ -119,10 +119,10 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	source = RB_IMPORT_ERRORS_SOURCE (G_OBJECT_CLASS (rb_import_errors_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	/* construct real query */
 	query = rhythmdb_query_parse (source->priv->db,
@@ -184,7 +184,7 @@ rb_import_errors_source_new (RBShell *shell,
 	RBSource *source;
 	RhythmDBEntryType entry_type;
 
-	g_object_get (G_OBJECT (library), "entry-type", &entry_type, NULL);
+	g_object_get (library, "entry-type", &entry_type, NULL);
 	source = RB_SOURCE (g_object_new (RB_TYPE_IMPORT_ERRORS_SOURCE,
 					  "name", _("Import Errors"),
 					  "shell", shell,
@@ -206,6 +206,8 @@ impl_delete (RBSource *asource)
 		rhythmdb_entry_delete (source->priv->db, tem->data);
 		rhythmdb_commit (source->priv->db);
 	}
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }
 
@@ -215,7 +217,7 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 	RhythmDBQueryModel *model;
 	gint count;
 
-	g_object_get (G_OBJECT (asource), "query-model", &model, NULL);
+	g_object_get (asource, "query-model", &model, NULL);
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (model);
 

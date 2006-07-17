@@ -311,10 +311,11 @@ rb_removable_media_manager_set_property (GObject *object,
 		GtkUIManager *uimanager;
 
 		priv->shell = g_value_get_object (value);
-		g_object_get (G_OBJECT (priv->shell),
+		g_object_get (priv->shell,
 			      "ui-manager", &uimanager,
 			      NULL);
 		rb_removable_media_manager_set_uimanager (RB_REMOVABLE_MEDIA_MANAGER (object), uimanager);
+		g_object_unref (uimanager);
 		break;
 	}
 	case PROP_SOURCELIST:
@@ -736,6 +737,10 @@ rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
 
 	priv->uimanager = uimanager;
 
+	if (priv->uimanager != NULL) {
+		g_object_ref (priv->uimanager);
+	}
+
 	if (priv->actiongroup == NULL) {
 		priv->actiongroup = gtk_action_group_new ("RemovableMediaActions");
 		gtk_action_group_set_translation_domain (priv->actiongroup,
@@ -779,7 +784,7 @@ rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMedia
 	RBRemovableMediaSource *source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
 	GnomeVFSVolume *volume;
 
-	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
+	g_object_get (source, "volume", &volume, NULL);
 	rb_removable_media_manager_unmount_volume (mgr, volume);
 	gnome_vfs_volume_eject (volume, (GnomeVFSVolumeOpCallback)rb_removable_media_manager_eject_medium_cb, mgr);
 	gnome_vfs_volume_unref (volume);
@@ -1027,14 +1032,14 @@ rb_removable_media_manager_cmd_copy_tracks (GtkAction *action, RBRemovableMediaM
 	GList *list = NULL;
 
 	source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
-	g_object_get (G_OBJECT (source), "query-model", &model, NULL);
-	g_object_get (G_OBJECT (priv->shell), "library-source", &library, NULL);
+	g_object_get (source, "query-model", &model, NULL);
+	g_object_get (priv->shell, "library-source", &library, NULL);
 
 	gtk_tree_model_foreach (GTK_TREE_MODEL (model), (GtkTreeModelForeachFunc)copy_entry, &list);
 	rb_source_paste (RB_SOURCE (library), list);
 	g_list_free (list);
 
-	g_object_unref (G_OBJECT (model));
-	g_object_unref (G_OBJECT (library));
+	g_object_unref (model);
+	g_object_unref (library);
 #endif
 }

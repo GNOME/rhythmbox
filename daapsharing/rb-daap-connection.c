@@ -1763,6 +1763,9 @@ rb_daap_connection_set_property (GObject *object,
 		priv->name = g_value_dup_string (value);
 		break;
 	case PROP_DB:
+		if (priv->db != NULL) {
+			g_object_unref (priv->db);
+		}
 		priv->db = RHYTHMDB (g_value_dup_object (value));
 		break;
 	case PROP_PASSWORD_PROTECTED:

@@ -20,7 +20,8 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -438,6 +439,8 @@ rhythmdb_query_model_set_property (GObject *object,
 		break;
 	case PROP_QUERY:
 		rhythmdb_query_free (model->priv->query);
+		rhythmdb_query_free (model->priv->original_query);
+
 		model->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
 		model->priv->original_query = rhythmdb_query_copy (model->priv->query);
 		rhythmdb_query_preprocess (model->priv->db, model->priv->query);
@@ -2583,6 +2586,6 @@ rhythmdb_query_model_reapply_query_cb (RhythmDBQueryModel *model)
 	rhythmdb_query_model_reapply_query (model, FALSE);
 	rhythmdb_do_full_query_async_parsed (model->priv->db,
 					     RHYTHMDB_QUERY_RESULTS (model),
-					     model->priv->original_query);
+					     model->priv->query);
 	return TRUE;
 }

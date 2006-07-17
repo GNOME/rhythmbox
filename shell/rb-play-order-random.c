@@ -30,6 +30,8 @@
  * will not see any changes to their history of played songs.
  */
 
+#include "config.h"
+
 #include <string.h>
 
 #include "rb-play-order-random-by-age.h"
@@ -361,7 +363,7 @@ rb_random_play_order_go_next (RBPlayOrder* porder)
 
 	rb_random_play_order_get_next (porder);
 
-	g_object_get (G_OBJECT (rorder), "playing-entry", &entry, NULL);
+	g_object_get (rorder, "playing-entry", &entry, NULL);
 	g_assert (entry == NULL || rb_history_current (history) == NULL || entry == rb_history_current (history));
 	if (rb_history_current (history) == NULL)
 		rb_history_go_first (history);

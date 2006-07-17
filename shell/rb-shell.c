@@ -542,7 +542,7 @@ rb_shell_class_init (RBShellClass *klass)
 							      "RhythmDB",
 							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
-							       G_PARAM_READABLE));
+							      G_PARAM_READABLE));
 
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
@@ -550,7 +550,7 @@ rb_shell_class_init (RBShellClass *klass)
 							      "GtkUIManager",
 							      "GtkUIManager object",
 							      GTK_TYPE_UI_MANAGER,
-							       G_PARAM_READABLE));
+							      G_PARAM_READABLE));
 
 	g_object_class_install_property (object_class,
 					 PROP_CLIPBOARD,
@@ -775,8 +775,9 @@ rb_shell_get_property (GObject *object,
 		{
 			GtkTreeModel *model = NULL;
 
-			g_object_get (G_OBJECT (shell->priv->sourcelist), "model", &model, NULL);
+			g_object_get (shell->priv->sourcelist, "model", &model, NULL);
  			g_value_set_object (value, model);
+			g_object_unref (model);
 		}
  		break;
 	case PROP_VISIBILITY:
@@ -890,12 +891,6 @@ rb_shell_finalize (GObject *object)
 	rb_debug ("unreffing clipboard shell");
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 
-	rb_debug ("shutting down DB");
-	rhythmdb_shutdown (shell->priv->db);
-
-	rb_debug ("unreffing DB");
-	g_object_unref (G_OBJECT (shell->priv->db));
-
 	rb_debug ("destroying prefs");
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
@@ -912,6 +907,12 @@ rb_shell_finalize (GObject *object)
 	shell->priv->sources = NULL;
 
 	g_hash_table_destroy (shell->priv->sources_hash);
+
+	rb_debug ("shutting down DB");
+	rhythmdb_shutdown (shell->priv->db);
+
+	rb_debug ("unreffing DB");
+	g_object_unref (G_OBJECT (shell->priv->db));
 
         ((GObjectClass*)rb_shell_parent_class)->finalize (G_OBJECT (shell));
 
@@ -1066,7 +1067,7 @@ construct_widgets (RBShell *shell)
 	g_object_set (G_OBJECT(shell->priv->player_shell), "queue-source", shell->priv->queue_source, NULL);
 	g_object_set (G_OBJECT(shell->priv->clipboard_shell), "queue-source", shell->priv->queue_source, NULL);
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->queue_source), NULL);
-	g_object_get (G_OBJECT (shell->priv->queue_source), "sidebar", &shell->priv->queue_sidebar, NULL);
+	g_object_get (shell->priv->queue_source, "sidebar", &shell->priv->queue_sidebar, NULL);
 	gtk_widget_show_all (shell->priv->queue_sidebar);
 	gtk_widget_set_no_show_all (shell->priv->queue_sidebar, TRUE);
 
@@ -1818,7 +1819,8 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 				RBShell *shell)
 {
 	gboolean from_queue;
-	g_object_get (G_OBJECT (player), "playing-from-queue", &from_queue, NULL);
+
+	g_object_get (player, "playing-from-queue", &from_queue, NULL);
 	if (!shell->priv->queue_as_sidebar) {
 		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
 						  rb_shell_player_get_playing_source (shell->priv->player_shell));
@@ -1969,7 +1971,8 @@ rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
 					RBShell *shell)
 {
 	char *song;
-	g_object_get (G_OBJECT (player), "stream-song", &song, NULL);
+
+	g_object_get (player, "stream-song", &song, NULL);
 	if (song) {
 		rb_shell_hidden_notify (shell, 4000, song, NULL, NULL);
 		g_free (song);
@@ -3289,7 +3292,8 @@ rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 				   RBShell *shell)
 {
 	float volume;
-	g_object_get (G_OBJECT (player), "volume", &volume, NULL);
+
+	g_object_get (player, "volume", &volume, NULL);
 	shell->priv->syncing_volume = TRUE;
 	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (shell->priv->volume_button),
 				       volume);

@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include <stdio.h>      /* rename() */
@@ -265,6 +265,10 @@ rb_playlist_manager_finalize (GObject *object)
 
 	g_return_if_fail (mgr->priv != NULL);
 
+	if (mgr->priv->db != NULL) {
+		g_object_unref (mgr->priv->db);
+	}
+
 	g_mutex_free (mgr->priv->saving_mutex);
 
 	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->finalize (object);
@@ -318,7 +322,7 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	mgr->priv->selected_source = source;
 	playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
 	if (playlist_active) {
-		g_object_get (G_OBJECT (mgr->priv->selected_source), "is-local", &playlist_local, NULL);
+		g_object_get (mgr->priv->selected_source, "is-local", &playlist_local, NULL);
 	}
 
 	can_save = playlist_local && !party_mode;
@@ -345,6 +349,30 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 }
 
 static void
+rb_playlist_manager_set_shell_internal (RBPlaylistManager *mgr,
+					RBShell           *shell)
+{
+	GtkUIManager *uimanager = NULL;
+	RhythmDB     *db = NULL;
+
+	if (mgr->priv->db != NULL) {
+		g_object_unref (mgr->priv->db);
+	}
+
+	mgr->priv->shell = shell;
+
+	if (mgr->priv->shell != NULL) {
+		g_object_get (mgr->priv->shell,
+			      "ui-manager", &uimanager,
+			      "db", &db,
+			      NULL);
+	}
+
+	mgr->priv->db = db;
+	rb_playlist_manager_set_uimanager (mgr, uimanager);
+}
+
+static void
 rb_playlist_manager_set_property (GObject *object,
 				  guint prop_id,
 				  const GValue *value,
@@ -357,16 +385,8 @@ rb_playlist_manager_set_property (GObject *object,
 		rb_playlist_manager_set_source (mgr, g_value_get_object (value));
 		break;
 	case PROP_SHELL:
-	{
-		GtkUIManager *uimanager;
-		mgr->priv->shell = g_value_get_object (value);
-		g_object_get (G_OBJECT (mgr->priv->shell),
-			      "ui-manager", &uimanager,
-			      "db", &mgr->priv->db,
-			      NULL);
-		rb_playlist_manager_set_uimanager (mgr, uimanager);
+		rb_playlist_manager_set_shell_internal (mgr, g_value_get_object (value));
 		break;
-	}
 	case PROP_SOURCELIST:
 		mgr->priv->sourcelist = g_value_get_object (value);
 		mgr->priv->window = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (mgr->priv->sourcelist)));

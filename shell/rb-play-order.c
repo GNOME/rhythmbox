@@ -20,6 +20,8 @@
  *
  */
 
+#include "config.h"
+
 #include <string.h>
 
 #include <glib/gi18n.h>
@@ -181,9 +183,40 @@ rb_play_order_finalize (GObject *object)
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
 						      G_CALLBACK (rb_play_order_row_deleted_cb),
 						      porder);
+		g_object_unref (porder->priv->query_model);
+	}
+
+	if (porder->priv->db != NULL) {
+		g_object_unref (porder->priv->db);
 	}
 
 	G_OBJECT_CLASS (rb_play_order_parent_class)->finalize (object);
+}
+
+static void
+rb_play_order_set_player (RBPlayOrder   *porder,
+			  RBShellPlayer *player)
+{
+	porder->priv->player = player;
+}
+
+static void
+rb_play_order_set_playing_entry_internal (RBPlayOrder   *porder,
+					  RhythmDBEntry *entry)
+{
+	RhythmDBEntry *old_entry;
+
+	old_entry = porder->priv->playing_entry;
+	porder->priv->playing_entry = entry;
+
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
+		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, old_entry, entry);
+
+	if (old_entry != NULL) {
+		rhythmdb_entry_unref (old_entry);
+	}
+
+	rb_play_order_update_have_next_previous (porder);
 }
 
 static void
@@ -193,24 +226,13 @@ rb_play_order_set_property (GObject *object,
 			    GParamSpec *pspec)
 {
 	RBPlayOrder *porder = RB_PLAY_ORDER (object);
-	RhythmDBEntry *entry;
-	RhythmDBEntry *old_entry;
 
 	switch (prop_id) {
 	case PROP_PLAYER:
-		porder->priv->player = g_value_get_object (value);
+		rb_play_order_set_player (porder, g_value_get_object (value));
 		break;
 	case PROP_PLAYING_ENTRY:
-		old_entry = porder->priv->playing_entry;
-		entry = g_value_dup_boxed (value);
-		porder->priv->playing_entry = entry;
-
-		if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
-			RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, old_entry, entry);
-		if (old_entry)
-			rhythmdb_entry_unref (old_entry);
-
-		rb_play_order_update_have_next_previous (porder);
+		rb_play_order_set_playing_entry_internal (porder, g_value_dup_boxed (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -417,15 +439,22 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder,
 
 	g_return_if_fail (porder != NULL);
 
-	g_object_get (G_OBJECT (porder->priv->player),
+	g_object_get (porder->priv->player,
 		      "db", &db,
 		      NULL);
 
 	if (db != porder->priv->db) {
 		if (RB_PLAY_ORDER_GET_CLASS (porder)->db_changed)
 			RB_PLAY_ORDER_GET_CLASS (porder)->db_changed (porder, db);
-		porder->priv->db = db;
+
+		if (porder->priv->db != NULL) {
+			g_object_unref (porder->priv->db);
+		}
+
+		porder->priv->db = g_object_ref (db);
 	}
+
+	g_object_unref (db);
 
 	if (source != porder->priv->source) {
 		if (porder->priv->source) {
@@ -475,7 +504,7 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 	RhythmDBQueryModel *new_model = NULL;
 
 	if (porder->priv->source)
-		g_object_get (G_OBJECT (porder->priv->source), "query-model", &new_model, NULL);
+		g_object_get (porder->priv->source, "query-model", &new_model, NULL);
 
 	if (porder->priv->query_model == new_model)
 		return;

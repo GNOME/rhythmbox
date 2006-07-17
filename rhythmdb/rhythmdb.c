@@ -20,23 +20,22 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #define	G_IMPLEMENT_INLINES 1
 #define	__RHYTHMDB_C__
 #include "rhythmdb.h"
 #undef G_IMPLEMENT_INLINES
 
-#include "rhythmdb-private.h"
-#include "rhythmdb-property-model.h"
 #include <string.h>
-#include <gobject/gvaluecollector.h>
+#include <libxml/tree.h>
 #include <glib.h>
 #include <glib-object.h>
-#include <gconf/gconf-client.h>
-#include <gdk/gdk.h>
-#include <libxml/tree.h>
 #include <glib/gi18n.h>
+#include <gobject/gvaluecollector.h>
+#include <gdk/gdk.h>
+#include <gconf/gconf-client.h>
+
 #include "rb-marshal.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
@@ -44,6 +43,8 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
+#include "rhythmdb-private.h"
+#include "rhythmdb-property-model.h"
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
@@ -472,13 +473,7 @@ rhythmdb_start_action_thread (RhythmDB *db)
 static void
 rhythmdb_action_free (RhythmDB *db, RhythmDBAction *action)
 {
-	switch (action->type) {
-	case RHYTHMDB_ACTION_STAT:
-	case RHYTHMDB_ACTION_LOAD:
-	case RHYTHMDB_ACTION_SYNC:
-		g_free (action->uri);
-		break;
-	}
+	g_free (action->uri);
 	g_free (action);
 }
 
@@ -486,42 +481,34 @@ static void
 rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
 {
 	switch (result->type) {
-	case RHYTHMDB_EVENT_STAT:
-		g_free (result->uri);
-		g_free (result->real_uri);
-		if (result->vfsinfo)
-			gnome_vfs_file_info_unref (result->vfsinfo);
-		break;
-	case RHYTHMDB_EVENT_METADATA_LOAD:
-		g_free (result->uri);
-		g_free (result->real_uri);
-		if (result->vfsinfo)
-			gnome_vfs_file_info_unref (result->vfsinfo);
-		if (result->metadata)
-			g_object_unref (result->metadata);
-		g_clear_error (&result->error);
-		break;
-	case RHYTHMDB_EVENT_DB_LOAD:
-		break;
 	case RHYTHMDB_EVENT_THREAD_EXITED:
 		g_object_unref (db);
 		g_assert (g_atomic_int_dec_and_test (&db->priv->outstanding_threads) >= 0);
 		g_async_queue_unref (db->priv->action_queue);
 		g_async_queue_unref (db->priv->event_queue);
 		break;
+	case RHYTHMDB_EVENT_STAT:
+	case RHYTHMDB_EVENT_METADATA_LOAD:
+	case RHYTHMDB_EVENT_DB_LOAD:
 	case RHYTHMDB_EVENT_DB_SAVED:
-		break;
 	case RHYTHMDB_EVENT_QUERY_COMPLETE:
-		g_object_unref (result->results);
-		break;
 	case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
-		break;
 	case RHYTHMDB_EVENT_FILE_DELETED:
 		break;
 	case RHYTHMDB_EVENT_ENTRY_SET:
 		g_value_unset (&result->change.new);
 		break;
 	}
+	if (result->error)
+		g_error_free (result->error);
+	g_free (result->uri);
+	g_free (result->real_uri);
+	if (result->vfsinfo)
+		gnome_vfs_file_info_unref (result->vfsinfo);
+	if (result->metadata)
+		g_object_unref (result->metadata);
+	if (result->results)
+		g_object_unref (result->results);
 	g_free (result);
 }
 
@@ -556,7 +543,7 @@ rhythmdb_shutdown (RhythmDB *db)
 		rhythmdb_event_free (db, result);
 	}
 
-	//FIXME
+	/* FIXME */
 	while ((result = g_async_queue_try_pop (db->priv->event_queue)) != NULL)
 		rhythmdb_event_free (db, result);
 }
@@ -655,7 +642,7 @@ rhythmdb_get_property (GObject *object,
 static void
 rhythmdb_thread_create (RhythmDB *db, GThreadFunc func, gpointer data)
 {
-	g_object_ref (G_OBJECT (db));
+	g_object_ref (db);
 	g_atomic_int_inc (&db->priv->outstanding_threads);
 	g_async_queue_ref (db->priv->action_queue);
 	g_async_queue_ref (db->priv->event_queue);
@@ -2099,7 +2086,7 @@ action_thread_main (RhythmDB *db)
 				RhythmDBSaveErrorData *data;
 
 				data = g_new0 (RhythmDBSaveErrorData, 1);
-				g_object_ref (G_OBJECT (db));
+				g_object_ref (db);
 				data->db = db;
 				data->uri = g_strdup (action->uri);
 				data->error = error;
@@ -2972,8 +2959,8 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db,
 
 	rhythmdb_query_results_set_query (results, query);
 
-	g_object_ref (G_OBJECT (results));
-	g_object_ref (G_OBJECT (db));
+	g_object_ref (results);
+	g_object_ref (db);
 	g_atomic_int_inc (&db->priv->outstanding_threads);
 	g_async_queue_ref (db->priv->action_queue);
 	g_async_queue_ref (db->priv->event_queue);
@@ -3015,7 +3002,7 @@ rhythmdb_do_full_query_internal (RhythmDB *db,
 	rhythmdb_read_enter (db);
 
 	rhythmdb_query_results_set_query (results, query);
-	g_object_ref (G_OBJECT (results));
+	g_object_ref (results);
 
 	rhythmdb_query_internal (data);
 	g_free (data);

@@ -116,6 +116,28 @@ GtkActionGroup *daap_action_group;
 guint daap_ui_merge_id;
 
 static void
+rb_daap_source_dispose (GObject *object)
+{
+	RBDAAPSource *source = RB_DAAP_SOURCE (object);
+
+	/* we should already have been disconnected */
+	g_assert (source->priv->connection == NULL);
+
+	G_OBJECT_CLASS (rb_daap_source_parent_class)->dispose (object);
+}
+
+static void
+rb_daap_source_finalize (GObject *object)
+{
+	RBDAAPSource *source = RB_DAAP_SOURCE (object);
+
+	g_free (source->priv->service_name);
+	g_free (source->priv->host);
+
+	G_OBJECT_CLASS (rb_daap_source_parent_class)->finalize (object);
+}
+
+static void
 rb_daap_source_class_init (RBDAAPSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -123,6 +145,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->dispose      = rb_daap_source_dispose;
+	object_class->finalize     = rb_daap_source_finalize;
 	object_class->get_property = rb_daap_source_get_property;
 	object_class->set_property = rb_daap_source_set_property;
 
@@ -184,22 +207,6 @@ rb_daap_source_init (RBDAAPSource *source)
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
 						    RB_TYPE_DAAP_SOURCE,
 						    RBDAAPSourcePrivate);
-}
-
-static void
-rb_daap_source_dispose (GObject *object)
-{
-	RBDAAPSource *source = RB_DAAP_SOURCE (object);
-
-	if (source->priv) {
-		/* we should already have been disconnected */
-		g_assert (source->priv->connection == NULL);
-
-		g_free (source->priv->service_name);
-		g_free (source->priv->host);
-	}
-
-	G_OBJECT_CLASS (rb_daap_source_parent_class)->dispose (object);
 }
 
 static void
@@ -266,14 +273,9 @@ rb_daap_get_icon (gboolean password_protected,
 		  gboolean connected)
 {
 	GdkPixbuf *icon;
-	GtkIconTheme *theme;
-	gint size;
 
 	g_return_val_if_fail (daap_share_pixbuf != NULL, NULL);
 	g_return_val_if_fail (daap_share_locked_pixbuf != NULL, NULL);
-
-	theme = gtk_icon_theme_get_default ();
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 
 	if (! password_protected) {
 		icon = g_object_ref (daap_share_pixbuf);
@@ -299,12 +301,11 @@ rb_daap_source_new (RBShell *shell,
 	GdkPixbuf *icon;
 	RhythmDB *db;
 
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_get (shell, "db", &db, NULL);
 	type = rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
 
 	icon = rb_daap_get_icon (password_protected, FALSE);
-
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
 					  "service-name", service_name,
 					  "name", name,
@@ -561,6 +562,7 @@ destroy_pixbufs (void)
 	if (daap_share_pixbuf != NULL) {
 		g_object_unref (daap_share_pixbuf);
 	}
+
 	daap_share_pixbuf = NULL;
 
 	if (daap_share_locked_pixbuf != NULL) {
@@ -598,7 +600,7 @@ rb_daap_sources_init (RBShell *shell)
 	create_pixbufs ();
 
 	/* add UI */
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		      "ui-manager", &uimanager,
 		      NULL);
 	daap_action_group = gtk_action_group_new ("DaapActions");
@@ -611,7 +613,7 @@ rb_daap_sources_init (RBShell *shell)
 	daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
 							    rb_file ("daap-ui.xml"),
 							    NULL);
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (uimanager);
 
 	return NULL;
 }
@@ -626,7 +628,7 @@ rb_daap_sources_shutdown (RBShell *shell)
 	g_assert (!daap_was_shutdown);
 	daap_was_shutdown = TRUE;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		      "ui-manager", &uimanager,
 		      NULL);
 
@@ -642,7 +644,7 @@ rb_daap_sources_shutdown (RBShell *shell)
 	gtk_ui_manager_remove_ui (uimanager, daap_ui_merge_id);
 	gtk_ui_manager_remove_action_group (uimanager, daap_action_group);
 
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (uimanager);
 	g_object_unref (shell);
 
 	destroy_pixbufs ();
@@ -760,7 +762,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		return;
 	}
 
-	g_object_get (G_OBJECT (daap_source),
+	g_object_get (daap_source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
@@ -775,7 +777,8 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
 		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
 	}
-	g_object_unref (G_OBJECT (shell));
+
+	g_object_unref (shell);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 }
 
@@ -792,12 +795,12 @@ rb_daap_source_activate (RBSource *source)
 		return;
 	}
 
-	g_object_get (G_OBJECT (daap_source),
+	g_object_get (daap_source,
 		      "shell", &shell,
 		      "entry-type", &type,
 		      "name", &name,
 		      NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_get (shell, "db", &db, NULL);
 
 	daap_source->priv->connection = rb_daap_connection_new (name,
 								daap_source->priv->host,
@@ -811,8 +814,9 @@ rb_daap_source_activate (RBSource *source)
 				    (RBDAAPConnectionCallback) rb_daap_source_connection_cb,
 				    source);
 
-	g_object_unref (G_OBJECT (db));
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (db);
+	g_object_unref (shell);
+	g_free (name);
 
         g_signal_connect (daap_source->priv->connection,
 			  "authenticate",
@@ -849,7 +853,7 @@ rb_daap_source_cmd_disconnect (GtkAction *action,
 {
 	RBSource *source;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		      "selected-source", &source,
 		      NULL);
 
@@ -859,6 +863,10 @@ rb_daap_source_cmd_disconnect (GtkAction *action,
 	}
 
 	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
+
+	if (source != NULL) {
+		g_object_unref (source);
+	}
 }
 
 static void
@@ -874,13 +882,14 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 
 		daap_source->priv->disconnecting = TRUE;
 
-		g_object_get (G_OBJECT (daap_source), "shell", &shell, "entry-type", &type, NULL);
-		g_object_get (G_OBJECT (shell), "db", &db, NULL);
-		g_object_unref (G_OBJECT (shell));
+		g_object_get (daap_source, "shell", &shell, "entry-type", &type, NULL);
+		g_object_get (shell, "db", &db, NULL);
+		g_object_unref (shell);
 
 		rhythmdb_entry_delete_by_type (db, type);
 		rhythmdb_commit (db);
-		g_object_unref (G_OBJECT (db));
+
+		g_object_unref (db);
 
 		for (l = daap_source->priv->playlist_sources; l!= NULL; l = l->next) {
 			RBSource *playlist_source = RB_SOURCE (l->data);
@@ -982,13 +991,13 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 		RhythmDBEntry *entry;
 		gulong bitrate;
 
-		g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-		g_object_get (G_OBJECT (shell), "db", &db, NULL);
+		g_object_get (source, "shell", &shell, NULL);
+		g_object_get (shell, "db", &db, NULL);
 
 		entry = rhythmdb_entry_lookup_by_location (db, uri);
 
-		g_object_unref (G_OBJECT (shell));
-		g_object_unref (G_OBJECT (db));
+		g_object_unref (shell);
+		g_object_unref (db);
 
 		bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
 		/* bitrate is kilobits per second */

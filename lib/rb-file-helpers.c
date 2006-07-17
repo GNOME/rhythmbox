@@ -642,8 +642,6 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 			      RBUriHandleRecursivelyData *data,
 			      gboolean *recurse)
 {
-	char *path;
-
 	if (data->cancel_flag && *data->cancel_flag)
 		return TRUE;
 
@@ -656,7 +654,9 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 	}
 
 	if (info->type == GNOME_VFS_FILE_TYPE_REGULAR) {
-		char *escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
+		char *path, *escaped_rel_path;
+
+		escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
 		escaped_rel_path = escape_extra_gnome_vfs_chars (escaped_rel_path);
 		path = g_build_filename (data->uri, escaped_rel_path, NULL);
 		(data->func) (path, data->user_data);

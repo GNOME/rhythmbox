@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 
@@ -136,6 +136,8 @@ struct RBIRadioSourcePrivate
 	char *search_text;
 	char *selected_genre;
 
+	guint prefs_notify_id;
+	guint first_time_notify_id;
 	gboolean firstrun_done;
 
 	RhythmDBEntryType entry_type;
@@ -256,6 +258,13 @@ rb_iradio_source_finalize (GObject *object)
 
 	rb_debug ("finalizing iradio source");
 
+	if (source->priv->action_group != NULL) {
+		g_object_unref (source->priv->action_group);
+	}
+
+	eel_gconf_notification_remove (source->priv->prefs_notify_id);
+	eel_gconf_notification_remove (source->priv->first_time_notify_id);
+
 	G_OBJECT_CLASS (rb_iradio_source_parent_class)->finalize (object);
 }
 
@@ -275,10 +284,10 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->paned = gtk_hpaned_new ();
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "IRadioActions",
@@ -345,13 +354,17 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
 
 	rb_iradio_source_state_prefs_sync (source);
-	eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
-				    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
-				    source);
+
+	source->priv->prefs_notify_id =
+		eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
+					    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
+					    source);
 	source->priv->firstrun_done = eel_gconf_get_boolean (CONF_FIRST_TIME);
-	eel_gconf_notification_add (CONF_FIRST_TIME,
-				    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
-				    source);
+
+	source->priv->first_time_notify_id =
+		eel_gconf_notification_add (CONF_FIRST_TIME,
+					    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
+					    source);
 	gtk_widget_show_all (GTK_WIDGET (source));
 
 	if (source->priv->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID ||
@@ -563,9 +576,9 @@ impl_get_status (RBSource *asource, char **text, char **progress_text, float *pr
 	RhythmDBQueryModel *model;
 	guint num_entries;
 
-	g_object_get (G_OBJECT (asource), "query-model", &model, NULL);
+	g_object_get (asource, "query-model", &model, NULL);
 	num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
-	g_object_unref (G_OBJECT (model));
+	g_object_unref (model);
 
 	*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
 				 num_entries);
@@ -581,13 +594,17 @@ static void
 impl_delete (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
+	GList *sel;
 	GList *l;
 
-	for (l = rb_entry_view_get_selected_entries (source->priv->stations); l != NULL;
-	     l = g_list_next (l)) {
+	sel = rb_entry_view_get_selected_entries (source->priv->stations);
+	for (l = sel; l != NULL; l = g_list_next (l)) {
 		rhythmdb_entry_delete (source->priv->db, l->data);
 		rhythmdb_commit (source->priv->db);
 	}
+
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (sel);
 }
 
 static void
@@ -595,6 +612,7 @@ impl_song_properties (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations);
+
 	rb_debug ("in song properties");
 	if (dialog)
 		gtk_widget_show_all (dialog);

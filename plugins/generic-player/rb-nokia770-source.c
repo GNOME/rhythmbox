@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of Nokia 770 source object
  *
  *  Copyright (C) 2006 James Livingston  <jrl@ids.org.au>
@@ -21,16 +22,16 @@
 
 #define __EXTENSIONS__
 
-#include <config.h>
+#include "config.h"
 
-#include <gtk/gtktreeview.h>
 #include <string.h>
-#include "rhythmdb.h"
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <dbus/dbus.h>
+#include <libhal.h>
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
-#include <libhal.h>
-#include <dbus/dbus.h>
 
 #include "eel-gconf-extensions.h"
 #include "rb-nokia770-source.h"
@@ -81,16 +82,16 @@ rb_nokia770_source_new (RBShell *shell, GnomeVFSVolume *volume)
 
 	g_assert (rb_nokia770_is_volume_player (volume));
 
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	entry_type =  rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (G_OBJECT (db));
+	g_object_get (shell, "db", &db, NULL);
+	entry_type = rhythmdb_entry_register_type (db, NULL);
+	g_object_unref (db);
 
 	source = RB_NOKIA770_SOURCE (g_object_new (RB_TYPE_NOKIA770_SOURCE,
-					  "entry-type", entry_type,
-					  "volume", volume,
-					  "shell", shell,
-					  "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
-					  NULL));
+						   "entry-type", entry_type,
+						   "volume", volume,
+						   "shell", shell,
+						   "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
+						   NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -124,14 +125,18 @@ hal_udi_is_nokia770 (const char *udi)
 {
 	LibHalContext *ctx;
 	DBusConnection *conn;
-	char *parent_udi, *parent_name;
+	char *parent_udi;
+	char *parent_name;
 	gboolean result;
 	DBusError error;
 
 	result = FALSE;
 	dbus_error_init (&error);
-	
+
 	conn = NULL;
+	parent_udi = NULL;
+	parent_name = NULL;
+
 	ctx = libhal_ctx_new ();
 	if (ctx == NULL) {
 		rb_debug ("cannot connect to HAL");
@@ -171,11 +176,11 @@ hal_udi_is_nokia770 (const char *udi)
 			result = TRUE;
 		}
 	}
-	
-	g_free (parent_name);
-		
-	g_free (parent_udi);
+
 end:
+	g_free (parent_name);
+	g_free (parent_udi);
+
 	if (dbus_error_is_set (&error)) {
 		rb_debug ("Error: %s\n", error.message);
 		dbus_error_free (&error);
@@ -198,7 +203,8 @@ static gboolean
 hal_udi_is_nokia770 (const char *udi)
 {
 	LibHalContext *ctx;
-	char *parent_udi, *parent_name;
+	char *parent_udi;
+	char *parent_name;
 	gboolean result;
 
 	result = FALSE;

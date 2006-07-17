@@ -279,6 +279,7 @@ rb_shell_clipboard_finalize (GObject *object)
 
 	g_hash_table_destroy (shell_clipboard->priv->signal_hash);
 
+	g_list_foreach (shell_clipboard->priv->entries, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (shell_clipboard->priv->entries);
 
 	g_async_queue_unref (shell_clipboard->priv->deleted_queue);
@@ -468,7 +469,9 @@ rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 }
 
 RBShellClipboard *
-rb_shell_clipboard_new (GtkActionGroup *actiongroup,GtkUIManager *ui_mgr, RhythmDB *db)
+rb_shell_clipboard_new (GtkActionGroup *actiongroup,
+			GtkUIManager *ui_mgr,
+			RhythmDB *db)
 {
 	return g_object_new (RB_TYPE_SHELL_CLIPBOARD,
 			     "action-group", actiongroup,
@@ -506,9 +509,9 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 
 	if (clipboard->priv->queue_source) {
 		RBEntryView *sidebar;
-		g_object_get (G_OBJECT (clipboard->priv->queue_source), "sidebar", &sidebar, NULL);
+		g_object_get (clipboard->priv->queue_source, "sidebar", &sidebar, NULL);
 		have_sidebar_selection = rb_entry_view_have_selection (sidebar);
-		g_object_unref (G_OBJECT (sidebar));
+		g_object_unref (sidebar);
 	}
 
 	rb_debug ("syncing clipboard");
@@ -566,7 +569,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	 * FIXME: change this when we support non-library playilst adding
 	 */
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
-	g_object_get (G_OBJECT (clipboard->priv->source), "entry-type", &entry_type, NULL);
+	g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
 	gtk_action_set_sensitive (action, (entry_type == RHYTHMDB_ENTRY_TYPE_SONG));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
@@ -649,7 +652,10 @@ static void
 rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			GList *entries)
 {
-	g_list_free (clipboard->priv->entries);
+	if (clipboard->priv->entries != NULL) {
+		g_list_foreach (clipboard->priv->entries, (GFunc)rhythmdb_entry_unref, NULL);
+		g_list_free (clipboard->priv->entries);
+	}
 
 	clipboard->priv->entries = entries;
 }
@@ -753,6 +759,8 @@ rb_shell_clipboard_cmd_add_to_playlist_new (GtkAction *action,
 	playlist_source = rb_playlist_manager_new_playlist (clipboard->priv->playlist_manager,
 							    NULL, FALSE);
 	rb_source_paste (playlist_source, entries);
+
+	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (entries);
 }
 
@@ -794,6 +802,8 @@ rb_shell_clipboard_playlist_add_cb (GtkAction *action,
 
 	entries = rb_source_copy (clipboard->priv->source);
 	rb_source_paste (playlist_source, entries);
+
+	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (entries);
 }
 
@@ -833,16 +843,16 @@ rb_shell_clipboard_playlist_renamed_cb (RBStaticPlaylistSource *source,
 	char *name, *action_name;
 	GtkAction *action;
 
-	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	g_object_get (source, "name", &name, NULL);
 
 	action_name = generate_action_name (source, clipboard);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
 	g_assert (action);
 	g_free (action_name);
 
-	g_object_set (G_OBJECT (action), "label", name, NULL);
+	g_object_set (action, "label", name, NULL);
 	g_free (name);
-	g_object_unref (G_OBJECT (action));
+	g_object_unref (action);
 }
 
 static void
@@ -854,7 +864,7 @@ rb_shell_clipboard_playlist_visible_cb (RBStaticPlaylistSource *source,
 	char *action_name;
 	GtkAction *action;
 
-	g_object_get (G_OBJECT (source), "visibility", &visible, NULL);
+	g_object_get (source, "visibility", &visible, NULL);
 
 	action_name = generate_action_name (source, clipboard);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
@@ -887,7 +897,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	 * based on the currently selected source
 	 */
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
-	g_object_get (G_OBJECT (source), "entry-type", &source_entry_type, NULL);
+	g_object_get (source, "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 		return FALSE;
@@ -898,7 +908,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	if (action == NULL) {
 		char *name;
 
-		g_object_get (G_OBJECT (source), "name", &name, NULL);
+		g_object_get (source, "name", &name, NULL);
 		action = gtk_action_new (action_name, name, NULL, NULL);
 		gtk_action_group_add_action (clipboard->priv->actiongroup, action);
 		g_free (name);
@@ -927,6 +937,8 @@ add_playlist_to_menu (GtkTreeModel *model,
 	}
 
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
+	g_free (action_name);
+
 	return FALSE;
 }
 
@@ -957,7 +969,7 @@ rebuild_playlist_menu (RBShellClipboard *clipboard)
 
 	if (model != NULL) {
 		gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)add_playlist_to_menu, clipboard);
-		g_object_unref (G_OBJECT (model));
+		g_object_unref (model);
 	}
 
 	clipboard->priv->idle_playlist_id = 0;

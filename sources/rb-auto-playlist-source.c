@@ -100,14 +100,14 @@ struct _RBAutoPlaylistSourcePrivate
 	RhythmDBPropType search_prop;
 };
 
+static gpointer playlist_pixbuf = NULL;
+
 G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
 #define RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_AUTO_PLAYLIST_SOURCE, RBAutoPlaylistSourcePrivate))
 
 static void
 rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 {
-	gint size;
-
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
@@ -129,27 +129,41 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	klass->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						  GNOME_MEDIA_AUTO_PLAYLIST,
-						  size,
-						  0, NULL);
-
 	g_type_class_add_private (klass, sizeof (RBAutoPlaylistSourcePrivate));
 }
 
 static void
 rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 {
-	RBAutoPlaylistSourceClass *klass = RB_AUTO_PLAYLIST_SOURCE_GET_CLASS (source);
+	if (playlist_pixbuf == NULL) {
+		gint size;
 
-	rb_source_set_pixbuf (RB_SOURCE (source), klass->pixbuf);
+		gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+		playlist_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+							    GNOME_MEDIA_AUTO_PLAYLIST,
+							    size,
+							    0, NULL);
+		g_object_add_weak_pointer (playlist_pixbuf,
+					   (gpointer *) &playlist_pixbuf);
+
+		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+
+		/* drop the initial reference to the icon */
+		g_object_unref (playlist_pixbuf);
+	} else {
+		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+	}
+
 }
 
 static void
 rb_auto_playlist_source_finalize (GObject *object)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
+
+	if (priv->action_group != NULL) {
+		g_object_unref (priv->action_group);
+	}
 
 	if (priv->cached_all_query)
 		g_object_unref (G_OBJECT (priv->cached_all_query));
@@ -196,7 +210,7 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 				 G_CALLBACK (rb_auto_playlist_source_songs_sort_order_changed_cb),
 				 source, 0);
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (source, "shell", &shell, NULL);
 	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 							       "AutoPlaylistActions",
 							       NULL, 0,
@@ -208,7 +222,7 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 					    (GCallback)search_action_changed,
 					    shell);
 	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	/* reparent the entry view */
 	g_object_ref (songs);
@@ -452,16 +466,17 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 	names = g_strsplit ((char *)data->data, "\r\n", 0);
 	propid = rb_auto_playlist_source_drag_atom_to_prop (data->type);
-	g_object_get (G_OBJECT (asource), "db", &db, NULL);
 
-	for (i=0; names[i]; i++) {
-		if (subquery == NULL)
+	g_object_get (asource, "db", &db, NULL);
+
+	for (i = 0; names[i]; i++) {
+		if (subquery == NULL) {
 			subquery = rhythmdb_query_parse (db,
 							 RHYTHMDB_QUERY_PROP_EQUALS,
 							 propid,
 							 names[i],
 							 RHYTHMDB_QUERY_END);
-		else
+		} else {
 			rhythmdb_query_append (db,
 					       subquery,
 					       RHYTHMDB_QUERY_DISJUNCTION,
@@ -469,6 +484,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 					       propid,
 					       names[i],
 					       RHYTHMDB_QUERY_END);
+		}
 	}
 
 	g_strfreev (names);
@@ -477,7 +493,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		RhythmDBEntryType qtype;
 		GPtrArray *query;
 
-		g_object_get (G_OBJECT (source), "entry-type", &qtype, NULL);
+		g_object_get (source, "entry-type", &qtype, NULL);
 		if (qtype == RHYTHMDB_ENTRY_TYPE_INVALID)
 			qtype = RHYTHMDB_ENTRY_TYPE_SONG;
 
@@ -493,7 +509,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 						   NULL, 0);
 	}
 
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
 
 	return TRUE;
 }
@@ -591,9 +607,12 @@ static void
 rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
-	RhythmDB *db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
+	RhythmDB *db;
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
+
+	/* this doesn't add a ref */
+	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
 
 	g_assert (priv->cached_all_query);
 
@@ -611,11 +630,11 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 
 	if (subset) {
 		/* just apply the new query to the existing query model */
-		g_object_get (G_OBJECT (priv->browser), "input-model", &query_model, NULL);
+		g_object_get (priv->browser, "input-model", &query_model, NULL);
 		g_assert (query_model != priv->cached_all_query);
-		g_object_set (G_OBJECT (query_model), "query", query, NULL);
+		g_object_set (query_model, "query", query, NULL);
 		rhythmdb_query_model_reapply_query (query_model, FALSE);
-		g_object_unref (G_OBJECT (query_model));
+		g_object_unref (query_model);
 	} else {
 		/* otherwise, we need a new query model */
 		query_model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
@@ -636,6 +655,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 						     query);
 		g_object_unref (G_OBJECT (query_model));
 	}
+
 	rhythmdb_query_free (query);
 }
 
@@ -656,6 +676,8 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 		rhythmdb_query_free (priv->query);
 	if (priv->cached_all_query)
 		g_object_unref (G_OBJECT (priv->cached_all_query));
+	if (priv->limit_value)
+		g_value_array_free (priv->limit_value);
 
 	/* playlists that aren't limited, with a particular sort order, are user-orderable */
 	rb_entry_view_set_columns_clickable (songs, (limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE));
@@ -663,8 +685,6 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 
 	priv->query = rhythmdb_query_copy (query);
 	priv->limit_type = limit_type;
-	if (priv->limit_value)
-		g_value_array_free (priv->limit_value);
 	priv->limit_value = limit_value ? g_value_array_copy (limit_value) : NULL;
 
 	priv->cached_all_query = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
@@ -719,10 +739,10 @@ rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 	RhythmDBQueryModel *query_model;
 
-	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
+	g_object_get (browser, "output-model", &query_model, NULL);
 	rb_entry_view_set_model (songs, query_model);
 	rb_playlist_source_set_query_model (RB_PLAYLIST_SOURCE (source), query_model);
-	g_object_unref (G_OBJECT (query_model));
+	g_object_unref (query_model);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
@@ -774,7 +794,8 @@ search_action_changed (GtkRadioAction  *action,
 	gboolean active;
 	RBAutoPlaylistSource *source;
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+	g_object_get (shell, "selected-source", &source, NULL);
+
 	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
@@ -784,5 +805,9 @@ search_action_changed (GtkRadioAction  *action,
 		priv->search_prop = search_action_to_prop (GTK_ACTION (current));
 		rb_auto_playlist_source_do_query (source, FALSE);
 		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+
+	if (source != NULL) {
+		g_object_unref (source);
 	}
 }

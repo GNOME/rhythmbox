@@ -223,6 +223,7 @@ rb_sourcelist_model_new (void)
 						   "child-model", store,
 						   "virtual-root", NULL,
 						   NULL));
+	g_object_unref (store);
 
 	/* create marker rows used to separate source groups */
 	for (i = 0; i < RB_SOURCELIST_GROUP_LAST; i++) {
@@ -312,7 +313,7 @@ rb_sourcelist_model_is_row_visible (GtkTreeModel *model,
 
 	if (source != NULL) {
 		gboolean visible;
-		g_object_get (G_OBJECT (source), "visibility", &visible, NULL);
+		g_object_get (source, "visibility", &visible, NULL);
 
 		return visible;
 	} else {
@@ -429,7 +430,7 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 		gtk_tree_model_get (GTK_TREE_MODEL (real_model), &real_iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
 				    -1);
-		g_object_get (G_OBJECT (source), "sourcelist-group", &group, NULL);
+		g_object_get (source, "sourcelist-group", &group, NULL);
 
 		/* restrict sources to within their group */
 		dest_group = get_group_for_path (model, real_dest);
@@ -521,7 +522,7 @@ path_is_reorderable (RBSourceListModel *model,
 		if (source == NULL)
 			return FALSE;
 
-		g_object_get (G_OBJECT (source), "sourcelist-group", &group, NULL);
+		g_object_get (source, "sourcelist-group", &group, NULL);
 
 		/* fixed and transient sources are not reorderable, everything else is */
 		return (group != RB_SOURCELIST_GROUP_FIXED &&
@@ -623,7 +624,7 @@ rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
-		g_object_get (G_OBJECT (source), "sourcelist-group", &group, NULL);
+		g_object_get (source, "sourcelist-group", &group, NULL);
 
 		return (group != RB_SOURCELIST_GROUP_FIXED &&
 			group != RB_SOURCELIST_GROUP_TRANSIENT);
@@ -675,7 +676,7 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 		data = g_string_new ("");
 		gtk_tree_model_get (GTK_TREE_MODEL (drag_source), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-		g_object_get (G_OBJECT (source), "query-model", &query_model, NULL);
+		g_object_get (source, "query-model", &query_model, NULL);
 
 		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model), &iter)) {
 			g_object_unref (G_OBJECT (query_model));
@@ -693,7 +694,8 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 			g_string_append (data, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (query_model), &iter));
-		g_object_unref (G_OBJECT (query_model));
+
+		g_object_unref (query_model);
 
 		gtk_selection_data_set (selection_data,
 					selection_data->target,

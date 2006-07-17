@@ -20,7 +20,8 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>

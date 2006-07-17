@@ -217,13 +217,14 @@ impl_delete_thyself (RBSource *source)
 	RBShell *shell;
 	RhythmDBEntryType entry_type;
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
 
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
 	rhythmdb_commit (db);
 	g_object_unref (db);
 }

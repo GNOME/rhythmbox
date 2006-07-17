@@ -103,6 +103,16 @@ rb_play_queue_sync_playing_state (GObject *entry_view,
 }
 
 static void
+rb_play_queue_source_finalize (GObject *object)
+{
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (object);
+
+	if (priv->action_group != NULL) {
+		g_object_unref (priv->action_group);
+	}
+}
+
+static void
 rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -111,6 +121,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 
 	object_class->constructor = rb_play_queue_source_constructor;
 	object_class->get_property = rb_play_queue_source_get_property;
+	object_class->finalize = rb_play_queue_source_finalize;
 
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
@@ -139,7 +150,8 @@ rb_play_queue_source_init (RBPlayQueueSource *source)
 }
 
 static GObject *
-rb_play_queue_source_constructor (GType type, guint n_construct_properties,
+rb_play_queue_source_constructor (GType type,
+				  guint n_construct_properties,
 				  GObjectConstructParam *construct_properties)
 {
 	GObjectClass *parent_class = G_OBJECT_CLASS (rb_play_queue_source_parent_class);
@@ -152,9 +164,9 @@ rb_play_queue_source_constructor (GType type, guint n_construct_properties,
 	GtkCellRenderer *renderer;
 	RhythmDBQueryModel *model;
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (source, "shell", &shell, NULL);
 	shell_player = rb_shell_get_player (shell);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 							       "PlayQueueActions",

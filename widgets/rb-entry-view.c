@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -423,75 +423,92 @@ rb_entry_view_finalize (GObject *object)
 }
 
 static void
+rb_entry_view_set_shell_player_internal (RBEntryView   *view,
+					 RBShellPlayer *player)
+{
+	if (view->priv->shell_player != NULL) {
+		g_signal_handlers_disconnect_by_func (view->priv->shell_player,
+						      G_CALLBACK (rb_entry_view_playing_song_changed),
+						      view);
+	}
+
+	view->priv->shell_player = player;
+
+	g_signal_connect_object (G_OBJECT (view->priv->shell_player),
+				 "playing-song-changed",
+				 G_CALLBACK (rb_entry_view_playing_song_changed),
+				 view, 0);
+}
+
+static void
+rb_entry_view_set_model_internal (RBEntryView        *view,
+				  RhythmDBQueryModel *model)
+{
+	if (view->priv->model != NULL) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
+						      G_CALLBACK (rb_entry_view_row_inserted_cb),
+						      view);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
+						      G_CALLBACK (rb_entry_view_row_deleted_cb),
+						      view);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
+						      G_CALLBACK (rb_entry_view_rows_reordered_cb),
+						      view);
+	}
+
+	g_signal_connect_object (G_OBJECT (model),
+				 "row_inserted",
+				 G_CALLBACK (rb_entry_view_row_inserted_cb),
+				 view,
+				 0);
+	g_signal_connect_object (G_OBJECT (model),
+				 "row_deleted",
+				 G_CALLBACK (rb_entry_view_row_deleted_cb),
+				 view,
+				 0);
+	g_signal_connect_object (G_OBJECT (model),
+				 "rows_reordered",
+				 G_CALLBACK (rb_entry_view_rows_reordered_cb),
+				 view,
+				 0);
+
+	gtk_tree_selection_unselect_all (view->priv->selection);
+	view->priv->model = model;
+
+	if (view->priv->sorting_column) {
+		rb_entry_view_resort_model (view);
+	}
+
+	gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
+				 GTK_TREE_MODEL (model));
+	view->priv->have_selection = FALSE;
+	view->priv->have_complete_selection = FALSE;
+
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
+}
+
+static void
 rb_entry_view_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *pspec)
 {
 	RBEntryView *view = RB_ENTRY_VIEW (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		view->priv->db = g_value_get_object (value);
 		break;
 	case PROP_SHELL_PLAYER:
-		view->priv->shell_player = g_value_get_object (value);
-		g_signal_connect_object (G_OBJECT (view->priv->shell_player),
-					 "playing-song-changed",
-					 G_CALLBACK (rb_entry_view_playing_song_changed),
-					 view, 0);
+		rb_entry_view_set_shell_player_internal (view, g_value_get_object (value));
 		break;
 	case PROP_SORTING_KEY:
 		g_free (view->priv->sorting_key);
 		view->priv->sorting_key = g_value_dup_string (value);
 		break;
 	case PROP_MODEL:
-	{
-		RhythmDBQueryModel *new_model;
-
-		if (view->priv->model) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
-							      G_CALLBACK (rb_entry_view_row_inserted_cb),
-							      view);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
-							      G_CALLBACK (rb_entry_view_row_deleted_cb),
-							      view);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->model),
-							      G_CALLBACK (rb_entry_view_rows_reordered_cb),
-							      view);
-		}
-		new_model = g_value_get_object (value);
-
-		g_signal_connect_object (G_OBJECT (new_model),
-					 "row_inserted",
-					 G_CALLBACK (rb_entry_view_row_inserted_cb),
-					 view,
-					 0);
-		g_signal_connect_object (G_OBJECT (new_model),
-					 "row_deleted",
-					 G_CALLBACK (rb_entry_view_row_deleted_cb),
-					 view,
-					 0);
-		g_signal_connect_object (G_OBJECT (new_model),
-					 "rows_reordered",
-					 G_CALLBACK (rb_entry_view_rows_reordered_cb),
-					 view,
-					 0);
-
-		gtk_tree_selection_unselect_all (view->priv->selection);
-		view->priv->model = new_model;
-		if (view->priv->sorting_column)
-			rb_entry_view_resort_model (view);
-
-		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
-					 GTK_TREE_MODEL (new_model));
-		view->priv->have_selection = FALSE;
-		view->priv->have_complete_selection = FALSE;
-
-		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
+		rb_entry_view_set_model_internal (view, g_value_get_object (value));
 		break;
-	}
 	case PROP_IS_DRAG_SOURCE:
 		view->priv->is_drag_source = g_value_get_boolean (value);
 		break;
@@ -514,9 +531,9 @@ rb_entry_view_set_property (GObject *object,
 
 static void
 rb_entry_view_get_property (GObject *object,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *pspec)
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *pspec)
 {
 	RBEntryView *view = RB_ENTRY_VIEW (object);
 
@@ -547,8 +564,10 @@ rb_entry_view_get_property (GObject *object,
 }
 
 RBEntryView *
-rb_entry_view_new (RhythmDB *db, GObject *shell_player,
-		   const char *sort_key, gboolean is_drag_source,
+rb_entry_view_new (RhythmDB *db,
+		   GObject *shell_player,
+		   const char *sort_key,
+		   gboolean is_drag_source,
 		   gboolean is_drag_dest)
 {
 	RBEntryView *view;
@@ -1457,6 +1476,7 @@ rb_entry_view_button_press_cb (GtkTreeView *treeview,
 			if (!g_list_find (selected, entry))
 				rb_entry_view_select_entry (view, entry);
 
+			/* FIXME: unref entries */
 			g_list_free (selected);
 
 		}

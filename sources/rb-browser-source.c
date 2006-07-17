@@ -35,7 +35,6 @@
 #include "rhythmdb-query-model.h"
 #include "rb-property-view.h"
 #include "rb-glade-helpers.h"
-#include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-library-browser.h"
 #include "rb-util.h"
@@ -282,6 +281,10 @@ rb_browser_source_finalize (GObject *object)
 	eel_gconf_notification_remove (source->priv->state_paned_notify_id);
 	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
 
+	if (source->priv->action_group != NULL) {
+		g_object_unref (source->priv->action_group);
+	}
+
 	G_OBJECT_CLASS (rb_browser_source_parent_class)->finalize (object);
 }
 
@@ -338,7 +341,7 @@ search_action_changed (GtkRadioAction  *action,
 	gboolean         active;
 	RBBrowserSource *source;
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+	g_object_get (shell, "selected-source", &source, NULL);
 
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
 
@@ -347,6 +350,10 @@ search_action_changed (GtkRadioAction  *action,
 		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
 		rb_browser_source_do_query (source, FALSE);
 		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+
+	if (source != NULL) {
+		g_object_unref (source);
 	}
 }
 
@@ -366,8 +373,8 @@ rb_browser_source_constructor (GType type,
 	source = RB_BROWSER_SOURCE (G_OBJECT_CLASS (rb_browser_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
@@ -382,7 +389,7 @@ rb_browser_source_constructor (GType type,
 					    0,
 					    (GCallback)search_action_changed,
 					    shell);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -552,7 +559,7 @@ rb_browser_source_cmd_choose_artist (GtkAction *action,
 
 	rb_debug ("choosing artist");
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+	g_object_get (shell, "selected-source", &source, NULL);
 	props = rb_source_gather_selected_properties (RB_SOURCE (source), RHYTHMDB_PROP_ARTIST);
 	view = rb_library_browser_get_property_view (source->priv->browser, RHYTHMDB_PROP_ARTIST);
 	if (view)
@@ -680,6 +687,7 @@ impl_delete (RBSource *asource)
 		rhythmdb_entry_delete (source->priv->db, tem->data);
 		rhythmdb_commit (source->priv->db);
 	}
+	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }
 
@@ -816,10 +824,10 @@ rb_browser_source_browser_changed_cb (RBLibraryBrowser *browser,
 {
 	RhythmDBQueryModel *query_model;
 
-	g_object_get (G_OBJECT (browser), "output-model", &query_model, NULL);
+	g_object_get (browser, "output-model", &query_model, NULL);
 	rb_entry_view_set_model (source->priv->songs, query_model);
-	g_object_set (RB_SOURCE (source), "query-model", query_model, NULL);
-	g_object_unref (G_OBJECT (query_model));
+	g_object_set (source, "query-model", query_model, NULL);
+	g_object_unref (query_model);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
@@ -852,7 +860,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 		return;
 	}
 
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
@@ -868,10 +876,10 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 		 * of the existing results, so we can just change the query on the existing query
 		 * model and reapply the query.
 		 */
-		g_object_get (G_OBJECT (source->priv->browser), "input-model", &query_model, NULL);
-		g_object_set (G_OBJECT (query_model), "query", query, NULL);
+		g_object_get (source->priv->browser, "input-model", &query_model, NULL);
+		g_object_set (query_model, "query", query, NULL);
 		rhythmdb_query_model_reapply_query (query_model, FALSE);
-		g_object_unref (G_OBJECT (query_model));
+		g_object_unref (query_model);
 	} else {/* otherwise build a query based on the search text and feed it to the browser */
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
 		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);

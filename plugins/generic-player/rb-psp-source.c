@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of PSP source object
  *
  *  Copyright (C) 2006 James Livingston  <jrl@ids.org.au>
@@ -21,12 +22,12 @@
 
 #define __EXTENSIONS__
 
-#include <config.h>
+#include "config.h"
 
-#include <gtk/gtktreeview.h>
 #include <string.h>
-#include "rhythmdb.h"
-#include <libgnome/gnome-i18n.h>
+
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
 
@@ -101,17 +102,20 @@ rb_psp_source_new (RBShell *shell, GnomeVFSVolume *volume)
 	return RB_REMOVABLE_MEDIA_SOURCE (source);
 }
 
-static gchar *
+static char *
 impl_get_mount_path (RBGenericPlayerSource *source)
 {
-	gchar *uri, *path;
+	char *uri;
+	char *path;
 	GnomeVFSVolume *volume;
 
 	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 	uri = gnome_vfs_volume_get_activation_uri (volume);
-	g_object_unref (G_OBJECT (volume));
+	g_object_unref (volume);
 
 	path = rb_uri_append_path (uri, "PSP/MUSIC");
+
+	g_free (uri);
 
 	return path;
 }
@@ -143,11 +147,11 @@ visit_playlist_dirs (const gchar *rel_path,
 		return TRUE;
 	}
 
-	g_object_get (G_OBJECT (source), 
-		      "shell", &shell, 
+	g_object_get (source,
+		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		      "db", &db,
 		      NULL);
 
@@ -162,8 +166,8 @@ visit_playlist_dirs (const gchar *rel_path,
 					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
 					   NULL, 0);
 	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source), shell, RB_SOURCE (playlist));
-	g_object_unref (G_OBJECT (shell));
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (shell);
+	g_object_unref (db);
 
 	return TRUE;
 }
@@ -190,13 +194,17 @@ hal_udi_is_psp (const char *udi)
 {
 	LibHalContext *ctx;
 	DBusConnection *conn;
-	char *parent_udi, *parent_name;
+	char *parent_udi;
+	char *parent_name;
 	gboolean result;
 	DBusError error;
 
 	result = FALSE;
 	dbus_error_init (&error);
-	
+
+	parent_udi = NULL;
+	parent_name = NULL;
+
 	conn = NULL;
 	ctx = libhal_ctx_new ();
 	if (ctx == NULL) {
@@ -215,10 +223,9 @@ hal_udi_is_psp (const char *udi)
 			"info.parent", &error);
 	if (parent_udi == NULL || dbus_error_is_set (&error))
 		goto end;
-		
+
 	parent_name = libhal_device_get_property_string (ctx, parent_udi,
 			"storage.model", &error);
-	g_free (parent_udi);
 	if (parent_name == NULL || dbus_error_is_set (&error))
 		goto end;
 
@@ -226,8 +233,10 @@ hal_udi_is_psp (const char *udi)
 		result = TRUE;
 	}
 
-	g_free (parent_name);
 end:
+	g_free (parent_udi);
+	g_free (parent_name);
+
 	if (dbus_error_is_set (&error)) {
 		rb_debug ("Error: %s\n", error.message);
 		dbus_error_free (&error);
@@ -250,7 +259,8 @@ static gboolean
 hal_udi_is_psp (const char *udi)
 {
 	LibHalContext *ctx;
-	char *parent_udi, *parent_name;
+	char *parent_udi;
+	char *parent_name;
 	gboolean result;
 
 	result = FALSE;
@@ -259,9 +269,9 @@ hal_udi_is_psp (const char *udi)
 		return FALSE;
 	}
 	parent_udi = hal_device_get_property_string (ctx, udi,
-			"info.parent");
+						     "info.parent");
 	parent_name = hal_device_get_property_string (ctx, parent_udi,
-			"storage.model");
+						      "storage.model");
 	g_free (parent_udi);
 
 	if (parent_name != NULL && strcmp (parent_name, "PSP") == 0) {

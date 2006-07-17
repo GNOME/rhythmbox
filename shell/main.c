@@ -386,6 +386,10 @@ main (int argc, char **argv)
 #endif
 	}
 
+#ifdef HAVE_GSTREAMER_0_10
+	gst_deinit ();
+#endif
+
 	g_strfreev (new_argv);
 
 	rb_debug ("THE END");

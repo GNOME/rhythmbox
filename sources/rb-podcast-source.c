@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #define __USE_XOPEN
@@ -255,6 +255,7 @@ struct RBPodcastSourcePrivate
 	RhythmDB *db;
 
 	guint toolbar_ui_merge_id;
+	guint prefs_notify_id;
 
 	GtkWidget *vbox;
 	GtkWidget *config_widget;
@@ -383,10 +384,8 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
-	GtkWidget *dummy;
 	GdkPixbuf *pixbuf;
-
-	dummy = gtk_tree_view_new ();
+	gint       size;
 
 	source->priv = RB_PODCAST_SOURCE_GET_PRIVATE (source);
 
@@ -396,17 +395,17 @@ rb_podcast_source_init (RBPodcastSource *source)
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 
-	pixbuf = gtk_widget_render_icon (dummy,
-					 RB_STOCK_PODCAST,
-					 GTK_ICON_SIZE_LARGE_TOOLBAR,
-					 NULL);
+	/* FIXME: we use size LARGE_TOOLBAR for everything else but it doesn't look right */
+	gtk_icon_size_lookup (GTK_ICON_SIZE_SMALL_TOOLBAR, &size, NULL);
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   RB_STOCK_PODCAST,
+					   size,
+					   0, NULL);
 
 	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
-
-	gtk_widget_destroy (dummy);
 }
 
 static void
@@ -419,6 +418,10 @@ rb_podcast_source_dispose (GObject *object)
 
 	if (source->priv->disposed)
 		return;
+
+	if (source->priv->db != NULL) {
+		g_object_unref (source->priv->db);
+	}
 
 	source->priv->disposed = TRUE;
 
@@ -438,6 +441,12 @@ rb_podcast_source_finalize (GObject *object)
 	g_return_if_fail (source->priv != NULL);
 
 	rb_debug ("finalizing podcast source");
+
+	if (source->priv->action_group != NULL) {
+		g_object_unref (source->priv->action_group);
+	}
+
+	eel_gconf_notification_remove (source->priv->prefs_notify_id);
 
 	g_object_unref (source->priv->feeds);
 	g_object_unref (source->priv->podcast_mg);
@@ -484,7 +493,7 @@ search_action_changed (GtkRadioAction  *action,
 	gboolean active;
 	RBPodcastSource *source;
 
-	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
+	g_object_get (shell, "selected-source", &source, NULL);
 
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
 
@@ -493,6 +502,10 @@ search_action_changed (GtkRadioAction  *action,
 		source->priv->search_prop = search_action_to_prop (GTK_ACTION (current));
 		rb_podcast_source_do_query (source, RB_PODCAST_QUERY_TYPE_SEARCH);
 		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
+
+	if (source != NULL) {
+		g_object_unref (source);
 	}
 }
 
@@ -515,8 +528,8 @@ rb_podcast_source_constructor (GType type,
 	source = RB_PODCAST_SOURCE (G_OBJECT_CLASS (rb_podcast_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &source->priv->db, NULL);
 
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "PodcastActions",
@@ -741,9 +754,9 @@ rb_podcast_source_constructor (GType type,
 
 	rb_podcast_source_state_prefs_sync (source);
 
-	eel_gconf_notification_add (CONF_STATE_PODCAST_PREFIX,
-				    (GConfClientNotifyFunc) rb_podcast_source_state_pref_changed,
-				    source);
+	source->priv->prefs_notify_id = eel_gconf_notification_add (CONF_STATE_PODCAST_PREFIX,
+								    (GConfClientNotifyFunc) rb_podcast_source_state_pref_changed,
+								    source);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
@@ -863,6 +876,7 @@ static void
 impl_delete (RBSource *asource)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
+	GList *entries;
 	GList *l;
 	gint ret;
 	GtkWidget *dialog;
@@ -872,9 +886,9 @@ impl_delete (RBSource *asource)
 
 	rb_debug ("Delete episode action");
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "window", &window, NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "window", &window, NULL);
+	g_object_unref (shell);
 
 	dialog = gtk_message_dialog_new (window,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -912,10 +926,14 @@ impl_delete (RBSource *asource)
 	rb_podcast_manager_set_remove_files (source->priv->podcast_mg,
 					     (ret == GTK_RESPONSE_YES));
 
-	for (l = rb_entry_view_get_selected_entries (source->priv->posts); l != NULL;
-	     l = g_list_next (l)) {
+	entries = rb_entry_view_get_selected_entries (source->priv->posts);
+	for (l = entries; l != NULL; l = g_list_next (l)) {
 		rhythmdb_entry_delete (source->priv->db, l->data);
 	}
+
+	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (entries);
+
 	rhythmdb_commit (source->priv->db);
 }
 
@@ -1011,6 +1029,9 @@ rb_podcast_source_songs_show_popup_cb (RBEntryView *view,
 			lst = lst->next;
 		}
 
+		g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
+		g_list_free (lst);
+
 		action = gtk_action_group_get_action (source->priv->action_group, "PodcastSrcDownloadPost");
 		gtk_action_set_sensitive (action, downloadable);
 
@@ -1097,7 +1118,7 @@ construct_query_from_selection (RBPodcastSource *source)
 	GPtrArray *query;
 	RhythmDBEntryType entry_type;
 
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
 
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1304,6 +1325,9 @@ rb_podcast_source_cmd_download_post (GtkAction *action,
 	}
 	g_value_unset (&val);
 	rhythmdb_commit (source->priv->db);
+
+	g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (lst);
 }
 
 static void
@@ -1333,8 +1357,12 @@ rb_podcast_source_cmd_cancel_download (GtkAction *action,
 
 		lst = lst->next;
 	}
+
 	g_value_unset (&val);
 	rhythmdb_commit (source->priv->db);
+
+	g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (lst);
 }
 
 static void
@@ -1350,9 +1378,9 @@ rb_podcast_source_cmd_delete_feed (GtkAction *action,
 
 	rb_debug ("Delete feed action");
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "window", &window, NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "window", &window, NULL);
+	g_object_unref (shell);
 
 	dialog = gtk_message_dialog_new (window,
 			                 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1715,9 +1743,10 @@ rb_podcast_source_start_download_cb (RBPodcastManager *pd,
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
+
 	rb_debug ("Start download");
 	rb_shell_hidden_notify (shell, 4000, _("Downloading podcast"), NULL, podcast_name);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 }
 
 static void
@@ -1727,9 +1756,10 @@ rb_podcast_source_finish_download_cb (RBPodcastManager *pd,
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
+
 	rb_debug ("Finish download");
 	rb_shell_hidden_notify (shell, 4000, _("Finished downloading podcast"), NULL, podcast_name);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 }
 
 static void
@@ -1739,17 +1769,20 @@ rb_podcast_source_feed_updates_avaliable_cb (RBPodcastManager *pd,
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
+
 	rb_debug ("Updates avaliable");
 	rb_shell_hidden_notify (shell, 4000, _("New updates avaliable from"), NULL, podcast_name);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 }
 
-static RBShell*
+static RBShell *
 rb_podcast_source_get_shell (RBPodcastSource *source)
 {
 	RBShell *shell;
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+
+	g_object_get (source, "shell", &shell, NULL);
+
 	return shell;
 }
 
@@ -1879,7 +1912,9 @@ impl_can_add_to_queue (RBSource *source)
 		ok |= rb_podcast_manager_entry_downloaded (entry);
 	}
 
+	g_list_foreach (selection, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (selection);
+
 	return ok;
 }
 
@@ -1904,6 +1939,7 @@ impl_add_to_queue (RBSource *source, RBSource *queue)
 						     entry, -1);
 	}
 
+	g_list_foreach (selection, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (selection);
 }
 
@@ -1938,10 +1974,13 @@ rb_podcast_source_cmd_new_podcast (GtkAction *action,
 	GObject *object;
 
 	rb_debug ("Got new podcast command");
-	g_object_get (G_OBJECT (source), "podcast-manager", &object, NULL);
+	g_object_get (source, "podcast-manager", &object, NULL);
+
 	dialog = rb_new_podcast_dialog_new (RB_PODCAST_MANAGER (object));
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
+
+	g_object_unref (object);
 }
 
 static void
@@ -1954,14 +1993,15 @@ impl_get_status (RBSource *source, char **text, char **progress_text, float *pro
 		ngettext ("%d episode", "%d episodes", 0);
 	}
 
-	g_object_get (G_OBJECT (source), "query-model", &query_model, NULL);
-	if (query_model) {
+	g_object_get (source, "query-model", &query_model, NULL);
+	if (query_model != NULL) {
 		*text = rhythmdb_query_model_compute_status_normal (query_model,
 								    "%d episode",
 								    "%d episodes");
 		if (rhythmdb_query_model_has_pending_changes (query_model))
 			*progress = -1.0f;
-		g_object_unref (G_OBJECT (query_model));
+
+		g_object_unref (query_model);
 	} else {
 		*text = g_strdup ("");
 	}

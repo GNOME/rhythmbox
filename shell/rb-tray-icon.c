@@ -235,6 +235,10 @@ rb_tray_icon_finalize (GObject *object)
 
 	g_return_if_fail (tray->priv != NULL);
 
+	if (tray->priv->shell_player != NULL) {
+		g_object_unref (tray->priv->shell_player);
+	}
+
 	gtk_object_destroy (GTK_OBJECT (tray->priv->tooltips));
 
 	G_OBJECT_CLASS (rb_tray_icon_parent_class)->finalize (object);
@@ -244,12 +248,13 @@ static void
 rb_tray_icon_sync_action (RBShell *shell, gboolean visible, RBTrayIcon *tray)
 {
 	GtkAction *action;
+
 	if ((tray->priv->actiongroup != NULL) && (tray->priv->shell != NULL)) {
 		gboolean visible;
 
 		action = gtk_action_group_get_action (tray->priv->actiongroup,
 						      "TrayShowWindow");
-		g_object_get (G_OBJECT (tray->priv->shell), "visibility", &visible, NULL);
+		g_object_get (tray->priv->shell, "visibility", &visible, NULL);
 		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), visible);
 
 		action = gtk_action_group_get_action (tray->priv->actiongroup,
@@ -279,7 +284,7 @@ rb_tray_icon_set_property (GObject *object,
 					 "visibility_changed",
 					 G_CALLBACK (rb_tray_icon_sync_action),
 					 tray, 0);
-		g_object_get (G_OBJECT (tray->priv->shell),
+		g_object_get (tray->priv->shell,
 			      "shell-player", &tray->priv->shell_player,
 			      NULL);
 		rb_tray_icon_sync_action (NULL, FALSE, tray);

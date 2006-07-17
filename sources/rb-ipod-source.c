@@ -138,7 +138,7 @@ rb_ipod_source_name_changed_cb (RBiPodSource *source, GParamSpec *spec,
 {
 	char *name;
 
-	g_object_get (RB_SOURCE (source), "name", &name, NULL);
+	g_object_get (source, "name", &name, NULL);
 	rb_ipod_source_set_ipod_name (source, name);
 	g_free (name);
 }
@@ -195,7 +195,8 @@ rb_ipod_source_dispose (GObject *object)
 }
 
 RBRemovableMediaSource *
-rb_ipod_source_new (RBShell *shell, GnomeVFSVolume *volume)
+rb_ipod_source_new (RBShell *shell,
+                    GnomeVFSVolume *volume)
 {
 	RBiPodSource *source;
 	RhythmDBEntryType entry_type;
@@ -203,9 +204,9 @@ rb_ipod_source_new (RBShell *shell, GnomeVFSVolume *volume)
 
 	g_assert (rb_ipod_is_volume_ipod (volume));
 
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_get (shell, "db", &db, NULL);
 	entry_type =  rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (db);
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "entry-type", entry_type,
@@ -259,7 +260,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
 
-  	g_object_get (G_OBJECT (source),
+  	g_object_get (source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
@@ -283,7 +284,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	}
 
 	rb_shell_append_source (shell, playlist_source, RB_SOURCE (source));
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 }
 
 static void
@@ -348,7 +349,7 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	char *pc_path;
 
 	/* Set URI */
-	g_object_get (G_OBJECT (source), "entry-type", &entry_type,
+	g_object_get (source, "entry-type", &entry_type,
 		      NULL);
 
 	pc_path = ipod_path_to_uri (priv->ipod_mount_path,
@@ -495,17 +496,27 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	rhythmdb_commit (RHYTHMDB (db));
 }
 
+static RhythmDB *
+get_db_for_source (RBiPodSource *source)
+{
+	RBShell *shell;
+	RhythmDB *db;
+
+  	g_object_get (source, "shell", &shell, NULL);
+  	g_object_get (shell, "db", &db, NULL);
+  	g_object_unref (shell);
+
+        return db;
+}
+
 static gboolean
 load_ipod_db_idle_cb (RBiPodSource *source)
 {
-	RBShell *shell;
 	RhythmDB *db;
  	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 
-  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-  	g_object_unref (G_OBJECT (shell));
+        db = get_db_for_source (source);
 
   	g_assert (db != NULL);
  	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
@@ -514,7 +525,8 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 
 	load_ipod_playlists (source);
 
-	g_object_unref (G_OBJECT (db));
+	g_object_unref (db);
+
 	return FALSE;
 }
 
@@ -524,7 +536,7 @@ rb_ipod_load_songs (RBiPodSource *source)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GnomeVFSVolume *volume;
 
-	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
+	g_object_get (source, "volume", &volume, NULL);
 	priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
 
  	priv->ipod_db = itdb_parse (priv->ipod_mount_path, NULL);
@@ -538,6 +550,8 @@ rb_ipod_load_songs (RBiPodSource *source)
 			      NULL);
 		g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
+
+        g_object_unref (volume);
 }
 
 static gchar *
@@ -634,7 +648,8 @@ hal_udi_is_ipod (const char *udi)
 {
 	LibHalContext *ctx;
 	DBusConnection *conn;
-	char *parent_udi, *parent_name;
+	char *parent_udi;
+        char *parent_name;
 	gboolean result;
 	DBusError error;
 
@@ -642,6 +657,9 @@ hal_udi_is_ipod (const char *udi)
 	dbus_error_init (&error);
 
 	conn = NULL;
+        parent_udi = NULL;
+        parent_name = NULL;
+
 	ctx = libhal_ctx_new ();
 	if (ctx == NULL) {
 		/* FIXME: should we return an error somehow so that we can
@@ -700,22 +718,23 @@ hal_udi_is_ipod (const char *udi)
 				product_id = 0;
 			}
 		}
-		g_free(spider_udi);
+		g_free (spider_udi);
 
 		if (vnd_id == PHONE_VENDOR_ID && product_id == PHONE_PRODUCT_ID) {
 			result = TRUE;
 		}
 	}
 #endif
-	g_free (parent_udi);
 	if (parent_name == NULL || dbus_error_is_set (&error))
 		goto end;
 
 	if (strcmp (parent_name, "iPod") == 0)
 		result = TRUE;
 
-	g_free (parent_name);
 end:
+	g_free (parent_udi);
+	g_free (parent_name);
+
 	if (dbus_error_is_set (&error)) {
 		rb_debug ("Error: %s\n", error.message);
 		dbus_error_free (&error);
@@ -738,7 +757,8 @@ static gboolean
 hal_udi_is_ipod (const char *udi)
 {
 	LibHalContext *ctx;
-	char *parent_udi, *parent_name;
+	char *parent_udi;
+        char *parent_name;
 	gboolean result;
 
 	result = FALSE;
@@ -800,14 +820,11 @@ impl_move_to_trash (RBSource *asource)
 {
 	GList *sel, *tem;
 	RBEntryView *songs;
-	RBShell *shell;
 	RhythmDB *db;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (asource);
 	RBiPodSource *source = RB_IPOD_SOURCE (asource);
 
-  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-  	g_object_unref (G_OBJECT (shell));
+        db = get_db_for_source (source);
 
 	songs = rb_source_get_entry_view (RB_SOURCE (asource));
 	sel = rb_entry_view_get_selected_entries (songs);
@@ -830,9 +847,12 @@ impl_move_to_trash (RBSource *asource)
 		rhythmdb_entry_move_to_trash (db, entry);
 		rhythmdb_commit (db);
 	}
+
 	if (sel != NULL) {
 		itdb_write (priv->ipod_db, NULL);
 	}
+
+  	g_object_unref (db);
 
 	g_list_free (sel);
 }
@@ -874,13 +894,10 @@ build_filename (RBSource *asource, RhythmDBEntry *entry)
 static void
 completed_cb (RhythmDBEntry *entry, const char *dest, RBiPodSource *source)
 {
-	RBShell *shell;
 	RhythmDB *db;
 	Itdb_Track *song;
 
-  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-  	g_object_unref (G_OBJECT (shell));
+        db = get_db_for_source (source);
 
 	song = create_ipod_song_from_entry (entry);
 	if (song != NULL) {
@@ -908,11 +925,11 @@ impl_paste (RBSource *asource, GList *entries)
 	GList *l;
 	RBShell *shell;
 
-	g_object_get (G_OBJECT (asource), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell),
+	g_object_get (asource, "shell", &shell, NULL);
+	g_object_get (shell,
 		      "removable-media-manager", &rm_mgr,
 		      NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	for (l = entries; l != NULL; l = l->next) {
 		RhythmDBEntry *entry;
@@ -922,7 +939,7 @@ impl_paste (RBSource *asource, GList *entries)
 
 		entry = (RhythmDBEntry *)l->data;
 		entry_type = rhythmdb_entry_get_entry_type (entry);
-		g_object_get (G_OBJECT (asource),
+		g_object_get (asource,
 			      "entry-type", &ipod_entry_type,
 			      NULL);
 		if (entry_type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
@@ -945,7 +962,8 @@ impl_paste (RBSource *asource, GList *entries)
 		g_free (dest);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	}
-	g_object_unref (G_OBJECT (rm_mgr));
+
+	g_object_unref (rm_mgr);
 }
 
 static gboolean
@@ -954,15 +972,12 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
 	GList *list, *i;
 	GList *entries = NULL;
-	RBShell *shell;
 	RhythmDB *db;
 
 	rb_debug ("parsing uri list");
 	list = rb_uri_list_parse ((const char *) data->data);
 
-  	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-  	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-  	g_object_unref (G_OBJECT (shell));
+        db = get_db_for_source (RB_IPOD_SOURCE (source));
 
 	for (i = list; i != NULL; i = g_list_next (i)) {
 		if (i->data != NULL) {

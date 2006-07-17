@@ -21,7 +21,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -632,61 +632,61 @@ static void
 rb_shell_player_set_source_internal (RBShellPlayer *player,
 				     RBSource      *source)
 {
-		if (player->priv->selected_source != NULL) {
-			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
-			GList *property_views = rb_source_get_property_views (player->priv->selected_source);
+	if (player->priv->selected_source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
+		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
 
-			if (songs != NULL) {
-				g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-								      G_CALLBACK (rb_shell_player_entry_activated_cb),
-								      player);
-			}
-
-			for (; property_views; property_views = property_views->next) {
-				g_signal_handlers_disconnect_by_func (G_OBJECT (property_views->data),
-								      G_CALLBACK (rb_shell_player_property_row_activated_cb),
-								      player);
-			}
-
-			g_list_free (property_views);
+		if (songs != NULL) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_player_entry_activated_cb),
+							      player);
 		}
 
-		player->priv->selected_source = source;
-
-		rb_debug ("selected source %p", player->priv->selected_source);
-
-		rb_shell_player_sync_with_selected_source (player);
-		rb_shell_player_sync_buttons (player);
-
-		if (player->priv->selected_source != NULL) {
-			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
-			GList *property_views = rb_source_get_property_views (player->priv->selected_source);
-
-			if (songs)
-				g_signal_connect_object (G_OBJECT (songs),
-							 "entry-activated",
-							 G_CALLBACK (rb_shell_player_entry_activated_cb),
-							 player, 0);
-			for (; property_views; property_views = property_views->next)
-				g_signal_connect_object (G_OBJECT (property_views->data),
-							 "property-activated",
-							 G_CALLBACK (rb_shell_player_property_row_activated_cb),
-							 player, 0);
-
-			g_list_free (property_views);
+		for (; property_views; property_views = property_views->next) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (property_views->data),
+							      G_CALLBACK (rb_shell_player_property_row_activated_cb),
+							      player);
 		}
 
-		/* If we're not playing, change the play order's view of the current source;
-		 * if the selected source is the queue, however, set it to NULL so it'll stop
-		 * once the queue is empty.
-		 */
-		if (player->priv->current_playing_source == NULL) {
-			RBSource *source = player->priv->selected_source;
-			if (source == RB_SOURCE (player->priv->queue_source))
-				source = NULL;
+		g_list_free (property_views);
+	}
 
-			rb_play_order_playing_source_changed (player->priv->play_order, source);
-		}
+	player->priv->selected_source = source;
+
+	rb_debug ("selected source %p", player->priv->selected_source);
+
+	rb_shell_player_sync_with_selected_source (player);
+	rb_shell_player_sync_buttons (player);
+
+	if (player->priv->selected_source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
+		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
+
+		if (songs)
+			g_signal_connect_object (G_OBJECT (songs),
+						 "entry-activated",
+						 G_CALLBACK (rb_shell_player_entry_activated_cb),
+						 player, 0);
+		for (; property_views; property_views = property_views->next)
+			g_signal_connect_object (G_OBJECT (property_views->data),
+						 "property-activated",
+						 G_CALLBACK (rb_shell_player_property_row_activated_cb),
+						 player, 0);
+
+		g_list_free (property_views);
+	}
+
+	/* If we're not playing, change the play order's view of the current source;
+	 * if the selected source is the queue, however, set it to NULL so it'll stop
+	 * once the queue is empty.
+	 */
+	if (player->priv->current_playing_source == NULL) {
+		RBSource *source = player->priv->selected_source;
+		if (source == RB_SOURCE (player->priv->queue_source))
+			source = NULL;
+
+		rb_play_order_playing_source_changed (player->priv->play_order, source);
+	}
 }
 
 static void
@@ -717,7 +717,7 @@ rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
 	if (player->priv->queue_source != NULL) {
 		RBEntryView *sidebar;
 
-		g_object_get (G_OBJECT (player->priv->queue_source), "sidebar", &sidebar, NULL);
+		g_object_get (player->priv->queue_source, "sidebar", &sidebar, NULL);
 		g_signal_handlers_disconnect_by_func (sidebar,
 						      G_CALLBACK (rb_shell_player_entry_activated_cb),
 						      player);
@@ -748,7 +748,7 @@ rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
 		rb_play_order_playing_source_changed (player->priv->queue_play_order,
 						      RB_SOURCE (player->priv->queue_source));
 
-		g_object_get (G_OBJECT (player->priv->queue_source), "sidebar", &sidebar, NULL);
+		g_object_get (player->priv->queue_source, "sidebar", &sidebar, NULL);
 		g_signal_connect_object (G_OBJECT (sidebar),
 					 "entry-activated",
 					 G_CALLBACK (rb_shell_player_entry_activated_cb),
@@ -769,16 +769,13 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
-	rb_shell_player_set_source_internal (player, NULL);
-	rb_shell_player_set_queue_source_internal (player, NULL);
-	rb_shell_player_set_db_internal (player, NULL);
-
 	eel_gconf_notification_remove (player->priv->gconf_play_order_id);
 
 	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
 
-	g_object_unref (G_OBJECT (player->priv->mmplayer));
-	g_object_unref (G_OBJECT (player->priv->play_order));
+	g_object_unref (player->priv->mmplayer);
+	g_object_unref (player->priv->play_order);
+	g_object_unref (player->priv->queue_play_order);
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
 }
@@ -1277,7 +1274,8 @@ static void
 rb_shell_player_set_play_order (RBShellPlayer *player, const gchar *new_val)
 {
 	char *old_val;
-	g_object_get (G_OBJECT (player), "play-order", &old_val, NULL);
+
+	g_object_get (player, "play-order", &old_val, NULL);
 	if (strcmp (old_val, new_val) != 0) {
 		/* The notify signal will be emitted by the gconf notifier */
 		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, new_val);
@@ -1976,7 +1974,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	if (playa->priv->queue_source) {
 		RBEntryView *queue_sidebar;
 
-		g_object_get (G_OBJECT (playa->priv->queue_source), "sidebar", &queue_sidebar, NULL);
+		g_object_get (playa->priv->queue_source, "sidebar", &queue_sidebar, NULL);
 
 		if (view == queue_sidebar || view == rb_source_get_entry_view (RB_SOURCE (playa->priv->queue_source))) {
 
@@ -2006,7 +2004,7 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 			}
 		}
 
-		g_object_unref (G_OBJECT (queue_sidebar));
+		g_object_unref (queue_sidebar);
 	}
 
 	/* bail out if queue only */
@@ -2052,17 +2050,23 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	 * keyboard to select then activate) and is pretty much always done by
 	 * the time we get in here.
 	 */
-	g_object_get (G_OBJECT (playa->priv->selected_source), "query-model", &model, NULL);
+	g_object_get (playa->priv->selected_source, "query-model", &model, NULL);
+
 	if (!model)
 		return;
-	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter))
-		return;
+
+	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
+		goto done;
+	}
 
 	entry = rhythmdb_query_model_iter_to_entry (model, &iter);
 	if (!rb_shell_player_set_playing_entry (playa, entry, TRUE, &error)) {
 		rb_shell_player_error (playa, FALSE, error);
 		g_clear_error (&error);
 	}
+
+ done:
+	g_object_unref (model);
 }
 
 static void
@@ -2899,7 +2903,7 @@ _idle_unblock_signal_cb (gpointer data)
 					      "ControlPlay");
 
 	/* sync the active state of the action again */
-	g_object_get (G_OBJECT (player), "playing", &playing, NULL);
+	g_object_get (player, "playing", &playing, NULL);
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
 
 	g_signal_handlers_unblock_by_func (action, rb_shell_player_cmd_play, player);
@@ -2915,7 +2919,7 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 	gboolean playing;
 	char *tooltip;
 
-	g_object_get (G_OBJECT (player), "playing", &playing, NULL);
+	g_object_get (player, "playing", &playing, NULL);
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
 	if (playing) {

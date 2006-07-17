@@ -44,7 +44,6 @@ typedef struct
 typedef struct
 {
 	RBPlaylistSourceClass parent;
-	GdkPixbuf *pixbuf;
 } RBAutoPlaylistSourceClass;
 
 GType		rb_auto_playlist_source_get_type 	(void);
