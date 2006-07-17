@@ -1,5 +1,13 @@
 2006-07-17  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_do_query): use rbythmdb_query_model_chain
+	rather than setting the base model, as that lets us not import all the
+	entries from the base model. This fixes some issues whether the search
+	box wasn't filting automatic playlists.
+
+2006-07-17  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/artdisplay/artdisplay/CoverArtDatabase.py: fix a syntax
 	error, which caused blacklist creation to fail.
 
