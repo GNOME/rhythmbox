@@ -110,7 +110,7 @@ class CoverArtDatabase (object):
 	def write_blist (self, blist_location, blist):
 		if blist:
 			blist_file = file (blist_location, 'w')
-			blist_file.writelines ("%s\n" % b for b in blist)
+			blist_file.writelines (blist)
 			blist_file.close ()
 		elif os.path.exists (blist_location):
 			os.unlink (blist_location)

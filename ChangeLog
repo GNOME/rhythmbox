@@ -1,5 +1,10 @@
 2006-07-17  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py: fix a syntax
+	error, which caused blacklist creation to fail.
+
+2006-07-17  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell.c: (rb_shell_quit): don't stop DAAP sharing when
 	running with -n, because we don't start it then. Fixes a crash on
 	exit.
