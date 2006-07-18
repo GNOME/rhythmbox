@@ -1,3 +1,12 @@
+2006-07-18  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Ståle Lyngaas  <staale@lyngaas.com>
+	* sources/rb-audiocd-source.c: store the MB track ids in the database.
+	Fixes #347832
+
+	* backends/gstreamer/rb-encoder-gst.c: (add_tags_from_entry): and
+	write then into files.
+
 2006-07-17  William Jon McCann  <mccann@jhu.edu>
 
 	* daapsharing/rb-daap-connection.c:

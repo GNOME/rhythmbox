@@ -440,6 +440,7 @@ metadata_cb (SjMetadata *metadata,
 			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
 			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ALBUM, album->title);
 			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_GENRE, album->genre);
+			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, track->track_id);
 
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, track->duration);
