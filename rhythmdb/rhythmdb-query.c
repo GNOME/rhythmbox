@@ -761,7 +761,7 @@ rhythmdb_query_to_string (RhythmDB *db, GPtrArray *query)
 
 	buf = g_string_sized_new (100);
 	for (i = 0; i < query->len; i++) {
-		char *fmt;
+		char *fmt = NULL;
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
 
 		switch (data->type) {
