@@ -1,3 +1,17 @@
+2006-07-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_reapply_query_cb):
+	Ignore old query == new query case.
+	Fixes auto playlists with time-relative queries.
+
+	* rhythmdb/rhythmdb-query.c: (prop_gvalue_to_string),
+	(write_encoded_gvalue), (rhythmdb_query_is_time_relative),
+	(rhythmdb_query_to_string):
+	* rhythmdb/rhythmdb.h:
+	Add debug helper for printing queries in case someone needs it again.
+
 2006-07-18  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Ståle Lyngaas  <staale@lyngaas.com>

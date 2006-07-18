@@ -269,6 +269,47 @@ rhythmdb_query_free (GPtrArray *query)
 	g_ptr_array_free (query, TRUE);
 }
 
+static char *
+prop_gvalue_to_string (RhythmDB *db,
+		       RhythmDBPropType propid,
+		       GValue *val)
+{
+	/* special-case some properties */
+	switch (propid) {
+	case RHYTHMDB_PROP_TYPE:
+		{
+			RhythmDBEntryType type = g_value_get_pointer (val);
+			return g_strdup (type->name);
+		}
+		break;
+	default:
+		break;
+	}
+
+	/* otherwise just convert numbers to strings */
+	switch (G_VALUE_TYPE (val)) {
+	case G_TYPE_STRING:
+		return g_value_dup_string (val);
+	case G_TYPE_BOOLEAN:
+		return g_strdup_printf ("%d", g_value_get_boolean (val));
+	case G_TYPE_INT:
+		return g_strdup_printf ("%d", g_value_get_int (val));
+	case G_TYPE_LONG:
+		return g_strdup_printf ("%ld", g_value_get_long (val));
+	case G_TYPE_ULONG:
+		return g_strdup_printf ("%lu", g_value_get_ulong (val));
+	case G_TYPE_UINT64:
+		return g_strdup_printf ("%" G_GUINT64_FORMAT, g_value_get_uint64 (val));
+	case G_TYPE_FLOAT:
+		return g_strdup_printf ("%f", g_value_get_float (val));
+	case G_TYPE_DOUBLE:
+		return g_strdup_printf ("%f", g_value_get_double (val));
+	default:
+		g_assert_not_reached ();
+		return NULL;
+	}
+}
+
 static void
 write_encoded_gvalue (RhythmDB *db,
 		      xmlNodePtr node,
@@ -278,52 +319,7 @@ write_encoded_gvalue (RhythmDB *db,
 	char *strval = NULL;
 	xmlChar *quoted;
 
-	/* special-case some properties */
-	switch (propid) {
-	case RHYTHMDB_PROP_TYPE:
-		{
-			RhythmDBEntryType type = g_value_get_pointer (val);
-			strval = g_strdup (type->name);
-		}
-		break;
-	default:
-		break;
-	}
-
-	/* otherwise just convert numbers to strings */
-	if (!strval) {
-		switch (G_VALUE_TYPE (val)) {
-		case G_TYPE_STRING:
-			strval = g_value_dup_string (val);
-			break;
-		case G_TYPE_BOOLEAN:
-			strval = g_strdup_printf ("%d", g_value_get_boolean (val));
-			break;
-		case G_TYPE_INT:
-			strval = g_strdup_printf ("%d", g_value_get_int (val));
-			break;
-		case G_TYPE_LONG:
-			strval = g_strdup_printf ("%ld", g_value_get_long (val));
-			break;
-		case G_TYPE_ULONG:
-			strval = g_strdup_printf ("%lu", g_value_get_ulong (val));
-			break;
-		case G_TYPE_UINT64:
-			strval = g_strdup_printf ("%" G_GUINT64_FORMAT, g_value_get_uint64 (val));
-			break;
-		case G_TYPE_FLOAT:
-			strval = g_strdup_printf ("%f", g_value_get_float (val));
-			break;
-		case G_TYPE_DOUBLE:
-			strval = g_strdup_printf ("%f", g_value_get_double (val));
-			break;
-		default:
-			g_assert_not_reached ();
-			strval = NULL;
-			break;
-		}
-	}
-
+	strval = prop_gvalue_to_string (db, propid, val);
 	quoted = xmlEncodeEntitiesReentrant (NULL, BAD_CAST strval);
 	g_free (strval);
 
@@ -747,6 +743,88 @@ rhythmdb_query_is_time_relative (RhythmDB *db, GPtrArray *query)
 	}
 
 	return FALSE;
+}
+
+/**
+ * rhythmdb_query_to_string:
+ * @db: a #RhythmDB instance
+ * @query: a query.
+ *
+ * Returns a supposedly human-readable form of the query.
+ * This is only intended for debug usage.
+ **/
+char *
+rhythmdb_query_to_string (RhythmDB *db, GPtrArray *query)
+{
+	GString *buf;
+	int i;
+
+	buf = g_string_sized_new (100);
+	for (i = 0; i < query->len; i++) {
+		char *fmt;
+		RhythmDBQueryData *data = g_ptr_array_index (query, i);
+
+		switch (data->type) {
+		case RHYTHMDB_QUERY_SUBQUERY:
+			g_string_append_printf (buf, "{ %s }", 
+						rhythmdb_query_to_string (db, data->subquery));
+			break;
+		case RHYTHMDB_QUERY_PROP_LIKE:
+			fmt = "(%s =~ %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
+			fmt = "(%s !~ %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_PREFIX:
+			fmt = "(%s |< %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_SUFFIX:
+			fmt = "(%s >| %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_EQUALS:
+			fmt = "(%s == %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+			fmt = "(year(%s) == %s)";
+			break;
+		case RHYTHMDB_QUERY_DISJUNCTION:
+			g_string_append_printf (buf, " || ");
+			break;
+		case RHYTHMDB_QUERY_END:
+			break;
+		case RHYTHMDB_QUERY_PROP_GREATER:
+			fmt = "(%s > %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+			fmt = "(year(%s) > %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_LESS:
+			fmt = "(%s < %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_YEAR_LESS:
+			fmt = "(year(%s) < %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
+			fmt = "(%s <> %s)";
+			break;
+		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
+			fmt = "(%s >< %s)";
+			break;
+		}
+
+		if (fmt) {
+			char *value;
+
+			value = prop_gvalue_to_string (db, data->propid, data->val);
+			g_string_append_printf (buf, fmt,
+						rhythmdb_nice_elt_name_from_propid (db, data->propid),
+						value);
+			g_free (value);
+			fmt = NULL;
+		}
+	}
+
+	return g_string_free (buf, FALSE);
 }
 
 GType
