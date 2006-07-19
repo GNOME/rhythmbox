@@ -1,5 +1,24 @@
 2006-07-19  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init),
+	(rhythmdb_execute_multi_stat_info_cb), (rhythmdb_event_free),
+	(_shutdown_foreach_swapped), (rhythmdb_shutdown),
+	(rhythmdb_finalize), (timeout_rhythmdb_commit),
+	(rhythmdb_add_timeout_commit), (rhythmdb_execute_stat_info_cb),
+	(rhythmdb_execute_stat), (queue_stat_uri),
+	(rhythmdb_sync_library_idle), (rhythmdb_load_thread_main),
+	(rhythmdb_load), (rhythmdb_entry_register_type),
+	(rhythmdb_entry_register_type_alias): Keep track of outstanding
+	asynchronous vfs operations, and cancel them when shutting down the
+	DB. Also remove outstanding timeoud/idle callbacks. Fixes #347985
+
+	* tests/test-rhythmdb.c: (mark_signal), (set_waiting_signal),
+	(test_rhythmdb_shutdown): wait until the db has been finalised before
+	continuing on to the next test.
+
+2006-07-19  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-encoder-gst.c: (add_tags_from_entry): use the
 	right thing in the #ifdef. From #347832.
 

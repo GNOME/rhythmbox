@@ -378,7 +378,7 @@ rhythmdb_init (RhythmDB *db)
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
 
-	db->priv->entry_type_map = g_hash_table_new (g_str_hash, g_str_equal);
+	db->priv->entry_type_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	db->priv->entry_type_map_mutex = g_mutex_new ();
 	db->priv->entry_type_mutex = g_mutex_new ();
 	rhythmdb_register_core_entry_types (db);
@@ -447,6 +447,7 @@ rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
 
 		results = results->next;
 	}
+	db->priv->stat_handle = NULL;
 	g_mutex_unlock (db->priv->stat_mutex);
 }
 
@@ -509,6 +510,8 @@ rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
 		g_object_unref (result->metadata);
 	if (result->results)
 		g_object_unref (result->results);
+	if (result->handle)
+		gnome_vfs_async_cancel (result->handle);
 	g_free (result);
 }
 
@@ -518,6 +521,12 @@ rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
  * Ceases all #RhythmDB operations, including stopping all directory monitoring, and
  * removing all actions and events currently queued.
  **/
+static void
+_shutdown_foreach_swapped (RhythmDBEvent *event, RhythmDB *db)
+{
+	rhythmdb_event_free (db, event);
+}
+
 void
 rhythmdb_shutdown (RhythmDB *db)
 {
@@ -532,6 +541,17 @@ rhythmdb_shutdown (RhythmDB *db)
 	g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
 	g_slist_free (db->priv->library_locations);
 	db->priv->library_locations = NULL;
+
+	/* abort all async vfs operations */
+	g_mutex_lock (db->priv->stat_mutex);
+	if (db->priv->stat_handle) {
+		gnome_vfs_async_cancel (db->priv->stat_handle);
+		db->priv->stat_handle = NULL;
+	}
+	g_list_foreach (db->priv->outstanding_stats, (GFunc)_shutdown_foreach_swapped, db);
+	g_list_free (db->priv->outstanding_stats);
+	db->priv->outstanding_stats = NULL;
+	g_mutex_unlock (db->priv->stat_mutex);
 
 	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
 		rhythmdb_action_free (db, action);
@@ -552,6 +572,7 @@ static void
 rhythmdb_finalize (GObject *object)
 {
 	RhythmDB *db;
+	int i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RHYTHMDB_IS (object));
@@ -563,9 +584,10 @@ rhythmdb_finalize (GObject *object)
 	rhythmdb_finalize_monitoring (db);
 
 	g_source_remove (db->priv->event_poll_id);
-	if (db->priv->save_timeout_id > 0) {
+	if (db->priv->save_timeout_id > 0)
 		g_source_remove (db->priv->save_timeout_id);
-	}
+	if (db->priv->emit_entry_signals_id > 0)
+		g_source_remove (db->priv->emit_entry_signals_id);
 
 	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
 	g_async_queue_unref (db->priv->action_queue);
@@ -585,6 +607,16 @@ rhythmdb_finalize (GObject *object)
 
 	rb_refstring_unref (db->priv->empty_string);
 	rb_refstring_unref (db->priv->octet_stream_str);
+
+	g_hash_table_destroy (db->priv->entry_type_map);
+	g_mutex_free (db->priv->entry_type_map_mutex);
+
+	g_object_unref (db->priv->metadata);
+
+	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES; i++) {
+		xmlFree (db->priv->column_xml_names[i]);
+	}
+	g_free (db->priv->column_xml_names);
 
 	g_free (db->priv->name);
 
@@ -840,6 +872,7 @@ static gboolean
 timeout_rhythmdb_commit (RhythmDBTimeoutCommitData *data)
 {
 	rhythmdb_commit_internal (data->db, data->sync, data->thread);
+	g_object_unref (data->db);
 	g_free (data);
 	return FALSE;
 }
@@ -852,7 +885,7 @@ rhythmdb_add_timeout_commit (RhythmDB *db, gboolean sync)
 	g_assert (rb_is_main_thread ());
 
 	data = g_new0 (RhythmDBTimeoutCommitData, 1);
-	data->db = db;
+	data->db = g_object_ref (db);
 	data->sync = sync;
 	data->thread = g_thread_self ();
 	g_timeout_add (100, (GSourceFunc)timeout_rhythmdb_commit, data);
@@ -1806,6 +1839,11 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 	/* this is in the main thread, so we can't do any long operation here */
 	GnomeVFSGetFileInfoResult *info_result = results->data;
 
+	g_mutex_lock (event->db->priv->stat_mutex);
+	event->db->priv->outstanding_stats = g_list_remove (event->db->priv->outstanding_stats, event);
+	event->handle = NULL;
+	g_mutex_unlock (event->db->priv->stat_mutex);
+
 	if (info_result->result == GNOME_VFS_OK) {
 		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 	} else {
@@ -1837,6 +1875,10 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 			       event);
 	gnome_vfs_uri_unref (vfs_uri);
 	g_list_free (uri_list);
+
+	g_mutex_lock (db->priv->stat_mutex);
+	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
+	g_mutex_unlock (db->priv->stat_mutex);
 }
 
 void
@@ -1862,8 +1904,8 @@ queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 	 * async_get_file_info job directly.
 	 */
 	g_mutex_lock (db->priv->stat_mutex);
-
 	if (db->priv->action_thread_running) {
+		g_mutex_unlock (db->priv->stat_mutex);
 		rhythmdb_execute_stat (db, uri, result);
 	} else {
 		GnomeVFSURI *vfs_uri;
@@ -1881,9 +1923,9 @@ queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 			g_hash_table_insert (db->priv->stat_events, vfs_uri, result);
 			db->priv->stat_list = g_list_prepend (db->priv->stat_list, vfs_uri);
 		}
-	}
 
-	g_mutex_unlock (db->priv->stat_mutex);
+		g_mutex_unlock (db->priv->stat_mutex);
+	}
 }
 
 static void
@@ -2155,6 +2197,7 @@ static gboolean
 rhythmdb_sync_library_idle (RhythmDB *db)
 {
 	rhythmdb_sync_library_location (db);
+	g_object_unref (db);
 	return FALSE;
 }
 
@@ -2168,6 +2211,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	klass->impl_load (db, &db->priv->exiting);
 	g_mutex_unlock (db->priv->saving_mutex);
 
+	g_object_ref (db);
 	g_timeout_add (10000, (GSourceFunc) rhythmdb_sync_library_idle, db);
 
 	rb_debug ("queuing db load complete signal");
@@ -2204,6 +2248,7 @@ rhythmdb_load (RhythmDB *db)
 	klass->impl_load (db, &db->priv->exiting);
 	g_mutex_unlock (db->priv->saving_mutex);
 
+	g_object_ref (db);
 	g_idle_add ((GSourceFunc) rhythmdb_sync_library_idle, db);
 	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
 						    (GSourceFunc) rhythmdb_process_changed_files, db);
@@ -3322,7 +3367,7 @@ rhythmdb_entry_register_type (RhythmDB *db, const char *name)
 	if (name) {
 		type->name = g_strdup (name);
 		g_mutex_lock (db->priv->entry_type_map_mutex);
-		g_hash_table_insert (db->priv->entry_type_map, type->name, type);
+		g_hash_table_insert (db->priv->entry_type_map, g_strdup (type->name), type);
 		g_mutex_unlock (db->priv->entry_type_map_mutex);
 	}
 
@@ -3337,7 +3382,6 @@ rhythmdb_entry_register_type_alias (RhythmDB *db,
 				    RhythmDBEntryType type,
 				    const char *name)
 {
-	/* yes, we leak the string */
 	char *dn = g_strdup (name);
 
 	g_mutex_lock (db->priv->entry_type_map_mutex);

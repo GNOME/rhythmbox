@@ -18,10 +18,16 @@
 /* test utils */
 gboolean waiting, signaled;
 char *sig_name;
+gulong sig_handler;
+GObject *sig_object;
 
 static void
 mark_signal (void)
 {
+	g_signal_handler_disconnect (sig_object, sig_handler);
+	sig_object = NULL;
+	sig_handler = 0;
+
 	if (signaled) {
 		rb_debug ("got signal '%s' multiple times", sig_name);
 	} else {
@@ -38,7 +44,8 @@ set_waiting_signal (GObject *o, const char *name)
 	signaled = FALSE;
 	waiting = FALSE;
 	sig_name = g_strdup (name);
-	g_signal_connect (o, sig_name, G_CALLBACK (mark_signal), NULL);
+	sig_object = o;
+	sig_handler = g_signal_connect (o, sig_name, G_CALLBACK (mark_signal), NULL);
 }
 
 static void wait_for_signal (void)
@@ -58,6 +65,7 @@ static void wait_for_signal (void)
 
 /* common setup and teardown */
 RhythmDB *db = NULL;
+gboolean waiting_db, finalised_db;
 
 static void
 test_rhythmdb_setup (void)
@@ -78,7 +86,11 @@ test_rhythmdb_shutdown (void)
 {
 	fail_unless (db != NULL, "failed to shutdown DB");
 	rhythmdb_shutdown (db);
-	g_object_unref (G_OBJECT (db));
+
+	/* release the reference, and wait until after finalisation */
+	g_object_weak_ref (G_OBJECT (db), (GWeakNotify)gtk_main_quit, NULL);
+	g_idle_add ((GSourceFunc)g_object_unref, db);
+	gtk_main ();
 	db = NULL;
 }
 

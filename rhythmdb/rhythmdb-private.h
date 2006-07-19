@@ -134,6 +134,7 @@ struct RhythmDBPrivate
 	GList *stat_list;
 	GHashTable *stat_events;
 	GnomeVFSAsyncHandle *stat_handle;
+	GList *outstanding_stats;
 	GMutex *stat_mutex;
 
 	GHashTable *monitored_directories;
