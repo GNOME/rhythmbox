@@ -573,7 +573,7 @@ lookup_cd (SjMetadata *metadata)
         if (mb_GetResultData(priv->mb, MBE_ReleaseGetDate, data, sizeof (data))) {
           int matched, year=1, month=1, day=1;
           matched = sscanf(data, "%u-%u-%u", &year, &month, &day);
-          if (matched > 1) {
+          if (matched >= 1) {
             album->release_date = g_date_new_dmy (day, month, year);
           }
         }

@@ -1,5 +1,12 @@
 2006-07-19  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Alex Lancaster   <alexl@users.sourceforge.net>
+
+	* metadata/sj-metadata-musicbrainz.c: (lookup_cd): accept dates from
+	MB that only have years. Fixes #347906.
+
+2006-07-19  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb-private.h:
 	* rhythmdb/rhythmdb.c: (rhythmdb_init),
 	(rhythmdb_execute_multi_stat_info_cb), (rhythmdb_event_free),
