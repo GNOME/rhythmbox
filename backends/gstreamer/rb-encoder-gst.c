@@ -434,7 +434,7 @@ add_tags_from_entry (RBEncoderGst *encoder,
 				  NULL);
 		g_date_free (date);
 	}
-#ifdef RHYTHMDB_PROP_MUSICBRAINZ_TRACKID
+#ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID)) {
 		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
 				  GST_TAG_MUSICBRAINZ_TRACKID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID),
