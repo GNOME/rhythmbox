@@ -202,6 +202,9 @@ type_ahead_search_func (GtkTreeModel *model, gint column,
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 	folded = rb_search_fold (key);
 	entry_folded = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_FOLDED);
+	if (entry_folded == NULL || folded == NULL)
+		return 1;
+
 	res = (strstr (entry_folded, folded) == NULL);
 	g_free (folded);
 	return res;

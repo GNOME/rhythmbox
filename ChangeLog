@@ -1,3 +1,8 @@
+2006-07-20  James Livingston  <doclivingston@gmail.com>
+
+	* widgets/rb-entry-view.c: (type_ahead_search_func): check the strings
+	aren't NULL before calling strstr. Fixes #347998.
+
 2006-07-19  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster   <alexl@users.sourceforge.net>
