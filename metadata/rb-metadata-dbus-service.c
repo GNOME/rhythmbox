@@ -501,7 +501,11 @@ main (int argc, char **argv)
 	g_main_loop_run (svc.loop);
 
 	if (svc.connection) {
+#ifdef WITH_OLD_DBUS
 		dbus_connection_disconnect (svc.connection);
+#else
+		dbus_connection_close (svc.connection);
+#endif
 		dbus_connection_unref (svc.connection);
 	}
 

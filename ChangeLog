@@ -1,3 +1,10 @@
+2006-07-20  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
+
+	* metadata/rb-metadata-dbus-client.c: (kill_metadata_service):
+	* metadata/rb-metadata-dbus-service.c: (main): Replace calls to 
+	deprecated dbus_connection_disconnect () with dbus_connection_close ().
+	Fixes #348098.
+
 2006-07-20  James Livingston  <doclivingston@gmail.com>
 
 	* widgets/rb-entry-view.c: (type_ahead_search_func): check the strings

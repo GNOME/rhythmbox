@@ -119,7 +119,11 @@ kill_metadata_service (void)
 	if (dbus_connection) {
 		if (dbus_connection_get_is_connected (dbus_connection)) {
 			rb_debug ("closing dbus connection");
+#ifdef WITH_OLD_DBUS
 			dbus_connection_disconnect (dbus_connection);
+#else
+			dbus_connection_close (dbus_connection);
+#endif
 		} else {
 			rb_debug ("dbus connection already closed");
 		}
