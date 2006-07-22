@@ -44,6 +44,7 @@
 #include "rb-playlist-source.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
+#include "rb-file-helpers.h"
 
 static void rb_daap_share_set_property  (GObject *object,
 					 guint prop_id,
@@ -993,24 +994,8 @@ add_entry_to_mlcl (RhythmDBEntry *entry,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASAR, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 	if (client_requested (mb->bits, SONG_BITRATE)) {
 		gulong bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
-
-		if (bitrate == 0) { /* because gstreamer is stupid */
-		/* bitrate needs to be sent in kbps, kb/s
-		 * a kilobit is 128 bytes
-		 * if the length is L seconds,
-		 * and the file is S bytes
-		 * then
-		 * (S / 128) / L is kbps */
-			gulong length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
-			guint64 file_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
-
-			if (length > 0)
-				bitrate = (file_size / 128) / length;
-			else
-				bitrate = 0;
-		}
-
-		rb_daap_structure_add (mlit, RB_DAAP_CC_ASBR, (gint32) rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE));
+		if (bitrate != 0)
+			rb_daap_structure_add (mlit, RB_DAAP_CC_ASBR, (gint32) bitrate);
 	}
 	if (client_requested (mb->bits, SONG_BPM))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ASBT, (gint32) 0);
@@ -1194,10 +1179,83 @@ write_next_chunk (SoupMessage *message, GnomeVFSHandle *handle)
 }
 
 static void
-message_finished (SoupMessage *message, GnomeVFSHandle *handle)
+chunked_message_finished (SoupMessage *message, GnomeVFSHandle *handle)
 {
+	rb_debug ("finished sending chunked file");
 	gnome_vfs_close (handle);
 }
+
+static void
+send_chunked_file (SoupMessage *message, RhythmDBEntry *entry, guint64 file_size, guint64 offset)
+{
+	GnomeVFSResult result;
+	GnomeVFSHandle *handle;
+	const char *location;
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	
+	rb_debug ("sending %s chunked from offset %" G_GUINT64_FORMAT, location, offset);
+	result = gnome_vfs_open (&handle, location, GNOME_VFS_OPEN_READ);
+	if (result != GNOME_VFS_OK) {
+		soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
+		return;
+	}
+
+	if (offset != 0) {
+		result = gnome_vfs_seek (handle, GNOME_VFS_SEEK_START, offset);
+		if (result != GNOME_VFS_OK) {
+			g_warning ("Error seeking: %s", gnome_vfs_result_to_string (result));
+			gnome_vfs_close (handle);
+			soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
+			return;
+		}
+		file_size -= offset;
+	}
+
+	soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
+
+	g_signal_connect (message, "wrote_chunk", G_CALLBACK (write_next_chunk), handle);
+	g_signal_connect (message, "finished", G_CALLBACK (chunked_message_finished), handle);
+	write_next_chunk (message, handle);
+}
+
+#ifdef HAVE_G_MAPPED_FILE
+static void
+mapped_file_message_finished (SoupMessage *message, GMappedFile *file)
+{
+	rb_debug ("finished sending mmapped file");
+	g_mapped_file_free (file);
+}
+
+static void
+send_mapped_file (SoupMessage *message, RhythmDBEntry *entry, guint64 file_size, guint64 offset)
+{
+	GMappedFile *mapped_file;
+	char *path;
+	GError *error = NULL;
+
+	path = gnome_vfs_get_local_path_from_uri (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	rb_debug ("sending file %s mmapped, from offset %" G_GUINT64_FORMAT, path, offset);
+
+	mapped_file = g_mapped_file_new (path, FALSE, &error);
+	if (mapped_file == NULL) {
+		g_warning ("Unable to map file %s: %s", path, error->message);
+		soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
+	} else {
+		message->response.owner = SOUP_BUFFER_USER_OWNED;
+		message->response.length = file_size;
+		message->response.body = g_mapped_file_get_contents (mapped_file) + offset;
+		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), 
+						  SOUP_TRANSFER_CONTENT_LENGTH);
+
+		g_signal_connect (message, 
+				  "finished", 
+				  G_CALLBACK (mapped_file_message_finished), 
+				  mapped_file);
+	}
+	g_free (path);
+}
+#endif
 
 static void
 databases_cb (RBDAAPShare *share,
@@ -1389,11 +1447,9 @@ databases_cb (RBDAAPShare *share,
 		gint id;
 		RhythmDBEntry *entry;
 		const gchar *location;
-		guint64 file_size;
-		GnomeVFSResult result;
-		GnomeVFSHandle *handle;
 		const gchar *range_header;
-		guint status_code = SOUP_STATUS_OK;
+		guint64 file_size;
+		guint64 offset = 0;
 
 		id_str = rest_of_path + 9;
 		id = atoi (id_str);
@@ -1401,46 +1457,37 @@ databases_cb (RBDAAPShare *share,
 		entry = g_hash_table_lookup (share->priv->id_to_entry, GINT_TO_POINTER (id));
 		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		file_size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
-
-		result = gnome_vfs_open (&handle, location, GNOME_VFS_OPEN_READ);
-		if (result != GNOME_VFS_OK) {
-			soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
-			goto out;
-		}
+		
+		message_add_standard_headers (message);
+		soup_message_add_header (message->response_headers, "Accept-Ranges", "bytes");
 
 		range_header = soup_message_get_header (message->request_headers, "Range");
 		if (range_header) {
 			const gchar *s;
-			GnomeVFSFileOffset range;
 			gchar *content_range;
 
 			s = range_header + 6; /* bytes= */
-			range = atoll (s);
+			offset = atoll (s);
 
-			result = gnome_vfs_seek (handle, GNOME_VFS_SEEK_START, range);
-
-			if (result != GNOME_VFS_OK) {
-				g_warning ("Error seeking: %s", gnome_vfs_result_to_string (result));
-				soup_message_set_status (message, SOUP_STATUS_INTERNAL_SERVER_ERROR);
-				goto out;
-			}
-
-			status_code = SOUP_STATUS_PARTIAL_CONTENT;
-
-			content_range = g_strdup_printf ("bytes %"GNOME_VFS_OFFSET_FORMAT_STR"-%"G_GUINT64_FORMAT"/%"G_GUINT64_FORMAT, range, file_size, file_size);
+			content_range = g_strdup_printf ("bytes %" G_GUINT64_FORMAT "-%" G_GUINT64_FORMAT "/%" G_GUINT64_FORMAT, offset, file_size, file_size);
 			soup_message_add_header (message->response_headers, "Content-Range", content_range);
 			g_free (content_range);
 
-			file_size -= range;
+			soup_message_set_status (message, SOUP_STATUS_PARTIAL_CONTENT);
+			file_size -= offset;
 		}
 
-		g_signal_connect (message, "wrote_chunk", G_CALLBACK (write_next_chunk), handle);
-		g_signal_connect (message, "finished", G_CALLBACK (message_finished), handle);
-		write_next_chunk (message, handle);
-
-		soup_message_set_status (message, status_code);
-		soup_server_message_set_encoding (SOUP_SERVER_MESSAGE (message), SOUP_TRANSFER_CHUNKED);
-
+#ifdef HAVE_G_MAPPED_FILE
+		/* don't use chunked transfers if we can send the file mmapped,
+		 * as itunes clients can't seek properly when we do.
+		 */
+		if (rb_uri_is_local (location)) {
+			send_mapped_file (message, entry, file_size, offset);
+		} else 
+#endif
+		{
+			send_chunked_file (message, entry, file_size, offset);
+		}
 	} else {
 		rb_debug ("unhandled: %s\n", path);
 	}

@@ -1,5 +1,16 @@
 2006-07-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* configure.ac:
+	* daapsharing/rb-daap-share.c: (add_entry_to_mlcl),
+	(chunked_message_finished), (send_chunked_file),
+	(mapped_file_message_finished), (send_mapped_file), (databases_cb):
+	Use GMappedFile to send local files to DAAP clients where possible.  
+	iTunes can't seek properly in files sent using chunked transfer 
+	encoding.  Also remove the useless bitrate calculation code, as we
+	never even used the result anyway.  From #330410.
+
+2006-07-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by: Nguyễn Thái Ngọc Duy  <pclouds@gmail.com>
 
 	* shell/rb-shell.c: (rb_shell_cmd_add_file_to_library):

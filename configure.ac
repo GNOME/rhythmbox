@@ -45,6 +45,8 @@ AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
 AC_CHECK_LIB(glib-2.0, g_utf8_collate_key_for_filename,
     [AC_DEFINE([HAVE_COLLATE_KEY_FILENAME], 1, [Have glib function to collate filename sort keys])])
+AC_CHECK_LIB(glib-2.0, g_mapped_file_new,
+    [AC_DEFINE([HAVE_G_MAPPED_FILE], 1, [Have glib mmap wrapper])])
 
 PKG_PROG_PKG_CONFIG
 
