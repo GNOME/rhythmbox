@@ -1,3 +1,10 @@
+2006-07-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch by: Nguyễn Thái Ngọc Duy  <pclouds@gmail.com>
+
+	* shell/rb-shell.c: (rb_shell_cmd_add_file_to_library):
+	Enable multiple selection for 'import file'.  Fixes #347478.
+
 2006-07-20  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
 
 	* metadata/rb-metadata-dbus-client.c: (kill_metadata_service):

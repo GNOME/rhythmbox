@@ -2370,6 +2370,7 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 			              GTK_WINDOW (shell->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
 				      FALSE);
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (dialog), TRUE);
 	if (dir)
 		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (dialog),
 							 dir);
