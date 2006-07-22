@@ -1475,6 +1475,8 @@ databases_cb (RBDAAPShare *share,
 
 			soup_message_set_status (message, SOUP_STATUS_PARTIAL_CONTENT);
 			file_size -= offset;
+		} else {
+			soup_message_set_status (message, SOUP_STATUS_OK);
 		}
 
 #ifdef HAVE_G_MAPPED_FILE
