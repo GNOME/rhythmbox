@@ -225,7 +225,8 @@ enum
 	PROP_QUEUE_SOURCE,
 	PROP_QUEUE_ONLY,
 	PROP_STREAM_SONG,
-	PROP_PLAYING_FROM_QUEUE
+	PROP_PLAYING_FROM_QUEUE,
+	PROP_PLAYER,
 };
 
 enum
@@ -344,6 +345,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       "Whether playing from the play queue or not",
 							       FALSE,
 							       G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_PLAYER,
+					 g_param_spec_object ("player",
+							      "RBPlayer",
+							      "RBPlayer object",
+							      G_TYPE_OBJECT,
+							      G_PARAM_READABLE));
 
 	/* If you change these, be sure to update the CORBA interface
 	 * in rb-remote-bonobo.c! */
@@ -873,6 +882,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_PLAYING_FROM_QUEUE:
 		g_value_set_boolean (value, player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source));
+		break;
+	case PROP_PLAYER:
+		g_value_set_object (value, player->priv->mmplayer);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
