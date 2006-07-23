@@ -1880,6 +1880,7 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 		rb_entry_view_set_state (songs, from_queue ? RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_NOT_PLAYING);
 		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
 						  rb_shell_player_get_active_source (shell->priv->player_shell));
+		rhythmdb_entry_unref (entry);
 	}
 }
 
@@ -2799,14 +2800,17 @@ rb_shell_play_entry (RBShell *shell,
 static void
 rb_shell_jump_to_current (RBShell *shell)
 {
-	RBSource *source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+	RBSource *source;
 	RhythmDBEntry *playing;
+
+	source = rb_shell_player_get_playing_source (shell->priv->player_shell);
 
 	g_return_if_fail (source != NULL);
 
 	playing = rb_shell_player_get_playing_entry (shell->priv->player_shell);
 
 	rb_shell_jump_to_entry_with_source (shell, source, playing);
+	rhythmdb_entry_unref (playing);
 }
 
 static gboolean

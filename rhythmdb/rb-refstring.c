@@ -87,8 +87,8 @@ rb_refstring_new (const char *init)
 void
 rb_refstring_unref (RBRefString *val)
 {
-	if (!val)
-		return;
+	g_return_if_fail (val != NULL);
+	g_return_if_fail (val->refcount > 0);
 
 	if (g_atomic_int_dec_and_test (&val->refcount)) {
 		g_mutex_lock (rb_refstrings_mutex);
@@ -107,6 +107,9 @@ rb_refstring_system_shutdown (void)
 RBRefString *
 rb_refstring_ref (RBRefString *val)
 {
+	g_return_val_if_fail (val != NULL, NULL);
+	g_return_val_if_fail (val->refcount > 0, NULL);
+
 	g_atomic_int_inc (&val->refcount);
 	return val;
 }
@@ -161,7 +164,7 @@ rb_refstring_get_sort_key (RBRefString *val)
 		return NULL;
 
 	ptr = &val->sortkey;
-	string = (const char*)g_atomic_pointer_get (ptr);
+	string = (const char *)g_atomic_pointer_get (ptr);
 	if (string == NULL) {
 		char *newstring;
 		const char *s;

@@ -492,18 +492,22 @@ rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 
 static gboolean
 rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
- 	   			  GtkTreePath *path, GtkTreeIter *iter,
+ 	   			  GtkTreePath *path,
+				  GtkTreeIter *iter,
 				  RBPodcastManager *manager)
 {
         const char *uri;
-        RhythmDBEntry* entry;
+        RhythmDBEntry *entry;
 	guint status;
 
         gtk_tree_model_get (query_model, iter, 0, &entry, -1);
         uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+
 	if (status == 1)
 		rb_podcast_manager_subscribe_feed (manager, uri);
+
+	rhythmdb_entry_unref (entry);
 
         return FALSE;
 }
@@ -548,7 +552,7 @@ rb_podcast_manager_copy_post (RBPodcastManager *pd)
 
 	/* get first element of list */
 	g_mutex_lock (pd->priv->download_list_mutex);
-	data = (RBPodcastManagerInfo *) g_list_first(pd->priv->download_list)->data;
+	data = (RBPodcastManagerInfo *) g_list_first (pd->priv->download_list)->data;
 	g_mutex_unlock (pd->priv->download_list_mutex);
 
 	if (data == NULL)
@@ -1249,10 +1253,14 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 			gboolean has_next;
 			do {
 				RhythmDBEntry *entry;
+
 				gtk_tree_model_get (query_model, &iter, 0, &entry, -1);
 				has_next = gtk_tree_model_iter_next (query_model, &iter);
 				rhythmdb_entry_delete (pd->priv->db, entry);
+				rhythmdb_entry_unref (entry);
+
 			} while (has_next);
+
 			rhythmdb_commit (pd->priv->db);
 		}
 	}
@@ -1491,9 +1499,9 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		g_value_set_ulong (&status, RHYTHMDB_PODCAST_STATUS_WAITING);
 		for (t = download_entries; t != NULL; t = g_list_next (t)) {
 			rhythmdb_entry_set (db,
-						       (RhythmDBEntry*) t->data,
-						       RHYTHMDB_PROP_STATUS,
-						       &status);
+					    (RhythmDBEntry*) t->data,
+					    RHYTHMDB_PROP_STATUS,
+					    &status);
 		}
 		g_value_unset (&status);
 	}

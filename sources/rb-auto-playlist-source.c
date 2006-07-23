@@ -165,14 +165,17 @@ rb_auto_playlist_source_finalize (GObject *object)
 		g_object_unref (priv->action_group);
 	}
 
-	if (priv->cached_all_query)
+	if (priv->cached_all_query) {
 		g_object_unref (G_OBJECT (priv->cached_all_query));
+	}
 
-	if (priv->query)
+	if (priv->query) {
 		rhythmdb_query_free (priv->query);
+	}
 
-	if (priv->limit_value)
+	if (priv->limit_value) {
 		g_value_array_free (priv->limit_value);
+	}
 
 	g_free (priv->search_text);
 
@@ -489,7 +492,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 
 	g_strfreev (names);
 
-	if (subquery) {
+	if (subquery != NULL) {
 		RhythmDBEntryType qtype;
 		GPtrArray *query;
 
@@ -507,6 +510,9 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (source), query,
 						   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
 						   NULL, 0);
+
+		rhythmdb_query_free (subquery);
+		rhythmdb_query_free (query);
 	}
 
 	g_object_unref (db);
@@ -539,21 +545,25 @@ _save_write_uint64 (xmlNodePtr node, GValueArray *limit_value, const xmlChar *ke
 }
 
 static void
-impl_save_contents_to_xml (RBPlaylistSource *psource, xmlNodePtr node)
+impl_save_contents_to_xml (RBPlaylistSource *psource,
+			   xmlNodePtr node)
 {
 	GPtrArray *query;
 	RhythmDBQueryModelLimitType limit_type;
 	GValueArray *limit_value = NULL;
-	const gchar *sort_key;
+	char *sort_key;
 	gint sort_direction;
 	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (psource);
 
 	xmlSetProp (node, RB_PLAYLIST_TYPE, RB_PLAYLIST_AUTOMATIC);
 
+	sort_key = NULL;
 	rb_auto_playlist_source_get_query (source,
-					    &query,
-					    &limit_type, &limit_value,
-					    &sort_key, &sort_direction);
+					   &query,
+					   &limit_type,
+					   &limit_value,
+					   &sort_key,
+					   &sort_direction);
 
 	switch (limit_type) {
 	case RHYTHMDB_QUERY_MODEL_LIMIT_NONE:
@@ -576,16 +586,18 @@ impl_save_contents_to_xml (RBPlaylistSource *psource, xmlNodePtr node)
 	}
 
 	if (sort_key && *sort_key) {
-		gchar *temp_str;
+		char *temp_str;
 
 		xmlSetProp (node, RB_PLAYLIST_SORT_KEY, BAD_CAST sort_key);
 		temp_str = g_strdup_printf ("%d", sort_direction);
 		xmlSetProp (node, RB_PLAYLIST_SORT_DIRECTION, BAD_CAST temp_str);
+
 		g_free (temp_str);
 	}
 
 	rhythmdb_query_serialize (rb_playlist_source_get_db (psource), query, node);
 	rhythmdb_query_free (query);
+	g_free (sort_key);
 }
 
 static void
@@ -672,12 +684,17 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
 
 	priv->query_resetting = TRUE;
-	if (priv->query)
+	if (priv->query) {
 		rhythmdb_query_free (priv->query);
-	if (priv->cached_all_query)
+	}
+
+	if (priv->cached_all_query) {
 		g_object_unref (G_OBJECT (priv->cached_all_query));
-	if (priv->limit_value)
+	}
+
+	if (priv->limit_value) {
 		g_value_array_free (priv->limit_value);
+	}
 
 	/* playlists that aren't limited, with a particular sort order, are user-orderable */
 	rb_entry_view_set_columns_clickable (songs, (limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE));
@@ -688,28 +705,33 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 	priv->limit_value = limit_value ? g_value_array_copy (limit_value) : NULL;
 
 	priv->cached_all_query = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
-					      "db", db,
-					      "limit-type", priv->limit_type,
-					      "limit-value", priv->limit_value,
-					      NULL);
+					       "db", db,
+					       "limit-type", priv->limit_type,
+					       "limit-value", priv->limit_value,
+					       NULL);
 	rb_library_browser_set_model (priv->browser, priv->cached_all_query, TRUE);
 	rhythmdb_do_full_query_async_parsed (db,
 					     RHYTHMDB_QUERY_RESULTS (priv->cached_all_query),
-					     query);
+					     priv->query);
 
 	priv->query_resetting = FALSE;
 }
 
 void
 rb_auto_playlist_source_get_query (RBAutoPlaylistSource *source,
-				    GPtrArray **query,
-				    RhythmDBQueryModelLimitType *limit_type,
-				    GValueArray **limit_value,
-				    const char **sort_key,
-				    gint *sort_direction)
+				   GPtrArray **query,
+				   RhythmDBQueryModelLimitType *limit_type,
+				   GValueArray **limit_value,
+				   char **sort_key,
+				   gint *sort_direction)
 {
-	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
-	RBEntryView *songs = rb_source_get_entry_view (RB_SOURCE (source));
+	RBAutoPlaylistSourcePrivate *priv;
+	RBEntryView *songs;
+
+ 	g_return_if_fail (RB_IS_AUTO_PLAYLIST_SOURCE (source));
+
+	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	songs = rb_source_get_entry_view (RB_SOURCE (source));
 
 	*query = rhythmdb_query_copy (priv->query);
 	*limit_type = priv->limit_type;

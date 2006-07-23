@@ -155,7 +155,8 @@ rb_play_order_init (RBPlayOrder *porder)
 }
 
 static GObject *
-rb_play_order_constructor (GType type, guint n_construct_properties,
+rb_play_order_constructor (GType type,
+			   guint n_construct_properties,
 			   GObjectConstructParam *construct_properties)
 {
 	RBPlayOrder *porder;
@@ -176,7 +177,11 @@ rb_play_order_finalize (GObject *object)
 
 	porder = RB_PLAY_ORDER (object);
 
-	if (porder->priv->query_model) {
+	if (porder->priv->playing_entry != NULL) {
+		rhythmdb_entry_unref (porder->priv->playing_entry);
+	}
+
+	if (porder->priv->query_model != NULL) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
 						      G_CALLBACK (rb_play_order_entry_added_cb),
 						      porder);
@@ -209,6 +214,10 @@ rb_play_order_set_playing_entry_internal (RBPlayOrder   *porder,
 	old_entry = porder->priv->playing_entry;
 	porder->priv->playing_entry = entry;
 
+	if (porder->priv->playing_entry != NULL) {
+		rhythmdb_entry_ref (porder->priv->playing_entry);
+	}
+
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
 		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, old_entry, entry);
 
@@ -232,7 +241,7 @@ rb_play_order_set_property (GObject *object,
 		rb_play_order_set_player (porder, g_value_get_object (value));
 		break;
 	case PROP_PLAYING_ENTRY:
-		rb_play_order_set_playing_entry_internal (porder, g_value_dup_boxed (value));
+		rb_play_order_set_playing_entry_internal (porder, g_value_get_boxed (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -301,7 +310,8 @@ rb_play_order_get_orders (void)
  * Returns: #RBPlayOrder instance
  **/
 RBPlayOrder *
-rb_play_order_new (const char* porder_name, RBShellPlayer *player)
+rb_play_order_new (const char* porder_name,
+		   RBShellPlayer *player)
 {
 	int default_index = -1;
 	const RBPlayOrderDescription *orders = rb_play_order_get_orders ();
@@ -338,6 +348,8 @@ rb_play_order_new (const char* porder_name, RBShellPlayer *player)
 RBShellPlayer *
 rb_play_order_get_player (RBPlayOrder *porder)
 {
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
+
 	return porder->priv->player;
 }
 
@@ -352,6 +364,8 @@ rb_play_order_get_player (RBPlayOrder *porder)
 RBSource *
 rb_play_order_get_source (RBPlayOrder *porder)
 {
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
+
 	return porder->priv->source;
 }
 
@@ -366,6 +380,8 @@ rb_play_order_get_source (RBPlayOrder *porder)
 RhythmDB *
 rb_play_order_get_db (RBPlayOrder *porder)
 {
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
+
 	return porder->priv->db;
 }
 
@@ -380,6 +396,8 @@ rb_play_order_get_db (RBPlayOrder *porder)
 RhythmDBQueryModel *
 rb_play_order_get_query_model (RBPlayOrder *porder)
 {
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
+
 	return porder->priv->query_model;
 }
 
@@ -392,6 +410,8 @@ rb_play_order_get_query_model (RBPlayOrder *porder)
 gboolean
 rb_play_order_player_is_playing (RBPlayOrder *porder)
 {
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), FALSE);
+
 	return (porder->priv->playing_entry != NULL);
 }
 
@@ -406,7 +426,9 @@ void
 rb_play_order_set_playing_entry (RBPlayOrder *porder,
 				 RhythmDBEntry *entry)
 {
-	g_object_set (G_OBJECT (porder), "playing-entry", entry, NULL);
+	g_return_if_fail (RB_IS_PLAY_ORDER (porder));
+
+	rb_play_order_set_playing_entry_internal (porder, entry);
 }
 
 /**
@@ -418,7 +440,16 @@ rb_play_order_set_playing_entry (RBPlayOrder *porder,
 RhythmDBEntry *
 rb_play_order_get_playing_entry (RBPlayOrder *porder)
 {
-	return porder->priv->playing_entry;
+	RhythmDBEntry *entry;
+
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
+
+	entry = porder->priv->playing_entry;
+	if (entry != NULL) {
+		rhythmdb_entry_ref (entry);
+	}
+
+	return entry;
 }
 
 /**
@@ -437,7 +468,7 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder,
 {
 	RhythmDB *db = NULL;
 
-	g_return_if_fail (porder != NULL);
+	g_return_if_fail (RB_IS_PLAY_ORDER (porder));
 
 	g_object_get (porder->priv->player,
 		      "db", &db,
@@ -503,6 +534,8 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 {
 	RhythmDBQueryModel *new_model = NULL;
 
+	g_return_if_fail (RB_IS_PLAY_ORDER (porder));
+
 	if (porder->priv->source)
 		g_object_get (porder->priv->source, "query-model", &new_model, NULL);
 
@@ -551,15 +584,24 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
  * #RhythmDBQueryModel.
  */
 static void
-rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBPlayOrder *porder)
+rb_play_order_entry_added_cb (GtkTreeModel *model,
+			      GtkTreePath *path,
+			      GtkTreeIter *iter,
+			      RBPlayOrder *porder)
 {
-	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry(RHYTHMDB_QUERY_MODEL (model),
-								  iter);
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model),
+						    iter);
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_added)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_added (porder, entry);
 
 	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
 		rb_play_order_update_have_next_previous (porder);
+
+	if (entry != NULL) {
+		rhythmdb_entry_unref (entry);
+	}
 }
 
 /**
@@ -577,7 +619,9 @@ rb_play_order_entry_added_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIte
  * signal is emitted.
  */
 static void
-rb_play_order_row_deleted_cb (GtkTreeModel *model, GtkTreePath *row, RBPlayOrder *porder)
+rb_play_order_row_deleted_cb (GtkTreeModel *model,
+			      GtkTreePath *row,
+			      RBPlayOrder *porder)
 {
 	RhythmDBEntry *entry;
 
@@ -597,19 +641,44 @@ rb_play_order_row_deleted_cb (GtkTreeModel *model, GtkTreePath *row, RBPlayOrder
 static gboolean
 default_has_next (RBPlayOrder *porder)
 {
-	return rb_play_order_get_next (porder) != NULL;
+	RhythmDBEntry *entry;
+	gboolean res;
+
+	entry = rb_play_order_get_next (porder);
+
+	if (entry != NULL) {
+		res = TRUE;
+		rhythmdb_entry_unref (entry);
+	} else {
+		res = FALSE;
+	}
+
+	return res;
 }
 
 static gboolean
 default_has_previous (RBPlayOrder *porder)
 {
-	return rb_play_order_get_previous (porder) != NULL;
+	RhythmDBEntry *entry;
+	gboolean res;
+
+	entry = rb_play_order_get_previous (porder);
+
+	if (entry != NULL) {
+		res = TRUE;
+		rhythmdb_entry_unref (entry);
+	} else {
+		res = FALSE;
+	}
+
+	return res;
 }
 
 static gboolean
 sync_playing_entry_cb (RBPlayOrder *porder)
 {
 	RBShellPlayer *player = rb_play_order_get_player (porder);
+
 	if (porder->priv->playing_entry) {
 		rb_shell_player_play_entry (player,
 					    porder->priv->playing_entry,
@@ -630,7 +699,8 @@ sync_playing_entry_cb (RBPlayOrder *porder)
 }
 
 static void
-default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
+default_playing_entry_removed (RBPlayOrder *porder,
+			       RhythmDBEntry *entry)
 {
 	RBShellPlayer *player = rb_play_order_get_player (porder);
 	RBSource *source = rb_shell_player_get_playing_source (player);
@@ -654,10 +724,13 @@ default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 
 				/* go to next song, in an idle function so that other handlers run first */
 				next_entry = rb_play_order_get_next (porder);
-				if (next_entry == entry)
-					next_entry = NULL;
 
-				g_object_set (G_OBJECT (porder), "playing-entry", next_entry, NULL);
+				if (next_entry == entry) {
+					rhythmdb_entry_unref (next_entry);
+					next_entry = NULL;
+				}
+
+				rb_play_order_set_playing_entry_internal (porder, next_entry);
 				if (porder->priv->sync_playing_entry_id == 0) {
 					porder->priv->sync_playing_entry_id =
 						g_idle_add_full (G_PRIORITY_HIGH_IDLE,
@@ -665,6 +738,11 @@ default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
 								 porder,
 								 NULL);
 				}
+
+				if (next_entry != NULL) {
+					rhythmdb_entry_unref (next_entry);
+				}
+
 				break;
 			}
 		}
@@ -682,10 +760,11 @@ default_playing_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry)
  * Returns: true if there is an entry after the current playing entry in the play order.
  */
 gboolean
-rb_play_order_has_next (RBPlayOrder* porder)
+rb_play_order_has_next (RBPlayOrder *porder)
 {
-	g_return_val_if_fail (porder != NULL, FALSE);
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), FALSE);
 	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->has_next != NULL, FALSE);
+
 	return RB_PLAY_ORDER_GET_CLASS (porder)->has_next (porder);
 }
 
@@ -698,8 +777,9 @@ rb_play_order_has_next (RBPlayOrder* porder)
 RhythmDBEntry *
 rb_play_order_get_next (RBPlayOrder *porder)
 {
-	g_return_val_if_fail (porder != NULL, NULL);
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
 	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->get_next != NULL, NULL);
+
 	return RB_PLAY_ORDER_GET_CLASS (porder)->get_next (porder);
 }
 
@@ -713,12 +793,19 @@ rb_play_order_get_next (RBPlayOrder *porder)
 void
 rb_play_order_go_next (RBPlayOrder *porder)
 {
-	g_return_if_fail (porder != NULL);
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_next)
+	g_return_if_fail (RB_IS_PLAY_ORDER (porder));
+
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_next) {
 		RB_PLAY_ORDER_GET_CLASS (porder)->go_next (porder);
-	else if (RB_PLAY_ORDER_GET_CLASS (porder)->get_next)
-		rb_play_order_set_playing_entry (porder,
-						 RB_PLAY_ORDER_GET_CLASS (porder)->get_next (porder));
+	} else if (RB_PLAY_ORDER_GET_CLASS (porder)->get_next) {
+		RhythmDBEntry *entry;
+
+		entry = RB_PLAY_ORDER_GET_CLASS (porder)->get_next (porder);
+		rb_play_order_set_playing_entry (porder, entry);
+		if (entry != NULL) {
+			rhythmdb_entry_unref (entry);
+		}
+	}
 }
 
 /**
@@ -729,10 +816,11 @@ rb_play_order_go_next (RBPlayOrder *porder)
  * If not currently playing, returns false.
  */
 gboolean
-rb_play_order_has_previous (RBPlayOrder* porder)
+rb_play_order_has_previous (RBPlayOrder *porder)
 {
-	g_return_val_if_fail (porder != NULL, FALSE);
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), FALSE);
 	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->has_previous != NULL, FALSE);
+
 	return RB_PLAY_ORDER_GET_CLASS (porder)->has_previous (porder);
 }
 
@@ -745,8 +833,9 @@ rb_play_order_has_previous (RBPlayOrder* porder)
 RhythmDBEntry *
 rb_play_order_get_previous (RBPlayOrder *porder)
 {
-	g_return_val_if_fail (porder != NULL, NULL);
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), NULL);
 	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->get_previous != NULL, NULL);
+
 	return RB_PLAY_ORDER_GET_CLASS (porder)->get_previous (porder);
 }
 
@@ -759,12 +848,19 @@ rb_play_order_get_previous (RBPlayOrder *porder)
 void
 rb_play_order_go_previous (RBPlayOrder *porder)
 {
-	g_return_if_fail (porder != NULL);
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_previous)
+	g_return_if_fail (RB_IS_PLAY_ORDER (porder));
+
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_previous) {
 		RB_PLAY_ORDER_GET_CLASS (porder)->go_previous (porder);
-	else if (RB_PLAY_ORDER_GET_CLASS (porder)->get_previous)
-		rb_play_order_set_playing_entry (porder,
-						 RB_PLAY_ORDER_GET_CLASS (porder)->get_previous (porder));
+	} else if (RB_PLAY_ORDER_GET_CLASS (porder)->get_previous) {
+		RhythmDBEntry *entry;
+
+		entry = RB_PLAY_ORDER_GET_CLASS (porder)->get_previous (porder);
+		rb_play_order_set_playing_entry (porder, entry);
+		if (entry != NULL) {
+			rhythmdb_entry_unref (entry);
+		}
+	}
 }
 
 /**
@@ -778,6 +874,8 @@ rb_play_order_go_previous (RBPlayOrder *porder)
 gboolean
 rb_play_order_model_not_empty (RBPlayOrder *porder)
 {
+	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), FALSE);
+
 	GtkTreeIter iter;
 	if (!porder->priv->query_model)
 		return FALSE;
@@ -795,8 +893,13 @@ rb_play_order_model_not_empty (RBPlayOrder *porder)
 void
 rb_play_order_update_have_next_previous (RBPlayOrder *porder)
 {
-	gboolean have_next = rb_play_order_has_next (porder);
-	gboolean have_previous = rb_play_order_has_previous (porder);
+	gboolean have_next;
+	gboolean have_previous;
+
+	g_return_if_fail (RB_IS_PLAY_ORDER (porder));
+
+	have_next = rb_play_order_has_next (porder);
+	have_previous = rb_play_order_has_previous (porder);
 
 	if ((have_next != porder->priv->have_next) ||
 	    (have_previous != porder->priv->have_previous)) {

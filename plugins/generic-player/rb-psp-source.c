@@ -166,6 +166,8 @@ visit_playlist_dirs (const gchar *rel_path,
 					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
 					   NULL, 0);
 	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source), shell, RB_SOURCE (playlist));
+	rhythmdb_query_free (query);
+
 	g_object_unref (shell);
 	g_object_unref (db);
 

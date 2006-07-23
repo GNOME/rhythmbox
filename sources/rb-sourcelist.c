@@ -440,6 +440,7 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 						    -1);
 
 			} while (check_name && (strlen (check_name)) > 0 && (g_utf8_collate (name, check_name) > 0));
+
 			g_free (check_name);
 
 		} else {
@@ -483,22 +484,32 @@ typedef struct _SourcePath {
 } SourcePath;
 
 static gboolean
-match_source_to_iter (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter,
+match_source_to_iter (GtkTreeModel *model,
+		      GtkTreePath *path,
+		      GtkTreeIter *iter,
 		      SourcePath *sp)
 {
 	RBSource *target = NULL;
+	gboolean  res;
 
 	gtk_tree_model_get (model, iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+
+	res = FALSE;
 	if (target == sp->source) {
 		sp->path = gtk_tree_path_copy (path);
-		return TRUE;
+		res = TRUE;
 	}
 
-	return FALSE;
+	if (target != NULL) {
+		g_object_unref (target);
+	}
+
+	return res;
 }
 
 static gboolean
-rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
+rb_sourcelist_source_to_iter (RBSourceList *sourcelist,
+			      RBSource *source,
 			      GtkTreeIter *iter)
 {
 	SourcePath *sp = g_new0 (SourcePath,1);
@@ -520,7 +531,8 @@ rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 }
 
 static gboolean
-rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source,
+rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
+				      RBSource *source,
 				      GtkTreeIter *iter)
 {
 	SourcePath *sp = g_new0 (SourcePath,1);
@@ -542,7 +554,8 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source
 }
 
 void
-rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
+rb_sourcelist_edit_source_name (RBSourceList *sourcelist,
+				RBSource *source)
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
@@ -564,7 +577,9 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 }
 
 static void
-set_source_playing (RBSourceList *sourcelist, RBSource *source, gboolean playing)
+set_source_playing (RBSourceList *sourcelist,
+		    RBSource *source,
+		    gboolean playing)
 {
 	GtkTreeIter iter;
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
@@ -573,7 +588,8 @@ set_source_playing (RBSourceList *sourcelist, RBSource *source, gboolean playing
 }
 
 void
-rb_sourcelist_set_playing_source (RBSourceList *sourcelist, RBSource *source)
+rb_sourcelist_set_playing_source (RBSourceList *sourcelist,
+				  RBSource *source)
 {
 	if (sourcelist->priv->playing_source)
 		set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
@@ -584,7 +600,8 @@ rb_sourcelist_set_playing_source (RBSourceList *sourcelist, RBSource *source)
 }
 
 void
-rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
+rb_sourcelist_remove (RBSourceList *sourcelist,
+		      RBSource *source)
 {
 	GtkTreeIter iter;
 
@@ -610,7 +627,8 @@ rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
 }
 
 void
-rb_sourcelist_select (RBSourceList *sourcelist, RBSource *source)
+rb_sourcelist_select (RBSourceList *sourcelist,
+		      RBSource *source)
 {
 	GtkTreeIter iter;
 
@@ -635,14 +653,20 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 	if (target == NULL)
 		return;
+
 	g_return_if_fail (RB_IS_SOURCE (target));
 	source = target;
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SELECTED], 0, source);
+
+	g_object_unref (target);
 }
 
 static void
-drop_received_cb (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos,
-		  GtkSelectionData *data, RBSourceList *sourcelist)
+drop_received_cb (RBSourceListModel *model,
+		  RBSource *target,
+		  GtkTreeViewDropPosition pos,
+		  GtkSelectionData *data,
+		  RBSourceList *sourcelist)
 {
 	rb_debug ("drop recieved");
 	/* Proxy the signal. */
@@ -663,8 +687,10 @@ row_activated_cb (GtkTreeView *treeview,
 	g_return_if_fail (gtk_tree_model_get_iter (model, &iter, path));
 	gtk_tree_model_get (model, &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 
-	if (target)
+	if (target != NULL) {
 		g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
+		g_object_unref (target);
+	}
 }
 
 static gboolean
@@ -683,9 +709,14 @@ emit_show_popup (GtkTreeView *treeview,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 	if (target == NULL)
 		return FALSE;
+
 	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
 
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
+
+	if (target != NULL) {
+		g_object_unref (target);
+	}
 
 	return ret;
 }
@@ -724,6 +755,7 @@ key_release_cb (GtkTreeView *treeview,
 {
 	GtkTreeIter iter;
 	RBSource *target;
+	gboolean res;
 
 	/* F2 = rename playlist */
 	if (event->keyval != GDK_F2)
@@ -737,13 +769,15 @@ key_release_cb (GtkTreeView *treeview,
 	if (target == NULL)
 		return FALSE;
 
-	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
+	res = FALSE;
 	if (rb_source_can_rename (target)) {
 		rb_sourcelist_edit_source_name (sourcelist, target);
-		return TRUE;
+		res = TRUE;
 	}
 
-	return FALSE;
+	g_object_unref (target);
+
+	return res;
 }
 
 static gboolean
@@ -754,7 +788,9 @@ popup_menu_cb (GtkTreeView *treeview,
 }
 
 static void
-name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
+name_notify_cb (GObject *obj,
+		GParamSpec *pspec,
+		gpointer data)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (data);
 	RBSource *source = RB_SOURCE (obj);
@@ -773,7 +809,9 @@ name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 }
 
 static void
-visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
+visibility_notify_cb (GObject *obj,
+		      GParamSpec *pspec,
+		      gpointer data)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (data);
 	RBSource *source = RB_SOURCE (obj);
@@ -812,8 +850,10 @@ visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 }
 
 static void
-rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				    GtkTreeModel *tree_model, GtkTreeIter *iter,
+rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column,
+				    GtkCellRenderer *renderer,
+				    GtkTreeModel *tree_model,
+				    GtkTreeIter *iter,
 				    RBSourceList *sourcelist)
 {
 	char *str;
@@ -832,8 +872,10 @@ rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *
 }
 
 static void
-source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
-		       const char *text, RBSourceList *sourcelist)
+source_name_edited_cb (GtkCellRendererText *renderer,
+		       const char *pathstr,
+		       const char *text,
+		       RBSourceList *sourcelist)
 {
 	GtkTreePath *path;
 	GtkTreeIter iter;
@@ -858,6 +900,8 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 	g_object_set (G_OBJECT (renderer), "editable", FALSE, NULL);
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
+
+	g_object_unref (source);
 }
 
 static void

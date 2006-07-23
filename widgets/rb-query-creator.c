@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of RhythmDB query creation dialog
  *
  *  Copyright (C) 2003, 2004 Colin Walters <walters@gnome.org>
@@ -140,7 +141,8 @@ rb_query_creator_init (RBQueryCreator *creator)
 }
 
 static GObject *
-rb_query_creator_constructor (GType type, guint n_construct_properties,
+rb_query_creator_constructor (GType type,
+                              guint n_construct_properties,
 			      GObjectConstructParam *construct_properties)
 {
 	RBQueryCreatorPrivate *priv;
@@ -270,9 +272,9 @@ rb_query_creator_set_property (GObject *object,
 
 static void
 rb_query_creator_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+                               guint prop_id,
+                               GValue *value,
+                               GParamSpec *pspec)
 {
 	RBQueryCreator *creator = RB_QUERY_CREATOR (object);
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
@@ -298,8 +300,10 @@ rb_query_creator_new (RhythmDB *db)
 }
 
 static gboolean
-rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
-			     RhythmDBQueryModelLimitType limit_type, GValueArray *limit_value)
+rb_query_creator_load_query (RBQueryCreator *creator,
+                             GPtrArray *query,
+			     RhythmDBQueryModelLimitType limit_type,
+                             GValueArray *limit_value)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	int i;
@@ -398,7 +402,9 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 }
 
 static gboolean
-rb_query_creator_set_sorting (RBQueryCreator *creator, const char *sort_column, gint sort_direction)
+rb_query_creator_set_sorting (RBQueryCreator *creator,
+                              const char *sort_column,
+                              gint sort_direction)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	int i;
@@ -421,11 +427,13 @@ rb_query_creator_set_sorting (RBQueryCreator *creator, const char *sort_column, 
 
 	gtk_option_menu_set_history (GTK_OPTION_MENU (priv->sort_menu), i);
 	sort_option_menu_changed (GTK_OPTION_MENU (priv->sort_menu), creator); /* force the checkbox to change label */
+
 	return TRUE;
 }
 
 GtkWidget *
-rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
+rb_query_creator_new_from_query (RhythmDB *db,
+                                 GPtrArray *query,
 				 RhythmDBQueryModelLimitType limit_type,
                                  GValueArray *limit_value,
 				 const char *sort_column,
@@ -484,11 +492,15 @@ get_entry_for_property (RBQueryCreator *creator,
 GPtrArray *
 rb_query_creator_get_query (RBQueryCreator *creator)
 {
-	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
+	RBQueryCreatorPrivate *priv;
 	GPtrArray *query;
 	GPtrArray *sub_query;
 	GList *rows, *row;
 	gboolean disjunction;
+
+	g_return_val_if_fail (RB_IS_QUERY_CREATOR (creator), NULL);
+
+	priv = QUERY_CREATOR_GET_PRIVATE (creator);
 
 	disjunction = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->disjunction_check));
 	sub_query = g_ptr_array_new ();
@@ -530,17 +542,22 @@ rb_query_creator_get_query (RBQueryCreator *creator)
 				      RHYTHMDB_PROP_TYPE,
 				      RHYTHMDB_ENTRY_TYPE_SONG,
 				      /* the constructed query */
-			       RHYTHMDB_QUERY_SUBQUERY,
-			       sub_query,
-			       RHYTHMDB_QUERY_END);
+                                      RHYTHMDB_QUERY_SUBQUERY,
+                                      sub_query,
+                                      RHYTHMDB_QUERY_END);
 	return query;
 }
 
 void
 rb_query_creator_get_limit (RBQueryCreator *creator,
-			    RhythmDBQueryModelLimitType *type, GValueArray **limit)
+			    RhythmDBQueryModelLimitType *type,
+                            GValueArray **limit)
 {
-	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
+	RBQueryCreatorPrivate *priv;
+
+	g_return_if_fail (RB_IS_QUERY_CREATOR (creator));
+
+	priv = QUERY_CREATOR_GET_PRIVATE (creator);
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->limit_check))) {
 		guint64 l;
@@ -578,22 +595,33 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 }
 
 void
-rb_query_creator_get_sort_order (RBQueryCreator *creator, const char **sort_column, gint *sort_direction)
+rb_query_creator_get_sort_order (RBQueryCreator *creator,
+                                 const char **sort_column,
+                                 gint *sort_direction)
 {
-	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
-	int i;
+	RBQueryCreatorPrivate *priv;
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->sort_desc)))
-		*sort_direction = GTK_SORT_DESCENDING;
-	else
-		*sort_direction = GTK_SORT_ASCENDING;
+	g_return_if_fail (RB_IS_QUERY_CREATOR (creator));
 
-	i = gtk_option_menu_get_history (GTK_OPTION_MENU (priv->sort_menu));
-	*sort_column = sort_options[i].sort_key;
+	priv = QUERY_CREATOR_GET_PRIVATE (creator);
+
+	if (sort_direction != NULL) {
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->sort_desc)))
+			*sort_direction = GTK_SORT_DESCENDING;
+		else
+			*sort_direction = GTK_SORT_ASCENDING;
+	}
+
+	if (sort_column != NULL) {
+		int i;
+		i = gtk_option_menu_get_history (GTK_OPTION_MENU (priv->sort_menu));
+		*sort_column = sort_options[i].sort_key;
+	}
 }
 
 static void
-limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator)
+limit_toggled_cb (GtkWidget *limit,
+                  RBQueryCreator *creator)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	gboolean active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (limit));
@@ -606,7 +634,8 @@ limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator)
 }
 
 static GtkWidget *
-lookup_row_by_widget (RBQueryCreator *creator, GtkWidget *widget)
+lookup_row_by_widget (RBQueryCreator *creator,
+                      GtkWidget *widget)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	GList *rows = priv->rows;
@@ -627,7 +656,8 @@ lookup_row_by_widget (RBQueryCreator *creator, GtkWidget *widget)
 }
 
 static void
-remove_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
+remove_button_click_cb (GtkWidget *button,
+                        RBQueryCreator *creator)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	GtkWidget *row;
@@ -640,7 +670,8 @@ remove_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
 }
 
 static void
-add_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
+add_button_click_cb (GtkWidget *button,
+                     RBQueryCreator *creator)
 {
 	append_row (creator);
 }
@@ -780,7 +811,7 @@ property_option_menu_changed (GtkOptionMenu *propmenu,
 
 static GtkWidget*
 create_property_option_menu (RBQueryCreator *creator,
-			    const RBQueryCreatorPropertyOption *options,
+                             const RBQueryCreatorPropertyOption *options,
 			     int length)
 {
 	GtkWidget *option_menu;

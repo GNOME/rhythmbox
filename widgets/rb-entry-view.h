@@ -98,25 +98,33 @@ typedef struct
 
 GType		rb_entry_view_get_type			(void);
 
-RBEntryView *	rb_entry_view_new			(RhythmDB *db, GObject *shell_player,
-							 const char *sort_key, gboolean drag_source,
+RBEntryView *	rb_entry_view_new			(RhythmDB *db,
+                                                         GObject *shell_player,
+							 const char *sort_key,
+                                                         gboolean drag_source,
 							 gboolean drag_dest);
 
 void		rb_entry_view_append_column		(RBEntryView *view,
-							 RBEntryViewColumn coltype, gboolean always_visible);
+							 RBEntryViewColumn coltype,
+                                                         gboolean always_visible);
 
-void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
-							 const char *title, const char *key,
+void		rb_entry_view_append_column_custom	(RBEntryView *view,
+                                                         GtkTreeViewColumn *column,
+							 const char *title,
+                                                         const char *key,
 							 GCompareDataFunc sort_func,
 							 gpointer data);
 
-void		rb_entry_view_insert_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
-							 const char *title, const char *key,
+void		rb_entry_view_insert_column_custom	(RBEntryView *view,
+                                                         GtkTreeViewColumn *column,
+							 const char *title,
+                                                         const char *key,
 							 GCompareDataFunc sort_func,
 							 gpointer data,
 							 gint position);
 
-void		rb_entry_view_set_columns_clickable	(RBEntryView *view, gboolean clickable);
+void		rb_entry_view_set_columns_clickable	(RBEntryView *view,
+                                                         gboolean clickable);
 
 void		rb_entry_view_set_model			(RBEntryView *view,
 							 RhythmDBQueryModel *model);
@@ -146,11 +154,16 @@ void		rb_entry_view_enable_drag_source	(RBEntryView *view,
 							 const GtkTargetEntry *targets,
 							 int n_targets);
 
-void		rb_entry_view_get_sorting_order		(RBEntryView *view, const char **column_name, gint *sort_order);
-void		rb_entry_view_set_sorting_order		(RBEntryView *view, const char *column_name, gint sort_order);
+void		rb_entry_view_get_sorting_order		(RBEntryView *view,
+                                                         char       **column_name,
+                                                         gint        *sort_order);
+void		rb_entry_view_set_sorting_order		(RBEntryView *view,
+                                                         const char  *column_name,
+                                                         gint         sort_order);
 /* deal with the sorting order as a composite string */
 const char *	rb_entry_view_get_sorting_type		(RBEntryView *view);
- void		rb_entry_view_set_sorting_type		(RBEntryView *view, const char *sorttype);
+ void		rb_entry_view_set_sorting_type		(RBEntryView *view,
+                                                         const char  *sorttype);
 
 void		rb_entry_view_set_fixed_column_width	(RBEntryView *view,
 							 GtkTreeViewColumn *column,

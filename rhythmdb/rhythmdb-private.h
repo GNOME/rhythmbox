@@ -68,7 +68,7 @@ enum {
 struct RhythmDBEntry_ {
 	/* internal bits */
 	guint flags;
-	gint refcount;
+	volatile gint refcount;
 	void *data;
 	RhythmDBEntryType type;
 

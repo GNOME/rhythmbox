@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-play-order-linear.h"
 
 #include "rb-debug.h"
@@ -27,8 +29,8 @@
 
 static void rb_linear_play_order_class_init (RBLinearPlayOrderClass *klass);
 
-static RhythmDBEntry* rb_linear_play_order_get_next (RBPlayOrder* method);
-static RhythmDBEntry* rb_linear_play_order_get_previous (RBPlayOrder* method);
+static RhythmDBEntry *rb_linear_play_order_get_next (RBPlayOrder *method);
+static RhythmDBEntry *rb_linear_play_order_get_previous (RBPlayOrder *method);
 
 G_DEFINE_TYPE (RBLinearPlayOrder, rb_linear_play_order, RB_TYPE_PLAY_ORDER)
 
@@ -57,8 +59,8 @@ rb_linear_play_order_init (RBLinearPlayOrder *porder)
 {
 }
 
-static RhythmDBEntry*
-rb_linear_play_order_get_next (RBPlayOrder* porder)
+static RhythmDBEntry *
+rb_linear_play_order_get_next (RBPlayOrder *porder)
 {
 	RhythmDBQueryModel *model;
 	RhythmDBEntry *entry;
@@ -70,8 +72,8 @@ rb_linear_play_order_get_next (RBPlayOrder* porder)
 	if (model == NULL)
 		return NULL;
 
-	g_object_get (porder, "playing-entry", &entry, NULL);
-	if (entry) {
+        entry = rb_play_order_get_playing_entry (porder);
+	if (entry != NULL) {
 		RhythmDBEntry *next;
 		next = rhythmdb_query_model_get_next_from_entry (model, entry);
 		rhythmdb_entry_unref (entry);
@@ -84,8 +86,8 @@ rb_linear_play_order_get_next (RBPlayOrder* porder)
 	}
 }
 
-static RhythmDBEntry*
-rb_linear_play_order_get_previous (RBPlayOrder* porder)
+static RhythmDBEntry *
+rb_linear_play_order_get_previous (RBPlayOrder *porder)
 {
 	RhythmDBQueryModel *model;
 	RhythmDBEntry *entry, *prev;
@@ -97,11 +99,12 @@ rb_linear_play_order_get_previous (RBPlayOrder* porder)
 	if (model == NULL)
 		return NULL;
 
-	g_object_get (porder, "playing-entry", &entry, NULL);
+        entry = rb_play_order_get_playing_entry (porder);
 	if (entry == NULL)
 		return NULL;
 
 	prev = rhythmdb_query_model_get_previous_from_entry (model, entry);
 	rhythmdb_entry_unref (entry);
+
 	return prev;
 }

@@ -21,7 +21,8 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <string.h>
 
 #include <gtk/gtk.h>
@@ -893,5 +894,6 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 						     query);
 		g_object_unref (G_OBJECT (query_model));
 	}
+
 	rhythmdb_query_free (query);
 }

@@ -518,7 +518,9 @@ impl_save_contents_to_xml (RBPlaylistSource *source,
 		encoded = xmlEncodeEntitiesReentrant (NULL, BAD_CAST location);
 
 		xmlNodeSetContent (child_node, encoded);
+
 		g_free (encoded);
+		rhythmdb_entry_unref (entry);
 	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (priv->base_model), &iter));
 }
 
@@ -586,6 +588,7 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 		rhythmdb_entry_ref (entry);
 		rhythmdb_query_model_add_entry (priv->base_model, entry, index);
 		rhythmdb_entry_unref (entry);
+
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	}
 
@@ -713,6 +716,8 @@ rb_static_playlist_source_row_inserted (GtkTreeModel *model,
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
 	rb_static_playlist_source_add_entry (source, entry, -1);
+
+	rhythmdb_entry_unref (entry);
 }
 
 static GList *

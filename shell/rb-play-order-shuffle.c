@@ -281,6 +281,7 @@ handle_query_model_changed (RBShufflePlayOrder *sorder)
 			RhythmDBEntry *entry;
 			entry = rhythmdb_query_model_iter_to_entry (model, &iter);
 			rb_shuffle_entry_added (RB_PLAY_ORDER (sorder), entry);
+			rhythmdb_entry_unref (entry);
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
 	}
 
@@ -371,6 +372,7 @@ get_query_model_contents (RhythmDBQueryModel *model)
 		RhythmDBEntry *entry;
 		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
 		g_ptr_array_index (result, i++) = entry;
+		rhythmdb_entry_unref (entry);
 	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
 
 	return result;

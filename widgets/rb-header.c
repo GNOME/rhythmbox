@@ -302,7 +302,8 @@ rb_header_new (RBShellPlayer *shell_player)
 {
 	RBHeader *header;
 
-	header = RB_HEADER (g_object_new (RB_TYPE_HEADER, "shell-player", shell_player,
+	header = RB_HEADER (g_object_new (RB_TYPE_HEADER,
+					  "shell-player", shell_player,
 					  "title", NULL,
 					  "spacing", 6, NULL));
 
@@ -314,13 +315,13 @@ rb_header_new (RBShellPlayer *shell_player)
 void
 rb_header_set_playing_entry (RBHeader *header, RhythmDBEntry *entry)
 {
-	g_object_set (G_OBJECT (header), "entry", entry, NULL);
+	g_object_set (header, "entry", entry, NULL);
 }
 
 void
 rb_header_set_title (RBHeader *header, const char *title)
 {
-	g_object_set (G_OBJECT (header), "title", title, NULL);
+	g_object_set (header, "title", title, NULL);
 }
 
 void

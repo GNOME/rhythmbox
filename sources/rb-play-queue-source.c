@@ -283,8 +283,11 @@ rb_play_queue_source_clear_queue (RBPlayQueueSource *source)
 	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
 	while (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
 		entry = rhythmdb_query_model_iter_to_entry (model, &iter);
-		if (entry)
+
+		if (entry != NULL) {
 			rhythmdb_query_model_remove_entry (model, entry);
+			rhythmdb_entry_unref (entry);
+		}
 	}
 }
 
@@ -310,22 +313,25 @@ rb_play_queue_source_track_info_cell_data_func (GtkTreeViewColumn *column,
 						RBPlaylistSource *source)
 {
 	RhythmDBEntry *entry;
-	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
 	const char *title;
 	const char *artist;
 	const char *album;
 	char *markup;
+
+	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
 
 	title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
 	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
 	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 
 	/* Translators: format is "<title> from <album> by <artist>" */
-	markup = g_markup_printf_escaped("%s\n<span size=\"smaller\">%s <i>%s</i>\n%s <i>%s</i></span>",
-				         title, _("from"), album, _("by"), artist);
+	markup = g_markup_printf_escaped ("%s\n<span size=\"smaller\">%s <i>%s</i>\n%s <i>%s</i></span>",
+					  title, _("from"), album, _("by"), artist);
 
 	g_object_set (G_OBJECT (renderer), "markup", markup, NULL);
+
 	g_free (markup);
+	rhythmdb_entry_unref (entry);
 }
 
 static void

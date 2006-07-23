@@ -353,12 +353,14 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 
 	g_return_val_if_fail (selected_entries != NULL, NULL);
 
-	for (tem = selected_entries; tem; tem = tem->next)
+	for (tem = selected_entries; tem; tem = tem->next) {
 		if (!rhythmdb_entry_is_editable (song_info->priv->db,
 						 selected_entries->data)) {
 			editable = FALSE;
 			break;
 		}
+	}
+
 	song_info->priv->editable = editable;
 
 	if (selected_entries->next == NULL) {
@@ -477,7 +479,7 @@ rb_song_info_finalize (GObject *object)
 
 	g_return_if_fail (song_info->priv != NULL);
 
-	g_signal_handlers_disconnect_by_func (G_OBJECT (song_info->priv->source),
+	g_signal_handlers_disconnect_by_func (song_info->priv->source,
 					      G_CALLBACK (rb_song_info_query_model_changed_cb),
 					      song_info);
 
@@ -485,9 +487,9 @@ rb_song_info_finalize (GObject *object)
 	g_object_unref (song_info->priv->artists);
 	g_object_unref (song_info->priv->genres);
 
-	g_object_unref (G_OBJECT (song_info->priv->db));
-	g_object_unref (G_OBJECT (song_info->priv->source));
-	g_object_unref (G_OBJECT (song_info->priv->query_model));
+	g_object_unref (song_info->priv->db);
+	g_object_unref (song_info->priv->source);
+	g_object_unref (song_info->priv->query_model);
 
 	if (song_info->priv->selected_entries != NULL) {
 		g_list_foreach (song_info->priv->selected_entries, (GFunc)rhythmdb_entry_unref, NULL);
@@ -986,9 +988,8 @@ rb_song_info_backward_clicked_cb (GtkWidget *button,
 	RhythmDBEntry *new_entry;
 
 	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
-	new_entry =
-		rhythmdb_query_model_get_previous_from_entry (song_info->priv->query_model,
-							      song_info->priv->current_entry);
+	new_entry = rhythmdb_query_model_get_previous_from_entry (song_info->priv->query_model,
+								  song_info->priv->current_entry);
 	g_return_if_fail (new_entry != NULL);
 
 	song_info->priv->current_entry = new_entry;
@@ -997,6 +998,7 @@ rb_song_info_backward_clicked_cb (GtkWidget *button,
 
 	rb_song_info_populate_dialog (song_info);
 	g_object_notify (G_OBJECT (song_info), "current-entry");
+	rhythmdb_entry_unref (new_entry);
 }
 
 static void
@@ -1006,9 +1008,8 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 	RhythmDBEntry *new_entry;
 
 	rb_song_info_sync_entries (RB_SONG_INFO (song_info));
-	new_entry =
-		rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
-							  song_info->priv->current_entry);
+	new_entry = rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
+							      song_info->priv->current_entry);
 	g_return_if_fail (new_entry != NULL);
 
 	song_info->priv->current_entry = new_entry;
@@ -1017,6 +1018,8 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 
 	rb_song_info_populate_dialog (song_info);
 	g_object_notify (G_OBJECT (song_info), "current-entry");
+
+	rhythmdb_entry_unref (new_entry);
 }
 
 /*
@@ -1038,11 +1041,14 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 							      song_info->priv->current_entry);
 
 	gtk_widget_set_sensitive (song_info->priv->backward, entry != NULL);
+	rhythmdb_entry_unref (entry);
+
 	/* forward */
 	entry = rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
 							  song_info->priv->current_entry);
 
 	gtk_widget_set_sensitive (song_info->priv->forward, entry != NULL);
+	rhythmdb_entry_unref (entry);
 }
 
 static void
@@ -1140,7 +1146,7 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 
 	rating = rhythmdb_entry_get_double (song_info->priv->current_entry, RHYTHMDB_PROP_RATING);
-	g_object_set (G_OBJECT (song_info->priv->rating),
+	g_object_set (song_info->priv->rating,
 		      "rating", rating,
 		      NULL);
 }
@@ -1315,7 +1321,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
 	year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
 
-	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[PRE_METADATA_CHANGE], 0,
+	g_signal_emit (dialog, rb_song_info_signals[PRE_METADATA_CHANGE], 0,
 		       entry);
 
 	tracknum = g_ascii_strtoull (tracknum_str, &endptr, 10);

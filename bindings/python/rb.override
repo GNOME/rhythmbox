@@ -21,7 +21,7 @@ headers
 #include "rb-source.h"
 #include "rb-sourcelist.h"
 
-void pyrb_register_classes (PyObject *d); 
+void pyrb_register_classes (PyObject *d);
 void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
 
 /* hacks to deal with the nonstandard class name RHYTHMDB */
@@ -29,9 +29,9 @@ void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);
 #define RHYTHMDB_RHYTHMDB(o) RHYTHMDB(o)
 
 %%
-modulename rb 
+modulename rb
 %%
-import gobject.GObject as PyGObject_Type 
+import gobject.GObject as PyGObject_Type
 import gtk.ActionGroup as PyGtkActionGroup_Type
 import gtk.Dialog as PyGtkDialog_Type
 import gtk.HBox as PyGtkHBox_Type
@@ -342,7 +342,7 @@ _wrap_RBSource__proxy_do_impl_cut (RBSource *self)
 	}
 
 	ret = _helper_unwrap_pointer_pylist (py_retval, RHYTHMDB_TYPE_ENTRY);
-    
+
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
@@ -413,7 +413,7 @@ _wrap_RBSource__proxy_do_impl_copy (RBSource *self)
 	}
 
 	ret = _helper_unwrap_pointer_pylist (py_retval, RHYTHMDB_TYPE_ENTRY);
-    
+
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
@@ -484,7 +484,7 @@ _wrap_RBSource__proxy_do_impl_get_property_views (RBSource *self)
 	}
 
 	ret = _helper_unwrap_pointer_pylist (py_retval, RB_TYPE_PROPERTY_VIEW);
-    
+
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
@@ -555,7 +555,7 @@ _wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
 	}
 
 	ret = _helper_unwrap_string_pylist (py_retval);
-    
+
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
@@ -626,7 +626,7 @@ _wrap_RBSource__proxy_do_impl_get_search_actions (RBSource *self)
 	}
 
 	ret = _helper_unwrap_string_pylist (py_retval);
-    
+
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
@@ -652,11 +652,15 @@ override rb_entry_view_get_sorting_order noargs
 static PyObject *
 _wrap_rb_entry_view_get_sorting_order(PyGObject *self)
 {
-    const char *column = NULL;
+    char *column = NULL;
     gint order = 0;
+    PyObject *object;
 
     rb_entry_view_get_sorting_order(RB_ENTRY_VIEW(self->obj), &column, &order);
-    return Py_BuildValue ("si", column, order);
+    object = Py_BuildValue ("si", column, order);
+    g_free (column);
+
+    return object;
 }
 %%
 override rb_entry_view_set_fixed_column_width kwargs
@@ -738,7 +742,7 @@ _wrap_RBSource__proxy_do_impl_paste(RBSource *self, GList *entries)
     PyObject *py_retval;
     PyObject *py_args;
     PyObject *py_method;
-    
+
     __py_state = pyg_gil_state_ensure();
     py_self = pygobject_new((GObject *) self);
     if (!py_self) {
@@ -748,11 +752,11 @@ _wrap_RBSource__proxy_do_impl_paste(RBSource *self, GList *entries)
         return;
     }
     py_entries = _helper_wrap_pointer_glist (entries, RHYTHMDB_TYPE_ENTRY);
-    
+
     py_args = PyTuple_New(1);
     Py_INCREF(py_entries);
     PyTuple_SET_ITEM(py_args, 0, py_entries);
-    
+
     py_method = PyObject_GetAttrString(py_self, "do_impl_paste");
     if (!py_method) {
         if (PyErr_Occurred())
@@ -783,7 +787,7 @@ _wrap_RBSource__proxy_do_impl_paste(RBSource *self, GList *entries)
         pyg_gil_state_release(__py_state);
         return;
     }
-    
+
     Py_DECREF(py_retval);
     Py_DECREF(py_method);
     Py_DECREF(py_args);
@@ -857,7 +861,7 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
     PyObject *py_retval;
     PyObject *py_method;
     const char *st, *pt;
-    
+
     __py_state = pyg_gil_state_ensure();
     py_self = pygobject_new((GObject *) self);
     if (!py_self) {
@@ -866,7 +870,7 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
         pyg_gil_state_release(__py_state);
         return;
     }
-    
+
     py_method = PyObject_GetAttrString(py_self, "do_impl_get_status");
     if (!py_method) {
         if (PyErr_Occurred())
@@ -900,7 +904,7 @@ _wrap_RBSource__proxy_do_impl_get_status(RBSource *self, char **status_text, cha
       *status_text = g_strdup (st);
     if (pt)
       *progress_text = g_strdup (pt);
-    
+
     Py_DECREF(py_retval);
     Py_DECREF(py_method);
     Py_DECREF(py_self);

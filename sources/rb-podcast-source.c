@@ -1153,6 +1153,8 @@ construct_query_from_selection (RBPodcastSource *source)
 				       RHYTHMDB_QUERY_SUBQUERY,
 				       subquery,
 				       RHYTHMDB_QUERY_END);
+
+		rhythmdb_query_free (subquery);
 	}
 
 	if (source->priv->selected_feeds) {
@@ -1171,7 +1173,7 @@ construct_query_from_selection (RBPodcastSource *source)
 					       RHYTHMDB_PROP_SUBTITLE,
 					       location,
 					       RHYTHMDB_QUERY_END);
-			if (g_list_next(l))
+			if (g_list_next (l))
 				rhythmdb_query_append (source->priv->db, subquery,
 						       RHYTHMDB_QUERY_DISJUNCTION);
 		}
@@ -1179,6 +1181,8 @@ construct_query_from_selection (RBPodcastSource *source)
 		rhythmdb_query_append (source->priv->db, query,
 				       RHYTHMDB_QUERY_SUBQUERY, subquery,
 				       RHYTHMDB_QUERY_END);
+
+		rhythmdb_query_free (subquery);
 	}
 
 	return query;
@@ -1492,19 +1496,19 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 
 	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS)) {
 	case RHYTHMDB_PODCAST_STATUS_COMPLETE:
-		g_object_set (G_OBJECT (renderer), "text", _("Downloaded"), NULL);
+		g_object_set (renderer, "text", _("Downloaded"), NULL);
 		value = 100;
 		break;
 	case RHYTHMDB_PODCAST_STATUS_ERROR:
-		g_object_set (G_OBJECT (renderer), "text", _("Failed"), NULL);
+		g_object_set (renderer, "text", _("Failed"), NULL);
 		value = 0;
 		break;
 	case RHYTHMDB_PODCAST_STATUS_WAITING:
-		g_object_set (G_OBJECT (renderer), "text", _("Waiting"), NULL);
+		g_object_set (renderer, "text", _("Waiting"), NULL);
 		value = 0;
 		break;
 	case RHYTHMDB_PODCAST_STATUS_PAUSED:
-		g_object_set (G_OBJECT (renderer), "text", "", NULL);
+		g_object_set (renderer, "text", "", NULL);
 		value = 0;
 		break;
 	default:
@@ -1514,16 +1518,18 @@ rb_podcast_source_post_status_cell_data_func (GtkTreeViewColumn *column,
 			value = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 			s = g_strdup_printf ("%u %%", value);
 
-			g_object_set (G_OBJECT (renderer), "text", s, NULL);
+			g_object_set (renderer, "text", s, NULL);
 			g_free (s);
 		}
 	}
 
-	g_object_set (G_OBJECT (renderer), "visible",
+	g_object_set (renderer, "visible",
 		      rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS) != RHYTHMDB_PODCAST_STATUS_PAUSED,
 		      NULL);
 
-	g_object_set (G_OBJECT (renderer), "value", value, NULL);
+	g_object_set (renderer, "value", value, NULL);
+
+	rhythmdb_entry_unref (entry);
 }
 
 static void
@@ -1540,7 +1546,9 @@ rb_podcast_source_post_feed_cell_data_func (GtkTreeViewColumn *column,
 	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
 	album = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 
-	g_object_set (G_OBJECT (renderer), "text", album, NULL);
+	g_object_set (renderer, "text", album, NULL);
+
+	rhythmdb_entry_unref (entry);
 }
 
 static gboolean
@@ -1559,6 +1567,7 @@ rb_podcast_source_feed_title_search_func (GtkTreeModel *model,
 	gtk_tree_model_get (model, iter,
 			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title,
 			    -1);
+
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, title);
 	if (entry != NULL) {
 		g_free (title);
@@ -1569,6 +1578,7 @@ rb_podcast_source_feed_title_search_func (GtkTreeModel *model,
 
 	g_free (fold_key);
 	g_free (title);
+
 	return !ret;
 }
 
@@ -1646,6 +1656,8 @@ rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column,
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
 	g_free (str);
+
+	rhythmdb_entry_unref (entry);
 }
 
 static void

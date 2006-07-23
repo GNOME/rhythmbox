@@ -245,7 +245,8 @@ rhythmdb_class_init (RhythmDBClass *klass)
 }
 
 static gboolean
-metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
+metadata_field_from_prop (RhythmDBPropType prop,
+			  RBMetaDataField *field)
 {
 	switch (prop) {
 	case RHYTHMDB_PROP_TITLE:
@@ -290,7 +291,9 @@ metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
 }
 
 static GType
-extract_gtype_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
+extract_gtype_from_enum_entry (RhythmDB *db,
+			       GEnumClass *klass,
+			       guint i)
 {
 	GType ret;
 	GEnumValue *value;
@@ -319,7 +322,9 @@ extract_gtype_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 }
 
 static xmlChar *
-extract_nice_name_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
+extract_nice_name_from_enum_entry (RhythmDB *db,
+				   GEnumClass *klass,
+				   guint i)
 {
 	GEnumValue *value;
 	xmlChar *nick;
@@ -334,7 +339,7 @@ extract_nice_name_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 	name_end = xmlStrstr (name, RB_PARSE_NICK_END);
 	name++;
 
-	return xmlStrndup (name, name_end-name);
+	return xmlStrndup (name, name_end - name);
 }
 
 static void
@@ -358,13 +363,14 @@ rhythmdb_init (RhythmDB *db)
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 
 	g_assert (prop_class->n_values == RHYTHMDB_NUM_PROPERTIES);
-	db->priv->column_xml_names = g_new (xmlChar *, RHYTHMDB_NUM_PROPERTIES);
+	db->priv->column_xml_names = g_new0 (xmlChar *, RHYTHMDB_NUM_PROPERTIES);
 
 	/* Now, extract the GType and XML tag of each column from the
 	 * enum descriptions, and cache that for later use. */
 	for (i = 0; i < prop_class->n_values; i++) {
 		rhythmdb_property_type_map[i] = extract_gtype_from_enum_entry (db, prop_class, i);
 		g_assert (rhythmdb_property_type_map[i] != G_TYPE_INVALID);
+
 		db->priv->column_xml_names[i] = extract_nice_name_from_enum_entry (db, prop_class, i);
 		g_assert (db->priv->column_xml_names[i]);
 	}
@@ -383,15 +389,26 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->entry_type_mutex = g_mutex_new ();
 	rhythmdb_register_core_entry_types (db);
 
- 	db->priv->stat_events = g_hash_table_new_full (gnome_vfs_uri_hash, (GEqualFunc) gnome_vfs_uri_equal,
+ 	db->priv->stat_events = g_hash_table_new_full (gnome_vfs_uri_hash,
+						       (GEqualFunc) gnome_vfs_uri_equal,
  						       (GDestroyNotify) gnome_vfs_uri_unref,
  						       NULL);
  	db->priv->stat_mutex = g_mutex_new ();
 
 	db->priv->change_mutex = g_mutex_new ();
-	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
-	db->priv->added_entries = g_hash_table_new (NULL, NULL);
-	db->priv->deleted_entries = g_hash_table_new (NULL, NULL);
+
+	db->priv->changed_entries = g_hash_table_new_full (NULL,
+							   NULL,
+							   (GDestroyNotify) rhythmdb_entry_unref,
+							   NULL);
+	db->priv->added_entries = g_hash_table_new_full (NULL,
+							 NULL,
+							 (GDestroyNotify) rhythmdb_entry_unref,
+							 NULL);
+	db->priv->deleted_entries = g_hash_table_new_full (NULL,
+							   NULL,
+							   (GDestroyNotify) rhythmdb_entry_unref,
+							   NULL);
 
 	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
 
@@ -410,7 +427,8 @@ rhythmdb_init (RhythmDB *db)
 
 static void
 rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
-				     GList *results, /* GnomeVFSGetFileInfoResult* items */
+				     GList *results,
+				     /* GnomeVFSGetFileInfoResult* items */
 				     RhythmDB *db)
 {
 	g_mutex_lock (db->priv->stat_mutex);
@@ -472,14 +490,16 @@ rhythmdb_start_action_thread (RhythmDB *db)
 }
 
 static void
-rhythmdb_action_free (RhythmDB *db, RhythmDBAction *action)
+rhythmdb_action_free (RhythmDB *db,
+		      RhythmDBAction *action)
 {
 	g_free (action->uri);
 	g_free (action);
 }
 
 static void
-rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
+rhythmdb_event_free (RhythmDB *db,
+		     RhythmDBEvent *result)
 {
 	switch (result->type) {
 	case RHYTHMDB_EVENT_THREAD_EXITED:
@@ -512,6 +532,9 @@ rhythmdb_event_free (RhythmDB *db, RhythmDBEvent *result)
 		g_object_unref (result->results);
 	if (result->handle)
 		gnome_vfs_async_cancel (result->handle);
+	if (result->entry != NULL) {
+		rhythmdb_entry_unref (result->entry);
+	}
 	g_free (result);
 }
 
@@ -572,7 +595,7 @@ static void
 rhythmdb_finalize (GObject *object)
 {
 	RhythmDB *db;
-	int i;
+	int  i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RHYTHMDB_IS (object));
@@ -625,9 +648,9 @@ rhythmdb_finalize (GObject *object)
 
 static void
 rhythmdb_set_property (GObject *object,
-		      guint prop_id,
-		      const GValue *value,
-		      GParamSpec *pspec)
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *pspec)
 {
 	RhythmDB *source = RHYTHMDB (object);
 
@@ -649,9 +672,9 @@ rhythmdb_set_property (GObject *object,
 
 static void
 rhythmdb_get_property (GObject *object,
-		      guint prop_id,
-		      GValue *value,
-		      GParamSpec *pspec)
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *pspec)
 {
 	RhythmDB *source = RHYTHMDB (object);
 
@@ -672,7 +695,9 @@ rhythmdb_get_property (GObject *object,
 }
 
 static void
-rhythmdb_thread_create (RhythmDB *db, GThreadFunc func, gpointer data)
+rhythmdb_thread_create (RhythmDB *db,
+			GThreadFunc func,
+			gpointer data)
 {
 	g_object_ref (db);
 	g_atomic_int_inc (&db->priv->outstanding_threads);
@@ -716,7 +741,9 @@ rhythmdb_read_leave (RhythmDB *db)
 }
 
 static gboolean
-free_entry_changes (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
+free_entry_changes (RhythmDBEntry *entry,
+		    GSList *changes,
+		    RhythmDB *db)
 {
 	GSList *t;
 	for (t = changes; t; t = t->next) {
@@ -726,17 +753,22 @@ free_entry_changes (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 		g_free (change);
 	}
 	g_slist_free (changes);
+
 	return TRUE;
 }
 
 static void
-emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
+emit_entry_changed (RhythmDBEntry *entry,
+		    GSList *changes,
+		    RhythmDB *db)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, changes);
 }
 
 static void
-sync_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
+sync_entry_changed (RhythmDBEntry *entry,
+		    GSList *changes,
+		    RhythmDB *db)
 {
 	GSList *t;
 
@@ -801,7 +833,9 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 }
 
 static gboolean
-process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
+process_added_entries_cb (RhythmDBEntry *entry,
+			  GThread *thread,
+			  RhythmDB *db)
 {
 	if (thread != g_thread_self ())
 		return FALSE;
@@ -825,22 +859,28 @@ process_added_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
 
 	rhythmdb_entry_ref (entry);
 	db->priv->added_entries_to_emit = g_list_prepend (db->priv->added_entries_to_emit, entry);
+
 	return TRUE;
 }
 
 static gboolean
-process_deleted_entries_cb (RhythmDBEntry *entry, GThread *thread, RhythmDB *db)
+process_deleted_entries_cb (RhythmDBEntry *entry,
+			    GThread *thread,
+			    RhythmDB *db)
 {
 	if (thread != g_thread_self ())
 		return FALSE;
 
-	/* carry reference over from deleted_entries hash table */
+	rhythmdb_entry_ref (entry);
 	db->priv->deleted_entries_to_emit = g_list_prepend (db->priv->deleted_entries_to_emit, entry);
+
 	return TRUE;
 }
 
 static void
-rhythmdb_commit_internal (RhythmDB *db, gboolean sync_changes, GThread *thread)
+rhythmdb_commit_internal (RhythmDB *db,
+			  gboolean sync_changes,
+			  GThread *thread)
 {
 	g_mutex_lock (db->priv->change_mutex);
 
@@ -878,7 +918,8 @@ timeout_rhythmdb_commit (RhythmDBTimeoutCommitData *data)
 }
 
 static void
-rhythmdb_add_timeout_commit (RhythmDB *db, gboolean sync)
+rhythmdb_add_timeout_commit (RhythmDB *db,
+			     gboolean sync)
 {
 	RhythmDBTimeoutCommitData *data;
 
@@ -935,7 +976,8 @@ rhythmdb_error_quark (void)
  * Returns: the newly allocated #RhythmDBEntry
  **/
 RhythmDBEntry *
-rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
+rhythmdb_entry_allocate (RhythmDB *db,
+			 RhythmDBEntryType type)
 {
 	RhythmDBEntry *ret;
 	gsize size = sizeof (RhythmDBEntry);
@@ -958,7 +1000,7 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 		      RHYTHMDB_ENTRY_LAST_SEEN_DIRTY;
 
 	/* The refcount is initially 0, we want to set it to 1 */
-	g_atomic_int_inc (&ret->refcount);
+	ret->refcount = 1;
 
 	if (type->post_entry_create)
 		(type->post_entry_create)(ret, type->post_entry_create_data);
@@ -977,8 +1019,11 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
  * a slightly more friendly interface to this functionality.
  */
 gpointer
-rhythmdb_entry_get_type_data (RhythmDBEntry *entry, guint expected_size)
+rhythmdb_entry_get_type_data (RhythmDBEntry *entry,
+			      guint expected_size)
 {
+	g_return_val_if_fail (entry != NULL, NULL);
+
 	g_assert (expected_size == entry->type->entry_type_data_size);
 	gsize offset = ALIGN_STRUCT (sizeof (RhythmDBEntry));
 
@@ -996,11 +1041,17 @@ rhythmdb_entry_get_type_data (RhythmDBEntry *entry, guint expected_size)
  * this function.
  **/
 void
-rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_entry_insert (RhythmDB *db,
+		       RhythmDBEntry *entry)
 {
+	g_return_if_fail (RHYTHMDB_IS (db));
+	g_return_if_fail (entry != NULL);
+
 	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
 	g_return_if_fail (entry->location != NULL);
 
+	/* ref the entry before adding to hash, it is unreffed when removed */
+	rhythmdb_entry_ref (entry);
 	g_mutex_lock (db->priv->change_mutex);
 	g_hash_table_insert (db->priv->added_entries, entry, g_thread_self ());
 	g_mutex_unlock (db->priv->change_mutex);
@@ -1022,7 +1073,9 @@ rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
  * Returns: the newly created #RhythmDBEntry
  **/
 RhythmDBEntry *
-rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
+rhythmdb_entry_new (RhythmDB *db,
+		    RhythmDBEntryType type,
+		    const char *uri)
 {
 	RhythmDBEntry *ret;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
@@ -1056,7 +1109,9 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
  * Returns: the newly created #RhythmDBEntry
  **/
 RhythmDBEntry *
-rhythmdb_entry_example_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
+rhythmdb_entry_example_new (RhythmDB *db,
+			    RhythmDBEntryType type,
+			    const char *uri)
 {
 	RhythmDBEntry *ret;
 
@@ -1087,8 +1142,11 @@ rhythmdb_entry_example_new (RhythmDB *db, RhythmDBEntryType type, const char *ur
 RhythmDBEntry *
 rhythmdb_entry_ref (RhythmDBEntry *entry)
 {
-	if (entry != NULL)
-		g_atomic_int_inc (&entry->refcount);
+	g_return_val_if_fail (entry != NULL, NULL);
+	g_return_val_if_fail (entry->refcount > 0, NULL);
+
+	g_atomic_int_inc (&entry->refcount);
+
 	return entry;
 }
 
@@ -1098,6 +1156,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	RhythmDBEntryType type;
 
 	type = rhythmdb_entry_get_entry_type (entry);
+
 	if (type->pre_entry_destroy)
 		(type->pre_entry_destroy)(entry, type->pre_entry_destroy_data);
 
@@ -1124,8 +1183,15 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 void
 rhythmdb_entry_unref (RhythmDBEntry *entry)
 {
-	if (entry && g_atomic_int_dec_and_test (&entry->refcount))
+	gboolean is_zero;
+
+	g_return_if_fail (entry != NULL);
+	g_return_if_fail (entry->refcount > 0);
+
+	is_zero = g_atomic_int_dec_and_test (&entry->refcount);
+	if (G_UNLIKELY (is_zero)) {
 		rhythmdb_entry_finalize (entry);
+	}
 }
 
 /**
@@ -1141,9 +1207,13 @@ rhythmdb_entry_unref (RhythmDBEntry *entry)
  **/
 
 gboolean
-rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_entry_is_editable (RhythmDB *db,
+			    RhythmDBEntry *entry)
 {
 	RhythmDBEntryType entry_type;
+
+	g_return_val_if_fail (RHYTHMDB_IS (db), FALSE);
+	g_return_val_if_fail (entry != NULL, FALSE);
 
 	entry_type = rhythmdb_entry_get_entry_type (entry);
 	return entry_type->can_sync_metadata (db, entry, entry_type->can_sync_metadata_data);
@@ -1174,8 +1244,10 @@ set_metadata_string_default_unknown (RhythmDB *db,
 }
 
 static void
-set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
-			 GnomeVFSFileInfo *vfsinfo, RBMetaData *metadata)
+set_props_from_metadata (RhythmDB *db,
+			 RhythmDBEntry *entry,
+			 GnomeVFSFileInfo *vfsinfo,
+			 RBMetaData *metadata)
 {
 	const char *mime;
 	GValue val = {0,};
@@ -1361,7 +1433,8 @@ is_ghost_entry (RhythmDBEntry *entry)
 }
 
 static void
-rhythmdb_process_stat_event (RhythmDB *db, RhythmDBEvent *event)
+rhythmdb_process_stat_event (RhythmDB *db,
+			     RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	RhythmDBAction *action;
@@ -1457,7 +1530,8 @@ typedef struct
 } RhythmDBLoadErrorData;
 
 static void
-rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
+rhythmdb_add_import_error_entry (RhythmDB *db,
+				 RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
@@ -1541,7 +1615,8 @@ rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event)
 }
 
 static gboolean
-rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
+rhythmdb_process_metadata_load (RhythmDB *db,
+				RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
 	GValue value = {0,};
@@ -1570,7 +1645,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 
-	if (entry) {
+	if (entry != NULL) {
 		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) &&
 		    (rhythmdb_entry_get_entry_type (entry) != event->entry_type)) {
 			/* switching from IGNORE to SONG or vice versa, recreate the entry */
@@ -1580,9 +1655,10 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		}
 	}
 
-	if (!entry) {
+	if (entry == NULL) {
 		if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
 			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+
 		entry = rhythmdb_entry_new (db, event->entry_type, event->real_uri);
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
@@ -1593,7 +1669,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, 0);
 		rhythmdb_entry_set (db, entry,
-					       RHYTHMDB_PROP_LAST_PLAYED, &value);
+				    RHYTHMDB_PROP_LAST_PLAYED, &value);
 		g_value_unset (&value);
 
 		/* initialize the rating */
@@ -1662,7 +1738,8 @@ rhythmdb_process_queued_entry_set_event (RhythmDB *db,
 }
 
 static void
-rhythmdb_process_file_created_or_modified (RhythmDB *db, RhythmDBEvent *event)
+rhythmdb_process_file_created_or_modified (RhythmDB *db,
+					   RhythmDBEvent *event)
 {
 	RhythmDBAction *action;
 
@@ -1674,7 +1751,8 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db, RhythmDBEvent *event)
 }
 
 static void
-rhythmdb_process_file_deleted (RhythmDB *db, RhythmDBEvent *event)
+rhythmdb_process_file_deleted (RhythmDB *db,
+			       RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (db, event->uri);
 
@@ -1688,7 +1766,8 @@ rhythmdb_process_file_deleted (RhythmDB *db, RhythmDBEvent *event)
 }
 
 static gboolean
-rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
+rhythmdb_process_events (RhythmDB *db,
+			 GTimeVal *timeout)
 {
 	RhythmDBEvent *event;
 	guint count = 0;
@@ -1833,7 +1912,8 @@ read_queue (GAsyncQueue *queue, gboolean *cancel)
 
 static void
 rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
-			       GList *results, /* GnomeVFSGetFileInfoResult* items */
+			       GList *results,
+			       /* GnomeVFSGetFileInfoResult* items */
 			       RhythmDBEvent *event)
 {
 	/* this is in the main thread, so we can't do any long operation here */
@@ -1861,7 +1941,9 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 }
 
 static void
-rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
+rhythmdb_execute_stat (RhythmDB *db,
+		       const char *uri,
+		       RhythmDBEvent *event)
 {
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 
@@ -1882,7 +1964,9 @@ rhythmdb_execute_stat (RhythmDB *db, const char *uri, RhythmDBEvent *event)
 }
 
 void
-queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
+queue_stat_uri (const char *uri,
+		RhythmDB *db,
+		RhythmDBEntryType type)
 {
 	RhythmDBEvent *result;
 
@@ -1929,7 +2013,8 @@ queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type)
 }
 
 static void
-queue_stat_uri_tad (const char *uri, RhythmDBAddThreadData *data)
+queue_stat_uri_tad (const char *uri,
+		    RhythmDBAddThreadData *data)
 {
 	queue_stat_uri (uri, data->db, data->type);
 }
@@ -1953,7 +2038,9 @@ add_thread_main (RhythmDBAddThreadData *data)
 }
 
 static void
-rhythmdb_execute_load (RhythmDB *db, const char *uri, RhythmDBEvent *event)
+rhythmdb_execute_load (RhythmDB *db,
+		       const char *uri,
+		       RhythmDBEvent *event)
 {
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	GnomeVFSResult vfsresult;
@@ -1997,9 +2084,15 @@ rhythmdb_execute_load (RhythmDB *db, const char *uri, RhythmDBEvent *event)
  * Gets a property of an entry, storing it in the given #GValue.
  **/
 void
-rhythmdb_entry_get (RhythmDB *db, RhythmDBEntry *entry,
-		    RhythmDBPropType propid, GValue *val)
+rhythmdb_entry_get (RhythmDB *db,
+		    RhythmDBEntry *entry,
+		    RhythmDBPropType propid,
+		    GValue *val)
 {
+	g_return_if_fail (RHYTHMDB_IS (db));
+	g_return_if_fail (entry != NULL);
+	g_return_if_fail (entry->refcount > 0);
+
 	rhythmdb_entry_sync_mirrored (entry, propid);
 
 	g_assert (G_VALUE_TYPE (val) == rhythmdb_get_property_type (db, propid));
@@ -2029,7 +2122,9 @@ rhythmdb_entry_get (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 static void
-entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry, RBMetaData *metadata)
+entry_to_rb_metadata (RhythmDB *db,
+		      RhythmDBEntry *entry,
+		      RBMetaData *metadata)
 {
 	GValue val = {0, };
 	int i;
@@ -2165,13 +2260,16 @@ action_thread_main (RhythmDB *db)
  * If the URI is that of a directory, everything under it will be added recursively.
  **/
 void
-rhythmdb_add_uri (RhythmDB *db, const char *uri)
+rhythmdb_add_uri (RhythmDB *db,
+		  const char *uri)
 {
 	rhythmdb_add_uri_with_type (db, uri, RHYTHMDB_ENTRY_TYPE_INVALID);
 }
 
 void
-rhythmdb_add_uri_with_type (RhythmDB *db, const char *uri, RhythmDBEntryType type)
+rhythmdb_add_uri_with_type (RhythmDB *db,
+			    const char *uri,
+			    RhythmDBEntryType type)
 {
 	char *realuri;
 	char *canon_uri;
@@ -2183,14 +2281,15 @@ rhythmdb_add_uri_with_type (RhythmDB *db, const char *uri, RhythmDBEntryType typ
 	if (rb_uri_is_directory (realuri)) {
 		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
 		data->db = db;
-		data->uri = realuri;
+		data->uri = g_strdup (realuri);
 		data->type = type;
 
 		rhythmdb_thread_create (db, (GThreadFunc) add_thread_main, data);
 	} else {
 		queue_stat_uri (realuri, db, type);
-		g_free (realuri);
 	}
+
+	g_free (realuri);
 }
 
 static gboolean
@@ -2367,9 +2466,14 @@ rhythmdb_save (RhythmDB *db)
  * have taken effect.
  **/
 void
-rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
-		    guint propid, const GValue *value)
+rhythmdb_entry_set (RhythmDB *db,
+		    RhythmDBEntry *entry,
+		    guint propid,
+		    const GValue *value)
 {
+	g_return_if_fail (RHYTHMDB_IS (db));
+	g_return_if_fail (entry != NULL);
+
 	if ((entry->flags & RHYTHMDB_ENTRY_INSERTED) != 0) {
 		if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
 			rhythmdb_entry_set_internal (db, entry, TRUE, propid, value);
@@ -2382,7 +2486,7 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 
 			rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
 
-			result->entry = entry;
+			result->entry = rhythmdb_entry_ref (entry);
 			result->change.prop = propid;
 			result->signal_change = TRUE;
 			g_value_init (&result->change.new, G_VALUE_TYPE (value));
@@ -2395,8 +2499,10 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 static void
-record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
-		     guint propid, const GValue *value)
+record_entry_change (RhythmDB *db,
+		     RhythmDBEntry *entry,
+		     guint propid,
+		     const GValue *value)
 {
 	RhythmDBEntryChange *changedata;
 	GSList *changelist;
@@ -2418,6 +2524,8 @@ record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
 	g_value_copy (value, &changedata->new);
 
 	g_mutex_lock (db->priv->change_mutex);
+	/* ref the entry before adding to hash, it is unreffed when removed */
+	rhythmdb_entry_ref (entry);
 	changelist = g_hash_table_lookup (db->priv->changed_entries, entry);
 	changelist = g_slist_append (changelist, changedata);
 	g_hash_table_insert (db->priv->changed_entries, entry, changelist);
@@ -2425,9 +2533,11 @@ record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 void
-rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
+rhythmdb_entry_set_internal (RhythmDB *db,
+			     RhythmDBEntry *entry,
 			     gboolean notify_if_inserted,
-			     guint propid, const GValue *value)
+			     guint propid,
+			     const GValue *value)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	gboolean handled;
@@ -2467,19 +2577,27 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			g_assert_not_reached ();
 			break;
 		case RHYTHMDB_PROP_TITLE:
-			rb_refstring_unref (entry->title);
+			if (entry->title != NULL) {
+				rb_refstring_unref (entry->title);
+			}
 			entry->title = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_ALBUM:
-			rb_refstring_unref (entry->album);
+			if (entry->album != NULL) {
+				rb_refstring_unref (entry->album);
+			}
 			entry->album = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_ARTIST:
-			rb_refstring_unref (entry->artist);
+			if (entry->artist != NULL) {
+				rb_refstring_unref (entry->artist);
+			}
 			entry->artist = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_GENRE:
-			rb_refstring_unref (entry->genre);
+			if (entry->genre != NULL) {
+				rb_refstring_unref (entry->genre);
+			}
 			entry->genre = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
@@ -2528,15 +2646,18 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 				entry->playback_error = NULL;
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			rb_refstring_unref (entry->mountpoint);
+			if (entry->mountpoint != NULL) {
+				rb_refstring_unref (entry->mountpoint);
+			}
 			entry->mountpoint = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
 			entry->file_size = g_value_get_uint64 (value);
 			break;
 		case RHYTHMDB_PROP_MIMETYPE:
-			if (entry->mimetype)
+			if (entry->mimetype != NULL) {
 				rb_refstring_unref (entry->mimetype);
+			}
 			entry->mimetype = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_MTIME:
@@ -2593,17 +2714,23 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 			break;
 		case RHYTHMDB_PROP_LANG:
 			g_assert (podcast);
-			rb_refstring_unref (podcast->lang);
+			if (podcast->lang != NULL) {
+				rb_refstring_unref (podcast->lang);
+			}
 			podcast->lang = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_COPYRIGHT:
 			g_assert (podcast);
-			rb_refstring_unref (podcast->copyright);
+			if (podcast->copyright != NULL) {
+				rb_refstring_unref (podcast->copyright);
+			}
 			podcast->copyright = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_IMAGE:
 			g_assert (podcast);
-			rb_refstring_unref (podcast->image);
+			if (podcast->image != NULL) {
+				rb_refstring_unref (podcast->image);
+			}
 			podcast->image = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_POST_TIME:
@@ -2634,7 +2761,8 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
  **/
 
 static void
-rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
+rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
+			      guint propid)
 {
 	static const char *format;
 	static const char *never;
@@ -2663,10 +2791,13 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 			g_free (val);
 		}
 
-		if (g_atomic_pointer_compare_and_exchange (&entry->last_played_str, old, new))
-			rb_refstring_unref (old);
-		else
+		if (g_atomic_pointer_compare_and_exchange (&entry->last_played_str, old, new)) {
+			if (old != NULL) {
+				rb_refstring_unref (old);
+			}
+		} else {
 			rb_refstring_unref (new);
+		}
 
 		break;
 	}
@@ -2682,10 +2813,14 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 		new = rb_refstring_new (val);
 		g_free (val);
 
-		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new))
-			rb_refstring_unref (old);
-		else
+		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new)) {
+			if (old != NULL) {
+				rb_refstring_unref (old);
+			}
+		} else {
 			rb_refstring_unref (new);
+		}
+
 		break;
 	}
 	case RHYTHMDB_PROP_LAST_SEEN_STR:
@@ -2705,10 +2840,14 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
 			new = NULL;
 		}
 
-		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new))
-			rb_refstring_unref (old);
-		else
+		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new)) {
+			if (old != NULL) {
+				rb_refstring_unref (old);
+			}
+		} else {
 			rb_refstring_unref (new);
+		}
+
 		break;
 	}
 	default:
@@ -2726,12 +2865,17 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry, guint propid)
  * as a network source.
  **/
 void
-rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_entry_delete (RhythmDB *db,
+		       RhythmDBEntry *entry)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
+	g_return_if_fail (RHYTHMDB_IS (db));
+	g_return_if_fail (entry != NULL);
+
 	klass->impl_entry_delete (db, entry);
 
+	/* ref the entry before adding to hash, it is unreffed when removed */
 	rhythmdb_entry_ref (entry);
 	g_mutex_lock (db->priv->change_mutex);
 	g_hash_table_insert (db->priv->deleted_entries, entry, g_thread_self ());
@@ -2742,7 +2886,8 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 }
 
 static gint
-rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info, gpointer data)
+rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info,
+				 gpointer data)
 {
 	/* Abort immediately if anything happens */
 	if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
@@ -2754,7 +2899,8 @@ rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info, gpointer data)
 }
 
 static void
-rhythmdb_entry_move_to_trash_set_error (RhythmDB *db, RhythmDBEntry *entry,
+rhythmdb_entry_move_to_trash_set_error (RhythmDB *db,
+					RhythmDBEntry *entry,
 				        GnomeVFSResult res)
 {
 	GValue value = { 0, };
@@ -2772,7 +2918,8 @@ rhythmdb_entry_move_to_trash_set_error (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 void
-rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_entry_move_to_trash (RhythmDB *db,
+			      RhythmDBEntry *entry)
 {
 	GnomeVFSResult res;
 	GnomeVFSURI *uri, *trash, *dest;
@@ -2865,7 +3012,8 @@ rhythmdb_entry_move_to_trash (RhythmDB *db, RhythmDBEntry *entry)
  * removable media being removed, or a network share becoming unavailable.
  **/
 void
-rhythmdb_entry_delete_by_type (RhythmDB *db, RhythmDBEntryType type)
+rhythmdb_entry_delete_by_type (RhythmDB *db,
+			       RhythmDBEntryType type)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
@@ -2877,13 +3025,15 @@ rhythmdb_entry_delete_by_type (RhythmDB *db, RhythmDBEntryType type)
 }
 
 const xmlChar *
-rhythmdb_nice_elt_name_from_propid (RhythmDB *db, RhythmDBPropType propid)
+rhythmdb_nice_elt_name_from_propid (RhythmDB *db,
+				    RhythmDBPropType propid)
 {
 	return db->priv->column_xml_names[propid];
 }
 
 int
-rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const xmlChar *name)
+rhythmdb_propid_from_nice_elt_name (RhythmDB *db,
+				    const xmlChar *name)
 {
 	gpointer ret, orig;
 	if (g_hash_table_lookup_extended (db->priv->propname_map, name,
@@ -2903,7 +3053,8 @@ rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const xmlChar *name)
  * Returns: the entry with location @uri, or NULL if no such entry exists.
  **/
 RhythmDBEntry *
-rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri)
+rhythmdb_entry_lookup_by_location (RhythmDB *db,
+				   const char *uri)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
@@ -2919,7 +3070,9 @@ rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri)
  * Calls the given function for each of the entries in the database.
  **/
 void
-rhythmdb_entry_foreach (RhythmDB *db, GFunc func, gpointer data)
+rhythmdb_entry_foreach (RhythmDB *db,
+			GFunc func,
+			gpointer data)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
@@ -2937,7 +3090,9 @@ rhythmdb_entry_foreach (RhythmDB *db, GFunc func, gpointer data)
  * Returns: whether the given entry matches the criteria of the given query.
  **/
 gboolean
-rhythmdb_evaluate_query (RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry)
+rhythmdb_evaluate_query (RhythmDB *db,
+			 GPtrArray *query,
+			 RhythmDBEntry *entry)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
@@ -3194,7 +3349,8 @@ rhythmdb_prop_type_get_type (void)
 }
 
 void
-rhythmdb_emit_entry_deleted (RhythmDB *db, RhythmDBEntry *entry)
+rhythmdb_emit_entry_deleted (RhythmDB *db,
+			     RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
 }
@@ -3232,7 +3388,11 @@ rhythmdb_is_busy (RhythmDB *db)
  * Returns: the string, which should be freed with g_free.
  **/
 char *
-rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size, const char *singular, const char *plural)
+rhythmdb_compute_status_normal (gint n_songs,
+				glong duration,
+				guint64 size,
+				const char *singular,
+				const char *plural)
 {
 	long days, hours, minutes, seconds;
 	char *songcount = NULL;
@@ -3315,7 +3475,10 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, guint64 size, cons
 }
 
 static void
-default_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data)
+default_sync_metadata (RhythmDB *db,
+		       RhythmDBEntry *entry,
+		       GError **error,
+		       gpointer data)
 {
 	const char *uri;
 	GError *local_error = NULL;
@@ -3356,7 +3519,8 @@ default_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpoin
  * Returns: the new #RhythmDBEntryType.
  **/
 RhythmDBEntryType
-rhythmdb_entry_register_type (RhythmDB *db, const char *name)
+rhythmdb_entry_register_type (RhythmDB *db,
+			      const char *name)
 {
 	RhythmDBEntryType type;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
@@ -3415,7 +3579,9 @@ rhythmdb_entry_type_foreach_cb (const char *name,
  * Calls a function for each registered entry type.
  */
 void
-rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data)
+rhythmdb_entry_type_foreach (RhythmDB *db,
+			     GHFunc func,
+			     gpointer data)
 {
 	RhythmDBEntryTypeForeachData d;
 
@@ -3441,7 +3607,8 @@ rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data)
  * Returns: the #RhythmDBEntryType
  */
 RhythmDBEntryType
-rhythmdb_entry_type_get_by_name (RhythmDB *db, const char *name)
+rhythmdb_entry_type_get_by_name (RhythmDB *db,
+				 const char *name)
 {
 	gpointer t = NULL;
 
@@ -3458,7 +3625,9 @@ rhythmdb_entry_type_get_by_name (RhythmDB *db, const char *name)
 }
 
 static gboolean
-song_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, gpointer data)
+song_can_sync_metadata (RhythmDB *db,
+			RhythmDBEntry *entry,
+			gpointer data)
 {
 	const char *mimetype;
 
@@ -3467,13 +3636,15 @@ song_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry, gpointer data)
 }
 
 static char *
-podcast_get_playback_uri (RhythmDBEntry *entry, gpointer data)
+podcast_get_playback_uri (RhythmDBEntry *entry,
+			  gpointer data)
 {
 	return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 }
 
 static void
-podcast_data_destroy (RhythmDBEntry *entry, gpointer something)
+podcast_data_destroy (RhythmDBEntry *entry,
+		      gpointer something)
 {
 	RhythmDBPodcastFields *podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 	rb_refstring_unref (podcast->description);
@@ -3567,7 +3738,8 @@ rhythmdb_entry_podcast_feed_get_type (void)
 }
 
 static void
-rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry,
+rhythmdb_entry_set_mount_point (RhythmDB *db,
+				RhythmDBEntry *entry,
 				const gchar *realuri)
 {
 	gchar *mount_point;
@@ -3585,11 +3757,15 @@ rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 void
-rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
+rhythmdb_entry_set_visibility (RhythmDB *db,
+			       RhythmDBEntry *entry,
 			       gboolean visible)
 {
 	GValue old_val = {0, };
 	gboolean old_visible;
+
+	g_return_if_fail (RHYTHMDB_IS (db));
+	g_return_if_fail (entry != NULL);
 
 	g_value_init (&old_val, G_TYPE_BOOLEAN);
 
@@ -3658,21 +3834,30 @@ library_location_changed_cb (GConfClient *client,
 }
 
 char *
-rhythmdb_entry_dup_string (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_dup_string (RhythmDBEntry *entry,
+			   RhythmDBPropType propid)
 {
 	const char *s;
 
+	g_return_val_if_fail (entry != NULL, NULL);
+
 	s = rhythmdb_entry_get_string (entry, propid);
-	if (s)
+	if (s != NULL) {
 		return g_strdup (s);
-	else
+	} else {
 		return NULL;
+	}
 }
 
 const char *
-rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_get_string (RhythmDBEntry *entry,
+			   RhythmDBPropType propid)
 {
 	RhythmDBPodcastFields *podcast = NULL;
+
+	g_return_val_if_fail (entry != NULL, NULL);
+	g_return_val_if_fail (entry->refcount > 0, NULL);
+
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
 	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
@@ -3761,8 +3946,11 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 }
 
 gboolean
-rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_get_boolean (RhythmDBEntry *entry,
+			    RhythmDBPropType propid)
 {
+	g_return_val_if_fail (entry != NULL, FALSE);
+
 	switch (propid) {
 	case RHYTHMDB_PROP_HIDDEN:
 		return ((entry->flags & RHYTHMDB_ENTRY_HIDDEN) != 0);
@@ -3773,8 +3961,11 @@ rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
 }
 
 guint64
-rhythmdb_entry_get_uint64 (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_get_uint64 (RhythmDBEntry *entry,
+			   RhythmDBPropType propid)
 {
+	g_return_val_if_fail (entry != NULL, 0);
+
 	switch (propid) {
 	case RHYTHMDB_PROP_FILE_SIZE:
 		return entry->file_size;
@@ -3787,12 +3978,17 @@ rhythmdb_entry_get_uint64 (RhythmDBEntry *entry, RhythmDBPropType propid)
 RhythmDBEntryType
 rhythmdb_entry_get_entry_type (RhythmDBEntry *entry)
 {
+	g_return_val_if_fail (entry != NULL, RHYTHMDB_ENTRY_TYPE_INVALID);
+
 	return entry->type;
 }
 
 gpointer
-rhythmdb_entry_get_pointer (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_get_pointer (RhythmDBEntry *entry,
+			    RhythmDBPropType propid)
 {
+	g_return_val_if_fail (entry != NULL, NULL);
+
 	switch (propid) {
 	case RHYTHMDB_PROP_TYPE:
 		return entry->type;
@@ -3803,9 +3999,13 @@ rhythmdb_entry_get_pointer (RhythmDBEntry *entry, RhythmDBPropType propid)
 }
 
 gulong
-rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_get_ulong (RhythmDBEntry *entry,
+			  RhythmDBPropType propid)
 {
 	RhythmDBPodcastFields *podcast = NULL;
+
+	g_return_val_if_fail (entry != NULL, 0);
+
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
 	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
@@ -3856,8 +4056,11 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 }
 
 double
-rhythmdb_entry_get_double (RhythmDBEntry *entry, RhythmDBPropType propid)
+rhythmdb_entry_get_double (RhythmDBEntry *entry,
+			   RhythmDBPropType propid)
 {
+	g_return_val_if_fail (entry != NULL, 0);
+
 	switch (propid) {
 	case RHYTHMDB_PROP_TRACK_GAIN:
 		return entry->track_gain;
@@ -3880,6 +4083,8 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 {
 	RhythmDBEntryType type;
 
+	g_return_val_if_fail (entry != NULL, NULL);
+
 	type = rhythmdb_entry_get_entry_type (entry);
 	if (type->get_playback_uri)
 		return (type->get_playback_uri) (entry, type->get_playback_uri_data);
@@ -3888,7 +4093,8 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 }
 
 GType
-rhythmdb_get_property_type (RhythmDB *db, guint property_id)
+rhythmdb_get_property_type (RhythmDB *db,
+			    guint property_id)
 {
 	g_assert (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES);
 	return rhythmdb_property_type_map[property_id];

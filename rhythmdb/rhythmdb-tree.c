@@ -20,7 +20,8 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
+
 #ifdef HAVE_GNU_FWRITE_UNLOCKED
 #define _GNU_SOURCE
 #endif
@@ -181,7 +182,9 @@ rhythmdb_tree_init (RhythmDBTree *db)
 }
 
 static void
-unparent_entries (const char *uri, RhythmDBEntry *entry, RhythmDBTree *db)
+unparent_entries (const char *uri,
+		  RhythmDBEntry *entry,
+		  RhythmDBTree *db)
 {
 	remove_entry_from_album (db, entry);
 }
@@ -269,7 +272,8 @@ struct RhythmDBTreeLoadContext
 
 static void
 rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
-				    const char *name, const char **attrs)
+				    const char *name,
+				    const char **attrs)
 {
 	if (*ctx->die == TRUE) {
 		xmlStopParser (ctx->xmlctx);
@@ -378,7 +382,8 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 }
 
 static void
-rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const char *name)
+rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
+				  const char *name)
 {
 	if (*ctx->die == TRUE) {
 		xmlStopParser (ctx->xmlctx);
@@ -531,7 +536,8 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 }
 
 static void
-rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx, const char *data,
+rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx,
+				 const char *data,
 				 guint len)
 {
 	if (*ctx->die == TRUE) {
@@ -555,13 +561,17 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx, const char
 }
 
 static void
-rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
+rhythmdb_tree_load (RhythmDB *rdb,
+		    gboolean *die)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
 	xmlParserCtxtPtr ctxt;
-	xmlSAXHandlerPtr sax_handler = g_new0 (xmlSAXHandler, 1);
-	struct RhythmDBTreeLoadContext *ctx = g_new0 (struct RhythmDBTreeLoadContext, 1);
+	xmlSAXHandlerPtr sax_handler;
+	struct RhythmDBTreeLoadContext *ctx;
 	char *name;
+
+	sax_handler = g_new0 (xmlSAXHandler, 1);
+	ctx = g_new0 (struct RhythmDBTreeLoadContext, 1);
 
 	sax_handler->startElement = (startElementSAXFunc) rhythmdb_tree_parser_start_element;
 	sax_handler->endElement = (endElementSAXFunc) rhythmdb_tree_parser_end_element;
@@ -588,6 +598,7 @@ rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
 			rhythmdb_commit (RHYTHMDB (ctx->db));
 
 	}
+
 	g_string_free (ctx->buf, TRUE);
 	g_free (name);
 	g_free (sax_handler);
@@ -628,7 +639,8 @@ struct RhythmDBTreeSaveContext
 #define RHYTHMDB_FWRITE_STATICSTR(STR, HANDLE, ERROR) RHYTHMDB_FWRITE(STR, 1, sizeof(STR)-1, HANDLE, ERROR)
 
 static void
-write_elt_name_open (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name)
+write_elt_name_open (struct RhythmDBTreeSaveContext *ctx,
+		     const xmlChar *elt_name)
 {
 	RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle, ctx->error);
 	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle, ctx->error);
@@ -636,7 +648,8 @@ write_elt_name_open (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_nam
 }
 
 static void
-write_elt_name_close (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name)
+write_elt_name_close (struct RhythmDBTreeSaveContext *ctx,
+		      const xmlChar *elt_name)
 {
 	RHYTHMDB_FWRITE_STATICSTR ("</", ctx->handle, ctx->error);
 	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle, ctx->error);
@@ -645,7 +658,8 @@ write_elt_name_close (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_na
 
 static void
 save_entry_string (struct RhythmDBTreeSaveContext *ctx,
-		   const xmlChar *elt_name, const char *str)
+		   const xmlChar *elt_name,
+		   const char *str)
 {
 	xmlChar *encoded;
 
@@ -659,7 +673,8 @@ save_entry_string (struct RhythmDBTreeSaveContext *ctx,
 
 static void
 save_entry_int (struct RhythmDBTreeSaveContext *ctx,
-		const xmlChar *elt_name, int num)
+		const xmlChar *elt_name,
+		int num)
 {
 	char buf[92];
 	if (num == 0)
@@ -672,9 +687,12 @@ save_entry_int (struct RhythmDBTreeSaveContext *ctx,
 
 static void
 save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
-		  const xmlChar *elt_name, gulong num, gboolean save_zeroes)
+		  const xmlChar *elt_name,
+		  gulong num,
+		  gboolean save_zeroes)
 {
 	char buf[92];
+
 	if (num == 0 && !save_zeroes)
 		return;
 	write_elt_name_open (ctx, elt_name);
@@ -685,13 +703,15 @@ save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
 
 static void
 save_entry_boolean (struct RhythmDBTreeSaveContext *ctx,
-		    const xmlChar *elt_name, gboolean val)
+		    const xmlChar *elt_name,
+		    gboolean val)
 {
 	save_entry_ulong (ctx, elt_name, val ? 1 : 0, FALSE);
 }
 
 static void
-save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name,
+save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx,
+		   const xmlChar *elt_name,
 		   guint64 num)
 {
 	char buf[92];
@@ -707,7 +727,8 @@ save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name,
 
 static void
 save_entry_double (struct RhythmDBTreeSaveContext *ctx,
-		   const xmlChar *elt_name, double num)
+		   const xmlChar *elt_name,
+		   double num)
 {
 	char buf[92];
 
@@ -724,7 +745,9 @@ save_entry_double (struct RhythmDBTreeSaveContext *ctx,
  * readability cost.  Sorry about that.
  */
 static void
-save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveContext *ctx)
+save_entry (RhythmDBTree *db,
+	    RhythmDBEntry *entry,
+	    struct RhythmDBTreeSaveContext *ctx)
 {
 	RhythmDBPropType i;
 	RhythmDBPodcastFields *podcast = NULL;
@@ -753,8 +776,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 
 		elt_name = rhythmdb_nice_elt_name_from_propid ((RhythmDB *) ctx->db, i);
 
-		switch (i)
-		{
+		switch (i) {
 		case RHYTHMDB_PROP_TYPE:
 			break;
 		case RHYTHMDB_PROP_TITLE:
@@ -1022,7 +1044,9 @@ rhythmdb_tree_new (const char *name)
 }
 
 static void
-set_entry_album (RhythmDBTree *db, RhythmDBEntry *entry, RhythmDBTreeProperty *artist,
+set_entry_album (RhythmDBTree *db,
+		 RhythmDBEntry *entry,
+		 RhythmDBTreeProperty *artist,
 		 RBRefString *name)
 {
 	struct RhythmDBTreeProperty *prop;
@@ -1032,7 +1056,8 @@ set_entry_album (RhythmDBTree *db, RhythmDBEntry *entry, RhythmDBTreeProperty *a
 }
 
 static void
-rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntry *entry)
+rhythmdb_tree_entry_new (RhythmDB *rdb,
+			 RhythmDBEntry *entry)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
 	RhythmDBTreeProperty *artist;
@@ -1085,7 +1110,8 @@ rhythmdb_tree_property_new (RhythmDBTree *db)
 }
 
 static GHashTable *
-get_genres_hash_for_type (RhythmDBTree *db, RhythmDBEntryType type)
+get_genres_hash_for_type (RhythmDBTree *db,
+			  RhythmDBEntryType type)
 {
 	GHashTable *table;
 
@@ -1135,7 +1161,8 @@ genres_hash_foreach (RhythmDBTree *db, RBHFunc func, gpointer data)
 }
 
 static RhythmDBTreeProperty *
-get_or_create_genre (RhythmDBTree *db, RhythmDBEntryType type,
+get_or_create_genre (RhythmDBTree *db,
+		     RhythmDBEntryType type,
 		     RBRefString *name)
 {
 	RhythmDBTreeProperty *genre;
@@ -1158,7 +1185,8 @@ get_or_create_genre (RhythmDBTree *db, RhythmDBEntryType type,
 }
 
 static RhythmDBTreeProperty *
-get_or_create_artist (RhythmDBTree *db, RhythmDBTreeProperty *genre,
+get_or_create_artist (RhythmDBTree *db,
+		      RhythmDBTreeProperty *genre,
 		      RBRefString *name)
 {
 	RhythmDBTreeProperty *artist;
@@ -1179,7 +1207,8 @@ get_or_create_artist (RhythmDBTree *db, RhythmDBTreeProperty *genre,
 }
 
 static RhythmDBTreeProperty *
-get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
+get_or_create_album (RhythmDBTree *db,
+		     RhythmDBTreeProperty *artist,
 		     RBRefString *name)
 {
 	RhythmDBTreeProperty *album;
@@ -1198,7 +1227,8 @@ get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
 }
 
 static gboolean
-remove_child (RhythmDBTreeProperty *parent, gconstpointer data)
+remove_child (RhythmDBTreeProperty *parent,
+	      gconstpointer data)
 {
 	g_assert (g_hash_table_remove (parent->children, data));
 	if (g_hash_table_size (parent->children) <= 0) {
@@ -1208,7 +1238,8 @@ remove_child (RhythmDBTreeProperty *parent, gconstpointer data)
 }
 
 static void
-remove_entry_from_album (RhythmDBTree *db, RhythmDBEntry *entry)
+remove_entry_from_album (RhythmDBTree *db,
+			 RhythmDBEntry *entry)
 {
 	GHashTable *table;
 
@@ -1238,8 +1269,10 @@ remove_entry_from_album (RhythmDBTree *db, RhythmDBEntry *entry)
 }
 
 static gboolean
-rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
-			 guint propid, const GValue *value)
+rhythmdb_tree_entry_set (RhythmDB *adb,
+			 RhythmDBEntry *entry,
+			 guint propid,
+			 const GValue *value)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	RhythmDBEntryType type;
@@ -1354,7 +1387,8 @@ rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *entry,
 }
 
 static void
-rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *entry)
+rhythmdb_tree_entry_delete (RhythmDB *adb,
+			    RhythmDBEntry *entry)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 
@@ -1372,7 +1406,8 @@ typedef struct {
 } RbEntryRemovalCtxt;
 
 static gboolean
-remove_one_song (gchar *uri, RhythmDBEntry *entry,
+remove_one_song (gchar *uri,
+		 RhythmDBEntry *entry,
 		 RbEntryRemovalCtxt *ctxt)
 {
 	g_return_val_if_fail (entry != NULL, FALSE);
@@ -1387,7 +1422,8 @@ remove_one_song (gchar *uri, RhythmDBEntry *entry,
 }
 
 static void
-rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType type)
+rhythmdb_tree_entry_delete_by_type (RhythmDB *adb,
+				    RhythmDBEntryType type)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	RbEntryRemovalCtxt ctxt;
@@ -1421,7 +1457,8 @@ struct RhythmDBTreeTraversalData
 };
 
 static gboolean
-rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
+rhythmdb_tree_evaluate_query (RhythmDB *adb,
+			      GPtrArray *query,
 			      RhythmDBEntry *entry)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
@@ -1481,7 +1518,9 @@ rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 			}
 
 static gboolean
-search_match_properties (RhythmDB *db, RhythmDBEntry *entry, gchar **words)
+search_match_properties (RhythmDB *db,
+			 RhythmDBEntry *entry,
+			 gchar **words)
 {
 	const RhythmDBPropType props[] = {
 		RHYTHMDB_PROP_TITLE_FOLDED,
@@ -1515,8 +1554,11 @@ search_match_properties (RhythmDB *db, RhythmDBEntry *entry, gchar **words)
 }
 
 static gboolean
-evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
-			       guint base, guint max, RhythmDBEntry *entry)
+evaluate_conjunctive_subquery (RhythmDBTree *dbtree,
+			       GPtrArray *query,
+			       guint base,
+			       guint max,
+			       RhythmDBEntry *entry)
 
 {
 	RhythmDB *db = (RhythmDB *) dbtree;
@@ -1641,7 +1683,8 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 }
 
 static void
-do_conjunction (RhythmDBEntry *entry, gpointer unused,
+do_conjunction (RhythmDBEntry *entry,
+		gpointer unused,
 		struct RhythmDBTreeTraversalData *data)
 {
 	if (G_UNLIKELY (*data->cancel))
@@ -1654,7 +1697,8 @@ do_conjunction (RhythmDBEntry *entry, gpointer unused,
 }
 
 static void
-conjunctive_query_songs (const char *name, RhythmDBTreeProperty *album,
+conjunctive_query_songs (const char *name,
+			 RhythmDBTreeProperty *album,
 			 struct RhythmDBTreeTraversalData *data)
 {
 	if (G_UNLIKELY (*data->cancel))
@@ -1663,7 +1707,8 @@ conjunctive_query_songs (const char *name, RhythmDBTreeProperty *album,
 }
 
 static GPtrArray *
-clone_remove_ptr_array_index (GPtrArray *arr, guint index)
+clone_remove_ptr_array_index (GPtrArray *arr,
+			      guint index)
 {
 	GPtrArray *ret = g_ptr_array_new ();
 	guint i;
@@ -1675,7 +1720,8 @@ clone_remove_ptr_array_index (GPtrArray *arr, guint index)
 }
 
 static void
-conjunctive_query_albums (const char *name, RhythmDBTreeProperty *artist,
+conjunctive_query_albums (const char *name,
+			  RhythmDBTreeProperty *artist,
 			  struct RhythmDBTreeTraversalData *data)
 {
 	guint i;
@@ -1717,7 +1763,8 @@ conjunctive_query_albums (const char *name, RhythmDBTreeProperty *artist,
 }
 
 static void
-conjunctive_query_artists (const char *name, RhythmDBTreeProperty *genre,
+conjunctive_query_artists (const char *name,
+			   RhythmDBTreeProperty *genre,
 			   struct RhythmDBTreeTraversalData *data)
 {
 	guint i;
@@ -1758,7 +1805,8 @@ conjunctive_query_artists (const char *name, RhythmDBTreeProperty *genre,
 }
 
 static void
-conjunctive_query_genre (RhythmDBTree *db, GHashTable *genres,
+conjunctive_query_genre (RhythmDBTree *db,
+			 GHashTable *genres,
 			 struct RhythmDBTreeTraversalData *data)
 {
 	int genre_query_idx = -1;
@@ -1802,8 +1850,10 @@ conjunctive_query_genre (RhythmDBTree *db, GHashTable *genres,
 }
 
 static void
-conjunctive_query (RhythmDBTree *db, GPtrArray *query,
-		   RhythmDBTreeTraversalFunc func, gpointer data,
+conjunctive_query (RhythmDBTree *db,
+		   GPtrArray *query,
+		   RhythmDBTreeTraversalFunc func,
+		   gpointer data,
 		   gboolean *cancel)
 {
 	int type_query_idx = -1;
@@ -1853,7 +1903,8 @@ conjunctive_query (RhythmDBTree *db, GPtrArray *query,
 }
 
 static GList *
-split_query_by_disjunctions (RhythmDBTree *db, GPtrArray *query)
+split_query_by_disjunctions (RhythmDBTree *db,
+			     GPtrArray *query)
 {
 	GList *conjunctions = NULL;
 	guint i, j;
@@ -1898,8 +1949,11 @@ struct RhythmDBTreeQueryGatheringData
 };
 
 static void
-do_query_recurse (RhythmDBTree *db, GPtrArray *query, RhythmDBTreeTraversalFunc func,
-		  struct RhythmDBTreeQueryGatheringData *data, gboolean *cancel)
+do_query_recurse (RhythmDBTree *db,
+		  GPtrArray *query,
+		  RhythmDBTreeTraversalFunc func,
+		  struct RhythmDBTreeQueryGatheringData *data,
+		  gboolean *cancel)
 {
 	GList *conjunctions, *tem;
 
@@ -1932,7 +1986,8 @@ do_query_recurse (RhythmDBTree *db, GPtrArray *query, RhythmDBTreeTraversalFunc 
 }
 
 static void
-handle_entry_match (RhythmDB *db, RhythmDBEntry *entry,
+handle_entry_match (RhythmDB *db,
+		    RhythmDBEntry *entry,
 		    struct RhythmDBTreeQueryGatheringData *data)
 {
 
@@ -1967,7 +2022,8 @@ rhythmdb_tree_do_full_query (RhythmDB *adb,
 }
 
 static RhythmDBEntry *
-rhythmdb_tree_entry_lookup_by_location (RhythmDB *adb, const char *uri)
+rhythmdb_tree_entry_lookup_by_location (RhythmDB *adb,
+					const char *uri)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	return g_hash_table_lookup (db->priv->entries, uri);
@@ -1981,14 +2037,18 @@ struct RhythmDBEntryForeachCtxt
 };
 
 static void
-rhythmdb_tree_entry_foreach_func (gpointer key, gpointer val, gpointer data)
+rhythmdb_tree_entry_foreach_func (gpointer key,
+				  gpointer val,
+				  gpointer data)
 {
 	struct RhythmDBEntryForeachCtxt * ctx = data;
 	ctx->func (val, ctx->user_data);
 }
 
 static void
-rhythmdb_tree_entry_foreach (RhythmDB *adb, GFunc func, gpointer user_data)
+rhythmdb_tree_entry_foreach (RhythmDB *adb,
+			     GFunc func,
+			     gpointer user_data)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	struct RhythmDBEntryForeachCtxt *ctx = g_new0 (struct RhythmDBEntryForeachCtxt, 1);
@@ -2010,7 +2070,9 @@ struct HashTreeIteratorCtxt {
 };
 
 static void
-hash_tree_entries_foreach (gpointer key, gpointer value, gpointer data)
+hash_tree_entries_foreach (gpointer key,
+			   gpointer value,
+			   gpointer data)
 {
 	RhythmDBEntry *entry = (RhythmDBEntry *) key;
 	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
@@ -2021,7 +2083,9 @@ hash_tree_entries_foreach (gpointer key, gpointer value, gpointer data)
 }
 
 static void
-hash_tree_albums_foreach (gpointer key, gpointer value, gpointer data)
+hash_tree_albums_foreach (gpointer key,
+			  gpointer value,
+			  gpointer data)
 {
 	RhythmDBTreeProperty *album = (RhythmDBTreeProperty *)value;
 	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
@@ -2037,7 +2101,9 @@ hash_tree_albums_foreach (gpointer key, gpointer value, gpointer data)
 }
 
 static void
-hash_tree_artists_foreach (gpointer key, gpointer value, gpointer data)
+hash_tree_artists_foreach (gpointer key,
+			   gpointer value,
+			   gpointer data)
 {
 	RhythmDBTreeProperty *artist = (RhythmDBTreeProperty *)value;
 	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
@@ -2053,7 +2119,9 @@ hash_tree_artists_foreach (gpointer key, gpointer value, gpointer data)
 }
 
 static void
-hash_tree_genres_foreach (gpointer key, gpointer value, gpointer data)
+hash_tree_genres_foreach (gpointer key,
+			  gpointer value,
+			  gpointer data)
 {
 	RhythmDBTreeProperty *genre = (RhythmDBTreeProperty *)value;
 	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;

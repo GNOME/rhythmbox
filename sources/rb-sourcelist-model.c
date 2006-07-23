@@ -213,7 +213,7 @@ rb_sourcelist_model_new (void)
 	column_types[RB_SOURCELIST_MODEL_COLUMN_PLAYING] = G_TYPE_BOOLEAN;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_PIXBUF] = GDK_TYPE_PIXBUF;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_NAME] = G_TYPE_STRING;
-	column_types[RB_SOURCELIST_MODEL_COLUMN_SOURCE] = G_TYPE_POINTER;
+	column_types[RB_SOURCELIST_MODEL_COLUMN_SOURCE] = G_TYPE_OBJECT;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES] = PANGO_TYPE_ATTR_LIST;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_VISIBILITY] = G_TYPE_BOOLEAN;
 	store = gtk_tree_store_newv (RB_SOURCELIST_MODEL_N_COLUMNS,
@@ -315,6 +315,8 @@ rb_sourcelist_model_is_row_visible (GtkTreeModel *model,
 		gboolean visible;
 		g_object_get (source, "visibility", &visible, NULL);
 
+		g_object_unref (source);
+
 		return visible;
 	} else {
 		return real_row_is_separator (sourcelist, iter);
@@ -332,8 +334,10 @@ rb_sourcelist_model_row_is_separator (GtkTreeModel *model,
 	/* rows with actual sources are never separators */
 	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-	if (source != NULL)
+	if (source != NULL) {
+		g_object_unref (source);
 		return FALSE;
+	}
 
 	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (sourcelist),
 							  &real_iter,
@@ -378,14 +382,20 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 		RBSource *target;
 		rb_debug ("text/uri-list drag data received");
 
-		if (dest == NULL || !gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
+		if (dest == NULL || !gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
 			target = NULL;
-		else
+		} else {
 			gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 					    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+		}
 
 		g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
 			       0, target, pos, selection_data);
+
+		if (target != NULL) {
+			g_object_unref (target);
+		}
+
 		return TRUE;
 	}
 
@@ -431,6 +441,7 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
 				    -1);
 		g_object_get (source, "sourcelist-group", &group, NULL);
+		g_object_unref (source);
 
 		/* restrict sources to within their group */
 		dest_group = get_group_for_path (model, real_dest);
@@ -496,6 +507,9 @@ path_is_droppable (RBSourceListModel *model,
 		   GtkTreePath *dest)
 {
 	GtkTreeIter iter;
+	gboolean res;
+
+	res = FALSE;
 
 	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
 		RBSource *source;
@@ -503,10 +517,13 @@ path_is_droppable (RBSourceListModel *model,
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
-		if (source)
-			return rb_source_can_paste (source);
+		if (source != NULL) {
+			res = rb_source_can_paste (source);
+			g_object_unref (source);
+		}
 	}
-	return FALSE;
+
+	return res;
 }
 
 static gboolean
@@ -514,20 +531,25 @@ path_is_reorderable (RBSourceListModel *model,
 		     GtkTreePath *dest)
 {
 	GtkTreeIter iter;
+
 	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
 		RBSource *source;
 		RBSourceListGroup group;
+
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+
 		if (source == NULL)
 			return FALSE;
 
 		g_object_get (source, "sourcelist-group", &group, NULL);
+		g_object_unref (source);
 
 		/* fixed and transient sources are not reorderable, everything else is */
 		return (group != RB_SOURCELIST_GROUP_FIXED &&
 			group != RB_SOURCELIST_GROUP_TRANSIENT);
 	}
+
 	return FALSE;
 }
 
@@ -625,6 +647,7 @@ rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
 		g_object_get (source, "sourcelist-group", &group, NULL);
+		g_object_unref (source);
 
 		return (group != RB_SOURCELIST_GROUP_FIXED &&
 			group != RB_SOURCELIST_GROUP_TRANSIENT);
@@ -677,14 +700,16 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 		gtk_tree_model_get (GTK_TREE_MODEL (drag_source), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 		g_object_get (source, "query-model", &query_model, NULL);
+		g_object_unref (source);
 
 		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (query_model), &iter)) {
-			g_object_unref (G_OBJECT (query_model));
+			g_object_unref (query_model);
 			return FALSE;
 		}
 
 		do {
 			RhythmDBEntry *entry;
+
 			if (first) {
 				g_string_append(data, "\r\n");
 				first = FALSE;
@@ -692,6 +717,8 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 
 			entry = rhythmdb_query_model_iter_to_entry (query_model, &iter);
 			g_string_append (data, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+
+			rhythmdb_entry_unref (entry);
 
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (query_model), &iter));
 

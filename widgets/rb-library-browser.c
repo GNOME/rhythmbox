@@ -563,10 +563,10 @@ rebuild_child_model (RBLibraryBrowser *widget, gint property_index, gboolean que
 		ignore_selection_changes (widget, view, TRUE);
 
 		prop_model = rb_property_view_get_model (view);
-		g_object_set (G_OBJECT (prop_model), "query-model", child_model, NULL);
-		g_object_unref (G_OBJECT (prop_model));
+		g_object_set (prop_model, "query-model", child_model, NULL);
+		g_object_unref (prop_model);
 
-		g_object_unref (G_OBJECT (base_model));
+		g_object_unref (base_model);
 
 		rebuild_child_model (widget, property_index + 1, query_pending);
 		restore_selection (widget, property_index + 1, query_pending);
@@ -640,8 +640,8 @@ rb_library_browser_set_model (RBLibraryBrowser *widget,
 	ignore_selection_changes (widget, view, TRUE);
 
 	prop_model = rb_property_view_get_model (view);
-	g_object_set (G_OBJECT (prop_model), "query-model", priv->input_model, NULL);
-	g_object_unref (G_OBJECT (prop_model));
+	g_object_set (prop_model, "query-model", priv->input_model, NULL);
+	g_object_unref (prop_model);
 
 	rebuild_child_model (widget, 0, query_pending);
 	restore_selection (widget, 0, query_pending);

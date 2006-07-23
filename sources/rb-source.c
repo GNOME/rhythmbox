@@ -60,7 +60,7 @@ static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
 static gboolean default_show_popup  (RBSource *source);
 static void default_delete_thyself (RBSource *source);
-static RBEntryView* default_get_entry_view (RBSource *source);
+static RBEntryView *default_get_entry_view (RBSource *source);
 static void default_activate (RBSource *source);
 static void default_deactivate (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
@@ -475,7 +475,10 @@ rb_source_get_property (GObject *object,
 }
 
 static void
-default_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+default_get_status (RBSource *source,
+		    char **text,
+		    char **progress_text,
+		    float *progress)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
 	/* hack to get these strings marked for translation */
@@ -506,7 +509,10 @@ default_get_status (RBSource *source, char **text, char **progress_text, float *
  * the progress bar will be hidden.
  **/
 void
-rb_source_get_status (RBSource *source, char **text, char **progress_text, float *progress)
+rb_source_get_status (RBSource *source,
+		      char **text,
+		      char **progress_text,
+		      float *progress)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
@@ -536,7 +542,8 @@ rb_source_can_browse (RBSource *source)
 }
 
 void
-rb_source_browser_toggled (RBSource *source, gboolean enabled)
+rb_source_browser_toggled (RBSource *source,
+			   gboolean enabled)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
@@ -557,7 +564,9 @@ rb_source_notify_filter_changed (RBSource *source)
 }
 
 void
-rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry *entry)
+rb_source_update_play_statistics (RBSource *source,
+				  RhythmDB *db,
+				  RhythmDBEntry *entry)
 {
 	time_t now;
 	gulong current_count;
@@ -640,7 +649,8 @@ rb_source_can_search (RBSource *source)
 }
 
 void
-rb_source_search (RBSource *source, const char *text)
+rb_source_search (RBSource *source,
+		  const char *text)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
@@ -650,7 +660,8 @@ rb_source_search (RBSource *source, const char *text)
 }
 
 GtkWidget *
-rb_source_get_config_widget (RBSource *source, RBShellPreferences *prefs)
+rb_source_get_config_widget (RBSource *source,
+			     RBShellPreferences *prefs)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
@@ -749,7 +760,8 @@ rb_source_can_add_to_queue (RBSource *source)
 }
 
 static void
-default_add_to_queue (RBSource *source, RBSource *queue)
+default_add_to_queue (RBSource *source,
+		      RBSource *queue)
 {
 	RBEntryView *songs = rb_source_get_entry_view (source);
 	GList *selection = rb_entry_view_get_selected_entries (songs);
@@ -768,7 +780,8 @@ default_add_to_queue (RBSource *source, RBSource *queue)
 }
 
 void
-rb_source_add_to_queue (RBSource *source, RBSource *queue)
+rb_source_add_to_queue (RBSource *source,
+			RBSource *queue)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 	klass->impl_add_to_queue (source, queue);
@@ -886,7 +899,8 @@ rb_source_have_url (RBSource *source)
 }
 
 gboolean
-rb_source_receive_drag (RBSource *source, GtkSelectionData *data)
+rb_source_receive_drag (RBSource *source,
+			GtkSelectionData *data)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
@@ -1028,7 +1042,9 @@ rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 }
 
 static void
-rb_source_gather_hash_keys (char *key, gpointer unused, GList **data)
+rb_source_gather_hash_keys (char *key,
+			    gpointer unused,
+			    GList **data)
 {
 	*data = g_list_prepend (*data, key);
 }

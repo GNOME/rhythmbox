@@ -48,7 +48,6 @@ GType rhythmdb_entry_get_type (void);
 
 #define RHYTHMDB_TYPE_ENTRY      (rhythmdb_entry_get_type ())
 #define RHYTHMDB_ENTRY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_ENTRY, RhythmDBEntry))
-#define RHYTHMDB_IS_ENTRY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_ENTRY))
 
 typedef void (*RhythmDBEntryActionFunc) (RhythmDBEntry *entry, gpointer data);
 typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);

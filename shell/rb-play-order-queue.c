@@ -17,6 +17,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-play-order-queue.h"
 
 #include "rb-debug.h"
@@ -75,7 +77,7 @@ rb_queue_play_order_init (RBQueuePlayOrder *porder)
 {
 }
 
-static RhythmDBEntry*
+static RhythmDBEntry *
 rb_queue_play_order_get_next (RBPlayOrder* porder)
 {
 	RhythmDBQueryModel *model;
@@ -118,7 +120,7 @@ rb_queue_play_order_go_next (RBPlayOrder *porder)
 }
 
 static RhythmDBEntry*
-rb_queue_play_order_get_previous (RBPlayOrder* porder)
+rb_queue_play_order_get_previous (RBPlayOrder *porder)
 {
 	RhythmDBQueryModel *model;
 	RhythmDBEntry *entry, *prev;

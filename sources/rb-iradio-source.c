@@ -743,25 +743,28 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	genre_query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
 	if (source->priv->search_text) {
-		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_GENRE_FOLDED,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_DISJUNCTION,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_TITLE_FOLDED,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_END);
+		GPtrArray *subquery;
+		subquery = rhythmdb_query_parse (source->priv->db,
+						 RHYTHMDB_QUERY_PROP_LIKE,
+						 RHYTHMDB_PROP_GENRE_FOLDED,
+						 source->priv->search_text,
+						 RHYTHMDB_QUERY_DISJUNCTION,
+						 RHYTHMDB_QUERY_PROP_LIKE,
+						 RHYTHMDB_PROP_TITLE_FOLDED,
+						 source->priv->search_text,
+						 RHYTHMDB_QUERY_END);
 		rb_debug ("searching for \"%s\"", source->priv->search_text);
 		rhythmdb_query_append (source->priv->db,
 				       query,
 				       RHYTHMDB_QUERY_SUBQUERY,
 				       subquery,
 				       RHYTHMDB_QUERY_END);
+
+		rhythmdb_query_free (subquery);
 	}
 
 	genre_model = rb_property_view_get_model (source->priv->genres);
-	g_object_set (G_OBJECT (genre_model), "query-model", genre_query_model, NULL);
+	g_object_set (genre_model, "query-model", genre_query_model, NULL);
 
 	rhythmdb_do_full_query_parsed (source->priv->db,
 				       RHYTHMDB_QUERY_RESULTS (genre_query_model),
@@ -784,7 +787,7 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 		rb_property_view_set_selection (source->priv->genres, sel);
 		g_list_free (sel);
 	}
-	g_object_unref (G_OBJECT (genre_model));
+	g_object_unref (genre_model);
 
 	/* if a genre is selected, construct a new query for it, and create
 	 * a new model based on the search box query model.  otherwise, just
@@ -804,6 +807,7 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 			      "query", query,
 			      "base-model", genre_query_model,
 			      NULL);
+
 		rhythmdb_query_free (query);
 		query = NULL;
 	} else {

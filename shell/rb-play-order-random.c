@@ -171,8 +171,10 @@ get_query_model_contents (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 	i = 0;
 	do {
 		RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (model, &iter);
-		if (!entry)
+
+		if (entry == NULL)
 			continue;
+
 		weight = rb_random_play_order_get_entry_weight (rorder, db, entry);
 
 		g_array_index (result, EntryWeight, i).entry = entry;
@@ -180,6 +182,9 @@ get_query_model_contents (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 		g_array_index (result, EntryWeight, i).cumulative_weight = cumulative_weight;
 		cumulative_weight += weight;
 		i++;
+
+		rhythmdb_entry_unref (entry);
+
 	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
 
 	return result;

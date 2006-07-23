@@ -881,7 +881,8 @@ add_playlist_to_menu (GtkTreeModel *model,
 		      GtkTreeIter *iter,
 		      RBShellClipboard *clipboard)
 {
-	RhythmDBEntryType entry_type, source_entry_type;
+	RhythmDBEntryType entry_type;
+	RhythmDBEntryType source_entry_type;
 	RBSource *source = NULL;
 	char *action_name;
 	GtkAction *action;
@@ -890,8 +891,14 @@ add_playlist_to_menu (GtkTreeModel *model,
 	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
-	if (!RB_IS_STATIC_PLAYLIST_SOURCE (source))
+	if (source == NULL) {
 		return FALSE;
+	}
+
+	if (!RB_IS_STATIC_PLAYLIST_SOURCE (source)) {
+		g_object_unref (source);
+		return FALSE;
+	}
 
 	/* FIXME: allow add-to-playlist for iPods and the like,
 	 * based on the currently selected source
@@ -899,6 +906,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 	g_object_get (source, "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
+		g_object_unref (source);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 		return FALSE;
 	}
@@ -918,13 +926,13 @@ add_playlist_to_menu (GtkTreeModel *model,
 					 "activate", G_CALLBACK (rb_shell_clipboard_playlist_add_cb),
 					 clipboard, 0);
 
-		g_signal_connect_object (G_OBJECT (source),
+		g_signal_connect_object (source,
 					 "deleted", G_CALLBACK (rb_shell_clipboard_playlist_deleted_cb),
 					 clipboard, 0);
-		g_signal_connect_object (G_OBJECT (source),
+		g_signal_connect_object (source,
 					 "notify::name", G_CALLBACK (rb_shell_clipboard_playlist_renamed_cb),
 					 clipboard, 0);
-		g_signal_connect_object (G_OBJECT (source),
+		g_signal_connect_object (source,
 					 "notify::visibility", G_CALLBACK (rb_shell_clipboard_playlist_visible_cb),
 					 clipboard, 0);
 	}
@@ -938,6 +946,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 	g_free (action_name);
+	g_object_unref (source);
 
 	return FALSE;
 }

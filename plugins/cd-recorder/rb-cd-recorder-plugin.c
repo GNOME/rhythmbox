@@ -19,9 +19,7 @@
 
 #define __EXTENSIONS__
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "config.h"
 
 #include <string.h> /* For strlen */
 #include <glib/gi18n-lib.h>
@@ -220,6 +218,8 @@ playlist_row_inserted_cb (GtkTreeModel       *model,
 	RhythmDBEntry *entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model), iter);
 
 	playlist_entries_changed (model, entry, pi);
+
+	rhythmdb_entry_unref (entry);
 }
 
 static void

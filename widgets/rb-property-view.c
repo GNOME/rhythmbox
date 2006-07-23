@@ -244,6 +244,55 @@ rb_property_view_init (RBPropertyView *view)
 }
 
 static void
+rb_property_view_set_model_internal (RBPropertyView *view,
+				     RhythmDBPropertyModel *model)
+{
+	if (view->priv->prop_model) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
+						      G_CALLBACK (rb_property_view_pre_row_deleted_cb),
+						      view);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
+						      G_CALLBACK (rb_property_view_post_row_deleted_cb),
+						      view);
+		g_object_unref (view->priv->prop_model);
+	}
+
+	view->priv->prop_model = model;
+
+	if (view->priv->prop_model != NULL) {
+		GtkTreeIter iter;
+
+		g_object_ref (view->priv->prop_model);
+
+		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
+					 GTK_TREE_MODEL (view->priv->prop_model));
+
+		g_signal_connect_object (view->priv->prop_model,
+					 "pre-row-deletion",
+					 G_CALLBACK (rb_property_view_pre_row_deleted_cb),
+					 view,
+					 0);
+		g_signal_connect_object (view->priv->prop_model,
+					 "row_deleted",
+					 G_CALLBACK (rb_property_view_post_row_deleted_cb),
+					 view,
+					 G_CONNECT_AFTER);
+
+		g_signal_handlers_block_by_func (view->priv->selection,
+						 G_CALLBACK (rb_property_view_selection_changed_cb),
+						 view);
+
+		gtk_tree_selection_unselect_all (view->priv->selection);
+
+		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter))
+			gtk_tree_selection_select_iter (view->priv->selection, &iter);
+		g_signal_handlers_unblock_by_func (view->priv->selection,
+						   G_CALLBACK (rb_property_view_selection_changed_cb),
+						   view);
+	}
+}
+
+static void
 rb_property_view_finalize (GObject *object)
 {
 	RBPropertyView *view;
@@ -254,6 +303,8 @@ rb_property_view_finalize (GObject *object)
 	view = RB_PROPERTY_VIEW (object);
 
 	g_return_if_fail (view->priv != NULL);
+
+	rb_property_view_set_model_internal (view, NULL);
 
 	g_free (view->priv->title);
 
@@ -268,8 +319,7 @@ rb_property_view_set_property (GObject *object,
 {
 	RBPropertyView *view = RB_PROPERTY_VIEW (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		view->priv->db = g_value_get_object (value);
 		break;
@@ -280,51 +330,7 @@ rb_property_view_set_property (GObject *object,
 		view->priv->title = g_value_dup_string (value);
 		break;
 	case PROP_MODEL:
-	{
-		GtkTreeIter iter;
-
-		if (view->priv->prop_model) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
-							      G_CALLBACK (rb_property_view_pre_row_deleted_cb),
-							      view);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
-							      G_CALLBACK (rb_property_view_post_row_deleted_cb),
-							      view);
-			g_object_unref (G_OBJECT (view->priv->prop_model));
-		}
-
-		view->priv->prop_model = g_value_get_object (value);
-
-		if (!view->priv->prop_model)
-			break;
-
-		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
-					 GTK_TREE_MODEL (view->priv->prop_model));
-
-		g_object_ref (G_OBJECT (view->priv->prop_model));
-		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
-					 "pre-row-deletion",
-					 G_CALLBACK (rb_property_view_pre_row_deleted_cb),
-					 view,
-					 0);
-		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
-					 "row_deleted",
-					 G_CALLBACK (rb_property_view_post_row_deleted_cb),
-					 view,
-					 G_CONNECT_AFTER);
-
-		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
-						 G_CALLBACK (rb_property_view_selection_changed_cb),
-						 view);
-
-		gtk_tree_selection_unselect_all (view->priv->selection);
-		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter))
-			gtk_tree_selection_select_iter (view->priv->selection, &iter);
-		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-						   G_CALLBACK (rb_property_view_selection_changed_cb),
-						   view);
-
-	}
+		rb_property_view_set_model_internal (view, g_value_get_object (value));
 		break;
 	case PROP_DRAGGABLE:
 		view->priv->draggable = g_value_get_boolean (value);
@@ -343,8 +349,7 @@ rb_property_view_get_property (GObject *object,
 {
 	RBPropertyView *view = RB_PROPERTY_VIEW (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, view->priv->db);
 		break;
@@ -406,8 +411,8 @@ rb_property_view_reset (RBPropertyView *view)
 
 	model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 
-	g_object_set (G_OBJECT (view), "property-model", model, NULL);
-	g_object_unref (G_OBJECT (model));
+	g_object_set (view, "property-model", model, NULL);
+	g_object_unref (model);
 }
 
 RhythmDBPropertyModel *
@@ -415,14 +420,15 @@ rb_property_view_get_model (RBPropertyView *view)
 {
 	RhythmDBPropertyModel *model;
 
-	g_object_get (G_OBJECT (view), "property-model", &model, NULL);
+	g_object_get (view, "property-model", &model, NULL);
+
 	return model;
 }
 
 void
 rb_property_view_set_model (RBPropertyView *view, RhythmDBPropertyModel *model)
 {
-	g_object_set (G_OBJECT (view), "property-model", model, NULL);
+	g_object_set (view, "property-model", model, NULL);
 }
 
 static void
@@ -588,7 +594,7 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 				   RBPropertyView *view)
 {
 	GtkTreeIter iter;
-	const char *val;
+	char *val;
 	gboolean is_all;
 
 	rb_debug ("row activated");
@@ -602,6 +608,8 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 	rb_debug ("emitting property activated");
 	g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_ACTIVATED], 0,
 		       is_all ? NULL : val);
+
+	g_free (val);
 }
 
 void
@@ -728,14 +736,16 @@ rb_property_view_button_press_cb (GtkTreeView *tree,
 		} else {
 			GtkTreeModel *model;
 			GtkTreeIter iter;
-			const char *val;
+			char *val;
 			GList *lst = NULL;
 
 			model = gtk_tree_view_get_model (GTK_TREE_VIEW (view->priv->treeview));
 			if (gtk_tree_model_get_iter (model, &iter, path)) {
-				gtk_tree_model_get (model, &iter, 0, &val, -1);
+				gtk_tree_model_get (model, &iter,
+						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &val, -1);
 				lst = g_list_prepend (lst, (gpointer) val);
 				rb_property_view_set_selection (view, lst);
+				g_free (val);
 			}
 		}
 		g_signal_emit (G_OBJECT (view), rb_property_view_signals[SHOW_POPUP], 0);

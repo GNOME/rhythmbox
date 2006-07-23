@@ -681,25 +681,29 @@ rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 		do {
 			RBSource *source;
 			gboolean local;
-			GValue v = {0,};
-			gtk_tree_model_get_value (model,
-						  &iter,
-						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-						  &v);
-			source = g_value_get_pointer (&v);
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
-				continue;
 
-			g_object_get (G_OBJECT (source),
+			gtk_tree_model_get (model,
+					    &iter,
+					    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+					    &source,
+					    -1);
+			if (source == NULL) {
+				continue;
+			}
+			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+				g_object_unref (source);
+				continue;
+			}
+
+			g_object_get (source,
 				      "is-local", &local,
 				      NULL);
 			if (local) {
-				g_object_get (G_OBJECT (source),
-					      "dirty", &dirty,
-					      NULL);
+				g_object_get (source, "dirty", &dirty, NULL);
 				if (dirty)
 					break;
 			}
+			g_object_unref (source);
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
 
@@ -793,20 +797,26 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	if (gtk_tree_model_get_iter_first (model, &iter)) {
 		do {
 			RBSource *source;
-			GValue v = {0,};
 			gboolean local;
 
-			gtk_tree_model_get_value (model,
-						  &iter,
-						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-						  &v);
-			source = g_value_get_pointer (&v);
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+			gtk_tree_model_get (model,
+					    &iter,
+					    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+					    &source,
+					    -1);
+			if (source == NULL) {
 				continue;
+			}
+			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+				g_object_unref (source);
+				continue;
+			}
 
 			g_object_get (G_OBJECT (source), "is-local", &local, NULL);
 			if (local)
 				rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
+
+			g_object_unref (source);
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
 
@@ -999,14 +1009,21 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 	GValueArray *limit_value = NULL;
 	const char *sort_key;
 	gint sort_direction;
+	GPtrArray *query;
 
 	rb_query_creator_get_limit (creator, &limit_type, &limit_value);
-	rb_query_creator_get_sort_order (creator, &sort_key, &sort_direction);
+	rb_query_creator_get_sort_order (creator,
+					 &sort_key,
+					 &sort_direction);
 
+	query = rb_query_creator_get_query (creator);
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (playlist),
-					   rb_query_creator_get_query (creator),
-					   limit_type, limit_value,
-					   sort_key, sort_direction);
+					   query,
+					   limit_type,
+					   limit_value,
+					   sort_key,
+					   sort_direction);
+	rhythmdb_query_free (query);
 }
 
 static void
@@ -1081,21 +1098,29 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 		RhythmDBQueryModelLimitType limit_type;
 		GValueArray *limit_value = NULL;
 		GPtrArray *query;
-		const char *sort_key;
+		char *sort_key;
 		gint sort_direction;
 		EditAutoPlaylistData *data;
 
-		rb_auto_playlist_source_get_query (playlist, &query,
-						   &limit_type, &limit_value,
-						   &sort_key, &sort_direction);
+		sort_key = NULL;
+		rb_auto_playlist_source_get_query (playlist,
+						   &query,
+						   &limit_type,
+						   &limit_value,
+						   &sort_key,
+						   &sort_direction);
 
 		creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
 									     query,
-									     limit_type, limit_value,
-									     sort_key, sort_direction));
-		if (limit_value)
+									     limit_type,
+									     limit_value,
+									     sort_key,
+									     sort_direction));
+		if (limit_value != NULL) {
 			g_value_array_free (limit_value);
+		}
 		rhythmdb_query_free (query);
+		g_free (sort_key);
 
 		data = g_new0 (EditAutoPlaylistData, 1);
 		data->mgr = mgr;
@@ -1127,6 +1152,7 @@ _queue_track_cb (RhythmDBQueryModel *model,
 
 	entry = rhythmdb_query_model_iter_to_entry (model, iter);
 	rb_static_playlist_source_add_entry (queue_source, entry, -1);
+	rhythmdb_entry_unref (entry);
 
 	return FALSE;
 }
@@ -1419,24 +1445,29 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 	if (gtk_tree_model_get_iter_first (model, &iter)) {
 		do {
 			RBSource *source;
-			GValue v = {0,};
 			gboolean local;
 
-			gtk_tree_model_get_value (model,
-						  &iter,
-						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-						  &v);
-			source = g_value_get_pointer (&v);
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+			gtk_tree_model_get (model,
+					    &iter,
+					    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+					    &source,
+					    -1);
+			if (source == NULL) {
 				continue;
-			if (RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE)
+			}
+			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE
+			    || RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE) {
+				g_object_unref (source);
 				continue;
+			}
+
 			g_object_get (G_OBJECT (source), "is-local", &local,
 				      NULL);
 			if (local) {
 				playlists = g_list_prepend (playlists, source);
 			}
 
+			g_object_unref (source);
 		} while (gtk_tree_model_iter_next (model, &iter));
 	}
 
@@ -1480,20 +1511,26 @@ rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 	i = 0;
 	do {
 		RBSource *source;
-		GValue v = {0,};
 		char *source_name;
 
-		gtk_tree_model_get_value (model, &iter,
-					  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-					  &v);
-		source = g_value_get_pointer (&v);
-		if (!RB_IS_PLAYLIST_SOURCE (source))
+		gtk_tree_model_get (model, &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+				    &source,
+				    -1);
+		if (source == NULL) {
 			continue;
-		if (RB_IS_PLAY_QUEUE_SOURCE (source))
+		}
+		if (RB_IS_PLAYLIST_SOURCE (source) == FALSE
+		    || RB_IS_PLAY_QUEUE_SOURCE (source) == TRUE) {
+			g_object_unref (source);
 			continue;
+		}
 
-		g_object_get (G_OBJECT (source), "name", &source_name, NULL);
+		g_object_get (source, "name", &source_name, NULL);
 		(*playlists)[i++] = source_name;
+
+		g_object_unref (source);
+
 	} while (gtk_tree_model_iter_next (model, &iter));
 
 	return TRUE;
@@ -1517,21 +1554,25 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
 
 	do {
 		RBSource *source;
-		GValue v = {0,};
 		char *source_name;
 
-		gtk_tree_model_get_value (model, &iter,
-					  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-					  &v);
-		source = g_value_get_pointer (&v);
-		if (!RB_IS_PLAYLIST_SOURCE (source))
+		gtk_tree_model_get (model, &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+				    &source,
+				    -1);
+		if (source == NULL) {
 			continue;
+		}
+		if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+			g_object_unref (source);
+			continue;
+		}
 		g_object_get (G_OBJECT (source), "name", &source_name, NULL);
 		if (strcmp (name, source_name) == 0)
 			playlist = source;
 
 		g_free (source_name);
-
+		g_object_unref (source);
 	} while (gtk_tree_model_iter_next (model, &iter) && playlist == NULL);
 
 	return playlist;

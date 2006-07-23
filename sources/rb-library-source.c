@@ -21,7 +21,8 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <string.h>
 
 #include <gtk/gtk.h>
@@ -813,7 +814,8 @@ sanitize_path (const char *str)
  * %tS -- track artist sortname (lowercase)
  */
 static char *
-filepath_parse_pattern (const char *pattern, RhythmDBEntry *entry)
+filepath_parse_pattern (const char *pattern,
+			RhythmDBEntry *entry)
 {
 	/* p is the pattern iterator, i is a general purpose iterator */
 	const char *p;

@@ -1118,6 +1118,8 @@ add_playlist_entry_to_mlcl (GtkTreeModel *model,
 	if (client_requested (mb->bits, CONTAINER_ITEM_ID))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MCTI, (gint32) id);
 
+	rhythmdb_entry_unref (entry);
+
 	return FALSE;
 }
 

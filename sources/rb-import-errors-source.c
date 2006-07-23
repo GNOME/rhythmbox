@@ -133,7 +133,7 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	model = rhythmdb_query_model_new (source->priv->db, query,
 					  (GCompareDataFunc) rhythmdb_query_model_string_sort_func,
 					  GUINT_TO_POINTER (RHYTHMDB_PROP_LOCATION), NULL, FALSE);
-	g_ptr_array_free (query, TRUE);
+	rhythmdb_query_free (query);
 
 	/* set up entry view */
 	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,

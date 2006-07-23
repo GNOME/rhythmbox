@@ -337,14 +337,13 @@ rb_playlist_source_finalize (GObject *object)
 
 static void
 rb_playlist_source_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *pspec)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_LOCAL:
 		source->priv->is_local = g_value_get_boolean (value);
 		break;
@@ -359,14 +358,13 @@ rb_playlist_source_set_property (GObject *object,
 
 static void
 rb_playlist_source_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *pspec)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, source->priv->db);
 		break;
@@ -478,8 +476,16 @@ playlist_iter_func (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
-	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	if (uri != NULL) {
+		*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	}
+	if (title != NULL) {
+		*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	}
+
+	if (entry != NULL) {
+		rhythmdb_entry_unref (entry);
+	}
 }
 #else
 static void
@@ -494,9 +500,19 @@ playlist_iter_func (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
-	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	*custom_title = FALSE;
+	if (uri != NULL) {
+		*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
+	}
+	if (title != NULL) {
+		*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	}
+	if (custom_title != NULL) {
+		*custom_title = FALSE;
+	}
+
+	if (entry != NULL) {
+		rhythmdb_entry_unref (entry);
+	}
 }
 #endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 
@@ -643,7 +659,8 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 }
 
 void
-rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node)
+rb_playlist_source_save_to_xml (RBPlaylistSource *source,
+				xmlNodePtr parent_node)
 {
 	xmlNodePtr node;
 	xmlChar *name;
@@ -673,6 +690,8 @@ rb_playlist_source_row_deleted (GtkTreeModel *model,
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	if (g_hash_table_remove (source->priv->entries, location))
 		source->priv->dirty = TRUE;
+
+	rhythmdb_entry_unref (entry);
 }
 
 static void
@@ -691,8 +710,10 @@ rb_playlist_source_entry_added_cb (RhythmDB *db,
 }
 
 static void
-rb_playlist_source_track_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-					 GtkTreeModel *tree_model, GtkTreeIter *iter,
+rb_playlist_source_track_cell_data_func (GtkTreeViewColumn *column,
+					 GtkCellRenderer *renderer,
+					 GtkTreeModel *tree_model,
+					 GtkTreeIter *iter,
 					 RBPlaylistSource *source)
 {
 	char *str;
