@@ -1,5 +1,14 @@
 2006-07-23  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-play-order-random.c: (rb_random_play_order_finalize),
+	(get_history), (rb_random_filter_history),
+	(rb_random_playing_entry_changed), (rb_random_db_entry_deleted):
+	remove the tentative history, since it appears to be a remanent from
+	older play order code. The only thing it was doing was using up
+	CPU-time and memory. From #345857
+
+2006-07-23  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* shell/main.c: (main):

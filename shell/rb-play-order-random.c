@@ -64,10 +64,6 @@ struct RBRandomPlayOrderPrivate
 {
 	RBHistory *history;
 
-	/* Updates are made to the tentative_history, which is then copied
-	 * over the real one when go_{next,previous} are called. */
-	RBHistory *tentative_history;
-
 	gboolean query_model_changed;
 };
 
@@ -123,8 +119,6 @@ rb_random_play_order_finalize (GObject *object)
 	rorder = RB_RANDOM_PLAY_ORDER (object);
 
 	g_object_unref (G_OBJECT (rorder->priv->history));
-	if (rorder->priv->tentative_history)
-		g_object_unref (G_OBJECT (rorder->priv->tentative_history));
 
 	G_OBJECT_CLASS (rb_random_play_order_parent_class)->finalize (object);
 }
@@ -141,10 +135,7 @@ rb_random_play_order_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db,
 static inline RBHistory *
 get_history (RBRandomPlayOrder *rorder)
 {
-	if (rorder->priv->tentative_history)
-		return rorder->priv->tentative_history;
-	else
-		return rorder->priv->history;
+	return rorder->priv->history;
 }
 
 typedef struct {
@@ -213,12 +204,8 @@ rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 	GPtrArray *history_contents;
 	int i;
 
-	if (rorder->priv->tentative_history) {
-		g_object_unref (rorder->priv->tentative_history);
-		rorder->priv->tentative_history = NULL;
-	}
 	history_contents = rb_history_dump (rorder->priv->history);
-	for (i=0; i < history_contents->len; ++i) {
+	for (i = 0; i < history_contents->len; ++i) {
 		gboolean remove = TRUE;
 		if (model) {
 			GtkTreeIter iter;
@@ -227,27 +214,12 @@ rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model)
 		}
 
 		if (remove) {
-			if (!rorder->priv->tentative_history)
-				rorder->priv->tentative_history
-				       	= rb_history_clone (rorder->priv->history,
-							    (GFunc) rhythmdb_entry_unref,
-							    NULL);
-			rb_history_remove_entry (rorder->priv->tentative_history,
+			rb_history_remove_entry (rorder->priv->history,
 						 g_ptr_array_index (history_contents, i));
 		}
 	}
 
 	g_ptr_array_free (history_contents, TRUE);
-}
-
-static void
-rb_random_commit_history (RBRandomPlayOrder *rorder)
-{
-	if (rorder->priv->tentative_history) {
-		g_object_unref (rorder->priv->history);
-		rorder->priv->history = rorder->priv->tentative_history;
-		rorder->priv->tentative_history = NULL;
-	}
 }
 
 static inline double
@@ -429,8 +401,6 @@ rb_random_playing_entry_changed (RBPlayOrder *porder,
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
 
-	rb_random_commit_history (rorder);
-
 	if (new_entry) {
 		if (new_entry == rb_history_current (get_history (rorder))) {
 			/* Do nothing */
@@ -458,6 +428,5 @@ rb_random_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry)
 
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
 	rb_history_remove_entry (rorder->priv->history, entry);
-	if (rorder->priv->tentative_history)
-		rb_history_remove_entry (rorder->priv->tentative_history, entry);
 }
+
