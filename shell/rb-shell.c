@@ -264,6 +264,7 @@ enum
 	PROP_NO_UPDATE,
 	PROP_DRY_RUN,
 	PROP_RHYTHMDB_FILE,
+	PROP_PLAYLISTS_FILE,
 	PROP_SELECTED_SOURCE,
 	PROP_DB,
 	PROP_UI_MANAGER,
@@ -339,6 +340,7 @@ struct RBShellPrivate
 	gboolean no_update;
 	gboolean dry_run;
 	char *rhythmdb_file;
+	char *playlists_file;
 
 	RhythmDB *db;
 	char *pending_entry;
@@ -528,6 +530,17 @@ rb_shell_class_init (RBShellClass *klass)
 #endif
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLISTS_FILE,
+					 g_param_spec_string ("playlists-file", 
+							      "playlists-file", 
+							      "The playlists file to use", 
+							      "playlists.xml",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+
+
 	g_object_class_install_property (object_class,
 					 PROP_SELECTED_SOURCE,
 					 g_param_spec_object ("selected-source",
@@ -696,7 +709,12 @@ rb_shell_set_property (GObject *object,
 			shell->priv->no_registration = TRUE;
 		break;
 	case PROP_RHYTHMDB_FILE:
+		g_free (shell->priv->rhythmdb_file);
 		shell->priv->rhythmdb_file = g_value_dup_string (value);
+		break;
+	case PROP_PLAYLISTS_FILE:
+		g_free (shell->priv->playlists_file);
+		shell->priv->playlists_file = g_value_dup_string (value);
 		break;
 	case PROP_VISIBILITY:
 		rb_shell_set_visibility (shell, g_value_get_boolean (value), FALSE);
@@ -734,6 +752,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_RHYTHMDB_FILE:
 		g_value_set_string (value, shell->priv->rhythmdb_file);
+		break;
+	case PROP_PLAYLISTS_FILE:
+		g_value_set_string (value, shell->priv->playlists_file);
 		break;
 	case PROP_DB:
 		g_value_set_object (value, shell->priv->db);
@@ -803,7 +824,8 @@ rb_shell_sync_state (RBShell *shell)
 	}
 
 	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, TRUE);
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, 
+					    TRUE);
 
 	rb_debug ("saving db");
 	rhythmdb_save (shell->priv->db);
@@ -821,9 +843,10 @@ idle_save_rhythmdb (RBShell *shell)
 }
 
 static gboolean
-idle_save_playlist_manager (RBPlaylistManager *mgr)
+idle_save_playlist_manager (RBShell *shell) 
 {
-	rb_playlist_manager_save_playlists (mgr, FALSE);
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, 
+					    FALSE);
 
 	return TRUE;
 }
@@ -900,6 +923,8 @@ rb_shell_finalize (GObject *object)
 
 	g_free (shell->priv->rhythmdb_file);
 
+	g_free (shell->priv->playlists_file);
+
 	rb_debug ("destroying window");
 	gtk_widget_destroy (shell->priv->window);
 
@@ -925,15 +950,25 @@ rb_shell_new (int argc,
 	      gboolean no_registration,
 	      gboolean no_update,
 	      gboolean dry_run,
-	      char *rhythmdb)
+	      char *rhythmdb,
+	      char *playlists)
 {
 	RBShell *s;
+	char *pathname;
 
+	/* set default playlist name, if none supplied */
+	if (playlists) 
+		pathname = g_strdup (playlists);
+	else 
+		pathname = g_build_filename (rb_dot_dir (), "playlists.xml", NULL); 
+	
 	s = g_object_new (RB_TYPE_SHELL, "argc", argc, "argv", argv,
 			  "no-registration", no_registration,
 			  "no-update", no_update,
-			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, NULL);
+			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, 
+			  "playlists-file", pathname, NULL);
 
+	g_free (pathname);
 	return s;
 }
 
@@ -1153,7 +1188,7 @@ construct_sources (RBShell *shell)
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
-								 RB_SOURCELIST (shell->priv->sourcelist));
+								 RB_SOURCELIST (shell->priv->sourcelist), shell->priv->playlists_file);
 
 	g_object_set (G_OBJECT(shell->priv->clipboard_shell), "playlist-manager", shell->priv->playlist_manager, NULL);
 
@@ -2416,7 +2451,7 @@ idle_handle_load_complete (RBShell *shell)
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 	shell->priv->load_complete = TRUE;
-	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
+	shell->priv->save_playlist_id = g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell);
 
 	rhythmdb_start_action_thread (shell->priv->db);
 

@@ -1,3 +1,21 @@
+2006-07-23  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* shell/main.c: (main):
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_class_init),
+	(rb_playlist_manager_finalize), (rb_playlist_manager_set_property),
+	(rb_playlist_manager_get_property), (rb_playlist_manager_new),
+	(rb_playlist_manager_load_playlists),
+	(rb_playlist_manager_save_data):
+	* shell/rb-playlist-manager.h:
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_set_property),
+	(rb_shell_get_property), (rb_shell_sync_state),
+	(idle_save_playlist_manager), (rb_shell_finalize), (rb_shell_new),
+	(construct_sources), (idle_handle_load_complete):
+	* shell/rb-shell.h: Add a command-line option for changing the
+	playlist xml file to use, similar to the rhythmdb one. Fixes #343659.
+
 2006-07-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* daapsharing/rb-daap-share.c: (databases_cb):

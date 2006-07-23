@@ -88,6 +88,7 @@ static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
+static char *playlists_file = NULL;
 #if WITH_DBUS
 static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
 static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
@@ -125,6 +126,7 @@ main (int argc, char **argv)
 		{ "no-registration",		'n',POPT_ARG_NONE,	&no_registration,		0, N_("Do not register the shell"), NULL },
 		{ "dry-run",			0,  POPT_ARG_NONE,	&dry_run,			0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "rhythmdb-file",		0,  POPT_ARG_STRING,	&rhythmdb_file,			0, N_("Path for database file to use"), NULL },
+		{ "playlists-file",		0,  POPT_ARG_STRING,	&playlists_file,		0, N_("Path for playlists file to use"), NULL },
 		{ "quit",			'q',POPT_ARG_NONE,	&quit,				0, N_("Quit Rhythmbox"), NULL },
 #ifdef HAVE_GSTREAMER_0_8
 		{NULL, '\0', POPT_ARG_INCLUDE_TABLE, NULL, 0, "GStreamer", NULL},
@@ -293,7 +295,7 @@ main (int argc, char **argv)
 
 		gtk_window_set_default_icon_name ("rhythmbox");
 
-		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file);
+		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file, playlists_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 		if (!no_registration && session_bus != NULL) {
 #if WITH_DBUS

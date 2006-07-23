@@ -76,7 +76,8 @@ typedef enum
 GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
-							 RBSourceList *sourcelist);
+						 	 RBSourceList *sourcelist,
+							 const char *playlists_file);
 
 void			rb_playlist_manager_shutdown	(RBPlaylistManager *mgr);
 gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,

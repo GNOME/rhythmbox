@@ -88,6 +88,8 @@ struct RBPlaylistManagerPrivate
 	RBShell *shell;
 	RBSource *selected_source;
 
+	char *playlists_file;
+
 	RBSourceList *sourcelist;
 
 	GtkActionGroup *actiongroup;
@@ -105,6 +107,7 @@ struct RBPlaylistManagerPrivate
 enum
 {
 	PROP_0,
+	PROP_PLAYLIST_NAME,
 	PROP_SHELL,
 	PROP_SOURCE,
 	PROP_SOURCELIST,
@@ -164,6 +167,14 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 
 	object_class->set_property = rb_playlist_manager_set_property;
 	object_class->get_property = rb_playlist_manager_get_property;
+  
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_NAME,
+                                         g_param_spec_string ("playlists_file",
+                                                              "name",
+                                                              "playlists file",
+                                                              NULL,
+                                                              G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
@@ -270,6 +281,8 @@ rb_playlist_manager_finalize (GObject *object)
 	}
 
 	g_mutex_free (mgr->priv->saving_mutex);
+
+	g_free (mgr->priv->playlists_file);
 
 	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->finalize (object);
 }
@@ -381,6 +394,10 @@ rb_playlist_manager_set_property (GObject *object,
 	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
 
 	switch (prop_id) {
+	case PROP_PLAYLIST_NAME:
+		g_free (mgr->priv->playlists_file);
+		mgr->priv->playlists_file = g_strdup (g_value_get_string (value));
+                break;
 	case PROP_SOURCE:
 		rb_playlist_manager_set_source (mgr, g_value_get_object (value));
 		break;
@@ -405,7 +422,10 @@ rb_playlist_manager_get_property (GObject *object,
 {
 	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
 
-	switch (prop_id) {
+	switch (prop_id) {       
+        case PROP_PLAYLIST_NAME:
+                g_value_set_string (value, mgr->priv->playlists_file);
+                break;
 	case PROP_SOURCE:
 		g_value_set_object (value, mgr->priv->selected_source);
 		break;
@@ -423,11 +443,13 @@ rb_playlist_manager_get_property (GObject *object,
 
 RBPlaylistManager *
 rb_playlist_manager_new (RBShell *shell,
-			 RBSourceList *sourcelist)
+			 RBSourceList *sourcelist,
+			 const char *playlists_file)
 {
 	return g_object_new (RB_TYPE_PLAYLIST_MANAGER,
 			     "shell", shell,
 			     "sourcelist", sourcelist,
+			     "playlists_file", playlists_file,
 			     NULL);
 }
 
@@ -592,7 +614,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 	gboolean exists;
 
 	exists = FALSE;
-	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+	file = g_strdup (mgr->priv->playlists_file);
 
 	/* block saves until the playlists have loaded */
 	g_mutex_lock (mgr->priv->saving_mutex);
@@ -701,7 +723,7 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 
 	g_mutex_lock (data->mgr->priv->saving_mutex);
 
-	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+	file = g_strdup (data->mgr->priv->playlists_file);
 	tmpname = g_strconcat (file, ".tmp", NULL);
 
 	if (xmlSaveFormatFile (tmpname, data->doc, 1) != -1) {
