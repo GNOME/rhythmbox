@@ -1,5 +1,14 @@
 2006-07-24  James Livingston  <doclivingston@gmail.com>
 
+	* widgets/eggtrayicon.c: (egg_tray_icon_class_init),
+	(transparent_expose_event), (make_transparent_again),
+	(make_transparent), (egg_tray_icon_realize), (egg_tray_icon_add):
+	apply a patch for EggTrayIcon so that it handled transparent panels
+	correctly. Patch by DanWinship  <danw@novell.com> from bug 150726.
+	Fixes #348208.
+
+2006-07-24  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb-query.c: (rhythmdb_query_parse_valist): copy
 	queries rather than taking ownership when parsing a subquery. Fixed a
 	crash exposed by the recent leak fixes.
