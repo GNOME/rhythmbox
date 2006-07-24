@@ -2025,7 +2025,7 @@ apply_updated_entry_sequence (RhythmDBQueryModel *model,
 
 		old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 		reorder_map[i] = g_sequence_ptr_get_position (old_ptr);
-		g_hash_table_replace (model->priv->reverse_map, entry, ptr);
+		g_hash_table_replace (model->priv->reverse_map, rhythmdb_entry_ref (entry), ptr);
 
 		ptr = g_sequence_ptr_next (ptr);
 	}

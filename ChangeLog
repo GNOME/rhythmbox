@@ -1,3 +1,12 @@
+2006-07-24  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_unref),
+	(rb_refstring_ref): don't emit critical warnings when the refstring
+	is NULL, as that happens often for podcast metadata.
+
+	* rhythmdb/rhythmdb-query-model.c: (apply_updated_entry_sequence): add
+	missing rhythmdb_entry_ref call
+
 2006-07-23  William Jon McCann  <mccann@jhu.edu>
 
 	* bindings/python/rb.override:

@@ -87,7 +87,9 @@ rb_refstring_new (const char *init)
 void
 rb_refstring_unref (RBRefString *val)
 {
-	g_return_if_fail (val != NULL);
+	if (val == NULL)
+		return;
+
 	g_return_if_fail (val->refcount > 0);
 
 	if (g_atomic_int_dec_and_test (&val->refcount)) {
@@ -107,7 +109,9 @@ rb_refstring_system_shutdown (void)
 RBRefString *
 rb_refstring_ref (RBRefString *val)
 {
-	g_return_val_if_fail (val != NULL, NULL);
+	if (val == NULL)
+		return NULL;
+
 	g_return_val_if_fail (val->refcount > 0, NULL);
 
 	g_atomic_int_inc (&val->refcount);
