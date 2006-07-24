@@ -1,3 +1,29 @@
+<!-- ##### TYPEDEF CDDBDisclosurePrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO CDDB_DISCLOSURE ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+<!-- ##### MACRO CDDB_DISCLOSURE_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
+
+<!-- ##### MACRO CDDB_DISCLOSURE_TYPE ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### MACRO CONF_AUTO_RATE ##### -->
 <para>
 
@@ -15,6 +41,20 @@
 
 </para>
 
+
+<!-- ##### MACRO IS_CDDB_DISCLOSURE ##### -->
+<para>
+
+</para>
+
+@obj: 
+
+<!-- ##### MACRO IS_CDDB_DISCLOSURE_CLASS ##### -->
+<para>
+
+</para>
+
+@klass: 
 
 <!-- ##### TYPEDEF RBDAAPmDNSBrowser ##### -->
 <para>
@@ -131,6 +171,12 @@
 @RB_SHELL_ERROR_IMMUTABLE_PROPERTY: 
 @RB_SHELL_ERROR_INVALID_PROPERTY_TYPE: 
 
+<!-- ##### TYPEDEF RBSongDisplayBoxPrivate ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### TYPEDEF RBSourceListModelPriv ##### -->
 <para>
 
@@ -154,6 +200,13 @@
 
 </para>
 
+
+<!-- ##### MACRO RB_SONG_DISPLAY_BOX ##### -->
+<para>
+
+</para>
+
+@obj: 
 
 <!-- ##### MACRO RB_STOCK_ALBUM ##### -->
 <para>
@@ -299,11 +352,50 @@
 </para>
 
 
+<!-- ##### MACRO RB_TYPE_SONG_DISPLAY_BOX ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### MACRO RHYTHMDB_TYPE_PROP ##### -->
 <para>
 
 </para>
 
+
+<!-- ##### FUNCTION cddb_disclosure_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION cddb_disclosure_new ##### -->
+<para>
+
+</para>
+
+@shown: 
+@hidden: 
+@Returns: 
+
+<!-- ##### FUNCTION cddb_disclosure_set_container ##### -->
+<para>
+
+</para>
+
+@cddb: 
+@widget: 
+
+<!-- ##### FUNCTION cddb_disclosure_set_labels ##### -->
+<para>
+
+</para>
+
+@cddb: 
+@label_when_shown: 
+@label_when_hidden: 
 
 <!-- ##### FUNCTION egg_notification_bubble_attach ##### -->
 <para>
@@ -635,6 +727,22 @@
 @porder: 
 @Returns: 
 
+<!-- ##### FUNCTION rb_play_order_ref_entry_swapped ##### -->
+<para>
+
+</para>
+
+@entry: 
+@db: 
+
+<!-- ##### FUNCTION rb_play_order_unref_entry_swapped ##### -->
+<para>
+
+</para>
+
+@entry: 
+@db: 
+
 <!-- ##### FUNCTION rb_playlist_manager_load_legacy_playlists ##### -->
 <para>
 
@@ -673,6 +781,13 @@
 
 @source: 
 @locations: 
+
+<!-- ##### FUNCTION rb_playlist_source_burn_playlist ##### -->
+<para>
+
+</para>
+
+@source: 
 
 <!-- ##### FUNCTION rb_playlist_source_delete ##### -->
 <para>
@@ -782,6 +897,20 @@
 
 @player: 
 
+<!-- ##### FUNCTION rb_song_display_box_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+<!-- ##### FUNCTION rb_song_display_box_new ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
 <!-- ##### FUNCTION rb_source_disconnect ##### -->
 <para>
 
@@ -864,6 +993,35 @@
 </para>
 
 @Returns: 
+
+<!-- ##### FUNCTION rhythmdb_entry_set_nonotify ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
+@value: 
+
+<!-- ##### FUNCTION rhythmdb_entry_set_uninserted ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
+@value: 
+
+<!-- ##### FUNCTION rhythmdb_entry_sync_mirrored ##### -->
+<para>
+
+</para>
+
+@db: 
+@entry: 
+@propid: 
 
 <!-- ##### FUNCTION rhythmdb_prop_get_type ##### -->
 <para>

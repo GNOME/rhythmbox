@@ -109,7 +109,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 		case RHYTHMDB_QUERY_DISJUNCTION:
 			break;
 		case RHYTHMDB_QUERY_SUBQUERY:
-			data->subquery = va_arg (args, GPtrArray *);
+			data->subquery = rhythmdb_query_copy (va_arg (args, GPtrArray *));
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:

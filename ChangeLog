@@ -1,5 +1,23 @@
 2006-07-24  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb-query.c: (rhythmdb_query_parse_valist): copy
+	queries rather than taking ownership when parsing a subquery. Fixed a
+	crash exposed by the recent leak fixes.
+
+	* doc/reference/tmpl/disclosure-widget.sgml:
+	* doc/reference/tmpl/rb-debug.sgml:
+	* doc/reference/tmpl/rb-metadata.sgml:
+	* doc/reference/tmpl/rb-play-order.sgml:
+	* doc/reference/tmpl/rb-playlist-manager.sgml:
+	* doc/reference/tmpl/rb-playlist-source.sgml:
+	* doc/reference/tmpl/rb-shell-player.sgml:
+	* doc/reference/tmpl/rb-shell.sgml:
+	* doc/reference/tmpl/rb-song-display-box.sgml:
+	* doc/reference/tmpl/rhythmbox-unused.sgml:
+	* doc/reference/tmpl/rhythmdb.sgml: Update all the gtk-doc crap
+
+2006-07-24  James Livingston  <doclivingston@gmail.com>
+
 	* lib/.cvsignore:
 	* plugins/artdisplay/.cvsignore:
 	* plugins/artdisplay/artdisplay/.cvsignore:

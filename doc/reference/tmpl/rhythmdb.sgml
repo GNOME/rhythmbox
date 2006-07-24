@@ -141,7 +141,7 @@ rhythmdb
 @RHYTHMDB_PROP_COPYRIGHT: 
 @RHYTHMDB_PROP_IMAGE: 
 @RHYTHMDB_PROP_POST_TIME: 
-@RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
+@RHYTHMDB_PROP_MUSICBRAINZ_TRACKID: 
 @RHYTHMDB_NUM_PROPERTIES: 
 
 <!-- ##### MACRO RHYTHMDB_TYPE_QUERY ##### -->
@@ -390,28 +390,6 @@ rhythmdb
 @value: 
 
 
-<!-- ##### FUNCTION rhythmdb_entry_set_nonotify ##### -->
-<para>
-
-</para>
-
-@db: 
-@entry: 
-@propid: 
-@value: 
-
-
-<!-- ##### FUNCTION rhythmdb_entry_set_uninserted ##### -->
-<para>
-
-</para>
-
-@db: 
-@entry: 
-@propid: 
-@value: 
-
-
 <!-- ##### FUNCTION rhythmdb_entry_delete ##### -->
 <para>
 
@@ -499,16 +477,6 @@ rhythmdb
 @db: 
 @results: 
 @query: 
-
-
-<!-- ##### FUNCTION rhythmdb_entry_sync_mirrored ##### -->
-<para>
-
-</para>
-
-@db: 
-@entry: 
-@propid: 
 
 
 <!-- ##### FUNCTION rhythmdb_query_parse ##### -->
@@ -613,6 +581,7 @@ rhythmdb
 
 </para>
 
+@db: 
 @name: 
 @Returns: 
 
@@ -648,8 +617,8 @@ rhythmdb
 
 </para>
 
-@db: 
 @entry: 
+@Returns: 
 
 
 <!-- ##### FUNCTION rhythmdb_entry_unref ##### -->
@@ -657,7 +626,6 @@ rhythmdb
 
 </para>
 
-@db: 
 @entry: 
 
 
