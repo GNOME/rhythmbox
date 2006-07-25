@@ -617,8 +617,8 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/rblirc/enabled</key>
-        <applyto>/apps/rhythmbox/plugins/rblirc/enabled</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/rblirc/active</key>
+        <applyto>/apps/rhythmbox/plugins/rblirc/active</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
         <default>0</default>
@@ -628,8 +628,8 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/audioscrobbler/enabled</key>
-        <applyto>/apps/rhythmbox/plugins/audioscrobbler/enabled</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/audioscrobbler/active</key>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/active</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
         <default>0</default>
@@ -639,8 +639,8 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/pythonconsole/enabled</key>
-        <applyto>/apps/rhythmbox/plugins/pythonconsole/enabled</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/pythonconsole/active</key>
+        <applyto>/apps/rhythmbox/plugins/pythonconsole/active</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
         <default>0</default>
@@ -650,8 +650,8 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/generic-player/enabled</key>
-	<applyto>/apps/rhythmbox/plugins/generic-player/enabled</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/generic-player/active</key>
+	<applyto>/apps/rhythmbox/plugins/generic-player/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
 	<default>1</default>
@@ -661,14 +661,48 @@
 	</locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/plugins/ipod/enabled</key>
-	<applyto>/apps/rhythmbox/plugins/ipod/enabled</applyto>
+        <key>/schemas/apps/rhythmbox/plugins/ipod/active</key>
+	<applyto>/apps/rhythmbox/plugins/ipod/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
 	<default>1</default>
 	<locale name="C">
 	<short>True if the iPod plugin is enabled.</short>
 	<long>True if the iPod plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/artdisplay/active</key>
+	<applyto>/apps/rhythmbox/plugins/artdisplay/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>True if the art-display plugin is enabled.</short>
+	<long>True if the art-display plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/lyrics/active</key>
+	<applyto>/apps/rhythmbox/plugins/lyrics/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>True if the lyric plugin is enabled.</short>
+	<long>True if the lyric plugin is enabled.</long>
+	</locale>
+      </schema>
+    </schemalist>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/cd-recorder/active</key>
+	<applyto>/apps/rhythmbox/plugins/cd-recorder/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>True if the cd-burning plugin is enabled.</short>
+	<long>True if the cd-burning plugin is enabled.</long>
 	</locale>
       </schema>
     </schemalist>

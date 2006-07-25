@@ -1,5 +1,13 @@
 2006-07-25  James Livingston  <doclivingston@gmail.com>
 
+	* data/rhythmbox.schemas: fix the schema to use the right plugin keys
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_finalize),
+	(rhythmdb_load_thread_main), (rhythmdb_load): release entry refs when
+	aborting entry-emission on finalise
+
+2006-07-25  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-play-order-random.c: (rb_random_play_order_go_next): fix
 	warning when entry is NULL.
 

@@ -609,8 +609,11 @@ rhythmdb_finalize (GObject *object)
 	g_source_remove (db->priv->event_poll_id);
 	if (db->priv->save_timeout_id > 0)
 		g_source_remove (db->priv->save_timeout_id);
-	if (db->priv->emit_entry_signals_id > 0)
+	if (db->priv->emit_entry_signals_id > 0) {
 		g_source_remove (db->priv->emit_entry_signals_id);
+		g_list_foreach (db->priv->added_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
+		g_list_foreach (db->priv->deleted_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
+	}
 
 	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
 	g_async_queue_unref (db->priv->action_queue);
@@ -2306,6 +2309,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	RhythmDBEvent *result;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
+	rb_profile_start ("loading db");
 	g_mutex_lock (db->priv->saving_mutex);
 	klass->impl_load (db, &db->priv->exiting);
 	g_mutex_unlock (db->priv->saving_mutex);
@@ -2323,6 +2327,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (db->priv->event_queue, result);
 
+	rb_profile_end ("loading db");
 	return NULL;
 }
 
@@ -2335,30 +2340,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 void
 rhythmdb_load (RhythmDB *db)
 {
-	rb_profile_start ("loading db");
 	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_load_thread_main, db);
-
-#if 0
-	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-	RhythmDBEvent *result;
-
-	/* grab the saving mutex, so that saves will block until the load is complete */
-	g_mutex_lock (db->priv->saving_mutex);
-	klass->impl_load (db, &db->priv->exiting);
-	g_mutex_unlock (db->priv->saving_mutex);
-
-	g_object_ref (db);
-	g_idle_add ((GSourceFunc) rhythmdb_sync_library_idle, db);
-	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
-						    (GSourceFunc) rhythmdb_process_changed_files, db);
-
-	rb_debug ("queuing db load complete signal");
-	result = g_new0 (RhythmDBEvent, 1);
-	result->db = db;
-	result->type = RHYTHMDB_EVENT_DB_LOAD;
-	g_async_queue_push (db->priv->event_queue, result);
-#endif
-	rb_profile_end ("loading db");
 }
 
 static gpointer
