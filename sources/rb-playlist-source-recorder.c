@@ -22,7 +22,8 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -313,7 +314,7 @@ update_speed_combobox (RBPlaylistSourceRecorder *source)
                 for (i = 0; write_speeds [i] > 0; i++) {
 
 #ifdef NAUTILUS_BURN_DRIVE_CD_SPEED
-                        name = g_strdup_printf ("%d \303\227", NAUTILUS_BURN_DRIVE_CD_SPEED (write_speeds [i]));
+                        name = g_strdup_printf ("%d \303\227", (int)NAUTILUS_BURN_DRIVE_CD_SPEED (write_speeds [i]));
 #else
                         name = g_strdup_printf ("%d \303\227", write_speeds [i]);
 #endif
