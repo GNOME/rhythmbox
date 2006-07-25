@@ -1,3 +1,13 @@
+2006-07-25  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb): Make hidden entries not get
+	lost from static playlists. Yet again. Fixes #323095.
+
+	* tests/test-rhythmdb.c: (START_TEST), (rhythmdb_suite): add a test
+	case for the above, so that we should know if a change will break it
+	again.
+
 2006-07-25  William Jon McCann  <mccann@jhu.edu>
 
 	* data/rhythmbox.schemas: Fix for last commit.

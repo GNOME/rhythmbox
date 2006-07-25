@@ -855,7 +855,7 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 		g_value_unset (&true_val);
 		g_value_unset (&false_val);
 
-		rhythmdb_query_model_remove_entry (model, entry);
+		rhythmdb_query_model_filter_out_entry (model, entry);
 		return;
 	}
 

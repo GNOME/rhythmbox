@@ -447,15 +447,79 @@ START_TEST (test_rhythmdb_deserialisation3)
 }
 END_TEST
 
+/* this tests that chained query models, where the base shows hidden entries
+ * forwards visibility changes correctly. This is basically what static playlists do */
+START_TEST (test_hidden_chain_filter)
+{
+	RhythmDBQueryModel *base_model;
+	RhythmDBQueryModel *filter_model;
+	RhythmDBQuery *query;
+	RhythmDBEntry *entry;
+	GtkTreeIter iter;
+	GValue val = {0,};
+
+	/* setup */
+	base_model = rhythmdb_query_model_new_empty (db);
+	g_object_set (base_model, "show-hidden", TRUE, NULL);
+
+	filter_model = rhythmdb_query_model_new_empty (db);
+	g_object_set (filter_model, "base-model", base_model, NULL);
+	query = g_ptr_array_new ();
+	g_object_set (filter_model, "query", query, NULL);
+	rhythmdb_query_free (query);
+
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///whee.ogg");
+	rhythmdb_commit (db);
+
+	g_value_init (&val, G_TYPE_BOOLEAN);
+
+	
+	/* add entry to base, should be in both */
+	rhythmdb_query_model_add_entry (base_model, entry, -1);
+	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
+	fail_unless (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
+	
+	/* hide entry, should be in base and not filtered */
+	g_value_set_boolean (&val, TRUE);
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &val);
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
+	fail_if (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
+
+	/* show entry again, should be in both */
+	g_value_set_boolean (&val, FALSE);
+	set_waiting_signal (G_OBJECT (db), "entry-changed");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &val);
+	rhythmdb_commit (db);
+	wait_for_signal ();
+
+	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
+	fail_unless (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
+
+	/* tidy up */
+	rhythmdb_entry_delete (db, entry);
+	g_object_unref (base_model);
+	g_object_unref (filter_model);
+	g_value_unset (&val);
+}
+END_TEST
 
 static Suite *
 rhythmdb_suite (void)
 {
 	Suite *s = suite_create ("rhythmdb");
-	TCase *tc_chain = tcase_create ("rhythmdb");
+	TCase *tc_chain = tcase_create ("rhythmdb-core");
+	TCase *tc_bugs = tcase_create ("rhythmdb-bugs");
 
 	suite_add_tcase (s, tc_chain);
-	tcase_add_checked_fixture(tc_chain, test_rhythmdb_setup, test_rhythmdb_shutdown);
+	tcase_add_checked_fixture (tc_chain, test_rhythmdb_setup, test_rhythmdb_shutdown);
+	suite_add_tcase (s, tc_bugs);
+	tcase_add_checked_fixture (tc_bugs, test_rhythmdb_setup, test_rhythmdb_shutdown);
+
+	/* test core functionality */
 	/*tcase_add_test (tc_chain, test_refstring);*/
 	tcase_add_test (tc_chain, test_rhythmdb_indexing);
 	tcase_add_test (tc_chain, test_rhythmdb_multiple);
@@ -470,6 +534,9 @@ rhythmdb_suite (void)
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation2);
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation3);
 	/*tcase_add_test (tc_chain, test_rhythmdb_serialisation);*/
+
+	/* tests for breakable bug fixes */
+	tcase_add_test (tc_bugs, test_hidden_chain_filter);
 
 	return s;
 }
