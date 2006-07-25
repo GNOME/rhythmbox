@@ -156,10 +156,10 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	source = RB_MISSING_FILES_SOURCE (G_OBJECT_CLASS (rb_missing_files_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
-	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
-	g_object_unref (G_OBJECT (shell));
+	g_object_unref (shell);
 
 	/* construct real query */
 	query = rhythmdb_query_parse (source->priv->db,
@@ -175,7 +175,7 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 
 	rhythmdb_query_free (query);
 
-	g_object_set (G_OBJECT (model), "show-hidden", TRUE, NULL);
+	g_object_set (model, "show-hidden", TRUE, NULL);
 
 	/* set up entry view */
 	source->priv->view = rb_entry_view_new (source->priv->db, shell_player,
@@ -194,14 +194,14 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_set_columns_clickable (source->priv->view, TRUE);
 
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
-	g_signal_connect_object (G_OBJECT (source->priv->view), "show_popup",
+	g_signal_connect_object (source->priv->view, "show_popup",
 				 G_CALLBACK (rb_missing_files_source_songs_show_popup_cb), source, 0);
-	g_signal_connect_object (G_OBJECT (source->priv->view), "sort-order-changed",
+	g_signal_connect_object (source->priv->view, "sort-order-changed",
 				 G_CALLBACK (rb_missing_files_source_songs_sort_order_changed_cb), source, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
-	g_object_set (G_OBJECT (source), "query-model", model, NULL);
+	g_object_set (source, "query-model", model, NULL);
 	g_object_unref (model);
 
 	return G_OBJECT (source);
@@ -212,8 +212,8 @@ rb_missing_files_source_dispose (GObject *object)
 {
 	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (object);
 
-	if (source->priv->db) {
-		g_object_unref (G_OBJECT (source->priv->db));
+	if (source->priv->db != NULL) {
+		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
 	}
 
@@ -272,7 +272,7 @@ rb_missing_files_source_new (RBShell *shell,
 	RBSource *source;
 	RhythmDBEntryType entry_type;
 
-	g_object_get (G_OBJECT (library), "entry-type", &entry_type, NULL);
+	g_object_get (library, "entry-type", &entry_type, NULL);
 	source = RB_SOURCE (g_object_new (RB_TYPE_MISSING_FILES_SOURCE,
 					  "name", _("Missing Files"),
 					  "entry-type", entry_type,

@@ -199,7 +199,8 @@ struct RhythmDBQueryModelPrivate
 	GDestroyNotify sort_data_destroy;
 	gboolean sort_reverse;
 
-	GPtrArray *query, *original_query;
+	GPtrArray *query;
+	GPtrArray *original_query;
 
 	guint stamp;
 
@@ -425,6 +426,36 @@ rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface)
 }
 
 static void
+rhythmdb_query_model_set_query_internal (RhythmDBQueryModel *model,
+					GPtrArray          *query)
+{
+	if (query == model->priv->original_query)
+		return;
+
+	rhythmdb_query_free (model->priv->query);
+	rhythmdb_query_free (model->priv->original_query);
+
+	model->priv->query = rhythmdb_query_copy (query);
+	model->priv->original_query = rhythmdb_query_copy (model->priv->query);
+	rhythmdb_query_preprocess (model->priv->db, model->priv->query);
+
+	/* if the query contains time-relative criteria, re-run it periodically.
+	 * currently it's just every half hour, but perhaps it could be smarter.
+	 */
+	if (rhythmdb_query_is_time_relative (model->priv->db, model->priv->query)) {
+		if (model->priv->query_reapply_timeout_id == 0) {
+			model->priv->query_reapply_timeout_id =
+				g_timeout_add (1 * 60 * 1000,
+					       (GSourceFunc) rhythmdb_query_model_reapply_query_cb,
+					       model);
+		}
+	} else if (model->priv->query_reapply_timeout_id) {
+		g_source_remove (model->priv->query_reapply_timeout_id);
+		model->priv->query_reapply_timeout_id = 0;
+	}
+}
+
+static void
 rhythmdb_query_model_set_property (GObject *object,
 				   guint prop_id,
 				   const GValue *value,
@@ -432,36 +463,12 @@ rhythmdb_query_model_set_property (GObject *object,
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_RHYTHMDB:
 		model->priv->db = g_value_get_object (value);
 		break;
 	case PROP_QUERY:
-		if (g_value_get_pointer (value) == model->priv->original_query)
-			break;
-
-		rhythmdb_query_free (model->priv->query);
-		rhythmdb_query_free (model->priv->original_query);
-
-		model->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
-		model->priv->original_query = rhythmdb_query_copy (model->priv->query);
-		rhythmdb_query_preprocess (model->priv->db, model->priv->query);
-
-		/* if the query contains time-relative criteria, re-run it periodically.
-		 * currently it's just every half hour, but perhaps it could be smarter.
-		 */
-		if (rhythmdb_query_is_time_relative (model->priv->db, model->priv->query)) {
-			if (model->priv->query_reapply_timeout_id == 0) {
-				model->priv->query_reapply_timeout_id =
-					g_timeout_add (1 * 60 * 1000,
-						       (GSourceFunc) rhythmdb_query_model_reapply_query_cb,
-						       model);
-			}
-		} else if (model->priv->query_reapply_timeout_id) {
-			g_source_remove (model->priv->query_reapply_timeout_id);
-			model->priv->query_reapply_timeout_id = 0;
-		}
+		rhythmdb_query_model_set_query_internal (model, g_value_get_pointer (value));
 		break;
 	case PROP_SORT_FUNC:
 		model->priv->sort_func = g_value_get_pointer (value);
@@ -506,8 +513,7 @@ rhythmdb_query_model_get_property (GObject *object,
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_RHYTHMDB:
 		g_value_set_object (value, model->priv->db);
 		break;
@@ -704,23 +710,23 @@ rhythmdb_query_model_chain (RhythmDBQueryModel *model,
 {
 	rb_debug ("query model %p chaining to base model %p", model, base);
 
-	if (model->priv->base_model) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+	if (model->priv->base_model != NULL) {
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_row_inserted),
 						      model);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_row_deleted),
 						      model);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_non_entry_dropped),
 						      model);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_complete),
 						      model);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
 						      model);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 						      model);
 		g_object_unref (model->priv->base_model);
@@ -728,32 +734,32 @@ rhythmdb_query_model_chain (RhythmDBQueryModel *model,
 
 	model->priv->base_model = base;
 
-	if (model->priv->base_model) {
+	if (model->priv->base_model != NULL) {
 		g_object_ref (model->priv->base_model);
 
 		g_assert (model->priv->base_model->priv->db == model->priv->db);
 
-		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+		g_signal_connect_object (model->priv->base_model,
 					 "row-inserted",
 					 G_CALLBACK (rhythmdb_query_model_base_row_inserted),
 					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+		g_signal_connect_object (model->priv->base_model,
 					 "row-deleted",
 					 G_CALLBACK (rhythmdb_query_model_base_row_deleted),
 					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+		g_signal_connect_object (model->priv->base_model,
 					 "non-entry-dropped",
 					 G_CALLBACK (rhythmdb_query_model_base_non_entry_dropped),
 					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+		g_signal_connect_object (model->priv->base_model,
 					 "complete",
 					 G_CALLBACK (rhythmdb_query_model_base_complete),
 					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+		g_signal_connect_object (model->priv->base_model,
 					 "rows-reordered",
 					 G_CALLBACK (rhythmdb_query_model_base_rows_reordered),
 					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->base_model),
+		g_signal_connect_object (model->priv->base_model,
 					 "entry-removed",
 					 G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 					 model, 0);

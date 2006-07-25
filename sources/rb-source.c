@@ -282,13 +282,16 @@ rb_source_finalize (GObject *object)
 	priv = RB_SOURCE_GET_PRIVATE (source);
 	g_return_if_fail (priv != NULL);
 
-	rb_debug ("Finalizing view %p", source);
+	rb_debug ("Finalizing source %p: '%s'", source, priv->name);
 
 	if (priv->update_visibility_id != 0) {
 		g_source_remove (priv->update_visibility_id);
 	}
 
-	g_object_unref (G_OBJECT (priv->query_model));
+	if (priv->query_model != NULL) {
+		rb_debug ("Unreffing model %p count: %d", priv->query_model, G_OBJECT (priv->query_model)->ref_count);
+		g_object_unref (priv->query_model);
+	}
 
 	if (priv->pixbuf != NULL) {
 		g_object_unref (priv->pixbuf);
@@ -363,13 +366,47 @@ rb_source_set_hidden_when_empty (RBSource *source,
 }
 
 static void
+rb_source_set_query_model_internal (RBSource *source,
+				    RhythmDBQueryModel *model)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	if (priv->query_model == model) {
+		return;
+	}
+
+	if (priv->query_model != NULL) {
+		g_signal_handlers_disconnect_by_func (priv->query_model,
+						      G_CALLBACK (rb_source_post_entry_deleted_cb),
+						      source);
+		g_signal_handlers_disconnect_by_func (priv->query_model,
+						      G_CALLBACK (rb_source_row_inserted_cb),
+						      source);
+		g_object_unref (priv->query_model);
+	}
+
+	priv->query_model = model;
+	if (priv->query_model != NULL) {
+		g_object_ref (priv->query_model);
+		g_signal_connect_object (model, "post-entry-delete",
+					 G_CALLBACK (rb_source_post_entry_deleted_cb),
+					 source, 0);
+		g_signal_connect_object (model, "row_inserted",
+					 G_CALLBACK (rb_source_row_inserted_cb),
+					 source, 0);
+	}
+
+	/* g_object_notify (G_OBJECT (source), "query-model"); */
+	rb_source_notify_status_changed (source);
+}
+
+static void
 rb_source_set_property (GObject *object,
 			guint prop_id,
 			const GValue *value,
 			GParamSpec *pspec)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (object);
-	RhythmDBQueryModel *model;
 	RBSource *source = RB_SOURCE (object);
 
 	switch (prop_id) {
@@ -393,34 +430,7 @@ rb_source_set_property (GObject *object,
 		rb_source_set_hidden_when_empty (source, g_value_get_boolean (value));
 		break;
 	case PROP_QUERY_MODEL:
-		model = g_value_get_object (value);
-
-		if (priv->query_model == model)
-			return;
-
-		if (priv->query_model) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (priv->query_model),
-							      G_CALLBACK (rb_source_post_entry_deleted_cb),
-							      source);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (priv->query_model),
-							      G_CALLBACK (rb_source_row_inserted_cb),
-							      source);
-			g_object_unref (G_OBJECT (priv->query_model));
-		}
-
-		priv->query_model = model;
-		if (priv->query_model) {
-			g_object_ref (G_OBJECT (model));
-			g_signal_connect_object (G_OBJECT (model), "post-entry-delete",
-						 G_CALLBACK (rb_source_post_entry_deleted_cb),
-						 source, 0);
-			g_signal_connect_object (G_OBJECT (model), "row_inserted",
-						 G_CALLBACK (rb_source_row_inserted_cb),
-						 source, 0);
-		}
-
-		/* g_object_notify (G_OBJECT (source), "query-model"); */
-		rb_source_notify_status_changed (source);
+		rb_source_set_query_model_internal (source, g_value_get_object (value));
 		break;
 	case PROP_SOURCELIST_GROUP:
 		priv->sourcelist_group = g_value_get_enum (value);
@@ -481,10 +491,12 @@ default_get_status (RBSource *source,
 		    float *progress)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
 	/* hack to get these strings marked for translation */
 	if (0) {
 		ngettext ("%d song", "%d songs", 0);
 	}
+
 	if (priv->query_model) {
 		*text = rhythmdb_query_model_compute_status_normal (priv->query_model,
 								    "%d song",

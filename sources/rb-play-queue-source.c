@@ -110,6 +110,8 @@ rb_play_queue_source_finalize (GObject *object)
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
 	}
+
+	G_OBJECT_CLASS (rb_play_queue_source_parent_class)->finalize (object);
 }
 
 static void

@@ -107,6 +107,7 @@ typedef struct
 
 	GtkActionGroup *action_group;
 	RhythmDBPropType search_prop;
+	gboolean dispose_has_run;
 } RBStaticPlaylistSourcePrivate;
 
 static gpointer playlist_pixbuf = NULL;
@@ -168,12 +169,24 @@ static void
 rb_static_playlist_source_dispose (GObject *object)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
-	if (!priv)
-		return;
 
-	if (priv->base_model) {
-		g_object_unref (G_OBJECT (priv->base_model));
+	if (priv->dispose_has_run) {
+		/* If dispose did already run, return. */
+		rb_debug ("Dispose has already run for static playlist source %p", object);
+		return;
+	}
+	/* Make sure dispose does not run twice. */
+	priv->dispose_has_run = TRUE;
+
+	rb_debug ("Disposing static playlist source %p", object);
+
+	if (priv->base_model != NULL) {
+		g_object_unref (priv->base_model);
 		priv->base_model = NULL;
+	}
+
+	if (priv->filter_model != NULL) {
+		g_object_unref (priv->filter_model);
 	}
 
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->dispose (object);
@@ -183,6 +196,8 @@ static void
 rb_static_playlist_source_finalize (GObject *object)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
+
+	rb_debug ("Finalizing static playlist source %p", object);
 
 	g_free (priv->search_text);
 
@@ -194,7 +209,8 @@ rb_static_playlist_source_finalize (GObject *object)
 }
 
 static GObject *
-rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
+rb_static_playlist_source_constructor (GType type,
+				       guint n_construct_properties,
 				       GObjectConstructParam *construct_properties)
 {
 	GObjectClass *parent_class = G_OBJECT_CLASS (rb_static_playlist_source_parent_class);
@@ -207,8 +223,8 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 	RhythmDBEntryType entry_type;
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
-	g_object_set (G_OBJECT (priv->base_model), "show-hidden", TRUE, NULL);
-	g_object_ref (G_OBJECT (priv->base_model));
+	g_object_set (priv->base_model, "show-hidden", TRUE, NULL);
+	g_object_ref (priv->base_model);
 
 	priv->paned = gtk_vpaned_new ();
 
@@ -232,7 +248,7 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 						entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
-	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
+	g_signal_connect_object (priv->browser, "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
 				 source, 0);
 
@@ -241,19 +257,19 @@ rb_static_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	/* reparent the entry view */
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
-	g_object_ref (G_OBJECT (songs));
+	g_object_ref (songs);
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
 	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
 	gtk_container_add (GTK_CONTAINER (source), priv->paned);
 	g_object_unref (songs);
 
 	/* watch these to find out when things are dropped into the entry view */
-	g_signal_connect_object (G_OBJECT (priv->base_model), "row-inserted",
-			 G_CALLBACK (rb_static_playlist_source_row_inserted),
-			 source, 0);
-	g_signal_connect_object (G_OBJECT (priv->base_model), "non-entry-dropped",
-			 G_CALLBACK (rb_static_playlist_source_non_entry_dropped),
-			 source, 0);
+	g_signal_connect_object (priv->base_model, "row-inserted",
+				 G_CALLBACK (rb_static_playlist_source_row_inserted),
+				 source, 0);
+	g_signal_connect_object (priv->base_model, "non-entry-dropped",
+				 G_CALLBACK (rb_static_playlist_source_non_entry_dropped),
+				 source, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
@@ -448,13 +464,14 @@ rb_static_playlist_source_do_query (RBStaticPlaylistSource *source)
 	RhythmDB *db = rb_playlist_source_get_db (psource);
 	GPtrArray *query;
 
-	if (priv->filter_model)
+	if (priv->filter_model != NULL) {
 		g_object_unref (priv->filter_model);
+	}
 	priv->filter_model = rhythmdb_query_model_new_empty (db);
-	g_object_set (G_OBJECT (priv->filter_model), "base-model", priv->base_model, NULL);
+	g_object_set (priv->filter_model, "base-model", priv->base_model, NULL);
 
 	query = construct_query_from_selection (source);
-	g_object_set (G_OBJECT (priv->filter_model), "query", query, NULL);
+	g_object_set (priv->filter_model, "query", query, NULL);
 	rhythmdb_query_free (query);
 
 	rhythmdb_query_model_reapply_query (priv->filter_model, TRUE);

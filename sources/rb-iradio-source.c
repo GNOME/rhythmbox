@@ -141,6 +141,7 @@ struct RBIRadioSourcePrivate
 	gboolean firstrun_done;
 
 	RhythmDBEntryType entry_type;
+	gboolean dispose_has_run;
 };
 
 #define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
@@ -236,6 +237,13 @@ rb_iradio_source_dispose (GObject *object)
 
 	source = RB_IRADIO_SOURCE (object);
 
+	if (source->priv->dispose_has_run) {
+		/* If dispose did already run, return. */
+		return;
+	}
+	/* Make sure dispose does not run twice. */
+	source->priv->dispose_has_run = TRUE;
+
 	if (source->priv->db) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
@@ -269,7 +277,8 @@ rb_iradio_source_finalize (GObject *object)
 }
 
 static GObject *
-rb_iradio_source_constructor (GType type, guint n_construct_properties,
+rb_iradio_source_constructor (GType type,
+			      guint n_construct_properties,
 			      GObjectConstructParam *construct_properties)
 {
 	RBIRadioSource *source;
@@ -306,7 +315,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING, FALSE);
 /*	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);*/
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
-	g_signal_connect_object (G_OBJECT (source->priv->stations),
+	g_signal_connect_object (source->priv->stations,
 				 "sort-order-changed",
 				 G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),
 				 source, 0);
@@ -315,7 +324,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	 * we don't use RBEntryView's DnD support because it does too much.
 	 * we just want to be able to drop stations in to add them.
 	 */
-	g_signal_connect_object (G_OBJECT (source->priv->stations),
+	g_signal_connect_object (source->priv->stations,
 				 "drag_data_received",
 				 G_CALLBACK (stations_view_drag_data_received_cb),
 				 source, 0);
@@ -324,36 +333,35 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 			   stations_view_drag_types, 2,
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
-	g_signal_connect_object (G_OBJECT (source->priv->stations),
+	g_signal_connect_object (source->priv->stations,
 				 "size_allocate",
 				 G_CALLBACK (paned_size_allocate_cb),
 				 source, 0);
-	g_signal_connect_object (G_OBJECT (source->priv->stations), "show_popup",
+	g_signal_connect_object (source->priv->stations, "show_popup",
 				 G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source, 0);
 
 	/* set up genre entry view */
 	source->priv->genres = rb_property_view_new (source->priv->db,
 						     RHYTHMDB_PROP_GENRE,
 						     _("Genre"));
-	g_signal_connect_object (G_OBJECT (source->priv->genres),
+	g_signal_connect_object (source->priv->genres,
 				 "property-selected",
 				 G_CALLBACK (genre_selected_cb),
 				 source, 0);
-	g_signal_connect_object (G_OBJECT (source->priv->genres),
+	g_signal_connect_object (source->priv->genres,
 				 "property-selection-reset",
 				 G_CALLBACK (genre_selection_reset_cb),
 				 source, 0);
 
-	g_object_set (G_OBJECT (source->priv->genres), "vscrollbar_policy",
+	g_object_set (source->priv->genres, "vscrollbar_policy",
 		      GTK_POLICY_AUTOMATIC, NULL);
-	g_object_ref (G_OBJECT (source->priv->genres));
 
+	gtk_paned_pack1 (GTK_PANED (source->priv->paned),
+			 GTK_WIDGET (source->priv->genres), FALSE, FALSE);
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
 			 GTK_WIDGET (source->priv->stations), TRUE, FALSE);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
-
-	rb_iradio_source_state_prefs_sync (source);
 
 	source->priv->prefs_notify_id =
 		eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
@@ -365,7 +373,11 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 		eel_gconf_notification_add (CONF_FIRST_TIME,
 					    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
 					    source);
+
 	gtk_widget_show_all (GTK_WIDGET (source));
+
+	rb_iradio_source_state_prefs_sync (source);
+
 
 	if (source->priv->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID ||
 	    source->priv->entry_type == NULL)
@@ -378,9 +390,9 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 
 static void
 rb_iradio_source_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *pspec)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
 
@@ -396,9 +408,9 @@ rb_iradio_source_set_property (GObject *object,
 
 static void
 rb_iradio_source_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *pspec)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
 
@@ -450,7 +462,9 @@ guess_uri_scheme (const char *uri)
 
 void
 rb_iradio_source_add_station (RBIRadioSource *source,
-			      const char *uri, const char *title, const char *genre)
+			      const char *uri,
+			      const char *title,
+			      const char *genre)
 {
 	RhythmDBEntry *entry;
 	GValue val = { 0, };
@@ -499,7 +513,8 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 }
 
 static void
-impl_search (RBSource *asource, const char *search_text)
+impl_search (RBSource *asource,
+	     const char *search_text)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 
@@ -571,7 +586,10 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 #endif
 
 static void
-impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
+impl_get_status (RBSource *asource,
+		 char **text,
+		 char **progress_text,
+		 float *progress)
 {
 	RhythmDBQueryModel *model;
 	guint num_entries;
@@ -665,9 +683,10 @@ rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 				      gboolean over_entry,
 				      RBIRadioSource *source)
 {
-	if (G_OBJECT (source) == NULL) {
+	if (source == NULL) {
 		return;
 	}
+
 	if (over_entry)
 		_rb_source_show_popup (RB_SOURCE (source), "/IRadioViewPopup");
 	else
@@ -689,7 +708,8 @@ genre_selected_cb (RBPropertyView *propview, const char *name,
 }
 
 static void
-genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source)
+genre_selection_reset_cb (RBPropertyView *propview,
+			  RBIRadioSource *iradio_source)
 {
 	if (iradio_source->priv->setting_new_query)
 		return;
@@ -709,14 +729,9 @@ rb_iradio_source_show_browser (RBIRadioSource *source,
 	GtkWidget *genreswidget = GTK_WIDGET (source->priv->genres);
 
 	if (show == TRUE) {
-		gtk_paned_pack1 (GTK_PANED (source->priv->paned), genreswidget, FALSE, FALSE);
-		gtk_widget_show_all (genreswidget);
-	} else if (show == FALSE) {
-		GList *children = gtk_container_get_children (GTK_CONTAINER (source->priv->paned));
+		gtk_widget_show (genreswidget);
+	} else {
 		gtk_widget_hide (genreswidget);
-		if (g_list_find (children, genreswidget))
-		    gtk_container_remove (GTK_CONTAINER (source->priv->paned), genreswidget);
-		g_list_free (children);
 	}
 }
 
@@ -740,10 +755,10 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 				      RHYTHMDB_PROP_TYPE,
 				      source->priv->entry_type,
 				      RHYTHMDB_QUERY_END);
-	genre_query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
-	if (source->priv->search_text) {
+	if (source->priv->search_text != NULL) {
 		GPtrArray *subquery;
+
 		subquery = rhythmdb_query_parse (source->priv->db,
 						 RHYTHMDB_QUERY_PROP_LIKE,
 						 RHYTHMDB_PROP_GENRE_FOLDED,
@@ -764,6 +779,8 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	}
 
 	genre_model = rb_property_view_get_model (source->priv->genres);
+
+	genre_query_model = rhythmdb_query_model_new_empty (source->priv->db);
 	g_object_set (genre_model, "query-model", genre_query_model, NULL);
 
 	rhythmdb_do_full_query_parsed (source->priv->db,
@@ -776,6 +793,7 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	/* check the selected genre is still available, and if not, select 'all' */
 	if (source->priv->selected_genre != NULL) {
 		GList *sel = NULL;
+
 		if (!rhythmdb_property_model_iter_from_string (genre_model,
 							       source->priv->selected_genre,
 							       NULL)) {
@@ -787,7 +805,6 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 		rb_property_view_set_selection (source->priv->genres, sel);
 		g_list_free (sel);
 	}
-	g_object_unref (genre_model);
 
 	/* if a genre is selected, construct a new query for it, and create
 	 * a new model based on the search box query model.  otherwise, just
@@ -796,6 +813,7 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 
 	if (source->priv->selected_genre != NULL) {
 		rb_debug ("matching on genre \"%s\"", source->priv->selected_genre);
+
 		station_query_model = rhythmdb_query_model_new_empty (source->priv->db);
 		query = rhythmdb_query_parse (source->priv->db,
 					      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -811,22 +829,24 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 		rhythmdb_query_free (query);
 		query = NULL;
 	} else {
-		station_query_model = genre_query_model;
+		station_query_model = g_object_ref (genre_query_model);
 	}
 
 	rb_entry_view_set_model (source->priv->stations, station_query_model);
-	g_object_set (G_OBJECT (source), "query-model", station_query_model, NULL);
+	g_object_set (source, "query-model", station_query_model, NULL);
 
-	g_object_unref (G_OBJECT (genre_query_model));
-	if (station_query_model != genre_query_model)
-		g_object_unref (G_OBJECT (station_query_model));
+	g_object_unref (genre_query_model);
+	g_object_unref (station_query_model);
 
 	source->priv->setting_new_query = FALSE;
 }
 
 static void
-handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri, const char *title,
-			  const char *genre, RBIRadioSource *source)
+handle_playlist_entry_cb (TotemPlParser *playlist,
+			  const char *uri,
+			  const char *title,
+			  const char *genre,
+			  RBIRadioSource *source)
 {
 	rb_iradio_source_add_station (source, uri, title, genre);
 }
@@ -842,11 +862,11 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 	if (real_uri)
 		uri = real_uri;
 
-	g_signal_connect_object (G_OBJECT (parser), "entry",
+	g_signal_connect_object (parser, "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
-		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
+		g_object_set (parser, "recurse", FALSE, NULL);
 
 	switch (totem_pl_parser_parse (parser, uri, TRUE)) {
 	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
@@ -859,7 +879,7 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 	case TOTEM_PL_PARSER_RESULT_ERROR:
 		break;
 	}
-	g_object_unref (G_OBJECT (parser));
+	g_object_unref (parser);
 	g_free (real_uri);
 }
 
@@ -884,9 +904,11 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 static void
 stations_view_drag_data_received_cb (GtkWidget *widget,
 				     GdkDragContext *dc,
-				     gint x, gint y,
+				     gint x,
+				     gint y,
 				     GtkSelectionData *selection_data,
-				     guint info, guint time,
+				     guint info,
+				     guint time,
 				     RBIRadioSource *source)
 {
 	GList *list, *uri_list, *i;

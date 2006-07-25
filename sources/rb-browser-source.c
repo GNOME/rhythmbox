@@ -132,6 +132,8 @@ struct RBBrowserSourcePrivate
 	guint state_paned_notify_id;
 	guint state_browser_notify_id;
 	guint state_sorting_notify_id;
+
+	gboolean dispose_has_run;
 };
 
 #define RB_BROWSER_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_BROWSER_SOURCE, RBBrowserSourcePrivate))
@@ -246,18 +248,25 @@ rb_browser_source_dispose (GObject *object)
 	RBBrowserSource *source;
 	source = RB_BROWSER_SOURCE (object);
 
-	if (source->priv->db) {
+	if (source->priv->dispose_has_run) {
+		/* If dispose did already run, return. */
+		return;
+	}
+	/* Make sure dispose does not run twice. */
+	source->priv->dispose_has_run = TRUE;
+
+	if (source->priv->db != NULL) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
 	}
 
-	if (source->priv->search_text) {
+	if (source->priv->search_text != NULL) {
 		g_free (source->priv->search_text);
 		source->priv->search_text = NULL;
 	}
 
-	if (source->priv->cached_all_query) {
-		g_object_unref (G_OBJECT (source->priv->cached_all_query));
+	if (source->priv->cached_all_query != NULL) {
+		g_object_unref (source->priv->cached_all_query);
 		source->priv->cached_all_query = NULL;
 	}
 
@@ -881,18 +890,19 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 		g_object_set (query_model, "query", query, NULL);
 		rhythmdb_query_model_reapply_query (query_model, FALSE);
 		g_object_unref (query_model);
-	} else {/* otherwise build a query based on the search text and feed it to the browser */
+	} else {
+		/* otherwise build a query based on the search text and feed it to the browser */
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
 		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
 		source->priv->query_active = TRUE;
 		source->priv->search_on_completion = FALSE;
-		g_signal_connect_object (G_OBJECT (query_model),
+		g_signal_connect_object (query_model,
 					 "complete", G_CALLBACK (rb_browser_source_query_complete_cb),
 					 source, 0);
 		rhythmdb_do_full_query_async_parsed (source->priv->db,
 						     RHYTHMDB_QUERY_RESULTS (query_model),
 						     query);
-		g_object_unref (G_OBJECT (query_model));
+		g_object_unref (query_model);
 	}
 
 	rhythmdb_query_free (query);

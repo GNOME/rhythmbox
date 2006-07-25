@@ -20,7 +20,7 @@
  *
  */
 
-#include <config.h>
+#include "config.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -247,11 +247,11 @@ static void
 rb_property_view_set_model_internal (RBPropertyView *view,
 				     RhythmDBPropertyModel *model)
 {
-	if (view->priv->prop_model) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
+	if (view->priv->prop_model != NULL) {
+		g_signal_handlers_disconnect_by_func (view->priv->prop_model,
 						      G_CALLBACK (rb_property_view_pre_row_deleted_cb),
 						      view);
-		g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
+		g_signal_handlers_disconnect_by_func (view->priv->prop_model,
 						      G_CALLBACK (rb_property_view_post_row_deleted_cb),
 						      view);
 		g_object_unref (view->priv->prop_model);
@@ -286,6 +286,7 @@ rb_property_view_set_model_internal (RBPropertyView *view,
 
 		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter))
 			gtk_tree_selection_select_iter (view->priv->selection, &iter);
+
 		g_signal_handlers_unblock_by_func (view->priv->selection,
 						   G_CALLBACK (rb_property_view_selection_changed_cb),
 						   view);
@@ -399,7 +400,9 @@ void
 rb_property_view_set_selection_mode (RBPropertyView *view,
 				     GtkSelectionMode mode)
 {
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
 	g_return_if_fail (mode == GTK_SELECTION_SINGLE || mode == GTK_SELECTION_MULTIPLE);
+
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview)),
 				     mode);
 }
@@ -409,9 +412,11 @@ rb_property_view_reset (RBPropertyView *view)
 {
 	RhythmDBPropertyModel *model;
 
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
+
 	model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 
-	g_object_set (view, "property-model", model, NULL);
+	rb_property_view_set_model_internal (view, model);
 	g_object_unref (model);
 }
 
@@ -420,15 +425,20 @@ rb_property_view_get_model (RBPropertyView *view)
 {
 	RhythmDBPropertyModel *model;
 
-	g_object_get (view, "property-model", &model, NULL);
+	g_return_val_if_fail (RB_IS_PROPERTY_VIEW (view), NULL);
+
+	model = view->priv->prop_model;
 
 	return model;
 }
 
 void
-rb_property_view_set_model (RBPropertyView *view, RhythmDBPropertyModel *model)
+rb_property_view_set_model (RBPropertyView *view,
+			    RhythmDBPropertyModel *model)
 {
-	g_object_set (view, "property-model", model, NULL);
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
+
+	rb_property_view_set_model_internal (view, model);
 }
 
 static void
@@ -465,6 +475,8 @@ rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
 guint
 rb_property_view_get_num_properties (RBPropertyView *view)
 {
+	g_return_val_if_fail (RB_IS_PROPERTY_VIEW (view), 0);
+
 	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->prop_model),
 					       NULL)-1;
 }
@@ -613,8 +625,11 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 }
 
 void
-rb_property_view_set_selection (RBPropertyView *view, const GList *vals)
+rb_property_view_set_selection (RBPropertyView *view,
+				const GList *vals)
 {
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
+
 	view->priv->handling_row_deletion = TRUE;
 
 	gtk_tree_selection_unselect_all (view->priv->selection);
@@ -715,6 +730,8 @@ void
 rb_property_view_append_column_custom (RBPropertyView *view,
 				       GtkTreeViewColumn *column)
 {
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
+
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
 }
 
@@ -761,6 +778,8 @@ rb_property_view_set_search_func (RBPropertyView *view,
 				  gpointer func_data,
 				  GtkDestroyNotify notify)
 {
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (view));
+
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
 					     func, func_data,
 					     notify);

@@ -144,14 +144,14 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_LOCATION, TRUE);
 	rb_entry_view_append_column (source->priv->view, RB_ENTRY_VIEW_COL_ERROR, TRUE);
 
-	g_signal_connect_object (G_OBJECT (source->priv->view), "show_popup",
+	g_signal_connect_object (source->priv->view, "show_popup",
 				 G_CALLBACK (rb_import_errors_source_songs_show_popup_cb), source, 0);
 
 	gtk_container_add (GTK_CONTAINER (source), GTK_WIDGET (source->priv->view));
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
-	g_object_set (G_OBJECT (source), "query-model", model, NULL);
+	g_object_set (source, "query-model", model, NULL);
 	g_object_unref (model);
 
 	return G_OBJECT (source);

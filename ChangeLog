@@ -1,5 +1,94 @@
 2006-07-25  William Jon McCann  <mccann@jhu.edu>
 
+	* data/rhythmbox.schemas: Fix for last commit.
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_download_entry),
+	(rb_podcast_manager_start_sync), (rb_podcast_manager_update_feeds),
+	(rb_podcast_manager_db_entry_deleted_cb):
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_set_query_model_internal),
+	(rhythmdb_property_model_set_property),
+	(rhythmdb_property_model_finalize),
+	(rhythmdb_property_model_drag_data_get):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_set_query_internal),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property), (rhythmdb_query_model_chain):
+	* rhythmdb/rhythmdb-query-model.h:
+	* sources/rb-browser-source.c: (rb_browser_source_dispose),
+	(rb_browser_source_do_query):
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_constructor):
+	* sources/rb-iradio-source.c: (rb_iradio_source_dispose),
+	(rb_iradio_source_constructor), (rb_iradio_source_set_property),
+	(rb_iradio_source_get_property), (rb_iradio_source_add_station),
+	(impl_search), (impl_get_status),
+	(rb_iradio_source_songs_show_popup_cb), (genre_selection_reset_cb),
+	(rb_iradio_source_show_browser), (rb_iradio_source_do_query),
+	(handle_playlist_entry_cb), (rb_iradio_source_add_from_playlist):
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_constructor),
+	(rb_missing_files_source_dispose), (rb_missing_files_source_new):
+	* sources/rb-play-queue-source.c: (rb_play_queue_source_finalize):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor),
+	(rb_playlist_source_dispose), (rb_playlist_source_finalize),
+	(rb_playlist_source_save_playlist),
+	(rb_playlist_source_new_from_xml),
+	(rb_playlist_source_save_to_xml),
+	(rb_playlist_source_setup_entry_view),
+	(rb_playlist_source_set_query_model), (rb_playlist_source_get_db),
+	(rb_playlist_source_get_query_model),
+	(rb_playlist_source_mark_dirty),
+	(rb_playlist_source_location_in_map),
+	(rb_playlist_source_add_to_map):
+	* sources/rb-podcast-source.c: (rb_podcast_source_dispose),
+	(rb_podcast_source_finalize), (rb_podcast_source_constructor),
+	(rb_podcast_source_set_property), (rb_podcast_source_get_property),
+	(impl_delete), (rb_podcast_source_state_prefs_sync),
+	(rb_podcast_source_show_browser), (rb_podcast_source_do_query),
+	(impl_get_config_widget), (rb_podcast_source_add_feed),
+	(rb_podcast_source_cmd_download_post),
+	(rb_podcast_source_cmd_cancel_download),
+	(rb_podcast_source_cmd_delete_feed),
+	(rb_podcast_source_cmd_update_feed),
+	(rb_podcast_source_cmd_update_all),
+	(rb_podcast_source_cb_interval_changed_cb),
+	(rb_podcast_source_load_finish_cb), (rb_podcast_source_shutdown),
+	(rb_podcast_source_entry_activated_cb):
+	* sources/rb-source.c: (rb_source_finalize),
+	(rb_source_set_query_model_internal), (rb_source_set_property),
+	(default_get_status):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_dispose),
+	(rb_static_playlist_source_finalize),
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_do_query):
+	* widgets/rb-entry-view.c: (rb_entry_view_finalize),
+	(rb_entry_view_set_shell_player_internal),
+	(rb_entry_view_set_model_internal), (rb_entry_view_get_property),
+	(rb_entry_view_set_model), (rb_entry_view_append_column),
+	(rb_entry_view_insert_column_custom), (rb_entry_view_constructor),
+	(rb_entry_view_set_state):
+	* widgets/rb-library-browser.c: (rb_library_browser_constructor),
+	(rb_library_browser_finalize), (rb_library_browser_new),
+	(update_browser_property_visibilty), (view_selection_reset_cb),
+	(reset_view_cb), (construct_query_cb), (ignore_selection_changes),
+	(restore_selection), (rebuild_child_model),
+	(rb_library_browser_set_selection), (rb_library_browser_set_model):
+	* widgets/rb-property-view.c:
+	(rb_property_view_set_model_internal),
+	(rb_property_view_set_selection_mode), (rb_property_view_reset),
+	(rb_property_view_get_model), (rb_property_view_set_model),
+	(rb_property_view_get_num_properties),
+	(rb_property_view_set_selection),
+	(rb_property_view_append_column_custom),
+	(rb_property_view_set_search_func):
+	Fix some more leaks.  Mostly RhythmDBQueryModel ref leaks.
+	From #347446
+
+2006-07-25  William Jon McCann  <mccann@jhu.edu>
+
 	* sources/rb-playlist-source-recorder.c: (update_speed_combobox):
 	Work around a small n-c-b API change.
 

@@ -288,6 +288,52 @@ _add_entry_cb (GtkTreeModel *model,
 }
 
 static void
+rhythmdb_property_model_set_query_model_internal (RhythmDBPropertyModel *model,
+						  RhythmDBQueryModel    *query_model)
+{
+	if (model->priv->query_model != NULL) {
+		g_signal_handlers_disconnect_by_func (model->priv->query_model,
+						      G_CALLBACK (rhythmdb_property_model_row_inserted_cb),
+						      model);
+		g_signal_handlers_disconnect_by_func (model->priv->query_model,
+						      G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
+						      model);
+		g_signal_handlers_disconnect_by_func (model->priv->query_model,
+						      G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
+						      model);
+		g_hash_table_foreach_remove (model->priv->entries, (GHRFunc)_remove_entry_cb, model);
+
+		g_object_unref (model->priv->query_model);
+	}
+
+	model->priv->query_model = query_model;
+	g_assert (rhythmdb_property_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 1);
+
+	if (model->priv->query_model != NULL) {
+		g_object_ref (model->priv->query_model);
+
+		g_signal_connect_object (model->priv->query_model,
+					 "row_inserted",
+					 G_CALLBACK (rhythmdb_property_model_row_inserted_cb),
+					 model,
+					 0);
+		g_signal_connect_object (model->priv->query_model,
+					 "post-entry-delete",
+					 G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
+					 model,
+					 0);
+		g_signal_connect_object (model->priv->query_model,
+					 "entry-prop-changed",
+					 G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
+					 model,
+					 0);
+		gtk_tree_model_foreach (GTK_TREE_MODEL (model->priv->query_model),
+					(GtkTreeModelForeachFunc)_add_entry_cb,
+					model);
+	}
+}
+
+static void
 rhythmdb_property_model_set_property (GObject *object,
 				      guint prop_id,
 				      const GValue *value,
@@ -297,10 +343,8 @@ rhythmdb_property_model_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_RHYTHMDB:
-	{
 		model->priv->db = g_value_get_object (value);
 		break;
-	}
 	case PROP_PROP:
 		model->priv->propid = g_value_get_int (value);
 		switch (model->priv->propid) {
@@ -326,48 +370,8 @@ rhythmdb_property_model_set_property (GObject *object,
 		}
 		break;
 	case PROP_QUERY_MODEL:
-	{
-		if (model->priv->query_model) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
-							      G_CALLBACK (rhythmdb_property_model_row_inserted_cb),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
-							      G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
-							      model);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
-							      G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
-							      model);
-			g_hash_table_foreach_remove (model->priv->entries, (GHRFunc)_remove_entry_cb, model);
-			g_object_unref (model->priv->query_model);
-		}
-
-		model->priv->query_model = g_value_get_object (value);
-		g_assert (rhythmdb_property_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 1);
-
-		if (model->priv->query_model) {
-			g_object_ref (model->priv->query_model);
-
-			g_signal_connect_object (G_OBJECT (model->priv->query_model),
-						 "row_inserted",
-						 G_CALLBACK (rhythmdb_property_model_row_inserted_cb),
-						 model,
-						 0);
-			g_signal_connect_object (G_OBJECT (model->priv->query_model),
-						 "post-entry-delete",
-						 G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
-						 model,
-						 0);
-			g_signal_connect_object (G_OBJECT (model->priv->query_model),
-						 "entry-prop-changed",
-						 G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
-						 model,
-						 0);
-			gtk_tree_model_foreach (GTK_TREE_MODEL (model->priv->query_model),
-						(GtkTreeModelForeachFunc)_add_entry_cb,
-						model);
-		}
+		rhythmdb_property_model_set_query_model_internal (model, g_value_get_object (value));
 		break;
-	}
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -445,8 +449,9 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	g_hash_table_destroy (model->priv->entries);
 
-	if (model->priv->query_model)
-		g_object_unref (G_OBJECT (model->priv->query_model));
+	if (model->priv->query_model != NULL) {
+		g_object_unref (model->priv->query_model);
+	}
 
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }
@@ -990,7 +995,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 					    &is_all, -1);
 		gtk_tree_path_free (path);
 		if (is_all) {
-			g_object_set (G_OBJECT (query_model),
+			g_object_set (query_model,
 				      "base-model", model->priv->query_model,
 				      NULL);
 		} else {
@@ -1022,7 +1027,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
  				g_free (name);
  			}
 
-			g_object_set (G_OBJECT (query_model),
+			g_object_set (query_model,
 				      "query", subquery,
 				      "base-model", model->priv->query_model,
 				      NULL);

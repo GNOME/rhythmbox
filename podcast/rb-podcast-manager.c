@@ -391,9 +391,13 @@ rb_podcast_manager_new (RhythmDB *db)
 }
 
 void
-rb_podcast_manager_download_entry (RBPodcastManager *pd, RhythmDBEntry *entry)
+rb_podcast_manager_download_entry (RBPodcastManager *pd,
+				   RhythmDBEntry *entry)
 {
 	gulong status;
+
+	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
+
 	if (entry == NULL)
 		return;
 
@@ -438,10 +442,13 @@ void
 rb_podcast_manager_start_sync (RBPodcastManager *pd)
 {
 	gint next_time;
+
+	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
+
 	if (pd->priv->next_time > 0) {
 		next_time = pd->priv->next_time;
 	} else {
-		next_time = eel_gconf_get_integer(CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME);
+		next_time = eel_gconf_get_integer (CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME);
 	}
 
 	if (next_time > 0) {
@@ -475,7 +482,11 @@ rb_podcast_manager_sync_head_cb (gpointer data)
 void
 rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 {
-	GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));
+	GtkTreeModel *query_model;
+
+	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
+
+	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (pd->priv->db));
 
 	rhythmdb_do_full_query (pd->priv->db,
 				RHYTHMDB_QUERY_RESULTS (query_model),
@@ -1238,9 +1249,10 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 		gnome_vfs_remove_directory (dir_name);
 
 	} else if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(pd->priv->db));
+		GtkTreeModel *query_model;
 		GtkTreeIter iter;
 
+		query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (pd->priv->db));
 		rhythmdb_do_full_query (pd->priv->db,
 					RHYTHMDB_QUERY_RESULTS (query_model),
                 	                RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1263,6 +1275,8 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 
 			rhythmdb_commit (pd->priv->db);
 		}
+
+		g_object_unref (query_model);
 	}
 }
 

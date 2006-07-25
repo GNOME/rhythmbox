@@ -49,18 +49,19 @@
 
 static void rb_playlist_source_class_init (RBPlaylistSourceClass *klass);
 static void rb_playlist_source_init (RBPlaylistSource *source);
-static GObject *rb_playlist_source_constructor (GType type, guint n_construct_properties,
+static GObject *rb_playlist_source_constructor (GType type,
+						guint n_construct_properties,
 						GObjectConstructParam *construct_properties);
 static void rb_playlist_source_dispose (GObject *object);
 static void rb_playlist_source_finalize (GObject *object);
 static void rb_playlist_source_set_property (GObject *object,
-			                  guint prop_id,
-			                  const GValue *value,
-			                  GParamSpec *pspec);
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *pspec);
 static void rb_playlist_source_get_property (GObject *object,
-			                  guint prop_id,
-			                  GValue *value,
-			                  GParamSpec *pspec);
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *pspec);
 
 /* source methods */
 static char *impl_get_browser_key (RBSource *source);
@@ -108,6 +109,7 @@ struct RBPlaylistSourcePrivate
 
 	gboolean dirty;
 	gboolean is_local;
+	gboolean dispose_has_run;
 
 	char *title;
 };
@@ -228,6 +230,7 @@ rb_playlist_source_constructor (GType type,
 	RBPlaylistSourceClass *klass;
 	RBShell *shell;
 	RhythmDB *db;
+	RhythmDBQueryModel *query_model;
 
 	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
 
@@ -246,9 +249,13 @@ rb_playlist_source_constructor (GType type,
 
 	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-	source->priv->songs = rb_entry_view_new (source->priv->db, shell_player,
+	source->priv->songs = rb_entry_view_new (source->priv->db,
+						 shell_player,
 					 	 NULL, TRUE, TRUE);
-	rb_playlist_source_set_query_model (source, rhythmdb_query_model_new_empty (source->priv->db));
+
+	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	rb_playlist_source_set_query_model (source, query_model);
+	g_object_unref (query_model);
 
 	{
 		const char *title = "";
@@ -308,9 +315,23 @@ rb_playlist_source_dispose (GObject *object)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
 
-	if (source->priv->db) {
+	if (source->priv->dispose_has_run) {
+		/* If dispose did already run, return. */
+		rb_debug ("Dispose has already run for playlist source %p", object);
+		return;
+	}
+	/* Make sure dispose does not run twice. */
+	source->priv->dispose_has_run = TRUE;
+
+	rb_debug ("Disposing playlist source %p", source);
+
+	if (source->priv->db != NULL) {
 		g_object_unref (source->priv->db);
 		source->priv->db = NULL;
+	}
+
+	if (source->priv->model != NULL) {
+		g_object_unref (source->priv->model);
 	}
 
 	G_OBJECT_CLASS (rb_playlist_source_parent_class)->dispose (object);
@@ -326,6 +347,8 @@ rb_playlist_source_finalize (GObject *object)
 
 	source = RB_PLAYLIST_SOURCE (object);
 	g_return_if_fail (source->priv != NULL);
+
+	rb_debug ("Finalizing playlist source %p", source);
 
 	g_hash_table_destroy (source->priv->entries);
 
@@ -525,6 +548,8 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 	GError *error = NULL;
 	char *name;
 
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
+
 	rb_debug ("saving playlist");
 	playlist = totem_pl_parser_new ();
 
@@ -629,6 +654,8 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	xmlChar *tmp;
 	xmlChar *name;
 
+	g_return_val_if_fail (RB_IS_SHELL (shell), NULL);
+
 	/* Try to get name from XML and remove translated names */
 	name = get_playlist_name_from_xml (node);
 
@@ -665,6 +692,8 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source,
 	xmlNodePtr node;
 	xmlChar *name;
 	RBPlaylistSourceClass *klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
+
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
 	node = xmlNewChild (parent_node, NULL, RB_PLAYLIST_PLAYLIST, NULL);
 	g_object_get (source, "name", &name, NULL);
@@ -734,56 +763,70 @@ void
 rb_playlist_source_setup_entry_view (RBPlaylistSource *source,
 				     RBEntryView *entry_view)
 {
-	g_signal_connect_object (G_OBJECT (entry_view), "show_popup",
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
+
+	g_signal_connect_object (entry_view, "show_popup",
 				 G_CALLBACK (rb_playlist_source_songs_show_popup_cb), source, 0);
-	g_signal_connect_object (G_OBJECT (entry_view), "drag_data_received",
+	g_signal_connect_object (entry_view, "drag_data_received",
 				 G_CALLBACK (rb_playlist_source_drop_cb), source, 0);
-	gtk_drag_dest_set (GTK_WIDGET (entry_view), GTK_DEST_DEFAULT_ALL,
-			   target_uri, G_N_ELEMENTS (target_uri), GDK_ACTION_COPY);
+	gtk_drag_dest_set (GTK_WIDGET (entry_view),
+			   GTK_DEST_DEFAULT_ALL,
+			   target_uri,
+			   G_N_ELEMENTS (target_uri),
+			   GDK_ACTION_COPY);
 }
 
 void
 rb_playlist_source_set_query_model (RBPlaylistSource *source,
 				    RhythmDBQueryModel *model)
 {
-	if (source->priv->model) {
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
+
+	if (source->priv->model != NULL) {
 		/* if the query model is replaced, the set of entries in
 		 * the playlist will change, so we should mark the playlist dirty.
 		 */
 		source->priv->dirty = TRUE;
-		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->model),
+		g_signal_handlers_disconnect_by_func (source->priv->model,
 						      G_CALLBACK (rb_playlist_source_row_deleted),
 						      source);
 		g_object_unref (source->priv->model);
 	}
+
 	source->priv->model = model;
 
-	if (model) {
-		g_object_ref (G_OBJECT (model));
-		g_signal_connect_object (G_OBJECT (source->priv->model), "row_deleted",
+	if (source->priv->model != NULL) {
+		g_object_ref (source->priv->model);
+		g_signal_connect_object (source->priv->model, "row_deleted",
 					 G_CALLBACK (rb_playlist_source_row_deleted), source, 0);
 	}
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
 
-	g_object_set (G_OBJECT (source), "query-model", source->priv->model, NULL);
+	g_object_set (source, "query-model", source->priv->model, NULL);
 }
 
 RhythmDB *
 rb_playlist_source_get_db (RBPlaylistSource *source)
 {
+	g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE (source), NULL);
+
 	return source->priv->db;
 }
 
 RhythmDBQueryModel *
 rb_playlist_source_get_query_model (RBPlaylistSource *source)
 {
+	g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE (source), NULL);
+
 	return source->priv->model;
 }
 
 void
 rb_playlist_source_mark_dirty (RBPlaylistSource *source)
 {
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
+
 	source->priv->dirty = TRUE;
 }
 
@@ -791,6 +834,8 @@ gboolean
 rb_playlist_source_location_in_map (RBPlaylistSource *source,
 				    const char *location)
 {
+	g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE (source), FALSE);
+
 	return (g_hash_table_lookup (source->priv->entries, location) != NULL);
 }
 
@@ -798,6 +843,8 @@ gboolean
 rb_playlist_source_add_to_map (RBPlaylistSource *source,
 			       const char *location)
 {
+	g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE (source), FALSE);
+
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		return FALSE;
 	}
