@@ -347,7 +347,9 @@ rb_random_play_order_go_next (RBPlayOrder* porder)
 	else
 		rb_history_go_next (history);
 	rb_play_order_set_playing_entry (porder, rb_history_current (history));
-	rhythmdb_entry_unref (entry);
+
+	if (entry)
+		rhythmdb_entry_unref (entry);
 }
 
 static RhythmDBEntry*
