@@ -883,13 +883,20 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 
 	if (subset) {
 		/* if we're appending text to an existing search string, the results will be a subset
-		 * of the existing results, so we can just change the query on the existing query
-		 * model and reapply the query.
+		 * of the existing results, so rather than doing a whole new query, we can copy the
+		 * results to a new query model with a more restrictive query.
 		 */
-		g_object_get (source->priv->browser, "input-model", &query_model, NULL);
+		RhythmDBQueryModel *old;
+		g_object_get (source->priv->browser, "input-model", &old, NULL);
+
+		query_model = rhythmdb_query_model_new_empty (source->priv->db);
 		g_object_set (query_model, "query", query, NULL);
-		rhythmdb_query_model_reapply_query (query_model, FALSE);
+		rhythmdb_query_model_copy_contents (query_model, old);
+		g_object_unref (old);
+
+		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
 		g_object_unref (query_model);
+
 	} else {
 		/* otherwise build a query based on the search text and feed it to the browser */
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);

@@ -92,6 +92,9 @@ RhythmDBQueryModel *	rhythmdb_query_model_new		(RhythmDB *db,
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty		(RhythmDB *db);
 
+void			rhythmdb_query_model_copy_contents	(RhythmDBQueryModel *dest,
+								 RhythmDBQueryModel *src);
+
 void			rhythmdb_query_model_chain		(RhythmDBQueryModel *child,
 								 RhythmDBQueryModel *base,
 								 gboolean import_entries);

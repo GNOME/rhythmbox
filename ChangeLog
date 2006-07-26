@@ -1,3 +1,15 @@
+2006-07-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_copy_contents), (rhythmdb_query_model_chain):
+	* rhythmdb/rhythmdb-query-model.h:
+	Add function to copy contents from one query model to another,
+	filtered by the destination model's query.
+
+	* sources/rb-browser-source.c: (rb_browser_source_do_query):
+	Use the above to create a new query model for subset searches, rather
+	than filtering the existing model. Fixes #348617.
+
 2006-07-25  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-query-model.c:

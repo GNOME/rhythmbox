@@ -704,6 +704,30 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 }
 
 void
+rhythmdb_query_model_copy_contents (RhythmDBQueryModel *dest,
+				    RhythmDBQueryModel *src)
+{
+	GSequencePtr ptr, next;
+	RhythmDBEntry *entry;
+
+	if (src->priv->entries == NULL)
+		return;
+
+	ptr = g_sequence_get_begin_ptr (src->priv->entries);
+	while (!g_sequence_ptr_is_end (ptr)) {
+		next = g_sequence_ptr_next (ptr);
+		entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
+		if (dest->priv->query == NULL ||
+		    rhythmdb_evaluate_query (dest->priv->db, dest->priv->query, entry)) {
+			if (dest->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
+				rhythmdb_query_model_do_insert (dest, entry, -1);
+		}
+
+		ptr = next;
+	}
+}
+
+void
 rhythmdb_query_model_chain (RhythmDBQueryModel *model,
 			    RhythmDBQueryModel *base,
 			    gboolean import_entries)
@@ -764,23 +788,8 @@ rhythmdb_query_model_chain (RhythmDBQueryModel *model,
 					 G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 					 model, 0);
 
-		if (import_entries && model->priv->base_model->priv->entries) {
-			GSequencePtr ptr, next;
-			RhythmDBEntry *entry;
-
-			ptr = g_sequence_get_begin_ptr (model->priv->base_model->priv->entries);
-			while (!g_sequence_ptr_is_end (ptr)) {
-				next = g_sequence_ptr_next (ptr);
-				entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
-				if (model->priv->query == NULL ||
-				    rhythmdb_evaluate_query (model->priv->db, model->priv->query, entry)) {
-					if (model->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
-						rhythmdb_query_model_do_insert (model, entry, -1);
-				}
-
-				ptr = next;
-			}
-		}
+		if (import_entries)
+			rhythmdb_query_model_copy_contents (model, model->priv->base_model);
 	}
 }
 
