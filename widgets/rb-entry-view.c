@@ -472,6 +472,8 @@ rb_entry_view_set_model_internal (RBEntryView        *view,
 		g_object_unref (view->priv->model);
 	}
 
+	gtk_tree_selection_unselect_all (view->priv->selection);
+
 	view->priv->model = model;
 	if (view->priv->model != NULL) {
 		g_object_ref (view->priv->model);
@@ -491,8 +493,6 @@ rb_entry_view_set_model_internal (RBEntryView        *view,
 					 view,
 					 0);
 	}
-
-	gtk_tree_selection_unselect_all (view->priv->selection);
 
 	if (view->priv->sorting_column != NULL) {
 		rb_entry_view_resort_model (view);

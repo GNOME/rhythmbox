@@ -1,3 +1,9 @@
+2006-07-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_set_model_internal):
+	Clear selection before changing our idea of the model.  Fixes crashes
+	on model changes while playing.
+
 2006-07-27  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_type_registered): add
