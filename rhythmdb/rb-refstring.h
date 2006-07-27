@@ -30,6 +30,7 @@ void		rb_refstring_system_init (void);
 void		rb_refstring_system_shutdown (void);
 
 RBRefString *	rb_refstring_new (const char *init);
+RBRefString *	rb_refstring_find (const char *init);
 
 RBRefString *	rb_refstring_ref (RBRefString *val);
 void		rb_refstring_unref (RBRefString *val);

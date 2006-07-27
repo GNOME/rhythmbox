@@ -84,6 +84,21 @@ rb_refstring_new (const char *init)
 	return ret;
 }
 
+RBRefString *
+rb_refstring_find (const char *init)
+{
+	RBRefString *ret;
+
+	g_mutex_lock (rb_refstrings_mutex);
+	ret = g_hash_table_lookup (rb_refstrings, init);
+
+	if (ret)
+		rb_refstring_ref (ret);
+
+	g_mutex_unlock (rb_refstrings_mutex);
+	return ret;
+}
+
 void
 rb_refstring_unref (RBRefString *val)
 {

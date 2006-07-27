@@ -72,7 +72,7 @@ static gboolean rhythmdb_tree_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 static void rhythmdb_tree_entry_delete (RhythmDB *db, RhythmDBEntry *entry);
 static void rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType type);
 
-static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_location (RhythmDB *db, const char *uri);
+static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_location (RhythmDB *db, RBRefString *uri);
 static void rhythmdb_tree_entry_foreach (RhythmDB *adb, GFunc func, gpointer user_data);
 static void rhythmdb_tree_do_full_query (RhythmDB *db, GPtrArray *query,
 					 RhythmDBQueryResults *results,
@@ -127,13 +127,13 @@ struct RhythmDBTreePrivate
 
 typedef struct
 {
-	char *name;
-	char *value;
+	RBRefString *name;
+	RBRefString *value;
 } RhythmDBUnknownEntryProperty;
 
 typedef struct
 {
-	char *typename;
+	RBRefString *typename;
 	GList *properties;
 } RhythmDBUnknownEntry;
 
@@ -174,15 +174,15 @@ rhythmdb_tree_init (RhythmDBTree *db)
 {
 	db->priv = RHYTHMDB_TREE_GET_PRIVATE (db);
 
-	db->priv->entries = g_hash_table_new (g_str_hash, g_str_equal);
+	db->priv->entries = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
 
 	db->priv->genres = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 						  NULL, (GDestroyNotify)g_hash_table_destroy);
-	db->priv->unknown_entry_types = g_hash_table_new (g_str_hash, g_str_equal);
+	db->priv->unknown_entry_types = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
 }
 
 static void
-unparent_entries (const char *uri,
+unparent_entries (gpointer key,
 		  RhythmDBEntry *entry,
 		  RhythmDBTree *db)
 {
@@ -190,7 +190,7 @@ unparent_entries (const char *uri,
 }
 
 static void
-free_unknown_entries (const char *name,
+free_unknown_entries (RBRefString *name,
 		      GList *entries,
 		      gpointer nah)
 {
@@ -200,13 +200,13 @@ free_unknown_entries (const char *name,
 		GList *p;
 
 		entry = (RhythmDBUnknownEntry *)e->data;
-		g_free (entry->typename);
+		rb_refstring_unref (entry->typename);
 		for (p = entry->properties; p != NULL; p = p->next) {
 			RhythmDBUnknownEntryProperty *prop;
 
 			prop = (RhythmDBUnknownEntryProperty *)p->data;
-			g_free (prop->name);
-			g_free (prop->value);
+			rb_refstring_unref (prop->name);
+			rb_refstring_unref (prop->value);
 			g_free (prop);
 		}
 
@@ -342,7 +342,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				rb_debug ("reading unknown entry");
 				ctx->state = RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY;
 				ctx->unknown_entry = g_new0 (RhythmDBUnknownEntry, 1);
-				ctx->unknown_entry->typename = g_strdup (typename);
+				ctx->unknown_entry->typename = rb_refstring_new (typename);
 			}
 		} else {
 			ctx->in_unknown_elt++;
@@ -367,7 +367,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		RhythmDBUnknownEntryProperty *prop;
 
 		prop = g_new0 (RhythmDBUnknownEntryProperty, 1);
-		prop->name = g_strdup (name);
+		prop->name = rb_refstring_new (name);
 
 		ctx->unknown_entry->properties = g_list_prepend (ctx->unknown_entry->properties, prop);
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY;
@@ -433,7 +433,8 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 					ctx->batch_count = 0;
 				}
 			} else {
-				rb_debug ("found entry with duplicate location %s. merging metadata", ctx->entry->location);
+				rb_debug ("found entry with duplicate location %s. merging metadata",
+					  rb_refstring_get (ctx->entry->location));
 				entry->play_count += ctx->entry->play_count;
 
 				if (entry->rating < 0.01)
@@ -523,8 +524,8 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 		g_assert (ctx->unknown_entry->properties);
 		prop = ctx->unknown_entry->properties->data;
 		g_assert (prop->value == NULL);
-		prop->value = g_strdup (ctx->buf->str);
-		rb_debug ("unknown entry property: %s = %s", prop->name, prop->value);
+		prop->value = rb_refstring_new (ctx->buf->str);
+		rb_debug ("unknown entry property: %s = %s", rb_refstring_get (prop->name), rb_refstring_get (prop->value));
 
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY;
 		break;
@@ -825,7 +826,7 @@ save_entry (RhythmDBTree *db,
 			save_entry_double(ctx, elt_name, entry->album_peak);
 			break;
 		case RHYTHMDB_PROP_LOCATION:
-			save_entry_string(ctx, elt_name, entry->location);
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->location));
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
 			/* Avoid crashes on exit when upgrading from 0.8
@@ -933,7 +934,7 @@ save_entry_type (const char *name,
 }
 
 static void
-save_unknown_entry_type (const char *typename,
+save_unknown_entry_type (RBRefString *typename,
 			 GList *entries,
 			 struct RhythmDBTreeSaveContext *ctx)
 {
@@ -950,7 +951,7 @@ save_unknown_entry_type (const char *typename,
 		entry = (RhythmDBUnknownEntry *)t->data;
 
 		RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle, ctx->error);
-		encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST entry->typename);
+		encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST rb_refstring_get (entry->typename));
 		RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle, ctx->error);
 		g_free (encoded);
 
@@ -959,7 +960,7 @@ save_unknown_entry_type (const char *typename,
 		for (p = entry->properties; p != NULL; p = p->next) {
 			RhythmDBUnknownEntryProperty *prop;
 			prop = (RhythmDBUnknownEntryProperty *) p->data;
-			save_entry_string(ctx, (const xmlChar *)prop->name, prop->value);
+			save_entry_string(ctx, (const xmlChar *)rb_refstring_get (prop->name), rb_refstring_get (prop->value));
 		}
 
 		RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
@@ -1068,23 +1069,23 @@ rhythmdb_tree_entry_new (RhythmDB *rdb,
 	g_return_if_fail (entry->location != NULL);
 
 	if (entry->title == NULL) {
-		g_warning ("Entry %s has missing title",entry->location);
+		g_warning ("Entry %s has missing title", rb_refstring_get (entry->location));
 		entry->title = rb_refstring_new (_("Unknown"));
 	}
 	if (entry->artist == NULL) {
-		g_warning ("Entry %s has missing artist",entry->location);
+		g_warning ("Entry %s has missing artist", rb_refstring_get (entry->location));
 		entry->artist = rb_refstring_new (_("Unknown"));
 	}
 	if (entry->album == NULL) {
-		g_warning ("Entry %s has missing album",entry->location);
+		g_warning ("Entry %s has missing album", rb_refstring_get (entry->location));
 		entry->album = rb_refstring_new (_("Unknown"));
 	}
 	if (entry->genre == NULL) {
-		g_warning ("Entry %s has missing genre",entry->location);
+		g_warning ("Entry %s has missing genre", rb_refstring_get (entry->location));
 		entry->genre = rb_refstring_new (_("Unknown"));
 	}
 	if (entry->mimetype == NULL) {
-		g_warning ("Entry %s has missing mimetype",entry->location);
+		g_warning ("Entry %s has missing mimetype", rb_refstring_get (entry->location));
 		entry->mimetype = rb_refstring_new ("unknown/unknown");
 	}
 
@@ -1290,17 +1291,17 @@ rhythmdb_tree_entry_set (RhythmDB *adb,
 	{
 	case RHYTHMDB_PROP_LOCATION:
 	{
+		RBRefString *s;
 		/* We have to use the string in the entry itself as the hash key,
 		 * otherwise either we leak it, or the string vanishes when the
 		 * GValue is freed; this means we have to do the entry modification
 		 * here, rather than letting rhythmdb_entry_set_internal do it.
 		 */
-		g_assert (g_hash_table_lookup (db->priv->entries, entry->location) != NULL);
+		g_assert (g_hash_table_remove (db->priv->entries, entry->location));
 
-		g_hash_table_remove (db->priv->entries, entry->location);
-
-		g_free (entry->location);
-		entry->location = g_strdup (g_value_get_string (value));
+		s = rb_refstring_new (g_value_get_string (value));
+		rb_refstring_unref (entry->location);
+		entry->location = s;
 		g_hash_table_insert (db->priv->entries, entry->location, entry);
 
 		return TRUE;
@@ -1394,9 +1395,7 @@ rhythmdb_tree_entry_delete (RhythmDB *adb,
 
 	remove_entry_from_album (db, entry);
 
-	g_assert (g_hash_table_lookup (db->priv->entries, entry->location) != NULL);
-
-	g_hash_table_remove (db->priv->entries, entry->location);
+	g_assert (g_hash_table_remove (db->priv->entries, entry->location));
 	rhythmdb_entry_unref (entry);
 }
 
@@ -1406,7 +1405,7 @@ typedef struct {
 } RbEntryRemovalCtxt;
 
 static gboolean
-remove_one_song (gchar *uri,
+remove_one_song (gpointer key,
 		 RhythmDBEntry *entry,
 		 RbEntryRemovalCtxt *ctxt)
 {
@@ -2023,7 +2022,7 @@ rhythmdb_tree_do_full_query (RhythmDB *adb,
 
 static RhythmDBEntry *
 rhythmdb_tree_entry_lookup_by_location (RhythmDB *adb,
-					const char *uri)
+					RBRefString *uri)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	return g_hash_table_lookup (db->priv->entries, uri);
@@ -2175,15 +2174,19 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 				     const char *name,
 				     RhythmDBEntryType entry_type)
 {
-	GList *entries;
+	GList *entries = NULL;
 	GList *e;
 	gint count = 0;
 	RhythmDBTree *rdb;
+	RBRefString *rs_name;
+
 	if (name == NULL)
 		return;
 
 	rdb = RHYTHMDB_TREE (db);
-	entries = g_hash_table_lookup (rdb->priv->unknown_entry_types, name);
+	rs_name = rb_refstring_find (name);
+	if (rs_name)
+		entries = g_hash_table_lookup (rdb->priv->unknown_entry_types, rs_name);
 	if (entries == NULL) {
 		rb_debug ("no entries of newly registered type %s loaded from db", name);
 		return;
@@ -2203,9 +2206,9 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 			GValue value = {0,};
 
 			prop = (RhythmDBUnknownEntryProperty *) p->data;
-			propid = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *) prop->name);
+			propid = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *) rb_refstring_get (prop->name));
 
-			rhythmdb_read_encoded_property (db, prop->value, propid, &value);
+			rhythmdb_read_encoded_property (db, rb_refstring_get (prop->value), propid, &value);
 			rhythmdb_entry_set_internal (db, entry, FALSE, propid, &value);
 			g_value_unset (&value);
 		}
@@ -2216,6 +2219,6 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 	rb_debug ("handled %d entries of newly registered type %s", count, name);
 	rhythmdb_commit (db);
 
-	g_hash_table_remove (rdb->priv->unknown_entry_types, name);
-	free_unknown_entries (name, entries, NULL);
+	g_hash_table_remove (rdb->priv->unknown_entry_types, rs_name);
+	free_unknown_entries (rs_name, entries, NULL);
 }

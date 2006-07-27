@@ -1705,11 +1705,14 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
 			    RhythmDBEntry *entry,
 			    RBShell *shell)
 {
+	const char *loc;
+
 	if (shell->priv->pending_entry == NULL)
 		return;
 
-	rb_debug ("got entry added for %s", entry->location);
-	if (strcmp (entry->location, shell->priv->pending_entry) == 0) {
+	loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	rb_debug ("got entry added for %s", loc);
+	if (strcmp (loc, shell->priv->pending_entry) == 0) {
 		rb_shell_play_entry (shell, entry);
 
 		g_free (shell->priv->pending_entry);

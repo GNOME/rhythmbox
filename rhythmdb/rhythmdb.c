@@ -77,7 +77,7 @@ typedef struct
 		RHYTHMDB_ACTION_LOAD,
 		RHYTHMDB_ACTION_SYNC
 	} type;
-	char *uri;
+	RBRefString *uri;
  	RhythmDBEntryType entry_type;
 } RhythmDBAction;
 
@@ -451,7 +451,7 @@ rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
 		if (info_result->result == GNOME_VFS_OK) {
 			event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 		} else {
-			char *unescaped = gnome_vfs_unescape_string_for_display (event->real_uri);
+			char *unescaped = gnome_vfs_unescape_string_for_display (rb_refstring_get (event->real_uri));
 			event->error = g_error_new (RHYTHMDB_ERROR,
 						    RHYTHMDB_ERROR_ACCESS_FAILED,
 						    _("Couldn't access %s: %s"),
@@ -522,8 +522,8 @@ rhythmdb_event_free (RhythmDB *db,
 	}
 	if (result->error)
 		g_error_free (result->error);
-	g_free (result->uri);
-	g_free (result->real_uri);
+	rb_refstring_unref (result->uri);
+	rb_refstring_unref (result->real_uri);
 	if (result->vfsinfo)
 		gnome_vfs_file_info_unref (result->vfsinfo);
 	if (result->metadata)
@@ -789,7 +789,7 @@ sync_entry_changed (RhythmDBEntry *entry,
 
 			action = g_new0 (RhythmDBAction, 1);
 			action->type = RHYTHMDB_ACTION_SYNC;
-			action->uri = g_strdup (entry->location);
+			action->uri = rb_refstring_ref (entry->location);
 			g_async_queue_push (db->priv->action_queue, action);
 			break;
 		}
@@ -1090,7 +1090,7 @@ rhythmdb_entry_new (RhythmDB *db,
 	}
 
 	ret = rhythmdb_entry_allocate (db, type);
-	ret->location = g_strdup (uri);
+	ret->location = rb_refstring_new (uri);
 	klass->impl_entry_new (db, ret);
 	rb_debug ("emitting entry added");
 	rhythmdb_entry_insert (db, ret);
@@ -1119,7 +1119,8 @@ rhythmdb_entry_example_new (RhythmDB *db,
 	RhythmDBEntry *ret;
 
 	ret = rhythmdb_entry_allocate (db, type);
-	ret->location = g_strdup (uri);
+	if (uri)
+		ret->location = rb_refstring_new (uri);
 
 	if (type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		rb_refstring_unref (ret->artist);
@@ -1163,8 +1164,8 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	if (type->pre_entry_destroy)
 		(type->pre_entry_destroy)(entry, type->pre_entry_destroy_data);
 
-	g_free (entry->location);
-	g_free (entry->playback_error);
+	rb_refstring_unref (entry->location);
+	rb_refstring_unref (entry->playback_error);
 	rb_refstring_unref (entry->title);
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
@@ -1442,7 +1443,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	RhythmDBEntry *entry;
 	RhythmDBAction *action;
 
-	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
+	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
 	if (entry) {
 		time_t mtime = (time_t) entry->mtime;
 
@@ -1456,7 +1457,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			if (!is_ghost_entry (entry)) {
 				rhythmdb_entry_set_visibility (db, entry, FALSE);
 			} else {
-				rb_debug ("error accessing %s: %s", event->real_uri,
+				rb_debug ("error accessing %s: %s", rb_refstring_get (event->real_uri),
 					  event->error->message);
 				rhythmdb_entry_delete (db, entry);
 			}
@@ -1474,7 +1475,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 			if (mount_point == NULL) {
 				rhythmdb_entry_set_mount_point (db, entry,
-								event->real_uri);
+								rb_refstring_get (event->real_uri));
 			}
 
 			/* Update last seen time. It will also be updated
@@ -1497,17 +1498,17 @@ rhythmdb_process_stat_event (RhythmDB *db,
 			g_value_unset (&val);
 
 			if (mtime == event->vfsinfo->mtime) {
-				rb_debug ("not modified: %s", event->real_uri);
+				rb_debug ("not modified: %s", rb_refstring_get (event->real_uri));
 				/* monitor the file for changes */
 				if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
-					rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
+					rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL /* FIXME */);
 			} else {
 				RhythmDBEvent *new_event;
 
-				rb_debug ("changed: %s", event->real_uri);
+				rb_debug ("changed: %s", rb_refstring_get (event->real_uri));
 				new_event = g_new0 (RhythmDBEvent, 1);
 				new_event->db = db;
-				new_event->uri = g_strdup (event->real_uri);
+				new_event->uri = rb_refstring_ref (event->real_uri);
 				new_event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
 				g_async_queue_push (db->priv->event_queue,
 						    new_event);
@@ -1518,9 +1519,9 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	} else {
 		action = g_new0 (RhythmDBAction, 1);
 		action->type = RHYTHMDB_ACTION_LOAD;
-		action->uri = g_strdup (event->real_uri);
+		action->uri = rb_refstring_ref (event->real_uri);
 		action->entry_type = event->entry_type;
-		rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", action->uri);
+		rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", rb_refstring_get (action->uri));
 		g_async_queue_push (db->priv->action_queue, action);
 	}
 }
@@ -1549,13 +1550,13 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 		error_entry_type = RHYTHMDB_ENTRY_TYPE_IGNORE;
 	}
 
-	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
+	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
 	if (entry) {
 		RhythmDBEntryType entry_type = rhythmdb_entry_get_entry_type (entry);
 		if (entry_type != RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR &&
 		    entry_type != RHYTHMDB_ENTRY_TYPE_IGNORE) {
 			/* FIXME we've successfully read this file before.. so what should we do? */
-			rb_debug ("%s already exists in the library.. ignoring import error?", event->real_uri);
+			rb_debug ("%s already exists in the library.. ignoring import error?", rb_refstring_get (event->real_uri));
 			return;
 		}
 
@@ -1586,7 +1587,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 
 	if (entry == NULL) {
 		/* create a new import error or ignore entry */
-		entry = rhythmdb_entry_new (db, error_entry_type, event->real_uri);
+		entry = rhythmdb_entry_new (db, error_entry_type, rb_refstring_get (event->real_uri));
 		if (entry == NULL)
 			return;
 
@@ -1609,7 +1610,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 		}
 
 		/* record the mount point so we can delete entries for unmounted volumes */
-		rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
+		rhythmdb_entry_set_mount_point (db, entry, rb_refstring_get (event->real_uri));
 
 		rhythmdb_entry_set_visibility (db, entry, TRUE);
 
@@ -1646,7 +1647,7 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 
 	g_get_current_time (&time);
 
-	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
+	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
 
 	if (entry != NULL) {
 		if ((event->entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) &&
@@ -1662,7 +1663,7 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 		if (event->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID)
 			event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 
-		entry = rhythmdb_entry_new (db, event->entry_type, event->real_uri);
+		entry = rhythmdb_entry_new (db, event->entry_type, rb_refstring_get (event->real_uri));
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
 			return TRUE;
@@ -1713,12 +1714,12 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 	g_value_unset (&value);
 
 	/* Remember the mount point of the volume the song is on */
-	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
+	rhythmdb_entry_set_mount_point (db, entry, rb_refstring_get (event->real_uri));
 
 	/* monitor the file for changes */
 	/* FIXME: watch for errors */
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY) && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
-		rhythmdb_monitor_uri_path (db, entry->location, NULL);
+		rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL);
 
 	rhythmdb_add_timeout_commit (db, FALSE);
 
@@ -1748,7 +1749,7 @@ rhythmdb_process_file_created_or_modified (RhythmDB *db,
 
 	action = g_new0 (RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_LOAD;
-	action->uri = g_strdup (event->uri);
+	action->uri = rb_refstring_ref (event->uri);
 	action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 	g_async_queue_push (db->priv->action_queue, action);
 }
@@ -1757,12 +1758,12 @@ static void
 rhythmdb_process_file_deleted (RhythmDB *db,
 			       RhythmDBEvent *event)
 {
-	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (db, event->uri);
+	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location_refstring (db, event->uri);
 
-	g_hash_table_remove (db->priv->changed_files, event->uri);
+	g_hash_table_remove (db->priv->changed_files, rb_refstring_get (event->uri));
 
 	if (entry) {
-		rb_debug ("deleting entry for %s", event->uri);
+		rb_debug ("deleting entry for %s", rb_refstring_get (event->uri));
 		rhythmdb_entry_set_visibility (db, entry, FALSE);
 		rhythmdb_commit (db);
 	}
@@ -1930,7 +1931,7 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 	if (info_result->result == GNOME_VFS_OK) {
 		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 	} else {
-		char *unescaped = gnome_vfs_unescape_string_for_display (event->real_uri);
+		char *unescaped = gnome_vfs_unescape_string_for_display (rb_refstring_get (event->real_uri));
 		event->error = g_error_new (RHYTHMDB_ERROR,
 					    RHYTHMDB_ERROR_ACCESS_FAILED,
 					    _("Couldn't access %s: %s"),
@@ -1951,7 +1952,7 @@ rhythmdb_execute_stat (RhythmDB *db,
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 
 	GList *uri_list = g_list_append (NULL, vfs_uri);
-	event->real_uri = g_strdup (uri);
+	event->real_uri = rb_refstring_new (uri);
 
 	gnome_vfs_async_get_file_info (&event->handle, uri_list,
 			       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
@@ -2006,7 +2007,7 @@ queue_stat_uri (const char *uri,
 			g_free (result);
 			gnome_vfs_uri_unref (vfs_uri);
 		} else {
-			result->real_uri = g_strdup (uri);
+			result->real_uri = rb_refstring_new (uri);
 			g_hash_table_insert (db->priv->stat_events, vfs_uri, result);
 			db->priv->stat_list = g_list_prepend (db->priv->stat_list, vfs_uri);
 		}
@@ -2048,7 +2049,7 @@ rhythmdb_execute_load (RhythmDB *db,
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	GnomeVFSResult vfsresult;
 
-	event->real_uri = rb_uri_resolve_symlink (uri);
+	event->real_uri = rb_refstring_new (rb_uri_resolve_symlink (uri));
 	event->vfsinfo = gnome_vfs_file_info_new ();
 
 	vfsresult = gnome_vfs_get_file_info (uri,
@@ -2069,7 +2070,7 @@ rhythmdb_execute_load (RhythmDB *db,
 	} else {
 		if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
 			event->metadata = rb_metadata_new ();
-			rb_metadata_load (event->metadata, event->real_uri,
+			rb_metadata_load (event->metadata, rb_refstring_get (event->real_uri),
 					  &event->error);
 		}
 	}
@@ -2187,9 +2188,9 @@ action_thread_main (RhythmDB *db)
 			result->type = RHYTHMDB_EVENT_STAT;
 			result->entry_type = action->entry_type;
 
-			rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", action->uri);
+			rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", rb_refstring_get (action->uri));
 
-			rhythmdb_execute_stat (db, action->uri, result);
+			rhythmdb_execute_stat (db, rb_refstring_get (action->uri), result);
 		}
 		break;
 		case RHYTHMDB_ACTION_LOAD:
@@ -2199,9 +2200,9 @@ action_thread_main (RhythmDB *db)
 			result->type = RHYTHMDB_EVENT_METADATA_LOAD;
 			result->entry_type = action->entry_type;
 
-			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", action->uri);
+			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", rb_refstring_get (action->uri));
 
-			rhythmdb_execute_load (db, action->uri, result);
+			rhythmdb_execute_load (db, rb_refstring_get (action->uri), result);
 		}
 		break;
 		case RHYTHMDB_ACTION_SYNC:
@@ -2215,7 +2216,7 @@ action_thread_main (RhythmDB *db)
 				break;
 			}
 
-			entry = rhythmdb_entry_lookup_by_location (db, action->uri);
+			entry = rhythmdb_entry_lookup_by_location_refstring (db, action->uri);
 			if (!entry)
 				break;
 
@@ -2228,7 +2229,7 @@ action_thread_main (RhythmDB *db)
 				data = g_new0 (RhythmDBSaveErrorData, 1);
 				g_object_ref (db);
 				data->db = db;
-				data->uri = g_strdup (action->uri);
+				data->uri = g_strdup (rb_refstring_get (action->uri));
 				data->error = error;
 				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
 				break;
@@ -2617,13 +2618,13 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			entry->album_peak = g_value_get_double (value);
 			break;
 		case RHYTHMDB_PROP_LOCATION:
-			g_free (entry->location);
-			entry->location = g_value_dup_string (value);
+			rb_refstring_unref (entry->location);
+			entry->location = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
-			g_free (entry->playback_error);
+			rb_refstring_unref (entry->playback_error);
 			if (g_value_get_string (value))
-				entry->playback_error = g_value_dup_string (value);
+				entry->playback_error = rb_refstring_new (g_value_get_string (value));
 			else
 				entry->playback_error = NULL;
 			break;
@@ -2895,7 +2896,7 @@ rhythmdb_entry_move_to_trash_set_error (RhythmDB *db,
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &value);
 	g_value_unset (&value);
 
-	rb_debug ("Deleting %s failed: %s", entry->location,
+	rb_debug ("Deleting %s failed: %s", rb_refstring_get (entry->location),
 			gnome_vfs_result_to_string (res));
 }
 
@@ -2907,17 +2908,17 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
 	GnomeVFSURI *uri, *trash, *dest;
 	char *shortname;
 
-	uri = gnome_vfs_uri_new (entry->location);
+	uri = gnome_vfs_uri_new (rb_refstring_get (entry->location));
 	if (uri == NULL) {
 		rhythmdb_entry_move_to_trash_set_error (db, entry, -1);
 		return;
 	}
 
 	res = gnome_vfs_find_directory (uri,
-			GNOME_VFS_DIRECTORY_KIND_TRASH,
-			&trash,
-			TRUE, TRUE,
-			0);
+					GNOME_VFS_DIRECTORY_KIND_TRASH,
+					&trash,
+					TRUE, TRUE,
+					0);
 	if (res != GNOME_VFS_OK || trash == NULL) {
 		/* If the file doesn't exist, or trash isn't support,
 		 * remove it from the db */
@@ -2967,11 +2968,11 @@ rhythmdb_entry_move_to_trash (RhythmDB *db,
 
 	/* RB can't tell that a file's moved, so no unique names */
 	res = gnome_vfs_xfer_uri (uri, dest,
-			GNOME_VFS_XFER_REMOVESOURCE,
-			GNOME_VFS_XFER_ERROR_MODE_ABORT,
-			GNOME_VFS_XFER_OVERWRITE_MODE_SKIP,
-			rhythmdb_entry_move_to_trash_cb,
-			entry);
+				  GNOME_VFS_XFER_REMOVESOURCE,
+				  GNOME_VFS_XFER_ERROR_MODE_ABORT,
+				  GNOME_VFS_XFER_OVERWRITE_MODE_SKIP,
+				  rhythmdb_entry_move_to_trash_cb,
+				  entry);
 
 	if (res == GNOME_VFS_OK) {
 		rhythmdb_entry_set_visibility (db, entry, FALSE);
@@ -3037,6 +3038,20 @@ rhythmdb_propid_from_nice_elt_name (RhythmDB *db,
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_location (RhythmDB *db,
 				   const char *uri)
+{
+	RBRefString *rs;
+
+	rs = rb_refstring_find (uri);
+	if (rs != NULL) {
+		return rhythmdb_entry_lookup_by_location_refstring (db, rs);
+	} else {
+		return NULL;
+	}
+}
+
+RhythmDBEntry *
+rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db,
+					     RBRefString *uri)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
@@ -3482,7 +3497,7 @@ default_sync_metadata (RhythmDB *db,
 		/* reload the metadata, to revert the db changes */
 		load_action = g_new0 (RhythmDBAction, 1);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
-		load_action->uri = g_strdup (uri);
+		load_action->uri = rb_refstring_ref (entry->location);
 		load_action->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 		g_async_queue_push (db->priv->action_queue, load_action);
 
@@ -3876,13 +3891,13 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_GENRE_FOLDED:
 		return rb_refstring_get_folded (entry->genre);
 	case RHYTHMDB_PROP_LOCATION:
-		return entry->location;
+		return rb_refstring_get (entry->location);
 	case RHYTHMDB_PROP_MOUNTPOINT:
 		return rb_refstring_get (entry->mountpoint);
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		return rb_refstring_get (entry->last_played_str);
 	case RHYTHMDB_PROP_PLAYBACK_ERROR:
-		return entry->playback_error;
+		return rb_refstring_get (entry->playback_error);
 	case RHYTHMDB_PROP_FIRST_SEEN_STR:
 		return rb_refstring_get (entry->first_seen_str);
 	case RHYTHMDB_PROP_LAST_SEEN_STR:
@@ -3921,6 +3936,46 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		else
 			return NULL;
 
+	default:
+		g_assert_not_reached ();
+		return NULL;
+	}
+}
+
+RBRefString *
+rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
+			      RhythmDBPropType propid)
+{
+	g_return_val_if_fail (entry != NULL, NULL);
+	g_return_val_if_fail (entry->refcount > 0, NULL);
+
+	rhythmdb_entry_sync_mirrored (entry, propid);
+
+	switch (propid) {
+	case RHYTHMDB_PROP_TITLE:
+		return rb_refstring_ref (entry->title);
+	case RHYTHMDB_PROP_ALBUM:
+		return rb_refstring_ref (entry->album);
+	case RHYTHMDB_PROP_ARTIST:
+		return rb_refstring_ref (entry->artist);
+	case RHYTHMDB_PROP_GENRE:
+		return rb_refstring_ref (entry->genre);
+	case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
+		return rb_refstring_ref (entry->musicbrainz_trackid);
+	case RHYTHMDB_PROP_MIMETYPE:
+		return rb_refstring_ref (entry->mimetype);
+	case RHYTHMDB_PROP_MOUNTPOINT:
+		return rb_refstring_ref (entry->mountpoint);
+	case RHYTHMDB_PROP_LAST_PLAYED_STR:
+		return rb_refstring_ref (entry->last_played_str);
+	case RHYTHMDB_PROP_FIRST_SEEN_STR:
+		return rb_refstring_ref (entry->first_seen_str);
+	case RHYTHMDB_PROP_LAST_SEEN_STR:
+		return rb_refstring_ref (entry->last_seen_str);
+	case RHYTHMDB_PROP_LOCATION:
+		return rb_refstring_ref (entry->location);
+	case RHYTHMDB_PROP_PLAYBACK_ERROR:
+		return rb_refstring_ref (entry->playback_error);
 	default:
 		g_assert_not_reached ();
 		return NULL;

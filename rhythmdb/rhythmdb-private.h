@@ -89,7 +89,7 @@ struct RhythmDBEntry_ {
 	GDate date;
 
 	/* filesystem */
-	char *location;
+	RBRefString *location;
 	RBRefString *mountpoint;
 	guint64 file_size;
 	RBRefString *mimetype;
@@ -108,7 +108,7 @@ struct RhythmDBEntry_ {
 	gpointer last_seen_str;
 
 	/* playback error string */
-	char *playback_error;
+	RBRefString *playback_error;
 };
 
 struct RhythmDBPrivate
@@ -188,8 +188,8 @@ typedef struct
 		RHYTHMDB_EVENT_FILE_DELETED,
 		RHYTHMDB_EVENT_ENTRY_SET
 	} type;
-	char *uri;
-	char *real_uri; /* Target of a symlink, if any */
+	RBRefString *uri;
+	RBRefString *real_uri; /* Target of a symlink, if any */
 	RhythmDBEntryType entry_type;
 
 	GError *error;
@@ -217,6 +217,7 @@ void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 				  gboolean notify_if_inserted, guint propid,
 				  const GValue *value);
 void rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data);
+RhythmDBEntry *	rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db, RBRefString *uri);
 
 /* from rhythmdb-monitor.c */
 void rhythmdb_init_monitoring (RhythmDB *db);

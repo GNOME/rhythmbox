@@ -28,6 +28,7 @@
 #include <libxml/tree.h>
 
 #include "config.h"
+#include "rb-refstring.h"
 #include "rhythmdb-query-results.h"
 
 G_BEGIN_DECLS
@@ -216,6 +217,7 @@ typedef struct {
 } RhythmDBEntryChange;
 
 const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
+RBRefString *rhythmdb_entry_get_refstring (RhythmDBEntry *entry, RhythmDBPropType propid);
 char *rhythmdb_entry_dup_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
 guint64 rhythmdb_entry_get_uint64	(RhythmDBEntry *entry, RhythmDBPropType propid);
@@ -274,7 +276,7 @@ typedef struct
 
 	void            (*impl_entry_delete_by_type) (RhythmDB *db, RhythmDBEntryType type);
 
-	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, const char *uri);
+	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, RBRefString *uri);
 
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
 

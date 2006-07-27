@@ -51,8 +51,8 @@ rhythmdb_init_monitoring (RhythmDB *db)
 								 (GDestroyNotify) g_free,
 								 NULL);
 
-	db->priv->changed_files = g_hash_table_new_full (g_str_hash, g_str_equal,
-							 (GDestroyNotify) g_free,
+	db->priv->changed_files = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
+							 (GDestroyNotify) rb_refstring_unref,
 							 NULL);
 
 	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
@@ -102,7 +102,10 @@ monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 	GError *error = NULL;
 
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		rhythmdb_monitor_uri_path (db, entry->location, &error);
+		const char *loc;
+
+		loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		rhythmdb_monitor_uri_path (db, loc, &error);
 	}
 
 	if (error) {
@@ -152,7 +155,7 @@ monitor_library_directory (const char *uri, RhythmDB *db)
 }
 
 static gboolean
-rhythmdb_check_changed_file (const char *uri, gpointer data, RhythmDB *db)
+rhythmdb_check_changed_file (RBRefString *uri, gpointer data, RhythmDB *db)
 {
 	GTimeVal time;
 	glong time_sec = GPOINTER_TO_INT (data);
@@ -163,14 +166,14 @@ rhythmdb_check_changed_file (const char *uri, gpointer data, RhythmDB *db)
 		RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
 		event->db = db;
 		event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
-		event->uri = g_strdup (uri);
+		event->uri = rb_refstring_ref (uri);
 
 		g_async_queue_push (db->priv->event_queue, event);
-		rb_debug ("adding newly located file %s", uri);
+		rb_debug ("adding newly located file %s", rb_refstring_get (uri));
 		return TRUE;
 	}
 
-	rb_debug ("waiting to add newly located file %s", uri);
+	rb_debug ("waiting to add newly located file %s", rb_refstring_get (uri));
 
 	return FALSE;
 }
@@ -242,7 +245,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 
 			g_get_current_time (&time);
 			g_hash_table_replace (db->priv->changed_files,
-					      g_strdup (info_uri),
+					      rb_refstring_new (info_uri),
 					      GINT_TO_POINTER (time.tv_sec));
 		}
 		break;
@@ -251,7 +254,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
 			event->db = db;
 			event->type = RHYTHMDB_EVENT_FILE_DELETED;
-			event->uri = g_strdup (info_uri);
+			event->uri = rb_refstring_new (info_uri);
 			g_async_queue_push (db->priv->event_queue, event);
 		}
 		break;

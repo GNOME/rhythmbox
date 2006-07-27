@@ -247,7 +247,8 @@ rb_playlist_source_constructor (GType type,
 	g_object_unref (db);
 	g_object_unref (shell);
 
-	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	source->priv->entries = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
+						       (GDestroyNotify)rb_refstring_unref, NULL);
 
 	source->priv->songs = rb_entry_view_new (source->priv->db,
 						 shell_player,
@@ -711,15 +712,16 @@ rb_playlist_source_row_deleted (GtkTreeModel *model,
 				RBPlaylistSource *source)
 {
 	RhythmDBEntry *entry;
-	const char *location;
+	RBRefString *location;
 
 	entry = rhythmdb_query_model_tree_path_to_entry (RHYTHMDB_QUERY_MODEL (model),
 							 path);
 
-	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	location = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_LOCATION);
 	if (g_hash_table_remove (source->priv->entries, location))
 		source->priv->dirty = TRUE;
 
+	rb_refstring_unref (location);
 	rhythmdb_entry_unref (entry);
 }
 
@@ -728,14 +730,16 @@ rb_playlist_source_entry_added_cb (RhythmDB *db,
 				   RhythmDBEntry *entry,
 				   RBPlaylistSource *source)
 {
-	const char *location;
+	RBRefString *location;
 
-	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	location = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_LOCATION);
 
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry, -1);
 		source->priv->dirty = TRUE;
 	}
+
+	rb_refstring_unref (location);
 }
 
 static void
@@ -834,22 +838,38 @@ gboolean
 rb_playlist_source_location_in_map (RBPlaylistSource *source,
 				    const char *location)
 {
+	RBRefString *refstr;
+	gboolean found;
+
 	g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE (source), FALSE);
 
-	return (g_hash_table_lookup (source->priv->entries, location) != NULL);
+	refstr = rb_refstring_find (location);
+	if (refstr == NULL) {
+		return FALSE;
+	}
+
+	found = (g_hash_table_lookup (source->priv->entries, refstr) != NULL);
+	rb_refstring_unref (refstr);
+
+	return found;
 }
 
 gboolean
 rb_playlist_source_add_to_map (RBPlaylistSource *source,
 			       const char *location)
 {
+	RBRefString *refstr;
+
 	g_return_val_if_fail (RB_IS_PLAYLIST_SOURCE (source), FALSE);
 
-	if (g_hash_table_lookup (source->priv->entries, location)) {
+	refstr = rb_refstring_new (location);
+	if (g_hash_table_lookup (source->priv->entries, refstr)) {
+		rb_refstring_unref (refstr);
 		return FALSE;
 	}
 
 	g_hash_table_insert (source->priv->entries,
-			     g_strdup (location), GINT_TO_POINTER (1));
+			     refstr, GINT_TO_POINTER (1));
+
 	return TRUE;
 }

@@ -1,3 +1,47 @@
+2006-07-27  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_find):
+	* rhythmdb/rb-refstring.h: add a new function which returns the
+	RBRefString that matches a string, but never creates a new one.
+
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_init_monitoring),
+	(monitor_entry_file), (rhythmdb_check_changed_file),
+	(rhythmdb_directory_change_cb):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_init),
+	(unparent_entries), (free_unknown_entries),
+	(rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (save_entry),
+	(save_unknown_entry_type), (rhythmdb_tree_entry_new),
+	(rhythmdb_tree_entry_set), (rhythmdb_tree_entry_delete),
+	(remove_one_song), (rhythmdb_tree_entry_lookup_by_location),
+	(rhythmdb_tree_entry_type_registered):
+	* rhythmdb/rhythmdb.c: (rhythmdb_execute_multi_stat_info_cb),
+	(rhythmdb_event_free), (sync_entry_changed), (rhythmdb_entry_new),
+	(rhythmdb_entry_example_new), (rhythmdb_entry_finalize),
+	(rhythmdb_process_stat_event), (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_file_created_or_modified),
+	(rhythmdb_process_file_deleted), (rhythmdb_execute_stat_info_cb),
+	(rhythmdb_execute_stat), (queue_stat_uri), (rhythmdb_execute_load),
+	(action_thread_main), (rhythmdb_entry_set_internal),
+	(rhythmdb_entry_move_to_trash_set_error),
+	(rhythmdb_entry_move_to_trash),
+	(rhythmdb_entry_lookup_by_location),
+	(rhythmdb_entry_lookup_by_location_refstring),
+	(default_sync_metadata), (rhythmdb_entry_get_string),
+	(rhythmdb_entry_get_refstring):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-shell.c: (rb_shell_db_entry_added_cb):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor),
+	(rb_playlist_source_row_deleted),
+	(rb_playlist_source_entry_added_cb),
+	(rb_playlist_source_location_in_map),
+	(rb_playlist_source_add_to_map): Make the LOCATION field of
+	RhythmDBEntry be a RBRefString instead, which reduces some of the
+	memory-fragmentation on startup and saves RBStaticPlaylistSource
+	duplicating all the strings.
+
 2006-07-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:
