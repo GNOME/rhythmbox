@@ -2188,6 +2188,7 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 	if (rs_name)
 		entries = g_hash_table_lookup (rdb->priv->unknown_entry_types, rs_name);
 	if (entries == NULL) {
+		rb_refstring_unref (rs_name);
 		rb_debug ("no entries of newly registered type %s loaded from db", name);
 		return;
 	}
@@ -2221,4 +2222,5 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 
 	g_hash_table_remove (rdb->priv->unknown_entry_types, rs_name);
 	free_unknown_entries (rs_name, entries, NULL);
+	rb_refstring_unref (rs_name);
 }

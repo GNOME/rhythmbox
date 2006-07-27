@@ -1,5 +1,14 @@
 2006-07-27  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_type_registered): add
+	a missing rb_refstring_unref.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_action_free),
+	(rhythmdb_process_file_deleted): use rb_refstring_unref not g_free:
+	oops. should hopefully fix the crash reported on #347425.
+
+2006-07-27  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-encoder-gst.c:
 	(get_profile_from_mime_type): fix encoding error issue, from #310774.
 

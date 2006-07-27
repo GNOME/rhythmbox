@@ -493,7 +493,7 @@ static void
 rhythmdb_action_free (RhythmDB *db,
 		      RhythmDBAction *action)
 {
-	g_free (action->uri);
+	rb_refstring_unref (action->uri);
 	g_free (action);
 }
 
@@ -1760,7 +1760,7 @@ rhythmdb_process_file_deleted (RhythmDB *db,
 {
 	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location_refstring (db, event->uri);
 
-	g_hash_table_remove (db->priv->changed_files, rb_refstring_get (event->uri));
+	g_hash_table_remove (db->priv->changed_files, event->uri);
 
 	if (entry) {
 		rb_debug ("deleting entry for %s", rb_refstring_get (event->uri));
