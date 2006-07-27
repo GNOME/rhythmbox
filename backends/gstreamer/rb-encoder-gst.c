@@ -685,6 +685,7 @@ get_profile_from_mime_type (const char *mime_type)
 		g_free (pipeline_description);
 		if (error) {
 			g_error_free (error);
+			error = NULL;
 			continue;
 		}
 

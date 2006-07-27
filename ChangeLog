@@ -1,5 +1,13 @@
 2006-07-27  James Livingston  <doclivingston@gmail.com>
 
+	* backends/gstreamer/rb-encoder-gst.c:
+	(get_profile_from_mime_type): fix encoding error issue, from #310774.
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_unref): Fix potential
+	thread-safety issue.
+
+2006-07-27  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rb-refstring.c: (rb_refstring_find):
 	* rhythmdb/rb-refstring.h: add a new function which returns the
 	RBRefString that matches a string, but never creates a new one.
