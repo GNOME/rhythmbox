@@ -1,3 +1,18 @@
+2006-07-28  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_init),
+	(rhythmdb_tree_finalize), (rhythmdb_tree_parser_end_element),
+	(rhythmdb_tree_entry_new), (rhythmdb_tree_entry_new_internal),
+	(get_or_create_genre), (remove_entry_from_album),
+	(rhythmdb_tree_entry_set), (rhythmdb_tree_entry_delete),
+	(rhythmdb_tree_entry_delete_by_type), (conjunctive_query),
+	(rhythmdb_tree_entry_lookup_by_location),
+	(rhythmdb_tree_entry_foreach_func), (rhythmdb_tree_entry_foreach),
+	(rhythmdb_hash_tree_foreach),
+	(rhythmdb_tree_entry_type_registered): actually make RhythmDBTree
+	threadsafe. Fix a nasty problem if the _foreach callback function
+	caused the addition/removal of entries.
+
 2006-07-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_set_model_internal):
