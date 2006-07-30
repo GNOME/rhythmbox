@@ -34,7 +34,7 @@ gboolean rb_false_function (gpointer dummy);
 gpointer rb_null_function (gpointer dummy);
 gpointer rb_copy_function (gpointer data);
 
-gboolean rb_gvalue_compare (GValue *a, GValue *b);
+int rb_gvalue_compare (GValue *a, GValue *b);
 
 int rb_compare_gtimeval (GTimeVal *a, GTimeVal *b);
 char *rb_make_duration_string (guint duration);

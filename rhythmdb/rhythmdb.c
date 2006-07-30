@@ -623,6 +623,9 @@ rhythmdb_finalize (GObject *object)
 	g_mutex_free (db->priv->saving_mutex);
 	g_cond_free (db->priv->saving_condition);
 
+	g_hash_table_destroy (db->priv->stat_events);
+ 	g_mutex_free (db->priv->stat_mutex);
+
 	g_mutex_free (db->priv->change_mutex);
 
 	g_hash_table_destroy (db->priv->propname_map);

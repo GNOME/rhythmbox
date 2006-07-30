@@ -214,6 +214,8 @@ rb_query_creator_constructor (GType type,
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (creator)->vbox), mainbox, FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (creator));
 
+	g_object_unref (xml);
+
 	return G_OBJECT (creator);
 }
 
@@ -418,7 +420,7 @@ rb_query_creator_set_sorting (RBQueryCreator *creator,
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->sort_desc), (sort_direction == GTK_SORT_DESCENDING));
 
-	for (i = 0; i < num_property_options; i++)
+	for (i = 0; i < num_sort_options; i++)
 		if (strcmp (sort_options[i].sort_key, sort_column) == 0)
 			break;
 

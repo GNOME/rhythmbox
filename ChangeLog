@@ -1,3 +1,16 @@
+2006-07-30  James Livingston  <doclivingston@gmail.com>
+
+	* lib/eel-gconf-extensions.c: (eel_gconf_handle_error): don't use
+	rb_error_dialog, as it's above this in the stack.
+
+	* lib/rb-util.c: (rb_gvalue_compare):
+	* lib/rb-util.h: change the return type to int, as we're returning
+	-1/0/1
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_finalize):
+	* widgets/rb-query-creator.c: (rb_query_creator_constructor),
+	(rb_query_creator_set_sorting): minor leak fixes
+
 2006-07-28  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_init),

@@ -182,8 +182,14 @@ rb_gvalue_compare (GValue *a, GValue *b)
 		retval = g_utf8_collate (stra, strb);
 		break;
 	case G_TYPE_POINTER:
+		retval = (g_value_get_pointer (a) != g_value_get_pointer (b));
+		break;
 	case G_TYPE_BOXED:
+		retval = (g_value_get_boxed (a) != g_value_get_boxed (b));
+		break;
 	case G_TYPE_OBJECT:
+		retval = (g_value_get_object (a) != g_value_get_object (b));
+		break;
 	default:
 		g_assert_not_reached ();
 		retval = 0;
