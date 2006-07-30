@@ -1,5 +1,10 @@
 2006-07-30  James Livingston  <doclivingston@gmail.com>
 
+	* bindings/python/rb.override: remove an extraneous _wrap_ from the
+	override definition. Fixes #348893.
+
+2006-07-30  James Livingston  <doclivingston@gmail.com>
+
 	* lib/eel-gconf-extensions.c: (eel_gconf_handle_error): don't use
 	rb_error_dialog, as it's above this in the stack.
 

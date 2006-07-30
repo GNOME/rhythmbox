@@ -943,10 +943,10 @@ _wrap_RBSource__do_impl_get_status(PyObject *cls, PyObject *args, PyObject *kwar
     return tuple;
 }
 %%
-override _wrap_rb__debug_real kwargs
+override rb_debug_real kwargs
 
 static PyObject *
-_wrap_rb__debug_real(PyObject *self, PyObject *args, PyObject *kwargs)
+_wrap_rb_debug_real(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     static char *kwlist[] = { "function", "file", "line", "str", NULL };
     char *function, *file, *str;
