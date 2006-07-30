@@ -639,6 +639,7 @@ rhythmdb_finalize (GObject *object)
 
 	g_hash_table_destroy (db->priv->entry_type_map);
 	g_mutex_free (db->priv->entry_type_map_mutex);
+	g_mutex_free (db->priv->entry_type_mutex);
 
 	g_object_unref (db->priv->metadata);
 

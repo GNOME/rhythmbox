@@ -65,6 +65,9 @@ rb_gvalue_compare (GValue *a, GValue *b)
 {
 	int retval;
 	const char *stra, *strb;
+
+	if (G_VALUE_TYPE (a) != G_VALUE_TYPE (b))
+		return -1;
 	
 	switch (G_VALUE_TYPE (a))
 	{
@@ -840,6 +843,7 @@ rb_value_array_append_data (GValueArray *array, GType type, ...)
 	g_value_init (&val, type);
 	G_VALUE_COLLECT (&val, va, 0, &err);
 	g_value_array_append (array, &val);
+	g_value_unset (&val);
 
 	if (err)
 		rb_debug ("unable to collect GValue: %s", err);

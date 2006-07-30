@@ -766,8 +766,13 @@ rhythmdb_query_to_string (RhythmDB *db, GPtrArray *query)
 
 		switch (data->type) {
 		case RHYTHMDB_QUERY_SUBQUERY:
-			g_string_append_printf (buf, "{ %s }", 
-						rhythmdb_query_to_string (db, data->subquery));
+			{
+				char *s;
+
+				s = rhythmdb_query_to_string (db, data->subquery);
+				g_string_append_printf (buf, "{ %s }",  s);
+				g_free (s);
+			}
 			break;
 		case RHYTHMDB_QUERY_PROP_LIKE:
 			fmt = "(%s =~ %s)";
