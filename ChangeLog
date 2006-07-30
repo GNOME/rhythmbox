@@ -1,3 +1,9 @@
+2006-07-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-browser-source.c: (rb_browser_source_do_query):
+	Don't tell the browser the query is still pending when doing a subset
+	search.  Fixes #348617 again.
+
 2006-07-30  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rb.override: remove an extraneous _wrap_ from the

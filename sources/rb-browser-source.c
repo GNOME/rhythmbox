@@ -894,7 +894,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 		rhythmdb_query_model_copy_contents (query_model, old);
 		g_object_unref (old);
 
-		rb_library_browser_set_model (source->priv->browser, query_model, TRUE);
+		rb_library_browser_set_model (source->priv->browser, query_model, FALSE);
 		g_object_unref (query_model);
 
 	} else {
