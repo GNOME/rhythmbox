@@ -123,6 +123,28 @@ if test "x$with_ipod" != "xno"; then
 fi			  
 AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
+
+dnl gnome-keyring support
+
+AC_ARG_WITH(gnome-keyring,
+            AC_HELP_STRING([--with-gnome-keyring],
+			   [Enable gnome-keyring support]),,
+	      with_gnome_keyring=auto)
+if test "x$with_gnome_keyring" != "xno"; then
+
+	PKG_CHECK_MODULES(GNOME_KEYRING, gnome-keyring-1, have_gnome_keyring=yes, have_gnome_keyring=no)
+	if test "x$have_gnome_keyring" = "xno" -a "x$with_gnome_keyring" = "xyes"; then
+	  AC_MSG_ERROR([gnome-keyring support explicitly requested but gnome-keyring couldn't be found])
+	fi
+	if test "x$have_gnome_keyring" = "xyes"; then
+	   AC_DEFINE(WITH_GNOME_KEYRING, 1, [Define if gnome-keyring support is enabled])
+	   use_gnome_keyring=yes
+	  AC_SUBST(GNOME_KEYRING_CFLAGS)
+	  AC_SUBST(GNOME_KEYRING_LIBS)
+	fi
+fi			  
+AM_CONDITIONAL(USE_GNOME_KEYRING, test x"$use_gnome_keyring" = xyes)
+
 dnl Database
 AC_ARG_WITH(database,
               AC_HELP_STRING([--with-database=tree|libgda],
@@ -1032,7 +1054,11 @@ if test x"$enable_python" != xno; then
 else
 	AC_MSG_NOTICE([   Python support disabled])
 fi
-
+if test x"$use_gnome_keyring" = xyes; then
+	AC_MSG_NOTICE([** gnome-keyring support enabled])
+else
+	AC_MSG_NOTICE([   gnome-keyring support disabled])
+fi
 if test x"$enable_audioscrobbler" != xno; then
 	AC_MSG_NOTICE([** Audioscrobbler support enabled])
 else

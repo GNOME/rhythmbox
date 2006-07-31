@@ -26,6 +26,11 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libgnomeui/gnome-password-dialog.h>
+
+#ifdef WITH_GNOME_KEYRING
+#include <gnome-keyring.h>
+#endif
 
 #include "rhythmdb.h"
 #include "rb-shell.h"
@@ -37,6 +42,7 @@
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
+#include "rb-daap-src.h"
 
 #include "rb-daap-connection.h"
 #include "rb-daap-mdns-browser.h"
@@ -93,6 +99,7 @@ struct RBDAAPSourcePrivate
 	const char *connection_status;
 	float connection_progress;
 
+	gboolean tried_password;
 	gboolean disconnecting;
 };
 
@@ -653,13 +660,93 @@ rb_daap_sources_shutdown (RBShell *shell)
 static char *
 connection_auth_cb (RBDAAPConnection *connection,
 		    const char       *name,
-		    RBSource         *source)
+		    RBDAAPSource     *source)
 {
-	char      *password;
-	GtkWindow *parent;
+	gchar *password;
+#ifdef WITH_GNOME_KEYRING
+	GnomeKeyringResult keyringret;
+	gchar *keyring;
+	GList *list;
 
-	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
-	password = rb_daap_password_dialog_new_run (parent, name);
+	if (!source->priv->tried_password) {
+		gnome_keyring_get_default_keyring_sync (&keyring);
+		keyringret = gnome_keyring_find_network_password_sync (
+				NULL,
+				"DAAP", name,
+				NULL, "daap", 
+				NULL, 0, &list);
+	} else {
+		keyringret = GNOME_KEYRING_RESULT_CANCELLED;
+	}
+
+	if (keyringret == GNOME_KEYRING_RESULT_OK) {
+		GnomeKeyringNetworkPasswordData *pwd_data;
+
+		pwd_data = (GnomeKeyringNetworkPasswordData*)list->data;
+		password = g_strdup (pwd_data->password);
+		source->priv->tried_password = TRUE;
+	} else {
+#endif
+		GtkWindow *parent;
+		GnomePasswordDialog *dialog;
+		char *message;
+
+		parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
+
+		message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
+		dialog = GNOME_PASSWORD_DIALOG (gnome_password_dialog_new (
+					_("Password Required"), message,
+					NULL, NULL, TRUE));
+		gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+		g_free (message);
+
+		gnome_password_dialog_set_domain (dialog, "DAAP");
+		gnome_password_dialog_set_show_username (dialog, FALSE);
+		gnome_password_dialog_set_show_domain (dialog, FALSE);
+		gnome_password_dialog_set_show_userpass_buttons (dialog, FALSE);
+#ifdef WITH_GNOME_KEYRING
+		gnome_password_dialog_set_show_remember (dialog, gnome_keyring_is_available ());
+#endif
+
+		if (gnome_password_dialog_run_and_block (dialog)) {
+			password = gnome_password_dialog_get_password (dialog);
+
+#ifdef WITH_GNOME_KEYRING
+			switch (gnome_password_dialog_get_remember (dialog)) {
+			case GNOME_PASSWORD_DIALOG_REMEMBER_SESSION:
+				g_free (keyring);
+				keyring = g_strdup ("session");
+				/* fall through */
+			case GNOME_PASSWORD_DIALOG_REMEMBER_FOREVER:
+			{
+				guint32 item_id;
+				gnome_keyring_set_network_password_sync (keyring,
+					NULL,
+					"DAAP", name,
+					NULL, "daap", 
+					NULL, 0, 
+					password, 
+					&item_id);
+				break;
+			}
+			default:
+				break;
+			}
+#endif
+		} else {
+			password = NULL;
+		}
+
+		/* buggered if I know why we don't do this...
+		g_object_unref (G_OBJECT (dialog)); */
+#ifdef WITH_GNOME_KEYRING
+	}
+
+	/* or these...
+	if (list)
+		gnome_keyring_network_password_list_free (list); */
+	g_free (keyring);
+#endif
 
 	return password;
 }
@@ -748,6 +835,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 	RhythmDBEntryType entry_type;
 
 	rb_debug ("Connection callback result: %s", result ? "success" : "failure");
+	daap_source->priv->tried_password = FALSE;
 
 	if (result == FALSE) {
 		if (reason != NULL) {
@@ -810,12 +898,6 @@ rb_daap_source_activate (RBSource *source)
 								type);
 	g_object_add_weak_pointer (G_OBJECT (daap_source->priv->connection), (gpointer *)&daap_source->priv->connection);
 
-	rb_daap_connection_connect (RB_DAAP_CONNECTION (daap_source->priv->connection),
-				    (RBDAAPConnectionCallback) rb_daap_source_connection_cb,
-				    source);
-
-	g_object_unref (db);
-	g_object_unref (shell);
 	g_free (name);
 
         g_signal_connect (daap_source->priv->connection,
@@ -830,6 +912,13 @@ rb_daap_source_activate (RBSource *source)
 			  "disconnected",
                           G_CALLBACK (connection_disconnected_cb),
 			  source);
+
+	rb_daap_connection_connect (RB_DAAP_CONNECTION (daap_source->priv->connection),
+				    (RBDAAPConnectionCallback) rb_daap_source_connection_cb,
+				    source);
+
+	g_object_unref (G_OBJECT (db));
+	g_object_unref (G_OBJECT (shell));
 }
 
 static void

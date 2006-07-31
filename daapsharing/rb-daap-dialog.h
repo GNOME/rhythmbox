@@ -26,9 +26,6 @@
 
 G_BEGIN_DECLS
 
-char * rb_daap_password_dialog_new_run  (GtkWindow  *parent,
-                                         const char *name);
-
 char * rb_daap_collision_dialog_new_run (GtkWindow  *parent,
                                          const char *old_name);
 

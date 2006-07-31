@@ -1,5 +1,18 @@
 2006-07-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* configure.ac:
+	* daapsharing/rb-daap-dialog.c:
+	* daapsharing/rb-daap-dialog.h:
+	* shell/Makefile.am:
+	* sources/Makefile.am:
+	* sources/rb-daap-source.c: (connection_auth_cb),
+	(rb_daap_source_connection_cb), (rb_daap_source_activate):
+	Add gnome-keyring support for DAAP passwords and use
+	gnome-password-dialog instead of our own.  
+	Patch mostly by James Livingston.  Fixes bug #330346.
+
+2006-07-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-player.c:
 	(rb_shell_player_set_playing_source_internal),
 	(rb_shell_player_sync_with_selected_source):

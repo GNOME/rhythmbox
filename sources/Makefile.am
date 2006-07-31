@@ -65,6 +65,10 @@ daap_files =				\
 	rb-daap-source.h
 if USE_DAAP
 libsourcesimpl_la_SOURCES += $(daap_files)
+if USE_GNOME_KEYRING
+INCLUDES +=						\
+	$(GNOME_KEYRING_CFLAGS)
+endif
 endif
 
 if USE_LIBSOUP
