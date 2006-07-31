@@ -15,12 +15,6 @@ appicondir = $(datadir)/icons/hicolor/48x48/apps
 schemadir = @GCONF_SCHEMA_FILE_DIR@
 schema_DATA = rhythmbox.schemas
 
-keys_DATA = rhythmbox.keys
-keysdir = $(datadir)/mime-info/
-
-applicationsdir = $(datadir)/application-registry
-applications_DATA = rhythmbox.applications
-
 iradio-initial.xml:
 
 iradio_DATA = iradio-initial.pls
@@ -29,10 +23,6 @@ iradiodir = $(datadir)/rhythmbox
 playlists_in_files = playlists.xml.in
 playlists_DATA = playlists.xml
 playlistsdir = $(datadir)/rhythmbox
-
-rhythmbox.keys: generate-keys.sh rhythmbox.applications
-	$(srcdir)/generate-keys.sh $(srcdir)/rhythmbox.applications \
-	> rhythmbox.keys
 
 # Dbus service file
 servicedir = $(datadir)/dbus-1/services
@@ -62,10 +52,8 @@ install-data-hook:
 EXTRA_DIST = $(service_in_files)    \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
-	     $(applications_DATA)   \
 	     $(schema_DATA)	    \
 	     $(iradio_DATA)	    \
-	     $(playlists_in_files)  \
-		generate-keys.sh
+	     $(playlists_in_files) 
 
-CLEANFILES = rhythmbox.desktop rhythmbox.keys org.gnome.Rhythmbox.service playlists.xml
+CLEANFILES = rhythmbox.desktop org.gnome.Rhythmbox.service playlists.xml
