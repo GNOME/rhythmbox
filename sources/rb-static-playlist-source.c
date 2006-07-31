@@ -50,6 +50,8 @@ static void impl_browser_toggled (RBSource *source, gboolean enabled);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static GList *impl_get_search_actions (RBSource *source);
+static guint impl_want_uri (RBSource *source, const char *uri);
+
 static GPtrArray *construct_query_from_selection (RBStaticPlaylistSource *source);
 
 /* playlist methods */
@@ -137,6 +139,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_browser_toggled = impl_browser_toggled;
 	source_class->impl_get_property_views = impl_get_property_views;
 	source_class->impl_get_search_actions = impl_get_search_actions;
+	source_class->impl_want_uri = impl_want_uri;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 
@@ -799,4 +802,15 @@ search_action_changed (GtkRadioAction  *action,
 	if (source != NULL) {
 		g_object_unref (source);
 	}
+}
+
+static guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	/* take anything local or on smb */
+	if (rb_uri_is_local (uri) || 
+	    g_str_has_prefix (uri, "smb://"))
+		return 25;	/* less than what the library returns */
+
+	return 0;
 }

@@ -1892,28 +1892,7 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBShell *shell)
 {
-/*	RBRemoteSong song; */
 	char *notifytitle;
-
-	/* emit remote song_changed notification */
-	/*
-	song.title = g_strdup (rb_refstring_get (entry->title));
-	song.artist = g_strdup (rb_refstring_get (entry->artist));
-	song.genre = g_strdup (rb_refstring_get (entry->genre));
-	song.album = g_strdup (rb_refstring_get (entry->album));
-	song.uri = g_strdup (entry->location);
-
-	song.track_number = entry->tracknum;
-	song.disc_number = entry->discnum;
-	song.duration = entry->duration;
-	song.bitrate = entry->bitrate;
-	song.filesize = entry->file_size;
-	song.rating = entry->rating;
-	song.play_count = entry->play_count;
-	song.last_played = entry->last_played;
-
-	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
-	*/
 
 	/* Translators: by Artist from Album*/
 	notifytitle = g_strdup_printf (_("by %s from %s"),
@@ -2932,45 +2911,34 @@ rb_shell_session_init (RBShell *shell)
 				 shell, 0);
 }
 
-RhythmDBEntryType
-rb_shell_guess_type_for_uri (RBShell *shell,
-			     const char *uri)
+RBSource *
+rb_shell_guess_source_for_uri (RBShell *shell,
+			       const char *uri)
 {
-	GnomeVFSURI *vfs_uri;
-	RhythmDBEntryType entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
-	const char *scheme;
-	const char *path;
-	const char *pathend;
+	GList *t;
+	RBSource *best = NULL;
+	guint strength = 0;
 
-	if (uri == NULL)
-		return RHYTHMDB_ENTRY_TYPE_INVALID;
+	for (t = shell->priv->sources; t != NULL; t = t->next) {
+		guint s;
+		RBSource *source;
 
-	vfs_uri = gnome_vfs_uri_new (uri);
-	if (vfs_uri == NULL) {
-		rb_debug ("Invalid uri: %s", uri);
-		return RHYTHMDB_ENTRY_TYPE_INVALID;
-	}
-	scheme = gnome_vfs_uri_get_scheme (vfs_uri);
-	path = gnome_vfs_uri_get_scheme (vfs_uri);
-	pathend = path + strlen (path);
+		source = (RBSource *)t->data;
+		s = rb_source_want_uri (source, uri);
+		if (s > strength) {
+			gchar *name;
+			
+			g_object_get (source, "name", &name, NULL);
+			rb_debug ("source %s returned strength %u for uri %s",
+				  name, s, uri);
+			g_free (name);
 
-	if (strcmp ("file", scheme) == 0) {
-		entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
-	} else if (strcmp ("http", scheme) == 0) {
-		if ((strcasecmp (".xml", pathend-4) == 0)
-		    || strcasecmp (".rss", pathend-4) == 0)
-			entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_FEED;
-		else
-			entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
-	} else if ((strcmp ("pnm", scheme) == 0) ||
-		  (strcmp ("rtsp", scheme) == 0) ||
-		  (strcmp ("mms", scheme) == 0) ||
-		  (strcmp ("mmsh", scheme) == 0)) {
-		entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+			strength = s;
+			best = source;
+		}
 	}
 
-	gnome_vfs_uri_unref (vfs_uri);
-	return entry_type;
+	return best;
 }
 
 /* Load a URI representing an element of the given type, with
@@ -2978,7 +2946,6 @@ rb_shell_guess_type_for_uri (RBShell *shell,
  */
 gboolean
 rb_shell_add_uri (RBShell *shell,
-		  RhythmDBEntryType entrytype,
 		  const char *uri,
 		  const char *title,
 		  const char *genre,
@@ -2986,35 +2953,24 @@ rb_shell_add_uri (RBShell *shell,
 {
 	RBSource *source;
 
-	/* FIXME should abstract this... */
-	source = rb_shell_get_source_by_entry_type (shell, entrytype);
-	if (source == RB_SOURCE (shell->priv->iradio_source)) {
-		if (rb_uri_is_local (uri)) {
-			rb_iradio_source_add_from_playlist (shell->priv->iradio_source,
-							    uri);
-		} else {
-			rb_iradio_source_add_station (shell->priv->iradio_source,
-						      uri,
-						      title,
-						      genre);
-		}
-		return TRUE;
-	} else if (source == RB_SOURCE (shell->priv->podcast_source)) {
-		rb_podcast_source_add_feed (shell->priv->podcast_source, uri);
-		return TRUE;
-	} else if (entrytype == RHYTHMDB_ENTRY_TYPE_SONG) {
-		/* FIXME should be sync... */
-		rhythmdb_add_uri (shell->priv->db, uri);
-		return TRUE;
-	} else {
-		g_assert_not_reached ();
+	source = rb_shell_guess_source_for_uri (shell, uri);
+	if (source == NULL) {
+		g_set_error (error,
+			     RB_SHELL_ERROR,
+			     RB_SHELL_ERROR_NO_SOURCE_FOR_URI,
+			     _("No registered source can handle URI %s"),
+			     uri);
 		return FALSE;
 	}
+
+	rb_source_add_uri (source, uri, title, genre);
+	return TRUE;
 }
 
 typedef struct {
 	RBShell *shell;
-	gboolean iradio_playlist;
+	gboolean can_use_playlist;
+	RBSource *playlist_source;
 } PlaylistParseData;
 
 static void
@@ -3024,14 +2980,28 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 			  const char *genre,
 			  PlaylistParseData *data)
 {
-	RhythmDBEntryType entry_type;
+	RBSource *source;
 
-	g_return_if_fail (uri != NULL);
+	/* 
+	 * Track whether the same playlist-handling source
+	 * wants all the URIs from the playlist; if it does,
+	 * then we'll just give the playlist URI to the source.
+	 */
+	if (data->can_use_playlist == FALSE)
+		return;
 
-	entry_type = rb_shell_guess_type_for_uri (data->shell, uri);
-
-	if (entry_type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION)
-		data->iradio_playlist = FALSE;
+	source = rb_shell_guess_source_for_uri (data->shell, uri);
+	if (data->playlist_source == NULL) {
+		if (rb_source_try_playlist (source)) {
+			data->playlist_source = RB_SOURCE (g_object_ref (source));
+		} else {
+			data->can_use_playlist = FALSE;
+		}
+	} else if (data->playlist_source != source) {
+		g_object_unref (data->playlist_source);
+		data->playlist_source = NULL;
+		data->can_use_playlist = FALSE;
+	}
 }
 
 /* Load a URI representing a single song, a directory, a playlist, or
@@ -3051,7 +3021,6 @@ rb_shell_load_uri (RBShell *shell,
 		   GError **error)
 {
 	RhythmDBEntry *entry;
-
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
 
 	if (entry == NULL) {
@@ -3060,12 +3029,8 @@ rb_shell_load_uri (RBShell *shell,
 		PlaylistParseData data;
 
 		data.shell = shell;
-		if (rb_uri_is_local (uri)) {
-			/* TODO: we'd need to grab the first stream URL from the playlist
-			 * to be able to play stations added this way.
-			 */
-			play = FALSE;
-		}
+		data.can_use_playlist = TRUE;
+		data.playlist_source = NULL;
 
 		rb_debug ("adding uri %s", uri);
 		parser = totem_pl_parser_new ();
@@ -3081,25 +3046,30 @@ rb_shell_load_uri (RBShell *shell,
 		result = totem_pl_parser_parse (parser, uri, FALSE);
 		g_object_unref (parser);
 
-		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS && data.iradio_playlist == FALSE) {
-			rb_debug ("adding %s as a static playlist", uri);
-			if (!rb_playlist_manager_parse_file (shell->priv->playlist_manager,
-							     uri, error))
-				return FALSE;
-		} else {
-			RhythmDBEntryType entrytype;
+		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+			if (data.can_use_playlist && data.playlist_source) {
+				rb_debug ("adding playlist %s to source", uri);
+				rb_source_add_uri (data.playlist_source, uri, NULL, NULL);
+				g_object_unref (data.playlist_source);
 
-			if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
-				rb_debug ("adding %s as an iradio playlist", uri);
-				entrytype = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+				/* FIXME: We need some way to determine whether the URI as
+				 * given will appear in the db, or whether something else will.
+				 * This hack assumes we'll never add local playlists to the db
+				 * directly.
+				 */
+				if (rb_uri_is_local (uri)) {
+					play = FALSE;
+				}
 			} else {
-				rb_debug ("%s didn't parse as a playlist", uri);
-				entrytype = rb_shell_guess_type_for_uri (shell, uri);
-				if (entrytype < 0)
+				rb_debug ("adding %s as a static playlist", uri);
+				if (!rb_playlist_manager_parse_file (shell->priv->playlist_manager,
+								     uri, error))
 					return FALSE;
 			}
-
-			rb_shell_add_uri (shell, entrytype, uri, NULL, NULL, NULL);
+		} else {
+			rb_debug ("%s didn't parse as a playlist", uri);
+			if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
+				return FALSE;
 		}
 	}
 

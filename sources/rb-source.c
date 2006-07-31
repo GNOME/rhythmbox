@@ -138,7 +138,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_entry_view = default_get_entry_view;
-	klass->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_song_properties = default_song_properties;
@@ -874,6 +873,24 @@ rb_source_try_playlist (RBSource *source)
 	return klass->impl_try_playlist (source);
 }
 
+guint
+rb_source_want_uri (RBSource *source, const char *uri)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	if (klass->impl_want_uri)
+		return klass->impl_want_uri (source, uri);
+	return 0;
+}
+
+gboolean
+rb_source_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	if (klass->impl_add_uri)
+		return klass->impl_add_uri (source, uri, title, genre);
+	return FALSE;
+}
+
 gboolean
 rb_source_can_pause (RBSource *source)
 {
@@ -900,14 +917,6 @@ rb_source_handle_eos (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_handle_eos (source);
-}
-
-gboolean
-rb_source_have_url (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_have_url (source);
 }
 
 gboolean

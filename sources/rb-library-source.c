@@ -63,6 +63,8 @@ static gboolean impl_can_paste (RBSource *asource);
 #ifdef ENABLE_TRACK_TRANSFER
 static void impl_paste (RBSource *source, GList *entries);
 #endif
+static guint impl_want_uri (RBSource *source, const char *uri);
+static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
 
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -185,6 +187,8 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 #ifdef ENABLE_TRACK_TRANSFER
 	source_class->impl_paste = impl_paste;
 #endif
+	source_class->impl_want_uri = impl_want_uri;
+	source_class->impl_add_uri = impl_add_uri;
 
 	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
@@ -1203,6 +1207,27 @@ impl_paste (RBSource *asource, GList *entries)
 	g_object_unref (rm_mgr);
 }
 #endif
+
+static guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	/* assume anything local or on smb is a song */
+	if (rb_uri_is_local (uri) || 
+	    g_str_has_prefix (uri, "smb://"))
+		return 50;
+
+	return 0;
+}
+
+static gboolean
+impl_add_uri (RBSource *asource, const char *uri, const char *title, const char *genre)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	/* FIXME should be synchronous */
+	rb_debug ("adding uri %s to library", uri);
+	rhythmdb_add_uri (source->priv->db, uri);
+	return TRUE;
+}
 
 static void
 rb_library_source_add_child_source (const char *path, RBLibrarySource *library_source)

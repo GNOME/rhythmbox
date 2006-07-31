@@ -464,33 +464,32 @@ rb_playlist_manager_error_quark (void)
 }
 
 static void
-handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
+handle_playlist_entry_cb (TotemPlParser *playlist,
+			  const char *uri_maybe,
 			  const char *title,
-			  const char *genre, RBPlaylistManager *mgr)
+			  const char *genre,
+			  RBPlaylistManager *mgr)
 {
-	char *uri = rb_canonicalise_uri (uri_maybe);
-	RhythmDBEntryType entry_type;
-
+	char *uri;
+	
+	uri = rb_canonicalise_uri (uri_maybe);
 	g_return_if_fail (uri != NULL);
 
-	entry_type = rb_shell_guess_type_for_uri (mgr->priv->shell, uri);
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_INVALID) {
-		g_free (uri);
+	rb_debug ("adding uri %s (title %s, genre %s) from playlist",
+		  uri, title, genre);
+	if (!rb_shell_add_uri (mgr->priv->shell, 
+			       uri, 
+			       title, 
+			       genre, 
+			       NULL))
 		return;
+
+	if (!mgr->priv->loading_playlist) {
+		mgr->priv->loading_playlist =
+			RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
 	}
-
-	rb_shell_add_uri (mgr->priv->shell,
-			  entry_type,
-			  uri,
-			  title,
-			  genre,
-			  NULL);
-
-	if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		if (!mgr->priv->loading_playlist) {
-			mgr->priv->loading_playlist =
-				RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
-		}
+	if (rb_source_want_uri (RB_SOURCE (mgr->priv->loading_playlist), uri) > 0) {
+		rb_debug ("adding uri %s to playlist", uri);
 		rb_static_playlist_source_add_location (mgr->priv->loading_playlist, uri, -1);
 	}
 

@@ -105,7 +105,6 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_status = impl_get_status;
 
 	g_object_class_install_property (object_class,

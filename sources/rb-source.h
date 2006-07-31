@@ -118,6 +118,8 @@ struct _RBSourceClass
 	void		(*impl_song_properties)	(RBSource *source);
 
 	gboolean	(*impl_try_playlist)	(RBSource *source);
+	guint		(*impl_want_uri)	(RBSource *source, const char *uri);
+	gboolean	(*impl_add_uri)		(RBSource *source, const char *uri, const char *title, const char *genre);
 
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
@@ -181,11 +183,11 @@ void		rb_source_move_to_trash		(RBSource *source);
 void		rb_source_song_properties	(RBSource *source);
 
 gboolean	rb_source_try_playlist		(RBSource *source);
+guint		rb_source_want_uri		(RBSource *source, const char *uri);
+gboolean	rb_source_add_uri		(RBSource *source, const char *uri, const char *title, const char *genre);
 
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);
-
-gboolean	rb_source_have_url		(RBSource *source);
 
 gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
 

@@ -238,10 +238,10 @@
   )
 )
 
-(define-method guess_type_for_uri
+(define-method guess_source_for_uri
   (of-object "RBShell")
-  (c-name "rb_shell_guess_type_for_uri")
-  (return-type "RhythmDBEntryType_*")
+  (c-name "rb_shell_guess_source_for_uri")
+  (return-type "RBSource*")
   (parameters
     '("const-char*" "uri")
   )
@@ -252,7 +252,6 @@
   (c-name "rb_shell_add_uri")
   (return-type "gboolean")
   (parameters
-    '("RhythmDBEntryType_*" "entry_type")
     '("const-char*" "uri")
     '("const-char*" "title")
     '("const-char*" "genre")
@@ -823,12 +822,6 @@
   (return-type "RBSourceEOFType")
 )
 
-(define-method have_url
-  (of-object "RBSource")
-  (c-name "rb_source_have_url")
-  (return-type "gboolean")
-)
-
 (define-method receive_drag
   (of-object "RBSource")
   (c-name "rb_source_receive_drag")
@@ -1038,11 +1031,6 @@
 (define-virtual impl_handle_eos
   (of-object "RBSource")
   (return-type "RBSourceEOFType")
-)
-
-(define-virtual impl_have_url
-  (of-object "RBSource")
-  (return-type "gboolean")
 )
 
 (define-virtual impl_receive_drag

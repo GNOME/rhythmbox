@@ -153,7 +153,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_show_popup = impl_show_popup;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;

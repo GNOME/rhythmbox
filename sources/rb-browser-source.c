@@ -197,7 +197,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_browser_toggled = impl_browser_toggled;

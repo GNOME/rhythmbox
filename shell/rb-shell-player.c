@@ -187,7 +187,6 @@ struct RBShellPlayerPrivate
 	RBPlayer *mmplayer;
 
 	char *song;
-	gboolean have_url;
 	char *url;
 	long elapsed;
 
@@ -2487,7 +2486,6 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	g_free (player->priv->song);
 	player->priv->song = NULL;
 	player->priv->url = NULL;
-	player->priv->have_url = FALSE;
 
 	if (player->priv->current_playing_source == NULL)
 		rb_shell_player_stop (player);
@@ -2656,9 +2654,6 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 	if (player->priv->source == NULL)
 	{
 		rb_debug ("no playing source, new source is %p", player->priv->selected_source);
-
-		player->priv->have_url = rb_source_have_url (player->priv->selected_source);
-
 		rb_shell_player_sync_with_source (player);
 	}
 }

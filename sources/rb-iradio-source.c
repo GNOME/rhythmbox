@@ -94,6 +94,8 @@ static void impl_song_properties (RBSource *source);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
+static guint impl_want_uri (RBSource *source, const char *uri);
+static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
 
 static void rb_iradio_source_do_query (RBIRadioSource *source);
 
@@ -190,11 +192,12 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_want_uri = impl_want_uri;
+	source_class->impl_add_uri = impl_add_uri;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -636,6 +639,36 @@ impl_song_properties (RBSource *asource)
 		gtk_widget_show_all (dialog);
 	else
 		rb_debug ("no selection!");
+}
+
+static guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	if (g_str_has_prefix (uri, "http://")) {
+		/* other entry types might have 
+		 * more specific guesses for HTTP 
+		 */
+		return 50;
+	} else if (g_str_has_prefix (uri, "pnm://") ||
+		   g_str_has_prefix (uri, "rtsp://") ||
+		   g_str_has_prefix (uri, "mms://") ||
+		   g_str_has_prefix (uri, "mmsh://")) {
+		return 100;
+	}
+
+	return 0;
+}
+
+static gboolean
+impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
+{
+	if (rb_uri_is_local (uri)) {
+		rb_iradio_source_add_from_playlist (RB_IRADIO_SOURCE (source), uri);
+	} else {
+		rb_iradio_source_add_station (RB_IRADIO_SOURCE (source),
+					      uri, title, genre);
+	}
+	return TRUE;
 }
 
 static void

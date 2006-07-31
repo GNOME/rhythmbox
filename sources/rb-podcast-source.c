@@ -232,6 +232,8 @@ static void impl_get_status				(RBSource *source,
 							 char **text,
 							 char **progress_text,
 							 float *progress);
+static guint impl_want_uri				(RBSource *source, const char *uri);
+static gboolean impl_add_uri				(RBSource *source, const char *uri, const char *title, const char *genre);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
@@ -355,12 +357,13 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_search = impl_search;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_get_status = impl_get_status;
+	source_class->impl_want_uri = impl_want_uri;
+	source_class->impl_add_uri = impl_add_uri;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -2004,3 +2007,25 @@ impl_get_status (RBSource *source, char **text, char **progress_text, float *pro
 		*text = g_strdup ("");
 	}
 }
+
+static guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	if (g_str_has_prefix (uri, "http://") == FALSE)
+		return 0;
+
+	if (g_str_has_suffix (uri, ".xml") ||
+	    g_str_has_suffix (uri, ".rss"))
+		return 100;
+
+	return 0;
+}
+
+static gboolean
+impl_add_uri (RBSource *asource, const char *uri, const char *title, const char *genre)
+{
+	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
+	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, uri);
+	return TRUE;
+}
+

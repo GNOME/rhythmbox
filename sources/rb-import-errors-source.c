@@ -78,7 +78,6 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 
-	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_status = impl_get_status;
 
 	g_type_class_add_private (klass, sizeof (RBImportErrorsSourcePrivate));

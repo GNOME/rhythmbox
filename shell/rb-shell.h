@@ -41,7 +41,8 @@ enum
 	RB_SHELL_ERROR_NO_SUCH_URI,
 	RB_SHELL_ERROR_NO_SUCH_PROPERTY,
 	RB_SHELL_ERROR_IMMUTABLE_PROPERTY,
-	RB_SHELL_ERROR_INVALID_PROPERTY_TYPE
+	RB_SHELL_ERROR_INVALID_PROPERTY_TYPE,
+	RB_SHELL_ERROR_NO_SOURCE_FOR_URI
 };
 
 #define RB_SHELL_ERROR rb_shell_error_quark ()
@@ -87,10 +88,9 @@ RBShell *	rb_shell_new		(int argc, char **argv,
 
 gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);
 
-RhythmDBEntryType rb_shell_guess_type_for_uri (RBShell *shell, const char *uri);
+RBSource *	rb_shell_guess_source_for_uri (RBShell *shell, const char *uri);
 
 gboolean        rb_shell_add_uri        (RBShell *shell,
-					 RhythmDBEntryType entry_type,
 					 const char *uri,
 					 const char *title,
 					 const char *genre,
