@@ -1,3 +1,23 @@
+2006-08-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst.c:
+	Only use DAAP seek hacks for GStreamer 0.8 builds.
+
+	* daapsharing/rb-daap-src.c: (rb_daap_src_class_init),
+	(rb_daap_src_open):
+	* daapsharing/rb-daap-src.h:
+	Implement normal GStreamer seeking for GStreamer 0.10 builds.
+
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_source_get_headers):
+	* sources/rb-daap-source.h:
+	Reimplement rb_daap_source_get_headers for the case where we've
+	already got the byte offset.  Add a small hack to
+	rb_daap_source_class_init to prevent the linker from dropping
+	rb-daap-src.o entirely.
+
+	Fixes client-side DAAP seeking (for MP3, at least), bug #330410.
+
 2006-08-02  James Livingston  <doclivingston@gmail.com>
 
 	* daapsharing/rb-daap-connection.c: (entry_set_string_prop),

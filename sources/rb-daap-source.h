@@ -59,11 +59,18 @@ rb_daap_source_get_type (void);
 RBDAAPSource *
 rb_daap_source_find_for_uri (const gchar *uri);
 
+#ifdef HAVE_GSTREAMER_0_8
 gchar *
 rb_daap_source_get_headers (RBDAAPSource *source,
 			    const gchar *uri,
 			    glong time,
 			    gint64 *bytes);
+#else
+gchar *
+rb_daap_source_get_headers (RBDAAPSource *source,
+			    const gchar *uri, 
+			    gint64 bytes);
+#endif
 
 G_END_DECLS
 

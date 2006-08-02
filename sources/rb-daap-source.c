@@ -42,7 +42,9 @@
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
+#ifdef HAVE_GSTREAMER
 #include "rb-daap-src.h"
+#endif
 
 #include "rb-daap-connection.h"
 #include "rb-daap-mdns-browser.h"
@@ -206,6 +208,11 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBDAAPSourcePrivate));
+
+#ifdef HAVE_GSTREAMER
+	/* small hack to ensure the linker doesn't drop the daap src code */
+	rb_daap_src_get_type ();
+#endif
 }
 
 static void
@@ -1063,6 +1070,7 @@ rb_daap_source_find_for_uri (const char *uri)
 	return source;
 }
 
+#ifdef HAVE_GSTREAMER_0_8
 char *
 rb_daap_source_get_headers (RBDAAPSource *source,
 			    const char *uri,
@@ -1106,6 +1114,20 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 
 	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
 }
+#else
+char *
+rb_daap_source_get_headers (RBDAAPSource *source,
+			    const char *uri,
+			    gint64 bytes)
+{
+	/* If there is no connection then bail */
+	if (source->priv->connection == NULL) {
+		return NULL;
+	}
+
+	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
+}
+#endif
 
 static char *
 rb_daap_source_get_browser_key (RBSource *source)

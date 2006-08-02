@@ -92,13 +92,13 @@ struct _RBDAAPSrc
 
 	/* Seek stuff */
 	gint64 curoffset;
-	glong seek_time;
 	gint64 seek_bytes;
-	glong seek_time_to_return;
 	gboolean do_seek;
 #ifdef HAVE_GSTREAMER_0_8
 	gboolean need_flush;
 	gboolean send_discont;
+	glong seek_time_to_return;
+	glong seek_time;
 #endif
 };
 
@@ -146,7 +146,6 @@ _do_init (GType daap_src_type)
 }
 
 #ifdef HAVE_GSTREAMER_0_8
-GType rb_daap_src_get_type (void);
 GST_BOILERPLATE_FULL (RBDAAPSrc, rb_daap_src, GstElement, GST_TYPE_ELEMENT, _do_init);
 #else
 GST_BOILERPLATE_FULL (RBDAAPSrc, rb_daap_src, GstElement, GST_TYPE_PUSH_SRC, _do_init);
@@ -182,6 +181,7 @@ static gboolean rb_daap_src_start (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_stop (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_is_seekable (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_get_size (GstBaseSrc *src, guint64 *size);
+static gboolean rb_daap_src_do_seek (GstBaseSrc *src, GstSegment *segment);
 static GstFlowReturn rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf);
 #endif
 
@@ -302,6 +302,7 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 	gstbasesrc_class->stop = GST_DEBUG_FUNCPTR (rb_daap_src_stop);
 	gstbasesrc_class->is_seekable = GST_DEBUG_FUNCPTR (rb_daap_src_is_seekable);
 	gstbasesrc_class->get_size = GST_DEBUG_FUNCPTR (rb_daap_src_get_size);
+	gstbasesrc_class->do_seek = GST_DEBUG_FUNCPTR (rb_daap_src_do_seek);
 
 	gstpushsrc_class->create = GST_DEBUG_FUNCPTR (rb_daap_src_create);
 #endif
@@ -578,60 +579,6 @@ _split_uri (const gchar *daap_uri, gchar **host, guint *port, gchar **path)
 	}
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-/* I tell you, it'd be nice if Gstreamer's typefind element actually listened
- * to this stuff, then it wouldnt have to do all that seeking and testing
- * the streams against the typefind functions.  Here I am, /telling/ it what
- * sort of stream it is, and it can't even listen.  Bah.
- */
-static GstCaps *
-rb_daap_src_getcaps (GstPad *pad)
-{
-	RBDAAPSrc *src = NULL;
-	const gchar *extension = NULL;
-	static GstStaticCaps mp3_caps = GST_STATIC_CAPS ("audio/mpeg, mpegversion = (int) 1, layer = (int) [ 1, 3 ]");
-	static GstStaticCaps ogg_caps = GST_STATIC_CAPS ("application/ogg");
-	static GstStaticCaps wav_caps = GST_STATIC_CAPS ("audio/x-wav");
-	static GstStaticCaps m4a_caps = GST_STATIC_CAPS ("audio/x-m4a");
-	static GstStaticCaps aac_caps = GST_STATIC_CAPS ("audio/mpeg, mpegversion = (int) { 2, 4 }, framed = (bool) false");
-
-	src = RB_DAAP_SRC (GST_OBJECT_PARENT (pad));
-
-	if (src->daap_uri == NULL) {
-		return gst_caps_new_any ();
-	}
-
-	extension = strrchr (src->daap_uri, '.');
-	extension++;
-
-	if ((g_strncasecmp (extension, "mp3", 3) == 0) ||
-	    (g_strncasecmp (extension, "mp2", 3) == 0) ||
-	    (g_strncasecmp (extension, "mp1", 3) == 0) ||
-	    (g_strncasecmp (extension, "mpga", 4) == 0)) {
-		return gst_caps_copy (gst_static_caps_get(&mp3_caps));
-	}
-
-	if ((g_strncasecmp (extension, "ogg", 3) == 0) ||
-	    (g_strncasecmp (extension, "oggm", 4) == 0)) {
-		return gst_caps_copy (gst_static_caps_get(&ogg_caps));
-	}
-
-	if ((g_strncasecmp (extension, "wav", 3) == 0)) {
-		return gst_caps_copy (gst_static_caps_get(&wav_caps));
-	}
-
-	if ((g_strncasecmp (extension, "m4a", 3) == 0)) {
-		return gst_caps_copy (gst_static_caps_get(&m4a_caps));
-	}
-
-	if ((g_strncasecmp (extension, "aac", 3) == 0)) {
-		return gst_caps_copy (gst_static_caps_get(&aac_caps));
-	}
-
-	return gst_caps_new_any ();
-}
-#endif
-
 static gboolean
 rb_daap_src_open (RBDAAPSrc *src)
 {
@@ -699,7 +646,11 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 
 	/* The following can fail if the source is no longer connected */
+#ifdef HAVE_GSTREAMER_0_8
 	headers = rb_daap_source_get_headers (source, src->daap_uri, src->seek_time, &src->seek_bytes);
+#else
+	headers = rb_daap_source_get_headers (source, src->daap_uri, src->seek_bytes);
+#endif
 	if (headers == NULL) {
 		g_free (host);
 		g_free (path);
@@ -825,8 +776,8 @@ rb_daap_src_start (GstBaseSrc *bsrc)
 
 	if (rb_daap_src_open (src)) {
 		src->buffer = src->buffer_base;
-		src->seek_time_to_return = src->seek_time;
 #ifdef HAVE_GSTREAMER_0_8
+		src->seek_time_to_return = src->seek_time;
 		if (src->seek_bytes != 0) {
 			src->need_flush = TRUE;
 			src->send_discont = TRUE;
@@ -1145,7 +1096,20 @@ rb_daap_src_srcpad_query (GstPad *pad,
 gboolean
 rb_daap_src_is_seekable (GstBaseSrc *bsrc)
 {
-	return FALSE;
+	return TRUE;
+}
+
+gboolean
+rb_daap_src_do_seek (GstBaseSrc *bsrc, GstSegment *segment)
+{
+	RBDAAPSrc *src = RB_DAAP_SRC (bsrc);
+	if (segment->format == GST_FORMAT_BYTES) {
+		src->do_seek = TRUE;
+		src->seek_bytes = segment->start;
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 gboolean
@@ -1165,7 +1129,6 @@ static gboolean
 plugin_init (GstPlugin *plugin)
 {
 	gboolean ret = gst_element_register (plugin, "rbdaapsrc", GST_RANK_PRIMARY, RB_TYPE_DAAP_SRC);
-
 	return ret;
 }
 
@@ -1179,6 +1142,7 @@ GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
 			  PACKAGE,
 			  "");
 
+#ifdef HAVE_GSTREAMER_0_8
 /*** RB DAAP SEEK INTERFACE **************************************************/
 
 void
@@ -1196,6 +1160,7 @@ rb_daap_src_get_time (GstElement *element)
 	return src->seek_time_to_return;
 }
 
+#endif
 /*** GSTURIHANDLER INTERFACE *************************************************/
 
 static guint

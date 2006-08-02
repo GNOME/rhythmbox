@@ -41,7 +41,7 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
-#ifdef WITH_DAAP_SUPPORT
+#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
 #include "rb-daap-src.h"
 #endif
 
@@ -980,7 +980,7 @@ rb_player_gst_set_time (RBPlayer *player, long time)
 	}
 #endif
 
-#ifdef WITH_DAAP_SUPPORT
+#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
 	/* FIXME?
 	 * This is sorta hack/sorta best way to do it.
 	 * If we set up the daapsrc to do regular GStreamer seeking,
@@ -1011,7 +1011,7 @@ rb_player_gst_set_time (RBPlayer *player, long time)
 			  GST_SEEK_TYPE_NONE, -1);
 #endif
 
-#ifdef WITH_DAAP_SUPPORT
+#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
 	}
 #endif
 	if (mp->priv->playing) {
@@ -1036,19 +1036,13 @@ rb_player_gst_get_time (RBPlayer *player)
 		if (position != -1)
 			position /= GST_SECOND;
 
-		/* FIXME whether this is a good idea or not depends on gstreamer version
-		 * and filetype.  ugh.  for now, disabling it with gstreamer 0.8 seems to
-		 * give the best results.
-		 */
-#ifdef HAVE_GSTREAMER_0_8
-#ifdef WITH_DAAP_SUPPORT
+#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
 		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
 			GstElement *src;
 			g_object_get (G_OBJECT (mp->priv->playbin), "source", &src, NULL);
 			if (src)
 				position += rb_daap_src_get_time (src);
 		}
-#endif
 #endif
 
 		return (long) position;
