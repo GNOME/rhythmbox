@@ -1,5 +1,14 @@
 2006-08-02  James Livingston  <doclivingston@gmail.com>
 
+	* daapsharing/rb-daap-connection.c: (entry_set_string_prop),
+	(handle_song_listing), (handle_playlist_entries),
+	(rb_daap_connection_dispose):
+	* sources/rb-daap-source.c: (_add_location_to_playlist),
+	(rb_daap_source_connection_cb): make the daap code use RBRefStrings
+	for playlist URIs, not pointless duplicate strings. From #347425.
+
+2006-08-02  James Livingston  <doclivingston@gmail.com>
+
 	* data/rhythmbox.schemas:
 	* lib/rb-preferences.h:
 	* plugins/rb-plugin-manager.c: (rb_plugin_manager_class_init),

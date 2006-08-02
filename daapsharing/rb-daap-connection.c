@@ -665,16 +665,16 @@ entry_set_string_prop (RhythmDB        *db,
 		       const char      *str)
 {
 	GValue value = {0,};
-	gchar *tmp;
+	const gchar *tmp;
 
 	if (str == NULL || *str == '\0' || !g_utf8_validate (str, -1, NULL)) {
-		tmp = g_strdup (_("Unknown"));
+		tmp = _("Unknown");
 	} else {
-		tmp = g_strdup (str);
+		tmp = str;
 	}
 
 	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string_take_ownership (&value, tmp);
+	g_value_set_string (&value, tmp);
 	rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
 	g_value_unset (&value);
 }
@@ -888,7 +888,7 @@ handle_song_listing (RBDAAPConnection *connection,
 		return;
 	}
 
-	priv->item_id_to_uri = g_hash_table_new_full ((GHashFunc)g_direct_hash,(GEqualFunc)g_direct_equal, NULL, g_free);
+	priv->item_id_to_uri = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_refstring_unref);
 
 	rb_profile_start ("handling song listing");
 	priv->progress = 0.0f;
@@ -983,7 +983,8 @@ handle_song_listing (RBDAAPConnection *connection,
 			rb_debug ("cannot create entry for daap track %s", uri);
 			continue;
 		}
-		g_hash_table_insert (priv->item_id_to_uri, GINT_TO_POINTER (item_id), uri);
+		g_hash_table_insert (priv->item_id_to_uri, GINT_TO_POINTER (item_id), rb_refstring_new (uri));
+		g_free (uri);
 
 		/* year */
 		if (year != 0) {
@@ -1155,7 +1156,7 @@ handle_playlist_entries (RBDAAPConnection *connection,
 
 	rb_profile_start ("handling playlist entries");
 	for (i = 0, node = listing_node->children; node; node = node->next, i++) {
-		gchar *item_uri;
+		RBRefString *item_uri;
 		gint playlist_item_id;
 		RBDAAPItem *item;
 
@@ -1174,7 +1175,7 @@ handle_playlist_entries (RBDAAPConnection *connection,
 			continue;
 		}
 
-		playlist_uris = g_list_prepend (playlist_uris, g_strdup (item_uri));
+		playlist_uris = g_list_prepend (playlist_uris, rb_refstring_ref (item_uri));
 	}
 	rb_profile_end ("handling playlist entries");
 
@@ -1704,7 +1705,7 @@ rb_daap_connection_dispose (GObject *object)
 		for (l = priv->playlists; l; l = l->next) {
 			RBDAAPPlaylist *playlist = l->data;
 
-			g_list_foreach (playlist->uris, (GFunc)g_free, NULL);
+			g_list_foreach (playlist->uris, (GFunc)rb_refstring_unref, NULL);
 			g_list_free (playlist->uris);
 			g_free (playlist->name);
 			g_free (playlist);

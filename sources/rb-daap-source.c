@@ -823,6 +823,12 @@ release_connection (RBDAAPSource *daap_source)
 }
 
 static void
+_add_location_to_playlist (RBRefString *uri, RBStaticPlaylistSource *source)
+{
+	rb_static_playlist_source_add_location (source, rb_refstring_get (uri), -1);
+}
+
+static void
 rb_daap_source_connection_cb (RBDAAPConnection *connection,
 			      gboolean          result,
 			      const char       *reason,
@@ -860,7 +866,7 @@ rb_daap_source_connection_cb (RBDAAPConnection *connection,
 		RBSource *playlist_source;
 
 		playlist_source = rb_static_playlist_source_new (shell, playlist->name, FALSE, entry_type);
-		rb_static_playlist_source_add_locations (RB_STATIC_PLAYLIST_SOURCE (playlist_source), playlist->uris);
+		g_list_foreach (playlist->uris, (GFunc)_add_location_to_playlist, playlist_source);
 
 		rb_shell_append_source (shell, playlist_source, RB_SOURCE (daap_source));
 		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
