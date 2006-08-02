@@ -1,3 +1,9 @@
+2006-08-02  James Livingston  <doclivingston@gmail.com>
+
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_drag_data_received): don't crash if we didn't
+	drop on a source. Fixes #349580.
+
 2006-07-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* configure.ac:

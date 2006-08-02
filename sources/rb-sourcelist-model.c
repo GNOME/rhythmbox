@@ -379,20 +379,18 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 
 	if (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
 		GtkTreeIter iter;
-		RBSource *target;
+		RBSource *target = NULL;
+
 		rb_debug ("text/uri-list drag data received");
 
-		if (dest == NULL || !gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
-			target = NULL;
-		} else {
+		if (dest != NULL && gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
 			gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 					    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 		}
 
-		g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
-			       0, target, pos, selection_data);
-
 		if (target != NULL) {
+			g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
+				       0, target, pos, selection_data);
 			g_object_unref (target);
 		}
 
