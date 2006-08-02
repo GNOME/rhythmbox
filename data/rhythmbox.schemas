@@ -617,6 +617,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/plugins/no_user_plugins</key>
+        <applyto>/apps/rhythmbox/plugins/no_user_plugins</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Disable per-user plugins.</short>
+	<long>When set prevents loading of per-user plugins from ~/.gnome2/rhythmbox/plugins/</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/plugins/rblirc/active</key>
         <applyto>/apps/rhythmbox/plugins/rblirc/active</applyto>
         <owner>rhythmbox</owner>
@@ -702,6 +713,94 @@
 	<locale name="C">
 	<short>True if the cd-burning plugin is enabled.</short>
 	<long>True if the cd-burning plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/rblirc/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/rblirc/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>True if the LIRC plugin is hidden.</short>
+	<long>True if the LIRC plugin is hidden.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/audioscrobbler/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/audioscrobbler/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>True if the AudioScrobbler plugin is hidden.</short>
+	<long>True if the AudioScrobbler plugin is hidden.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/pythonconsole/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/pythonconsole/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>True if the Python console plugin is hidden.</short>
+	<long>True if the Python console plugin is hidden.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/generic-player/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/generic-player/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>True if the generic audio player plugin is hidden.</short>
+	<long>True if the generic audio player plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/ipod/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/ipod/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>True if the iPod plugin is hidden.</short>
+	<long>True if the iPod plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/artdisplay/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/artdisplay/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>True if the art-display plugin is hidden.</short>
+	<long>True if the art-display plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/lyrics/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/lyrics/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>True if the lyric plugin is hidden.</short>
+	<long>True if the lyric plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/cd-recorder/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/cd-recorder/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>True if the cd-burning plugin is hidden.</short>
+	<long>True if the cd-burning plugin is hidden.</long>
 	</locale>
       </schema>
     </schemalist>

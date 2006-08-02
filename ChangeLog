@@ -1,5 +1,22 @@
 2006-08-02  James Livingston  <doclivingston@gmail.com>
 
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* plugins/rb-plugin-manager.c: (rb_plugin_manager_class_init),
+	(plugin_manager_view_cell_cb), (plugin_manager_populate_lists),
+	(plugin_manager_set_active), (plugin_manager_toggle_active),
+	(plugin_manager_get_selected_plugin), (name_search_cb),
+	(plugin_manager_construct_tree), (rb_plugin_manager_new),
+	(rb_plugin_manager_finalize):
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load_cb),
+	(rb_plugins_engine_load_all), (rb_plugin_info_free),
+	(rb_plugins_engine_plugin_is_visible),
+	(rb_plugins_engine_plugin_visible_cb):
+	* plugins/rb-plugins-engine.h: add gconf options to 1) disable loading
+	per-user plugins, and 2) hide plugins from the manager UI. From #349395
+
+2006-08-02  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-sourcelist-model.c:
 	(rb_sourcelist_model_drag_data_received): don't crash if we didn't
 	drop on a source. Fixes #349580.

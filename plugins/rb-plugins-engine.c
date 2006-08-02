@@ -74,7 +74,9 @@ struct _RBPluginInfo
 	RBPlugin     *plugin;
 	
 	gboolean     active;
-	guint        notification_id;
+	gboolean     visible;
+	guint        active_notification_id;
+	guint        visible_notification_id;
 };
 
 static void rb_plugin_info_free (RBPluginInfo *info);
@@ -82,6 +84,10 @@ static void rb_plugins_engine_plugin_active_cb (GConfClient *client,
 						guint cnxn_id,
 						GConfEntry *entry,
 						RBPluginInfo *info);
+static void rb_plugins_engine_plugin_visible_cb (GConfClient *client,
+						 guint cnxn_id,
+						 GConfEntry *entry,
+						 RBPluginInfo *info);
 static gboolean rb_plugins_engine_activate_plugin_real (RBPluginInfo *info,
 							RBShell *shell);
 static void rb_plugins_engine_deactivate_plugin_real (RBPluginInfo *info,
@@ -271,10 +277,17 @@ rb_plugins_engine_load_cb (const char *uri, gpointer userdata)
 	rb_debug ("Plugin %s loaded", info->name);
 	
 	key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
-	info->notification_id = eel_gconf_notification_add (key_name,
-							    (GConfClientNotifyFunc)rb_plugins_engine_plugin_active_cb,
-							    info);
+	info->active_notification_id = eel_gconf_notification_add (key_name,
+								   (GConfClientNotifyFunc)rb_plugins_engine_plugin_active_cb,
+								   info);
 	activate = eel_gconf_get_boolean (key_name);
+	g_free (key_name);
+
+	key_name = g_strdup_printf (CONF_PLUGIN_HIDDEN_KEY, info->location);
+	info->visible_notification_id = eel_gconf_notification_add (key_name,
+								    (GConfClientNotifyFunc)rb_plugins_engine_plugin_visible_cb,
+								    info);
+	info->visible = !eel_gconf_get_boolean (key_name);
 	g_free (key_name);
 
 	if (activate)
@@ -297,9 +310,11 @@ rb_plugins_engine_load_all (void)
 	gchar *pdir;
 
 	/* load user's plugins */
-	pdir = gnome_util_home_file (USER_RB_PLUGINS_LOCATION);
-	rb_plugins_engine_load_dir (pdir);
-	g_free (pdir);
+	if (!eel_gconf_get_boolean (CONF_PLUGIN_DISABLE_USER)) {
+		pdir = gnome_util_home_file (USER_RB_PLUGINS_LOCATION);
+		rb_plugins_engine_load_dir (pdir);
+		g_free (pdir);
+	}
 
 #ifdef SHARE_UNINSTALLED_DIR
 	/* load plugins when running uninstalled */
@@ -368,7 +383,8 @@ rb_plugin_info_free (RBPluginInfo *info)
 		 * a type module */
 	}
 
-	eel_gconf_notification_remove (info->notification_id);
+	eel_gconf_notification_remove (info->visible_notification_id);
+	eel_gconf_notification_remove (info->visible_notification_id);
 
 	g_free (info->file);
 	g_free (info->location);
@@ -553,6 +569,15 @@ rb_plugins_engine_plugin_is_active (RBPluginInfo *info)
 	return info->active;
 }
 
+gboolean
+rb_plugins_engine_plugin_is_visible (RBPluginInfo *info)
+{
+	g_return_val_if_fail (info != NULL, FALSE);
+	
+	return info->visible;
+}
+
+
 
 gboolean
 rb_plugins_engine_plugin_is_configurable (RBPluginInfo *info)
@@ -606,6 +631,16 @@ rb_plugins_engine_plugin_active_cb (GConfClient *client,
 		rb_plugins_engine_deactivate_plugin (info);
 	}
 }
+
+static void
+rb_plugins_engine_plugin_visible_cb (GConfClient *client,
+				     guint cnxn_id,
+				     GConfEntry *entry,
+				     RBPluginInfo *info)
+{
+	info->visible = !gconf_value_get_bool (entry->value);
+}
+
 
 const gchar *
 rb_plugins_engine_get_plugin_name (RBPluginInfo *info)

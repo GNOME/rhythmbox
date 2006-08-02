@@ -40,7 +40,8 @@
 enum
 {
 	ACTIVE_COLUMN,
-	NAME_COLUMN,
+	VISIBLE_COLUMN,
+	INFO_COLUMN,
 	N_COLUMNS
 };
 
@@ -51,8 +52,9 @@ enum
 
 struct _RBPluginManagerPrivate
 {
-	const GList	*plugins;
+	GList		*plugins;
 	GtkWidget	*tree;
+	GtkTreeModel	*plugin_model;
 
 	GtkWidget	*configure_button;
 	GtkWidget	*site_label;
@@ -69,6 +71,7 @@ struct _RBPluginManagerPrivate
 
 G_DEFINE_TYPE(RBPluginManager, rb_plugin_manager, GTK_TYPE_VBOX)
 
+static void rb_plugin_manager_finalize (GObject *o);
 static RBPluginInfo *plugin_manager_get_selected_plugin (RBPluginManager *pm); 
 static void plugin_manager_toggle_active (GtkTreeIter *iter, GtkTreeModel *model, RBPluginManager *pm); 
 static void plugin_manager_toggle_all (RBPluginManager *pm); 
@@ -77,6 +80,8 @@ static void
 rb_plugin_manager_class_init (RBPluginManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->finalize = rb_plugin_manager_finalize;
 
 	g_type_class_add_private (object_class, sizeof (RBPluginManagerPrivate));
 }
@@ -113,7 +118,7 @@ plugin_manager_view_cell_cb (GtkTreeViewColumn *tree_column,
 	g_return_if_fail (tree_model != NULL);
 	g_return_if_fail (tree_column != NULL);
 
-	gtk_tree_model_get (tree_model, iter, NAME_COLUMN, &info, -1);
+	gtk_tree_model_get (tree_model, iter, INFO_COLUMN, &info, -1);
 
 	if (info == NULL)
 		return;
@@ -214,40 +219,32 @@ column_clicked_cb (GtkTreeViewColumn *tree_column,
 static void
 plugin_manager_populate_lists (RBPluginManager *pm)
 {
-	const GList *plugins;
-	GtkListStore *model;
+	GtkTreeModel *model;
 	GtkTreeIter iter;
+	GList *p;
 
-	plugins = pm->priv->plugins;
-
-	model = GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (pm->priv->tree)));
-
-	while (plugins)	{
+	for (p = pm->priv->plugins; p != NULL; p = g_list_next (p)) {
 		RBPluginInfo *info;
-		info = (RBPluginInfo *)plugins->data;
+		info = (RBPluginInfo *)p->data;
 
-		gtk_list_store_append (model, &iter);
-		gtk_list_store_set (model, &iter,
+		gtk_list_store_append (GTK_LIST_STORE (pm->priv->plugin_model), &iter);
+		gtk_list_store_set (GTK_LIST_STORE (pm->priv->plugin_model), &iter,
 				    ACTIVE_COLUMN, rb_plugins_engine_plugin_is_active (info),
-				    NAME_COLUMN, info,
+				    VISIBLE_COLUMN, rb_plugins_engine_plugin_is_visible (info),
+				    INFO_COLUMN, info,
 				    -1);
-
-		plugins = plugins->next;
 	}
 
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (pm->priv->tree));
 	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
 		GtkTreeSelection *selection;
-		RBPluginInfo* info;
 
 		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree));
 		g_return_if_fail (selection != NULL);
 		
 		gtk_tree_selection_select_iter (selection, &iter);
-
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-				    NAME_COLUMN, &info, -1);
-		/*cursor_changed_cb (selection, pm);*/
 	}
+	g_object_unref (model);
 }
 
 static void
@@ -258,7 +255,7 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 {
 	RBPluginInfo *info;
 	
-	gtk_tree_model_get (model, iter, NAME_COLUMN, &info, -1);
+	gtk_tree_model_get (model, iter, INFO_COLUMN, &info, -1);
 
 	g_return_if_fail (info != NULL);
 
@@ -292,12 +289,17 @@ plugin_manager_toggle_active (GtkTreeIter  *iter,
 			      GtkTreeModel *model,
 			      RBPluginManager *pm)
 {
-	gboolean active;
+	gboolean active, visible;
 	
-	gtk_tree_model_get (model, iter, ACTIVE_COLUMN, &active, -1);
+	gtk_tree_model_get (model, iter,
+			    ACTIVE_COLUMN, &active,
+			    VISIBLE_COLUMN, &visible,
+			    -1);
 
-	active ^= 1;
-	plugin_manager_set_active (iter, model, active, pm);
+	if (visible) {
+		active ^= 1;
+		plugin_manager_set_active (iter, model, active, pm);
+	}
 }
 
 static RBPluginInfo *
@@ -315,7 +317,7 @@ plugin_manager_get_selected_plugin (RBPluginManager *pm)
 	g_return_val_if_fail (selection != NULL, NULL);
 
 	if (gtk_tree_selection_get_selected (selection, NULL, &iter)) {
-		gtk_tree_model_get (model, &iter, NAME_COLUMN, &info, -1);
+		gtk_tree_model_get (model, &iter, INFO_COLUMN, &info, -1);
 	}
 	
 	return info;
@@ -357,7 +359,7 @@ name_search_cb (GtkTreeModel *model,
 	gint key_len;
 	gboolean retval;
 
-	gtk_tree_model_get (model, iter, NAME_COLUMN, &info, -1);
+	gtk_tree_model_get (model, iter, INFO_COLUMN, &info, -1);
 	if (!info)
 		return FALSE;
 
@@ -386,12 +388,13 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 {
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *cell;
-	GtkListStore *model;
+	GtkTreeModel *filter;
 
-	model = gtk_list_store_new (N_COLUMNS, G_TYPE_BOOLEAN, G_TYPE_POINTER);
-
-	gtk_tree_view_set_model (GTK_TREE_VIEW (pm->priv->tree), GTK_TREE_MODEL (model));
-	g_object_unref (model);
+	pm->priv->plugin_model = GTK_TREE_MODEL (gtk_list_store_new (N_COLUMNS, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_POINTER));
+	filter = gtk_tree_model_filter_new (pm->priv->plugin_model, NULL);
+	gtk_tree_model_filter_set_visible_column (GTK_TREE_MODEL_FILTER (filter), VISIBLE_COLUMN);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (pm->priv->tree), filter);
+	g_object_unref (filter);
 
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (pm->priv->tree), TRUE);
 	gtk_tree_view_set_headers_clickable (GTK_TREE_VIEW (pm->priv->tree), TRUE);
@@ -421,7 +424,7 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 	gtk_tree_view_append_column (GTK_TREE_VIEW (pm->priv->tree), column);
 
 	/* Enable search for our non-string column */
-	gtk_tree_view_set_search_column (GTK_TREE_VIEW (pm->priv->tree), NAME_COLUMN);
+	gtk_tree_view_set_search_column (GTK_TREE_VIEW (pm->priv->tree), INFO_COLUMN);
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (pm->priv->tree),
 					     name_search_cb,
 					     NULL,
@@ -489,7 +492,17 @@ rb_plugin_manager_init (RBPluginManager *pm)
 	plugin_manager_populate_lists (pm);
 }
 
-GtkWidget *rb_plugin_manager_new (void)
+GtkWidget*
+rb_plugin_manager_new (void)
 {
 	return g_object_new (RB_TYPE_PLUGIN_MANAGER, 0);
 }
+
+static void
+rb_plugin_manager_finalize (GObject *o)
+{
+	RBPluginManager *pm = RB_PLUGIN_MANAGER (o);
+
+	g_list_free (pm->priv->plugins);
+}
+

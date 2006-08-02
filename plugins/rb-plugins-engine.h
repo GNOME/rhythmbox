@@ -37,6 +37,7 @@ GList*		rb_plugins_engine_get_plugins_list 	(void);
 gboolean 	 rb_plugins_engine_activate_plugin 	(RBPluginInfo *info);
 gboolean 	 rb_plugins_engine_deactivate_plugin	(RBPluginInfo *info);
 gboolean 	 rb_plugins_engine_plugin_is_active 	(RBPluginInfo *info);
+gboolean 	 rb_plugins_engine_plugin_is_visible 	(RBPluginInfo *info);
 
 gboolean	 rb_plugins_engine_plugin_is_configurable 
 							(RBPluginInfo *info);
