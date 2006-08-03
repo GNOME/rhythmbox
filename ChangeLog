@@ -1,3 +1,8 @@
+2006-08-03  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/rb-plugin-manager.c: (plugin_manager_set_active): use the
+	real GtkTreeModel not the filter. Fixes #349722
+
 2006-08-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst.c:

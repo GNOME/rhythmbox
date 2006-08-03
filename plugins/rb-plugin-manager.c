@@ -274,7 +274,8 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 	}
   
 	/* set new value */
-	gtk_list_store_set (GTK_LIST_STORE (model), 
+	
+	gtk_list_store_set (GTK_LIST_STORE (pm->priv->plugin_model), 
 			    iter, 
 			    ACTIVE_COLUMN,
 			    rb_plugins_engine_plugin_is_active (info), 
