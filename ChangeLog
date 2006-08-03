@@ -1,3 +1,15 @@
+2006-08-03  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	various fixes for valgrind complaints:
+	* lib/rb-tree-dnd.c: (rb_tree_dnd_data_free),
+	(init_rb_tree_dnd_data):
+	  free the associated target list, too
+	* widgets/libsexy/sexy-icon-entry.c: (sexy_icon_entry_realize):
+	  initialize allocation.{x,y,width,height} correctly
+	* widgets/rb-entry-view.c: (rb_entry_view_sync_sorting),
+	(rb_entry_view_constructor):
+	  free strings when no longer needed
+
 2006-08-03  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/rb-plugin-manager.c: (plugin_manager_set_active): use the

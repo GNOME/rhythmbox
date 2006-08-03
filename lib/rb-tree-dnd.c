@@ -260,6 +260,16 @@ rb_tree_drag_dest_row_drop_position (RbTreeDragDest   *drag_dest,
   return (* iface->row_drop_position) (drag_dest, dest_path, targets, pos);
 }
 
+static void
+rb_tree_dnd_data_free (gpointer data)
+{
+  RbTreeDndData *priv_data = data;
+
+  gtk_target_list_unref (priv_data->source_target_list);
+
+  g_free (priv_data);
+}
+
 RbTreeDndData *
 init_rb_tree_dnd_data (GtkWidget *widget)
 {
@@ -270,7 +280,7 @@ init_rb_tree_dnd_data (GtkWidget *widget)
 	{
 		priv_data = g_new0 (RbTreeDndData, 1);
 		priv_data->pending_event = FALSE;
-		g_object_set_data_full (G_OBJECT (widget), RB_TREE_DND_STRING, priv_data, g_free);
+		g_object_set_data_full (G_OBJECT (widget), RB_TREE_DND_STRING, priv_data, rb_tree_dnd_data_free);
 		priv_data->drag_motion_handler = 0;
 		priv_data->drag_leave_handler = 0;
 		priv_data->button_press_event_handler = 0;

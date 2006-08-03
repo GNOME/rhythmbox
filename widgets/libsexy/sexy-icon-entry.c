@@ -331,22 +331,23 @@ sexy_icon_entry_realize(GtkWidget *widget)
 
 	GTK_WIDGET_CLASS(parent_class)->realize(widget);
 
+	attributes.width = 1;
+	attributes.height = 1;
+	attributes.window_type = GDK_WINDOW_CHILD;
+	attributes.wclass = GDK_INPUT_OUTPUT;
+	attributes.visual = gtk_widget_get_visual(widget);
+	attributes.colormap = gtk_widget_get_colormap(widget);
+	attributes.event_mask = gtk_widget_get_events(widget);
+	attributes.event_mask |=
+		(GDK_EXPOSURE_MASK
+		 | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
+		 | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
+
+	attributes_mask = GDK_WA_VISUAL | GDK_WA_COLORMAP;
+
 	for (i = 0; i < MAX_ICONS; i++)
 	{
 		SexyIconInfo *icon_info;
-
-		attributes.window_type = GDK_WINDOW_CHILD;
-		attributes.wclass = GDK_INPUT_OUTPUT;
-		attributes.visual = gtk_widget_get_visual(widget);
-		attributes.colormap = gtk_widget_get_colormap(widget);
-		attributes.event_mask = gtk_widget_get_events(widget);
-		attributes.event_mask |=
-			(GDK_EXPOSURE_MASK
-			 | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
-			 | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
-
-		attributes_mask = GDK_WA_X | GDK_WA_Y |
-		                  GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
 		icon_info = &entry->priv->icons[i];
 		icon_info->window = gdk_window_new(widget->window, &attributes,

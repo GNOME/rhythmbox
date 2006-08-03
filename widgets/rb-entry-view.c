@@ -862,6 +862,7 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 
 	column = g_hash_table_lookup (view->priv->column_key_map, column_name);
 	if (column == NULL) {
+		g_free (column_name);
 		return;
 	}
 
@@ -1417,7 +1418,9 @@ rb_entry_view_constructor (GType type,
 	}
 
 	if (view->priv->sorting_key) {
-		rb_entry_view_set_sorting_type (view, eel_gconf_get_string (view->priv->sorting_key));
+		char *s = eel_gconf_get_string (view->priv->sorting_key);
+		rb_entry_view_set_sorting_type (view, s);
+		g_free (s);
 	}
 
 	{
