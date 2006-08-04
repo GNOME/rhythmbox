@@ -1,5 +1,11 @@
 2006-08-04  James Livingston  <doclivingston@gmail.com>
 
+	patch by: William Jon McCann  <mccann@jhu.edu>
+
+	* shell/main.c: (main): use GOption instead of popt. Fixes #346930
+
+2006-08-04  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/rb-plugin-manager.c: (plugin_manager_set_active): try to
 	actually fix #349722 this time
 

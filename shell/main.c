@@ -81,14 +81,18 @@
 #include <nautilus-burn.h>
 #endif
 
+#define HAVE_LIBGNOME_GOPTION defined(GNOME_PARAM_GOPTION_CONTEXT)
+
 static gboolean debug           = FALSE;
 static char *debug_match        = NULL;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
-static char *rhythmdb_file = NULL;
-static char *playlists_file = NULL;
+static char *rhythmdb_file	= NULL;
+static char *playlists_file	= NULL;
+static char **remaining_args    = NULL;
+
 #if WITH_DBUS
 static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
 static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
@@ -105,7 +109,7 @@ static gboolean send_present_message (DBusConnection *connection, guint32 curren
 int
 main (int argc, char **argv)
 {
-	GnomeProgram *program;
+	GnomeProgram *program = NULL;
 #if WITH_DBUS || WITH_OLD_DBUS
 	DBusGConnection *session_bus;
 	GError *error = NULL;
@@ -113,26 +117,26 @@ main (int argc, char **argv)
 	RBShell *rb_shell;
 	char **new_argv;
 	gboolean activated;
-	poptContext poptContext;
-        GValue context_as_value = { 0 };
+
+
+	GOptionContext *context;
+	static const GOptionEntry options []  = {
+		{ "debug",           'd', 0, G_OPTION_ARG_NONE,         &debug,           N_("Enable debug output"), NULL },
+		{ "debug-match",     'D', 0, G_OPTION_ARG_STRING,       &debug_match,     N_("Enable debug output matching a specified string"), NULL },
+		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &no_update,       N_("Do not update the library with file changes"), NULL },
+		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &no_registration, N_("Do not register the shell"), NULL },
+		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &rhythmdb_file,   N_("Path for database file to use"), NULL },
+		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &playlists_file,   N_("Path for playlists file to use"), NULL },
+		{ "quit",	     'q', 0, G_OPTION_ARG_NONE,         &quit,            N_("Quit Rhythmbox"), NULL },
+		{ G_OPTION_REMAINING,  0, 0, G_OPTION_ARG_STRING_ARRAY, &remaining_args,  NULL, N_("[URI...]") },
+		{ NULL }
+	};
 
 	rb_profile_start ("starting rhythmbox");
 
-	struct poptOption popt_options[] =
-	{
-		{ "debug",			'd',POPT_ARG_NONE,	&debug,				0, N_("Enable debug output"), NULL },
-		{ "debug-match",		'D',POPT_ARG_STRING,	&debug_match,			0, N_("Enable debug output matching a specified string"), NULL },
-		{ "no-update",			0,  POPT_ARG_NONE,	&no_update,			0, N_("Do not update the library with file changes"), NULL },
-		{ "no-registration",		'n',POPT_ARG_NONE,	&no_registration,		0, N_("Do not register the shell"), NULL },
-		{ "dry-run",			0,  POPT_ARG_NONE,	&dry_run,			0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
-		{ "rhythmdb-file",		0,  POPT_ARG_STRING,	&rhythmdb_file,			0, N_("Path for database file to use"), NULL },
-		{ "playlists-file",		0,  POPT_ARG_STRING,	&playlists_file,		0, N_("Path for playlists file to use"), NULL },
-		{ "quit",			'q',POPT_ARG_NONE,	&quit,				0, N_("Quit Rhythmbox"), NULL },
-#ifdef HAVE_GSTREAMER_0_8
-		{NULL, '\0', POPT_ARG_INCLUDE_TABLE, NULL, 0, "GStreamer", NULL},
-#endif
-		POPT_TABLEEND
-	};
+	context = g_option_context_new (NULL);
+	g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
 
 	/* Disable event sounds for now by passing "--disable-sound" to libgnomeui.
 	 * See: http://bugzilla.gnome.org/show_bug.cgi?id=119222 */
@@ -142,37 +146,45 @@ main (int argc, char **argv)
 	new_argv[argc+1] = NULL;
 
 #ifdef HAVE_GSTREAMER_0_8
-	popt_options[(sizeof(popt_options)/sizeof(popt_options[0]))-2].arg
-		= (void *) gst_init_get_popt_table ();
-#elif HAVE_GSTREAMER_0_10
-        /* To pass options to GStreamer in 0.10, RB needs to use GOption, for
+        /* To pass options to GStreamer in 0.8, RB needs to use popt, for
          * now, GStreamer can live without them (people can still use env
          * vars, after all) */
+	gst_init (NULL, NULL);
+#elif HAVE_GSTREAMER_0_10
 	rb_profile_start ("initializing gstreamer");
-        gst_init (NULL, NULL);
+	g_option_context_add_group (context, gst_init_get_option_group ());
 	rb_profile_end ("initializing gstreamer");
 #endif
 
 	gtk_set_locale ();
 	rb_profile_start ("initializing gnome program");
+
+#if HAVE_LIBGNOME_GOPTION
 	program = gnome_program_init (PACKAGE, VERSION,
-				      LIBGNOMEUI_MODULE, argc+1, new_argv,
-				      GNOME_PARAM_POPT_TABLE, popt_options,
+				      LIBGNOMEUI_MODULE,
+				      argc+1, new_argv,
+				      GNOME_PARAM_GOPTION_CONTEXT, context,
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
-	rb_profile_end ("initializing gnome program");
+#else
+	g_option_context_parse (context, &argc, &argv, NULL);
+	g_option_context_free (context);
+	program = gnome_program_init (PACKAGE, VERSION,
+				      LIBGNOMEUI_MODULE,
+				      argc+1, new_argv,
+				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
+				      GNOME_PARAM_APP_DATADIR, DATADIR,
+				      NULL);
+#endif
 
-	g_object_get_property (G_OBJECT (program),
-                               GNOME_PARAM_POPT_CONTEXT,
-                               g_value_init (&context_as_value, G_TYPE_POINTER));
-        poptContext = g_value_get_pointer (&context_as_value);
+	rb_profile_end ("initializing gnome program");
 
 	rb_profile_start ("initializing gnome auth manager");
 	gnome_authentication_manager_init ();
 	rb_profile_end ("initializing gnome auth manager");
 
-	g_random_set_seed (time(0));
+	g_random_set_seed (time (0));
 
 #ifdef ENABLE_NLS
 	/* initialize i18n */
@@ -264,9 +276,7 @@ main (int argc, char **argv)
 				   request_name_reply);
 			activated = FALSE;
 		}
-
 	}
-
 #endif
 
 	if (!activated) {
@@ -353,7 +363,7 @@ main (int argc, char **argv)
 				dbus_g_proxy_call_no_reply (shell_proxy, "quit",
 							    G_TYPE_INVALID);
 			} else {
-				load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
+				load_uri_args ((const char **) remaining_args, (GFunc) dbus_load_uri, shell_proxy);
 				dbus_g_proxy_call_no_reply (shell_proxy, "present",
 							    G_TYPE_UINT, current_time,
 							    G_TYPE_INVALID);
