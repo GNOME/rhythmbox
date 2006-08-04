@@ -1,3 +1,9 @@
+2006-08-04  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py: don't attempt
+	to seach for local art from http:// URIs, or those gnome-vfs doesn't
+	know about. Fixes #348571.
+
 2006-08-03  Benjamin Otte  <in7y118@public.uni-hamburg.de>
 
 	various fixes for valgrind complaints:

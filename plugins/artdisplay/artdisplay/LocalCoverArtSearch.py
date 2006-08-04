@@ -40,14 +40,18 @@ class LocalCoverArtSearch:
 				print "Error reading \"%s\": %s" % (self.uri.parent, exception)
 
 	def search (self, db, entry, on_search_completed_cb, *args):
-		uri = entry.get_playback_uri()
-		if uri is None or uri[:4] == 'http':
-			print 'not searching for local art to', uri
+		self.uri = None
+		try:
+			self.uri = gnomevfs.URI (entry.get_playback_uri())
+		except TypeError:
+			pass
+
+		if self.uri is None or self.uri.scheme == 'http':
+			print 'not searching for local art to', self.uri
 			on_search_completed_cb (self, entry, [], *args)
 			return
 
-		print 'searching for art local to', uri
-		self.uri = gnomevfs.URI (uri)
+		print 'searching for art local to', self.uri
 		gnomevfs.async.load_directory (self.uri.parent, self._load_dir_cb, LOAD_DIRECTORY_FLAGS, data=([], on_search_completed_cb, entry, args))
 
 	def search_next (self):
