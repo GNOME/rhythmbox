@@ -209,9 +209,7 @@ static void
 column_clicked_cb (GtkTreeViewColumn *tree_column,
 		   gpointer           data)
 {
-	RBPluginManager *pm = data;
-
-	g_return_if_fail (pm != NULL);
+	RBPluginManager *pm = RB_PLUGIN_MANAGER (data);
 
 	plugin_manager_toggle_all (pm);
 }
@@ -254,6 +252,7 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 			   RBPluginManager *pm)
 {
 	RBPluginInfo *info;
+	GtkTreeIter child_iter;
 	
 	gtk_tree_model_get (model, iter, INFO_COLUMN, &info, -1);
 
@@ -274,9 +273,10 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 	}
   
 	/* set new value */
-	
-	gtk_list_store_set (GTK_LIST_STORE (pm->priv->plugin_model), 
-			    iter, 
+	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (model),
+							  &child_iter, iter);
+	gtk_list_store_set (GTK_LIST_STORE (pm->priv->plugin_model),
+			    &child_iter,
 			    ACTIVE_COLUMN,
 			    rb_plugins_engine_plugin_is_active (info), 
 			    -1);
