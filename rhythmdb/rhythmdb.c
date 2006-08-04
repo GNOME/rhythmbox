@@ -1958,6 +1958,10 @@ rhythmdb_execute_stat (RhythmDB *db,
 	GList *uri_list = g_list_append (NULL, vfs_uri);
 	event->real_uri = rb_refstring_new (uri);
 
+	g_mutex_lock (db->priv->stat_mutex);
+	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
+	g_mutex_unlock (db->priv->stat_mutex);
+
 	gnome_vfs_async_get_file_info (&event->handle, uri_list,
 			       GNOME_VFS_FILE_INFO_FOLLOW_LINKS,
 			       GNOME_VFS_PRIORITY_MIN,
@@ -1965,10 +1969,6 @@ rhythmdb_execute_stat (RhythmDB *db,
 			       event);
 	gnome_vfs_uri_unref (vfs_uri);
 	g_list_free (uri_list);
-
-	g_mutex_lock (db->priv->stat_mutex);
-	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
-	g_mutex_unlock (db->priv->stat_mutex);
 }
 
 void
