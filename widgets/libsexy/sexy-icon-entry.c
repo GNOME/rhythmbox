@@ -546,6 +546,8 @@ draw_icon(GtkWidget *widget, SexyIconEntryPosition icon_pos)
 		return;
 
 	gdk_drawable_get_size(icon_info->window, &width, &height);
+	if ((width < 2 * ICON_MARGIN) || (height < 2 * ICON_MARGIN))
+		return;
 
 	if (gdk_pixbuf_get_height(pixbuf) > height)
 	{

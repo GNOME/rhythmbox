@@ -1,3 +1,9 @@
+2006-08-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/libsexy/sexy-icon-entry.c: (draw_icon):
+	Don't try to draw the icon if the drawable area is too small.
+	Fixes #349838.
+
 2006-08-04  Ryan P Skadberg  <skadz@stigmata.org>
 
 	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>
