@@ -383,7 +383,7 @@ rb_plugin_info_free (RBPluginInfo *info)
 		 * a type module */
 	}
 
-	eel_gconf_notification_remove (info->visible_notification_id);
+	eel_gconf_notification_remove (info->active_notification_id);
 	eel_gconf_notification_remove (info->visible_notification_id);
 
 	g_free (info->file);

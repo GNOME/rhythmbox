@@ -1,3 +1,11 @@
+2006-08-05  James Livingston  <doclivingston@gmail.com>
+
+	* configure.ac: tell libtool not to check for C++/fortran/ etc
+	compilers
+
+	* plugins/rb-plugins-engine.c: (rb_plugin_info_free): remove the right
+	watch, to fix some gconf warnings.
+
 2006-08-04  James Livingston  <doclivingston@gmail.com>
 
 	patch by: William Jon McCann  <mccann@jhu.edu>

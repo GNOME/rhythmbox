@@ -8,6 +8,11 @@ AM_INIT_AUTOMAKE(rhythmbox, 0.9.5)
 
 AM_MAINTAINER_MODE
 
+dnl XXXX hack to kill off all the libtool tags ...
+dnl it isn't like we are using C++ or Fortran.
+m4_define([_LT_AC_TAGCONFIG],[])
+
+
 AC_PROG_INTLTOOL
 
 AC_ISC_POSIX
