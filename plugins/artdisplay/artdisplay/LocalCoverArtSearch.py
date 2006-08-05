@@ -22,6 +22,7 @@ import gnomevfs
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
 LOAD_DIRECTORY_FLAGS = gnomevfs.FILE_INFO_GET_MIME_TYPE | gnomevfs.FILE_INFO_FORCE_FAST_MIME_TYPE
+ITEMS_PER_NOTIFICATION = 10
 
 def file_root (f_name):
 	return os.path.splitext (f_name)[0].lower ()
@@ -52,7 +53,7 @@ class LocalCoverArtSearch:
 			return
 
 		print 'searching for art local to', self.uri
-		gnomevfs.async.load_directory (self.uri.parent, self._load_dir_cb, LOAD_DIRECTORY_FLAGS, data=([], on_search_completed_cb, entry, args))
+		gnomevfs.async.load_directory (self.uri.parent, self._load_dir_cb, LOAD_DIRECTORY_FLAGS, ITEMS_PER_NOTIFICATION, data=([], on_search_completed_cb, entry, args))
 
 	def search_next (self):
 		return False

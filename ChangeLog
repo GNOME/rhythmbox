@@ -1,5 +1,12 @@
 2006-08-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:
+	Pass the items_per_notification parameter to
+	gnomevfs.async.load_directory, fixing 'argument 4 impossible' errors
+	with some versions of python.
+
+2006-08-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* widgets/libsexy/sexy-icon-entry.c: (draw_icon):
 	Don't try to draw the icon if the drawable area is too small.
 	Fixes #349838.
