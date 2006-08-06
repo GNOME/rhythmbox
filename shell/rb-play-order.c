@@ -539,8 +539,10 @@ rb_play_order_query_model_changed (RBPlayOrder *porder)
 	if (porder->priv->source)
 		g_object_get (porder->priv->source, "query-model", &new_model, NULL);
 
-	if (porder->priv->query_model == new_model)
+	if (porder->priv->query_model == new_model) {
+		g_object_unref (new_model);
 		return;
+	}
 
 	if (porder->priv->query_model != NULL) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
@@ -599,9 +601,7 @@ rb_play_order_entry_added_cb (GtkTreeModel *model,
 	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
 		rb_play_order_update_have_next_previous (porder);
 
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
-	}
+	rhythmdb_entry_unref (entry);
 }
 
 /**
@@ -636,6 +636,7 @@ rb_play_order_row_deleted_cb (GtkTreeModel *model,
 	if (!rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (model)))
 		rb_play_order_update_have_next_previous (porder);
 
+	rhythmdb_entry_unref (entry);
 }
 
 static gboolean
@@ -646,12 +647,9 @@ default_has_next (RBPlayOrder *porder)
 
 	entry = rb_play_order_get_next (porder);
 
-	if (entry != NULL) {
-		res = TRUE;
+	res = (entry != NULL);
+	if (entry)
 		rhythmdb_entry_unref (entry);
-	} else {
-		res = FALSE;
-	}
 
 	return res;
 }
@@ -664,12 +662,9 @@ default_has_previous (RBPlayOrder *porder)
 
 	entry = rb_play_order_get_previous (porder);
 
-	if (entry != NULL) {
-		res = TRUE;
+	res = (entry != NULL);
+	if (entry)
 		rhythmdb_entry_unref (entry);
-	} else {
-		res = FALSE;
-	}
 
 	return res;
 }
@@ -874,9 +869,10 @@ rb_play_order_go_previous (RBPlayOrder *porder)
 gboolean
 rb_play_order_model_not_empty (RBPlayOrder *porder)
 {
+	GtkTreeIter iter;
+
 	g_return_val_if_fail (RB_IS_PLAY_ORDER (porder), FALSE);
 
-	GtkTreeIter iter;
 	if (!porder->priv->query_model)
 		return FALSE;
 	return gtk_tree_model_get_iter_first (GTK_TREE_MODEL (porder->priv->query_model), &iter);

@@ -292,7 +292,7 @@ static RhythmDBEntry*
 rb_random_play_order_get_next (RBPlayOrder* porder)
 {
 	RBRandomPlayOrder *rorder;
-	RhythmDBEntry *entry;
+	RhythmDBEntry *entry, *current;
 	RBHistory *history;
 
 	g_return_val_if_fail (porder != NULL, NULL);
@@ -303,25 +303,33 @@ rb_random_play_order_get_next (RBPlayOrder* porder)
 	rb_random_handle_query_model_changed (rorder);
 	history = get_history (rorder);
 
-	entry = rb_play_order_get_playing_entry (porder);
+	current = rb_play_order_get_playing_entry (porder);
+	entry = NULL;
+
 	if (rb_history_length (history) == 0
-	    || (entry == rb_history_current (history)
+	    || (current == rb_history_current (history)
 	        && rb_history_current (history) == rb_history_last (history))) {
 
 		rb_debug ("choosing random entry");
 		entry = rb_random_play_order_pick_entry (rorder);
 		if (entry) {
 			rhythmdb_entry_ref (entry);
-			rb_history_append (history, entry);
+			rb_history_append (history, rhythmdb_entry_ref (entry));
 		}
 	} else {
 		rb_debug ("choosing enqueued entry");
-		if (entry == rb_history_current (history))
+
+		if (current == rb_history_current (history))
 			entry = rb_history_next (history);
 		else
 			entry = rb_history_current (history);
+		
+		if (entry)
+			rhythmdb_entry_ref (entry);
 	}
 
+	if (current)
+		rhythmdb_entry_unref (current);
 	return entry;
 }
 
@@ -338,7 +346,10 @@ rb_random_play_order_go_next (RBPlayOrder* porder)
 	rorder = RB_RANDOM_PLAY_ORDER (porder);
 	history = get_history (rorder);
 
-	rb_random_play_order_get_next (porder);
+	/* I think this forces the next track to be added to the history */
+	entry =  rb_random_play_order_get_next (porder);
+	if (entry)
+		rhythmdb_entry_unref (entry);
 
 	g_object_get (rorder, "playing-entry", &entry, NULL);
 	g_assert (entry == NULL || rb_history_current (history) == NULL || entry == rb_history_current (history));
@@ -356,6 +367,7 @@ static RhythmDBEntry*
 rb_random_play_order_get_previous (RBPlayOrder* porder)
 {
 	RBRandomPlayOrder *rorder;
+	RhythmDBEntry *entry;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder), NULL);
@@ -365,7 +377,11 @@ rb_random_play_order_get_previous (RBPlayOrder* porder)
 	rb_random_handle_query_model_changed (rorder);
 
 	rb_debug ("choosing history entry");
-	return rb_history_previous (get_history (rorder));
+	entry = rb_history_previous (get_history (rorder));
+	if (entry)
+		rhythmdb_entry_ref (entry);
+
+	return entry;
 }
 
 static void
@@ -392,10 +408,6 @@ rb_random_db_changed (RBPlayOrder *porder, RhythmDB *db)
 	g_return_if_fail (RB_IS_RANDOM_PLAY_ORDER (porder));
 
 	rb_history_clear (RB_RANDOM_PLAY_ORDER (porder)->priv->history);
-
-	rb_history_set_destroy_notify (RB_RANDOM_PLAY_ORDER (porder)->priv->history,
-				       (GFunc) rhythmdb_entry_unref,
-				       NULL);
 }
 
 static void

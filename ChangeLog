@@ -1,3 +1,22 @@
+2006-08-06  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-play-order-queue.c: (rb_queue_play_order_go_next),
+	(rb_queue_play_order_get_previous):
+	* shell/rb-play-order-random.c: (rb_random_play_order_get_next),
+	(rb_random_play_order_go_next),
+	(rb_random_play_order_get_previous), (rb_random_db_changed):
+	* shell/rb-play-order-shuffle.c: (rb_shuffle_play_order_init),
+	(rb_shuffle_play_order_get_next), (rb_shuffle_play_order_go_next),
+	(rb_shuffle_play_order_get_previous), (add_randomly_to_history),
+	(rb_shuffle_db_changed), (rb_shuffle_entry_added),
+	(rb_shuffle_entry_removed),
+	(query_model_and_history_contents_match):
+	* shell/rb-play-order.c: (rb_play_order_query_model_changed),
+	(rb_play_order_entry_added_cb), (rb_play_order_row_deleted_cb),
+	(default_has_next), (default_has_previous),
+	(rb_play_order_model_not_empty): Fix assorted refcounting issues in
+	various play orders, after reviewing the code. Should fix #349601.
+
 2006-08-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py:

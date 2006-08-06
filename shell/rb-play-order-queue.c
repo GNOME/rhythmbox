@@ -117,6 +117,8 @@ rb_queue_play_order_go_next (RBPlayOrder *porder)
 
 	next = rb_queue_play_order_get_next (porder);
 	rb_play_order_set_playing_entry (porder, next);
+	if (next)
+		rhythmdb_entry_unref (next);
 }
 
 static RhythmDBEntry*
@@ -136,7 +138,6 @@ rb_queue_play_order_get_previous (RBPlayOrder *porder)
 	if (entry == NULL)
 		return NULL;
 	prev = rhythmdb_query_model_get_previous_from_entry (model, entry);
-	rhythmdb_entry_unref (entry);
 	return prev;
 }
 
