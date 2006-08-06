@@ -1,5 +1,18 @@
 2006-08-06  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-play-order-shuffle.c: (rb_shuffle_play_order_finalize),
+	(rb_shuffle_play_order_get_next), (rb_shuffle_play_order_go_next),
+	(rb_shuffle_play_order_get_previous),
+	(rb_shuffle_play_order_go_previous), (handle_query_model_changed),
+	(remove_from_history), (add_randomly_to_history),
+	(rb_shuffle_sync_history_with_query_model),
+	(rb_shuffle_playing_entry_changed), (rb_shuffle_db_entry_deleted),
+	(query_model_and_history_contents_match): remove the tentatative
+	history stuff, which is from older code, like we did for -random a few
+	weeks ago.
+
+2006-08-06  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-play-order-queue.c: (rb_queue_play_order_go_next),
 	(rb_queue_play_order_get_previous):
 	* shell/rb-play-order-random.c: (rb_random_play_order_get_next),
