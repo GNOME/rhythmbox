@@ -1838,6 +1838,7 @@ rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
 					    RhythmDBQueryModel *model)
 {
 	const char *a_str, *b_str;
+	gulong a_val, b_val;
 	gint ret;
 
 	/* feeds */
@@ -1847,6 +1848,12 @@ rb_podcast_source_post_feed_cell_sort_func (RhythmDBEntry *a,
 	ret = strcmp (a_str, b_str);
 	if (ret != 0)
 		return ret;
+
+	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_POST_TIME);
+	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_POST_TIME);
+
+	if (a_val != b_val)
+		return (a_val > b_val) ? 1 : -1;
 
 	/* titles */
 	a_str = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE);
