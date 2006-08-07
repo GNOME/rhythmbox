@@ -561,7 +561,6 @@ main (int argc, char **argv)
 
 	g_object_unref (G_OBJECT (shell_proxy));
 	g_object_unref (G_OBJECT (player_proxy));
-	dbus_g_connection_unref (bus);
 	g_option_context_free (context);
 
 	return 0;
