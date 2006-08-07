@@ -1,5 +1,11 @@
 2006-08-07  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: (process_added_entries_cb): don't auto-hide
+	remote tracks with GStreamer 0.10, and remember their visibility like
+	local ones.
+
+2006-08-07  James Livingston  <doclivingston@gmail.com>
+
 	* remote/dbus/rb-client.c: (main): don't unref the bus instance, since
 	apparently it's a borrowed reference. Should fix #347072.
 
