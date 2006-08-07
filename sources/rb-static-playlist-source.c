@@ -807,9 +807,10 @@ search_action_changed (GtkRadioAction  *action,
 static guint
 impl_want_uri (RBSource *source, const char *uri)
 {
-	/* take anything local or on smb */
-	if (rb_uri_is_local (uri) || 
-	    g_str_has_prefix (uri, "smb://"))
+	/* take anything local, on smb, or sftp */
+	if (rb_uri_is_local (uri) ||
+	    g_str_has_prefix (uri, "smb://") ||
+	    g_str_has_prefix (uri, "sftp://"))
 		return 25;	/* less than what the library returns */
 
 	return 0;

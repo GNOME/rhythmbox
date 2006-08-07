@@ -1211,9 +1211,10 @@ impl_paste (RBSource *asource, GList *entries)
 static guint
 impl_want_uri (RBSource *source, const char *uri)
 {
-	/* assume anything local or on smb is a song */
-	if (rb_uri_is_local (uri) || 
-	    g_str_has_prefix (uri, "smb://"))
+	/* assume anything local, on smb, or on sftp is a song */
+	if (rb_uri_is_local (uri) ||
+	    g_str_has_prefix (uri, "smb://") ||
+	    g_str_has_prefix (uri, "sftp://"))
 		return 50;
 
 	return 0;

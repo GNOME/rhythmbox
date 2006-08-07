@@ -1,3 +1,9 @@
+2006-08-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-library-source.c: (impl_want_uri):
+	* sources/rb-static-playlist-source.c: (impl_want_uri):
+	Treat sftp:// URIs as likely indicators of songness.
+
 2006-08-07  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb.c: (process_added_entries_cb): don't auto-hide
