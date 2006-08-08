@@ -1,5 +1,18 @@
 2006-08-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post),
+	(rb_podcast_manager_download_file_info_cb),
+	(rb_podcast_manager_abort_download), (download_info_free),
+	(download_info_new):
+	Use gnome_vfs_async_get_file_info to figure out the local filename for
+	a podcast episode, so we get the filename from the target of any
+	redirects, rather than the source.  When creating the GnomeVFSURI, hide
+	the query string, then append it later, to stop gnome-vfs from
+	converting 'http://' to 'http:/'.  If the local filename ends with the
+	query string, remove it.  Fixes #330766 and #321991.
+
+2006-08-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-library-source.c: (impl_want_uri):
 	* sources/rb-static-playlist-source.c: (impl_want_uri):
 	Treat sftp:// URIs as likely indicators of songness.
