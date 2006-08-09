@@ -741,6 +741,10 @@ rhythmdb_property_model_get_path (GtkTreeModel *tree_model,
 
 	g_return_val_if_fail (iter->stamp == model->priv->stamp, NULL);
 
+	if (iter->user_data == model->priv->all) {
+		return gtk_tree_path_new_first ();
+	}
+
 	if (g_sequence_ptr_is_end (iter->user_data))
 		return NULL;
 
@@ -748,7 +752,7 @@ rhythmdb_property_model_get_path (GtkTreeModel *tree_model,
 	if (iter->user_data == model->priv->all)
 		gtk_tree_path_append_index (path, 0);
 	else
-		gtk_tree_path_append_index (path, g_sequence_ptr_get_position (iter->user_data)+1);
+		gtk_tree_path_append_index (path, g_sequence_ptr_get_position (iter->user_data) + 1);
 	return path;
 }
 
@@ -760,7 +764,6 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model,
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 
-	g_return_if_fail (!g_sequence_ptr_is_end (iter->user_data));
 	g_return_if_fail (model->priv->stamp == iter->stamp);
 
 	if (iter->user_data == model->priv->all) {
@@ -781,8 +784,11 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model,
 			g_assert_not_reached ();
 		}
 	} else {
-		RhythmDBPropertyModelEntry *prop = g_sequence_ptr_get_data (iter->user_data);
+		RhythmDBPropertyModelEntry *prop;
 
+		g_return_if_fail (!g_sequence_ptr_is_end (iter->user_data));
+
+		prop = g_sequence_ptr_get_data (iter->user_data);
 		switch (column) {
 		case RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE:
 			g_value_init (value, G_TYPE_STRING);
@@ -810,10 +816,12 @@ rhythmdb_property_model_iter_next (GtkTreeModel  *tree_model,
 
 	g_return_val_if_fail (iter->stamp == model->priv->stamp, FALSE);
 
-	if (iter->user_data == model->priv->all)
+	if (iter->user_data == model->priv->all) {
 		iter->user_data = g_sequence_get_begin_ptr (model->priv->properties);
-	else
+	} else {
+		g_return_val_if_fail (!g_sequence_ptr_is_end (iter->user_data), FALSE);
 		iter->user_data = g_sequence_ptr_next (iter->user_data);
+	}
 
 	return !g_sequence_ptr_is_end (iter->user_data);
 }

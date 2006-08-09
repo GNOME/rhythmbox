@@ -1,3 +1,12 @@
+2006-08-09  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_get_path),
+	(rhythmdb_property_model_get_value),
+	(rhythmdb_property_model_iter_next): don't attempt to verify the
+	iterator if it's the All value, since it isn't valid. Fixes a
+	potential crasher.
+
 2006-08-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_copy_post),
