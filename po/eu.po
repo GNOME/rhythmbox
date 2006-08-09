@@ -1,6 +1,4 @@
-# translation of eu.po to Basque
 # translation of rhythmbox.HEAD.po to Basque
-# Basque translation of rhythmbox.
 # Copyright (C) 2004, 2005 THE rhythmbox'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the rhythmbox package.
 # Mikel Olasagasti <hey_neken@mundurat.net>, 2004, 2005.
@@ -11,17 +9,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-20 10:12+0000\n"
-"PO-Revision-Date: 2006-07-20 12:26+0000\n"
+"POT-Creation-Date: 2006-08-09 15:19+0000\n"
+"PO-Revision-Date: 2006-08-09 15:24+0000\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
 "Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: Plural-Forms: Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"\n"
-"\n"
 "X-Generator: KBabel 1.10.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"\n"
+
 
 #: ../backends/gstreamer/rb-encoder-gst.c:507
 #, c-format
@@ -42,8 +40,8 @@ msgstr "Erreprodukzioko errore ezezaguna"
 #. Assemble list of search keywords (and thus search queries)
 #. If we still have no definite hit, use first result where artist matches
 #: ../daapsharing/rb-daap-connection.c:671
-#: ../iradio/rb-station-properties-dialog.c:427 ../lib/rb-util.c:588
-#: ../lib/rb-util.c:802
+#: ../iradio/rb-station-properties-dialog.c:427 ../lib/rb-util.c:597
+#: ../lib/rb-util.c:811
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
@@ -57,45 +55,31 @@ msgstr "Erreprodukzioko errore ezezaguna"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1029
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1030
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1398
+#: ../podcast/rb-podcast-manager.c:1497
 #: ../podcast/rb-podcast-properties-dialog.c:449
-#: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1159
-#: ../rhythmdb/rhythmdb-tree.c:1047 ../rhythmdb/rhythmdb-tree.c:1051
-#: ../rhythmdb/rhythmdb-tree.c:1055 ../rhythmdb/rhythmdb-tree.c:1059
-#: ../shell/rb-shell-player.c:2684 ../sources/rb-audiocd-source.c:199
-#: ../sources/rb-ipod-source.c:230 ../sources/rb-iradio-source.c:486
-#: ../sources/rb-podcast-source.c:1638 ../widgets/rb-entry-view.c:733
-#: ../widgets/rb-entry-view.c:754 ../widgets/rb-entry-view.c:1008
-#: ../widgets/rb-entry-view.c:1020 ../widgets/rb-entry-view.c:1032
-#: ../widgets/rb-song-info.c:730 ../widgets/rb-song-info.c:894
-#: ../widgets/rb-song-info.c:1158
+#: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1239
+#: ../rhythmdb/rhythmdb-tree.c:1090 ../rhythmdb/rhythmdb-tree.c:1094
+#: ../rhythmdb/rhythmdb-tree.c:1098 ../rhythmdb/rhythmdb-tree.c:1102
+#: ../shell/rb-shell-player.c:2814 ../sources/rb-audiocd-source.c:199
+#: ../sources/rb-ipod-source.c:230 ../sources/rb-iradio-source.c:503
+#: ../sources/rb-podcast-source.c:1637 ../widgets/rb-entry-view.c:776
+#: ../widgets/rb-entry-view.c:801 ../widgets/rb-entry-view.c:1084
+#: ../widgets/rb-entry-view.c:1096 ../widgets/rb-entry-view.c:1108
+#: ../widgets/rb-song-info.c:732 ../widgets/rb-song-info.c:896
+#: ../widgets/rb-song-info.c:1164
 msgid "Unknown"
 msgstr "Ezezaguna"
 
-#: ../daapsharing/rb-daap-dialog.c:48
-msgid "Password Required"
-msgstr "Pasahitza behar da"
-
-#: ../daapsharing/rb-daap-dialog.c:70
-#, c-format
-msgid "The music share '%s' requires a password to connect"
-msgstr "'%s'(r)en partekatutako musikak pasahitza behar du konektatzeko"
-
-#: ../daapsharing/rb-daap-dialog.c:78
-#: ../data/glade/audioscrobbler-prefs.glade.h:12
-msgid "_Password:"
-msgstr "_Pasahitza:"
-
-#: ../daapsharing/rb-daap-dialog.c:120
+#: ../daapsharing/rb-daap-dialog.c:47
 msgid "Invalid share name"
 msgstr "Baliogabeko fitxategi-izena"
 
-#: ../daapsharing/rb-daap-dialog.c:139
+#: ../daapsharing/rb-daap-dialog.c:66
 #, c-format
 msgid "The shared music name '%s' is already taken. Please choose another."
 msgstr "Partekatutako '%s' musika jadanik hartuta dago. Aukeratu beste bat."
 
-#: ../daapsharing/rb-daap-dialog.c:147 ../data/glade/daap-prefs.glade.h:3
+#: ../daapsharing/rb-daap-dialog.c:74 ../data/glade/daap-prefs.glade.h:3
 msgid "Shared music _name:"
 msgstr "Partekatutako musika-_izena:"
 
@@ -158,7 +142,7 @@ msgstr "'howl MDNS' zerbitzua ez da exekutatzen ari"
 msgid "%s's Music"
 msgstr "%s(r)en musika"
 
-#: ../daapsharing/rb-daap-src.c:682
+#: ../daapsharing/rb-daap-src.c:629
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "%s:%d konexioa ukatu egin da."
@@ -194,9 +178,9 @@ msgstr "Last.fm profila"
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
 #: ../iradio/rb-station-properties-dialog.c:438
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:846
-#: ../rhythmdb/rhythmdb.c:2647 ../widgets/rb-entry-view.c:688
-#: ../widgets/rb-entry-view.c:1066 ../widgets/rb-entry-view.c:1079
-#: ../widgets/rb-song-info.c:1131
+#: ../rhythmdb/rhythmdb.c:2764 ../widgets/rb-entry-view.c:724
+#: ../widgets/rb-entry-view.c:1142 ../widgets/rb-entry-view.c:1155
+#: ../widgets/rb-song-info.c:1137
 msgid "Never"
 msgstr "Inoiz"
 
@@ -211,6 +195,10 @@ msgstr "Egoera:"
 #: ../data/glade/audioscrobbler-prefs.glade.h:11
 msgid "Tracks submitted:"
 msgstr "Bidalitako pistak:"
+
+#: ../data/glade/audioscrobbler-prefs.glade.h:12
+msgid "_Password:"
+msgstr "_Pasahitza:"
 
 #: ../data/glade/audioscrobbler-prefs.glade.h:13
 msgid "_Username:"
@@ -366,7 +354,7 @@ msgstr "_Artista"
 msgid "_Artists and albums"
 msgstr "_Artistak eta albumak"
 
-#: ../data/glade/general-prefs.glade.h:17 ../widgets/rb-entry-view.c:994
+#: ../data/glade/general-prefs.glade.h:17 ../widgets/rb-entry-view.c:1070
 msgid "_Genre"
 msgstr "_Generoa"
 
@@ -382,15 +370,15 @@ msgstr "_Erreproduzitutako azkena"
 msgid "_Play count"
 msgstr "_Erreprodukzio kopurua"
 
-#: ../data/glade/general-prefs.glade.h:21 ../widgets/rb-entry-view.c:1028
+#: ../data/glade/general-prefs.glade.h:21 ../widgets/rb-entry-view.c:1104
 msgid "_Quality"
 msgstr "_Kalitatea"
 
-#: ../data/glade/general-prefs.glade.h:22 ../widgets/rb-entry-view.c:1041
+#: ../data/glade/general-prefs.glade.h:22 ../widgets/rb-entry-view.c:1117
 msgid "_Rating"
 msgstr "_Balioa"
 
-#: ../data/glade/general-prefs.glade.h:23 ../widgets/rb-entry-view.c:1016
+#: ../data/glade/general-prefs.glade.h:23 ../widgets/rb-entry-view.c:1092
 msgid "_Year"
 msgstr "_Urtea"
 
@@ -667,7 +655,7 @@ msgstr "_Disko-zenbakia:"
 
 #: ../data/glade/station-new.glade.h:1
 msgid "_URL of internet radio station:"
-msgstr "Interneteko irrati emisiogunearen _URLa:"
+msgstr "Interneteko irratiaren _URLa:"
 
 #: ../data/glade/station-properties.glade.h:5
 msgid "L_ocation:"
@@ -683,7 +671,7 @@ msgstr "Ireki URI batetik"
 
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
-msgstr "Nire gogokoenak"
+msgstr "Gogokoenak"
 
 #: ../data/playlists.xml.in.h:2
 msgid "Recently Added"
@@ -693,8 +681,8 @@ msgstr "Duela gutxi gehituta"
 msgid "Recently Played"
 msgstr "Duela gutxi erreproduzitua"
 
-#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:982
-#: ../shell/rb-shell.c:2021
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:1017
+#: ../shell/rb-shell.c:2039
 msgid "Music Player"
 msgstr "Musika erreproduzigailua"
 
@@ -709,24 +697,20 @@ msgstr "Rhythmbox musika erreproduzigailua"
 #: ../iradio/rb-new-station-dialog.c:105
 #: ../iradio/rb-station-properties-dialog.c:341
 msgid "New Internet Radio Station"
-msgstr "Interneteko irrati emisiogune berria"
+msgstr "Interneteko irrati berria"
 
 #: ../iradio/rb-station-properties-dialog.c:337
 #: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:337 ../widgets/rb-song-info.c:834
+#: ../podcast/rb-podcast-properties-dialog.c:337 ../widgets/rb-song-info.c:836
 #, c-format
 msgid "%s Properties"
 msgstr "%s propietateak"
 
 #: ../iradio/rb-station-properties-dialog.c:429
-#: ../podcast/rb-podcast-properties-dialog.c:447 ../widgets/rb-song-info.c:892
+#: ../podcast/rb-podcast-properties-dialog.c:447 ../widgets/rb-song-info.c:894
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
-
-#: ../lib/eel-gconf-extensions.c:66
-msgid "Configuration system error"
-msgstr "Sistemaren konfigurazio errorea"
 
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:269
@@ -761,48 +745,48 @@ msgstr "%b %d %l:%M %p"
 msgid "%b %d %Y"
 msgstr "%Y %b %d"
 
-#: ../lib/rb-util.c:590
+#: ../lib/rb-util.c:599
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:592
+#: ../lib/rb-util.c:601
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:627
+#: ../lib/rb-util.c:636
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d faltan"
 
-#: ../lib/rb-util.c:631
+#: ../lib/rb-util.c:640
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d faltan"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:645
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:640
+#: ../lib/rb-util.c:649
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:277
+#: ../metadata/rb-metadata-dbus-client.c:281
 msgid "Internal GStreamer problem; file a bug"
 msgstr "GStreamer barneko arazoa; osatu akatsa"
 
-#: ../metadata/rb-metadata-dbus-client.c:295
-#: ../metadata/rb-metadata-dbus-client.c:345
-#: ../metadata/rb-metadata-dbus-client.c:350
-#: ../metadata/rb-metadata-dbus-client.c:370
-#: ../metadata/rb-metadata-dbus-client.c:380
-#: ../metadata/rb-metadata-dbus-client.c:388
-#: ../metadata/rb-metadata-dbus-client.c:528
-#: ../metadata/rb-metadata-dbus-client.c:538
+#: ../metadata/rb-metadata-dbus-client.c:299
+#: ../metadata/rb-metadata-dbus-client.c:349
+#: ../metadata/rb-metadata-dbus-client.c:354
+#: ../metadata/rb-metadata-dbus-client.c:374
+#: ../metadata/rb-metadata-dbus-client.c:384
+#: ../metadata/rb-metadata-dbus-client.c:392
+#: ../metadata/rb-metadata-dbus-client.c:532
+#: ../metadata/rb-metadata-dbus-client.c:542
 msgid "D-BUS communication error"
 msgstr "D-BUS komunikazio-errorea"
 
@@ -1043,15 +1027,15 @@ msgstr "Pista bidaltzeak hainbat aldiz huts egin du"
 msgid "Last.fm Profile Preferences"
 msgstr "Last.fm profilaren hobespenak"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:79
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:77
 msgid "_Create Audio CD..."
 msgstr "_Sortu audio CDa..."
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:80
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:78
 msgid "Create an audio CD from playlist"
 msgstr "Sortu audio CDa erreprodukzio-zerrendatik"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:174
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:172
 msgid "Unable to create audio CD"
 msgstr "Ezin izan da audio CDa sortu"
 
@@ -1076,14 +1060,14 @@ msgid ""
 "Adds iPod support to Rhythmbox so that it can show an iPod content, and play "
 "from there"
 msgstr ""
-"iPod gailuen euskarria gehitzen dio Rhythmbox-i, iPod baten edukia bistaratzeko eta "
-"bertatik pistak erreproduzitzeko"
+"iPod gailuen euskarria gehitzen dio Rhythmbox-i, iPod baten edukia "
+"bistaratzeko eta bertatik pistak erreproduzitzeko"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
 msgid "iPod support"
 msgstr "iPod euskarria"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:85 ../shell/rb-playlist-manager.c:141
+#: ../plugins/ipod/rb-ipod-plugin.c:85 ../shell/rb-playlist-manager.c:144
 msgid "_Rename"
 msgstr "_Izena aldatu"
 
@@ -1145,19 +1129,19 @@ msgstr "Python-en kontsola interaktiboa"
 msgid "Python Console"
 msgstr "Python kontsola"
 
-#: ../plugins/rb-plugin-manager.c:46
+#: ../plugins/rb-plugin-manager.c:48
 msgid "Plugin"
 msgstr "Plugin-a"
 
-#: ../plugins/rb-plugin-manager.c:47
+#: ../plugins/rb-plugin-manager.c:49
 msgid "Enabled"
 msgstr "Gaituta"
 
-#: ../plugins/rb-plugins-engine.c:515
+#: ../plugins/rb-plugins-engine.c:531
 msgid "Plugin Error"
 msgstr "Plugin-aren errorea"
 
-#: ../plugins/rb-plugins-engine.c:515
+#: ../plugins/rb-plugins-engine.c:531
 #, c-format
 msgid "Unable to activate plugin %s"
 msgstr "Ezin da %s plugin-a aktibatu"
@@ -1188,34 +1172,34 @@ msgstr "Ez du askorik egiten"
 msgid "New Podcast Feed"
 msgstr "Podcast-en iturri berria"
 
-#: ../podcast/rb-podcast-manager.c:683
+#: ../podcast/rb-podcast-manager.c:779
 msgid "Invalid URL"
 msgstr "URL baliogabea"
 
-#: ../podcast/rb-podcast-manager.c:684
+#: ../podcast/rb-podcast-manager.c:780
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "\"%s\" URLa ez da baliozkoa, egiaztatu ezazu."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:692
+#: ../podcast/rb-podcast-manager.c:788
 msgid "URL already added"
 msgstr "URLa jadanik gehituta"
 
-#: ../podcast/rb-podcast-manager.c:693
+#: ../podcast/rb-podcast-manager.c:789
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"\"%s\" URLa jadanik irrati emisiogune gisa gehituta dago. Podcast baten "
-"iturria bada kendu irrati emisiogunea."
+"\"%s\" URLa jadanik irrati gisa gehituta dago. Podcast baten "
+"iturria bada kendu irratia."
 
-#: ../podcast/rb-podcast-manager.c:763
+#: ../podcast/rb-podcast-manager.c:859
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1544
+#: ../podcast/rb-podcast-manager.c:1643
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "Arazoak daude podcast hau gehitzean. Egiaztatu URLa: %s"
@@ -1227,24 +1211,24 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"'%s' URLa ez dirudi podcast-eko iturria denik. Agian URL okerra da, edo iturria "
-"hondatuta dago. Hala ere, nahi duzu Rhythmbox-ek hori erabiltzea?"
+"'%s' URLa ez dirudi podcast-eko iturria denik. Agian URL okerra da, edo "
+"iturria hondatuta dago. Hala ere, nahi duzu Rhythmbox-ek hori erabiltzea?"
 
 #: ../podcast/rb-podcast-properties-dialog.c:397
 msgid "Not Downloaded"
 msgstr "Deskargatu gabe"
 
-#: ../rhythmdb/rhythmdb.c:439 ../rhythmdb/rhythmdb.c:1853
-#: ../rhythmdb/rhythmdb.c:1971
+#: ../rhythmdb/rhythmdb.c:457 ../rhythmdb/rhythmdb.c:1943
+#: ../rhythmdb/rhythmdb.c:2068
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Ezin izan da %s-ra sartu: %s"
 
-#: ../rhythmdb/rhythmdb.c:1263
+#: ../rhythmdb/rhythmdb.c:1345
 msgid "<invalid filename>"
 msgstr "<baliogabeko fitxategi-izena>"
 
-#: ../rhythmdb/rhythmdb.c:1521
+#: ../rhythmdb/rhythmdb.c:1605
 msgid "invalid unicode in error message"
 msgstr "baliogabeko unicode-a erroreko mezuan"
 
@@ -1253,26 +1237,26 @@ msgstr "baliogabeko unicode-a erroreko mezuan"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2645 ../sources/rb-podcast-source.c:1644
-#: ../widgets/rb-entry-view.c:1949
+#: ../rhythmdb/rhythmdb.c:2762 ../sources/rb-podcast-source.c:1643
+#: ../widgets/rb-entry-view.c:2043
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3253
+#: ../rhythmdb/rhythmdb.c:3416
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "Minutu %ld"
 msgstr[1] "%ld minutu"
 
-#: ../rhythmdb/rhythmdb.c:3254
+#: ../rhythmdb/rhythmdb.c:3417
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "Ordu %ld"
 msgstr[1] "%ld ordu"
 
-#: ../rhythmdb/rhythmdb.c:3255
+#: ../rhythmdb/rhythmdb.c:3418
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1280,7 +1264,7 @@ msgstr[0] "Egun %ld"
 msgstr[1] "%ld egun"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3261
+#: ../rhythmdb/rhythmdb.c:3424
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s eta %s"
@@ -1288,198 +1272,206 @@ msgstr "%s, %s eta %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3267 ../rhythmdb/rhythmdb.c:3275
-#: ../rhythmdb/rhythmdb.c:3286
+#: ../rhythmdb/rhythmdb.c:3430 ../rhythmdb/rhythmdb.c:3438
+#: ../rhythmdb/rhythmdb.c:3449
 #, c-format
 msgid "%s and %s"
 msgstr "%s eta %s"
 
-#: ../rhythmdb/rhythmdb-monitor.c:303
+#: ../rhythmdb/rhythmdb-monitor.c:306
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Ezin izan da %s monitorizatu: %s"
 
-#: ../rhythmdb/rhythmdb-property-model.c:412
-#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:153
-#: ../sources/rb-podcast-source.c:309
-#: ../sources/rb-static-playlist-source.c:86
+#: ../rhythmdb/rhythmdb-property-model.c:417
+#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:156
+#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-static-playlist-source.c:88
 msgid "All"
 msgstr "Denak"
 
-#: ../shell/main.c:122
+#: ../shell/main.c:124
 msgid "Enable debug output"
 msgstr "Gaitu arazketaren irteera"
 
-#: ../shell/main.c:123
+#: ../shell/main.c:125
 msgid "Enable debug output matching a specified string"
 msgstr "Gaitu arazketaren irteera kate bat bilatzeko"
 
-#: ../shell/main.c:124
+#: ../shell/main.c:126
 msgid "Do not update the library with file changes"
 msgstr "Ez eguneratu liburutegia fitxategi-aldaketekin"
 
-#: ../shell/main.c:125
+#: ../shell/main.c:127
 msgid "Do not register the shell"
 msgstr "Ez erregistratu shell-a"
 
-#: ../shell/main.c:126
+#: ../shell/main.c:128
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Datuak betirako ez gorde (--no-registration inplikatzen du)"
 
-#: ../shell/main.c:127
+#: ../shell/main.c:129
 msgid "Path for database file to use"
 msgstr "Erabiliko den datubase-fitxategiaren bidea"
 
-#: ../shell/main.c:128
+#: ../shell/main.c:130
+msgid "Path for playlists file to use"
+msgstr "Erabiliko den errepordukzio-zerrenda fitxategiaren bidea"
+
+#: ../shell/main.c:131
 msgid "Quit Rhythmbox"
 msgstr "Irten Rhythmbox-etik"
 
-#: ../shell/main.c:159 ../widgets/rb-druid.c:184
+#: ../shell/main.c:132
+msgid "[URI...]"
+msgstr "[URIa...]"
+
+#: ../shell/main.c:167 ../shell/main.c:176 ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:127
+#: ../shell/rb-playlist-manager.c:130
 msgid "_Playlist"
 msgstr "Erre_produkzio-zerrenda"
 
-#: ../shell/rb-playlist-manager.c:129
+#: ../shell/rb-playlist-manager.c:132
 msgid "_New Playlist"
 msgstr "Erreprodukzio-zerrenda _berria..."
 
-#: ../shell/rb-playlist-manager.c:130
+#: ../shell/rb-playlist-manager.c:133
 msgid "Create a new playlist"
 msgstr "Sortu erreprodukzio zerrenda berria"
 
-#: ../shell/rb-playlist-manager.c:132
+#: ../shell/rb-playlist-manager.c:135
 msgid "New _Automatic Playlist..."
 msgstr "Erreprodukzio-zerrenda automatiko _berria..."
 
-#: ../shell/rb-playlist-manager.c:133
+#: ../shell/rb-playlist-manager.c:136
 msgid "Create a new automatically updating playlist"
 msgstr "Sortu automatikoki eguneratzen den erreproduzio-zerrenda berria"
 
-#: ../shell/rb-playlist-manager.c:135
+#: ../shell/rb-playlist-manager.c:138
 msgid "_Load from File..."
 msgstr "_Kargatu fitxategitik..."
 
-#: ../shell/rb-playlist-manager.c:136
+#: ../shell/rb-playlist-manager.c:139
 msgid "Choose a playlist to be loaded"
 msgstr "Aukeratu kargatzeko erreprodukzio-zerrenda bat"
 
-#: ../shell/rb-playlist-manager.c:138
+#: ../shell/rb-playlist-manager.c:141
 msgid "_Save to File..."
 msgstr "_Gorde fitxategian..."
 
-#: ../shell/rb-playlist-manager.c:139
+#: ../shell/rb-playlist-manager.c:142
 msgid "Save a playlist to a file"
 msgstr "Gorde erreprodukzio-zerrenda fitxategi batean"
 
-#: ../shell/rb-playlist-manager.c:142
+#: ../shell/rb-playlist-manager.c:145
 msgid "Rename playlist"
 msgstr "Berrizendatu erreprodukzio-zerrenda"
 
-#: ../shell/rb-playlist-manager.c:144
+#: ../shell/rb-playlist-manager.c:147
 msgid "_Delete"
 msgstr "_Ezabatu"
 
-#: ../shell/rb-playlist-manager.c:145
+#: ../shell/rb-playlist-manager.c:148
 msgid "Delete playlist"
 msgstr "Ezabatu erreprodukzio-zerrenda"
 
-#: ../shell/rb-playlist-manager.c:147
+#: ../shell/rb-playlist-manager.c:150
 msgid "_Edit..."
 msgstr "E_ditatu..."
 
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:151
 msgid "Change this automatic playlist"
 msgstr "Aldatu erreprodukzio-zerrenda automatiko hau"
 
-#: ../shell/rb-playlist-manager.c:150
+#: ../shell/rb-playlist-manager.c:153
 msgid "_Queue All Tracks"
 msgstr "_Ilaratu pista guztiak"
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:154
 msgid "Add all tracks in this playlist to the queue"
 msgstr "Zerrendako pista guztiak ilarari gehitzen dizkio"
 
-#: ../shell/rb-playlist-manager.c:540
+#: ../shell/rb-playlist-manager.c:561
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Erreprodukzio-zerrenda formatu ezezagun batean edo apurtua dago."
 
-#: ../shell/rb-playlist-manager.c:928
+#: ../shell/rb-playlist-manager.c:959
 msgid "Untitled Playlist"
 msgstr "Titulurik gabeko erreprodukzio-zerrenda"
 
-#: ../shell/rb-playlist-manager.c:1171
+#: ../shell/rb-playlist-manager.c:1218
 msgid "Couldn't read playlist"
 msgstr "Ezin izan da erreprodukzio-zerrenda irakurri"
 
-#: ../shell/rb-playlist-manager.c:1186
+#: ../shell/rb-playlist-manager.c:1233
 msgid "Load Playlist"
 msgstr "Kargatu erreprodukzio-zerrenda"
 
-#: ../shell/rb-playlist-manager.c:1207
+#: ../shell/rb-playlist-manager.c:1254
 msgid "MPEG Version 3.0 URL"
 msgstr "MPEG 3.0 bertsioa URLa"
 
-#: ../shell/rb-playlist-manager.c:1208
+#: ../shell/rb-playlist-manager.c:1255
 msgid "Shoutcast playlist"
 msgstr "Shoutcast-eko zerrenda"
 
-#: ../shell/rb-playlist-manager.c:1253 ../sources/rb-playlist-source.c:523
+#: ../shell/rb-playlist-manager.c:1300 ../sources/rb-playlist-source.c:564
 msgid "Couldn't save playlist"
 msgstr "Ezin izan da erreprodukzio-zerrenda gorde"
 
-#: ../shell/rb-playlist-manager.c:1253
+#: ../shell/rb-playlist-manager.c:1300
 msgid "Unsupported file extension given."
 msgstr "Onartu gabeko fitxategi-luzapena eman da."
 
-#: ../shell/rb-playlist-manager.c:1539
+#: ../shell/rb-playlist-manager.c:1601
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "%s erreprodukzio-zerrenda jadanik badago"
 
-#: ../shell/rb-playlist-manager.c:1569 ../shell/rb-playlist-manager.c:1602
-#: ../shell/rb-playlist-manager.c:1642 ../shell/rb-playlist-manager.c:1685
+#: ../shell/rb-playlist-manager.c:1631 ../shell/rb-playlist-manager.c:1664
+#: ../shell/rb-playlist-manager.c:1704 ../shell/rb-playlist-manager.c:1747
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Erreprodukzio-zerrenda ezezaguna: %s"
 
-#: ../shell/rb-playlist-manager.c:1610 ../shell/rb-playlist-manager.c:1650
+#: ../shell/rb-playlist-manager.c:1672 ../shell/rb-playlist-manager.c:1712
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr " %s erreprodukzio-zerrenda automatiko da"
 
-#: ../shell/rb-play-order.c:281
+#: ../shell/rb-play-order.c:290
 msgid "Linear"
 msgstr "Lineala"
 
-#: ../shell/rb-play-order.c:282
+#: ../shell/rb-play-order.c:291
 msgid "Linear looping"
 msgstr "Begizta lineala"
 
-#: ../shell/rb-play-order.c:283
+#: ../shell/rb-play-order.c:292
 msgid "Shuffle"
 msgstr "Ausazkoa"
 
-#: ../shell/rb-play-order.c:284
+#: ../shell/rb-play-order.c:293
 msgid "Random with equal weights"
 msgstr "Ausaz pisu berdikoengatik"
 
-#: ../shell/rb-play-order.c:285
+#: ../shell/rb-play-order.c:294
 msgid "Random by time since last play"
 msgstr "Ausaz azken erreprodukzio denboragatik"
 
-#: ../shell/rb-play-order.c:286
+#: ../shell/rb-play-order.c:295
 msgid "Random by rating"
 msgstr "Ausaz balioarengatik"
 
-#: ../shell/rb-play-order.c:287
+#: ../shell/rb-play-order.c:296
 msgid "Random by time since last play and rating"
 msgstr "Ausaz azken erreprodukzio eta balioarengatik"
 
-#: ../shell/rb-play-order.c:288
+#: ../shell/rb-play-order.c:297
 msgid "Linear, removing entries once played"
 msgstr "Lineala, kendu sarrera behin erreproduzitutakoan"
 
@@ -1511,207 +1503,188 @@ msgstr "Bilatu euskarri aldagarri berria"
 msgid "Error transferring track"
 msgstr "Errorea pista transferitzean"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:409
 msgid "_Music"
 msgstr "_Musika"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:410
 msgid "_Edit"
 msgstr "_Editatu"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:411
 msgid "_View"
 msgstr "_Ikusi"
 
-#: ../shell/rb-shell.c:410
+#: ../shell/rb-shell.c:412
 msgid "_Control"
 msgstr "_Kontrola"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:413
 msgid "_Tools"
 msgstr "_Tresnak"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:414
 msgid "_Help"
 msgstr "_Laguntza"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:416
 msgid "_Import Folder..."
 msgstr "_Inportatu karpeta..."
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:417
 msgid "Choose folder to be added to the Library"
 msgstr "Aukeratu liburutegian gehitzeko direktorioak"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:419
 msgid "Import _File..."
 msgstr "_Inportatu fitxategia..."
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:420
 msgid "Choose file to be added to the Library"
 msgstr "Aukeratu liburutegian gehitzeko fitxategiak"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:422
 msgid "_About"
 msgstr "_Honi buruz"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:423
 msgid "Show information about the music player"
 msgstr "Erakutsi musika erreproduzigailuari buruzko informazioa"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:425
 msgid "_Contents"
 msgstr "_Edukiak"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:426
 msgid "Display music player help"
 msgstr "Bistaratu musika erreproduzigailuaren laguntza"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:428
 msgid "_Close"
 msgstr "It_xi"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:429
 msgid "Hide the music player window"
 msgstr "Ezkutatu musika erreproduzigailu-leihoa"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:431
 msgid "_Quit"
 msgstr "_Irten"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:432
 msgid "Quit the music player"
 msgstr "Irten musika erreproduzigailutik"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:434
 msgid "Prefere_nces..."
 msgstr "Hobespe_nak..."
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:435
 msgid "Edit music player preferences"
 msgstr "Editatu musika erreproduzigailuaren hobespenak"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:437
 msgid "P_lugins..."
 msgstr "P_lugin-ak..."
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:438
 msgid "Change and configure plugins"
 msgstr "Aldatu eta konfiguratu plugin-ak"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:440
 msgid "Show _All"
 msgstr "Erakutsi _denak"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:441
 msgid "Show all items in this music source"
 msgstr "Erakutsi elementu guztiak musika iturrian"
 
-#: ../shell/rb-shell.c:441
+#: ../shell/rb-shell.c:443
 msgid "_Jump to Playing Song"
 msgstr "_Salto erreproduzitzen ari den kantara"
 
-#: ../shell/rb-shell.c:442
+#: ../shell/rb-shell.c:444
 msgid "Scroll the view to the currently playing song"
 msgstr "Korritu uneko kanta bistaratu arte"
 
-#: ../shell/rb-shell.c:449
+#: ../shell/rb-shell.c:451
 msgid "Side _Pane"
 msgstr "Albo-_panela"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:452
 msgid "Change the visibility of the side pane"
 msgstr "Aldatu alboko panelaren ikusgaitasuna"
 
-#: ../shell/rb-shell.c:452
+#: ../shell/rb-shell.c:454
 msgid "_Toolbar"
 msgstr "_Tresna-barra"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:455
 msgid "Change the visibility of the toolbar"
 msgstr "Aldatu tresna-barraren ikusgaitasuna"
 
-#: ../shell/rb-shell.c:455
+#: ../shell/rb-shell.c:457
 msgid "_Small Display"
 msgstr "_Pantaila txikia"
 
-#: ../shell/rb-shell.c:456
+#: ../shell/rb-shell.c:458
 msgid "Make the main window smaller"
 msgstr "Txikiagotu leiho nagusia"
 
-#: ../shell/rb-shell.c:458
+#: ../shell/rb-shell.c:460
 msgid "_Party Mode"
 msgstr "_Parranda-modua"
 
-#: ../shell/rb-shell.c:459
+#: ../shell/rb-shell.c:461
 msgid "Change the status of the party mode"
 msgstr "Aldatu parranda-moduaren egoera"
 
-#: ../shell/rb-shell.c:461
+#: ../shell/rb-shell.c:463
 msgid "Play _Queue as Side Pane"
 msgstr "Erreproduzitu _ilara alboko panelean bezala"
 
-#: ../shell/rb-shell.c:462
+#: ../shell/rb-shell.c:464
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Ilara iturri gisa edo albo-panelaren gisa ikusgai bada aldatzen da"
 
-#: ../shell/rb-shell.c:464
+#: ../shell/rb-shell.c:466
 msgid "S_tatusbar"
 msgstr "Eg_oera-barra"
 
-#: ../shell/rb-shell.c:465
+#: ../shell/rb-shell.c:467
 msgid "Change the visibility of the statusbar"
 msgstr "Aldatu egoera-barraren ikusgaitasuna"
 
-#: ../shell/rb-shell.c:1243
+#: ../shell/rb-shell.c:1278
 msgid "Change the music volume"
 msgstr "Aldatu musikaren bolumena"
 
-#: ../shell/rb-shell.c:1664
+#: ../shell/rb-shell.c:1699
 msgid "Error while saving song information"
 msgstr "Errorea abestiaren informazioa gordetzean"
 
-#: ../shell/rb-shell.c:1766
+#: ../shell/rb-shell.c:1804
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "%d / %d pista transferitzen (%.0f%%)"
 
-#: ../shell/rb-shell.c:1769
+#: ../shell/rb-shell.c:1807
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "%d / %d pista transferitzen"
 
-#. emit remote song_changed notification
-#.
-#. song.title = g_strdup (rb_refstring_get (entry->title));
-#. song.artist = g_strdup (rb_refstring_get (entry->artist));
-#. song.genre = g_strdup (rb_refstring_get (entry->genre));
-#. song.album = g_strdup (rb_refstring_get (entry->album));
-#. song.uri = g_strdup (entry->location);
-#.
-#. song.track_number = entry->tracknum;
-#. song.disc_number = entry->discnum;
-#. song.duration = entry->duration;
-#. song.bitrate = entry->bitrate;
-#. song.filesize = entry->file_size;
-#. song.rating = entry->rating;
-#. song.play_count = entry->play_count;
-#. song.last_played = entry->last_played;
-#.
-#. g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
-#.
 #. Translators: by Artist from Album
-#: ../shell/rb-shell.c:1880
+#: ../shell/rb-shell.c:1898
 #, c-format
 msgid "by %s from %s"
 msgstr "%s / %s"
 
-#: ../shell/rb-shell.c:1994 ../shell/rb-tray-icon.c:167
+#: ../shell/rb-shell.c:2012 ../shell/rb-tray-icon.c:167
 msgid "Not playing"
 msgstr "Ez dago ezer erreproduzitzen"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1997
+#: ../shell/rb-shell.c:2015
 #, c-format
 msgid ""
 "%s\n"
@@ -1721,7 +1694,7 @@ msgstr ""
 "Pausatua, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:2001
+#: ../shell/rb-shell.c:2019
 #, c-format
 msgid ""
 "%s\n"
@@ -1731,19 +1704,19 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2041
+#: ../shell/rb-shell.c:2059
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausatua)"
 
-#: ../shell/rb-shell.c:2146
+#: ../shell/rb-shell.c:2164
 msgid "translator-credits"
 msgstr ""
 "Alberto Fernández Benito <afernn@euskalnet.net>\n"
 "Mikel Olasagasti <hey_neken@mundurat.net>\n"
 "Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>"
 
-#: ../shell/rb-shell.c:2149
+#: ../shell/rb-shell.c:2167
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -1755,7 +1728,7 @@ msgstr ""
 "bertsioan, \n"
 "edo (nahiago baduzu) beste berriago batean, jasotako baldintzak betez gero.\n"
 
-#: ../shell/rb-shell.c:2153
+#: ../shell/rb-shell.c:2171
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -1767,7 +1740,7 @@ msgstr ""
 "MERKATURATZEKO edo HELBURU PARTIKULARRETARAKO ERABILTZEKO. \n"
 "Argibide gehiago nahi izanez gero, ikus GNU Lizentzia Publiko Orokorra.\n"
 
-#: ../shell/rb-shell.c:2157
+#: ../shell/rb-shell.c:2175
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -1778,49 +1751,54 @@ msgstr ""
 "Franklin St, \n"
 "Fifth Floor, Boston, MA 02110-1301, USA.\n"
 
-#: ../shell/rb-shell.c:2166
+#: ../shell/rb-shell.c:2184
 msgid "Maintainers:"
 msgstr "Garapenaren arduradunak:"
 
-#: ../shell/rb-shell.c:2169
+#: ../shell/rb-shell.c:2187
 msgid "Former Maintainers:"
 msgstr "Haserako arduradunak:"
 
-#: ../shell/rb-shell.c:2172
+#: ../shell/rb-shell.c:2190
 msgid "Contributors:"
 msgstr "Laguntzaileak:"
 
-#: ../shell/rb-shell.c:2174
+#: ../shell/rb-shell.c:2192
 msgid "Music management and playback software for GNOME."
 msgstr "Musika kudeatzeko eta erreproduzitzeko softwarea GNOMErako."
 
-#: ../shell/rb-shell.c:2230 ../shell/rb-shell-preferences.c:119
+#: ../shell/rb-shell.c:2248 ../shell/rb-shell-preferences.c:119
 msgid "Couldn't display help"
 msgstr "Ezin izan da laguntza bistaratu"
 
-#: ../shell/rb-shell.c:2277
+#: ../shell/rb-shell.c:2295
 msgid "Configure Plugins"
 msgstr "Konfiguratu plugin-ak"
 
-#: ../shell/rb-shell.c:2348
+#: ../shell/rb-shell.c:2366
 msgid "Import Folder into Library"
 msgstr "Inportatu karpeta liburutegira"
 
-#: ../shell/rb-shell.c:2369
+#: ../shell/rb-shell.c:2387
 msgid "Import File into Library"
 msgstr "Inportatu fitxategia liburutegira"
 
-#: ../shell/rb-shell.c:3191 ../shell/rb-shell.c:3250
+#: ../shell/rb-shell.c:2961
+#, c-format
+msgid "No registered source can handle URI %s"
+msgstr "Ez da %s URIa kudeatzeko iturbururik erregistratu"
+
+#: ../shell/rb-shell.c:3204 ../shell/rb-shell.c:3263
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Abestiaren URI ezezaguna: %s"
 
-#: ../shell/rb-shell.c:3259
+#: ../shell/rb-shell.c:3272
 #, c-format
 msgid "Unknown property %s"
 msgstr "%s propietate ezezaguna"
 
-#: ../shell/rb-shell.c:3269
+#: ../shell/rb-shell.c:3282
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "%2$s propietatearen %1$s mota baliogabea"
@@ -1906,7 +1884,7 @@ msgid "Remove"
 msgstr "Kendu"
 
 #: ../shell/rb-shell-clipboard.c:159 ../shell/rb-shell-clipboard.c:162
-#: ../sources/rb-podcast-source.c:293
+#: ../sources/rb-podcast-source.c:295
 msgid "_Properties"
 msgstr "_Propietateak"
 
@@ -1914,120 +1892,120 @@ msgstr "_Propietateak"
 msgid "Show information on the selected song"
 msgstr "Erakutsi hautatutako kantaren informazioa"
 
-#: ../shell/rb-shell-player.c:245
+#: ../shell/rb-shell-player.c:244
 msgid "P_revious"
 msgstr "Au_rrekoa"
 
-#: ../shell/rb-shell-player.c:246
+#: ../shell/rb-shell-player.c:245
 msgid "Start playing the previous song"
 msgstr "Hasi erreproduzitzen aurreko abestia"
 
-#: ../shell/rb-shell-player.c:248
+#: ../shell/rb-shell-player.c:247
 msgid "_Next"
 msgstr "_Hurrengoa"
 
-#: ../shell/rb-shell-player.c:249
+#: ../shell/rb-shell-player.c:248
 msgid "Start playing the next song"
 msgstr "Hasi erreproduzitzen hurrengo abestia"
 
-#: ../shell/rb-shell-player.c:251
+#: ../shell/rb-shell-player.c:250
 msgid "_Increase Volume"
 msgstr "_Igo bolumena"
 
-#: ../shell/rb-shell-player.c:252
+#: ../shell/rb-shell-player.c:251
 msgid "Increase playback volume"
 msgstr "Igo erreproduzio-bolumena"
 
-#: ../shell/rb-shell-player.c:254
+#: ../shell/rb-shell-player.c:253
 msgid "_Decrease Volume"
 msgstr "_Jeitsi bolumena"
 
-#: ../shell/rb-shell-player.c:255
+#: ../shell/rb-shell-player.c:254
 msgid "Decrease playback volume"
 msgstr "Jeitsi erreproduzio-bolumena"
 
-#: ../shell/rb-shell-player.c:262
+#: ../shell/rb-shell-player.c:261
 msgid "_Play"
 msgstr "_Erreproduzitu"
 
-#: ../shell/rb-shell-player.c:263 ../shell/rb-shell-player.c:2928
+#: ../shell/rb-shell-player.c:262 ../shell/rb-shell-player.c:3071
 msgid "Start playback"
 msgstr "Hasi erreprodukzioa"
 
-#: ../shell/rb-shell-player.c:265
+#: ../shell/rb-shell-player.c:264
 msgid "Sh_uffle"
 msgstr "Naha_sia"
 
-#: ../shell/rb-shell-player.c:266
+#: ../shell/rb-shell-player.c:265
 msgid "Play songs in a random order"
 msgstr "Erreproduzitu kantak ausazko ordenean"
 
-#: ../shell/rb-shell-player.c:268
+#: ../shell/rb-shell-player.c:267
 msgid "_Repeat"
 msgstr "_Errepikatu"
 
-#: ../shell/rb-shell-player.c:269
+#: ../shell/rb-shell-player.c:268
 msgid "Play first song again after all songs are played"
 msgstr "Jarraitu aurrenekoarekin, kanta guztiak erreproduzitu ondoren"
 
-#: ../shell/rb-shell-player.c:271
+#: ../shell/rb-shell-player.c:270
 msgid "_Song Position Slider"
 msgstr "_Abesti-posizioaren graduatzailea"
 
-#: ../shell/rb-shell-player.c:272
+#: ../shell/rb-shell-player.c:271
 msgid "Change the visibility of the song position slider"
 msgstr "Aldatu Abesti-posizioaren graduatzailearen ikusgaitasuna"
 
-#: ../shell/rb-shell-player.c:567
+#: ../shell/rb-shell-player.c:614
+msgid "Stream error"
+msgstr "Korronte errorea"
+
+#: ../shell/rb-shell-player.c:615
+msgid "Unexpected end of stream!"
+msgstr "Ustekabeko korrente amaiera!"
+
+#: ../shell/rb-shell-player.c:699
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Huts egin du erreproduktorea sortzean: %s"
 
-#: ../shell/rb-shell-player.c:997
+#: ../shell/rb-shell-player.c:1110
 msgid "Connecting"
 msgstr "Konektatzea"
 
-#: ../shell/rb-shell-player.c:1013
+#: ../shell/rb-shell-player.c:1126
 msgid "Playlist was empty"
 msgstr "Erreprodukzio-zerrenda hutsik dago"
 
-#: ../shell/rb-shell-player.c:1442
+#: ../shell/rb-shell-player.c:1577
 msgid "Not currently playing"
 msgstr "Ez dago ezer erreproduzitzen"
 
-#: ../shell/rb-shell-player.c:1476
+#: ../shell/rb-shell-player.c:1615
 msgid "No previous song"
 msgstr "Ez dago aurreko kantarik"
 
-#: ../shell/rb-shell-player.c:1547
+#: ../shell/rb-shell-player.c:1692
 msgid "No next song"
 msgstr "Ez dago hurrengo kantarik"
 
-#: ../shell/rb-shell-player.c:1656 ../shell/rb-shell-player.c:2564
+#: ../shell/rb-shell-player.c:1807 ../shell/rb-shell-player.c:2686
 msgid "Couldn't start playback"
 msgstr "Ezin izan da erreprodukzioa hasi"
 
-#: ../shell/rb-shell-player.c:2338
+#: ../shell/rb-shell-player.c:2529
 msgid "Couldn't stop playback"
 msgstr "Ezin izan da erreprodukzioa gelditu"
 
-#: ../shell/rb-shell-player.c:2420
+#: ../shell/rb-shell-player.c:2612
 msgid "Current song is not seekable"
 msgstr "Uneko abestia ezin da bilatu"
 
-#: ../shell/rb-shell-player.c:2482
-msgid "Stream error"
-msgstr "Korronte errorea"
-
-#: ../shell/rb-shell-player.c:2483
-msgid "Unexpected end of stream!"
-msgstr "Ustekabeko korrente amaiera!"
-
-#: ../shell/rb-shell-player.c:2759
+#: ../shell/rb-shell-player.c:2895
 msgid "Buffering"
 msgstr "Bufferreratzen"
 
-#: ../shell/rb-shell-player.c:2926
+#: ../shell/rb-shell-player.c:3069
 msgid "Stop playback"
 msgstr "Gelditu erreprodukzioa"
 
@@ -2103,185 +2081,194 @@ msgstr "Rhythmbox-ek ezin izan du CDaren informazioa irakurri."
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox-ek ezin izan du CD gailura sarbidetu."
 
-#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:153
-#: ../sources/rb-podcast-source.c:309
-#: ../sources/rb-static-playlist-source.c:86
+#: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:156
+#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-static-playlist-source.c:88
 msgid "Search all fields"
 msgstr "Bilatu eremu guztiak"
 
-#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:154
-#: ../sources/rb-static-playlist-source.c:87
+#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:157
+#: ../sources/rb-static-playlist-source.c:89
 msgid "Artists"
 msgstr "Artistak"
 
-#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:154
-#: ../sources/rb-static-playlist-source.c:87
+#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:157
+#: ../sources/rb-static-playlist-source.c:89
 msgid "Search artists"
 msgstr "Bilatu artistak"
 
-#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:155
-#: ../sources/rb-static-playlist-source.c:88
+#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:158
+#: ../sources/rb-static-playlist-source.c:90
 msgid "Albums"
 msgstr "Albumak"
 
-#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:155
-#: ../sources/rb-static-playlist-source.c:88
+#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:158
+#: ../sources/rb-static-playlist-source.c:90
 msgid "Search albums"
 msgstr "Bilatu albumak"
 
-#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:156
-#: ../sources/rb-static-playlist-source.c:89
+#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:159
+#: ../sources/rb-static-playlist-source.c:91
 msgid "Titles"
 msgstr "Tituluak"
 
-#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:156
-#: ../sources/rb-static-playlist-source.c:89
+#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:159
+#: ../sources/rb-static-playlist-source.c:91
 msgid "Search titles"
 msgstr "Bilatu tituluak"
 
-#: ../sources/rb-browser-source.c:140
+#: ../sources/rb-browser-source.c:143
 msgid "Browse This _Genre"
 msgstr "Arakatu _genero hau"
 
-#: ../sources/rb-browser-source.c:141
+#: ../sources/rb-browser-source.c:144
 msgid "Set the browser to view only this genre"
 msgstr "Ezarri arakatzailea uneko generoa bakarrik ikusteko"
 
-#: ../sources/rb-browser-source.c:143
+#: ../sources/rb-browser-source.c:146
 msgid "Browse This _Artist"
 msgstr "Arakatu _artista hau"
 
-#: ../sources/rb-browser-source.c:144
+#: ../sources/rb-browser-source.c:147
 msgid "Set the browser to view only this artist"
 msgstr "Ezarri arakatzailea artista hau bakarrik ikusteko"
 
-#: ../sources/rb-browser-source.c:146
+#: ../sources/rb-browser-source.c:149
 msgid "Browse This A_lbum"
 msgstr "Arakatu a_lbum hau"
 
-#: ../sources/rb-browser-source.c:147
+#: ../sources/rb-browser-source.c:150
 msgid "Set the browser to view only this album"
 msgstr "Ezarri arakatzailea album hau bakarrik ikusteko"
 
-#: ../sources/rb-daap-source.c:111
+#: ../sources/rb-daap-source.c:120
 msgid "_Disconnect"
 msgstr "_Deskonektatu"
 
-#: ../sources/rb-daap-source.c:112
+#: ../sources/rb-daap-source.c:121
 msgid "Disconnect from DAAP share"
 msgstr "Deskonektatu partekatutako DAAPetik"
 
-#: ../sources/rb-daap-source.c:682
+#: ../sources/rb-daap-source.c:703
+#, c-format
+msgid "The music share '%s' requires a password to connect"
+msgstr "'%s'(r)en partekatutako musikak pasahitza behar du konektatzeko"
+
+#: ../sources/rb-daap-source.c:705
+msgid "Password Required"
+msgstr "Pasahitza behar da"
+
+#: ../sources/rb-daap-source.c:776
 msgid "Connecting to music share"
 msgstr "Konektatu musika partekatzeko"
 
-#: ../sources/rb-daap-source.c:689
+#: ../sources/rb-daap-source.c:783
 msgid "Retrieving songs from music share"
 msgstr "Abestiak eskuratzen partekatutako musikatik"
 
-#: ../sources/rb-daap-source.c:754
+#: ../sources/rb-daap-source.c:855
 msgid "Could not connect to shared music"
 msgstr "Ezin izan da partekatutako musikarekin konektatu"
 
-#: ../sources/rb-import-errors-source.c:189
+#: ../sources/rb-import-errors-source.c:188
 msgid "Import Errors"
 msgstr "Errorea inportatzean"
 
-#: ../sources/rb-import-errors-source.c:224
+#: ../sources/rb-import-errors-source.c:223
 #, c-format
 msgid "%d import errors"
 msgid_plural "%d import errors"
 msgstr[0] "Inportatzeko errore %d"
 msgstr[1] "Inportatzeko %d errore"
 
-#: ../sources/rb-iradio-source.c:150
+#: ../sources/rb-iradio-source.c:153
 msgid "New Internet _Radio Station"
-msgstr "Interneteko _irrati emisiogune berria"
+msgstr "Interneteko _irrati berria"
 
-#: ../sources/rb-iradio-source.c:151
+#: ../sources/rb-iradio-source.c:154
 msgid "Create a new Internet Radio station"
-msgstr "Sortu interneteko irrati emisiogune berria"
+msgstr "Sortu interneteko irrati berria"
 
-#: ../sources/rb-iradio-source.c:337 ../widgets/rb-library-browser.c:99
+#: ../sources/rb-iradio-source.c:349 ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
 msgid "Genre"
 msgstr "Generoa"
 
-#: ../sources/rb-iradio-source.c:421
+#: ../sources/rb-iradio-source.c:436
 msgid "Radio"
 msgstr "Irratia"
 
-#: ../sources/rb-iradio-source.c:583
+#: ../sources/rb-iradio-source.c:604
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
-msgstr[0] "Emisiogune %d"
-msgstr[1] "%d emisiogune"
+msgstr[0] "Irrati %d"
+msgstr[1] "%d irrati"
 
-#: ../sources/rb-library-source.c:117
+#: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
 msgstr "Artista/Artista - Albuma"
 
-#: ../sources/rb-library-source.c:118
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Album"
 msgstr "Artista/Albuma"
 
-#: ../sources/rb-library-source.c:119
+#: ../sources/rb-library-source.c:122
 msgid "Artist - Album"
 msgstr "Artista - Albuma"
 
-#: ../sources/rb-library-source.c:120 ../widgets/rb-library-browser.c:101
+#: ../sources/rb-library-source.c:123 ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:93
 msgid "Album"
 msgstr "Albuma"
 
-#: ../sources/rb-library-source.c:121 ../widgets/rb-library-browser.c:100
+#: ../sources/rb-library-source.c:124 ../widgets/rb-library-browser.c:100
 #: ../widgets/rb-query-creator-properties.c:66
 #: ../widgets/rb-query-creator-properties.c:92
 msgid "Artist"
 msgstr "Artista"
 
-#: ../sources/rb-library-source.c:126
+#: ../sources/rb-library-source.c:129
 msgid "Number - Title"
 msgstr "Zenbakia - Titulua"
 
-#: ../sources/rb-library-source.c:127
+#: ../sources/rb-library-source.c:130
 msgid "Artist - Title"
 msgstr "Artista - Titulua"
 
-#: ../sources/rb-library-source.c:128
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
 msgstr "Artista - Zenbakia - Titulua"
 
-#: ../sources/rb-library-source.c:129
+#: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
 msgstr "Artista (Albuma) - Zenbakia - Titulua"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:133
 #: ../widgets/rb-query-creator-properties.c:65
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "Title"
 msgstr "Titulua"
 
-#: ../sources/rb-library-source.c:131
+#: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
 msgstr "Zenbakia. Artista - Titulua"
 
-#: ../sources/rb-library-source.c:305
+#: ../sources/rb-library-source.c:310
 msgid "Library"
 msgstr "Liburutegia"
 
-#: ../sources/rb-library-source.c:340
+#: ../sources/rb-library-source.c:345
 msgid "Choose Library Location"
 msgstr "Aukeratu liburutegiaren kokalekua"
 
-#: ../sources/rb-library-source.c:527
+#: ../sources/rb-library-source.c:532
 msgid "Multiple locations set"
 msgstr "Hainbat kokaleku-multzo"
 
-#: ../sources/rb-library-source.c:629
+#: ../sources/rb-library-source.c:634
 msgid "Add Location"
 msgstr "Gehitu kokapena"
 
@@ -2296,30 +2283,30 @@ msgid_plural "%d missing files"
 msgstr[0] "Fitxategi %d falta da"
 msgstr[1] "%d fitxategi falta dira"
 
-#: ../sources/rb-playlist-source-recorder.c:300
+#: ../sources/rb-playlist-source-recorder.c:301
 msgid "Maximum possible"
 msgstr "Ahal den gehiena"
 
-#: ../sources/rb-playlist-source-recorder.c:371
+#: ../sources/rb-playlist-source-recorder.c:372
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Baliogabeko grabagailu-unitatea: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:471
+#: ../sources/rb-playlist-source-recorder.c:472
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "ordu %d"
 msgstr[1] "%d ordu"
 
-#: ../sources/rb-playlist-source-recorder.c:473
+#: ../sources/rb-playlist-source-recorder.c:474
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "minutu %d"
 msgstr[1] "%d minutu"
 
-#: ../sources/rb-playlist-source-recorder.c:476
+#: ../sources/rb-playlist-source-recorder.c:477
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -2327,94 +2314,94 @@ msgstr[0] "segundo %d"
 msgstr[1] "%d segundo"
 
 #. hour:minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:481
+#: ../sources/rb-playlist-source-recorder.c:482
 #, c-format
 msgid "%s %s %s"
 msgstr "%s:%s:%s"
 
 #. minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:484
+#: ../sources/rb-playlist-source-recorder.c:485
 #, c-format
 msgid "%s %s"
 msgstr "%s:%s"
 
 #. seconds
-#: ../sources/rb-playlist-source-recorder.c:487
+#: ../sources/rb-playlist-source-recorder.c:488
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../sources/rb-playlist-source-recorder.c:490
+#: ../sources/rb-playlist-source-recorder.c:491
 msgid "0 seconds"
 msgstr "0 segundo"
 
-#: ../sources/rb-playlist-source-recorder.c:509
+#: ../sources/rb-playlist-source-recorder.c:510
 #, c-format
 msgid "About %s left"
 msgstr "%s falta da"
 
-#: ../sources/rb-playlist-source-recorder.c:578
+#: ../sources/rb-playlist-source-recorder.c:579
 msgid "Could not determine media type because CD drive is busy"
 msgstr "Ezin izand da euskarri-mota zehaztu CD unitatea lanpetuta dagoelako"
 
-#: ../sources/rb-playlist-source-recorder.c:580
+#: ../sources/rb-playlist-source-recorder.c:581
 msgid "Couldn't open media"
 msgstr "Ezin izan da euskarria ireki"
 
-#: ../sources/rb-playlist-source-recorder.c:582
+#: ../sources/rb-playlist-source-recorder.c:583
 msgid "Unknown Media"
 msgstr "Euskarri ezezaguna"
 
-#: ../sources/rb-playlist-source-recorder.c:584
+#: ../sources/rb-playlist-source-recorder.c:585
 msgid "Commercial CD or Audio CD"
 msgstr "CD komertziala edo audioko CDa"
 
-#: ../sources/rb-playlist-source-recorder.c:586
+#: ../sources/rb-playlist-source-recorder.c:587
 msgid "CD-R"
 msgstr "CD-Ra"
 
-#: ../sources/rb-playlist-source-recorder.c:588
+#: ../sources/rb-playlist-source-recorder.c:589
 msgid "CD-RW"
 msgstr "CD-RWa"
 
-#: ../sources/rb-playlist-source-recorder.c:590
+#: ../sources/rb-playlist-source-recorder.c:591
 msgid "DVD"
 msgstr "DVDa"
 
-#: ../sources/rb-playlist-source-recorder.c:592
+#: ../sources/rb-playlist-source-recorder.c:593
 msgid "DVD-R, or DVD-RAM"
 msgstr "DVD-R edo DVD-RAM"
 
-#: ../sources/rb-playlist-source-recorder.c:594
+#: ../sources/rb-playlist-source-recorder.c:595
 msgid "DVD-RW"
 msgstr "DVD-RWa"
 
-#: ../sources/rb-playlist-source-recorder.c:596
+#: ../sources/rb-playlist-source-recorder.c:597
 msgid "DVD-RAM"
 msgstr "DVD-RAMa"
 
-#: ../sources/rb-playlist-source-recorder.c:598
+#: ../sources/rb-playlist-source-recorder.c:599
 msgid "DVD+R"
 msgstr "DVD+R"
 
-#: ../sources/rb-playlist-source-recorder.c:600
+#: ../sources/rb-playlist-source-recorder.c:601
 msgid "DVD+RW"
 msgstr "DVD+RW"
 
-#: ../sources/rb-playlist-source-recorder.c:605
+#: ../sources/rb-playlist-source-recorder.c:606
 msgid "Broken media type"
 msgstr "Hondatutako euskarri-mota"
 
-#: ../sources/rb-playlist-source-recorder.c:620
+#: ../sources/rb-playlist-source-recorder.c:621
 msgid "Writing audio to CD"
 msgstr "Audio CDa grabatzen"
 
-#: ../sources/rb-playlist-source-recorder.c:636
+#: ../sources/rb-playlist-source-recorder.c:637
 msgid "Finished creating audio CD."
 msgstr "Audio CDaren sorrera burutu da"
 
-#: ../sources/rb-playlist-source-recorder.c:654
+#: ../sources/rb-playlist-source-recorder.c:655
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -2422,165 +2409,165 @@ msgstr ""
 "Audio CDaren sorrera burutu da.\n"
 "Egin nahi duzu beste kopia bat?"
 
-#: ../sources/rb-playlist-source-recorder.c:656
+#: ../sources/rb-playlist-source-recorder.c:657
 msgid "Writing failed.  Try again?"
 msgstr "Huts egin du idaztean. Saiatu berriro?"
 
-#: ../sources/rb-playlist-source-recorder.c:658
+#: ../sources/rb-playlist-source-recorder.c:659
 msgid "Writing cancelled.  Try again?"
 msgstr "Grabaketa bertan behera geratu da. Saiatu berriro?"
 
-#: ../sources/rb-playlist-source-recorder.c:724
+#: ../sources/rb-playlist-source-recorder.c:725
 msgid "Audio recording error"
 msgstr "Errorea audioa grabatzean"
 
-#: ../sources/rb-playlist-source-recorder.c:752
+#: ../sources/rb-playlist-source-recorder.c:753
 msgid "Audio Conversion Error"
 msgstr "Errorea audioa bihurtzean"
 
-#: ../sources/rb-playlist-source-recorder.c:782
+#: ../sources/rb-playlist-source-recorder.c:783
 msgid "Recording error"
 msgstr "Errorea grabatzean"
 
-#: ../sources/rb-playlist-source-recorder.c:902
+#: ../sources/rb-playlist-source-recorder.c:903
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Diskaren grabaketa eten nahi duzu?"
 
-#: ../sources/rb-playlist-source-recorder.c:905
+#: ../sources/rb-playlist-source-recorder.c:906
 msgid "This may result in an unusable disc."
 msgstr "Hau eginez gero, diskoa erabilkaitza gera daiteke."
 
-#: ../sources/rb-playlist-source-recorder.c:912
+#: ../sources/rb-playlist-source-recorder.c:913
 msgid "_Cancel"
 msgstr "_Utzi"
 
-#: ../sources/rb-playlist-source-recorder.c:913
+#: ../sources/rb-playlist-source-recorder.c:914
 msgid "_Interrupt"
 msgstr "_Eten"
 
-#: ../sources/rb-playlist-source-recorder.c:935
+#: ../sources/rb-playlist-source-recorder.c:936
 msgid "Could not create audio CD"
 msgstr "Ezin izan da audio CDa sortu"
 
-#: ../sources/rb-playlist-source-recorder.c:957
+#: ../sources/rb-playlist-source-recorder.c:958
 msgid "Please make sure another application is not using the drive."
 msgstr "Ziurtatu zaitez beste aplikazio batek unitatea ez darabilela."
 
-#: ../sources/rb-playlist-source-recorder.c:958
+#: ../sources/rb-playlist-source-recorder.c:959
 msgid "Drive is busy"
 msgstr "Unitatea lanpetuta"
 
-#: ../sources/rb-playlist-source-recorder.c:960
+#: ../sources/rb-playlist-source-recorder.c:961
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Sartu euskarri erabili-gabekoa edo berridazgarria (RW) grabagailuan"
 
-#: ../sources/rb-playlist-source-recorder.c:961
+#: ../sources/rb-playlist-source-recorder.c:962
 msgid "Insert a rewritable or blank CD"
 msgstr "Sartu euskarri erabili-gabekoa edo berridazgarria"
 
-#: ../sources/rb-playlist-source-recorder.c:963
+#: ../sources/rb-playlist-source-recorder.c:964
 msgid "Please put a blank CD in the drive."
 msgstr "Sartu euskarri erabili-gabekoa edo berridazgarria"
 
-#: ../sources/rb-playlist-source-recorder.c:964
+#: ../sources/rb-playlist-source-recorder.c:965
 msgid "Insert a blank CD"
 msgstr "Sartu erabili-gabeko euskarria"
 
-#: ../sources/rb-playlist-source-recorder.c:966
+#: ../sources/rb-playlist-source-recorder.c:967
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr "Ordeztu euskarriko unitatea berridazgarri edo erabili-gabeko bategatik"
 
-#: ../sources/rb-playlist-source-recorder.c:967
+#: ../sources/rb-playlist-source-recorder.c:968
 msgid "Reload a rewritable or blank CD"
 msgstr "Birkargatu euskarri erabili-gabekoa edo berridazgarria"
 
-#: ../sources/rb-playlist-source-recorder.c:969
+#: ../sources/rb-playlist-source-recorder.c:970
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Ordeztu euskarriko unitatea erabili-gabeko bategatik"
 
-#: ../sources/rb-playlist-source-recorder.c:970
+#: ../sources/rb-playlist-source-recorder.c:971
 msgid "Reload a blank CD"
 msgstr "Birkargatu erabili-gabeko euskarria"
 
-#: ../sources/rb-playlist-source-recorder.c:1021
+#: ../sources/rb-playlist-source-recorder.c:1022
 msgid "Converting audio tracks"
 msgstr "Audio pista bihurtzen"
 
-#: ../sources/rb-playlist-source-recorder.c:1024
+#: ../sources/rb-playlist-source-recorder.c:1025
 msgid "Preparing to write CD"
 msgstr "Prestatu CDa idazteko"
 
-#: ../sources/rb-playlist-source-recorder.c:1027
+#: ../sources/rb-playlist-source-recorder.c:1028
 msgid "Writing CD"
 msgstr "CDa grabatzen"
 
-#: ../sources/rb-playlist-source-recorder.c:1030
+#: ../sources/rb-playlist-source-recorder.c:1031
 msgid "Finishing write"
 msgstr "Grabatzea amaitzen"
 
-#: ../sources/rb-playlist-source-recorder.c:1033
+#: ../sources/rb-playlist-source-recorder.c:1034
 msgid "Erasing CD"
 msgstr "CDa ezabatzen"
 
-#: ../sources/rb-playlist-source-recorder.c:1036
+#: ../sources/rb-playlist-source-recorder.c:1037
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "burn_action_changed_cb-ean kudeatu ezin den ekintza"
 
-#: ../sources/rb-playlist-source-recorder.c:1064
+#: ../sources/rb-playlist-source-recorder.c:1065
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "%s(e)k jadanik informazioa grabatua duela dirudi."
 
-#: ../sources/rb-playlist-source-recorder.c:1071
+#: ../sources/rb-playlist-source-recorder.c:1072
 msgid "Erase information on this disc?"
 msgstr "Diskoko informazioa ezabatu?"
 
-#: ../sources/rb-playlist-source-recorder.c:1080
+#: ../sources/rb-playlist-source-recorder.c:1081
 msgid "_Try Another"
 msgstr "_Saiatu beste batekin"
 
-#: ../sources/rb-playlist-source-recorder.c:1087
+#: ../sources/rb-playlist-source-recorder.c:1088
 msgid "_Erase Disc"
 msgstr "_Ezabatu diskoa"
 
-#: ../sources/rb-playlist-source-recorder.c:1191
+#: ../sources/rb-playlist-source-recorder.c:1192
 msgid "C_reate"
 msgstr "So_rtu"
 
-#: ../sources/rb-playlist-source-recorder.c:1254
+#: ../sources/rb-playlist-source-recorder.c:1255
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Huts egin du grabatzailea sortzean: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1354
+#: ../sources/rb-playlist-source-recorder.c:1355
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Ezin izan da '%s' aldi baterako direktorioa: %s"
 
-#: ../sources/rb-playlist-source-recorder.c:1373
+#: ../sources/rb-playlist-source-recorder.c:1374
 msgid "Create Audio CD"
 msgstr "Sortu Audio-CDa"
 
-#: ../sources/rb-playlist-source-recorder.c:1390
+#: ../sources/rb-playlist-source-recorder.c:1391
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Sortu audio CD-a '%s'(e)tik?"
 
-#: ../sources/rb-playlist-source-recorder.c:1436
-#: ../sources/rb-playlist-source-recorder.c:1454
+#: ../sources/rb-playlist-source-recorder.c:1437
+#: ../sources/rb-playlist-source-recorder.c:1455
 msgid "Unable to build an audio track list."
 msgstr "Ezin da audioko pista-zerrenda eraiki."
 
-#: ../sources/rb-playlist-source-recorder.c:1464
+#: ../sources/rb-playlist-source-recorder.c:1465
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Erreprodukzio-zerrenda handiegia da audio CDan grabatzeko."
 
-#: ../sources/rb-playlist-source-recorder.c:1534
+#: ../sources/rb-playlist-source-recorder.c:1535
 #, c-format
 msgid "Cannot get free space at %s"
 msgstr "Ezin da leku librea lortu %s-an"
 
-#: ../sources/rb-playlist-source-recorder.c:1619
+#: ../sources/rb-playlist-source-recorder.c:1620
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -2591,15 +2578,15 @@ msgstr ""
 "estandar baten luzapena gainditzen du. Helburuko gailua audio CD estandarra "
 "baino handioago bada, mesedez sartu unitatean eta saitu berriro."
 
-#: ../sources/rb-playlist-source-recorder.c:1630
+#: ../sources/rb-playlist-source-recorder.c:1631
 msgid "Playlist too long"
 msgstr "Erreprodukzio-zerrenda luzegia"
 
-#: ../sources/rb-playlist-source-recorder.c:1670
+#: ../sources/rb-playlist-source-recorder.c:1671
 msgid "Could not find temporary space!"
 msgstr "Ezin izan da aldi baterako lekua!"
 
-#: ../sources/rb-playlist-source-recorder.c:1671
+#: ../sources/rb-playlist-source-recorder.c:1672
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -2616,129 +2603,129 @@ msgstr "Garbitu _ilara"
 msgid "Remove all songs from the play queue"
 msgstr "Kendu abesti guztiak zerrendatik"
 
-#: ../sources/rb-play-queue-source.c:192 ../sources/rb-play-queue-source.c:241
-#: ../sources/rb-play-queue-source.c:355
+#: ../sources/rb-play-queue-source.c:194 ../sources/rb-play-queue-source.c:243
+#: ../sources/rb-play-queue-source.c:363
 msgid "Play Queue"
 msgstr "Erreprodukzio-zerrenda"
 
-#: ../sources/rb-play-queue-source.c:325 ../widgets/rb-header.c:100
+#: ../sources/rb-play-queue-source.c:331 ../widgets/rb-header.c:100
 msgid "from"
 msgstr "diska"
 
-#: ../sources/rb-play-queue-source.c:325 ../widgets/rb-header.c:100
+#: ../sources/rb-play-queue-source.c:331 ../widgets/rb-header.c:100
 msgid "by"
 msgstr "egilea"
 
-#: ../sources/rb-podcast-source.c:283
+#: ../sources/rb-podcast-source.c:285
 msgid "_New Podcast Feed"
 msgstr "Podcast iturri _berria"
 
-#: ../sources/rb-podcast-source.c:284
+#: ../sources/rb-podcast-source.c:286
 msgid "Subscribe to a new Podcast Feed"
 msgstr "Harpidetu podcast iturri berrian"
 
-#: ../sources/rb-podcast-source.c:287
+#: ../sources/rb-podcast-source.c:289
 msgid "Download _Episode"
 msgstr "Deskargatu _pasartea"
 
-#: ../sources/rb-podcast-source.c:288
+#: ../sources/rb-podcast-source.c:290
 msgid "Download Podcast Episode"
 msgstr "Deskargatu podcast-aren pasartea"
 
-#: ../sources/rb-podcast-source.c:290
+#: ../sources/rb-podcast-source.c:292
 msgid "_Cancel Download"
 msgstr "_Utzi deskarga"
 
-#: ../sources/rb-podcast-source.c:291
+#: ../sources/rb-podcast-source.c:293
 msgid "Cancel Episode Download"
 msgstr "Utzi pasartearen deskarga"
 
-#: ../sources/rb-podcast-source.c:294
+#: ../sources/rb-podcast-source.c:296
 msgid "Episode Properties"
 msgstr "Pasartearen propietateak"
 
-#: ../sources/rb-podcast-source.c:296
+#: ../sources/rb-podcast-source.c:298
 msgid "_Update Podcast Feed"
 msgstr "_Eguneratu podcast-aren iturria"
 
-#: ../sources/rb-podcast-source.c:297
+#: ../sources/rb-podcast-source.c:299
 msgid "Update Feed"
 msgstr "Eguneratu iturria"
 
-#: ../sources/rb-podcast-source.c:299
+#: ../sources/rb-podcast-source.c:301
 msgid "_Delete Podcast Feed"
 msgstr "_Ezabatu podcast-aren iturria"
 
-#: ../sources/rb-podcast-source.c:300
+#: ../sources/rb-podcast-source.c:302
 msgid "Delete Feed"
 msgstr "_Ezabatu iturria"
 
-#: ../sources/rb-podcast-source.c:302
+#: ../sources/rb-podcast-source.c:304
 msgid "_Update All Feeds"
 msgstr "_Eguneratu iturri guztiak"
 
-#: ../sources/rb-podcast-source.c:303
+#: ../sources/rb-podcast-source.c:305
 msgid "Update all feeds"
 msgstr "Eguneratu iturri guztiak"
 
-#: ../sources/rb-podcast-source.c:310
+#: ../sources/rb-podcast-source.c:312
 msgid "Feeds"
 msgstr "Iturriak"
 
-#: ../sources/rb-podcast-source.c:310
+#: ../sources/rb-podcast-source.c:312
 msgid "Search podcast feeds"
 msgstr "Bilatu podcast iturriak"
 
-#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-podcast-source.c:313
 msgid "Episodes"
 msgstr "Pasarteak"
 
-#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-podcast-source.c:313
 msgid "Search podcast episodes"
 msgstr "Bilatu podcast-aren pasarteak"
 
-#: ../sources/rb-podcast-source.c:576
+#: ../sources/rb-podcast-source.c:580
 msgid "Date"
 msgstr "Data"
 
-#: ../sources/rb-podcast-source.c:587
+#: ../sources/rb-podcast-source.c:591
 msgid "_Date"
 msgstr "_Data"
 
-#: ../sources/rb-podcast-source.c:608
+#: ../sources/rb-podcast-source.c:612
 msgid "_Feed"
 msgstr "_Iturria"
 
-#: ../sources/rb-podcast-source.c:627 ../sources/rb-podcast-source.c:645
+#: ../sources/rb-podcast-source.c:631 ../sources/rb-podcast-source.c:649
 msgid "Status"
 msgstr "Egoera"
 
-#: ../sources/rb-podcast-source.c:628 ../sources/rb-podcast-source.c:1495
+#: ../sources/rb-podcast-source.c:632 ../sources/rb-podcast-source.c:1488
 msgid "Downloaded"
 msgstr "Deskargatuta"
 
-#: ../sources/rb-podcast-source.c:629 ../sources/rb-podcast-source.c:1503
+#: ../sources/rb-podcast-source.c:633 ../sources/rb-podcast-source.c:1496
 msgid "Waiting"
 msgstr "Zain"
 
-#: ../sources/rb-podcast-source.c:630 ../sources/rb-podcast-source.c:1499
+#: ../sources/rb-podcast-source.c:634 ../sources/rb-podcast-source.c:1492
 msgid "Failed"
 msgstr "Huts egin du"
 
 #. configure feed view
-#: ../sources/rb-podcast-source.c:672 ../sources/rb-podcast-source.c:706
+#: ../sources/rb-podcast-source.c:676 ../sources/rb-podcast-source.c:710
 msgid "Feed"
 msgstr "Iturria"
 
-#: ../sources/rb-podcast-source.c:815
+#: ../sources/rb-podcast-source.c:817
 msgid "Podcasts"
 msgstr "Podcast-ak"
 
-#: ../sources/rb-podcast-source.c:897
+#: ../sources/rb-podcast-source.c:899
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ezabatu podcast-are pasartea eta deskargatu fitxategia?"
 
-#: ../sources/rb-podcast-source.c:900
+#: ../sources/rb-podcast-source.c:902
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2748,19 +2735,19 @@ msgstr ""
 "dira. Jakin ezazu pasartea ezabatu eta deskargatutako fitxategia gordeta "
 "eduki dezakezula pasartea soilik ezabatzeko aukeratuz."
 
-#: ../sources/rb-podcast-source.c:908
+#: ../sources/rb-podcast-source.c:910
 msgid "Delete _Episode Only"
 msgstr "Ezabatu _pasartea soilik"
 
-#: ../sources/rb-podcast-source.c:914
+#: ../sources/rb-podcast-source.c:916
 msgid "_Delete Episode And File"
 msgstr "_Ezabatu pasartea eta fitxategia"
 
-#: ../sources/rb-podcast-source.c:1389
+#: ../sources/rb-podcast-source.c:1382
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ezabatu podcast-aren iturria eta deskargatutako fitxategiak?"
 
-#: ../sources/rb-podcast-source.c:1392
+#: ../sources/rb-podcast-source.c:1385
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2770,45 +2757,45 @@ msgstr ""
 "dira. Jakin ezazu iturria ezabatu eta deskargatutako fitxategiak gordeta "
 "eduki ditzakezula iturria soilik ezabatzeko aukeratuz."
 
-#: ../sources/rb-podcast-source.c:1400
+#: ../sources/rb-podcast-source.c:1393
 msgid "Delete _Feed Only"
 msgstr "Ezabatu _iturria soilik"
 
-#: ../sources/rb-podcast-source.c:1407
+#: ../sources/rb-podcast-source.c:1400
 msgid "_Delete Feed And Files"
 msgstr "_Ezabatu iturria eta fitxategiak"
 
-#: ../sources/rb-podcast-source.c:1608
+#: ../sources/rb-podcast-source.c:1607
 #, c-format
 msgid "All %d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "Iturri %d"
 msgstr[1] "%d iturri guztiak"
 
-#: ../sources/rb-podcast-source.c:1748
+#: ../sources/rb-podcast-source.c:1749
 msgid "Downloading podcast"
 msgstr "Podcast-a deskargatzen"
 
-#: ../sources/rb-podcast-source.c:1761
+#: ../sources/rb-podcast-source.c:1762
 msgid "Finished downloading podcast"
 msgstr "Amaitu du podcast-a deskargatzea"
 
-#: ../sources/rb-podcast-source.c:1774
+#: ../sources/rb-podcast-source.c:1775
 msgid "New updates avaliable from"
 msgstr "Eguneraketa berriak eskuragarri: "
 
-#: ../sources/rb-podcast-source.c:1871
+#: ../sources/rb-podcast-source.c:1879
 msgid "Error in podcast"
 msgstr "Errorea podcast-en"
 
-#: ../sources/rb-podcast-source.c:1993
+#: ../sources/rb-podcast-source.c:2001
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d. pasartea"
 msgstr[1] "%d. pasartea"
 
-#: ../sources/rb-source.c:483
+#: ../sources/rb-source.c:496
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -2824,15 +2811,15 @@ msgstr "_Iturburua"
 msgid "+"
 msgstr "+"
 
-#: ../widgets/eggtrayicon.c:147
+#: ../widgets/eggtrayicon.c:153
 msgid "Orientation"
 msgstr "Orientazioa"
 
-#: ../widgets/eggtrayicon.c:148
+#: ../widgets/eggtrayicon.c:154
 msgid "The orientation of the tray."
 msgstr "Erretiluaren orientazioa."
 
-#: ../widgets/eggtrayicon.c:485
+#: ../widgets/eggtrayicon.c:531
 msgid "Notification"
 msgstr "Jakinarazpena"
 
@@ -2887,107 +2874,107 @@ msgstr ""
 msgid "Load folder into Library"
 msgstr "Kargatu karpeta liburutegian"
 
-#: ../widgets/rb-entry-view.c:750
+#: ../widgets/rb-entry-view.c:797
 #, c-format
 msgid "%u kbps"
 msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:953
+#: ../widgets/rb-entry-view.c:1029
 msgid "Trac_k"
 msgstr "_Pista"
 
-#: ../widgets/rb-entry-view.c:964
+#: ../widgets/rb-entry-view.c:1040
 msgid "_Title"
 msgstr "_Titulua"
 
-#: ../widgets/rb-entry-view.c:974
+#: ../widgets/rb-entry-view.c:1050
 msgid "Art_ist"
 msgstr "Art_ista"
 
-#: ../widgets/rb-entry-view.c:984
+#: ../widgets/rb-entry-view.c:1060
 msgid "_Album"
 msgstr "_Albuma"
 
-#: ../widgets/rb-entry-view.c:1004
+#: ../widgets/rb-entry-view.c:1080
 msgid "Tim_e"
 msgstr "Or_dua"
 
-#: ../widgets/rb-entry-view.c:1031
+#: ../widgets/rb-entry-view.c:1107
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1063
+#: ../widgets/rb-entry-view.c:1139
 msgid "_Play Count"
 msgstr "_Zenbatzailea"
 
-#: ../widgets/rb-entry-view.c:1075
+#: ../widgets/rb-entry-view.c:1151
 msgid "_Last Played"
 msgstr "_Erreproduzitutako azkena"
 
-#: ../widgets/rb-entry-view.c:1087
+#: ../widgets/rb-entry-view.c:1163
 msgid "_Date Added"
 msgstr "Gehitutako _data"
 
-#: ../widgets/rb-entry-view.c:1098
+#: ../widgets/rb-entry-view.c:1174
 msgid "Last _Seen"
 msgstr "_ikusitako azkena"
 
-#: ../widgets/rb-entry-view.c:1109
+#: ../widgets/rb-entry-view.c:1185
 msgid "L_ocation"
 msgstr "K_okapena:"
 
-#: ../widgets/rb-entry-view.c:1117
+#: ../widgets/rb-entry-view.c:1193
 msgid "Error"
 msgstr "Errorea"
 
-#: ../widgets/rb-entry-view.c:1325
+#: ../widgets/rb-entry-view.c:1406
 msgid "Now Playing"
 msgstr "Orain erreproduzitzen"
 
-#: ../widgets/rb-entry-view.c:1394
+#: ../widgets/rb-entry-view.c:1481
 msgid "Playback Error"
 msgstr "Erreprodukzio errorea"
 
-#: ../widgets/rb-header.c:361
+#: ../widgets/rb-header.c:362
 msgid "Not Playing"
 msgstr "Ez dago ezer erreproduzitzen"
 
-#: ../widgets/rb-property-view.c:493
+#: ../widgets/rb-property-view.c:511
 #, c-format
 msgid "All %d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "Artista %d (%d)"
 msgstr[1] "%d artista guztiak (%d)"
 
-#: ../widgets/rb-property-view.c:496
+#: ../widgets/rb-property-view.c:514
 #, c-format
 msgid "All %d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "Album %d (%d)"
 msgstr[1] "%d album guztiak (%d)"
 
-#: ../widgets/rb-property-view.c:499
+#: ../widgets/rb-property-view.c:517
 #, c-format
 msgid "All %d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "Genero %d (%d)"
 msgstr[1] "%d genero guztiak (%d)"
 
-#: ../widgets/rb-property-view.c:502
+#: ../widgets/rb-property-view.c:520
 #, c-format
 msgid "All %d (%d)"
 msgstr "%d guztiak (%d)"
 
-#: ../widgets/rb-property-view.c:508
+#: ../widgets/rb-property-view.c:526
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
 
-#: ../widgets/rb-query-creator.c:176
+#: ../widgets/rb-query-creator.c:178
 msgid "Create Automatic Playlist"
 msgstr "Sortu erreprodukzio-zerrenda automatikoa"
 
-#: ../widgets/rb-query-creator.c:178
+#: ../widgets/rb-query-creator.c:180
 msgid "Edit Automatic Playlist"
 msgstr "Editatu erreprodukzio-zerrenda automatikoa"
 
@@ -3172,15 +3159,15 @@ msgstr "Kantaren propietateak"
 msgid "Multiple Song Properties"
 msgstr "Hainbat abestiren propietateak"
 
-#: ../widgets/rb-song-info.c:948
+#: ../widgets/rb-song-info.c:950
 msgid "Unknown file name"
 msgstr "Fitxategi izen ezezaguna"
 
-#: ../widgets/rb-song-info.c:967
+#: ../widgets/rb-song-info.c:969
 msgid "On the desktop"
 msgstr "Mahaigainean"
 
-#: ../widgets/rb-song-info.c:976
+#: ../widgets/rb-song-info.c:978
 msgid "Unknown location"
 msgstr "Kokapen ezezaguna"
 
