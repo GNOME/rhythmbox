@@ -516,6 +516,8 @@ load_ipod_db_idle_cb (RBiPodSource *source)
  	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 
+	GDK_THREADS_ENTER ();
+
         db = get_db_for_source (source);
 
   	g_assert (db != NULL);
@@ -527,6 +529,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 
 	g_object_unref (db);
 
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

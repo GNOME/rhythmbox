@@ -324,9 +324,10 @@ static gboolean
 update_visibility_idle (RBSource *source)
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
-
 	gboolean visibility;
 
+	GDK_THREADS_ENTER ();
+	
 	gint count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (priv->query_model), NULL);
 
 	visibility = (count > 0);
@@ -336,6 +337,7 @@ update_visibility_idle (RBSource *source)
 	}
 
 	priv->update_visibility_id = 0;
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

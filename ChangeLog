@@ -1,3 +1,44 @@
+2006-08-10  James Livingston  <doclivingston@gmail.com>
+
+	* daapsharing/rb-daap-connection.c: (connection_connected),
+	(connection_disconnected), (connection_operation_done):
+	* daapsharing/rb-daap-share.c: (name_collision_cb):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_load_playlists):
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_download_entry),
+	(rb_podcast_manager_sync_head_cb), (rb_podcast_manager_next_file),
+	(end_job), (rb_podcast_manager_event_loop):
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_perform_sync):
+	* rhythmdb/rhythmdb-query-model.c: (idle_process_update_idle),
+	(rhythmdb_query_model_process_update), (idle_process_update),
+	(rhythmdb_query_model_reapply_query_cb):
+	* shell/rb-play-order.c: (sync_playing_entry_cb):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_load_media):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync_idle),
+	(rb_shell_clipboard_sync),
+	(rb_shell_clipboard_entryview_changed_cb),
+	(rb_shell_clipboard_entries_changed_cb),
+	(rb_shell_clipboard_playlist_deleted_cb), (rebuild_playlist_menu),
+	(rebuild_playlist_menu_idle),
+	(rb_shell_clipboard_playlist_added_cb):
+	* shell/rb-shell-player.c: (notify_playing_idle),
+	(rb_shell_player_jump_to_current_idle), (_idle_unblock_signal_cb):
+	* shell/rb-shell.c: (idle_save_playlist_manager), (quit_timeout),
+	(rb_shell_quit):
+	* sources/rb-ipod-source.c: (load_ipod_db_idle_cb):
+	* sources/rb-library-source.c: (add_child_sources_idle):
+	* sources/rb-playlist-source-recorder.c: (response_idle_cb),
+	(burn_cd_idle):
+	* sources/rb-source.c: (update_visibility_idle):
+	* widgets/bacon-volume.c: (button_timeout), (cb_button_timeout),
+	(cb_button_press):
+	* widgets/rb-druid.c: (idle_set_sensitive):
+	* widgets/rb-entry-view.c: (rb_entry_view_emit_selection_changed):
+	take the GDK lock when we should be, from #348588
+
 2006-08-09  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-property-model.c:

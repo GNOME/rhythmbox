@@ -182,7 +182,7 @@ struct RhythmDBQueryModelUpdate
 
 static void rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update);
 
-static gboolean idle_process_update (struct RhythmDBQueryModelUpdate *update);
+static void idle_process_update (struct RhythmDBQueryModelUpdate *update);
 
 static const GtkTargetEntry rhythmdb_query_model_drag_types[] = { { "text/uri-list", 0, 0 },};
 
@@ -917,6 +917,15 @@ rhythmdb_query_model_entry_deleted_cb (RhythmDB *db,
 		rhythmdb_query_model_remove_entry (model, entry);
 }
 
+static gboolean
+idle_process_update_idle (struct RhythmDBQueryModelUpdate *update)
+{
+	GDK_THREADS_ENTER ();
+	idle_process_update (update);
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
+
 static void
 rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update)
 {
@@ -924,10 +933,10 @@ rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate *update)
 	if (rb_is_main_thread ())
 		idle_process_update (update);
 	else
-		g_idle_add ((GSourceFunc) idle_process_update, update);
+		g_idle_add ((GSourceFunc) idle_process_update_idle, update);
 }
 
-static gboolean
+static void
 idle_process_update (struct RhythmDBQueryModelUpdate *update)
 {
 	switch (update->type) {
@@ -971,7 +980,6 @@ idle_process_update (struct RhythmDBQueryModelUpdate *update)
 	g_atomic_int_add (&update->model->priv->pending_update_count, -1);
 	g_object_unref (update->model);
 	g_free (update);
-	return FALSE;
 }
 
 void
@@ -2716,9 +2724,11 @@ rhythmdb_query_model_limit_type_get_type (void)
 static gboolean
 rhythmdb_query_model_reapply_query_cb (RhythmDBQueryModel *model)
 {
+	GDK_THREADS_ENTER ();
 	rhythmdb_query_model_reapply_query (model, FALSE);
 	rhythmdb_do_full_query_async_parsed (model->priv->db,
 					     RHYTHMDB_QUERY_RESULTS (model),
 					     model->priv->original_query);
+	GDK_THREADS_LEAVE ();
 	return TRUE;
 }

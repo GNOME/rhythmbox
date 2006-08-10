@@ -845,8 +845,10 @@ idle_save_rhythmdb (RBShell *shell)
 static gboolean
 idle_save_playlist_manager (RBShell *shell) 
 {
+	GDK_THREADS_ENTER ();
 	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, 
 					    FALSE);
+	GDK_THREADS_LEAVE ();
 
 	return TRUE;
 }
@@ -2399,6 +2401,15 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 				 shell, 0);
 }
 
+static gboolean
+quit_timeout (gpointer dummy)
+{
+	GDK_THREADS_ENTER ();
+	gtk_main_quit ();
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
+
 gboolean
 rb_shell_quit (RBShell *shell,
 	       GError **error)
@@ -2421,7 +2432,7 @@ rb_shell_quit (RBShell *shell,
 	rb_shell_sync_state (shell);
 	g_object_unref (G_OBJECT (shell));
 
-	g_timeout_add (10000, (GSourceFunc)gtk_main_quit, NULL);
+	g_timeout_add (10000, quit_timeout, NULL);
 	return TRUE;
 }
 

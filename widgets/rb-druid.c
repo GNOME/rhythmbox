@@ -331,8 +331,11 @@ idle_set_sensitive (RBDruid *druid)
 {
 	g_return_val_if_fail (RB_IS_DRUID (druid), FALSE);
 
+	GDK_THREADS_ENTER ();
+
 	rb_druid_page2_sync_sensitive (druid);
 
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

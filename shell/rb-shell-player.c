@@ -568,9 +568,12 @@ reemit_playing_signal (RBShellPlayer *player,
 static gboolean
 notify_playing_idle (RBShellPlayer *player)
 {
+	GDK_THREADS_ENTER ();
 	rb_debug ("emitting playing notification: %d", rb_player_playing (player->priv->mmplayer));
 	g_object_notify (G_OBJECT (player), "playing");
 	rb_shell_player_sync_buttons (player);
+
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -1497,7 +1500,9 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 static gboolean
 rb_shell_player_jump_to_current_idle (RBShellPlayer *player)
 {
+	GDK_THREADS_ENTER ();
 	rb_shell_player_jump_to_current (player);
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -3042,6 +3047,8 @@ _idle_unblock_signal_cb (gpointer data)
 	GtkAction *action;
 	gboolean playing;
 
+	GDK_THREADS_ENTER ();
+
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
 
@@ -3050,6 +3057,8 @@ _idle_unblock_signal_cb (gpointer data)
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
 
 	g_signal_handlers_unblock_by_func (action, rb_shell_player_cmd_play, player);
+
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

@@ -251,7 +251,9 @@ rb_library_source_finalize (GObject *object)
 static gboolean
 add_child_sources_idle (RBLibrarySource *source)
 {
+	GDK_THREADS_ENTER ();
 	rb_library_source_sync_child_sources (source);
+	GDK_THREADS_LEAVE ();
 
 	return FALSE;
 }

@@ -398,9 +398,10 @@ set_message_text (RBPlaylistSourceRecorder *source,
 static gboolean
 response_idle_cb (RBPlaylistSourceRecorder *source)
 {
-
+	GDK_THREADS_ENTER ();
         gtk_dialog_response (GTK_DIALOG (source),
                              GTK_RESPONSE_CANCEL);
+	GDK_THREADS_LEAVE ();
 
         return FALSE;
 }
@@ -719,6 +720,8 @@ burn_cd_idle (RBPlaylistSourceRecorder *source)
         GError *error = NULL;
         int     res;
 
+	GDK_THREADS_ENTER ();
+
         res = burn_cd (source, &error);
         if (error) {
                 error_dialog (source,
@@ -727,6 +730,7 @@ burn_cd_idle (RBPlaylistSourceRecorder *source)
                 g_error_free (error);
         }
 
+	GDK_THREADS_LEAVE ();
         return FALSE;
 }
 

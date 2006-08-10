@@ -333,9 +333,8 @@ bacon_volume_button_press (GtkWidget      * widget,
  */
 
 static gboolean
-cb_button_timeout (gpointer data)
+button_timeout (BaconVolumeButton *button)
 {
-  BaconVolumeButton *button = BACON_VOLUME_BUTTON (data);
   GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (button->scale));
   float val;
   gboolean res = TRUE;
@@ -363,6 +362,17 @@ cb_button_timeout (gpointer data)
 }
 
 static gboolean
+cb_button_timeout (gpointer data)
+{
+  BaconVolumeButton *button = BACON_VOLUME_BUTTON (data);
+
+  GDK_THREADS_ENTER ();
+  return button_timeout (button);
+  GDK_THREADS_LEAVE ();
+}
+
+
+static gboolean
 cb_button_press (GtkWidget      * widget,
 		 GdkEventButton * event,
 		 gpointer         data)
@@ -376,7 +386,7 @@ cb_button_press (GtkWidget      * widget,
       fabs (adj->page_increment) : - fabs (adj->page_increment);
   button->click_id = g_timeout_add (CLICK_TIMEOUT,
 				    (GSourceFunc) cb_button_timeout, button);
-  cb_button_timeout (button);
+  button_timeout (button);
 
   return TRUE;
 }

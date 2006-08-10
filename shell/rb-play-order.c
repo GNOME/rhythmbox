@@ -672,7 +672,11 @@ default_has_previous (RBPlayOrder *porder)
 static gboolean
 sync_playing_entry_cb (RBPlayOrder *porder)
 {
-	RBShellPlayer *player = rb_play_order_get_player (porder);
+	RBShellPlayer *player;
+
+	GDK_THREADS_ENTER ();
+	
+	player = rb_play_order_get_player (porder);
 
 	if (porder->priv->playing_entry) {
 		rb_shell_player_play_entry (player,
@@ -690,6 +694,8 @@ sync_playing_entry_cb (RBPlayOrder *porder)
 		}
 	}
 	porder->priv->sync_playing_entry_id = 0;
+
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

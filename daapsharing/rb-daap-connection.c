@@ -286,9 +286,11 @@ connection_connected (RBDAAPConnection *connection)
 
 	connection->priv->is_connected = TRUE;
 
+	GDK_THREADS_ENTER ();
 	g_signal_emit (connection,
 		       signals [CONNECTED],
 		       0);
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -298,9 +300,11 @@ connection_disconnected (RBDAAPConnection *connection)
 
 	connection->priv->is_connected = FALSE;
 
+	GDK_THREADS_ENTER ();
 	g_signal_emit (connection,
 		       signals [DISCONNECTED],
 		       0);
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -308,9 +312,11 @@ connection_operation_done (RBDAAPConnection *connection)
 {
 	rb_debug ("Emitting operation done");
 
+	GDK_THREADS_ENTER ();
 	g_signal_emit (connection,
 		       signals [OPERATION_DONE],
 		       0);
+	GDK_THREADS_LEAVE ();
 }
 
 static SoupMessage *

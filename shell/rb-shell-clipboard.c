@@ -47,7 +47,7 @@ static void rb_shell_clipboard_get_property (GObject *object,
 				   	     guint prop_id,
 					     GValue *value,
 					     GParamSpec *pspec);
-static gboolean rb_shell_clipboard_sync (RBShellClipboard *clipboard);
+static void rb_shell_clipboard_sync (RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_select_all (GtkAction *action,
 					       RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_select_none (GtkAction *action,
@@ -86,7 +86,8 @@ static void rb_shell_clipboard_cmd_song_info (GtkAction *action,
 					      RBShellClipboard *clipboard);
 static void rb_shell_clipboard_cmd_queue_song_info (GtkAction *action,
 						    RBShellClipboard *clipboard);
-static gboolean rebuild_playlist_menu (RBShellClipboard *clipboard);
+static void rebuild_playlist_menu (RBShellClipboard *clipboard);
+static gboolean rebuild_playlist_menu_idle (RBShellClipboard *clipboard);
 
 struct RBShellClipboardPrivate
 {
@@ -481,6 +482,17 @@ rb_shell_clipboard_new (GtkActionGroup *actiongroup,
 }
 
 static gboolean
+rb_shell_clipboard_sync_idle (RBShellClipboard *clipboard)
+{
+	GDK_THREADS_ENTER ();
+	rb_shell_clipboard_sync (clipboard);
+	clipboard->priv->idle_sync_id = 0;
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
+static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
 	RBEntryView *view;
@@ -497,9 +509,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	RhythmDBEntryType entry_type;
 
 	if (!clipboard->priv->source)
-		return FALSE;
-
-	clipboard->priv->idle_sync_id = 0;
+		return;
 
 	view = rb_source_get_entry_view (clipboard->priv->source);
 	if (view) {
@@ -572,8 +582,6 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
 	gtk_action_set_sensitive (action, (entry_type == RHYTHMDB_ENTRY_TYPE_SONG));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-
-	return FALSE;
 }
 
 static void
@@ -730,7 +738,7 @@ rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 					 RBShellClipboard *clipboard)
 {
 	if (clipboard->priv->idle_sync_id == 0)
-		clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync,
+		clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync_idle,
 							    clipboard);
 	rb_debug ("entryview changed");
 }
@@ -742,7 +750,7 @@ rb_shell_clipboard_entries_changed_cb (RBEntryView *view,
 {
 	rb_debug ("entryview changed");
 	if (clipboard->priv->idle_sync_id == 0)
-		clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync,
+		clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync_idle,
 							    clipboard);
 }
 
@@ -831,7 +839,7 @@ rb_shell_clipboard_playlist_deleted_cb (RBStaticPlaylistSource *source,
 	/* this will update the menu */
 	if (clipboard->priv->idle_playlist_id == 0) {
 		clipboard->priv->idle_playlist_id =
-			g_idle_add ((GSourceFunc)rebuild_playlist_menu, clipboard);
+			g_idle_add ((GSourceFunc)rebuild_playlist_menu_idle, clipboard);
 	}
 }
 
@@ -951,7 +959,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	return FALSE;
 }
 
-static gboolean
+static void
 rebuild_playlist_menu (RBShellClipboard *clipboard)
 {
 	GtkTreeModel *model = NULL;
@@ -980,8 +988,15 @@ rebuild_playlist_menu (RBShellClipboard *clipboard)
 		gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)add_playlist_to_menu, clipboard);
 		g_object_unref (model);
 	}
+}
 
+static gboolean
+rebuild_playlist_menu_idle (RBShellClipboard *clipboard)
+{
+	GDK_THREADS_ENTER ();
+	rebuild_playlist_menu (clipboard);
 	clipboard->priv->idle_playlist_id = 0;
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -995,6 +1010,6 @@ rb_shell_clipboard_playlist_added_cb (RBPlaylistManager *mgr,
 
 	if (clipboard->priv->idle_playlist_id == 0) {
 		clipboard->priv->idle_playlist_id =
-			g_idle_add ((GSourceFunc)rebuild_playlist_menu, clipboard);
+			g_idle_add ((GSourceFunc)rebuild_playlist_menu_idle, clipboard);
 	}
 }

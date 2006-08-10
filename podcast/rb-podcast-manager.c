@@ -424,7 +424,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
         	g_mutex_lock (pd->priv->download_list_mutex);
 		pd->priv->download_list =  g_list_append (pd->priv->download_list, data);
 		g_mutex_unlock (pd->priv->download_list_mutex);
-		gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);
+		g_idle_add ((GtkFunction) rb_podcast_manager_next_file , pd);
 	}
 }
 
@@ -477,10 +477,14 @@ static gboolean
 rb_podcast_manager_sync_head_cb (gpointer data)
 {
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (data);
+
+	GDK_THREADS_ENTER ();
+
 	rb_podcast_manager_update_feeds (pd);
 	pd->priv->source_sync = 0;
 	pd->priv->next_time = 0;
 	rb_podcast_manager_update_synctime (RB_PODCAST_MANAGER (data));
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -531,7 +535,8 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
 static gboolean
 rb_podcast_manager_next_file (RBPodcastManager * pd)
 {
-
+	GDK_THREADS_ENTER ();
+	
 	rb_debug ("try lock file_process mutex");
 	if (g_mutex_trylock (pd->priv->mutex_job) == TRUE) {
 		gint size;
@@ -548,6 +553,7 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 		rb_debug ("not start");
 	}
 
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -1133,7 +1139,7 @@ end_job	(RBPodcastManagerInfo *data)
 	download_info_free (data);
 	g_mutex_unlock (pd->priv->mutex_job);
 
-	gtk_idle_add ((GtkFunction) rb_podcast_manager_next_file, pd);
+	g_idle_add ((GtkFunction) rb_podcast_manager_next_file, pd);
 }
 
 static void
@@ -1631,6 +1637,8 @@ rb_podcast_manager_event_loop (RBPodcastManager *pd)
 {
 	RBPodcastManagerEvent *event;
 
+	GDK_THREADS_ENTER ();
+
 	while ((event = g_async_queue_try_pop (pd->priv->event_queue))) {
 		switch (event->type)
 		{
@@ -1656,6 +1664,7 @@ rb_podcast_manager_event_loop (RBPodcastManager *pd)
 
 	g_async_queue_unref (pd->priv->event_queue);
 
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

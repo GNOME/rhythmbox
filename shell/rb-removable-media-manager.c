@@ -549,6 +549,8 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 #endif
 	GObject *shell_player;
 
+	GDK_THREADS_ENTER ();
+	
 	/*
 	 * Monitor new (un)mounted file systems to look for new media
 	 *
@@ -586,6 +588,7 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 			  G_CALLBACK (rb_removable_media_manager_playing_uri_changed_cb),
 			  manager);
 
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

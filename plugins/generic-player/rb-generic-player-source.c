@@ -449,8 +449,12 @@ rb_generic_player_source_load_playlists (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
 
+	GDK_THREADS_ENTER ();
+
 	if (klass->impl_load_playlists)
 		klass->impl_load_playlists (source);
+
+	GDK_THREADS_LEAVE ();
 
 	return FALSE;
 }

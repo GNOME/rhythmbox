@@ -1595,6 +1595,7 @@ rb_entry_view_emit_selection_changed (RBEntryView *view)
 	gboolean available;
 	gint sel_count;
 
+	GDK_THREADS_ENTER ();
 	sel_count = gtk_tree_selection_count_selected_rows (view->priv->selection);
 	available = (sel_count > 0);
 
@@ -1611,6 +1612,8 @@ rb_entry_view_emit_selection_changed (RBEntryView *view)
 
 	view->priv->selection_changed_id = 0;
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SELECTION_CHANGED], 0);
+
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
