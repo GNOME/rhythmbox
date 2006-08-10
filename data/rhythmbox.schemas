@@ -1,6 +1,3 @@
-<!-- arch-tag: Rhythmbox GConf schema file
-  -->
-
 <gconfschemafile>
    <schemalist>
       <schema>
@@ -8,7 +5,7 @@
         <applyto>/apps/rhythmbox/first_time_flag</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the initial druid has already been run.</short>
 	<long>True if the initial druid has already been run.</long>
@@ -75,7 +72,7 @@
         <applyto>/apps/rhythmbox/monitor_library</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
           <short>Whether the library location are monitored</short>
           <long>If true, the locations listed in /apps/rhythmbox/library_locations are monitored for new files</long>
@@ -87,7 +84,7 @@
         <applyto>/apps/rhythmbox/state/window_visible</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>1</default>
+        <default>TRUE</default>
         <locale name="C">
 	<short>Whether the window is visible</short>
 	<long>When set to false, causes Rhythmbox to start only as a tray icon with the window hidden.</long>
@@ -172,7 +169,7 @@
         <applyto>/apps/rhythmbox/state/window_maximized</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>Main window maximization state</short>
 	<long>If true, the main window is maximized.</long>
@@ -195,7 +192,7 @@
 	<applyto>/apps/rhythmbox/ui/sourcelist_hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Source list visibility</short>
 	<long>If true, the main source list is hidden.</long>
@@ -206,7 +203,7 @@
 	<applyto>/apps/rhythmbox/ui/small_display</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Small display mode</short>
 	<long>If true, the main window is displayed without the source list, browser or playlist.</long>
@@ -217,7 +214,7 @@
 	<applyto>/apps/rhythmbox/ui/statusbar_hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Statusbar visibility</short>
 	<long>If true, the statusbar is hidden.</long>
@@ -228,7 +225,7 @@
 	<applyto>/apps/rhythmbox/ui/queue_as_sidebar</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Queue display type</short>
 	<long>If true, the play queue is displayed as a sidebar. If false, the play queue is displayed as a source in the source list.</long>
@@ -239,7 +236,7 @@
 	<applyto>/apps/rhythmbox/ui/toolbar_hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Toolbar visibility</short>
 	<long>If true, the toolbar is hidden.</long>
@@ -261,7 +258,7 @@
 	<applyto>/apps/rhythmbox/ui/song_position_slider_hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Song position slider visibility</short>
 	<long>If true, the song position slider is hidden.</long>
@@ -320,7 +317,7 @@
         <applyto>/apps/rhythmbox/state/library/show_browser</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>1</default>
+        <default>TRUE</default>
         <locale name="C">
 	<short>Show browser in library</short>
 	<long>Show the artist and album browser in the library.</long>
@@ -354,7 +351,7 @@
         <applyto>/apps/rhythmbox/state/daap/show_browser</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>1</default>
+        <default>TRUE</default>
         <locale name="C">
 	<short>Show browser in remote music shares</short>
 	<long>Show the artist and album browser in remote music shares.</long>
@@ -400,7 +397,7 @@
         <applyto>/apps/rhythmbox/ui/time_display</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>1</default>
+        <default>TRUE</default>
         <locale name="C">
         <short>Whether to show elapsed or remaining time</short>
         <long>If true, the elapsed time will be shown in song duration
@@ -412,7 +409,7 @@
         <applyto>/apps/rhythmbox/state/iradio/show_browser</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	  <short>Show browser in radio display</short>
 	  <long>Show the genre browser in the Internet Radio display.</long>
@@ -435,7 +432,7 @@
         <applyto>/apps/rhythmbox/state/podcast/show_browser</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	  <short>Show browser in podcast display</short>
 	  <long>Show the album browser in the Podcast display.</long>
@@ -533,7 +530,7 @@
 	<applyto>/apps/rhythmbox/sharing/enable_browsing</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>1</default>
+	<default>TRUE</default>
 	<locale name="C">
 	<short>Enables browsing your network for computers with shared music</short>
 	<long>When enabled, Rhythmbox will search for computers running Rhythmbox or Apple iTunes with shared music on your local network</long>
@@ -544,7 +541,7 @@
 	<applyto>/apps/rhythmbox/sharing/enable_sharing</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Enables sharing your music with computers on your network</short>
 	<long>When enabled, Rhythmbox will share your music with other computers running Rhythmbox or Apple iTunes</long>
@@ -555,7 +552,7 @@
 	<applyto>/apps/rhythmbox/sharing/require_password</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>Require a password to access your music over the network</short>
 	<long>When enabled, Rhythmbox will require a password for others to access your music over the network.</long>
@@ -610,7 +607,7 @@
         <applyto>/apps/rhythmbox/ui/show_notifications</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>1</default>
+        <default>TRUE</default>
         <locale name="C">
 	<short>Whether to show notifications from the tray icon</short>
 	<long>When enabled, Rhythmbox will display notification bubbles when the playing track changes, a podcast is downloaded, a CD finished burning, etc.</long>
@@ -621,7 +618,7 @@
         <applyto>/apps/rhythmbox/plugins/no_user_plugins</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>Disable per-user plugins.</short>
 	<long>When set prevents loading of per-user plugins from ~/.gnome2/rhythmbox/plugins/</long>
@@ -632,7 +629,7 @@
         <applyto>/apps/rhythmbox/plugins/rblirc/active</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the LIRC plugin is enabled.</short>
 	<long>True if the LIRC plugin is enabled.</long>
@@ -643,7 +640,7 @@
         <applyto>/apps/rhythmbox/plugins/audioscrobbler/active</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the AudioScrobbler plugin is enabled.</short>
 	<long>True if the AudioScrobbler plugin is enabled.</long>
@@ -654,7 +651,7 @@
         <applyto>/apps/rhythmbox/plugins/pythonconsole/active</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the Python console plugin is enabled.</short>
 	<long>True if the Python console plugin is enabled.</long>
@@ -665,7 +662,7 @@
 	<applyto>/apps/rhythmbox/plugins/generic-player/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>1</default>
+	<default>TRUE</default>
 	<locale name="C">
 	<short>True if the generic audio player plugin is enabled.</short>
 	<long>True if the generic audio player plugin is enabled.</long>
@@ -676,7 +673,7 @@
 	<applyto>/apps/rhythmbox/plugins/ipod/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>1</default>
+	<default>TRUE</default>
 	<locale name="C">
 	<short>True if the iPod plugin is enabled.</short>
 	<long>True if the iPod plugin is enabled.</long>
@@ -687,7 +684,7 @@
 	<applyto>/apps/rhythmbox/plugins/artdisplay/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>True if the art-display plugin is enabled.</short>
 	<long>True if the art-display plugin is enabled.</long>
@@ -698,7 +695,7 @@
 	<applyto>/apps/rhythmbox/plugins/lyrics/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>True if the lyric plugin is enabled.</short>
 	<long>True if the lyric plugin is enabled.</long>
@@ -709,7 +706,7 @@
 	<applyto>/apps/rhythmbox/plugins/cd-recorder/active</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>1</default>
+	<default>TRUE</default>
 	<locale name="C">
 	<short>True if the cd-burning plugin is enabled.</short>
 	<long>True if the cd-burning plugin is enabled.</long>
@@ -720,7 +717,7 @@
         <applyto>/apps/rhythmbox/plugins/rblirc/hidden</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the LIRC plugin is hidden.</short>
 	<long>True if the LIRC plugin is hidden.</long>
@@ -731,7 +728,7 @@
         <applyto>/apps/rhythmbox/plugins/audioscrobbler/hidden</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the AudioScrobbler plugin is hidden.</short>
 	<long>True if the AudioScrobbler plugin is hidden.</long>
@@ -742,7 +739,7 @@
         <applyto>/apps/rhythmbox/plugins/pythonconsole/hidden</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
-        <default>0</default>
+        <default>FALSE</default>
         <locale name="C">
 	<short>True if the Python console plugin is hidden.</short>
 	<long>True if the Python console plugin is hidden.</long>
@@ -753,7 +750,7 @@
 	<applyto>/apps/rhythmbox/plugins/generic-player/hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>1</default>
+	<default>TRUE</default>
 	<locale name="C">
 	<short>True if the generic audio player plugin is hidden.</short>
 	<long>True if the generic audio player plugin is hidden.</long>
@@ -764,7 +761,7 @@
 	<applyto>/apps/rhythmbox/plugins/ipod/hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>True if the iPod plugin is hidden.</short>
 	<long>True if the iPod plugin is hidden.</long>
@@ -775,7 +772,7 @@
 	<applyto>/apps/rhythmbox/plugins/artdisplay/hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>True if the art-display plugin is hidden.</short>
 	<long>True if the art-display plugin is hidden.</long>
@@ -786,7 +783,7 @@
 	<applyto>/apps/rhythmbox/plugins/lyrics/hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>0</default>
+	<default>FALSE</default>
 	<locale name="C">
 	<short>True if the lyric plugin is hidden.</short>
 	<long>True if the lyric plugin is hidden.</long>
@@ -797,7 +794,7 @@
 	<applyto>/apps/rhythmbox/plugins/cd-recorder/hidden</applyto>
 	<owner>rhythmbox</owner>
 	<type>bool</type>
-	<default>1</default>
+	<default>TRUE</default>
 	<locale name="C">
 	<short>True if the cd-burning plugin is hidden.</short>
 	<long>True if the cd-burning plugin is hidden.</long>

@@ -1,3 +1,62 @@
+2006-08-10  William Jon McCann  <mccann@jhu.edu>
+
+	* data/rhythmbox.schemas:
+	* plugins/Makefile.am:
+	* plugins/artdisplay/Makefile.am:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/cd-recorder/Makefile.am:
+	* plugins/generic-player/Makefile.am:
+	* plugins/ipod/Makefile.am:
+	* plugins/lirc/Makefile.am:
+	* plugins/lyrics/Makefile.am:
+	* plugins/pythonconsole/Makefile.am:
+	* plugins/rb-module.c:
+	* plugins/rb-module.h:
+	* plugins/rb-plugin-manager.c: (configure_button_cb),
+	(plugin_manager_view_cell_cb), (cursor_changed_cb),
+	(plugin_manager_populate_lists), (plugin_manager_set_active),
+	(plugin_manager_toggle_active),
+	(plugin_manager_get_selected_plugin), (rb_plugin_manager_init),
+	(rb_plugin_manager_finalize):
+	* plugins/rb-plugin-manager.h:
+	* plugins/rb-plugin.c: (rb_get_plugin_paths),
+	(rb_plugin_find_file):
+	* plugins/rb-plugin.h:
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load),
+	(rb_plugins_engine_load_cb), (rb_plugins_engine_load_all),
+	(rb_plugins_engine_init), (rb_plugin_info_free),
+	(load_plugin_module), (rb_plugins_engine_activate_plugin),
+	(rb_plugins_engine_deactivate_plugin),
+	(rb_plugins_engine_plugin_is_active),
+	(rb_plugins_engine_plugin_is_visible),
+	(rb_plugins_engine_plugin_is_configurable),
+	(rb_plugins_engine_configure_plugin),
+	(rb_plugins_engine_get_plugin_name),
+	(rb_plugins_engine_get_plugin_description),
+	(rb_plugins_engine_get_plugin_authors),
+	(rb_plugins_engine_get_plugin_website),
+	(rb_plugins_engine_get_plugin_copyright),
+	(rb_plugins_engine_get_plugin_icon):
+	* plugins/rb-plugins-engine.h:
+	* plugins/rb-python-module.c: (rb_python_module_init_python),
+	(rb_python_module_load), (rb_python_module_unload),
+	(rb_python_module_class_init), (rb_python_module_new),
+	(finalise_collect_cb), (rb_python_shutdown):
+	* plugins/rb-python-module.h:
+	* plugins/rb-python-plugin.c: (call_python_method),
+	(impl_deactivate), (impl_activate), (impl_create_configure_dialog),
+	(impl_is_configurable), (rb_python_object_get_type):
+	* plugins/rb-python-plugin.h:
+	* plugins/rb/Makefile.am:
+
+	Use TRUE/FALSE in schemas to make it easier to read.  Remove
+	spurious whitespace.  Don't use libgnome explicitly.  Replace the
+	crack USER_RB_PLUGINS_LOCATION API with rb_get_plugin_paths().
+	Remove unused RB_PLUGINS_ENGINE_BASE_KEY CONF_PREFIX etc.  Don't
+	special case loading of dirs.  Install plugins to subdirectors of
+	PLUGINDIR so they don't interfere.  Install rb plugin to LIBDIR
+	not DATADIR.  Fixes #350352
+
 2006-08-10  James Livingston  <doclivingston@gmail.com>
 
 	* daapsharing/rb-daap-connection.c: (connection_connected),

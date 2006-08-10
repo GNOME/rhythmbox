@@ -15,8 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #ifndef __RB_PLUGIN_MANAGER_H__
@@ -65,7 +65,7 @@ typedef struct
 GType		 rb_plugin_manager_get_type		(void) G_GNUC_CONST;
 
 GtkWidget	*rb_plugin_manager_new		(void);
-   
+
 G_END_DECLS
 
 #endif  /* __RB_PLUGIN_MANAGER_H__  */

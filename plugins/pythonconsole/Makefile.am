@@ -1,5 +1,5 @@
 # Python Console Plugin
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/python-console
 plugin_PYTHON = pythonconsole.py
 
 plugin_in_files = pythonconsole.rb-plugin.desktop.in

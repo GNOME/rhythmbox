@@ -1,5 +1,5 @@
 # Lyric display plugin
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/lyrics
 plugin_PYTHON = lyrics.py
 
 plugin_in_files = lyrics.rb-plugin.desktop.in

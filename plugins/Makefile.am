@@ -65,7 +65,7 @@ librbplugins_la_SOURCES += \
 	rb-python-module.c		\
 	rb-python-module.h		\
 	rb-python-plugin.c		\
-	rb-python-plugin.h	
+	rb-python-plugin.h
 
 INCLUDES += \
 	$(NO_STRICT_ALIASING_CFLAGS)	\

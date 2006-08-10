@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003 Marco Pesenti Gritti
  * Copyright (C) 2003, 2004 Christian Persch
- * Copyright (C) 2005 - Paolo Maggi 
+ * Copyright (C) 2005 - Paolo Maggi
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #include "config.h"
@@ -54,7 +54,6 @@ static void rb_module_class_init	(RBModuleClass *class);
 static GObjectClass *parent_class = NULL;
 
 G_DEFINE_TYPE (RBModule, rb_module, G_TYPE_TYPE_MODULE)
-
 
 static gboolean
 rb_module_load (GTypeModule *gmodule)

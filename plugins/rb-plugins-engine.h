@@ -1,7 +1,7 @@
 /*
  * heavily based on code from Gedit
  *
- * Copyright (C) 2002-2005 - Paolo Maggi 
+ * Copyright (C) 2002-2005 - Paolo Maggi
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #ifndef __RB_PLUGINS_ENGINE_H__
@@ -39,9 +39,9 @@ gboolean 	 rb_plugins_engine_deactivate_plugin	(RBPluginInfo *info);
 gboolean 	 rb_plugins_engine_plugin_is_active 	(RBPluginInfo *info);
 gboolean 	 rb_plugins_engine_plugin_is_visible 	(RBPluginInfo *info);
 
-gboolean	 rb_plugins_engine_plugin_is_configurable 
+gboolean	 rb_plugins_engine_plugin_is_configurable
 							(RBPluginInfo *info);
-void	 	 rb_plugins_engine_configure_plugin	(RBPluginInfo *info, 
+void	 	 rb_plugins_engine_configure_plugin	(RBPluginInfo *info,
 							 GtkWindow *parent);
 
 const gchar*	rb_plugins_engine_get_plugin_name	(RBPluginInfo *info);
@@ -54,5 +54,3 @@ const gchar*	rb_plugins_engine_get_plugin_copyright	(RBPluginInfo *info);
 GdkPixbuf *	rb_plugins_engine_get_plugin_icon	(RBPluginInfo *info);
 
 #endif  /* __RB_PLUGINS_ENGINE_H__ */
-
-

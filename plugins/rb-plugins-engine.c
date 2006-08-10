@@ -1,7 +1,8 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * Plugin manager for Rhythmbox, based heavily on the code from gedit.
  *
- * Copyright (C) 2002-2005 Paolo Maggi 
+ * Copyright (C) 2002-2005 Paolo Maggi
  *               2006 James Livingston  <jrl@ids.org.au>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,10 +17,9 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -29,7 +29,6 @@
 
 #include <glib/gi18n.h>
 #include <glib/gkeyfile.h>
-#include <libgnome/gnome-util.h>
 
 #include "eel-gconf-extensions.h"
 #include "rb-file-helpers.h"
@@ -57,7 +56,7 @@ typedef enum
 struct _RBPluginInfo
 {
 	gchar        *file;
-	
+
 	gchar        *location;
 	RBPluginLang lang;
 	GTypeModule  *module;
@@ -70,9 +69,9 @@ struct _RBPluginInfo
 
 	gchar        *icon_name;
 	GdkPixbuf    *icon_pixbuf;
-	 
+
 	RBPlugin     *plugin;
-	
+
 	gboolean     active;
 	gboolean     visible;
 	guint        active_notification_id;
@@ -92,7 +91,6 @@ static gboolean rb_plugins_engine_activate_plugin_real (RBPluginInfo *info,
 							RBShell *shell);
 static void rb_plugins_engine_deactivate_plugin_real (RBPluginInfo *info,
 						      RBShell *shell);
-
 
 static GHashTable *rb_plugins = NULL;
 guint garbage_collect_id = 0;
@@ -127,7 +125,7 @@ rb_plugins_engine_load (const gchar *file)
 		rb_debug ("IAge key does not exist in file: %s", file);
 		goto error;
 	}
-	
+
 	/* Check IAge=1 */
 	if (g_key_file_get_integer (plugin_file,
 				    "RB Plugin",
@@ -137,7 +135,7 @@ rb_plugins_engine_load (const gchar *file)
 		rb_debug ("Wrong IAge in file: %s", file);
 		goto error;
 	}
-				    
+
 	/* Get Location */
 	str = g_key_file_get_string (plugin_file,
 				     "RB Plugin",
@@ -152,7 +150,7 @@ rb_plugins_engine_load (const gchar *file)
 		g_warning ("Could not find 'Module' in %s", file);
 		goto error;
 	}
-	
+
 	/* Get the loader for this plugin */
 	str = g_key_file_get_string (plugin_file,
 				     "RB Plugin",
@@ -206,7 +204,6 @@ rb_plugins_engine_load (const gchar *file)
 	else
 		rb_debug ("Could not find 'Description' in %s", file);
 
-
 	/* Get Authors */
 	info->authors = g_key_file_get_string_list (plugin_file,
 						    "RB Plugin",
@@ -214,7 +211,6 @@ rb_plugins_engine_load (const gchar *file)
 						    NULL, NULL);
 	if (info->authors == NULL)
 		rb_debug ("Could not find 'Authors' in %s", file);
-
 
 	/* Get Copyright */
 	str = g_key_file_get_string (plugin_file,
@@ -235,9 +231,9 @@ rb_plugins_engine_load (const gchar *file)
 		info->website = str;
 	else
 		rb_debug ("Could not find 'Website' in %s", file);
-		
+
 	g_key_file_free (plugin_file);
-	
+
 	return info;
 
 error:
@@ -257,7 +253,7 @@ rb_plugins_engine_load_cb (const char *uri, gpointer userdata)
 	RBPluginInfo *info;
 	char *key_name;
 	gboolean activate;
-			
+
 	if (!g_str_has_suffix (uri, PLUGIN_EXT))
 		return;
 
@@ -275,7 +271,7 @@ rb_plugins_engine_load_cb (const char *uri, gpointer userdata)
 
 	g_hash_table_insert (rb_plugins, info->location, info);
 	rb_debug ("Plugin %s loaded", info->name);
-	
+
 	key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
 	info->active_notification_id = eel_gconf_notification_add (key_name,
 								   (GConfClientNotifyFunc)rb_plugins_engine_plugin_active_cb,
@@ -307,23 +303,14 @@ rb_plugins_engine_load_dir (const gchar *path)
 static void
 rb_plugins_engine_load_all (void)
 {
-	gchar *pdir;
+	GList *paths;
 
-	/* load user's plugins */
-	if (!eel_gconf_get_boolean (CONF_PLUGIN_DISABLE_USER)) {
-		pdir = gnome_util_home_file (USER_RB_PLUGINS_LOCATION);
-		rb_plugins_engine_load_dir (pdir);
-		g_free (pdir);
+	paths = rb_get_plugin_paths ();
+	while (paths != NULL) {
+		rb_plugins_engine_load_dir (paths->data);
+		g_free (paths->data);
+		paths = g_list_delete_link (paths, paths);
 	}
-
-#ifdef SHARE_UNINSTALLED_DIR
-	/* load plugins when running uninstalled */
-	rb_plugins_engine_load_dir (UNINSTALLED_PLUGINS_LOCATION);
-	rb_plugins_engine_load_dir ("../" UNINSTALLED_PLUGINS_LOCATION);
-#endif
-	
-	/* load system-wide plugins */
-	rb_plugins_engine_load_dir (RB_PLUGIN_DIR);
 }
 
 static gboolean
@@ -337,7 +324,7 @@ gboolean
 rb_plugins_engine_init (RBShell *shell)
 {
 	g_return_val_if_fail (rb_plugins == NULL, FALSE);
-	
+
 	if (!g_module_supported ())
 	{
 		g_warning ("rb is not able to initialize the plugins engine.");
@@ -359,7 +346,6 @@ rb_plugins_engine_init (RBShell *shell)
 	return TRUE;
 }
 
-
 void
 rb_plugins_engine_garbage_collect (void)
 {
@@ -373,13 +359,13 @@ rb_plugin_info_free (RBPluginInfo *info)
 {
 	if (info->active)
 		rb_plugins_engine_deactivate_plugin_real (info, rb_plugins_shell);
-	
+
 	if (info->plugin != NULL) {
 	       	rb_debug ("Unref plugin %s", info->name);
 
 		g_object_unref (info->plugin);
-			
-		/* info->module must not be unref since it is not possible to finalize 
+
+		/* info->module must not be unref since it is not possible to finalize
 		 * a type module */
 	}
 
@@ -434,28 +420,28 @@ load_plugin_module (RBPluginInfo *info)
 	g_return_val_if_fail (info->file != NULL, FALSE);
 	g_return_val_if_fail (info->location != NULL, FALSE);
 	g_return_val_if_fail (info->plugin == NULL, FALSE);
-	
+
 	switch (info->lang) {
 		case RB_PLUGIN_LOADER_C:
-			dirname = g_path_get_dirname (info->file);	
+			dirname = g_path_get_dirname (info->file);
 			g_return_val_if_fail (dirname != NULL, FALSE);
 
 			path = g_module_build_path (dirname, info->location);
 #ifdef SHARE_UNINSTALLED_DIR
-			if (!g_file_test(path, G_FILE_TEST_EXISTS)) {
+			if (!g_file_test (path, G_FILE_TEST_EXISTS)) {
 				char *temp;
 
 				g_free (path);
 				temp = g_build_filename (dirname, ".libs", NULL);
-				
+
 				path = g_module_build_path (temp, info->location);
 				g_free (temp);
 			}
 #endif
-			
+
 			g_free (dirname);
 			g_return_val_if_fail (path != NULL, FALSE);
-	
+
 			info->module = G_TYPE_MODULE (rb_module_new (path, info->location));
 			g_free (path);
 			break;
@@ -468,7 +454,6 @@ load_plugin_module (RBPluginInfo *info)
 			break;
 	}
 
-	
 	if (g_type_module_use (info->module) == FALSE) {
 		g_warning ("Could not load plugin %s\n", info->location);
 
@@ -477,7 +462,7 @@ load_plugin_module (RBPluginInfo *info)
 
 		return FALSE;
 	}
-	
+
 	switch (info->lang) {
 		case RB_PLUGIN_LOADER_C:
 			info->plugin = RB_PLUGIN (rb_module_new_object (RB_MODULE (info->module)));
@@ -492,7 +477,7 @@ load_plugin_module (RBPluginInfo *info)
 	return TRUE;
 }
 
-static gboolean 	 
+static gboolean
 rb_plugins_engine_activate_plugin_real (RBPluginInfo *info, RBShell *shell)
 {
 	gboolean res = TRUE;
@@ -508,7 +493,7 @@ rb_plugins_engine_activate_plugin_real (RBPluginInfo *info, RBShell *shell)
 	return res;
 }
 
-gboolean 	 
+gboolean
 rb_plugins_engine_activate_plugin (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, FALSE);
@@ -522,7 +507,7 @@ rb_plugins_engine_activate_plugin (RBPluginInfo *info)
 		key_name = g_strdup_printf (CONF_PLUGIN_ACTIVE_KEY, info->location);
 		eel_gconf_set_boolean (key_name, TRUE);
 		g_free (key_name);
-	
+
 		info->active = TRUE;
 
 		return TRUE;
@@ -543,7 +528,7 @@ gboolean
 rb_plugins_engine_deactivate_plugin (RBPluginInfo *info)
 {
 	char *key_name;
-	
+
 	g_return_val_if_fail (info != NULL, FALSE);
 
 	if (!info->active)
@@ -565,7 +550,7 @@ gboolean
 rb_plugins_engine_plugin_is_active (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, FALSE);
-	
+
 	return info->active;
 }
 
@@ -573,11 +558,9 @@ gboolean
 rb_plugins_engine_plugin_is_visible (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, FALSE);
-	
+
 	return info->visible;
 }
-
-
 
 gboolean
 rb_plugins_engine_plugin_is_configurable (RBPluginInfo *info)
@@ -586,18 +569,18 @@ rb_plugins_engine_plugin_is_configurable (RBPluginInfo *info)
 
 	if ((info->plugin == NULL) || !info->active)
 		return FALSE;
-	
+
 	return rb_plugin_is_configurable (info->plugin);
 }
 
-void 	 
-rb_plugins_engine_configure_plugin (RBPluginInfo *info, 
+void
+rb_plugins_engine_configure_plugin (RBPluginInfo *info,
 				       GtkWindow       *parent)
 {
 	GtkWidget *conf_dlg;
-	
+
 	GtkWindowGroup *wg;
-	
+
 	g_return_if_fail (info != NULL);
 
 	conf_dlg = rb_plugin_create_configure_dialog (info->plugin);
@@ -605,17 +588,17 @@ rb_plugins_engine_configure_plugin (RBPluginInfo *info,
 	gtk_window_set_transient_for (GTK_WINDOW (conf_dlg),
 				      parent);
 
-	wg = parent->group;		      
+	wg = parent->group;
 	if (wg == NULL)
 	{
 		wg = gtk_window_group_new ();
 		gtk_window_group_add_window (wg, parent);
 	}
-			
+
 	gtk_window_group_add_window (wg,
 				     GTK_WINDOW (conf_dlg));
-		
-	gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);		     
+
+	gtk_window_set_modal (GTK_WINDOW (conf_dlg), TRUE);
 	gtk_widget_show (conf_dlg);
 }
 
@@ -641,12 +624,11 @@ rb_plugins_engine_plugin_visible_cb (GConfClient *client,
 	info->visible = !gconf_value_get_bool (entry->value);
 }
 
-
 const gchar *
 rb_plugins_engine_get_plugin_name (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, NULL);
-	
+
 	return info->name;
 }
 
@@ -654,7 +636,7 @@ const gchar *
 rb_plugins_engine_get_plugin_description (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, NULL);
-	
+
 	return info->desc;
 }
 
@@ -662,7 +644,7 @@ const gchar **
 rb_plugins_engine_get_plugin_authors (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, (const gchar **)NULL);
-	
+
 	return (const gchar **)info->authors;
 }
 
@@ -670,7 +652,7 @@ const gchar *
 rb_plugins_engine_get_plugin_website (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, NULL);
-	
+
 	return info->website;
 }
 
@@ -678,7 +660,7 @@ const gchar *
 rb_plugins_engine_get_plugin_copyright (RBPluginInfo *info)
 {
 	g_return_val_if_fail (info != NULL, NULL);
-	
+
 	return info->copyright;
 }
 
@@ -702,4 +684,3 @@ rb_plugins_engine_get_plugin_icon (RBPluginInfo *info)
 
 	return info->icon_pixbuf;
 }
-

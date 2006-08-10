@@ -1,9 +1,9 @@
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/lirc
 plugin_LTLIBRARIES = librblirc.la
 
 librblirc_la_SOURCES = \
 	rb-lirc-plugin.c
-	
+
 librblirc_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) -llirc_client
 
 INCLUDES = 						\

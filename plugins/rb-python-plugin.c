@@ -13,8 +13,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #include <config.h>
@@ -50,7 +50,7 @@ call_python_method (RBPythonObject *object,
 					      "(N)",
 					      pygobject_new (G_OBJECT (shell)));
 	}
-	
+
 	if (!py_ret)
 		PyErr_Print ();
 
@@ -90,11 +90,11 @@ impl_deactivate (RBPlugin *plugin,
 {
 	PyGILState_STATE state = pyg_gil_state_ensure ();
 	RBPythonObject *object = (RBPythonObject *)plugin;
-	
+
 	if (PyObject_HasAttrString (object->instance, "deactivate"))
-	{		
+	{
 		PyObject *py_ret = call_python_method (object, shell, "deactivate");
-		
+
 		if (py_ret)
 		{
 			Py_XDECREF (py_ret);
@@ -112,7 +112,7 @@ impl_activate (RBPlugin *plugin,
 {
 	PyGILState_STATE state = pyg_gil_state_ensure ();
 	RBPythonObject *object = (RBPythonObject *)plugin;
-	
+
 	if (PyObject_HasAttrString (object->instance, "activate"))
 	{
 		PyObject *py_ret = call_python_method (object, shell, "activate");
@@ -124,7 +124,7 @@ impl_activate (RBPlugin *plugin,
 	}
 	else
 		RB_PLUGIN_CLASS (parent_class)->activate (plugin, shell);
-	
+
 	pyg_gil_state_release (state);
 }
 
@@ -134,11 +134,11 @@ impl_create_configure_dialog (RBPlugin *plugin)
 	PyGILState_STATE state = pyg_gil_state_ensure ();
 	RBPythonObject *object = (RBPythonObject *)plugin;
 	GtkWidget *ret = NULL;
-	
+
 	if (PyObject_HasAttrString (object->instance, "create_configure_dialog"))
 	{
 		PyObject *py_ret = call_python_method (object, NULL, "create_configure_dialog");
-	
+
 		if (py_ret)
 		{
 			if (check_py_object_is_gtk_widget (py_ret))
@@ -151,13 +151,13 @@ impl_create_configure_dialog (RBPlugin *plugin)
 				PyErr_SetString(PyExc_TypeError, "return value for create_configure_dialog is not a GtkWidget");
 				PyErr_Print();
 			}
-			
+
 			Py_DECREF (py_ret);
 		}
 	}
 	else
 		ret = RB_PLUGIN_CLASS (parent_class)->create_configure_dialog (plugin);
- 
+
 	pyg_gil_state_release (state);
 	return ret;
 }
@@ -167,22 +167,22 @@ impl_is_configurable (RBPlugin *plugin)
 {
 	PyGILState_STATE state = pyg_gil_state_ensure ();
 	RBPythonObject *object = (RBPythonObject *) plugin;
-	PyObject *dict = object->instance->ob_type->tp_dict;	
+	PyObject *dict = object->instance->ob_type->tp_dict;
 	gboolean result;
-	
+
 	if (dict == NULL)
 		result = FALSE;
 	else if (!PyDict_Check(dict))
 		result = FALSE;
-	else 
+	else
 		result = PyDict_GetItemString(dict, "create_configure_dialog") != NULL;
 
 	pyg_gil_state_release (state);
-	
+
 	return result;
 }
-						
-static void 
+
+static void
 rb_python_object_init (RBPythonObject *object)
 {
 	RBPythonObjectClass *class;
@@ -228,7 +228,7 @@ rb_python_object_class_init (RBPythonObjectClass *klass,
 }
 
 GType
-rb_python_object_get_type (GTypeModule *module, 
+rb_python_object_get_type (GTypeModule *module,
 			      PyObject    *type)
 {
 	GTypeInfo *info;
@@ -248,7 +248,7 @@ rb_python_object_get_type (GTypeModule *module,
 				     PyString_AsString (PyObject_GetAttrString (type, "__name__")));
 
 	rb_debug ("Registering python plugin instance: %s", type_name);
-	gtype = g_type_module_register_type (module, 
+	gtype = g_type_module_register_type (module,
 					     RB_TYPE_PLUGIN,
 					     type_name,
 					     info, 0);

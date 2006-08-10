@@ -17,8 +17,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -29,7 +29,6 @@
 
 #include <glib/gi18n.h>
 #include <glade/glade-xml.h>
-#include <libgnome/gnome-url.h>
 
 #include "rb-plugin-manager.h"
 #include "rb-plugins-engine.h"
@@ -72,11 +71,11 @@ struct _RBPluginManagerPrivate
 G_DEFINE_TYPE(RBPluginManager, rb_plugin_manager, GTK_TYPE_VBOX)
 
 static void rb_plugin_manager_finalize (GObject *o);
-static RBPluginInfo *plugin_manager_get_selected_plugin (RBPluginManager *pm); 
-static void plugin_manager_toggle_active (GtkTreeIter *iter, GtkTreeModel *model, RBPluginManager *pm); 
-static void plugin_manager_toggle_all (RBPluginManager *pm); 
+static RBPluginInfo *plugin_manager_get_selected_plugin (RBPluginManager *pm);
+static void plugin_manager_toggle_active (GtkTreeIter *iter, GtkTreeModel *model, RBPluginManager *pm);
+static void plugin_manager_toggle_all (RBPluginManager *pm);
 
-static void 
+static void
 rb_plugin_manager_class_init (RBPluginManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -103,7 +102,7 @@ configure_button_cb (GtkWidget          *button,
 
 	rb_plugins_engine_configure_plugin (info, toplevel);
 
-	rb_debug ("Done configuring plugin");	
+	rb_debug ("Done configuring plugin");
 }
 
 static void
@@ -114,7 +113,7 @@ plugin_manager_view_cell_cb (GtkTreeViewColumn *tree_column,
 			     gpointer           data)
 {
 	RBPluginInfo *info;
-	
+
 	g_return_if_fail (tree_model != NULL);
 	g_return_if_fail (tree_column != NULL);
 
@@ -123,9 +122,9 @@ plugin_manager_view_cell_cb (GtkTreeViewColumn *tree_column,
 	if (info == NULL)
 		return;
 
-	g_object_set (G_OBJECT (cell), 
-		      "text", 
-		      rb_plugins_engine_get_plugin_name (info), 
+	g_object_set (G_OBJECT (cell),
+		      "text",
+		      rb_plugins_engine_get_plugin_name (info),
 		      NULL);
 }
 
@@ -181,7 +180,7 @@ cursor_changed_cb (GtkTreeSelection *selection,
 				   rb_plugins_engine_get_plugin_icon (info));
 
 	gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
-				  (info != NULL) && 
+				  (info != NULL) &&
 				   rb_plugins_engine_plugin_is_configurable (info));
 }
 
@@ -239,7 +238,7 @@ plugin_manager_populate_lists (RBPluginManager *pm)
 
 		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree));
 		g_return_if_fail (selection != NULL);
-		
+
 		gtk_tree_selection_select_iter (selection, &iter);
 	}
 	g_object_unref (model);
@@ -253,7 +252,7 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 {
 	RBPluginInfo *info;
 	GtkTreeIter child_iter;
-	
+
 	gtk_tree_model_get (model, iter, INFO_COLUMN, &info, -1);
 
 	g_return_if_fail (info != NULL);
@@ -271,14 +270,14 @@ plugin_manager_set_active (GtkTreeIter  *iter,
 			active ^= 1;
 		}
 	}
-  
+
 	/* set new value */
 	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (model),
 							  &child_iter, iter);
 	gtk_list_store_set (GTK_LIST_STORE (pm->priv->plugin_model),
 			    &child_iter,
 			    ACTIVE_COLUMN,
-			    rb_plugins_engine_plugin_is_active (info), 
+			    rb_plugins_engine_plugin_is_active (info),
 			    -1);
 
 	/* cause the configure button sensitivity to be updated */
@@ -291,7 +290,7 @@ plugin_manager_toggle_active (GtkTreeIter  *iter,
 			      RBPluginManager *pm)
 {
 	gboolean active, visible;
-	
+
 	gtk_tree_model_get (model, iter,
 			    ACTIVE_COLUMN, &active,
 			    VISIBLE_COLUMN, &visible,
@@ -320,7 +319,7 @@ plugin_manager_get_selected_plugin (RBPluginManager *pm)
 	if (gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		gtk_tree_model_get (model, &iter, INFO_COLUMN, &info, -1);
 	}
-	
+
 	return info;
 }
 
@@ -443,7 +442,7 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 	gtk_widget_show (pm->priv->tree);
 }
 
-static void 
+static void
 rb_plugin_manager_init (RBPluginManager *pm)
 {
 	GladeXML *xml;
@@ -461,7 +460,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 	pm->priv->tree = gtk_tree_view_new ();
 	plugins_tree_vbox = glade_xml_get_widget (xml, "plugins_tree_vbox");
 	gtk_container_add (GTK_CONTAINER (plugins_tree_vbox), pm->priv->tree);
-	
+
 	pm->priv->configure_button = glade_xml_get_widget (xml, "configure_button");
 	g_signal_connect (pm->priv->configure_button,
 			  "clicked",
@@ -469,7 +468,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 			  pm);
 
 	pm->priv->plugin_title = glade_xml_get_widget (xml, "plugin_title");
-	
+
 	pm->priv->site_label = glade_xml_get_widget (xml, "site_label");
 	rb_glade_boldify_label (xml, "site_label");
 	pm->priv->copyright_label = glade_xml_get_widget (xml, "copyright_label");
@@ -493,7 +492,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 	plugin_manager_populate_lists (pm);
 }
 
-GtkWidget*
+GtkWidget *
 rb_plugin_manager_new (void)
 {
 	return g_object_new (RB_TYPE_PLUGIN_MANAGER, 0);
@@ -506,4 +505,3 @@ rb_plugin_manager_finalize (GObject *o)
 
 	g_list_free (pm->priv->plugins);
 }
-

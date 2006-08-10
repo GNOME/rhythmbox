@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * Copyright (C) 2005 Raphael Slinckx
  *
  * This program is free software; you can redistribute it and/or modify
@@ -13,8 +14,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -28,6 +29,7 @@
 
 #include <gmodule.h>
 
+#include "rb-plugin.h"
 #include "rb-python-module.h"
 #include "rb-python-plugin.h"
 #include "rb-debug.h"
@@ -66,16 +68,17 @@ static PyTypeObject *PyRBPlugin_Type;
 G_DEFINE_TYPE (RBPythonModule, rb_python_module, G_TYPE_TYPE_MODULE);
 
 static void
-rb_python_module_init_python ()
+rb_python_module_init_python (void)
 {
 	PyObject *pygtk, *mdict, *require;
 	PyObject *rb, *rhythmdb, *gtk, *pygtk_version, *pygtk_required_version;
 	PyObject *gettext, *install, *gettext_args;
-	PyObject *sys_path, *path;
+	PyObject *sys_path;
 	struct sigaction old_sigint;
 	gint res;
 	char *argv[] = { "rb", "rhythmdb", NULL };
-	
+	GList *paths;
+
 	if (Py_IsInitialized ()) {
 		g_warning ("Python Should only be initialized once, since it's in class_init");
 		g_return_if_reached ();
@@ -83,9 +86,9 @@ rb_python_module_init_python ()
 
 	/* Hack to make python not overwrite SIGINT: this is needed to avoid
 	 * the crash reported on gedit bug #326191 */
-	
+
 	/* Save old handler */
-	res = sigaction (SIGINT, NULL, &old_sigint);  
+	res = sigaction (SIGINT, NULL, &old_sigint);
 	if (res != 0) {
 		g_warning ("Error initializing Python interpreter: cannot get "
 		           "handler to SIGINT signal (%s)",
@@ -153,17 +156,19 @@ rb_python_module_init_python ()
 	pyrhythmdb_add_constants (rhythmdb, "RHYTHMDB_");
 
 	/* import rb */
+	paths = rb_get_plugin_paths ();
 	sys_path = PySys_GetObject ("path");
-#ifdef SHARE_UNINSTALLED_DIR
-	path = PyString_FromString ("plugins/");
-	if (PySequence_Contains(sys_path, path) == 0);
-		PyList_Insert (sys_path, 0, path);
-	Py_DECREF(path);
-#endif
-	path = PyString_FromString (SHARE_DIR "/plugins/");
-	if (PySequence_Contains(sys_path, path) == 0);
-		PyList_Insert (sys_path, 0, path);
-	Py_DECREF(path);
+	while (paths != NULL) {
+		PyObject *path;
+
+		path = PyString_FromString (paths->data);
+		if (PySequence_Contains (sys_path, path) == 0) {
+			PyList_Insert (sys_path, 0, path);
+		}
+		Py_DECREF (path);
+		g_free (paths->data);
+		paths = g_list_delete_link (paths, paths);
+	}
 
 	rb = PyImport_ImportModule ("rb");
 
@@ -195,7 +200,7 @@ rb_python_module_init_python ()
 	pyrb_add_constants (rb, "RB_");
 
 	/* Retreive the Python type for rb.Plugin */
-	PyRBPlugin_Type = (PyTypeObject *) PyDict_GetItemString (mdict, "Plugin"); 
+	PyRBPlugin_Type = (PyTypeObject *) PyDict_GetItemString (mdict, "Plugin");
 	if (PyRBPlugin_Type == NULL) {
 		PyErr_Print ();
 		return;
@@ -242,13 +247,13 @@ rb_python_module_load (GTypeModule *gmodule)
 
 		Py_DECREF(path);
 	}
-	
+
 	main_locals = PyModule_GetDict (main_module);
 	/* we need a fromlist to be able to import modules with a '.' in the
 	   name. */
 	fromlist = PyTuple_New(0);
 	module = PyImport_ImportModuleEx (priv->module, main_locals,
-					  main_locals, fromlist); 
+					  main_locals, fromlist);
 	Py_DECREF (fromlist);
 	if (!module) {
 		PyErr_Print ();
@@ -276,7 +281,7 @@ rb_python_module_unload (GTypeModule *module)
 {
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (module);
 	rb_debug ("Unloading python module");
-	
+
 	priv->type = 0;
 }
 
@@ -378,7 +383,7 @@ rb_python_module_class_init (RBPythonModuleClass *class)
 					      "The python module to load for this plugin",
 					      NULL,
 					      G_PARAM_WRITABLE | G_PARAM_READABLE | G_PARAM_CONSTRUCT_ONLY));
-					      
+
 	g_object_class_install_property
 			(object_class,
 			 PROP_PATH,
@@ -389,7 +394,7 @@ rb_python_module_class_init (RBPythonModuleClass *class)
 					      G_PARAM_WRITABLE | G_PARAM_READABLE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (object_class, sizeof (RBPythonModulePrivate));
-	
+
 	module_class->load = rb_python_module_load;
 	module_class->unload = rb_python_module_unload;
 
@@ -404,7 +409,7 @@ rb_python_module_new (const gchar *path,
 			 const gchar *module)
 {
 	RBPythonModule *result;
-	gchar *dir;			
+	gchar *dir;
 
 	if (module == NULL || module[0] == '\0')
 		return NULL;
@@ -420,7 +425,6 @@ rb_python_module_new (const gchar *path,
 
 	return result;
 }
-
 
 /* --- these are not module methods, they are here out of convenience --- */
 
@@ -454,7 +458,7 @@ finalise_collect_cb (gpointer data)
 	/* useful if python is refusing to give up it's shell reference for some reason.
 	PyRun_SimpleString ("import gc, gobject\nfor o in gc.get_objects():\n\tif isinstance(o, gobject.GObject):\n\t\tprint o, gc.get_referrers(o)");
 	*/
-	
+
 	return TRUE;
 }
 
@@ -475,4 +479,3 @@ rb_python_shutdown ()
 		Py_Finalize ();*/
 	}
 }
-

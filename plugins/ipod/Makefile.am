@@ -1,11 +1,11 @@
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/ipod
 plugin_LTLIBRARIES = libipod.la
 
 libipod_la_SOURCES = \
 	rb-ipod-plugin.c			\
 	$(top_srcdir)/sources/rb-ipod-source.c	\
 	$(top_srcdir)/sources/rb-ipod-source.h
-	
+
 libipod_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libipod_la_LIBADD = 					\
 	$(top_builddir)/lib/librb.la			\

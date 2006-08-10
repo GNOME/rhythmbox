@@ -1,7 +1,7 @@
 /*
  * heavily based on code from Gedit
  *
- * Copyright (C) 2002-2005 - Paolo Maggi 
+ * Copyright (C) 2002-2005 - Paolo Maggi
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, 
- * Boston, MA 02110-1301  USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301  USA.
  */
 
 #ifndef __RB_PLUGIN_H__
@@ -39,7 +39,6 @@ G_BEGIN_DECLS
 #define RB_IS_PLUGIN_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), RB_TYPE_PLUGIN))
 #define RB_PLUGIN_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS((obj), RB_TYPE_PLUGIN, RBPluginClass))
 
-
 /*
  * Main object structure
  */
@@ -47,7 +46,6 @@ typedef struct
 {
 	GObject parent;
 } RBPlugin;
-
 
 typedef void		(*RBPluginActivationFunc)	(RBPlugin *plugin, RBShell *shell);
 typedef GtkWidget *	(*RBPluginWidgetFunc)		(RBPlugin *plugin);
@@ -61,7 +59,7 @@ typedef struct
 	GObjectClass parent_class;
 
 	/* Virtual public methods */
-	
+
 	RBPluginActivationFunc		activate;
 	RBPluginActivationFunc		deactivate;
 	RBPluginWidgetFunc		create_configure_dialog;
@@ -80,21 +78,15 @@ void 		 rb_plugin_activate		(RBPlugin *plugin,
 						 RBShell *shell);
 void 		 rb_plugin_deactivate		(RBPlugin *plugin,
 						 RBShell *shell);
-				 
+
 gboolean	 rb_plugin_is_configurable	(RBPlugin *plugin);
-GtkWidget	*rb_plugin_create_configure_dialog		
+GtkWidget	*rb_plugin_create_configure_dialog
 						(RBPlugin *plugin);
 
-char*		rb_plugin_find_file		(RBPlugin *plugin,
+char *		 rb_plugin_find_file		(RBPlugin *plugin,
 						 const char *file);
 
-
-#define USER_RB_PLUGINS_LOCATION "rhythmbox/plugins/"
-#define UNINSTALLED_PLUGINS_LOCATION "plugins"
-
-#define RB_PLUGINS_ENGINE_BASE_KEY CONF_PREFIX "/plugins"
-#define RB_PLUGINS_ENGINE_KEY RB_PLUGINS_ENGINE_BASE_KEY "/active-plugins"
-
+GList *          rb_get_plugin_paths            (void);
 
 /*
  * Utility macro used to register plugins
@@ -153,7 +145,6 @@ register_rb_plugin (GTypeModule *module)					\
 	return plugin_name##_type;						\
 }
 
-
 #define RB_PLUGIN_REGISTER_TYPE(type_name)                                      \
         type_name##_register_type (plugin_module_type)
 
@@ -207,8 +198,6 @@ type_name##_register_type (GTypeModule *module) 				\
 	return type_name##_type_id;						\
 }
 
-
 G_END_DECLS
 
 #endif  /* __GEDIT_PLUGIN_H__ */
-

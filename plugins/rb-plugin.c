@@ -1,7 +1,8 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * heavily based on code from Gedit
  *
- * Copyright (C) 2002-2005 Paolo Maggi 
+ * Copyright (C) 2002-2005 Paolo Maggi
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +25,12 @@
 #endif
 
 #include <glib.h>
-#include <libgnome/gnome-util.h>
 
 #include "rb-plugin.h"
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
-
+#include "eel-gconf-extensions.h"
 
 G_DEFINE_TYPE (RBPlugin, rb_plugin, G_TYPE_OBJECT)
 #define RB_PLUGIN_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLUGIN, RBPluginPrivate))
@@ -54,8 +54,6 @@ enum
 	PROP_0,
 	PROP_NAME,
 };
-
-
 
 static gboolean
 is_configurable (RBPlugin *plugin)
@@ -185,51 +183,64 @@ rb_plugin_create_configure_dialog (RBPlugin *plugin)
 		return NULL;
 }
 
-char*
-rb_plugin_find_file (RBPlugin *plugin, const char *file)
+#define UNINSTALLED_PLUGINS_LOCATION "plugins"
+
+GList *
+rb_get_plugin_paths (void)
 {
-	RBPluginPrivate *priv = RB_PLUGIN_GET_PRIVATE (plugin);
-	char *ret = NULL;
+	GList *paths;
+	char  *path;
 
-	/* user installed plugins */
-	if (ret == NULL && priv->name) {
-		char *tmp1, *tmp2;
+	paths = NULL;
 
-		tmp1 = gnome_util_home_file (USER_RB_PLUGINS_LOCATION);
-		tmp2 = g_build_path (G_DIR_SEPARATOR_S, tmp1, priv->name, file, NULL);
-		g_free (tmp1);
-		if (g_file_test (tmp2, G_FILE_TEST_EXISTS)) {
-			ret = tmp2;
-		} else {
-			g_free (tmp2);
-		}
+	if (!eel_gconf_get_boolean (CONF_PLUGIN_DISABLE_USER)) {
+		path = g_build_filename (rb_dot_dir (), "plugins", NULL);
+		paths = g_list_prepend (paths, path);
 	}
 
 #ifdef SHARE_UNINSTALLED_DIR
-	/* data when running uninstalled */
-	if (ret == NULL && priv->name) {
-		char *tmp;
-
-		tmp = g_build_path (G_DIR_SEPARATOR_S, UNINSTALLED_PLUGINS_LOCATION, priv->name, file, NULL);
-		if (g_file_test (tmp, G_FILE_TEST_EXISTS)) {
-			ret = tmp;
-		} else {
-			g_free (tmp);
-		}
-	}
+	path = g_build_filename (UNINSTALLED_PLUGINS_LOCATION, NULL);
+	paths = g_list_prepend (paths, path);
+	path = g_build_filename ("..", UNINSTALLED_PLUGINS_LOCATION, NULL);
+	paths = g_list_prepend (paths, path);
 #endif
 
-	/* global plugin data */
-	if (ret == NULL && priv->name) {
-		char *tmp;
+	path = g_strdup (RB_PLUGIN_DIR);
+	paths = g_list_prepend (paths, path);
 
-		tmp = g_build_path (G_DIR_SEPARATOR_S, SHARE_DIR "/plugins/", priv->name, file, NULL);
-		if (g_file_test (tmp, G_FILE_TEST_EXISTS)) {
-			ret = tmp;
-		} else {
+	paths = g_list_reverse (paths);
+
+	return paths;
+}
+
+
+char *
+rb_plugin_find_file (RBPlugin *plugin,
+		     const char *file)
+{
+	RBPluginPrivate *priv = RB_PLUGIN_GET_PRIVATE (plugin);
+	GList *paths;
+	GList *l;
+	char *ret = NULL;
+
+	paths = rb_get_plugin_paths ();
+
+	for (l = paths; l != NULL; l = l->next) {
+		if (ret == NULL && priv->name) {
+			char *tmp;
+
+			tmp = g_build_filename (l->data, priv->name, file, NULL);
+
+			if (g_file_test (tmp, G_FILE_TEST_EXISTS)) {
+				ret = tmp;
+				break;
+			}
 			g_free (tmp);
 		}
 	}
+
+	g_list_foreach (paths, (GFunc)g_free, NULL);
+	g_list_free (paths);
 
 	/* global data files */
 	if (ret == NULL) {
@@ -244,4 +255,3 @@ rb_plugin_find_file (RBPlugin *plugin, const char *file)
 		  ret, file, priv->name);
 	return ret;
 }
-

@@ -1,4 +1,4 @@
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/generic-player
 plugin_LTLIBRARIES = libgeneric-player.la
 
 libgeneric_player_la_SOURCES =				\
@@ -14,7 +14,6 @@ libgeneric_player_la_SOURCES +=				\
 	rb-nokia770-source.h
 endif
 
-	
 libgeneric_player_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 INCLUDES = 						\

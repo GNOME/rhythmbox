@@ -1,6 +1,6 @@
 NULL =
 
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/cd-recorder
 plugin_LTLIBRARIES = libcd-recorder.la
 
 libcd_recorder_la_SOURCES =					\
