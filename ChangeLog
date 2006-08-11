@@ -1,3 +1,8 @@
+2006-08-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-dbus-client.c: (start_metadata_service):
+	Don't ignore SIGPIPE.  gnome-vfs does it for us anyway.
+
 2006-08-11  James Livingston  <doclivingston@gmail.com>
 
 	* podcast/rb-podcast-manager.c:

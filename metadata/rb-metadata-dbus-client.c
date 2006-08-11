@@ -232,9 +232,6 @@ start_metadata_service (GError **error)
 			return FALSE;
 		}
 
-		/* hmm, probably shouldn't do this */
-		signal (SIGPIPE, SIG_IGN);
-
 		stdout_channel = g_io_channel_unix_new (metadata_stdout);
 		status = g_io_channel_read_line (stdout_channel, &dbus_address, NULL, NULL, error);
 		g_io_channel_unref (stdout_channel);
