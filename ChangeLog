@@ -1,3 +1,12 @@
+2006-08-11  James Livingston  <doclivingston@gmail.com>
+
+	* configure.ac:
+	* data/Makefile.am:
+	- data/rhythmbox.desktop.in:
+	+ data/rhythmbox.desktop.in.in: add mroe indirection to the build, so
+	the @VERSION@ can be substituted in. Fix some issues with newer
+	bug-buddy versions. Fixes #348853.
+
 2006-08-10  William Jon McCann  <mccann@jhu.edu>
 
 	* data/rhythmbox.schemas:

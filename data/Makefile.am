@@ -51,9 +51,9 @@ install-data-hook:
 
 EXTRA_DIST = $(service_in_files)    \
 	     $(appicon_DATA)        \
-	     $(Multimedia_in_files) \
 	     $(schema_DATA)	    \
 	     $(iradio_DATA)	    \
-	     $(playlists_in_files) 
+	     $(playlists_in_files)  \
+	     rhythmbox.desktop.in.in
 
-CLEANFILES = rhythmbox.desktop org.gnome.Rhythmbox.service playlists.xml
+CLEANFILES = rhythmbox.desktop org.gnome.Rhythmbox.service playlists.xml rhythmbox.desktop.in

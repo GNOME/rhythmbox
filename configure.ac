@@ -948,6 +948,7 @@ iradio/Makefile
 podcast/Makefile
 shell/Makefile
 data/Makefile
+data/rhythmbox.desktop.in
 data/ui/Makefile
 data/art/Makefile
 data/glade/Makefile
