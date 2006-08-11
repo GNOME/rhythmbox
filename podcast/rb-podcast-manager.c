@@ -1405,8 +1405,6 @@ rb_podcast_manager_update_synctime (RBPodcastManager *pd)
 	case UPDATE_MANUALLY:
 		value = 0;
 		break;
-	default:
-		value = 0;
 	};
 
 	eel_gconf_set_integer (CONF_STATE_PODCAST_DOWNLOAD_NEXT_TIME, value);
