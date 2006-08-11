@@ -1,5 +1,11 @@
 2006-08-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* lib/rb-debug.c: (rb_debug_real):
+	No point allocating a buffer for the timestamp when we can just put it
+	on the stack.
+
+2006-08-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* metadata/rb-metadata-dbus-client.c: (start_metadata_service):
 	Don't ignore SIGPIPE.  gnome-vfs does it for us anyway.
 
