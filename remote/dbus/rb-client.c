@@ -228,10 +228,21 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 				if (value)
 					string = g_strdup_printf ("%02u", g_value_get_uint (value));
 				break;
+				/* genre */
+			case 'g':
+				value = g_hash_table_lookup (properties, "genre");
+				if (value)
+					string = g_value_dup_string (value);
+				break;
+			case 'G':
+				value = g_hash_table_lookup (properties, "genre-folded");
+				if (value)
+					string = g_value_dup_string (value);
+				break;
 			default:
 				string = g_strdup_printf ("%%a%c", *p);
 			}
-			
+
 			break;
 
 		case 't':
@@ -294,7 +305,7 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
  			}
 
 			break;
-			
+
 		default:
 			string = g_strdup_printf ("%%%c", *p);
 		}
@@ -339,7 +350,7 @@ create_rb_shell_proxies (DBusGConnection *bus, DBusGProxy **shell_proxy, DBusGPr
 		*player_proxy = NULL;
 		return FALSE;
 	}
-	
+
 	*shell_proxy = sp;
 	return TRUE;
 }
@@ -500,7 +511,7 @@ main (int argc, char **argv)
 	if (clear_queue) {
 		org_gnome_Rhythmbox_Shell_clear_queue (shell_proxy, &error);
 		annoy (&error);
-	} 
+	}
 	if (other_stuff) {
 		int i;
 		for (i = 0; other_stuff[i] != NULL; i++) {
