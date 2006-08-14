@@ -302,6 +302,9 @@ rb_library_source_new (RBShell *shell)
 	RBSource *source;
 	GdkPixbuf *icon;
 	gint size;
+	RhythmDBEntryType entry_type;
+
+	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
@@ -310,7 +313,7 @@ rb_library_source_new (RBShell *shell)
 					 0, NULL);
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
-					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
+					  "entry-type", entry_type,
 					  "sorting-key", CONF_STATE_LIBRARY_SORTING,
 					  "shell", shell,
 					  "icon", icon,
@@ -319,8 +322,7 @@ rb_library_source_new (RBShell *shell)
 		g_object_unref (icon);
 	}
 
-	rb_shell_register_entry_type_for_source (shell, source,
-						 RHYTHMDB_ENTRY_TYPE_SONG);
+	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 
 	return source;
 }
@@ -948,6 +950,7 @@ layout_example_label_update (RBLibrarySource *source)
 	char *example;
 	char *format;
 	GMAudioProfile *profile;
+	RhythmDBEntryType entry_type;
 	RhythmDBEntry *sample_entry;
 
   	profile = gm_audio_profile_choose_get_active (source->priv->preferred_format_menu);
@@ -962,7 +965,10 @@ layout_example_label_update (RBLibrarySource *source)
 		path_pattern = g_strdup (library_layout_paths[0].path);
 	}
 
-	sample_entry = rhythmdb_entry_example_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_SONG, NULL);
+	g_object_get (source, "entry-type", &entry_type, NULL);
+	sample_entry = rhythmdb_entry_example_new (source->priv->db, entry_type, NULL);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
 	file_value = filepath_parse_pattern (file_pattern, sample_entry);
 	path_value = filepath_parse_pattern (path_pattern, sample_entry);
 	rhythmdb_entry_unref (sample_entry);
@@ -1164,6 +1170,7 @@ impl_paste (RBSource *asource, GList *entries)
 	GList *l;
 	GSList *sl;
 	RBShell *shell;
+	RhythmDBEntryType source_entry_type;
 
 	sl = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 	if ((sl == NULL) ||
@@ -1175,7 +1182,10 @@ impl_paste (RBSource *asource, GList *entries)
 		return;
 	}
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &source_entry_type,
+		      NULL);
 	g_object_get (shell, "removable-media-manager", &rm_mgr, NULL);
 	g_object_unref (shell);
 
@@ -1187,7 +1197,7 @@ impl_paste (RBSource *asource, GList *entries)
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 
 		entry_type = rhythmdb_entry_get_entry_type (entry);
-		if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
+		if (entry_type == source_entry_type)
 			/* copying to ourselves would be silly */
 			continue;
 
@@ -1205,6 +1215,7 @@ impl_paste (RBSource *asource, GList *entries)
 							  dest, NULL,
 							  (RBTranferCompleteCallback)completed_cb, source);
 	}
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
 
 	g_object_unref (rm_mgr);
 }
@@ -1241,15 +1252,19 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	GnomeVFSURI *uri;
 	char *name;
 	GdkPixbuf *icon;
+	RhythmDBEntryType entry_type;
 
-	g_object_get (library_source, "shell", &shell, NULL);
+	g_object_get (library_source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      NULL);
 	uri = gnome_vfs_uri_new (path);
 	name = gnome_vfs_uri_extract_short_name (uri);
 	gnome_vfs_uri_unref (uri);
 
 	source = rb_auto_playlist_source_new (shell, name, FALSE);
 	query = rhythmdb_query_parse (library_source->priv->db,
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
 				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_LOCATION, path,
 				      RHYTHMDB_QUERY_END);
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (source), query,
@@ -1266,6 +1281,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	rb_shell_append_source (shell, source, RB_SOURCE (library_source));
 	library_source->priv->child_sources = g_list_prepend (library_source->priv->child_sources, source);
 
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	g_object_unref (shell);
 	g_free (name);
 }

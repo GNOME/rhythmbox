@@ -142,7 +142,6 @@ struct RBIRadioSourcePrivate
 	guint first_time_notify_id;
 	gboolean firstrun_done;
 
-	RhythmDBEntryType entry_type;
 	gboolean dispose_has_run;
 };
 
@@ -158,12 +157,6 @@ static GtkActionEntry rb_iradio_source_actions [] =
 static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "text/uri-list", 0, 0 },
 	{  "_NETSCAPE_URL", 0, 1 },
-};
-
-enum
-{
-	PROP_0,
-	PROP_ENTRY_TYPE
 };
 
 G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_SOURCE)
@@ -198,14 +191,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
-
-	g_object_class_install_property (object_class,
-					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-							     "Entry type",
-							     "Type of the entries which should be displayed by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBIRadioSourcePrivate));
 }
@@ -381,11 +366,6 @@ rb_iradio_source_constructor (GType type,
 
 	rb_iradio_source_state_prefs_sync (source);
 
-
-	if (source->priv->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID ||
-	    source->priv->entry_type == NULL)
-		source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
-
 	rb_iradio_source_do_query (source);
 
 	return G_OBJECT (source);
@@ -397,12 +377,9 @@ rb_iradio_source_set_property (GObject *object,
 			       const GValue *value,
 			       GParamSpec *pspec)
 {
-	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
+	/*RBIRadioSource *source = RB_IRADIO_SOURCE (object);*/
 
 	switch (prop_id) {
-	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_boxed (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -415,12 +392,9 @@ rb_iradio_source_get_property (GObject *object,
 			       GValue *value,
 			       GParamSpec *pspec)
 {
-	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
+	/*RBIRadioSource *source = RB_IRADIO_SOURCE (object);*/
 
 	switch (prop_id) {
-	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->entry_type);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -431,14 +405,16 @@ RBSource *
 rb_iradio_source_new (RBShell *shell)
 {
 	RBSource *source;
+	RhythmDBEntryType entry_type;
 
+	entry_type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
 					  "shell", shell,
+					  "entry-type", entry_type,
 					  NULL));
 
-	rb_shell_register_entry_type_for_source (shell, source,
-						 RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
+	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 
 	return source;
 }
@@ -472,6 +448,7 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	RhythmDBEntry *entry;
 	GValue val = { 0, };
 	char *real_uri = NULL;
+	RhythmDBEntryType entry_type;
 
 	real_uri = guess_uri_scheme (uri);
 	if (real_uri)
@@ -483,7 +460,10 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 		g_free (real_uri);
 		return;
 	}
-	entry = rhythmdb_entry_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
+
+	g_object_get (source, "entry-type", &entry_type, NULL);
+	entry = rhythmdb_entry_new (source->priv->db, entry_type, uri);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	if (entry == NULL) {
 		g_free (real_uri);
 		return;
@@ -775,6 +755,7 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	RhythmDBQueryModel *station_query_model = NULL;
 	RhythmDBPropertyModel *genre_model;
 	GPtrArray *query;
+	RhythmDBEntryType entry_type;
 
 	/* don't update the selection while we're rebuilding the query */
 	source->priv->setting_new_query = TRUE;
@@ -783,11 +764,13 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	 * this is used as the model for the genre view.
 	 */
 
+	g_object_get (source, "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
-				      source->priv->entry_type,
+				      entry_type,
 				      RHYTHMDB_QUERY_END);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	if (source->priv->search_text != NULL) {
 		GPtrArray *subquery;

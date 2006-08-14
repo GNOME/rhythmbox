@@ -48,7 +48,6 @@ struct RBImportErrorsSourcePrivate
 {
 	RhythmDB *db;
 	RBEntryView *view;
-	RhythmDBEntryType entry_type;
 };
 
 G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
@@ -112,13 +111,17 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	RBShell *shell;
 	GPtrArray *query;
 	RhythmDBQueryModel *model;
+	RhythmDBEntryType entry_type;
 
 	klass = RB_IMPORT_ERRORS_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IMPORT_ERRORS_SOURCE));
 
 	source = RB_IMPORT_ERRORS_SOURCE (G_OBJECT_CLASS (rb_import_errors_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (shell);
@@ -127,8 +130,10 @@ rb_import_errors_source_constructor (GType type, guint n_construct_properties,
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      	RHYTHMDB_PROP_TYPE,
-					RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
+					entry_type,
 				      RHYTHMDB_QUERY_END);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
 	model = rhythmdb_query_model_new (source->priv->db, query,
 					  (GCompareDataFunc) rhythmdb_query_model_string_sort_func,
 					  GUINT_TO_POINTER (RHYTHMDB_PROP_LOCATION), NULL, FALSE);
@@ -181,16 +186,14 @@ rb_import_errors_source_new (RBShell *shell,
 			     RBLibrarySource *library)
 {
 	RBSource *source;
-	RhythmDBEntryType entry_type;
 
-	g_object_get (library, "entry-type", &entry_type, NULL);
 	source = RB_SOURCE (g_object_new (RB_TYPE_IMPORT_ERRORS_SOURCE,
 					  "name", _("Import Errors"),
 					  "shell", shell,
 					  "visibility", FALSE,
 					  "hidden-when-empty", TRUE,
+					  "entry-type", RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
 					  NULL));
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	return source;
 }
 

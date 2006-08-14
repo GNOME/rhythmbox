@@ -126,8 +126,6 @@ struct RBBrowserSourcePrivate
 	GtkActionGroup *action_group;
 	GtkActionGroup *search_action_group;
 
-	RhythmDBEntryType entry_type;
-
 	char *sorting_key;
 	guint state_paned_notify_id;
 	guint state_browser_notify_id;
@@ -164,7 +162,6 @@ static const GtkTargetEntry songs_view_drag_types[] = {{  "text/uri-list", 0, 0 
 enum
 {
 	PROP_0,
-	PROP_ENTRY_TYPE,
 	PROP_SORTING_KEY
 };
 
@@ -206,14 +203,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	klass->impl_show_entry_popup = default_show_entry_popup;
 
 	g_object_class_install_property (object_class,
-					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-							     "Entry type",
-							     "Type of the entries which should be displayed by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
 					 PROP_SORTING_KEY,
 					 g_param_spec_string ("sorting-key",
 							      "Sorting key",
@@ -232,11 +221,6 @@ rb_browser_source_init (RBBrowserSource *source)
 	source->priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	/* Default value, should be overridden at object construction by the
-	 * "entry-type" property
-	 */
-	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 }
@@ -376,13 +360,17 @@ rb_browser_source_constructor (GType type,
 	RBShell *shell;
 	GObject *shell_player;
 	char *browser_key;
+	RhythmDBEntryType entry_type;
 
 	klass = RB_BROWSER_SOURCE_CLASS (g_type_class_peek (RB_TYPE_BROWSER_SOURCE));
 
 	source = RB_BROWSER_SOURCE (G_OBJECT_CLASS (rb_browser_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 
@@ -402,7 +390,7 @@ rb_browser_source_constructor (GType type,
 
 	source->priv->paned = gtk_vpaned_new ();
 
-	source->priv->browser = rb_library_browser_new (source->priv->db, source->priv->entry_type);
+	source->priv->browser = rb_library_browser_new (source->priv->db, entry_type);
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->browser), TRUE, FALSE);
 	gtk_container_child_set (GTK_CONTAINER (source->priv->paned),
 				 GTK_WIDGET (source->priv->browser),
@@ -489,8 +477,9 @@ rb_browser_source_constructor (GType type,
 	rb_library_browser_set_model (source->priv->browser, source->priv->cached_all_query, TRUE);
 	rhythmdb_do_full_query_async (source->priv->db,
 				      RHYTHMDB_QUERY_RESULTS (source->priv->cached_all_query),
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, source->priv->entry_type,
+				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
 				      RHYTHMDB_QUERY_END);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	return G_OBJECT (source);
 }
@@ -504,9 +493,6 @@ rb_browser_source_set_property (GObject *object,
 	RBBrowserSource *source = RB_BROWSER_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_boxed (value);
-		break;
 	case PROP_SORTING_KEY:
 		g_free (source->priv->sorting_key);
 		source->priv->sorting_key = g_strdup (g_value_get_string (value));
@@ -526,9 +512,6 @@ rb_browser_source_get_property (GObject *object,
 	RBBrowserSource *source = RB_BROWSER_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->entry_type);
-		break;
 	case PROP_SORTING_KEY:
 		g_value_set_string (value, source->priv->sorting_key);
 		break;

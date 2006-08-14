@@ -1,3 +1,17 @@
+2006-08-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-browser-source.c:
+	* sources/rb-import-errors-source.c:
+	* sources/rb-iradio-source.c:
+	* sources/rb-library-source.c:
+	* sources/rb-missing-files-source.c:
+	* sources/rb-play-queue-source.c:
+	* sources/rb-playlist-source.c:
+	* sources/rb-podcast-source.c:
+	* sources/rb-source.c:
+	Make entry-type a property on RBSource, rather than on most of its
+	subclasses.  Fixes #347288.
+
 2006-08-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* remote/dbus/rb-client.c: (parse_pattern),

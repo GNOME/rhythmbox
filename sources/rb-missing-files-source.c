@@ -65,13 +65,6 @@ struct RBMissingFilesSourcePrivate
 {
 	RhythmDB *db;
 	RBEntryView *view;
-	RhythmDBEntryType entry_type;
-};
-
-enum
-{
-	PROP_0,
-	PROP_ENTRY_TYPE
 };
 
 G_DEFINE_TYPE (RBMissingFilesSource, rb_missing_files_source, RB_TYPE_SOURCE);
@@ -107,14 +100,6 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 
 	source_class->impl_get_status = impl_get_status;
 
-	g_object_class_install_property (object_class,
-					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-							     "Entry type",
-							     "Type of the entries which should be displayed by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	g_type_class_add_private (klass, sizeof (RBMissingFilesSourcePrivate));
 }
 
@@ -135,8 +120,6 @@ rb_missing_files_source_init (RBMissingFilesSource *source)
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
-
-	source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 }
 
 static GObject *
@@ -149,13 +132,17 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	RBShell *shell;
 	GPtrArray *query;
 	RhythmDBQueryModel *model;
+	RhythmDBEntryType entry_type;
 
 	klass = RB_MISSING_FILES_SOURCE_CLASS (g_type_class_peek (RB_TYPE_MISSING_FILES_SOURCE));
 
 	source = RB_MISSING_FILES_SOURCE (G_OBJECT_CLASS (rb_missing_files_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
 
-	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
 	shell_player = rb_shell_get_player (shell);
 	g_object_unref (shell);
@@ -164,11 +151,13 @@ rb_missing_files_source_constructor (GType type, guint n_construct_properties,
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      	RHYTHMDB_PROP_TYPE,
-					source->priv->entry_type,
+					entry_type,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      	RHYTHMDB_PROP_HIDDEN,
 					TRUE,
 				      RHYTHMDB_QUERY_END);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
 	model = rhythmdb_query_model_new (source->priv->db, query,
 					  NULL, NULL, NULL, FALSE);
 
@@ -232,13 +221,10 @@ rb_missing_files_source_set_property (GObject *object,
 				      const GValue *value,
 				      GParamSpec *pspec)
 {
-	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (object);
+	/*RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (object);*/
 
 	switch (prop_id)
 	{
-	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_boxed (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -251,13 +237,10 @@ rb_missing_files_source_get_property (GObject *object,
 				      GValue *value,
 				      GParamSpec *pspec)
 {
-	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (object);
+	/*RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (object);*/
 
 	switch (prop_id)
 	{
-	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->entry_type);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;

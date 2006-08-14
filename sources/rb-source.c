@@ -90,6 +90,7 @@ struct _RBSourcePrivate
 	RBSourceListGroup sourcelist_group;
 	guint hidden_when_empty : 1;
 	guint update_visibility_id;
+	RhythmDBEntryType entry_type;
 };
 
 enum
@@ -102,7 +103,8 @@ enum
 	PROP_VISIBLE,
 	PROP_QUERY_MODEL,
 	PROP_HIDDEN_WHEN_EMPTY,
-	PROP_SOURCELIST_GROUP
+	PROP_SOURCELIST_GROUP,
+	PROP_ENTRY_TYPE
 };
 
 enum
@@ -224,6 +226,14 @@ rb_source_class_init (RBSourceClass *klass)
 							    RB_SOURCELIST_GROUP_FIXED,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_object_class_install_property (object_class,
+					 PROP_ENTRY_TYPE,
+					 g_param_spec_boxed ("entry-type",
+							     "Entry type",
+							     "Type of the entries which should be displayed by this source",
+							     RHYTHMDB_TYPE_ENTRY_TYPE,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
 			      RB_TYPE_SOURCE,
@@ -327,7 +337,7 @@ update_visibility_idle (RBSource *source)
 	gboolean visibility;
 
 	GDK_THREADS_ENTER ();
-	
+
 	gint count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (priv->query_model), NULL);
 
 	visibility = (count > 0);
@@ -436,6 +446,9 @@ rb_source_set_property (GObject *object,
 	case PROP_SOURCELIST_GROUP:
 		priv->sourcelist_group = g_value_get_enum (value);
 		break;
+	case PROP_ENTRY_TYPE:
+		priv->entry_type = g_value_get_boxed (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -478,6 +491,9 @@ rb_source_get_property (GObject *object,
 		break;
 	case PROP_SOURCELIST_GROUP:
 		g_value_set_enum (value, priv->sourcelist_group);
+		break;
+	case PROP_ENTRY_TYPE:
+		g_value_set_boxed (value, priv->entry_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

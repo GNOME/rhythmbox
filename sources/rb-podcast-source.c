@@ -366,14 +366,6 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_add_uri = impl_add_uri;
 
 	g_object_class_install_property (object_class,
-					 PROP_ENTRY_TYPE,
-					 g_param_spec_boxed ("entry-type",
-							     "Entry type",
-							     "Type of the entries which should be displayed by this source",
-							     RHYTHMDB_TYPE_ENTRY_TYPE,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
 					 PROP_PODCAST_MANAGER,
 					 g_param_spec_object ("podcast-manager",
 					                      "RBPodcastManager",
@@ -680,10 +672,6 @@ rb_podcast_source_constructor (GType type,
 	feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
 	g_object_set (feed_model, "query-model", query_model, NULL);
 
-	if (source->priv->entry_type == RHYTHMDB_ENTRY_TYPE_INVALID ||
-	    source->priv->entry_type == NULL)
-		source->priv->entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
-
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
@@ -776,9 +764,6 @@ rb_podcast_source_set_property (GObject *object,
 	RBPodcastSource *source = RB_PODCAST_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_ENTRY_TYPE:
-		source->priv->entry_type = g_value_get_boxed (value);
-		break;
 	case PROP_PODCAST_MANAGER:
 		source->priv->podcast_mgr = g_value_get_object (value);
 		break;
@@ -797,9 +782,6 @@ rb_podcast_source_get_property (GObject *object,
 	RBPodcastSource *source = RB_PODCAST_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_ENTRY_TYPE:
-		g_value_set_boxed (value, source->priv->entry_type);
-		break;
 	case PROP_PODCAST_MANAGER:
 		g_value_set_object (value, source->priv->podcast_mgr);
 	        break;
@@ -816,6 +798,7 @@ rb_podcast_source_new (RBShell *shell)
 	source = RB_SOURCE (g_object_new (RB_TYPE_PODCAST_SOURCE,
 					  "name", _("Podcasts"),
 					  "shell", shell,
+					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source,
