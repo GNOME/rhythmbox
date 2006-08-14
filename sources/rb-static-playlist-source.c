@@ -156,13 +156,15 @@ rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 							    GNOME_MEDIA_PLAYLIST,
 							    size,
 							    0, NULL);
-		g_object_add_weak_pointer (playlist_pixbuf,
+		if (playlist_pixbuf) {
+			g_object_add_weak_pointer (playlist_pixbuf,
 					   (gpointer *) &playlist_pixbuf);
 
-		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
+			rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
 
-		/* drop the initial reference to the icon */
-		g_object_unref (playlist_pixbuf);
+			/* drop the initial reference to the icon */
+			g_object_unref (playlist_pixbuf);
+		}
 	} else {
 		rb_source_set_pixbuf (RB_SOURCE (source), playlist_pixbuf);
 	}

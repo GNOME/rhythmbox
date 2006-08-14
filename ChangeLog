@@ -1,3 +1,28 @@
+2006-08-14  James Livingston,,,  <doclivingston@gmail.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* backends/Makefile.am:
+	* configure.ac:
+	* lib/rb-marshal.list:
+	* lib/rb-util.c: (list_copy_cb), (rb_list_copy),
+	(rb_string_list_copy):
+	* lib/rb-util.h:
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_class_init),
+	(rb_removable_media_manager_init),
+	(rb_removable_media_manager_finalize), (emit_progress), (error_cb),
+	(progress_cb), (completed_cb), (start_transfer), (abort_cb),
+	(rb_removable_media_manager_queue_transfer):
+	* shell/rb-removable-media-manager.h:
+	* shell/rb-shell.c: (construct_sources),
+	(rb_shell_medium_added_cb):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_init):
+	* sources/rb-library-source.c: (xfer_entry_cb), (impl_paste):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_init):
+
 2006-08-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-browser-source.c:
