@@ -587,13 +587,13 @@ rebuild_child_model (RBLibraryBrowser *widget,
 		prop_model = rb_property_view_get_model (view);
 		g_object_set (prop_model, "query-model", child_model, NULL);
 
-		g_object_unref (base_model);
+		g_object_unref (child_model);
 
 		rebuild_child_model (widget, property_index + 1, query_pending);
 		restore_selection (widget, property_index + 1, query_pending);
 	}
 
-	g_object_unref (child_model);
+	g_object_unref (base_model);
 }
 
 void
