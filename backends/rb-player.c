@@ -42,7 +42,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 	signals[EOS] =
 		g_signal_new ("eos",
 			      G_TYPE_FROM_INTERFACE (iface),
-			      G_SIGNAL_RUN_LAST,
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, eos),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
@@ -60,7 +60,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 	signals[ERROR] =
 		g_signal_new ("error",
 			      G_TYPE_FROM_INTERFACE (iface),
-			      G_SIGNAL_RUN_LAST,
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, error),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
