@@ -315,7 +315,7 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 typedef struct
 {
 	RhythmDB *db;
-	char *mount_point;
+	RBRefString *mount_point;
 	gboolean mounted;
 } MountCtxt;
 
@@ -323,7 +323,7 @@ static void
 entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 				   MountCtxt *ctxt)
 {
-	const char *mount_point;
+	RBRefString *mount_point;
 	const char *location;
 
 	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG &&
@@ -331,8 +331,8 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 		return;
 	}
 
-	mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-	if (mount_point == NULL || strcmp (mount_point, ctxt->mount_point) != 0) {
+	mount_point = rhythmdb_entry_get_refstring (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (mount_point == NULL || !rb_refstring_equal (mount_point, ctxt->mount_point)) {
 		return;
 	}
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
@@ -378,15 +378,20 @@ rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 			    gpointer data)
 {
 	MountCtxt ctxt;
+	char *mp;
+
+	mp = gnome_vfs_volume_get_activation_uri (volume); 
+	ctxt.mount_point = rb_refstring_new (mp);
+	g_free (mp);
 
 	ctxt.db = RHYTHMDB (data);
-	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
 	ctxt.mounted = TRUE;
+	rb_debug ("volume %s mounted", rb_refstring_get (ctxt.mount_point));
 	rhythmdb_entry_foreach (RHYTHMDB (data),
 				(GFunc)entry_volume_mounted_or_unmounted,
 				&ctxt);
 	rhythmdb_commit (RHYTHMDB (data));
-	g_free (ctxt.mount_point);
+	rb_refstring_unref (ctxt.mount_point);
 }
 
 static void
@@ -395,14 +400,18 @@ rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 			      gpointer data)
 {
 	MountCtxt ctxt;
+	char *mp;
+
+	mp = gnome_vfs_volume_get_activation_uri (volume); 
+	ctxt.mount_point = rb_refstring_new (mp);
+	g_free (mp);
 
 	ctxt.db = RHYTHMDB (data);
-	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
 	ctxt.mounted = FALSE;
-	rb_debug ("volume %s unmounted", ctxt.mount_point);
+	rb_debug ("volume %s unmounted", rb_refstring_get (ctxt.mount_point));
 	rhythmdb_entry_foreach (RHYTHMDB (data),
 				(GFunc)entry_volume_mounted_or_unmounted,
 				&ctxt);
 	rhythmdb_commit (RHYTHMDB (data));
-	g_free (ctxt.mount_point);
+	rb_refstring_unref (ctxt.mount_point);
 }

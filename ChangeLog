@@ -1,5 +1,18 @@
 2006-08-15  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb-monitor.c: (entry_volume_mounted_or_unmounted),
+	(rhythmdb_volume_mounted_cb), (rhythmdb_volume_unmounted_cb): turn the
+	mountpoint into a RBRefString and compare equality of those, rather
+	than doign lots of strcmp()s.
+
+	* sources/rb-source.c: (rb_source_finalize), (_update_status_idle),
+	(rb_source_row_inserted_cb), (rb_source_post_entry_deleted_cb): do
+	status notification as well as the visibility update in an idle
+	callback. Makes it take much less time to update after a volume
+	mount/unmount event.
+
+2006-08-15  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Christian Becke  <christianbecke@web.de>
 
 	* shell/rb-shell.c: (rb_shell_cmd_add_folder_to_library): allow

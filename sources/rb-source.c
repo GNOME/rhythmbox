@@ -90,6 +90,7 @@ struct _RBSourcePrivate
 	RBSourceListGroup sourcelist_group;
 	guint hidden_when_empty : 1;
 	guint update_visibility_id;
+	guint update_status_id;
 	RhythmDBEntryType entry_type;
 };
 
@@ -295,6 +296,9 @@ rb_source_finalize (GObject *object)
 
 	if (priv->update_visibility_id != 0) {
 		g_source_remove (priv->update_visibility_id);
+	}
+	if (priv->update_status_id != 0) {
+		g_source_remove (priv->update_status_id);
 	}
 
 	if (priv->query_model != NULL) {
@@ -1051,6 +1055,20 @@ rb_source_get_search_actions (RBSource *source)
 	return klass->impl_get_search_actions (source);
 }
 
+static gboolean
+_update_status_idle (RBSource *source)
+{
+	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
+
+	rb_source_notify_status_changed (source);
+
+	if (priv->hidden_when_empty)
+		update_visibility_idle (source);
+
+	priv->update_status_id = 0;
+	return FALSE;
+}
+
 static void
 rb_source_row_inserted_cb (GtkTreeModel *model,
 			   GtkTreePath *path,
@@ -1059,11 +1077,8 @@ rb_source_row_inserted_cb (GtkTreeModel *model,
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
 
-	rb_source_notify_status_changed (source);
-
-	if (priv->hidden_when_empty) {
-		queue_update_visibility (source);
-	}
+	if (priv->update_status_id == 0)
+		priv->update_status_id = g_idle_add ((GSourceFunc)_update_status_idle, source);
 }
 
 static void
@@ -1073,11 +1088,8 @@ rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 {
 	RBSourcePrivate *priv = RB_SOURCE_GET_PRIVATE (source);
 
-	rb_source_notify_status_changed (source);
-
-	if (priv->hidden_when_empty) {
-		queue_update_visibility (source);
-	}
+	if (priv->update_status_id == 0)
+		priv->update_status_id = g_idle_add ((GSourceFunc)_update_status_idle, source);
 }
 
 static void
