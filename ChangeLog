@@ -1,5 +1,15 @@
 2006-08-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (construct_widgets):
+	* shell/rb-statusbar.c: (rb_statusbar_class_init),
+	(rb_statusbar_connect_ui_manager), (rb_statusbar_set_property),
+	(rb_statusbar_get_property), (rb_statusbar_new):
+	* shell/rb-statusbar.h:
+	Use the connect-proxy signal from the UI manager, which covers all
+	action groups, rather than just one.  Fixes #351280.
+
+2006-08-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* widgets/rb-library-browser.c: (rebuild_child_model):
 	Fix query model reference counts (bug #349601).
 

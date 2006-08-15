@@ -61,7 +61,7 @@ struct RBStatusbarPrivate
 
         RhythmDB *db;
 
-        GtkActionGroup *actiongroup;
+        GtkUIManager *ui_manager;
         GtkTooltips *tooltips;
 
         GtkWidget *progress;
@@ -78,7 +78,7 @@ enum
 {
         PROP_0,
         PROP_DB,
-        PROP_ACTION_GROUP,
+        PROP_UI_MANAGER,
         PROP_SOURCE
 };
 
@@ -110,11 +110,11 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               RB_TYPE_SOURCE,
                                                               G_PARAM_READWRITE));
         g_object_class_install_property (object_class,
-                                         PROP_ACTION_GROUP,
-                                         g_param_spec_object ("action-group",
-                                                              "GtkActionGroup",
-                                                              "GtkActionGroup object",
-                                                              GTK_TYPE_ACTION_GROUP,
+                                         PROP_UI_MANAGER,
+                                         g_param_spec_object ("ui-manager",
+                                                              "GtkUIManager",
+                                                              "GtkUIManager object",
+                                                              GTK_TYPE_UI_MANAGER,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBStatusbarPrivate));
@@ -223,10 +223,10 @@ unset_statusbar_tooltip (GtkWidget *widget,
 }
 
 static void
-rb_statusbar_connect_action_group (RBStatusbar    *statusbar,
-                                   GtkAction      *action,
-                                   GtkWidget      *proxy,
-                                   GtkActionGroup *action_group)
+rb_statusbar_connect_ui_manager (RBStatusbar    *statusbar,
+				 GtkAction      *action,
+				 GtkWidget      *proxy,
+				 GtkUIManager   *ui_manager)
 {
         char *tooltip;
 
@@ -285,17 +285,17 @@ rb_statusbar_set_property (GObject *object,
 		rb_statusbar_sync_status (statusbar);
 
                 break;
-        case PROP_ACTION_GROUP:
-                if (statusbar->priv->actiongroup) {
-                        g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->actiongroup),
-                                                              G_CALLBACK (rb_statusbar_connect_action_group),
+        case PROP_UI_MANAGER:
+                if (statusbar->priv->ui_manager) {
+                        g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->ui_manager),
+                                                              G_CALLBACK (rb_statusbar_connect_ui_manager),
                                                               statusbar);
                 }
-                statusbar->priv->actiongroup = g_value_get_object (value);
+                statusbar->priv->ui_manager = g_value_get_object (value);
 
-                g_signal_connect_object (statusbar->priv->actiongroup,
+                g_signal_connect_object (statusbar->priv->ui_manager,
                                          "connect-proxy",
-                                         G_CALLBACK (rb_statusbar_connect_action_group),
+                                         G_CALLBACK (rb_statusbar_connect_ui_manager),
                                          statusbar,
                                          G_CONNECT_SWAPPED);
                 break;
@@ -321,8 +321,8 @@ rb_statusbar_get_property (GObject *object,
         case PROP_SOURCE:
                 g_value_set_object (value, statusbar->priv->selected_source);
                 break;
-        case PROP_ACTION_GROUP:
-                g_value_set_object (value, statusbar->priv->actiongroup);
+        case PROP_UI_MANAGER:
+                g_value_set_object (value, statusbar->priv->ui_manager);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -424,11 +424,11 @@ rb_statusbar_sync_status (RBStatusbar *status)
 
 RBStatusbar *
 rb_statusbar_new (RhythmDB *db,
-                  GtkActionGroup *actions)
+                  GtkUIManager *ui_manager)
 {
         RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
                                                "db", db,
-                                               "action-group", actions,
+                                               "ui-manager", ui_manager,
                                                NULL);
 
         g_return_val_if_fail (statusbar->priv != NULL, NULL);
