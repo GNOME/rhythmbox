@@ -1,3 +1,9 @@
+2006-08-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-song-info.c: (rb_song_info_update_buttons):
+	Don't try to unref previous/next entries if they aren't there.
+	Fixes #351806.
+
 2006-08-15  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-monitor.c: (entry_volume_mounted_or_unmounted),

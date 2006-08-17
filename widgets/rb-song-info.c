@@ -1041,14 +1041,16 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 							      song_info->priv->current_entry);
 
 	gtk_widget_set_sensitive (song_info->priv->backward, entry != NULL);
-	rhythmdb_entry_unref (entry);
+	if (entry != NULL)
+		rhythmdb_entry_unref (entry);
 
 	/* forward */
 	entry = rhythmdb_query_model_get_next_from_entry (song_info->priv->query_model,
 							  song_info->priv->current_entry);
 
 	gtk_widget_set_sensitive (song_info->priv->forward, entry != NULL);
-	rhythmdb_entry_unref (entry);
+	if (entry != NULL)
+		rhythmdb_entry_unref (entry);
 }
 
 static void
