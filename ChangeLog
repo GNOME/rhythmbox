@@ -1,3 +1,15 @@
+2006-08-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_source):
+	* widgets/rb-header.c: (rb_header_class_init),
+	(rb_header_set_property), (rb_header_get_property),
+	(rb_header_set_playing_entry), (rb_header_sync),
+	(rb_header_sync_time):
+	* widgets/rb-header.h:
+	Add a 'seekable' property on RBHeader, and use it to make the seek bar
+	insensitive when the player backend tells us we can't seek in the
+	current song.  From #330410.
+
 2006-08-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-song-info.c: (rb_song_info_update_buttons):

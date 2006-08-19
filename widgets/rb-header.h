@@ -56,7 +56,8 @@ GType		rb_header_get_type		(void);
 RBHeader *	rb_header_new			(RBShellPlayer *header);
 
 void		rb_header_set_playing_entry	(RBHeader *header,
-						 RhythmDBEntry *entry);
+						 RhythmDBEntry *entry,
+						 gboolean seekable);
 
 void		rb_header_set_title		(RBHeader *header,
 						 const char *title);

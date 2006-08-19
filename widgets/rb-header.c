@@ -85,6 +85,7 @@ struct RBHeaderPrivate
 
 	long elapsed_time;
 	long duration;
+	gboolean seekable;
 };
 
 enum
@@ -94,6 +95,7 @@ enum
 	PROP_SHELL_PLAYER,
 	PROP_ENTRY,
 	PROP_TITLE,
+	PROP_SEEKABLE,
 };
 
 #define SONG_MARKUP(xSONG) g_markup_printf_escaped ("<big><b>%s</b></big>", xSONG);
@@ -140,6 +142,14 @@ rb_header_class_init (RBHeaderClass *klass)
 							      "title",
 							      NULL,
 							      G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_SEEKABLE,
+					 g_param_spec_boolean ("seekable",
+						 	       "seekable",
+							       "seekable",
+							       TRUE,
+							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBHeaderPrivate));
 }
@@ -264,6 +274,9 @@ rb_header_set_property (GObject *object,
 		g_free (header->priv->title);
 		header->priv->title = g_value_dup_string (value);
 		break;
+	case PROP_SEEKABLE:
+		header->priv->seekable = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -291,6 +304,9 @@ rb_header_get_property (GObject *object,
 	case PROP_TITLE:
 		g_value_set_string (value, header->priv->title);
 		break;
+	case PROP_SEEKABLE:
+		g_value_set_boolean (value, header->priv->seekable);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -313,9 +329,14 @@ rb_header_new (RBShellPlayer *shell_player)
 }
 
 void
-rb_header_set_playing_entry (RBHeader *header, RhythmDBEntry *entry)
+rb_header_set_playing_entry (RBHeader *header,
+			     RhythmDBEntry *entry,
+			     gboolean seekable)
 {
-	g_object_set (header, "entry", entry, NULL);
+	g_object_set (header,
+		      "entry", entry,
+		      "seekable", seekable,
+		      NULL);
 }
 
 void
@@ -352,7 +373,7 @@ rb_header_sync (RBHeader *header)
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
-		rb_header_set_show_timeline (header, have_duration);
+		rb_header_set_show_timeline (header, have_duration && header->priv->seekable);
 		if (have_duration)
 			rb_header_sync_time (header);
 	} else {
@@ -429,7 +450,7 @@ rb_header_sync_time (RBHeader *header)
 		header->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (header->priv->adjustment, progress);
 		header->priv->slider_locked = FALSE;
-		gtk_widget_set_sensitive (header->priv->scale, TRUE);
+		gtk_widget_set_sensitive (header->priv->scale, header->priv->seekable);
 	} else {
 		header->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (header->priv->adjustment, 0.0);
