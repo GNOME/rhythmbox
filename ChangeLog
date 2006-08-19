@@ -1,5 +1,12 @@
 2006-08-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* backends/gstreamer/rb-player-gst.c:
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_source):
+	Don't actually disable the seek bar for non-seekable songs,
+	because we can't reliably tell yet.
+
+2006-08-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* daapsharing/rb-daap-share.c: (add_entry_to_mlcl),
 	(add_playlist_entry_to_mlcl), (databases_cb), (db_entry_added_cb),
 	(db_entry_deleted_cb), (rb_daap_share_server_start),

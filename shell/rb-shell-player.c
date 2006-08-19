@@ -2353,7 +2353,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 
 	rb_header_set_playing_entry (player->priv->header_widget,
 				     entry,
-				     rb_player_seekable (player->priv->mmplayer));
+				     TRUE /*rb_player_seekable (player->priv->mmplayer)*/);
 	rb_header_sync (player->priv->header_widget);
 
 	if (entry != NULL) {
