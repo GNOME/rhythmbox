@@ -1,5 +1,20 @@
 2006-08-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* daapsharing/rb-daap-share.c: (add_entry_to_mlcl),
+	(add_playlist_entry_to_mlcl), (databases_cb), (db_entry_added_cb),
+	(db_entry_deleted_cb), (rb_daap_share_server_start),
+	(rb_daap_share_server_stop):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (save_entry):
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_entry_allocate),
+	(rhythmdb_entry_set_internal), (rhythmdb_prop_type_get_type),
+	(rhythmdb_entry_get_ulong):
+	* rhythmdb/rhythmdb.h:
+	Give db entries a numeric ID property, replacing the daap server's
+	entry->id map.  From #347665.
+
+2006-08-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-player.c: (rb_shell_player_sync_with_source):
 	* widgets/rb-header.c: (rb_header_class_init),
 	(rb_header_set_property), (rb_header_get_property),

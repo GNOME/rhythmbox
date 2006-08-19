@@ -71,6 +71,7 @@ struct RhythmDBEntry_ {
 	volatile gint refcount;
 	void *data;
 	RhythmDBEntryType type;
+	guint id;
 
 	/* metadata */
 	RBRefString *title;
@@ -173,6 +174,8 @@ struct RhythmDBPrivate
 	GHashTable *entry_type_map;
 	GMutex *entry_type_map_mutex;
 	GMutex *entry_type_mutex;
+
+	gint next_entry_id;
 };
 
 typedef struct

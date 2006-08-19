@@ -422,6 +422,8 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->empty_string = rb_refstring_new ("");
 	db->priv->octet_stream_str = rb_refstring_new ("application/octet-stream");
 
+	db->priv->next_entry_id = 1;
+
 	rhythmdb_init_monitoring (db);
 }
 
@@ -995,6 +997,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
 		size = ALIGN_STRUCT (sizeof (RhythmDBEntry)) + type->entry_type_data_size;
 	}
 	ret = g_malloc0 (size);
+	ret->id = (guint) g_atomic_int_exchange_and_add (&db->priv->next_entry_id, 1);
 
 	ret->type = type;
 	ret->title = rb_refstring_ref (db->priv->empty_string);
@@ -2563,6 +2566,7 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 
 		switch (propid) {
 		case RHYTHMDB_PROP_TYPE:
+		case RHYTHMDB_PROP_ENTRY_ID:
 			g_assert_not_reached ();
 			break;
 		case RHYTHMDB_PROP_TITLE:
@@ -3292,6 +3296,7 @@ rhythmdb_prop_type_get_type (void)
 			* Finally, there is the XML element name in brackets.
 			*/
 			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gpointer) [type]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ENTRY_ID, "Numeric ID (guint) [entry-id]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title (gchararray) [title]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray) [genre]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray) [artist]"),
@@ -4054,6 +4059,8 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry,
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 
 	switch (propid) {
+	case RHYTHMDB_PROP_ENTRY_ID:
+		return entry->id;
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		return entry->tracknum;
 	case RHYTHMDB_PROP_DISC_NUMBER:

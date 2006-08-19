@@ -102,7 +102,6 @@ struct RBDAAPSharePrivate {
 	RhythmDB *db;
 	gint32 next_song_id;
 	GHashTable *id_to_entry;
-	GHashTable *entry_to_id;
 	gulong entry_added_id;
 	gulong entry_deleted_id;
 	gulong entry_changed_id;
@@ -965,9 +964,9 @@ client_requested (bitwise bits,
 #define DMAP_ITEM_KIND_AUDIO 2
 #define DAAP_SONG_DATA_KIND_NONE 0
 
-static void
-add_entry_to_mlcl (RhythmDBEntry *entry,
-		   gint id,
+static void 
+add_entry_to_mlcl (gint id,
+		   RhythmDBEntry *entry,
 		   struct MLCL_Bits *mb)
 {
 	GNode *mlit;
@@ -1111,7 +1110,7 @@ add_playlist_entry_to_mlcl (GtkTreeModel *model,
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	id = GPOINTER_TO_INT (g_hash_table_lookup ((GHashTable *)mb->pointer, entry));
+	id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
 
 	if (client_requested (mb->bits, ITEM_KIND))
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIKD, (gchar) DMAP_ITEM_KIND_AUDIO);
@@ -1308,7 +1307,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, share->priv->name);
-		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->entry_to_id));
+		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->id_to_entry));
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MCTC, (gint32) 1);
 
 		message_set_from_rb_daap_structure (message, avdb);
@@ -1326,7 +1325,7 @@ databases_cb (RBDAAPShare *share,
 	 * 		...
 	 */
 		GNode *adbs;
-		gint32 num_songs = (gint32)g_hash_table_size (share->priv->entry_to_id);
+		gint32 num_songs = (gint32)g_hash_table_size (share->priv->id_to_entry);
 		struct MLCL_Bits mb = {NULL,0};
 
 		mb.bits = parse_meta (rest_of_path);
@@ -1338,7 +1337,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (adbs, RB_DAAP_CC_MRCO, (gint32) num_songs);
 		mb.mlcl = rb_daap_structure_add (adbs, RB_DAAP_CC_MLCL);
 
-		g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
+		g_hash_table_foreach (share->priv->id_to_entry, (GHFunc) add_entry_to_mlcl, &mb);
 
 		message_set_from_rb_daap_structure (message, adbs);
 		rb_daap_structure_destroy (adbs);
@@ -1373,7 +1372,7 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MIID, (gint32) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MPER, (gint64) 1);
 		rb_daap_structure_add (mlit, RB_DAAP_CC_MINM, share->priv->name);
-		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->entry_to_id));
+		rb_daap_structure_add (mlit, RB_DAAP_CC_MIMC, (gint32) g_hash_table_size (share->priv->id_to_entry));
 		rb_daap_structure_add (mlit, RB_DAAP_CC_ABPL, (gchar) 1); /* base playlist */
 
 		g_list_foreach (share->priv->playlist_ids, (GFunc) add_playlist_to_mlcl, mlcl);
@@ -1405,12 +1404,12 @@ databases_cb (RBDAAPShare *share,
 		rb_daap_structure_add (apso, RB_DAAP_CC_MUTY, 0);
 
 		if (pl_id == 1) {
-			gint32 num_songs = (gint32) g_hash_table_size (share->priv->entry_to_id);
+			gint32 num_songs = (gint32) g_hash_table_size (share->priv->id_to_entry);
 			rb_daap_structure_add (apso, RB_DAAP_CC_MTCO, (gint32) num_songs);
 			rb_daap_structure_add (apso, RB_DAAP_CC_MRCO, (gint32) num_songs);
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
 
-			g_hash_table_foreach (share->priv->entry_to_id, (GHFunc) add_entry_to_mlcl, &mb);
+			g_hash_table_foreach (share->priv->id_to_entry, (GHFunc) add_entry_to_mlcl, &mb);
 		} else {
 			RBPlaylistID *id;
 			GList *idl;
@@ -1430,8 +1429,6 @@ databases_cb (RBDAAPShare *share,
 			id = (RBPlaylistID *)idl->data;
 
 			mb.mlcl = rb_daap_structure_add (apso, RB_DAAP_CC_MLCL);
-
-			mb.pointer = share->priv->entry_to_id;
 
 			g_object_get (id->source, "query-model", &model, NULL);
 			num_songs = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
@@ -1551,11 +1548,12 @@ db_entry_added_cb (RhythmDB *db,
 {
 	RhythmDBEntryType type = rhythmdb_entry_get_entry_type (entry);
 	gboolean hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
+	gulong id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
 
-	if (type == rhythmdb_entry_song_get_type () && !hidden && g_hash_table_lookup (share->priv->entry_to_id, entry) == NULL) {
-		gint32 song_id = share->priv->next_song_id++;
-		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (song_id), entry);
-		g_hash_table_insert (share->priv->entry_to_id, entry, GINT_TO_POINTER (song_id));
+	if (type == rhythmdb_entry_song_get_type () && 
+	    !hidden && 
+	    g_hash_table_lookup (share->priv->id_to_entry, GINT_TO_POINTER (id)) == NULL) {
+		g_hash_table_insert (share->priv->id_to_entry, GINT_TO_POINTER (id), entry);
 	}
 }
 
@@ -1573,10 +1571,9 @@ db_entry_deleted_cb (RhythmDB *db,
 {
 	gpointer id;
 
-	id = g_hash_table_lookup (share->priv->entry_to_id, entry);
-	if (id) {
-		g_hash_table_remove (share->priv->entry_to_id, entry);
-	}
+	id = GINT_TO_POINTER (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
+	if (id)
+		g_hash_table_remove (share->priv->id_to_entry, id);
 }
 
 static void
@@ -1689,7 +1686,6 @@ rb_daap_share_server_start (RBDAAPShare *share)
 	soup_server_run_async (share->priv->server);
 
 	share->priv->id_to_entry = g_hash_table_new (NULL, NULL);
-	share->priv->entry_to_id = g_hash_table_new (NULL, NULL);
 	/* using direct since there is no g_uint_hash or g_uint_equal */
 	share->priv->session_ids = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_free);
 
@@ -1734,11 +1730,6 @@ rb_daap_share_server_stop (RBDAAPShare *share)
 	if (share->priv->session_ids) {
 		g_hash_table_destroy (share->priv->session_ids);
 		share->priv->session_ids = NULL;
-	}
-
-	if (share->priv->entry_to_id) {
-		g_hash_table_destroy (share->priv->entry_to_id);
-		share->priv->entry_to_id = NULL;
 	}
 
 	if (share->priv->entry_added_id != 0) {

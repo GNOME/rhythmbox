@@ -789,6 +789,8 @@ save_entry (RhythmDBTree *db,
 		switch (i) {
 		case RHYTHMDB_PROP_TYPE:
 			break;
+		case RHYTHMDB_PROP_ENTRY_ID:
+			break;
 		case RHYTHMDB_PROP_TITLE:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->title));
 			break;
