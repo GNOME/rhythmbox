@@ -1,3 +1,10 @@
+2006-08-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-source.c: (rb_source_class_init), (rb_source_dispose),
+	(rb_source_finalize):
+	Remove idle callbacks in dispose, rather than finalize. Fixes crashes
+	when disconnecting generic audio players.
+
 2006-08-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Paolo Borelli  <pborelli@katamail.com>

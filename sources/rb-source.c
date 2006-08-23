@@ -39,6 +39,7 @@
 
 static void rb_source_class_init (RBSourceClass *klass);
 static void rb_source_init (RBSource *source);
+static void rb_source_dispose (GObject *object);
 static void rb_source_finalize (GObject *object);
 static void rb_source_set_property (GObject *object,
 					guint prop_id,
@@ -123,6 +124,7 @@ rb_source_class_init (RBSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_source_dispose;
 	object_class->finalize = rb_source_finalize;
 
 	object_class->set_property = rb_source_set_property;
@@ -280,6 +282,33 @@ rb_source_init (RBSource *source)
 }
 
 static void
+rb_source_dispose (GObject *object)
+{
+	RBSource *source;
+	RBSourcePrivate *priv;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SOURCE (object));
+
+	source = RB_SOURCE (object);
+	priv = RB_SOURCE_GET_PRIVATE (source);
+	g_return_if_fail (priv != NULL);
+
+	rb_debug ("Disposing source %p: '%s'", source, priv->name);
+
+	if (priv->update_visibility_id != 0) {
+		g_source_remove (priv->update_visibility_id);
+		priv->update_visibility_id = 0;
+	}
+	if (priv->update_status_id != 0) {
+		g_source_remove (priv->update_status_id);
+		priv->update_status_id = 0;
+	}
+
+	G_OBJECT_CLASS (rb_source_parent_class)->dispose (object);
+}
+
+static void
 rb_source_finalize (GObject *object)
 {
 	RBSource *source;
@@ -293,13 +322,6 @@ rb_source_finalize (GObject *object)
 	g_return_if_fail (priv != NULL);
 
 	rb_debug ("Finalizing source %p: '%s'", source, priv->name);
-
-	if (priv->update_visibility_id != 0) {
-		g_source_remove (priv->update_visibility_id);
-	}
-	if (priv->update_status_id != 0) {
-		g_source_remove (priv->update_status_id);
-	}
 
 	if (priv->query_model != NULL) {
 		rb_debug ("Unreffing model %p count: %d", priv->query_model, G_OBJECT (priv->query_model)->ref_count);
