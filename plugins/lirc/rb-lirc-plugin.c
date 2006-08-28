@@ -1,13 +1,13 @@
 /*
  * rb-lirc-plugin.c
- * 
+ *
  * Copyright (C) 2006  Jonathan Matthew
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,6 +44,7 @@
 
 #define RB_IR_COMMAND_PLAY "play"
 #define RB_IR_COMMAND_PAUSE "pause"
+#define RB_IR_COMMAND_PLAYPAUSE "playpause"
 #define RB_IR_COMMAND_STOP "stop"
 #define RB_IR_COMMAND_SHUFFLE "shuffle"
 #define RB_IR_COMMAND_REPEAT "repeat"
@@ -92,7 +93,7 @@ rb_lirc_plugin_init (RBLircPlugin *plugin)
 }
 
 static gboolean
-rb_lirc_plugin_read_code (GIOChannel *source, 
+rb_lirc_plugin_read_code (GIOChannel *source,
 			  GIOCondition condition,
 			  RBLircPlugin *plugin)
 {
@@ -116,6 +117,8 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 		rb_shell_player_play (plugin->shell_player, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_PAUSE) == 0) {
 		rb_shell_player_pause (plugin->shell_player, NULL);
+	} else if (strcmp (str, RB_IR_COMMAND_PLAYPAUSE) == 0) {
+		rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
 	} else if (strcmp (str, RB_IR_COMMAND_STOP) == 0) {
 		rb_shell_player_stop (plugin->shell_player);
 	} else if (strcmp (str, RB_IR_COMMAND_SHUFFLE) == 0) {
@@ -150,9 +153,8 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 	}
 	g_free (code);
 
-	return TRUE;	
+	return TRUE;
 }
-
 
 static void
 impl_activate (RBPlugin *rbplugin,
@@ -175,7 +177,7 @@ impl_activate (RBPlugin *rbplugin,
 		rb_debug ("Couldn't initialize lirc");
 		return;
 	}
-	
+
 	plugin->lirc_channel = g_io_channel_unix_new (fd);
 	g_io_add_watch (plugin->lirc_channel, G_IO_IN,
 			(GIOFunc) rb_lirc_plugin_read_code, plugin);
@@ -187,7 +189,7 @@ impl_deactivate	(RBPlugin *rbplugin,
 {
 	RBLircPlugin *plugin = RB_LIRC_PLUGIN (rbplugin);
 	GError *error = NULL;
-	
+
 	rb_debug ("Deactivating lirc plugin");
 
 	if (plugin->lirc_channel) {
@@ -212,5 +214,4 @@ impl_deactivate	(RBPlugin *rbplugin,
 		plugin->shell_player = NULL;
 	}
 }
-
 
