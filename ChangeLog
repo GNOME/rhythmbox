@@ -1,5 +1,11 @@
 2006-08-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* help/C/rhythmbox.xml: unbreak help build
+	* plugins/lirc/rb-lirc-plugin.c: (impl_activate):
+	Unbuffer the IO channel.  Fixes some weirdness for me.
+
+2006-08-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* help/C/rhythmbox.xml:
 	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_read_code),
 	(impl_activate), (impl_deactivate):

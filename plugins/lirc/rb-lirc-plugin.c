@@ -179,6 +179,8 @@ impl_activate (RBPlugin *rbplugin,
 	}
 
 	plugin->lirc_channel = g_io_channel_unix_new (fd);
+	g_io_channel_set_encoding (plugin->lirc_channel, NULL, NULL);
+	g_io_channel_set_buffered (plugin->lirc_channel, FALSE);
 	g_io_add_watch (plugin->lirc_channel, G_IO_IN,
 			(GIOFunc) rb_lirc_plugin_read_code, plugin);
 }
