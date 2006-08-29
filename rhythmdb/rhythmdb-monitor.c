@@ -207,8 +207,11 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			      GnomeVFSMonitorEventType vfsevent,
 			      RhythmDB *db)
 {
+	char *canon_uri;
+
+	canon_uri = rb_canonicalise_uri (info_uri);
 	rb_debug ("directory event %d for %s: %s", (int) vfsevent,
-		  monitor_uri, info_uri);
+		  monitor_uri, canon_uri);
 
 	switch (vfsevent) {
         case GNOME_VFS_MONITOR_EVENT_CREATED:
@@ -217,25 +220,25 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			gboolean in_library = FALSE;
 
 			if (!eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
-				return;
+				break;
 
 			/* ignore new files outside of the library locations */
 			for (cur = db->priv->library_locations; cur != NULL; cur = g_slist_next (cur)) {
-				if (g_str_has_prefix (info_uri, cur->data)) {
+				if (g_str_has_prefix (canon_uri, cur->data)) {
 					in_library = TRUE;
 					break;
 				}
 			}
 
 			if (!in_library)
-				return;
+				break;
 		}
 
 		/* process directories immediately */
-		if (rb_uri_is_directory (info_uri)) {
-			rhythmdb_monitor_uri_path (db, info_uri, NULL);
-			rhythmdb_add_uri (db, info_uri);
-			return;
+		if (rb_uri_is_directory (canon_uri)) {
+			rhythmdb_monitor_uri_path (db, canon_uri, NULL);
+			rhythmdb_add_uri (db, canon_uri);
+			break;
 		}
 		/* fall through*/
 	case GNOME_VFS_MONITOR_EVENT_CHANGED:
@@ -245,7 +248,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 
 			g_get_current_time (&time);
 			g_hash_table_replace (db->priv->changed_files,
-					      rb_refstring_new (info_uri),
+					      rb_refstring_new (canon_uri),
 					      GINT_TO_POINTER (time.tv_sec));
 		}
 		break;
@@ -254,7 +257,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
 			event->db = db;
 			event->type = RHYTHMDB_EVENT_FILE_DELETED;
-			event->uri = rb_refstring_new (info_uri);
+			event->uri = rb_refstring_new (canon_uri);
 			g_async_queue_push (db->priv->event_queue, event);
 		}
 		break;
@@ -262,6 +265,8 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 	case GNOME_VFS_MONITOR_EVENT_STOPEXECUTING:
 		break;
 	}
+
+	g_free (canon_uri);
 }
 
 void

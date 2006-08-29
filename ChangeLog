@@ -1,3 +1,9 @@
+2006-08-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_directory_change_cb):
+	Canonicalise URIs received from gnome-vfs file monitor.
+	Fixes #353447.
+
 2006-08-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* help/C/rhythmbox.xml: unbreak help build
