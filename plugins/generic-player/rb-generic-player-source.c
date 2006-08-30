@@ -129,7 +129,7 @@ static GObject *
 rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
 {
-	RBGenericPlayerSource *source; 
+	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
 	GnomeVFSVolume *volume;
 	RBShell *shell;
@@ -153,7 +153,7 @@ rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 	priv->playlist_format_unknown = TRUE;
 
 	rb_generic_player_source_load_songs (source);
-	
+
 	g_idle_add ((GSourceFunc)rb_generic_player_source_load_playlists, source);
 
 	return G_OBJECT (source);
@@ -166,7 +166,7 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 	GnomeVFSVolume *volume;
 	LibHalContext *ctx = get_hal_context ();
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	
+
 	if (ctx) {
 		gchar *udi;
 
@@ -309,7 +309,7 @@ impl_delete_thyself (RBSource *source)
 {
 	GList *p;
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	
+
 	for (p = priv->playlists; p != NULL; p = p->next) {
 		RBSource *playlist = RB_SOURCE (p->data);
 		rb_source_delete_thyself (playlist);
@@ -329,7 +329,7 @@ rb_generic_player_source_load_songs (RBGenericPlayerSource *source)
 	priv->mount_path = rb_generic_player_source_get_mount_path (source);
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 
-	/* if HAL gives us a set of folders on the device containing audio files, 
+	/* if HAL gives us a set of folders on the device containing audio files,
 	 * load only those folders, otherwise add the whole volume.
 	 */
 	if (priv->audio_folders) {
@@ -503,14 +503,14 @@ load_playlist_file (RBGenericPlayerSource *source,
 	HandlePlaylistEntryData *data;
 	RBShell *shell;
 
-	g_object_get (G_OBJECT (source), 
-		      "shell", &shell, 
+	g_object_get (G_OBJECT (source),
+		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
 
 	playlist = RB_STATIC_PLAYLIST_SOURCE (
-			rb_static_playlist_source_new (shell, 
-						      rel_path, 
+			rb_static_playlist_source_new (shell,
+						      rel_path,
 						      FALSE,
 						      entry_type));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
@@ -518,7 +518,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 	data = g_new0 (HandlePlaylistEntryData, 1);
 	data->source = playlist;
 	data->player_source = source;
-	
+
 	parser = totem_pl_parser_new ();
 
 	g_signal_connect (parser,
@@ -573,7 +573,7 @@ default_load_playlists (RBGenericPlayerSource *source)
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 	char *mount_path;
 	char *playlist_path = NULL;
-	
+
 	mount_path = rb_generic_player_source_get_mount_path (source);
 	if (priv->playlist_path) {
 		/* If the device only supports a single playlist, just load that */
@@ -655,7 +655,7 @@ get_hal_context (void)
 	}
 
 	if (!result) {
-		cleanup_hal_context (ctx);
+		libhal_ctx_free (ctx);
 		ctx = NULL;
 	}
 	return ctx;

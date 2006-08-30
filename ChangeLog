@@ -1,5 +1,15 @@
 2006-08-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_constructor),
+	(rb_generic_player_source_get_device_info), (impl_delete_thyself),
+	(rb_generic_player_source_load_songs), (load_playlist_file),
+	(default_load_playlists), (get_hal_context):
+	Only call libhal_ctx_shutdown if libhal_ctx_init succeeds.
+	Fixes #353483.
+
+2006-08-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_directory_change_cb):
 	Canonicalise URIs received from gnome-vfs file monitor.
 	Fixes #353447.
