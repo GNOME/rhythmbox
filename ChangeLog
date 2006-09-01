@@ -1,3 +1,9 @@
+2006-09-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/bacon-volume.c: (cb_button_timeout):
+	Actually drop the GDK lock, rather than returning while holding it.
+	Fixes #353895.
+
 2006-08-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/generic-player/rb-generic-player-source.c:

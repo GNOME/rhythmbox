@@ -365,10 +365,13 @@ static gboolean
 cb_button_timeout (gpointer data)
 {
   BaconVolumeButton *button = BACON_VOLUME_BUTTON (data);
+  gboolean r;
 
   GDK_THREADS_ENTER ();
-  return button_timeout (button);
+  r = button_timeout (button);
   GDK_THREADS_LEAVE ();
+
+  return r;
 }
 
 
