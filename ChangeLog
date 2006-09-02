@@ -1,5 +1,11 @@
 2006-09-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* daapsharing/rb-daap-connection.c: (handle_song_listing):
+	Add a final rhythmdb_commit to make sure all songs from the share show
+	up in the daap source.  Fixes #353913.
+
+2006-09-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-sourcelist-model.c:
 	(rb_sourcelist_model_drag_data_received),
 	(rb_sourcelist_model_row_drop_possible):

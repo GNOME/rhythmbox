@@ -1059,6 +1059,7 @@ handle_song_listing (RBDAAPConnection *connection,
 			rhythmdb_commit (priv->db);
 		}
 	}
+	rhythmdb_commit (priv->db);
 	rb_profile_end ("handling song listing");
 
 	rb_daap_connection_state_done (connection, TRUE);
