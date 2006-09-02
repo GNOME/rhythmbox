@@ -206,7 +206,8 @@ sexy_icon_entry_map(GtkWidget *widget)
 		GTK_WIDGET_CLASS(parent_class)->map(widget);
 
 		for (i = 0; i < MAX_ICONS; i++)
-			gdk_window_show(entry->priv->icons[i].window);
+			if (entry->priv->icons[i].icon != NULL)
+				gdk_window_show(entry->priv->icons[i].window);
 	}
 }
 
@@ -219,7 +220,8 @@ sexy_icon_entry_unmap(GtkWidget *widget)
 		int i;
 
 		for (i = 0; i < MAX_ICONS; i++)
-			gdk_window_hide(entry->priv->icons[i].window);
+			if (entry->priv->icons[i].icon != NULL)
+				gdk_window_hide(entry->priv->icons[i].window);
 
 		GTK_WIDGET_CLASS(parent_class)->unmap(widget);
 	}
@@ -817,10 +819,14 @@ sexy_icon_entry_set_icon(SexyIconEntry *entry, SexyIconEntryPosition icon_pos,
 		{
 			gtk_widget_destroy(GTK_WIDGET(icon_info->icon));
 			icon_info->icon = NULL;
+			gdk_window_hide(icon_info->window);
 		}
 	}
 	else
 	{
+		if (icon_info->icon == NULL)
+			gdk_window_show(icon_info->window);
+
 		g_signal_connect(G_OBJECT(icon), "notify",
 						 G_CALLBACK(update_icon), entry);
 
