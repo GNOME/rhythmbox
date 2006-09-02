@@ -388,11 +388,11 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 					    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 		}
 
-		if (target != NULL) {
-			g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
-				       0, target, pos, selection_data);
+		g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
+			       0, target, pos, selection_data);
+
+		if (target != NULL)
 			g_object_unref (target);
-		}
 
 		return TRUE;
 	}
@@ -487,10 +487,6 @@ rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 	rb_debug ("row drop possible");
 	g_return_val_if_fail (RB_IS_SOURCELIST_MODEL (drag_dest), FALSE);
 	model = RB_SOURCELIST_MODEL (drag_dest);
-
-	if (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE)
-	    && !dest)
-		return FALSE;
 
 	if (!dest)
 		return TRUE;
