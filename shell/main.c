@@ -72,15 +72,6 @@
 #include <dbus/dbus-glib-lowlevel.h>
 #endif
 
-#include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-#include <nautilus-burn.h>
-#endif
-
 #define HAVE_LIBGNOME_GOPTION defined(GNOME_PARAM_GOPTION_CONTEXT)
 
 static gboolean debug           = FALSE;
@@ -299,10 +290,6 @@ main (int argc, char **argv)
 
 		rb_stock_icons_init ();
 
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-		nautilus_burn_init ();
-#endif
-
 		gtk_window_set_default_icon_name ("rhythmbox");
 
 		rb_shell = rb_shell_new (argc, argv, no_registration, no_update, dry_run, rhythmdb_file, playlists_file);
@@ -392,10 +379,6 @@ main (int argc, char **argv)
 		rb_refstring_system_shutdown ();
 
 		gnome_vfs_shutdown ();
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-		nautilus_burn_shutdown ();
-#endif
 	}
 
 #ifdef HAVE_GSTREAMER_0_10

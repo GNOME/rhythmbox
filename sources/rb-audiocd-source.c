@@ -36,6 +36,7 @@
 #include <gst/gst.h>
 #include <totem-disc.h>
 
+#include "rb-plugin.h"
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
 #include "rb-audiocd-source.h"
@@ -74,7 +75,7 @@ typedef struct
 #endif
 } RBAudioCdSourcePrivate;
 
-G_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
+RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
 
 static void

@@ -2,6 +2,7 @@
 
 SUBDIRS = 						\
 	generic-player					\
+	audiocd						\
 	sample
 
 if WITH_AUDIOSCROBBLER

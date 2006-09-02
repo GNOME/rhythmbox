@@ -956,6 +956,7 @@ sources/Makefile
 daapsharing/Makefile
 plugins/Makefile
 plugins/sample/Makefile
+plugins/audiocd/Makefile
 plugins/audioscrobbler/Makefile
 plugins/cd-recorder/Makefile
 plugins/ipod/Makefile

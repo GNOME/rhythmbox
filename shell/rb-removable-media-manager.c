@@ -25,23 +25,12 @@
 #include <string.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
 #include <libgnomevfs/gnome-vfs.h>
-
-#include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-#include <nautilus-burn.h>
-#endif
 
 #include "rb-removable-media-manager.h"
 #include "rb-library-source.h"
 #include "rb-sourcelist.h"
 #include "rb-removable-media-source.h"
-#include "rb-audiocd-source.h"
 
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -54,10 +43,6 @@
 
 #ifdef ENABLE_TRACK_TRANSFER
 #include "rb-encoder.h"
-#endif
-
-#ifndef HAVE_BURN_DRIVE_UNREF
-#define nautilus_burn_drive_unref nautilus_burn_drive_free
 #endif
 
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
@@ -114,13 +99,8 @@ typedef struct
 
 	GList *sources;
 	GHashTable *volume_mapping;
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-	GHashTable *cd_drive_mapping;
-#endif
 	GList *cur_volume_list;
 	gboolean scanned;
-
-	char *playing_uri;
 
 	GAsyncQueue *transfer_queue;
 	gboolean transfer_running;
@@ -283,9 +263,6 @@ rb_removable_media_manager_finalize (GObject *object)
 	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (object);
 
 	g_hash_table_destroy (priv->volume_mapping);
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-	g_hash_table_destroy (priv->cd_drive_mapping);
-#endif
 	g_async_queue_unref (priv->transfer_queue);
 
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->finalize (object);
@@ -365,189 +342,10 @@ rb_removable_media_manager_new (RBShell *shell,
 			     NULL);
 }
 
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-typedef struct
-{
-	gboolean removed;
-	gboolean tray_opened;
-	RBRemovableMediaManager *manager;
-	NautilusBurnDrive *drive;
-} RbCdDriveInfo;
-
-#ifdef HAVE_BURN_DRIVE_DOOR
-static
-gboolean poll_tray_opened (RbCdDriveInfo *info)
-{
-	GnomeVFSVolumeMonitor *monitor =  gnome_vfs_get_volume_monitor ();
-	gboolean new_status;
-	GnomeVFSVolume *volume;
-
-	if (info->removed) {
-		nautilus_burn_drive_unref (info->drive);
-		g_free (info);
-		return FALSE;
-	}
-
-	new_status = nautilus_burn_drive_door_is_open (info->drive);
-
-	if (new_status != info->tray_opened) {
-		volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, info->drive->device);
-		if (volume) {
-			if (new_status)
-				rb_removable_media_manager_unmount_volume (info->manager, volume);
-			else
-				rb_removable_media_manager_mount_volume (info->manager, volume);
-			gnome_vfs_volume_unref (volume);
-		}
-	}
-	info->tray_opened = new_status;
-
-	return TRUE;
-}
-#endif
-
-static
-void end_cd_drive_monitor (RbCdDriveInfo *info, RBRemovableMediaManager *manager)
-{
-	/* this will be freed when the poll next gets called */
-	info->removed = TRUE;
-}
-
-static
-void begin_cd_drive_monitor (NautilusBurnDrive *drive, RBRemovableMediaManager *manager)
-{
-#ifdef HAVE_BURN_DRIVE_DOOR
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
-	RbCdDriveInfo *info = g_new0 (RbCdDriveInfo, 1);
-	GnomeVFSVolumeMonitor *monitor=  gnome_vfs_get_volume_monitor ();
-	GnomeVFSVolume *volume;
-
-	info->drive = drive;
-	info->tray_opened = nautilus_burn_drive_door_is_open (drive);
-	info->manager = manager;
-
-	g_hash_table_insert (priv->cd_drive_mapping, drive, info);
-	g_timeout_add (1000, (GSourceFunc)poll_tray_opened, info);
-
-	volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, drive->device);
-
-	if (volume) {
-		if (!nautilus_burn_drive_door_is_open (drive)) {
-			rb_removable_media_manager_mount_volume (manager, volume);
-		} else {
-			/* it may have got ejected while we weren't monitoring */
-			rb_removable_media_manager_unmount_volume (manager, volume);
-		}
-	}
-#endif
-}
-
-static NautilusBurnDrive *
-get_nautilus_burn_drive_for_path (const char *path)
-{
-#ifdef HAVE_BURN_DRIVE_NEW_FROM_PATH
-	return nautilus_burn_drive_new_from_path (path);
-#else
-	GList *drives, *l;
-	NautilusBurnDrive *path_drive = NULL;
-
-	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
-	for (l = drives; l != NULL; l = g_list_next (l)) {
-		NautilusBurnDrive *drive = (NautilusBurnDrive*)l->data;
-
-		if (path_drive == NULL && strcmp (drive->device, path) == 0) {
-			path_drive = drive;
-		} else {
-			nautilus_burn_drive_unref (drive);
-		}
-	}
-	g_list_free (drives);
-
-	return path_drive;
-#endif
-}
-#endif /* NAUTILUS_BURN < 2.15.3 */
-
-static char *
-split_drive_from_cdda_uri (const char *uri)
-{
-	gchar *copy, *temp, *split;
-	int len;
-
-	if (!g_str_has_prefix (uri, "cdda://"))
-		return NULL;
-
-	len = strlen ("cdda://");
-
-	copy = g_strdup (uri);
-	split = g_utf8_strrchr (copy + len, -1, ':');
-
-	if (split == NULL) {
-		/* invalid URI, it doesn't contain a ':' */
-		g_free (copy);
-		return NULL;
-	}
-
-	*split = 0;
-	temp = g_strdup (copy + len);
-	g_free (copy);
-
-	return temp;
-}
-
-static void
-rb_removable_media_manager_playing_uri_changed_cb (RBShellPlayer *player,
-						   const char *uri,
-						   RBRemovableMediaManager *manager)
-{
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
-	char *old_drive = NULL;
-	char *new_drive = NULL;
-
-	/* extract the drive paths */
-	if (priv->playing_uri)
-		old_drive = split_drive_from_cdda_uri (priv->playing_uri);
-
-	if (uri)
-		new_drive = split_drive_from_cdda_uri (uri);
-
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-	/* if the drive we're playing from has changed, adjust the polling */
-	if (old_drive == NULL || new_drive == NULL || strcmp (old_drive, new_drive) != 0) {
-		if (old_drive) {
-			NautilusBurnDrive *drive;
-
-			rb_debug ("restarting monitoring of drive %s after playing", old_drive);
-			drive = get_nautilus_burn_drive_for_path (old_drive);
-			begin_cd_drive_monitor (drive, manager);
-			nautilus_burn_drive_unref (drive);
-		}
-
-		if (new_drive) {
-			NautilusBurnDrive *drive;
-
-			rb_debug ("stopping monitoring of drive %s while playing", new_drive);
-			drive = get_nautilus_burn_drive_for_path (new_drive);
-			/* removing it from the hash table makes it stop monitoring */
-			g_hash_table_remove (priv->cd_drive_mapping, drive);
-			nautilus_burn_drive_unref (drive);
-		}
-	}
-#endif
-
-	g_free (priv->playing_uri);
-	priv->playing_uri = (uri) ? g_strdup (uri) : NULL;
-}
-
 static gboolean
 rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 {
-	RBRemovableMediaManagerPrivate *priv = REMOVABLE_MEDIA_MANAGER_GET_PRIVATE (manager);
 	GnomeVFSVolumeMonitor *monitor = gnome_vfs_get_volume_monitor ();
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-	GList *drives;
-#endif
-	GObject *shell_player;
 
 	GDK_THREADS_ENTER ();
 	
@@ -567,25 +365,6 @@ rb_removable_media_manager_load_media (RBRemovableMediaManager *manager)
 			  manager);
 	g_signal_connect (G_OBJECT (monitor), "volume-unmounted",
 			  G_CALLBACK (rb_removable_media_manager_volume_unmounted_cb),
-			  manager);
-
-	/*
-	 * Monitor all cd drives for inserted audio cds
-	 *
-	 * This needs to be done seperately from the above, because non-HAL systems don't
-	 * (currently) report audio cd insertions as mount events.
-	 */
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-	priv->cd_drive_mapping = g_hash_table_new_full (NULL, NULL, NULL, (GDestroyNotify)end_cd_drive_monitor);
-	drives = nautilus_burn_drive_get_list (FALSE, FALSE);
-	g_list_foreach (drives, (GFunc)begin_cd_drive_monitor, manager);
-	g_list_free (drives);
-#endif
-
-	/* monitor the playing song, to disable cd drive polling */
-	shell_player = rb_shell_get_player (priv->shell);
-	g_signal_connect (shell_player, "playing-uri-changed",
-			  G_CALLBACK (rb_removable_media_manager_playing_uri_changed_cb),
 			  manager);
 
 	GDK_THREADS_LEAVE ();
@@ -677,9 +456,6 @@ rb_removable_media_manager_mount_volume (RBRemovableMediaManager *mgr, GnomeVFSV
 
 	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE], 0,
 		       volume, &source);
-
-	if (source == NULL && rb_audiocd_is_volume_audiocd (volume))
-		source = rb_audiocd_source_new (priv->shell, volume);
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
@@ -822,16 +598,6 @@ rb_removable_media_manager_unmount_volume_swap (GnomeVFSVolume *volume, RBRemova
 	rb_removable_media_manager_unmount_volume (manager, volume);
 }
 
-#if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-static const char *
-nautilus_burn_drive_get_device (NautilusBurnDrive *drive)
-{
-	g_return_val_if_fail (drive != NULL, NULL);
-
-	return drive->device;
-}
-#endif
-
 void
 rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 {
@@ -862,23 +628,6 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 		volume = GNOME_VFS_VOLUME (it->data);
 		rb_removable_media_manager_mount_volume (manager, volume);
 		gnome_vfs_volume_unref (volume);
-	}
-	g_list_free (list);
-
-	/* scan cd drives */
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-	list = nautilus_burn_drive_monitor_get_drives (nautilus_burn_get_drive_monitor ());
-#else
-	list = nautilus_burn_drive_get_list (FALSE, FALSE);
-#endif
-	for  (it = list; it != NULL; it = g_list_next (it)) {
-		NautilusBurnDrive *drive = (NautilusBurnDrive *)it->data;
-
-		volume = gnome_vfs_volume_monitor_get_volume_for_path (monitor, nautilus_burn_drive_get_device (drive));
-		if (volume) {
-			rb_removable_media_manager_mount_volume (manager, volume);
-			gnome_vfs_volume_unref (volume);
-		}
 	}
 	g_list_free (list);
 }

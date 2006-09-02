@@ -1,3 +1,39 @@
+2006-09-02  William Jon McCann  <mccann@jhu.edu>
+
+	patch by: James Livingston <doclivingston@gmail.com>
+
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* metadata/Makefile.am:
+	* plugins/Makefile.am:
+	* plugins/audiocd/.cvsignore:
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/audiocd.rb-plugin.desktop.in:
+	* plugins/audiocd/rb-audiocd-plugin.c:
+	(rb_audiocd_plugin_class_init), (rb_audiocd_plugin_init),
+	(rb_audiocd_plugin_finalize), (rb_audiocd_plugin_mount_volume),
+	(rb_audiocd_plugin_unmount_volume), (poll_tray_opened),
+	(end_cd_drive_monitor), (begin_cd_drive_monitor),
+	(get_nautilus_burn_drive_for_path), (split_drive_from_cdda_uri),
+	(rb_audiocd_plugin_playing_uri_changed_cb),
+	(nautilus_burn_drive_get_device),
+	(rb_audiocd_plugin_source_deleted), (create_source_cb),
+	(impl_activate), (_delete_cb), (impl_deactivate):
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c:
+	(rb_cd_recorder_plugin_init), (rb_cd_recorder_plugin_finalize):
+	* shell/main.c: (main):
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_finalize),
+	(rb_removable_media_manager_load_media),
+	(rb_removable_media_manager_mount_volume),
+	(rb_removable_media_manager_scan):
+	* sources/Makefile.am:
+	* sources/rb-audiocd-source.c:
+	* sources/rb-audiocd-source.h:
+	Make auto CD support a plugin.
+
+	Fixes #349415.
+
 2006-09-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* daapsharing/rb-daap-connection.c: (handle_song_listing):
