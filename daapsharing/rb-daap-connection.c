@@ -1129,6 +1129,7 @@ handle_playlists (RBDAAPConnection *connection,
 
 		priv->playlists = g_slist_prepend (priv->playlists, playlist);
 	}
+	priv->playlists = g_slist_reverse (priv->playlists);
 
 	rb_daap_connection_state_done (connection, TRUE);
 }
