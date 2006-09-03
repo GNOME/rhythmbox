@@ -100,6 +100,7 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 	char *code;
 	char *str = NULL;	/* owned by lirc config, must not be freed */
 	int ok;
+	gboolean processed = FALSE;
 
 	lirc_nextcode (&code);
 	if (code == NULL) {
@@ -107,50 +108,55 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 		return TRUE;
 	}
 
-	ok = lirc_code2char (plugin->lirc_config, code, &str);
+	do {
+		ok = lirc_code2char (plugin->lirc_config, code, &str);
 
-	if (ok != 0) {
-		rb_debug ("couldn't convert lirc code \"%s\" to string", code);
-	} else if (str == NULL) {
-		rb_debug ("unknown LIRC code");
-	} else if (strcmp (str, RB_IR_COMMAND_PLAY) == 0) {
-		rb_shell_player_play (plugin->shell_player, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_PAUSE) == 0) {
-		rb_shell_player_pause (plugin->shell_player, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_PLAYPAUSE) == 0) {
-		rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_STOP) == 0) {
-		rb_shell_player_stop (plugin->shell_player);
-	} else if (strcmp (str, RB_IR_COMMAND_SHUFFLE) == 0) {
-		gboolean shuffle;
-		gboolean repeat;
-		if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
-			rb_shell_player_set_playback_state (plugin->shell_player, !shuffle, repeat);
+		if (ok != 0) {
+			rb_debug ("couldn't convert lirc code \"%s\" to string", code);
+		} else if (str == NULL) {
+			if (processed == FALSE)
+				rb_debug ("unknown LIRC code \"%s\"", code);
+			break;
+		} else if (strcmp (str, RB_IR_COMMAND_PLAY) == 0) {
+			rb_shell_player_play (plugin->shell_player, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_PAUSE) == 0) {
+			rb_shell_player_pause (plugin->shell_player, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_PLAYPAUSE) == 0) {
+			rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_STOP) == 0) {
+			rb_shell_player_stop (plugin->shell_player);
+		} else if (strcmp (str, RB_IR_COMMAND_SHUFFLE) == 0) {
+			gboolean shuffle;
+			gboolean repeat;
+			if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
+				rb_shell_player_set_playback_state (plugin->shell_player, !shuffle, repeat);
+			}
+		} else if (strcmp (str, RB_IR_COMMAND_REPEAT) == 0) {
+			gboolean shuffle;
+			gboolean repeat;
+			if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
+				rb_shell_player_set_playback_state (plugin->shell_player, shuffle, !repeat);
+			}
+		} else if (strcmp (str, RB_IR_COMMAND_NEXT) == 0) {
+			rb_shell_player_do_next (plugin->shell_player, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_PREVIOUS) == 0) {
+			rb_shell_player_do_previous (plugin->shell_player, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_SEEK_FORWARD) == 0) {
+			rb_shell_player_seek (plugin->shell_player, 10);
+		} else if (strcmp (str, RB_IR_COMMAND_SEEK_BACKWARD) == 0) {
+			rb_shell_player_seek (plugin->shell_player, -10);
+		} else if (strcmp (str, RB_IR_COMMAND_VOLUME_UP) == 0) {
+			rb_shell_player_set_volume_relative (plugin->shell_player, 0.1, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_VOLUME_DOWN) == 0) {
+			rb_shell_player_set_volume_relative (plugin->shell_player, -0.1, NULL);
+		} else if (strcmp (str, RB_IR_COMMAND_MUTE) == 0) {
+			gboolean mute;
+			if (rb_shell_player_get_mute (plugin->shell_player, &mute, NULL)) {
+				rb_shell_player_set_mute (plugin->shell_player, !mute, NULL);
+			}
 		}
-	} else if (strcmp (str, RB_IR_COMMAND_REPEAT) == 0) {
-		gboolean shuffle;
-		gboolean repeat;
-		if (rb_shell_player_get_playback_state (plugin->shell_player, &shuffle, &repeat)) {
-			rb_shell_player_set_playback_state (plugin->shell_player, shuffle, !repeat);
-		}
-	} else if (strcmp (str, RB_IR_COMMAND_NEXT) == 0) {
-		rb_shell_player_do_next (plugin->shell_player, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_PREVIOUS) == 0) {
-		rb_shell_player_do_previous (plugin->shell_player, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_SEEK_FORWARD) == 0) {
-		rb_shell_player_seek (plugin->shell_player, 10);
-	} else if (strcmp (str, RB_IR_COMMAND_SEEK_BACKWARD) == 0) {
-		rb_shell_player_seek (plugin->shell_player, -10);
-	} else if (strcmp (str, RB_IR_COMMAND_VOLUME_UP) == 0) {
-		rb_shell_player_set_volume_relative (plugin->shell_player, 0.1, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_VOLUME_DOWN) == 0) {
-		rb_shell_player_set_volume_relative (plugin->shell_player, -0.1, NULL);
-	} else if (strcmp (str, RB_IR_COMMAND_MUTE) == 0) {
-		gboolean mute;
-		if (rb_shell_player_get_mute (plugin->shell_player, &mute, NULL)) {
-			rb_shell_player_set_mute (plugin->shell_player, !mute, NULL);
-		}
-	}
+		processed = TRUE;
+	} while (ok == 0);
 	g_free (code);
 
 	return TRUE;

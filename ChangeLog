@@ -1,5 +1,11 @@
 2006-09-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_read_code):
+	Fully process each code so the LIRC client returns to its normal state
+	when we're done.  Makes LIRC actually work properly for me.
+
+2006-09-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by: Ed Catmur  <ed@catmur.co.uk>
 
 	* widgets/libsexy/sexy-icon-entry.c: (sexy_icon_entry_map),
