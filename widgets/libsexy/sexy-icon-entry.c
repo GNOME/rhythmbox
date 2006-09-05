@@ -206,8 +206,10 @@ sexy_icon_entry_map(GtkWidget *widget)
 		GTK_WIDGET_CLASS(parent_class)->map(widget);
 
 		for (i = 0; i < MAX_ICONS; i++)
+		{
 			if (entry->priv->icons[i].icon != NULL)
 				gdk_window_show(entry->priv->icons[i].window);
+		}
 	}
 }
 
@@ -220,8 +222,10 @@ sexy_icon_entry_unmap(GtkWidget *widget)
 		int i;
 
 		for (i = 0; i < MAX_ICONS; i++)
+		{
 			if (entry->priv->icons[i].icon != NULL)
 				gdk_window_hide(entry->priv->icons[i].window);
+		}
 
 		GTK_WIDGET_CLASS(parent_class)->unmap(widget);
 	}
@@ -541,7 +545,7 @@ draw_icon(GtkWidget *widget, SexyIconEntryPosition icon_pos)
 	GdkPixbuf *pixbuf;
 	gint x, y, width, height;
 
-	if (icon_info->icon == NULL)
+	if (icon_info->icon == NULL || !GTK_WIDGET_REALIZED(widget))
 		return;
 
 	if ((pixbuf = get_pixbuf_from_icon(entry, icon_pos)) == NULL)
@@ -819,19 +823,24 @@ sexy_icon_entry_set_icon(SexyIconEntry *entry, SexyIconEntryPosition icon_pos,
 		{
 			gtk_widget_destroy(GTK_WIDGET(icon_info->icon));
 			icon_info->icon = NULL;
-			gdk_window_hide(icon_info->window);
+
+			/*
+			 * Explicitly check, as the pointer may become invalidated
+			 * during destruction.
+			 */
+			if (icon_info->window != NULL && GDK_IS_WINDOW(icon_info->window))
+				gdk_window_hide(icon_info->window);
 		}
 	}
 	else
 	{
-		if (icon_info->icon == NULL)
+		if (icon_info->window != NULL && icon_info->icon == NULL)
 			gdk_window_show(icon_info->window);
 
 		g_signal_connect(G_OBJECT(icon), "notify",
 						 G_CALLBACK(update_icon), entry);
 
 		icon_info->icon = icon;
-
 		g_object_ref(icon);
 	}
 
