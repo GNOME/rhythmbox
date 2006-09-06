@@ -829,18 +829,15 @@ rb_shell_clipboard_playlist_deleted_cb (RBStaticPlaylistSource *source,
 	char *action_name;
 	GtkAction *action;
 
+	/* first rebuild the menu */
+	rebuild_playlist_menu (clipboard);
+
+	/* then remove the 'add to playlist' action for the deleted playlist */
 	action_name = generate_action_name (source, clipboard);
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, action_name);
 	g_assert (action);
 	gtk_action_group_remove_action (clipboard->priv->actiongroup, action);
 	g_free (action_name);
-	g_object_unref (G_OBJECT (action));
-
-	/* this will update the menu */
-	if (clipboard->priv->idle_playlist_id == 0) {
-		clipboard->priv->idle_playlist_id =
-			g_idle_add ((GSourceFunc)rebuild_playlist_menu_idle, clipboard);
-	}
 }
 
 static void

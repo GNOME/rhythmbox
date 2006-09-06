@@ -1,3 +1,11 @@
+2006-09-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-clipboard.c:
+	(rb_shell_clipboard_playlist_deleted_cb):
+	Rebuild 'add to playlist' menu before removing actions for deleted
+	playlists, and don't unref the action, as we never had a reference on
+	it to begin with.  Fixes #354599.
+
 2006-09-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/libsexy/sexy-icon-entry.c: (sexy_icon_entry_map),
