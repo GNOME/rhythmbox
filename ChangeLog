@@ -1,3 +1,9 @@
+2006-09-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst.c: (error_cb):
+	Ignore 'internal data flow error' messages if we've already got an
+	error for the file.  Fixes #349569.
+
 2006-09-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-clipboard.c:

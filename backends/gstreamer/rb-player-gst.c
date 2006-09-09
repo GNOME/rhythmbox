@@ -80,6 +80,7 @@ struct _RBPlayerGstPrivate
 
 	gboolean can_signal_direct_error;
 	GError *error;
+	gboolean emitted_error;
 
 	gboolean playing;
 
@@ -301,6 +302,16 @@ error_cb (GstElement *element,
 		code = RB_PLAYER_ERROR_GENERAL;
 	}
 
+	/* If we've already got an error, ignore 'internal data flow error'
+	 * type messages, as they're too generic to be helpful.
+	 */
+	if (mp->priv->emitted_error &&
+	    error->domain == GST_STREAM_ERROR &&
+	    error->code == GST_STREAM_ERROR_FAILED) {
+		rb_debug ("Ignoring generic error \"%s\"", error->message);
+		return;
+	}
+
 	/* If we're in a synchronous op, we can signal the error directly */
 	if (mp->priv->can_signal_direct_error) {
 		if (mp->priv->error) {
@@ -309,6 +320,7 @@ error_cb (GstElement *element,
 				   error->message);
 			g_error_free (mp->priv->error);
 		}
+		mp->priv->emitted_error = TRUE;
 		mp->priv->error = g_error_copy (error);
 		return;
 	}
@@ -328,6 +340,7 @@ error_cb (GstElement *element,
 						   (GSourceFunc) emit_signal_idle,
 						   signal,
 						   destroy_idle_signal);
+	mp->priv->emitted_error = TRUE;
 }
 #endif
 
@@ -745,6 +758,7 @@ rb_player_gst_open (RBPlayer *player,
 	begin_gstreamer_operation (mp);
 	g_free (mp->priv->uri);
 	mp->priv->uri = g_strdup (uri);
+	mp->priv->emitted_error = FALSE;
 
 	if (!cdda_seek) {
 		g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);
