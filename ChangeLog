@@ -1,3 +1,9 @@
+2006-09-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_bus_cb):
+	Do something like the previous change, but for gstreamer 0.10
+	this time.  Oops.  Really fixes #349569.
+
 2006-09-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst.c: (error_cb):

@@ -446,8 +446,19 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		char *debug;
 		GError *error, *sig_error;
 		int code;
+		gboolean emit = TRUE;
 
 		gst_message_parse_error (message, &error, &debug);
+
+		/* If we've already got an error, ignore 'internal data flow error'
+		 * type messages, as they're too generic to be helpful.
+		 */
+		if (mp->priv->emitted_error &&
+		    error->domain == GST_STREAM_ERROR &&
+		    error->code == GST_STREAM_ERROR_FAILED) {
+			rb_debug ("Ignoring generic error \"%s\"", error->message);
+			emit = FALSE;
+		}
 
 		if ((error->domain == GST_CORE_ERROR)
 			|| (error->domain == GST_LIBRARY_ERROR)
@@ -457,10 +468,13 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 			code = RB_PLAYER_ERROR_GENERAL;
 		}
 
-		sig_error = g_error_new_literal (RB_PLAYER_ERROR,
-						 code,
-						 error->message);
-		_rb_player_emit_error (RB_PLAYER (mp), sig_error);
+		if (emit) {
+			sig_error = g_error_new_literal (RB_PLAYER_ERROR,
+							 code,
+							 error->message);
+			mp->priv->emitted_error = TRUE;
+			_rb_player_emit_error (RB_PLAYER (mp), sig_error);
+		}
 
 		/* close if not already closing */
 		if (mp->priv->uri != NULL)
