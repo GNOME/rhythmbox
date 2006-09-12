@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-01 13:28+0300\n"
+"POT-Creation-Date: 2006-09-12 12:37+0300\n"
 "PO-Revision-Date: 2006-09-01 10:10+0100\n"
 "Last-Translator: Dimitris Glezos <dimitris@glezos.com>\n"
 "Language-Team: Greek <fedora-trans-el@redhat.com>\n"
@@ -35,13 +35,13 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Θέλετε να αντικαταστήσετε το αρχείο \"%s\";"
 
-#: ../backends/gstreamer/rb-player-gst.c:563 ../metadata/rb-metadata-gst.c:887
+#: ../backends/gstreamer/rb-player-gst.c:590 ../metadata/rb-metadata-gst.c:887
 #: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:659
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Αποτυχία δημιουργίας στοιχείου %s, ελέγξτε την εγκατάσταση σας"
 
-#: ../backends/gstreamer/rb-player-gst.c:640
+#: ../backends/gstreamer/rb-player-gst.c:667
 msgid "Unknown playback error"
 msgstr "Άγνωστο σφάλμα αναπαραγωγής"
 
@@ -69,7 +69,7 @@ msgstr "Άγνωστο σφάλμα αναπαραγωγής"
 #: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1242
 #: ../rhythmdb/rhythmdb-tree.c:1092 ../rhythmdb/rhythmdb-tree.c:1096
 #: ../rhythmdb/rhythmdb-tree.c:1100 ../rhythmdb/rhythmdb-tree.c:1104
-#: ../shell/rb-shell-player.c:2821 ../sources/rb-audiocd-source.c:199
+#: ../shell/rb-shell-player.c:2821 ../sources/rb-audiocd-source.c:200
 #: ../sources/rb-ipod-source.c:230 ../sources/rb-iradio-source.c:483
 #: ../sources/rb-podcast-source.c:1620 ../widgets/rb-entry-view.c:776
 #: ../widgets/rb-entry-view.c:801 ../widgets/rb-entry-view.c:1084
@@ -292,7 +292,7 @@ msgstr ""
 "Προκειμένου να χρησιμοποιείτε αυτό το χαρακτηριστικό χρειάζεται να πείτε στο "
 "Rhythmbox που να βρεί τη μουσική σας.\n"
 "Μπορείτε να παρακάμψετε αυτό το βήμα , και να προσθέσετε \n"
-"αργότερα μουσική στην βιβλιοθήκη σας \n"
+"αργότερα μουσική στη βιβλιοθήκη σας \n"
 "Παρακαλώ επιλέξτε μια από τις παρακάτω επιλογές:"
 
 #: ../data/glade/druid.glade.h:5 ../data/glade/library-prefs.glade.h:5
@@ -703,7 +703,7 @@ msgstr "Music Player"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Παίξτε και οργανώστε την μουσική σας συλλογή"
+msgstr "Παίξτε και οργανώστε τη μουσική σας συλλογή"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
@@ -1046,15 +1046,15 @@ msgstr "Η υποβολή κομματιού απέτυχε πάρα πολλέ�
 msgid "Last.fm Profile Preferences"
 msgstr "Προτιμήσεις προφίλ Last fm"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:77
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:86
 msgid "_Create Audio CD..."
 msgstr "_Δημιουργία Audio-CD..."
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:78
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
 msgid "Create an audio CD from playlist"
 msgstr "Δημιουργία ενός CD ήχου από λίστα αναπαραγωγής"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:172
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:189
 msgid "Unable to create audio CD"
 msgstr "Δεν είναι δυνατή η δημιουργία CD μουσικής"
 
@@ -1311,45 +1311,45 @@ msgstr "Αποτυχία παρακολούθησης  %s: %s"
 msgid "All"
 msgstr "Όλα"
 
-#: ../shell/main.c:124
+#: ../shell/main.c:115
 msgid "Enable debug output"
 msgstr "Ενεργοποίηση κώδικα εκσφαλμάτωσης"
 
-#: ../shell/main.c:125
+#: ../shell/main.c:116
 msgid "Enable debug output matching a specified string"
 msgstr ""
 "Ενεργοποίηση ταιριάσματος αποτελέσματος debug σε καθορισμένο αλφαριθμητικό"
 
-#: ../shell/main.c:126
+#: ../shell/main.c:117
 msgid "Do not update the library with file changes"
 msgstr "Να μην ενημερωθεί η βιβλιοθήκη με τις αλλαγές αρχείων"
 
-#: ../shell/main.c:127
+#: ../shell/main.c:118
 msgid "Do not register the shell"
 msgstr "Να μην εγγραφεί το κέλυφος"
 
-#: ../shell/main.c:128
+#: ../shell/main.c:119
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Να μην γίνεται μόνιμη αποθήκευση δεδομένων (συνεπάγεται --καθόλου-εγγραφή)"
 
-#: ../shell/main.c:129
+#: ../shell/main.c:120
 msgid "Path for database file to use"
 msgstr "Διαδρομή αρχείου βάσης δεδομένων για χρήση"
 
-#: ../shell/main.c:130
+#: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Διαδρομή για αρχείο λίστας αναπαραγωγής για χρήση"
 
-#: ../shell/main.c:131
+#: ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "Έξοδος από το Rhythmbox"
 
-#: ../shell/main.c:132
+#: ../shell/main.c:123
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:167 ../shell/main.c:176 ../widgets/rb-druid.c:184
+#: ../shell/main.c:158 ../shell/main.c:167 ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -1416,7 +1416,7 @@ msgstr "Όλα τα κομμάτια στη _σειρά αναμονής"
 
 #: ../shell/rb-playlist-manager.c:154
 msgid "Add all tracks in this playlist to the queue"
-msgstr "Προσθήκη όλων των κομματιών σε αυτή τη λίστα αναπαραγωγής ως σειρά"
+msgstr "Προσθήκη όλων των κομματιών σε αυτήν τη λίστα αναπαραγωγής ως σειρά"
 
 #: ../shell/rb-playlist-manager.c:561
 msgid "The playlist file may be in an unknown format or corrupted."
@@ -1498,31 +1498,31 @@ msgstr "Τυχαία βάσει τελευταίας αναπαραγωγής κ
 msgid "Linear, removing entries once played"
 msgstr "Γραμμική αναπαραγωγή, με αφαίρεση καταχωρήσεων αφού παιχθούν"
 
-#: ../shell/rb-removable-media-manager.c:156
+#: ../shell/rb-removable-media-manager.c:136
 msgid "_Eject"
 msgstr "Ε_ξαγωγή"
 
-#: ../shell/rb-removable-media-manager.c:157
+#: ../shell/rb-removable-media-manager.c:137
 msgid "Eject this medium"
 msgstr "Εξαγωγή αυτού του μέσου"
 
-#: ../shell/rb-removable-media-manager.c:159
+#: ../shell/rb-removable-media-manager.c:139
 msgid "_Copy to library"
 msgstr "_Αντιγραφή στη βιβλιοθήκη"
 
-#: ../shell/rb-removable-media-manager.c:160
+#: ../shell/rb-removable-media-manager.c:140
 msgid "Copy all tracks to the library"
 msgstr "Αντιγραφή όλων των κομματιών στη βιβλιοθήκη"
 
-#: ../shell/rb-removable-media-manager.c:162
+#: ../shell/rb-removable-media-manager.c:142
 msgid "_Scan Removable Media"
 msgstr "_Ανίχνευση αφαιρέσιμων μέσων"
 
-#: ../shell/rb-removable-media-manager.c:163
+#: ../shell/rb-removable-media-manager.c:143
 msgid "Scan for new Removable Media"
 msgstr "Αναζήτηση για νέα Αφαιρέσιμα Μέσα"
 
-#: ../shell/rb-removable-media-manager.c:914
+#: ../shell/rb-removable-media-manager.c:663
 msgid "Error transferring track"
 msgstr "Σφάλμα στη μεταφορά κομματιού"
 
@@ -1556,7 +1556,7 @@ msgstr "_Εισαγωγή φακέλου..."
 
 #: ../shell/rb-shell.c:417
 msgid "Choose folder to be added to the Library"
-msgstr "Επιλογή φακέλου που θα προστεθεί στην βιβλιοθήκη"
+msgstr "Επιλογή φακέλου που θα προστεθεί στη βιβλιοθήκη"
 
 #: ../shell/rb-shell.c:419
 msgid "Import _File..."
@@ -1564,7 +1564,7 @@ msgstr "_Εισαγωγή _αρχείου..."
 
 #: ../shell/rb-shell.c:420
 msgid "Choose file to be added to the Library"
-msgstr "Επιλογή αρχείου που θα προστεθεί στην βιβλιοθήκη"
+msgstr "Επιλογή αρχείου που θα προστεθεί στη βιβλιοθήκη"
 
 #: ../shell/rb-shell.c:422
 msgid "_About"
@@ -1620,7 +1620,7 @@ msgstr "Εμφάνιση _όλων"
 
 #: ../shell/rb-shell.c:441
 msgid "Show all items in this music source"
-msgstr "Εμφάνιση όλων των αντικείμενων σε αυτή την πηγή ήχου"
+msgstr "Εμφάνιση όλων των αντικείμενων σε αυτήν την πηγή ήχου"
 
 #: ../shell/rb-shell.c:443
 msgid "_Jump to Playing Song"
@@ -2077,29 +2077,29 @@ msgstr "Εμφάνιση Ειδ_οποιήσεων"
 msgid "Show notifications of song changes and other events"
 msgstr "Εμφάνιση ειδοποιήσεων αλλαγής κομματιού και άλλων γεγονότων"
 
-#: ../sources/rb-audiocd-source.c:203
+#: ../sources/rb-audiocd-source.c:204
 msgid "<Invalid unicode>"
 msgstr "<Μη έγκυρο unicode>"
 
-#: ../sources/rb-audiocd-source.c:248
+#: ../sources/rb-audiocd-source.c:249
 #, c-format
 msgid "Track %u"
 msgstr "Κομμάτι %u"
 
-#: ../sources/rb-audiocd-source.c:334 ../sources/rb-audiocd-source.c:344
-#: ../sources/rb-audiocd-source.c:351 ../sources/rb-audiocd-source.c:546
+#: ../sources/rb-audiocd-source.c:335 ../sources/rb-audiocd-source.c:345
+#: ../sources/rb-audiocd-source.c:352 ../sources/rb-audiocd-source.c:547
 msgid "Couldn't load Audio CD"
 msgstr "Δεν ήταν δυνατή η φόρτωση του CD ήχου"
 
-#: ../sources/rb-audiocd-source.c:335 ../sources/rb-audiocd-source.c:345
+#: ../sources/rb-audiocd-source.c:336 ../sources/rb-audiocd-source.c:346
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Το Rhythmbox δεν μπόρεσε να αποκτήσει πρόσβαση στο CD."
 
-#: ../sources/rb-audiocd-source.c:352
+#: ../sources/rb-audiocd-source.c:353
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Το Rhythmbox δεν μπόρεσε να διαβάσει τις πληροφορίες του CD."
 
-#: ../sources/rb-audiocd-source.c:547
+#: ../sources/rb-audiocd-source.c:548
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Το Rhythmbox δεν μπόρεσε να αποκτήσει πρόσβαση στη συσκευή CD."
 
@@ -2153,7 +2153,7 @@ msgstr "Περιήγηση αυτού του _καλλιτέχνη"
 
 #: ../sources/rb-browser-source.c:145
 msgid "Set the browser to view only this artist"
-msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό τον καλλιτέχνη"
+msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτόν τον καλλιτέχνη"
 
 #: ../sources/rb-browser-source.c:147
 msgid "Browse This A_lbum"
@@ -2454,7 +2454,7 @@ msgstr "Σφάλμα εγγραφής"
 
 #: ../sources/rb-playlist-source-recorder.c:907
 msgid "Do you wish to interrupt writing this disc?"
-msgstr "Θέλετε να διακόψετε την εγγραφή στον δίσκο;"
+msgstr "Θέλετε να διακόψετε την εγγραφή στο δίσκο;"
 
 #: ../sources/rb-playlist-source-recorder.c:910
 msgid "This may result in an unusable disc."
@@ -2474,7 +2474,7 @@ msgstr "Αδυναμία δημιουργίας κενού CD"
 
 #: ../sources/rb-playlist-source-recorder.c:962
 msgid "Please make sure another application is not using the drive."
-msgstr "Παρακαλώ βεβαιωθείτε ότι δεν χρησιμοποιεί τον δίσκο άλλη εφαρμογή."
+msgstr "Παρακαλώ βεβαιωθείτε ότι δεν χρησιμοποιεί το δίσκο άλλη εφαρμογή."
 
 #: ../sources/rb-playlist-source-recorder.c:963
 msgid "Drive is busy"
@@ -2616,7 +2616,7 @@ msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
 "required."
 msgstr ""
-"Αδυναμία εύρεσης αρκετού ελεύθερου προσωρινού χώρου για την μετατροπή "
+"Αδυναμία εύρεσης αρκετού ελεύθερου προσωρινού χώρου για τη μετατροπή "
 "ηχητικών κομματιών. Χρειάζονται %s MiB."
 
 #: ../sources/rb-play-queue-source.c:89
@@ -2898,7 +2898,7 @@ msgstr ""
 
 #: ../widgets/rb-druid.c:286
 msgid "Load folder into Library"
-msgstr "Φόρτωση φακέλου στην βιβλιοθήκη"
+msgstr "Φόρτωση φακέλου στη βιβλιοθήκη"
 
 #: ../widgets/rb-entry-view.c:797
 #, c-format
