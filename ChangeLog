@@ -1,3 +1,13 @@
+2006-09-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init),
+	(rhythmdb_start_action_thread), (rhythmdb_finalize),
+	(rhythmdb_thread_create), (rhythmdb_add_uri_with_type),
+	(rhythmdb_load), (rhythmdb_save_async):
+	Use a limited thread pool for adding URIs to the database.
+	Fixes #352494.
+
 2006-09-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_bus_cb):

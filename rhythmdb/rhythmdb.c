@@ -90,7 +90,10 @@ static void rhythmdb_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
-static void rhythmdb_thread_create (RhythmDB *db, GThreadFunc func, gpointer data);
+static void rhythmdb_thread_create (RhythmDB *db,
+				    GThreadPool *pool,
+				    GThreadFunc func,
+				    gpointer data);
 static void rhythmdb_read_enter (RhythmDB *db);
 static void rhythmdb_read_leave (RhythmDB *db);
 static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
@@ -357,6 +360,12 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc)query_thread_main,
 							 NULL,
 							 -1, FALSE, NULL);
+	/* Limit this pool to 3 threads.  They'll each be thrashing the disk,
+	 * so parallelism is limited.
+	 */
+	db->priv->add_thread_pool = g_thread_pool_new ((GFunc)add_thread_main,
+						       NULL,
+						       3, FALSE, NULL);
 
 	db->priv->metadata = rb_metadata_new ();
 
@@ -476,7 +485,7 @@ rhythmdb_start_action_thread (RhythmDB *db)
 {
 	g_mutex_lock (db->priv->stat_mutex);
 	db->priv->action_thread_running = TRUE;
-	rhythmdb_thread_create (db, (GThreadFunc) action_thread_main, db);
+	rhythmdb_thread_create (db, NULL, (GThreadFunc) action_thread_main, db);
 
 	if (db->priv->stat_list != NULL) {
 		gnome_vfs_async_get_file_info (&db->priv->stat_handle, db->priv->stat_list,
@@ -618,6 +627,7 @@ rhythmdb_finalize (GObject *object)
 	}
 
 	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
+	g_thread_pool_free (db->priv->add_thread_pool, FALSE, TRUE);
 	g_async_queue_unref (db->priv->action_queue);
 	g_async_queue_unref (db->priv->event_queue);
 	g_async_queue_unref (db->priv->restored_queue);
@@ -705,6 +715,7 @@ rhythmdb_get_property (GObject *object,
 
 static void
 rhythmdb_thread_create (RhythmDB *db,
+			GThreadPool *pool,
 			GThreadFunc func,
 			gpointer data)
 {
@@ -712,7 +723,11 @@ rhythmdb_thread_create (RhythmDB *db,
 	g_atomic_int_inc (&db->priv->outstanding_threads);
 	g_async_queue_ref (db->priv->action_queue);
 	g_async_queue_ref (db->priv->event_queue);
-	g_thread_create ((GThreadFunc) func, data, FALSE, NULL);
+
+	if (pool)
+		g_thread_pool_push (pool, data, NULL);
+	else
+		g_thread_create ((GThreadFunc) func, data, FALSE, NULL);
 }
 
 static gboolean
@@ -2297,7 +2312,7 @@ rhythmdb_add_uri_with_type (RhythmDB *db,
 		data->uri = g_strdup (realuri);
 		data->type = type;
 
-		rhythmdb_thread_create (db, (GThreadFunc) add_thread_main, data);
+		rhythmdb_thread_create (db, db->priv->add_thread_pool, NULL, data);
 	} else {
 		queue_stat_uri (realuri, db, type);
 	}
@@ -2350,7 +2365,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 void
 rhythmdb_load (RhythmDB *db)
 {
-	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_load_thread_main, db);
+	rhythmdb_thread_create (db, NULL, (GThreadFunc) rhythmdb_load_thread_main, db);
 }
 
 static gpointer
@@ -2412,7 +2427,7 @@ rhythmdb_save_async (RhythmDB *db)
 
 	rhythmdb_read_enter (db);
 
-	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_save_thread_main, db);
+	rhythmdb_thread_create (db, NULL, (GThreadFunc) rhythmdb_save_thread_main, db);
 }
 
 /**

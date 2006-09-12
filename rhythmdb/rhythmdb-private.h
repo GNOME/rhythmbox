@@ -131,6 +131,7 @@ struct RhythmDBPrivate
 	GAsyncQueue *event_queue;
 	GAsyncQueue *restored_queue;
 	GThreadPool *query_thread_pool;
+	GThreadPool *add_thread_pool;
 
 	GList *stat_list;
 	GHashTable *stat_events;
