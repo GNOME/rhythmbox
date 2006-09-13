@@ -413,7 +413,7 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "Tools", NULL, N_("_Tools") },
 	{ "Help", NULL, N_("_Help") },
 
-	{ "MusicImportFolder", GTK_STOCK_DIRECTORY, N_("_Import Folder..."), "<control>O",
+	{ "MusicImportFolder", GTK_STOCK_OPEN, N_("_Import Folder..."), "<control>O",
 	  N_("Choose folder to be added to the Library"),
 	  G_CALLBACK (rb_shell_cmd_add_folder_to_library) },
 	{ "MusicImportFile", GTK_STOCK_FILE, N_("Import _File..."), NULL,

@@ -1,5 +1,12 @@
 2006-09-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c:
+	Use GTK_STOCK_OPEN instead of GTK_STOCK_DIRECTORY for the
+	'Music->Import Folder' menu item for better icon theme coverage.
+	Fixes #354575.
+
+2006-09-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb-private.h:
 	* rhythmdb/rhythmdb.c: (rhythmdb_init),
 	(rhythmdb_start_action_thread), (rhythmdb_finalize),
