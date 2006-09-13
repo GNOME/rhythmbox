@@ -616,6 +616,9 @@ rb_sourcelist_remove (RBSourceList *sourcelist,
 		rb_sourcelist_update_expander_visibility (sourcelist);
 	}
 
+	if (source == sourcelist->priv->playing_source)
+		rb_sourcelist_set_playing_source (sourcelist, NULL);
+
 	gtk_tree_store_remove (GTK_TREE_STORE (sourcelist->priv->real_model), &iter);
 	g_signal_handlers_disconnect_by_func (G_OBJECT (source),
 					      G_CALLBACK (name_notify_cb), sourcelist);

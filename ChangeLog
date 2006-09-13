@@ -1,3 +1,13 @@
+2006-09-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-ipod-source.c: (add_rb_playlist),
+	(impl_move_to_trash), (impl_delete_thyself):
+	Delete ipod playlists when the ipod source is deleted.  Fixes #355235.
+
+	* sources/rb-sourcelist.c: (rb_sourcelist_remove):
+	Make sure we don't leave the sourcelist thinking a deleted source is
+	still playing.  Fixes nothing.
+
 2006-09-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell.c:

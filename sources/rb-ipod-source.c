@@ -83,6 +83,8 @@ typedef struct
 	Itdb_iTunesDB *ipod_db;
 	gchar *ipod_mount_path;
 	GHashTable *entry_map;
+
+	GList *playlists;
 } RBiPodSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
@@ -282,6 +284,8 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 							filename, -1);
 		g_free (filename);
 	}
+
+	priv->playlists = g_list_prepend (priv->playlists, playlist_source);
 
 	rb_shell_append_source (shell, playlist_source, RB_SOURCE (source));
 	g_object_unref (shell);
@@ -847,7 +851,7 @@ impl_move_to_trash (RBSource *asource)
 
  		remove_track_from_db (track);
 		g_hash_table_remove (priv->entry_map, entry);
-		rhythmdb_entry_move_to_trash (db, entry);
+		/*rhythmdb_entry_move_to_trash (db, entry);*/	/* hmm. */
 		rhythmdb_commit (db);
 	}
 
@@ -1279,6 +1283,14 @@ static void
 impl_delete_thyself (RBSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	GList *p;
+
+	for (p = priv->playlists; p != NULL; p = p->next) {
+		RBSource *playlist = RB_SOURCE (p->data);
+		rb_source_delete_thyself (playlist);
+	}
+	g_list_free (priv->playlists);
+	priv->playlists = NULL;
 
 	itdb_free (priv->ipod_db);
 	priv->ipod_db = NULL;
