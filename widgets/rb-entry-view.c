@@ -853,6 +853,7 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 	gint direction;
 	char *column_name;
 
+	direction = GTK_SORT_ASCENDING;
 	column_name = NULL;
 	rb_entry_view_get_sorting_order (view, &column_name, &direction);
 
