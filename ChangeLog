@@ -1,3 +1,15 @@
+2006-09-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-property-model.c: (_remove_entry_cb),
+	(rhythmdb_property_model_set_query_model_internal),
+	(rhythmdb_property_model_row_inserted_cb),
+	(rhythmdb_property_model_prop_changed_cb),
+	(rhythmdb_property_model_entry_removed_cb),
+	(rhythmdb_property_model_delete),
+	(rhythmdb_property_model_perform_sync):
+	Use the hash table to track hidden entries, rather than visible
+	entries.  Cuts memory usage fairly significantly.  From bug #347425.
+
 2006-09-14  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_sync_sorting):
