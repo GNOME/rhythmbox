@@ -380,6 +380,7 @@ static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
 	GdkPixbuf *pixbuf;
+	GdkPixbuf *scaled = NULL;
 	gint       size;
 
 	source->priv = RB_PODCAST_SOURCE_GET_PRIVATE (source);
@@ -390,16 +391,28 @@ rb_podcast_source_init (RBPodcastSource *source)
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 
-	/* FIXME: we use size LARGE_TOOLBAR for everything else but it doesn't look right */
-	gtk_icon_size_lookup (GTK_ICON_SIZE_SMALL_TOOLBAR, &size, NULL);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					   RB_STOCK_PODCAST,
 					   size,
 					   0, NULL);
 
-	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
+	if (pixbuf != NULL) {
+		/* we only have this icon as a 48x48 bitmap, so it helps to
+		 * scale it to the right size.  otherwise the sourcelist gets
+		 * a bit uneven.
+		 */
+		gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+		scaled = gdk_pixbuf_scale_simple (pixbuf, size, size, GDK_INTERP_BILINEAR);
+
+		rb_source_set_pixbuf (RB_SOURCE (source), scaled);
+	}
+
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
+	}
+	if (scaled != NULL) {
+		g_object_unref (scaled);
 	}
 }
 
