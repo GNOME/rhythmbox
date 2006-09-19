@@ -211,13 +211,14 @@ _rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  
 	result = PyEval_CallObject (data->func, args);
 	Py_DECREF (py_entry);
 	Py_DECREF (args);
-	Py_DECREF (result);
+	if (result != NULL)
+		Py_DECREF (result);
 }
 
 static PyObject*
 _wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
-	static char *kwlist[] = {"func", NULL};
+	static char *kwlist[] = {"func", "data", NULL};
 	PyRhythmDBEntryForeachData data;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O:RhythmDB.entry_foreach",
