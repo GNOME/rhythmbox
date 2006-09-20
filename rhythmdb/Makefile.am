@@ -11,6 +11,7 @@ INCLUDES = 						\
 	-DG_LOG_DOMAIN=\"RhythmDB\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
+	-I$(top_srcdir)/widgets				\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_builddir)/lib                           \
 	$(GDA_CFLAGS)					\

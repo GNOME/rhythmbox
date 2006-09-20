@@ -169,6 +169,7 @@ struct RhythmDBPrivate
 	GList *added_entries_to_emit;
 	GList *deleted_entries_to_emit;
 
+	gboolean can_save;
 	gboolean saving;
 	gboolean dirty;
 

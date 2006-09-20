@@ -42,6 +42,15 @@ enum {
 	RHYTHMDB_ENTRY_TREE_LOADING = RHYTHMDB_ENTRY_PRIVATE_FLAG_BASE,
 };
 
+typedef enum
+{
+	RHYTHMDB_TREE_ERROR_DATABASE_TOO_NEW,
+} RhythmTreeDBError;
+
+#define RHYTHMDB_TREE_ERROR (rhythmdb_tree_error_quark ())
+
+GQuark rhythmdb_tree_error_quark (void);
+
 typedef struct
 {
 	RhythmDB parent;

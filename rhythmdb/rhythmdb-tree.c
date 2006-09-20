@@ -63,7 +63,7 @@ G_DEFINE_TYPE(RhythmDBTree, rhythmdb_tree, RHYTHMDB_TYPE)
 
 static void rhythmdb_tree_finalize (GObject *object);
 
-static void rhythmdb_tree_load (RhythmDB *rdb, gboolean *die);
+static gboolean rhythmdb_tree_load (RhythmDB *rdb, gboolean *die, GError **error);
 static void rhythmdb_tree_save (RhythmDB *rdb);
 static void rhythmdb_tree_entry_new (RhythmDB *db, RhythmDBEntry *entry);
 static void rhythmdb_tree_entry_new_internal (RhythmDB *db, RhythmDBEntry *entry);
@@ -148,6 +148,16 @@ enum
 };
 
 const int RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE = 512;
+
+GQuark
+rhythmdb_tree_error_quark (void)
+{
+	static GQuark quark;
+	if (!quark)
+		quark = g_quark_from_static_string ("rhythmdb_tree_error");
+
+	return quark;
+}
 
 static void
 rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
@@ -270,6 +280,7 @@ struct RhythmDBTreeLoadContext
 	GString *buf;
 	RhythmDBPropType propid;
 	gint batch_count;
+	GError **error;
 
 	/* updating */
 	gboolean has_date;
@@ -312,8 +323,12 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 					} else if (!strcmp (version, "1.3")) {
 						/* current version*/
 					} else {
-						/* too new. FIXME quit gracefully with error */
-						g_assert_not_reached ();
+						g_set_error (ctx->error,
+							     RHYTHMDB_TREE_ERROR,
+							     RHYTHMDB_TREE_ERROR_DATABASE_TOO_NEW,
+							     _("The database was created by a later version of rhythmbox."
+							       "  This version of rhythmbox cannot read the database."));
+						xmlStopParser (ctx->xmlctx);
 					}
 				} else {
 					g_assert_not_reached ();
@@ -570,9 +585,10 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx,
 	}
 }
 
-static void
+static gboolean
 rhythmdb_tree_load (RhythmDB *rdb,
-		    gboolean *die)
+		    gboolean *die,
+		    GError **error)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
 	xmlParserCtxtPtr ctxt;
@@ -591,6 +607,7 @@ rhythmdb_tree_load (RhythmDB *rdb,
 	ctx->db = db;
 	ctx->die = die;
 	ctx->buf = g_string_sized_new (RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE);
+	ctx->error = error;
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
@@ -606,13 +623,14 @@ rhythmdb_tree_load (RhythmDB *rdb,
 
 		if (ctx->batch_count)
 			rhythmdb_commit (RHYTHMDB (ctx->db));
-
 	}
 
 	g_string_free (ctx->buf, TRUE);
 	g_free (name);
 	g_free (sax_handler);
 	g_free (ctx);
+
+	return ((*ctx->error) == NULL);
 }
 
 struct RhythmDBTreeSaveContext

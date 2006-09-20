@@ -1,3 +1,16 @@
+2006-09-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/Makefile.am:
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_error_quark),
+	(rhythmdb_tree_parser_start_element), (rhythmdb_tree_load):
+	* rhythmdb/rhythmdb-tree.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_load_error_cb),
+	(rhythmdb_load_thread_main), (rhythmdb_save_thread_main):
+	* rhythmdb/rhythmdb.h:
+	Rather than aborting, show an error and refuse to load the database when
+	it appears to come from the future.  From bug #350304.
+
 2006-09-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* bindings/python/rhythmdb.override:

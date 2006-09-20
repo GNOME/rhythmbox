@@ -262,7 +262,7 @@ typedef struct
 
 	/* virtual methods */
 
-	void		(*impl_load)		(RhythmDB *db, gboolean *dead);
+	gboolean	(*impl_load)		(RhythmDB *db, gboolean *dead, GError **error);
 	void		(*impl_save)		(RhythmDB *db);
 
 	void		(*impl_entry_new)	(RhythmDB *db, RhythmDBEntry *entry);

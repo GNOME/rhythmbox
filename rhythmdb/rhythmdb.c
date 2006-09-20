@@ -45,6 +45,7 @@
 #include "eel-gconf-extensions.h"
 #include "rhythmdb-private.h"
 #include "rhythmdb-property-model.h"
+#include "rb-dialog.h"
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
@@ -424,6 +425,7 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->saving_condition = g_cond_new ();
 	db->priv->saving_mutex = g_mutex_new ();
 
+	db->priv->can_save = TRUE;
 	db->priv->exiting = FALSE;
 	db->priv->saving = FALSE;
 	db->priv->dirty = FALSE;
@@ -2328,15 +2330,36 @@ rhythmdb_sync_library_idle (RhythmDB *db)
 	return FALSE;
 }
 
+static gboolean
+rhythmdb_load_error_cb (GError *error)
+{
+	GDK_THREADS_ENTER ();
+	rb_error_dialog (NULL,
+			 _("Could not load the music database"),
+			 error->message);
+	g_error_free (error);
+
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
+
 static gpointer
 rhythmdb_load_thread_main (RhythmDB *db)
 {
 	RhythmDBEvent *result;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	GError *error = NULL;
 
 	rb_profile_start ("loading db");
 	g_mutex_lock (db->priv->saving_mutex);
-	klass->impl_load (db, &db->priv->exiting);
+	if (klass->impl_load (db, &db->priv->exiting, &error) == FALSE) {
+		rb_debug ("db load failed: disabling saving");
+		db->priv->can_save = FALSE;
+
+		if (error) {
+			g_idle_add ((GSourceFunc) rhythmdb_load_error_cb, error);
+		}
+	}
 	g_mutex_unlock (db->priv->saving_mutex);
 
 	g_object_ref (db);
@@ -2378,7 +2401,7 @@ rhythmdb_save_thread_main (RhythmDB *db)
 
 	g_mutex_lock (db->priv->saving_mutex);
 
-	if (!db->priv->dirty) {
+	if (!db->priv->dirty && !db->priv->can_save) {
 		rb_debug ("no save needed, ignoring");
 		g_mutex_unlock (db->priv->saving_mutex);
 		goto out;
