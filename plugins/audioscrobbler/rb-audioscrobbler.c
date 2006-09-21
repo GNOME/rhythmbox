@@ -117,7 +117,7 @@ struct _RBAudioscrobblerPrivate
 	time_t submit_interval;
 
 	/* Whether this song should be queued once enough of it has been played;
-	 * will be set to false when queued, or if the song shouldn't be submitted 
+	 * will be set to false when queued, or if the song shouldn't be submitted
 	 */
 	gboolean should_queue;
 	/* Only write the queue to a file if it has been changed */
@@ -270,11 +270,11 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	rb_audioscrobbler_import_settings (audioscrobbler);
 
 	/* gconf notifications: */
-	audioscrobbler->priv->notification_username_id = 
+	audioscrobbler->priv->notification_username_id =
 		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_USERNAME,
 				    (GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
 				    audioscrobbler);
-	audioscrobbler->priv->notification_password_id = 
+	audioscrobbler->priv->notification_password_id =
 		eel_gconf_notification_add (CONF_AUDIOSCROBBLER_PASSWORD,
 				    (GConfClientNotifyFunc) rb_audioscrobbler_gconf_changed_cb,
 				    audioscrobbler);
@@ -444,7 +444,7 @@ rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler)
 
 			/* Mark current track as having been queued. */
 			audioscrobbler->priv->should_queue = FALSE;
-			
+
 			rb_audioscrobbler_preferences_sync (audioscrobbler);
 		} else if (elapsed_delta > 20) {
 			rb_debug ("Skipping detected; not submitting current song");
@@ -507,10 +507,10 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && (msg->response).body != NULL) {
 		gchar *body;
 		gchar **breaks;
-		
+
 		body = g_malloc0 ((msg->response).length + 1);
 		memcpy (body, (msg->response).body, (msg->response).length);
-		
+
 		g_strstrip (body);
 		breaks = g_strsplit (body, "\n", 4);
 		int i;
@@ -604,17 +604,17 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 
 	if (post_data != NULL) {
 		rb_debug ("Submitting to Audioscrobbler: %s", post_data);
-		soup_message_set_request (msg, 
+		soup_message_set_request (msg,
 					  "application/x-www-form-urlencoded",
-					  SOUP_BUFFER_SYSTEM_OWNED, 
-					  post_data, 
+					  SOUP_BUFFER_SYSTEM_OWNED,
+					  post_data,
 					  strlen (post_data));
 	}
 
 	/* create soup session, if we haven't got one yet */
 	if (!audioscrobbler->priv->soup_session) {
 		SoupUri *uri;
-		
+
 		uri = rb_proxy_config_get_libsoup_uri (audioscrobbler->priv->proxy_config);
 		audioscrobbler->priv->soup_session = soup_session_async_new_with_options (
 					"proxy-uri", uri,
@@ -622,7 +622,7 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 		if (uri)
 			soup_uri_free (uri);
 	}
-	
+
 	soup_session_queue_message (audioscrobbler->priv->soup_session,
 				    msg,
 				    response_handler,
@@ -680,14 +680,14 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 
 
 static void
-rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data) 
+rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data)
 {
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER(user_data);
 
 	rb_debug ("Handshake response");
 	rb_audioscrobbler_parse_response (audioscrobbler, msg);
 	rb_audioscrobbler_preferences_sync (audioscrobbler);
-	
+
 	switch (audioscrobbler->priv->status) {
 	case STATUS_OK:
 	case CLIENT_UPDATE_REQUIRED:
@@ -786,13 +786,13 @@ rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
 }
 
 static void
-rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data) 
+rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 {
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (user_data);
 
 	rb_debug ("Submission response");
 	rb_audioscrobbler_parse_response (audioscrobbler, msg);
-	
+
 	if (audioscrobbler->priv->status == STATUS_OK) {
 		rb_debug ("Queue submitted successfully");
 		rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);
@@ -807,7 +807,7 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 		++audioscrobbler->priv->failures;
 
 		/* add failed submission entries back to queue */
-		audioscrobbler->priv->queue = 
+		audioscrobbler->priv->queue =
 			g_slist_concat (audioscrobbler->priv->submission, audioscrobbler->priv->queue);
 		audioscrobbler->priv->submission = NULL;
 		rb_audioscrobbler_save_queue (audioscrobbler);
@@ -815,7 +815,7 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 		rb_audioscrobbler_print_queue (audioscrobbler, FALSE);
 
 		if (audioscrobbler->priv->failures >= 3) {
-			rb_debug ("Queue submission has failed %d times; caching tracks locally", 
+			rb_debug ("Queue submission has failed %d times; caching tracks locally",
 				  audioscrobbler->priv->failures);
 			g_free (audioscrobbler->priv->status_msg);
 
@@ -826,7 +826,7 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 			rb_debug ("Queue submission failed %d times", audioscrobbler->priv->failures);
 		}
 	}
-	
+
 	rb_audioscrobbler_preferences_sync (audioscrobbler);
 }
 
@@ -905,7 +905,7 @@ rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler)
 	gtk_label_set_text (GTK_LABEL (audioscrobbler->priv->status_label),
 			    status);
 	g_free (free_this);
-	
+
 	free_this = g_strdup_printf ("%u", audioscrobbler->priv->submit_count);
 	gtk_label_set_text (GTK_LABEL (audioscrobbler->priv->submit_count_label), free_this);
 	g_free (free_this);
@@ -914,7 +914,7 @@ rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler)
 	gtk_label_set_text (GTK_LABEL (audioscrobbler->priv->queue_count_label), free_this);
 	g_free (free_this);
 
-	gtk_label_set_text (GTK_LABEL (audioscrobbler->priv->submit_time_label), 
+	gtk_label_set_text (GTK_LABEL (audioscrobbler->priv->submit_time_label),
 			    audioscrobbler->priv->submit_time);
 }
 
@@ -985,7 +985,7 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 	} else if (strcmp (entry->key, CONF_AUDIOSCROBBLER_PASSWORD) == 0) {
 		g_free (audioscrobbler->priv->password);
 		audioscrobbler->priv->password = g_strdup (gconf_value_get_string (entry->value));
-	
+
 		if (audioscrobbler->priv->password_entry)
 			gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->password_entry),
 					    gconf_value_get_string (entry->value));
@@ -1164,7 +1164,7 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 
 	result = gnome_vfs_read_entire_file (uri, &size, &data);
 	g_free (uri);
-	
+
 	/* do stuff */
 	if (result == GNOME_VFS_OK) {
 		char *start = data, *end;
@@ -1219,9 +1219,9 @@ rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 		GString *s = g_string_new (NULL);
 		GSList *l;
 
-		for (l = audioscrobbler->priv->queue; l; l = g_slist_next (l)) { 
+		for (l = audioscrobbler->priv->queue; l; l = g_slist_next (l)) {
 			AudioscrobblerEntry *entry;
-		
+
 			entry = (AudioscrobblerEntry *) l->data;
 			g_string_printf (s, "a=%s&t=%s&b=%s&m=%s&l=%d&i=%s\n",
 					    entry->artist,
