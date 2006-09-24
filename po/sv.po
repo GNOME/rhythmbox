@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-08-30 16:34+0200\n"
-"PO-Revision-Date: 2006-08-30 21:55+0100\n"
+"POT-Creation-Date: 2006-09-24 14:07+0200\n"
+"PO-Revision-Date: 2006-09-24 16:43+0100\n"
 "Last-Translator: Fredrik Tuomas <fredrik@jpl.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Vill du skriva över filen \"%s\"?"
 
-#: ../backends/gstreamer/rb-player-gst.c:563
+#: ../backends/gstreamer/rb-player-gst.c:590
 #: ../metadata/rb-metadata-gst.c:887
 #: ../metadata/rb-metadata-gst.c:1447
 #: ../player/rb-recorder-gst.c:659
@@ -32,7 +32,7 @@ msgstr "Vill du skriva över filen \"%s\"?"
 msgid "Failed to create %s element; check your installation"
 msgstr "Misslyckades med att skapa %s-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst.c:640
+#: ../backends/gstreamer/rb-player-gst.c:667
 msgid "Unknown playback error"
 msgstr "Okänt uppspelningsfel"
 
@@ -59,21 +59,21 @@ msgstr "Okänt uppspelningsfel"
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
 #: ../podcast/rb-podcast-properties-dialog.c:502
-#: ../rhythmdb/rhythmdb.c:1242
-#: ../rhythmdb/rhythmdb-tree.c:1092
-#: ../rhythmdb/rhythmdb-tree.c:1096
-#: ../rhythmdb/rhythmdb-tree.c:1100
-#: ../rhythmdb/rhythmdb-tree.c:1104
+#: ../rhythmdb/rhythmdb.c:1259
+#: ../rhythmdb/rhythmdb-tree.c:1110
+#: ../rhythmdb/rhythmdb-tree.c:1114
+#: ../rhythmdb/rhythmdb-tree.c:1118
+#: ../rhythmdb/rhythmdb-tree.c:1122
 #: ../shell/rb-shell-player.c:2821
-#: ../sources/rb-audiocd-source.c:199
-#: ../sources/rb-ipod-source.c:230
+#: ../sources/rb-audiocd-source.c:200
+#: ../sources/rb-ipod-source.c:232
 #: ../sources/rb-iradio-source.c:483
-#: ../sources/rb-podcast-source.c:1620
+#: ../sources/rb-podcast-source.c:1633
 #: ../widgets/rb-entry-view.c:776
 #: ../widgets/rb-entry-view.c:801
-#: ../widgets/rb-entry-view.c:1084
-#: ../widgets/rb-entry-view.c:1096
-#: ../widgets/rb-entry-view.c:1108
+#: ../widgets/rb-entry-view.c:1085
+#: ../widgets/rb-entry-view.c:1097
+#: ../widgets/rb-entry-view.c:1109
 #: ../widgets/rb-song-info.c:732
 #: ../widgets/rb-song-info.c:896
 #: ../widgets/rb-song-info.c:1166
@@ -189,10 +189,10 @@ msgstr "Last.fm-profil"
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
 #: ../iradio/rb-station-properties-dialog.c:438
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:846
-#: ../rhythmdb/rhythmdb.c:2768
+#: ../rhythmdb/rhythmdb.c:2806
 #: ../widgets/rb-entry-view.c:724
-#: ../widgets/rb-entry-view.c:1142
-#: ../widgets/rb-entry-view.c:1155
+#: ../widgets/rb-entry-view.c:1143
+#: ../widgets/rb-entry-view.c:1156
 #: ../widgets/rb-song-info.c:1139
 msgid "Never"
 msgstr "Aldrig"
@@ -363,7 +363,7 @@ msgid "_Artists and albums"
 msgstr "_Artister och album"
 
 #: ../data/glade/general-prefs.glade.h:17
-#: ../widgets/rb-entry-view.c:1070
+#: ../widgets/rb-entry-view.c:1071
 msgid "_Genre"
 msgstr "_Genre"
 
@@ -380,17 +380,17 @@ msgid "_Play count"
 msgstr "Antal s_pelningar"
 
 #: ../data/glade/general-prefs.glade.h:21
-#: ../widgets/rb-entry-view.c:1104
+#: ../widgets/rb-entry-view.c:1105
 msgid "_Quality"
 msgstr "_Kvalitet"
 
 #: ../data/glade/general-prefs.glade.h:22
-#: ../widgets/rb-entry-view.c:1117
+#: ../widgets/rb-entry-view.c:1118
 msgid "_Rating"
 msgstr "_Betyg"
 
 #: ../data/glade/general-prefs.glade.h:23
-#: ../widgets/rb-entry-view.c:1092
+#: ../widgets/rb-entry-view.c:1093
 msgid "_Year"
 msgstr "Å_r"
 
@@ -1042,15 +1042,15 @@ msgstr "Inrapportering av spår misslyckades för många gånger"
 msgid "Last.fm Profile Preferences"
 msgstr "Last.fm-profil inställningar"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:77
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:86
 msgid "_Create Audio CD..."
 msgstr "S_kapa ljud-cd..."
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:78
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
 msgid "Create an audio CD from playlist"
 msgstr "Skapa en ljud-cd från spellista"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:172
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:189
 msgid "Unable to create audio CD"
 msgstr "Kan inte skapa ljud-cd"
 
@@ -1222,47 +1222,51 @@ msgstr "URL:en  \"%s\" verkar inte vara en poddradiokanal. Det kan vara fel URL 
 msgid "Not Downloaded"
 msgstr "Ej hämtad"
 
-#: ../rhythmdb/rhythmdb.c:459
-#: ../rhythmdb/rhythmdb.c:1946
-#: ../rhythmdb/rhythmdb.c:2071
+#: ../rhythmdb/rhythmdb.c:470
+#: ../rhythmdb/rhythmdb.c:1963
+#: ../rhythmdb/rhythmdb.c:2088
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kunde inte komma åt %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1348
+#: ../rhythmdb/rhythmdb.c:1365
 msgid "<invalid filename>"
 msgstr "<ogiltigt filnamn>"
 
-#: ../rhythmdb/rhythmdb.c:1608
+#: ../rhythmdb/rhythmdb.c:1625
 msgid "invalid unicode in error message"
 msgstr "ogiltig unicode i felmeddelande"
+
+#: ../rhythmdb/rhythmdb.c:2338
+msgid "Could not load the music database"
+msgstr "Kunde inte läsa in musikdatabasen"
 
 #. Translators:  Please keep the translated date format
 #. * compact, and avoid variable-width items such as month and
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2766
-#: ../sources/rb-podcast-source.c:1626
-#: ../widgets/rb-entry-view.c:2046
+#: ../rhythmdb/rhythmdb.c:2804
+#: ../sources/rb-podcast-source.c:1639
+#: ../widgets/rb-entry-view.c:2047
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
-#: ../rhythmdb/rhythmdb.c:3421
+#: ../rhythmdb/rhythmdb.c:3459
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: ../rhythmdb/rhythmdb.c:3422
+#: ../rhythmdb/rhythmdb.c:3460
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: ../rhythmdb/rhythmdb.c:3423
+#: ../rhythmdb/rhythmdb.c:3461
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1270,7 +1274,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3429
+#: ../rhythmdb/rhythmdb.c:3467
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -1278,9 +1282,9 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3435
-#: ../rhythmdb/rhythmdb.c:3443
-#: ../rhythmdb/rhythmdb.c:3454
+#: ../rhythmdb/rhythmdb.c:3473
+#: ../rhythmdb/rhythmdb.c:3481
+#: ../rhythmdb/rhythmdb.c:3492
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -1290,7 +1294,7 @@ msgstr "%s och %s"
 msgid "Couldn't monitor %s: %s"
 msgstr "Kunde inte övervaka %s: %s"
 
-#: ../rhythmdb/rhythmdb-property-model.c:417
+#: ../rhythmdb/rhythmdb-property-model.c:423
 #: ../sources/rb-auto-playlist-source.c:72
 #: ../sources/rb-browser-source.c:154
 #: ../sources/rb-podcast-source.c:311
@@ -1298,44 +1302,48 @@ msgstr "Kunde inte övervaka %s: %s"
 msgid "All"
 msgstr "Alla"
 
-#: ../shell/main.c:124
+#: ../rhythmdb/rhythmdb-tree.c:329
+msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
+msgstr "Databasen är skapad av en senare version av Rhythmbox. Denna version av Rhythmbox kan inte läsa databasen."
+
+#: ../shell/main.c:115
 msgid "Enable debug output"
 msgstr "Aktivera felsökningsutskrifter"
 
-#: ../shell/main.c:125
+#: ../shell/main.c:116
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivera felsökningsutskrifter som matchar en speciell sträng"
 
-#: ../shell/main.c:126
+#: ../shell/main.c:117
 msgid "Do not update the library with file changes"
 msgstr "Uppdatera inte biblioteket med filändringar"
 
-#: ../shell/main.c:127
+#: ../shell/main.c:118
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: ../shell/main.c:128
+#: ../shell/main.c:119
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Spara inte någon data permanent (aktiverar --no-registration)"
 
-#: ../shell/main.c:129
+#: ../shell/main.c:120
 msgid "Path for database file to use"
 msgstr "Sökväg till databasfil att använda"
 
-#: ../shell/main.c:130
+#: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Sökväg till spellistefiler att använda"
 
-#: ../shell/main.c:131
+#: ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: ../shell/main.c:132
+#: ../shell/main.c:123
 msgid "[URI...]"
 msgstr "[URI...]"
 
+#: ../shell/main.c:158
 #: ../shell/main.c:167
-#: ../shell/main.c:176
 #: ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -1489,31 +1497,31 @@ msgstr "Slumpmässig efter tid sedan senaste uppspelning och betyg"
 msgid "Linear, removing entries once played"
 msgstr "Linjär, tar bort instanser spelade en gång"
 
-#: ../shell/rb-removable-media-manager.c:156
+#: ../shell/rb-removable-media-manager.c:136
 msgid "_Eject"
 msgstr "_Mata ut"
 
-#: ../shell/rb-removable-media-manager.c:157
+#: ../shell/rb-removable-media-manager.c:137
 msgid "Eject this medium"
 msgstr "Mata ut detta media"
 
-#: ../shell/rb-removable-media-manager.c:159
+#: ../shell/rb-removable-media-manager.c:139
 msgid "_Copy to library"
 msgstr "_Kopiera till bibliotek"
 
-#: ../shell/rb-removable-media-manager.c:160
+#: ../shell/rb-removable-media-manager.c:140
 msgid "Copy all tracks to the library"
 msgstr "Kopiera alla spår till biblioteket"
 
-#: ../shell/rb-removable-media-manager.c:162
+#: ../shell/rb-removable-media-manager.c:142
 msgid "_Scan Removable Media"
 msgstr "_Sök på flyttbara enheter"
 
-#: ../shell/rb-removable-media-manager.c:163
+#: ../shell/rb-removable-media-manager.c:143
 msgid "Scan for new Removable Media"
 msgstr "Sök efter nya flyttbara enheter"
 
-#: ../shell/rb-removable-media-manager.c:914
+#: ../shell/rb-removable-media-manager.c:663
 msgid "Error transferring track"
 msgstr "Fel vid överföring av spår"
 
@@ -2076,32 +2084,32 @@ msgstr "Visa _notifieringar"
 msgid "Show notifications of song changes and other events"
 msgstr "Visa notifieringar när låt ändras och andra händelser"
 
-#: ../sources/rb-audiocd-source.c:203
+#: ../sources/rb-audiocd-source.c:204
 msgid "<Invalid unicode>"
 msgstr "<Ogiltig unicode>"
 
-#: ../sources/rb-audiocd-source.c:248
+#: ../sources/rb-audiocd-source.c:249
 #, c-format
 msgid "Track %u"
 msgstr "Spår %u"
 
-#: ../sources/rb-audiocd-source.c:334
-#: ../sources/rb-audiocd-source.c:344
-#: ../sources/rb-audiocd-source.c:351
-#: ../sources/rb-audiocd-source.c:546
+#: ../sources/rb-audiocd-source.c:335
+#: ../sources/rb-audiocd-source.c:345
+#: ../sources/rb-audiocd-source.c:352
+#: ../sources/rb-audiocd-source.c:547
 msgid "Couldn't load Audio CD"
 msgstr "Kunde ej mata in ljud-cd"
 
-#: ../sources/rb-audiocd-source.c:335
-#: ../sources/rb-audiocd-source.c:345
+#: ../sources/rb-audiocd-source.c:336
+#: ../sources/rb-audiocd-source.c:346
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox kunde ej komma åt cd:n."
 
-#: ../sources/rb-audiocd-source.c:352
+#: ../sources/rb-audiocd-source.c:353
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox kunde ej läsa cd-informationen."
 
-#: ../sources/rb-audiocd-source.c:547
+#: ../sources/rb-audiocd-source.c:548
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhytmbox kunde ej få åtkomst till cd-enheten"
 
@@ -2711,104 +2719,104 @@ msgstr "Avsnitt"
 msgid "Search podcast episodes"
 msgstr "Sök poddradio-avsnitt"
 
-#: ../sources/rb-podcast-source.c:572
+#: ../sources/rb-podcast-source.c:585
 msgid "Date"
 msgstr "Datum"
 
-#: ../sources/rb-podcast-source.c:583
+#: ../sources/rb-podcast-source.c:596
 msgid "_Date"
 msgstr "_Datum"
 
-#: ../sources/rb-podcast-source.c:604
+#: ../sources/rb-podcast-source.c:617
 msgid "_Feed"
 msgstr "_Kanal"
 
-#: ../sources/rb-podcast-source.c:623
-#: ../sources/rb-podcast-source.c:641
+#: ../sources/rb-podcast-source.c:636
+#: ../sources/rb-podcast-source.c:654
 msgid "Status"
 msgstr "Status"
 
-#: ../sources/rb-podcast-source.c:624
-#: ../sources/rb-podcast-source.c:1471
+#: ../sources/rb-podcast-source.c:637
+#: ../sources/rb-podcast-source.c:1484
 msgid "Downloaded"
 msgstr "Hämtat"
 
-#: ../sources/rb-podcast-source.c:625
-#: ../sources/rb-podcast-source.c:1479
+#: ../sources/rb-podcast-source.c:638
+#: ../sources/rb-podcast-source.c:1492
 msgid "Waiting"
 msgstr "Väntar"
 
-#: ../sources/rb-podcast-source.c:626
-#: ../sources/rb-podcast-source.c:1475
+#: ../sources/rb-podcast-source.c:639
+#: ../sources/rb-podcast-source.c:1488
 msgid "Failed"
 msgstr "Misslyckades"
 
 #. configure feed view
-#: ../sources/rb-podcast-source.c:668
-#: ../sources/rb-podcast-source.c:698
+#: ../sources/rb-podcast-source.c:681
+#: ../sources/rb-podcast-source.c:711
 msgid "Feed"
 msgstr "Kanal"
 
-#: ../sources/rb-podcast-source.c:799
+#: ../sources/rb-podcast-source.c:812
 msgid "Podcasts"
 msgstr "Poddradio"
 
-#: ../sources/rb-podcast-source.c:882
+#: ../sources/rb-podcast-source.c:895
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ta bort detta poddradioavsnitt och hämtad fil?"
 
-#: ../sources/rb-podcast-source.c:885
+#: ../sources/rb-podcast-source.c:898
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
 msgstr "Om du väljer att ta bort avsnittet och filen kommer de att vara permanent förlorade. Observera att du kan ta bort avsnittet men behålla den hämtade filen genom att välja att ta bort endast avsnittet."
 
-#: ../sources/rb-podcast-source.c:893
+#: ../sources/rb-podcast-source.c:906
 msgid "Delete _Episode Only"
 msgstr "Ta _endast bort avsnittet"
 
-#: ../sources/rb-podcast-source.c:899
+#: ../sources/rb-podcast-source.c:912
 msgid "_Delete Episode And File"
 msgstr "Ta bort avsnitt och fil"
 
-#: ../sources/rb-podcast-source.c:1365
+#: ../sources/rb-podcast-source.c:1378
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ta bort poddradiokanalen och hämtade filer?"
 
-#: ../sources/rb-podcast-source.c:1368
+#: ../sources/rb-podcast-source.c:1381
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
 msgstr "Om du väljer att ta bort kanalen och filerna, kommer de att vara permanent förlorade. Observera att du kan ta bort kanalen men behålla filerna genom att välja att endast ta bort kanalen."
 
-#: ../sources/rb-podcast-source.c:1376
+#: ../sources/rb-podcast-source.c:1389
 msgid "Delete _Feed Only"
 msgstr "_Ta endast bort kanal"
 
-#: ../sources/rb-podcast-source.c:1383
+#: ../sources/rb-podcast-source.c:1396
 msgid "_Delete Feed And Files"
 msgstr "_Ta bort kanal och filer"
 
-#: ../sources/rb-podcast-source.c:1590
+#: ../sources/rb-podcast-source.c:1603
 #, c-format
 msgid "All %d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "%d kanal"
 msgstr[1] "Alla %d kanaler"
 
-#: ../sources/rb-podcast-source.c:1732
+#: ../sources/rb-podcast-source.c:1745
 msgid "Downloading podcast"
 msgstr "Hämtar poddradio"
 
-#: ../sources/rb-podcast-source.c:1745
+#: ../sources/rb-podcast-source.c:1758
 msgid "Finished downloading podcast"
 msgstr "Klar med hämtning av poddradio"
 
-#: ../sources/rb-podcast-source.c:1758
+#: ../sources/rb-podcast-source.c:1771
 msgid "New updates avaliable from"
 msgstr "Nya uppdateringar tillgängliga från"
 
-#: ../sources/rb-podcast-source.c:1862
+#: ../sources/rb-podcast-source.c:1875
 msgid "Error in podcast"
 msgstr "Fel i poddradio"
 
-#: ../sources/rb-podcast-source.c:1984
+#: ../sources/rb-podcast-source.c:1997
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -2892,59 +2900,59 @@ msgstr "Läs in mapp till biblioteket"
 msgid "%u kbps"
 msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:1029
+#: ../widgets/rb-entry-view.c:1030
 msgid "Trac_k"
 msgstr "Spå_r"
 
-#: ../widgets/rb-entry-view.c:1040
+#: ../widgets/rb-entry-view.c:1041
 msgid "_Title"
 msgstr "_Titel"
 
-#: ../widgets/rb-entry-view.c:1050
+#: ../widgets/rb-entry-view.c:1051
 msgid "Art_ist"
 msgstr "Art_ist"
 
-#: ../widgets/rb-entry-view.c:1060
+#: ../widgets/rb-entry-view.c:1061
 msgid "_Album"
 msgstr "_Album"
 
-#: ../widgets/rb-entry-view.c:1080
+#: ../widgets/rb-entry-view.c:1081
 msgid "Tim_e"
 msgstr "Ti_d"
 
-#: ../widgets/rb-entry-view.c:1107
+#: ../widgets/rb-entry-view.c:1108
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1139
+#: ../widgets/rb-entry-view.c:1140
 msgid "_Play Count"
 msgstr "Antal s_pelningar"
 
-#: ../widgets/rb-entry-view.c:1151
+#: ../widgets/rb-entry-view.c:1152
 msgid "_Last Played"
 msgstr "_Senast spelad"
 
-#: ../widgets/rb-entry-view.c:1163
+#: ../widgets/rb-entry-view.c:1164
 msgid "_Date Added"
 msgstr "_Datum tillagd"
 
-#: ../widgets/rb-entry-view.c:1174
+#: ../widgets/rb-entry-view.c:1175
 msgid "Last _Seen"
 msgstr "Senast _sedd"
 
-#: ../widgets/rb-entry-view.c:1185
+#: ../widgets/rb-entry-view.c:1186
 msgid "L_ocation"
 msgstr "P_lats:"
 
-#: ../widgets/rb-entry-view.c:1193
+#: ../widgets/rb-entry-view.c:1194
 msgid "Error"
 msgstr "Fel"
 
-#: ../widgets/rb-entry-view.c:1406
+#: ../widgets/rb-entry-view.c:1407
 msgid "Now Playing"
 msgstr "Spelar nu"
 
-#: ../widgets/rb-entry-view.c:1481
+#: ../widgets/rb-entry-view.c:1482
 msgid "Playback Error"
 msgstr "Uppspelningsfel"
 
