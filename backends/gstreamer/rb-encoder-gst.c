@@ -877,34 +877,39 @@ transcode_track (RBEncoderGst *encoder,
 	return TRUE;
 }
 
-static void
+static GnomeVFSResult
 create_parent_dirs_uri (GnomeVFSURI *uri)
 {
 	GnomeVFSURI *parent_uri;
+	GnomeVFSResult result;
 
 	if (gnome_vfs_uri_exists (uri))
-		return;
+		return GNOME_VFS_OK;
 
 	parent_uri = gnome_vfs_uri_get_parent (uri);
-	create_parent_dirs_uri (parent_uri);
+	result = create_parent_dirs_uri (parent_uri);
 	gnome_vfs_uri_unref (parent_uri);
+	if (result != GNOME_VFS_OK)
+		return result;
 
-	gnome_vfs_make_directory_for_uri (uri, 0750);
+	return gnome_vfs_make_directory_for_uri (uri, 0750);
 }
 
-static void
+static GnomeVFSResult
 create_parent_dirs (const char *uri)
 {
 	GnomeVFSURI *vfs_uri;
 	GnomeVFSURI *parent_uri;
+	GnomeVFSResult result;
 
 	vfs_uri = gnome_vfs_uri_new (uri);
 	parent_uri = gnome_vfs_uri_get_parent (vfs_uri);
 
-	create_parent_dirs_uri (parent_uri);
+	result = create_parent_dirs_uri (parent_uri);
 
 	gnome_vfs_uri_unref (parent_uri);
 	gnome_vfs_uri_unref (vfs_uri);
+	return result;
 }
 
 static void
@@ -933,6 +938,7 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	gboolean was_raw;
 	gboolean result;
 	GError *error = NULL;
+	GnomeVFSResult vfsresult;
 
 	g_return_val_if_fail (priv->pipeline == NULL, FALSE);
 
@@ -941,7 +947,17 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 
 	priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 
-	create_parent_dirs (dest);
+	vfsresult = create_parent_dirs (dest);
+	if (vfsresult != GNOME_VFS_OK) {
+		error = g_error_new_literal (RB_ENCODER_ERROR,
+					     RB_ENCODER_ERROR_FILE_ACCESS,
+					     gnome_vfs_result_to_string (vfsresult));
+
+		_rb_encoder_emit_error (encoder, error);
+		_rb_encoder_emit_completed (encoder);
+		g_error_free (error);
+		return FALSE;
+	}
 
 	if ((mime_type == NULL && !was_raw) || (mime_type && (strcmp (mime_type, entry_mime_type) == 0))) {
 		result = copy_track (RB_ENCODER_GST (encoder), entry, dest, &error);

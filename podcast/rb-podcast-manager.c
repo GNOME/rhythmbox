@@ -664,12 +664,12 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 				     NULL);
 	g_free (conf_dir_name);
 
-	if (!g_file_test (dir_name, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR)) {
-		if (g_mkdir_with_parents (dir_name, 0750) == -1) {
-			g_warning ("Could not create podcast download directory %s", dir_name);
-			g_free (dir_name);
-			rb_podcast_manager_abort_download (data);
-		}
+	if (g_mkdir_with_parents (dir_name, 0750) == -1) {
+		rb_debug ("Could not create podcast download directory %s", dir_name);
+		/* FIXME: display error to user */
+		g_free (dir_name);
+		rb_podcast_manager_abort_download (data);
+		return;
 	}
 
 	/* if the filename ends with the query string from the original URI,

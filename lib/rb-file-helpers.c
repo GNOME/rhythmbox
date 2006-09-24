@@ -83,8 +83,8 @@ rb_dot_dir (void)
 					    GNOME_DOT_GNOME,
 					    "rhythmbox",
 					    NULL);
-		if (!g_file_test (dot_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
-			mkdir (dot_dir, 0750);
+		if (mkdir (dot_dir, 0750) == -1)
+			rb_debug ("unable to create Rhythmbox's dot dir");
 	}
 	
 	return dot_dir;
