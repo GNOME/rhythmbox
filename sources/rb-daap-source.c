@@ -637,9 +637,10 @@ rb_daap_sources_shutdown (RBShell *shell)
 {
 	GtkUIManager *uimanager = NULL;
 
-	rb_debug ("Shutting down DAAP sources");
+	if (daap_was_shutdown)
+		return;
 
-	g_assert (!daap_was_shutdown);
+	rb_debug ("Shutting down DAAP sources");
 	daap_was_shutdown = TRUE;
 
 	g_object_get (shell,

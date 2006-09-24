@@ -1,5 +1,10 @@
 2006-09-24  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-daap-source.c: (rb_daap_sources_shutdown): don't assert
+	if we get called twice, as that can happen. Fixes #357214.
+
+2006-09-24  James Livingston  <doclivingston@gmail.com>
+
 	* backends/rb-encoder.h: add "file access" error
 
 	* lib/rb-file-helpers.c: (rb_dot_dir):
