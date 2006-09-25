@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-24 14:07+0200\n"
-"PO-Revision-Date: 2006-09-24 16:43+0100\n"
+"POT-Creation-Date: 2006-09-25 14:11+0200\n"
+"PO-Revision-Date: 2006-09-25 21:39+0100\n"
 "Last-Translator: Fredrik Tuomas <fredrik@jpl.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -515,7 +515,7 @@ msgstr "Titel:"
 
 #: ../data/glade/podcast-new.glade.h:1
 msgid "_URL of podcast feed:"
-msgstr "_URL till poddsändningskanal:"
+msgstr "_URL till poddradiokanal:"
 
 #: ../data/glade/podcast-prefs.glade.h:1
 msgid "<b>Download Manager</b>"
@@ -1183,7 +1183,7 @@ msgstr "Gör inte alls mycket"
 
 #: ../podcast/rb-new-podcast-dialog.c:112
 msgid "New Podcast Feed"
-msgstr "Ny poddsändningskanal"
+msgstr "Ny poddradiokanal"
 
 #: ../podcast/rb-podcast-manager.c:785
 msgid "Invalid URL"
@@ -1202,7 +1202,7 @@ msgstr "URL:en är redan tillagd"
 #: ../podcast/rb-podcast-manager.c:795
 #, c-format
 msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
-msgstr "\"%s\" har redan lagts till som en radiostation. Om det är en poddsändningskanal, ta bort radiostationen."
+msgstr "\"%s\" har redan lagts till som en radiostation. Om det är en poddradiokanal, ta bort radiostationen."
 
 #: ../podcast/rb-podcast-manager.c:865
 msgid "Podcast"
@@ -1211,12 +1211,12 @@ msgstr "Poddsändning"
 #: ../podcast/rb-podcast-manager.c:1652
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr "Det uppstod ett problem när denna poddsändningskanal lades till. Var vänlig kontrollera url:en: %s"
+msgstr "Det uppstod ett problem när denna poddradiokanal lades till. Var vänlig kontrollera url:en: %s"
 
 #: ../podcast/rb-podcast-parse.c:452
 #, c-format
 msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
-msgstr "URL:en  \"%s\" verkar inte vara en poddsändningskanal. Det kan vara fel URL eller så kan kanalen vara trasig. Vill du att Rhythmbox ska försöka använda den ändå?"
+msgstr "URL:en  \"%s\" verkar inte vara en poddradiokanal. Det kan vara fel URL eller så kan kanalen vara trasig. Vill du att Rhythmbox ska försöka använda den ändå?"
 
 #: ../podcast/rb-podcast-properties-dialog.c:397
 msgid "Not Downloaded"
@@ -2188,24 +2188,24 @@ msgstr "_Koppla från"
 msgid "Disconnect from DAAP share"
 msgstr "Koppla från DAAP-musikutdelning"
 
-#: ../sources/rb-daap-source.c:703
+#: ../sources/rb-daap-source.c:704
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Musikutdelningen \"%s\" kräver ett lösenord för att ansluta"
 
-#: ../sources/rb-daap-source.c:705
+#: ../sources/rb-daap-source.c:706
 msgid "Password Required"
 msgstr "Lösenord krävs"
 
-#: ../sources/rb-daap-source.c:776
+#: ../sources/rb-daap-source.c:777
 msgid "Connecting to music share"
 msgstr "Ansluter till musikutdelning"
 
-#: ../sources/rb-daap-source.c:783
+#: ../sources/rb-daap-source.c:784
 msgid "Retrieving songs from music share"
 msgstr "Hämtar låtar från musikutdelning"
 
-#: ../sources/rb-daap-source.c:855
+#: ../sources/rb-daap-source.c:856
 msgid "Could not connect to shared music"
 msgstr "Kunde inte ansluta till musikutdelning"
 
@@ -2653,11 +2653,11 @@ msgstr "av"
 
 #: ../sources/rb-podcast-source.c:285
 msgid "_New Podcast Feed"
-msgstr "_Ny poddsändningskanal"
+msgstr "_Ny poddradiokanal"
 
 #: ../sources/rb-podcast-source.c:286
 msgid "Subscribe to a new Podcast Feed"
-msgstr "Prenumerera på en ny poddsändningskanal"
+msgstr "Prenumerera på en ny poddradiokanal"
 
 #: ../sources/rb-podcast-source.c:289
 msgid "Download _Episode"
@@ -2665,7 +2665,7 @@ msgstr "Hämta _avsnitt"
 
 #: ../sources/rb-podcast-source.c:290
 msgid "Download Podcast Episode"
-msgstr "Hämta poddsändningsavsnitt"
+msgstr "Hämta poddradioavsnitt"
 
 #: ../sources/rb-podcast-source.c:292
 msgid "_Cancel Download"
@@ -2681,7 +2681,7 @@ msgstr "Egenskaper för avsnitt"
 
 #: ../sources/rb-podcast-source.c:298
 msgid "_Update Podcast Feed"
-msgstr "_Uppdatera poddsändningskanal"
+msgstr "_Uppdatera poddradiokanal"
 
 #: ../sources/rb-podcast-source.c:299
 msgid "Update Feed"
@@ -2689,7 +2689,7 @@ msgstr "Uppdatera kanal"
 
 #: ../sources/rb-podcast-source.c:301
 msgid "_Delete Podcast Feed"
-msgstr "_Ta bort poddsändningskanal"
+msgstr "_Ta bort poddradiokanal"
 
 #: ../sources/rb-podcast-source.c:302
 msgid "Delete Feed"
@@ -2709,7 +2709,7 @@ msgstr "Kanaler"
 
 #: ../sources/rb-podcast-source.c:312
 msgid "Search podcast feeds"
-msgstr "Sök poddsändningskanaler"
+msgstr "Sök poddradiokanaler"
 
 #: ../sources/rb-podcast-source.c:313
 msgid "Episodes"
@@ -2717,7 +2717,7 @@ msgstr "Avsnitt"
 
 #: ../sources/rb-podcast-source.c:313
 msgid "Search podcast episodes"
-msgstr "Sök poddsändningsavsnitt"
+msgstr "Sök poddradioavsnitt"
 
 #: ../sources/rb-podcast-source.c:585
 msgid "Date"
@@ -2763,7 +2763,7 @@ msgstr "Poddsändningar"
 
 #: ../sources/rb-podcast-source.c:895
 msgid "Delete the podcast episode and downloaded file?"
-msgstr "Ta bort detta poddsändningsavsnitt och hämtad fil?"
+msgstr "Ta bort detta poddradioavsnitt och hämtad fil?"
 
 #: ../sources/rb-podcast-source.c:898
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
@@ -2779,7 +2779,7 @@ msgstr "Ta bort avsnitt och fil"
 
 #: ../sources/rb-podcast-source.c:1378
 msgid "Delete the podcast feed and downloaded files?"
-msgstr "Ta bort poddsändningskanalen och hämtade filer?"
+msgstr "Ta bort poddradiokanalen och hämtade filer?"
 
 #: ../sources/rb-podcast-source.c:1381
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
