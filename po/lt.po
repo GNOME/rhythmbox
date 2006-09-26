@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-25 10:06+0300\n"
-"PO-Revision-Date: 2006-09-25 10:10+0300\n"
+"POT-Creation-Date: 2006-09-26 16:55+0300\n"
+"PO-Revision-Date: 2006-09-26 17:03+0300\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
 "MIME-Version: 1.0\n"
@@ -53,7 +53,8 @@ msgstr "Nežinoma grojimo klaida"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
-#: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1259
+#: ../podcast/rb-podcast-properties-dialog.c:502
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1259
 #: ../rhythmdb/rhythmdb-tree.c:1110 ../rhythmdb/rhythmdb-tree.c:1114
 #: ../rhythmdb/rhythmdb-tree.c:1118 ../rhythmdb/rhythmdb-tree.c:1122
 #: ../shell/rb-shell-player.c:2821 ../sources/rb-audiocd-source.c:200
@@ -741,12 +742,20 @@ msgstr "%b %d %H:%M"
 msgid "%b %d %Y"
 msgstr "%Y %b %d"
 
-#: ../lib/rb-util.c:599
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr "HTTP tarpinio servererio konfigūracijos klaida"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr "Rhythmbox nepalaiko automatinio tarpinio serverio konfigūravimo"
+
+#: ../lib/rb-util.c:599 ../remote/dbus/rb-client.c:116
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:601
+#: ../lib/rb-util.c:601 ../remote/dbus/rb-client.c:118
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -970,6 +979,14 @@ msgstr "Paveikslėlių rodymas"
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Displays art for the playing track"
 msgstr "Rodo grojančių takelių paveikslėlius"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+msgid "Audio CD"
+msgstr "Audio CD"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+msgid "Support for audio CDs"
+msgstr "Audio CD palaikymas"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm Profile "
@@ -1214,6 +1231,72 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr "Neatsiųsta"
 
+#: ../remote/dbus/rb-client.c:64
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "Nepaleisti dar vienos Rhythmbox kopijos"
+
+#: ../remote/dbus/rb-client.c:65 ../shell/main.c:122
+msgid "Quit Rhythmbox"
+msgstr "Išeiti iš Rhythmbox"
+
+#: ../remote/dbus/rb-client.c:67
+msgid "Don't present an existing Rhythmbox window"
+msgstr "Neparodyti egzistuojančio Rhythmbox lango"
+
+#: ../remote/dbus/rb-client.c:68
+msgid "Hide the Rhythmbox window"
+msgstr "Paslėpti Rhythmbox langą"
+
+#: ../remote/dbus/rb-client.c:70
+msgid "Jump to next song"
+msgstr "Peršokti pire kitos dainos"
+
+#: ../remote/dbus/rb-client.c:71
+msgid "Jump to previous song"
+msgstr "Peršokti prie ankstesnės dainos"
+
+#: ../remote/dbus/rb-client.c:73
+msgid "Resume playback if currently paused"
+msgstr "Tęsti grojimą, jei jis sustabdytas"
+
+#: ../remote/dbus/rb-client.c:74
+msgid "Pause playback if currently playing"
+msgstr "Pristabdyti grojimą, jei dabar grojama"
+
+#: ../remote/dbus/rb-client.c:75
+msgid "Toggle play/pause mode"
+msgstr "Perjungti grojimo/pauzės režimą"
+
+#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:78
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Groti iš nurodytą URI, jei reikia, importuojant"
+
+#: ../remote/dbus/rb-client.c:78
+msgid "URI to play"
+msgstr "Grotinas URI"
+
+#: ../remote/dbus/rb-client.c:79
+msgid "Add specified tracks to the play queue"
+msgstr "Įdėti nurodytas dainas į grojimo eilę"
+
+#: ../remote/dbus/rb-client.c:80
+msgid "Empty the play queue before adding new tracks"
+msgstr "Prieš įdedant naujus takelius išvalyti grojimo eilę"
+
+#: ../remote/dbus/rb-client.c:82
+msgid "Print the title and artist of the playing song"
+msgstr "Rodyti grojamos dainos pavadinimą ir atlikėją"
+
+#: ../remote/dbus/rb-client.c:83
+msgid "Print formatted details of the song"
+msgstr "Rodyti suformuotą dainos informaciją"
+
+#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:2014
+#: ../shell/rb-tray-icon.c:167
+msgid "Not playing"
+msgstr "Negroja"
+
 #: ../rhythmdb/rhythmdb.c:470 ../rhythmdb/rhythmdb.c:1963
 #: ../rhythmdb/rhythmdb.c:2088
 #, c-format
@@ -1328,10 +1411,6 @@ msgstr "Duomenų bazės rinkmenos kelias"
 #: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Naudotinos grojaraščių rinkmenos kelias"
-
-#: ../shell/main.c:122
-msgid "Quit Rhythmbox"
-msgstr "Išeiti iš Rhythmbox"
 
 #: ../shell/main.c:123
 msgid "[URI...]"
@@ -1689,10 +1768,6 @@ msgstr "Perkeliamas %d takelis iš %d"
 #, c-format
 msgid "by %s from %s"
 msgstr "atlieka %s iš %s"
-
-#: ../shell/rb-shell.c:2014 ../shell/rb-tray-icon.c:167
-msgid "Not playing"
-msgstr "Negroja"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: ../shell/rb-shell.c:2017
@@ -3081,7 +3156,7 @@ msgstr "_Pradžioje vėliausiai groti takeliai"
 
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Date Added"
-msgstr "Kada pridėta"
+msgstr "Pridėjimo data"
 
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "W_ith more recently added tracks first"
@@ -3178,11 +3253,11 @@ msgstr "Dainos savybės"
 
 #: ../widgets/rb-song-info.c:317
 msgid "Multiple Song Properties"
-msgstr "Keletos dainų savybės"
+msgstr "Keleto dainų savybės"
 
 #: ../widgets/rb-song-info.c:950
 msgid "Unknown file name"
-msgstr "Nežinomas rinkmenos vardas"
+msgstr "Nežinomas rinkmenos pavadinimas"
 
 #: ../widgets/rb-song-info.c:969
 msgid "On the desktop"
@@ -3191,51 +3266,3 @@ msgstr "Darbastalyje"
 #: ../widgets/rb-song-info.c:978
 msgid "Unknown location"
 msgstr "Nežinoma vieta"
-
-#~ msgid "Configuration system error"
-#~ msgstr "Konfigūravimo sistemos klaida"
-
-#~ msgid "Import _Audio CD..."
-#~ msgstr "Importuoti _audio CD"
-
-#~ msgid "Extract and import songs from a CD"
-#~ msgstr "Ištraukti ir importuoti dainas iš CD"
-
-#~ msgid "CD Ripper not found"
-#~ msgstr "Muzikos iš CD ištrauktuvas nerastas"
-
-#~ msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
-#~ msgstr ""
-#~ "Tam, kad galėtumėte ištraukti dainas iš CD, turite įdiegti Sound Juicer "
-#~ "paketą."
-
-#~ msgid "Couldn't run CD Ripper"
-#~ msgstr "Nepavyko paleisti CD ištrauktuvo"
-
-#~ msgid "An error occurred while running sound-juicer: %s"
-#~ msgstr "Veikiant sound-juicer įvyko klaida: %s"
-
-#~ msgid "Show _Browser"
-#~ msgstr "Rodyti _naršyklę"
-
-#~ msgid "Hide _Browser"
-#~ msgstr "Slėpti _naršyklę"
-
-#~ msgid "Get information on this album from the web"
-#~ msgstr "Gauti informaciją apie šį albumą iš Interneto"
-
-#~ msgid "Get information on this artist from the web"
-#~ msgstr "Gauti informaciją apie šį atlikėją iš Interneto"
-
-#~ msgid "_File Name:"
-#~ msgstr "_Rinkmenos pavadinimas:"
-
-#~ msgid "The following files couldn't be loaded:"
-#~ msgstr "Šios rinkmenos negalėjo būti įkeltos:"
-
-#~ msgid ""
-#~ "Download\n"
-#~ "Location:"
-#~ msgstr ""
-#~ "Atsiuntimo\n"
-#~ "vieta:"
