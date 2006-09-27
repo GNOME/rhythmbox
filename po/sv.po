@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-25 14:11+0200\n"
-"PO-Revision-Date: 2006-09-25 21:39+0100\n"
+"POT-Creation-Date: 2006-09-27 13:09+0200\n"
+"PO-Revision-Date: 2006-09-27 13:57+0100\n"
 "Last-Translator: Fredrik Tuomas <fredrik@jpl.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -59,6 +59,7 @@ msgstr "Okänt uppspelningsfel"
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
 #: ../podcast/rb-podcast-properties-dialog.c:502
+#: ../remote/dbus/rb-client.c:114
 #: ../rhythmdb/rhythmdb.c:1259
 #: ../rhythmdb/rhythmdb-tree.c:1110
 #: ../rhythmdb/rhythmdb-tree.c:1114
@@ -761,12 +762,22 @@ msgstr "%d %b %H.%M"
 msgid "%b %d %Y"
 msgstr "%d %b %Y"
 
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr "Fel i HTTP-proxykonfigurationen"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr "Rhythmbox saknar stöd för automatisk proxykonfiguration"
+
 #: ../lib/rb-util.c:599
+#: ../remote/dbus/rb-client.c:116
 #, c-format
 msgid "%d:%02d"
 msgstr "%d.%02d"
 
 #: ../lib/rb-util.c:601
+#: ../remote/dbus/rb-client.c:118
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d.%02d:%02d"
@@ -989,6 +1000,14 @@ msgstr "Grafikvisare"
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Displays art for the playing track"
 msgstr "Visar grafik för det aktuella spåret"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+msgid "Audio CD"
+msgstr "Ljud-cd"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+msgid "Support for audio CDs"
+msgstr "Stöd för ljud-cd"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm Profile "
@@ -1222,6 +1241,74 @@ msgstr "URL:en  \"%s\" verkar inte vara en poddradiokanal. Det kan vara fel URL 
 msgid "Not Downloaded"
 msgstr "Ej hämtad"
 
+#: ../remote/dbus/rb-client.c:64
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "Starta inte en ny instans av Rhythmbox"
+
+#: ../remote/dbus/rb-client.c:65
+#: ../shell/main.c:122
+msgid "Quit Rhythmbox"
+msgstr "Avsluta Rhythmbox"
+
+#: ../remote/dbus/rb-client.c:67
+msgid "Don't present an existing Rhythmbox window"
+msgstr "Visa inte ett existerande Rhythmbox-fönster"
+
+#: ../remote/dbus/rb-client.c:68
+msgid "Hide the Rhythmbox window"
+msgstr "Dölj Rhythmbox-fönstret"
+
+#: ../remote/dbus/rb-client.c:70
+msgid "Jump to next song"
+msgstr "Hoppa till nästa låt"
+
+#: ../remote/dbus/rb-client.c:71
+msgid "Jump to previous song"
+msgstr "Hoppa till föregående låt"
+
+#: ../remote/dbus/rb-client.c:73
+msgid "Resume playback if currently paused"
+msgstr "Fortsätt uppspelning om uppspelning är pausad"
+
+#: ../remote/dbus/rb-client.c:74
+msgid "Pause playback if currently playing"
+msgstr "Pausa i uppspelning om uppspelning sker"
+
+#: ../remote/dbus/rb-client.c:75
+msgid "Toggle play/pause mode"
+msgstr "Växla uppspelnings-/pausläge"
+
+#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:78
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Spela upp en angiven uri, importera den om det behövs"
+
+#: ../remote/dbus/rb-client.c:78
+msgid "URI to play"
+msgstr "Uri att spela upp"
+
+#: ../remote/dbus/rb-client.c:79
+msgid "Add specified tracks to the play queue"
+msgstr "Lägg till angivna spår till spelarkön"
+
+#: ../remote/dbus/rb-client.c:80
+msgid "Empty the play queue before adding new tracks"
+msgstr "Töm spelarkön innan nya spår läggs till"
+
+#: ../remote/dbus/rb-client.c:82
+msgid "Print the title and artist of the playing song"
+msgstr "Skriv ut titeln och artisten för den spelade låten"
+
+#: ../remote/dbus/rb-client.c:83
+msgid "Print formatted details of the song"
+msgstr "Skriv ut formaterade detaljer om låten"
+
+#: ../remote/dbus/rb-client.c:375
+#: ../shell/rb-shell.c:2014
+#: ../shell/rb-tray-icon.c:167
+msgid "Not playing"
+msgstr "Spelar inte"
+
 #: ../rhythmdb/rhythmdb.c:470
 #: ../rhythmdb/rhythmdb.c:1963
 #: ../rhythmdb/rhythmdb.c:2088
@@ -1333,10 +1420,6 @@ msgstr "Sökväg till databasfil att använda"
 #: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Sökväg till spellistefiler att använda"
-
-#: ../shell/main.c:122
-msgid "Quit Rhythmbox"
-msgstr "Avsluta Rhythmbox"
 
 #: ../shell/main.c:123
 msgid "[URI...]"
@@ -1587,7 +1670,7 @@ msgstr "S_täng"
 
 #: ../shell/rb-shell.c:429
 msgid "Hide the music player window"
-msgstr "Göm musikspelarfönstret"
+msgstr "Dölj musikspelarfönstret"
 
 #: ../shell/rb-shell.c:431
 msgid "_Quit"
@@ -1700,11 +1783,6 @@ msgstr "Överför spår %d av %d"
 #, c-format
 msgid "by %s from %s"
 msgstr "av %s från albumet %s"
-
-#: ../shell/rb-shell.c:2014
-#: ../shell/rb-tray-icon.c:167
-msgid "Not playing"
-msgstr "Spelar inte"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: ../shell/rb-shell.c:2017
@@ -3194,8 +3272,6 @@ msgstr "Okänd plats"
 
 #~ msgid "_File Name:"
 #~ msgstr "_Filnamn:"
-#~ msgid "Configuration system error"
-#~ msgstr "Fel i konfigurationssystemet"
 #~ msgid "Import _Audio CD..."
 #~ msgstr "Importera _ljud-cd..."
 #~ msgid "Extract and import songs from a CD"
@@ -3285,8 +3361,6 @@ msgstr "Okänd plats"
 #~ msgstr "Skriv ut URI:n för den spelade låten och avsluta"
 #~ msgid "Print the playing song length in seconds and exit"
 #~ msgstr "Skriv ut den spelade låtlängden i sekunder och avsluta"
-#~ msgid "Print the current elapsed time of playing song and exit"
-#~ msgstr "Skriv ut den förflutna tiden för den spelade låten och avsluta"
 #~ msgid "Seek to the specified time in playing song if possible and exit"
 #~ msgstr "Spola om möjligt till den angivna tiden och avsluta"
 #~ msgid "Seek by the specified amount if possible and exit"
@@ -3294,18 +3368,8 @@ msgstr "Okänd plats"
 #~ "Spola om möjligt till den angivna tiden i den spelade låten och avsluta"
 #~ msgid "Set the rating of the currently playing song and exit"
 #~ msgstr "Sätt betyget för denna låt och avsluta"
-#~ msgid "Toggle play/pause mode"
-#~ msgstr "Växla uppspelnings-/pausläge"
-#~ msgid "Pause playback if currently playing"
-#~ msgstr "Pausa i uppspelning om uppspelning sker"
-#~ msgid "Resume playback if currently paused"
-#~ msgstr "Fortsätt uppspelning om uppspelning är pausad"
 #~ msgid "Focus the running player"
 #~ msgstr "Fokusera den exekverande spelaren"
-#~ msgid "Jump to previous song"
-#~ msgstr "Hoppa till föregående låt"
-#~ msgid "Jump to next song"
-#~ msgstr "Hoppa till nästa låt"
 #~ msgid "Toggle shuffling"
 #~ msgstr "Växla blanda"
 #~ msgid "Toggle repeat"
