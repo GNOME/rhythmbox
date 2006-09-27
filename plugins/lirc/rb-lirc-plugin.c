@@ -173,14 +173,14 @@ impl_activate (RBPlugin *rbplugin,
 
 	rb_debug ("Activating lirc plugin");
 
-	if (lirc_readconfig (NULL, &plugin->lirc_config, NULL) == -1) {
-		rb_debug ("Couldn't read lirc configuration");
-		return;
-	}
-
 	fd = lirc_init ("Rhythmbox", 1);
 	if (fd < 0) {
 		rb_debug ("Couldn't initialize lirc");
+		return;
+	}
+
+	if (lirc_readconfig (NULL, &plugin->lirc_config, NULL) == -1) {
+		rb_debug ("Couldn't read lirc configuration");
 		return;
 	}
 
