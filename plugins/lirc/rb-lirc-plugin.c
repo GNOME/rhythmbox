@@ -23,6 +23,7 @@
 #endif
 
 #include <string.h>
+#include <unistd.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -102,6 +103,12 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 	int ok;
 	gboolean processed = FALSE;
 
+	if (condition & (G_IO_ERR | G_IO_HUP)) {
+		/* TODO: retry after a minute? */
+		rb_debug ("LIRC connection broken.  sorry.");
+		return FALSE;
+	}
+
 	lirc_nextcode (&code);
 	if (code == NULL) {
 		rb_debug ("Got incomplete lirc code");
@@ -180,6 +187,7 @@ impl_activate (RBPlugin *rbplugin,
 	}
 
 	if (lirc_readconfig (NULL, &plugin->lirc_config, NULL) == -1) {
+		close (fd);
 		rb_debug ("Couldn't read lirc configuration");
 		return;
 	}
@@ -187,7 +195,7 @@ impl_activate (RBPlugin *rbplugin,
 	plugin->lirc_channel = g_io_channel_unix_new (fd);
 	g_io_channel_set_encoding (plugin->lirc_channel, NULL, NULL);
 	g_io_channel_set_buffered (plugin->lirc_channel, FALSE);
-	g_io_add_watch (plugin->lirc_channel, G_IO_IN,
+	g_io_add_watch (plugin->lirc_channel, G_IO_IN | G_IO_ERR | G_IO_HUP,
 			(GIOFunc) rb_lirc_plugin_read_code, plugin);
 }
 

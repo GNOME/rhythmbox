@@ -1,5 +1,11 @@
 2006-09-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_read_code),
+	(impl_activate):
+	Handle error/hangup conditions on the LIRC connection.  Fixes #358049.
+
+2006-09-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/lirc/rb-lirc-plugin.c: (impl_activate):
 	Call lirc_init before lirc_readconfig so we don't crash if the user's
 	.lircrc file has any mode sections. Fixes #357419.
