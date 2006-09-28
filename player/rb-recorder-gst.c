@@ -32,6 +32,7 @@
 #include <fcntl.h>
 
 #include <glib/gi18n.h>
+#include <gdk/gdk.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <gst/gst.h>
 #ifdef HAVE_GSTREAMER_0_8
@@ -1612,6 +1613,7 @@ rb_recorder_burn (RBRecorder *recorder,
         if (TRUE)
                 flags |= NAUTILUS_BURN_RECORDER_WRITE_DISC_AT_ONCE;
 
+	GDK_THREADS_LEAVE ();
 #ifdef NAUTILUS_BURN_DRIVE_SIZE_TO_TIME
         /* If nautilus-cd-burner >= 2.12 */
         res = nautilus_burn_recorder_write_tracks (cdrecorder,
@@ -1628,6 +1630,7 @@ rb_recorder_burn (RBRecorder *recorder,
                                                    speed,
                                                    flags);
 #endif
+	GDK_THREADS_ENTER ();
 
         if (res == NAUTILUS_BURN_RECORDER_RESULT_FINISHED) {
                 result = RB_RECORDER_RESULT_FINISHED;

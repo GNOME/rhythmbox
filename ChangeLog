@@ -1,3 +1,10 @@
+2006-09-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch by:  William Jon McCann  <mccann@jhu.edu>
+
+	* player/rb-recorder-gst.c: (rb_recorder_burn):
+	Drop GDK lock before entering n-c-b.  Fixes #353894?
+
 2006-09-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_read_code),
