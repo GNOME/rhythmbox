@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-24 14:07+0200\n"
-"PO-Revision-Date: 2006-09-24 15:16+0200\n"
+"POT-Creation-Date: 2006-09-27 13:09+0200\n"
+"PO-Revision-Date: 2006-09-28 07:20+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +74,8 @@ msgstr "Onbekende afspeelfout"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
-#: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1259
+#: ../podcast/rb-podcast-properties-dialog.c:502
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1259
 #: ../rhythmdb/rhythmdb-tree.c:1110 ../rhythmdb/rhythmdb-tree.c:1114
 #: ../rhythmdb/rhythmdb-tree.c:1118 ../rhythmdb/rhythmdb-tree.c:1122
 #: ../shell/rb-shell-player.c:2821 ../sources/rb-audiocd-source.c:200
@@ -88,9 +89,10 @@ msgid "Unknown"
 msgstr "Onbekend"
 
 # share niet meevertaald
+# (eigenlijk: ongeldige naam voor muziekbron)
 #: ../daapsharing/rb-daap-dialog.c:47
 msgid "Invalid share name"
-msgstr "<ongeldige naam>"
+msgstr "Ongeldige naam"
 
 #: ../daapsharing/rb-daap-dialog.c:66
 #, c-format
@@ -707,9 +709,12 @@ msgstr "Voer de _locatie (URI) in van het bestand dat u wilt toevoegen:"
 msgid "Open from URI"
 msgstr "Via URI openen"
 
+# 'mijn' weggelaten (tino) want lelijk
+# bovendien is het zo meer conform de 
+# benamingen van de andere speellijsten
 #: ../data/playlists.xml.in.h:1
 msgid "My Top Rated"
-msgstr "Mijn hoogst gewaardeerde"
+msgstr "Hoogst gewaardeerd"
 
 #: ../data/playlists.xml.in.h:2
 msgid "Recently Added"
@@ -786,12 +791,20 @@ msgstr "%b %d %I:%M %p"
 msgid "%b %d %Y"
 msgstr "%d %b %Y"
 
-#: ../lib/rb-util.c:599
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr "HTTP proxy-configuratiefout"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr "Rhythmbox kan niet automatisch een proxy configureren"
+
+#: ../lib/rb-util.c:599 ../remote/dbus/rb-client.c:116
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:601
+#: ../lib/rb-util.c:601 ../remote/dbus/rb-client.c:118
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -1031,6 +1044,14 @@ msgstr "Albumhoezen tonen"
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Displays art for the playing track"
 msgstr "Toont de albumhoes voor het huidige nummer"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+msgid "Audio CD"
+msgstr "Audio-cd"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+msgid "Support for audio CDs"
+msgstr "Ondersteuning voor het aanmaken van audio-cd's"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm Profile "
@@ -1284,6 +1305,74 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr "Niet gedownload"
 
+#: ../remote/dbus/rb-client.c:64
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "Niet een nieuwe instantie van Rhythmbox opstarten"
+
+#: ../remote/dbus/rb-client.c:65 ../shell/main.c:122
+msgid "Quit Rhythmbox"
+msgstr "Rhythmbox afsluiten"
+
+#: ../remote/dbus/rb-client.c:67
+msgid "Don't present an existing Rhythmbox window"
+msgstr "Geen Rhythmbox-venster dat al bestaat tonen"
+
+#: ../remote/dbus/rb-client.c:68
+msgid "Hide the Rhythmbox window"
+msgstr "Het Rhythmboxvenster verbergen"
+
+#: ../remote/dbus/rb-client.c:70
+msgid "Jump to next song"
+msgstr "Naar volgende nummer springen"
+
+#: ../remote/dbus/rb-client.c:71
+msgid "Jump to previous song"
+msgstr "Naar vorige nummer springen"
+
+#: ../remote/dbus/rb-client.c:73
+msgid "Resume playback if currently paused"
+msgstr "Afspelen hervatten indien gepauzeerd"
+
+#: ../remote/dbus/rb-client.c:74
+msgid "Pause playback if currently playing"
+msgstr "Pauzeren indien aan het afspelen"
+
+#: ../remote/dbus/rb-client.c:75
+msgid "Toggle play/pause mode"
+msgstr "Afspelen/pauzeren-modus omschakelen"
+
+#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:78
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Een opgegeven URI afspelen, indien nodig importeren"
+
+#: ../remote/dbus/rb-client.c:78
+msgid "URI to play"
+msgstr "Af te spelen URI"
+
+#: ../remote/dbus/rb-client.c:79
+msgid "Add specified tracks to the play queue"
+msgstr "Specifieke nummers toevoegen aan de wachtrij"
+
+# wat is dan de zin van een wachtrij, vraag ik mij af? (tino)
+#: ../remote/dbus/rb-client.c:80
+msgid "Empty the play queue before adding new tracks"
+msgstr "De wachtrij wissen bij het toevoegen van nieuwe nummers"
+
+# afdrukken?
+#: ../remote/dbus/rb-client.c:82
+msgid "Print the title and artist of the playing song"
+msgstr "Titel en artiest van het beluisterde nummer afdrukken"
+
+#: ../remote/dbus/rb-client.c:83
+msgid "Print formatted details of the song"
+msgstr "Opgemaakte details van het nummer afdrukken"
+
+#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:2014
+#: ../shell/rb-tray-icon.c:167
+msgid "Not playing"
+msgstr "Afspelen gestopt"
+
 #: ../rhythmdb/rhythmdb.c:470 ../rhythmdb/rhythmdb.c:1963
 #: ../rhythmdb/rhythmdb.c:2088
 #, c-format
@@ -1368,7 +1457,9 @@ msgstr "Alle"
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
-msgstr "De database is aangemaakt door een nieuwere versie van rhythmbox. Deze versie van rhythmbox kan de database niet lezen."
+msgstr ""
+"De database is aangemaakt door een nieuwere versie van rhythmbox. Deze "
+"versie van rhythmbox kan de database niet lezen."
 
 #: ../shell/main.c:115
 msgid "Enable debug output"
@@ -1400,10 +1491,6 @@ msgstr "Pad naar het database-bestand"
 #: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Pad naar het luisterlijst-bestand"
-
-#: ../shell/main.c:122
-msgid "Quit Rhythmbox"
-msgstr "Rhythmbox afsluiten"
 
 #: ../shell/main.c:123
 msgid "[URI...]"
@@ -1783,10 +1870,6 @@ msgstr "Overzetten van nummer %d van %d"
 #, c-format
 msgid "by %s from %s"
 msgstr "door %s van %s"
-
-#: ../shell/rb-shell.c:2014 ../shell/rb-tray-icon.c:167
-msgid "Not playing"
-msgstr "Afspelen gestopt"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: ../shell/rb-shell.c:2017
@@ -2277,25 +2360,25 @@ msgstr "_Verbinding verbreken"
 msgid "Disconnect from DAAP share"
 msgstr "Verbinding met de DAAP-bron verbreken"
 
-#: ../sources/rb-daap-source.c:703
+#: ../sources/rb-daap-source.c:704
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr ""
 "De muziekbron '%s' vereist een wachtwoord om een verbinding te kunnen maken"
 
-#: ../sources/rb-daap-source.c:705
+#: ../sources/rb-daap-source.c:706
 msgid "Password Required"
 msgstr "Wachtwoord vereist"
 
-#: ../sources/rb-daap-source.c:776
+#: ../sources/rb-daap-source.c:777
 msgid "Connecting to music share"
 msgstr "Verbinden met muziekbron"
 
-#: ../sources/rb-daap-source.c:783
+#: ../sources/rb-daap-source.c:784
 msgid "Retrieving songs from music share"
 msgstr "Nummers van de muziekbron ophalen"
 
-#: ../sources/rb-daap-source.c:855
+#: ../sources/rb-daap-source.c:856
 msgid "Could not connect to shared music"
 msgstr "Kon geen verbinding maken met de muziekbron"
 
@@ -3350,9 +3433,6 @@ msgstr "Onbekende locatie:"
 #~ msgid "_File Name:"
 #~ msgstr "_Bestandsnaam:"
 
-#~ msgid "Configuration system error"
-#~ msgstr "Fout in configuratiesysteem"
-
 #~ msgid "Import _Audio CD..."
 #~ msgstr "Audio-_cd importeren..."
 
@@ -3469,9 +3549,6 @@ msgstr "Onbekende locatie:"
 #~ msgid "Print the playing song length in seconds and exit"
 #~ msgstr "Lengte van huidige nummer in seconden afdrukken en afsluiten"
 
-#~ msgid "Print the current elapsed time of playing song and exit"
-#~ msgstr "Verlopen tijd van huidige nummer afdrukken en afsluiten"
-
 #~ msgid "Seek to the specified time in playing song if possible and exit"
 #~ msgstr ""
 #~ "Zo mogelijk doorspoelen naar aangegeven tijd in huidige nummer en "
@@ -3482,22 +3559,10 @@ msgstr "Onbekende locatie:"
 #~ "Zo mogelijk de aangegeven tijd vooruitspoelen in huidige nummer en "
 #~ "afsluiten"
 
-#~ msgid "Toggle play/pause mode"
-#~ msgstr "Afspelen/pauzeren-modus omschakelen"
-
-#~ msgid "Resume playback if currently paused"
-#~ msgstr "Afspelen hervatten indien er nu wordt gepauzeerd"
-
 # standaard:
 # aandacht
 #~ msgid "Focus the running player"
 #~ msgstr "Muziekspeler focus geven"
-
-#~ msgid "Jump to previous song"
-#~ msgstr "Naar vorige nummer springen"
-
-#~ msgid "Jump to next song"
-#~ msgstr "Naar volgende nummer springen"
 
 # aan/uit(zetten)
 #~ msgid "Toggle shuffling"
