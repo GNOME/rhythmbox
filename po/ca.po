@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.9.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-24 17:41+0200\n"
-"PO-Revision-Date: 2006-09-24 17:54+0200\n"
+"POT-Creation-Date: 2006-09-29 14:50+0200\n"
+"PO-Revision-Date: 2006-09-29 14:50+0200\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Voleu sobreescriure el fitxer «%s»?"
 
 #: ../backends/gstreamer/rb-player-gst.c:590 ../metadata/rb-metadata-gst.c:887
-#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:659
+#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:660
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "No s'ha pogut crear l'element %s; comproveu la vostra instal·lació"
@@ -52,7 +52,8 @@ msgstr "S'ha produït un error de reproducció desconegut"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
-#: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1259
+#: ../podcast/rb-podcast-properties-dialog.c:502
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1259
 #: ../rhythmdb/rhythmdb-tree.c:1110 ../rhythmdb/rhythmdb-tree.c:1114
 #: ../rhythmdb/rhythmdb-tree.c:1118 ../rhythmdb/rhythmdb-tree.c:1122
 #: ../shell/rb-shell-player.c:2821 ../sources/rb-audiocd-source.c:200
@@ -741,12 +742,23 @@ msgstr "%d de %b %I:%M %p"
 msgid "%b %d %Y"
 msgstr "%d de %b de %Y"
 
-#: ../lib/rb-util.c:599
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr ""
+"S'ha produït un error de la configuració del servidor intermediari d'HTTP"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr ""
+"El Rhythmbox no implementa la configuració automàtica del servidor "
+"intermediari"
+
+#: ../lib/rb-util.c:599 ../remote/dbus/rb-client.c:116
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:601
+#: ../lib/rb-util.c:601 ../remote/dbus/rb-client.c:118
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -891,68 +903,68 @@ msgstr "Les metadades d'aquest CD no són completes"
 msgid "Could not create CD lookup thread"
 msgstr "No s'ha pogut crear el fil de cerca de CD"
 
-#: ../player/rb-recorder-gst.c:540
+#: ../player/rb-recorder-gst.c:541
 msgid "Failed to create pipeline"
 msgstr "No s'ha pogut crear un conducte"
 
-#: ../player/rb-recorder-gst.c:570
+#: ../player/rb-recorder-gst.c:571
 msgid "Could not access source pad"
 msgstr "No s'ha pogut accedir al bloc de fonts"
 
-#: ../player/rb-recorder-gst.c:677 ../player/rb-recorder-gst.c:683
+#: ../player/rb-recorder-gst.c:678 ../player/rb-recorder-gst.c:684
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "No s'ha pogut desenllaçar «%s»"
 
-#: ../player/rb-recorder-gst.c:724
+#: ../player/rb-recorder-gst.c:725
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "No s'ha pogut inicialitzar el planificador. Heu executat gst-register?"
 
-#: ../player/rb-recorder-gst.c:760 ../player/rb-recorder-gst.c:765
-#: ../player/rb-recorder-gst.c:831
+#: ../player/rb-recorder-gst.c:761 ../player/rb-recorder-gst.c:766
+#: ../player/rb-recorder-gst.c:832
 msgid "Could not get current track position"
 msgstr "No s'ha pogut obtenir la posició de la peça actual"
 
-#: ../player/rb-recorder-gst.c:817
+#: ../player/rb-recorder-gst.c:818
 msgid "Could not retrieve state from processing pipeline"
 msgstr "No s'ha pogut obtenir l'estat del conducte processador"
 
-#: ../player/rb-recorder-gst.c:882 ../player/rb-recorder-gst.c:934
+#: ../player/rb-recorder-gst.c:883 ../player/rb-recorder-gst.c:935
 msgid "Could not start pipeline playing"
 msgstr "No s'ha pogut iniciar la reproducció del conducte"
 
-#: ../player/rb-recorder-gst.c:897 ../player/rb-recorder-gst.c:945
+#: ../player/rb-recorder-gst.c:898 ../player/rb-recorder-gst.c:946
 msgid "Could not pause playback"
 msgstr "No s'ha pogut pausar la reproducció"
 
-#: ../player/rb-recorder-gst.c:1152
+#: ../player/rb-recorder-gst.c:1153
 msgid "Cannot find drive"
 msgstr "No es pot trobar la unitat"
 
-#: ../player/rb-recorder-gst.c:1215
+#: ../player/rb-recorder-gst.c:1216
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "No es pot trobar la unitat %s"
 
-#: ../player/rb-recorder-gst.c:1224
+#: ../player/rb-recorder-gst.c:1225
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "La unitat %s no és una gravadora"
 
-#: ../player/rb-recorder-gst.c:1390 ../player/rb-recorder-gst.c:1582
+#: ../player/rb-recorder-gst.c:1391 ../player/rb-recorder-gst.c:1583
 msgid "No writable drives found."
 msgstr "No s'ha trobat cap dispositiu escrivible."
 
-#: ../player/rb-recorder-gst.c:1532
+#: ../player/rb-recorder-gst.c:1533
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "No s'ha pogut obtenir la duració de la peça per al fitxer: %s"
 
-#: ../player/rb-recorder-gst.c:1591
+#: ../player/rb-recorder-gst.c:1592
 msgid "Could not determine audio track durations."
 msgstr "No s'ha pogut determinat la duració de les peçes."
 
-#: ../player/rb-recorder-gst.c:1639
+#: ../player/rb-recorder-gst.c:1642
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -961,7 +973,7 @@ msgstr ""
 "S'ha produït un error en escriure al CD:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1643
+#: ../player/rb-recorder-gst.c:1646
 msgid "There was an error writing to the CD"
 msgstr "S'ha produït un error en escriure al CD"
 
@@ -972,6 +984,14 @@ msgstr "Visualització d'art"
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Displays art for the playing track"
 msgstr "Mostra art per a la peça en reproducció"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+msgid "Audio CD"
+msgstr "CD d'àudio"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+msgid "Support for audio CDs"
+msgstr "Implementació de CD d'àudio"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm Profile "
@@ -1043,7 +1063,8 @@ msgstr "Gravador de CD"
 
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
 msgid "Support for recording audio CDs from playlists"
-msgstr "Implementació de gravació de CD d'àudio a partir de llistes de reproducció"
+msgstr ""
+"Implementació de gravació de CD d'àudio a partir de llistes de reproducció"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
 msgid "Generic Audio Player"
@@ -1217,6 +1238,72 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr "No baixat"
 
+#: ../remote/dbus/rb-client.c:64
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "No inicies una nova instància del Rhythmbox"
+
+#: ../remote/dbus/rb-client.c:65 ../shell/main.c:122
+msgid "Quit Rhythmbox"
+msgstr "Surt del Rhythmbox"
+
+#: ../remote/dbus/rb-client.c:67
+msgid "Don't present an existing Rhythmbox window"
+msgstr "No mostres una finestra del Rhythmbox existent"
+
+#: ../remote/dbus/rb-client.c:68
+msgid "Hide the Rhythmbox window"
+msgstr "Amaga la finestra del Rhythmbox"
+
+#: ../remote/dbus/rb-client.c:70
+msgid "Jump to next song"
+msgstr "Salta a la següent cançó"
+
+#: ../remote/dbus/rb-client.c:71
+msgid "Jump to previous song"
+msgstr "Salta a l'anterior cançó"
+
+#: ../remote/dbus/rb-client.c:73
+msgid "Resume playback if currently paused"
+msgstr "Torna a reproduir si s'estava fent una pausa"
+
+#: ../remote/dbus/rb-client.c:74
+msgid "Pause playback if currently playing"
+msgstr "Fes una pausa de la reproducció si s'està reproduint"
+
+#: ../remote/dbus/rb-client.c:75
+msgid "Toggle play/pause mode"
+msgstr "Commuta el mode reproducció/pausa"
+
+#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:78
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Reprodueix una URI especificada, important-la si és necessari"
+
+#: ../remote/dbus/rb-client.c:78
+msgid "URI to play"
+msgstr "URI a reproduir"
+
+#: ../remote/dbus/rb-client.c:79
+msgid "Add specified tracks to the play queue"
+msgstr "Afegeix les cançons especificades a la cua de reproducció"
+
+#: ../remote/dbus/rb-client.c:80
+msgid "Empty the play queue before adding new tracks"
+msgstr "Buida la cua de reproducció abans d'afegir cançons noves"
+
+#: ../remote/dbus/rb-client.c:82
+msgid "Print the title and artist of the playing song"
+msgstr "Mostra el títol i artista de la cançó que s'està reproduint"
+
+#: ../remote/dbus/rb-client.c:83
+msgid "Print formatted details of the song"
+msgstr "Mostra detalls amb format de la cançó"
+
+#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:2014
+#: ../shell/rb-tray-icon.c:167
+msgid "Not playing"
+msgstr "No s'està reproduint"
+
 #: ../rhythmdb/rhythmdb.c:470 ../rhythmdb/rhythmdb.c:1963
 #: ../rhythmdb/rhythmdb.c:2088
 #, c-format
@@ -1299,7 +1386,9 @@ msgstr "Tots"
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
-msgstr "La base de dades ha estat creada per una versió posterior del Rhythmbox. Aquesta versió no la pot llegir."
+msgstr ""
+"La base de dades ha estat creada per una versió posterior del Rhythmbox. "
+"Aquesta versió no la pot llegir."
 
 #: ../shell/main.c:115
 msgid "Enable debug output"
@@ -1329,10 +1418,6 @@ msgstr "Camí al fitxer de base de dades a utilitzar"
 #: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Camí al fitxer de llistes de reproducció a utilitzar"
-
-#: ../shell/main.c:122
-msgid "Quit Rhythmbox"
-msgstr "Surt del Rhythmbox"
 
 #: ../shell/main.c:123
 msgid "[URI...]"
@@ -1690,10 +1775,6 @@ msgstr "S'està transferint la peça %d de %d"
 #, c-format
 msgid "by %s from %s"
 msgstr "per %s de l'àlbum %s"
-
-#: ../shell/rb-shell.c:2014 ../shell/rb-tray-icon.c:167
-msgid "Not playing"
-msgstr "No s'està reproduint"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: ../shell/rb-shell.c:2017
@@ -3193,9 +3274,6 @@ msgstr "La ubicació és desconeguda"
 #~ msgid "_File Name:"
 #~ msgstr "Nom del _fitxer:"
 
-#~ msgid "Configuration system error"
-#~ msgstr "S'ha produït un error del sistema de configuració"
-
 #~ msgid "Import _Audio CD..."
 #~ msgstr "Import_a un CD d'àudio..."
 
@@ -3318,10 +3396,6 @@ msgstr "La ubicació és desconeguda"
 #~ msgid "Print the playing song length in seconds and exit"
 #~ msgstr "Mostra la duració de la cançó que s'està reproduint i surt"
 
-#~ msgid "Print the current elapsed time of playing song and exit"
-#~ msgstr ""
-#~ "Mostra el temps transcorregut de la cançó que s'està reproduint i surt"
-
 #~ msgid "Seek to the specified time in playing song if possible and exit"
 #~ msgstr ""
 #~ "Cerca al temps especificat en la cançó que s'està reproduint, si és "
@@ -3333,23 +3407,8 @@ msgstr "La ubicació és desconeguda"
 #~ msgid "Set the rating of the currently playing song and exit"
 #~ msgstr "Especifica la puntuació de la cançó que s'està reproduïnt i surt."
 
-#~ msgid "Toggle play/pause mode"
-#~ msgstr "Commuta el mode reproducció/pausa"
-
-#~ msgid "Pause playback if currently playing"
-#~ msgstr "Fes una pausa de la reproducció si s'està reproduint"
-
-#~ msgid "Resume playback if currently paused"
-#~ msgstr "Torna a reproduir si s'estava fent una pausa"
-
 #~ msgid "Focus the running player"
 #~ msgstr "Focalitza el reproductor en execució"
-
-#~ msgid "Jump to previous song"
-#~ msgstr "Salta a l'anterior cançó"
-
-#~ msgid "Jump to next song"
-#~ msgstr "Salta a la següent cançó"
 
 #~ msgid "Toggle shuffling"
 #~ msgstr "Commuta l'ordre aleatori"
@@ -3666,9 +3725,6 @@ msgstr "La ubicació és desconeguda"
 #~ msgid "Start playing"
 #~ msgstr "Comença la reproducció"
 
-#~ msgid "Stop playing"
-#~ msgstr "Atura la reproducció"
-
 #~ msgid "_Cut"
 #~ msgstr "_Talla"
 
@@ -3693,9 +3749,6 @@ msgstr "La ubicació és desconeguda"
 
 #~ msgid "No information for this song found"
 #~ msgstr "No s'ha trobat informació per a aquesta cançó"
-
-#~ msgid "Audio CD track"
-#~ msgstr "Peça de CD d'àudio"
 
 #~ msgid "Failed to open file for reading"
 #~ msgstr "No s'ha pogut obrir el fitxer per lectura"
