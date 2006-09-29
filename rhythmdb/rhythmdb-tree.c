@@ -630,7 +630,7 @@ rhythmdb_tree_load (RhythmDB *rdb,
 	g_free (sax_handler);
 	g_free (ctx);
 
-	return ((*ctx->error) == NULL);
+	return (*error == NULL);
 }
 
 struct RhythmDBTreeSaveContext
