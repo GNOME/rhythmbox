@@ -1,5 +1,13 @@
 2006-09-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by:  William Jon McCann  <mccann@jhu.edu>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_load):
+	Use a local GError in case no error pointer pointer is passed in.
+	From bug #358396.
+
+2006-09-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_load):
 	Don't reference members of freed structures.
 

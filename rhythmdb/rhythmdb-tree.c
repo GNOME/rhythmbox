@@ -595,6 +595,10 @@ rhythmdb_tree_load (RhythmDB *rdb,
 	xmlSAXHandlerPtr sax_handler;
 	struct RhythmDBTreeLoadContext *ctx;
 	char *name;
+	GError *local_error;
+	gboolean ret;
+
+	local_error = NULL;
 
 	sax_handler = g_new0 (xmlSAXHandler, 1);
 	ctx = g_new0 (struct RhythmDBTreeLoadContext, 1);
@@ -607,7 +611,7 @@ rhythmdb_tree_load (RhythmDB *rdb,
 	ctx->db = db;
 	ctx->die = die;
 	ctx->buf = g_string_sized_new (RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE);
-	ctx->error = error;
+	ctx->error = &local_error;
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
@@ -625,12 +629,18 @@ rhythmdb_tree_load (RhythmDB *rdb,
 			rhythmdb_commit (RHYTHMDB (ctx->db));
 	}
 
+	ret = TRUE;
+	if (local_error != NULL) {
+		g_propagate_error (error, local_error);
+		ret = FALSE;
+	}
+
 	g_string_free (ctx->buf, TRUE);
 	g_free (name);
 	g_free (sax_handler);
 	g_free (ctx);
 
-	return (*error == NULL);
+	return ret;
 }
 
 struct RhythmDBTreeSaveContext
