@@ -1,3 +1,70 @@
+Overview of changes in Rhythmbox 0.9.6 "Live from the shores of lake Burley-Griffin"
+====================================================================================
+
+* fix DAAP seeking (Jonathan Matthew: #330410)
+* display track numbers in playlists too (Alex Lancaster: #329986)
+* retrieve playlsit and audio folder information from HAL (Jonathan Matthew: #333845)
+* make search box coloured when active (Nguyễn Thái Ngọc Duy: #344416)
+* improve ID3 tag writing (Jonathan Matthew, James Livingston)
+* load local cover art, and large improvements to plugin (Ed Catmur, Peter: #345688)
+* build fixes: Solaris (Brian Cameron: #345673)
+* Store MusicBrainz track IDs in the DB (Ståle Lyngaas: 343491)
+* fix some i18n issues (Nguyễn Thái Ngọc Duy: #345286)
+* add gnome-keyring support to DAAP (James Livingston, Jonathan Matthew: #330346)
+* allow hiding of plugins and disabler per-user plugins (James Livingston: #349395)
+* plugin improvements (James Livingston, Jonathan Matthew)
+* HTTP proxy-related fixes/improvements (Jonathan Matthew: #345712, #345895)
+* drag-and-drop improvements (James Livingston: #337657)
+* importing fixes (Ed Catmur, Jonathan Matthew)
+* add "property changed" signal for dbus clients (Jonathan Matthew: #332461)
+* turn CD burning into a plugin (William Jon McCann: #344300)
+* turn audio CD support into a plugin (James Livingston: #349415)
+* LIRC plugin fixes (Jonathan Matthew)
+* improve database thread usage
+* make DB handle unknown entry-types (Jonathan Matthew: #330226
+* improve plugin debug output, and bindings (James Livingston)
+* improve "import errors" and "missing files" source (William Jon McCann: #346800)
+* fix many memory leaks (William Jon McCann: #347446, #347446, #347446, #347446)
+* use GMapperFiles for DAAP transfers, fixing some iTunes clients (Jonathan Matthew: #330410)
+* add support for alternate playlists files (Alex Lancaster: #343659)
+* handle transparent panels correctly (DanWinship: #348208)
+* fix playlists subset searching (Jonathan Matthew: #348617)
+* make iradio playlists handling better (Jonathan Matthew: #347097)
+* use GOption instead og popt (William Jon McCann: #346930)
+* remember visibility for remote files, as well as local ones (James Livingston)
+* be smarter about creating podcast file names (Jonathan Matthew: #330766, #321991)
+* allow multiple selections in the Import Folder dialog (Christian Becke: #351414)
+
+Plus the usual assortment of bug fixes, performance and memory improvements, and minor features.
+
+Updated Translations
+--------------------
+
+* bg	Rostislav Raykov
+* ca	Jordi Mallach
+* de	Daniel Schindler, Hendrik Brandt
+* el	Kostas Papadimas, Dimitris Glezos
+* en_GB	David Lodge
+* es	Francisco Javier F. Serrador, María Majadas
+* eu	Inaki Larranaga
+* fi	Ilkka Tuohela, Tommi Vainikainen
+* fr	Haïkel Guémar, Damien Durand
+* gl	Ignacio Casal Quinteiro
+* hu	Gabor Kelemen
+* it	Guilherme de S. Pastore
+* lt	Žygimantas Beručka
+* lv	Raivis Dejus
+* mk	Jovan Naumovski
+* ne	Pawan Chitrakar
+* nl	Tino Meinen
+* sv	Fredrik Tuomas
+* th	Theppitak Karoonboonyanan
+* vi	Clytie Siddall
+* zh_CN	Funda Wang
+* zn_HK	Abel Cheung
+* zn_TW	Abel Cheung
+
+
 Overview of Changes in Rhythmbox 0.9.5
 ======================================
 

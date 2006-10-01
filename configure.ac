@@ -4,7 +4,7 @@ AC_PREREQ(2.53)
 AC_INIT(shell)
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.9.5)
+AM_INIT_AUTOMAKE(rhythmbox, 0.9.6)
 
 AM_MAINTAINER_MODE
 
@@ -249,10 +249,9 @@ RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
-	      AC_HELP_STRING([--enable-tag-writing],
-			     [Enable tag writing support in rhythmbox **EXPERIMENTAL**]))
-if test x"$enable_tag_writing" = xyes; then
-   AC_MSG_WARN([Tag writing support is experimental, and may corrupt files, use at your own risk])
+	      AC_HELP_STRING([--disble-tag-writing],
+			     [Disable tag writing support in rhythmbox]))
+if test x"$enable_tag_writing" != xno; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
 
@@ -278,17 +277,22 @@ AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
 
 dnl ipod writing
 AC_ARG_ENABLE(ipod-writing,
-	      AC_HELP_STRING([--enable-ipod-writing],
-			     [Enable support for writing to ipods in rhythmbox **EXPERIMENTAL**]))
-if test x"$enable_ipod_writing" = xyes; then
-   if test "x$use_ipod" != xyes -a "x$enable_ipod_writing" = xyes; then
-      AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
+	      AC_HELP_STRING([--disable-ipod-writing],
+			     [Disable support for writing to ipods in rhythmbox]))
+if test x"$enable_ipod_writing" != xno; then
+   if test "x$use_ipod" != xyes; then
+      if test "x$enable_ipod_writing" = xyes; then
+         AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
+      fi
+      enable_ipod_writing = no
+   elif test "x$with_track_transfer" != xyes; then
+      if test "x$enable_ipod_writing" = xyes; then
+         AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
+      fi
+      enable_ipod_writing = no
+   else
+      AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
    fi
-   if test "x$with_track_transfer" != xyes -a "x$enable_ipod_writing" = xyes; then
-      AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
-   fi
-   AC_MSG_WARN([iPod writing support is experimental, and may corrupt iPod databases, use at your own risk])
-   AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
 fi
 
 
@@ -994,8 +998,8 @@ if test x"${with_rhythmdb_debug}" != x0; then
 fi
 
 
-if test x"$enable_tag_writing" = xyes; then
-        AC_MSG_NOTICE([** Tag writing is enabled - USE AT YOUR OWN RISK])
+if test x"$enable_tag_writing" != xno; then
+        AC_MSG_NOTICE([** Tag writing is enabled])
 else
 	AC_MSG_NOTICE([   Tag writing is disabled])
 fi
@@ -1004,7 +1008,7 @@ if test x"$with_track_transfer" = xyes; then
 else
 	AC_MSG_NOTICE([   Track transfer is disabled])
 fi
-if test x"$enable_ipod_writing" = xyes; then
+if test x"$enable_ipod_writing" != xno; then
         AC_MSG_NOTICE([** iPod write support is enabled])
 else
 	AC_MSG_NOTICE([   iPod write support is disabled])
