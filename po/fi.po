@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-24 15:50+0300\n"
-"PO-Revision-Date: 2006-09-28 22:37+0300\n"
+"POT-Creation-Date: 2006-10-01 06:57+0300\n"
+"PO-Revision-Date: 2006-10-01 07:01+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Haluatko kirjoittaa tiedoston \"%s\" yli?"
 
 #: ../backends/gstreamer/rb-player-gst.c:590 ../metadata/rb-metadata-gst.c:887
-#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:659
+#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:660
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Elementin %s luonti epäonnistui: tarkista asennuksesi"
@@ -56,9 +56,10 @@ msgstr "Tuntematon virhe toistettaessa"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
-#: ../podcast/rb-podcast-properties-dialog.c:502 ../rhythmdb/rhythmdb.c:1259
-#: ../rhythmdb/rhythmdb-tree.c:1110 ../rhythmdb/rhythmdb-tree.c:1114
-#: ../rhythmdb/rhythmdb-tree.c:1118 ../rhythmdb/rhythmdb-tree.c:1122
+#: ../podcast/rb-podcast-properties-dialog.c:502
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1259
+#: ../rhythmdb/rhythmdb-tree.c:1120 ../rhythmdb/rhythmdb-tree.c:1124
+#: ../rhythmdb/rhythmdb-tree.c:1128 ../rhythmdb/rhythmdb-tree.c:1132
 #: ../shell/rb-shell-player.c:2821 ../sources/rb-audiocd-source.c:200
 #: ../sources/rb-ipod-source.c:232 ../sources/rb-iradio-source.c:483
 #: ../sources/rb-podcast-source.c:1633 ../widgets/rb-entry-view.c:776
@@ -743,12 +744,20 @@ msgstr "%b %d %I:%M %p"
 msgid "%b %d %Y"
 msgstr "%b %d %Y"
 
-#: ../lib/rb-util.c:599
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr "HTTP-välipalvelimen asetusvirhe"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr "Rhythmbox ei tue automaattista välimuistiasetusten hakua"
+
+#: ../lib/rb-util.c:599 ../remote/dbus/rb-client.c:116
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:601
+#: ../lib/rb-util.c:601 ../remote/dbus/rb-client.c:118
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -890,68 +899,68 @@ msgstr "CD-levyn metatiedot eivät ole täydelliset"
 msgid "Could not create CD lookup thread"
 msgstr "CD-levyn etsintäsäiettä ei voi luoda"
 
-#: ../player/rb-recorder-gst.c:540
+#: ../player/rb-recorder-gst.c:541
 msgid "Failed to create pipeline"
 msgstr "Liukuhihnan luonti epäonnistui"
 
-#: ../player/rb-recorder-gst.c:570
+#: ../player/rb-recorder-gst.c:571
 msgid "Could not access source pad"
 msgstr "Lähdettä ei voitu avata"
 
-#: ../player/rb-recorder-gst.c:677 ../player/rb-recorder-gst.c:683
+#: ../player/rb-recorder-gst.c:678 ../player/rb-recorder-gst.c:684
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "'%s' poistaminen epäonnistui"
 
-#: ../player/rb-recorder-gst.c:724
+#: ../player/rb-recorder-gst.c:725
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Skeduleria ei voi alustaa. Haluatko suorittaa käskyn gst-register?"
 
-#: ../player/rb-recorder-gst.c:760 ../player/rb-recorder-gst.c:765
-#: ../player/rb-recorder-gst.c:831
+#: ../player/rb-recorder-gst.c:761 ../player/rb-recorder-gst.c:766
+#: ../player/rb-recorder-gst.c:832
 msgid "Could not get current track position"
 msgstr "Soivan kappaleen kohtaa ei voi määrittää"
 
-#: ../player/rb-recorder-gst.c:817
+#: ../player/rb-recorder-gst.c:818
 msgid "Could not retrieve state from processing pipeline"
 msgstr "Tilaa ei voi hakea "
 
-#: ../player/rb-recorder-gst.c:882 ../player/rb-recorder-gst.c:934
+#: ../player/rb-recorder-gst.c:883 ../player/rb-recorder-gst.c:935
 msgid "Could not start pipeline playing"
 msgstr "Putkeen soittamisen aloitus epäonnistui"
 
-#: ../player/rb-recorder-gst.c:897 ../player/rb-recorder-gst.c:945
+#: ../player/rb-recorder-gst.c:898 ../player/rb-recorder-gst.c:946
 msgid "Could not pause playback"
 msgstr "Soiton pysäytys epäonnistui"
 
-#: ../player/rb-recorder-gst.c:1152
+#: ../player/rb-recorder-gst.c:1153
 msgid "Cannot find drive"
 msgstr "Asemaa ei löydy"
 
-#: ../player/rb-recorder-gst.c:1215
+#: ../player/rb-recorder-gst.c:1216
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Asemaa %s ei löydy"
 
-#: ../player/rb-recorder-gst.c:1224
+#: ../player/rb-recorder-gst.c:1225
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "Asema %s ei ole kirjoitin"
 
-#: ../player/rb-recorder-gst.c:1390 ../player/rb-recorder-gst.c:1582
+#: ../player/rb-recorder-gst.c:1391 ../player/rb-recorder-gst.c:1583
 msgid "No writable drives found."
 msgstr "Kirjoittavia asemia ei löytynyt."
 
-#: ../player/rb-recorder-gst.c:1532
+#: ../player/rb-recorder-gst.c:1533
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Kappaleen kestoa ei voi lukea tiedostosta: %s"
 
-#: ../player/rb-recorder-gst.c:1591
+#: ../player/rb-recorder-gst.c:1592
 msgid "Could not determine audio track durations."
 msgstr "Kappaleiden pituuksia ei voi määrittää."
 
-#: ../player/rb-recorder-gst.c:1639
+#: ../player/rb-recorder-gst.c:1642
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -960,7 +969,7 @@ msgstr ""
 "Virhe kirjoitettaessa CD-levylle:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1643
+#: ../player/rb-recorder-gst.c:1646
 msgid "There was an error writing to the CD"
 msgstr "Virhe kirjoitettaessa CD-levylle"
 
@@ -971,6 +980,14 @@ msgstr "Kansikuvien näyttäminen"
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Displays art for the playing track"
 msgstr "Näyttää levyn kansikuva soivalle kappaleelle"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+msgid "Audio CD"
+msgstr "Ääni-CD"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+msgid "Support for audio CDs"
+msgstr "Tuki ääni-CD-levyille"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm Profile "
@@ -1216,6 +1233,72 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr "Ei noudettu"
 
+#: ../remote/dbus/rb-client.c:64
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "Älä käynnistä uutta rhythmbox-soitinta"
+
+#: ../remote/dbus/rb-client.c:65 ../shell/main.c:122
+msgid "Quit Rhythmbox"
+msgstr "Lopeta musiikkisoitin"
+
+#: ../remote/dbus/rb-client.c:67
+msgid "Don't present an existing Rhythmbox window"
+msgstr "Älä näytä olemassaolevaa rhythmbox-ikkunaa"
+
+#: ../remote/dbus/rb-client.c:68
+msgid "Hide the Rhythmbox window"
+msgstr "Piilota rhythmbox-ikkuna"
+
+#: ../remote/dbus/rb-client.c:70
+msgid "Jump to next song"
+msgstr "Hyppää seuraavaan kappaleeseen"
+
+#: ../remote/dbus/rb-client.c:71
+msgid "Jump to previous song"
+msgstr "Hyppää edelliseen kappaleeseen"
+
+#: ../remote/dbus/rb-client.c:73
+msgid "Resume playback if currently paused"
+msgstr "Jatka toistoa, jos toisto on pysäytetty"
+
+#: ../remote/dbus/rb-client.c:74
+msgid "Pause playback if currently playing"
+msgstr "Pysäytä toisto, jos ollaan soittamassa"
+
+#: ../remote/dbus/rb-client.c:75
+msgid "Toggle play/pause mode"
+msgstr "Vaihtele soiton/pysäytyksen tilaa"
+
+#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:78
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Toista annettu URI, tuoden se tarvittaessa"
+
+#: ../remote/dbus/rb-client.c:78
+msgid "URI to play"
+msgstr "Toistettava URI"
+
+#: ../remote/dbus/rb-client.c:79
+msgid "Add specified tracks to the play queue"
+msgstr "Lisää annetut kappaleet soittojonoon"
+
+#: ../remote/dbus/rb-client.c:80
+msgid "Empty the play queue before adding new tracks"
+msgstr "Tyhjennä soittojono ennen uusien kappaleiden lisäämistä"
+
+#: ../remote/dbus/rb-client.c:82
+msgid "Print the title and artist of the playing song"
+msgstr "Näytä soitettavan kappaleen nimi ja esittäjä"
+
+#: ../remote/dbus/rb-client.c:83
+msgid "Print formatted details of the song"
+msgstr "Näytä muotoillut yksityiskohdat kappaleesta"
+
+#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:2014
+#: ../shell/rb-tray-icon.c:167
+msgid "Not playing"
+msgstr "Soitto pysäytetty"
+
 #: ../rhythmdb/rhythmdb.c:470 ../rhythmdb/rhythmdb.c:1963
 #: ../rhythmdb/rhythmdb.c:2088
 #, c-format
@@ -1297,8 +1380,8 @@ msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
 msgstr ""
-"Musiikkitietokanta on luotu tätä versiota uudemmalla rhythmboxin "
-"versiolla, eikä sitä voida lukea tällä ohjelmalla."
+"Musiikkitietokanta on luotu tätä versiota uudemmalla rhythmboxin versiolla, "
+"eikä sitä voida lukea tällä ohjelmalla."
 
 #: ../shell/main.c:115
 msgid "Enable debug output"
@@ -1328,10 +1411,6 @@ msgstr "Käytettävän tietokantatiedoston polku"
 #: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Käytettävän soittolistatiedoston polkunimi"
-
-#: ../shell/main.c:122
-msgid "Quit Rhythmbox"
-msgstr "Lopeta musiikkisoitin"
 
 #: ../shell/main.c:123
 msgid "[URI...]"
@@ -1689,10 +1768,6 @@ msgstr "Siirretään kappaletta %d/%d"
 #, c-format
 msgid "by %s from %s"
 msgstr "esittäjä %s levyltä %s"
-
-#: ../shell/rb-shell.c:2014 ../shell/rb-tray-icon.c:167
-msgid "Not playing"
-msgstr "Soitto pysäytetty"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: ../shell/rb-shell.c:2017
@@ -2160,24 +2235,24 @@ msgstr "_Katkaise yhteys"
 msgid "Disconnect from DAAP share"
 msgstr "Katkaise yhteys DAAP-jakoon"
 
-#: ../sources/rb-daap-source.c:703
+#: ../sources/rb-daap-source.c:704
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Musiikkijakoon '%s' yhteydenotto vaatii salasanan"
 
-#: ../sources/rb-daap-source.c:705
+#: ../sources/rb-daap-source.c:706
 msgid "Password Required"
 msgstr "Salasana vaaditaan"
 
-#: ../sources/rb-daap-source.c:776
+#: ../sources/rb-daap-source.c:777
 msgid "Connecting to music share"
 msgstr "Yhdistetään musiikkijakoon"
 
-#: ../sources/rb-daap-source.c:783
+#: ../sources/rb-daap-source.c:784
 msgid "Retrieving songs from music share"
 msgstr "Haetaan kappaleita musiikkijaosta"
 
-#: ../sources/rb-daap-source.c:855
+#: ../sources/rb-daap-source.c:856
 msgid "Could not connect to shared music"
 msgstr "Jaettuun musiikkiin ei saatu yhteyttä"
 
@@ -3183,9 +3258,6 @@ msgstr "Työpöydällä"
 msgid "Unknown location"
 msgstr "Tuntematon sijainti"
 
-#~ msgid "Configuration system error"
-#~ msgstr "Asetusjärjestelmän virhe"
-
 #~ msgid "Import _Audio CD..."
 #~ msgstr "Tuo _CD-levy..."
 
@@ -3298,9 +3370,6 @@ msgstr "Tuntematon sijainti"
 #~ msgid "Print the playing song length in seconds and exit"
 #~ msgstr "Näytä soitettavan kappaleen pituus sekunteina ja poistu"
 
-#~ msgid "Print the current elapsed time of playing song and exit"
-#~ msgstr "Näytä soitettavan tiedoston soitettu aika ja poistu"
-
 #~ msgid "Seek to the specified time in playing song if possible and exit"
 #~ msgstr ""
 #~ "Siirry annetuun aikaan soitettavassa kappalessa, jos mahdollista, ja "
@@ -3312,23 +3381,8 @@ msgstr "Tuntematon sijainti"
 #~ msgid "Set the rating of the currently playing song and exit"
 #~ msgstr "Arvostele soiva kappale ja poistu"
 
-#~ msgid "Toggle play/pause mode"
-#~ msgstr "Vaihtele soiton/pysäytyksen tilaa"
-
-#~ msgid "Pause playback if currently playing"
-#~ msgstr "Pysäytä toisto, jos ollaan soittamassa"
-
-#~ msgid "Resume playback if currently paused"
-#~ msgstr "Jatka toistoa, jos toisto on pysäytetty"
-
 #~ msgid "Focus the running player"
 #~ msgstr "Kohdista suoritettavana olevaan soittimeen"
-
-#~ msgid "Jump to previous song"
-#~ msgstr "Hyppää edelliseen kappaleeseen"
-
-#~ msgid "Jump to next song"
-#~ msgstr "Hyppää seuraavaan kappaleeseen"
 
 #~ msgid "Toggle shuffling"
 #~ msgstr "Vaihtele satunnaissoittoa"
