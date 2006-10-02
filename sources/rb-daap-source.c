@@ -317,6 +317,8 @@ rb_daap_source_new (RBShell *shell,
 
 	g_object_get (shell, "db", &db, NULL);
 	type = rhythmdb_entry_register_type (db, NULL);
+	type->save_to_disk = FALSE;
+	type->category = RHYTHMDB_ENTRY_NORMAL;
 	g_object_unref (db);
 
 	icon = rb_daap_get_icon (password_protected, FALSE);

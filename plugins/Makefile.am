@@ -4,6 +4,7 @@ SUBDIRS = 						\
 	generic-player					\
 	power-manager					\
 	audiocd						\
+	iradio						\
 	sample
 
 if WITH_AUDIOSCROBBLER

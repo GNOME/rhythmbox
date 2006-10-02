@@ -12,8 +12,6 @@ libsourcesimpl_la_SOURCES =		\
 	rb-browser-source.h	\
 	rb-library-source.c		\
 	rb-library-source.h		\
-	rb-iradio-source.c		\
-	rb-iradio-source.h		\
 	rb-podcast-source.c		\
 	rb-podcast-source.h		\
 	rb-removable-media-source.c	\

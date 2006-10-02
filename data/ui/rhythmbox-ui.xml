@@ -16,7 +16,7 @@
 	<separator name="MusicPlaylistSeparator1"/>
 	<menuitem name="MusicPlaylistDeletePlaylistMenu" action="MusicPlaylistDeletePlaylist"/>
       </menu>
-      <menuitem name="MusicNewInternetRadioStationMenu" action="MusicNewInternetRadioStation"/>
+      <placeholder name="MusicMenuNewPluginPlaceholder" />
       <menuitem name="MusicNewPodcastMenu" action="MusicNewPodcast"/>
       <separator/>
       <menuitem name="MusicPropertiesMenu" action="MusicProperties"/>
@@ -190,15 +190,6 @@
     <menuitem name="LibrarySrcPopupAddFolder" action="MusicImportFolder"/>
   </popup>
 
-  <popup name="IRadioSourcePopup">
-    <menuitem name="IRadioSrcPopupNewStation" action="MusicNewInternetRadioStation"/>
-  </popup>
-
-  <popup name="IRadioViewPopup">
-    <menuitem name="DeleteIRadioPopup" action="EditDelete"/>
-    <separator/>
-    <menuitem name="PropertiesIRadioPopup" action="MusicProperties"/>
-  </popup>
   <popup name="PodcastSourcePopup">
     <menuitem name="PodcastSrcPopupNew" action="MusicNewPodcast"/>
     <menuitem name="PodcastSrcPopupUpdateAllFeeds" action="PodcastUpdateAllFeeds"/>

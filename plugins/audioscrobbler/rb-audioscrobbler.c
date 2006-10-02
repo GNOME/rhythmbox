@@ -1007,9 +1007,8 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 	}
 
 	type = rhythmdb_entry_get_entry_type (entry);
-	if (type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
+	if (type->category != RHYTHMDB_ENTRY_NORMAL ||
 	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
-	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
 	    rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) != NULL) {
 		audioscrobbler->priv->should_queue = FALSE;
 		return;

@@ -55,11 +55,19 @@ typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
 typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
 
+enum RhythmDBEntryCategory {
+	RHYTHMDB_ENTRY_NORMAL,		/* anything that doesn't match the other categories */
+	RHYTHMDB_ENTRY_STREAM,		/* endless streams (eg shoutcast, last.fm) */
+	RHYTHMDB_ENTRY_CONTAINER,	/* things that point to other entries (eg podcast feeds) */
+	RHYTHMDB_ENTRY_VIRTUAL		/* import errors, ignored files */
+};
+
 typedef struct {
 	char 				*name;
 
 	guint				entry_type_data_size;
 	gboolean			save_to_disk;
+	enum RhythmDBEntryCategory	category;
 
 	/* virtual functions here */
 	RhythmDBEntryActionFunc		post_entry_create;
@@ -96,7 +104,6 @@ GType rhythmdb_query_get_type (void);
 #define RHYTHMDB_IS_QUERY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_QUERY))
 
 #define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
-#define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_POST (rhythmdb_entry_podcast_post_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_FEED (rhythmdb_entry_podcast_feed_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR (rhythmdb_entry_import_error_get_type ())
@@ -197,6 +204,10 @@ enum {
 	RHYTHMDB_PODCAST_STATUS_WAITING = 102,
 	RHYTHMDB_PODCAST_STATUS_PAUSED = 103,
 };
+
+/* commonly used extra entry metadata */
+#define RHYTHMDB_PROP_STREAM_SONG_TITLE		"rb:stream-song-title"
+#define RHYTHMDB_PROP_STREAM_SONG_ARTIST	"rb:stream-song-artist"
 
 GType rhythmdb_query_type_get_type (void);
 GType rhythmdb_prop_type_get_type (void);
@@ -411,7 +422,6 @@ RhythmDBEntryType rhythmdb_entry_register_type          (RhythmDB *db, const cha
 RhythmDBEntryType rhythmdb_entry_type_get_by_name       (RhythmDB *db, const char *name);
 
 RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
-RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
 RhythmDBEntryType rhythmdb_entry_podcast_post_get_type  (void);
 RhythmDBEntryType rhythmdb_entry_podcast_feed_get_type  (void);
 RhythmDBEntryType rhythmdb_entry_import_error_get_type	(void);

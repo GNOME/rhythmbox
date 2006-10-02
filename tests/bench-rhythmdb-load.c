@@ -90,7 +90,7 @@ main (int argc, char **argv)
 			wait_for_signal ();
 
 			rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_SONG);
-			rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
+			rhythmdb_entry_delete_by_type (db, rhythmdb_entry_type_get_by_name (db, "iradio"));
 			rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED);
 			rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_PODCAST_POST);
 		}

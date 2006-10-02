@@ -208,6 +208,8 @@ rb_ipod_source_new (RBShell *shell,
 
 	g_object_get (shell, "db", &db, NULL);
 	entry_type =  rhythmdb_entry_register_type (db, NULL);
+	entry_type->save_to_disk = FALSE;
+	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
 	g_object_unref (db);
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
@@ -949,10 +951,8 @@ impl_paste (RBSource *asource, GList *entries)
 		g_object_get (asource,
 			      "entry-type", &ipod_entry_type,
 			      NULL);
-		if (entry_type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION ||
-		    entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
-		    /*entry_type == RHYTHMDB_ENTRY_TYPE_PODCAST_EPISODE ||*/
-		    entry_type == ipod_entry_type) {
+		if (entry_type == ipod_entry_type ||
+		    entry_type->category != RHYTHMDB_ENTRY_NORMAL) {
 			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 			continue;
 		}

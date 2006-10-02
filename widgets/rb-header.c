@@ -36,6 +36,7 @@
 #include "rb-shell-player.h"
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
+#include "rhythmdb.h"
 
 static void rb_header_class_init (RBHeaderClass *klass);
 static void rb_header_init (RBHeader *header);
@@ -62,8 +63,6 @@ struct RBHeaderPrivate
 {
 	RhythmDB *db;
 	RhythmDBEntry *entry;
-
-	char *title;
 
 	RBShellPlayer *shell_player;
 
@@ -94,12 +93,13 @@ enum
 	PROP_DB,
 	PROP_SHELL_PLAYER,
 	PROP_ENTRY,
-	PROP_TITLE,
 	PROP_SEEKABLE,
 };
 
-#define SONG_MARKUP(xSONG) g_markup_printf_escaped ("<big><b>%s</b></big>", xSONG);
-#define SONG_MARKUP_ALBUM_ARTIST(xSONG, xALBUM, xARTIST) g_markup_printf_escaped ("<big><b>%s</b></big> %s <i>%s</i> %s <i>%s</i>", xSONG, _("by"), xARTIST, _("from"), xALBUM);
+#define TITLE_MARKUP(xTITLE) g_markup_printf_escaped ("<big><b>%s</b></big>", xTITLE)
+#define ALBUM_MARKUP(xALBUM) g_markup_printf_escaped (" %s <i>%s</i>", _("from"), xALBUM)
+#define ARTIST_MARKUP(xARTIST) g_markup_printf_escaped (" %s <i>%s</i>", _("by"), xARTIST)
+#define STREAM_MARKUP(xSTREAM) g_markup_printf_escaped (" (%s)", xSTREAM)
 
 G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_HBOX)
 
@@ -135,14 +135,6 @@ rb_header_class_init (RBHeaderClass *klass)
 							      "RBShellPlayer object",
 							      RB_TYPE_SHELL_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_TITLE,
-					 g_param_spec_string ("title",
-							      "title",
-							      "title",
-							      NULL,
-							      G_PARAM_READWRITE));
-
 	g_object_class_install_property (object_class,
 					 PROP_SEEKABLE,
 					 g_param_spec_boolean ("seekable",
@@ -270,10 +262,6 @@ rb_header_set_property (GObject *object,
 				  (GCallback) rb_header_elapsed_changed_cb,
 				  header);
 		break;
-	case PROP_TITLE:
-		g_free (header->priv->title);
-		header->priv->title = g_value_dup_string (value);
-		break;
 	case PROP_SEEKABLE:
 		header->priv->seekable = g_value_get_boolean (value);
 		break;
@@ -301,9 +289,6 @@ rb_header_get_property (GObject *object,
 	case PROP_SHELL_PLAYER:
 		g_value_set_object (value, header->priv->shell_player);
 		break;
-	case PROP_TITLE:
-		g_value_set_string (value, header->priv->title);
-		break;
 	case PROP_SEEKABLE:
 		g_value_set_boolean (value, header->priv->seekable);
 		break;
@@ -314,13 +299,13 @@ rb_header_get_property (GObject *object,
 }
 
 RBHeader *
-rb_header_new (RBShellPlayer *shell_player)
+rb_header_new (RBShellPlayer *shell_player, RhythmDB *db)
 {
 	RBHeader *header;
 
 	header = RB_HEADER (g_object_new (RB_TYPE_HEADER,
 					  "shell-player", shell_player,
-					  "title", NULL,
+					  "db", db,
 					  "spacing", 6, NULL));
 
 	g_return_val_if_fail (header->priv != NULL, NULL);
@@ -339,10 +324,12 @@ rb_header_set_playing_entry (RBHeader *header,
 		      NULL);
 }
 
-void
-rb_header_set_title (RBHeader *header, const char *title)
+static void
+append_and_free (GString *str,
+		 char *text)
 {
-	g_object_set (header, "title", title, NULL);
+	g_string_append (str, text);
+	g_free (text);
 }
 
 void
@@ -353,23 +340,60 @@ rb_header_sync (RBHeader *header)
 	rb_debug ("syncing with entry = %p", header->priv->entry);
 
 	if (header->priv->entry != NULL) {
-		const char *song = header->priv->title;
+		const char *title;
 		const char *album;
 		const char *artist;
+		const char *stream_name = NULL;
+		char *streaming_title = NULL;
+		char *streaming_artist = NULL;
+		GValue *value;
+		GString *label_str;
 
 		gboolean have_duration = (header->priv->duration > 0);
 
+		title = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_TITLE);
 		album = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ALBUM);
 		artist = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ARTIST);
 
-		/* check for artist and album */
-		if ((album != NULL && artist != NULL)
-		    && (strlen (album) > 0 && strlen (artist) > 0)) {
-			label_text = SONG_MARKUP_ALBUM_ARTIST (song, album, artist);
-		} else {
-			label_text = SONG_MARKUP (song);
+		value = rhythmdb_entry_request_extra_metadata (header->priv->db,
+							       header->priv->entry,
+							       RHYTHMDB_PROP_STREAM_SONG_TITLE);
+		if (value != NULL) {
+			streaming_title = g_value_dup_string (value);
+			g_value_unset (value);
+			g_free (value);
+
+			/* use entry title as stream name */
+			stream_name = title;
+			title = streaming_title;
 		}
 
+		value = rhythmdb_entry_request_extra_metadata (header->priv->db,
+							       header->priv->entry,
+							       RHYTHMDB_PROP_STREAM_SONG_ARTIST);
+		if (value != NULL) {
+			streaming_artist = g_value_dup_string (value);
+			g_value_unset (value);
+			g_free (value);
+
+			/* override artist from entry */
+			artist = streaming_artist;
+		}
+
+		label_str = g_string_sized_new (100);
+
+		append_and_free (label_str, TITLE_MARKUP (title));
+
+		if (artist != NULL && artist[0] != '\0')
+			append_and_free (label_str, ARTIST_MARKUP (artist));
+
+		if (album != NULL && album[0] != '\0')
+			append_and_free (label_str, ALBUM_MARKUP (album));
+
+		if (stream_name && stream_name[0] != '\0')
+			append_and_free (label_str, STREAM_MARKUP (stream_name));
+
+		label_text = g_string_free (label_str, FALSE);
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 
@@ -380,7 +404,7 @@ rb_header_sync (RBHeader *header)
 		char *tmp;
 
 		rb_debug ("not playing");
-		label_text = SONG_MARKUP (_("Not Playing"));
+		label_text = TITLE_MARKUP (_("Not Playing"));
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
 		g_free (label_text);
 

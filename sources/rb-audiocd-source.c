@@ -166,6 +166,7 @@ rb_audiocd_source_new (RBShell *shell,
 	entry_type =  rhythmdb_entry_register_type (db, NULL);
 	g_object_unref (db);
 
+	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
 	/* TODO same the metadata somewhere */
 	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;

@@ -1,0 +1,19 @@
+<ui>
+  <menubar name="MenuBar">
+    <menu name="MusicMenu" action="Music">
+      <placeholder name="MusicMenuNewPluginPlaceholder">
+        <menuitem name="MusicNewInternetRadioStationMenu" action="MusicNewInternetRadioStation"/>
+      </placeholder>
+    </menu>
+  </menubar>
+
+  <popup name="IRadioSourcePopup">
+    <menuitem name="IRadioSrcPopupNewStation" action="MusicNewInternetRadioStation"/>
+  </popup>
+
+  <popup name="IRadioViewPopup">
+    <menuitem name="DeleteIRadioPopup" action="EditDelete"/>
+    <separator/>
+    <menuitem name="PropertiesIRadioPopup" action="MusicProperties"/>
+  </popup>
+</ui>

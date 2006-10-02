@@ -1,5 +1,78 @@
 2006-10-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_register_core_entry_types),
+	(rhythmdb_entry_podcast_post_get_type):
+	* rhythmdb/rhythmdb.h:
+	* tests/bench-rhythmdb-load.c: (main):
+	Add definitions for some common extra-metadata fields,
+	remove iradio entry type definition, add the concept of entry type
+	categories, define categories for the core entry types.
+	Categories are used to decide if an entry can be copied to a removable
+	device, if it should be reported to audioscrobbler, etc.
+
+	* shell/Makefile.am:
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_constructor), (rb_shell_player_init),
+	(rb_shell_player_get_property), (open_location_thread),
+	(rb_shell_player_open_location),
+	(rb_shell_player_sync_with_source),
+	(rb_shell_player_set_playing_source_internal), (tick_cb):
+	* shell/rb-shell.c: (construct_widgets), (construct_sources),
+	(rb_shell_player_elapsed_changed_cb):
+	Remove iradio-specific code, use extra metadata fields for streaming
+	title and artist name.
+
+	* data/ui/rhythmbox-ui.xml:
+	Add a placeholder for 'new ...' menu items.
+
+	* Makefile.am:
+	* sources/Makefile.am:
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* plugins/Makefile.am:
+	* plugins/iradio/Makefile.am:
+	* plugins/iradio/iradio-ui.xml:
+	* plugins/iradio/iradio.rb-plugin.desktop.in:
+	* plugins/iradio/rb-iradio-plugin.c: (rb_iradio_plugin_init),
+	(rb_iradio_plugin_finalize), (impl_activate), (impl_deactivate),
+	(rb_iradio_plugin_class_init):
+	iradio plugin, enabled and hidden by default.
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_song_changed_cb):
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* sources/rb-daap-source.c: (rb_daap_source_new):
+	* sources/rb-ipod-source.c: (rb_ipod_source_new), (impl_paste):
+	Define entry type categories, and use them where appropriate.
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_dispose),
+	(rb_iradio_source_constructor), (rb_iradio_source_new),
+	(impl_get_status), (impl_want_uri), (buffering_cb),
+	(check_entry_type), (streaming_title_request_cb),
+	(streaming_artist_request_cb), (extra_metadata_gather_cb),
+	(info_available_cb), (playing_entry_changed_cb),
+	(playing_source_changed_cb):
+	Move streaming metadata and buffering handling here from
+	rb-shell-player.c.  Emit extra-metadata notify signals when the streaming
+	title or artist changes, and handle request and gather signals for
+	those.
+
+	* widgets/rb-header.c: (rb_header_class_init),
+	(rb_header_set_property), (rb_header_get_property),
+	(rb_header_new), (append_and_free), (rb_header_sync):
+	* widgets/rb-header.h:
+	Rework to use streaming artist and title extra-metadata.
+	streaming-artist overrides entry artist, and streaming-title means
+	entry title is a stream name, displayed in brackets.
+
+	* doc/reference/Makefile.am:
+	* doc/reference/rhythmbox.types:
+	Remove iradio stuff from gtk-doc build.
+
+	Fixed #347097.
+
+2006-10-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch mostly by: Ed Catmur  <ed@catmur.co.uk>
 
 	* bindings/python/rhythmdb.defs:

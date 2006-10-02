@@ -844,5 +844,27 @@
 	<long>True if the audio cd plugin is hidden.</long>
 	</locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/iradio/active</key>
+	<applyto>/apps/rhythmbox/plugins/iradio/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the iradio plugin is enabled.</short>
+	<long>True if the iradio plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/iradio/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/iradio/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the iradio plugin is hidden.</short>
+	<long>True if the iradio plugin is hidden.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

@@ -54,7 +54,6 @@
 #include "rb-header.h"
 #include "totem-pl-parser.h"
 #include "rb-metadata.h"
-#include "rb-iradio-source.h"
 #include "rb-library-source.h"
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
@@ -125,13 +124,8 @@ static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, long elapsed, gpointer data);
 static void error_cb (RBPlayer *player, const GError *err, gpointer data);
-static void buffering_cb (RBPlayer *player, guint progress, gpointer data);
 static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
 
-static void info_available_cb (RBPlayer *player,
-                               RBMetaDataField field,
-                               GValue *value,
-                               gpointer data);
 static void rb_shell_player_set_play_order (RBShellPlayer *player,
 					    const gchar *new_val);
 static void rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
@@ -228,7 +222,6 @@ enum
 	PROP_STATUSBAR,
 	PROP_QUEUE_SOURCE,
 	PROP_QUEUE_ONLY,
-	PROP_STREAM_SONG,
 	PROP_PLAYING_FROM_QUEUE,
 	PROP_PLAYER,
 };
@@ -358,8 +351,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      G_TYPE_OBJECT,
 							      G_PARAM_READABLE));
 
-	/* If you change these, be sure to update the CORBA interface
-	 * in rb-remote-bonobo.c! */
 	g_object_class_install_property (object_class,
 					 PROP_PLAY_ORDER,
 					 g_param_spec_string ("play-order",
@@ -390,14 +381,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "RBStatusbar object",
 							      RB_TYPE_STATUSBAR,
 							      G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class,
-					 PROP_STREAM_SONG,
-					 g_param_spec_string ("stream-song",
-							      "stream-song",
-							      "Current stream song title",
-							      "",
-							      G_PARAM_READABLE));
 
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
@@ -493,6 +476,10 @@ rb_shell_player_constructor (GType type,
 
 	player = RB_SHELL_PLAYER (G_OBJECT_CLASS (rb_shell_player_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
+
+	player->priv->header_widget = rb_header_new (player, player->priv->db);
+	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
+	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
 	gtk_action_group_add_actions (player->priv->actiongroup,
 				      rb_shell_player_actions,
@@ -715,11 +702,6 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_container_set_border_width (GTK_CONTAINER (player), 3);
 
 	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
-				 "info",
-				 G_CALLBACK (info_available_cb),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
 				 "eos",
 				 G_CALLBACK (rb_shell_player_handle_eos),
 				 player, G_CONNECT_SWAPPED);
@@ -734,11 +716,6 @@ rb_shell_player_init (RBShellPlayer *player)
 				 G_CALLBACK (error_cb),
 				 player, 0);
 
-	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
-				 "buffering",
-				 G_CALLBACK (buffering_cb),
-				 player, 0);
-
 	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()),
 			  "volume-pre-unmount",
 			  G_CALLBACK (volume_pre_unmount_cb),
@@ -748,10 +725,6 @@ rb_shell_player_init (RBShellPlayer *player)
 		eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
 					    (GConfClientNotifyFunc)gconf_play_order_changed,
 					    player);
-
-	player->priv->header_widget = rb_header_new (player);
-	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
-	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
 
 	player->priv->volume = eel_gconf_get_float (CONF_STATE_VOLUME);
 
@@ -1016,9 +989,6 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_QUEUE_ONLY:
 		g_value_set_boolean (value, player->priv->queue_only);
 		break;
-	case PROP_STREAM_SONG:
-		g_value_set_string (value, player->priv->song);
-		break;
 	case PROP_PLAYING_FROM_QUEUE:
 		g_value_set_boolean (value, player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source));
 		break;
@@ -1122,10 +1092,6 @@ open_location_thread (OpenLocationThreadData *data)
 	TotemPlParser *playlist;
 	TotemPlParserResult playlist_result;
 
-	GDK_THREADS_ENTER ();
-	rb_statusbar_set_progress (data->player->priv->statusbar_widget, 0.0, _("Connecting"));
-	GDK_THREADS_LEAVE ();
-
 	playlist = totem_pl_parser_new ();
 	g_signal_connect_data (G_OBJECT (playlist), "entry",
 			       G_CALLBACK (playlist_entry_cb),
@@ -1175,10 +1141,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	g_free (unescaped);
 
 	was_playing = rb_player_playing (player->priv->mmplayer);
-
-	g_free (player->priv->song);
-	player->priv->song = NULL;
-	g_object_notify (G_OBJECT (player), "stream-song");
 
 	if (rb_source_try_playlist (player->priv->source)) {
 		OpenLocationThreadData *data;
@@ -2369,41 +2331,75 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 {
 	const char *entry_title = NULL;
 	const char *artist = NULL;
-	char *title;
+	const char *stream_name = NULL;
+	char *streaming_title = NULL;
+	char *streaming_artist = NULL;
 	RhythmDBEntry *entry;
+	char *title = NULL;
 
 	entry = rb_shell_player_get_playing_entry (player);
 	rb_debug ("playing source: %p, active entry: %p", player->priv->current_playing_source, entry);
 
 	if (entry != NULL) {
+		GValue *value;
+
 		entry_title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
 		artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+
+		value = rhythmdb_entry_request_extra_metadata (player->priv->db,
+							       entry,
+							       RHYTHMDB_PROP_STREAM_SONG_TITLE);
+		if (value != NULL) {
+			streaming_title = g_value_dup_string (value);
+			g_value_unset (value);
+			g_free (value);
+
+			rb_debug ("got streaming title \"%s\"", streaming_title);
+			/* use entry title for stream name */
+			stream_name = entry_title;
+			entry_title = streaming_title;
+		}
+
+		value = rhythmdb_entry_request_extra_metadata (player->priv->db,
+							       entry,
+							       RHYTHMDB_PROP_STREAM_SONG_ARTIST);
+		if (value != NULL) {
+			streaming_artist = g_value_dup_string (value);
+			g_value_unset (value);
+			g_free (value);
+
+			rb_debug ("got streaming artist \"%s\"", streaming_artist);
+			/* override artist from entry */
+			artist = streaming_artist;
+		}
 	}
 
-	if (player->priv->song && entry_title)
-		title = g_strdup_printf ("%s (%s)", player->priv->song,
-					 entry_title);
-	else if (entry_title && artist && artist[0] != '\0')
-		title = g_strdup_printf ("%s - %s", artist, entry_title);
-	else if (entry_title)
-		title = g_strdup (entry_title);
-	else
-		title = NULL;
+	if ((artist && artist[0] != '\0') || entry_title || stream_name) {
+
+		GString *title_str = g_string_sized_new (100);
+		if (artist && artist[0] != '\0') {
+			g_string_append (title_str, artist);
+			g_string_append (title_str, " - ");
+		}
+		if (entry_title != NULL)
+			g_string_append (title_str, entry_title);
+
+		if (stream_name != NULL)
+			g_string_append_printf (title_str, " (%s)", stream_name);
+
+		title = g_string_free (title_str, FALSE);
+	}
 
 	player->priv->elapsed = rb_player_get_time (player->priv->mmplayer);
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
+	g_free (title);
+
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED], 0,
 		       (guint) player->priv->elapsed);
 
 	/* Sync the header */
-	if (player->priv->song)
-		rb_header_set_title (player->priv->header_widget, title);
-	else
-		rb_header_set_title (player->priv->header_widget, entry_title);
-	g_free (title);
-
 	rb_header_set_playing_entry (player->priv->header_widget,
 				     entry,
 				     TRUE /*rb_player_seekable (player->priv->mmplayer)*/);
@@ -2412,6 +2408,9 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	if (entry != NULL) {
 		rhythmdb_entry_unref (entry);
 	}
+
+	g_free (streaming_artist);
+	g_free (streaming_title);
 }
 
 static void
@@ -2543,8 +2542,6 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	}
 
 	g_free (player->priv->url);
-	g_free (player->priv->song);
-	player->priv->song = NULL;
 	player->priv->url = NULL;
 
 	if (player->priv->current_playing_source == NULL)
@@ -2797,162 +2794,6 @@ tick_cb (RBPlayer *mmplayer,
 		}
 	}
 
-	GDK_THREADS_LEAVE ();
-}
-
-static void
-info_available_cb (RBPlayer *mmplayer,
-                   RBMetaDataField field,
-                   GValue *value,
-                   gpointer data)
-{
-        RBShellPlayer *player = RB_SHELL_PLAYER (data);
-        RhythmDBEntry *entry;
-        RhythmDBPropType entry_field = 0;
-        gboolean changed = FALSE;
-        gboolean set_field = FALSE;
-	RhythmDBEntryType type;
-
-        rb_debug ("info: %d", field);
-
-        /* Sanity check, this signal may come in after we stopped the
-         * player */
-        if (player->priv->source == NULL
-            || !rb_player_opened (player->priv->mmplayer)) {
-                rb_debug ("Got info_available but no playing source!");
-                return;
-        }
-
-        GDK_THREADS_ENTER ();
-
-	entry = rb_shell_player_get_playing_entry (player);
-        if (entry == NULL) {
-                rb_debug ("Got info_available but no playing entry!");
-                goto out_unlock;
-        }
-
-	type = rhythmdb_entry_get_entry_type (entry);
-	if (type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
-		rb_debug ("Got info_available but entry isn't an iradio station");
-		goto out_unlock;
-	}
-
-	switch (field)	{
-	case RB_METADATA_FIELD_TITLE:
-	{
-		char *song = g_value_dup_string (value);
-		if (!g_utf8_validate (song, -1, NULL)) {
-			g_warning ("Invalid UTF-8 from internet radio: %s", song);
-			goto out_unlock;
-		}
-
-		if ((!song && player->priv->song)
-		    || !player->priv->song
-		    || strcmp (song, player->priv->song)) {
-			changed = TRUE;
-			g_free (player->priv->song);
-			player->priv->song = song;
-			g_object_notify (G_OBJECT (player), "stream-song");
-		}
-		else
-			g_free (song);
-		break;
-	}
-	case RB_METADATA_FIELD_GENRE:
-	{
-		const char *genre = g_value_get_string (value);
-		const char *existing;
-		if (!g_utf8_validate (genre, -1, NULL)) {
-			g_warning ("Invalid UTF-8 from internet radio: %s", genre);
-			goto out_unlock;
-		}
-
-		/* check if the db entry already has a genre; if so, don't change it */
-		existing = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
-		if ((existing == NULL) ||
-		    (strcmp (existing, "") == 0) ||
-		    (strcmp (existing, _("Unknown")) == 0)) {
-			entry_field = RHYTHMDB_PROP_GENRE;
-			rb_debug ("setting genre of iradio station to %s", genre);
-			set_field = TRUE;
-		} else {
-			rb_debug ("iradio station already has genre: %s; ignoring %s", existing, genre);
-		}
-		break;
-	}
-	case RB_METADATA_FIELD_COMMENT:
-	{
-		const char *name = g_value_get_string (value);
-		const char *existing;
-		const char *location;
-
-		if (!g_utf8_validate (name, -1, NULL)) {
-			g_warning ("Invalid UTF-8 from internet radio: %s", name);
-			goto out_unlock;
-		}
-
-		/* check if the db entry already has a title; if so, don't change it.
-		 * consider title==URI to be the same as no title, since that's what
-		 * happens for stations imported by DnD or commandline args.
-		 * if the station title really is the same as the URI, then surely
-		 * the station title in the stream metadata will say that too..
-		 */
-		existing = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
-		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		if ((existing == NULL) ||
-		    (strcmp (existing, "") == 0) ||
-		    (strcmp (existing, location) == 0)) {
-			entry_field = RHYTHMDB_PROP_TITLE;
-			rb_debug ("setting title of iradio station to %s", name);
-			set_field = TRUE;
-		} else {
-			rb_debug ("iradio station already has title: %s; ignoring %s", existing, name);
-		}
-		break;
-	}
-	case RB_METADATA_FIELD_BITRATE:
-		if (!rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE)) {
-			gulong bitrate;
-
-			/* GStreamer sends us bitrate in bps, but we need it in kbps*/
-			bitrate = g_value_get_ulong (value);
-			g_value_set_ulong (value, bitrate/1000);
-
-			rb_debug ("setting bitrate of iradio station to %lu",
-				  g_value_get_ulong (value));
-			entry_field = RHYTHMDB_PROP_BITRATE;
-			set_field = TRUE;
-		}
-		break;
-	default:
-		break;
-	}
-
-	if (changed)
-		rb_shell_player_sync_with_source (player);
-
-	if (set_field && entry_field != 0) {
-		rhythmdb_entry_set (player->priv->db, entry, entry_field, value);
-		rhythmdb_commit (player->priv->db);
-	}
-
- out_unlock:
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
-	}
-
-	GDK_THREADS_LEAVE ();
-}
-
-static void
-buffering_cb (RBPlayer *mmplayer,
-	      guint progress,
-	      gpointer data)
-{
- 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-
-	GDK_THREADS_ENTER ();
-	rb_statusbar_set_progress (player->priv->statusbar_widget, ((double)progress)/100, _("Buffering"));
 	GDK_THREADS_LEAVE ();
 }
 

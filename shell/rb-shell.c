@@ -76,7 +76,6 @@
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
 #endif /* WITH_DAAP_SUPPORT */
-#include "rb-iradio-source.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "rb-static-playlist-source.h"
@@ -163,9 +162,6 @@ static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 static void rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
 						guint elapsed,
 						RBShell *shell);
-static void rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
-						    GParamSpec *arg,
-						    RBShell *shell);
 static void rb_shell_cmd_about (GtkAction *action,
 		                RBShell *shell);
 static void rb_shell_cmd_contents (GtkAction *action,
@@ -355,7 +351,6 @@ struct RBShellPrivate
 	GList *supported_media_extensions;
 
 	RBLibrarySource *library_source;
-	RBIRadioSource *iradio_source;
 	RBPodcastSource *podcast_source;
 	RBPlaylistSource *queue_source;
 	RBSource *missing_files_source;
@@ -1061,10 +1056,6 @@ construct_widgets (RBShell *shell)
 				 "elapsed_changed",
 				 G_CALLBACK (rb_shell_player_elapsed_changed_cb),
 				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
-				 "notify::stream-song",
-				 G_CALLBACK (rb_shell_player_stream_song_changed_cb),
-				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->ui_manager,
 							       shell->priv->db);
@@ -1178,8 +1169,6 @@ construct_sources (RBShell *shell)
 
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
-	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source), NULL);
 	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
 	shell->priv->missing_files_source = rb_missing_files_source_new (shell, shell->priv->library_source);
@@ -1983,20 +1972,6 @@ rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
 				    RBShell *shell)
 {
 	rb_shell_set_elapsed (shell, elapsed);
-}
-
-static void
-rb_shell_player_stream_song_changed_cb (RBShellPlayer *player,
-					GParamSpec *arg,
-					RBShell *shell)
-{
-	char *song;
-
-	g_object_get (player, "stream-song", &song, NULL);
-	if (song) {
-		rb_shell_hidden_notify (shell, 4000, song, NULL, NULL);
-		g_free (song);
-	}
 }
 
 static void

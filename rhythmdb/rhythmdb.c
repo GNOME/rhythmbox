@@ -3903,7 +3903,6 @@ static RhythmDBEntryType ignore_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 static RhythmDBEntryType import_error_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
 /* to be evicted */
-static RhythmDBEntryType iradio_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 static RhythmDBEntryType podcast_post_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 static RhythmDBEntryType podcast_feed_type = RHYTHMDB_ENTRY_TYPE_INVALID;
 
@@ -3914,26 +3913,24 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	song_type = rhythmdb_entry_register_type (db, "song");
 	rhythmdb_entry_register_type_alias (db, song_type, "0");
 	song_type->save_to_disk = TRUE;
+	song_type->category = RHYTHMDB_ENTRY_NORMAL;
 	song_type->can_sync_metadata = song_can_sync_metadata;
 
 	/* import errors */
 	import_error_type = rhythmdb_entry_register_type (db, "import-error");
 	import_error_type->get_playback_uri = (RhythmDBEntryStringFunc)rb_null_function;
+	import_error_type->category = RHYTHMDB_ENTRY_VIRTUAL;
 
 	/* ignored files */
 	ignore_type = rhythmdb_entry_register_type (db, "ignore");
 	ignore_type->save_to_disk = TRUE;
-
-	/* iradio streams */
-	iradio_type = rhythmdb_entry_register_type (db, "iradio");
-	iradio_type->save_to_disk = TRUE;
-	iradio_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
-	iradio_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
+	ignore_type->category = RHYTHMDB_ENTRY_VIRTUAL;
 
 	/* podcast posts */
 	podcast_post_type = rhythmdb_entry_register_type (db, "podcast-post");
 	podcast_post_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
 	podcast_post_type->save_to_disk = TRUE;
+	podcast_post_type->category = RHYTHMDB_ENTRY_NORMAL;
 	podcast_post_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
 	podcast_post_type->get_playback_uri = podcast_get_playback_uri;
 
@@ -3941,6 +3938,7 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	podcast_feed_type = rhythmdb_entry_register_type (db, "podcast-feed");
 	podcast_feed_type->entry_type_data_size = sizeof (RhythmDBPodcastFields);
 	podcast_feed_type->save_to_disk = TRUE;
+	podcast_feed_type->category = RHYTHMDB_ENTRY_VIRTUAL;
 	podcast_feed_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
 }
 
@@ -3962,14 +3960,8 @@ rhythmdb_entry_import_error_get_type (void)
 	return import_error_type;
 }
 
-RhythmDBEntryType
-rhythmdb_entry_iradio_get_type (void)
-{
-	return iradio_type;
-}
-
-RhythmDBEntryType
-rhythmdb_entry_podcast_post_get_type (void)
+RhythmDBEntryType 
+rhythmdb_entry_podcast_post_get_type (void) 
 {
 	return podcast_post_type;
 }

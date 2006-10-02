@@ -952,7 +952,6 @@ metadata/Makefile
 rhythmdb/Makefile
 widgets/Makefile
 widgets/libsexy/Makefile
-iradio/Makefile
 podcast/Makefile
 shell/Makefile
 data/Makefile
@@ -968,6 +967,7 @@ plugins/audiocd/Makefile
 plugins/audioscrobbler/Makefile
 plugins/cd-recorder/Makefile
 plugins/ipod/Makefile
+plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
 plugins/sample-python/Makefile
