@@ -443,7 +443,7 @@ rb_string_split_words (const gchar *string)
 	while (*cur_read) {
 		switch (g_unichar_type (*cur_read)) {
 		case G_UNICODE_UNASSIGNED:
-			g_warning ("unassigned unicode character type found");
+			rb_debug ("unassigned unicode character type found");
 			/* fall through */
 		case G_UNICODE_CONTROL:
 		case G_UNICODE_FORMAT:
@@ -569,7 +569,7 @@ rb_search_fold (const char *original)
 			break;
 
 		case G_UNICODE_UNASSIGNED:
-			g_warning ("unassigned unicode character type found");
+			rb_debug ("unassigned unicode character type found");
 			/* fall through */
 
 		default:

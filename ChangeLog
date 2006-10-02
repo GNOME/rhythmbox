@@ -1,3 +1,13 @@
+2006-10-03  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-util.c: (rb_string_split_words), (rb_search_fold): downgrade
+	non-unicode warnings to debug statements, since they can occur with
+	slightly broken files.
+
+	* plugins/iradio/rb-iradio-plugin.c: (impl_deactivate):
+	* shell/rb-shell.c: (rb_shell_source_deleted_cb): fix a crasher if the
+	iradio plugin is disabled and re-enabled.
+
 2006-10-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_register_core_entry_types),

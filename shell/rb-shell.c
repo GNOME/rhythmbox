@@ -1810,7 +1810,17 @@ static void
 rb_shell_source_deleted_cb (RBSource *source,
 			    RBShell *shell)
 {
+	RhythmDBEntryType entry_type;
+
 	rb_debug ("source deleted");
+
+	/* remove from the map if the source owns the type */
+	g_object_get (source, "entry-type", &entry_type, NULL);
+	if (rb_shell_get_source_by_entry_type (shell, entry_type) == source) {
+		g_hash_table_remove (shell->priv->sources_hash, entry_type);
+	}
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
 
 	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell)) {
 		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);

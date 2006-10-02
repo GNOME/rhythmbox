@@ -114,7 +114,6 @@ impl_deactivate	(RBPlugin *plugin,
 	g_object_unref (G_OBJECT (uimanager));
 
 	rb_source_delete_thyself (pi->source);
-	g_object_unref (G_OBJECT (pi->source));
 	pi->source = NULL;
 }
 
