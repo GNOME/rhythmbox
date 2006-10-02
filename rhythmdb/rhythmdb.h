@@ -254,6 +254,9 @@ typedef struct
 	void	(*entry_added)		(RhythmDB *db, RhythmDBEntry *entry);
 	void	(*entry_changed)	(RhythmDB *db, RhythmDBEntry *entry, GSList *changes); /* list of RhythmDBEntryChanges */
 	void	(*entry_deleted)	(RhythmDB *db, RhythmDBEntry *entry);
+	GValue *(*entry_extra_metadata_request) (RhythmDB *db, RhythmDBEntry *entry);
+	void    (*entry_extra_metadata_gather) (RhythmDB *db, RhythmDBEntry *entry, GHashTable *data);
+	void	(*entry_extra_metadata_notify) (RhythmDB *db, RhythmDBEntry *entry, const char *field, GValue *metadata);
 	void	(*load_complete)	(RhythmDB *db);
 	void	(*save_complete)	(RhythmDB *db);
 	void	(*load_error)		(RhythmDB *db, const char *uri, const char *msg);
@@ -393,6 +396,10 @@ int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *name);
 
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
+
+GValue *	rhythmdb_entry_request_extra_metadata	(RhythmDB *db, RhythmDBEntry *entry, const gchar *property_name);
+GHashTable *	rhythmdb_entry_gather_metadata		(RhythmDB *db, RhythmDBEntry *entry);
+void		rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db, RhythmDBEntry *entry, const gchar *property_name, const GValue *metadata);
 
 gboolean	rhythmdb_is_busy			(RhythmDB *db);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,

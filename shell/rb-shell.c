@@ -3189,14 +3189,6 @@ rb_shell_present (RBShell *shell,
 	return TRUE;
 }
 
-static void
-unset_and_free_g_value (gpointer valpointer)
-{
-	GValue *value = valpointer;
-	g_value_unset (value);
-	g_free (value);
-}
-
 gboolean
 rb_shell_get_song_properties (RBShell *shell,
 			      const char *uri,
@@ -3204,8 +3196,6 @@ rb_shell_get_song_properties (RBShell *shell,
 			      GError **error)
 {
 	RhythmDBEntry *entry;
-	GEnumClass *klass;
-	guint i;
 
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
 
@@ -3218,41 +3208,8 @@ rb_shell_get_song_properties (RBShell *shell,
 		return FALSE;
 	}
 
-	*properties = g_hash_table_new_full (g_str_hash, g_str_equal,
-					     NULL,
-					     unset_and_free_g_value);
-
-	klass = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
-	for (i = 0; i < klass->n_values; i++) {
-		GValue *value;
-		gint prop;
-		GType value_type;
-
-		prop = klass->values[i].value;
-
-		/* only include easily marshallable types in the hash table */
-		value_type = rhythmdb_get_property_type (shell->priv->db, prop);
-		switch (value_type) {
-		case G_TYPE_STRING:
-		case G_TYPE_BOOLEAN:
-		case G_TYPE_ULONG:
-		case G_TYPE_UINT64:
-		case G_TYPE_DOUBLE:
-			break;
-		default:
-			continue;
-		}
-
-		value = g_new0 (GValue, 1);
-		g_value_init (value, value_type);
-		rhythmdb_entry_get (shell->priv->db, entry, prop, value);
-		g_hash_table_insert (*properties,
-				     (gpointer) rhythmdb_nice_elt_name_from_propid (shell->priv->db, prop),
-				     value);
-	}
-	g_type_class_unref (klass);
-
-	return TRUE;
+	*properties = rhythmdb_entry_gather_metadata (shell->priv->db, entry);
+	return (*properties != NULL);
 }
 
 gboolean

@@ -584,6 +584,36 @@
   (return-type "RhythmDBEntryType_*")
 )
 
+(define-method entry_request_extra_metadata
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_request_extra_metadata")
+  (return-type "GValue*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-gchar*" "property_name")
+  )
+)
+
+(define-method entry_gather_metadata
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_gather_metadata")
+  (return-type "GHashTable*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method emit_entry_extra_metadata_notify
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_emit_entry_extra_metadata_notify")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-gchar*" "property_name")
+    '("const-GValue*" "metadata")
+  )
+)
+
 
 ;; From ../../rhythmdb/rhythmdb-property-model.h
 

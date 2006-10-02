@@ -1,5 +1,43 @@
 2006-10-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch mostly by: Ed Catmur  <ed@catmur.co.uk>
+
+	* bindings/python/rhythmdb.defs:
+	* lib/rb-marshal.list:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init),
+	(rhythmdb_emit_entry_deleted),
+	(rhythmdb_entry_extra_metadata_accumulator),
+	(rhythmdb_entry_request_extra_metadata),
+	(rhythmdb_emit_entry_extra_metadata_notify),
+	(unset_and_free_g_value), (rhythmdb_entry_gather_metadata):
+	* rhythmdb/rhythmdb.h:
+	Add signals for dealing with transient metadata outside the set stored
+	in RhythmDBEntry:
+	- entry_extra_metadata_request returns a value for the requested
+	  metadata field
+	- entry_extra_metadata_notify notifies observers of a change to an
+	  extra metadata field
+	- entry_extra_metadata_gather returns the values of all extra metadata
+	  fields
+
+	* shell/rb-shell-player.c: (rb_shell_player_set_db_internal),
+	(rb_shell_player_extra_metadata_cb):
+	Sync the display on extra metadata changes and emit dbus signals when
+	we can marshal the value.
+
+	* shell/rb-shell.c: (rb_shell_get_song_properties):
+	Implement rb_shell_song_get_properties using
+	rhythmdb_entry_gather_metadata.
+
+	* plugins/rb-python-module.c: (pyg_value_g_value_as_pyobject),
+	(pyg_value_g_value_from_pyobject), (rb_python_module_init_python):
+	* configure.ac:
+	Add GValue marshaller for python (until bug 351072 is fixed)
+
+	From #345592.
+
+2006-10-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* configure.ac:
 	* data/rhythmbox.schemas:
 	* plugins/Makefile.am:

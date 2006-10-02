@@ -151,6 +151,12 @@ static void gconf_song_position_slider_visibility_changed (GConfClient *client,g
 static void rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 						GParamSpec *arg1,
 						gpointer user_data);
+static void rb_shell_player_extra_metadata_cb (RhythmDB *db,
+					       RhythmDBEntry *entry,
+					       const char *field,
+					       GValue *metadata,
+					       RBShellPlayer *player);
+
 
 static gboolean rb_shell_player_jump_to_current_idle (RBShellPlayer *player);
 
@@ -832,6 +838,9 @@ rb_shell_player_set_db_internal (RBShellPlayer *player,
 		g_signal_handlers_disconnect_by_func (player->priv->db,
 						      G_CALLBACK (rb_shell_player_entry_changed_cb),
 						      player);
+		g_signal_handlers_disconnect_by_func (player->priv->db,
+						      G_CALLBACK (rb_shell_player_extra_metadata_cb),
+						      player);
 	}
 
 	player->priv->db = db;
@@ -841,6 +850,10 @@ rb_shell_player_set_db_internal (RBShellPlayer *player,
 		g_signal_connect_object (G_OBJECT (player->priv->db),
 					 "entry_changed",
 					 G_CALLBACK (rb_shell_player_entry_changed_cb),
+					 player, 0);
+		g_signal_connect_object (G_OBJECT (player->priv->db),
+					 "entry_extra_metadata_notify",
+					 G_CALLBACK (rb_shell_player_extra_metadata_cb),
 					 player, 0);
 	}
 }
@@ -2310,6 +2323,46 @@ rb_shell_player_entry_changed_cb (RhythmDB *db,
 		rhythmdb_entry_unref (playing_entry);
 	}
 }
+
+static void
+rb_shell_player_extra_metadata_cb (RhythmDB *db,
+				   RhythmDBEntry *entry,
+				   const char *field,
+				   GValue *metadata,
+				   RBShellPlayer *player)
+{
+
+	RhythmDBEntry *playing_entry;
+
+	playing_entry = rb_shell_player_get_playing_entry (player);
+	if (entry != playing_entry) {
+		if (playing_entry != NULL) {
+			rhythmdb_entry_unref (playing_entry);
+		}
+		return;
+	}
+
+	rb_shell_player_sync_with_source (player);
+
+	/* emit dbus signals for changes with easily marshallable types */
+	switch (G_VALUE_TYPE (metadata)) {
+	case G_TYPE_STRING:
+	case G_TYPE_BOOLEAN:
+	case G_TYPE_ULONG:
+	case G_TYPE_UINT64:
+	case G_TYPE_DOUBLE:
+		g_signal_emit (G_OBJECT (player),
+			       rb_shell_player_signals[PLAYING_SONG_PROPERTY_CHANGED], 0,
+			       rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+			       field,
+			       metadata,		/* slightly silly */
+			       metadata);
+		break;
+	default:
+		break;
+	}
+}
+
 
 static void
 rb_shell_player_sync_with_source (RBShellPlayer *player)

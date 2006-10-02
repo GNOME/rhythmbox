@@ -902,6 +902,10 @@ if test "x$have_python" != "xno"; then
 	AC_SUBST([PYGTK_CODEGEN])
 	AC_SUBST([PYGTK_H2DEF])
 
+dnl	uncomment when http://bugzilla.gnome.org/show_bug.cgi?id=351072 fixed
+dnl	PKG_CHECK_EXISTS([pygobject-2.0 >= X.XX.X],
+dnl			 AC_DEFINE([PYGOBJECT_CAN_MARSHAL_GVALUE]))
+
 	dnl Check for -fno-strict-aliasing
 	FLAGS="-fno-strict-aliasing"
 	save_CFLAGS="$CFLAGS"

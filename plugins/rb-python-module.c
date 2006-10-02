@@ -52,6 +52,35 @@ enum
 	PROP_MODULE
 };
 
+#ifndef PYGOBJECT_CAN_MARSHAL_GVALUE
+static PyObject *
+pyg_value_g_value_as_pyobject (const GValue *value)
+{
+	return pyg_value_as_pyobject((GValue *)g_value_get_boxed(value), FALSE);
+}
+
+static int
+pyg_value_g_value_from_pyobject (GValue *value, PyObject *obj)
+{
+	GType type;
+	GValue obj_value = { 0, };
+	
+	type = pyg_type_from_object((PyObject *) obj->ob_type);
+	if (! type) {
+		PyErr_Clear();
+		return -1;
+	}
+	g_value_init(&obj_value, type);
+	if (pyg_value_from_pyobject(&obj_value, obj) == -1) {
+		g_value_unset(&obj_value);
+		return -1;
+	}
+	g_value_set_boxed(value, &obj_value);
+	g_value_unset(&obj_value);
+	return 0;
+}
+#endif /* PYGOBJECT_CAN_MARSHAL_GVALUE */
+
 /* Exported by pyrhythmdb module */
 void pyrhythmdb_register_classes (PyObject *d);
 void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
@@ -125,6 +154,10 @@ rb_python_module_init_python (void)
 
 	/* import gobject */
 	init_pygobject ();
+
+#ifndef PYGOBJECT_CAN_MARSHAL_GVALUE
+	pyg_register_gtype_custom (G_TYPE_VALUE, pyg_value_g_value_as_pyobject, pyg_value_g_value_from_pyobject);
+#endif
 
 	/* import gtk */
 	init_pygtk ();

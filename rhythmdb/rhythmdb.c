@@ -117,6 +117,10 @@ static void rhythmdb_sync_library_location (RhythmDB *db);
 static void rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 					  guint propid);
 static void rhythmdb_register_core_entry_types (RhythmDB *db);
+static gboolean rhythmdb_entry_extra_metadata_accumulator (GSignalInvocationHint *ihint,
+							   GValue *return_accu,
+							   const GValue *handler_return,
+							   gpointer data);
 
 enum
 {
@@ -131,6 +135,9 @@ enum
 	ENTRY_ADDED,
 	ENTRY_CHANGED,
 	ENTRY_DELETED,
+	ENTRY_EXTRA_METADATA_REQUEST,
+	ENTRY_EXTRA_METADATA_NOTIFY,
+	ENTRY_EXTRA_METADATA_GATHER,
 	LOAD_COMPLETE,
 	SAVE_COMPLETE,
 	SAVE_ERROR,
@@ -201,6 +208,36 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      rb_marshal_VOID__BOXED_POINTER,
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
+
+	rhythmdb_signals[ENTRY_EXTRA_METADATA_REQUEST] =
+		g_signal_new ("entry_extra_metadata_request",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_request),
+			      rhythmdb_entry_extra_metadata_accumulator, NULL,
+			      rb_marshal_BOXED__BOXED,
+			      G_TYPE_VALUE, 1,
+			      RHYTHMDB_TYPE_ENTRY);
+
+	rhythmdb_signals[ENTRY_EXTRA_METADATA_NOTIFY] =
+		g_signal_new ("entry_extra_metadata_notify",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_notify),
+			      NULL, NULL,
+			      rb_marshal_VOID__BOXED_STRING_BOXED,
+			      G_TYPE_NONE, 3,
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_VALUE);
+
+	rhythmdb_signals[ENTRY_EXTRA_METADATA_GATHER] =
+		g_signal_new ("entry_extra_metadata_gather",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_gather),
+			      NULL, NULL,
+			      rb_marshal_VOID__BOXED_BOXED,
+			      G_TYPE_NONE, 2,
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_HASH_TABLE);
 
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
@@ -3399,6 +3436,166 @@ rhythmdb_emit_entry_deleted (RhythmDB *db,
 			     RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
+}
+
+static gboolean
+rhythmdb_entry_extra_metadata_accumulator (GSignalInvocationHint *ihint,
+					   GValue *return_accu,
+					   const GValue *handler_return,
+					   gpointer data)
+{
+	if (handler_return == NULL)
+		return TRUE;
+
+	g_value_copy (handler_return, return_accu);
+	return (g_value_get_boxed (return_accu) == NULL);
+}
+
+/**
+ * rhythmdb_entry_request_extra_metadata:
+ * @db: a #RhythmDB
+ * @entry: a #RhythmDBEntry
+ * @property_name: the metadata predicate
+ *
+ * Emits a request for extra metadata for the @entry.
+ * The @property_name argument is emitted as the ::detail part of the
+ * "entry_extra_metadata_request" signal. It should be a namespaced RDF
+ * predicate e.g. from Dublin Core, MusicBrainz, or internal to Rhythmbox
+ * (namespace "rb:"). Suitable predicates would be those that are expensive to
+ * acquire or only apply to a limited range of entries.
+ * Handlers capable of providing a particular predicate may ensure they only
+ * see appropriate requests by supplying an appropriate ::detail part when
+ * connecting to the signal. Upon a handler returning a non-%NULL value,
+ * emission will be stopped and the value returned to the caller; if no
+ * handlers return a non-%NULL value, the caller will receive %NULL. Priority
+ * is determined by signal connection order, with %G_CONNECT_AFTER providing a
+ * second, lower rank of priority.
+ * A handler returning a value should do so in a #GValue allocated on the heap;
+ * the accumulator will take ownership. The caller should unset and free the
+ * #GValue if non-%NULL when finished with it.
+ *
+ * Returns: an allocated, initialised, set #GValue, or NULL
+ **/
+GValue *
+rhythmdb_entry_request_extra_metadata (RhythmDB *db,
+				       RhythmDBEntry *entry,
+				       const gchar *property_name)
+{
+	GValue *value = NULL;
+
+	g_signal_emit (G_OBJECT (db),
+		       rhythmdb_signals[ENTRY_EXTRA_METADATA_REQUEST],
+		       g_quark_from_string (property_name),
+		       entry,
+		       &value);
+
+	return value;
+}
+
+/**
+ * rhythmdb_emit_entry_extra_metadata_notify:
+ * @db: a #RhythmDB
+ * @entry: a #RhythmDBEntry
+ * @property_name: the metadata predicate
+ * @metadata: a #GValue
+ *
+ * Emits a signal describing extra metadata for the @entry.  The @property_name
+ * argument is emitted as the ::detail part of the
+ * "entry_extra_metadata_notify" signal and as the 'field' parameter.  Handlers
+ * can ensure they only get metadata they are interested in by supplying an
+ * appropriate ::detail part when connecting to the signal.  If handlers are
+ * interested in the metadata they should ref or copy the contents of @metadata
+ * and unref or free it when they are finished with it.
+ **/
+void
+rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db,
+					   RhythmDBEntry *entry,
+					   const gchar *property_name,
+					   const GValue *metadata)
+{
+	g_signal_emit (G_OBJECT (db),
+		       rhythmdb_signals[ENTRY_EXTRA_METADATA_NOTIFY],
+		       g_quark_from_string (property_name),
+		       entry,
+		       property_name,
+		       metadata);
+}
+
+static void
+unset_and_free_g_value (gpointer valpointer)
+{
+	GValue *value = valpointer;
+	g_value_unset (value);
+	g_free (value);
+}
+
+/**
+ * rhythmdb_entry_extra_gather:
+ * @db: a #RhythmDB
+ * @entry: a #RhythmDBEntry
+ *
+ * Gathers all metadata for the @entry. The returned GHashTable maps property
+ * names and extra metadata names (described under
+ * @rhythmdb_entry_request_extra_metadata) to GValues. Anything wanting to
+ * provide extra metadata should connect to the "entry_extra_metadata_gather"
+ * signal.
+ *
+ * Returns: a GHashTable containing metadata for the entry.  This must be freed
+ * using g_hash_table_destroy.
+ */
+GHashTable *
+rhythmdb_entry_gather_metadata (RhythmDB *db,
+				RhythmDBEntry *entry)
+{
+	GHashTable *metadata;
+	GEnumClass *klass;
+	guint i;
+
+	metadata = g_hash_table_new_full (g_str_hash,
+					  g_str_equal,
+					  g_free,
+					  unset_and_free_g_value);
+
+	/* add core properties */
+	klass = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
+	for (i = 0; i < klass->n_values; i++) {
+		GValue *value;
+		gint prop;
+		GType value_type;
+		const char *name;
+
+		prop = klass->values[i].value;
+
+		/* only include easily marshallable types in the hash table */
+		value_type = rhythmdb_get_property_type (db, prop);
+		switch (value_type) {
+		case G_TYPE_STRING:
+		case G_TYPE_BOOLEAN:
+		case G_TYPE_ULONG:
+		case G_TYPE_UINT64:
+		case G_TYPE_DOUBLE:
+			break;
+		default:
+			continue;
+		}
+
+		value = g_new0 (GValue, 1);
+		g_value_init (value, value_type);
+		rhythmdb_entry_get (db, entry, prop, value);
+		name = (char *)rhythmdb_nice_elt_name_from_propid (db, prop);
+		g_hash_table_insert (metadata,
+				     (gpointer) g_strdup (name),
+				     value);
+	}
+	g_type_class_unref (klass);
+
+	/* gather extra metadata */
+	g_signal_emit (G_OBJECT (db),
+		       rhythmdb_signals[ENTRY_EXTRA_METADATA_GATHER], 0,
+		       entry,
+		       metadata);
+
+	return metadata;
 }
 
 static gboolean
