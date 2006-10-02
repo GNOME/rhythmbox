@@ -853,7 +853,7 @@ impl_move_to_trash (RBSource *asource)
 
  		remove_track_from_db (track);
 		g_hash_table_remove (priv->entry_map, entry);
-		/*rhythmdb_entry_move_to_trash (db, entry);*/	/* hmm. */
+		rhythmdb_entry_move_to_trash (db, entry);
 		rhythmdb_commit (db);
 	}
 
