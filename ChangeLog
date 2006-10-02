@@ -1,3 +1,17 @@
+2006-10-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* plugins/Makefile.am:
+	* plugins/power-manager/Makefile.am:
+	* plugins/power-manager/power-manager.rb-plugin.desktop.in:
+	* plugins/power-manager/rb-power-manager-plugin.c:
+	(rb_gpm_plugin_class_init), (rb_gpm_plugin_init), (ignore_error),
+	(inhibit_cb), (inhibit), (uninhibit_cb), (uninhibit),
+	(playing_changed_cb), (impl_activate), (impl_deactivate):
+	gnome-power-manager integration: inhibit suspend while playing.
+	Fixes #344979.
+
 2006-10-02  James Livingston  <doclivingston@gmail.com>
 
 	update by: Aloriel  <jorge.gonzalez.gonzalez@hispalinux.es>

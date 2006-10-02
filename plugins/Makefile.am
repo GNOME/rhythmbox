@@ -2,6 +2,7 @@
 
 SUBDIRS = 						\
 	generic-player					\
+	power-manager					\
 	audiocd						\
 	sample
 

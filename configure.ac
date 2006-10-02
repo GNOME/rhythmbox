@@ -972,6 +972,7 @@ plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
+plugins/power-manager/Makefile
 bindings/Makefile
 bindings/python/Makefile
 help/Makefile

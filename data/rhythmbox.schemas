@@ -713,6 +713,17 @@
 	</locale>
       </schema>
       <schema>
+	<key>/schemas/apps/rhythmbox/plugins/power-manager/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/power-manager/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the power-manager plugin is enabled.</short>
+	<long>True if the power-manager plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/plugins/rblirc/hidden</key>
         <applyto>/apps/rhythmbox/plugins/rblirc/hidden</applyto>
         <owner>rhythmbox</owner>
@@ -798,6 +809,17 @@
 	<locale name="C">
 	<short>True if the cd-burning plugin is hidden.</short>
 	<long>True if the cd-burning plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/power-manager/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/power-manager/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the power-manager plugin is hidden.</short>
+	<long>True if the power-manager plugin is hidden.</long>
 	</locale>
       </schema>
       <schema>
