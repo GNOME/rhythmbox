@@ -154,6 +154,7 @@ struct RBIRadioSourcePrivate
 	gboolean setting_new_query;
 
 	gboolean initialized;
+	gboolean is_playing;
 
 	char *search_text;
 	char *selected_genre;
@@ -1372,39 +1373,45 @@ playing_source_changed_cb (RBShellPlayer *player,
 {
 	GObject *backend;
 
-	g_object_get (G_OBJECT (player), "player", &backend, NULL);
+	g_object_get (player, "player", &backend, NULL);
+
 	if (source == RB_SOURCE (iradio_source)) {
+		iradio_source->priv->is_playing = TRUE;
+
 		rb_debug ("connecting buffering and info-available signal handlers");
 		if (iradio_source->priv->buffering_id == 0) {
 			iradio_source->priv->buffering_id =
 				g_signal_connect_object (backend, "buffering",
 							 G_CALLBACK (buffering_cb),
-							 source, 0);
+							 iradio_source, 0);
 		}
 		if (iradio_source->priv->info_available_id == 0) {
 			iradio_source->priv->info_available_id =
 				g_signal_connect_object (backend, "info",
 							 G_CALLBACK (info_available_cb),
-							 source, 0);
+							 iradio_source, 0);
 		}
 		/* display 'connecting' status until we get a buffering message */
 		iradio_source->priv->buffering = -1;
-		rb_source_notify_status_changed (source);
-	} else {
+		rb_source_notify_status_changed (RB_SOURCE (iradio_source));
+	} else if (iradio_source->priv->is_playing) {
+		iradio_source->priv->is_playing = FALSE;
+
 		rb_debug ("disconnecting buffering and info-available signal handlers");
 		if (iradio_source->priv->buffering_id) {
-			g_signal_handler_disconnect (G_OBJECT (backend),
+			g_signal_handler_disconnect (backend,
 						     iradio_source->priv->buffering_id);
 			iradio_source->priv->buffering_id = 0;
 		}
 		if (iradio_source->priv->info_available_id) {
-			g_signal_handler_disconnect (G_OBJECT (backend),
+			g_signal_handler_disconnect (backend,
 						     iradio_source->priv->info_available_id);
 			iradio_source->priv->info_available_id = 0;
 		}
 		iradio_source->priv->buffering = 0;
-		rb_source_notify_status_changed (source);
+		rb_source_notify_status_changed (RB_SOURCE (iradio_source));
 	}
+
 	g_object_unref (backend);
 }
 

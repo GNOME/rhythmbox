@@ -1,3 +1,11 @@
+2006-10-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch by:  William Jon McCann  <mccann@jhu.edu>
+
+	* sources/rb-iradio-source.c: (playing_source_changed_cb):
+	Fix some stupidity I introduced that caused crashes on shutdown.
+	Fixes #359181.
+
 2006-10-02  William Jon McCann  <mccann@jhu.edu>
 
 	* plugins/audiocd/Makefile.am:
