@@ -1,3 +1,18 @@
+2006-10-02  William Jon McCann  <mccann@jhu.edu>
+
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/rb-audiocd-plugin.c: (create_source_cb):
+	* plugins/iradio/.cvsignore:
+	* plugins/iradio/Makefile.am:
+	* plugins/iradio/rb-iradio-plugin.c: (impl_activate),
+	(impl_deactivate):
+	* plugins/power-manager/.cvsignore:
+	Install missing iradio ui file.  Don't leak ui filename.
+	Fix iradio install dir. Fix audiocd install dir.
+	Remove unused code from audio cd plugin.
+
+	Fixes #359170
+
 2006-10-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-ipod-source.c: (impl_move_to_trash):

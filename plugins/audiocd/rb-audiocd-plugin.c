@@ -381,19 +381,6 @@ create_source_cb (RBRemovableMediaManager *rmm,
 	}
 
 	if (source != NULL) {
-		if (plugin->ui_merge_id == 0) {
-			GtkUIManager *uimanager = NULL;
-			char         *file = NULL;
-
-			g_object_get (G_OBJECT (plugin->shell), "ui-manager", &uimanager, NULL);
-			/*file = rb_plugin_find_file (RB_PLUGIN (plugin), "generic-player-ui.xml");
-			plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-									       file,
-									       NULL);*/
-			g_free (file);
-			g_object_unref (G_OBJECT (uimanager));
-		}
-
 		g_hash_table_insert (plugin->sources, g_object_ref (volume), g_object_ref (source));
 		g_signal_connect_object (G_OBJECT (source),
 					 "deleted", G_CALLBACK (rb_audiocd_plugin_source_deleted),

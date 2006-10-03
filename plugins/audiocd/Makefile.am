@@ -1,4 +1,4 @@
-plugindir = $(PLUGINDIR)
+plugindir = $(PLUGINDIR)/audiocd
 plugin_LTLIBRARIES = libaudiocd.la
 
 libaudiocd_la_SOURCES =					\

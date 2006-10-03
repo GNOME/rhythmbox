@@ -1,13 +1,14 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * rb-iradio-plugin.c
- * 
+ *
  * Copyright (C) 2006  Jonathan Matthew
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -91,15 +92,23 @@ impl_activate (RBPlugin *plugin,
 {
 	RBIRadioPlugin *pi = RB_IRADIO_PLUGIN (plugin);
 	GtkUIManager *uimanager;
+	char *filename;
 
 	pi->source = rb_iradio_source_new (shell);
 	rb_shell_append_source (shell, pi->source, NULL);
 
-	g_object_get (G_OBJECT (shell), "ui-manager", &uimanager, NULL);
-	pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-							   rb_plugin_find_file (plugin, "iradio-ui.xml"),
-							   NULL);
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
+	filename = rb_plugin_find_file (plugin, "iradio-ui.xml");
+	if (filename != NULL) {
+		pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
+                                                             filename,
+                                                             NULL);
+	} else {
+		g_warning ("Unable to find file: iradio-ui.xml");
+	}
+
+	g_free (filename);
+	g_object_unref (uimanager);
 }
 
 static void
@@ -109,9 +118,9 @@ impl_deactivate	(RBPlugin *plugin,
 	RBIRadioPlugin *pi = RB_IRADIO_PLUGIN (plugin);
 	GtkUIManager *uimanager;
 
-	g_object_get (G_OBJECT (shell), "ui-manager", &uimanager, NULL);
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
 	gtk_ui_manager_remove_ui (uimanager, pi->ui_merge_id);
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (uimanager);
 
 	rb_source_delete_thyself (pi->source);
 	pi->source = NULL;

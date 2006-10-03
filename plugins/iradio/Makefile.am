@@ -1,6 +1,7 @@
-plugindir = $(PLUGINDIR)
+NULL =
+
+plugindir = $(PLUGINDIR)/iradio
 plugin_LTLIBRARIES = libiradio.la
-#noinst_LTLIBRARIES = libiradio.la
 
 libiradio_la_SOURCES = \
 	rb-iradio-plugin.c					\
@@ -45,7 +46,10 @@ plugin_in_files = iradio.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+plugin_DATA = 							\
+	$(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) 	\
+	iradio-ui.xml						\
+	$(NULL)
 
 EXTRA_DIST = $(glade_DATA) $(plugin_in_files) iradio-ui.xml
 
