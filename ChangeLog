@@ -1,3 +1,11 @@
+2006-10-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-proxy-config.c: (rb_proxy_config_init),
+	(rb_proxy_config_dispose), (rb_proxy_config_finalize),
+	(check_auto_proxy_config), (get_proxy_config):
+	Don't crash when eel_gconf_get_string returns NULL.
+	Fixes #359974.
+
 2006-10-04  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Fryderyk Dziarmagowski  <freetz@gmx.net>

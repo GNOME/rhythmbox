@@ -94,11 +94,11 @@ rb_proxy_config_init (RBProxyConfig *config)
 		eel_gconf_notification_add ("/system/http_proxy/use_http_proxy",
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
-	config->priv->host_notify_id = 
+	config->priv->host_notify_id =
 		eel_gconf_notification_add ("/system/http_proxy/host",
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
-	config->priv->port_notify_id = 
+	config->priv->port_notify_id =
 		eel_gconf_notification_add ("/system/http_proxy/port",
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
@@ -106,11 +106,11 @@ rb_proxy_config_init (RBProxyConfig *config)
 		eel_gconf_notification_add ("/system/http_proxy/use_authentication",
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
-	config->priv->username_notify_id = 
+	config->priv->username_notify_id =
 		eel_gconf_notification_add ("/system/http_proxy/authentication_user",
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
-	config->priv->password_notify_id = 
+	config->priv->password_notify_id =
 		eel_gconf_notification_add ("/system/http_proxy/authentication_password",
 					(GConfClientNotifyFunc) rb_proxy_config_gconf_changed_cb,
 					config);
@@ -129,7 +129,7 @@ rb_proxy_config_dispose (GObject *object)
 	g_return_if_fail (RB_IS_PROXY_CONFIG (object));
 	config = RB_PROXY_CONFIG (object);
 	g_return_if_fail (config->priv != NULL);
-	
+
 	rb_debug ("Removing HTTP proxy config watch");
 	eel_gconf_notification_remove (config->priv->enabled_notify_id);
 	eel_gconf_notification_remove (config->priv->host_notify_id);
@@ -151,11 +151,11 @@ rb_proxy_config_finalize (GObject *object)
 	g_return_if_fail (RB_IS_PROXY_CONFIG (object));
 	config = RB_PROXY_CONFIG (object);
 	g_return_if_fail (config->priv != NULL);
-	
+
 	g_free (config->host);
 	g_free (config->username);
 	g_free (config->password);
-	
+
 	G_OBJECT_CLASS (rb_proxy_config_parent_class)->finalize (object);
 }
 
@@ -165,7 +165,7 @@ rb_proxy_config_new ()
 	return g_object_new (RB_TYPE_PROXY_CONFIG, NULL);
 }
 
-static void	
+static void
 rb_proxy_config_gconf_changed_cb (GConfClient *client,
 				  guint cnxn_id,
 		 		  GConfEntry *entry,
@@ -183,7 +183,7 @@ check_auto_proxy_config (RBProxyConfig *config)
 
 	/* complain once if auto proxy mode is enabled */
 	mode = eel_gconf_get_string ("/system/proxy/mode");
-	if (strcmp (mode, "auto") == 0) {
+	if (mode != NULL && strcmp (mode, "auto") == 0) {
 		if (eel_gconf_get_boolean (CONF_UI_AUTO_PROXY_COMPLAINT) == FALSE) {
 			rb_error_dialog (NULL,
 					 _("HTTP proxy configuration error"),
@@ -197,7 +197,7 @@ check_auto_proxy_config (RBProxyConfig *config)
 	g_free (mode);
 }
 
-static void	
+static void
 get_proxy_config (RBProxyConfig *config)
 {
 	config->enabled = eel_gconf_get_boolean ("/system/http_proxy/use_http_proxy");
@@ -211,13 +211,17 @@ get_proxy_config (RBProxyConfig *config)
 	g_free (config->password);
 	config->username = eel_gconf_get_string ("/system/http_proxy/authentication_user");
 	config->password = eel_gconf_get_string ("/system/http_proxy/authentication_password");
+	if (config->username == NULL || config->password == NULL) {
+		rb_debug ("HTTP proxy authentication enabled, but username or password is missing");
+		config->auth_enabled = FALSE;
+	}
 
 	if (config->enabled) {
 		if (config->host == NULL || config->host[0] == '\0') {
 			rb_debug ("HTTP proxy is enabled, but no proxy host is specified");
 			config->enabled = FALSE;
 		} else if (config->auth_enabled)
-			rb_debug ("HTTP proxy URL is http://%s:<password>@%s:%u/", 
+			rb_debug ("HTTP proxy URL is http://%s:<password>@%s:%u/",
 				  config->username, config->host, config->port);
 		else
 			rb_debug ("HTTP proxy URL is http://%s:%u/",
