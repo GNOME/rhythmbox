@@ -46,13 +46,25 @@ plugin_in_files = iradio.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = 							\
+BUILT_SOURCES =							\
 	$(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) 	\
-	iradio-ui.xml						\
 	$(NULL)
 
-EXTRA_DIST = $(glade_DATA) $(plugin_in_files) iradio-ui.xml
+plugin_DATA = 			\
+	$(BUILT_SOURCES)	\
+	iradio-ui.xml		\
+	$(NULL)
 
-CLEANFILES = $(plugin_DATA)
-DISTCLEANFILES = $(plugin_DATA)
+EXTRA_DIST = 			\
+	$(glade_DATA)		\
+	$(plugin_in_files)	\
+	$(NULL)
+
+CLEANFILES = 			\
+	$(BUILT_SOURCES)	\
+	$(NULL)
+
+DISTCLEANFILES =		\
+	$(BUILT_SOURCES)	\
+	$(NULL)
 

@@ -43,9 +43,23 @@ plugin_in_files = audioscrobbler.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) as-powered.png
+BUILT_SOURCES =							\
+	$(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) 	\
+	$(NULL)
 
-EXTRA_DIST = $(plugin_in_files) as-powered.png 
+plugin_DATA = 			\
+	$(BUILT_SOURCES)	\
+	as-powered.png		\
+	$(NULL)
 
-CLEANFILES = $(plugin_DATA)
-DISTCLEANFILES = $(plugin_DATA)
+EXTRA_DIST = 			\
+	$(plugin_in_files)	\
+	$(NULL)
+
+CLEANFILES = 			\
+	$(BUILT_SOURCES)	\
+	$(NULL)
+
+DISTCLEANFILES =		\
+	$(BUILT_SOURCES)	\
+	$(NULL)
