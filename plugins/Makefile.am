@@ -21,6 +21,7 @@ SUBDIRS += 						\
 	sample-python					\
 	artdisplay					\
 	lyrics						\
+	magnatune					\
 	rb
 endif
 

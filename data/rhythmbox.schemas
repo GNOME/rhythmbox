@@ -866,5 +866,150 @@
 	<long>True if the iradio plugin is hidden.</long>
 	</locale>
       </schema>
+      
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/active</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the magnatune plugin is enabled.</short>
+	<long>True if the magnatune plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the magnatune plugin is hidden.</short>
+	<long>True if the magnatune plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/cc_number</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/cc_number</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>The user's credit card number.</short>
+	<long>The user's credit card number. Visa/Mastercard only.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/cc_month</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/cc_month</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>Expiry month of the user's credit card.</short>
+	<long>Expiry month of the user's credit card.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/cc_year</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/cc_year</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>Expiry year of the user's credit card.</short>
+	<long>Expiry year of the user's credit card.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/email</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/email</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>User's email address.</short>
+	<long>User's email address.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/format</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/format</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>ogg</default>
+        <locale name="C">
+        <short>Desired format of downloaded audio.</short>
+	<long>Desired format of downloaded audio. Valid values are: ogg, flac, wav, mp3-vbr, mp3-cbr</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/forget</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/forget</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the user's credit card information should not be stored.</short>
+	<long>True if the user's credit card information should not be stored.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/name</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/name</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>User's name.</short>
+	<long>User's name.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/pay</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/pay</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>8</default>
+        <locale name="C">
+        <short>US Dollar amount to pay by default for an album.</short>
+	<long>US Dollar amount to pay by default for an album.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/sorting</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/sorting</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Artist,ascending</default>
+        <locale name="C">
+	<short>The sorting order</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/show_browser</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+	<short>Whether or not to show the browser.</short>
+	<long>Whether or not to show the browser.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/paned_position</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/paned_position</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>88</default>
+        <locale name="C">
+	<short>The size of the browser.</short>
+	<long>The size of the browser.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

@@ -1,0 +1,122 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
+
+<glade-interface>
+
+<widget class="GtkWindow" id="window1">
+  <property name="visible">True</property>
+  <property name="title" translatable="no">window1</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="modal">False</property>
+  <property name="resizable">True</property>
+  <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="focus_on_map">True</property>
+  <property name="urgency_hint">False</property>
+
+  <child>
+    <widget class="GtkVBox" id="magnatune_loading_vbox">
+      <property name="border_width">12</property>
+      <property name="visible">True</property>
+      <property name="homogeneous">False</property>
+      <property name="spacing">6</property>
+
+      <child>
+	<widget class="GtkImage" id="image1">
+	  <property name="visible">True</property>
+	  <property name="pixbuf">magnatune_logo_color_small.png</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="GtkLabel" id="label1">
+	  <property name="visible">True</property>
+	  <property name="label" translatable="yes">&lt;b&gt;Magnatune online music store&lt;/b&gt;</property>
+	  <property name="use_underline">False</property>
+	  <property name="use_markup">True</property>
+	  <property name="justify">GTK_JUSTIFY_CENTER</property>
+	  <property name="wrap">False</property>
+	  <property name="selectable">False</property>
+	  <property name="xalign">0.5</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	  <property name="width_chars">-1</property>
+	  <property name="single_line_mode">False</property>
+	  <property name="angle">0</property>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+
+      <child>
+	<widget class="GtkLabel" id="label2">
+	  <property name="visible">True</property>
+	  <property name="can_focus">True</property>
+	  <property name="label" translatable="yes">Magnatune is an online record label that is not evil. Some of their key attributes are:
+
+    * Free listening of all songs
+    * All albums and artists hand-picked
+    * Very simple user interface, quick to play music
+    * Radio stations and &quot;genre mix&quot; playlists allow background listening - can do work while listening to our music
+    * No need to &quot;register&quot; to listen or buy
+    * Smaller selection means easier to find good music
+    * Wide variety of genres, can fit any mood
+    * Our genres are hard to find in record stores and not on radio (though do appear on college radio)
+    * Downloads and CDs are both available (no other site on the internet sells both)
+    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)
+    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)
+    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist
+    * Full color, high quality cover art PDF available for most albums - easy to print
+    * Variable pricing scheme means you can pay as little as $5 for an album if you choose
+    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)
+    * Not venture-capital backed big business
+    * Not part of the &quot;evil&quot; major label machine - for those that hate the music biz and want to help topple it
+    * Founder/owner runs it -- support a small business
+    * Low pressure environment - nothing flashing, no audio ads while listening to albums
+    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection
+
+You can find more information at http://www.magnatune.com/</property>
+	  <property name="use_underline">False</property>
+	  <property name="use_markup">False</property>
+	  <property name="justify">GTK_JUSTIFY_LEFT</property>
+	  <property name="wrap">False</property>
+	  <property name="selectable">True</property>
+	  <property name="xalign">0</property>
+	  <property name="yalign">0.5</property>
+	  <property name="xpad">0</property>
+	  <property name="ypad">0</property>
+	  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	  <property name="width_chars">-1</property>
+	  <property name="single_line_mode">False</property>
+	  <property name="angle">0</property>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">True</property>
+	  <property name="fill">True</property>
+	</packing>
+      </child>
+    </widget>
+  </child>
+</widget>
+
+</glade-interface>

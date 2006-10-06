@@ -974,6 +974,8 @@ plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
+plugins/magnatune/Makefile
+plugins/magnatune/magnatune/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile
