@@ -30,6 +30,7 @@
 #include <glib-object.h>
 
 #include "rb-audioscrobbler.h"
+#include "rb-lastfm-source.h"
 #include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
@@ -48,6 +49,8 @@ typedef struct
 	RBPlugin parent;
 	RBAudioscrobbler *audioscrobbler;
 	GtkWidget *preferences;
+
+	RBSource *lastfm_source;
 } RBAudioscrobblerPlugin;
 
 typedef struct
@@ -129,6 +132,9 @@ impl_activate (RBPlugin *bplugin,
 								proxy_config);
 	}
 	g_object_unref (G_OBJECT (proxy_config));
+
+	plugin->lastfm_source = rb_lastfm_source_new (shell);
+	rb_shell_append_source (shell, plugin->lastfm_source, NULL);
 }
 
 static void
@@ -136,6 +142,9 @@ impl_deactivate	(RBPlugin *bplugin,
 		 RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+
+	rb_source_delete_thyself (plugin->lastfm_source);
+	plugin->lastfm_source = NULL;
 
 	if (plugin->audioscrobbler) {
 		g_object_unref (plugin->audioscrobbler);
@@ -161,15 +170,11 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 
 		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler);
 
-		plugin->preferences = gtk_dialog_new_with_buttons (_("Last.fm Profile Preferences"),
+		plugin->preferences = gtk_dialog_new_with_buttons (_("Audioscrobbler preferences"),
 								   NULL,
 								   GTK_DIALOG_DESTROY_WITH_PARENT,
 								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
 								   NULL);
-		gtk_container_set_border_width (GTK_CONTAINER (plugin->preferences), 5);
-		gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (plugin->preferences)->vbox), 2);
-		gtk_dialog_set_has_separator (GTK_DIALOG (plugin->preferences), FALSE);
-		
 		g_signal_connect (G_OBJECT (plugin->preferences),
 				  "response",
 				  G_CALLBACK (preferences_response_cb),

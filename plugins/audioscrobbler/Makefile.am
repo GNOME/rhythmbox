@@ -4,7 +4,13 @@ plugin_LTLIBRARIES = libaudioscrobbler.la
 libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-plugin.c			\
 	rb-audioscrobbler.c				\
-	rb-audioscrobbler.h
+	rb-audioscrobbler.h				\
+	rb-lastfm-source.c				\
+	rb-lastfm-source.h
+
+if USE_GSTREAMER_0_10
+libaudioscrobbler_la_SOURCES += rb-lastfm-gst-src.c
+endif
 
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBADD = 				\
@@ -37,9 +43,9 @@ plugin_in_files = audioscrobbler.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) as-powered.png
 
-EXTRA_DIST = $(plugin_in_files) as-powered.png
+EXTRA_DIST = $(plugin_in_files) as-powered.png 
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

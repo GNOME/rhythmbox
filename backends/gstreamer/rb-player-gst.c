@@ -106,6 +106,7 @@ typedef enum
 	ERROR,
 	TICK,
 	BUFFERING,
+	EVENT,
 } RBPlayerGstSignalType;
 
 typedef struct
@@ -256,6 +257,9 @@ emit_signal_idle (RBPlayerGstSignal *signal)
 	case BUFFERING:
 		_rb_player_emit_buffering (RB_PLAYER (signal->object), g_value_get_uint (signal->info));
 		signal->object->priv->idle_buffering_id = 0;
+		break;
+	case EVENT:
+		_rb_player_emit_event (RB_PLAYER (signal->object), g_value_get_string (signal->info), NULL);
 		break;
 	}
 
@@ -515,6 +519,21 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 		g_value_set_uint (signal->info, (guint)progress);
 		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 		break;
+	}
+	case GST_MESSAGE_APPLICATION: {
+		RBPlayerGstSignal *signal;
+		const GstStructure *structure;
+
+		structure = gst_message_get_structure (message);
+		signal = g_new0 (RBPlayerGstSignal, 1);
+		signal->type = EVENT;
+
+		g_object_ref (G_OBJECT (mp));
+		signal->object = mp;
+		signal->info = g_new0 (GValue, 1);
+		g_value_init (signal->info, G_TYPE_STRING);
+		g_value_set_string (signal->info, gst_structure_get_name (structure));
+		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 	}
 	default:
 		break;

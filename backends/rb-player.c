@@ -31,6 +31,7 @@ enum {
 	BUFFERING,
 	ERROR,
 	TICK,
+	EVENT,
 	LAST_SIGNAL
 };
 
@@ -87,6 +88,16 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_UINT);
+	signals[EVENT] =
+		g_signal_new ("event",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
+			      G_STRUCT_OFFSET (RBPlayerIface, event),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
 }
 
 GType
@@ -247,6 +258,12 @@ void
 _rb_player_emit_tick (RBPlayer *player, long elapsed)
 {
 	g_signal_emit (player, signals[TICK], 0, elapsed);
+}
+
+void
+_rb_player_emit_event (RBPlayer *player, const char *name, gpointer data)
+{
+	g_signal_emit (player, signals[EVENT], g_quark_from_string (name), data);
 }
 
 GQuark

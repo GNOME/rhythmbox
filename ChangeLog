@@ -1,8 +1,31 @@
-2006-10-06  James Livingston,,,  <doclivingston@gmail.com>
+2006-10-06  James Livingston  <doclivingston@gmail.com>
 
-	reviewed by: <delete if not using a buddy>
+	patch from Matt N  <fisxoj@gmail.com>
 
-	* plugins/magnatune/magnatune/Makefile.am:
+	* backends/gstreamer/rb-player-gst.c: (emit_signal_idle),
+	(rb_player_gst_bus_cb):
+	* backends/rb-player.c: (rb_player_interface_init),
+	(_rb_player_emit_tick), (_rb_player_emit_event):
+	* backends/rb-player.h: let the backend emit named "events", for
+	things that the core shouldn't know about.
+
+	* rhythmdb/rhythmdb.h:
+	* widgets/rb-header.c: (get_extra_metadata), (rb_header_sync): add
+	support for streams containing album metadata.
+
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_activate), (impl_deactivate), (impl_create_configure_dialog):
+	* plugins/audioscrobbler/rb-lastfm-gst-src.c:
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	* plugins/audioscrobbler/rb-lastfm-source.h: Add support for playback
+	of last.fm streams. From #313049.
+
+2006-10-06  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/magnatune/magnatune/Makefile.am: add a file I missed
+	committing. Oops.
 
 2006-10-06  James Livingston  <doclivingston@gmail.com>
 

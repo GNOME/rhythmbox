@@ -208,6 +208,7 @@ enum {
 /* commonly used extra entry metadata */
 #define RHYTHMDB_PROP_STREAM_SONG_TITLE		"rb:stream-song-title"
 #define RHYTHMDB_PROP_STREAM_SONG_ARTIST	"rb:stream-song-artist"
+#define RHYTHMDB_PROP_STREAM_SONG_ALBUM		"rb:stream-song-album"
 
 GType rhythmdb_query_type_get_type (void);
 GType rhythmdb_prop_type_get_type (void);

@@ -88,6 +88,7 @@ typedef struct
 						 GError *error);
 	void		(*tick)            	(RBPlayer *player,
 						 long elapsed);
+	void		(*event)		(RBPlayer *player, gpointer data);
 } RBPlayerIface;
 
 GType		rb_player_get_type   (void);
@@ -119,6 +120,7 @@ void	_rb_player_emit_info (RBPlayer *player, RBMetaDataField field, GValue *valu
 void	_rb_player_emit_buffering (RBPlayer *player, guint progress);
 void	_rb_player_emit_error (RBPlayer *player, GError *error);
 void	_rb_player_emit_tick (RBPlayer *player, long elapsed);
+void	_rb_player_emit_event (RBPlayer *player, const char *name, gpointer data);
 
 G_END_DECLS
 

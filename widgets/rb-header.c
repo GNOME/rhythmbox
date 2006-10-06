@@ -332,6 +332,21 @@ append_and_free (GString *str,
 	g_free (text);
 }
 
+static void
+get_extra_metadata (RhythmDB *db, RhythmDBEntry *entry, const char *field, char **value)
+{
+	GValue *v;
+
+	v = rhythmdb_entry_request_extra_metadata (db, entry, field);
+	if (v != NULL) {
+		*value = g_value_dup_string (v);
+		g_value_unset (v);
+		g_free (v);
+	} else {
+		*value = NULL;
+	}
+}
+
 void
 rb_header_sync (RBHeader *header)
 {
@@ -344,9 +359,9 @@ rb_header_sync (RBHeader *header)
 		const char *album;
 		const char *artist;
 		const char *stream_name = NULL;
-		char *streaming_title = NULL;
-		char *streaming_artist = NULL;
-		GValue *value;
+		char *streaming_title;
+		char *streaming_artist;
+		char *streaming_album;
 		GString *label_str;
 
 		gboolean have_duration = (header->priv->duration > 0);
@@ -355,29 +370,32 @@ rb_header_sync (RBHeader *header)
 		album = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ALBUM);
 		artist = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ARTIST);
 
-		value = rhythmdb_entry_request_extra_metadata (header->priv->db,
-							       header->priv->entry,
-							       RHYTHMDB_PROP_STREAM_SONG_TITLE);
-		if (value != NULL) {
-			streaming_title = g_value_dup_string (value);
-			g_value_unset (value);
-			g_free (value);
-
+		get_extra_metadata (header->priv->db,
+				    header->priv->entry,
+				    RHYTHMDB_PROP_STREAM_SONG_TITLE,
+				    &streaming_title);
+		if (streaming_title) {
 			/* use entry title as stream name */
 			stream_name = title;
 			title = streaming_title;
 		}
 
-		value = rhythmdb_entry_request_extra_metadata (header->priv->db,
-							       header->priv->entry,
-							       RHYTHMDB_PROP_STREAM_SONG_ARTIST);
-		if (value != NULL) {
-			streaming_artist = g_value_dup_string (value);
-			g_value_unset (value);
-			g_free (value);
-
+		get_extra_metadata (header->priv->db,
+				    header->priv->entry,
+				    RHYTHMDB_PROP_STREAM_SONG_ARTIST,
+				    &streaming_artist);
+		if (streaming_artist) {
 			/* override artist from entry */
 			artist = streaming_artist;
+		}
+
+		get_extra_metadata (header->priv->db,
+				    header->priv->entry,
+				    RHYTHMDB_PROP_STREAM_SONG_ALBUM,
+				    &streaming_album);
+		if (streaming_album) {
+			/* override album from entry */
+			album = streaming_album;
 		}
 
 		label_str = g_string_sized_new (100);
@@ -400,6 +418,10 @@ rb_header_sync (RBHeader *header)
 		rb_header_set_show_timeline (header, have_duration && header->priv->seekable);
 		if (have_duration)
 			rb_header_sync_time (header);
+
+		g_free (streaming_artist);
+		g_free (streaming_album);
+		g_free (streaming_title);
 	} else {
 		char *tmp;
 
