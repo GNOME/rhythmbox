@@ -26,12 +26,8 @@ class MagnatuneSource(rb.BrowserSource):
 	
 	
 	def __init__(self):
-		circle_file_name = rb.Plugin.find_file(rb.Plugin(), "magnatune_circle_small.png") # bit of a hack, since self.__plugin isn't defined here
-		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
-		icon = gtk.gdk.pixbuf_new_from_file_at_size(circle_file_name, width, height)
 
-
-		rb.BrowserSource.__init__(self, name=_("Magnatune"), icon=icon)
+		rb.BrowserSource.__init__(self, name=_("Magnatune"))
 
 		# track data
 		self.__sku_dict = {}
@@ -57,6 +53,13 @@ class MagnatuneSource(rb.BrowserSource):
 	def do_set_property(self, property, value):
 		if property.name == 'plugin':
 			self.__plugin = value
+
+			# we have to wait until we get the plugin to do this
+			circle_file_name = self.__plugin.find_file("magnatune_circle_small.png")
+			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(circle_file_name, width, height)
+			self.set_property("icon", icon)
+
 		else:
 			raise AttributeError, 'unknown property %s' % property.name
 
