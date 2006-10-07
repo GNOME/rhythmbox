@@ -429,7 +429,7 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces..."), NULL,
 	  N_("Edit music player preferences"),
 	  G_CALLBACK (rb_shell_cmd_preferences) },
-	{ "EditPlugins", NULL, N_("P_lugins..."), NULL,
+	{ "EditPlugins", NULL, N_("Plu_gins..."), NULL,
 	  N_("Change and configure plugins"),
 	  G_CALLBACK (rb_shell_cmd_plugins) },
 	{ "ViewAll", NULL, N_("Show _All"), "<control>Y",
@@ -1302,6 +1302,7 @@ rb_shell_constructor (GType type,
 					     shell);
 
 	construct_db (shell);
+	rb_source_group_init ();
 
 	/* initialize shell services */
 	construct_widgets (shell);
