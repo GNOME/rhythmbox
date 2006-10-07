@@ -1,5 +1,19 @@
 2006-10-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_dispose),
+	(rhythmdb_query_model_chain),
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_base_entry_prop_changed),
+	(rhythmdb_query_model_base_entry_removed):
+	For chained models, propagate the parent model's entry-prop-changed
+	signal rather than emitting one from the db entry-changed handler.
+	This ensures that when the change filters the entry out of the parent
+	model, property models attached to the child model get the entry
+	change signal before the post-entry-delete signal, so they can
+	decrement the refcount for the right property value.  Fixes #359083.
+
+2006-10-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/audioscrobbler/Makefile.am:
 	define NULL
 

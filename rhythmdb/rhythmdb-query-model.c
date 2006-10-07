@@ -155,6 +155,12 @@ static void rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 static void rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_model,
 						     RhythmDBEntry *entry,
 						     RhythmDBQueryModel *model);
+static void rhythmdb_query_model_base_entry_prop_changed (RhythmDBQueryModel *base_model,
+							  RhythmDBEntry *entry,
+							  RhythmDBPropType prop,
+							  const GValue *old,
+							  const GValue *new_value,
+							  RhythmDBQueryModel *model);
 static int rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *model, int index);
 
 static gint _reverse_sorting_func (gpointer a, gpointer b, struct ReverseSortData *model);
@@ -631,6 +637,9 @@ rhythmdb_query_model_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
 						      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 						      model);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->base_model),
+						      G_CALLBACK (rhythmdb_query_model_base_entry_prop_changed),
+						      model);
 		g_object_unref (model->priv->base_model);
 		model->priv->base_model = NULL;
 	}
@@ -753,6 +762,9 @@ rhythmdb_query_model_chain (RhythmDBQueryModel *model,
 		g_signal_handlers_disconnect_by_func (model->priv->base_model,
 						      G_CALLBACK (rhythmdb_query_model_base_entry_removed),
 						      model);
+		g_signal_handlers_disconnect_by_func (model->priv->base_model,
+						      G_CALLBACK (rhythmdb_query_model_base_entry_prop_changed),
+						      model);
 		g_object_unref (model->priv->base_model);
 	}
 
@@ -786,6 +798,10 @@ rhythmdb_query_model_chain (RhythmDBQueryModel *model,
 		g_signal_connect_object (model->priv->base_model,
 					 "entry-removed",
 					 G_CALLBACK (rhythmdb_query_model_base_entry_removed),
+					 model, 0);
+		g_signal_connect_object (model->priv->base_model,
+					 "entry-prop-changed",
+					 G_CALLBACK (rhythmdb_query_model_base_entry_prop_changed),
 					 model, 0);
 
 		if (import_entries)
@@ -868,12 +884,18 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 		return;
 	}
 
-	/* emit separate change signals for each property */
+	/* emit separate change signals for each property
+	 * unless this is a chained query model, in which
+	 * case we propagate the parent model's signals instead.
+	 */
 	for (t = changes; t; t = t->next) {
 		RhythmDBEntryChange *change = t->data;
-		g_signal_emit (G_OBJECT (model),
-			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
-			       entry, change->prop, &change->old, &change->new);
+
+		if (model->priv->base_model == NULL) {
+			g_signal_emit (G_OBJECT (model),
+				       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
+				       entry, change->prop, &change->old, &change->new);
+		}
 
 		if (change->prop == RHYTHMDB_PROP_DURATION) {
 			model->priv->total_duration -= g_value_get_ulong (&change->old);
@@ -903,6 +925,22 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 						     path, &iter);
 			gtk_tree_path_free (path);
 		}
+	}
+}
+
+static void
+rhythmdb_query_model_base_entry_prop_changed (RhythmDBQueryModel *base_model,
+					      RhythmDBEntry *entry,
+					      RhythmDBPropType prop,
+					      const GValue *old,
+					      const GValue *new_value,
+					      RhythmDBQueryModel *model)
+{
+	if (g_hash_table_lookup (model->priv->reverse_map, entry)) {
+		/* propagate the signal */
+		g_signal_emit (G_OBJECT (model),
+			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
+			       entry, prop, old, new_value);
 	}
 }
 
@@ -2287,10 +2325,12 @@ rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_model,
 					 RhythmDBEntry *entry,
 					 RhythmDBQueryModel *model)
 {
-	/* propagate the signal out to any attached property models */
-	g_signal_emit (G_OBJECT (model),
-		       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
-		       entry);
+	if (g_hash_table_lookup (model->priv->reverse_map, entry)) {
+		/* propagate the signal out to any attached property models */
+		g_signal_emit (G_OBJECT (model),
+			       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
+			       entry);
+	}
 }
 
 void
