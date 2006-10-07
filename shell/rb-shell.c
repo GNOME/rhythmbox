@@ -1302,7 +1302,6 @@ rb_shell_constructor (GType type,
 					     shell);
 
 	construct_db (shell);
-	rb_source_group_init ();
 
 	/* initialize shell services */
 	construct_widgets (shell);
