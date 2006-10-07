@@ -1,3 +1,11 @@
+2006-10-07  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/audioscrobbler/rb-lastfm-gst-src.c:
+	(rb_lastfm_src_uri_get_protocols), (rb_lastfm_src_uri_set_uri):
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_get_playback_uri): work around GStreamer not support
+	hypens in URI schemes.
+
 2006-10-06  William Jon McCann  <mccann@jhu.edu>
 
 	* plugins/iradio/Makefile.am:

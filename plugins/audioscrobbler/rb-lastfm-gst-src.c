@@ -243,7 +243,7 @@ rb_lastfm_src_uri_get_type (void)
 static gchar **
 rb_lastfm_src_uri_get_protocols (void)
 {
-	static gchar *protocols[] = {"lastfm", NULL};
+	static gchar *protocols[] = {"xrblastfm", NULL};
 	return protocols;
 }
 
@@ -266,11 +266,11 @@ rb_lastfm_src_uri_set_uri (GstURIHandler *handler,
 		return FALSE;
 	}
 
-	if (g_str_has_prefix (uri, "x-rb-lastfm://") == FALSE) {
+	if (g_str_has_prefix (uri, "xrblastfm://") == FALSE) {
 		return FALSE;
 	}
 
-	http_uri = g_strdup_printf ("http://%s", uri + strlen ("x-rb-lastfm://"));
+	http_uri = g_strdup_printf ("http://%s", uri + strlen ("xrblastfm://"));
 	g_object_set (src, "uri", http_uri, NULL);
 	g_free (http_uri);
 

@@ -771,7 +771,7 @@ rb_lastfm_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
 	}
 	source = RB_LASTFM_SOURCE (data);
 
-	location = g_strdup_printf ("x-rb-lastfm://%s", source->priv->stream_url + strlen("http://"));
+	location = g_strdup_printf ("xrblastfm://%s", source->priv->stream_url + strlen("http://"));
 	rb_debug ("playback uri: %s", location);
 	return location;
 }
