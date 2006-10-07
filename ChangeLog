@@ -1,5 +1,11 @@
 2006-10-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/main.c: (main):
+	Call bind_textdomain_codeset ("gstreamer-0.10", "UTF-8") so we get
+	UTF-8 GStreamer messages.  Fixes #357973.
+
+2006-10-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: (rb_shell_constructor):
 	Remove a line that accidentally slipped in from some other universe.
 

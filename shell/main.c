@@ -181,6 +181,15 @@ main (int argc, char **argv)
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+
+	/* ask for utf-8 message text from GStreamer too,
+	 * since it doesn't do that itself.
+	 */
+#ifdef HAVE_GSTREAMER_0_10
+	bind_textdomain_codeset ("gstreamer-0.10", "UTF-8");
+#else
+	bind_textdomain_codeset ("gstreamer-0.8", "UTF-8");
+#endif
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
