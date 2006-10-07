@@ -1,3 +1,5 @@
+NULL =
+
 plugindir = $(PLUGINDIR)/audioscrobbler
 plugin_LTLIBRARIES = libaudioscrobbler.la
 
