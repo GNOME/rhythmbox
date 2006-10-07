@@ -1,3 +1,9 @@
+2006-10-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audiocd/rb-audiocd-plugin.c: (_delete_cb):
+	Don't remove sources from the hash table while iterating it on
+	shutdown.  Fixes #359583.
+
 2006-10-07  James Livingston  <doclivingston@gmail.com>
 
 	patch from Alex Lancaster  <alexl@users.sourceforge.net>

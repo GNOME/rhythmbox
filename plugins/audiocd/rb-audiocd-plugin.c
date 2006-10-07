@@ -472,6 +472,10 @@ _delete_cb (GnomeVFSVolume  *volume,
 	    RBSource        *source,
 	    RBAudioCdPlugin *plugin)
 {
+	/* block the source deleted handler so we don't modify the hash table
+	 * while iterating it.
+	 */
+	g_signal_handlers_block_by_func (source, rb_audiocd_plugin_source_deleted, plugin);
 	rb_source_delete_thyself (source);
 }
 
