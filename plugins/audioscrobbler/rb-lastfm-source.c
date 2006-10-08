@@ -256,6 +256,7 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_activate = impl_activate;
+	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,

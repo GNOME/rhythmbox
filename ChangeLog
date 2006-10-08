@@ -1,3 +1,10 @@
+2006-10-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_class_init):
+	Return TRUE from impl_try_playlist so playback starts in a separate
+	thread.
+
 2006-10-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/main.c: (main):
