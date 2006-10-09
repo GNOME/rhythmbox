@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkWindow" id="song_info">
   <property name="visible">True</property>
@@ -290,7 +289,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="discn_label">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">_Disc Number:</property>
+	      <property name="label" translatable="yes">_Disc number:</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
