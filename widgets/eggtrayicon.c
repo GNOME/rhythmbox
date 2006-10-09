@@ -595,7 +595,11 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       secondary = "";
     }
 
+#if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR == 3 && LIBNOTIFY_VERSION_MICRO == 0)
+  esc_primary = strdup (primary);
+#else
   esc_primary = g_markup_escape_text (primary, strlen (primary));
+#endif
   esc_secondary = g_markup_escape_text (secondary, strlen (secondary));
   icon->notify->handle = notify_notification_new (esc_primary,
                                                   esc_secondary,
