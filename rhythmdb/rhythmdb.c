@@ -475,6 +475,28 @@ rhythmdb_init (RhythmDB *db)
 	rhythmdb_init_monitoring (db);
 }
 
+static GError *
+make_access_failed_error (const char *uri, GnomeVFSResult result)
+{
+	char *unescaped;
+	char *utf8ised;
+	GError *error;
+
+	/* make sure the URI we put in the error message is valid utf8 */
+	unescaped = gnome_vfs_unescape_string_for_display (uri);
+	utf8ised = rb_make_valid_utf8 (unescaped, '?');
+
+	error = g_error_new (RHYTHMDB_ERROR,
+			     RHYTHMDB_ERROR_ACCESS_FAILED,
+			     _("Couldn't access %s: %s"),
+			     utf8ised,
+			     gnome_vfs_result_to_string (result));
+	rb_debug ("got error on %s: %s", utf8ised, error->message);
+	g_free (unescaped);
+	g_free (utf8ised);
+	return error;
+}
+
 static void
 rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
 				     GList *results,
@@ -501,14 +523,8 @@ rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
 		if (info_result->result == GNOME_VFS_OK) {
 			event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 		} else {
-			char *unescaped = gnome_vfs_unescape_string_for_display (rb_refstring_get (event->real_uri));
-			event->error = g_error_new (RHYTHMDB_ERROR,
-						    RHYTHMDB_ERROR_ACCESS_FAILED,
-						    _("Couldn't access %s: %s"),
-						    unescaped,
-						    gnome_vfs_result_to_string (info_result->result));
-			rb_debug ("got error on %s: %s", unescaped, event->error->message);
-			g_free (unescaped);
+			event->error = make_access_failed_error (rb_refstring_get (event->real_uri),
+								 info_result->result);
 			event->vfsinfo = NULL;
 		}
 		g_async_queue_push (db->priv->event_queue, event);
@@ -1994,14 +2010,8 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 	if (info_result->result == GNOME_VFS_OK) {
 		event->vfsinfo = gnome_vfs_file_info_dup (info_result->file_info);
 	} else {
-		char *unescaped = gnome_vfs_unescape_string_for_display (rb_refstring_get (event->real_uri));
-		event->error = g_error_new (RHYTHMDB_ERROR,
-					    RHYTHMDB_ERROR_ACCESS_FAILED,
-					    _("Couldn't access %s: %s"),
-					    unescaped,
-					    gnome_vfs_result_to_string (info_result->result));
-		rb_debug ("got error on %s: %s", unescaped, event->error->message);
-		g_free (unescaped);
+		event->error = make_access_failed_error (rb_refstring_get (event->real_uri),
+							 info_result->result);
 		event->vfsinfo = NULL;
 	}
 	g_async_queue_push (event->db->priv->event_queue, event);
@@ -2119,14 +2129,7 @@ rhythmdb_execute_load (RhythmDB *db,
 					     event->vfsinfo,
 					     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
 	if (vfsresult != GNOME_VFS_OK) {
-		char *unescaped = gnome_vfs_unescape_string_for_display (uri);
-		event->error = g_error_new (RHYTHMDB_ERROR,
-					    RHYTHMDB_ERROR_ACCESS_FAILED,
-					    _("Couldn't access %s: %s"),
-					    unescaped,
-					    gnome_vfs_result_to_string (vfsresult));
-		rb_debug ("got error on %s: %s", unescaped, event->error->message);
-		g_free (unescaped);
+		event->error = make_access_failed_error (uri, vfsresult);
 		if (event->vfsinfo)
 			gnome_vfs_file_info_unref (event->vfsinfo);
 		event->vfsinfo = NULL;

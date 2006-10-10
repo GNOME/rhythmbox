@@ -1,5 +1,19 @@
 2006-10-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* sources/rb-ipod-source.c: (generate_ipod_filename):
+	* lib/rb-cut-and-paste-code.c: (rb_make_valid_utf8):
+	* lib/rb-cut-and-paste-code.h:
+	Move eel_make_valid_utf8 to lib/, make the replacement
+	character a parameter.
+
+	* rhythmdb/rhythmdb.c: (make_access_failed_error),
+	(rhythmdb_execute_multi_stat_info_cb),
+	(rhythmdb_execute_stat_info_cb), (rhythmdb_execute_load):
+	When constructing an error message that includes a URI, make sure the
+	URI is valid utf-8.  Fixes #353588.
+
+2006-10-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* player/rb-recorder-gst.c: (rb_recorder_construct),
 	(acb_wave_time):
 	Add an extra audioconvert element to allow endianness conversion on

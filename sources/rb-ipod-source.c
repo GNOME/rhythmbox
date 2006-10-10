@@ -43,6 +43,7 @@
 #include "rb-static-playlist-source.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
+#include "rb-cut-and-paste-code.h"
 
 #ifdef IPOD_PHONE_SUPPORT
 #define PHONE_VENDOR_ID 0x22b8
@@ -1139,46 +1140,6 @@ utf8_to_ascii (const gchar *utf8)
 	return g_string_free (string, FALSE);
 }
 
-/* Copied from eel-vfs-extensions.c from eel CVS HEAD on 2004-05-09
- * This function is (C) 1999, 2000 Eazel, Inc.
- */
-static char *
-eel_make_valid_utf8 (const char *name)
-{
-	GString *string;
-	const char *remainder, *invalid;
-	int remaining_bytes, valid_bytes;
-
-	string = NULL;
-	remainder = name;
-	remaining_bytes = strlen (name);
-
-	while (remaining_bytes != 0) {
-		if (g_utf8_validate (remainder, remaining_bytes, &invalid)) {
-			break;
-		}
-		valid_bytes = invalid - remainder;
-
-		if (string == NULL) {
-			string = g_string_sized_new (remaining_bytes);
-		}
-		g_string_append_len (string, remainder, valid_bytes);
-		g_string_append_c (string, '_');
-
-		remaining_bytes -= valid_bytes + 1;
-		remainder = invalid + 1;
-	}
-
-	if (string == NULL) {
-		return g_strdup (name);
-	}
-
-	g_string_append (string, remainder);
-	g_assert (g_utf8_validate (string->str, -1, NULL));
-
-	return g_string_free (string, FALSE);
-}
-
 static gchar *
 generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 {
@@ -1188,7 +1149,7 @@ generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 	gint tries = 0;
 
 	/* First, we need a valid UTF-8 filename, strip all non-UTF-8 chars */
-	tmp = eel_make_valid_utf8 (filename);
+	tmp = rb_make_valid_utf8 (filename, '_');
 	/* The iPod doesn't seem to recognize non-ascii chars in filenames,
 	 * so we strip them
 	 */

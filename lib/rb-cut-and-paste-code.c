@@ -435,3 +435,45 @@ rb_utf8_collate_key_for_filename (const gchar *str, gssize len)
 	return g_string_free (result, FALSE);
 }
 #endif
+
+
+/* Copied from eel-vfs-extensions.c from eel CVS HEAD on 2004-05-09
+ * This function is (C) 1999, 2000 Eazel, Inc.
+ */
+char *
+rb_make_valid_utf8 (const char *name, char substitute)
+{
+	GString *string;
+	const char *remainder, *invalid;
+	int remaining_bytes, valid_bytes;
+
+	string = NULL;
+	remainder = name;
+	remaining_bytes = strlen (name);
+
+	while (remaining_bytes != 0) {
+		if (g_utf8_validate (remainder, remaining_bytes, &invalid)) {
+			break;
+		}
+		valid_bytes = invalid - remainder;
+
+		if (string == NULL) {
+			string = g_string_sized_new (remaining_bytes);
+		}
+		g_string_append_len (string, remainder, valid_bytes);
+		g_string_append_c (string, substitute);
+
+		remaining_bytes -= valid_bytes + 1;
+		remainder = invalid + 1;
+	}
+
+	if (string == NULL) {
+		return g_strdup (name);
+	}
+
+	g_string_append (string, remainder);
+	g_assert (g_utf8_validate (string->str, -1, NULL));
+
+	return g_string_free (string, FALSE);
+}
+

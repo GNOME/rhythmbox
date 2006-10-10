@@ -43,6 +43,8 @@ char *     rb_utf_friendly_time        (time_t date);
 gchar*	rb_utf8_collate_key_for_filename (const gchar *str, gssize len);
 #endif
 
+char *     rb_make_valid_utf8 (const char *name, char substitute);
+
 G_END_DECLS
 
 #endif /* __RB_CUT_AND_PASTE_CODE_H */
