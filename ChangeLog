@@ -1,3 +1,11 @@
+2006-10-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* player/rb-recorder-gst.c: (rb_recorder_construct),
+	(acb_wave_time):
+	Add an extra audioconvert element to allow endianness conversion on
+	big-endian machines, and fix a few endianness issues in the .wav
+	reading code.  Fixes #355611.
+
 2006-10-09  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>

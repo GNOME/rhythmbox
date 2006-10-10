@@ -90,6 +90,7 @@ struct _RBRecorderPrivate {
         guint       eos_signal_id;
 #elif HAVE_GSTREAMER_0_10
 	GstElement *capsfilter;
+	GstElement *audioconvert2;
 	gboolean    got_audio_pad;
 #endif
 
@@ -529,8 +530,10 @@ rb_recorder_construct (RBRecorder *recorder,
         rb_recorder_gst_free_pipeline (recorder);
 
         /* The recording pipeline looks like:
-         *  { src ! decodebin ! audioconvert ! audioscale
-         *    ! audio/x-raw-int,rate=44100,width=16,depth=16 ! wavenc ! sink }
+         *  { src ! decodebin ! audioconvert ! audioscale ! audioconvert
+         *    ! audio/x-raw-int,rate=44100,width=16,depth=16,endian=1234 ! wavenc ! sink }
+         * The second audioconvert is there for endianness conversion
+         * on big-endian machines.
          */
 
         recorder->priv->pipeline = gst_pipeline_new ("pipeline");
@@ -596,6 +599,9 @@ rb_recorder_construct (RBRecorder *recorder,
         gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->audioscale);
 
 #ifdef HAVE_GSTREAMER_0_10
+        MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert2);
+        gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->audioconvert2);
+
 	MAKE_ELEMENT_OR_LOSE(capsfilter, capsfilter);
 	gst_bin_add (GST_BIN (recorder->priv->pipeline), recorder->priv->capsfilter);
 #endif
@@ -613,6 +619,7 @@ rb_recorder_construct (RBRecorder *recorder,
                                           "rate",     G_TYPE_INT, 44100,
                                           "width",    G_TYPE_INT, 16,
                                           "depth",    G_TYPE_INT, 16,
+					  "endianness",	G_TYPE_INT, G_LITTLE_ENDIAN,
                                           NULL);
 #ifdef HAVE_GSTREAMER_0_8
         gst_element_link_many (recorder->priv->src,
@@ -643,6 +650,7 @@ rb_recorder_construct (RBRecorder *recorder,
 
 	gst_element_link_many (recorder->priv->audioconvert,
 			       recorder->priv->audioscale,
+			       recorder->priv->audioconvert2,
 			       recorder->priv->capsfilter,
 			       recorder->priv->encoder,
 			       recorder->priv->sink,
@@ -1479,7 +1487,8 @@ acb_wave_time (const char *filename)
                 return ACB_ERROR_NOT_WAVE_TOO_SMALL;
         }
 
-        if (GINT_FROM_LE (len) != 16) {
+	len = GINT_FROM_LE (len);
+        if (len != 16) {
                 close (fd);
                 g_print ("file len not defined\n");
                 return ACB_ERROR_NOT_WAVE_FORMAT;
@@ -1494,9 +1503,9 @@ acb_wave_time (const char *filename)
 
         close (fd);
 
-        if (wav->nChannels != 2
-            || wav->nSamplesPerSec != 44100
-            || wav->wBitsPerSample != 16) {
+        if (GINT16_FROM_LE (wav->nChannels) != 2
+            || GINT32_FROM_LE (wav->nSamplesPerSec) != 44100
+            || GINT16_FROM_LE (wav->wBitsPerSample) != 16) {
                 g_free (wav);
                 return ACB_ERROR_NOT_WAVE_FORMAT;
         }
