@@ -862,23 +862,27 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 	}
 
 	if (hidden) {
-		/* emit this, so things know why it was removed.
-		 * this is needed to update propery models correctly */
-		GValue true_val = { 0, };
-		GValue false_val = { 0, };
+		/* emit an entry-prop-changed signal so property models
+		 * can be updated correctly.  if we have a base model,
+		 * we'll propagate the parent's signal instead.
+		 */
+		if (model->priv->base_model == NULL) {
+			GValue true_val = { 0, };
+			GValue false_val = { 0, };
 
-		g_value_init (&true_val, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&true_val, TRUE);
-		g_value_init (&false_val, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&false_val, FALSE);
+			g_value_init (&true_val, G_TYPE_BOOLEAN);
+			g_value_set_boolean (&true_val, TRUE);
+			g_value_init (&false_val, G_TYPE_BOOLEAN);
+			g_value_set_boolean (&false_val, FALSE);
 
-		rb_debug ("emitting hidden-removal notification for %s",
-			  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
-		g_signal_emit (G_OBJECT (model),
-			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
-			       entry, RHYTHMDB_PROP_HIDDEN, &false_val, &true_val);
-		g_value_unset (&true_val);
-		g_value_unset (&false_val);
+			rb_debug ("emitting hidden-removal notification for %s",
+				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+			g_signal_emit (G_OBJECT (model),
+				       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
+				       entry, RHYTHMDB_PROP_HIDDEN, &false_val, &true_val);
+			g_value_unset (&true_val);
+			g_value_unset (&false_val);
+		}
 
 		rhythmdb_query_model_filter_out_entry (model, entry);
 		return;

@@ -1,3 +1,11 @@
+2006-10-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb):
+	Don't emit entry-prop-changed for hidden signals from chained query
+	models, as the model will also propagate the parent model's
+	entry-prop-changed signal.  Fixes mysteriously unreported crashes.
+
 2006-10-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-ipod-source.c: (generate_ipod_filename):
