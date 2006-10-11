@@ -1,5 +1,10 @@
 2006-10-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/rb-search-entry.c: (rb_search_entry_changed_cb):
+	Reset the style when clearing the search text.  Fixes #361295.
+
+2006-10-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_entry_changed_cb):
 	Don't emit entry-prop-changed for hidden signals from chained query

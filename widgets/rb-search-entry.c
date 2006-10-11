@@ -219,6 +219,8 @@ static void
 rb_search_entry_changed_cb (GtkEditable *editable,
 			    RBSearchEntry *entry)
 {
+	rb_search_entry_check_style (entry);
+
 	if (entry->priv->clearing == TRUE)
 		return;
 
@@ -226,8 +228,6 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 		g_source_remove (entry->priv->timeout);
 		entry->priv->timeout = 0;
 	}
-
-	rb_search_entry_check_style (entry);
 
 	/* emit it now if we're clearing the entry */
 	if (gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)))
