@@ -1,4 +1,4 @@
-# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*- 
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
 #
 # Copyright 2005 Eduardo Gonzalez
 # Copyright (C) 2006 Jonathan Matthew
@@ -7,7 +7,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,14 +17,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 #
-# TODO: 
+# TODO:
 # - multiple lyrics sites (lyrc.com.ar, etc.)
 # - handle multiple results usefully
 # - save lyrics to disk?
 # - check that the lyrics returned even remotely match the request?
 # - share URL grabbing code with other plugins
 
-import os 
+import os
 import gtk, gobject
 import urllib
 import re
@@ -125,8 +125,8 @@ class LyricPane(object):
 	self.buffer.set_text(_("Searching for lyrics..."));
 	lyrics_grabber = LyricGrabber()
 	lyrics_grabber.get_lyrics(self.db, self.entry, self.buffer.set_text)
-	
-	
+
+
 
 class LyricGrabber(object):
     def __init__(self):
@@ -170,7 +170,7 @@ class LyricGrabber(object):
 	if os.path.exists (self.cache_path):
             self.loader.get_url(self.cache_path, callback)
             return;
-        
+
 	url = "http://api.leoslyrics.com/api_search.php?auth=Rhythmbox&artist=%s&songtitle=%s" % (
 		urllib.quote(artist.encode('utf-8')),
 		urllib.quote(title.encode('utf-8')))
@@ -186,13 +186,13 @@ class LyricGrabber(object):
 	except:
 	    self.callback("Couldn't parse search results.")
 	    return
-	
+
 	result_code = xmldoc.getElementsByTagName('response')[0].getAttribute('code')
 	if result_code != '0':
 	    self.callback("Server is busy, try again later.")
 	    xmldoc.unlink()
 	    return
-	
+
 	# We don't really need the top 100 matches, so I'm limiting it to ten
 	matches = xmldoc.getElementsByTagName('result')[:10]
 	#songs = map(lambda x:
@@ -208,7 +208,7 @@ class LyricGrabber(object):
 	    self.callback("Unable to find lyrics for this track.")
 	    xmldoc.unlink()
 	    return
-	
+
 	#songlist = []
 	#for i in range(len(hids)):
 	#    songlist.append((songs[i], hids[i], exacts[i]))
@@ -259,7 +259,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 	self.action_group = gtk.ActionGroup ('SongLyricsPluginActions')
 	self.action_group.add_action (self.action)
-    	
+
     	uim = shell.get_ui_manager ()
 	uim.insert_action_group (self.action_group, 0)
 	self.ui_id = uim.add_ui_from_string (ui_str)
@@ -272,13 +272,15 @@ class LyricsDisplayPlugin(rb.Plugin):
 	self.csi_id = shell.connect('create_song_info', self.create_song_info)
 
     def deactivate (self, shell):
-    	
+
 	uim = shell.get_ui_manager()
 	uim.remove_ui (self.ui_id)
 	uim.remove_action_group (self.action_group)
 
 	self.action_group = None
 	self.action = None
+
+	shell.disconnect (self.csi_id)
 
 	sp = shell.get_player ()
 	sp.disconnect (self.pec_id)
@@ -308,7 +310,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 	self.window = LyricWindow(db, entry)
 	lyrics_grabber = LyricGrabber()
 	lyrics_grabber.get_lyrics(db, entry, self.window.buffer.set_text)
-	
+
     def create_song_info (self, shell, song_info, is_multiple):
 
 	if is_multiple is False:
