@@ -429,6 +429,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 
 		if (info != NULL
 		    && info->mime_type != NULL
+		    && strstr (info->mime_type, "html") == NULL
 		    && strstr (info->mime_type, "xml") == NULL
 		    && strstr (info->mime_type, "rss") == NULL) {
 			invalid_mime_type = TRUE;
