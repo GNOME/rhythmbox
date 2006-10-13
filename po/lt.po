@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-09 13:34+0300\n"
-"PO-Revision-Date: 2006-10-09 13:36+0300\n"
+"POT-Creation-Date: 2006-10-13 11:46+0300\n"
+"PO-Revision-Date: 2006-10-13 11:46+0300\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Ar norite perrašyti rinkmeną „%s“?"
 
 #: ../backends/gstreamer/rb-player-gst.c:609 ../metadata/rb-metadata-gst.c:887
-#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:660
+#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Nepavyko sukurti %s elemento; patikrinkite įdiegimą"
@@ -54,10 +54,10 @@ msgstr "Nežinoma grojimo klaida"
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
 #: ../podcast/rb-podcast-properties-dialog.c:502
-#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1296
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1312
 #: ../rhythmdb/rhythmdb-tree.c:1120 ../rhythmdb/rhythmdb-tree.c:1124
 #: ../rhythmdb/rhythmdb-tree.c:1128 ../rhythmdb/rhythmdb-tree.c:1132
-#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:234
+#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:235
 #: ../sources/rb-iradio-source.c:551 ../sources/rb-iradio-source.c:1285
 #: ../sources/rb-podcast-source.c:1633 ../widgets/rb-entry-view.c:776
 #: ../widgets/rb-entry-view.c:801 ../widgets/rb-entry-view.c:1085
@@ -175,7 +175,7 @@ msgstr "Last.fm profilis"
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
 #: ../iradio/rb-station-properties-dialog.c:438
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:846
-#: ../rhythmdb/rhythmdb.c:2843 ../widgets/rb-entry-view.c:724
+#: ../rhythmdb/rhythmdb.c:2846 ../widgets/rb-entry-view.c:724
 #: ../widgets/rb-entry-view.c:1143 ../widgets/rb-entry-view.c:1156
 #: ../widgets/rb-song-info.c:1139
 msgid "Never"
@@ -271,11 +271,11 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox laiko visą Jūsų muziką centrinėje muzikos „bibliotekoje“, kad būtų "
-"paprasta ieškoti muzikos.\n"
-"Tam, kad galėtumėte naudoti šią funkciją, turite Rhythmbox nurodyti, kur "
-"ieškoti muzikos rinkmenų.  Galite praleisti šį žingsnį - galėsite pridėti "
-"muziką į biblioteką bet kuriuo metu vėliau.\n"
+"Rhythmbox tvarko visą Jūsų muziką centrinėje muzikos „bibliotekoje“, kad "
+"Jums būtų patogu ją susirasti bei valdyti.\n"
+"Norėdami naudoti šią funkciją, turite Rhythmbox nurodyti, kur ieškoti "
+"muzikos rinkmenų. Galite šį žingsnį ir praleisti - muziką į biblioteką "
+"galėsite įtraukti bet kada vėliau.\n"
 "Pasirinkite vieną iš žemiau esančių variantų:"
 
 #: ../data/glade/druid.glade.h:5 ../data/glade/library-prefs.glade.h:5
@@ -644,6 +644,7 @@ msgstr "_Takelio numeris:"
 
 #: ../data/glade/song-info.glade.h:19
 #: ../data/glade/song-info-multiple.glade.h:6
+#: ../plugins/magnatune/magnatune-prefs.glade.h:47
 msgid "_Year:"
 msgstr "_Metai:"
 
@@ -682,11 +683,11 @@ msgstr "Muzikos grotuvas"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Grokite ir tvarkykite savo muzikos kolekciją"
+msgstr "Valdykite ir klausykitės savo muzikos kolekcijos"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
-msgstr "Rhythmbox muzikos grotuvas"
+msgstr "Muzikos grotuvas Rhythmbox"
 
 #: ../iradio/rb-new-station-dialog.c:105
 #: ../iradio/rb-station-properties-dialog.c:341
@@ -825,7 +826,7 @@ msgstr "Nepavyko sukurti žymų rašymo elementų"
 
 #: ../metadata/rb-metadata-gst.c:1407
 msgid "Timeout while setting pipeline to NULL"
-msgstr "Pasibaigęs laikas nustatant konvejerį į NULL"
+msgstr "Baigėsi laiko limitas nustatant konvejerį į NULL"
 
 #: ../metadata/rb-metadata-gst.c:1427
 msgid "File corrupted during write"
@@ -895,68 +896,68 @@ msgstr "Šio CD metaduomenys nepilni"
 msgid "Could not create CD lookup thread"
 msgstr "Nepavyko sukurti CD peržiūros gijos"
 
-#: ../player/rb-recorder-gst.c:541
+#: ../player/rb-recorder-gst.c:544
 msgid "Failed to create pipeline"
 msgstr "Nepavyko sukurti konvejerio"
 
-#: ../player/rb-recorder-gst.c:571
+#: ../player/rb-recorder-gst.c:574
 msgid "Could not access source pad"
 msgstr "Nepavyko pasiekti šaltinio pagrindo"
 
-#: ../player/rb-recorder-gst.c:678 ../player/rb-recorder-gst.c:684
+#: ../player/rb-recorder-gst.c:686 ../player/rb-recorder-gst.c:692
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "Nepavyko atsieti „%s“"
 
-#: ../player/rb-recorder-gst.c:725
+#: ../player/rb-recorder-gst.c:733
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr "Nepavyko inicializuoti planuotuvo.  Ar paleidote gst-register?"
+msgstr "Nepavyko inicializuoti planuoklio. Ar paleidote gst-register?"
 
-#: ../player/rb-recorder-gst.c:761 ../player/rb-recorder-gst.c:766
-#: ../player/rb-recorder-gst.c:832
+#: ../player/rb-recorder-gst.c:769 ../player/rb-recorder-gst.c:774
+#: ../player/rb-recorder-gst.c:840
 msgid "Could not get current track position"
 msgstr "Nepavyko gauti takelio dabartinės pozicijos"
 
-#: ../player/rb-recorder-gst.c:818
+#: ../player/rb-recorder-gst.c:826
 msgid "Could not retrieve state from processing pipeline"
-msgstr "Nepavyko gauti būsenos apdorojant konvejerį"
+msgstr "Iš apdorojamo konvejerio nepavyko gauti būsenos"
 
-#: ../player/rb-recorder-gst.c:883 ../player/rb-recorder-gst.c:935
+#: ../player/rb-recorder-gst.c:891 ../player/rb-recorder-gst.c:943
 msgid "Could not start pipeline playing"
-msgstr "Nepavyko pradėti konvejerio grojimo"
+msgstr "Nepavyko pradėti konvejerinio grojimo"
 
-#: ../player/rb-recorder-gst.c:898 ../player/rb-recorder-gst.c:946
+#: ../player/rb-recorder-gst.c:906 ../player/rb-recorder-gst.c:954
 msgid "Could not pause playback"
 msgstr "Nepavyko pristabdyti grojimo"
 
-#: ../player/rb-recorder-gst.c:1153
+#: ../player/rb-recorder-gst.c:1161
 msgid "Cannot find drive"
 msgstr "Nepavyko rasti įrenginio"
 
-#: ../player/rb-recorder-gst.c:1216
+#: ../player/rb-recorder-gst.c:1224
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Nepavyko rasti diskų įrenginio %s"
 
-#: ../player/rb-recorder-gst.c:1225
+#: ../player/rb-recorder-gst.c:1233
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "Įrenginys %s negali rašyti diskų"
 
-#: ../player/rb-recorder-gst.c:1391 ../player/rb-recorder-gst.c:1583
+#: ../player/rb-recorder-gst.c:1399 ../player/rb-recorder-gst.c:1592
 msgid "No writable drives found."
 msgstr "Nerasta rašomų įrenginių."
 
-#: ../player/rb-recorder-gst.c:1533
+#: ../player/rb-recorder-gst.c:1542
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Nepavyko gauti rinkmenos trukmės: %s"
 
-#: ../player/rb-recorder-gst.c:1592
+#: ../player/rb-recorder-gst.c:1601
 msgid "Could not determine audio track durations."
 msgstr "Nepavyko nustatyti garso takelių trukmės."
 
-#: ../player/rb-recorder-gst.c:1642
+#: ../player/rb-recorder-gst.c:1651
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -965,7 +966,7 @@ msgstr ""
 "Rašant CD įvyko klaida:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1646
+#: ../player/rb-recorder-gst.c:1655
 msgid "There was an error writing to the CD"
 msgstr "Rašant CD įvyko klaida"
 
@@ -1087,7 +1088,8 @@ msgstr "Pervadinti iPod"
 
 #: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
-msgstr "Valdo Rhythmbox naudojant infraraudonujų spindulių nuotolinį valdymą"
+msgstr ""
+"Valdykite Rhythmbox naudodamiesi infraraudonujų spindulių nuotoliniu valdymu"
 
 #: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:2
 msgid "LIRC "
@@ -1108,7 +1110,7 @@ msgstr "Dainos žodžius suteikė leoslyrics.com"
 
 #: ../plugins/lyrics/lyrics.py:255
 msgid "Song L_yrics"
-msgstr "Dainos ž_odžiai"
+msgstr "_Dainos žodžiai"
 
 #: ../plugins/lyrics/lyrics.py:256
 msgid "Display lyrics for the playing song"
@@ -1117,6 +1119,313 @@ msgstr "Rodyti grojamų dainų žodžius"
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
 msgid "Displays song lyrics"
 msgstr "Rodo dainų žodžius"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:1
+msgid "<b>Magnatune online music store</b>"
+msgstr "<b>Muzikos parduotuvė internete Magnatune</b>"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:3
+#, no-c-format
+msgid ""
+"Magnatune is an online record label that is not evil. Some of their key "
+"attributes are:\n"
+"\n"
+"    * Free listening of all songs\n"
+"    * All albums and artists hand-picked\n"
+"    * Very simple user interface, quick to play music\n"
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music\n"
+"    * No need to \"register\" to listen or buy\n"
+"    * Smaller selection means easier to find good music\n"
+"    * Wide variety of genres, can fit any mood\n"
+"    * Our genres are hard to find in record stores and not on radio (though "
+"do appear on college radio)\n"
+"    * Downloads and CDs are both available (no other site on the internet "
+"sells both)\n"
+"    * Perfect quality downloads (CD copy) are available when you download "
+"(not inferior quality sound)\n"
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)\n"
+"    * Extensive biographical info about each musician, and artist photo -- "
+"feel a strong connection to the artist\n"
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print\n"
+"    * Variable pricing scheme means you can pay as little as $5 for an album "
+"if you choose\n"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
+"the world)\n"
+"    * Not venture-capital backed big business\n"
+"    * Not part of the \"evil\" major label machine - for those that hate the "
+"music biz and want to help topple it\n"
+"    * Founder/owner runs it -- support a small business\n"
+"    * Low pressure environment - nothing flashing, no audio ads while "
+"listening to albums\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
+"\n"
+"You can find more information at http://www.magnatune.com/"
+msgstr ""
+"Magnatune yra gera internetinė įrašų kompanija. Keletas jų pagrindinių "
+"savybių:\n"
+"\n"
+"    * Visų dainų galima klausytis nemokamai\n"
+"    * Visi albumai ir atlikėjai yra parenkami žmogaus\n"
+"    * Labai paprasta naudotojo sąsaja, greitai galima klausytis muzikos\n"
+"    * Radijo stotys ir „žanrų mišinio“ grojaraščiai leidžia klausytis fone -"
+"gali dirbti, kol klausoma mūsų muzikos\n"
+"    * Norint klausytis ar pirkti nereikia „registruotis\n"
+"“    * Mažesnis pasirinkimas - lengviau rasti geros muzikos\n"
+"    * Platus žanrų pasirinkimas, galima rasti bet kokiai nuotaikai\n"
+"    * Mūsų žanrus sunku rasti įrašų parduotuvėse ir jų negroja per radiją "
+"(nors juos ir groja universiteto radijas)\n"
+"    * Prieinami ir atsisiuntimai, ir CD (jokia kita svetainė internete "
+"nepardavinėja abiejų)\n"
+"    * Atsisiunčiant puiki (CD kopijos) kokybė (ne prastos kokybės garsas)\n"
+"    * Muzika nėra apsaugota nuo kopijavimo (DRM), tai leidžia klausytis "
+"muzika su bet kokiu įrenginiu (ne taip kaip iTunes/MSN/kt.)\n"
+"    * Išsami biografinė informacija apie kiekvieną muzikantą, bei atlikėjo "
+"fotografija -- pajuskite stiprų ryšį su atlikėju\n"
+"    * Daugumai albumų yra spalvoti, aukštos kokybės PDF viršeliai -- lengva "
+"atsispausdinti\n"
+"    * Lanksti kainų schema reiškia tai, kad, jei norėsite, galėsite už "
+"albumą sumokėti vos 5 dolerius\n"
+"    * 50% sumos atitenka atlikėjui (pirkėjai gerai jaučiasi: jie padeda "
+"pasauliui)\n"
+"    * Tai ne spekuliaciniu kapitalu paremtas stambus verslas\n"
+"    * Nėra stambios „piktos“ įrašų kompanijų mašinos dalis - tiems kurie "
+"nekenčia muzikos verslo ir nori padėti jį nuversti\n"
+"    * Parduotuvę prižiūri įkūrėjas/sąvininkas -- palaikykite smulkų verslą\n"
+"    * Neįkyri aplinka - niekas nežybsi, klausantis nėra jokių audio reklamų\n"
+"    * Muzikos pasirinkimas yra unikalus Magnatune, ne taip kai daugumoje "
+"internetinių parduotuvių, kuriose daugiau ar mažiau ta pati (milžiniška) "
+"pasiūla\n"
+"\n"
+"Daugiau informacijos galite rasti http://www.magnatune.com/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:1
+#: ../plugins/magnatune/magnatune-purchase.glade.h:1
+msgid ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (typical)\n"
+"$9\n"
+"$10 (better than average)\n"
+"$11\n"
+"$12 (generous)\n"
+"$13\n"
+"$14\n"
+"$15 (VERY generous!)\n"
+"$16\n"
+"$17\n"
+"$18 (We love you!)"
+msgstr ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (tipiška)\n"
+"$9\n"
+"$10 (geriau nei vidutiniškai)\n"
+"$11\n"
+"$12 (dosnu)\n"
+"$13\n"
+"$14\n"
+"$15 (LABAI dosnu!)\n"
+"$16\n"
+"$17\n"
+"$18 (Mes Jus mylim!)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:15
+msgid "(US Dollars)"
+msgstr "(JAV doleriai)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:16
+#: ../plugins/magnatune/magnatune-purchase.glade.h:15
+msgid ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+msgstr ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:28
+msgid ""
+"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+"expiration date listed.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">Jūsų kreditinė kortelė yra senesnė "
+"negu nurodyta galiojimo pabaigos datoje.</span>"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:29
+msgid "C_redit Card:"
+msgstr "K_reditinė kortelė:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:30
+msgid "Default _amount to pay:"
+msgstr "Numatytoji mokama _suma:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:31
+msgid "Don't store credit card information"
+msgstr "Neišsaugoti kreditinės kortelės informacijos"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:32
+msgid "Expiry:"
+msgstr "Baigiasi galiojimas:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:33
+msgid "Find out about Magnatune at "
+msgstr "Sužinokite apie Magnatune "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:34
+msgid "Magnatune Information"
+msgstr "Magnatune informacija"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:35
+msgid "Magnatune Preferences"
+msgstr "Magnatune nustatymai"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:36
+#: ../plugins/magnatune/magnatune-purchase.glade.h:32
+msgid ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+msgstr ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:41
+msgid "Preferred audio _format:"
+msgstr "Pageidaujami audio _formatai:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:42
+msgid "Redownload purchased music at "
+msgstr "Iš naujo atsisiųsti nusipirktą muziką "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:43
+msgid "Visit Magnatune at "
+msgstr "Aplankykite Magnatune "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:44
+msgid "_Email:"
+msgstr "_El. paštas:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:45
+msgid "_Month:"
+msgstr "_Mėnuo:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:46
+msgid "_Name:"
+msgstr "_Vardas:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:48
+msgid "http://www.magnatune.com/"
+msgstr "http://www.magnatune.com/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:49
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:50
+msgid "http://www.magnatune.com/info/redownload"
+msgstr "http://www.magnatune.com/info/redownload"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:27
+msgid "Audio _format:"
+msgstr "Audio _formatas:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:28
+msgid "Credit Card number:"
+msgstr "Kreditinės kortelės numeris:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:29
+msgid "Expiry month:"
+msgstr "Galiojimo pabaigos mėnuo:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:30
+msgid "Expiry year:"
+msgstr "Galiojimo pabaigos metai:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:31
+msgid "Name:"
+msgstr "Vardas:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:37
+msgid "Purchase Magnatune Tracks"
+msgstr "Pirkti Magnatune kūrinius"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:38
+msgid "_Amount to pay:"
+msgstr "_Suma apmokėjimui:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:39
+msgid "_Purchase"
+msgstr "_Pirkti"
+
+#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr ""
+"Suteikia galimybę Rhythmbox klausytis ir pirkti muziką iš Magnatune muzikos "
+"parduotuvės internete"
+
+#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
+msgid "Magnatune Store"
+msgstr "Magnatune parduotuvė"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:30
+msgid "Magnatune"
+msgstr "Magnatune"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:80
+msgid "Loading Magnatune catalogue"
+msgstr "Atsiunčiamas Magnatune katalogas"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:83
+msgid "Downloading Magnatune Album(s)"
+msgstr "Atsiunčiamas(i) Magnatune Albumas(ai)"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:164
+#, python-format
+msgid "Would you like to purchase the album '%s' by '%s'."
+msgstr "Ar norėtumėte nusipirkti atlikėjo „%s“ albumą „%s“?"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:371
+#, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The Magnatune server returned:\n"
+"%s"
+msgstr ""
+"Bandant nusipirkti albumą iškilo klaida.\n"
+"Magnatune serveris grąžino:\n"
+"%s"
 
 #: ../plugins/pythonconsole/pythonconsole.py:57
 msgid "_Python Console"
@@ -1294,21 +1603,20 @@ msgstr "Rodyti suformuotą dainos informaciją"
 msgid "Not playing"
 msgstr "Negroja"
 
-#: ../rhythmdb/rhythmdb.c:507 ../rhythmdb/rhythmdb.c:2000
-#: ../rhythmdb/rhythmdb.c:2125
+#: ../rhythmdb/rhythmdb.c:491
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Nepavyko pasiekti %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1402
+#: ../rhythmdb/rhythmdb.c:1418
 msgid "<invalid filename>"
 msgstr "<netinkamas rinkmenos vardas>"
 
-#: ../rhythmdb/rhythmdb.c:1662
+#: ../rhythmdb/rhythmdb.c:1678
 msgid "invalid unicode in error message"
 msgstr "netinkamas unikodas klaidos pranešime"
 
-#: ../rhythmdb/rhythmdb.c:2375
+#: ../rhythmdb/rhythmdb.c:2378
 msgid "Could not load the music database"
 msgstr "Nepavyko įkelti muzikos duomenų bazės"
 
@@ -1317,12 +1625,12 @@ msgstr "Nepavyko įkelti muzikos duomenų bazės"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2841 ../sources/rb-podcast-source.c:1639
+#: ../rhythmdb/rhythmdb.c:2844 ../sources/rb-podcast-source.c:1639
 #: ../widgets/rb-entry-view.c:2047
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3656
+#: ../rhythmdb/rhythmdb.c:3659
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -1330,7 +1638,7 @@ msgstr[0] "%ld minutė"
 msgstr[1] "%ld minutės"
 msgstr[2] "%ld minučių"
 
-#: ../rhythmdb/rhythmdb.c:3657
+#: ../rhythmdb/rhythmdb.c:3660
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -1338,7 +1646,7 @@ msgstr[0] "%ld valanda"
 msgstr[1] "%ld valandos"
 msgstr[2] "%ld valandų"
 
-#: ../rhythmdb/rhythmdb.c:3658
+#: ../rhythmdb/rhythmdb.c:3661
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1347,7 +1655,7 @@ msgstr[1] "%ld dienos"
 msgstr[2] "%ld dienų"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3664
+#: ../rhythmdb/rhythmdb.c:3667
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ir %s"
@@ -1355,8 +1663,8 @@ msgstr "%s, %s ir %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3670 ../rhythmdb/rhythmdb.c:3678
-#: ../rhythmdb/rhythmdb.c:3689
+#: ../rhythmdb/rhythmdb.c:3673 ../rhythmdb/rhythmdb.c:3681
+#: ../rhythmdb/rhythmdb.c:3692
 #, c-format
 msgid "%s and %s"
 msgstr "%s ir %s"
@@ -1696,7 +2004,7 @@ msgstr "Slinkti vaizdą iki dabar grojamos dainos"
 
 #: ../shell/rb-shell.c:446
 msgid "Side _Pane"
-msgstr "Šoninis _polangis"
+msgstr "Šoninis p_olangis"
 
 #: ../shell/rb-shell.c:447
 msgid "Change the visibility of the side pane"
