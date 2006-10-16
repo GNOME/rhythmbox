@@ -36,6 +36,7 @@
 #include <glade/glade-init.h>
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-ui-init.h>
+#include <libgnomeui/gnome-app-helper.h>
 #include <libgnomeui/gnome-authentication-manager.h>
 
 #ifdef HAVE_GSTREAMER
@@ -399,6 +400,8 @@ main (int argc, char **argv)
 	rb_debug ("THE END");
 	rb_profile_end ("starting rhythmbox");
 	g_object_unref (program);
+
+	gnome_accelerators_sync ();
 
 	exit (0);
 }
