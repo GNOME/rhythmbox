@@ -2183,16 +2183,14 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 static void
 rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 					   const char *name,
-					   RBShellPlayer *playa)
+					   RBShellPlayer *player)
 {
 	RhythmDBEntry *entry = NULL;
-	RhythmDBQueryModel *model;
-	GtkTreeIter iter;
 	GError *error = NULL;
 
 	rb_debug  ("got property activated");
 
-	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
+	rb_shell_player_set_playing_source (player, player->priv->selected_source);
 
 	/* RHYTHMDBFIXME - do we need to wait here until the query is finished?
 	 * in theory, yes, but in practice the query is started when the row is
@@ -2200,27 +2198,22 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	 * keyboard to select then activate) and is pretty much always done by
 	 * the time we get in here.
 	 */
-	g_object_get (playa->priv->selected_source, "query-model", &model, NULL);
 
-	if (!model)
+	entry = rb_play_order_get_next (player->priv->play_order);
+	if (entry == NULL) {
 		return;
-
-	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
-		goto done;
 	}
 
-	entry = rhythmdb_query_model_iter_to_entry (model, &iter);
-	if (!rb_shell_player_set_playing_entry (playa, entry, TRUE, &error)) {
-		rb_shell_player_error (playa, FALSE, error);
+	rb_play_order_go_next (player->priv->play_order);
+
+	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, &error)) {
+		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
 	}
 
 	if (entry != NULL) {
 		rhythmdb_entry_unref (entry);
 	}
-
- done:
-	g_object_unref (model);
 }
 
 static void
