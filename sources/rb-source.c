@@ -56,7 +56,6 @@ static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
 static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
-static void default_song_properties (RBSource *source);
 static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
 static gboolean default_show_popup  (RBSource *source);
@@ -145,7 +144,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_get_entry_view = default_get_entry_view;
 	klass->impl_copy = default_copy;
 	klass->impl_reset_filters = default_reset_filters;
-	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_get_config_widget = NULL;
 	klass->impl_receive_drag = NULL;
@@ -895,10 +893,12 @@ rb_source_reset_filters (RBSource *source)
 	klass->impl_reset_filters (source);
 }
 
-static void
-default_song_properties (RBSource *source)
+gboolean
+rb_source_can_show_properties (RBSource *source)
 {
-	g_assert_not_reached ();
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return (klass->impl_song_properties != NULL);
 }
 
 void
@@ -906,6 +906,7 @@ rb_source_song_properties (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
+	g_assert (klass->impl_song_properties);
 	klass->impl_song_properties (source);
 }
 

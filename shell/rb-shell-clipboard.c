@@ -505,6 +505,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	gboolean can_add_to_queue = FALSE;
 	gboolean can_move_to_trash = FALSE;
 	gboolean can_select_all = FALSE;
+	gboolean can_show_properties = FALSE;
 	GtkAction *action;
 	RhythmDBEntryType entry_type;
 
@@ -534,6 +535,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 		can_delete = rb_source_can_delete (clipboard->priv->source);
 		can_copy = rb_source_can_copy (clipboard->priv->source);
 		can_move_to_trash = rb_source_can_move_to_trash (clipboard->priv->source);
+		can_show_properties = rb_source_can_show_properties (clipboard->priv->source);
 
 		if (clipboard->priv->queue_source)
 			can_add_to_queue = rb_source_can_add_to_queue (clipboard->priv->source);
@@ -561,7 +563,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	g_object_set (G_OBJECT (action), "sensitive", can_add_to_queue, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "MusicProperties");
-	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
+	g_object_set (G_OBJECT (action), "sensitive", can_show_properties, NULL);
 
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "QueueMusicProperties");
 	g_object_set (G_OBJECT (action), "sensitive", have_sidebar_selection, NULL);

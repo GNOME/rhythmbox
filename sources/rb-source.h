@@ -172,6 +172,7 @@ gboolean	rb_source_can_move_to_trash	(RBSource *source);
 gboolean	rb_source_can_copy		(RBSource *source);
 gboolean	rb_source_can_paste		(RBSource *source);
 gboolean	rb_source_can_add_to_queue	(RBSource *source);
+gboolean	rb_source_can_show_properties	(RBSource *source);
 
 GList *		rb_source_cut			(RBSource *source);
 GList *		rb_source_copy			(RBSource *source);

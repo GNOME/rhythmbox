@@ -1,3 +1,12 @@
+2006-10-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_can_show_properties), (rb_source_song_properties):
+	* sources/rb-source.h:
+	Only enable the 'properties' item in the 'music' menu if the selected
+	source implements the show_properties method.  Fixes #356485.
+
 2006-10-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* shell/rb-shell-player.c:
