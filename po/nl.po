@@ -29,8 +29,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-11 04:55+0200\n"
-"PO-Revision-Date: 2006-10-11 12:53+0200\n"
+"POT-Creation-Date: 2006-10-13 22:14+0200\n"
+"PO-Revision-Date: 2006-10-14 03:34+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -502,6 +502,7 @@ msgstr "Site:"
 msgid "-"
 msgstr "-"
 
+# essentieel/basis/eenvoudig
 #: ../data/glade/podcast-feed-properties.glade.h:3
 #: ../data/glade/podcast-properties.glade.h:2
 #: ../data/glade/song-info.glade.h:2
@@ -576,7 +577,7 @@ msgstr "_Downloadlocatie:"
 #: ../data/glade/song-info.glade.h:3
 #: ../data/glade/station-properties.glade.h:2
 msgid "Bitrate:"
-msgstr "Bitsnelheid:"
+msgstr "Bitrate:"
 
 #: ../data/glade/podcast-properties.glade.h:4
 msgid "Date:"
@@ -687,6 +688,7 @@ msgstr "Spoor_nummer:"
 
 #: ../data/glade/song-info.glade.h:19
 #: ../data/glade/song-info-multiple.glade.h:6
+#: ../plugins/magnatune/magnatune-prefs.glade.h:47
 msgid "_Year:"
 msgstr "_Jaar:"
 
@@ -809,12 +811,12 @@ msgstr "%d:%02d:%02d"
 #: ../lib/rb-util.c:636
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
-msgstr "%d:%02d van %d:%02d over"
+msgstr "%d:%02d van %d:%02d resterend"
 
 #: ../lib/rb-util.c:640
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
-msgstr "%d:%02d:%02d van %d:%02d:%02d over"
+msgstr "%d:%02d:%02d van %d:%02d:%02d resterend"
 
 #: ../lib/rb-util.c:645
 #, c-format
@@ -845,7 +847,7 @@ msgstr "D-BUS communicatiefout"
 #: ../metadata/rb-metadata-gst.c:633
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
-msgstr "De GStreamer plugins om \"%s\" te decoderen zijn niet gevonden"
+msgstr "De GStreamer plugins om ‘%s’ te decoderen zijn niet gevonden"
 
 # datastroom/stroom
 #: ../metadata/rb-metadata-gst.c:636
@@ -926,15 +928,13 @@ msgstr "Deze cd kon niet worden bevraagd: %s\n"
 #: ../metadata/sj-metadata-musicbrainz.c:510
 #, c-format
 msgid "Device '%s' does not contain any media"
-msgstr "Apparaat '%s' bevat geen enkele media"
+msgstr "Apparaat ‘%s’ bevat geen enkele media"
 
 #: ../metadata/sj-metadata-musicbrainz.c:513
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr ""
-"Apparaat '%s' kon niet worden geopend. Controleer de toegangsrechten op het "
-"apparaat."
+msgstr "Apparaat ‘%s’ kon niet worden geopend. Controleer de toegangsrechten op het apparaat."
 
 # Meerdere/verschillende/verscheidene
 #: ../metadata/sj-metadata-musicbrainz.c:549
@@ -961,7 +961,7 @@ msgstr "Kon geen toegang krijgen tot bron"
 #: ../player/rb-recorder-gst.c:686 ../player/rb-recorder-gst.c:692
 #, c-format
 msgid "Unable to unlink '%s'"
-msgstr "Ontlinken van '%s' is mislukt"
+msgstr "Ontlinken van ‘%s’ is mislukt"
 
 # vertaling scheduler?
 #: ../player/rb-recorder-gst.c:733
@@ -1057,7 +1057,7 @@ msgstr "Last.fm"
 # de lijst met beluisterde nummers naar last.fm opsturen
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
 msgid "Submits songs to last.fm and plays last.fm radio streams"
-msgstr "Stuurt beluisterde nummers naar last.fm en speelt last.fm radio."
+msgstr "Stuurt beluisterde nummers naar last.fm en speelt last.fm radio"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:866
 msgid "OK"
@@ -1186,6 +1186,308 @@ msgstr "Songtekst van het huidige nummer tonen"
 msgid "Displays song lyrics"
 msgstr "Toont de songteksten"
 
+#: ../plugins/magnatune/magnatune-loading.glade.h:1
+msgid "<b>Magnatune online music store</b>"
+msgstr "<b>Magnatune online muziekwinkel</b>"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:3
+#, no-c-format
+msgid ""
+"Magnatune is an online record label that is not evil. Some of their key "
+"attributes are:\n"
+"\n"
+"    * Free listening of all songs\n"
+"    * All albums and artists hand-picked\n"
+"    * Very simple user interface, quick to play music\n"
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music\n"
+"    * No need to \"register\" to listen or buy\n"
+"    * Smaller selection means easier to find good music\n"
+"    * Wide variety of genres, can fit any mood\n"
+"    * Our genres are hard to find in record stores and not on radio (though "
+"do appear on college radio)\n"
+"    * Downloads and CDs are both available (no other site on the internet "
+"sells both)\n"
+"    * Perfect quality downloads (CD copy) are available when you download "
+"(not inferior quality sound)\n"
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)\n"
+"    * Extensive biographical info about each musician, and artist photo -- "
+"feel a strong connection to the artist\n"
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print\n"
+"    * Variable pricing scheme means you can pay as little as $5 for an album "
+"if you choose\n"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
+"the world)\n"
+"    * Not venture-capital backed big business\n"
+"    * Not part of the \"evil\" major label machine - for those that hate the "
+"music biz and want to help topple it\n"
+"    * Founder/owner runs it -- support a small business\n"
+"    * Low pressure environment - nothing flashing, no audio ads while "
+"listening to albums\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
+"\n"
+"You can find more information at http://www.magnatune.com/"
+msgstr ""
+"Magnatune is een online muzieklabel dat niet kwaadwillend is. Een aantal eigenschappen zijn:\n"
+"\n"
+"    * Gratis alle nummers beluisteren\n"
+"    * Alle albums en artiesten zelf uitgekozen\n"
+"    * Eenvoudige bediening, snel luisteren naar muziek\n"
+"    * Radiostations en \"genre mix\" luisterlijsten waardoor u tijdens uw werk onze muziek als achtergrond kunt gebruiken\n"
+"    * Geen noodzaak om te \"registreren\" om te kunnen luisteren of kopen\n"
+"    * Kleiner aanbod maakt het eenvoudiger goede muziek te vinden\n"
+"    * Uitgebreid aanbod van genres, past bij elke stemming\n"
+"    * Onze genres zijn moeilijk in muziekwinkels te vinden en bijna niet op de radio (hoewel het soms op studentenradio is te horen)\n"
+"    * Downloads en cd's zijn beiden beschikbaar\n"
+"    * Perfecte kwaliteit van de downloads (cd-kopie) is mogelijk (geen slechte geluidskwaliteit)\n"
+"    * Geen copy-protection op de muziek (DRM) waardoor u het elke apparaat kunt afspelen (in tegenstelling tot iTunes/MSN/etc)\n"
+"    * Uitgebreide biografische info over elke muzikant, en een foto van de artiest -- we hebben een sterke band met de artiest\n"
+"    * Full color, hoge kwaliteit pdf-bestand van de albumhoes beschikbaar bij de meeste albums - eenvoudig af te drukken\n"
+"    * Variabele prijzen betent dat u indien gewenst al voor $5 een album kunt aanschaffen\n"
+"    * 50% van het aankoopbedrag gaat naar de artiest (de koper voelt zich goed: ze helpen de wereld)\n"
+"    * Geen bedrijf waar het groot-kapitaal achter zit\n"
+"    * Geen onderdeel van de \"kwaadaardige\" grote muziekindustrie - voor diegenen die de muziekindustrie haten en het omver willen gooien\n"
+"    * Oprichter/eigenaar draait het bedrijf -- ondersteun een klein bedrijfje\n"
+"    * Eenvoudige omgeving - niets flitsend, geen reclame tijdens het luisteren naar albums\n"
+"    * Muziekkeuze is uniek voor Magnatune, in tegenstelling to de meeste online winkels die min of meer hetzelfde (gigantische) aanbod hebben\n"
+"\n"
+"U kunt meer informatie krijgen op http://www.magnatune.com/"
+
+# we houden van je/we zijn dol op je/we zijn verzot op je
+# we zijn verguld met je
+# vrijgevig/gul
+#: ../plugins/magnatune/magnatune-prefs.glade.h:1
+#: ../plugins/magnatune/magnatune-purchase.glade.h:1
+msgid ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (typical)\n"
+"$9\n"
+"$10 (better than average)\n"
+"$11\n"
+"$12 (generous)\n"
+"$13\n"
+"$14\n"
+"$15 (VERY generous!)\n"
+"$16\n"
+"$17\n"
+"$18 (We love you!)"
+msgstr ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (normaal)\n"
+"$9\n"
+"$10 (beter dan gemiddeld)\n"
+"$11\n"
+"$12 (gul)\n"
+"$13\n"
+"$14\n"
+"$15 (ZEER gul!)\n"
+"$16\n"
+"$17\n"
+"$18 (We zijn verguld met je!)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:15
+msgid "(US Dollars)"
+msgstr "(Amerikaanse dollars)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:16
+#: ../plugins/magnatune/magnatune-purchase.glade.h:15
+msgid ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+msgstr ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+
+# huh? 'the credit card is past the expiration date listed?'
+# ze bedoelen waarschijnlijk gewoon: 'the credit card is expired'
+# of 'the current date is past the expiration date listed on the credit card'
+# of 'we're past this expiry date'
+#: ../plugins/magnatune/magnatune-prefs.glade.h:28
+msgid ""
+"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+"expiration date listed.</span>"
+msgstr "<span weight=\"bold\" foreground=\"red\">Uw creditkaart is verlopen.</span>"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:29
+msgid "C_redit Card:"
+msgstr "_Creditkaart:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:30
+msgid "Default _amount to pay:"
+msgstr "Standaard _aankoopbedrag:"
+
+# niet bewaren/niet opslaan
+#: ../plugins/magnatune/magnatune-prefs.glade.h:31
+msgid "Don't store credit card information"
+msgstr "Creditkaartinformatie niet bewaren"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:32
+msgid "Expiry:"
+msgstr "Verloopdatum:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:33
+msgid "Find out about Magnatune at "
+msgstr "Lees meer over Magnatune op "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:34
+msgid "Magnatune Information"
+msgstr "Magnatune informatie"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:35
+msgid "Magnatune Preferences"
+msgstr "Magnatune-voorkeuren"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:36
+#: ../plugins/magnatune/magnatune-purchase.glade.h:32
+msgid ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+msgstr ""
+"ogg vorbis\n"
+"flac\n"
+"wav\n"
+"vbr mp3\n"
+"128K mp3"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:41
+msgid "Preferred audio _format:"
+msgstr "_Voorkeursformaat:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:42
+msgid "Redownload purchased music at "
+msgstr "Aangeschafte muziek opnieuw downloaden van "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:43
+msgid "Visit Magnatune at "
+msgstr "Bezoek Magnatune op "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:44
+msgid "_Email:"
+msgstr "_E-mail"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:45
+msgid "_Month:"
+msgstr "_Maand:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:46
+msgid "_Name:"
+msgstr "_Naam:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:48
+msgid "http://www.magnatune.com/"
+msgstr "http://www.magnatune.com/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:49
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:50
+msgid "http://www.magnatune.com/info/redownload"
+msgstr "http://www.magnatune.com/info/redownload"
+
+# format/formaat
+#: ../plugins/magnatune/magnatune-purchase.glade.h:27
+msgid "Audio _format:"
+msgstr "Audio_formaat:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:28
+msgid "Credit Card number:"
+msgstr "Nummer creditkaart:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:29
+msgid "Expiry month:"
+msgstr "Verloopt in maand:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:30
+msgid "Expiry year:"
+msgstr "Verloopt in jaar:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:31
+msgid "Name:"
+msgstr "Naam:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:37
+msgid "Purchase Magnatune Tracks"
+msgstr "Magnatune nummers aanschaffen"
+
+# aankoopbedrag/hoeveel te betalen
+#: ../plugins/magnatune/magnatune-purchase.glade.h:38
+msgid "_Amount to pay:"
+msgstr "_Aankoopbedrag:"
+
+# aanschaffen/kopen
+#: ../plugins/magnatune/magnatune-purchase.glade.h:39
+msgid "_Purchase"
+msgstr "_Kopen"
+
+#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr "Biedt u de mogelijkheid om met Rhythmbox muziek uit de Magntune online muziekwinkel af te spelen en aan te schaffen"
+
+#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
+msgid "Magnatune Store"
+msgstr "Magnatune winkel"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:30
+msgid "Magnatune"
+msgstr "Magnatune"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:80
+msgid "Loading Magnatune catalogue"
+msgstr "Magnatune catalogus laden"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:83
+msgid "Downloading Magnatune Album(s)"
+msgstr "Magnatune album(s) downloaden"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:164
+#, python-format
+msgid "Would you like to purchase the album '%s' by '%s'."
+msgstr "Wilt u album ‘%s’ van ‘%s’ aanschaffen?"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:371
+#, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The Magnatune server returned:\n"
+"%s"
+msgstr ""
+"Er is een fout opgetreden bij het aanschaffen van het album.\n"
+"De melding van de Magnatune-server is:\n"
+"%s"
+
 #: ../plugins/pythonconsole/pythonconsole.py:57
 msgid "_Python Console"
 msgstr "_Python opdrachtregel"
@@ -1196,8 +1498,7 @@ msgstr "Python opdrachtregel voor Rhythmbox tonen"
 
 #: ../plugins/pythonconsole/pythonconsole.py:93
 msgid "You can access the main window through the 'shell' variable :"
-msgstr ""
-"U kunt toegang krijgen tot het hoofdvenster via de 'shell' variabele : "
+msgstr "U kunt toegang krijgen tot het hoofdvenster via de 'shell' variabele :"
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:1
@@ -1260,7 +1561,7 @@ msgstr "Ongeldige URL"
 #: ../podcast/rb-podcast-manager.c:786
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
-msgstr "Controleer de URL \"%s\" want deze is ongeldig."
+msgstr "Controleer de URL ‘%s’ want deze is ongeldig."
 
 #. added as something else, probably iradio
 #: ../podcast/rb-podcast-manager.c:794
@@ -1272,9 +1573,7 @@ msgstr "URL is al toegevoegd"
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
-msgstr ""
-"De URL \"%s\" is al toegevoegd als een radiostation. Als dit een podcast "
-"feed is, verwijder dan het radiostation."
+msgstr "De URL ‘%s’ is al toegevoegd als een radiostation. Als dit een podcast feed is, verwijder dan het radiostation."
 
 #: ../podcast/rb-podcast-manager.c:865
 msgid "Podcast"
@@ -1287,16 +1586,13 @@ msgstr ""
 "Er was een probleem bij het toevoegen van deze podcast. Controleer de URL: %s"
 
 # te beluisteren/af te spelen
-#: ../podcast/rb-podcast-parse.c:452
+#: ../podcast/rb-podcast-parse.c:453
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
-msgstr ""
-"De URL '%s' is kennelijk geen podcast-feed. Mogelijkerwijs is de URL "
-"verkeerd, of de feed is corrupt.  Wilt u toch proberen het met Rhythmbox af "
-"te spelen?"
+msgstr "De URL ‘%s’ is kennelijk geen podcast-feed. Mogelijkerwijs is de URL verkeerd, of de feed is corrupt.  Wilt u toch proberen het met Rhythmbox af te spelen?"
 
 # binnengehaald/gedownload
 #: ../podcast/rb-podcast-properties-dialog.c:397
@@ -1437,18 +1733,18 @@ msgstr "%s, %s en %s"
 msgid "%s and %s"
 msgstr "%s en %s"
 
-# observeren/monitoren
+# observeren/monitoren/volgen
 #: ../rhythmdb/rhythmdb-monitor.c:311
 #, c-format
 msgid "Couldn't monitor %s: %s"
-msgstr "Kon %s niet monitoren: %s"
+msgstr "Kon %s niet volgen: %s"
 
 #: ../rhythmdb/rhythmdb-property-model.c:423
 #: ../sources/rb-auto-playlist-source.c:72 ../sources/rb-browser-source.c:154
 #: ../sources/rb-podcast-source.c:311
 #: ../sources/rb-static-playlist-source.c:88
 msgid "All"
-msgstr "Alle"
+msgstr "Alles"
 
 #: ../rhythmdb/rhythmdb-tree.c:329
 msgid ""
@@ -1464,16 +1760,16 @@ msgstr "Debug-uitvoer aanzetten"
 
 #: ../shell/main.c:116
 msgid "Enable debug output matching a specified string"
-msgstr "Debuguitvoer geven overeenkomend met een opgegeven tekenreeks"
+msgstr "Debug-uitvoer geven, overeenkomend met een opgegeven tekenreeks"
 
 #: ../shell/main.c:117
 msgid "Do not update the library with file changes"
 msgstr "De collectie niet bijwerken wanneer bestanden wijzigen"
 
-# hmm, dit is behoorlijk dubbelzinnig: de omgeving niet registreren?
+# hmm, de shell niet registreren? omgeving/shell?
 #: ../shell/main.c:118
 msgid "Do not register the shell"
-msgstr "De omgeving niet registreren"
+msgstr "De shell niet registreren"
 
 #: ../shell/main.c:119
 msgid "Don't save any data permanently (implies --no-registration)"
@@ -1862,11 +2158,13 @@ msgstr "Overzetten van nummer %d van %d (%.0f%%)"
 msgid "Transferring track %d out of %d"
 msgstr "Overzetten van nummer %d van %d"
 
+# dan maar iets langer, maar zo is het niet meer dubbelzinnig
+# door A van B/door A van het album B
 #. Translators: by Artist from Album
 #: ../shell/rb-shell.c:1899
 #, c-format
 msgid "by %s from %s"
-msgstr "door %s van %s"
+msgstr "door %s van het album %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: ../shell/rb-shell.c:2002
@@ -1953,7 +2251,7 @@ msgstr "Bijdragen van:"
 
 #: ../shell/rb-shell.c:2179
 msgid "Music management and playback software for GNOME."
-msgstr "Een muziekbeheer en -afspeelprogramma voor GNOME."
+msgstr "Een muziekbeheer en -afspeelprogramma voor Gnome."
 
 #: ../shell/rb-shell.c:2235 ../shell/rb-shell-preferences.c:119
 msgid "Couldn't display help"
@@ -2730,7 +3028,7 @@ msgstr "Schrijven voltooien"
 
 #: ../sources/rb-playlist-source-recorder.c:1038
 msgid "Erasing CD"
-msgstr "CD leegmaken"
+msgstr "Cd leegmaken"
 
 #: ../sources/rb-playlist-source-recorder.c:1041
 msgid "Unhandled action in burn_action_changed_cb"
@@ -2768,7 +3066,7 @@ msgstr "Aanmaken van opnameapparaat mislukt: %s"
 #: ../sources/rb-playlist-source-recorder.c:1359
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
-msgstr "Kon de tijdelijke map '%s' niet verwijderen: %s"
+msgstr "Kon de tijdelijke map ‘%s’ niet verwijderen: %s"
 
 #: ../sources/rb-playlist-source-recorder.c:1378
 msgid "Create Audio CD"
@@ -2811,7 +3109,7 @@ msgstr "Speellijst is te lang"
 
 #: ../sources/rb-playlist-source-recorder.c:1675
 msgid "Could not find temporary space!"
-msgstr "Kon geen tijdelijke ruimte vinden!"
+msgstr "Kon geen tijdelijke opslagruimte vinden!"
 
 # 	
 #: ../sources/rb-playlist-source-recorder.c:1676
@@ -3154,7 +3452,7 @@ msgstr "_Laatst gehoord"
 # datum niet meervertaald (overbodig en te lang)
 #: ../widgets/rb-entry-view.c:1164
 msgid "_Date Added"
-msgstr "_Toegevoegd op"
+msgstr "_Toegevoegd"
 
 #: ../widgets/rb-entry-view.c:1175
 msgid "Last _Seen"
@@ -3436,9 +3734,6 @@ msgstr "Onbekende locatie:"
 #~ msgid "Last.fm Profile Preferences"
 #~ msgstr "Last.fm profielvoorkeuren"
 
-#~ msgid "_File Name:"
-#~ msgstr "_Bestandsnaam:"
-
 #~ msgid "Import _Audio CD..."
 #~ msgstr "Audio-_cd importeren..."
 
@@ -3696,9 +3991,6 @@ msgstr "Onbekende locatie:"
 # uitvinden/bepalen
 #~ msgid "Could not determine default writer device"
 #~ msgstr "Kon niet uitvinden wat het standaard schrijfapparaat is"
-
-#~ msgid "_Pause"
-#~ msgstr "_Pauzeren"
 
 #~ msgid "Pause playback"
 #~ msgstr "Afspelen pauzeren"
