@@ -19,8 +19,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.9.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-08 11:40+0200\n"
-"PO-Revision-Date: 2006-10-08 12:00+0200\n"
+"POT-Creation-Date: 2006-10-14 19:34+0200\n"
+"PO-Revision-Date: 2006-10-19 09:12+0200\n"
 "Last-Translator: Luca Ferretti <elle.uca@libero.it>\n"
 "Language-Team: Italiano <tp@lists.linux.it>\n"
 "MIME-Version: 1.0\n"
@@ -34,7 +34,7 @@ msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Sovrascrivere il file «%s»?"
 
 #: ../backends/gstreamer/rb-player-gst.c:609 ../metadata/rb-metadata-gst.c:887
-#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:660
+#: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr ""
@@ -67,10 +67,10 @@ msgstr "Errore di riproduzione sconosciuto"
 #: ../podcast/rb-podcast-manager.c:1504
 #: ../podcast/rb-podcast-properties-dialog.c:449
 #: ../podcast/rb-podcast-properties-dialog.c:502
-#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1296
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1312
 #: ../rhythmdb/rhythmdb-tree.c:1120 ../rhythmdb/rhythmdb-tree.c:1124
 #: ../rhythmdb/rhythmdb-tree.c:1128 ../rhythmdb/rhythmdb-tree.c:1132
-#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:234
+#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:235
 #: ../sources/rb-iradio-source.c:551 ../sources/rb-iradio-source.c:1285
 #: ../sources/rb-podcast-source.c:1633 ../widgets/rb-entry-view.c:776
 #: ../widgets/rb-entry-view.c:801 ../widgets/rb-entry-view.c:1085
@@ -189,7 +189,7 @@ msgstr "Profilo Last.fm"
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
 #: ../iradio/rb-station-properties-dialog.c:438
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:846
-#: ../rhythmdb/rhythmdb.c:2843 ../widgets/rb-entry-view.c:724
+#: ../rhythmdb/rhythmdb.c:2846 ../widgets/rb-entry-view.c:724
 #: ../widgets/rb-entry-view.c:1143 ../widgets/rb-entry-view.c:1156
 #: ../widgets/rb-song-info.c:1139
 msgid "Never"
@@ -638,6 +638,7 @@ msgid "_Artist:"
 msgstr "A_rtista:"
 
 #: ../data/glade/song-info.glade.h:14
+#: ../data/glade/song-info-multiple.glade.h:3
 msgid "_Disc number:"
 msgstr "Numero _disco"
 
@@ -658,12 +659,9 @@ msgstr "N_umero traccia:"
 
 #: ../data/glade/song-info.glade.h:19
 #: ../data/glade/song-info-multiple.glade.h:6
+#: ../plugins/magnatune/magnatune-prefs.glade.h:47
 msgid "_Year:"
 msgstr "A_nno:"
-
-#: ../data/glade/song-info-multiple.glade.h:3
-msgid "_Disc Number:"
-msgstr "Numero _disco:"
 
 #: ../data/glade/station-new.glade.h:1
 msgid "_URL of internet radio station:"
@@ -917,70 +915,70 @@ msgstr "Metadati incompleti per questo CD"
 msgid "Could not create CD lookup thread"
 msgstr "Impossibile creare il thread di consultazioe CD"
 
-#: ../player/rb-recorder-gst.c:541
+#: ../player/rb-recorder-gst.c:544
 msgid "Failed to create pipeline"
 msgstr "Creazione della pipeline fallita"
 
-#: ../player/rb-recorder-gst.c:571
+#: ../player/rb-recorder-gst.c:574
 msgid "Could not access source pad"
 msgstr "Impossibile accedere al pad sorgente"
 
-#: ../player/rb-recorder-gst.c:678 ../player/rb-recorder-gst.c:684
+#: ../player/rb-recorder-gst.c:686 ../player/rb-recorder-gst.c:692
 #, c-format
 msgid "Unable to unlink '%s'"
 msgstr "Impossibile scollegare «%s»"
 
-#: ../player/rb-recorder-gst.c:725
+#: ../player/rb-recorder-gst.c:733
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr ""
 "Impossibile inizializzare lo scheduler. Assicurarsi di aver eseguito «gst-"
 "register»."
 
-#: ../player/rb-recorder-gst.c:761 ../player/rb-recorder-gst.c:766
-#: ../player/rb-recorder-gst.c:832
+#: ../player/rb-recorder-gst.c:769 ../player/rb-recorder-gst.c:774
+#: ../player/rb-recorder-gst.c:840
 msgid "Could not get current track position"
 msgstr "Impossibile ottenere la posizione della traccia corrente"
 
-#: ../player/rb-recorder-gst.c:818
+#: ../player/rb-recorder-gst.c:826
 msgid "Could not retrieve state from processing pipeline"
 msgstr "Impossibile recuperare lo stato dalla pipeline in esecuzione"
 
-#: ../player/rb-recorder-gst.c:883 ../player/rb-recorder-gst.c:935
+#: ../player/rb-recorder-gst.c:891 ../player/rb-recorder-gst.c:943
 msgid "Could not start pipeline playing"
 msgstr "Impossibile avviare la pipeline di riproduzione"
 
-#: ../player/rb-recorder-gst.c:898 ../player/rb-recorder-gst.c:946
+#: ../player/rb-recorder-gst.c:906 ../player/rb-recorder-gst.c:954
 msgid "Could not pause playback"
 msgstr "Impossibile mettere in pausa la ripoduzione"
 
-#: ../player/rb-recorder-gst.c:1153
+#: ../player/rb-recorder-gst.c:1161
 msgid "Cannot find drive"
 msgstr "Impossibile trovare l'unità"
 
-#: ../player/rb-recorder-gst.c:1216
+#: ../player/rb-recorder-gst.c:1224
 #, c-format
 msgid "Cannot find drive %s"
 msgstr "Impossibile trovare l'unità %s"
 
-#: ../player/rb-recorder-gst.c:1225
+#: ../player/rb-recorder-gst.c:1233
 #, c-format
 msgid "Drive %s is not a recorder"
 msgstr "L'unità %s non è un masterizzatore"
 
-#: ../player/rb-recorder-gst.c:1391 ../player/rb-recorder-gst.c:1583
+#: ../player/rb-recorder-gst.c:1399 ../player/rb-recorder-gst.c:1592
 msgid "No writable drives found."
 msgstr "Non è stata trovata alcuna unità scrivibile."
 
-#: ../player/rb-recorder-gst.c:1533
+#: ../player/rb-recorder-gst.c:1542
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr "Impossibile recuperare la durata del brano per il file: %s"
 
-#: ../player/rb-recorder-gst.c:1592
+#: ../player/rb-recorder-gst.c:1601
 msgid "Could not determine audio track durations."
 msgstr "Impossibile determinare la durata della traccia audio."
 
-#: ../player/rb-recorder-gst.c:1642
+#: ../player/rb-recorder-gst.c:1651
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -989,7 +987,7 @@ msgstr ""
 "Si è verificato un errore nello scrivere sul CD:\n"
 "%s"
 
-#: ../player/rb-recorder-gst.c:1646
+#: ../player/rb-recorder-gst.c:1655
 msgid "There was an error writing to the CD"
 msgstr "Si è verificato un errore nello scrivere sul CD"
 
@@ -1151,6 +1149,298 @@ msgstr "Mostra il testo della canzone in riproduzione"
 msgid "Displays song lyrics"
 msgstr "Mostra il testo delle canzoni"
 
+#: ../plugins/magnatune/magnatune-loading.glade.h:1
+msgid "<b>Magnatune online music store</b>"
+msgstr "<b>Negozio di musica online Magnatune</b>"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:3
+#, no-c-format
+msgid ""
+"Magnatune is an online record label that is not evil. Some of their key "
+"attributes are:\n"
+"\n"
+"    * Free listening of all songs\n"
+"    * All albums and artists hand-picked\n"
+"    * Very simple user interface, quick to play music\n"
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music\n"
+"    * No need to \"register\" to listen or buy\n"
+"    * Smaller selection means easier to find good music\n"
+"    * Wide variety of genres, can fit any mood\n"
+"    * Our genres are hard to find in record stores and not on radio (though "
+"do appear on college radio)\n"
+"    * Downloads and CDs are both available (no other site on the internet "
+"sells both)\n"
+"    * Perfect quality downloads (CD copy) are available when you download "
+"(not inferior quality sound)\n"
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)\n"
+"    * Extensive biographical info about each musician, and artist photo -- "
+"feel a strong connection to the artist\n"
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print\n"
+"    * Variable pricing scheme means you can pay as little as $5 for an album "
+"if you choose\n"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
+"the world)\n"
+"    * Not venture-capital backed big business\n"
+"    * Not part of the \"evil\" major label machine - for those that hate the "
+"music biz and want to help topple it\n"
+"    * Founder/owner runs it -- support a small business\n"
+"    * Low pressure environment - nothing flashing, no audio ads while "
+"listening to albums\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
+"\n"
+"You can find more information at http://www.magnatune.com/"
+msgstr ""
+"Magnatune è una etichetta musicale online niente male. Alcuni dei suoi attributi chiave sono:\n"
+"\n"
+"     * Ascolto gratis di tutte le tracce disponibili\n"
+"     * Curata selezione di album e artisti\n"
+"     * Interfaccia utente semplice, veloce per riprodurre la musica\n"
+"     * Stazioni radio e scalette «genre mix» che consentono l'ascolto in background - si può fare altro mentre si ascolta la musica\n"
+"     * Nessuna necessità di registrarsi per ascoltare o acquistare\n"
+"     * Alta probabilità di trovare buona musica per la scelta non troppo estesa\n"
+"     * Estesa varietà di generi, adatti ad ogni gusto\n"
+"     * Disponibilità di generi difficili da trovare nei negozi di dischi e del tutto assenti in radio (sebbene possano apparire nelle radio di alcuni college)\n"
+"     * Disponibilità sia di file per lo scaricamento che di dischi CD (nessun altro sito su Internet vende entrambi)\n"
+"     * File di qualità perfetta (copia CD) disponibili per lo scaricamento (niente audio di qualità scadente)\n"
+"     * Nessuna protezione per la copia della musica (DRM), permettendo la riproduzione su ogni dispositivo (diversamente da iTunes, MSN, ...)\n"
+"     * Estese informazioni biografiche su ciascun musicista\n"
+"     * Copertine a colori e alta qualità in formato PDF per la maggior parte degli album, facili da stampare\n"
+"     * Schema di costo variabile, che rende possibile pagare anche solo 5$ per l'album scelto\n"
+"     * 50% del costo va all'artista (rendendo felice l'acquirente: sta aiutando il mondo)\n"
+"     * Nessun grande businnes venture-capital alle spalle\n"
+"     * Nessuna connessione con la \"macchina malvagia\" delle major - per quelli che odiano il businnes musicale e vogliono contribuire a cambiare il sistema\n"
+"     * Gestito dal fondatore/proprietario - supporto a una piccola impresa\n"
+"     * Ambiente a bassa pressione - niente lampeggianti, né pubblicità mentre si ascoltano gli album\n"
+"     * Selezione musicale unica, diversamente da molti negozi online che hanno più o meno la stessa (gigantesca) selezione\n"
+"\n"
+"È possibile trovare maggiori informazioni presso http://www.magnatune.com/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:1
+#: ../plugins/magnatune/magnatune-purchase.glade.h:1
+msgid ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (typical)\n"
+"$9\n"
+"$10 (better than average)\n"
+"$11\n"
+"$12 (generous)\n"
+"$13\n"
+"$14\n"
+"$15 (VERY generous!)\n"
+"$16\n"
+"$17\n"
+"$18 (We love you!)"
+msgstr ""
+" 5 $\n"
+" 6 $\n"
+" 7 $\n"
+" 8 $ (tipico)\n"
+" 9 $\n"
+"10 $ (più delle media)\n"
+"11 $\n"
+"12 $ (generoso)\n"
+"13 $\n"
+"14 $\n"
+"15 $ (MOLTO generoso!)\n"
+"16 $\n"
+"17 $\n"
+"18 $ (già ti amiamo!)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:15
+msgid "(US Dollars)"
+msgstr "(Dollaro USA)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:16
+#: ../plugins/magnatune/magnatune-purchase.glade.h:15
+msgid ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+msgstr ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:28
+msgid ""
+"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+"expiration date listed.</span>"
+msgstr "<span weight=\"bold\" foreground=\"red\">È stata superata la data di scadenza della carta di credito.</span>"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:29
+msgid "C_redit Card:"
+msgstr "Ca_rta di credito:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:30
+msgid "Default _amount to pay:"
+msgstr "_Prezzo predefinito da pagare:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:31
+msgid "Don't store credit card information"
+msgstr "Non memorizzare le informazioni sulla carta di credito"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:32
+msgid "Expiry:"
+msgstr "Scadenza:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:33
+msgid "Find out about Magnatune at "
+msgstr "Informazioni su Magnatune presso "
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:34
+msgid "Magnatune Information"
+msgstr "Informazioni su Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:35
+msgid "Magnatune Preferences"
+msgstr "Preferenze di Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:36
+#: ../plugins/magnatune/magnatune-purchase.glade.h:32
+msgid ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+msgstr ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"MP3 VBR\n"
+"MP3 128K"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:41
+msgid "Preferred audio _format:"
+msgstr "_Formato audo preferito:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:42
+msgid "Redownload purchased music at "
+msgstr "Ri-scarica la musica acquistata presso"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:43
+msgid "Visit Magnatune at "
+msgstr "Visita Magnatune presso"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:44
+msgid "_Email:"
+msgstr "_Email:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:45
+msgid "_Month:"
+msgstr "_Mese:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:46
+msgid "_Name:"
+msgstr "_Nome:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:48
+msgid "http://www.magnatune.com/"
+msgstr "http://www.magnatune.com/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:49
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:50
+msgid "http://www.magnatune.com/info/redownload"
+msgstr "http://www.magnatune.com/info/redownload"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:27
+msgid "Audio _format:"
+msgstr "_Formato audio:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:28
+msgid "Credit Card number:"
+msgstr "Numero carta di credito:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:29
+msgid "Expiry month:"
+msgstr "Mese di scadenza:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:30
+msgid "Expiry year:"
+msgstr "Anno di scadenza:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:31
+msgid "Name:"
+msgstr "Nome:"
+
+# credo titolo di dialogo
+#: ../plugins/magnatune/magnatune-purchase.glade.h:37
+msgid "Purchase Magnatune Tracks"
+msgstr "Acquista tracce da Magnatune"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:38
+msgid "_Amount to pay:"
+msgstr "_Prezzo da pagare:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:39
+msgid "_Purchase"
+msgstr "Ac_quista"
+
+#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr "Aggiunge a Rhythmbox il supporto per la riproduzione e l'acquisto dal negozio di musica online Magnatune"
+
+#: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
+msgid "Magnatune Store"
+msgstr "Negozio Magnatune"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:30
+msgid "Magnatune"
+msgstr "Magnatune"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:80
+msgid "Loading Magnatune catalogue"
+msgstr "Caricamento del catalogo di Magnatune"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:83
+msgid "Downloading Magnatune Album(s)"
+msgstr "Scaricamento album da Magnatune"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:164
+#, python-format
+msgid "Would you like to purchase the album '%s' by '%s'."
+msgstr "Acquistare l'album «%s» di «%s»."
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:371
+#, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The Magnatune server returned:\n"
+"%s"
+msgstr ""
+"Si è verificato un errore durante il tentativo di acquistare l'album.\n"
+"Il server Magnatune ha restituito:\n"
+"%s"
+
 #: ../plugins/pythonconsole/pythonconsole.py:57
 msgid "_Python Console"
 msgstr "Console _python"
@@ -1251,7 +1541,7 @@ msgstr ""
 "Si è verificato un problema nell'aggiungere questo podcast. Verificare "
 "l'URL: %s"
 
-#: ../podcast/rb-podcast-parse.c:452
+#: ../podcast/rb-podcast-parse.c:453
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -1333,21 +1623,20 @@ msgstr "Stampa dettagli formatta sul brano"
 msgid "Not playing"
 msgstr "Fermo"
 
-#: ../rhythmdb/rhythmdb.c:507 ../rhythmdb/rhythmdb.c:2000
-#: ../rhythmdb/rhythmdb.c:2125
+#: ../rhythmdb/rhythmdb.c:491
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Impossibile accedere a %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1402
+#: ../rhythmdb/rhythmdb.c:1418
 msgid "<invalid filename>"
 msgstr "<nome file non valido>"
 
-#: ../rhythmdb/rhythmdb.c:1662
+#: ../rhythmdb/rhythmdb.c:1678
 msgid "invalid unicode in error message"
 msgstr "Unicode non valido nel messaggio di errore"
 
-#: ../rhythmdb/rhythmdb.c:2375
+#: ../rhythmdb/rhythmdb.c:2378
 msgid "Could not load the music database"
 msgstr "Impossibile caricare il database musicale"
 
@@ -1358,26 +1647,26 @@ msgstr "Impossibile caricare il database musicale"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2841 ../sources/rb-podcast-source.c:1639
+#: ../rhythmdb/rhythmdb.c:2844 ../sources/rb-podcast-source.c:1639
 #: ../widgets/rb-entry-view.c:2047
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y/%m/%d %H.%M"
 
-#: ../rhythmdb/rhythmdb.c:3656
+#: ../rhythmdb/rhythmdb.c:3659
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minuti"
 
-#: ../rhythmdb/rhythmdb.c:3657
+#: ../rhythmdb/rhythmdb.c:3660
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld ora"
 msgstr[1] "%ld ore"
 
-#: ../rhythmdb/rhythmdb.c:3658
+#: ../rhythmdb/rhythmdb.c:3661
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1385,7 +1674,7 @@ msgstr[0] "%ld giorno"
 msgstr[1] "%ld giorni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3664
+#: ../rhythmdb/rhythmdb.c:3667
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s e %s"
@@ -1393,8 +1682,8 @@ msgstr "%s, %s e %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3670 ../rhythmdb/rhythmdb.c:3678
-#: ../rhythmdb/rhythmdb.c:3689
+#: ../rhythmdb/rhythmdb.c:3673 ../rhythmdb/rhythmdb.c:3681
+#: ../rhythmdb/rhythmdb.c:3692
 #, c-format
 msgid "%s and %s"
 msgstr "%s e %s"
@@ -3308,6 +3597,9 @@ msgstr "Sulla scrivania"
 #: ../widgets/rb-song-info.c:978
 msgid "Unknown location"
 msgstr "Posizione sconosciuta"
+
+#~ msgid "_Disc Number:"
+#~ msgstr "Numero _disco:"
 
 #~ msgid "Last.fm Profile "
 #~ msgstr "Profilo Lasf.fm "
