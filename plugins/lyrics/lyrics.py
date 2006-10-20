@@ -63,9 +63,10 @@ def create_lyrics_view():
     return (vbox, view.get_buffer())
 
 class LyricWindow(gtk.Window):
-    def __init__(self, db, entry):
+    def __init__(self, db, parent, entry):
         gtk.Window.__init__(self)
         self.set_border_width(12)
+	self.set_transient_for(parent)
 
 	title = db.entry_get(entry, rhythmdb.PROP_TITLE)
 	artist = db.entry_get(entry, rhythmdb.PROP_ARTIST)
@@ -307,7 +308,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 	if entry is None:
 	    return
 
-	self.window = LyricWindow(db, entry)
+	self.window = LyricWindow(db, shell.get_property ("window"), entry)
 	lyrics_grabber = LyricGrabber()
 	lyrics_grabber.get_lyrics(db, entry, self.window.buffer.set_text)
 
