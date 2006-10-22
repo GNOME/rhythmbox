@@ -2,7 +2,6 @@
 
 SUBDIRS = 						\
 	generic-player					\
-	power-manager					\
 	audiocd						\
 	iradio						\
 	sample
@@ -31,6 +30,10 @@ endif
 
 if USE_CD_BURNING
 SUBDIRS += cd-recorder
+endif
+
+if WITH_DBUS
+SUBDIRS += power-manager
 endif
 
 noinst_LTLIBRARIES = librbplugins.la

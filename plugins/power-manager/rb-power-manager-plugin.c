@@ -26,9 +26,7 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
-#if WITH_DBUS
 #include <dbus/dbus-glib.h>
-#endif
 
 #include "rb-plugin.h"
 #include "rb-debug.h"
