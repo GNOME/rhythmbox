@@ -229,7 +229,6 @@ rb_source_header_init (RBSourceHeader *header)
 	header->priv->tooltips = gtk_tooltips_new ();
 	gtk_tooltips_enable (header->priv->tooltips);
 
-	gtk_table_set_homogeneous (GTK_TABLE (header), TRUE);
 	gtk_table_set_col_spacings (GTK_TABLE (header), 5);
 	gtk_table_resize (GTK_TABLE (header), 1, 3);
 
