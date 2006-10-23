@@ -1,3 +1,10 @@
+2006-10-23  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac: update required libgpod version to avoid crashes
+	when starting up with an iPod connect (Closes: #352972)
+	* sources/rb-ipod-source.c: (rb_ipod_get_itunesdb_path),
+	(hal_udi_is_ipod): remove outdated ifdefs
+
 2006-10-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/Makefile.am:

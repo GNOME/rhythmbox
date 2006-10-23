@@ -45,7 +45,7 @@
 #include "rhythmdb.h"
 #include "rb-cut-and-paste-code.h"
 
-#ifdef IPOD_PHONE_SUPPORT
+#ifdef IPOD_SUPPORT
 #define PHONE_VENDOR_ID 0x22b8
 #define PHONE_PRODUCT_ID 0x4810
 #endif
@@ -595,7 +595,7 @@ rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
 		return NULL;
 	}
 
-#ifdef IPOD_PHONE_SUPPORT
+#ifdef IPOD_SUPPORT
 	result = itdb_get_itunesdb_path (mount_point);
 #else
 	result = g_build_filename (mount_point,
@@ -693,7 +693,7 @@ hal_udi_is_ipod (const char *udi)
 
 	parent_name = libhal_device_get_property_string (ctx, parent_udi,
 			"storage.model", &error);
-#ifdef IPOD_PHONE_SUPPORT
+#ifdef IPOD_SUPPORT
 	{
 		char *spider_udi;
 		int vnd_id = 0;
