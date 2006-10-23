@@ -92,6 +92,8 @@ struct _RBPlayerGstPrivate
 #ifdef HAVE_GSTREAMER_0_8
 	guint error_signal_id;
 	guint buffering_signal_id;
+#else
+	gboolean buffering;
 #endif
 
 	float cur_volume;
@@ -509,6 +511,26 @@ rb_player_gst_bus_cb (GstBus * bus, GstMessage * message, RBPlayerGst *mp)
 			g_warning ("Could not get value from BUFFERING message");
 			break;
 		}
+		if (progress >= 100) {
+			mp->priv->buffering = FALSE;
+			if (mp->priv->playing) {
+				rb_debug ("buffering done, setting pipeline back to PLAYING");
+				gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+			} else {
+				rb_debug ("buffering done, leaving pipeline PAUSED");
+			}
+		} else if (mp->priv->buffering == FALSE && mp->priv->playing) {
+			GstState cur_state;
+
+			gst_element_get_state (mp->priv->playbin, &cur_state, NULL, 0);
+			if (cur_state == GST_STATE_PLAYING) {
+				rb_debug ("buffering - temporarily pausing playback");
+				gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
+			} else {
+				rb_debug ("buffering - during preroll; doing nothing");
+			}
+			mp->priv->buffering = TRUE;
+		}
 		signal = g_new0 (RBPlayerGstSignal, 1);
 		signal->type = BUFFERING;
 
@@ -734,6 +756,7 @@ rb_player_gst_open (RBPlayer *player,
 		g_free (mp->priv->uri);
 		mp->priv->uri = NULL;
 		mp->priv->playing = FALSE;
+		mp->priv->buffering = FALSE;
 		return TRUE;
 	}
 
@@ -822,6 +845,7 @@ rb_player_gst_close (RBPlayer *player, GError **error)
 	gboolean ret;
 
 	mp->priv->playing = FALSE;
+	mp->priv->buffering = FALSE;
 
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
@@ -868,6 +892,7 @@ rb_player_gst_play (RBPlayer *player, GError **error)
 	gboolean ret;
 
 	mp->priv->playing = TRUE;
+	mp->priv->buffering = FALSE;
 
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 

@@ -1,3 +1,8 @@
+2006-10-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_bus_cb):
+	Pause the pipeline while buffering.  Fixes #358290.
+
 2006-10-23  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac: update required libgpod version to avoid crashes
