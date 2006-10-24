@@ -1,3 +1,12 @@
+2006-10-24  Bastien Nocera  <hadess@hadess.net>
+
+	* widgets/bacon-volume.c: (bacon_volume_button_get_type),
+	(bacon_volume_button_class_init), (bacon_volume_button_new),
+	(bacon_volume_key_release), (cb_button_timeout), (cb_button_press),
+	(cb_dock_button_press), (cb_dock_key_release), (cb_dock_key_press),
+	(bacon_volume_scale_value_changed): update from libbacon, to get
+	better accessibility support (Closes: #364637)
+
 2006-10-24  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
