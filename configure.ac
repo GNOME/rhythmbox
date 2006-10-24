@@ -244,7 +244,7 @@ RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
-	      AC_HELP_STRING([--disble-tag-writing],
+	      AC_HELP_STRING([--disable-tag-writing],
 			     [Disable tag writing support in rhythmbox]))
 if test x"$enable_tag_writing" != xno; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
@@ -253,7 +253,7 @@ fi
 dnl transfers
 AC_ARG_ENABLE(track-transfer,
 	      AC_HELP_STRING([--disable-track-transfer],
-			     [Enable track transfer support in rhythmbox]))
+			     [Disable track transfer support in rhythmbox]))
 if test x"$enable_track_transfer" != xno; then
    PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
       gnome-media-profiles >= 2.8, 
@@ -299,7 +299,7 @@ AC_ARG_ENABLE(audioscrobbler,
 dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--disable-daap],
-			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox]))
+			     [Disable Digital Audio Access Protocol (music sharing) in rhythmbox]))
 
 AC_ARG_WITH(mdns,
    AC_HELP_STRING([--with-mdns=auto|howl|avahi],
