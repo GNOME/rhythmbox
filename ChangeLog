@@ -1,5 +1,13 @@
 2006-10-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by: Brian Cameron <brian.cameron@sun.com>
+
+	* plugins/audiocd/Makefile.am:
+	Link audiocd plugin with libnautilus-burn as required to get it to work
+	on Solaris.  Fixes #363288.
+
+2006-10-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by:  Gabor Kelemen  <kelemeng@gnome.hu>
 
 	* plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in:
