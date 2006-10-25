@@ -58,6 +58,7 @@ plugin_DATA = 			\
 EXTRA_DIST = 			\
 	$(glade_DATA)		\
 	$(plugin_in_files)	\
+	iradio-ui.xml		\
 	$(NULL)
 
 CLEANFILES = 			\

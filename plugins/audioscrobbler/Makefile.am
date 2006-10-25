@@ -56,6 +56,7 @@ plugin_DATA = 			\
 
 EXTRA_DIST = 			\
 	$(plugin_in_files)	\
+	as-powered.png		\
 	$(NULL)
 
 CLEANFILES = 			\
