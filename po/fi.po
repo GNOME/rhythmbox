@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-15 08:15+0300\n"
-"PO-Revision-Date: 2006-10-16 07:25+0300\n"
+"POT-Creation-Date: 2006-10-26 08:13+0300\n"
+"PO-Revision-Date: 2006-10-26 08:13+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -25,13 +25,13 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Haluatko kirjoittaa tiedoston \"%s\" yli?"
 
-#: ../backends/gstreamer/rb-player-gst.c:609 ../metadata/rb-metadata-gst.c:887
+#: ../backends/gstreamer/rb-player-gst.c:631 ../metadata/rb-metadata-gst.c:887
 #: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Elementin %s luonti epäonnistui: tarkista asennuksesi"
 
-#: ../backends/gstreamer/rb-player-gst.c:686
+#: ../backends/gstreamer/rb-player-gst.c:708
 msgid "Unknown playback error"
 msgstr "Tuntematon virhe toistettaessa"
 
@@ -459,7 +459,7 @@ msgstr "Sivusto:"
 
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
-#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:203
+#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:217
 msgid "-"
 msgstr "-"
 
@@ -992,8 +992,8 @@ msgid "Last.fm"
 msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
-msgid "Submits songs to last.fm and plays last.fm radio streams"
-msgstr "Lähettää kappaleita last.fm-tilille ja soittaa last.fm-radiokanavia"
+msgid "Submits song information to last.fm and plays last.fm radio streams"
+msgstr "Lähettää kappaletietoja last.fm:lle ja soittaa last.fm-radiokanavia"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:866
 msgid "OK"
@@ -1095,24 +1095,24 @@ msgstr "Ohjaa Rhythmboxia kaukosäätimellä"
 msgid "LIRC "
 msgstr "LIRC"
 
-#: ../plugins/lyrics/lyrics.py:84 ../plugins/lyrics/lyrics.py:125
+#: ../plugins/lyrics/lyrics.py:85 ../plugins/lyrics/lyrics.py:126
 msgid "Searching for lyrics..."
 msgstr "Etsitään sanoituksia..."
 
-#: ../plugins/lyrics/lyrics.py:93
+#: ../plugins/lyrics/lyrics.py:94
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
 msgid "Lyrics"
 msgstr "Sanoitukset"
 
-#: ../plugins/lyrics/lyrics.py:237
+#: ../plugins/lyrics/lyrics.py:238
 msgid "Lyrics provided by leoslyrics.com"
 msgstr "Sanoitukset sivustolta leoslyrics.com"
 
-#: ../plugins/lyrics/lyrics.py:255
+#: ../plugins/lyrics/lyrics.py:256
 msgid "Song L_yrics"
 msgstr "Kappaleen _sanoitukset"
 
-#: ../plugins/lyrics/lyrics.py:256
+#: ../plugins/lyrics/lyrics.py:257
 msgid "Display lyrics for the playing song"
 msgstr "Näytä soivan kappaleen sanoituksia"
 
@@ -1538,7 +1538,7 @@ msgstr "Ei noudettu"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Älä käynnistä uutta rhythmbox-soitinta"
 
-#: ../remote/dbus/rb-client.c:65 ../shell/main.c:122
+#: ../remote/dbus/rb-client.c:65 ../shell/main.c:123
 msgid "Quit Rhythmbox"
 msgstr "Lopeta musiikkisoitin"
 
@@ -1683,40 +1683,40 @@ msgstr ""
 "Musiikkitietokanta on luotu tätä versiota uudemmalla rhythmboxin versiolla, "
 "eikä sitä voida lukea tällä ohjelmalla."
 
-#: ../shell/main.c:115
+#: ../shell/main.c:116
 msgid "Enable debug output"
 msgstr "Ota käyttöön vianetsintätuloste"
 
-#: ../shell/main.c:116
+#: ../shell/main.c:117
 msgid "Enable debug output matching a specified string"
 msgstr "Ota käyttöön tiettyyn merkkijonoon liittyvä vianetsintätuloste"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:118
 msgid "Do not update the library with file changes"
 msgstr "Älä päivitä kirjastoa, kun tiedostot muuttuvat"
 
-#: ../shell/main.c:118
+#: ../shell/main.c:119
 msgid "Do not register the shell"
 msgstr "Älä rekisteröi kuorta"
 
-#: ../shell/main.c:119
+#: ../shell/main.c:120
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Älä tallenna mitään tietoja pysyvästi (sivuvaikutuksena --no-registration)"
 
-#: ../shell/main.c:120
+#: ../shell/main.c:121
 msgid "Path for database file to use"
 msgstr "Käytettävän tietokantatiedoston polku"
 
-#: ../shell/main.c:121
+#: ../shell/main.c:122
 msgid "Path for playlists file to use"
 msgstr "Käytettävän soittolistatiedoston polkunimi"
 
-#: ../shell/main.c:123
+#: ../shell/main.c:124
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:158 ../shell/main.c:167 ../widgets/rb-druid.c:184
+#: ../shell/main.c:159 ../shell/main.c:168 ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Musiikkisoitin"
 
@@ -2315,7 +2315,7 @@ msgstr "Vähennä soiton äänenvoimakkuutta"
 msgid "_Play"
 msgstr "_Soita"
 
-#: ../shell/rb-shell-player.c:261 ../shell/rb-shell-player.c:2976
+#: ../shell/rb-shell-player.c:261 ../shell/rb-shell-player.c:2969
 msgid "Start playback"
 msgstr "Aloita soitto"
 
@@ -2372,19 +2372,19 @@ msgstr "Ei edellistä kappaletta"
 msgid "No next song"
 msgstr "Ei seuraavaa kappaletta"
 
-#: ../shell/rb-shell-player.c:1787 ../shell/rb-shell-player.c:2743
+#: ../shell/rb-shell-player.c:1787 ../shell/rb-shell-player.c:2736
 msgid "Couldn't start playback"
 msgstr "Soiton aloitus epäonnistui"
 
-#: ../shell/rb-shell-player.c:2586
+#: ../shell/rb-shell-player.c:2579
 msgid "Couldn't stop playback"
 msgstr "Soiton lopetus epäonnistui"
 
-#: ../shell/rb-shell-player.c:2669
+#: ../shell/rb-shell-player.c:2662
 msgid "Current song is not seekable"
 msgstr "Tämänhetkisessä kappaleessa ei voi kelata"
 
-#: ../shell/rb-shell-player.c:2974
+#: ../shell/rb-shell-player.c:2967
 msgid "Stop playback"
 msgstr "Lopeta soitto"
 
@@ -2408,7 +2408,7 @@ msgstr "_Selain"
 msgid "Change the visibility of the browser"
 msgstr "Valitse näytetäänkö selain"
 
-#: ../shell/rb-source-header.c:240
+#: ../shell/rb-source-header.c:239
 msgid "Filter music display by genre, artist, album, or title"
 msgstr ""
 "Suodata musiikin näyttöä tyylin, esittäjän, levyn tai kappaleen perusteella"
@@ -3182,7 +3182,7 @@ msgid_plural "%d episodes"
 msgstr[0] "%d jakso"
 msgstr[1] "%d jaksoa"
 
-#: ../sources/rb-source.c:540
+#: ../sources/rb-source.c:538
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -3194,7 +3194,7 @@ msgid "S_ource"
 msgstr "Lähde"
 
 #. +
-#: ../widgets/bacon-volume.c:187
+#: ../widgets/bacon-volume.c:201
 msgid "+"
 msgstr "+"
 
