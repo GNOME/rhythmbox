@@ -768,13 +768,13 @@ save_entry_double (struct RhythmDBTreeSaveContext *ctx,
 		   const xmlChar *elt_name,
 		   double num)
 {
-	char buf[92];
+	char buf[G_ASCII_DTOSTR_BUF_SIZE+1];
 
 	if (num > -0.001 && num < 0.001)
 		return;
 
 	write_elt_name_open (ctx, elt_name);
-	g_snprintf (buf, sizeof (buf), "%f", num);
+	g_ascii_dtostr (buf, sizeof (buf), num);
 	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle, ctx->error);
 	write_elt_name_close (ctx, elt_name);
 }

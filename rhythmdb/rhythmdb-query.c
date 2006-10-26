@@ -349,7 +349,19 @@ rhythmdb_read_encoded_property (RhythmDB *db,
 		g_value_set_uint64 (val, g_ascii_strtoull (content, NULL, 10));
 		break;
 	case G_TYPE_DOUBLE:
-		g_value_set_double (val, g_ascii_strtod (content, NULL));
+		{
+			gdouble d;
+			char *end;
+
+			d = g_ascii_strtod (content, &end);
+			if (*end != '\0') {
+				/* conversion wasn't entirely successful.
+				 * try locale-aware strtod().
+				 */
+				d = strtod (content, NULL);
+			}
+			g_value_set_double (val, d);
+		}
 		break;
 	case G_TYPE_POINTER:
 		if (propid == RHYTHMDB_PROP_TYPE) {
