@@ -68,7 +68,11 @@ enum {
 struct RhythmDBEntry_ {
 	/* internal bits */
 	guint flags;
+#if (GLIB_MAJOR_VERSION >= 2 && GLIB_MINOR_VERSION >= 10)
 	volatile gint refcount;
+#else
+	gint refcount;
+#endif
 	void *data;
 	RhythmDBEntryType type;
 	guint id;

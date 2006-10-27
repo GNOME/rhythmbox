@@ -47,6 +47,7 @@
 #include "rhythmdb-property-model.h"
 #include "rb-dialog.h"
 
+
 #define RB_PARSE_NICK_START (xmlChar *) "["
 #define RB_PARSE_NICK_END (xmlChar *) "]"
 
@@ -235,9 +236,16 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_gather),
 			      NULL, NULL,
+#if (GLIB_MAJOR_VERSION >= 2 && GLIB_MINOR_VERSION >= 10)
 			      rb_marshal_VOID__BOXED_BOXED,
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_HASH_TABLE);
+#else
+/* work with glib < 2.10 */
+			      rb_marshal_VOID__BOXED_POINTER,
+			      G_TYPE_NONE, 2,
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
+#endif
 
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
