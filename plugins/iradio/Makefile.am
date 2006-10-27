@@ -52,7 +52,6 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
-	iradio-ui.xml		\
 	$(NULL)
 
 EXTRA_DIST = 			\

@@ -51,7 +51,6 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
-	as-powered.png		\
 	$(NULL)
 
 EXTRA_DIST = 			\
