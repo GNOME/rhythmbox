@@ -1027,7 +1027,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_long_cell_data_func;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_track_sort_func;
-		title = _("Trac_k");
+		title = _("Track");
 		key = "Track";
 		strings[0] = title;
 		strings[1] = "9999";
@@ -1038,7 +1038,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_string_sort_func;
-		title = _("_Title");
+		title = _("Title");
 		key = "Title";
 		ellipsize = TRUE;
 		break;
@@ -1048,7 +1048,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_artist_sort_func;
-		title = _("Art_ist");
+		title = _("Artist");
 		key = "Artist";
 		ellipsize = TRUE;
 		break;
@@ -1058,7 +1058,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_album_sort_func;
-		title = _("_Album");
+		title = _("Album");
 		key = "Album";
 		ellipsize = TRUE;
 		break;
@@ -1068,7 +1068,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_genre_sort_func;
-		title = _("_Genre");
+		title = _("Genre");
 		key = "Genre";
 		ellipsize = TRUE;
 		break;
@@ -1078,7 +1078,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
 		sort_propid = cell_data->propid;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
-		title = _("Tim_e");
+		title = _("Time");
 		key = "Time";
 		strings[0] = title;
 		strings[1] = "000:00";
@@ -1090,7 +1090,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_year_cell_data_func;
 		sort_propid = cell_data->propid;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_date_sort_func;
-		title = _("_Year");
+		title = _("Year");
 		key = "Year";
 		strings[0] = title;
 		strings[1] = "0000";
@@ -1102,7 +1102,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
 		sort_propid = cell_data->propid;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
-		title = _("_Quality");
+		title = _("Quality");
 		key = "Quality";
 		strings[0] = title;
 		strings[1] = _("000 kbps");
@@ -1115,7 +1115,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &column_width, NULL);
 		column_width = column_width * 5 + 5;
 		resizable = FALSE;
-		title = _("_Rating");
+		title = _("Rating");
 		key = "Rating";
 
 		renderer = rb_cell_renderer_rating_new ();
@@ -1137,7 +1137,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
 		sort_propid = cell_data->propid;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
-		title = _("_Play Count");
+		title = _("Play Count");
 		key = "PlayCount";
 		strings[0] = title;
 		strings[1] = _("Never");
@@ -1149,7 +1149,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_LAST_PLAYED;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
-		title = _("_Last Played");
+		title = _("Last Played");
 		key = "LastPlayed";
 		strings[0] = title;
 		strings[1] = rb_entry_view_get_time_date_column_sample ();
@@ -1161,7 +1161,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_FIRST_SEEN;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
-		title = _("_Date Added");
+		title = _("Date Added");
 		key = "FirstSeen";
 		strings[0] = title;
 		strings[1] = rb_entry_view_get_time_date_column_sample ();
@@ -1172,7 +1172,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_LAST_SEEN;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_ulong_sort_func;
-		title = _("Last _Seen");
+		title = _("Last Seen");
 		key = "LastSeen";
 		strings[0] = title;
 		strings[1] = rb_entry_view_get_time_date_column_sample ();
@@ -1183,7 +1183,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_location_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_LOCATION;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_location_sort_func;
-		title = _("L_ocation");
+		title = _("Location");
 		key = "Location";
 		ellipsize = TRUE;
 		break;
