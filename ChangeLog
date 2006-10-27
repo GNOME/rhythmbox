@@ -1,5 +1,21 @@
 2006-10-27  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* metadata/sj-metadata-musicbrainz.c: (lookup_cd): handle MusicBrainz
+	returning 0 for the year/month/day. Fixes #364837.
+
+2006-10-27  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Luca Ferretti  <elle.uca@libero.it>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_append_column): remove the
+	access keys from the entry view columns headers - they cause
+	keybindings conflicts, headaches for translators and the HIG says
+	they are bad. Fixes #360640.
+
+2006-10-27  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Luca Ferretti  <elle.uca@libero.it>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_append_column): remove the
