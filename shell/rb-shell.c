@@ -2979,7 +2979,7 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 {
 	RBSource *source;
 
-	/* 
+	/*
 	 * Track whether the same playlist-handling source
 	 * wants all the URIs from the playlist; if it does,
 	 * then we'll just give the playlist URI to the source.
@@ -2989,7 +2989,7 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 
 	source = rb_shell_guess_source_for_uri (data->shell, uri);
 	if (data->playlist_source == NULL) {
-		if (rb_source_try_playlist (source)) {
+		if (source != NULL && rb_source_try_playlist (source)) {
 			data->playlist_source = RB_SOURCE (g_object_ref (source));
 		} else {
 			data->can_use_playlist = FALSE;

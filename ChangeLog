@@ -1,5 +1,11 @@
 2006-10-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell.c: (handle_playlist_entry_cb):
+	Don't crash if we can't guess a source for a URI in the playlist.
+	Fixes #366261.
+
+2006-10-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-player.c: (rb_shell_player_class_init),
 	(rb_shell_player_sync_with_source),
 	(rb_shell_player_get_playing_time_string), (rb_shell_player_seek),
