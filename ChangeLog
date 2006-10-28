@@ -1,3 +1,15 @@
+2006-10-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_sync_with_source),
+	(rb_shell_player_get_playing_time_string), (rb_shell_player_seek),
+	(tick_cb):
+	* widgets/rb-header.c: (rb_header_sync_time),
+	(rb_header_elapsed_changed_cb):
+	Treat elapsed time as signed, since rb_player_get_time returns a
+	signed value.  When actually using the value, mostly treat negative
+	values as 0.  Fixes #365908.
+
 2006-10-27  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>

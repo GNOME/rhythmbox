@@ -57,7 +57,7 @@ static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event,
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 
-static void rb_header_elapsed_changed_cb (RBShellPlayer *player, guint elapsed, RBHeader *header);
+static void rb_header_elapsed_changed_cb (RBShellPlayer *player, long elapsed, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -471,7 +471,7 @@ rb_header_set_show_timeline (RBHeader *header,
 gboolean
 rb_header_sync_time (RBHeader *header)
 {
-	int seconds;
+	long seconds;
 
 	if (header->priv->shell_player == NULL)
 		return TRUE;
@@ -487,7 +487,7 @@ rb_header_sync_time (RBHeader *header)
 		double progress = 0.0;
 
 		if (seconds > 0) {
-			progress = (double) (long) seconds;
+			progress = (double) seconds;
 		} else {
 			header->priv->adjustment->upper = header->priv->duration;
 			g_signal_emit_by_name (G_OBJECT (header->priv->adjustment), "changed");
@@ -655,7 +655,7 @@ rb_header_update_elapsed (RBHeader *header)
 
 static void
 rb_header_elapsed_changed_cb (RBShellPlayer *player,
-			      guint elapsed,
+			      long elapsed,
 			      RBHeader *header)
 {
 	header->priv->elapsed_time = elapsed;

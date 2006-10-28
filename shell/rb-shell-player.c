@@ -399,10 +399,10 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__UINT,
+			      g_cclosure_marshal_VOID__LONG,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_UINT);
+			      G_TYPE_LONG);
 
 	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
 		g_signal_new ("playing-source-changed",
@@ -2390,7 +2390,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	g_free (title);
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED], 0,
-		       (guint) player->priv->elapsed);
+		       player->priv->elapsed);
 
 	/* Sync the header */
 	rb_header_set_playing_entry (player->priv->header_widget,
@@ -2631,7 +2631,12 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 char *
 rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 {
-	return rb_make_elapsed_time_string (player->priv->elapsed,
+	long elapsed = player->priv->elapsed;
+	if (elapsed < 0) {
+		elapsed = 0;
+	}
+
+	return rb_make_elapsed_time_string (elapsed,
 					    rb_shell_player_get_playing_song_duration (player),
 					    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 }
@@ -2671,6 +2676,8 @@ rb_shell_player_seek (RBShellPlayer *player, long offset)
 
 	if (rb_player_seekable (player->priv->mmplayer)) {
 		long t = rb_player_get_time (player->priv->mmplayer);
+		if (t < 0)
+			t = 0;
 		rb_player_set_time (player->priv->mmplayer, t + offset);
 	}
 }
@@ -2783,7 +2790,7 @@ tick_cb (RBPlayer *mmplayer,
 		if (player->priv->elapsed != elapsed) {
 			player->priv->elapsed = elapsed;
 			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED],
-				       0, (guint) elapsed);
+				       0, elapsed);
 		}
 	}
 
