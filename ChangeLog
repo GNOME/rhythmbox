@@ -1,5 +1,13 @@
 2006-10-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by: Luca Ferretti  <elle.uca@libero.it>
+
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	Remove the access keys from the podcast-specific column headers.
+	Fixes #360640 again.
+
+2006-10-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by: James Livingston <doclivingston@gmail.com>
 
 	* sources/rb-browser-source.c: (rb_browser_source_constructor):
