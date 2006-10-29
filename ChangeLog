@@ -1,5 +1,12 @@
 2006-10-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by: James Livingston <doclivingston@gmail.com>
+
+	* sources/rb-browser-source.c: (rb_browser_source_constructor):
+	Only register the search actions once.  From #346801.
+
+2006-10-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-player.c: (rb_shell_player_error):
 	When handling an error, try playing the next stream URL if we have
 	one, rather than stopping playback.  From #358140.

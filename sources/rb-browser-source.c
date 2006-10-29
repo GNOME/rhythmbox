@@ -380,12 +380,16 @@ rb_browser_source_constructor (GType type,
 								       G_N_ELEMENTS (rb_browser_source_actions),
 								       shell);
 
-	gtk_action_group_add_radio_actions (source->priv->action_group,
-					    rb_browser_source_radio_actions,
-					    G_N_ELEMENTS (rb_browser_source_radio_actions),
-					    0,
-					    (GCallback)search_action_changed,
-					    shell);
+	/* only add the actions if we haven't already */
+	if (gtk_action_group_get_action (source->priv->action_group,
+					 rb_browser_source_radio_actions[0].name) == NULL) {
+		gtk_action_group_add_radio_actions (source->priv->action_group,
+						    rb_browser_source_radio_actions,
+						    G_N_ELEMENTS (rb_browser_source_radio_actions),
+						    0,
+						    (GCallback)search_action_changed,
+						    shell);
+	}
 	g_object_unref (shell);
 
 	source->priv->paned = gtk_vpaned_new ();
