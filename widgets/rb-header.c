@@ -57,7 +57,7 @@ static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event,
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 
-static void rb_header_elapsed_changed_cb (RBShellPlayer *player, long elapsed, RBHeader *header);
+static void rb_header_elapsed_changed_cb (RBShellPlayer *player, guint elapsed, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -82,7 +82,7 @@ struct RBHeaderPrivate
 	guint value_changed_update_handler;
 	GtkWidget *elapsed;
 
-	long elapsed_time;
+	guint elapsed_time;
 	long duration;
 	gboolean seekable;
 };
@@ -471,7 +471,7 @@ rb_header_set_show_timeline (RBHeader *header,
 gboolean
 rb_header_sync_time (RBHeader *header)
 {
-	long seconds;
+	guint seconds;
 
 	if (header->priv->shell_player == NULL)
 		return TRUE;
@@ -557,7 +557,7 @@ slider_moved_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	header->priv->elapsed_time = (long) (progress+0.5);
+	header->priv->elapsed_time = (guint) (progress+0.5);
 
 	rb_header_update_elapsed (header);
 
@@ -642,7 +642,7 @@ rb_header_update_elapsed (RBHeader *header)
 	char *elapsed_text;
 
 	/* sanity check */
-	if ((header->priv->elapsed_time > header->priv->duration) || (header->priv->elapsed_time < 0))
+	if (header->priv->elapsed_time > header->priv->duration)
 		return;
 
 	elapsed_text = rb_make_elapsed_time_string (header->priv->elapsed_time,
@@ -655,7 +655,7 @@ rb_header_update_elapsed (RBHeader *header)
 
 static void
 rb_header_elapsed_changed_cb (RBShellPlayer *player,
-			      long elapsed,
+			      guint elapsed,
 			      RBHeader *header)
 {
 	header->priv->elapsed_time = elapsed;

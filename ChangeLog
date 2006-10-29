@@ -1,3 +1,13 @@
+2006-10-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_sync_with_source),
+	(rb_shell_player_get_playing_time_string), (tick_cb):
+	* widgets/rb-header.c: (rb_header_sync_time),
+	(slider_moved_callback), (rb_header_update_elapsed),
+	(rb_header_elapsed_changed_cb):
+	Revert dbus interface breakage introduced in the fix for #365908.
+
 2006-10-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Luca Ferretti  <elle.uca@libero.it>

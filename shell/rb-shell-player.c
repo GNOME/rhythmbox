@@ -188,7 +188,7 @@ struct RBShellPlayerPrivate
 
 	char *song;
 	char *url;
-	long elapsed;
+	guint elapsed;
 
 	RBPlayOrder *play_order;
 	RBPlayOrder *queue_play_order;
@@ -399,10 +399,10 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__LONG,
+			      g_cclosure_marshal_VOID__UINT,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_LONG);
+			      G_TYPE_UINT);
 
 	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
 		g_signal_new ("playing-source-changed",
@@ -2329,6 +2329,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	char *streaming_artist = NULL;
 	RhythmDBEntry *entry;
 	char *title = NULL;
+	long elapsed;
 
 	entry = rb_shell_player_get_playing_entry (player);
 	rb_debug ("playing source: %p, active entry: %p", player->priv->current_playing_source, entry);
@@ -2383,7 +2384,10 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 		title = g_string_free (title_str, FALSE);
 	}
 
-	player->priv->elapsed = rb_player_get_time (player->priv->mmplayer);
+	elapsed = rb_player_get_time (player->priv->mmplayer);
+	if (elapsed < 0)
+		elapsed = 0;
+	player->priv->elapsed = elapsed;
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
@@ -2631,12 +2635,7 @@ rb_shell_player_get_playing (RBShellPlayer *player,
 char *
 rb_shell_player_get_playing_time_string (RBShellPlayer *player)
 {
-	long elapsed = player->priv->elapsed;
-	if (elapsed < 0) {
-		elapsed = 0;
-	}
-
-	return rb_make_elapsed_time_string (elapsed,
+	return rb_make_elapsed_time_string (player->priv->elapsed,
 					    rb_shell_player_get_playing_song_duration (player),
 					    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
 }
@@ -2800,10 +2799,13 @@ tick_cb (RBPlayer *mmplayer,
 	GDK_THREADS_ENTER ();
 
 	if (rb_player_playing (mmplayer)) {
+		if (elapsed < 0)
+			elapsed = 0;
+
 		if (player->priv->elapsed != elapsed) {
 			player->priv->elapsed = elapsed;
 			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[ELAPSED_CHANGED],
-				       0, elapsed);
+				       0, player->priv->elapsed);
 		}
 	}
 
