@@ -2721,6 +2721,7 @@ rb_shell_player_error (RBShellPlayer *player,
 		       const GError *err)
 {
 	RhythmDBEntry *entry;
+	gboolean do_next;
 
 	g_return_if_fail (player->priv->handling_error == FALSE);
 
@@ -2736,14 +2737,26 @@ rb_shell_player_error (RBShellPlayer *player,
 	if (err->code == RB_PLAYER_ERROR_NO_AUDIO) {
 		/* stream has completely ended */
 		rb_shell_player_set_playing_source (player, NULL);
+		do_next = FALSE;
 	} else if ((player->priv->current_playing_source != NULL) &&
 		   (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_RETRY)) {
-		/* receiving an error means a broken stream or non-audio stream, so abort */
-		rb_error_dialog (NULL,
-				 _("Couldn't start playback"),
-				 "%s", (err) ? err->message : "(null)");
-		rb_shell_player_set_playing_source (player, NULL);
-	} else if (player->priv->do_next_idle_id == 0) {
+		/* receiving an error means a broken stream or non-audio stream, so abort
+		 * unless we've got more URLs to try */
+		if (g_queue_is_empty (player->priv->playlist_urls)) {
+			rb_error_dialog (NULL,
+					 _("Couldn't start playback"),
+					 "%s", (err) ? err->message : "(null)");
+			rb_shell_player_set_playing_source (player, NULL);
+			do_next = FALSE;
+		} else {
+			rb_debug ("haven't yet exhausted the URLs from the playlist");
+			do_next = TRUE;
+		}
+	} else {
+		do_next = TRUE;
+	}
+
+	if (do_next && player->priv->do_next_idle_id == 0) {
 		player->priv->do_next_idle_id = g_idle_add ((GSourceFunc)do_next_idle, player);
 	}
 
