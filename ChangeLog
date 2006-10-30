@@ -1,5 +1,11 @@
 2006-10-30  James Livingston  <doclivingston@gmail.com>
 
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_db_entry_deleted_cb): when deleting a feed, cancel
+	any downloads from it before deleting the post entry. Fixes #366567.
+
+2006-10-30  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell-clipboard.c: remove the Control-T shortcut from
 	move-to-trash, since there have been reports of people accidently
 	deleting tracks and it probably isn't a common enough operation to be

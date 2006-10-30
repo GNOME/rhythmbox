@@ -420,7 +420,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 		rb_debug ("Try insert entry for download.");
 		data  = download_info_new();
 		data->pd = pd;
-		data->entry = entry;
+		data->entry = rhythmdb_entry_ref (entry);
         	g_mutex_lock (pd->priv->download_list_mutex);
 		pd->priv->download_list =  g_list_append (pd->priv->download_list, data);
 		g_mutex_unlock (pd->priv->download_list_mutex);
@@ -1042,6 +1042,10 @@ download_info_free (RBPodcastManagerInfo *data)
 
 	g_mutex_free (data->mutex_working);
 
+	if (data->entry) {
+		rhythmdb_entry_unref (data->entry);
+	}
+
 	g_free (data);
 }
 
@@ -1351,6 +1355,10 @@ rb_podcast_manager_db_entry_deleted_cb (RBPodcastManager *pd,
 
 				gtk_tree_model_get (query_model, &iter, 0, &entry, -1);
 				has_next = gtk_tree_model_iter_next (query_model, &iter);
+
+				/* make sure we're not downloading it */
+				rb_podcast_manager_cancel_download (pd, entry);
+
 				rhythmdb_entry_delete (pd->priv->db, entry);
 				rhythmdb_entry_unref (entry);
 
