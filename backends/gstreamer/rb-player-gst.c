@@ -83,6 +83,7 @@ struct _RBPlayerGstPrivate
 	gboolean emitted_error;
 
 	gboolean playing;
+	gboolean buffering;
 
 	guint idle_error_id;
 	guint idle_eos_id;
@@ -92,8 +93,6 @@ struct _RBPlayerGstPrivate
 #ifdef HAVE_GSTREAMER_0_8
 	guint error_signal_id;
 	guint buffering_signal_id;
-#else
-	gboolean buffering;
 #endif
 
 	float cur_volume;

@@ -214,7 +214,7 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
 	elif test x$with_playback = xgstreamer-0-10; then
-		AC_MSG_ERROR([GStreamer 0.10 explicity requested, and it was not found or older than version $GST_REQUIRED_VERSION, or gst-plugins-base was missing])
+		AC_MSG_ERROR([GStreamer 0.10 explicitly requested, and it was not found or older than version $GST_REQUIRED_VERSION, or gst-plugins-base was missing])
 	fi
 fi
 if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
@@ -226,7 +226,7 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_8_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_8_LIBS"
 	elif test x$with_playback = xgstreamer-0-8; then
-		AC_MSG_ERROR([GStreamer 0.8 explicity requested, and it was not found or older than version $GST_REQUIRED_VERSION])
+		AC_MSG_ERROR([GStreamer 0.8 explicitly requested, and it was not found or older than version $GST_REQUIRED_VERSION])
 	fi
 fi
 AM_CONDITIONAL(USE_GSTREAMER_0_10, test x"$with_playback" = xgstreamer_0_10)
@@ -893,7 +893,7 @@ fi
 
 if test "x$have_python" != "xyes"; then
 	if test "x$enable_python" = "xyes"; then
-		AC_MSG_ERROR([Python support explicity requested, but not found])
+		AC_MSG_ERROR([Python support explicitly requested, but not found])
 	elif test "x$enable_python" != "xno"; then
 		enable_python=no
 		AC_MSG_WARN([Python not found, disabling python support])

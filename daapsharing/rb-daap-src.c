@@ -162,8 +162,6 @@ static void rb_daap_src_get_property (GObject *object,
 			  GParamSpec *pspec);
 
 #ifdef HAVE_GSTREAMER_0_8
-static GstCaps *rb_daap_src_getcaps (GstPad *pad);
-
 static GstData *rb_daap_src_get (GstPad *pad);
 
 static GstElementStateReturn rb_daap_src_change_state (GstElement *element);
@@ -328,8 +326,6 @@ rb_daap_src_init (RBDAAPSrc *src, RBDAAPSrcClass *klass)
 	src->need_flush = FALSE;
 
 	src->srcpad = gst_pad_new ("src", GST_PAD_SRC);
-	gst_pad_set_getcaps_function (src->srcpad,
-				      rb_daap_src_getcaps);
 	gst_pad_set_get_function (src->srcpad,
 				  rb_daap_src_get);
 	gst_pad_set_event_mask_function (src->srcpad,
