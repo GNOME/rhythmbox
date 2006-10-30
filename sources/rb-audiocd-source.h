@@ -45,7 +45,9 @@ typedef struct
 	RBRemovableMediaSourceClass parent;
 } RBAudioCdSourceClass;
 
-RBRemovableMediaSource *	rb_audiocd_source_new			(RBShell *shell, GnomeVFSVolume *volume);
+RBRemovableMediaSource *	rb_audiocd_source_new		(RBPlugin *plugin,
+								 RBShell *shell,
+								 GnomeVFSVolume *volume);
 GType			rb_audiocd_source_get_type		(void);
 GType			rb_audiocd_source_register_type		(GTypeModule *module);
 

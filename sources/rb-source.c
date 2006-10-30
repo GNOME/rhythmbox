@@ -36,6 +36,7 @@
 #include "rb-source.h"
 #include "rb-util.h"
 #include "rb-static-playlist-source.h"
+#include "rb-plugin.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
 static void rb_source_init (RBSource *source);
@@ -92,6 +93,7 @@ struct _RBSourcePrivate
 	guint update_visibility_id;
 	guint update_status_id;
 	RhythmDBEntryType entry_type;
+	RBPlugin *plugin;
 };
 
 enum
@@ -105,7 +107,8 @@ enum
 	PROP_QUERY_MODEL,
 	PROP_HIDDEN_WHEN_EMPTY,
 	PROP_SOURCELIST_GROUP,
-	PROP_ENTRY_TYPE
+	PROP_ENTRY_TYPE,
+	PROP_PLUGIN
 };
 
 enum
@@ -234,6 +237,13 @@ rb_source_class_init (RBSourceClass *klass)
 							     "Type of the entries which should be displayed by this source",
 							     RHYTHMDB_TYPE_ENTRY_TYPE,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_PLUGIN,
+					 g_param_spec_object ("plugin",
+						 	      "RBPlugin",
+							      "RBPlugin instance for the plugin that created the source",
+							      RB_TYPE_PLUGIN,
+							      G_PARAM_READWRITE));
 
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
@@ -473,6 +483,9 @@ rb_source_set_property (GObject *object,
 	case PROP_ENTRY_TYPE:
 		priv->entry_type = g_value_get_boxed (value);
 		break;
+	case PROP_PLUGIN:
+		priv->plugin = g_value_get_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -518,6 +531,9 @@ rb_source_get_property (GObject *object,
 		break;
 	case PROP_ENTRY_TYPE:
 		g_value_set_boxed (value, priv->entry_type);
+		break;
+	case PROP_PLUGIN:
+		g_value_set_object (value, priv->plugin);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

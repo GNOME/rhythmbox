@@ -45,6 +45,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/daapsharing			\
+	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\

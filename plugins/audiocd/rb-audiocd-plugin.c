@@ -377,7 +377,7 @@ create_source_cb (RBRemovableMediaManager *rmm,
 	RBSource *source = NULL;
 
 	if (rb_audiocd_is_volume_audiocd (volume)) {
-		source = RB_SOURCE (rb_audiocd_source_new (plugin->shell, volume));
+		source = RB_SOURCE (rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume));
 	}
 
 	if (source != NULL) {

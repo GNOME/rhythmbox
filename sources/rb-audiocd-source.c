@@ -22,7 +22,6 @@
 
 /*
  * TODO
- *    * handle cases where MusicBrainz returns multiple albums
  *    * save user-edited metadata somewhere (use S-J stuff?)
  */
 
@@ -43,6 +42,7 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-glade-helpers.h"
 
 #ifdef HAVE_MUSICBRAINZ
 #include "sj-metadata-musicbrainz.h"
@@ -78,6 +78,9 @@ typedef struct
 RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
 
+#ifdef HAVE_MUSICBRAINZ
+static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
+#endif
 static void
 rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 {
@@ -152,7 +155,8 @@ rb_audiocd_source_constructor (GType type,
 }
 
 RBRemovableMediaSource *
-rb_audiocd_source_new (RBShell *shell,
+rb_audiocd_source_new (RBPlugin *plugin,
+		       RBShell *shell,
 		       GnomeVFSVolume *volume)
 {
 	char *device_path;
@@ -179,6 +183,7 @@ rb_audiocd_source_new (RBShell *shell,
 			       "shell", shell,
 			       "sorting-key", NULL,
 			       "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
+			       "plugin", plugin,
 			       NULL);
 
 	g_free (device_path);
@@ -393,6 +398,122 @@ get_db_for_source (RBAudioCdSource *source)
 }
 
 #ifdef HAVE_MUSICBRAINZ
+
+/**
+ * Called by the Multiple Album dialog when the user hits return in
+ * the list view
+ */
+static void
+album_row_activated (GtkTreeView *treeview,
+		     GtkTreePath *arg1,
+		     GtkTreeViewColumn *arg2,
+		     gpointer user_data)
+{
+	GtkDialog *dialog = GTK_DIALOG (user_data);
+	g_assert (dialog != NULL);
+	gtk_dialog_response (dialog, GTK_RESPONSE_OK);
+}
+
+/**
+ * Utility function for when there are more than one albums
+ * available. Borrowed from Sound Juicer.
+ */
+static AlbumDetails *
+multiple_album_dialog (GList *albums, RBAudioCdSource *source)
+{
+	GtkWidget *dialog;
+	GtkWidget *albums_listview;
+	GtkListStore *albums_store;
+	GtkTreeSelection *selection;
+	AlbumDetails *album;
+	GtkTreeIter iter;
+	int response;
+	GladeXML *xml;
+	GtkTreeViewColumn *column;
+	GtkCellRenderer *text_renderer;
+	RBPlugin *plugin;
+	char *glade_file;
+
+	gdk_threads_enter ();
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	g_assert (plugin != NULL);
+
+	/* create dialog */
+	glade_file = rb_plugin_find_file (plugin, "multiple-album.glade");
+	g_object_unref (plugin);
+
+	if (glade_file == NULL) {
+		g_warning ("couldn't find multiple-album.glade");
+		return NULL;
+	}
+
+	xml = glade_xml_new (glade_file, NULL, NULL);
+	g_free (glade_file);
+
+	dialog = glade_xml_get_widget (xml, "multiple_dialog");
+	g_assert (dialog != NULL);
+	gtk_window_set_transient_for (GTK_WINDOW (dialog),
+				      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))));
+	albums_listview = glade_xml_get_widget (xml, "albums_listview");
+
+	g_signal_connect (albums_listview, "row-activated", G_CALLBACK (album_row_activated), dialog);
+
+	/* add columns */
+	text_renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes (_("Title"),
+							   text_renderer,
+							   "text", 0,
+							   NULL);
+
+	gtk_tree_view_append_column (GTK_TREE_VIEW (albums_listview), column);
+
+	column = gtk_tree_view_column_new_with_attributes (_("Artist"),
+							   text_renderer,
+							   "text", 1,
+							   NULL);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (albums_listview), column);
+
+	/* create model for the tree view */
+	albums_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (albums_listview), GTK_TREE_MODEL (albums_store));
+
+	for (; albums ; albums = g_list_next (albums)) {
+		GtkTreeIter iter;
+		AlbumDetails *album = (AlbumDetails*)(albums->data);
+		gtk_list_store_append (albums_store, &iter);
+		gtk_list_store_set (albums_store, &iter,
+				    0, album->title,
+				    1, album->artist,
+				    2, album,
+				    -1);
+	}
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (albums_listview));
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_BROWSE);
+
+	/* select the first row */
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (albums_store), &iter);
+	gtk_tree_selection_select_iter (selection, &iter);
+
+	gtk_widget_grab_focus (albums_listview);
+	gtk_widget_show_all (dialog);
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_hide (dialog);
+
+	if (response == GTK_RESPONSE_DELETE_EVENT) {
+		album = NULL;
+	} else {
+		gtk_tree_selection_get_selected (selection, NULL, &iter);
+		gtk_tree_model_get (GTK_TREE_MODEL (albums_store), &iter, 2, &album, -1);
+	}
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	gdk_threads_leave ();
+	return album;
+}
+
+
 static void
 metadata_cb (SjMetadata *metadata,
 	     GList *albums,
@@ -403,6 +524,7 @@ metadata_cb (SjMetadata *metadata,
 	GList *cd_track = priv->tracks;
 	RhythmDB *db;
 	GValue true_value = {0,};
+	AlbumDetails *album;
 
 	g_assert (metadata == priv->metadata);
 
@@ -423,61 +545,61 @@ metadata_cb (SjMetadata *metadata,
 	g_value_init (&true_value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&true_value, TRUE);
 
-	/*while (albums) {*/
-	{
-		AlbumDetails *album;
+	/* if we have multiple results, ask the user to pick one */
+	if (g_list_length (albums) > 1) {
+		album = multiple_album_dialog (albums, source);
+		if (album == NULL)
+			album = (AlbumDetails *)albums->data;
+	} else
 		album = (AlbumDetails *)albums->data;
 
-		g_object_set (G_OBJECT (source), "name", album->title, NULL);
+	g_object_set (G_OBJECT (source), "name", album->title, NULL);
 
-		while (album->tracks && cd_track) {
-			TrackDetails *track = (TrackDetails*)album->tracks->data;
-			RhythmDBEntry *entry = cd_track->data;
-			GValue value = {0, };
+	while (album->tracks && cd_track) {
+		TrackDetails *track = (TrackDetails*)album->tracks->data;
+		RhythmDBEntry *entry = cd_track->data;
+		GValue value = {0, };
 
-			rb_debug ("storing metadata for %s - %s - %s", track->artist, album->title, track->title);
+		rb_debug ("storing metadata for %s - %s - %s", track->artist, album->title, track->title);
 
-			/* record track info in entry*/
-			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
-			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
-			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ALBUM, album->title);
-			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_GENRE, album->genre);
-			entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, track->track_id);
+		/* record track info in entry*/
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ALBUM, album->title);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_GENRE, album->genre);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, track->track_id);
 
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, track->duration);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &value);
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, track->duration);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &value);
+		g_value_unset (&value);
+
+		/*album->release_date (could potentially have multiple values)*/
+		/* in current sj-structures.h, however, it does not */
+
+		if (album->release_date) {
+			GType type = rhythmdb_get_property_type (db, RHYTHMDB_PROP_DATE);
+			g_value_init (&value, type);
+			g_value_set_ulong (&value, g_date_get_julian (album->release_date));
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DATE, &value);
 			g_value_unset (&value);
-
-			/*album->release_date (could potentially have multiple values)*/
-			/* in current sj-structures.h, however, it does not */
-
-			if (album->release_date) {
-				GType type = rhythmdb_get_property_type (db, RHYTHMDB_PROP_DATE);
-				g_value_init (&value, type);
-				g_value_set_ulong (&value, g_date_get_julian (album->release_date));
-				rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DATE, &value);
-				g_value_unset (&value);
-			}
-
-			rhythmdb_commit (db);
-
-			album->tracks = g_list_next (album->tracks);
-			cd_track = g_list_next (cd_track);
 		}
 
-		while (cd_track) {
-			/* Musicbrainz doesn't report data tracks on multisession CDs.
-			 * These aren't interesting to us anyway, so they should be hidden.
-			 */
-			RhythmDBEntry *entry = cd_track->data;
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &true_value);
-			rhythmdb_commit (db);
+		rhythmdb_commit (db);
 
-			cd_track = g_list_next (cd_track);
-		}
+		album->tracks = g_list_next (album->tracks);
+		cd_track = g_list_next (cd_track);
+	}
 
-		/*albums = g_list_next (albums);*/
+	while (cd_track) {
+		/* Musicbrainz doesn't report data tracks on multisession CDs.
+		 * These aren't interesting to us anyway, so they should be hidden.
+		 */
+		RhythmDBEntry *entry = cd_track->data;
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &true_value);
+		rhythmdb_commit (db);
+
+		cd_track = g_list_next (cd_track);
 	}
 
 	g_object_unref (metadata);

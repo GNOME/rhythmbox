@@ -1,3 +1,26 @@
+2006-10-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch largely by:  Edgar Luna  <eald@linuxuanl.org>
+
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_set_property), (rb_source_get_property):
+	Add a property to RBSource for plugin-created sources to have a
+	pointer to the RBPlugin object that created them.
+
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/multiple-album.glade:
+	* plugins/audiocd/rb-audiocd-plugin.c: (create_source_cb):
+	* sources/Makefile.am:
+	* sources/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* sources/rb-audiocd-source.h:
+	If musicbrainz returns multiple albums, present the user with a
+	choice between them.  Fixes #333215.
+
+	* configure.ac:
+	* plugins/Makefile.am:
+	Remove unused old audio CD stuff, only build audiocd plugin if we have
+	libnautilus-burn.  Fixes #367440.
+
 2006-10-30  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Brian McKenna  <puffnfresh@gmail.com>

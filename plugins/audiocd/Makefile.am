@@ -34,8 +34,8 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gladedir = $(datadir)/rhythmbox/glade
-glade_DATA =
+gladedir = $(plugindir)
+glade_DATA =	multiple-album.glade
 
 plugin_in_files = audiocd.rb-plugin.desktop.in
 

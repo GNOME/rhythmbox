@@ -563,30 +563,6 @@ else
 	fi
 fi
 
-dnl CD Audio support		  
-AC_DEFINE(WITH_AUDIOCD_SUPPORT, 1, [Define if audio cd support is enabled])
-AC_CHECK_HEADER(linux/cdrom.h,[enable_linux_cdrom=yes],)
-if test "x$enable_linux_cdrom" = "xyes"; then
-  AC_MSG_CHECKING([whether linux/cdrom.h actually works])
-  AC_COMPILE_IFELSE([
-#include <stdlib.h>    
-#include <sys/ioctl.h>    
-#include <linux/cdrom.h>
-int main(int argc,char **argv) {
-  ioctl (0, CDROM_GET_CAPABILITY, 0);
-  ioctl (0, CDROM_DRIVE_STATUS, CDSL_CURRENT);  
-  ioctl (0, CDROMREADTOCHDR, NULL);
-  exit(0);
-}], [enable_linux_cdrom=yes],[enable_linux_cdrom=no])
-  if test "x$enable_linux_cdrom" = "xyes"; then
-    AC_MSG_RESULT([yes])
-    enable_audiocd=yes
-  else
-    AC_MSG_FAILURE([linux/cdrom.h is damaged; fix your system or use --disable-audiocd])
-  fi
-fi
-AM_CONDITIONAL(HAVE_LINUX_CDROM, test "x$enable_linux_cdrom" = "xyes")
-
 dnl CD burner support
 AC_ARG_WITH(cd-burning,
             AC_HELP_STRING([--with-cd-burning],

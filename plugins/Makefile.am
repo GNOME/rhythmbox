@@ -29,7 +29,9 @@ SUBDIRS += ipod
 endif
 
 if USE_CD_BURNING
-SUBDIRS += cd-recorder
+SUBDIRS += 						\
+	audiocd						\
+	cd-recorder
 endif
 
 if WITH_DBUS
