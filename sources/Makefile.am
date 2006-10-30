@@ -1,15 +1,19 @@
 ## arch-tag: Automake rules for source object library
 noinst_LTLIBRARIES = libsources.la libsourcesimpl.la
 
-libsources_la_SOURCES = rb-source.c rb-source.h
+libsources_la_SOURCES = 		\
+	rb-source.c 			\
+	rb-source.h			\
+	rb-streaming-source.c		\
+	rb-streaming-source.h
 
 libsourcesimpl_la_SOURCES =		\
 	rb-sourcelist.c			\
 	rb-sourcelist.h			\
 	rb-sourcelist-model.c		\
 	rb-sourcelist-model.h		\
-	rb-browser-source.c	\
-	rb-browser-source.h	\
+	rb-browser-source.c		\
+	rb-browser-source.h		\
 	rb-library-source.c		\
 	rb-library-source.h		\
 	rb-podcast-source.c		\
@@ -45,6 +49,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/daapsharing			\
+	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \

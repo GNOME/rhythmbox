@@ -2586,6 +2586,12 @@ rb_shell_player_stop (RBShellPlayer *player)
 	}
 
 	rb_shell_player_sync_with_source (player);
+	g_signal_emit (G_OBJECT (player),
+		       rb_shell_player_signals[PLAYING_SONG_CHANGED], 0,
+		       NULL);
+	g_signal_emit (G_OBJECT (player),
+		       rb_shell_player_signals[PLAYING_URI_CHANGED], 0,
+		       NULL);
 	g_object_notify (G_OBJECT (player), "playing");
 	rb_shell_player_sync_buttons (player);
 }

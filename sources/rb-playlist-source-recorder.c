@@ -637,7 +637,7 @@ burn_cd (RBPlaylistSourceRecorder *source,
 
                 finished_msg = _("Finished creating audio CD.");
 
-                rb_shell_hidden_notify (source->priv->shell, 0, finished_msg, source->priv->cd_icon, "");
+                rb_shell_hidden_notify (source->priv->shell, 0, finished_msg, source->priv->cd_icon, "", FALSE);
 
                 /* save the write speed that was used */
                 eel_gconf_set_integer (CONF_STATE_BURN_SPEED, speed);

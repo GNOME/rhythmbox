@@ -1,3 +1,49 @@
+2006-10-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell.h:
+	* shell/rb-tray-icon.c: (rb_tray_icon_notify):
+	* shell/rb-tray-icon.h:
+	* bindings/python/rb.defs:
+	* shell/rb-shell.c: (rb_shell_playing_entry_changed_cb),
+	(rb_shell_notify_playing_entry), (rb_shell_hidden_notify):
+	* sources/rb-playlist-source-recorder.c: (burn_cd):
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_start_download_cb),
+	(rb_podcast_source_finish_download_cb),
+	(rb_podcast_source_feed_updates_avaliable_cb):
+	Change the various notification functions to take a parameter
+	specifying whether the notification was explicitly requested by the
+	user.  Add a function to display a notification for an entry,
+	including streaming song metadata.
+
+	* shell/rb-shell-player.c: (rb_shell_player_stop):
+	Emit playing-song-changed and playing-uri-changed when stopping
+	playback.
+
+	* sources/Makefile.am:
+	* sources/rb-streaming-source.c:
+	* sources/rb-streaming-source.h:
+	Add a base class for streaming sources, handling streaming song
+	metadata and buffering messages, emitting notifications on song
+	changes, and updating play count statistics when playback stops.
+
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_class_init), (rb_lastfm_source_finalize),
+	(rb_lastfm_source_constructor), (impl_get_status),
+	(rb_lastfm_message_cb), (rb_lastfm_source_new_station),
+	(rb_lastfm_source_title_from_uri),
+	(rb_lastfm_source_entry_added_cb), (rb_lastfm_source_metadata_cb),
+	(rb_lastfm_song_changed_cb), (impl_activate):
+	* plugins/audioscrobbler/rb-lastfm-source.h:
+	* plugins/iradio/Makefile.am:
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_constructor), (impl_get_status),
+	(info_available_cb), (playing_source_changed_cb):
+	* sources/rb-iradio-source.h:
+	Use the new streaming source base class for iradio and last.fm
+	sources.  Fixes #364094.
+
 2006-10-30  James Livingston  <doclivingston@gmail.com>
 
 	* podcast/rb-podcast-manager.c:

@@ -61,7 +61,8 @@ void                    rb_tray_icon_notify     (RBTrayIcon *icon,
 						 guint timeout,
 						 const char *primary,
 						 GtkWidget *msgicon,
-						 const char *secondary);
+						 const char *secondary,
+						 gboolean requested);
 
 void                    rb_tray_icon_cancel_notify (RBTrayIcon *icon);
 

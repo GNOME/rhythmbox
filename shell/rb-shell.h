@@ -135,7 +135,11 @@ void            rb_shell_hidden_notify  (RBShell *shell,
 					 guint timeout,
 					 const char *primary,
 					 GtkWidget *icon,
-					 const char *secondary);
+					 const char *secondary,
+					 gboolean requested);
+void		rb_shell_notify_playing_entry (RBShell *shell,
+					       RhythmDBEntry *entry,
+					       gboolean requested);
 
 void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,

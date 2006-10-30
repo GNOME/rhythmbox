@@ -24,7 +24,7 @@
 #define __RB_IRADIO_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-source.h"
+#include "rb-streaming-source.h"
 
 G_BEGIN_DECLS
 
@@ -39,14 +39,14 @@ typedef struct RBIRadioSourcePrivate RBIRadioSourcePrivate;
 
 typedef struct
 {
-	RBSource parent;
+	RBStreamingSource parent;
 
 	RBIRadioSourcePrivate *priv;
 } RBIRadioSource;
 
 typedef struct
 {
-	RBSourceClass parent;
+	RBStreamingSourceClass parent;
 } RBIRadioSourceClass;
 
 GType		rb_iradio_source_get_type	(void);

@@ -1742,7 +1742,7 @@ rb_podcast_source_start_download_cb (RBPodcastManager *pd,
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
 
 	rb_debug ("Start download");
-	rb_shell_hidden_notify (shell, 4000, _("Downloading podcast"), NULL, podcast_name);
+	rb_shell_hidden_notify (shell, 4000, _("Downloading podcast"), NULL, podcast_name, FALSE);
 	g_object_unref (shell);
 }
 
@@ -1755,7 +1755,7 @@ rb_podcast_source_finish_download_cb (RBPodcastManager *pd,
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
 
 	rb_debug ("Finish download");
-	rb_shell_hidden_notify (shell, 4000, _("Finished downloading podcast"), NULL, podcast_name);
+	rb_shell_hidden_notify (shell, 4000, _("Finished downloading podcast"), NULL, podcast_name, FALSE);
 	g_object_unref (shell);
 }
 
@@ -1768,7 +1768,7 @@ rb_podcast_source_feed_updates_avaliable_cb (RBPodcastManager *pd,
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
 
 	rb_debug ("Updates avaliable");
-	rb_shell_hidden_notify (shell, 4000, _("New updates avaliable from"), NULL, podcast_name);
+	rb_shell_hidden_notify (shell, 4000, _("New updates avaliable from"), NULL, podcast_name, FALSE);
 	g_object_unref (shell);
 
 }

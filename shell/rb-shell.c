@@ -1893,18 +1893,7 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBShell *shell)
 {
-	char *notifytitle;
-
-	/* Translators: by Artist from Album*/
-	notifytitle = g_strdup_printf (_("by %s from %s"),
-				       rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
-				       rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
-	rb_shell_hidden_notify (shell,
-				4000,
-				rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
-				NULL,
-				notifytitle);
-	g_free (notifytitle);
+	rb_shell_notify_playing_entry (shell, entry, FALSE);
 }
 
 static void
@@ -2840,12 +2829,107 @@ tray_destroy_cb (GtkObject *object,
  	return TRUE;
 }
 
+
+void
+rb_shell_notify_playing_entry (RBShell *shell,
+			       RhythmDBEntry *entry,
+			       gboolean requested)
+{
+	GValue *value;
+	char *stream_title = NULL;
+	char *artist = NULL;
+	char *album = NULL;
+	char *title = NULL;
+	char *sec;
+	GString *secondary;
+
+	if (entry == NULL)
+		return;
+
+	secondary = g_string_sized_new (100);
+
+	/* get artist, preferring streaming song details */
+	value = rhythmdb_entry_request_extra_metadata (shell->priv->db,
+						       entry,
+						       RHYTHMDB_PROP_STREAM_SONG_ARTIST);
+	if (value != NULL) {
+		artist = g_value_dup_string (value);
+		g_value_unset (value);
+		g_free (value);
+	} else {
+		artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	}
+
+	if (artist != NULL && artist[0] != '\0') {
+		/* Translators: by Artist */
+		g_string_append_printf (secondary, _("by %s"), artist);
+	}
+	g_free (artist);
+
+	/* get album, preferring streaming song details */
+	value = rhythmdb_entry_request_extra_metadata (shell->priv->db,
+						       entry,
+						       RHYTHMDB_PROP_STREAM_SONG_ALBUM);
+	if (value != NULL) {
+		album = g_value_dup_string (value);
+		g_value_unset (value);
+		g_free (value);
+	} else {
+		album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
+	}
+
+	if (album != NULL && album[0] != '\0') {
+		if (secondary->len != 0)
+			g_string_append_c (secondary, ' ');
+
+		/* Translators: from Album */
+		g_string_append_printf (secondary, _("from %s"), album);
+	}
+	g_free (album);
+
+	/* get title and possibly stream name.
+	 * if we have a streaming song title, the entry's title
+	 * property is the stream name.
+	 */
+	value = rhythmdb_entry_request_extra_metadata (shell->priv->db,
+						       entry,
+						       RHYTHMDB_PROP_STREAM_SONG_TITLE);
+	if (value != NULL) {
+		title = g_value_dup_string (value);
+		g_value_unset (value);
+		g_free (value);
+
+		stream_title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	} else {
+		title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+	}
+
+	if (stream_title != NULL && stream_title[0] != '\0') {
+		if (secondary->len == 0)
+			g_string_append (secondary, stream_title);
+		else
+			g_string_append_printf (secondary, " (%s)", stream_title);
+	}
+	g_free (stream_title);
+
+	sec = g_string_free (secondary, FALSE);
+	rb_shell_hidden_notify (shell,
+				4000,
+				title,
+				NULL,
+				sec,
+				requested);
+	g_free (sec);
+	g_free (title);
+}
+
 void
 rb_shell_hidden_notify (RBShell *shell,
 			guint timeout,
 			const char *primary,
 			GtkWidget *icon,
-			const char *secondary)
+			const char *secondary,
+			gboolean requested)
 {
 
 	if (rb_shell_get_visibility (shell)) {
@@ -2854,8 +2938,11 @@ rb_shell_hidden_notify (RBShell *shell,
 	}
 
 	rb_tray_icon_notify (shell->priv->tray_icon,
-			     timeout, primary,
-			     icon, secondary);
+			     timeout,
+			     primary,
+			     icon,
+			     secondary,
+			     requested);
 }
 
 static void

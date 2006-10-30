@@ -94,7 +94,6 @@ static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_ui_actions (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
@@ -113,22 +112,9 @@ static void stations_view_drag_data_received_cb (GtkWidget *widget,
 static void rb_iradio_source_cmd_new_station (GtkAction *action,
 					      RBIRadioSource *source);
 
-static void playing_entry_changed_cb (RBShellPlayer *player,
-				      RhythmDBEntry *entry,
-				      RBIRadioSource *iradio_source);
 static void playing_source_changed_cb (RBShellPlayer *player,
 				       RBSource *source,
 				       RBIRadioSource *iradio_source);
-static GValue * streaming_title_request_cb (RhythmDB *db,
-					    RhythmDBEntry *entry,
-					    RBIRadioSource *source);
-static GValue * streaming_artist_request_cb (RhythmDB *db,
-					     RhythmDBEntry *entry,
-					     RBIRadioSource *source);
-static void extra_metadata_gather_cb (RhythmDB *db,
-				      RhythmDBEntry *entry,
-				      GHashTable *data,
-				      RBIRadioSource *source);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
@@ -154,7 +140,6 @@ struct RBIRadioSourcePrivate
 	gboolean setting_new_query;
 
 	gboolean initialized;
-	gboolean is_playing;
 
 	char *search_text;
 	char *selected_genre;
@@ -164,12 +149,8 @@ struct RBIRadioSourcePrivate
 	gboolean firstrun_done;
 
 	RBShellPlayer *player;
-	char *streaming_title;
-	char *streaming_artist;
 
-	gint buffering_id;
 	gint info_available_id;
-	guint buffering;
 
 	gboolean dispose_has_run;
 };
@@ -188,7 +169,7 @@ static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "_NETSCAPE_URL", 0, 1 },
 };
 
-G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_SOURCE)
+G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_STREAMING_SOURCE)
 
 static void
 rb_iradio_source_class_init (RBIRadioSourceClass *klass)
@@ -213,11 +194,9 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
-	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_search = impl_search;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
 
@@ -321,22 +300,6 @@ rb_iradio_source_constructor (GType type,
 		      NULL);
 	g_object_unref (shell);
 
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-request::" RHYTHMDB_PROP_STREAM_SONG_TITLE,
-				 G_CALLBACK (streaming_title_request_cb),
-				 source, 0);
-
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-request::" RHYTHMDB_PROP_STREAM_SONG_ARTIST,
-				 G_CALLBACK (streaming_artist_request_cb),
-				 source, 0);
-
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-gather",
-				 G_CALLBACK (extra_metadata_gather_cb),
-				 source, 0);
-
-
 	source->priv->action_group = _rb_source_register_action_group (RB_SOURCE (source),
 								       "IRadioActions",
 								       rb_iradio_source_actions,
@@ -419,9 +382,6 @@ rb_iradio_source_constructor (GType type,
 
 	g_signal_connect_object (source->priv->player, "playing-source-changed",
 				 G_CALLBACK (playing_source_changed_cb),
-				 source, 0);
-	g_signal_connect_object (source->priv->player, "playing-song-changed",
-				 G_CALLBACK (playing_entry_changed_cb),
 				 source, 0);
 
 	rb_iradio_source_do_query (source);
@@ -597,45 +557,6 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->stations;
 }
 
-static RBSourceEOFType
-impl_handle_eos (RBSource *asource)
-{
-	return RB_SOURCE_EOF_RETRY;
-}
-
-#if 0
-struct RBIRadioAsyncPlayStatisticsData
-{
-	RBIRadioSource *source;
-	RhythmDBEntry *entry;
-};
-
-static gboolean
-rb_iradio_source_async_update_play_statistics (gpointer data)
-{
-	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
-	RhythmDBEntry *playing_entry;
-
-	rb_debug ("entering async handler");
-
-	GDK_THREADS_ENTER ();
-
-	playing_entry = rb_entry_view_get_playing_entry (source->priv->stations);
-	rb_debug ("async updating play statistics, entry: %p playing entry: %p",
-		  source->priv->async_update_entry, playing_entry);
-	if (source->priv->async_update_entry == playing_entry)
-		rb_source_update_play_statistics (RB_SOURCE (source),
-						  source->priv->db,
-						  source->priv->async_update_entry);
-	rhythmdb_entry_unref (source->priv->db, source->priv->async_update_entry);
-	source->priv->async_update_entry = NULL;
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-#endif
-
 static void
 impl_get_status (RBSource *asource,
 		 char **text,
@@ -653,13 +574,7 @@ impl_get_status (RBSource *asource,
 	*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
 				 num_entries);
 
-	*progress = 0.0;
-	if (source->priv->buffering == -1) {
-		*progress_text = g_strdup (_("Connecting"));
-	} else if (source->priv->buffering > 0) {
-		*progress = ((float)source->priv->buffering)/100;
-		*progress_text = g_strdup (_("Buffering"));
-	}
+	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
 }
 
 static char *
@@ -1095,21 +1010,6 @@ rb_iradio_source_cmd_new_station (GtkAction *action,
 	gtk_widget_destroy (dialog);
 }
 
-static void
-buffering_cb (GObject *backend, guint progress, RBIRadioSource *source)
-{
-	if (progress == 0)
-		return;
-
-	if (progress == 100)
-		progress = 0;
-
-	GDK_THREADS_ENTER ();
-	source->priv->buffering = progress;
-	rb_source_notify_status_changed (RB_SOURCE (source));
-	GDK_THREADS_LEAVE ();
-}
-
 static gboolean
 check_entry_type (RBIRadioSource *source, RhythmDBEntry *entry)
 {
@@ -1122,73 +1022,6 @@ check_entry_type (RBIRadioSource *source, RhythmDBEntry *entry)
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	return matches;
-}
-
-static GValue *
-streaming_title_request_cb (RhythmDB *db,
-			    RhythmDBEntry *entry,
-			    RBIRadioSource *source)
-{
-	GValue *value;
-	if (check_entry_type (source, entry) == FALSE ||
-	    entry != rb_shell_player_get_playing_entry (source->priv->player) ||
-	    source->priv->streaming_title == NULL)
-		return NULL;
-
-	rb_debug ("returning streaming title \"%s\" to extra metadata request", source->priv->streaming_title);
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_TYPE_STRING);
-	g_value_set_string (value, source->priv->streaming_title);
-	return value;
-}
-
-static GValue *
-streaming_artist_request_cb (RhythmDB *db,
-			     RhythmDBEntry *entry,
-			     RBIRadioSource *source)
-{
-	GValue *value;
-
-	if (check_entry_type (source, entry) == FALSE ||
-	    entry != rb_shell_player_get_playing_entry (source->priv->player) ||
-	    source->priv->streaming_artist == NULL)
-		return NULL;
-
-	rb_debug ("returning streaming artist \"%s\" to extra metadata request", source->priv->streaming_artist);
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_TYPE_STRING);
-	g_value_set_string (value, source->priv->streaming_artist);
-	return value;
-}
-
-static void
-extra_metadata_gather_cb (RhythmDB *db,
-			  RhythmDBEntry *entry,
-			  GHashTable *data,
-			  RBIRadioSource *source)
-{
-	/* our extra metadata only applies to the playing entry */
-	if (entry != rb_shell_player_get_playing_entry (source->priv->player) ||
-	    check_entry_type (source, entry) == FALSE)
-		return;
-
-	if (source->priv->streaming_title != NULL) {
-		GValue *value;
-
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_title);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_TITLE), value);
-	}
-
-	if (source->priv->streaming_artist != NULL) {
-		GValue *value;
-
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_artist);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_ARTIST), value);
-	}
 }
 
 static void
@@ -1236,40 +1069,12 @@ info_available_cb (RBPlayer *backend,
 		/* streaming song information */
 	case RB_METADATA_FIELD_TITLE:
 	{
-		if ((!str && source->priv->streaming_title)
-		    || !source->priv->streaming_title
-		    || strcmp (str, source->priv->streaming_title)) {
-
-			g_free (source->priv->streaming_title);
-			source->priv->streaming_title = str;
-			rb_debug ("got streaming song title \"%s\"", str);
-
-			rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-								   entry,
-								   RHYTHMDB_PROP_STREAM_SONG_TITLE,
-								   value);
-		} else {
-			g_free (str);
-		}
+		rb_streaming_source_set_streaming_title (RB_STREAMING_SOURCE (source), str);
 		break;
 	}
 	case RB_METADATA_FIELD_ARTIST:
 	{
-		if ((!str && source->priv->streaming_artist)
-		    || !source->priv->streaming_artist
-		    || strcmp (str, source->priv->streaming_artist)) {
-
-			g_free (source->priv->streaming_artist);
-			source->priv->streaming_artist = str;
-			rb_debug ("got streaming song artist \"%s\"", str);
-
-			rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-								   entry,
-								   RHYTHMDB_PROP_STREAM_SONG_ARTIST,
-								   value);
-		} else {
-			g_free (str);
-		}
+		rb_streaming_source_set_streaming_artist (RB_STREAMING_SOURCE (source), str);
 		break;
 	}
 
@@ -1293,14 +1098,8 @@ info_available_cb (RBPlayer *backend,
 	}
 	case RB_METADATA_FIELD_COMMENT:
 	{
-		const char *name = g_value_get_string (value);
 		const char *existing;
 		const char *location;
-
-		if (!g_utf8_validate (name, -1, NULL)) {
-			g_warning ("Invalid UTF-8 from internet radio: %s", name);
-			goto out_unlock;
-		}
 
 		/* check if the db entry already has a title; if so, don't change it.
 		 * consider title==URI to be the same as no title, since that's what
@@ -1314,10 +1113,10 @@ info_available_cb (RBPlayer *backend,
 		    (strcmp (existing, "") == 0) ||
 		    (strcmp (existing, location) == 0)) {
 			entry_field = RHYTHMDB_PROP_TITLE;
-			rb_debug ("setting title of iradio station to %s", name);
+			rb_debug ("setting title of iradio station to %s", str);
 			set_field = TRUE;
 		} else {
-			rb_debug ("iradio station already has title: %s; ignoring %s", existing, name);
+			rb_debug ("iradio station already has title: %s; ignoring %s", existing, str);
 		}
 		break;
 	}
@@ -1343,27 +1142,10 @@ info_available_cb (RBPlayer *backend,
 		rhythmdb_entry_set (source->priv->db, entry, entry_field, value);
 		rhythmdb_commit (source->priv->db);
 	}
+
+	g_free (str);
  out_unlock:
 	GDK_THREADS_LEAVE ();
-}
-
-static void
-playing_entry_changed_cb (RBShellPlayer *player,
-			  RhythmDBEntry *entry,
-			  RBIRadioSource *iradio_source)
-{
-	g_free (iradio_source->priv->streaming_title);
-	g_free (iradio_source->priv->streaming_artist);
-	iradio_source->priv->streaming_title = NULL;
-	iradio_source->priv->streaming_artist = NULL;
-
-	if (check_entry_type (iradio_source, entry) == FALSE) {
-		iradio_source->priv->buffering = 0;
-	} else {
-		rb_debug ("playing new stream; resetting buffering");
-		iradio_source->priv->buffering = -1;
-	}
-	rb_source_notify_status_changed (RB_SOURCE (iradio_source));
 }
 
 static void
@@ -1375,41 +1157,17 @@ playing_source_changed_cb (RBShellPlayer *player,
 
 	g_object_get (player, "player", &backend, NULL);
 
-	if (source == RB_SOURCE (iradio_source)) {
-		iradio_source->priv->is_playing = TRUE;
-
-		rb_debug ("connecting buffering and info-available signal handlers");
-		if (iradio_source->priv->buffering_id == 0) {
-			iradio_source->priv->buffering_id =
-				g_signal_connect_object (backend, "buffering",
-							 G_CALLBACK (buffering_cb),
-							 iradio_source, 0);
-		}
-		if (iradio_source->priv->info_available_id == 0) {
-			iradio_source->priv->info_available_id =
-				g_signal_connect_object (backend, "info",
-							 G_CALLBACK (info_available_cb),
-							 iradio_source, 0);
-		}
-		/* display 'connecting' status until we get a buffering message */
-		iradio_source->priv->buffering = -1;
-		rb_source_notify_status_changed (RB_SOURCE (iradio_source));
-	} else if (iradio_source->priv->is_playing) {
-		iradio_source->priv->is_playing = FALSE;
-
-		rb_debug ("disconnecting buffering and info-available signal handlers");
-		if (iradio_source->priv->buffering_id) {
-			g_signal_handler_disconnect (backend,
-						     iradio_source->priv->buffering_id);
-			iradio_source->priv->buffering_id = 0;
-		}
-		if (iradio_source->priv->info_available_id) {
-			g_signal_handler_disconnect (backend,
-						     iradio_source->priv->info_available_id);
-			iradio_source->priv->info_available_id = 0;
-		}
-		iradio_source->priv->buffering = 0;
-		rb_source_notify_status_changed (RB_SOURCE (iradio_source));
+	if (source == RB_SOURCE (iradio_source) && (iradio_source->priv->info_available_id == 0)) {
+		rb_debug ("connecting info-available signal handler");
+		iradio_source->priv->info_available_id =
+			g_signal_connect_object (backend, "info",
+						 G_CALLBACK (info_available_cb),
+						 iradio_source, 0);
+	} else if (iradio_source->priv->info_available_id) {
+		rb_debug ("disconnecting info-available signal handler");
+		g_signal_handler_disconnect (backend,
+					     iradio_source->priv->info_available_id);
+		iradio_source->priv->info_available_id = 0;
 	}
 
 	g_object_unref (backend);

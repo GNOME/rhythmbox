@@ -23,7 +23,7 @@
 #define __RB_LASTFM_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-source.h"
+#include "rb-streaming-source.h"
 
 G_BEGIN_DECLS
 
@@ -38,23 +38,20 @@ typedef struct RBLastfmSourcePrivate RBLastfmSourcePrivate;
 
 typedef struct
 {
-	RBSource parent;
+	RBStreamingSource parent;
 
 	RBLastfmSourcePrivate *priv;
 } RBLastfmSource;
 
 typedef struct
 {
-	RBSourceClass parent;
+	RBStreamingSourceClass parent;
 } RBLastfmSourceClass;
 
 GType		rb_lastfm_source_get_type	(void);
 GType           rb_lastfm_source_register_type    (GTypeModule *module);
 
 RBSource *	rb_lastfm_source_new		(RBShell *shell);
-
-void	lastfm_set_stream_URL 	(gchar URL);
-
 
 G_END_DECLS
 

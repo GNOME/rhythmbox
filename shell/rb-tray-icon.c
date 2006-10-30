@@ -516,13 +516,14 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 		     guint timeout,
 		     const char *primary,
 		     GtkWidget *msgicon,
-		     const char *secondary)
+		     const char *secondary,
+		     gboolean requested)
 {
 	if (!egg_tray_icon_have_manager (EGG_TRAY_ICON (icon))) {
 		rb_debug ("not showing notification: %s", primary);
 		return;
 	}
-	if (!icon->priv->show_notifications) {
+	if ((requested || icon->priv->show_notifications) == FALSE) {
 		rb_debug ("ignoring notification: %s", primary);
 		return;
 	}

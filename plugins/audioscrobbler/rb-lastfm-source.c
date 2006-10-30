@@ -120,7 +120,6 @@ static void impl_delete (RBSource *asource);
 static GList *impl_get_ui_actions (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *asource);
 static void impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress);
-static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static void impl_activate (RBSource *source);
 
@@ -130,26 +129,11 @@ static void rb_lastfm_source_love_track (GtkAction *action, RBLastfmSource *sour
 static void rb_lastfm_source_ban_track (GtkAction *action, RBLastfmSource *source);
 static char *rb_lastfm_source_title_from_uri (char *uri);
 static void rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data);
+static void rb_lastfm_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry, RBLastfmSource *source);
 
 static void rb_lastfm_source_new_song_cb (GObject *player_backend, gpointer data, RBLastfmSource *source);
 static void rb_lastfm_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBLastfmSource *source);
 
-static GValue *streaming_title_request_cb (RhythmDB *db,
-					   RhythmDBEntry *entry,
-					   RBLastfmSource *source);
-static GValue *streaming_album_request_cb (RhythmDB *db,
-					   RhythmDBEntry *entry,
-					   RBLastfmSource *source);
-static GValue *streaming_artist_request_cb (RhythmDB *db,
-					    RhythmDBEntry *entry,
-					    RBLastfmSource *source);
-static void extra_metadata_gather_cb (RhythmDB *db,
-				      RhythmDBEntry *entry,
-				      GHashTable *data,
-				      RBLastfmSource *source);
-static void playing_source_changed_cb (RBShellPlayer *player,
-				       RBSource *source,
-				       RBLastfmSource *lastfm_source);
 #ifdef HAVE_GSTREAMER_0_10
 /* can't be bothered creating a whole header file just for this: */
 GType rb_lastfm_src_get_type (void);
@@ -186,9 +170,6 @@ struct RBLastfmSourcePrivate
 	gboolean connected;
 
 	/*RhythmDBEntry *pending_entry;*/
-	char *streaming_title;
-	char *streaming_artist;
-	char *streaming_album;
 
 	enum {
 		OK = 0,
@@ -200,12 +181,9 @@ struct RBLastfmSourcePrivate
 
 	SoupSession *soup_session;
 	RBProxyConfig *proxy_config;
-
-	gint buffering_id;
-	guint buffering;
 };
 
-G_DEFINE_TYPE (RBLastfmSource, rb_lastfm_source, RB_TYPE_SOURCE);
+G_DEFINE_TYPE (RBLastfmSource, rb_lastfm_source, RB_TYPE_STREAMING_SOURCE);
 #define RB_LASTFM_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LASTFM_SOURCE, RBLastfmSourcePrivate))
 
 enum
@@ -253,10 +231,8 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
-	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_activate = impl_activate;
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -321,10 +297,6 @@ rb_lastfm_source_finalize (GObject *object)
 		source->priv->db = NULL;
 	}
 
-	g_free (source->priv->streaming_title);
-	g_free (source->priv->streaming_artist);
-	g_free (source->priv->streaming_album);
-
 	g_object_unref (G_OBJECT (source->priv->proxy_config));
 
 	G_OBJECT_CLASS (rb_lastfm_source_parent_class)->finalize (object);
@@ -350,6 +322,11 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 		      "shell-player", &source->priv->shell_player,
 		      NULL);
 	g_object_unref (G_OBJECT (shell));
+
+	g_signal_connect_object (source->priv->db,
+				 "entry-added",
+				 G_CALLBACK (rb_lastfm_source_entry_added_cb),
+				 source, 0);
 
 	/* Set up station tuner */
 	/*source->priv->tuner = gtk_vbox_new (FALSE, 5); */
@@ -391,8 +368,7 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 						    G_OBJECT (source->priv->shell_player),
 						    NULL,
 						    FALSE, FALSE);
-	/*rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);*/
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE, TRUE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING, TRUE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, TRUE);
 	g_signal_connect_object (G_OBJECT (source->priv->stations),
@@ -438,36 +414,12 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 
 	rb_lastfm_source_do_query (source);
 
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-request::" RHYTHMDB_PROP_STREAM_SONG_TITLE,
-				 G_CALLBACK (streaming_title_request_cb),
-				 source, 0);
-
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-request::" RHYTHMDB_PROP_STREAM_SONG_ARTIST,
-				 G_CALLBACK (streaming_artist_request_cb),
-				 source, 0);
-
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-request::" RHYTHMDB_PROP_STREAM_SONG_ALBUM,
-				 G_CALLBACK (streaming_album_request_cb),
-				 source, 0);
-
-	g_signal_connect_object (G_OBJECT (source->priv->db),
-				 "entry-extra-metadata-gather",
-				 G_CALLBACK (extra_metadata_gather_cb),
-				 source, 0);
-
 	g_object_get (source->priv->shell_player, "player", &player_backend, NULL);
 	g_signal_connect_object (player_backend,
 				 "event::rb-lastfm-new-song",
 				 G_CALLBACK (rb_lastfm_source_new_song_cb),
 				 source,
 				 0);
-	source->priv->buffering = -1;
-	g_signal_connect_object (source->priv->shell_player, "playing-source-changed",
-				 G_CALLBACK (playing_source_changed_cb),
-				 source, 0);
 
 	return G_OBJECT (source);
 }
@@ -616,49 +568,39 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->stations;
 }
 
-static RBSourceEOFType
-impl_handle_eos (RBSource *asource)
-{
-	return RB_SOURCE_EOF_RETRY;
-}
-
 static void
 impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress)
 {
 	RBLastfmSource *source = RB_LASTFM_SOURCE (asource);
 
-	if (source->priv->buffering != -1) {
-		*progress = ((float)source->priv->buffering)/100;
-		*text = g_strdup (_("Buffering")); 
-	} else {
-		switch (source->priv->status) {
-		case NO_ARTIST:
-			*text = g_strdup (_("No such artist.  Check your spelling"));
+	switch (source->priv->status) {
+	case NO_ARTIST:
+		*text = g_strdup (_("No such artist.  Check your spelling"));
+		break;
+
+	case FAILED:
+		*text = g_strdup (_("Handshake failed"));
+		break;
+
+	case BANNED:
+		*text = g_strdup (_("The server marked you as banned"));
+		break;
+
+	case COMMUNICATING:
+	case OK:
+		{
+			RhythmDBQueryModel *model;
+			guint num_entries;
+
+			g_object_get (asource, "query-model", &model, NULL);
+			num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
+			g_object_unref (model);
+
+			*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries), num_entries);
 			break;
-
-		case FAILED:
-			*text = g_strdup (_("Handshake failed"));
-			break;
-
-		case BANNED:
-			*text = g_strdup (_("The server marked you as banned"));
-			break;
-
-		case COMMUNICATING:
-		case OK:
-			{
-				RhythmDBQueryModel *model;
-				guint num_entries;
-
-				g_object_get (asource, "query-model", &model, NULL);
-				num_entries = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
-				g_object_unref (model);
-	
-				*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries), num_entries);
-				break;
-			}
 		}
 	}
+	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
 }
 
 static void
@@ -907,10 +849,8 @@ rb_lastfm_message_cb (SoupMessage *req, gpointer user_data)
 
 			if (entry == NULL) {
 				entry = rhythmdb_entry_new (source->priv->db, source->priv->entry_type, data[1]);
-				rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &titlestring);
-			} else {
-				rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &titlestring);
 			}
+			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &titlestring);
 			g_value_unset (&titlestring);
 			rhythmdb_commit (source->priv->db);
 
@@ -986,7 +926,7 @@ rb_lastfm_source_new_station (char *uri, char *title, RBLastfmSource *source)
 	entry = rhythmdb_entry_new (source->priv->db, source->priv->entry_type, uri);
 	g_value_init (&v, G_TYPE_STRING);
 	g_value_set_string (&v, title);
-	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &v);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &v);
 	g_value_unset (&v);
 
 	g_value_init (&v, G_TYPE_DOUBLE);
@@ -1100,7 +1040,7 @@ rb_lastfm_source_title_from_uri (char *uri)
 			if (strcmp (data[4], "similarartists") == 0)
 				title = g_strdup_printf (_("Artists similar to %s"), data[3]);
 			if (strcmp (data[4], "fans") == 0)
-				title = g_strdup_printf (_("Artists Liked by fans of %s"), data[3]);
+				title = g_strdup_printf (_("Artists liked by fans of %s"), data[3]);
 		}
 
 	}
@@ -1121,6 +1061,42 @@ rb_lastfm_source_title_from_uri (char *uri)
 	unesc_title = gnome_vfs_unescape_string (title, NULL);
 	g_free (title);
 	return unesc_title;
+}
+
+static void
+rb_lastfm_source_entry_added_cb (RhythmDB *db,
+				 RhythmDBEntry *entry,
+				 RBLastfmSource *source)
+{
+	const char *title;
+	const char *genre;
+	GValue v = {0,};
+
+	if (rhythmdb_entry_get_entry_type (entry) != source->priv->entry_type)
+		return;
+
+	/* move station name from genre to title */
+
+	title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+	if (title != NULL && title[0] != '\0')
+		return;
+
+	genre = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
+	if (genre == NULL || genre[0] == '\0')
+		return;
+
+	g_value_init (&v, G_TYPE_STRING);
+	g_value_set_string (&v, genre);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &v);
+	g_value_unset (&v);
+
+	g_value_init (&v, G_TYPE_STRING);
+	g_value_set_string (&v, "");
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &v);
+	g_value_unset (&v);
+
+	/* recursive commit?  really? */
+	rhythmdb_commit (source->priv->db);
 }
 
 static void
@@ -1170,7 +1146,6 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 
 	for (p = 0; pieces[p] != NULL; p++) {
 		gchar **values;
-		GValue v = {0,};
 
 		values = g_strsplit (pieces[p], "=", 2);
 		if (strcmp (values[0], "station") == 0) {
@@ -1179,41 +1154,13 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 		} else if (strcmp (values[0], "stationfeed_url") == 0) {
 		} else if (strcmp (values[0], "artist") == 0) {
 			rb_debug ("artist -> %s", values[1]);
-			g_free (source->priv->streaming_artist);
-			source->priv->streaming_artist = g_strdup (values[1]);
-
-			g_value_init (&v, G_TYPE_STRING);
-			g_value_set_string (&v, values[1]);
-			rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-								   entry,
-								   RHYTHMDB_PROP_STREAM_SONG_ARTIST,
-								   &v);
-			g_value_unset (&v);
+			rb_streaming_source_set_streaming_artist (RB_STREAMING_SOURCE (source), values[1]);
 		} else if (strcmp (values[0], "album") == 0) {
 			rb_debug ("album -> %s", values[1]);
-			g_free (source->priv->streaming_album);
-			source->priv->streaming_album = g_strdup (values[1]);
-
-			g_value_init (&v, G_TYPE_STRING);
-			g_value_set_string (&v, values[1]);
-			rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-								   entry,
-								   RHYTHMDB_PROP_STREAM_SONG_ALBUM,
-								   &v);
-			g_value_unset (&v);
+			rb_streaming_source_set_streaming_album (RB_STREAMING_SOURCE (source), values[1]);
 		} else if (strcmp (values[0], "track") == 0) {
 			rb_debug ("track -> %s", values[1]);
-
-			g_free (source->priv->streaming_title);
-			source->priv->streaming_title = g_strdup (values[1]);
-
-			g_value_init (&v, G_TYPE_STRING);
-			g_value_set_string (&v, values[1]);
-			rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
-								   entry,
-								   RHYTHMDB_PROP_STREAM_SONG_TITLE,
-								   &v);
-			g_value_unset (&v);
+			rb_streaming_source_set_streaming_title (RB_STREAMING_SOURCE (source), values[1]);
 		} else if (strcmp (values[0], "albumcover_small") == 0) {
 		} else if (strcmp (values[0], "albumcover_medium") == 0) {
 		} else if (strcmp (values[0], "albumcover_large") == 0) {
@@ -1274,13 +1221,6 @@ rb_lastfm_song_changed_cb (RBShellPlayer *player,
 {
 	const char *location;
 
-	g_free (source->priv->streaming_title);
-	g_free (source->priv->streaming_album);
-	g_free (source->priv->streaming_artist);
-	source->priv->streaming_title = NULL;
-	source->priv->streaming_album = NULL;
-	source->priv->streaming_artist = NULL;
-
 	if (check_entry_type (source, entry)) {
 		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		/* this bit doesn't work */
@@ -1300,153 +1240,9 @@ rb_lastfm_song_changed_cb (RBShellPlayer *player,
 	}
 }
 
-static GValue *
-streaming_title_request_cb (RhythmDB *db,
-			    RhythmDBEntry *entry,
-			    RBLastfmSource *source)
-{
-	GValue *value;
-	if (check_entry_type (source, entry) == FALSE ||
-	    entry != rb_shell_player_get_playing_entry (source->priv->shell_player) ||
-	    source->priv->streaming_title == NULL)
-		return NULL;
-
-	rb_debug ("returning streaming title \"%s\" to extra metadata request", source->priv->streaming_title);
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_TYPE_STRING);
-	g_value_set_string (value, source->priv->streaming_title);
-	return value;
-}
-
-static GValue *
-streaming_artist_request_cb (RhythmDB *db,
-			     RhythmDBEntry *entry,
-			     RBLastfmSource *source)
-{
-	GValue *value;
-
-	if (check_entry_type (source, entry) == FALSE ||
-	    entry != rb_shell_player_get_playing_entry (source->priv->shell_player) ||
-	    source->priv->streaming_artist == NULL)
-		return NULL;
-
-	rb_debug ("returning streaming artist \"%s\" to extra metadata request", source->priv->streaming_artist);
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_TYPE_STRING);
-	g_value_set_string (value, source->priv->streaming_artist);
-	return value;
-}
-
-static GValue *
-streaming_album_request_cb (RhythmDB *db,
-			    RhythmDBEntry *entry,
-			    RBLastfmSource *source)
-{
-	GValue *value;
-
-	if (check_entry_type (source, entry) == FALSE ||
-	    entry != rb_shell_player_get_playing_entry (source->priv->shell_player) ||
-	    source->priv->streaming_artist == NULL)
-		return NULL;
-
-	rb_debug ("returning streaming album \"%s\" to extra metadata request", source->priv->streaming_album);
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_TYPE_STRING);
-	g_value_set_string (value, source->priv->streaming_album);
-	return value;
-}
-
-static void
-extra_metadata_gather_cb (RhythmDB *db,
-			  RhythmDBEntry *entry,
-			  GHashTable *data,
-			  RBLastfmSource *source)
-{
-	/* our extra metadata only applies to the playing entry */
-	if (entry != rb_shell_player_get_playing_entry (source->priv->shell_player) ||
-	    check_entry_type (source, entry) == FALSE)
-		return;
-
-	if (source->priv->streaming_title != NULL) {
-		GValue *value;
-
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_title);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_TITLE), value);
-	}
-
-	if (source->priv->streaming_artist != NULL) {
-		GValue *value;
-
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_artist);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_ARTIST), value);
-	}
-
-	if (source->priv->streaming_album != NULL) {
-		GValue *value;
-
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_album);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_ALBUM), value);
-	}
-}
-
 static void
 impl_activate (RBSource *source)
 {
 	rb_lastfm_source_do_handshake (RB_LASTFM_SOURCE (source));
-}
-
-static void
-buffering_cb (GObject *backend, guint progress, RBLastfmSource *source)
-{
-	if (progress == 0)
-		return;
-
-	if (progress == 100)
-		progress = 0;
-
-	rb_debug ("buffer at %d%%", progress);
-
-	GDK_THREADS_ENTER ();
-	source->priv->buffering = progress;
-	rb_source_notify_status_changed (RB_SOURCE (source));
-	GDK_THREADS_LEAVE ();
-}
-
-static void
-playing_source_changed_cb (RBShellPlayer *player,
-			   RBSource *source,
-			   RBLastfmSource *lastfm_source)
-{
-	GObject *backend;
-
-	g_object_get (player, "player", &backend, NULL);
-
-	if (source == RB_SOURCE (lastfm_source)) {
-		rb_debug ("connecting buffering signal handler");
-		if (lastfm_source->priv->buffering_id == 0) {
-			lastfm_source->priv->buffering_id =
-				g_signal_connect_object (backend, "buffering",
-							 G_CALLBACK (buffering_cb),
-							 lastfm_source, 0);
-		}
-		/* display 'connecting' status until we get a buffering message */
-		lastfm_source->priv->buffering = -1;
-		rb_source_notify_status_changed (RB_SOURCE (lastfm_source));
-	} else if (lastfm_source->priv->buffering_id > 0) {
-		rb_debug ("disconnecting buffering signal handler");
-		g_signal_handler_disconnect (backend, lastfm_source->priv->buffering_id);
-		lastfm_source->priv->buffering_id = 0;
-
-		lastfm_source->priv->buffering = -1;
-		rb_source_notify_status_changed (RB_SOURCE (lastfm_source));
-	}
-
-	g_object_unref (backend);
 }
 

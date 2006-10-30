@@ -322,6 +322,17 @@
     '("const-char*" "primary")
     '("GtkWidget*" "icon")
     '("const-char*" "secondary")
+    '("gboolean" "requested")
+  )
+)
+
+(define-method notify_playing_entry
+  (of-object "RBShell")
+  (c-name "rb_shell_notify_playing_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("gboolean" "requested")
   )
 )
 

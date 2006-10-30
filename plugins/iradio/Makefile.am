@@ -14,7 +14,8 @@ libiradio_la_SOURCES = \
 
 libiradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libiradio_la_LIBADD = 					\
-	$(top_builddir)/lib/librb.la
+	$(top_builddir)/lib/librb.la			\
+	$(top_builddir)/sources/libsources.la
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
