@@ -132,6 +132,8 @@ class PythonConsole(gtk.ScrolledWindow):
 
 		self.destroy_cb = destroy_cb
 
+		self.block_command = False
+
 		# Init first line
 		buffer.create_mark("input-line", buffer.get_end_iter(), True)
 		buffer.insert(buffer.get_end_iter(), ">>> ")
@@ -202,14 +204,26 @@ class PythonConsole(gtk.ScrolledWindow):
 			buffer.apply_tag(self.command, lin, cur)
 			buffer.insert(cur, "\n")
 			
-			# Eval the command
-			self.__run(self.current_command)
-			self.current_command = ''
+			cur_strip = self.current_command.rstrip()
+
+			if cur_strip.endswith(":") \
+			or (self.current_command[-2:] != "\n\n" and self.block_command):
+				# Unfinished block command
+				self.block_command = True
+				com_mark = "... "
+			elif cur_strip.endswith("\\"):
+				com_mark = "... "
+			else:
+				# Eval the command
+				self.__run(self.current_command)
+				self.current_command = ''
+				self.block_command = False
+				com_mark = ">>> "
 
 			# Prepare the new line
 			cur = buffer.get_end_iter()
 			buffer.move_mark(lin_mark, cur)
-			buffer.insert(cur, ">>> ")
+			buffer.insert(cur, com_mark)
 			cur = buffer.get_end_iter()
 			buffer.move_mark(inp_mark, cur)
 			buffer.place_cursor(cur)
