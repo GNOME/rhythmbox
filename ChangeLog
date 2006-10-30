@@ -1,3 +1,10 @@
+2006-10-30  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-shell-clipboard.c: remove the Control-T shortcut from
+	move-to-trash, since there have been reports of people accidently
+	deleting tracks and it probably isn't a common enough operation to be
+	worth a shortcut.
+
 2006-10-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst.c:
