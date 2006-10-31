@@ -6,7 +6,7 @@ libaudiocd_la_SOURCES =					\
 	../../sources/rb-audiocd-source.c		\
 	../../sources/rb-audiocd-source.h
 
-libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) $(LIBNAUTILUS_BURN_LIBS)
+libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) $(LIBNAUTILUS_BURN_LIBS) $(MUSICBRAINZ_LIBS)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
