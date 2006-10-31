@@ -279,12 +279,12 @@ if test x"$enable_ipod_writing" != xno; then
       if test "x$enable_ipod_writing" = xyes; then
          AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
       fi
-      enable_ipod_writing = no
+      enable_ipod_writing=no
    elif test "x$with_track_transfer" != xyes; then
       if test "x$enable_ipod_writing" = xyes; then
          AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
       fi
-      enable_ipod_writing = no
+      enable_ipod_writing=no
    else
       AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
    fi
