@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-31 07:05+0300\n"
-"PO-Revision-Date: 2006-10-31 07:06+0300\n"
+"POT-Creation-Date: 2006-10-31 19:34+0300\n"
+"PO-Revision-Date: 2006-10-31 19:37+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -678,8 +678,8 @@ msgstr "Viimeksi lisätyt"
 msgid "Recently Played"
 msgstr "Viimeksi soitetut"
 
-#: ../data/rhythmbox.desktop.in.in.h:1 ../shell/rb-shell.c:1014
-#: ../shell/rb-shell.c:2015
+#: ../data/rhythmbox.desktop.in.in.h:1 ../shell/rb-shell.c:1015
+#: ../shell/rb-shell.c:2019
 msgid "Music Player"
 msgstr "Musiikkisoitin"
 
@@ -972,20 +972,20 @@ msgid "There was an error writing to the CD"
 msgstr "Virhe kirjoitettaessa CD-levylle"
 
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
-msgid "Art Display"
-msgstr "Kansikuvien näyttäminen"
+msgid "Cover art"
+msgstr "Kansikuvat"
 
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
-msgid "Displays art for the playing track"
-msgstr "Näyttää levyn kansikuvan soivalle kappaleelle"
+msgid "Fetch album covers from the Internet"
+msgstr "Hae levyjen kansikuvia Internetistä"
 
 #: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
-msgid "Audio CD"
-msgstr "Ääni-CD"
+msgid "Audio CD Player"
+msgstr "Ääni-CD-soitin"
 
 #: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
-msgid "Support for audio CDs"
-msgstr "Tuki ääni-CD-levyille"
+msgid "Support for playing of audio CDs as music source"
+msgstr "Tukee Ääni-CD-levyjen soittamista äänilähteenä"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm"
@@ -1052,32 +1052,28 @@ msgid "Unable to create audio CD"
 msgstr "CD-levyä ei voi kirjoittaa"
 
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
-msgid "CD Recorder"
-msgstr "CD-kirjoitin"
+msgid "Audio CD Recorder"
+msgstr "Ääni-CD-kirjoitin"
 
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
 msgid "Support for recording audio CDs from playlists"
-msgstr "Luo CD-levyjä soittolistasta"
+msgstr "Tukee Ääni-CD-levyjen kirjoittamista soittolistoista"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
-msgid "Generic Audio Player"
-msgstr "Yleiset musiikkisoittimet"
+msgid "Portable Players"
+msgstr "Kannettavat soittimet"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:2
-msgid "Support for generic audio player devices (and PSP and Nokia 770)"
+msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Tuki yleisille musiikkisoittimille, PSP:lle ja Nokia N770:lle"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:1
-msgid ""
-"Adds iPod support to Rhythmbox so that it can show an iPod content, and play "
-"from there"
-msgstr ""
-"Lisää Rhythmboxiin tuen iPodille, jolloin iPodin sisältöä voidaan näyttää ja "
-"soittaa ohjelmasta"
+msgid "Portable Players - iPod"
+msgstr "Kannettavat soittimet - iPod"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
-msgid "iPod support"
-msgstr "iPod-tuki"
+msgid "Support for Apple iPod devices (show the content, play from device)"
+msgstr "Tuki Applen iPodeille (näytä sisältö ja soita laitteelta)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:85 ../shell/rb-playlist-manager.c:144
 msgid "_Rename"
@@ -1100,7 +1096,6 @@ msgid "Searching for lyrics..."
 msgstr "Etsitään sanoituksia..."
 
 #: ../plugins/lyrics/lyrics.py:94
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
 msgid "Lyrics"
 msgstr "Sanoitukset"
 
@@ -1117,8 +1112,12 @@ msgid "Display lyrics for the playing song"
 msgstr "Näytä soivan kappaleen sanoituksia"
 
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
-msgid "Displays song lyrics"
-msgstr "Näytä kappaleiden sanoituksia"
+msgid "Fetch song lyrics from the Internet"
+msgstr "Hae kappaleiden sanoituksia Internetistä"
+
+#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+msgid "Song Lyrics"
+msgstr "Kappaleen sanoitukset"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:1
 msgid "<b>Magnatune online music store</b>"
@@ -1466,12 +1465,12 @@ msgid "Python Source"
 msgstr "Python-lähdekoodi"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
-msgid " doesn't do much"
-msgstr " ei tee paljoakaan"
+msgid "A sample plugin in Python with no features"
+msgstr "Esimerkkiliitänninen pythonille, joka ei tee mitään"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
-msgid "Python Sample"
-msgstr "Python-esimerkki"
+msgid "Python Sample Plugin"
+msgstr "Pythonin esimerkkiliitännäinen"
 
 #: ../plugins/sample/rb-sample-plugin.c:115
 #: ../plugins/sample/rb-sample-plugin.c:122
@@ -1480,8 +1479,8 @@ msgid "Sample Plugin"
 msgstr "Esimerkkiliitännäinen"
 
 #: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
-msgid "Does a whole lot of not much"
-msgstr "Ei tee kauhean paljon"
+msgid "A sample plugin in C with no features"
+msgstr "Esimerkkiliitänninen C:llä, joka ei tee mitään"
 
 #: ../podcast/rb-new-podcast-dialog.c:112
 msgid "New Podcast Feed"
@@ -1595,7 +1594,7 @@ msgstr "Näytä soitettavan kappaleen nimi ja esittäjä"
 msgid "Print formatted details of the song"
 msgstr "Näytä muotoillut yksityiskohdat kappaleesta"
 
-#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:1988
+#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:1992
 #: ../shell/rb-tray-icon.c:167
 msgid "Not playing"
 msgstr "Soitto pysäytetty"
@@ -1893,178 +1892,178 @@ msgstr "Etsi uusia irroitettavia laitteita"
 msgid "Error transferring track"
 msgstr "Virhe siirrettäessä kappaletta"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:405
 msgid "_Music"
 msgstr "_Soitto"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:406
 msgid "_Edit"
 msgstr "_Muokkaa"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:407
 msgid "_View"
 msgstr "_Näytä"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:408
 msgid "_Control"
 msgstr "_Ohjaus"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:409
 msgid "_Tools"
 msgstr "_Työkalut"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:410
 msgid "_Help"
 msgstr "O_hje"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:412
 msgid "_Import Folder..."
 msgstr "_Tuo kansio..."
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:413
 msgid "Choose folder to be added to the Library"
 msgstr "Valitse kansio, joka lisätään musiikkikirjastoon"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:415
 msgid "Import _File..."
 msgstr "_Tuo tiedosto..."
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:416
 msgid "Choose file to be added to the Library"
 msgstr "Valitse tiedosto, joka lisätään kirjastoon"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:418
 msgid "_About"
 msgstr "_Tietoja"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:419
 msgid "Show information about the music player"
 msgstr "Näytä tietoja musiikkisoittimesta"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:421
 msgid "_Contents"
 msgstr "_Sisältö"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:422
 msgid "Display music player help"
 msgstr "Näytä musiikkisoittimen ohje"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:424
 msgid "_Close"
 msgstr "_Sulje"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:425
 msgid "Hide the music player window"
 msgstr "Piilota musiikkisoittimen ikkuna"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:427
 msgid "_Quit"
 msgstr "_Lopeta"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:428
 msgid "Quit the music player"
 msgstr "Lopeta musiikkisoitin"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:430
 msgid "Prefere_nces..."
 msgstr "_Asetukset..."
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:431
 msgid "Edit music player preferences"
 msgstr "Muokkaa musiikkisoittimen asetuksia"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:433
 msgid "Plu_gins..."
 msgstr "_Liitännäiset..."
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:434
 msgid "Change and configure plugins"
 msgstr "Muuta ja määrittele liitännäisiä"
 
-#: ../shell/rb-shell.c:435
+#: ../shell/rb-shell.c:436
 msgid "Show _All"
 msgstr "Näytä k_aikki"
 
-#: ../shell/rb-shell.c:436
+#: ../shell/rb-shell.c:437
 msgid "Show all items in this music source"
 msgstr "Näytä kaikki kohteet tässä musiikkilähteessä"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:439
 msgid "_Jump to Playing Song"
 msgstr "_Siirry soivaan kappaleeseen"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:440
 msgid "Scroll the view to the currently playing song"
 msgstr "Siirrä näkymä soivaan kappaleeseen"
 
-#: ../shell/rb-shell.c:446
+#: ../shell/rb-shell.c:447
 msgid "Side _Pane"
 msgstr "Sivu_paneeli"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:448
 msgid "Change the visibility of the side pane"
 msgstr "Valitse näytetäänkö sivupaneeli"
 
-#: ../shell/rb-shell.c:449
+#: ../shell/rb-shell.c:450
 msgid "_Toolbar"
 msgstr "_Työkalupalkki"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:451
 msgid "Change the visibility of the toolbar"
 msgstr "Valitse näytetäänkö työkalupalkki"
 
-#: ../shell/rb-shell.c:452
+#: ../shell/rb-shell.c:453
 msgid "_Small Display"
 msgstr "_Pieni näyttö"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:454
 msgid "Make the main window smaller"
 msgstr "Pienennä pääikkuna"
 
-#: ../shell/rb-shell.c:455
+#: ../shell/rb-shell.c:456
 msgid "_Party Mode"
 msgstr "_Kokoruututila"
 
-#: ../shell/rb-shell.c:456
+#: ../shell/rb-shell.c:457
 msgid "Change the status of the party mode"
 msgstr "Vaihda biletilan tilaa"
 
-#: ../shell/rb-shell.c:458
+#: ../shell/rb-shell.c:459
 msgid "Play _Queue as Side Pane"
 msgstr "Kappale_jono sivupaneelina"
 
-#: ../shell/rb-shell.c:459
+#: ../shell/rb-shell.c:460
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Määritä, näytetäänkö jono lähteenä vai sivupaneelina"
 
-#: ../shell/rb-shell.c:461
+#: ../shell/rb-shell.c:462
 msgid "S_tatusbar"
 msgstr "T_ilarivi"
 
-#: ../shell/rb-shell.c:462
+#: ../shell/rb-shell.c:463
 msgid "Change the visibility of the statusbar"
 msgstr "Valitse näytetäänkö tilarivi"
 
-#: ../shell/rb-shell.c:1269
+#: ../shell/rb-shell.c:1273
 msgid "Change the music volume"
 msgstr "Muuta äänen voimakkuutta"
 
-#: ../shell/rb-shell.c:1690
+#: ../shell/rb-shell.c:1694
 msgid "Error while saving song information"
 msgstr "Virhe tallennettaessa kappaleen tietoja"
 
-#: ../shell/rb-shell.c:1795
+#: ../shell/rb-shell.c:1799
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Siirretään kappaletta %d/%d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1798
+#: ../shell/rb-shell.c:1802
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Siirretään kappaletta %d/%d"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1991
+#: ../shell/rb-shell.c:1995
 #, c-format
 msgid ""
 "%s\n"
@@ -2074,7 +2073,7 @@ msgstr ""
 "Pysäytetty, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1995
+#: ../shell/rb-shell.c:1999
 #, c-format
 msgid ""
 "%s\n"
@@ -2084,19 +2083,19 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2035
+#: ../shell/rb-shell.c:2039
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: ../shell/rb-shell.c:2140
+#: ../shell/rb-shell.c:2144
 msgid "translator-credits"
 msgstr ""
 "Ilkka Tuohela, 2002-2006\n"
 "\n"
 "http://gnome.fi/"
 
-#: ../shell/rb-shell.c:2143
+#: ../shell/rb-shell.c:2147
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -2109,7 +2108,7 @@ msgstr ""
 "lisenssin version 2, tai (valinnan mukaan) minkä tahansa myöhemmän\n"
 "version mukaisesti.\n"
 
-#: ../shell/rb-shell.c:2147
+#: ../shell/rb-shell.c:2151
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -2121,7 +2120,7 @@ msgstr ""
 "hyväksyttävästä laadusta tai soveltuvuudesta tiettyyn tarkoitukseen. \n"
 "Katso GPL lisenssistä lisää yksityiskohtia.\n"
 
-#: ../shell/rb-shell.c:2151
+#: ../shell/rb-shell.c:2155
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -2132,66 +2131,66 @@ msgstr ""
 "St,\n"
 "Fifth Floor, Boston, MA 02110-1301, USA.\n"
 
-#: ../shell/rb-shell.c:2160
+#: ../shell/rb-shell.c:2164
 msgid "Maintainers:"
 msgstr "Ylläpitäjät:"
 
-#: ../shell/rb-shell.c:2163
+#: ../shell/rb-shell.c:2167
 msgid "Former Maintainers:"
 msgstr "Aikaisemmat ylläpitäjät:"
 
-#: ../shell/rb-shell.c:2166
+#: ../shell/rb-shell.c:2170
 msgid "Contributors:"
 msgstr "Avustajat:"
 
-#: ../shell/rb-shell.c:2168
+#: ../shell/rb-shell.c:2172
 msgid "Music management and playback software for GNOME."
 msgstr "Musiikin hallinta- ja soitto-ohjelma Gnomeen"
 
-#: ../shell/rb-shell.c:2224 ../shell/rb-shell-preferences.c:119
+#: ../shell/rb-shell.c:2228 ../shell/rb-shell-preferences.c:119
 msgid "Couldn't display help"
 msgstr "Ohjetta ei voi näyttää"
 
-#: ../shell/rb-shell.c:2271
+#: ../shell/rb-shell.c:2275
 msgid "Configure Plugins"
 msgstr "Määrittele liitännäisiä"
 
-#: ../shell/rb-shell.c:2342
+#: ../shell/rb-shell.c:2346
 msgid "Import Folder into Library"
 msgstr "Lisää kansio musiikkikirjastoon"
 
-#: ../shell/rb-shell.c:2364
+#: ../shell/rb-shell.c:2368
 msgid "Import File into Library"
 msgstr "Lisää tiedosto musiikkikirjastoon"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2865
+#: ../shell/rb-shell.c:2869
 #, c-format
 msgid "by %s"
 msgstr "%s -"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:2886
+#: ../shell/rb-shell.c:2890
 #, c-format
 msgid "from %s"
 msgstr "%s -"
 
-#: ../shell/rb-shell.c:3045
+#: ../shell/rb-shell.c:3049
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Yksikään rekisteröity lähde ei voi käsitellä URIa %s"
 
-#: ../shell/rb-shell.c:3278 ../shell/rb-shell.c:3304
+#: ../shell/rb-shell.c:3282 ../shell/rb-shell.c:3308
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Tuntematon kappaleen URI: %s"
 
-#: ../shell/rb-shell.c:3313
+#: ../shell/rb-shell.c:3317
 #, c-format
 msgid "Unknown property %s"
 msgstr "Tuntematon ominaisuus %s"
 
-#: ../shell/rb-shell.c:3323
+#: ../shell/rb-shell.c:3327
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Virheellinen ominaisuuden tyyppi %s ominaisuudelle %s"
@@ -3533,6 +3532,37 @@ msgstr "Työpöydällä"
 #: ../widgets/rb-song-info.c:978
 msgid "Unknown location"
 msgstr "Tuntematon sijainti"
+
+#~ msgid "Art Display"
+#~ msgstr "Kansikuvien näyttäminen"
+
+#~ msgid "Displays art for the playing track"
+#~ msgstr "Näyttää levyn kansikuvan soivalle kappaleelle"
+
+#~ msgid "Support for audio CDs"
+#~ msgstr "Tuki ääni-CD-levyille"
+
+#~ msgid "Generic Audio Player"
+#~ msgstr "Yleiset musiikkisoittimet"
+
+#~ msgid ""
+#~ "Adds iPod support to Rhythmbox so that it can show an iPod content, and "
+#~ "play from there"
+#~ msgstr ""
+#~ "Lisää Rhythmboxiin tuen iPodille, jolloin iPodin sisältöä voidaan näyttää "
+#~ "ja soittaa ohjelmasta"
+
+#~ msgid "iPod support"
+#~ msgstr "iPod-tuki"
+
+#~ msgid "Displays song lyrics"
+#~ msgstr "Näytä kappaleiden sanoituksia"
+
+#~ msgid " doesn't do much"
+#~ msgstr " ei tee paljoakaan"
+
+#~ msgid "Does a whole lot of not much"
+#~ msgstr "Ei tee kauhean paljon"
 
 #~ msgid "by %s from %s"
 #~ msgstr "esittäjä %s levyltä %s"
