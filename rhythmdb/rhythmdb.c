@@ -1511,7 +1511,7 @@ is_ghost_entry (RhythmDBEntry *entry)
 	/* This is a bit silly, but I prefer to make sure we won't
 	 * overflow in the following calculations
 	 */
-	if ((grace_period < 0) || (grace_period > 20000)) {
+	if ((grace_period <= 0) || (grace_period > 20000)) {
 		return FALSE;
 	}
 

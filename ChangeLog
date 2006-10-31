@@ -1,5 +1,12 @@
 2006-10-31  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Nguyen Thai Ngoc Duy  <pclouds@gmail.com>
+
+	* rhythmdb/rhythmdb.c: don't remove stale db entries when the grace
+	period is 0. Fixes #351425
+
+2006-10-31  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Luca Ferretti  <elle.uca@libero.it>
 
 	* plugins/artdisplay/artdisplay.rb-plugin.desktop.in:
