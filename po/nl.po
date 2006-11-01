@@ -16,6 +16,7 @@
 # Zoveel mogelijk proberen de sneltoetsen voor veelgebruikte kolommen niet
 # te laten botsen met elkaar en met het hoofdmenu
 # ----------------------------------
+# audio cd      muziek-cd (ipv audio-cd)
 # episode       aflevering
 # library       collectie/verzameling
 # music share   muziekbron
@@ -29,8 +30,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-13 22:14+0200\n"
-"PO-Revision-Date: 2006-10-14 03:34+0200\n"
+"POT-Creation-Date: 2006-10-31 21:11+0100\n"
+"PO-Revision-Date: 2006-11-01 03:37+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -43,13 +44,13 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Wilt u het bestand \"%s\" overschrijven?"
 
-#: ../backends/gstreamer/rb-player-gst.c:609 ../metadata/rb-metadata-gst.c:887
+#: ../backends/gstreamer/rb-player-gst.c:630 ../metadata/rb-metadata-gst.c:887
 #: ../metadata/rb-metadata-gst.c:1447 ../player/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Aanmaken van een %s-element mislukt; controleer uw installatie"
 
-#: ../backends/gstreamer/rb-player-gst.c:686
+#: ../backends/gstreamer/rb-player-gst.c:707
 msgid "Unknown playback error"
 msgstr "Onbekende afspeelfout"
 
@@ -72,14 +73,14 @@ msgstr "Onbekende afspeelfout"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1028
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1029
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1504
+#: ../podcast/rb-podcast-manager.c:1512
 #: ../podcast/rb-podcast-properties-dialog.c:449
 #: ../podcast/rb-podcast-properties-dialog.c:502
-#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1312
+#: ../remote/dbus/rb-client.c:114 ../rhythmdb/rhythmdb.c:1320
 #: ../rhythmdb/rhythmdb-tree.c:1120 ../rhythmdb/rhythmdb-tree.c:1124
 #: ../rhythmdb/rhythmdb-tree.c:1128 ../rhythmdb/rhythmdb-tree.c:1132
-#: ../sources/rb-audiocd-source.c:201 ../sources/rb-ipod-source.c:235
-#: ../sources/rb-iradio-source.c:551 ../sources/rb-iradio-source.c:1285
+#: ../sources/rb-audiocd-source.c:206 ../sources/rb-ipod-source.c:235
+#: ../sources/rb-iradio-source.c:511 ../sources/rb-iradio-source.c:1090
 #: ../sources/rb-podcast-source.c:1633 ../widgets/rb-entry-view.c:776
 #: ../widgets/rb-entry-view.c:801 ../widgets/rb-entry-view.c:1085
 #: ../widgets/rb-entry-view.c:1097 ../widgets/rb-entry-view.c:1109
@@ -167,7 +168,7 @@ msgstr "De howl MDNS-service is niet opgestart"
 msgid "%s's Music"
 msgstr "%s's muziek"
 
-#: ../daapsharing/rb-daap-src.c:629
+#: ../daapsharing/rb-daap-src.c:625
 #, c-format
 msgid "Connection to %s:%d refused."
 msgstr "Verbinding met %s:%d geweigerd."
@@ -203,7 +204,7 @@ msgstr "Last.fm profiel"
 #: ../data/glade/audioscrobbler-prefs.glade.h:8
 #: ../iradio/rb-station-properties-dialog.c:438
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:846
-#: ../rhythmdb/rhythmdb.c:2846 ../widgets/rb-entry-view.c:724
+#: ../rhythmdb/rhythmdb.c:2854 ../widgets/rb-entry-view.c:724
 #: ../widgets/rb-entry-view.c:1143 ../widgets/rb-entry-view.c:1156
 #: ../widgets/rb-song-info.c:1139
 msgid "Never"
@@ -386,7 +387,7 @@ msgstr "_Artiest"
 msgid "_Artists and albums"
 msgstr "_Artiesten en albums"
 
-#: ../data/glade/general-prefs.glade.h:17 ../widgets/rb-entry-view.c:1071
+#: ../data/glade/general-prefs.glade.h:17
 msgid "_Genre"
 msgstr "_Genre"
 
@@ -403,15 +404,15 @@ msgstr "_Laatst beluisterd"
 msgid "_Play count"
 msgstr "Aantal keer b_eluisterd"
 
-#: ../data/glade/general-prefs.glade.h:21 ../widgets/rb-entry-view.c:1105
+#: ../data/glade/general-prefs.glade.h:21
 msgid "_Quality"
 msgstr "_Kwaliteit"
 
-#: ../data/glade/general-prefs.glade.h:22 ../widgets/rb-entry-view.c:1118
+#: ../data/glade/general-prefs.glade.h:22
 msgid "_Rating"
 msgstr "_Waardering"
 
-#: ../data/glade/general-prefs.glade.h:23 ../widgets/rb-entry-view.c:1093
+#: ../data/glade/general-prefs.glade.h:23
 msgid "_Year"
 msgstr "_Jaar"
 
@@ -498,7 +499,7 @@ msgstr "Site:"
 
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
-#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:203
+#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:217
 msgid "-"
 msgstr "-"
 
@@ -617,7 +618,7 @@ msgstr "_Waardering:"
 
 #: ../data/glade/recorder.glade.h:1
 msgid "Create audio CD from playlist?"
-msgstr "Audio-cd aanmaken van luisterlijst?"
+msgstr "Muziek-cd aanmaken van luisterlijst?"
 
 #: ../data/glade/recorder.glade.h:2
 msgid "Options"
@@ -724,7 +725,7 @@ msgid "Recently Played"
 msgstr "Recentelijk beluisterd"
 
 #: ../data/rhythmbox.desktop.in.in.h:1 ../shell/rb-shell.c:1014
-#: ../shell/rb-shell.c:2026
+#: ../shell/rb-shell.c:2015
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -934,7 +935,9 @@ msgstr "Apparaat ‘%s’ bevat geen enkele media"
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr "Apparaat ‘%s’ kon niet worden geopend. Controleer de toegangsrechten op het apparaat."
+msgstr ""
+"Apparaat ‘%s’ kon niet worden geopend. Controleer de toegangsrechten op het "
+"apparaat."
 
 # Meerdere/verschillende/verscheidene
 #: ../metadata/sj-metadata-musicbrainz.c:549
@@ -1033,22 +1036,22 @@ msgstr ""
 msgid "There was an error writing to the CD"
 msgstr "Er is een fout opgetreden bij het schrijven naar de cd"
 
-# albumhoezen tonen
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
-msgid "Art Display"
-msgstr "Albumhoezen tonen"
+msgid "Cover art"
+msgstr "Albumhoezen"
 
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
-msgid "Displays art for the playing track"
-msgstr "Toont de albumhoes voor het huidige nummer"
+msgid "Fetch album covers from the Internet"
+msgstr "Albumhoezen van het internet halen"
 
+# impliceert muziek-cd speler, muziek hier weglaten
 #: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
-msgid "Audio CD"
-msgstr "Audio-cd"
+msgid "Audio CD Player"
+msgstr "Cd-speler"
 
 #: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
-msgid "Support for audio CDs"
-msgstr "Ondersteuning voor het aanmaken van audio-cd's"
+msgid "Support for playing of audio CDs as music source"
+msgstr "Ondersteuning voor het afspelen van muziek-cd's"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 msgid "Last.fm"
@@ -1056,8 +1059,8 @@ msgstr "Last.fm"
 
 # de lijst met beluisterde nummers naar last.fm opsturen
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
-msgid "Submits songs to last.fm and plays last.fm radio streams"
-msgstr "Stuurt beluisterde nummers naar last.fm en speelt last.fm radio"
+msgid "Submits song information to last.fm and plays last.fm radio streams"
+msgstr "Meldt de beluisterde nummers aan last.fm en speelt last.fm radio"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:866
 msgid "OK"
@@ -1107,43 +1110,42 @@ msgstr "Audioscrobbler voorkeuren"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:86
 msgid "_Create Audio CD..."
-msgstr "Audio-_cd aanmaken..."
+msgstr "Muziek-_cd aanmaken..."
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
 msgid "Create an audio CD from playlist"
-msgstr "Audio-cd aanmaken van luisterlijst"
+msgstr "Muziek-cd aanmaken van luisterlijst"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:189
 msgid "Unable to create audio CD"
-msgstr "Kon de audio-cd niet aanmaken"
+msgstr "Kon de muziek-cd niet aanmaken"
 
+# muziek/audio weglaten
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
-msgid "CD Recorder"
-msgstr "cd-recorder"
+msgid "Audio CD Recorder"
+msgstr "Cd-recorder"
 
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
 msgid "Support for recording audio CDs from playlists"
-msgstr "Ondersteuning voor het aanmaken van audio-cd's van luisterlijsten"
+msgstr "Ondersteuning voor het aanmaken van muziek-cd's van luisterlijsten"
 
+# je zou bijna mp3-spelers zeggen
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
-msgid "Generic Audio Player"
-msgstr "Algemene audio-speler"
+msgid "Portable Players"
+msgstr "Draagbare spelers"
 
+# muziekspelers/audiospelers
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:2
-msgid "Support for generic audio player devices (and PSP and Nokia 770)"
+msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Ondersteuning voor algemene audio-spelers (en PSP en Nokia 770)"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:1
-msgid ""
-"Adds iPod support to Rhythmbox so that it can show an iPod content, and play "
-"from there"
-msgstr ""
-"Geeft Rhythmbox ondersteuning voor de iPod zodat het de inhoud van de iPod "
-"kan tonen en nummers kan afspelen vanaf de iPod"
+msgid "Portable Players - iPod"
+msgstr "Draagbare spelers - iPod"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
-msgid "iPod support"
-msgstr "Ondersteuning voor iPod"
+msgid "Support for Apple iPod devices (show the content, play from device)"
+msgstr "Ondersteuning voor Apple iPods (inhoud tonen, beluisteren)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:85 ../shell/rb-playlist-manager.c:144
 msgid "_Rename"
@@ -1161,30 +1163,33 @@ msgstr "Rhythmbox bedienen met infrarood afstandsbediening"
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/lyrics.py:84 ../plugins/lyrics/lyrics.py:125
+#: ../plugins/lyrics/lyrics.py:85 ../plugins/lyrics/lyrics.py:126
 msgid "Searching for lyrics..."
 msgstr "Songteksten opzoeken..."
 
-#: ../plugins/lyrics/lyrics.py:93
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+#: ../plugins/lyrics/lyrics.py:94
 msgid "Lyrics"
 msgstr "Songteksten"
 
-#: ../plugins/lyrics/lyrics.py:237
+#: ../plugins/lyrics/lyrics.py:238
 msgid "Lyrics provided by leoslyrics.com"
 msgstr "Songteksten geleverd door leoslyrics.com"
 
-#: ../plugins/lyrics/lyrics.py:255
+#: ../plugins/lyrics/lyrics.py:256
 msgid "Song L_yrics"
 msgstr "_Songteksten"
 
-#: ../plugins/lyrics/lyrics.py:256
+#: ../plugins/lyrics/lyrics.py:257
 msgid "Display lyrics for the playing song"
 msgstr "Songtekst van het huidige nummer tonen"
 
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
-msgid "Displays song lyrics"
-msgstr "Toont de songteksten"
+msgid "Fetch song lyrics from the Internet"
+msgstr "Songteksten van het internet halen"
+
+#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+msgid "Song Lyrics"
+msgstr "Songteksten"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:1
 msgid "<b>Magnatune online music store</b>"
@@ -1231,28 +1236,41 @@ msgid ""
 "\n"
 "You can find more information at http://www.magnatune.com/"
 msgstr ""
-"Magnatune is een online muzieklabel dat niet kwaadwillend is. Een aantal eigenschappen zijn:\n"
+"Magnatune is een online muzieklabel dat niet kwaadwillend is. Een aantal "
+"eigenschappen zijn:\n"
 "\n"
 "    * Gratis alle nummers beluisteren\n"
 "    * Alle albums en artiesten zelf uitgekozen\n"
 "    * Eenvoudige bediening, snel luisteren naar muziek\n"
-"    * Radiostations en \"genre mix\" luisterlijsten waardoor u tijdens uw werk onze muziek als achtergrond kunt gebruiken\n"
+"    * Radiostations en \"genre mix\" luisterlijsten waardoor u tijdens uw "
+"werk onze muziek als achtergrond kunt gebruiken\n"
 "    * Geen noodzaak om te \"registreren\" om te kunnen luisteren of kopen\n"
 "    * Kleiner aanbod maakt het eenvoudiger goede muziek te vinden\n"
 "    * Uitgebreid aanbod van genres, past bij elke stemming\n"
-"    * Onze genres zijn moeilijk in muziekwinkels te vinden en bijna niet op de radio (hoewel het soms op studentenradio is te horen)\n"
+"    * Onze genres zijn moeilijk in muziekwinkels te vinden en bijna niet op "
+"de radio (hoewel het soms op studentenradio is te horen)\n"
 "    * Downloads en cd's zijn beiden beschikbaar\n"
-"    * Perfecte kwaliteit van de downloads (cd-kopie) is mogelijk (geen slechte geluidskwaliteit)\n"
-"    * Geen copy-protection op de muziek (DRM) waardoor u het elke apparaat kunt afspelen (in tegenstelling tot iTunes/MSN/etc)\n"
-"    * Uitgebreide biografische info over elke muzikant, en een foto van de artiest -- we hebben een sterke band met de artiest\n"
-"    * Full color, hoge kwaliteit pdf-bestand van de albumhoes beschikbaar bij de meeste albums - eenvoudig af te drukken\n"
-"    * Variabele prijzen betent dat u indien gewenst al voor $5 een album kunt aanschaffen\n"
-"    * 50% van het aankoopbedrag gaat naar de artiest (de koper voelt zich goed: ze helpen de wereld)\n"
+"    * Perfecte kwaliteit van de downloads (cd-kopie) is mogelijk (geen "
+"slechte geluidskwaliteit)\n"
+"    * Geen copy-protection op de muziek (DRM) waardoor u het elke apparaat "
+"kunt afspelen (in tegenstelling tot iTunes/MSN/etc)\n"
+"    * Uitgebreide biografische info over elke muzikant, en een foto van de "
+"artiest -- we hebben een sterke band met de artiest\n"
+"    * Full color, hoge kwaliteit pdf-bestand van de albumhoes beschikbaar "
+"bij de meeste albums - eenvoudig af te drukken\n"
+"    * Variabele prijzen betent dat u indien gewenst al voor $5 een album "
+"kunt aanschaffen\n"
+"    * 50% van het aankoopbedrag gaat naar de artiest (de koper voelt zich "
+"goed: ze helpen de wereld)\n"
 "    * Geen bedrijf waar het groot-kapitaal achter zit\n"
-"    * Geen onderdeel van de \"kwaadaardige\" grote muziekindustrie - voor diegenen die de muziekindustrie haten en het omver willen gooien\n"
-"    * Oprichter/eigenaar draait het bedrijf -- ondersteun een klein bedrijfje\n"
-"    * Eenvoudige omgeving - niets flitsend, geen reclame tijdens het luisteren naar albums\n"
-"    * Muziekkeuze is uniek voor Magnatune, in tegenstelling to de meeste online winkels die min of meer hetzelfde (gigantische) aanbod hebben\n"
+"    * Geen onderdeel van de \"kwaadaardige\" grote muziekindustrie - voor "
+"diegenen die de muziekindustrie haten en het omver willen gooien\n"
+"    * Oprichter/eigenaar draait het bedrijf -- ondersteun een klein "
+"bedrijfje\n"
+"    * Eenvoudige omgeving - niets flitsend, geen reclame tijdens het "
+"luisteren naar albums\n"
+"    * Muziekkeuze is uniek voor Magnatune, in tegenstelling to de meeste "
+"online winkels die min of meer hetzelfde (gigantische) aanbod hebben\n"
 "\n"
 "U kunt meer informatie krijgen op http://www.magnatune.com/"
 
@@ -1333,7 +1351,8 @@ msgstr ""
 msgid ""
 "<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
 "expiration date listed.</span>"
-msgstr "<span weight=\"bold\" foreground=\"red\">Uw creditkaart is verlopen.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">Uw creditkaart is verlopen.</span>"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:29
 msgid "C_redit Card:"
@@ -1454,7 +1473,9 @@ msgstr "_Kopen"
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
-msgstr "Biedt u de mogelijkheid om met Rhythmbox muziek uit de Magntune online muziekwinkel af te spelen en aan te schaffen"
+msgstr ""
+"Biedt u de mogelijkheid om met Rhythmbox muziek uit de Magntune online "
+"muziekwinkel af te spelen en aan te schaffen"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
 msgid "Magnatune Store"
@@ -1531,14 +1552,13 @@ msgstr "Kon de plugin %s niet activeren"
 msgid "Python Source"
 msgstr "Pythonbron"
 
-# werkt niet/doet niets/doet niet zo veel
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
-msgid " doesn't do much"
-msgstr " doet niet zo veel"
+msgid "A sample plugin in Python with no features"
+msgstr "Een voorbeeldplugin in Python zonder functies"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
-msgid "Python Sample"
-msgstr "Python voorbeeld"
+msgid "Python Sample Plugin"
+msgstr "Python voorbeeldplugin"
 
 #: ../plugins/sample/rb-sample-plugin.c:115
 #: ../plugins/sample/rb-sample-plugin.c:122
@@ -1547,8 +1567,8 @@ msgid "Sample Plugin"
 msgstr "Voorbeeldplugin"
 
 #: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
-msgid "Does a whole lot of not much"
-msgstr "Doet een heleboel niets"
+msgid "A sample plugin in C with no features"
+msgstr "Een voorbeeldplugin in C zonder functies"
 
 #: ../podcast/rb-new-podcast-dialog.c:112
 msgid "New Podcast Feed"
@@ -1573,13 +1593,15 @@ msgstr "URL is al toegevoegd"
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
-msgstr "De URL ‘%s’ is al toegevoegd als een radiostation. Als dit een podcast feed is, verwijder dan het radiostation."
+msgstr ""
+"De URL ‘%s’ is al toegevoegd als een radiostation. Als dit een podcast feed "
+"is, verwijder dan het radiostation."
 
 #: ../podcast/rb-podcast-manager.c:865
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:1652
+#: ../podcast/rb-podcast-manager.c:1660
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr ""
@@ -1592,7 +1614,10 @@ msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
-msgstr "De URL ‘%s’ is kennelijk geen podcast-feed. Mogelijkerwijs is de URL verkeerd, of de feed is corrupt.  Wilt u toch proberen het met Rhythmbox af te spelen?"
+msgstr ""
+"De URL ‘%s’ is kennelijk geen podcast-feed. Mogelijkerwijs is de URL "
+"verkeerd, of de feed is corrupt.  Wilt u toch proberen het met Rhythmbox af "
+"te spelen?"
 
 # binnengehaald/gedownload
 #: ../podcast/rb-podcast-properties-dialog.c:397
@@ -1603,7 +1628,7 @@ msgstr "Niet gedownload"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Niet een nieuwe instantie van Rhythmbox opstarten"
 
-#: ../remote/dbus/rb-client.c:65 ../shell/main.c:122
+#: ../remote/dbus/rb-client.c:65 ../shell/main.c:123
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox afsluiten"
 
@@ -1662,25 +1687,25 @@ msgstr "Titel en artiest van het beluisterde nummer afdrukken"
 msgid "Print formatted details of the song"
 msgstr "Opgemaakte details van het nummer afdrukken"
 
-#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:1999
+#: ../remote/dbus/rb-client.c:375 ../shell/rb-shell.c:1988
 #: ../shell/rb-tray-icon.c:167
 msgid "Not playing"
 msgstr "Afspelen gestopt"
 
-#: ../rhythmdb/rhythmdb.c:491
+#: ../rhythmdb/rhythmdb.c:499
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kon geen toegang krijgen tot %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1418
+#: ../rhythmdb/rhythmdb.c:1426
 msgid "<invalid filename>"
 msgstr "<ongeldige bestandsnaam>"
 
-#: ../rhythmdb/rhythmdb.c:1678
+#: ../rhythmdb/rhythmdb.c:1686
 msgid "invalid unicode in error message"
 msgstr "ongeldige unicode in foutmelding"
 
-#: ../rhythmdb/rhythmdb.c:2378
+#: ../rhythmdb/rhythmdb.c:2386
 msgid "Could not load the music database"
 msgstr "Kon de muziek-database niet laden"
 
@@ -1689,12 +1714,12 @@ msgstr "Kon de muziek-database niet laden"
 #. * day names wherever possible.  This allows us to disable
 #. * column autosizing, which makes the Rhythmbox UI much faster.
 #.
-#: ../rhythmdb/rhythmdb.c:2844 ../sources/rb-podcast-source.c:1639
+#: ../rhythmdb/rhythmdb.c:2852 ../sources/rb-podcast-source.c:1639
 #: ../widgets/rb-entry-view.c:2047
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d-%m-%Y %H:%M"
 
-#: ../rhythmdb/rhythmdb.c:3659
+#: ../rhythmdb/rhythmdb.c:3671
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -1704,14 +1729,14 @@ msgstr[1] "%ld minuten"
 # meervoud van uur is uren, maar je zegt:
 # 1 dag 5 uur en 10 minuten    en niet:
 # 1 dag 5 uren en 10 minuten
-#: ../rhythmdb/rhythmdb.c:3660
+#: ../rhythmdb/rhythmdb.c:3672
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld uur"
 msgstr[1] "%ld uur"
 
-#: ../rhythmdb/rhythmdb.c:3661
+#: ../rhythmdb/rhythmdb.c:3673
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1719,7 +1744,7 @@ msgstr[0] "%.ld dag"
 msgstr[1] "%.ld dagen"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3667
+#: ../rhythmdb/rhythmdb.c:3679
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s en %s"
@@ -1727,8 +1752,8 @@ msgstr "%s, %s en %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3673 ../rhythmdb/rhythmdb.c:3681
-#: ../rhythmdb/rhythmdb.c:3692
+#: ../rhythmdb/rhythmdb.c:3685 ../rhythmdb/rhythmdb.c:3693
+#: ../rhythmdb/rhythmdb.c:3704
 #, c-format
 msgid "%s and %s"
 msgstr "%s en %s"
@@ -1754,42 +1779,42 @@ msgstr ""
 "De database is aangemaakt door een nieuwere versie van rhythmbox. Deze "
 "versie van rhythmbox kan de database niet lezen."
 
-#: ../shell/main.c:115
+#: ../shell/main.c:116
 msgid "Enable debug output"
 msgstr "Debug-uitvoer aanzetten"
 
-#: ../shell/main.c:116
+#: ../shell/main.c:117
 msgid "Enable debug output matching a specified string"
 msgstr "Debug-uitvoer geven, overeenkomend met een opgegeven tekenreeks"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:118
 msgid "Do not update the library with file changes"
 msgstr "De collectie niet bijwerken wanneer bestanden wijzigen"
 
 # hmm, de shell niet registreren? omgeving/shell?
-#: ../shell/main.c:118
+#: ../shell/main.c:119
 msgid "Do not register the shell"
 msgstr "De shell niet registreren"
 
-#: ../shell/main.c:119
+#: ../shell/main.c:120
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Geen gegevens definitief opslaan (houdt in: --no-registration)"
 
 # 'te gebruiken' weggelaten
-#: ../shell/main.c:120
+#: ../shell/main.c:121
 msgid "Path for database file to use"
 msgstr "Pad naar het database-bestand"
 
 # 'te gebruiken' weggelaten
-#: ../shell/main.c:121
+#: ../shell/main.c:122
 msgid "Path for playlists file to use"
 msgstr "Pad naar het luisterlijst-bestand"
 
-#: ../shell/main.c:123
+#: ../shell/main.c:124
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:158 ../shell/main.c:167 ../widgets/rb-druid.c:184
+#: ../shell/main.c:159 ../shell/main.c:168 ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -2158,16 +2183,8 @@ msgstr "Overzetten van nummer %d van %d (%.0f%%)"
 msgid "Transferring track %d out of %d"
 msgstr "Overzetten van nummer %d van %d"
 
-# dan maar iets langer, maar zo is het niet meer dubbelzinnig
-# door A van B/door A van het album B
-#. Translators: by Artist from Album
-#: ../shell/rb-shell.c:1899
-#, c-format
-msgid "by %s from %s"
-msgstr "door %s van het album %s"
-
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:2002
+#: ../shell/rb-shell.c:1991
 #, c-format
 msgid ""
 "%s\n"
@@ -2177,7 +2194,7 @@ msgstr ""
 "Gepauzeerd, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:1995
 #, c-format
 msgid ""
 "%s\n"
@@ -2187,12 +2204,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2046
+#: ../shell/rb-shell.c:2035
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (gepauzeerd)"
 
-#: ../shell/rb-shell.c:2151
+#: ../shell/rb-shell.c:2140
 msgid "translator-credits"
 msgstr ""
 "Tino Meinen\n"
@@ -2202,7 +2219,7 @@ msgstr ""
 "\n"
 "Kijk voor meer informatie op http://nl.gnome.org/"
 
-#: ../shell/rb-shell.c:2154
+#: ../shell/rb-shell.c:2143
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -2214,7 +2231,7 @@ msgstr ""
 "die gepubliceerd is door de Free Software Foundation; ofwel versie 2\n"
 "van de licentie, of (zo u wilt) een latere versie.\n"
 
-#: ../shell/rb-shell.c:2158
+#: ../shell/rb-shell.c:2147
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -2226,7 +2243,7 @@ msgstr ""
 "van VERKOOPBAARHEID, of GESCHIKTHEID VOOR EEN BEPAALD DOEL.\n"
 "Zie de GNU General Public License voor meer informatie.\n"
 
-#: ../shell/rb-shell.c:2162
+#: ../shell/rb-shell.c:2151
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -2237,56 +2254,81 @@ msgstr ""
 "Free Software Foundation, Inc., 51 Franklin St. Fifth Floor,\n"
 "Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2171
+#: ../shell/rb-shell.c:2160
 msgid "Maintainers:"
 msgstr "Ontwikkelaars:"
 
-#: ../shell/rb-shell.c:2174
+#: ../shell/rb-shell.c:2163
 msgid "Former Maintainers:"
 msgstr "Ex-ontwikkelaars:"
 
-#: ../shell/rb-shell.c:2177
+#: ../shell/rb-shell.c:2166
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
-#: ../shell/rb-shell.c:2179
+#: ../shell/rb-shell.c:2168
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziekbeheer en -afspeelprogramma voor Gnome."
 
-#: ../shell/rb-shell.c:2235 ../shell/rb-shell-preferences.c:119
+#: ../shell/rb-shell.c:2224 ../shell/rb-shell-preferences.c:119
 msgid "Couldn't display help"
 msgstr "Kon hulptekst niet weergeven"
 
-#: ../shell/rb-shell.c:2282
+#: ../shell/rb-shell.c:2271
 msgid "Configure Plugins"
 msgstr "Plugins configureren"
 
 # laden/importeren
-#: ../shell/rb-shell.c:2353
+#: ../shell/rb-shell.c:2342
 msgid "Import Folder into Library"
 msgstr "Map importeren in collectie"
 
 # laden/importeren
-#: ../shell/rb-shell.c:2375
+#: ../shell/rb-shell.c:2364
 msgid "Import File into Library"
 msgstr "Bestand importeren in collectie"
 
-#: ../shell/rb-shell.c:2958
+# 'door' werkt niet als bij klassieke muziek de componist bij artiest staat
+# (hetgeen veelvuldig maar niet altijd voorkomt)
+# 'Black Napkins' door Frank Zappa (=artiest) <- klinkt
+# 'Black Napkins' van Frank Zappa (=artiest)  <- klinkt ook
+# 'Prelude en fuga nr. 1' door Johan Sebastian Bach <- klopt niet
+# 'Prelude en fuga nr. 1' van Johan Sebastian Bach <- klinkt
+# 'Prelude en fuga nr. 1' van Svjatoslav Richter <- klopt niet
+#
+# Dus bij klassiek kan de vertaling 'van' en 'door' problemen geven.
+# Bij pop-muziek kunnen beide vertalingen wel.
+#
+# vandaar is het het veiligste om 'by' niet te vertalen
+#. Translators: by Artist
+#: ../shell/rb-shell.c:2865
+#, c-format
+msgid "by %s"
+msgstr "%s"
+
+# Trackname from Albumname by Artistname
+#. Translators: from Album
+#: ../shell/rb-shell.c:2886
+#, c-format
+msgid "from %s"
+msgstr "van het album %s"
+
+#: ../shell/rb-shell.c:3045
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Geen bron kan met URI %s omgaan"
 
-#: ../shell/rb-shell.c:3191 ../shell/rb-shell.c:3217
+#: ../shell/rb-shell.c:3278 ../shell/rb-shell.c:3304
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Onbekend nummer URI: %s"
 
-#: ../shell/rb-shell.c:3226
+#: ../shell/rb-shell.c:3313
 #, c-format
 msgid "Unknown property %s"
 msgstr "Onbekende eigenschap %s"
 
-#: ../shell/rb-shell.c:3236
+#: ../shell/rb-shell.c:3323
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ongeldig type %s voor eigenschap %s"
@@ -2418,7 +2460,7 @@ msgstr "Het geluidsniveau verlagen"
 msgid "_Play"
 msgstr "_Afspelen"
 
-#: ../shell/rb-shell-player.c:261 ../shell/rb-shell-player.c:2976
+#: ../shell/rb-shell-player.c:261 ../shell/rb-shell-player.c:2997
 msgid "Start playback"
 msgstr "Afspelen starten"
 
@@ -2483,20 +2525,20 @@ msgid "No next song"
 msgstr "Geen volgend nummer"
 
 # Kon het afspelen niet starten/ kon niet beginnen met afspelen
-#: ../shell/rb-shell-player.c:1787 ../shell/rb-shell-player.c:2743
+#: ../shell/rb-shell-player.c:1787 ../shell/rb-shell-player.c:2752
 msgid "Couldn't start playback"
 msgstr "Kon niet beginnen met afspelen"
 
-#: ../shell/rb-shell-player.c:2586
+#: ../shell/rb-shell-player.c:2583
 msgid "Couldn't stop playback"
 msgstr "Kon het afspelen niet stoppen"
 
 # hmm, betere vertaling voor doorzoekbaar
-#: ../shell/rb-shell-player.c:2669
+#: ../shell/rb-shell-player.c:2672
 msgid "Current song is not seekable"
 msgstr "Huidige nummer is niet te doorzoeken"
 
-#: ../shell/rb-shell-player.c:2974
+#: ../shell/rb-shell-player.c:2995
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
@@ -2523,7 +2565,7 @@ msgstr "Bla_deren"
 msgid "Change the visibility of the browser"
 msgstr "Het bladervenster wel of niet weergeven"
 
-#: ../shell/rb-source-header.c:240
+#: ../shell/rb-source-header.c:239
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Muziekweergave filteren op genre, artiest, album of titel"
 
@@ -2548,30 +2590,43 @@ msgstr "_Mededelingen tonen"
 msgid "Show notifications of song changes and other events"
 msgstr "Attenderen bij nummerwisselingen en andere gebeurtenissen"
 
-#: ../sources/rb-audiocd-source.c:205
+#: ../sources/rb-audiocd-source.c:210
 msgid "<Invalid unicode>"
 msgstr "<ongeldige unicode>"
 
-#: ../sources/rb-audiocd-source.c:250
+#: ../sources/rb-audiocd-source.c:255
 #, c-format
 msgid "Track %u"
 msgstr "Nummer %u"
 
-#: ../sources/rb-audiocd-source.c:336 ../sources/rb-audiocd-source.c:346
-#: ../sources/rb-audiocd-source.c:353 ../sources/rb-audiocd-source.c:548
+#: ../sources/rb-audiocd-source.c:341 ../sources/rb-audiocd-source.c:351
+#: ../sources/rb-audiocd-source.c:358 ../sources/rb-audiocd-source.c:670
 msgid "Couldn't load Audio CD"
-msgstr "Kon de audio-cd niet laden"
+msgstr "Kon de muziek-cd niet laden"
 
 # toegang krijgen tot/benaderen
-#: ../sources/rb-audiocd-source.c:337 ../sources/rb-audiocd-source.c:347
+#: ../sources/rb-audiocd-source.c:342 ../sources/rb-audiocd-source.c:352
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox kon geen toegang krijgen tot de cd."
 
-#: ../sources/rb-audiocd-source.c:354
+#: ../sources/rb-audiocd-source.c:359
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox kon de informatie over de cd niet lezen."
 
-#: ../sources/rb-audiocd-source.c:549
+#: ../sources/rb-audiocd-source.c:464 ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1041 ../widgets/rb-query-creator-properties.c:65
+#: ../widgets/rb-query-creator-properties.c:95
+msgid "Title"
+msgstr "Titel"
+
+#: ../sources/rb-audiocd-source.c:471 ../sources/rb-library-source.c:124
+#: ../widgets/rb-entry-view.c:1051 ../widgets/rb-library-browser.c:100
+#: ../widgets/rb-query-creator-properties.c:66
+#: ../widgets/rb-query-creator-properties.c:92
+msgid "Artist"
+msgstr "Artiest"
+
+#: ../sources/rb-audiocd-source.c:671
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox kon geen toegang krijgen tot de cd-speler."
 
@@ -2680,38 +2735,31 @@ msgid_plural "%d import errors"
 msgstr[0] "%d importeerfout"
 msgstr[1] "%d importeerfouten"
 
-#: ../sources/rb-iradio-source.c:181
+#: ../sources/rb-iradio-source.c:162
 msgid "New Internet _Radio Station"
 msgstr "_Nieuw internetradiostation"
 
-#: ../sources/rb-iradio-source.c:182
+#: ../sources/rb-iradio-source.c:163
 msgid "Create a new Internet Radio station"
 msgstr "Nieuw internet-radiostation aanmaken"
 
-#: ../sources/rb-iradio-source.c:385 ../widgets/rb-library-browser.c:99
+#: ../sources/rb-iradio-source.c:348 ../widgets/rb-entry-view.c:1071
+#: ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
 msgid "Genre"
 msgstr "Genre"
 
-#: ../sources/rb-iradio-source.c:482
+#: ../sources/rb-iradio-source.c:442
 msgid "Radio"
 msgstr "Radio"
 
-#: ../sources/rb-iradio-source.c:653
+#: ../sources/rb-iradio-source.c:574
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d station"
 msgstr[1] "%d stations"
-
-#: ../sources/rb-iradio-source.c:658
-msgid "Connecting"
-msgstr "Verbinden"
-
-#: ../sources/rb-iradio-source.c:661
-msgid "Buffering"
-msgstr "Bufferen"
 
 #: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
@@ -2725,17 +2773,12 @@ msgstr "Artiest/Album"
 msgid "Artist - Album"
 msgstr "Artiest - Album"
 
-#: ../sources/rb-library-source.c:123 ../widgets/rb-library-browser.c:101
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1061
+#: ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:93
 msgid "Album"
 msgstr "Album"
-
-#: ../sources/rb-library-source.c:124 ../widgets/rb-library-browser.c:100
-#: ../widgets/rb-query-creator-properties.c:66
-#: ../widgets/rb-query-creator-properties.c:92
-msgid "Artist"
-msgstr "Artiest"
 
 #: ../sources/rb-library-source.c:129
 msgid "Number - Title"
@@ -2752,12 +2795,6 @@ msgstr "Artiest - Volgnummer - Titel"
 #: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
 msgstr "Artiest (Album) - Volgnummer - Titel"
-
-#: ../sources/rb-library-source.c:133
-#: ../widgets/rb-query-creator-properties.c:65
-#: ../widgets/rb-query-creator-properties.c:95
-msgid "Title"
-msgstr "Titel"
 
 #: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
@@ -2868,7 +2905,7 @@ msgstr "Onbekend medium"
 
 #: ../sources/rb-playlist-source-recorder.c:586
 msgid "Commercial CD or Audio CD"
-msgstr "Commerciële cd of audio-cd"
+msgstr "Commerciële cd of muziek-cd"
 
 #: ../sources/rb-playlist-source-recorder.c:588
 msgid "CD-R"
@@ -2914,14 +2951,14 @@ msgstr "Audio branden naar cd"
 
 #: ../sources/rb-playlist-source-recorder.c:638
 msgid "Finished creating audio CD."
-msgstr "Klaar met het maken van audio-cd."
+msgstr "Klaar met het maken van muziek-cd."
 
 #: ../sources/rb-playlist-source-recorder.c:656
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
-"Klaar met het maken van de audio-cd.\n"
+"Klaar met het maken van de muziek-cd.\n"
 "Nog een kopie maken?"
 
 #: ../sources/rb-playlist-source-recorder.c:658
@@ -2962,7 +2999,7 @@ msgstr "_Onderbreken"
 
 #: ../sources/rb-playlist-source-recorder.c:940
 msgid "Could not create audio CD"
-msgstr "Kon de audiocd niet aanmaken"
+msgstr "Kon de muziek-cd niet aanmaken"
 
 # Controleer of het apparaat niet door een andere toepassing wordt gebruikt.
 # Of een andere toepassing het apparaat in gebruik heeft
@@ -3070,12 +3107,12 @@ msgstr "Kon de tijdelijke map ‘%s’ niet verwijderen: %s"
 
 #: ../sources/rb-playlist-source-recorder.c:1378
 msgid "Create Audio CD"
-msgstr "Audio-cd aanmaken"
+msgstr "Muziek-cd aanmaken"
 
 #: ../sources/rb-playlist-source-recorder.c:1395
 #, c-format
 msgid "Create audio CD from '%s'?"
-msgstr "Audio-cd aanmaken van luisterlijst ‘%s’?"
+msgstr "Muziek-cd aanmaken van luisterlijst ‘%s’?"
 
 # wat is een audio track list? bedoelen ze hetzelfde als playlist?
 #: ../sources/rb-playlist-source-recorder.c:1441
@@ -3085,7 +3122,7 @@ msgstr "Kan geen luisterlijst aanmaken."
 
 #: ../sources/rb-playlist-source-recorder.c:1469
 msgid "This playlist is too long to write to an audio CD."
-msgstr "Deze luisterlijst is te lang om een audio-cd van te maken."
+msgstr "Deze luisterlijst is te lang om een muziek-cd van te maken."
 
 #: ../sources/rb-playlist-source-recorder.c:1539
 #, c-format
@@ -3098,10 +3135,7 @@ msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
-msgstr ""
-"Deze speellijst is %s minuten lang. Dit overschrijdt de lengte van een "
-"standaard audio cd. Als het doelmedium groter is dan een standaaard audio cd "
-"kunt u het in het brandapparaat laden en opnieuw proberen."
+msgstr "Deze speellijst is %s minuten lang. Dit overschrijdt de lengte van een standaard muziek-cd. Als het doelmedium groter is dan een standaard muziek-cd kunt u het in het brandapparaat laden en opnieuw proberen."
 
 #: ../sources/rb-playlist-source-recorder.c:1635
 msgid "Playlist too long"
@@ -3216,17 +3250,15 @@ msgstr "Afleveringen"
 msgid "Search podcast episodes"
 msgstr "Zoeken in podcast-afleveringen"
 
-#: ../sources/rb-podcast-source.c:585
+#: ../sources/rb-podcast-source.c:585 ../sources/rb-podcast-source.c:596
 msgid "Date"
 msgstr "Datum"
 
-#: ../sources/rb-podcast-source.c:596
-msgid "_Date"
-msgstr "_Datum"
-
-#: ../sources/rb-podcast-source.c:617
-msgid "_Feed"
-msgstr "_Feed"
+#. configure feed view
+#: ../sources/rb-podcast-source.c:617 ../sources/rb-podcast-source.c:681
+#: ../sources/rb-podcast-source.c:711
+msgid "Feed"
+msgstr "Feed"
 
 #: ../sources/rb-podcast-source.c:636 ../sources/rb-podcast-source.c:654
 msgid "Status"
@@ -3244,11 +3276,6 @@ msgstr "Wachten"
 #: ../sources/rb-podcast-source.c:639 ../sources/rb-podcast-source.c:1488
 msgid "Failed"
 msgstr "Mislukt"
-
-#. configure feed view
-#: ../sources/rb-podcast-source.c:681 ../sources/rb-podcast-source.c:711
-msgid "Feed"
-msgstr "Feed"
 
 #: ../sources/rb-podcast-source.c:812
 msgid "Podcasts"
@@ -3330,7 +3357,7 @@ msgid_plural "%d episodes"
 msgstr[0] "%d aflevering"
 msgstr[1] "%d afleveringen"
 
-#: ../sources/rb-source.c:540
+#: ../sources/rb-source.c:554
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -3342,7 +3369,7 @@ msgid "S_ource"
 msgstr "_Bron"
 
 #. +
-#: ../widgets/bacon-volume.c:187
+#: ../widgets/bacon-volume.c:201
 msgid "+"
 msgstr "+"
 
@@ -3416,51 +3443,58 @@ msgstr "%u kbps"
 
 # spoor
 #: ../widgets/rb-entry-view.c:1030
-msgid "Trac_k"
-msgstr "_Nummer"
+msgid "Track"
+msgstr "Nummer"
 
-#: ../widgets/rb-entry-view.c:1041
-msgid "_Title"
-msgstr "_Titel"
-
-#: ../widgets/rb-entry-view.c:1051
-msgid "Art_ist"
-msgstr "Art_iest"
-
-#: ../widgets/rb-entry-view.c:1061
-msgid "_Album"
-msgstr "_Album"
-
+# _T wordt voor _Titel gebruikt
+# _d voor Beel_d (in hoofdmenu)
 #: ../widgets/rb-entry-view.c:1081
-msgid "Tim_e"
-msgstr "Ti_jd"
+msgid "Time"
+msgstr "Tijd"
+
+#: ../widgets/rb-entry-view.c:1093 ../widgets/rb-query-creator-properties.c:69
+#: ../widgets/rb-query-creator-properties.c:98
+msgid "Year"
+msgstr "Jaar"
+
+#: ../widgets/rb-entry-view.c:1105
+msgid "Quality"
+msgstr "Kwaliteit"
 
 #: ../widgets/rb-entry-view.c:1108
 msgid "000 kbps"
 msgstr "000 kbps"
 
-# In de tabelkop komt te staan: Beluisterd: Nooit, 1, 2 etc
-# Aantal maal afgespeeld is veel te lang
-#: ../widgets/rb-entry-view.c:1140
-msgid "_Play Count"
-msgstr "B_eluisterd"
+# cijfer/waardering
+#: ../widgets/rb-entry-view.c:1118 ../widgets/rb-query-creator-properties.c:70
+#: ../widgets/rb-query-creator-properties.c:96
+msgid "Rating"
+msgstr "Waardering"
+
+# Aantal maal afgespeeld is te lang
+#: ../widgets/rb-entry-view.c:1140 ../widgets/rb-query-creator-properties.c:73
+#: ../widgets/rb-query-creator-properties.c:97
+msgid "Play Count"
+msgstr "Beluisterd"
 
 #: ../widgets/rb-entry-view.c:1152
-msgid "_Last Played"
-msgstr "_Laatst gehoord"
+#: ../widgets/rb-query-creator-properties.c:101
+msgid "Last Played"
+msgstr "Laatst beluisterd"
 
-# datum niet meervertaald (overbodig en te lang)
+# date niet meevertalen
 #: ../widgets/rb-entry-view.c:1164
-msgid "_Date Added"
-msgstr "_Toegevoegd"
+#: ../widgets/rb-query-creator-properties.c:102
+msgid "Date Added"
+msgstr "Toegevoegd"
 
 #: ../widgets/rb-entry-view.c:1175
-msgid "Last _Seen"
-msgstr "Laatst ge_zien"
+msgid "Last Seen"
+msgstr "Laatst gezien"
 
 #: ../widgets/rb-entry-view.c:1186
-msgid "L_ocation"
-msgstr "L_ocatie"
+msgid "Location"
+msgstr "Locatie"
 
 #: ../widgets/rb-entry-view.c:1194
 msgid "Error"
@@ -3520,26 +3554,9 @@ msgstr "Automatische lusiterlijst aanmaken"
 msgid "Edit Automatic Playlist"
 msgstr "Automatische luisterlijst bewerken"
 
-#: ../widgets/rb-query-creator-properties.c:69
-#: ../widgets/rb-query-creator-properties.c:98
-msgid "Year"
-msgstr "Jaar"
-
-# cijfer/waardering
-#: ../widgets/rb-query-creator-properties.c:70
-#: ../widgets/rb-query-creator-properties.c:96
-msgid "Rating"
-msgstr "Waardering"
-
 #: ../widgets/rb-query-creator-properties.c:71
 msgid "Path"
 msgstr "Pad"
-
-# Aantal maal afgespeeld is te lang
-#: ../widgets/rb-query-creator-properties.c:73
-#: ../widgets/rb-query-creator-properties.c:97
-msgid "Play Count"
-msgstr "Beluisterd"
 
 #: ../widgets/rb-query-creator-properties.c:74
 #: ../widgets/rb-query-creator-properties.c:100
@@ -3599,17 +3616,8 @@ msgid "_In decreasing order"
 msgstr "_In afnemende volgorde"
 
 #: ../widgets/rb-query-creator-properties.c:101
-msgid "Last Played"
-msgstr "Laatst beluisterd"
-
-#: ../widgets/rb-query-creator-properties.c:101
 msgid "W_ith more recently played tracks first"
 msgstr "_Met meer recent beluisterde nummers eerst"
-
-# date niet meevertalen
-#: ../widgets/rb-query-creator-properties.c:102
-msgid "Date Added"
-msgstr "Toegevoegd"
 
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "W_ith more recently added tracks first"
@@ -3725,6 +3733,80 @@ msgstr "Op het werkblad"
 msgid "Unknown location"
 msgstr "Onbekende locatie:"
 
+# albumhoezen tonen
+#~ msgid "Art Display"
+#~ msgstr "Albumhoezen tonen"
+
+#~ msgid "Displays art for the playing track"
+#~ msgstr "Toont de albumhoes voor het huidige nummer"
+
+#~ msgid "Generic Audio Player"
+#~ msgstr "Algemene audio-speler"
+
+#~ msgid ""
+#~ "Adds iPod support to Rhythmbox so that it can show an iPod content, and "
+#~ "play from there"
+#~ msgstr ""
+#~ "Geeft Rhythmbox ondersteuning voor de iPod zodat het de inhoud van de "
+#~ "iPod kan tonen en nummers kan afspelen vanaf de iPod"
+
+#~ msgid "iPod support"
+#~ msgstr "Ondersteuning voor iPod"
+
+#~ msgid "Displays song lyrics"
+#~ msgstr "Toont de songteksten"
+
+# werkt niet/doet niets/doet niet zo veel
+#~ msgid " doesn't do much"
+#~ msgstr " doet niet zo veel"
+
+#~ msgid "Does a whole lot of not much"
+#~ msgstr "Doet een heleboel niets"
+
+# dan maar iets langer, maar zo is het niet meer dubbelzinnig
+# door A van B/door A van het album B
+#~ msgid "by %s from %s"
+#~ msgstr "door %s van het album %s"
+
+#~ msgid "Connecting"
+#~ msgstr "Verbinden"
+
+#~ msgid "Buffering"
+#~ msgstr "Bufferen"
+
+#~ msgid "_Date"
+#~ msgstr "_Datum"
+
+#~ msgid "_Feed"
+#~ msgstr "_Feed"
+
+#~ msgid "_Title"
+#~ msgstr "_Titel"
+
+#~ msgid "Art_ist"
+#~ msgstr "Art_iest"
+
+#~ msgid "_Album"
+#~ msgstr "_Album"
+
+#~ msgid "Tim_e"
+#~ msgstr "Ti_jd"
+
+# In de tabelkop komt te staan: Beluisterd: Nooit, 1, 2 etc
+# Aantal maal afgespeeld is veel te lang
+#~ msgid "_Play Count"
+#~ msgstr "B_eluisterd"
+
+#~ msgid "_Last Played"
+#~ msgstr "_Laatst gehoord"
+
+# datum niet meervertaald (overbodig en te lang)
+#~ msgid "_Date Added"
+#~ msgstr "_Toegevoegd"
+
+#~ msgid "L_ocation"
+#~ msgstr "L_ocatie"
+
 #~ msgid "_Disc Number:"
 #~ msgstr "_Schijfnummer:"
 
@@ -3733,9 +3815,6 @@ msgstr "Onbekende locatie:"
 
 #~ msgid "Last.fm Profile Preferences"
 #~ msgstr "Last.fm profielvoorkeuren"
-
-#~ msgid "Import _Audio CD..."
-#~ msgstr "Audio-_cd importeren..."
 
 #~ msgid "Extract and import songs from a CD"
 #~ msgstr "Nummers van een cd overnemen en importeren"
@@ -3889,10 +3968,6 @@ msgstr "Onbekende locatie:"
 # statusbalkmelding
 #~ msgid "Change the visibility of the source list"
 #~ msgstr "De bronnenlijst wel of niet weergeven"
-
-# denk "van (het album...) door (de artiest...)
-#~ msgid "%s by %s"
-#~ msgstr "%s door %s"
 
 # misschien beter: gebruik audioscrobbler
 #~ msgid "_Enable AudioScrobbler"
