@@ -65,6 +65,14 @@ static gboolean cb_button_release		(GtkWidget      * widget,
 						 GdkEventButton * event,
 						 gpointer         data);
 static void	bacon_volume_scale_value_changed(GtkRange       * range);
+#ifndef HAVE_GTK_ONLY
+static void	bacon_volume_button_realize	(GtkWidget	*widget,
+    						 BaconVolumeButton *button);
+static void	bacon_volume_theme_changed	(GtkIconTheme	* theme,
+						 gpointer         data);
+static void	bacon_volume_load_icons		(BaconVolumeButton * button,
+						 GtkIconTheme      * theme);
+#endif
 
 /* see below for scale definitions */
 static GtkWidget *bacon_volume_scale_new	(BaconVolumeButton * button,
@@ -79,8 +87,8 @@ bacon_volume_button_get_type (void)
 {
   static GType bacon_volume_button_type = 0;
 
-  if (!bacon_volume_button_type) {
-    static const GTypeInfo bacon_volume_button_info = {
+  if (G_UNLIKELY (bacon_volume_button_type == 0)) {
+    const GTypeInfo bacon_volume_button_info = {
       sizeof (BaconVolumeButtonClass),
       NULL,
       NULL,
@@ -129,29 +137,28 @@ bacon_volume_button_init (BaconVolumeButton *button)
   button->timeout = FALSE;
   button->click_id = 0;
   button->dock = button->scale = NULL;
-#ifndef HAVE_GTK_ONLY
-  button->theme = gtk_icon_theme_get_default ();
-#endif
 }
 
 static void
 bacon_volume_button_dispose (GObject *object)
 {
   BaconVolumeButton *button = BACON_VOLUME_BUTTON (object);
+  guint i;
 
   if (button->dock) {
     gtk_widget_destroy (button->dock);
     button->dock = NULL;
   }
 
-  if (button->theme) {
-    g_object_unref (G_OBJECT (button->theme));
-    button->theme = NULL;
-  }
-
   if (button->click_id != 0) {
     g_source_remove (button->click_id);
     button->click_id = 0;
+  }
+  for (i = 0; i < 4; i++) {
+    if (button->icon[i] != NULL) {
+      g_object_unref (button->icon[i]);
+      button->icon[i] = NULL;
+    }
   }
 
   G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -170,8 +177,14 @@ bacon_volume_button_new (GtkIconSize size,
   GtkWidget *frame, *box;
 
   button = g_object_new (BACON_TYPE_VOLUME_BUTTON, NULL);
+  atk_object_set_name (gtk_widget_get_accessible (GTK_WIDGET (button)),
+		       _("Volume"));
   button->size = size;
   gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+  gtk_button_set_focus_on_click (GTK_BUTTON (button), FALSE);
+
+  g_signal_connect (G_OBJECT (button), "realize",
+      		    G_CALLBACK (bacon_volume_button_realize), button);
 
 #ifndef HAVE_GTK_ONLY
   /* image */
@@ -199,6 +212,8 @@ bacon_volume_button_new (GtkIconSize size,
 
   /* + */
   button->plus = gtk_button_new_with_label (_("+"));
+  atk_object_set_name (gtk_widget_get_accessible (button->plus),
+		       _("Volume Down"));
   gtk_button_set_relief (GTK_BUTTON (button->plus), GTK_RELIEF_NONE);
   g_signal_connect (button->plus, "button-press-event",
 		    G_CALLBACK (cb_button_press), button);
@@ -215,6 +230,8 @@ bacon_volume_button_new (GtkIconSize size,
 
   /* - */
   button->min = gtk_button_new_with_label (_("-"));
+  atk_object_set_name (gtk_widget_get_accessible (button->min),
+		       _("Volume Up"));
   gtk_button_set_relief (GTK_BUTTON (button->min), GTK_RELIEF_NONE);
   g_signal_connect (button->min, "button-press-event",
 		   G_CALLBACK (cb_button_press), button);
@@ -248,6 +265,20 @@ bacon_volume_button_set_value (BaconVolumeButton * button,
 /*
  * button callbacks.
  */
+
+#ifndef HAVE_GTK_ONLY
+static void
+bacon_volume_button_realize (GtkWidget *widget, BaconVolumeButton *button)
+{
+  GtkIconTheme *theme;
+  GdkScreen *screen;
+
+  screen = gtk_widget_get_screen (widget);
+  theme = gtk_icon_theme_get_for_screen (screen);
+  g_signal_connect (G_OBJECT (theme), "changed",
+		    G_CALLBACK (bacon_volume_theme_changed), button);
+}
+#endif
 
 static gboolean
 bacon_volume_button_scroll (GtkWidget      * widget,
@@ -284,8 +315,15 @@ bacon_volume_button_press (GtkWidget      * widget,
   gint x, y, m, dx, dy, sx, sy, ystartoff, mouse_y;
   float v;
   GdkEventButton *e;
+  GdkDisplay *display;
+  GdkScreen *screen;
+
+  display = gtk_widget_get_display (widget);
+  screen = gtk_widget_get_screen (widget);
 
   /* position roughly */
+  gtk_window_set_screen (GTK_WINDOW (button->dock), screen);
+
   gdk_window_get_origin (widget->window, &x, &y);
   x += widget->allocation.x;
   y += widget->allocation.y;
@@ -314,12 +352,25 @@ bacon_volume_button_press (GtkWidget      * widget,
   GTK_WIDGET_CLASS (parent_class)->button_press_event (widget, event);
 
   /* grab focus */
-  gtk_widget_grab_focus (button->dock);
   gtk_grab_add (button->dock);
-  gdk_pointer_grab (button->dock->window, TRUE,
-      GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
-      GDK_POINTER_MOTION_MASK, NULL, NULL, GDK_CURRENT_TIME);
-  gdk_keyboard_grab (button->dock->window, TRUE, GDK_CURRENT_TIME);
+
+  if (gdk_pointer_grab (button->dock->window, TRUE,
+			GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
+			GDK_POINTER_MOTION_MASK, NULL, NULL, event->time)
+      != GDK_GRAB_SUCCESS) {
+	  gtk_grab_remove (button->dock);
+	  gtk_widget_hide (button->dock);
+	  return FALSE;
+   }
+
+  if (gdk_keyboard_grab (button->dock->window, TRUE, event->time) != GDK_GRAB_SUCCESS) {
+	  gdk_display_pointer_ungrab (display, event->time);
+	  gtk_grab_remove (button->dock);
+	  gtk_widget_hide (button->dock);
+	  return FALSE;
+  }
+
+  gtk_widget_grab_focus (button->dock);
 
   /* forward event to the slider */
   e = (GdkEventButton *) gdk_event_copy ((GdkEvent *) event);
@@ -350,11 +401,18 @@ bacon_volume_key_release (GtkWidget      * widget,
   GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (button->scale));
   gint x, y, m, dx, dy, sx, sy, ystartoff;
   float v;
+  GdkDisplay *display;
+  GdkScreen *screen;
 
   if (event->keyval != GDK_space && event->keyval != GDK_Return)
     return FALSE;
 
+  display = gtk_widget_get_display (widget);
+  screen = gtk_widget_get_screen (widget);
+
   /* position roughly */
+  gtk_window_set_screen (GTK_WINDOW (button->dock), screen);
+
   gdk_window_get_origin (widget->window, &x, &y);
   x += widget->allocation.x;
   y += widget->allocation.y;
@@ -379,12 +437,23 @@ bacon_volume_key_release (GtkWidget      * widget,
   gdk_window_get_origin (button->scale->window, &sx, &sy);
 
   /* grab focus */
-  gtk_widget_grab_focus (button->dock);
   gtk_grab_add (button->dock);
-  gdk_pointer_grab (button->dock->window, TRUE,
-      GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK,
-      NULL, NULL, GDK_CURRENT_TIME);
-  gdk_keyboard_grab (button->dock->window, TRUE, GDK_CURRENT_TIME);
+
+  if (gdk_pointer_grab (button->dock->window, TRUE,
+			GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK,
+			NULL, NULL, event->time)
+      != GDK_GRAB_SUCCESS) {
+	  gtk_grab_remove (button->dock);
+	  gtk_widget_hide (button->dock);
+	  return FALSE;
+   }
+
+  if (gdk_keyboard_grab (button->dock->window, TRUE, event->time) != GDK_GRAB_SUCCESS) {
+	  gdk_display_pointer_ungrab (display, event->time);
+	  gtk_grab_remove (button->dock);
+	  gtk_widget_hide (button->dock);
+	  return FALSE;
+  }
 
   gtk_widget_grab_focus (button->scale);
 
@@ -470,10 +539,12 @@ bacon_volume_release_grab (BaconVolumeButton *button,
 			   GdkEventButton * event)
 {
   GdkEventButton *e;
+  GdkDisplay *display;
 
   /* ungrab focus */
-  gdk_keyboard_ungrab (GDK_CURRENT_TIME);
-  gdk_pointer_ungrab (GDK_CURRENT_TIME);
+  display = gtk_widget_get_display (GTK_WIDGET (button));
+  gdk_display_keyboard_ungrab (display, event->time);
+  gdk_display_pointer_ungrab (display, event->time);
   gtk_grab_remove (button->dock);
 
   /* hide again */
@@ -512,10 +583,12 @@ cb_dock_key_release (GtkWidget      * widget,
   BaconVolumeButton *button = BACON_VOLUME_BUTTON (data);
 
   if (event->keyval == GDK_Escape) {
-     /* ungrab focus */
-    gdk_keyboard_ungrab (GDK_CURRENT_TIME);
-    gdk_pointer_ungrab (GDK_CURRENT_TIME);
-    gtk_grab_remove (button->dock);
+    GdkDisplay *display;
+
+    /* ungrab focus */
+    display = gtk_widget_get_display (widget);
+    gdk_display_keyboard_ungrab (display, event->time);
+    gdk_display_pointer_ungrab (display, event->time);
 
     /* hide again */
     gtk_widget_hide (button->dock);
@@ -568,8 +641,8 @@ bacon_volume_scale_get_type (void)
 {
   static GType bacon_volume_scale_type = 0;
 
-  if (!bacon_volume_scale_type) {
-    static const GTypeInfo bacon_volume_scale_info = {
+  if (G_UNLIKELY (bacon_volume_scale_type == 0)) {
+    const GTypeInfo bacon_volume_scale_info = {
       sizeof (GtkVScaleClass),
       NULL,
       NULL,
@@ -671,7 +744,6 @@ bacon_volume_scale_value_changed (GtkRange * range)
   GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (button->scale));
   float step = (adj->upper - adj->lower) / 4;
   float val = gtk_range_get_value (range);
-  gint w, h;
 #ifdef HAVE_GTK_ONLY
   char *s;
 
@@ -680,27 +752,69 @@ bacon_volume_scale_value_changed (GtkRange * range)
   gtk_button_set_label (GTK_BUTTON (button), s);
   g_free (s);
 #else
-  const char *s;
-  GdkPixbuf *buf;
+  GdkPixbuf *pixbuf;
+
+  if (button->icon[0] == NULL)
+    bacon_volume_load_icons (button, NULL);
 
   if (val == adj->lower)
-    s = "stock_volume-0";
+    pixbuf = button->icon[0];
   else if (val > adj->lower && val <= adj->lower + step)
-    s = "stock_volume-min";
+    pixbuf = button->icon[1];
   else if (val > adj->lower + step && val <= adj->lower + step * 2)
-    s = "stock_volume-med";
+    pixbuf = button->icon[2];
   else
-    s = "stock_volume-max";
+    pixbuf = button->icon[3];
 
   /* update image */
-  gtk_icon_size_lookup (button->size, &w, &h);
-  buf = gtk_icon_theme_load_icon (button->theme, s, w, 0, NULL);
-  gtk_image_set_from_pixbuf (GTK_IMAGE (button->image), buf);
+  gtk_image_set_from_pixbuf (GTK_IMAGE (button->image), pixbuf);
 #endif
 
   /* signal */
   g_signal_emit (button, signals[SIGNAL_VALUE_CHANGED], 0);
 }
+ 
+#ifndef HAVE_GTK_ONLY
+static void
+bacon_volume_theme_changed (GtkIconTheme * theme,
+			    gpointer       data)
+{
+  BaconVolumeButton *button = BACON_VOLUME_BUTTON (data);
+
+  bacon_volume_load_icons (button, theme);
+  bacon_volume_scale_value_changed (GTK_RANGE (button->scale));
+}
+
+static void
+bacon_volume_load_icons	(BaconVolumeButton * button,
+			 GtkIconTheme      * _theme)
+{
+  guint i;
+  gint w, h;
+  GtkIconTheme *theme;
+  const char *icon_name[] = {"audio-volume-muted", "audio-volume-low",
+    "audio-volume-medium", "audio-volume-high"};
+
+  if (_theme != NULL) {
+    theme = _theme;
+  } else {
+    GdkScreen *screen;
+
+    screen = gtk_widget_get_screen (GTK_WIDGET (button));
+    theme = gtk_icon_theme_get_for_screen (screen);
+  }
+
+  gtk_icon_size_lookup (button->size, &w, &h);
+
+  for (i = 0; i < 4; i++) {
+    if (button->icon[i] != NULL) {
+      g_object_unref (button->icon[i]);
+      button->icon[i] = NULL;
+    }
+    button->icon[i] = gtk_icon_theme_load_icon (theme, icon_name[i], w, 0, NULL);
+  }
+}
+#endif
 
 /*
  * vim: sw=2 ts=8 cindent noai bs=2

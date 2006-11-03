@@ -1,3 +1,15 @@
+2006-11-03  James Livingston  <doclivingston@gmail.com>
+
+	* widgets/bacon-volume.c: (bacon_volume_button_get_type),
+	(bacon_volume_button_init), (bacon_volume_button_dispose),
+	(bacon_volume_button_new), (bacon_volume_button_realize),
+	(bacon_volume_button_press), (bacon_volume_key_release),
+	(bacon_volume_release_grab), (cb_dock_key_release),
+	(bacon_volume_scale_get_type), (bacon_volume_scale_value_changed),
+	(bacon_volume_theme_changed), (bacon_volume_load_icons):
+	* widgets/bacon-volume.h: update bacon-volume-widget from cvs.
+	Fixes #369491
+
 2006-10-31  James Livingston  <doclivingston@gmail.com>
 
 	* configure.ac: remove spaces around '=' where they shouldn't be,
