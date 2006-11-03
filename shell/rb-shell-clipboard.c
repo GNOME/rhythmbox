@@ -586,15 +586,35 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 }
 
+static GtkWidget*
+get_focussed_widget (RBShellClipboard *clipboard)
+{
+	GtkWidget *window;
+	GtkWidget *widget;
+
+	/* FIXME: this should be better */
+	window = gtk_widget_get_toplevel (GTK_WIDGET (clipboard->priv->source));
+	widget = gtk_window_get_focus (GTK_WINDOW (window));
+
+	return widget;
+}
+
 static void
 rb_shell_clipboard_cmd_select_all (GtkAction *action,
 				   RBShellClipboard *clipboard)
 {
 	RBEntryView *entryview;
-	rb_debug ("select all");
+	GtkWidget *widget;
 
-	entryview = rb_source_get_entry_view (clipboard->priv->source);
-	rb_entry_view_select_all (entryview);
+	rb_debug ("select all");
+	widget = get_focussed_widget (clipboard);
+	if (GTK_IS_EDITABLE (widget)) {
+		gtk_editable_select_region (GTK_EDITABLE (widget), 0, -1);
+	} else {
+		/* select all tracks in the entry view */
+		entryview = rb_source_get_entry_view (clipboard->priv->source);
+		rb_entry_view_select_all (entryview);
+	}
 }
 
 static void
@@ -602,10 +622,16 @@ rb_shell_clipboard_cmd_select_none (GtkAction *action,
 				    RBShellClipboard *clipboard)
 {
 	RBEntryView *entryview;
-	rb_debug ("select none");
+	GtkWidget *widget;
 
-	entryview = rb_source_get_entry_view (clipboard->priv->source);
-	rb_entry_view_select_none (entryview);
+	rb_debug ("select none");
+	widget = get_focussed_widget (clipboard);
+	if (GTK_IS_EDITABLE (widget)) {
+		gtk_editable_select_region (GTK_EDITABLE (widget), -1, -1);
+	} else {
+		entryview = rb_source_get_entry_view (clipboard->priv->source);
+		rb_entry_view_select_none (entryview);
+	}
 }
 
 static void

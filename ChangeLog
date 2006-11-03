@@ -1,5 +1,12 @@
 2006-11-03  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell-clipboard.c: (get_focussed_widget),
+	(rb_shell_clipboard_cmd_select_all),
+	(rb_shell_clipboard_cmd_select_none): make Select All select text in
+	the focussed widget if it's a text entry. Fixes #364590
+
+2006-11-03  James Livingston  <doclivingston@gmail.com>
+
 	* widgets/bacon-volume.c: (bacon_volume_button_get_type),
 	(bacon_volume_button_init), (bacon_volume_button_dispose),
 	(bacon_volume_button_new), (bacon_volume_button_realize),
