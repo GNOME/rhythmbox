@@ -1,6 +1,9 @@
 #include <check.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include <glib/gi18n.h>
+
+#include "test-utils.h"
 
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
@@ -10,95 +13,16 @@
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
 
-#ifndef fail_if
-#define fail_if(expr, ...) fail_unless(!(expr), "Failure '"#expr"' occured")
-#endif
 
 
-/* test utils */
-gboolean waiting, signaled;
-char *sig_name;
-gulong sig_handler;
-GObject *sig_object;
-
-static void
-mark_signal (void)
-{
-	g_signal_handler_disconnect (sig_object, sig_handler);
-	sig_object = NULL;
-	sig_handler = 0;
-
-	if (signaled) {
-		rb_debug ("got signal '%s' multiple times", sig_name);
-	} else {
-		rb_debug ("got signal '%s'", sig_name);
-		signaled = TRUE;
-		if (waiting)
-			gtk_main_quit ();
-	}
-}
-
-static void
-set_waiting_signal (GObject *o, const char *name)
-{
-	signaled = FALSE;
-	waiting = FALSE;
-	sig_name = g_strdup (name);
-	sig_object = o;
-	sig_handler = g_signal_connect (o, sig_name, G_CALLBACK (mark_signal), NULL);
-}
-
-static void wait_for_signal (void)
-{
-	if (!signaled) {
-		rb_debug ("waiting for signal '%s'", sig_name);
-		waiting = TRUE;
-		gtk_main ();
-	} else {
-		rb_debug ("no need to wait for signal '%s', already received", sig_name);
-	}
-
-	g_free (sig_name);
-	sig_name = NULL;
-}
-
-
-/* common setup and teardown */
-RhythmDB *db = NULL;
-gboolean waiting_db, finalised_db;
-
-static void
-test_rhythmdb_setup (void)
-{
-	RhythmDBEntryType entry_type;
-	db = rhythmdb_tree_new ("test");
-	fail_unless (db != NULL, "failed to initialise DB");
-	rhythmdb_start_action_thread (db);
-
-	/* allow SONGs to be synced to for the tests */
-	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
-	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
-	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
-}
-
-static void
-test_rhythmdb_shutdown (void)
-{
-	fail_unless (db != NULL, "failed to shutdown DB");
-	rhythmdb_shutdown (db);
-
-	/* release the reference, and wait until after finalisation */
-	g_object_weak_ref (G_OBJECT (db), (GWeakNotify)gtk_main_quit, NULL);
-	g_idle_add ((GSourceFunc)g_object_unref, db);
-	gtk_main ();
-	db = NULL;
-}
 
 static void
 set_true (RhythmDBEntry *entry, gboolean *b)
 {
 	*b = TRUE;
 }
+
+
 
 /* tests */
 START_TEST (test_rhythmdb_indexing)
@@ -280,95 +204,6 @@ START_TEST (test_rhythmdb_mirroring)
 }
 END_TEST
 
-START_TEST (test_rhythmdb_db_queries)
-{
-	RhythmDBEntry *entry = NULL;
-	RhythmDBQuery *query;
-	GValue val = {0,};
-
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///whee.ogg");
-	fail_unless (entry != NULL, "failed to create entry");
-
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_static_string (&val, "Rock");
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
-	g_value_unset (&val);
-
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_static_string (&val, "Nine Inch Nails");
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
-	g_value_unset (&val);
-
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_static_string (&val, "Pretty Hate Machine");
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
-	g_value_unset (&val);
-
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_static_string (&val, "Sin");
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
-	g_value_unset (&val);
-
-	rhythmdb_commit (db);
-
-	/* basic queries and conjunctions */
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TITLE, "Sin",
-				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-	
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_ARTIST, "Nine Inch",
-				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-	
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_ALBUM, "Load",
-				      RHYTHMDB_QUERY_END);
-	fail_if (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-	
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_SEARCH_MATCH, "Pretty Nine",
-				      RHYTHMDB_QUERY_END);
-	rhythmdb_query_preprocess (db, query);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-
-	/* disjunctions */
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Sin",
-				      RHYTHMDB_QUERY_DISJUNCTION,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Son",
-				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-	
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Sun",
-				      RHYTHMDB_QUERY_DISJUNCTION,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Sin",
-				      RHYTHMDB_QUERY_END);
-	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-	
-	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Sun",
-				      RHYTHMDB_QUERY_DISJUNCTION,
-				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_TITLE, "Son",
-				      RHYTHMDB_QUERY_END);
-	fail_if (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
-	rhythmdb_query_free (query);
-
-	/* TODO: subqueries */
-
-	rhythmdb_entry_delete (db, entry);
-}
-END_TEST
-
 START_TEST (test_rhythmdb_deserialisation1)
 {
 	RhythmDBQueryModel *model;
@@ -407,7 +242,6 @@ START_TEST (test_rhythmdb_deserialisation2)
 	g_object_set (G_OBJECT (model), "show-hidden", TRUE, NULL);
 	set_waiting_signal (G_OBJECT (model), "complete");
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (model),
-				NULL,
 				RHYTHMDB_QUERY_PROP_EQUALS,
 				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
 				RHYTHMDB_QUERY_END);
@@ -447,65 +281,6 @@ START_TEST (test_rhythmdb_deserialisation3)
 }
 END_TEST
 
-/* this tests that chained query models, where the base shows hidden entries
- * forwards visibility changes correctly. This is basically what static playlists do */
-START_TEST (test_hidden_chain_filter)
-{
-	RhythmDBQueryModel *base_model;
-	RhythmDBQueryModel *filter_model;
-	RhythmDBQuery *query;
-	RhythmDBEntry *entry;
-	GtkTreeIter iter;
-	GValue val = {0,};
-
-	/* setup */
-	base_model = rhythmdb_query_model_new_empty (db);
-	g_object_set (base_model, "show-hidden", TRUE, NULL);
-
-	filter_model = rhythmdb_query_model_new_empty (db);
-	g_object_set (filter_model, "base-model", base_model, NULL);
-	query = g_ptr_array_new ();
-	g_object_set (filter_model, "query", query, NULL);
-	rhythmdb_query_free (query);
-
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///whee.ogg");
-	rhythmdb_commit (db);
-
-	g_value_init (&val, G_TYPE_BOOLEAN);
-
-	
-	/* add entry to base, should be in both */
-	rhythmdb_query_model_add_entry (base_model, entry, -1);
-	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
-	fail_unless (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
-	
-	/* hide entry, should be in base and not filtered */
-	g_value_set_boolean (&val, TRUE);
-	set_waiting_signal (G_OBJECT (db), "entry-changed");
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &val);
-	rhythmdb_commit (db);
-	wait_for_signal ();
-
-	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
-	fail_if (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
-
-	/* show entry again, should be in both */
-	g_value_set_boolean (&val, FALSE);
-	set_waiting_signal (G_OBJECT (db), "entry-changed");
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &val);
-	rhythmdb_commit (db);
-	wait_for_signal ();
-
-	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
-	fail_unless (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
-
-	/* tidy up */
-	rhythmdb_entry_delete (db, entry);
-	g_object_unref (base_model);
-	g_object_unref (filter_model);
-	g_value_unset (&val);
-}
-END_TEST
 
 static Suite *
 rhythmdb_suite (void)
@@ -526,21 +301,16 @@ rhythmdb_suite (void)
 	tcase_add_test (tc_chain, test_rhythmdb_mirroring);
 	/*tcase_add_test (tc_chain, test_rhythmdb_signals);*/
 	/*tcase_add_test (tc_chain, test_rhythmdb_query);*/
-	tcase_add_test (tc_chain, test_rhythmdb_db_queries);
-	/*tcase_add_test (tc_chain, test_rhythmdb_query_model);*/
-	/*tcase_add_test (tc_chain, test_rhythmdb_chained_query_model);*/
-	/*tcase_add_test (tc_chain, test_rhythmdb_property_model);*/
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation1);
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation2);
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation3);
 	/*tcase_add_test (tc_chain, test_rhythmdb_serialisation);*/
 
 	/* tests for breakable bug fixes */
-	tcase_add_test (tc_bugs, test_hidden_chain_filter);
 
 	return s;
 }
-	
+
 int
 main (int argc, char **argv)
 {

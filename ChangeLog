@@ -1,3 +1,18 @@
+2006-11-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* tests/Makefile.am:
+	* tests/test-rhythmdb-property-model.c: (_get_property_count),
+	(START_TEST), (rhythmdb_property_model_suite), (main):
+	* tests/test-rhythmdb-query-model.c: (START_TEST),
+	(rhythmdb_query_model_suite), (main):
+	* tests/test-rhythmdb.c: (START_TEST), (rhythmdb_suite):
+	* tests/test-utils.c: (start_test_case), (end_step),
+	(end_test_case), (mark_signal), (set_waiting_signal),
+	(wait_for_signal), (test_rhythmdb_setup), (test_rhythmdb_shutdown),
+	(set_entry_string), (set_entry_ulong), (set_entry_hidden):
+	* tests/test-utils.h:
+	Split up rhythmdb tests, add tests for RhythmDBPropertyModel.
+
 2006-11-04  James Livingston  <doclivingston@gmail.com>
 
 	* lib/rb-glade-helpers.c: (rb_glade_xml_new): don't use rb_file() is

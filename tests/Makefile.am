@@ -3,8 +3,7 @@
 
 TESTS = 
 
-test_rhythmdb_SOURCES = test-rhythmdb.c
-test_rhythmdb_LDADD = \
+LDADD = \
 	$(CHECK_LIBS)						\
 	$(top_builddir)/rhythmdb/librhythmdb.la 		\
 	$(top_builddir)/lib/librb.la				\
@@ -12,14 +11,22 @@ test_rhythmdb_LDADD = \
 	$(top_builddir)/widgets/librbwidgets.la			\
 	$(RHYTHMBOX_LIBS)
 
+test_rhythmdb_SOURCES = \
+	test-rhythmdb.c						\
+	test-utils.h						\
+	test-utils.c
+
+test_rhythmdb_query_model_SOURCES = \
+	test-rhythmdb-query-model.c				\
+	test-utils.h						\
+	test-utils.c
+
+test_rhythmdb_property_model_SOURCES = \
+	test-rhythmdb-property-model.c				\
+	test-utils.h						\
+	test-utils.c
+
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
-bench_rhythmdb_load_LDADD = \
-	$(CHECK_LIBS)						\
-	$(top_builddir)/rhythmdb/librhythmdb.la 		\
-	$(top_builddir)/lib/librb.la				\
-	$(top_builddir)/metadata/librbmetadata.la		\
-	$(top_builddir)/widgets/librbwidgets.la			\
-	$(RHYTHMBOX_LIBS)
 
 INCLUDES = 							\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"	        \
@@ -33,7 +40,10 @@ INCLUDES = 							\
 
 
 if HAVE_CHECK
-TESTS += test-rhythmdb
+TESTS += \
+	test-rhythmdb						\
+	test-rhythmdb-query-model				\
+	test-rhythmdb-property-model
 endif
 
 OLD_TESTS = \
