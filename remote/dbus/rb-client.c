@@ -43,6 +43,8 @@ static gboolean hide = FALSE;
 static gboolean next = FALSE;
 static gboolean previous = FALSE;
 
+static gboolean notify = FALSE;
+
 static gboolean play = FALSE;
 static gboolean pause = FALSE;
 static gboolean play_pause = FALSE;
@@ -69,6 +71,8 @@ static GOptionEntry args[] = {
 
 	{ "next", 0, 0, G_OPTION_ARG_NONE, &next, N_("Jump to next song"), NULL },
 	{ "previous", 0, 0, G_OPTION_ARG_NONE, &previous, N_("Jump to previous song"), NULL },
+
+	{ "notify", 0, 0, G_OPTION_ARG_NONE, &notify, N_("Show notification of the playing song"), NULL },
 
 	{ "play", 0, 0, G_OPTION_ARG_NONE, &play, N_("Resume playback if currently paused"), NULL },
 	{ "pause", 0, 0, G_OPTION_ARG_NONE, &pause, N_("Pause playback if currently playing"), NULL },
@@ -474,7 +478,7 @@ main (int argc, char **argv)
 	}
 
 	/* don't present if we're doing something else */
-	if (next || previous || clear_queue || play_uri || other_stuff || play || pause || play_pause || stop || print_playing || print_playing_format)
+	if (next || previous || clear_queue || play_uri || other_stuff || play || pause || play_pause || stop || print_playing || print_playing_format || notify)
 		no_present = TRUE;
 
 	/* 2. present or hide */
@@ -568,6 +572,13 @@ main (int argc, char **argv)
 		print_playing_song (shell_proxy, player_proxy, print_playing_format);
 	} else if (print_playing) {
 		print_playing_song (shell_proxy, player_proxy, "%ta - %tt");
+	}
+
+	/* 7. display notification about playing song */
+	if (notify) {
+		rb_debug ("show notification");
+		org_gnome_Rhythmbox_Shell_notify (shell_proxy, TRUE, &error);
+		annoy (&error);
 	}
 
 	g_object_unref (G_OBJECT (shell_proxy));

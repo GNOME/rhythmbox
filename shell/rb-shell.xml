@@ -8,14 +8,14 @@
       <arg type="s"/>
       <arg type="b"/>
     </method>
-    
+
     <method name="getPlayer">
       <arg type="o" direction="out">
 	<annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
 	<annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
       </arg>
     </method>
-    
+
     <method name="getPlaylistManager">
       <arg type="o" direction="out">
 	<annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
@@ -49,7 +49,12 @@
     </method>
 
     <method name="clearQueue"/>
-    
+
+    <method name="notify">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_do_notify"/>
+      <arg type="b" name="userRequested"/>
+    </method>
+
     <signal name="visibilityChanged">
       <arg type="b" name="visibility"/>
     </signal>

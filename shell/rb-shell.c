@@ -2932,7 +2932,7 @@ rb_shell_hidden_notify (RBShell *shell,
 			gboolean requested)
 {
 
-	if (rb_shell_get_visibility (shell)) {
+	if (requested == FALSE && rb_shell_get_visibility (shell)) {
 		rb_debug ("shell is visible, not notifying");
 		return;
 	}
@@ -2943,6 +2943,18 @@ rb_shell_hidden_notify (RBShell *shell,
 			     icon,
 			     secondary,
 			     requested);
+}
+
+gboolean
+rb_shell_do_notify (RBShell *shell, gboolean requested, GError **error)
+{
+	RhythmDBEntry *entry;
+
+	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+	rb_shell_notify_playing_entry (shell, entry, requested);
+	rhythmdb_entry_unref (entry);
+
+	return TRUE;
 }
 
 static void

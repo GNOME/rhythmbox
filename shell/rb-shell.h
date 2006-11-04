@@ -140,6 +140,9 @@ void            rb_shell_hidden_notify  (RBShell *shell,
 void		rb_shell_notify_playing_entry (RBShell *shell,
 					       RhythmDBEntry *entry,
 					       gboolean requested);
+gboolean	rb_shell_do_notify (RBShell *shell,
+				    gboolean requested,
+				    GError **error);
 
 void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,
