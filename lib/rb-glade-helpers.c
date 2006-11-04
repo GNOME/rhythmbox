@@ -37,8 +37,17 @@ rb_glade_xml_new (const char *file,
 		  gpointer user_data)
 {
 	GladeXML *xml;
+	const char *name;
 
-	xml = glade_xml_new (rb_file (file), root, NULL);
+	g_return_val_if_fail (file != NULL, NULL);
+
+	/* is the first characters is /, it's an absolute path, otherwise locate it */
+	if (file[0] == G_DIR_SEPARATOR)
+		name = file;
+	else
+		name = rb_file (file);
+
+	xml = glade_xml_new (name, root, NULL);
 
 	glade_xml_signal_autoconnect_full (xml,
 					   (GladeXMLConnectFunc) glade_signal_connect_func,

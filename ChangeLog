@@ -1,3 +1,9 @@
+2006-11-04  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-glade-helpers.c: (rb_glade_xml_new): don't use rb_file() is
+	we were passed a absolute path, e.g. from the plugin file find
+	function.
+
 2006-11-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch somewhat by:  Oskari Saarenmaa  <os@sumu.org>
