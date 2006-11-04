@@ -14,9 +14,9 @@ rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
 def playing_uri_changed(uri):
     print "Now playing: %s" % (uri,)
     props = rbshell.getSongProperties(uri)
-    #interesting = ['title', 'artist', 'album', 'location']
+    interesting = ['title', 'artist', 'album', 'location']
     for prop in props:
-        #if prop in interesting:
+        if prop in interesting:
             print "%s: %s" % (prop, props[prop])
 
 rbplayer.connect_to_signal('playingUriChanged', playing_uri_changed)
