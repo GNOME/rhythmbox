@@ -92,7 +92,6 @@ test_rhythmdb_setup (void)
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;
 	entry_type->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
-	entry_type->check_file_exists = FALSE;
 }
 
 void
