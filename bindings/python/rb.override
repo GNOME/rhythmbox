@@ -513,7 +513,7 @@ _wrap_RBSource__do_impl_get_ui_actions(PyObject *cls, PyObject *args, PyObject *
 		return NULL;
 	}
 	g_type_class_unref(klass);
-	return _helper_unwrap_string_pylist (ret);
+	return _helper_wrap_string_glist (ret);
 }
 %%
 override RBSource__proxy_do_impl_get_ui_actions
@@ -524,7 +524,8 @@ _wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
 	PyObject *py_self;
 	PyObject *py_method;
 	PyObject *py_retval;
-	GList *ret = NULL;
+	GList *ret;
+	GList *list;
 
 	__py_state = pyg_gil_state_ensure();
 	py_self = pygobject_new((GObject *)self);
@@ -554,13 +555,15 @@ _wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
 		return NULL;
 	}
 
-	ret = _helper_unwrap_string_pylist (py_retval);
+	list = _helper_unwrap_string_pylist (py_retval);
 
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
 	pyg_gil_state_release(__py_state);
 
+	ret = rb_string_list_copy (list);
+	g_list_free (list);
 	return ret;
 }
 %%
