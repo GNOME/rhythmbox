@@ -76,6 +76,7 @@ typedef struct
 {
 	RhythmDB *db;
 
+	gint load_playlists_id;
 	GList *playlists;
 
 	char *mount_path;
@@ -154,7 +155,8 @@ rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 
 	rb_generic_player_source_load_songs (source);
 
-	g_idle_add ((GSourceFunc)rb_generic_player_source_load_playlists, source);
+	priv->load_playlists_id =
+		g_idle_add ((GSourceFunc)rb_generic_player_source_load_playlists, source);
 
 	return G_OBJECT (source);
 }
@@ -256,6 +258,11 @@ static void
 rb_generic_player_source_dispose (GObject *object)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (object);
+
+	if (priv->load_playlists_id != 0) {
+		g_source_remove (priv->load_playlists_id);
+		priv->load_playlists_id = 0;
+	}
 
 	if (priv->db) {
 		g_object_unref (G_OBJECT (priv->db));
@@ -448,8 +455,11 @@ static gboolean
 rb_generic_player_source_load_playlists (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
 	GDK_THREADS_ENTER ();
+
+	priv->load_playlists_id = 0;
 
 	if (klass->impl_load_playlists)
 		klass->impl_load_playlists (source);

@@ -1,3 +1,12 @@
+2006-11-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_constructor),
+	(rb_generic_player_source_dispose),
+	(rb_generic_player_source_load_playlists):
+	Don't crash if the source is destroyed before it gets a chance
+	to load playlists.
+
 2006-11-06  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_monitor_uri_path):
