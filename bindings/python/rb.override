@@ -513,7 +513,7 @@ _wrap_RBSource__do_impl_get_ui_actions(PyObject *cls, PyObject *args, PyObject *
 		return NULL;
 	}
 	g_type_class_unref(klass);
-	return _helper_wrap_string_glist (ret);
+	return _helper_unwrap_string_pylist (ret);
 }
 %%
 override RBSource__proxy_do_impl_get_ui_actions
