@@ -666,6 +666,12 @@ rhythmdb_shutdown (RhythmDB *db)
 }
 
 static void
+_shutdown_foreach_hash (gpointer uri, RhythmDBEvent *event, RhythmDB *db)
+{
+	rhythmdb_event_free (db, event);
+}
+
+static void
 rhythmdb_finalize (GObject *object)
 {
 	RhythmDB *db;
@@ -674,6 +680,7 @@ rhythmdb_finalize (GObject *object)
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RHYTHMDB_IS (object));
 
+	rb_debug ("finalizing rhythmdb");
 	db = RHYTHMDB (object);
 
 	g_return_if_fail (db->priv != NULL);
@@ -698,6 +705,8 @@ rhythmdb_finalize (GObject *object)
 	g_mutex_free (db->priv->saving_mutex);
 	g_cond_free (db->priv->saving_condition);
 
+	g_list_free (db->priv->stat_list);
+	g_hash_table_foreach (db->priv->stat_events, (GHFunc)_shutdown_foreach_hash, db);
 	g_hash_table_destroy (db->priv->stat_events);
  	g_mutex_free (db->priv->stat_mutex);
 

@@ -292,8 +292,10 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 		gnome_vfs_uri_unref (parent);
 	}
 
-	if (directory == NULL || g_hash_table_lookup (db->priv->monitored_directories, directory))
+	if (directory == NULL || g_hash_table_lookup (db->priv->monitored_directories, directory)) {
+		g_free (directory);
 		return;
+	}
 
 	handle = g_new0 (GnomeVFSMonitorHandle *, 1);
 	vfsresult = gnome_vfs_monitor_add (handle, directory,
