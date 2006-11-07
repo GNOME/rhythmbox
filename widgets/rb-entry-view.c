@@ -58,6 +58,7 @@ static void rb_entry_view_class_init (RBEntryViewClass *klass);
 static void rb_entry_view_init (RBEntryView *view);
 static GObject *rb_entry_view_constructor (GType type, guint n_construct_properties,
 					   GObjectConstructParam *construct_properties);
+static void rb_entry_view_dispose (GObject *object);
 static void rb_entry_view_finalize (GObject *object);
 static void rb_entry_view_set_property (GObject *object,
 				       guint prop_id,
@@ -221,6 +222,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->dispose = rb_entry_view_dispose;
 	object_class->finalize = rb_entry_view_finalize;
 	object_class->constructor = rb_entry_view_constructor;
 
@@ -394,6 +396,61 @@ rb_entry_view_init (RBEntryView *view)
 }
 
 static void
+rb_entry_view_dispose (GObject *object)
+{
+	RBEntryView *view;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_ENTRY_VIEW (object));
+
+	view = RB_ENTRY_VIEW (object);
+
+	g_return_if_fail (view->priv != NULL);
+
+	if (view->priv->gconf_notification_id > 0) {
+		eel_gconf_notification_remove (view->priv->gconf_notification_id);
+		view->priv->gconf_notification_id = 0;
+	}
+
+	if (view->priv->sorting_gconf_notification_id > 0) {
+		eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
+		view->priv->sorting_gconf_notification_id = 0;
+	}
+
+	if (view->priv->selection_changed_id > 0) {
+		g_source_remove (view->priv->selection_changed_id);
+		view->priv->selection_changed_id = 0;
+	}
+
+	if (view->priv->playing_pixbuf != NULL) {
+		g_object_unref (view->priv->playing_pixbuf);
+		view->priv->playing_pixbuf = NULL;
+	}
+
+	if (view->priv->paused_pixbuf != NULL) {
+		g_object_unref (view->priv->paused_pixbuf);
+		view->priv->paused_pixbuf = NULL;
+	}
+
+	if (view->priv->error_pixbuf != NULL) {
+		g_object_unref (view->priv->error_pixbuf);
+		view->priv->error_pixbuf = NULL;
+	}
+
+	if (view->priv->playing_model != NULL) {
+		g_object_unref (view->priv->playing_model);
+		view->priv->playing_model = NULL;
+	}
+
+	if (view->priv->model != NULL) {
+		g_object_unref (view->priv->model);
+		view->priv->model = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_entry_view_parent_class)->dispose (object);
+}
+
+static void
 rb_entry_view_finalize (GObject *object)
 {
 	RBEntryView *view;
@@ -405,31 +462,9 @@ rb_entry_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	if (view->priv->gconf_notification_id > 0)
-		eel_gconf_notification_remove (view->priv->gconf_notification_id);
-	if (view->priv->sorting_gconf_notification_id > 0)
-		eel_gconf_notification_remove (view->priv->sorting_gconf_notification_id);
-
-	if (view->priv->selection_changed_id > 0)
-		g_source_remove (view->priv->selection_changed_id);
-
 	g_hash_table_destroy (view->priv->propid_column_map);
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 	g_hash_table_destroy (view->priv->column_key_map);
-
-	if (view->priv->playing_pixbuf != NULL)
-		g_object_unref (view->priv->playing_pixbuf);
-	if (view->priv->paused_pixbuf != NULL)
-		g_object_unref (view->priv->paused_pixbuf);
-	if (view->priv->error_pixbuf != NULL)
-		g_object_unref (view->priv->error_pixbuf);
-
-	if (view->priv->playing_model != NULL) {
-		g_object_unref (view->priv->playing_model);
-	}
-	if (view->priv->model != NULL) {
-		g_object_unref (view->priv->model);
-	}
 
 	g_free (view->priv->sorting_key);
 	g_free (view->priv->sorting_column_name);

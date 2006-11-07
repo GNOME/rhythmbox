@@ -1,5 +1,12 @@
 2006-11-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_dispose), (rb_entry_view_finalize):
+	Unref objects and remove idle handlers in dispose rather than
+	finalize.  Should fix #364783.
+
+2006-11-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):
 	Rename 'ctxt' to 'parser' to avoid confusion, fix the check for
 	xmlCreateMemoryParserCtxt returning NULL that was previously checking
