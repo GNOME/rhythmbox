@@ -1,3 +1,10 @@
+2006-11-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):
+	Rename 'ctxt' to 'parser' to avoid confusion, fix the check for
+	xmlCreateMemoryParserCtxt returning NULL that was previously checking
+	the wrong variable.  Really fixes #336842.
+
 2006-11-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/iradio/Makefile.am:

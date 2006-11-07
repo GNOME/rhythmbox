@@ -409,7 +409,7 @@ gboolean
 rb_podcast_parse_load_feed (RBPodcastChannel *data,
 			    const char *file_name)
 {
-	xmlParserCtxtPtr ctxt;
+	xmlParserCtxtPtr parser;
 	xmlSAXHandlerPtr sax_handler = NULL;
 	GnomeVFSResult result;
 	GnomeVFSFileInfo *info;
@@ -485,8 +485,8 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	ctx->channel_data = data;
 	ctx->prop_value = g_string_sized_new (512);
 
-	ctxt = xmlCreateMemoryParserCtxt (buffer, file_size);
-	if (ctx == NULL) {
+	parser = xmlCreateMemoryParserCtxt (buffer, file_size);
+	if (parser == NULL) {
 		g_free (sax_handler);
 		g_free (buffer);
 		g_string_free (ctx->prop_value, TRUE);
@@ -494,14 +494,14 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 		return FALSE;
 	}
 
-	ctx->xmlctx = ctxt;
-	ctxt->userData = ctx;
-	ctxt->sax = sax_handler;
-	xmlParseDocument (ctxt);
+	ctx->xmlctx = parser;
+	parser->userData = ctx;
+	parser->sax = sax_handler;
+	xmlParseDocument (parser);
 
 	g_free (sax_handler);
-	ctxt->sax = NULL;
-	xmlFreeParserCtxt (ctxt);
+	parser->sax = NULL;
+	xmlFreeParserCtxt (parser);
 
 	g_free (buffer);
 	g_string_free (ctx->prop_value, TRUE);
