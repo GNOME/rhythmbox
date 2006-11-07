@@ -40,8 +40,11 @@ INCLUDES = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gladedir = $(datadir)/rhythmbox/glade
+gladedir = $(plugindir)
 glade_DATA =
+
+uixmldir = $(plugindir)
+uixml_DATA = iradio-ui.xml
 
 plugin_in_files = iradio.rb-plugin.desktop.in
 
@@ -57,8 +60,8 @@ plugin_DATA = 			\
 
 EXTRA_DIST = 			\
 	$(glade_DATA)		\
+	$(uixml_DATA)		\
 	$(plugin_in_files)	\
-	iradio-ui.xml		\
 	$(NULL)
 
 CLEANFILES = 			\
