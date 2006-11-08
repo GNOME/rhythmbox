@@ -57,6 +57,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkrelation target="title_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -78,6 +81,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkrelation target="artist_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -99,6 +105,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkrelation target="album_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -237,6 +246,9 @@
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
 		  <property name="width_chars">3</property>
+		  <accessibility>
+		    <atkrelation target="trackn_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -258,6 +270,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkrelation target="genre_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -337,6 +352,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkrelation target="discn_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -358,6 +376,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">*</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkrelation target="year_label" type="labelled-by"/>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -855,6 +876,9 @@
 	      <property name="has_frame">True</property>
 	      <property name="invisible_char">*</property>
 	      <property name="activates_default">False</property>
+	      <accessibility>
+		<atkrelation target="name_label" type="labelled-by"/>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="left_attach">1</property>
@@ -982,6 +1006,9 @@
 	      <property name="has_frame">True</property>
 	      <property name="invisible_char">*</property>
 	      <property name="activates_default">False</property>
+	      <accessibility>
+		<atkrelation target="location_label" type="labelled-by"/>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="left_attach">1</property>
