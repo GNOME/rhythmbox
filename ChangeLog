@@ -1,3 +1,9 @@
+2006-11-09  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_finalize):don't attempt to use the SoupSession
+	after we're finalised. Should fix #370513
+
 2006-11-08  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Jerry Tan  <jerry.tan@sun.com>

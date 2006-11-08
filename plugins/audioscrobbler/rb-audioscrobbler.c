@@ -312,8 +312,10 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->album);
 	g_free (audioscrobbler->priv->title);
 	g_free (audioscrobbler->priv->mbid);
-	if (audioscrobbler->priv->soup_session)
+	if (audioscrobbler->priv->soup_session) {
+		soup_session_abort (audioscrobbler->priv->soup_session);
 		g_object_unref (G_OBJECT (audioscrobbler->priv->soup_session));
+	}
 	g_object_unref (G_OBJECT (audioscrobbler->priv->proxy_config));
 	g_object_unref (G_OBJECT (audioscrobbler->priv->shell_player));
 
@@ -592,6 +594,9 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 	}
 }
 
+/*
+ * NOTE: the caller *must* unref the audioscrobbler object in the callback
+ */
 static void
 rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 			   char *url,
@@ -626,7 +631,7 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 	soup_session_queue_message (audioscrobbler->priv->soup_session,
 				    msg,
 				    response_handler,
-				    audioscrobbler);
+				    g_object_ref (audioscrobbler));
 }
 
 static void
@@ -699,6 +704,8 @@ rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data)
 		++audioscrobbler->priv->failures;
 		break;
 	}
+
+	g_object_unref (audioscrobbler);
 }
 
 static void
@@ -828,6 +835,7 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 	}
 
 	rb_audioscrobbler_preferences_sync (audioscrobbler);
+	g_object_unref (audioscrobbler);
 }
 
 /* Configuration functions: */
