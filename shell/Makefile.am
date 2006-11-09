@@ -104,16 +104,6 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/plugins/librbplugins.la		\
 	$(top_builddir)/lib/librb.la
 
-if USE_DAAP
-INCLUDES += -I$(top_srcdir)/daapsharing
-
-rhythmbox_LDADD += $(MDNS_LIBS) \
-		   $(top_builddir)/daapsharing/libdaapsharing.la
-if USE_GNOME_KEYRING
-rhythmbox_LDADD += $(GNOME_KEYRING_LIBS)
-endif
-endif
-
 if USE_LIBSOUP
 rhythmbox_LDADD += $(SOUP_LIBS)
 INCLUDES += $(SOUP_CFLAGS)

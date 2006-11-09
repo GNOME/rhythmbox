@@ -37,6 +37,10 @@ if WITH_DBUS
 SUBDIRS += power-manager
 endif
 
+if USE_DAAP
+SUBDIRS += daap
+endif
+
 noinst_LTLIBRARIES = librbplugins.la
 
 librbplugins_la_SOURCES =				\

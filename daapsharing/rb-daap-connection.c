@@ -1371,7 +1371,9 @@ rb_daap_connection_disconnect (RBDAAPConnection        *connection,
 		   hasn't returned yet so we need to force the connection
 		   to finish */
 		priv->state = DAAP_DONE;
+		GDK_THREADS_LEAVE ();
 		rb_daap_connection_finish (connection);
+		GDK_THREADS_ENTER ();
 	}
 
 	rdata = g_new (ConnectionResponseData, 1);
@@ -1388,7 +1390,9 @@ rb_daap_connection_disconnect (RBDAAPConnection        *connection,
 
 	if (! connection->priv->is_connected) {
 		priv->state = DAAP_DONE;
+		GDK_THREADS_LEAVE ();
 		rb_daap_connection_finish (connection);
+		GDK_THREADS_ENTER ();
 	} else {
 		priv->state = DAAP_LOGOUT;
 

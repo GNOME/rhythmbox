@@ -24,7 +24,7 @@
 
 #include "rb-shell.h"
 #include "rb-browser-source.h"
-#include "rhythmdb.h"
+#include "rb-plugin.h"
 
 G_BEGIN_DECLS
 
@@ -47,29 +47,27 @@ typedef struct {
 	RBBrowserSourceClass parent;
 } RBDAAPSourceClass;
 
-RBSource *
-rb_daap_sources_init (RBShell *shell);
+GType 		rb_daap_source_get_type 	(void);
 
-void
-rb_daap_sources_shutdown (RBShell *shell);
+RBSource *	rb_daap_source_new 		(RBShell *shell,
+						 RBPlugin *plugin,
+						 const char *service_name,
+						 const char *name,
+						 const char *host,
+						 guint port,
+						 gboolean password_protected);
 
-GType
-rb_daap_source_get_type (void);
-
-RBDAAPSource *
-rb_daap_source_find_for_uri (const gchar *uri);
+void 		rb_daap_source_disconnect 	(RBDAAPSource *daap_source);
 
 #ifdef HAVE_GSTREAMER_0_8
-gchar *
-rb_daap_source_get_headers (RBDAAPSource *source,
-			    const gchar *uri,
-			    glong time,
-			    gint64 *bytes);
+gchar * 	rb_daap_source_get_headers 	(RBDAAPSource *source,
+					    	 const gchar *uri,
+					    	 glong time,
+					    	 gint64 *bytes);
 #else
-gchar *
-rb_daap_source_get_headers (RBDAAPSource *source,
-			    const gchar *uri, 
-			    gint64 bytes);
+gchar *		rb_daap_source_get_headers 	(RBDAAPSource *source,
+					    	 const gchar *uri,
+					    	 gint64 bytes);
 #endif
 
 G_END_DECLS

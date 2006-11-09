@@ -28,9 +28,12 @@
 G_BEGIN_DECLS
 
 GType rb_daap_src_get_type (void);
+void rb_daap_src_set_plugin (RBPlugin *plugin);
 
+#ifdef HAVE_GSTREAMER_0_8
 void rb_daap_src_set_time (GstElement *element, glong time);
 glong rb_daap_src_get_time (GstElement *element);
+#endif
 
 G_END_DECLS
 

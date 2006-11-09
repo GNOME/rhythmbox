@@ -13,7 +13,6 @@ glade_DATA =	general-prefs.glade	  	\
 		create-playlist.glade		\
 		druid.glade			\
 		recorder.glade			\
-		daap-prefs.glade		\
 		uri.glade			\
 		plugins.glade			\
 		audioscrobbler-prefs.glade	\

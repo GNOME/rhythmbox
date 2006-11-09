@@ -41,10 +41,6 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
-#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
-#include "rb-daap-src.h"
-#endif
-
 static void rb_player_init (RBPlayerIface *iface);
 static void rb_player_gst_finalize (GObject *object);
 
@@ -1053,24 +1049,6 @@ rb_player_gst_set_time (RBPlayer *player, long time)
 	}
 #endif
 
-#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
-	/* FIXME?
-	 * This is sorta hack/sorta best way to do it.
-	 * If we set up the daapsrc to do regular GStreamer seeking,
-	 * GStreamer goes ape-shit and tries to seek all over the
-	 * place (typefinding), which can cause iTunes to return errors
-	 * (probably cause we're requesting the same file too often)
- 	 *
-	 * So, we do it this way.  Doesn't that suck?
-	 */
-	if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
-		GstElement *src;
-
-		g_object_get (G_OBJECT (mp->priv->playbin), "source", &src, NULL);
-		if (src)
-			rb_daap_src_set_time (src, time);
-	} else {
-#endif
 #ifdef HAVE_GSTREAMER_0_8
 	gst_element_seek (mp->priv->playbin,
 			  GST_FORMAT_TIME
@@ -1084,9 +1062,6 @@ rb_player_gst_set_time (RBPlayer *player, long time)
 			  GST_SEEK_TYPE_NONE, -1);
 #endif
 
-#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
-	}
-#endif
 	if (mp->priv->playing) {
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
 	}
@@ -1108,15 +1083,6 @@ rb_player_gst_get_time (RBPlayer *player)
 #endif
 		if (position != -1)
 			position /= GST_SECOND;
-
-#if defined(HAVE_GSTREAMER_0_8) && defined(WITH_DAAP_SUPPORT)
-		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
-			GstElement *src;
-			g_object_get (G_OBJECT (mp->priv->playbin), "source", &src, NULL);
-			if (src)
-				position += rb_daap_src_get_time (src);
-		}
-#endif
 
 		return (long) position;
 	} else

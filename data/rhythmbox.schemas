@@ -1011,5 +1011,27 @@
 	<long>The size of the browser.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/daap/active</key>
+        <applyto>/apps/rhythmbox/plugins/daap/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+        <short>True if the DAAP plugin is enabled.</short>
+	<long>True if the DAAP plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/daap/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/daap/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the DAAP plugin is hidden.</short>
+	<long>True if the DAAP plugin is hidden.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

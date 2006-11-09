@@ -47,6 +47,7 @@
 #include "rb-daap-source.h"
 #include "rb-daap-src.h"
 #include "rb-debug.h"
+#include "rb-daap-plugin.h"
 
 #define RB_TYPE_DAAP_SRC (rb_daap_src_get_type())
 #define RB_DAAP_SRC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),RB_TYPE_DAAP_SRC,RBDAAPSrc))
@@ -127,6 +128,8 @@ GST_ELEMENT_DETAILS ("RBDAAP Source",
 	"Read a DAAP (music share) file",
 	"Charles Schmidt <cschmidt2@emich.edu");
 
+static RBDaapPlugin *daap_plugin = NULL;
+
 static void rb_daap_src_uri_handler_init (gpointer g_iface, gpointer iface_data);
 
 static void
@@ -182,6 +185,13 @@ static gboolean rb_daap_src_get_size (GstBaseSrc *src, guint64 *size);
 static gboolean rb_daap_src_do_seek (GstBaseSrc *src, GstSegment *segment);
 static GstFlowReturn rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf);
 #endif
+
+void
+rb_daap_src_set_plugin (RBPlugin *plugin)
+{
+	g_assert (RB_IS_DAAP_PLUGIN (plugin));
+	daap_plugin = RB_DAAP_PLUGIN (plugin);
+}
 
 #ifdef HAVE_GSTREAMER_0_8
 
@@ -635,7 +645,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 
 	/* construct request */
-	source = rb_daap_source_find_for_uri (src->daap_uri);
+	source = rb_daap_plugin_find_source_for_uri (daap_plugin, src->daap_uri);
 	if (source == NULL) {
 		g_warning ("Unable to lookup source for URI: %s", src->daap_uri);
 		return FALSE;

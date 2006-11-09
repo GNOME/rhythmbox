@@ -30,7 +30,3 @@ librbbackendsgstreamer_la_SOURCES +=	\
 	rb-encoder-gst.c
 endif
 
-if USE_DAAP
-INCLUDES += -I$(top_srcdir)/daapsharing			
-endif
-

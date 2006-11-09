@@ -72,10 +72,6 @@
 #include "rb-library-source.h"
 #include "rb-podcast-source.h"
 #include "totem-pl-parser.h"
-#ifdef WITH_DAAP_SUPPORT
-#include "rb-daap-source.h"
-#include "rb-daap-sharing.h"
-#endif /* WITH_DAAP_SUPPORT */
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "rb-static-playlist-source.h"
@@ -1187,12 +1183,6 @@ construct_sources (RBShell *shell)
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_created",
 				 G_CALLBACK (rb_shell_playlist_created_cb), shell, 0);
-
-#ifdef WITH_DAAP_SUPPORT
-	rb_daap_sources_init (shell);
-	if (!shell->priv->no_registration)
-		rb_daap_sharing_init (shell);
-#endif
 
 	/* Initialize removable media manager */
 	rb_debug ("shell: creating removable media manager");
@@ -2398,11 +2388,6 @@ rb_shell_quit (RBShell *shell,
 
 	rb_podcast_source_shutdown (shell->priv->podcast_source);
 
-#ifdef WITH_DAAP_SUPPORT
-	rb_daap_sources_shutdown (shell);
-	if (!shell->priv->no_registration)
-		rb_daap_sharing_shutdown (shell);
-#endif /* WITH_DAAP_SUPPORT */
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
 	g_object_unref (G_OBJECT (shell));

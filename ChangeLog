@@ -1,3 +1,36 @@
+2006-11-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* CVS-SURGERY:
+	* backends/gstreamer/Makefile.am:
+	* backends/gstreamer/rb-player-gst.c:
+	* configure.ac:
+	* daapsharing/Makefile.am:
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_disconnect):
+	* daapsharing/rb-daap-src.c: (rb_daap_src_set_plugin),
+	(rb_daap_src_open):
+	* daapsharing/rb-daap-src.h:
+	* data/glade/Makefile.am:
+	* data/rhythmbox.schemas:
+	* data/ui/Makefile.am:
+	* plugins/Makefile.am:
+	* plugins/daap/.cvsignore:
+	* plugins/daap/Makefile.am:
+	* plugins/daap/daap.rb-plugin.desktop.in:
+	* plugins/daap/rb-daap-plugin.c:
+	* shell/Makefile.am:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_new):
+	* shell/rb-shell.c: (construct_sources), (rb_shell_quit):
+	* sources/Makefile.am:
+	* sources/rb-daap-source.c: (rb_daap_source_class_init),
+	(rb_daap_source_new), (connection_auth_cb),
+	(connection_connecting_cb), (connection_disconnected_cb),
+	(release_connection), (rb_daap_source_disconnect),
+	(rb_daap_source_show_popup):
+	* sources/rb-daap-source.h:
+	Mangle DAAP into a plugin.  This disables DAAP with GStreamer 0.8.
+	Fixes #336150.
+
 2006-11-09  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb.c: take the ref before calling the delete

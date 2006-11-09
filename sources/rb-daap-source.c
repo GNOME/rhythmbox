@@ -49,6 +49,7 @@
 #include "rb-daap-connection.h"
 #include "rb-daap-mdns-browser.h"
 #include "rb-daap-dialog.h"
+#include "rb-daap-plugin.h"
 
 #include "rb-static-playlist-source.h"
 
@@ -67,23 +68,10 @@ static gboolean rb_daap_source_show_popup (RBSource *source);
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static const char * rb_daap_source_get_paned_key (RBBrowserSource *source);
 static void rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress);
-static void rb_daap_source_cmd_disconnect (GtkAction *action, RBShell *shell);
-static void rb_daap_source_disconnect (RBDAAPSource *daap_source);
 
-#define CONF_ENABLE_BROWSING CONF_PREFIX "/sharing/enable_browsing"
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
 #define CONF_STATE_SHOW_BROWSER CONF_PREFIX "/state/daap/show_browser"
-
-static RBDaapMdnsBrowser *mdns_browser = NULL;
-
-static GHashTable *source_lookup = NULL;
-
-static guint enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-
-static GdkPixbuf *daap_share_pixbuf        = NULL;
-static GdkPixbuf *daap_share_locked_pixbuf = NULL;
-static gboolean daap_was_shutdown = FALSE;
 
 struct RBDAAPSourcePrivate
 {
@@ -114,15 +102,6 @@ enum {
 };
 
 G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE)
-
-static GtkActionEntry rb_daap_source_actions [] =
-{
-	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL,
-	  N_("Disconnect from DAAP share"),
-	  G_CALLBACK (rb_daap_source_cmd_disconnect) },
-};
-GtkActionGroup *daap_action_group;
-guint daap_ui_merge_id;
 
 static void
 rb_daap_source_dispose (GObject *object)
@@ -208,11 +187,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBDAAPSourcePrivate));
-
-#ifdef HAVE_GSTREAMER
-	/* small hack to ensure the linker doesn't drop the daap src code */
-	rb_daap_src_get_type ();
-#endif
 }
 
 static void
@@ -282,28 +256,10 @@ rb_daap_source_get_property (GObject *object,
 	}
 }
 
-static GdkPixbuf *
-rb_daap_get_icon (gboolean password_protected,
-		  gboolean connected)
-{
-	GdkPixbuf *icon;
 
-	g_return_val_if_fail (daap_share_pixbuf != NULL, NULL);
-	g_return_val_if_fail (daap_share_locked_pixbuf != NULL, NULL);
-
-	if (! password_protected) {
-		icon = g_object_ref (daap_share_pixbuf);
-	} else if (connected) {
-		icon = g_object_ref (daap_share_pixbuf);
-	} else {
-		icon = g_object_ref (daap_share_locked_pixbuf);
-	}
-
-	return icon;
-}
-
-static RBSource *
+RBSource *
 rb_daap_source_new (RBShell *shell,
+		    RBPlugin *plugin,
 		    const char *service_name,
 		    const char *name,
 		    const char *host,
@@ -321,7 +277,7 @@ rb_daap_source_new (RBShell *shell,
 	type->category = RHYTHMDB_ENTRY_NORMAL;
 	g_object_unref (db);
 
-	icon = rb_daap_get_icon (password_protected, FALSE);
+	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin), password_protected, FALSE);
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
 					  "service-name", service_name,
 					  "name", name,
@@ -334,6 +290,7 @@ rb_daap_source_new (RBShell *shell,
 					  "sorting-key", CONF_STATE_SORTING,
 					  "password-protected", password_protected,
 					  "sourcelist-group", RB_SOURCELIST_GROUP_TRANSIENT,
+					  "plugin", RB_PLUGIN (plugin),
 					  NULL));
 
 	if (icon != NULL) {
@@ -344,327 +301,6 @@ rb_daap_source_new (RBShell *shell,
 						 type);
 
 	return source;
-}
-
-static RBSource *
-find_source_by_service_name (const char *service_name)
-{
-	RBSource *source;
-
-	source = g_hash_table_lookup (source_lookup, service_name);
-
-	return source;
-}
-
-static void
-mdns_service_added (RBDaapMdnsBrowser *browser,
-		    const char        *service_name,
-		    const char        *name,
-		    const char        *host,
-		    guint              port,
-		    gboolean           password_protected,
-		    RBShell           *shell)
-{
-	RBSource *source;
-
-#if 0
-	g_message ("New service: %s name=%s host=%s port=%u password=%d",
-		   service_name, name, host, port, password_protected);
-#endif
-
-	source = find_source_by_service_name (service_name);
-
-	if (source == NULL) {
-		source = rb_daap_source_new (shell, service_name, name, host, port, password_protected);
-		g_hash_table_insert (source_lookup, g_strdup (service_name), source);
-		rb_shell_append_source (shell, source, NULL);
-	} else {
-		g_object_set (G_OBJECT (source),
-			      "name", name,
-			      "host", host,
-			      "port", port,
-			      "password-protected", password_protected,
-			      NULL);
-	}
-}
-
-static void
-mdns_service_removed (RBDaapMdnsBrowser *browser,
-		      const char        *service_name,
-		      RBShell           *shell)
-{
-	RBSource *source;
-
-	source = find_source_by_service_name (service_name);
-
-	rb_debug ("DAAP source '%s' went away", service_name);
-	if (source == NULL) {
-		return;
-	}
-
-	g_hash_table_remove (source_lookup, service_name);
-}
-
-static void
-remove_source (RBSource *source)
-{
-	rb_debug ("Removing DAAP source: %s", RB_DAAP_SOURCE (source)->priv->service_name);
-	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
-	rb_source_delete_thyself (source);
-}
-
-static void
-start_browsing (RBShell *shell)
-{
-	GError *error;
-
-	if (mdns_browser != NULL) {
-		return;
-	}
-
-	mdns_browser = rb_daap_mdns_browser_new ();
-	if (mdns_browser == NULL) {
-		g_warning ("Unable to start mDNS browsing");
-		return;
-	}
-
-	g_signal_connect_object (mdns_browser,
-				 "service-added",
-				 G_CALLBACK (mdns_service_added),
-				 shell,
-				 0);
-	g_signal_connect_object (mdns_browser,
-				 "service-removed",
-				 G_CALLBACK (mdns_service_removed),
-				 shell,
-				 0);
-
-	error = NULL;
-	rb_daap_mdns_browser_start (mdns_browser, &error);
-	if (error != NULL) {
-		g_warning ("Unable to start mDNS browsing: %s", error->message);
-		g_error_free (error);
-	}
-
-	source_lookup = g_hash_table_new_full ((GHashFunc)g_str_hash,
-					       (GEqualFunc)g_str_equal,
-					       (GDestroyNotify)g_free,
-					       (GDestroyNotify)remove_source);
-
-}
-
-static void
-stop_browsing (RBShell *shell)
-{
-	GError *error;
-
-	if (mdns_browser == NULL) {
-		return;
-	}
-
-	rb_debug ("Destroying DAAP source lookup");
-
-	g_hash_table_destroy (source_lookup);
-	source_lookup = NULL;
-
-	g_signal_handlers_disconnect_by_func (mdns_browser, mdns_service_added, shell);
-	g_signal_handlers_disconnect_by_func (mdns_browser, mdns_service_removed, shell);
-
-	error = NULL;
-	rb_daap_mdns_browser_stop (mdns_browser, &error);
-	if (error != NULL) {
-		g_warning ("Unable to stop mDNS browsing: %s", error->message);
-		g_error_free (error);
-	}
-
-	g_object_unref (mdns_browser);
-	mdns_browser = NULL;
-}
-
-static void
-enable_browsing_changed_cb (GConfClient *client,
-			    guint cnxn_id,
-			    GConfEntry *entry,
-			    RBShell *shell)
-{
-	gboolean enabled = eel_gconf_get_boolean (CONF_ENABLE_BROWSING);
-
-	if (enabled) {
-		start_browsing (shell);
-	} else {
-		stop_browsing (shell);
-	}
-}
-
-static GdkPixbuf *
-composite_icons (const GdkPixbuf *src1,
-		 const GdkPixbuf *src2)
-{
-	GdkPixbuf *dest;
-	GdkPixbuf *scaled;
-	gint       w1, w2, h1, h2;
-	gint       dest_x, dest_y;
-	gboolean   do_scale;
-
-	if (! src1) {
-		return NULL;
-	}
-
-	dest = gdk_pixbuf_copy (src1);
-
-	if (! src2) {
-		return dest;
-	}
-
-	w1 = gdk_pixbuf_get_width (src1);
-	h1 = gdk_pixbuf_get_height (src1);
-	w2 = gdk_pixbuf_get_width (src2);
-	h2 = gdk_pixbuf_get_height (src2);
-
-	do_scale = ((float)w1 * 0.8) < w2;
-
-	/* scale the emblem down if it will obscure the entire bottom image */
-	if (do_scale) {
-		scaled = gdk_pixbuf_scale_simple (src2, w1 / 2, h1 / 2, GDK_INTERP_BILINEAR);
-	} else {
-		scaled = (GdkPixbuf *)src2;
-	}
-
-	w2 = gdk_pixbuf_get_width (scaled);
-	h2 = gdk_pixbuf_get_height (scaled);
-
-	dest_x = w1 - w2;
-	dest_y = h1 - h2;
-
-	gdk_pixbuf_composite (scaled, dest,
-			      dest_x, dest_y,
-			      w2, h2,
-			      dest_x, dest_y,
-			      1.0, 1.0,
-			      GDK_INTERP_BILINEAR, 0xFF);
-
-	if (do_scale) {
-		g_object_unref (scaled);
-	}
-
-	return dest;
-}
-
-static void
-create_pixbufs (void)
-{
-	GdkPixbuf    *emblem;
-	GtkIconTheme *theme;
-	gint          size;
-
-	theme = gtk_icon_theme_get_default ();
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	daap_share_pixbuf = gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &size, NULL);
-	emblem = gtk_icon_theme_load_icon (theme, "stock_lock", size, 0, NULL);
-
-	daap_share_locked_pixbuf = composite_icons (daap_share_pixbuf, emblem);
-
-	if (emblem != NULL) {
-		g_object_unref (emblem);
-	}
-}
-
-static void
-destroy_pixbufs (void)
-{
-	if (daap_share_pixbuf != NULL) {
-		g_object_unref (daap_share_pixbuf);
-	}
-
-	daap_share_pixbuf = NULL;
-
-	if (daap_share_locked_pixbuf != NULL) {
-		g_object_unref (daap_share_locked_pixbuf);
-	}
-	daap_share_locked_pixbuf = NULL;
-}
-
-RBSource *
-rb_daap_sources_init (RBShell *shell)
-{
-	gboolean enabled = TRUE;
-	GConfValue *value;
-	GConfClient *client = eel_gconf_client_get_global ();
-	GtkUIManager *uimanager = NULL;
-
-	value = gconf_client_get_without_default (client,
-						  CONF_ENABLE_BROWSING, NULL);
-	if (value != NULL) {
-		enabled = gconf_value_get_bool (value);
-		gconf_value_free (value);
-	}
-
-	g_object_ref (shell);
-
-	if (enabled) {
-		start_browsing (shell);
-	}
-
-	enable_browsing_notify_id =
-		eel_gconf_notification_add (CONF_ENABLE_BROWSING,
-					    (GConfClientNotifyFunc) enable_browsing_changed_cb,
-					    shell);
-
-	create_pixbufs ();
-
-	/* add UI */
-	g_object_get (shell,
-		      "ui-manager", &uimanager,
-		      NULL);
-	daap_action_group = gtk_action_group_new ("DaapActions");
-	gtk_action_group_set_translation_domain (daap_action_group,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (daap_action_group,
-				      rb_daap_source_actions, G_N_ELEMENTS (rb_daap_source_actions),
-				      shell);
-	gtk_ui_manager_insert_action_group (uimanager, daap_action_group, 0);
-	daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-							    rb_file ("daap-ui.xml"),
-							    NULL);
-	g_object_unref (uimanager);
-
-	return NULL;
-}
-
-void
-rb_daap_sources_shutdown (RBShell *shell)
-{
-	GtkUIManager *uimanager = NULL;
-
-	if (daap_was_shutdown)
-		return;
-
-	rb_debug ("Shutting down DAAP sources");
-	daap_was_shutdown = TRUE;
-
-	g_object_get (shell,
-		      "ui-manager", &uimanager,
-		      NULL);
-
-	if (mdns_browser) {
-		stop_browsing (shell);
-	}
-
-	if (enable_browsing_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (enable_browsing_notify_id);
-		enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-	}
-
-	gtk_ui_manager_remove_ui (uimanager, daap_ui_merge_id);
-	gtk_ui_manager_remove_action_group (uimanager, daap_action_group);
-
-	g_object_unref (uimanager);
-	g_object_unref (shell);
-
-	destroy_pixbufs ();
 }
 
 static char *
@@ -683,7 +319,7 @@ connection_auth_cb (RBDAAPConnection *connection,
 		keyringret = gnome_keyring_find_network_password_sync (
 				NULL,
 				"DAAP", name,
-				NULL, "daap", 
+				NULL, "daap",
 				NULL, 0, &list);
 	} else {
 		keyringret = GNOME_KEYRING_RESULT_CANCELLED;
@@ -733,9 +369,9 @@ connection_auth_cb (RBDAAPConnection *connection,
 				gnome_keyring_set_network_password_sync (keyring,
 					NULL,
 					"DAAP", name,
-					NULL, "daap", 
-					NULL, 0, 
-					password, 
+					NULL, "daap",
+					NULL, 0,
+					password,
 					&item_id);
 				break;
 			}
@@ -769,6 +405,7 @@ connection_connecting_cb (RBDAAPConnection     *connection,
 {
 	GdkPixbuf *icon;
 	gboolean   is_connected;
+	RBPlugin  *plugin;
 
 	rb_debug ("DAAP connection status: %d/%f", state, progress);
 
@@ -796,11 +433,19 @@ connection_connecting_cb (RBDAAPConnection     *connection,
 	rb_source_notify_status_changed (RB_SOURCE (source));
 
 	is_connected = rb_daap_connection_is_connected (connection);
-	icon = rb_daap_get_icon (source->priv->password_protected, is_connected);
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	g_assert (plugin != NULL);
+
+	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
+					source->priv->password_protected,
+					is_connected);
 	g_object_set (source, "icon", icon, NULL);
 	if (icon != NULL) {
 		g_object_unref (icon);
 	}
+
+	g_object_unref (plugin);
 }
 
 static void
@@ -808,18 +453,27 @@ connection_disconnected_cb (RBDAAPConnection *connection,
 			    RBDAAPSource     *source)
 {
 	GdkPixbuf *icon;
+	RBPlugin  *plugin;
+	gboolean   daap_shutdown;
 
 	rb_debug ("DAAP connection disconnected");
 
-	if (daap_was_shutdown) {
-		return;
+	g_object_get (source, "plugin", &plugin, NULL);
+	g_assert (plugin != NULL);
+
+	g_object_get (plugin, "shutdown", &daap_shutdown, NULL);
+	if (daap_shutdown == FALSE) {
+
+		icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
+						source->priv->password_protected,
+						FALSE);
+		g_object_set (source, "icon", icon, NULL);
+		if (icon != NULL) {
+			g_object_unref (icon);
+		}
 	}
 
-	icon = rb_daap_get_icon (source->priv->password_protected, FALSE);
-	g_object_set (source, "icon", icon, NULL);
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
+	g_object_unref (plugin);
 }
 
 static void
@@ -827,9 +481,7 @@ release_connection (RBDAAPSource *daap_source)
 {
 	rb_debug ("Releasing connection");
 
-	g_object_unref (G_OBJECT (daap_source->priv->connection));
-	/* Weak pointer will set to NULL for us */
-	/*daap_source->priv->connection = NULL;*/
+	g_object_unref (daap_source->priv->connection);
 }
 
 static void
@@ -952,80 +604,66 @@ rb_daap_source_disconnect_cb (RBDAAPConnection *connection,
 	g_object_unref (source);
 }
 
-static void
-rb_daap_source_cmd_disconnect (GtkAction *action,
-			       RBShell   *shell)
+void
+rb_daap_source_disconnect (RBDAAPSource *daap_source)
 {
-	RBSource *source;
+	GSList *l;
+	RBShell *shell;
+	RhythmDB *db;
+	RhythmDBEntryType type;
 
-	g_object_get (shell,
-		      "selected-source", &source,
-		      NULL);
-
-	if (!RB_IS_DAAP_SOURCE (source)) {
-		g_critical ("got non-Daap source for Daap action");
+	if (daap_source->priv->connection == NULL) {
 		return;
 	}
 
-	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
+	rb_debug ("Disconnecting source");
 
-	if (source != NULL) {
-		g_object_unref (source);
+	daap_source->priv->disconnecting = TRUE;
+
+	g_object_get (daap_source, "shell", &shell, "entry-type", &type, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
+
+	rhythmdb_entry_delete_by_type (db, type);
+	rhythmdb_commit (db);
+
+	g_object_unref (db);
+
+	for (l = daap_source->priv->playlist_sources; l!= NULL; l = l->next) {
+		RBSource *playlist_source = RB_SOURCE (l->data);
+		char *name;
+
+		g_object_get (playlist_source, "name", &name, NULL);
+		rb_debug ("destroying DAAP playlist %s", name);
+		g_free (name);
+
+		rb_source_delete_thyself (playlist_source);
 	}
-}
 
-static void
-rb_daap_source_disconnect (RBDAAPSource *daap_source)
-{
-	if (daap_source->priv->connection) {
-		GSList *l;
-		RBShell *shell;
-		RhythmDB *db;
-		RhythmDBEntryType type;
+	g_slist_free (daap_source->priv->playlist_sources);
+	daap_source->priv->playlist_sources = NULL;
 
-		rb_debug ("Disconnecting source");
+	/* we don't want these firing while we are disconnecting */
+	g_signal_handlers_disconnect_by_func (daap_source->priv->connection,
+					      G_CALLBACK (connection_connecting_cb),
+					      daap_source);
+	g_signal_handlers_disconnect_by_func (daap_source->priv->connection,
+					      G_CALLBACK (connection_auth_cb),
+					      daap_source);
 
-		daap_source->priv->disconnecting = TRUE;
+	/* keep the source alive until the disconnect completes */
+	g_object_ref (daap_source);
+	rb_daap_connection_disconnect (daap_source->priv->connection,
+				       (RBDAAPConnectionCallback) rb_daap_source_disconnect_cb,
+				       daap_source);
 
-		g_object_get (daap_source, "shell", &shell, "entry-type", &type, NULL);
-		g_object_get (shell, "db", &db, NULL);
-		g_object_unref (shell);
-
-		rhythmdb_entry_delete_by_type (db, type);
-		rhythmdb_commit (db);
-
-		g_object_unref (db);
-
-		for (l = daap_source->priv->playlist_sources; l!= NULL; l = l->next) {
-			RBSource *playlist_source = RB_SOURCE (l->data);
-
-			rb_source_delete_thyself (playlist_source);
-		}
-
-		g_slist_free (daap_source->priv->playlist_sources);
-		daap_source->priv->playlist_sources = NULL;
-
-		/* we don't want these firing while we are disconnecting */
-		g_signal_handlers_disconnect_by_func (daap_source->priv->connection,
-						      G_CALLBACK (connection_connecting_cb),
-						      daap_source);
-		g_signal_handlers_disconnect_by_func (daap_source->priv->connection,
-						      G_CALLBACK (connection_auth_cb),
-						      daap_source);
-
-		/* keep the source alive until the disconnect completes */
-		g_object_ref (daap_source);
-		rb_daap_connection_disconnect (daap_source->priv->connection,
-					       (RBDAAPConnectionCallback) rb_daap_source_disconnect_cb,
-					       daap_source);
-
-		/* wait until disconnected */
-		rb_debug ("Waiting for DAAP connection to finish");
-		while (daap_source->priv->connection != NULL) {
-			rb_debug ("Waiting for DAAP connection to finish...");
-			gtk_main_iteration ();
-		}
+	/* wait until disconnected */
+	rb_debug ("Waiting for DAAP connection to finish");
+	while (daap_source->priv->connection != NULL) {
+		rb_debug ("Waiting for DAAP connection to finish...");
+		gtk_main_iteration ();
 	}
+	rb_debug ("DAAP connection finished");
 }
 
 static gboolean
@@ -1033,44 +671,6 @@ rb_daap_source_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/DAAPSourcePopup");
 	return TRUE;
-}
-
-static gboolean
-source_host_find (const char *key,
-		  RBDAAPSource *source,
-		  const char *host)
-{
-	if (source == NULL || host == NULL) {
-		return FALSE;
-	}
-
-	if (strcmp (host, source->priv->host) == 0) {
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-RBDAAPSource *
-rb_daap_source_find_for_uri (const char *uri)
-{
-	char *ip;
-	char *s;
-	RBDAAPSource *source = NULL;
-
-	if (uri == NULL) {
-		return NULL;
-	}
-
-	ip = strdup (uri + 7); /* daap:// */
-	s = strchr (ip, ':');
-	*s = '\0';
-
-	source = (RBDAAPSource *)g_hash_table_find (source_lookup, (GHRFunc)source_host_find, ip);
-
-	g_free (ip);
-
-	return source;
 }
 
 #ifdef HAVE_GSTREAMER_0_8

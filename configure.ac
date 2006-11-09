@@ -40,7 +40,7 @@ if test x"$have_fwrite_unlocked" = xyes; then
 	AC_MSG_RESULT([yes])
 else
 	AC_MSG_RESULT([no])
-fi	
+fi
 
 mkdtemp_missing=false
 AC_CHECK_FUNC(mkdtemp,
@@ -67,7 +67,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
    AC_MSG_ERROR([totem playlist parsing library not found or too old])
-fi   
+fi
 
 AC_ARG_WITH(hal,
 	      AC_HELP_STRING([--without-hal],
@@ -111,7 +111,7 @@ if test "x$with_ipod" != "xno"; then
 	fi
 	if test "x$have_libgpod" = "xyes"; then
           if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
-	     AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])	   
+	     AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])
 	  fi
           if test "x$enable_hal" = xyes; then
 	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
@@ -120,7 +120,7 @@ if test "x$with_ipod" != "xno"; then
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
 	fi
-fi			  
+fi
 AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
 
@@ -142,7 +142,7 @@ if test "x$with_gnome_keyring" != "xno"; then
 	  AC_SUBST(GNOME_KEYRING_CFLAGS)
 	  AC_SUBST(GNOME_KEYRING_LIBS)
 	fi
-fi			  
+fi
 AM_CONDITIONAL(USE_GNOME_KEYRING, test x"$use_gnome_keyring" = xyes)
 
 dnl Database
@@ -191,7 +191,7 @@ PKG_CHECK_MODULES(GSTREAMER_0_8, \
 	gstreamer-control-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION
 	gstreamer-gconf-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION,
 	have_gstreamer_0_8=yes,have_gstreamer_0_8=no)
-	
+
 GST_0_10_MAJORMINOR=0.10
 GST_0_10_REQUIRED_VERSION=0.9.7
 PKG_CHECK_MODULES(GSTREAMER_0_10, \
@@ -256,7 +256,7 @@ AC_ARG_ENABLE(track-transfer,
 			     [Disable track transfer support in rhythmbox]))
 if test x"$enable_track_transfer" != xno; then
    PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
-      gnome-media-profiles >= 2.8, 
+      gnome-media-profiles >= 2.8,
       with_track_transfer=yes,
       with_track_transfer=no)
 
@@ -412,7 +412,7 @@ if test "x$enable_libnotify" != "xno"; then
 	if test "x$have_libnotify" = "xyes"; then
 	     enable_libnotify=yes
 	fi
-fi			  
+fi
 AM_CONDITIONAL(USE_NOTIFY, test x"$enable_libnotify" = xyes)
 if test x$enable_libnotify = xyes ; then
     # Find out the version of LIBNOTIFY we're using
@@ -483,6 +483,11 @@ if test "x$enable_daap" != "xno"; then
 	elif test x"$have_mdns" = xno; then
 		if test "x$enable_daap" = "xyes"; then
 			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Howl or Avahi])
+		fi
+		enable_daap=no
+	elif test x"$with_playback" = xgstreamer_0_8; then
+		if test "x$enable_daap" = "xyes"; then
+			AC_MSG_ERROR([DAAP support explicitly requested, but not supported with GStreamer 0.8])
 		fi
 		enable_daap=no
 	else
@@ -643,9 +648,9 @@ if test "x$enable_dbus" = xno; then
    if test "x$enable_old_dbus" = xno; then
       AC_MSG_ERROR([DBUS not found or too old])
    fi
-   AC_DEFINE(WITH_OLD_DBUS, 1, [Define if old D-BUS is enabled])	   
+   AC_DEFINE(WITH_OLD_DBUS, 1, [Define if old D-BUS is enabled])
 else
-   AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
+   AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])
 fi
 
 DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
@@ -915,7 +920,7 @@ dnl ================================================================
 dnl end-game
 dnl ================================================================
 
-AC_OUTPUT([ 
+AC_OUTPUT([
 Makefile
 macros/Makefile
 lib/Makefile
@@ -937,6 +942,7 @@ plugins/sample/Makefile
 plugins/audiocd/Makefile
 plugins/audioscrobbler/Makefile
 plugins/cd-recorder/Makefile
+plugins/daap/Makefile
 plugins/ipod/Makefile
 plugins/iradio/Makefile
 plugins/lirc/Makefile

@@ -48,7 +48,6 @@ INCLUDES =						\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/podcast				\
 	-I$(top_srcdir)/shell				\
-	-I$(top_srcdir)/daapsharing			\
 	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
@@ -62,17 +61,6 @@ INCLUDES =						\
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
 
-daap_files =				\
-	rb-daap-source.c		\
-	rb-daap-source.h
-if USE_DAAP
-libsourcesimpl_la_SOURCES += $(daap_files)
-if USE_GNOME_KEYRING
-INCLUDES +=						\
-	$(GNOME_KEYRING_CFLAGS)
-endif
-endif
-
 if USE_LIBSOUP
 INCLUDES += $(SOUP_CFLAGS)
 endif
@@ -81,4 +69,3 @@ if ENABLE_TRACK_TRANSFER
 INCLUDES +=$(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
-EXTRA_DIST = $(daap_files)
