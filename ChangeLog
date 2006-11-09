@@ -1,5 +1,10 @@
 2006-11-09  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: take the ref before calling the delete
+	implementation, not after. From #372851.
+
+2006-11-09  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Gilles Dartiguelongue  <dartigug@esiee.fr>
 
 	* plugins/Makefile.am:

@@ -2961,10 +2961,11 @@ rhythmdb_entry_delete (RhythmDB *db,
 	g_return_if_fail (RHYTHMDB_IS (db));
 	g_return_if_fail (entry != NULL);
 
-	klass->impl_entry_delete (db, entry);
-
 	/* ref the entry before adding to hash, it is unreffed when removed */
 	rhythmdb_entry_ref (entry);
+
+	klass->impl_entry_delete (db, entry);
+
 	g_mutex_lock (db->priv->change_mutex);
 	g_hash_table_insert (db->priv->deleted_entries, entry, g_thread_self ());
 	g_mutex_unlock (db->priv->change_mutex);
