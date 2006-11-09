@@ -8,6 +8,18 @@ libaudiocd_la_SOURCES =					\
 
 libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) $(LIBNAUTILUS_BURN_LIBS) $(MUSICBRAINZ_LIBS)
 
+libaudiocd_la_LIBADD = \
+	$(top_builddir)/lib/librb.la \
+	$(HAL_LIBS)                  \
+	$(TOTEM_PLPARSER_LIBS)       \
+	$(LIBNAUTILUS_BURN_LIBS)
+
+if HAVE_MUSICBRAINZ
+libaudiocd_la_LIBADD += $(MUSICBRAINZ_LIBS)
+endif
+
+libaudiocd_la_LIBADD += $(NULL)
+
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\

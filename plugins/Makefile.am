@@ -2,7 +2,6 @@
 
 SUBDIRS = 						\
 	generic-player					\
-	audiocd						\
 	iradio						\
 	sample
 
