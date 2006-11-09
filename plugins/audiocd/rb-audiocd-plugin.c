@@ -428,9 +428,9 @@ impl_activate (RBPlugin *plugin,
 
 
 	/* monitor the playing song, to disable cd drive polling */
-	g_signal_connect (rb_shell_get_player (shell), "playing-uri-changed",
-			  G_CALLBACK (rb_audiocd_plugin_playing_uri_changed_cb),
-			  plugin);
+	g_signal_connect_object (rb_shell_get_player (shell), "playing-uri-changed",
+				 G_CALLBACK (rb_audiocd_plugin_playing_uri_changed_cb),
+				 plugin, 0);
 
 	/*
 	 * Monitor all cd drives for inserted audio cds

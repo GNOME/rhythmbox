@@ -1,5 +1,11 @@
 2006-11-09  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/audiocd/rb-audiocd-plugin.c: (impl_activate): use
+	g_signal_connect_object not g_signal_object, which stops it beign
+	called after the plugin is disposed.
+
+2006-11-09  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/audioscrobbler/rb-audioscrobbler.c:
 	(rb_audioscrobbler_finalize):don't attempt to use the SoupSession
 	after we're finalised. Should fix #370513
