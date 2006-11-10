@@ -1,3 +1,11 @@
+2006-11-10  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/generic-player/rb-nokia770-source.c:
+	(hal_udi_is_nokia770):
+	* plugins/generic-player/rb-psp-source.c: (hal_udi_is_psp):
+	* sources/rb-ipod-source.c: (hal_udi_is_ipod): don't shutdown the HAL
+	context if it wasn't inited. Fixes #372824
+
 2006-11-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/daap/rb-daap-plugin.h:

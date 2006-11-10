@@ -200,6 +200,7 @@ hal_udi_is_psp (const char *udi)
 	char *parent_name;
 	gboolean result;
 	DBusError error;
+	gboolean inited = FALSE;
 
 	result = FALSE;
 	dbus_error_init (&error);
@@ -221,6 +222,7 @@ hal_udi_is_psp (const char *udi)
 	if (!libhal_ctx_init (ctx, &error) || dbus_error_is_set (&error))
 		goto end;
 
+	inited = TRUE;
 	parent_udi = libhal_device_get_property_string (ctx, udi,
 			"info.parent", &error);
 	if (parent_udi == NULL || dbus_error_is_set (&error))
@@ -246,7 +248,8 @@ end:
 	}
 
 	if (ctx) {
-		libhal_ctx_shutdown (ctx, &error);
+		if (inited)
+			libhal_ctx_shutdown (ctx, &error);
 		libhal_ctx_free(ctx);
 	}
 
