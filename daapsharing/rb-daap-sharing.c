@@ -41,6 +41,19 @@ static guint require_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 static guint share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 static guint share_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
 
+char *
+rb_daap_sharing_default_share_name ()
+{
+	const gchar *real_name;
+
+	real_name = g_get_real_name ();
+	if (strcmp (real_name, "Unknown") == 0) {
+		real_name = g_get_user_name ();
+	}
+
+	return g_strdup_printf (_("%s's Music"), real_name);
+}
+
 static void
 create_share (RBShell *shell)
 {
@@ -51,22 +64,12 @@ create_share (RBShell *shell)
 	gboolean require_password;
 
 	g_assert (share == NULL);
-	rb_debug ("initialize daap sharing\n");
+	rb_debug ("initialize daap sharing");
 
 	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
-
 	if (name == NULL || *name == '\0') {
-		const gchar *real_name;
-
 		g_free (name);
-
-		real_name = g_get_real_name ();
-		if (strcmp (real_name, "Unknown") == 0) {
-			real_name = g_get_user_name ();
-		}
-
-		name = g_strdup_printf (_("%s's Music"), real_name);
-		eel_gconf_set_string (CONF_DAAP_SHARE_NAME, name);
+		name = rb_daap_sharing_default_share_name ();
 	}
 
 	g_object_get (shell,
@@ -151,6 +154,11 @@ share_name_changed_cb (GConfClient *client,
 	}
 
 	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+	if (name == NULL || name[0] == '\0') {
+		g_free (name);
+		name = rb_daap_sharing_default_share_name ();
+	}
+
 	g_object_set (G_OBJECT (share), "name", name, NULL);
 	g_free (name);
 }

@@ -50,6 +50,7 @@ struct RBDaapPluginPrivate
 {
 	RBShell *shell;
 
+	GladeXML *config_xml;
 	GtkWidget *preferences;
 	gboolean sharing;
 	gboolean shutdown;
@@ -706,10 +707,9 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 	return FALSE;
 }
 
-static GtkWidget *
-make_config_widget (RBPlugin *plugin)
+static void
+update_config_widget (RBDaapPlugin *plugin)
 {
-	GladeXML *xml;
 	GtkWidget *check;
 	GtkWidget *name_entry;
 	GtkWidget *password_entry;
@@ -717,27 +717,14 @@ make_config_widget (RBPlugin *plugin)
 	GtkWidget *box;
 	gboolean sharing_enabled;
 	gboolean require_password;
-
 	char *name;
 	char *password;
-	char *gladefile;
 
-	gladefile = rb_plugin_find_file (plugin, "daap-prefs.glade");
-	if (gladefile == NULL) {
-		gladefile = g_strdup (rb_file ("daap-prefs.glade"));
-		if (gladefile == NULL) {
-			return NULL;
-		}
-	}
-
-	xml = glade_xml_new (gladefile, "daap_vbox", NULL);
-	g_free (gladefile);
-
-	check = glade_xml_get_widget (xml, "daap_enable_check");
-	password_check = glade_xml_get_widget (xml, "daap_password_check");
-	name_entry = glade_xml_get_widget (xml, "daap_name_entry");
-	password_entry = glade_xml_get_widget (xml, "daap_password_entry");
-	box = glade_xml_get_widget (xml, "daap_box");
+	check = glade_xml_get_widget (plugin->priv->config_xml, "daap_enable_check");
+	password_check = glade_xml_get_widget (plugin->priv->config_xml, "daap_password_check");
+	name_entry = glade_xml_get_widget (plugin->priv->config_xml, "daap_name_entry");
+	password_entry = glade_xml_get_widget (plugin->priv->config_xml, "daap_password_entry");
+	box = glade_xml_get_widget (plugin->priv->config_xml, "daap_box");
 
 	sharing_enabled = eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), sharing_enabled);
@@ -748,6 +735,8 @@ make_config_widget (RBPlugin *plugin)
 	g_signal_connect (password_check, "toggled", G_CALLBACK (password_check_button_toggled_cb), password_entry);
 
 	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+	if (name == NULL || name[0] == '\0')
+		name = rb_daap_sharing_default_share_name ();
 	if (name != NULL)
 		gtk_entry_set_text (GTK_ENTRY (name_entry), name);
 	g_free (name);
@@ -763,9 +752,28 @@ make_config_widget (RBPlugin *plugin)
 
 	gtk_widget_set_sensitive (box, sharing_enabled);
 	gtk_widget_set_sensitive (password_entry, require_password);
-
-	return glade_xml_get_widget (xml, "daap_vbox");
 }
+
+static GtkWidget *
+make_config_widget (RBDaapPlugin *plugin)
+{
+	char *gladefile;
+
+	gladefile = rb_plugin_find_file (RB_PLUGIN (plugin), "daap-prefs.glade");
+	if (gladefile == NULL) {
+		gladefile = g_strdup (rb_file ("daap-prefs.glade"));
+		if (gladefile == NULL) {
+			return NULL;
+		}
+	}
+
+	plugin->priv->config_xml = glade_xml_new (gladefile, "daap_vbox", NULL);
+	g_free (gladefile);
+
+	update_config_widget (plugin);
+	return glade_xml_get_widget (plugin->priv->config_xml, "daap_vbox");
+}
+
 
 static GtkWidget*
 impl_create_configure_dialog (RBPlugin *bplugin)
@@ -775,7 +783,7 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 	if (plugin->priv->preferences == NULL) {
 		GtkWidget *widget;
 
-		widget =  make_config_widget (bplugin);
+		widget = make_config_widget (plugin);
 
 		plugin->priv->preferences = gtk_dialog_new_with_buttons (_("DAAP Music Sharing Preferences"),
 								   NULL,
@@ -789,6 +797,8 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 		gtk_widget_hide_on_delete (plugin->priv->preferences);
 
 		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (plugin->priv->preferences)->vbox), widget);
+	} else {
+		update_config_widget (plugin);
 	}
 
 	gtk_widget_show_all (plugin->priv->preferences);

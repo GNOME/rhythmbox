@@ -1,3 +1,15 @@
+2006-11-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* daapsharing/rb-daap-sharing.c:
+	(rb_daap_sharing_default_share_name), (create_share),
+	(share_name_changed_cb):
+	* daapsharing/rb-daap-sharing.h:
+	* plugins/daap/rb-daap-plugin.c: (update_config_widget),
+	(make_config_widget), (impl_create_configure_dialog):
+	Update DAAP preferences widget when displaying it, and
+	populate the share name entry with the default if there's nothing
+	there already.  Fixes #340279.
+
 2006-11-11  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Adam Zimmerman  <adam_zimmerman@sfu.ca>
