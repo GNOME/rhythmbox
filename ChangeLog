@@ -1,5 +1,12 @@
 2006-11-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* daapsharing/rb-daap-src.c: (rb_daap_src_open):
+	Don't try to report the size if we didn't get one.
+	Fixes server-side decoded playback from mt-daapd (but seeking doesn't
+	work), from #350276.
+
+2006-11-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* daapsharing/rb-daap-sharing.c:
 	(rb_daap_sharing_default_share_name), (create_share),
 	(share_name_changed_cb):

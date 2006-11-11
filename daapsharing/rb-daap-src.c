@@ -736,6 +736,9 @@ rb_daap_src_open (RBDAAPSrc *src)
 								   ("Couldn't read HTTP content length \"%s\"", val->data));
 						ok = FALSE;
 					}
+				} else {
+					GST_DEBUG_OBJECT (src, "Response doesn't have a content length");
+					src->size = 0;
 				}
 			}
 
@@ -1122,7 +1125,7 @@ gboolean
 rb_daap_src_get_size (GstBaseSrc *bsrc, guint64 *size)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (bsrc);
-	if (!src->chunked) {
+	if (src->chunked == FALSE && src->size > 0) {
 		*size = src->size;
 		return TRUE;
 	}
