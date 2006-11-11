@@ -16,8 +16,9 @@ popup_ui = """
 <ui>
   <popup name="MagnatuneSourceViewPopup">
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
-    <menuitem name="MagnatunePurchaseAlbum" action="MagnatunePurchase"/>
+    <menuitem name="MagnatunePurchaseAlbum" action="MagnatunePurchaseAlbum"/>
     <menuitem name="MagnatuneArtistInfo" action="MagnatuneArtistInfo"/>
+    <menuitem name="MagnatuneCancelDownload" action="MagnatuneCancelDownload"/>
     <separator/>
     <menuitem name="BrowseGenreLibraryPopup" action="BrowserSrcChooseGenre"/>
     <menuitem name="BrowseArtistLibraryPopup" action="BrowserSrcChooseArtist"/>
@@ -67,17 +68,25 @@ class Magnatune(rb.Plugin):
 		shell.append_source(self.source, None) # Add the source to the list
 		
 		manager = shell.get_player().get_property('ui-manager')
-		action = gtk.Action('MagnatunePurchase', _('Purchase Album'),
+		# Add the popup menu actions
+		action = gtk.Action('MagnatunePurchaseAlbum', _('Purchase Album'),
 				_("Purchase this album from Magnatune"),
-				'gnome-mime-audio')
+				'gtk-save')
 		action.connect('activate', lambda a: self.shell.get_property("selected-source").purchase_tracks())
 		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
 		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneArtistInfo', _('Artist Information'),
 				_("Get information about this artist"),
-				'gnome-mime-audio')
+				'gtk-info')
 		action.connect('activate', lambda a: self.shell.get_property("selected-source").display_artist_info())
 		self.action_group.add_action(action)
+		action = gtk.Action('MagnatuneCancelDownload', _('Cancel Downloads'),
+				_("Stop downloading purchased albums"),
+				'gtk-stop')
+		action.connect('activate', lambda a: self.shell.get_property("selected-source").cancel_downloads())
+		action.set_sensitive(False)
+		self.action_group.add_action(action)
+		
 		manager.insert_action_group(self.action_group, 0)
 		self.ui_id = manager.add_ui_from_string(popup_ui)
 		manager.ensure_update()

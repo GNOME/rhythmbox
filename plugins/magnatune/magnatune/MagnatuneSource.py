@@ -84,6 +84,11 @@ class MagnatuneSource(rb.BrowserSource):
 		else:
 			qm = self.get_property("query-model")
 			return (qm.compute_status_normal("song", "songs"), None, 0.0)
+	
+	def do_impl_get_ui_actions(self):
+		return ["MagnatunePurchaseAlbum",
+			"MagnatuneArtistInfo",
+			"MagnatuneCancelDownload"]
 
 	def do_impl_activate(self):
 		if not self.__activated:
@@ -437,9 +442,13 @@ class MagnatuneSource(rb.BrowserSource):
 	
 	def __download_album(self, audio_dl_uri):
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
-			to_file_uri = gnomevfs.URI(library_location + "/" + audio_dl_uri.short_name)
+			to_file_uri = gnomevfs.URI(magnatune_dir + audio_dl_uri.short_name)
 			
+			shell = self.get_property('shell')
+			manager = shell.get_player().get_property('ui-manager')
+			manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
 			self.__downloading = True
+			self.cancelled = False
 			self.purchase_filesize += gnomevfs.get_file_info(audio_dl_uri).size
 			create_if_needed(to_file_uri, gnomevfs.OPEN_WRITE).close()
 			gnomevfs.async.xfer (source_uri_list = [audio_dl_uri],
@@ -458,8 +467,11 @@ class MagnatuneSource(rb.BrowserSource):
 			library_location = data[1]
 			audio_dl_uri = data[2]
 			
+			try:
+				del self.__downloads[str(audio_dl_uri)]
+			except:
+				return 0
 			self.purchase_filesize -= gnomevfs.get_file_info(audio_dl_uri).size
-			del self.__downloads[str(audio_dl_uri)]
 			album = zipfile.ZipFile(to_file_uri.path)
 			for track in album.namelist():
 				track_uri = gnomevfs.URI(library_location + "/" + track)
@@ -478,6 +490,18 @@ class MagnatuneSource(rb.BrowserSource):
 		to_file_uri = data[0]
 		audio_dl_uri = data[1]
 		
+		if self.cancelled:
+			try:
+				del self.__downloads[str(audio_dl_uri)]
+				self.purchase_filesize -= gnomevfs.get_file_info(audio_dl_uri).size
+				gnomevfs.unlink(gnomevfs.URI(magnatune_dir + "in_progress_" + to_file_uri.short_name))
+				gnomevfs.unlink(to_file_uri)
+			except: # this may get run more than once
+				pass
+			if self.purchase_filesize == 0:
+				self.__downloading = False
+			return 0
+		
 		self.__downloads[str(audio_dl_uri)] = info.bytes_copied
 		purchase_downloaded = 0
 		for i in self.__downloads.values():
@@ -485,7 +509,12 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__download_progress = purchase_downloaded / float(self.purchase_filesize)
 		self.__notify_status_changed()
 		return 1
-
+	
+	def cancel_downloads(self):
+		self.cancelled = True
+		shell = self.get_property('shell')
+		manager = shell.get_player().get_property('ui-manager')
+		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
 
 gobject.type_register(MagnatuneSource)
 
