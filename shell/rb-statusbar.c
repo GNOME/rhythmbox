@@ -40,6 +40,7 @@ static GObject* rb_statusbar_construct (GType type,
 					GObjectConstructParam *construct_properties);
 static void rb_statusbar_class_init (RBStatusbarClass *klass);
 static void rb_statusbar_init (RBStatusbar *statusbar);
+static void rb_statusbar_dispose (GObject *object);
 static void rb_statusbar_finalize (GObject *object);
 static void rb_statusbar_set_property (GObject *object,
 				       guint prop_id,
@@ -90,6 +91,7 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
         GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
         object_class->constructor = rb_statusbar_construct;
+        object_class->dispose = rb_statusbar_dispose;
         object_class->finalize = rb_statusbar_finalize;
 
         object_class->set_property = rb_statusbar_set_property;
@@ -175,6 +177,41 @@ rb_statusbar_init (RBStatusbar *statusbar)
 }
 
 static void
+rb_statusbar_dispose (GObject *object)
+{
+        RBStatusbar *statusbar;
+
+        g_return_if_fail (object != NULL);
+        g_return_if_fail (RB_IS_STATUSBAR (object));
+
+        statusbar = RB_STATUSBAR (object);
+
+        g_return_if_fail (statusbar->priv != NULL);
+
+	if (statusbar->priv->status_poll_id) {
+                g_source_remove (statusbar->priv->status_poll_id);
+		statusbar->priv->status_poll_id = 0;
+	}
+
+	if (statusbar->priv->db != NULL) {
+		g_object_unref (statusbar->priv->db);
+		statusbar->priv->db = NULL;
+	}
+
+	if (statusbar->priv->ui_manager != NULL) {
+		g_object_unref (statusbar->priv->ui_manager);
+		statusbar->priv->ui_manager = NULL;
+	}
+
+	if (statusbar->priv->selected_source != NULL) {
+		g_object_unref (statusbar->priv->selected_source);
+		statusbar->priv->selected_source = NULL;
+	}
+
+        G_OBJECT_CLASS (rb_statusbar_parent_class)->dispose (object);
+}
+
+static void
 rb_statusbar_finalize (GObject *object)
 {
         RBStatusbar *statusbar;
@@ -188,9 +225,6 @@ rb_statusbar_finalize (GObject *object)
 
 	g_free (statusbar->priv->loading_text);
 	g_free (statusbar->priv->progress_text);
-
-        if (statusbar->priv->status_poll_id)
-                g_source_remove (statusbar->priv->status_poll_id);
 
         G_OBJECT_CLASS (rb_statusbar_parent_class)->finalize (object);
 }
@@ -273,6 +307,7 @@ rb_statusbar_set_property (GObject *object,
         {
         case PROP_DB:
                 statusbar->priv->db = g_value_get_object (value);
+		g_object_ref (statusbar->priv->db);
                 statusbar->priv->status_poll_id
                         = g_idle_add ((GSourceFunc) poll_status, statusbar);
                 break;
@@ -281,10 +316,12 @@ rb_statusbar_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->selected_source),
 							      G_CALLBACK (rb_statusbar_source_status_changed_cb),
 							      statusbar);
+			g_object_unref (statusbar->priv->selected_source);
                 }
 
                 statusbar->priv->selected_source = g_value_get_object (value);
-                rb_debug ("selected source %p", g_value_get_object (value));
+                rb_debug ("selected source %p", statusbar->priv->selected_source);
+		g_object_ref (statusbar->priv->selected_source);
 
                 if (statusbar->priv->selected_source != NULL) {
 			g_signal_connect_object (G_OBJECT (statusbar->priv->selected_source),
@@ -300,8 +337,10 @@ rb_statusbar_set_property (GObject *object,
                         g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->ui_manager),
                                                               G_CALLBACK (rb_statusbar_connect_ui_manager),
                                                               statusbar);
+			g_object_unref (statusbar->priv->ui_manager);
                 }
                 statusbar->priv->ui_manager = g_value_get_object (value);
+		g_object_ref (statusbar->priv->ui_manager);
 
                 g_signal_connect_object (statusbar->priv->ui_manager,
                                          "connect-proxy",

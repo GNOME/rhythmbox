@@ -1,3 +1,12 @@
+2006-11-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-statusbar.c: (rb_statusbar_class_init),
+	(rb_statusbar_dispose), (rb_statusbar_finalize),
+	(rb_statusbar_set_property):
+	Remove idle handler in dispose, rather than finalize.
+	Keep references on all referenced objects (duh?).
+	Fixes #374443.
+
 2006-11-12  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Baptiste Mille-Mathias  <bmm80@free.fr>
