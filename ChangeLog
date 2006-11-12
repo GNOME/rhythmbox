@@ -1,3 +1,10 @@
+2006-11-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/daap/rb-daap-plugin.c: (mdns_service_added),
+	(mdns_service_removed):
+	Take GDK lock in mDNS callbacks.  Fixes UI hangs when DAAP shares
+	disappear.
+
 2006-11-12  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:

@@ -440,6 +440,8 @@ mdns_service_added (RBDaapMdnsBrowser *browser,
 	rb_debug ("New service: %s name=%s host=%s port=%u password=%d",
 		   service_name, name, host, port, password_protected);
 
+	GDK_THREADS_ENTER ();
+
 	source = find_source_by_service_name (plugin, service_name);
 
 	if (source == NULL) {
@@ -454,6 +456,8 @@ mdns_service_added (RBDaapMdnsBrowser *browser,
 			      "password-protected", password_protected,
 			      NULL);
 	}
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -463,14 +467,16 @@ mdns_service_removed (RBDaapMdnsBrowser *browser,
 {
 	RBSource *source;
 
+	GDK_THREADS_ENTER ();
+
 	source = find_source_by_service_name (plugin, service_name);
 
 	rb_debug ("DAAP source '%s' went away", service_name);
-	if (source == NULL) {
-		return;
+	if (source != NULL) {
+		g_hash_table_remove (plugin->priv->source_lookup, service_name);
 	}
 
-	g_hash_table_remove (plugin->priv->source_lookup, service_name);
+	GDK_THREADS_LEAVE ();
 }
 
 static void
