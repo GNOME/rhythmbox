@@ -939,8 +939,9 @@ process_added_entries_cb (RhythmDBEntry *entry,
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		const gchar *uri;
 
-		uri = rhythmdb_entry_get_string (entry,
-						 RHYTHMDB_PROP_LOCATION);
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		if (uri == NULL)
+			return TRUE;
 
 #ifdef HAVE_GSTREAMER_0_8
 		/* always start remote files hidden*/

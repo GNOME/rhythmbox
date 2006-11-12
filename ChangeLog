@@ -1,5 +1,10 @@
 2006-11-12  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: check the URI isn't NULL, in case ti got
+	through the earlier checks. Fixes #373605
+
+2006-11-12  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-library-source.c:
 	(rb_library_source_add_child_source): sort the child-library sources
 	the same as the library by default.
