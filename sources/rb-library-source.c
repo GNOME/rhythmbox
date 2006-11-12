@@ -1253,6 +1253,8 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	char *name;
 	GdkPixbuf *icon;
 	RhythmDBEntryType entry_type;
+	char *sort_column;
+	int sort_order;
 
 	g_object_get (library_source,
 		      "shell", &shell,
@@ -1262,6 +1264,9 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	name = gnome_vfs_uri_extract_short_name (uri);
 	gnome_vfs_uri_unref (uri);
 
+	rb_entry_view_get_sorting_order (rb_source_get_entry_view (RB_SOURCE (library_source)),
+					 &sort_column, &sort_order);
+
 	source = rb_auto_playlist_source_new (shell, name, FALSE);
 	query = rhythmdb_query_parse (library_source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
@@ -1269,8 +1274,9 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 				      RHYTHMDB_QUERY_END);
 	rb_auto_playlist_source_set_query (RB_AUTO_PLAYLIST_SOURCE (source), query,
 					   RHYTHMDB_QUERY_MODEL_LIMIT_NONE, NULL,
-					   NULL, 0);
+					   sort_column, sort_order);
 	rhythmdb_query_free (query);
+	g_free (sort_column);
 
 	g_object_get (library_source, "icon", &icon, NULL);
 	g_object_set (source, "icon", icon, NULL);
