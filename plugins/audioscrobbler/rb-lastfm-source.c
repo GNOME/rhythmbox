@@ -139,6 +139,15 @@ static void rb_lastfm_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *ent
 GType rb_lastfm_src_get_type (void);
 #endif
 
+
+static const char* const radio_options[][3] = {
+	{N_("Similar Artists radio"), "lastfm://artist/%s/similarartists", N_("Artists similar to %s")},
+	{N_("Tag radio"), "lastfm://globaltags/%s", N_("Tracks tagged with %s")},
+	{N_("Artist Fan radio"), "lastfm://artist/%s/fans", N_("Artists like by fans of %s")},
+	{N_("Group radio"), "lastfm://group/%s", N_("Tracks liked by the %s group")},
+	{NULL, NULL, NULL}
+};
+
 struct RBLastfmSourcePrivate
 {
 	GtkWidget *vbox;
@@ -310,6 +319,7 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	RBLastfmSourceClass *klass;
 	RBShell *shell;
 	GObject *player_backend;
+	int i;
 
 	klass = RB_LASTFM_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LASTFM_SOURCE));
 
@@ -333,7 +343,7 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 	source->priv->vbox2 = gtk_vbox_new (FALSE, 5);
 	source->priv->hbox = gtk_hbox_new (FALSE, 5);
 
-	source->priv->label = gtk_label_new (_("Enter the artist or global tag to build a radio station out of:"));
+	source->priv->label = gtk_label_new (_("Enter the item to build a Last.fm station out of:"));
 	g_object_set (source->priv->label, "xalign", 0.0, NULL);
 
 	source->priv->gobutton = gtk_button_new_with_label (_("Add"));
@@ -341,27 +351,20 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 				 "clicked",
 				 G_CALLBACK (rb_lastfm_source_add_station_cb),
 				 source, 0);
+
 	source->priv->typecombo = gtk_combo_box_new_text ();
-	gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->typecombo), _("Artist"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->typecombo), _("Tag"));
+	for (i = 0; radio_options[i][0] != NULL; i++) {
+		gtk_combo_box_append_text (GTK_COMBO_BOX (source->priv->typecombo), _(radio_options[i][0]));
+	}
 	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->typecombo), 0);
 
 	source->priv->txtbox = gtk_entry_new ();
 
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->hbox),
-								 GTK_WIDGET (source->priv->gobutton));
-
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->hbox),
-								 GTK_WIDGET (source->priv->txtbox));
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->hbox),
-								 GTK_WIDGET (source->priv->typecombo));
-
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->vbox2),
-								 GTK_WIDGET (source->priv->hbox));
-
-	gtk_box_pack_end_defaults (GTK_BOX (source->priv->vbox2),
-								 GTK_WIDGET (source->priv->label));
+	gtk_box_pack_end_defaults (GTK_BOX (source->priv->hbox), GTK_WIDGET (source->priv->gobutton));
+	gtk_box_pack_end_defaults (GTK_BOX (source->priv->hbox), GTK_WIDGET (source->priv->txtbox));
+	gtk_box_pack_start_defaults (GTK_BOX (source->priv->hbox), GTK_WIDGET (source->priv->typecombo));
+	gtk_box_pack_end_defaults (GTK_BOX (source->priv->vbox2), GTK_WIDGET (source->priv->hbox));
+	gtk_box_pack_end_defaults (GTK_BOX (source->priv->vbox2), GTK_WIDGET (source->priv->label));
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db,
@@ -1106,18 +1109,19 @@ rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data)
 	const gchar *add;
 	char *title;
 	char *uri;
+	int selection;
 
 	add = gtk_entry_get_text (GTK_ENTRY (source->priv->txtbox));
+	if (add == NULL || *add == '\0')
+		return;
 
-	if (strcmp (gtk_combo_box_get_active_text (GTK_COMBO_BOX (source->priv->typecombo)), "Artist") == 0) {
-		uri = g_strdup_printf ("lastfm://artist/%s/similarartists", add);
-	} else {
-		uri = g_strdup_printf ("lastfm://globaltags/%s", add);
-	}
+	selection = gtk_combo_box_get_active (GTK_COMBO_BOX (source->priv->typecombo));
+
+	uri = g_strdup_printf(radio_options[selection][1], add);
+	title = g_strdup_printf(radio_options[selection][2], add);
+	rb_lastfm_source_new_station (uri, title, source);
 
 	gtk_entry_set_text (GTK_ENTRY (source->priv->txtbox), "");
-	title = rb_lastfm_source_title_from_uri (uri);
-	rb_lastfm_source_new_station (uri, title, source);
 
 	g_free(uri);
 	g_free(title);

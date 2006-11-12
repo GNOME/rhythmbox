@@ -1,5 +1,11 @@
 2006-11-12  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_constructor), (rb_lastfm_source_add_station_cb): add
+	more supported last.fm radio things. From #373622
+
+2006-11-12  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb.c: check the URI isn't NULL, in case ti got
 	through the earlier checks. Fixes #373605
 
