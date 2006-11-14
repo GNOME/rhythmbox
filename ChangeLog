@@ -1,3 +1,10 @@
+2006-11-14  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Alex Lancaster
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): support podcast
+	episode dates which are missing the seconds. Fixes #373845
+
 2006-11-13  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rhythmdb.override: bidn a few other pieces of

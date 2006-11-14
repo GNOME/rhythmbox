@@ -532,6 +532,12 @@ rb_podcast_parse_date (const char *date_str)
 		result = strptime (date_str, "%a, %d %b %Y 0%T", &tm);
 	}
 
+	/* close-to-RFC 2822, but with no seconds */
+	if (result == NULL) {
+		memset (&tm, 0, sizeof (struct tm));
+		result = strptime (date_str, "%a, %d %b %Y %R", &tm);
+	}
+
 	/* format without weekday */
 	if (result == NULL) {
 		memset (&tm, 0, sizeof (struct tm));
