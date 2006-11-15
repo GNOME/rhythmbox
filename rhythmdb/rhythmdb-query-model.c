@@ -2500,13 +2500,15 @@ rhythmdb_query_model_album_sort_func (RhythmDBEntry *a,
 	if (ret != 0)
 		return ret;
 
-	/* Then by disc number, */
+	/* Then by disc number (assume 1 if non-existent) */
 	a_num = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_DISC_NUMBER);
 	b_num = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_DISC_NUMBER);
+	a_num = (a_num ? a_num : 1);
+	b_num = (b_num ? b_num : 1);
 	if (a_num != b_num)
 		return (a_num < b_num ? -1 : 1);
 
-	/* by track number */
+	/* by track number (assume 0 if non-existent) */
 	a_num = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_TRACK_NUMBER);
 	b_num = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_TRACK_NUMBER);
 	if (a_num != b_num)

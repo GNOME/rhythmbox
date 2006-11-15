@@ -1,3 +1,11 @@
+2006-11-15  James Livingston  <doclivingston@gmail.com>
+
+	patch by: William Lachance  <wrlach@gmail.com>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_album_sort_func): improve sorting when some
+	tracks are missing track/disc number info. Fixes #371322
+
 2006-11-14  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster
