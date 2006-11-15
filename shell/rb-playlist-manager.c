@@ -56,6 +56,7 @@
 
 static void rb_playlist_manager_class_init (RBPlaylistManagerClass *klass);
 static void rb_playlist_manager_init (RBPlaylistManager *mgr);
+static void rb_playlist_manager_dispose (GObject *object);
 static void rb_playlist_manager_finalize (GObject *object);
 static void rb_playlist_manager_set_property (GObject *object,
 					      guint prop_id,
@@ -163,11 +164,12 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_playlist_manager_dispose;
 	object_class->finalize = rb_playlist_manager_finalize;
 
 	object_class->set_property = rb_playlist_manager_set_property;
 	object_class->get_property = rb_playlist_manager_get_property;
-  
+
 	g_object_class_install_property (object_class,
 					 PROP_PLAYLIST_NAME,
                                          g_param_spec_string ("playlists_file",
@@ -263,6 +265,43 @@ rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
 }
 
 static void
+rb_playlist_manager_dispose (GObject *object)
+{
+	RBPlaylistManager *mgr;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (object));
+
+	rb_debug ("Disposing playlist manager");
+
+	mgr = RB_PLAYLIST_MANAGER (object);
+
+	g_return_if_fail (mgr->priv != NULL);
+
+	if (mgr->priv->db != NULL) {
+		g_object_unref (mgr->priv->db);
+		mgr->priv->db = NULL;
+	}
+
+	if (mgr->priv->uimanager != NULL) {
+		g_object_unref (mgr->priv->uimanager);
+		mgr->priv->uimanager = NULL;
+	}
+
+	if (mgr->priv->sourcelist != NULL) {
+		g_object_unref (mgr->priv->sourcelist);
+		mgr->priv->sourcelist = NULL;
+	}
+
+	if (mgr->priv->selected_source != NULL) {
+		g_object_unref (mgr->priv->selected_source);
+		mgr->priv->selected_source = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->dispose (object);
+}
+
+static void
 rb_playlist_manager_finalize (GObject *object)
 {
 	RBPlaylistManager *mgr;
@@ -275,10 +314,6 @@ rb_playlist_manager_finalize (GObject *object)
 	mgr = RB_PLAYLIST_MANAGER (object);
 
 	g_return_if_fail (mgr->priv != NULL);
-
-	if (mgr->priv->db != NULL) {
-		g_object_unref (mgr->priv->db);
-	}
 
 	g_mutex_free (mgr->priv->saving_mutex);
 
@@ -296,8 +331,7 @@ rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
 			gtk_ui_manager_remove_action_group (mgr->priv->uimanager,
 							    mgr->priv->actiongroup);
 		}
-		g_object_unref (G_OBJECT (mgr->priv->uimanager));
-		mgr->priv->uimanager = NULL;
+		g_object_unref (mgr->priv->uimanager);
 	}
 
 	mgr->priv->uimanager = uimanager;
@@ -332,7 +366,11 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 
 	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
 
-	mgr->priv->selected_source = source;
+	if (mgr->priv->selected_source != NULL) {
+		g_object_unref (mgr->priv->selected_source);
+	}
+	mgr->priv->selected_source = g_object_ref (source);
+
 	playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
 	if (playlist_active) {
 		g_object_get (mgr->priv->selected_source, "is-local", &playlist_local, NULL);
@@ -406,6 +444,7 @@ rb_playlist_manager_set_property (GObject *object,
 		break;
 	case PROP_SOURCELIST:
 		mgr->priv->sourcelist = g_value_get_object (value);
+		g_object_ref (mgr->priv->sourcelist);
 		mgr->priv->window = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (mgr->priv->sourcelist)));
 		break;
 	default:
@@ -422,7 +461,7 @@ rb_playlist_manager_get_property (GObject *object,
 {
 	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
 
-	switch (prop_id) {       
+	switch (prop_id) {
         case PROP_PLAYLIST_NAME:
                 g_value_set_string (value, mgr->priv->playlists_file);
                 break;
@@ -471,16 +510,16 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 			  RBPlaylistManager *mgr)
 {
 	char *uri;
-	
+
 	uri = rb_canonicalise_uri (uri_maybe);
 	g_return_if_fail (uri != NULL);
 
 	rb_debug ("adding uri %s (title %s, genre %s) from playlist",
 		  uri, title, genre);
-	if (!rb_shell_add_uri (mgr->priv->shell, 
-			       uri, 
-			       title, 
-			       genre, 
+	if (!rb_shell_add_uri (mgr->priv->shell,
+			       uri,
+			       title,
+			       genre,
 			       NULL))
 		return;
 
@@ -511,7 +550,7 @@ playlist_load_end_cb (TotemPlParser *parser, const char *title, RBPlaylistManage
 	rb_debug ("finished loading playlist %s", title);
 
 	if (title) {
-		g_object_set (G_OBJECT (mgr->priv->loading_playlist), "name", title, NULL);
+		g_object_set (mgr->priv->loading_playlist, "name", title, NULL);
 		mgr->priv->loading_playlist = NULL;
 	}
 }
@@ -533,25 +572,25 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 {
 	rb_debug ("loading playlist from %s", uri);
 
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0);
+	g_signal_emit (mgr, rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0);
 
 	{
 		TotemPlParser *parser = totem_pl_parser_new ();
 
-		g_signal_connect_object (G_OBJECT (parser), "entry",
+		g_signal_connect_object (parser, "entry",
 					 G_CALLBACK (handle_playlist_entry_cb),
 					 mgr, 0);
 
-		g_signal_connect_object (G_OBJECT (parser), "playlist-start",
+		g_signal_connect_object (parser, "playlist-start",
 					 G_CALLBACK (playlist_load_start_cb),
 					 mgr, 0);
 
-		g_signal_connect_object (G_OBJECT (parser), "playlist-end",
+		g_signal_connect_object (parser, "playlist-end",
 					 G_CALLBACK (playlist_load_end_cb),
 					 mgr, 0);
 
 		if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
-			g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
+			g_object_set (parser, "recurse", FALSE, NULL);
 
 		if (totem_pl_parser_parse (parser, uri, TRUE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
 			g_set_error (error,
@@ -582,17 +621,17 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError 
 			mgr->priv->loading_playlist = NULL;
 		}
 
-		g_object_unref (G_OBJECT (parser));
+		g_object_unref (parser);
 	}
 
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0);
+	g_signal_emit (mgr, rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0);
 	return TRUE;
 }
 
 static void
 append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 {
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
+	g_signal_emit (mgr, rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
 		       source);
 }
 
@@ -672,7 +711,7 @@ rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
@@ -743,7 +782,7 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 	g_atomic_int_compare_and_exchange (&data->mgr->priv->saving, 1, 0);
 	g_mutex_unlock (data->mgr->priv->saving_mutex);
 
-	g_object_unref (G_OBJECT (data->mgr));
+	g_object_unref (data->mgr);
 
 	g_free (data);
 	return NULL;
@@ -784,12 +823,12 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	data = g_new0 (struct RBPlaylistManagerSaveData, 1);
 	data->mgr = mgr;
 	data->doc = xmlNewDoc (RB_PLAYLIST_MGR_VERSION);
-	g_object_ref (G_OBJECT (mgr));
+	g_object_ref (mgr);
 
 	root = xmlNewDocNode (data->doc, NULL, RB_PLAYLIST_MGR_PL, NULL);
 	xmlDocSetRootElement (data->doc, root);
 
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
@@ -811,7 +850,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 				continue;
 			}
 
-			g_object_get (G_OBJECT (source), "is-local", &local, NULL);
+			g_object_get (source, "is-local", &local, NULL);
 			if (local)
 				rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
 
@@ -860,7 +899,7 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_CREATED], 0,
+	g_signal_emit (mgr, rb_playlist_manager_signals[PLAYLIST_CREATED], 0,
 		       playlist);
 
 	return playlist;
@@ -1126,14 +1165,14 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 		data->playlist = playlist;
 		data->creator = creator;
 		data->creator_response_id =
-			g_signal_connect (G_OBJECT (creator),
+			g_signal_connect (creator,
 					  "response",
 					  G_CALLBACK (edit_auto_playlist_response_cb),
 					  data);
 
 		g_object_set_data (G_OBJECT (playlist), "rhythmbox-playlist-editor", creator);
 		data->playlist_deleted_id =
-			g_signal_connect (G_OBJECT (playlist),
+			g_signal_connect (playlist,
 					  "deleted",
 					  G_CALLBACK (edit_auto_playlist_deleted_cb),
 					  data);
@@ -1163,15 +1202,15 @@ rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
 	RBSource *queue_source;
 	RhythmDBQueryModel *model;
 
-	g_object_get (G_OBJECT (mgr->priv->shell), "queue-source", &queue_source, NULL);
-	g_object_get (G_OBJECT (mgr->priv->selected_source), "query-model", &model, NULL);
+	g_object_get (mgr->priv->shell, "queue-source", &queue_source, NULL);
+	g_object_get (mgr->priv->selected_source, "query-model", &model, NULL);
 
 	gtk_tree_model_foreach (GTK_TREE_MODEL (model),
 				(GtkTreeModelForeachFunc) _queue_track_cb,
 				queue_source);
 
-	g_object_unref (G_OBJECT (queue_source));
-	g_object_unref (G_OBJECT (model));
+	g_object_unref (queue_source);
+	g_object_unref (model);
 }
 
 static void
@@ -1235,7 +1274,7 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
 				      FALSE);
 
-	g_signal_connect_object (G_OBJECT (dialog), "response",
+	g_signal_connect_object (dialog, "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
 }
 
@@ -1386,7 +1425,7 @@ setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
 		g_free (filter_label);
 	}
 
-	g_signal_connect_object (GTK_OBJECT (menu),
+	g_signal_connect_object (menu,
 				 "changed", G_CALLBACK (export_set_extension_cb),
 				 dialog, 0);
 }
@@ -1408,7 +1447,7 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	setup_format_menu (menu, dialog);
 	g_object_set_data (G_OBJECT (dialog), "export-menu", menu);
 
-	g_object_get (G_OBJECT (mgr->priv->selected_source), "name", &name, NULL);
+	g_object_get (mgr->priv->selected_source, "name", &name, NULL);
 	tmp = g_strconcat (name, ".pls", NULL);
 	gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), tmp);
 	g_free (tmp);
@@ -1416,11 +1455,11 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 
 	/* FIXME: always has "by extension" as default (it should probably remember the last selection) */
 	gtk_combo_box_set_active (GTK_COMBO_BOX (menu), 0);
-	g_signal_connect_object (G_OBJECT (dialog), "response",
+	g_signal_connect_object (dialog, "response",
 				 G_CALLBACK (save_playlist_response_cb),
 				 mgr, 0);
 
-	g_object_unref (G_OBJECT (xml));
+	g_object_unref (xml);
 }
 
 /**
@@ -1437,7 +1476,7 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
 
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
@@ -1460,7 +1499,7 @@ rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 				continue;
 			}
 
-			g_object_get (G_OBJECT (source), "is-local", &local,
+			g_object_get (source, "is-local", &local,
 				      NULL);
 			if (local) {
 				playlists = g_list_prepend (playlists, source);
@@ -1494,7 +1533,7 @@ rb_playlist_manager_get_playlist_names (RBPlaylistManager *mgr,
 	GtkTreeModel *model;
 	int i;
 
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
@@ -1544,9 +1583,9 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
 	GtkTreeModel *model;
 	RBSource *playlist = NULL;
 
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
-	g_object_unref (G_OBJECT (fmodel));
+	g_object_unref (fmodel);
 
 	if (!gtk_tree_model_get_iter_first (model, &iter))
 		return NULL;
@@ -1566,7 +1605,7 @@ _get_playlist_by_name (RBPlaylistManager *mgr,
 			g_object_unref (source);
 			continue;
 		}
-		g_object_get (G_OBJECT (source), "name", &source_name, NULL);
+		g_object_get (source, "name", &source_name, NULL);
 		if (strcmp (name, source_name) == 0)
 			playlist = source;
 
