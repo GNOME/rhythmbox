@@ -67,8 +67,6 @@ libaudiocd_la_SOURCES += \
 	../../metadata/sj-error.h ../../metadata/sj-error.c \
 	$(MARSHALFILES)
 
-libaudiocd_la_LIBADD = $(MUSICBRAINZ_LIBS)
-
 MARSHALFILES += sj-metadata-marshal.h sj-metadata-marshal.c
 
 sj-metadata-marshal.h: ../../metadata/sj-metadata-marshal.list
