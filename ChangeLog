@@ -1,5 +1,15 @@
 2006-11-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/bacon-volume.c: (bacon_volume_button_class_init),
+	(bacon_volume_button_new), (bacon_volume_button_style_set),
+	(bacon_volume_scale_class_init), (bacon_volume_button_update_icon),
+	(bacon_volume_scale_value_changed),
+	(bacon_volume_button_load_icons):
+	* widgets/bacon-volume.h:
+	Update bacon-volume from libbacon CVS again.
+
+2006-11-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* widgets/bacon-volume.c: (bacon_volume_load_icons):
 	Fall back to old icon names if the icon naming spec compliant
 	names don't work.  From #369491.

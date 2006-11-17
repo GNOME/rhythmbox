@@ -40,9 +40,9 @@ typedef struct _BaconVolumeButton {
   GtkIconSize size;
   gint click_id;
   float direction;
-  gboolean timeout;
   guint32 pop_time;
   GdkPixbuf *icon[4];
+  guint timeout : 1;
 } BaconVolumeButton;
 
 typedef struct _BaconVolumeButtonClass {
