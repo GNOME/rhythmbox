@@ -49,12 +49,16 @@ plugins/artdisplay/artdisplay/CoverArtDatabase.py
 plugins/artdisplay/artdisplay/__init__.py
 plugins/artdisplay/artdisplay.rb-plugin.desktop.in
 plugins/audiocd/audiocd.rb-plugin.desktop.in
+plugins/audiocd/multiple-album.glade
 plugins/audiocd/rb-audiocd-plugin.c
 plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in
 plugins/audioscrobbler/rb-audioscrobbler.c
 plugins/audioscrobbler/rb-audioscrobbler-plugin.c
+plugins/audioscrobbler/rb-lastfm-source.c
 plugins/cd-recorder/rb-cd-recorder-plugin.c
 plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in
+plugins/daap/daap.rb-plugin.desktop.in
+plugins/daap/rb-daap-plugin.c
 plugins/generic-player/generic-player.rb-plugin.desktop.in
 plugins/generic-player/rb-generic-player-plugin.c
 plugins/generic-player/rb-generic-player-source.c
@@ -62,6 +66,7 @@ plugins/generic-player/rb-nokia770-source.c
 plugins/generic-player/rb-psp-source.c
 plugins/ipod/ipod.rb-plugin.desktop.in
 plugins/ipod/rb-ipod-plugin.c
+plugins/iradio/iradio.rb-plugin.desktop.in
 plugins/lirc/lirc.rb-plugin.desktop.in
 plugins/lirc/rb-lirc-plugin.c
 plugins/lyrics/lyrics.py
@@ -70,8 +75,10 @@ plugins/magnatune/magnatune-loading.glade
 plugins/magnatune/magnatune-prefs.glade
 plugins/magnatune/magnatune-purchase.glade
 plugins/magnatune/magnatune.rb-plugin.desktop.in
+plugins/magnatune/magnatune/__init__.py
 plugins/magnatune/magnatune/MagnatuneSource.py
-plugins/power-manager/power-manager.rb-plugin.desktop.in 
+plugins/power-manager/power-manager.rb-plugin.desktop.in
+plugins/power-manager/rb-power-manager-plugin.c
 plugins/pythonconsole/pythonconsole.py
 plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in
 plugins/rb/__init__.py
@@ -122,6 +129,7 @@ sources/rb-podcast-source.c
 sources/rb-source.c
 sources/rb-sourcelist.c
 sources/rb-static-playlist-source.c
+sources/rb-streaming-source.c
 widgets/bacon-volume.c
 widgets/eggtrayicon.c
 widgets/rb-cell-renderer-pixbuf.c
