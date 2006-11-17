@@ -1,5 +1,13 @@
 2006-11-17  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-ipod-source.c: (rb_ipod_source_dispose),
+	(load_ipod_db_idle_cb), (rb_ipod_load_songs): remove the idle callback
+	when disposing of the source. Fixes #376155
+
+	* plugins/daap/Makefile.am: fix some distcheck brokenness.
+
+2006-11-17  James Livingston  <doclivingston@gmail.com>
+
 	* po/POTFILES.in: add missing files to POTFILES.in. Fixes #375978
 
 2006-11-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>

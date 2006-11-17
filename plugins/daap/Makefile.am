@@ -5,6 +5,7 @@ plugin_LTLIBRARIES = libdaap.la
 
 libdaap_la_SOURCES = \
 	rb-daap-plugin.c			\
+	rb-daap-plugin.h			\
 	$(top_srcdir)/sources/rb-daap-source.c	\
 	$(top_srcdir)/sources/rb-daap-source.h
 

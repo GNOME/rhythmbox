@@ -86,6 +86,8 @@ typedef struct
 	GHashTable *entry_map;
 
 	GList *playlists;
+
+	guint load_idle_id;
 } RBiPodSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
@@ -193,6 +195,11 @@ rb_ipod_source_dispose (GObject *object)
 		g_hash_table_destroy (priv->entry_map);
 		priv->entry_map = NULL;
  	}
+
+	if (priv->load_idle_id != 0) {
+		g_source_remove (priv->load_idle_id);
+		priv->load_idle_id = 0;
+	}
 
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
 }
@@ -537,6 +544,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	g_object_unref (db);
 
 	GDK_THREADS_LEAVE ();
+	priv->load_idle_id = 0;
 	return FALSE;
 }
 
@@ -558,7 +566,7 @@ rb_ipod_load_songs (RBiPodSource *source)
 		g_object_set (RB_SOURCE (source),
 			      "name", itdb_playlist_mpl (priv->ipod_db)->name,
 			      NULL);
-		g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
+		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
 
         g_object_unref (volume);
