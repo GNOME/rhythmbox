@@ -794,6 +794,8 @@ bacon_volume_load_icons	(BaconVolumeButton * button,
   GtkIconTheme *theme;
   const char *icon_name[] = {"audio-volume-muted", "audio-volume-low",
     "audio-volume-medium", "audio-volume-high"};
+  const char *fallback_icon_name[] = {"stock_volume-0", "stock_volume-min",
+    "stock_volume-med", "stock_volume-max"};
 
   if (_theme != NULL) {
     theme = _theme;
@@ -812,6 +814,9 @@ bacon_volume_load_icons	(BaconVolumeButton * button,
       button->icon[i] = NULL;
     }
     button->icon[i] = gtk_icon_theme_load_icon (theme, icon_name[i], w, 0, NULL);
+    if (button->icon[i] == NULL) {
+      button->icon[i] = gtk_icon_theme_load_icon (theme, fallback_icon_name[i], w, 0, NULL);
+    }
   }
 }
 #endif

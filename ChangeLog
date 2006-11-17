@@ -1,5 +1,11 @@
 2006-11-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/bacon-volume.c: (bacon_volume_load_icons):
+	Fall back to old icon names if the icon naming spec compliant
+	names don't work.  From #369491.
+
+2006-11-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/audiocd/Makefile.am:
 	Stop automake complaining about duplicate definitions.
 
