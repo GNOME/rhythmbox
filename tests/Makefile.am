@@ -11,20 +11,25 @@ LDADD = \
 	$(top_builddir)/widgets/librbwidgets.la			\
 	$(RHYTHMBOX_LIBS)
 
-test_rhythmdb_SOURCES = \
-	test-rhythmdb.c						\
+test_utils = \
 	test-utils.h						\
 	test-utils.c
+
+test_rhythmdb_SOURCES = \
+	test-rhythmdb.c						\
+	$(test_utils)
 
 test_rhythmdb_query_model_SOURCES = \
 	test-rhythmdb-query-model.c				\
-	test-utils.h						\
-	test-utils.c
+	$(test_utils)
 
 test_rhythmdb_property_model_SOURCES = \
 	test-rhythmdb-property-model.c				\
-	test-utils.h						\
-	test-utils.c
+	$(test_utils)
+
+test_file_helpers_SOURCES = \
+	test-file-helpers.c					\
+	$(test_utils)
 
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
 
@@ -43,7 +48,8 @@ if HAVE_CHECK
 TESTS += \
 	test-rhythmdb						\
 	test-rhythmdb-query-model				\
-	test-rhythmdb-property-model
+	test-rhythmdb-property-model				\
+	test-file-helpers
 endif
 
 OLD_TESTS = \

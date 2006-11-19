@@ -765,7 +765,7 @@ rb_uri_append_path (const char *uri, const char *path)
 {
 	GnomeVFSURI *vfs_uri, *full_uri;
 	char *result;
-	
+
 	vfs_uri = gnome_vfs_uri_new (uri);
 	full_uri = gnome_vfs_uri_append_path (vfs_uri, path);
 	gnome_vfs_uri_unref (vfs_uri);
@@ -780,7 +780,7 @@ rb_uri_append_uri (const char *uri, const char *fragment)
 {
 	GnomeVFSURI *vfs_uri, *full_uri;
 	char *result;
-	
+
 	vfs_uri = gnome_vfs_uri_new (uri);
 	full_uri = gnome_vfs_uri_append_string (vfs_uri, fragment);
 	gnome_vfs_uri_unref (vfs_uri);
@@ -801,5 +801,41 @@ rb_uri_get_dir_name (const char *uri)
 	gnome_vfs_uri_unref (vfs_uri);
 
 	return dirname;
+}
+
+char *
+rb_uri_get_short_path_name (const char *uri)
+{
+	const char *start;
+	const char *end;
+
+	if (uri == NULL)
+		return NULL;
+
+	/* skip query string */
+	end = g_utf8_strchr (uri, -1, '?');
+
+	start = g_utf8_strrchr (uri, end ? (end - uri) : -1, GNOME_VFS_URI_PATH_CHR);
+	if (start == NULL) {
+		/* no separator, just a single file name */
+	} else if ((start + 1 == end) || *(start + 1) == '\0') {
+		/* last character is the separator, so find the previous one */
+		end = start;
+		start = g_utf8_strrchr (uri, (end - uri)-1, GNOME_VFS_URI_PATH_CHR);
+
+		if (start != NULL)
+			start++;
+	} else {
+		start++;
+	}
+
+	if (start == NULL)
+		start = uri;
+
+	if (end == NULL) {
+		return g_strdup (start);
+	} else {
+		return g_strndup (start, (end - start));
+	}
 }
 

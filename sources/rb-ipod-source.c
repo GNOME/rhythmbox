@@ -1194,17 +1194,11 @@ generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 static gchar *
 ipod_get_filename_for_uri (const gchar *mount_point, const gchar *uri_str)
 {
-	GnomeVFSURI *uri;
 	gchar *escaped;
 	gchar *filename;
 	gchar *result;
 
-	uri = gnome_vfs_uri_new (uri_str);
-	if (uri == NULL) {
-		return NULL;
-	}
-	escaped = gnome_vfs_uri_extract_short_path_name (uri);
-	gnome_vfs_uri_unref (uri);
+	escaped = rb_uri_get_short_path_name (uri_str);
 	if (escaped == NULL) {
 		return NULL;
 	}

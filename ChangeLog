@@ -1,3 +1,18 @@
+2006-11-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-file-helpers.c: (rb_uri_append_path), (rb_uri_append_uri),
+	(rb_uri_get_dir_name), (rb_uri_get_short_path_name):
+	* lib/rb-file-helpers.h:
+	* sources/rb-ipod-source.c: (ipod_get_filename_for_uri):
+	Implement rb_uri_get_short_path_name to replace
+	gnome_vfs_uri_extract_short_path name with something that doesn't
+	reject unknown URI schemes such as daap://.  Fixes #361077.
+
+	* tests/Makefile.am:
+	* tests/test-file-helpers.c: (test_get_short_path_name),
+	(START_TEST), (rb_file_helpers_suite), (main):
+	Add tests for the above.
+
 2006-11-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/bacon-volume.c: (bacon_volume_button_class_init),
