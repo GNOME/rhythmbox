@@ -1192,6 +1192,7 @@ impl_paste (RBSource *asource, GList *entries)
 	for (l = entries; l != NULL; l = g_list_next (l)) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
 		RhythmDBEntryType entry_type;
+		RBSource *source_source;
 		char *dest;
 
 		rb_debug ("pasting entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
@@ -1202,7 +1203,8 @@ impl_paste (RBSource *asource, GList *entries)
 			continue;
 
 		/* see if the responsible source lets us copy */
-		if (!rb_source_can_copy (rb_shell_get_source_by_entry_type (shell, entry_type)))
+		source_source = rb_shell_get_source_by_entry_type (shell, entry_type);
+		if ((source_source != NULL) && !rb_source_can_copy (source_source))
 			continue;
 
 		dest = build_filename (source, entry);
