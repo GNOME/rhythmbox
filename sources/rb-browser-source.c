@@ -157,7 +157,10 @@ static GtkRadioActionEntry rb_browser_source_radio_actions [] =
 	{ "BrowserSourceSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), 3 }
 };
 
-static const GtkTargetEntry songs_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
+static const GtkTargetEntry songs_view_drag_types[] = {
+	{ "application/x-rhythmbox-entry", 0, 0 },
+	{ "text/uri-list", 0, 1 }
+};
 
 enum
 {
@@ -452,7 +455,7 @@ rb_browser_source_constructor (GType type,
 	if (rb_browser_source_has_drop_support (source)) {
 		gtk_drag_dest_set (GTK_WIDGET (source->priv->songs),
 				   GTK_DEST_DEFAULT_ALL,
-				   songs_view_drag_types, 1,
+				   songs_view_drag_types, G_N_ELEMENTS (songs_view_drag_types),
 				   GDK_ACTION_COPY | GDK_ACTION_MOVE);	/* really accept move actions? */
 
 		/* set up drag and drop for the song tree view.

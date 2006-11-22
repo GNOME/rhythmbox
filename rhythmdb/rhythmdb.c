@@ -3166,6 +3166,53 @@ rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db,
 }
 
 /**
+ *rhythmdb_entry_lookup_by_id:
+ * @db: a #RhythmDB.
+ * @id: entry ID
+ *
+ * Looks up the entry with id @id.
+ *
+ * Returns: the entry with id @id, or NULL if no such entry exists.
+ */
+RhythmDBEntry *
+rhythmdb_entry_lookup_by_id (RhythmDB *db,
+			     gint id)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
+	return klass->impl_lookup_by_id (db, id);
+}
+
+/**
+ *rhythmdb_entry_lookup_from_string:
+ * @db: a #RhythmDB.
+ * @str: string
+ * @is_id: whether the string is an entry ID or a location.
+ *
+ * Locates an entry using a string containing either an entry ID
+ * or a location.
+ *
+ * Returns: the entry matching the string, or NULL if no such entry exists.
+ */
+RhythmDBEntry *
+rhythmdb_entry_lookup_from_string (RhythmDB *db,
+				   const char *str,
+				   gboolean is_id)
+{
+	if (is_id) {
+		gint id;
+
+		id = strtoul (str, NULL, 10);
+		if (id == 0)
+			return NULL;
+
+		return rhythmdb_entry_lookup_by_id (db, id);
+	} else {
+		return rhythmdb_entry_lookup_by_location (db, str);
+	}
+}
+
+/**
  *rhythmdb_entry_foreach:
  * @db: a #RhythmDB.
  * @func: the function to call with each entry.
@@ -3182,6 +3229,58 @@ rhythmdb_entry_foreach (RhythmDB *db,
 
 	klass->impl_entry_foreach (db, func, data);
 }
+
+/**
+ *rhythmdb_entry_count:
+ * @db: a #RhythmDB.
+ *
+ * Returns: the number of entries in the database.
+ */
+gint64
+rhythmdb_entry_count (RhythmDB *db)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
+	return klass->impl_entry_count (db);
+}
+
+/**
+ *rhythmdb_entry_foreach_by_type:
+ * @db: a #RhythmdB.
+ * @entry_type: the type of entry to retrieve
+ * @func: the function to call with each entry
+ * @data: user data to pass to the function.
+ *
+ * Calls the given function for each of the entries in the database
+ * of a given type.
+ */
+void
+rhythmdb_entry_foreach_by_type (RhythmDB *db,
+				RhythmDBEntryType entry_type,
+				GFunc func,
+				gpointer data)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
+	klass->impl_entry_foreach_by_type (db, entry_type, func, data);
+}
+
+/**
+ *rhythmdb_entry_count_by_type:
+ * @db: a #RhythmDB.
+ * @entry_type: a #RhythmDBEntryType.
+ *
+ * Returns: the number of entries in the database of a particular type.
+ */
+gint64
+rhythmdb_entry_count_by_type (RhythmDB *db,
+			      RhythmDBEntryType entry_type)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
+	return klass->impl_entry_count_by_type (db, entry_type);
+}
+
 
 /**
  * rhythmdb_evaluate_query:

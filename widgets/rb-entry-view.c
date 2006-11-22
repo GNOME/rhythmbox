@@ -46,7 +46,10 @@
 #include "rb-shell-player.h"
 #include "rb-cut-and-paste-code.h"
 
-static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
+static const GtkTargetEntry rb_entry_view_drag_types[] = {
+	{ "application/x-rhythmbox-entry", 0, 0 },
+	{ "text/uri-list", 0, 1 }
+};
 
 struct RBEntryViewColumnSortData
 {

@@ -113,23 +113,28 @@ enum {
 	TARGET_GENRE,
 	TARGET_ARTISTS,
 	TARGET_LOCATION,
+	TARGET_ENTRIES,
 	TARGET_URIS,
 };
 
 static const GtkTargetEntry targets_album  [] = {
 	{ "text/x-rhythmbox-album",  0, TARGET_ALBUMS },
+	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
 	{ "text/uri-list", 0, TARGET_URIS },
 };
 static const GtkTargetEntry targets_genre  [] = {
 	{ "text/x-rhythmbox-genre",  0, TARGET_GENRE },
+	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
 	{ "text/uri-list", 0, TARGET_URIS },
 };
 static const GtkTargetEntry targets_artist [] = {
 	{ "text/x-rhythmbox-artist", 0, TARGET_ARTISTS },
+	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
 	{ "text/uri-list", 0, TARGET_URIS },
 };
 static const GtkTargetEntry targets_location [] = {
 	{ "text/x-rhythmbox-location", 0, TARGET_LOCATION },
+	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
 	{ "text/uri-list", 0, TARGET_URIS },
 };
 
@@ -911,6 +916,7 @@ rhythmdb_property_model_drag_data_delete (RbTreeDragSource *dragsource,
 struct QueryModelCbStruct {
 	RhythmDB *db;
 	GString *reply;
+	gint target;
 };
 
 static gboolean
@@ -919,12 +925,18 @@ query_model_cb (GtkTreeModel *query_model,
 		GtkTreeIter *iter,
  		struct QueryModelCbStruct *data)
 {
- 	const char *uri;
  	RhythmDBEntry *entry;
 
  	gtk_tree_model_get (query_model, iter, 0, &entry, -1);
- 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
- 	g_string_append (data->reply, uri);
+	if (data->target == TARGET_ENTRIES) {
+		g_string_append_printf (data->reply,
+					"%ld",
+					rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
+	} else if (data->target == TARGET_URIS) {
+		const char *uri;
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		g_string_append (data->reply, uri);
+	}
  	g_string_append (data->reply, "\r\n");
 
  	rhythmdb_entry_unref (entry);
@@ -963,7 +975,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 		return FALSE;
 	}
 
-	if (target == TARGET_URIS) {
+	if (target == TARGET_URIS || target == TARGET_ENTRIES) {
 		RhythmDB *db = model->priv->db;
  		RhythmDBQueryModel *query_model;
  		GString* reply = g_string_new ("");
@@ -1037,6 +1049,7 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 
 		tmp.db = db;
  		tmp.reply = reply;
+		tmp.target = target;
  		/* Too bad that we're on the main thread. Why doesn't gtk call us async?
  		 * How does file-roller manage? - it seems it refuses the drop when it isn't
 		 * done unpacking. In which case, we should tweak the drop acknowledgement,

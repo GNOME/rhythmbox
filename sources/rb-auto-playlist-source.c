@@ -465,8 +465,9 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	int i;
 	RhythmDB *db;
 
-	/* ignore URI lists */
-	if (data->type == gdk_atom_intern ("text/uri-list", TRUE))
+	/* ignore URI and entry ID lists */
+	if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE))
 		return TRUE;
 
 	names = g_strsplit ((char *)data->data, "\r\n", 0);

@@ -110,26 +110,6 @@ enum
 
 static guint rb_property_view_signals[LAST_SIGNAL] = { 0 };
 
-enum {
-	TARGET_ALBUMS,
-	TARGET_GENRE,
-	TARGET_ARTISTS,
-	TARGET_URIS,
-};
-
-static const GtkTargetEntry targets_album  [] = {
-	{ "text/x-rhythmbox-album",  0, TARGET_ALBUMS },
-	{ "text/uri-list", 0, TARGET_URIS },
-};
-static const GtkTargetEntry targets_genre  [] = {
-	{ "text/x-rhythmbox-genre",  0, TARGET_GENRE },
-	{ "text/uri-list", 0, TARGET_URIS },
-};
-static const GtkTargetEntry targets_artist [] = {
-	{ "text/x-rhythmbox-artist", 0, TARGET_ARTISTS },
-	{ "text/uri-list", 0, TARGET_URIS },
-};
-
 G_DEFINE_TYPE (RBPropertyView, rb_property_view, GTK_TYPE_SCROLLED_WINDOW)
 
 static void

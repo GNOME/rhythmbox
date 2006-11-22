@@ -52,6 +52,7 @@ GType         rb_daap_share_get_type (void);
 RBDAAPShare * rb_daap_share_new      (const char *name,
                                       const char *password,
                                       RhythmDB *db,
+				      RhythmDBEntryType entry_type,
                                       RBPlaylistManager *playlist_manager);
 
 #endif /* __RB_DAAP_SHARE_H */

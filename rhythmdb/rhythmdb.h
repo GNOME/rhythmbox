@@ -294,9 +294,17 @@ typedef struct
 
 	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, RBRefString *uri);
 
+	RhythmDBEntry *	(*impl_lookup_by_id)    (RhythmDB *db, gint id);
+
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
 
 	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
+
+	gint64		(*impl_entry_count)	(RhythmDB *db);
+
+	void		(*impl_entry_foreach_by_type) (RhythmDB *db, RhythmDBEntryType type, GFunc func, gpointer data);
+
+	gint64		(*impl_entry_count_by_type) (RhythmDB *db, RhythmDBEntryType type);
 
 	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
 						 RhythmDBQueryResults *results,
@@ -347,12 +355,24 @@ void		rhythmdb_entry_move_to_trash (RhythmDB *db,
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);
 
+RhythmDBEntry *	rhythmdb_entry_lookup_by_id     (RhythmDB *db, gint id);
+
+RhythmDBEntry * rhythmdb_entry_lookup_from_string (RhythmDB *db, const char *str, gboolean is_id);
+
 gboolean	rhythmdb_evaluate_query		(RhythmDB *db, GPtrArray *query,
 						 RhythmDBEntry *entry);
 
 void		rhythmdb_entry_foreach		(RhythmDB *db,
 						 GFunc func,
 						 gpointer data);
+gint64		rhythmdb_entry_count		(RhythmDB *db);
+
+void		rhythmdb_entry_foreach_by_type  (RhythmDB *db,
+						 RhythmDBEntryType entry_type,
+						 GFunc func,
+						 gpointer data);
+gint64		rhythmdb_entry_count_by_type	(RhythmDB *db,
+						 RhythmDBEntryType entry_type);
 
 /**
  * Returns a freshly allocated GtkTreeModel which represents the query.

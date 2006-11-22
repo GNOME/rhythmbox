@@ -74,7 +74,11 @@ static void rhythmdb_tree_entry_delete (RhythmDB *db, RhythmDBEntry *entry);
 static void rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType type);
 
 static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_location (RhythmDB *db, RBRefString *uri);
+static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_id (RhythmDB *db, gint id);
 static void rhythmdb_tree_entry_foreach (RhythmDB *adb, GFunc func, gpointer user_data);
+static gint64 rhythmdb_tree_entry_count (RhythmDB *adb);
+static void rhythmdb_tree_entry_foreach_by_type (RhythmDB *adb, RhythmDBEntryType type, GFunc func, gpointer user_data);
+static gint64 rhythmdb_tree_entry_count_by_type (RhythmDB *adb, RhythmDBEntryType type);
 static void rhythmdb_tree_do_full_query (RhythmDB *db, GPtrArray *query,
 					 RhythmDBQueryResults *results,
 					 gboolean *cancel);
@@ -118,6 +122,7 @@ static gboolean evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *quer
 struct RhythmDBTreePrivate
 {
 	GHashTable *entries;
+	GHashTable *entry_ids;
 	GMutex *entries_lock;
 
 	GHashTable *genres;
@@ -174,7 +179,11 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_entry_delete = rhythmdb_tree_entry_delete;
 	rhythmdb_class->impl_entry_delete_by_type = rhythmdb_tree_entry_delete_by_type;
 	rhythmdb_class->impl_lookup_by_location = rhythmdb_tree_entry_lookup_by_location;
+	rhythmdb_class->impl_lookup_by_id = rhythmdb_tree_entry_lookup_by_id;
 	rhythmdb_class->impl_entry_foreach = rhythmdb_tree_entry_foreach;
+	rhythmdb_class->impl_entry_count = rhythmdb_tree_entry_count;
+	rhythmdb_class->impl_entry_foreach_by_type = rhythmdb_tree_entry_foreach_by_type;
+	rhythmdb_class->impl_entry_count_by_type = rhythmdb_tree_entry_count_by_type;
 	rhythmdb_class->impl_evaluate_query = rhythmdb_tree_evaluate_query;
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
 	rhythmdb_class->impl_entry_type_registered = rhythmdb_tree_entry_type_registered;
@@ -188,6 +197,8 @@ rhythmdb_tree_init (RhythmDBTree *db)
 	db->priv = RHYTHMDB_TREE_GET_PRIVATE (db);
 
 	db->priv->entries = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
+
+	db->priv->entry_ids = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	db->priv->genres = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 						  NULL, (GDestroyNotify)g_hash_table_destroy);
@@ -247,6 +258,7 @@ rhythmdb_tree_finalize (GObject *object)
 
 	g_hash_table_foreach (db->priv->entries, (GHFunc) unparent_entries, db);
 	g_hash_table_destroy (db->priv->entries);
+	g_hash_table_destroy (db->priv->entry_ids);
 	g_mutex_free (db->priv->entries_lock);
 
 	g_hash_table_destroy (db->priv->genres);
@@ -1143,6 +1155,7 @@ rhythmdb_tree_entry_new_internal (RhythmDB *rdb, RhythmDBEntry *entry)
 
 	/* this accounts for the initial reference on the entry */
 	g_hash_table_insert (db->priv->entries, entry->location, entry);
+	g_hash_table_insert (db->priv->entry_ids, GINT_TO_POINTER (entry->id), entry);
 
 	entry->flags &= ~RHYTHMDB_ENTRY_TREE_LOADING;
 }
@@ -1450,6 +1463,7 @@ rhythmdb_tree_entry_delete (RhythmDB *adb,
 
 	g_mutex_lock (db->priv->entries_lock);
 	g_assert (g_hash_table_remove (db->priv->entries, entry->location));
+	g_assert (g_hash_table_remove (db->priv->entry_ids, GINT_TO_POINTER (entry->id)));
 	rhythmdb_entry_unref (entry);
 	g_mutex_unlock (db->priv->entries_lock);
 }
@@ -1469,6 +1483,7 @@ remove_one_song (gpointer key,
 	if (entry->type == ctxt->type) {
 		rhythmdb_emit_entry_deleted (ctxt->db, entry);
 		remove_entry_from_album (RHYTHMDB_TREE (ctxt->db), entry);
+		g_hash_table_remove (RHYTHMDB_TREE (ctxt->db)->priv->entry_ids, GINT_TO_POINTER (entry->id));
 		rhythmdb_entry_unref (entry);
 		return TRUE;
 	}
@@ -2093,6 +2108,20 @@ rhythmdb_tree_entry_lookup_by_location (RhythmDB *adb,
 	return entry;
 }
 
+static RhythmDBEntry *
+rhythmdb_tree_entry_lookup_by_id (RhythmDB *adb,
+				  gint id)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (adb);
+	RhythmDBEntry *entry;
+
+	g_mutex_lock (db->priv->entries_lock);
+	entry = g_hash_table_lookup (db->priv->entry_ids, GINT_TO_POINTER (id));
+	g_mutex_unlock (db->priv->entries_lock);
+
+	return entry;
+}
+
 struct RhythmDBEntryForeachCtxt
 {
 	RhythmDBTree *db;
@@ -2127,6 +2156,41 @@ rhythmdb_tree_entry_foreach (RhythmDB *rdb, GFunc foreach_func, gpointer user_da
 	}
 
 	g_ptr_array_free (list, TRUE);
+}
+
+static gint64
+rhythmdb_tree_entry_count (RhythmDB *rdb)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
+	return g_hash_table_size (db->priv->entries);
+}
+
+static void
+rhythmdb_tree_entry_foreach_by_type (RhythmDB *db,
+				     RhythmDBEntryType type,
+				     GFunc foreach_func,
+				     gpointer data)
+{
+	rhythmdb_hash_tree_foreach (db, type,
+				    (RBTreeEntryItFunc) foreach_func,
+				    NULL, NULL, NULL, data);
+}
+
+static void
+count_entries (RhythmDB *db, RhythmDBTreeProperty *album, gint64 *count)
+{
+	*count += g_hash_table_size (album->children);
+}
+
+static gint64
+rhythmdb_tree_entry_count_by_type (RhythmDB *db,
+				   RhythmDBEntryType type)
+{
+	gint64 count = 0;
+	rhythmdb_hash_tree_foreach (db, type,
+				    NULL, (RBTreePropertyItFunc) count_entries, NULL, NULL,
+				    &count);
+	return count;
 }
 
 

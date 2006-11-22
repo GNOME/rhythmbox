@@ -68,7 +68,9 @@ static void rb_static_playlist_source_browser_changed_cb (RBLibraryBrowser *entr
 
 static void rb_static_playlist_source_do_query (RBStaticPlaylistSource *source);
 
-static void rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
+static void rb_static_playlist_source_add_id_list (RBStaticPlaylistSource *source,
+						   GList *list);
+static void rb_static_playlist_source_add_uri_list (RBStaticPlaylistSource *source,
 						    GList *list);
 static void rb_static_playlist_source_row_inserted (GtkTreeModel *model,
 						    GtkTreePath *path,
@@ -505,12 +507,17 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	GList *list;
 	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);
 
-        if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
+        if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
 		list = rb_uri_list_parse ((char *)data->data);
-		if (list != NULL) {
-			rb_static_playlist_source_add_list_uri (source, list);
-		} else
+		if (list == NULL)
 			return FALSE;
+
+		if (data->type == gdk_atom_intern ("text/uri-list", TRUE))
+			rb_static_playlist_source_add_uri_list (source, list);
+		else
+			rb_static_playlist_source_add_id_list (source, list);
+		rb_list_deep_free (list);
 	}
 
         return TRUE;
@@ -547,7 +554,34 @@ impl_save_contents_to_xml (RBPlaylistSource *source,
 }
 
 static void
-rb_static_playlist_source_add_list_uri (RBStaticPlaylistSource *source,
+rb_static_playlist_source_add_id_list (RBStaticPlaylistSource *source,
+				       GList *list)
+{
+	RBPlaylistSource *psource = RB_PLAYLIST_SOURCE (source);
+	GList *i;
+	gint id;
+
+	g_return_if_fail (list != NULL);
+
+	for (i = list; i != NULL; i = i->next) {
+		RhythmDBEntry *entry;
+
+		id = strtoul ((const char *)i->data, NULL, 0);
+		if (id == 0)
+			continue;
+
+		entry = rhythmdb_entry_lookup_by_id (rb_playlist_source_get_db (psource), id);
+		if (entry == NULL) {
+			rb_debug ("received id %d, but can't find the entry", id);
+			continue;
+		}
+
+		rb_static_playlist_source_add_entry (source, entry, -1);
+	}
+}
+
+static void
+rb_static_playlist_source_add_uri_list (RBStaticPlaylistSource *source,
 					GList *list)
 {
 	GList *i, *uri_list = NULL;

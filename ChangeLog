@@ -1,5 +1,52 @@
 2006-11-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-property-model.c: (query_model_cb),
+	(rhythmdb_property_model_drag_data_get):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_drag_data_get),
+	(rhythmdb_query_model_drag_data_received):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_class_init),
+	(rhythmdb_tree_init), (rhythmdb_tree_finalize),
+	(rhythmdb_tree_entry_new_internal), (rhythmdb_tree_entry_delete),
+	(remove_one_song), (rhythmdb_tree_entry_lookup_by_id),
+	(rhythmdb_tree_entry_foreach), (rhythmdb_tree_entry_count),
+	(rhythmdb_tree_entry_foreach_by_type), (count_entries),
+	(rhythmdb_tree_entry_count_by_type):
+	* rhythmdb/rhythmdb.c:
+	* rhythmdb/rhythmdb.h:
+	* daapsharing/rb-daap-share.c: (rb_daap_share_class_init),
+	(rb_daap_share_set_property), (rb_daap_share_get_property),
+	(rb_daap_share_new), (add_entry_to_mlcl), (send_chunked_file),
+	(send_mapped_file), (databases_cb), (db_entry_added_cb),
+	(db_entry_deleted_cb), (rb_daap_share_server_start),
+	(rb_daap_share_server_stop):
+	* daapsharing/rb-daap-share.h:
+	* daapsharing/rb-daap-sharing.c: (create_share):
+	Move id-to-entry map from daap share into rhythmdb.
+
+	* shell/rb-playlist-manager.c: (create_name_from_selection_data),
+	(rb_playlist_manager_new_playlist_from_selection_data):
+	* sources/rb-auto-playlist-source.c: (impl_receive_drag):
+	* sources/rb-browser-source.c: (rb_browser_source_constructor):
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_drag_data_received),
+	(rb_sourcelist_model_row_drop_position),
+	(rb_sourcelist_model_get_drag_target),
+	(rb_sourcelist_model_drag_data_get):
+	* sources/rb-static-playlist-source.c: (impl_receive_drag),
+	(rb_static_playlist_source_add_id_list),
+	(rb_static_playlist_source_add_uri_list):
+	* widgets/rb-entry-view.c:
+	* widgets/rb-property-view.c:
+	Add a new drag-and-drop type: application/x-rhythmbox-entry
+	containing a list of entry IDs, and use it for DnD within the
+	application.  Avoids having to pick a URI to use for an entry, so we
+	can make DnD of podcast entries (and anything else where playback URI
+	is not the same as the entry location) work as expected.
+	Fixes #343537.
+
+2006-11-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell.c: (rb_shell_present):
 	Clear the skip-taskbar hint when presenting the window. Fixes #377963.
 

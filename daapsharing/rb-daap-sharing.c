@@ -83,7 +83,7 @@ create_share (RBShell *shell)
 		password = NULL;
 	}
 
-	share = rb_daap_share_new (name, password, db, playlist_manager);
+	share = rb_daap_share_new (name, password, db, RHYTHMDB_ENTRY_TYPE_SONG, playlist_manager);
 
 	g_object_unref (db);
 	g_object_unref (playlist_manager);

@@ -190,7 +190,15 @@ static void rhythmdb_query_model_process_update (struct RhythmDBQueryModelUpdate
 
 static void idle_process_update (struct RhythmDBQueryModelUpdate *update);
 
-static const GtkTargetEntry rhythmdb_query_model_drag_types[] = { { "text/uri-list", 0, 0 },};
+enum {
+	TARGET_ENTRIES,
+	TARGET_URIS
+};
+
+static const GtkTargetEntry rhythmdb_query_model_drag_types[] = {
+	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
+	{ "text/uri-list", 0, TARGET_URIS },
+};
 
 static GtkTargetList *rhythmdb_query_model_drag_target_list = NULL;
 
@@ -1623,52 +1631,62 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 				    GtkSelectionData *selection_data)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (dragsource);
+	RhythmDBEntry *entry;
+	GString *data;
 	guint target;
+	GList *tem;
+	gboolean need_newline = FALSE;
 
 	rb_debug ("getting drag data");
 
-	if (gtk_target_list_find (rhythmdb_query_model_drag_target_list,
+	if (!gtk_target_list_find (rhythmdb_query_model_drag_target_list,
 				  selection_data->target, &target)) {
-		RhythmDBEntry *entry;
-		GList *tem;
-		GString *data;
-		gboolean need_newline = FALSE;
-
-		data = g_string_new ("");
-
-		for (tem = paths; tem; tem = tem->next) {
-			GtkTreeIter iter;
-			GtkTreePath *path;
-			const char *location;
-
-			path = gtk_tree_row_reference_get_path (tem->data);
-
-			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
-
-			entry = g_sequence_ptr_get_data (iter.user_data);
-
-			location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-			if (location == NULL)
-				continue;
-
-			if (need_newline)
-				g_string_append (data, "\r\n");
-
-			g_string_append (data, location);
-			need_newline = TRUE;
-		}
-
-		gtk_selection_data_set (selection_data,
-					selection_data->target,
-					8, (guchar *) data->str,
-					data->len);
-
-		g_string_free (data, TRUE);
-
-		return TRUE;
+		return FALSE;
 	}
 
-	return FALSE;
+
+	data = g_string_new ("");
+
+	for (tem = paths; tem; tem = tem->next) {
+		GtkTreeIter iter;
+		GtkTreePath *path;
+
+		path = gtk_tree_row_reference_get_path (tem->data);
+
+		gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+
+		entry = g_sequence_ptr_get_data (iter.user_data);
+
+		if (need_newline)
+			g_string_append (data, "\r\n");
+
+		if (target == TARGET_URIS) {
+			char *location;
+
+			location = rhythmdb_entry_get_playback_uri (entry);
+			if (location == NULL) {
+				need_newline = FALSE;
+				continue;
+			}
+
+			g_string_append (data, location);
+			g_free (location);
+		} else if (target == TARGET_ENTRIES) {
+			g_string_append_printf (data,
+						"%lu",
+						rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
+		}
+		need_newline = TRUE;
+	}
+
+	gtk_selection_data_set (selection_data,
+				selection_data->target,
+				8, (guchar *) data->str,
+				data->len);
+
+	g_string_free (data, TRUE);
+
+	return TRUE;
 }
 
 static gboolean
@@ -1713,7 +1731,10 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 		GSequencePtr ptr;
 		char **strv;
 		RhythmDBEntry *entry;
+		gboolean uri_list;
 		int i = 0;
+
+		uri_list = (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE));
 
 		strv = g_strsplit ((char *) selection_data->data, "\r\n", -1);
 
@@ -1732,20 +1753,22 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 			if (g_utf8_strlen (strv[i], -1) == 0)
 				continue;
 
-			entry = rhythmdb_entry_lookup_by_location (model->priv->db,
-								   strv[i]);
-
+			entry = rhythmdb_entry_lookup_from_string (model->priv->db, strv[i], !uri_list);
 			if (entry == NULL) {
 				int pos;
 
-				if (g_sequence_ptr_is_end (ptr))
-					pos = -1;
-				else
-					pos = g_sequence_ptr_get_position (ptr);
+				if (uri_list) {
+					if (g_sequence_ptr_is_end (ptr))
+						pos = -1;
+					else
+						pos = g_sequence_ptr_get_position (ptr);
 
-				g_signal_emit (G_OBJECT (model),
-					       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
-					       0, strv[i], pos);
+					g_signal_emit (G_OBJECT (model),
+						       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
+						       0, strv[i], pos);
+				} else {
+					rb_debug ("got drop with entry id %s, but can't find the entry", strv[i]);
+				}
 			} else {
 				GSequencePtr old_ptr;
 				GtkTreePath *tem_path;

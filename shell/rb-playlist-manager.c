@@ -912,8 +912,11 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
 	char  *name = NULL;
 	GList *list;
 
-        if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
-                list = gnome_vfs_uri_list_parse ((char *) data->data);
+        if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE)) {
+		gboolean is_id;
+		list = rb_uri_list_parse ((const char *)data->data);
+		is_id = (data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
 
 		if (list != NULL) {
 			GList   *l;
@@ -928,16 +931,12 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
 			mixed_albums  = FALSE;
 			for (l = list; l != NULL; l = g_list_next (l)) {
 				RhythmDBEntry *entry;
-				char          *location;
 				const char    *e_artist;
 				const char    *e_album;
 
-				location = gnome_vfs_uri_to_string ((const GnomeVFSURI *) l->data, 0);
-				if (location == NULL) {
-					continue;
-				}
-
-				entry = rhythmdb_entry_lookup_by_location (mgr->priv->db, location);
+				entry = rhythmdb_entry_lookup_from_string (mgr->priv->db,
+									   (const char *)l->data,
+									   is_id);
 				if (entry == NULL) {
 					continue;
 				}
@@ -983,7 +982,7 @@ create_name_from_selection_data (RBPlaylistManager *mgr,
 
 			g_free (artist);
 			g_free (album);
-			gnome_vfs_uri_list_free (list);
+			rb_list_deep_free (list);
 		}
 
 	} else {
@@ -1017,10 +1016,12 @@ rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
 						      GtkSelectionData *data)
 {
 	RBSource *playlist;
-	gboolean  automatic;
+	gboolean  automatic = TRUE;
 	char     *suggested_name;
 
-	automatic = (data->type != gdk_atom_intern ("text/uri-list", TRUE));
+	if (data->type == gdk_atom_intern ("text/uri-list", TRUE) ||
+	    data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE))
+		automatic = FALSE;
 	suggested_name = create_name_from_selection_data (mgr, data);
 
 	playlist = rb_playlist_manager_new_playlist (mgr,
