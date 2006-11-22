@@ -3252,6 +3252,7 @@ rb_shell_present (RBShell *shell,
 	gtk_window_present (GTK_WINDOW (shell->priv->window));
 	gdk_window_focus (GTK_WIDGET (shell->priv->window)->window, timestamp);
 #endif
+	gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
 
 	rb_profile_end ("presenting shell");
 
