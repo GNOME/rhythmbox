@@ -129,6 +129,7 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 	RhythmDBEntry *entry;
 	RhythmDBPropType propid;
 	GValue value = {0,};
+	GType prop_type;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RhythmDBEntry.set", kwlist, &py_entry, &py_propid, &py_value))
 	    return NULL;
@@ -140,11 +141,19 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 	}
 	if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
 	    return NULL;
-	g_value_init(&value, rhythmdb_get_property_type (RHYTHMDB(self->obj), propid));
+
+	prop_type = rhythmdb_get_property_type (RHYTHMDB(self->obj), propid);
+	g_value_init(&value, prop_type);
 	if (pyg_value_from_pyobject(&value, py_value) < 0) {
-	    PyErr_SetString(PyExc_TypeError,
-		"could not convert argument to correct param type");
-	    return NULL;
+		char *s;
+
+		s = g_strdup_printf ("could not convert argument from type '%s' (%d) to correct type '%s'",
+				     g_type_name (pyg_type_from_object (py_value)),
+				     pyg_type_from_object (py_value),
+				     g_type_name (prop_type));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
 	}
 	rhythmdb_entry_set(RHYTHMDB(self->obj), entry, propid, &value);
 	g_value_unset (&value);
