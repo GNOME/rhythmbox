@@ -367,7 +367,7 @@ class MagnatuneSource(rb.BrowserSource):
 			ccmonth = self.__tmp_mm
 			name = self.__tmp_name
 
-		print "purchasing tracks:", sku, pay, format, ccnumber, ccyear, ccmonth, name, email
+		print "purchasing tracks:", sku, pay, format, name, email
 
 		try:
 			self.__buy_track(sku, pay, format, name, email, ccnumber, ccyear, ccmonth)
