@@ -1213,6 +1213,9 @@ rb_shell_player_play (RBShellPlayer *player,
 {
 	RBEntryView *songs;
 
+	if (player->priv->current_playing_source == NULL)
+		return FALSE;
+
 	if (rb_player_playing (player->priv->mmplayer))
 		return TRUE;
 

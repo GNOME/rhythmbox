@@ -125,7 +125,10 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 				rb_debug ("unknown LIRC code \"%s\"", code);
 			break;
 		} else if (strcmp (str, RB_IR_COMMAND_PLAY) == 0) {
-			rb_shell_player_play (plugin->shell_player, NULL);
+			gboolean playing;
+			rb_shell_player_get_playing (plugin->shell_player, &playing, NULL);
+			if (playing == FALSE)
+				rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_PAUSE) == 0) {
 			rb_shell_player_pause (plugin->shell_player, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_PLAYPAUSE) == 0) {

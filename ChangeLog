@@ -1,3 +1,12 @@
+2006-11-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_play):
+	Don't crash if current_playing_source is NULL.  Fixes #378195.
+	
+	* plugins/lirc/rb-lirc-plugin.c: (rb_lirc_plugin_read_code):
+	rb_shell_player_play isn't very useful, use _playpause if not
+	already playing instead.
+
 2006-11-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-property-model.c: (query_model_cb),
