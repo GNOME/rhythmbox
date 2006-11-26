@@ -612,8 +612,8 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 	/* if we could create the gconf sink use that, otherwise let playbin decide */
 	if (sink != NULL) {
 		/* set the profile property on the gconfaudiosink to "music and movies" */
-		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "profile"))
-			g_object_set (G_OBJECT (source), "profile", 1, NULL);
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (sink), "profile"))
+			g_object_set (G_OBJECT (sink), "profile", 1, NULL);
 
 		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
 	}

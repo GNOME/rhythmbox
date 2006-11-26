@@ -1,3 +1,9 @@
+2006-11-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_construct):
+	Use the right variable name when setting the "profile" property on the
+	sink.  Fixes #379532 and closes #379314 again.
+
 2006-11-27  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Adam Zimmerman <adam_zimmerman@sfu.ca>
