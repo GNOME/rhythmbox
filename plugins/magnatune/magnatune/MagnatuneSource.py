@@ -393,34 +393,36 @@ class MagnatuneSource(rb.BrowserSource):
 						'email':email
 					})
 
-		self.__buy_album_handler = BuyAlbumHandler(format) # so we can get the url and auth info
-		self.__auth_parser = xml.sax.make_parser()
-		self.__auth_parser.setContentHandler(self.__buy_album_handler)
+		buy_album_handler = BuyAlbumHandler(format) # so we can get the url and auth info
+		auth_parser = xml.sax.make_parser()
+		auth_parser.setContentHandler(buy_album_handler)
 		
 		self.__wait_dlg = gtk.Dialog(title="Authorizing Purchase", flags=gtk.DIALOG_NO_SEPARATOR|gtk.DIALOG_DESTROY_WITH_PARENT)
 		lbl = gtk.Label("Authorizing purchase with the Magnatune server. Please wait...")
 		self.__wait_dlg.vbox.pack_start(lbl)
 		lbl.show()
 		self.__wait_dlg.show()
-		gnomevfs.async.open(gnomevfs.URI(url), self.__auth_open_cb)
+		gnomevfs.async.open(gnomevfs.URI(url), self.__auth_open_cb, data=(buy_album_handler, auth_parser))
 	
-	def __auth_open_cb(self, handle, exc_type):
+	def __auth_open_cb(self, handle, exc_type, data):
 		if exc_type:
 			raise exc_type
 		
-		handle.read(64 * 1024, self.__auth_read_cb)
+		handle.read(64 * 1024, self.__auth_read_cb, data)
 		
 	
-	def __auth_read_cb (self, handle, data, exc_type, bytes_requested):
+	def __auth_read_cb (self, handle, data, exc_type, bytes_requested, parser):
+		buy_album_handler = parser[0]
+		auth_parser = parser[1]
 		data = data.replace("<br>", "") # get rid of any stray <br> tags that will mess up the parser
 		if exc_type:
 			if issubclass (exc_type, gnomevfs.EOFError):
 				# successfully loaded
 				gtk.gdk.threads_enter()
-				audio_dl_uri = gnomevfs.URI(self.__buy_album_handler.url)
-				audio_dl_uri = gnomevfs.URI(self.__buy_album_handler.url[0:self.__buy_album_handler.url.rfind("/") + 1] + urllib.quote(audio_dl_uri.short_name))
-				audio_dl_uri.user_name = str(self.__buy_album_handler.username) # URI objects don't like unicode strings
-				audio_dl_uri.password = str(self.__buy_album_handler.password)
+				audio_dl_uri = gnomevfs.URI(buy_album_handler.url)
+				audio_dl_uri = gnomevfs.URI(buy_album_handler.url[0:buy_album_handler.url.rfind("/") + 1] + urllib.quote(audio_dl_uri.short_name))
+				audio_dl_uri.user_name = str(buy_album_handler.username) # URI objects don't like unicode strings
+				audio_dl_uri.password = str(buy_album_handler.password)
 				
 				in_progress = create_if_needed(gnomevfs.URI(magnatune_dir + "in_progress_" + audio_dl_uri.short_name), gnomevfs.OPEN_WRITE)
 				in_progress.write(str(audio_dl_uri))
@@ -432,13 +434,13 @@ class MagnatuneSource(rb.BrowserSource):
 				# error reading file
 				raise exc_type
 			
-			self.__auth_parser.close()
+			auth_parser.close()
 			handle.close(lambda handle, exc: None) # FIXME: report it?
 			
  		else:
 
-			self.__auth_parser.feed(data)
-			handle.read(64 * 1024, self.__auth_read_cb)
+			auth_parser.feed(data)
+			handle.read(64 * 1024, self.__auth_read_cb, parser)
 	
 	def __download_album(self, audio_dl_uri):
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
