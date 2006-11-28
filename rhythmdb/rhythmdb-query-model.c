@@ -426,17 +426,17 @@ rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface)
 static void
 rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface)
 {
-	iface->row_draggable = rhythmdb_query_model_row_draggable;
-	iface->drag_data_delete = rhythmdb_query_model_drag_data_delete;
-	iface->drag_data_get = rhythmdb_query_model_drag_data_get;
+	iface->rb_row_draggable = rhythmdb_query_model_row_draggable;
+	iface->rb_drag_data_delete = rhythmdb_query_model_drag_data_delete;
+	iface->rb_drag_data_get = rhythmdb_query_model_drag_data_get;
 }
 
 static void
 rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface)
 {
-	iface->drag_data_received = rhythmdb_query_model_drag_data_received;
-	iface->row_drop_possible = rhythmdb_query_model_row_drop_possible;
-	iface->row_drop_position = rhythmdb_query_model_row_drop_position;
+	iface->rb_drag_data_received = rhythmdb_query_model_drag_data_received;
+	iface->rb_row_drop_possible = rhythmdb_query_model_row_drop_possible;
+	iface->rb_row_drop_position = rhythmdb_query_model_row_drop_position;
 }
 
 static void

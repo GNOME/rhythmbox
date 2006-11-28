@@ -150,18 +150,18 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 static void
 rb_sourcelist_model_drag_dest_init (RbTreeDragDestIface *iface)
 {
-  iface->drag_data_received = rb_sourcelist_model_drag_data_received;
-  iface->row_drop_possible = rb_sourcelist_model_row_drop_possible;
-  iface->row_drop_position = rb_sourcelist_model_row_drop_position;
-  iface->get_drag_target = rb_sourcelist_model_get_drag_target;
+  iface->rb_drag_data_received = rb_sourcelist_model_drag_data_received;
+  iface->rb_row_drop_possible = rb_sourcelist_model_row_drop_possible;
+  iface->rb_row_drop_position = rb_sourcelist_model_row_drop_position;
+  iface->rb_get_drag_target = rb_sourcelist_model_get_drag_target;
 }
 
 static void
 rb_sourcelist_model_drag_source_init (RbTreeDragSourceIface *iface)
 {
-  iface->row_draggable = rb_sourcelist_model_row_draggable;
-  iface->drag_data_get = rb_sourcelist_model_drag_data_get;
-  iface->drag_data_delete = rb_sourcelist_model_drag_data_delete;
+  iface->rb_row_draggable = rb_sourcelist_model_row_draggable;
+  iface->rb_drag_data_get = rb_sourcelist_model_drag_data_get;
+  iface->rb_drag_data_delete = rb_sourcelist_model_drag_data_delete;
 }
 
 void

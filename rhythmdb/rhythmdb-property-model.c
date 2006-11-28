@@ -265,9 +265,9 @@ rhythmdb_property_model_tree_model_init (GtkTreeModelIface *iface)
 static void
 rhythmdb_property_model_drag_source_init (RbTreeDragSourceIface *iface)
 {
-	iface->row_draggable = rhythmdb_property_model_row_draggable;
-	iface->drag_data_delete = rhythmdb_property_model_drag_data_delete;
-	iface->drag_data_get = rhythmdb_property_model_drag_data_get;
+	iface->rb_row_draggable = rhythmdb_property_model_row_draggable;
+	iface->rb_drag_data_delete = rhythmdb_property_model_drag_data_delete;
+	iface->rb_drag_data_get = rhythmdb_property_model_drag_data_get;
 }
 
 static gboolean

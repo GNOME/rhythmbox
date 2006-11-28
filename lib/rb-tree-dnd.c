@@ -117,11 +117,11 @@ rb_tree_drag_source_row_draggable (RbTreeDragSource *drag_source,
   RbTreeDragSourceIface *iface = RB_TREE_DRAG_SOURCE_GET_IFACE (drag_source);
 
   g_return_val_if_fail (RB_IS_TREE_DRAG_SOURCE (drag_source), FALSE);
-  g_return_val_if_fail (iface->row_draggable != NULL, FALSE);
+  g_return_val_if_fail (iface->rb_row_draggable != NULL, FALSE);
   g_return_val_if_fail (path_list != NULL, FALSE);
 
-  if (iface->row_draggable)
-    return (* iface->row_draggable) (drag_source, path_list);
+  if (iface->rb_row_draggable)
+    return (* iface->rb_row_draggable) (drag_source, path_list);
   else
     return TRUE;
 }
@@ -147,10 +147,10 @@ rb_tree_drag_source_drag_data_delete (RbTreeDragSource *drag_source,
   RbTreeDragSourceIface *iface = RB_TREE_DRAG_SOURCE_GET_IFACE (drag_source);
 
   g_return_val_if_fail (RB_IS_TREE_DRAG_SOURCE (drag_source), FALSE);
-  g_return_val_if_fail (iface->drag_data_delete != NULL, FALSE);
+  g_return_val_if_fail (iface->rb_drag_data_delete != NULL, FALSE);
   g_return_val_if_fail (path_list != NULL, FALSE);
 
-  return (* iface->drag_data_delete) (drag_source, path_list);
+  return (* iface->rb_drag_data_delete) (drag_source, path_list);
 }
 
 /**
@@ -174,11 +174,11 @@ rb_tree_drag_source_drag_data_get    (RbTreeDragSource *drag_source,
   RbTreeDragSourceIface *iface = RB_TREE_DRAG_SOURCE_GET_IFACE (drag_source);
 
   g_return_val_if_fail (RB_IS_TREE_DRAG_SOURCE (drag_source), FALSE);
-  g_return_val_if_fail (iface->drag_data_get != NULL, FALSE);
+  g_return_val_if_fail (iface->rb_drag_data_get != NULL, FALSE);
   g_return_val_if_fail (path_list != NULL, FALSE);
   g_return_val_if_fail (selection_data != NULL, FALSE);
 
-  return (* iface->drag_data_get) (drag_source, path_list, selection_data);
+  return (* iface->rb_drag_data_get) (drag_source, path_list, selection_data);
 }
 
 
@@ -220,10 +220,10 @@ rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
   RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (drag_dest);
 
   g_return_val_if_fail (RB_IS_TREE_DRAG_DEST (drag_dest), FALSE);
-  g_return_val_if_fail (iface->drag_data_received != NULL, FALSE);
+  g_return_val_if_fail (iface->rb_drag_data_received != NULL, FALSE);
   g_return_val_if_fail (selection_data != NULL, FALSE);
 
-  return (* iface->drag_data_received) (drag_dest, dest, pos, selection_data);
+  return (* iface->rb_drag_data_received) (drag_dest, dest, pos, selection_data);
 }
 
 
@@ -237,10 +237,10 @@ rb_tree_drag_dest_row_drop_possible (RbTreeDragDest   *drag_dest,
   RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (drag_dest);
 
   g_return_val_if_fail (RB_IS_TREE_DRAG_DEST (drag_dest), FALSE);
-  g_return_val_if_fail (iface->drag_data_received != NULL, FALSE);
+  g_return_val_if_fail (iface->rb_row_drop_possible != NULL, FALSE);
   g_return_val_if_fail (selection_data != NULL, FALSE);
 
-  return (* iface->row_drop_possible) (drag_dest, dest_path, pos, selection_data);
+  return (* iface->rb_row_drop_possible) (drag_dest, dest_path, pos, selection_data);
 }
 
 
@@ -253,11 +253,11 @@ rb_tree_drag_dest_row_drop_position (RbTreeDragDest   *drag_dest,
   RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (drag_dest);
 
   g_return_val_if_fail (RB_IS_TREE_DRAG_DEST (drag_dest), FALSE);
-  g_return_val_if_fail (iface->row_drop_position != NULL, FALSE);
+  g_return_val_if_fail (iface->rb_row_drop_position != NULL, FALSE);
   g_return_val_if_fail (targets != NULL, FALSE);
   g_return_val_if_fail (pos != NULL, FALSE);
 
-  return (* iface->row_drop_position) (drag_dest, dest_path, targets, pos);
+  return (* iface->rb_row_drop_position) (drag_dest, dest_path, targets, pos);
 }
 
 static void
@@ -740,11 +740,11 @@ rb_tree_dnd_drag_drop_cb (GtkWidget        *widget,
 
 		GdkAtom target;
 		RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (model);
-		if (iface->get_drag_target) {
+		if (iface->rb_get_drag_target) {
 			RbTreeDragDest *dest = RB_TREE_DRAG_DEST (model);
-			target = (* iface->get_drag_target) (dest, widget, 
-							     context, path, 
-							     priv_data->dest_target_list);
+			target = (* iface->rb_get_drag_target) (dest, widget, 
+								context, path, 
+								priv_data->dest_target_list);
 		} else {
 			target = gtk_drag_dest_find_target (widget, context, 
 							    priv_data->dest_target_list);

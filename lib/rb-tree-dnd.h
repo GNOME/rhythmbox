@@ -57,14 +57,14 @@ struct _RbTreeDragSourceIface
 	GTypeInterface g_iface;
 
 	/* VTable - not signals */
-	gboolean     (* row_draggable)        (RbTreeDragSource   *drag_source,
+	gboolean     (* rb_row_draggable)        (RbTreeDragSource   *drag_source,
 	                              GList              *path_list);
 
-	gboolean     (* drag_data_get)        (RbTreeDragSource   *drag_source,
+	gboolean     (* rb_drag_data_get)        (RbTreeDragSource   *drag_source,
                                          GList              *path_list,
                                          GtkSelectionData   *selection_data);
 
-	gboolean     (* drag_data_delete)     (RbTreeDragSource *drag_source,
+	gboolean     (* rb_drag_data_delete)     (RbTreeDragSource *drag_source,
                                          GList            *path_list);
 };
 
@@ -75,23 +75,23 @@ struct _RbTreeDragDestIface {
 
 	/* VTable - not signals */
 
-	gboolean (* drag_data_received) (RbTreeDragDest   *drag_dest,
+	gboolean (* rb_drag_data_received) (RbTreeDragDest   *drag_dest,
 					 GtkTreePath       *dest,
 					 GtkTreeViewDropPosition pos,
 					 GtkSelectionData  *selection_data);
 
-	gboolean (* row_drop_possible)  (RbTreeDragDest   *drag_dest,
+	gboolean (* rb_row_drop_possible)  (RbTreeDragDest   *drag_dest,
 					 GtkTreePath       *dest_path,
 					 GtkTreeViewDropPosition pos,
 					 GtkSelectionData  *selection_data);
 
-	gboolean (* row_drop_position) (RbTreeDragDest   *drag_dest,
+	gboolean (* rb_row_drop_position) (RbTreeDragDest   *drag_dest,
 					GtkTreePath       *dest_path,
 					GList *targets,
 					GtkTreeViewDropPosition *pos);
 
 	/* optional */
-	GdkAtom  (* get_drag_target)    (RbTreeDragDest   *drag_dest,
+	GdkAtom  (* rb_get_drag_target)    (RbTreeDragDest   *drag_dest,
 					 GtkWidget        *widget,
 					 GdkDragContext   *context,
 					 GtkTreePath      *dest_path,

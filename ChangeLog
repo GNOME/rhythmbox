@@ -1,3 +1,26 @@
+2006-11-29  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-tree-dnd.c: (rb_tree_drag_source_row_draggable),
+	(rb_tree_drag_source_drag_data_delete),
+	(rb_tree_drag_source_drag_data_get),
+	(rb_tree_drag_dest_drag_data_received),
+	(rb_tree_drag_dest_row_drop_possible),
+	(rb_tree_drag_dest_row_drop_position), (rb_tree_dnd_drag_drop_cb):
+	* lib/rb-tree-dnd.h:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_drag_source_init):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_drag_source_init),
+	(rhythmdb_query_model_drag_dest_init):
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_drag_dest_init),
+	(rb_sourcelist_model_drag_source_init): don't use the same method
+	names as the GtkTreeDnd ones, since it break bindings to other
+	languages.
+
+	* shell/rb-shell.c: (_scan_idle), (rb_shell_constructor): run the
+	removable media scan in an idle callback.
+
 2006-11-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_construct):

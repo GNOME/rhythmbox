@@ -36,10 +36,8 @@
 #include <X11/Xatom.h>
 
 #include <libgnome/libgnome.h>
-/*#include <libgnomeui/gnome-stock-icons.h>*/
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
-/*#include <libgnomeui/gnome-window-icon.h>*/
 #include <libgnomeui/gnome-client.h>
 
 #include <libgnomevfs/gnome-vfs.h>
@@ -1267,6 +1265,15 @@ construct_load_ui (RBShell *shell)
 	rb_profile_end ("loading ui");
 }
 
+static gboolean
+_scan_idle (RBShell *shell)
+{
+	GDK_THREADS_ENTER ();
+	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
+
 static GObject *
 rb_shell_constructor (GType type,
 		      guint n_construct_properties,
@@ -1353,7 +1360,7 @@ rb_shell_constructor (GType type,
 
 	rb_plugins_engine_init (shell);
 
-	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
+	g_idle_add ((GSourceFunc)_scan_idle, shell);
 
 	/* GO GO GO! */
 	rb_debug ("loading database");
