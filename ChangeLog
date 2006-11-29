@@ -1,5 +1,13 @@
 2006-11-29  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Ingo Planz  <planz@mi-fu-berlin.de>
+
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_date): Make the
+	podcast plugin set unknown dates to the current time, not the start of
+	the epoch. Fixes #367572.
+
+2006-11-29  James Livingston  <doclivingston@gmail.com>
+
 	* lib/rb-tree-dnd.c: (rb_tree_drag_source_row_draggable),
 	(rb_tree_drag_source_drag_data_delete),
 	(rb_tree_drag_source_drag_data_get),

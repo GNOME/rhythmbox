@@ -608,11 +608,10 @@ rb_podcast_parse_date (const char *date_str)
 	}
 
 	if (result == NULL) {
-		memset (&tm, 0, sizeof (struct tm));
 		rb_debug ("unable to convert date string %s", date_str);
 	}
 
-	return (uintmax_t) mktime (&tm);
+	return (uintmax_t) ( (result==NULL) ? 0 : mktime (&tm) );
 }
 
 static gulong
