@@ -130,7 +130,7 @@ sj_metadata_musicbrainz_instance_init (GTypeInstance *instance, gpointer g_class
 #if HAVE_MB_SETPROXYCREDS
       mb_SetProxyCreds (self->priv->mb,
                         gconf_client_get_string (gconf_client, GCONF_PROXY_USERNAME, NULL),
-                        gconf_client_get_string (gconf_client, GCONF_PROXY_USERNAME, NULL));
+                        gconf_client_get_string (gconf_client, GCONF_PROXY_PASSWORD, NULL));
 #else
       g_warning ("mb_SetProxyCreds() not found, no proxy authorisation possible.");
 #endif
