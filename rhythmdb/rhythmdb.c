@@ -2139,13 +2139,22 @@ rhythmdb_execute_load (RhythmDB *db,
 {
 	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	GnomeVFSResult vfsresult;
+	char *resolved;
 
-	event->real_uri = rb_refstring_new (rb_uri_resolve_symlink (uri));
-	event->vfsinfo = gnome_vfs_file_info_new ();
+	resolved = rb_uri_resolve_symlink (uri);
+	if (resolved != NULL) {
+		event->real_uri = rb_refstring_new (resolved);
+		event->vfsinfo = gnome_vfs_file_info_new ();
 
-	vfsresult = gnome_vfs_get_file_info (uri,
-					     event->vfsinfo,
-					     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+		vfsresult = gnome_vfs_get_file_info (uri,
+						     event->vfsinfo,
+						     GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+		g_free (resolved);
+	} else {
+		event->real_uri = rb_refstring_new (uri);
+		vfsresult = GNOME_VFS_ERROR_LOOP;
+	}
+
 	if (vfsresult != GNOME_VFS_OK) {
 		event->error = make_access_failed_error (uri, vfsresult);
 		if (event->vfsinfo)
@@ -2364,9 +2373,18 @@ rhythmdb_add_uri_with_type (RhythmDB *db,
 
 	canon_uri = rb_canonicalise_uri (uri);
 	realuri = rb_uri_resolve_symlink (canon_uri);
-	g_free (canon_uri);
 
-	if (rb_uri_is_directory (realuri)) {
+	if (realuri == NULL) {
+		/* create import error entry */
+		RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
+
+		event->db = db;
+		event->real_uri = rb_refstring_new (canon_uri);
+		event->error = make_access_failed_error (canon_uri, GNOME_VFS_ERROR_LOOP);
+		rhythmdb_add_import_error_entry (db, event);
+		g_free (event);
+
+	} else if (rb_uri_is_directory (realuri)) {
 		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
 		data->db = db;
 		data->uri = g_strdup (realuri);
@@ -2377,6 +2395,7 @@ rhythmdb_add_uri_with_type (RhythmDB *db,
 		queue_stat_uri (realuri, db, type);
 	}
 
+	g_free (canon_uri);
 	g_free (realuri);
 }
 

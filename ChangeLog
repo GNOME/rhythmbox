@@ -1,3 +1,11 @@
+2006-12-01  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c:
+	(rhythmdb_execute_load), (rhythmdb_add_uri_with_type):
+	Handle rb_uri_resolve_symlink returning NULL, as it does when it
+	encounters a symlink loop.  Create import errors for such URIs.
+	Fixes #380826.
+
 2006-11-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch started by:  James Livingston  <doclivingston@gmail.com>
