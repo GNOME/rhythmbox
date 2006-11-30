@@ -1,3 +1,19 @@
+2006-11-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch started by:  James Livingston  <doclivingston@gmail.com>
+
+	* podcast/rb-podcast-manager.c: (*)
+	* podcast/rb-podcast-manager.h:
+	* sources/rb-podcast-source.c: (rb_podcast_source_set_property),
+	(rb_podcast_source_cmd_cancel_download),
+	(rb_podcast_source_load_finish_cb),
+	(rb_podcast_source_feed_updates_available_cb),
+	(rb_podcast_source_shutdown), (rb_podcast_source_cmd_new_podcast):
+	Remove mutexes and async queues from the podcast manager; just do
+	everything on the main thread and use idle handlers to marshal things
+	across to it.  Should fix crashes on FreeBSD, various other weird
+	stuff, and bug 337332.
+
 2006-11-29  James Livingston  <doclivingston@gmail.com>
 
 	patch from: Glynn Foster <glynn.foster@sun.com>

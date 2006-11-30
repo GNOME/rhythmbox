@@ -191,7 +191,7 @@ static void rb_podcast_source_finish_download_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry,
 							 RBPodcastSource *source);
 
-static void rb_podcast_source_feed_updates_avaliable_cb (RBPodcastManager *pd,
+static void rb_podcast_source_feed_updates_available_cb (RBPodcastManager *pd,
 							 RhythmDBEntry *entry,
 							 RBPodcastSource *source);
 
@@ -779,6 +779,8 @@ rb_podcast_source_set_property (GObject *object,
 	switch (prop_id) {
 	case PROP_PODCAST_MANAGER:
 		source->priv->podcast_mgr = g_value_get_object (value);
+		if (source->priv->podcast_mgr)
+			g_object_ref (source->priv->podcast_mgr);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1327,7 +1329,6 @@ rb_podcast_source_cmd_cancel_download (GtkAction *action,
 	GValue val = {0, };
 	RBEntryView *posts;
 
-	rb_debug ("Add to download action");
 	posts = source->priv->posts;
 
 	lst = rb_entry_view_get_selected_entries (posts);
@@ -1673,8 +1674,8 @@ rb_podcast_source_load_finish_cb  (gpointer cb_data)
 			  	source);
 
 	g_signal_connect_after (G_OBJECT (source->priv->podcast_mgr),
-			  	"feed_updates_avaliable",
- 			  	G_CALLBACK (rb_podcast_source_feed_updates_avaliable_cb),
+			  	"feed_updates_available",
+ 			  	G_CALLBACK (rb_podcast_source_feed_updates_available_cb),
 			  	source);
 
 	return FALSE;
@@ -1760,15 +1761,15 @@ rb_podcast_source_finish_download_cb (RBPodcastManager *pd,
 }
 
 static void
-rb_podcast_source_feed_updates_avaliable_cb (RBPodcastManager *pd,
+rb_podcast_source_feed_updates_available_cb (RBPodcastManager *pd,
 					     RhythmDBEntry *entry,
 					     RBPodcastSource *source)
 {
 	RBShell *shell = rb_podcast_source_get_shell (source);
 	const gchar *podcast_name = rhythmdb_entry_get_string(entry, RHYTHMDB_PROP_TITLE);
 
-	rb_debug ("Updates avaliable");
-	rb_shell_hidden_notify (shell, 4000, _("New updates avaliable from"), NULL, podcast_name, FALSE);
+	rb_debug ("Updates available");
+	rb_shell_hidden_notify (shell, 4000, _("New updates available from"), NULL, podcast_name, FALSE);
 	g_object_unref (shell);
 
 }
@@ -1787,7 +1788,7 @@ void
 rb_podcast_source_shutdown	(RBPodcastSource *source)
 {
 	rb_debug ("podcast source shutdown");
-	rb_podcast_manager_cancel_all (source->priv->podcast_mgr);
+	rb_podcast_manager_shutdown (source->priv->podcast_mgr);
 }
 
 static gint
@@ -1975,16 +1976,12 @@ rb_podcast_source_cmd_new_podcast (GtkAction *action,
 				   RBPodcastSource *source)
 {
 	GtkWidget *dialog;
-	GObject *object;
 
 	rb_debug ("Got new podcast command");
-	g_object_get (source, "podcast-manager", &object, NULL);
 
-	dialog = rb_new_podcast_dialog_new (RB_PODCAST_MANAGER (object));
+	dialog = rb_new_podcast_dialog_new (source->priv->podcast_mgr);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
-
-	g_object_unref (object);
 }
 
 static void

@@ -52,14 +52,13 @@ typedef struct
     void        (*status_changed)    		(RBPodcastManager* pd, RhythmDBEntry *entry, glong value);
     void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
     void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
-    void        (*feed_updates_avaliable)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
+    void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
     void        (*process_error)	   	(RBPodcastManager* pd, const char *error);
 
 } RBPodcastManagerClass;
 
 GType                   rb_podcast_manager_get_type    		(void);
 RBPodcastManager*      	rb_podcast_manager_new         		(RhythmDB *db);
-void			rb_podcast_manager_cancel_all		(RBPodcastManager *pd);
 void                    rb_podcast_manager_download_entry  	(RBPodcastManager *pd, RhythmDBEntry *entry);
 void		        rb_podcast_manager_cancel_download	(RBPodcastManager *pd, RhythmDBEntry *entry);
 void 			rb_podcast_manager_update_feeds 	(RBPodcastManager *pd);
