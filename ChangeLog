@@ -1,3 +1,9 @@
+2006-12-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/rb-plugin-manager.c: (plugin_manager_populate_lists):
+	gtk_tree_view_get_model doesn't ref the model, so don't unref it
+	when we're done with it.
+
 2006-12-01  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c:

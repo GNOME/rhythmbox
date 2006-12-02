@@ -241,7 +241,6 @@ plugin_manager_populate_lists (RBPluginManager *pm)
 
 		gtk_tree_selection_select_iter (selection, &iter);
 	}
-	g_object_unref (model);
 }
 
 static void
