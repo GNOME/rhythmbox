@@ -654,10 +654,12 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 }
 
 static void
-rb_static_playlist_source_add_location_swapped (const char *uri,
-						RBStaticPlaylistSource *source)
+rb_static_playlist_source_add_location_cb (const char *uri,
+					   gboolean dir,
+					   RBStaticPlaylistSource *source)
 {
-	rb_static_playlist_source_add_location_internal (source, uri, -1);
+	if (!dir)
+		rb_static_playlist_source_add_location_internal (source, uri, -1);
 }
 
 void
@@ -674,7 +676,7 @@ rb_static_playlist_source_add_location (RBStaticPlaylistSource *source,
 	/* if there is an entry, it won't be a directory */
 	if (entry == NULL && rb_uri_is_directory (location))
 		rb_uri_handle_recursively (location,
-					   (GFunc) rb_static_playlist_source_add_location_swapped,
+					   (RBUriRecurseFunc) rb_static_playlist_source_add_location_cb,
 					   NULL,
 					   source);
 	else

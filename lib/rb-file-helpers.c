@@ -629,11 +629,35 @@ escape_extra_gnome_vfs_chars (char *uri)
 }
 
 typedef struct {
-	const char *uri;
-	GFunc func;
+	char *uri;
+	RBUriRecurseFunc func;
 	gpointer user_data;
 	gboolean *cancel_flag;
+	GDestroyNotify data_destroy;
 } RBUriHandleRecursivelyData;
+
+typedef struct {
+	RBUriHandleRecursivelyData data;
+
+	/* real data */
+	RBUriRecurseFunc func;
+	gpointer user_data;
+
+	GMutex *results_lock;
+	guint results_idle_id;
+	GList *uri_results;
+	GList *dir_results;
+} RBUriHandleRecursivelyAsyncData;
+
+static void
+_rb_uri_recurse_data_free (RBUriHandleRecursivelyData *data)
+{
+	g_free (data->uri);
+	if (data->data_destroy)
+		data->data_destroy (data->user_data);
+
+	g_free (data);
+}
 
 static gboolean
 rb_uri_handle_recursively_cb (const gchar *rel_path,
@@ -642,6 +666,11 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 			      RBUriHandleRecursivelyData *data,
 			      gboolean *recurse)
 {
+	char *path, *escaped_rel_path;
+	gboolean dir;
+
+	dir = (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY);
+
 	if (data->cancel_flag && *data->cancel_flag)
 		return TRUE;
 
@@ -653,16 +682,12 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 		return TRUE;
 	}
 
-	if (info->type == GNOME_VFS_FILE_TYPE_REGULAR) {
-		char *path, *escaped_rel_path;
-
-		escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
-		escaped_rel_path = escape_extra_gnome_vfs_chars (escaped_rel_path);
-		path = g_build_filename (data->uri, escaped_rel_path, NULL);
-		(data->func) (path, data->user_data);
-		g_free (escaped_rel_path);
-		g_free (path);
-	}
+	escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
+	escaped_rel_path = escape_extra_gnome_vfs_chars (escaped_rel_path);
+	path = g_build_filename (data->uri, escaped_rel_path, NULL);
+	(data->func) (path, dir, data->user_data);
+	g_free (escaped_rel_path);
+	g_free (path);
 
 	*recurse = !recursing_will_loop;
 	return TRUE;
@@ -670,7 +695,7 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 
 void
 rb_uri_handle_recursively (const char *text_uri,
-		           GFunc func,
+		           RBUriRecurseFunc func,
 			   gboolean *cancelflag,
 		           gpointer user_data)
 {
@@ -678,10 +703,11 @@ rb_uri_handle_recursively (const char *text_uri,
 	GnomeVFSFileInfoOptions flags;
 	GnomeVFSResult result;
 	
-	data->uri = text_uri;
+	data->uri = g_strdup (text_uri);
 	data->func = func;
 	data->user_data = user_data;
 	data->cancel_flag = cancelflag;
+	data->data_destroy = NULL;
 
 	flags = GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
 		GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
@@ -692,8 +718,114 @@ rb_uri_handle_recursively (const char *text_uri,
 					    GNOME_VFS_DIRECTORY_VISIT_LOOPCHECK,
 					    (GnomeVFSDirectoryVisitFunc)rb_uri_handle_recursively_cb,
 					    data);
-	g_free (data);
+	_rb_uri_recurse_data_free (data);
 }
+
+/* runs in main thread */
+static gboolean
+_recurse_async_idle_cb (RBUriHandleRecursivelyAsyncData *data)
+{
+	GList *ul, *dl;
+
+	g_mutex_lock (data->results_lock);
+
+	for (ul = data->uri_results, dl = data->dir_results;
+	     ul != NULL;
+	     ul = g_list_next (ul), dl = g_list_next (dl)) {
+		g_assert (dl != NULL);
+
+		data->func ((const char*)ul->data, (GPOINTER_TO_INT (dl->data) == 1), data->user_data);
+		g_free (ul->data);
+	}
+	g_assert (dl == NULL);
+
+
+	g_list_free (data->uri_results);
+	data->uri_results = NULL;
+	g_list_free (data->dir_results);
+	data->dir_results = NULL;
+
+	data->results_idle_id = 0;
+	g_mutex_unlock (data->results_lock);
+	return FALSE;
+}
+
+/* runs in main thread */
+static gboolean
+_recurse_async_data_free (RBUriHandleRecursivelyAsyncData *data)
+{
+	if (data->results_idle_id) {
+		g_source_remove (data->results_idle_id);
+		_recurse_async_idle_cb (data); /* process last results */
+	}
+
+	g_list_free (data->uri_results);
+	data->uri_results = NULL;
+	g_list_free (data->dir_results);
+	data->dir_results = NULL;
+
+	g_mutex_free (data->results_lock);
+	_rb_uri_recurse_data_free (&data->data);
+
+	return FALSE;
+}
+
+/* runs in worker thread */
+static void
+_recurse_async_cb (const char *uri, gboolean dir, RBUriHandleRecursivelyAsyncData *data)
+{
+	g_mutex_lock (data->results_lock);
+
+	data->uri_results = g_list_prepend (data->uri_results, g_strdup (uri));
+	data->dir_results = g_list_prepend (data->dir_results, GINT_TO_POINTER (dir ? 1 : 0));
+	if (data->results_idle_id == 0)
+		g_idle_add ((GSourceFunc)_recurse_async_idle_cb, data);
+
+	g_mutex_unlock (data->results_lock);
+}
+
+static gpointer
+_recurse_async_func (RBUriHandleRecursivelyAsyncData *data)
+{
+	GnomeVFSFileInfoOptions flags;
+	GnomeVFSResult result;
+
+	flags = GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
+		GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
+		GNOME_VFS_FILE_INFO_FOLLOW_LINKS |
+		GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS;
+	result = gnome_vfs_directory_visit (data->data.uri,
+					    flags,
+					    GNOME_VFS_DIRECTORY_VISIT_LOOPCHECK,
+					    (GnomeVFSDirectoryVisitFunc)rb_uri_handle_recursively_cb,
+					    &data->data);
+	
+	g_idle_add ((GSourceFunc)_recurse_async_data_free, data);
+	return NULL;
+}
+
+void
+rb_uri_handle_recursively_async (const char *text_uri,
+			         RBUriRecurseFunc func,
+				 gboolean *cancelflag,
+			         gpointer user_data,
+				 GDestroyNotify data_destroy)
+{
+	RBUriHandleRecursivelyAsyncData *data = g_new0 (RBUriHandleRecursivelyAsyncData, 1);
+	
+	data->data.uri = g_strdup (text_uri);
+	data->func = (RBUriRecurseFunc)_recurse_async_cb;
+	data->data.user_data = user_data;
+	data->data.cancel_flag = cancelflag;
+	data->data.data_destroy = data_destroy;
+
+	data->results_lock = g_mutex_new ();
+	data->data.func = func;
+	data->user_data = data;
+
+	g_thread_create ((GThreadFunc)_recurse_async_func, data, FALSE, NULL);
+}
+
 
 GnomeVFSResult
 rb_uri_mkstemp (const char *prefix, char **uri_ret, GnomeVFSHandle **ret)

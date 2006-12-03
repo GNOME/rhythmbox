@@ -1,5 +1,28 @@
 2006-12-03  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-file-helpers.c: (_rb_uri_recurse_data_free),
+	(rb_uri_handle_recursively_cb), (rb_uri_handle_recursively),
+	(_recurse_async_idle_cb), (_recurse_async_data_free),
+	(_recurse_async_cb), (_recurse_async_func),
+	(rb_uri_handle_recursively_async):
+	* lib/rb-file-helpers.h:
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load_cb),
+	(rb_plugins_engine_load_dir):
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_init_monitoring),
+	(rhythmdb_stop_monitoring), (monitor_entry_file),
+	(monitor_subdirectory), (monitor_library_directory),
+	(_monitor_entry_thread), (rhythmdb_start_monitoring),
+	(rhythmdb_monitor_uri_path):
+	* rhythmdb/rhythmdb.c:
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_add_location_cb),
+	(rb_static_playlist_source_add_location): add a utility function for
+	doing directory recusion asynchronously, and use it everywhere instead
+	of the old one. Removes one of our biggest do-IO-synchronously issues.
+	From #325215
+
+2006-12-03  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/audioscrobbler/Makefile.am:
 	* plugins/audioscrobbler/audioscrobbler-ui.xml:
 	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:

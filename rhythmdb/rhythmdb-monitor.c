@@ -29,6 +29,7 @@
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
 
 #include "rb-debug.h"
+#include "rb-util.h"
 #include "rhythmdb.h"
 #include "rhythmdb-private.h"
 #include "rb-file-helpers.h"
@@ -49,7 +50,7 @@ rhythmdb_init_monitoring (RhythmDB *db)
 {
 	db->priv->monitored_directories = g_hash_table_new_full (g_str_hash, g_str_equal,
 								 (GDestroyNotify) g_free,
-								 NULL);
+								 (GDestroyNotify)gnome_vfs_monitor_cancel);
 
 	db->priv->changed_files = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
 							 (GDestroyNotify) rb_refstring_unref,
@@ -81,60 +82,45 @@ rhythmdb_finalize_monitoring (RhythmDB *db)
 	g_hash_table_destroy (db->priv->changed_files);
 }
 
-static gboolean
-rhythmdb_unmonitor_directories (char *dir, GnomeVFSMonitorHandle *handle, RhythmDB *db)
-{
-	gnome_vfs_monitor_cancel (handle);
-	return TRUE;
-}
-
 void
 rhythmdb_stop_monitoring (RhythmDB *db)
 {
 	g_hash_table_foreach_remove (db->priv->monitored_directories,
-				     (GHRFunc) rhythmdb_unmonitor_directories,
+				     (GHRFunc) rb_true_function,
 				     db);
 }
 
 static void
 monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 {
-	GError *error = NULL;
-
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		const char *loc;
+		GSList *l;
 
 		loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		rhythmdb_monitor_uri_path (db, loc, &error);
-	}
 
-	if (error) {
-		/* FIXME: should we complain to the user? */
-		rb_debug ("error while attempting to monitor library track: %s", error->message);
+		/* don't add add monitor if it's in the library path*/
+		for (l = db->priv->library_locations; l != NULL; l = g_slist_next (l)) {
+			if (g_str_has_prefix (loc, (const char*)l->data))
+				return;
+				
+		}
+		rhythmdb_monitor_uri_path (db, loc, NULL);
 	}
 }
 
 static void
-monitor_subdirectory (const char *uri, RhythmDB *db)
+monitor_subdirectory (const char *uri, gboolean dir, RhythmDB *db)
 {
-	GError *error = NULL;
-
-	if (!rb_uri_is_directory (uri))
-		return;
-
-	rhythmdb_monitor_uri_path (db, uri, &error);
-
-	if (error) {
-		/* FIXME: should we complain to the user? */
-		rb_debug ("error while attempting to monitor the library directory: %s", error->message);
-	}
+	if (dir)
+		rhythmdb_monitor_uri_path (db, uri, NULL);
+	else
+		rhythmdb_add_uri (db, uri);
 }
 
 static void
 monitor_library_directory (const char *uri, RhythmDB *db)
 {
-	GError *error = NULL;
-
 	if ((strcmp (uri, "file:///") == 0) ||
 	    (strcmp (uri, "file://") == 0)) {
 		/* display an error to the user? */
@@ -142,16 +128,9 @@ monitor_library_directory (const char *uri, RhythmDB *db)
 	}
 
 	rb_debug ("beginning monitor of the library directory %s", uri);
-	rhythmdb_monitor_uri_path (db, uri, &error);
-	rb_uri_handle_recursively (uri, (GFunc) monitor_subdirectory, NULL, db);
-
-	if (error) {
-		/* FIXME: should we complain to the user? */
-		rb_debug ("error while attempting to monitor the library directory: %s", error->message);
-	}
-
-	rb_debug ("loading new tracks from library directory %s", uri);
-	rhythmdb_add_uri (db, uri);
+	rhythmdb_monitor_uri_path (db, uri, NULL);
+	rb_uri_handle_recursively_async (uri, (RBUriRecurseFunc) monitor_subdirectory, NULL,
+					 g_object_ref (db), (GDestroyNotify)g_object_unref);
 }
 
 static gboolean
@@ -186,18 +165,25 @@ rhythmdb_process_changed_files (RhythmDB *db)
 	return TRUE;
 }
 
+static gpointer
+_monitor_entry_thread (RhythmDB *db)
+{
+	rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
+	g_object_unref (G_OBJECT (db));
+	return NULL;
+}
+
 void
 rhythmdb_start_monitoring (RhythmDB *db)
 {
 	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
 						    (GSourceFunc) rhythmdb_process_changed_files, db);
 
-	if (db->priv->library_locations) {
-		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
-	}
+	g_thread_create ((GThreadFunc)_monitor_entry_thread, g_object_ref (db), FALSE, NULL);
 
-	/* monitor every directory that contains a (TYPE_SONG) track */
-	rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
+	/* monitor all library locations */
+	if (db->priv->library_locations)
+		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
 }
 
 static void
@@ -274,7 +260,7 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 {
 	char *directory;
 	GnomeVFSResult vfsresult;
-	GnomeVFSMonitorHandle **handle;
+	GnomeVFSMonitorHandle **handle = NULL;
 
 	if (rb_uri_is_directory (uri)) {
 		if (g_str_has_suffix(uri, G_DIR_SEPARATOR_S)) {
@@ -315,7 +301,6 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 			     gnome_vfs_result_to_string (vfsresult));
 		rb_debug ("failed to monitor %s", directory);
 		g_free (directory);
-		g_free (handle);
 	}
 }
 

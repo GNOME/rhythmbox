@@ -247,14 +247,14 @@ error:
 }
 
 static void
-rb_plugins_engine_load_cb (const char *uri, gpointer userdata)
+rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
 {
 	gchar *plugin_file;
 	RBPluginInfo *info;
 	char *key_name;
 	gboolean activate;
 
-	if (!g_str_has_suffix (uri, PLUGIN_EXT))
+	if (dir || !g_str_has_suffix (uri, PLUGIN_EXT))
 		return;
 
 	plugin_file = gnome_vfs_get_local_path_from_uri (uri);
@@ -296,7 +296,7 @@ rb_plugins_engine_load_dir (const gchar *path)
 	char *uri;
 
 	uri = rb_uri_resolve_relative (path);
-	rb_uri_handle_recursively (uri, (GFunc)rb_plugins_engine_load_cb, NULL, NULL);
+	rb_uri_handle_recursively (uri, (RBUriRecurseFunc)rb_plugins_engine_load_cb, NULL, NULL);
 	g_free (uri);
 }
 

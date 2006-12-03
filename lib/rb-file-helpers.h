@@ -45,10 +45,18 @@ gboolean	rb_uri_is_local		(const char *uri);
 char *		rb_uri_get_dir_name	(const char *uri);
 char *		rb_uri_get_short_path_name (const char *uri);
 
+typedef void (*RBUriRecurseFunc) (const char *uri, gboolean dir, gpointer data);
+
 void		rb_uri_handle_recursively(const char *uri,
-					  GFunc func,
+					  RBUriRecurseFunc func,
 					  gboolean *cancelflag,
 					  gpointer user_data);
+
+void		rb_uri_handle_recursively_async(const char *uri,
+						RBUriRecurseFunc func,
+						gboolean *cancelflag,
+						gpointer user_data,
+						GDestroyNotify data_destroy);
 
 char*		rb_uri_append_path	(const char *uri,
 					 const char *path);

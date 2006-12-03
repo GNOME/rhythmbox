@@ -1596,9 +1596,6 @@ rhythmdb_process_stat_event (RhythmDB *db,
 
 			if (mtime == event->vfsinfo->mtime) {
 				rb_debug ("not modified: %s", rb_refstring_get (event->real_uri));
-				/* monitor the file for changes */
-				if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
-					rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL /* FIXME */);
 			} else {
 				RhythmDBEvent *new_event;
 
@@ -2109,9 +2106,11 @@ queue_stat_uri (const char *uri,
 
 static void
 queue_stat_uri_tad (const char *uri,
+		    gboolean dir,
 		    RhythmDBAddThreadData *data)
 {
-	queue_stat_uri (uri, data->db, data->type);
+	if (!dir)
+		queue_stat_uri (uri, data->db, data->type);
 }
 
 static gpointer
@@ -2119,7 +2118,7 @@ add_thread_main (RhythmDBAddThreadData *data)
 {
 	RhythmDBEvent *result;
 
-	rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri_tad,
+	rb_uri_handle_recursively (data->uri, (RBUriRecurseFunc) queue_stat_uri_tad,
 				   &data->db->priv->exiting, data);
 
 	rb_debug ("exiting");
