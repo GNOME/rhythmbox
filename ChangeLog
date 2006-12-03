@@ -1,3 +1,14 @@
+2006-12-03  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/audioscrobbler-ui.xml:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_activate), (impl_deactivate):
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_class_init), (rb_lastfm_source_constructor),
+	(impl_activate), (impl_show_popup), (show_entry_popup): add a context
+	menu to the last.fm source, and allow deletion of stations.
+
 2006-12-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/rb-plugin-manager.c: (plugin_manager_populate_lists):

@@ -49,6 +49,7 @@ typedef struct
 	RBPlugin parent;
 	RBAudioscrobbler *audioscrobbler;
 	GtkWidget *preferences;
+	guint ui_merge_id;
 
 	RBSource *lastfm_source;
 } RBAudioscrobblerPlugin;
@@ -114,12 +115,15 @@ impl_activate (RBPlugin *bplugin,
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 	RBProxyConfig *proxy_config;
+	GtkUIManager *uimanager = NULL;
 	gboolean no_registration;
+	char *file;
 
 	g_assert (plugin->audioscrobbler == NULL);
 	g_object_get (G_OBJECT (shell), 
 		      "proxy-config", &proxy_config, 
 		      "no-registration", &no_registration,
+		      "ui-manager", &uimanager,
 		      NULL);
 
 	/* 
@@ -133,8 +137,15 @@ impl_activate (RBPlugin *bplugin,
 	}
 	g_object_unref (G_OBJECT (proxy_config));
 
+	file = rb_plugin_find_file (bplugin, "audioscrobbler-ui.xml");
+	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
+							       file,
+							       NULL);
+
 	plugin->lastfm_source = rb_lastfm_source_new (shell);
 	rb_shell_append_source (shell, plugin->lastfm_source, NULL);
+
+	g_object_unref (G_OBJECT (uimanager));
 }
 
 static void
@@ -142,9 +153,17 @@ impl_deactivate	(RBPlugin *bplugin,
 		 RBShell *shell)
 {
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
+	GtkUIManager *uimanager = NULL;
+
+	g_object_get (G_OBJECT (shell), 
+		      "ui-manager", &uimanager,
+		      NULL);
 
 	rb_source_delete_thyself (plugin->lastfm_source);
 	plugin->lastfm_source = NULL;
+
+	gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
+	g_object_unref (G_OBJECT (uimanager));
 
 	if (plugin->audioscrobbler) {
 		g_object_unref (plugin->audioscrobbler);

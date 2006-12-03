@@ -122,6 +122,7 @@ static RBEntryView *impl_get_entry_view (RBSource *asource);
 static void impl_get_status (RBSource *asource, char **text, char **progress_text, float *progress);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static void impl_activate (RBSource *source);
+static gboolean impl_show_popup (RBSource *source);
 
 static void rb_lastfm_source_new_station (char *uri, char *title, RBLastfmSource *source);
 static void rb_lastfm_source_skip_track (GtkAction *action, RBLastfmSource *source);
@@ -133,6 +134,10 @@ static void rb_lastfm_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 
 static void rb_lastfm_source_new_song_cb (GObject *player_backend, gpointer data, RBLastfmSource *source);
 static void rb_lastfm_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBLastfmSource *source);
+
+static void show_entry_popup (RBEntryView *view,
+			      gboolean over_entry,
+			      RBSource *source);
 
 #ifdef HAVE_GSTREAMER_0_10
 /* can't be bothered creating a whole header file just for this: */
@@ -242,6 +247,7 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_activate = impl_activate;
+	source_class->impl_show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -378,6 +384,8 @@ rb_lastfm_source_constructor (GType type, guint n_construct_properties,
 				 "sort-order-changed",
 				 G_CALLBACK (rb_lastfm_source_songs_view_sort_order_changed_cb),
 				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->stations), "show_popup",
+				 G_CALLBACK (show_entry_popup), source, 0);
 
 	/* Drag and drop URIs */
 	g_signal_connect_object (G_OBJECT (source->priv->stations),
@@ -1248,5 +1256,24 @@ static void
 impl_activate (RBSource *source)
 {
 	rb_lastfm_source_do_handshake (RB_LASTFM_SOURCE (source));
+}
+
+static gboolean
+impl_show_popup (RBSource *source)
+{
+	_rb_source_show_popup (source, "/LastfmSourcePopup");
+	return TRUE;
+}
+
+static void
+show_entry_popup (RBEntryView *view,
+		  gboolean over_entry,
+		  RBSource *source)
+{
+	if (over_entry) {
+		_rb_source_show_popup (source, "/LastfmSourceViewPopup");
+	} else {
+		rb_source_show_popup (source);
+	}
 }
 

@@ -52,6 +52,7 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
+	audioscrobbler-ui.xml	\
 	$(NULL)
 
 EXTRA_DIST = 			\
