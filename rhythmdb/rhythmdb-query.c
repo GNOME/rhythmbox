@@ -634,18 +634,25 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 				gulong year;
 
 				search_date = g_value_get_ulong (data->val);
-				g_date_set_julian (&date, search_date);
-				year = g_date_get_year (&date);
-				g_date_clear (&date, 1);
+				
+				/* GDate functions don't handle Year="0", so we need to special case this */
+				if (search_date != 0) {
+					g_date_set_julian (&date, search_date);
+					year = g_date_get_year (&date);
+					g_date_clear (&date, 1);
 
-				/* get Julian dates for beginning and end of year */
-				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year);
-				begin = g_date_get_julian (&date);
-				g_date_clear (&date, 1);
+					/* get Julian dates for beginning and end of year */
+					g_date_set_dmy (&date, 1, G_DATE_JANUARY, year);
+					begin = g_date_get_julian (&date);
+					g_date_clear (&date, 1);
 
-				/* and the day before the beginning of the next year */
-				g_date_set_dmy (&date, 1, G_DATE_JANUARY, year + 1);
-				end =  g_date_get_julian (&date) - 1;
+					/* and the day before the beginning of the next year */
+					g_date_set_dmy (&date, 1, G_DATE_JANUARY, year + 1);
+					end =  g_date_get_julian (&date) - 1;
+				} else {
+					begin = 0;
+					end = 0;
+				}
 
 				switch (data->type)
 				{

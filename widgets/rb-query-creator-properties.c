@@ -365,14 +365,19 @@ yearCriteriaSetWidgetData (GtkWidget *widget, GValue *val)
 {
 	GDate *date = NULL;
 	gulong num = g_value_get_ulong (val);
+	gint display_year;
 	g_assert (num <= G_MAXINT);
 
-	/* Create a date structure to get year from */
-	date = g_date_new();
-	g_date_set_julian (date, num);
-
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), (gint)g_date_get_year(date));
-	g_date_free(date);
+	if (num != 0) {
+	  /* Create a date structure to get year from */
+	  date = g_date_new();
+	  g_date_set_julian (date, num);
+	  display_year = (gint)g_date_get_year(date);
+	  g_date_free(date);
+	} else {
+	  display_year = 0;
+	}
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (widget), display_year);
 }
 
 static void
@@ -380,14 +385,20 @@ yearCriteriaGetWidgetData (GtkWidget *widget, GValue *val)
 {
 	GDate *date = NULL;
 	gint num = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (widget));
+	guint32 display_date;
 	g_assert (num >=  0);
 
-	/* New date structure, use year set in widget */
-	date = g_date_new_dmy (1, G_DATE_JANUARY, num);
-
 	g_value_init (val, G_TYPE_ULONG);
-	g_value_set_ulong (val, (gulong) g_date_get_julian (date) );
-	g_date_free(date);
+
+	if (num != 0) {
+	  /* New date structure, use year set in widget */
+	  date = g_date_new_dmy (1, G_DATE_JANUARY, num);
+	  display_date = g_date_get_julian (date);
+	  g_date_free(date);
+	} else {
+	  display_date = 0;
+	}
+	g_value_set_ulong (val, (gulong)display_date);
 }
 
 /*
