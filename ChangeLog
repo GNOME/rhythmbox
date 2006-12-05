@@ -1,3 +1,9 @@
+2006-12-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-property-view.c: (rb_property_view_class_init),
+	(rb_property_view_dispose), (rb_property_view_finalize):
+	Disconnect signal handlers in dispose, not finalize.  Fixes #374892.
+
 2006-12-04  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>

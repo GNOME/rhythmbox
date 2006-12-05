@@ -41,6 +41,7 @@
 
 static void rb_property_view_class_init (RBPropertyViewClass *klass);
 static void rb_property_view_init (RBPropertyView *view);
+static void rb_property_view_dispose (GObject *object);
 static void rb_property_view_finalize (GObject *object);
 static void rb_property_view_set_property (GObject *object,
 					   guint prop_id,
@@ -117,6 +118,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_property_view_dispose;
 	object_class->finalize = rb_property_view_finalize;
 	object_class->constructor = rb_property_view_constructor;
 
@@ -274,7 +276,7 @@ rb_property_view_set_model_internal (RBPropertyView *view,
 }
 
 static void
-rb_property_view_finalize (GObject *object)
+rb_property_view_dispose (GObject *object)
 {
 	RBPropertyView *view;
 
@@ -283,9 +285,20 @@ rb_property_view_finalize (GObject *object)
 
 	view = RB_PROPERTY_VIEW (object);
 
-	g_return_if_fail (view->priv != NULL);
-
 	rb_property_view_set_model_internal (view, NULL);
+
+	G_OBJECT_CLASS (rb_property_view_parent_class)->dispose (object);
+}
+
+static void
+rb_property_view_finalize (GObject *object)
+{
+	RBPropertyView *view;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PROPERTY_VIEW (object));
+
+	view = RB_PROPERTY_VIEW (object);
 
 	g_free (view->priv->title);
 
