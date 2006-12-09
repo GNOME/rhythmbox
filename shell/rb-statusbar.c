@@ -149,14 +149,10 @@ rb_statusbar_init (RBStatusbar *statusbar)
 						       RB_TYPE_STATUSBAR,
 						       RBStatusbarPrivate);
 
-        GtkWidget *vbox;
-
         statusbar->priv->tooltips = gtk_tooltips_new ();
         gtk_tooltips_enable (statusbar->priv->tooltips);
 
         gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR (statusbar), TRUE);
-
-        vbox = gtk_vbox_new (TRUE, 0);
 
         statusbar->priv->progress = gtk_progress_bar_new ();
         statusbar->priv->progress_fraction = 1.0;
@@ -164,16 +160,10 @@ rb_statusbar_init (RBStatusbar *statusbar)
         statusbar->priv->loading_text = g_strdup (_("Loading..."));
 
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
-        gtk_widget_set_size_request (statusbar->priv->progress, -1, 10);
         gtk_widget_hide (statusbar->priv->progress);
 
-        gtk_box_pack_start (GTK_BOX (vbox),
-                            GTK_WIDGET (statusbar->priv->progress),
-                            FALSE, FALSE, 0);
-
         gtk_box_pack_start (GTK_BOX (statusbar),
-                            GTK_WIDGET (vbox), FALSE, TRUE, 10);
-
+                            GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
 }
 
 static void
