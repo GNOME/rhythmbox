@@ -27,6 +27,10 @@ if USE_IPOD
 SUBDIRS += ipod
 endif
 
+if USE_MTP
+SUBDIRS += mtp
+endif
+
 if USE_CD_BURNING
 SUBDIRS += 						\
 	audiocd						\

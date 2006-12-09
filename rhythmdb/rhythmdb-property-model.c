@@ -447,15 +447,16 @@ rhythmdb_property_model_finalize (GObject *object)
 	if (model->priv->syncing_id != 0)
 		g_source_remove (model->priv->syncing_id);
 
+	g_hash_table_destroy (model->priv->reverse_map);
+
 	end_ptr = g_sequence_get_end_ptr (model->priv->properties);
 	for (ptr = g_sequence_get_begin_ptr (model->priv->properties); ptr != end_ptr;
 	     ptr = g_sequence_ptr_next (ptr)) {
 		RhythmDBPropertyModelEntry *prop = g_sequence_ptr_get_data (ptr);
 		rb_refstring_unref (prop->string);
 		rb_refstring_unref (prop->sort_string);
+		g_free (prop);
 	}
-
-	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->properties);
 
 	g_hash_table_destroy (model->priv->entries);

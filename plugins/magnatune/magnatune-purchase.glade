@@ -147,7 +147,7 @@
 	<widget class="GtkTable" id="table1">
 	  <property name="border_width">12</property>
 	  <property name="visible">True</property>
-	  <property name="n_rows">7</property>
+	  <property name="n_rows">8</property>
 	  <property name="n_columns">3</property>
 	  <property name="homogeneous">False</property>
 	  <property name="row_spacing">0</property>
@@ -341,6 +341,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkLabel" id="name_label">
+	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Name:</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
@@ -368,6 +369,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkEntry" id="name_entry">
+	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
 	      <property name="visibility">True</property>
@@ -388,6 +390,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkLabel" id="cc_label">
+	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Credit Card number:</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
@@ -415,6 +418,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkLabel" id="mm_label">
+	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Expiry month:</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
@@ -442,6 +446,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkLabel" id="yy_label">
+	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Expiry year:</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
@@ -469,6 +474,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkEntry" id="cc_entry">
+	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
 	      <property name="visibility">True</property>
@@ -489,6 +495,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkEntry" id="yy_entry">
+	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
 	      <property name="visibility">True</property>
@@ -509,6 +516,7 @@ $18 (We love you!)</property>
 
 	  <child>
 	    <widget class="GtkComboBox" id="mm_combobox">
+	      <property name="visible">True</property>
 	      <property name="items" translatable="yes">01
 02
 03
@@ -531,6 +539,28 @@ $18 (We love you!)</property>
 	      <property name="bottom_attach">6</property>
 	      <property name="x_options">fill</property>
 	      <property name="y_options">fill</property>
+	    </packing>
+	  </child>
+
+	  <child>
+	    <widget class="GtkCheckButton" id="remember_cc_details">
+	      <property name="visible">True</property>
+	      <property name="can_focus">True</property>
+	      <property name="label" translatable="yes">Remember my credit card details</property>
+	      <property name="use_underline">True</property>
+	      <property name="relief">GTK_RELIEF_NORMAL</property>
+	      <property name="focus_on_click">True</property>
+	      <property name="active">False</property>
+	      <property name="inconsistent">False</property>
+	      <property name="draw_indicator">True</property>
+	    </widget>
+	    <packing>
+	      <property name="left_attach">1</property>
+	      <property name="right_attach">3</property>
+	      <property name="top_attach">7</property>
+	      <property name="bottom_attach">8</property>
+	      <property name="x_options">fill</property>
+	      <property name="y_options"></property>
 	    </packing>
 	  </child>
 	</widget>
