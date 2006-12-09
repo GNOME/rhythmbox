@@ -123,32 +123,6 @@ if test "x$with_ipod" != "xno"; then
 fi
 AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
-dnl MTP device support
-
-AC_ARG_WITH(mtp,
-            AC_HELP_STRING([--with-mtp],
-			   [Enable MTP device support]),,
-	      with_mtp=auto)
-if test "x$with_mtp" != "xno"; then
-	PKG_CHECK_MODULES(MTP, libmtp, have_libmtp=yes, have_libmtp=no)
-	if test "x$have_libmtp" = "xno" -a "x$with_mtp" = "xyes"; then
-	  AC_MSG_ERROR([MTP device explicitly requested but libmtp couldn't be found])
-	fi
-	if test "x$have_libmtp" = "xyes"; then
-          if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
-	     AC_MSG_ERROR([MTP device explicitly requested but HAL not found or too old])
-	  fi
-          if test "x$enable_hal" = xyes; then
-	     AC_DEFINE(WITH_MTP_SUPPORT, 1, [Define if MTP device support is enabled])
-	     use_mtp=yes
-	  fi
-	  AC_SUBST(MTP_CFLAGS)
-	  AC_SUBST(MTP_LIBS)
-	fi
-fi
-AM_CONDITIONAL(USE_MTP, test x"$use_mtp" = xyes)
-
-
 
 dnl gnome-keyring support
 
@@ -973,7 +947,6 @@ plugins/ipod/Makefile
 plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
-plugins/mtp/Makefile
 plugins/sample-python/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
@@ -1047,11 +1020,6 @@ if test x"$use_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
-fi
-if test x"$use_mtp" = xyes; then
-	AC_MSG_NOTICE([** MTP device integration enabled])
-else
-	AC_MSG_NOTICE([   MTP device integration disabled])
 fi
 if test x"$with_cd_burning" != xno; then
 	AC_MSG_NOTICE([** CD burning support enabled])

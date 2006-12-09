@@ -890,6 +890,50 @@
 	</locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/cc_number</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/cc_number</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>The user's credit card number.</short>
+	<long>The user's credit card number. Visa/Mastercard only.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/cc_month</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/cc_month</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>Expiry month of the user's credit card.</short>
+	<long>Expiry month of the user's credit card.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/cc_year</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/cc_year</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>Expiry year of the user's credit card.</short>
+	<long>Expiry year of the user's credit card.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/email</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/email</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>User's email address.</short>
+	<long>User's email address.</long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/plugins/magnatune/format</key>
         <applyto>/apps/rhythmbox/plugins/magnatune/format</applyto>
         <owner>rhythmbox</owner>
@@ -898,6 +942,28 @@
         <locale name="C">
         <short>Desired format of downloaded audio.</short>
 	<long>Desired format of downloaded audio. Valid values are: ogg, flac, wav, mp3-vbr, mp3-cbr</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/forget</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/forget</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the user's credit card information should not be stored.</short>
+	<long>True if the user's credit card information should not be stored.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/magnatune/name</key>
+        <applyto>/apps/rhythmbox/plugins/magnatune/name</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+        <short>User's name.</short>
+	<long>User's name.</long>
 	</locale>
       </schema>
       <schema>
