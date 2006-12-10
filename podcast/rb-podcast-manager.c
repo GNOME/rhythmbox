@@ -906,7 +906,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	GValue val = {0,};
 	GTimeVal time;
 
-	if (!uri || !name || !title || !date || !g_utf8_validate(uri, -1, NULL)) {
+	if (!uri || !name || !title || !g_utf8_validate(uri, -1, NULL)) {
 		return NULL;
 	}
 	entry = rhythmdb_entry_lookup_by_location (db, uri);
@@ -918,6 +918,10 @@ rb_podcast_manager_add_post (RhythmDB *db,
 				    uri);
 	if (entry == NULL)
 		return NULL;
+
+	g_get_current_time (&time);
+	if (date == 0)
+		date = time.tv_sec;
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, name);
@@ -970,7 +974,6 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
 
 	/* first seen */
-	g_get_current_time (&time);
 	g_value_reset (&val);
 	g_value_set_ulong (&val, time.tv_sec);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
