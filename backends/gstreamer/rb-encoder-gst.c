@@ -281,13 +281,13 @@ progress_timeout_cb (RBEncoderGst *encoder)
 		gint secs;
 
 		secs = position / GST_SECOND;
-		rb_debug ("encoding progress at %d out of %lld",
+		rb_debug ("encoding progress at %d out of %" G_GINT64_FORMAT,
 			  secs,
 			  encoder->priv->total_length);
 		_rb_encoder_emit_progress (RB_ENCODER (encoder), 
 					   ((double)secs) / encoder->priv->total_length);
 	} else {
-		rb_debug ("encoding progress at %lld out of %lld",
+		rb_debug ("encoding progress at %" G_GINT64_FORMAT " out of %" G_GINT64_FORMAT,
 			  position,
 			  encoder->priv->total_length);
 		_rb_encoder_emit_progress (RB_ENCODER (encoder),
