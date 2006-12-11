@@ -67,7 +67,8 @@ struct _RBEncoderGstPrivate {
 	gboolean error_emitted;
 	gboolean completion_emitted;
 
-	gulong total_length;
+	GstFormat position_format;
+	gint64 total_length;
 	guint progress_id;
 };
 
@@ -247,20 +248,21 @@ gst_error_cb (GstElement *element,
 static gboolean
 progress_timeout_cb (RBEncoderGst *encoder)
 {
-	gint64 nanos;
-	gint secs;
-	static GstFormat format = GST_FORMAT_TIME;
+	gint64 position;
+	static GstFormat format;
 	GstState state;
 
 	if (encoder->priv->pipeline == NULL)
 		return FALSE;
+
+	format = encoder->priv->position_format;
 
 #ifdef HAVE_GSTREAMER_0_10
 	gst_element_get_state (encoder->priv->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
 	if (state != GST_STATE_PLAYING)
 		return FALSE;
 
-	if (!gst_element_query_position (encoder->priv->pipeline, &format, &nanos)) {
+	if (!gst_element_query_position (encoder->priv->pipeline, &format, &position)) {
 		g_warning ("Could not get current track position");
 		return TRUE;
 	}
@@ -269,15 +271,28 @@ progress_timeout_cb (RBEncoderGst *encoder)
 	if (state != GST_STATE_PLAYING)
 		return FALSE;
 
-	if (!gst_element_query (encoder->priv->pipeline, GST_QUERY_POSITION, &format, &nanos)) {
+	if (!gst_element_query (encoder->priv->pipeline, GST_QUERY_POSITION, &format, &position)) {
 		g_warning ("Could not get current track position");
 		return TRUE;
 	}
 #endif
 
-	secs = nanos / GST_SECOND;
-	rb_debug ("encoding progress at %d out of %lu", secs, encoder->priv->total_length);
-	_rb_encoder_emit_progress (RB_ENCODER (encoder), ((double)secs) / encoder->priv->total_length);
+	if (format == GST_FORMAT_TIME) {
+		gint secs;
+
+		secs = position / GST_SECOND;
+		rb_debug ("encoding progress at %d out of %lld",
+			  secs,
+			  encoder->priv->total_length);
+		_rb_encoder_emit_progress (RB_ENCODER (encoder), 
+					   ((double)secs) / encoder->priv->total_length);
+	} else {
+		rb_debug ("encoding progress at %lld out of %lld",
+			  position,
+			  encoder->priv->total_length);
+		_rb_encoder_emit_progress (RB_ENCODER (encoder),
+					   ((double) position) / encoder->priv->total_length);
+	}
 
 	return TRUE;
 }
@@ -945,8 +960,6 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	entry_mime_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
 	was_raw = g_str_has_prefix (entry_mime_type, "audio/x-raw");
 
-	priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
-
 	vfsresult = create_parent_dirs (dest);
 	if (vfsresult != GNOME_VFS_OK) {
 		error = g_error_new_literal (RB_ENCODER_ERROR,
@@ -960,8 +973,14 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	}
 
 	if ((mime_type == NULL && !was_raw) || (mime_type && (strcmp (mime_type, entry_mime_type) == 0))) {
+		priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
+		priv->position_format = GST_FORMAT_BYTES;
+
 		result = copy_track (RB_ENCODER_GST (encoder), entry, dest, &error);
 	} else {
+		priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+		priv->position_format = GST_FORMAT_TIME;
+
 		if (mime_type == NULL) {
 			result = extract_track (RB_ENCODER_GST (encoder), entry, dest, &error);
 		} else {

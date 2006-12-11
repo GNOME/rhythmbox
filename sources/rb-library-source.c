@@ -696,16 +696,18 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GList *list, *i;
 	GList *entries = NULL;
+	gboolean is_id;
 
 	rb_debug ("parsing uri list");
 	list = rb_uri_list_parse ((const char *) data->data);
+	is_id = (data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
 
 	for (i = list; i != NULL; i = g_list_next (i)) {
 		if (i->data != NULL) {
 			char *uri = i->data;
 			RhythmDBEntry *entry;
 
-			entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
+			entry = rhythmdb_entry_lookup_from_string (source->priv->db, uri, is_id);
 
 			if (entry == NULL) {
 				/* add to the library */
