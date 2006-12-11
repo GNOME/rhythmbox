@@ -1,5 +1,10 @@
 2006-12-11  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-daap-source.c: (connection_auth_cb): fix a code path
+	trying to free an unset pointer. Fixes #384208
+
+2006-12-11  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-library-source.c: (build_filename): deal with URIs that
 	don't have a period in them. Fixes #384016
 

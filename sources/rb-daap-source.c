@@ -314,6 +314,7 @@ connection_auth_cb (RBDAAPConnection *connection,
 	gchar *keyring;
 	GList *list;
 
+	keyring = NULL;
 	if (!source->priv->tried_password) {
 		gnome_keyring_get_default_keyring_sync (&keyring);
 		keyringret = gnome_keyring_find_network_password_sync (
