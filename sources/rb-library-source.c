@@ -1107,10 +1107,19 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	}
 
 	if (extension == NULL) {
+		const char *uri;
+		const char *loc;
 		char *tmp;
 
 		/* use the old extension. strip anything after a '?' for http/daap/etc */
-		extension = g_strdup (g_utf8_strrchr (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), -1, '.') + 1);
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		loc = g_utf8_strrchr (uri, -1, '.');
+		if (loc == NULL)
+			loc = g_utf8_strrchr (uri, -1, '/');
+		if (loc == NULL)
+			loc = uri;
+
+		extension = g_strdup (loc + 1);
 
 		tmp = g_utf8_strchr (extension, -1, '?');
 		if (tmp)
