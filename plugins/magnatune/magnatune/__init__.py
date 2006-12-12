@@ -8,8 +8,16 @@ import zipfile
 import sys, os.path
 import xml
 import datetime
+import string
 
 from MagnatuneSource import MagnatuneSource
+
+has_gnome_keyring = False
+#try:
+#	import gnomekeyring
+#	has_gnome_keyring = True
+#except:
+#	pass	
 
 
 popup_ui = """
@@ -29,6 +37,8 @@ popup_ui = """
 </ui>
 """
 
+keyring_attributes = {"name": "rb-magnatune-cc-data"}
+
 
 class Magnatune(rb.Plugin):
 	client = gconf.client_get_default()
@@ -38,12 +48,7 @@ class Magnatune(rb.Plugin):
 	gconf_keys = {
 		'format': "/apps/rhythmbox/plugins/magnatune/format",
 		'pay': "/apps/rhythmbox/plugins/magnatune/pay",
-		'ccnumber': "/apps/rhythmbox/plugins/magnatune/cc_number",
-		'ccyear': "/apps/rhythmbox/plugins/magnatune/cc_year",
-		'ccmonth': "/apps/rhythmbox/plugins/magnatune/cc_month",
-		'ccname': "/apps/rhythmbox/plugins/magnatune/name",
-		'email': "/apps/rhythmbox/plugins/magnatune/email",
-		'forget': "/apps/rhythmbox/plugins/magnatune/forget"
+		'ccauthtoken': "/apps/rhythmbox/plugins/magnatune/ccauthtoken"
 	}
 
 
@@ -57,6 +62,7 @@ class Magnatune(rb.Plugin):
 	def activate(self, shell):
 		self.shell = shell # so buy_track can update the progress bar
 		self.db = shell.get_property("db")
+		self.keyring = None
 
 		self.entry_type = self.db.entry_register_type("MagnatuneEntryType")
 		# allow changes which don't do anything
@@ -104,69 +110,108 @@ class Magnatune(rb.Plugin):
 		self.source.delete_thyself()
 		self.source = None
 		self.shell = None
+		self.keyring = None
+
+
+	def get_keyring(self):
+		if self.keyring is None:
+			self.keyring = gnomekeyring.get_default_keyring_sync()
+		return self.keyring
+
+	def store_cc_details(self, *details):
+		if has_gnome_keyring:
+			print "storing CC details"
+			try:
+				id = gnomekeyring.item_create_sync(self.get_keyring(),
+						gnomekeyring.ITEM_GENERIC_SECRET,
+						"Magnatune credit card info", keyring_attributes,
+						string.join (details, '\n'), True)
+			except Exception, e:
+				print e
+
+	def clear_cc_details(self):
+		if has_gnome_keyring:
+			print "clearing CC details"
+			try:
+				ids = gnomekeyring.find_items_sync (gnomekeyring.ITEM_GENERIC_SECRET, keyring_attributes)
+				gnomekeyring.item_delete_sync (self.get_keyring(), id[0])
+			except Exception, e:
+				print e
+	
+	def get_cc_details(self):
+		if has_gnome_keyring:
+			print "getting CC details"
+			try:
+				ids = gnomekeyring.find_items_sync (gnomekeyring.ITEM_GENERIC_SECRET, keyring_attributes)
+				data =  gnomekeyring.item_get_info_sync(self.get_keyring(), ids[0]).get_secret()
+				return string.split(data, "\n")
+			except Exception, e:
+				print e
+		return ("", "", 0, "", "")
 	
 	def create_configure_dialog(self, dialog=None):
 		if dialog == None:
-			
-			def ignore_checkbox_toggled(button):
-				if button.get_active():
-					gladexml.get_widget("name_entry").set_sensitive(False)
-					gladexml.get_widget("cc_entry").set_sensitive(False)
-					gladexml.get_widget("mm_entry").set_sensitive(False)
-					gladexml.get_widget("yy_entry").set_sensitive(False)
-					gladexml.get_widget("name_entry").set_text("")
+			def fill_cc_details():
+				try:
+					(ccnumber, ccyear, ccmonth, name, email) = self.get_cc_details()
+					gladexml.get_widget("cc_entry").set_text(ccnumber)
+					gladexml.get_widget("yy_entry").set_text(ccyear)
+					gladexml.get_widget("mm_entry").set_active(int(ccmonth)-1)
+					gladexml.get_widget("name_entry").set_text(name)
+					gladexml.get_widget("email_entry").set_text(email)
+					gladexml.get_widget("remember_cc_details").set_active(True)
+				except Exception, e:
+					print e
+
 					gladexml.get_widget("cc_entry").set_text("")
-					gladexml.get_widget("mm_entry").set_active(0)
 					gladexml.get_widget("yy_entry").set_text("")
-					self.client.set_bool(self.gconf_keys['forget'], True)
+					gladexml.get_widget("mm_entry").set_active(0)
+					gladexml.get_widget("name_entry").set_text("")
+					gladexml.get_widget("email_entry").set_text("")
+					gladexml.get_widget("remember_cc_details").set_active(False)
+
+			def update_expired():
+				mm = gladexml.get_widget("mm_entry").get_active() + 1
+				yy = 0
+				try:
+					yy = int(gladexml.get_widget("yy_entry").get_text())
+				except Exception, e:
+					print e
+					gladexml.get_widget("cc_expired_label").hide()
+					return
+
+				if yy < (datetime.date.today().year % 100):
+					gladexml.get_widget("cc_expired_label").show()
+				elif (yy == (datetime.date.today().year % 100) and mm < datetime.date.today().month):
+					gladexml.get_widget("cc_expired_label").show()
 				else:
-					gladexml.get_widget("name_entry").set_sensitive(True)
-					gladexml.get_widget("cc_entry").set_sensitive(True)
-					gladexml.get_widget("mm_entry").set_sensitive(True)
-					gladexml.get_widget("yy_entry").set_sensitive(True)
-					self.client.set_bool(self.gconf_keys['forget'], False)
+					gladexml.get_widget("cc_expired_label").hide()
 			
-			def yy_entry_changed(entry):
-				self.client.set_string(self.gconf_keys['ccyear'], entry.get_text())
-				try:
-					mm = gladexml.get_widget("mm_entry").get_active_text()
-					if int(entry.get_text()) < (datetime.date.today().year % 100):
-						gladexml.get_widget("cc_expired_label").visible = True
-						gladexml.get_widget("cc_expired_label").show()
-					elif (int(entry.get_text()) == (datetime.date.today().year % 100) and int(mm) < datetime.date.today().month):
-						gladexml.get_widget("cc_expired_label").visible = True
-						gladexml.get_widget("cc_expired_label").show()
-					else:
-						gladexml.get_widget("cc_expired_label").visible = False
-						gladexml.get_widget("cc_expired_label").hide()
-				except Exception,e:
-					print e
-			
-			def mm_entry_changed(entry):
-				self.client.set_string(self.gconf_keys['ccmonth'], entry.get_active_text())
-				try:
-					yy = gladexml.get_widget("yy_entry").get_text()
-					if int(yy) < (datetime.date.today().year % 100):
-						gladexml.get_widget("cc_expired_label").visible = True
-						gladexml.get_widget("cc_expired_label").show()
-					elif (int(yy) == (datetime.date.today().year % 100) and int(entry.get_active_text()) < datetime.date.today().month):
-						gladexml.get_widget("cc_expired_label").visible = True
-						gladexml.get_widget("cc_expired_label").show()
-					else:
-						gladexml.get_widget("cc_expired_label").visible = False
-						gladexml.get_widget("cc_expired_label").hide()
-				except Exception,e:
-					print e
-			
+			def remember_checkbox_toggled (button):
+				print "remember CC details toggled " + str(button.get_active())
+				gladexml.get_widget("cc_entry").set_sensitive(button.get_active())
+				gladexml.get_widget("mm_entry").set_sensitive(button.get_active())
+				gladexml.get_widget("yy_entry").set_sensitive(button.get_active())
+				gladexml.get_widget("name_entry").set_sensitive(button.get_active())
+				gladexml.get_widget("email_entry").set_sensitive(button.get_active())
+
+				if not button.get_active():
+					try:
+						self.clear_cc_details ()
+					except Exception, e:
+						print e
+#				fill_cc_details()
+
+
 			self.configure_callback_dic = {
-				"rb_magnatune_name_entry_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['ccname'], w.get_text()),
-				"rb_magnatune_email_entry_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['email'], w.get_text()),
-				"rb_magnatune_cc_entry_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['ccnumber'], w.get_text()),
-				"rb_magnatune_yy_entry_changed_cb" : yy_entry_changed,
-				"rb_magnatune_mm_entry_changed_cb" : mm_entry_changed,
+#				"rb_magnatune_yy_entry_changed_cb" : lambda w: update_expired(),
+#				"rb_magnatune_mm_entry_changed_cb" : lambda w: update_expired(),
+#				"rb_magnatune_name_entry_changed_cb" : lambda w: None,
+#				"rb_magnatune_cc_entry_changed_cb" : lambda w: None,
+#				"rb_magnatune_email_entry_changed_cb" : lambda w: None,
 				"rb_magnatune_pay_combobox_changed_cb" : lambda w: self.client.set_int(self.gconf_keys['pay'], w.get_active() + 5),
 				"rb_magnatune_audio_combobox_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['format'], self.format_list[w.get_active()]),
-				"rb_magnatune_ignore_cc_info_checkbox_toggled_cb" : ignore_checkbox_toggled
+				"rb_magnatune_remember_cc_details_toggled_cb" : remember_checkbox_toggled
 			}
 
 			gladexml = gtk.glade.XML(self.find_file("magnatune-prefs.glade"))
@@ -174,16 +219,21 @@ class Magnatune(rb.Plugin):
 
 			# FIXME this bit should be in glade too
 			dialog = gladexml.get_widget('preferences_dialog')
-			dialog.connect("response", lambda w, r: w.hide())
+			def dialog_response (dialog, response):
+				if gladexml.get_widget("remember_cc_details").get_active():
+					ccnumber = gladexml.get_widget("cc_entry").get_text()
+					ccyear = gladexml.get_widget("yy_entry").get_text()
+					ccmonth = str(gladexml.get_widget("mm_entry").get_active() + 1)
+					name = gladexml.get_widget("name_entry").get_text()
+					email = gladexml.get_widget("email_entry").get_text()
+					self.store_cc_details(ccnumber, ccyear, ccmonth, name, email)
+				dialog.hide()
+			dialog.connect("response", dialog_response)
 			
-			gladexml.get_widget("name_entry").set_text(self.client.get_string(self.gconf_keys['ccname']))
-			gladexml.get_widget("email_entry").set_text(self.client.get_string(self.gconf_keys['email']))
-			gladexml.get_widget("cc_entry").set_text(self.client.get_string(self.gconf_keys['ccnumber']))
-			gladexml.get_widget("yy_entry").set_text(self.client.get_string(self.gconf_keys['ccyear']))
-			gladexml.get_widget("mm_entry").set_active(int(self.client.get_string(self.gconf_keys['ccmonth'])) - 1)
+			gladexml.get_widget("cc_details_box").props.visible = has_gnome_keyring
 			gladexml.get_widget("pay_combobox").set_active(self.client.get_int(self.gconf_keys['pay']) - 5)
 			gladexml.get_widget("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
-			gladexml.get_widget("ignore_cc_info_checkbox").set_active(self.client.get_bool(self.gconf_keys['forget']))
+			fill_cc_details()
 
 		dialog.present()
 		return dialog

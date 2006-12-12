@@ -404,15 +404,29 @@ purge_useless_threads (gpointer data)
 	return TRUE;
 }
 
+
+static GStaticRecMutex rb_gdk_mutex;
+
+static void
+_threads_enter (void)
+{
+	g_static_rec_mutex_lock (&rb_gdk_mutex);
+}
+
+static void
+_threads_leave (void)
+{
+	g_static_rec_mutex_unlock (&rb_gdk_mutex);
+}
+
 void
 rb_threads_init (void)
 {
 	private_is_primary_thread = g_private_new (NULL);
 	g_private_set (private_is_primary_thread, GUINT_TO_POINTER (1));
 
-	/* not really necessary, but in case it does something besides
-	 * set up lock functions some day..
-	 */
+	g_static_rec_mutex_init (&rb_gdk_mutex);
+	gdk_threads_set_lock_functions (_threads_enter, _threads_leave);
 	gdk_threads_init ();
 
 	/* purge useless thread-pool threads occasionally */

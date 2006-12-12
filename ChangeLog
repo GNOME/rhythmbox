@@ -1,3 +1,15 @@
+2006-12-12  James Livingston  <doclivingston@gmail.com>
+
+	* data/rhythmbox.schemas:
+	* lib/rb-util.c: (_threads_enter), (_threads_leave),
+	(rb_threads_init):
+	* plugins/magnatune/magnatune-prefs.glade:
+	* plugins/magnatune/magnatune-purchase.glade:
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	* plugins/magnatune/magnatune/__init__.py: add code to use
+	Gnome-Keyring to store the user's credit card details, but force it to
+	be disabled (due to bugs). From #377354
+
 2006-12-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:

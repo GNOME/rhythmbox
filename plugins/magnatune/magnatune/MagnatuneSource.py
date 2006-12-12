@@ -8,6 +8,14 @@ import gnomevfs, gnome, gconf
 import xml
 import urllib, zipfile
 
+has_gnome_keyring = False
+#try:
+#	import gnomekeyring
+#	has_gnome_keyring = True
+#except:
+#	pass	
+
+
 magnatune_partner_id = "zimmerman"
 
 # URIs
@@ -160,40 +168,49 @@ class MagnatuneSource(rb.BrowserSource):
 			album = self.__db.entry_get(track, rhythmdb.PROP_ALBUM)	
 
 			gladexml = gtk.glade.XML(self.__plugin.find_file("magnatune-purchase.glade"))
-			pay_combo = gladexml.get_widget("pay_combobox")
-			format_combo = gladexml.get_widget("audio_combobox")
-			text_label = gladexml.get_widget("info_label")
 
-			pay_combo.set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
-			format_combo.set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
-			text_label.set_text(_("Would you like to purchase the album '%s' by '%s'.") % (album, artist))
-			
-			if self.__client.get_bool(self.__plugin.gconf_keys['forget']):
-				gladexml.get_widget("name_label").visible = True
-				gladexml.get_widget("name_entry").visible = True
-				gladexml.get_widget("cc_label").visible = True
-				gladexml.get_widget("cc_entry").visible = True
-				gladexml.get_widget("mm_label").visible = True
-				gladexml.get_widget("mm_combobox").visible = True
-				gladexml.get_widget("yy_label").visible = True
-				gladexml.get_widget("yy_entry").visible = True
-				gladexml.get_widget("name_label").show()
-				gladexml.get_widget("name_entry").show()
-				gladexml.get_widget("cc_label").show()
-				gladexml.get_widget("cc_entry").show()
-				gladexml.get_widget("mm_label").show()
-				gladexml.get_widget("mm_combobox").show()
-				gladexml.get_widget("yy_label").show()
-				gladexml.get_widget("yy_entry").show()
+			gladexml.get_widget("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
+			gladexml.get_widget("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
+			gladexml.get_widget("info_label").set_text(_("Would you like to purchase the album '%s' by '%s'.") % (album, artist))
+			gladexml.get_widget("remember_cc_details").props.visible = has_gnome_keyring
+
+			try:
+				(ccnumber, ccyear, ccmonth, name, email) = self.__plugin.get_cc_details()
+				gladexml.get_widget("cc_entry").set_text(ccnumber)
+				gladexml.get_widget("yy_entry").set_text(ccyear)
+				gladexml.get_widget("mm_entry").set_active(ccmonth-1)
+				gladexml.get_widget("name_entry").set_text(name)
+				gladexml.get_widget("email_entry").set_text(email)
+
+				gladexml.get_widget("remember_cc_details").set_active(True)
+			except Exception, e:
+				print e
+
+				gladexml.get_widget("cc_entry").set_text("")
+				gladexml.get_widget("yy_entry").set_text("")
+				gladexml.get_widget("mm_entry").set_active(0)
+				gladexml.get_widget("name_entry").set_text("")
+				gladexml.get_widget("email_entry").set_text("")
+
+				gladexml.get_widget("remember_cc_details").set_active(False)
+							
 			
 			window = gladexml.get_widget("purchase_dialog")
 			if window.run() == gtk.RESPONSE_ACCEPT:
-				if self.__client.get_bool(self.__plugin.gconf_keys['forget']):
-					self.__tmp_name = gladexml.get_widget("name_entry").get_text()
-					self.__tmp_cc = gladexml.get_widget("cc_entry").get_text()
-					self.__tmp_mm = gladexml.get_widget("mm_combobox").get_active_text()
-					self.__tmp_yy = gladexml.get_widget("yy_entry").get_text()
-				self.__purchase_album (sku, pay_combo.get_active() + 5, self.__plugin.format_list[format_combo.get_active()])
+				amount = gladexml.get_widget("pay_combobox").get_active() + 5
+				format = self.__plugin.format_list[gladexml.get_widget("audio_combobox").get_active()]
+				ccnumber = gladexml.get_widget("cc_entry").get_text()
+				ccyear = gladexml.get_widget("yy_entry").get_text()
+				ccmonth = str(gladexml.get_widget("mm_entry").get_active() + 1).zfill(2)
+				name = gladexml.get_widget("name_entry").get_text()
+				email = gladexml.get_widget("email_entry").get_text()
+
+				if gladexml.get_widget("remember_cc_details").props.active:
+					self.__plugin.store_cc_details(ccnumber, ccyear, ccmonth, name, email)
+				else:
+					self.__plugin.clear_cc_details()
+
+				self.__purchase_album (sku, amount, format, ccnumber, ccyear, ccmonth, name, email)
 
 			window.destroy()
 
@@ -203,24 +220,26 @@ class MagnatuneSource(rb.BrowserSource):
 	def __load_catalogue_read_cb (self, handle, data, exc_type, bytes_requested, parser):
 		if exc_type:
 			if issubclass (exc_type, gnomevfs.EOFError):
-				# successfully loaded
-				gtk.gdk.threads_enter()
-				self.__show_loading_screen (False)
+				def finish_loadscreen():
+					# successfully loaded
+					gtk.gdk.threads_enter()
+					self.__show_loading_screen (False)
 				
-				in_progress_dir = gnomevfs.DirectoryHandle(gnomevfs.URI(magnatune_dir))
-				in_progress = in_progress_dir.next()
-				while True:
-					if in_progress.name[0:12] == "in_progress_":
-						in_progress = gnomevfs.read_entire_file(magnatune_dir + in_progress.name)
-						for uri in in_progress.split("\n"):
-							if uri == '':
-								continue
-							self.__download_album(gnomevfs.URI(uri))
-					try:
-						in_progress = in_progress_dir.next()
-					except:
-						break
-				gtk.gdk.threads_leave()
+					in_progress_dir = gnomevfs.DirectoryHandle(gnomevfs.URI(magnatune_dir))
+					in_progress = in_progress_dir.next()
+					while True:
+						if in_progress.name[0:12] == "in_progress_":
+							in_progress = gnomevfs.read_entire_file(magnatune_dir + in_progress.name)
+							for uri in in_progress.split("\n"):
+								if uri == '':
+									continue
+								self.__download_album(gnomevfs.URI(uri))
+						try:
+							in_progress = in_progress_dir.next()
+						except:
+							break
+					gtk.gdk.threads_leave()
+				gobject.idle_add (finish_loadscreen)
 			else:
 				# error reading file
 				raise exc_type
@@ -354,19 +373,7 @@ class MagnatuneSource(rb.BrowserSource):
 	#
 	# internal purchasing code
 	#
-	def __purchase_album(self, sku, pay, format):
-		ccnumber = self.__client.get_string(self.__plugin.gconf_keys['ccnumber'])
-		ccyear = self.__client.get_string(self.__plugin.gconf_keys['ccyear'])
-		ccmonth = self.__client.get_string(self.__plugin.gconf_keys['ccmonth'])
-		name = self.__client.get_string(self.__plugin.gconf_keys['ccname'])
-		email = self.__client.get_string(self.__plugin.gconf_keys['email'])
-		
-		if self.__client.get_bool(self.__plugin.gconf_keys['forget']):
-			ccnumber = self.__tmp_cc
-			ccyear = self.__tmp_yy
-			ccmonth = self.__tmp_mm
-			name = self.__tmp_name
-
+	def __purchase_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email):
 		print "purchasing tracks:", sku, pay, format, name, email
 
 		try:
@@ -417,19 +424,21 @@ class MagnatuneSource(rb.BrowserSource):
 		data = data.replace("<br>", "") # get rid of any stray <br> tags that will mess up the parser
 		if exc_type:
 			if issubclass (exc_type, gnomevfs.EOFError):
-				# successfully loaded
-				gtk.gdk.threads_enter()
-				audio_dl_uri = gnomevfs.URI(buy_album_handler.url)
-				audio_dl_uri = gnomevfs.URI(buy_album_handler.url[0:buy_album_handler.url.rfind("/") + 1] + urllib.quote(audio_dl_uri.short_name))
-				audio_dl_uri.user_name = str(buy_album_handler.username) # URI objects don't like unicode strings
-				audio_dl_uri.password = str(buy_album_handler.password)
+				def start_download ():
+					# successfully loaded
+					gtk.gdk.threads_enter()
+					audio_dl_uri = gnomevfs.URI(buy_album_handler.url)
+					audio_dl_uri = gnomevfs.URI(buy_album_handler.url[0:buy_album_handler.url.rfind("/") + 1] + urllib.quote(audio_dl_uri.short_name))
+					audio_dl_uri.user_name = str(buy_album_handler.username) # URI objects don't like unicode strings
+					audio_dl_uri.password = str(buy_album_handler.password)
 				
-				in_progress = create_if_needed(gnomevfs.URI(magnatune_dir + "in_progress_" + audio_dl_uri.short_name), gnomevfs.OPEN_WRITE)
-				in_progress.write(str(audio_dl_uri))
-				in_progress.close()
-				self.__download_album(audio_dl_uri)
-				self.__wait_dlg.destroy()
-				gtk.gdk.threads_leave()
+					in_progress = create_if_needed(gnomevfs.URI(magnatune_dir + "in_progress_" + audio_dl_uri.short_name), gnomevfs.OPEN_WRITE)
+					in_progress.write(str(audio_dl_uri))
+					in_progress.close()
+					self.__download_album(audio_dl_uri)
+					self.__wait_dlg.destroy()
+					gtk.gdk.threads_leave()
+				gobject.idle_add (start_download)
 			else:
 				# error reading file
 				raise exc_type
@@ -438,9 +447,13 @@ class MagnatuneSource(rb.BrowserSource):
 			handle.close(lambda handle, exc: None) # FIXME: report it?
 			
  		else:
-
-			auth_parser.feed(data)
-			handle.read(64 * 1024, self.__auth_read_cb, parser)
+			try :
+				print data
+				auth_parser.feed(data)
+				handle.read(64 * 1024, self.__auth_read_cb, parser)
+			except Exception, e:
+				print e
+				raise e
 	
 	def __download_album(self, audio_dl_uri):
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
@@ -451,7 +464,9 @@ class MagnatuneSource(rb.BrowserSource):
 			manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
 			self.__downloading = True
 			self.cancelled = False
+			gtk.gdk.threads_leave()
 			self.purchase_filesize += gnomevfs.get_file_info(audio_dl_uri).size
+			gtk.gdk.threads_enter()
 			create_if_needed(to_file_uri, gnomevfs.OPEN_WRITE).close()
 			gnomevfs.async.xfer (source_uri_list = [audio_dl_uri],
 							target_uri_list = [to_file_uri],
