@@ -562,12 +562,17 @@ rb_ipod_load_songs (RBiPodSource *source)
  	priv->ipod_db = itdb_parse (priv->ipod_mount_path, NULL);
 	priv->entry_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
+		Itdb_Playlist *mpl;
+
 		/* FIXME: we could set a different icon depending on the iPod
 		 * model
 		 */
-		g_object_set (RB_SOURCE (source),
-			      "name", itdb_playlist_mpl (priv->ipod_db)->name,
-			      NULL);
+		mpl = itdb_playlist_mpl (priv->ipod_db);
+		if (mpl && mpl->name) {
+			g_object_set (RB_SOURCE (source),
+				      "name", mpl->name,
+				      NULL);
+		}
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
 

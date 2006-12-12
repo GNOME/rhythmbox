@@ -1,5 +1,10 @@
 2006-12-12  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-ipod-source.c: (rb_ipod_load_songs): hopefully fix
+	some corrupt-ipod-db issues. from #358855
+
+2006-12-12  James Livingston  <doclivingston@gmail.com>
+
 	* widgets/rb-entry-view.c: (rb_entry_view_set_model_internal): don't
 	try to re-sort the model if it's NULL. Fixes #367646
 
