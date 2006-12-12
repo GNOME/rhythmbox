@@ -530,13 +530,11 @@ rb_entry_view_set_model_internal (RBEntryView        *view,
 					 G_CALLBACK (rb_entry_view_rows_reordered_cb),
 					 view,
 					 0);
-	}
 
-	if (view->priv->sorting_column != NULL) {
-		rb_entry_view_resort_model (view);
-	}
+		if (view->priv->sorting_column != NULL) {
+			rb_entry_view_resort_model (view);
+		}
 
-	if (view->priv->model != NULL) {
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (view->priv->model));
 	}
