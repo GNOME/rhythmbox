@@ -1,5 +1,21 @@
 2006-12-12  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/audioscrobbler/Makefile.am:
+	* metadata/sj-error.c: (sj_error_quark):
+	* metadata/sj-error.h:
+	* metadata/sj-metadata-musicbrainz.c:
+	(sj_metadata_musicbrainz_instance_init),
+	(get_offline_track_listing), (cache_rdf), (get_cached_rdf),
+	(get_rdf), (lookup_cd):
+	* metadata/sj-metadata-musicbrainz.h:
+	* metadata/sj-metadata.c: (sj_metadata_get_type):
+	* metadata/sj-metadata.h:
+	* metadata/sj-structures.c:
+	* metadata/sj-structures.h: get bug fixes from S-J and hopefully fix
+	#382954.
+
+2006-12-12  James Livingston  <doclivingston@gmail.com>
+
 	* sources/rb-ipod-source.c: (rb_ipod_load_songs): hopefully fix
 	some corrupt-ipod-db issues. from #358855
 

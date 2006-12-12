@@ -14,8 +14,8 @@
  *
  * You should have received a copy of the GNU Library General Public
  * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA 02110-1301  USA.
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #include <glib-object.h>
@@ -62,7 +62,7 @@ sj_metadata_get_type (void)
       NULL,
       NULL
     };
-
+    
     type = g_type_register_static (G_TYPE_INTERFACE, "SjMetadata", &info, 0);
     g_type_interface_add_prerequisite (type, G_TYPE_OBJECT);
   }

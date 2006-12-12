@@ -14,11 +14,13 @@
  *
  * You should have received a copy of the GNU Library General Public
  * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA 02110-1301  USA.
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include <string.h>
 #include <stdio.h>
@@ -28,21 +30,12 @@
 #include <glib/glist.h>
 #include <glib/gstrfuncs.h>
 #include <glib/gmessages.h>
-#include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
 #include <musicbrainz/queries.h>
 #include <musicbrainz/mb_c.h>
+#include <nautilus-burn.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-#include <nautilus-burn-drive.h>
-#ifndef NAUTILUS_BURN_CHECK_VERSION
-#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
-#endif
-
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-#include <nautilus-burn.h>
-#endif
 
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
@@ -120,17 +113,20 @@ sj_metadata_musicbrainz_instance_init (GTypeInstance *instance, gpointer g_class
     mb_SetServer (self->priv->mb, server_name, 80);
     g_free (server_name);
   }
-
+  
   /* Set the HTTP proxy */
   if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_PROXY, NULL)) {
-    mb_SetProxy (self->priv->mb,
-                 gconf_client_get_string (gconf_client, GCONF_PROXY_HOST, NULL),
+    char *proxy_host = gconf_client_get_string (gconf_client, GCONF_PROXY_HOST, NULL);
+    mb_SetProxy (self->priv->mb, proxy_host,
                  gconf_client_get_int (gconf_client, GCONF_PROXY_PORT, NULL));
+    g_free (proxy_host);
     if (gconf_client_get_bool (gconf_client, GCONF_PROXY_USE_AUTHENTICATION, NULL)) {
 #if HAVE_MB_SETPROXYCREDS
-      mb_SetProxyCreds (self->priv->mb,
-                        gconf_client_get_string (gconf_client, GCONF_PROXY_USERNAME, NULL),
-                        gconf_client_get_string (gconf_client, GCONF_PROXY_PASSWORD, NULL));
+      char *username = gconf_client_get_string (gconf_client, GCONF_PROXY_USERNAME, NULL);
+      char *password = gconf_client_get_string (gconf_client, GCONF_PROXY_PASSWORD, NULL);
+      mb_SetProxyCreds (self->priv->mb, username, password);
+      g_free (username);
+      g_free (password);
 #else
       g_warning ("mb_SetProxyCreds() not found, no proxy authorisation possible.");
 #endif
@@ -139,7 +135,7 @@ sj_metadata_musicbrainz_instance_init (GTypeInstance *instance, gpointer g_class
 
   g_object_unref (gconf_client);
 
-  if (g_getenv ("MUSICBRAINZ_DEBUG")) {
+  if (g_getenv("MUSICBRAINZ_DEBUG")) {
     mb_SetDebug (self->priv->mb, TRUE);
   }
 }
@@ -231,7 +227,7 @@ get_offline_track_listing(SjMetadata *metadata, GError **error)
                  _("Cannot read CD: %s"), message);
     return NULL;
   }
-
+  
   num_tracks = mb_GetResultInt (priv->mb, MBE_TOCGetLastTrack);
 
   album = g_new0 (AlbumDetails, 1);
@@ -360,7 +356,7 @@ cache_rdf (musicbrainz_t mb, const char *filename)
   path = g_path_get_dirname (filename);
   g_mkdir_with_parents (path, 0755); /* Handle errors in set_contents() */
   g_free (path);
-
+  
   /* How much data is there to save? */
   len = mb_GetResultRDFLen (mb);
   rdf = g_malloc0 (len);
@@ -391,18 +387,18 @@ get_cached_rdf (musicbrainz_t mb, const char *cachepath)
 
   if (!g_file_test (cachepath, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR))
     goto done;
-
+  
   /* Cache file exists, open it */
   if (!g_file_get_contents (cachepath, &rdf, NULL, &error)) {
     g_warning ("Cannot open cache file %s: %s", cachepath, error->message);
     g_error_free (error);
     goto done;
   }
-
+  
   /* Set the RDF */
   if (mb_SetResultRDF (mb, rdf))
     ret = TRUE;
-
+  
   done:
     g_free (rdf);
     return ret;
@@ -451,7 +447,7 @@ get_rdf (SjMetadata *metadata)
 
   cachepath = g_build_filename (g_get_home_dir (), ".gnome2", "sound-juicer", "cache", cdindex, NULL);
 #endif
-
+  
   if (!get_cached_rdf (priv->mb, cachepath)) {
     /* Don't re-use the CD Index as that doesn't send enough data to the server.
        By doing this we also pass track lengths, which can be proxied to FreeDB
@@ -463,7 +459,7 @@ get_rdf (SjMetadata *metadata)
     }
     cache_rdf (priv->mb, cachepath);
   }
-
+  
  done:
   g_free (cachepath);
   g_free (cdindex);
@@ -479,9 +475,8 @@ lookup_cd (SjMetadata *metadata)
   char data[256];
   int num_albums, i, j;
   NautilusBurnMediaType type;
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+  NautilusBurnDriveMonitor *monitor;
   NautilusBurnDrive *drive;
-#endif
 
   /* TODO: fire error signal */
   g_return_val_if_fail (metadata != NULL, NULL);
@@ -490,17 +485,16 @@ lookup_cd (SjMetadata *metadata)
   g_return_val_if_fail (priv->cdrom != NULL, NULL);
   priv->error = NULL; /* TODO: hack */
 
-#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
-  drive = nautilus_burn_drive_monitor_get_drive_for_device (nautilus_burn_get_drive_monitor (),
-                                                            priv->cdrom);
+  if (! nautilus_burn_initialized ()) {
+    nautilus_burn_init ();
+  }
+  monitor = nautilus_burn_get_drive_monitor ();
+  drive = nautilus_burn_drive_monitor_get_drive_for_device (monitor, priv->cdrom);
   if (drive == NULL) {
     return NULL;
   }
   type = nautilus_burn_drive_get_media_type (drive);
   nautilus_burn_drive_unref (drive);
-#else
-  type = nautilus_burn_drive_get_media_type_from_path (priv->cdrom);
-#endif
 
   if (type == NAUTILUS_BURN_MEDIA_TYPE_ERROR) {
     char *msg;
@@ -548,12 +542,12 @@ lookup_cd (SjMetadata *metadata)
       if (g_ascii_strncasecmp (MBI_VARIOUS_ARTIST_ID, data, 64) == 0) {
         album->artist = g_strdup (_("Various"));
       } else {
-        if (data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistName, data, sizeof (data), 1)) {
+        if (*data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistName, data, sizeof (data), 1)) {
           album->artist = g_strdup (data);
         } else {
           album->artist = g_strdup (_("Unknown Artist"));
         }
-        if (data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistSortName, data, sizeof (data), 1)) {
+        if (*data && mb_GetResultData1(priv->mb, MBE_AlbumGetArtistSortName, data, sizeof (data), 1)) {
           album->artist_sortname = g_strdup (data);
         }
       }
@@ -630,7 +624,7 @@ lookup_cd (SjMetadata *metadata)
       if (mb_GetResultData1(priv->mb, MBE_AlbumGetTrackDuration, data, sizeof (data), j)) {
         track->duration = atoi (data) / 1000;
       }
-
+      
       album->tracks = g_list_append (album->tracks, track);
       album->number++;
     }
@@ -648,12 +642,12 @@ lookup_cd (SjMetadata *metadata)
   mb_Query (priv->mb, MBQ_GetCDTOC);
   for (al = albums; al; al = al->next) {
     AlbumDetails *album = al->data;
-
+    
     j = 1;
     for (tl = album->tracks; tl; tl = tl->next) {
       TrackDetails *track = tl->data;
       int sectors;
-
+      
       if (track->duration == 0) {
         sectors = mb_GetResultInt1 (priv->mb, MBE_TOCGetTrackNumSectors, j+1);
         track->duration = get_duration_from_sectors (sectors);

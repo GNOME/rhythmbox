@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2003 Ross Burton <ross@burtonini.com>
  *
  * Sound Juicer - sj-error.c
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * Authors: Ross Burton <ross@burtonini.com>
  */
@@ -25,9 +25,9 @@
 #include "sj-error.h"
 
 GQuark
-sj_error_quark (void)
+sj_error_quark (void) 
 {
-  static GQuark q = 0;
+  static GQuark q = 0; 
   if (q == 0) {
     q = g_quark_from_static_string ("sj-error-quark");
   }

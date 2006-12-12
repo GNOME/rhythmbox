@@ -50,14 +50,14 @@ BUILT_SOURCES =							\
 	$(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) 	\
 	$(NULL)
 
-plugin_DATA = 			\
-	$(BUILT_SOURCES)	\
-	audioscrobbler-ui.xml	\
+plugin_DATA = 					\
+	$(BUILT_SOURCES)			\
+	$(top_srcdir)/plugins/audioscrobbler/audioscrobbler-ui.xml	\
 	$(NULL)
 
-EXTRA_DIST = 			\
-	$(plugin_in_files)	\
-	as-powered.png		\
+EXTRA_DIST = 					\
+	$(plugin_in_files)			\
+	$(top_srcdir)/plugins/audioscrobbler/as-powered.png		\
 	$(NULL)
 
 CLEANFILES = 			\

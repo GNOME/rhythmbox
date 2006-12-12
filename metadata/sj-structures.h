@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2003 Ross Burton <ross@burtonini.com>
  *
  * Sound Juicer - sj-structures.h
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * Authors: Ross Burton <ross@burtonini.com>
  */
@@ -29,23 +29,17 @@
 typedef struct _AlbumDetails AlbumDetails;
 typedef struct _TrackDetails TrackDetails;
 
+
 struct _TrackDetails {
   AlbumDetails *album;
   int number; /* track number */
   char *title;
   char *artist;
-  char* artist_sortname;
+  char* artist_sortname; /* Can be NULL, so fall back onto artist */
   int duration; /* seconds */
   char* track_id;
   char* artist_id;
   GtkTreeIter iter; /* Temporary iterator for internal use */
-};
-
-struct _Date {
-  /* TODO: use GLib date structures? */
-  guint year;
-  guint month;
-  guint day;
 };
 
 struct _AlbumDetails {
