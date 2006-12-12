@@ -1,3 +1,10 @@
+2006-12-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_remove_from_main_list):
+	Re-find the sequence node pointer after emitting the row-deleted
+	signal, as signal handlers may cause it to change.  Fixes #370443.
+
 2006-12-11  James Livingston  <doclivingston@gmail.com>
 
 	* sources/rb-daap-source.c: (connection_auth_cb): fix a code path

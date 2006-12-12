@@ -1167,10 +1167,11 @@ static void
 rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model,
 					    RhythmDBEntry *entry)
 {
-	GSequencePtr ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	GSequencePtr ptr;
 	int index;
 	GtkTreePath *path;
 
+	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	index = g_sequence_ptr_get_position (ptr);
 
 	path = gtk_tree_path_new ();
@@ -1185,6 +1186,10 @@ rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model,
 	/* take temporary ref */
 	rhythmdb_entry_ref (entry);
 
+	/* find the sequence pointer again in case a row-deleted
+	 * signal handler moved it.
+	 */
+	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	g_sequence_remove (ptr);
 	g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
 
