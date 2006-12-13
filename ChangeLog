@@ -1,5 +1,14 @@
 2006-12-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_init),
+	(rhythmdb_query_model_entry_added_cb),
+	(rhythmdb_query_model_entry_changed_cb):
+	Track hidden entries in query models with no query.  Currently unused
+	due to how we structure queries for static playlists, but it fixes the
+	property model unit tests.
+
+2006-12-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* daapsharing/rb-daap-connection.c:
 	(rb_daap_connection_do_something):
 	Request daap.songdiscnumber from the DAAP server.

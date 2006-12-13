@@ -228,6 +228,7 @@ struct RhythmDBQueryModelPrivate
 	GHashTable *reverse_map;
 	GSequence *limited_entries;
 	GHashTable *limited_reverse_map;
+	GHashTable *hidden_entry_map;
 
 	gint pending_update_count;
 
@@ -583,6 +584,11 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 								  (GDestroyNotify)rhythmdb_entry_unref,
 								  NULL);
 
+	model->priv->hidden_entry_map = g_hash_table_new_full (g_direct_hash,
+							       g_direct_equal,
+							       (GDestroyNotify)rhythmdb_entry_unref,
+							       NULL);
+
 	model->priv->reorder_drag_and_drop = FALSE;
 }
 
@@ -834,18 +840,30 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db,
 				     RhythmDBEntry *entry,
 				     RhythmDBQueryModel *model)
 {
-	if (model->priv->query) {
-		if (!model->priv->show_hidden && rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
-			return;
+	int index = -1;
+	gboolean insert = FALSE;
+	if (!model->priv->show_hidden && rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN)) {
+		return;
+	}
 
-		/* check if it's in the base model */
-		if (model->priv->base_model)
-		       if (g_hash_table_lookup (model->priv->base_model->priv->reverse_map, entry) == NULL)
-			       return;
+	/* check if it's in the base model */
+	if (model->priv->base_model) {
+	       if (g_hash_table_lookup (model->priv->base_model->priv->reverse_map, entry) == NULL) {
+		       return;
+	       }
+	}
 
-		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			rhythmdb_query_model_do_insert (model, entry, -1);
-		}
+	if (model->priv->query != NULL) {
+		insert = rhythmdb_evaluate_query (db, model->priv->query, entry);
+	} else {
+		index = GPOINTER_TO_INT (g_hash_table_lookup (model->priv->hidden_entry_map, entry));
+		insert = g_hash_table_remove (model->priv->hidden_entry_map, entry);
+		if (insert)
+			rb_debug ("adding unhidden entry at index %d", index);
+	}
+
+	if (insert) {
+		rhythmdb_query_model_do_insert (model, entry, index);
 	}
 }
 
@@ -890,6 +908,29 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 				       entry, RHYTHMDB_PROP_HIDDEN, &false_val, &true_val);
 			g_value_unset (&true_val);
 			g_value_unset (&false_val);
+		}
+
+		/* if we don't have a query to help us decide, we need to
+		 * track hidden entries that were in this query model,
+		 * so we can add them back in if they become visible again.
+		 * if we have a query, any entry that matches will be added.
+		 */
+		if (model->priv->query == NULL) {
+			GtkTreeIter iter;
+			GtkTreePath *path;
+			gint index;
+
+			/* find the entry's position so we can restore it there
+			 * if it reappears
+			 */
+			g_assert (rhythmdb_query_model_entry_to_iter (model, entry, &iter));
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
+			index = gtk_tree_path_get_indices (path)[0];
+			rb_debug ("adding hidden entry to map with index %d", index);
+
+			g_hash_table_insert (model->priv->hidden_entry_map,
+					     rhythmdb_entry_ref (entry),
+					     GINT_TO_POINTER (index));
 		}
 
 		rhythmdb_query_model_filter_out_entry (model, entry);
