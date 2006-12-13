@@ -33,9 +33,21 @@
 #include <gconf/gconf-client.h>
 #include <musicbrainz/queries.h>
 #include <musicbrainz/mb_c.h>
-#include <nautilus-burn.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include <nautilus-burn-drive.h>
+#ifndef NAUTILUS_BURN_CHECK_VERSION
+#define NAUTILUS_BURN_CHECK_VERSION(a,b,c) FALSE
+#endif
+
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+#include <nautilus-burn.h>
+#endif
+
+#ifndef HAVE_BURN_DRIVE_UNREF
+#define nautilus_burn_drive_unref nautilus_burn_drive_free
+#endif
 
 #include "sj-metadata-musicbrainz.h"
 #include "sj-structures.h"
@@ -465,6 +477,35 @@ get_rdf (SjMetadata *metadata)
   g_free (cdindex);
 }
 
+static NautilusBurnMediaType
+get_drive_media_type (SjMetadata *metadata)
+{
+  SjMetadataMusicbrainzPrivate *priv;
+  NautilusBurnDrive *drive;
+  NautilusBurnMediaType type;
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+  NautilusBurnDriveMonitor *monitor;
+#endif
+
+  priv = SJ_METADATA_MUSICBRAINZ (metadata)->priv;
+#if NAUTILUS_BURN_CHECK_VERSION(2,15,3)
+  if (! nautilus_burn_initialized ()) {
+    nautilus_burn_init ();
+  }
+  monitor = nautilus_burn_get_drive_monitor ();
+  drive = nautilus_burn_drive_monitor_get_drive_for_device (monitor, priv->cdrom);
+#else
+  drive = nautilus_burn_drive_new_from_path (priv->cdrom);
+#endif
+
+  if (drive == NULL) {
+    return NAUTILUS_BURN_MEDIA_TYPE_ERROR;
+  }
+  type = nautilus_burn_drive_get_media_type (drive);
+  nautilus_burn_drive_unref (drive);
+  return type;
+}
+
 static gpointer
 lookup_cd (SjMetadata *metadata)
 {
@@ -475,8 +516,6 @@ lookup_cd (SjMetadata *metadata)
   char data[256];
   int num_albums, i, j;
   NautilusBurnMediaType type;
-  NautilusBurnDriveMonitor *monitor;
-  NautilusBurnDrive *drive;
 
   /* TODO: fire error signal */
   g_return_val_if_fail (metadata != NULL, NULL);
@@ -485,16 +524,7 @@ lookup_cd (SjMetadata *metadata)
   g_return_val_if_fail (priv->cdrom != NULL, NULL);
   priv->error = NULL; /* TODO: hack */
 
-  if (! nautilus_burn_initialized ()) {
-    nautilus_burn_init ();
-  }
-  monitor = nautilus_burn_get_drive_monitor ();
-  drive = nautilus_burn_drive_monitor_get_drive_for_device (monitor, priv->cdrom);
-  if (drive == NULL) {
-    return NULL;
-  }
-  type = nautilus_burn_drive_get_media_type (drive);
-  nautilus_burn_drive_unref (drive);
+  type = get_drive_media_type (metadata);
 
   if (type == NAUTILUS_BURN_MEDIA_TYPE_ERROR) {
     char *msg;
