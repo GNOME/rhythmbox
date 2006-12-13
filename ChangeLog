@@ -1,3 +1,11 @@
+2006-12-13  James Livingston  <doclivingston@gmail.com>
+
+	Patch from Tim Retout  <tim@retout.co.uk>
+
+	* shell/rb-history.c: (rb_history_append):
+	* shell/rb-play-order-random.c: (rb_random_play_order_go_next): fix a
+	problem where appending a song could get the history wrong. Fixes #346287
+
 2006-12-12  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/audioscrobbler/Makefile.am:

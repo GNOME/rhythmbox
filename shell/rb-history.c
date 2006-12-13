@@ -373,12 +373,18 @@ rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 void
 rb_history_append (RBHistory *hist, RhythmDBEntry *entry)
 {
-	GSequencePtr new_node;
+	GSequencePtr new_node, last;
 
 	g_return_if_fail (RB_IS_HISTORY (hist));
 	g_return_if_fail (entry != NULL);
 
-	rb_history_remove_entry (hist, entry);
+	if (entry == g_sequence_ptr_get_data(hist->priv->current)) {
+		rb_history_remove_entry (hist, entry);
+		last = g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq));
+		hist->priv->current = last ? last : g_sequence_get_end_ptr (hist->priv->seq);
+	} else {
+		rb_history_remove_entry (hist, entry);
+	}
 
 	g_sequence_append (hist->priv->seq, entry);
 	new_node = g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq));

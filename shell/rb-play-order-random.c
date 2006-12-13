@@ -351,16 +351,11 @@ rb_random_play_order_go_next (RBPlayOrder* porder)
 	if (entry)
 		rhythmdb_entry_unref (entry);
 
-	g_object_get (rorder, "playing-entry", &entry, NULL);
-	g_assert (entry == NULL || rb_history_current (history) == NULL || entry == rb_history_current (history));
 	if (rb_history_current (history) == NULL)
 		rb_history_go_first (history);
 	else
 		rb_history_go_next (history);
 	rb_play_order_set_playing_entry (porder, rb_history_current (history));
-
-	if (entry)
-		rhythmdb_entry_unref (entry);
 }
 
 static RhythmDBEntry*
