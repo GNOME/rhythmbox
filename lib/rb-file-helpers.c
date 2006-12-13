@@ -899,6 +899,10 @@ rb_uri_append_path (const char *uri, const char *path)
 	char *result;
 
 	vfs_uri = gnome_vfs_uri_new (uri);
+	if (vfs_uri == NULL) {
+		return NULL;
+	}
+
 	full_uri = gnome_vfs_uri_append_path (vfs_uri, path);
 	gnome_vfs_uri_unref (vfs_uri);
 	result = gnome_vfs_uri_to_string (full_uri, GNOME_VFS_URI_HIDE_NONE);
@@ -914,6 +918,10 @@ rb_uri_append_uri (const char *uri, const char *fragment)
 	char *result;
 
 	vfs_uri = gnome_vfs_uri_new (uri);
+	if (vfs_uri == NULL) {
+		return NULL;
+	}
+
 	full_uri = gnome_vfs_uri_append_string (vfs_uri, fragment);
 	gnome_vfs_uri_unref (vfs_uri);
 	result = gnome_vfs_uri_to_string (full_uri, GNOME_VFS_URI_HIDE_NONE);
@@ -929,6 +937,10 @@ rb_uri_get_dir_name (const char *uri)
 	char *dirname;
 
 	vfs_uri = gnome_vfs_uri_new (uri);
+	if (vfs_uri == NULL) {
+		return NULL;
+	}
+
 	dirname = gnome_vfs_uri_extract_dirname (vfs_uri);
 	gnome_vfs_uri_unref (vfs_uri);
 

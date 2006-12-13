@@ -2037,10 +2037,19 @@ rhythmdb_execute_stat (RhythmDB *db,
 		       const char *uri,
 		       RhythmDBEvent *event)
 {
-	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+	GList *uri_list;
+	GnomeVFSURI *vfs_uri;
 
-	GList *uri_list = g_list_append (NULL, vfs_uri);
 	event->real_uri = rb_refstring_new (uri);
+
+	vfs_uri = gnome_vfs_uri_new (uri);
+	if (vfs_uri == NULL) {
+		event->error = make_access_failed_error (uri, GNOME_VFS_ERROR_INVALID_URI);
+		g_async_queue_push (db->priv->event_queue, event);
+		return;
+	}
+
+	uri_list = g_list_append (NULL, vfs_uri);
 
 	g_mutex_lock (db->priv->stat_mutex);
 	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
@@ -2087,17 +2096,22 @@ queue_stat_uri (const char *uri,
 		GnomeVFSURI *vfs_uri;
 
 		vfs_uri = gnome_vfs_uri_new (uri);
-
-		/* construct a list of URIs and a hash table containing
-		 * stat events to fill in and post on the event queue.
-		 */
-		if (g_hash_table_lookup (db->priv->stat_events, vfs_uri)) {
-			g_free (result);
-			gnome_vfs_uri_unref (vfs_uri);
-		} else {
+		if (vfs_uri == NULL) {
 			result->real_uri = rb_refstring_new (uri);
-			g_hash_table_insert (db->priv->stat_events, vfs_uri, result);
-			db->priv->stat_list = g_list_prepend (db->priv->stat_list, vfs_uri);
+			result->error = make_access_failed_error (uri, GNOME_VFS_ERROR_INVALID_URI);
+			g_async_queue_push (db->priv->event_queue, result);
+		} else {
+			/* construct a list of URIs and a hash table containing
+			 * stat events to fill in and post on the event queue.
+			 */
+			if (g_hash_table_lookup (db->priv->stat_events, vfs_uri)) {
+				g_free (result);
+				gnome_vfs_uri_unref (vfs_uri);
+			} else {
+				result->real_uri = rb_refstring_new (uri);
+				g_hash_table_insert (db->priv->stat_events, vfs_uri, result);
+				db->priv->stat_list = g_list_prepend (db->priv->stat_list, vfs_uri);
+			}
 		}
 
 		g_mutex_unlock (db->priv->stat_mutex);
@@ -2136,7 +2150,6 @@ rhythmdb_execute_load (RhythmDB *db,
 		       const char *uri,
 		       RhythmDBEvent *event)
 {
-	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
 	GnomeVFSResult vfsresult;
 	char *resolved;
 
@@ -2167,7 +2180,6 @@ rhythmdb_execute_load (RhythmDB *db,
 		}
 	}
 
-	gnome_vfs_uri_unref (vfs_uri);
 	g_async_queue_push (db->priv->event_queue, event);
 }
 

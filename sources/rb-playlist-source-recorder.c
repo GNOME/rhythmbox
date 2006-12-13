@@ -1530,6 +1530,10 @@ check_dir_has_space (const char *path,
                 return FALSE;
 
         dir_uri = gnome_vfs_uri_new (path);
+	if (dir_uri == NULL) {
+		g_warning (_("Cannot get free space at %s"), path);
+		return FALSE;
+	}
 
         result = gnome_vfs_get_volume_free_space (dir_uri, &free_bytes);
 

@@ -272,6 +272,11 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 		GnomeVFSURI *vfsuri, *parent;
 
 		vfsuri = gnome_vfs_uri_new (uri);
+		if (vfsuri == NULL) {
+			rb_debug ("failed to monitor %s: couldn't create GnomeVFSURI", uri);
+			return;
+		}
+
 		parent = gnome_vfs_uri_get_parent (vfsuri);
 		directory = gnome_vfs_uri_to_string (parent, GNOME_VFS_URI_HIDE_NONE);
 		gnome_vfs_uri_unref (vfsuri);

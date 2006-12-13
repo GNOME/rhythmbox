@@ -1091,6 +1091,12 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	}
 
 	uri = gnome_vfs_uri_new ((const char *)list->data);
+	if (uri == NULL) {
+		/* do something.. */
+		g_slist_free (list);
+		return NULL;
+	}
+
 	g_slist_free (list);
 
 	realpath = filepath_parse_pattern (layout_path, entry);
@@ -1274,6 +1280,12 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 		      "entry-type", &entry_type,
 		      NULL);
 	uri = gnome_vfs_uri_new (path);
+	if (uri == NULL) {
+		g_object_unref (shell);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		return;
+	}
+
 	name = gnome_vfs_uri_extract_short_name (uri);
 	gnome_vfs_uri_unref (uri);
 
