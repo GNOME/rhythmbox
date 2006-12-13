@@ -594,10 +594,8 @@ rb_static_playlist_source_add_uri_list (RBStaticPlaylistSource *source,
 		char *uri = (char *) i->data;
 		uri_list = g_list_prepend (uri_list, rb_canonicalise_uri (uri));
 	}
+
 	uri_list = g_list_reverse (uri_list);
-
-	rb_list_deep_free (list);
-
 	if (uri_list == NULL)
 		return;
 
