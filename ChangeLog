@@ -1,5 +1,11 @@
 2006-12-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* daapsharing/rb-daap-connection.c:
+	(rb_daap_connection_do_something):
+	Request daap.songdiscnumber from the DAAP server.
+
+2006-12-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* sources/rb-static-playlist-source.c:
 	(rb_static_playlist_source_add_uri_list):
 	Don't free the URI list twice.  Fixes #380947.

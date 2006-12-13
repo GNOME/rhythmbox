@@ -1544,7 +1544,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					"daap.songartist,daap.daap.songgenre,daap.songsize,"
 					"daap.songtime,daap.songtrackcount,daap.songtracknumber,"
 					"daap.songyear,daap.songformat,daap.songgenre,"
-					"daap.songbitrate",
+					"daap.songbitrate,daap.songdiscnumber",
 					priv->database_id,
 					priv->session_id,
 					priv->revision_number);
