@@ -378,7 +378,8 @@ rb_history_append (RBHistory *hist, RhythmDBEntry *entry)
 	g_return_if_fail (RB_IS_HISTORY (hist));
 	g_return_if_fail (entry != NULL);
 
-	if (entry == g_sequence_ptr_get_data(hist->priv->current)) {
+	if (g_sequence_ptr_is_end (hist->priv->current) == FALSE &&
+	    entry == g_sequence_ptr_get_data (hist->priv->current)) {
 		rb_history_remove_entry (hist, entry);
 		last = g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq));
 		hist->priv->current = last ? last : g_sequence_get_end_ptr (hist->priv->seq);
