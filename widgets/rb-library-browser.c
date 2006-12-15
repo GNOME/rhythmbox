@@ -307,7 +307,7 @@ update_browser_property_visibilty (RhythmDBPropType prop,
 			gtk_widget_show (GTK_WIDGET (view));
 		} else {
 			gtk_widget_hide (GTK_WIDGET (view));
-			rb_property_view_reset (view);
+			rb_property_view_set_selection (view, NULL);
 		}
 	}
 }

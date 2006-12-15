@@ -1,5 +1,12 @@
 2006-12-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* widgets/rb-library-browser.c:
+	(update_browser_property_visibilty):
+	Use rb_property_view_set_selection instead of rb_property_view_reset;
+	_reset breaks the query chain.  Fixes #367646.
+
+2006-12-15  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-history.c: (rb_history_append):
 	Fix critical on first insertion.
 
