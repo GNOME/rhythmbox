@@ -1862,7 +1862,6 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 						  rb_shell_player_get_playing_source (shell->priv->player_shell));
 	} else {
 		RBSource *source;
-		RBEntryView *songs;
 		RhythmDBEntry *entry;
 		RhythmDBEntryType entry_type;
 
@@ -1876,12 +1875,19 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 
 		entry_type = rhythmdb_entry_get_entry_type (entry);
 		source = rb_shell_get_source_by_entry_type (shell, entry_type);
-		songs = rb_source_get_entry_view (source);
+		if (source != NULL) {
+			RBEntryViewState state;
+			RBEntryView *songs;
 
-		rb_entry_view_set_state (songs, from_queue ? RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_NOT_PLAYING);
+			songs = rb_source_get_entry_view (source);
+
+			state = from_queue ? RB_ENTRY_VIEW_PLAYING : RB_ENTRY_VIEW_NOT_PLAYING;
+			rb_entry_view_set_state (songs, state);
+		}
+		rhythmdb_entry_unref (entry);
+
 		rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
 						  rb_shell_player_get_active_source (shell->priv->player_shell));
-		rhythmdb_entry_unref (entry);
 	}
 }
 

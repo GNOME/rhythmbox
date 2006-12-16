@@ -1,3 +1,9 @@
+2006-12-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell.c: (rb_shell_playing_from_queue_cb):
+	Don't crash if the type of the playing entry doesn't map to a source.
+	Fixes #366222.
+
 2006-12-16  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Alex Lancaster  <alexl@users.sourceforge.net>
