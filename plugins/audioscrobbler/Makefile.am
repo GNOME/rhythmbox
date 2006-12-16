@@ -57,6 +57,7 @@ plugin_DATA = 					\
 
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
+	$(top_srcdir)/plugins/audioscrobbler/audioscrobbler-ui.xml	\
 	$(top_srcdir)/plugins/audioscrobbler/as-powered.png		\
 	$(NULL)
 
