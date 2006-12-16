@@ -1261,7 +1261,7 @@ impl_activate (RBSource *source)
 static gboolean
 impl_show_popup (RBSource *source)
 {
-	_rb_source_show_popup (source, "/LastfmSourcePopup");
+	/*_rb_source_show_popup (source, "/LastfmSourcePopup");*/
 	return TRUE;
 }
 
