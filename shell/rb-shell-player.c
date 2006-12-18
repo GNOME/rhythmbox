@@ -1977,8 +1977,10 @@ rb_shell_player_sync_replaygain (RBShellPlayer *player,
              	entry_album_peak = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_ALBUM_PEAK);
 	}
 
-	rb_player_set_replaygain (player->priv->mmplayer, entry_track_gain,
-				  entry_track_peak, entry_album_gain, entry_album_peak);
+	if (eel_gconf_get_boolean (CONF_USE_REPLAYGAIN)) {
+		rb_player_set_replaygain (player->priv->mmplayer, entry_track_gain,
+					  entry_track_peak, entry_album_gain, entry_album_peak);
+	}
 }
 
 gboolean

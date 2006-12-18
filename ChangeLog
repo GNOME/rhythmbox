@@ -1,3 +1,13 @@
+2006-12-18  James Livingston  <doclivingston@gmail.com>
+
+	patch by: James M  <jamesm@bluebottle.com>
+
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* shell/rb-shell-player.c: (rb_shell_player_sync_replaygain): Add a
+	gconf option for turning ReplayGain adjustments on and off, and have
+	it off by default. Fixes #145103
+
 2006-12-16  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c: (impl_show_popup): don't

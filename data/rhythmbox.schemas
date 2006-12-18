@@ -78,6 +78,17 @@
           <long>If true, the locations listed in /apps/rhythmbox/library_locations are monitored for new files</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/use_replaygain</key>
+        <applyto>/apps/rhythmbox/use_replaygain</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+          <short>Whether to use replay gain</short>
+          <long>If true, the replay gain will be used</long>
+        </locale>
+      </schema>
 
       <schema>
         <key>/schemas/apps/rhythmbox/state/window_visible</key>

@@ -63,6 +63,7 @@ G_BEGIN_DECLS
 #define CONF_LIBRARY_LAYOUT_PATH	CONF_PREFIX "/library_layout_path"
 #define CONF_LIBRARY_LAYOUT_FILENAME	CONF_PREFIX "/library_layout_filename"
 #define CONF_LIBRARY_PREFERRED_FORMAT	CONF_PREFIX "/library_preferred_format"
+#define CONF_USE_REPLAYGAIN	CONF_PREFIX "/use_replaygain"
 
 #define CONF_PLUGINS_PREFIX		CONF_PREFIX "/plugins"
 #define CONF_PLUGIN_DISABLE_USER	CONF_PLUGINS_PREFIX "/no_user_plugins"
