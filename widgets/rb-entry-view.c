@@ -2072,16 +2072,14 @@ rb_entry_view_get_time_date_column_sample ()
 	 */
 
 	if (sample == NULL) {
-				/*    s  m  h   d  M    Y dw   dY  x */
-		struct tm someday = { 0, 0, 0, 30, 9, 100, 6, 274, 0};
+ 		time_t then;
 
-		/* Translators:  Please keep the translated date format
-		 * compact, and avoid variable-width items such as month and
-		 * day names wherever possible.  This allows us to disable
-		 * column autosizing, which makes the Rhythmbox UI much faster.
-		 */
-		sample = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &someday);
-	}
+ 		/* A reasonable estimate of the widest friendly date
+ 		   is "Yesterday NN:NN PM" */
+ 		then = time (NULL) - 86400;
+ 		sample = rb_utf_friendly_time (then);
+  	}
+
 	return sample;
 }
 

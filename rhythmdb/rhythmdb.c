@@ -2883,13 +2883,9 @@ static void
 rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 			      guint propid)
 {
-	static const char *format;
 	static const char *never;
 	char *val;
 
-	/* PERFORMANCE: doing these lookups every call creates a noticable slowdown */
-	if (format == NULL)
-		format = _("%Y-%m-%d %H:%M");
 	if (never == NULL)
 		never = _("Never");
 
@@ -2905,7 +2901,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 		if (entry->last_played == 0) {
 			new = rb_refstring_new (never);
 		} else {
-			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_played));
+			val = rb_utf_friendly_time (entry->last_played);
 			new = rb_refstring_new (val);
 			g_free (val);
 		}
@@ -2928,9 +2924,13 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 			break;
 
 		old = g_atomic_pointer_get (&entry->first_seen_str);
-		val = eel_strdup_strftime (format, localtime ((glong*)&entry->first_seen));
-		new = rb_refstring_new (val);
-		g_free (val);
+ 		if (entry->first_seen == 0) {
+			new = rb_refstring_new (never);
+ 		} else {
+ 			val = rb_utf_friendly_time (entry->first_seen);
+ 			new = rb_refstring_new (val);
+ 			g_free (val);
+ 		}
 
 		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new)) {
 			if (old != NULL) {
@@ -2952,7 +2952,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 		old = g_atomic_pointer_get (&entry->last_seen_str);
 		/* only store last seen time as a string for hidden entries */
 		if (entry->flags & RHYTHMDB_ENTRY_HIDDEN) {
-			val = eel_strdup_strftime (format, localtime ((glong*)&entry->last_seen));
+			val = rb_utf_friendly_time (entry->last_seen);
 			new = rb_refstring_new (val);
 			g_free (val);
 		} else {

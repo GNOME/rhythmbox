@@ -1,3 +1,15 @@
+2006-12-19  William Jon McCann  <mccann@jhu.edu>
+
+	* lib/rb-cut-and-paste-code.c:
+	Remove trailing whitespace.
+
+	* rhythmdb/rhythmdb.c:
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_post_date_cell_data_func):
+	* widgets/rb-entry-view.c:
+	(rb_entry_view_get_time_date_column_sample):
+	Use a friendlier time/date format.  Fixes #324534
+
 ============ Version 0.9.7
 
 2006-12-18  James Livingston  <doclivingston@gmail.com>

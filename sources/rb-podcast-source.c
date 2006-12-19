@@ -1633,11 +1633,7 @@ rb_podcast_source_post_date_cell_data_func (GtkTreeViewColumn *column,
         if (value == 0) {
 		str = g_strdup (_("Unknown"));
 	} else {
-		struct tm time_tm;
-		time_t time = (time_t) value;
-
-		localtime_r (&time, &time_tm);
-		str = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), &time_tm);
+		str = rb_utf_friendly_time (value);
 	}
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);

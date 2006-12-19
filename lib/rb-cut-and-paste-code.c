@@ -43,7 +43,7 @@ eel_create_colorized_pixbuf (GdkPixbuf *src,
 	guchar *pixsrc;
 	guchar *pixdest;
 	GdkPixbuf *dest;
-						
+
 	g_return_val_if_fail (gdk_pixbuf_get_colorspace (src) == GDK_COLORSPACE_RGB, NULL);
 	g_return_val_if_fail ((!gdk_pixbuf_get_has_alpha (src)
 		       	      && gdk_pixbuf_get_n_channels (src) == 3)
@@ -68,13 +68,13 @@ eel_create_colorized_pixbuf (GdkPixbuf *src,
 	for (i = 0; i < height; i++) {
 		pixdest = target_pixels + i*dst_row_stride;
 		pixsrc = original_pixels + i*src_row_stride;
-		for (j = 0; j < width; j++) {		
+		for (j = 0; j < width; j++) {
 			*pixdest++ = (*pixsrc++ * red_value) >> 8;
 			*pixdest++ = (*pixsrc++ * green_value) >> 8;
 			*pixdest++ = (*pixsrc++ * blue_value) >> 8;
 			if (has_alpha) {
 				*pixdest++ = *pixsrc++;
-			}	
+			}
 		}
 	}
 	return dest;
@@ -105,7 +105,7 @@ eel_create_colorized_pixbuf (GdkPixbuf *src,
  * @format: format string to pass to strftime. See strftime documentation
  * for details.
  * @time_pieces: date/time, in struct format.
- * 
+ *
  * Return value: Newly allocated string containing the formatted time.
  **/
 char *
@@ -124,7 +124,7 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 	 * so convert to locale encoding which strftime uses */
 	converted = g_locale_from_utf8 (format, -1, NULL, NULL, NULL);
 	g_return_val_if_fail (converted != NULL, NULL);
-	
+
 	string = g_string_new ("");
 	remainder = converted;
 
@@ -174,8 +174,8 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 				g_warning ("Unfinished %%%c modifier passed to eel_strdup_strftime", modifier);
 				break;
 			}
-		} 
-		
+		}
+
 		if (strchr (C_STANDARD_STRFTIME_CHARACTERS, *remainder) == NULL) {
 			g_warning ("eel_strdup_strftime does not support "
 				   "non-standard escape code %%%c",
@@ -233,7 +233,7 @@ eel_strdup_strftime (const char *format, struct tm *time_pieces)
 		/* Add this piece. */
 		g_string_append (string, piece);
 	}
-	
+
 	/* Convert the string back into utf-8. */
 	result = g_locale_to_utf8 (string->str, -1, NULL, NULL, NULL);
 
@@ -253,12 +253,12 @@ rb_utf_friendly_time (time_t date)
 	const char *format = NULL;
 	char *str = NULL;
 	gboolean done = FALSE;
-	
+
 	nowdate = time (NULL);
 
 	if (date == 0)
 		return NULL;
-	
+
 	localtime_r (&date, &then);
 	localtime_r (&nowdate, &now);
 
@@ -436,7 +436,6 @@ rb_utf8_collate_key_for_filename (const gchar *str, gssize len)
 }
 #endif
 
-
 /* Copied from eel-vfs-extensions.c from eel CVS HEAD on 2004-05-09
  * This function is (C) 1999, 2000 Eazel, Inc.
  */
@@ -476,4 +475,3 @@ rb_make_valid_utf8 (const char *name, char substitute)
 
 	return g_string_free (string, FALSE);
 }
-
