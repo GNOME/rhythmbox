@@ -18,8 +18,6 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)
 
 librhythmdb_la_SOURCES =				\
-	gsequence.c					\
-	gsequence.h					\
 	rb-refstring.c					\
 	rb-refstring.h					\
 	rhythmdb.h					\

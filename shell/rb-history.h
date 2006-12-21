@@ -69,10 +69,6 @@ RBHistory *		rb_history_new		(gboolean truncate_on_play,
 						 GFunc destroyer,
 						 gpointer destroy_userdata);
 
-RBHistory *		rb_history_clone	(RBHistory *orig,
-						 GFunc callback,
-						 gpointer userdata);
-
 void			rb_history_set_destroy_notify	(RBHistory *hist,
 							 GFunc destroyer,
 							 gpointer destroy_userdata);

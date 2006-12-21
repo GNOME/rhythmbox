@@ -14,6 +14,8 @@ librb_la_SOURCES =					\
 	rb-debug.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
+	eggsequence.c					\
+	eggsequence.h					\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
 	rb-glade-helpers.c				\

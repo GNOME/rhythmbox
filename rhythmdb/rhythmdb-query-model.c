@@ -32,7 +32,7 @@
 
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
-#include "gsequence.h"
+#include "eggsequence.h"
 #include "rb-tree-dnd.h"
 #include "rb-marshal.h"
 #include "rb-util.h"
@@ -224,9 +224,9 @@ struct RhythmDBQueryModelPrivate
 	glong total_duration;
 	guint64 total_size;
 
-	GSequence *entries;
+	EggSequence *entries;
 	GHashTable *reverse_map;
-	GSequence *limited_entries;
+	EggSequence *limited_entries;
 	GHashTable *limited_reverse_map;
 	GHashTable *hidden_entry_map;
 
@@ -572,13 +572,13 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 
 	model->priv->stamp = g_random_int ();
 
-	model->priv->entries = g_sequence_new (NULL);
+	model->priv->entries = egg_sequence_new (NULL);
 	model->priv->reverse_map = g_hash_table_new_full (g_direct_hash,
 							  g_direct_equal,
 							  (GDestroyNotify)rhythmdb_entry_unref,
 							  NULL);
 
-	model->priv->limited_entries = g_sequence_new (NULL);
+	model->priv->limited_entries = egg_sequence_new (NULL);
 	model->priv->limited_reverse_map = g_hash_table_new_full (g_direct_hash,
 								  g_direct_equal,
 								  (GDestroyNotify)rhythmdb_entry_unref,
@@ -676,10 +676,10 @@ rhythmdb_query_model_finalize (GObject *object)
 	rb_debug ("finalizing query model %p", object);
 
 	g_hash_table_destroy (model->priv->reverse_map);
-	g_sequence_free (model->priv->entries);
+	egg_sequence_free (model->priv->entries);
 
 	g_hash_table_destroy (model->priv->limited_reverse_map);
-	g_sequence_free (model->priv->limited_entries);
+	egg_sequence_free (model->priv->limited_entries);
 
 	if (model->priv->query)
 		rhythmdb_query_free (model->priv->query);
@@ -726,28 +726,24 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 			     "db", db, NULL);
 }
 
+static void
+_copy_contents_foreach_cb (RhythmDBEntry *entry, RhythmDBQueryModel *dest)
+{
+	if (dest->priv->query == NULL ||
+	    rhythmdb_evaluate_query (dest->priv->db, dest->priv->query, entry)) {
+		if (dest->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
+			rhythmdb_query_model_do_insert (dest, entry, -1);
+	}
+}
+
 void
 rhythmdb_query_model_copy_contents (RhythmDBQueryModel *dest,
 				    RhythmDBQueryModel *src)
 {
-	GSequencePtr ptr, next;
-	RhythmDBEntry *entry;
-
 	if (src->priv->entries == NULL)
 		return;
 
-	ptr = g_sequence_get_begin_ptr (src->priv->entries);
-	while (!g_sequence_ptr_is_end (ptr)) {
-		next = g_sequence_ptr_next (ptr);
-		entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
-		if (dest->priv->query == NULL ||
-		    rhythmdb_evaluate_query (dest->priv->db, dest->priv->query, entry)) {
-			if (dest->priv->show_hidden || (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN) == FALSE))
-				rhythmdb_query_model_do_insert (dest, entry, -1);
-		}
-
-		ptr = next;
-	}
+	egg_sequence_foreach (src->priv->entries, (GFunc)_copy_contents_foreach_cb, dest);
 }
 
 void
@@ -1125,7 +1121,7 @@ rhythmdb_query_model_insert_into_main_list (RhythmDBQueryModel *model,
 					    RhythmDBEntry *entry,
 					    gint index)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
 	/* take reference; released when removed from hash */
 	rhythmdb_entry_ref (entry);
@@ -1145,19 +1141,19 @@ rhythmdb_query_model_insert_into_main_list (RhythmDBQueryModel *model,
 			sort_data = model->priv->sort_data;
 		}
 
-		ptr = g_sequence_insert_sorted (model->priv->entries,
+		ptr = egg_sequence_insert_sorted (model->priv->entries,
 						entry,
 						sort_func,
 						sort_data);
 	} else {
 		if (index == -1) {
-			ptr = g_sequence_get_end_ptr (model->priv->entries);
+			ptr = egg_sequence_get_end_iter (model->priv->entries);
 		} else {
-			ptr = g_sequence_get_ptr_at_pos (model->priv->entries, index);
+			ptr = egg_sequence_get_iter_at_pos (model->priv->entries, index);
 		}
 
-		g_sequence_insert (ptr, entry);
-		ptr = g_sequence_ptr_prev (ptr);
+		egg_sequence_insert_before (ptr, entry);
+		ptr = egg_sequence_iter_prev (ptr);
 	}
 
 	/* the hash now owns this reference to the entry */
@@ -1171,7 +1167,7 @@ static void
 rhythmdb_query_model_insert_into_limited_list (RhythmDBQueryModel *model,
 					       RhythmDBEntry *entry)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
 	/* take reference; released when removed from hash */
 	rhythmdb_entry_ref (entry);
@@ -1191,13 +1187,13 @@ rhythmdb_query_model_insert_into_limited_list (RhythmDBQueryModel *model,
 			sort_data = model->priv->sort_data;
 		}
 
-		ptr = g_sequence_insert_sorted (model->priv->limited_entries, entry,
+		ptr = egg_sequence_insert_sorted (model->priv->limited_entries, entry,
 						sort_func,
 						sort_data);
 	} else {
-		ptr = g_sequence_get_end_ptr (model->priv->limited_entries);
-		g_sequence_insert (ptr, entry);
-		ptr = g_sequence_ptr_prev (ptr);
+		ptr = egg_sequence_get_end_iter (model->priv->limited_entries);
+		egg_sequence_insert_before (ptr, entry);
+		ptr = egg_sequence_iter_prev (ptr);
 	}
 
 	/* the hash now owns this reference to the entry */
@@ -1208,12 +1204,12 @@ static void
 rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model,
 					    RhythmDBEntry *entry)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 	int index;
 	GtkTreePath *path;
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-	index = g_sequence_ptr_get_position (ptr);
+	index = egg_sequence_iter_get_position (ptr);
 
 	path = gtk_tree_path_new ();
 	gtk_tree_path_append_index (path, index);
@@ -1231,7 +1227,7 @@ rhythmdb_query_model_remove_from_main_list (RhythmDBQueryModel *model,
 	 * signal handler moved it.
 	 */
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-	g_sequence_remove (ptr);
+	egg_sequence_remove (ptr);
 	g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
 
 	g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[POST_ENTRY_DELETE], 0, entry);
@@ -1244,11 +1240,11 @@ static void
 rhythmdb_query_model_remove_from_limited_list (RhythmDBQueryModel *model,
 					       RhythmDBEntry *entry)
 {
-	GSequencePtr ptr = g_hash_table_lookup (model->priv->limited_reverse_map, entry);
+	EggSequenceIter *ptr = g_hash_table_lookup (model->priv->limited_reverse_map, entry);
 
 	/* take temporary ref */
 	rhythmdb_entry_ref (entry);
-	g_sequence_remove (ptr);
+	egg_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->limited_reverse_map, entry);
 	/* release temporary ref */
 	rhythmdb_entry_unref (entry);
@@ -1258,12 +1254,12 @@ static void
 rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 {
 	RhythmDBEntry *entry;
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
 	/* make it fit inside the limits */
 	while (!rhythmdb_query_model_within_limit (model, NULL)) {
-		ptr = g_sequence_ptr_prev (g_sequence_get_end_ptr (model->priv->entries));
-		entry = (RhythmDBEntry*) g_sequence_ptr_get_data (ptr);
+		ptr = egg_sequence_iter_prev (egg_sequence_get_end_iter (model->priv->entries));
+		entry = (RhythmDBEntry*) egg_sequence_get (ptr);
 
 		/* take temporary ref */
 		rhythmdb_entry_ref (entry);
@@ -1278,10 +1274,10 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 		GtkTreePath *path;
 		GtkTreeIter iter;
 
-		ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
-		if (!ptr || ptr == g_sequence_get_end_ptr (model->priv->limited_entries))
+		ptr = egg_sequence_get_begin_iter (model->priv->limited_entries);
+		if (!ptr || ptr == egg_sequence_get_end_iter (model->priv->limited_entries))
 			break;
-		entry = (RhythmDBEntry*) g_sequence_ptr_get_data (ptr);
+		entry = (RhythmDBEntry*) egg_sequence_get (ptr);
 		if (!entry)
 			break;
 
@@ -1321,7 +1317,7 @@ rhythmdb_query_model_emit_reorder (RhythmDBQueryModel *model,
 		return FALSE;
 	}
 
-	length = g_sequence_get_length (model->priv->entries);
+	length = egg_sequence_get_length (model->priv->entries);
 	reorder_map = malloc (length * sizeof(gint));
 
 	if (new_pos > old_pos) {
@@ -1359,7 +1355,7 @@ static gboolean
 rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model,
 				 RhythmDBEntry *entry)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 	int old_pos, new_pos;
 	GtkTreePath *path;
 	GtkTreeIter iter;
@@ -1380,10 +1376,10 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model,
 		sort_data = model->priv->sort_data;
 	}
 
-	ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
+	ptr = egg_sequence_get_begin_iter (model->priv->limited_entries);
 
-	if (ptr != NULL && !g_sequence_ptr_is_end (ptr)) {
-		RhythmDBEntry *first_limited = g_sequence_ptr_get_data (ptr);
+	if (ptr != NULL && !egg_sequence_iter_is_end (ptr)) {
+		RhythmDBEntry *first_limited = egg_sequence_get (ptr);
 		int cmp = (sort_func) (entry, first_limited, sort_data);
 
 		if (cmp > 0) {
@@ -1412,13 +1408,13 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model,
 
 	/* it may have moved, check for a re-order */
 	g_hash_table_remove (model->priv->reverse_map, entry);
-	old_pos = g_sequence_ptr_get_position (ptr);
-	g_sequence_remove (ptr);
+	old_pos = egg_sequence_iter_get_position (ptr);
+	egg_sequence_remove (ptr);
 
-	ptr = g_sequence_insert_sorted (model->priv->entries, entry,
+	ptr = egg_sequence_insert_sorted (model->priv->entries, entry,
 					sort_func,
 					sort_data);
-	new_pos = g_sequence_ptr_get_position (ptr);
+	new_pos = egg_sequence_iter_get_position (ptr);
 
 	/* the hash now owns this reference to the entry */
 	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
@@ -1431,7 +1427,7 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 				RhythmDBEntry *entry,
 				gint index)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 	GtkTreePath *path;
 	GtkTreeIter iter;
 
@@ -1471,7 +1467,7 @@ static void
 rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
 				       RhythmDBEntry *entry)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	if (ptr != NULL) {
@@ -1493,15 +1489,15 @@ rhythmdb_query_model_move_entry (RhythmDBQueryModel *model,
 				 RhythmDBEntry *entry,
 				 gint index)
 {
-	GSequencePtr ptr;
-	GSequencePtr nptr;
+	EggSequenceIter *ptr;
+	EggSequenceIter *nptr;
 	gint old_pos;
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	if (ptr == NULL)
 		return;
 
-	nptr = g_sequence_get_ptr_at_pos (model->priv->entries, index);
+	nptr = egg_sequence_get_iter_at_pos (model->priv->entries, index);
 	if ((nptr == NULL) || (ptr == nptr))
 		return;
 
@@ -1509,13 +1505,13 @@ rhythmdb_query_model_move_entry (RhythmDBQueryModel *model,
 	rhythmdb_entry_ref (entry);
 
 	/* remove from old position */
-	old_pos = g_sequence_ptr_get_position (ptr);
-	g_sequence_remove (ptr);
+	old_pos = egg_sequence_iter_get_position (ptr);
+	egg_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, entry);
 
 	/* insert into new position */
-	g_sequence_insert (nptr, entry);
-	ptr = g_sequence_ptr_prev (nptr);
+	egg_sequence_insert_before (nptr, entry);
+	ptr = egg_sequence_iter_prev (nptr);
 
 	/* the hash now owns this reference to the entry */
 	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
@@ -1551,7 +1547,7 @@ rhythmdb_query_model_entry_to_iter (RhythmDBQueryModel *model,
 				    RhythmDBEntry *entry,
 				    GtkTreeIter *iter)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 
@@ -1658,7 +1654,7 @@ rhythmdb_query_model_drag_data_delete (RbTreeDragSource *dragsource,
 
 			if (path) {
 				if (rhythmdb_query_model_get_iter (treemodel, &iter, path)) {
-					entry = g_sequence_ptr_get_data (iter.user_data);
+					entry = egg_sequence_get (iter.user_data);
 					rhythmdb_query_model_remove_entry (model, entry);
 				}
 				gtk_tree_path_free (path);
@@ -1701,7 +1697,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 
 		gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 
-		entry = g_sequence_ptr_get_data (iter.user_data);
+		entry = egg_sequence_get (iter.user_data);
 
 		if (need_newline)
 			g_string_append (data, "\r\n");
@@ -1774,7 +1770,7 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 
 	if (selection_data->format == 8 && selection_data->length >= 0) {
 		GtkTreeIter iter;
-		GSequencePtr ptr;
+		EggSequenceIter *ptr;
 		char **strv;
 		RhythmDBEntry *entry;
 		gboolean uri_list;
@@ -1785,15 +1781,15 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 		strv = g_strsplit ((char *) selection_data->data, "\r\n", -1);
 
 		if (dest == NULL || !rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
-			ptr = g_sequence_get_end_ptr (model->priv->entries);
+			ptr = egg_sequence_get_end_iter (model->priv->entries);
 		else
 			ptr = iter.user_data;
 
 		if (pos == GTK_TREE_VIEW_DROP_AFTER)
-			ptr = g_sequence_ptr_next (ptr);
+			ptr = egg_sequence_iter_next (ptr);
 
 		for (; strv[i]; i++) {
-			GSequencePtr tem_ptr;
+			EggSequenceIter *tem_ptr;
 			GtkTreeIter tem_iter;
 
 			if (g_utf8_strlen (strv[i], -1) == 0)
@@ -1804,10 +1800,10 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 				int pos;
 
 				if (uri_list) {
-					if (g_sequence_ptr_is_end (ptr))
+					if (egg_sequence_iter_is_end (ptr))
 						pos = -1;
 					else
-						pos = g_sequence_ptr_get_position (ptr);
+						pos = egg_sequence_iter_get_position (ptr);
 
 					g_signal_emit (G_OBJECT (model),
 						       rhythmdb_query_model_signals[NON_ENTRY_DROPPED],
@@ -1816,7 +1812,7 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 					rb_debug ("got drop with entry id %s, but can't find the entry", strv[i]);
 				}
 			} else {
-				GSequencePtr old_ptr;
+				EggSequenceIter *old_ptr;
 				GtkTreePath *tem_path;
 				gint old_pos = 0;
 				gint new_pos;
@@ -1835,17 +1831,17 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 				if (old_ptr) {
 					model->priv->reorder_drag_and_drop = TRUE;
 
-					old_pos = g_sequence_ptr_get_position (old_ptr);
-					g_sequence_remove (old_ptr);
+					old_pos = egg_sequence_iter_get_position (old_ptr);
+					egg_sequence_remove (old_ptr);
 					g_assert (g_hash_table_remove (model->priv->reverse_map, entry));
 				} else {
 					model->priv->reorder_drag_and_drop = FALSE;
 				}
 
-				g_sequence_insert (ptr, entry);
+				egg_sequence_insert_before (ptr, entry);
 
-				tem_ptr = g_sequence_ptr_prev (ptr);
-				new_pos = g_sequence_ptr_get_position (tem_ptr);
+				tem_ptr = egg_sequence_iter_prev (ptr);
+				new_pos = egg_sequence_iter_get_position (tem_ptr);
 
 				tem_iter.stamp = model->priv->stamp;
 				tem_iter.user_data = tem_ptr;
@@ -1981,14 +1977,14 @@ rhythmdb_query_model_get_iter (GtkTreeModel *tree_model,
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (tree_model);
 	guint index;
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
 	index = gtk_tree_path_get_indices (path)[0];
 
-	if (index >= g_sequence_get_length (model->priv->entries))
+	if (index >= egg_sequence_get_length (model->priv->entries))
 		return FALSE;
 
-	ptr = g_sequence_get_ptr_at_pos (model->priv->entries, index);
+	ptr = egg_sequence_get_iter_at_pos (model->priv->entries, index);
 	g_assert (ptr);
 
 	iter->stamp = model->priv->stamp;
@@ -2006,11 +2002,11 @@ rhythmdb_query_model_get_path (GtkTreeModel *tree_model,
 
 	g_return_val_if_fail (iter->stamp == model->priv->stamp, NULL);
 
-	if (g_sequence_ptr_is_end (iter->user_data))
+	if (egg_sequence_iter_is_end (iter->user_data))
 		return NULL;
 
 	path = gtk_tree_path_new ();
-	gtk_tree_path_append_index (path, g_sequence_ptr_get_position (iter->user_data));
+	gtk_tree_path_append_index (path, egg_sequence_iter_get_position (iter->user_data));
 	return path;
 }
 
@@ -2023,10 +2019,11 @@ rhythmdb_query_model_get_value (GtkTreeModel *tree_model,
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (tree_model);
 	RhythmDBEntry *entry;
 
-	g_return_if_fail (!g_sequence_ptr_is_end (iter->user_data));
+	/* this is done internally by eggsequence anyway
+	g_return_if_fail (!egg_sequence_iter_is_end (iter->user_data));*/
 	g_return_if_fail (model->priv->stamp == iter->stamp);
 
-	entry = g_sequence_ptr_get_data (iter->user_data);
+	entry = egg_sequence_get (iter->user_data);
 
 	switch (column) {
 	case 0:
@@ -2035,7 +2032,7 @@ rhythmdb_query_model_get_value (GtkTreeModel *tree_model,
 		break;
 	case 1:
 		g_value_init (value, G_TYPE_INT);
-		g_value_set_int (value, g_sequence_ptr_get_position (iter->user_data)+1);
+		g_value_set_int (value, egg_sequence_iter_get_position (iter->user_data)+1);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -2050,9 +2047,9 @@ rhythmdb_query_model_iter_next (GtkTreeModel  *tree_model,
 
 	g_return_val_if_fail (iter->stamp == model->priv->stamp, FALSE);
 
-	iter->user_data = g_sequence_ptr_next (iter->user_data);
+	iter->user_data = egg_sequence_iter_next (iter->user_data);
 
-	return !g_sequence_ptr_is_end (iter->user_data);
+	return !egg_sequence_iter_is_end (iter->user_data);
 }
 
 static gboolean
@@ -2065,11 +2062,11 @@ rhythmdb_query_model_iter_children (GtkTreeModel *tree_model,
 	if (parent != NULL)
 		return FALSE;
 
-	if (g_sequence_get_length (model->priv->entries) == 0)
+	if (egg_sequence_get_length (model->priv->entries) == 0)
 		return FALSE;
 
 	iter->stamp = model->priv->stamp;
-	iter->user_data = g_sequence_get_begin_ptr (model->priv->entries);
+	iter->user_data = egg_sequence_get_begin_iter (model->priv->entries);
 
 	return TRUE;
 }
@@ -2088,7 +2085,7 @@ rhythmdb_query_model_iter_n_children (GtkTreeModel *tree_model,
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (tree_model);
 
 	if (iter == NULL)
-		return g_sequence_get_length (model->priv->entries);
+		return egg_sequence_get_length (model->priv->entries);
 
 	g_return_val_if_fail (model->priv->stamp == iter->stamp, -1);
 
@@ -2102,14 +2099,14 @@ rhythmdb_query_model_iter_nth_child (GtkTreeModel *tree_model,
 				     gint n)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (tree_model);
-	GSequencePtr child;
+	EggSequenceIter *child;
 
 	if (parent)
 		return FALSE;
 
-	child = g_sequence_get_ptr_at_pos (model->priv->entries, n);
+	child = egg_sequence_get_iter_at_pos (model->priv->entries, n);
 
-	if (g_sequence_ptr_is_end (child))
+	if (egg_sequence_iter_is_end (child))
 		return FALSE;
 
 	iter->stamp = model->priv->stamp;
@@ -2140,30 +2137,30 @@ rhythmdb_query_model_compute_status_normal (RhythmDBQueryModel *model,
 
 static void
 apply_updated_entry_sequence (RhythmDBQueryModel *model,
-			      GSequence *new_entries)
+			      EggSequence *new_entries)
 {
 	int *reorder_map;
 	int length, i;
 	GtkTreePath *path;
 	GtkTreeIter iter;
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 
-	length = g_sequence_get_length (new_entries);
+	length = egg_sequence_get_length (new_entries);
 	/* generate resort map and rebuild reverse map */
 	reorder_map = malloc (length * sizeof(gint));
 
-	ptr = g_sequence_get_begin_ptr (new_entries);
+	ptr = egg_sequence_get_begin_iter (new_entries);
 	for (i = 0; i < length; i++) {
-		gpointer entry = g_sequence_ptr_get_data (ptr);
-		GSequencePtr old_ptr;
+		gpointer entry = egg_sequence_get (ptr);
+		EggSequenceIter *old_ptr;
 
 		old_ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-		reorder_map[i] = g_sequence_ptr_get_position (old_ptr);
+		reorder_map[i] = egg_sequence_iter_get_position (old_ptr);
 		g_hash_table_replace (model->priv->reverse_map, rhythmdb_entry_ref (entry), ptr);
 
-		ptr = g_sequence_ptr_next (ptr);
+		ptr = egg_sequence_iter_next (ptr);
 	}
-	g_sequence_free (model->priv->entries);
+	egg_sequence_free (model->priv->entries);
 	model->priv->entries = new_entries;
 
 	/* emit the re-order and clean up */
@@ -2184,8 +2181,8 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 				     GDestroyNotify sort_data_destroy,
 				     gboolean sort_reverse)
 {
-	GSequence *new_entries;
-	GSequencePtr ptr;
+	EggSequence *new_entries;
+	EggSequenceIter *ptr;
 	int length, i;
 	struct ReverseSortData reverse_data;
 
@@ -2198,7 +2195,7 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 	g_return_if_fail ((model->priv->limit_type == RHYTHMDB_QUERY_MODEL_LIMIT_NONE) ||
 			  (model->priv->sort_func == NULL));
 	if (model->priv->sort_func == NULL)
-		g_assert (g_sequence_get_length (model->priv->limited_entries) == 0);
+		g_assert (egg_sequence_get_length (model->priv->limited_entries) == 0);
 
 	if (model->priv->sort_data_destroy && model->priv->sort_data)
 		model->priv->sort_data_destroy (model->priv->sort_data);
@@ -2216,17 +2213,17 @@ rhythmdb_query_model_set_sort_order (RhythmDBQueryModel *model,
 	}
 
 	/* create the new sorted entry sequence */
-	length = g_sequence_get_length (model->priv->entries);
+	length = egg_sequence_get_length (model->priv->entries);
 	if (length > 0) {
-		new_entries = g_sequence_new (NULL);
-		ptr = g_sequence_get_begin_ptr (model->priv->entries);
+		new_entries = egg_sequence_new (NULL);
+		ptr = egg_sequence_get_begin_iter (model->priv->entries);
 		for (i = 0; i < length; i++) {
-			gpointer entry = g_sequence_ptr_get_data (ptr);
+			gpointer entry = egg_sequence_get (ptr);
 
-			g_sequence_insert_sorted (new_entries, entry,
+			egg_sequence_insert_sorted (new_entries, entry,
 						  sort_func,
 						  sort_data);
-			ptr = g_sequence_ptr_next (ptr);
+			ptr = egg_sequence_iter_next (ptr);
 		}
 
 		apply_updated_entry_sequence (model, new_entries);
@@ -2237,25 +2234,25 @@ static int
 rhythmdb_query_model_child_index_to_base_index (RhythmDBQueryModel *model,
 						int index)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 	RhythmDBEntry *entry;
 	g_assert (model->priv->base_model);
 
-	ptr = g_sequence_get_ptr_at_pos (model->priv->entries, index);
-	if (ptr == NULL || g_sequence_ptr_is_end (ptr))
+	ptr = egg_sequence_get_iter_at_pos (model->priv->entries, index);
+	if (ptr == NULL || egg_sequence_iter_is_end (ptr))
 		return -1;
-	entry = (RhythmDBEntry*)g_sequence_ptr_get_data (ptr);
+	entry = (RhythmDBEntry*)egg_sequence_get (ptr);
 
 	ptr = g_hash_table_lookup (model->priv->base_model->priv->reverse_map, entry);
 	g_assert (ptr); /* all child model entries are in the base model */
 
-	return g_sequence_ptr_get_position (ptr);
+	return egg_sequence_iter_get_position (ptr);
 }
 
 /*static int
 rhythmdb_query_model_base_index_to_child_index (RhythmDBQueryModel *model, int index)
 {
-	GSequencePtr ptr;
+	EggSequenceIter *ptr;
 	RhythmDBEntry *entry;
 	int pos;
 
@@ -2263,16 +2260,16 @@ rhythmdb_query_model_base_index_to_child_index (RhythmDBQueryModel *model, int i
 	if (index == -1)
 		return -1;
 
-	ptr = g_sequence_get_ptr_at_pos (model->priv->base_model->priv->entries, index);
-	if (ptr == NULL || g_sequence_ptr_is_end (ptr))
+	ptr = egg_sequence_get_iter_at_pos (model->priv->base_model->priv->entries, index);
+	if (ptr == NULL || egg_sequence_iter_is_end (ptr))
 		return -1;
-	entry = (RhythmDBEntry*)g_sequence_ptr_get_data (ptr);
+	entry = (RhythmDBEntry*)egg_sequence_get (ptr);
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	if (ptr == NULL)
 		return -1;
 
-	pos = g_sequence_ptr_get_position (ptr);
+	pos = egg_sequence_iter_get_position (ptr);
 	return pos;
 }*/
 
@@ -2280,10 +2277,10 @@ static int
 rhythmdb_query_model_get_entry_index (RhythmDBQueryModel *model,
 				      RhythmDBEntry *entry)
 {
-	GSequencePtr ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	EggSequenceIter *ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 
 	if (ptr)
-		return g_sequence_ptr_get_position (ptr);
+		return egg_sequence_iter_get_position (ptr);
 	else
 		return -1;
 }
@@ -2362,6 +2359,18 @@ rhythmdb_query_model_base_complete (GtkTreeModel *base_model,
 	g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
 }
 
+typedef struct {
+	RhythmDBQueryModel *model;
+	EggSequence *new_entries;
+} _BaseRowsReorderedData;
+
+static void
+_base_rows_reordered_foreach_cb (RhythmDBEntry *entry, _BaseRowsReorderedData *data)
+{
+	if (g_hash_table_lookup (data->model->priv->reverse_map, entry))
+		egg_sequence_append (data->new_entries, entry);
+}
+
 static void
 rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 					  GtkTreePath *arg1,
@@ -2370,27 +2379,16 @@ rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 					  RhythmDBQueryModel *model)
 {
 	RhythmDBQueryModel *base_query_model = RHYTHMDB_QUERY_MODEL (base_model);
-	GSequence *new_entries;
-	GSequencePtr ptr;
+	_BaseRowsReorderedData data;
 
 	/* ignore, if this model sorts */
 	if (model->priv->sort_func)
 		return;
 
-	new_entries = g_sequence_new (NULL);
-
-	/* iterate over the entries in the base, and recreate the sequence */
-	ptr = g_sequence_get_begin_ptr (base_query_model->priv->entries);
-	while (!g_sequence_ptr_is_end (ptr)) {
-		gpointer entry = g_sequence_ptr_get_data (ptr);
-
-		if (g_hash_table_lookup (model->priv->reverse_map, entry))
-			g_sequence_append (new_entries, entry);
-
-		ptr = g_sequence_ptr_next (ptr);
-	}
-
-	apply_updated_entry_sequence (model, new_entries);
+	data.new_entries = egg_sequence_new (NULL);
+	data.model = base_query_model;
+	egg_sequence_foreach (base_query_model->priv->entries, (GFunc)_base_rows_reordered_foreach_cb, &data);
+	apply_updated_entry_sequence (model, data.new_entries);
 }
 
 static void
@@ -2406,77 +2404,62 @@ rhythmdb_query_model_base_entry_removed (RhythmDBQueryModel *base_model,
 	}
 }
 
+typedef struct {
+	RhythmDBQueryModel *model;
+	GList *remove;
+} _ReapplyQueryForeachData;
+
+static void
+_reapply_query_foreach_cb (RhythmDBEntry *entry, _ReapplyQueryForeachData *data)
+{
+	if (!rhythmdb_evaluate_query (data->model->priv->db,
+				      data->model->priv->query,
+				      entry)) {
+		data->remove = g_list_prepend (data->remove, entry);
+	}
+}
+
 void
 rhythmdb_query_model_reapply_query (RhythmDBQueryModel *model,
 				    gboolean filter)
 {
-	GSequencePtr ptr;
-	GSequencePtr next;
-	RhythmDBEntry *entry;
 	gboolean changed = FALSE;
-	GList *remove = NULL;
+	_ReapplyQueryForeachData data;
+	GList *t;
+
+	data.model = model;
+	data.remove = NULL;
 
 	/* process limited list first, so entries that don't match can't sneak in
 	 * to the main list from there
 	 */
-	if (model->priv->limited_entries) {
-		ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
-		while (!g_sequence_ptr_is_end (ptr)) {
-			next = g_sequence_ptr_next (ptr);
-			entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
-			if (!rhythmdb_evaluate_query (model->priv->db,
-						      model->priv->query,
-						      entry)) {
-				remove = g_list_prepend (remove, entry);
-			}
+	if (model->priv->limited_entries)
+		egg_sequence_foreach (model->priv->limited_entries, (GFunc)_reapply_query_foreach_cb, &data);
 
-			ptr = next;
+	for (t = data.remove; t; t = t->next)
+		rhythmdb_query_model_remove_from_limited_list (model, (RhythmDBEntry*)t->data);
+
+	changed |= (data.remove != NULL);
+	g_list_free (data.remove);
+	data.remove = NULL;
+
+
+	if (model->priv->entries)
+		egg_sequence_foreach (model->priv->entries, (GFunc)_reapply_query_foreach_cb, &data);
+
+	for (t = data.remove; t; t = t->next) {
+		RhythmDBEntry *entry = t->data;
+		if (!filter) {
+			g_signal_emit (G_OBJECT (model),
+				       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
+				       entry);
 		}
-
-		if (remove) {
-			GList *t;
-			for (t = remove; t; t = t->next) {
-				RhythmDBEntry *entry = t->data;
-				rhythmdb_query_model_remove_from_limited_list (model, entry);
-			}
-
-			changed = TRUE;
-			g_list_free (remove);
-			remove = NULL;
-		}
+		rhythmdb_query_model_remove_from_main_list (model, entry);
 	}
 
-	if (model->priv->entries) {
-		ptr = g_sequence_get_begin_ptr (model->priv->entries);
-		while (!g_sequence_ptr_is_end (ptr)) {
-			next = g_sequence_ptr_next (ptr);
-			entry = (RhythmDBEntry *)g_sequence_ptr_get_data (ptr);
-			if (!rhythmdb_evaluate_query (model->priv->db,
-						      model->priv->query,
-						      entry)) {
-				remove = g_list_prepend (remove, entry);
-			}
-
-			ptr = next;
-		}
-
-		if (remove) {
-			GList *t;
-			for (t = remove; t; t = t->next) {
-				RhythmDBEntry *entry = t->data;
-				if (!filter) {
-					g_signal_emit (G_OBJECT (model),
-						       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
-						       entry);
-				}
-				rhythmdb_query_model_remove_from_main_list (model, entry);
-			}
-
-			changed = TRUE;
-			g_list_free (remove);
-			remove = NULL;
-		}
-	}
+	changed |= (data.remove != NULL);
+	g_list_free (data.remove);
+	data.remove = NULL;
 
 	if (changed)
 		rhythmdb_query_model_update_limited_entries (model);

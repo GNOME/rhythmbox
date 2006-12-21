@@ -1,3 +1,65 @@
+2006-12-21  James  Livingston  <doclivingston@gmail.com>
+
+	* lib/eggsequence.c:
+	* lib/eggsequence.h:
+	* rhythmdb/gsequence.c:
+	* rhythmdb/gsequence.h:
+	* lib/Makefile.am:
+	* rhythmdb/Makefile.am: replace GSequence with EggSequence. Closes #374242
+
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_init), (_prop_model_entry_cleanup),
+	(rhythmdb_property_model_finalize),
+	(rhythmdb_property_model_insert),
+	(rhythmdb_property_model_delete_prop),
+	(rhythmdb_property_model_iter_from_string),
+	(rhythmdb_property_model_get_iter),
+	(rhythmdb_property_model_get_path),
+	(rhythmdb_property_model_get_value),
+	(rhythmdb_property_model_iter_next),
+	(rhythmdb_property_model_iter_n_children),
+	(rhythmdb_property_model_iter_nth_child):
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_init),
+	(rhythmdb_query_model_finalize), (_copy_contents_foreach_cb),
+	(rhythmdb_query_model_copy_contents),
+	(rhythmdb_query_model_insert_into_main_list),
+	(rhythmdb_query_model_insert_into_limited_list),
+	(rhythmdb_query_model_remove_from_main_list),
+	(rhythmdb_query_model_remove_from_limited_list),
+	(rhythmdb_query_model_update_limited_entries),
+	(rhythmdb_query_model_emit_reorder),
+	(rhythmdb_query_model_do_reorder),
+	(rhythmdb_query_model_do_insert),
+	(rhythmdb_query_model_filter_out_entry),
+	(rhythmdb_query_model_move_entry),
+	(rhythmdb_query_model_entry_to_iter),
+	(rhythmdb_query_model_drag_data_delete),
+	(rhythmdb_query_model_drag_data_get),
+	(rhythmdb_query_model_drag_data_received),
+	(rhythmdb_query_model_get_iter), (rhythmdb_query_model_get_path),
+	(rhythmdb_query_model_get_value), (rhythmdb_query_model_iter_next),
+	(rhythmdb_query_model_iter_children),
+	(rhythmdb_query_model_iter_n_children),
+	(rhythmdb_query_model_iter_nth_child),
+	(apply_updated_entry_sequence),
+	(rhythmdb_query_model_set_sort_order),
+	(rhythmdb_query_model_child_index_to_base_index),
+	(rhythmdb_query_model_get_entry_index),
+	(_base_rows_reordered_foreach_cb),
+	(rhythmdb_query_model_base_rows_reordered),
+	(_reapply_query_foreach_cb), (rhythmdb_query_model_reapply_query):
+	* shell/rb-history.c: (rb_history_init), (rb_history_finalize),
+	(rb_history_length), (rb_history_first), (rb_history_previous),
+	(rb_history_current), (rb_history_next), (rb_history_last),
+	(rb_history_go_first), (rb_history_go_previous),
+	(rb_history_go_next), (rb_history_go_last),
+	(_history_remove_swapped), (rb_history_set_playing),
+	(rb_history_append), (rb_history_get_current_index),
+	(rb_history_insert_at_index), (rb_history_limit_size),
+	(rb_history_remove_entry), (rb_history_delete_link),
+	(rb_history_clear), (rb_history_dump):
+	* shell/rb-history.h: update for the above.
+
 2006-12-19  William Jon McCann  <mccann@jhu.edu>
 
 	* lib/rb-cut-and-paste-code.c:
