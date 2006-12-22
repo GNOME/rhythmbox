@@ -358,12 +358,15 @@ rb_source_header_set_source_internal (RBSourceHeader *header,
 			gtk_widget_hide (GTK_WIDGET (header));
 		else
 			gtk_widget_show (GTK_WIDGET (header));
-	}
 
-	/* merge the source-specific UI */
-	actions = rb_source_get_search_actions (source);
-	g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
-	rb_list_deep_free (actions);
+		/* merge the source-specific UI */
+		actions = rb_source_get_search_actions (source);
+		g_list_foreach (actions, (GFunc)merge_source_ui_cb, header);
+		rb_list_deep_free (actions);
+	} else {
+		/* no selected source -> hide source header */
+		gtk_widget_hide (GTK_WIDGET (header));
+	}
 
 	rb_source_header_sync_control_state (header);
 }
@@ -426,7 +429,7 @@ rb_source_header_set_source (RBSourceHeader *header,
 			     RBSource *source)
 {
 	g_return_if_fail (RB_IS_SOURCE_HEADER (header));
-	g_return_if_fail (RB_IS_SOURCE (source));
+	g_return_if_fail (source == NULL || RB_IS_SOURCE (source));
 
 	g_object_set (G_OBJECT (header),
 		      "source", source,

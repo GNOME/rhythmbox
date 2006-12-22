@@ -509,13 +509,12 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	GtkAction *action;
 	RhythmDBEntryType entry_type;
 
-	if (!clipboard->priv->source)
-		return;
-
-	view = rb_source_get_entry_view (clipboard->priv->source);
-	if (view) {
-		have_selection = rb_entry_view_have_selection (view);
-		can_select_all = !rb_entry_view_have_complete_selection (view);
+	if (clipboard->priv->source) {
+		view = rb_source_get_entry_view (clipboard->priv->source);
+		if (view) {
+			have_selection = rb_entry_view_have_selection (view);
+			can_select_all = !rb_entry_view_have_complete_selection (view);
+		}
 	}
 
 	if (clipboard->priv->queue_source) {
@@ -578,12 +577,16 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
 
 	/* disable the whole add-to-playlist menu if we can't add to a playlist
-	 * FIXME: change this when we support non-library playilst adding
+	 * FIXME: change this when we support non-library playlist adding
 	 */
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
-	g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
-	gtk_action_set_sensitive (action, (entry_type == RHYTHMDB_ENTRY_TYPE_SONG));
-	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	if (clipboard->priv->source != NULL) {
+		g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
+		gtk_action_set_sensitive (action, (entry_type == RHYTHMDB_ENTRY_TYPE_SONG));
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	} else {
+		gtk_action_set_sensitive (action, FALSE);
+	}
 }
 
 static GtkWidget*

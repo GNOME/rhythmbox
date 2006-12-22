@@ -3390,6 +3390,8 @@ rb_shell_get_box_for_ui_location (RBShell *shell, RBShellUILocation location)
 	case RB_SHELL_UI_LOCATION_MAIN_BOTTOM:
 		box = shell->priv->bottom_container;
 		break;
+	default:
+		break;
 	}
 
 	return box;
@@ -3400,21 +3402,65 @@ rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation locati
 {
 	GtkBox *box;
 
-	box = rb_shell_get_box_for_ui_location (shell, location);
-	g_return_if_fail (box != NULL);
+	switch (location) {
+	case RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK:
+		gtk_notebook_append_page (GTK_NOTEBOOK (shell->priv->notebook),
+					  widget,
+					  gtk_label_new (""));
+		break;
+	default:
+		box = rb_shell_get_box_for_ui_location (shell, location);
+		g_return_if_fail (box != NULL);
 
-	gtk_box_pack_start (box, widget, FALSE, TRUE, 0);
+		gtk_box_pack_start (box, widget, FALSE, TRUE, 0);
+		break;
+	}
 }
 
 void
 rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location)
 {
 	GtkBox *box;
+	gint page_num;
 
-	box = rb_shell_get_box_for_ui_location (shell, location);
-	g_return_if_fail (box != NULL);
+	switch (location) {
+	case RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK:
+		page_num = gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook),
+						  widget);
+		g_return_if_fail (page_num != -1);
+		gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
+					  page_num);
+		break;
+	default:
+		box = rb_shell_get_box_for_ui_location (shell, location);
+		g_return_if_fail (box != NULL);
 
-	gtk_container_remove (GTK_CONTAINER (box), widget);
+		gtk_container_remove (GTK_CONTAINER (box), widget);
+		break;
+	}
+}
+
+void
+rb_shell_notebook_set_page (RBShell *shell, GtkWidget *widget)
+{
+	gint page = 0;
+
+	/* if no widget specified, use the selected source */
+	if (widget == NULL && shell->priv->selected_source)
+		widget = GTK_WIDGET (shell->priv->selected_source);
+
+	if (widget)
+		page = gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook), widget);
+
+	if (RB_IS_SOURCE (widget)) {
+		rb_source_header_set_source (shell->priv->source_header, RB_SOURCE (widget));
+		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, RB_SOURCE (widget));
+	} else {
+		rb_source_header_set_source (shell->priv->source_header, NULL);
+		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, NULL);
+	}
+
+	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook), page);
 }
 
 /* This should really be standard. */
@@ -3430,6 +3476,7 @@ rb_shell_ui_location_get_type (void)
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_SIDEBAR, "Sidebar"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_TOP, "Main Top"),
 			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_BOTTOM, "Main Bottom"),
+			ENUM_ENTRY (RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK, "Main Notebook"),
 			{ 0, 0, 0 }
 		};
 

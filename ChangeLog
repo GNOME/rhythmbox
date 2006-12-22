@@ -1,3 +1,38 @@
+2006-12-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_class_init),
+	(rb_player_gst_get_property), (rb_player_gst_construct):
+	Add a 'playbin' property allowing plugins to access the playbin
+	element, and allow them to set the audio and video sinks.
+
+	* shell/rb-shell.c: (rb_shell_get_box_for_ui_location),
+	(rb_shell_add_widget), (rb_shell_remove_widget),
+	(rb_shell_notebook_set_page), (rb_shell_ui_location_get_type):
+	* shell/rb-shell.h:
+	Extend rb_shell_add_widget to allow the addition of source notebook
+	pages.
+
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync):
+	* shell/rb-source-header.c: (rb_source_header_set_source_internal),
+	(rb_source_header_set_source):
+	Handle the possibility of no source being selected if a notebook page
+	added with rb_shell_add_widget is active.  Hide the source header
+	widget when no source is selected.
+
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* plugins/Makefile.am:
+	* plugins/visualizer/Makefile.am:
+	* plugins/visualizer/rb-fake-visualizer.c:
+	* plugins/visualizer/rb-vis-widget.c:
+	* plugins/visualizer/rb-vis-widget.h:
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	* plugins/visualizer/rb-visualizer.xml:
+	* plugins/visualizer/visualizer-controls.glade:
+	* plugins/visualizer/visualizer-ui.xml:
+	* plugins/visualizer/visualizer.rb-plugin.desktop.in:
+	Add visualiser plugin.  Fixes #76519.
+
 2006-12-21  James  Livingston  <doclivingston@gmail.com>
 
 	* lib/eggsequence.c:

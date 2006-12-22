@@ -43,6 +43,10 @@
 
 static void rb_player_init (RBPlayerIface *iface);
 static void rb_player_gst_finalize (GObject *object);
+static void rb_player_gst_get_property (GObject *object,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *pspec);
 
 static gboolean rb_player_gst_open (RBPlayer *player,
 				    const char *uri,
@@ -67,6 +71,12 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
 #define RB_PLAYER_GST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYER_GST, RBPlayerGstPrivate))
 
 #define RB_PLAYER_GST_TICK_HZ 5
+
+enum
+{
+	PROP_0,
+	PROP_PLAYBIN
+};
 
 struct _RBPlayerGstPrivate
 {
@@ -125,6 +135,15 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_player_gst_finalize;
+	object_class->get_property = rb_player_gst_get_property;
+
+	g_object_class_install_property (object_class,
+					 PROP_PLAYBIN,
+					 g_param_spec_object ("playbin",
+						 	      "playbin",
+							      "playbin element",
+							      GST_TYPE_ELEMENT,
+							      G_PARAM_READABLE));
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstPrivate));
 }
@@ -167,6 +186,24 @@ rb_player_gst_init (RBPlayerGst *mp)
 	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
 	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
 
+}
+
+static void
+rb_player_gst_get_property (GObject *object,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *pspec)
+{
+	RBPlayerGst *mp = RB_PLAYER_GST (object);
+
+	switch (prop_id) {
+	case PROP_PLAYBIN:
+		g_value_set_object (value, mp->priv->playbin);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -565,7 +602,8 @@ static gboolean
 rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 {
 	char *element_name = NULL;
-	GstElement *sink, *fakesink;
+	GstElement *sink;
+	GstElement *fakesink;
 
 	/* playbin */
 	rb_debug ("constructing element \"playbin\"");
@@ -573,9 +611,6 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 	if (mp->priv->playbin == NULL) {
 		goto missing_element;
 	}
-
-	fakesink = gst_element_factory_make ("fakesink", "fakesink");
-	g_object_set (G_OBJECT (mp->priv->playbin), "video-sink", fakesink, NULL);
 
 #ifdef HAVE_GSTREAMER_0_8
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
@@ -597,25 +632,48 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin), "eos",
 				 G_CALLBACK (eos_cb), mp, 0);
+#endif
 
+#ifdef HAVE_GSTREAMER_0_8
 	/* Output sink */
 	sink = gst_gconf_get_default_audio_sink ();
+	g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
 #endif
 #ifdef HAVE_GSTREAMER_0_10
 	gst_bus_add_watch (gst_element_get_bus (GST_ELEMENT (mp->priv->playbin)),
 			     (GstBusFunc) rb_player_gst_bus_cb, mp);
 
-	/* Output sink */
-	sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
+	/* let plugins add bits to playbin */
+	g_object_notify (G_OBJECT (mp), "playbin");
+
+	/* Use gconfaudiosink for audio if there's no audio sink yet */
+	g_object_get (G_OBJECT (mp->priv->playbin), "audio-sink", &sink, NULL);
+	if (sink == NULL) {
+		sink = gst_element_factory_make ("gconfaudiosink", "audiosink");
+		if (sink == NULL) {
+			/* fall back to autoaudiosink */
+			sink = gst_element_factory_make ("autoaudiosink", "audiosink");
+		}
+
+		if (sink != NULL) {
+			/* set the profile property on the gconfaudiosink to "music and movies" */
+			if (g_object_class_find_property (G_OBJECT_GET_CLASS (sink), "profile"))
+				g_object_set (G_OBJECT (sink), "profile", 1, NULL);
+
+			g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
+		}
+	} else {
+		g_object_unref (sink);
+	}
 #endif
 
-	/* if we could create the gconf sink use that, otherwise let playbin decide */
-	if (sink != NULL) {
-		/* set the profile property on the gconfaudiosink to "music and movies" */
-		if (g_object_class_find_property (G_OBJECT_GET_CLASS (sink), "profile"))
-			g_object_set (G_OBJECT (sink), "profile", 1, NULL);
-
-		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
+	/* Use fakesink for video if there's no video sink yet */
+	g_object_get (G_OBJECT (mp->priv->playbin), "video-sink", &sink, NULL);
+	if (sink == NULL) {
+		fakesink = gst_element_factory_make ("fakesink", "fakesink");
+		g_object_set (G_OBJECT (mp->priv->playbin), "video-sink", fakesink, NULL);
+	} else {
+		g_object_unref (sink);
 	}
 
 	if (mp->priv->cur_volume > 1.0)

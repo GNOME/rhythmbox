@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+  <interface name="org.gnome.Rhythmbox.Visualizer">
+
+    <method name="startVisualization">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_visualizer_start_remote"/>
+      <arg type="u" name="window"/>
+    </method>
+
+    <method name="stopVisualization">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_visualizer_stop_remote"/>
+    </method>
+
+  </interface>
+</node>
+

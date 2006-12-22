@@ -54,6 +54,7 @@ typedef enum
 	RB_SHELL_UI_LOCATION_SIDEBAR,
 	RB_SHELL_UI_LOCATION_MAIN_TOP,
 	RB_SHELL_UI_LOCATION_MAIN_BOTTOM,
+	RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK
 } RBShellUILocation;
 
 GType rb_shell_ui_location_get_type (void);
@@ -154,8 +155,9 @@ gboolean        rb_shell_get_party_mode (RBShell *shell);
 
 void rb_shell_append_source (RBShell *shell, RBSource *source, RBSource *parent);
 
-void rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
-void rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
+void 		rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
+void 		rb_shell_remove_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location);
+void		rb_shell_notebook_set_page (RBShell *shell, GtkWidget *widget);
 
 G_END_DECLS
 

@@ -978,5 +978,72 @@
 	<long>True if the DAAP plugin is hidden.</long>
 	</locale>
       </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/visualizer/active</key>
+	<applyto>/apps/rhythmbox/plugins/visualizer/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the visualizer plugin is enabled.</short>
+	<long>True if the visualizer plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/visualizer/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/visualizer/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>FALSE</default>
+	<locale name="C">
+	<short>True if the visualizer plugin is hidden.</short>
+	<long>True if the visualizer plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/visualizer/element</key>
+	<applyto>/apps/rhythmbox/plugins/visualizer/element</applyto>
+	<owner>rhythmbox</owner>
+	<type>string</type>
+	<default>goom</default>
+	<locale name="C">
+	<short>GStreamer visualizer element to use for visualizations</short>
+	<long>GStreamer visualizer element to use for visualizations</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/visualizer/quality</key>
+	<applyto>/apps/rhythmbox/plugins/visualizer/quality</applyto>
+	<owner>rhythmbox</owner>
+	<type>int</type>
+	<default>1</default>
+	<locale name="C">
+	<short>Visualization resolution and frame rate (1-4)</short>
+	<long>Visualization resolution and frame rate (1-4)</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/visualizer/screen</key>
+	<applyto>/apps/rhythmbox/plugins/visualizer/screen</applyto>
+	<owner>rhythmbox</owner>
+	<type>int</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Number of the screen on which to display fullscreen visualization</short>
+	<long>Number of the screen on which to display fullscreen visualization</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/visualizer/monitor</key>
+	<applyto>/apps/rhythmbox/plugins/visualizer/monitor</applyto>
+	<owner>rhythmbox</owner>
+	<type>int</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Number of the monitor on which to display fullmonitor visualization</short>
+	<long>Number of the monitor on which to display fullmonitor visualization</long>
+	</locale>
+      </schema>
+
     </schemalist>
 </gconfschemafile>

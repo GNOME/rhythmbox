@@ -33,6 +33,10 @@ SUBDIRS += 						\
 	cd-recorder
 endif
 
+if USE_GSTREAMER_0_10
+SUBDIRS += visualizer
+endif
+
 if WITH_DBUS
 SUBDIRS += power-manager
 endif

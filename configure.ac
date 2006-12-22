@@ -956,6 +956,7 @@ plugins/magnatune/magnatune/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile
+plugins/visualizer/Makefile
 bindings/Makefile
 bindings/python/Makefile
 help/Makefile
