@@ -13,7 +13,7 @@ dnl it isn't like we are using C++ or Fortran.
 m4_define([_LT_AC_TAGCONFIG],[])
 
 
-AC_PROG_INTLTOOL
+IT_PROG_INTLTOOL([0.35.0])
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -627,9 +627,7 @@ AC_TRY_RUN([#include <time.h>
 
 GETTEXT_PACKAGE=rhythmbox
 AC_SUBST(GETTEXT_PACKAGE)
-AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/po/LINGUAS'])
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Define to the Gettext package name])
-ALL_LINGUAS="`cat "$srcdir/po/LINGUAS" | grep -v '^#'`"
 
 AM_GLIB_GNU_GETTEXT
 
