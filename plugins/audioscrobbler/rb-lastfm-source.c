@@ -148,7 +148,7 @@ GType rb_lastfm_src_get_type (void);
 static const char* const radio_options[][3] = {
 	{N_("Similar Artists radio"), "lastfm://artist/%s/similarartists", N_("Artists similar to %s")},
 	{N_("Tag radio"), "lastfm://globaltags/%s", N_("Tracks tagged with %s")},
-	{N_("Artist Fan radio"), "lastfm://artist/%s/fans", N_("Artists like by fans of %s")},
+	{N_("Artist Fan radio"), "lastfm://artist/%s/fans", N_("Artists liked by fans of %s")},
 	{N_("Group radio"), "lastfm://group/%s", N_("Tracks liked by the %s group")},
 	{NULL, NULL, NULL}
 };
