@@ -433,7 +433,25 @@ rb_podcast_source_dispose (GObject *object)
 
 	if (source->priv->db != NULL) {
 		g_object_unref (source->priv->db);
+		source->priv->db = NULL;
 	}
+
+	if (source->priv->cached_all_query) {
+		g_object_unref (source->priv->cached_all_query);
+		source->priv->cached_all_query = NULL;
+	}
+
+	if (source->priv->action_group != NULL) {
+		g_object_unref (source->priv->action_group);
+		source->priv->action_group = NULL;
+	}
+
+	if (source->priv->podcast_mgr != NULL) {
+		g_object_unref (source->priv->podcast_mgr);
+		source->priv->podcast_mgr = NULL;
+	}
+
+	eel_gconf_notification_remove (source->priv->prefs_notify_id);
 
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->dispose (object);
 }
@@ -452,21 +470,10 @@ rb_podcast_source_finalize (GObject *object)
 
 	rb_debug ("finalizing podcast source");
 
-	if (source->priv->action_group != NULL) {
-		g_object_unref (source->priv->action_group);
-	}
-
-	eel_gconf_notification_remove (source->priv->prefs_notify_id);
-
-	g_object_unref (source->priv->podcast_mgr);
-
 	if (source->priv->selected_feeds) {
 		g_list_foreach (source->priv->selected_feeds, (GFunc) g_free, NULL);
 	        g_list_free (source->priv->selected_feeds);
 	}
-
-       if (source->priv->cached_all_query)
-		g_object_unref (G_OBJECT (source->priv->cached_all_query));
 
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->finalize (object);
 }

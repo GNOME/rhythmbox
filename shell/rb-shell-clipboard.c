@@ -38,6 +38,7 @@ static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
 static GObject *rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
 						GObjectConstructParam *construct_properties);
+static void rb_shell_clipboard_dispose (GObject *object);
 static void rb_shell_clipboard_finalize (GObject *object);
 static void rb_shell_clipboard_set_property (GObject *object,
 					     guint prop_id,
@@ -180,6 +181,7 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_shell_clipboard_dispose;
 	object_class->finalize = rb_shell_clipboard_finalize;
 	object_class->constructor = rb_shell_clipboard_constructor;
 
@@ -264,6 +266,36 @@ unset_source_internal (RBShellClipboard *clipboard)
 }
 
 static void
+rb_shell_clipboard_dispose (GObject *object)
+{
+	RBShellClipboard *shell_clipboard;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SHELL_CLIPBOARD (object));
+
+	shell_clipboard = RB_SHELL_CLIPBOARD (object);
+
+	g_return_if_fail (shell_clipboard->priv != NULL);
+
+	unset_source_internal (shell_clipboard);
+
+	if (shell_clipboard->priv->idle_sync_id != 0) {
+		g_source_remove (shell_clipboard->priv->idle_sync_id);
+		shell_clipboard->priv->idle_sync_id = 0;
+	}
+	if (shell_clipboard->priv->idle_deletion_id != 0) {
+		g_source_remove (shell_clipboard->priv->idle_deletion_id);
+		shell_clipboard->priv->idle_deletion_id = 0;
+	}
+	if (shell_clipboard->priv->idle_playlist_id != 0) {
+		g_source_remove (shell_clipboard->priv->idle_playlist_id);
+		shell_clipboard->priv->idle_playlist_id = 0;
+	}
+
+	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->dispose (object);
+}
+
+static void
 rb_shell_clipboard_finalize (GObject *object)
 {
 	RBShellClipboard *shell_clipboard;
@@ -275,22 +307,12 @@ rb_shell_clipboard_finalize (GObject *object)
 
 	g_return_if_fail (shell_clipboard->priv != NULL);
 
-	/* release references to the source */
-	unset_source_internal (shell_clipboard);
-
 	g_hash_table_destroy (shell_clipboard->priv->signal_hash);
 
 	g_list_foreach (shell_clipboard->priv->entries, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (shell_clipboard->priv->entries);
 
 	g_async_queue_unref (shell_clipboard->priv->deleted_queue);
-
-	if (shell_clipboard->priv->idle_sync_id)
-		g_source_remove (shell_clipboard->priv->idle_sync_id);
-	if (shell_clipboard->priv->idle_deletion_id)
-		g_source_remove (shell_clipboard->priv->idle_deletion_id);
-	if (shell_clipboard->priv->idle_playlist_id)
-		g_source_remove (shell_clipboard->priv->idle_playlist_id);
 
 	G_OBJECT_CLASS (rb_shell_clipboard_parent_class)->finalize (object);
 }

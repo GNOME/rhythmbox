@@ -72,13 +72,20 @@ rhythmdb_init_monitoring (RhythmDB *db)
 }
 
 void
+rhythmdb_dispose_monitoring (RhythmDB *db)
+{
+	if (db->priv->changed_files_id != 0) {
+		g_source_remove (db->priv->changed_files_id);
+		db->priv->changed_files_id = 0;
+	}
+}
+
+void
 rhythmdb_finalize_monitoring (RhythmDB *db)
 {
 	rhythmdb_stop_monitoring (db);
 
 	g_hash_table_destroy (db->priv->monitored_directories);
-	if (db->priv->changed_files_id)
-		g_source_remove (db->priv->changed_files_id);
 	g_hash_table_destroy (db->priv->changed_files);
 }
 

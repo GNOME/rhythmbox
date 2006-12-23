@@ -85,6 +85,7 @@ extern char *mkdtemp (char *template);
 
 static void rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass);
 static void rb_playlist_source_recorder_init       (RBPlaylistSourceRecorder *source);
+static void rb_playlist_source_recorder_dispose    (GObject *object);
 static void rb_playlist_source_recorder_finalize   (GObject *object);
 
 void        rb_playlist_source_recorder_device_changed_cb  (NautilusBurnDriveSelection *selection,
@@ -175,6 +176,7 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
 
         widget_class->style_set = rb_playlist_source_recorder_style_set;
 
+        object_class->dispose = rb_playlist_source_recorder_dispose;
         object_class->finalize = rb_playlist_source_recorder_finalize;
 
         rb_playlist_source_recorder_signals [NAME_CHANGED] =
@@ -1329,6 +1331,36 @@ free_song_list (GSList *songs)
 }
 
 static void
+rb_playlist_source_recorder_dispose (GObject *object)
+{
+        RBPlaylistSourceRecorder *source;
+
+        g_return_if_fail (object != NULL);
+        g_return_if_fail (RB_IS_PLAYLIST_SOURCE_RECORDER (object));
+
+        source = RB_PLAYLIST_SOURCE_RECORDER (object);
+
+        g_return_if_fail (source->priv != NULL);
+
+	if (source->priv->shell != NULL) {
+		g_object_unref (source->priv->shell);
+		source->priv->shell = NULL;
+	}
+
+	if (source->priv->cd_icon != NULL) {
+		g_object_unref (source->priv->cd_icon);
+		source->priv->cd_icon = NULL;
+	}
+
+	if (source->priv->recorder != NULL) {
+		g_object_unref (source->priv->recorder);
+		source->priv->recorder = NULL;
+	}
+
+        G_OBJECT_CLASS (rb_playlist_source_recorder_parent_class)->dispose (object);
+}
+
+static void
 rb_playlist_source_recorder_finalize (GObject *object)
 {
         RBPlaylistSourceRecorder *source;
@@ -1342,17 +1374,10 @@ rb_playlist_source_recorder_finalize (GObject *object)
 
         rb_debug ("Finalize source recorder");
 
-        g_object_unref (source->priv->shell);
-
-        g_object_unref (source->priv->cd_icon);
-
         g_free (source->priv->name);
         source->priv->name = NULL;
 
         free_song_list (source->priv->songs);
-
-        g_object_unref (source->priv->recorder);
-        source->priv->recorder = NULL;
 
         if (source->priv->tmp_dir) {
                 if (rmdir (source->priv->tmp_dir) < 0)

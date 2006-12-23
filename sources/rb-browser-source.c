@@ -256,6 +256,15 @@ rb_browser_source_dispose (GObject *object)
 		source->priv->cached_all_query = NULL;
 	}
 
+	if (source->priv->action_group != NULL) {
+		g_object_unref (source->priv->action_group);
+		source->priv->action_group = NULL;
+	}
+
+	eel_gconf_notification_remove (source->priv->state_browser_notify_id);
+	eel_gconf_notification_remove (source->priv->state_paned_notify_id);
+	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
+
 	G_OBJECT_CLASS (rb_browser_source_parent_class)->dispose (object);
 }
 
@@ -271,15 +280,7 @@ rb_browser_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
-	rb_debug ("finalizing browser source");
 	g_free (source->priv->sorting_key);
-	eel_gconf_notification_remove (source->priv->state_browser_notify_id);
-	eel_gconf_notification_remove (source->priv->state_paned_notify_id);
-	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
-
-	if (source->priv->action_group != NULL) {
-		g_object_unref (source->priv->action_group);
-	}
 
 	G_OBJECT_CLASS (rb_browser_source_parent_class)->finalize (object);
 }

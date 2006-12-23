@@ -55,7 +55,6 @@ static void rb_iradio_source_init (RBIRadioSource *source);
 static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
 					      GObjectConstructParam *construct_properties);
 static void rb_iradio_source_dispose (GObject *object);
-static void rb_iradio_source_finalize (GObject *object);
 static void rb_iradio_source_set_property (GObject *object,
 			                  guint prop_id,
 			                  const GValue *value,
@@ -178,7 +177,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_iradio_source_dispose;
-	object_class->finalize = rb_iradio_source_finalize;
 	object_class->constructor = rb_iradio_source_constructor;
 
 	object_class->set_property = rb_iradio_source_set_property;
@@ -250,31 +248,15 @@ rb_iradio_source_dispose (GObject *object)
 		source->priv->db = NULL;
 	}
 
-	G_OBJECT_CLASS (rb_iradio_source_parent_class)->dispose (object);
-}
-
-static void
-rb_iradio_source_finalize (GObject *object)
-{
-	RBIRadioSource *source;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_IRADIO_SOURCE (object));
-
-	source = RB_IRADIO_SOURCE (object);
-
-	g_return_if_fail (source->priv != NULL);
-
-	rb_debug ("finalizing iradio source");
-
 	if (source->priv->action_group != NULL) {
 		g_object_unref (source->priv->action_group);
+		source->priv->action_group = NULL;
 	}
 
 	eel_gconf_notification_remove (source->priv->prefs_notify_id);
 	eel_gconf_notification_remove (source->priv->first_time_notify_id);
 
-	G_OBJECT_CLASS (rb_iradio_source_parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_iradio_source_parent_class)->dispose (object);
 }
 
 static GObject *

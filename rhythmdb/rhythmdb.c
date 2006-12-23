@@ -83,6 +83,7 @@ typedef struct
  	RhythmDBEntryType entry_type;
 } RhythmDBAction;
 
+static void rhythmdb_dispose (GObject *object);
 static void rhythmdb_finalize (GObject *object);
 static void rhythmdb_set_property (GObject *object,
 					guint prop_id,
@@ -153,6 +154,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rhythmdb_dispose;
 	object_class->finalize = rhythmdb_finalize;
 
 	object_class->set_property = rhythmdb_set_property;
@@ -672,6 +674,47 @@ _shutdown_foreach_hash (gpointer uri, RhythmDBEvent *event, RhythmDB *db)
 }
 
 static void
+rhythmdb_dispose (GObject *object)
+{
+	RhythmDB *db;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RHYTHMDB_IS (object));
+
+	rb_debug ("disposing rhythmdb");
+	db = RHYTHMDB (object);
+
+	g_return_if_fail (db->priv != NULL);
+
+	rhythmdb_dispose_monitoring (db);
+
+	if (db->priv->event_poll_id != 0) {
+		g_source_remove (db->priv->event_poll_id);
+		db->priv->event_poll_id = 0;
+	}
+
+	if (db->priv->save_timeout_id != 0) {
+		g_source_remove (db->priv->save_timeout_id);
+		db->priv->save_timeout_id = 0;
+	}
+
+	if (db->priv->emit_entry_signals_id != 0) {
+		g_source_remove (db->priv->emit_entry_signals_id);
+		db->priv->emit_entry_signals_id = 0;
+
+		g_list_foreach (db->priv->added_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
+		g_list_foreach (db->priv->deleted_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
+	}
+
+	if (db->priv->metadata != NULL) {
+		g_object_unref (db->priv->metadata);
+		db->priv->metadata = NULL;
+	}
+
+	G_OBJECT_CLASS (rhythmdb_parent_class)->dispose (object);
+}
+
+static void
 rhythmdb_finalize (GObject *object)
 {
 	RhythmDB *db;
@@ -686,15 +729,6 @@ rhythmdb_finalize (GObject *object)
 	g_return_if_fail (db->priv != NULL);
 
 	rhythmdb_finalize_monitoring (db);
-
-	g_source_remove (db->priv->event_poll_id);
-	if (db->priv->save_timeout_id > 0)
-		g_source_remove (db->priv->save_timeout_id);
-	if (db->priv->emit_entry_signals_id > 0) {
-		g_source_remove (db->priv->emit_entry_signals_id);
-		g_list_foreach (db->priv->added_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
-		g_list_foreach (db->priv->deleted_entries_to_emit, (GFunc)rhythmdb_entry_unref, NULL);
-	}
 
 	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
 	g_thread_pool_free (db->priv->add_thread_pool, FALSE, TRUE);
@@ -724,8 +758,6 @@ rhythmdb_finalize (GObject *object)
 	g_hash_table_destroy (db->priv->entry_type_map);
 	g_mutex_free (db->priv->entry_type_map_mutex);
 	g_mutex_free (db->priv->entry_type_mutex);
-
-	g_object_unref (db->priv->metadata);
 
 	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES; i++) {
 		xmlFree (db->priv->column_xml_names[i]);

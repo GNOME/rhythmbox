@@ -230,6 +230,7 @@ RhythmDBEntry *	rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db, RBRef
 
 /* from rhythmdb-monitor.c */
 void rhythmdb_init_monitoring (RhythmDB *db);
+void rhythmdb_dispose_monitoring (RhythmDB *db);
 void rhythmdb_finalize_monitoring (RhythmDB *db);
 void rhythmdb_stop_monitoring (RhythmDB *db);
 void rhythmdb_start_monitoring (RhythmDB *db);

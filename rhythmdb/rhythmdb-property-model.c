@@ -48,6 +48,7 @@ typedef struct {
 	guint refcount;
 } RhythmDBPropertyModelEntry;
 
+static void rhythmdb_property_model_dispose (GObject *object);
 static void rhythmdb_property_model_finalize (GObject *object);
 static void rhythmdb_property_model_set_property (GObject *object,
 					       guint prop_id,
@@ -206,6 +207,7 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 	object_class->set_property = rhythmdb_property_model_set_property;
 	object_class->get_property = rhythmdb_property_model_get_property;
 
+	object_class->dispose = rhythmdb_property_model_dispose;
 	object_class->finalize = rhythmdb_property_model_finalize;
 
 	rhythmdb_property_model_signals[PRE_ROW_DELETION] =
@@ -437,6 +439,33 @@ _prop_model_entry_cleanup (RhythmDBPropertyModelEntry *prop, gpointer data)
 }
 
 static void
+rhythmdb_property_model_dispose (GObject *object)
+{
+	RhythmDBPropertyModel *model;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RHYTHMDB_IS_PROPERTY_MODEL (object));
+
+	model = RHYTHMDB_PROPERTY_MODEL (object);
+
+	rb_debug ("disposing property model %p", model);
+
+	g_return_if_fail (model->priv != NULL);
+
+	if (model->priv->syncing_id != 0) {
+		g_source_remove (model->priv->syncing_id);
+		model->priv->syncing_id = 0;
+	}
+
+	if (model->priv->query_model != NULL) {
+		g_object_unref (model->priv->query_model);
+		model->priv->query_model = NULL;
+	}
+
+	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->dispose (object);
+}
+
+static void
 rhythmdb_property_model_finalize (GObject *object)
 {
 	RhythmDBPropertyModel *model;
@@ -450,19 +479,12 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	g_return_if_fail (model->priv != NULL);
 
-	if (model->priv->syncing_id != 0)
-		g_source_remove (model->priv->syncing_id);
-
 	g_hash_table_destroy (model->priv->reverse_map);
 
 	egg_sequence_foreach (model->priv->properties, (GFunc)_prop_model_entry_cleanup, NULL);
 	egg_sequence_free (model->priv->properties);
 
 	g_hash_table_destroy (model->priv->entries);
-
-	if (model->priv->query_model != NULL) {
-		g_object_unref (model->priv->query_model);
-	}
 
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }

@@ -40,6 +40,7 @@
 
 static void rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass);
 static void rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog);
+static void rb_podcast_properties_dialog_dispose (GObject *object);
 static void rb_podcast_properties_dialog_finalize (GObject *object);
 static void rb_podcast_properties_dialog_set_property (GObject *object,
 						       guint prop_id,
@@ -118,6 +119,7 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	object_class->dispose = rb_podcast_properties_dialog_dispose;
 	object_class->finalize = rb_podcast_properties_dialog_finalize;
 
 	g_type_class_add_private (klass, sizeof (RBPodcastPropertiesDialogPrivate));
@@ -191,7 +193,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 }
 
 static void
-rb_podcast_properties_dialog_finalize (GObject *object)
+rb_podcast_properties_dialog_dispose (GObject *object)
 {
 	RBPodcastPropertiesDialog *dialog;
 
@@ -204,7 +206,23 @@ rb_podcast_properties_dialog_finalize (GObject *object)
 
 	if (dialog->priv->db != NULL) {
 		g_object_unref (dialog->priv->db);
+		dialog->priv->db = NULL;
 	}
+
+	G_OBJECT_CLASS (rb_podcast_properties_dialog_parent_class)->dispose (object);
+}
+
+static void
+rb_podcast_properties_dialog_finalize (GObject *object)
+{
+	RBPodcastPropertiesDialog *dialog;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PODCAST_PROPERTIES_DIALOG (object));
+
+	dialog = RB_PODCAST_PROPERTIES_DIALOG (object);
+
+	g_return_if_fail (dialog->priv != NULL);
 
 	G_OBJECT_CLASS (rb_podcast_properties_dialog_parent_class)->finalize (object);
 }

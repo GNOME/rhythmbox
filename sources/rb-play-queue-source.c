@@ -103,13 +103,22 @@ rb_play_queue_sync_playing_state (GObject *entry_view,
 }
 
 static void
-rb_play_queue_source_finalize (GObject *object)
+rb_play_queue_source_dispose (GObject *object)
 {
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (object);
 
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
+		priv->action_group = NULL;
 	}
+
+	G_OBJECT_CLASS (rb_play_queue_source_parent_class)->dispose (object);
+}
+
+static void
+rb_play_queue_source_finalize (GObject *object)
+{
+	/* do nothing */
 
 	G_OBJECT_CLASS (rb_play_queue_source_parent_class)->finalize (object);
 }
@@ -124,6 +133,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	object_class->constructor = rb_play_queue_source_constructor;
 	object_class->get_property = rb_play_queue_source_get_property;
 	object_class->finalize = rb_play_queue_source_finalize;
+	object_class->dispose  = rb_play_queue_source_dispose;
 
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;

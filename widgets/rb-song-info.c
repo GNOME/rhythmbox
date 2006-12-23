@@ -56,6 +56,7 @@ static GObject *rb_song_info_constructor (GType type, guint n_construct_properti
 					  GObjectConstructParam *construct_properties);
 
 static void rb_song_info_show (GtkWidget *widget);
+static void rb_song_info_dispose (GObject *object);
 static void rb_song_info_finalize (GObject *object);
 static void rb_song_info_set_property (GObject *object,
 				       guint prop_id,
@@ -191,6 +192,7 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 							     RHYTHMDB_TYPE_ENTRY,
 					                     G_PARAM_READABLE));
 
+	object_class->dispose = rb_song_info_dispose;
 	object_class->finalize = rb_song_info_finalize;
 
 	rb_song_info_signals[PRE_METADATA_CHANGE] =
@@ -468,6 +470,50 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 }
 
 static void
+rb_song_info_dispose (GObject *object)
+{
+	RBSongInfo *song_info;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SONG_INFO (object));
+
+	song_info = RB_SONG_INFO (object);
+
+	g_return_if_fail (song_info->priv != NULL);
+	g_signal_handlers_disconnect_by_func (song_info->priv->source,
+					      G_CALLBACK (rb_song_info_query_model_changed_cb),
+					      song_info);
+
+	if (song_info->priv->albums != NULL) {
+		g_object_unref (song_info->priv->albums);
+		song_info->priv->albums = NULL;
+	}
+	if (song_info->priv->artists != NULL) {
+		g_object_unref (song_info->priv->artists);
+		song_info->priv->artist = NULL;
+	}
+	if (song_info->priv->genres != NULL) {
+		g_object_unref (song_info->priv->genres);
+		song_info->priv->genres = NULL;
+	}
+
+	if (song_info->priv->db != NULL) {
+		g_object_unref (song_info->priv->db);
+		song_info->priv->db = NULL;
+	}
+	if (song_info->priv->source != NULL) {
+		g_object_unref (song_info->priv->source);
+		song_info->priv->source = NULL;
+	}
+	if (song_info->priv->query_model != NULL) {
+		g_object_unref (song_info->priv->query_model);
+		song_info->priv->query_model = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_song_info_parent_class)->dispose (object);
+}
+
+static void
 rb_song_info_finalize (GObject *object)
 {
 	RBSongInfo *song_info;
@@ -478,18 +524,6 @@ rb_song_info_finalize (GObject *object)
 	song_info = RB_SONG_INFO (object);
 
 	g_return_if_fail (song_info->priv != NULL);
-
-	g_signal_handlers_disconnect_by_func (song_info->priv->source,
-					      G_CALLBACK (rb_song_info_query_model_changed_cb),
-					      song_info);
-
-	g_object_unref (song_info->priv->albums);
-	g_object_unref (song_info->priv->artists);
-	g_object_unref (song_info->priv->genres);
-
-	g_object_unref (song_info->priv->db);
-	g_object_unref (song_info->priv->source);
-	g_object_unref (song_info->priv->query_model);
 
 	if (song_info->priv->selected_entries != NULL) {
 		g_list_foreach (song_info->priv->selected_entries, (GFunc)rhythmdb_entry_unref, NULL);

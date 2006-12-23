@@ -47,6 +47,7 @@ static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
 static GObject *rb_play_order_constructor (GType type, guint n_construct_properties,
 					   GObjectConstructParam *construct_properties);
+static void rb_play_order_dispose (GObject *object);
 static void rb_play_order_finalize (GObject *object);
 static void rb_play_order_set_property (GObject *object,
 					guint prop_id,
@@ -111,6 +112,7 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->constructor = rb_play_order_constructor;
+	object_class->dispose = rb_play_order_dispose;
 	object_class->finalize = rb_play_order_finalize;
 	object_class->set_property = rb_play_order_set_property;
 	object_class->get_property = rb_play_order_get_property;
@@ -168,7 +170,7 @@ rb_play_order_constructor (GType type,
 }
 
 static void
-rb_play_order_finalize (GObject *object)
+rb_play_order_dispose (GObject *object)
 {
 	RBPlayOrder *porder;
 
@@ -176,10 +178,6 @@ rb_play_order_finalize (GObject *object)
 	g_return_if_fail (RB_IS_PLAY_ORDER (object));
 
 	porder = RB_PLAY_ORDER (object);
-
-	if (porder->priv->playing_entry != NULL) {
-		rhythmdb_entry_unref (porder->priv->playing_entry);
-	}
 
 	if (porder->priv->query_model != NULL) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->query_model),
@@ -189,11 +187,31 @@ rb_play_order_finalize (GObject *object)
 						      G_CALLBACK (rb_play_order_row_deleted_cb),
 						      porder);
 		g_object_unref (porder->priv->query_model);
+		porder->priv->query_model = NULL;
 	}
 
 	if (porder->priv->db != NULL) {
 		g_object_unref (porder->priv->db);
+		porder->priv->db = NULL;
 	}
+
+	if (porder->priv->playing_entry != NULL) {
+		rhythmdb_entry_unref (porder->priv->playing_entry);
+		porder->priv->playing_entry = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_play_order_parent_class)->dispose (object);
+}
+
+static void
+rb_play_order_finalize (GObject *object)
+{
+	RBPlayOrder *porder;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PLAY_ORDER (object));
+
+	porder = RB_PLAY_ORDER (object);
 
 	G_OBJECT_CLASS (rb_play_order_parent_class)->finalize (object);
 }

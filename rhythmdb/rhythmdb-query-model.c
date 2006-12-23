@@ -658,6 +658,11 @@ rhythmdb_query_model_dispose (GObject *object)
 		model->priv->base_model = NULL;
 	}
 
+	if (model->priv->query_reapply_timeout_id != 0) {
+		g_source_remove (model->priv->query_reapply_timeout_id);
+		model->priv->query_reapply_timeout_id = 0;
+	}
+
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->dispose (object);
 }
 
@@ -691,9 +696,6 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	if (model->priv->limit_value)
 		g_value_array_free (model->priv->limit_value);
-
-	if (model->priv->query_reapply_timeout_id)
-		g_source_remove (model->priv->query_reapply_timeout_id);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }

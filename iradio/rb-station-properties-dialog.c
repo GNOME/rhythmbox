@@ -38,6 +38,7 @@
 
 static void rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass);
 static void rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog);
+static void rb_station_properties_dialog_dispose (GObject *object);
 static void rb_station_properties_dialog_finalize (GObject *object);
 static void rb_station_properties_dialog_set_property (GObject *object,
 						       guint prop_id,
@@ -120,6 +121,7 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	object_class->dispose = rb_station_properties_dialog_dispose;
 	object_class->finalize = rb_station_properties_dialog_finalize;
 
 	g_type_class_add_private (klass, sizeof (RBStationPropertiesDialogPrivate));
@@ -189,6 +191,24 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 }
 
 static void
+rb_station_properties_dialog_dispose (GObject *object)
+{
+	RBStationPropertiesDialog *dialog;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (object));
+
+	dialog = RB_STATION_PROPERTIES_DIALOG (object);
+	g_return_if_fail (dialog->priv != NULL);
+
+	if (dialog->priv->db != NULL) {
+		g_object_unref (dialog->priv->db);
+	}
+
+	G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)->dispose (object);
+}
+
+static void
 rb_station_properties_dialog_finalize (GObject *object)
 {
 	RBStationPropertiesDialog *dialog;
@@ -199,10 +219,6 @@ rb_station_properties_dialog_finalize (GObject *object)
 	dialog = RB_STATION_PROPERTIES_DIALOG (object);
 
 	g_return_if_fail (dialog->priv != NULL);
-
-	if (dialog->priv->db != NULL) {
-		g_object_unref (dialog->priv->db);
-	}
 
 	G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)->finalize (object);
 }

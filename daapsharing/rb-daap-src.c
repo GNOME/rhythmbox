@@ -367,8 +367,10 @@ rb_daap_src_finalize (GObject *object)
 	g_free (src->daap_uri);
 	src->daap_uri = NULL;
 
-	if (src->sock_fd != -1)
+	if (src->sock_fd != -1) {
 		close (src->sock_fd);
+		src->sock_fd = -1;
+	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

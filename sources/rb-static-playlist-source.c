@@ -194,6 +194,12 @@ rb_static_playlist_source_dispose (GObject *object)
 
 	if (priv->filter_model != NULL) {
 		g_object_unref (priv->filter_model);
+		priv->filter_model = NULL;
+	}
+
+	if (priv->action_group != NULL) {
+		g_object_unref (priv->action_group);
+		priv->action_group = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->dispose (object);
@@ -207,10 +213,6 @@ rb_static_playlist_source_finalize (GObject *object)
 	rb_debug ("Finalizing static playlist source %p", object);
 
 	g_free (priv->search_text);
-
-	if (priv->action_group != NULL) {
-		g_object_unref (priv->action_group);
-	}
 
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->finalize (object);
 }

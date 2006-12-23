@@ -43,6 +43,7 @@ static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
 static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
 					  GObjectConstructParam *construct_properties);
+static void rb_tray_icon_dispose (GObject *object);
 static void rb_tray_icon_finalize (GObject *object);
 static void rb_tray_icon_sync_action (RBShell *shell,
 				      gboolean visible,
@@ -121,6 +122,7 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_tray_icon_dispose;
 	object_class->finalize = rb_tray_icon_finalize;
 	object_class->constructor = rb_tray_icon_constructor;
 
@@ -214,9 +216,37 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 	rb_tray_icon_sync_action (NULL, FALSE, tray);
 
 	gtk_ui_manager_insert_action_group (tray->priv->ui_manager, tray->priv->actiongroup, 0);
-	g_object_unref (tray->priv->actiongroup);
 
 	return G_OBJECT (tray);
+}
+
+static void
+rb_tray_icon_dispose (GObject *object)
+{
+	RBTrayIcon *tray;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_TRAY_ICON (object));
+
+	tray = RB_TRAY_ICON (object);
+
+	g_return_if_fail (tray->priv != NULL);
+
+	if (tray->priv->shell_player != NULL) {
+		g_object_unref (tray->priv->shell_player);
+		tray->priv->shell_player = NULL;
+	}
+
+	if (tray->priv->actiongroup != NULL) {
+		if (tray->priv->ui_manager != NULL) {
+			gtk_ui_manager_remove_action_group (tray->priv->ui_manager,
+							    tray->priv->actiongroup);
+		}
+		g_object_unref (tray->priv->actiongroup);
+		tray->priv->actiongroup = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_tray_icon_parent_class)->dispose (object);
 }
 
 static void
@@ -231,13 +261,7 @@ rb_tray_icon_finalize (GObject *object)
 
 	rb_debug ("tray icon %p finalizing", object);
 
-	gtk_ui_manager_remove_action_group (tray->priv->ui_manager, tray->priv->actiongroup);
-
 	g_return_if_fail (tray->priv != NULL);
-
-	if (tray->priv->shell_player != NULL) {
-		g_object_unref (tray->priv->shell_player);
-	}
 
 	gtk_object_destroy (GTK_OBJECT (tray->priv->tooltips));
 

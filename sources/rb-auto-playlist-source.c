@@ -37,6 +37,7 @@
 
 static GObject *rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 						      GObjectConstructParam *construct_properties);
+static void rb_auto_playlist_source_dispose (GObject *object);
 static void rb_auto_playlist_source_finalize (GObject *object);
 
 /* source methods */
@@ -113,6 +114,7 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_auto_playlist_source_constructor;
+	object_class->dispose = rb_auto_playlist_source_dispose;
 	object_class->finalize = rb_auto_playlist_source_finalize;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -159,17 +161,27 @@ rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 }
 
 static void
-rb_auto_playlist_source_finalize (GObject *object)
+rb_auto_playlist_source_dispose (GObject *object)
 {
 	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
 
 	if (priv->action_group != NULL) {
 		g_object_unref (priv->action_group);
+		priv->action_group = NULL;
 	}
 
 	if (priv->cached_all_query) {
 		g_object_unref (G_OBJECT (priv->cached_all_query));
+		priv->cached_all_query = NULL;
 	}
+
+	G_OBJECT_CLASS (rb_auto_playlist_source_parent_class)->dispose (object);
+}
+
+static void
+rb_auto_playlist_source_finalize (GObject *object)
+{
+	RBAutoPlaylistSourcePrivate *priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (object);
 
 	if (priv->query) {
 		rhythmdb_query_free (priv->query);

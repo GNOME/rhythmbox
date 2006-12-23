@@ -31,6 +31,7 @@
 
 static void rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass);
 static void rb_shuffle_play_order_init (RBShufflePlayOrder *sorder);
+static void rb_shuffle_play_order_dispose (GObject *object);
 static void rb_shuffle_play_order_finalize (GObject *object);
 
 static RhythmDBEntry* rb_shuffle_play_order_get_next (RBPlayOrder* method);
@@ -83,6 +84,7 @@ rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass)
 	RBPlayOrderClass *porder;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_shuffle_play_order_dispose;
 	object_class->finalize = rb_shuffle_play_order_finalize;
 
 	porder = RB_PLAY_ORDER_CLASS (klass);
@@ -121,6 +123,24 @@ rb_shuffle_play_order_init (RBShufflePlayOrder *sorder)
 }
 
 static void
+rb_shuffle_play_order_dispose (GObject *object)
+{
+	RBShufflePlayOrder *sorder;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (object));
+
+	sorder = RB_SHUFFLE_PLAY_ORDER (object);
+
+	if (sorder->priv->history != NULL) {
+		g_object_unref (sorder->priv->history);
+		sorder->priv->history = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_shuffle_play_order_parent_class)->dispose (object);
+}
+
+static void
 rb_shuffle_play_order_finalize (GObject *object)
 {
 	RBShufflePlayOrder *sorder;
@@ -130,7 +150,6 @@ rb_shuffle_play_order_finalize (GObject *object)
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (object);
 
-	g_object_unref (sorder->priv->history);
 	g_hash_table_destroy (sorder->priv->entries_added);
 	g_hash_table_destroy (sorder->priv->entries_removed);
 

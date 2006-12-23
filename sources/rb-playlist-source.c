@@ -319,6 +319,7 @@ rb_playlist_source_dispose (GObject *object)
 
 	if (source->priv->model != NULL) {
 		g_object_unref (source->priv->model);
+		source->priv->model = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_playlist_source_parent_class)->dispose (object);

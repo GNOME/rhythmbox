@@ -77,6 +77,7 @@ static void rb_shell_player_class_init (RBShellPlayerClass *klass);
 static void rb_shell_player_init (RBShellPlayer *shell_player);
 static GObject *rb_shell_player_constructor (GType type, guint n_construct_properties,
 					     GObjectConstructParam *construct_properties);
+static void rb_shell_player_dispose (GObject *object);
 static void rb_shell_player_finalize (GObject *object);
 static void rb_shell_player_set_property (GObject *object,
 					  guint prop_id,
@@ -281,6 +282,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_shell_player_dispose;
 	object_class->finalize = rb_shell_player_finalize;
 	object_class->constructor = rb_shell_player_constructor;
 
@@ -879,6 +881,41 @@ rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
 }
 
 static void
+rb_shell_player_dispose (GObject *object)
+{
+	RBShellPlayer *player;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
+
+	player = RB_SHELL_PLAYER (object);
+
+	g_return_if_fail (player->priv != NULL);
+
+	if (player->priv->gconf_play_order_id != 0) {
+		eel_gconf_notification_remove (player->priv->gconf_play_order_id);
+		player->priv->gconf_play_order_id = 0;
+	}
+
+	if (player->priv->mmplayer != NULL) {
+		g_object_unref (player->priv->mmplayer);
+		player->priv->mmplayer = NULL;
+	}
+
+	if (player->priv->play_order != NULL) {
+		g_object_unref (player->priv->play_order);
+		player->priv->play_order = NULL;
+	}
+
+	if (player->priv->queue_play_order != NULL) {
+		g_object_unref (player->priv->queue_play_order);
+		player->priv->queue_play_order = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
+}
+
+static void
 rb_shell_player_finalize (GObject *object)
 {
 	RBShellPlayer *player;
@@ -890,13 +927,7 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
-	eel_gconf_notification_remove (player->priv->gconf_play_order_id);
-
 	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
-
-	g_object_unref (player->priv->mmplayer);
-	g_object_unref (player->priv->play_order);
-	g_object_unref (player->priv->queue_play_order);
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
 }

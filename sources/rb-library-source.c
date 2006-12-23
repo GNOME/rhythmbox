@@ -222,6 +222,27 @@ rb_library_source_dispose (GObject *object)
 		source->priv->db = NULL;
 	}
 
+	if (source->priv->ui_dir_notify_id != 0) {
+		eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
+		source->priv->ui_dir_notify_id = 0;
+	}
+
+	if (source->priv->library_location_notify_id != 0) {
+		eel_gconf_notification_remove (source->priv->library_location_notify_id);
+		source->priv->library_location_notify_id = 0;
+	}
+#ifdef ENABLE_TRACK_TRANSFER
+	if (source->priv->layout_path_notify_id != 0) {
+		eel_gconf_notification_remove (source->priv->layout_path_notify_id);
+		source->priv->layout_path_notify_id = 0;
+	}
+
+	if (source->priv->layout_filename_notify_id != 0) {
+		eel_gconf_notification_remove (source->priv->layout_filename_notify_id);
+		source->priv->layout_filename_notify_id = 0;
+	}
+#endif
+
 	G_OBJECT_CLASS (rb_library_source_parent_class)->dispose (object);
 }
 
@@ -238,12 +259,6 @@ rb_library_source_finalize (GObject *object)
 	g_return_if_fail (source->priv != NULL);
 
 	rb_debug ("finalizing library source");
-	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
-	eel_gconf_notification_remove (source->priv->library_location_notify_id);
-#ifdef ENABLE_TRACK_TRANSFER
-	eel_gconf_notification_remove (source->priv->layout_path_notify_id);
-	eel_gconf_notification_remove (source->priv->layout_filename_notify_id);
-#endif
 
 	G_OBJECT_CLASS (rb_library_source_parent_class)->finalize (object);
 }

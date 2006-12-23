@@ -1,3 +1,64 @@
+2006-12-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* daapsharing/rb-daap-src.c: (rb_daap_src_finalize):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_class_init),
+	(rb_station_properties_dialog_dispose),
+	(rb_station_properties_dialog_finalize):
+	* podcast/rb-podcast-properties-dialog.c:
+	(rb_podcast_properties_dialog_class_init),
+	(rb_podcast_properties_dialog_dispose),
+	(rb_podcast_properties_dialog_finalize):
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_dispose_monitoring),
+	(rhythmdb_finalize_monitoring):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_class_init),
+	(rhythmdb_property_model_dispose),
+	(rhythmdb_property_model_finalize):
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_dispose),
+	(rhythmdb_query_model_finalize):
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init):
+	* shell/rb-play-order-shuffle.c:
+	(rb_shuffle_play_order_class_init),
+	(rb_shuffle_play_order_dispose), (rb_shuffle_play_order_finalize):
+	* shell/rb-play-order.c: (rb_play_order_class_init),
+	(rb_play_order_dispose), (rb_play_order_finalize):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_class_init),
+	(rb_shell_clipboard_dispose), (rb_shell_clipboard_finalize):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_dispose), (rb_shell_player_finalize):
+	* shell/rb-tray-icon.c: (rb_tray_icon_class_init),
+	(rb_tray_icon_constructor), (rb_tray_icon_dispose),
+	(rb_tray_icon_finalize):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_class_init),
+	(rb_auto_playlist_source_dispose),
+	(rb_auto_playlist_source_finalize):
+	* sources/rb-browser-source.c: (rb_browser_source_dispose),
+	(rb_browser_source_finalize):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_dispose):
+	* sources/rb-library-source.c: (rb_library_source_dispose),
+	(rb_library_source_finalize):
+	* sources/rb-play-queue-source.c: (rb_play_queue_source_dispose),
+	(rb_play_queue_source_finalize), (rb_play_queue_source_class_init):
+	* sources/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_class_init),
+	(rb_playlist_source_recorder_dispose),
+	(rb_playlist_source_recorder_finalize):
+	* sources/rb-playlist-source.c: (rb_playlist_source_dispose):
+	* sources/rb-podcast-source.c: (rb_podcast_source_dispose),
+	(rb_podcast_source_finalize):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_dispose),
+	(rb_static_playlist_source_finalize):
+	* widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_dispose), (rb_song_info_finalize):
+	Unref objects and remove main loop sources in dispose rather than
+	finalize throughout (except RBShell, which scares me).  In all
+	likelihood, fixes #362484.
+
 2006-12-23  James  Livingston  <doclivingston@gmail.com>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c: fix a typo. Closes #380933
