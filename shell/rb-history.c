@@ -61,10 +61,9 @@ static void rb_history_get_property (GObject *object,
 
 static void rb_history_limit_size (RBHistory *hist, gboolean cut_from_beginning);
 
-/**
- * Removes a link from the history and updates all pointers. Doesn't destroy the entry, but does change the size of the list.
- */
-static void rb_history_delete_link (RBHistory *hist, EggSequenceIter *to_delete);
+static void rb_history_remove_entry_internal (RBHistory *hist,
+					      RhythmDBEntry *entry,
+					      gboolean from_seq);
 
 enum
 {
@@ -322,7 +321,7 @@ rb_history_go_last (RBHistory *hist)
 static void
 _history_remove_swapped (RhythmDBEntry *entry, RBHistory *hist)
 {
-	rb_history_remove_entry (hist, entry);
+	rb_history_remove_entry_internal (hist, entry, FALSE);
 }
 
 void
@@ -349,6 +348,8 @@ rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 		egg_sequence_foreach_range (egg_sequence_iter_next (hist->priv->current),
 					    egg_sequence_get_end_iter (hist->priv->seq),
 					    (GFunc)_history_remove_swapped, hist);
+		egg_sequence_remove_range (egg_sequence_iter_next (hist->priv->current),
+					   egg_sequence_get_end_iter (hist->priv->seq));
 	}
 
 	rb_history_limit_size (hist, TRUE);
@@ -436,6 +437,12 @@ rb_history_limit_size (RBHistory *hist, gboolean cut_from_beginning)
 void
 rb_history_remove_entry (RBHistory *hist, RhythmDBEntry *entry)
 {
+	rb_history_remove_entry_internal (hist, entry, TRUE);
+}
+
+static void
+rb_history_remove_entry_internal (RBHistory *hist, RhythmDBEntry *entry, gboolean from_seq)
+{
 	EggSequenceIter *to_delete;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
@@ -444,19 +451,15 @@ rb_history_remove_entry (RBHistory *hist, RhythmDBEntry *entry)
 		g_hash_table_remove (hist->priv->entry_to_seqptr, entry);
 		if (hist->priv->destroyer)
 			hist->priv->destroyer (entry, hist->priv->destroy_userdata);
-		rb_history_delete_link (hist, to_delete);
-	}
-}
 
-static void
-rb_history_delete_link (RBHistory *hist, EggSequenceIter *to_delete)
-{
-	if (to_delete == hist->priv->current) {
-		hist->priv->current = egg_sequence_get_end_iter (hist->priv->seq);
+		if (to_delete == hist->priv->current) {
+			hist->priv->current = egg_sequence_get_end_iter (hist->priv->seq);
+		}
+		g_assert (to_delete != hist->priv->current);
+		if (from_seq) {
+			egg_sequence_remove (to_delete);
+		}
 	}
-	g_assert (to_delete != hist->priv->current);
-
-	egg_sequence_remove (to_delete);
 }
 
 void
@@ -465,6 +468,8 @@ rb_history_clear (RBHistory *hist)
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
 	egg_sequence_foreach (hist->priv->seq, (GFunc)_history_remove_swapped, hist);
+	egg_sequence_remove_range (egg_sequence_get_begin_iter (hist->priv->seq),
+				   egg_sequence_get_end_iter (hist->priv->seq));
 
 	/* When the sequence is empty, the hash table should also be empty. */
 	g_assert (g_hash_table_size (hist->priv->entry_to_seqptr) == 0);

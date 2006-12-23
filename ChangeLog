@@ -1,5 +1,12 @@
 2006-12-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-history.c: (_history_remove_swapped),
+	(rb_history_set_playing), (rb_history_remove_entry),
+	(rb_history_remove_entry_internal), (rb_history_clear):
+	Don't remove entries from the sequence while iterating it.
+
+2006-12-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* daapsharing/rb-daap-src.c: (rb_daap_src_finalize):
 	* iradio/rb-station-properties-dialog.c:
 	(rb_station_properties_dialog_class_init),
