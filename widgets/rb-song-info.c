@@ -480,9 +480,6 @@ rb_song_info_dispose (GObject *object)
 	song_info = RB_SONG_INFO (object);
 
 	g_return_if_fail (song_info->priv != NULL);
-	g_signal_handlers_disconnect_by_func (song_info->priv->source,
-					      G_CALLBACK (rb_song_info_query_model_changed_cb),
-					      song_info);
 
 	if (song_info->priv->albums != NULL) {
 		g_object_unref (song_info->priv->albums);
@@ -490,7 +487,7 @@ rb_song_info_dispose (GObject *object)
 	}
 	if (song_info->priv->artists != NULL) {
 		g_object_unref (song_info->priv->artists);
-		song_info->priv->artist = NULL;
+		song_info->priv->artists = NULL;
 	}
 	if (song_info->priv->genres != NULL) {
 		g_object_unref (song_info->priv->genres);
@@ -502,6 +499,9 @@ rb_song_info_dispose (GObject *object)
 		song_info->priv->db = NULL;
 	}
 	if (song_info->priv->source != NULL) {
+		g_signal_handlers_disconnect_by_func (song_info->priv->source,
+						      G_CALLBACK (rb_song_info_query_model_changed_cb),
+						      song_info);
 		g_object_unref (song_info->priv->source);
 		song_info->priv->source = NULL;
 	}
