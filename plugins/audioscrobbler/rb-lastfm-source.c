@@ -1048,20 +1048,28 @@ rb_lastfm_source_title_from_uri (char *uri)
 		 *  will handle for us.
 		 */
 		if (data[4] != NULL) {
-			if (strcmp (data[4], "similarartists") == 0)
+			if (strcmp (data[4], "similarartists") == 0) {
 				title = g_strdup_printf (_("Artists similar to %s"), data[3]);
-			if (strcmp (data[4], "fans") == 0)
+			} if (strcmp (data[4], "fans") == 0) {
 				title = g_strdup_printf (_("Artists liked by fans of %s"), data[3]);
+			}
 		}
 
 	}
 
 	if (title == NULL && strcmp (data[2], "user") == 0) {
-		if (strcmp(data[4], "neighbours") == 0)
+		if (strcmp (data[4], "neighbours") == 0) {
 			title = g_strdup_printf (_("%s's Neighbour Radio"), data[3]);
-		if (strcmp(data[4], "recommended") == 0)
+		} else if (strcmp (data[4], "recommended") == 0) {
 			title = g_strdup_printf (_("%s's Recommended Radio: %s percent"), data[3], data[5]);
+		} else if (strcmp (data[4], "personal") == 0) {
+			title = g_strdup_printf (_("%s's Personal Radio"), data[3]);
+		}
 		/* subscriber? */
+	}
+
+	if (title == NULL && strcmp (data[2], "usertags") == 0) {
+		title = g_strdup_printf (_("%s's %s Radio"), data[3], data[4]);
 	}
 
 	if (title == NULL) {
