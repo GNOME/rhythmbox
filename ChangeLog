@@ -1,5 +1,12 @@
 2006-12-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_title_from_uri):
+	Don't free the drag data string if we don't understand the URI.
+	From #390494.
+
+2006-12-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/artdisplay/Makefile.am:
 	Install rhythmbox-missing-artwork.svg.  Fixes #387413.
 

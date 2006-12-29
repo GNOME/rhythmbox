@@ -1065,7 +1065,7 @@ rb_lastfm_source_title_from_uri (char *uri)
 	}
 
 	if (title == NULL) {
-		title = g_strstrip (uri);
+		title = g_strdup (g_strstrip (uri));
 	}
 
 	g_strfreev (data);
