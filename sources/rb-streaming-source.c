@@ -106,7 +106,6 @@ rb_streaming_source_class_init (RBStreamingSourceClass *klass)
 	object_class->dispose = rb_streaming_source_dispose;
 	object_class->constructor = rb_streaming_source_constructor;
 
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
