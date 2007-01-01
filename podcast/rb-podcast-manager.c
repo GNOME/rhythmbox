@@ -115,6 +115,7 @@ struct RBPodcastManagerPrivate
 	guint next_time;
 	guint source_sync;
 	guint update_interval_notify_id;
+	guint next_file_id;
 	gboolean shutdown;
 
 	gboolean remove_files;
@@ -299,6 +300,11 @@ rb_podcast_manager_dispose (GObject *object)
 
 	eel_gconf_monitor_remove (CONF_STATE_PODCAST_PREFIX);
 
+	if (pd->priv->next_file_id != 0) {
+		g_source_remove (pd->priv->next_file_id);
+		pd->priv->next_file_id = 0;
+	}
+
 	if (pd->priv->source_sync != 0) {
 		g_source_remove (pd->priv->source_sync);
 		pd->priv->source_sync = 0;
@@ -436,7 +442,10 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 		data->entry = rhythmdb_entry_ref (entry);
 
 		pd->priv->download_list = g_list_append (pd->priv->download_list, data);
-		g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, pd);
+		if (pd->priv->next_file_id == 0) {
+			pd->priv->next_file_id =
+				g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, pd);
+		}
 	}
 }
 
@@ -559,6 +568,8 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	rb_debug ("looking for something to download");
 
 	GDK_THREADS_ENTER ();
+
+	pd->priv->next_file_id = 0;
 
 	if (pd->priv->active_download != NULL) {
 		rb_debug ("already downloading something");
@@ -789,7 +800,10 @@ rb_podcast_manager_abort_download (RBPodcastManagerInfo *data)
 	if (mgr->priv->active_download == data)
 		mgr->priv->active_download = NULL;
 
-	g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, mgr);
+	if (mgr->priv->next_file_id == 0) {
+		mgr->priv->next_file_id =
+			g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, mgr);
+	}
 }
 
 gboolean
@@ -1139,7 +1153,10 @@ end_job	(RBPodcastManagerInfo *data)
 
 	download_info_free (data);
 
-	g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, pd);
+	if (pd->priv->next_file_id == 0) {
+		pd->priv->next_file_id =
+			g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, pd);
+	}
 	return FALSE;
 }
 
