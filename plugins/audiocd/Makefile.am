@@ -9,7 +9,7 @@ libaudiocd_la_SOURCES =					\
 libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) $(LIBNAUTILUS_BURN_LIBS) $(MUSICBRAINZ_LIBS)
 
 libaudiocd_la_LIBADD = \
-	$(top_builddir)/lib/librb.la \
+	$(top_builddir)/corelib/librhythmbox-core.la \
 	$(HAL_LIBS)                  \
 	$(TOTEM_PLPARSER_LIBS)       \
 	$(LIBNAUTILUS_BURN_LIBS)

@@ -1,5 +1,20 @@
 2007-01-02  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* Makefile.am:
+	* configure.ac:
+	* plugins/audiocd/Makefile.am:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/cd-recorder/Makefile.am:
+	* plugins/ipod/Makefile.am:
+	* plugins/iradio/Makefile.am:
+	* shell/Makefile.am: move stuff into a shared library that is used by
+	both the main binary and plugins. Reduces the size of the binaries and
+	hopefully fixes dynamic linking issues on Solaris. From #372863.
+
+2007-01-02  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Loïc Minier  <lool+gnome@via.ecp.fr>
 
 	* data/rhythmbox.schemas: fix a typo in the schema. Fixes #387527

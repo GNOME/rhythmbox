@@ -935,6 +935,7 @@ data/art/Makefile
 data/glade/Makefile
 sources/Makefile
 daapsharing/Makefile
+corelib/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audiocd/Makefile

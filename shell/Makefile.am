@@ -90,19 +90,15 @@ librbshell_la_SOURCES =              			\
 	rb-play-order-random-by-rating.c		\
 	rb-play-order-random-by-rating.h		\
 	rb-tray-icon.c					\
-	rb-tray-icon.h				
+	rb-tray-icon.h
 
 rhythmbox_LDADD =					\
 	librbshell.la					\
-	$(top_builddir)/sources/libsources.la	        \
+	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/podcast/librbpodcast.la	        \
-	$(top_builddir)/metadata/librbmetadata.la	\
-	$(top_builddir)/widgets/librbwidgets.la         \
-	$(top_builddir)/rhythmdb/librhythmdb.la         \
-	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
-	$(top_builddir)/lib/librb.la
+	$(top_builddir)/rhythmdb/librhythmdb.la
 
 if USE_LIBSOUP
 rhythmbox_LDADD += $(SOUP_LIBS)

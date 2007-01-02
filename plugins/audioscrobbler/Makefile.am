@@ -16,8 +16,7 @@ endif
 
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBADD = 				\
-	$(top_builddir)/lib/librb.la			\
-	$(top_builddir)/sources/libsources.la		\
+	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(SOUP_LIBS)
 
 INCLUDES = 						\
