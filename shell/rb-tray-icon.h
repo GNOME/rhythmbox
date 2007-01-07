@@ -59,14 +59,16 @@ void                    rb_tray_icon_get_geom   (RBTrayIcon *icon, int *x, int *
 
 void                    rb_tray_icon_notify     (RBTrayIcon *icon,
 						 guint timeout,
-						 const char *primary,
+						 const char *primary_markup,
 						 GtkWidget *msgicon,
-						 const char *secondary,
+						 const char *secondary_markup,
 						 gboolean requested);
 
 void                    rb_tray_icon_cancel_notify (RBTrayIcon *icon);
 
-void			rb_tray_icon_set_tooltip(RBTrayIcon *icon, const char *tooltip);
+void rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon, const char *primary_markup);
+void rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon);
+void rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon, const char *secondary_markup);
 
 G_END_DECLS
 

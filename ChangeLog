@@ -1,3 +1,43 @@
+2007-01-07  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* widgets/libsexy/Makefile.am:
+	* widgets/libsexy/sexy-tooltip.h:
+	* widgets/libsexy/sexy-tooltip.c: add a copy of sexy-tooltip from
+	Libsexy.
+
+	* bindings/python/rhythmdb.override:
+	* plugins/artdisplay/artdisplay/__init__.py:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_constructor),
+	(rb_shell_db_metadata_art_cb), (rb_shell_playing_entry_changed_cb),
+	(rb_shell_player_elapsed_changed_cb),
+	(rb_shell_update_tray_tooltip_elapsed), (markup_escape),
+	(rb_shell_construct_notify_titles),
+	(rb_shell_notify_playing_entry), (rb_shell_hidden_notify),
+	(rb_shell_hidden_notify_markup):
+	* shell/rb-shell.h:
+	* shell/rb-tray-icon.c: (rb_tray_icon_init),
+	(rb_tray_icon_finalize), (rb_tray_icon_update_tooltip_visibility),
+	(rb_tray_icon_unhide_cb),
+	(rb_tray_icon_set_tooltip_primary_markup),
+	(rb_tray_icon_set_tooltip_icon),
+	(rb_tray_icon_set_tooltip_secondary_markup), (rb_tray_icon_notify),
+	(rb_tray_icon_enter_notify_event_cb),
+	(rb_tray_icon_leave_notify_event_cb),
+	(rb_tray_icon_tooltip_size_allocate_cb),
+	(rb_tray_icon_construct_tooltip), (rb_tray_icon_unsuppress_cb),
+	(rb_tray_icon_suppress_tooltips):
+	* shell/rb-tray-icon.h:
+	* widgets/eggtrayicon.c: (egg_tray_icon_send_message),
+	(egg_tray_icon_notify):
+	* widgets/eggtrayicon.h: Display cover art in the song-change
+	notification and the tray icon toolip. Fixes #345592
+
+2007-01-02  James Livingston  <doclivingston@gmail.com>
+
+	* corelib/: add the directory that I missed in the last commit. Oops.
+
 2007-01-02  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>

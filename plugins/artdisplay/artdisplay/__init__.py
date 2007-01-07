@@ -250,11 +250,14 @@ class ArtDisplayPlugin (rb.Plugin):
 		sp = shell.get_player ()
 		self.pec_id = sp.connect ('playing-song-changed', self.playing_entry_changed)
 		self.pc_id = sp.connect ('playing-changed', self.playing_changed)
+		db = shell.get_property ("db")
+		self.eemr_art_id = db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request)
 		self.art_widget = FadingImage (self.find_file (ART_MISSING_ICON + ".svg"))
 		self.art_widget.set_padding (0, 5)
 		shell.add_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_db = CoverArtDatabase ()
 		self.current_entry = None
+		self.current_pixbuf = None
 		entry = sp.get_playing_entry ()
 		self.playing_entry_changed (sp, entry)
 	
@@ -263,6 +266,8 @@ class ArtDisplayPlugin (rb.Plugin):
 		sp = shell.get_player ()
 		sp.disconnect (self.pec_id)
 		sp.disconnect (self.pc_id)
+		db = shell.get_property ("db")
+		db.disconnect (self.eemr_art_id)
 		shell.remove_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
@@ -282,9 +287,18 @@ class ArtDisplayPlugin (rb.Plugin):
 			self.art_widget.show ()
 			# Intitates search in the database (which checks art cache, internet etc.)
 			self.current_entry = entry
+			self.current_pixbuf = None
 			self.art_db.get_pixbuf(db, entry, self.on_get_pixbuf_completed)
 
 	def on_get_pixbuf_completed(self, entry, pixbuf):
 		# Set the pixbuf for the entry returned from the art db
 		if entry == self.current_entry:
 			self.art_widget.set_current_art (pixbuf, False)
+			if pixbuf:
+				db = self.shell.get_property ("db")
+				db.emit_entry_extra_metadata_notify (entry,
+						"rb:coverArt", pixbuf)
+	
+	def cover_art_request (self, db, entry):
+		if entry == self.current_entry:
+			return self.current_pixbuf

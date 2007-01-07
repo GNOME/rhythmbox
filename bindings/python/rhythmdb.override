@@ -618,6 +618,7 @@ _wrap_rhythmdb_emit_entry_extra_metadata_notify(PyGObject *self, PyObject *args,
 	char *property_name;
 	PyObject *py_metadata;
 	RhythmDBEntry *entry = NULL;
+	GType type;
 	GValue val = {0,};
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs,"OsO:RhythmDB.emit_entry_extra_metadata_notify", kwlist, &py_entry, &property_name, &py_metadata))
@@ -630,7 +631,16 @@ _wrap_rhythmdb_emit_entry_extra_metadata_notify(PyGObject *self, PyObject *args,
 		return NULL;
 	}
 
-	pyg_value_from_pyobject (&val, py_metadata);
+	type = pyg_type_from_object((PyObject *) py_metadata->ob_type);
+	if (! type) {
+		PyErr_SetString(PyExc_TypeError, "can't map metadata to GType system");
+		return NULL;
+	}
+	g_value_init (&val, type);
+	if (pyg_value_from_pyobject (&val, py_metadata) == -1) {
+		g_value_unset (&val);
+		return NULL;
+	}
 	rhythmdb_emit_entry_extra_metadata_notify(RHYTHMDB_RHYTHMDB(self->obj), entry, property_name, &val);
 	g_value_unset (&val);
     

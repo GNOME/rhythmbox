@@ -2,7 +2,9 @@ noinst_LTLIBRARIES = libsexy.la
 
 libsexy_la_SOURCES =		\
 	sexy-icon-entry.h	\
-	sexy-icon-entry.c
+	sexy-icon-entry.c	\
+	sexy-tooltip.h		\
+	sexy-tooltip.c
 
 libsexy_la_LIBADD = $(RHYTHMBOX_LIBS)
 

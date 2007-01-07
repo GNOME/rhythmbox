@@ -79,7 +79,7 @@ EggTrayIcon *egg_tray_icon_new            (const gchar *name);
 
 guint        egg_tray_icon_send_message   (EggTrayIcon *icon,
 					   gint         timeout,
-					   const char  *message,
+					   const char  *message_markup,
 					   gint         len);
 void         egg_tray_icon_cancel_message (EggTrayIcon *icon,
 					   guint        id);
@@ -88,9 +88,9 @@ gboolean     egg_tray_icon_have_manager   (EggTrayIcon *icon);
 
 void 	     egg_tray_icon_notify         (EggTrayIcon *icon,
 					   guint timeout,
-					   const char *primary,
+					   const char *primary_markup,
 					   GtkWidget *msgicon,
-					   const char *secondary);
+					   const char *secondary_markup);
 
 GtkOrientation egg_tray_icon_get_orientation (EggTrayIcon *icon);
 

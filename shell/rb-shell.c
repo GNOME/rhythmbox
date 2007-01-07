@@ -86,6 +86,8 @@
 #include "rb-song-info.h"
 #include "rb-marshal.h"
 
+#define PLAYING_ENTRY_NOTIFY_TIME 4
+
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
 static GObject *rb_shell_constructor (GType type,
@@ -135,6 +137,11 @@ static void rb_shell_db_save_error_cb (RhythmDB *db,
 static void rb_shell_db_entry_added_cb (RhythmDB *db,
 					RhythmDBEntry *entry,
 					RBShell *shell);
+static void rb_shell_db_metadata_art_cb (RhythmDB *db,
+					 RhythmDBEntry *entry,
+					 const char *field,
+					 GValue *metadata,
+					 RBShell *shell);
 static void rb_shell_druid_response_cb (GtkDialog *druid,
 					guint response,
 					 RBShell *shell);
@@ -149,7 +156,7 @@ static void rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
 					   RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
-static void rb_shell_set_elapsed (RBShell *shell, guint elapsed);
+static void rb_shell_update_tray_tooltip_elapsed (RBShell *shell);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
@@ -222,6 +229,8 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
 static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
+static void rb_shell_construct_notify_titles (RBShell *shell, 
+					      RhythmDBEntry *entry);
 
 static gboolean save_yourself_cb (GnomeClient *client,
                                   gint phase,
@@ -365,6 +374,11 @@ struct RBShellPrivate
 	char *cached_title;
 	char *cached_duration;
 	gboolean cached_playing;
+
+	/* markup, used for notifications and for tray tooltips */
+	char *cached_notify_primary;
+	char *cached_notify_secondary;
+	GtkWidget *cached_art_icon;
 
 	guint sidepane_visibility_notify_id;
 	guint toolbar_visibility_notify_id;
@@ -877,6 +891,13 @@ rb_shell_finalize (GObject *object)
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
 
+	if (shell->priv->cached_notify_primary != NULL)
+		g_free (shell->priv->cached_notify_primary);
+	if (shell->priv->cached_notify_secondary != NULL)
+		g_free (shell->priv->cached_notify_secondary);
+	if (shell->priv->cached_art_icon != NULL)
+		g_object_unref (shell->priv->cached_art_icon);
+
 	if (shell->priv->save_playlist_id > 0) {
 		g_source_remove (shell->priv->save_playlist_id);
 		shell->priv->save_playlist_id = 0;
@@ -1347,6 +1368,10 @@ rb_shell_constructor (GType type,
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
 				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
 
+	g_signal_connect_object (G_OBJECT (shell->priv->db),
+				 "entry_extra_metadata_notify::rb:coverArt",
+				 G_CALLBACK (rb_shell_db_metadata_art_cb), shell, 0);
+
 	construct_sources (shell);
 
 	construct_load_ui (shell);
@@ -1708,6 +1733,55 @@ rb_shell_db_entry_added_cb (RhythmDB *db,
 	}
 }
 
+static void
+rb_shell_db_metadata_art_cb (RhythmDB *db,
+			     RhythmDBEntry *entry,
+			     const char *field,
+			     GValue *metadata,
+			     RBShell *shell)
+{
+	GdkPixbuf *pixbuf, *my_pixbuf;
+	RhythmDBEntry *playing_entry;
+	gint icon_size;
+	guint time;
+
+	playing_entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+	if (entry != playing_entry) {
+		rhythmdb_entry_unref (playing_entry);
+		return;
+	}
+
+	if  (!G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
+		rhythmdb_entry_unref (playing_entry);
+		return;
+	}
+
+	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
+	if (pixbuf == NULL) {
+		rhythmdb_entry_unref (playing_entry);
+		return;
+	}
+
+	gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &icon_size, NULL);
+	my_pixbuf = gdk_pixbuf_scale_simple (pixbuf,
+			icon_size, icon_size,
+			GDK_INTERP_BILINEAR);
+
+	if (shell->priv->cached_art_icon != NULL)
+		g_object_unref (shell->priv->cached_art_icon);
+	shell->priv->cached_art_icon = g_object_ref_sink (gtk_image_new_from_pixbuf (my_pixbuf));
+	g_object_unref (my_pixbuf);
+
+	rb_tray_icon_set_tooltip_icon (shell->priv->tray_icon,
+				       shell->priv->cached_art_icon);
+
+	if (rb_shell_player_get_playing_time (shell->priv->player_shell, &time, NULL))
+		if (time < PLAYING_ENTRY_NOTIFY_TIME)
+			rb_shell_notify_playing_entry (shell, entry, FALSE);
+
+	rhythmdb_entry_unref (playing_entry);
+}
+
 RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell,
 				   RhythmDBEntryType type)
@@ -1896,7 +1970,15 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBShell *shell)
 {
+	if (shell->priv->cached_art_icon != NULL)
+		g_object_unref (shell->priv->cached_art_icon);
+	shell->priv->cached_art_icon = NULL;
+
 	rb_shell_notify_playing_entry (shell, entry, FALSE);
+
+	rb_tray_icon_set_tooltip_primary_markup (shell->priv->tray_icon, shell->priv->cached_notify_primary);
+	rb_tray_icon_set_tooltip_icon (shell->priv->tray_icon, shell->priv->cached_art_icon);
+	rb_shell_update_tray_tooltip_elapsed (shell);
 }
 
 static void
@@ -1973,35 +2055,38 @@ rb_shell_player_elapsed_changed_cb (RBShellPlayer *player,
 				    guint elapsed,
 				    RBShell *shell)
 {
-	rb_shell_set_elapsed (shell, elapsed);
+	rb_shell_update_tray_tooltip_elapsed (shell);
 }
 
 static void
-rb_shell_set_elapsed (RBShell *shell,
-		      guint elapsed)
+rb_shell_update_tray_tooltip_elapsed (RBShell *shell)
 {
 	gboolean playing;
 	char *elapsed_string;
-	char *tooltip;
+	GString *secondary;
 
 	rb_shell_player_get_playing (shell->priv->player_shell, &playing, NULL);
 	elapsed_string = rb_shell_player_get_playing_time_string (shell->priv->player_shell);
 
-	if (shell->priv->cached_title == NULL)
-		tooltip = g_strdup (_("Not playing"));
-	else if (!playing) {
-		/* Translators: the first %s is substituted by the song name, the second one is the elapsed and total time */
-		tooltip = g_strdup_printf (_("%s\nPaused, %s"),
-					 shell->priv->cached_title, elapsed_string);
+	secondary = g_string_sized_new (100);
+	if (shell->priv->cached_notify_secondary != NULL) {
+		g_string_append (secondary, shell->priv->cached_notify_secondary);
+		if (secondary->len != 0)
+			g_string_append_c (secondary, '\n');
+	}
+	if (shell->priv->cached_notify_primary == NULL) {
+		g_string_append (secondary, _("Not playing"));
+	} else if (!playing) {
+		/* Translators: the %s is the elapsed and total time */
+		g_string_append_printf (secondary, _("Paused, %s"), elapsed_string);
 	} else {
-		/* Translators: the first %s is substituted by the song name, the second one is the elapsed and total time */
-		tooltip = g_strdup_printf (_("%s\n%s"),
-					   shell->priv->cached_title, elapsed_string);
+		g_string_append (secondary, elapsed_string);
 	}
 
-	rb_tray_icon_set_tooltip (shell->priv->tray_icon, tooltip);
+	rb_tray_icon_set_tooltip_secondary_markup (shell->priv->tray_icon,
+						   secondary->str);
 	g_free (elapsed_string);
-	g_free (tooltip);
+	g_string_free (secondary, TRUE);
 }
 
 static void
@@ -2827,22 +2912,33 @@ tray_destroy_cb (GtkObject *object,
  	return TRUE;
 }
 
+static gchar *
+markup_escape (const char *text)
+{
+	return (text == NULL) ? NULL : g_markup_escape_text (text, -1);
+}
 
-void
-rb_shell_notify_playing_entry (RBShell *shell,
-			       RhythmDBEntry *entry,
-			       gboolean requested)
+static void
+rb_shell_construct_notify_titles (RBShell *shell,
+				  RhythmDBEntry *entry)
 {
 	GValue *value;
 	char *stream_title = NULL;
 	char *artist = NULL;
 	char *album = NULL;
 	char *title = NULL;
-	char *sec;
 	GString *secondary;
 
-	if (entry == NULL)
+	if (shell->priv->cached_notify_primary != NULL)
+		g_free (shell->priv->cached_notify_primary);
+	if (shell->priv->cached_notify_secondary != NULL)
+		g_free (shell->priv->cached_notify_secondary);
+
+	if (entry == NULL) {
+		shell->priv->cached_notify_primary = NULL;
+		shell->priv->cached_notify_secondary = NULL;
 		return;
+	}
 
 	secondary = g_string_sized_new (100);
 
@@ -2851,16 +2947,16 @@ rb_shell_notify_playing_entry (RBShell *shell,
 						       entry,
 						       RHYTHMDB_PROP_STREAM_SONG_ARTIST);
 	if (value != NULL) {
-		artist = g_value_dup_string (value);
+		artist = markup_escape (g_value_get_string (value));
 		g_value_unset (value);
 		g_free (value);
 	} else {
-		artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+		artist = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 	}
 
 	if (artist != NULL && artist[0] != '\0') {
 		/* Translators: by Artist */
-		g_string_append_printf (secondary, _("by %s"), artist);
+		g_string_append_printf (secondary, _("by <b>%s</b>"), artist);
 	}
 	g_free (artist);
 
@@ -2869,11 +2965,11 @@ rb_shell_notify_playing_entry (RBShell *shell,
 						       entry,
 						       RHYTHMDB_PROP_STREAM_SONG_ALBUM);
 	if (value != NULL) {
-		album = g_value_dup_string (value);
+		album = markup_escape (g_value_get_string (value));
 		g_value_unset (value);
 		g_free (value);
 	} else {
-		album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
+		album = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 	}
 
 	if (album != NULL && album[0] != '\0') {
@@ -2881,7 +2977,7 @@ rb_shell_notify_playing_entry (RBShell *shell,
 			g_string_append_c (secondary, ' ');
 
 		/* Translators: from Album */
-		g_string_append_printf (secondary, _("from %s"), album);
+		g_string_append_printf (secondary, _("from <b>%s</b>"), album);
 	}
 	g_free (album);
 
@@ -2893,13 +2989,13 @@ rb_shell_notify_playing_entry (RBShell *shell,
 						       entry,
 						       RHYTHMDB_PROP_STREAM_SONG_TITLE);
 	if (value != NULL) {
-		title = g_value_dup_string (value);
+		title = markup_escape (g_value_get_string (value));
 		g_value_unset (value);
 		g_free (value);
 
-		stream_title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+		stream_title = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 	} else {
-		title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
+		title = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 	}
 
 	if (stream_title != NULL && stream_title[0] != '\0') {
@@ -2910,15 +3006,31 @@ rb_shell_notify_playing_entry (RBShell *shell,
 	}
 	g_free (stream_title);
 
-	sec = g_string_free (secondary, FALSE);
-	rb_shell_hidden_notify (shell,
-				4000,
-				title,
-				NULL,
-				sec,
-				requested);
-	g_free (sec);
-	g_free (title);
+	if (title != NULL)
+		shell->priv->cached_notify_primary = title;
+	else
+		/* Translators: unknown track title */
+		shell->priv->cached_notify_primary = g_strdup (_("Unknown"));
+
+	shell->priv->cached_notify_secondary = g_string_free (secondary, FALSE);
+}
+
+void
+rb_shell_notify_playing_entry (RBShell *shell,
+			       RhythmDBEntry *entry,
+			       gboolean requested)
+{
+	rb_shell_construct_notify_titles (shell, entry);
+
+	if (entry == NULL)
+		return;
+
+	rb_shell_hidden_notify_markup (shell,
+				       PLAYING_ENTRY_NOTIFY_TIME * 1000,
+				       shell->priv->cached_notify_primary,
+				       shell->priv->cached_art_icon,
+				       shell->priv->cached_notify_secondary,
+				       requested);
 }
 
 void
@@ -2929,6 +3041,24 @@ rb_shell_hidden_notify (RBShell *shell,
 			const char *secondary,
 			gboolean requested)
 {
+	char *primary_markup = g_markup_escape_text (primary, -1);
+	char *secondary_markup = g_markup_escape_text (secondary, -1);
+
+	rb_shell_hidden_notify_markup (shell, timeout, primary_markup, 
+				       icon, secondary_markup, requested);
+
+	g_free (primary_markup);
+	g_free (secondary_markup);
+}
+
+void
+rb_shell_hidden_notify_markup (RBShell *shell,
+			       guint timeout,
+			       const char *primary_markup,
+			       GtkWidget *icon,
+			       const char *secondary_markup,
+			       gboolean requested)
+{
 
 	if (requested == FALSE && rb_shell_get_visibility (shell)) {
 		rb_debug ("shell is visible, not notifying");
@@ -2937,9 +3067,9 @@ rb_shell_hidden_notify (RBShell *shell,
 
 	rb_tray_icon_notify (shell->priv->tray_icon,
 			     timeout,
-			     primary,
+			     primary_markup,
 			     icon,
-			     secondary,
+			     secondary_markup,
 			     requested);
 }
 

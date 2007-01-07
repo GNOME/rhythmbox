@@ -520,15 +520,15 @@ egg_tray_icon_new (const gchar *name)
 guint
 egg_tray_icon_send_message (EggTrayIcon *icon,
 			    gint         timeout,
-			    const gchar *message,
+			    const gchar *message_markup,
 			    gint         len)
 {
   g_return_val_if_fail (EGG_IS_TRAY_ICON (icon), 0);
   g_return_val_if_fail (timeout >= 0, 0);
-  g_return_val_if_fail (message != NULL, 0);
+  g_return_val_if_fail (message_markup != NULL, 0);
 
 #ifdef HAVE_NOTIFY
-  egg_tray_icon_notify (icon, timeout, _("Notification"), NULL, message);
+  egg_tray_icon_notify (icon, timeout, _("Notification"), NULL, message_markup);
 #endif
 
   return 1;
@@ -564,9 +564,9 @@ egg_tray_icon_get_orientation (EggTrayIcon *icon)
 void
 egg_tray_icon_notify (EggTrayIcon *icon,
 		      guint timeout,
-		      const char *primary,
+		      const char *primary_markup,
 		      GtkWidget *msgicon,
-		      const char *secondary)
+		      const char *secondary_markup)
 {
 #ifdef HAVE_NOTIFY
 #if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
@@ -574,8 +574,6 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   GdkPixbuf *pixbuf;
   int x;
   int y;
-  char *esc_primary;
-  char *esc_secondary;
 
   if (!notify_is_initted ())
     if (!notify_init ("rhythmbox"))
@@ -586,33 +584,25 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       notify_notification_close (icon->notify->handle, NULL);
     }
 
-  if (primary == NULL)
+  if (primary_markup == NULL)
     {
-      primary = "";
+      primary_markup = "";
     }
-  if (secondary == NULL)
+  if (secondary_markup == NULL)
     {
-      secondary = "";
+      secondary_markup = "";
     }
 
-#if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR == 3 && LIBNOTIFY_VERSION_MICRO == 0)
-  esc_primary = strdup (primary);
-#else
-  esc_primary = g_markup_escape_text (primary, strlen (primary));
-#endif
-  esc_secondary = g_markup_escape_text (secondary, strlen (secondary));
-  icon->notify->handle = notify_notification_new (esc_primary,
-                                                  esc_secondary,
+  icon->notify->handle = notify_notification_new (primary_markup,
+                                                  secondary_markup,
                                                   NULL,
                                                   GTK_WIDGET (icon));
-  g_free (esc_primary);
-  g_free (esc_secondary);
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
 
   if (msgicon)
     {
-      pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (msgicon));
+      pixbuf = g_object_ref (gtk_image_get_pixbuf (GTK_IMAGE (msgicon)));
     }
   else
     {
@@ -647,7 +637,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   if (! notify_notification_show (icon->notify->handle, NULL))
     {
-      g_warning ("failed to send notification (%s)", primary);
+      g_warning ("failed to send notification (%s)", primary_markup);
     }
 
   return;
@@ -657,8 +647,6 @@ egg_tray_icon_notify (EggTrayIcon *icon,
   NotifyIcon *icon_notify = NULL;
   NotifyHints *hints;
   char *fn;
-  char *esc_primary;
-  char *esc_secondary;
 
   if (!notify_is_initted ())
     if (!notify_init ("rhythmbox"))
@@ -690,7 +678,6 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 	    {
 	      icon_notify = NULL;
 	    }
-	  g_free (pix);
 	  g_free (tmp);
 	}
     }
@@ -706,21 +693,17 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       notify_close (icon->notify->handle);
     }
 
-  esc_primary = g_markup_escape_text (primary, strlen (primary));
-  esc_secondary = g_markup_escape_text (secondary, strlen (secondary));
   icon->notify->hints = hints;
   icon->notify->icon = icon_notify;
   icon->notify->handle = notify_send_notification (NULL, "transfer",
  	 	  	  	            	   NOTIFY_URGENCY_LOW,
-			           	    	   primary,
-			    	   	    	   secondary,
+			           	    	   primary_markup,
+			    	   	    	   secondary_markup,
 			    	   	           icon_notify,
 			    	   	           TRUE, timeout/1000,
 			    	   	           hints,
 			    	   	           NULL,
 			    	   	           0);
-  g_free (esc_primary);
-  g_free (esc_secondary);
   return;
 #endif
 #endif
