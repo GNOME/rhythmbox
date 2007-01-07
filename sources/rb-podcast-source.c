@@ -45,7 +45,7 @@
 #include "totem-pl-parser.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
-#include "rb-new-podcast-dialog.h"
+#include "rb-uri-dialog.h"
 #include "rb-podcast-properties-dialog.h"
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-playlist-manager.h"
@@ -1975,6 +1975,14 @@ impl_get_search_actions (RBSource *source)
 }
 
 static void
+rb_podcast_source_location_added_cb (RBURIDialog *dialog,
+				     const char *location,
+				     RBPodcastSource *source)
+{
+	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr, location);
+}
+
+static void
 rb_podcast_source_cmd_new_podcast (GtkAction *action,
 				   RBPodcastSource *source)
 {
@@ -1982,7 +1990,11 @@ rb_podcast_source_cmd_new_podcast (GtkAction *action,
 
 	rb_debug ("Got new podcast command");
 
-	dialog = rb_new_podcast_dialog_new (source->priv->podcast_mgr);
+	dialog = rb_uri_dialog_new (_("New Podcast Feed"), _("URL of podcast feed:"));
+	g_signal_connect_object (G_OBJECT (dialog),
+				 "location-added",
+				 G_CALLBACK (rb_podcast_source_location_added_cb),
+				 source, 0);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 }

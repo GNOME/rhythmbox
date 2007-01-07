@@ -64,8 +64,6 @@
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
-#include "rb-station-properties-dialog.h"
-#include "rb-new-station-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-shell-player.h"

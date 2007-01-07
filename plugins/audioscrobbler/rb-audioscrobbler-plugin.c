@@ -1,13 +1,13 @@
 /*
  * rb-audioscrobbler-plugin.c
- * 
+ *
  * Copyright (C) 2006 James Livingston <jrl@ids.org.au>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -120,13 +120,13 @@ impl_activate (RBPlugin *bplugin,
 	char *file;
 
 	g_assert (plugin->audioscrobbler == NULL);
-	g_object_get (G_OBJECT (shell), 
-		      "proxy-config", &proxy_config, 
+	g_object_get (G_OBJECT (shell),
+		      "proxy-config", &proxy_config,
 		      "no-registration", &no_registration,
 		      "ui-manager", &uimanager,
 		      NULL);
 
-	/* 
+	/*
 	 * Don't use audioscrobbler when the no-registration flag is set.
 	 * This flag is only used to run multiple instances at the same time, and
 	 * last.fm only allows one active client per user.
@@ -155,7 +155,7 @@ impl_deactivate	(RBPlugin *bplugin,
 	RBAudioscrobblerPlugin *plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
 
-	g_object_get (G_OBJECT (shell), 
+	g_object_get (G_OBJECT (shell),
 		      "ui-manager", &uimanager,
 		      NULL);
 
@@ -187,7 +187,7 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 	if (plugin->preferences == NULL) {
 		GtkWidget *widget;
 
-		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler);
+		widget =  rb_audioscrobbler_get_config_widget (plugin->audioscrobbler, bplugin);
 
 		plugin->preferences = gtk_dialog_new_with_buttons (_("Audioscrobbler preferences"),
 								   NULL,
@@ -199,10 +199,10 @@ impl_create_configure_dialog (RBPlugin *bplugin)
 				  G_CALLBACK (preferences_response_cb),
 				  plugin);
 		gtk_widget_hide_on_delete (plugin->preferences);
-		
+
 		gtk_container_add (GTK_CONTAINER (GTK_DIALOG (plugin->preferences)->vbox), widget);
 	}
-	
+
 	gtk_widget_show_all (plugin->preferences);
 	return plugin->preferences;
 }

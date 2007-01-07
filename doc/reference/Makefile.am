@@ -30,11 +30,9 @@ INCLUDES=\
 	-I$(top_srcdir)/sources \
 	-I$(top_srcdir)/shell \
 	-I$(top_srcdir)/rhythmdb \
-	-I$(top_srcdir)/player \
 	-I$(top_srcdir)/metadata \
 	-I$(top_srcdir)/widgets \
 	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/daapsharing \
 	-I$(top_srcdir)/plugins \
 	-I$(top_srcdir)/backends \
 	$(DBUS_CFLAGS) \
@@ -51,7 +49,6 @@ GTKDOC_LIBS=\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/backends/librbbackends.la	\
-	$(top_builddir)/daapsharing/libdaapsharing.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\

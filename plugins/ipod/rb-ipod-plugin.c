@@ -1,13 +1,13 @@
 /*
  * rb-ipod-plugin.c
- * 
+ *
  * Copyright (C) 2006 James Livingston <jrl@ids.org.au>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -95,7 +95,7 @@ rb_ipod_plugin_class_init (RBIpodPluginClass *klass)
 	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
 
 	object_class->finalize = rb_ipod_plugin_finalize;
-	
+
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;
 
@@ -133,7 +133,7 @@ impl_activate (RBPlugin *bplugin,
 
 	g_object_get (G_OBJECT (shell),
 		      "removable-media-manager", &rmm,
-		      "ui-manager", &uimanager, 
+		      "ui-manager", &uimanager,
 		      NULL);
 
 	/* add ipod UI */
@@ -174,12 +174,12 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	g_object_get (G_OBJECT (shell),
 		      "removable-media-manager", &rmm,
-		      "ui-manager", &uimanager, 
+		      "ui-manager", &uimanager,
 		      NULL);
 
 	gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
 	gtk_ui_manager_remove_action_group (uimanager, plugin->action_group);
-	
+
 	g_signal_handlers_disconnect_by_func (G_OBJECT (rmm), create_source_cb, plugin);
 
 	g_list_foreach (plugin->ipod_sources, (GFunc)rb_source_delete_thyself, NULL);
@@ -207,14 +207,14 @@ create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBIpodPl
 		g_signal_connect_object (G_OBJECT (src),
 					 "deleted", G_CALLBACK (rb_ipod_plugin_source_deleted),
 					 plugin, 0);
-		
+
 		return src;
 	}
 
 	return NULL;
 }
 
-static void 
+static void
 rb_ipod_plugin_cmd_rename (GtkAction *action,
 			   RBIpodPlugin *plugin)
 {
@@ -224,10 +224,10 @@ rb_ipod_plugin_cmd_rename (GtkAction *action,
 
 	/* FIXME: this is pretty ugly, the sourcelist should automatically add
 	 * a "rename" menu item for sources that have can_rename == TRUE.
-	 * This is a bit trickier to handle though, since playlists want 
+	 * This is a bit trickier to handle though, since playlists want
 	 * to make rename sensitive/unsensitive instead of showing/hiding it
 	 */
-	g_object_get (G_OBJECT (plugin->shell), 
+	g_object_get (G_OBJECT (plugin->shell),
 		      "selected-source", &source,
 		      "removable-media-manager", &manager,
 		      NULL);
@@ -236,11 +236,11 @@ rb_ipod_plugin_cmd_rename (GtkAction *action,
 		g_critical ("got iPodSourceRename action for non-ipod source");
 		return;
 	}
-	
+
 	g_object_get (G_OBJECT (manager), "sourcelist", &sourcelist, NULL);
 	g_object_unref (G_OBJECT (manager));
-	
-	rb_sourcelist_edit_source_name (sourcelist, RB_SOURCE (source)); 
+
+	rb_sourcelist_edit_source_name (sourcelist, RB_SOURCE (source));
 	/* Once editing is done, notify::name will be fired on the source, and
 	 * we'll catch that in our rename callback
 	 */

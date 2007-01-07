@@ -50,6 +50,7 @@
 #include "md5.h"
 #include "rb-proxy-config.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-plugin.h"
 
 
 #define CLIENT_ID "rbx"
@@ -169,6 +170,7 @@ static void	     rb_audioscrobbler_set_property (GObject *object,
 						    guint prop_id,
 						    const GValue *value,
 						    GParamSpec *pspec);
+static void	     rb_audioscrobbler_dispose (GObject *object);
 static void	     rb_audioscrobbler_finalize (GObject *object);
 
 static void	     rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler);
@@ -214,6 +216,7 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = rb_audioscrobbler_dispose;
 	object_class->finalize = rb_audioscrobbler_finalize;
 
 	object_class->set_property = rb_audioscrobbler_set_property;
@@ -283,6 +286,49 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 }
 
 static void
+rb_audioscrobbler_dispose (GObject *object)
+{
+	RBAudioscrobbler *audioscrobbler;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_AUDIOSCROBBLER (object));
+
+	audioscrobbler = RB_AUDIOSCROBBLER (object);
+
+	if (audioscrobbler->priv->notification_username_id != 0) {
+		eel_gconf_notification_remove (audioscrobbler->priv->notification_username_id);
+		audioscrobbler->priv->notification_username_id = 0;
+	}
+	if (audioscrobbler->priv->notification_password_id != 0) {
+		eel_gconf_notification_remove (audioscrobbler->priv->notification_password_id);
+		audioscrobbler->priv->notification_password_id = 0;
+	}
+
+	if (audioscrobbler->priv->timeout_id != 0) {
+		g_source_remove (audioscrobbler->priv->timeout_id);
+		audioscrobbler->priv->timeout_id = 0;
+	}
+
+	if (audioscrobbler->priv->soup_session != NULL) {
+		soup_session_abort (audioscrobbler->priv->soup_session);
+		g_object_unref (audioscrobbler->priv->soup_session);
+		audioscrobbler->priv->soup_session = NULL;
+	}
+
+	if (audioscrobbler->priv->proxy_config != NULL) {
+		g_object_unref (audioscrobbler->priv->proxy_config);
+		audioscrobbler->priv->proxy_config = NULL;
+	}
+
+	if (audioscrobbler->priv->shell_player != NULL) {
+		g_object_unref (audioscrobbler->priv->shell_player);
+		audioscrobbler->priv->shell_player = NULL;
+	}
+
+	G_OBJECT_CLASS (rb_audioscrobbler_parent_class)->dispose (object);
+}
+
+static void
 rb_audioscrobbler_finalize (GObject *object)
 {
 	RBAudioscrobbler *audioscrobbler;
@@ -294,15 +340,8 @@ rb_audioscrobbler_finalize (GObject *object)
 
 	audioscrobbler = RB_AUDIOSCROBBLER (object);
 
-	g_return_if_fail (audioscrobbler->priv != NULL);
-
 	/* Save any remaining entries */
 	rb_audioscrobbler_save_queue (audioscrobbler);
-
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_username_id);
-	eel_gconf_notification_remove (audioscrobbler->priv->notification_password_id);
-
-	g_source_remove (audioscrobbler->priv->timeout_id);
 
 	g_free (audioscrobbler->priv->md5_challenge);
 	g_free (audioscrobbler->priv->username);
@@ -312,12 +351,6 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->album);
 	g_free (audioscrobbler->priv->title);
 	g_free (audioscrobbler->priv->mbid);
-	if (audioscrobbler->priv->soup_session) {
-		soup_session_abort (audioscrobbler->priv->soup_session);
-		g_object_unref (G_OBJECT (audioscrobbler->priv->soup_session));
-	}
-	g_object_unref (G_OBJECT (audioscrobbler->priv->proxy_config));
-	g_object_unref (G_OBJECT (audioscrobbler->priv->shell_player));
 
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->queue);
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);
@@ -344,25 +377,25 @@ rb_audioscrobbler_set_property (GObject *object,
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (object);
 
 	switch (prop_id) {
-		case PROP_SHELL_PLAYER:
-			audioscrobbler->priv->shell_player = g_value_get_object (value);
-			g_object_ref (G_OBJECT (audioscrobbler->priv->shell_player));
-			g_signal_connect_object (G_OBJECT (audioscrobbler->priv->shell_player),
-						 "playing-song-changed",
-						 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
-						 audioscrobbler, 0);
-			break;
-		case PROP_PROXY_CONFIG:
-			audioscrobbler->priv->proxy_config = g_value_get_object (value);
-			g_object_ref (G_OBJECT (audioscrobbler->priv->proxy_config));
-			g_signal_connect_object (G_OBJECT (audioscrobbler->priv->proxy_config),
-						 "config-changed",
-						 G_CALLBACK (rb_audioscrobbler_proxy_config_changed_cb),
-						 audioscrobbler, 0);
-			break;
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-			break;
+	case PROP_SHELL_PLAYER:
+		audioscrobbler->priv->shell_player = g_value_get_object (value);
+		g_object_ref (G_OBJECT (audioscrobbler->priv->shell_player));
+		g_signal_connect_object (G_OBJECT (audioscrobbler->priv->shell_player),
+					 "playing-song-changed",
+					 G_CALLBACK (rb_audioscrobbler_song_changed_cb),
+					 audioscrobbler, 0);
+		break;
+	case PROP_PROXY_CONFIG:
+		audioscrobbler->priv->proxy_config = g_value_get_object (value);
+		g_object_ref (G_OBJECT (audioscrobbler->priv->proxy_config));
+		g_signal_connect_object (G_OBJECT (audioscrobbler->priv->proxy_config),
+					 "config-changed",
+					 G_CALLBACK (rb_audioscrobbler_proxy_config_changed_cb),
+					 audioscrobbler, 0);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
 	}
 }
 
@@ -375,12 +408,12 @@ rb_audioscrobbler_get_property (GObject *object,
 	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (object);
 
 	switch (prop_id) {
-		case PROP_SHELL_PLAYER:
-			g_value_set_object (value, audioscrobbler->priv->shell_player);
-			break;
-		default:
-			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-			break;
+	case PROP_SHELL_PLAYER:
+		g_value_set_object (value, audioscrobbler->priv->shell_player);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
 	}
 }
 
@@ -927,15 +960,21 @@ rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler)
 }
 
 GtkWidget *
-rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler)
+rb_audioscrobbler_get_config_widget (RBAudioscrobbler *audioscrobbler,
+				     RBPlugin *plugin)
 {
 	GladeXML *xml;
+	char *gladefile;
 
 	if (audioscrobbler->priv->config_widget) {
 		return audioscrobbler->priv->config_widget;
 	}
 
-	xml = rb_glade_xml_new ("audioscrobbler-prefs.glade", "audioscrobbler_vbox", audioscrobbler);
+	gladefile = rb_plugin_find_file (plugin, "audioscrobbler-prefs.glade");
+	g_assert (gladefile != NULL);
+	xml = rb_glade_xml_new (gladefile, "audioscrobbler_vbox", audioscrobbler);
+	g_free (gladefile);
+
 	audioscrobbler->priv->config_widget = glade_xml_get_widget (xml, "audioscrobbler_vbox");
 	audioscrobbler->priv->username_entry = glade_xml_get_widget (xml, "username_entry");
 	audioscrobbler->priv->username_label = glade_xml_get_widget (xml, "username_label");

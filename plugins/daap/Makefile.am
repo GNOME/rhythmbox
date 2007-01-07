@@ -6,12 +6,41 @@ plugin_LTLIBRARIES = libdaap.la
 libdaap_la_SOURCES = \
 	rb-daap-plugin.c			\
 	rb-daap-plugin.h			\
-	$(top_srcdir)/sources/rb-daap-source.c	\
-	$(top_srcdir)/sources/rb-daap-source.h
+	rb-daap-source.c			\
+	rb-daap-source.h			\
+	rb-daap-sharing.c			\
+	rb-daap-sharing.h			\
+	rb-daap-share.c				\
+	rb-daap-share.h				\
+	rb-daap-structure.c			\
+	rb-daap-structure.h 			\
+	rb-daap-mdns-publisher.h		\
+	rb-daap-mdns-browser.h			\
+	rb-daap-connection.c			\
+	rb-daap-connection.h			\
+	rb-daap-hash.c				\
+	rb-daap-hash.h				\
+	rb-daap-src.c				\
+	rb-daap-src.h				\
+	rb-daap-dialog.c			\
+	rb-daap-dialog.h			\
+	$(NULL)
+
+if USE_HOWL
+libdaap_la_SOURCES += \
+	rb-daap-mdns-publisher-howl.c		\
+	rb-daap-mdns-browser-howl.c		\
+	$(NULL)
+else
+libdaap_la_SOURCES += \
+	rb-daap-mdns-publisher-avahi.c		\
+	rb-daap-mdns-browser-avahi.c		\
+	$(NULL)
+endif
+
 
 libdaap_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libdaap_la_LIBADD = 					\
-	$(top_builddir)/daapsharing/libdaapsharing.la	\
 	$(SOUP_LIBS)					\
 	$(MDNS_LIBS)
 
@@ -31,7 +60,6 @@ INCLUDES = 						\
 	-I$(top_builddir)/remote			\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell				\
-	-I$(top_srcdir)/daapsharing			\
 	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
@@ -48,10 +76,10 @@ INCLUDES += $(GNOME_KEYRING_CFLAGS)
 endif
 
 gladedir = $(plugindir)
-glade_DATA = ../../data/glade/daap-prefs.glade
+glade_DATA = daap-prefs.glade
 
 uixmldir = $(plugindir)
-uixml_DATA = ../../data/ui/daap-ui.xml
+uixml_DATA = daap-ui.xml
 
 plugin_in_files = daap.rb-plugin.desktop.in
 

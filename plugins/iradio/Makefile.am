@@ -5,12 +5,10 @@ plugin_LTLIBRARIES = libiradio.la
 
 libiradio_la_SOURCES = \
 	rb-iradio-plugin.c					\
-	$(top_srcdir)/sources/rb-iradio-source.c		\
-	$(top_srcdir)/sources/rb-iradio-source.h		\
-	$(top_srcdir)/iradio/rb-new-station-dialog.c		\
-	$(top_srcdir)/iradio/rb-new-station-dialog.h		\
-	$(top_srcdir)/iradio/rb-station-properties-dialog.c	\
-	$(top_srcdir)/iradio/rb-station-properties-dialog.h
+	rb-iradio-source.c		\
+	rb-iradio-source.h		\
+	rb-station-properties-dialog.c	\
+	rb-station-properties-dialog.h
 
 libiradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libiradio_la_LIBADD = 					\
@@ -22,12 +20,9 @@ INCLUDES = 						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
 	-I$(top_srcdir)/metadata                       	\
-	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
-	-I$(top_srcdir)/iradio                    	\
-	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/backends			\
@@ -40,7 +35,8 @@ INCLUDES = 						\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gladedir = $(plugindir)
-glade_DATA =
+glade_DATA = \
+	station-properties.glade
 
 uixmldir = $(plugindir)
 uixml_DATA = iradio-ui.xml
@@ -55,12 +51,14 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
+	iradio-initial.pls	\
 	$(NULL)
 
 EXTRA_DIST = 			\
 	$(glade_DATA)		\
 	$(uixml_DATA)		\
 	$(plugin_in_files)	\
+	iradio-initial.pls	\
 	$(NULL)
 
 CLEANFILES = 			\

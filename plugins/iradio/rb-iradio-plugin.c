@@ -94,7 +94,7 @@ impl_activate (RBPlugin *plugin,
 	GtkUIManager *uimanager;
 	char *filename;
 
-	pi->source = rb_iradio_source_new (shell);
+	pi->source = rb_iradio_source_new (shell, plugin);
 	rb_shell_append_source (shell, pi->source, NULL);
 
 	g_object_get (shell, "ui-manager", &uimanager, NULL);

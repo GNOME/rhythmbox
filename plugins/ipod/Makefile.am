@@ -3,8 +3,8 @@ plugin_LTLIBRARIES = libipod.la
 
 libipod_la_SOURCES = \
 	rb-ipod-plugin.c			\
-	$(top_srcdir)/sources/rb-ipod-source.c	\
-	$(top_srcdir)/sources/rb-ipod-source.h
+	rb-ipod-source.c			\
+	rb-ipod-source.h
 
 libipod_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libipod_la_LIBADD = 					\
@@ -22,7 +22,6 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
-	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell				\
@@ -39,9 +38,12 @@ plugin_in_files = ipod.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
+uixmldir = $(plugindir)
+uixml_DATA = ipod-ui.xml
+
 plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
-EXTRA_DIST = $(plugin_in_files)
+EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

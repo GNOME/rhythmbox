@@ -3,8 +3,6 @@
 noinst_LTLIBRARIES = librbpodcast.la
 
 librbpodcast_la_SOURCES =				\
-	rb-new-podcast-dialog.c				\
-	rb-new-podcast-dialog.h				\
 	rb-feed-podcast-properties-dialog.c		\
 	rb-feed-podcast-properties-dialog.h		\
 	rb-podcast-properties-dialog.c			\

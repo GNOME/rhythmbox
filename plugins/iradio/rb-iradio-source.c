@@ -43,12 +43,13 @@
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-station-properties-dialog.h"
-#include "rb-new-station-dialog.h"
+#include "rb-uri-dialog.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-shell-player.h"
 #include "rb-player.h"
 #include "rb-metadata.h"
+#include "rb-plugin.h"
 
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
@@ -265,10 +266,7 @@ rb_iradio_source_constructor (GType type,
 			      GObjectConstructParam *construct_properties)
 {
 	RBIRadioSource *source;
-	RBIRadioSourceClass *klass;
 	RBShell *shell;
-
-	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IRADIO_SOURCE));
 
 	source = RB_IRADIO_SOURCE (G_OBJECT_CLASS (rb_iradio_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -402,7 +400,7 @@ rb_iradio_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_iradio_source_new (RBShell *shell)
+rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
 {
 	RBSource *source;
 	RhythmDBEntryType entry_type;
@@ -424,6 +422,7 @@ rb_iradio_source_new (RBShell *shell)
 					  "name", _("Radio"),
 					  "shell", shell,
 					  "entry-type", entry_type,
+					  "plugin", plugin,
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 	return source;
@@ -586,7 +585,12 @@ static void
 impl_song_properties (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations);
+	RBPlugin *plugin;
+	GtkWidget *dialog;
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	dialog = rb_station_properties_dialog_new (plugin, source->priv->stations);
+	g_object_unref (plugin);
 
 	rb_debug ("in song properties");
 	if (dialog)
@@ -880,13 +884,20 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 				     RBIRadioSource *source)
 {
 	char *uri;
+	char *file;
+	RBPlugin *plugin;
 
 	if (source->priv->firstrun_done || !gconf_value_get_bool (entry->value))
 		return;
 
-	uri = gnome_vfs_get_uri_from_local_path (rb_file ("iradio-initial.pls"));
-	rb_iradio_source_add_from_playlist (source, uri);
-	g_free (uri);
+	g_object_get (source, "plugin", &plugin, NULL);
+	file = rb_plugin_find_file (plugin, "iradio-initial.pls");
+	if (file != NULL) {
+		uri = gnome_vfs_get_uri_from_local_path (file);
+		rb_iradio_source_add_from_playlist (source, uri);
+		g_free (uri);
+	}
+	g_free (file);
 
 	source->priv->firstrun_done = TRUE;
 }
@@ -967,9 +978,9 @@ impl_get_ui_actions (RBSource *source)
 }
 
 static void
-new_station_location_added (RBNewStationDialog *dialog,
-			    const char         *uri,
-			    RBIRadioSource     *source)
+new_station_location_added (RBURIDialog    *dialog,
+			    const char     *uri,
+			    RBIRadioSource *source)
 {
 	rb_iradio_source_add_station (source, uri, NULL, NULL);
 }
@@ -982,7 +993,7 @@ rb_iradio_source_cmd_new_station (GtkAction *action,
 
 	rb_debug ("Got new station command");
 
-	dialog = rb_new_station_dialog_new (source->priv->stations);
+	dialog = rb_uri_dialog_new (_("New Internet Radio Station"), _("URL of internet radio station:"));
 	g_signal_connect_object (dialog, "location-added",
 				 G_CALLBACK (new_station_location_added),
 				 source, 0);

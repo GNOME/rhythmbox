@@ -1,3 +1,46 @@
+2007-01-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	Moved lots of files around.  Now everything should be in the directory
+	it's built in and all plugin-specific files should be installed into
+	the plugin directory.
+
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_create_configure_dialog):
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_class_init), (rb_audioscrobbler_dispose),
+	(rb_audioscrobbler_finalize),
+	(rb_audioscrobbler_get_config_widget):
+	* plugins/audioscrobbler/rb-audioscrobbler.h:
+	Use rb_plugin_find_file where needed.
+
+	* widgets/rb-uri-dialog.c: (rb_uri_dialog_class_init),
+	(rb_uri_dialog_init), (rb_uri_dialog_finalize),
+	(rb_uri_dialog_new), (rb_uri_dialog_response_cb),
+	(rb_uri_dialog_text_changed):
+	* widgets/rb-uri-dialog.h:
+	New common 'enter a URI' dialog, used by iradio and podcast code.
+
+	* plugins/iradio/rb-iradio-plugin.c: (impl_activate):
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_constructor), (rb_iradio_source_new),
+	(impl_song_properties), (rb_iradio_source_first_time_changed),
+	(new_station_location_added), (rb_iradio_source_cmd_new_station):
+	* plugins/iradio/rb-iradio-source.h:
+	* plugins/iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_class_init),
+	(rb_station_properties_dialog_init),
+	(rb_station_properties_dialog_constructor),
+	(rb_station_properties_dialog_set_property),
+	(rb_station_properties_dialog_get_property),
+	(rb_station_properties_dialog_new):
+	* plugins/iradio/rb-station-properties-dialog.h:
+	Use the common URI dialog, use rb_plugin_find_file where needed.
+
+	* sources/rb-podcast-source.c:
+	(rb_podcast_source_location_added_cb),
+	(rb_podcast_source_cmd_new_podcast):
+	Use the common URI dialog.
+
 2007-01-07  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Ed Catmur  <ed@catmur.co.uk>

@@ -5,10 +5,10 @@ plugin_LTLIBRARIES = libcd-recorder.la
 
 libcd_recorder_la_SOURCES =					\
 	rb-cd-recorder-plugin.c					\
-	$(top_srcdir)/player/rb-recorder.h			\
-	$(top_srcdir)/player/rb-recorder-gst.c			\
-	$(top_srcdir)/sources/rb-playlist-source-recorder.c	\
-	$(top_srcdir)/sources/rb-playlist-source-recorder.h	\
+	rb-recorder.h						\
+	rb-recorder-gst.c					\
+	rb-playlist-source-recorder.c				\
+	rb-playlist-source-recorder.h				\
 	$(NULL)
 
 libcd_recorder_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
@@ -47,6 +47,9 @@ plugin_in_files = cd-recorder.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
+gladedir = $(plugindir)
+glade_DATA = recorder.glade
+
 BUILT_SOURCES =							\
 	$(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin) 	\
 	$(NULL)
@@ -57,6 +60,7 @@ plugin_DATA = 			\
 
 EXTRA_DIST = 			\
 	$(plugin_in_files)	\
+	$(glade_DATA)		\
 	$(NULL)
 
 CLEANFILES = 			\

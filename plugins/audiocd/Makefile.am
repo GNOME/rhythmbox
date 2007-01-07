@@ -3,8 +3,8 @@ plugin_LTLIBRARIES = libaudiocd.la
 
 libaudiocd_la_SOURCES =					\
 	rb-audiocd-plugin.c				\
-	../../sources/rb-audiocd-source.c		\
-	../../sources/rb-audiocd-source.h
+	rb-audiocd-source.c				\
+	rb-audiocd-source.h
 
 libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) $(LIBNAUTILUS_BURN_LIBS) $(MUSICBRAINZ_LIBS)
 
@@ -55,27 +55,27 @@ plugin_in_files = audiocd.rb-plugin.desktop.in
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
-EXTRA_DIST = $(glade_DATA) $(plugin_in_files) ../../metadata/sj-metadata-marshal.list
+EXTRA_DIST = $(glade_DATA) $(plugin_in_files) sj-metadata-marshal.list
 
 MARSHALFILES = 
 
 if HAVE_MUSICBRAINZ
 libaudiocd_la_SOURCES += \
-	../../metadata/sj-metadata.h ../../metadata/sj-metadata.c \
-	../../metadata/sj-metadata-musicbrainz.h ../../metadata/sj-metadata-musicbrainz.c \
-	../../metadata/sj-structures.h ../../metadata/sj-structures.c \
-	../../metadata/sj-error.h ../../metadata/sj-error.c \
+	sj-metadata.h sj-metadata.c \
+	sj-metadata-musicbrainz.h sj-metadata-musicbrainz.c \
+	sj-structures.h sj-structures.c \
+	sj-error.h sj-error.c \
 	$(MARSHALFILES)
 
 MARSHALFILES += sj-metadata-marshal.h sj-metadata-marshal.c
 
-sj-metadata-marshal.h: ../../metadata/sj-metadata-marshal.list
+sj-metadata-marshal.h: sj-metadata-marshal.list
 	( $(GLIB_GENMARSHAL) --prefix=metadata_marshal $< \
 	--header > marshal-header.tmp \
 	&& mv marshal-header.tmp $@ ) \
 	|| ( rm -f marshal-header.tmp && exit 1 )
 
-sj-metadata-marshal.c: ../../metadata/sj-metadata-marshal.list
+sj-metadata-marshal.c: sj-metadata-marshal.list
 	( $(GLIB_GENMARSHAL) --prefix=metadata_marshal $< \
 	--body > marshal-source.tmp \
 	&& echo "#include \"sj-metadata-marshal.h\"" > $@ \

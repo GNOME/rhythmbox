@@ -21,6 +21,7 @@
 
 #include <gtk/gtkdialog.h>
 #include "rb-entry-view.h"
+#include "rb-plugin.h"
 
 #ifndef __RB_STATION_PROPERTIES_DIALOG_H
 #define __RB_STATION_PROPERTIES_DIALOG_H
@@ -50,7 +51,7 @@ typedef struct
 
 GType      rb_station_properties_dialog_get_type (void);
 
-GtkWidget *rb_station_properties_dialog_new      (RBEntryView *view);
+GtkWidget *rb_station_properties_dialog_new      (RBPlugin *plugin, RBEntryView *view);
 
 G_END_DECLS
 

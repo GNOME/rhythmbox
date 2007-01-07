@@ -15,11 +15,6 @@ appicondir = $(datadir)/icons/hicolor/48x48/apps
 schemadir = @GCONF_SCHEMA_FILE_DIR@
 schema_DATA = rhythmbox.schemas
 
-iradio-initial.xml:
-
-iradio_DATA = iradio-initial.pls
-iradiodir = $(datadir)/rhythmbox
-
 playlists_in_files = playlists.xml.in
 playlists_DATA = playlists.xml
 playlistsdir = $(datadir)/rhythmbox
@@ -52,7 +47,6 @@ install-data-hook:
 EXTRA_DIST = $(service_in_files)    \
 	     $(appicon_DATA)        \
 	     $(schema_DATA)	    \
-	     $(iradio_DATA)	    \
 	     $(playlists_in_files)  \
 	     rhythmbox.desktop.in.in
 

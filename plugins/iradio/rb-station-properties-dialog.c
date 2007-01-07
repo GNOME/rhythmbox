@@ -35,9 +35,12 @@
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
+#include "rb-plugin.h"
 
 static void rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass);
 static void rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog);
+static GObject *rb_station_properties_dialog_constructor(GType type, guint n_construct_properties,
+						    GObjectConstructParam *construct_properties);
 static void rb_station_properties_dialog_dispose (GObject *object);
 static void rb_station_properties_dialog_finalize (GObject *object);
 static void rb_station_properties_dialog_set_property (GObject *object,
@@ -73,6 +76,7 @@ static void rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
 
 struct RBStationPropertiesDialogPrivate
 {
+	RBPlugin    *plugin;
 	RBEntryView *entry_view;
 	RhythmDB    *db;
 	RhythmDBEntry *current_entry;
@@ -95,7 +99,8 @@ struct RBStationPropertiesDialogPrivate
 enum
 {
 	PROP_0,
-	PROP_ENTRY_VIEW
+	PROP_ENTRY_VIEW,
+	PROP_PLUGIN
 };
 
 G_DEFINE_TYPE (RBStationPropertiesDialog,
@@ -108,6 +113,7 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->constructor = rb_station_properties_dialog_constructor;
 	object_class->set_property = rb_station_properties_dialog_set_property;
 	object_class->get_property = rb_station_properties_dialog_get_property;
 
@@ -120,6 +126,13 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 					                      "RBEntryView object",
 					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_PLUGIN,
+					 g_param_spec_object ("plugin",
+					                      "RBPlugin",
+					                      "RBPlugin to use to find files",
+					                      RB_TYPE_PLUGIN,
+					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->dispose = rb_station_properties_dialog_dispose;
 	object_class->finalize = rb_station_properties_dialog_finalize;
@@ -130,9 +143,20 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 static void
 rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 {
-	GladeXML *xml;
-
         dialog->priv = RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
+}
+
+static GObject *
+rb_station_properties_dialog_constructor (GType type,
+					  guint n_construct_properties,
+					  GObjectConstructParam *construct_properties)
+{
+	RBStationPropertiesDialog *dialog;
+	GladeXML *xml;
+	char *gladefile;
+
+	dialog = RB_STATION_PROPERTIES_DIALOG (G_OBJECT_CLASS (rb_station_properties_dialog_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
@@ -143,10 +167,13 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	xml = rb_glade_xml_new ("station-properties.glade",
+	gladefile = rb_plugin_find_file (dialog->priv->plugin, "station-properties.glade");
+	g_assert (gladefile != NULL);
+	xml = rb_glade_xml_new (gladefile,
 				"stationproperties",
 				dialog);
 	glade_xml_signal_autoconnect (xml);
+	g_free (gladefile);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "stationproperties"));
@@ -187,7 +214,9 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 				 G_OBJECT (dialog), 0);
 	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "ratingVBox")),
 			   dialog->priv->rating);
-	g_object_unref (G_OBJECT (xml));
+	g_object_unref (xml);
+
+	return G_OBJECT (dialog);
 }
 
 static void
@@ -242,6 +271,9 @@ rb_station_properties_dialog_set_property (GObject *object,
 		g_object_get (G_OBJECT (dialog->priv->entry_view),
 			      "db", &dialog->priv->db, NULL);
 		break;
+	case PROP_PLUGIN:
+		dialog->priv->plugin = g_value_get_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -260,6 +292,9 @@ rb_station_properties_dialog_get_property (GObject *object,
 	case PROP_ENTRY_VIEW:
 		g_value_set_object (value, dialog->priv->entry_view);
 		break;
+	case PROP_PLUGIN:
+		g_value_set_object (value, dialog->priv->plugin);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -267,13 +302,14 @@ rb_station_properties_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_station_properties_dialog_new (RBEntryView *entry_view)
+rb_station_properties_dialog_new (RBPlugin *plugin, RBEntryView *entry_view)
 {
 	RBStationPropertiesDialog *dialog;
 
 	g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
 
 	dialog = g_object_new (RB_TYPE_STATION_PROPERTIES_DIALOG,
+			       "plugin", plugin,
 			       "entry-view", entry_view,
 			       NULL);
 

@@ -1,13 +1,13 @@
 /*
  * rb-generic-player-plugin.c
- * 
+ *
  * Copyright (C) 2006  Jonathan Matthew
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -151,7 +151,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBGeneri
 					 "deleted", G_CALLBACK (rb_generic_player_plugin_source_deleted),
 					 plugin, 0);
 	}
-	
+
 	return source;
 }
 
@@ -170,7 +170,7 @@ impl_activate (RBPlugin *plugin,
 		      "removable-media-manager", &rmm,
 		      NULL);
 
-	/* watch for new removable media.  use connect_after so 
+	/* watch for new removable media.  use connect_after so
 	 * plugins for more specific device types can get in first.
 	 */
 	g_signal_connect_after (G_OBJECT (rmm),
@@ -195,15 +195,15 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	g_object_get (G_OBJECT (shell),
 		      "removable-media-manager", &rmm,
-		      "ui-manager", &uimanager, 
+		      "ui-manager", &uimanager,
 		      NULL);
-	
+
 	g_signal_handlers_disconnect_by_func (G_OBJECT (rmm), create_source_cb, plugin);
 
 	g_list_foreach (plugin->player_sources, (GFunc)rb_source_delete_thyself, NULL);
 	g_list_free (plugin->player_sources);
 	plugin->player_sources = NULL;
-	
+
 	if (plugin->ui_merge_id) {
 		gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
 		plugin->ui_merge_id = 0;

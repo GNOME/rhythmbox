@@ -39,7 +39,9 @@ librbwidgets_la_SOURCES =				\
 	rb-query-creator.c				\
 	rb-query-creator.h				\
 	rb-query-creator-private.h			\
-	rb-query-creator-properties.c
+	rb-query-creator-properties.c			\
+	rb-uri-dialog.c					\
+	rb-uri-dialog.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

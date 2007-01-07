@@ -41,6 +41,12 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
+gladedir = $(plugindir)
+glade_DATA = audioscrobbler-prefs.glade
+
+uixmldir = $(plugindir)
+uixml_DATA = audioscrobbler-ui.xml
+
 plugin_in_files = audioscrobbler.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
@@ -51,12 +57,12 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 					\
 	$(BUILT_SOURCES)			\
-	$(top_srcdir)/plugins/audioscrobbler/audioscrobbler-ui.xml	\
 	$(NULL)
 
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
-	$(top_srcdir)/plugins/audioscrobbler/audioscrobbler-ui.xml	\
+	$(uixml_DATA)				\
+	$(glade_DATA)				\
 	$(top_srcdir)/plugins/audioscrobbler/as-powered.png		\
 	$(NULL)
 

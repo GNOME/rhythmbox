@@ -41,8 +41,8 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gladedir = $(datadir)/rhythmbox/glade
-glade_DATA =
+uixmldir = $(plugindir)
+uixml_DATA = generic-player-ui.xml
 
 plugin_in_files = generic-player.rb-plugin.desktop.in
 
@@ -50,7 +50,7 @@ plugin_in_files = generic-player.rb-plugin.desktop.in
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
-EXTRA_DIST = $(glade_DATA) $(plugin_in_files)
+EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

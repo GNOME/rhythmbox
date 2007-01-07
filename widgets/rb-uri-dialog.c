@@ -30,29 +30,29 @@
 #include <glade/glade.h>
 #include <libgnomevfs/gnome-vfs.h>
 
-#include "rb-new-station-dialog.h"
+#include "rb-uri-dialog.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
-#include "rb-entry-view.h"
 #include "rb-debug.h"
 
-static void rb_new_station_dialog_class_init (RBNewStationDialogClass *klass);
-static void rb_new_station_dialog_init (RBNewStationDialog *dialog);
-static void rb_new_station_dialog_finalize (GObject *object);
-static void rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
-					       int response_id,
-					       RBNewStationDialog *dialog);
-static void rb_new_station_dialog_text_changed (GtkEditable *buffer,
-						RBNewStationDialog *dialog);
+static void rb_uri_dialog_class_init (RBURIDialogClass *klass);
+static void rb_uri_dialog_init (RBURIDialog *dialog);
+static void rb_uri_dialog_finalize (GObject *object);
+static void rb_uri_dialog_response_cb (GtkDialog *gtkdialog,
+				       int response_id,
+				       RBURIDialog *dialog);
+static void rb_uri_dialog_text_changed (GtkEditable *buffer,
+					RBURIDialog *dialog);
 
-struct RBNewStationDialogPrivate
+struct RBURIDialogPrivate
 {
+	GtkWidget   *label;
 	GtkWidget   *url;
 	GtkWidget   *okbutton;
 	GtkWidget   *cancelbutton;
 };
 
-#define RB_NEW_STATION_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NEW_STATION_DIALOG, RBNewStationDialogPrivate))
+#define RB_URI_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_URI_DIALOG, RBURIDialogPrivate))
 
 enum
 {
@@ -60,49 +60,49 @@ enum
 	LAST_SIGNAL
 };
 
-static guint rb_new_station_dialog_signals [LAST_SIGNAL] = { 0 };
+static guint rb_uri_dialog_signals [LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBNewStationDialog, rb_new_station_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (RBURIDialog, rb_uri_dialog, GTK_TYPE_DIALOG)
 
 static void
-rb_new_station_dialog_class_init (RBNewStationDialogClass *klass)
+rb_uri_dialog_class_init (RBURIDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->finalize = rb_new_station_dialog_finalize;
+	object_class->finalize = rb_uri_dialog_finalize;
 
-	rb_new_station_dialog_signals [LOCATION_ADDED] =
+	rb_uri_dialog_signals [LOCATION_ADDED] =
 		g_signal_new ("location-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNewStationDialogClass, location_added),
+			      G_STRUCT_OFFSET (RBURIDialogClass, location_added),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__STRING,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
 
-	g_type_class_add_private (klass, sizeof (RBNewStationDialogPrivate));
+	g_type_class_add_private (klass, sizeof (RBURIDialogPrivate));
 }
 
 static void
-rb_new_station_dialog_init (RBNewStationDialog *dialog)
+rb_uri_dialog_init (RBURIDialog *dialog)
 {
 	GladeXML *xml;
 
 	/* create the dialog and some buttons forward - close */
-	dialog->priv = RB_NEW_STATION_DIALOG_GET_PRIVATE (dialog);
+	dialog->priv = RB_URI_DIALOG_GET_PRIVATE (dialog);
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
-				 G_CALLBACK (rb_new_station_dialog_response_cb),
+				 G_CALLBACK (rb_uri_dialog_response_cb),
 				 dialog, 0);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	gtk_window_set_title (GTK_WINDOW (dialog), _("New Internet Radio Station"));
+	/*gtk_window_set_title (GTK_WINDOW (dialog), _("New Internet Radio Station"));*/
 
 	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CANCEL,
@@ -112,20 +112,21 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 							GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
-	xml = rb_glade_xml_new ("station-new.glade",
-				"newstation",
+	xml = rb_glade_xml_new ("uri-new.glade",
+				"newuri",
 				dialog);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-			   glade_xml_get_widget (xml, "newstation"));
+			   glade_xml_get_widget (xml, "newuri"));
 
 	/* get the widgets from the XML */
+	dialog->priv->label = glade_xml_get_widget (xml, "label");
 	dialog->priv->url = glade_xml_get_widget (xml, "txt_url");
 	gtk_entry_set_activates_default (GTK_ENTRY (dialog->priv->url), TRUE);
 
 	g_signal_connect_object (G_OBJECT (dialog->priv->url),
 				 "changed",
-				 G_CALLBACK (rb_new_station_dialog_text_changed),
+				 G_CALLBACK (rb_uri_dialog_text_changed),
 				 dialog, 0);
 
 	/* default focus */
@@ -138,61 +139,57 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 }
 
 static void
-rb_new_station_dialog_finalize (GObject *object)
+rb_uri_dialog_finalize (GObject *object)
 {
-	RBNewStationDialog *dialog;
+	RBURIDialog *dialog;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_NEW_STATION_DIALOG (object));
+	g_return_if_fail (RB_IS_URI_DIALOG (object));
 
-	dialog = RB_NEW_STATION_DIALOG (object);
+	dialog = RB_URI_DIALOG (object);
 
 	g_return_if_fail (dialog->priv != NULL);
 
-	G_OBJECT_CLASS (rb_new_station_dialog_parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_uri_dialog_parent_class)->finalize (object);
 }
 
 GtkWidget *
-rb_new_station_dialog_new (RBEntryView *view)
+rb_uri_dialog_new (const char *title, const char *label)
 {
-	RBNewStationDialog *dialog;
+	RBURIDialog *dialog;
 
-	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, NULL);
+	dialog = g_object_new (RB_TYPE_URI_DIALOG, NULL);
+
+	gtk_window_set_title (GTK_WINDOW (dialog), title);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->label), label);
 
 	return GTK_WIDGET (dialog);
 }
 
 static void
-rb_new_station_dialog_create_station (RBNewStationDialog *dialog)
+rb_uri_dialog_response_cb (GtkDialog *gtkdialog,
+				   int response_id,
+				   RBURIDialog *dialog)
 {
 	char *valid_url;
 	char *str;
 
-	str = gtk_editable_get_chars (GTK_EDITABLE (dialog->priv->url), 0, -1);
-	valid_url = g_strstrip (str);
-
-	g_signal_emit (dialog, rb_new_station_dialog_signals [LOCATION_ADDED], 0, valid_url);
-
-	g_free (str);
-}
-
-static void
-rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
-				   int response_id,
-				   RBNewStationDialog *dialog)
-{
-
 	if (response_id != GTK_RESPONSE_OK)
 		return;
 
-	rb_new_station_dialog_create_station (dialog);
+	str = gtk_editable_get_chars (GTK_EDITABLE (dialog->priv->url), 0, -1);
+	valid_url = g_strstrip (str);
+
+	g_signal_emit (dialog, rb_uri_dialog_signals [LOCATION_ADDED], 0, valid_url);
+
+	g_free (str);
 
 	gtk_widget_hide (GTK_WIDGET (gtkdialog));
 }
 
 static void
-rb_new_station_dialog_text_changed (GtkEditable *buffer,
-				    RBNewStationDialog *dialog)
+rb_uri_dialog_text_changed (GtkEditable *buffer,
+				    RBURIDialog *dialog)
 {
 	char *text = gtk_editable_get_chars (buffer, 0, -1);
 	gboolean has_text = ((text != NULL) && (*text != 0));
