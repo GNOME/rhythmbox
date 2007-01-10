@@ -269,12 +269,16 @@ impl_deactivate (RBPlugin *rbplugin,
 
 	g_object_get (shell, "shell-player", &shell_player, NULL);
 
-	g_signal_handler_disconnect (shell_player, plugin->handler_id);
-	plugin->handler_id = 0;
+	if (plugin->handler_id != 0) {
+		g_signal_handler_disconnect (shell_player, plugin->handler_id);
+		plugin->handler_id = 0;
+	}
 
 	g_object_unref (shell_player);
 
-	g_object_unref (plugin->proxy);
-	plugin->proxy = NULL;
+	if (plugin->proxy != NULL) {
+		g_object_unref (plugin->proxy);
+		plugin->proxy = NULL;
+	}
 }
 

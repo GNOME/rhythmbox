@@ -1,3 +1,12 @@
+2007-01-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch by:  William Jon McCann  <mccann@jhu.edu>
+
+	* plugins/power-manager/rb-power-manager-plugin.c:
+	(impl_deactivate):
+	Don't crash if we couldn't create the dbus proxy object or connect the
+	signal handler.  Fixes #395088.
+
 2007-01-07  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* plugins/daap/Makefile.am (INCLUDES): Build fix for building in
