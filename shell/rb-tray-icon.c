@@ -555,12 +555,35 @@ rb_tray_icon_get_geom (RBTrayIcon *icon, int *x, int *y, int *width, int *height
 	*height = widget->allocation.y;
 }
 
+/* FIXME HORRIBLE HACK pending resolution of bug 350107 */
+#define sexy_tooltip_position_to_widget _rb_tooltip_position_to_widget
+static void
+sexy_tooltip_position_to_widget(SexyTooltip *tooltip, GtkWidget *widget)
+{
+	GdkScreen *screen;
+	gint x, y;
+	GdkRectangle rect;
+
+	screen = gtk_widget_get_screen(widget);
+	gdk_window_get_origin(widget->window, &x, &y);
+
+	rect.x = widget->allocation.x + x;
+	rect.y = widget->allocation.y + y;
+	rect.width  = widget->allocation.width;
+	rect.height = widget->allocation.height;
+
+	sexy_tooltip_position_to_rect(tooltip, &rect, screen);
+}
+/* END HACK */
+
 static void
 rb_tray_icon_update_tooltip_visibility (RBTrayIcon *icon)
 {
-	if (icon->priv->tooltips_should_show && !icon->priv->tooltips_suppressed)
+	if (icon->priv->tooltips_should_show && !icon->priv->tooltips_suppressed) {
+		sexy_tooltip_position_to_widget (SEXY_TOOLTIP (icon->priv->tooltip), 
+						 icon->priv->ebox);
 		gtk_widget_show (icon->priv->tooltip);
-	else
+	} else
 		gtk_widget_hide (icon->priv->tooltip);
 }
 
@@ -575,7 +598,7 @@ rb_tray_icon_unhide_cb (RBTrayIcon *icon)
 }
 
 void
-rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon, 
+rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon,
 					 const char *primary_markup)
 {
 	/* hide, then reshow in the right position & size */
@@ -583,7 +606,7 @@ rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon,
 
 	if (primary_markup == NULL)
 		primary_markup = TRAY_ICON_DEFAULT_TOOLTIP;
-	gtk_label_set_markup (GTK_LABEL (icon->priv->tooltip_primary), 
+	gtk_label_set_markup (GTK_LABEL (icon->priv->tooltip_primary),
 			      primary_markup);
 
 	if (icon->priv->tooltip_unhide_id > 0)
@@ -591,14 +614,14 @@ rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon,
 	icon->priv->tooltip_unhide_id = g_idle_add ((GSourceFunc) rb_tray_icon_unhide_cb, icon);
 }
 
-void 
+void
 rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 {
 	GtkContainer *image_box;
 	GtkWidget *current_image;
 
 	if (msgicon == NULL)
-		msgicon = gtk_image_new_from_icon_name ("gnome-media-player", 
+		msgicon = gtk_image_new_from_icon_name ("gnome-media-player",
 							GTK_ICON_SIZE_DIALOG);
 	image_box = GTK_CONTAINER (icon->priv->tooltip_image_box);
 	current_image = GTK_WIDGET (g_list_nth_data (gtk_container_get_children (image_box), 0));
@@ -611,7 +634,7 @@ rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 }
 
 void
-rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon, 
+rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon,
 					   const char *secondary_markup)
 {
 	if (secondary_markup != NULL) {
@@ -622,7 +645,7 @@ rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon,
 		gtk_widget_hide (icon->priv->tooltip_secondary);
 
 }
-	
+
 void
 rb_tray_icon_notify (RBTrayIcon *icon,
 		     guint timeout,
@@ -643,7 +666,7 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 	rb_debug ("doing notify: %s", primary_markup);
 	if (timeout > 0)
 		rb_tray_icon_suppress_tooltips (icon, timeout);
-	egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout, 
+	egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout,
 			      primary_markup, msgicon, secondary_markup);
 }
 
@@ -654,7 +677,7 @@ rb_tray_icon_cancel_notify (RBTrayIcon *icon)
 }
 
 static void
-rb_tray_icon_enter_notify_event_cb (RBTrayIcon *icon, 
+rb_tray_icon_enter_notify_event_cb (RBTrayIcon *icon,
 				    GdkEvent *event,
 				    GtkWidget *widget)
 {
@@ -663,7 +686,7 @@ rb_tray_icon_enter_notify_event_cb (RBTrayIcon *icon,
 }
 
 static void
-rb_tray_icon_leave_notify_event_cb (RBTrayIcon *icon, 
+rb_tray_icon_leave_notify_event_cb (RBTrayIcon *icon,
 				    GdkEvent *event,
 				    GtkWidget *widget)
 {
@@ -673,10 +696,10 @@ rb_tray_icon_leave_notify_event_cb (RBTrayIcon *icon,
 
 static void
 rb_tray_icon_tooltip_size_allocate_cb (RBTrayIcon *icon,
-				       GtkAllocation *allocation, 
+				       GtkAllocation *allocation,
 				       GtkWidget *tooltip)
 {
-	sexy_tooltip_position_to_widget (SEXY_TOOLTIP (icon->priv->tooltip), 
+	sexy_tooltip_position_to_widget (SEXY_TOOLTIP (icon->priv->tooltip),
 					 icon->priv->ebox);
 }
 
@@ -686,13 +709,13 @@ rb_tray_icon_construct_tooltip (RBTrayIcon *icon)
 	GtkWidget *hbox, *vbox, *image;
 	gint size;
 	PangoFontDescription *font_desc;
-	
+
 	icon->priv->tooltips_should_show = FALSE;
 	icon->priv->tooltips_suppressed = FALSE;
 	icon->priv->tooltip = sexy_tooltip_new ();
 
-	g_signal_connect_object (icon->priv->tooltip, "size-allocate", 
-				 (GCallback) rb_tray_icon_tooltip_size_allocate_cb, 
+	g_signal_connect_object (icon->priv->tooltip, "size-allocate",
+				 (GCallback) rb_tray_icon_tooltip_size_allocate_cb,
 				 icon, G_CONNECT_SWAPPED | G_CONNECT_AFTER);
 
 	icon->priv->tooltip_primary = gtk_label_new (TRAY_ICON_DEFAULT_TOOLTIP);

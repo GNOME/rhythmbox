@@ -1,5 +1,15 @@
 2007-01-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* shell/rb-tray-icon.c: (sexy_tooltip_position_to_widget),
+	(rb_tray_icon_update_tooltip_visibility):
+	Add a less broken implementation of sexy_tooltip_position_to_widget
+	that works for tray icons, and update the tooltip position each time
+	it gets displayed.  From #345592, fixes #395273.
+
+2007-01-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/cd-recorder/rb-cd-recorder-plugin.c: (source_burn),
 	(cmd_burn_source):
 	* plugins/cd-recorder/rb-playlist-source-recorder.c:
