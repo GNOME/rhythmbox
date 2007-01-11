@@ -148,7 +148,8 @@ burn_source_iter_func (GtkTreeModel *model,
 }
 
 static void
-source_burn (RBSource *source)
+source_burn (RBCdRecorderPlugin *pi,
+	     RBSource *source)
 {
 	GtkWidget    *recorder;
 	GtkWidget    *parent;
@@ -173,6 +174,7 @@ source_burn (RBSource *source)
 	parent = gtk_widget_get_toplevel (GTK_WIDGET (source));
 	recorder = rb_playlist_source_recorder_new (parent,
 						    shell,
+						    RB_PLUGIN (pi),
 						    name);
 	g_object_unref (shell);
 	g_free (name);
@@ -208,7 +210,7 @@ cmd_burn_source (GtkAction          *action,
 		 RBCdRecorderPlugin *pi)
 {
 	if (pi->selected_source != NULL) {
-		source_burn (pi->selected_source);
+		source_burn (pi, pi->selected_source);
 	}
 }
 

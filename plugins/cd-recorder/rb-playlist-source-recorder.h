@@ -25,6 +25,9 @@
 #ifndef __RB_PLAYLIST_SOURCE_RECORDER_H
 #define __RB_PLAYLIST_SOURCE_RECORDER_H
 
+#include "rb-shell.h"
+#include "rb-plugin.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_PLAYLIST_SOURCE_RECORDER         (rb_playlist_source_recorder_get_type ())
@@ -58,6 +61,7 @@ GType       rb_playlist_source_recorder_get_type (void);
 
 GtkWidget * rb_playlist_source_recorder_new            (GtkWidget                *parent,
                                                         RBShell                  *shell,
+							RBPlugin                 *plugin,
                                                         const char               *name);
 
 void        rb_playlist_source_recorder_set_name       (RBPlaylistSourceRecorder *recorder,

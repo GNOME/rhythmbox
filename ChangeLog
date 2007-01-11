@@ -1,5 +1,14 @@
 2007-01-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/cd-recorder/rb-cd-recorder-plugin.c: (source_burn),
+	(cmd_burn_source):
+	* plugins/cd-recorder/rb-playlist-source-recorder.c:
+	* plugins/cd-recorder/rb-playlist-source-recorder.h:
+	Use rb_plugin_find_file to locate plugin-specific files.
+	Accidentally dropped from the source tree surgery changes.
+
+2007-01-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/main.c: (main):  Initialise GThread before doing anything
 	else.
 

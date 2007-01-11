@@ -57,6 +57,7 @@
 #include "rb-playlist-source-recorder.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
+#include "rb-plugin.h"
 
 #ifndef HAVE_MKDTEMP
 #include "mkdtemp.h"
@@ -85,8 +86,19 @@ extern char *mkdtemp (char *template);
 
 static void rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass);
 static void rb_playlist_source_recorder_init       (RBPlaylistSourceRecorder *source);
+static GObject *rb_playlist_source_recorder_constructor(GType type, guint n_construct_properties,
+						    GObjectConstructParam *construct_properties);
 static void rb_playlist_source_recorder_dispose    (GObject *object);
 static void rb_playlist_source_recorder_finalize   (GObject *object);
+
+static void rb_playlist_source_recorder_set_property (GObject *object,
+						      guint prop_id,
+						      const GValue *value,
+						      GParamSpec *pspec);
+static void rb_playlist_source_recorder_get_property (GObject *object,
+						      guint prop_id,
+						      GValue *value,
+						      GParamSpec *pspec);
 
 void        rb_playlist_source_recorder_device_changed_cb  (NautilusBurnDriveSelection *selection,
                                                             const char                 *device_path,
@@ -107,6 +119,7 @@ struct RBPlaylistSourceRecorderPrivate
         GtkWidget   *parent;
 
         RBShell     *shell;
+	RBPlugin    *plugin;
 
         char        *name;
 
@@ -135,6 +148,13 @@ struct RBPlaylistSourceRecorderPrivate
         gboolean     confirmed_exit;
 
         char        *tmp_dir;
+};
+
+enum
+{
+	PROP_0,
+	PROP_SHELL,
+	PROP_PLUGIN
 };
 
 typedef enum {
@@ -176,8 +196,26 @@ rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClass *klass)
 
         widget_class->style_set = rb_playlist_source_recorder_style_set;
 
+	object_class->constructor = rb_playlist_source_recorder_constructor;
         object_class->dispose = rb_playlist_source_recorder_dispose;
         object_class->finalize = rb_playlist_source_recorder_finalize;
+	object_class->set_property = rb_playlist_source_recorder_set_property;
+	object_class->get_property = rb_playlist_source_recorder_get_property;
+
+	g_object_class_install_property (object_class,
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							       "RBShell",
+							       "RBShell object",
+							      RB_TYPE_SHELL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_PLUGIN,
+					 g_param_spec_object ("plugin",
+						 	      "RBPlugin",
+							      "RBPlugin instance for the plugin that created the recorder",
+							      RB_TYPE_PLUGIN,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
         rb_playlist_source_recorder_signals [NAME_CHANGED] =
                 g_signal_new ("name_changed",
@@ -1161,6 +1199,60 @@ delete_event_handler (GtkWidget   *widget,
 static void
 rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
 {
+	source->priv = RB_PLAYLIST_SOURCE_RECORDER_GET_PRIVATE (source);
+}
+
+static void
+rb_playlist_source_recorder_set_property (GObject *object,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *pspec)
+{
+	RBPlaylistSourceRecorder *source;
+	source = RB_PLAYLIST_SOURCE_RECORDER (object);
+
+	switch (prop_id) {
+	case PROP_SHELL:
+		source->priv->shell = g_value_get_object (value);
+		break;
+	case PROP_PLUGIN:
+		source->priv->plugin = g_value_get_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_playlist_source_recorder_get_property (GObject *object,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *pspec)
+{
+	RBPlaylistSourceRecorder *source;
+	source = RB_PLAYLIST_SOURCE_RECORDER (object);
+
+	switch (prop_id) {
+	case PROP_SHELL:
+		g_value_set_object (value, source->priv->shell);
+		break;
+	case PROP_PLUGIN:
+		g_value_set_object (value, source->priv->plugin);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static GObject *
+rb_playlist_source_recorder_constructor (GType type,
+					 guint n_construct_properties,
+					 GObjectConstructParam *construct_properties)
+{
+	RBPlaylistSourceRecorder *source;
+	char           *gladefile;
         GladeXML       *xml;
         GError         *error = NULL;
         GtkWidget      *widget;
@@ -1168,6 +1260,9 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         int             font_size;
         PangoAttrList  *pattrlist;
         PangoAttribute *attr;
+
+	source = RB_PLAYLIST_SOURCE_RECORDER (G_OBJECT_CLASS (rb_playlist_source_recorder_parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
 
         g_signal_connect (GTK_DIALOG (source),
                           "delete_event",
@@ -1205,9 +1300,13 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
 
         gtk_dialog_set_default_response (GTK_DIALOG (source), GTK_RESPONSE_ACCEPT);
 
-        xml = rb_glade_xml_new ("recorder.glade",
+	gladefile = rb_plugin_find_file (source->priv->plugin, "recorder.glade");
+	g_assert (gladefile != NULL);
+
+        xml = rb_glade_xml_new (gladefile,
                                 "recorder_vbox",
                                 source);
+	g_free (gladefile);
 
         source->priv->vbox = glade_xml_get_widget (xml, "recorder_vbox");
 
@@ -1267,7 +1366,7 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
                                                  msg);
                 gtk_dialog_run (GTK_DIALOG (dialog));
                 g_free (msg);
-                return;
+                return G_OBJECT (source);
         }
 
         update_speed_combobox (source);
@@ -1298,6 +1397,7 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
 
         g_signal_connect (GTK_DIALOG (source), "response",
                           G_CALLBACK (response_cb), NULL);
+	return G_OBJECT (source);
 }
 
 static RBRecorderSong *
@@ -1394,6 +1494,7 @@ rb_playlist_source_recorder_finalize (GObject *object)
 GtkWidget *
 rb_playlist_source_recorder_new (GtkWidget  *parent,
                                  RBShell    *shell,
+				 RBPlugin   *plugin,
                                  const char *name)
 {
         GtkWidget *result;
@@ -1401,6 +1502,7 @@ rb_playlist_source_recorder_new (GtkWidget  *parent,
 
         result = g_object_new (RB_TYPE_PLAYLIST_SOURCE_RECORDER,
                                "title", _("Create Audio CD"),
+			       "plugin", plugin,
                                NULL);
 
         source = RB_PLAYLIST_SOURCE_RECORDER (result);
