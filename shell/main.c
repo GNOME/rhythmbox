@@ -110,7 +110,6 @@ main (int argc, char **argv)
 	char **new_argv;
 	gboolean activated;
 
-
 	GOptionContext *context;
 	static const GOptionEntry options []  = {
 		{ "debug",           'd', 0, G_OPTION_ARG_NONE,         &debug,           N_("Enable debug output"), NULL },
@@ -124,6 +123,8 @@ main (int argc, char **argv)
 		{ G_OPTION_REMAINING,  0, 0, G_OPTION_ARG_STRING_ARRAY, &remaining_args,  NULL, N_("[URI...]") },
 		{ NULL }
 	};
+
+	g_thread_init (NULL);
 
 	rb_profile_start ("starting rhythmbox");
 
