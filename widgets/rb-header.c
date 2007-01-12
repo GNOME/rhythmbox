@@ -179,6 +179,7 @@ rb_header_init (RBHeader *header)
  	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
  	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->song), PANGO_ELLIPSIZE_END);
+	gtk_misc_set_alignment (GTK_MISC (header->priv->song), 0.0, 0.0);
 	gtk_box_pack_start (GTK_BOX (hbox), header->priv->song, TRUE, TRUE, 0);
 	gtk_widget_show (header->priv->song);
 
