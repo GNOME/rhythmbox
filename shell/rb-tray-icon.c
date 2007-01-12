@@ -40,7 +40,7 @@
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 
-#define TRAY_ICON_DEFAULT_TOOLTIP _("Rhythmbox")
+#define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);

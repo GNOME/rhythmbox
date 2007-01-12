@@ -2956,7 +2956,7 @@ rb_shell_construct_notify_titles (RBShell *shell,
 
 	if (artist != NULL && artist[0] != '\0') {
 		/* Translators: by Artist */
-		g_string_append_printf (secondary, _("by <b>%s</b>"), artist);
+		g_string_append_printf (secondary, _("by <i>%s</i>"), artist);
 	}
 	g_free (artist);
 
@@ -2977,7 +2977,7 @@ rb_shell_construct_notify_titles (RBShell *shell,
 			g_string_append_c (secondary, ' ');
 
 		/* Translators: from Album */
-		g_string_append_printf (secondary, _("from <b>%s</b>"), album);
+		g_string_append_printf (secondary, _("from <i>%s</i>"), album);
 	}
 	g_free (album);
 
