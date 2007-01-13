@@ -60,7 +60,7 @@ class Magnatune(rb.Plugin):
 		rb.Plugin.__init__(self)
 		
 	def activate(self, shell):
-		self.shell = shell # so buy_track can update the progress bar
+		self.shell = shell # so the source can update the progress bar
 		self.db = shell.get_property("db")
 		self.keyring = None
 
@@ -78,7 +78,7 @@ class Magnatune(rb.Plugin):
 		action = gtk.Action('MagnatunePurchaseAlbum', _('Purchase Album'),
 				_("Purchase this album from Magnatune"),
 				'gtk-save')
-		action.connect('activate', lambda a: self.shell.get_property("selected-source").purchase_tracks())
+		action.connect('activate', lambda a: self.shell.get_property("selected-source").purchase_album())
 		self.action_group = gtk.ActionGroup('MagnatunePluginActions')
 		self.action_group.add_action(action)
 		action = gtk.Action('MagnatuneArtistInfo', _('Artist Information'),

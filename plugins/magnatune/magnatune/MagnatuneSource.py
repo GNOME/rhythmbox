@@ -13,7 +13,7 @@ has_gnome_keyring = False
 #	import gnomekeyring
 #	has_gnome_keyring = True
 #except:
-#	pass	
+#	pass
 
 
 magnatune_partner_id = "zimmerman"
@@ -31,8 +31,8 @@ class MagnatuneSource(rb.BrowserSource):
 	}
 
 	__client = gconf.client_get_default()
-	
-	
+
+
 	def __init__(self):
 
 		rb.BrowserSource.__init__(self, name=_("Magnatune"))
@@ -51,13 +51,13 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__has_loaded = False
 		self.__load_handle = None
 		self.__load_current_size = 0
-		self.__load_total_size = 1
-		
+		self.__load_total_size = 0
+
 		self.__downloads = {} # keeps track of amount downloaded for each file
 		self.__downloading = False # keeps track of whether we are currently downloading an album
 		self.__download_progress = 0.0 # progress of current download(s)
 		self.purchase_filesize = 0 # total amount of bytes to download
-	
+
 	def do_set_property(self, property, value):
 		if property.name == 'plugin':
 			self.__plugin = value
@@ -84,15 +84,15 @@ class MagnatuneSource(rb.BrowserSource):
 			if self.__load_total_size > 0:
 				progress = min (float(self.__load_current_size) / self.__load_total_size, 1.0)
 			else:
-				progress = 0.0
+				progress = -1.0
 			return (_("Loading Magnatune catalogue"), None, progress)
 		elif self.__downloading:
 			progress = min (self.__download_progress, 1.0)
 			return (_("Downloading Magnatune Album(s)"), None, progress)
 		else:
 			qm = self.get_property("query-model")
-			return (qm.compute_status_normal("song", "songs"), None, 0.0)
-	
+			return (qm.compute_status_normal("%d song", "%d songs"), None, 0.0)
+
 	def do_impl_get_ui_actions(self):
 		return ["MagnatunePurchaseAlbum",
 			"MagnatuneArtistInfo",
@@ -111,17 +111,17 @@ class MagnatuneSource(rb.BrowserSource):
 			# start our catalogue updates
 			self.__update_id = gobject.timeout_add(6 * 60 * 60 * 1000, self.__update_catalogue)
 			self.__update_catalogue()
-			
+
 			self.get_entry_view().set_sorting_type(self.__client.get_string("/apps/rhythmbox/plugins/magnatune/sorting"))
 
 		rb.BrowserSource.do_impl_activate (self)
-	
+
 #	def do_impl_get_browser_key (self):
 #		return "/apps/rhythmbox/plugins/magnatune/show_browser"
 #
 #	def do_impl_get_paned_key (self):
 #		return "/apps/rhythmbox/plugins/magnatune/paned_position"
-	
+
 	def do_impl_delete_thyself(self):
 		if self.__update_id != 0:
 			gobject.source_remove (self.__update_id)
@@ -134,9 +134,9 @@ class MagnatuneSource(rb.BrowserSource):
 		if self.__xfer_handle is not None:
 			self.__xfer_handle.close(lambda handle, exc: None) #FIXME: report it?
 			self.__xfer_handle = None
-		
+
 		self.__client.set_string("/apps/rhythmbox/plugins/magnatune/sorting", self.get_entry_view().get_sorting_type())
-		
+
 		rb.BrowserSource.do_impl_delete_thyself (self)
 
 
@@ -155,7 +155,14 @@ class MagnatuneSource(rb.BrowserSource):
 				gnomevfs.url_show(url)
 				urls.add(url)
 
-	def purchase_tracks(self):
+	def purchase_album(self):
+		try:
+			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
+		except IndexError, e:
+			rb.error_dialog(title = _("Couldn't purchase album"),
+				        message = _("You must have a library location set to purchase an album."))
+			return
+
 		tracks = self.get_entry_view().get_selected_entries()
 		skus = []
 
@@ -165,7 +172,7 @@ class MagnatuneSource(rb.BrowserSource):
 				continue
 			skus.append(sku)
 			artist = self.__db.entry_get(track, rhythmdb.PROP_ARTIST)
-			album = self.__db.entry_get(track, rhythmdb.PROP_ALBUM)	
+			album = self.__db.entry_get(track, rhythmdb.PROP_ALBUM)
 
 			gladexml = gtk.glade.XML(self.__plugin.find_file("magnatune-purchase.glade"))
 
@@ -193,8 +200,8 @@ class MagnatuneSource(rb.BrowserSource):
 				gladexml.get_widget("email_entry").set_text("")
 
 				gladexml.get_widget("remember_cc_details").set_active(False)
-							
-			
+
+
 			window = gladexml.get_widget("purchase_dialog")
 			if window.run() == gtk.RESPONSE_ACCEPT:
 				amount = gladexml.get_widget("pay_combobox").get_active() + 5
@@ -224,7 +231,7 @@ class MagnatuneSource(rb.BrowserSource):
 					# successfully loaded
 					gtk.gdk.threads_enter()
 					self.__show_loading_screen (False)
-				
+
 					in_progress_dir = gnomevfs.DirectoryHandle(gnomevfs.URI(magnatune_dir))
 					in_progress = in_progress_dir.next()
 					while True:
@@ -243,7 +250,7 @@ class MagnatuneSource(rb.BrowserSource):
 			else:
 				# error reading file
 				raise exc_type
-			
+
 			parser.close()
 			handle.close(lambda handle, exc: None) # FIXME: report it?
 			self.__load_handle = None
@@ -260,7 +267,7 @@ class MagnatuneSource(rb.BrowserSource):
 		if exc_type:
 			self.__load_handle = None
 			self.__notify_status_changed()
-			
+
 			if gnomevfs.exists(local_song_info_uri):
 				raise exc_type
 			else:
@@ -377,7 +384,7 @@ class MagnatuneSource(rb.BrowserSource):
 		print "purchasing tracks:", sku, pay, format, name, email
 
 		try:
-			self.__buy_track(sku, pay, format, name, email, ccnumber, ccyear, ccmonth)
+			self.__buy_album(sku, pay, format, name, email, ccnumber, ccyear, ccmonth)
 		except MagnatunePurchaseError, e:
 			error_dlg = gtk.Dialog(title="Error", flags=gtk.DIALOG_DESTROY_WITH_PARENT, buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
 			label = gtk.Label(_("An error occurred while trying to purchase the album.\nThe Magnatune server returned:\n%s") % str(e))
@@ -387,7 +394,7 @@ class MagnatuneSource(rb.BrowserSource):
 			error_dlg.connect("response", lambda w, r: w.destroy())
 			error_dlg.show()
 
-	def __buy_track(self, sku, pay, format, name, email, ccnumber, ccyear, ccmonth): # http://magnatune.com/info/api#purchase
+	def __buy_album(self, sku, pay, format, name, email, ccnumber, ccyear, ccmonth): # http://magnatune.com/info/api#purchase
 		url = "https://magnatune.com/buy/buy_dl_cc_xml?"
 		url = url + urllib.urlencode({
 						'id':	magnatune_partner_id,
@@ -403,21 +410,21 @@ class MagnatuneSource(rb.BrowserSource):
 		buy_album_handler = BuyAlbumHandler(format) # so we can get the url and auth info
 		auth_parser = xml.sax.make_parser()
 		auth_parser.setContentHandler(buy_album_handler)
-		
+
 		self.__wait_dlg = gtk.Dialog(title="Authorizing Purchase", flags=gtk.DIALOG_NO_SEPARATOR|gtk.DIALOG_DESTROY_WITH_PARENT)
 		lbl = gtk.Label("Authorizing purchase with the Magnatune server. Please wait...")
 		self.__wait_dlg.vbox.pack_start(lbl)
 		lbl.show()
 		self.__wait_dlg.show()
 		gnomevfs.async.open(gnomevfs.URI(url), self.__auth_open_cb, data=(buy_album_handler, auth_parser))
-	
+
 	def __auth_open_cb(self, handle, exc_type, data):
 		if exc_type:
 			raise exc_type
-		
+
 		handle.read(64 * 1024, self.__auth_read_cb, data)
-		
-	
+
+
 	def __auth_read_cb (self, handle, data, exc_type, bytes_requested, parser):
 		buy_album_handler = parser[0]
 		auth_parser = parser[1]
@@ -431,7 +438,7 @@ class MagnatuneSource(rb.BrowserSource):
 					audio_dl_uri = gnomevfs.URI(buy_album_handler.url[0:buy_album_handler.url.rfind("/") + 1] + urllib.quote(audio_dl_uri.short_name))
 					audio_dl_uri.user_name = str(buy_album_handler.username) # URI objects don't like unicode strings
 					audio_dl_uri.password = str(buy_album_handler.password)
-				
+
 					in_progress = create_if_needed(gnomevfs.URI(magnatune_dir + "in_progress_" + audio_dl_uri.short_name), gnomevfs.OPEN_WRITE)
 					in_progress.write(str(audio_dl_uri))
 					in_progress.close()
@@ -442,10 +449,10 @@ class MagnatuneSource(rb.BrowserSource):
 			else:
 				# error reading file
 				raise exc_type
-			
+
 			auth_parser.close()
 			handle.close(lambda handle, exc: None) # FIXME: report it?
-			
+
  		else:
 			try :
 				print data
@@ -454,11 +461,11 @@ class MagnatuneSource(rb.BrowserSource):
 			except Exception, e:
 				print e
 				raise e
-	
+
 	def __download_album(self, audio_dl_uri):
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
 			to_file_uri = gnomevfs.URI(magnatune_dir + audio_dl_uri.short_name)
-			
+
 			shell = self.get_property('shell')
 			manager = shell.get_player().get_property('ui-manager')
 			manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
@@ -477,13 +484,13 @@ class MagnatuneSource(rb.BrowserSource):
 							update_callback_data = (to_file_uri, library_location, audio_dl_uri),
 							progress_sync_callback = self.__purchase_download_progress_cb,
 							sync_callback_data = (to_file_uri, audio_dl_uri))
-	
+
 	def __purchase_download_update_cb(self, _reserved, info, data):
 		if (info.phase == gnomevfs.XFER_PHASE_COMPLETED):
 			to_file_uri = data[0]
 			library_location = data[1]
 			audio_dl_uri = data[2]
-			
+
 			try:
 				del self.__downloads[str(audio_dl_uri)]
 			except:
@@ -502,11 +509,11 @@ class MagnatuneSource(rb.BrowserSource):
 				self.__downloading = False
 			self.__db.add_uri("file://" + urllib.quote(track_uri.dirname))
 		return 1
-	
+
 	def __purchase_download_progress_cb(self, info, data):
 		to_file_uri = data[0]
 		audio_dl_uri = data[1]
-		
+
 		if self.cancelled:
 			try:
 				del self.__downloads[str(audio_dl_uri)]
@@ -518,7 +525,7 @@ class MagnatuneSource(rb.BrowserSource):
 			if self.purchase_filesize == 0:
 				self.__downloading = False
 			return 0
-		
+
 		self.__downloads[str(audio_dl_uri)] = info.bytes_copied
 		purchase_downloaded = 0
 		for i in self.__downloads.values():
@@ -526,7 +533,7 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__download_progress = purchase_downloaded / float(self.purchase_filesize)
 		self.__notify_status_changed()
 		return 1
-	
+
 	def cancel_downloads(self):
 		self.cancelled = True
 		shell = self.get_property('shell')

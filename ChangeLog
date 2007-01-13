@@ -1,5 +1,21 @@
 2007-01-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch mostly by: Adam Zimmerman <adam_zimmerman@sfu.ca>
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	* plugins/magnatune/magnatune/TrackListHandler.py:
+	* plugins/magnatune/magnatune/__init__.py:
+	Complain if no library location is set when trying to purchase an
+	album from magnatune (fixes #390153).
+	Use the right format strings for the status text to actually show the
+	number of songs (fixes #392930).
+	Pulse the status bar while loading the song info (fixes #392040).
+	Use the song's 'year' property from the magnatune catalog if it
+	exists, otherwise fall back to 'launchdate'; clean up some other
+	stuff.  (fixes #388425).
+
+2007-01-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb-query-model.h:
 	Increase query result chunk size from 32 to 1024.
 
