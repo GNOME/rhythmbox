@@ -51,7 +51,7 @@ typedef enum {
 
 typedef struct RhythmDBQueryModelPrivate RhythmDBQueryModelPrivate;
 
-#define RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK 32
+#define RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK 1024
 
 typedef struct
 {
