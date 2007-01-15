@@ -61,7 +61,7 @@ Rhythmbox has been compiled with Howl support, these will will be used as
 sw_discovery_oid structures, which are used to identify the specific mDNS/DNS-SD
 call.  If Rhythmbox is using Avahi, these datatypes represent 
 AvahiServiceBrowser, AvahiServiceResolver and AvahiEntryGroup variables, 
-which, again, are used to uniquely idenfity the specific mDNS/DNS-SD call.
+which, again, are used to uniquely identify the specific mDNS/DNS-SD call.
 
 Browsing for remote shares is started via rb_daap_mdns_browse() which takes a
 callback that is run anytime a share is discovered or goes away.  Browsing will
@@ -72,7 +72,7 @@ runs when the host is resolved or a timeout reached.  Either way, when the
 the callback is run, the resolving stops.  If you wish to stop resolving early,
 you can use rb_daap_mdns_resolve_cancel().
 
-Pubsishing is done via rb_daap_mdns_publish().  The callback for this function
+Publishing is done via rb_daap_mdns_publish().  The callback for this function
 is used to notify you of success or failure due to name collision.  Two servers
 cannot have the same name.  Publishing will continue until 
 rb_daap_mdns_publish_cancel() is called.
@@ -88,7 +88,7 @@ source.  This reduces unneccessary computations and network traffic.
 
 4. Connecting to a music share
 
-When a user clicks on an music share source in the list, 
+When a user clicks on a music share source in the list, 
 rb-shell.c:rb_shell_select_source() runs the virtual function 
 rb_source_activate().  This tells the RBDAAPSource to resolve the server via
 RBDAAPmDNSResolver.  In the resolver's callback function, if the resolve was
