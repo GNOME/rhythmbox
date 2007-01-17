@@ -1,3 +1,33 @@
+2007-01-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-browser-source.h:
+	* sources/rb-browser-source.c: (rb_browser_source_class_init),
+	(rb_browser_source_init), (rb_browser_source_constructor),
+	(paned_size_allocate_cb), (rb_browser_source_state_prefs_sync),
+	(default_pack_paned):
+	Change get_paned_key to return an allocated string so python sources
+	can implement it, and add a pack_paned method for packing the GtkPaned
+	containing the browser and the entry view into the source UI.  The
+	default implementation just packs it into a box and adds that to the
+	source.
+
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_get_paned_key):
+	* sources/rb-library-source.c: (impl_get_paned_key):
+	Update for changes to get_paned_key.
+
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	Add python bindings for RBSource.get_browser_key,
+	RBBrowserSource.get_paned_key, and RBBrowserSource.pack_paned.
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	Implement get_browser_key and get_paned_key, pack the browser pane
+	widget into a box that we hide while showing the loading screen.
+	Fixes #390834.
+
+	* data/rhythmbox.schemas:
+	Show the browser in the magnatune source by default.  Fixes #392071.
+
 2007-01-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_insert_feed):

@@ -94,6 +94,7 @@ static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_search_actions (RBSource *source);
 static void impl_browser_toggled (RBSource *asource, gboolean disclosed);
 static void default_show_entry_popup (RBBrowserSource *source);
+static void default_pack_paned (RBBrowserSource *source, GtkWidget *paned);
 
 void rb_browser_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBBrowserSource *source);
@@ -111,7 +112,6 @@ struct RBBrowserSourcePrivate
 	RhythmDB *db;
 
 	RBLibraryBrowser *browser;
-	GtkWidget *vbox;
 
 	RBEntryView *songs;
 	GtkWidget *paned;
@@ -201,6 +201,7 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_browser_toggled = impl_browser_toggled;
 
+	klass->impl_pack_paned = default_pack_paned;
 	klass->impl_get_paned_key = (RBBrowserSourceStringFunc)rb_null_function;
 	klass->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 	klass->impl_show_entry_popup = default_show_entry_popup;
@@ -222,10 +223,6 @@ rb_browser_source_init (RBBrowserSource *source)
 	source->priv = RB_BROWSER_SOURCE_GET_PRIVATE (source);
 
 	source->priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
-
-	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 }
 
 static void
@@ -364,9 +361,8 @@ rb_browser_source_constructor (GType type,
 	RBShell *shell;
 	GObject *shell_player;
 	char *browser_key;
+	char *paned_key;
 	RhythmDBEntryType entry_type;
-
-	klass = RB_BROWSER_SOURCE_CLASS (g_type_class_peek (RB_TYPE_BROWSER_SOURCE));
 
 	source = RB_BROWSER_SOURCE (G_OBJECT_CLASS (rb_browser_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -436,11 +432,13 @@ rb_browser_source_constructor (GType type,
 					    (GConfClientNotifyFunc) rb_browser_source_state_pref_changed,
 					    source);
 	}
-	if (rb_browser_source_get_paned_key (source)) {
+	paned_key = rb_browser_source_get_paned_key (source);
+	if (paned_key) {
 		source->priv->state_paned_notify_id =
-			eel_gconf_notification_add (rb_browser_source_get_paned_key (source),
+			eel_gconf_notification_add (paned_key,
 					    (GConfClientNotifyFunc) rb_browser_source_state_pref_changed,
 					    source);
+		g_free (paned_key);
 	}
 	browser_key = rb_source_get_browser_key (RB_SOURCE (source));
 	if (browser_key) {
@@ -478,7 +476,9 @@ rb_browser_source_constructor (GType type,
 
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
 
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
+	klass = RB_BROWSER_SOURCE_GET_CLASS (source);
+	klass->impl_pack_paned (source, source->priv->paned);
+
 	gtk_widget_show_all (GTK_WIDGET (source));
 
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
@@ -714,12 +714,13 @@ paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBBrowserSource *source)
 {
-	const char *key = rb_browser_source_get_paned_key (source);;
+	char *key = rb_browser_source_get_paned_key (source);;
 
 	/* save state */
 	rb_debug ("paned size allocate");
 	if (key)
 		eel_gconf_set_integer (key, gtk_paned_get_position (GTK_PANED (source->priv->paned)));
+	g_free (key);
 }
 
 static void
@@ -735,7 +736,7 @@ rb_browser_source_state_pref_changed (GConfClient *client,
 static void
 rb_browser_source_state_prefs_sync (RBBrowserSource *source)
 {
-	const char *paned_key;
+	char *paned_key;
 	char *browser_key;
 
 	rb_debug ("syncing state");
@@ -750,6 +751,8 @@ rb_browser_source_state_prefs_sync (RBBrowserSource *source)
 	} else {
 		gtk_widget_hide (GTK_WIDGET (source->priv->browser));
 	}
+
+	g_free (paned_key);
 	g_free (browser_key);
 }
 
@@ -786,7 +789,7 @@ impl_show_popup (RBSource *source)
 	return TRUE;
 }
 
-const char *
+char *
 rb_browser_source_get_paned_key (RBBrowserSource *source)
 {
 	RBBrowserSourceClass *klass = RB_BROWSER_SOURCE_GET_CLASS (source);
@@ -904,3 +907,14 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 
 	rhythmdb_query_free (query);
 }
+
+static void
+default_pack_paned (RBBrowserSource *source, GtkWidget *paned)
+{
+	GtkWidget *box;
+
+	box = gtk_vbox_new (FALSE, 5);
+	gtk_box_pack_start_defaults (GTK_BOX (box), paned);
+	gtk_container_add (GTK_CONTAINER (source), box);
+}
+

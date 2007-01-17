@@ -961,3 +961,169 @@ _wrap_rb_debug_real(PyObject *self, PyObject *args, PyObject *kwargs)
     Py_INCREF(Py_None);
     return Py_None;
 }
+%%
+override RBSource__proxy_do_impl_get_browser_key
+static char *
+_wrap_RBSource__proxy_do_impl_get_browser_key(RBSource *self)
+{
+    PyGILState_STATE __py_state;
+    PyObject *py_self;
+    PyObject *py_retval;
+    PyObject *py_method;
+    char *ret = NULL;
+
+    __py_state = pyg_gil_state_ensure();
+    py_self = pygobject_new((GObject *) self);
+    if (!py_self) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        pyg_gil_state_release(__py_state);
+        return NULL;
+    }
+
+    py_method = PyObject_GetAttrString(py_self, "do_impl_get_browser_key");
+    if (!py_method) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return NULL;
+    }
+    py_retval = PyObject_CallObject(py_method, NULL);
+    if (!py_retval) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_method);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return NULL;
+    }
+    if (py_retval == Py_None) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        PyErr_SetString(PyExc_TypeError, "retval was None");
+    } else if (PyString_Check(py_retval) == FALSE) {
+        /* nothing */
+    } else {
+    	ret = g_strdup (PyString_AsString(py_retval));
+    }
+
+    Py_DECREF(py_retval);
+    Py_DECREF(py_method);
+    Py_DECREF(py_self);
+    pyg_gil_state_release(__py_state);
+
+    return ret;
+}
+
+%%
+override RBSource__do_impl_get_browser_key
+static PyObject *
+_wrap_RBSource__do_impl_get_browser_key(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+    gpointer klass;
+    static char *kwlist[] = { "self", NULL };
+    PyGObject *self;
+    PyObject *tuple;
+    char *key = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBSource.impl_get_browser_key", kwlist, &PyRBSource_Type, &self))
+	return NULL;
+
+    klass = g_type_class_ref(pyg_type_from_object(cls));
+    if (RB_SOURCE_CLASS(klass)->impl_get_browser_key) {
+	key = RB_SOURCE_CLASS(klass)->impl_get_browser_key(RB_SOURCE(self->obj));
+    } else {
+	PyErr_SetString(PyExc_NotImplementedError, "virtual method RBSource.impl_get_browser_key not implemented");
+	g_type_class_unref(klass);
+	return NULL;
+    }
+    g_type_class_unref(klass);
+
+    tuple = Py_BuildValue ("(s)", key);
+    g_free (key);
+    return tuple;
+}
+%%
+override RBBrowserSource__proxy_do_impl_get_paned_key
+static char *
+_wrap_RBBrowserSource__proxy_do_impl_get_paned_key(RBBrowserSource *self)
+{
+    PyGILState_STATE __py_state;
+    PyObject *py_self;
+    PyObject *py_retval;
+    PyObject *py_method;
+    char *ret = NULL;
+
+    __py_state = pyg_gil_state_ensure();
+    py_self = pygobject_new((GObject *) self);
+    if (!py_self) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        pyg_gil_state_release(__py_state);
+        return NULL;
+    }
+
+    py_method = PyObject_GetAttrString(py_self, "do_impl_get_paned_key");
+    if (!py_method) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return NULL;
+    }
+    py_retval = PyObject_CallObject(py_method, NULL);
+    if (!py_retval) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        Py_DECREF(py_method);
+        Py_DECREF(py_self);
+        pyg_gil_state_release(__py_state);
+        return NULL;
+    }
+    if (py_retval == Py_None) {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        PyErr_SetString(PyExc_TypeError, "retval was None");
+    } else if (PyString_Check(py_retval) == FALSE) {
+        /* nothing */
+    } else {
+    	ret = g_strdup (PyString_AsString(py_retval));
+    }
+
+    Py_DECREF(py_retval);
+    Py_DECREF(py_method);
+    Py_DECREF(py_self);
+    pyg_gil_state_release(__py_state);
+
+    return ret;
+}
+
+%%
+override RBBrowserSource__do_impl_get_paned_key
+static PyObject *
+_wrap_RBBrowserSource__do_impl_get_paned_key(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+    gpointer klass;
+    static char *kwlist[] = { "self", NULL };
+    PyGObject *self;
+    PyObject *tuple;
+    char *key = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBBrowserSource.impl_get_paned_key", kwlist, &PyRBBrowserSource_Type, &self))
+	return NULL;
+
+    klass = g_type_class_ref(pyg_type_from_object(cls));
+    if (RB_BROWSER_SOURCE_CLASS(klass)->impl_get_paned_key) {
+	key = RB_BROWSER_SOURCE_CLASS(klass)->impl_get_paned_key(RB_BROWSER_SOURCE(self->obj));
+    } else {
+	PyErr_SetString(PyExc_NotImplementedError, "virtual method RBBrowserSource.impl_get_paned_key not implemented");
+	g_type_class_unref(klass);
+	return NULL;
+    }
+    g_type_class_unref(klass);
+
+    tuple = Py_BuildValue ("(s)", key);
+    g_free (key);
+    return tuple;
+}

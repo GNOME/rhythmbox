@@ -57,7 +57,7 @@ static void rb_library_source_finalize (GObject *object);
 static gboolean impl_show_popup (RBSource *source);
 static GtkWidget *impl_get_config_widget (RBSource *source, RBShellPreferences *prefs);
 static char *impl_get_browser_key (RBSource *source);
-static const char *impl_get_paned_key (RBBrowserSource *source);
+static char *impl_get_paned_key (RBBrowserSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_can_paste (RBSource *asource);
 #ifdef ENABLE_TRACK_TRANSFER
@@ -630,10 +630,10 @@ impl_get_browser_key (RBSource *source)
 	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
-static const char *
+static char *
 impl_get_paned_key (RBBrowserSource *status)
 {
-	return CONF_STATE_PANED_POSITION;
+	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
 static void

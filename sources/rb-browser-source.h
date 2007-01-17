@@ -51,17 +51,18 @@ typedef struct
 {
 	RBSourceClass parent;
 
-	const char *	(*impl_get_paned_key)		(RBBrowserSource *source);
+	void		(*impl_pack_paned)		(RBBrowserSource *source, GtkWidget *paned);
+	char *		(*impl_get_paned_key)		(RBBrowserSource *source);
 	gboolean	(*impl_has_drop_support)	(RBBrowserSource *source);
 	void		(*impl_show_entry_popup)	(RBBrowserSource *source);
 } RBBrowserSourceClass;
 
-typedef gboolean	(*RBBrowserSourceFeatureFunc) (RBBrowserSource *source);
-typedef const char*	(*RBBrowserSourceStringFunc) (RBBrowserSource *source);
+typedef gboolean	(*RBBrowserSourceFeatureFunc)	(RBBrowserSource *source);
+typedef char*		(*RBBrowserSourceStringFunc)	(RBBrowserSource *source);
 
 GType		rb_browser_source_get_type		(void);
 
-const char *	rb_browser_source_get_paned_key		(RBBrowserSource *source);
+char *		rb_browser_source_get_paned_key		(RBBrowserSource *source);
 gboolean	rb_browser_source_has_drop_support	(RBBrowserSource *source);
 
 G_END_DECLS

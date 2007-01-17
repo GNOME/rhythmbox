@@ -66,7 +66,7 @@ static void rb_daap_source_activate (RBSource *source);
 
 static gboolean rb_daap_source_show_popup (RBSource *source);
 static char * rb_daap_source_get_browser_key (RBSource *source);
-static const char * rb_daap_source_get_paned_key (RBBrowserSource *source);
+static char * rb_daap_source_get_paned_key (RBBrowserSource *source);
 static void rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress);
 
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
@@ -739,10 +739,10 @@ rb_daap_source_get_browser_key (RBSource *source)
 	return g_strdup (CONF_STATE_SHOW_BROWSER);
 }
 
-static const char *
+static char *
 rb_daap_source_get_paned_key (RBBrowserSource *source)
 {
-	return CONF_STATE_PANED_POSITION;
+	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
 static void

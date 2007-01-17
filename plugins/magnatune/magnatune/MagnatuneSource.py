@@ -116,11 +116,17 @@ class MagnatuneSource(rb.BrowserSource):
 
 		rb.BrowserSource.do_impl_activate (self)
 
-#	def do_impl_get_browser_key (self):
-#		return "/apps/rhythmbox/plugins/magnatune/show_browser"
-#
-#	def do_impl_get_paned_key (self):
-#		return "/apps/rhythmbox/plugins/magnatune/paned_position"
+	def do_impl_get_browser_key (self):
+		return "/apps/rhythmbox/plugins/magnatune/show_browser"
+
+	def do_impl_get_paned_key (self):
+		return "/apps/rhythmbox/plugins/magnatune/paned_position"
+
+	def do_impl_pack_paned (self, paned):
+		self.__paned_box = gtk.VBox(False, 5)
+		self.pack_start(self.__paned_box)
+		self.__paned_box.pack_start(paned)
+
 
 	def do_impl_delete_thyself(self):
 		if self.__update_id != 0:
@@ -365,7 +371,7 @@ class MagnatuneSource(rb.BrowserSource):
 			self.__info_screen.set_no_show_all (True)
 
 		self.__info_screen.set_property("visible", show)
-		self.get_entry_view().set_property("visible", not show)
+		self.__paned_box.set_property("visible", not show)
 
 	def __notify_status_changed(self):
 		def change_idle_cb():

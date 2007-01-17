@@ -680,7 +680,7 @@
 (define-method get_browser_key
   (of-object "RBSource")
   (c-name "rb_source_get_browser_key")
-  (return-type "const-char*")
+  (return-type "char*")
 )
 
 (define-method browser_toggled
@@ -1554,7 +1554,7 @@
 (define-method get_paned_key
   (of-object "RBBrowserSource")
   (c-name "rb_browser_source_get_paned_key")
-  (return-type "const-char*")
+  (return-type "char*")
 )
 
 (define-method has_drop_support
@@ -1565,7 +1565,7 @@
 
 (define-virtual impl_get_paned_key
   (of-object "RBBrowserSource")
-  (return-type "const-char*")
+  (return-type "char*")
 )
 
 (define-virtual impl_has_drop_support
@@ -1578,6 +1578,13 @@
   (return-type "none")
 )
 
+(define-virtual impl_pack_paned
+  (of-object "RBBrowserSource")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "paned")
+  )
+)
 
 
 ;; From ../../sources/rb-removable-media-source.h
