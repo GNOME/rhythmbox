@@ -1,3 +1,14 @@
+2007-01-17  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	Patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* shell/rb-tray-icon.c: (rb_tray_icon_update_tooltip_visibility),
+	(rb_tray_icon_sticky_cb), (rb_tray_icon_enter_notify_event_cb),
+	(rb_tray_icon_leave_notify_event_cb),
+	(rb_tray_icon_construct_tooltip):
+	Only show the tooltip after a short delay, as with normal gtk+
+	tooltips.  From #345592.
+
 2007-01-15  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	Patch by Greg Ward

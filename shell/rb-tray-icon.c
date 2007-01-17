@@ -41,6 +41,8 @@
 #include "rb-shell-player.h"
 
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
+#define TOOLTIPS_DELAY 500
+#define TOOLTIPS_STICKY_REVERT_DELAY 1000
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
@@ -92,14 +94,16 @@ struct RBTrayIconPrivate
 	GtkWidget *ebox;
 
 	GtkWidget *tooltip;
-	gboolean tooltips_should_show;
+	gboolean tooltips_pointer_above;
+	gboolean tooltips_sticky;
+	guint tooltip_sticky_id;
 	gboolean tooltips_suppressed;
 	GtkWidget *tooltip_primary;
 	GtkWidget *tooltip_secondary;
 	GtkWidget *tooltip_image_box;
 	guint tooltip_unsuppress_id;
 	guint tooltip_unhide_id;
- 
+
 	RBShell *shell;
 	RBShellPlayer *shell_player;
 
@@ -579,8 +583,9 @@ sexy_tooltip_position_to_widget(SexyTooltip *tooltip, GtkWidget *widget)
 static void
 rb_tray_icon_update_tooltip_visibility (RBTrayIcon *icon)
 {
-	if (icon->priv->tooltips_should_show && !icon->priv->tooltips_suppressed) {
-		sexy_tooltip_position_to_widget (SEXY_TOOLTIP (icon->priv->tooltip), 
+	if (icon->priv->tooltips_pointer_above && icon->priv->tooltips_sticky
+			&& !icon->priv->tooltips_suppressed) {
+		sexy_tooltip_position_to_widget (SEXY_TOOLTIP (icon->priv->tooltip),
 						 icon->priv->ebox);
 		gtk_widget_show (icon->priv->tooltip);
 	} else
@@ -676,13 +681,33 @@ rb_tray_icon_cancel_notify (RBTrayIcon *icon)
 	egg_tray_icon_cancel_message (EGG_TRAY_ICON (icon), 1);
 }
 
+static gboolean
+rb_tray_icon_sticky_cb (RBTrayIcon *icon)
+{
+	gdk_threads_enter ();
+	icon->priv->tooltips_sticky = icon->priv->tooltips_pointer_above;
+	rb_tray_icon_update_tooltip_visibility (icon);
+	icon->priv->tooltip_sticky_id = 0;
+	gdk_threads_leave ();
+	return FALSE;
+}
+
 static void
 rb_tray_icon_enter_notify_event_cb (RBTrayIcon *icon,
 				    GdkEvent *event,
 				    GtkWidget *widget)
 {
-	icon->priv->tooltips_should_show = TRUE;
+	icon->priv->tooltips_pointer_above = TRUE;
 	rb_tray_icon_update_tooltip_visibility (icon);
+	if (icon->priv->tooltip_sticky_id > 0) {
+		g_source_remove (icon->priv->tooltip_sticky_id);
+		icon->priv->tooltip_sticky_id = 0;
+	}
+
+	if (!icon->priv->tooltips_sticky)
+		icon->priv->tooltip_sticky_id = g_timeout_add (TOOLTIPS_DELAY,
+							       (GSourceFunc) rb_tray_icon_sticky_cb,
+							       icon);
 }
 
 static void
@@ -690,8 +715,17 @@ rb_tray_icon_leave_notify_event_cb (RBTrayIcon *icon,
 				    GdkEvent *event,
 				    GtkWidget *widget)
 {
-	icon->priv->tooltips_should_show = FALSE;
+	icon->priv->tooltips_pointer_above = FALSE;
 	rb_tray_icon_update_tooltip_visibility (icon);
+	if (icon->priv->tooltip_sticky_id > 0) {
+		g_source_remove (icon->priv->tooltip_sticky_id);
+		icon->priv->tooltip_sticky_id = 0;
+	}
+
+	if (icon->priv->tooltips_sticky)
+		icon->priv->tooltip_sticky_id = g_timeout_add (TOOLTIPS_STICKY_REVERT_DELAY,
+							       (GSourceFunc) rb_tray_icon_sticky_cb,
+							       icon);
 }
 
 static void
@@ -710,7 +744,8 @@ rb_tray_icon_construct_tooltip (RBTrayIcon *icon)
 	gint size;
 	PangoFontDescription *font_desc;
 
-	icon->priv->tooltips_should_show = FALSE;
+	icon->priv->tooltips_pointer_above = FALSE;
+	icon->priv->tooltips_sticky = FALSE;
 	icon->priv->tooltips_suppressed = FALSE;
 	icon->priv->tooltip = sexy_tooltip_new ();
 
