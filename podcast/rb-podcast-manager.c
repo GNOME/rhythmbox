@@ -1530,8 +1530,13 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		if (entry == NULL)
 			return;
 
+		/* if the feed does not contain a title, use the URL instead */
 		g_value_init (&title_val, G_TYPE_STRING);
-		g_value_set_string (&title_val, (gchar * ) data->title);
+		if (data->title == NULL || strlen ((gchar *)data->title) == 0) {
+			g_value_set_string (&title_val, (gchar *) data->url);
+		} else {
+			g_value_set_string (&title_val, (gchar *) data->title);
+		}
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 		g_value_unset (&title_val);
 
