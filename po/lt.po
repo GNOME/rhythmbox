@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-08 15:31+0200\n"
-"PO-Revision-Date: 2007-01-08 15:33+0200\n"
+"POT-Creation-Date: 2007-01-20 12:38+0200\n"
+"PO-Revision-Date: 2007-01-20 12:41+0200\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
 "MIME-Version: 1.0\n"
@@ -450,6 +450,7 @@ msgstr "Neseniai grota"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:140
 #: ../shell/rb-shell.c:1029 ../shell/rb-shell.c:2103
+#: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Muzikos grotuvas"
 
@@ -526,7 +527,7 @@ msgstr "Rhythmbox nepalaiko automatinio tarpinio serverio konfigūravimo"
 #: ../plugins/iradio/rb-iradio-source.c:1083
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1542
+#: ../podcast/rb-podcast-manager.c:1547
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:118 ../rhythmdb/rhythmdb-tree.c:1132
@@ -534,8 +535,8 @@ msgstr "Rhythmbox nepalaiko automatinio tarpinio serverio konfigūravimo"
 #: ../rhythmdb/rhythmdb-tree.c:1144 ../rhythmdb/rhythmdb.c:1362
 #: ../shell/rb-shell.c:3013 ../sources/rb-podcast-source.c:1641
 #: ../widgets/rb-entry-view.c:812 ../widgets/rb-entry-view.c:837
-#: ../widgets/rb-entry-view.c:1121 ../widgets/rb-entry-view.c:1133
-#: ../widgets/rb-entry-view.c:1145 ../widgets/rb-song-info.c:766
+#: ../widgets/rb-entry-view.c:1123 ../widgets/rb-entry-view.c:1135
+#: ../widgets/rb-entry-view.c:1147 ../widgets/rb-song-info.c:766
 #: ../widgets/rb-song-info.c:930 ../widgets/rb-song-info.c:1200
 msgid "Unknown"
 msgstr "Nežinomas"
@@ -682,14 +683,14 @@ msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmox nepavyko perskaityti CD informacijos."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:464
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1077
+#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1079
 #: ../widgets/rb-query-creator-properties.c:65
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "Title"
 msgstr "Pavadinimas"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:471
-#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1087
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1089
 #: ../widgets/rb-library-browser.c:100
 #: ../widgets/rb-query-creator-properties.c:66
 #: ../widgets/rb-query-creator-properties.c:92
@@ -805,7 +806,7 @@ msgstr "Last.fm profilis"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:887
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../rhythmdb/rhythmdb.c:2922 ../widgets/rb-entry-view.c:760
-#: ../widgets/rb-entry-view.c:1179 ../widgets/rb-entry-view.c:1192
+#: ../widgets/rb-entry-view.c:1181 ../widgets/rb-entry-view.c:1194
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
 msgstr "Niekada"
@@ -1031,7 +1032,7 @@ msgstr "Su_kurti Audio CD..."
 msgid "Create an audio CD from playlist"
 msgstr "Pagal grojaraštį sukurti audio CD"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:189
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:191
 msgid "Unable to create audio CD"
 msgstr "Nepavyko sukurti audio CD"
 
@@ -1114,16 +1115,16 @@ msgstr ""
 msgid "There was an error writing to the CD"
 msgstr "Rašant CD įvyko klaida"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:303
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:341
 msgid "Maximum possible"
 msgstr "Didžiausias galimas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:374
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:412
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Netinkamas rašymo įrenginys: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:475
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:513
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
@@ -1131,7 +1132,7 @@ msgstr[0] "%d valanda"
 msgstr[1] "%d valandos"
 msgstr[2] "%d valandų"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:477
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:515
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
@@ -1139,7 +1140,7 @@ msgstr[0] "%d minutė"
 msgstr[1] "%d minutės"
 msgstr[2] "%d minučių"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:480
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:518
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -1148,94 +1149,94 @@ msgstr[1] "%d sekundės"
 msgstr[2] "%d sekundžių"
 
 #. hour:minutes:seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:485
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:523
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:488
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:526
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:491
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:529
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:494
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:532
 msgid "0 seconds"
 msgstr "0 sekundžių"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:513
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:551
 #, c-format
 msgid "About %s left"
 msgstr "Liko apie %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:582
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:620
 msgid "Could not determine media type because CD drive is busy"
 msgstr "Nepavyko nustatyti įprasto laikmenos tipo, nes CD įrenginys užimtas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:584
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:622
 msgid "Couldn't open media"
 msgstr "Nepavyko atverti laikmenos"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:586
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:624
 msgid "Unknown Media"
 msgstr "Nežinoma laikmena"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:588
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:626
 msgid "Commercial CD or Audio CD"
 msgstr "Komercinis CD arba Audio CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:590
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:628
 msgid "CD-R"
 msgstr "CD-R"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:592
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:630
 msgid "CD-RW"
 msgstr "CD-RW"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:594
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:632
 msgid "DVD"
 msgstr "DVD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:596
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:634
 msgid "DVD-R, or DVD-RAM"
 msgstr "DVD-R, or DVD-RAM"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:598
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:636
 msgid "DVD-RW"
 msgstr "DVD-RW"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:600
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:638
 msgid "DVD-RAM"
 msgstr "DVD-RAM"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:602
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:640
 msgid "DVD+R"
 msgstr "DVD+R"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:604
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:642
 msgid "DVD+RW"
 msgstr "DVD+RW"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:609
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:647
 msgid "Broken media type"
 msgstr "Sugadintas laikmenos tipas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:624
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:662
 msgid "Writing audio to CD"
 msgstr "Muzika rašoma į CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:640
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:678
 msgid "Finished creating audio CD."
 msgstr "Audio CD sukurtas."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:658
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:696
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1243,167 +1244,167 @@ msgstr ""
 "Audio CD sukurtas.\n"
 "Įrašyti dar vieną kopiją?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:660
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:698
 msgid "Writing failed.  Try again?"
 msgstr "Rašymas nepavyko.  Bandyti dar kartą?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:662
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:700
 msgid "Writing cancelled.  Try again?"
 msgstr "Rašymas atšauktas.  Bandyti dar kartą?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:730
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:768
 msgid "Audio recording error"
 msgstr "Audio rašymo klaida"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:759
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:797
 msgid "Audio Conversion Error"
 msgstr "Audio konvertavimo klaida"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:789
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:827
 msgid "Recording error"
 msgstr "Rašymo klaida"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:909
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:947
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Ar norite pertraukti šio disko rašymą?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:912
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:950
 msgid "This may result in an unusable disc."
 msgstr "Diskas gali būti sugadintas."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:919
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:957
 msgid "_Cancel"
 msgstr "_Atšaukti"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:920
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:958
 msgid "_Interrupt"
 msgstr "_Pertraukti"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:942
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:980
 msgid "Could not create audio CD"
 msgstr "Nepavyko sukurti audio CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:964
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1002
 msgid "Please make sure another application is not using the drive."
 msgstr "Įsitikinkite ar kokia nors programa nenaudoja šio disko."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:965
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1003
 msgid "Drive is busy"
 msgstr "Diskas užimtas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:967
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1005
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Įdėkite perrašomą arba tuščią diską į rašymo įrenginį."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:968
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1006
 msgid "Insert a rewritable or blank CD"
 msgstr "Įdėkite perrašomą arba tuščią diską"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:970
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1008
 msgid "Please put a blank CD in the drive."
 msgstr "Įdėkite tuščią diską į rašymo įrenginį."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:971
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1009
 msgid "Insert a blank CD"
 msgstr "Įdėkite tuščią diską"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:973
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1011
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr ""
 "Pakeiskite įrenginyje esančią laikmeną į perrašomą arba tuščią laikmeną."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:974
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1012
 msgid "Reload a rewritable or blank CD"
 msgstr "Perkrauti perrašomą arba tuščią laikmeną"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:976
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1014
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Pakeiskite įrenginyje esančią laikmeną į tučią laikmeną."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:977
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1015
 msgid "Reload a blank CD"
 msgstr "Perkrauti tuščią laikmeną"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1028
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1066
 msgid "Converting audio tracks"
 msgstr "Konvertuojamas audio takelis"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1031
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1069
 msgid "Preparing to write CD"
 msgstr "Ruošiamasi rašyti diską"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1034
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1072
 msgid "Writing CD"
 msgstr "Rašoma į diską"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1037
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1075
 msgid "Finishing write"
 msgstr "Rašymas baigiamas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1040
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1078
 msgid "Erasing CD"
 msgstr "Diskas trinamas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1043
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1081
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Neapdorotas veiksmas iš burn_action_changed_cb"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1071
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1109
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "Atrodo, kad %s jau yra įrašyta kažkokia informacija."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1078
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1116
 msgid "Erase information on this disc?"
 msgstr "Ištrinti informaciją diske?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1087
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1125
 msgid "_Try Another"
 msgstr "_Bandyti kitą"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1094
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1132
 msgid "_Erase Disc"
 msgstr "Išt_rinti diską"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1198
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1293
 msgid "C_reate"
 msgstr "Suku_rti"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1261
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1360
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Nepavyko sukurti rašytuvo: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1384
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1484
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Nepavyko pašalinti laikino aplanko „%s“: %s"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1403
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1504
 msgid "Create Audio CD"
 msgstr "Sukurti Audio CD"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1420
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1522
 #, c-format
 msgid "Create audio CD from '%s'?"
 msgstr "Sukurti audio CD iš „%s“?"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1466
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1484
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
 msgid "Unable to build an audio track list."
 msgstr "Nepavyko sudaryti audio takelių sąrašo."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1494
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Šis grojaraštis per ilgas, kad jį būtų galima įrašyti į audio CD."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1559
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1661
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1670
 #, c-format
 msgid "Cannot get free space at %s"
 msgstr "Nepavyko gauti %s laisvos vietos"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1653
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1755
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1414,15 +1415,15 @@ msgstr ""
 "talpą.  Jeigu įdėtas diskas yra talpesnis nei standartinis audio CD, įdėkite "
 "jį į įrenginį ir bandykite dar kartą."
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1664
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1766
 msgid "Playlist too long"
 msgstr "Grojaraštis per ilgas"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1704
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1806
 msgid "Could not find temporary space!"
 msgstr "Nepakanka laikinos vietos!"
 
-#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1705
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1807
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -1625,7 +1626,7 @@ msgstr "Nauja Interneto _radijo stotis"
 msgid "Create a new Internet Radio station"
 msgstr "Sukurti naują Interneto radijo stotį"
 
-#: ../plugins/iradio/rb-iradio-source.c:328 ../widgets/rb-entry-view.c:1107
+#: ../plugins/iradio/rb-iradio-source.c:328 ../widgets/rb-entry-view.c:1109
 #: ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
@@ -2049,12 +2050,20 @@ msgstr "Atsiunčiamas Magnatune katalogas"
 msgid "Downloading Magnatune Album(s)"
 msgstr "Atsiunčiamas(i) Magnatune Albumas(ai)"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:174
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:168
+msgid "Couldn't purchase album"
+msgstr "Nepavyko nusipirkti albumo"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:169
+msgid "You must have a library location set to purchase an album."
+msgstr "Norėdami nusipirkti albumą, turite nurodyti bibliotekos vietą."
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:187
 #, python-format
 msgid "Would you like to purchase the album '%s' by '%s'."
 msgstr "Ar norėtumėte nusipirkti atlikėjo „%s“ albumą „%s“?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:383
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:396
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2278,7 +2287,7 @@ msgstr "Neatsiųsta"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nepaleisti dar vienos Rhythmbox kopijos"
 
-#: ../remote/dbus/rb-client.c:67 ../shell/main.c:123
+#: ../remote/dbus/rb-client.c:67 ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "Išeiti iš Rhythmbox"
 
@@ -2419,40 +2428,39 @@ msgstr "%s, %s ir %s"
 msgid "%s and %s"
 msgstr "%s ir %s"
 
-#: ../shell/main.c:116
+#: ../shell/main.c:115
 msgid "Enable debug output"
 msgstr "Įjungti derinimo išvestį"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:116
 msgid "Enable debug output matching a specified string"
 msgstr "Įjungti derinimo išvestį atitinkančią nurodytą užrašą"
 
-#: ../shell/main.c:118
+#: ../shell/main.c:117
 msgid "Do not update the library with file changes"
 msgstr "Neatnaujinti bibliotekos rinkmenų pakeitimais"
 
-#: ../shell/main.c:119
+#: ../shell/main.c:118
 msgid "Do not register the shell"
 msgstr "Neregistruoti apvalkalo"
 
-#: ../shell/main.c:120
+#: ../shell/main.c:119
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Nesaugoti ilgam jokių duomenų (implikuoja --no-registration)"
 
-#: ../shell/main.c:121
+#: ../shell/main.c:120
 msgid "Path for database file to use"
 msgstr "Duomenų bazės rinkmenos kelias"
 
-#: ../shell/main.c:122
+#: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "Naudotinos grojaraščių rinkmenos kelias"
 
-#: ../shell/main.c:124
+#: ../shell/main.c:123
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:159 ../shell/main.c:168 ../shell/rb-tray-icon.c:43
-#: ../widgets/rb-druid.c:184
+#: ../shell/main.c:160 ../shell/main.c:169 ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -2928,12 +2936,12 @@ msgid "Change and configure plugins"
 msgstr "Keisti ir konfigūruoti įskiepius"
 
 #: ../shell/rb-shell.c:443
-msgid "Show _All"
-msgstr "Rodyti _visus"
+msgid "Show _All Tracks"
+msgstr "Rodyti _visus takelius"
 
 #: ../shell/rb-shell.c:444
-msgid "Show all items in this music source"
-msgstr "Rodyti visus elementus šiame šaltinyje"
+msgid "Show all tracks in this music source"
+msgstr "Rodyti visus takelius, esančius šiame muzikos šaltinyje"
 
 #: ../shell/rb-shell.c:446
 msgid "_Jump to Playing Song"
@@ -3092,13 +3100,13 @@ msgstr "Įtraukti rinkmeną į biblioteką"
 #. Translators: by Artist
 #: ../shell/rb-shell.c:2959
 #, c-format
-msgid "by <b>%s</b>"
+msgid "by <i>%s</i>"
 msgstr "atliekama <b>%s</b>"
 
 #. Translators: from Album
 #: ../shell/rb-shell.c:2980
 #, c-format
-msgid "from <b>%s</b>"
+msgid "from <i>%s</i>"
 msgstr "iš <b>%s<b>"
 
 #: ../shell/rb-shell.c:3185
@@ -3137,19 +3145,19 @@ msgstr "Filtruoti sąrašą pagal žanrą, atlikėją, albumą ar pavadinimą"
 msgid "Loading..."
 msgstr "Įkeliama..."
 
-#: ../shell/rb-tray-icon.c:126
+#: ../shell/rb-tray-icon.c:130
 msgid "_Show Music Player"
 msgstr "_Rodyti muzikos grotuvą"
 
-#: ../shell/rb-tray-icon.c:127
+#: ../shell/rb-tray-icon.c:131
 msgid "Choose music to play"
 msgstr "Pasirinkite grotiną muziką"
 
-#: ../shell/rb-tray-icon.c:129
+#: ../shell/rb-tray-icon.c:133
 msgid "Show N_otifications"
 msgstr "Rodyti _pranešimus"
 
-#: ../shell/rb-tray-icon.c:130
+#: ../shell/rb-tray-icon.c:134
 msgid "Show notifications of song changes and other events"
 msgstr "Rodyti dainų pasikeitimo bei kitų įvykių pranešimus"
 
@@ -3237,7 +3245,7 @@ msgstr "Atlikėjas/Albumas"
 msgid "Artist - Album"
 msgstr "Atlikėjas - Albumas"
 
-#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1097
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1099
 #: ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:93
@@ -3601,68 +3609,68 @@ msgstr "Įtraukti aplanką į biblioteką"
 msgid "%u kbps"
 msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:1066
+#: ../widgets/rb-entry-view.c:1068
 msgid "Track"
 msgstr "Takelis"
 
-#: ../widgets/rb-entry-view.c:1117
+#: ../widgets/rb-entry-view.c:1119
 msgid "Time"
 msgstr "Laikas"
 
-#: ../widgets/rb-entry-view.c:1129 ../widgets/rb-query-creator-properties.c:69
+#: ../widgets/rb-entry-view.c:1131 ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "Year"
 msgstr "Metai"
 
-#: ../widgets/rb-entry-view.c:1141
+#: ../widgets/rb-entry-view.c:1143
 msgid "Quality"
 msgstr "Kokybė"
 
-#: ../widgets/rb-entry-view.c:1144
+#: ../widgets/rb-entry-view.c:1146
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1154 ../widgets/rb-query-creator-properties.c:70
+#: ../widgets/rb-entry-view.c:1156 ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Rating"
 msgstr "Įvertinimas"
 
-#: ../widgets/rb-entry-view.c:1176 ../widgets/rb-query-creator-properties.c:73
+#: ../widgets/rb-entry-view.c:1178 ../widgets/rb-query-creator-properties.c:73
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Play Count"
 msgstr "Grojimų kiekis"
 
-#: ../widgets/rb-entry-view.c:1188
+#: ../widgets/rb-entry-view.c:1190
 #: ../widgets/rb-query-creator-properties.c:101
 msgid "Last Played"
 msgstr "Vėliausiai grota"
 
-#: ../widgets/rb-entry-view.c:1200
+#: ../widgets/rb-entry-view.c:1202
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Date Added"
 msgstr "Pridėjimo data"
 
-#: ../widgets/rb-entry-view.c:1211
+#: ../widgets/rb-entry-view.c:1213
 msgid "Last Seen"
 msgstr "Vėliausiai matyta"
 
-#: ../widgets/rb-entry-view.c:1222
+#: ../widgets/rb-entry-view.c:1224
 msgid "Location"
 msgstr "Vieta"
 
-#: ../widgets/rb-entry-view.c:1230
+#: ../widgets/rb-entry-view.c:1232
 msgid "Error"
 msgstr "Klaida"
 
-#: ../widgets/rb-entry-view.c:1443
+#: ../widgets/rb-entry-view.c:1445
 msgid "Now Playing"
 msgstr "Dabar grojama"
 
-#: ../widgets/rb-entry-view.c:1518
+#: ../widgets/rb-entry-view.c:1520
 msgid "Playback Error"
 msgstr "Grojimo klaida"
 
-#: ../widgets/rb-header.c:429
+#: ../widgets/rb-header.c:430
 msgid "Not Playing"
 msgstr "Negrojama"
 
