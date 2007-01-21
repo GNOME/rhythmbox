@@ -91,6 +91,24 @@ class CoverArtDatabase (object):
 			if Engine.__name__ not in blist:
 				yield Engine (self.loader), Engine.__name__, True
 	
+	def set_pixbuf_from_uri (self, db, entry, uri, callback):
+		def loader_cb (data):
+			self.set_pixbuf (db, entry, self.image_data_load (data), callback)
+		self.loader.get_url (str (uri), loader_cb)
+
+	def set_pixbuf (self, db, entry, pixbuf, callback):
+		if entry is None or pixbuf is None:
+			return
+		art_location = self.build_art_cache_filename (db, entry, ART_CACHE_EXTENSION)
+		self.ticket.purge (entry)
+		pixbuf.save (art_location, ART_CACHE_FORMAT, ART_CACHE_SETTINGS)
+		callback (entry, pixbuf, art_location)
+		for Engine in ART_SEARCHES_LOCAL:
+			try:
+				Engine (self.loader).save_pixbuf (db, entry, pixbuf)
+			except AttributeError:
+				pass
+
 	def cancel_get_pixbuf (self, entry):
 		self.ticket.purge (entry)
   

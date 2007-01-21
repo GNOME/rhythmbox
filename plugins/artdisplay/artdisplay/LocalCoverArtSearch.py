@@ -19,10 +19,15 @@
 import os
 import rhythmdb
 import gnomevfs
+import rb
+import gobject
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
 LOAD_DIRECTORY_FLAGS = gnomevfs.FILE_INFO_GET_MIME_TYPE | gnomevfs.FILE_INFO_FORCE_FAST_MIME_TYPE
 ITEMS_PER_NOTIFICATION = 10
+ART_SAVE_NAME = 'Cover.jpg'
+ART_SAVE_FORMAT = 'jpeg'
+ART_SAVE_SETTINGS = {"quality": "100"}
 
 def file_root (f_name):
 	return os.path.splitext (f_name)[0].lower ()
@@ -65,3 +70,75 @@ class LocalCoverArtSearch:
 				if file_root (f_name) == name:
 					yield self.uri.parent.append_file_name (f_name).path
 
+	def pixbuf_save (self, plexer, pixbuf, uri):
+		gnomevfs.async.create (uri, plexer.send (), gnomevfs.OPEN_WRITE | gnomevfs.OPEN_TRUNCATE, False, 0644, gnomevfs.PRIORITY_DEFAULT)
+		yield None
+		_, (handle, result) = plexer.receive ()
+		if result:
+			print "Error creating \"%s\": %s" % (uri, result)
+			return
+		def pixbuf_cb (buf):
+			data = [buf]
+			status = []
+			def write_coro (w_plexer):
+				while data:
+					buf = data.pop ()
+					handle.write (buf, w_plexer.send ())
+					yield None
+					_, (_, requested, result, written) = w_plexer.receive ()
+					if result:
+						print "Error writing \"%s\": %s" % (uri, result)
+						status.insert (0, False)
+						return
+					if written < requested:
+						data.insert (0, buf[written:])
+				status.insert (0, True)
+			rb.Coroutine (write_coro).begin ()
+			while not status:
+				gobject.main_context_default ().iteration ()
+			return status[0]
+		pixbuf.save_to_callback (pixbuf_cb, ART_SAVE_FORMAT, ART_SAVE_SETTINGS)
+		handle.close (plexer.send())
+		yield None
+		_, (_, result) = plexer.receive ()
+		if result:
+			print "Error closing \"%s\": %s" % (uri, result)
+
+	def _save_dir_cb (self, handle, files, exception, (db, entry, pixbuf)):
+		artist, album = [db.entry_get (entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
+		for f in files:
+			if f.mime_type.split ("/")[0] in ["image", "x-directory"]:
+				continue
+			uri = str (self.uri.parent.append_file_name (f.name))
+			u_entry = db.entry_lookup_by_location (uri)
+			if u_entry:
+				u_artist, u_album = [db.entry_get (u_entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
+				if (artist, album) != (u_artist, u_album):
+					print "Not saving local art; encountered media with different artist/album (%s, %s, %s)" % (uri, u_artist, u_album)
+					handle.cancel ()
+					return
+				continue
+			print "Not saving local art; encountered unknown file (%s)" % uri
+			handle.cancel ()
+			return
+		if exception:
+			if issubclass (exception, gnomevfs.EOFError):
+				art_uri = str (self.uri.parent.append_file_name (ART_SAVE_NAME))
+				print "Saving local art to \"%s\"" % art_uri
+				rb.Coroutine (self.pixbuf_save, pixbuf, art_uri).begin ()
+			else:
+				print "Error reading \"%s\": %s" % (self.uri.parent, exception)
+
+	def save_pixbuf (self, db, entry, pixbuf):
+		self.uri = None
+		try:
+			self.uri = gnomevfs.URI (entry.get_playback_uri())
+		except TypeError:
+			pass
+
+		if self.uri is None or self.uri.scheme == 'http':
+			print 'not saving local art for %s' % self.uri
+			return
+
+		print 'checking whether to save local art for %s' % self.uri
+		gnomevfs.async.load_directory (self.uri.parent, self._save_dir_cb, LOAD_DIRECTORY_FLAGS, ITEMS_PER_NOTIFICATION, data=(db, entry, pixbuf))
