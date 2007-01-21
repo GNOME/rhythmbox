@@ -267,6 +267,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		db = shell.get_property ("db")
 		self.eemr_art_id = db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request)
 		self.eemn_art_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify)
+		self.eemn_art_uri_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify)
 		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
 		shell.add_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_db = CoverArtDatabase ()
@@ -281,6 +282,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		db = shell.get_property ("db")
 		db.disconnect (self.eemr_art_id)
 		db.disconnect (self.eemn_art_id)
+		db.disconnect (self.eemn_art_uri_id)
 		shell.remove_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
@@ -332,4 +334,21 @@ class ArtDisplayPlugin (rb.Plugin):
 		if self.current_pixbuf == metadata:
 			return
 		self.art_widget.set (entry, metadata, None, False)
+
+	def cover_art_uri_notify (self, db, entry, field, metadata):
+		if entry != self.current_entry or not metadata:
+			return
+		uri = str (metadata)
+		def loader_cb (data):
+			if data and len (data) >= 1000:
+				pbl = gtk.gdk.PixbufLoader ()
+				try:
+					if pbl.write (data) and pbl.close ():
+						pixbuf = pbl.get_pixbuf ()
+						if pixbuf:
+							self.art_db.cancel_get_pixbuf (entry)
+							self.on_get_pixbuf_completed (entry, pixbuf, uri)
+				except GError:
+					pass
+		rb.Loader().get_url (uri, loader_cb)
 
