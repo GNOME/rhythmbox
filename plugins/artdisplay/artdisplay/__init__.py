@@ -241,6 +241,20 @@ class FadingImage (gtk.Misc):
 gobject.type_register (FadingImage)
 
 
+class ArtDisplayWidget (FadingImage):
+	def __init__ (self, missing_image):
+		super (ArtDisplayWidget, self).__init__ (missing_image)
+		self.set_padding (0, 5)
+		self.current_entry, self.working = None, False
+		self.current_pixbuf, self.current_uri = None, None
+	
+	def set (self, entry, pixbuf, uri, working):
+		self.current_entry = entry
+		self.current_pixbuf = pixbuf
+		self.current_uri = uri
+		self.set_current_art (pixbuf, working)
+
+
 class ArtDisplayPlugin (rb.Plugin):
 	def __init__ (self):
 		rb.Plugin.__init__ (self)
@@ -252,14 +266,12 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.pc_id = sp.connect ('playing-changed', self.playing_changed)
 		db = shell.get_property ("db")
 		self.eemr_art_id = db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request)
-		self.art_widget = FadingImage (self.find_file (ART_MISSING_ICON + ".svg"))
-		self.art_widget.set_padding (0, 5)
+		self.eemn_art_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify)
+		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
 		shell.add_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_db = CoverArtDatabase ()
-		self.current_entry = None
-		self.current_pixbuf = None
-		entry = sp.get_playing_entry ()
-		self.playing_entry_changed (sp, entry)
+		self.current_entry, self.current_pixbuf = None, None
+		self.playing_entry_changed (sp, sp.get_playing_entry ())
 	
 	def deactivate (self, shell):
 		self.shell = None
@@ -268,6 +280,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		sp.disconnect (self.pc_id)
 		db = shell.get_property ("db")
 		db.disconnect (self.eemr_art_id)
+		db.disconnect (self.eemn_art_id)
 		shell.remove_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
@@ -280,25 +293,43 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.set_entry(entry)
 
 	def set_entry (self, entry):
-		if entry != self.current_entry and entry is not None:
-			db = self.shell.get_property ("db")
-
-			self.art_widget.set_current_art (None, True)
-			self.art_widget.show ()
-			# Intitates search in the database (which checks art cache, internet etc.)
-			self.current_entry = entry
-			self.current_pixbuf = None
-			self.art_db.get_pixbuf(db, entry, self.on_get_pixbuf_completed)
-
-	def on_get_pixbuf_completed(self, entry, pixbuf):
-		# Set the pixbuf for the entry returned from the art db
 		if entry == self.current_entry:
-			self.art_widget.set_current_art (pixbuf, False)
-			if pixbuf:
-				db = self.shell.get_property ("db")
-				db.emit_entry_extra_metadata_notify (entry,
-						"rb:coverArt", pixbuf)
-	
+			return
+		db = self.shell.get_property ("db")
+
+		self.art_widget.set (entry, None, None, True)
+		self.art_widget.show ()
+		# Intitates search in the database (which checks art cache, internet etc.)
+		self.current_entry = entry
+		self.current_pixbuf = None
+		self.art_db.get_pixbuf(db, entry, self.on_get_pixbuf_completed)
+
+	def on_get_pixbuf_completed(self, entry, pixbuf, uri):
+		# Set the pixbuf for the entry returned from the art db
+		if entry != self.current_entry:
+			return
+		self.current_pixbuf = pixbuf
+		self.art_widget.set (entry, pixbuf, uri, False)
+		if pixbuf:
+			db = self.shell.get_property ("db")
+			# This might be from a playing-changed signal, 
+			# in which case consumers won't be ready yet.
+			def idle_emit_art():
+				db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", pixbuf)
+				return False
+			gobject.idle_add(idle_emit_art)
+
 	def cover_art_request (self, db, entry):
 		if entry == self.current_entry:
 			return self.current_pixbuf
+
+	def cover_art_notify (self, db, entry, field, metadata):
+		if entry != self.current_entry:
+			return
+		if not isinstance (metadata, gtk.gdk.Pixbuf):
+			return
+		self.art_db.cancel_get_pixbuf (entry)
+		if self.current_pixbuf == metadata:
+			return
+		self.art_widget.set (entry, metadata, None, False)
+
