@@ -2693,6 +2693,8 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 	gboolean handled;
 	RhythmDBPodcastFields *podcast = NULL;
 
+	g_return_if_fail (entry != NULL);
+
 #ifndef G_DISABLE_ASSERT
 	switch (G_VALUE_TYPE (value)) {
 	case G_TYPE_STRING:

@@ -1,5 +1,10 @@
 2007-01-21  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: warn instead of crashing if the entry is NULL.
+	Fixes #397973.
+
+2007-01-21  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Ed Catmur  <ed@catmur.co.uk>
 
 	* plugins/artdisplay/artdisplay/__init__.py: add 'rb:coverArt-uri'
