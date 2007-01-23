@@ -2047,7 +2047,20 @@ rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					 const char *window_title,
 					 RBShell *shell)
 {
+	RhythmDBEntry *entry;
 	rb_shell_set_window_title (shell, window_title);
+
+	/* also update the tooltip; this is slightly weird,
+	 * but this is the most useful way to identify
+	 * track changes in radio streams.
+	 */
+	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+	rb_shell_construct_notify_titles (shell, entry);
+	rb_tray_icon_set_tooltip_primary_markup (shell->priv->tray_icon, shell->priv->cached_notify_primary);
+	rb_shell_update_tray_tooltip_elapsed (shell);
+	
+	if (entry)
+		rhythmdb_entry_unref (entry);
 }
 
 static void
