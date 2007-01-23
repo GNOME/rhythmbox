@@ -450,13 +450,25 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/state/podcast/sorting</key>
-        <applyto>/apps/rhythmbox/state/podcast/sorting</applyto>
+        <key>/schemas/apps/rhythmbox/state/podcast/sorting_feeds</key>
+        <applyto>/apps/rhythmbox/state/podcast/sorting_feeds</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Feed,ascending</default>
+        <locale name="C">
+	<short>The sorting order for feeds</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/podcast/sorting_posts</key>
+        <applyto>/apps/rhythmbox/state/podcast/sorting_posts</applyto>
         <owner>rhythmbox</owner>
         <type>string</type>
         <default>Title,ascending</default>
         <locale name="C">
-	<short>The sorting order</short>
+	<short>The sorting order for posts</short>
 	<long>A comma-separated list.  The first is the title of the
 	column to sort on, the second is the sort type.</long>
         </locale>
