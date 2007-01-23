@@ -245,10 +245,19 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 
         case RB_PODCAST_PARSER_STATE_CHANNEL:
 		{
-
-			if (strcmp (name, "image") == 0
-			    || strcmp (name, "itunes:image") == 0) {
+			if (strcmp (name, "image") == 0)
+			{
 				ctx->state = RB_PODCAST_PARSER_STATE_IMG;
+			} else if (strcmp (name, "itunes:image") == 0) {
+				for (; *attrs; attrs +=2) {
+					if (!strcmp (*attrs, "href")) {
+						const char *href_value = *(attrs + 1);
+						rb_set_channel_value (ctx, "img", href_value);
+					}
+				}
+
+				ctx->state = RB_PODCAST_PARSER_STATE_IMG;
+
 			} else if (!strcmp (name, "item")) {
 				ctx->item_data = rb_podcast_initializa_item ();
 				ctx->state = RB_PODCAST_PARSER_STATE_ITEM;

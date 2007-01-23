@@ -1530,70 +1530,70 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		if (entry == NULL)
 			return;
 
-		/* if the feed does not contain a title, use the URL instead */
-		g_value_init (&title_val, G_TYPE_STRING);
-		if (data->title == NULL || strlen ((gchar *)data->title) == 0) {
-			g_value_set_string (&title_val, (gchar *) data->url);
-		} else {
-			g_value_set_string (&title_val, (gchar *) data->title);
-		}
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-		g_value_unset (&title_val);
-
-		g_value_init (&author_val, G_TYPE_STRING);
-		if (data->author)
-			g_value_set_string (&author_val, (gchar *) data->author);
-		else
-			g_value_set_static_string (&author_val, _("Unknown"));
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
-		g_value_unset (&author_val);
-
-		if (data->subtitle) {
-			g_value_init (&subtitle_val, G_TYPE_STRING);
-			g_value_set_string (&subtitle_val, (gchar *) data->subtitle);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
-			g_value_unset (&subtitle_val);
-		}
-
-		if (data->description) {
-			g_value_init (&description_val, G_TYPE_STRING);
-			g_value_set_string (&description_val, (gchar *) data->description);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
-			g_value_unset (&description_val);
-		}
-
-		if (data->summary) {
-			g_value_init (&summary_val, G_TYPE_STRING);
-			g_value_set_string (&summary_val, (gchar *) data->summary);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
-			g_value_unset (&summary_val);
-		}
-
-		if (data->lang) {
-			g_value_init (&lang_val, G_TYPE_STRING);
-			g_value_set_string (&lang_val, (gchar *) data->lang);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
-			g_value_unset (&lang_val);
-		}
-
-		if (data->copyright) {
-			g_value_init (&copyright_val, G_TYPE_STRING);
-			g_value_set_string (&copyright_val, (gchar *) data->copyright);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
-			g_value_unset (&copyright_val);
-		}
-
-		if (data->img) {
-			g_value_init (&image_val, G_TYPE_STRING);
-			g_value_set_string (&image_val, (gchar *) data->img);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
-			g_value_unset (&image_val);
-		}
-
 		g_value_init (&status_val, G_TYPE_ULONG);
 		g_value_set_ulong (&status_val, 1);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		g_value_unset (&status_val);
+	}
+
+	/* if the feed does not contain a title, use the URL instead */
+	g_value_init (&title_val, G_TYPE_STRING);
+	if (data->title == NULL || strlen ((gchar *)data->title) == 0) {
+		g_value_set_string (&title_val, (gchar *) data->url);
+	} else {
+		g_value_set_string (&title_val, (gchar *) data->title);
+	}
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
+	g_value_unset (&title_val);
+
+	g_value_init (&author_val, G_TYPE_STRING);
+	if (data->author)
+		g_value_set_string (&author_val, (gchar *) data->author);
+	else
+		g_value_set_static_string (&author_val, _("Unknown"));
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
+	g_value_unset (&author_val);
+
+	if (data->subtitle) {
+		g_value_init (&subtitle_val, G_TYPE_STRING);
+		g_value_set_string (&subtitle_val, (gchar *) data->subtitle);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &subtitle_val);
+		g_value_unset (&subtitle_val);
+	}
+
+	if (data->description) {
+		g_value_init (&description_val, G_TYPE_STRING);
+		g_value_set_string (&description_val, (gchar *) data->description);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
+		g_value_unset (&description_val);
+	}
+
+	if (data->summary) {
+		g_value_init (&summary_val, G_TYPE_STRING);
+		g_value_set_string (&summary_val, (gchar *) data->summary);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUMMARY, &summary_val);
+		g_value_unset (&summary_val);
+	}
+
+	if (data->lang) {
+		g_value_init (&lang_val, G_TYPE_STRING);
+		g_value_set_string (&lang_val, (gchar *) data->lang);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
+		g_value_unset (&lang_val);
+	}
+
+	if (data->copyright) {
+		g_value_init (&copyright_val, G_TYPE_STRING);
+		g_value_set_string (&copyright_val, (gchar *) data->copyright);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
+		g_value_unset (&copyright_val);
+	}
+
+	if (data->img) {
+		g_value_init (&image_val, G_TYPE_STRING);
+		g_value_set_string (&image_val, (gchar *) data->img);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
+		g_value_unset (&image_val);
 	}
 
 	/* insert episodes */

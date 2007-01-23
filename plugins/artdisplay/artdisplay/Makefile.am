@@ -2,6 +2,7 @@
 
 plugindir = $(PLUGINDIR)/artdisplay
 plugin_PYTHON = 			\
+	PodcastCoverArtSearch.py	\
 	AmazonCoverArtSearch.py		\
 	LocalCoverArtSearch.py		\
 	CoverArtDatabase.py		\

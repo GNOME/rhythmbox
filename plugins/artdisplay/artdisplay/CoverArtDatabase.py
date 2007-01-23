@@ -22,11 +22,12 @@ import os
 import gtk
 import itertools
 
+from PodcastCoverArtSearch import PodcastCoverArtSearch
 from AmazonCoverArtSearch import AmazonCoverArtSearch
 from LocalCoverArtSearch import LocalCoverArtSearch
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
-ART_SEARCHES_REMOTE = [AmazonCoverArtSearch]
+ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 ART_CACHE_EXTENSION = 'jpg'
 ART_CACHE_FORMAT = 'jpeg'
