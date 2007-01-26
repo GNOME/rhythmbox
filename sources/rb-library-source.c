@@ -1261,7 +1261,8 @@ impl_want_uri (RBSource *source, const char *uri)
 	/* assume anything local, on smb, or on sftp is a song */
 	if (rb_uri_is_local (uri) ||
 	    g_str_has_prefix (uri, "smb://") ||
-	    g_str_has_prefix (uri, "sftp://"))
+	    g_str_has_prefix (uri, "sftp://") ||
+	    g_str_has_prefix (uri, "ssh://"))
 		return 50;
 
 	return 0;
