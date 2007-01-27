@@ -601,6 +601,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	gchar *request;
 	gchar *response;
 	gchar *end_headers;
+	gchar first_byte;
 	size_t readsize;
 	gboolean ok = TRUE;
 	guint http_status;
@@ -704,10 +705,13 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 
 	/* libsoup wants the headers null-terminated, despite taking a parameter
-	 * specifying how long they are.
+	 * specifying how long they are.  since the byte we overwrite to null-
+	 * terminate the headers is the first byte of the response body, we need
+	 * to restore it once we've parsed the response headers.
 	 */
-	end_headers[2] = '\0';
-	end_headers += 4;
+	first_byte = end_headers[4];
+	end_headers[4] = '\0';
+	end_headers += 2;
 
 	header_table = g_hash_table_new (soup_str_case_hash, soup_str_case_equal);
 	if (soup_headers_parse_response (response,
@@ -757,6 +761,10 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 	g_free (http_status_phrase);
 	g_hash_table_destroy (header_table);
+
+	/* restore the first response body byte and move on */
+	end_headers += 2;
+	*end_headers = first_byte;
 
 	/* copy remaining data into a new buffer */
 	if (ok) {

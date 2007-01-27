@@ -1,3 +1,8 @@
+2007-01-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/daap/rb-daap-src.c: (rb_daap_src_open):
+	Fix call to soup_headers_parse_response to work with libsoup 2.2.99.
+
 2007-01-26  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* sources/rb-library-source.c (impl_want_uri): Handle 'ssh://' as
