@@ -624,12 +624,15 @@ rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 {
 	GtkContainer *image_box;
 	GtkWidget *current_image;
+	GList *children;
 
 	if (msgicon == NULL)
 		msgicon = gtk_image_new_from_icon_name ("gnome-media-player",
 							GTK_ICON_SIZE_DIALOG);
 	image_box = GTK_CONTAINER (icon->priv->tooltip_image_box);
-	current_image = GTK_WIDGET (g_list_nth_data (gtk_container_get_children (image_box), 0));
+	children = gtk_container_get_children (image_box);
+	current_image = GTK_WIDGET (g_list_nth_data (children, 0));
+	g_list_free (children);
 	if (current_image != msgicon) {
 		gtk_container_remove (image_box, current_image);
 		gtk_box_pack_start (GTK_BOX (image_box), msgicon, FALSE, FALSE, 0);

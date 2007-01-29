@@ -1,3 +1,18 @@
+2007-01-29  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/audiocd/rb-audiocd-source.c:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_activate):
+	* plugins/rb-plugin-manager.c: (rb_plugin_manager_init):
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_finalize):
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_finalize),
+	(rhythmdb_query_model_entry_changed_cb):
+	* shell/rb-shell-player.c: (rb_shell_player_set_source_internal):
+	* shell/rb-tray-icon.c: (rb_tray_icon_set_tooltip_icon):
+	* widgets/rb-library-browser.c: (update_browser_views_visibility): fix
+	assorted memory leaks
+
 2007-01-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/daap/rb-daap-src.c: (rb_daap_src_open):

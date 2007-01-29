@@ -141,6 +141,7 @@ impl_activate (RBPlugin *bplugin,
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
 							       file,
 							       NULL);
+	g_free (file);
 
 	plugin->lastfm_source = rb_lastfm_source_new (shell);
 	rb_shell_append_source (shell, plugin->lastfm_source, NULL);

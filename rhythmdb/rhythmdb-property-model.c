@@ -486,6 +486,8 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	g_hash_table_destroy (model->priv->entries);
 
+	g_free (model->priv->all);
+
 	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }
 

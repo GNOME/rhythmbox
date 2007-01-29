@@ -686,6 +686,8 @@ rhythmdb_query_model_finalize (GObject *object)
 	g_hash_table_destroy (model->priv->limited_reverse_map);
 	egg_sequence_free (model->priv->limited_entries);
 
+	g_hash_table_destroy (model->priv->hidden_entry_map);
+
 	if (model->priv->query)
 		rhythmdb_query_free (model->priv->query);
 	if (model->priv->original_query)
@@ -924,6 +926,7 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 			g_assert (rhythmdb_query_model_entry_to_iter (model, entry, &iter));
 			path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
 			index = gtk_tree_path_get_indices (path)[0];
+			gtk_tree_path_free (path);
 			rb_debug ("adding hidden entry to map with index %d", index);
 
 			g_hash_table_insert (model->priv->hidden_entry_map,

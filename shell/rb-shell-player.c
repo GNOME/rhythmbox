@@ -751,6 +751,7 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 	if (player->priv->selected_source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
+		GList *l;
 
 		if (songs != NULL) {
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
@@ -758,7 +759,7 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 							      player);
 		}
 
-		for (; property_views; property_views = property_views->next) {
+		for (l = property_views; l != NULL; l = g_list_next (l)) {
 			g_signal_handlers_disconnect_by_func (G_OBJECT (property_views->data),
 							      G_CALLBACK (rb_shell_player_property_row_activated_cb),
 							      player);
@@ -777,17 +778,19 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 	if (player->priv->selected_source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
+		GList *l;
 
 		if (songs)
 			g_signal_connect_object (G_OBJECT (songs),
 						 "entry-activated",
 						 G_CALLBACK (rb_shell_player_entry_activated_cb),
 						 player, 0);
-		for (; property_views; property_views = property_views->next)
+		for (l = property_views; l != NULL; l = g_list_next (l)) {
 			g_signal_connect_object (G_OBJECT (property_views->data),
 						 "property-activated",
 						 G_CALLBACK (rb_shell_player_property_row_activated_cb),
 						 player, 0);
+		}
 
 		g_list_free (property_views);
 	}

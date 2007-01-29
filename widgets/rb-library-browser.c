@@ -329,6 +329,7 @@ update_browser_views_visibility (RBLibraryBrowser *widget)
 	}
 
 	g_hash_table_foreach (priv->property_views, (GHFunc)update_browser_property_visibilty, properties);
+	g_list_free (properties);
 }
 
 static void

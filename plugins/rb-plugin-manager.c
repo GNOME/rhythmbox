@@ -489,6 +489,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 	pm->priv->plugins = rb_plugins_engine_get_plugins_list ();
 
 	plugin_manager_populate_lists (pm);
+	g_object_unref (xml);
 }
 
 GtkWidget *
