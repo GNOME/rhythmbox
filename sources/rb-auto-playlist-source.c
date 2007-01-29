@@ -612,6 +612,7 @@ impl_save_contents_to_xml (RBPlaylistSource *psource,
 
 	rhythmdb_query_serialize (rb_playlist_source_get_db (psource), query, node);
 	rhythmdb_query_free (query);
+	g_value_array_free (limit_value);
 	g_free (sort_key);
 }
 

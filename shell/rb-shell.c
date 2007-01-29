@@ -1872,6 +1872,7 @@ rb_shell_transfer_progress_cb (RBRemovableMediaManager *mgr,
 		rb_statusbar_set_progress (shell->priv->statusbar,
 					   (((double)(done) + fraction)/total),
 					   s);
+		g_free (s);
 	} else {
 		rb_statusbar_set_progress (shell->priv->statusbar, -1, NULL);
 	}

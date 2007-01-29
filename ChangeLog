@@ -1,5 +1,11 @@
 2007-01-29  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-shell.c: (rb_shell_transfer_progress_cb):
+	* sources/rb-auto-playlist-source.c: (impl_save_contents_to_xml): more
+	memory leak fixes
+
+2007-01-29  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/audiocd/rb-audiocd-source.c:
 	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
 	(impl_activate):
