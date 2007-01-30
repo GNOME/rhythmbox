@@ -1,3 +1,16 @@
+2007-01-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch partly by:  William Jon McCann  <mccann@jhu.edu>
+
+	* lib/rb-debug.c: (rb_debug_init_match), (rb_debug_get_args):
+	* lib/rb-debug.h:
+	Add a function to return a copy of the debug command line args.
+
+	* metadata/rb-metadata-dbus-client.c: (rb_metadata_class_init),
+	(rb_metadata_finalize), (start_metadata_service):
+	* metadata/rb-metadata-dbus-service.c: (main):
+	Pass debug args through to the metadata helper.  Fixes #383845.
+
 2007-01-29  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-shell.c: (rb_shell_transfer_progress_cb):

@@ -69,8 +69,8 @@ static GStaticMutex conn_mutex = G_STATIC_MUTEX_INIT;
 
 struct RBMetaDataPrivate
 {
-	char *uri;
-	char *mimetype;
+	char       *uri;
+	char       *mimetype;
 	GHashTable *metadata;
 };
 
@@ -80,6 +80,7 @@ static void
 rb_metadata_class_init (RBMetaDataClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
 	object_class->finalize = rb_metadata_finalize;
 
 	g_type_class_add_private (object_class, sizeof (RBMetaDataPrivate));
@@ -99,6 +100,7 @@ rb_metadata_finalize (GObject *object)
 	RBMetaData *md;
 
 	md = RB_METADATA (object);
+
 	g_free (md->priv->uri);
 	g_free (md->priv->mimetype);
 	if (md->priv->metadata)
@@ -175,19 +177,6 @@ ping_metadata_service (GError **error)
 static gboolean
 start_metadata_service (GError **error)
 {
-	/*
-	 * Normally, we find the metadata helper in the libexec dir,
-	 * but when --enable-uninstalled-build is specified, we look
-	 * in the directory it's built in.
-	 */
-	char *argv[] = {
-#ifdef METADATA_UNINSTALLED_DIR
-		METADATA_UNINSTALLED_DIR "/rhythmbox-metadata",
-#else
-		LIBEXEC_DIR "/rhythmbox-metadata",
-#endif
-		"unix:tmpdir=/tmp", NULL
-	};
 	DBusError dbus_error = {0,};
 	GIOChannel *stdout_channel;
 	GIOStatus status;
@@ -218,17 +207,49 @@ start_metadata_service (GError **error)
 
 	if (dbus_address == NULL) {
 		gint metadata_stdout;
+		GPtrArray *argv;
+		gboolean res;
+		char **debug_args;
+		GError *local_error;
+		int i;
 
-		if (!g_spawn_async_with_pipes (NULL,
-					       argv,
-					       NULL,
-					       0,
-					       NULL, NULL,
-					       &metadata_child,
-					       NULL,
-					       &metadata_stdout,
-					       NULL,
-					       error)) {
+		argv = g_ptr_array_new ();
+		/*
+		 * Normally, we find the metadata helper in the libexec dir,
+		 * but when --enable-uninstalled-build is specified, we look
+		 * in the directory it's built in.
+		 */
+#ifdef METADATA_UNINSTALLED_DIR
+		g_ptr_array_add (argv, METADATA_UNINSTALLED_DIR "/rhythmbox-metadata");
+#else
+		g_ptr_array_add (argv, LIBEXEC_DIR "/rhythmbox-metadata");
+#endif
+		debug_args = rb_debug_get_args ();
+		i = 0;
+		while (debug_args[i] != NULL) {
+			g_ptr_array_add (argv, debug_args[i]);
+			i++;
+		}
+
+		g_ptr_array_add (argv, "unix:tmpdir=/tmp");
+		g_ptr_array_add (argv, NULL);
+
+		local_error = NULL;
+		res = g_spawn_async_with_pipes (NULL,
+						(char **)argv->pdata,
+						NULL,
+						0,
+						NULL, NULL,
+						&metadata_child,
+						NULL,
+						&metadata_stdout,
+						NULL,
+						&local_error);
+		g_ptr_array_free (argv, TRUE);
+		g_strfreev (debug_args);
+
+		if (res == FALSE) {
+			g_propagate_error (error, local_error);
 			return FALSE;
 		}
 

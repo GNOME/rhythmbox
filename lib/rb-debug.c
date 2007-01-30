@@ -81,12 +81,12 @@ rb_debug_init (gboolean debug)
 	rb_debug_init_match (debug ? debug_everything : NULL);
 }
 
-void 
+void
 rb_debug_init_match (const char *match)
 {
 	guint i;
 
-	/* This is a workaround for the fact that there is not way to 
+	/* This is a workaround for the fact that there is no way to
 	 * make this useful debugging feature happen for ALL domains.
 	 *
 	 * What we did here is list all the ones we could think of that
@@ -139,6 +139,23 @@ rb_debug_init_match (const char *match)
 			g_log_set_handler (standard_log_domains[i], G_LOG_LEVEL_MASK, log_handler, NULL);
 
 	rb_debug ("Debugging enabled");
+}
+
+char **
+rb_debug_get_args (void)
+{
+	char **args;
+	if (debug_match == NULL) {
+		args = (char **)g_new0 (char *, 1);
+	} else if (debug_match == debug_everything) {
+		args = (char **)g_new0 (char *, 2);
+		args[0] = g_strdup ("--debug");
+	} else {
+		args = (char **)g_new0 (char *, 3);
+		args[0] = g_strdup ("--debug-match");
+		args[1] = g_strdup (debug_match);
+	}
+	return args;
 }
 
 /* Raise a SIGINT signal to get the attention of the debugger.

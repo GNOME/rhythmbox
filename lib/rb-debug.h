@@ -45,6 +45,8 @@ void rb_debug_real             (const char *func,
 				gboolean newline,
 				const char *format, ...) G_GNUC_PRINTF (5, 6);
 
+char **rb_debug_get_args       (void);
+
 void rb_debug_stop_in_debugger (void);
 
 typedef struct RBProfiler RBProfiler;

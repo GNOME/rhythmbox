@@ -424,7 +424,6 @@ main (int argc, char **argv)
 {
 	ServiceData svc = {0,};
 	DBusError dbus_error = {0,};
-	gboolean debug = FALSE;
 	const char *address = NULL;
 
 #ifdef ENABLE_NLS
@@ -443,9 +442,13 @@ main (int argc, char **argv)
 
 	if (argv[1] != NULL && strcmp(argv[1], "--debug") == 0) {
 		argv++;
-		debug = TRUE;
+		rb_debug_init (TRUE);
+	} else if (argv[1] != NULL && strcmp (argv[1], "--debug-match") == 0) {
+		rb_debug_init_match (argv[2]);
+		argv += 2;
+	} else {
+		rb_debug_init (FALSE);
 	}
-	rb_debug_init (debug);
 
 	/* bug report modes */
 	if (argv[1] != NULL && strcmp(argv[1], "--load") == 0) {
