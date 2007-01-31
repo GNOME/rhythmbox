@@ -40,6 +40,7 @@ class MagnatuneSource(rb.BrowserSource):
 		# track data
 		self.__sku_dict = {}
 		self.__home_dict = {}
+		self.__buy_dict = {}
 
 		# catalogue stuff
 		self.__activated = False
@@ -95,6 +96,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 	def do_impl_get_ui_actions(self):
 		return ["MagnatunePurchaseAlbum",
+			"MagnatunePurchaseCD",
 			"MagnatuneArtistInfo",
 			"MagnatuneCancelDownload"]
 
@@ -157,6 +159,16 @@ class MagnatuneSource(rb.BrowserSource):
 
 		for tr in tracks:
 			url = self.__home_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			if url not in urls:
+				gnomevfs.url_show(url)
+				urls.add(url)
+	
+	def buy_cd(self):
+		tracks = self.get_entry_view().get_selected_entries()
+		urls = set([])
+
+		for tr in tracks:
+			url = self.__buy_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
 			if url not in urls:
 				gnomevfs.url_show(url)
 				urls.add(url)
@@ -280,7 +292,7 @@ class MagnatuneSource(rb.BrowserSource):
 				return
 
 		parser = xml.sax.make_parser()
-		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict))
+		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__buy_dict))
 		handle.read (64 * 1024, self.__load_catalogue_read_cb, parser)
 
 	def __load_catalogue(self):

@@ -4,12 +4,13 @@ import datetime
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
 
-	def __init__(self, db, entry_type, sku_dict, home_dict):
+	def __init__(self, db, entry_type, sku_dict, home_dict, buy_dict):
 		xml.sax.handler.ContentHandler.__init__(self)
 		self.__db = db
 		self.__entry_type = entry_type
 		self.__sku_dict = sku_dict
 		self.__home_dict = home_dict
+		self.__buy_dict = buy_dict
 		self.__track = {}
 
 	def startElement(self, name, attrs):
@@ -39,6 +40,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				self.__db.set(entry, rhythmdb.PROP_DURATION, int(self.__track['seconds']))
 				self.__sku_dict[self.__track['url']] = self.__track['albumsku']
 				self.__home_dict[self.__track['url']] = self.__track['home']
+				self.__buy_dict[self.__track['url']] = self.__track['buy'].replace("buy_album", "buy_cd", 1)
 
 				self.__db.commit()
 			except Exception,e: # This happens on duplicate uris being added
