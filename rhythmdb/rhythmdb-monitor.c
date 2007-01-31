@@ -215,6 +215,9 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			if (!eel_gconf_get_boolean (CONF_MONITOR_LIBRARY))
 				break;
 
+			if (rb_uri_is_hidden (canon_uri))
+				break;
+
 			/* ignore new files outside of the library locations */
 			for (cur = db->priv->library_locations; cur != NULL; cur = g_slist_next (cur)) {
 				if (g_str_has_prefix (canon_uri, cur->data)) {
@@ -231,12 +234,18 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 		if (rb_uri_is_directory (canon_uri)) {
 			rhythmdb_monitor_uri_path (db, canon_uri, NULL);
 			rhythmdb_add_uri (db, canon_uri);
-			break;
+		} else {
+			GTimeVal time;
+
+			g_get_current_time (&time);
+			g_hash_table_replace (db->priv->changed_files,
+					      rb_refstring_new (canon_uri),
+					      GINT_TO_POINTER (time.tv_sec));
 		}
-		/* fall through*/
+		break;
 	case GNOME_VFS_MONITOR_EVENT_CHANGED:
         case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
-		{
+		if (rhythmdb_entry_lookup_by_location (db, canon_uri)) {
 			GTimeVal time;
 
 			g_get_current_time (&time);
@@ -246,7 +255,7 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:
-		{
+		if (rhythmdb_entry_lookup_by_location (db, canon_uri)) {
 			RhythmDBEvent *event = g_new0 (RhythmDBEvent, 1);
 			event->db = db;
 			event->type = RHYTHMDB_EVENT_FILE_DELETED;
@@ -267,7 +276,7 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 {
 	char *directory;
 	GnomeVFSResult vfsresult;
-	GnomeVFSMonitorHandle **handle = NULL;
+	GnomeVFSMonitorHandle *handle;
 
 	if (rb_uri_is_directory (uri)) {
 		if (g_str_has_suffix(uri, G_DIR_SEPARATOR_S)) {
@@ -295,15 +304,14 @@ rhythmdb_monitor_uri_path (RhythmDB *db, const char *uri, GError **error)
 		return;
 	}
 
-	handle = g_new0 (GnomeVFSMonitorHandle *, 1);
-	vfsresult = gnome_vfs_monitor_add (handle, directory,
+	vfsresult = gnome_vfs_monitor_add (&handle, directory,
 					   GNOME_VFS_MONITOR_DIRECTORY,
 					   (GnomeVFSMonitorCallback) rhythmdb_directory_change_cb,
 					   db);
 	if (vfsresult == GNOME_VFS_OK) {
 		rb_debug ("monitoring: %s", directory);
 		g_hash_table_insert (db->priv->monitored_directories,
-				     directory, *handle);
+				     directory, handle);
 	} else {
 		g_set_error (error,
 			     RHYTHMDB_ERROR,

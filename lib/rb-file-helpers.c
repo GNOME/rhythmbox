@@ -610,6 +610,12 @@ rb_uri_is_local (const char *text_uri)
 	return g_str_has_prefix (text_uri, "file://");
 }
 
+gboolean
+rb_uri_is_hidden (const char *text_uri)
+{
+	return g_utf8_strrchr (text_uri, -1, GNOME_VFS_URI_PATH_CHR)[1] == '.';
+}
+
 /*
  * gnome_vfs_uri_new escapes a few extra characters that
  * gnome_vfs_escape_path doesn't ('&' and '=').  If we
