@@ -2,6 +2,13 @@
 
 	patch by: Ed Catmur  <ed@catmur.co.uk>
 
+	* plugins/artdisplay/artdisplay/__init__.py: keep the art widget
+	square so it doesn't resize vertically. Fixes #346679.
+
+2007-01-31  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
 	* lib/rb-file-helpers.c: (rb_uri_is_hidden):
 	* lib/rb-file-helpers.h:
 	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_directory_change_cb),

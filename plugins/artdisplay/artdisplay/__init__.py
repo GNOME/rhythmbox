@@ -29,26 +29,8 @@ ART_MISSING_ICON = 'rhythmbox-missing-artwork'
 WORKING_DELAY = 500
 THROBBER_RATE = 10
 THROBBER = 'gnome-spinner'
-
-def pixbuf_aspect (pixbuf):
-	if pixbuf is None: return None
-	return float (pixbuf.props.height) / pixbuf.props.width
-
-def weighted_avg (a, b, weight):
-	if a is None and b is None: return 1
-	elif a is None: return b
-	elif b is None: return a
-	else: return a * (1 - weight) + b * weight
-
-def merge_height (old_aspect, new_aspect, reserve_aspect, step, width):
-	if old_aspect is None:
-		if new_aspect is None:
-			return width
-		else:
-			return int (new_aspect * width)
-	elif new_aspect is None:
-		new_aspect = reserve_aspect
-	return int (width * weighted_avg (old_aspect, new_aspect, step))
+ASPECT_RATIO_MIN = 0.9
+ASPECT_RATIO_MAX = 1.1
 
 def merge_pixbufs (old_pb, new_pb, reserve_pb, step, width, height, mode=gtk.gdk.INTERP_BILINEAR):
 	if width <= 1 and height <= 1:
@@ -70,14 +52,25 @@ def merge_pixbufs (old_pb, new_pb, reserve_pb, step, width, height, mode=gtk.gdk
 	new_pb.composite (ret, 0, 0, width, height, 0, 0, sw, sh, mode, alpha)
 	return ret
 
-def merge_with_background (pixbuf, bgcolor):
-	if pixbuf is None or not pixbuf.get_has_alpha ():
+def merge_with_background (pixbuf, bgcolor, pad_if_not_near_square):
+	if pixbuf is None:
 		return pixbuf
+	has_alpha = pixbuf.get_has_alpha ()
 	width, height = pixbuf.props.width, pixbuf.props.height
-	bg = ((bgcolor.red & 0xff00) << 16) | ((bgcolor.green & 0xff00) << 8) | (bgcolor.blue & 0xff00) | 0xff
-	ret = gtk.gdk.Pixbuf (gtk.gdk.COLORSPACE_RGB, False, 8, width, height)
-	ret.fill (bg)
-	pixbuf.composite (ret, 0, 0, width, height, 0, 0, 1.0, 1.0, gtk.gdk.INTERP_NEAREST, 255)
+	if pad_if_not_near_square and (height < width * ASPECT_RATIO_MIN or
+				       height > width * ASPECT_RATIO_MAX):
+		rw, rh = max (width, height), max (width, height)
+		left, top = (rw - width) // 2, (rh - height) // 2
+	else:
+		if not has_alpha:
+			return pixbuf
+		rw, rh, left, top = width, height, 0, 0
+	ret = gtk.gdk.Pixbuf (gtk.gdk.COLORSPACE_RGB, False, 8, rw, rh)
+	ret.fill (((bgcolor.red & 0xff00) << 16) | ((bgcolor.green & 0xff00) << 8) | (bgcolor.blue & 0xff00) | 0xff)
+	if has_alpha:
+		pixbuf.composite (ret, left, top, width, height, left, top, 1.0, 1.0, gtk.gdk.INTERP_NEAREST, 255)
+	else:
+		pixbuf.copy_area (0, 0, width, height, ret, left, top)
 	return ret
 
 class FadingImage (gtk.Misc):
@@ -138,7 +131,7 @@ class FadingImage (gtk.Misc):
 			except Exception, e:
 				warn ("Missing artwork icon not found: %s" % e, Warning)
 				return
-		self.missing_pixbuf = merge_with_background (missing_pixbuf, self.style.bg[gtk.STATE_NORMAL])
+		self.missing_pixbuf = merge_with_background (missing_pixbuf, self.style.bg[gtk.STATE_NORMAL], False)
 
 	def do_size_allocate (self, allocation):
 		self.allocation = allocation
@@ -159,8 +152,7 @@ class FadingImage (gtk.Misc):
 		return False
 
 	def size_request (self, widget, requisition):
-		requisition.width = -1
-		requisition.height = merge_height (pixbuf_aspect (self.old_pixbuf), pixbuf_aspect (self.new_pixbuf), 1.0, self.fade_step, self.size)
+		requisition.width, requisition.height = -1, self.size
 
 	def expose (self, widget, event):
 		if not self.ensure_merged_pixbuf ():
@@ -223,7 +215,7 @@ class FadingImage (gtk.Misc):
 			self.old_pixbuf = self.render_overlay ()
 		else:
 			self.old_pixbuf = None	# don't fade
-		self.new_pixbuf = merge_with_background (pixbuf, self.style.bg[gtk.STATE_NORMAL])
+		self.new_pixbuf = merge_with_background (pixbuf, self.style.bg[gtk.STATE_NORMAL], True)
 		self.merged_pixbuf = None
 		self.fade_step = 0.0
 		self.anim = None
