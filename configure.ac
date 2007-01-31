@@ -951,6 +951,8 @@ plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
 plugins/magnatune/Makefile
 plugins/magnatune/magnatune/Makefile
+plugins/jamendo/Makefile
+plugins/jamendo/jamendo/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile

@@ -108,6 +108,3 @@ DISTCLEANFILES =		\
 	$(BUILT_SOURCES)	\
 	$(NULL)
 
-libdaapsharing_la_LIBADD =				\
-	$(RHYTHMBOX_LIBS) 
-

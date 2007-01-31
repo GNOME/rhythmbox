@@ -20,6 +20,7 @@ SUBDIRS += 						\
 	artdisplay					\
 	lyrics						\
 	magnatune					\
+	jamendo						\
 	rb
 endif
 

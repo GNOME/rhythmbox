@@ -1057,5 +1057,73 @@
 	</locale>
       </schema>
 
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/jamendo/active</key>
+        <applyto>/apps/rhythmbox/plugins/jamendo/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the jamendo plugin is enabled.</short>
+	<long>True if the jamendo plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/jamendo/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/jamendo/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the jamendo plugin is hidden.</short>
+	<long>True if the jamendo plugin is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/jamendo/format</key>
+        <applyto>/apps/rhythmbox/plugins/jamendo/format</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>ogg3</default>
+        <locale name="C">
+        <short>Desired format of downloaded audio.</short>
+	<long>Desired format of downloaded audio. Valid values are: ogg3, mp32</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/jamendo/sorting</key>
+        <applyto>/apps/rhythmbox/plugins/jamendo/sorting</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Artist,ascending</default>
+        <locale name="C">
+	<short>The sorting order</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/jamendo/show_browser</key>
+        <applyto>/apps/rhythmbox/plugins/jamendo/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>TRUE</default>
+        <locale name="C">
+	<short>Whether or not to show the browser.</short>
+	<long>Whether or not to show the browser.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/jamendo/paned_position</key>
+        <applyto>/apps/rhythmbox/plugins/jamendo/paned_position</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>180</default>
+        <locale name="C">
+	<short>The size of the browser.</short>
+	<long>The size of the browser.</long>
+        </locale>
+      </schema>
+
     </schemalist>
 </gconfschemafile>
