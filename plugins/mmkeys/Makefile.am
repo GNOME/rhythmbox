@@ -1,0 +1,52 @@
+NULL =
+
+plugindir = $(PLUGINDIR)/mmkeys
+plugin_LTLIBRARIES = libmmkeys.la
+
+libmmkeys_la_SOURCES = \
+	rb-mmkeys-plugin.c				\
+	$(NULL)
+
+libmmkeys_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+
+libmmkeys_la_LIBADD =					\
+	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(NULL)
+
+INCLUDES = 						\
+        -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
+	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
+	-I$(top_srcdir) 				\
+	-I$(top_srcdir)/lib                        	\
+	-I$(top_srcdir)/player                       	\
+	-I$(top_srcdir)/rhythmdb                       	\
+	-I$(top_srcdir)/widgets                    	\
+	-I$(top_srcdir)/sources                    	\
+	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/shell				\
+	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
+	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
+	-DDATADIR=\""$(datadir)"\"			\
+	$(RHYTHMBOX_CFLAGS)				\
+	$(WARN_CFLAGS)					\
+	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
+	$(NULL)
+
+if WITH_DBUS
+INCLUDES += $(DBUS_CFLAGS)
+libmmkeys_la_LIBADD += $(DBUS_LIBS)
+endif
+
+gladedir = $(datadir)/rhythmbox/glade
+glade_DATA =
+
+plugin_in_files = mmkeys.rb-plugin.desktop.in
+
+%.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+
+plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+
+EXTRA_DIST = $(glade_DATA) $(plugin_in_files)
+
+CLEANFILES = $(plugin_DATA)
+DISTCLEANFILES = $(plugin_DATA)

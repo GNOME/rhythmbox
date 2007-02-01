@@ -3,6 +3,7 @@
 SUBDIRS = 						\
 	generic-player					\
 	iradio						\
+	mmkeys						\
 	sample
 
 if WITH_AUDIOSCROBBLER

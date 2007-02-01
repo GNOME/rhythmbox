@@ -1,3 +1,20 @@
+2007-02-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* plugins/Makefile.am:
+	* plugins/mmkeys/Makefile.am:
+	* plugins/mmkeys/mmkeys.rb-plugin.desktop.in:
+	* plugins/mmkeys/rb-mmkeys-plugin.c: (rb_mmkeys_plugin_init),
+	(media_player_key_pressed), (window_focus_cb), (grab_mmkey),
+	(ungrab_mmkey), (filter_mmkeys), (mmkeys_grab), (impl_activate),
+	(impl_deactivate), (rb_mmkeys_plugin_class_init):
+	New plugin for media player key shortcuts.  Handles both dbus signals
+	from gnome-settings-daemon and the older XGrabKey method (bug #398184).
+
+	* shell/rb-shell-player.c: (rb_shell_player_init):
+	Remove XGrabKey key shortcut handling code.
+
 2007-02-01  James Livingston  <doclivingston@gmail.com>
 
 	* shell/rb-statusbar.c: (rb_statusbar_sync_status): make the status

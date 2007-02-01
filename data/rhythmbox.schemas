@@ -1125,5 +1125,27 @@
         </locale>
       </schema>
 
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/mmkeys/active</key>
+	<applyto>/apps/rhythmbox/plugins/mmkeys/active</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the media player keys plugin is enabled.</short>
+	<long>True if the media player keys plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/plugins/mmkeys/hidden</key>
+	<applyto>/apps/rhythmbox/plugins/mmkeys/hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>TRUE</default>
+	<locale name="C">
+	<short>True if the media player keys plugin is hidden.</short>
+	<long>True if the media player keys plugin is hidden.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>
