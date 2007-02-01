@@ -401,7 +401,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
         gboolean show_progress = TRUE;
         char *status_text = NULL;
 	char *progress_text = NULL;
-	float progress = 0.0f;
+	float progress = 999;
 
         /*
          * Behaviour of status bar:
@@ -411,8 +411,11 @@ rb_statusbar_sync_status (RBStatusbar *status)
          */
 
 	/* get source details */
-        if (status->priv->selected_source)
+        if (status->priv->selected_source) {
 		rb_source_get_status (status->priv->selected_source, &status_text, &progress_text, &progress);
+		rb_debug ("updating status with: '%s', '%s', %f",
+			status_text ? status_text : "", progress_text ? progress_text : "", progress);
+	}
 
         /* internal progress bar moving? */
         if (status->priv->progress_fraction < (1.0 - EPSILON) || status->priv->progress_changed) {
@@ -439,7 +442,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
         }
 
         /* set up the progress bar */
-	if (progress > (1.0f - EPSILON) && !show_progress) {
+	if (progress > (1.0f - EPSILON) || !show_progress) {
 		gtk_widget_hide (status->priv->progress);
 	} else {
                 gtk_widget_show (status->priv->progress);
