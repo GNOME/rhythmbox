@@ -70,12 +70,21 @@ static gboolean hal_udi_is_ipod (const char *udi);
 #endif
 
 #ifdef ENABLE_IPOD_WRITING
-static void impl_paste (RBSource *source, GList *entries);
-static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
-static gchar *
-ipod_get_filename_for_uri (const gchar *mount_point, const gchar *uri_str);
-static gchar *
-ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path);
+static GList * impl_get_mime_types (RBRemovableMediaSource *source);
+static gboolean impl_track_added (RBRemovableMediaSource *source,
+				  RhythmDBEntry *entry,
+				  const char *dest,
+				  const char *mimetype);
+static char* impl_build_dest_uri (RBRemovableMediaSource *source,
+				  RhythmDBEntry *entry,
+				  const char *mimetype,
+				  const char *extension);
+static gchar* ipod_get_filename_for_uri (const gchar *mount_point,
+					 const gchar *uri_str,
+					 const gchar *mimetype,
+					 const gchar *extension);
+static gchar* ipod_path_from_unix_path (const gchar *mount_point,
+					const gchar *unix_path);
 #endif
 static void itdb_schedule_save (Itdb_iTunesDB *db);
 
@@ -101,6 +110,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_ipod_source_constructor;
 	object_class->dispose = rb_ipod_source_dispose;
@@ -111,10 +121,15 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
    	source_class->impl_move_to_trash = impl_move_to_trash;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+
 #ifdef ENABLE_IPOD_WRITING
-  	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
-  	source_class->impl_paste = impl_paste;
-  	source_class->impl_receive_drag = impl_receive_drag;
+	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
+	rms_class->impl_track_added = impl_track_added;
+	rms_class->impl_build_dest_uri = impl_build_dest_uri;
+	rms_class->impl_get_mime_types = impl_get_mime_types;
+#else
+	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
+	rms_class->impl_track_added = NULL;
 #endif
 
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
@@ -213,14 +228,20 @@ rb_ipod_source_new (RBShell *shell,
 	RBiPodSource *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
+	char *name;
+	char *path;
 
 	g_assert (rb_ipod_is_volume_ipod (volume));
 
 	g_object_get (shell, "db", &db, NULL);
-	entry_type =  rhythmdb_entry_register_type (db, NULL);
+	path = gnome_vfs_volume_get_device_path (volume);
+	name = g_strdup_printf ("ipod: %s", path);
+	entry_type =  rhythmdb_entry_register_type (db, name);
 	entry_type->save_to_disk = FALSE;
 	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
 	g_object_unref (db);
+	g_free (name);
+	g_free (path);
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "entry-type", entry_type,
@@ -327,7 +348,7 @@ load_ipod_playlists (RBiPodSource *source)
 
 #ifdef ENABLE_IPOD_WRITING
 static Itdb_Track *
-create_ipod_song_from_entry (RhythmDBEntry *entry)
+create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 {
 	Itdb_Track *track;
 
@@ -337,7 +358,7 @@ create_ipod_song_from_entry (RhythmDBEntry *entry)
 	track->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
 	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
-	/*	track->filetype = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP);*/
+	track->filetype = g_strdup (mimetype);
 	track->size = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 	track->tracklen = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 	track->tracklen *= 1000;
@@ -900,17 +921,20 @@ itdb_schedule_save (Itdb_iTunesDB *db)
 
 #ifdef ENABLE_IPOD_WRITING
 static char *
-build_filename (RBSource *asource, RhythmDBEntry *entry)
+impl_build_dest_uri (RBRemovableMediaSource *source,
+		     RhythmDBEntry *entry,
+		     const char *mimetype,
+		     const char *extension)
 {
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	const char *uri;
 	char *dest;
-	char *dest_uri;
-
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (asource);
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	dest = ipod_get_filename_for_uri (priv->ipod_mount_path,  uri);
+	dest = ipod_get_filename_for_uri (priv->ipod_mount_path,  uri, mimetype, extension);
 	if (dest != NULL) {
+		char *dest_uri;
+
 		dest_uri = g_filename_to_uri (dest, NULL, NULL);
 		g_free (dest);
 		return dest_uri;
@@ -919,15 +943,19 @@ build_filename (RBSource *asource, RhythmDBEntry *entry)
 	return NULL;
 }
 
-static void
-completed_cb (RhythmDBEntry *entry, const char *dest, RBiPodSource *source)
+static gboolean
+impl_track_added (RBRemovableMediaSource *source,
+		  RhythmDBEntry *entry,
+		  const char *dest,
+		  const char *mimetype)
 {
+	RBiPodSource *isource = RB_IPOD_SOURCE (source);
 	RhythmDB *db;
 	Itdb_Track *song;
 
-        db = get_db_for_source (source);
+        db = get_db_for_source (isource);
 
-	song = create_ipod_song_from_entry (entry);
+	song = create_ipod_song_from_entry (entry, mimetype);
 	if (song != NULL) {
 		RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 		char *filename;
@@ -939,103 +967,12 @@ completed_cb (RhythmDBEntry *entry, const char *dest, RBiPodSource *source)
 		itdb_playlist_add_track (itdb_playlist_mpl (priv->ipod_db),
 					 song, -1);
 
-		add_ipod_song_to_db (source, db, song);
+		add_ipod_song_to_db (isource, db, song);
 		itdb_schedule_save (priv->ipod_db);
 	}
 
 	g_object_unref (db);
-}
-
-static void
-impl_paste (RBSource *asource, GList *entries)
-{
-	RBRemovableMediaManager *rm_mgr;
-	GList *l;
-	RBShell *shell;
-
-	g_object_get (asource, "shell", &shell, NULL);
-	g_object_get (shell,
-		      "removable-media-manager", &rm_mgr,
-		      NULL);
-	g_object_unref (shell);
-
-	for (l = entries; l != NULL; l = l->next) {
-		RhythmDBEntry *entry;
-		RhythmDBEntryType entry_type;
-		RhythmDBEntryType ipod_entry_type;
-		char *dest;
-
-		entry = (RhythmDBEntry *)l->data;
-		entry_type = rhythmdb_entry_get_entry_type (entry);
-		g_object_get (asource,
-			      "entry-type", &ipod_entry_type,
-			      NULL);
-		if (entry_type == ipod_entry_type ||
-		    entry_type->category != RHYTHMDB_ENTRY_NORMAL) {
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-			continue;
-		}
-
-		dest = build_filename (asource, entry);
-		if (dest == NULL) {
-			rb_debug ("could not create destination path for entry");
-			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-			continue;
-		}
-		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
-							   dest, NULL,
-							   (RBTranferCompleteCallback)completed_cb, asource);
-		g_free (dest);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
-	}
-
-	g_object_unref (rm_mgr);
-}
-
-static gboolean
-impl_receive_drag (RBSource *asource, GtkSelectionData *data)
-{
-	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
-	GList *list, *i;
-	GList *entries = NULL;
-	RhythmDB *db;
-	gboolean is_id;
-
-	rb_debug ("parsing uri list");
-	list = rb_uri_list_parse ((const char *) data->data);
-	is_id = (data->type == gdk_atom_intern ("application/x-rhythmbox-entry", TRUE));
-
-        db = get_db_for_source (RB_IPOD_SOURCE (source));
-
-	for (i = list; i != NULL; i = g_list_next (i)) {
-		if (i->data != NULL) {
-			char *uri = i->data;
-			RhythmDBEntry *entry;
-
-			entry = rhythmdb_entry_lookup_from_string (db, uri, is_id);
-
-			if (entry == NULL) {
-				/* add to the library */
-				g_print ("Where does that come from?\n");
-			} else {
-				/* add to list of entries to copy */
-				entries = g_list_prepend (entries, entry);
-			}
-
-			g_free (uri);
-		}
-	}
-	g_object_unref (db);
-	g_list_free (list);
-
-	if (entries) {
-		entries = g_list_reverse (entries);
-		if (rb_source_can_paste (asource))
-			rb_source_paste (asource, entries);
-		g_list_free (entries);
-	}
-
-	return TRUE;
+	return FALSE;
 }
 
 /* Generation of the filename for the ipod */
@@ -1201,7 +1138,10 @@ generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 }
 
 static gchar *
-ipod_get_filename_for_uri (const gchar *mount_point, const gchar *uri_str)
+ipod_get_filename_for_uri (const gchar *mount_point,
+			   const gchar *uri_str,
+			   const gchar *mimetype,
+			   const gchar *extension)
 {
 	gchar *escaped;
 	gchar *filename;
@@ -1217,8 +1157,20 @@ ipod_get_filename_for_uri (const gchar *mount_point, const gchar *uri_str)
 		return NULL;
 	}
 
-	result = generate_ipod_filename (mount_point, filename);
+	/* replace the old extension or append it */
+	/* FIXME: we really need a mapping (audio/mpeg->mp3) and not
+	 * just rely on the user's audio profile havign the "right" one */
+	escaped = g_utf8_strrchr (filename, -1, '.');
+	if (escaped != NULL) {
+		*escaped = 0;
+	}
+
+	escaped = g_strdup_printf ("%s.%s", filename, extension);
 	g_free (filename);
+
+
+	result = generate_ipod_filename (mount_point, escaped);
+	g_free (escaped);
 
 	return result;
 }
@@ -1271,4 +1223,16 @@ impl_delete_thyself (RBSource *source)
 	priv->ipod_db = NULL;
 
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
+}
+
+static GList *
+impl_get_mime_types (RBRemovableMediaSource *source)
+{
+	GList *ret = NULL;
+
+	/* FIXME: we should really query HAL for this */
+	ret = g_list_prepend (ret, g_strdup ("audio/aac"));
+	ret = g_list_prepend (ret, g_strdup ("audio/mpeg"));
+
+	return ret;
 }

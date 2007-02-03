@@ -58,6 +58,8 @@ gboolean rb_string_list_equal (GList *a, GList *b);
 void rb_list_deep_free (GList *list);
 GList* rb_string_list_copy (GList *list);
 
+gboolean rb_str_in_strv (const char *needle, char **haystack);
+
 GList* rb_collate_hash_table_keys (GHashTable *table);
 GList* rb_collate_hash_table_values (GHashTable *table);
 

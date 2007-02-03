@@ -46,9 +46,15 @@ typedef struct
 
 	char *		(*impl_get_mount_path) (RBGenericPlayerSource *source);
 	void		(*impl_load_playlists) (RBGenericPlayerSource *source);
+	char **		(*impl_get_audio_folders) (RBGenericPlayerSource *source);
 
 	/* used internally in the base load_playlist implementation*/
 	char *		(*impl_transform_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
+
+#if ENABLE_TRACK_TRANSFER
+	/* used for track transfer - returns the filename relative to the audio folder on the device */
+	char *		(*impl_build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
+#endif
 } RBGenericPlayerSourceClass;
 
 RBRemovableMediaSource *	rb_generic_player_source_new		(RBShell *shell, GnomeVFSVolume *volume);

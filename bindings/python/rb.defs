@@ -1594,6 +1594,60 @@
   (return-type "GType")
 )
 
+(define-method build_dest_uri
+  (of-object "RBRemovableMediaSource")
+  (c-name "rb_removable_media_source_build_dest_uri")
+  (return-type "char*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-char*" "mimetype")
+    '("const-char*" "extension")
+  )
+)
+
+(define-method track_added
+  (of-object "RBRemovableMediaSource")
+  (c-name "rb_removable_media_source_track_added")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-char*" "uri")
+    '("const-char*" "mimetype")
+  )
+)
+
+(define-method get_mime_types
+  (of-object "RBRemovableMediaSource")
+  (c-name "rb_removable_media_source_get_mime_types")
+  (return-type "GList*")
+)
+
+(define-virtual impl_build_dest_uri
+  (of-object "RBRemovableMediaSource")
+  (return-type "char*")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-char*" "mimetype")
+    '("const-char*" "extension")
+  )
+)
+
+(define-virtual impl_track_added
+  (of-object "RBRemovableMediaSource")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("const-char*" "uri")
+    '("const-char*" "mimetype")
+  )
+)
+
+(define-virtual impl_get_mime_types
+  (of-object "RBRemovableMediaSource")
+  (return-type "GList*")
+)
+
+
 
 ;; From ../../shell/rb-removable-media-manager.h
 
@@ -1615,7 +1669,7 @@
   (parameters
     '("RhythmDBEntry*" "entry")
     '("const-char*" "dest")
-    '("const-char*" "mime_type")
+    '("GList*" "mime_type")
     '("RBTranferCompleteCallback" "callback")
     '("gpointer" "userdata")
   )

@@ -29,7 +29,6 @@
 
 #include "rb-removable-media-manager.h"
 #include "rb-library-source.h"
-#include "rb-sourcelist.h"
 #include "rb-removable-media-source.h"
 
 #include "rb-shell.h"
@@ -91,7 +90,6 @@ typedef struct
 	RBShell *shell;
 	gboolean disposed;
 
-	RBSourceList *sourcelist;
 	RBSource *selected_source;
 
 	GtkActionGroup *actiongroup;
@@ -170,13 +168,6 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE));
 
-	g_object_class_install_property (object_class,
-					 PROP_SOURCELIST,
-					 g_param_spec_object ("sourcelist",
-							      "RBSourceList",
-							      "RBSourceList",
-							      RB_TYPE_SOURCELIST,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_SCANNED,
 					 g_param_spec_boolean ("scanned",
@@ -295,10 +286,6 @@ rb_removable_media_manager_set_property (GObject *object,
 		g_object_unref (uimanager);
 		break;
 	}
-	case PROP_SOURCELIST:
-		priv->sourcelist = g_value_get_object (value);
-		break;
-	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
@@ -320,9 +307,6 @@ rb_removable_media_manager_get_property (GObject *object,
 	case PROP_SHELL:
 		g_value_set_object (value, priv->shell);
 		break;
-	case PROP_SOURCELIST:
-		g_value_set_object (value, priv->sourcelist);
-		break;
 	case PROP_SCANNED:
 		g_value_set_boolean (value, priv->scanned);
 		break;
@@ -333,12 +317,10 @@ rb_removable_media_manager_get_property (GObject *object,
 }
 
 RBRemovableMediaManager *
-rb_removable_media_manager_new (RBShell *shell,
-				 RBSourceList *sourcelist)
+rb_removable_media_manager_new (RBShell *shell)
 {
 	return g_object_new (RB_TYPE_REMOVABLE_MEDIA_MANAGER,
 			     "shell", shell,
-			     "sourcelist", sourcelist,
 			     NULL);
 }
 
@@ -639,7 +621,7 @@ typedef struct {
 	RBRemovableMediaManager *manager;
 	RhythmDBEntry *entry;
 	char *dest;
-	char *mime_type;
+	GList *mime_types;
 	gboolean failed;
 	RBTranferCompleteCallback callback;
 	gpointer userdata;
@@ -692,7 +674,7 @@ completed_cb (RBEncoder *encoder, TransferData *data)
 
 	g_object_unref (G_OBJECT (encoder));
 	g_free (data->dest);
-	g_free (data->mime_type);
+	rb_list_deep_free (data->mime_types);
 	g_free (data);
 }
 
@@ -731,14 +713,14 @@ do_transfer (RBRemovableMediaManager *manager)
 	g_signal_connect (G_OBJECT (encoder),
 			  "completed", G_CALLBACK (completed_cb),
 			  data);
-	rb_encoder_encode (encoder, data->entry, data->dest, NULL);
+	rb_encoder_encode (encoder, data->entry, data->dest, data->mime_types);
 }
 
 void
 rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
 					  RhythmDBEntry *entry,
 					  const char *dest,
-					  const char *mime_type,
+					  GList *mime_types,
 					  RBTranferCompleteCallback callback,
 					  gpointer userdata)
 {
@@ -751,7 +733,7 @@ rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *manager,
 	data->manager = manager;
 	data->entry = entry;
 	data->dest = g_strdup (dest);
-	data->mime_type = g_strdup (mime_type);
+	data->mime_types = rb_string_list_copy (mime_types);
 	data->callback = callback;
 	data->userdata = userdata;
 

@@ -94,11 +94,11 @@ gboolean
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
 		   const char *dest,
-		   const char *mime_type)
+		   GList *mime_types)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	return iface->encode (encoder, entry, dest, mime_type);
+	return iface->encode (encoder, entry, dest, mime_types);
 }
 
 void
@@ -107,6 +107,17 @@ rb_encoder_cancel (RBEncoder *encoder)
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
 	iface->cancel (encoder);
+}
+
+gboolean
+rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
+				   GList *mime_types,
+				   char **mime,
+				   char **extension)
+{
+	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
+
+	return iface->get_preferred_mimetype (encoder, mime_types, mime, extension);
 }
 
 RBEncoder*
@@ -142,3 +153,4 @@ rb_encoder_error_quark (void)
 
 	return quark;
 }
+

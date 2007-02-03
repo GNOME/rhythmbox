@@ -43,9 +43,29 @@ typedef struct
 typedef struct
 {
 	RBBrowserSourceClass parent;
+
+	char*		(*impl_build_dest_uri)	(RBRemovableMediaSource *source,
+						 RhythmDBEntry *entry,
+						 const char *mimetype,
+						 const char *extension);
+	GList*		(*impl_get_mime_types)	(RBRemovableMediaSource *source);
+	gboolean	(*impl_track_added)	(RBRemovableMediaSource *source,
+						 RhythmDBEntry *entry,
+						 const char *uri,
+						 const char *mimetype);
 } RBRemovableMediaSourceClass;
 
 GType			rb_removable_media_source_get_type	(void);
+
+char*		rb_removable_media_source_build_dest_uri 	(RBRemovableMediaSource *source,
+								 RhythmDBEntry *entry,
+								 const char *mimetype,
+								 const char *extension);
+void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
+								 RhythmDBEntry *entry,
+								 const char *uri,
+								 const char *mimetype);
+GList *		rb_removable_media_source_get_mime_types	(RBRemovableMediaSource *source);
 
 G_END_DECLS
 

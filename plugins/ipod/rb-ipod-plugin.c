@@ -30,6 +30,7 @@
 #include <libgnomevfs/gnome-vfs.h>
 
 #include "rb-removable-media-manager.h"
+#include "rb-sourcelist.h"
 #include "rb-source.h"
 #include "rb-ipod-source.h"
 #include "rb-plugin.h"

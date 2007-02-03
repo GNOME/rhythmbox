@@ -35,6 +35,8 @@
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
 #include "rb-removable-media-source.h"
+#include "rb-removable-media-manager.h"
+#include "rb-encoder.h"
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -55,6 +57,8 @@ static void rb_removable_media_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 static void impl_delete_thyself (RBSource *source);
+static void impl_paste (RBSource *source, GList *entries);
+static gboolean impl_receive_drag (RBSource *asource, GtkSelectionData *data);
 
 typedef struct
 {
@@ -87,9 +91,9 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_receive_drag = NULL;
+  	source_class->impl_paste = impl_paste;
+  	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_paste = NULL;
 	source_class->impl_delete = NULL;
 	source_class->impl_get_config_widget = NULL;
 	source_class->impl_show_popup = (RBSourceFeatureFunc) rb_false_function;
@@ -222,9 +226,245 @@ impl_delete_thyself (RBSource *source)
 	g_object_unref (shell);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
+	rb_debug ("deleting all entries of type '%s'", entry_type->name);
 	rhythmdb_entry_delete_by_type (db, entry_type);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 	rhythmdb_commit (db);
 	g_object_unref (db);
 }
+
+struct _TrackAddedData {
+	RBRemovableMediaSource *source;
+	char *mimetype;
+};
+
+static void
+_track_added_cb (RhythmDBEntry *entry, const char *uri, struct _TrackAddedData *data)
+{
+	rb_removable_media_source_track_added (data->source, entry, uri, data->mimetype);
+	g_free (data->mimetype);
+	g_free (data);
+}
+
+static void
+impl_paste (RBSource *source, GList *entries)
+{
+	RBRemovableMediaManager *rm_mgr;
+	RBShell *shell;
+	GList *l;
+	RhythmDBEntryType our_entry_type;
+	RBEncoder *encoder;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell,
+		      "removable-media-manager", &rm_mgr,
+		      NULL);
+	g_object_unref (shell);
+
+	g_object_get (source,
+		      "entry-type", &our_entry_type,
+		      NULL);
+
+	encoder = rb_encoder_new ();
+
+	for (l = entries; l != NULL; l = l->next) {
+		RhythmDBEntry *entry;
+		RhythmDBEntryType entry_type;
+		GList *mime_types;
+		char *mimetype;
+		char *extension;
+		char *dest;
+		struct _TrackAddedData *added_data;
+
+		dest = NULL;
+		mimetype = NULL;
+		extension = NULL;
+		mime_types = NULL;
+		entry = (RhythmDBEntry *)l->data;
+		entry_type = rhythmdb_entry_get_entry_type (entry);
+
+		if (entry_type == our_entry_type ||
+		    entry_type->category != RHYTHMDB_ENTRY_NORMAL) {
+			goto impl_paste_end;
+		}
+
+		mime_types = rb_removable_media_source_get_mime_types (RB_REMOVABLE_MEDIA_SOURCE (source));
+		if (mime_types != NULL) {
+			if (!rb_encoder_get_preferred_mimetype (encoder, mime_types, &mimetype, &extension)) {
+				rb_debug ("failed to find acceptable mime type for %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+				goto impl_paste_end;
+			}
+		} else {
+			const char *s = g_strrstr (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), ".");
+			extension = s ? g_strdup (s) : NULL;
+		}
+
+		dest = rb_removable_media_source_build_dest_uri (RB_REMOVABLE_MEDIA_SOURCE (source), entry, mimetype, extension);
+		if (dest == NULL) {
+			rb_debug ("could not create destination path for entry");
+			goto impl_paste_end;
+		}
+
+		rb_list_deep_free (mime_types);
+		mime_types = g_list_prepend (NULL, g_strdup (mimetype));
+		added_data = g_new0 (struct _TrackAddedData, 1);
+		added_data->source = RB_REMOVABLE_MEDIA_SOURCE (source);
+		added_data->mimetype = g_strdup (mimetype);
+		rb_removable_media_manager_queue_transfer (rm_mgr, entry,
+							   dest, mime_types,
+							   (RBTranferCompleteCallback)_track_added_cb, added_data);
+impl_paste_end:
+		g_free (dest);
+		g_free (mimetype);
+		g_free (extension);
+		if (mime_types)
+			rb_list_deep_free (mime_types);
+		if (entry_type)
+			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+	}
+
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, our_entry_type);
+	g_object_unref (rm_mgr);
+	g_object_unref (encoder);
+}
+
+static RhythmDB *
+get_db_for_source (RBSource *source)
+{
+	RBShell *shell;
+	RhythmDB *db;
+
+  	g_object_get (source, "shell", &shell, NULL);
+  	g_object_get (shell, "db", &db, NULL);
+  	g_object_unref (shell);
+
+        return db;
+}
+
+static gboolean
+impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+{
+	GList *entries;
+	RhythmDB *db;
+	char *type;
+
+	entries = NULL;
+	type = gdk_atom_name (data->type);
+        db = get_db_for_source (asource);
+
+	if (strcmp (type, "text/uri-list") == 0) {
+		GList *list;
+		GList *i;
+	
+		rb_debug ("parsing uri list");
+		list = rb_uri_list_parse ((const char *) data->data);
+
+		for (i = list; i != NULL; i = g_list_next (i)) {
+			char *uri;
+			RhythmDBEntry *entry;
+
+			if (i->data == NULL)
+				continue;
+
+			uri = i->data;
+			entry = rhythmdb_entry_lookup_by_location (db, uri);
+
+			if (entry == NULL) {
+				/* add to the library */
+				rb_debug ("received drop of unknown uri: %s", uri);
+			} else {
+				/* add to list of entries to copy */
+				entries = g_list_prepend (entries, entry);
+			}
+			g_free (uri);
+		}
+		g_list_free (list);
+	} else if (strcmp (type, "application/x-rhythmbox-entry") == 0) {
+		char **list;
+		char **i;
+
+		rb_debug ("parsing entry ids");
+		list = g_strsplit ((const char*)data->data, "\n", -1);
+		for (i = list; *i != NULL; i++) {
+			RhythmDBEntry *entry;
+			gulong id;
+
+			id = atoi (*i);
+			entry = rhythmdb_entry_lookup_by_id (db, id);
+			if (entry != NULL)
+				entries = g_list_prepend (entries, entry);
+		}
+
+		g_strfreev (list);
+	} else {
+		rb_debug ("received unknown drop type");
+	}
+
+	g_object_unref (db);
+	g_free (type);
+
+	if (entries) {
+		entries = g_list_reverse (entries);
+		if (rb_source_can_paste (asource))
+			rb_source_paste (asource, entries);
+		g_list_free (entries);
+	}
+
+	return TRUE;
+}
+
+char*
+rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
+					  RhythmDBEntry *entry,
+					  const char *mimetype,
+					  const char *extension)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+
+	if (klass->impl_build_dest_uri)
+		return klass->impl_build_dest_uri (source, entry, mimetype, extension);
+	else
+		return NULL;
+}
+
+GList *
+rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+
+	if (klass->impl_get_mime_types)
+		return klass->impl_get_mime_types (source);
+	else
+		return NULL;
+}
+
+void
+rb_removable_media_source_track_added (RBRemovableMediaSource *source,
+				       RhythmDBEntry *entry,
+				       const char *uri,
+				       const char *mimetype)
+{
+	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+	gboolean add_to_db = TRUE;
+
+	if (klass->impl_track_added)
+		add_to_db = klass->impl_track_added (source, entry, uri, mimetype);
+
+	if (add_to_db) {
+		RhythmDBEntryType entry_type;
+		RhythmDB *db;
+		RBShell *shell;
+
+		g_object_get (source, "shell", &shell, NULL);
+		g_object_get (shell, "db", &db, NULL);
+		g_object_unref (shell);
+
+		g_object_get (source, "entry-type", &entry_type, NULL);
+		rhythmdb_add_uri_with_type (db, uri, entry_type);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
+		g_object_unref (db);
+	}
+}
+

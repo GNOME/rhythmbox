@@ -40,6 +40,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-static-playlist-source.h"
 #include "rb-generic-player-source.h"
+#include "rb-removable-media-manager.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
@@ -59,6 +60,12 @@ static void rb_generic_player_source_get_device_info (RBGenericPlayerSource *sou
 static gboolean impl_show_popup (RBSource *source);
 static void impl_delete_thyself (RBSource *source);
 static gboolean impl_can_move_to_trash (RBSource *source);
+static gboolean impl_can_paste (RBSource *source);
+static GList* impl_get_mime_types (RBRemovableMediaSource *source);
+static char* impl_build_dest_uri (RBRemovableMediaSource *source,
+				  RhythmDBEntry *entry,
+				  const char *mimetype,
+				  const char *extension);
 
 static gchar *default_get_mount_path (RBGenericPlayerSource *source);
 static void default_load_playlists (RBGenericPlayerSource *source);
@@ -87,6 +94,7 @@ typedef struct
 
 	/* information derived from HAL */
 	char **audio_folders;
+	char **output_mime_types;
 	gboolean playlist_format_unknown;
 	gboolean playlist_format_pls;
 	gboolean playlist_format_m3u;
@@ -104,6 +112,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 
 	object_class->constructor = rb_generic_player_source_constructor;
 	object_class->dispose = rb_generic_player_source_dispose;
@@ -112,6 +121,10 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_can_move_to_trash = impl_can_move_to_trash;
+	source_class->impl_can_paste = impl_can_paste;
+
+	rms_class->impl_build_dest_uri = impl_build_dest_uri;
+	rms_class->impl_get_mime_types = impl_get_mime_types;
 
 	klass->impl_get_mount_path = default_get_mount_path;
 	klass->impl_load_playlists = default_load_playlists;
@@ -185,34 +198,55 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 			/* get audio folders */
 			dbus_error_init (&error);
 			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.audio_folders", &error);
-			if (proplist && !dbus_error_is_set (&error)) {
-				char *dbg;
+			if (proplist) {
+				if (!dbus_error_is_set (&error)) {
+					char *dbg;
 
-				priv->audio_folders = g_strdupv (proplist);
+					priv->audio_folders = g_strdupv (proplist);
+
+					dbg = g_strjoinv(", ", priv->audio_folders);
+					rb_debug ("got audio player folder list: %s", dbg);
+					g_free (dbg);
+				}
 				libhal_free_string_array (proplist);
-
-				dbg = g_strjoinv(", ", priv->audio_folders);
-				rb_debug ("got audio player folder list: %s", dbg);
-				g_free (dbg);
 			}
 			free_dbus_error ("getting audio folder list", &error);
+
+			/* get supported mime-types */
+			dbus_error_init (&error);
+			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.output_formats", &error);
+			if (proplist) {
+				if (!dbus_error_is_set (&error)) {
+					char *dbg;
+
+					priv->output_mime_types = g_strdupv (proplist);
+
+					dbg = g_strjoinv(", ", priv->output_mime_types);
+					rb_debug ("got output mime-type list: %s", dbg);
+					g_free (dbg);
+				}
+				libhal_free_string_array (proplist);
+			}
+			free_dbus_error ("getting supported mime-type list", &error);
 
 			/* get playlist format */
 			dbus_error_init (&error);
 			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.playlist_format", &error);
-			if (proplist && !dbus_error_is_set (&error)) {
-				int fmt;
-				for (fmt = 0; proplist[fmt] != NULL; fmt++) {
-					if (strcmp (proplist[fmt], "audio/x-mpegurl") == 0) {
-						rb_debug ("device supports M3U playlists");
-						priv->playlist_format_unknown = FALSE;
-						priv->playlist_format_m3u = TRUE;
-					} else if (strcmp (proplist[fmt], "audio/x-scpls") == 0) {
-						rb_debug ("device supports PLS playlists");
-						priv->playlist_format_unknown = FALSE;
-						priv->playlist_format_pls = TRUE;
-					} else {
-						rb_debug ("unrecognized playlist format: %s", proplist[fmt]);
+			if (proplist) {
+				if (!dbus_error_is_set (&error)) {
+					int fmt;
+					for (fmt = 0; proplist[fmt] != NULL; fmt++) {
+						if (strcmp (proplist[fmt], "audio/x-mpegurl") == 0) {
+							rb_debug ("device supports M3U playlists");
+							priv->playlist_format_unknown = FALSE;
+							priv->playlist_format_m3u = TRUE;
+						} else if (strcmp (proplist[fmt], "audio/x-scpls") == 0) {
+							rb_debug ("device supports PLS playlists");
+							priv->playlist_format_unknown = FALSE;
+							priv->playlist_format_pls = TRUE;
+						} else {
+							rb_debug ("unrecognized playlist format: %s", proplist[fmt]);
+						}
 					}
 				}
 
@@ -282,6 +316,7 @@ rb_generic_player_source_finalize (GObject *object)
 
 	g_free (priv->mount_path);
 	g_strfreev (priv->audio_folders);
+	g_strfreev (priv->output_mime_types);
 	g_free (priv->playlist_path);
 }
 
@@ -291,12 +326,18 @@ rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
 	RBGenericPlayerSource *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
+	char *name;
+	char *path;
 
 	g_assert (rb_generic_player_is_volume_player (volume));
 
 	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	entry_type = rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (G_OBJECT (db));
+	path = gnome_vfs_volume_get_device_path (volume);
+	name = g_strdup_printf ("generic audio player: %s", path);
+	entry_type = rhythmdb_entry_register_type (db, name);
+	g_object_unref (db);
+	g_free (name);
+	g_free (path);
 
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
 							 "entry-type", entry_type,
@@ -636,6 +677,157 @@ default_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 	return full_uri;
 }
 
+static gboolean
+impl_can_paste (RBSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+
+	return (priv->read_only == FALSE);
+}
+
+/* probably should move this somewhere common */
+static char *
+sanitize_path (const char *str)
+{
+	gchar *res = NULL;
+	gchar *s;
+
+	/* Skip leading periods, otherwise files disappear... */
+	while (*str == '.')
+		str++;
+
+	s = g_strdup(str);
+	/* Replace path seperators with a hyphen */
+	g_strdelimit (s, "/", '-');
+
+	/* Replace separators with a hyphen */
+	g_strdelimit (s, "\\:|", '-');
+	/* Replace all other weird characters to whitespace */
+	g_strdelimit (s, "*?&!\'\"$()`>{}", ' ');
+	/* Replace all whitespace with underscores */
+	/* TODO: I'd like this to compress whitespace aswell */
+	g_strdelimit (s, "\t ", '_');
+
+	res = g_filename_from_utf8(s, -1, NULL, NULL, NULL);
+	g_free(s);
+	return res ? res : g_strdup(str);
+}
+
+static GList *
+impl_get_mime_types (RBRemovableMediaSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	GList *list = NULL;
+	char **mime;
+
+	for (mime = priv->output_mime_types; mime && *mime != NULL; mime++) {
+		list = g_list_prepend (list, g_strdup (*mime));
+	}
+	return g_list_reverse (list);
+}
+
+static char *
+impl_build_dest_uri (RBRemovableMediaSource *source,
+		     RhythmDBEntry *entry,
+		     const char *mimetype,
+		     const char *extension)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	const char *mime;
+	char *artist, *album, *title;
+	gulong track_number, disc_number;
+	const char *folders;
+	char *number;
+	char *file = NULL;
+	char *path;
+	char *ext;
+
+	rb_debug ("building dest uri for entry at %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+
+	if (extension != NULL) {
+		ext = g_strconcat (".", extension, NULL);
+	} else {
+		ext = g_strdup ("");
+	}
+
+	artist = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+	album = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+	title = sanitize_path (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+
+	/* we really do need to fix this so untagged entries actually have NULL rather than
+	 * a translated string.
+	 */
+	if (strcmp (artist, _("Unknown")) == 0 && strcmp (album, _("Unknown")) == 0 &&
+	    g_str_has_suffix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), title)) {
+		/* file isn't tagged, so just use the filename as-is */
+		file = g_strdup (title);
+	}
+
+	mime = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+
+	/* hackish mapping of gstreamer media types to mime types; this
+	 * should be easier when we do proper (deep) typefinding.
+	 */
+	if (strcmp (mime, "audio/x-wav") == 0) {
+		/* if it has a bitrate, assume it's mp3-in-wav */
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
+			mime = "audio/mpeg";
+	} else if (strcmp (mime, "application/x-id3") == 0) {
+		mime = "audio/mpeg";
+	}
+
+	if (file == NULL) {
+		track_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
+		disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
+		if (disc_number > 0)
+			number = g_strdup_printf ("%u.%u", (guint)disc_number, (guint)track_number);
+		else
+			number = g_strdup_printf ("%u", (guint)track_number);
+
+		switch (priv->folder_depth) {
+		case 0:
+			/* artist - album - number - title */
+			file = g_strdup_printf ("%s - %s - %s - %s%s",
+						artist, album, number, title, extension);
+			break;
+
+		case 1:
+			/* artist - album/number - title */
+			file = g_strdup_printf ("%s - %s" G_DIR_SEPARATOR_S "%s - %s%s",
+						artist, album, number, title, extension);
+			break;
+
+		default: /* use this for players that don't care */
+		case 2:
+			/* artist/album/number - title */
+			file = g_strdup_printf ("%s" G_DIR_SEPARATOR_S "%s" G_DIR_SEPARATOR_S "%s - %s%s",
+						artist, album, number, title, extension);
+			break;
+		}
+		g_free (number);
+	}
+
+	g_free (artist);
+	g_free (album);
+	g_free (title);
+	g_free (ext);
+
+	if (file == NULL)
+		return NULL;
+
+	if (priv->audio_folders && priv->audio_folders[0])
+		folders = priv->audio_folders[0];
+	else
+		folders = "";
+
+	path = g_build_filename (priv->mount_path, folders, file, NULL);
+	g_free (file);
+
+	/* TODO: check for duplicates, or just overwrite by default? */
+	rb_debug ("dest file is %s", path);
+	return path;
+}
+
 /* generic HAL-related code */
 
 #ifdef HAVE_HAL_0_5
@@ -730,3 +922,4 @@ free_dbus_error (const char *what, DBusError *error)
 
 
 #endif
+

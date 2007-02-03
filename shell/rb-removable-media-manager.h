@@ -27,7 +27,6 @@
 #include "rb-source.h"
 #include "rhythmdb.h"
 #include "rb-shell.h"
-#include "rb-sourcelist.h"
 
 G_BEGIN_DECLS
 
@@ -62,7 +61,7 @@ typedef struct
 					 GnomeVFSVolume *volume);
 } RBRemovableMediaManagerClass;
 
-RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell, RBSourceList *sourcelist);
+RBRemovableMediaManager* rb_removable_media_manager_new		(RBShell *shell);
 GType			rb_removable_media_manager_get_type	(void);
 
 void			rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
@@ -71,7 +70,7 @@ void			rb_removable_media_manager_scan (RBRemovableMediaManager *manager);
 void	rb_removable_media_manager_queue_transfer (RBRemovableMediaManager *mgr,
 						   RhythmDBEntry *entry,
 						   const char *dest,
-						   const char *mime_type,
+						   GList *mime_types,
 						   RBTranferCompleteCallback callback,
 						   gpointer userdata);
 #endif

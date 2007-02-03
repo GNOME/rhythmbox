@@ -872,3 +872,19 @@ rb_value_free (GValue *val)
 	g_free (val);
 }
 
+gboolean
+rb_str_in_strv (const char *needle, char **haystack)
+{
+	int i;
+
+	if (needle == NULL || haystack == NULL)
+		return FALSE;
+
+	for (i = 0; haystack[i] != NULL; i++) {
+		if (strcmp (needle, haystack[i]) == 0)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+

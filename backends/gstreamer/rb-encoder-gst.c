@@ -80,9 +80,14 @@ G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
 static gboolean rb_encoder_gst_encode (RBEncoder *encoder,
 				       RhythmDBEntry *entry,
 				       const char *dest,
-				       const char *mime_type);
+				       GList *mime_types);
 static void rb_encoder_gst_cancel (RBEncoder *encoder);
+static gboolean rb_encoder_gst_get_preferred_mimetype (RBEncoder *encoder,
+						       GList *mime_types,
+						       char **mime,
+						       char **extension);
 static void rb_encoder_gst_emit_completed (RBEncoderGst *encoder);
+
 
 static void
 rb_encoder_gst_class_init (RBEncoderGstClass *klass)
@@ -105,6 +110,7 @@ rb_encoder_init (RBEncoderIface *iface)
 {
 	iface->encode = rb_encoder_gst_encode;
 	iface->cancel = rb_encoder_gst_cancel;
+	iface->get_preferred_mimetype = rb_encoder_gst_get_preferred_mimetype;
 }
 
 static void
@@ -629,7 +635,7 @@ encoder_match_mime (GstElement *encoder, const gchar *mime_type)
 	caps = gst_pad_get_caps (srcpad);
 	structure = gst_caps_get_structure (caps, 0);
 	pad_mime = gst_structure_get_name (structure);
-	match = strcmp (mime_type, pad_mime) == 0;
+	match = (strcmp (mime_type, pad_mime) == 0);
 	gst_caps_unref (caps);
 	gst_object_unref (GST_OBJECT (srcpad));
 
@@ -721,7 +727,27 @@ get_profile_from_mime_type (const char *mime_type)
 		gst_object_unref (GST_OBJECT (pipeline));
 	}
 
+	if (matching_profile)
+		g_object_ref (matching_profile);
+	g_list_free (profiles);
+
 	return matching_profile;
+}
+
+static GMAudioProfile*
+get_profile_from_mime_types (GList *mime_types)
+{
+	GList *l;
+
+	for (l = mime_types; l != NULL; l = g_list_next (l)) {
+		GMAudioProfile *profile;
+
+		profile = get_profile_from_mime_type ((const char *)l->data);
+		if (profile)
+			return profile;
+	}
+
+	return NULL;
 }
 
 static GstElement *
@@ -845,7 +871,7 @@ static gboolean
 transcode_track (RBEncoderGst *encoder,
 	 	 RhythmDBEntry *entry,
 		 const char *dest,
-		 const char *mime_type,
+		 GList *mime_types,
 		 GError **error)
 {
 	/* src ! decodebin ! queue ! encoding_profile ! queue ! sink */
@@ -854,14 +880,14 @@ transcode_track (RBEncoderGst *encoder,
 
 	g_assert (encoder->priv->pipeline == NULL);
 
-	profile = get_profile_from_mime_type (mime_type);
+	profile = get_profile_from_mime_types (mime_types);
 	if (profile == NULL) {
 		g_set_error (error,
 			     RB_ENCODER_ERROR,
 			     RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
 			     "Unable to locate encoding profile for mime-type "
-			     "'%s'", mime_type);
-		return FALSE;
+			     /*"'%s'", mime_type*/);
+		goto error;
 	} else {
 		rb_debug ("selected profile %s",
 				gm_audio_profile_get_name (profile));
@@ -869,27 +895,32 @@ transcode_track (RBEncoderGst *encoder,
 
 	src = create_pipeline_and_source (encoder, entry, error);
 	if (src == NULL)
-		return FALSE;
+		goto error;
 
 	decoder = add_decoding_pipeline (encoder, error);
 	if (decoder == NULL)
-		return FALSE;
+		goto error;
 
 	if (gst_element_link (src, decoder) == FALSE)
-		return FALSE;
+		goto error;
 
 	end = add_encoding_pipeline (encoder, profile, error);
 	if (end == NULL)
-		return FALSE;
+		goto error;
 
 	if (!attach_output_pipeline (encoder, end, dest, error))
-		return FALSE;
+		goto error;
 	if (!add_tags_from_entry (encoder, entry, error))
-		return FALSE;
+		goto error;
 	if (!start_pipeline (encoder, error))
-		return FALSE;
+		goto error;
 
 	return TRUE;
+error:
+	if (profile)
+		g_object_unref (profile);
+
+	return FALSE;
 }
 
 static GnomeVFSResult
@@ -946,10 +977,11 @@ static gboolean
 rb_encoder_gst_encode (RBEncoder *encoder,
 		       RhythmDBEntry *entry,
 		       const char *dest,
-		       const char *mime_type)
+		       GList *mime_types)
 {
 	RBEncoderGstPrivate *priv = RB_ENCODER_GST (encoder)->priv;
 	const char *entry_mime_type;
+	gboolean copy;
 	gboolean was_raw;
 	gboolean result;
 	GError *error = NULL;
@@ -972,7 +1004,23 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		return FALSE;
 	}
 
-	if ((mime_type == NULL && !was_raw) || (mime_type && (strcmp (mime_type, entry_mime_type) == 0))) {
+	if (mime_types == NULL) {
+		/* don't copy raw audio */
+		copy = !was_raw;
+	} else {
+		GList *l;
+
+		/* see if it's already in any of the destination formats */
+		copy = FALSE;
+		for (l = mime_types; l != NULL; l = g_list_next (l)) {
+			if (strcmp (entry_mime_type, l->data) == 0) {
+				copy = TRUE;
+				break;
+			}
+		}
+	}
+
+	if (copy) {
 		priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 		priv->position_format = GST_FORMAT_BYTES;
 
@@ -981,10 +1029,10 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 		priv->position_format = GST_FORMAT_TIME;
 
-		if (mime_type == NULL) {
+		if (mime_types == NULL) {
 			result = extract_track (RB_ENCODER_GST (encoder), entry, dest, &error);
 		} else {
-			result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, mime_type, &error);
+			result = transcode_track (RB_ENCODER_GST (encoder), entry, dest, mime_types, &error);
 		}
 	}
 
@@ -1002,4 +1050,33 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	}
 
 	return result;
+}
+
+static gboolean
+rb_encoder_gst_get_preferred_mimetype (RBEncoder *encoder,
+				       GList *mime_types,
+				       char **mime,
+				       char **extension)
+{
+	GList *l;
+
+	g_return_val_if_fail (mime_types != NULL, FALSE);
+	g_return_val_if_fail (mime != NULL, FALSE);
+	g_return_val_if_fail (extension != NULL, FALSE);
+
+	for (l = mime_types; l != NULL; l = g_list_next (l)) {
+		GMAudioProfile *profile;
+		const char *mimetype;
+
+		mimetype = (const char *)l->data;
+		profile = get_profile_from_mime_type (mimetype);
+		if (profile) {
+			*extension = g_strdup (gm_audio_profile_get_extension (profile));
+			*mime = g_strdup (mimetype);
+			g_object_unref (profile);
+			return TRUE;
+		}
+	}
+
+	return FALSE;
 }

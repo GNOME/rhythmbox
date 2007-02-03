@@ -1,3 +1,52 @@
+2007-02-04  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_init),
+	(encoder_match_mime), (get_profile_from_mime_type),
+	(get_profile_from_mime_types), (transcode_track),
+	(rb_encoder_gst_encode), (rb_encoder_gst_get_preferred_mimetype):
+	* backends/rb-encoder.c: (rb_encoder_encode),
+	(rb_encoder_get_preferred_mimetype):
+	* backends/rb-encoder.h:
+	* lib/rb-util.c: (rb_str_in_strv):
+	* lib/rb-util.h: add a new function for finding out what the preferred
+	mimetype from a list is, and the extension to use for those files.
+
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init), (impl_delete_thyself),
+	(_track_added_cb), (impl_paste), (get_db_for_source),
+	(impl_receive_drag), (rb_removable_media_source_build_dest_uri),
+	(rb_removable_media_source_get_mime_types),
+	(rb_removable_media_source_track_added):
+	* sources/rb-removable-media-source.h:
+	* bindings/python/rb.defs: add common code for transcoding to
+	removable media, so that subclasses can use it.
+
+	* plugins/generic-player/rb-generic-player-source.h:
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_class_init),
+	(rb_generic_player_source_get_device_info),
+	(rb_generic_player_source_finalize),
+	(rb_generic_player_source_new), (impl_can_paste), (sanitize_path),
+	(impl_get_mime_types), (impl_build_dest_uri): use the above to support
+	transcoding to "generic" audio players. From #76528.
+
+	* plugins/ipod/rb-ipod-plugin.c:
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_class_init),
+	(rb_ipod_source_new), (create_ipod_song_from_entry),
+	(impl_build_dest_uri), (impl_track_added),
+	(ipod_get_filename_for_uri), (impl_get_mime_types): improve iPod
+	support use the new features.
+
+	* shell/rb-removable-media-manager.c:
+	(rb_removable_media_manager_class_init),
+	(rb_removable_media_manager_set_property),
+	(rb_removable_media_manager_get_property),
+	(rb_removable_media_manager_new), (completed_cb), (do_transfer),
+	(rb_removable_media_manager_queue_transfer):
+	* shell/rb-removable-media-manager.h:
+	* shell/rb-shell.c: (construct_sources): miscellaneous fixes and
+	improvements related to the above.
+
 2007-02-01  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* plugins/mmkeys/Makefile.am (INCLUDES): Build fix for building in

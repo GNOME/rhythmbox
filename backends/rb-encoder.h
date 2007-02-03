@@ -55,8 +55,12 @@ typedef struct
 	gboolean	(*encode)	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
-					 const char *mime_type);
+					 GList *mime_types);
 	void		(*cancel)	(RBEncoder *encoder);
+	gboolean	(*get_preferred_mimetype)	(RBEncoder *encoder,
+							 GList *mime_types,
+							 char **mime,
+							 char **extension);
 
 	/* signals */
 	void (*progress) (RBEncoder *encoder,  double fraction);
@@ -70,10 +74,15 @@ GType rb_encoder_get_type (void);
 gboolean	rb_encoder_encode	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
-					 const char *mime_type);
+					 GList *mime_types);
 void		rb_encoder_cancel	(RBEncoder *encoder);
 
-/* obly to be used by subclasses */
+gboolean	rb_encoder_get_preferred_mimetype (RBEncoder *encoder,
+						   GList *mime_types,
+						   char **mime,
+						   char **extension);
+
+/* only to be used by subclasses */
 void	_rb_encoder_emit_progress (RBEncoder *encoder, double fraction);
 void	_rb_encoder_emit_completed (RBEncoder *encoder);
 void	_rb_encoder_emit_error (RBEncoder *encoder, GError *error);
