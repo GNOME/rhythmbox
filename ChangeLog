@@ -1,3 +1,13 @@
+2007-02-04  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c: (idle_unref_cb),
+	(rb_audioscrobbler_do_handshake_cb),
+	(rb_audioscrobbler_submit_queue_cb):
+	Don't unref the audioscrobbler object in soup callbacks.  When this
+	unref destroys the object, it will in turn destroy the soup session,
+	which will then cause a crash when we return from the callback.
+	Instead, do the unref in an idle handler.  Fixes #403097.
+
 2007-02-04  James Livingston  <doclivingston@gmail.com>
 
 	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_init),

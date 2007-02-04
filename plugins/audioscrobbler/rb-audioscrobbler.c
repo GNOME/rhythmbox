@@ -627,8 +627,16 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 	}
 }
 
+static gboolean
+idle_unref_cb (GObject *object)
+{
+	g_object_unref (object);
+	return FALSE;
+}
+
 /*
- * NOTE: the caller *must* unref the audioscrobbler object in the callback
+ * NOTE: the caller *must* unref the audioscrobbler object in an idle
+ * handler created in the callback.
  */
 static void
 rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
@@ -738,7 +746,7 @@ rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data)
 		break;
 	}
 
-	g_object_unref (audioscrobbler);
+	g_idle_add ((GSourceFunc) idle_unref_cb, audioscrobbler);
 }
 
 static void
@@ -868,7 +876,7 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 	}
 
 	rb_audioscrobbler_preferences_sync (audioscrobbler);
-	g_object_unref (audioscrobbler);
+	g_idle_add ((GSourceFunc) idle_unref_cb, audioscrobbler);
 }
 
 /* Configuration functions: */
