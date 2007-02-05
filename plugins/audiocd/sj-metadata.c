@@ -78,7 +78,15 @@ sj_metadata_get_new_error (SjMetadata *metadata)
 void
 sj_metadata_set_cdrom (SjMetadata *metadata, const char* device)
 {
+#if defined (sun) && defined (__SVR4)
+  if (g_str_has_prefix (device, "/dev/dsk/")) {
+    char *raw_path = g_strdup_printf ("/dev/rdsk/%s", device + strlen ("/dev/dsk/"));
+    SJ_METADATA_GET_CLASS (metadata)->set_cdrom (metadata, raw_path);
+    g_free (raw_path);
+  } else
+#else
   SJ_METADATA_GET_CLASS (metadata)->set_cdrom (metadata, device);
+#endif
 }
 
 void
