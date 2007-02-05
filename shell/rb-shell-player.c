@@ -741,7 +741,7 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 		}
 
 		for (l = property_views; l != NULL; l = g_list_next (l)) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (property_views->data),
+			g_signal_handlers_disconnect_by_func (G_OBJECT (l->data),
 							      G_CALLBACK (rb_shell_player_property_row_activated_cb),
 							      player);
 		}
@@ -767,7 +767,7 @@ rb_shell_player_set_source_internal (RBShellPlayer *player,
 						 G_CALLBACK (rb_shell_player_entry_activated_cb),
 						 player, 0);
 		for (l = property_views; l != NULL; l = g_list_next (l)) {
-			g_signal_connect_object (G_OBJECT (property_views->data),
+			g_signal_connect_object (G_OBJECT (l->data),
 						 "property-activated",
 						 G_CALLBACK (rb_shell_player_property_row_activated_cb),
 						 player, 0);
@@ -2208,7 +2208,7 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	RhythmDBEntry *entry = NULL;
 	GError *error = NULL;
 
-	rb_debug  ("got property activated");
+	rb_debug ("got property activated");
 
 	rb_shell_player_set_playing_source (player, player->priv->selected_source);
 
