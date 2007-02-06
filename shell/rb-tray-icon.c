@@ -41,6 +41,7 @@
 #include "rb-shell-player.h"
 
 #define TRAY_ICON_DEFAULT_TOOLTIP _("Music Player")
+#define DEFAULT_TOOLTIP_ICON "" /*"gnome-media-player"*/
 #define TOOLTIPS_DELAY 500
 #define TOOLTIPS_STICKY_REVERT_DELAY 1000
 
@@ -627,8 +628,9 @@ rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 	GList *children;
 
 	if (msgicon == NULL)
-		msgicon = gtk_image_new_from_icon_name ("gnome-media-player",
-							GTK_ICON_SIZE_DIALOG);
+		/*msgicon = gtk_image_new_from_icon_name (DEFAULT_TOOLTIP_ICON,
+							GTK_ICON_SIZE_DIALOG);*/
+		msgicon = gtk_image_new ();
 	image_box = GTK_CONTAINER (icon->priv->tooltip_image_box);
 	children = gtk_container_get_children (image_box);
 	current_image = GTK_WIDGET (g_list_nth_data (children, 0));
@@ -776,8 +778,9 @@ rb_tray_icon_construct_tooltip (RBTrayIcon *icon)
 	gtk_misc_set_alignment  (GTK_MISC  (icon->priv->tooltip_secondary),
 				 0.0, 0.0);
 
-	image = gtk_image_new_from_icon_name ("gnome-media-player",
-					      GTK_ICON_SIZE_DIALOG);
+	/*image = gtk_image_new_from_icon_name (DEFAULT_TOOLTIP_ICON,
+					      GTK_ICON_SIZE_DIALOG);*/
+	image = gtk_image_new ();
 	icon->priv->tooltip_image_box = gtk_vbox_new (FALSE, 12);
 	gtk_box_pack_start (GTK_BOX (icon->priv->tooltip_image_box), image,
 			    FALSE, FALSE, 0);

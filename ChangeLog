@@ -1,5 +1,11 @@
 2007-02-06  James Livingston  <doclivingston@gmail.com>
 
+	* shell/rb-tray-icon.c: (rb_tray_icon_set_tooltip_icon),
+	(rb_tray_icon_construct_tooltip): make it not display a placeholder
+	icon when there is no art.
+
+2007-02-06  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/generic-player/rb-generic-player-source.c:
 	(impl_build_dest_uri): use the right variable, so file extensions get
 	set correctly. From #76528
