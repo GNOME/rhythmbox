@@ -1,5 +1,15 @@
 2007-02-06  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-plugin.c: (rb_plugin_find_file): turn relative paths into
+	absolute ones, so that rb_glade_new doesn't get confused when running
+	uninstalled.
+
+	* shell/rb-shell-player.c: (rb_shell_player_get_property): don't crash
+	if _idle_unblock_signal_cb() tried to update the playing status after
+	we've disposed of the backend player object.
+
+2007-02-06  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-tray-icon.c: (rb_tray_icon_set_tooltip_icon),
 	(rb_tray_icon_construct_tooltip): make it not display a placeholder
 	icon when there is no art.

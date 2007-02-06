@@ -990,7 +990,10 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	}
 	case PROP_PLAYING:
-		g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
+		if (player->priv->mmplayer != NULL)
+			g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
+		else
+			g_value_set_boolean (value, FALSE);
 		break;
 	case PROP_VOLUME:
 		g_value_set_float (value, player->priv->volume);
