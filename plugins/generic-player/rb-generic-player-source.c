@@ -788,20 +788,20 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		case 0:
 			/* artist - album - number - title */
 			file = g_strdup_printf ("%s - %s - %s - %s%s",
-						artist, album, number, title, extension);
+						artist, album, number, title, ext);
 			break;
 
 		case 1:
 			/* artist - album/number - title */
 			file = g_strdup_printf ("%s - %s" G_DIR_SEPARATOR_S "%s - %s%s",
-						artist, album, number, title, extension);
+						artist, album, number, title, ext);
 			break;
 
 		default: /* use this for players that don't care */
 		case 2:
 			/* artist/album/number - title */
 			file = g_strdup_printf ("%s" G_DIR_SEPARATOR_S "%s" G_DIR_SEPARATOR_S "%s - %s%s",
-						artist, album, number, title, extension);
+						artist, album, number, title, ext);
 			break;
 		}
 		g_free (number);

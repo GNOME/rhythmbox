@@ -1,5 +1,11 @@
 2007-02-06  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/generic-player/rb-generic-player-source.c:
+	(impl_build_dest_uri): use the right variable, so file extensions get
+	set correctly. From #76528
+
+2007-02-06  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/rb-python-module.c: (rb_python_module_load): log when we
 	can't find any rb.Plugin-derived classes.
 
