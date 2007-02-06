@@ -61,6 +61,9 @@ struct RBShufflePlayOrderPrivate
 
 	GHashTable *entries_removed;
 	GHashTable *entries_added;
+
+	/* stores the playing entry if it comes from outside the query model */
+	RhythmDBEntry *external_playing_entry;
 };
 
 G_DEFINE_TYPE (RBShufflePlayOrder, rb_shuffle_play_order, RB_TYPE_PLAY_ORDER)
@@ -132,6 +135,11 @@ rb_shuffle_play_order_dispose (GObject *object)
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (object);
 
+	if (sorder->priv->external_playing_entry != NULL) {
+		rhythmdb_entry_unref (sorder->priv->external_playing_entry);
+		sorder->priv->external_playing_entry = NULL;
+	}
+
 	if (sorder->priv->history != NULL) {
 		g_object_unref (sorder->priv->history);
 		sorder->priv->history = NULL;
@@ -173,10 +181,12 @@ rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 	current = rb_play_order_get_playing_entry (porder);
 	entry = NULL;
 
-	if (current == rb_history_current ( sorder->priv->history) && current != NULL) {
-		if (rb_history_current ( sorder->priv->history) != rb_history_last ( sorder->priv->history)) {
+	if (current != NULL &&
+	    (current == sorder->priv->external_playing_entry ||
+	    current == rb_history_current (sorder->priv->history))) {
+		if (rb_history_current (sorder->priv->history) != rb_history_last (sorder->priv->history)) {
 			rb_debug ("choosing next entry in shuffle");
-			entry = rb_history_next ( sorder->priv->history);
+			entry = rb_history_next (sorder->priv->history);
 			if (entry)
 				rhythmdb_entry_ref (entry);
 		}
@@ -184,11 +194,11 @@ rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 		/* If the player is currently stopped, the "next" (first) song
 		 * is the first in the shuffle. */
 		rb_debug ("choosing current entry in shuffle");
-		entry = rb_history_current ( sorder->priv->history);
+		entry = rb_history_current (sorder->priv->history);
 
 		if (entry == NULL)
-			entry = rb_history_first ( sorder->priv->history);
-	
+			entry = rb_history_first (sorder->priv->history);
+
 		if (entry != NULL)
 			rhythmdb_entry_ref (entry);
 	}
@@ -212,11 +222,14 @@ rb_shuffle_play_order_go_next (RBPlayOrder* porder)
 	entry = rb_play_order_get_playing_entry (porder);
 	g_assert (entry == NULL ||
 		  rb_history_current (sorder->priv->history) == NULL ||
-		  entry == rb_history_current (sorder->priv->history));
+		  (entry == sorder->priv->external_playing_entry ||
+		  entry == rb_history_current (sorder->priv->history)));
 
 	if (rb_history_current (sorder->priv->history) == NULL)  {
 		rb_history_go_first (sorder->priv->history);
-	} else if (entry == rb_history_current (sorder->priv->history)) {
+	} else if (entry == rb_history_current (sorder->priv->history) ||
+		   (sorder->priv->external_playing_entry != NULL &&
+		    entry == sorder->priv->external_playing_entry)) {
 		if (rb_history_current (sorder->priv->history) != rb_history_last (sorder->priv->history))
 			rb_history_go_next (sorder->priv->history);
 	}
@@ -242,8 +255,14 @@ rb_shuffle_play_order_get_previous (RBPlayOrder* porder)
 
 	rb_shuffle_sync_history_with_query_model (sorder);
 
-	rb_debug ("choosing previous history entry");
-	entry = rb_history_previous (sorder->priv->history);
+	if (sorder->priv->external_playing_entry != NULL) {
+		rb_debug ("playing from outside the query model; previous is current");
+		entry = rb_history_current (sorder->priv->history);
+	} else {
+		rb_debug ("choosing previous history entry");
+		entry = rb_history_previous (sorder->priv->history);
+	}
+
 	if (entry)
 		rhythmdb_entry_ref (entry);
 
@@ -262,9 +281,19 @@ rb_shuffle_play_order_go_previous (RBPlayOrder* porder)
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 
-	if (rb_history_current (sorder->priv->history) != rb_history_first (sorder->priv->history)) {
-		rb_history_go_previous (sorder->priv->history);
+	if (sorder->priv->external_playing_entry != NULL) {
+		/* if we were playing an external entry, the current entry
+		 * is the history is the one before it.
+		 */
 		rb_play_order_set_playing_entry (porder, rb_history_current (sorder->priv->history));
+
+		rhythmdb_entry_unref (sorder->priv->external_playing_entry);
+		sorder->priv->external_playing_entry = NULL;
+	} else {
+		if (rb_history_current (sorder->priv->history) != rb_history_first (sorder->priv->history)) {
+			rb_history_go_previous (sorder->priv->history);
+			rb_play_order_set_playing_entry (porder, rb_history_current (sorder->priv->history));
+		}
 	}
 }
 
@@ -340,9 +369,25 @@ rb_shuffle_sync_history_with_query_model (RBShufflePlayOrder *sorder)
 	g_hash_table_foreach_remove (sorder->priv->entries_removed, (GHRFunc) remove_from_history, sorder);
 	g_hash_table_foreach_remove (sorder->priv->entries_added, (GHRFunc) add_randomly_to_history, sorder);
 
-	/* if the current entry no longer exists in the history, go back to the start */
-	if (!rb_history_contains_entry (sorder->priv->history, current)) {
-		rb_history_set_playing (sorder->priv->history, NULL);
+	if (sorder->priv->external_playing_entry != NULL) {
+		if (rb_history_contains_entry (sorder->priv->history,
+					       sorder->priv->external_playing_entry)) {
+			/* history now contains the previously external entry, so
+			 * use it as the playing entry.
+			 */
+			rb_history_set_playing (sorder->priv->history,
+						sorder->priv->external_playing_entry);
+			rhythmdb_entry_unref (sorder->priv->external_playing_entry);
+			sorder->priv->external_playing_entry = NULL;
+			current = NULL;
+		}
+	}
+
+	if (current != NULL) {
+		/* if the current entry no longer exists in the history, go back to the start */
+		if (!rb_history_contains_entry (sorder->priv->history, current)) {
+			rb_history_set_playing (sorder->priv->history, NULL);
+		}
 	}
 
 	/* postconditions */
@@ -399,13 +444,24 @@ rb_shuffle_playing_entry_changed (RBPlayOrder *porder,
 	g_return_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (porder));
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 
+	if (sorder->priv->external_playing_entry != NULL) {
+		rhythmdb_entry_unref (sorder->priv->external_playing_entry);
+		sorder->priv->external_playing_entry = NULL;
+	}
+
 	if (new_entry) {
 		if (new_entry == rb_history_current (sorder->priv->history)) {
 			/* Do nothing */
-		} else {
+		} else if (rb_history_contains_entry (sorder->priv->history, new_entry)) {
 			rhythmdb_entry_ref (new_entry);
-
 			rb_history_set_playing (sorder->priv->history, new_entry);
+		} else {
+			/* playing an entry outside the query model;
+			 * track the entry separately as if it was between
+			 * the current entry in the history and the next.
+			 */
+			rhythmdb_entry_ref (new_entry);
+			sorder->priv->external_playing_entry = new_entry;
 		}
 	} else {
 		/* go back to the start if we just finished the play order */

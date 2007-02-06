@@ -1,3 +1,16 @@
+2007-02-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-play-order-shuffle.c: (rb_shuffle_play_order_dispose),
+	(rb_shuffle_play_order_get_next), (rb_shuffle_play_order_go_next),
+	(rb_shuffle_play_order_get_previous),
+	(rb_shuffle_play_order_go_previous),
+	(rb_shuffle_sync_history_with_query_model),
+	(rb_shuffle_playing_entry_changed):
+	If the playing entry is not in the query model, track it separately
+	rather than inserting it into the history, so it doesn't cause
+	assertion failures when we check that the query model and the history
+	are in sync.  Fixes #381561.
+
 2007-02-06  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Gustavo Carneiro  <gjc@inescporto.pt>
