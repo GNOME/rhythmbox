@@ -249,7 +249,7 @@ rb_podcast_parser_start_element (struct RBPoadcastLoadContext *ctx,
 			{
 				ctx->state = RB_PODCAST_PARSER_STATE_IMG;
 			} else if (strcmp (name, "itunes:image") == 0) {
-				for (; *attrs; attrs +=2) {
+				for (; attrs && *attrs; attrs +=2) {
 					if (!strcmp (*attrs, "href")) {
 						const char *href_value = *(attrs + 1);
 						rb_set_channel_value (ctx, "img", href_value);
