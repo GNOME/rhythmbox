@@ -34,6 +34,13 @@
 #include "rb-python-plugin.h"
 #include "rb-debug.h"
 
+#if PY_VERSION_HEX < 0x02050000
+typedef int Py_ssize_t;
+#define PY_SSIZE_T_MAX INT_MAX
+#define PY_SSIZE_T_MIN INT_MIN
+#endif
+
+
 #define RB_PYTHON_MODULE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), \
 						 RB_TYPE_PYTHON_MODULE, \
 						 RBPythonModulePrivate))
@@ -260,7 +267,7 @@ rb_python_module_load (GTypeModule *gmodule)
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (gmodule);
 	PyObject *main_module, *main_locals, *locals, *key, *value;
 	PyObject *module, *fromlist;
-	int pos = 0;
+	Py_ssize_t pos = 0;
 
 	main_module = PyImport_AddModule ("__main__");
 	if (main_module == NULL)
