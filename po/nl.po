@@ -4,7 +4,7 @@
 # This file is distributed under the same license as the rhythmbox package.
 # Kees van den Broek <kvdb@NOSPAMkvdb.net>, 2003.
 # Reinout van Schouwen <reinout@cs.vu.nl>, 2003
-# Tino Meinen <a.t.meinen@chello.nl>, 2004, 2005, 2006.
+# Tino Meinen <a.t.meinen@chello.nl>, 2004, 2005, 2006, 2007.
 # Daniel van Eeden <daniel_e@dds.nl>, 2004.
 #
 # Vergeet jezelf niet toe te voegen aan translator_credits 
@@ -31,8 +31,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-26 15:13+0100\n"
-"PO-Revision-Date: 2006-12-27 19:53+1000\n"
+"POT-Creation-Date: 2007-01-01 15:14+0100\n"
+"PO-Revision-Date: 2007-02-06 10:26+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -1251,15 +1251,26 @@ msgstr "Nummer verbannen..."
 msgid "Global Tag %s"
 msgstr "Algemene tag %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1061
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1062
 #, c-format
 msgid "%s's Neighbour Radio"
 msgstr "%s’s buurmanradio"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1063
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1064
 #, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "%s’s aanbevolen radio: %s procent"
+
+# eigen/persoonlijke
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1066
+#, c-format
+msgid "%s's Personal Radio"
+msgstr "%s’s eigen radio"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1072
+#, c-format
+msgid "%s's %s Radio"
+msgstr "%s’s %s-radio"
 
 # muziek/audio weglaten
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
@@ -3697,11 +3708,11 @@ msgstr[1] "%d nummers"
 msgid "S_ource"
 msgstr "_Bron"
 
-#: ../sources/rb-streaming-source.c:210
+#: ../sources/rb-streaming-source.c:209
 msgid "Connecting"
 msgstr "Verbinden"
 
-#: ../sources/rb-streaming-source.c:213
+#: ../sources/rb-streaming-source.c:212
 msgid "Buffering"
 msgstr "Bufferen"
 
