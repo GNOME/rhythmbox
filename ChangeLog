@@ -1,5 +1,10 @@
 2007-02-06  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-python-module.c: (rb_python_module_load): log when we
+	can't find any rb.Plugin-derived classes.
+
+2007-02-06  James Livingston  <doclivingston@gmail.com>
+
 	* podcast/rb-podcast-parse.c: (rb_podcast_parser_start_element): don't
 	crash if we get an itunes:image tag with no attributes. Fixes #404850
 

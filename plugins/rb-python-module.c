@@ -306,6 +306,8 @@ rb_python_module_load (GTypeModule *gmodule)
 		}
 	}
 
+	rb_debug ("failed to find any rb.Plugin-derived classes in python plugin");
+
 	return FALSE;
 }
 
