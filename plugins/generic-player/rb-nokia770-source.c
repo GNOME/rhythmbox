@@ -152,15 +152,19 @@ hal_udi_is_nokia770 (const char *udi)
 		goto end;
 
 	inited = TRUE;
-	parent_udi = libhal_device_get_property_string (ctx, udi,
-			"info.parent", &error);
+	parent_udi = libhal_device_get_property_string (ctx,
+							udi,
+							"info.parent",
+							&error);
 	if (parent_udi == NULL || dbus_error_is_set (&error))
 		goto end;
 
 
 	rb_debug ("Nokia detection: info.parent=%s", parent_udi);
-	parent_name = libhal_device_get_property_string (ctx, parent_udi,
-			"info.vendor", &error);
+	parent_name = libhal_device_get_property_string (ctx,
+							 parent_udi,
+							 "info.vendor",
+							 &error);
 	rb_debug ("Nokia detection: info.vendor=%s", parent_name);
 	if (parent_name == NULL || dbus_error_is_set (&error))
 		goto end;
@@ -168,13 +172,17 @@ hal_udi_is_nokia770 (const char *udi)
 	if (strcmp (parent_name, "Nokia") == 0) {
 		g_free (parent_name);
 
-		parent_name = libhal_device_get_property_string (ctx, parent_udi,
-			"info.product", &error);
+		parent_name = libhal_device_get_property_string (ctx,
+								 parent_udi,
+								 "info.product",
+								 &error);
 		rb_debug ("Nokia detection: info.product=%s", parent_name);
 		if (parent_name == NULL || dbus_error_is_set (&error))
 			goto end;
 
 		if (strcmp (parent_name, "770") == 0) {
+			result = TRUE;
+		} else if (strcmp (parent_name, "N800") == 0) {
 			result = TRUE;
 		}
 	}
@@ -192,7 +200,7 @@ end:
 	if (ctx) {
 		if (inited)
 			libhal_ctx_shutdown (ctx, &error);
-		libhal_ctx_free(ctx);
+		libhal_ctx_free (ctx);
 	}
 
 	dbus_error_free (&error);
@@ -216,15 +224,17 @@ hal_udi_is_nokia770 (const char *udi)
 		return FALSE;
 	}
 	parent_udi = hal_device_get_property_string (ctx, udi,
-			"info.parent");
+						     "info.parent");
 
 	parent_name = hal_device_get_property_string (ctx, parent_udi,
-			"info.vendor");
+						      "info.vendor");
 	if (parent_name != NULL && strcmp (parent_name, "Nokia") == 0) {
 		g_free (parent_udi);
 		parent_name = hal_device_get_property_string (ctx, parent_udi,
-				"info.product");
+							      "info.product");
 		if (parent_name != NULL && strcmp (parent_name, "770") == 0) {
+			result = TRUE;
+		} else if (parent_name != NULL && strcmp (parent_name, "N800") == 0) {
 			result = TRUE;
 		}
 	}
