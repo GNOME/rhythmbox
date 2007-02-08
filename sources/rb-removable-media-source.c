@@ -307,7 +307,10 @@ impl_paste (RBSource *source, GList *entries)
 		}
 
 		rb_list_deep_free (mime_types);
-		mime_types = g_list_prepend (NULL, g_strdup (mimetype));
+		if (mimetype != NULL)
+			mime_types = g_list_prepend (NULL, g_strdup (mimetype));
+		else
+			mime_types = NULL;
 		added_data = g_new0 (struct _TrackAddedData, 1);
 		added_data->source = RB_REMOVABLE_MEDIA_SOURCE (source);
 		added_data->mimetype = g_strdup (mimetype);
