@@ -44,6 +44,7 @@
 #include "rb-encoder.h"
 #include "rb-encoder-gst.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 
 #ifdef HAVE_GSTREAMER_0_8
 #define GstStateChangeReturn GstElementStateReturn
@@ -290,7 +291,7 @@ progress_timeout_cb (RBEncoderGst *encoder)
 		rb_debug ("encoding progress at %d out of %" G_GINT64_FORMAT,
 			  secs,
 			  encoder->priv->total_length);
-		_rb_encoder_emit_progress (RB_ENCODER (encoder), 
+		_rb_encoder_emit_progress (RB_ENCODER (encoder),
 					   ((double)secs) / encoder->priv->total_length);
 	} else {
 		rb_debug ("encoding progress at %" G_GINT64_FORMAT " out of %" G_GINT64_FORMAT,
@@ -1026,9 +1027,9 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		/* see if it's already in any of the destination formats */
 		copy = FALSE;
 		for (l = mime_types; l != NULL; l = g_list_next (l)) {
-			rb_debug ("Comparing mimetypes '%s' '%s'", entry_mime_type, l->data);
+			rb_debug ("Comparing mimetypes '%s' '%s'", entry_mime_type, (char *)l->data);
 			if (rb_safe_strcmp (entry_mime_type, l->data) == 0) {
-				rb_debug ("Matched mimetypes '%s' '%s'", entry_mime_type, l->data);
+				rb_debug ("Matched mimetypes '%s' '%s'", entry_mime_type, (char *)l->data);
 
 				copy = TRUE;
 				break;

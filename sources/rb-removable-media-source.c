@@ -41,6 +41,7 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
+#include "rb-file-helpers.h"
 
 static GObject *rb_removable_media_source_constructor (GType type,
 						       guint n_construct_properties,
