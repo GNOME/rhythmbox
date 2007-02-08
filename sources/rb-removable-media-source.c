@@ -296,8 +296,13 @@ impl_paste (RBSource *source, GList *entries)
 				goto impl_paste_end;
 			}
 		} else {
-			const char *s = g_strrstr (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), ".");
-			extension = s ? g_strdup (s) : NULL;
+			const char *s;
+			char       *path;
+
+			path = rb_uri_get_short_path_name (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+			s = g_strrstr (path, ".");
+			extension = (s != NULL) ? g_strdup (s + 1) : NULL;
+			g_free (path);
 		}
 
 		dest = rb_removable_media_source_build_dest_uri (RB_REMOVABLE_MEDIA_SOURCE (source), entry, mimetype, extension);
@@ -417,18 +422,27 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	return TRUE;
 }
 
-char*
+char *
 rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 					  RhythmDBEntry *entry,
 					  const char *mimetype,
 					  const char *extension)
 {
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
+	char *uri;
 
-	if (klass->impl_build_dest_uri)
-		return klass->impl_build_dest_uri (source, entry, mimetype, extension);
-	else
-		return NULL;
+	if (klass->impl_build_dest_uri) {
+		uri = klass->impl_build_dest_uri (source, entry, mimetype, extension);
+	} else {
+		uri = NULL;
+	}
+
+	rb_debug ("Built dest URI for mime='%s', extension='%s': '%s'",
+		  mimetype,
+		  extension,
+		  uri);
+
+	return uri;
 }
 
 GList *

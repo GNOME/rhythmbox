@@ -635,7 +635,7 @@ encoder_match_mime (GstElement *encoder, const gchar *mime_type)
 	caps = gst_pad_get_caps (srcpad);
 	structure = gst_caps_get_structure (caps, 0);
 	pad_mime = gst_structure_get_name (structure);
-	match = (strcmp (mime_type, pad_mime) == 0);
+	match = (rb_safe_strcmp (mime_type, pad_mime) == 0);
 	gst_caps_unref (caps);
 	gst_object_unref (GST_OBJECT (srcpad));
 
@@ -658,7 +658,7 @@ profile_bin_find_encoder (GstBin *profile_bin)
 		switch (gst_iterator_next (iter, &data)) {
 			case GST_ITERATOR_OK:
 				factory = gst_element_get_factory (GST_ELEMENT (data));
-				if (strcmp (factory->details.klass,
+				if (rb_safe_strcmp (factory->details.klass,
 						"Codec/Encoder/Audio") == 0) {
 					encoder = GST_ELEMENT (data);
 					done = TRUE;
@@ -695,6 +695,8 @@ get_profile_from_mime_type (const char *mime_type)
 	GMAudioProfile *profile;
 	GMAudioProfile *matching_profile = NULL;
 	GError *error = NULL;
+
+	rb_debug ("Looking up profile for mimetype '%s'", mime_type);
 
 	profiles = gm_audio_profile_get_active_list ();
 	for (walk = profiles; walk; walk = g_list_next (walk)) {
@@ -992,6 +994,17 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 	entry_mime_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
 	was_raw = g_str_has_prefix (entry_mime_type, "audio/x-raw");
 
+	/* hackish mapping of gstreamer media types to mime types; this
+	 * should be easier when we do proper (deep) typefinding.
+	 */
+	if (rb_safe_strcmp (entry_mime_type, "audio/x-wav") == 0) {
+		/* if it has a bitrate, assume it's mp3-in-wav */
+		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
+			entry_mime_type = "audio/mpeg";
+	} else if (rb_safe_strcmp (entry_mime_type, "application/x-id3") == 0) {
+		entry_mime_type = "audio/mpeg";
+	}
+
 	vfsresult = create_parent_dirs (dest);
 	if (vfsresult != GNOME_VFS_OK) {
 		error = g_error_new_literal (RB_ENCODER_ERROR,
@@ -1013,7 +1026,10 @@ rb_encoder_gst_encode (RBEncoder *encoder,
 		/* see if it's already in any of the destination formats */
 		copy = FALSE;
 		for (l = mime_types; l != NULL; l = g_list_next (l)) {
-			if (strcmp (entry_mime_type, l->data) == 0) {
+			rb_debug ("Comparing mimetypes '%s' '%s'", entry_mime_type, l->data);
+			if (rb_safe_strcmp (entry_mime_type, l->data) == 0) {
+				rb_debug ("Matched mimetypes '%s' '%s'", entry_mime_type, l->data);
+
 				copy = TRUE;
 				break;
 			}

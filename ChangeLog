@@ -1,3 +1,14 @@
+2007-02-08  William Jon McCann  <mccann@jhu.edu>
+
+	* backends/gstreamer/rb-encoder-gst.c: (encoder_match_mime),
+	(profile_bin_find_encoder), (get_profile_from_mime_type),
+	(rb_encoder_gst_encode):
+	Use rb_safe_strcmp.  Add hack to translate application/x-id3 to audio/mpeg.
+	* lib/rb-util.[ch]: (rb_safe_strcmp):
+	* sources/rb-removable-media-source.c: (impl_paste),
+	(rb_removable_media_source_build_dest_uri):
+	Fix the construction of the file extension.  Fixes rest of #405198
+
 2007-02-08  James Livingston  <doclivingston@gmail.com>
 
 	* sources/rb-removable-media-source.c: (impl_paste): don't put NULL on

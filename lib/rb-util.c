@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  *  arch-tag: Implementation of totally random functions that didn't fit elsewhere
  *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
@@ -214,6 +215,13 @@ rb_compare_gtimeval (GTimeVal *a, GTimeVal *b)
 		return 1;
 	else
 		return -1;
+}
+
+int
+rb_safe_strcmp (const char *a,
+                const char *b)
+{
+	return (!a && !b) ? 0 : (a && !b) || (!a && b) ? 1 : strcmp (a, b);
 }
 
 /* Taken from totem/video-utils.c CVS HEAD 2004-04-22 */
