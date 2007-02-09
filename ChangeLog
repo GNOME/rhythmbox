@@ -1,3 +1,8 @@
+2007-02-09  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_set_ipod_name): don't
+	crash if the MPL is null. Fixes #406052
+
 2007-02-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_encode):

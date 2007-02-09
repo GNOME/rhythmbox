@@ -142,16 +142,20 @@ rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 
 	mpl = itdb_playlist_mpl (priv->ipod_db);
-	if (mpl->name != NULL) {
-		rb_debug ("Renaming iPod from %s to %s", mpl->name, name);
-		if (strcmp (mpl->name, name) == 0) {
-			rb_debug ("iPod is already named %s", name);
-			return;
+	if (mpl != NULL) {
+		if (mpl->name != NULL) {
+			rb_debug ("Renaming iPod from %s to %s", mpl->name, name);
+			if (strcmp (mpl->name, name) == 0) {
+				rb_debug ("iPod is already named %s", name);
+				return;
+			}
 		}
+		g_free (mpl->name);
+		mpl->name = g_strdup (name);
+		itdb_schedule_save (priv->ipod_db);
+	} else {
+		g_warning ("iPod's master playlist is missing");
 	}
-	g_free (mpl->name);
-	mpl->name = g_strdup (name);
-	itdb_schedule_save (priv->ipod_db);
 }
 
 static void
