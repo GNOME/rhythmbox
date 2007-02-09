@@ -140,8 +140,9 @@ rb_generic_player_source_init (RBGenericPlayerSource *source)
 }
 
 static GObject *
-rb_generic_player_source_constructor (GType type, guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
+rb_generic_player_source_constructor (GType type,
+				      guint n_construct_properties,
+				      GObjectConstructParam *construct_properties)
 {
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
@@ -149,7 +150,7 @@ rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 	RBShell *shell;
 
 	source = RB_GENERIC_PLAYER_SOURCE (G_OBJECT_CLASS (rb_generic_player_source_parent_class)->
-			constructor (type, n_construct_properties, construct_properties));
+					   constructor (type, n_construct_properties, construct_properties));
 
 	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
@@ -171,6 +172,8 @@ rb_generic_player_source_constructor (GType type, guint n_construct_properties,
 	priv->load_playlists_id =
 		g_idle_add ((GSourceFunc)rb_generic_player_source_load_playlists, source);
 
+	rb_generic_player_source_get_device_info (source);
+
 	return G_OBJECT (source);
 }
 
@@ -182,14 +185,14 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 	LibHalContext *ctx = get_hal_context ();
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	if (ctx) {
+	if (ctx != NULL) {
 		gchar *udi;
 
 		g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 		udi = get_hal_udi_for_player (ctx, volume);
 		g_object_unref (G_OBJECT (volume));
 
-		if (udi) {
+		if (udi != NULL) {
 			DBusError error;
 			char *prop;
 			char **proplist;
@@ -221,7 +224,7 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 
 					priv->output_mime_types = g_strdupv (proplist);
 
-					dbg = g_strjoinv(", ", priv->output_mime_types);
+					dbg = g_strjoinv (", ", priv->output_mime_types);
 					rb_debug ("got output mime-type list: %s", dbg);
 					g_free (dbg);
 				}
@@ -346,7 +349,6 @@ rb_generic_player_source_new (RBShell *shell, GnomeVFSVolume *volume)
 							 "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
 							 NULL));
 
-	rb_generic_player_source_get_device_info (source);
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
 	return RB_REMOVABLE_MEDIA_SOURCE (source);
@@ -423,12 +425,13 @@ rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
 	LibHalContext *ctx;
 
 	ctx = get_hal_context ();
-	if (ctx) {
+	if (ctx != NULL) {
 		gchar *udi = get_hal_udi_for_player (ctx, volume);
-		if (udi) {
+		if (udi != NULL) {
 			DBusError error;
 			char *prop;
 
+			rb_debug ("Checking udi %s", udi);
 			/* check that it can be accessed as mass-storage */
 			dbus_error_init (&error);
 			prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.access_method", &error);
@@ -696,7 +699,7 @@ sanitize_path (const char *str)
 	while (*str == '.')
 		str++;
 
-	s = g_strdup(str);
+	s = g_strdup (str);
 	/* Replace path seperators with a hyphen */
 	g_strdelimit (s, "/", '-');
 
@@ -708,9 +711,9 @@ sanitize_path (const char *str)
 	/* TODO: I'd like this to compress whitespace aswell */
 	g_strdelimit (s, "\t ", '_');
 
-	res = g_filename_from_utf8(s, -1, NULL, NULL, NULL);
-	g_free(s);
-	return res ? res : g_strdup(str);
+	res = g_filename_from_utf8 (s, -1, NULL, NULL, NULL);
+	g_free (s);
+	return res ? res : g_strdup (str);
 }
 
 static GList *
@@ -880,7 +883,10 @@ static char *
 get_hal_udi_for_player (LibHalContext *ctx, GnomeVFSVolume *volume)
 {
 	DBusError error;
-	gchar *udi = gnome_vfs_volume_get_hal_udi (volume);
+	gchar *udi;
+
+	udi = gnome_vfs_volume_get_hal_udi (volume);
+
 	if (udi == NULL)
 		return NULL;
 
@@ -889,25 +895,34 @@ get_hal_udi_for_player (LibHalContext *ctx, GnomeVFSVolume *volume)
 	rb_debug ("searching for player udi from %s", udi);
 	while (!libhal_device_query_capability (ctx, udi, "portable_audio_player", &error) &&
 	       !dbus_error_is_set (&error)) {
-		char *new_udi = libhal_device_get_property_string (ctx, udi, "info.parent", &error);
+		char *new_udi;
+
+		new_udi = libhal_device_get_property_string (ctx, udi, "info.parent", &error);
 		if (dbus_error_is_set (&error))
 			break;
 
 		rb_debug ("parent of udi %s: %s", udi, new_udi);
 		g_free (udi);
 		udi = NULL;
-		if ((new_udi == NULL) || strcmp (new_udi, "/") == 0) {
+
+		if (new_udi == NULL) {
+			break;
+		}
+		if (strcmp (new_udi, "/") == 0) {
+			libhal_free_string (new_udi);
 			break;
 		}
 
 		udi = g_strdup (new_udi);
 		libhal_free_string (new_udi);
 	}
+
 	if (dbus_error_is_set (&error)) {
 		g_free (udi);
 		udi = NULL;
 		free_dbus_error ("finding audio player udi", &error);
 	}
+
 	return udi;
 }
 

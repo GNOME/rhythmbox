@@ -1,3 +1,14 @@
+2007-02-09  William Jon McCann  <mccann@jhu.edu>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_constructor),
+	(rb_generic_player_source_get_device_info),
+	(rb_generic_player_source_new),
+	(rb_generic_player_is_volume_player), (sanitize_path),
+	(get_hal_udi_for_player):
+	Initialize the device info in the constructor instead of new().
+	Fix a small leak.  Fixes part of #405775
+
 2007-02-09  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_set_ipod_name): don't
