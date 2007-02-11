@@ -9,6 +9,7 @@ art_DATA =  \
 	   media-eject.png             \
 	   about-logo.png
 
+
 artdir = $(pkgdatadir)/art
 
 EXTRA_DIST = $(art_DATA)
