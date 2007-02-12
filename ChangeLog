@@ -1,3 +1,11 @@
+2007-02-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/ipod/rb-ipod-source.c:
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_class_init):
+	Fix build breaks with track transfer/ipod writing disabled.
+	Probably fixes #406126?
+
 2007-02-12  Irene Huang  <irene.huang@sun.com>
 
 	* widgets/rb-entry-view.c: (rb_entry_view_set_sorting_type):

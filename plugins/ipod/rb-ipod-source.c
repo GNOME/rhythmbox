@@ -1229,6 +1229,8 @@ impl_delete_thyself (RBSource *source)
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }
 
+#ifdef ENABLE_IPOD_WRITING
+
 static GList *
 impl_get_mime_types (RBRemovableMediaSource *source)
 {
@@ -1240,3 +1242,5 @@ impl_get_mime_types (RBRemovableMediaSource *source)
 
 	return ret;
 }
+
+#endif
