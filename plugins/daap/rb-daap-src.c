@@ -760,6 +760,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 		ok = FALSE;
 	}
 	g_free (http_status_phrase);
+	soup_message_clear_headers (header_table);
 	g_hash_table_destroy (header_table);
 
 	/* restore the first response body byte and move on */

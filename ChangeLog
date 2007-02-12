@@ -1,3 +1,8 @@
+2007-02-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/daap/rb-daap-src.c: (rb_daap_src_open):
+	Don't leak the parsed HTTP response headers.
+
 2007-02-13  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-query.c: (rhythmdb_query_append_params): add new
