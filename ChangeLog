@@ -1,3 +1,8 @@
+2007-02-12  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/rb-python-module.c: (run_gc), (rb_python_shutdown): be nicer
+	when poking the garbage colletor, so as to not block the UI.
+
 2007-02-10  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* Makefile.am (art_DATA): Build fix: remove

@@ -475,12 +475,12 @@ static gint idle_garbage_collect_id = 0;
 static gboolean
 run_gc (gpointer data)
 {
-	while (PyGC_Collect ())
-		;
+	gboolean ret = (PyGC_Collect () != 0);
 
-	idle_garbage_collect_id = 0;
+	if (!ret)
+		idle_garbage_collect_id = 0;
 
-	return FALSE;
+	return ret;
 }
 
 void
@@ -513,7 +513,9 @@ rb_python_shutdown ()
 			idle_garbage_collect_id = 0;
 		}
 
-		run_gc (NULL);
+		while (run_gc (NULL))
+			/* loop */;
+
 		/* this helps to force python to give up it's shell reference */
 		g_timeout_add (1000, finalise_collect_cb, NULL);
 
