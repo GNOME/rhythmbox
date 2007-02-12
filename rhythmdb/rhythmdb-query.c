@@ -222,6 +222,44 @@ rhythmdb_query_append (RhythmDB *db, GPtrArray *query, ...)
 	va_end (args);
 }
 
+void
+rhythmdb_query_append_params (RhythmDB *db, GPtrArray *query,
+			      RhythmDBQueryType type, RhythmDBPropType prop, const GValue *value)
+{
+	RhythmDBQueryData *data = g_new0 (RhythmDBQueryData, 1);
+
+	data->type = type;
+	switch (type) {
+	case RHYTHMDB_QUERY_END:
+		g_assert_not_reached ();
+		break;
+	case RHYTHMDB_QUERY_DISJUNCTION:
+		break;
+	case RHYTHMDB_QUERY_SUBQUERY:
+		data->subquery = rhythmdb_query_copy (g_value_get_pointer (value));
+		break;
+	case RHYTHMDB_QUERY_PROP_EQUALS:
+	case RHYTHMDB_QUERY_PROP_LIKE:
+	case RHYTHMDB_QUERY_PROP_NOT_LIKE:
+	case RHYTHMDB_QUERY_PROP_PREFIX:
+	case RHYTHMDB_QUERY_PROP_SUFFIX:
+	case RHYTHMDB_QUERY_PROP_GREATER:
+	case RHYTHMDB_QUERY_PROP_LESS:
+	case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
+	case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
+	case RHYTHMDB_QUERY_PROP_YEAR_EQUALS:
+	case RHYTHMDB_QUERY_PROP_YEAR_GREATER:
+	case RHYTHMDB_QUERY_PROP_YEAR_LESS:
+		data->propid = prop;
+		data->val = g_new0 (GValue, 1);
+		g_value_init (data->val, rhythmdb_get_property_type (db, data->propid));
+		g_value_copy (value, data->val);
+		break;
+	}
+
+	g_ptr_array_add (query, data);
+}
+
 /**
  * rhythmdb_query_free:
  * @query: a query.

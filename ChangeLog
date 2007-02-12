@@ -1,3 +1,16 @@
+2007-02-13  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-query.c: (rhythmdb_query_append_params): add new
+	function which appends a single criteria to the query. Mostly for use
+	by bindings.
+
+	* rhythmdb/rhythmdb.h: The above, and replace GPtrArray with
+	RhythmDBQuery in the header.
+
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override: bind the new function, and fix up
+	some other bits.
+
 2007-02-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/ipod/rb-ipod-source.c:

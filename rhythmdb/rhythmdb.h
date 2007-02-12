@@ -220,7 +220,7 @@ typedef struct {
 	guint type;
 	guint propid;
 	GValue *val;
-	GPtrArray *subquery;
+	RhythmDBQuery *subquery;
 } RhythmDBQueryData;
 
 typedef struct {
@@ -296,7 +296,7 @@ typedef struct
 
 	RhythmDBEntry *	(*impl_lookup_by_id)    (RhythmDB *db, gint id);
 
-	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
+	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, RhythmDBQuery *query, RhythmDBEntry *entry);
 
 	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
 
@@ -306,7 +306,7 @@ typedef struct
 
 	gint64		(*impl_entry_count_by_type) (RhythmDB *db, RhythmDBEntryType type);
 
-	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
+	void		(*impl_do_full_query)	(RhythmDB *db, RhythmDBQuery *query,
 						 RhythmDBQueryResults *results,
 						 gboolean *cancel);
 
@@ -359,7 +359,7 @@ RhythmDBEntry *	rhythmdb_entry_lookup_by_id     (RhythmDB *db, gint id);
 
 RhythmDBEntry * rhythmdb_entry_lookup_from_string (RhythmDB *db, const char *str, gboolean is_id);
 
-gboolean	rhythmdb_evaluate_query		(RhythmDB *db, GPtrArray *query,
+gboolean	rhythmdb_evaluate_query		(RhythmDB *db, RhythmDBQuery *query,
 						 RhythmDBEntry *entry);
 
 void		rhythmdb_entry_foreach		(RhythmDB *db,
@@ -396,7 +396,7 @@ void		rhythmdb_do_full_query			(RhythmDB *db,
 							 ...);
 void		rhythmdb_do_full_query_parsed		(RhythmDB *db,
 							 RhythmDBQueryResults *results,
-							 GPtrArray *query);
+							 RhythmDBQuery *query);
 
 void		rhythmdb_do_full_query_async		(RhythmDB *db,
 							 RhythmDBQueryResults *results,
@@ -404,24 +404,25 @@ void		rhythmdb_do_full_query_async		(RhythmDB *db,
 
 void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db,
 							 RhythmDBQueryResults *results,
-							 GPtrArray *query);
+							 RhythmDBQuery *query);
 
-GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
-void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
-void		rhythmdb_query_append_prop_multiple	(RhythmDB *db, GPtrArray *query, RhythmDBPropType propid, GList *items);
-void		rhythmdb_query_concatenate		(GPtrArray *query1, GPtrArray *query2);
-void		rhythmdb_query_free			(GPtrArray *query);
-GPtrArray *	rhythmdb_query_copy			(GPtrArray *array);
-void		rhythmdb_query_preprocess		(RhythmDB *db, GPtrArray *query);
+RhythmDBQuery *	rhythmdb_query_parse			(RhythmDB *db, ...);
+void		rhythmdb_query_append			(RhythmDB *db, RhythmDBQuery *query, ...);
+void		rhythmdb_query_append_params		(RhythmDB *db, RhythmDBQuery *query, RhythmDBQueryType type, RhythmDBPropType prop, const GValue *value);
+void		rhythmdb_query_append_prop_multiple	(RhythmDB *db, RhythmDBQuery *query, RhythmDBPropType propid, GList *items);
+void		rhythmdb_query_concatenate		(RhythmDBQuery *query1, RhythmDBQuery *query2);
+void		rhythmdb_query_free			(RhythmDBQuery *query);
+RhythmDBQuery *	rhythmdb_query_copy			(RhythmDBQuery *array);
+void		rhythmdb_query_preprocess		(RhythmDB *db, RhythmDBQuery *query);
 
-void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
+void		rhythmdb_query_serialize		(RhythmDB *db, RhythmDBQuery *query,
 							 xmlNodePtr node);
 
-GPtrArray *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
+RhythmDBQuery *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
 
-char *		rhythmdb_query_to_string		(RhythmDB *db, GPtrArray *query);
+char *		rhythmdb_query_to_string		(RhythmDB *db, RhythmDBQuery *query);
 
-gboolean	rhythmdb_query_is_time_relative		(RhythmDB *db, GPtrArray *query);
+gboolean	rhythmdb_query_is_time_relative		(RhythmDB *db, RhythmDBQuery *query);
 
 const xmlChar *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, RhythmDBPropType propid);
 int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *name);

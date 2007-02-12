@@ -467,6 +467,12 @@
   )
 )
 
+(define-method query_new
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_query_new")
+  (return-type "RhythmDBQuery*")
+)
+
 (define-method query_parse
   (of-object "RhythmDB")
   (c-name "rhythmdb_query_parse")
@@ -474,12 +480,26 @@
   (varargs #t)
 )
 
-(define-method append
-  (of-object "RhythmDBQuery")
+(define-method query_append
+  (of-object "RhythmDB")
   (c-name "rhythmdb_query_append")
   (return-type "none")
-  (varargs #t)
+  (parameters
+    '("RhythmDBQuery*" "query")
+  )
 )
+
+;(define-method query_append_params
+;  (of-object "RhythmDB")
+;  (c-name "rhythmdb_query_append_params")
+;  (return-type "none")
+;  (parameters
+;    '("RhythmDBQuery" "query")
+;    '("RhythmDBQueryType" "type")
+;    '("RhythmDBPropType" "propid")
+;    '("GValue*" "value")
+;  )
+;)
 
 (define-method append_prop_multiple
   (of-object "RhythmDBQuery")
