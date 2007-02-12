@@ -27,6 +27,7 @@
 
 struct _SexyTooltipPriv
 {
+	int dummy;
 };
 
 static void sexy_tooltip_class_init(SexyTooltipClass *klass);

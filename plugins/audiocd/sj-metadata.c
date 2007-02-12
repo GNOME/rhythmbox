@@ -83,7 +83,7 @@ sj_metadata_set_cdrom (SjMetadata *metadata, const char* device)
     char *raw_path = g_strdup_printf ("/dev/rdsk/%s", device + strlen ("/dev/dsk/"));
     SJ_METADATA_GET_CLASS (metadata)->set_cdrom (metadata, raw_path);
     g_free (raw_path);
-  } else
+  }
 #else
   SJ_METADATA_GET_CLASS (metadata)->set_cdrom (metadata, device);
 #endif
