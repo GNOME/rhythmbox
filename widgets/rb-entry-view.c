@@ -952,8 +952,6 @@ rb_entry_view_set_sorting_type (RBEntryView *view,
 {
 	char **strs;
 
-	g_return_if_fail (sorttype != NULL);
-
 	if (!sorttype || !strchr (sorttype, ',')) {
 		rb_debug ("malformed sort data: %s", (sorttype) ? sorttype : "(null)");
 		return;

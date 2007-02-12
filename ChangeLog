@@ -1,5 +1,14 @@
 2007-02-12  Irene Huang  <irene.huang@sun.com>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_set_sorting_type):
+	Do not have to use g_return_if_fail (sorttype != NULL), since
+	sorttype can be null, and the statement that follows also 
+	implement the checking using if (!sorttype || ...
+
+	Fixes #406980
+
+2007-02-12  Irene Huang  <irene.huang@sun.com>
+
 	* plugins/audiocd/sj-metadata.c: (sj_metadata_set_cdrom):
 	syntax error, there should be no else after "{".
 	* widgets/libsexy/sexy-tooltip.c: Add a dummy int for _SexyTooltipPriv
