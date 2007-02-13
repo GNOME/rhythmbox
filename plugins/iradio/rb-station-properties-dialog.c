@@ -561,12 +561,16 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 
 	string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	if (strcmp (location, string)) {
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, location);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_LOCATION, &val);
-		g_value_unset (&val);
-		changed = TRUE;
+		if (rhythmdb_entry_lookup_by_location (dialog->priv->db, location) == NULL) {
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, location);
+			rhythmdb_entry_set (dialog->priv->db, entry,
+					    RHYTHMDB_PROP_LOCATION, &val);
+			g_value_unset (&val);
+			changed = TRUE;
+		} else {
+			rb_error_dialog (NULL, _("Unable to change station property"), _("Unable to change station URI to %s, as that station already exists"), location);
+		}
 	}
 
 	if (changed)

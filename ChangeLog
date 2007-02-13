@@ -1,5 +1,11 @@
 2007-02-14  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_sync_entries): don't crash if the user
+	tries to rename/add a station which is the same as another. From #353119
+
+2007-02-14  James Livingston  <doclivingston@gmail.com>
+
 	* shell/rb-shell.c: (rb_shell_db_metadata_art_cb): don't crash if we
 	get art for an entry after we've stop playing anything. Fixes #405537
 
