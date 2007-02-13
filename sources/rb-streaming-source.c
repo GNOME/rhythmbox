@@ -359,6 +359,12 @@ set_streaming_metadata (RBStreamingSource *source,
 			const char *value)
 {
 	GValue v = {0,};
+
+	/* don't do anything if the value isn't changing */
+	if (*field != NULL && strcmp (*field, value) == 0) {
+		return;
+	}
+
 	g_free (*field);
 	*field = g_strdup (value);
 

@@ -1,3 +1,8 @@
+2007-02-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-streaming-source.c: (set_streaming_metadata):
+	Don't do anything if the value isn't changing.  Fixes #407221.
+
 2007-02-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/daap/rb-daap-src.c: (rb_daap_src_open):
