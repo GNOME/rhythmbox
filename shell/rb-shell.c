@@ -1745,6 +1745,9 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 	guint time;
 
 	playing_entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+	if (playing_entry == NULL)
+		return;
+
 	if (entry != playing_entry) {
 		rhythmdb_entry_unref (playing_entry);
 		return;
