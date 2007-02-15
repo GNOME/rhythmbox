@@ -826,6 +826,12 @@ search_action_changed (GtkRadioAction  *action,
 	gboolean active;
 
 	g_object_get (shell, "selected-source", &source, NULL);
+	if (source == NULL || !RB_IS_STATIC_PLAYLIST_SOURCE (source)) {
+		if (source != NULL)
+			g_object_unref (source);
+		return;
+	}
+
 	priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));

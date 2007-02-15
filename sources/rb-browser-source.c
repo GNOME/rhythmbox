@@ -336,6 +336,11 @@ search_action_changed (GtkRadioAction  *action,
 	RBBrowserSource *source;
 
 	g_object_get (shell, "selected-source", &source, NULL);
+	if (source == NULL || !RB_IS_BROWSER_SOURCE (source)) {
+		if (source != NULL)
+			g_object_unref (source);
+		return;
+	}
 
 	active = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (current));
 

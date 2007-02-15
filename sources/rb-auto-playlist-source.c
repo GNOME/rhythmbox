@@ -833,6 +833,11 @@ search_action_changed (GtkRadioAction  *action,
 	RBAutoPlaylistSource *source;
 
 	g_object_get (shell, "selected-source", &source, NULL);
+	if (source == NULL || !RB_IS_AUTO_PLAYLIST_SOURCE (source)) {
+		if (source != NULL)
+			g_object_unref (source);
+		return;
+	}
 
 	priv = RB_AUTO_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
