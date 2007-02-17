@@ -1,5 +1,15 @@
 2007-02-17  James Livingston  <doclivingston@gmail.com>
 
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_class_init),
+	(encoder_match_mime), (get_profile_from_mime_type),
+	(get_profile_from_mime_types), (transcode_track),
+	(rb_encoder_gst_get_preferred_mimetype):
+	* backends/gstreamer/rb-encoder-gst.h: use caps intersection rather
+	than just the mimetype to find out whether a pipeline will emit what
+	is needed. This makes it correctly match things like AAC. From #405149
+
+2007-02-17  James Livingston  <doclivingston@gmail.com>
+
 	* widgets/rb-header.c: (rb_header_init), (rb_header_set_property),
 	(rb_header_sync), (rb_header_set_show_timeline),
 	(rb_header_sync_time), (rb_header_update_elapsed): display playing

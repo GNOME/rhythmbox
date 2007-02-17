@@ -31,13 +31,18 @@ G_BEGIN_DECLS
 
 #define RB_TYPE_ENCODER_GST            (rb_encoder_gst_get_type ())
 #define RB_ENCODER_GST(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_ENCODER, RBEncoderGst))
+#define RB_ENCODE_GST_CLASS(k)         (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_ENCODER_GST, RBEncoderGstClass))
 #define RB_IS_ENCODER_GST(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_ENCODER))
+#define RB_IS_ENCODER_GST_CLASS(k)     (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_ENCODER_GST))
+#define RB_ENCODER_GST_GET_CLASS(o)    (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_ENCODER_GST, RBEncoderGstClass))
 
 typedef struct _RBEncoderGstPrivate RBEncoderGstPrivate;
 
 typedef struct
 {
 	GObjectClass obj_class;
+
+	GHashTable *mime_caps_table;
 } RBEncoderGstClass;
 
 typedef struct

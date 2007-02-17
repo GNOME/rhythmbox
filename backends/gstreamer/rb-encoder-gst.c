@@ -94,10 +94,30 @@ static void
 rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 {
         GObjectClass *object_class = (GObjectClass *) klass;
+	GstCaps *caps;
 
         object_class->finalize = rb_encoder_gst_finalize;
 
         g_type_class_add_private (klass, sizeof (RBEncoderGstPrivate));
+
+	/* create the mimetype -> GstCaps lookup table
+	 *
+	 * The strings are static data for now, but if we allow dynamic changing
+	 * we need to change this to use g_strdup/g_free
+	 */
+	klass->mime_caps_table = g_hash_table_new_full (g_str_hash, g_str_equal,
+							NULL, (GDestroyNotify)gst_caps_unref);
+
+	caps = gst_caps_new_simple ("audio/mpeg",
+				    "mpegversion", G_TYPE_INT, 4,
+				    NULL);
+	g_hash_table_insert (klass->mime_caps_table, "audio/aac", caps);
+
+	caps = gst_caps_new_simple ("audio/mpeg",
+				    "mpegversion", G_TYPE_INT, 1,
+				    "layer", G_TYPE_INT, 3,
+				    NULL);
+	g_hash_table_insert (klass->mime_caps_table, "audio/aac", caps);
 }
 
 static void
@@ -624,20 +644,29 @@ attach_output_pipeline (RBEncoderGst *encoder,
 }
 
 static gboolean
-encoder_match_mime (GstElement *encoder, const gchar *mime_type)
+encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *mime_type)
 {
 	GstPad *srcpad;
-	GstCaps *caps;
-	GstStructure *structure;
-	const gchar *pad_mime;
+	GstCaps *element_caps;
+	GstCaps *desired_caps;
+	GstCaps *intersect_caps;
 	gboolean match;
 
 	srcpad = gst_element_get_pad (encoder, "src");
-	caps = gst_pad_get_caps (srcpad);
-	structure = gst_caps_get_structure (caps, 0);
-	pad_mime = gst_structure_get_name (structure);
-	match = (rb_safe_strcmp (mime_type, pad_mime) == 0);
-	gst_caps_unref (caps);
+	element_caps = gst_pad_get_caps (srcpad);
+
+	desired_caps = g_hash_table_lookup (RB_ENCODER_GST_GET_CLASS (rbencoder)->mime_caps_table, mime_type);
+	if (desired_caps == NULL)
+		desired_caps = gst_caps_new_simple (mime_type, NULL);
+
+	GST_INFO ("desired caps are %" GST_PTR_FORMAT, desired_caps);
+	GST_INFO ("element caps are %" GST_PTR_FORMAT, element_caps);
+	intersect_caps = gst_caps_intersect (desired_caps, element_caps);
+	match = gst_caps_is_empty (intersect_caps);
+
+	gst_caps_unref (intersect_caps);
+	gst_caps_unref (desired_caps);
+	gst_caps_unref (element_caps);
 	gst_object_unref (GST_OBJECT (srcpad));
 
 	return match;
@@ -687,7 +716,7 @@ profile_bin_find_encoder (GstBin *profile_bin)
 }
 
 static GMAudioProfile*
-get_profile_from_mime_type (const char *mime_type)
+get_profile_from_mime_type (RBEncoderGst *rbencoder, const char *mime_type)
 {
 	GList *profiles, *walk;
 	gchar *pipeline_description;
@@ -719,7 +748,7 @@ get_profile_from_mime_type (const char *mime_type)
 			continue;
 		}
 
-		if (encoder_match_mime (encoder, mime_type)) {
+		if (encoder_match_mime (rbencoder, encoder, mime_type)) {
 			matching_profile = profile;
 			gst_object_unref (GST_OBJECT (encoder));
 			gst_object_unref (GST_OBJECT (pipeline));
@@ -738,14 +767,14 @@ get_profile_from_mime_type (const char *mime_type)
 }
 
 static GMAudioProfile*
-get_profile_from_mime_types (GList *mime_types)
+get_profile_from_mime_types (RBEncoderGst *rbencoder, GList *mime_types)
 {
 	GList *l;
 
 	for (l = mime_types; l != NULL; l = g_list_next (l)) {
 		GMAudioProfile *profile;
 
-		profile = get_profile_from_mime_type ((const char *)l->data);
+		profile = get_profile_from_mime_type (rbencoder, (const char *)l->data);
 		if (profile)
 			return profile;
 	}
@@ -883,7 +912,7 @@ transcode_track (RBEncoderGst *encoder,
 
 	g_assert (encoder->priv->pipeline == NULL);
 
-	profile = get_profile_from_mime_types (mime_types);
+	profile = get_profile_from_mime_types (encoder, mime_types);
 	if (profile == NULL) {
 		g_set_error (error,
 			     RB_ENCODER_ERROR,
@@ -1086,7 +1115,7 @@ rb_encoder_gst_get_preferred_mimetype (RBEncoder *encoder,
 		const char *mimetype;
 
 		mimetype = (const char *)l->data;
-		profile = get_profile_from_mime_type (mimetype);
+		profile = get_profile_from_mime_type (RB_ENCODER_GST (encoder), mimetype);
 		if (profile) {
 			*extension = g_strdup (gm_audio_profile_get_extension (profile));
 			*mime = g_strdup (mimetype);
