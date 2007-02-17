@@ -579,11 +579,6 @@ egg_tray_icon_notify (EggTrayIcon *icon,
     if (!notify_init ("rhythmbox"))
       return;
 
-  if (icon->notify->handle != NULL)
-    {
-      notify_notification_close (icon->notify->handle, NULL);
-    }
-
   if (primary_markup == NULL)
     {
       primary_markup = "";
@@ -593,10 +588,22 @@ egg_tray_icon_notify (EggTrayIcon *icon,
       secondary_markup = "";
     }
 
-  icon->notify->handle = notify_notification_new (primary_markup,
-                                                  secondary_markup,
-                                                  NULL,
-                                                  GTK_WIDGET (icon));
+  if (icon->notify->handle == NULL)
+    {
+      icon->notify->handle = notify_notification_new (primary_markup,
+						      secondary_markup,
+						      NULL,
+						      GTK_WIDGET (icon));
+    }
+  else
+    {
+      notify_notification_update (icon->notify->handle,
+				  primary_markup,
+				  secondary_markup,
+				  NULL);
+      notify_notification_attach_to_widget (icon->notify->handle,
+					    GTK_WIDGET (icon));
+    }
 
   notify_notification_set_timeout (icon->notify->handle, timeout);
 

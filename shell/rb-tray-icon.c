@@ -86,6 +86,7 @@ static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  RBTrayIcon *icon);
 static void rb_tray_icon_suppress_tooltips (RBTrayIcon *icon, guint duration);
 static void rb_tray_icon_construct_tooltip (RBTrayIcon *icon);
+static GtkWidget* rb_tray_icon_create_blank_image (RBTrayIcon *icon);
 
 struct RBTrayIconPrivate
 {
@@ -628,9 +629,7 @@ rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon)
 	GList *children;
 
 	if (msgicon == NULL)
-		/*msgicon = gtk_image_new_from_icon_name (DEFAULT_TOOLTIP_ICON,
-							GTK_ICON_SIZE_DIALOG);*/
-		msgicon = gtk_image_new ();
+		msgicon = rb_tray_icon_create_blank_image (icon);
 	image_box = GTK_CONTAINER (icon->priv->tooltip_image_box);
 	children = gtk_container_get_children (image_box);
 	current_image = GTK_WIDGET (g_list_nth_data (children, 0));
@@ -676,6 +675,8 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 	rb_debug ("doing notify: %s", primary_markup);
 	if (timeout > 0)
 		rb_tray_icon_suppress_tooltips (icon, timeout);
+	if (msgicon == NULL)
+		msgicon = rb_tray_icon_create_blank_image (icon);
 	egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout,
 			      primary_markup, msgicon, secondary_markup);
 }
@@ -778,9 +779,7 @@ rb_tray_icon_construct_tooltip (RBTrayIcon *icon)
 	gtk_misc_set_alignment  (GTK_MISC  (icon->priv->tooltip_secondary),
 				 0.0, 0.0);
 
-	/*image = gtk_image_new_from_icon_name (DEFAULT_TOOLTIP_ICON,
-					      GTK_ICON_SIZE_DIALOG);*/
-	image = gtk_image_new ();
+	image = rb_tray_icon_create_blank_image (icon);
 	icon->priv->tooltip_image_box = gtk_vbox_new (FALSE, 12);
 	gtk_box_pack_start (GTK_BOX (icon->priv->tooltip_image_box), image,
 			    FALSE, FALSE, 0);
@@ -824,3 +823,20 @@ rb_tray_icon_suppress_tooltips (RBTrayIcon *icon, guint duration)
 		g_source_remove (icon->priv->tooltip_unsuppress_id);
 	icon->priv->tooltip_unsuppress_id = g_timeout_add (duration, (GSourceFunc) rb_tray_icon_unsuppress_cb, icon);
 }
+
+static GtkWidget*
+rb_tray_icon_create_blank_image (RBTrayIcon *icon)
+{
+	int width;
+	GdkPixbuf *pixbuf;
+	GtkWidget *image;
+
+	gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &width, NULL);
+	pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, width, width);
+	gdk_pixbuf_fill (pixbuf, 0); /* transparent */
+	image = gtk_image_new_from_pixbuf (pixbuf);
+	g_object_unref (pixbuf);
+
+	return image;
+}
+
