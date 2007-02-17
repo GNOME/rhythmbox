@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-08 19:14+0000\n"
-"PO-Revision-Date: 2007-02-08 19:17-0000\n"
+"POT-Creation-Date: 2007-02-17 00:19+0000\n"
+"PO-Revision-Date: 2007-02-17 00:19-0000\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:528
+#: ../backends/gstreamer/rb-encoder-gst.c:529
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Do you want to overwrite the file \"%s\"?"
@@ -448,7 +448,7 @@ msgstr "Recently Played"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:140
 #: ../shell/rb-shell.c:1029
-#: ../shell/rb-shell.c:2116
+#: ../shell/rb-shell.c:2119
 #: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Music Player"
@@ -525,8 +525,8 @@ msgstr "Rhythmbox does not support automatic proxy configuration"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1083
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/daap/rb-daap-connection.c:677
-#: ../plugins/generic-player/rb-generic-player-source.c:760
-#: ../plugins/ipod/rb-ipod-source.c:265
+#: ../plugins/generic-player/rb-generic-player-source.c:763
+#: ../plugins/ipod/rb-ipod-source.c:269
 #: ../plugins/iradio/rb-iradio-source.c:492
 #: ../plugins/iradio/rb-iradio-source.c:1083
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
@@ -540,13 +540,13 @@ msgstr "Rhythmbox does not support automatic proxy configuration"
 #: ../rhythmdb/rhythmdb-tree.c:1140
 #: ../rhythmdb/rhythmdb-tree.c:1144
 #: ../rhythmdb/rhythmdb.c:1362
-#: ../shell/rb-shell.c:3026
+#: ../shell/rb-shell.c:3029
 #: ../sources/rb-podcast-source.c:1641
 #: ../widgets/rb-entry-view.c:812
 #: ../widgets/rb-entry-view.c:837
-#: ../widgets/rb-entry-view.c:1123
-#: ../widgets/rb-entry-view.c:1135
-#: ../widgets/rb-entry-view.c:1147
+#: ../widgets/rb-entry-view.c:1121
+#: ../widgets/rb-entry-view.c:1133
+#: ../widgets/rb-entry-view.c:1145
 #: ../widgets/rb-song-info.c:766
 #: ../widgets/rb-song-info.c:930
 #: ../widgets/rb-song-info.c:1200
@@ -694,7 +694,7 @@ msgstr "Rhythmbox couldn't read the CD information."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:464
 #: ../sources/rb-library-source.c:133
-#: ../widgets/rb-entry-view.c:1079
+#: ../widgets/rb-entry-view.c:1077
 #: ../widgets/rb-query-creator-properties.c:65
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "Title"
@@ -702,7 +702,7 @@ msgstr "Title"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:471
 #: ../sources/rb-library-source.c:124
-#: ../widgets/rb-entry-view.c:1089
+#: ../widgets/rb-entry-view.c:1087
 #: ../widgets/rb-library-browser.c:100
 #: ../widgets/rb-query-creator-properties.c:66
 #: ../widgets/rb-query-creator-properties.c:92
@@ -813,8 +813,8 @@ msgstr "Last.fm Profile"
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
 #: ../rhythmdb/rhythmdb.c:2924
 #: ../widgets/rb-entry-view.c:760
-#: ../widgets/rb-entry-view.c:1181
-#: ../widgets/rb-entry-view.c:1194
+#: ../widgets/rb-entry-view.c:1179
+#: ../widgets/rb-entry-view.c:1192
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
 msgstr "Never"
@@ -1741,7 +1741,7 @@ msgid "Create a new Internet Radio station"
 msgstr "Create a new Internet Radio station"
 
 #: ../plugins/iradio/rb-iradio-source.c:328
-#: ../widgets/rb-entry-view.c:1109
+#: ../widgets/rb-entry-view.c:1107
 #: ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
@@ -1775,6 +1775,15 @@ msgstr "%s Properties"
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
+
+#: ../plugins/iradio/rb-station-properties-dialog.c:572
+msgid "Unable to change station property"
+msgstr "Unable to change station property"
+
+#: ../plugins/iradio/rb-station-properties-dialog.c:572
+#, c-format
+msgid "Unable to change station URI to %s, as that station already exists"
+msgstr "Unable to change station URI to %s, as that station already exists"
 
 #: ../plugins/iradio/station-properties.glade.h:5
 msgid "L_ocation:"
@@ -2440,7 +2449,7 @@ msgid "Print formatted details of the song"
 msgstr "Print formatted details of the song"
 
 #: ../remote/dbus/rb-client.c:379
-#: ../shell/rb-shell.c:2091
+#: ../shell/rb-shell.c:2094
 msgid "Not playing"
 msgstr "Not playing"
 
@@ -2934,7 +2943,7 @@ msgid "Stop playback"
 msgstr "Stop playback"
 
 #: ../shell/rb-shell-preferences.c:119
-#: ../shell/rb-shell.c:2325
+#: ../shell/rb-shell.c:2328
 msgid "Couldn't display help"
 msgstr "Couldn't display help"
 
@@ -3106,33 +3115,33 @@ msgstr "Change the music volume"
 msgid "Error while saving song information"
 msgstr "Error while saving song information"
 
-#: ../shell/rb-shell.c:1865
+#: ../shell/rb-shell.c:1868
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Transferring track %d out of %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1868
+#: ../shell/rb-shell.c:1871
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Transferring track %d out of %d"
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2094
+#: ../shell/rb-shell.c:2097
 #, c-format
 msgid "Paused, %s"
 msgstr "Paused, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2136
+#: ../shell/rb-shell.c:2139
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Paused)"
 
-#: ../shell/rb-shell.c:2241
+#: ../shell/rb-shell.c:2244
 msgid "translator-credits"
 msgstr "David Lodge <dave@cirt.net>"
 
-#: ../shell/rb-shell.c:2244
+#: ../shell/rb-shell.c:2247
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3144,7 +3153,7 @@ msgstr ""
 "the Free Software Foundation; either version 2 of the Licence, or\n"
 "(at your option) any later version.\n"
 
-#: ../shell/rb-shell.c:2248
+#: ../shell/rb-shell.c:2251
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3156,7 +3165,7 @@ msgstr ""
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public Licence for more details.\n"
 
-#: ../shell/rb-shell.c:2252
+#: ../shell/rb-shell.c:2255
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3166,63 +3175,63 @@ msgstr ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2261
+#: ../shell/rb-shell.c:2264
 msgid "Maintainers:"
 msgstr "Maintainers:"
 
-#: ../shell/rb-shell.c:2264
+#: ../shell/rb-shell.c:2267
 msgid "Former Maintainers:"
 msgstr "Former Maintainers:"
 
-#: ../shell/rb-shell.c:2267
+#: ../shell/rb-shell.c:2270
 msgid "Contributors:"
 msgstr "Contributors:"
 
-#: ../shell/rb-shell.c:2269
+#: ../shell/rb-shell.c:2272
 msgid "Music management and playback software for GNOME."
 msgstr "Music management and playback software for GNOME."
 
-#: ../shell/rb-shell.c:2372
+#: ../shell/rb-shell.c:2375
 msgid "Configure Plugins"
 msgstr "Configure Plugins"
 
-#: ../shell/rb-shell.c:2443
+#: ../shell/rb-shell.c:2446
 msgid "Import Folder into Library"
 msgstr "Import Folder into Library"
 
-#: ../shell/rb-shell.c:2465
+#: ../shell/rb-shell.c:2468
 msgid "Import File into Library"
 msgstr "Import File into Library"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2972
+#: ../shell/rb-shell.c:2975
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "by <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:2993
+#: ../shell/rb-shell.c:2996
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "from <i>%s</i>"
 
-#: ../shell/rb-shell.c:3198
+#: ../shell/rb-shell.c:3201
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "No registered source can handle URI %s"
 
-#: ../shell/rb-shell.c:3432
-#: ../shell/rb-shell.c:3458
+#: ../shell/rb-shell.c:3435
+#: ../shell/rb-shell.c:3461
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Unknown song URI: %s"
 
-#: ../shell/rb-shell.c:3467
+#: ../shell/rb-shell.c:3470
 #, c-format
 msgid "Unknown property %s"
 msgstr "Unknown property %s"
 
-#: ../shell/rb-shell.c:3477
+#: ../shell/rb-shell.c:3480
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Invalid property type %s for property %s"
@@ -3350,7 +3359,7 @@ msgid "Artist - Album"
 msgstr "Artist - Album"
 
 #: ../sources/rb-library-source.c:123
-#: ../widgets/rb-entry-view.c:1099
+#: ../widgets/rb-entry-view.c:1097
 #: ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:93
@@ -3699,67 +3708,67 @@ msgstr "Load folder into Library"
 msgid "%u kbps"
 msgstr "%u kbps"
 
-#: ../widgets/rb-entry-view.c:1068
+#: ../widgets/rb-entry-view.c:1066
 msgid "Track"
 msgstr "Track"
 
-#: ../widgets/rb-entry-view.c:1119
+#: ../widgets/rb-entry-view.c:1117
 msgid "Time"
 msgstr "Time"
 
-#: ../widgets/rb-entry-view.c:1131
+#: ../widgets/rb-entry-view.c:1129
 #: ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "Year"
 msgstr "Year"
 
-#: ../widgets/rb-entry-view.c:1143
+#: ../widgets/rb-entry-view.c:1141
 msgid "Quality"
 msgstr "Quality"
 
-#: ../widgets/rb-entry-view.c:1146
+#: ../widgets/rb-entry-view.c:1144
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1156
+#: ../widgets/rb-entry-view.c:1154
 #: ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Rating"
 msgstr "Rating"
 
-#: ../widgets/rb-entry-view.c:1178
+#: ../widgets/rb-entry-view.c:1176
 #: ../widgets/rb-query-creator-properties.c:73
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Play Count"
 msgstr "Play Count"
 
-#: ../widgets/rb-entry-view.c:1190
+#: ../widgets/rb-entry-view.c:1188
 #: ../widgets/rb-query-creator-properties.c:101
 msgid "Last Played"
 msgstr "Last Played"
 
-#: ../widgets/rb-entry-view.c:1202
+#: ../widgets/rb-entry-view.c:1200
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Date Added"
 msgstr "Date Added"
 
-#: ../widgets/rb-entry-view.c:1213
+#: ../widgets/rb-entry-view.c:1211
 msgid "Last Seen"
 msgstr "Last Seen"
 
-#: ../widgets/rb-entry-view.c:1224
+#: ../widgets/rb-entry-view.c:1222
 msgid "Location"
 msgstr "Location"
 
-#: ../widgets/rb-entry-view.c:1232
+#: ../widgets/rb-entry-view.c:1230
 msgid "Error"
 msgstr "Error"
 
-#: ../widgets/rb-entry-view.c:1445
+#: ../widgets/rb-entry-view.c:1443
 msgid "Now Playing"
 msgstr "Now Playing"
 
-#: ../widgets/rb-entry-view.c:1520
+#: ../widgets/rb-entry-view.c:1518
 msgid "Playback Error"
 msgstr "Playback Error"
 
