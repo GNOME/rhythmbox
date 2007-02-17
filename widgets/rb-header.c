@@ -189,7 +189,6 @@ rb_header_init (RBHeader *header)
 
 	gtk_misc_set_padding (GTK_MISC (header->priv->elapsed), 2, 0);
 	gtk_box_pack_start (GTK_BOX (header->priv->timeline), header->priv->elapsed, FALSE, FALSE, 0);
-	gtk_widget_set_sensitive (header->priv->timeline, FALSE);
 	gtk_box_pack_end (GTK_BOX (hbox), header->priv->timeline, FALSE, FALSE, 0);
 	gtk_widget_show_all (header->priv->timeline);
 
@@ -253,7 +252,7 @@ rb_header_set_property (GObject *object,
 			header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
 									   RHYTHMDB_PROP_DURATION);
 		} else {
-			header->priv->duration = -1;
+			header->priv->duration = 0;
 		}
 		break;
 	case PROP_SHELL_PLAYER:
@@ -424,8 +423,6 @@ rb_header_sync (RBHeader *header)
 		g_free (streaming_album);
 		g_free (streaming_title);
 	} else {
-		char *tmp;
-
 		rb_debug ("not playing");
 		label_text = TITLE_MARKUP (_("Not Playing"));
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
@@ -438,9 +435,7 @@ rb_header_sync (RBHeader *header)
 		header->priv->slider_locked = FALSE;
 		gtk_widget_set_sensitive (header->priv->scale, FALSE);
 
-		tmp = rb_make_elapsed_time_string (0, 0, !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
-		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), tmp);
-		g_free (tmp);
+		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), "");
 	}
 }
 
@@ -465,7 +460,6 @@ static void
 rb_header_set_show_timeline (RBHeader *header,
 			     gboolean show)
 {
-	gtk_widget_set_sensitive (header->priv->timeline, show);
 	gtk_widget_set_sensitive (header->priv->scaleline, show);
 }
 
@@ -484,7 +478,7 @@ rb_header_sync_time (RBHeader *header)
 
 	seconds = header->priv->elapsed_time;
 
-	if (header->priv->duration > -1) {
+	if (header->priv->duration > 0) {
 		double progress = 0.0;
 
 		if (seconds > 0) {
@@ -640,18 +634,22 @@ slider_changed_callback (GtkWidget *widget,
 static void
 rb_header_update_elapsed (RBHeader *header)
 {
-	char *elapsed_text;
-
 	/* sanity check */
-	if (header->priv->elapsed_time > header->priv->duration)
+	if (header->priv->duration > 0 && header->priv->elapsed_time > header->priv->duration)
 		return;
 
-	elapsed_text = rb_make_elapsed_time_string (header->priv->elapsed_time,
-						    header->priv->duration,
-						    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
+	if (header->priv->entry != NULL) {
+		char *elapsed_text;
 
-	gtk_label_set_text (GTK_LABEL (header->priv->elapsed), elapsed_text);
-	g_free (elapsed_text);
+		elapsed_text = rb_make_elapsed_time_string (header->priv->elapsed_time,
+							    header->priv->duration,
+							    !eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY));
+		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), elapsed_text);
+		g_free (elapsed_text);
+	} else {
+		gtk_label_set_text (GTK_LABEL (header->priv->elapsed), "");
+	}
+
 }
 
 static void
