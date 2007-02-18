@@ -1,5 +1,10 @@
 2007-02-18  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_source_new): don't
+	emit a critical warning when the below happens.
+
+2007-02-18  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_source_new): lower
 	assertion to warning, since it can fail if the CD was removed in
 	between the original check and this one. Fixes #408913

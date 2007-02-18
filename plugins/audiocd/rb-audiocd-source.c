@@ -164,7 +164,8 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
 
-	g_return_if_fail (rb_audiocd_is_volume_audiocd (volume));
+	if (!rb_audiocd_is_volume_audiocd (volume))
+		return NULL;
 
 	g_object_get (shell, "db", &db, NULL);
 	entry_type =  rhythmdb_entry_register_type (db, NULL);
