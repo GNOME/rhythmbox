@@ -1,5 +1,10 @@
 2007-02-18  James Livingston  <doclivingston@gmail.com>
 
+	* backends/gstreamer/rb-encoder-gst.c: (encoder_match_mime): add
+	missing not symbol, and debug output. Should fix #405149
+
+2007-02-18  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_source_new): don't
 	emit a critical warning when the below happens.
 

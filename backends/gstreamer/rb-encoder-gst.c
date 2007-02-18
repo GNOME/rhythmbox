@@ -651,6 +651,7 @@ encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *m
 	GstCaps *desired_caps;
 	GstCaps *intersect_caps;
 	gboolean match;
+	char *tmp;
 
 	srcpad = gst_element_get_pad (encoder, "src");
 	element_caps = gst_pad_get_caps (srcpad);
@@ -659,10 +660,20 @@ encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *m
 	if (desired_caps == NULL)
 		desired_caps = gst_caps_new_simple (mime_type, NULL);
 
-	GST_INFO ("desired caps are %" GST_PTR_FORMAT, desired_caps);
-	GST_INFO ("element caps are %" GST_PTR_FORMAT, element_caps);
 	intersect_caps = gst_caps_intersect (desired_caps, element_caps);
-	match = gst_caps_is_empty (intersect_caps);
+	match = !gst_caps_is_empty (intersect_caps);
+
+	tmp = gst_caps_to_string (desired_caps);
+	rb_debug ("desired caps are: %s", tmp);
+	g_free (tmp);
+
+	tmp = gst_caps_to_string (element_caps);
+	rb_debug ("element caps are: %s", tmp);
+	g_free (tmp);
+
+	tmp = gst_caps_to_string (intersect_caps);
+	rb_debug ("intersect caps are: %s", tmp);
+	g_free (tmp);
 
 	gst_caps_unref (intersect_caps);
 	gst_caps_unref (desired_caps);
