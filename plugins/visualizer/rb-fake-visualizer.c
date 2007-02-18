@@ -73,6 +73,7 @@ struct _RBFakeVis
   /* state stuff */
   /*GstAdapter *adapter;*/
   guint avail;
+  gboolean first_frame;
 
   /* QoS stuff *//* with LOCK */
   gdouble proportion;
@@ -175,6 +176,7 @@ rb_fake_vis_reset (RBFakeVis * visual)
   GST_OBJECT_LOCK (visual);
   visual->proportion = 1.0;
   visual->earliest_time = -1;
+  visual->first_frame = FALSE;
   GST_OBJECT_UNLOCK (visual);
 }
 
@@ -450,6 +452,22 @@ rb_fake_vis_chain (GstPad * pad, GstBuffer * buffer)
   if (GST_BUFFER_FLAG_IS_SET (buffer, GST_BUFFER_FLAG_DISCONT)) {
     visual->avail = 0;
     visual->next_ts = -1;
+  }
+
+  /* Try to push a frame as soon as possible to avoid stalling the pipeline */
+  if (visual->first_frame == FALSE) {
+    if (outbuf == NULL) {
+      ret = get_buffer (visual, &outbuf);
+      if (ret != GST_FLOW_OK) {
+	goto beach;
+      }
+    }
+    ret = gst_pad_push (visual->srcpad, outbuf);
+    if (ret != GST_FLOW_OK) {
+      goto beach;
+    }
+    outbuf = NULL;
+    visual->first_frame = TRUE;
   }
 
   /* Match timestamps from the incoming audio */

@@ -1,3 +1,10 @@
+2007-02-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/visualizer/rb-fake-visualizer.c: (rb_fake_vis_reset),
+	(rb_fake_vis_chain):
+	Make the fake visualizer push a frame as soon as possible so
+	prerolling finishes.  Fixes #409170.
+
 2007-02-18  James Livingston  <doclivingston@gmail.com>
 
 	* backends/gstreamer/rb-encoder-gst.c: (encoder_match_mime): add
