@@ -108,16 +108,18 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 	klass->mime_caps_table = g_hash_table_new_full (g_str_hash, g_str_equal,
 							NULL, (GDestroyNotify)gst_caps_unref);
 
+	/* AAC */
 	caps = gst_caps_new_simple ("audio/mpeg",
 				    "mpegversion", G_TYPE_INT, 4,
 				    NULL);
 	g_hash_table_insert (klass->mime_caps_table, "audio/aac", caps);
 
+	/* MP3 */
 	caps = gst_caps_new_simple ("audio/mpeg",
 				    "mpegversion", G_TYPE_INT, 1,
 				    "layer", G_TYPE_INT, 3,
 				    NULL);
-	g_hash_table_insert (klass->mime_caps_table, "audio/aac", caps);
+	g_hash_table_insert (klass->mime_caps_table, "audio/mpeg", caps);
 }
 
 static void
