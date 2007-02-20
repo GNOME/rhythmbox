@@ -301,6 +301,10 @@ class MagnatuneSource(rb.BrowserSource):
 
 
 	def __download_update_cb (self, _reserved, info, moving):
+		self.__load_current_size = info.bytes_copied
+		self.__load_total_size = info.bytes_total
+		self.__notify_status_changed()
+
 		if info.phase == gnomevfs.XFER_PHASE_COMPLETED:
 			# done downloading, unzip to real location
 			catalog = zipfile.ZipFile(local_song_info_temp_uri.path)
@@ -317,16 +321,6 @@ class MagnatuneSource(rb.BrowserSource):
 
 		return 1
 
-	def __download_progress_cb (self, info, data):
-		#if info.status == gnomevfs.XFER_PROGRESS_STATUS_OK:
-		if True:
-			self.__load_current_size = info.bytes_copied
-			self.__load_total_size = info.bytes_total
-			self.__notify_status_changed()
-		else:
-			print info
-		return 1
-
 	def __download_catalogue(self):
 		self.__updating = True
 		create_if_needed(local_song_info_temp_uri, gnomevfs.OPEN_WRITE).close()
@@ -336,9 +330,8 @@ class MagnatuneSource(rb.BrowserSource):
 							  error_mode = gnomevfs.XFER_ERROR_MODE_ABORT,
 							  overwrite_mode = gnomevfs.XFER_OVERWRITE_MODE_REPLACE,
 							  progress_update_callback = self.__download_update_cb,
-							  update_callback_data = False,
-							  progress_sync_callback = self.__download_progress_cb,
-							  sync_callback_data = None)
+							  update_callback_data = False)
+							  
 
 	def __update_catalogue(self):
 		def info_cb (handle, results):
