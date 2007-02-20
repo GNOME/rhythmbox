@@ -8,10 +8,12 @@ headers
 #include "rb-util.h"
 #include "rb-debug.h"
 
+#include "rb-auto-playlist-source.h"
 #include "rb-browser-source.h"
 #include "rb-dialog.h"
 #include "rb-entry-view.h"
 #include "rb-library-browser.h"
+#include "rb-playlist-source.h"
 #include "rb-plugin.h"
 #include "rb-property-view.h"
 #include "rb-removable-media-manager.h"
@@ -20,6 +22,7 @@ headers
 #include "rb-shell-player.h"
 #include "rb-source.h"
 #include "rb-sourcelist.h"
+#include "rb-static-playlist-source.h"
 
 void pyrb_register_classes (PyObject *d);
 void pyrb_add_constants (PyObject *module, const gchar *strip_prefix);

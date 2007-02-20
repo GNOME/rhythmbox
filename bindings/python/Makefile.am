@@ -55,10 +55,13 @@ BINDING_HEADERS_SRCDIR_IN = \
 	shell/rb-shell-player.h			\
 	shell/rb-removable-media-manager.h	\
 	sources/rb-source.h			\
+	sources/rb-auto-playlist-source.h	\
 	sources/rb-browser-source.h		\
+	sources/rb-playlist-source.h		\
 	sources/rb-removable-media-source.h	\
 	sources/rb-sourcelist.h			\
 	sources/rb-sourcelist-model.h		\
+	sources/rb-static-playlist-source.h	\
 	widgets/rb-entry-view.h			\
 	widgets/rb-library-browser.h		\
 	widgets/rb-property-view.h		\

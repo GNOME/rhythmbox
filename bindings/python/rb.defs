@@ -43,6 +43,27 @@
   (gtype-id "RB_TYPE_REMOVABLE_MEDIA_SOURCE")
 )
 
+(define-object PlaylistSource
+  (in-module "RB")
+  (parent "RBSource")
+  (c-name "RBPlaylistSource")
+  (gtype-id "RB_TYPE_PLAYLIST_SOURCE")
+)
+
+(define-object StaticPlaylistSource
+  (in-module "RB")
+  (parent "RBSource")
+  (c-name "RBStaticPlaylistSource")
+  (gtype-id "RB_TYPE_STATIC_PLAYLIST_SOURCE")
+)
+
+(define-object AutoPlaylistSource
+  (in-module "RB")
+  (parent "RBSource")
+  (c-name "RBAutoPlaylistSource")
+  (gtype-id "RB_TYPE_AUTO_PLAYLIST_SOURCE")
+)
+
 (define-object RemovableMediaManager
   (in-module "RB")
   (parent "GObject")
@@ -1729,4 +1750,243 @@
     '("const-char*" "message")
   )
 )
+
+;; From rb-playlist-source.h
+
+(define-function rb_playlist_source_get_type
+  (c-name "rb_playlist_source_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_playlist_source_new_from_xml
+  (c-name "rb_playlist_source_new_from_xml")
+  (return-type "RBSource*")
+  (parameters
+    '("RBShell*" "shell")
+    '("xmlNodePtr" "node")
+  )
+)
+
+(define-method save_playlist
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_save_playlist")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+    '("gboolean" "m3u_format")
+  )
+)
+
+(define-method save_to_xml
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_save_to_xml")
+  (return-type "none")
+  (parameters
+    '("xmlNodePtr" "node")
+  )
+)
+
+(define-method setup_entry_view
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_setup_entry_view")
+  (return-type "none")
+  (parameters
+    '("RBEntryView*" "entry_view")
+  )
+)
+
+(define-method set_query_model
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_set_query_model")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQueryModel*" "model")
+  )
+)
+
+(define-method get_query_model
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_get_query_model")
+  (return-type "RhythmDBQueryModel*")
+)
+
+(define-method get_db
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_get_db")
+  (return-type "RhythmDB*")
+)
+
+(define-method mark_dirty
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_mark_dirty")
+  (return-type "none")
+)
+
+(define-method location_in_map
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_location_in_map")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "location")
+  )
+)
+
+(define-method add_to_map
+  (of-object "RBPlaylistSource")
+  (c-name "rb_playlist_source_add_to_map")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "location")
+  )
+)
+
+
+;; From rb-auto-playlist-source.h
+
+(define-function rb_auto_playlist_source_get_type
+  (c-name "rb_auto_playlist_source_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_auto_playlist_source_new
+  (c-name "rb_auto_playlist_source_new")
+  (is-constructor-of "RbAutoPlaylistSource")
+  (return-type "RBSource*")
+  (parameters
+    '("RBShell*" "shell")
+    '("const-char*" "name")
+    '("gboolean" "local")
+  )
+)
+
+(define-function rb_auto_playlist_source_new_from_xml
+  (c-name "rb_auto_playlist_source_new_from_xml")
+  (return-type "RBSource*")
+  (parameters
+    '("RBShell*" "shell")
+    '("xmlNodePtr" "node")
+  )
+)
+
+(define-method set_query
+  (of-object "RBAutoPlaylistSource")
+  (c-name "rb_auto_playlist_source_set_query")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQuery*" "query")
+    '("RhythmDBQueryModelLimitType" "limit_type")
+    '("GValueArray*" "limit_value")
+    '("const-char*" "sort_key")
+    '("gint" "sort_order")
+  )
+)
+
+(define-method get_query
+  (of-object "RBAutoPlaylistSource")
+  (c-name "rb_auto_playlist_source_get_query")
+  (return-type "none")
+  (parameters
+    '("RhythmDBQuery*" "query")
+    '("RhythmDBQueryModelLimitType*" "limit_type")
+    '("GValueArray**" "limit_value")
+    '("char**" "sort_key")
+    '("gint*" "sort_order")
+  )
+)
+
+
+;; From rb-static-playlist-source.h
+
+(define-function rb_static_playlist_source_get_type
+  (c-name "rb_static_playlist_source_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_static_playlist_source_new
+  (c-name "rb_static_playlist_source_new")
+  (is-constructor-of "RbStaticPlaylistSource")
+  (return-type "RBSource*")
+  (parameters
+    '("RBShell*" "shell")
+    '("const-char*" "name")
+    '("gboolean" "local")
+    '("RhythmDBEntryType" "entry_type")
+  )
+)
+
+(define-function rb_static_playlist_source_new_from_xml
+  (c-name "rb_static_playlist_source_new_from_xml")
+  (return-type "RBSource*")
+  (parameters
+    '("RBShell*" "shell")
+    '("xmlNodePtr" "node")
+  )
+)
+
+(define-method load_from_xml
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_load_from_xml")
+  (return-type "none")
+  (parameters
+    '("xmlNodePtr" "node")
+  )
+)
+
+(define-method add_entry
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_add_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("gint" "index")
+  )
+)
+
+(define-method remove_entry
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_remove_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method add_location
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_add_location")
+  (return-type "none")
+  (parameters
+    '("const-char*" "location")
+    '("gint" "index")
+  )
+)
+
+(define-method add_locations
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_add_locations")
+  (return-type "none")
+  (parameters
+    '("GList*" "locations")
+  )
+)
+
+(define-method remove_location
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_remove_location")
+  (return-type "none")
+  (parameters
+    '("const-char*" "location")
+  )
+)
+
+(define-method move_entry
+  (of-object "RBStaticPlaylistSource")
+  (c-name "rb_static_playlist_source_move_entry")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("gint" "index")
+  )
+)
+
 
