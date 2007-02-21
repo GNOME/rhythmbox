@@ -219,7 +219,6 @@ static void
 rb_ipod_plugin_cmd_rename (GtkAction *action,
 			   RBIpodPlugin *plugin)
 {
-	RBRemovableMediaManager *manager = NULL;
 	RBSourceList *sourcelist = NULL;
 	RBSource *source = NULL;
 
@@ -230,21 +229,21 @@ rb_ipod_plugin_cmd_rename (GtkAction *action,
 	 */
 	g_object_get (G_OBJECT (plugin->shell),
 		      "selected-source", &source,
-		      "removable-media-manager", &manager,
 		      NULL);
 	if ((source == NULL) || !RB_IS_IPOD_SOURCE (source)) {
-		g_object_unref (G_OBJECT (manager));
 		g_critical ("got iPodSourceRename action for non-ipod source");
+		if (source != NULL)
+			g_object_unref (source);
 		return;
 	}
 
-	g_object_get (G_OBJECT (manager), "sourcelist", &sourcelist, NULL);
-	g_object_unref (G_OBJECT (manager));
+	g_object_get (plugin->shell, "sourcelist", &sourcelist, NULL);
 
-	rb_sourcelist_edit_source_name (sourcelist, RB_SOURCE (source));
+	rb_sourcelist_edit_source_name (sourcelist, source);
 	/* Once editing is done, notify::name will be fired on the source, and
 	 * we'll catch that in our rename callback
 	 */
-	g_object_unref (G_OBJECT (sourcelist));
+	g_object_unref (sourcelist);
+	g_object_unref (source);
 }
 

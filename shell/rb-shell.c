@@ -277,6 +277,7 @@ enum
 	PROP_PROXY_CONFIG,
 	PROP_LIBRARY_SOURCE,
 	PROP_SOURCELIST_MODEL,
+	PROP_SOURCELIST,
 	PROP_VISIBILITY,
 };
 
@@ -640,6 +641,14 @@ rb_shell_class_init (RBShellClass *klass)
 							      G_PARAM_READABLE));
 
 	g_object_class_install_property (object_class,
+					 PROP_SOURCELIST,
+					 g_param_spec_object ("sourcelist",
+							      "sourcelist",
+							      "RBSourcelist",
+							      RB_TYPE_SOURCELIST,
+							      G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
 					 PROP_VISIBILITY,
 					 g_param_spec_boolean ("visibility",
 							       "visibility",
@@ -803,6 +812,9 @@ rb_shell_get_property (GObject *object,
  			g_value_set_object (value, model);
 			g_object_unref (model);
 		}
+ 		break;
+ 	case PROP_SOURCELIST:
+ 		g_value_set_object (value, shell->priv->sourcelist);
  		break;
 	case PROP_VISIBILITY:
 		g_value_set_boolean (value, rb_shell_get_visibility (shell));

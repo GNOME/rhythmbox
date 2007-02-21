@@ -2,6 +2,13 @@
 
 2007-02-21  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/ipod/rb-ipod-plugin.c: (rb_ipod_plugin_cmd_rename):
+	* shell/rb-removable-media-manager.c:
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_get_property):
+	don't crash when we try to change the name of the ipod. Fixes #410338
+
+2007-02-21  James Livingston  <doclivingston@gmail.com>
+
 	* data/rhythmbox.schemas: turn on the art plugin by default
 	* NEWS: release name
 
