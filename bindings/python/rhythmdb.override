@@ -633,8 +633,8 @@ _wrap_rhythmdb_emit_entry_extra_metadata_notify(PyGObject *self, PyObject *args,
 		return NULL;
 	}
 
-	type = pyg_type_from_object((PyObject *) py_metadata->ob_type);
-	if (! type) {
+	type = (py_metadata == Py_None) ? G_TYPE_POINTER : pyg_type_from_object((PyObject *) py_metadata->ob_type);
+	if (!type) {
 		PyErr_SetString(PyExc_TypeError, "can't map metadata to GType system");
 		return NULL;
 	}

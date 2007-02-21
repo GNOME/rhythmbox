@@ -1,5 +1,13 @@
 2007-02-21  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* bindings/python/rhythmdb.override: make
+	rhythmdb.emit_entry_extra_metadata_notify support passing None. Fixes
+	#410105
+
+2007-02-21  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-encoder-gst.c: (encoder_match_mime): ref the
 	caps we get back from the mime->caps table, because we unref them
 	later. Fixes some crashes.
