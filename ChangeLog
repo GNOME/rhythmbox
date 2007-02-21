@@ -2,11 +2,17 @@
 
 2007-02-21  James Livingston  <doclivingston@gmail.com>
 
+	* data/rhythmbox.schemas: turn on the art plugin by default
+	* NEWS: release name
+
+2007-02-21  James Livingston  <doclivingston@gmail.com>
+
 	* NEWS: update NEWS
 	* configure.ac: bump version for release
 
 	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger),
-	(rb_metadata_init): remove id3tag support, since it break files
+	(rb_metadata_init): remove id3tag support, since it break files. Fixes
+	#401782
 
 2007-02-21  James Livingston  <doclivingston@gmail.com>
 
