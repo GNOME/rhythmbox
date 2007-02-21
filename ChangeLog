@@ -1,3 +1,19 @@
+2007-02-21  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-encoder-gst.c: (encoder_match_mime): ref the
+	caps we get back from the mime->caps table, because we unref them
+	later. Fixes some crashes.
+
+2007-02-20  James Livingston  <doclivingston@gmail.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_class_init):
+	* lib/rb-stock-icons.h:
+	* shell/rb-tray-icon.c: (rb_tray_icon_set_tooltip_icon),
+	(rb_tray_icon_notify), (rb_tray_icon_construct_tooltip):
+	* widgets/eggtrayicon.c: (egg_tray_icon_notify):
+
 2007-02-20  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/Makefile.am:

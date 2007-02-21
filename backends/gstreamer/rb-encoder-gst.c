@@ -649,18 +649,31 @@ static gboolean
 encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *mime_type)
 {
 	GstPad *srcpad;
-	GstCaps *element_caps;
-	GstCaps *desired_caps;
-	GstCaps *intersect_caps;
-	gboolean match;
+	GstCaps *element_caps = NULL;
+	GstCaps *desired_caps = NULL;
+	GstCaps *intersect_caps = NULL;
+	gboolean match = FALSE;
 	char *tmp;
 
 	srcpad = gst_element_get_pad (encoder, "src");
 	element_caps = gst_pad_get_caps (srcpad);
 
+	if (element_caps == NULL) {
+		g_warning ("couldn't create any element caps");
+		goto end;
+	}
+
 	desired_caps = g_hash_table_lookup (RB_ENCODER_GST_GET_CLASS (rbencoder)->mime_caps_table, mime_type);
-	if (desired_caps == NULL)
+	if (desired_caps != NULL) {
+		gst_caps_ref (desired_caps);
+	} else {
 		desired_caps = gst_caps_new_simple (mime_type, NULL);
+	}
+
+	if (desired_caps == NULL) {
+		g_warning ("couldn't create any desired caps for mimetype: %s", mime_type);
+		goto end;
+	}
 
 	intersect_caps = gst_caps_intersect (desired_caps, element_caps);
 	match = !gst_caps_is_empty (intersect_caps);
@@ -677,10 +690,15 @@ encoder_match_mime (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *m
 	rb_debug ("intersect caps are: %s", tmp);
 	g_free (tmp);
 
-	gst_caps_unref (intersect_caps);
-	gst_caps_unref (desired_caps);
-	gst_caps_unref (element_caps);
-	gst_object_unref (GST_OBJECT (srcpad));
+end:
+	if (intersect_caps != NULL)
+		gst_caps_unref (intersect_caps);
+	if (desired_caps != NULL)
+		gst_caps_unref (desired_caps);
+	if (element_caps != NULL)
+		gst_caps_unref (element_caps);
+	if (srcpad != NULL)
+		gst_object_unref (GST_OBJECT (srcpad));
 
 	return match;
 }
