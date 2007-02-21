@@ -589,6 +589,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	EggSequenceIter *ptr;
 	const char *propstr;
 
+	iter.stamp = model->priv->stamp;
 	propstr = rhythmdb_entry_get_string (entry, model->priv->propid);
 
 	model->priv->all->refcount++;
@@ -597,6 +598,12 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 		prop = egg_sequence_get (ptr);
 		prop->refcount++;
 		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
+
+		iter.user_data = ptr;
+		path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+		gtk_tree_path_free (path);
+
 		return prop;
 	}
 	rb_debug ("adding new property \"%s\"", propstr);
@@ -606,7 +613,6 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	prop->sort_string = rb_refstring_new (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
 	prop->refcount = 1;
 
-	iter.stamp = model->priv->stamp;
 	ptr = egg_sequence_insert_sorted (model->priv->properties, prop,
 					(GCompareDataFunc) rhythmdb_property_model_compare,
 					model);
@@ -646,27 +652,32 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 
 	g_assert ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr)));
 
+	iter.stamp = model->priv->stamp;
+	iter.user_data = ptr;
+
 	model->priv->all->refcount--;
 
 	prop = egg_sequence_get (ptr);
 	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
 	prop->refcount--;
-	if (prop->refcount > 0)
+	if (prop->refcount > 0) {
+		path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+		gtk_tree_path_free (path);
 		return;
-
-	iter.stamp = model->priv->stamp;
-	iter.user_data = ptr;
+	}
 
 	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 	g_signal_emit (G_OBJECT (model), rhythmdb_property_model_signals[PRE_ROW_DELETION], 0);
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
+
 	egg_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, propstr);
 	rb_refstring_unref (prop->string);
 	rb_refstring_unref (prop->sort_string);
+
 	g_free (prop);
-	return;
 }
 
 gboolean
