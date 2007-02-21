@@ -205,16 +205,6 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 		} else {
 			rb_debug ("using id3v2mux");
 		}
-	} else {
-		mux =  gst_element_factory_make ("id3mux", NULL);
-
-		/* check for backwards id3mux merge-mode */
-		if (mux && !rb_gst_plugin_greater ("mad", "id3mux", 0, 10, 3)) {
-			rb_debug ("using id3mux with backwards merge mode");
-			gst_tag_setter_set_tag_merge_mode (GST_TAG_SETTER (mux), GST_TAG_MERGE_REPLACE);
-		} else {
-			rb_debug ("using id3mux");
-		}
 	}
 
 	if (demux == NULL || mux == NULL)
@@ -393,9 +383,7 @@ rb_metadata_init (RBMetaData *md)
 	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
 			    gst_element_factory_find ("gnomevfssink") != NULL);
 #ifdef HAVE_GSTREAMER_0_10
-	has_id3 = (gst_element_factory_find ("id3demux") != NULL) &&
-			(gst_default_registry_check_feature_version ("id3mux", 0, 10, 2) ||
-			 (gst_element_factory_find ("id3v2mux") != NULL));
+	has_id3 = (gst_element_factory_find ("id3v2mux") != NULL);
 #elif HAVE_GSTREAMER_0_8
 	has_id3 = (gst_element_factory_find ("id3tag") != NULL);
 #endif
