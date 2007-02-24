@@ -63,5 +63,5 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LIBADD = $(LIBSEXY_LIBS)
+librbwidgets_la_LIBADD = $(NOTIFY_LIBS) $(LIBSEXY_LIBS)
 
