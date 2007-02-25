@@ -672,7 +672,10 @@ message_get_session_id (SoupMessage *message,
 		return FALSE;
 	}
 
-	position = strstr (uri->query, "session-id=");
+	if (uri->query != NULL)
+		position = strstr (uri->query, "session-id=");
+	else
+		position == NULL;
 
 	if (position == NULL) {
 		rb_debug ("session id not found");
@@ -706,7 +709,10 @@ message_get_revision_number (SoupMessage *message,
 		return FALSE;
 	}
 
-	position = strstr (uri->query, "revision-number=");
+	if (uri->query != NULL)
+		position = strstr (uri->query, "revision-number=");
+	else
+		position = NULL;
 
 	if (position == NULL) {
 		rb_debug ("client asked for an update without a revision number?!?\n");
