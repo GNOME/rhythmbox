@@ -1,5 +1,10 @@
 2007-02-25  James Livingston  <doclivingston@gmail.com>
 
+	* sources/rb-browser-source.c: (rb_browser_source_class_init): don't
+	try to use a popup menu that doesn't exist. Fixes #411703
+
+2007-02-25  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Nguyen Thai Ngoc Duy  <pclouds@gmail.com>
 
 	* plugins/artdisplay/artdisplay/CoverArtDatabase.py: import GError.
