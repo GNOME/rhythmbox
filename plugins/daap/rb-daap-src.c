@@ -601,11 +601,12 @@ rb_daap_src_open (RBDAAPSrc *src)
 	gchar *request;
 	gchar *response;
 	gchar *end_headers;
-	gchar first_byte;
 	size_t readsize;
 	gboolean ok = TRUE;
 	guint http_status;
 	gchar *http_status_phrase = NULL;
+	gboolean parse_result;
+	char *dup_headers;
 
 	if (src->buffer_base) {
 		g_free (src->buffer_base);
@@ -704,22 +705,39 @@ rb_daap_src_open (RBDAAPSrc *src)
 		return FALSE;
 	}
 
-	/* libsoup wants the headers null-terminated, despite taking a parameter
-	 * specifying how long they are.  since the byte we overwrite to null-
-	 * terminate the headers is the first byte of the response body, we need
-	 * to restore it once we've parsed the response headers.
+	/* for compatibility with older versions of libsoup, we may need to retry
+	 * the soup_headers_parse_response call with slightly different arguments.
+	 * since this function modifies the string passed in, we need to copy it
+	 * before the first call.
+	 *
+	 * > 2.2.99 wants the full response header, including the trailing blank line,
+	 * with the length passed in up to the start of the start of the trailing
+	 * blank line.
 	 */
-	first_byte = end_headers[4];
-	end_headers[4] = '\0';
-	end_headers += 2;
+	dup_headers = g_strndup (response, (end_headers + 4) - response);
 
 	header_table = g_hash_table_new (soup_str_case_hash, soup_str_case_equal);
-	if (soup_headers_parse_response (response,
-					 (end_headers - response),
-					 header_table,
-					 NULL,
-					 &http_status,
-					 &http_status_phrase)) {
+	parse_result = soup_headers_parse_response (dup_headers,
+						    ((end_headers+2) - response),
+						    header_table,
+						    NULL,
+						    &http_status,
+						    &http_status_phrase);
+	g_free (dup_headers);
+	if (parse_result == FALSE) {
+		/*
+		 * < 2.2.98 wants the headers terminated before the trailing blank line.
+		 */
+		end_headers[2] = '\0';
+		parse_result = soup_headers_parse_response (response,
+							    (end_headers+2 - response),
+							    header_table,
+							    NULL,
+							    &http_status,
+							    &http_status_phrase);
+	}
+
+	if (parse_result) {
 		if (http_status == 200 || http_status == 206) {
 			GSList *val;
 
@@ -763,9 +781,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	soup_message_clear_headers (header_table);
 	g_hash_table_destroy (header_table);
 
-	/* restore the first response body byte and move on */
-	end_headers += 2;
-	*end_headers = first_byte;
+	end_headers += 4;
 
 	/* copy remaining data into a new buffer */
 	if (ok) {
