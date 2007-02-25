@@ -297,29 +297,31 @@ class JamendoSource(rb.BrowserSource):
 
 		for track_key in tracks.keys():
 			track = tracks[track_key]
-			album = albums[track['albumID']]
-			artist = artists[album['artistID']]
-			stream = stream_url % (track_key)
+			album = albums.get(track['albumID'])
+			if album != None:
+				artist = artists.get(album['artistID'])
+				stream = stream_url % (track_key)
 
-			entry = self.__db.entry_lookup_by_location (stream)
-			if entry == None:
-				entry = self.__db.entry_new(self.__entry_type, stream)
+				entry = self.__db.entry_lookup_by_location (stream)
+				if entry == None:
+					entry = self.__db.entry_new(self.__entry_type, stream)
 
-			release_date = album['releaseDate']
-			if release_date:
-				year = int(release_date[0:4])
-				date = datetime.date(year, 1, 1).toordinal()
-				self.__db.set(entry, rhythmdb.PROP_DATE, date)
+				release_date = album['releaseDate']
+				if release_date:
+					year = int(release_date[0:4])
+					date = datetime.date(year, 1, 1).toordinal()
+					self.__db.set(entry, rhythmdb.PROP_DATE, date)
 
-			self.__db.set(entry, rhythmdb.PROP_TITLE, track['dispname'])
-			self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['dispname'])
-			self.__db.set(entry, rhythmdb.PROP_ALBUM, album['dispname'])
-			self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(track['trackno']))
-			self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
-			self.__db.set(entry, rhythmdb.PROP_GENRE, artist['genre'])
+					self.__db.set(entry, rhythmdb.PROP_TITLE, track['dispname'])
+					if artist != None:
+						self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['dispname'])
+						self.__db.set(entry, rhythmdb.PROP_GENRE, artist['genre'])
+					self.__db.set(entry, rhythmdb.PROP_ALBUM, album['dispname'])
+					self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(track['trackno']))
+					self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
 
-			self.__p2plinks[stream] = album['P2PLinks']
-			self.__album_id[stream] = track['albumID']
+					self.__p2plinks[stream] = album['P2PLinks']
+					self.__album_id[stream] = track['albumID']
 
 		self.__db.commit()
 		self.__saxHandler = None
