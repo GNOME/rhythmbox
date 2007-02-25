@@ -21,6 +21,7 @@ import rhythmdb, rb
 import os
 import gtk
 import itertools
+import gobject
 
 from PodcastCoverArtSearch import PodcastCoverArtSearch
 from AmazonCoverArtSearch import AmazonCoverArtSearch
@@ -198,6 +199,6 @@ class CoverArtDatabase (object):
 			try:
 				if pbl.write (data) and pbl.close ():
 					return pbl.get_pixbuf ()
-			except GError:
+			except gobject.GError:
 				pass
 		return None
