@@ -675,7 +675,7 @@ message_get_session_id (SoupMessage *message,
 	if (uri->query != NULL)
 		position = strstr (uri->query, "session-id=");
 	else
-		position == NULL;
+		position = NULL;
 
 	if (position == NULL) {
 		rb_debug ("session id not found");
