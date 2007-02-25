@@ -1,5 +1,27 @@
 2007-02-25  James Livingston  <doclivingston@gmail.com>
 
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_init),
+	(rb_player_gst_finalize): don't run the 5-times-a-second tick when we
+	aren't playing.
+
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_init),
+	(rb_shell_clipboard_dispose),
+	(rb_shell_clipboard_entry_deleted_cb): do the removal directly in the
+	callback, rather than a idle callback. Removed a pointless wakeup.
+	From #399012
+
+2007-02-25  James Livingston  <doclivingston@gmail.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_init),
+	(rb_player_gst_finalize):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_init),
+	(rb_shell_clipboard_dispose),
+	(rb_shell_clipboard_entry_deleted_cb):
+
+2007-02-25  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load): handle keys
 	being missing from the .rb-plugin file without crashing. Fixes #411558
 

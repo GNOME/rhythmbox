@@ -67,7 +67,6 @@ static void rb_shell_clipboard_cmd_move_to_trash (GtkAction *action,
 						  RBShellClipboard *clipboard);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
-static gboolean rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard);
 static void rb_shell_clipboard_playlist_added_cb (RBPlaylistManager *mgr,
 						  RBPlaylistSource *source,
 						  RBShellClipboard *clipboard);
@@ -105,7 +104,7 @@ struct RBShellClipboardPrivate
 
 	GAsyncQueue *deleted_queue;
 
-	guint idle_deletion_id, idle_sync_id, idle_playlist_id;
+	guint idle_sync_id, idle_playlist_id;
 
 	GList *entries;
 };
@@ -243,8 +242,6 @@ rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 								    NULL, g_free);
 
 	shell_clipboard->priv->deleted_queue = g_async_queue_new ();
-
-	shell_clipboard->priv->idle_deletion_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_idle_poll_deletions, shell_clipboard);
 }
 
 static void
@@ -282,10 +279,6 @@ rb_shell_clipboard_dispose (GObject *object)
 	if (shell_clipboard->priv->idle_sync_id != 0) {
 		g_source_remove (shell_clipboard->priv->idle_sync_id);
 		shell_clipboard->priv->idle_sync_id = 0;
-	}
-	if (shell_clipboard->priv->idle_deletion_id != 0) {
-		g_source_remove (shell_clipboard->priv->idle_deletion_id);
-		shell_clipboard->priv->idle_deletion_id = 0;
 	}
 	if (shell_clipboard->priv->idle_playlist_id != 0) {
 		g_source_remove (shell_clipboard->priv->idle_playlist_id);
@@ -709,6 +702,7 @@ rb_shell_clipboard_cmd_move_to_trash (GtkAction *action,
 	rb_source_move_to_trash (clipboard->priv->source);
 }
 
+/* NOTE: takes ownership of the entries */
 static void
 rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			GList *entries)
@@ -721,69 +715,21 @@ rb_shell_clipboard_set (RBShellClipboard *clipboard,
 	clipboard->priv->entries = entries;
 }
 
-static gboolean
-rb_shell_clipboard_process_deletions (RBShellClipboard *clipboard)
-{
-	RhythmDBEntry *entry;
-
-	if (clipboard->priv->entries) {
-		GList *tem, *finished = NULL;
-		gboolean processed = FALSE;
-
-		while ((entry = g_async_queue_try_pop (clipboard->priv->deleted_queue)) != NULL) {
-			clipboard->priv->entries = g_list_remove (clipboard->priv->entries, entry);
-			finished = g_list_prepend (finished, entry);
-			processed = TRUE;
-		}
-
-		if (processed)
-			rb_shell_clipboard_sync (clipboard);
-
-		for (tem = finished; tem; tem = tem->next)
-			rhythmdb_entry_unref (tem->data);
-		g_list_free (finished);
-
-		return processed;
-	} else {
-		/* Fast path for when there's nothing in the clipboard */
-		while ((entry = g_async_queue_try_pop (clipboard->priv->deleted_queue)) != NULL)
-			rhythmdb_entry_unref (entry);
-		return FALSE;
-	}
-}
-
-static gboolean
-rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard)
-{
-	gboolean did_sync;
-
-	GDK_THREADS_ENTER ();
-
-	did_sync = rb_shell_clipboard_process_deletions (clipboard);
-
-	if (did_sync)
-		clipboard->priv->idle_deletion_id =
-			g_idle_add_full (G_PRIORITY_LOW,
-					 (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
-					 clipboard, NULL);
-	else
-		clipboard->priv->idle_deletion_id =
-			g_timeout_add (300,
-				       (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
-				       clipboard);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
 static void
 rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 				     RhythmDBEntry *entry,
 				     RBShellClipboard *clipboard)
 {
-	rhythmdb_entry_ref (entry);
-	g_async_queue_push (clipboard->priv->deleted_queue, entry);
+	GList *l;
+
+	GDK_THREADS_ENTER ();
+	l = g_list_find (clipboard->priv->entries, entry);
+	if (l != NULL) {
+		clipboard->priv->entries = g_list_delete_link (clipboard->priv->entries, l);
+		rhythmdb_entry_unref (entry);
+		rb_shell_clipboard_sync (clipboard);
+	}
+	GDK_THREADS_LEAVE ();
 }
 
 static void

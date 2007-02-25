@@ -179,11 +179,7 @@ tick_timeout (RBPlayerGst *mp)
 static void
 rb_player_gst_init (RBPlayerGst *mp)
 {
-	gint ms_period = 1000 / RB_PLAYER_GST_TICK_HZ;
-
 	mp->priv = RB_PLAYER_GST_GET_PRIVATE (mp);
-
-	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
 	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
 
 }
@@ -213,7 +209,8 @@ rb_player_gst_finalize (GObject *object)
 
 	mp = RB_PLAYER_GST (object);
 
-	g_source_remove (mp->priv->tick_timeout_id);
+	if (mp->priv->tick_timeout_id != 0)
+		g_source_remove (mp->priv->tick_timeout_id);
 	g_hash_table_destroy (mp->priv->idle_info_ids);
 
 	if (mp->priv->playbin) {
@@ -884,6 +881,9 @@ rb_player_gst_open (RBPlayer *player,
 		return FALSE;
 	}
 
+	if (mp->priv->tick_timeout_id == 0)
+		mp->priv->tick_timeout_id = g_timeout_add (1000 / RB_PLAYER_GST_TICK_HZ, (GSourceFunc) tick_timeout, mp);
+
 	end_gstreamer_operation (mp, FALSE, error);
 	return TRUE;
 }
@@ -922,6 +922,9 @@ rb_player_gst_close (RBPlayer *player, GError **error)
 	}
 	g_hash_table_foreach (mp->priv->idle_info_ids, remove_idle_source, NULL);
 
+	if (mp->priv->tick_timeout_id != 0)
+		g_source_remove (mp->priv->tick_timeout_id);
+
 	if (mp->priv->playbin == NULL)
 		return TRUE;
 
@@ -957,6 +960,10 @@ rb_player_gst_play (RBPlayer *player, GError **error)
 	begin_gstreamer_operation (mp);
 	ret = rb_player_gst_sync_pipeline (mp);
 	end_gstreamer_operation (mp, !ret, error);
+
+	if (mp->priv->tick_timeout_id == 0)
+		mp->priv->tick_timeout_id = g_timeout_add (1000 / RB_PLAYER_GST_TICK_HZ, (GSourceFunc) tick_timeout, mp);
+
 	return ret;
 }
 
@@ -973,6 +980,9 @@ rb_player_gst_pause (RBPlayer *player)
 	g_return_if_fail (mp->priv->playbin != NULL);
 
 	rb_player_gst_sync_pipeline (mp);
+
+	if (mp->priv->tick_timeout_id != 0)
+		g_source_remove (mp->priv->tick_timeout_id);
 }
 
 static gboolean
