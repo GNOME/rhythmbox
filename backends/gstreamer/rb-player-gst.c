@@ -922,8 +922,10 @@ rb_player_gst_close (RBPlayer *player, GError **error)
 	}
 	g_hash_table_foreach (mp->priv->idle_info_ids, remove_idle_source, NULL);
 
-	if (mp->priv->tick_timeout_id != 0)
+	if (mp->priv->tick_timeout_id != 0) {
 		g_source_remove (mp->priv->tick_timeout_id);
+		mp->priv->tick_timeout_id = 0;
+	}
 
 	if (mp->priv->playbin == NULL)
 		return TRUE;
@@ -981,8 +983,10 @@ rb_player_gst_pause (RBPlayer *player)
 
 	rb_player_gst_sync_pipeline (mp);
 
-	if (mp->priv->tick_timeout_id != 0)
+	if (mp->priv->tick_timeout_id != 0) {
 		g_source_remove (mp->priv->tick_timeout_id);
+		mp->priv->tick_timeout_id = 0;
+	}
 }
 
 static gboolean
