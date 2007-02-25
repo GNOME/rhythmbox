@@ -90,7 +90,6 @@ static void impl_delete (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_reset_filters (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_show_popup (RBSource *source);
 static GList *impl_get_search_actions (RBSource *source);
 static void impl_browser_toggled (RBSource *asource, gboolean disclosed);
 static void default_show_entry_popup (RBBrowserSource *source);
@@ -197,7 +196,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_browser_toggled = impl_browser_toggled;
 
@@ -785,13 +783,6 @@ impl_browser_toggled (RBSource *asource, gboolean disclosed)
 		gtk_widget_hide (GTK_WIDGET (source->priv->browser));
 		rb_library_browser_reset (source->priv->browser);
 	}
-}
-
-static gboolean
-impl_show_popup (RBSource *source)
-{
-	_rb_source_show_popup (RB_SOURCE (source), "/BrowserSourcePopup");
-	return TRUE;
 }
 
 char *
