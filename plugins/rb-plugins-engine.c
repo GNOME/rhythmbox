@@ -111,8 +111,7 @@ rb_plugins_engine_load (const gchar *file)
 	info->file = g_strdup (file);
 
 	plugin_file = g_key_file_new ();
-	if (!g_key_file_load_from_file (plugin_file, file, G_KEY_FILE_NONE, NULL))
-	{
+	if (!g_key_file_load_from_file (plugin_file, file, G_KEY_FILE_NONE, NULL)) {
 		g_warning ("Bad plugin file: %s", file);
 		goto error;
 	}
@@ -120,8 +119,7 @@ rb_plugins_engine_load (const gchar *file)
 	if (!g_key_file_has_key (plugin_file,
 			   	 "RB Plugin",
 				 "IAge",
-				 NULL))
-	{
+				 NULL))	{
 		rb_debug ("IAge key does not exist in file: %s", file);
 		goto error;
 	}
@@ -130,8 +128,7 @@ rb_plugins_engine_load (const gchar *file)
 	if (g_key_file_get_integer (plugin_file,
 				    "RB Plugin",
 				    "IAge",
-				    NULL) != 1)
-	{
+				    NULL) != 1)	{
 		rb_debug ("Wrong IAge in file: %s", file);
 		goto error;
 	}
@@ -141,12 +138,9 @@ rb_plugins_engine_load (const gchar *file)
 				     "RB Plugin",
 				     "Module",
 				     NULL);
-	if (str)
-	{
+	if (str) {
 		info->location = str;
-	}
-	else
-	{
+	} else {
 		g_warning ("Could not find 'Module' in %s", file);
 		goto error;
 	}
@@ -156,17 +150,14 @@ rb_plugins_engine_load (const gchar *file)
 				     "RB Plugin",
 				     "Loader",
 				     NULL);
-	if (str && strcmp(str, "python") == 0)
-	{
+	if (str && strcmp(str, "python") == 0) {
 		info->lang = RB_PLUGIN_LOADER_PY;
 #ifndef ENABLE_PYTHON
 		rb_debug ("Cannot load python extension '%s', Rhythmbox was not "
 					"compiled with python support", file);
 		goto error;
 #endif
-	}
-	else
-	{
+	} else {
 		info->lang = RB_PLUGIN_LOADER_C;
 	}
 	g_free (str);
@@ -176,10 +167,9 @@ rb_plugins_engine_load (const gchar *file)
 					    "RB Plugin",
 					    "Name",
 					    NULL, NULL);
-	if (str)
+	if (str) {
 		info->name = str;
-	else
-	{
+	} else {
 		g_warning ("Could not find 'Name' in %s", file);
 		goto error;
 	}
@@ -189,20 +179,24 @@ rb_plugins_engine_load (const gchar *file)
 					    "RB Plugin",
 					    "Description",
 					    NULL, NULL);
-	if (str)
+	if (str) {
 		info->desc = str;
-	else
+	} else {
 		rb_debug ("Could not find 'Description' in %s", file);
+		info->desc = g_strdup ("");
+	}
 
 	/* Get icon name */
 	str = g_key_file_get_string (plugin_file,
 				     "RB Plugin",
 				     "Icon",
 				     NULL);
-	if (str)
+	if (str) {
 		info->icon_name = str;
-	else
+	} else {
 		rb_debug ("Could not find 'Description' in %s", file);
+		info->desc = g_strdup ("");
+	}
 
 	/* Get Authors */
 	info->authors = g_key_file_get_string_list (plugin_file,
@@ -217,20 +211,24 @@ rb_plugins_engine_load (const gchar *file)
 				     "RB Plugin",
 				     "Copyright",
 				     NULL);
-	if (str)
+	if (str) {
 		info->copyright = str;
-	else
+	} else {
 		rb_debug ("Could not find 'Copyright' in %s", file);
+		info->copyright = g_strdup ("");
+	}
 
 	/* Get Copyright */
 	str = g_key_file_get_string (plugin_file,
 				     "RB Plugin",
 				     "Website",
 				     NULL);
-	if (str)
+	if (str) {
 		info->website = str;
-	else
+	} else {
 		rb_debug ("Could not find 'Website' in %s", file);
+		info->website = g_strdup ("");
+	}
 
 	g_key_file_free (plugin_file);
 

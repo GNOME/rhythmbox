@@ -1,5 +1,10 @@
 2007-02-25  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load): handle keys
+	being missing from the .rb-plugin file without crashing. Fixes #411558
+
+2007-02-25  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/daap/rb-daap-share.c: (message_get_session_id),
 	(message_get_revision_number): check that there is a query part in the
 	URI before trying to use it. Fixes #411783
