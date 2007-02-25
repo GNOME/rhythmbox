@@ -46,7 +46,7 @@ rhythmbox_metadata_SOURCES = 				\
 	rb-metadata-dbus-service.c
 
 rhythmbox_metadata_LDADD = 				\
-	$(top_builddir)/metadata/librbmetadatasvc.la	\
+	librbmetadatasvc.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
 	$(DBUS_LIBS)
@@ -57,7 +57,7 @@ test_metadata_SOURCES =					\
 	test-metadata.c
 
 test_metadata_LDADD =					\
-	$(top_builddir)/metadata/librbmetadata.la	\
+	librbmetadata.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
 	$(DBUS_LIBS)
