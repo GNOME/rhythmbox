@@ -1,3 +1,9 @@
+2007-02-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/daap/rb-daap-src.c: (rb_daap_src_open):
+	Fix libsoup compatibility properly, so it actually works with 2.2.98
+	and earlier as well as 2.2.99 and newer.  Fixes #410940.
+
 2007-02-25  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Matt N  <fisxoj@gmail.com>
