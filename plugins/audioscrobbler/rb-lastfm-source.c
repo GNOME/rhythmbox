@@ -1070,6 +1070,10 @@ rb_lastfm_source_title_from_uri (char *uri)
 		title = g_strdup_printf (_("%s's %s Radio"), data[3], data[4]);
 	}
 
+	if (title == NULL && strcmp(data[2], "group") == 0) {
+		title = g_strdup_printf (_("%s Group Radio"), data[3]);
+	}
+
 	if (title == NULL) {
 		title = g_strdup (g_strstrip (uri));
 	}

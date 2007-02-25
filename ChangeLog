@@ -1,5 +1,13 @@
 2007-02-25  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Matt N  <fisxoj@gmail.com>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_title_from_uri): parse Group radio URIs too.
+	Fixes #407320
+
+2007-02-25  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_init),
 	(rb_player_gst_finalize): don't run the 5-times-a-second tick when we
 	aren't playing.
