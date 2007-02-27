@@ -78,6 +78,15 @@
   (gtype-id "RB_TYPE_SOURCELIST")
 )
 
+(define-object SourceListModel
+  (in-module "RB")
+  (parent "GtkTreeModelFilter")
+  (interface "RBTreeDragSource")
+  (interface "RBTreeDragDest")
+  (c-name "RBSourceListModel")
+  (gtype-id "RB_TYPE_SOURCELIST_MODEL")
+)
+
 (define-object EntryView
   (in-module "RB")
   (parent "GtkScrolledWindow")
@@ -175,6 +184,20 @@
     '("not-playing" "RB_ENTRY_VIEW_NOT_PLAYING")
     '("playing" "RB_ENTRY_VIEW_PLAYING")
     '("paused" "RB_ENTRY_VIEW_PAUSED")
+  )
+)
+
+(define-enum SourceListModelColumn
+  (in-module "RB")
+  (c-name "RBSourceListModelColumn")
+  (gtype-id "RB_TYPE_SOURCELIST_MODEL_COLUMN")
+  (values
+    '("column-playing" "RB_SOURCELIST_MODEL_COLUMN_PLAYING")
+    '("column-pixbuf" "RB_SOURCELIST_MODEL_COLUMN_PIXBUF")
+    '("column-name" "RB_SOURCELIST_MODEL_COLUMN_NAME")
+    '("column-source" "RB_SOURCELIST_MODEL_COLUMN_SOURCE")
+    '("column-attributes" "RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES")
+    '("column-visibility" "RB_SOURCELIST_MODEL_COLUMN_VISIBILITY")
   )
 )
 
@@ -1989,4 +2012,44 @@
   )
 )
 
+;; From rb-sourcelist-model.h
+
+(define-function rb_sourcelist_model_get_type
+  (c-name "rb_sourcelist_model_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_sourcelist_model_new
+  (c-name "rb_sourcelist_model_new")
+  (is-constructor-of "RbSourcelistModel")
+  (return-type "GtkTreeModel*")
+)
+
+(define-method set_dnd_targets
+  (of-object "RBSourceListModel")
+  (c-name "rb_sourcelist_model_set_dnd_targets")
+  (return-type "none")
+  (parameters
+    '("GtkTreeView*" "treeview")
+  )
+)
+
+(define-method get_group_path
+  (of-object "RBSourceListModel")
+  (c-name "rb_sourcelist_model_get_group_path")
+  (return-type "GtkTreePath*")
+  (parameters
+    '("RBSourceListGroup" "group")
+  )
+)
+
+(define-function rb_sourcelist_model_row_is_separator
+  (c-name "rb_sourcelist_model_row_is_separator")
+  (return-type "gboolean")
+  (parameters
+    '("GtkTreeModel*" "model")
+    '("GtkTreeIter*" "iter")
+    '("RBSourceListModel*" "sourcelist")
+  )
+)
 

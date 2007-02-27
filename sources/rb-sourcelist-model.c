@@ -781,3 +781,30 @@ rb_sourcelist_model_get_group_path (RBSourceListModel *sourcelist,
 {
 	return gtk_tree_row_reference_get_path (sourcelist->priv->groups[group]);
 }
+
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_sourcelist_model_column_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_PLAYING, "Playing"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_PIXBUF, "Pixbuf Icon"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_NAME, "Name"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_SOURCE, "Source"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, "Attributes"),
+			ENUM_ENTRY (RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, "Visibility"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBSourceListModelColumn", values);
+	}
+
+	return etype;
+}
+

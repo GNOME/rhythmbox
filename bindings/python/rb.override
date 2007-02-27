@@ -22,6 +22,7 @@ headers
 #include "rb-shell-player.h"
 #include "rb-source.h"
 #include "rb-sourcelist.h"
+#include "rb-sourcelist-model.h"
 #include "rb-static-playlist-source.h"
 
 void pyrb_register_classes (PyObject *d);
@@ -39,6 +40,8 @@ import gtk.ActionGroup as PyGtkActionGroup_Type
 import gtk.Dialog as PyGtkDialog_Type
 import gtk.HBox as PyGtkHBox_Type
 import gtk.ScrolledWindow as PyGtkScrolledWindow_Type
+import gtk.TreeModel as PyGtkTreeModel_Type
+import gtk.TreeModelFilter as PyGtkTreeModelFilter_Type
 import gtk.TreeView as PyGtkTreeView_Type
 import gtk.TreeViewColumn as PyGtkTreeViewColumn_Type
 import gtk.UIManager as PyGtkUIManager_Type
