@@ -877,7 +877,7 @@ void
 rb_value_free (GValue *val)
 {
 	g_value_unset (val);
-	g_free (val);
+	g_slice_free (GValue, val);
 }
 
 gboolean

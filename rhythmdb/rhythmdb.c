@@ -46,6 +46,7 @@
 #include "rhythmdb-private.h"
 #include "rhythmdb-property-model.h"
 #include "rb-dialog.h"
+#include "rb-string-value-map.h"
 
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
@@ -238,16 +239,9 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_gather),
 			      NULL, NULL,
-#if (GLIB_MAJOR_VERSION >= 2 && GLIB_MINOR_VERSION >= 10)
-			      rb_marshal_VOID__BOXED_BOXED,
+			      rb_marshal_VOID__BOXED_OBJECT,
 			      G_TYPE_NONE, 2,
-			      RHYTHMDB_TYPE_ENTRY, G_TYPE_HASH_TABLE);
-#else
-/* work with glib < 2.10 */
-			      rb_marshal_VOID__BOXED_POINTER,
-			      G_TYPE_NONE, 2,
-			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
-#endif
+			      RHYTHMDB_TYPE_ENTRY, RB_TYPE_STRING_VALUE_MAP);
 
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
@@ -3706,14 +3700,6 @@ rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db,
 		       metadata);
 }
 
-static void
-unset_and_free_g_value (gpointer valpointer)
-{
-	GValue *value = valpointer;
-	g_value_unset (value);
-	g_free (value);
-}
-
 /**
  * rhythmdb_entry_extra_gather:
  * @db: a #RhythmDB
@@ -3725,26 +3711,23 @@ unset_and_free_g_value (gpointer valpointer)
  * provide extra metadata should connect to the "entry_extra_metadata_gather"
  * signal.
  *
- * Returns: a GHashTable containing metadata for the entry.  This must be freed
- * using g_hash_table_destroy.
+ * Returns: a RBStringValueMap containing metadata for the entry.  This must be freed
+ * using g_object_unref.
  */
-GHashTable *
+RBStringValueMap *
 rhythmdb_entry_gather_metadata (RhythmDB *db,
 				RhythmDBEntry *entry)
 {
-	GHashTable *metadata;
+	RBStringValueMap *metadata;
 	GEnumClass *klass;
 	guint i;
 
-	metadata = g_hash_table_new_full (g_str_hash,
-					  g_str_equal,
-					  g_free,
-					  unset_and_free_g_value);
+	metadata = rb_string_value_map_new ();
 
 	/* add core properties */
 	klass = g_type_class_ref (RHYTHMDB_TYPE_PROP_TYPE);
 	for (i = 0; i < klass->n_values; i++) {
-		GValue *value;
+		GValue value = {0,};
 		gint prop;
 		GType value_type;
 		const char *name;
@@ -3764,13 +3747,11 @@ rhythmdb_entry_gather_metadata (RhythmDB *db,
 			continue;
 		}
 
-		value = g_new0 (GValue, 1);
-		g_value_init (value, value_type);
-		rhythmdb_entry_get (db, entry, prop, value);
+		g_value_init (&value, value_type);
+		rhythmdb_entry_get (db, entry, prop, &value);
 		name = (char *)rhythmdb_nice_elt_name_from_propid (db, prop);
-		g_hash_table_insert (metadata,
-				     (gpointer) g_strdup (name),
-				     value);
+		rb_string_value_map_set (metadata, name, &value);
+		g_value_unset (&value);
 	}
 	g_type_class_unref (klass);
 

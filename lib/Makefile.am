@@ -32,7 +32,9 @@ librb_la_SOURCES =					\
 	md5.c						\
 	md5.h						\
 	rb-proxy-config.c				\
-	rb-proxy-config.h
+	rb-proxy-config.h				\
+	rb-string-value-map.c				\
+	rb-string-value-map.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

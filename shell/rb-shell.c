@@ -3437,6 +3437,7 @@ rb_shell_get_song_properties (RBShell *shell,
 			      GError **error)
 {
 	RhythmDBEntry *entry;
+	RBStringValueMap *map;
 
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
 
@@ -3449,7 +3450,10 @@ rb_shell_get_song_properties (RBShell *shell,
 		return FALSE;
 	}
 
-	*properties = rhythmdb_entry_gather_metadata (shell->priv->db, entry);
+	map = rhythmdb_entry_gather_metadata (shell->priv->db, entry);
+	*properties = rb_string_value_map_steal_hashtable (map);
+	g_object_unref (map);
+
 	return (*properties != NULL);
 }
 

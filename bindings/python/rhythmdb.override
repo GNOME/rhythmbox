@@ -7,6 +7,7 @@ headers
 #include "override_common.h"
 #include "rb-util.h"
 
+#include "rb-string-value-map.h"
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"
 #include "rhythmdb-query-model.h"
@@ -567,49 +568,6 @@ _wrap_rhythmdb_entry_request_extra_metadata(PyGObject *self, PyObject *args, PyO
 	return Py_None;
 }
 %%
-override rhythmdb_entry_gather_metadata kwargs
-
-static void
-_hashtable_to_dict (const char *name, GValue *value, PyObject *dict)
-{
-	PyObject *obj;
-
-	obj =  pyg_value_as_pyobject (value, TRUE);
-	PyDict_SetItemString (dict, name, obj);
-	Py_DECREF (obj);
-}
-
-static PyObject *
-_wrap_rhythmdb_entry_gather_metadata(PyGObject *self, PyObject *args, PyObject *kwargs)
-{
-	static char *kwlist[] = { "entry", NULL };
-	PyObject *py_entry;
-	GHashTable *ret;
-	RhythmDBEntry *entry = NULL;
-
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs,"O:RhythmDB.entry_gather_metadata", kwlist, &py_entry))
-		return NULL;
-	if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY))
-		entry = pyg_boxed_get(py_entry, RhythmDBEntry);
-	else {
-		PyErr_SetString(PyExc_TypeError, "entry should be a RhythmDBEntry");
-		return NULL;
-	}
-
-	ret = rhythmdb_entry_gather_metadata(RHYTHMDB_RHYTHMDB(self->obj), entry);
-	
-	if (ret) {
-		PyObject *py_ret = PyDict_New();
-
-		g_hash_table_foreach (ret, (GHFunc)_hashtable_to_dict, py_ret);
-
-		g_hash_table_destroy(ret);
-		return py_ret;
-	}
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-%%
 override rhythmdb_emit_entry_extra_metadata_notify kwargs
 
 static PyObject *
@@ -765,5 +723,73 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 	}
 	
 	Py_INCREF (Py_None);
+	return Py_None;
+}
+%%
+override rb_string_value_map_get kwargs
+static PyObject *
+_wrap_rb_string_value_map_get (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = {"key", NULL };
+	PyObject *py_key = NULL;
+	PyObject *py_value = NULL;
+	char *key;
+	GValue value = {0,};
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBStringValueMap.get", kwlist, &py_key))
+		return NULL;
+
+	if (PyString_Check (py_key) < 0) {
+		PyErr_SetString (PyExc_TypeError, "key must be a string");
+		return NULL;
+	}
+	key = PyString_AsString (py_key);
+	
+	if (!rb_string_value_map_get (RB_STRING_VALUE_MAP(self->obj), key, &value)) {
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	py_value = pyg_value_as_pyobject (&value, TRUE);
+	g_value_unset (&value);
+
+	return py_value;
+}
+%%
+override rb_string_value_map_set kwargs
+static PyObject *
+_wrap_rb_string_value_map_set (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = {"key", "value", NULL };
+	PyObject *py_key = NULL;
+	PyObject *py_value = NULL;
+	char *key;
+	GValue value = {0,};
+	GType gtype;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO:RBStringValueMap.set", kwlist, &py_key, &py_value))
+		return NULL;
+
+	gtype = pyg_type_from_object ((PyObject *)py_value->ob_type);
+	if (!gtype) {
+		PyErr_SetString (PyExc_TypeError, "can't map metadata to GType system");
+		return NULL;
+	}
+	g_value_init (&value, gtype);
+	if (pyg_value_from_pyobject  (&value, py_value) < 0) {
+		PyErr_SetString (PyExc_TypeError, "could not access value for criteria");
+		return NULL;
+	}
+
+	if (PyString_Check (py_key) < 0) {
+		PyErr_SetString (PyExc_TypeError, "key must be a string");
+		return NULL;
+	}
+	key = PyString_AsString (py_key);
+	
+	rb_string_value_map_set (RB_STRING_VALUE_MAP(self->obj), key, &value);
+	g_value_unset (&value);
+
+	Py_INCREF(Py_None);
 	return Py_None;
 }

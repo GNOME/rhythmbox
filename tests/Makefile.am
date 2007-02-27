@@ -31,6 +31,10 @@ test_file_helpers_SOURCES = \
 	test-file-helpers.c					\
 	$(test_utils)
 
+test_rb_lib_SOURCES = \
+	test-rb-lib.c					\
+	$(test_utils)
+
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
 
 INCLUDES = 							\
@@ -46,6 +50,7 @@ INCLUDES = 							\
 
 if HAVE_CHECK
 TESTS += \
+	test-rb-lib						\
 	test-rhythmdb						\
 	test-rhythmdb-query-model				\
 	test-rhythmdb-property-model				\

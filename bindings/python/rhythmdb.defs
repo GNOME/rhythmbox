@@ -56,6 +56,13 @@
   (gtype-id "RHYTHMDB_TYPE_QUERY_MODEL")
 )
 
+(define-object StringValueMap
+  (in-module "RhythmDB")
+  (parent "GObject")
+  (c-name "RBStringValueMap")
+  (gtype-id "RB_TYPE_STRING_VALUE_MAP")
+)
+
 
 ;; Enumerations and flags ...
 
@@ -626,7 +633,7 @@
 (define-method entry_gather_metadata
   (of-object "RhythmDB")
   (c-name "rhythmdb_entry_gather_metadata")
-  (return-type "GHashTable*")
+  (return-type "RBStringValueMap*")
   (parameters
     '("RhythmDBEntry*" "entry")
   )
@@ -944,4 +951,61 @@
     '("RhythmDBEntry*" "b")
     '("RhythmDBQueryModel*" "model")
   )
+)
+
+;; From rb-string-value-map.h
+
+(define-function rb_string_value_map_get_type
+  (c-name "rb_string_value_map_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_string_value_map_new
+  (c-name "rb_string_value_map_new")
+  (is-constructor-of "RbStringValueMap")
+  (return-type "RBStringValueMap*")
+)
+
+(define-method set
+  (of-object "RBStringValueMap")
+  (c-name "rb_string_value_map_set")
+  (return-type "none")
+  (parameters
+    '("const-char*" "key")
+    '("const-GValue*" "value")
+  )
+)
+
+(define-method get
+  (of-object "RBStringValueMap")
+  (c-name "rb_string_value_map_get")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "key")
+    '("GValue*" "out")
+  )
+)
+
+(define-method peek
+  (of-object "RBStringValueMap")
+  (c-name "rb_string_value_map_peek")
+  (return-type "const-GValue*")
+  (parameters
+    '("const-char*" "key")
+  )
+)
+
+(define-method remove
+  (of-object "RBStringValueMap")
+  (c-name "rb_string_value_map_remove")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "key")
+  )
+)
+
+(define-method size
+  (of-object "RBStringValueMap")
+  (c-name "rb_string_value_map_size")
+  (return-type "guint")
 )

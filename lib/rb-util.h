@@ -72,7 +72,7 @@ gboolean rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 					       const GValue *handler_return,
 					       gpointer dummy);
 void rb_value_array_append_data (GValueArray *array, GType type, ...);
-void rb_value_free (GValue *val);
+void rb_value_free (GValue *val); /* g_value_unset, g_slice_free */
 
 G_END_DECLS
 

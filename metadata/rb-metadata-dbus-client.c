@@ -461,7 +461,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 	type = rb_metadata_get_field_type (field);
 	g_return_val_if_fail (type == G_VALUE_TYPE (val), FALSE);
 
-	newval = g_new0 (GValue, 1);
+	newval = g_slice_new0 (GValue);
 	g_value_init (newval, type);
 	g_value_copy (val, newval);
 

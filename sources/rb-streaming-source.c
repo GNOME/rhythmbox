@@ -72,7 +72,7 @@ static GValue * streaming_album_request_cb (RhythmDB *db,
 					    RBStreamingSource *source);
 static void extra_metadata_gather_cb (RhythmDB *db,
 				      RhythmDBEntry *entry,
-				      GHashTable *data,
+				      RBStringValueMap *data,
 				      RBStreamingSource *source);
 
 struct RBStreamingSourcePrivate
@@ -300,7 +300,7 @@ streaming_album_request_cb (RhythmDB *db,
 static void
 extra_metadata_gather_cb (RhythmDB *db,
 			  RhythmDBEntry *entry,
-			  GHashTable *data,
+			  RBStringValueMap *data,
 			  RBStreamingSource *source)
 {
 	/* our extra metadata only applies to the playing entry */
@@ -309,30 +309,30 @@ extra_metadata_gather_cb (RhythmDB *db,
 		return;
 
 	if (source->priv->streaming_title != NULL) {
-		GValue *value;
+		GValue value = {0,};
 
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_title);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_TITLE), value);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, source->priv->streaming_title);
+		rb_string_value_map_set (data, RHYTHMDB_PROP_STREAM_SONG_TITLE, &value);
+		g_value_unset (&value);
 	}
 
 	if (source->priv->streaming_artist != NULL) {
-		GValue *value;
+		GValue value = {0,};
 
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_artist);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_ARTIST), value);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, source->priv->streaming_artist);
+		rb_string_value_map_set (data, RHYTHMDB_PROP_STREAM_SONG_ARTIST, &value);
+		g_value_unset (&value);
 	}
 
 	if (source->priv->streaming_album != NULL) {
-		GValue *value;
+		GValue value = {0,};
 
-		value = g_new0 (GValue, 1);
-		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, source->priv->streaming_album);
-		g_hash_table_insert (data, g_strdup (RHYTHMDB_PROP_STREAM_SONG_ALBUM), value);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, source->priv->streaming_album);
+		rb_string_value_map_set (data, RHYTHMDB_PROP_STREAM_SONG_ALBUM, &value);
+		g_value_unset (&value);
 	}
 }
 

@@ -47,6 +47,7 @@ rb.c: rb.defs rb.override
 
 BINDING_HEADERS_SRCDIR_IN = \
 	plugins/rb-plugin.h			\
+	lib/rb-string-value-map.h		\
 	rhythmdb/rhythmdb.h			\
 	rhythmdb/rhythmdb-property-model.h	\
 	rhythmdb/rhythmdb-query-model.h		\

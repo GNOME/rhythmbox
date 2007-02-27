@@ -202,7 +202,7 @@ rb_metadata_dbus_read_from_message (RBMetaData *md, GHashTable *metadata, DBusMe
 		}
 
 		dbus_message_iter_recurse (&e_iter, &v_iter);
-		val = g_new0 (GValue, 1);
+		val = g_slice_new0 (GValue);
 		switch (dbus_message_iter_get_arg_type (&v_iter)) {
 		case DBUS_TYPE_UINT32:
 			{
