@@ -183,7 +183,7 @@ rb_audiocd_source_new (RBPlugin *plugin,
 			       "volume", volume,
 			       "shell", shell,
 			       "sorting-key", NULL,
-			       "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
+			       "source-group", RB_SOURCE_GROUP_DEVICES,
 			       "plugin", plugin,
 			       NULL);
 

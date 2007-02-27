@@ -1,3 +1,67 @@
+2007-02-27  William Jon McCann  <mccann@jhu.edu>
+
+	* widgets/gossip-cell-renderer-expander.[ch]: New files.
+	* sources/rb-source-group.[ch]: New files.
+
+	* bindings/python/rb.defs:
+	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_new):
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_new):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_new):
+	* plugins/generic-player/rb-nokia770-source.c:
+	(rb_nokia770_source_new):
+	* plugins/generic-player/rb-psp-source.c: (rb_psp_source_new):
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_new):
+	* plugins/iradio/rb-iradio-source.c: (rb_iradio_source_new):
+	* plugins/jamendo/jamendo/__init__.py:
+	* plugins/magnatune/magnatune/BuyAlbumHandler.py:
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	* plugins/magnatune/magnatune/TrackListHandler.py:
+	* plugins/magnatune/magnatune/__init__.py:
+	* shell/rb-playlist-manager.c: (model_foreach_func),
+	(rb_playlist_manager_save_playlists):
+	* shell/rb-shell.c: (construct_sources), (rb_shell_constructor):
+	* sources/Makefile.am:
+	* sources/rb-auto-playlist-source.c: (rb_auto_playlist_source_new):
+	* sources/rb-import-errors-source.c: (rb_import_errors_source_new):
+	* sources/rb-library-source.c: (rb_library_source_new):
+	* sources/rb-missing-files-source.c: (rb_missing_files_source_new):
+	* sources/rb-play-queue-source.c: (rb_play_queue_source_new):
+	* sources/rb-podcast-source.c: (rb_podcast_source_new):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_set_property), (rb_source_get_property),
+	(rb_source_eof_type_get_type):
+	* sources/rb-source.h:
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_finalize),
+	(rb_sourcelist_model_new), (rb_sourcelist_model_is_row_visible),
+	(get_group_for_path), (rb_sourcelist_model_drag_data_received),
+	(path_is_reorderable), (rb_sourcelist_model_row_draggable):
+	* sources/rb-sourcelist-model.h:
+	* sources/rb-sourcelist.c: (rb_sourcelist_cell_set_background),
+	(sourcelist_indent_level1_cell_data_func),
+	(sourcelist_indent_level2_cell_data_func),
+	(sourcelist_pixbuf_cell_data_func),
+	(rb_sourcelist_title_cell_data_func), (compare_rows),
+	(rb_sourcelist_expander_cell_data_func), (row_activated_cb),
+	(drop_received_cb), (emit_show_popup), (button_press_cb),
+	(key_release_cb), (popup_menu_cb), (rb_sourcelist_init),
+	(rb_sourcelist_new), (icon_notify_cb),
+	(sourcelist_get_group_foreach), (rb_sourcelist_find_group_iter),
+	(sourcelist_get_group), (name_notify_cb), (visibility_notify_cb),
+	(rb_sourcelist_group_update_visibility), (rb_sourcelist_append),
+	(rb_sourcelist_source_to_iter),
+	(rb_sourcelist_visible_source_to_iter),
+	(rb_sourcelist_edit_source_name), (rb_sourcelist_remove),
+	(rb_sourcelist_selection_changed_cb), (source_name_edited_cb):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_new):
+	* widgets/Makefile.am:
+	* widgets/rb-cell-renderer-pixbuf.c:
+	Add source groups.  Use expanders to collapse source groups.
+	Fixes #359740
+
 2007-02-27  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/rb.defs:

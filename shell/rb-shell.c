@@ -1199,9 +1199,9 @@ construct_sources (RBShell *shell)
 	shell->priv->podcast_source = RB_PODCAST_SOURCE (rb_podcast_source_new (shell));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->podcast_source), NULL);
 	shell->priv->missing_files_source = rb_missing_files_source_new (shell, shell->priv->library_source);
-	rb_shell_append_source (shell, shell->priv->missing_files_source, RB_SOURCE (shell->priv->library_source));
+	rb_shell_append_source (shell, shell->priv->missing_files_source, NULL);
 	shell->priv->import_errors_source = rb_import_errors_source_new (shell, shell->priv->library_source);
-	rb_shell_append_source (shell, shell->priv->import_errors_source, RB_SOURCE (shell->priv->library_source));
+	rb_shell_append_source (shell, shell->priv->import_errors_source, NULL);
 
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
@@ -1331,6 +1331,7 @@ rb_shell_constructor (GType type,
 					     shell);
 
 	construct_db (shell);
+	rb_source_group_init ();
 
 	/* initialize shell services */
 	construct_widgets (shell);

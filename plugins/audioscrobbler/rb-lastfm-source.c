@@ -531,6 +531,7 @@ rb_lastfm_source_new (RBShell *shell)
 					  "shell", shell,
 					  "entry-type", entry_type,
 					  "proxy-config", proxy_config,
+					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 

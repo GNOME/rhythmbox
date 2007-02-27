@@ -37,8 +37,11 @@
 #include "rb-stock-icons.h"
 #include "rb-marshal.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "gossip-cell-renderer-expander.h"
 #include "rb-tree-dnd.h"
 #include "rb-util.h"
+#include "rb-auto-playlist-source.h"
+#include "rb-static-playlist-source.h"
 
 struct RBSourceListPrivate
 {
@@ -51,7 +54,6 @@ struct RBSourceListPrivate
 
 	RBSource *playing_source;
 	int child_source_count;
-	GtkTreeViewColumn *hidden_column;
 	GtkTreeViewColumn *main_column;
 
 	RBShell *shell;
@@ -94,26 +96,8 @@ static gboolean rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
 						      GtkTreeIter *iter);
 static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 						RBSourceList *sourcelist);
-static void drop_received_cb (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos,
-			      GtkSelectionData *data, RBSourceList *sourcelist);
-static void row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
-			      GtkTreeViewColumn *column, RBSourceList *sourcelist);
-static gboolean button_press_cb (GtkTreeView *treeview,
-				 GdkEventButton *event,
-				 RBSourceList *sourcelist);
-static gboolean key_release_cb (GtkTreeView *treeview,
-				GdkEventKey *event,
-				RBSourceList *sourcelist);
-static gboolean popup_menu_cb (GtkTreeView *treeview, RBSourceList *sourcelist);
-static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
-static void visibility_notify_cb (GObject *obj, GParamSpec *pspec,
-				  gpointer data);
 static void source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 				   const char *text, RBSourceList *sourcelist);
-static void rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-						GtkTreeModel *tree_model, GtkTreeIter *iter,
-						RBSourceList *sourcelist);
-static void rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist);
 
 static guint rb_sourcelist_signals[LAST_SIGNAL] = { 0 };
 
@@ -195,6 +179,410 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 }
 
 static void
+rb_sourcelist_cell_set_background (RBSourceList       *list,
+				   GtkCellRenderer    *cell,
+				   gboolean            is_group,
+				   gboolean            is_active)
+{
+	GdkColor  color;
+	GtkStyle *style;
+
+	g_return_if_fail (list != NULL);
+	g_return_if_fail (cell != NULL);
+
+	style = gtk_widget_get_style (GTK_WIDGET (list));
+
+	if (!is_group) {
+		if (is_active) {
+			color = style->bg[GTK_STATE_SELECTED];
+
+			/* Here we take the current theme colour and add it to
+			 * the colour for white and average the two. This
+			 * gives a colour which is inline with the theme but
+			 * slightly whiter.
+			 */
+			color.red = (color.red + (style->white).red) / 2;
+			color.green = (color.green + (style->white).green) / 2;
+			color.blue = (color.blue + (style->white).blue) / 2;
+
+			g_object_set (cell,
+				      "cell-background-gdk", &color,
+				      NULL);
+		} else {
+			g_object_set (cell,
+				      "cell-background-gdk", NULL,
+				      NULL);
+		}
+	} else {
+		color = style->text_aa[GTK_STATE_INSENSITIVE];
+
+		color.red = (color.red + (style->white).red) / 2;
+		color.green = (color.green + (style->white).green) / 2;
+		color.blue = (color.blue + (style->white).blue) / 2;
+
+		g_object_set (cell,
+			      "cell-background-gdk", &color,
+			      NULL);
+	}
+}
+
+static void
+sourcelist_indent_level1_cell_data_func (GtkTreeViewColumn *tree_column,
+					 GtkCellRenderer   *cell,
+					 GtkTreeModel      *model,
+					 GtkTreeIter       *iter,
+					 RBSourceList      *sourcelist)
+{
+	GtkTreePath *path;
+	int          depth;
+
+	path = gtk_tree_model_get_path (model, iter);
+	depth = gtk_tree_path_get_depth (path);
+	gtk_tree_path_free (path);
+	g_object_set (cell,
+		      "text", " ",
+		      "visible", depth > 1,
+		      NULL);
+}
+
+static void
+sourcelist_indent_level2_cell_data_func (GtkTreeViewColumn *tree_column,
+					 GtkCellRenderer   *cell,
+					 GtkTreeModel      *model,
+					 GtkTreeIter       *iter,
+					 RBSourceList      *sourcelist)
+{
+	GtkTreePath *path;
+	int          depth;
+
+	path = gtk_tree_model_get_path (model, iter);
+	depth = gtk_tree_path_get_depth (path);
+	gtk_tree_path_free (path);
+	g_object_set (cell,
+		      "text", " ",
+		      "visible", depth > 2,
+		      NULL);
+}
+
+static void
+sourcelist_pixbuf_cell_data_func (GtkTreeViewColumn *tree_column,
+				  GtkCellRenderer   *cell,
+				  GtkTreeModel      *model,
+				  GtkTreeIter       *iter,
+				  RBSourceList      *sourcelist)
+{
+	GdkPixbuf *pixbuf;
+	gboolean   is_group;
+	gboolean   is_active;
+
+	gtk_tree_model_get (model, iter,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &is_group,
+			    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, &pixbuf,
+			    -1);
+
+	g_object_set (cell,
+		      "visible", !is_group,
+		      "pixbuf", pixbuf,
+		      NULL);
+
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
+
+	is_active = FALSE;
+	rb_sourcelist_cell_set_background (sourcelist, cell, is_group, is_active);
+}
+
+static void
+rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column,
+				    GtkCellRenderer   *renderer,
+				    GtkTreeModel      *tree_model,
+				    GtkTreeIter       *iter,
+				    RBSourceList      *sourcelist)
+{
+	char    *str;
+	gboolean playing;
+	gboolean is_group;
+	gboolean is_active;
+
+	gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->filter_model), iter,
+			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
+			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, &playing,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &is_group,
+			    -1);
+
+	g_object_set (renderer,
+		      "text", str,
+		      "weight", playing ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
+		      NULL);
+
+	is_active = FALSE;
+	rb_sourcelist_cell_set_background (sourcelist, renderer, is_group, is_active);
+
+	g_free (str);
+}
+
+static int
+compare_rows (GtkTreeModel *model,
+	      GtkTreeIter  *a,
+	      GtkTreeIter  *b,
+	      gpointer      user_data)
+{
+	char *a_name;
+	char *b_name;
+	gboolean a_is_group;
+	gboolean b_is_group;
+	RBSourceGroupCategory a_category;
+	RBSourceGroupCategory b_category;
+	RBSource             *a_source;
+	RBSource             *b_source;
+	int ret;
+
+	gtk_tree_model_get (model, a,
+			    RB_SOURCELIST_MODEL_COLUMN_NAME, &a_name,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &a_is_group,
+			    RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY, &a_category,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &a_source,
+			    -1);
+	gtk_tree_model_get (model, b,
+			    RB_SOURCELIST_MODEL_COLUMN_NAME, &b_name,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &b_is_group,
+			    RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY, &b_category,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &b_source,
+			    -1);
+
+	if (a_is_group && a_is_group) {
+		if (a_category < b_category) {
+			ret = -1;
+		} else if (a_category > b_category) {
+			ret = 1;
+		} else {
+			ret = g_utf8_collate (a_name, b_name);
+		}
+	} else {
+		/* sort by name */
+		switch (a_category) {
+		case RB_SOURCE_GROUP_CATEGORY_FIXED:
+			ret = -1;
+			break;
+		case RB_SOURCE_GROUP_CATEGORY_PERSISTENT:
+			if (RB_IS_AUTO_PLAYLIST_SOURCE (a_source)
+			    && RB_IS_AUTO_PLAYLIST_SOURCE (b_source)) {
+				ret = g_utf8_collate (a_name, b_name);
+			} else if (RB_IS_STATIC_PLAYLIST_SOURCE (a_source)
+				   && RB_IS_STATIC_PLAYLIST_SOURCE (b_source)) {
+				ret = g_utf8_collate (a_name, b_name);
+			} else if (RB_IS_AUTO_PLAYLIST_SOURCE (a_source)) {
+				ret = -1;
+			} else {
+				ret = 1;
+			}
+
+			break;
+		case RB_SOURCE_GROUP_CATEGORY_REMOVABLE:
+		case RB_SOURCE_GROUP_CATEGORY_TRANSIENT:
+			ret = g_utf8_collate (a_name, b_name);
+			break;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
+	}
+
+	if (a_source != NULL) {
+		g_object_unref (a_source);
+	}
+	if (b_source != NULL) {
+		g_object_unref (b_source);
+	}
+	g_free (a_name);
+	g_free (b_name);
+
+	return ret;
+}
+
+static void
+rb_sourcelist_expander_cell_data_func (GtkTreeViewColumn *column,
+				       GtkCellRenderer   *cell,
+				       GtkTreeModel      *model,
+				       GtkTreeIter       *iter,
+				       RBSourceList      *sourcelist)
+{
+	gboolean is_group;
+	gboolean is_active;
+
+	gtk_tree_model_get (model, iter,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &is_group,
+			    -1);
+
+	if (gtk_tree_model_iter_has_child (model, iter)) {
+		GtkTreePath *path;
+		gboolean     row_expanded;
+
+		path = gtk_tree_model_get_path (model, iter);
+		row_expanded = gtk_tree_view_row_expanded (GTK_TREE_VIEW (column->tree_view), path);
+		gtk_tree_path_free (path);
+
+		g_object_set (cell,
+			      "visible", TRUE,
+			      "expander-style", row_expanded ? GTK_EXPANDER_EXPANDED : GTK_EXPANDER_COLLAPSED,
+			      NULL);
+	} else {
+		g_object_set (cell, "visible", FALSE, NULL);
+	}
+
+	is_active = FALSE;
+	rb_sourcelist_cell_set_background (sourcelist, cell, is_group, is_active);
+}
+
+static void
+row_activated_cb (GtkTreeView       *treeview,
+		  GtkTreePath       *path,
+		  GtkTreeViewColumn *column,
+		  RBSourceList      *sourcelist)
+{
+	GtkTreeModel *model;
+	GtkTreeIter   iter;
+	RBSource     *target;
+	gboolean      is_group;
+
+	model = gtk_tree_view_get_model (treeview);
+
+	g_return_if_fail (gtk_tree_model_get_iter (model, &iter, path));
+
+	gtk_tree_model_get (model, &iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &is_group,
+			    -1);
+
+	if (target != NULL) {
+		g_signal_emit (sourcelist, rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
+		g_object_unref (target);
+	}
+}
+
+static void
+drop_received_cb (RBSourceListModel      *model,
+		  RBSource               *target,
+		  GtkTreeViewDropPosition pos,
+		  GtkSelectionData       *data,
+		  RBSourceList           *sourcelist)
+{
+	rb_debug ("drop recieved");
+	/* Proxy the signal. */
+	g_signal_emit (sourcelist, rb_sourcelist_signals[DROP_RECEIVED], 0, target, data);
+}
+
+static gboolean
+emit_show_popup (GtkTreeView  *treeview,
+		 RBSourceList *sourcelist)
+{
+	GtkTreeIter iter;
+	RBSource   *target;
+	gboolean    ret;
+
+	if (!gtk_tree_selection_get_selected (gtk_tree_view_get_selection (treeview),
+					      NULL, &iter))
+		return FALSE;
+
+	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	if (target == NULL)
+		return FALSE;
+
+	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
+
+	g_signal_emit (sourcelist, rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
+
+	if (target != NULL) {
+		g_object_unref (target);
+	}
+
+	return ret;
+}
+
+static gboolean
+button_press_cb (GtkTreeView    *treeview,
+		 GdkEventButton *event,
+		 RBSourceList   *sourcelist)
+{
+	GtkTreeIter  iter;
+	GtkTreePath *path;
+	gboolean     res;
+
+	if (event->button != 3) {
+		return FALSE;
+	}
+
+	res = gtk_tree_view_get_path_at_pos (treeview,
+					     event->x,
+					     event->y,
+					     &path,
+					     NULL,
+					     NULL,
+					     NULL);
+	if (! res) {
+		/* pointer is over empty space */
+		GtkUIManager *uimanager;
+		g_object_get (sourcelist->priv->shell, "ui-manager", &uimanager, NULL);
+		rb_gtk_action_popup_menu (uimanager, "/SourceListPopup");
+		g_object_unref (uimanager);
+		return TRUE;
+	}
+
+	res = gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model), &iter, path);
+	if (res) {
+		gtk_tree_selection_select_iter (gtk_tree_view_get_selection (treeview), &iter);
+	}
+
+	return emit_show_popup (treeview, sourcelist);
+}
+
+static gboolean
+key_release_cb (GtkTreeView  *treeview,
+		GdkEventKey  *event,
+		RBSourceList *sourcelist)
+{
+	GtkTreeIter iter;
+	RBSource   *target;
+	gboolean    res;
+
+	/* F2 = rename playlist */
+	if (event->keyval != GDK_F2) {
+		return FALSE;
+	}
+
+	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection, NULL, &iter)) {
+		return FALSE;
+	}
+
+	gtk_tree_model_get (sourcelist->priv->filter_model,
+			    &iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target,
+			    -1);
+	if (target == NULL) {
+		return FALSE;
+	}
+
+	res = FALSE;
+	if (rb_source_can_rename (target)) {
+		rb_sourcelist_edit_source_name (sourcelist, target);
+		res = TRUE;
+	}
+
+	g_object_unref (target);
+
+	return res;
+}
+
+static gboolean
+popup_menu_cb (GtkTreeView  *treeview,
+	       RBSourceList *sourcelist)
+{
+	return emit_show_popup (treeview, sourcelist);
+}
+
+static void
 rb_sourcelist_init (RBSourceList *sourcelist)
 {
 	GtkCellRenderer *renderer;
@@ -203,78 +591,141 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 
 	sourcelist->priv->filter_model = rb_sourcelist_model_new ();
 	sourcelist->priv->real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
-
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->filter_model),
+	g_signal_connect_object (sourcelist->priv->filter_model,
 				 "drop_received",
 				 G_CALLBACK (drop_received_cb),
 				 sourcelist, 0);
 
 	sourcelist->priv->treeview = gtk_tree_view_new_with_model (sourcelist->priv->filter_model);
+
+	g_object_set (sourcelist->priv->treeview,
+		      "headers-visible", FALSE,
+		      "reorderable", TRUE,
+		      NULL);
+
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (sourcelist->priv->treeview), FALSE);
 	rb_sourcelist_model_set_dnd_targets (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
 					     GTK_TREE_VIEW (sourcelist->priv->treeview));
-	gtk_tree_view_set_row_separator_func (GTK_TREE_VIEW (sourcelist->priv->treeview),
-					      (GtkTreeViewRowSeparatorFunc) rb_sourcelist_model_row_is_separator,
-					      sourcelist->priv->filter_model, NULL);
 
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+	g_signal_connect_object (sourcelist->priv->treeview,
 				 "row_activated",
 				 G_CALLBACK (row_activated_cb),
 				 sourcelist, 0);
 
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+	g_signal_connect_object (sourcelist->priv->treeview,
 				 "button_press_event",
 				 G_CALLBACK (button_press_cb),
 				 sourcelist, 0);
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+	g_signal_connect_object (sourcelist->priv->treeview,
 				 "key_release_event",
 				 G_CALLBACK (key_release_cb),
 				 sourcelist, 0);
 
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+	g_signal_connect_object (sourcelist->priv->treeview,
 				 "popup_menu",
 				 G_CALLBACK (popup_menu_cb),
 				 sourcelist, 0);
 
-	sourcelist->priv->hidden_column = gtk_tree_view_column_new ();
-	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
-				     sourcelist->priv->hidden_column);
-	gtk_tree_view_column_set_visible (sourcelist->priv->hidden_column, FALSE);
-	gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
-				     sourcelist->priv->hidden_column);
-
 	sourcelist->priv->main_column = gtk_tree_view_column_new ();
 	gtk_tree_view_column_set_title (sourcelist->priv->main_column, _("S_ource"));
 	gtk_tree_view_column_set_clickable (sourcelist->priv->main_column, FALSE);
+
+        gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (sourcelist->priv->real_model),
+                                         RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY,
+					 compare_rows,
+                                         NULL, NULL);
+        gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sourcelist->priv->real_model),
+                                              RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY,
+                                              GTK_SORT_ASCENDING);
+
 	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), sourcelist->priv->main_column);
+
+	/* Set up the indent level1 column */
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, FALSE);
+	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column,
+						 renderer,
+						 (GtkTreeCellDataFunc) sourcelist_indent_level1_cell_data_func,
+						 sourcelist,
+						 NULL);
+
+	g_object_set (renderer,
+		      "xpad", 0,
+		      "visible", FALSE,
+		      NULL);
+
+	/* Set up the indent level2 column */
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, FALSE);
+	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column,
+						 renderer,
+						 (GtkTreeCellDataFunc) sourcelist_indent_level2_cell_data_func,
+						 sourcelist,
+						 NULL);
+
+	g_object_set (renderer,
+		      "xpad", 0,
+		      "visible", FALSE,
+		      NULL);
 
 	/* Set up the pixbuf column */
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, FALSE);
-	gtk_tree_view_column_set_attributes (sourcelist->priv->main_column, renderer,
-				             "pixbuf", RB_SOURCELIST_MODEL_COLUMN_PIXBUF,
-					     NULL);
+	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column,
+						 renderer,
+						 (GtkTreeCellDataFunc) sourcelist_pixbuf_cell_data_func,
+						 sourcelist,
+						 NULL);
+
+	g_object_set (renderer,
+		      "xpad", 8,
+		      "ypad", 1,
+		      "visible", FALSE,
+		      NULL);
+
 
 	/* Set up the name column */
 	sourcelist->priv->title_renderer = renderer = gtk_cell_renderer_text_new ();
-	g_object_set (G_OBJECT (sourcelist->priv->title_renderer),
+	g_object_set (sourcelist->priv->title_renderer,
 		      "ellipsize", PANGO_ELLIPSIZE_END,
 		      NULL);
 	gtk_tree_view_column_pack_start (sourcelist->priv->main_column, renderer, TRUE);
-	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column, renderer,
-						 (GtkTreeCellDataFunc)
-						 rb_sourcelist_title_cell_data_func,
-						 sourcelist, NULL);
+	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column,
+						 renderer,
+						 (GtkTreeCellDataFunc) rb_sourcelist_title_cell_data_func,
+						 sourcelist,
+						 NULL);
 	g_signal_connect_object (renderer, "edited", G_CALLBACK (source_name_edited_cb), sourcelist, 0);
 
+	if (g_object_class_find_property (G_OBJECT_GET_CLASS (sourcelist->priv->treeview), "show-expanders") != NULL) {
+		g_object_set (sourcelist->priv->treeview, "show-expanders", FALSE, NULL);
+	} else {
+		/* Hidden column for the normal treeview expander (gtk 2.8 compatibility) */
+		GtkTreeViewColumn *hidden;
+
+		hidden = gtk_tree_view_column_new ();
+
+		g_object_set (hidden, "visible", FALSE, NULL);
+
+		gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), hidden);
+		gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview), hidden);
+	}
+
+	/* Expander */
+	renderer = gossip_cell_renderer_expander_new ();
+	gtk_tree_view_column_pack_end (sourcelist->priv->main_column, renderer, FALSE);
+	gtk_tree_view_column_set_cell_data_func (sourcelist->priv->main_column,
+						 renderer,
+						 (GtkTreeCellDataFunc) rb_sourcelist_expander_cell_data_func,
+						 sourcelist,
+						 NULL);
+
 	sourcelist->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sourcelist->priv->treeview));
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->selection),
+	g_signal_connect_object (sourcelist->priv->selection,
 			         "changed",
 			         G_CALLBACK (rb_sourcelist_selection_changed_cb),
 			         sourcelist,
 				 0);
-
-	rb_sourcelist_update_expander_visibility (sourcelist);
 }
 
 static void
@@ -290,10 +741,10 @@ rb_sourcelist_finalize (GObject *object)
 }
 
 static void
-rb_sourcelist_set_property (GObject *object,
-			    guint prop_id,
+rb_sourcelist_set_property (GObject      *object,
+			    guint         prop_id,
 			    const GValue *value,
-			    GParamSpec *pspec)
+			    GParamSpec   *pspec)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (object);
 	switch (prop_id)
@@ -308,9 +759,9 @@ rb_sourcelist_set_property (GObject *object,
 }
 
 static void
-rb_sourcelist_get_property (GObject *object,
-			    guint prop_id,
-			    GValue *value,
+rb_sourcelist_get_property (GObject    *object,
+			    guint       prop_id,
+			    GValue     *value,
 			    GParamSpec *pspec)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (object);
@@ -349,8 +800,8 @@ rb_sourcelist_new (RBShell *shell)
 }
 
 static void
-icon_notify_cb (RBSource *source,
-		GParamSpec *pspec,
+icon_notify_cb (RBSource     *source,
+		GParamSpec   *pspec,
 		RBSourceList *sourcelist)
 {
 	GtkTreeIter iter;
@@ -370,88 +821,233 @@ icon_notify_cb (RBSource *source,
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
+typedef struct {
+	const char *name;
+	gboolean    found;
+	GtkTreeIter iter;
+} FindGroup;
+
+/* adapted from gossip */
+static gboolean
+sourcelist_get_group_foreach (GtkTreeModel *model,
+			      GtkTreePath  *path,
+			      GtkTreeIter  *iter,
+			      FindGroup    *fg)
+{
+	char     *str;
+	gboolean  is_group;
+
+	/* Groups are only at the top level. */
+	if (gtk_tree_path_get_depth (path) != 1) {
+		return FALSE;
+	}
+
+	gtk_tree_model_get (model, iter,
+			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, &is_group,
+			    -1);
+	if (is_group && strcmp (str, fg->name) == 0) {
+		fg->found = TRUE;
+		fg->iter = *iter;
+	}
+
+	g_free (str);
+
+	return fg->found;
+}
+
+static gboolean
+rb_sourcelist_find_group_iter (RBSourceList  *sourcelist,
+			       RBSourceGroup *group,
+			       GtkTreeIter   *iter)
+{
+	FindGroup fg;
+
+	memset (&fg, 0, sizeof (fg));
+
+	fg.name = group->display_name;
+
+	gtk_tree_model_foreach (sourcelist->priv->real_model,
+				(GtkTreeModelForeachFunc) sourcelist_get_group_foreach,
+				&fg);
+
+	if (iter != NULL) {
+		*iter = fg.iter;
+	}
+
+	return fg.found;
+}
+
+static void
+sourcelist_get_group (RBSourceList  *sourcelist,
+		      RBSourceGroup *group,
+		      GtkTreeIter   *iter,
+		      gboolean      *created)
+{
+	gboolean found;
+
+	found = rb_sourcelist_find_group_iter (sourcelist,
+					       group,
+					       iter);
+	if (! found) {
+		if (created != NULL) {
+			*created = TRUE;
+		}
+
+		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), iter, NULL);
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), iter,
+				    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, NULL,
+				    RB_SOURCELIST_MODEL_COLUMN_NAME, group->display_name,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, NULL,
+				    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, NULL,
+				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, TRUE,
+				    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, TRUE,
+				    RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY, group->category,
+				    -1);
+	} else {
+		if (created != NULL) {
+			*created = FALSE;
+		}
+	}
+}
+
+static void
+name_notify_cb (GObject    *obj,
+		GParamSpec *pspec,
+		gpointer    data)
+{
+	RBSourceList *sourcelist = RB_SOURCELIST (data);
+	RBSource *source = RB_SOURCE (obj);
+	GtkTreeIter iter;
+	char *name;
+
+	if (rb_sourcelist_source_to_iter (sourcelist, source, &iter)) {
+		g_object_get (obj, "name", &name, NULL);
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model),
+				    &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_NAME, name, -1);
+		g_free (name);
+	}
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
+}
+
+static void
+visibility_notify_cb (GObject    *obj,
+		      GParamSpec *pspec,
+		      gpointer    data)
+{
+	RBSourceList *sourcelist = RB_SOURCELIST (data);
+	RBSource     *source = RB_SOURCE (obj);
+	GtkTreeIter   iter;
+	gboolean      old_visibility;
+	gboolean      new_visibility;
+	char         *name;
+
+	g_object_get (obj,
+		      "visibility", &new_visibility,
+		      "name", &name,
+		      NULL);
+	rb_debug ("Source visibility changed: %s", name);
+	g_free (name);
+
+	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
+
+	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
+	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
+
+		gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->real_model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, &old_visibility,
+				    -1);
+
+		if (old_visibility != new_visibility) {
+			gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
+					    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, new_visibility,
+					    -1);
+		}
+	}
+
+	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
+}
+
+static void
+rb_sourcelist_group_update_visibility (RBSourceList  *sourcelist,
+				       RBSourceGroup *group)
+{
+	gboolean    found;
+	GtkTreeIter iter;
+
+	found = rb_sourcelist_find_group_iter (sourcelist, group, &iter);
+	if (found) {
+		gboolean has_child;
+
+		has_child = gtk_tree_model_iter_has_child (sourcelist->priv->real_model, &iter);
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, has_child,
+				    -1);
+		gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
+	}
+}
+
 void
 rb_sourcelist_append (RBSourceList *sourcelist,
-		      RBSource *source,
-		      RBSource *parent)
+		      RBSource     *source,
+		      RBSource     *parent)
 {
-	GtkTreeIter iter;
+	GtkTreeIter    iter;
 	PangoAttrList *attrs;
-	char *name;
-	GdkPixbuf *pixbuf;
-	gboolean visible;
+	char          *name;
+	GdkPixbuf     *pixbuf;
+	gboolean       visible;
+	RBSourceGroup *group;
+	RBSourceGroupCategory group_category;
+	GtkTreePath   *expand_path;
 
 	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
 	g_return_if_fail (RB_IS_SOURCE (source));
 
-	g_object_get (source, "name", &name, NULL);
-	g_object_get (source, "icon", &pixbuf, NULL);
-	g_object_get (source, "visibility", &visible, NULL);
+	expand_path = NULL;
+	group_category = RB_SOURCE_GROUP_CATEGORY_FIXED;
 
-	if (parent) {
+	g_object_get (source,
+		      "name", &name,
+		      "icon", &pixbuf,
+		      "visibility", &visible,
+		      "source-group", &group,
+		      NULL);
+
+	if (parent != NULL) {
 		GtkTreeIter parent_iter;
 
-		rb_debug ("inserting source %p with parent", source);
+		rb_debug ("inserting source %p with parent %p", source, parent);
 		g_assert (rb_sourcelist_source_to_iter (sourcelist, parent, &parent_iter));
 		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, &parent_iter);
-
-		if (visible) {
-			sourcelist->priv->child_source_count++;
-			rb_sourcelist_update_expander_visibility (sourcelist);
-		}
 	} else {
-		GtkTreePath *group_path;
-		GtkTreePath *prev_group_path = NULL;
-		RBSourceListGroup group;
-		GtkTreeIter group_iter;
+		GtkTreeIter    group_iter;
+		gboolean       created;
+		GtkTreePath   *path;
 
-		/* get the marker rows before and after the group for this source */
-		g_object_get (G_OBJECT (source), "sourcelist-group", &group, NULL);
-		group_path = rb_sourcelist_model_get_group_path (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
-								 group);
-		g_assert (group_path);
-
-		if (group > 0) {
-			/* there's no marker row before the fixed source group, but we
-			 * don't need one anyway.
-			 */
-			prev_group_path = rb_sourcelist_model_get_group_path (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
-									      group-1);
-			g_assert (prev_group_path);
+		if (group == NULL) {
+			g_warning ("source %p has no group", source);
+			group = RB_SOURCE_GROUP_LIBRARY;
 		}
 
-		/* find the location to insert the source */
-		if (group == RB_SOURCELIST_GROUP_TRANSIENT) {
-			char *check_name = NULL;
+		rb_debug ("inserting source %p to group %s", source, group->name);
 
-			rb_debug ("inserting source %p in group %d in sorted order", source, group);
-			g_assert (prev_group_path);
+		sourcelist_get_group (sourcelist, group, &group_iter, &created);
 
-			gtk_tree_model_get_iter (sourcelist->priv->real_model, &group_iter, prev_group_path);
-			do {
-				g_free (check_name);
+		/* always set group visible when adding a source */
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &group_iter,
+				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, TRUE,
+				    -1);
 
-				if (!gtk_tree_model_iter_next (sourcelist->priv->real_model, &group_iter))
-					break;
+		group_category = group->category;
 
-				gtk_tree_model_get (sourcelist->priv->real_model,
-						    &group_iter,
-						    RB_SOURCELIST_MODEL_COLUMN_NAME, &check_name,
-						    -1);
+		path = gtk_tree_model_get_path (sourcelist->priv->real_model, &group_iter);
+		expand_path = gtk_tree_model_filter_convert_child_path_to_path (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model), path);
+		gtk_tree_path_free (path);
 
-			} while (check_name && (strlen (check_name)) > 0 && (g_utf8_collate (name, check_name) > 0));
-
-			g_free (check_name);
-
-		} else {
-			rb_debug ("inserting source %p in group %d", source, group);
-			gtk_tree_model_get_iter (sourcelist->priv->real_model, &group_iter, group_path);
-		}
-
-		gtk_tree_store_insert_before (GTK_TREE_STORE (sourcelist->priv->real_model),
-					      &iter, NULL, &group_iter);
-
-		gtk_tree_path_free (group_path);
+		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, &group_iter);
 	}
 
 	attrs = pango_attr_list_new ();
@@ -462,6 +1058,8 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, source,
 			    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, attrs,
 			    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, visible,
+			    RB_SOURCELIST_MODEL_COLUMN_IS_GROUP, FALSE,
+			    RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY, group_category,
 			    -1);
 
 	pango_attr_list_unref (attrs);
@@ -471,23 +1069,28 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 	}
 	g_free (name);
 
-	g_signal_connect_object (G_OBJECT (source), "notify::name", G_CALLBACK (name_notify_cb), sourcelist, 0);
-	g_signal_connect_object (G_OBJECT (source), "notify::visibility", G_CALLBACK (visibility_notify_cb), sourcelist, 0);
-	g_signal_connect_object (G_OBJECT (source), "notify::icon", G_CALLBACK (icon_notify_cb), sourcelist, 0);
+	g_signal_connect_object (source, "notify::name", G_CALLBACK (name_notify_cb), sourcelist, 0);
+	g_signal_connect_object (source, "notify::visibility", G_CALLBACK (visibility_notify_cb), sourcelist, 0);
+	g_signal_connect_object (source, "notify::icon", G_CALLBACK (icon_notify_cb), sourcelist, 0);
+
+	if (expand_path != NULL) {
+		gtk_tree_view_expand_row (GTK_TREE_VIEW (sourcelist->priv->treeview), expand_path, TRUE);
+		gtk_tree_path_free (expand_path);
+	}
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
 typedef struct _SourcePath {
-	RBSource *source;
+	RBSource    *source;
 	GtkTreePath *path;
 } SourcePath;
 
 static gboolean
 match_source_to_iter (GtkTreeModel *model,
-		      GtkTreePath *path,
-		      GtkTreeIter *iter,
-		      SourcePath *sp)
+		      GtkTreePath  *path,
+		      GtkTreeIter  *iter,
+		      SourcePath   *sp)
 {
 	RBSource *target = NULL;
 	gboolean  res;
@@ -509,12 +1112,14 @@ match_source_to_iter (GtkTreeModel *model,
 
 static gboolean
 rb_sourcelist_source_to_iter (RBSourceList *sourcelist,
-			      RBSource *source,
-			      GtkTreeIter *iter)
+			      RBSource     *source,
+			      GtkTreeIter  *iter)
 {
-	SourcePath *sp = g_new0 (SourcePath,1);
-	gboolean ret = FALSE;
+	SourcePath *sp;
+	gboolean    ret;
 
+	ret = FALSE;
+	sp = g_new0 (SourcePath, 1);
 	sp->source = source;
 
 	gtk_tree_model_foreach (sourcelist->priv->real_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
@@ -532,12 +1137,14 @@ rb_sourcelist_source_to_iter (RBSourceList *sourcelist,
 
 static gboolean
 rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
-				      RBSource *source,
-				      GtkTreeIter *iter)
+				      RBSource     *source,
+				      GtkTreeIter  *iter)
 {
-	SourcePath *sp = g_new0 (SourcePath,1);
-	gboolean ret = FALSE;
+	SourcePath *sp;
+	gboolean    ret;
 
+	ret = FALSE;
+	sp = g_new0 (SourcePath, 1);
 	sp->source = source;
 
 	gtk_tree_model_foreach (sourcelist->priv->filter_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
@@ -555,9 +1162,9 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
 
 void
 rb_sourcelist_edit_source_name (RBSourceList *sourcelist,
-				RBSource *source)
+				RBSource     *source)
 {
-	GtkTreeIter iter;
+	GtkTreeIter  iter;
 	GtkTreePath *path;
 
 	g_assert (rb_sourcelist_visible_source_to_iter (sourcelist, source, &iter));
@@ -566,7 +1173,7 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist,
 
 	/* Make cell editable just for the moment.
 	   We'll turn it off once editing is done. */
-	g_object_set (G_OBJECT (sourcelist->priv->title_renderer), "editable", TRUE, NULL);
+	g_object_set (sourcelist->priv->title_renderer, "editable", TRUE, NULL);
 
 	gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (sourcelist->priv->treeview),
 					  path, sourcelist->priv->main_column,
@@ -578,8 +1185,8 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist,
 
 static void
 set_source_playing (RBSourceList *sourcelist,
-		    RBSource *source,
-		    gboolean playing)
+		    RBSource     *source,
+		    gboolean      playing)
 {
 	GtkTreeIter iter;
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
@@ -589,7 +1196,7 @@ set_source_playing (RBSourceList *sourcelist,
 
 void
 rb_sourcelist_set_playing_source (RBSourceList *sourcelist,
-				  RBSource *source)
+				  RBSource     *source)
 {
 	if (sourcelist->priv->playing_source)
 		set_source_playing (sourcelist, sourcelist->priv->playing_source, FALSE);
@@ -601,37 +1208,38 @@ rb_sourcelist_set_playing_source (RBSourceList *sourcelist,
 
 void
 rb_sourcelist_remove (RBSourceList *sourcelist,
-		      RBSource *source)
+		      RBSource     *source)
 {
-	GtkTreeIter iter;
+	GtkTreeIter    iter;
+	RBSourceGroup *group;
 
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
 
-	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
-		gboolean visible;
-
-		g_object_get (source, "visibility", &visible, NULL);
-		if (visible)
-			sourcelist->priv->child_source_count--;
-		rb_sourcelist_update_expander_visibility (sourcelist);
+	if (source == sourcelist->priv->playing_source) {
+		rb_sourcelist_set_playing_source (sourcelist, NULL);
 	}
 
-	if (source == sourcelist->priv->playing_source)
-		rb_sourcelist_set_playing_source (sourcelist, NULL);
+	g_object_get (source,
+		      "source-group", &group,
+		      NULL);
 
 	gtk_tree_store_remove (GTK_TREE_STORE (sourcelist->priv->real_model), &iter);
-	g_signal_handlers_disconnect_by_func (G_OBJECT (source),
+	g_signal_handlers_disconnect_by_func (source,
 					      G_CALLBACK (name_notify_cb), sourcelist);
-        g_signal_handlers_disconnect_by_func (G_OBJECT (source),
+        g_signal_handlers_disconnect_by_func (source,
 					      G_CALLBACK (visibility_notify_cb),
                                              sourcelist);
+
+	if (group != NULL) {
+		rb_sourcelist_group_update_visibility (sourcelist, group);
+	}
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 }
 
 void
 rb_sourcelist_select (RBSourceList *sourcelist,
-		      RBSource *source)
+		      RBSource     *source)
 {
 	GtkTreeIter iter;
 
@@ -641,12 +1249,12 @@ rb_sourcelist_select (RBSourceList *sourcelist,
 
 static void
 rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
-				    RBSourceList *sourcelist)
+				    RBSourceList     *sourcelist)
 {
-	GtkTreeIter iter;
+	GtkTreeIter   iter;
 	GtkTreeModel *cindy;
-	gpointer target = NULL;
-	RBSource *source;
+	gpointer      target = NULL;
+	RBSource     *source;
 
 	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection,
 					      &cindy, &iter))
@@ -659,230 +1267,20 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 
 	g_return_if_fail (RB_IS_SOURCE (target));
 	source = target;
-	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SELECTED], 0, source);
+	g_signal_emit (sourcelist, rb_sourcelist_signals[SELECTED], 0, source);
 
 	g_object_unref (target);
-}
-
-static void
-drop_received_cb (RBSourceListModel *model,
-		  RBSource *target,
-		  GtkTreeViewDropPosition pos,
-		  GtkSelectionData *data,
-		  RBSourceList *sourcelist)
-{
-	rb_debug ("drop recieved");
-	/* Proxy the signal. */
-	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[DROP_RECEIVED], 0, target, data);
-}
-
-static void
-row_activated_cb (GtkTreeView *treeview,
-		  GtkTreePath *path,
-		  GtkTreeViewColumn *column,
-		  RBSourceList *sourcelist)
-{
-	GtkTreeModel *model;
-	GtkTreeIter iter;
-	RBSource *target;
-
-	model = gtk_tree_view_get_model (treeview);
-	g_return_if_fail (gtk_tree_model_get_iter (model, &iter, path));
-	gtk_tree_model_get (model, &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
-
-	if (target != NULL) {
-		g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
-		g_object_unref (target);
-	}
-}
-
-static gboolean
-emit_show_popup (GtkTreeView *treeview,
-		 RBSourceList *sourcelist)
-{
-	GtkTreeIter iter;
-	RBSource *target;
-	gboolean ret;
-
-	if (!gtk_tree_selection_get_selected (gtk_tree_view_get_selection (treeview),
-					      NULL, &iter))
-		return FALSE;
-
-	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
-	if (target == NULL)
-		return FALSE;
-
-	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
-
-	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
-
-	if (target != NULL) {
-		g_object_unref (target);
-	}
-
-	return ret;
-}
-
-static gboolean
-button_press_cb (GtkTreeView *treeview,
-		 GdkEventButton *event,
-		 RBSourceList *sourcelist)
-{
-	GtkTreeIter iter;
-	GtkTreePath *path;
-
-	if (event->button != 3)
-		return FALSE;
-
-	if (gtk_tree_view_get_path_at_pos (treeview, event->x, event->y,
-					   &path, NULL, NULL, NULL) == FALSE) {
-		/* pointer is over empty space */
-		GtkUIManager *uimanager;
-		g_object_get (sourcelist->priv->shell, "ui-manager", &uimanager, NULL);
-		rb_gtk_action_popup_menu (uimanager, "/SourceListPopup");
-		g_object_unref (uimanager);
-		return TRUE;
-	}
-
-	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model), &iter, path))
-		gtk_tree_selection_select_iter (gtk_tree_view_get_selection (treeview), &iter);
-
-	return emit_show_popup (treeview, sourcelist);
-}
-
-static gboolean
-key_release_cb (GtkTreeView *treeview,
-		GdkEventKey *event,
-		RBSourceList *sourcelist)
-{
-	GtkTreeIter iter;
-	RBSource *target;
-	gboolean res;
-
-	/* F2 = rename playlist */
-	if (event->keyval != GDK_F2)
-		return FALSE;
-
-	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection, NULL, &iter))
-		return FALSE;
-
-	gtk_tree_model_get (sourcelist->priv->filter_model, &iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
-	if (target == NULL)
-		return FALSE;
-
-	res = FALSE;
-	if (rb_source_can_rename (target)) {
-		rb_sourcelist_edit_source_name (sourcelist, target);
-		res = TRUE;
-	}
-
-	g_object_unref (target);
-
-	return res;
-}
-
-static gboolean
-popup_menu_cb (GtkTreeView *treeview,
-	       RBSourceList *sourcelist)
-{
-	return emit_show_popup (treeview, sourcelist);
-}
-
-static void
-name_notify_cb (GObject *obj,
-		GParamSpec *pspec,
-		gpointer data)
-{
-	RBSourceList *sourcelist = RB_SOURCELIST (data);
-	RBSource *source = RB_SOURCE (obj);
-	GtkTreeIter iter;
-	char *name;
-
-	if (rb_sourcelist_source_to_iter (sourcelist, source, &iter)) {
-		g_object_get (obj, "name", &name, NULL);
-		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model),
-				    &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_NAME, name, -1);
-		g_free (name);
-	}
-
-	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
-}
-
-static void
-visibility_notify_cb (GObject *obj,
-		      GParamSpec *pspec,
-		      gpointer data)
-{
-	RBSourceList *sourcelist = RB_SOURCELIST (data);
-	RBSource *source = RB_SOURCE (obj);
-	GtkTreeIter iter;
-	gboolean old_visibility;
-	gboolean new_visibility;
-	char *name;
-
-	g_object_get (obj,
-		      "visibility", &new_visibility,
-		      "name", &name,
-		      NULL);
-	rb_debug ("Source visibility changed: %s", name);
-	g_free (name);
-
-	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
-
-	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
-	if (gtk_tree_store_iter_depth (GTK_TREE_STORE (sourcelist->priv->real_model), &iter) > 0) {
-
-		gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->real_model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, &old_visibility,
-				    -1);
-
-		if (old_visibility != new_visibility) {
-			sourcelist->priv->child_source_count += new_visibility ? 1 : -1;
-			rb_sourcelist_update_expander_visibility (sourcelist);
-
-			gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
-					    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, new_visibility,
-					    -1);
-		}
-	}
-
-	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
-}
-
-static void
-rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column,
-				    GtkCellRenderer *renderer,
-				    GtkTreeModel *tree_model,
-				    GtkTreeIter *iter,
-				    RBSourceList *sourcelist)
-{
-	char *str;
-	gboolean playing;
-
-	gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->filter_model), iter,
-			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
-			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, &playing,
-			    -1);
-
-	g_object_set (G_OBJECT (renderer), "text", str,
-		      "weight", playing ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
-		      NULL);
-
-	g_free (str);
 }
 
 static void
 source_name_edited_cb (GtkCellRendererText *renderer,
-		       const char *pathstr,
-		       const char *text,
-		       RBSourceList *sourcelist)
+		       const char          *pathstr,
+		       const char          *text,
+		       RBSourceList        *sourcelist)
 {
 	GtkTreePath *path;
-	GtkTreeIter iter;
-	RBSource *source;
+	GtkTreeIter  iter;
+	RBSource    *source;
 
 	if (text[0] == '\0')
 		return;
@@ -896,31 +1294,13 @@ source_name_edited_cb (GtkCellRendererText *renderer,
 	if (source == NULL)
 		return;
 
-	g_object_set (G_OBJECT (source), "name", text, NULL);
+	g_object_set (source, "name", text, NULL);
 
 	gtk_tree_path_free (path);
 
-	g_object_set (G_OBJECT (renderer), "editable", FALSE, NULL);
+	g_object_set (renderer, "editable", FALSE, NULL);
 
 	gtk_tree_view_columns_autosize (GTK_TREE_VIEW (sourcelist->priv->treeview));
 
 	g_object_unref (source);
-}
-
-static void
-rb_sourcelist_update_expander_visibility (RBSourceList *sourcelist)
-{
-	gboolean visible;
-	GtkTreeViewColumn *column;
-
-	g_assert (sourcelist->priv->child_source_count >= 0);
-
-	visible = (sourcelist->priv->child_source_count > 0);
-	if (visible)
-		column = sourcelist->priv->main_column;
-	else
-		column = sourcelist->priv->hidden_column;
-
-	gtk_tree_view_set_expander_column (GTK_TREE_VIEW (sourcelist->priv->treeview),
-					   column);
 }

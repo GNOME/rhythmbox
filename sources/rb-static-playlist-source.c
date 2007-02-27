@@ -296,7 +296,7 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, gboolean local,
 					"shell", shell,
 					"is-local", local,
 					"entry-type", entry_type,
-					"sourcelist-group", RB_SOURCELIST_GROUP_PERSISTANT,
+					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
 					NULL));
 }
 

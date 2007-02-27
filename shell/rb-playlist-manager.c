@@ -788,6 +788,38 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 	return NULL;
 }
 
+static gboolean
+model_foreach_func (GtkTreeModel *model,
+		    GtkTreePath  *path,
+		    GtkTreeIter  *iter,
+		    xmlNodePtr    root)
+{
+	RBSource *source;
+	gboolean  local;
+
+	gtk_tree_model_get (model,
+			    iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    -1);
+	if (source == NULL) {
+		goto out;
+	}
+	if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+		goto out;
+	}
+
+	g_object_get (source, "is-local", &local, NULL);
+	if (local) {
+		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
+	}
+ out:
+	if (source != NULL) {
+		g_object_unref (source);
+	}
+
+	return FALSE;
+}
+
 /**
  * rb_playlist_manager_save_playlists
  * @mgr: the #RBPlaylistManager
@@ -806,7 +838,6 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveData *data;
-	GtkTreeIter iter;
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
 
@@ -832,31 +863,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
-	if (gtk_tree_model_get_iter_first (model, &iter)) {
-		do {
-			RBSource *source;
-			gboolean local;
-
-			gtk_tree_model_get (model,
-					    &iter,
-					    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-					    &source,
-					    -1);
-			if (source == NULL) {
-				continue;
-			}
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
-				g_object_unref (source);
-				continue;
-			}
-
-			g_object_get (source, "is-local", &local, NULL);
-			if (local)
-				rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
-
-			g_object_unref (source);
-		} while (gtk_tree_model_iter_next (model, &iter));
-	}
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc)model_foreach_func, root);
 
 	/* mark clean here.  if the save fails, we'll mark it dirty again */
 	rb_playlist_manager_set_dirty (data->mgr, FALSE);

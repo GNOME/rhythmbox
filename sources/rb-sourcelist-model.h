@@ -43,6 +43,8 @@ typedef enum {
 	RB_SOURCELIST_MODEL_COLUMN_SOURCE,
 	RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES,
 	RB_SOURCELIST_MODEL_COLUMN_VISIBILITY,
+	RB_SOURCELIST_MODEL_COLUMN_IS_GROUP,
+	RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY,
 	RB_SOURCELIST_MODEL_N_COLUMNS
 } RBSourceListModelColumn;
 
@@ -67,18 +69,12 @@ typedef struct RBSourceListModelClass
 
 } RBSourceListModelClass;
 
-
 GType		rb_sourcelist_model_get_type	(void);
 
 GtkTreeModel *	rb_sourcelist_model_new		(void);
 
 void		rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
 						     GtkTreeView *treeview);
-GtkTreePath *	rb_sourcelist_model_get_group_path (RBSourceListModel *sourcelist,
-						    RBSourceListGroup group);
-gboolean	rb_sourcelist_model_row_is_separator (GtkTreeModel *model,
-						      GtkTreeIter *iter,
-						      RBSourceListModel *sourcelist);
 
 G_END_DECLS
 

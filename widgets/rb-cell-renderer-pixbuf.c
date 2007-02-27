@@ -23,10 +23,10 @@
  */
 
 #include <config.h>
-#include <libgnome/gnome-i18n.h>
+
 #include <stdlib.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkiconfactory.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cut-and-paste-code.h"

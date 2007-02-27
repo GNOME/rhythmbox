@@ -261,6 +261,7 @@ rb_missing_files_source_new (RBShell *shell,
 					  "shell", shell,
 					  "visibility", FALSE,
 					  "hidden-when-empty", TRUE,
+					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  NULL));
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	return source;

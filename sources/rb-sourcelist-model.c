@@ -37,7 +37,7 @@
 
 struct RBSourceListModelPrivate
 {
-	GtkTreeRowReference *groups[RB_SOURCELIST_GROUP_LAST];
+	gpointer dummy;
 };
 
 #define RB_SOURCELIST_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SOURCELIST_MODEL, RBSourceListModelPrivate))
@@ -192,14 +192,9 @@ static void
 rb_sourcelist_model_finalize (GObject *object)
 {
 	RBSourceListModel *model;
-	int i;
 
 	g_return_if_fail (RB_IS_SOURCELIST_MODEL (object));
 	model = RB_SOURCELIST_MODEL (object);
-
-	for (i = 0; i < RB_SOURCELIST_GROUP_LAST; i++) {
-		gtk_tree_row_reference_free (model->priv->groups[i]);
-	}
 
 	G_OBJECT_CLASS (rb_sourcelist_model_parent_class)->finalize (object);
 }
@@ -209,7 +204,6 @@ rb_sourcelist_model_new (void)
 {
 	RBSourceListModel *model;
 	GtkTreeStore *store;
-	int i;
  	GType *column_types = g_new (GType, RB_SOURCELIST_MODEL_N_COLUMNS);
 
 	column_types[RB_SOURCELIST_MODEL_COLUMN_PLAYING] = G_TYPE_BOOLEAN;
@@ -218,6 +212,8 @@ rb_sourcelist_model_new (void)
 	column_types[RB_SOURCELIST_MODEL_COLUMN_SOURCE] = G_TYPE_OBJECT;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES] = PANGO_TYPE_ATTR_LIST;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_VISIBILITY] = G_TYPE_BOOLEAN;
+	column_types[RB_SOURCELIST_MODEL_COLUMN_IS_GROUP] = G_TYPE_BOOLEAN;
+	column_types[RB_SOURCELIST_MODEL_COLUMN_GROUP_CATEGORY] = RB_TYPE_SOURCE_GROUP_CATEGORY;
 	store = gtk_tree_store_newv (RB_SOURCELIST_MODEL_N_COLUMNS,
 				     column_types);
 
@@ -226,23 +222,6 @@ rb_sourcelist_model_new (void)
 						   "virtual-root", NULL,
 						   NULL));
 	g_object_unref (store);
-
-	/* create marker rows used to separate source groups */
-	for (i = 0; i < RB_SOURCELIST_GROUP_LAST; i++) {
-		GtkTreeIter iter;
-		GtkTreePath *path;
-
-		gtk_tree_store_append (store, &iter, NULL);
-		gtk_tree_store_set (store, &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_NAME, "",
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, NULL,
-				    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, FALSE,
-				    -1);
-
-		path = gtk_tree_model_get_path (GTK_TREE_MODEL (store), &iter);
-		model->priv->groups[i] = gtk_tree_row_reference_new (GTK_TREE_MODEL (store), path);
-		gtk_tree_path_free (path);
-	}
 
 	/* ensure the group markers get updated as sources are added and removed */
 	g_signal_connect_object (G_OBJECT (store), "row-inserted",
@@ -262,56 +241,17 @@ rb_sourcelist_model_new (void)
 }
 
 static gboolean
-real_row_is_separator (RBSourceListModel *model, GtkTreeIter *iter)
-{
-	int i;
-	GtkTreePath *path;
-	GtkTreeModel *real_model;
-	GtkTreePath *group_path;
-
-	real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (model));
-	path = gtk_tree_model_get_path (real_model, iter);
-
-	/* -1 here because the last group marker is always the last row in
-	 * the model, and therefore can never be shown.
-	 */
-	for (i = 0; i < RB_SOURCELIST_GROUP_LAST-1; i++) {
-		group_path = rb_sourcelist_model_get_group_path (model, i);
-
-		if (gtk_tree_path_compare (path, group_path) == 0) {
-			/* okay, we know this is a group marker.
-			 * if the next row is not a group marker,
-			 * then we should show this row as a separator.
-			 */
-			gboolean separator = FALSE;
-
-			gtk_tree_path_next (path);
-
-			gtk_tree_path_free (group_path);
-			group_path = rb_sourcelist_model_get_group_path (model, i+1);
-			separator = (gtk_tree_path_compare (path, group_path) != 0);
-
-			gtk_tree_path_free (group_path);
-			gtk_tree_path_free (path);
-			return separator;
-		}
-		gtk_tree_path_free (group_path);
-	}
-
-	gtk_tree_path_free (path);
-
-	return FALSE;
-}
-
-static gboolean
 rb_sourcelist_model_is_row_visible (GtkTreeModel *model,
 				    GtkTreeIter *iter,
 				    RBSourceListModel *sourcelist)
 {
 	RBSource *source;
+	gboolean  visibility;
 
 	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    RB_SOURCELIST_MODEL_COLUMN_VISIBILITY, &visibility,
+			    -1);
 
 	if (source != NULL) {
 		gboolean visible;
@@ -321,51 +261,33 @@ rb_sourcelist_model_is_row_visible (GtkTreeModel *model,
 
 		return visible;
 	} else {
-		return real_row_is_separator (sourcelist, iter);
+		return visibility;
 	}
+
+	return TRUE;
 }
 
-gboolean
-rb_sourcelist_model_row_is_separator (GtkTreeModel *model,
-				      GtkTreeIter *iter,
-				      RBSourceListModel *sourcelist)
+static RBSourceGroup *
+get_group_for_path (RBSourceListModel *model,
+		    GtkTreePath       *path)
 {
-	GtkTreeIter real_iter;
-	RBSource *source;
+	RBSource      *source;
+	RBSourceGroup *group;
+	GtkTreeIter    iter;
 
-	/* rows with actual sources are never separators */
-	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-	if (source != NULL) {
+	group = NULL;
+
+	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
+
+		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+				    -1);
+
+		g_object_get (source, "source-group", &group, NULL);
 		g_object_unref (source);
-		return FALSE;
 	}
 
-	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (sourcelist),
-							  &real_iter,
-							  iter);
-	return real_row_is_separator (sourcelist, &real_iter);
-}
-
-static int
-get_group_for_path (RBSourceListModel *model, GtkTreePath *path)
-{
-	GtkTreePath *group_path;
-	gboolean found = FALSE;
-	int i;
-
-	for (i=0; i < RB_SOURCELIST_GROUP_LAST; i++) {
-		group_path = rb_sourcelist_model_get_group_path (model, i);
-		g_assert (group_path);
-
-		found = (gtk_tree_path_compare (group_path, path) == 1);
-		gtk_tree_path_free (group_path);
-
-		if (found)
-			return i;
-	}
-
-	g_assert_not_reached ();
+	return group;
 }
 
 static gboolean
@@ -411,18 +333,19 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
         }
 
 	if (selection_data->type == gdk_atom_intern ("application/x-rhythmbox-source", TRUE)) {
-		GtkTreePath *path;
-		GtkTreePath *real_dest;
-		char *path_str;
-		GtkTreeIter iter, real_iter;
-		GtkTreeIter real_dest_iter;
+		GtkTreePath  *path;
+		GtkTreePath  *real_dest;
+		char         *path_str;
+		GtkTreeIter   iter, real_iter;
+		GtkTreeIter   real_dest_iter;
 		GtkTreeModel *real_model;
-		RBSource *source;
-		RBSourceListGroup group;
-		int dest_group;
+		RBSource      *source;
+		RBSourceGroup *group;
+		RBSourceGroup *dest_group;
 
-		if (!dest)
+		if (! dest) {
 			return FALSE;
+		}
 
 		real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (model));
 
@@ -434,37 +357,36 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 		gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (model),
 								  &real_iter, &iter);
 
-		real_dest =
-			gtk_tree_model_filter_convert_path_to_child_path (GTK_TREE_MODEL_FILTER (model),
-									  dest);
+		real_dest = gtk_tree_model_filter_convert_path_to_child_path (GTK_TREE_MODEL_FILTER (model),
+									      dest);
 
 		gtk_tree_model_get (GTK_TREE_MODEL (real_model), &real_iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
 				    -1);
-		g_object_get (source, "sourcelist-group", &group, NULL);
+		g_object_get (source, "source-group", &group, NULL);
 		g_object_unref (source);
 
 		/* restrict sources to within their group */
 		dest_group = get_group_for_path (model, real_dest);
-		if (dest_group < group) {
-			gtk_tree_path_free (real_dest);
-			real_dest = rb_sourcelist_model_get_group_path (model, group-1);
-			pos = GTK_TREE_VIEW_DROP_AFTER;
-		} else if (dest_group > group) {
-			gtk_tree_path_free (real_dest);
-			real_dest = rb_sourcelist_model_get_group_path (model, group);
-			pos = GTK_TREE_VIEW_DROP_BEFORE;
+		if (dest_group == NULL
+		    || group == NULL
+		    || strcmp (dest_group->name, group->name) != 0) {
+			/* bail */
+			return FALSE;
 		}
 
+
+		/* FIXME: this won't work with a sorted model */
 		if (gtk_tree_model_get_iter (GTK_TREE_MODEL (real_model),
 					     &real_dest_iter, real_dest)) {
 
-			if (pos == GTK_TREE_VIEW_DROP_AFTER)
+			if (pos == GTK_TREE_VIEW_DROP_AFTER) {
 				gtk_tree_store_move_after (GTK_TREE_STORE (real_model),
 							   &real_iter, &real_dest_iter);
-			else
+			} else {
 				gtk_tree_store_move_before (GTK_TREE_STORE (real_model),
 							    &real_iter, &real_dest_iter);
+			}
 
 		} else {
 			gtk_tree_store_move_before (GTK_TREE_STORE (real_model),
@@ -530,8 +452,8 @@ path_is_reorderable (RBSourceListModel *model,
 	GtkTreeIter iter;
 
 	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
-		RBSource *source;
-		RBSourceListGroup group;
+		RBSource      *source;
+		RBSourceGroup *group;
 
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
@@ -539,12 +461,12 @@ path_is_reorderable (RBSourceListModel *model,
 		if (source == NULL)
 			return FALSE;
 
-		g_object_get (source, "sourcelist-group", &group, NULL);
+		g_object_get (source, "source-group", &group, NULL);
 		g_object_unref (source);
 
 		/* fixed and transient sources are not reorderable, everything else is */
-		return (group != RB_SOURCELIST_GROUP_FIXED &&
-			group != RB_SOURCELIST_GROUP_TRANSIENT);
+		return (group->category != RB_SOURCE_GROUP_CATEGORY_FIXED &&
+			group->category != RB_SOURCE_GROUP_CATEGORY_TRANSIENT);
 	}
 
 	return FALSE;
@@ -644,17 +566,20 @@ rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
 	path = gtk_tree_row_reference_get_path (path_list->data);
 
 	if (path && gtk_tree_model_get_iter (model, &iter, path)) {
-		RBSource *source;
-		RBSourceListGroup group;
+		RBSource      *source;
+		RBSourceGroup *group;
+		gboolean       can;
 
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
-		g_object_get (source, "sourcelist-group", &group, NULL);
+		g_object_get (source, "source-group", &group, NULL);
 		g_object_unref (source);
 
-		return (group != RB_SOURCELIST_GROUP_FIXED &&
-			group != RB_SOURCELIST_GROUP_TRANSIENT);
+		can = (group->category != RB_SOURCE_GROUP_CATEGORY_FIXED &&
+		       group->category != RB_SOURCE_GROUP_CATEGORY_TRANSIENT);
+
+		return can;
 	}
 
 	return FALSE;
@@ -774,14 +699,6 @@ rb_sourcelist_model_row_deleted_cb (GtkTreeModel *model,
 {
 	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist));
 }
-
-GtkTreePath *
-rb_sourcelist_model_get_group_path (RBSourceListModel *sourcelist,
-				    RBSourceListGroup group)
-{
-	return gtk_tree_row_reference_get_path (sourcelist->priv->groups[group]);
-}
-
 
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }

@@ -1,3 +1,22 @@
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#
+# Copyright (C) 2006 Adam Zimmerman  <adam_zimmerman@sfu.ca>
+# Copyright (C) 2006 James Livingston  <doclivingston@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+
 import rb, rhythmdb
 from TrackListHandler import TrackListHandler
 from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
@@ -23,7 +42,6 @@ magnatune_dir = gnome.user_dir_get() + "rhythmbox/magnatune/"
 magnatune_song_info_uri = gnomevfs.URI("http://magnatune.com/info/song_info_xml.zip")
 local_song_info_uri = gnomevfs.URI(magnatune_dir + "song_info.xml")
 local_song_info_temp_uri = gnomevfs.URI(magnatune_dir + "song_info.xml.zip.tmp")
-
 
 class MagnatuneSource(rb.BrowserSource):
 	__gproperties__ = {
@@ -71,7 +89,6 @@ class MagnatuneSource(rb.BrowserSource):
 
 		else:
 			raise AttributeError, 'unknown property %s' % property.name
-
 
 	#
 	# RBSource methods
@@ -147,11 +164,9 @@ class MagnatuneSource(rb.BrowserSource):
 
 		rb.BrowserSource.do_impl_delete_thyself (self)
 
-
 	#
 	# methods for use by plugin and UI
 	#
-
 
 	def display_artist_info(self):
 		tracks = self.get_entry_view().get_selected_entries()
@@ -299,7 +314,6 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__notify_status_changed()
 		self.__load_handle = gnomevfs.async.open (local_song_info_uri, self.__load_catalogue_open_cb)
 
-
 	def __download_update_cb (self, _reserved, info, moving):
 		self.__load_current_size = info.bytes_copied
 		self.__load_total_size = info.bytes_total
@@ -386,7 +400,6 @@ class MagnatuneSource(rb.BrowserSource):
 
 		if self.__notify_id == 0:
 			self.__notify_id = gobject.idle_add(change_idle_cb)
-
 
 	#
 	# internal purchasing code
@@ -563,8 +576,6 @@ def create_if_needed(uri, mode):
 	else:
 		out = gnomevfs.open(uri, open_mode=mode)
 	return out
-
-
 
 class URIIterator:
 	def __init__(self, uri):

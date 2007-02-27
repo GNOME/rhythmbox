@@ -90,7 +90,7 @@ rb_nokia770_source_new (RBShell *shell, GnomeVFSVolume *volume)
 						   "entry-type", entry_type,
 						   "volume", volume,
 						   "shell", shell,
-						   "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
+						   "source-group", RB_SOURCE_GROUP_DEVICES,
 						   NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);

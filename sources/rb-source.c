@@ -36,6 +36,7 @@
 #include "rb-source.h"
 #include "rb-util.h"
 #include "rb-static-playlist-source.h"
+#include "rb-source-group.h"
 #include "rb-plugin.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
@@ -88,11 +89,11 @@ struct _RBSourcePrivate
 	gboolean visible;
 	RhythmDBQueryModel *query_model;
 	GdkPixbuf *pixbuf;
-	RBSourceListGroup sourcelist_group;
 	guint hidden_when_empty : 1;
 	guint update_visibility_id;
 	guint update_status_id;
 	RhythmDBEntryType entry_type;
+	RBSourceGroup *source_group;
 	RBPlugin *plugin;
 };
 
@@ -106,7 +107,7 @@ enum
 	PROP_VISIBLE,
 	PROP_QUERY_MODEL,
 	PROP_HIDDEN_WHEN_EMPTY,
-	PROP_SOURCELIST_GROUP,
+	PROP_SOURCE_GROUP,
 	PROP_ENTRY_TYPE,
 	PROP_PLUGIN
 };
@@ -222,14 +223,12 @@ rb_source_class_init (RBSourceClass *klass)
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_SOURCELIST_GROUP,
-					 g_param_spec_enum ("sourcelist-group",
-						 	    "sourcelist group",
-							    "sourcelist group",
-							    RB_TYPE_SOURCELIST_GROUP,
-							    RB_SOURCELIST_GROUP_FIXED,
-							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
+					 PROP_SOURCE_GROUP,
+					 g_param_spec_boxed ("source-group",
+							     "Source group",
+							     "Source group",
+							     RB_TYPE_SOURCE_GROUP,
+							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_boxed ("entry-type",
@@ -477,8 +476,8 @@ rb_source_set_property (GObject *object,
 	case PROP_QUERY_MODEL:
 		rb_source_set_query_model_internal (source, g_value_get_object (value));
 		break;
-	case PROP_SOURCELIST_GROUP:
-		priv->sourcelist_group = g_value_get_enum (value);
+	case PROP_SOURCE_GROUP:
+		priv->source_group = g_value_get_boxed (value);
 		break;
 	case PROP_ENTRY_TYPE:
 		priv->entry_type = g_value_get_boxed (value);
@@ -526,8 +525,8 @@ rb_source_get_property (GObject *object,
 	case PROP_QUERY_MODEL:
 		g_value_set_object (value, priv->query_model);
 		break;
-	case PROP_SOURCELIST_GROUP:
-		g_value_set_enum (value, priv->sourcelist_group);
+	case PROP_SOURCE_GROUP:
+		g_value_set_boxed (value, priv->source_group);
 		break;
 	case PROP_ENTRY_TYPE:
 		g_value_set_boxed (value, priv->entry_type);
@@ -1227,26 +1226,6 @@ rb_source_eof_type_get_type (void)
 		};
 
 		etype = g_enum_register_static ("RBSourceEOFType", values);
-	}
-
-	return etype;
-}
-
-GType
-rb_sourcelist_group_get_type (void)
-{
-	static GType etype = 0;
-
-	if (etype == 0) {
-		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SOURCELIST_GROUP_FIXED, "Fixed single instance source"),
-			ENUM_ENTRY (RB_SOURCELIST_GROUP_PERSISTANT, "Persistant multiple-instance source"),
-			ENUM_ENTRY (RB_SOURCELIST_GROUP_REMOVABLE, "Source representing a removable device"),
-			ENUM_ENTRY (RB_SOURCELIST_GROUP_TRANSIENT, "Transient source (eg. network shares)"),
-			{ 0, 0, 0 }
-		};
-
-		etype = g_enum_register_static ("RBSourcelistGroupType", values);
 	}
 
 	return etype;

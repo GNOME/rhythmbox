@@ -323,12 +323,13 @@ rb_library_source_new (RBShell *shell)
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					 "stock_music-library",
+					 "audio-x-generic",
 					 size,
 					 0, NULL);
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
-					  "name", _("Library"),
+					  "name", _("Music"),
 					  "entry-type", entry_type,
+					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "sorting-key", CONF_STATE_LIBRARY_SORTING,
 					  "shell", shell,
 					  "icon", icon,

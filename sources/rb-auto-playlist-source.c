@@ -264,7 +264,7 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					"shell", shell,
 					"is-local", local,
 					"entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
-					"sourcelist-group", RB_SOURCELIST_GROUP_PERSISTANT,
+					"source-group", RB_SOURCE_GROUP_PLAYLISTS,
 					NULL));
 }
 

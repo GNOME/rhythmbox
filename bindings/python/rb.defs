@@ -141,18 +141,6 @@
   )
 )
 
-(define-enum SourceListGroup
-  (in-module "RB")
-  (c-name "RBSourceListGroup")
-  (gtype-id "RB_TYPE_SOURCELIST_GROUP")
-  (values
-    '("fixed" "RB_SOURCELIST_GROUP_FIXED")
-    '("persistant" "RB_SOURCELIST_GROUP_PERSISTANT")
-    '("removable" "RB_SOURCELIST_GROUP_REMOVABLE")
-    '("transient" "RB_SOURCELIST_GROUP_TRANSIENT")
-  )
-)
-
 (define-enum EntryViewColumn
   (in-module "RB")
   (c-name "RBEntryViewColumn")
@@ -653,6 +641,50 @@
   )
 )
 
+
+;; From ../../sources/rb-source-group.h
+
+(define-enum SourceGroupCategory
+  (in-module "RB")
+  (c-name "RBSourceGroupCategory")
+  (gtype-id "RB_TYPE_SOURCE_GROUP_CATEGORY")
+  (values
+    '("fixed" "RB_SOURCE_GROUP_CATEGORY_FIXED")
+    '("persistent" "RB_SOURCE_GROUP_CATEGORY_PERSISTENT")
+    '("removable" "RB_SOURCE_GROUP_CATEGORY_REMOVABLE")
+    '("transient" "RB_SOURCE_GROUP_CATEGORY_TRANSIENT")
+  )
+)
+
+(define-boxed SourceGroup
+  (in-module "RB")
+  (c-name "RBSourceGroup")
+  (gtype-id "RB_TYPE_SOURCE_GROUP")
+  (fields
+    '("char*" "name" (access readwrite))
+    '("char*" "display_name" (access readwrite))
+    '("RBSourceGroupCategory" "category" (access readwrite))
+  )
+)
+
+(define-function rb_source_group_get_by_name
+  (c-name "rb_source_group_get_by_name")
+  (return-type "RBSourceGroup*")
+  (parameters
+    '("const-char*" "name")
+  )
+)
+
+(define-function rb_source_group_register
+  (c-name "rb_source_group_register")
+  (return-type "RBSourceGroup*")
+  (parameters
+    '("const-char*" "name")
+    '("const-char*" "display_name")
+    '("RBSourceGroupCategory" "category")
+  )
+)
+
 ;; From ../../sources/rb-source.h
 
 (define-function rb_source_get_type
@@ -668,8 +700,8 @@
   (properties
     '("name" (argname "name") (optional))
     '("icon" (argname "icon") (optional))
-    '("query-model" (argname "query-model") (optional))
-    '("sourcelist-group" (argname "sourcelist-group") (optional))
+    '("query-model" (argname "query_model") (optional))
+    '("source-group" (argname "source_group") (optional))
   )
 )
 
@@ -1584,14 +1616,14 @@
   (c-name "rb_browser_source_new")
   (return-type "RBBrowserSource*")
   (properties
-    '("entry-type" (argname "entry-type") (optional))
-    '("sorting-key" (argname "sorting-key") (optional))
+    '("entry-type" (argname "entry_type") (optional))
+    '("sorting-key" (argname "sorting_key") (optional))
 
     ; from RBSource
     '("name" (argname "name") (optional))
     '("icon" (argname "icon") (optional))
-    '("query-model" (argname "query-model") (optional))
-    '("sourcelist-group" (argname "sourcelist-group") (optional))
+    '("query-model" (argname "query_model") (optional))
+    '("source-group" (argname "source_group") (optional))
   )
 )
 
@@ -2040,16 +2072,6 @@
   (return-type "GtkTreePath*")
   (parameters
     '("RBSourceListGroup" "group")
-  )
-)
-
-(define-function rb_sourcelist_model_row_is_separator
-  (c-name "rb_sourcelist_model_row_is_separator")
-  (return-type "gboolean")
-  (parameters
-    '("GtkTreeModel*" "model")
-    '("GtkTreeIter*" "iter")
-    '("RBSourceListModel*" "sourcelist")
   )
 )
 

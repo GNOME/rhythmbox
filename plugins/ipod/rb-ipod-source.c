@@ -248,11 +248,11 @@ rb_ipod_source_new (RBShell *shell,
 	g_free (path);
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
-					  "entry-type", entry_type,
-					  "volume", volume,
-					  "shell", shell,
-					  "sourcelist-group", RB_SOURCELIST_GROUP_REMOVABLE,
-					  NULL));
+                                               "entry-type", entry_type,
+                                               "volume", volume,
+                                               "shell", shell,
+                                               "source-group", RB_SOURCE_GROUP_DEVICES,
+                                               NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 

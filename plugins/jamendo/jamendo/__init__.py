@@ -60,7 +60,13 @@ class Jamendo(rb.Plugin):
 		self.entry_type.can_sync_metadata = True
 		self.entry_type.sync_metadata = None
 
-		self.source = gobject.new (JamendoSource, shell=shell, entry_type=self.entry_type, plugin=self)
+		group = rb.rb_source_group_get_by_name ("stores")
+ 		if not group:
+ 			group = rb.rb_source_group_register ("stores",
+ 							     _("Stores"),
+ 							     rb.SOURCE_GROUP_CATEGORY_FIXED)
+
+		self.source = gobject.new (JamendoSource, shell=shell, entry_type=self.entry_type, plugin=self, source_group=group)
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_source(self.source, None) # Add the source to the list
 

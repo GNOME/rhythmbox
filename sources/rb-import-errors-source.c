@@ -192,6 +192,7 @@ rb_import_errors_source_new (RBShell *shell,
 					  "shell", shell,
 					  "visibility", FALSE,
 					  "hidden-when-empty", TRUE,
+					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR,
 					  NULL));
 	return source;

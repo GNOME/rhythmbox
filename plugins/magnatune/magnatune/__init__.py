@@ -1,3 +1,22 @@
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#
+# Copyright (C) 2006 Adam Zimmerman  <adam_zimmerman@sfu.ca>
+# Copyright (C) 2006 James Livingston  <doclivingston@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+
 import rhythmdb, rb
 import gobject
 import gtk, gtk.glade
@@ -19,7 +38,6 @@ has_gnome_keyring = False
 #except:
 #	pass	
 
-
 popup_ui = """
 <ui>
   <popup name="MagnatuneSourceViewPopup">
@@ -39,7 +57,6 @@ popup_ui = """
 """
 
 keyring_attributes = {"name": "rb-magnatune-cc-data"}
-
 
 class Magnatune(rb.Plugin):
 	client = gconf.client_get_default()
@@ -65,12 +82,23 @@ class Magnatune(rb.Plugin):
 		self.db = shell.get_property("db")
 		self.keyring = None
 
+		group = rb.rb_source_group_get_by_name ("stores")
+ 		if not group:
+ 			group = rb.rb_source_group_register ("stores",
+ 							     _("Stores"),
+ 							     rb.SOURCE_GROUP_CATEGORY_FIXED)
+
 		self.entry_type = self.db.entry_register_type("MagnatuneEntryType")
 		# allow changes which don't do anything
 		self.entry_type.can_sync_metadata = True
 		self.entry_type.sync_metadata = None
 
-		self.source = gobject.new (MagnatuneSource, shell=shell, entry_type=self.entry_type, plugin=self)
+		self.source = gobject.new (MagnatuneSource,
+ 					   shell=shell,
+ 					   entry_type=self.entry_type,
+ 					   source_group=group,
+ 					   plugin=self)
+
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_source(self.source, None) # Add the source to the list
 		
@@ -102,7 +130,7 @@ class Magnatune(rb.Plugin):
 		manager.insert_action_group(self.action_group, 0)
 		self.ui_id = manager.add_ui_from_string(popup_ui)
 		manager.ensure_update()
-	
+
 	def deactivate(self, shell):
 		manager = shell.get_player().get_property('ui-manager')
 		manager.remove_ui (self.ui_id)

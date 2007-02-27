@@ -422,6 +422,7 @@ rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
 					  "name", _("Radio"),
 					  "shell", shell,
 					  "entry-type", entry_type,
+					  "source-group", RB_SOURCE_GROUP_LIBRARY,
 					  "plugin", plugin,
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
