@@ -13,6 +13,13 @@ headers
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-query-results.h"
 
+
+#if PY_VERSION_HEX < 0x02050000
+typedef int Py_ssize_t;
+#define PY_SSIZE_T_MAX INT_MAX
+#define PY_SSIZE_T_MIN INT_MIN
+#endif
+
 void pyrhythmdb_register_classes (PyObject *d); 
 void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
 
