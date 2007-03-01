@@ -267,29 +267,6 @@ rb_sourcelist_model_is_row_visible (GtkTreeModel *model,
 	return TRUE;
 }
 
-static RBSourceGroup *
-get_group_for_path (RBSourceListModel *model,
-		    GtkTreePath       *path)
-{
-	RBSource      *source;
-	RBSourceGroup *group;
-	GtkTreeIter    iter;
-
-	group = NULL;
-
-	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
-
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
-				    -1);
-
-		g_object_get (source, "source-group", &group, NULL);
-		g_object_unref (source);
-	}
-
-	return group;
-}
-
 static gboolean
 rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 					GtkTreePath *dest,
@@ -333,69 +310,8 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
         }
 
 	if (selection_data->type == gdk_atom_intern ("application/x-rhythmbox-source", TRUE)) {
-		GtkTreePath  *path;
-		GtkTreePath  *real_dest;
-		char         *path_str;
-		GtkTreeIter   iter, real_iter;
-		GtkTreeIter   real_dest_iter;
-		GtkTreeModel *real_model;
-		RBSource      *source;
-		RBSourceGroup *group;
-		RBSourceGroup *dest_group;
-
-		if (! dest) {
-			return FALSE;
-		}
-
-		real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (model));
-
-		path_str = g_strndup ((char *) selection_data->data, selection_data->length);
-
-		path = gtk_tree_path_new_from_string (path_str);
-		gtk_tree_model_get_iter (GTK_TREE_MODEL (model),
-					 &iter, path);
-		gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (model),
-								  &real_iter, &iter);
-
-		real_dest = gtk_tree_model_filter_convert_path_to_child_path (GTK_TREE_MODEL_FILTER (model),
-									      dest);
-
-		gtk_tree_model_get (GTK_TREE_MODEL (real_model), &real_iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
-				    -1);
-		g_object_get (source, "source-group", &group, NULL);
-		g_object_unref (source);
-
-		/* restrict sources to within their group */
-		dest_group = get_group_for_path (model, real_dest);
-		if (dest_group == NULL
-		    || group == NULL
-		    || strcmp (dest_group->name, group->name) != 0) {
-			/* bail */
-			return FALSE;
-		}
-
-
-		/* FIXME: this won't work with a sorted model */
-		if (gtk_tree_model_get_iter (GTK_TREE_MODEL (real_model),
-					     &real_dest_iter, real_dest)) {
-
-			if (pos == GTK_TREE_VIEW_DROP_AFTER) {
-				gtk_tree_store_move_after (GTK_TREE_STORE (real_model),
-							   &real_iter, &real_dest_iter);
-			} else {
-				gtk_tree_store_move_before (GTK_TREE_STORE (real_model),
-							    &real_iter, &real_dest_iter);
-			}
-
-		} else {
-			gtk_tree_store_move_before (GTK_TREE_STORE (real_model),
-						    &real_iter, NULL);
-		}
-
-		gtk_tree_path_free (real_dest);
-		gtk_tree_path_free (path);
-		g_free (path_str);
+		/* don't support dnd of sources */
+		return FALSE;
 	}
 
 	return FALSE;
@@ -411,6 +327,7 @@ rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 
 	rb_debug ("row drop possible");
 	g_return_val_if_fail (RB_IS_SOURCELIST_MODEL (drag_dest), FALSE);
+
 	model = RB_SOURCELIST_MODEL (drag_dest);
 
 	if (!dest)
@@ -446,33 +363,6 @@ path_is_droppable (RBSourceListModel *model,
 }
 
 static gboolean
-path_is_reorderable (RBSourceListModel *model,
-		     GtkTreePath *dest)
-{
-	GtkTreeIter iter;
-
-	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
-		RBSource      *source;
-		RBSourceGroup *group;
-
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-
-		if (source == NULL)
-			return FALSE;
-
-		g_object_get (source, "source-group", &group, NULL);
-		g_object_unref (source);
-
-		/* fixed and transient sources are not reorderable, everything else is */
-		return (group->category != RB_SOURCE_GROUP_CATEGORY_FIXED &&
-			group->category != RB_SOURCE_GROUP_CATEGORY_TRANSIENT);
-	}
-
-	return FALSE;
-}
-
-static gboolean
 rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
 				       GtkTreePath       *dest_path,
 				       GList *targets,
@@ -482,25 +372,7 @@ rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
 
 	if (g_list_find (targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE)) && dest_path) {
 		rb_debug ("application/x-rhythmbox-source type");
-		if (!path_is_reorderable (RB_SOURCELIST_MODEL (model), dest_path)) {
-			GtkTreePath *test_path = gtk_tree_path_copy (dest_path);
-			gtk_tree_path_next (test_path);
-			gboolean ret = FALSE;
-			if (path_is_reorderable (RB_SOURCELIST_MODEL (model), test_path)) {
-				*pos = GTK_TREE_VIEW_DROP_AFTER;
-				ret = TRUE;
-			}
-
-			gtk_tree_path_free (test_path);
-			return ret;
-		}
-
-		if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_BEFORE)
-			*pos = GTK_TREE_VIEW_DROP_BEFORE;
-		else if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_AFTER)
-			*pos = GTK_TREE_VIEW_DROP_AFTER;
-
-		return TRUE;
+		return FALSE;
 	}
 
 	if (g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE)) ||
@@ -556,32 +428,6 @@ static gboolean
 rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
 				   GList *path_list)
 {
-	GtkTreeIter iter;
-	GtkTreePath *path;
-	GtkTreeModel *model = GTK_TREE_MODEL (drag_source);
-
-	/* we don't support multi selection */
-	g_return_val_if_fail (g_list_length (path_list) == 1, FALSE);
-
-	path = gtk_tree_row_reference_get_path (path_list->data);
-
-	if (path && gtk_tree_model_get_iter (model, &iter, path)) {
-		RBSource      *source;
-		RBSourceGroup *group;
-		gboolean       can;
-
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-
-		g_object_get (source, "source-group", &group, NULL);
-		g_object_unref (source);
-
-		can = (group->category != RB_SOURCE_GROUP_CATEGORY_FIXED &&
-		       group->category != RB_SOURCE_GROUP_CATEGORY_TRANSIENT);
-
-		return can;
-	}
-
 	return FALSE;
 }
 
