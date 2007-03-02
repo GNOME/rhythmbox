@@ -531,6 +531,7 @@ button_press_cb (GtkTreeView    *treeview,
 	}
 
 	res = gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model), &iter, path);
+	gtk_tree_path_free (path);
 	if (res) {
 		gtk_tree_selection_select_iter (gtk_tree_view_get_selection (treeview), &iter);
 	}

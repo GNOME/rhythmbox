@@ -1,5 +1,12 @@
 2007-03-02  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load):
+	* sources/rb-sourcelist.c: (button_press_cb): More leak fixes, fixes #413782
+
+2007-03-02  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/rb-plugin-manager.c: (plugin_manager_view_cell_cb): don't
 	crash if the plugin has NULL for the name, just emit a critical
 	warning. Fixes #413206

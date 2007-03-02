@@ -194,8 +194,8 @@ rb_plugins_engine_load (const gchar *file)
 	if (str) {
 		info->icon_name = str;
 	} else {
-		rb_debug ("Could not find 'Description' in %s", file);
-		info->desc = g_strdup ("");
+		rb_debug ("Could not find 'Icon' in %s", file);
+		info->icon_name = g_strdup ("");
 	}
 
 	/* Get Authors */
