@@ -35,9 +35,11 @@ typedef enum
 	RB_PLAYER_ERROR_INTERNAL
 } RBPlayerError;
 
+GType rb_player_error_get_type (void);
+#define RB_TYPE_PLAYER_ERROR	(rb_player_error_get_type())
+GQuark rb_player_error_quark (void);
 #define RB_PLAYER_ERROR rb_player_error_quark ()
 
-GQuark rb_player_error_quark (void);
 
 #define RB_TYPE_PLAYER         (rb_player_get_type ())
 #define RB_PLAYER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_PLAYER, RBPlayer))

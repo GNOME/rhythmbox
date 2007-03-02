@@ -142,6 +142,7 @@ rhythmbox_LDADD += $(DBUS_LIBS)
 endif
 
 rhythmbox_LDADD += \
+	$(top_builddir)/backends/librbbackends.la	\
 	$(GDA_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\

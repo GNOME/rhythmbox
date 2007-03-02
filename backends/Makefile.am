@@ -7,6 +7,12 @@ SUBDIRS = gstreamer
 librbbackends_la_SOURCES =				\
 	rb-player.h					\
 	rb-player.c					\
+	rb-player-gst-filter.h				\
+	rb-player-gst-filter.c				\
+	rb-player-gst-tee.h				\
+	rb-player-gst-tee.c				\
+	rb-player-gst-data-tee.h			\
+	rb-player-gst-data-tee.c			\
 	$(NULL)
 
 librbbackends_la_LIBADD =				\

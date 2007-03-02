@@ -115,6 +115,31 @@
   (gtype-id "RB_TYPE_SONG_INFO")
 )
 
+(define-interface Player
+  (in-module "RB")
+  (c-name "RBPlayer")
+  (gtype-id "RB_TYPE_PLAYER")
+)
+
+(define-interface PlayerGstFilter
+  (in-module "RB")
+  (c-name "RBPlayerGstFilter")
+  (gtype-id "RB_TYPE_PLAYER_GST_FILTER")
+)
+
+(define-interface PlayerGstTee
+  (in-module "RB")
+  (c-name "RBPlayerGstTee")
+  (gtype-id "RB_TYPE_PLAYER_GST_TEE")
+)
+
+(define-interface PlayerGstDataTee
+  (in-module "RB")
+  (c-name "RBPlayerGstDataTee")
+  (gtype-id "RB_TYPE_PLAYER_GST_DATA_TEE")
+)
+
+
 ;; Enumerations and flags ...
 
 (define-enum ShellPlayerError
@@ -126,6 +151,17 @@
     '("end-of-playlist" "RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST")
     '("not-playing" "RB_SHELL_PLAYER_ERROR_NOT_PLAYING")
     '("not-seekable" "RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE")
+  )
+)
+
+(define-enum PlayerError
+  (in-module "RB")
+  (c-name "RBPlayerError")
+  (gtype-id "RB_TYPE_PLAYER_ERROR")
+  (values
+    '("no-audio" "RB_PLAYER_ERROR_NO_AUDIO")
+    '("general" "RB_PLAYER_ERROR_GENERAL")
+    '("internal" "RB_PLAYER_ERROR_INTERNAL")
   )
 )
 
@@ -2072,6 +2108,178 @@
   (return-type "GtkTreePath*")
   (parameters
     '("RBSourceListGroup" "group")
+  )
+)
+
+
+;; From ../../backends/rb-player.h
+
+(define-function rb_player_error_quark
+  (c-name "rb_player_error_quark")
+  (return-type "GQuark")
+)
+
+(define-function rb_player_get_type
+  (c-name "rb_player_get_type")
+  (return-type "GType")
+)
+
+(define-function rb_player_new
+  (c-name "rb_player_new")
+  (is-constructor-of "RBPlayer")
+  (return-type "RBPlayer*")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method open
+  (of-object "RBPlayer")
+  (c-name "rb_player_open")
+  (return-type "gboolean")
+  (parameters
+    '("const-char*" "uri")
+    '("GError**" "error")
+  )
+)
+
+(define-method opened
+  (of-object "RBPlayer")
+  (c-name "rb_player_opened")
+  (return-type "gboolean")
+)
+
+(define-method close
+  (of-object "RBPlayer")
+  (c-name "rb_player_close")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method play
+  (of-object "RBPlayer")
+  (c-name "rb_player_play")
+  (return-type "gboolean")
+  (parameters
+    '("GError**" "error")
+  )
+)
+
+(define-method pause
+  (of-object "RBPlayer")
+  (c-name "rb_player_pause")
+  (return-type "none")
+)
+
+(define-method playing
+  (of-object "RBPlayer")
+  (c-name "rb_player_playing")
+  (return-type "gboolean")
+)
+
+(define-method set_volume
+  (of-object "RBPlayer")
+  (c-name "rb_player_set_volume")
+  (return-type "none")
+  (parameters
+    '("float" "volume")
+  )
+)
+
+(define-method get_volume
+  (of-object "RBPlayer")
+  (c-name "rb_player_get_volume")
+  (return-type "float")
+)
+
+(define-method set_replaygain
+  (of-object "RBPlayer")
+  (c-name "rb_player_set_replaygain")
+  (return-type "none")
+  (parameters
+    '("double" "track_gain")
+    '("double" "track_peak")
+    '("double" "album_gain")
+    '("double" "album_peak")
+  )
+)
+
+(define-method seekable
+  (of-object "RBPlayer")
+  (c-name "rb_player_seekable")
+  (return-type "gboolean")
+)
+
+(define-method set_time
+  (of-object "RBPlayer")
+  (c-name "rb_player_set_time")
+  (return-type "none")
+  (parameters
+    '("long" "time")
+  )
+)
+
+(define-method get_time
+  (of-object "RBPlayer")
+  (c-name "rb_player_get_time")
+  (return-type "long")
+)
+
+
+
+(define-method add_tee
+  (of-object "RBPlayerGstTee")
+  (c-name "rb_player_gst_tee_add_tee")
+  (return-type "none")
+  (parameters
+    '("GObject*" "element")
+  )
+)
+
+(define-method remove_tee
+  (of-object "RBPlayerGstTee")
+  (c-name "rb_player_gst_tee_remove_tee")
+  (return-type "none")
+  (parameters
+    '("GObject*" "element")
+  )
+)
+
+(define-method add_data_tee
+  (of-object "RBPlayerGstDataTee")
+  (c-name "rb_player_gst_data_tee_add_data_tee")
+  (return-type "none")
+  (parameters
+    '("GObject*" "element")
+  )
+)
+
+(define-method remove_data_tee
+  (of-object "RBPlayerGstDataTee")
+  (c-name "rb_player_gst_data_tee_remove_data_tee")
+  (return-type "none")
+  (parameters
+    '("GObject*" "element")
+  )
+)
+
+(define-method add_filter
+  (of-object "RBPlayerGstFilter")
+  (c-name "rb_player_gst_filter_add_filter")
+  (return-type "none")
+  (parameters
+    '("GObject*" "element")
+  )
+)
+
+(define-method remove_filter
+  (of-object "RBPlayerGstFilter")
+  (c-name "rb_player_gst_filter_remove_filter")
+  (return-type "none")
+  (parameters
+    '("GObject*" "element")
   )
 )
 

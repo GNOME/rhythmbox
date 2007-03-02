@@ -275,3 +275,26 @@ rb_player_error_quark (void)
 
 	return quark;
 }
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_player_error_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_PLAYER_ERROR_NO_AUDIO, "Stream contains no audio"),
+			ENUM_ENTRY (RB_PLAYER_ERROR_GENERAL, "General error"),
+			ENUM_ENTRY (RB_PLAYER_ERROR_INTERNAL, "Internal backend error"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBPlayerError", values);
+	}
+
+	return etype;
+}
+

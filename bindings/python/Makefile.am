@@ -17,14 +17,15 @@ rb_la_LIBADD = \
 rb_la_CFLAGS = \
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/lib             \
-	-I$(top_srcdir)/metadata                       	\
-	-I$(top_srcdir)/player                       	\
-	-I$(top_srcdir)/rhythmdb                       	\
-	-I$(top_srcdir)/widgets                    	\
-	-I$(top_srcdir)/sources                    	\
-	-I$(top_srcdir)/iradio                    	\
-	-I$(top_srcdir)/podcast                    	\
-	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/metadata	\
+	-I$(top_srcdir)/player		\
+	-I$(top_srcdir)/rhythmdb	\
+	-I$(top_srcdir)/widgets		\
+	-I$(top_srcdir)/sources		\
+	-I$(top_srcdir)/iradio		\
+	-I$(top_srcdir)/podcast		\
+	-I$(top_srcdir)/plugins		\
+	-I$(top_srcdir)/backends	\
 	-I$(top_srcdir)/shell		\
 	$(RHYTHMBOX_CFLAGS)		\
 	$(PYGTK_CFLAGS)			\
@@ -46,6 +47,8 @@ rb.c: rb.defs rb.override
 		--prefix py$* $(<F) ) > $@ 
 
 BINDING_HEADERS_SRCDIR_IN = \
+	backends/rb-player.h			\
+	backends/gstreamer/rb-player-gst.h	\
 	plugins/rb-plugin.h			\
 	lib/rb-string-value-map.h		\
 	rhythmdb/rhythmdb.h			\

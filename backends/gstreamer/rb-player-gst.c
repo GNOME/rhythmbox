@@ -36,12 +36,19 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-debug.h"
-#include "rb-player.h"
-#include "rb-player-gst.h"
-#include "rb-debug.h"
 #include "rb-marshal.h"
 
+#include "rb-player.h"
+#include "rb-player-gst-filter.h"
+#include "rb-player-gst-tee.h"
+/*#include "rb-player-gst-data-tee.h"*/
+#include "rb-player-gst.h"
+
+
 static void rb_player_init (RBPlayerIface *iface);
+static void rb_player_gst_filter_init (RBPlayerGstFilterIface *iface);
+static void rb_player_gst_tee_init (RBPlayerGstTeeIface *iface);
+/*tatic void rb_player_gst_data_tee_init (RBPlayerGstDataTeeIface *iface);*/
 static void rb_player_gst_finalize (GObject *object);
 static void rb_player_gst_get_property (GObject *object,
 					guint prop_id,
@@ -66,8 +73,13 @@ static void rb_player_gst_set_time (RBPlayer *player, long time);
 static long rb_player_gst_get_time (RBPlayer *player);
 
 G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
-			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER,
-					      rb_player_init))
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER, rb_player_init)
+#ifdef HAVE_GSTREAMER_0_10
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER, rb_player_gst_filter_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_TEE, rb_player_gst_tee_init)
+			/*G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_DATA_TEE, rb_player_gst_data_tee_init)*/
+#endif
+			)
 #define RB_PLAYER_GST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYER_GST, RBPlayerGstPrivate))
 
 #define RB_PLAYER_GST_TICK_HZ 5
@@ -99,6 +111,14 @@ struct _RBPlayerGstPrivate
 #ifdef HAVE_GSTREAMER_0_8
 	guint error_signal_id;
 	guint buffering_signal_id;
+#endif
+#ifdef HAVE_GSTREAMER_0_10
+	GList *waiting_tees;
+	GstElement *sinkbin;
+	GstElement *tee;
+
+	GList *waiting_filters; /* in reverse order */
+	GstElement *filterbin;
 #endif
 
 	float cur_volume;
@@ -226,6 +246,13 @@ rb_player_gst_finalize (GObject *object)
 
 		rb_player_gst_gst_free_playbin (mp);
 	}
+
+#ifdef HAVE_GSTREAMER_0_10
+	if (mp->priv->waiting_tees) {
+		g_list_foreach (mp->priv->waiting_tees, (GFunc)gst_object_sink, NULL);
+	}
+	g_list_free (mp->priv->waiting_tees);
+#endif
 
 	G_OBJECT_CLASS (rb_player_gst_parent_class)->finalize (object);
 }
@@ -634,7 +661,8 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 #ifdef HAVE_GSTREAMER_0_8
 	/* Output sink */
 	sink = gst_gconf_get_default_audio_sink ();
-	g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
+	if (sink != NULL)
+		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
 #endif
 #ifdef HAVE_GSTREAMER_0_10
 	gst_bus_add_watch (gst_element_get_bus (GST_ELEMENT (mp->priv->playbin)),
@@ -661,6 +689,61 @@ rb_player_gst_construct (RBPlayerGst *mp, GError **error)
 		}
 	} else {
 		g_object_unref (sink);
+	}
+
+	{
+		GstPad *pad;
+		GList *l;
+		GstElement *queue;
+		GstElement *audioconvert;
+		GstPad *ghostpad;
+
+		/* setup filterbin,and insert the leading audioconvert */
+		mp->priv->filterbin = gst_bin_new (NULL);
+		audioconvert = gst_element_factory_make ("audioconvert", NULL);
+		gst_bin_add (GST_BIN (mp->priv->filterbin), audioconvert);
+
+		/* ghost it to the bin */
+		pad = gst_element_get_pad (audioconvert, "sink");
+		ghostpad = gst_ghost_pad_new ("sink", pad);
+		gst_element_add_pad (mp->priv->filterbin, ghostpad);
+		gst_object_unref (pad);
+
+		pad = gst_element_get_pad (audioconvert, "src");
+		ghostpad = gst_ghost_pad_new ("src", pad);
+		gst_element_add_pad (mp->priv->filterbin, ghostpad);
+		gst_object_unref (pad);
+
+
+		/* set up the sinkbin with it's tee element */
+		mp->priv->sinkbin = gst_bin_new (NULL);
+		mp->priv->tee = gst_element_factory_make ("tee", NULL);
+		queue = gst_element_factory_make ("queue", NULL);
+
+		/* link it all together and insert */
+		gst_bin_add_many (GST_BIN (mp->priv->sinkbin), mp->priv->filterbin, mp->priv->tee, queue, sink, NULL);
+		gst_element_link_many (mp->priv->filterbin, mp->priv->tee, queue, sink, NULL);
+
+		pad = gst_element_get_pad (mp->priv->filterbin, "sink");
+		ghostpad = gst_ghost_pad_new ("sink", pad);
+		gst_element_add_pad (mp->priv->sinkbin, ghostpad);
+		gst_object_unref (pad);
+
+		g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", mp->priv->sinkbin, NULL);
+
+
+		/* add any tees and filters that were waiting for us */
+		for (l = mp->priv->waiting_tees; l != NULL; l = g_list_next (l)) {
+			rb_player_gst_tee_add_tee (RB_PLAYER_GST_TEE (mp), GST_ELEMENT (l->data));
+		}
+		g_list_free (mp->priv->waiting_tees);
+		mp->priv->waiting_tees = NULL;
+
+		for (l = mp->priv->waiting_filters; l != NULL; l = g_list_next (l)) {
+			rb_player_gst_filter_add_filter (RB_PLAYER_GST_FILTER(mp), GST_ELEMENT (l->data));
+		}
+		g_list_free (mp->priv->waiting_filters);
+		mp->priv->waiting_filters = NULL;
 	}
 #endif
 
@@ -730,7 +813,7 @@ rb_player_gst_sync_pipeline (RBPlayerGst *mp)
 	}
 #ifdef HAVE_GSTREAMER_0_10
 	/* FIXME: Set up a timeout to watch if the pipeline doesn't
-         * go to PAUSED/PLAYING within some time (5 secs maybe?)
+	 * go to PAUSED/PLAYING within some time (5 secs maybe?)
 	 */
 #endif
 	return TRUE;
@@ -1030,7 +1113,7 @@ rb_player_gst_set_replaygain (RBPlayer *player,
 	if (scale > 15)
 		scale = 15;
 
-        rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
+	rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
 
 	if (mp->priv->playbin != NULL) {
 		GParamSpec *volume_pspec;
@@ -1165,3 +1248,306 @@ rb_player_gst_get_time (RBPlayer *player)
 	} else
 		return -1;
 }
+
+
+#ifdef HAVE_GSTREAMER_0_10
+static gboolean
+rb_player_gst_add_tee (RBPlayerGstTee *player, GstElement *element)
+{
+	RBPlayerGst *mp;
+	GstElement *queue, *audioconvert, *bin;
+	GstPad *pad, *ghostpad;
+
+	mp = RB_PLAYER_GST (player);
+
+	if (mp->priv->tee == NULL) {
+		mp->priv->waiting_tees = g_list_prepend (mp->priv->waiting_tees, element);
+		return TRUE;
+	}
+
+	if (mp->priv->playing) {
+		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {
+			/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+			if (gst_element_get_state (mp->priv->playbin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+				g_warning ("Failed to pause pipeline before tee insertion");
+				return FALSE;
+			}
+		}
+	}
+
+	bin = gst_bin_new (NULL);
+	queue = gst_element_factory_make ("queue", NULL);
+	audioconvert = gst_element_factory_make ("audioconvert", NULL);
+
+	/* set up the element's containing bin */
+	gst_bin_add_many (GST_BIN (bin), queue, audioconvert, element, NULL);
+	gst_bin_add (GST_BIN (mp->priv->sinkbin), bin);
+	gst_element_link_many (queue, audioconvert, element, NULL);
+
+	/* link it to the tee */
+	pad = gst_element_get_pad (queue, "sink");
+	ghostpad = gst_ghost_pad_new ("sink", pad);
+	gst_element_add_pad (bin, ghostpad);
+	gst_object_unref (pad);
+
+	gst_element_link (mp->priv->tee, bin);
+
+	if (mp->priv->playing)
+		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+
+	return TRUE;
+}
+
+static gboolean
+rb_player_gst_remove_tee (RBPlayerGstTee *player, GstElement *element)
+{
+	RBPlayerGst *mp;
+	GstElement *bin;
+
+	mp = RB_PLAYER_GST (player);
+
+	if (mp->priv->tee == NULL) {
+		gst_object_sink (element);
+		mp->priv->waiting_tees = g_list_remove (mp->priv->waiting_tees, element);
+		return TRUE;
+	}
+
+	if (mp->priv->playing) {
+		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {
+			/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+			if (gst_element_get_state (mp->priv->playbin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+				g_warning ("Failed to pause pipeline before eee insertion");
+				return FALSE;
+			}
+		}
+	}
+
+	/* get the containing bin and unlink it */
+	bin = GST_ELEMENT (gst_element_get_parent (element));
+
+	if (gst_element_set_state (bin, GST_STATE_NULL) == GST_STATE_CHANGE_ASYNC) {
+		/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+		if (gst_element_get_state (bin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+			g_warning ("Failed to pause pipeline before tee insertion");
+			return FALSE;
+		}
+	}
+
+	gst_bin_remove (GST_BIN (mp->priv->sinkbin), bin);
+	gst_object_unref (bin);
+
+	if (mp->priv->playing)
+		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+
+	return TRUE;
+}
+
+static gboolean
+rb_player_gst_add_filter (RBPlayerGstFilter *player, GstElement *element)
+{
+	RBPlayerGst *mp;
+	GstElement *audioconvert, *bin;
+	GstPad *ghostpad, *realpad;
+	GstPad *binsinkpad, *binsrcpad;
+	gpointer element_sink_pad;
+	GstIterator *sink_pads;
+	gboolean sink_pad_found, stop_scan;
+	GstPadLinkReturn link;
+
+	mp = RB_PLAYER_GST (player);
+
+	if (mp->priv->filterbin == NULL) {
+		mp->priv->waiting_filters = g_list_prepend (mp->priv->waiting_filters, element);
+		return TRUE;
+	}
+
+	if (mp->priv->playing) {
+		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {
+			/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+			if (gst_element_get_state (mp->priv->playbin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+				g_warning ("Failed to pause pipeline before filter insertion");
+				return FALSE;
+			}
+		}
+	}
+
+	bin = gst_bin_new (NULL);
+	audioconvert = gst_element_factory_make ("audioconvert", NULL);
+
+	/* set up the element's containing bin */
+	rb_debug ("adding element %p and audioconvert to bin", element);
+	gst_bin_add_many (GST_BIN (bin), element, audioconvert, NULL);
+	gst_element_link_many (element, audioconvert, NULL);
+
+	/* ghost to the bin */
+	/* retrieve the first unliked source pad */
+	sink_pad_found = FALSE;
+	stop_scan = FALSE;
+	sink_pads = gst_element_iterate_sink_pads (element);
+	while (!sink_pad_found && !stop_scan) {
+		gpointer *esp_pointer = &element_sink_pad; /* stop type-punning warnings */
+		switch (gst_iterator_next (sink_pads, esp_pointer)) {
+			case GST_ITERATOR_OK:
+				sink_pad_found = !gst_pad_is_linked (GST_PAD(element_sink_pad));
+				break;
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync (sink_pads);
+				break;
+			case GST_ITERATOR_ERROR:
+			case GST_ITERATOR_DONE:
+				stop_scan = TRUE;
+				break;
+		}
+	}
+	gst_iterator_free (sink_pads);
+
+	if (!sink_pad_found) {
+		g_warning ("Could not find a free sink pad on filter");
+		return FALSE;
+	}
+
+	binsinkpad = gst_ghost_pad_new ("sink", GST_PAD (element_sink_pad));
+	gst_element_add_pad (bin, binsinkpad);
+
+	realpad = gst_element_get_pad (audioconvert, "src");
+	binsrcpad = gst_ghost_pad_new ("src", realpad);
+	gst_element_add_pad (bin, binsrcpad);
+	gst_object_unref (realpad);
+
+	/* replace the filter chain ghost with the new bin */
+	gst_bin_add (GST_BIN (mp->priv->filterbin), bin);
+
+	ghostpad = gst_element_get_pad (mp->priv->filterbin, "src");
+	realpad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghostpad));
+	gst_ghost_pad_set_target (GST_GHOST_PAD (ghostpad), binsrcpad);
+	gst_object_unref (ghostpad);
+
+	link = gst_pad_link (realpad, binsinkpad);
+	gst_object_unref (realpad);
+	if (link != GST_PAD_LINK_OK) {
+		g_warning ("could not link new filter into pipeline");
+		return FALSE;
+	}
+
+	if (mp->priv->playing)
+		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+
+	return TRUE;
+}
+
+static gboolean
+rb_player_gst_remove_filter (RBPlayerGstFilter *player, GstElement *element)
+{
+	RBPlayerGst *mp;
+	GstPad *mypad;
+	GstPad *prevpad, *nextpad;
+	GstPad *ghostpad;
+	GstPad *targetpad;
+	GstElement *bin;
+	gboolean result = TRUE;
+
+	mp = RB_PLAYER_GST (player);
+
+	if (mp->priv->filterbin == NULL) {
+		gst_object_sink (element);
+		mp->priv->waiting_filters = g_list_remove (mp->priv->waiting_filters, element);
+		return TRUE;
+	}
+
+	if (mp->priv->playing) {
+
+		/* it'd be more fun to do this by blocking a pad.. */
+
+		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {
+			/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+			if (gst_element_get_state (mp->priv->playbin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+				g_warning ("Failed to pause pipeline before filter insertion");
+				return FALSE;
+			}
+		}
+	}
+
+	/* get the containing bin and unlink it */
+	bin = GST_ELEMENT (gst_element_get_parent (element));
+
+	if (gst_element_set_state (bin, GST_STATE_NULL) == GST_STATE_CHANGE_ASYNC) {
+		/* FIXME: Use a timeout on get_state. Post a GError somewhere on failed? */
+		if (gst_element_get_state (bin, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
+			g_warning ("Failed to pause pipeline before filter insertion");
+			return FALSE;
+		}
+	}
+
+	mypad = gst_element_get_pad (bin, "sink");
+	prevpad = gst_pad_get_peer (mypad);
+	gst_pad_unlink (prevpad, mypad);
+	gst_object_unref (mypad);
+
+	ghostpad = gst_element_get_pad (bin, "src");
+	nextpad = gst_element_get_pad (mp->priv->filterbin, "src");
+
+	targetpad = gst_ghost_pad_get_target (GST_GHOST_PAD (nextpad));
+	if (targetpad == ghostpad) {
+		/* we are at the end of the filter chain, so redirect the ghostpad to the previous element */
+		gst_ghost_pad_set_target (GST_GHOST_PAD (nextpad), prevpad);
+	} else {
+		/* we are in the middle, so link the previous and next elements */
+		mypad = gst_element_get_pad (bin, "src");
+		gst_object_unref (nextpad);
+		nextpad = gst_pad_get_peer (mypad);
+		gst_pad_unlink (mypad, nextpad);
+		gst_object_unref (mypad);
+
+		if (gst_pad_link (prevpad, nextpad) != GST_PAD_LINK_OK)
+			result = FALSE;
+	}
+
+	gst_object_unref (nextpad);
+	gst_object_unref (prevpad);
+	gst_object_unref (ghostpad);
+	gst_object_unref (targetpad);
+
+	gst_bin_remove (GST_BIN (mp->priv->filterbin), bin);
+	gst_object_unref (bin);
+
+	if (mp->priv->playing)
+		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
+
+	return result;
+}
+
+/*static gboolean
+rb_player_gst_add_data_tee (RBPlayerGstDataTee *player, GstElement *element)
+{
+
+}
+
+static gboolean
+rb_player_gst_remove_data_tee (RBPlayerGstDataTee *player, GstElement *element)
+{
+
+}*/
+
+static void
+rb_player_gst_filter_init (RBPlayerGstFilterIface *iface)
+{
+	iface->add_filter = rb_player_gst_add_filter;
+	iface->remove_filter = rb_player_gst_remove_filter;
+}
+
+static void
+rb_player_gst_tee_init (RBPlayerGstTeeIface *iface)
+{
+	iface->add_tee = rb_player_gst_add_tee;
+	iface->remove_tee = rb_player_gst_remove_tee;
+}
+
+/*static void
+rb_player_gst_data_tee_init (RBPlayerGstDataTeeIface *iface)
+{
+	iface->add_data_tee = rb_player_gst_add_data_tee;
+	iface->remove_data_tee = rb_player_gst_remove_data_tee;
+}*/
+
+
+#endif

@@ -1,5 +1,39 @@
 2007-03-02  James Livingston  <doclivingston@gmail.com>
 
+	* backends/Makefile.am:
+	* backends/rb-player-gst-data-tee.c:
+	(rb_player_gst_data_tee_interface_init),
+	(rb_player_gst_data_tee_get_type),
+	(rb_player_gst_data_tee_add_data_tee),
+	(rb_player_gst_data_tee_remove_data_tee):
+	* backends/rb-player-gst-data-tee.h:
+	* backends/rb-player-gst-filter.c:
+	(rb_player_gst_filter_interface_init),
+	(rb_player_gst_filter_get_type), (rb_player_gst_filter_add_filter),
+	(rb_player_gst_filter_remove_filter):
+	* backends/rb-player-gst-filter.h:
+	* backends/rb-player-gst-tee.c: (rb_player_gst_tee_interface_init),
+	(rb_player_gst_tee_get_type), (rb_player_gst_tee_add_tee),
+	(rb_player_gst_tee_remove_tee):
+	* backends/rb-player-gst-tee.h: Add three new interfaces, which allow
+	the addition of "tee" elements, "filter elements" and "data-tee"
+	elements to the pipeline.
+
+	* shell/Makefile.am:
+	* backends/rb-player.c: (rb_player_error_get_type):
+	* backends/rb-player.h: make player errors a full type.
+
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_finalize),
+	(rb_player_gst_construct): implement the tee and filter interfaces.
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: python bindings
+
+	from #345181
+
+2007-03-02  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Andreas Hanke  <andreas.hanke@gmx-topmail.de>
 
 	* configure.ac:
