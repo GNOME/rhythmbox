@@ -521,9 +521,9 @@ rb_sourcelist_source_to_iter (RBSourceList *sourcelist,
 
 	if (sp->path) {
 		ret = gtk_tree_model_get_iter (sourcelist->priv->real_model, iter, sp->path);
+		gtk_tree_path_free (sp->path);
 	}
 
-	gtk_tree_path_free (sp->path);
 	g_free (sp);
 	sp = NULL;
 
@@ -544,9 +544,9 @@ rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist,
 
 	if (sp->path) {
 		ret = gtk_tree_model_get_iter (sourcelist->priv->filter_model, iter, sp->path);
+		gtk_tree_path_free (sp->path);
 	}
 
-	gtk_tree_path_free (sp->path);
 	g_free (sp);
 	sp = NULL;
 
