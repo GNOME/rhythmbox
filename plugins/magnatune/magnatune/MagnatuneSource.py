@@ -196,7 +196,7 @@ class MagnatuneSource(rb.BrowserSource):
 
 			gladexml.get_widget("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
 			gladexml.get_widget("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
-			gladexml.get_widget("info_label").set_text(_("Would you like to purchase the album '%(album)s' by '%(artist)s'?") % (album, artist))
+			gladexml.get_widget("info_label").set_markup(_("Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?") % {"album":album, "artist":artist})
 			gladexml.get_widget("remember_cc_details").props.visible = has_gnome_keyring
 
 			try:
