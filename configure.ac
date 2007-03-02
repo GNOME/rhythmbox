@@ -637,8 +637,6 @@ AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
 fi
 AC_SUBST(MKINSTALLDIRS)
 
-AS_AC_EXPAND(DATADIR, $datadir)
-
 dnl DBUS
 PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
 if test "x$enable_dbus" = xno; then
@@ -785,8 +783,8 @@ dnl ================================================================
 PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 
-AS_AC_EXPAND(PLUGINDIR, ${libdir}/rhythmbox/plugins)
-
+PLUGINDIR='${libdir}/rhythmbox/plugins'
+AC_SUBST(PLUGINDIR)
 
 dnl ================================================================
 dnl Python
