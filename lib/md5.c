@@ -53,6 +53,8 @@
   1999-05-03 lpd Original version.
  */
 
+#include "config.h"
+
 #include "md5.h"
 #include <string.h>
 

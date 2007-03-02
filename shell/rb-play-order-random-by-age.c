@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-play-order-random-by-age.h"
 
 #include "rhythmdb.h"

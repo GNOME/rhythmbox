@@ -3042,8 +3042,8 @@ rhythmdb_entry_move_to_trash_cb (GnomeVFSXferProgressInfo *info,
 		return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
 	/* Don't overwrite files */
 	if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OVERWRITE)
-		return 0;
-	return TRUE;
+		return GNOME_VFS_XFER_OVERWRITE_ACTION_ABORT; /* abort */
+	return 1; /* continue */
 }
 
 static void

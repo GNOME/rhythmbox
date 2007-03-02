@@ -504,4 +504,6 @@ rb_plugin_manager_finalize (GObject *o)
 	RBPluginManager *pm = RB_PLUGIN_MANAGER (o);
 
 	g_list_free (pm->priv->plugins);
+
+	G_OBJECT_CLASS(rb_plugin_manager_parent_class)->finalize (o);
 }

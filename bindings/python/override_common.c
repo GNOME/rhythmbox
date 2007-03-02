@@ -23,6 +23,8 @@
  *
  */
 
+#include "config.h"
+
 #define NO_IMPORT_PYGOBJECT
 #include "pygobject.h"
 #include <pygtk/pygtk.h>

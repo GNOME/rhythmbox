@@ -1,0 +1,147 @@
+#!/usr/bin/perl -w
+#
+#  Gnumeric
+#
+#  Copyright (C) 2003 Morten Welinder.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation; either version 2 of the
+#  License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this library; if not, write to the Free Software
+#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#  Author: Morten Welinder <terra@gnome.org>
+
+use strict;
+
+my $exitcode = 0;
+my $verbose = 0;
+my $strict = 0;
+
+warn "$0: should be run from top-level directory.\n"
+    unless (-r "configure.in" || -r "configure.ac") && -r 'ChangeLog';
+
+my %base_exceptions =
+    ();
+
+my %exceptions =
+    ();
+
+{
+    local (*FIND);
+    open (*FIND, "find . '(' -type f -name '*.c' -print ')' -o '(' -type d '(' -name CVS -o -name intl -o -name macros ')' -prune ')' |")
+	or die "$0: cannot execute find: $!\n";
+  FILE:
+    foreach my $filename (<FIND>) {
+	chomp $filename;
+	$filename =~ s|^\./||;
+
+	next if $exceptions{$filename};
+	my $basename = $filename;
+	$basename =~ s|^.*/||;
+	next if $base_exceptions{$basename};
+
+	local (*FIL);
+	if (open (*FIL, "< $filename")) {
+	    # print "Checking $filename...\n";
+	    my $lineno = 0;
+	    my $state = 0;
+	    my ($good,$dubious,$bad,$functype);
+	    my ($seen_good,$seen_dubious,$seen_bad);
+	    my %values;
+	  LINE:
+	    while (<FIL>) {
+		$lineno++;
+
+		if (/^(static\s+)?(inline\s+)?(unsigned\s+|signed\s+|const\s+)*(int|gu?int(|8|16|32|64)|char|gu?char)\b[^*]*$/) {
+		    $state = 1;
+		    $good = '[-+]?\d+';
+		    $dubious = 'FALSE|TRUE';
+		    $bad = 'NULL';
+		    $functype = 'integer';
+		} elsif (/^(static\s+)?(inline\s+)?gboolean\b[^*]*$/) {
+		    $state = 1;
+		    $good = 'FALSE|TRUE';
+		    $dubious = '0|1';
+		    $bad = 'NULL|[-+]\d+|[2-9]\d*';
+		    $functype = 'boolean';
+		} elsif (/^(static\s+)?(inline\s+)?(const\s+)?(gpointer|\S[ a-zA-Z0-9]+\*)/) {
+		    $state = 1;
+		    $good = 'NULL';
+		    $dubious = '0';
+		    $bad = 'FALSE';
+		    $functype = 'pointer';
+		}
+
+		if ($state == 1) {
+		    if (/;\s*$/) {
+			$state = 0;
+			next;
+		    }
+
+		    if (/^\{/) {
+			$state++;
+			$seen_good = $seen_dubious = $seen_bad = 0;
+			%values = ();
+			next;
+		    }
+		}
+
+		if (/^\}/) {
+		    if ($state == 2 && !$strict && $seen_good && $seen_dubious) {
+			print "$filename:$lineno: mixture of good and dubious return values: ";
+			print join (', ', sort keys %values), ".\n";
+		    }
+
+		    $state = 0;
+		    next;
+		}
+
+		if ($state == 2) {
+		    my $val;
+
+		    if (/\breturn(\s|\()\s*($good|$dubious|$bad)\s*\)*\s*;/) {
+			$val = $2;
+		    } elsif (/\bg_return_val_if_fail.*,\s*($good|$dubious|$bad)\s*\)\s*;\s*$/) {
+			$val = $1;
+		    } else {
+			next;
+		    }
+
+		    my $barf = 0;
+		    if ($val =~ /^($bad)$/) {
+			$seen_bad = 1;
+			$barf = 1;
+		    } elsif ($val =~ /^($dubious)$/) {
+			$seen_dubious = 1;
+			$barf = 1 if $strict;
+			$values{$val} = 1;
+		    } else {
+			$seen_good = 1;
+			$values{$val} = 1;
+		    }
+
+		    print "$filename:$lineno: returning $val in a $functype function.\n"
+			if $barf;
+
+		    next;
+		}
+	    }
+	    close (*FIL);
+	} else {
+	    print STDERR "$0: Cannot read `$filename': $!\b";
+	    $exitcode = 1;
+	}
+    }
+    close (*FIND);
+}
+
+exit $exitcode;

@@ -1,3 +1,51 @@
+2007-03-02  James Livingston  <doclivingston@gmail.com>
+
+	* tools/check-config-h.pl:
+	* tools/check-finalizers:
+	* tools/check-glade-visible:
+	* tools/check-null-false-returns:
+	* tools/massif.sh:
+	* tools/run-tests: add some useful tools, the check-* ones copied from
+	gnuemeric.
+
+	* bindings/python/override_common.c:
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.override:
+	* lib/eggsequence.c:
+	* lib/md5.c:
+	* lib/rb-debug.c:
+	* lib/rb-glade-helpers.c:
+	* lib/rb-stock-icons.c:
+	* lib/rb-tree-dnd.c:
+	* plugins/audiocd/sj-metadata-musicbrainz.c:
+	(sj_metadata_musicbrainz_finalize):
+	* plugins/audiocd/sj-metadata.c:
+	* plugins/audiocd/sj-structures.c:
+	* plugins/daap/rb-daap-structure.c:
+	* plugins/rb-plugin-manager.c: (rb_plugin_manager_finalize):
+	* podcast/rb-podcast-parse.c:
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_move_to_trash_cb):
+	* shell/rb-history.c:
+	* shell/rb-play-order-linear-loop.c:
+	* shell/rb-play-order-random-by-age-and-rating.c:
+	* shell/rb-play-order-random-by-age.c:
+	* shell/rb-play-order-random-by-rating.c:
+	* shell/rb-play-order-random-equal-weights.c:
+	* shell/rb-play-order-shuffle.c:
+	* tests/bench-rhythmdb-load.c:
+	* tests/test-file-helpers.c:
+	* tests/test-rb-lib.c:
+	* tests/test-rhythmdb-property-model.c:
+	* tests/test-rhythmdb-query-model.c:
+	* tests/test-rhythmdb-query.c:
+	* tests/test-rhythmdb-tree-serialization.c:
+	* tests/test-rhythmdb-view.c:
+	* tests/test-rhythmdb.c:
+	* tests/test-utils.c:
+	* widgets/gossip-cell-renderer-expander.c:
+	* widgets/rb-query-creator-properties.c:
+	* widgets/rb-rating-helper.c: fix some issues they pick up
+
 2007-03-01  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	Patch partially by: Edward Rudd <eddie@omegaware.com>:

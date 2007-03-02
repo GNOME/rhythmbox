@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include <gmodule.h>
 #include <gtk/gtk.h>
 #include <string.h>

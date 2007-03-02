@@ -20,6 +20,8 @@
  * Authors: Ross Burton <ross@burtonini.com>
  */
 
+#include "config.h"
+
 #include "sj-structures.h"
 #include <glib/gmessages.h>
 #include <glib/glist.h>

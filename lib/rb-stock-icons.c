@@ -21,6 +21,8 @@
  *
  */
 
+#include "config.h"
+
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <stdio.h>

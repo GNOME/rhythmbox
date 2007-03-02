@@ -27,6 +27,8 @@
  *     start the new one).
  */
 
+#include "config.h"
+
 #include <gtk/gtktreeview.h>
 
 #include "gossip-cell-renderer-expander.h"

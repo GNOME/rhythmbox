@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-play-order-linear-loop.h"
 
 #include "rb-debug.h"

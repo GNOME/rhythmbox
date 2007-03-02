@@ -1,0 +1,191 @@
+#!/usr/bin/perl -w
+#
+#  Gnumeric
+#
+#  Copyright (C) 2003 Morten Welinder.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License as
+#  published by the Free Software Foundation; either version 2 of the
+#  License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this library; if not, write to the Free Software
+#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#  Author: Morten Welinder <terra@gnome.org>
+
+use strict;
+
+my $exitcode = 0;
+my $verbose = 0;
+my $strict = 0;
+
+warn "$0: should be run from top-level directory.\n"
+    unless (-r "configure.in" || -r "configure.ac") && -r 'ChangeLog';
+
+my %base_exceptions =
+    ();
+
+my %exceptions =
+    ();
+
+{
+    local (*FIND);
+    open (*FIND, "find . '(' -type f -name '*.c' -print ')' -o '(' -type d '(' -name CVS -o -name intl -o -name macros ')' -prune ')' |")
+	or die "$0: cannot execute find: $!\n";
+  FILE:
+    foreach my $filename (<FIND>) {
+	chomp $filename;
+	$filename =~ s|^\./||;
+
+	next if $exceptions{$filename};
+	my $basename = $filename;
+	$basename =~ s|^.*/||;
+	next if $base_exceptions{$basename};
+
+	my %is_an_object_type = ();
+	my $err = &pass1 ($filename, \%is_an_object_type);
+	if ($err) {
+	    $exitcode = 1;
+	    next FILE;
+	}
+	$exitcode ||= &pass2 ($filename, \%is_an_object_type);
+    }
+    close (*FIND);
+}
+
+exit $exitcode;
+
+# -----------------------------------------------------------------------------
+
+sub slurp {
+    my ($s) = @_;
+
+    while ($s =~ m{(/\*|//)}) {
+	if ($1 eq '//') {
+	    $s =~ s{//.*}{};
+	} else {
+	    ($s =~ s{/\*.*\*/}{}) or ($s =~ s{/\*.*}{});
+	}
+    }
+
+    $s =~ s/\s+$//;
+    return $s;
+}
+
+# -----------------------------------------------------------------------------
+
+sub pass1 {
+    my ($filename,$pis_an_object_type) = @_;
+
+    local (*FIL);
+    if (open (*FIL, "<$filename")) {
+	while (<FIL>) {
+	    if (/^(([a-zA-Z_]+[a-zA-Z_0-9]*)_get_type)\s*\(/) {
+		$pis_an_object_type->{$2} = 1;
+	    }
+	    if (/\(GClassInitFunc\)\s*(([a-zA-Z_]+[a-zA-Z_0-9]*)_class_init)\s*,/) {
+		$pis_an_object_type->{$2} = 1;
+	    }
+	    if (/\(GInstanceInitFunc\)\s*(([a-zA-Z_]+[a-zA-Z_0-9]*)_init)\s*,/) {
+		$pis_an_object_type->{$2} = 1;
+	    }
+	    if (/\bG_DEFINE_TYPE\b/) {
+		while (!/\)\s*;?\s*$/) { chomp; $_ .= &slurp (scalar <FIL>); }
+		if (/\bG_DEFINE_TYPE\s*\([^,]*,\s*([a-zA-Z_]+[a-zA-Z_0-9]*)\s*,/) {
+		    $pis_an_object_type->{$1} = 1;
+		}
+	    }
+
+	    if (/\bBONOBO_TYPE_FUNC_FULL\b/) {
+		while (!/\)\s*;?\s*$/) { chomp; $_ .= &slurp (scalar <FIL>); }
+		if (/\bBONOBO_TYPE_FUNC_FULL\s*\([^,]*,[^,]*,[^,]*,\s*([a-zA-Z_]+[a-zA-Z_0-9]*)\s*\)/) {
+		    $pis_an_object_type->{$1} = 1;
+		}
+	    }
+
+	    if (/\bGNOME_CLASS_BOILERPLATE\b/) {
+		while (!/\)\s*;?\s*$/) { chomp; $_ .= &slurp (scalar <FIL>); }
+		if (/\bGNOME_CLASS_BOILERPLATE\s*\([^,]*,\s*([a-zA-Z_]+[a-zA-Z_0-9]*)\s*,[^,]*,[^,]*\)/) {
+		    $pis_an_object_type->{$1} = 1;
+		}
+	    }
+
+	    if (/\bGSF_CLASS(_ABSTRACT)?\b/) {
+		# print "$filename: $_";
+		while (!/\)\s*;?\s*$/) { chomp; $_ .= &slurp (scalar <FIL>); }
+		if (/\bGSF_CLASS(_ABSTRACT)?\s*\([^,]*,\s*([a-zA-Z_]+[a-zA-Z_0-9]*)\s*,[^,]*,[^,]*,[^,]*\)/) {
+		    $pis_an_object_type->{$2} = 1;
+		}
+	    }
+	}
+	close (*FIL);
+	return 0;
+    } else {
+	print STDERR "$0: Cannot read `$filename': $!\b";
+	return 1;
+    }
+}
+
+# -----------------------------------------------------------------------------
+
+sub pass2 {
+    my ($filename,$pis_an_object_type) = @_;
+
+    local (*FIL);
+    if (open (*FIL, "<$filename")) {
+	# print "Checking $filename...\n";
+	my $lineno = 0;
+	my $state = 1;
+	my $funcname = undef;
+	my $type = undef;
+	my $handler = undef;
+      LINE:
+	while (<FIL>) {
+	    $lineno++;
+
+	    if ($state == 1 && /^(([a-zA-Z_]+[a-zA-Z_0-9]*)_(finalize|destroy|dispose))\s*\([^,]+\)/) {
+		$funcname = $1;
+		$type = $2;
+		$handler = $3;
+		if (!$pis_an_object_type->{$type}) {
+		    # print "NO TYPE: $type\n";
+		    next LINE;
+		}
+		$state = 2;
+		next;
+	    }
+
+	    next if $state == 1;
+
+	    if (/^\}/) {
+		if ($state != 3) {
+		    print "$filename:$lineno: apparently missing chain in $funcname.\n";
+		}
+		$state = 1;
+		next;
+	    }
+
+	    if (/->\s*$handler\s*\)?\s*\(/ ||
+		/GNOME_CALL_PARENT.*,\s*$handler\s*,/ ||
+		(/gnm_command_$handler/ && $funcname =~ /^cmd_/) ||
+		/g_object_dtor\s*\)?\s*\(/) {
+		$state = 3;
+		next;
+	    }
+	}
+	close (*FIL);
+	return 0;
+    } else {
+	print STDERR "$0: Cannot read `$filename': $!\b";
+	return 1;
+    }
+}
+
+# -----------------------------------------------------------------------------

@@ -96,6 +96,8 @@ sj_metadata_musicbrainz_finalize (GObject *object)
   g_free (priv->cdrom);
   mb_Delete (priv->mb);
   g_free (priv);
+
+  parent_class->finalize (object);
 }
 
 static void

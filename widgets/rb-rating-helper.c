@@ -20,6 +20,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-cut-and-paste-code.h"
 #include "rb-rating-helper.h"
 #include "rb-stock-icons.h"

@@ -20,6 +20,8 @@
  *
  */
 
+#include "config.h"
+
 #include <string.h>
 
 #include "rb-play-order-shuffle.h"

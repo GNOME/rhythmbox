@@ -19,6 +19,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-play-order-random-equal-weights.h"
 
 static void rb_random_play_order_equal_weights_class_init (RBRandomPlayOrderEqualWeightsClass *klass);

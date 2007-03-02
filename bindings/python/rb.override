@@ -1,5 +1,8 @@
 %%
 headers
+
+#include "config.h"
+
 #define NO_IMPORT_PYGOBJECT
 #include <pygobject.h>
 #include <pygtk/pygtk.h>
@@ -335,7 +338,7 @@ _wrap_RBSource__proxy_do_impl_cut (RBSource *self)
 			PyErr_Print();
 		Py_DECREF(py_self);
 		pyg_gil_state_release(__py_state);
-		return FALSE;
+		return NULL;
 	}
 
 	py_retval = PyObject_CallObject(py_method, NULL);
@@ -406,7 +409,7 @@ _wrap_RBSource__proxy_do_impl_copy (RBSource *self)
 			PyErr_Print();
 		Py_DECREF(py_self);
 		pyg_gil_state_release(__py_state);
-		return FALSE;
+		return NULL;
 	}
 
 	py_retval = PyObject_CallObject(py_method, NULL);
@@ -477,7 +480,7 @@ _wrap_RBSource__proxy_do_impl_get_property_views (RBSource *self)
 			PyErr_Print();
 		Py_DECREF(py_self);
 		pyg_gil_state_release(__py_state);
-		return FALSE;
+		return NULL;
 	}
 
 	py_retval = PyObject_CallObject(py_method, NULL);
@@ -549,7 +552,7 @@ _wrap_RBSource__proxy_do_impl_get_ui_actions (RBSource *self)
 			PyErr_Print();
 		Py_DECREF(py_self);
 		pyg_gil_state_release(__py_state);
-		return FALSE;
+		return NULL;
 	}
 
 	py_retval = PyObject_CallObject(py_method, NULL);
@@ -622,7 +625,7 @@ _wrap_RBSource__proxy_do_impl_get_search_actions (RBSource *self)
 			PyErr_Print();
 		Py_DECREF(py_self);
 		pyg_gil_state_release(__py_state);
-		return FALSE;
+		return NULL;
 	}
 
 	py_retval = PyObject_CallObject(py_method, NULL);
