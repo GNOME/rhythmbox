@@ -722,6 +722,10 @@ rb_podcast_manager_download_file_info_cb (GnomeVFSAsyncHandle *handle,
 	g_free (dir_name);
 	rb_debug ("creating file %s", local_file_path);
 
+	local_file_name = g_filename_to_uri (local_file_path, NULL, NULL);
+	g_free (local_file_path);
+	local_file_path = local_file_name;
+
 	data->write_uri = gnome_vfs_uri_new (local_file_path);
 	if (data->write_uri == NULL) {
 		g_warning ("Could not create local podcast URI for %s", local_file_path);

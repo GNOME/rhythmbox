@@ -868,6 +868,8 @@ rb_canonicalise_uri (const char *uri)
 		result = gnome_vfs_make_path_name_canonical (uri);
 		tmp = gnome_vfs_escape_path_string (result);
 		g_free (result);
+		if (tmp == NULL)
+			return NULL;
 		tmp = escape_extra_gnome_vfs_chars (tmp);
 		result = g_strconcat ("file://", tmp, NULL);
 		g_free (tmp);
@@ -877,6 +879,8 @@ rb_canonicalise_uri (const char *uri)
 		tmp1  = gnome_vfs_unescape_string (uri + 7, NULL);  /* ignore "file://" */
 		tmp2 = gnome_vfs_escape_path_string (tmp1);
 		g_free (tmp1);
+		if (tmp2 == NULL)
+			return NULL;
 		tmp2 = escape_extra_gnome_vfs_chars (tmp2);
 		result = g_strconcat ("file://", tmp2, NULL); /* re-add scheme */
 		g_free (tmp2);

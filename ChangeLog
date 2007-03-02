@@ -1,5 +1,14 @@
 2007-03-02  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-file-helpers.c: (rb_canonicalise_uri): don't crash.
+
+	* podcast/rb-podcast-manager.c:
+	(rb_podcast_manager_download_file_info_cb): generate proper URIs.
+
+	Fixes #411189
+
+2007-03-02  James Livingston  <doclivingston@gmail.com>
+
 	* tools/check-config-h.pl:
 	* tools/check-finalizers:
 	* tools/check-glade-visible:
