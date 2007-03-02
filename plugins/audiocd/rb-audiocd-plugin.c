@@ -143,12 +143,15 @@ rb_audiocd_plugin_mount_volume (RBAudioCdPlugin *plugin,
 {
 	RBRemovableMediaManager *rmm = NULL;
 	RBSource *source;
+	gchar *device_path;
 
 	g_object_get (G_OBJECT (plugin->shell),
 		      "removable-media-manager", &rmm,
 		      NULL);
 
-	rb_debug ("checking audiocd for %s", gnome_vfs_volume_get_device_path (volume));
+	device_path = gnome_vfs_volume_get_device_path (volume);
+	rb_debug ("checking audiocd for %s", device_path);
+	g_free (device_path);
 	source = create_source_cb (rmm, volume, plugin);
 	if (source) {
 		rb_debug ("creating audio cd source behind RMMs back for %p", volume);
