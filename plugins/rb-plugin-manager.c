@@ -122,6 +122,8 @@ plugin_manager_view_cell_cb (GtkTreeViewColumn *tree_column,
 	if (info == NULL)
 		return;
 
+	g_return_if_fail (rb_plugins_engine_get_plugin_name (info) != NULL);
+
 	g_object_set (G_OBJECT (cell),
 		      "text",
 		      rb_plugins_engine_get_plugin_name (info),

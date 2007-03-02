@@ -1,5 +1,11 @@
 2007-03-02  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/rb-plugin-manager.c: (plugin_manager_view_cell_cb): don't
+	crash if the plugin has NULL for the name, just emit a critical
+	warning. Fixes #413206
+
+2007-03-02  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/audiocd/rb-audiocd-plugin.c:
