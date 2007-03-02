@@ -1,5 +1,12 @@
 2007-03-02  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/audiocd/rb-audiocd-plugin.c:
+	(rb_audiocd_plugin_mount_volume): fix a leak
+
+2007-03-02  James Livingston  <doclivingston@gmail.com>
+
 	* lib/rb-file-helpers.c: (rb_canonicalise_uri): don't crash.
 
 	* podcast/rb-podcast-manager.c:
