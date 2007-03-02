@@ -1,5 +1,14 @@
 2007-03-01  Alex Lancaster  <alexl@users.sourceforge.net>
 
+	Patch partially by: Edward Rudd <eddie@omegaware.com>:
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py
+	(MagnatuneSource.purchase_album):
+	Pass in artist and album name to dialog correctly.  Use
+	set_markup() to italicise album name.  Fixes #412931.
+
+2007-03-01  Alex Lancaster  <alexl@users.sourceforge.net>
+
 	Patch partially by: Kjell Braden <fnord@abwesend.de>:	
 
 	* plugins/jamendo/jamendo-loading.glade: 
