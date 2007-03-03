@@ -443,6 +443,15 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 	gtk_widget_show (pm->priv->tree);
 }
 
+static int
+plugin_name_cmp (gconstpointer a, gconstpointer b)
+{
+	RBPluginInfo *lhs = (RBPluginInfo*)a;
+	RBPluginInfo *rhs = (RBPluginInfo*)b;
+	return strcmp (rb_plugins_engine_get_plugin_name (lhs),
+		       rb_plugins_engine_get_plugin_name (rhs));
+}
+
 static void
 rb_plugin_manager_init (RBPluginManager *pm)
 {
@@ -489,7 +498,7 @@ rb_plugin_manager_init (RBPluginManager *pm)
 
 	/* get the list of available plugins (or installed) */
 	pm->priv->plugins = rb_plugins_engine_get_plugins_list ();
-
+	pm->priv->plugins = g_list_sort (pm->priv->plugins, plugin_name_cmp);
 	plugin_manager_populate_lists (pm);
 	g_object_unref (xml);
 }

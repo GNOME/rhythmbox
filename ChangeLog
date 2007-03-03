@@ -1,5 +1,12 @@
 2007-03-03  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/rb-plugin-manager.c: (plugin_name_cmp),
+	(rb_plugin_manager_init): sort the plugins list by name. Fixes #412995
+
+2007-03-03  James Livingston  <doclivingston@gmail.com>
+
 	patch by:  Ed Catumur  <ed@catmur.co.uk>
 
 	* plugins/magnatune/magnatune/MagnatuneSource.py:
