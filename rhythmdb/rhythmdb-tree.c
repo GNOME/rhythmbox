@@ -126,8 +126,9 @@ struct RhythmDBTreePrivate
 	GMutex *entries_lock;
 
 	GHashTable *genres;
+	GMutex *genres_lock; /* must be held while using the tree */
+
 	GHashTable *unknown_entry_types;
-	GMutex *genres_lock;
 	gboolean finalizing;
 
 	guint idle_load_id;
@@ -208,11 +209,14 @@ rhythmdb_tree_init (RhythmDBTree *db)
 	db->priv->genres_lock = g_mutex_new();
 }
 
+/* must be called with the genres lock held */
 static void
 unparent_entries (gpointer key,
 		  RhythmDBEntry *entry,
 		  RhythmDBTree *db)
 {
+	rb_assert_locked (db->priv->genres_lock);
+
 	remove_entry_from_album (db, entry);
 }
 
@@ -256,7 +260,10 @@ rhythmdb_tree_finalize (GObject *object)
 
 	db->priv->finalizing = TRUE;
 
+	g_mutex_lock (db->priv->genres_lock);
 	g_hash_table_foreach (db->priv->entries, (GHFunc) unparent_entries, db);
+	g_mutex_unlock (db->priv->genres_lock);
+
 	g_hash_table_destroy (db->priv->entries);
 	g_hash_table_destroy (db->priv->entry_ids);
 	g_mutex_free (db->priv->entries_lock);
@@ -1095,6 +1102,7 @@ rhythmdb_tree_new (const char *name)
 	return RHYTHMDB (db);
 }
 
+/* must be called with the genres_lock held */
 static void
 set_entry_album (RhythmDBTree *db,
 		 RhythmDBEntry *entry,
@@ -1102,6 +1110,7 @@ set_entry_album (RhythmDBTree *db,
 		 RBRefString *name)
 {
 	struct RhythmDBTreeProperty *prop;
+
 	prop = get_or_create_album (db, artist, name);
 	g_hash_table_insert (prop->children, entry, NULL);
 	entry->data = prop;
@@ -1116,6 +1125,7 @@ rhythmdb_tree_entry_new (RhythmDB *rdb,
 	g_mutex_unlock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
 }
 
+/* must be called with the entry lock held */
 static void
 rhythmdb_tree_entry_new_internal (RhythmDB *rdb, RhythmDBEntry *entry)
 {
@@ -1123,6 +1133,7 @@ rhythmdb_tree_entry_new_internal (RhythmDB *rdb, RhythmDBEntry *entry)
 	RhythmDBTreeProperty *artist;
 	RhythmDBTreeProperty *genre;
 
+	rb_assert_locked (db->priv->entries_lock);
 	g_assert (entry != NULL);
 
 	g_return_if_fail (entry->location != NULL);
@@ -1149,9 +1160,11 @@ rhythmdb_tree_entry_new_internal (RhythmDB *rdb, RhythmDBEntry *entry)
 	}
 
 	/* Initialize the tree structure. */
+	g_mutex_lock (db->priv->genres_lock);
 	genre = get_or_create_genre (db, entry->type, entry->genre);
 	artist = get_or_create_artist (db, genre, entry->artist);
 	set_entry_album (db, entry, artist, entry->album);
+	g_mutex_unlock (db->priv->genres_lock);
 
 	/* this accounts for the initial reference on the entry */
 	g_hash_table_insert (db->priv->entries, entry->location, entry);
@@ -1221,6 +1234,7 @@ genres_hash_foreach (RhythmDBTree *db, RBHFunc func, gpointer data)
 	g_hash_table_foreach (db->priv->genres, genres_process_one, &ctxt);
 }
 
+/* must be called with the genres lock held */
 static RhythmDBTreeProperty *
 get_or_create_genre (RhythmDBTree *db,
 		     RhythmDBEntryType type,
@@ -1229,7 +1243,8 @@ get_or_create_genre (RhythmDBTree *db,
 	RhythmDBTreeProperty *genre;
 	GHashTable *table;
 
-	g_mutex_lock (db->priv->genres_lock);
+	rb_assert_locked (db->priv->genres_lock);
+
 	table = get_genres_hash_for_type (db, type);
 	genre = g_hash_table_lookup (table, name);
 
@@ -1242,17 +1257,19 @@ get_or_create_genre (RhythmDBTree *db,
 		g_hash_table_insert (table, name, genre);
 		genre->parent = NULL;
 	}
-	g_mutex_unlock (db->priv->genres_lock);
 
 	return genre;
 }
 
+/* must be called with the genres lock held */
 static RhythmDBTreeProperty *
 get_or_create_artist (RhythmDBTree *db,
 		      RhythmDBTreeProperty *genre,
 		      RBRefString *name)
 {
 	RhythmDBTreeProperty *artist;
+
+	rb_assert_locked (db->priv->genres_lock);
 
 	artist = g_hash_table_lookup (genre->children, name);
 
@@ -1269,12 +1286,15 @@ get_or_create_artist (RhythmDBTree *db,
 	return artist;
 }
 
+/* must be called with the genres lock held */
 static RhythmDBTreeProperty *
 get_or_create_album (RhythmDBTree *db,
 		     RhythmDBTreeProperty *artist,
 		     RBRefString *name)
 {
 	RhythmDBTreeProperty *album;
+
+	rb_assert_locked (db->priv->genres_lock);
 
 	album = g_hash_table_lookup (artist->children, name);
 
@@ -1300,17 +1320,19 @@ remove_child (RhythmDBTreeProperty *parent,
 	return FALSE;
 }
 
+/* must be called with the genres lock held */
 static void
 remove_entry_from_album (RhythmDBTree *db,
 			 RhythmDBEntry *entry)
 {
 	GHashTable *table;
 
+	rb_assert_locked (db->priv->genres_lock);
+
 	rb_refstring_ref (entry->genre);
 	rb_refstring_ref (entry->artist);
 	rb_refstring_ref (entry->album);
 
-	g_mutex_lock (db->priv->genres_lock);
 	table = get_genres_hash_for_type (db, entry->type);
 	if (remove_child (RHYTHMDB_TREE_PROPERTY_FROM_ENTRY (entry), entry)) {
 		if (remove_child (RHYTHMDB_TREE_PROPERTY_FROM_ENTRY (entry)->parent,
@@ -1326,7 +1348,6 @@ remove_entry_from_album (RhythmDBTree *db,
 
 		destroy_tree_property (RHYTHMDB_TREE_PROPERTY_FROM_ENTRY (entry));
 	}
-	g_mutex_unlock (db->priv->genres_lock);
 
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
@@ -1384,11 +1405,12 @@ rhythmdb_tree_entry_set (RhythmDB *adb,
 			rb_refstring_ref (entry->artist);
 			rb_refstring_ref (entry->album);
 
+			g_mutex_lock (db->priv->genres_lock);
 			remove_entry_from_album (db, entry);
-
 			genre = get_or_create_genre (db, type, entry->genre);
 			artist = get_or_create_artist (db, genre, entry->artist);
 			set_entry_album (db, entry, artist, rb_refstring_new (albumname));
+			g_mutex_unlock (db->priv->genres_lock);
 
 			rb_refstring_unref (entry->genre);
 			rb_refstring_unref (entry->artist);
@@ -1408,12 +1430,13 @@ rhythmdb_tree_entry_set (RhythmDB *adb,
 			rb_refstring_ref (entry->artist);
 			rb_refstring_ref (entry->album);
 
+			g_mutex_lock (db->priv->genres_lock);
 			remove_entry_from_album (db, entry);
-
 			genre = get_or_create_genre (db, type, entry->genre);
 			new_artist = get_or_create_artist (db, genre,
 							   rb_refstring_new (artistname));
 			set_entry_album (db, entry, new_artist, entry->album);
+			g_mutex_unlock (db->priv->genres_lock);
 
 			rb_refstring_unref (entry->genre);
 			rb_refstring_unref (entry->artist);
@@ -1433,12 +1456,13 @@ rhythmdb_tree_entry_set (RhythmDB *adb,
 			rb_refstring_ref (entry->artist);
 			rb_refstring_ref (entry->album);
 
+			g_mutex_lock (db->priv->genres_lock);
 			remove_entry_from_album (db, entry);
-
 			new_genre = get_or_create_genre (db, type,
 							 rb_refstring_new (genrename));
 			new_artist = get_or_create_artist (db, new_genre, entry->artist);
 			set_entry_album (db, entry, new_artist, entry->album);
+			g_mutex_unlock (db->priv->genres_lock);
 
 			rb_refstring_unref (entry->genre);
 			rb_refstring_unref (entry->artist);
@@ -1459,7 +1483,9 @@ rhythmdb_tree_entry_delete (RhythmDB *adb,
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 
+	g_mutex_lock (db->priv->genres_lock);
 	remove_entry_from_album (db, entry);
+	g_mutex_unlock (db->priv->genres_lock);
 
 	g_mutex_lock (db->priv->entries_lock);
 	g_assert (g_hash_table_remove (db->priv->entries, entry->location));
@@ -1473,11 +1499,15 @@ typedef struct {
 	RhythmDBEntryType type;
 } RbEntryRemovalCtxt;
 
+/* must be called with the entries and genres locks held */
 static gboolean
 remove_one_song (gpointer key,
 		 RhythmDBEntry *entry,
 		 RbEntryRemovalCtxt *ctxt)
 {
+	rb_assert_locked (RHYTHMDB_TREE (ctxt->db)->priv->entries_lock);
+	rb_assert_locked (RHYTHMDB_TREE (ctxt->db)->priv->genres_lock);
+
 	g_return_val_if_fail (entry != NULL, FALSE);
 
 	if (entry->type == ctxt->type) {
@@ -1500,8 +1530,10 @@ rhythmdb_tree_entry_delete_by_type (RhythmDB *adb,
 	ctxt.db = adb;
 	ctxt.type = type;
 	g_mutex_lock (db->priv->entries_lock);
+	g_mutex_lock (db->priv->genres_lock);
 	g_hash_table_foreach_remove (db->priv->entries,
 				     (GHRFunc) remove_one_song, &ctxt);
+	g_mutex_unlock (db->priv->genres_lock);
 	g_mutex_unlock (db->priv->entries_lock);
 }
 
