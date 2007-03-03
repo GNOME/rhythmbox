@@ -129,6 +129,8 @@ class Magnatune(rb.Plugin):
 		
 		manager.insert_action_group(self.action_group, 0)
 		self.ui_id = manager.add_ui_from_string(popup_ui)
+
+		self.pec_id = shell.get_player().connect('playing-song-changed', self.playing_entry_changed)
 		manager.ensure_update()
 
 	def deactivate(self, shell):
@@ -136,6 +138,8 @@ class Magnatune(rb.Plugin):
 		manager.remove_ui (self.ui_id)
 		manager.remove_action_group(self.action_group)
 		self.action_group = None
+
+		shell.get_player().disconnect (self.pec_id)
 
 		self.db.entry_delete_by_type(self.entry_type)
 		self.db.commit()
@@ -146,6 +150,8 @@ class Magnatune(rb.Plugin):
 		self.shell = None
 		self.keyring = None
 
+	def playing_entry_changed (self, sp, entry):
+		self.source.playing_entry_changed (entry)
 
 	def get_keyring(self):
 		if self.keyring is None:

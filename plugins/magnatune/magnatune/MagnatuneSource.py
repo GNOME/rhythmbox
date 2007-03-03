@@ -28,6 +28,7 @@ import xml
 import urllib, zipfile
 
 has_gnome_keyring = False
+
 #try:
 #	import gnomekeyring
 #	has_gnome_keyring = True
@@ -42,6 +43,7 @@ magnatune_dir = gnome.user_dir_get() + "rhythmbox/magnatune/"
 magnatune_song_info_uri = gnomevfs.URI("http://magnatune.com/info/song_info_xml.zip")
 local_song_info_uri = gnomevfs.URI(magnatune_dir + "song_info.xml")
 local_song_info_temp_uri = gnomevfs.URI(magnatune_dir + "song_info.xml.zip.tmp")
+ALBUM_ART_URL = 'http://www.magnatune.com/music/%s/%s/cover.jpg'
 
 class MagnatuneSource(rb.BrowserSource):
 	__gproperties__ = {
@@ -563,6 +565,19 @@ class MagnatuneSource(rb.BrowserSource):
 		shell = self.get_property('shell')
 		manager = shell.get_player().get_property('ui-manager')
 		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
+
+	def playing_entry_changed (self, entry):
+		if not self.__db or not entry:
+			return
+
+		if entry.get_entry_type() != self.__db.entry_type_get_by_name("MagnatuneEntryType"):
+			return
+
+		album = urllib.quote(self.__db.entry_get(entry, rhythmdb.PROP_ALBUM))
+		artist = urllib.quote(self.__db.entry_get(entry, rhythmdb.PROP_ARTIST))
+
+		self.__db.emit_entry_extra_metadata_notify (entry, 'rb:coverArt-uri', ALBUM_ART_URL % (artist,album))
+
 
 gobject.type_register(MagnatuneSource)
 
