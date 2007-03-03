@@ -271,24 +271,11 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 static void
 rb_lastfm_source_init (RBLastfmSource *source)
 {
-	gint size;
-	GdkPixbuf *pixbuf;
-
 	source->priv = RB_LASTFM_SOURCE_GET_PRIVATE (source);
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   "stock_channel",
-					   size,
-					   0, NULL);
-	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
-	if (pixbuf != NULL) {
-		g_object_unref (pixbuf);
-	}
 }
 
 static void

@@ -119,6 +119,11 @@ impl_activate (RBPlugin *bplugin,
 	gboolean no_registration;
 	char *file;
 
+    /* Source icon data */
+    gchar *icon_filename;
+    gint icon_size;
+    GdkPixbuf *icon_pixbuf;
+
 	g_assert (plugin->audioscrobbler == NULL);
 	g_object_get (G_OBJECT (shell),
 		      "proxy-config", &proxy_config,
@@ -144,6 +149,16 @@ impl_activate (RBPlugin *bplugin,
 	g_free (file);
 
 	plugin->lastfm_source = rb_lastfm_source_new (shell);
+    
+    icon_filename = rb_plugin_find_file (bplugin, "as-icon.svg");
+    gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
+    icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename,
+                                                    icon_size, icon_size,
+                                                    NULL);
+    g_free (icon_filename);
+    rb_source_set_pixbuf (plugin->lastfm_source, icon_pixbuf);
+    g_object_unref (icon_pixbuf);
+    
 	rb_shell_append_source (shell, plugin->lastfm_source, NULL);
 
 	g_object_unref (G_OBJECT (uimanager));
