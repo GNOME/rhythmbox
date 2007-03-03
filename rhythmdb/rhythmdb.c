@@ -125,6 +125,11 @@ static gboolean rhythmdb_entry_extra_metadata_accumulator (GSignalInvocationHint
 							   const GValue *handler_return,
 							   gpointer data);
 
+static void rhythmdb_monitor_library_changed_cb (GConfClient *client,
+						 guint cnxn_id,
+						 GConfEntry *entry,
+						 RhythmDB *db);
+
 enum
 {
 	PROP_0,
@@ -477,6 +482,11 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->next_entry_id = 1;
 
 	rhythmdb_init_monitoring (db);
+
+	db->priv->monitor_notify_id = 
+		eel_gconf_notification_add (CONF_MONITOR_LIBRARY,
+					   (GConfClientNotifyFunc)rhythmdb_monitor_library_changed_cb,
+					   db);
 }
 
 static GError *
@@ -631,9 +641,13 @@ rhythmdb_shutdown (RhythmDB *db)
 	db->priv->exiting = TRUE;
 
 	eel_gconf_notification_remove (db->priv->library_location_notify_id);
+	db->priv->library_location_notify_id = 0;
 	g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
 	g_slist_free (db->priv->library_locations);
 	db->priv->library_locations = NULL;
+
+	eel_gconf_notification_remove (db->priv->monitor_notify_id);
+	db->priv->monitor_notify_id = 0;
 
 	/* abort all async vfs operations */
 	g_mutex_lock (db->priv->stat_mutex);
@@ -4223,10 +4237,21 @@ rhythmdb_sync_library_location (RhythmDB *db)
 	}
 
 	if (eel_gconf_get_boolean (CONF_MONITOR_LIBRARY)) {
+		rb_debug ("starting library monitoring");
 		db->priv->library_locations = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
 		rhythmdb_start_monitoring (db);
 	}
+}
+
+static
+void rhythmdb_monitor_library_changed_cb (GConfClient *client,
+					  guint cnxn_id,
+					  GConfEntry *entry,
+					  RhythmDB *db)
+{
+	rb_debug ("'watch library' key changed");
+	rhythmdb_sync_library_location (db);
 }
 
 static void

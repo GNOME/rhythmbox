@@ -1,3 +1,10 @@
+2007-03-03  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_shutdown),
+	(rhythmdb_monitor_library_changed_cb): watch the "monitor library for
+	changes" gconf key. Fixes #388648
+
 2007-03-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/artdisplay/artdisplay/__init__.py:
