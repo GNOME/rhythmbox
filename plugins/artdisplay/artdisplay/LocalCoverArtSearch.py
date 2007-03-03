@@ -113,8 +113,8 @@ class LocalCoverArtSearch:
 			u_entry = db.entry_lookup_by_location (uri)
 			if u_entry:
 				u_artist, u_album = [db.entry_get (u_entry, x) for x in [rhythmdb.PROP_ARTIST, rhythmdb.PROP_ALBUM]]
-				if (artist, album) != (u_artist, u_album):
-					print "Not saving local art; encountered media with different artist/album (%s, %s, %s)" % (uri, u_artist, u_album)
+				if album != u_album:
+					print "Not saving local art; encountered media with different album (%s, %s, %s)" % (uri, u_artist, u_album)
 					handle.cancel ()
 					return
 				continue

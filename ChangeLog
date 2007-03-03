@@ -1,5 +1,12 @@
 2007-03-03  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Ed Catumur  <ed@catmur.co.uk>
+
+	* plugins/artdisplay/artdisplay/LocalCoverArtSearch.py: Save art found
+	for multi-artist albums. Fixes #403959
+
+2007-03-03  James Livingston  <doclivingston@gmail.com>
+
 	* lib/rb-util.c: (rb_assert_locked), (rb_threads_init),
 	(rb_str_in_strv):
 	* lib/rb-util.h: add util function which asserts that a lock is being
