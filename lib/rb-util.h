@@ -74,6 +74,8 @@ gboolean rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 void rb_value_array_append_data (GValueArray *array, GType type, ...);
 void rb_value_free (GValue *val); /* g_value_unset, g_slice_free */
 
+void rb_assert_locked (GMutex *mutex);
+
 G_END_DECLS
 
 #endif /* __RB_UTIL_H */

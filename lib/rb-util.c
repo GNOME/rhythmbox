@@ -414,6 +414,7 @@ purge_useless_threads (gpointer data)
 
 
 static GStaticRecMutex rb_gdk_mutex;
+static gboolean mutex_recurses;
 
 static void
 _threads_enter (void)
@@ -427,15 +428,36 @@ _threads_leave (void)
 	g_static_rec_mutex_unlock (&rb_gdk_mutex);
 }
 
+
+void
+rb_assert_locked (GMutex *m)
+{
+	if (!mutex_recurses)
+		g_assert (!g_mutex_trylock (m));
+}
+
 void
 rb_threads_init (void)
 {
+	GMutex *m;
+
 	private_is_primary_thread = g_private_new (NULL);
 	g_private_set (private_is_primary_thread, GUINT_TO_POINTER (1));
 
 	g_static_rec_mutex_init (&rb_gdk_mutex);
 	gdk_threads_set_lock_functions (_threads_enter, _threads_leave);
 	gdk_threads_init ();
+
+	m = g_mutex_new ();
+
+	g_mutex_lock (m);
+	mutex_recurses = g_mutex_trylock (m);
+	if (mutex_recurses)
+		g_mutex_unlock (m);
+	g_mutex_unlock (m);
+	g_mutex_free (m);
+
+	rb_debug ("GMutex %s recursive", mutex_recurses ? "is" : "isn't");
 
 	/* purge useless thread-pool threads occasionally */
 	g_timeout_add (30 * 1000, purge_useless_threads, NULL);
@@ -895,4 +917,3 @@ rb_str_in_strv (const char *needle, char **haystack)
 
 	return FALSE;
 }
-

@@ -1,5 +1,22 @@
 2007-03-03  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-util.c: (rb_assert_locked), (rb_threads_init),
+	(rb_str_in_strv):
+	* lib/rb-util.h: add util function which asserts that a lock is being
+	held (only works on systems where GMutex isn't recursive)
+
+	* rhythmdb/rhythmdb-tree.c: (unparent_entries),
+	(rhythmdb_tree_finalize), (set_entry_album),
+	(rhythmdb_tree_entry_new_internal), (get_or_create_genre),
+	(get_or_create_artist), (get_or_create_album),
+	(remove_entry_from_album), (rhythmdb_tree_entry_set),
+	(rhythmdb_tree_entry_delete), (remove_one_song),
+	(rhythmdb_tree_entry_delete_by_type): take the tree lock in other
+	paths, and use the above function to ensure the lock is being held.
+	Fixes #393642 and probably others
+
+2007-03-03  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Alex "weej" Jones  <alex@weej.com>
 
 	* plugins/audioscrobbler/Makefile.am:
