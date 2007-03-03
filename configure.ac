@@ -568,18 +568,16 @@ else
 	fi
 fi
 
-dnl CD burner support
-AC_ARG_WITH(cd-burning,
-            AC_HELP_STRING([--with-cd-burning],
-			   [Enable CD burning support]),,
-	      with_cd_burning=auto)
-if test "x$with_cd_burning" != "xno"; then
-    NCB_DRIVE_DOOR_VERSION=2.11.3
-    PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_cd_burner=yes, have_cd_burner=no)
-    if test "x$have_cd_burner" = xno; then
-       AC_MSG_ERROR([libnautilus-burn not found or too cold])
-    fi
-
+dnl libnautilus-burn support
+have_libnautilus_burn=no
+AC_ARG_WITH(libnautilus-burn,
+	    AC_HELP_STRING([--with-libnautilus-burn],
+	    		   [Build with libnautilus-burn support]),,
+	    with_libnautilus_burn=auto)
+if test x"$with_libnautilus_burn" != "xno"; then
+    PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], have_libnautilus_burn=yes, have_libnautilus_burn=no)
+fi
+if test "x$have_libnautilus_burn" = xyes; then
     AC_CHECK_LIB(nautilus-burn, nautilus_burn_drive_door_is_open,
        [AC_DEFINE([HAVE_BURN_DRIVE_DOOR], 1, [Have nautilus-burn function to check drive door state])],
        ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
@@ -594,9 +592,20 @@ if test "x$with_cd_burning" != "xno"; then
        ,[$LIBNAUTILUS_BURN_LIBS $LIBNAUTILUS_BURN_CFLAGS])
 
     AC_DEFINE([HAVE_NAUTILUS_BURN], 1, [Have nautilus-burn])
-
 fi
-AM_CONDITIONAL(USE_CD_BURNING, test "x$with_cd_burning" != "xno")
+AM_CONDITIONAL(HAVE_NAUTILUS_BURN, test x$have_libnautilus_burn = xyes)
+AC_SUBST(HAVE_NAUTILUS_BURN)
+
+dnl CD burning support
+AC_ARG_WITH(cd-burning,
+            AC_HELP_STRING([--with-cd-burning],
+			   [Enable CD burning support]),,
+	      with_cd_burning=auto)
+enable_cd_burning=no
+if test "x$have_libnautilus_burn" = "xyes" -a "x$with_cd_burning" != "xno"; then
+   enable_cd_burning=yes
+fi
+AM_CONDITIONAL(USE_CD_BURNING, test "x$enable_cd_burning" != "xno")
 
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
@@ -1021,7 +1030,7 @@ if test x"$use_ipod" = xyes; then
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
 fi
-if test x"$with_cd_burning" != xno; then
+if test x"$enable_cd_burning" != xno; then
 	AC_MSG_NOTICE([** CD burning support enabled])
 else
 	AC_MSG_NOTICE([   CD burning support disabled])
