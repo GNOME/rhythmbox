@@ -73,6 +73,8 @@
 #define RB_LASTFM_VERSION "1.1.1"
 #define EXTRA_URI_ENCODE_CHARS	"&+"
 
+#define LAST_FM_NO_COVER_IMAGE "http://static.last.fm/depth/catalogue/noimage/cover_med.gif"
+
 
 static void rb_lastfm_source_class_init (RBLastfmSourceClass *klass);
 static void rb_lastfm_source_init (RBLastfmSource *source);
@@ -1140,6 +1142,7 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 	char **pieces;
 	int p;
 	RhythmDBEntry *entry;
+	gboolean found_cover;
 
 	entry = rb_shell_player_get_playing_entry (source->priv->shell_player);
 	if (entry == NULL || rhythmdb_entry_get_entry_type (entry) != source->priv->entry_type) {
@@ -1153,6 +1156,7 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 
 	g_strstrip (body);
 	pieces = g_strsplit (body, "\n", 0);
+	found_cover = FALSE;
 
 	for (p = 0; pieces[p] != NULL; p++) {
 		gchar **values;
@@ -1173,6 +1177,22 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 			rb_streaming_source_set_streaming_title (RB_STREAMING_SOURCE (source), values[1]);
 		} else if (strcmp (values[0], "albumcover_small") == 0) {
 		} else if (strcmp (values[0], "albumcover_medium") == 0) {
+			GValue v = {0,};
+
+			rb_debug ("albumcover -> %s", values[1]);
+			if (strcmp (values[1], LAST_FM_NO_COVER_IMAGE) == 0) {
+				rb_debug ("ignoring last.fm's no cover image");
+			} else {
+				g_value_init (&v, G_TYPE_STRING);
+				g_value_set_string (&v, values[1]);
+				rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
+									   entry,
+									   "rb:coverArt-uri",
+									   &v);
+				g_value_unset (&v);
+				found_cover = TRUE;
+			}
+
 		} else if (strcmp (values[0], "albumcover_large") == 0) {
 		} else if (strcmp (values[0], "trackprogress") == 0) {
 		} else if (strcmp (values[0], "trackduration") == 0) {
@@ -1189,6 +1209,19 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 
 	g_strfreev (pieces);
 	g_free (body);
+
+	if (found_cover == FALSE) {
+		GValue v = {0,};
+
+		/* art display plugin treats an empty URI as meaning 'no cover art' */
+		g_value_init (&v, G_TYPE_STRING);
+		g_value_set_string (&v, "");
+		rhythmdb_emit_entry_extra_metadata_notify (source->priv->db,
+							   entry,
+							   "rb:coverArt-uri",
+							   &v);
+		g_value_unset (&v);
+	}
 
 	source->priv->status = OK;
 	rb_source_notify_status_changed (RB_SOURCE (source));

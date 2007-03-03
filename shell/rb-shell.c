@@ -1752,7 +1752,8 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 			     GValue *metadata,
 			     RBShell *shell)
 {
-	GdkPixbuf *pixbuf, *my_pixbuf;
+	GdkPixbuf *pixbuf = NULL;
+	GdkPixbuf *my_pixbuf;
 	RhythmDBEntry *playing_entry;
 	gint icon_size;
 	guint time;
@@ -1766,33 +1767,31 @@ rb_shell_db_metadata_art_cb (RhythmDB *db,
 		return;
 	}
 
-	if  (!G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
-		rhythmdb_entry_unref (playing_entry);
-		return;
-	}
-
-	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
-	if (pixbuf == NULL) {
-		rhythmdb_entry_unref (playing_entry);
-		return;
-	}
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &icon_size, NULL);
-	my_pixbuf = gdk_pixbuf_scale_simple (pixbuf,
-			icon_size, icon_size,
-			GDK_INTERP_BILINEAR);
-
-	if (shell->priv->cached_art_icon != NULL)
+	if (shell->priv->cached_art_icon != NULL) {
 		g_object_unref (shell->priv->cached_art_icon);
-	shell->priv->cached_art_icon = g_object_ref_sink (gtk_image_new_from_pixbuf (my_pixbuf));
-	g_object_unref (my_pixbuf);
+		shell->priv->cached_art_icon = NULL;
+	}
+
+	if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
+		pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
+		if (pixbuf != NULL) {
+			gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &icon_size, NULL);
+			my_pixbuf = gdk_pixbuf_scale_simple (pixbuf,
+					icon_size, icon_size,
+					GDK_INTERP_BILINEAR);
+
+			shell->priv->cached_art_icon = g_object_ref_sink (gtk_image_new_from_pixbuf (my_pixbuf));
+			g_object_unref (my_pixbuf);
+		}
+	}
 
 	rb_tray_icon_set_tooltip_icon (shell->priv->tray_icon,
 				       shell->priv->cached_art_icon);
 
-	if (rb_shell_player_get_playing_time (shell->priv->player_shell, &time, NULL))
+	if (rb_shell_player_get_playing_time (shell->priv->player_shell, &time, NULL)) {
 		if (time < PLAYING_ENTRY_NOTIFY_TIME)
 			rb_shell_notify_playing_entry (shell, entry, FALSE);
+	}
 
 	rhythmdb_entry_unref (playing_entry);
 }

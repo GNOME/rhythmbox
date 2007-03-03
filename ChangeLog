@@ -1,3 +1,17 @@
+2007-03-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/artdisplay/artdisplay/__init__.py:
+	Treat rb:coverArt-uri signals with an empty URI as meaning that no
+	cover image is available.
+
+	* shell/rb-shell.c: (rb_shell_db_metadata_art_cb):
+	Handle rb:coverArt with no pixbuf as a signal to clear the cover art
+	image.
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_metadata_cb):
+	Emit rb:coverArt-uri when we get an album cover URI.  Fixes #414065.
+
 2007-03-03  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Christophe Fergeau  <teuf@gnome.org>

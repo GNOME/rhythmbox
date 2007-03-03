@@ -1,4 +1,4 @@
-# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*- 
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
 #
 # Copyright (C) 2006 - James Livingston
 #
@@ -6,7 +6,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -239,7 +239,7 @@ class ArtDisplayWidget (FadingImage):
 		self.set_padding (0, 5)
 		self.current_entry, self.working = None, False
 		self.current_pixbuf, self.current_uri = None, None
-	
+
 	def set (self, entry, pixbuf, uri, working):
 		self.current_entry = entry
 		self.current_pixbuf = pixbuf
@@ -250,7 +250,7 @@ class ArtDisplayWidget (FadingImage):
 class ArtDisplayPlugin (rb.Plugin):
 	def __init__ (self):
 		rb.Plugin.__init__ (self)
-		
+
 	def activate (self, shell):
 		self.shell = shell
 		sp = shell.get_player ()
@@ -265,7 +265,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_db = CoverArtDatabase ()
 		self.current_entry, self.current_pixbuf = None, None
 		self.playing_entry_changed (sp, sp.get_playing_entry ())
-	
+
 	def deactivate (self, shell):
 		self.shell = None
 		sp = shell.get_player ()
@@ -306,7 +306,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_widget.set (entry, pixbuf, uri, False)
 		if pixbuf:
 			db = self.shell.get_property ("db")
-			# This might be from a playing-changed signal, 
+			# This might be from a playing-changed signal,
 			# in which case consumers won't be ready yet.
 			def idle_emit_art():
 				db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", pixbuf)
@@ -328,8 +328,15 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.art_widget.set (entry, metadata, None, False)
 
 	def cover_art_uri_notify (self, db, entry, field, metadata):
-		if entry != self.current_entry or not metadata:
+		if entry != self.current_entry:
 			return
+
+		if not metadata:
+			print "got no-cover-art notification"
+			self.art_widget.set (entry, None, None, False)
+			db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", None)
+			return
+
 		uri = str (metadata)
 		def loader_cb (data):
 			if data and len (data) >= 1000:
@@ -342,5 +349,7 @@ class ArtDisplayPlugin (rb.Plugin):
 							self.on_get_pixbuf_completed (entry, pixbuf, uri)
 				except GError:
 					pass
+
+		print "got cover art URI notification: %s" % (uri)
 		rb.Loader().get_url (uri, loader_cb)
 
