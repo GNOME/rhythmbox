@@ -1,3 +1,15 @@
+2007-03-03  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Alex "weej" Jones  <alex@weej.com>
+
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/as-icon.svg:
+	* plugins/audioscrobbler/rb-audioscrobbler-plugin.c:
+	(impl_activate):
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_init): Use audioscrobbler logo for the source, which
+	the last.fm guys have said is fine. Fixes #409164
+
 2007-03-02  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Andreas Hanke  <andreas.hanke@gmx-topmail.de>

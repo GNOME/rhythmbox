@@ -57,6 +57,7 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 					\
 	$(BUILT_SOURCES)			\
+	$(top_srcdir)/plugins/audioscrobbler/as-icon.svg		\
 	$(NULL)
 
 EXTRA_DIST = 					\
