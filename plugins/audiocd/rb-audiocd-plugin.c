@@ -403,6 +403,8 @@ impl_activate (RBPlugin *plugin,
 	GList                   *drives;
 	GList                   *it;
 	GnomeVFSVolumeMonitor   *monitor;
+	GtkUIManager            *uimanager;
+	char                    *filename;
 
 	pi->sources = g_hash_table_new_full (g_direct_hash,
 					     g_direct_equal,
@@ -410,13 +412,27 @@ impl_activate (RBPlugin *plugin,
 					     g_object_unref);
 
 	pi->shell = shell;
-	g_object_get (G_OBJECT (shell),
+	g_object_get (shell,
 		      "removable-media-manager", &rmm,
+		      "ui-manager", &uimanager,
 		      NULL);
 
-	/* watch for new removable media.  use connect_after so	 * plugins for more specific device types can get in first.
+	filename = rb_plugin_find_file (plugin, "audiocd-ui.xml");
+	if (filename != NULL) {
+		pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
+								   filename,
+								   NULL);
+	} else {
+		g_warning ("Unable to find file: audiocd-ui.xml");
+	}
+
+	g_free (filename);
+	g_object_unref (uimanager);
+
+	/* watch for new removable media.  use connect_after so
+	 * plugins for more specific device types can get in first.
 	 */
-	g_signal_connect_after (G_OBJECT (rmm),
+	g_signal_connect_after (rmm,
 				"create-source", G_CALLBACK (create_source_cb),
 				pi);
 
@@ -427,8 +443,6 @@ impl_activate (RBPlugin *plugin,
 	}
 
 	g_object_unref (rmm);
-
-
 
 	/* monitor the playing song, to disable cd drive polling */
 	g_signal_connect_object (rb_shell_get_player (shell), "playing-uri-changed",
@@ -494,7 +508,7 @@ impl_deactivate	(RBPlugin *bplugin,
 		      "removable-media-manager", &rmm,
 		      "ui-manager", &uimanager,
 		      NULL);
-	g_signal_handlers_disconnect_by_func (G_OBJECT (rmm), create_source_cb, plugin);
+	g_signal_handlers_disconnect_by_func (rmm, create_source_cb, plugin);
 
 	g_hash_table_foreach (plugin->sources, (GHFunc)_delete_cb, plugin);
 	g_hash_table_destroy (plugin->sources);
@@ -504,8 +518,8 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->ui_merge_id = 0;
 	}
 
-	g_object_unref (G_OBJECT (uimanager));
-	g_object_unref (G_OBJECT (rmm));
+	g_object_unref (uimanager);
+	g_object_unref (rmm);
 
 #if !NAUTILUS_BURN_CHECK_VERSION(2,15,3) && !HAVE_HAL
 	g_hash_table_destroy (plugin->cd_drive_mapping);
