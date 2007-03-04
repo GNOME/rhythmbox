@@ -856,7 +856,6 @@ rb_shell_clipboard_playlist_renamed_cb (RBStaticPlaylistSource *source,
 
 	g_object_set (action, "label", name, NULL);
 	g_free (name);
-	g_object_unref (action);
 }
 
 static void
