@@ -49,13 +49,16 @@ INCLUDES = 						\
 gladedir = $(plugindir)
 glade_DATA =	multiple-album.glade
 
+uixmldir = $(plugindir)
+uixml_DATA = audiocd-ui.xml
+
 plugin_in_files = audiocd.rb-plugin.desktop.in
 
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
 plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
-EXTRA_DIST = $(glade_DATA) $(plugin_in_files) sj-metadata-marshal.list
+EXTRA_DIST = $(glade_DATA) $(uixml_DATA) $(plugin_in_files) sj-metadata-marshal.list
 
 MARSHALFILES = 
 
