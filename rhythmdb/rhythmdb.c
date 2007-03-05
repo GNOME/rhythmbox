@@ -4117,6 +4117,8 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	podcast_post_type->category = RHYTHMDB_ENTRY_NORMAL;
 	podcast_post_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
 	podcast_post_type->get_playback_uri = podcast_get_playback_uri;
+	podcast_post_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
+	podcast_post_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
 
 	/* podcast feeds */
 	podcast_feed_type = rhythmdb_entry_register_type (db, "podcast-feed");
@@ -4124,6 +4126,8 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	podcast_feed_type->save_to_disk = TRUE;
 	podcast_feed_type->category = RHYTHMDB_ENTRY_VIRTUAL;
 	podcast_feed_type->pre_entry_destroy = (RhythmDBEntryActionFunc) podcast_data_destroy;
+	podcast_feed_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
+	podcast_feed_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
 }
 
 RhythmDBEntryType
