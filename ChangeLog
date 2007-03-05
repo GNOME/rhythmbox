@@ -1,3 +1,11 @@
+2007-03-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/visualizer/rb-visualizer-plugin.c: (find_xoverlay),
+	(bus_sync_message_cb), (rb_visualizer_plugin_window_id_notify_cb),
+	(update_window):
+	Check we actually found an x overlay interface before trying to use
+	it.
+
 2007-03-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_register_core_entry_types):

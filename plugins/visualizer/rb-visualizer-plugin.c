@@ -329,7 +329,7 @@ static gboolean
 find_xoverlay (RBVisualizerPlugin *plugin)
 {
 	/* (re-)locate xoverlay */
-	if (plugin->xoverlay) {
+	if (plugin->xoverlay != NULL) {
 		g_object_unref (plugin->xoverlay);
 		plugin->xoverlay = NULL;
 	}
@@ -347,7 +347,7 @@ find_xoverlay (RBVisualizerPlugin *plugin)
 		rb_debug ("found video_sink implementing xoverlay");
 	}
 
-	if (!plugin->xoverlay) {
+	if (plugin->xoverlay == NULL) {
 		g_warning ("Couldn't find an x overlay");
 		return FALSE;
 	}
@@ -387,7 +387,8 @@ bus_sync_message_cb (GstBus *bus, GstMessage *msg, RBVisualizerPlugin *plugin)
 		break;
 	}
 
-	gst_x_overlay_set_xwindow_id (plugin->xoverlay, window);
+	if (plugin->xoverlay != NULL)
+		gst_x_overlay_set_xwindow_id (plugin->xoverlay, window);
 	plugin->window_id_set = TRUE;
 }
 
@@ -648,8 +649,11 @@ rb_visualizer_plugin_window_id_notify_cb (GObject *vis_widget,
 					  RBVisualizerPlugin *plugin)
 {
 	XID window;
-	g_object_get (plugin->vis_widget, "window-xid", &window, NULL);
-	gst_x_overlay_set_xwindow_id (plugin->xoverlay, window);
+
+	if (plugin->xoverlay != NULL) {
+		g_object_get (plugin->vis_widget, "window-xid", &window, NULL);
+		gst_x_overlay_set_xwindow_id (plugin->xoverlay, window);
+	}
 }
 
 static GdkScreen *
@@ -784,7 +788,7 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 			rb_debug ("got root window id %lu", plugin->remote_window);
 		}
 
-		if (plugin->xoverlay) {
+		if (plugin->xoverlay != NULL) {
 			gst_x_overlay_set_xwindow_id (plugin->xoverlay, plugin->remote_window);
 		}
 
