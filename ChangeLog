@@ -1,3 +1,12 @@
+2007-03-05  Alex Lancaster  <alexl@users.sourceforge.net>
+
+	Patch by: Adam Zimmerman  <adam_zimmerman@sfu.ca>
+	
+	* plugins/magnatune/magnatune/TrackListHandler.py
+	(TrackListHandler.endElement): If year is not set, use launch date
+	instead, ensuring that metadata gets set on all files.  Fixes
+	#414980
+
 2007-03-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/visualizer/rb-visualizer-plugin.c: (find_xoverlay),
