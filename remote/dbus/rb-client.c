@@ -58,6 +58,13 @@ static gchar *play_uri = NULL;
 static gboolean print_playing = FALSE;
 static gchar *print_playing_format = NULL;
 
+static gdouble set_volume = -1.0;
+static gboolean volume_up = FALSE;
+static gboolean volume_down = FALSE;
+static gboolean print_volume = FALSE;
+static gboolean mute = FALSE;
+static gboolean unmute = FALSE;
+
 static gchar **other_stuff = NULL;
 
 static GOptionEntry args[] = {
@@ -85,6 +92,15 @@ static GOptionEntry args[] = {
 
 	{ "print-playing", 0, 0, G_OPTION_ARG_NONE, &print_playing, N_("Print the title and artist of the playing song"), NULL },
 	{ "print-playing-format", 0, 0, G_OPTION_ARG_STRING, &print_playing_format, N_("Print formatted details of the song"), NULL },
+
+#if GLIB_CHECK_VERSION(2,12,0)
+	{ "set-volume", 0, 0, G_OPTION_ARG_DOUBLE, &set_volume, N_("Set the playback volume"), NULL },
+#endif
+	{ "volume-up", 0, 0, G_OPTION_ARG_NONE, &volume_up, N_("Increase the playback volume"), NULL },
+	{ "volume-down", 0, 0, G_OPTION_ARG_NONE, &volume_down, N_("Decrease the playback volume"), NULL },
+	{ "print-volume", 0, 0, G_OPTION_ARG_NONE, &print_volume, N_("Print the current playback volume"), NULL },
+	{ "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
+	{ "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
 
 	{ G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &other_stuff, NULL, NULL },
 
@@ -478,7 +494,12 @@ main (int argc, char **argv)
 	}
 
 	/* don't present if we're doing something else */
-	if (next || previous || clear_queue || play_uri || other_stuff || play || pause || play_pause || stop || print_playing || print_playing_format || notify)
+	if (next || previous ||
+	    clear_queue ||
+	    play_uri || other_stuff ||
+	    play || pause || play_pause || stop ||
+	    print_playing || print_playing_format || notify ||
+	    (set_volume > -0.01) || volume_up || volume_down || print_volume || mute || unmute)
 		no_present = TRUE;
 
 	/* 2. present or hide */
@@ -567,22 +588,51 @@ main (int argc, char **argv)
 		}
 	}
 
-	/* 6. print playing song */
+	/* 6. get/set volume, mute/unmute */
+#if GLIB_CHECK_VERSION(2,12,0)
+	if (set_volume > -0.01) {
+		org_gnome_Rhythmbox_Player_set_volume (player_proxy, set_volume, &error);
+		annoy (&error);
+	} else
+#endif
+	if (volume_up || volume_down) {
+		org_gnome_Rhythmbox_Player_set_volume_relative (player_proxy, volume_up ? 0.1 : -0.1, &error);
+		annoy (&error);
+	} else if (unmute || mute) {
+		org_gnome_Rhythmbox_Player_set_mute (player_proxy, unmute ? FALSE : TRUE, &error);
+		annoy (&error);
+	}
+
+	if (print_volume) {
+		gboolean mute = FALSE;
+		gdouble volume = 1.0;
+
+		org_gnome_Rhythmbox_Player_get_mute (player_proxy, &mute, &error);
+		annoy (&error);
+		org_gnome_Rhythmbox_Player_get_volume (player_proxy, &volume, &error);
+		annoy (&error);
+
+		if (mute)
+			g_print (_("Playback is muted.\n"));
+		g_print (_("Playback volume is %f.\n"), volume);
+	}
+
+	/* 7. print playing song */
 	if (print_playing_format) {
 		print_playing_song (shell_proxy, player_proxy, print_playing_format);
 	} else if (print_playing) {
 		print_playing_song (shell_proxy, player_proxy, "%ta - %tt");
 	}
 
-	/* 7. display notification about playing song */
+	/* 8. display notification about playing song */
 	if (notify) {
 		rb_debug ("show notification");
 		org_gnome_Rhythmbox_Shell_notify (shell_proxy, TRUE, &error);
 		annoy (&error);
 	}
 
-	g_object_unref (G_OBJECT (shell_proxy));
-	g_object_unref (G_OBJECT (player_proxy));
+	g_object_unref (shell_proxy);
+	g_object_unref (player_proxy);
 	g_option_context_free (context);
 
 	return 0;
