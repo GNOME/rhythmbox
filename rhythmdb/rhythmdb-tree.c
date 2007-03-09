@@ -511,9 +511,11 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 		rb_debug ("finished reading unknown entry");
 		ctx->unknown_entry->properties = g_list_reverse (ctx->unknown_entry->properties);
 
+		g_mutex_lock (ctx->db->priv->entries_lock);
 		entry_list = g_hash_table_lookup (ctx->db->priv->unknown_entry_types, ctx->unknown_entry->typename);
 		entry_list = g_list_prepend (entry_list, ctx->unknown_entry);
 		g_hash_table_insert (ctx->db->priv->unknown_entry_types, ctx->unknown_entry->typename, entry_list);
+		g_mutex_unlock (ctx->db->priv->entries_lock);
 
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
 		ctx->unknown_entry = NULL;
@@ -1054,9 +1056,11 @@ rhythmdb_tree_save (RhythmDB *rdb)
 				   ctx.handle, ctx.error);
 
 	rhythmdb_entry_type_foreach (rdb, (GHFunc) save_entry_type, &ctx);
+	g_mutex_lock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
 	g_hash_table_foreach (db->priv->unknown_entry_types,
 			      (GHFunc) save_unknown_entry_type,
 			      &ctx);
+	g_mutex_unlock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
 
 	RHYTHMDB_FWRITE_STATICSTR ("</rhythmdb>\n", ctx.handle, ctx.error);
 
@@ -2353,10 +2357,13 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 		return;
 
 	rdb = RHYTHMDB_TREE (db);
+	g_mutex_lock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
+
 	rs_name = rb_refstring_find (name);
 	if (rs_name)
 		entries = g_hash_table_lookup (rdb->priv->unknown_entry_types, rs_name);
 	if (entries == NULL) {
+		g_mutex_unlock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
 		rb_refstring_unref (rs_name);
 		rb_debug ("no entries of newly registered type %s loaded from db", name);
 		return;
@@ -2390,6 +2397,8 @@ rhythmdb_tree_entry_type_registered (RhythmDB *db,
 	rhythmdb_commit (db);
 
 	g_hash_table_remove (rdb->priv->unknown_entry_types, rs_name);
+	g_mutex_unlock (RHYTHMDB_TREE(rdb)->priv->entries_lock);
 	free_unknown_entries (rs_name, entries, NULL);
 	rb_refstring_unref (rs_name);
 }
+
