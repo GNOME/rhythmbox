@@ -1,3 +1,9 @@
+2007-03-09  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(rhythmdb_tree_save), (rhythmdb_tree_entry_type_registered): hold the
+	entries lock when accessing the unknown-entries map. Fixes #416024
+
 2007-03-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/visualizer/rb-visualizer-plugin.c: (find_xoverlay),
