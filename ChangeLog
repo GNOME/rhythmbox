@@ -1,3 +1,12 @@
+2007-03-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/power-manager/rb-power-manager-plugin.c:
+	(proxy_destroy_cb), (create_dbus_proxy), (inhibit), (uninhibit),
+	(impl_activate):
+	Use dbus_g_proxy_new_for_name_owner instead of
+	dbus_g_proxy_new_for_name so dbus doesn't start g-p-m if it's not
+	already running.  Recreate the dbus proxy as required.  Fixes #416213.
+
 2007-03-09  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
