@@ -42,6 +42,7 @@ typedef struct
 {
 	RBPlugin parent;
 
+	DBusGConnection *bus;
 	DBusGProxy *proxy;
 	guint32 cookie;
 	gint handler_id;
@@ -93,6 +94,44 @@ ignore_error (GError *error)
 }
 
 static void
+proxy_destroy_cb (DBusGProxy *proxy,
+		  RBGPMPlugin *plugin)
+{
+	rb_debug ("dbus proxy destroyed");
+	plugin->proxy = NULL;
+}
+
+static gboolean
+create_dbus_proxy (RBGPMPlugin *plugin)
+{
+	GError *error = NULL;
+
+	if (plugin->proxy != NULL) {
+		return TRUE;
+	}
+
+	plugin->proxy = dbus_g_proxy_new_for_name_owner (plugin->bus,
+						   "org.gnome.PowerManager",
+						   "/org/gnome/PowerManager",
+						   "org.gnome.PowerManager",
+						   &error);
+	if (error != NULL) {
+		if (ignore_error (error) == FALSE) {
+			g_warning ("Failed to create dbus proxy for org.gnome.PowerManager: %s",
+				   error->message);
+		}
+		g_error_free (error);
+		return FALSE;
+	} else {
+		g_signal_connect_object (plugin->proxy,
+					 "destroy",
+					 G_CALLBACK (proxy_destroy_cb),
+					 plugin, 0);
+	}
+	return TRUE;
+}
+
+static void
 inhibit_cb (DBusGProxy *proxy,
 	    DBusGProxyCall *call_id,
 	    RBGPMPlugin *plugin)
@@ -123,11 +162,13 @@ static gboolean
 inhibit (RBGPMPlugin *plugin)
 {
 	plugin->timeout_id = 0;
-	if (plugin->proxy == NULL)
-		return FALSE;
 
 	if (plugin->cookie != 0) {
 		rb_debug ("Was going to inhibit gnome-power-manager, but we already have done");
+		return FALSE;
+	}
+
+	if (create_dbus_proxy (plugin) == FALSE) {
 		return FALSE;
 	}
 
@@ -175,11 +216,13 @@ static gboolean
 uninhibit (RBGPMPlugin *plugin)
 {
 	plugin->timeout_id = 0;
-	if (plugin->proxy == NULL)
-		return FALSE;
 
 	if (plugin->cookie == 0) {
 		rb_debug ("Was going to uninhibit power manager, but we haven't inhibited it");
+		return FALSE;
+	}
+
+	if (create_dbus_proxy (plugin) == FALSE) {
 		return FALSE;
 	}
 
@@ -216,29 +259,23 @@ impl_activate (RBPlugin *rbplugin,
 {
 	RBGPMPlugin *plugin;
 	GError *error = NULL;
-	DBusGConnection *bus;
 	GObject *shell_player;
 	gboolean playing;
 
 	plugin = RB_GPM_PLUGIN (rbplugin);
 
-	bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-	if (bus == NULL) {
+	plugin->bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
+	if (plugin->bus == NULL) {
 		g_warning ("Couldn't connect to system bus: %s", (error) ? error->message : "(null)");
 		return;
 	}
 
-	plugin->proxy = dbus_g_proxy_new_for_name (bus,
-						   "org.gnome.PowerManager",
-						   "/org/gnome/PowerManager",
-						   "org.gnome.PowerManager");
-
 	g_object_get (shell, "shell-player", &shell_player, NULL);
 
-	plugin->handler_id = g_signal_connect (shell_player,
-					       "playing-changed",
-					       (GCallback) playing_changed_cb,
-					       plugin);
+	plugin->handler_id = g_signal_connect_object (shell_player,
+						      "playing-changed",
+						      (GCallback) playing_changed_cb,
+						      plugin, 0);
 
 	g_object_get (shell_player, "playing", &playing, NULL);
 	if (playing) {
