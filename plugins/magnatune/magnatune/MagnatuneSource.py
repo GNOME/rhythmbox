@@ -61,6 +61,7 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__sku_dict = {}
 		self.__home_dict = {}
 		self.__buy_dict = {}
+		self.__art_dict = {}
 
 		# catalogue stuff
 		self.__activated = False
@@ -309,7 +310,7 @@ class MagnatuneSource(rb.BrowserSource):
 				return
 
 		parser = xml.sax.make_parser()
-		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__buy_dict))
+		parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__buy_dict, self.__art_dict))
 		handle.read (64 * 1024, self.__load_catalogue_read_cb, parser)
 
 	def __load_catalogue(self):
@@ -572,12 +573,10 @@ class MagnatuneSource(rb.BrowserSource):
 
 		if entry.get_entry_type() != self.__db.entry_type_get_by_name("MagnatuneEntryType"):
 			return
-
-		album = urllib.quote(self.__db.entry_get(entry, rhythmdb.PROP_ALBUM))
-		artist = urllib.quote(self.__db.entry_get(entry, rhythmdb.PROP_ARTIST))
-
-		self.__db.emit_entry_extra_metadata_notify (entry, 'rb:coverArt-uri', ALBUM_ART_URL % (artist,album))
-
+		
+		url = str(self.__art_dict[self.__db.entry_get(entry, rhythmdb.PROP_LOCATION)])
+		
+		self.__db.emit_entry_extra_metadata_notify (entry, 'rb:coverArt-uri', url)
 
 gobject.type_register(MagnatuneSource)
 
