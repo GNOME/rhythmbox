@@ -91,7 +91,9 @@ rb_vis_widget_size_allocate (GtkWidget *widget,
 	if (!GTK_WIDGET_REALIZED (widget))
 		return;
 
-	rb_debug ("handling size allocate event");
+	rb_debug ("handling size allocate event ([%d,%d] - [%d,%d])",
+		  allocation->x, allocation->y,
+		  allocation->width, allocation->height);
 	gdk_window_move_resize (widget->window,
 				allocation->x, allocation->y,
 				allocation->width, allocation->height);
@@ -146,16 +148,6 @@ rb_vis_widget_show (GtkWidget *widget)
 	}
 
 	GTK_WIDGET_CLASS (rb_vis_widget_parent_class)->show (widget);
-}
-
-void
-rb_vis_widget_resize (RBVisWidget *rbvw, int width, int height)
-{
-	rbvw->width = width;
-	rbvw->height = height;
-
-	if (GTK_WIDGET_REALIZED (rbvw))
-		gtk_widget_set_size_request (GTK_WIDGET (rbvw), width, height);
 }
 
 static void

@@ -703,9 +703,12 @@ AC_ARG_ENABLE(uninstalled-build,
 			     [Search for files in build directory as well]),
 	      enable_uninstalled=yes,)
 if test x"$enable_uninstalled" = xyes; then
+	ROOT_UNINSTALLED_DIR="`pwd`"
+	AC_DEFINE(USE_UNINSTALLED_DIRS, 1, [Define to look for files in source tree locations])
 	AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/data",[path to source data dir])
 	AC_DEFINE_UNQUOTED(METADATA_UNINSTALLED_DIR,"`pwd`/metadata",[path to metadata build dir])
 fi
+AC_SUBST(ROOT_UNINSTALLED_DIR)
 
 AC_ARG_WITH(internal-libsexy,
             AC_HELP_STRING([--with-internal-libsexy],

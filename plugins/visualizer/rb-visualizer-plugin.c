@@ -81,6 +81,9 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
+/*#include "visualization-icon.h"*/
+#define VISUALIZATION_ICON_NAME	"visualization"
+
 #ifdef WITH_DBUS
 #include <dbus/dbus-glib.h>
 #endif
@@ -113,6 +116,7 @@ extern GType rb_fake_vis_get_type (void);
 
 #define VISUALIZER_DBUS_PATH	"/org/gnome/Rhythmbox/Visualizer"
 
+
 typedef struct {
 	const char *name;
 	const char *displayname;
@@ -129,8 +133,14 @@ typedef struct {
 typedef enum {
 	EMBEDDED = 0,		/* stuck in main UI window */
 	FULLSCREEN,		/* separate window, fullscreen */
-	REMOTE_WINDOW		/* drawing on a remote window (not done yet) */
+	EXTERNAL_WINDOW,	/* drawing on an external window */
+	DESKTOP_WINDOW,		/* drawing on a root window (or a remote window ID, maybe) */
 } VisualizerMode;
+
+typedef struct {
+	const char *name;
+	VisualizerMode mode;
+} VisualizerModeName;
 
 typedef struct
 {
@@ -167,21 +177,20 @@ typedef struct
 	gulong playing_song_changed_id;
 	gulong playing_changed_id;
 	gulong window_title_change_id;
+	gulong vis_window_size_request_id;
 
 	/* ui */
 	gint merge_id;
 	GtkActionGroup *action_group;
-	gboolean has_desktop_manager;
 
 	/* control ui */
 	GtkWidget *control_widget;
-	GtkWidget *root_window_button;
-	GtkWidget *fullscreen_button;
-	GtkWidget *leave_fullscreen_button;
 	GtkWidget *screen_label;
 	GtkWidget *screen_combo;
 	GtkWidget *element_combo;
 	GtkWidget *quality_combo;
+	GtkWidget *mode_combo;
+	GtkWidget *disable_button;
 	GList *vis_plugin_list;
 
 	GtkWidget *play_control_widget;
@@ -211,7 +220,7 @@ static void rb_visualizer_plugin_cmd_toggle (GtkAction *action,
 
 static void create_controls (RBVisualizerPlugin *pi);
 static void enable_visualization (RBVisualizerPlugin *pi);
-static gboolean disable_visualization (RBVisualizerPlugin *pi);
+static gboolean disable_visualization (RBVisualizerPlugin *pi, gboolean set_action);
 static void update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int monitor);
 
 #ifdef WITH_DBUS
@@ -223,7 +232,7 @@ gboolean rb_visualizer_stop_remote (RBVisualizerPlugin *plugin, GError **error);
 
 static GtkToggleActionEntry rb_visualizer_plugin_toggle_actions [] =
 {
-	{ "ToggleVisualizer", NULL, N_("Visualization"), NULL,
+	{ "ToggleVisualizer", VISUALIZATION_ICON_NAME, N_("Visualization"), NULL,
 	  N_("Start or stop visualization"),
 	  G_CALLBACK (rb_visualizer_plugin_cmd_toggle) },
 };
@@ -243,12 +252,30 @@ static const VisualizerQuality vis_quality[] = {
  */
 static const VisualizerQuality fake_vis_quality = { "", 60, 60, 1, 1 };
 
+static const VisualizerModeName vis_mode_name[] = {
+	{ N_("Embedded"),	EMBEDDED },
+	{ N_("Fullscreen"),	FULLSCREEN },
+	{ N_("Desktop"),	DESKTOP_WINDOW },
+	{ N_("Window"),		EXTERNAL_WINDOW },
+};
+
 RB_PLUGIN_REGISTER(RBVisualizerPlugin, rb_visualizer_plugin)
 
 static void
 rb_visualizer_plugin_init (RBVisualizerPlugin *plugin)
 {
+	GtkIconTheme *theme;
+	int icon_size;
+
 	rb_debug ("RBVisualizerPlugin initialising");
+
+	theme = gtk_icon_theme_get_default ();
+	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
+
+	/* for uninstalled builds, add plugins/visualizer/icons as an icon search path */
+#ifdef USE_UNINSTALLED_DIRS
+	gtk_icon_theme_append_search_path (theme, PLUGIN_SRC_DIR G_DIR_SEPARATOR_S "icons");
+#endif
 }
 
 static void
@@ -304,7 +331,7 @@ rb_visualizer_plugin_finalize (GObject *object)
 }
 
 static gboolean
-check_desktop_manager (RBVisualizerPlugin *plugin, int screen)
+can_draw_on_desktop (RBVisualizerPlugin *plugin, int screen)
 {
 	char *selection_name;
 	GdkDisplay *display;
@@ -314,15 +341,27 @@ check_desktop_manager (RBVisualizerPlugin *plugin, int screen)
 		screen = 0;
 	display = gdk_display_get_default ();
 
+	/* if we have a compositing manager, we probably can't just
+	 * scribble on the desktop.
+	 */
+#if GTK_CHECK_VERSION(2,10,0)
+	if (gdk_screen_is_composited (gdk_display_get_screen (display, screen))) {
+		rb_debug ("screen is composited: probably can't draw on desktop");
+		return FALSE;
+	}
+#endif
+
 	selection_name = g_strdup_printf ("_NET_DESKTOP_MANAGER_S%d", screen);
 	selection_atom = gdk_atom_intern (selection_name, FALSE);
 	g_free (selection_name);
 
 	if (XGetSelectionOwner (GDK_DISPLAY_XDISPLAY (display),
 				gdk_x11_atom_to_xatom_for_display (display, selection_atom)) != None) {
-		return TRUE;
+		rb_debug ("desktop manager exists: probably can't draw on desktop");
+		return FALSE;
 	}
-	return FALSE;
+
+	return TRUE;
 }
 
 static gboolean
@@ -371,6 +410,7 @@ bus_sync_message_cb (GstBus *bus, GstMessage *msg, RBVisualizerPlugin *plugin)
 	switch (plugin->mode) {
 	case EMBEDDED:
 	case FULLSCREEN:
+	case EXTERNAL_WINDOW:
 		if (plugin->vis_widget != NULL) {
 			g_object_get (plugin->vis_widget, "window-xid", &window, NULL);
 			if (window == 0) {
@@ -381,7 +421,7 @@ bus_sync_message_cb (GstBus *bus, GstMessage *msg, RBVisualizerPlugin *plugin)
 			}
 		}
 		break;
-	case REMOTE_WINDOW:
+	case DESKTOP_WINDOW:
 		window = plugin->remote_window;
 		rb_debug ("setting remote window id %lu", window);
 		break;
@@ -516,11 +556,12 @@ actually_hide_controls (RBVisualizerPlugin *plugin)
 		gtk_widget_grab_focus (plugin->vis_widget);
 		/* fall through */
 	case EMBEDDED:
+	case EXTERNAL_WINDOW:
 		gtk_widget_hide (plugin->control_widget);
 		gtk_widget_hide (plugin->play_control_widget);
 		plugin->controls_shown = FALSE;
 		break;
-	case REMOTE_WINDOW:
+	case DESKTOP_WINDOW:
 		/* always keep controls shown */
 		break;
 	}
@@ -560,28 +601,19 @@ show_controls (RBVisualizerPlugin *plugin, gboolean play_controls_only)
 		switch (plugin->mode) {
 		case EMBEDDED:
 			gtk_widget_hide (plugin->play_control_widget);
-
-			gtk_widget_show (plugin->fullscreen_button);
-			if (plugin->has_desktop_manager) {
-				gtk_widget_hide (plugin->root_window_button);
-			} else {
-				gtk_widget_show (plugin->root_window_button);
-			}
-			gtk_widget_hide (plugin->leave_fullscreen_button);
+			gtk_widget_hide (plugin->disable_button);
 			break;
 		case FULLSCREEN:
 			gtk_widget_show (plugin->play_control_widget);
-
-			gtk_widget_hide (plugin->fullscreen_button);
-			gtk_widget_hide (plugin->root_window_button);
-			gtk_widget_show (plugin->leave_fullscreen_button);
+			gtk_widget_show (plugin->disable_button);
 			break;
-		case REMOTE_WINDOW:
+		case EXTERNAL_WINDOW:
 			gtk_widget_hide (plugin->play_control_widget);
-
-			gtk_widget_hide (plugin->fullscreen_button);
-			gtk_widget_hide (plugin->root_window_button);
-			gtk_widget_show (plugin->leave_fullscreen_button);
+			gtk_widget_show (plugin->disable_button);
+			break;
+		case DESKTOP_WINDOW:
+			gtk_widget_hide (plugin->play_control_widget);
+			gtk_widget_hide (plugin->disable_button);
 			autohide = FALSE;
 			break;
 		}
@@ -617,25 +649,21 @@ rb_visualizer_plugin_key_release_cb (GtkWidget *vis_widget,
 				     GdkEventKey *event,
 				     RBVisualizerPlugin *plugin)
 {
-	GtkAction *action;
-
 	if (event->keyval != GDK_Escape)
 		return FALSE;
 
 	switch (plugin->mode) {
 	case EMBEDDED:
 		/* stop visualization? */
-		disable_visualization (plugin);
-		action = gtk_action_group_get_action (plugin->action_group, "ToggleVisualizer");
-		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), FALSE);
-		update_visualizer (plugin, NULL, -1);
+		disable_visualization (plugin, TRUE);
 		break;
 	case FULLSCREEN:
 		/* leave fullscreen */
 		update_window (plugin, EMBEDDED, -1, -1);
 		enable_visualization (plugin);
 		break;
-	case REMOTE_WINDOW:
+	case EXTERNAL_WINDOW:
+	case DESKTOP_WINDOW:
 		/* ??? .. can this even happen? */
 		break;
 	}
@@ -678,9 +706,115 @@ get_screen (RBVisualizerPlugin *plugin, int screen)
 }
 
 static void
+vis_window_size_request_cb (GtkWidget *widget, GtkRequisition *req, RBVisualizerPlugin *plugin)
+{
+	int quality;
+	float ratio;
+	GtkRequisition control_req;
+
+	rb_debug ("handling size-request for vis window");
+
+	quality = eel_gconf_get_integer (CONF_VIS_QUALITY);
+
+	gtk_widget_size_request (plugin->control_widget, &control_req);
+
+	req->width = vis_quality[quality].width;
+	req->height = vis_quality[quality].height;
+	ratio = ((float)vis_quality[quality].height) / ((float)vis_quality[quality].width);
+
+	if ((req->width < control_req.width) || (req->height < (control_req.width * ratio))) {
+		req->width = control_req.width;
+		req->height = control_req.width * ratio;
+	}
+
+	g_signal_handler_disconnect (plugin->vis_window, plugin->vis_window_size_request_id);
+	plugin->vis_window_size_request_id = 0;
+}
+
+static void
+resize_vis_window (RBVisualizerPlugin *plugin, int quality, gboolean resize_down)
+{
+	int width;
+	int height;
+	GtkRequisition req;
+	float ratio;
+	gboolean update = FALSE;
+
+	if (GTK_WIDGET_REALIZED (plugin->vis_window) == FALSE) {
+		rb_debug ("window isn't realized yet; trying in size-request instead");
+		if (plugin->vis_window_size_request_id == 0) {
+			plugin->vis_window_size_request_id =
+				g_signal_connect_object (plugin->vis_window,
+							 "size-request",
+							 G_CALLBACK (vis_window_size_request_cb),
+							 plugin, 0);
+		}
+		return;
+	}
+
+	/* try to resize the output window so it's at least as big as
+	 * the visualiser resolution and has a vaguely correct aspect
+	 * ratio.  the main problem here is that the control widgets
+	 * are fairly wide.
+	 */
+
+	if (quality == -1)
+		quality = eel_gconf_get_integer (CONF_VIS_QUALITY);
+	ratio = ((float)vis_quality[quality].height) / ((float)vis_quality[quality].width);
+
+	gtk_window_get_size (GTK_WINDOW (plugin->vis_window), &width, &height);
+	gtk_widget_size_request (plugin->control_widget, &req);
+
+	if (width < vis_quality[quality].width && height < vis_quality[quality].height) {
+		rb_debug ("resizing output window: [%d,%d] < [%d,%d]",
+			  width, height,
+			  vis_quality[quality].width, vis_quality[quality].height);
+		width = vis_quality[quality].width;
+		height = vis_quality[quality].height;
+		update = TRUE;
+	}
+
+	if (resize_down) {
+		if (width > vis_quality[quality].width) {
+			rb_debug ("reducing output window width: %d -> %d",
+				  width, vis_quality[quality].width);
+			width = vis_quality[quality].width;
+			update = TRUE;
+		}
+		if (height > vis_quality[quality].height) {
+			rb_debug ("reducing output window height: %d -> %d",
+				  height, vis_quality[quality].height);
+			height = vis_quality[quality].height;
+			update = TRUE;
+		}
+	}
+
+	if (width < req.width) {
+		rb_debug ("resizing output window %d < %d", width, req.width);
+		width = req.width;
+		update = TRUE;
+	}
+	if (height < (req.width * ratio)) {
+		rb_debug ("resizing output window: %d < %d (ratio %f)",
+			  height, (int)(req.width * ratio), ratio);
+		height = (int)(req.width * ratio);
+		update = TRUE;
+	}
+
+	if (width < 2)
+		width = 2;
+	if (height < 2)
+		height = 2;
+
+	if (update)
+		gtk_window_resize (GTK_WINDOW (plugin->vis_window), width, height);
+}
+
+static void
 update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int monitor)
 {
 	gboolean need_vis_widget;
+	gboolean can_resize_down = FALSE;
 
 	/* remove the visualizer container from whatever it's currently sitting in */
 	if (plugin->vis_box == NULL) {
@@ -696,17 +830,32 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 		case EMBEDDED:
 			gtk_container_remove (GTK_CONTAINER (plugin->vis_shell),
 					      plugin->vis_box);
+
+			if (plugin->mode != mode) {
+				rb_shell_notebook_set_page (plugin->shell, NULL);
+			}
 			break;
+
 		case FULLSCREEN:
 			gtk_container_remove (GTK_CONTAINER (plugin->vis_window),
 					      plugin->vis_box);
+			gtk_window_unfullscreen (GTK_WINDOW (plugin->vis_window));
+			can_resize_down = TRUE;
 			break;
-		case REMOTE_WINDOW:
+
+		case EXTERNAL_WINDOW:
+			gtk_container_remove (GTK_CONTAINER (plugin->vis_window),
+					      plugin->vis_box);
+			break;
+
+		case DESKTOP_WINDOW:
 			/* would be nice to force the window to redraw itself here.. */
+			plugin->remote_window = 0;
 			rb_shell_remove_widget (plugin->shell,
 						plugin->vis_box,
 						RB_SHELL_UI_LOCATION_MAIN_BOTTOM);
 			break;
+
 		}
 	}
 
@@ -723,9 +872,10 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 	switch (plugin->mode) {
 	case EMBEDDED:
 	case FULLSCREEN:
+	case EXTERNAL_WINDOW:
 		need_vis_widget = TRUE;
 		break;
-	case REMOTE_WINDOW:
+	case DESKTOP_WINDOW:
 		need_vis_widget = FALSE;
 		break;
 	default:
@@ -757,6 +907,7 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 	switch (plugin->mode) {
 	case EMBEDDED:
 		gtk_box_pack_start (GTK_BOX (plugin->vis_shell), plugin->vis_box, TRUE, TRUE, 0);
+		gtk_widget_hide (plugin->vis_window);
 		break;
 	case FULLSCREEN:
 	{
@@ -776,27 +927,42 @@ update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int 
 		gtk_container_add (GTK_CONTAINER (plugin->vis_window), plugin->vis_box);
 		break;
 	}
-	case REMOTE_WINDOW:
-		if (plugin->remote_window == 0) {
-			GdkScreen *gdk_screen;
-			GdkWindow *root_window;
+	case EXTERNAL_WINDOW:
+	{
+		GdkScreen *gdk_screen;
 
-			/* this is probably going to look crap on multi-monitor screens */
+		gdk_screen = get_screen (plugin, screen);
+		gtk_window_set_screen (GTK_WINDOW (plugin->vis_window), gdk_screen);
+		gtk_container_add (GTK_CONTAINER (plugin->vis_window), plugin->vis_box);
+
+		/* set monitor too somehow? */
+
+		resize_vis_window (plugin, -1, can_resize_down);
+		break;
+	}
+	case DESKTOP_WINDOW:
+	{
+		GdkScreen *gdk_screen;
+		GdkWindow *root_window;
+
+		/* this is probably going to look crap on multi-monitor screens */
+		if (plugin->remote_window == 0) {
 			gdk_screen = get_screen (plugin, screen);
 			root_window = gdk_screen_get_root_window (gdk_screen);
 			plugin->remote_window = GDK_WINDOW_XWINDOW (root_window);
 			rb_debug ("got root window id %lu", plugin->remote_window);
 		}
 
-		if (plugin->xoverlay != NULL) {
-			gst_x_overlay_set_xwindow_id (plugin->xoverlay, plugin->remote_window);
-		}
-
 		rb_shell_add_widget (plugin->shell,
 				     plugin->vis_box,
 				     RB_SHELL_UI_LOCATION_MAIN_BOTTOM);
-		rb_shell_notebook_set_page (plugin->shell, NULL);
+
+		if (plugin->xoverlay != NULL) {
+			gst_x_overlay_set_xwindow_id (plugin->xoverlay, plugin->remote_window);
+		}
+		gtk_widget_hide (plugin->vis_window);
 		break;
+	}
 	}
 
 	/* update controls */
@@ -965,7 +1131,11 @@ enable_visualization (RBVisualizerPlugin *pi)
 		gtk_widget_show_all (pi->vis_window);
 		gtk_window_fullscreen (GTK_WINDOW (pi->vis_window));
 		break;
-	case REMOTE_WINDOW:
+	case EXTERNAL_WINDOW:
+		gtk_widget_hide (pi->vis_shell);
+		gtk_widget_show_all (pi->vis_window);
+		break;
+	case DESKTOP_WINDOW:
 		gtk_widget_show (pi->vis_box);
 		break;
 	}
@@ -974,8 +1144,9 @@ enable_visualization (RBVisualizerPlugin *pi)
 }
 
 static gboolean
-disable_visualization (RBVisualizerPlugin *pi)
+disable_visualization (RBVisualizerPlugin *pi, gboolean set_action)
 {
+	GtkAction *action;
 	rb_debug ("disabling visualization");
 
 	switch (pi->mode) {
@@ -987,11 +1158,22 @@ disable_visualization (RBVisualizerPlugin *pi)
 		gtk_window_unfullscreen (GTK_WINDOW (pi->vis_window));
 		gtk_widget_hide_all (pi->vis_window);
 		break;
-	case REMOTE_WINDOW:
+	case EXTERNAL_WINDOW:
+		gtk_widget_hide_all (pi->vis_window);
+		break;
+	case DESKTOP_WINDOW:
 		gtk_widget_hide (pi->vis_box);
 		break;
 	}
 	pi->active = FALSE;
+
+	if (set_action) {
+		action = gtk_action_group_get_action (pi->action_group, "ToggleVisualizer");
+		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), FALSE);
+	}
+
+	update_visualizer (pi, NULL, -1);
+
 	return FALSE;
 }
 
@@ -1009,6 +1191,7 @@ rb_visualizer_plugin_cmd_toggle (GtkAction *action, RBVisualizerPlugin *pi)
 						      FALSE);
 			return;
 		}
+
 		/* if playing something, enable visualization now, otherwise,
 		 * wait until we start playing.
 		 */
@@ -1019,8 +1202,7 @@ rb_visualizer_plugin_cmd_toggle (GtkAction *action, RBVisualizerPlugin *pi)
 			pi->enable_deferred = TRUE;
 		}
 	} else {
-		disable_visualization (pi);
-		update_visualizer (pi, NULL, -1);
+		disable_visualization (pi, FALSE);
 	}
 }
 
@@ -1029,20 +1211,16 @@ rb_visualizer_plugin_source_selected_cb (GObject *shell,
 					 GParamSpec *arg,
 					 RBVisualizerPlugin *plugin)
 {
-	GtkAction *action;
-
 	switch (plugin->mode) {
 	case EMBEDDED:
 		if (plugin->active) {
 			/* disable visualization */
-			disable_visualization (plugin);
-			action = gtk_action_group_get_action (plugin->action_group, "ToggleVisualizer");
-			gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), FALSE);
-			update_visualizer (plugin, NULL, -1);
+			disable_visualization (plugin, TRUE);
 		}
 		break;
 	case FULLSCREEN:
-	case REMOTE_WINDOW:
+	case EXTERNAL_WINDOW:
+	case DESKTOP_WINDOW:
 		break;
 	}
 
@@ -1081,8 +1259,8 @@ rb_visualizer_plugin_song_change_cb (RBShellPlayer *player,
 
 	} else if (plugin->active) {
 		/* disable, and re-enable when we start playing something */
-		disable_visualization (plugin);
-		update_visualizer (plugin, NULL, -1);
+		disable_visualization (plugin, FALSE);
+
 		plugin->enable_deferred = TRUE;
 		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), TRUE);
 	}
@@ -1117,15 +1295,24 @@ rb_visualizer_plugin_shell_visibility_changed_cb (RBShell *shell,
 			update_visualizer (plugin, NULL, -1);
 		} else {
 			rb_debug ("disabling visualization until window is visible again");
-			disable_visualization (plugin);
-			update_visualizer (plugin, NULL, -1);
+			disable_visualization (plugin, FALSE);
 			plugin->active = TRUE;
 		}
 		break;
 	case FULLSCREEN:
-	case REMOTE_WINDOW:
+	case EXTERNAL_WINDOW:
+	case DESKTOP_WINDOW:
 		return;
 	}
+}
+
+static gboolean
+window_delete_cb (GtkWidget *window,
+		  GdkEvent *event,
+		  RBVisualizerPlugin *plugin)
+{
+	disable_visualization (plugin, TRUE);
+	return gtk_widget_hide_on_delete (window);
 }
 
 static void
@@ -1202,9 +1389,21 @@ impl_activate (RBPlugin *plugin,
 	}
 
 	if (pi->vis_window == NULL) {
+		GtkWindow *parent;
+
 		pi->vis_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+		gtk_window_set_title (GTK_WINDOW (pi->vis_window), _("Music Player Visualization"));
 		gtk_window_set_skip_taskbar_hint (GTK_WINDOW (pi->vis_window), TRUE);
 		g_object_ref (pi->vis_window);
+
+		g_object_get (pi->shell, "window", &parent, NULL);
+		gtk_window_set_transient_for (GTK_WINDOW (pi->vis_window), parent);
+		g_object_unref (parent);
+
+		g_signal_connect_object (pi->vis_window,
+					 "delete-event",
+					 G_CALLBACK (window_delete_cb),
+					 pi, 0);
 	}
 
 	/* real output window */
@@ -1225,11 +1424,6 @@ impl_activate (RBPlugin *plugin,
 		attributes_mask = GDK_WA_X | GDK_WA_Y;
 		pi->fake_window = gdk_window_new (NULL, &attributes, attributes_mask);
 	}
-
-	/* could be smarter - check per-screen when the selected screen changes;
-	 * but I think this will be good enough anyway.
-	 */
-	pi->has_desktop_manager = check_desktop_manager (pi, -1);
 
 	action = gtk_action_group_get_action (pi->action_group, "ToggleVisualizer");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), FALSE);
@@ -1287,8 +1481,8 @@ impl_deactivate	(RBPlugin *plugin,
 	RBVisualizerPlugin *pi = RB_VISUALIZER_PLUGIN (plugin);
 	GtkUIManager *uim;
 
-	disable_visualization (pi);
-	update_visualizer (pi, NULL, -1);
+	if (pi->active)
+		disable_visualization (pi, FALSE);
 
 	/* remove ui */
 	g_object_get (G_OBJECT (shell), "ui-manager", &uim, NULL);
@@ -1296,7 +1490,11 @@ impl_deactivate	(RBPlugin *plugin,
 	gtk_ui_manager_remove_ui (uim, pi->merge_id);
 	pi->merge_id = 0;
 
-	gtk_ui_manager_remove_action_group (uim, pi->action_group);
+	if (pi->action_group != NULL) {
+		gtk_ui_manager_remove_action_group (uim, pi->action_group);
+		g_object_unref (pi->action_group);
+		pi->action_group = NULL;
+	}
 
 	/* can't remove the dbus interface.  it only goes away when the
 	 * plugin object does, which is when the process exits.
@@ -1470,6 +1668,20 @@ screen_list_cell_data (GtkCellLayout *layout,
 }
 
 static void
+mode_list_cell_data (GtkCellLayout *layout,
+		     GtkCellRenderer *cell,
+		     GtkTreeModel *model,
+		     GtkTreeIter *iter,
+		     gpointer whatever)
+{
+	VisualizerModeName *mode;
+
+	gtk_tree_model_get (model, iter, 0, &mode, -1);
+	g_object_set (G_OBJECT (cell), "text", gettext (mode->name), NULL);
+}
+
+
+static void
 populate_combo_boxes (RBVisualizerPlugin *pi)
 {
 	int i;
@@ -1589,6 +1801,30 @@ populate_combo_boxes (RBVisualizerPlugin *pi)
 		pi->screen_controls_shown = TRUE;
 	}
 
+	/* mode selection */
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (pi->mode_combo), renderer, TRUE);
+	gtk_cell_layout_set_cell_data_func (GTK_CELL_LAYOUT (pi->mode_combo),
+					    renderer,
+					    (GtkCellLayoutDataFunc) mode_list_cell_data,
+					    NULL, NULL);
+
+	model = gtk_list_store_new (1, G_TYPE_POINTER);
+	for (i = 0; i < G_N_ELEMENTS (vis_mode_name); i++) {
+		GtkTreeIter iter;
+
+		/* skip desktop window mode if a desktop manager exists;
+		 * could be a bit smarter, but it's not terribly important.
+		 */
+		if ((vis_mode_name[i].mode == DESKTOP_WINDOW) &&
+		    (can_draw_on_desktop (pi, -1) == FALSE))
+			continue;
+
+		gtk_list_store_append (model, &iter);
+		gtk_list_store_set (model, &iter, 0, &vis_mode_name[i], -1);
+	}
+	gtk_combo_box_set_model (GTK_COMBO_BOX (pi->mode_combo), GTK_TREE_MODEL (model));
+	gtk_combo_box_set_active (GTK_COMBO_BOX (pi->mode_combo), 0);
 }
 
 static void
@@ -1630,6 +1866,9 @@ quality_combo_changed_cb (GtkComboBox *combo, RBVisualizerPlugin *pi)
 	eel_gconf_set_integer (CONF_VIS_QUALITY, index);
 
 	update_visualizer (pi, NULL, index);
+
+	if (pi->mode == EXTERNAL_WINDOW)
+		resize_vis_window (pi, index, FALSE);
 }
 
 static void
@@ -1660,24 +1899,53 @@ screen_changed_cb (GtkComboBox *combo, RBVisualizerPlugin *pi)
 }
 
 static void
-fullscreen_clicked_cb (GtkButton *button, RBVisualizerPlugin *pi)
+mode_changed_cb (GtkComboBox *combo, RBVisualizerPlugin *pi)
 {
-	update_window (pi, FULLSCREEN, eel_gconf_get_integer (CONF_VIS_SCREEN), eel_gconf_get_integer (CONF_VIS_MONITOR));
-	enable_visualization (pi);
+	GtkTreeIter iter;
+	VisualizerModeName *mode;
+	gboolean visibility;
+
+	gtk_combo_box_get_active_iter (combo, &iter);
+	gtk_tree_model_get (gtk_combo_box_get_model (combo), &iter, 0, &mode, -1);
+	switch (mode->mode) {
+	case EMBEDDED:
+		update_window (pi, EMBEDDED, -1, -1);
+
+		/* if main window is not visible, defer until it becomes visible */
+		g_object_get (pi->shell, "visibility", &visibility, NULL);
+		rb_visualizer_plugin_shell_visibility_changed_cb (pi->shell, visibility, pi);
+		break;
+
+	case FULLSCREEN:
+		update_window (pi,
+			       FULLSCREEN,
+			       eel_gconf_get_integer (CONF_VIS_SCREEN),
+			       eel_gconf_get_integer (CONF_VIS_MONITOR));
+		enable_visualization (pi);
+		break;
+
+	case EXTERNAL_WINDOW:
+		update_window (pi,
+			       EXTERNAL_WINDOW,
+			       eel_gconf_get_integer (CONF_VIS_SCREEN),
+			       eel_gconf_get_integer (CONF_VIS_MONITOR));
+		enable_visualization (pi);
+		break;
+
+	case DESKTOP_WINDOW:
+		update_window (pi,
+			       DESKTOP_WINDOW,
+			       eel_gconf_get_integer (CONF_VIS_SCREEN),
+			       eel_gconf_get_integer (CONF_VIS_MONITOR));
+		enable_visualization (pi);
+		break;
+	}
 }
 
 static void
-leave_fullscreen_clicked_cb (GtkButton *button, RBVisualizerPlugin *pi)
+disable_clicked_cb (GtkButton *button, RBVisualizerPlugin *plugin)
 {
-	update_window (pi, EMBEDDED, -1, -1);
-	enable_visualization (pi);
-}
-
-static void
-root_window_clicked_cb (GtkButton *button, RBVisualizerPlugin *pi)
-{
-	update_window (pi, REMOTE_WINDOW, eel_gconf_get_integer (CONF_VIS_SCREEN), eel_gconf_get_integer (CONF_VIS_MONITOR));
-	enable_visualization (pi);
+	disable_visualization (plugin, TRUE);
 }
 
 static void
@@ -1699,13 +1967,11 @@ create_controls (RBVisualizerPlugin *plugin)
 	plugin->control_widget = glade_xml_get_widget (xml, "visualizer_controls");
 	plugin->element_combo = glade_xml_get_widget (xml, "element");
 	plugin->quality_combo = glade_xml_get_widget (xml, "quality");
+	plugin->mode_combo = glade_xml_get_widget (xml, "mode");
+	plugin->disable_button = glade_xml_get_widget (xml, "disable");
 
 	plugin->screen_label = glade_xml_get_widget (xml, "screen_label");
 	plugin->screen_combo = glade_xml_get_widget (xml, "screen");
-
-	plugin->fullscreen_button = glade_xml_get_widget (xml, "fullscreen");
-	plugin->leave_fullscreen_button = glade_xml_get_widget (xml, "leave_fullscreen");
-	plugin->root_window_button = glade_xml_get_widget (xml, "root_window");
 
 	populate_combo_boxes (plugin);
 
@@ -1718,14 +1984,11 @@ create_controls (RBVisualizerPlugin *plugin)
 	g_signal_connect_object (plugin->screen_combo, "changed",
 				 G_CALLBACK (screen_changed_cb), plugin,
 				 0);
-	g_signal_connect_object (plugin->fullscreen_button, "clicked",
-				 G_CALLBACK (fullscreen_clicked_cb), plugin,
+	g_signal_connect_object (plugin->mode_combo, "changed",
+				 G_CALLBACK (mode_changed_cb), plugin,
 				 0);
-	g_signal_connect_object (plugin->leave_fullscreen_button, "clicked",
-				 G_CALLBACK (leave_fullscreen_clicked_cb), plugin,
-				 0);
-	g_signal_connect_object (plugin->root_window_button, "clicked",
-				 G_CALLBACK (root_window_clicked_cb), plugin,
+	g_signal_connect_object (plugin->disable_button, "clicked",
+				 G_CALLBACK (disable_clicked_cb), plugin,
 				 0);
 
 	g_object_ref (plugin->control_widget);
@@ -1780,8 +2043,9 @@ rb_visualizer_start_remote (RBVisualizerPlugin *plugin, unsigned long window_id,
 	if (plugin->plugin_enabled == FALSE)
 		return TRUE;
 
+	/* this might not work properly - might need a new visualizer mode */
 	plugin->remote_window = window_id;
-	update_window (plugin, REMOTE_WINDOW, -1, -1);
+	update_window (plugin, DESKTOP_WINDOW, -1, -1);
 	return TRUE;
 }
 

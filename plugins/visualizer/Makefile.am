@@ -36,6 +36,7 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
+	-DPLUGIN_SRC_DIR=\""$(ROOT_UNINSTALLED_DIR)/plugins/visualizer"\" \
 	$(RHYTHMBOX_CFLAGS)				\
 	$(WARN_CFLAGS)					\
 	$(DBUS_CFLAGS)					\
@@ -46,6 +47,13 @@ glade_DATA = visualizer-controls.glade
 
 uixmldir = $(plugindir)
 uixml_DATA = visualizer-ui.xml
+
+themedir = $(pkgdatadir)/icons/hicolor
+size = 22x22
+context = actions
+
+icondir = $(themedir)/$(size)/$(context)
+icon_DATA = icons/hicolor/$(size)/$(context)/visualization.png
 
 plugin_in_files = visualizer.rb-plugin.desktop.in
 
@@ -62,6 +70,7 @@ plugin_DATA = 			\
 EXTRA_DIST = 			\
 	$(glade_DATA)		\
 	$(uixml_DATA)		\
+	$(icon_DATA)		\
 	$(plugin_in_files)	\
 	$(NULL)
 

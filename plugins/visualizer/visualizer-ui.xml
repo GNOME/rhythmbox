@@ -1,13 +1,16 @@
 <ui>
-  <popup name="VisualizerPopup">
-    <menuitem name="VisualizerPopupDisable" action="ToggleVisualizer"/>
-    <placeholder name="VisualizerSelectPlaceholder"/>
-  </popup>
-
   <menubar name="MenuBar">
-    <menu name="ControlMenu" action="Control">
-      <menuitem name="ControlMenuVisualizerToggle" action="ToggleVisualizer"/>
+    <menu name="ViewMenu" action="View">
+      <placeholder name="ViewMenuModePlaceholder">
+        <menuitem name="ViewMenuVisualizerToggle" action="ToggleVisualizer"/>
+      </placeholder>
     </menu>
   </menubar>
+
+  <toolbar name="ToolBar">
+    <placeholder name="ToolBarPluginPlaceholder">
+      <toolitem name="Visualization" action="ToggleVisualizer"/>
+    </placeholder>
+  </toolbar>
 </ui>
 

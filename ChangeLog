@@ -1,3 +1,48 @@
+2007-03-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	Add $pkgdatadir/icons and ~/.gnome2/rhythmbox/icons
+	to the gtk+ icon search path so plugins can install their own themable
+	icons.
+
+	* plugins/visualizer/Makefile.am:
+	* data/ui/rhythmbox-ui.xml:
+	* plugins/visualizer/visualizer-ui.xml:
+	Add toolbar button (with an ugly icon for now), move
+	the menu item from the 'Control' menu to the 'View' menu.
+
+	* plugins/visualizer/rb-vis-widget.c:
+	(rb_vis_widget_size_allocate):
+	* plugins/visualizer/rb-vis-widget.h:
+	Minor cleanup
+
+	* configure.ac:
+	Add variables for constructing uninstalled directory paths
+
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(rb_visualizer_plugin_init), (can_draw_on_desktop),
+	(bus_sync_message_cb), (actually_hide_controls), (show_controls),
+	(rb_visualizer_plugin_key_release_cb),
+	(vis_window_size_request_cb), (resize_vis_window), (update_window),
+	(enable_visualization), (disable_visualization),
+	(rb_visualizer_plugin_cmd_toggle),
+	(rb_visualizer_plugin_source_selected_cb),
+	(rb_visualizer_plugin_song_change_cb),
+	(rb_visualizer_plugin_shell_visibility_changed_cb),
+	(window_delete_cb), (impl_activate), (impl_deactivate),
+	(mode_list_cell_data), (populate_combo_boxes),
+	(quality_combo_changed_cb), (mode_changed_cb),
+	(disable_clicked_cb), (create_controls),
+	(rb_visualizer_start_remote):
+	* plugins/visualizer/visualizer-controls.glade:
+	Replace the 'fullscreen', 'leave fullscreen' etc. buttons with a combo
+	box offering the different modes.  Add an external (non-fullscreen)
+	window mode.  In fullscreen and window modes, add a button to disable
+	visualisation.  For uninstalled builds, add the plugin source path to
+	the icon search path so the icon will show up.
+
+	Fixes #388648, #388650.
+
 2007-03-11  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/artdisplay/rhythmbox-missing-artwork.svg: replace with a

@@ -76,7 +76,7 @@ static const char* icons[] =
 	RB_STOCK_UNSET_STAR,
 	RB_STOCK_PODCAST,
 	RB_STOCK_NO_STAR,
-	
+
 	/* gnome-icon-theme icons */
 	GNOME_MEDIA_SHUFFLE,
 	GNOME_MEDIA_REPEAT,
@@ -92,6 +92,7 @@ rb_stock_icons_init (void)
 	GtkIconTheme *theme = gtk_icon_theme_get_default ();
 	int i;
 	int icon_size;
+	char *dot_icon_dir;
 
 	g_return_if_fail (factory == NULL);
 
@@ -100,6 +101,15 @@ rb_stock_icons_init (void)
 
 	/* we should really add all the sizes */
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
+
+	/* add our icon search paths */
+	dot_icon_dir = g_build_filename (rb_dot_dir (), "icons", NULL);
+	gtk_icon_theme_append_search_path (theme, dot_icon_dir);
+	g_free (dot_icon_dir);
+
+	gtk_icon_theme_append_search_path (theme, SHARE_DIR G_DIR_SEPARATOR_S "icons");
+
+
 
 	/* add inline icons */
 	for (i = 0; i < (int) G_N_ELEMENTS (inline_icons); i++) {
@@ -141,7 +151,7 @@ rb_stock_icons_init (void)
 			icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
 			gtk_icon_factory_add (factory, icons[i], icon_set);
 			gtk_icon_set_unref (icon_set);
-			
+
 			g_object_unref (G_OBJECT (pixbuf));
 		} else {
 			g_warning ("Unable to load icon %s", icons[i]);

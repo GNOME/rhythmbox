@@ -44,7 +44,6 @@ typedef struct _RBVisWidgetClass
 } RBVisWidgetClass;
 
 GType	rb_vis_widget_get_type (void);
-void	rb_vis_widget_resize (RBVisWidget *rbvw, int width, int height);
 
 G_END_DECLS
 
