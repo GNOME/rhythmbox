@@ -1495,10 +1495,10 @@
   (c-name "rb_property_view_new")
   (is-constructor-of "RBPropertyView")
   (return-type "RBPropertyView*")
-  (parameters
-    '("RhythmDB*" "db")
-    '("guint" "propid")
-    '("const-char*" "title")
+  (properties
+    '("db" (argname "db"))
+    '("propid" (argment "propid"))
+    '("title" (argname "title"))
   )
 )
 

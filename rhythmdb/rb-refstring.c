@@ -218,3 +218,17 @@ rb_refstring_equal (gconstpointer ap, gconstpointer bp)
 {
 	return (ap == bp);
 }
+
+GType
+rb_refstring_get_type (void)
+{
+	static GType type = 0;
+
+	if (G_UNLIKELY (type == 0)) {
+		type = g_boxed_type_register_static ("RBRefString",
+						     (GBoxedCopyFunc)rb_refstring_ref,
+						     (GBoxedFreeFunc)rb_refstring_unref);
+	}
+
+	return type;
+}

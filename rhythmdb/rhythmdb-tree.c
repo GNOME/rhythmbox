@@ -79,6 +79,10 @@ static void rhythmdb_tree_entry_foreach (RhythmDB *adb, GFunc func, gpointer use
 static gint64 rhythmdb_tree_entry_count (RhythmDB *adb);
 static void rhythmdb_tree_entry_foreach_by_type (RhythmDB *adb, RhythmDBEntryType type, GFunc func, gpointer user_data);
 static gint64 rhythmdb_tree_entry_count_by_type (RhythmDB *adb, RhythmDBEntryType type);
+static gboolean rhythmdb_tree_entry_keyword_add (RhythmDB *adb, RhythmDBEntry *entry, RBRefString *keyword);
+static gboolean rhythmdb_tree_entry_keyword_remove (RhythmDB *adb, RhythmDBEntry *entry, RBRefString *keyword);
+static gboolean rhythmdb_tree_entry_keyword_has (RhythmDB *adb, RhythmDBEntry *entry, RBRefString *keyword);
+static GList* rhythmdb_tree_entry_keywords_get (RhythmDB *adb, RhythmDBEntry *entry);
 static void rhythmdb_tree_do_full_query (RhythmDB *db, GPtrArray *query,
 					 RhythmDBQueryResults *results,
 					 gboolean *cancel);
@@ -114,6 +118,7 @@ static RhythmDBTreeProperty *get_or_create_genre (RhythmDBTree *db, RhythmDBEntr
 							 RBRefString *name);
 
 static void remove_entry_from_album (RhythmDBTree *db, RhythmDBEntry *entry);
+static void remove_entry_from_keywords (RhythmDBTree *db, RhythmDBEntry *entry);
 
 static GList *split_query_by_disjunctions (RhythmDBTree *db, GPtrArray *query);
 static gboolean evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *query,
@@ -124,6 +129,9 @@ struct RhythmDBTreePrivate
 	GHashTable *entries;
 	GHashTable *entry_ids;
 	GMutex *entries_lock;
+
+	GHashTable *keywords; /* GHashTable<RBRefString, GHashTable<RhyhmDBEntry, 1>> */
+	GMutex *keywords_lock;
 
 	GHashTable *genres;
 	GMutex *genres_lock; /* must be held while using the tree */
@@ -185,6 +193,10 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_entry_count = rhythmdb_tree_entry_count;
 	rhythmdb_class->impl_entry_foreach_by_type = rhythmdb_tree_entry_foreach_by_type;
 	rhythmdb_class->impl_entry_count_by_type = rhythmdb_tree_entry_count_by_type;
+	rhythmdb_class->impl_entry_keyword_add = rhythmdb_tree_entry_keyword_add;
+	rhythmdb_class->impl_entry_keyword_remove = rhythmdb_tree_entry_keyword_remove;
+	rhythmdb_class->impl_entry_keyword_has = rhythmdb_tree_entry_keyword_has;
+	rhythmdb_class->impl_entry_keywords_get = rhythmdb_tree_entry_keywords_get;
 	rhythmdb_class->impl_evaluate_query = rhythmdb_tree_evaluate_query;
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
 	rhythmdb_class->impl_entry_type_registered = rhythmdb_tree_entry_type_registered;
@@ -198,15 +210,18 @@ rhythmdb_tree_init (RhythmDBTree *db)
 	db->priv = RHYTHMDB_TREE_GET_PRIVATE (db);
 
 	db->priv->entries = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
-
 	db->priv->entry_ids = g_hash_table_new (g_direct_hash, g_direct_equal);
+	db->priv->entries_lock = g_mutex_new();
 
+	db->priv->keywords = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
+						    (GDestroyNotify)rb_refstring_unref, (GDestroyNotify)g_hash_table_destroy);
+	db->priv->keywords_lock = g_mutex_new();
+
+	db->priv->genres_lock = g_mutex_new();
 	db->priv->genres = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 						  NULL, (GDestroyNotify)g_hash_table_destroy);
-	db->priv->unknown_entry_types = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
 
-	db->priv->entries_lock = g_mutex_new();
-	db->priv->genres_lock = g_mutex_new();
+	db->priv->unknown_entry_types = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
 }
 
 /* must be called with the genres lock held */
@@ -268,6 +283,9 @@ rhythmdb_tree_finalize (GObject *object)
 	g_hash_table_destroy (db->priv->entry_ids);
 	g_mutex_free (db->priv->entries_lock);
 
+	g_hash_table_destroy (db->priv->keywords);
+	g_mutex_free (db->priv->keywords_lock);
+
 	g_hash_table_destroy (db->priv->genres);
 	g_mutex_free (db->priv->genres_lock);
 
@@ -289,6 +307,7 @@ struct RhythmDBTreeLoadContext
 		RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB,
 		RHYTHMDB_TREE_PARSER_STATE_ENTRY,
 		RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY,
+		RHYTHMDB_TREE_PARSER_STATE_ENTRY_KEYWORD,
 		RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY,
 		RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY,
 		RHYTHMDB_TREE_PARSER_STATE_END,
@@ -391,18 +410,20 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
-	{
-		int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), BAD_CAST name);
-		if (val < 0) {
-			ctx->in_unknown_elt++;
-			break;
-		}
+		if (strcmp (name, "keyword") == 0) {
+			ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY_KEYWORD;
+		} else {
+			int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), BAD_CAST name);
+			if (val < 0) {
+				ctx->in_unknown_elt++;
+				break;
+			}
 
-		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY;
-		ctx->propid = val;
+			ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY;
+			ctx->propid = val;
+		}
 		g_string_truncate (ctx->buf, 0);
 		break;
-	}
 	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY:
 	{
 		RhythmDBUnknownEntryProperty *prop;
@@ -417,6 +438,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY:
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
+	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_KEYWORD:
 	case RHYTHMDB_TREE_PARSER_STATE_END:
 	break;
 	}
@@ -562,6 +584,17 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
 		break;
 	}
+	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_KEYWORD:
+	{
+		RBRefString *keyword;
+
+		keyword = rb_refstring_new (ctx->buf->str);
+		rhythmdb_entry_keyword_add (RHYTHMDB(ctx->db), ctx->entry, keyword);
+		rb_refstring_unref (keyword);
+
+		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
+		break;
+	}
 	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY:
 	{
 		RhythmDBUnknownEntryProperty *prop;
@@ -594,6 +627,7 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx,
 	switch (ctx->state)
 	{
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
+	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_KEYWORD:
 	case RHYTHMDB_TREE_PARSER_STATE_UNKNOWN_ENTRY_PROPERTY:
 		g_string_append_len (ctx->buf, data, len);
 		break;
@@ -811,6 +845,7 @@ save_entry (RhythmDBTree *db,
 	RhythmDBPropType i;
 	RhythmDBPodcastFields *podcast = NULL;
 	xmlChar *encoded;
+	GList *keywords, *l;
 
 	if (ctx->error)
 		return;
@@ -957,6 +992,24 @@ save_entry (RhythmDBTree *db,
 			if (podcast)
 				save_entry_ulong (ctx, elt_name, podcast->post_time, FALSE);
 			break;
+		case RHYTHMDB_PROP_KEYWORD:
+			keywords = rhythmdb_entry_keywords_get (RHYTHMDB (db), entry);
+
+			for (l = keywords; l != NULL; l = g_list_next (l)) {
+				RBRefString *keyword = (RBRefString*)l->data;
+
+				RHYTHMDB_FWRITE_STATICSTR ("    <keyword>", ctx->handle, ctx->error);
+				encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST rb_refstring_get (keyword));
+				RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle, ctx->error);
+				g_free (encoded);
+				RHYTHMDB_FWRITE_STATICSTR ("</keyword>\n", ctx->handle, ctx->error);
+
+				rb_refstring_unref (keyword);
+			}
+
+			g_list_free (keywords);
+			RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
+			break;
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORT_KEY:
@@ -975,8 +1028,6 @@ save_entry (RhythmDBTree *db,
 			break;
 		}
 	}
-
-	RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
 }
 
 static void
@@ -1491,6 +1542,11 @@ rhythmdb_tree_entry_delete (RhythmDB *adb,
 	remove_entry_from_album (db, entry);
 	g_mutex_unlock (db->priv->genres_lock);
 
+	/* remove all keywords */
+	g_mutex_lock (db->priv->keywords_lock);
+	remove_entry_from_keywords (db, entry);
+	g_mutex_unlock (db->priv->keywords_lock);
+
 	g_mutex_lock (db->priv->entries_lock);
 	g_assert (g_hash_table_remove (db->priv->entries, entry->location));
 	g_assert (g_hash_table_remove (db->priv->entry_ids, GINT_TO_POINTER (entry->id)));
@@ -1509,15 +1565,20 @@ remove_one_song (gpointer key,
 		 RhythmDBEntry *entry,
 		 RbEntryRemovalCtxt *ctxt)
 {
-	rb_assert_locked (RHYTHMDB_TREE (ctxt->db)->priv->entries_lock);
-	rb_assert_locked (RHYTHMDB_TREE (ctxt->db)->priv->genres_lock);
+	RhythmDBTree *db = RHYTHMDB_TREE(ctxt->db);
+
+	rb_assert_locked (db->priv->entries_lock);
+	rb_assert_locked (db->priv->genres_lock);
 
 	g_return_val_if_fail (entry != NULL, FALSE);
 
 	if (entry->type == ctxt->type) {
 		rhythmdb_emit_entry_deleted (ctxt->db, entry);
-		remove_entry_from_album (RHYTHMDB_TREE (ctxt->db), entry);
-		g_hash_table_remove (RHYTHMDB_TREE (ctxt->db)->priv->entry_ids, GINT_TO_POINTER (entry->id));
+		g_mutex_lock (db->priv->keywords_lock);
+		remove_entry_from_keywords (db, entry);
+		g_mutex_unlock (db->priv->keywords_lock);
+		remove_entry_from_album (db, entry);
+		g_hash_table_remove (db->priv->entry_ids, GINT_TO_POINTER (entry->id));
 		rhythmdb_entry_unref (entry);
 		return TRUE;
 	}
@@ -1742,7 +1803,24 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree,
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		{
-			if (rhythmdb_get_property_type (db, data->propid) == G_TYPE_STRING) {
+			if (data->propid == RHYTHMDB_PROP_KEYWORD) {
+				const char *str;
+				RBRefString *keyword;
+				gboolean has;
+
+				str = g_value_get_string (data->val);
+				keyword = rb_refstring_find (str);
+				if (keyword != NULL) {
+					has = rhythmdb_tree_entry_keyword_has (db, entry, keyword);
+				} else {
+					has = FALSE;
+				}
+				if ((data->type == RHYTHMDB_QUERY_PROP_LIKE) ^ has)
+					return FALSE;
+				else
+					continue;
+				break;
+			} else if (rhythmdb_get_property_type (db, data->propid) == G_TYPE_STRING) {
 				gboolean islike;
 
 				if (data->propid == RHYTHMDB_PROP_SEARCH_MATCH) {
@@ -2227,6 +2305,137 @@ rhythmdb_tree_entry_count_by_type (RhythmDB *db,
 				    NULL, (RBTreePropertyItFunc) count_entries, NULL, NULL,
 				    &count);
 	return count;
+}
+
+
+/* this is called with keywords_lock held */
+static gboolean
+remove_entry_from_keyword_table (RBRefString *keyword,
+				 GHashTable *table,
+				 RhythmDBEntry *entry)
+{
+	gboolean present;
+
+	present = g_hash_table_remove (table, entry);
+	/* TODO: remove entry hash tables */
+	return present;
+}
+
+static gboolean
+rhythmdb_tree_entry_keyword_add (RhythmDB *rdb,
+				 RhythmDBEntry *entry,
+				 RBRefString *keyword)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
+	GHashTable *keyword_table;
+	gboolean present;
+
+	g_mutex_lock (db->priv->keywords_lock);
+	keyword_table = g_hash_table_lookup (db->priv->keywords, keyword);
+	if (keyword_table != NULL) {
+		/* it would be nice if _insert told us whether it was replacing a value */
+		present = (gboolean) g_hash_table_lookup (keyword_table, entry);
+		g_hash_table_insert (keyword_table, entry, GINT_TO_POINTER(1));
+	} else {
+		/* new keyword */
+		present = FALSE;
+
+		keyword_table = g_hash_table_new (g_direct_hash, g_direct_equal);
+		g_hash_table_insert (keyword_table, entry, GINT_TO_POINTER(1));
+
+		g_hash_table_insert (db->priv->keywords, rb_refstring_ref (keyword), keyword_table);
+	}
+
+	g_mutex_unlock (db->priv->keywords_lock);
+
+	return present;
+}
+
+static gboolean
+rhythmdb_tree_entry_keyword_remove (RhythmDB *rdb,
+				    RhythmDBEntry *entry,
+				    RBRefString *keyword)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
+	GHashTable *keyword_table;
+	gboolean ret;
+
+	g_mutex_lock (db->priv->keywords_lock);
+	keyword_table = g_hash_table_lookup (db->priv->keywords, keyword);
+	if (keyword_table != NULL) {
+		ret = remove_entry_from_keyword_table (keyword, keyword_table, entry);
+	} else {
+		ret = FALSE;
+	}
+	g_mutex_unlock (db->priv->keywords_lock);
+
+	return ret;
+}
+
+static gboolean
+rhythmdb_tree_entry_keyword_has (RhythmDB *rdb,
+				 RhythmDBEntry *entry,
+				 RBRefString *keyword)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
+	GHashTable *keyword_table;
+	gboolean ret;
+
+	g_mutex_lock (db->priv->keywords_lock);
+	keyword_table = g_hash_table_lookup (db->priv->keywords, keyword);
+	if (keyword_table != NULL) {
+		ret = (gboolean) g_hash_table_lookup (keyword_table, entry);
+	} else {
+		ret = FALSE;
+	}
+	g_mutex_unlock (db->priv->keywords_lock);
+
+	return ret;
+}
+
+/* this is called with keywords_lock held */
+static void
+remove_entry_from_keywords (RhythmDBTree *db,
+			    RhythmDBEntry *entry)
+{
+	g_hash_table_foreach (db->priv->keywords, (GHFunc)remove_entry_from_keyword_table, entry);
+}
+
+struct RhythmDBTreeKeywordsGetData {
+	RhythmDBTree *db;
+	RhythmDBEntry *entry;
+	GList *keywords;
+};
+
+static void
+check_entry_existance (RBRefString *keyword,
+		       GHashTable *keyword_table,
+		       struct RhythmDBTreeKeywordsGetData *data)
+{
+	gboolean present;
+
+	present = (gboolean) g_hash_table_lookup (keyword_table, data->entry);
+	if (present) {
+		data->keywords = g_list_prepend (data->keywords, rb_refstring_ref (keyword));
+	}
+}
+
+static GList*
+rhythmdb_tree_entry_keywords_get (RhythmDB *rdb,
+				  RhythmDBEntry *entry)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
+	struct RhythmDBTreeKeywordsGetData data;
+	
+	data.db = db;
+	data.entry = entry;
+	data.keywords = NULL;
+
+	g_mutex_lock (db->priv->keywords_lock);
+	g_hash_table_foreach (db->priv->keywords, (GHFunc)check_entry_existance, &data);
+	g_mutex_unlock (db->priv->keywords_lock);
+
+	return data.keywords;
 }
 
 

@@ -86,6 +86,8 @@
     '("prop-year-equals" "RHYTHMDB_QUERY_PROP_YEAR_EQUALS")
     '("prop-year-greater" "RHYTHMDB_QUERY_PROP_YEAR_GREATER")
     '("prop-year-less" "RHYTHMDB_QUERY_PROP_YEAR_LESS")
+    '("keyword-has" "RHYTHMDB_QUERY_KEYWORD_HAS")
+    '("keyword-hasnt" "RHYTHMDB_QUERY_KEYWORD_HASNT")
   )
 )
 
@@ -440,6 +442,71 @@
   (return-type "gboolean")
   (parameters
     '("RhythmDBQuery*" "query")
+    '("RhythmDBEntry*" "entry")
+  )
+)
+
+(define-method entry_count
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_count")
+  (return-type "gint64")
+)
+
+(define-method entry_foreach_by_type
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_foreach_by_type")
+  (return-type "none")
+  (parameters
+    '("RhythmDBEntryType" "entry_type")
+    '("GFunc" "func")
+    '("gpointer" "data")
+  )
+)
+
+(define-method entry_count_by_type
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_count_by_type")
+  (return-type "gint64")
+  (parameters
+    '("RhythmDBEntryType" "entry_type")
+  )
+)
+
+(define-method entry_keyword_add
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_keyword_add")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("RBRefString*" "keyword")
+  )
+)
+
+(define-method entry_keyword_remove
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_keyword_remove")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("RBRefString*" "keyword")
+  )
+)
+
+(define-method entry_keyword_has
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_keyword_has")
+  (return-type "gboolean")
+  (parameters
+    '("RhythmDBEntry*" "entry")
+    '("RBRefString*" "keyword")
+  )
+)
+
+(define-method entry_keywords_get
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_keywords_get")
+  (return-type "GList*")
+  (parameters
     '("RhythmDBEntry*" "entry")
   )
 )

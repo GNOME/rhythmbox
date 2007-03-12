@@ -183,6 +183,7 @@ typedef enum
 	/* synthetic properties */
 	RHYTHMDB_PROP_SEARCH_MATCH,
 	RHYTHMDB_PROP_YEAR,
+	RHYTHMDB_PROP_KEYWORD, /**/
 
 	/* Podcast properties */
 	RHYTHMDB_PROP_STATUS,
@@ -267,6 +268,8 @@ typedef struct
 	void	(*entry_added)		(RhythmDB *db, RhythmDBEntry *entry);
 	void	(*entry_changed)	(RhythmDB *db, RhythmDBEntry *entry, GSList *changes); /* list of RhythmDBEntryChanges */
 	void	(*entry_deleted)	(RhythmDB *db, RhythmDBEntry *entry);
+	void	(*entry_keyword_added)	(RhythmDB *db, RhythmDBEntry *entry, RBRefString *keyword);
+	void	(*entry_keyword_removed)(RhythmDB *db, RhythmDBEntry *entry, RBRefString *keyword);
 	GValue *(*entry_extra_metadata_request) (RhythmDB *db, RhythmDBEntry *entry);
 	void    (*entry_extra_metadata_gather) (RhythmDB *db, RhythmDBEntry *entry, RBStringValueMap *data);
 	void	(*entry_extra_metadata_notify) (RhythmDB *db, RhythmDBEntry *entry, const char *field, GValue *metadata);
@@ -314,6 +317,18 @@ typedef struct
 	void		(*impl_entry_type_registered) (RhythmDB *db,
 						       const char *name,
 						       RhythmDBEntryType type);
+
+	gboolean	(*impl_entry_keyword_add)	(RhythmDB *db,
+							 RhythmDBEntry *entry,
+							 RBRefString *keyword);
+	gboolean	(*impl_entry_keyword_remove)	(RhythmDB *db,
+							 RhythmDBEntry *entry,
+							 RBRefString *keyword);
+	gboolean	(*impl_entry_keyword_has)	(RhythmDB *db,
+							 RhythmDBEntry *entry,
+							 RBRefString *keyword);
+	GList*		(*impl_entry_keywords_get)	(RhythmDB *db,
+							 RhythmDBEntry *entry);
 } RhythmDBClass;
 
 GType		rhythmdb_get_type	(void);
@@ -374,6 +389,18 @@ void		rhythmdb_entry_foreach_by_type  (RhythmDB *db,
 						 gpointer data);
 gint64		rhythmdb_entry_count_by_type	(RhythmDB *db,
 						 RhythmDBEntryType entry_type);
+
+gboolean	rhythmdb_entry_keyword_add	(RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 RBRefString *keyword);
+gboolean	rhythmdb_entry_keyword_remove	(RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 RBRefString *keyword);
+gboolean	rhythmdb_entry_keyword_has	(RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 RBRefString *keyword);
+GList* /*<RBRefString>*/ rhythmdb_entry_keywords_get	(RhythmDB *db,
+							 RhythmDBEntry *entry);
 
 /**
  * Returns a freshly allocated GtkTreeModel which represents the query.

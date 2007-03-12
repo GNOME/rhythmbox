@@ -143,6 +143,8 @@ enum
 	ENTRY_ADDED,
 	ENTRY_CHANGED,
 	ENTRY_DELETED,
+	ENTRY_KEYWORD_ADDED,
+	ENTRY_KEYWORD_REMOVED,
 	ENTRY_EXTRA_METADATA_REQUEST,
 	ENTRY_EXTRA_METADATA_NOTIFY,
 	ENTRY_EXTRA_METADATA_GATHER,
@@ -217,6 +219,26 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      rb_marshal_VOID__BOXED_POINTER,
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_POINTER);
+
+	rhythmdb_signals[ENTRY_KEYWORD_ADDED] =
+		g_signal_new ("entry_keyword_added",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_added),
+			      NULL, NULL,
+			      rb_marshal_VOID__BOXED_BOXED,
+			      G_TYPE_NONE,
+			      2, RHYTHMDB_TYPE_ENTRY, RB_TYPE_REFSTRING);
+
+	rhythmdb_signals[ENTRY_KEYWORD_REMOVED] =
+		g_signal_new ("entry_keyword_removed",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
+			      NULL, NULL,
+			      rb_marshal_VOID__BOXED_BOXED,
+			      G_TYPE_NONE,
+			      2, RHYTHMDB_TYPE_ENTRY, RB_TYPE_REFSTRING);
 
 	rhythmdb_signals[ENTRY_EXTRA_METADATA_REQUEST] =
 		g_signal_new ("entry_extra_metadata_request",
@@ -783,17 +805,18 @@ rhythmdb_set_property (GObject *object,
 		       const GValue *value,
 		       GParamSpec *pspec)
 {
-	RhythmDB *source = RHYTHMDB (object);
+	RhythmDB *db = RHYTHMDB (object);
 
 	switch (prop_id) {
 	case PROP_NAME:
-		source->priv->name = g_strdup (g_value_get_string (value));
+		g_free (db->priv->name);
+		db->priv->name = g_value_dup_string (value);
 		break;
 	case PROP_DRY_RUN:
-		source->priv->dry_run = g_value_get_boolean (value);
+		db->priv->dry_run = g_value_get_boolean (value);
 		break;
 	case PROP_NO_UPDATE:
-		source->priv->no_update = g_value_get_boolean (value);
+		db->priv->no_update = g_value_get_boolean (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -3615,6 +3638,8 @@ rhythmdb_prop_type_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_COPYRIGHT, "Podcast copyright (gchararray) [copyright]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_IMAGE, "Podcast image(gchararray) [image]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_POST_TIME, "Podcast time of post (gulong) [post-time]"),
+
+			ENUM_ENTRY (RHYTHMDB_PROP_KEYWORD, "Keywords applied to track (gchararray) [keyword]"),
 			{ 0, 0, 0 }
 		};
 		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES);
@@ -4567,6 +4592,94 @@ rhythmdb_entry_get_playback_uri (RhythmDBEntry *entry)
 	else
 		return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
 }
+
+
+/**
+ * rhythmdb_entry_keyword_add:
+ * @entry: a #RhythmDBEntry.
+ * @keyword: the keyword to add.
+ *
+ * Adds a keyword to an entry.
+ *
+ * Returns: whether the keyword was already on the entry
+ **/
+gboolean
+rhythmdb_entry_keyword_add	(RhythmDB *db,
+				 RhythmDBEntry *entry,
+				 RBRefString *keyword)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	gboolean ret;
+
+	ret = klass->impl_entry_keyword_add (db, entry, keyword);
+	if (!ret) {
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_KEYWORD_ADDED], 0, entry, keyword);
+	}
+	return ret;
+}
+
+/**
+ * rhythmdb_entry_keyword_remove:
+ * @entry: a #RhythmDBEntry.
+ * @keyword: the keyword to remove.
+ *
+ * Removed a keyword from an entry.
+ *
+ * Returns: whether the keyword had previously been added to the entry.
+ **/
+gboolean
+rhythmdb_entry_keyword_remove	(RhythmDB *db,
+				 RhythmDBEntry *entry,
+				 RBRefString *keyword)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	gboolean ret;
+
+	ret = klass->impl_entry_keyword_remove (db, entry, keyword);
+	if (ret) {
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_KEYWORD_REMOVED], 0, entry, keyword);
+	}
+	return ret;
+}
+
+/**
+ * rhythmdb_entry_keyword_has:
+ * @entry: a #RhythmDBEntry.
+ * @keyword: the keyword to check for.
+ *
+ * Checks whether a keyword is has been added to an entry.
+ *
+ * Returns: whether the keyword had been added to the entry.
+ **/
+gboolean
+rhythmdb_entry_keyword_has	(RhythmDB *db,
+				 RhythmDBEntry *entry,
+				 RBRefString *keyword)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
+	return klass->impl_entry_keyword_has (db, entry, keyword);
+}
+
+/**
+ * rhythmdb_entry_keywords_get:
+ * @entry: a #RhythmDBEntry.
+ *
+ * Gets the list ofkeywords that have been added to an entry.
+ *
+ * Returns: the list of keywords that have been added to the entry.
+ *          The caller is responsible for unref'ing the RBRefStrings and
+ *          freeing the list with g_list_free.
+ **/
+GList* /*<RBRefString>*/
+rhythmdb_entry_keywords_get	(RhythmDB *db,
+				 RhythmDBEntry *entry)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
+	return klass->impl_entry_keywords_get (db, entry);
+}
+
 
 GType
 rhythmdb_get_property_type (RhythmDB *db,

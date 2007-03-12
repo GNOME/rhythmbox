@@ -24,6 +24,8 @@
 #ifndef __RB_REFSTRING_H
 #define __RB_REFSTRING_H
 
+#define RB_TYPE_REFSTRING      (rb_refstring_get_type ())
+
 typedef struct RBRefString RBRefString;
 
 void		rb_refstring_system_init (void);
@@ -41,5 +43,7 @@ const char *	rb_refstring_get_sort_key (RBRefString *val);
 
 guint rb_refstring_hash (gconstpointer p);
 gboolean rb_refstring_equal (gconstpointer ap, gconstpointer bp);
+
+GType rb_refstring_get_type (void);
 
 #endif

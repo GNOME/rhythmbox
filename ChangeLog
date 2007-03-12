@@ -1,3 +1,36 @@
+2007-03-13  James Livingston  <doclivingston@gmail.com>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_get_type):
+	* rhythmdb/rb-refstring.h: make RBRefstring a boxed gtype.
+
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init),
+	(rhythmdb_set_property), (rhythmdb_prop_type_get_type),
+	(rhythmdb_entry_keyword_add), (rhythmdb_entry_keyword_remove),
+	(rhythmdb_entry_keyword_has), (rhythmdb_entry_keywords_get): add new
+	API for Keywords.
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_class_init),
+	(rhythmdb_tree_init), (rhythmdb_tree_finalize),
+	(rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element),
+	(rhythmdb_tree_parser_characters), (save_entry),
+	(rhythmdb_tree_entry_delete), (remove_one_song),
+	(evaluate_conjunctive_subquery), (remove_entry_from_keyword_table),
+	(rhythmdb_tree_entry_keyword_add),
+	(rhythmdb_tree_entry_keyword_remove),
+	(rhythmdb_tree_entry_keyword_has), (remove_entry_from_keywords),
+	(check_entry_existance), (rhythmdb_tree_entry_keywords_get): make
+	RhythmDBTree implement the above API.
+
+	* bindings/python/rb.defs:
+	* bindings/python/rhythmdb.defs: bind it to python.
+
+	* tests/test-rhythmdb.c: (count_and_free_refstring_list),
+	(START_TEST), (rhythmdb_suite): add some unit tests.
+
+	From #324540
+
 2007-03-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* lib/rb-stock-icons.c: (rb_stock_icons_init):

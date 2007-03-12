@@ -206,6 +206,100 @@ START_TEST (test_rhythmdb_mirroring)
 }
 END_TEST
 
+static int
+count_and_free_refstring_list (GList *list)
+{
+	int count;
+
+	count = g_list_length (list);
+
+	g_list_foreach (list, (GFunc)rb_refstring_unref, NULL);
+	g_list_free (list);
+
+	return count;
+}
+
+START_TEST (test_rhythmdb_keywords)
+{
+	RhythmDBEntry *entry;
+	GList *list;
+	gboolean ret;
+	RBRefString *keyword_foo, *keyword_bar, *keyword_baz;
+
+	keyword_foo = rb_refstring_new ("foo");
+	keyword_bar = rb_refstring_new ("bar");
+	keyword_baz = rb_refstring_new ("baz");
+
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///foo.mp3");
+	fail_unless (entry != NULL, "failed to create entry");
+
+	/* new entries should have 0 keywords */
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 0, "new entry had keywords");
+
+	/* adding one keyword */
+	ret = rhythmdb_entry_keyword_add (db, entry, keyword_foo);
+	fail_unless (ret == FALSE, "entry incorrectly reported as having keyword already");
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after one was added");
+
+	/* has added keyword */
+	ret = rhythmdb_entry_keyword_has (db, entry, keyword_foo);
+	fail_unless (ret == TRUE, "reported not having just-added keyword");
+
+	/* add keyword again */
+	ret = rhythmdb_entry_keyword_add (db, entry, keyword_foo);
+	fail_unless (ret == TRUE, "entry incorrectly reported as not keyword already");
+
+	/* check keyword count*/
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after one was re-added");
+
+	/* ensure it has only that keyword */
+	ret = rhythmdb_entry_keyword_has (db, entry, keyword_bar);
+	fail_unless (ret == FALSE, "reported having wrong keyword");
+
+	/* remove the keyword */
+	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_foo);
+	fail_unless (ret == TRUE, "reported having not previously having keyword");
+
+	/* has removed keyword */
+	ret = rhythmdb_entry_keyword_has (db, entry, keyword_foo);
+	fail_unless (ret == FALSE, "reported having just-removed keyword");
+
+	/* check count is back to zero */
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 0, "entry has keywords after they were removed");
+
+	/* try removing keyword again */
+	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_foo);
+	fail_unless (ret == FALSE, "reported previously having already removed keyword");
+
+	/* add and remove several keywords */
+	ret = rhythmdb_entry_keyword_add (db, entry, keyword_foo);
+	fail_unless (ret == FALSE, "reported previously having already removed keyword");
+	ret = rhythmdb_entry_keyword_add (db, entry, keyword_bar);
+	fail_unless (ret == FALSE, "reported previously having already never-added keyword");
+	ret = rhythmdb_entry_keyword_add (db, entry, keyword_baz);
+	fail_unless (ret == FALSE, "reported previously having already never-added keyword");
+
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 3, "entry wrong number of keywords after several were added");
+	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_foo);
+	fail_unless (ret == TRUE, "reported previously not having added keyword");
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 2, "entry wrong number of keywords after several were added");
+	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_bar);
+	fail_unless (ret == TRUE, "reported previously not having added keyword");
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after several were added");
+	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_baz);
+	fail_unless (ret == TRUE, "reported previously not having added keyword");
+	list = rhythmdb_entry_keywords_get (db, entry);
+	fail_unless (count_and_free_refstring_list (list) == 0, "entry wrong number of keywords after several were added");
+}
+END_TEST
+
 START_TEST (test_rhythmdb_deserialisation1)
 {
 	RhythmDBQueryModel *model;
@@ -301,8 +395,10 @@ rhythmdb_suite (void)
 	tcase_add_test (tc_chain, test_rhythmdb_indexing);
 	tcase_add_test (tc_chain, test_rhythmdb_multiple);
 	tcase_add_test (tc_chain, test_rhythmdb_mirroring);
+	tcase_add_test (tc_chain, test_rhythmdb_keywords);
 	/*tcase_add_test (tc_chain, test_rhythmdb_signals);*/
 	/*tcase_add_test (tc_chain, test_rhythmdb_query);*/
+	/* FIXME: add some keywords to the deserialisation tests */
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation1);
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation2);
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation3);
