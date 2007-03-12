@@ -1,3 +1,9 @@
+2007-03-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_get_string):
+	Return NULL for RHYTHMDB_PROP_KEYWORD for now so
+	rhythmdb_entry_gather_metadata doesn't abort.
+
 2007-03-13  James Livingston  <doclivingston@gmail.com>
 
 	* rhythmdb/rb-refstring.c: (rb_refstring_get_type):

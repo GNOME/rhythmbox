@@ -4364,8 +4364,13 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get (entry->first_seen_str);
 	case RHYTHMDB_PROP_LAST_SEEN_STR:
 		return rb_refstring_get (entry->last_seen_str);
+
+	/* synthetic properties */
 	case RHYTHMDB_PROP_SEARCH_MATCH:
-		return NULL;	/* synthetic property */
+		return NULL;
+	case RHYTHMDB_PROP_KEYWORD:
+		return NULL;
+
 	/* Podcast properties */
 	case RHYTHMDB_PROP_DESCRIPTION:
 		if (podcast)
