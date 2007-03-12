@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-07 03:33+0000\n"
-"PO-Revision-Date: 2007-03-12 12:21+0100\n"
+"POT-Creation-Date: 2007-03-12 12:38+0100\n"
+"PO-Revision-Date: 2007-03-12 12:40+0100\n"
 "Last-Translator: Gabor Kelemen <kelemeng@gnome.hu>\n"
 "Language-Team: Hungarian <gnome@gnome.hu>\n"
 "MIME-Version: 1.0\n"
@@ -448,7 +448,7 @@ msgid "Recently Played"
 msgstr "Legutóbb lejátszva"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:140
+#: ../plugins/power-manager/rb-power-manager-plugin.c:181
 #: ../shell/rb-shell.c:1041 ../shell/rb-shell.c:2131
 #: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
@@ -534,9 +534,9 @@ msgstr "A Rhythmbox nem támogatja az automatikus proxybeállítást"
 #: ../podcast/rb-podcast-manager.c:1557
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
-#: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1143
-#: ../rhythmdb/rhythmdb-tree.c:1147 ../rhythmdb/rhythmdb-tree.c:1151
-#: ../rhythmdb/rhythmdb-tree.c:1155 ../rhythmdb/rhythmdb.c:1370
+#: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1147
+#: ../rhythmdb/rhythmdb-tree.c:1151 ../rhythmdb/rhythmdb-tree.c:1155
+#: ../rhythmdb/rhythmdb-tree.c:1159 ../rhythmdb/rhythmdb.c:1370
 #: ../shell/rb-shell.c:3041 ../sources/rb-podcast-source.c:1642
 #: ../widgets/rb-entry-view.c:812 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:1121 ../widgets/rb-entry-view.c:1133
@@ -1658,8 +1658,8 @@ msgid ""
 "     * A legal framework protecting the artists (thanks to the Creative "
 "Commons licenses)."
 msgstr ""
-"     * Az előadókat védő jogi keretrendszer (a Creative "
-"Commons licenceknek köszönhetően)."
+"     * Az előadókat védő jogi keretrendszer (a Creative Commons licenceknek "
+"köszönhetően)."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:4
 msgid ""
@@ -1667,7 +1667,8 @@ msgid ""
 "listeners discover new artists based on their tastes\n"
 "       and on other criteria such as their location."
 msgstr ""
-"     * Adaptív, iRATE-alapú zeneajánlási rendszer, amely segítségével a hallgatók az ízlésüknek és más feltételeknek, például lakóhelyüknek\n"
+"     * Adaptív, iRATE-alapú zeneajánlási rendszer, amely segítségével a "
+"hallgatók az ízlésüknek és más feltételeknek, például lakóhelyüknek\n"
 "     megfelelő előadókat fedezhetnek fel."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:6
@@ -1695,9 +1696,12 @@ msgid ""
 "It's a \"Some rights reserved\" agreement, perfectly suited for the new "
 "century."
 msgstr ""
-"A Jamendo segítségével az előadók  Creative Commons licenc alatt terjesztik zenéjüket.\n"
-"Dióhéjban: lehetővé teszik zenéjük szabad letöltését, újrakeverését és megosztását.\n"
-"Ez egy \"Néhány jog fenntartva\" megegyezés, amely teljesen megfelel századunk követelményeinek."
+"A Jamendo segítségével az előadók  Creative Commons licenc alatt terjesztik "
+"zenéjüket.\n"
+"Dióhéjban: lehetővé teszik zenéjük szabad letöltését, újrakeverését és "
+"megosztását.\n"
+"Ez egy \"Néhány jog fenntartva\" megegyezés, amely teljesen megfelel "
+"századunk követelményeinek."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:13
 msgid ""
@@ -1705,7 +1709,10 @@ msgid ""
 "distribution like\n"
 "Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
 "albums at near-zero cost."
-msgstr "Ezek az új szabályok lehetővé teszik, hogy a Jamendo az albumokat legálisan és közel ingyen, a digitális átvitel új formáinak, például a BitTorrent vagy eMule hálózatok segítségével terjessze."
+msgstr ""
+"Ezek az új szabályok lehetővé teszik, hogy a Jamendo az albumokat legálisan "
+"és közel ingyen, a digitális átvitel új formáinak, például a BitTorrent vagy "
+"eMule hálózatok segítségével terjessze."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:15
 msgid "You can find more information at http://www.jamendo.com/"
@@ -1715,7 +1722,9 @@ msgstr "További információkat a http://www.jamendo.com/ oldalon talál"
 msgid ""
 "jamendo is a new model for artists to promote, publish, and be paid for "
 "their music."
-msgstr "A Jamendo új modellt biztosít az előadók számára zenéjük reklámozásához, közzétételéhez és az abból történő jövedelemszerzésre."
+msgstr ""
+"A Jamendo új modellt biztosít az előadók számára zenéjük reklámozásához, "
+"közzétételéhez és az abból történő jövedelemszerzésre."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:17
 msgid "jamendo is the only platform that joins together :"
@@ -1728,8 +1737,10 @@ msgid ""
 "Albums are democratically rated based on the visitors’ reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
-"A jamendo felhasználói felfedezhetnek és megoszthatnak albumokat, de írhatnak kritikákat és fórumtémákat is nyithatnak.\n"
-"Az albumok értékelése demokratikus, a látogatók visszajelzései alapján történik.\n"
+"A jamendo felhasználói felfedezhetnek és megoszthatnak albumokat, de "
+"írhatnak kritikákat és fórumtémákat is nyithatnak.\n"
+"Az albumok értékelése demokratikus, a látogatók visszajelzései alapján "
+"történik.\n"
 "Ha a felhasználóknak tetszik egy előadó, támogathatják azt."
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:1
@@ -1808,7 +1819,9 @@ msgstr "Az állomástulajdonság nem módosítható"
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr "Az állomás URI címe nem módosítható a következőre: %s; mivel ez az állomás már létezik"
+msgstr ""
+"Az állomás URI címe nem módosítható a következőre: %s; mivel ez az állomás "
+"már létezik"
 
 #: ../plugins/iradio/station-properties.glade.h:5
 msgid "L_ocation:"
@@ -2156,28 +2169,28 @@ msgstr "Magnatune bolt"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:108
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:109
 msgid "Loading Magnatune catalogue"
 msgstr "A Magnatune katalógus betöltése"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:111
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:112
 msgid "Downloading Magnatune Album(s)"
 msgstr "Magnatune albumok letöltése"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:197
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:198
 msgid "Couldn't purchase album"
 msgstr "Az album nem vásárolható meg"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:198
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
 msgid "You must have a library location set to purchase an album."
 msgstr "Album megvásárlásához be kell állítania a gyűjtemény helyét."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:216
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:217
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Meg kívánja vásárolni %(artist)s előadó <i>%(album)s</i> című albumát?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:416
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:417
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2237,7 +2250,7 @@ msgstr "Az Energiakezelő megakadályozása a gép felfüggesztésében lejátsz
 msgid "Power Manager"
 msgstr "Energiakezelő"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:141
+#: ../plugins/power-manager/rb-power-manager-plugin.c:182
 msgid "Playing"
 msgstr "Lejátszás"
 
@@ -2301,36 +2314,52 @@ msgstr "Mintabővítmény"
 msgid "A sample plugin in C with no features"
 msgstr "Példa C bővítmény hasznos szolgáltatások nélkül"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:226
+#: ../plugins/visualizer/rb-visualizer-plugin.c:235
 #: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
 msgid "Visualization"
 msgstr "Vizualizáció"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:227
+#: ../plugins/visualizer/rb-visualizer-plugin.c:236
 msgid "Start or stop visualization"
 msgstr "Vizualizáció indítása vagy leállítása"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:233
+#: ../plugins/visualizer/rb-visualizer-plugin.c:242
 msgid "Small"
 msgstr "Kicsi"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:234
+#: ../plugins/visualizer/rb-visualizer-plugin.c:243
 msgid "Normal"
 msgstr "Normál"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:235
+#: ../plugins/visualizer/rb-visualizer-plugin.c:244
 msgid "Large"
 msgstr "Nagy"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:236
+#: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Extra Large"
 msgstr "Extra nagy"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:937
+#: ../plugins/visualizer/rb-visualizer-plugin.c:256
+msgid "Embedded"
+msgstr "Beágyazott"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:257
+msgid "Fullscreen"
+msgstr "Teljes képernyő"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:258
+msgid "Desktop"
+msgstr "Munkaasztal"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:259
+msgid "Window"
+msgstr "Ablak"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1103
 msgid "Enable visual effects?"
 msgstr "Engedélyezi a vizuális effektusokat?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:939
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1105
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -2338,27 +2367,27 @@ msgstr ""
 "Úgy tűnik, távolról futtatja a Rhythmboxot.\n"
 "Biztos, hogy engedélyezi a vizuális effektusokat?"
 
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1395
+msgid "Music Player Visualization"
+msgstr "Zenelejátszó-vizualizáció"
+
 #: ../plugins/visualizer/visualizer-controls.glade.h:1
-msgid "Desktop"
-msgstr "Munkaasztal"
+msgid "Disable"
+msgstr "Tiltás"
 
 #: ../plugins/visualizer/visualizer-controls.glade.h:2
-msgid "Fullscreen"
-msgstr "Teljes képernyő"
+msgid "Mode:"
+msgstr "Mód:"
 
 #: ../plugins/visualizer/visualizer-controls.glade.h:3
-msgid "Leave Fullscreen"
-msgstr "Teljes képernyő elhagyása"
-
-#: ../plugins/visualizer/visualizer-controls.glade.h:4
 msgid "Quality:"
 msgstr "Minőség:"
 
-#: ../plugins/visualizer/visualizer-controls.glade.h:5
+#: ../plugins/visualizer/visualizer-controls.glade.h:4
 msgid "Screen:"
 msgstr "Képernyő:"
 
-#: ../plugins/visualizer/visualizer-controls.glade.h:6
+#: ../plugins/visualizer/visualizer-controls.glade.h:5
 msgid "Visualization:"
 msgstr "Vizualizáció:"
 
