@@ -253,7 +253,7 @@ class MagnatuneSource(rb.BrowserSource):
 				else:
 					self.__plugin.clear_cc_details()
 
-				self.__purchase_album (sku, amount, format, ccnumber, ccyear, ccmonth, name, email)
+				self.__buy_album (sku, amount, format, ccnumber, ccyear, ccmonth, name, email)
 
 			window.destroy()
 
@@ -407,21 +407,8 @@ class MagnatuneSource(rb.BrowserSource):
 	#
 	# internal purchasing code
 	#
-	def __purchase_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email):
+	def __buy_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email): # http://magnatune.com/info/api#purchase
 		print "purchasing tracks:", sku, pay, format, name, email
-
-		try:
-			self.__buy_album(sku, pay, format, name, email, ccnumber, ccyear, ccmonth)
-		except MagnatunePurchaseError, e:
-			error_dlg = gtk.Dialog(title="Error", flags=gtk.DIALOG_DESTROY_WITH_PARENT, buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK))
-			label = gtk.Label(_("An error occurred while trying to purchase the album.\nThe Magnatune server returned:\n%s") % str(e))
-			error_dlg.vbox.pack_start(label)
-			label.set_selectable(True)
-			label.show()
-			error_dlg.connect("response", lambda w, r: w.destroy())
-			error_dlg.show()
-
-	def __buy_album(self, sku, pay, format, name, email, ccnumber, ccyear, ccmonth): # http://magnatune.com/info/api#purchase
 		url = "https://magnatune.com/buy/buy_dl_cc_xml?"
 		url = url + urllib.urlencode({
 						'id':	magnatune_partner_id,
@@ -485,9 +472,14 @@ class MagnatuneSource(rb.BrowserSource):
 				print data
 				auth_parser.feed(data)
 				handle.read(64 * 1024, self.__auth_read_cb, parser)
+			except MagnatunePurchaseError, e:
+				self.__wait_dlg.destroy()
+				rb.error_dialog(title = _("Purchase Error"),
+						message = _("An error occurred while trying to purchase the album.\nThe Magnatune server returned:\n%s") % str(e))
 			except Exception, e:
-				print e
-				raise e
+				self.__wait_dlg.destroy()
+				rb.error_dialog(title = _("Error"),
+						message = _("An error occurred while trying to purchase the album.\nThe error text is:\n%s") % str(e))
 
 	def __download_album(self, audio_dl_uri):
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
