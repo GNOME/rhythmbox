@@ -60,6 +60,7 @@ struct _RBPluginManagerPrivate
 	GtkWidget	*copyright_label;
 	GtkWidget	*authors_label;
 	GtkWidget	*description_label;
+	GtkWidget	*header_hbox;
 	GtkWidget	*plugin_icon;
 	GtkWidget	*site_text;
 	GtkWidget	*copyright_text;
@@ -158,6 +159,7 @@ cursor_changed_cb (GtkTreeSelection *selection,
 	GtkTreeView *view;
 	RBPluginInfo *info;
 	char *string;
+	GdkPixbuf *icon;
 
 	view = gtk_tree_selection_get_tree_view (selection);
 	info = plugin_manager_get_selected_plugin (pm);
@@ -178,8 +180,27 @@ cursor_changed_cb (GtkTreeSelection *selection,
 	gtk_label_set_text (GTK_LABEL (pm->priv->authors_text), string);
 	g_free (string);
 
-	gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon),
-				   rb_plugins_engine_get_plugin_icon (info));
+	icon = rb_plugins_engine_get_plugin_icon (info);
+	if (icon != NULL) {
+		/* rescale icon to fit header if needed */
+		GdkPixbuf *icon_scaled;
+		gint width, height, header_height;
+
+		width = gdk_pixbuf_get_width (icon);
+		height = gdk_pixbuf_get_height (icon);
+		header_height = pm->priv->header_hbox->allocation.height;
+		if (height > header_height) {
+			icon_scaled = gdk_pixbuf_scale_simple (icon, 
+							       (gfloat)width/height*header_height, header_height,
+							       GDK_INTERP_BILINEAR);
+			gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon), icon_scaled);
+			g_object_unref (G_OBJECT (icon_scaled));
+		} else {
+			gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon), icon);
+		}
+	} else {
+		gtk_image_set_from_pixbuf (GTK_IMAGE (pm->priv->plugin_icon), NULL);
+	}
 
 	gtk_widget_set_sensitive (GTK_WIDGET (pm->priv->configure_button),
 				  (info != NULL) &&
@@ -456,7 +477,7 @@ static void
 rb_plugin_manager_init (RBPluginManager *pm)
 {
 	GladeXML *xml;
-	GtkWidget *plugins_tree_vbox;
+	GtkWidget *plugins_window;
 
 	pm->priv = RB_PLUGIN_MANAGER_GET_PRIVATE (pm);
 
@@ -468,14 +489,16 @@ rb_plugin_manager_init (RBPluginManager *pm)
 	gtk_box_set_spacing (GTK_BOX (pm), 6);
 
 	pm->priv->tree = gtk_tree_view_new ();
-	plugins_tree_vbox = glade_xml_get_widget (xml, "plugins_tree_vbox");
-	gtk_container_add (GTK_CONTAINER (plugins_tree_vbox), pm->priv->tree);
+        plugins_window = glade_xml_get_widget (xml, "plugins_list_window");
+	gtk_container_add (GTK_CONTAINER (plugins_window), pm->priv->tree);
 
 	pm->priv->configure_button = glade_xml_get_widget (xml, "configure_button");
 	g_signal_connect (pm->priv->configure_button,
 			  "clicked",
 			  G_CALLBACK (configure_button_cb),
 			  pm);
+	
+        pm->priv->header_hbox = glade_xml_get_widget (xml, "header_hbox");
 
 	pm->priv->plugin_title = glade_xml_get_widget (xml, "plugin_title");
 

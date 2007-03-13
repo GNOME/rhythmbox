@@ -1,5 +1,14 @@
 2007-03-13  James Livingston  <doclivingston@gmail.com>
 
+	patches by: Christophe Dehais  <christophe.dehais@gmail.com>
+
+	* data/glade/plugins.glade:
+	* plugins/rb-plugin-manager.c: (cursor_changed_cb),
+	(rb_plugin_manager_init): Don't scroll the header with the plugin
+	list, and keep the plugin icons a sane size. Fixes #415449 and #415507
+
+2007-03-13  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Christiphe Fergeau  <teuf@gnome.org>
 
 	* corelib/Makefile.am: clean up the Makefile.am, fixes #417786

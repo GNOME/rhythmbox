@@ -33,31 +33,16 @@
 	  <property name="spacing">12</property>
 
 	  <child>
-	    <widget class="GtkScrolledWindow" id="scrolledwindow1">
+	    <widget class="GtkScrolledWindow" id="plugins_list_window">
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
 	      <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-	      <property name="shadow_type">GTK_SHADOW_NONE</property>
+	      <property name="shadow_type">GTK_SHADOW_IN</property>
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkViewport" id="viewport1">
-		  <property name="visible">True</property>
-		  <property name="shadow_type">GTK_SHADOW_IN</property>
-
-		  <child>
-		    <widget class="GtkVBox" id="plugins_tree_vbox">
-		      <property name="visible">True</property>
-		      <property name="homogeneous">False</property>
-		      <property name="spacing">0</property>
-
-		      <child>
-			<placeholder/>
-		      </child>
-		    </widget>
-		  </child>
-		</widget>
+		<placeholder/>
 	      </child>
 	    </widget>
 	    <packing>
@@ -74,8 +59,8 @@
 	      <property name="spacing">6</property>
 
 	      <child>
-		<widget class="GtkHBox" id="hbox4">
-		  <property name="height_request">50</property>
+		<widget class="GtkHBox" id="header_hbox">
+		  <property name="height_request">64</property>
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">6</property>
