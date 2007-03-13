@@ -2335,7 +2335,7 @@ rhythmdb_tree_entry_keyword_add (RhythmDB *rdb,
 	keyword_table = g_hash_table_lookup (db->priv->keywords, keyword);
 	if (keyword_table != NULL) {
 		/* it would be nice if _insert told us whether it was replacing a value */
-		present = (gboolean) g_hash_table_lookup (keyword_table, entry);
+		present = (g_hash_table_lookup (keyword_table, entry) != NULL);
 		g_hash_table_insert (keyword_table, entry, GINT_TO_POINTER(1));
 	} else {
 		/* new keyword */
@@ -2385,7 +2385,7 @@ rhythmdb_tree_entry_keyword_has (RhythmDB *rdb,
 	g_mutex_lock (db->priv->keywords_lock);
 	keyword_table = g_hash_table_lookup (db->priv->keywords, keyword);
 	if (keyword_table != NULL) {
-		ret = (gboolean) g_hash_table_lookup (keyword_table, entry);
+		ret = (g_hash_table_lookup (keyword_table, entry) != NULL);
 	} else {
 		ret = FALSE;
 	}
@@ -2415,7 +2415,7 @@ check_entry_existance (RBRefString *keyword,
 {
 	gboolean present;
 
-	present = (gboolean) g_hash_table_lookup (keyword_table, data->entry);
+	present = (g_hash_table_lookup (keyword_table, data->entry) != NULL);
 	if (present) {
 		data->keywords = g_list_prepend (data->keywords, rb_refstring_ref (keyword));
 	}
@@ -2427,7 +2427,7 @@ rhythmdb_tree_entry_keywords_get (RhythmDB *rdb,
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
 	struct RhythmDBTreeKeywordsGetData data;
-	
+
 	data.db = db;
 	data.entry = entry;
 	data.keywords = NULL;

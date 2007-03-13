@@ -1,5 +1,13 @@
 2007-03-13  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Christiphe Fergeau  <teuf@gnome.org>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_entry_keyword_add),
+	(rhythmdb_tree_entry_keyword_has), (check_entry_existance): 64 bit
+	build fixes from #417785
+
+2007-03-13  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb-tree.c: (save_entry): write out the </entry> tag
 	when it's supposed to be. Oops.
 
