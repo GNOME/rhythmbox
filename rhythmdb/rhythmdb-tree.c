@@ -1008,7 +1008,6 @@ save_entry (RhythmDBTree *db,
 			}
 
 			g_list_free (keywords);
-			RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
 			break;
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
@@ -1028,6 +1027,8 @@ save_entry (RhythmDBTree *db,
 			break;
 		}
 	}
+
+	RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
 }
 
 static void
