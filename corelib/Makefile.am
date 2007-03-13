@@ -3,16 +3,7 @@
 
 lib_LTLIBRARIES = librhythmbox-core.la
 
-librhythmbox_core_la_SOURCES =
-	rb-plugin.h					\
-	rb-plugin.c					\
-	rb-module.c					\
-	rb-module.h					\
-	rb-plugin-manager.h				\
-	rb-plugin-manager.c				\
-	rb-plugins-engine.h				\
-	rb-plugins-engine.c
-
+librhythmbox_core_la_SOURCES = 
 
 librhythmbox_core_la_LIBADD = 				\
 	$(top_builddir)/sources/libsources.la	        \
