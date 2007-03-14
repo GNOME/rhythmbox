@@ -563,12 +563,23 @@ metadata_cb (SjMetadata *metadata,
 
 		rb_debug ("storing metadata for %s - %s - %s", track->artist, album->title, track->title);
 
+		rb_debug ("genre: %s", album->genre);
+		rb_debug ("musicbrainz_trackid: %s", track->track_id);
+		rb_debug ("musicbrainz_artistid: %s", track->artist_id);
+		rb_debug ("musicbrainz_albumid: %s", album->album_id);
+		rb_debug ("musicbrainz_albumartistid: %s", album->artist_id);
+		rb_debug ("musicbrainz_sortname: %s", album->artist_sortname);
+
 		/* record track info in entry*/
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_TITLE, track->title);
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ARTIST, track->artist);
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_ALBUM, album->title);
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_GENRE, album->genre);
 		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, track->track_id);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, track->artist_id);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, album->album_id);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, album->artist_id);
+		entry_set_string_prop (db, entry, TRUE, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME, album->artist_sortname);
 
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, track->duration);

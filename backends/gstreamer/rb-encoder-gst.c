@@ -484,6 +484,26 @@ add_tags_from_entry (RBEncoderGst *encoder,
 				  GST_TAG_MUSICBRAINZ_TRACKID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID),
 				  NULL);
 	}
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID)) {
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_MUSICBRAINZ_ARTISTID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID),
+				  NULL);
+	}
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID)) {
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_MUSICBRAINZ_ALBUMID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID),
+				  NULL);
+	}
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID)) {
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_MUSICBRAINZ_ALBUMARTISTID, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID),
+				  NULL);
+	}
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME)) {
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_MUSICBRAINZ_SORTNAME, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME),
+				  NULL);
+	}
 #endif
 
 #ifdef HAVE_GSTREAMER_0_10

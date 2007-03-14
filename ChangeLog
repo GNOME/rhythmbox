@@ -1,3 +1,31 @@
+2007-03-14  Alex Lancaster  <alexl@users.sourceforge.net>
+
+	* rhythmdb/rhythmdb.h: 
+	* rhythmdb/rhythmdb.c (metadata_field_from_prop)
+	(rhythmdb_entry_allocate, rhythmdb_entry_finalize)
+	(set_props_from_metadata, rhythmdb_entry_set_internal)
+	(rhythmdb_prop_type_get_type, rhythmdb_entry_get_string)
+	(rhythmdb_entry_get_refstring): 
+	* rhythmdb/rhythmdb-private.h: 
+	* rhythmdb/rhythmdb-tree.c (save_entry): 
+	Support MusicBrainz tags in the backend GST_TAG_MUSICBRAINZ_ARTISTID,
+	GST_TAG_MUSICBRAINZ_ALBUMID, GST_TAG_MUSICBRAINZ_ALBUMARTISTID,
+	GST_TAG_MUSICBRAINZ_SORTNAME
+
+	* plugins/audiocd/rb-audiocd-source.c (metadata_cb): 
+	* backends/gstreamer/rb-encoder-gst.c (add_tags_from_entry): 	
+	Add MusicBrainz ids for audio CDs, if they exist when querying
+	MusicBrainz and add them to the encoding pipeline.
+	
+	* metadata/rb-metadata.h: 
+	* metadata/rb-metadata-gst.c (rb_add_id3_tagger)
+	(rb_metadata_gst_tag_to_field, rb_metadata_gst_field_to_gst_tag): 
+	* metadata/rb-metadata-common.c: 
+	Read and write the new MusicBrainz tags to files via the metadata
+	backend.
+
+	Fixes #410681.
+
 2007-03-13  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Adam Zimmerman  <adam_zimmerman@sfu.ca>

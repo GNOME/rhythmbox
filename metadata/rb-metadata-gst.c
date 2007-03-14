@@ -216,6 +216,7 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 
 	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
 
+	g_printerr ("priv->tags = %s\n", gst_structure_to_string ((GstStructure *) md->priv->tags));
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
 
 	return mux;
@@ -515,6 +516,15 @@ rb_metadata_gst_tag_to_field (const char *tag)
 #ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
 		return RB_METADATA_FIELD_MUSICBRAINZ_TRACKID;
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_ARTISTID))
+		return RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID;
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_ALBUMID))
+		return RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID;
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_ALBUMARTISTID))
+		return RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID;
+	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_SORTNAME))
+		return RB_METADATA_FIELD_MUSICBRAINZ_ARTISTSORTNAME;
+
 #endif
 	else
 		return -1;
@@ -578,6 +588,14 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 #ifdef GST_TAG_MUSICBRAINZ_TRACKID
 	case RB_METADATA_FIELD_MUSICBRAINZ_TRACKID:
 		return GST_TAG_MUSICBRAINZ_TRACKID;
+	case RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID:
+		return GST_TAG_MUSICBRAINZ_ARTISTID;
+	case RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID:
+		return GST_TAG_MUSICBRAINZ_ALBUMID;
+	case RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID:
+		return GST_TAG_MUSICBRAINZ_ALBUMARTISTID;
+	case RB_METADATA_FIELD_MUSICBRAINZ_ARTISTSORTNAME:
+		return GST_TAG_MUSICBRAINZ_SORTNAME;
 #endif
 	default:
 		return NULL;

@@ -61,7 +61,12 @@ static struct RBMetaDataFieldInfo field_info[RB_METADATA_FIELD_LAST] = {
 	/* RB_METADATA_FIELD_ALBUM_GAIN */ 		{ G_TYPE_DOUBLE, "replaygain-album-gain" },
 	/* RB_METADATA_FIELD_ALBUM_PEAK */ 		{ G_TYPE_DOUBLE, "replaygain-album-peak" },
 	/* RB_METADATA_FIELD_LANGUAGE_CODE */		{ G_TYPE_STRING, "language-code" },
-	/* RB_METADATA_FIELD_MUSICBRAINZ-TRACKID */	{ G_TYPE_STRING, "musicbrainz-trackid" }
+	/* RB_METADATA_FIELD_MUSICBRAINZ_TRACKID */	{ G_TYPE_STRING, "musicbrainz-trackid" },
+	/* RB_METADATA_FIELD_MUSICBRAINZ_ARTISTID */	{ G_TYPE_STRING, "musicbrainz-artistid" },
+	/* RB_METADATA_FIELD_MUSICBRAINZ_ALBUMID */	{ G_TYPE_STRING, "musicbrainz-albumid" },
+	/* RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID */ { G_TYPE_STRING, "musicbrainz-albumartistid" },
+	/* RB_METADATA_FIELD_MUSICBRAINZ_ARTISTSORTNAME */ { G_TYPE_STRING, "musicbrainz-sortname" },
+
 };
 
 GType

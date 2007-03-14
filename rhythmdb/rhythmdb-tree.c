@@ -890,6 +890,18 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_MUSICBRAINZ_TRACKID:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_trackid));
 			break;
+		case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_artistid));
+			break;
+		case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_albumid));
+			break;
+		case RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_albumartistid));
+			break;
+		case RHYTHMDB_PROP_MUSICBRAINZ_ARTISTSORTNAME:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->musicbrainz_artistsortname));
+			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);
 			break;
