@@ -1,3 +1,9 @@
+2007-03-15  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-encoder-gst.c: (rb_encoder_gst_class_init):
+	map application/ogg to the caps for audio/x-vorbis, so that we can
+	interpret what HAL reports.
+
 2007-03-14  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* rhythmdb/rhythmdb.h: 

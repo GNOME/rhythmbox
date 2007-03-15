@@ -120,6 +120,11 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
 				    "layer", G_TYPE_INT, 3,
 				    NULL);
 	g_hash_table_insert (klass->mime_caps_table, "audio/mpeg", caps);
+
+	/* hack for HAL's application/ogg reporting, assume it's audio/vorbis */
+	caps = gst_caps_new_simple ("audio/x-vorbis",
+				    NULL);
+	g_hash_table_insert (klass->mime_caps_table, "application/ogg", caps);
 }
 
 static void
