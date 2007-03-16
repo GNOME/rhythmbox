@@ -51,6 +51,10 @@
 #include "rb-metadata.h"
 #include "rb-plugin.h"
 
+/* icon names */
+#define IRADIO_SOURCE_ICON  "library-internet-radio"
+#define IRADIO_NEW_STATION_ICON "internet-radio-new"
+
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
 static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
@@ -159,7 +163,7 @@ struct RBIRadioSourcePrivate
 
 static GtkActionEntry rb_iradio_source_actions [] =
 {
-	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New Internet _Radio Station"), "<control>I",
+	{ "MusicNewInternetRadioStation", IRADIO_NEW_STATION_ICON, N_("New Internet _Radio Station"), "<control>I",
 	  N_("Create a new Internet Radio station"),
 	  G_CALLBACK (rb_iradio_source_cmd_new_station) }
 };
@@ -216,7 +220,7 @@ rb_iradio_source_init (RBIRadioSource *source)
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   "stock_channel",
+					   IRADIO_SOURCE_ICON,
 					   size,
 					   0, NULL);
 	rb_source_set_pixbuf (RB_SOURCE (source), pixbuf);
