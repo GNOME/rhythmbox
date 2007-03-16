@@ -1,6 +1,6 @@
 ## arch-tag: Automake rules for various data files
 
-SUBDIRS = ui glade art
+SUBDIRS = ui glade art icons
 
 @INTLTOOL_XML_RULE@
 @INTLTOOL_DESKTOP_RULE@
