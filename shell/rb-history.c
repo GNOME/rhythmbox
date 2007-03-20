@@ -23,17 +23,17 @@
 #include "config.h"
 
 #include <string.h>
+#include <gsequence.h>
 
 #include "rb-history.h"
 
 #include "rhythmdb.h"
-#include "eggsequence.h"
 
 struct RBHistoryPrivate
 {
-	EggSequence *seq;
-	/* If seq is empty, current == egg_sequence_get_end_ptr (seq) */
-	EggSequenceIter *current;
+	GSequence *seq;
+	/* If seq is empty, current == g_sequence_get_end_ptr (seq) */
+	GSequenceIter *current;
 
 	GHashTable *entry_to_seqptr;
 
@@ -130,8 +130,8 @@ rb_history_init (RBHistory *hist)
 
 	hist->priv->entry_to_seqptr = g_hash_table_new (g_direct_hash,
 							g_direct_equal);
-	hist->priv->seq = egg_sequence_new (NULL);
-	hist->priv->current = egg_sequence_get_begin_iter (hist->priv->seq);
+	hist->priv->seq = g_sequence_new (NULL);
+	hist->priv->current = g_sequence_get_begin_iter (hist->priv->seq);
 }
 
 static void
@@ -147,7 +147,7 @@ rb_history_finalize (GObject *object)
 	rb_history_clear (hist);
 
 	g_hash_table_destroy (hist->priv->entry_to_seqptr);
-	egg_sequence_free (hist->priv->seq);
+	g_sequence_free (hist->priv->seq);
 
 	G_OBJECT_CLASS (rb_history_parent_class)->finalize (object);
 }
@@ -230,28 +230,28 @@ rb_history_length (RBHistory *hist)
 {
 	g_return_val_if_fail (RB_IS_HISTORY (hist), 0);
 
-	return egg_sequence_get_length (hist->priv->seq);
+	return g_sequence_get_length (hist->priv->seq);
 }
 
 RhythmDBEntry *
 rb_history_first (RBHistory *hist)
 {
-	EggSequenceIter *begin;
+	GSequenceIter *begin;
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	begin = egg_sequence_get_begin_iter (hist->priv->seq);
-	return egg_sequence_iter_is_end (begin) ? NULL : egg_sequence_get (begin);
+	begin = g_sequence_get_begin_iter (hist->priv->seq);
+	return g_sequence_iter_is_end (begin) ? NULL : g_sequence_get (begin);
 }
 
 RhythmDBEntry *
 rb_history_previous (RBHistory *hist)
 {
-	EggSequenceIter *prev;
+	GSequenceIter *prev;
 
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	prev = egg_sequence_iter_prev (hist->priv->current);
-	return prev == hist->priv->current ? NULL : egg_sequence_get (prev);
+	prev = g_sequence_iter_prev (hist->priv->current);
+	return prev == hist->priv->current ? NULL : g_sequence_get (prev);
 }
 
 RhythmDBEntry *
@@ -259,28 +259,28 @@ rb_history_current (RBHistory *hist)
 {
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	return egg_sequence_iter_is_end (hist->priv->current) ? NULL : egg_sequence_get (hist->priv->current);
+	return g_sequence_iter_is_end (hist->priv->current) ? NULL : g_sequence_get (hist->priv->current);
 }
 
 RhythmDBEntry *
 rb_history_next (RBHistory *hist)
 {
-	EggSequenceIter *next;
+	GSequenceIter *next;
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	next = egg_sequence_iter_next (hist->priv->current);
-	return egg_sequence_iter_is_end (next) ? NULL : egg_sequence_get (next);
+	next = g_sequence_iter_next (hist->priv->current);
+	return g_sequence_iter_is_end (next) ? NULL : g_sequence_get (next);
 }
 
 RhythmDBEntry *
 rb_history_last (RBHistory *hist)
 {
-	EggSequenceIter *last;
+	GSequenceIter *last;
 
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	last = egg_sequence_iter_prev (egg_sequence_get_end_iter (hist->priv->seq));
-	return egg_sequence_iter_is_end (last) ? NULL : egg_sequence_get (last);
+	last = g_sequence_iter_prev (g_sequence_get_end_iter (hist->priv->seq));
+	return g_sequence_iter_is_end (last) ? NULL : g_sequence_get (last);
 }
 
 void
@@ -288,16 +288,16 @@ rb_history_go_first (RBHistory *hist)
 {
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	hist->priv->current = egg_sequence_get_begin_iter (hist->priv->seq);
+	hist->priv->current = g_sequence_get_begin_iter (hist->priv->seq);
 }
 
 void
 rb_history_go_previous (RBHistory *hist)
 {
-	EggSequenceIter *prev;
+	GSequenceIter *prev;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	prev = egg_sequence_iter_prev (hist->priv->current);
+	prev = g_sequence_iter_prev (hist->priv->current);
 	if (prev)
 		hist->priv->current = prev;
 }
@@ -307,17 +307,17 @@ rb_history_go_next (RBHistory *hist)
 {
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	hist->priv->current = egg_sequence_iter_next (hist->priv->current);
+	hist->priv->current = g_sequence_iter_next (hist->priv->current);
 }
 
 void
 rb_history_go_last (RBHistory *hist)
 {
-	EggSequenceIter *last;
+	GSequenceIter *last;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	last = egg_sequence_iter_prev (egg_sequence_get_end_iter (hist->priv->seq));
-	hist->priv->current = last ? last : egg_sequence_get_end_iter (hist->priv->seq);
+	last = g_sequence_iter_prev (g_sequence_get_end_iter (hist->priv->seq));
+	hist->priv->current = last ? last : g_sequence_get_end_iter (hist->priv->seq);
 }
 
 static void
@@ -332,26 +332,26 @@ rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
 	if (entry == NULL) {
-		hist->priv->current = egg_sequence_get_end_iter (hist->priv->seq);
+		hist->priv->current = g_sequence_get_end_iter (hist->priv->seq);
 		return;
 	}
 
 	rb_history_remove_entry (hist, entry);
 
-	egg_sequence_insert_before (egg_sequence_iter_next (hist->priv->current), entry);
+	g_sequence_insert_before (g_sequence_iter_next (hist->priv->current), entry);
 	/* make hist->priv->current point to the new entry */
-	if (egg_sequence_iter_is_end (hist->priv->current))
-		hist->priv->current = egg_sequence_iter_prev (hist->priv->current);
+	if (g_sequence_iter_is_end (hist->priv->current))
+		hist->priv->current = g_sequence_iter_prev (hist->priv->current);
 	else
-		hist->priv->current = egg_sequence_iter_next (hist->priv->current);
+		hist->priv->current = g_sequence_iter_next (hist->priv->current);
 	g_hash_table_insert (hist->priv->entry_to_seqptr, entry, hist->priv->current);
 
 	if (hist->priv->truncate_on_play) {
-		egg_sequence_foreach_range (egg_sequence_iter_next (hist->priv->current),
-					    egg_sequence_get_end_iter (hist->priv->seq),
+		g_sequence_foreach_range (g_sequence_iter_next (hist->priv->current),
+					    g_sequence_get_end_iter (hist->priv->seq),
 					    (GFunc)_history_remove_swapped, hist);
-		egg_sequence_remove_range (egg_sequence_iter_next (hist->priv->current),
-					   egg_sequence_get_end_iter (hist->priv->seq));
+		g_sequence_remove_range (g_sequence_iter_next (hist->priv->current),
+					   g_sequence_get_end_iter (hist->priv->seq));
 	}
 
 	rb_history_limit_size (hist, TRUE);
@@ -360,23 +360,23 @@ rb_history_set_playing (RBHistory *hist, RhythmDBEntry *entry)
 void
 rb_history_append (RBHistory *hist, RhythmDBEntry *entry)
 {
-	EggSequenceIter *new_node;
-	EggSequenceIter *last;
+	GSequenceIter *new_node;
+	GSequenceIter *last;
 
 	g_return_if_fail (RB_IS_HISTORY (hist));
 	g_return_if_fail (entry != NULL);
 
-	if (egg_sequence_iter_is_end (hist->priv->current) == FALSE &&
-	    entry == egg_sequence_get (hist->priv->current)) {
+	if (g_sequence_iter_is_end (hist->priv->current) == FALSE &&
+	    entry == g_sequence_get (hist->priv->current)) {
 		rb_history_remove_entry (hist, entry);
-		last = egg_sequence_iter_prev (egg_sequence_get_end_iter (hist->priv->seq));
-		hist->priv->current = last ? last : egg_sequence_get_end_iter (hist->priv->seq);
+		last = g_sequence_iter_prev (g_sequence_get_end_iter (hist->priv->seq));
+		hist->priv->current = last ? last : g_sequence_get_end_iter (hist->priv->seq);
 	} else {
 		rb_history_remove_entry (hist, entry);
 	}
 
-	egg_sequence_append (hist->priv->seq, entry);
-	new_node = egg_sequence_iter_prev (egg_sequence_get_end_iter (hist->priv->seq));
+	g_sequence_append (hist->priv->seq, entry);
+	new_node = g_sequence_iter_prev (g_sequence_get_end_iter (hist->priv->seq));
 	g_hash_table_insert (hist->priv->entry_to_seqptr, entry, new_node);
 
 	rb_history_limit_size (hist, TRUE);
@@ -387,32 +387,32 @@ rb_history_get_current_index (RBHistory *hist)
 {
 	g_return_val_if_fail (RB_IS_HISTORY (hist), -1);
 
-	return egg_sequence_iter_get_position (hist->priv->current);
+	return g_sequence_iter_get_position (hist->priv->current);
 }
 
 void
 rb_history_insert_at_index (RBHistory *hist, RhythmDBEntry *entry, guint index)
 {
-	EggSequenceIter *old_node;
-	EggSequenceIter *new_node;
+	GSequenceIter *old_node;
+	GSequenceIter *new_node;
 
 	g_return_if_fail (RB_IS_HISTORY (hist));
 	g_return_if_fail (entry != NULL);
-	g_return_if_fail (index <= egg_sequence_get_length (hist->priv->seq));
+	g_return_if_fail (index <= g_sequence_get_length (hist->priv->seq));
 
 	/* Deal with case where the entry is moving forward */
 	old_node = g_hash_table_lookup (hist->priv->entry_to_seqptr, entry);
-	if (old_node && egg_sequence_iter_get_position (old_node) < index)
+	if (old_node && g_sequence_iter_get_position (old_node) < index)
 		index--;
 
 	rb_history_remove_entry (hist, entry);
 
-	new_node = egg_sequence_get_iter_at_pos (hist->priv->seq, index);
-	egg_sequence_insert_before (new_node, entry);
-	new_node = egg_sequence_iter_prev (new_node);
+	new_node = g_sequence_get_iter_at_pos (hist->priv->seq, index);
+	g_sequence_insert_before (new_node, entry);
+	new_node = g_sequence_iter_prev (new_node);
 	g_hash_table_insert (hist->priv->entry_to_seqptr, entry, new_node);
 
-	if (egg_sequence_iter_is_end (hist->priv->current) && index == egg_sequence_get_length (hist->priv->seq)-1 /*length just increased*/)
+	if (g_sequence_iter_is_end (hist->priv->current) && index == g_sequence_get_length (hist->priv->seq)-1 /*length just increased*/)
 		hist->priv->current = new_node;
 
 	rb_history_limit_size (hist, TRUE);
@@ -426,9 +426,9 @@ static void
 rb_history_limit_size (RBHistory *hist, gboolean cut_from_beginning)
 {
 	if (hist->priv->maximum_size != 0)
-		while (egg_sequence_get_length (hist->priv->seq) > hist->priv->maximum_size) {
+		while (g_sequence_get_length (hist->priv->seq) > hist->priv->maximum_size) {
 			if (cut_from_beginning
-					|| hist->priv->current == egg_sequence_iter_prev (egg_sequence_get_end_iter (hist->priv->seq))) {
+					|| hist->priv->current == g_sequence_iter_prev (g_sequence_get_end_iter (hist->priv->seq))) {
 				rb_history_remove_entry (hist, rb_history_first (hist));
 			} else {
 				rb_history_remove_entry (hist, rb_history_last (hist));
@@ -445,7 +445,7 @@ rb_history_remove_entry (RBHistory *hist, RhythmDBEntry *entry)
 static void
 rb_history_remove_entry_internal (RBHistory *hist, RhythmDBEntry *entry, gboolean from_seq)
 {
-	EggSequenceIter *to_delete;
+	GSequenceIter *to_delete;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
 	to_delete = g_hash_table_lookup (hist->priv->entry_to_seqptr, entry);
@@ -455,11 +455,11 @@ rb_history_remove_entry_internal (RBHistory *hist, RhythmDBEntry *entry, gboolea
 			hist->priv->destroyer (entry, hist->priv->destroy_userdata);
 
 		if (to_delete == hist->priv->current) {
-			hist->priv->current = egg_sequence_get_end_iter (hist->priv->seq);
+			hist->priv->current = g_sequence_get_end_iter (hist->priv->seq);
 		}
 		g_assert (to_delete != hist->priv->current);
 		if (from_seq) {
-			egg_sequence_remove (to_delete);
+			g_sequence_remove (to_delete);
 		}
 	}
 }
@@ -469,9 +469,9 @@ rb_history_clear (RBHistory *hist)
 {
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	egg_sequence_foreach (hist->priv->seq, (GFunc)_history_remove_swapped, hist);
-	egg_sequence_remove_range (egg_sequence_get_begin_iter (hist->priv->seq),
-				   egg_sequence_get_end_iter (hist->priv->seq));
+	g_sequence_foreach (hist->priv->seq, (GFunc)_history_remove_swapped, hist);
+	g_sequence_remove_range (g_sequence_get_begin_iter (hist->priv->seq),
+				   g_sequence_get_end_iter (hist->priv->seq));
 
 	/* When the sequence is empty, the hash table should also be empty. */
 	g_assert (g_hash_table_size (hist->priv->entry_to_seqptr) == 0);
@@ -480,16 +480,16 @@ rb_history_clear (RBHistory *hist)
 GPtrArray *
 rb_history_dump (RBHistory *hist)
 {
-	EggSequenceIter *cur;
+	GSequenceIter *cur;
 	GPtrArray *result;
 
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	result = g_ptr_array_sized_new (egg_sequence_get_length (hist->priv->seq));
-	for (cur = egg_sequence_get_begin_iter (hist->priv->seq);
-	     !egg_sequence_iter_is_end (cur);
-	     cur = egg_sequence_iter_next (cur)) {
-		g_ptr_array_add (result, egg_sequence_get (cur));
+	result = g_ptr_array_sized_new (g_sequence_get_length (hist->priv->seq));
+	for (cur = g_sequence_get_begin_iter (hist->priv->seq);
+	     !g_sequence_iter_is_end (cur);
+	     cur = g_sequence_iter_next (cur)) {
+		g_ptr_array_add (result, g_sequence_get (cur));
 	}
 	return result;
 }

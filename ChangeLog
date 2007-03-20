@@ -1,3 +1,17 @@
+2007-03-20  James Livingston  <doclivingston@gmail.com>
+
+	* lib/Makefile.am:
+	* lib/eggsequence.c:
+	* lib/eggsequence.h:
+	* lib/gsequence.c:
+	* lib/gsequence.h:
+	* configure.ac: Replace EggSequence with GSequence, using the
+	system-installed copy if we're building against glib 2.13. Fixes #419599
+
+	* rhythmdb/rhythmdb-property-model.c:
+	* rhythmdb/rhythmdb-query-model.c:
+	* shell/rb-history.c: adapt to the Change.
+
 2007-03-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* metadata/Makefile.am:

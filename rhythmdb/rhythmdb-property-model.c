@@ -26,10 +26,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <glib/gi18n.h>
+#include <gsequence.h>
 
 #include "rhythmdb-property-model.h"
 #include "rb-debug.h"
-#include "eggsequence.h"
 #include "rb-refstring.h"
 #include "rb-tree-dnd.h"
 
@@ -156,7 +156,7 @@ struct RhythmDBPropertyModelPrivate
 
 	guint stamp;
 
-	EggSequence *properties;
+	GSequence *properties;
 	GHashTable *reverse_map;
 
 	RhythmDBPropertyModelEntry *all;
@@ -422,7 +422,7 @@ rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 
 	model->priv->stamp = g_random_int ();
 
-	model->priv->properties = egg_sequence_new (NULL);
+	model->priv->properties = g_sequence_new (NULL);
 	model->priv->reverse_map = g_hash_table_new (g_str_hash, g_str_equal);
 	model->priv->entries = g_hash_table_new (g_direct_hash, g_direct_equal);
 
@@ -481,8 +481,8 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	g_hash_table_destroy (model->priv->reverse_map);
 
-	egg_sequence_foreach (model->priv->properties, (GFunc)_prop_model_entry_cleanup, NULL);
-	egg_sequence_free (model->priv->properties);
+	g_sequence_foreach (model->priv->properties, (GFunc)_prop_model_entry_cleanup, NULL);
+	g_sequence_free (model->priv->properties);
 
 	g_hash_table_destroy (model->priv->entries);
 
@@ -586,7 +586,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	RhythmDBPropertyModelEntry *prop;
 	GtkTreeIter iter;
 	GtkTreePath *path;
-	EggSequenceIter *ptr;
+	GSequenceIter *ptr;
 	const char *propstr;
 
 	iter.stamp = model->priv->stamp;
@@ -595,7 +595,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	model->priv->all->refcount++;
 
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
-		prop = egg_sequence_get (ptr);
+		prop = g_sequence_get (ptr);
 		prop->refcount++;
 		rb_debug ("adding \"%s\": refcount %d", propstr, prop->refcount);
 
@@ -613,7 +613,7 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model,
 	prop->sort_string = rb_refstring_new (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
 	prop->refcount = 1;
 
-	ptr = egg_sequence_insert_sorted (model->priv->properties, prop,
+	ptr = g_sequence_insert_sorted (model->priv->properties, prop,
 					(GCompareDataFunc) rhythmdb_property_model_compare,
 					model);
 	g_hash_table_insert (model->priv->reverse_map,
@@ -645,7 +645,7 @@ static void
 rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 				     const char *propstr)
 {
-	EggSequenceIter *ptr;
+	GSequenceIter *ptr;
 	RhythmDBPropertyModelEntry *prop;
 	GtkTreePath *path;
 	GtkTreeIter iter;
@@ -657,7 +657,7 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 
 	model->priv->all->refcount--;
 
-	prop = egg_sequence_get (ptr);
+	prop = g_sequence_get (ptr);
 	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
 	prop->refcount--;
 	if (prop->refcount > 0) {
@@ -672,7 +672,7 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
 
-	egg_sequence_remove (ptr);
+	g_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, propstr);
 	rb_refstring_unref (prop->string);
 	rb_refstring_unref (prop->sort_string);
@@ -685,7 +685,7 @@ rhythmdb_property_model_iter_from_string (RhythmDBPropertyModel *model,
 					  const char *name,
 					  GtkTreeIter *iter)
 {
-	EggSequenceIter *ptr;
+	GSequenceIter *ptr;
 
 	if (name == NULL) {
 		if (iter) {
@@ -743,7 +743,7 @@ rhythmdb_property_model_get_iter (GtkTreeModel *tree_model,
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 	guint index;
-	EggSequenceIter *ptr;
+	GSequenceIter *ptr;
 
 	index = gtk_tree_path_get_indices (path)[0];
 
@@ -754,10 +754,10 @@ rhythmdb_property_model_get_iter (GtkTreeModel *tree_model,
 	}
 
 	index--;
-	if (index >= egg_sequence_get_length (model->priv->properties))
+	if (index >= g_sequence_get_length (model->priv->properties))
 		return FALSE;
 
-	ptr = egg_sequence_get_iter_at_pos (model->priv->properties, index);
+	ptr = g_sequence_get_iter_at_pos (model->priv->properties, index);
 
 	iter->stamp = model->priv->stamp;
 	iter->user_data = ptr;
@@ -778,14 +778,14 @@ rhythmdb_property_model_get_path (GtkTreeModel *tree_model,
 		return gtk_tree_path_new_first ();
 	}
 
-	if (egg_sequence_iter_is_end (iter->user_data))
+	if (g_sequence_iter_is_end (iter->user_data))
 		return NULL;
 
 	path = gtk_tree_path_new ();
 	if (iter->user_data == model->priv->all)
 		gtk_tree_path_append_index (path, 0);
 	else
-		gtk_tree_path_append_index (path, egg_sequence_iter_get_position (iter->user_data) + 1);
+		gtk_tree_path_append_index (path, g_sequence_iter_get_position (iter->user_data) + 1);
 	return path;
 }
 
@@ -819,9 +819,9 @@ rhythmdb_property_model_get_value (GtkTreeModel *tree_model,
 	} else {
 		RhythmDBPropertyModelEntry *prop;
 
-		g_return_if_fail (!egg_sequence_iter_is_end (iter->user_data));
+		g_return_if_fail (!g_sequence_iter_is_end (iter->user_data));
 
-		prop = egg_sequence_get (iter->user_data);
+		prop = g_sequence_get (iter->user_data);
 		switch (column) {
 		case RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE:
 			g_value_init (value, G_TYPE_STRING);
@@ -850,13 +850,13 @@ rhythmdb_property_model_iter_next (GtkTreeModel  *tree_model,
 	g_return_val_if_fail (iter->stamp == model->priv->stamp, FALSE);
 
 	if (iter->user_data == model->priv->all) {
-		iter->user_data = egg_sequence_get_begin_iter (model->priv->properties);
+		iter->user_data = g_sequence_get_begin_iter (model->priv->properties);
 	} else {
-		g_return_val_if_fail (!egg_sequence_iter_is_end (iter->user_data), FALSE);
-		iter->user_data = egg_sequence_iter_next (iter->user_data);
+		g_return_val_if_fail (!g_sequence_iter_is_end (iter->user_data), FALSE);
+		iter->user_data = g_sequence_iter_next (iter->user_data);
 	}
 
-	return !egg_sequence_iter_is_end (iter->user_data);
+	return !g_sequence_iter_is_end (iter->user_data);
 }
 
 static gboolean
@@ -892,7 +892,7 @@ rhythmdb_property_model_iter_n_children (GtkTreeModel *tree_model,
 		g_return_val_if_fail (model->priv->stamp == iter->stamp, -1);
 
 	if (iter == NULL)
-		return 1 + egg_sequence_get_length (model->priv->properties);
+		return 1 + g_sequence_get_length (model->priv->properties);
 
 	return 0;
 }
@@ -904,15 +904,15 @@ rhythmdb_property_model_iter_nth_child (GtkTreeModel *tree_model,
 					gint n)
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
-	EggSequenceIter *child;
+	GSequenceIter *child;
 
 	if (parent)
 		return FALSE;
 
 	if (n != 0) {
-		child = egg_sequence_get_iter_at_pos (model->priv->properties, n);
+		child = g_sequence_get_iter_at_pos (model->priv->properties, n);
 
-		if (egg_sequence_iter_is_end (child))
+		if (g_sequence_iter_is_end (child))
 			return FALSE;
 		iter->user_data = child;
 	} else {

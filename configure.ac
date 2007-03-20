@@ -722,6 +722,19 @@ AC_SUBST(LIBSEXY_CFLAGS)
 AC_SUBST(LIBSEXY_LIBS)
 AM_CONDITIONAL(WITH_INTERNAL_LIBSEXY, test "x$with_internal_libsexy" = "xyes")
 
+
+dnl we've copies gsequence from glib 2.13, and should just link to that
+dnl if the system version has it
+AC_ARG_WITH(internal-gsequence,
+            AC_HELP_STRING([--with-internal-gsequence],
+			   [Build using internal cope of gsequence]),,
+	      with_internal_gsequence=no)
+if test "x$with_internal_gsequence" = "xno"; then
+	PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.13.0, with_internal_gsequence=no,
+		          with_internal_gsequence=yes)
+fi
+AM_CONDITIONAL(WITH_INTERNAL_GSEQUENCE, test "x$with_internal_gsequence" = "xyes")
+
 dnl warnings bits, copied from gnome-keyring configure.in
 dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
 
@@ -1093,6 +1106,11 @@ if test x"$with_internal_libsexy" = xyes; then
 	AC_MSG_NOTICE([   using internal libsexy])
 else
 	AC_MSG_NOTICE([** using system-wide libsexy])
+fi
+if test x"$with_internal_gsequence" = xyes; then
+	AC_MSG_NOTICE([   using internal copy of gsequence])
+else
+	AC_MSG_NOTICE([** using glib 2.13 version of gsequence])
 fi
 
 AC_MSG_NOTICE([End options])
