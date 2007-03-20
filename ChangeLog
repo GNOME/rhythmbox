@@ -1,3 +1,11 @@
+2007-03-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/Makefile.am:
+	* metadata/rb-metadata-dbus-client.c: (start_metadata_service):
+	Apply the program name transform to the metadata helper name and pass
+	it in as a preprocessor symbol so we can find it when configured with
+	--program-suffix etc.  Fixes #419874.
+
 2007-03-20  Irene Huang  <irene.huang@sun.com>
 
 	* shell/main.c: (main): Should call gdk_threads_enter/leave

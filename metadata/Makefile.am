@@ -12,8 +12,11 @@ INCLUDES = 						\
 
 if WITH_METADATA_HELPER
 
+INSTALLED_METADATA_HELPER=`echo rhythmbox-metadata | sed '$(transform)'`
+
 INCLUDES += $(DBUS_CFLAGS)				\
-	-DLIBEXEC_DIR=\"$(libexecdir)\"
+	-DLIBEXEC_DIR=\"$(libexecdir)\"			\
+	-DINSTALLED_METADATA_HELPER=\"$(INSTALLED_METADATA_HELPER)\"
 
 # client library
 
