@@ -207,6 +207,7 @@ main (int argc, char **argv)
 
 	/* TODO: kill this function */
 	rb_threads_init ();
+	gdk_threads_enter ();
 
 	activated = FALSE;
 
@@ -403,6 +404,7 @@ main (int argc, char **argv)
 	g_object_unref (program);
 
 	gnome_accelerators_sync ();
+	gdk_threads_leave ();
 
 	exit (0);
 }

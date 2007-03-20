@@ -1,3 +1,8 @@
+2007-03-20  Irene Huang  <irene.huang@sun.com>
+
+	* shell/main.c: (main): Should call gdk_threads_enter/leave
+	after gdk_threads_init in main. Fixes bug # 420444.
+
 2007-03-11  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/artdisplay/rhythmbox-missing-artwork.svg: replace with a
