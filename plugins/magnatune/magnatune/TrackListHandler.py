@@ -25,8 +25,11 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 					entry = self.__db.entry_new(self.__entry_type, self.__track['url'])
 
 				# if year is not set, use launch date instead
-				year = int(self.__track['year'])
-				if (year <= 0):
+				try:
+					year = int(self.__track['year'])
+					if (year <= 0):
+						raise ValueError
+				except ValueError:
 					year = int(self.__track['launchdate'][0:4])
 
 				date = datetime.date(year, 1, 1).toordinal()
