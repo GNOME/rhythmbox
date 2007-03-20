@@ -69,7 +69,6 @@ typedef struct
 typedef struct
 {
 	RhythmDB *db;
-	char *uri;
 	RhythmDBEntryType type;
 } RhythmDBAddThreadData;
 
@@ -101,7 +100,6 @@ static void rhythmdb_thread_create (RhythmDB *db,
 static void rhythmdb_read_enter (RhythmDB *db);
 static void rhythmdb_read_leave (RhythmDB *db);
 static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
-static gpointer add_thread_main (RhythmDBAddThreadData *data);
 static gpointer action_thread_main (RhythmDB *db);
 static gpointer query_thread_main (RhythmDBQueryThreadData *data);
 static void rhythmdb_entry_set_mount_point (RhythmDB *db,
@@ -441,12 +439,6 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc)query_thread_main,
 							 NULL,
 							 -1, FALSE, NULL);
-	/* Limit this pool to 3 threads.  They'll each be thrashing the disk,
-	 * so parallelism is limited.
-	 */
-	db->priv->add_thread_pool = g_thread_pool_new ((GFunc)add_thread_main,
-						       NULL,
-						       3, FALSE, NULL);
 
 	db->priv->metadata = rb_metadata_new ();
 
@@ -773,7 +765,6 @@ rhythmdb_finalize (GObject *object)
 	rhythmdb_finalize_monitoring (db);
 
 	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
-	g_thread_pool_free (db->priv->add_thread_pool, FALSE, TRUE);
 	g_async_queue_unref (db->priv->action_queue);
 	g_async_queue_unref (db->priv->event_queue);
 	g_async_queue_unref (db->priv->restored_queue);
@@ -2246,24 +2237,6 @@ queue_stat_uri_tad (const char *uri,
 		queue_stat_uri (uri, data->db, data->type);
 }
 
-static gpointer
-add_thread_main (RhythmDBAddThreadData *data)
-{
-	RhythmDBEvent *result;
-
-	rb_uri_handle_recursively (data->uri, (RBUriRecurseFunc) queue_stat_uri_tad,
-				   &data->db->priv->exiting, data);
-
-	rb_debug ("exiting");
-	result = g_new0 (RhythmDBEvent, 1);
-	result->db = data->db;
-	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
-	g_async_queue_push (data->db->priv->event_queue, result);
-	g_free (data->uri);
-	g_free (data);
-	return NULL;
-}
-
 static void
 rhythmdb_execute_load (RhythmDB *db,
 		       const char *uri,
@@ -2517,10 +2490,10 @@ rhythmdb_add_uri_with_type (RhythmDB *db,
 	} else if (rb_uri_is_directory (realuri)) {
 		RhythmDBAddThreadData *data = g_new0 (RhythmDBAddThreadData, 1);
 		data->db = db;
-		data->uri = g_strdup (realuri);
 		data->type = type;
 
-		rhythmdb_thread_create (db, db->priv->add_thread_pool, NULL, data);
+		rb_uri_handle_recursively_async (realuri, (RBUriRecurseFunc)queue_stat_uri_tad,
+						 &data->db->priv->exiting, data, (GDestroyNotify)g_free);
 	} else {
 		queue_stat_uri (realuri, db, type);
 	}

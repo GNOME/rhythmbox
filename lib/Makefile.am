@@ -34,7 +34,7 @@ librb_la_SOURCES =					\
 	rb-string-value-map.c				\
 	rb-string-value-map.h
 
-if WITH_INTERNAL_LIBSEXY
+if WITH_INTERNAL_GSEQUENCE
 librb_la_SOURCES += gsequence.c gsequence.h
 endif
 

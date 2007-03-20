@@ -1,5 +1,14 @@
 2007-03-20  James Livingston  <doclivingston@gmail.com>
 
+	* lib/rb-file-helpers.c: (_gnomevfs_info_unreadable),
+	(rb_uri_handle_recursively_cb):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_init), (rhythmdb_finalize),
+	(rhythmdb_add_uri_with_type): make files starting with a dot not get
+	added. Again. Fixes #395124
+
+2007-03-20  James Livingston  <doclivingston@gmail.com>
+
 	* lib/Makefile.am:
 	* lib/eggsequence.c:
 	* lib/eggsequence.h:

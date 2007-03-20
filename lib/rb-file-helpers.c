@@ -666,6 +666,13 @@ _rb_uri_recurse_data_free (RBUriHandleRecursivelyData *data)
 }
 
 static gboolean
+_gnomevfs_info_unreadable (GnomeVFSFileInfo *info)
+{
+	return (info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_ACCESS) &&
+		!(info->permissions & GNOME_VFS_PERM_ACCESS_READABLE);
+}
+
+static gboolean
 rb_uri_handle_recursively_cb (const gchar *rel_path,
 			      GnomeVFSFileInfo *info,
 			      gboolean recursing_will_loop,
@@ -673,6 +680,7 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 			      gboolean *recurse)
 {
 	char *path, *escaped_rel_path;
+	char *sep;
 	gboolean dir;
 
 	dir = (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY);
@@ -681,9 +689,10 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 		return TRUE;
 
 	/* skip hidden and unreadable files and directories */
-	if (g_str_has_prefix (rel_path, ".") ||
-	    ((info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_ACCESS) &&
-	    !(info->permissions & GNOME_VFS_PERM_ACCESS_READABLE))) {
+	sep = strrchr (rel_path, G_DIR_SEPARATOR);
+	if ((sep != NULL && g_str_has_prefix (sep + 1, ".")) ||
+	    (sep == NULL && g_str_has_prefix (rel_path, ".")) ||
+	    _gnomevfs_info_unreadable (info)) {
 		*recurse = FALSE;
 		return TRUE;
 	}
