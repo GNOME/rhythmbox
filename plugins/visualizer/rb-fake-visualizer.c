@@ -462,6 +462,7 @@ rb_fake_vis_chain (GstPad * pad, GstBuffer * buffer)
 	goto beach;
       }
     }
+    GST_BUFFER_TIMESTAMP (outbuf) = GST_BUFFER_TIMESTAMP (buffer);
     ret = gst_pad_push (visual->srcpad, outbuf);
     if (ret != GST_FLOW_OK) {
       goto beach;

@@ -1,3 +1,8 @@
+2007-03-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/visualizer/rb-fake-visualizer.c: (rb_fake_vis_chain):
+	Set a timestamp on the first frame.  Should fix some seeking problems.
+
 2007-03-20  James Livingston  <doclivingston@gmail.com>
 
 	* lib/rb-file-helpers.c: (_gnomevfs_info_unreadable),
