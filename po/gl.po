@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-06 11:36+0100\n"
-"PO-Revision-Date: 2007-03-06 11:38+0100\n"
+"POT-Creation-Date: 2007-03-21 19:39+0100\n"
+"PO-Revision-Date: 2007-03-21 19:42+0100\n"
 "Last-Translator: Ignacio Casal Quinteiro <icq@cvs.gnome.org>\n"
 "Language-Team: Galego <trasno@ceu.fi.udc.es>\n"
 "MIME-Version: 1.0\n"
@@ -19,13 +19,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:551
+#: ../backends/gstreamer/rb-encoder-gst.c:576
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Quere sobreescribir o ficheiro \"%s\"?"
 
-#: ../backends/gstreamer/rb-player-gst.c:769 ../metadata/rb-metadata-gst.c:875
-#: ../metadata/rb-metadata-gst.c:1435
+#: ../backends/gstreamer/rb-player-gst.c:769 ../metadata/rb-metadata-gst.c:893
+#: ../metadata/rb-metadata-gst.c:1453
 #: ../plugins/cd-recorder/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -449,7 +449,7 @@ msgid "Recently Played"
 msgstr "Reproducido recentemente"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:140
+#: ../plugins/power-manager/rb-power-manager-plugin.c:181
 #: ../shell/rb-shell.c:1041 ../shell/rb-shell.c:2131
 #: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
@@ -528,16 +528,16 @@ msgstr "Rhythmbox non soporta a configuración automática de proxy"
 #: ../plugins/daap/rb-daap-connection.c:677
 #: ../plugins/generic-player/rb-generic-player-source.c:763
 #: ../plugins/ipod/rb-ipod-source.c:269
-#: ../plugins/iradio/rb-iradio-source.c:493
-#: ../plugins/iradio/rb-iradio-source.c:1084
+#: ../plugins/iradio/rb-iradio-source.c:497
+#: ../plugins/iradio/rb-iradio-source.c:1088
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1557
+#: ../podcast/rb-podcast-manager.c:1567
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
-#: ../remote/dbus/rb-client.c:118 ../rhythmdb/rhythmdb-tree.c:1143
-#: ../rhythmdb/rhythmdb-tree.c:1147 ../rhythmdb/rhythmdb-tree.c:1151
-#: ../rhythmdb/rhythmdb-tree.c:1155 ../rhythmdb/rhythmdb.c:1370
+#: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
+#: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
+#: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1404
 #: ../shell/rb-shell.c:3041 ../sources/rb-podcast-source.c:1642
 #: ../widgets/rb-entry-view.c:812 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:1121 ../widgets/rb-entry-view.c:1133
@@ -546,12 +546,12 @@ msgstr "Rhythmbox non soporta a configuración automática de proxy"
 msgid "Unknown"
 msgstr "Descoñecido"
 
-#: ../lib/rb-util.c:643 ../remote/dbus/rb-client.c:120
+#: ../lib/rb-util.c:643 ../remote/dbus/rb-client.c:136
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:645 ../remote/dbus/rb-client.c:122
+#: ../lib/rb-util.c:645 ../remote/dbus/rb-client.c:138
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -591,44 +591,44 @@ msgstr "Problema interno de GStreamer; arquive un erro"
 msgid "D-BUS communication error"
 msgstr "Erro de comunicación de D-BUS"
 
-#: ../metadata/rb-metadata-gst.c:621
+#: ../metadata/rb-metadata-gst.c:639
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 "Non se puideron atopar os complementos de GStreamer para decodificar "
 "ficheiros \"%s\""
 
-#: ../metadata/rb-metadata-gst.c:624
+#: ../metadata/rb-metadata-gst.c:642
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "O ficheiro contén un fluxo de tipo %s, que non é decodificable"
 
-#: ../metadata/rb-metadata-gst.c:1030
+#: ../metadata/rb-metadata-gst.c:1048
 msgid "Failed to create a source element; check your installation"
 msgstr "Ocorreu un erro ao crear o elemento de orixe; comprobe a súa instalación"
 
-#: ../metadata/rb-metadata-gst.c:1103
+#: ../metadata/rb-metadata-gst.c:1121
 msgid "GStreamer error: failed to change state"
 msgstr "Erro de GStreamer: fallou cambiar o estado"
 
-#: ../metadata/rb-metadata-gst.c:1226
+#: ../metadata/rb-metadata-gst.c:1244
 msgid "The MIME type of the file could not be identified"
 msgstr "O tipo MIME do ficheiro non puido ser indentificado"
 
-#: ../metadata/rb-metadata-gst.c:1363
+#: ../metadata/rb-metadata-gst.c:1381
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Tipo de ficheiro non soportado: %s"
 
-#: ../metadata/rb-metadata-gst.c:1372
+#: ../metadata/rb-metadata-gst.c:1390
 msgid "Unable to create tag-writing elements"
 msgstr "Imposible crear elementos tag-writing"
 
-#: ../metadata/rb-metadata-gst.c:1395
+#: ../metadata/rb-metadata-gst.c:1413
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tempo expirado establecendo a tubería a NULL"
 
-#: ../metadata/rb-metadata-gst.c:1415
+#: ../metadata/rb-metadata-gst.c:1433
 msgid "File corrupted during write"
 msgstr "O ficheiro foi corrompido durante a escritura"
 
@@ -676,7 +676,7 @@ msgstr "Pista %u"
 #: ../plugins/audiocd/rb-audiocd-source.c:342
 #: ../plugins/audiocd/rb-audiocd-source.c:352
 #: ../plugins/audiocd/rb-audiocd-source.c:359
-#: ../plugins/audiocd/rb-audiocd-source.c:671
+#: ../plugins/audiocd/rb-audiocd-source.c:682
 msgid "Couldn't load Audio CD"
 msgstr "Non se puido cargar o CD de son"
 
@@ -704,7 +704,7 @@ msgstr "Título"
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:672
+#: ../plugins/audiocd/rb-audiocd-source.c:683
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox non puido obter acceso ao dispositivo de CD."
 
@@ -814,7 +814,7 @@ msgstr "Perfil Last.fm"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2932 ../widgets/rb-entry-view.c:760
+#: ../rhythmdb/rhythmdb.c:3000 ../widgets/rb-entry-view.c:760
 #: ../widgets/rb-entry-view.c:1179 ../widgets/rb-entry-view.c:1192
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
@@ -980,7 +980,7 @@ msgid "The server marked you as banned"
 msgstr "O servidor marcouno como excluído"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:598
-#: ../plugins/iradio/rb-iradio-source.c:556
+#: ../plugins/iradio/rb-iradio-source.c:560
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1411,7 +1411,7 @@ msgstr "Esta lista de reprodución é demasiado longa para escribila nun CD de s
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1670
 #, c-format
 msgid "Cannot get free space at %s"
-msgstr "Non se puido obter espacio libre en %s"
+msgstr "Non se puido obter espazo libre en %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1755
 #, c-format
@@ -1430,7 +1430,7 @@ msgstr "Lista de reprodución demasiado longa"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1806
 msgid "Could not find temporary space!"
-msgstr "Non se puido atopar o espacio temporal."
+msgstr "Non se puido atopar o espazo temporal."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1807
 #, c-format
@@ -1438,7 +1438,7 @@ msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
 "required."
 msgstr ""
-"Non se puido atopar suficiente espacio temporal para converter as pistas de "
+"Non se puido atopar suficiente espazo temporal para converter as pistas de "
 "son. Requírese %s MiB."
 
 #: ../plugins/cd-recorder/recorder.glade.h:1
@@ -1757,31 +1757,31 @@ msgstr "Descargar este álbume empregando BitTorrent"
 msgid "Loading Jamendo catalogue"
 msgstr "Cargando catálogo de Jamendo"
 
-#: ../plugins/iradio/rb-iradio-source.c:162
+#: ../plugins/iradio/rb-iradio-source.c:166
 msgid "New Internet _Radio Station"
 msgstr "Estación de _radio de internet nova"
 
-#: ../plugins/iradio/rb-iradio-source.c:163
+#: ../plugins/iradio/rb-iradio-source.c:167
 msgid "Create a new Internet Radio station"
 msgstr "Crear unha estación de radio de internet nova"
 
-#: ../plugins/iradio/rb-iradio-source.c:328 ../widgets/rb-entry-view.c:1107
+#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1107
 #: ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Genre"
 msgstr "Xénero"
 
-#: ../plugins/iradio/rb-iradio-source.c:422
+#: ../plugins/iradio/rb-iradio-source.c:426
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:997
+#: ../plugins/iradio/rb-iradio-source.c:1001
 #: ../plugins/iradio/rb-station-properties-dialog.c:393
 msgid "New Internet Radio Station"
 msgstr "Estación de radio de internet nova"
 
-#: ../plugins/iradio/rb-iradio-source.c:997
+#: ../plugins/iradio/rb-iradio-source.c:1001
 msgid "URL of internet radio station:"
 msgstr "URL da estación de radio de internet:"
 
@@ -1799,9 +1799,8 @@ msgid "%lu kbps"
 msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
-#, fuzzy
 msgid "Unable to change station property"
-msgstr "Non se puido activar o examinador"
+msgstr "Imposible cambiar a propiedade da estación"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
 #, c-format
@@ -1901,7 +1900,7 @@ msgstr ""
 "    * Emisoras de radio e listas de reprodución de \"xénero mesturado\" "
 "permitidas para escoitalas de fondo - pode traballar mentras escoita a nosa "
 "música\n"
-"    * Non é necesario \"rexistrarse\" para escoitar ou comprar\n"
+"    * Non é necesario \"rexistrarse\" para escoitar ou mercar\n"
 "    * Unha selección máis pequena significa que será máis fácil atopar boa "
 "música\n"
 
@@ -2131,7 +2130,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:36
 msgid "Purchase Magnatune Tracks"
-msgstr "Comprar pistas en Magnatune"
+msgstr "Mercar pistas en Magnatune"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:37
 msgid "_Amount to pay:"
@@ -2143,7 +2142,7 @@ msgstr "Enderezo de _correo-e:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:40
 msgid "_Purchase"
-msgstr "_Comprar"
+msgstr "_Mercar"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:41
 msgid "_Remember my credit card details"
@@ -2154,8 +2153,8 @@ msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
 msgstr ""
-"Engade soporte a Rhythmbox para reproducir e comprar desde a tenda en liña "
-"de música Magnatune"
+"Engade soporte a Rhythmbox para reproducir e mercar desde a tenda en liña de "
+"música Magnatune"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
 msgid "Magnatune Store"
@@ -2165,46 +2164,66 @@ msgstr "Tenda Magnatune"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:108
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:109
 msgid "Loading Magnatune catalogue"
 msgstr "Cargando catálogo de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:111
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:112
 msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbumes de Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:197
-msgid "Couldn't purchase album"
-msgstr "Non se puido comprar o álbume"
-
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:198
+msgid "Couldn't purchase album"
+msgstr "Non se puido mercar o álbume"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
 msgid "You must have a library location set to purchase an album."
 msgstr ""
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:216
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:217
 #, fuzzy, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr "Quere comprar o álbume '%s' de '%s'?"
+msgstr "Quere mercar o álbume '%s' de '%s'?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:416
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:477
+msgid "Purchase Error"
+msgstr "Erro ao mercar"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:478
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
-"Ocorreu un erro mentras se tentaba comprar o álbume.\n"
+"Ocorreu un erro mentras se tentaba mercar o álbume.\n"
+"O servidor Magnatune devolveu:\n"
+"%s"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:481
+#: ../widgets/rb-entry-view.c:1230
+msgid "Error"
+msgstr "Erro"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:482
+#, fuzzy, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The error text is:\n"
+"%s"
+msgstr ""
+"Ocorreu un erro mentras se tentaba mercar o álbume.\n"
 "O servidor Magnatune devolveu:\n"
 "%s"
 
 #. Add the popup menu actions
 #: ../plugins/magnatune/magnatune/__init__.py:107
 msgid "Purchase Album"
-msgstr "Comprar álbume"
+msgstr "Mercar álbume"
 
 #: ../plugins/magnatune/magnatune/__init__.py:108
 msgid "Purchase this album from Magnatune"
-msgstr "Comprar este álbume en Magnatune"
+msgstr "Mercar este álbume en Magnatune"
 
 #: ../plugins/magnatune/magnatune/__init__.py:113
 msgid "Purchase Physical CD"
@@ -2213,7 +2232,7 @@ msgstr ""
 #: ../plugins/magnatune/magnatune/__init__.py:114
 #, fuzzy
 msgid "Purchase a physical CD from Magnatune"
-msgstr "Comprar este álbume en Magnatune"
+msgstr "Mercar este álbume en Magnatune"
 
 #: ../plugins/magnatune/magnatune/__init__.py:118
 msgid "Artist Information"
@@ -2248,7 +2267,7 @@ msgstr "Impedir ao xestor de enerxía suspender a máquina mentras se reproduce"
 msgid "Power Manager"
 msgstr "Xestor de enerxía"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:141
+#: ../plugins/power-manager/rb-power-manager-plugin.c:182
 msgid "Playing"
 msgstr "Reproducindo"
 
@@ -2312,62 +2331,78 @@ msgstr "Complemento de exemplo"
 msgid "A sample plugin in C with no features"
 msgstr "Un complemento de exemplo en C sen características"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:226
+#: ../plugins/visualizer/rb-visualizer-plugin.c:235
 #: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
 msgid "Visualization"
 msgstr "Visualización"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:227
+#: ../plugins/visualizer/rb-visualizer-plugin.c:236
 msgid "Start or stop visualization"
 msgstr "Iniciar ou deter visualización"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:233
+#: ../plugins/visualizer/rb-visualizer-plugin.c:242
 msgid "Small"
 msgstr "Pequeno"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:234
+#: ../plugins/visualizer/rb-visualizer-plugin.c:243
 msgid "Normal"
 msgstr "Normal"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:235
+#: ../plugins/visualizer/rb-visualizer-plugin.c:244
 msgid "Large"
 msgstr "Grande"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:236
+#: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Extra Large"
 msgstr "Moi grande"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:937
+#: ../plugins/visualizer/rb-visualizer-plugin.c:256
+msgid "Embedded"
+msgstr "Empotrado"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:257
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:258
+msgid "Desktop"
+msgstr "Escritorio"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:259
+msgid "Window"
+msgstr "Ventá"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1103
 msgid "Enable visual effects?"
 msgstr "Activar efectos visuais?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:939
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1105
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
 msgstr ""
 
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1395
+msgid "Music Player Visualization"
+msgstr "Visualización do reprodutor de música"
+
 #: ../plugins/visualizer/visualizer-controls.glade.h:1
-msgid "Desktop"
-msgstr "Escritorio"
+msgid "Disable"
+msgstr "Desactivar"
 
 #: ../plugins/visualizer/visualizer-controls.glade.h:2
-msgid "Fullscreen"
-msgstr "Pantalla completa"
+msgid "Mode:"
+msgstr "Modo:"
 
 #: ../plugins/visualizer/visualizer-controls.glade.h:3
-msgid "Leave Fullscreen"
-msgstr "Saír da pantalla completa"
-
-#: ../plugins/visualizer/visualizer-controls.glade.h:4
 msgid "Quality:"
 msgstr "Calidade:"
 
-#: ../plugins/visualizer/visualizer-controls.glade.h:5
+#: ../plugins/visualizer/visualizer-controls.glade.h:4
 msgid "Screen:"
 msgstr "Pantalla:"
 
-#: ../plugins/visualizer/visualizer-controls.glade.h:6
+#: ../plugins/visualizer/visualizer-controls.glade.h:5
 msgid "Visualization:"
 msgstr "Visualización:"
 
@@ -2375,21 +2410,21 @@ msgstr "Visualización:"
 msgid "Displays visualizations"
 msgstr "Amosar visualizacións"
 
-#: ../podcast/rb-podcast-manager.c:820
+#: ../podcast/rb-podcast-manager.c:830
 msgid "Invalid URL"
 msgstr "URL inválida"
 
-#: ../podcast/rb-podcast-manager.c:821
+#: ../podcast/rb-podcast-manager.c:831
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "A URL \"%s\" non é válida, por favor compróbea."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:829
+#: ../podcast/rb-podcast-manager.c:839
 msgid "URL already added"
 msgstr "A URL xa está engadida"
 
-#: ../podcast/rb-podcast-manager.c:830
+#: ../podcast/rb-podcast-manager.c:840
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2398,12 +2433,12 @@ msgstr ""
 "A URL \"%s\" xa se engadiu como estación de radio. Se isto é un proveedor "
 "podcast, elimine a estación de radio."
 
-#: ../podcast/rb-podcast-manager.c:871
+#: ../podcast/rb-podcast-manager.c:881
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "Houbo un problema ao engadir este podcast. Comprobe a URL: %s"
 
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:959
 msgid "Podcast"
 msgstr "Podcast"
 
@@ -2422,74 +2457,108 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr "Non descargado"
 
-#: ../remote/dbus/rb-client.c:66
+#: ../remote/dbus/rb-client.c:73
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Non iniciar unha nova instancia de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:67 ../shell/main.c:122
+#: ../remote/dbus/rb-client.c:74 ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "Saír de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:69
+#: ../remote/dbus/rb-client.c:76
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Non presentar unha fiestra de Rhythmbox existente"
 
-#: ../remote/dbus/rb-client.c:70
+#: ../remote/dbus/rb-client.c:77
 msgid "Hide the Rhythmbox window"
 msgstr "Agochar a xanela de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:72
+#: ../remote/dbus/rb-client.c:79
 msgid "Jump to next song"
 msgstr "Saltar á seguinte canción"
 
-#: ../remote/dbus/rb-client.c:73
+#: ../remote/dbus/rb-client.c:80
 msgid "Jump to previous song"
 msgstr "Saltar á canción anterior"
 
-#: ../remote/dbus/rb-client.c:75
+#: ../remote/dbus/rb-client.c:82
 msgid "Show notification of the playing song"
 msgstr "Amosar notificación da canción en reprodución"
 
-#: ../remote/dbus/rb-client.c:77
+#: ../remote/dbus/rb-client.c:84
 msgid "Resume playback if currently paused"
 msgstr "Continuar a lista de reprodución se está pausada"
 
-#: ../remote/dbus/rb-client.c:78
+#: ../remote/dbus/rb-client.c:85
 msgid "Pause playback if currently playing"
 msgstr "Pausar a lista de reprodución se se está reproducindo"
 
-#: ../remote/dbus/rb-client.c:79
+#: ../remote/dbus/rb-client.c:86
 msgid "Toggle play/pause mode"
 msgstr "Cambiar modo reproducir/pausar"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:82
+#: ../remote/dbus/rb-client.c:89
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Reproducir unha URI específica, importándoa se é necesario"
 
-#: ../remote/dbus/rb-client.c:82
+#: ../remote/dbus/rb-client.c:89
 msgid "URI to play"
 msgstr "URI a reproducir"
 
-#: ../remote/dbus/rb-client.c:83
+#: ../remote/dbus/rb-client.c:90
 msgid "Add specified tracks to the play queue"
 msgstr "Engade as cancións especificadas á cola de reprodución"
 
-#: ../remote/dbus/rb-client.c:84
+#: ../remote/dbus/rb-client.c:91
 msgid "Empty the play queue before adding new tracks"
 msgstr "Baleirar a cola de reprodución antes de engadir pistas novas"
 
-#: ../remote/dbus/rb-client.c:86
+#: ../remote/dbus/rb-client.c:93
 msgid "Print the title and artist of the playing song"
 msgstr "Imprime o título e o artista da canción en reprodución"
 
-#: ../remote/dbus/rb-client.c:87
+#: ../remote/dbus/rb-client.c:94
 msgid "Print formatted details of the song"
 msgstr "Imprime os detalles da canción formatados"
 
-#: ../remote/dbus/rb-client.c:379 ../shell/rb-shell.c:2106
+#: ../remote/dbus/rb-client.c:97
+msgid "Set the playback volume"
+msgstr "Establecer o volume da reprodución"
+
+#: ../remote/dbus/rb-client.c:99
+msgid "Increase the playback volume"
+msgstr "Incrementar o volume da reprodución"
+
+#: ../remote/dbus/rb-client.c:100
+msgid "Decrease the playback volume"
+msgstr "Decrementar o volume da reprodución"
+
+#: ../remote/dbus/rb-client.c:101
+msgid "Print the current playback volume"
+msgstr "Imprimir o volume da reprodución actual"
+
+#: ../remote/dbus/rb-client.c:102
+msgid "Mute playback"
+msgstr "Silenciar reprodución"
+
+#: ../remote/dbus/rb-client.c:103
+#, fuzzy
+msgid "Unmute playback"
+msgstr "Deter reprodución"
+
+#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2106
 msgid "Not playing"
 msgstr "Non se está reproducindo nada"
+
+#: ../remote/dbus/rb-client.c:616
+msgid "Playback is muted.\n"
+msgstr "A reprodución está en silencio.\n"
+
+#: ../remote/dbus/rb-client.c:617
+#, c-format
+msgid "Playback volume is %f.\n"
+msgstr "O volume da reprodución é %f.\n"
 
 #: ../rhythmdb/rhythmdb-monitor.c:319
 #, c-format
@@ -2503,7 +2572,7 @@ msgstr "Non se puido monitorizar %s: %s"
 msgid "All"
 msgstr "Todo"
 
-#: ../rhythmdb/rhythmdb-tree.c:348
+#: ../rhythmdb/rhythmdb-tree.c:367
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
@@ -2511,38 +2580,38 @@ msgstr ""
 "A base de datos foi creada por unha versión posterior de rhythmbox. Esta "
 "versión de rhythmbox non pode ler a base de datos."
 
-#: ../rhythmdb/rhythmdb.c:505
+#: ../rhythmdb/rhythmdb.c:531
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Non se puido acceder a %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1476
+#: ../rhythmdb/rhythmdb.c:1546
 msgid "<invalid filename>"
 msgstr "<nome de ficheiro inválido>"
 
-#: ../rhythmdb/rhythmdb.c:1733
+#: ../rhythmdb/rhythmdb.c:1803
 msgid "invalid unicode in error message"
 msgstr "unicode inválido na mensaxe de erro"
 
-#: ../rhythmdb/rhythmdb.c:2466
+#: ../rhythmdb/rhythmdb.c:2518
 msgid "Could not load the music database"
 msgstr "Non se puido cargar a base de datos de música"
 
-#: ../rhythmdb/rhythmdb.c:3840
+#: ../rhythmdb/rhythmdb.c:3914
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:3841
+#: ../rhythmdb/rhythmdb.c:3915
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:3842
+#: ../rhythmdb/rhythmdb.c:3916
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2550,7 +2619,7 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3848
+#: ../rhythmdb/rhythmdb.c:3922
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s e %s"
@@ -2558,8 +2627,8 @@ msgstr "%s, %s e %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3854 ../rhythmdb/rhythmdb.c:3862
-#: ../rhythmdb/rhythmdb.c:3873
+#: ../rhythmdb/rhythmdb.c:3928 ../rhythmdb/rhythmdb.c:3936
+#: ../rhythmdb/rhythmdb.c:3947
 #, c-format
 msgid "%s and %s"
 msgstr "%s e %s"
@@ -3805,10 +3874,6 @@ msgstr "Visto por última vez"
 #: ../widgets/rb-entry-view.c:1222
 msgid "Location"
 msgstr "Ubicación"
-
-#: ../widgets/rb-entry-view.c:1230
-msgid "Error"
-msgstr "Erro"
 
 #: ../widgets/rb-entry-view.c:1443
 msgid "Now Playing"
