@@ -814,7 +814,17 @@ gboolean
 rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url)
 {
 	RBPodcastThreadInfo *info;
-	gchar *valid_url = gnome_vfs_make_uri_from_input (url);
+	gchar *valid_url;
+
+	if (g_str_has_prefix (url, "feed://")) {
+		char *tmp;
+
+		tmp = g_strdup_printf ("http://%s", url + strlen ("feed://"));
+		valid_url = gnome_vfs_make_uri_from_input (tmp);
+		g_free (tmp);
+	} else {
+		valid_url = gnome_vfs_make_uri_from_input (url);
+	}
 
 	if (valid_url == NULL) {
 		rb_error_dialog (NULL, _("Invalid URL"),
