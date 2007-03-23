@@ -7,228 +7,34 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rythmbox.HEAD.po\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-30 04:52+0100\n"
-"PO-Revision-Date: 2006-11-03 12:12+0530\n"
-"Last-Translator: sonam pelden <sonaa_peldn@yahoo.com>\n"
+"POT-Creation-Date: 2007-03-13 03:44+0000\n"
+"PO-Revision-Date: 2007-03-23 04:55+0530\n"
+"Last-Translator: yangka <yanang_ka@hotmail.com>\n"
 "Language-Team: Dzongkha <pgeyleg@dit.gov.bt>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1)\n"
 "X-Poedit-Language: Dzongkha\n"
 "X-Poedit-Country: Bhutan\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:507
+#: ../backends/gstreamer/rb-encoder-gst.c:551
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "ཡིག་སྣོད་ \"%s\" ཚབ་སྲུང་འབད་ནི་ལུ་  ཁྱོད་ངེས་བདེན་ཨིན་ན?"
 
-#: ../backends/gstreamer/rb-player-gst.c:631
-#: ../metadata/rb-metadata-gst.c:887
-#: ../metadata/rb-metadata-gst.c:1447
-#: ../player/rb-recorder-gst.c:668
+#: ../backends/gstreamer/rb-player-gst.c:689
+#: ../metadata/rb-metadata-gst.c:875
+#: ../metadata/rb-metadata-gst.c:1435
+#: ../plugins/cd-recorder/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "%sཆ་ཤས་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག; ཁྱོད་རའི་གཞི་བཙུགས་འདི་ཞིབ་དཔྱད་འབད་"
 
-#: ../backends/gstreamer/rb-player-gst.c:708
+#: ../backends/gstreamer/rb-player-gst.c:766
 msgid "Unknown playback error"
 msgstr "མ་ཤེས་པའི་གླུ་གཞས་གཏང་ནི་འཛོལ་བ་"
-
-#. TODO: Improve to decrease wrong cover downloads, maybe add severity?
-#. Assemble list of search keywords (and thus search queries)
-#. If we still have no definite hit, use first result where artist matches
-#: ../daapsharing/rb-daap-connection.c:677
-#: ../iradio/rb-station-properties-dialog.c:427
-#: ../lib/rb-util.c:597
-#: ../lib/rb-util.c:811
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:107
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:117
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:226
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:241
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:57
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:58
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:424
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1028
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1029
-#: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1504
-#: ../podcast/rb-podcast-properties-dialog.c:449
-#: ../podcast/rb-podcast-properties-dialog.c:502
-#: ../remote/dbus/rb-client.c:114
-#: ../rhythmdb/rhythmdb.c:1320
-#: ../rhythmdb/rhythmdb-tree.c:1120
-#: ../rhythmdb/rhythmdb-tree.c:1124
-#: ../rhythmdb/rhythmdb-tree.c:1128
-#: ../rhythmdb/rhythmdb-tree.c:1132
-#: ../sources/rb-audiocd-source.c:201
-#: ../sources/rb-ipod-source.c:235
-#: ../sources/rb-iradio-source.c:551
-#: ../sources/rb-iradio-source.c:1285
-#: ../sources/rb-podcast-source.c:1633
-#: ../widgets/rb-entry-view.c:776
-#: ../widgets/rb-entry-view.c:801
-#: ../widgets/rb-entry-view.c:1085
-#: ../widgets/rb-entry-view.c:1097
-#: ../widgets/rb-entry-view.c:1109
-#: ../widgets/rb-song-info.c:732
-#: ../widgets/rb-song-info.c:896
-#: ../widgets/rb-song-info.c:1166
-msgid "Unknown"
-msgstr "མ་ཤེས།"
-
-#: ../daapsharing/rb-daap-dialog.c:47
-msgid "Invalid share name"
-msgstr "ནུས་ཅན་མེད་པའི་རུབ་སྤྱོད་མིང་།"
-
-#: ../daapsharing/rb-daap-dialog.c:66
-#, c-format
-msgid "The shared music name '%s' is already taken. Please choose another."
-msgstr "རུབ་སྤྱོད་སྙན་ཆའི་མིང་ '%s' འདི་  ཧེ་མ་ལས་འབག་ནུག།  གཞན་མི་གདམ་ཁ་བརྐྱབ་གནང་།"
-
-#: ../daapsharing/rb-daap-dialog.c:74
-#: ../data/glade/daap-prefs.glade.h:3
-msgid "Shared music _name:"
-msgstr "རུབ་སྤྱོད་འབད་ཡོད་པའི་མིང་:(_n)"
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:298
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:343
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:318
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:364
-msgid "MDNS service is not running"
-msgstr "ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་གཡོག་མི་བཀོལ་བས་"
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:306
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:327
-msgid "Browser already active"
-msgstr "བརྡ་འཚོལ་པ་འདི་ཧེ་མ་ལས་ཤུགས་ལྡན་ཨིན་མས་"
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:326
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:347
-msgid "Unable to activate browser"
-msgstr "བརྡ་འཚོལ་པ་ཤུགས་ལྡན་བཟོ་མ་ཚུགས་"
-
-#: ../daapsharing/rb-daap-mdns-browser-avahi.c:351
-#: ../daapsharing/rb-daap-mdns-browser-howl.c:372
-msgid "Browser is not active"
-msgstr "བརྡ་འཚོལ་པ་འདི་ཤུགས་ལྡན་མིན་འདུག་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:199
-msgid "Could not create AvahiEntryGroup for publishing"
-msgstr "དེབ་བསྐྲུན་འབད་ནི་དོན་ལུ་  ཨ་བཱ་ཧི་ཐོ་བཀོད་སྡེ་ཚན་གསར་བསྐྲུན་འབད་མ་ཚུགས་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:235
-msgid "Could not add service"
-msgstr "ཞབས་ཏོག་ཁ་སྐོང་བརྐྱབ་མ་ཚུགས་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:247
-msgid "Could not commit service"
-msgstr "ཞབས་ཏོག་ཐག་གཅད་མ་ཚུགས་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:352
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:372
-msgid "The avahi MDNS service is not running"
-msgstr "ཨ་བཱ་ཧི་  ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་གཡོག་མི་བཀོལ་བས་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-avahi.c:381
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:272
-msgid "The MDNS service is not published"
-msgstr "ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་དཔེ་བསྐྲུན་མ་འབད་བས་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:176
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:211
-msgid "Error initializing Howl for publishing"
-msgstr "དེབ་བསྐྲུན་འབད་ནི་དོན་ལུ་  ཧའོལ་འཛོལ་བ་འདི་འགོ་འབྱེད་འབད་དོ་"
-
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:238
-#: ../daapsharing/rb-daap-mdns-publisher-howl.c:263
-msgid "The howl MDNS service is not running"
-msgstr "ཧའོལ་ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་གཡོག་མི་བཀོལ་བས་"
-
-#: ../daapsharing/rb-daap-sharing.c:68
-#, c-format
-msgid "%s's Music"
-msgstr "%s'sགི་སྙན་ཆ།"
-
-#: ../daapsharing/rb-daap-src.c:629
-#, c-format
-msgid "Connection to %s:%d refused."
-msgstr "%sལུ་མཐུད་ལམ: %dངོས་ལེན་མ་འབད་བས།"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:1
-msgid "0"
-msgstr "༠"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:2
-msgid "Check Last.fm server status at"
-msgstr " Last.fmསར་བར་གནས་ཚད་ལུ་ཞིབ་དཔྱད་འབད་"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:3
-msgid "Disabled"
-msgstr "ལྕོགས་མིན་བཟོ་ནུག"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:4
-msgid "Find out about Last.fm at "
-msgstr "Last.fmསྐོར་ལས་འཚོལ་ཞིབ་འབད།"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:5
-msgid "Join the Rhythmbox group at "
-msgstr "རི་ཐམ་བོཀསི་སྡེ་ཚན་འདི་མཐུད་བྱེད།"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:6
-msgid "Last submission time:"
-msgstr "མཇུག་གི་ཞུ་འབུལ་ཆུ་ཚོད:"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:7
-msgid "Last.fm Profile"
-msgstr "Last.fmགསལ་སྡུད་"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:8
-#: ../iradio/rb-station-properties-dialog.c:438
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:846
-#: ../rhythmdb/rhythmdb.c:2854
-#: ../widgets/rb-entry-view.c:724
-#: ../widgets/rb-entry-view.c:1143
-#: ../widgets/rb-entry-view.c:1156
-#: ../widgets/rb-song-info.c:1139
-msgid "Never"
-msgstr "ནམ་ཡང་"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:9
-msgid "Queued tracks:"
-msgstr "མི་གྲལ་གླུ་རིམ་ཚུ:"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:10
-msgid "Status:"
-msgstr "གནས་ཚད:"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:11
-msgid "Tracks submitted:"
-msgstr "གླུ་རིམ་ཚུ་ཞུ་འབུལ་འབད་ནུག:"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:12
-msgid "_Password:"
-msgstr "ཆོག་ཡིག:(_P)"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:13
-msgid "_Username:"
-msgstr "ལག་ལེན་པའི་མིང་:(_U)"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:14
-msgid "http://last.fm"
-msgstr "http://last.fm"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:15
-msgid "http://last.fm/forum/21713/_/51596"
-msgstr "http://last.fm/གྲོས་གནས་/༢༡༧༡༣/_/༥༡༥༩༦"
-
-#: ../data/glade/audioscrobbler-prefs.glade.h:16
-msgid "http://last.fm/group/Rhythmbox"
-msgstr "http://last.fm/སྡེ་ཚན་/རི་ཐམ་བོཀསི།"
 
 #: ../data/glade/create-playlist.glade.h:1
 msgid "A_dd if any criteria are matched"
@@ -262,20 +68,7 @@ msgstr "དབྱེ་སེལ་འབད་ཡོད་པའི་བསྒ
 msgid "songs"
 msgstr "ཞབས་ཁྲ་ཚུ་"
 
-#: ../data/glade/daap-prefs.glade.h:1
-msgid "<b>Sharing</b>"
-msgstr "<b>རུབ་སྤྱོད་འབད་དོ།</b>"
-
-#: ../data/glade/daap-prefs.glade.h:2
-msgid "Require _password:"
-msgstr "ཆོག་ཡིག་དགོས་མཁོ་ཡོད:(_p)"
-
-#: ../data/glade/daap-prefs.glade.h:4
-msgid "_Share my music"
-msgstr "ངེས་ཀྱི་སྙན་ཆ་རུབ་སྤྱོད་འབད།(_S)"
-
 #: ../data/glade/druid.glade.h:1
-#: ../data/glade/song-info.glade.h:1
 #: ../data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
@@ -470,21 +263,21 @@ msgstr "ས་ཁོངས:"
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
 #: ../data/glade/podcast-properties.glade.h:1
-#: ../widgets/bacon-volume.c:217
+#: ../widgets/bacon-volume.c:224
 msgid "-"
 msgstr "-"
 
 #: ../data/glade/podcast-feed-properties.glade.h:3
 #: ../data/glade/podcast-properties.glade.h:2
-#: ../data/glade/song-info.glade.h:2
-#: ../data/glade/station-properties.glade.h:1
+#: ../data/glade/song-info.glade.h:1
+#: ../plugins/iradio/station-properties.glade.h:1
 msgid "Basic"
 msgstr "གཞི་རིམ་"
 
 #: ../data/glade/podcast-feed-properties.glade.h:6
 #: ../data/glade/podcast-properties.glade.h:6
-#: ../data/glade/song-info.glade.h:4
-#: ../data/glade/station-properties.glade.h:3
+#: ../data/glade/song-info.glade.h:3
+#: ../plugins/iradio/station-properties.glade.h:3
 msgid "Details"
 msgstr "རྒྱས་བཤད་"
 
@@ -509,10 +302,6 @@ msgstr "འབྱུང་ཁུངས:"
 #: ../data/glade/podcast-properties.glade.h:13
 msgid "Title:"
 msgstr "མགོ་མིང་:"
-
-#: ../data/glade/podcast-new.glade.h:1
-msgid "_URL of podcast feed:"
-msgstr "པི་ཨོ་ཌི་ཀསིཊི་མཁོ་སྤྲོད་འབད་ནི་གི་ཡུ་ཨར་ཨེལ:(_U)"
 
 #: ../data/glade/podcast-prefs.glade.h:1
 msgid "<b>Download Manager</b>"
@@ -543,8 +332,8 @@ msgid "_Download location:"
 msgstr "གནས་ཁོངས་ཕབ་ལེན་འབད:(_D)"
 
 #: ../data/glade/podcast-properties.glade.h:3
-#: ../data/glade/song-info.glade.h:3
-#: ../data/glade/station-properties.glade.h:2
+#: ../data/glade/song-info.glade.h:2
+#: ../plugins/iradio/station-properties.glade.h:2
 msgid "Bitrate:"
 msgstr "བའི་ཊེརེཊི:"
 
@@ -557,7 +346,7 @@ msgid "Download location:"
 msgstr "གནས་ཁོངས་ཕབ་ལེན་འབད:"
 
 #: ../data/glade/podcast-properties.glade.h:8
-#: ../data/glade/song-info.glade.h:5
+#: ../data/glade/song-info.glade.h:4
 msgid "Duration:"
 msgstr "དུས་ཡུན:"
 
@@ -566,108 +355,76 @@ msgid "Feed:"
 msgstr "མཁོ་སྤྲོད་འབད:"
 
 #: ../data/glade/podcast-properties.glade.h:10
-#: ../data/glade/song-info.glade.h:9
-#: ../data/glade/station-properties.glade.h:6
+#: ../data/glade/song-info.glade.h:8
+#: ../plugins/iradio/station-properties.glade.h:6
 msgid "Last played:"
 msgstr "མཇུག་ལུ་གཏང་ནུག:"
 
 #: ../data/glade/podcast-properties.glade.h:11
-#: ../data/glade/song-info.glade.h:11
-#: ../data/glade/station-properties.glade.h:7
+#: ../data/glade/song-info.glade.h:10
+#: ../plugins/iradio/station-properties.glade.h:7
 msgid "Play count:"
 msgstr "གྱངས་ཁ་བརྐྱབ་ནི་གཏང་:"
 
 #: ../data/glade/podcast-properties.glade.h:14
-#: ../data/glade/song-info.glade.h:16
 #: ../data/glade/song-info-multiple.glade.h:5
-#: ../data/glade/station-properties.glade.h:9
+#: ../data/glade/song-info.glade.h:15
+#: ../plugins/iradio/station-properties.glade.h:9
 msgid "_Rating:"
 msgstr "མང་ཉུང་ཚད:(_R)"
 
-#: ../data/glade/recorder.glade.h:1
-msgid "Create audio CD from playlist?"
-msgstr "གཏང་ཐོ་ལས་རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ག?"
-
-#: ../data/glade/recorder.glade.h:2
-msgid "Options"
-msgstr "གདམ་ཁ་ཚུ།"
-
-#: ../data/glade/recorder.glade.h:3
-msgid "Progress"
-msgstr "ཡར་འཕེལ།"
-
-#: ../data/glade/recorder.glade.h:4
-msgid "Write _speed:"
-msgstr "མགྱགས་ཚད་འབྲི:(_s)"
-
-#: ../data/glade/recorder.glade.h:5
-msgid "Write disc _to:"
-msgstr "ཌིསིཀ་ལུ་འབྲི:(_t)"
-
-#: ../data/glade/recorder.glade.h:6
-msgid "_Make multiple copies"
-msgstr "སྣ་མང་འདྲ་བཤུས་ཚུ་བཟོ།(_M)"
-
-#: ../data/glade/song-info.glade.h:6
-#: ../data/glade/station-properties.glade.h:4
-msgid "Error message"
-msgstr "འཛོལ་བའི་འཕྲིན་དོན་"
-
-#: ../data/glade/song-info.glade.h:7
-msgid "File name:"
-msgstr "ཡིག་སྣོད་མིང་:"
-
-#: ../data/glade/song-info.glade.h:8
-msgid "File size:"
-msgstr "ཡིག་སྣོད་ཚད:"
-
-#: ../data/glade/song-info.glade.h:10
-msgid "Location:"
-msgstr "གནས་ཁོངས:"
-
-#: ../data/glade/song-info.glade.h:12
 #: ../data/glade/song-info-multiple.glade.h:1
+#: ../data/glade/song-info.glade.h:11
 msgid "_Album:"
 msgstr "གླུ་མཛོད:(_A)"
 
-#: ../data/glade/song-info.glade.h:13
 #: ../data/glade/song-info-multiple.glade.h:2
+#: ../data/glade/song-info.glade.h:12
 msgid "_Artist:"
 msgstr "གླུ་གཞསཔ་:(_A)"
 
-#: ../data/glade/song-info.glade.h:14
 #: ../data/glade/song-info-multiple.glade.h:3
+#: ../data/glade/song-info.glade.h:13
 msgid "_Disc number:"
 msgstr "ཌིསིཀ་ཨང་གྲངས:(_D)"
 
-#: ../data/glade/song-info.glade.h:15
 #: ../data/glade/song-info-multiple.glade.h:4
-#: ../data/glade/station-properties.glade.h:8
+#: ../data/glade/song-info.glade.h:14
+#: ../plugins/iradio/station-properties.glade.h:8
 msgid "_Genre:"
 msgstr "རིགས:(_G)"
 
-#: ../data/glade/song-info.glade.h:17
-#: ../data/glade/station-properties.glade.h:10
-msgid "_Title:"
-msgstr "མགོ་མིང་:(_T)"
-
-#: ../data/glade/song-info.glade.h:18
-msgid "_Track number:"
-msgstr "གླུ་རིམ་ཨང་གྲངས:(_T)"
-
-#: ../data/glade/song-info.glade.h:19
 #: ../data/glade/song-info-multiple.glade.h:6
-#: ../plugins/magnatune/magnatune-prefs.glade.h:47
+#: ../data/glade/song-info.glade.h:18
+#: ../plugins/magnatune/magnatune-prefs.glade.h:46
 msgid "_Year:"
 msgstr "ལོ:(_Y)"
 
-#: ../data/glade/station-new.glade.h:1
-msgid "_URL of internet radio station:"
-msgstr "ཨིན་ཊར་ནེཊི་རེ་ཌིའོ་ལྟེ་བའི་ཡུ་ཨར་ཨེལ:(_U)"
+#: ../data/glade/song-info.glade.h:5
+#: ../plugins/iradio/station-properties.glade.h:4
+msgid "Error message"
+msgstr "འཛོལ་བའི་འཕྲིན་དོན་"
 
-#: ../data/glade/station-properties.glade.h:5
-msgid "L_ocation:"
-msgstr "གནས་ཁོངས:(_o)"
+#: ../data/glade/song-info.glade.h:6
+msgid "File name:"
+msgstr "ཡིག་སྣོད་མིང་:"
+
+#: ../data/glade/song-info.glade.h:7
+msgid "File size:"
+msgstr "ཡིག་སྣོད་ཚད:"
+
+#: ../data/glade/song-info.glade.h:9
+msgid "Location:"
+msgstr "གནས་ཁོངས:"
+
+#: ../data/glade/song-info.glade.h:16
+#: ../plugins/iradio/station-properties.glade.h:10
+msgid "_Title:"
+msgstr "མགོ་མིང་:(_T)"
+
+#: ../data/glade/song-info.glade.h:17
+msgid "_Track number:"
+msgstr "གླུ་རིམ་ཨང་གྲངས:(_T)"
 
 #: ../data/glade/uri.glade.h:2
 msgid "Enter the _location (URI) of the file you would like to add:"
@@ -690,8 +447,10 @@ msgid "Recently Played"
 msgstr "འཕྲལ་གཏང་ཡོདཔ་"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../shell/rb-shell.c:1014
-#: ../shell/rb-shell.c:2026
+#: ../plugins/power-manager/rb-power-manager-plugin.c:181
+#: ../shell/rb-shell.c:1041
+#: ../shell/rb-shell.c:2131
+#: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "སྙན་ཆ་གཏང་འཕྲུལ་"
 
@@ -702,26 +461,6 @@ msgstr "གཏང་ཞིནམ་ལས་ཁྱོད་རའི་སྙན
 #: ../data/rhythmbox.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "རི་ཐམ་བོཀསི་སྙན་ཆ་གཏང་འཕྲུལ་"
-
-#: ../iradio/rb-new-station-dialog.c:105
-#: ../iradio/rb-station-properties-dialog.c:341
-msgid "New Internet Radio Station"
-msgstr "ཨིན་ཊར་ནེཊིརེ་ཌིའོ་ལྟེ་བ་གསརཔ་"
-
-#: ../iradio/rb-station-properties-dialog.c:337
-#: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:337
-#: ../widgets/rb-song-info.c:836
-#, c-format
-msgid "%s Properties"
-msgstr "%sརྒྱུ་དངོས་"
-
-#: ../iradio/rb-station-properties-dialog.c:429
-#: ../podcast/rb-podcast-properties-dialog.c:447
-#: ../widgets/rb-song-info.c:894
-#, c-format
-msgid "%lu kbps"
-msgstr "%lu ཀེ་བི་པི་ཨེསི་"
 
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:269
@@ -764,246 +503,277 @@ msgstr "ཨེཆ་ཊི་ཊི་པི་པོརོ་སི་རིམ
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "རི་ཐམ་བོཀསི་འདི་གིས་  རང་བཞིན་པོརོ་སི་རིམ་སྒྲིག་རྒྱབ་སྐྱོར་མི་འབད་"
 
-#: ../lib/rb-util.c:599
-#: ../remote/dbus/rb-client.c:116
+#. TODO: Improve to decrease wrong cover downloads, maybe add severity?
+#. Assemble list of search keywords (and thus search queries)
+#. If we still have no definite hit, use first result where artist matches
+#. we really do need to fix this so untagged entries actually have NULL rather than
+#. * a translated string.
+#.
+#. Translators: unknown track title
+#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:855
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:107
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:117
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:226
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:241
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:122
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:123
+#: ../plugins/audiocd/rb-audiocd-source.c:207
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:459
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1083
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
+#: ../plugins/daap/rb-daap-connection.c:677
+#: ../plugins/generic-player/rb-generic-player-source.c:763
+#: ../plugins/ipod/rb-ipod-source.c:269
+#: ../plugins/iradio/rb-iradio-source.c:492
+#: ../plugins/iradio/rb-iradio-source.c:1083
+#: ../plugins/iradio/rb-station-properties-dialog.c:479
+#: ../podcast/rb-feed-podcast-properties-dialog.c:301
+#: ../podcast/rb-podcast-manager.c:1557
+#: ../podcast/rb-podcast-properties-dialog.c:467
+#: ../podcast/rb-podcast-properties-dialog.c:520
+#: ../remote/dbus/rb-client.c:118
+#: ../rhythmdb/rhythmdb-tree.c:1147
+#: ../rhythmdb/rhythmdb-tree.c:1151
+#: ../rhythmdb/rhythmdb-tree.c:1155
+#: ../rhythmdb/rhythmdb-tree.c:1159
+#: ../rhythmdb/rhythmdb.c:1362
+#: ../shell/rb-shell.c:3041
+#: ../sources/rb-podcast-source.c:1641
+#: ../widgets/rb-entry-view.c:812
+#: ../widgets/rb-entry-view.c:837
+#: ../widgets/rb-entry-view.c:1121
+#: ../widgets/rb-entry-view.c:1133
+#: ../widgets/rb-entry-view.c:1145
+#: ../widgets/rb-song-info.c:766
+#: ../widgets/rb-song-info.c:930
+#: ../widgets/rb-song-info.c:1200
+msgid "Unknown"
+msgstr "མ་ཤེས།"
+
+#: ../lib/rb-util.c:643
+#: ../remote/dbus/rb-client.c:120
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:601
-#: ../remote/dbus/rb-client.c:118
+#: ../lib/rb-util.c:645
+#: ../remote/dbus/rb-client.c:122
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:680
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d of %d:%02d ལྷག་ལུས་"
 
-#: ../lib/rb-util.c:640
+#: ../lib/rb-util.c:684
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d of %d:%02d:%02d ལྷག་ལུས་"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:689
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d of %d:%02d"
 
-#: ../lib/rb-util.c:649
+#: ../lib/rb-util.c:693
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d of %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:278
+#: ../metadata/rb-metadata-dbus-client.c:299
 msgid "Internal GStreamer problem; file a bug"
 msgstr "ནང་འཁོད་ཇི་སི་ཊི་མར་དཀའ་ངལ་; རྐྱེན་ཅིག་ཡིག་སྣོད་བརྐྱབ་"
 
-#: ../metadata/rb-metadata-dbus-client.c:296
-#: ../metadata/rb-metadata-dbus-client.c:346
-#: ../metadata/rb-metadata-dbus-client.c:351
-#: ../metadata/rb-metadata-dbus-client.c:371
-#: ../metadata/rb-metadata-dbus-client.c:381
-#: ../metadata/rb-metadata-dbus-client.c:389
-#: ../metadata/rb-metadata-dbus-client.c:529
-#: ../metadata/rb-metadata-dbus-client.c:539
+#: ../metadata/rb-metadata-dbus-client.c:317
+#: ../metadata/rb-metadata-dbus-client.c:367
+#: ../metadata/rb-metadata-dbus-client.c:372
+#: ../metadata/rb-metadata-dbus-client.c:392
+#: ../metadata/rb-metadata-dbus-client.c:402
+#: ../metadata/rb-metadata-dbus-client.c:410
+#: ../metadata/rb-metadata-dbus-client.c:550
+#: ../metadata/rb-metadata-dbus-client.c:560
 msgid "D-BUS communication error"
 msgstr "ཌི་-བི་ཡུ་ཨེསི་བརྒྱུད་འབྲེལ་འཛོལ་བ་"
 
-#: ../metadata/rb-metadata-gst.c:633
+#: ../metadata/rb-metadata-gst.c:621
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr "\"%s\" ཡིག་སྣོད་ཚུ་ཌི་ཀོཌི་འབད་ནི་ལུ་  ཇི་སི་ཊི་མར་པ་ལག་ཨིནསི་འདི་འཚོལ་མི་འཐོབ་"
 
-#: ../metadata/rb-metadata-gst.c:636
+#: ../metadata/rb-metadata-gst.c:624
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "ཡིག་སྣོད་འདི་གིས་  %sདབྱེ་བ་གི་རྒྱུན་རིམ་ཅིག་ཡོདཔ་ཨིན་  དེ་ཡང་  ཌི་ཀོཌི་འབད་བཏུབ་མི་"
 
-#: ../metadata/rb-metadata-gst.c:1042
+#: ../metadata/rb-metadata-gst.c:1030
 msgid "Failed to create a source element; check your installation"
 msgstr "འབྱུང་ཁུངས་ཆ་ཤས་ཅིག་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག་; ཁྱོད་རའི་གཞི་བཙུགས་ཞིབ་དཔྱད་འབད་"
 
-#: ../metadata/rb-metadata-gst.c:1115
+#: ../metadata/rb-metadata-gst.c:1103
 msgid "GStreamer error: failed to change state"
 msgstr "ཇི་སི་ཊི་མར་འཛོལ་བ:  གནས་ལུགས་བསྒྱུར་བཅོས་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../metadata/rb-metadata-gst.c:1238
+#: ../metadata/rb-metadata-gst.c:1226
 msgid "The MIME type of the file could not be identified"
 msgstr "ཡིག་སྣོད་ཀྱི་མ་ཡིམ་དབྱེ་བ་འདི་ངོས་འཛིན་འབད་མ་བཏུབ་"
 
-#: ../metadata/rb-metadata-gst.c:1375
+#: ../metadata/rb-metadata-gst.c:1363
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "རྒྱབ་སྐྱོར་མེད་པའི་ཡིག་སྣོད་དབྱེ་བ: %s"
 
-#: ../metadata/rb-metadata-gst.c:1384
+#: ../metadata/rb-metadata-gst.c:1372
 msgid "Unable to create tag-writing elements"
 msgstr "ངོ་རྟགས་འབྲི་ནི་ཆ་ཤས་གསར་བསྐྲུན་འབད་མ་ཚུགས་"
 
-#: ../metadata/rb-metadata-gst.c:1407
+#: ../metadata/rb-metadata-gst.c:1395
 msgid "Timeout while setting pipeline to NULL"
 msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་སྟོང་ཆ་ལུ་སྒྲིག་སྟངས་འབདཝ་ད་ ངལ་མཚམས་"
 
-#: ../metadata/rb-metadata-gst.c:1427
+#: ../metadata/rb-metadata-gst.c:1415
 msgid "File corrupted during write"
 msgstr "འབྲི་བའི་བསྒང་  ཡིག་སྣོད་ངན་ཅན་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:109
+#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
+msgid "Cover art"
+msgstr "ཁེབས་ཀྱི་རི་མོ།"
+
+#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
+msgid "Fetch album covers from the Internet"
+msgstr "ཨིན་ཊར་ནེཊི་ལས་གླུ་མཛོད་ཁེབས་ཚུ་ལེན།"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
+msgid "Audio CD Player"
+msgstr "རྣར་ཉན་སི་ཌི་གཏང་འཕྲུལ།"
+
+#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
+msgid "Support for playing of audio CDs as music source"
+msgstr "སྙན་ཆ་འབྱུང་ཁུངས་བཟུམ་སྦེ་རྣར་ཉན་སི་ཌིསི་གི་གཏང་འཕྲུལ་གྱི་དོན་ལུ་རྒྱབ་སྐྱོར་འབད།"
+
+#: ../plugins/audiocd/multiple-album.glade.h:1
+msgid "Multiple Albums Found"
+msgstr "སྣ་མང་གླུ་མཛོད་ཚུ་ཐོབ་ཡོདཔ།"
+
+#: ../plugins/audiocd/multiple-album.glade.h:2
+msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
+msgstr "སི་ཌི་འདི་གླུ་མཛོད་གཅིག་ལས་མང་། འོག་གི་གླུ་མཛོད་ག་ཨིན་ན་སེལ་འཐུ་འབད་ནི་དང་ <i>འཕྲོ་མཐུད་</i>ཨེབ།"
+
+#: ../plugins/audiocd/multiple-album.glade.h:3
+msgid "_Continue"
+msgstr "འཕྲོ་མཐུད(_C)"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:211
+msgid "<Invalid unicode>"
+msgstr "<ནུས་ཅན་མེད་པའི་ཡུ་ནི་ཀོཌི་>"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:256
+#, c-format
+msgid "Track %u"
+msgstr "གླུ་རིམ་ %u"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:342
+#: ../plugins/audiocd/rb-audiocd-source.c:352
+#: ../plugins/audiocd/rb-audiocd-source.c:359
+#: ../plugins/audiocd/rb-audiocd-source.c:671
+msgid "Couldn't load Audio CD"
+msgstr "རྣར་ཉན་སི་ཌི་མངོན་གསལ་འབད་མ་ཚུགས་"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:343
+#: ../plugins/audiocd/rb-audiocd-source.c:353
+msgid "Rhythmbox couldn't access the CD."
+msgstr "རི་ཐམ་བོཀསི་འདི་གིས་  སི་ཌི་འཛུལ་སྤྱོད་འབད་མ་ཚུགས་"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:360
+msgid "Rhythmbox couldn't read the CD information."
+msgstr "རི་ཐམ་བོཀསི་འདི་གིས་ སི་ཌི་བརྡ་དོན་ལྷག་མ་ཚུགས་"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:465
+#: ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1077
+#: ../widgets/rb-query-creator-properties.c:65
+#: ../widgets/rb-query-creator-properties.c:95
+msgid "Title"
+msgstr "མགོ་མིང་"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:472
+#: ../sources/rb-library-source.c:124
+#: ../widgets/rb-entry-view.c:1087
+#: ../widgets/rb-library-browser.c:100
+#: ../widgets/rb-query-creator-properties.c:66
+#: ../widgets/rb-query-creator-properties.c:92
+msgid "Artist"
+msgstr "གླུ་གཞསཔ་"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:672
+msgid "Rhythmbox could not get access to the CD device."
+msgstr "རི་ཐམ་བོཀསི་འདི་གིས་  སི་ཌི་ཐབས་འཕྲུལ་ལུ་འཛུལ་སྤྱོད་འབད་མ་ཚུགས་"
+
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:114
 msgid "Cannot create MusicBrainz client"
 msgstr "མུས་སིཀ་བེརེནཛི་ཞབས་ཏོག་སྤྱོད་མི་གསར་བསྐྲུན་འབད་མ་ཚུགས་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:231
-#: ../metadata/sj-metadata-musicbrainz.c:516
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:239
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:540
 #, c-format
 msgid "Cannot read CD: %s"
 msgstr "སི་ཌི་ལྷག་མ་ཚུགས:%s"
 
-#: ../metadata/sj-metadata-musicbrainz.c:238
-#: ../metadata/sj-metadata-musicbrainz.c:554
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:246
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:578
 msgid "Unknown Artist"
 msgstr "མ་ཤེས་པའི་རི་མོ་མཁན་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:239
-#: ../metadata/sj-metadata-musicbrainz.c:565
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:247
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:589
 msgid "Unknown Title"
 msgstr "མ་ཤེས་པའི་མགོ་མིང་་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:245
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:253
 #, c-format
 msgid "Track %d"
 msgstr "%dགླུ་རིམ།"
 
-#: ../metadata/sj-metadata-musicbrainz.c:273
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:281
 msgid "MusicBrainz metadata object is not valid. This is bad, check your console for errors."
 msgstr "མུས་སིཀ་བེརེནཛི་མེ་ཊ་གནས་སྡུད་དངོས་པོ་འདི་ ནུས་ཅན་མིན་འདུག།  འདི་ལེགས་ཤོམ་མིན་འདུག་  འཛོལ་བའི་དོན་ལུ་  ཁྱོད་རའི་མ་སྒྲོམ་ཞིབ་དཔྱད་འབད་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:440
-#: ../metadata/sj-metadata-musicbrainz.c:447
-#: ../metadata/sj-metadata-musicbrainz.c:461
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:448
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:455
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:469
 #, c-format
 msgid "This CD could not be queried: %s\n"
 msgstr "སི་ཌི་འདི་འདྲི་དཔྱད་འབད་མ་བཏུབ:%s\n"
 
-#: ../metadata/sj-metadata-musicbrainz.c:510
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:534
 #, c-format
 msgid "Device '%s' does not contain any media"
 msgstr "ཐབས་འཕྲུལ་ '%s' འདི་གིས་  བརྡ་དོན་ཅི་ཡང་གནས་ཏེ་མེད་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:513
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:537
 #, c-format
 msgid "Device '%s' could not be opened. Check the access permissions on the device."
 msgstr "ཐབས་འཕྲུལ་'%s' ཁ་ཕྱེ་མ་བཏུབ།  ཐབས་འཕྲུལ་གུ་  འཛུལ་སྤྱོད་གནང་བ་ཚུ་ཞིབ་དཔྱད་འབད།"
 
-#: ../metadata/sj-metadata-musicbrainz.c:549
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:573
 msgid "Various"
 msgstr "འདྲ་མིན་སྣ་ཚོགས་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:590
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:614
 msgid "Incomplete metadata for this CD"
 msgstr "སི་ཌི་འདི་གི་དོན་ལུ་  ཆ་མ་ཚང་བའི་མེ་ཊ་གནས་སྡུད་"
 
-#: ../metadata/sj-metadata-musicbrainz.c:681
+#: ../plugins/audiocd/sj-metadata-musicbrainz.c:705
 msgid "Could not create CD lookup thread"
 msgstr "སི་ཌི་བལྟ་བའི་ཐེརེཌི་གསར་བསྐྲུན་འབད་མ་ཚུགས་"
 
-#: ../player/rb-recorder-gst.c:544
-msgid "Failed to create pipeline"
-msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག་"
-
-#: ../player/rb-recorder-gst.c:574
-msgid "Could not access source pad"
-msgstr "འབྱུང་ཁུངས་གདན་འཛུལ་སྤྱོད་འབད་མ་ཚུགས་"
-
-#: ../player/rb-recorder-gst.c:686
-#: ../player/rb-recorder-gst.c:692
-#, c-format
-msgid "Unable to unlink '%s'"
-msgstr "'%s'འབྲེལ་མཐུད་འབད་མ་ཚུགས།"
-
-#: ../player/rb-recorder-gst.c:733
-msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr "འཆར་རིམ་བཀོད་མི་འགོ་ཐོག་འབད་མ་ཚུགས།  ཁྱོད་ཀྱིས་ཇི་ཨེསི་ཊི་-ཐོ་འགོད་གཡོག་བཀོལ་ཡི་ག?"
-
-#: ../player/rb-recorder-gst.c:769
-#: ../player/rb-recorder-gst.c:774
-#: ../player/rb-recorder-gst.c:840
-msgid "Could not get current track position"
-msgstr "ད་ལྟོའི་གླུ་རིམ་གནས་ས་འཐོབ་མ་ཚུགས་"
-
-#: ../player/rb-recorder-gst.c:826
-msgid "Could not retrieve state from processing pipeline"
-msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་བཟོ་སྦྱོར་ལས་  གནས་ལུགས་སླར་འདྲེན་འབད་མ་ཚུགས་"
-
-#: ../player/rb-recorder-gst.c:891
-#: ../player/rb-recorder-gst.c:943
-msgid "Could not start pipeline playing"
-msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་གཏང་ནི་འགོ་བཙུགས་མ་ཚུགས་"
-
-#: ../player/rb-recorder-gst.c:906
-#: ../player/rb-recorder-gst.c:954
-msgid "Could not pause playback"
-msgstr "གླུ་གཞས་གཏང་ནི་འདི་ཐེམ་མ་ཚུགས་"
-
-#: ../player/rb-recorder-gst.c:1161
-msgid "Cannot find drive"
-msgstr "འདྲེན་འཕྲུལ་འཚོལ་མ་འཐོབ་"
-
-#: ../player/rb-recorder-gst.c:1224
-#, c-format
-msgid "Cannot find drive %s"
-msgstr "འདྲེན་འཕྲུལ་%sའཐོབ་མ་ཚུགས་"
-
-#: ../player/rb-recorder-gst.c:1233
-#, c-format
-msgid "Drive %s is not a recorder"
-msgstr "འདྲེན་འཕྲུལ་%sའདི་བཟུང་འཕྲུལ་ཅིག་མེན་བས་"
-
-#: ../player/rb-recorder-gst.c:1399
-#: ../player/rb-recorder-gst.c:1592
-msgid "No writable drives found."
-msgstr "འབྲི་བཏུབ་པའི་འདྲེན་འཕྲུལ་འཐོབ་མི་ཚུགས་བས།"
-
-#: ../player/rb-recorder-gst.c:1542
-#, c-format
-msgid "Could not get track time for file: %s"
-msgstr "ཡིག་སྣོད་དོན་ལུ་  གླུ་རིམ་ཆུ་ཚོད་ལེན་མ་ཚུགས:%s"
-
-#: ../player/rb-recorder-gst.c:1601
-msgid "Could not determine audio track durations."
-msgstr "རྣར་ཉན་གླུ་རིམ་དུས་ཡུན་ཚུ་གཏན་འབེབས་བཟོ་མ་ཚུགས།"
-
-#: ../player/rb-recorder-gst.c:1651
-#, c-format
-msgid ""
-"There was an error writing to the CD:\n"
-"%s"
-msgstr ""
-"སི་ཌི་ལུ་འབྲི་བའི་བསྒང་འཛོལ་བ་ཅིག་འབྱུང་ནུག:\n"
-"%s"
-
-#: ../player/rb-recorder-gst.c:1655
-msgid "There was an error writing to the CD"
-msgstr "སི་ཌི་ལུ་འབྲི་བའི་བསྒང་  འཛོལ་བ་འབྱུང་ནུག་"
-
-#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
-msgid "Art Display"
-msgstr "རི་མོ་བཀྲམ་སྟོན་"
-
-#: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
-msgid "Displays art for the playing track"
-msgstr "གཏང་ནིའི་གླུ་རིམ་དོན་ལུ་  སྒྱུ་རྩལ་བཀྲམ་སྟོན་འབདཝ་ཨིན་"
-
-#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
-msgid "Audio CD"
-msgstr "རྣར་ཉན་སི་ཌི་"
-
-#: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:2
-msgid "Support for audio CDs"
-msgstr "རྣར་ཉན་སི་ཌི་ཚུ་གི་དོན་ལུ་ རྒྱབ་སྐྱོར་"
-
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:517
 msgid "Last.fm"
 msgstr "Last.fm"
 
@@ -1011,49 +781,256 @@ msgstr "Last.fm"
 msgid "Submits song information to last.fm and plays last.fm radio streams"
 msgstr "ཞབས་ཁྲ་བརྡ་དོན་འདི་last.fmལུ་འཕུལ་ནི་དང་  last.fmརེ་ཌིའོ་རྒྱུན་རིམ་ཚུ་གཏངམ་ཨིན་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:866
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:1
+msgid "0"
+msgstr "༠"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:2
+msgid "Check Last.fm server status at"
+msgstr " Last.fmསར་བར་གནས་ཚད་ལུ་ཞིབ་དཔྱད་འབད་"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:3
+msgid "Disabled"
+msgstr "ལྕོགས་མིན་བཟོ་ནུག"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:4
+msgid "Find out about Last.fm at "
+msgstr "Last.fmསྐོར་ལས་འཚོལ་ཞིབ་འབད།"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:5
+msgid "Join the Rhythmbox group at "
+msgstr "རི་ཐམ་བོཀསི་སྡེ་ཚན་འདི་མཐུད་བྱེད།"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:6
+msgid "Last submission time:"
+msgstr "མཇུག་གི་ཞུ་འབུལ་ཆུ་ཚོད:"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:7
+msgid "Last.fm Profile"
+msgstr "Last.fmགསལ་སྡུད་"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
+#: ../plugins/iradio/rb-station-properties-dialog.c:490
+#: ../rhythmdb/rhythmdb.c:2924
+#: ../widgets/rb-entry-view.c:760
+#: ../widgets/rb-entry-view.c:1179
+#: ../widgets/rb-entry-view.c:1192
+#: ../widgets/rb-song-info.c:1173
+msgid "Never"
+msgstr "ནམ་ཡང་"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:9
+msgid "Queued tracks:"
+msgstr "མི་གྲལ་གླུ་རིམ་ཚུ:"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:10
+msgid "Status:"
+msgstr "གནས་ཚད:"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:11
+msgid "Tracks submitted:"
+msgstr "གླུ་རིམ་ཚུ་ཞུ་འབུལ་འབད་ནུག:"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:12
+msgid "_Password:"
+msgstr "ཆོག་ཡིག:(_P)"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:13
+msgid "_Username:"
+msgstr "ལག་ལེན་པའི་མིང་:(_U)"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:14
+msgid "http://last.fm"
+msgstr "http://last.fm"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:15
+msgid "http://last.fm/forum/21713/_/51596"
+msgstr "http://last.fm/གྲོས་གནས་/༢༡༧༡༣/_/༥༡༥༩༦"
+
+#: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:16
+msgid "http://last.fm/group/Rhythmbox"
+msgstr "http://last.fm/སྡེ་ཚན་/རི་ཐམ་བོཀསི།"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:208
+msgid "Audioscrobbler preferences"
+msgstr "རྣར་ཉན་སི་ཀོརོབ་ལར་གདའ་གདམ་ཚུ་"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:915
 msgid "OK"
 msgstr "བཏུབ་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:869
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:918
 msgid "Logging in"
 msgstr "ནང་ན་དྲན་དེབ་འབད་དོ་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:872
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:921
 msgid "Request failed"
 msgstr "ཞུ་བ་འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:875
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:924
 msgid "Incorrect username"
 msgstr "ལག་ལེན་པའི་མིང་བདེན་མེད་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:878
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:927
 msgid "Incorrect password"
 msgstr "ཆོག་ཡིག་བདེན་མེད་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:881
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:930
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:578
 msgid "Handshake failed"
 msgstr "ལག་མཐུད་འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:884
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:933
 msgid "Client update required"
 msgstr "ཞབས་ཏོག་སྤྱོད་མི་དུས་མཐུན་དགོས་མཁོ་ཡོད་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:887
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:936
 msgid "Track submission failed"
 msgstr "གླུ་རིམ་ཞུ་འབུལ་འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:890
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:939
 msgid "Queue is too long"
 msgstr "མི་གྲལ་འདི་སྣ་མེད་ས་མེད་རིངམ་ཨིན་མས་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:893
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:942
 msgid "Track submission failed too many times"
 msgstr "གླུ་རིམ་ཞུ་འབུལ་འདི་ཚར་ལེ་ཤ་འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-plugin.c:173
-msgid "Audioscrobbler preferences"
-msgstr "རྣར་ཉན་སི་ཀོརོབ་ལར་གདའ་གདམ་ཚུ་"
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:147
+msgid "Similar Artists radio"
+msgstr "ཆ་འདྲ་བའི་གླུ་གཞསཔ་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:147
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1037
+#, c-format
+msgid "Artists similar to %s"
+msgstr "ལུ་ཆ་འདྲ་བའི་གླུ་གཞསཔ་ %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:148
+msgid "Tag radio"
+msgstr "ངོ་རྟགས་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:148
+#, c-format
+msgid "Tracks tagged with %s"
+msgstr "དང་གཅིག་ཁར་གླུ་རིམ་ངོ་རྟགས་ཡོདཔ %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:149
+msgid "Artist Fan radio"
+msgstr "གླུ་གཞསཔ་ཕེན་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:149
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1039
+#, c-format
+msgid "Artists liked by fans of %s"
+msgstr "གི་ཕེནསི་གིས་དགའ་ཡོད་མི་གླུ་གཞསཔ་ %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:150
+msgid "Group radio"
+msgstr "སྡེ་ཚན་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:150
+#, c-format
+msgid "Tracks liked by the %s group"
+msgstr "སྡེ་ཚན་གྱིས་ %s དགའ་ཡོད་མི་གླུ་རིམ་ཚུ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:210
+msgid "Next Song"
+msgstr "ཤུལ་མམ་གྱི་གླུ་གཞས།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:211
+msgid "Skip the current track"
+msgstr "ད་ལྟོའི་གླུ་རིམ་འདི་གོམ་འགྱོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:213
+msgid "Love Song"
+msgstr "རྩེ་བའི་གླུ་གཞས།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:214
+msgid "Mark this song as loved"
+msgstr "གླུ་གཞས་འདི་རྩེ་བའི་ཨིནམ་སྦེ་རྟགས་བཀོད།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:216
+msgid "Ban Song"
+msgstr "བེན་ཞབས་ཁྲ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:217
+msgid "Ban the current track from being played again"
+msgstr "ད་ལྟོའི་གླུ་རིམ་འདི་ལོག་སྟེ་གཏང་ནི་ལས་བཀག་བསྡམ་འབད།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:337
+msgid "Enter the item to build a Last.fm station out of:"
+msgstr "གི་ཕྱི་ཁའི་ཨེཕ་ཨེམ་ལྟེ་བ་མཇུག་ཅིག་བཟོ་བརྩིགས་འབད་ནི་ལུ་རྣམ་གྲངས་ཅིག་བཙུགས།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:340
+msgid "Add"
+msgstr "ཁ་སྐོང་འབད།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:534
+msgid "Neighbour Radio"
+msgstr "སྦོ་ལོག་ཁའི་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:574
+msgid "No such artist.  Check your spelling"
+msgstr "འདི་བཟུམ་མའི་གླུ་གཞསཔ་མེད། ཁྱོད་ཀྱི་སྡེ་ཞིབ་དཔྱད་འབད།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:582
+msgid "The server marked you as banned"
+msgstr "སར་བར་གྱིས་ཁྱོད་བཀག་བསྡམ་འབད་ཡོདཔ་སྦེ་རྟགས་བཀོད་ཡོདཔ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:595
+#: ../plugins/iradio/rb-iradio-source.c:555
+#, c-format
+msgid "%d station"
+msgid_plural "%d stations"
+msgstr[0] "%dལྟེ་བ་"
+msgstr[1] "%dལྟེ་བ་ཚུ་"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:973
+msgid "Marking song loved..."
+msgstr "རྩེ་བ་ཡདོ་པའི་གླུ་གཞས་རྟགས་བཀོད་དོ་་་"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:979
+msgid "Skipping song..."
+msgstr "ཞབས་ཁྲ་གོམ་འགྱོ་དོ་་་"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:985
+msgid "Banning song..."
+msgstr "གླུ་གཞས་བཀག་བསྡམ་འབད་དོ་་་"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1028
+#, c-format
+msgid "Global Tag %s"
+msgstr "སྤྱི་ཁྱབ་ངོ་རྟགས་ %s"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1047
+#, c-format
+msgid "%s's Neighbour Radio"
+msgstr "%s's སྦོ་ལོག་ཁའི་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1049
+#, c-format
+msgid "%s's Recommended Radio: %s percent"
+msgstr "%s's འོས་སྦྱོར་འབད་ཡོད་པའི་རེ་ཌིའོ་ %s བརྒྱ་ཆ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1051
+#, c-format
+msgid "%s's Personal Radio"
+msgstr "%s's རང་དོན་རེ་ཌིའོ།"
+
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1057
+#, c-format
+msgid "%s's %s Radio"
+msgstr "%s's %s རེ་ཌིའོ།"
+
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
+msgid "Audio CD Recorder"
+msgstr "རྣར་ཉར་སི་ཌི་བཟུང་འཕྲུལ།"
+
+#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
+msgid "Support for recording audio CDs from playlists"
+msgstr "གཏང་ཐོ་ཚུ་ལས་རྣར་ཉན་སི་ཌི་ཚུ་སྒྲ་བཟུང་འབད་ནི་དོན་ལུ་རྒྱབ་སྐྱོར་འབད།"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:86
 msgid "_Create Audio CD..."
@@ -1063,42 +1040,754 @@ msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་
 msgid "Create an audio CD from playlist"
 msgstr "གཏང་ཐོ་ལས་རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་"
 
-#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:189
+#: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:191
 msgid "Unable to create audio CD"
 msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་མ་ཚུགས་"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:1
-msgid "CD Recorder"
-msgstr "སི་ཌི་བཟུང་འཕྲུལ་"
+#: ../plugins/cd-recorder/rb-recorder-gst.c:544
+msgid "Failed to create pipeline"
+msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
-msgid "Support for recording audio CDs from playlists"
-msgstr "གཏང་ཐོ་ཚུ་ལས་རྣར་ཉན་སི་ཌི་ཚུ་སྒྲ་བཟུང་འབད་ནི་དོན་ལུ་རྒྱབ་སྐྱོར་འབད།"
+#: ../plugins/cd-recorder/rb-recorder-gst.c:574
+msgid "Could not access source pad"
+msgstr "འབྱུང་ཁུངས་གདན་འཛུལ་སྤྱོད་འབད་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:686
+#: ../plugins/cd-recorder/rb-recorder-gst.c:692
+#, c-format
+msgid "Unable to unlink '%s'"
+msgstr "'%s'འབྲེལ་མཐུད་འབད་མ་ཚུགས།"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:733
+msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+msgstr "འཆར་རིམ་བཀོད་མི་འགོ་ཐོག་འབད་མ་ཚུགས།  ཁྱོད་ཀྱིས་ཇི་ཨེསི་ཊི་-ཐོ་འགོད་གཡོག་བཀོལ་ཡི་ག?"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:769
+#: ../plugins/cd-recorder/rb-recorder-gst.c:774
+#: ../plugins/cd-recorder/rb-recorder-gst.c:840
+msgid "Could not get current track position"
+msgstr "ད་ལྟོའི་གླུ་རིམ་གནས་ས་འཐོབ་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:826
+msgid "Could not retrieve state from processing pipeline"
+msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་བཟོ་སྦྱོར་ལས་  གནས་ལུགས་སླར་འདྲེན་འབད་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:891
+#: ../plugins/cd-recorder/rb-recorder-gst.c:943
+msgid "Could not start pipeline playing"
+msgstr "རྒྱུད་དུང་འབྲེལ་ལམ་གཏང་ནི་འགོ་བཙུགས་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:906
+#: ../plugins/cd-recorder/rb-recorder-gst.c:954
+msgid "Could not pause playback"
+msgstr "གླུ་གཞས་གཏང་ནི་འདི་ཐེམ་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1161
+msgid "Cannot find drive"
+msgstr "འདྲེན་འཕྲུལ་འཚོལ་མ་འཐོབ་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1224
+#, c-format
+msgid "Cannot find drive %s"
+msgstr "འདྲེན་འཕྲུལ་%sའཐོབ་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1233
+#, c-format
+msgid "Drive %s is not a recorder"
+msgstr "འདྲེན་འཕྲུལ་%sའདི་བཟུང་འཕྲུལ་ཅིག་མེན་བས་"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1399
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1592
+msgid "No writable drives found."
+msgstr "འབྲི་བཏུབ་པའི་འདྲེན་འཕྲུལ་འཐོབ་མི་ཚུགས་བས།"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1542
+#, c-format
+msgid "Could not get track time for file: %s"
+msgstr "ཡིག་སྣོད་དོན་ལུ་  གླུ་རིམ་ཆུ་ཚོད་ལེན་མ་ཚུགས:%s"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1601
+msgid "Could not determine audio track durations."
+msgstr "རྣར་ཉན་གླུ་རིམ་དུས་ཡུན་ཚུ་གཏན་འབེབས་བཟོ་མ་ཚུགས།"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1651
+#, c-format
+msgid ""
+"There was an error writing to the CD:\n"
+"%s"
+msgstr ""
+"སི་ཌི་ལུ་འབྲི་བའི་བསྒང་འཛོལ་བ་ཅིག་འབྱུང་ནུག:\n"
+"%s"
+
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1655
+msgid "There was an error writing to the CD"
+msgstr "སི་ཌི་ལུ་འབྲི་བའི་བསྒང་  འཛོལ་བ་འབྱུང་ནུག་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:341
+msgid "Maximum possible"
+msgstr "མང་ཤོས་རང་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:412
+#, c-format
+msgid "Invalid writer device: %s"
+msgstr "ནུས་ཅན་མེད་པའི་རྩོམ་འབྲི་པའི་ཐབས་འཕྲུལ: %s"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:513
+#, c-format
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%dཆུ་ཚོད་"
+msgstr[1] "%dཆུ་ཚོད་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:515
+#, c-format
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] "%dསྐར་ཆ་"
+msgstr[1] "%dསྐར་ཆ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:518
+#, c-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] "%dསྐར་ཆ་"
+msgstr[1] "%dསྐར་ཆ་"
+
+#. hour:minutes:seconds
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:523
+#, c-format
+msgid "%s %s %s"
+msgstr "%s %s %s"
+
+#. minutes:seconds
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:526
+#, c-format
+msgid "%s %s"
+msgstr "%s %s"
+
+#. seconds
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:529
+#, c-format
+msgid "%s"
+msgstr "%s"
+
+#. 0 seconds
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:532
+msgid "0 seconds"
+msgstr "སྐར་ཆ་ ༠ "
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:551
+#, c-format
+msgid "About %s left"
+msgstr "%sགཡོན་གྱི་སྐོར་ལས་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:620
+msgid "Could not determine media type because CD drive is busy"
+msgstr "བརྡ་བརྒྱུད་དབྱེ་བ་འདི་གཏན་འབེབས་བཟོ་མ་ཚུགས་  ག་ཅི་འབད་ཟེར་བ་ཅིན་  སི་ཌི་འདྲེན་འཕྲུལ་འདི་བདེ་ཁོམ་མིན་འདུག་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:622
+msgid "Couldn't open media"
+msgstr "བརྡ་བརྒྱུད་ཁ་ཕྱེ་མ་ཚུགས་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:624
+msgid "Unknown Media"
+msgstr "མ་ཤེས་པའི་བརྡ་བརྒྱུད་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:626
+msgid "Commercial CD or Audio CD"
+msgstr "ཚོང་འབྲེལ་སི་ཌི་ ཡང་ན་རྣར་ཉན་སི་ཌི་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:628
+msgid "CD-R"
+msgstr "སི་ཌི་-ཨར་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:630
+msgid "CD-RW"
+msgstr "སི་ཌི་-ཨར་ཌབ་ལུ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:632
+msgid "DVD"
+msgstr "ཌི་ཝི་ཌི་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:634
+msgid "DVD-R, or DVD-RAM"
+msgstr "ཌི་ཝི་ཌི་-ཨར་ ཡང་ན་ ཌི་ཝི་ཌི་-ཨར་ཨེ་ཨེམ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:636
+msgid "DVD-RW"
+msgstr "ཌི་ཝི་ཌི་-ཨར་ཌབ་ལུ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:638
+msgid "DVD-RAM"
+msgstr "ཌི་ཝི་ཌི་-ཨར་ཨེ་ཨེམ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:640
+msgid "DVD+R"
+msgstr "ཌི་ཝི་ཌི་+ཨར་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:642
+msgid "DVD+RW"
+msgstr "ཌི་ཝི་ཌི་+ཨར་ཌབ་ལུ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:647
+msgid "Broken media type"
+msgstr "ཆེད་ཡོད་པའི་བརྡ་བརྒྱུད་དབྱེ་བ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:662
+msgid "Writing audio to CD"
+msgstr "རྣར་ཉན་འདི་སི་ཌི་ལུ་རྩོམ་སྒྲིག་འབད་དོ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:678
+msgid "Finished creating audio CD."
+msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ཚར་ནུག་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:696
+msgid ""
+"Finished creating audio CD.\n"
+"Create another copy?"
+msgstr ""
+"རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ཚར་ནུག\n"
+"འདྲ་བཤུས་གཞན་ཅིག་གསར་བསྐྲུན་འབད་ག?"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:698
+msgid "Writing failed.  Try again?"
+msgstr "རྩོམ་སྒྲིག་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག། སླར་འབད་རྩོལ་བསྐྱེད་ད་ག?"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:700
+msgid "Writing cancelled.  Try again?"
+msgstr "རྩོམ་སྒྲིག་ཆ་མེད་གཏང་ནུག།  ལོག་འབད་རྩོལ་བསྐྱེད་ག?"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:768
+msgid "Audio recording error"
+msgstr "རྣར་ཉན་སྒྲ་བཟུང་འཛོལ་བ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:797
+msgid "Audio Conversion Error"
+msgstr "རྣར་ཉན་གཞི་བསྒྱུར་འཛོལ་བ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:827
+msgid "Recording error"
+msgstr "སྒྲ་བཟུང་འཛོལ་བ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:947
+msgid "Do you wish to interrupt writing this disc?"
+msgstr "ཌིསིཀ་འདི་འབྲི་ནི་ལུ་  ཁྱོད་ཀྱིས་  བར་དཀྲོགས་འབད་དགོ་མནོ་མས་ག?"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:950
+msgid "This may result in an unusable disc."
+msgstr "འདི་གིས་  ལག་ལེན་འཐབ་མ་བཏུབ་པའི་ཌིསིཀ་ཅིག་ལུ་འགྱུར་འོང་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:957
+msgid "_Cancel"
+msgstr "ཆ་མེད་གཏང་།(_C)"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:958
+msgid "_Interrupt"
+msgstr "བར་དཀྲོགས།(_I)"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:980
+msgid "Could not create audio CD"
+msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་མ་བཏུབ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1002
+msgid "Please make sure another application is not using the drive."
+msgstr "གློག་རིམ་གཞན་གྱིས་  འདྲེན་འཕྲུལ་ལག་ལེན་མ་འཐབ་ཅིག་འབད་གནང་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1003
+msgid "Drive is busy"
+msgstr "འདྲེན་འཕྲུལ་འདི་ཁོམ་མེད་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1005
+msgid "Please put a rewritable or blank CD in the drive."
+msgstr "འདྲེན་འཕྲུལ་ནང་བསྐྱར་འབྲི་འབད་བཏུབ་མི་  ཡང་ན་  སི་ཌི་སྟོངམ་ཅིག་བཙུགས་གནང་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1006
+msgid "Insert a rewritable or blank CD"
+msgstr "བསྐྱར་འབྲི་བཏུབ་མི་ཡང་ན་སི་ཌི་སྟོངམ་ཅིག་བཙུགས་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1008
+msgid "Please put a blank CD in the drive."
+msgstr "འདྲེན་འཕྲུལ་ནང་སི་ཌི་སྟོངམ་ཅིག་བཙུགས་གནང་།"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1009
+msgid "Insert a blank CD"
+msgstr "སི་ཌི་སྟོངམ་ཅིག་བཙུགས་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1011
+msgid "Please replace the disc in the drive with a rewritable or blank CD."
+msgstr "བསྐྱར་འབྲི་བཏུབ་ཡང་ན་སི་ཌི་སྟོངམ་ཅིག་དང་བཅས་  ཌིསིཀ་འདི་འདྲེན་འཕྲུལ་ནང་ཚབ་བཙུགས་འབད་གནང་།"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1012
+msgid "Reload a rewritable or blank CD"
+msgstr "བསྐྱར་འབྲི་བཏུབ་ཡང་ན་སི་ཌི་སྟོངམ་ཅིག་ཡང་བསྐྱར་མངོན་གསལ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1014
+msgid "Please replace the disc in the drive with a blank CD."
+msgstr "སི་ཌི་སྟོངམ་ཅིག་དང་བཅས་  ཌིསིཀ་འདི་འདྲེན་བྱེད་ནང་ཚབ་བཙུགས་གནང་།"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1015
+msgid "Reload a blank CD"
+msgstr "སི་ཌི་སྟོངམ་ཡང་བསྐྱར་མངོན་གསལ་འབད་གནང་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1066
+msgid "Converting audio tracks"
+msgstr "རྣར་ཉན་གླུ་རིམ་ཚུ་གཞི་བསྒྱུར་འབད་དོ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1069
+msgid "Preparing to write CD"
+msgstr "སི་ཌི་འབྲི་ནི་ལུ་གྲ་སྒྲིག་འབད་དོ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1072
+msgid "Writing CD"
+msgstr "སི་ཌི་འབྲི་དོ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1075
+msgid "Finishing write"
+msgstr "འབྲི་ཚར་དོ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1078
+msgid "Erasing CD"
+msgstr "སི་ཌི་ཀྲེག་གཏང་དོ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1081
+msgid "Unhandled action in burn_action_changed_cb"
+msgstr " བཙུགས་སྤྱོད་_བྱ་བ་_བསྒྱུར་བཅོས་འབད་ཡོདཔ་_སི་བི་  ནང་ལེགས་བཅོས་མེད་པའི་བྱ་བ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1109
+#, c-format
+msgid "This %s appears to have information already recorded on it."
+msgstr " %sའདི་ལུ་  ཧེ་མ་ལས་རང་སྒྲ་བཟུང་འབད་ཡོད་པའི་བརྡ་དོན་ཡོདཔ་འབད་འབྱུངམ་ཨིན་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1116
+msgid "Erase information on this disc?"
+msgstr "ཌིསིཀ་གུ་  བརྡ་དོན་འདི་ཀྲེག་གཏང་ག?"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1125
+msgid "_Try Another"
+msgstr "གཞན་མི་ཅིག་འབད་རྩོལ་བསྐྱེད།(_T)"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1132
+msgid "_Erase Disc"
+msgstr "ཌིསིཀ་ཀྲེག་གཏང་།(_E)"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1293
+msgid "C_reate"
+msgstr "གསར་བསྐྲུན་འབད།(_r)"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1360
+#, c-format
+msgid "Failed to create the recorder: %s"
+msgstr "བཟུང་འཕྲུལ་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག: %s"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1484
+#, c-format
+msgid "Could not remove temporary directory '%s': %s"
+msgstr "གནས་སྐབས་ཀྱི་སྣོད་ཐོ་'%s'རྩ་བསྐྲད་གཏང་མ་ཚུགས:  %s"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1504
+msgid "Create Audio CD"
+msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1522
+#, c-format
+msgid "Create audio CD from '%s'?"
+msgstr "'%s'ལས་རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ག?"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
+msgid "Unable to build an audio track list."
+msgstr "རྣར་ཉན་གླུ་རིམ་ཐོ་ཡིག་བཟོ་མ་ཚུགས།"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
+msgid "This playlist is too long to write to an audio CD."
+msgstr "གཏང་ཐོ་འདི་རྣར་ཉན་སི་ཌི་ཅིག་ལུ་འབྲི་ནི་ལུ་  རིང་མས།"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1661
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1670
+#, c-format
+msgid "Cannot get free space at %s"
+msgstr "%sལུ་བར་སྟོང་དལཝ་མི་འཐོབ་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1755
+#, c-format
+msgid "This playlist is %s minutes long.  This exceeds the length of a standard audio CD.  If the destination media is larger than a standard audio CD please insert it in the drive and try again."
+msgstr "གཏང་ཐོ་འདི་ %sསྐར་ཆ་རིངམ་འདུག།  འདི་གིས་  ཚད་ལྡན་རྣར་ཉན་སི་ཌི་ཅིག་གི་རིང་ཚད་ལྷག་པས།  འགྲོ་ཡུལ་བརྡ་བརྒྱུད་འདི་  ཚད་ལྡན་རྣར་ཉན་སི་ཌི་ལས་རིངམ་ཡོད་པ་ཅིན་  འདི་འདྲེན་འཕྲུལ་ནང་བཙུགས་ཏེ་ལོག་འདི་རང་འབད་རྩོལ་བསྐྱེད་གནང་།"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1766
+msgid "Playlist too long"
+msgstr "གཏང་ཐོ་འདི་སྣ་མེད་ས་མེད་རིངམ་འདུག་"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1806
+msgid "Could not find temporary space!"
+msgstr "གནས་སྐབས་ཀྱི་བར་སྟོང་འཚོལ་མ་འཐོབ!"
+
+#: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1807
+#, c-format
+msgid "Could not find enough temporary space to convert audio tracks.  %s MiB required."
+msgstr "རྣར་ཉན་གླུ་རིམ་ཚུ་གཞི་བསྒྱུར་འབད་ནི་ལུ་  གནས་སྐབས་བར་སྟོང་ལངམ་འཐོབ་མ་ཚུགས།  %s ཨེམ་ཨའི་བི་དགོས་མཁོ་ཡོད།"
+
+#: ../plugins/cd-recorder/recorder.glade.h:1
+msgid "Create audio CD from playlist?"
+msgstr "གཏང་ཐོ་ལས་རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ག?"
+
+#: ../plugins/cd-recorder/recorder.glade.h:2
+msgid "Options"
+msgstr "གདམ་ཁ་ཚུ།"
+
+#: ../plugins/cd-recorder/recorder.glade.h:3
+msgid "Progress"
+msgstr "ཡར་འཕེལ།"
+
+#: ../plugins/cd-recorder/recorder.glade.h:4
+msgid "Write _speed:"
+msgstr "མགྱགས་ཚད་འབྲི:(_s)"
+
+#: ../plugins/cd-recorder/recorder.glade.h:5
+msgid "Write disc _to:"
+msgstr "ཌིསིཀ་ལུ་འབྲི:(_t)"
+
+#: ../plugins/cd-recorder/recorder.glade.h:6
+msgid "_Make multiple copies"
+msgstr "སྣ་མང་འདྲ་བཤུས་ཚུ་བཟོ།(_M)"
+
+#: ../plugins/daap/daap.rb-plugin.desktop.in.h:1
+msgid "DAAP Music Sharing"
+msgstr "ཌི་ཨེ་ཨེ་པི་སྙན་ཆ་རུབ་སྤྱོད་འབད་དོ།"
+
+#: ../plugins/daap/daap.rb-plugin.desktop.in.h:2
+msgid "Share music and play shared music on your local network"
+msgstr "སྙན་ཆ་རུབ་སྤྱོད་འབད་ནི་དང་ཁྱོད་རང་གི་ཉེ་གནས་ཡོངས་འབྲེལ་གུ་རུབ་སྤྱོད་འབད་ཡོད་མི་སྙན་ཆ་གཏང་།"
+
+#: ../plugins/daap/daap-prefs.glade.h:1
+msgid "<b>Sharing</b>"
+msgstr "<b>རུབ་སྤྱོད་འབད་དོ།</b>"
+
+#: ../plugins/daap/daap-prefs.glade.h:2
+msgid "Require _password:"
+msgstr "ཆོག་ཡིག་དགོས་མཁོ་ཡོད:(_p)"
+
+#: ../plugins/daap/daap-prefs.glade.h:3
+#: ../plugins/daap/rb-daap-dialog.c:74
+msgid "Shared music _name:"
+msgstr "རུབ་སྤྱོད་འབད་ཡོད་པའི་མིང་:(_n)"
+
+#: ../plugins/daap/daap-prefs.glade.h:4
+msgid "_Share my music"
+msgstr "ངེས་ཀྱི་སྙན་ཆ་རུབ་སྤྱོད་འབད།(_S)"
+
+#: ../plugins/daap/rb-daap-dialog.c:47
+msgid "Invalid share name"
+msgstr "ནུས་ཅན་མེད་པའི་རུབ་སྤྱོད་མིང་།"
+
+#: ../plugins/daap/rb-daap-dialog.c:66
+#, c-format
+msgid "The shared music name '%s' is already taken. Please choose another."
+msgstr "རུབ་སྤྱོད་སྙན་ཆའི་མིང་ '%s' འདི་  ཧེ་མ་ལས་འབག་ནུག།  གཞན་མི་གདམ་ཁ་བརྐྱབ་གནང་།"
+
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:298
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:343
+#: ../plugins/daap/rb-daap-mdns-browser-howl.c:318
+#: ../plugins/daap/rb-daap-mdns-browser-howl.c:364
+msgid "MDNS service is not running"
+msgstr "ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་གཡོག་མི་བཀོལ་བས་"
+
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:306
+#: ../plugins/daap/rb-daap-mdns-browser-howl.c:327
+msgid "Browser already active"
+msgstr "བརྡ་འཚོལ་པ་འདི་ཧེ་མ་ལས་ཤུགས་ལྡན་ཨིན་མས་"
+
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:326
+#: ../plugins/daap/rb-daap-mdns-browser-howl.c:347
+msgid "Unable to activate browser"
+msgstr "བརྡ་འཚོལ་པ་ཤུགས་ལྡན་བཟོ་མ་ཚུགས་"
+
+#: ../plugins/daap/rb-daap-mdns-browser-avahi.c:351
+#: ../plugins/daap/rb-daap-mdns-browser-howl.c:372
+msgid "Browser is not active"
+msgstr "བརྡ་འཚོལ་པ་འདི་ཤུགས་ལྡན་མིན་འདུག་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:199
+msgid "Could not create AvahiEntryGroup for publishing"
+msgstr "དེབ་བསྐྲུན་འབད་ནི་དོན་ལུ་  ཨ་བཱ་ཧི་ཐོ་བཀོད་སྡེ་ཚན་གསར་བསྐྲུན་འབད་མ་ཚུགས་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:235
+msgid "Could not add service"
+msgstr "ཞབས་ཏོག་ཁ་སྐོང་བརྐྱབ་མ་ཚུགས་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:247
+msgid "Could not commit service"
+msgstr "ཞབས་ཏོག་ཐག་གཅད་མ་ཚུགས་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:352
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:372
+msgid "The avahi MDNS service is not running"
+msgstr "ཨ་བཱ་ཧི་  ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་གཡོག་མི་བཀོལ་བས་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:381
+#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:272
+msgid "The MDNS service is not published"
+msgstr "ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་དཔེ་བསྐྲུན་མ་འབད་བས་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:176
+#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:211
+msgid "Error initializing Howl for publishing"
+msgstr "དེབ་བསྐྲུན་འབད་ནི་དོན་ལུ་  ཧའོལ་འཛོལ་བ་འདི་འགོ་འབྱེད་འབད་དོ་"
+
+#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:238
+#: ../plugins/daap/rb-daap-mdns-publisher-howl.c:263
+msgid "The howl MDNS service is not running"
+msgstr "ཧའོལ་ཨེམ་ཌི་ཨེན་ཨེསི་ཞབས་ཏོག་འདི་གཡོག་མི་བཀོལ་བས་"
+
+#: ../plugins/daap/rb-daap-plugin.c:104
+msgid "_Disconnect"
+msgstr "མཐུད་ལམ་བཏོགས་ནི།(_D)"
+
+#: ../plugins/daap/rb-daap-plugin.c:105
+msgid "Disconnect from DAAP share"
+msgstr "ཌི་ཨེ་ཨེ་པི་རུབ་སྤྱོད་ལས་  མཐུད་ལམ་བཏོགས་"
+
+#: ../plugins/daap/rb-daap-plugin.c:794
+msgid "DAAP Music Sharing Preferences"
+msgstr "ཌི་ཨེ་ཨེ་པི་སྙན་ཆ་རུབ་སྤྱོད་འབད་ནི་དགའ་གདམ་ཚུ།"
+
+#: ../plugins/daap/rb-daap-sharing.c:54
+#, c-format
+msgid "%s's Music"
+msgstr "%s'sགི་སྙན་ཆ།"
+
+#: ../plugins/daap/rb-daap-source.c:343
+#, c-format
+msgid "The music share '%s' requires a password to connect"
+msgstr "སྙན་ཆའི་རུབ་སྤྱོད་ '%s' མཐུད་ནི་ལུ་ཆོག་ཡིག་ཅིག་དགོས་མཁོ་ཡོད་"
+
+#: ../plugins/daap/rb-daap-source.c:345
+msgid "Password Required"
+msgstr "ཆོག་ཡིག་དགོས་མཁོ་ཡོད་"
+
+#: ../plugins/daap/rb-daap-source.c:417
+msgid "Connecting to music share"
+msgstr "སྙན་ཆའི་རུབ་སྤྱོད་ལུ་མཐུད་དོ་"
+
+#: ../plugins/daap/rb-daap-source.c:424
+msgid "Retrieving songs from music share"
+msgstr "སྙན་ཆའི་རུབ་སྤྱོད་ལས་  ཞབས་ཁྲ་ཚུ་སླར་འདྲེན་འབད་དོ་"
+
+#: ../plugins/daap/rb-daap-source.c:511
+msgid "Could not connect to shared music"
+msgstr "རུབ་སྤྱོད་འབད་དེ་ཡོད་པའི་སྙན་ཆ་ལུ་  མཐུད་མ་ཚུགས་"
+
+#: ../plugins/daap/rb-daap-src.c:639
+#, c-format
+msgid "Connection to %s:%d refused."
+msgstr "%sལུ་མཐུད་ལམ: %dངོས་ལེན་མ་འབད་བས།"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
-msgid "Generic Audio Player"
-msgstr "རིགས་རྒྱུད་རྣར་ཉན་གཏང་མི་"
+msgid "Portable Players"
+msgstr "འབག་བཏུབ་གཏང་འཕྲུལ་ཚུ།"
 
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:2
-msgid "Support for generic audio player devices (and PSP and Nokia 770)"
-msgstr "རིགས་རྒྱུད་རྣར་ཉན་གཏང་འཕྲུལ་ཐབས་འཕྲུལ་(དང་ པི་ཨེསི་པི་དང་ནོ་ཀི་ཡ་༧༧༠)དོན་ལུ་ རྒྱབ་སྐྱོར་འབད་"
+msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
+msgstr "རིགས་བརྒྱུད་རྣར་ཉན་གཏང་འཕྲུལ་ཐབས་འཕྲུལ་ཚུ་གི་དོན་ལུ་རྒྱབ་སྐྱོར་་འབད(དེ་ཁར་པི་ཨེསི་པི་དང་ནོ་ཀི་ཡ་༧༧༠)"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:1
-msgid "Adds iPod support to Rhythmbox so that it can show an iPod content, and play from there"
-msgstr "རི་ཐམ་བོཀསི་ལུ་ ཨའི་པི་ཨོ་ཌི་རྒྱབ་སྐྱོར་ཁ་སྐོང་བརྐྱབ་ཨིན་  དེ་འབད་བ་ཅིན་  དེ་གིས་  ཨའི་པི་ཨོ་ཌི་ནང་དོན་སྟོན་ནི་དང་  འདི་ཁར་ལས་གཏངམ་ཨིན་"
+msgid "Portable Players - iPod"
+msgstr "འབག་བཏུབ་གཏང་འཕྲུལ་ཚུ་ ཨའི་པིཌི།"
 
 #: ../plugins/ipod/ipod.rb-plugin.desktop.in.h:2
-msgid "iPod support"
-msgstr "ཨའི་པི་ཨོ་ཌི་རྒྱབ་སྐྱོར་"
+msgid "Support for Apple iPod devices (show the content, play from device)"
+msgstr "ཨེ་པལ་ཨའི་པོཌི་ཐབས་འཕྲུལ་ཚུ་གི་དོན་ལུ་རྒྱབ་སྐྱོར་འབད(ནང་དོན་སྟོན་ ཐབས་འཕྲུལ་ལས་གཏང་)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:85
-#: ../shell/rb-playlist-manager.c:144
+#: ../plugins/ipod/rb-ipod-plugin.c:86
+#: ../shell/rb-playlist-manager.c:145
 msgid "_Rename"
 msgstr "བསྐྱར་མིང་བཏགས།(_R)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:86
+#: ../plugins/ipod/rb-ipod-plugin.c:87
 msgid "Rename iPod"
 msgstr "ཨའི་པི་ཨོ་ཌི་བསྐྱར་མིང་བཏགས་"
+
+#: ../plugins/iradio/iradio.rb-plugin.desktop.in.h:1
+msgid "Internet Radio"
+msgstr "ཨིན་ཊར་ནེཊིརེ་ཌིའོ།"
+
+#: ../plugins/iradio/iradio.rb-plugin.desktop.in.h:2
+msgid "Support for broadcasting services transmitted via the Internet"
+msgstr "ཨིན་ཊར་ནེཊི་འདི་བརྒྱུད་དེ་སྤེལ་བཀྲམ་འབད་ཡོད་མི་རྒྱང་བསྒྲགས་ལས་འཛིན་ཚུ་གི་དོན་ལུ་རྒྱབ་སྐྱོར་འབད།"
+
+#: ../plugins/jamendo/jamendo-prefs.glade.h:1
+msgid "<b>Download</b>"
+msgstr "<b>ཕབ་ལེན</b>"
+
+#: ../plugins/jamendo/jamendo-prefs.glade.h:2
+msgid "Jamendo Preferences"
+msgstr "ཇཱ་མིན་དོ་་གདའ་གདམ་ཚུ།"
+
+#: ../plugins/jamendo/jamendo-prefs.glade.h:3
+msgid ""
+"Ogg Vorbis (300Kbps)\n"
+"MP3 (200Kbps)"
+msgstr ""
+"ཨོ་ཇི་ཇི་ བོར་བིསི་ (ཀེ་བི་པི་ཨེསི་༣༠༠)\n"
+"ཨེམ་པི་༣ (ཀེ་བི་པི་ཨེསི་༢༠༠)"
+
+#: ../plugins/jamendo/jamendo-prefs.glade.h:5
+msgid "Visit Jamendo at "
+msgstr "ལུ་ཇཱ་མིན་དོ་བལྟ་སྤྱོད་འབད།"
+
+#: ../plugins/jamendo/jamendo-prefs.glade.h:6
+msgid "_Format:"
+msgstr "རྩ་སྒྲིག(_F)"
+
+#: ../plugins/jamendo/jamendo-prefs.glade.h:7
+msgid "http://www.jamendo.com/"
+msgstr "http://www.jamendo.com/"
+
+#. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages.
+#. You should take a look on this site and check if you can't reuse it.
+#: ../plugins/jamendo/jamendo-loading.glade.h:3
+msgid "     * A legal framework protecting the artists (thanks to the Creative Commons licenses)."
+msgstr "     * ལི་གཱལ་གཞི་ཁྲམ་ཅིག་གླུ་གཞས་ཚུ་རྒྱབ་སྐྱོར་འབད་དོ (གསར་བསྐྲུན་གྱི་ཆོག་ཐམ་ལག་འཁྱེར་མཐུན་མོང་ཚུ་ལུ་བཀྲིན་ཆེ་)."
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:4
+msgid ""
+"     * An adaptive music recommendation system based on iRATE to help listeners discover new artists based on their tastes\n"
+"       and on other criteria such as their location."
+msgstr ""
+"     * ཉན་བྱེད་ཚུ་ཁོང་རང་གི་སྤྲོ་བ་ལུ་་གླུ་གཞསཔ་གསརཔ་ཚུ་་དང་དེ་བཟུམ་མའི་གནས་ཁོངས་ཚུ་གཞན་ཁྱད་ཚད་གསར་རྙེད་གྲོགས་རམ་ལུ་ཨའི་རེཊི་\n"
+"མཐུན་ཅན་སྙན་ཆ་འོས་སྦྱོར་རིམ་ལུགས་ཅིག་གུ་གཞི་བཞག་ཡོདཔ་ཨིན།     "
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:6
+msgid "     * Free, simple and quick access to the music, for everyone."
+msgstr "     * ག་ར་གི་དོན་ལུ་ སྙན་ཆ་འདི་ལུ་འཛུལ་སྤྱོད་འབད་ནི་ རང་དབང་ འཇམ་སམ་དང་འཕྲལ་མགྱོགས་ཡོདཔ།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:7
+msgid "     * The possibility of making direct donations to the artists."
+msgstr "     * གླུ་གཞསཔ་ཚུ་ལུ་སྲིད་པའི་ཐད་ཀར་ཞལ་འདེབས་ཚུ་བཟོ་ནི།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:8
+msgid "     * The use of the latest Peer-to-Peer technologies"
+msgstr "     * མཐའ་མཇུག་དོ་མཉམ་-ལུ་དོ་མཉམ་འཕྲུལ་རིག་གི་ལག་ལེན་འཐབ་ནི་འདི།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:9
+msgid "<b>Jamendo</b>"
+msgstr "<b>ཇཱ་མིན་དོ་</b>"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:10
+msgid ""
+"On jamendo, the artists distribute their music under Creative Commons licenses.\n"
+"In a nutshell, they allow you to download, remix and share their music freely.\n"
+"It's a \"Some rights reserved\" agreement, perfectly suited for the new century."
+msgstr ""
+"ཇཱ་མིན་དོ་གུ་ གླུ་གཞསཔ་འདི་གིས་ཁོང་རང་གི་སྙན་ཆ་གསར་བསྐྲུན་གྱི་མཐུང་མོང་ཆོཁ་ཐམ་ལག་འཁྱེར་ཚུ་གི་འོག་བགོ་བཀྲམ་འབདཝ་ཨིན།\n"
+"ནཊི་ཤལ་ཅིག་ནང་ ཁོང་གི་ཁྱོད་ལུ་རི་མིགསི་ དང་ཁོང་རང་གི་སྙན་ཆ་རང་དབང་གི་ཐོག་ལས་ཕབ་ལེན་འབད་བཅུག་འོང་།་དུས་རབས་གསརཔ་གི་དོན་ལུ་ \"Some rights reserved\" ཡང་དག་སྦེ་འོས་འབབ་ཡོད་པའི་གན་འཛིན་ཅིག་ཨིན།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:13
+msgid ""
+"These new rules make jamendo able to use the new powerful means of digital distribution like\n"
+"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute albums at near-zero cost."
+msgstr ""
+"ལམ་ལུགས་གསརཔ་དེ་ཚུག་གིས་ཇཱ་མིན་དོ་ལུ་ཌི་ཇི་ཊཱལ་བགོ་བཀྲམ་ དོ་མཉམ་-ལུ་དོ་མཉམ་ ཡོངས་འབྲེལ་དེ་བཟུམ་མའི་གོང་ཚད་ཀླད་ཀོར་ལུ་ལི་གཱ་ལི་བགོ་བཀྲམ་ནིའི་གླུ་མཛོད་ཚུ་\n"
+"ལུ་བིཊི་ཊོ་རེནཊི་ཡང་ན་ཨི་མིའུལ་བཟུམ་གྱི་ནུས་ཅན་གསརཔ་འདི་ལག་ལེན་འཐབ་ཚུགསཔ་བཟོཝ་ཨིན།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:15
+msgid "You can find more information at http://www.jamendo.com/"
+msgstr "ཁྱོད་རང་བརྡ་དོན་མངམ་http://www.jamendo.com/ལུ་ཐོབ་ཚུགས།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:16
+msgid "jamendo is a new model for artists to promote, publish, and be paid for their music."
+msgstr "ཇཱ་མིན་དོ་འདི་གླུ་གཞསཔ་གི་དོན་ལུ་ཡར་བསྐྱེད་ དེབ་བསྐྲུན་འབད་ནི་ དང་ཁོང་གི་སྙན་ཆ་གི་དོན་ལུ་དངུལ་སྤྲོད་ནི་དེ་དཔེ་གསརཔ་ཅིག་ཨིན།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:17
+msgid "jamendo is the only platform that joins together :"
+msgstr "ཇཱ་མིན་དོ་འདི་རྐྱངམ་ཅིག་གཅིག་ཁར་མཐུད་པའི་མཉེན་རིམ་ཨིན།"
+
+#: ../plugins/jamendo/jamendo-loading.glade.h:18
+msgid ""
+"jamendo users can discover and share albums, but also review them or start a discussion on the forums.\n"
+"Albums are democratically rated based on the visitors’ reviews.\n"
+"If they fancy an artist they can support him by making a donation."
+msgstr ""
+"ཇཱ་མིན་དེ་ལག་ལེན་པ་ཚུ་གིས་གླུ་མཛོད་ཚུ་རུབ་སྤྱོད་འབད་ནི་དང་གསར་རྙེད་བཏུབ་ཨིན་རུང་ ཁོང་བསྐྱར་ཞིབ་འབད་བཏུབ་མ་ཚད་ཡང་ན་གྲོས་གནས་ཚུ་གུ་གྲོས་བསྡུར་ཅིག་འགོ་བཙུགས་བཏུབ་ཨིན།\n"
+"གླུ་མཛོད་ཚུ་བལྟ་སྤྱོད་འབད་མི་གི་བསྐྱར་ཞིབ་ཚུ་གུ་གཞི་བཞག་སྟེ་འདྲ་མཉམ་གྱི་གོང་ཚད་ཡོདཔ་ཨིན།\n"
+"ཁོང་རང་གླུ་གཞསཔ་ཅིག་སྤྲོད་འདོད་ཡོད་པ་ཅིན་ཁོང་རང་ཆ་ཁྱབ་ཁོ་ལུ་ཞལ་འདེབས་ཅིག་བཟོ་དེ་རྒྱབ་སྐྱོར་འབད་བཏུབ་ཨིན།"
+
+#: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:1
+msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+msgstr "གཏང་འཕྲུལ་དང་གླུ་མཛོད་ཚུ་ཕབ་ལེན་འབད་ནི་དོན་ལུ་ཇཱ་མིན་དོ་ལས་རི་ཐམ་སྒརོམ་ལུ་རྒྱབ་སྐྱོར་ཁ་སྐོང་འབདཝ་ཨིན།"
+
+#: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
+#: ../plugins/jamendo/jamendo/JamendoSource.py:51
+msgid "Jamendo"
+msgstr "ཇཱ་མིན་ཌོ།"
+
+#: ../plugins/jamendo/jamendo/__init__.py:69
+msgid "_Download Album"
+msgstr "གླུ་མཛོད་ཕབ་ལེན་འབད།(_D)"
+
+#: ../plugins/jamendo/jamendo/__init__.py:70
+msgid "Download this album using BitTorrent"
+msgstr "བིཊི་ཊོ་རེནཊི་ལག་ལེན་འཐབ་དེ་གླུ་མཛོད་འདི་ཕབ་ལེན་འབད།"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:110
+msgid "Loading Jamendo catalogue"
+msgstr "ཇཱ་མིན་དོ་ཐོ་གཞུག་ཕབ་ལེན་འབད་དོ།"
+
+#: ../plugins/iradio/rb-iradio-source.c:162
+msgid "New Internet _Radio Station"
+msgstr "ཨིན་ཊར་ནེཊི་རེ་ཌིའོ་ལྟེ་བ་གསརཔ།(_R)"
+
+#: ../plugins/iradio/rb-iradio-source.c:163
+msgid "Create a new Internet Radio station"
+msgstr "ཨིན་ཊར་ནེཊི་རེ་ཌིའོ་ལྟེ་བ་གསརཔ་ཅིག་གསར་བསྐྲུན་འབད་"
+
+#: ../plugins/iradio/rb-iradio-source.c:328
+#: ../widgets/rb-entry-view.c:1107
+#: ../widgets/rb-library-browser.c:99
+#: ../widgets/rb-query-creator-properties.c:68
+#: ../widgets/rb-query-creator-properties.c:94
+msgid "Genre"
+msgstr "རིགས་"
+
+#: ../plugins/iradio/rb-iradio-source.c:422
+msgid "Radio"
+msgstr "རེ་ཌིའོ་"
+
+#: ../plugins/iradio/rb-iradio-source.c:996
+#: ../plugins/iradio/rb-station-properties-dialog.c:393
+msgid "New Internet Radio Station"
+msgstr "ཨིན་ཊར་ནེཊིརེ་ཌིའོ་ལྟེ་བ་གསརཔ་"
+
+#: ../plugins/iradio/rb-iradio-source.c:996
+msgid "URL of internet radio station:"
+msgstr "ཨིན་ཊར་ནེཊི་རེ་ཌིའོ་ལྟེ་བ་གི་ཡུ་ཨར་ཨེལ།"
+
+#: ../plugins/iradio/rb-station-properties-dialog.c:389
+#: ../podcast/rb-feed-podcast-properties-dialog.c:209
+#: ../podcast/rb-podcast-properties-dialog.c:355
+#: ../widgets/rb-song-info.c:870
+#, c-format
+msgid "%s Properties"
+msgstr "%sརྒྱུ་དངོས་"
+
+#: ../plugins/iradio/rb-station-properties-dialog.c:481
+#: ../podcast/rb-podcast-properties-dialog.c:465
+#: ../widgets/rb-song-info.c:928
+#, c-format
+msgid "%lu kbps"
+msgstr "%lu ཀེ་བི་པི་ཨེསི་"
+
+#: ../plugins/iradio/rb-station-properties-dialog.c:572
+msgid "Unable to change station property"
+msgstr "རྒྱུ་དངོས་ལྟེ་བ་བསྒྱུར་བཅོས་འབད་མ་ཚུགསཔ།"
+
+#: ../plugins/iradio/rb-station-properties-dialog.c:572
+#, c-format
+msgid "Unable to change station URI to %s, as that station already exists"
+msgstr "ལུ་ཡུ་ཨར་ཨའི་ལྟེ་བ་བསྒྱུར་བཅོས་འབད་མ་ཚུགས་མི་དེ་ %s, ལྟེ་བ་དེ་ཧེ་མ་ལས་གནས་ཡོདཔ་ལས་རྟེན།"
+
+#: ../plugins/iradio/station-properties.glade.h:5
+msgid "L_ocation:"
+msgstr "གནས་ཁོངས:(_o)"
 
 #: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
@@ -1114,7 +1803,6 @@ msgid "Searching for lyrics..."
 msgstr "གླུ་ཚིག་དོན་ལུ་འཚོལ་ཞིབ་འབད་དོ..."
 
 #: ../plugins/lyrics/lyrics.py:94
-#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
 msgid "Lyrics"
 msgstr "གླུ་ཚིག་ཚུ་"
 
@@ -1131,8 +1819,12 @@ msgid "Display lyrics for the playing song"
 msgstr "ཞབས་ཁྲ་གཏང་མི་དོན་ལུ་གླུ་ཚིག་བཀྲམ་སྟོན་འབད་"
 
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
-msgid "Displays song lyrics"
-msgstr "ཞབས་ཁྲ་གླུ་ཚིག་བཀྲམ་སྟོན་འབདཝ་ཨིན་"
+msgid "Fetch song lyrics from the Internet"
+msgstr "ཨིན་ཊར་ནེཊི་ལས་ཞབས་ཁྲའི་གླུ་ཚིག་ཚུ་ལེན།"
+
+#: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:2
+msgid "Song Lyrics"
+msgstr "གླུ་གཞས་ཀྱི་གླུ་ཚིག"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:1
 msgid "<b>Magnatune online music store</b>"
@@ -1192,6 +1884,149 @@ msgstr ""
 "ཁྱོད་ཀྱིས་ http://www.magnatune.com/ལུ་བརྡ་དོན་ཧེང་བཀལ་འཐོབ་འོང་།"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:1
+msgid ""
+"$5 US\n"
+"$6 US\n"
+"$7 US\n"
+"$8 US (typical)\n"
+"$9 US\n"
+"$10 US (better than average)\n"
+"$11 US\n"
+"$12 US (generous)\n"
+"$13 US\n"
+"$14 US\n"
+"$15 US (very generous)\n"
+"$16 US\n"
+"$17 US\n"
+"$18 US (we love you)"
+msgstr ""
+"$5 ཡུ་ཨེསི་\n"
+"$6 ཡུ་ཨེསི་\n"
+"$7 ཡུ་ཨེསི་\n"
+"$8 ཡུ་ཨེསི་ (འཁྲུལ་བ་མེདཔ)\n"
+"$9 ཡུ་ཨེསི་\n"
+"$10 ཡུ་ཨེསི་ (ཆ་སྙོམས་ལས་ལྷགཔ)\n"
+"$11 ཡུ་ཨེསི\n"
+"$12 ཡུ་ཨེསི་ (ལེགས་ཤོམ)\n"
+"$13 ཡུ་ཨེསི་\n"
+"$14 ཡུ་ཨེསི་\n"
+"$15 ཡུ་ཨེསི་ (གནམ་མེད་ས་མེདལེགས་ཤོམ་)\n"
+"$16 ཡུ་ཨེསི་\n"
+"$17 ཡུ་ཨེསི་\n"
+"$18 ཡུ་ཨེསི་ (ང་བཅས་ཀྱི་ཁྱོད་ལུ་རྩེ་བ་ཡོད)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:15
+msgid ""
+"01\n"
+"02\n"
+"03\n"
+"04\n"
+"05\n"
+"06\n"
+"07\n"
+"08\n"
+"09\n"
+"10\n"
+"11\n"
+"12"
+msgstr ""
+"༠༡\n"
+"༠༢\n"
+"༠༣\n"
+"༠༤\n"
+"༠༥\n"
+"༠༦\n"
+"༠༧\n"
+"༠༨\n"
+"༠༩\n"
+"༡༠\n"
+"༡༡\n"
+"༡༢"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:27
+msgid "<span weight=\"bold\" foreground=\"red\">Your credit card is past the expiration date listed.</span>"
+msgstr "<span weight=\"bold\" foreground=\"red\">ཁྱོད་ཀྱི་དངུལ་ཚབ་ཤོག་བྱང་འདི་  ཐོ་བཀོད་འབད་དེ་ཡོད་པའི་དུས་ཡོལ་ཚེས་གྲངས་ལས་འགལ་སོང་ནུག</span>"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:28
+msgid "C_redit Card:"
+msgstr "དངུལ་ཚབ་ཤོག་བྱང་:(_r)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:29
+msgid "Default _amount to pay:"
+msgstr "དངུལ་སྤྲོད་ནི་ལུ་  སྔོན་སྒྲིག་ཡོད་པའི་དངུལ་བསྡོམས:(_a)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:30
+msgid "Expiry:"
+msgstr "དུས་ཡོལ་ནི:"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:31
+msgid "Find out about Magnatune at "
+msgstr "མེཀ་ནེ་ཊིཡུན་འདི་འཚོལ་ཞིབ་འབད་"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:32
+msgid "Magnatune Information"
+msgstr "མེཀ་ནེ་ཊིཡུན་བརྡ་དོན་"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:33
+msgid "Magnatune Preferences"
+msgstr "མེཀ་ནེ་ཊིཡུན་གདའ་གདམ་"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:34
+#: ../plugins/magnatune/magnatune-purchase.glade.h:31
+msgid ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
+msgstr ""
+"ཨོ་ཇི་ཇི་བོར་བིསི་\n"
+"ཨེཕ་ཨེལ་ཨེ་སི་\n"
+"ཌབ་ལུ་ཨེ་ཝི་\n"
+"ཝ་བི་ཨར་ ཨེམ་པི་༣\n"
+"༡༢༨ཀེ་ ཨེམ་པི་༣"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:39
+msgid "Preferred audio _format:"
+msgstr "གདའ་གདམ་བརྐྱབ་ཡོད་པའི་རྣར་ཉན་རྩ་སྒྲིག:(_f)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:40
+msgid "Redownload purchased music at "
+msgstr "ཉོ་ཚོང་བརྐྱབ་ཡོད་པའི་སྙན་ཆ་སླར་ཕབ་ལེན་འབད་"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:41
+msgid "Remember my credit card details"
+msgstr "ངི་གི་དངུལ་ཚབ་ཤོག་བྱང་གི་རྒྱས་བཤད་ཚུ་སེམས་ཁར་བཞག"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:42
+msgid "Visit Magnatune at "
+msgstr "མེཀ་ནེ་ཊིཡུན་ལུ་བལྟ་སྤྱོད་འབད་"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:43
+msgid "_Email:"
+msgstr "གློག་འཕྲིན:(_E)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:44
+msgid "_Month:"
+msgstr "ཟླ:(_M)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:45
+#: ../plugins/magnatune/magnatune-purchase.glade.h:39
+msgid "_Name:"
+msgstr "མིང་:(_N)"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:47
+msgid "http://www.magnatune.com/"
+msgstr "http://www.magnatune.com/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:48
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune-prefs.glade.h:49
+msgid "http://www.magnatune.com/info/redownload"
+msgstr "http://www.magnatune.com/info/redownload"
+
 #: ../plugins/magnatune/magnatune-purchase.glade.h:1
 msgid ""
 "$5\n"
@@ -1224,153 +2059,69 @@ msgstr ""
 "$17\n"
 "$18 (ང་བཅས་ཀྱི་ཁྱོད་ལུ་དགའ!)"
 
-#: ../plugins/magnatune/magnatune-prefs.glade.h:15
-msgid "(US Dollars)"
-msgstr "(ཡུ་ཨེསི་ཌོ་ལརསི་)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:16
 #: ../plugins/magnatune/magnatune-purchase.glade.h:15
-msgid ""
-"01\n"
-"02\n"
-"03\n"
-"04\n"
-"05\n"
-"06\n"
-"07\n"
-"08\n"
-"09\n"
-"10\n"
-"11\n"
-"12"
-msgstr ""
-"༠༡\n"
-"༠༢\n"
-"༠༣\n"
-"༠༤\n"
-"༠༥\n"
-"༠༦\n"
-"༠༧\n"
-"༠༨\n"
-"༠༩\n"
-"༡༠\n"
-"༡༡\n"
-"༡༢"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:28
-msgid "<span weight=\"bold\" foreground=\"red\">Your credit card is past the expiration date listed.</span>"
-msgstr "<span weight=\"bold\" foreground=\"red\">ཁྱོད་ཀྱི་དངུལ་ཚབ་ཤོག་བྱང་འདི་  ཐོ་བཀོད་འབད་དེ་ཡོད་པའི་དུས་ཡོལ་ཚེས་གྲངས་ལས་འགལ་སོང་ནུག</span>"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:29
-msgid "C_redit Card:"
-msgstr "དངུལ་ཚབ་ཤོག་བྱང་:(_r)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:30
-msgid "Default _amount to pay:"
-msgstr "དངུལ་སྤྲོད་ནི་ལུ་  སྔོན་སྒྲིག་ཡོད་པའི་དངུལ་བསྡོམས:(_a)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:31
-msgid "Don't store credit card information"
-msgstr "དངུལ་ཚབ་ཤོག་བྱང་བརྡ་དོན་གསོག་འཇོག་མ་འབད་"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:32
-msgid "Expiry:"
-msgstr "དུས་ཡོལ་ནི:"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:33
-msgid "Find out about Magnatune at "
-msgstr "མེཀ་ནེ་ཊིཡུན་འདི་འཚོལ་ཞིབ་འབད་"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:34
-msgid "Magnatune Information"
-msgstr "མེཀ་ནེ་ཊིཡུན་བརྡ་དོན་"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:35
-msgid "Magnatune Preferences"
-msgstr "མེཀ་ནེ་ཊིཡུན་གདའ་གདམ་"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:36
-#: ../plugins/magnatune/magnatune-purchase.glade.h:32
-msgid ""
-"Ogg Vorbis\n"
-"FLAC\n"
-"WAV\n"
-"VBR MP3\n"
-"128K MP3"
-msgstr ""
-"ཨོ་ཇི་ཇི་བོར་བིསི་\n"
-"ཨེཕ་ཨེལ་ཨེ་སི་\n"
-"ཌབ་ལུ་ཨེ་ཝི་\n"
-"ཝ་བི་ཨར་ ཨེམ་པི་༣\n"
-"༡༢༨ཀེ་ ཨེམ་པི་༣"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:41
-msgid "Preferred audio _format:"
-msgstr "གདའ་གདམ་བརྐྱབ་ཡོད་པའི་རྣར་ཉན་རྩ་སྒྲིག:(_f)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:42
-msgid "Redownload purchased music at "
-msgstr "ཉོ་ཚོང་བརྐྱབ་ཡོད་པའི་སྙན་ཆ་སླར་ཕབ་ལེན་འབད་"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:43
-msgid "Visit Magnatune at "
-msgstr "མེཀ་ནེ་ཊིཡུན་ལུ་བལྟ་སྤྱོད་འབད་"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:44
-msgid "_Email:"
-msgstr "གློག་འཕྲིན:(_E)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:45
-msgid "_Month:"
-msgstr "ཟླ:(_M)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:46
-msgid "_Name:"
-msgstr "མིང་:(_N)"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:48
-msgid "http://www.magnatune.com/"
-msgstr "http://www.magnatune.com/"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:49
-msgid "http://www.magnatune.com/info/"
-msgstr "http://www.magnatune.com/info/"
-
-#: ../plugins/magnatune/magnatune-prefs.glade.h:50
-msgid "http://www.magnatune.com/info/redownload"
-msgstr "http://www.magnatune.com/info/redownload"
-
-#: ../plugins/magnatune/magnatune-purchase.glade.h:27
 msgid "Audio _format:"
 msgstr "རྣར་ཉན་རྩ་སྒྲིག:(_f)"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:28
-msgid "Credit Card number:"
-msgstr "དངུལ་ཚབ་ཤོག་བྱང་ཨང་གྲངས:"
+#: ../plugins/magnatune/magnatune-purchase.glade.h:16
+msgid "C_redit Card number:"
+msgstr "དངུལ་ཚབ་ཤོག་བྱང་ཨང་།(_r)"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:29
-msgid "Expiry month:"
-msgstr "དུས་ཡོལ་ཟླཝ:"
+#: ../plugins/magnatune/magnatune-purchase.glade.h:17
+msgid "Expiry _month:"
+msgstr "དུས་ཡོལ་ཟླཝ(_m)"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:30
-msgid "Expiry year:"
-msgstr "དུས་ཡོལ་ལོ:"
+#: ../plugins/magnatune/magnatune-purchase.glade.h:18
+msgid "Expiry _year:"
+msgstr "དུས་ཡོལ་ལོ(_y)"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:31
-msgid "Name:"
-msgstr "མིང་:"
+#: ../plugins/magnatune/magnatune-purchase.glade.h:19
+msgid ""
+"January (01)\n"
+"February (02)\n"
+"March (03)\n"
+"April (04)\n"
+"May (05)\n"
+"June (06)\n"
+"July (07)\n"
+"August (08)\n"
+"September (09)\n"
+"October (10)\n"
+"November (11)\n"
+"December (12)"
+msgstr ""
+"སྤྱི་ཟླ་དང་པ (༠༡)\n"
+"སྤྱི་ཟླ་གཉིས་པ་ (༠༢)\n"
+"སྤྱི་གསུམ་པ་ (༠༣)\n"
+"སྤྱི་ཟླ་བཞི་པ་ (༠༤)\n"
+"སྤྱི་ཟླ་ལྔ་པ་ (༠༥)\n"
+"སྤྱི་ཟླ་དྲུག་པ་ (༠༦)\n"
+"སྤྱི་ཟླ་བདུན་པ་ (༠༧)\n"
+"སྤྱི་ཟླ་བརྒྱད་པ་ (༠༨)\n"
+"སྤྱི་ཟླ་དགུ་པ་ (༠༩)\n"
+"སྤྱི་ཟླ་བཅུ་པ (༡༠)\n"
+"སྤྱི་བཅུ་གཅིག་པ་ (༡༡)\n"
+"སྤྱི་ཟླ་བཅུ་གཉིས་པ་ (༡༢)"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:37
+#: ../plugins/magnatune/magnatune-purchase.glade.h:36
 msgid "Purchase Magnatune Tracks"
 msgstr "མེཀ་ནེ་ཊིཡུན་གླུ་རིམ་ཚུ་ཉོ་ཚོང་འཐབ་"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:38
+#: ../plugins/magnatune/magnatune-purchase.glade.h:37
 msgid "_Amount to pay:"
 msgstr "དངུལ་སྤྲོད་ནི་གི་དངུལ་བསྡོམས:(_A)"
 
-#: ../plugins/magnatune/magnatune-purchase.glade.h:39
+#: ../plugins/magnatune/magnatune-purchase.glade.h:38
+msgid "_Email address:"
+msgstr "གློག་རིག་ཁ་བྱང་(_E)"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:40
 msgid "_Purchase"
 msgstr "དངུལ་སྤྲོད་ནི།(_P)"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:41
+msgid "_Remember my credit card details"
+msgstr "ངི་གི་དངུལ་ཚབ་ཤོག་བྱང་གི་རྒྱས་བཤད་ཚུ་སེམས་ཁར་བཞག(_R)"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
 msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
@@ -1380,24 +2131,32 @@ msgstr "མེཀ་ནེ་ཊིཡུན་གློག་ཐོག་སྙ
 msgid "Magnatune Store"
 msgstr "མེཀ་ནེ་ཊིཡུན་གསོག་འཇོག་"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:30
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:38
 msgid "Magnatune"
 msgstr "མེཀ་ནེ་ཊིཡུན་"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:80
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:89
 msgid "Loading Magnatune catalogue"
 msgstr "མེཀ་ནེ་ཊིཡུན་ཐོ་གཞུང་མངོན་གསལ་འབད་དོ་"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:83
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:92
 msgid "Downloading Magnatune Album(s)"
 msgstr "མེཀ་ནེ་ཊིཡུན་གླུ་མཛོད་(ཚུ་)མར་ཕབ་ལེན་འབད་དོ་"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:164
-#, python-format
-msgid "Would you like to purchase the album '%s' by '%s'."
-msgstr "'%s'གིས་གླུ་མཛོད་'%s'འདི་ཁྱོད་ཀྱིས་ཉོ་ཚོང་འཐབ་ནི་ཨིན་ན།"
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:180
+msgid "Couldn't purchase album"
+msgstr "གླུ་མཛོད་ཉོ་མ་ཚུགས།"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:371
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:181
+msgid "You must have a library location set to purchase an album."
+msgstr "ཁྱོད་ཀྱིས་གླུ་མཛོད་ཅིག་ཉོ་ཚོང་བརྐྱབ་ནི་ལུ་དཔེར་མཛོད་གནས་ཁོངས་ཅིག་གཞི་སྒྲིག་འབད་དགོ"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
+#, python-format
+msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
+msgstr "ཁྱོད་ཀྱི་གླུ་མཛོད་འདི་ཉོ་ནི་ཨིན་ན་ <i>%(album)s</i> གིས་ '%(artist)s'?"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:401
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -1407,6 +2166,59 @@ msgstr ""
 "གླུ་མཛོད་འདི་ཉོ་ཚོང་འཐབ་ནི་འབདཝ་ད་འཛོལ་བ་འབྱུང་ནུག\n"
 "མེཀ་ནེ་ཊིཡུན་སར་བར་འདི་སླར་ལོག་འོང་ནུག:\n"
 "%s"
+
+#. Add the popup menu actions
+#: ../plugins/magnatune/magnatune/__init__.py:79
+msgid "Purchase Album"
+msgstr "གླུ་མཛོད་ཉོ།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:80
+msgid "Purchase this album from Magnatune"
+msgstr "གླུ་མཛོད་འདི་མེཀ་ན་ཊུན་ལས་ཉོ།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:85
+msgid "Purchase Physical CD"
+msgstr "དངོས་ཅན་སི་ཌི་ཉོ་ཚོང་བརྐྱབ།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:86
+msgid "Purchase a physical CD from Magnatune"
+msgstr "མེག་ན་ཊུན་ལས་སི་ཌི་དངོས་ཅན་ཅིག་ཉོ་ཚོང་བརྐྱབ།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:90
+msgid "Artist Information"
+msgstr "གླུ་གཞསཔ་བརྡ་དོན།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:91
+msgid "Get information about this artist"
+msgstr "གླུ་གཞསཔ་འདིའི་སྐོར་ལས་བརྡ་དོན་ལེན།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:95
+msgid "Cancel Downloads"
+msgstr "ཕབ་ལེན་ཚུ་ཆ་མེད་གཏང་།"
+
+#: ../plugins/magnatune/magnatune/__init__.py:96
+msgid "Stop downloading purchased albums"
+msgstr "ཉོ་ཚོང་བརྐྱབ་ཡོད་པའི་གླུ་མཛོད་ཚུ་ཕབ་ལེན་འབད་ནི་འགག"
+
+#: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:1
+msgid "Control Rhythmbox using key shortcuts"
+msgstr "མགྱོགས་ཐབས་ལྡེ་མིག་ཚུ་ལག་ལེན་འཐབ་དེ་རི་ཐམ་སྒྲོམ་ཚད་འཛིན་འབད།"
+
+#: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:2
+msgid "Media Player Keys"
+msgstr "བརྡ་ལམ་གཏང་འཕྲུལ་ལྡེ་མིག་ཚུ།"
+
+#: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:1
+msgid "Inhibit Power Manager from suspending the machine while playing"
+msgstr "རྩེདམོ་རྩེ་བའི་སྐབས་འཕྲལ་བཀག་འབད་ནི་གློག་འཕྲུལ་ལས་ནུས་ཤུགས་འཛིན་སྐྱོང་བར་ཆར་བརྐྱབ།"
+
+#: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:2
+msgid "Power Manager"
+msgstr "ནུས་ཤུགས་འཛིན་སྐྱོང་པ།"
+
+#: ../plugins/power-manager/rb-power-manager-plugin.c:182
+msgid "Playing"
+msgstr "གཏང་དོ།"
 
 #: ../plugins/pythonconsole/pythonconsole.py:57
 msgid "_Python Console"
@@ -1437,11 +2249,11 @@ msgstr "པ་ལག་ཨིན་"
 msgid "Enabled"
 msgstr "ལྕོགས་ཅན་བཟོ་ཡོདཔ་"
 
-#: ../plugins/rb-plugins-engine.c:516
+#: ../plugins/rb-plugins-engine.c:514
 msgid "Plugin Error"
 msgstr "པ་ལག་ཨིན་འཛོལ་བ་"
 
-#: ../plugins/rb-plugins-engine.c:516
+#: ../plugins/rb-plugins-engine.c:514
 #, c-format
 msgid "Unable to activate plugin %s"
 msgstr "པ་ལག་ཨིན་%sལུགས་ལྡན་བཟོ་མ་ཚུགས་"
@@ -1451,12 +2263,12 @@ msgid "Python Source"
 msgstr "པ་ཡི་ཐཱོན་འབྱུང་ཁུངས་"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
-msgid " doesn't do much"
-msgstr "ལེ་ཤ་འབད་ནི་མེན་"
+msgid "A sample plugin in Python with no features"
+msgstr "པ་ཡི་ཐཱོན་དང་གཅིག་ཁར་ཁྱད་རྣམ་ཚུ་མེད་མི་ནང་པ་ལག་ཨིན་དཔེ་ཚད་ཅིག"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
-msgid "Python Sample"
-msgstr "པ་ཡི་ཐཱོན་དཔེ་གཞི་"
+msgid "Python Sample Plugin"
+msgstr "པ་ཡི་ཐཱོན་དཔེ་གཞི་པ་ལག་ཨིན།"
 
 #: ../plugins/sample/rb-sample-plugin.c:115
 #: ../plugins/sample/rb-sample-plugin.c:122
@@ -1465,161 +2277,231 @@ msgid "Sample Plugin"
 msgstr "པ་ལག་ཨིན་དཔེ་གཞི་"
 
 #: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
-msgid "Does a whole lot of not much"
-msgstr "ལེ་ཤ་མ་ཡིན་པར་ཧྲིལ་བུ་འབདཝ་ཨིན་"
+msgid "A sample plugin in C with no features"
+msgstr "སི་དང་གཅིག་ཁར་ཁྱད་རྣམ་ཚུ་མེད་མི་ནང་པ་ལག་ཨིན་དཔེ་ཚད་ཅིག"
 
-#: ../podcast/rb-new-podcast-dialog.c:112
-msgid "New Podcast Feed"
-msgstr "པི་ཨོ་ཌི་ཀེསཊི་མཁོ་སྤྲོད་འབད་ནི་གསརཔ་"
+#: ../plugins/visualizer/rb-visualizer-plugin.c:226
+#: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
+msgid "Visualization"
+msgstr "འཆར་སྣང་།"
 
-#: ../podcast/rb-podcast-manager.c:785
+#: ../plugins/visualizer/rb-visualizer-plugin.c:227
+msgid "Start or stop visualization"
+msgstr "འགོ་བཙུགས་ཡང་ན་འཆར་སྣང་འགག"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:233
+msgid "Small"
+msgstr "ཆུང་ཀུ།"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:234
+msgid "Normal"
+msgstr "སྤྱིར་བཏང་།"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:235
+msgid "Large"
+msgstr "སྦོམ།"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:236
+msgid "Extra Large"
+msgstr "ཐེབས་སྦོམ།"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:937
+msgid "Enable visual effects?"
+msgstr "བི་ཤུ་ཡལ་ནུས་པ་ཚུ་ལྕོགས་ཅན་བཟོ་ནི་ཨིན་ན?"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:939
+msgid ""
+"It seems you are running Rhythmbox remotely.\n"
+"Are you sure you want to enable the visual effects?"
+msgstr ""
+"ཁྱོད་ཀྱིས་རི་ཐམ་སྒྲོམ་ཐག་རིང་ལས་གཡོག་བཀོལ་དོཝ་བཟུམ་ཅིག་འདུག\n"
+"ཁྱོད་ཀྱིས་བི་ཤུ་ཡལ་ནུས་པ་ཚུ་ལྕོགས་ཅན་བཟོ་ནི་ངེས་གཏན་ཨིན་ན?"
+
+#: ../plugins/visualizer/visualizer-controls.glade.h:1
+msgid "Desktop"
+msgstr "ཌེཀསི་ཊོཔ།"
+
+#: ../plugins/visualizer/visualizer-controls.glade.h:2
+msgid "Fullscreen"
+msgstr "གསལ་གཞི་གངམ།"
+
+#: ../plugins/visualizer/visualizer-controls.glade.h:3
+msgid "Leave Fullscreen"
+msgstr "གསལ་གཞི་གངམ་བཀོག་བཞག"
+
+#: ../plugins/visualizer/visualizer-controls.glade.h:4
+msgid "Quality:"
+msgstr "སྤུས་ཚད།"
+
+#: ../plugins/visualizer/visualizer-controls.glade.h:5
+msgid "Screen:"
+msgstr "གསལ་གཞི།"
+
+#: ../plugins/visualizer/visualizer-controls.glade.h:6
+msgid "Visualization:"
+msgstr "འཆར་སྣང་།"
+
+#: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:1
+msgid "Displays visualizations"
+msgstr "འཆར་སནང་ཚུ་བཀྲམ་སྟོན་འབདཝ་ཨིན།"
+
+#: ../podcast/rb-podcast-manager.c:820
 msgid "Invalid URL"
 msgstr "ནུས་ཅན་མེད་པའི་ཡུ་ཨར་ཨེལ་"
 
-#: ../podcast/rb-podcast-manager.c:786
+#: ../podcast/rb-podcast-manager.c:821
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "ཡུ་ཨར་ཨེལ་ \"%s\" འདི་ནུས་ཅན་མིན་འདུག་  ཞིབ་དཔྱད་འབད་གནང་།"
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:794
+#: ../podcast/rb-podcast-manager.c:829
 msgid "URL already added"
 msgstr "ཡུ་ཨར་ཨེལ་ཧེ་མ་ལས་རང་ཁ་སྐོང་བརྐྱབ་ནུག་"
 
-#: ../podcast/rb-podcast-manager.c:795
+#: ../podcast/rb-podcast-manager.c:830
 #, c-format
 msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
 msgstr "ཡུ་ཨར་ཨེལ་  \"%s\" འདི་ ཧེ་མ་ལས་རང་  རེ་ཌིའོ་ལྟེ་བ་འབད་ཁ་སྐོང་བརྐྱབ་ནུག།  འདི་པི་ཨོ་ཌི་ཀེསཊི་ཨིན་པ་ཅིན་  རེ་ཌིའོ་ལྟེ་བ་རྩ་བསྐྲད་གཏང་།"
 
-#: ../podcast/rb-podcast-manager.c:865
-msgid "Podcast"
-msgstr "པི་ཨོ་ཌི་ཀེསཊི་"
-
-#: ../podcast/rb-podcast-manager.c:1652
+#: ../podcast/rb-podcast-manager.c:871
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
 msgstr "པི་ཨོ་ཌི་ཀེསཊི་འདི་ཁ་སྐོང་བརྐྱབ་ད་ལུ་དཀའ་ངལ་འབྱུང་ནུག།  ཡུ་ཨར་ཨེལ་:%sའདི་བདེན་སྦྱོར་འབད་གནང་་།"
 
-#: ../podcast/rb-podcast-parse.c:453
+#: ../podcast/rb-podcast-manager.c:949
+msgid "Podcast"
+msgstr "པི་ཨོ་ཌི་ཀེསཊི་"
+
+#: ../podcast/rb-podcast-parse.c:462
 #, c-format
 msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
 msgstr "ཡུ་ཨར་ཨེལ་'%s' འདི་པི་ཨོ་ཌི་ཀེསཊི་མཁོ་སྤྲོད་འབད་མི་འབྱུང་།  ཡང་ན་ཡུ་ཨར་ཨེལ་ཕྱི་འགྱུར་ཨིན་འོང་  ཡང་ན་  མཁོ་སྤྲོད་འབད་ནི་འདི་ཆད་པ་འོང་།  ག་ལས་གོ་རུང་  ཁྱོད་ཀྱིས་  རི་ཐམ་བོཀསི་གིས་ལག་ལེན་འཐབ་དགོཔ་འབད་ཨིན་ན?"
 
-#: ../podcast/rb-podcast-properties-dialog.c:397
+#: ../podcast/rb-podcast-properties-dialog.c:415
 msgid "Not Downloaded"
 msgstr "མར་ཕབ་ལེན་མ་འབད་བས་"
 
-#: ../remote/dbus/rb-client.c:64
+#: ../remote/dbus/rb-client.c:66
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "རི་ཐམ་གྱི་དུས་སྐབས་གསརཔ་ཅིག་འགོ་མ་བཙུགས་"
 
-#: ../remote/dbus/rb-client.c:65
-#: ../shell/main.c:123
+#: ../remote/dbus/rb-client.c:67
+#: ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "རི་ཐམ་བོཀསི་སྤང་"
 
-#: ../remote/dbus/rb-client.c:67
+#: ../remote/dbus/rb-client.c:69
 msgid "Don't present an existing Rhythmbox window"
 msgstr "གནས་ཏེ་ཡོད་པའི་རི་ཐམ་བོཀསི་སྒོ་སྒྲིག་ཅིག་གསལ་སྟོན་མ་འབད་"
 
-#: ../remote/dbus/rb-client.c:68
+#: ../remote/dbus/rb-client.c:70
 msgid "Hide the Rhythmbox window"
 msgstr "རི་ཐམ་སྒོ་སྒྲིག་འདི་སྦ་བཞག་"
 
-#: ../remote/dbus/rb-client.c:70
+#: ../remote/dbus/rb-client.c:72
 msgid "Jump to next song"
 msgstr "ཤུལ་མའི་ཞབས་ཁྲ་ལུ་མཆོང་"
 
-#: ../remote/dbus/rb-client.c:71
+#: ../remote/dbus/rb-client.c:73
 msgid "Jump to previous song"
 msgstr "ཧེ་མའི་ཞབས་ཁྲ་ལུ་མཆོང་"
 
-#: ../remote/dbus/rb-client.c:73
+#: ../remote/dbus/rb-client.c:75
+msgid "Show notification of the playing song"
+msgstr "གླུ་གཞས་གཏང་མི་གི་བརྡ་བསྐུལ་སྟོན།"
+
+#: ../remote/dbus/rb-client.c:77
 msgid "Resume playback if currently paused"
 msgstr "ད་ལྟོ་ཐེབ་ཡོད་པ་ཅིན་  གླུ་གཞས་གཏང་ནི་ལུ་བསྐྱར་ལོག་འབད་"
 
-#: ../remote/dbus/rb-client.c:74
+#: ../remote/dbus/rb-client.c:78
 msgid "Pause playback if currently playing"
 msgstr "ད་ལྟོ་གཏང་དོ་ཡོད་པ་ཅིན་  གླུ་གཞས་གཏང་ནི་ལུ་ཐེམ་བཞག་"
 
-#: ../remote/dbus/rb-client.c:75
+#: ../remote/dbus/rb-client.c:79
 msgid "Toggle play/pause mode"
 msgstr "གཏང་ནི་འདི་སོར་སྟོན་འབད་ནི/ ཐབས་ལམ་ཐེམ་"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:78
+#: ../remote/dbus/rb-client.c:82
 msgid "Play a specified URI, importing it if necessary"
 msgstr "དགོས་མཁོ་ཡོད་པ་ཅིན་  གསལ་བཀོད་འབད་ཡོད་པའི་ཡུ་ཨར་ཨའི་འདི་ནང་འདྲེན་འབད་ཐོག་ལས་གཏང་"
 
-#: ../remote/dbus/rb-client.c:78
+#: ../remote/dbus/rb-client.c:82
 msgid "URI to play"
 msgstr "གཏང་ནིའི་ཡུ་ཨར་ཨའི་"
 
-#: ../remote/dbus/rb-client.c:79
+#: ../remote/dbus/rb-client.c:83
 msgid "Add specified tracks to the play queue"
 msgstr "མི་གྲལ་གཏང་ལུ་  གསལ་བཀོད་འབད་ཡོད་པའི་གླུ་རིམ་ཚུ་ཁ་སྐོང་བརྐྱབ་"
 
-#: ../remote/dbus/rb-client.c:80
+#: ../remote/dbus/rb-client.c:84
 msgid "Empty the play queue before adding new tracks"
 msgstr "གླུ་རིམ་གསརཔ་ཚུ་ཁ་སྐོང་མ་བརྐྱབ་པའི་ཧེ་མ་ལས་ མིགྲལ་གཏང་འདི་སྟོངམ་སྟོན་"
 
-#: ../remote/dbus/rb-client.c:82
+#: ../remote/dbus/rb-client.c:86
 msgid "Print the title and artist of the playing song"
 msgstr "ཞབས་ཁྲ་གཏང་མི་གི་མགོ་མིང་དང་རི་མོ་ཁམན་འདི་དཔར་བསྐྲུན་འབད་"
 
-#: ../remote/dbus/rb-client.c:83
+#: ../remote/dbus/rb-client.c:87
 msgid "Print formatted details of the song"
 msgstr "ཞབས་ཁྲ་གི་རྩ་སྒྲིག་འབད་དེ་ཡོད་པའི་རྒྱས་བཤད་འདི་དཔར་བསྐྲུན་འབད་"
 
-#: ../remote/dbus/rb-client.c:375
-#: ../shell/rb-shell.c:1999
-#: ../shell/rb-tray-icon.c:167
+#: ../remote/dbus/rb-client.c:379
+#: ../shell/rb-shell.c:2106
 msgid "Not playing"
 msgstr "མི་གཏང་མས་"
 
-#: ../rhythmdb/rhythmdb.c:499
+#: ../rhythmdb/rhythmdb-monitor.c:319
+#, c-format
+msgid "Couldn't monitor %s: %s"
+msgstr " %sལྟ་རྟགས་འབད་མ་ཚུགས: %s"
+
+#: ../rhythmdb/rhythmdb-property-model.c:430
+#: ../sources/rb-auto-playlist-source.c:73
+#: ../sources/rb-browser-source.c:153
+#: ../sources/rb-podcast-source.c:311
+#: ../sources/rb-static-playlist-source.c:90
+msgid "All"
+msgstr "ཆ་མཉམ"
+
+#: ../rhythmdb/rhythmdb-tree.c:348
+msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
+msgstr "གནས་སྡུད་གཞི་རྟེན་འདི་  ཤུལ་མའི་རི་ཐམ་བོཀསི་གི་ཐོན་རིམ་ཅིག་གིས་ གསར་བསྐྲུན་འབད་ནུག།  རི་ཐམ་བོཀསི་གི་འཐོན་རིམ་འདི་གིས་  གནས་སྡུད་གཞི་རྟེན་ལྷག་མི་ཚུགས།"
+
+#: ../rhythmdb/rhythmdb.c:501
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "%sའཛུལ་སྤྱོད་འབད་མ་ཚུགས:%s"
 
-#: ../rhythmdb/rhythmdb.c:1426
+#: ../rhythmdb/rhythmdb.c:1468
 msgid "<invalid filename>"
 msgstr "<ནུས་ཅན་མེད་པའི་ཡིག་སྣོད་མིང་>"
 
-#: ../rhythmdb/rhythmdb.c:1686
+#: ../rhythmdb/rhythmdb.c:1725
 msgid "invalid unicode in error message"
 msgstr "འཛོལ་བའི་འཕྲིན་དོན་ནང་ ནུས་ཅན་མེད་པའི་ཡུ་ནི་ཀོཌི་"
 
-#: ../rhythmdb/rhythmdb.c:2386
+#: ../rhythmdb/rhythmdb.c:2458
 msgid "Could not load the music database"
 msgstr "སྙན་ཆ་གནས་སྡུད་གཞི་རྟེན་འདི་མངོན་གསལ་འབད་མ་ཚུགས་"
 
-#. Translators:  Please keep the translated date format
-#. * compact, and avoid variable-width items such as month and
-#. * day names wherever possible.  This allows us to disable
-#. * column autosizing, which makes the Rhythmbox UI much faster.
-#.
-#: ../rhythmdb/rhythmdb.c:2852
-#: ../sources/rb-podcast-source.c:1639
-#: ../widgets/rb-entry-view.c:2047
-msgid "%Y-%m-%d %H:%M"
-msgstr "%Y-%m-%d %H:%M"
-
-#: ../rhythmdb/rhythmdb.c:3667
+#: ../rhythmdb/rhythmdb.c:3845
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ldསྐར་ཆ"
 msgstr[1] "%ld སྐར་ཆ་ཚུ།"
 
-#: ../rhythmdb/rhythmdb.c:3668
+#: ../rhythmdb/rhythmdb.c:3846
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld ཆ་ཚོད་"
 msgstr[1] "%ldཆུ་ཚོད་ཚུ།"
 
-#: ../rhythmdb/rhythmdb.c:3669
+#: ../rhythmdb/rhythmdb.c:3847
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -1627,7 +2509,7 @@ msgstr[0] "%ld ཉིནམ་"
 msgstr[1] "%ldཉིནམ་"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3675
+#: ../rhythmdb/rhythmdb.c:3853
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s དང་ %s"
@@ -1635,452 +2517,631 @@ msgstr "%s, %s དང་ %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3681
-#: ../rhythmdb/rhythmdb.c:3689
-#: ../rhythmdb/rhythmdb.c:3700
+#: ../rhythmdb/rhythmdb.c:3859
+#: ../rhythmdb/rhythmdb.c:3867
+#: ../rhythmdb/rhythmdb.c:3878
 #, c-format
 msgid "%s and %s"
 msgstr "%s དང་ %s"
 
-#: ../rhythmdb/rhythmdb-monitor.c:311
-#, c-format
-msgid "Couldn't monitor %s: %s"
-msgstr " %sལྟ་རྟགས་འབད་མ་ཚུགས: %s"
-
-#: ../rhythmdb/rhythmdb-property-model.c:423
-#: ../sources/rb-auto-playlist-source.c:72
-#: ../sources/rb-browser-source.c:154
-#: ../sources/rb-podcast-source.c:311
-#: ../sources/rb-static-playlist-source.c:88
-msgid "All"
-msgstr "ཆ་མཉམ"
-
-#: ../rhythmdb/rhythmdb-tree.c:329
-msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
-msgstr "གནས་སྡུད་གཞི་རྟེན་འདི་  ཤུལ་མའི་རི་ཐམ་བོཀསི་གི་ཐོན་རིམ་ཅིག་གིས་ གསར་བསྐྲུན་འབད་ནུག།  རི་ཐམ་བོཀསི་གི་འཐོན་རིམ་འདི་གིས་  གནས་སྡུད་གཞི་རྟེན་ལྷག་མི་ཚུགས།"
-
-#: ../shell/main.c:116
+#: ../shell/main.c:115
 msgid "Enable debug output"
 msgstr "རྐྱེན་སེལ་ཨའུཊི་པུཊི་ལྕོགས་ཅན་བཟོ་"
 
-#: ../shell/main.c:117
+#: ../shell/main.c:116
 msgid "Enable debug output matching a specified string"
 msgstr "གསལ་བཀོད་འབད་དེ་ཡོད་པའི་  རྐྱེན་སེལ་ཨའུཊི་པུཊི་མཐུན་སྒྲིག་ཅིག་ལྕོགས་ཅན་བཟོ་"
 
-#: ../shell/main.c:118
+#: ../shell/main.c:117
 msgid "Do not update the library with file changes"
 msgstr "ཡིག་སྣོད་བསྒྱུར་བཅོས་ཚུ་དང་བཅས་  དཔེ་མཛོད་འདི་དུས་མཐུན་མ་བཟོ་"
 
-#: ../shell/main.c:119
+#: ../shell/main.c:118
 msgid "Do not register the shell"
 msgstr "ཤལ་འདི་ཐོ་འགོད་མ་འབད་"
 
-#: ../shell/main.c:120
+#: ../shell/main.c:119
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "གནས་སྡུད་རྟག་བརྟན་ཅི་ཡང་སྲུང་བཞག་མ་འབད་(implies --no-registration)"
 
-#: ../shell/main.c:121
+#: ../shell/main.c:120
 msgid "Path for database file to use"
 msgstr "ལག་ལེན་འཐབ་ནི་ལུ་  གནས་སྡུད་གཞི་རྟེན་ཡིག་སྣོད་དོན་ལུ་འགྲལ་ལམ་"
 
-#: ../shell/main.c:122
+#: ../shell/main.c:121
 msgid "Path for playlists file to use"
 msgstr "གཏང་ཐོ་ལག་ལེན་འཐབ་ནི་དོན་ལུ་  འགྲུལ་ལམ་"
 
-#: ../shell/main.c:124
+#: ../shell/main.c:123
 msgid "[URI...]"
 msgstr "[ཡུ་ཨར་ཨའི་...]"
 
-#: ../shell/main.c:159
-#: ../shell/main.c:168
+#: ../shell/main.c:160
+#: ../shell/main.c:169
 #: ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "རི་ཐམ་བོཀསི་"
 
+#: ../shell/rb-play-order.c:308
+msgid "Linear"
+msgstr "ཐིག་གི་"
+
+#: ../shell/rb-play-order.c:309
+msgid "Linear looping"
+msgstr "ཐིག་གི་འཕྲལ་བཀོལ་"
+
+#: ../shell/rb-play-order.c:310
+msgid "Shuffle"
+msgstr "རིམ་དཀྲུགས་"
+
+#: ../shell/rb-play-order.c:311
+msgid "Random with equal weights"
+msgstr "ལྗིད་ཚད་མཉམ་པ་ཚུ་དང་ཅི་ཁར་ གང་འབྱུང་"
+
+#: ../shell/rb-play-order.c:312
+msgid "Random by time since last play"
+msgstr "མཇུག་ལུ་གཏང་མི་ལས་གོ་བཟུང་གང་འབྱུང་"
+
+#: ../shell/rb-play-order.c:313
+msgid "Random by rating"
+msgstr "མང་ཉུང་ཚད་ཀྱི་གང་འབྱུང་"
+
+#: ../shell/rb-play-order.c:314
+msgid "Random by time since last play and rating"
+msgstr "མཇུག་གི་གཏང་ནི་དང་དྲག་ཞན་དབྱེ་རྟགས་ལས་ཚུར་ དུས་ཚོད་ཀྱི་གང་འབྱུང་"
+
+#: ../shell/rb-play-order.c:315
+msgid "Linear, removing entries once played"
+msgstr "ཐིག་གི་  འཛུལ་ཞུགས་ཚུ་ཚར་ཅིག་གཏང་ཞིནམ་ལས་རྩ་བསྐྲད་གཏང་དོ་"
+
 #. Submenu of Music
-#: ../shell/rb-playlist-manager.c:130
+#: ../shell/rb-playlist-manager.c:131
 msgid "_Playlist"
 msgstr "གཏང་ཐོ།(_P)"
 
-#: ../shell/rb-playlist-manager.c:132
+#: ../shell/rb-playlist-manager.c:133
 msgid "_New Playlist"
 msgstr "གཏང་ཐོ་གསརཔ།(_N)"
 
-#: ../shell/rb-playlist-manager.c:133
+#: ../shell/rb-playlist-manager.c:134
 msgid "Create a new playlist"
 msgstr "གཏང་ཐོ་གསརཔ་ཅིག་གསར་བསྐྲུན་འབད་"
 
-#: ../shell/rb-playlist-manager.c:135
+#: ../shell/rb-playlist-manager.c:136
 msgid "New _Automatic Playlist..."
 msgstr "རང་བཞིན་གྱིས་གཏང་ཐོ་གསརཔ...( _A)"
 
-#: ../shell/rb-playlist-manager.c:136
+#: ../shell/rb-playlist-manager.c:137
 msgid "Create a new automatically updating playlist"
 msgstr "རང་བཞིན་གྱིས་དུས་མཐུན་བཟོ་བའི་གཏང་ཐོ་གསརཔ་ཅིག་གསར་བསྐྲུན་འབད་"
 
-#: ../shell/rb-playlist-manager.c:138
+#: ../shell/rb-playlist-manager.c:139
 msgid "_Load from File..."
 msgstr "ཡིག་སྣོད་ལས་མངོན་གསལ་འབད...(_L)"
 
-#: ../shell/rb-playlist-manager.c:139
+#: ../shell/rb-playlist-manager.c:140
 msgid "Choose a playlist to be loaded"
 msgstr "མངོན་གསལ་འབད་ནི་ལུ་ གཏང་ཐོ་གདམ་ཁ་བརྐྱབ་"
 
-#: ../shell/rb-playlist-manager.c:141
+#: ../shell/rb-playlist-manager.c:142
 msgid "_Save to File..."
 msgstr "ཡིག་སྣོད་ལུ་སྲུང་...(_S)"
 
-#: ../shell/rb-playlist-manager.c:142
+#: ../shell/rb-playlist-manager.c:143
 msgid "Save a playlist to a file"
 msgstr "གཏང་ཐོ་འདི་ཡིག་སྣོད་ཅིག་ལུ་སྲུང་"
 
-#: ../shell/rb-playlist-manager.c:145
+#: ../shell/rb-playlist-manager.c:146
 msgid "Rename playlist"
 msgstr "གཏང་ཐོ་བསྐྱར་མིང་བཞགས་"
 
-#: ../shell/rb-playlist-manager.c:147
+#: ../shell/rb-playlist-manager.c:148
 msgid "_Delete"
 msgstr "བཏོན་གཏང་(_D)"
 
-#: ../shell/rb-playlist-manager.c:148
+#: ../shell/rb-playlist-manager.c:149
 msgid "Delete playlist"
 msgstr "གཏང་ཐོ་བཏོན་གཏང་"
 
-#: ../shell/rb-playlist-manager.c:150
+#: ../shell/rb-playlist-manager.c:151
 msgid "_Edit..."
 msgstr "ཞུན་དག་འབད...(_E)"
 
-#: ../shell/rb-playlist-manager.c:151
+#: ../shell/rb-playlist-manager.c:152
 msgid "Change this automatic playlist"
 msgstr "རང་བཞིན་གྱིས་གཏང་ཐོ་འདི་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-playlist-manager.c:153
+#: ../shell/rb-playlist-manager.c:154
 msgid "_Queue All Tracks"
 msgstr "མི་གྲལ་གླུ་རིམ་ཆ་ཚང་(_Q)"
 
-#: ../shell/rb-playlist-manager.c:154
+#: ../shell/rb-playlist-manager.c:155
 msgid "Add all tracks in this playlist to the queue"
 msgstr "གཏང་ཐོ་འདི་ནང་གི་མི་གྲལ་ལུ་  གླུ་རིམ་ཆ་ཚང་ཁ་སྐོང་བརྐྱབ་"
 
-#: ../shell/rb-playlist-manager.c:561
+#: ../shell/rb-playlist-manager.c:600
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "གཏང་ཐོ་ཡིག་སྣོད་འདི་མ་ཤེས་པའི་རྩ་སྒྲིག་ཡང་ན་ངན་ཅན་བཟོ་ནི་ཅིག་ནང་འོང་"
 
-#: ../shell/rb-playlist-manager.c:959
+#: ../shell/rb-playlist-manager.c:997
 msgid "Untitled Playlist"
 msgstr "མགོ་མིང་མ་བཏགས་པའི་གཏང་ཐོ་"
 
-#: ../shell/rb-playlist-manager.c:1218
+#: ../shell/rb-playlist-manager.c:1258
 msgid "Couldn't read playlist"
 msgstr "གཏང་ཐོ་ལྷག་མ་ཚུགས་"
 
-#: ../shell/rb-playlist-manager.c:1233
+#: ../shell/rb-playlist-manager.c:1273
 msgid "Load Playlist"
 msgstr "གཏང་ཐོ་མངོན་གསལ་འབད་"
 
-#: ../shell/rb-playlist-manager.c:1254
+#: ../shell/rb-playlist-manager.c:1294
 msgid "MPEG Version 3.0 URL"
 msgstr "ཨེམ་པི་ཨི་ཇི་འཐོན་རིམ་ ༣.༠་ ཡུ་ཨར་ཨེལ་"
 
-#: ../shell/rb-playlist-manager.c:1255
+#: ../shell/rb-playlist-manager.c:1295
 msgid "Shoutcast playlist"
 msgstr "ཤའོཊི་ཀེསཊི་གཏང་ཐོ་"
 
-#: ../shell/rb-playlist-manager.c:1300
-#: ../sources/rb-playlist-source.c:545
+#: ../shell/rb-playlist-manager.c:1340
+#: ../sources/rb-playlist-source.c:546
 msgid "Couldn't save playlist"
 msgstr "གཏང་ཐོ་སྲུང་མ་ཚུགས་"
 
-#: ../shell/rb-playlist-manager.c:1300
+#: ../shell/rb-playlist-manager.c:1340
 msgid "Unsupported file extension given."
 msgstr "རྒྱབ་སྐྱོར་མེད་པའི་ཡིག་སྣོད་རྒྱ་བསྐྱེད་བྱིན་ནུག"
 
-#: ../shell/rb-playlist-manager.c:1601
+#: ../shell/rb-playlist-manager.c:1641
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "གཏང་ཐོ་%sཧེ་མ་ལས་གནས་ཏེ་ཡོད་"
 
-#: ../shell/rb-playlist-manager.c:1631
-#: ../shell/rb-playlist-manager.c:1664
+#: ../shell/rb-playlist-manager.c:1671
 #: ../shell/rb-playlist-manager.c:1704
-#: ../shell/rb-playlist-manager.c:1747
+#: ../shell/rb-playlist-manager.c:1744
+#: ../shell/rb-playlist-manager.c:1787
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "མ་ཤེས་པའི་གཏང་ཐོ:%s"
 
-#: ../shell/rb-playlist-manager.c:1672
 #: ../shell/rb-playlist-manager.c:1712
+#: ../shell/rb-playlist-manager.c:1752
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "གཏང་ཐོ་ %sའདི་ རང་བཞིན་གྱིས་གཏང་ཐོ་ཨིན་"
 
-#: ../shell/rb-play-order.c:290
-msgid "Linear"
-msgstr "ཐིག་གི་"
-
-#: ../shell/rb-play-order.c:291
-msgid "Linear looping"
-msgstr "ཐིག་གི་འཕྲལ་བཀོལ་"
-
-#: ../shell/rb-play-order.c:292
-msgid "Shuffle"
-msgstr "རིམ་དཀྲུགས་"
-
-#: ../shell/rb-play-order.c:293
-msgid "Random with equal weights"
-msgstr "ལྗིད་ཚད་མཉམ་པ་ཚུ་དང་ཅི་ཁར་ གང་འབྱུང་"
-
-#: ../shell/rb-play-order.c:294
-msgid "Random by time since last play"
-msgstr "མཇུག་ལུ་གཏང་མི་ལས་གོ་བཟུང་གང་འབྱུང་"
-
-#: ../shell/rb-play-order.c:295
-msgid "Random by rating"
-msgstr "མང་ཉུང་ཚད་ཀྱི་གང་འབྱུང་"
-
-#: ../shell/rb-play-order.c:296
-msgid "Random by time since last play and rating"
-msgstr "མཇུག་གི་གཏང་ནི་དང་དྲག་ཞན་དབྱེ་རྟགས་ལས་ཚུར་ དུས་ཚོད་ཀྱི་གང་འབྱུང་"
-
-#: ../shell/rb-play-order.c:297
-msgid "Linear, removing entries once played"
-msgstr "ཐིག་གི་  འཛུལ་ཞུགས་ཚུ་ཚར་ཅིག་གཏང་ཞིནམ་ལས་རྩ་བསྐྲད་གཏང་དོ་"
-
-#: ../shell/rb-removable-media-manager.c:136
+#: ../shell/rb-removable-media-manager.c:133
 msgid "_Eject"
 msgstr "ཕྱིར་བཏོན།(_E)"
 
-#: ../shell/rb-removable-media-manager.c:137
+#: ../shell/rb-removable-media-manager.c:134
 msgid "Eject this medium"
 msgstr "འབྲིང་མ་འདི་ཕྱིར་བཏོན་"
 
-#: ../shell/rb-removable-media-manager.c:139
+#: ../shell/rb-removable-media-manager.c:136
 msgid "_Copy to library"
 msgstr "དཔེ་མཛོད་ལུ་འདྲ་བཤུས་བརྐྱབ།(_C)"
 
-#: ../shell/rb-removable-media-manager.c:140
+#: ../shell/rb-removable-media-manager.c:137
 msgid "Copy all tracks to the library"
 msgstr "གླུ་རིམ་ཚུ་ཆ་མཉམ་དཔེ་མཛོད་ལུ་འདྲ་བཤུས་བརྐྱབ་"
 
-#: ../shell/rb-removable-media-manager.c:142
+#: ../shell/rb-removable-media-manager.c:139
 msgid "_Scan Removable Media"
 msgstr "རྩ་བསྐྲད་གཏང་བཏུབ་པའི་བརྡ་བརྒྱུད་འདི་ཞིབ་ལྟ་འབད།(_S)"
 
-#: ../shell/rb-removable-media-manager.c:143
+#: ../shell/rb-removable-media-manager.c:140
 msgid "Scan for new Removable Media"
 msgstr "རྩ་བསྐྲད་གཏང་བཏུབ་པའི་བརྡ་བརྒྱུད་གསརཔ་གི་དོན་ལུ་ཞིབ་ལྟ་འབད་"
 
-#: ../shell/rb-removable-media-manager.c:663
+#: ../shell/rb-removable-media-manager.c:644
 msgid "Error transferring track"
 msgstr "གླུ་རིམ་གནས་སོར་འབདཝ་ད་འཛོལ་བ་"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell-clipboard.c:128
+msgid "Select _All"
+msgstr "ཆ་མཉམ་སེལ་འཐུ་འབད།(_A)"
+
+#: ../shell/rb-shell-clipboard.c:129
+msgid "Select all songs"
+msgstr "ཞབས་ཁྲ་ཆ་མཉམ་སེལ་འཐུ་འབད་"
+
+#: ../shell/rb-shell-clipboard.c:131
+msgid "D_eselect All"
+msgstr "ཆ་མཉམ་སེལ་འཐུ་བཤོལ།(_e)"
+
+#: ../shell/rb-shell-clipboard.c:132
+msgid "Deselect all songs"
+msgstr "ཞབས་ཁྲ་ཆ་མཉམ་སེལ་འཐུ་བཤོལ་"
+
+#: ../shell/rb-shell-clipboard.c:134
+msgid "Cu_t"
+msgstr "བཏོག(_t)"
+
+#: ../shell/rb-shell-clipboard.c:135
+msgid "Cut selection"
+msgstr "སེལ་འཐུ་བཏོག་གཏང་"
+
+#: ../shell/rb-shell-clipboard.c:137
+msgid "_Copy"
+msgstr "འདྲ་བཤུས།(_C)"
+
+#: ../shell/rb-shell-clipboard.c:138
+msgid "Copy selection"
+msgstr "སེལ་འཐུ་འདི་འདྲ་བཤུས་བརྐྱབ་"
+
+#: ../shell/rb-shell-clipboard.c:140
+msgid "_Paste"
+msgstr "སྦྱར།(_P)"
+
+#: ../shell/rb-shell-clipboard.c:141
+msgid "Paste selection"
+msgstr "སེལ་འཐུ་སྦྱར་"
+
+#: ../shell/rb-shell-clipboard.c:143
+msgid "_Remove"
+msgstr "རྩ་བསྐྲད་གཏང་།(_R)"
+
+#: ../shell/rb-shell-clipboard.c:144
+#: ../shell/rb-shell-clipboard.c:158
+msgid "Remove selection"
+msgstr "སེལ་འཐུ་རྩ་བསྐྲད་གཏང་"
+
+#: ../shell/rb-shell-clipboard.c:146
+msgid "_Move to Trash"
+msgstr "ཕྱགས་ཧོད་ལུ་སྤོ་བཤུད་འབད།(_M)"
+
+#: ../shell/rb-shell-clipboard.c:147
+msgid "Move selection to the trash"
+msgstr "སེལ་འཐུ་འདི་ཕྱགས་ཧོད་ལུ་སྤོ་བཤུད་འབད་"
+
+#: ../shell/rb-shell-clipboard.c:150
+msgid "Add to P_laylist"
+msgstr "གཏང་ཐོ་ལུ་ཁ་སྐོང་བརྐྱབ།(_l)"
+
+#: ../shell/rb-shell-clipboard.c:151
+msgid "_New Playlist..."
+msgstr "གཏང་ཐོ་གསརཔ...(_N)"
+
+#: ../shell/rb-shell-clipboard.c:152
+msgid "Add the selected songs to a new playlist"
+msgstr "སེལ་འཐུ་འབད་དེ་ཡོད་པའི་ཞབས་ཁྲ་ཚུ་  གཏང་ཐོ་གསརཔ་ལུ་ཁ་སྐོང་བརྐྱབ་"
+
+#: ../shell/rb-shell-clipboard.c:154
+msgid "Add _to Play Queue"
+msgstr "མི་གྲལ་གཏང་ནི་ལུ་ཁ་སྐོང་བརྐྱབ།( _t)"
+
+#: ../shell/rb-shell-clipboard.c:155
+msgid "Add the selected songs to the play queue"
+msgstr "སེལ་འཐུ་འབད་དེ་ཡོད་པའི་ཞབས་ཁྲ་ཚུ་  མི་གྲལ་གཏང་ལུ་ཁ་སྐོང་བརྐྱབ་"
+
+#: ../shell/rb-shell-clipboard.c:157
+msgid "Remove"
+msgstr "རྩ་བསྐྲད་"
+
+#: ../shell/rb-shell-clipboard.c:161
+#: ../shell/rb-shell-clipboard.c:164
+#: ../sources/rb-podcast-source.c:295
+msgid "_Properties"
+msgstr "རྒྱུ་དངོས།(_P)"
+
+#: ../shell/rb-shell-clipboard.c:162
+#: ../shell/rb-shell-clipboard.c:165
+msgid "Show information on the selected song"
+msgstr "སེལ་འཐུ་འབད་དེ་ཡོད་པའི་ཞབས་ཁྲ་གུར་  བརྡ་དོན་སྟོན་"
+
+#: ../shell/rb-shell-player.c:230
+msgid "P_revious"
+msgstr "ཧེ་མ།(_r)"
+
+#: ../shell/rb-shell-player.c:231
+msgid "Start playing the previous song"
+msgstr "ཧེ་མའི་ཞབས་ཁྲ་གཏང་ནི་འདི་འགོ་བཙུགས་"
+
+#: ../shell/rb-shell-player.c:233
+msgid "_Next"
+msgstr "ཤུལ་མམ།(_N)"
+
+#: ../shell/rb-shell-player.c:234
+msgid "Start playing the next song"
+msgstr "ཤུལ་མའི་ཞབས་ཁྲ་གཏང་ནི་འདི་འགོ་བཙུགས་"
+
+#: ../shell/rb-shell-player.c:236
+msgid "_Increase Volume"
+msgstr "སྒྲ་སྐད་ཡར་འཕར་འབད།(_I)"
+
+#: ../shell/rb-shell-player.c:237
+msgid "Increase playback volume"
+msgstr "གླུ་གཞས་གཏང་ནིའི་སྒྲ་སྐད་ཡར་འཕར་འབད་"
+
+#: ../shell/rb-shell-player.c:239
+msgid "_Decrease Volume"
+msgstr "སྒྲ་སྐད་མར་ཕབ་འབད།(_D)"
+
+#: ../shell/rb-shell-player.c:240
+msgid "Decrease playback volume"
+msgstr "གླུ་གཞས་གཏང་ནིའི་སྒྲ་སྐད་མར་ཕབ་འབད་"
+
+#: ../shell/rb-shell-player.c:247
+msgid "_Play"
+msgstr "གཏང་།(_P)"
+
+#: ../shell/rb-shell-player.c:248
+#: ../shell/rb-shell-player.c:2902
+msgid "Start playback"
+msgstr "གླུ་གཞས་གཏང་ནི་འདི་འགོ་བཙུགས་"
+
+#: ../shell/rb-shell-player.c:250
+msgid "Sh_uffle"
+msgstr "རིམ་དཀྲུགས།(_u)"
+
+#: ../shell/rb-shell-player.c:251
+msgid "Play songs in a random order"
+msgstr "ཞབས་ཁྲ་ཚུ་གང་འབྱུང་རིམ་པའི་ནང་གཏང་"
+
+#: ../shell/rb-shell-player.c:253
+msgid "_Repeat"
+msgstr "ཡང་བསྐྱར།(_R)"
+
+#: ../shell/rb-shell-player.c:254
+msgid "Play first song again after all songs are played"
+msgstr "ཞབས་ཁྲ་ཚུ་ཆ་ཚང་གཏང་ཚར་བའི་ཤུལ་ལས་  ལོག་འདི་རང་མགོའི་ཞབས་ཁྲ་འདི་གཏང་"
+
+#: ../shell/rb-shell-player.c:256
+msgid "_Song Position Slider"
+msgstr "ཞབས་ཁྲའི་གནས་ས་བཤུད་བྱེད།(_S)"
+
+#: ../shell/rb-shell-player.c:257
+msgid "Change the visibility of the song position slider"
+msgstr "ཞབས་ཁྲའི་གནས་ས་བཤུད་བྱེད་ཀྱི་མཐོང་གསལ་འདི་བསྒྱུར་བཅོས་འབད་"
+
+#: ../shell/rb-shell-player.c:598
+msgid "Stream error"
+msgstr "རྒྱུན་རིམ་འཛོལ་བ་"
+
+#: ../shell/rb-shell-player.c:599
+msgid "Unexpected end of stream!"
+msgstr "རྒྱུན་རིམ་གྱི་རེ་བ་མེད་པའི་མཇུག!"
+
+#: ../shell/rb-shell-player.c:683
+#, c-format
+msgid "Failed to create the player: %s"
+msgstr "གཏང་འཕྲུལ་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག: %s"
+
+#: ../shell/rb-shell-player.c:1126
+msgid "Playlist was empty"
+msgstr "གཏང་ཐོ་འདི་སྟོངམ་ཨིན་མས་"
+
+#: ../shell/rb-shell-player.c:1578
+msgid "Not currently playing"
+msgstr "ད་ལྟོ་མི་གཏང་མས་"
+
+#: ../shell/rb-shell-player.c:1616
+msgid "No previous song"
+msgstr "ཧེ་མའི་ཞབས་ཁྲ་མེན་བས་"
+
+#: ../shell/rb-shell-player.c:1693
+msgid "No next song"
+msgstr "ཤུལ་མའི་ཞབས་ཁྲ་མེན་"
+
+#: ../shell/rb-shell-player.c:1808
+#: ../shell/rb-shell-player.c:2775
+msgid "Couldn't start playback"
+msgstr "གླུ་གཞས་གཏང་ནི་འགོ་བཙུགས་མ་ཚུགས་"
+
+#: ../shell/rb-shell-player.c:2606
+msgid "Couldn't stop playback"
+msgstr "གླུ་གཞས་གཏང་ནི་བཀག་མ་ཚུགས་"
+
+#: ../shell/rb-shell-player.c:2695
+msgid "Current song is not seekable"
+msgstr "ད་ལྟོའི་ཞབས་ཁྲ་འདི་འཚོལ་བཏུབ་ཨིན་མས་"
+
+#: ../shell/rb-shell-player.c:2900
+msgid "Stop playback"
+msgstr "གླུ་གཞས་གཏང་ནི་བཀག"
+
+#: ../shell/rb-shell-preferences.c:119
+#: ../shell/rb-shell.c:2340
+msgid "Couldn't display help"
+msgstr "གྲོགས་རམ་བཀྲམ་སྟོན་འབད་མ་ཚུགས་"
+
+#: ../shell/rb-shell-preferences.c:154
+msgid "Music Player Preferences"
+msgstr "སྙན་ཆ་གཏང་འཕྲུལ་དགའ་གདམ་"
+
+#: ../shell/rb-shell-preferences.c:207
+msgid "General"
+msgstr "ཡོངས་ཁྱབ་"
+
+#: ../shell/rb-shell.c:413
 msgid "_Music"
 msgstr "སྙན་ཆ།(_M)"
 
-#: ../shell/rb-shell.c:405
+#: ../shell/rb-shell.c:414
 msgid "_Edit"
 msgstr "ཞུན་དག(_E)"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:415
 msgid "_View"
 msgstr "སྟོན།(_V)"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:416
 msgid "_Control"
 msgstr "ཚད་འཛིན།(_C)"
 
-#: ../shell/rb-shell.c:408
+#: ../shell/rb-shell.c:417
 msgid "_Tools"
 msgstr "ལག་ཆས་ཚུ།(_T)"
 
-#: ../shell/rb-shell.c:409
+#: ../shell/rb-shell.c:418
 msgid "_Help"
 msgstr "གྲོགས་རམ།(_H)"
 
-#: ../shell/rb-shell.c:411
+#: ../shell/rb-shell.c:420
 msgid "_Import Folder..."
 msgstr "སྣོད་འཛིན་ནང་འདྲེན་འབད...(_I)"
 
-#: ../shell/rb-shell.c:412
+#: ../shell/rb-shell.c:421
 msgid "Choose folder to be added to the Library"
 msgstr "དཔེ་མཛོད་ལུ་ཁ་སྐོང་བརྐྱབ་ནི་ལུ་  སྣོད་འཛིན་གདམ་ཁ་བརྐྱབ་"
 
-#: ../shell/rb-shell.c:414
+#: ../shell/rb-shell.c:423
 msgid "Import _File..."
 msgstr "ཡིག་སྣོད་ནང་འདྲེན་འབད...(_F)"
 
-#: ../shell/rb-shell.c:415
+#: ../shell/rb-shell.c:424
 msgid "Choose file to be added to the Library"
 msgstr "དཔེ་མཛོད་ལུ་ཁ་སྐོང་བརྐྱབ་ནི་ལུ་  ཡིག་སྣོད་གདམ་ཁ་བརྐྱབ་"
 
-#: ../shell/rb-shell.c:417
+#: ../shell/rb-shell.c:426
 msgid "_About"
 msgstr "སྐོར་ལས།(_A)"
 
-#: ../shell/rb-shell.c:418
+#: ../shell/rb-shell.c:427
 msgid "Show information about the music player"
 msgstr "སྙན་ཆ་གཏང་མི་སྐོར་ལས་  བརྡ་དོན་སྟོན་"
 
-#: ../shell/rb-shell.c:420
+#: ../shell/rb-shell.c:429
 msgid "_Contents"
 msgstr "ནང་དོན་ཚུ།(_C)"
 
-#: ../shell/rb-shell.c:421
+#: ../shell/rb-shell.c:430
 msgid "Display music player help"
 msgstr "སྙན་ཆ་གཏང་འཕྲུལ་གྲོགས་རམ་བཀྲམ་སྟོན་འབད་"
 
-#: ../shell/rb-shell.c:423
+#: ../shell/rb-shell.c:432
 msgid "_Close"
 msgstr "ཁ་བསྡམས།(_C)"
 
-#: ../shell/rb-shell.c:424
+#: ../shell/rb-shell.c:433
 msgid "Hide the music player window"
 msgstr "སྙན་ཆ་གཏང་འཕྲུལ་སྒོ་སྒྲིག་འདི་སྦ་བཞག་"
 
-#: ../shell/rb-shell.c:426
+#: ../shell/rb-shell.c:435
 msgid "_Quit"
 msgstr "སྤང་།(_Q)"
 
-#: ../shell/rb-shell.c:427
+#: ../shell/rb-shell.c:436
 msgid "Quit the music player"
 msgstr "སྙན་ཆ་གཏང་འཕྲུལ་འདི་སྤང་"
 
-#: ../shell/rb-shell.c:429
+#: ../shell/rb-shell.c:438
 msgid "Prefere_nces..."
 msgstr "དགའ་གདམ་ཚུ...(_n)"
 
-#: ../shell/rb-shell.c:430
+#: ../shell/rb-shell.c:439
 msgid "Edit music player preferences"
 msgstr "སྙན་ཆ་གཏང་མི་དགའ་གདམ་ཚུ་ཞུན་དག་འབད་"
 
-#: ../shell/rb-shell.c:432
+#: ../shell/rb-shell.c:441
 msgid "Plu_gins..."
 msgstr "པ་ལག་ཨིནསི...(_g)"
 
-#: ../shell/rb-shell.c:433
+#: ../shell/rb-shell.c:442
 msgid "Change and configure plugins"
 msgstr "པ་ལག་ཨིན་ཚུ་བསྒྱུར་བཅོས་དང་རིམ་སྒྲིག་འབད་"
 
-#: ../shell/rb-shell.c:435
-msgid "Show _All"
-msgstr "ཆ་མཉམ་སྟོན།(_A)"
+#: ../shell/rb-shell.c:444
+msgid "Show _All Tracks"
+msgstr "གླུ་རིམ་ཚུ་ཆ་མཉམ་སྟོན(_A)"
 
-#: ../shell/rb-shell.c:436
-msgid "Show all items in this music source"
-msgstr "སྙན་ཆའི་འབྱུང་ཁུངས་འདི་ནང་  རྣམ་གྲངས་ཚུ་ཆ་ཚང་སྟོན་"
+#: ../shell/rb-shell.c:445
+msgid "Show all tracks in this music source"
+msgstr "སྙན་ཆ་འབྱུང་ཁུངས་འདི་ནང་གི་གླུ་རིམ་ཚུ་ཆ་མཉམ་སྟོན།"
 
-#: ../shell/rb-shell.c:438
+#: ../shell/rb-shell.c:447
 msgid "_Jump to Playing Song"
 msgstr "ཞབས་ཁྲ་གཏང་མི་ལུ་མཆོང་།(_J)"
 
-#: ../shell/rb-shell.c:439
+#: ../shell/rb-shell.c:448
 msgid "Scroll the view to the currently playing song"
 msgstr "ད་ལྟོ་གཏང་དོ་ཡོད་པའི་ཞབས་ཁྲ་ལུ་ མཐོང་སྣང་འདི་བཤུད་སྒྲིལ་འབད་"
 
-#: ../shell/rb-shell.c:446
+#: ../shell/rb-shell.c:455
 msgid "Side _Pane"
 msgstr "པེན་གྱི་ཕྱོགས།( _P)"
 
-#: ../shell/rb-shell.c:447
+#: ../shell/rb-shell.c:456
 msgid "Change the visibility of the side pane"
 msgstr "པེན་ཕྱོགས་ཀྱི་མཐོང་གསལ་འདི་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-shell.c:449
+#: ../shell/rb-shell.c:458
 msgid "_Toolbar"
 msgstr "ལག་ཆས་ཕྲ་རིང་།(_T)"
 
-#: ../shell/rb-shell.c:450
+#: ../shell/rb-shell.c:459
 msgid "Change the visibility of the toolbar"
 msgstr "ལག་ཆས་ཕྲ་རིང་གི་མཐོང་གསལ་འདི་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-shell.c:452
+#: ../shell/rb-shell.c:461
 msgid "_Small Display"
 msgstr "བཀྲམ་སྟོན་ཆུང་ཀུ།(_S)"
 
-#: ../shell/rb-shell.c:453
+#: ../shell/rb-shell.c:462
 msgid "Make the main window smaller"
 msgstr "སྒོ་སྒྲིག་ངོ་མ་འདི་ཆུང་ཀུ་བཟོ་"
 
-#: ../shell/rb-shell.c:455
+#: ../shell/rb-shell.c:464
 msgid "_Party Mode"
 msgstr "སྡེ་ཚོགས་ཐབས་ལམ།(_P)"
 
-#: ../shell/rb-shell.c:456
+#: ../shell/rb-shell.c:465
 msgid "Change the status of the party mode"
 msgstr "སྡེ་ཚོགས་ཐབས་ལམ་གྱི་གནས་ཚད་འདི་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-shell.c:458
+#: ../shell/rb-shell.c:467
 msgid "Play _Queue as Side Pane"
 msgstr "མི་གྲལ་འདི་  པེན་ཕྱོགས་འབད་གཏང་།( _Q)"
 
-#: ../shell/rb-shell.c:459
+#: ../shell/rb-shell.c:468
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "མི་གྲལ་འདི་འབྱུང་ཁུངས་ཡང་ན་ཟུར་ཁའི་ཕྲ་རིང་བཟུམ་མཐོང་ཚུགས་མི་ཚུགས་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-shell.c:461
+#: ../shell/rb-shell.c:470
 msgid "S_tatusbar"
 msgstr "གནས་ཚད་ཕྲ་རིང་།(_t)"
 
-#: ../shell/rb-shell.c:462
+#: ../shell/rb-shell.c:471
 msgid "Change the visibility of the statusbar"
 msgstr "གནས་ཚད་ཕྲ་རིང་གི་མཐོང་གསལ་འདི་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-shell.c:1269
+#: ../shell/rb-shell.c:1289
 msgid "Change the music volume"
 msgstr "སྙན་ཆའི་སྒྲ་སྐད་འདི་བསྒྱུར་བཅོས་འབད་"
 
-#: ../shell/rb-shell.c:1690
+#: ../shell/rb-shell.c:1723
 msgid "Error while saving song information"
 msgstr "ཞབས་ཁྲའི་བརྡ་དོན་སྲུང་བཞག་འབདཝ་ད་འཛོལ་བ་"
 
-#: ../shell/rb-shell.c:1795
+#: ../shell/rb-shell.c:1880
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "གླུ་རམི་ %d འདི་%d (%.0f%%)གི་ཕྱི་ཁར་གནས་སོར་གཏང་དོ་"
 
-#: ../shell/rb-shell.c:1798
+#: ../shell/rb-shell.c:1883
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "གླུ་རིམ་ %d འདི་  %dགི་ཕྱི་ཁར་གནས་སོར་གཏང་དོ་"
 
-#. Translators: by Artist from Album
-#: ../shell/rb-shell.c:1899
+#. Translators: the %s is the elapsed and total time
+#: ../shell/rb-shell.c:2109
 #, c-format
-msgid "by %s from %s"
-msgstr "%sགིས་%sལས་"
-
-#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:2002
-#, c-format
-msgid ""
-"%s\n"
-"Paused, %s"
-msgstr ""
-"%s\n"
-"ཐེམ་ནུག་, %s"
-
-#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:2006
-#, c-format
-msgid ""
-"%s\n"
-"%s"
-msgstr ""
-"%s\n"
-"%s"
+msgid "Paused, %s"
+msgstr "ཐེམ་ཡོདཔ %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2046
+#: ../shell/rb-shell.c:2151
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (ཐེམ་ནུག)"
 
-#: ../shell/rb-shell.c:2151
+#: ../shell/rb-shell.c:2256
 msgid "translator-credits"
 msgstr "སྐད་བསྒྱུར་པའི་-ངོ་བསྟོད་ཚུ་"
 
-#: ../shell/rb-shell.c:2154
+#: ../shell/rb-shell.c:2259
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -2092,7 +3153,7 @@ msgstr ""
 "མཉན་ཆས་དལཝ་གཞི་ཚོགས་ཀྱིས་  ཇི་ཨེན་ཡུ་ཡོངས་ཁྱབ་མི་མང་ཆོག་ཐམ་གྱི་འོག་ལུ་ \n"
 "དཔར་བསྐྲུན་འབད་བཏུབ་མི་ཅིག་ཨིན།\n"
 
-#: ../shell/rb-shell.c:2158
+#: ../shell/rb-shell.c:2263
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -2104,7 +3165,7 @@ msgstr ""
 "ཚུད་སྒྲིག་གི་  ཉན་ལེན་འཇུག་སྤྱོད་མ་འབད་བར་ཨིན།\n"
 "རྒྱས་བཤད་ཧེང་བཀལ་གྱི་དོན་ལུ་  ཇི་ཨེན་ཡུ་ཡོངས་ཁྱབ་མི་མང་ཆོག་ཐམ་འདི་བལྟ་ད།\n"
 
-#: ../shell/rb-shell.c:2162
+#: ../shell/rb-shell.c:2267
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -2114,274 +3175,66 @@ msgstr ""
 "འདི་མེན་པ་ཅིན་  མཉེན་ཆས་གཞི་ཚོགས་དལཝ་ལུ་འབྲི་ད་ \n"
 "དེ་ཡང་  ༥༡ ཕརེངཀི་ལིན་ ཨེསི་ཊི་  འཐིང་གཞི་ལྔ་པ་  བོསི་ཊོན་ ཨེམ་ཨེ་ ༠༢༡༡༠-༡༣༠༡  ཡུ་ཨེསི་ཨེ་བརྩིས་ཏེ་ཨིན།\n"
 
-#: ../shell/rb-shell.c:2171
+#: ../shell/rb-shell.c:2276
 msgid "Maintainers:"
 msgstr "རྒྱུན་སྐྱོང་པ་ཚུ:"
 
-#: ../shell/rb-shell.c:2174
+#: ../shell/rb-shell.c:2279
 msgid "Former Maintainers:"
 msgstr "ཧེ་མའི་རྒྱུན་སྐྱོང་པ་ཚུ:"
 
-#: ../shell/rb-shell.c:2177
+#: ../shell/rb-shell.c:2282
 msgid "Contributors:"
 msgstr "ཕན་འདེབས་པ་ཚུ:"
 
-#: ../shell/rb-shell.c:2179
+#: ../shell/rb-shell.c:2284
 msgid "Music management and playback software for GNOME."
 msgstr "ཇི་ནོམ་དོན་ལུ་  སྙན་ཆའི་འཛིན་སྐྱོང་པ་དང་གླུ་གཞས་གཏང་ནིའི་མཉེན་ཆས་"
 
-#: ../shell/rb-shell.c:2235
-#: ../shell/rb-shell-preferences.c:119
-msgid "Couldn't display help"
-msgstr "གྲོགས་རམ་བཀྲམ་སྟོན་འབད་མ་ཚུགས་"
-
-#: ../shell/rb-shell.c:2282
+#: ../shell/rb-shell.c:2387
 msgid "Configure Plugins"
 msgstr "པ་ལག་ཨིནསི་རིམ་སྒྲིག་འབད་"
 
-#: ../shell/rb-shell.c:2353
+#: ../shell/rb-shell.c:2458
 msgid "Import Folder into Library"
 msgstr "སྣོད་འཛིན་འདི་དཔེ་མཛོད་ནང་ལུ་ནང་འདྲེན་འབད་"
 
-#: ../shell/rb-shell.c:2375
+#: ../shell/rb-shell.c:2480
 msgid "Import File into Library"
 msgstr "ཡིག་སྣོད་འདི་དཔེ་མཛོད་ནང་ལུ་ནང་འདྲེན་འབད་"
 
-#: ../shell/rb-shell.c:2958
+#. Translators: by Artist
+#: ../shell/rb-shell.c:2987
+#, c-format
+msgid "by <i>%s</i>"
+msgstr "གིས་ <i>%s</i>"
+
+#. Translators: from Album
+#: ../shell/rb-shell.c:3008
+#, c-format
+msgid "from <i>%s</i>"
+msgstr "ལས་ <i>%s</i>"
+
+#: ../shell/rb-shell.c:3213
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "ཡུ་ཨར་ཨའི་%sལུ་  ཐོ་འགོད་འབད་དེ་ཡོད་པའི་འབྱུང་ཁུངས་ཀྱིས་ལེགས་སྐྱོང་འཐབ་མི་ཚུགས་"
 
-#: ../shell/rb-shell.c:3191
-#: ../shell/rb-shell.c:3217
+#: ../shell/rb-shell.c:3447
+#: ../shell/rb-shell.c:3473
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "མ་ཤེས་པའི་ཞབས་ཁྲ་ཡུ་ཨར་ཨའི:%s"
 
-#: ../shell/rb-shell.c:3226
+#: ../shell/rb-shell.c:3482
 #, c-format
 msgid "Unknown property %s"
 msgstr "མ་ཤེས་པའི་རྒྱུ་དངོས་%s"
 
-#: ../shell/rb-shell.c:3236
+#: ../shell/rb-shell.c:3492
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "རྒྱུ་དངོས་ %sགི་དོན་ལུ་  ནུས་ཅན་མེད་པའི་རྒྱུ་དངོས་དབྱེ་བ་ %s"
-
-#: ../shell/rb-shell-clipboard.c:127
-msgid "Select _All"
-msgstr "ཆ་མཉམ་སེལ་འཐུ་འབད།(_A)"
-
-#: ../shell/rb-shell-clipboard.c:128
-msgid "Select all songs"
-msgstr "ཞབས་ཁྲ་ཆ་མཉམ་སེལ་འཐུ་འབད་"
-
-#: ../shell/rb-shell-clipboard.c:130
-msgid "D_eselect All"
-msgstr "ཆ་མཉམ་སེལ་འཐུ་བཤོལ།(_e)"
-
-#: ../shell/rb-shell-clipboard.c:131
-msgid "Deselect all songs"
-msgstr "ཞབས་ཁྲ་ཆ་མཉམ་སེལ་འཐུ་བཤོལ་"
-
-#: ../shell/rb-shell-clipboard.c:133
-msgid "Cu_t"
-msgstr "བཏོག(_t)"
-
-#: ../shell/rb-shell-clipboard.c:134
-msgid "Cut selection"
-msgstr "སེལ་འཐུ་བཏོག་གཏང་"
-
-#: ../shell/rb-shell-clipboard.c:136
-msgid "_Copy"
-msgstr "འདྲ་བཤུས།(_C)"
-
-#: ../shell/rb-shell-clipboard.c:137
-msgid "Copy selection"
-msgstr "སེལ་འཐུ་འདི་འདྲ་བཤུས་བརྐྱབ་"
-
-#: ../shell/rb-shell-clipboard.c:139
-msgid "_Paste"
-msgstr "སྦྱར།(_P)"
-
-#: ../shell/rb-shell-clipboard.c:140
-msgid "Paste selection"
-msgstr "སེལ་འཐུ་སྦྱར་"
-
-#: ../shell/rb-shell-clipboard.c:142
-msgid "_Remove"
-msgstr "རྩ་བསྐྲད་གཏང་།(_R)"
-
-#: ../shell/rb-shell-clipboard.c:143
-#: ../shell/rb-shell-clipboard.c:157
-msgid "Remove selection"
-msgstr "སེལ་འཐུ་རྩ་བསྐྲད་གཏང་"
-
-#: ../shell/rb-shell-clipboard.c:145
-msgid "_Move to Trash"
-msgstr "ཕྱགས་ཧོད་ལུ་སྤོ་བཤུད་འབད།(_M)"
-
-#: ../shell/rb-shell-clipboard.c:146
-msgid "Move selection to the trash"
-msgstr "སེལ་འཐུ་འདི་ཕྱགས་ཧོད་ལུ་སྤོ་བཤུད་འབད་"
-
-#: ../shell/rb-shell-clipboard.c:149
-msgid "Add to P_laylist"
-msgstr "གཏང་ཐོ་ལུ་ཁ་སྐོང་བརྐྱབ།(_l)"
-
-#: ../shell/rb-shell-clipboard.c:150
-msgid "_New Playlist..."
-msgstr "གཏང་ཐོ་གསརཔ...(_N)"
-
-#: ../shell/rb-shell-clipboard.c:151
-msgid "Add the selected songs to a new playlist"
-msgstr "སེལ་འཐུ་འབད་དེ་ཡོད་པའི་ཞབས་ཁྲ་ཚུ་  གཏང་ཐོ་གསརཔ་ལུ་ཁ་སྐོང་བརྐྱབ་"
-
-#: ../shell/rb-shell-clipboard.c:153
-msgid "Add _to Play Queue"
-msgstr "མི་གྲལ་གཏང་ནི་ལུ་ཁ་སྐོང་བརྐྱབ།( _t)"
-
-#: ../shell/rb-shell-clipboard.c:154
-msgid "Add the selected songs to the play queue"
-msgstr "སེལ་འཐུ་འབད་དེ་ཡོད་པའི་ཞབས་ཁྲ་ཚུ་  མི་གྲལ་གཏང་ལུ་ཁ་སྐོང་བརྐྱབ་"
-
-#: ../shell/rb-shell-clipboard.c:156
-msgid "Remove"
-msgstr "རྩ་བསྐྲད་"
-
-#: ../shell/rb-shell-clipboard.c:160
-#: ../shell/rb-shell-clipboard.c:163
-#: ../sources/rb-podcast-source.c:295
-msgid "_Properties"
-msgstr "རྒྱུ་དངོས།(_P)"
-
-#: ../shell/rb-shell-clipboard.c:161
-#: ../shell/rb-shell-clipboard.c:164
-msgid "Show information on the selected song"
-msgstr "སེལ་འཐུ་འབད་དེ་ཡོད་པའི་ཞབས་ཁྲ་གུར་  བརྡ་དོན་སྟོན་"
-
-#: ../shell/rb-shell-player.c:243
-msgid "P_revious"
-msgstr "ཧེ་མ།(_r)"
-
-#: ../shell/rb-shell-player.c:244
-msgid "Start playing the previous song"
-msgstr "ཧེ་མའི་ཞབས་ཁྲ་གཏང་ནི་འདི་འགོ་བཙུགས་"
-
-#: ../shell/rb-shell-player.c:246
-msgid "_Next"
-msgstr "ཤུལ་མམ།(_N)"
-
-#: ../shell/rb-shell-player.c:247
-msgid "Start playing the next song"
-msgstr "ཤུལ་མའི་ཞབས་ཁྲ་གཏང་ནི་འདི་འགོ་བཙུགས་"
-
-#: ../shell/rb-shell-player.c:249
-msgid "_Increase Volume"
-msgstr "སྒྲ་སྐད་ཡར་འཕར་འབད།(_I)"
-
-#: ../shell/rb-shell-player.c:250
-msgid "Increase playback volume"
-msgstr "གླུ་གཞས་གཏང་ནིའི་སྒྲ་སྐད་ཡར་འཕར་འབད་"
-
-#: ../shell/rb-shell-player.c:252
-msgid "_Decrease Volume"
-msgstr "སྒྲ་སྐད་མར་ཕབ་འབད།(_D)"
-
-#: ../shell/rb-shell-player.c:253
-msgid "Decrease playback volume"
-msgstr "གླུ་གཞས་གཏང་ནིའི་སྒྲ་སྐད་མར་ཕབ་འབད་"
-
-#: ../shell/rb-shell-player.c:260
-msgid "_Play"
-msgstr "གཏང་།(_P)"
-
-#: ../shell/rb-shell-player.c:261
-#: ../shell/rb-shell-player.c:2991
-msgid "Start playback"
-msgstr "གླུ་གཞས་གཏང་ནི་འདི་འགོ་བཙུགས་"
-
-#: ../shell/rb-shell-player.c:263
-msgid "Sh_uffle"
-msgstr "རིམ་དཀྲུགས།(_u)"
-
-#: ../shell/rb-shell-player.c:264
-msgid "Play songs in a random order"
-msgstr "ཞབས་ཁྲ་ཚུ་གང་འབྱུང་རིམ་པའི་ནང་གཏང་"
-
-#: ../shell/rb-shell-player.c:266
-msgid "_Repeat"
-msgstr "ཡང་བསྐྱར།(_R)"
-
-#: ../shell/rb-shell-player.c:267
-msgid "Play first song again after all songs are played"
-msgstr "ཞབས་ཁྲ་ཚུ་ཆ་ཚང་གཏང་ཚར་བའི་ཤུལ་ལས་  ལོག་འདི་རང་མགོའི་ཞབས་ཁྲ་འདི་གཏང་"
-
-#: ../shell/rb-shell-player.c:269
-msgid "_Song Position Slider"
-msgstr "ཞབས་ཁྲའི་གནས་ས་བཤུད་བྱེད།(_S)"
-
-#: ../shell/rb-shell-player.c:270
-msgid "Change the visibility of the song position slider"
-msgstr "ཞབས་ཁྲའི་གནས་ས་བཤུད་བྱེད་ཀྱི་མཐོང་གསལ་འདི་བསྒྱུར་བཅོས་འབད་"
-
-#: ../shell/rb-shell-player.c:610
-msgid "Stream error"
-msgstr "རྒྱུན་རིམ་འཛོལ་བ་"
-
-#: ../shell/rb-shell-player.c:611
-msgid "Unexpected end of stream!"
-msgstr "རྒྱུན་རིམ་གྱི་རེ་བ་མེད་པའི་མཇུག!"
-
-#: ../shell/rb-shell-player.c:695
-#, c-format
-msgid "Failed to create the player: %s"
-msgstr "གཏང་འཕྲུལ་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག: %s"
-
-#: ../shell/rb-shell-player.c:1108
-msgid "Playlist was empty"
-msgstr "གཏང་ཐོ་འདི་སྟོངམ་ཨིན་མས་"
-
-#: ../shell/rb-shell-player.c:1557
-msgid "Not currently playing"
-msgstr "ད་ལྟོ་མི་གཏང་མས་"
-
-#: ../shell/rb-shell-player.c:1595
-msgid "No previous song"
-msgstr "ཧེ་མའི་ཞབས་ཁྲ་མེན་བས་"
-
-#: ../shell/rb-shell-player.c:1672
-msgid "No next song"
-msgstr "ཤུལ་མའི་ཞབས་ཁྲ་མེན་"
-
-#: ../shell/rb-shell-player.c:1787
-#: ../shell/rb-shell-player.c:2746
-msgid "Couldn't start playback"
-msgstr "གླུ་གཞས་གཏང་ནི་འགོ་བཙུགས་མ་ཚུགས་"
-
-#: ../shell/rb-shell-player.c:2583
-msgid "Couldn't stop playback"
-msgstr "གླུ་གཞས་གཏང་ནི་བཀག་མ་ཚུགས་"
-
-#: ../shell/rb-shell-player.c:2666
-msgid "Current song is not seekable"
-msgstr "ད་ལྟོའི་ཞབས་ཁྲ་འདི་འཚོལ་བཏུབ་ཨིན་མས་"
-
-#: ../shell/rb-shell-player.c:2989
-msgid "Stop playback"
-msgstr "གླུ་གཞས་གཏང་ནི་བཀག"
-
-#: ../shell/rb-shell-preferences.c:154
-msgid "Music Player Preferences"
-msgstr "སྙན་ཆ་གཏང་འཕྲུལ་དགའ་གདམ་"
-
-#: ../shell/rb-shell-preferences.c:207
-msgid "General"
-msgstr "ཡོངས་ཁྱབ་"
-
-#: ../shell/rb-shell-preferences.c:420
-msgid "Sharing"
-msgstr "རུབ་སྤྱོད་"
 
 #: ../shell/rb-source-header.c:111
 msgid "_Browse"
@@ -2395,150 +3248,92 @@ msgstr "བརྡ་འཚོལ་གྱི་མཐོང་གསལ་འད
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "རིགས་ རི་མོ་མཁན་  གླུ་མཛོད་ཡང་ན་མགོ་མིང་གིས་འབད་  སྙན་ཆ་བཀྲམ་སྟོན་ཚགས་མ་"
 
-#: ../shell/rb-statusbar.c:158
+#: ../shell/rb-statusbar.c:160
 msgid "Loading..."
 msgstr "མངོན་གསལ་འབད་དོ..."
 
-#: ../shell/rb-tray-icon.c:106
+#: ../shell/rb-tray-icon.c:132
 msgid "_Show Music Player"
 msgstr "སྙན་ཆ་གཏང་འཕྲུལ་སྟོན།(_S)"
 
-#: ../shell/rb-tray-icon.c:107
+#: ../shell/rb-tray-icon.c:133
 msgid "Choose music to play"
 msgstr "གཏང་ནི་ལུ་སྙན་ཆ་གདམ་ཁ་བརྐྱབ་"
 
-#: ../shell/rb-tray-icon.c:109
+#: ../shell/rb-tray-icon.c:135
 msgid "Show N_otifications"
 msgstr "བརྡ་བསྐུལ་ཚུ་སྟོན།(_o)"
 
-#: ../shell/rb-tray-icon.c:110
+#: ../shell/rb-tray-icon.c:136
 msgid "Show notifications of song changes and other events"
 msgstr "ཞབས་ཁྲ་བསྒྱུར་བཅོས་ཚུ་དང་ གཞན་བྱུང་ལས་ཚུ་གི་བརྡ་བསྐུལ་སྟོན་"
 
-#: ../sources/rb-audiocd-source.c:205
-msgid "<Invalid unicode>"
-msgstr "<ནུས་ཅན་མེད་པའི་ཡུ་ནི་ཀོཌི་>"
-
-#: ../sources/rb-audiocd-source.c:250
-#, c-format
-msgid "Track %u"
-msgstr "གླུ་རིམ་ %u"
-
-#: ../sources/rb-audiocd-source.c:336
-#: ../sources/rb-audiocd-source.c:346
-#: ../sources/rb-audiocd-source.c:353
-#: ../sources/rb-audiocd-source.c:548
-msgid "Couldn't load Audio CD"
-msgstr "རྣར་ཉན་སི་ཌི་མངོན་གསལ་འབད་མ་ཚུགས་"
-
-#: ../sources/rb-audiocd-source.c:337
-#: ../sources/rb-audiocd-source.c:347
-msgid "Rhythmbox couldn't access the CD."
-msgstr "རི་ཐམ་བོཀསི་འདི་གིས་  སི་ཌི་འཛུལ་སྤྱོད་འབད་མ་ཚུགས་"
-
-#: ../sources/rb-audiocd-source.c:354
-msgid "Rhythmbox couldn't read the CD information."
-msgstr "རི་ཐམ་བོཀསི་འདི་གིས་ སི་ཌི་བརྡ་དོན་ལྷག་མ་ཚུགས་"
-
-#: ../sources/rb-audiocd-source.c:549
-msgid "Rhythmbox could not get access to the CD device."
-msgstr "རི་ཐམ་བོཀསི་འདི་གིས་  སི་ཌི་ཐབས་འཕྲུལ་ལུ་འཛུལ་སྤྱོད་འབད་མ་ཚུགས་"
-
-#: ../sources/rb-auto-playlist-source.c:72
-#: ../sources/rb-browser-source.c:154
+#: ../sources/rb-auto-playlist-source.c:73
+#: ../sources/rb-browser-source.c:153
 #: ../sources/rb-podcast-source.c:311
-#: ../sources/rb-static-playlist-source.c:88
+#: ../sources/rb-static-playlist-source.c:90
 msgid "Search all fields"
 msgstr "ས་སྒོ་ཚུ་ཆ་ཚང་འཚོལ་ཞིབ་འབད་"
 
-#: ../sources/rb-auto-playlist-source.c:73
-#: ../sources/rb-browser-source.c:155
-#: ../sources/rb-static-playlist-source.c:89
+#: ../sources/rb-auto-playlist-source.c:74
+#: ../sources/rb-browser-source.c:154
+#: ../sources/rb-static-playlist-source.c:91
 msgid "Artists"
 msgstr "གླུ་གཞསཔ་ཚུ་"
 
-#: ../sources/rb-auto-playlist-source.c:73
-#: ../sources/rb-browser-source.c:155
-#: ../sources/rb-static-playlist-source.c:89
+#: ../sources/rb-auto-playlist-source.c:74
+#: ../sources/rb-browser-source.c:154
+#: ../sources/rb-static-playlist-source.c:91
 msgid "Search artists"
 msgstr "གླུ་གཞསཔ་ཚུ་འཚོལ་ཞིབ་འབད་"
 
-#: ../sources/rb-auto-playlist-source.c:74
-#: ../sources/rb-browser-source.c:156
-#: ../sources/rb-static-playlist-source.c:90
+#: ../sources/rb-auto-playlist-source.c:75
+#: ../sources/rb-browser-source.c:155
+#: ../sources/rb-static-playlist-source.c:92
 msgid "Albums"
 msgstr "གླུ་མཛོད་ཚུ་"
 
-#: ../sources/rb-auto-playlist-source.c:74
-#: ../sources/rb-browser-source.c:156
-#: ../sources/rb-static-playlist-source.c:90
+#: ../sources/rb-auto-playlist-source.c:75
+#: ../sources/rb-browser-source.c:155
+#: ../sources/rb-static-playlist-source.c:92
 msgid "Search albums"
 msgstr "གླུ་མཛོད་ཚུ་འཚོལ་ཞིབ་འབད་"
 
-#: ../sources/rb-auto-playlist-source.c:75
-#: ../sources/rb-browser-source.c:157
-#: ../sources/rb-static-playlist-source.c:91
+#: ../sources/rb-auto-playlist-source.c:76
+#: ../sources/rb-browser-source.c:156
+#: ../sources/rb-static-playlist-source.c:93
 msgid "Titles"
 msgstr "མགོ་མིང་ཚུ་"
 
-#: ../sources/rb-auto-playlist-source.c:75
-#: ../sources/rb-browser-source.c:157
-#: ../sources/rb-static-playlist-source.c:91
+#: ../sources/rb-auto-playlist-source.c:76
+#: ../sources/rb-browser-source.c:156
+#: ../sources/rb-static-playlist-source.c:93
 msgid "Search titles"
 msgstr "མགོ་མིང་ཚུ་འཚོལ་ཞིབ་འབད་"
 
-#: ../sources/rb-browser-source.c:141
+#: ../sources/rb-browser-source.c:140
 msgid "Browse This _Genre"
 msgstr "རིགས་འདི་བརྡ་འཚོལ་འབད།( _G)"
 
-#: ../sources/rb-browser-source.c:142
+#: ../sources/rb-browser-source.c:141
 msgid "Set the browser to view only this genre"
 msgstr "རིགས་འདི་རྐྱངམ་ཅིག་བལྟ་ནི་དོན་ལུ་  བརའུ་ཟར་འདི་གཞི་སྒྲིག་འབད་"
 
-#: ../sources/rb-browser-source.c:144
+#: ../sources/rb-browser-source.c:143
 msgid "Browse This _Artist"
 msgstr "གླུ་གཞསཔ་འདི་བརྡ་འཚོལ་འབད་(_A)"
 
-#: ../sources/rb-browser-source.c:145
+#: ../sources/rb-browser-source.c:144
 msgid "Set the browser to view only this artist"
 msgstr "གླུ་གཞསཔ་འདི་རྐྱངམ་ཅིག་བལྟ་ནི་ལུ་  བརའུ་ཟར་གཞི་སྒྲིག་འབད་"
 
-#: ../sources/rb-browser-source.c:147
+#: ../sources/rb-browser-source.c:146
 msgid "Browse This A_lbum"
 msgstr "གླུ་མཛོད་འདི་བརྡ་འཚོལ་འབད།(_l)"
 
-#: ../sources/rb-browser-source.c:148
+#: ../sources/rb-browser-source.c:147
 msgid "Set the browser to view only this album"
 msgstr "གླུ་མཛོད་འདི་རྐྱངམ་ཅིག་བལྟ་ནི་ལུ་  བརྡ་འཚོལ་འདི་གཞི་སྒྲིག་འབད་"
-
-#: ../sources/rb-daap-source.c:120
-msgid "_Disconnect"
-msgstr "མཐུད་ལམ་བཏོགས་ནི།(_D)"
-
-#: ../sources/rb-daap-source.c:121
-msgid "Disconnect from DAAP share"
-msgstr "ཌི་ཨེ་ཨེ་པི་རུབ་སྤྱོད་ལས་  མཐུད་ལམ་བཏོགས་"
-
-#: ../sources/rb-daap-source.c:706
-#, c-format
-msgid "The music share '%s' requires a password to connect"
-msgstr "སྙན་ཆའི་རུབ་སྤྱོད་ '%s' མཐུད་ནི་ལུ་ཆོག་ཡིག་ཅིག་དགོས་མཁོ་ཡོད་"
-
-#: ../sources/rb-daap-source.c:708
-msgid "Password Required"
-msgstr "ཆོག་ཡིག་དགོས་མཁོ་ཡོད་"
-
-#: ../sources/rb-daap-source.c:779
-msgid "Connecting to music share"
-msgstr "སྙན་ཆའི་རུབ་སྤྱོད་ལུ་མཐུད་དོ་"
-
-#: ../sources/rb-daap-source.c:786
-msgid "Retrieving songs from music share"
-msgstr "སྙན་ཆའི་རུབ་སྤྱོད་ལས་  ཞབས་ཁྲ་ཚུ་སླར་འདྲེན་འབད་དོ་"
-
-#: ../sources/rb-daap-source.c:858
-msgid "Could not connect to shared music"
-msgstr "རུབ་སྤྱོད་འབད་དེ་ཡོད་པའི་སྙན་ཆ་ལུ་  མཐུད་མ་ཚུགས་"
 
 #: ../sources/rb-import-errors-source.c:191
 msgid "Import Errors"
@@ -2550,41 +3345,6 @@ msgid "%d import errors"
 msgid_plural "%d import errors"
 msgstr[0] "%d ནང་འདྲེན་འཛོལ་བ་ཚུ་"
 msgstr[1] "%dནང་འདྲེན་འཛོལ་བ་ཚུ་"
-
-#: ../sources/rb-iradio-source.c:181
-msgid "New Internet _Radio Station"
-msgstr "ཨིན་ཊར་ནེཊི་རེ་ཌིའོ་ལྟེ་བ་གསརཔ།(_R)"
-
-#: ../sources/rb-iradio-source.c:182
-msgid "Create a new Internet Radio station"
-msgstr "ཨིན་ཊར་ནེཊི་རེ་ཌིའོ་ལྟེ་བ་གསརཔ་ཅིག་གསར་བསྐྲུན་འབད་"
-
-#: ../sources/rb-iradio-source.c:385
-#: ../widgets/rb-entry-view.c:1071
-#: ../widgets/rb-library-browser.c:99
-#: ../widgets/rb-query-creator-properties.c:68
-#: ../widgets/rb-query-creator-properties.c:94
-msgid "Genre"
-msgstr "རིགས་"
-
-#: ../sources/rb-iradio-source.c:482
-msgid "Radio"
-msgstr "རེ་ཌིའོ་"
-
-#: ../sources/rb-iradio-source.c:653
-#, c-format
-msgid "%d station"
-msgid_plural "%d stations"
-msgstr[0] "%dལྟེ་བ་"
-msgstr[1] "%dལྟེ་བ་ཚུ་"
-
-#: ../sources/rb-iradio-source.c:658
-msgid "Connecting"
-msgstr "མཐུད་དོ་"
-
-#: ../sources/rb-iradio-source.c:661
-msgid "Buffering"
-msgstr "གནད་ཁོངས་ནང་གསོག་འཇོག"
 
 #: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
@@ -2599,20 +3359,12 @@ msgid "Artist - Album"
 msgstr "གླུ་གཞསཔ་- གླུ་མཛོད་"
 
 #: ../sources/rb-library-source.c:123
-#: ../widgets/rb-entry-view.c:1061
+#: ../widgets/rb-entry-view.c:1097
 #: ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:93
 msgid "Album"
 msgstr "གླུ་མཛོད་"
-
-#: ../sources/rb-library-source.c:124
-#: ../widgets/rb-entry-view.c:1051
-#: ../widgets/rb-library-browser.c:100
-#: ../widgets/rb-query-creator-properties.c:66
-#: ../widgets/rb-query-creator-properties.c:92
-msgid "Artist"
-msgstr "གླུ་གཞསཔ་"
 
 #: ../sources/rb-library-source.c:129
 msgid "Number - Title"
@@ -2630,30 +3382,23 @@ msgstr "གླུ་གཞསཔ་ - ཨང་ - མགོ་མིང་"
 msgid "Artist (Album) - Number - Title"
 msgstr "གླུ་གཞསཔ་(གླུ་མཛོད་) - ཨང་- མགོ་མིང་"
 
-#: ../sources/rb-library-source.c:133
-#: ../widgets/rb-entry-view.c:1041
-#: ../widgets/rb-query-creator-properties.c:65
-#: ../widgets/rb-query-creator-properties.c:95
-msgid "Title"
-msgstr "མགོ་མིང་"
-
 #: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
 msgstr "ཨང་.གླུ་གཞསཔ་- མགོ་མིང་"
 
-#: ../sources/rb-library-source.c:315
+#: ../sources/rb-library-source.c:330
 msgid "Library"
 msgstr "དཔེ་མཛོད་"
 
-#: ../sources/rb-library-source.c:349
+#: ../sources/rb-library-source.c:364
 msgid "Choose Library Location"
 msgstr "དཔེ་མཛོད་གནས་ཁོངས་གདམ་ཁ་བརྐྱབ་"
 
-#: ../sources/rb-library-source.c:536
+#: ../sources/rb-library-source.c:551
 msgid "Multiple locations set"
 msgstr "སྣ་མང་གནས་ཁོངས་གཞི་སྒྲིག་འབད་"
 
-#: ../sources/rb-library-source.c:638
+#: ../sources/rb-library-source.c:653
 msgid "Add Location"
 msgstr "གནས་ཁོངས་ཁ་སྐོང་བརྐྱབ་"
 
@@ -2668,308 +3413,6 @@ msgid_plural "%d missing files"
 msgstr[0] "%dབརླག་སྟོར་ཞུགས་ཡོད་པའི་ཡིག་སྣོད་ཚུ་"
 msgstr[1] "%dབརླག་སྟོར་ཞུགས་ཡོད་པའི་ཡིག་སྣོད་ཚུ་"
 
-#: ../sources/rb-playlist-source-recorder.c:301
-msgid "Maximum possible"
-msgstr "མང་ཤོས་རང་ཚུགས་"
-
-#: ../sources/rb-playlist-source-recorder.c:372
-#, c-format
-msgid "Invalid writer device: %s"
-msgstr "ནུས་ཅན་མེད་པའི་རྩོམ་འབྲི་པའི་ཐབས་འཕྲུལ: %s"
-
-#: ../sources/rb-playlist-source-recorder.c:473
-#, c-format
-msgid "%d hour"
-msgid_plural "%d hours"
-msgstr[0] "%dཆུ་ཚོད་"
-msgstr[1] "%dཆུ་ཚོད་"
-
-#: ../sources/rb-playlist-source-recorder.c:475
-#, c-format
-msgid "%d minute"
-msgid_plural "%d minutes"
-msgstr[0] "%dསྐར་ཆ་"
-msgstr[1] "%dསྐར་ཆ་"
-
-#: ../sources/rb-playlist-source-recorder.c:478
-#, c-format
-msgid "%d second"
-msgid_plural "%d seconds"
-msgstr[0] "%dསྐར་ཆ་"
-msgstr[1] "%dསྐར་ཆ་"
-
-#. hour:minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:483
-#, c-format
-msgid "%s %s %s"
-msgstr "%s %s %s"
-
-#. minutes:seconds
-#: ../sources/rb-playlist-source-recorder.c:486
-#, c-format
-msgid "%s %s"
-msgstr "%s %s"
-
-#. seconds
-#: ../sources/rb-playlist-source-recorder.c:489
-#, c-format
-msgid "%s"
-msgstr "%s"
-
-#. 0 seconds
-#: ../sources/rb-playlist-source-recorder.c:492
-msgid "0 seconds"
-msgstr "སྐར་ཆ་ ༠ "
-
-#: ../sources/rb-playlist-source-recorder.c:511
-#, c-format
-msgid "About %s left"
-msgstr "%sགཡོན་གྱི་སྐོར་ལས་"
-
-#: ../sources/rb-playlist-source-recorder.c:580
-msgid "Could not determine media type because CD drive is busy"
-msgstr "བརྡ་བརྒྱུད་དབྱེ་བ་འདི་གཏན་འབེབས་བཟོ་མ་ཚུགས་  ག་ཅི་འབད་ཟེར་བ་ཅིན་  སི་ཌི་འདྲེན་འཕྲུལ་འདི་བདེ་ཁོམ་མིན་འདུག་"
-
-#: ../sources/rb-playlist-source-recorder.c:582
-msgid "Couldn't open media"
-msgstr "བརྡ་བརྒྱུད་ཁ་ཕྱེ་མ་ཚུགས་"
-
-#: ../sources/rb-playlist-source-recorder.c:584
-msgid "Unknown Media"
-msgstr "མ་ཤེས་པའི་བརྡ་བརྒྱུད་"
-
-#: ../sources/rb-playlist-source-recorder.c:586
-msgid "Commercial CD or Audio CD"
-msgstr "ཚོང་འབྲེལ་སི་ཌི་ ཡང་ན་རྣར་ཉན་སི་ཌི་"
-
-#: ../sources/rb-playlist-source-recorder.c:588
-msgid "CD-R"
-msgstr "སི་ཌི་-ཨར་"
-
-#: ../sources/rb-playlist-source-recorder.c:590
-msgid "CD-RW"
-msgstr "སི་ཌི་-ཨར་ཌབ་ལུ་"
-
-#: ../sources/rb-playlist-source-recorder.c:592
-msgid "DVD"
-msgstr "ཌི་ཝི་ཌི་"
-
-#: ../sources/rb-playlist-source-recorder.c:594
-msgid "DVD-R, or DVD-RAM"
-msgstr "ཌི་ཝི་ཌི་-ཨར་ ཡང་ན་ ཌི་ཝི་ཌི་-ཨར་ཨེ་ཨེམ་"
-
-#: ../sources/rb-playlist-source-recorder.c:596
-msgid "DVD-RW"
-msgstr "ཌི་ཝི་ཌི་-ཨར་ཌབ་ལུ་"
-
-#: ../sources/rb-playlist-source-recorder.c:598
-msgid "DVD-RAM"
-msgstr "ཌི་ཝི་ཌི་-ཨར་ཨེ་ཨེམ་"
-
-#: ../sources/rb-playlist-source-recorder.c:600
-msgid "DVD+R"
-msgstr "ཌི་ཝི་ཌི་+ཨར་"
-
-#: ../sources/rb-playlist-source-recorder.c:602
-msgid "DVD+RW"
-msgstr "ཌི་ཝི་ཌི་+ཨར་ཌབ་ལུ་"
-
-#: ../sources/rb-playlist-source-recorder.c:607
-msgid "Broken media type"
-msgstr "ཆེད་ཡོད་པའི་བརྡ་བརྒྱུད་དབྱེ་བ་"
-
-#: ../sources/rb-playlist-source-recorder.c:622
-msgid "Writing audio to CD"
-msgstr "རྣར་ཉན་འདི་སི་ཌི་ལུ་རྩོམ་སྒྲིག་འབད་དོ་"
-
-#: ../sources/rb-playlist-source-recorder.c:638
-msgid "Finished creating audio CD."
-msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ཚར་ནུག་"
-
-#: ../sources/rb-playlist-source-recorder.c:656
-msgid ""
-"Finished creating audio CD.\n"
-"Create another copy?"
-msgstr ""
-"རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ཚར་ནུག\n"
-"འདྲ་བཤུས་གཞན་ཅིག་གསར་བསྐྲུན་འབད་ག?"
-
-#: ../sources/rb-playlist-source-recorder.c:658
-msgid "Writing failed.  Try again?"
-msgstr "རྩོམ་སྒྲིག་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག། སླར་འབད་རྩོལ་བསྐྱེད་ད་ག?"
-
-#: ../sources/rb-playlist-source-recorder.c:660
-msgid "Writing cancelled.  Try again?"
-msgstr "རྩོམ་སྒྲིག་ཆ་མེད་གཏང་ནུག།  ལོག་འབད་རྩོལ་བསྐྱེད་ག?"
-
-#: ../sources/rb-playlist-source-recorder.c:728
-msgid "Audio recording error"
-msgstr "རྣར་ཉན་སྒྲ་བཟུང་འཛོལ་བ་"
-
-#: ../sources/rb-playlist-source-recorder.c:757
-msgid "Audio Conversion Error"
-msgstr "རྣར་ཉན་གཞི་བསྒྱུར་འཛོལ་བ་"
-
-#: ../sources/rb-playlist-source-recorder.c:787
-msgid "Recording error"
-msgstr "སྒྲ་བཟུང་འཛོལ་བ་"
-
-#: ../sources/rb-playlist-source-recorder.c:907
-msgid "Do you wish to interrupt writing this disc?"
-msgstr "ཌིསིཀ་འདི་འབྲི་ནི་ལུ་  ཁྱོད་ཀྱིས་  བར་དཀྲོགས་འབད་དགོ་མནོ་མས་ག?"
-
-#: ../sources/rb-playlist-source-recorder.c:910
-msgid "This may result in an unusable disc."
-msgstr "འདི་གིས་  ལག་ལེན་འཐབ་མ་བཏུབ་པའི་ཌིསིཀ་ཅིག་ལུ་འགྱུར་འོང་"
-
-#: ../sources/rb-playlist-source-recorder.c:917
-msgid "_Cancel"
-msgstr "ཆ་མེད་གཏང་།(_C)"
-
-#: ../sources/rb-playlist-source-recorder.c:918
-msgid "_Interrupt"
-msgstr "བར་དཀྲོགས།(_I)"
-
-#: ../sources/rb-playlist-source-recorder.c:940
-msgid "Could not create audio CD"
-msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་མ་བཏུབ་"
-
-#: ../sources/rb-playlist-source-recorder.c:962
-msgid "Please make sure another application is not using the drive."
-msgstr "གློག་རིམ་གཞན་གྱིས་  འདྲེན་འཕྲུལ་ལག་ལེན་མ་འཐབ་ཅིག་འབད་གནང་"
-
-#: ../sources/rb-playlist-source-recorder.c:963
-msgid "Drive is busy"
-msgstr "འདྲེན་འཕྲུལ་འདི་ཁོམ་མེད་"
-
-#: ../sources/rb-playlist-source-recorder.c:965
-msgid "Please put a rewritable or blank CD in the drive."
-msgstr "འདྲེན་འཕྲུལ་ནང་བསྐྱར་འབྲི་འབད་བཏུབ་མི་  ཡང་ན་  སི་ཌི་སྟོངམ་ཅིག་བཙུགས་གནང་"
-
-#: ../sources/rb-playlist-source-recorder.c:966
-msgid "Insert a rewritable or blank CD"
-msgstr "བསྐྱར་འབྲི་བཏུབ་མི་ཡང་ན་སི་ཌི་སྟོངམ་ཅིག་བཙུགས་"
-
-#: ../sources/rb-playlist-source-recorder.c:968
-msgid "Please put a blank CD in the drive."
-msgstr "འདྲེན་འཕྲུལ་ནང་སི་ཌི་སྟོངམ་ཅིག་བཙུགས་གནང་།"
-
-#: ../sources/rb-playlist-source-recorder.c:969
-msgid "Insert a blank CD"
-msgstr "སི་ཌི་སྟོངམ་ཅིག་བཙུགས་"
-
-#: ../sources/rb-playlist-source-recorder.c:971
-msgid "Please replace the disc in the drive with a rewritable or blank CD."
-msgstr "བསྐྱར་འབྲི་བཏུབ་ཡང་ན་སི་ཌི་སྟོངམ་ཅིག་དང་བཅས་  ཌིསིཀ་འདི་འདྲེན་འཕྲུལ་ནང་ཚབ་བཙུགས་འབད་གནང་།"
-
-#: ../sources/rb-playlist-source-recorder.c:972
-msgid "Reload a rewritable or blank CD"
-msgstr "བསྐྱར་འབྲི་བཏུབ་ཡང་ན་སི་ཌི་སྟོངམ་ཅིག་ཡང་བསྐྱར་མངོན་གསལ་"
-
-#: ../sources/rb-playlist-source-recorder.c:974
-msgid "Please replace the disc in the drive with a blank CD."
-msgstr "སི་ཌི་སྟོངམ་ཅིག་དང་བཅས་  ཌིསིཀ་འདི་འདྲེན་བྱེད་ནང་ཚབ་བཙུགས་གནང་།"
-
-#: ../sources/rb-playlist-source-recorder.c:975
-msgid "Reload a blank CD"
-msgstr "སི་ཌི་སྟོངམ་ཡང་བསྐྱར་མངོན་གསལ་འབད་གནང་"
-
-#: ../sources/rb-playlist-source-recorder.c:1026
-msgid "Converting audio tracks"
-msgstr "རྣར་ཉན་གླུ་རིམ་ཚུ་གཞི་བསྒྱུར་འབད་དོ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1029
-msgid "Preparing to write CD"
-msgstr "སི་ཌི་འབྲི་ནི་ལུ་གྲ་སྒྲིག་འབད་དོ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1032
-msgid "Writing CD"
-msgstr "སི་ཌི་འབྲི་དོ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1035
-msgid "Finishing write"
-msgstr "འབྲི་ཚར་དོ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1038
-msgid "Erasing CD"
-msgstr "སི་ཌི་ཀྲེག་གཏང་དོ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1041
-msgid "Unhandled action in burn_action_changed_cb"
-msgstr " བཙུགས་སྤྱོད་_བྱ་བ་_བསྒྱུར་བཅོས་འབད་ཡོདཔ་_སི་བི་  ནང་ལེགས་བཅོས་མེད་པའི་བྱ་བ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1069
-#, c-format
-msgid "This %s appears to have information already recorded on it."
-msgstr " %sའདི་ལུ་  ཧེ་མ་ལས་རང་སྒྲ་བཟུང་འབད་ཡོད་པའི་བརྡ་དོན་ཡོདཔ་འབད་འབྱུངམ་ཨིན་"
-
-#: ../sources/rb-playlist-source-recorder.c:1076
-msgid "Erase information on this disc?"
-msgstr "ཌིསིཀ་གུ་  བརྡ་དོན་འདི་ཀྲེག་གཏང་ག?"
-
-#: ../sources/rb-playlist-source-recorder.c:1085
-msgid "_Try Another"
-msgstr "གཞན་མི་ཅིག་འབད་རྩོལ་བསྐྱེད།(_T)"
-
-#: ../sources/rb-playlist-source-recorder.c:1092
-msgid "_Erase Disc"
-msgstr "ཌིསིཀ་ཀྲེག་གཏང་།(_E)"
-
-#: ../sources/rb-playlist-source-recorder.c:1196
-msgid "C_reate"
-msgstr "གསར་བསྐྲུན་འབད།(_r)"
-
-#: ../sources/rb-playlist-source-recorder.c:1259
-#, c-format
-msgid "Failed to create the recorder: %s"
-msgstr "བཟུང་འཕྲུལ་གསར་བསྐྲུན་འབད་ནི་ལུ་འཐུས་ཤོར་འབྱུང་ནུག: %s"
-
-#: ../sources/rb-playlist-source-recorder.c:1359
-#, c-format
-msgid "Could not remove temporary directory '%s': %s"
-msgstr "གནས་སྐབས་ཀྱི་སྣོད་ཐོ་'%s'རྩ་བསྐྲད་གཏང་མ་ཚུགས:  %s"
-
-#: ../sources/rb-playlist-source-recorder.c:1378
-msgid "Create Audio CD"
-msgstr "རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་"
-
-#: ../sources/rb-playlist-source-recorder.c:1395
-#, c-format
-msgid "Create audio CD from '%s'?"
-msgstr "'%s'ལས་རྣར་ཉན་སི་ཌི་གསར་བསྐྲུན་འབད་ག?"
-
-#: ../sources/rb-playlist-source-recorder.c:1441
-#: ../sources/rb-playlist-source-recorder.c:1459
-msgid "Unable to build an audio track list."
-msgstr "རྣར་ཉན་གླུ་རིམ་ཐོ་ཡིག་བཟོ་མ་ཚུགས།"
-
-#: ../sources/rb-playlist-source-recorder.c:1469
-msgid "This playlist is too long to write to an audio CD."
-msgstr "གཏང་ཐོ་འདི་རྣར་ཉན་སི་ཌི་ཅིག་ལུ་འབྲི་ནི་ལུ་  རིང་མས།"
-
-#: ../sources/rb-playlist-source-recorder.c:1539
-#, c-format
-msgid "Cannot get free space at %s"
-msgstr "%sལུ་བར་སྟོང་དལཝ་མི་འཐོབ་"
-
-#: ../sources/rb-playlist-source-recorder.c:1624
-#, c-format
-msgid "This playlist is %s minutes long.  This exceeds the length of a standard audio CD.  If the destination media is larger than a standard audio CD please insert it in the drive and try again."
-msgstr "གཏང་ཐོ་འདི་ %sསྐར་ཆ་རིངམ་འདུག།  འདི་གིས་  ཚད་ལྡན་རྣར་ཉན་སི་ཌི་ཅིག་གི་རིང་ཚད་ལྷག་པས།  འགྲོ་ཡུལ་བརྡ་བརྒྱུད་འདི་  ཚད་ལྡན་རྣར་ཉན་སི་ཌི་ལས་རིངམ་ཡོད་པ་ཅིན་  འདི་འདྲེན་འཕྲུལ་ནང་བཙུགས་ཏེ་ལོག་འདི་རང་འབད་རྩོལ་བསྐྱེད་གནང་།"
-
-#: ../sources/rb-playlist-source-recorder.c:1635
-msgid "Playlist too long"
-msgstr "གཏང་ཐོ་འདི་སྣ་མེད་ས་མེད་རིངམ་འདུག་"
-
-#: ../sources/rb-playlist-source-recorder.c:1675
-msgid "Could not find temporary space!"
-msgstr "གནས་སྐབས་ཀྱི་བར་སྟོང་འཚོལ་མ་འཐོབ!"
-
-#: ../sources/rb-playlist-source-recorder.c:1676
-#, c-format
-msgid "Could not find enough temporary space to convert audio tracks.  %s MiB required."
-msgstr "རྣར་ཉན་གླུ་རིམ་ཚུ་གཞི་བསྒྱུར་འབད་ནི་ལུ་  གནས་སྐབས་བར་སྟོང་ལངམ་འཐོབ་མ་ཚུགས།  %s ཨེམ་ཨའི་བི་དགོས་མཁོ་ཡོད།"
-
 #: ../sources/rb-play-queue-source.c:89
 msgid "Clear _Queue"
 msgstr "མི་གྲལ་བསལ།(_Q)"
@@ -2978,18 +3421,18 @@ msgstr "མི་གྲལ་བསལ།(_Q)"
 msgid "Remove all songs from the play queue"
 msgstr "མི་གྲལ་གཏང་ལས་  ཞབས་ཁྲ་ཆ་ཚང་རྩ་བསྐྲད་གཏང་"
 
-#: ../sources/rb-play-queue-source.c:194
-#: ../sources/rb-play-queue-source.c:243
-#: ../sources/rb-play-queue-source.c:364
+#: ../sources/rb-play-queue-source.c:204
+#: ../sources/rb-play-queue-source.c:253
+#: ../sources/rb-play-queue-source.c:374
 msgid "Play Queue"
 msgstr "མི་གྲལ་གཏང་"
 
-#: ../sources/rb-play-queue-source.c:332
+#: ../sources/rb-play-queue-source.c:342
 #: ../widgets/rb-header.c:100
 msgid "from"
 msgstr "ལས་"
 
-#: ../sources/rb-play-queue-source.c:332
+#: ../sources/rb-play-queue-source.c:342
 #: ../widgets/rb-header.c:101
 msgid "by"
 msgstr "གིས་"
@@ -3062,105 +3505,113 @@ msgstr "ལེའུ་ཚུ་"
 msgid "Search podcast episodes"
 msgstr "པི་ཨོ་ཌི་ཀསཊི་ལེའུ་ཚུ་འཚོལ་ཞིབ་འབད་"
 
-#: ../sources/rb-podcast-source.c:585
-#: ../sources/rb-podcast-source.c:596
+#: ../sources/rb-podcast-source.c:592
+#: ../sources/rb-podcast-source.c:603
 msgid "Date"
 msgstr "ཚེས་གྲངས་"
 
 #. configure feed view
-#: ../sources/rb-podcast-source.c:617
-#: ../sources/rb-podcast-source.c:681
-#: ../sources/rb-podcast-source.c:711
+#: ../sources/rb-podcast-source.c:624
+#: ../sources/rb-podcast-source.c:688
+#: ../sources/rb-podcast-source.c:718
 msgid "Feed"
 msgstr "མཁོ་སྤྲོད་འབད་"
 
-#: ../sources/rb-podcast-source.c:636
-#: ../sources/rb-podcast-source.c:654
+#: ../sources/rb-podcast-source.c:643
+#: ../sources/rb-podcast-source.c:661
 msgid "Status"
 msgstr "གནས་ཚད་"
 
-#: ../sources/rb-podcast-source.c:637
-#: ../sources/rb-podcast-source.c:1484
+#: ../sources/rb-podcast-source.c:644
+#: ../sources/rb-podcast-source.c:1492
 msgid "Downloaded"
 msgstr "ཕབ་ལེན་འབད་ནུག་"
 
-#: ../sources/rb-podcast-source.c:638
-#: ../sources/rb-podcast-source.c:1492
+#: ../sources/rb-podcast-source.c:645
+#: ../sources/rb-podcast-source.c:1500
 msgid "Waiting"
 msgstr "འབྲི་དོ་"
 
-#: ../sources/rb-podcast-source.c:639
-#: ../sources/rb-podcast-source.c:1488
+#: ../sources/rb-podcast-source.c:646
+#: ../sources/rb-podcast-source.c:1496
 msgid "Failed"
 msgstr "འཐུས་ཤོར་འབྱུང་ནུག་"
 
-#: ../sources/rb-podcast-source.c:812
+#: ../sources/rb-podcast-source.c:821
 msgid "Podcasts"
 msgstr "པི་ཨོ་ཌི་ཀསཌིསི་"
 
-#: ../sources/rb-podcast-source.c:895
+#: ../sources/rb-podcast-source.c:904
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "པི་ཨོ་ཌི་ཀསཊི་ལེའུ་དང་ ཕབ་ལེན་འབད་ཡོད་མི་ཡིག་སྣོད་འདི་  བཏོན་གཏང་ག?"
 
-#: ../sources/rb-podcast-source.c:898
+#: ../sources/rb-podcast-source.c:907
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
 msgstr "ཁྱོད་ཀྱིས་  ལེའུ་དང་ཡིག་སྣོད་བཏོན་གཏང་ནི་ལུ་གདམ་ཁ་བརྐྱབ་པ་ཅིན་  དེ་ཚུ་  རྟག་བརྟན་འབད་བརླག་སྟོར་ཞུགས་འོང་།  ཁྱོད་ཀྱིས་ ལེའུ་བཏོན་གཏང་བཏུབ་  དེ་འབདཝ་ད་  ལེའུ་རྐྱངམ་ཅིག་བཏོན་གཏང་ནི་ལུ་གདམ་ཁ་བརྐྱབ་སྟེ་  ཡིག་སྣོད་ཕབ་ལེན་བཞག་དགོ་ཟེར་  དྲན་འཛིན་འབད་གནང་།"
 
-#: ../sources/rb-podcast-source.c:906
+#: ../sources/rb-podcast-source.c:915
 msgid "Delete _Episode Only"
 msgstr "ལེའུ་རྐྱངམ་ཅིག་བཏོན་གཏང་།(_E)"
 
-#: ../sources/rb-podcast-source.c:912
+#: ../sources/rb-podcast-source.c:921
 msgid "_Delete Episode And File"
 msgstr "ལེའུ་དང་ཡིག་སྣོད་བཏོན་གཏང་།(_D)"
 
-#: ../sources/rb-podcast-source.c:1378
+#: ../sources/rb-podcast-source.c:1386
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "པི་ཨོ་ཌི་ཀསཊི་མཁོ་སྤྲོད་འབད་ནི་དང་  ཕབ་ལེན་འབད་ཡོད་པའི་ཡིག་སྣོད་ཚུ་བཏོན་གཏང་ག?"
 
-#: ../sources/rb-podcast-source.c:1381
+#: ../sources/rb-podcast-source.c:1389
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
 msgstr "ཁྱོད་ཀྱིས་ མཁོ་སྤྲོད་འབད་ནི་དང་ཡིག་སྣོད་ཚུ་བཏོན་གཏང་ནི་ལུ་  གདམ་ཁ་བརྐྱབ་པ་ཅིན་  དེ་ཚུ་རྟག་བརྟན་འབད་བརླག་སྟོར་ཞུགས་འོང་།  ཁྱོད་ཀྱིས་ མཁོ་སྤྲོད་འབད་ནི་འདི་བཏོན་གཏང་བཏུབ་  དེ་འབདཝ་ད་  མཁོ་སྤྲོད་རྐྱངམ་ཅིག་བཏོན་གཏང་ནི་ལུ་གདམ་ཁ་བརྐྱབ་ཐོག་ལས་  ཕབ་ལེན་ཡིག་སྣོད་ཚུ་བཞག་ཟེར་ དྲན་འཛིན་འབད་གནང་།"
 
-#: ../sources/rb-podcast-source.c:1389
+#: ../sources/rb-podcast-source.c:1397
 msgid "Delete _Feed Only"
 msgstr "མཁོ་སྤྲོད་འབད་ནི་རྐྱངམ་ཅིག་བཏོན་གཏང་།(_F)"
 
-#: ../sources/rb-podcast-source.c:1396
+#: ../sources/rb-podcast-source.c:1404
 msgid "_Delete Feed And Files"
 msgstr "མཁོ་སྤྲོད་འབད་ནི་དང་ཡིག་སྣོད་ཚུ་བཏོན་གཏང་།(_D)"
 
-#: ../sources/rb-podcast-source.c:1603
+#: ../sources/rb-podcast-source.c:1611
 #, c-format
 msgid "All %d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "ཆ་ཚང་ %dམཁོ་སྤྲོད་འབད་ནི"
 msgstr[1] "ཆ་ཚང་ %dམཁོ་སྤྲོད་འབད་ནི་"
 
-#: ../sources/rb-podcast-source.c:1745
+#: ../sources/rb-podcast-source.c:1749
 msgid "Downloading podcast"
 msgstr "པི་ཨོ་ཌི་ཀསཊི་ཕབ་ལེན་འབད་དོ་"
 
-#: ../sources/rb-podcast-source.c:1758
+#: ../sources/rb-podcast-source.c:1762
 msgid "Finished downloading podcast"
 msgstr "པི་ཨོ་ཌི་ཀསཊི་ཕབ་ལེན་འབད་ཚར་ནུག་"
 
-#: ../sources/rb-podcast-source.c:1771
-msgid "New updates avaliable from"
-msgstr "དུས་མཐུན་གསརཔ་ཚུ་འཐོབ་ཚུགས་"
+#: ../sources/rb-podcast-source.c:1775
+msgid "New updates available from"
+msgstr "ལས་དུས་མཐུན་བཟོ་ནི་གསརཔ་ཚུ་ཐོབ་ཚུགསཔ།"
 
-#: ../sources/rb-podcast-source.c:1875
+#: ../sources/rb-podcast-source.c:1879
 msgid "Error in podcast"
 msgstr "པི་ཨོ་ཌི་ཀསཊི་ནང་འཛོལ་བ་"
 
-#: ../sources/rb-podcast-source.c:1997
+#: ../sources/rb-podcast-source.c:1993
+msgid "New Podcast Feed"
+msgstr "པི་ཨོ་ཌི་ཀེསཊི་མཁོ་སྤྲོད་འབད་ནི་གསརཔ་"
+
+#: ../sources/rb-podcast-source.c:1993
+msgid "URL of podcast feed:"
+msgstr "པོཌི་ཀསིཊི་མཁ་སྤྲོད་འབད་ནི་གི་ཡུ་ཨར་ཨེལ།"
+
+#: ../sources/rb-podcast-source.c:2009
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%dལེའུ་"
 msgstr[1] "%dལེའུ་"
 
-#: ../sources/rb-source.c:538
+#: ../sources/rb-source.c:554
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -3171,10 +3622,30 @@ msgstr[1] "%dཞབས་ཁྲ་ཚུ་"
 msgid "S_ource"
 msgstr "འབྱུང་ཁུངས།(_o)"
 
+#: ../sources/rb-streaming-source.c:209
+msgid "Connecting"
+msgstr "མཐུད་དོ་"
+
+#: ../sources/rb-streaming-source.c:212
+msgid "Buffering"
+msgstr "གནད་ཁོངས་ནང་གསོག་འཇོག"
+
+#: ../widgets/bacon-volume.c:178
+msgid "Volume"
+msgstr "སྐད་ཤུགས།"
+
 #. +
-#: ../widgets/bacon-volume.c:201
+#: ../widgets/bacon-volume.c:206
 msgid "+"
 msgstr "+"
+
+#: ../widgets/bacon-volume.c:208
+msgid "Volume Down"
+msgstr "སྐད་ཤུགས་མར།"
+
+#: ../widgets/bacon-volume.c:226
+msgid "Volume Up"
+msgstr "སྐད་ཤུགས་ཡར།"
 
 #: ../widgets/eggtrayicon.c:153
 msgid "Orientation"
@@ -3232,117 +3703,109 @@ msgstr ""
 msgid "Load folder into Library"
 msgstr "སྣོད་འཛིན་འདི་དཔེ་མཛོད་ནང་ལུ་མངོན་གསལ་འབད་"
 
-#: ../widgets/rb-entry-view.c:797
+#: ../widgets/rb-entry-view.c:833
 #, c-format
 msgid "%u kbps"
 msgstr "%uཀེ་བི་པི་ཨེསི་"
 
-#: ../widgets/rb-entry-view.c:1030
+#: ../widgets/rb-entry-view.c:1066
 msgid "Track"
 msgstr "གླུ་རིམ་"
 
-#: ../widgets/rb-entry-view.c:1081
+#: ../widgets/rb-entry-view.c:1117
 msgid "Time"
 msgstr "ཆུ་ཚོད་"
 
-#: ../widgets/rb-entry-view.c:1093
+#: ../widgets/rb-entry-view.c:1129
 #: ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "Year"
 msgstr "ལོ་"
 
-#: ../widgets/rb-entry-view.c:1105
+#: ../widgets/rb-entry-view.c:1141
 msgid "Quality"
 msgstr "སྤུས་ཚད་"
 
-#: ../widgets/rb-entry-view.c:1108
+#: ../widgets/rb-entry-view.c:1144
 msgid "000 kbps"
 msgstr "༠༠༠་ ཀེ་བི་པི་ཨེསི་"
 
-#: ../widgets/rb-entry-view.c:1118
+#: ../widgets/rb-entry-view.c:1154
 #: ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Rating"
 msgstr "དྲག་ཞན་དབྱེ་རྟགས་"
 
-#: ../widgets/rb-entry-view.c:1140
+#: ../widgets/rb-entry-view.c:1176
 #: ../widgets/rb-query-creator-properties.c:73
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Play Count"
 msgstr "གྱངས་ཁ་བརྐྱབ་གཏང་"
 
-#: ../widgets/rb-entry-view.c:1152
+#: ../widgets/rb-entry-view.c:1188
 #: ../widgets/rb-query-creator-properties.c:101
 msgid "Last Played"
 msgstr "མཇུག་ལུ་གཏང་ནུག་"
 
-#: ../widgets/rb-entry-view.c:1164
+#: ../widgets/rb-entry-view.c:1200
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "Date Added"
 msgstr "ཚེས་གྲངས་ཁ་སྐོང་བརྐྱབ་ནུག་"
 
-#: ../widgets/rb-entry-view.c:1175
+#: ../widgets/rb-entry-view.c:1211
 msgid "Last Seen"
 msgstr "མཇུག་ལུ་མཐོང་ནུག་"
 
-#: ../widgets/rb-entry-view.c:1186
+#: ../widgets/rb-entry-view.c:1222
 msgid "Location"
 msgstr "གནས་ཁོངས་"
 
-#: ../widgets/rb-entry-view.c:1194
+#: ../widgets/rb-entry-view.c:1230
 msgid "Error"
 msgstr "འཛོལ་བ་"
 
-#: ../widgets/rb-entry-view.c:1407
+#: ../widgets/rb-entry-view.c:1443
 msgid "Now Playing"
 msgstr "ད་ལྟོ་གཏང་དོ་"
 
-#: ../widgets/rb-entry-view.c:1482
+#: ../widgets/rb-entry-view.c:1518
 msgid "Playback Error"
 msgstr "གླུ་གཞས་གཏང་ནི་ལུ་འཛོལ་བ་"
 
-#: ../widgets/rb-header.c:429
+#: ../widgets/rb-header.c:427
 msgid "Not Playing"
 msgstr "མི་གཏང་མས་"
 
-#: ../widgets/rb-property-view.c:511
+#: ../widgets/rb-property-view.c:504
 #, c-format
 msgid "All %d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "%d གླུ་གཞསཔ་ཆ་ཚང་(%d)"
 msgstr[1] "%dགླུ་གཞསཔ་ཆ་ཚང་ (%d)"
 
-#: ../widgets/rb-property-view.c:514
+#: ../widgets/rb-property-view.c:507
 #, c-format
 msgid "All %d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "%dགླུ་མཛོད་ཆ་ཚང་(%d)"
 msgstr[1] "%dགླུ་མཛོད་ཚུ་ཆ་ཚང་(%d)"
 
-#: ../widgets/rb-property-view.c:517
+#: ../widgets/rb-property-view.c:510
 #, c-format
 msgid "All %d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%dརིགས་ཆ་ཚང་(%d)"
 msgstr[1] "%dརིགས་ཚུ་ཆ་ཚང་(%d)"
 
-#: ../widgets/rb-property-view.c:520
+#: ../widgets/rb-property-view.c:513
 #, c-format
 msgid "All %d (%d)"
 msgstr " %d (%d)ཆ་ཚང་"
 
-#: ../widgets/rb-property-view.c:526
+#: ../widgets/rb-property-view.c:519
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
-
-#: ../widgets/rb-query-creator.c:178
-msgid "Create Automatic Playlist"
-msgstr "རང་བཞིན་གྱིས་གཏང་ཐོ་འདི་གསར་བསྐྲུན་འབད་"
-
-#: ../widgets/rb-query-creator.c:180
-msgid "Edit Automatic Playlist"
-msgstr "རང་བཞིན་གྱིས་གཏང་ཐོ་འདི་ཞུན་དག་འབད་"
 
 #: ../widgets/rb-query-creator-properties.c:71
 msgid "Path"
@@ -3489,28 +3952,75 @@ msgstr "ཉིནམ་(ཚུ་)"
 msgid "weeks"
 msgstr "བདུན་ཕྲག་(ཚུ་)"
 
+#: ../widgets/rb-query-creator.c:178
+msgid "Create Automatic Playlist"
+msgstr "རང་བཞིན་གྱིས་གཏང་ཐོ་འདི་གསར་བསྐྲུན་འབད་"
+
+#: ../widgets/rb-query-creator.c:180
+msgid "Edit Automatic Playlist"
+msgstr "རང་བཞིན་གྱིས་གཏང་ཐོ་འདི་ཞུན་དག་འབད་"
+
 #. this string can only be so long, or there wont be a search entry :)
 #: ../widgets/rb-search-entry.c:115
 msgid "_Search:"
 msgstr "འཚོལ་ཞིབ་འབད:(_S)"
 
-#: ../widgets/rb-song-info.c:270
+#: ../widgets/rb-song-info.c:272
 msgid "Song Properties"
 msgstr "ཞབས་ཁྲའི་རྒྱུ་དངོས་"
 
-#: ../widgets/rb-song-info.c:317
+#: ../widgets/rb-song-info.c:319
 msgid "Multiple Song Properties"
 msgstr "སྣ་མང་ཞབས་ཁྲའི་རྒྱུ་དངོས་"
 
-#: ../widgets/rb-song-info.c:950
+#: ../widgets/rb-song-info.c:984
 msgid "Unknown file name"
 msgstr "མ་ཤེས་པའི་ཡིག་སྣོད་མིང་"
 
-#: ../widgets/rb-song-info.c:969
+#: ../widgets/rb-song-info.c:1003
 msgid "On the desktop"
 msgstr "ཌེཀསི་ཊོཔ་གུ་"
 
-#: ../widgets/rb-song-info.c:978
+#: ../widgets/rb-song-info.c:1012
 msgid "Unknown location"
 msgstr "མ་ཤེས་པའི་གནས་ཁོངས་"
+
+#~ msgid "Art Display"
+#~ msgstr "རི་མོ་བཀྲམ་སྟོན་"
+#~ msgid "Displays art for the playing track"
+#~ msgstr "གཏང་ནིའི་གླུ་རིམ་དོན་ལུ་  སྒྱུ་རྩལ་བཀྲམ་སྟོན་འབདཝ་ཨིན་"
+#~ msgid "Support for audio CDs"
+#~ msgstr "རྣར་ཉན་སི་ཌི་ཚུ་གི་དོན་ལུ་ རྒྱབ་སྐྱོར་"
+#~ msgid "Generic Audio Player"
+#~ msgstr "རིགས་རྒྱུད་རྣར་ཉན་གཏང་མི་"
+#~ msgid ""
+#~ "Adds iPod support to Rhythmbox so that it can show an iPod content, and "
+#~ "play from there"
+#~ msgstr ""
+#~ "རི་ཐམ་བོཀསི་ལུ་ ཨའི་པི་ཨོ་ཌི་རྒྱབ་སྐྱོར་ཁ་སྐོང་བརྐྱབ་ཨིན་  དེ་འབད་བ་ཅིན་  དེ་གིས་  ཨའི་པི་ཨོ་ཌི་ནང་"
+#~ "དོན་སྟོན་ནི་དང་  འདི་ཁར་ལས་གཏངམ་ཨིན་"
+#~ msgid "iPod support"
+#~ msgstr "ཨའི་པི་ཨོ་ཌི་རྒྱབ་སྐྱོར་"
+#~ msgid "(US Dollars)"
+#~ msgstr "(ཡུ་ཨེསི་ཌོ་ལརསི་)"
+#~ msgid "Don't store credit card information"
+#~ msgstr "དངུལ་ཚབ་ཤོག་བྱང་བརྡ་དོན་གསོག་འཇོག་མ་འབད་"
+#~ msgid "Name:"
+#~ msgstr "མིང་:"
+#~ msgid " doesn't do much"
+#~ msgstr "ལེ་ཤ་འབད་ནི་མེན་"
+#~ msgid "Does a whole lot of not much"
+#~ msgstr "ལེ་ཤ་མ་ཡིན་པར་ཧྲིལ་བུ་འབདཝ་ཨིན་"
+#~ msgid "%Y-%m-%d %H:%M"
+#~ msgstr "%Y-%m-%d %H:%M"
+#~ msgid "by %s from %s"
+#~ msgstr "%sགིས་%sལས་"
+#~ msgid ""
+#~ "%s\n"
+#~ "%s"
+#~ msgstr ""
+#~ "%s\n"
+#~ "%s"
+#~ msgid "Sharing"
+#~ msgstr "རུབ་སྤྱོད་"
 
