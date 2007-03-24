@@ -184,7 +184,6 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 	RBiPodSource *source;
 	RBEntryView *songs;
 	RBiPodSourcePrivate *priv;
-	const Itdb_IpodInfo *info;
 
 	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
@@ -193,14 +192,6 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
-
-	info = itdb_device_get_ipod_info(priv->ipod_db->device);
-	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
-	    info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE) {
-		priv->needs_shuffle_db = TRUE;
-	} else {
-		priv->needs_shuffle_db = FALSE;
-	}
 
 	rb_ipod_load_songs (source);
 
@@ -590,11 +581,21 @@ rb_ipod_load_songs (RBiPodSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GnomeVFSVolume *volume;
+	const Itdb_IpodInfo *info;
 
 	g_object_get (source, "volume", &volume, NULL);
 	priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
 
  	priv->ipod_db = itdb_parse (priv->ipod_mount_path, NULL);
+
+	info = itdb_device_get_ipod_info(priv->ipod_db->device);
+	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
+	    info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE) {
+		priv->needs_shuffle_db = TRUE;
+	} else {
+		priv->needs_shuffle_db = FALSE;
+	}
+
 	priv->entry_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
 		Itdb_Playlist *mpl;
