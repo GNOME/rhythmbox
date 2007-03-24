@@ -86,7 +86,7 @@ static gchar* ipod_get_filename_for_uri (const gchar *mount_point,
 static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 					const gchar *unix_path);
 #endif
-static void itdb_schedule_save (Itdb_iTunesDB *db);
+static void itdb_schedule_save (RBiPodSource *source);
 
 typedef struct
 {
@@ -95,6 +95,7 @@ typedef struct
 	GHashTable *entry_map;
 
 	GList *playlists;
+	gboolean needs_shuffle_db;
 
 	guint load_idle_id;
 } RBiPodSourcePrivate;
@@ -152,7 +153,7 @@ rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 		}
 		g_free (mpl->name);
 		mpl->name = g_strdup (name);
-		itdb_schedule_save (priv->ipod_db);
+		itdb_schedule_save (source);
 	} else {
 		g_warning ("iPod's master playlist is missing");
 	}
@@ -183,6 +184,7 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 	RBiPodSource *source;
 	RBEntryView *songs;
 	RBiPodSourcePrivate *priv;
+	const Itdb_IpodInfo *info;
 
 	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
@@ -191,6 +193,14 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+
+	info = itdb_device_get_ipod_info(priv->ipod_db->device);
+	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
+	    info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE) {
+		priv->needs_shuffle_db = TRUE;
+	} else {
+		priv->needs_shuffle_db = FALSE;
+	}
 
 	rb_ipod_load_songs (source);
 
@@ -227,7 +237,7 @@ rb_ipod_source_dispose (GObject *object)
 
 RBRemovableMediaSource *
 rb_ipod_source_new (RBShell *shell,
-                    GnomeVFSVolume *volume)
+		    GnomeVFSVolume *volume)
 {
 	RBiPodSource *source;
 	RhythmDBEntryType entry_type;
@@ -248,11 +258,11 @@ rb_ipod_source_new (RBShell *shell,
 	g_free (path);
 
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
-                                               "entry-type", entry_type,
-                                               "volume", volume,
-                                               "shell", shell,
-                                               "source-group", RB_SOURCE_GROUP_DEVICES,
-                                               NULL));
+					       "entry-type", entry_type,
+					       "volume", volume,
+					       "shell", shell,
+					       "source-group", RB_SOURCE_GROUP_DEVICES,
+					       NULL));
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -547,7 +557,7 @@ get_db_for_source (RBiPodSource *source)
   	g_object_get (shell, "db", &db, NULL);
   	g_object_unref (shell);
 
-        return db;
+	return db;
 }
 
 static gboolean
@@ -559,7 +569,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 
 	GDK_THREADS_ENTER ();
 
-        db = get_db_for_source (source);
+	db = get_db_for_source (source);
 
   	g_assert (db != NULL);
  	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
@@ -601,7 +611,7 @@ rb_ipod_load_songs (RBiPodSource *source)
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
 
-        g_object_unref (volume);
+	g_object_unref (volume);
 }
 
 static gchar *
@@ -699,7 +709,7 @@ hal_udi_is_ipod (const char *udi)
 	LibHalContext *ctx;
 	DBusConnection *conn;
 	char *parent_udi;
-        char *parent_name;
+	char *parent_name;
 	gboolean result;
 	DBusError error;
 	gboolean inited = FALSE;
@@ -708,8 +718,8 @@ hal_udi_is_ipod (const char *udi)
 	dbus_error_init (&error);
 
 	conn = NULL;
-        parent_udi = NULL;
-        parent_name = NULL;
+	parent_udi = NULL;
+	parent_name = NULL;
 
 	ctx = libhal_ctx_new ();
 	if (ctx == NULL) {
@@ -811,7 +821,7 @@ hal_udi_is_ipod (const char *udi)
 {
 	LibHalContext *ctx;
 	char *parent_udi;
-        char *parent_name;
+	char *parent_name;
 	gboolean result;
 
 	result = FALSE;
@@ -877,7 +887,7 @@ impl_move_to_trash (RBSource *asource)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (asource);
 	RBiPodSource *source = RB_IPOD_SOURCE (asource);
 
-        db = get_db_for_source (source);
+	db = get_db_for_source (source);
 
 	songs = rb_source_get_entry_view (RB_SOURCE (asource));
 	sel = rb_entry_view_get_selected_entries (songs);
@@ -911,16 +921,22 @@ impl_move_to_trash (RBSource *asource)
 }
 
 static void
-itdb_schedule_save (Itdb_iTunesDB *db)
+itdb_schedule_save (RBiPodSource *source)
 {
-       /* FIXME: should probably be delayed a bit to avoid doing
-        * it after each file when we are copying several files
-        * consecutively
-        * FIXME: or this function could be called itdb_set_dirty, and we'd
-        * have a timeout firing every 5 seconds and saving the db if it's
-        * dirty
-        */
-       itdb_write (db, NULL);
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	/* FIXME: should probably be delayed a bit to avoid doing
+	 * it after each file when we are copying several files
+	 * consecutively
+	 * FIXME: or this function could be called itdb_set_dirty, and we'd
+	 * have a timeout firing every 5 seconds and saving the db if it's
+	 * dirty
+	 */
+	itdb_write (priv->ipod_db, NULL);
+
+	if (priv->needs_shuffle_db) {
+       		itdb_shuffle_write (priv->ipod_db, NULL);
+	}
 }
 
 #ifdef ENABLE_IPOD_WRITING
@@ -957,7 +973,7 @@ impl_track_added (RBRemovableMediaSource *source,
 	RhythmDB *db;
 	Itdb_Track *song;
 
-        db = get_db_for_source (isource);
+	db = get_db_for_source (isource);
 
 	song = create_ipod_song_from_entry (entry, mimetype);
 	if (song != NULL) {
@@ -972,7 +988,7 @@ impl_track_added (RBRemovableMediaSource *source,
 					 song, -1);
 
 		add_ipod_song_to_db (isource, db, song);
-		itdb_schedule_save (priv->ipod_db);
+		itdb_schedule_save (isource);
 	}
 
 	g_object_unref (db);
@@ -1184,29 +1200,29 @@ ipod_get_filename_for_uri (const gchar *mount_point,
 static gchar *
 ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
 {
-        gchar *ipod_path;
+	gchar *ipod_path;
 
-        g_assert (g_utf8_validate (unix_path, -1, NULL));
+	g_assert (g_utf8_validate (unix_path, -1, NULL));
 
-        if (!g_str_has_prefix (unix_path, mount_point)) {
-                return NULL;
-        }
+	if (!g_str_has_prefix (unix_path, mount_point)) {
+		return NULL;
+	}
 
-        ipod_path = g_strdup (unix_path + strlen (mount_point));
-        if (*ipod_path != G_DIR_SEPARATOR) {
-                gchar *tmp;
-                tmp = g_strdup_printf ("/%s", ipod_path);
-                g_free (ipod_path);
-                ipod_path = tmp;
-        }
+	ipod_path = g_strdup (unix_path + strlen (mount_point));
+	if (*ipod_path != G_DIR_SEPARATOR) {
+		gchar *tmp;
+		tmp = g_strdup_printf ("/%s", ipod_path);
+		g_free (ipod_path);
+		ipod_path = tmp;
+	}
 
-        /* Make sure the filename doesn't contain any ':' */
-        g_strdelimit (ipod_path, ":", ';');
+	/* Make sure the filename doesn't contain any ':' */
+	g_strdelimit (ipod_path, ":", ';');
 
-        /* Convert path to a Mac path where the dir separator is ':' */
+	/* Convert path to a Mac path where the dir separator is ':' */
 	itdb_filename_fs2ipod (ipod_path);
 
-        return ipod_path;
+	return ipod_path;
 }
 #endif
 
