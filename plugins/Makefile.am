@@ -25,6 +25,11 @@ SUBDIRS += 						\
 	rb
 endif
 
+if ENABLE_VALA
+SUBDIRS +=						\
+	sample-vala
+endif
+
 if USE_IPOD
 SUBDIRS += ipod
 endif

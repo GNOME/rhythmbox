@@ -812,10 +812,10 @@ PLUGINDIR='${libdir}/rhythmbox/plugins'
 AC_SUBST(PLUGINDIR)
 
 dnl ================================================================
-dnl Python
+dnl Python plugins
 dnl ================================================================
 
-AC_MSG_CHECKING([whether Python support is requested])
+AC_MSG_CHECKING([whether Python plugin support is requested])
 AC_ARG_ENABLE([python],
 	AS_HELP_STRING([--enable-python],[Enable python support]),
 	[enable_python=$enableval have_python=$enableval],
@@ -919,17 +919,38 @@ fi
 
 if test "x$have_python" != "xyes"; then
 	if test "x$enable_python" = "xyes"; then
-		AC_MSG_ERROR([Python support explicitly requested, but not found])
+		AC_MSG_ERROR([Python plugin support explicitly requested, but not found])
 	elif test "x$enable_python" != "xno"; then
 		enable_python=no
-		AC_MSG_WARN([Python not found, disabling python support])
+		AC_MSG_WARN([Python plugin not found, disabling python support])
 	fi
 elif test "x$enable_python" != "xno"; then
 	enable_python=yes
-	AC_DEFINE([ENABLE_PYTHON],[1],[Define to compile with python support])
+	AC_DEFINE([ENABLE_PYTHON],[1],[Define to compile with python plugin support])
 fi
 
 AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"])
+
+dnl ================================================================
+dnl Vala plugins
+dnl ================================================================
+AC_MSG_CHECKING([whether Vala plugin support is requested])
+AC_ARG_ENABLE([vala],
+	AS_HELP_STRING([--enable-vala],[Enable Vala plugin support]),
+	[enable_vala=$enableval have_vala=$enableval],
+	[enable_vala=autodetect have_vala=yes])
+AC_MSG_RESULT([$enable_vala])
+if test "x$enable_vala" != "xno"; then
+	PKG_CHECK_MODULES(VALA, vala-1.0 >= 0.0.8, with_vala=yes,
+		          with_vala=no)
+	if test "x$with_vala" = "xyes"; then
+		VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"
+		AC_SUBST([VALAC])
+	elif test "x$enable_vala" = "xyes"; then
+		AC_MSG_ERROR([Vala plugin support explicitly requested, but not found])
+	fi
+fi
+AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
 
 
 dnl check, for unit tests
@@ -982,6 +1003,7 @@ plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
 plugins/sample-python/Makefile
+plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/artdisplay/artdisplay/Makefile
@@ -996,6 +1018,7 @@ plugins/visualizer/Makefile
 plugins/mmkeys/Makefile
 bindings/Makefile
 bindings/python/Makefile
+bindings/vala/Makefile
 help/Makefile
 po/Makefile.in
 tests/Makefile
@@ -1083,9 +1106,14 @@ if test x"$enable_old_dbus" = xyes; then
 	AC_MSG_NOTICE([** using D-BUS < 0.35 control/activation])
 fi
 if test x"$enable_python" != xno; then
-	AC_MSG_NOTICE([** Python support enabled])
+	AC_MSG_NOTICE([** Python plugin support enabled])
 else
-	AC_MSG_NOTICE([   Python support disabled])
+	AC_MSG_NOTICE([   Python plugin support disabled])
+fi
+if test x"$with_vala" = xyes; then
+	AC_MSG_NOTICE([** Vala plugin support enabled])
+else
+	AC_MSG_NOTICE([   Vala plugin support disabled])
 fi
 if test x"$use_gnome_keyring" = xyes; then
 	AC_MSG_NOTICE([** gnome-keyring support enabled])
