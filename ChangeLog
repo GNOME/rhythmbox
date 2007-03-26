@@ -1,3 +1,12 @@
+2007-03-26  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-util.c: (rb_string_list_contains):
+	* lib/rb-util.h: add utility function to determine whether a string is
+	in a string list.
+
+	* sources/rb-removable-media-source.c: (impl_paste): Don't transcode
+	if the track is already in one of the destination formats.
+
 2007-03-25  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Gabor Kelemen  <kelemeng@gnome.hu>

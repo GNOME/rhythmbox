@@ -279,6 +279,7 @@ impl_paste (RBSource *source, GList *entries)
 		RhythmDBEntry *entry;
 		RhythmDBEntryType entry_type;
 		GList *mime_types;
+		const char *entry_mime;
 		char *mimetype;
 		char *extension;
 		char *dest;
@@ -296,8 +297,9 @@ impl_paste (RBSource *source, GList *entries)
 			goto impl_paste_end;
 		}
 
+		entry_mime = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
 		mime_types = rb_removable_media_source_get_mime_types (RB_REMOVABLE_MEDIA_SOURCE (source));
-		if (mime_types != NULL) {
+		if (mime_types != NULL && !rb_string_list_contains (mime_types, entry_mime)) {
 			if (!rb_encoder_get_preferred_mimetype (encoder, mime_types, &mimetype, &extension)) {
 				rb_debug ("failed to find acceptable mime type for %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 				goto impl_paste_end;
@@ -306,6 +308,7 @@ impl_paste (RBSource *source, GList *entries)
 			const char *s;
 			char       *path;
 
+			rb_debug ("copying using existing format");
 			path = rb_uri_get_short_path_name (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 			s = g_strrstr (path, ".");
 			extension = (s != NULL) ? g_strdup (s + 1) : NULL;

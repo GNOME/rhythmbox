@@ -755,6 +755,19 @@ rb_string_list_copy (GList *list)
 	return copy;
 }
 
+gboolean
+rb_string_list_contains (GList *list, const char *s)
+{
+	GList *l;
+
+	for (l = list; l != NULL; l = g_list_next (l)) {
+		if (strcmp ((const char *)l->data, s) == 0)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
 void
 rb_list_deep_free (GList *list)
 {
