@@ -87,6 +87,7 @@ static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 					const gchar *unix_path);
 #endif
 static void itdb_schedule_save (RBiPodSource *source);
+static RhythmDB *get_db_for_source (RBiPodSource *source);
 
 typedef struct
 {
@@ -98,6 +99,9 @@ typedef struct
 	gboolean needs_shuffle_db;
 
 	guint load_idle_id;
+
+	GHashTable *artwork_request_map;
+	guint artwork_notify_id;
 } RBiPodSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
@@ -221,6 +225,18 @@ rb_ipod_source_dispose (GObject *object)
 	if (priv->load_idle_id != 0) {
 		g_source_remove (priv->load_idle_id);
 		priv->load_idle_id = 0;
+	}
+
+	if (priv->artwork_request_map) {
+		g_hash_table_destroy (priv->artwork_request_map);
+		priv->artwork_request_map = NULL;
+ 	}
+
+	if (priv->artwork_notify_id) {
+		RhythmDB *db = get_db_for_source (RB_IPOD_SOURCE (object));
+		g_signal_handler_disconnect (db, priv->artwork_notify_id);
+		priv->artwork_notify_id = 0;
+		g_object_unref (db);
 	}
 
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
@@ -964,6 +980,69 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	return NULL;
 }
 
+static void
+artwork_notify_cb (RhythmDB *db,
+		   RhythmDBEntry *entry,
+		   const gchar *property_name,
+		   const GValue *metadata,
+		   RBiPodSource *isource)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (isource);
+	Itdb_Track *song;
+	gchar *image_data;
+	gsize image_data_len;
+	GError *err = NULL;
+	gboolean success;
+	
+	song = g_hash_table_lookup (priv->artwork_request_map, entry);
+	if (song == NULL)
+		return;
+
+	g_return_if_fail (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF));
+	success = gdk_pixbuf_save_to_buffer (GDK_PIXBUF (g_value_get_object (metadata)),
+					     &image_data, &image_data_len,
+					     "jpeg", &err,
+					     "quality", "100",
+					     NULL);
+	if (!success) {
+		g_assert (image_data == NULL);
+		g_warning ("Failed to save pixbuf to buffer %s", err->message);
+		g_error_free (err);
+		return;
+	}
+
+	g_hash_table_remove (priv->artwork_request_map, entry);
+	itdb_track_set_thumbnails_from_data (song, (guchar *) image_data, image_data_len);
+	g_free (image_data);
+	itdb_schedule_save (isource);
+}
+
+static void
+request_artwork (RBiPodSource *isource,
+		 RhythmDBEntry *entry,
+		 RhythmDB *db,
+		 Itdb_Track *song)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (isource);
+	GValue *metadata;
+
+	if (priv->artwork_request_map == NULL) {
+		priv->artwork_request_map = g_hash_table_new (g_direct_hash, g_direct_equal);
+	}
+
+	g_hash_table_insert (priv->artwork_request_map, entry, song);
+
+	if (priv->artwork_notify_id == 0) {
+		priv->artwork_notify_id = g_signal_connect_object (db, "entry-extra-metadata-notify::rb:coverArt",
+								   (GCallback)artwork_notify_cb, isource, 0);
+	}
+
+	metadata = rhythmdb_entry_request_extra_metadata (db, entry, "rb:coverArt");
+	if (metadata) {
+		artwork_notify_cb (db, entry, "rb:coverArt", metadata, isource);
+	}
+}
+
 static gboolean
 impl_track_added (RBRemovableMediaSource *source,
 		  RhythmDBEntry *entry,
@@ -987,6 +1066,7 @@ impl_track_added (RBRemovableMediaSource *source,
 		itdb_track_add (priv->ipod_db, song, -1);
 		itdb_playlist_add_track (itdb_playlist_mpl (priv->ipod_db),
 					 song, -1);
+		request_artwork (isource, entry, db, song);
 
 		add_ipod_song_to_db (isource, db, song);
 		itdb_schedule_save (isource);

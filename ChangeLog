@@ -1,3 +1,11 @@
+2007-03-27  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Ed Catmur  <ed@cautmur.co.uk>
+
+	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_dispose),
+	(artwork_notify_cb), (request_artwork), (impl_track_added): gather art
+	and pass it to libgpod, so we sync art onto ipods. From #357400
+
 2007-03-26  James Livingston  <doclivingston@gmail.com>
 
 	* data/glade/playlist-save.glade: make the playlist format combo not
