@@ -2139,6 +2139,7 @@
   (return-type "gboolean")
   (parameters
     '("const-char*" "uri")
+    '("gpointer" "stream_data")
     '("GError**" "error")
   )
 )
@@ -2154,6 +2155,7 @@
   (c-name "rb_player_close")
   (return-type "gboolean")
   (parameters
+    '("const-char*" "uri")
     '("GError**" "error")
   )
 )
@@ -2163,6 +2165,7 @@
   (c-name "rb_player_play")
   (return-type "gboolean")
   (parameters
+    '("gint" "crossfade")
     '("GError**" "error")
   )
 )
@@ -2199,6 +2202,7 @@
   (c-name "rb_player_set_replaygain")
   (return-type "none")
   (parameters
+    '("const-char*" "uri")
     '("double" "track_gain")
     '("double" "track_peak")
     '("double" "album_gain")

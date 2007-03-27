@@ -141,6 +141,10 @@ if WITH_OLD_DBUS
 rhythmbox_LDADD += $(DBUS_LIBS)
 endif
 
+if USE_GSTREAMER_0_10
+rhythmbox_LDADD += -lgstcontroller-0.10
+endif
+
 rhythmbox_LDADD += \
 	$(top_builddir)/backends/librbbackends.la	\
 	$(GDA_LIBS)					\

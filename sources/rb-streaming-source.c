@@ -214,7 +214,7 @@ rb_streaming_source_get_progress (RBStreamingSource *source, char **text, float 
 }
 
 static void
-buffering_cb (GObject *backend, guint progress, RBStreamingSource *source)
+buffering_cb (GObject *backend, gpointer whatever, guint progress, RBStreamingSource *source)
 {
 	if (progress == 0)
 		return;

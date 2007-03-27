@@ -22,6 +22,7 @@
 
 #include "rb-player.h"
 #include "rb-player-gst.h"
+#include "rb-player-gst-xfade.h"
 #include "rb-marshal.h"
 
 /* Signals */
@@ -32,6 +33,7 @@ enum {
 	ERROR,
 	TICK,
 	EVENT,
+	PLAYING_STREAM,
 	LAST_SIGNAL
 };
 
@@ -40,59 +42,138 @@ static guint signals[LAST_SIGNAL] = { 0 };
 static void
 rb_player_interface_init (RBPlayerIface *iface)
 {
+	/**
+	 * RBPlayer::eos
+	 * @stream_data: the data associated with the stream that finished
+	 *
+	 * The 'eos' signal is emitted when a stream finishes.
+	 **/
 	signals[EOS] =
 		g_signal_new ("eos",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, eos),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
-			      0);
+			      1, G_TYPE_POINTER);
+
+	/**
+	 * RBPlayer::info
+	 * @stream_data: the data associated with the stream
+	 * @field: the #RBMetaDataField corresponding to the stream info
+	 * @value: the value of the stream info field
+	 *
+	 * The 'info' signal is emitted when a metadata value is found in
+	 * the stream.
+	 **/
 	signals[INFO] =
 		g_signal_new ("info",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, info),
 			      NULL, NULL,
-			      rb_marshal_VOID__INT_POINTER,
+			      rb_marshal_VOID__POINTER_INT_POINTER,
 			      G_TYPE_NONE,
-			      2, G_TYPE_INT, G_TYPE_VALUE);
+			      3, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_VALUE);
+
+	/**
+	 * RBPlayer::error
+	 * @stream_data: the data associated with the stream
+	 * @error: description of the error
+	 *
+	 * The 'error' signal is emitted when an error is encountered
+	 * while opening or playing a stream.
+	 **/
 	signals[ERROR] =
 		g_signal_new ("error",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, error),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      rb_marshal_VOID__POINTER_POINTER,
 			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_POINTER);
+			      2,
+			      G_TYPE_POINTER, G_TYPE_POINTER);
+
+	/**
+	 * RBPlayer::tick
+	 * @stream_data: the data associated with the stream
+	 * @elapsed: playback position in the stream
+	 * @duration: current estimate of the duration of the stream
+	 *
+	 * The 'tick' signal is emitted repeatedly while the stream is
+	 * playing. Signal handlers can use this to update UI and to
+	 * prepare new streams for crossfade or gapless playback.
+	 **/
 	signals[TICK] =
 		g_signal_new ("tick",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, tick),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__LONG,
+			      rb_marshal_VOID__POINTER_LONG_LONG,
 			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_LONG);
+			      3,
+			      G_TYPE_POINTER, G_TYPE_LONG, G_TYPE_LONG);
+
+	/**
+	 * RBPlayer::buffering
+	 * @stream_data: the data associated with the buffering stream
+	 * @progress: buffering percentage
+	 *
+	 * The 'buffering' signal is emitted while a stream is paused so
+	 * that a buffer can be filled.  The progress value typically varies
+	 * from 0 to 100, and once it reaches 100, playback resumes.
+	 **/
 	signals[BUFFERING] =
 		g_signal_new ("buffering",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, buffering),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__UINT,
+			      rb_marshal_VOID__POINTER_UINT,
 			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_UINT);
+			      2,
+			      G_TYPE_POINTER, G_TYPE_UINT);
+
+	/**
+	 * RBPlayer::event
+	 * @stream_data: data associated with the stream
+	 * @data: event data
+	 *
+	 * The 'event' signal provides a means for custom GStreamer
+	 * elements to communicate events back to the rest of the
+	 * application.  The GStreamer element posts an application
+	 * message on the GStreamer bus, which is translated into an
+	 * event signal with the detail of the signal set to the name
+	 * of the structure found in the message.
+	 */
 	signals[EVENT] =
 		g_signal_new ("event",
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
 			      G_STRUCT_OFFSET (RBPlayerIface, event),
+			      NULL, NULL,
+			      rb_marshal_VOID__POINTER_POINTER,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_POINTER, G_TYPE_POINTER);
+
+	/**
+	 * RBPlayer::playing-stream
+	 * @stream_data: data associated with the stream
+	 *
+	 * The 'playing-stream' signal is emitted when the main playing stream
+	 * changes. It should be used to update the UI to show the new
+	 * stream. It can either be emitted before or after rb_player_play returns,
+	 * depending on the player backend.
+	 */
+	signals[PLAYING_STREAM] =
+		g_signal_new ("playing-stream",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerIface, playing_stream),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
@@ -124,14 +205,35 @@ rb_player_get_type (void)
 	return our_type;
 }
 
+/**
+ * rb_player_open:
+ * @player:	a #RBPlayer
+ * @uri:	URI to open
+ * @stream_data: arbitrary data to associate with the stream
+ * @stream_data_destroy: function to call to destroy the stream data
+ * @error:	returns error information
+ *
+ * Prepares a stream for playback.  Depending on the player
+ * implementation, this may stop any existing stream being
+ * played.  The stream preparation process may continue
+ * asynchronously, in which case errors may be reported from
+ * rb_player_play or using the 'error' signal.
+ *
+ * @returns TRUE if the stream preparation was not unsuccessful
+ */
 gboolean
-rb_player_open (RBPlayer *player, const char *uri, GError **error)
+rb_player_open (RBPlayer *player, const char *uri, gpointer stream_data, GDestroyNotify stream_data_destroy, GError **error)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
-	return iface->open (player, uri, error);
+	return iface->open (player, uri, stream_data, stream_data_destroy, error);
 }
 
+/**
+ * rb_player_opened:
+ * @player: 	a #RBPlayer
+ * @returns TRUE if a stream is prepared for playback
+ */
 gboolean
 rb_player_opened (RBPlayer *player)
 {
@@ -140,22 +242,70 @@ rb_player_opened (RBPlayer *player)
 	return iface->opened (player);
 }
 
+/**
+ * rb_player_close:
+ * @player:	a #RBPlayer
+ * @uri:	optionally, the URI of the stream to close
+ * @error:	returns error information
+ *
+ * If a URI is specified, this will close the stream corresponding
+ * to that URI and free any resources related resources.  If @uri
+ * is NULL, this will close all streams.
+ *
+ * If no streams remain open after this call, the audio device will
+ * be released.
+ *
+ * @returns TRUE if a stream was found and closed
+ */
 gboolean
-rb_player_close (RBPlayer *player, GError **error)
+rb_player_close (RBPlayer *player, const char *uri, GError **error)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
-	return iface->close (player, error);
+	return iface->close (player, uri, error);
 }
 
+/**
+ * rb_player_play:
+ * @player:	a #RBPlayer
+ * @crossfade:	requested crossfade duration
+ * @error:	returns error information
+ *
+ * Starts playback of the most recently opened stream.
+ * If @crossfade is greater than zero, the player may attempt
+ * to crossfade the new stream with any existing streams.
+ *
+ * If @crossfade is zero, the player may attempt to start the
+ * stream immediately after the current playing stream reaches
+ * EOS.  This may or may not result in the phenomemon known
+ * as 'gapless playback'.
+ *
+ * If @crossfade is less than zero, the player will stop any
+ * existing stream before starting the new stream. It may do
+ * this anyway, regardless of the value of @crossfade.
+ *
+ * The 'playing-stream' signal will be emitted when the new stream
+ * is actually playing. This may be before or after control returns
+ * to the caller.
+ *
+ * @returns: TRUE if playback started successfully
+ */
 gboolean
-rb_player_play (RBPlayer *player, GError **error)
+rb_player_play (RBPlayer *player, gint crossfade, GError **error)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
-	return iface->play (player, error);
+	return iface->play (player, crossfade, error);
 }
 
+/**
+ * rb_player_pause:
+ * @player:	a #RBPlayer
+ *
+ * Pauses playback of the most recently started stream.  Any
+ * streams being faded out may continue until the fade is
+ * complete.
+ */
 void
 rb_player_pause (RBPlayer *player)
 {
@@ -164,6 +314,12 @@ rb_player_pause (RBPlayer *player)
 	iface->pause (player);
 }
 
+/**
+ * rb_player_playing:
+ * @player:	a #RBPlayer
+ * @returns:	TRUE if a stream is currently being played (not paused
+ *  or being faded out).
+ */
 gboolean
 rb_player_playing (RBPlayer *player)
 {
@@ -172,6 +328,15 @@ rb_player_playing (RBPlayer *player)
 	return iface->playing (player);
 }
 
+/**
+ * rb_player_set_volume:
+ * @player:	a #RBPlayer
+ * @volume:	new output volume level
+ *
+ * Adjusts the output volume level.  This affects all streams.
+ * The player may use a hardware volume control to implement
+ * this volume adjustment.
+ */
 void
 rb_player_set_volume (RBPlayer *player, float volume)
 {
@@ -180,6 +345,11 @@ rb_player_set_volume (RBPlayer *player, float volume)
 	iface->set_volume (player, volume);
 }
 
+/**
+ * rb_player_get_volume:
+ * @player:	a #RBPlayer
+ * @returns:	current output volume level
+ */
 float
 rb_player_get_volume (RBPlayer *player)
 {
@@ -188,16 +358,33 @@ rb_player_get_volume (RBPlayer *player)
 	return iface->get_volume (player);
 }
 
+/**
+ * rb_player_set_replaygain:
+ * @player:	a #RBPlayer
+ * @uri:	URI of stream to adjust
+ * @track_gain: ReplayGain track gain level
+ * @track_peak: ReplayGain track peak level
+ * @album_gain: ReplayGain album gain level
+ * @album_peak: ReplayGain album peak level
+ *
+ * Sets ReplayGain values for a stream
+ */
 void
 rb_player_set_replaygain (RBPlayer *player,
+			  const char *uri,
 			  double track_gain, double track_peak,
 			  double album_gain, double album_peak)
 {
 	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
 
-	iface->set_replaygain (player, track_gain, track_peak, album_gain, album_peak);
+	iface->set_replaygain (player, uri, track_gain, track_peak, album_gain, album_peak);
 }
 
+/**
+ * rb_player_seekable:
+ * @player:	a #RBPlayer
+ * @returns:	TRUE if the current stream is seekable
+ */
 gboolean
 rb_player_seekable (RBPlayer *player)
 {
@@ -206,6 +393,15 @@ rb_player_seekable (RBPlayer *player)
 	return iface->seekable (player);
 }
 
+/**
+ * rb_player_set_time:
+ * @player:	a #RBPlayer
+ * @time:	seek target position in seconds
+ *
+ * Attempts to seek in the current stream.  The player
+ * may ignore this if the stream is not seekable.
+ * The seek may take place asynchronously.
+ */
 void
 rb_player_set_time (RBPlayer *player, long time)
 {
@@ -214,6 +410,11 @@ rb_player_set_time (RBPlayer *player, long time)
 	iface->set_time (player, time);
 }
 
+/**
+ * rb_player_get_time:
+ * @player:	a #RBPlayer
+ * @returns:	the current playback position in the current stream
+ */
 long
 rb_player_get_time (RBPlayer *player)
 {
@@ -222,48 +423,83 @@ rb_player_get_time (RBPlayer *player)
 	return iface->get_time (player);
 }
 
-RBPlayer*
-rb_player_new (GError **error)
+/**
+ * rb_player_multiple_open:
+ * @player:	a #RBPlayer
+ * @returns:	TRUE if the player supports multiple open streams
+ * 		(not necessarily multiple playing streams, though)
+ */
+gboolean
+rb_player_multiple_open (RBPlayer *player)
 {
-	return rb_player_gst_new (error);
+	RBPlayerIface *iface = RB_PLAYER_GET_IFACE (player);
+
+	if (iface->multiple_open)
+		return iface->multiple_open (player);
+	else
+		return FALSE;
+}
+
+/**
+ * rb_player_new:
+ * @want_crossfade: if TRUE, try to use a backend that supports
+ * 		    crossfading and other track transitions.
+ * @error:	returns error information
+ *
+ * Creates a new player object.
+ */
+RBPlayer*
+rb_player_new (gboolean want_crossfade, GError **error)
+{
+	if (want_crossfade)
+		return rb_player_gst_xfade_new (error);
+	else
+		return rb_player_gst_new (error);
 }
 
 void
-_rb_player_emit_eos (RBPlayer *player)
+_rb_player_emit_eos (RBPlayer *player, gpointer stream_data)
 {
-	g_signal_emit (player, signals[EOS], 0);
+	g_signal_emit (player, signals[EOS], 0, stream_data);
 }
 
 void
 _rb_player_emit_info (RBPlayer *player,
+		      gpointer stream_data,
 		      RBMetaDataField field,
 		      GValue *value)
 {
-	g_signal_emit (player, signals[INFO], 0, field, value);
+	g_signal_emit (player, signals[INFO], 0, stream_data, field, value);
 }
 
 void
-_rb_player_emit_buffering (RBPlayer *player, guint progress)
+_rb_player_emit_buffering (RBPlayer *player, gpointer stream_data, guint progress)
 {
-	g_signal_emit (player, signals[BUFFERING], 0, progress);
+	g_signal_emit (player, signals[BUFFERING], 0, stream_data, progress);
 }
 
 void
-_rb_player_emit_error (RBPlayer *player, GError *error)
+_rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *error)
 {
-	g_signal_emit (player, signals[ERROR], 0, error);
+	g_signal_emit (player, signals[ERROR], 0, stream_data, error);
 }
 
 void
-_rb_player_emit_tick (RBPlayer *player, long elapsed)
+_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed, long duration)
 {
-	g_signal_emit (player, signals[TICK], 0, elapsed);
+	g_signal_emit (player, signals[TICK], 0, stream_data, elapsed, duration);
 }
 
 void
-_rb_player_emit_event (RBPlayer *player, const char *name, gpointer data)
+_rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *name, gpointer data)
 {
-	g_signal_emit (player, signals[EVENT], g_quark_from_string (name), data);
+	g_signal_emit (player, signals[EVENT], g_quark_from_string (name), stream_data, data);
+}
+
+void
+_rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data)
+{
+	g_signal_emit (player, signals[PLAYING_STREAM], 0, stream_data);
 }
 
 GQuark

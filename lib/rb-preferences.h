@@ -35,7 +35,7 @@ G_BEGIN_DECLS
 #define CONF_UI_TOOLBAR_STYLE	CONF_PREFIX "/ui/toolbar_style"
 #define CONF_UI_SONG_POSITION_SLIDER_HIDDEN  CONF_PREFIX "/ui/song_position_slider_hidden"
 #define CONF_UI_SIDEPANE_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
-#define CONF_UI_QUEUE_AS_SIDEBAR  CONF_PREFIX "/ui/queue_as_sidebar" 
+#define CONF_UI_QUEUE_AS_SIDEBAR  CONF_PREFIX "/ui/queue_as_sidebar"
 #define CONF_UI_SMALL_DISPLAY     CONF_PREFIX "/ui/small_display"
 #define CONF_UI_FULLSCREEN     CONF_PREFIX "/ui/fullscreen"
 #define CONF_UI_OBSOLETE_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
@@ -69,6 +69,12 @@ G_BEGIN_DECLS
 #define CONF_PLUGIN_DISABLE_USER	CONF_PLUGINS_PREFIX "/no_user_plugins"
 #define CONF_PLUGIN_ACTIVE_KEY		CONF_PLUGINS_PREFIX "/%s/active"
 #define CONF_PLUGIN_HIDDEN_KEY		CONF_PLUGINS_PREFIX "/%s/hidden"
+
+#define CONF_PLAYER_DIR			CONF_PREFIX "/player"
+#define CONF_PLAYER_USE_XFADE_BACKEND 	CONF_PREFIX "/player/use_xfade_backend"
+#define CONF_PLAYER_TRANSITION_ALBUM_CHECK CONF_PREFIX "/player/transition_album_check"
+#define CONF_PLAYER_TRANSITION_TIME 	CONF_PREFIX "/player/transition_time"
+#define CONF_PLAYER_NETWORK_BUFFER_SIZE	CONF_PREFIX "/player/network_buffer_size"
 
 G_END_DECLS
 

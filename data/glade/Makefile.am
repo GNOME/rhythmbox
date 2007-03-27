@@ -12,6 +12,7 @@ glade_DATA =	general-prefs.glade	  	\
 		uri.glade			\
 		plugins.glade			\
 		playlist-save.glade		\
+		playback-prefs.glade		\
 		uri-new.glade
 
 gladedir = $(pkgdatadir)/glade

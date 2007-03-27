@@ -48,6 +48,8 @@ GQuark rb_player_error_quark (void);
 
 typedef struct _RBPlayer RBPlayer;
 
+typedef gboolean (*RBPlayerFeatureFunc) (RBPlayer *player);
+
 typedef struct
 {
 	GTypeInterface	g_iface;
@@ -55,12 +57,16 @@ typedef struct
 	/* virtual functions */
 	gboolean        (*open)			(RBPlayer *player,
 						 const char *uri,
+						 gpointer stream_data,
+						 GDestroyNotify stream_data_destroy,
 						 GError **error);
 	gboolean	(*opened)		(RBPlayer *player);
 	gboolean        (*close)		(RBPlayer *player,
+						 const char *uri,
 						 GError **error);
 
 	gboolean	(*play)			(RBPlayer *player,
+						 gint crossfade,
 						 GError **error);
 	void		(*pause)		(RBPlayer *player);
 	gboolean	(*playing)		(RBPlayer *player);
@@ -69,6 +75,7 @@ typedef struct
 						 float volume);
 	float		(*get_volume)		(RBPlayer *player);
 	void		(*set_replaygain)	(RBPlayer *player,
+						 const char *uri,
 						 double track_gain,
 						 double track_peak,
 						 double album_gain,
@@ -78,37 +85,55 @@ typedef struct
 	void		(*set_time)		(RBPlayer *player,
 						 long time);
 	long		(*get_time)		(RBPlayer *player);
+	gboolean	(*multiple_open)	(RBPlayer *player);
+
 
 	/* signals */
-	void		(*eos)			(RBPlayer *player);
+	void		(*playing_stream)	(RBPlayer *player,
+						 gpointer stream_data);
+	void		(*eos)			(RBPlayer *player,
+						 gpointer stream_data);
 	void		(*info)			(RBPlayer *player,
+						 gpointer stream_data,
 						 RBMetaDataField field,
 						 GValue *value);
 	void		(*buffering)		(RBPlayer *player,
+						 gpointer stream_data,
 						 guint progress);
 	void		(*error)           	(RBPlayer *player,
+						 gpointer stream_data,
 						 GError *error);
 	void		(*tick)            	(RBPlayer *player,
-						 long elapsed);
-	void		(*event)		(RBPlayer *player, gpointer data);
+						 gpointer stream_data,
+						 long elapsed,
+						 long duration);
+	void		(*event)		(RBPlayer *player,
+						 gpointer stream_data,
+						 gpointer data);
 } RBPlayerIface;
 
 GType		rb_player_get_type   (void);
-RBPlayer *	rb_player_new        (GError **error);
+RBPlayer *	rb_player_new        (gboolean want_crossfade,
+				      GError **error);
 
 gboolean        rb_player_open       (RBPlayer *player,
 				      const char *uri,
+				      gpointer stream_data,
+				      GDestroyNotify stream_data_destroy,
 				      GError **error);
 gboolean	rb_player_opened     (RBPlayer *player);
-gboolean        rb_player_close      (RBPlayer *player, GError **error);
+gboolean        rb_player_close      (RBPlayer *player,
+				      const char *uri,
+				      GError **error);
 
-gboolean	rb_player_play       (RBPlayer *player, GError **error);
+gboolean	rb_player_play       (RBPlayer *player, gint crossfade, GError **error);
 void		rb_player_pause      (RBPlayer *player);
 gboolean	rb_player_playing    (RBPlayer *player);
 
 void		rb_player_set_volume (RBPlayer *player, float volume);
 float		rb_player_get_volume (RBPlayer *player);
 void		rb_player_set_replaygain (RBPlayer *player,
+					  const char *uri,
 					  double track_gain, double track_peak,
 					  double album_gain, double album_peak);
 
@@ -116,13 +141,16 @@ gboolean	rb_player_seekable   (RBPlayer *player);
 void		rb_player_set_time   (RBPlayer *player, long time);
 long		rb_player_get_time   (RBPlayer *player);
 
+gboolean	rb_player_multiple_open (RBPlayer *player);
+
 /* only to be used by subclasses */
-void	_rb_player_emit_eos (RBPlayer *player);
-void	_rb_player_emit_info (RBPlayer *player, RBMetaDataField field, GValue *value);
-void	_rb_player_emit_buffering (RBPlayer *player, guint progress);
-void	_rb_player_emit_error (RBPlayer *player, GError *error);
-void	_rb_player_emit_tick (RBPlayer *player, long elapsed);
-void	_rb_player_emit_event (RBPlayer *player, const char *name, gpointer data);
+void	_rb_player_emit_eos (RBPlayer *player, gpointer stream_data);
+void	_rb_player_emit_info (RBPlayer *player, gpointer stream_data, RBMetaDataField field, GValue *value);
+void	_rb_player_emit_buffering (RBPlayer *player, gpointer stream_data, guint progress);
+void	_rb_player_emit_error (RBPlayer *player, gpointer stream_data, GError *error);
+void	_rb_player_emit_tick (RBPlayer *player, gpointer stream_data, long elapsed, long duration);
+void	_rb_player_emit_event (RBPlayer *player, gpointer stream_data, const char *name, gpointer data);
+void	_rb_player_emit_playing_stream (RBPlayer *player, gpointer stream_data);
 
 G_END_DECLS
 

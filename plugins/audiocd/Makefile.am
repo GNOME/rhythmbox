@@ -36,6 +36,7 @@ INCLUDES = 						\
 	-I$(top_builddir)/remote			\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/backends			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\

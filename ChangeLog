@@ -1,3 +1,105 @@
+2007-03-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/rb-player.c: (rb_player_interface_init),
+	(rb_player_open), (rb_player_close), (rb_player_play),
+	(rb_player_set_replaygain), (rb_player_multiple_open),
+	(rb_player_new), (_rb_player_emit_eos), (_rb_player_emit_info),
+	(_rb_player_emit_buffering), (_rb_player_emit_error),
+	(_rb_player_emit_tick), (_rb_player_emit_event),
+	(_rb_player_emit_playing_stream):
+	* backends/rb-player.h:
+	* bindings/python/rb.defs:
+	* lib/rb-marshal.list:
+	Additions to the RBPlayer interface to support gapless and crossfading
+	playback.  The caller now associates data with each stream it opens,
+	which is passed back through signals.  If the backend supports it, the
+	caller can open multiple streams at the same time, allowing the next
+	stream to be prepared before the current stream ends.  rb_player_play
+	now has a parameter that specifies what should happen to the existing
+	playing stream.  The 'playing-stream' signal is emitted when the
+	playing stream actually changes, so the caller doesn't have to assume
+	that rb_player_play takes effect immediately.
+
+	* shell/rb-shell-player.c: (rb_shell_player_constructor),
+	(rb_shell_player_get_crossfade),
+	(rb_shell_player_open_playlist_url),
+	(rb_shell_player_handle_eos_unlocked),
+	(rb_shell_player_handle_eos), (rb_shell_player_init),
+	(open_location_thread), (rb_shell_player_open_location),
+	(rb_shell_player_play), (do_next_idle),
+	(rb_shell_player_set_playing_entry), (rb_shell_player_do_previous),
+	(rb_shell_player_do_next_internal), (rb_shell_player_do_next),
+	(rb_shell_player_play_entry), (rb_shell_player_playpause),
+	(rb_shell_player_sync_replaygain),
+	(rb_shell_player_entry_activated_cb),
+	(rb_shell_player_property_row_activated_cb),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_stop), (new_playing_stream_idle_cb),
+	(current_playing_stream_idle_cb), (playing_stream_cb), (error_cb),
+	(tick_cb), (gconf_track_transition_time_changed),
+	(gconf_track_transition_album_check_changed),
+	(gconf_network_buffer_size_changed):
+	Use the RhythmDBEntry as the data associated with RBPlayer streams.
+	Add various checks to ignore signals from RBPlayer that don't
+	correspond to the stream we think is playing.
+
+	Update the UI when the player emits the playing-stream signal, rather
+	than hoping that rb_player_play works immediately.
+
+	Read preferences for crossfading and network buffer size from gconf.
+	Provide an option to disable crossfading between tracks on the same
+	album (for DJ mix/live concert cases).
+
+	In the player tick signal handler, start crossfading or prepare for
+	gapless playback when the playing stream gets within a few seconds of
+	the end.  Treat this as EOS (and therefore update play statistics
+	etc.) and ignore the real EOS when it arrives.
+
+	* shell/rb-shell.c: (rb_shell_finalize),
+	(rb_shell_construct_notify_titles):
+	Nothing very important
+
+	* sources/rb-streaming-source.c: (buffering_cb):
+	* plugins/iradio/rb-iradio-source.c: (info_available_cb):
+	Minor updates for RBPlayer interface changes
+
+	* backends/gstreamer/Makefile.am:
+	* backends/gstreamer/rb-player-gst.c: (rb_player_init),
+	(tick_timeout), (emit_signal_idle), (rb_player_gst_bus_cb):
+	Update the existing player backend for the RBPlayer interface changes.
+
+	* shell/Makefile.am:
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	* backends/gstreamer/rb-player-gst-xfade.h:
+	New player backend implementing crossfading and gapless playback.
+
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(create_visualizer_element), (update_playbin_visualizer),
+	(update_tee_visualizer), (update_visualizer), (impl_activate):
+	Use the RBPlayerGstTee interface to implement visualization for the
+	new player backend; somewhat shaky at the moment.
+
+	* plugins/audiocd/Makefile.am:
+	* plugins/audiocd/rb-audiocd-plugin.c:
+	(rb_audiocd_plugin_can_reuse_stream_cb),
+	(rb_audiocd_plugin_reuse_stream_cb), (impl_activate):
+	Use the new player backend's can-reuse-stream and reuse-stream signals
+	to skip between tracks on audio CDs rather than closing and reopening
+	the device (or attempting to crossfade between tracks..)
+
+	* data/glade/playback-prefs.glade:
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync), (update_playback_prefs_sensitivity),
+	(rb_shell_preferences_player_backend_cb),
+	(rb_shell_preferences_album_crossfade_cb),
+	(rb_shell_preferences_transition_duration_cb),
+	(rb_shell_preferences_network_buffer_size_cb):
+	Add preferences UI for playback.
+
+	Fixes #130426.
+
 2007-03-27  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Denis Jacquerye  <moyogo@gmail.com>

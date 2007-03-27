@@ -19,20 +19,6 @@
  */
 
 /*
- * visualizer plugin.
- * - assumes we're going to continue using playbin
- *     (it would be nice if any replacement pipeline had equivalent
- *      hooks for a visualization->video output branch..)
- * - does nasty tricks using a fake visualizer to convince
- *   playbin to set up the machinery for visualization so we can
- *   enable it at any time without even pausing the pipeline
- *     (it would be nice if any replacement pipeline had the
- *      ability to splice in a visualization->video output
- *      branch at any time)
- * - does further nasty tricks to make sure the video sink always
- *     has a valid window ID to scribble on, so it doesn't go
- *     creating its own window
- *
  * things to do:
  * - libvisual opengl actors may require some work here too
  * - maybe mangle caps filter when the output window size changes?
@@ -76,6 +62,7 @@
 #include "rb-shell-player.h"
 #include "rb-player.h"
 #include "rb-player-gst.h"
+#include "rb-player-gst-tee.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
@@ -154,9 +141,16 @@ typedef struct
 	GtkWidget *vis_shell;	/* notebook page */
 	GtkWidget *vis_box;
 	GtkWidget *vis_widget;
+
 	GstElement *visualizer;
 	GstElement *video_sink;
+
 	GstElement *playbin;
+
+	GstElement *identity;
+	GstElement *capsfilter;
+	GstElement *vis_plugin;
+
 	GstXOverlay *xoverlay;
 	gint bus_sync_id;
 	GdkWindow *fake_window;
@@ -485,16 +479,36 @@ fixate_vis_caps (RBVisualizerPlugin *pi, GstElement *vis_element, GstElement *ca
 		gst_caps_unref (caps);
 }
 
-static void
-update_visualizer (RBVisualizerPlugin *plugin, const char *vis_override, int quality)
+static GstElement *
+create_visualizer_element (const char *vis_override)
 {
-	GstElement *capsfilter;
-	GstPad *pad;
 	char *vis_element_name = NULL;
-	GstElement *vis_plugin;
+	GstElement *element;
 
-	if (plugin->playbin == NULL)
-		return;
+	if (vis_override) {
+		vis_element_name = g_strdup (vis_override);
+	} else {
+		vis_element_name = eel_gconf_get_string (CONF_VIS_ELEMENT);
+	}
+
+	if (vis_element_name == NULL) {
+		vis_element_name = g_strdup (DEFAULT_VIS_ELEMENT);
+	}
+	rb_debug ("creating new visualizer: %s", vis_element_name);
+
+	element = gst_element_factory_make (vis_element_name, NULL);
+	g_free (vis_element_name);
+
+	return element;
+}
+
+static void
+update_playbin_visualizer (RBVisualizerPlugin *plugin,
+			   const char *vis_override,
+			   int quality)
+{
+	GstPad *pad;
+	GstElement *vis_plugin;
 
 	if (plugin->visualizer)
 		g_object_unref (plugin->visualizer);
@@ -502,30 +516,17 @@ update_visualizer (RBVisualizerPlugin *plugin, const char *vis_override, int qua
 	plugin->visualizer = gst_bin_new (NULL);
 
 	/* set up capsfilter */
-	capsfilter = gst_element_factory_make ("capsfilter", NULL);
-	gst_bin_add (GST_BIN (plugin->visualizer), capsfilter);
+	plugin->capsfilter = gst_element_factory_make ("capsfilter", NULL);
+	gst_bin_add (GST_BIN (plugin->visualizer), plugin->capsfilter);
 
-	pad = gst_element_get_pad (capsfilter, "src");
+	pad = gst_element_get_pad (plugin->capsfilter, "src");
 	gst_element_add_pad (plugin->visualizer, gst_ghost_pad_new ("src", pad));
 	gst_object_unref (pad);
 
 	/* set up visualizer */
 	if (plugin->active) {
-		if (vis_override) {
-			vis_element_name = g_strdup (vis_override);
-		} else {
-			vis_element_name = eel_gconf_get_string (CONF_VIS_ELEMENT);
-		}
-
-		if (vis_element_name == NULL) {
-			vis_element_name = g_strdup (DEFAULT_VIS_ELEMENT);
-		}
-		rb_debug ("creating new visualizer: %s", vis_element_name);
-
-		vis_plugin = gst_element_factory_make (vis_element_name, NULL);
+		vis_plugin = create_visualizer_element (vis_override);
 		gst_bin_add (GST_BIN (plugin->visualizer), vis_plugin);
-		g_free (vis_element_name);
-
 	} else {
 		vis_plugin = g_object_new (rb_fake_vis_get_type (), NULL);
 		gst_bin_add (GST_BIN (plugin->visualizer), vis_plugin);
@@ -535,12 +536,108 @@ update_visualizer (RBVisualizerPlugin *plugin, const char *vis_override, int qua
 	gst_element_add_pad (plugin->visualizer, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 
-	gst_element_link (vis_plugin, capsfilter);
-	fixate_vis_caps (plugin, vis_plugin, capsfilter, quality);
+	gst_element_link (vis_plugin, plugin->capsfilter);
+	fixate_vis_caps (plugin, vis_plugin, plugin->capsfilter, quality);
 
 	g_object_ref (plugin->visualizer);
 
 	g_object_set (plugin->playbin, "vis-plugin", plugin->visualizer, NULL);
+}
+
+static void
+update_tee_visualizer (RBVisualizerPlugin *plugin,
+		       const char *vis_override,
+		       int quality)
+{
+	GstElement *old_vis_plugin = NULL;
+	GstPad *blocked_pad = NULL;
+	gboolean add_tee;
+
+	/* if we're not active, just make sure the bin isn't in the pipeline. */
+	if (plugin->active == FALSE) {
+		if (GST_ELEMENT_PARENT (plugin->visualizer)) {
+			rb_debug ("removing visualizer bin from the pipeline");
+			rb_player_gst_tee_remove_tee (RB_PLAYER_GST_TEE (plugin->player),
+						      plugin->visualizer);
+		} else {
+			rb_debug ("visualizer bin isn't in the pipeline");
+		}
+		return;
+	}
+
+	if (GST_ELEMENT_PARENT (plugin->visualizer) != NULL) {
+		GstStateChangeReturn ret;
+		GstState state, pending;
+
+		add_tee = FALSE;
+		ret = gst_element_get_state (plugin->visualizer, &state, &pending, GST_CLOCK_TIME_NONE);
+		if (ret == GST_STATE_CHANGE_SUCCESS && state == GST_STATE_PLAYING) {
+			GstPad *pad;
+
+			/* probably should do this async.. */
+			rb_debug ("blocking visualizer bin sink pad");
+			pad = gst_element_get_pad (plugin->visualizer, "sink");
+			blocked_pad = gst_ghost_pad_get_target (GST_GHOST_PAD (pad));
+			gst_pad_set_blocked (blocked_pad, TRUE);
+			gst_object_unref (pad);
+			rb_debug ("blocked visualizer bin sink pad");
+		}
+	} else {
+		add_tee = TRUE;
+	}
+
+	/* otherwise, update the visualizer element */
+	if (plugin->vis_plugin != NULL) {
+		/* clean up the element once we've unblocked the pipeline;
+		 * otherwise it seems to deadlock.
+		 */
+		old_vis_plugin = g_object_ref (plugin->vis_plugin);
+		gst_bin_remove (GST_BIN (plugin->visualizer), plugin->vis_plugin);
+	}
+
+	plugin->vis_plugin = create_visualizer_element (vis_override);
+	gst_bin_add (GST_BIN (plugin->visualizer), plugin->vis_plugin);
+
+	if (gst_element_link_many (plugin->identity, plugin->vis_plugin, plugin->capsfilter, NULL) == FALSE) {
+		rb_debug ("failed to link in new visualizer element");
+		/* um, what now? */
+	}
+
+	/* update the capsfilter */
+	fixate_vis_caps (plugin, plugin->vis_plugin, plugin->capsfilter, quality);
+
+	/* make sure the visualizer is in the pipeline, and sync its state
+	 * with the rest of the pipeline.
+	 */
+	if (add_tee) {
+		rb_debug ("adding visualizer bin to the pipeline");
+		rb_player_gst_tee_add_tee (RB_PLAYER_GST_TEE (plugin->player),
+					   plugin->visualizer);
+	} else if (blocked_pad != NULL) {
+		gst_element_set_state (plugin->vis_plugin, GST_STATE_PLAYING);
+		gst_pad_set_blocked (blocked_pad, FALSE);
+		gst_object_unref (blocked_pad);
+	} else {
+		gst_element_set_state (plugin->vis_plugin, GST_STATE_PAUSED);
+	}
+
+	if (old_vis_plugin != NULL) {
+		rb_debug ("cleaning up old visualizer element");
+		gst_element_set_state (old_vis_plugin, GST_STATE_NULL);
+		g_object_unref (old_vis_plugin);
+	}
+}
+
+static void
+update_visualizer (RBVisualizerPlugin *plugin,
+		   const char *vis_override,
+		   int quality)
+{
+	if (plugin->playbin != NULL) {
+		update_playbin_visualizer (plugin, vis_override, quality);
+	} else {
+		update_tee_visualizer (plugin, vis_override, quality);
+	}
 }
 
 static void
@@ -1337,9 +1434,12 @@ impl_activate (RBPlugin *plugin,
 	}
 
 	g_object_get (pi->shell_player, "player", &pi->player, NULL);
-	if (pi->player && g_object_class_find_property (G_OBJECT_GET_CLASS (pi->player), "playbin")) {
+	if (pi->player == NULL) {
+		g_warning ("no player exists yet");
+	} else if (g_object_class_find_property (G_OBJECT_GET_CLASS (pi->player), "playbin")) {
 		GstElement *playbin;
 
+		rb_debug ("using playbin-based visualization");
 		pi->playbin_notify_id =
 			g_signal_connect_object (pi->player,
 						 "notify::playbin",
@@ -1353,16 +1453,46 @@ impl_activate (RBPlugin *plugin,
 		}
 
 		connected = TRUE;
+	} else if (RB_IS_PLAYER_GST_TEE (pi->player)) {
+		GstElement *videoscale;
+		GstElement *colorspace;
+		GstPad *pad;
+
+		rb_debug ("using tee-based visualization");
+
+		/* create the sink */
+		pi->video_sink = gst_element_factory_make ("gconfvideosink", "videosink");
+		gst_element_set_state (pi->video_sink, GST_STATE_READY);
+		find_xoverlay (pi);
+
+		/* create the rest of the bin */
+		pi->visualizer = gst_bin_new (NULL);
+		g_object_ref (pi->visualizer);
+
+		pi->identity = gst_element_factory_make ("identity", NULL);
+		pi->capsfilter = gst_element_factory_make ("capsfilter", NULL);
+		colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
+		videoscale = gst_element_factory_make ("videoscale", NULL);
+
+		gst_bin_add_many (GST_BIN (pi->visualizer),
+				  pi->identity, pi->capsfilter, colorspace, videoscale, pi->video_sink,
+				  NULL);
+		gst_element_link_many (pi->capsfilter, colorspace, videoscale, pi->video_sink, NULL);
+		/* leave identity unlinked until we have a visualizer element */
+
+		pad = gst_element_get_pad (pi->identity, "sink");
+		gst_element_add_pad (pi->visualizer, gst_ghost_pad_new ("sink", pad));
+		gst_object_unref (pad);
+
+		connected = TRUE;
 	} else {
-		g_warning ("no player backend exists or wrong type?");
+		g_warning ("unknown player backend type");
 		g_object_unref (pi->player);
 		pi->player = NULL;
 	}
 
 	if (!connected)
 		return;
-
-	rb_debug ("connected to playbin mutation signal");
 
 	/* create action group */
 	pi->action_group = gtk_action_group_new ("VisualizerActions");

@@ -1024,6 +1024,7 @@ check_entry_type (RBIRadioSource *source, RhythmDBEntry *entry)
 
 static void
 info_available_cb (RBPlayer *backend,
+		   const char *uri,
 		   RBMetaDataField field,
 		   GValue *value,
 		   RBIRadioSource *source)

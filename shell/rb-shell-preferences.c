@@ -60,6 +60,15 @@ void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						      RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_toolbar_style_cb (GtkComboBox *box,
 						   RBShellPreferences *preferences);
+static void rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
+						    RBShellPreferences *preferences);
+static void rb_shell_preferences_album_crossfade_cb (GtkToggleButton *button,
+						     RBShellPreferences *preferences);
+static void rb_shell_preferences_transition_duration_cb (GtkRange *range,
+							 RBShellPreferences *preferences);
+static void rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
+							 RBShellPreferences *preferences);
+static void update_playback_prefs_sensitivity (RBShellPreferences *preferences);
 
 enum
 {
@@ -84,6 +93,11 @@ struct RBShellPreferencesPrivate
 	GtkWidget *first_seen_check;
 	GtkWidget *quality_check;
 	GtkWidget *year_check;
+
+	GtkWidget *xfade_backend_check;
+	GtkWidget *album_crossfade_check;
+	GtkWidget *transition_duration;
+	GtkWidget *network_buffer_size;
 
 	GSList *browser_views_group;
 
@@ -131,11 +145,11 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	shell_preferences->priv = RB_SHELL_PREFERENCES_GET_PRIVATE (shell_preferences);
 
-	g_signal_connect_object (G_OBJECT (shell_preferences),
+	g_signal_connect_object (shell_preferences,
 				 "delete_event",
 				 G_CALLBACK (rb_shell_preferences_window_delete_cb),
 				 shell_preferences, 0);
-	g_signal_connect_object (G_OBJECT (shell_preferences),
+	g_signal_connect_object (shell_preferences,
 				 "response",
 				 G_CALLBACK (rb_shell_preferences_response_cb),
 				 shell_preferences, 0);
@@ -146,7 +160,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	tmp = gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
 			              GTK_STOCK_HELP,
 			              GTK_RESPONSE_HELP);
-	g_signal_connect_object (G_OBJECT (tmp), "clicked",
+	g_signal_connect_object (tmp, "clicked",
 				 G_CALLBACK (help_cb), shell_preferences, 0);
 	gtk_dialog_set_default_response (GTK_DIALOG (shell_preferences),
 					 GTK_RESPONSE_CLOSE);
@@ -220,7 +234,56 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	eel_gconf_notification_add (CONF_UI_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
 				    shell_preferences);
-	g_object_unref (G_OBJECT (xml));
+	g_object_unref (xml);
+
+	/* playback preferences */
+	xml = rb_glade_xml_new ("playback-prefs.glade",
+				"playback_prefs_box",
+				shell_preferences);
+
+	rb_glade_boldify_label (xml, "backend_label");
+	rb_glade_boldify_label (xml, "crossfade_type_label");
+	rb_glade_boldify_label (xml, "duration_label");
+	rb_glade_boldify_label (xml, "buffer_size_label");
+
+	shell_preferences->priv->xfade_backend_check =
+		glade_xml_get_widget (xml, "use_xfade_backend");
+	shell_preferences->priv->album_crossfade_check =
+		glade_xml_get_widget (xml, "album_check");
+	shell_preferences->priv->transition_duration =
+		glade_xml_get_widget (xml, "duration");
+	shell_preferences->priv->network_buffer_size =
+		glade_xml_get_widget (xml, "network_buffer_size");
+
+	g_signal_connect_object (shell_preferences->priv->xfade_backend_check,
+				 "toggled",
+				 G_CALLBACK (rb_shell_preferences_player_backend_cb),
+				 shell_preferences, 0);
+
+	g_signal_connect_object (shell_preferences->priv->album_crossfade_check,
+				 "toggled",
+				 G_CALLBACK (rb_shell_preferences_album_crossfade_cb),
+				 shell_preferences, 0);
+
+	g_signal_connect_object (shell_preferences->priv->transition_duration,
+				 "value-changed",
+				 G_CALLBACK (rb_shell_preferences_transition_duration_cb),
+				 shell_preferences, 0);
+
+	g_signal_connect_object (shell_preferences->priv->network_buffer_size,
+				 "value-changed",
+				 G_CALLBACK (rb_shell_preferences_network_buffer_size_cb),
+				 shell_preferences, 0);
+
+	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
+				  glade_xml_get_widget (xml, "playback_prefs_box"),
+				  gtk_label_new (_("Playback")));
+	g_object_unref (xml);
+
+	eel_gconf_notification_add (CONF_PLAYER_DIR,
+				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
+				    shell_preferences);
+
 	rb_shell_preferences_sync (shell_preferences);
 }
 
@@ -404,6 +467,9 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	char *columns;
 	GSList  *l;
 	gint view, i;
+	gboolean b;
+	float duration;
+	int buffer_size;
 
 	shell_preferences->priv->loading = TRUE;
 
@@ -468,6 +534,21 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 					   G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
 					   shell_preferences);
 
+	/* player preferences */
+	b = eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->xfade_backend_check), b);
+
+	b = eel_gconf_get_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->album_crossfade_check), !b);
+
+	duration = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME);
+	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->transition_duration), duration);
+
+	buffer_size = eel_gconf_get_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE);
+	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->network_buffer_size), buffer_size);
+
+	update_playback_prefs_sensitivity (shell_preferences);
+
 	shell_preferences->priv->loading = FALSE;
 }
 
@@ -498,3 +579,58 @@ rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 
 	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
 }
+
+
+static void
+update_playback_prefs_sensitivity (RBShellPreferences *preferences)
+{
+	gboolean backend;
+
+	backend = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (preferences->priv->xfade_backend_check));
+
+	gtk_widget_set_sensitive (preferences->priv->album_crossfade_check, backend);
+	gtk_widget_set_sensitive (preferences->priv->network_buffer_size, backend);
+	gtk_widget_set_sensitive (preferences->priv->transition_duration, backend);
+}
+
+static void
+rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
+					RBShellPreferences *preferences)
+{
+	update_playback_prefs_sensitivity (preferences);
+
+	eel_gconf_set_boolean (CONF_PLAYER_USE_XFADE_BACKEND,
+			       gtk_toggle_button_get_active (button));
+}
+
+static void
+rb_shell_preferences_album_crossfade_cb (GtkToggleButton *button,
+					 RBShellPreferences *preferences)
+{
+	/* sense is inverted here because the wording sounded more natural
+	 * this way.  "[ ] Don't do x" sucks.
+	 */
+	eel_gconf_set_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK,
+			       !gtk_toggle_button_get_active (button));
+}
+
+static void
+rb_shell_preferences_transition_duration_cb (GtkRange *range,
+					     RBShellPreferences *preferences)
+{
+	gdouble v;
+
+	v = gtk_range_get_value (range);
+	eel_gconf_set_float (CONF_PLAYER_TRANSITION_TIME, (float)v);
+}
+
+static void
+rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
+					     RBShellPreferences *preferences)
+{
+	gdouble v;
+
+	v = gtk_range_get_value (range);
+	eel_gconf_set_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE, (int)v);
+}
+

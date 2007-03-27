@@ -991,6 +991,51 @@
 	</locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/player/use_xfade_backend</key>
+        <applyto>/apps/rhythmbox/player/use_xfade_backend</applyto>
+        <owner>rhythmbox</owner>
+        <type>boolean</type>
+        <default>false</default>
+        <locale name="C">
+        <short>Whether to use the experimental crossfading player backend</short>
+        <long>Whether to use the experimental crossfading player backend.
+        Changes to this setting only take effect after a restart.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/player/transition_album_check</key>
+        <applyto>/apps/rhythmbox/player/transition_album_check</applyto>
+        <owner>rhythmbox</owner>
+        <type>boolean</type>
+        <default>true</default>
+        <locale name="C">
+        <short>Perform transitions between songs on the same album</short>
+        <long>Perform transitions between songs on the same album</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/player/transition_time</key>
+        <applyto>/apps/rhythmbox/player/transition_time</applyto>
+        <owner>rhythmbox</owner>
+        <type>float</type>
+        <default>0.0</default>
+        <locale name="C">
+        <short>Duration of a track transition in seconds</short>
+        <long>Duration of a track transition in seconds</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/player/network_buffer_size</key>
+        <applyto>/apps/rhythmbox/player/network_buffer_size</applyto>
+        <owner>rhyhtmbox</owner>
+        <type>int</type>
+        <default>32</default>
+        <locale name="C">
+        <short>Size (kB) of buffer for playing remote files and streams</short>
+        <long>Size (kB) of buffer for playing remote files and streams</long>
+        </locale>
+      </schema>
+      <schema>
 	<key>/schemas/apps/rhythmbox/plugins/visualizer/active</key>
 	<applyto>/apps/rhythmbox/plugins/visualizer/active</applyto>
 	<owner>rhythmbox</owner>

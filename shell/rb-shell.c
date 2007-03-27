@@ -229,7 +229,7 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
 static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
-static void rb_shell_construct_notify_titles (RBShell *shell, 
+static void rb_shell_construct_notify_titles (RBShell *shell,
 					      RhythmDBEntry *entry);
 
 static gboolean save_yourself_cb (GnomeClient *client,
@@ -903,10 +903,9 @@ rb_shell_finalize (GObject *object)
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
 
-	if (shell->priv->cached_notify_primary != NULL)
-		g_free (shell->priv->cached_notify_primary);
-	if (shell->priv->cached_notify_secondary != NULL)
-		g_free (shell->priv->cached_notify_secondary);
+	g_free (shell->priv->cached_notify_primary);
+	g_free (shell->priv->cached_notify_secondary);
+
 	if (shell->priv->cached_art_icon != NULL)
 		g_object_unref (shell->priv->cached_art_icon);
 
@@ -2957,16 +2956,13 @@ rb_shell_construct_notify_titles (RBShell *shell,
 	char *title = NULL;
 	GString *secondary;
 
-	if (shell->priv->cached_notify_primary != NULL)
-		g_free (shell->priv->cached_notify_primary);
-	if (shell->priv->cached_notify_secondary != NULL)
-		g_free (shell->priv->cached_notify_secondary);
+	g_free (shell->priv->cached_notify_primary);
+	g_free (shell->priv->cached_notify_secondary);
+	shell->priv->cached_notify_primary = NULL;
+	shell->priv->cached_notify_secondary = NULL;
 
-	if (entry == NULL) {
-		shell->priv->cached_notify_primary = NULL;
-		shell->priv->cached_notify_secondary = NULL;
+	if (entry == NULL)
 		return;
-	}
 
 	secondary = g_string_sized_new (100);
 

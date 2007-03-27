@@ -43,6 +43,9 @@
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
 #endif
 
+#ifdef HAVE_GSTREAMER_0_10
+#include <gst/gst.h>
+#endif
 
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -51,6 +54,7 @@
 #include "rb-dialog.h"
 #include "rb-removable-media-manager.h"
 #include "rb-audiocd-source.h"
+#include "rb-player.h"
 
 
 #define RB_TYPE_AUDIOCD_PLUGIN		(rb_audiocd_plugin_get_type ())
@@ -351,6 +355,75 @@ rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer   *player,
 	plugin->playing_uri = uri ? g_strdup (uri) : NULL;
 }
 
+#ifdef HAVE_GSTREAMER_0_10
+
+static gboolean
+rb_audiocd_plugin_can_reuse_stream_cb (RBPlayer *player,
+				       const char *new_uri,
+				       const char *stream_uri,
+				       GstElement *stream_bin,
+				       RBAudioCdPlugin *plugin)
+{
+	const char *new_device;
+	const char *old_device;
+
+	/* can't do anything with non-cdda URIs */
+	if (g_str_has_prefix (new_uri, "cdda://") == FALSE ||
+	    g_str_has_prefix (stream_uri, "cdda://") == FALSE) {
+		return FALSE;
+	}
+
+	/* check the device matches */
+	new_device = g_utf8_strrchr (new_uri, -1, '#');
+	old_device = g_utf8_strrchr (stream_uri, -1, '#');
+	if (strcmp (old_device, new_device) != 0) {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static void
+rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
+				   const char *new_uri,
+				   const char *stream_uri,
+				   GstElement *stream_bin,
+				   RBAudioCdPlugin *plugin)
+{
+	GstFormat track_format = gst_format_get_by_nick ("track");
+	char *track_str;
+	char *new_device;
+	guint track;
+	guint cdda_len;
+	GstPad *ghost_pad;
+	GstPad *pad;
+
+	/* get the new track number */
+	cdda_len = strlen ("cdda://");
+	new_device = g_utf8_strrchr (new_uri, -1, '#');
+	track_str = g_strndup (new_uri + cdda_len, new_device - (new_uri + cdda_len));
+	track = atoi (track_str);
+	g_free (track_str);
+
+	rb_debug ("seeking to track %d on CD device %s", track, new_device+1);
+
+	ghost_pad = gst_element_get_pad (stream_bin, "src");
+	if (GST_IS_GHOST_PAD (ghost_pad)) {
+		pad = gst_ghost_pad_get_target (GST_GHOST_PAD (ghost_pad));
+		gst_object_unref (ghost_pad);
+	} else {
+		pad = ghost_pad;
+	}
+
+	gst_element_seek (GST_PAD_PARENT (pad),
+			  1.0, track_format, GST_SEEK_FLAG_FLUSH,
+			  GST_SEEK_TYPE_SET, track-1,
+			  GST_SEEK_TYPE_NONE, -1);
+	gst_object_unref (pad);
+}
+
+#endif
+
 #if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 static const char *
 nautilus_burn_drive_get_device (NautilusBurnDrive *drive)
@@ -403,6 +476,10 @@ impl_activate (RBPlugin *plugin,
 	GList                   *drives;
 	GList                   *it;
 	GnomeVFSVolumeMonitor   *monitor;
+	GObject                 *shell_player;
+#ifdef HAVE_GSTREAMER_0_10
+	RBPlayer                *player_backend;
+#endif
 	GtkUIManager            *uimanager;
 	char                    *filename;
 
@@ -444,8 +521,30 @@ impl_activate (RBPlugin *plugin,
 
 	g_object_unref (rmm);
 
+	/* if we're using the gapless/crossfade player backend, make it reuse
+	 * audio cd playback streams to avoid closing and reopening the device
+	 * (and prevent it from even thinking about crossfading songs on the same cd)
+	 */
+	shell_player = rb_shell_get_player (shell);
+#ifdef HAVE_GSTREAMER_0_10
+	g_object_get (shell_player, "player", &player_backend, NULL);
+	if (player_backend) {
+		GObjectClass *klass = G_OBJECT_GET_CLASS (player_backend);
+		if (g_signal_lookup ("reuse-stream", G_OBJECT_CLASS_TYPE (klass)) != 0) {
+			g_signal_connect_object (player_backend,
+						 "can-reuse-stream",
+						 G_CALLBACK (rb_audiocd_plugin_can_reuse_stream_cb),
+						 plugin, 0);
+			g_signal_connect_object (player_backend,
+						 "reuse-stream",
+						 G_CALLBACK (rb_audiocd_plugin_reuse_stream_cb),
+						 plugin, 0);
+		}
+	}
+#endif
+
 	/* monitor the playing song, to disable cd drive polling */
-	g_signal_connect_object (rb_shell_get_player (shell), "playing-uri-changed",
+	g_signal_connect_object (shell_player, "playing-uri-changed",
 				 G_CALLBACK (rb_audiocd_plugin_playing_uri_changed_cb),
 				 plugin, 0);
 
