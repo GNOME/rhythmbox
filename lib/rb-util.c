@@ -471,12 +471,14 @@ rb_string_split_words (const gchar *string)
 	GSList *words, *current;
 	gunichar *unicode, *cur_write, *cur_read;
 	gchar **ret;
+	gchar *normalized;
 	gint i, wordcount = 1;
 	gboolean new_word = TRUE;
 
 	g_return_val_if_fail (string != NULL, NULL);
 
-	cur_write = cur_read = unicode = g_utf8_to_ucs4_fast (string, -1, NULL);
+	normalized = g_utf8_normalize(string, -1, G_NORMALIZE_DEFAULT);
+	cur_write = cur_read = unicode = g_utf8_to_ucs4_fast (normalized, -1, NULL);
 
 	/* we may fail here, we expect valid utf-8 */
 	g_return_val_if_fail (unicode != NULL, NULL);
@@ -561,6 +563,7 @@ rb_string_split_words (const gchar *string)
 
 	g_slist_free (words);
 	g_free (unicode);
+	g_free (normalized);
 
 	return ret;
 }
@@ -569,6 +572,7 @@ gchar*
 rb_search_fold (const char *original)
 {
 	GString *string;
+	gchar *normalized;
 	gunichar *unicode, *cur;
 	
 	g_return_val_if_fail (original != NULL, NULL);
@@ -576,7 +580,9 @@ rb_search_fold (const char *original)
 	/* old behaviour is equivalent to: return g_utf8_casefold (original, -1); */
 	
 	string = g_string_new (NULL);
-	unicode = g_utf8_to_ucs4_fast (original, -1, NULL);
+	normalized = g_utf8_normalize(original, -1, G_NORMALIZE_DEFAULT);
+	unicode = g_utf8_to_ucs4_fast (normalized, -1, NULL);
+	
 
 	for (cur = unicode; *cur != 0; cur++) {
 		switch (g_unichar_type (*cur)) {
@@ -623,6 +629,7 @@ rb_search_fold (const char *original)
 	}
 	
 	g_free (unicode);
+	g_free (normalized);
 			
 	return g_string_free (string, FALSE);
 }

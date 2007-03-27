@@ -1,5 +1,16 @@
 2007-03-27  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Denis Jacquerye  <moyogo@gmail.com>
+
+	* lib/rb-util.c: (rb_string_split_words), (rb_search_fold): Normalise
+	strings before casefolding them, which means that strings with
+	denormalised combining marks gets matched correctly. Fixes #421253
+
+	This also has the effect of marking searches ignore combining
+	diacritical marks, which fixes #338824
+
+2007-03-27  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Ed Catmur  <ed@cautmur.co.uk>
 
 	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_dispose),
