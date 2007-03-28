@@ -1,3 +1,10 @@
+2007-03-28  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(adjust_stream_base_time), (rb_player_gst_xfade_bus_cb),
+	(rb_player_gst_xfade_set_time):
+	Fix build on 64-bit machines.
+
 2007-03-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/rb-player.c: (rb_player_interface_init),

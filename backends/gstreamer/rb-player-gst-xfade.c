@@ -809,7 +809,10 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	format = GST_FORMAT_TIME;
 	gst_element_query_position (stream->volume, &format, &stream_pos);
 	if (stream_pos != -1) {
-		rb_debug ("adjusting base time: %lld - %lld => %lld", stream->base_time, stream_pos, stream->base_time - stream_pos);
+		rb_debug ("adjusting base time: %" G_GINT64_FORMAT 
+		    " - %" G_GINT64_FORMAT " => %" G_GINT64_FORMAT, 
+		    stream->base_time, stream_pos, 
+		    stream->base_time - stream_pos);
 		stream->base_time -= stream_pos;
 	}
 }
@@ -1405,7 +1408,8 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			gint64 duration;
 			GstFormat format;
 			gst_message_parse_duration (message, &format, &duration);
-			rb_debug ("got duration %lld for stream %s", duration, stream->uri);
+			rb_debug ("got duration %" G_GINT64_FORMAT 
+			    " for stream %s", duration, stream->uri);
 		}
 		break;
 
@@ -3035,10 +3039,12 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, long time)
 
 	stream->seek_target = time * GST_SECOND;
 	if (stream->state == PAUSED) {
-		rb_debug ("seeking in paused stream %s; target %lld", stream->uri, stream->seek_target);
+		rb_debug ("seeking in paused stream %s; target %" 
+		    G_GINT64_FORMAT, stream->uri, stream->seek_target);
 		perform_seek (stream);
 	} else {
-		rb_debug ("unlinking playing stream %s to seek to %lld", stream->uri, stream->seek_target);
+		rb_debug ("unlinking playing stream %s to seek to %"
+		    G_GINT64_FORMAT, stream->uri, stream->seek_target);
 		stream->state = SEEKING;
 		unlink_and_block_stream (stream);
 	}
