@@ -451,9 +451,11 @@ rb_player_multiple_open (RBPlayer *player)
 RBPlayer*
 rb_player_new (gboolean want_crossfade, GError **error)
 {
+#ifdef HAVE_GSTREAMER_0_10_XFADE
 	if (want_crossfade)
 		return rb_player_gst_xfade_new (error);
 	else
+#endif
 		return rb_player_gst_new (error);
 }
 

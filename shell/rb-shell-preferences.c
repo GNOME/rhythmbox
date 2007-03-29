@@ -60,6 +60,7 @@ void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						      RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_toolbar_style_cb (GtkComboBox *box,
 						   RBShellPreferences *preferences);
+#ifdef HAVE_GSTREAMER_0_10_XFADE
 static void rb_shell_preferences_player_backend_cb (GtkToggleButton *button,
 						    RBShellPreferences *preferences);
 static void rb_shell_preferences_album_crossfade_cb (GtkToggleButton *button,
@@ -69,6 +70,7 @@ static void rb_shell_preferences_transition_duration_cb (GtkRange *range,
 static void rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
 							 RBShellPreferences *preferences);
 static void update_playback_prefs_sensitivity (RBShellPreferences *preferences);
+#endif
 
 enum
 {
@@ -94,10 +96,12 @@ struct RBShellPreferencesPrivate
 	GtkWidget *quality_check;
 	GtkWidget *year_check;
 
+#ifdef HAVE_GSTREAMER_0_10_XFADE
 	GtkWidget *xfade_backend_check;
 	GtkWidget *album_crossfade_check;
 	GtkWidget *transition_duration;
 	GtkWidget *network_buffer_size;
+#endif
 
 	GSList *browser_views_group;
 
@@ -236,6 +240,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				    shell_preferences);
 	g_object_unref (xml);
 
+#ifdef HAVE_GSTREAMER_0_10_XFADE
 	/* playback preferences */
 	xml = rb_glade_xml_new ("playback-prefs.glade",
 				"playback_prefs_box",
@@ -279,6 +284,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				  glade_xml_get_widget (xml, "playback_prefs_box"),
 				  gtk_label_new (_("Playback")));
 	g_object_unref (xml);
+#endif
 
 	eel_gconf_notification_add (CONF_PLAYER_DIR,
 				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
@@ -467,9 +473,6 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	char *columns;
 	GSList  *l;
 	gint view, i;
-	gboolean b;
-	float duration;
-	int buffer_size;
 
 	shell_preferences->priv->loading = TRUE;
 
@@ -534,20 +537,28 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 					   G_CALLBACK (rb_shell_preferences_toolbar_style_cb),
 					   shell_preferences);
 
-	/* player preferences */
-	b = eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->xfade_backend_check), b);
+#ifdef HAVE_GSTREAMER_0_10_XFADE
+	{
+		gboolean b;
+		float duration;
+		int buffer_size;
 
-	b = eel_gconf_get_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->album_crossfade_check), !b);
+		/* player preferences */
+		b = eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->xfade_backend_check), b);
 
-	duration = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME);
-	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->transition_duration), duration);
+		b = eel_gconf_get_boolean (CONF_PLAYER_TRANSITION_ALBUM_CHECK);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->album_crossfade_check), !b);
 
-	buffer_size = eel_gconf_get_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE);
-	gtk_range_set_value (GTK_RANGE (shell_preferences->priv->network_buffer_size), buffer_size);
+		duration = eel_gconf_get_float (CONF_PLAYER_TRANSITION_TIME);
+		gtk_range_set_value (GTK_RANGE (shell_preferences->priv->transition_duration), duration);
 
-	update_playback_prefs_sensitivity (shell_preferences);
+		buffer_size = eel_gconf_get_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE);
+		gtk_range_set_value (GTK_RANGE (shell_preferences->priv->network_buffer_size), buffer_size);
+
+		update_playback_prefs_sensitivity (shell_preferences);
+	}
+#endif
 
 	shell_preferences->priv->loading = FALSE;
 }
@@ -580,6 +591,7 @@ rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
 }
 
+#ifdef HAVE_GSTREAMER_0_10_XFADE
 
 static void
 update_playback_prefs_sensitivity (RBShellPreferences *preferences)
@@ -634,3 +646,4 @@ rb_shell_preferences_network_buffer_size_cb (GtkRange *range,
 	eel_gconf_set_integer (CONF_PLAYER_NETWORK_BUFFER_SIZE, (int)v);
 }
 
+#endif

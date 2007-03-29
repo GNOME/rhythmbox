@@ -1,3 +1,15 @@
+2007-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/Makefile.am:
+	* backends/rb-player.c: (rb_player_new):
+	* configure.ac:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync):
+	The crossfading player backend requires GStreamer 0.10.11, so don't
+	try to build it with earlier versions.
+
+	* data/rhythmbox.schemas: 'bool', not 'boolean'
+
 2007-03-29  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Adam Zimmerman  <adam_zimmerman@sfu.ca>

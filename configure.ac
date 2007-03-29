@@ -1,4 +1,4 @@
-define(arch-tag)
+efine(arch-tag)
 # arch-tag: Toplevel Autoconf configuration script
 AC_PREREQ(2.53)
 AC_INIT(shell)
@@ -200,6 +200,11 @@ PKG_CHECK_MODULES(GSTREAMER_0_10, \
 	gstreamer-plugins-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION,
 	have_gstreamer_0_10=yes,have_gstreamer_0_10=no)
 
+GST_0_10_XFADE_REQUIRED_VERSION=0.10.11
+PKG_CHECK_MODULES(GSTREAMER_0_10_XFADE, \
+	gstreamer-$GST_0_10_MAJORMINOR >= $GST_0_10_XFADE_REQUIRED_VERSION,
+	have_gstreamer_0_10_xfade=yes,have_gstreamer_0_10_xfade=no)
+
 AC_ARG_WITH(playback,
    AC_HELP_STRING([--with-playback=auto|gstreamer-0-8|gstreamer-0-10],
    [Select the playback backend to use (default auto)]),,
@@ -213,6 +218,11 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
 		AC_DEFINE(HAVE_GSTREAMER_0_10,1,[Define if you want to use the GStreamer 0.10])
 		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
 		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
+
+		if test x"$have_gstreamer_0_10_xfade" = xyes; then
+			with_xfade_backend=yes
+			AC_DEFINE(HAVE_GSTREAMER_0_10_XFADE,1,[Define if you want to use the crossfading GStreamer 0.10 backend])
+		fi
 	elif test x$with_playback = xgstreamer-0-10; then
 		AC_MSG_ERROR([GStreamer 0.10 explicitly requested, and it was not found or older than version $GST_0_10_REQUIRED_VERSION, or gst-plugins-base was missing])
 	fi
@@ -231,10 +241,11 @@ if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
 fi
 AM_CONDITIONAL(USE_GSTREAMER_0_10, test x"$with_playback" = xgstreamer_0_10)
 AM_CONDITIONAL(USE_GSTREAMER_0_8, test x"$with_playback" = xgstreamer_0_8)
+AM_CONDITIONAL(USE_GSTREAMER_0_10_XFADE, test x"$with_xfade_backend" = xyes)
 
 dnl Give error and exit if we don't have gstreamer
 if test x$with_playback = xauto; then
-		AC_MSG_ERROR([GStreamer not found, or older than version $GST_0_8_REQUIRED_VERSION/$GST_0_10_REQUIRED_VERSION])
+	AC_MSG_ERROR([GStreamer not found, or older than version $GST_0_8_REQUIRED_VERSION/$GST_0_10_REQUIRED_VERSION])
 fi
 
 AC_SUBST(SOUNDSYSTEM_DEPS)
@@ -1015,6 +1026,7 @@ plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile
 plugins/visualizer/Makefile
+plugins/equalizer/Makefile
 plugins/mmkeys/Makefile
 bindings/Makefile
 bindings/python/Makefile
@@ -1073,6 +1085,9 @@ if test x"$with_playback" = xgstreamer_0_8; then
 	AC_MSG_NOTICE([** GStreamer 0.8 player is enabled])
 elif test x"$with_playback" = xgstreamer_0_10; then
 	AC_MSG_NOTICE([** GStreamer 0.10 player is enabled])
+	if test x"$with_xfade_backend" = xyes; then
+		AC_MSG_NOTICE([** GStreamer 0.10 crossfading player is enabled])
+	fi
 else
 	AC_MSG_ERROR([   Playback engine set incorrectly])
 fi

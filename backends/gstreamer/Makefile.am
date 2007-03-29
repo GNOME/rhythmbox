@@ -30,7 +30,7 @@ librbbackendsgstreamer_la_SOURCES +=	\
 	rb-encoder-gst.c
 endif
 
-if USE_GSTREAMER_0_10
+if USE_GSTREAMER_0_10_XFADE
 librbbackendsgstreamer_la_SOURCES +=	\
 	rb-player-gst-xfade.h		\
 	rb-player-gst-xfade.c
