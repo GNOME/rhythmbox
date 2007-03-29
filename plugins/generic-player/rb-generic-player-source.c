@@ -736,7 +736,6 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		     const char *extension)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	const char *mime;
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
 	const char *folders;
@@ -764,19 +763,6 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	    g_str_has_suffix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), title)) {
 		/* file isn't tagged, so just use the filename as-is */
 		file = g_strdup (title);
-	}
-
-	mime = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-
-	/* hackish mapping of gstreamer media types to mime types; this
-	 * should be easier when we do proper (deep) typefinding.
-	 */
-	if (strcmp (mime, "audio/x-wav") == 0) {
-		/* if it has a bitrate, assume it's mp3-in-wav */
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
-			mime = "audio/mpeg";
-	} else if (strcmp (mime, "application/x-id3") == 0) {
-		mime = "audio/mpeg";
 	}
 
 	if (file == NULL) {

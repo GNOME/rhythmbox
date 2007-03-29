@@ -1,3 +1,11 @@
+2007-03-29  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(impl_build_dest_uri):
+	* sources/rb-removable-media-source.c: (impl_paste): move the hack to
+	the right place, which also makes it work for iPods. Should let people
+	copy MP3s without having lame installed.
+
 2007-03-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* configure.ac:
