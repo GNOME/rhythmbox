@@ -605,6 +605,9 @@ rb_entry_view_get_property (GObject *object,
 	case PROP_SORTING_KEY:
 		g_value_set_string (value, view->priv->sorting_key);
 		break;
+	case PROP_MODEL:
+		g_value_set_object (value, view->priv->model);
+		break;
 	case PROP_IS_DRAG_SOURCE:
 		g_value_set_boolean (value, view->priv->is_drag_source);
 		break;
