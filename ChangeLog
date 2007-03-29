@@ -1,3 +1,10 @@
+2007-03-29  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: (impl_move_to_trash): call
+	schedule_save instead of directly calling itdb_save after removing a
+	file, this makes sure file deletion works on iPod shuffles as well.
+	Initial patch by William <will@johnstonclan.net>, fixes bug #386662
+
 2007-03-29  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/generic-player/rb-generic-player-source.c:
