@@ -279,6 +279,7 @@ impl_paste (RBSource *source, GList *entries)
 		RhythmDBEntry *entry;
 		RhythmDBEntryType entry_type;
 		GList *mime_types;
+		const char *entry_mime;
 		char *mimetype;
 		char *extension;
 		char *dest;
@@ -296,8 +297,20 @@ impl_paste (RBSource *source, GList *entries)
 			goto impl_paste_end;
 		}
 
+		entry_mime = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+		/* hackish mapping of gstreamer media types to mime types; this
+		 * should be easier when we do proper (deep) typefinding.
+		 */
+		if (strcmp (entry_mime, "audio/x-wav") == 0) {
+			/* if it has a bitrate, assume it's mp3-in-wav */
+			if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
+				entry_mime = "audio/mpeg";
+		} else if (strcmp (entry_mime, "application/x-id3") == 0) {
+			entry_mime = "audio/mpeg";
+		}
+
 		mime_types = rb_removable_media_source_get_mime_types (RB_REMOVABLE_MEDIA_SOURCE (source));
-		if (mime_types != NULL) {
+		if (mime_types != NULL && !rb_string_list_contains (mime_types, entry_mime)) {
 			if (!rb_encoder_get_preferred_mimetype (encoder, mime_types, &mimetype, &extension)) {
 				rb_debug ("failed to find acceptable mime type for %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 				goto impl_paste_end;

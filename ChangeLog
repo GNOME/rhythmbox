@@ -1,3 +1,10 @@
+2007-03-29  James Livingston  <doclivingston@gmail.com>
+
+	* lib/rb-util.c: (rb_string_list_contains):
+	* lib/rb-util.h:
+	* sources/rb-removable-media-source.c: (impl_paste): backport the
+	change to hack around our having application/x-id3 for MP3s.
+
 2007-03-26  James Livingston  <doclivingston@gmail.com>
 
 	* data/glade/playlist-save.glade: make the playlist format combo not
