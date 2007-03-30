@@ -3,30 +3,31 @@
 # Luca Ferretti <elle.uca@libero.it>, 2002-2006.
 #
 # Convenzioni usate:
-# song & track		- Nella versione attuale non c'è necessità di 
+# song & track		- Nella versione attuale non c'è necessità di
 # 			distinguere tra file presenti nell'hd e traccie sul
 # 			cd audio. Preferisco tradurre entrambi come "brano" ed
-# 			attendere i futuri sviluppi per diversificare, se 
+# 			attendere i futuri sviluppi per diversificare, se
 # 			necessario.
 # 			La scelta di "brano" dovrebbe essere adatta anche per
 # 			indicare le tracce di un CD
 #
 # Browser			- Ce ne sono due tipi: quello per condivisioni su
-# 			Bonjour/Zeroconf ed il widget che permette di filtrare 
+# 			Bonjour/Zeroconf ed il widget che permette di filtrare
 # 			per artista/album/autore. Il primo è browser, il
 # 			secondo catalogo (ove possibile distinguere)
 msgid ""
 msgstr ""
-"Project-Id-Version: Rhythmbox trunk\n"
+"Project-Id-Version: Rhythmbox 0.10 branch\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-21 14:59+0100\n"
-"PO-Revision-Date: 2007-03-14 14:13+0100\n"
+"POT-Creation-Date: 2007-03-30 15:42+0200\n"
+"PO-Revision-Date: 2007-03-30 15:44+0200\n"
 "Last-Translator: Luca Ferretti <elle.uca@libero.it>\n"
 "Language-Team: Italiano <tp@lists.linux.it>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Rosetta-Export-Date: 2007-03-30 12:38+0000\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:551
 #, c-format
@@ -67,7 +68,7 @@ msgstr "Minuti"
 
 #: ../data/glade/create-playlist.glade.h:6
 msgid "_Limit to: "
-msgstr "_Limita a:"
+msgstr "_Limita a: "
 
 #: ../data/glade/create-playlist.glade.h:7
 msgid "_When sorted by:"
@@ -110,7 +111,6 @@ msgstr "Inserire la _posizione:"
 msgid "_Path:"
 msgstr "_Percorso:"
 
-# all'infinito, per fare scopa con inserire
 #: ../data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "_Omettere questo passo"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: ../data/glade/general-prefs.glade.h:10
 msgid "G_enres, artists and albums"
-msgstr "G_eneri, artisti ed album"
+msgstr "G_eneri, artisti e album"
 
 #: ../data/glade/general-prefs.glade.h:11
 msgid "Ti_me"
@@ -169,7 +169,7 @@ msgstr "A_rtista"
 
 #: ../data/glade/general-prefs.glade.h:16
 msgid "_Artists and albums"
-msgstr "_Artisti ed album"
+msgstr "_Artisti e album"
 
 #: ../data/glade/general-prefs.glade.h:17
 msgid "_Genre"
@@ -177,7 +177,7 @@ msgstr "Ge_nere"
 
 #: ../data/glade/general-prefs.glade.h:18
 msgid "_Genres and artists"
-msgstr "_Generi ed artisti"
+msgstr "_Generi e artisti"
 
 #: ../data/glade/general-prefs.glade.h:19
 msgid "_Last played"
@@ -516,7 +516,6 @@ msgstr "Errore di configurazione del proxy HTTP"
 msgid "Rhythmbox does not support automatic proxy configuration"
 msgstr "La configurazione automatica del proxy non è supportata in Rhythmbox"
 
-# tag id3?
 #. TODO: Improve to decrease wrong cover downloads, maybe add severity?
 #. Assemble list of search keywords (and thus search queries)
 #. If we still have no definite hit, use first result where artist matches
@@ -524,7 +523,7 @@ msgstr "La configurazione automatica del proxy non è supportata in Rhythmbox"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:641 ../lib/rb-util.c:855
+#: ../lib/rb-util.c:641 ../lib/rb-util.c:868
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
@@ -662,8 +661,6 @@ msgstr "Riproduzione CD audio"
 msgid "Support for playing of audio CDs as music source"
 msgstr "Supporto per la riproduzione di CD audio come sorgente musicale"
 
-# mantenere uguale a quella in sound-juicer  -Luca
-#
 #: ../plugins/audiocd/multiple-album.glade.h:1
 msgid "Multiple Albums Found"
 msgstr "Trovati più album"
@@ -671,7 +668,6 @@ msgstr "Trovati più album"
 # mantenere uguale a quella di sound-juicer
 #
 # Da correggere: lista --> elenco
-#                doppio punto nell'originale in s-j
 #: ../plugins/audiocd/multiple-album.glade.h:2
 msgid ""
 "This CD could be more than one album. Please select which album it is below "
@@ -680,8 +676,6 @@ msgstr ""
 "Questo CD corrisponde a più di un album. Selezionare quale album è dalla "
 "lista qui sotto e premere «Continua»."
 
-# mantenere uguale a quella di sound-juicer  --Luca
-#
 #: ../plugins/audiocd/multiple-album.glade.h:3
 msgid "_Continue"
 msgstr "_Continua"
@@ -966,7 +960,6 @@ msgstr "Canzone successiva"
 msgid "Skip the current track"
 msgstr "Omette la traccia corrente"
 
-# sarebbe l'etichetta di un pulsante nella toolbar....  --Luca
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:213
 msgid "Love Song"
 msgstr "Canzone gradita"
@@ -991,7 +984,6 @@ msgstr "Inserire la voce con cui costruire una stazione Last.fm:"
 msgid "Add"
 msgstr "Aggiungi"
 
-# boh!!! Non so proprio se è corretto....
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:534
 msgid "Neighbour Radio"
 msgstr "Radio del vicinato"
@@ -1044,7 +1036,6 @@ msgstr "Radio raccomandata di %s: %s percento"
 msgid "%s's Personal Radio"
 msgstr "Radio personale di %s"
 
-# invertire i due %s
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:1057
 #, c-format
 msgid "%s's %s Radio"
@@ -1132,7 +1123,7 @@ msgstr "Non è stata trovata alcuna unità scrivibile."
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1542
 #, c-format
 msgid "Could not get track time for file: %s"
-msgstr "Impossibile recuperare la durata del brano per il file: %s"
+msgstr "Impossibile ottenere la durata del brano per il file: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1601
 msgid "Could not determine audio track durations."
@@ -1275,7 +1266,7 @@ msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
-"Creazione audio CD completata.\n"
+"Creazione CD audio completata.\n"
 "Creare un'altra copia?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:698
@@ -1332,7 +1323,7 @@ msgstr "Inserire un CD riscrivibile o vuoto nell'unità."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1006
 msgid "Insert a rewritable or blank CD"
-msgstr "Inserire CD riscrivibile o vuoto"
+msgstr "Inserire un CD riscrivibile o vuoto"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1008
 msgid "Please put a blank CD in the drive."
@@ -1364,7 +1355,7 @@ msgstr "Conversione tracce audio"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1069
 msgid "Preparing to write CD"
-msgstr "Preparazione della scrittura del CD"
+msgstr "Preparazione alla scrittura del CD"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1072
 msgid "Writing CD"
@@ -1382,7 +1373,6 @@ msgstr "Cancellazione del CD"
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Azione non gestita in burn_action_changed_cb"
 
-# magari in italiano è meglio s/informazioni/dati
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1109
 #, c-format
 msgid "This %s appears to have information already recorded on it."
@@ -1469,7 +1459,7 @@ msgstr ""
 
 #: ../plugins/cd-recorder/recorder.glade.h:1
 msgid "Create audio CD from playlist?"
-msgstr "Crea un CD audio dalla scaletta?"
+msgstr "Creare un CD audio dalla scaletta?"
 
 #: ../plugins/cd-recorder/recorder.glade.h:2
 msgid "Options"
@@ -1675,7 +1665,7 @@ msgstr ""
 
 #: ../plugins/jamendo/jamendo-prefs.glade.h:5
 msgid "Visit Jamendo at "
-msgstr "Visita Jamendo presso"
+msgstr "Visita Jamendo presso "
 
 #: ../plugins/jamendo/jamendo-prefs.glade.h:6
 msgid "_Format:"
@@ -1685,9 +1675,8 @@ msgstr "_Formato:"
 msgid "http://www.jamendo.com/"
 msgstr "http://www.jamendo.com/it/"
 
-#
-#
 # da http://www.jamendo.com/it/static/concept/
+#
 #. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages.
 #. You should take a look on this site and check if you can't reuse it.
 #: ../plugins/jamendo/jamendo-loading.glade.h:3
@@ -1719,7 +1708,7 @@ msgstr "     * La possibilità di eseguire donazioni dirette agli artisti."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:8
 msgid "     * The use of the latest Peer-to-Peer technologies"
-msgstr "     * L'uso di tecnologie Peer-to-Peer all'avanguardia"
+msgstr "     * L'uso di tecnologie Peer-to-Peer all'avanguardia."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:9
 msgid "<b>Jamendo</b>"
@@ -1865,7 +1854,7 @@ msgstr ""
 msgid "L_ocation:"
 msgstr "_Posizione:"
 
-# remote control --> telecomando 
+# remote control --> telecomando
 # (come insegnano i Clash nella omonima canzone -Luca)
 #: ../plugins/lirc/lirc.rb-plugin.desktop.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
@@ -1879,7 +1868,6 @@ msgstr "LIRC "
 # usato sempre al plurale anche laddove in italiano si usa il singolare (il
 # testo di una canzone). Ho così distinto i casi in cui si riferisce al brano
 # corrente (singolare) a quello generico di cosa fa il plugin (plurale)  -Luca
-#
 #: ../plugins/lyrics/lyrics.py:85 ../plugins/lyrics/lyrics.py:126
 msgid "Searching for lyrics..."
 msgstr "Ricerca del testo..."
@@ -1898,7 +1886,7 @@ msgstr "Testo can_zone"
 
 #: ../plugins/lyrics/lyrics.py:257
 msgid "Display lyrics for the playing song"
-msgstr "Mostra il testo della canzone in riproduzione"
+msgstr "Mostra il testo del brano in riproduzione"
 
 #: ../plugins/lyrics/lyrics.rb-plugin.desktop.in.h:1
 msgid "Fetch song lyrics from the Internet"
@@ -2106,7 +2094,7 @@ msgstr "_Formato audio preferito:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:40
 msgid "Redownload purchased music at "
-msgstr "Ri-scarica la musica acquistata presso"
+msgstr "Ri-scarica la musica acquistata presso "
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:41
 msgid "Remember my credit card details"
@@ -2114,7 +2102,7 @@ msgstr "Memorizzare i dettagli della carta di credito"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:42
 msgid "Visit Magnatune at "
-msgstr "Visita Magnatune presso"
+msgstr "Visita Magnatune presso "
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:43
 msgid "_Email:"
@@ -2217,7 +2205,6 @@ msgstr ""
 "Novembre (11)\n"
 "Dicembre (12)"
 
-# credo titolo di dialogo
 #: ../plugins/magnatune/magnatune-purchase.glade.h:36
 msgid "Purchase Magnatune Tracks"
 msgstr "Acquista tracce da Magnatune"
@@ -2275,7 +2262,7 @@ msgstr ""
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
-msgstr "Acquistare l'album <i>%(album)s</i> di «%(artist)s»?"
+msgstr "Acquistare l'album <i>%(album)s»</i> di «%(artist)s»."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:401
 #, python-format
@@ -2297,12 +2284,10 @@ msgstr "Acquista album"
 msgid "Purchase this album from Magnatune"
 msgstr "Acquista questo album da Magnatune"
 
-# FIXME fisico non è granchè, ma è così anche in originale....
 #: ../plugins/magnatune/magnatune/__init__.py:85
 msgid "Purchase Physical CD"
 msgstr "Acquista CD fisico"
 
-# FIXME fisico non è granchè, ma è così anche in originale....
 #: ../plugins/magnatune/magnatune/__init__.py:86
 msgid "Purchase a physical CD from Magnatune"
 msgstr "Acquista un CD fisico da Magnatune"
@@ -2407,7 +2392,6 @@ msgid "A sample plugin in C with no features"
 msgstr "Un plugin di esempio in C senza funzionalità"
 
 # NOTA: visto che visualizzazione non mi pare abbia gran
-# significato, traduco visualization come effetto visivo
 #: ../plugins/visualizer/rb-visualizer-plugin.c:226
 #: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
 msgid "Visualization"
@@ -2493,7 +2477,7 @@ msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"L'URL «%s» è stata già aggiunto come stazione radio. Se si tratta di un feed "
+"L'URL «%s» è stata già aggiunta come stazione radio. Se si tratta di un feed "
 "podcast, rimuovere la stazione radio."
 
 #: ../podcast/rb-podcast-manager.c:871
@@ -2540,13 +2524,12 @@ msgstr "Nasconde la finestra di Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:72
 msgid "Jump to next song"
-msgstr "Passa alla canzone successiva"
+msgstr "Passa al brano successivo"
 
 #: ../remote/dbus/rb-client.c:73
 msgid "Jump to previous song"
-msgstr "Passa alla canzone precedente"
+msgstr "Passa al brano precedente"
 
-# l'azione compiuta è quella in traduzione (NdT)
 #: ../remote/dbus/rb-client.c:75
 msgid "Show notification of the playing song"
 msgstr "Mostra una notifica per il brano in riproduzione"
@@ -2580,7 +2563,6 @@ msgstr "Aggiunge le tracce specificate alla coda di riproduzione"
 msgid "Empty the play queue before adding new tracks"
 msgstr "Svuota la coda di riproduzione prima di aggiungere nuove tracce"
 
-# libera, ma meglio di letterale, no?
 #: ../remote/dbus/rb-client.c:86
 msgid "Print the title and artist of the playing song"
 msgstr "Stampa il titolo e l'artista del brano in riproduzione"
@@ -2620,7 +2602,7 @@ msgstr "Impossibile accedere a %s: %s"
 
 #: ../rhythmdb/rhythmdb.c:1459
 msgid "<invalid filename>"
-msgstr "<nome file non valido>"
+msgstr "<nomefile non valido>"
 
 #: ../rhythmdb/rhythmdb.c:1716
 msgid "invalid unicode in error message"
@@ -2781,7 +2763,7 @@ msgstr "Eli_mina"
 
 #: ../shell/rb-playlist-manager.c:149
 msgid "Delete playlist"
-msgstr "Elimina scaletta"
+msgstr "Elimina la scaletta"
 
 #: ../shell/rb-playlist-manager.c:151
 msgid "_Edit..."
@@ -3053,11 +3035,11 @@ msgstr "Non in riproduzione"
 
 #: ../shell/rb-shell-player.c:1616
 msgid "No previous song"
-msgstr "Nessun brano precedente"
+msgstr "Nessun brano precendente"
 
 #: ../shell/rb-shell-player.c:1693
 msgid "No next song"
-msgstr "Nessuna brano successivo"
+msgstr "Nessun brano successivo"
 
 #: ../shell/rb-shell-player.c:1808 ../shell/rb-shell-player.c:2775
 msgid "Couldn't start playback"
@@ -3081,7 +3063,7 @@ msgstr "Impossibile mostrare la guida"
 
 #: ../shell/rb-shell-preferences.c:154
 msgid "Music Player Preferences"
-msgstr "Preferenze del lettore musicale"
+msgstr "Preferenze del riproduttore musicale"
 
 #: ../shell/rb-shell-preferences.c:207
 msgid "General"
@@ -3121,7 +3103,7 @@ msgstr "Sceglie una cartella da aggiungere alla libreria"
 
 #: ../shell/rb-shell.c:423
 msgid "Import _File..."
-msgstr "Importa _file..."
+msgstr "Importa _file"
 
 #: ../shell/rb-shell.c:424
 msgid "Choose file to be added to the Library"
@@ -3157,7 +3139,7 @@ msgstr "_Esci"
 
 #: ../shell/rb-shell.c:436
 msgid "Quit the music player"
-msgstr "Esce dal riproduttore musicale"
+msgstr "Chiude il riproduttore musicale"
 
 #: ../shell/rb-shell.c:438
 msgid "Prefere_nces..."
@@ -3187,7 +3169,6 @@ msgstr "Mostra tutti le tracce in questa sorgente musicale"
 msgid "_Jump to Playing Song"
 msgstr "_Vai al brano in riproduzione"
 
-# libera, ma meglio di letterale, no?
 #: ../shell/rb-shell.c:448
 msgid "Scroll the view to the currently playing song"
 msgstr "Evidenzia nell'elenco il brano attualmente riprodotto"
@@ -3202,7 +3183,7 @@ msgstr "Cambia la visibilità del riquadro laterale"
 
 #: ../shell/rb-shell.c:458
 msgid "_Toolbar"
-msgstr "Barra _strumenti"
+msgstr "Barra degli _strumenti"
 
 #: ../shell/rb-shell.c:459
 msgid "Change the visibility of the toolbar"
@@ -3217,7 +3198,6 @@ msgid "Make the main window smaller"
 msgstr "Rende la finestra principale più piccola"
 
 # Finestra a schermo intero, limitazioni sulla riproduzione (credo solo da coda)
-# ed in futuro password di sblocco. Da usare durante i parti, ovvio.
 #: ../shell/rb-shell.c:464
 msgid "_Party Mode"
 msgstr "Modalità _party"
@@ -3376,7 +3356,6 @@ msgstr "Proprietà %s sconosciuta"
 msgid "Invalid property type %s for property %s"
 msgstr "Tipo di proprietà %s non valida per la proprietà %s"
 
-# FIXME!!! Forse dovrebbe essere Browser ?
 #: ../shell/rb-source-header.c:111
 msgid "_Browse"
 msgstr "_Catalogo"
@@ -3407,7 +3386,7 @@ msgstr "Mostra n_otifiche"
 
 #: ../shell/rb-tray-icon.c:136
 msgid "Show notifications of song changes and other events"
-msgstr "Mostra delle notifiche al cambio di brano ed altri eventi"
+msgstr "Mostra delle notifiche per il cambio di brano e per  altri eventi"
 
 #: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
 #: ../sources/rb-podcast-source.c:311
@@ -3563,7 +3542,6 @@ msgstr "Coda di riproduzione"
 msgid "from"
 msgstr "da"
 
-# scelta motivata: si trova prima del nome dell'artista. Per evitare problemi di "adattamento" (da Black Album di Metallica)
 #: ../sources/rb-play-queue-source.c:342 ../widgets/rb-header.c:101
 msgid "by"
 msgstr "-"
@@ -3788,10 +3766,10 @@ msgstr "Aumenta volume"
 msgid "Orientation"
 msgstr "Orientazione"
 
-# spero si tratti dell'icona...
+# secondo nomenclatura GNOME.
 #: ../widgets/eggtrayicon.c:154
 msgid "The orientation of the tray."
-msgstr "L'orientazione dell'icona di notifica."
+msgstr "L'orientamento dell'area di notifica."
 
 #: ../widgets/eggtrayicon.c:531
 msgid "Notification"
@@ -3801,7 +3779,6 @@ msgstr "Notifica"
 msgid "Pixbuf Object"
 msgstr "Oggetto pixbuf"
 
-# spiegazione della voce precedente
 #: ../widgets/rb-cell-renderer-pixbuf.c:106
 msgid "The pixbuf to render."
 msgstr "L'immagine da disegnare."
@@ -3922,7 +3899,6 @@ msgstr "Non in riproduzione"
 
 # il primo %d è il totale di album, il secondo è il totale delle canzoni
 #
-# Una scermata è disponibile presso http://xxx
 #: ../widgets/rb-property-view.c:504
 #, c-format
 msgid "All %d artist (%d)"
@@ -3944,7 +3920,6 @@ msgid_plural "All %d genres (%d)"
 msgstr[0] "%d genere (%d)"
 msgstr[1] "%d generi (%d)"
 
-# usato nel caso in cui i prededenti non siano adatti
 #: ../widgets/rb-property-view.c:513
 #, c-format
 msgid "All %d (%d)"
@@ -3983,7 +3958,7 @@ msgstr "Data dell'ultimo ascolto"
 
 #: ../widgets/rb-query-creator-properties.c:81
 msgid "Time Added to Library"
-msgstr "Data aggiunta alla libreria"
+msgstr "Data di aggiunta alla libreria"
 
 #: ../widgets/rb-query-creator-properties.c:92
 #: ../widgets/rb-query-creator-properties.c:93
@@ -3994,19 +3969,19 @@ msgstr "_In ordine alfabetico inverso"
 
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "W_ith more highly rated tracks first"
-msgstr "Con _i brani più quotati all'inizio"
+msgstr "Con i brani _più quotati all'inizio"
 
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "W_ith more often played songs first"
-msgstr "Con _i brani più riprodotti all'inizio"
+msgstr "Con i brani _più riprodotti all'inizio"
 
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "W_ith newer tracks first"
-msgstr "Con i brani più _recenti all'inizio"
+msgstr "Con i brani _più recenti all'inizio"
 
 #: ../widgets/rb-query-creator-properties.c:99
 msgid "W_ith longer tracks first"
-msgstr "Con _i brani più lunghi all'inizio"
+msgstr "Con i brani _più lunghi all'inizio"
 
 #: ../widgets/rb-query-creator-properties.c:100
 msgid "_In decreasing order"
@@ -4014,7 +3989,7 @@ msgstr "_In ordine decrescente"
 
 #: ../widgets/rb-query-creator-properties.c:101
 msgid "W_ith more recently played tracks first"
-msgstr "Con i brani riprodotti _più di recente all'inizio"
+msgstr "Con _i brani riprodotti più di recente all'inizio"
 
 #: ../widgets/rb-query-creator-properties.c:102
 msgid "W_ith more recently added tracks first"
@@ -4050,7 +4025,6 @@ msgstr "almeno"
 msgid "at most"
 msgstr "più di"
 
-# criterio per scaletta automatic: [Anno ] [nel ] ____
 #: ../widgets/rb-query-creator-properties.c:157
 msgid "in"
 msgstr "nel"
@@ -4132,65 +4106,4 @@ msgstr "Sulla scrivania"
 
 #: ../widgets/rb-song-info.c:1012
 msgid "Unknown location"
-msgstr "Posizione sconosciuta"
-
-# non so se è corretto, sarebbe da verificare...
-#~ msgid "%s Group Radio"
-#~ msgstr "Radio per gruppo %s"
-
-#~ msgid "Stores"
-#~ msgstr "Negozi"
-
-#~ msgid "Purchase Error"
-#~ msgstr "Errore nell'acquisto"
-
-#~ msgid ""
-#~ "An error occurred while trying to purchase the album.\n"
-#~ "The error text is:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Si è verificato un errore durante il tentativo di acquistare l'album.\n"
-#~ "Il testo dell'errore è:\n"
-#~ "%s"
-
-#~ msgid "Embedded"
-#~ msgstr "Incassato"
-
-#~ msgid "Window"
-#~ msgstr "Finestra"
-
-#~ msgid "Music Player Visualization"
-#~ msgstr "Visualizzatore lettore musicale"
-
-#~ msgid "Disable"
-#~ msgstr "Disabilitato"
-
-#~ msgid "Mode:"
-#~ msgstr "Modalità:"
-
-#~ msgid "Set the playback volume"
-#~ msgstr "Imposta il volume di riproduzione"
-
-#~ msgid "Increase the playback volume"
-#~ msgstr "Aumenta il volume di riproduzione"
-
-#~ msgid "Decrease the playback volume"
-#~ msgstr "Diminuisce il volume di riproduzione"
-
-#~ msgid "Print the current playback volume"
-#~ msgstr "Stampa il volume di riproduzione corrente"
-
-#~ msgid "Playback volume is %f.\n"
-#~ msgstr "Il volume di riproduzione è %f.\n"
-
-#~ msgid "Music"
-#~ msgstr "Musica"
-
-#~ msgid "Playlists"
-#~ msgstr "Scalette"
-
-#~ msgid "Devices"
-#~ msgstr "Disposititi"
-
-#~ msgid "Shared"
-#~ msgstr "Condivisi"
+msgstr "Locazione sconosciuta"
