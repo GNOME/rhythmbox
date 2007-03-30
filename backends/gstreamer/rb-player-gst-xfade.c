@@ -966,6 +966,10 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 static void
 link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
+	/* sometimes we seem to get called twice */
+	if (stream->state == FADING_IN || stream->state == PLAYING)
+		return;
+
 	rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
 	g_static_rec_mutex_lock (&stream->player->priv->stream_list_lock);
 	stream->src_blocked = FALSE;
@@ -980,8 +984,8 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	gst_element_set_state (stream->bin, GST_STATE_PLAYING);
 
 	post_stream_playing_message (stream);
-	g_object_unref (stream);
 	g_static_rec_mutex_unlock (&stream->player->priv->stream_list_lock);
+	g_object_unref (stream);
 }
 
 /* links a stream bin to the adder

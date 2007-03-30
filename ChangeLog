@@ -1,3 +1,9 @@
+2007-03-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (link_unblocked_cb):
+	Protect against our pad block callback being called multiple times, as
+	happens with some broken files.  Fixes #424116.
+
 2007-03-29  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: (impl_move_to_trash): call
