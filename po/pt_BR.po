@@ -7,16 +7,17 @@
 # Raphael Higino <phhigino@gmail.com>, 2004, 2005, 2006.
 # Vinicius Pinheiro <vinnie.gp@gmail.com>, 2006.
 # Guilherme de S. Pastore <gpastore@gnome.org>, 2006.
-# Lucas Mazzardo Veloso <lmveloso@gmail.com>, 2007.
 # Og Maciel <ogmaciel@ubuntu.com>, 2006-2007.
+# Lucas Mazzardo Veloso <lmveloso@gmail.com>, 2007.
+# Raul Pereira <contato@raulpereira.com>, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-12 23:26-0300\n"
-"PO-Revision-Date: 2007-03-12 23:23-0300\n"
-"Last-Translator: Og Maciel <ogmaciel@ubuntu.com>\n"
+"POT-Creation-Date: 2007-03-31 15:08-0300\n"
+"PO-Revision-Date: 2007-03-31 15:10-0300\n"
+"Last-Translator: Raul Pereira <contato@raulpereira.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -515,7 +516,7 @@ msgstr "Rhythmbox não suporta a configuração automática de proxy"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:641 ../lib/rb-util.c:855
+#: ../lib/rb-util.c:641 ../lib/rb-util.c:868
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
@@ -541,7 +542,7 @@ msgstr "Rhythmbox não suporta a configuração automática de proxy"
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:118 ../rhythmdb/rhythmdb-tree.c:1147
 #: ../rhythmdb/rhythmdb-tree.c:1151 ../rhythmdb/rhythmdb-tree.c:1155
-#: ../rhythmdb/rhythmdb-tree.c:1159 ../rhythmdb/rhythmdb.c:1362
+#: ../rhythmdb/rhythmdb-tree.c:1159 ../rhythmdb/rhythmdb.c:1353
 #: ../shell/rb-shell.c:3041 ../sources/rb-podcast-source.c:1641
 #: ../widgets/rb-entry-view.c:812 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:1121 ../widgets/rb-entry-view.c:1133
@@ -643,7 +644,7 @@ msgstr "Arte de capa"
 
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Fetch album covers from the Internet"
-msgstr "Buscar capas dos álbums na internet"
+msgstr "Buscar capas dos álbuns na internet"
 
 #: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
 msgid "Audio CD Player"
@@ -820,7 +821,7 @@ msgstr "Perfíl no Last.fm"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2924 ../widgets/rb-entry-view.c:760
+#: ../rhythmdb/rhythmdb.c:2897 ../widgets/rb-entry-view.c:760
 #: ../widgets/rb-entry-view.c:1179 ../widgets/rb-entry-view.c:1192
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
@@ -1693,7 +1694,7 @@ msgstr "     * A possibilidade de realizar doações diretas aos artistas."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:8
 msgid "     * The use of the latest Peer-to-Peer technologies"
-msgstr "     * O uso das mais recentes tecnologias Ponto a Pont"
+msgstr "     * O uso das mais recentes tecnologias Ponto a Ponto"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:9
 msgid "<b>Jamendo</b>"
@@ -1760,8 +1761,8 @@ msgstr ""
 msgid ""
 "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr ""
-"Adiciona suporte ao Rhythmbox para a reprodução e compra a partir da loja de "
-"música on-line Jamendo"
+"Adiciona suporte ao Rhythmbox para a reprodução e o download de álbuns do "
+"Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
 #: ../plugins/jamendo/jamendo/JamendoSource.py:51
@@ -1920,7 +1921,7 @@ msgstr ""
 "atributos são:\n"
 "\n"
 "    * Escute todas as músicas gratuitamente\n"
-"    * Todos os álbums e artistas são escolhidos a dedo\n"
+"    * Todos os álbuns e artistas são escolhidos a dedo\n"
 "    * Interface simples, rápida para escutar música\n"
 "    * Estações de rádio e listas de reprodução mistas criam um ambiente "
 "musical de fundo- faça seu trabalho e escute nossa música\n"
@@ -1938,7 +1939,7 @@ msgstr ""
 "    * Biografia extensa e fotos de cada músico -- sinta-se uma forte ligação "
 "com o artista\n"
 "    * Arte de capa e encartes em cores de alta qualidade em formato PDF "
-"disponíveis para a maioria dos álbums - fácil para imprimir\n"
+"disponíveis para a maioria dos álbuns - fácil para imprimir\n"
 "    * Esquema variável de preços significa que você pode pagar até US$ 5 por "
 "um álbum se você assim escolher\n"
 "    * 50% do pagamento vai para o artista (os compradores se sentem bem: "
@@ -1948,7 +1949,7 @@ msgstr ""
 "mundo de negócios da música e desejam ajudar a derrubá-lo\n"
 "    * Administrado pelo fundador/dono -- apoie uma pequena empresa\n"
 "    * Ambiente relaxado - nada piscando, nem propagandas enquanto você "
-"escuta nossos álbums\n"
+"escuta nossos álbuns\n"
 "    * A seleção musical é única do Magnatune, bem diferente da maioria das "
 "lojas on-line, que possuem mais ou menos a mesma (gigantesca) seleção\n"
 "\n"
@@ -2229,7 +2230,7 @@ msgstr "Não foi possível comprar o álbum"
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:181
 msgid "You must have a library location set to purchase an album."
 msgstr ""
-"Você deve possuir um local definido da biblioteca para comprar um album."
+"Você deve possuir um local definido da biblioteca para comprar um álbum."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
 #, python-format
@@ -2278,7 +2279,7 @@ msgstr "Cancelar Downloads"
 
 #: ../plugins/magnatune/magnatune/__init__.py:96
 msgid "Stop downloading purchased albums"
-msgstr "Parar o download de álbums comprados"
+msgstr "Parar o download de álbuns comprados"
 
 #: ../plugins/mmkeys/mmkeys.rb-plugin.desktop.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -2563,38 +2564,38 @@ msgstr ""
 "O banco de dados foi criado por uma versão mais recente do rhythmbox. Não é "
 "possível ler o banco de dados com esta versão do rhythmbox."
 
-#: ../rhythmdb/rhythmdb.c:501
+#: ../rhythmdb/rhythmdb.c:493
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Não foi possível acessar %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1468
+#: ../rhythmdb/rhythmdb.c:1459
 msgid "<invalid filename>"
 msgstr "<nome de arquivo inválido>"
 
-#: ../rhythmdb/rhythmdb.c:1725
+#: ../rhythmdb/rhythmdb.c:1716
 msgid "invalid unicode in error message"
 msgstr "unicode inválido na mensagem de erro"
 
-#: ../rhythmdb/rhythmdb.c:2458
+#: ../rhythmdb/rhythmdb.c:2431
 msgid "Could not load the music database"
 msgstr "Não foi possível carregar o banco de dados de músicas"
 
-#: ../rhythmdb/rhythmdb.c:3845
+#: ../rhythmdb/rhythmdb.c:3818
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: ../rhythmdb/rhythmdb.c:3846
+#: ../rhythmdb/rhythmdb.c:3819
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: ../rhythmdb/rhythmdb.c:3847
+#: ../rhythmdb/rhythmdb.c:3820
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2602,7 +2603,7 @@ msgstr[0] "%ld dia"
 msgstr[1] "%ld dias"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3853
+#: ../rhythmdb/rhythmdb.c:3826
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s e %s"
@@ -2610,8 +2611,8 @@ msgstr "%s, %s e %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3859 ../rhythmdb/rhythmdb.c:3867
-#: ../rhythmdb/rhythmdb.c:3878
+#: ../rhythmdb/rhythmdb.c:3832 ../rhythmdb/rhythmdb.c:3840
+#: ../rhythmdb/rhythmdb.c:3851
 #, c-format
 msgid "%s and %s"
 msgstr "%s e %s"
@@ -3225,12 +3226,13 @@ msgid "translator-credits"
 msgstr ""
 "Alexandre Folle de Menezes <afmenez@terra.com.br>\n"
 "Evandro Fernandes Giovanini <evandrofg@ig.com.br>\n"
-"Raphael Higino <phhigino@gmail.com>\n"
 "Afonso Celso Medina <afmedina@uol.com.br>\n"
+"Raphael Higino <phhigino@gmail.com>\n"
 "Vinicius Pinheiro <vinnie.gp@gmail.com>\n"
-"Og Maciel <ogmaciel@ubuntu.com>\n"
 "Guilherme de S. Pastore <gpastore@gnome.org>\n"
-"Lucas Mazzardo Veloso <lmveloso@gmail.com>"
+"Og Maciel <ogmaciel@ubuntu.com>\n"
+"Lucas Mazzardo Veloso <lmveloso@gmail.com>\n"
+"Raul Pereira <contato@raulpereira.com>"
 
 #: ../shell/rb-shell.c:2259
 msgid ""
@@ -3540,7 +3542,7 @@ msgstr "_Cancelar Download"
 
 #: ../sources/rb-podcast-source.c:293
 msgid "Cancel Episode Download"
-msgstr "Cancela o download do e\tpisódio"
+msgstr "Cancela o download do episódio"
 
 #: ../sources/rb-podcast-source.c:296
 msgid "Episode Properties"
