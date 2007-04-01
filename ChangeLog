@@ -1,3 +1,11 @@
+2007-04-01  Christophe Fergeau  <teuf@gnome.org>
+
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
+	* configure.ac:
+	* plugins/ipod/rb-ipod-source.c: (artwork_notify_cb): use new libgpod
+	pixbuf functions if they are available, fixes #357400
+
 2007-04-01  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Steven Walter  <stevenrwalter@gmail.com>

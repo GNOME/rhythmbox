@@ -1009,16 +1009,22 @@ artwork_notify_cb (RhythmDB *db,
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (isource);
 	Itdb_Track *song;
+#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
+#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 	gchar *image_data;
 	gsize image_data_len;
 	GError *err = NULL;
 	gboolean success;
+#endif /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 	
 	song = g_hash_table_lookup (priv->artwork_request_map, entry);
 	if (song == NULL)
 		return;
 
 	g_return_if_fail (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF));
+#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
+	itdb_track_set_thumbnails_from_pixbuf (song, g_value_get_object (metadata));
+#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 	success = gdk_pixbuf_save_to_buffer (GDK_PIXBUF (g_value_get_object (metadata)),
 					     &image_data, &image_data_len,
 					     "jpeg", &err,
@@ -1034,6 +1040,7 @@ artwork_notify_cb (RhythmDB *db,
 	g_hash_table_remove (priv->artwork_request_map, entry);
 	itdb_track_set_thumbnails_from_data (song, (guchar *) image_data, image_data_len);
 	g_free (image_data);
+#endif /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 	itdb_schedule_save (isource);
 }
 

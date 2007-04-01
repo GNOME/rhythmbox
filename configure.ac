@@ -117,6 +117,9 @@ if test "x$with_ipod" != "xno"; then
 	     AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
 	     use_ipod=yes
 	  fi
+	  AC_CHECK_LIB(gpod, itdb_track_set_thumbnails_from_pixbuf,
+		       [AC_DEFINE([HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF], 1, [Have libgpod function to set thumbnails from a GdkPixbuf])],
+		       ,[$IPOD_LIBS $IPOD_CFLAGS])
 	  AC_SUBST(IPOD_CFLAGS)
 	  AC_SUBST(IPOD_LIBS)
 	fi
