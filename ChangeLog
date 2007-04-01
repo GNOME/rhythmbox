@@ -1,3 +1,14 @@
+2007-04-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_dispose), (start_sink), (stop_sink),
+	(pause_sink), (create_sink), (rb_player_gst_xfade_close),
+	(rb_player_gst_xfade_play), (rb_player_gst_xfade_pause),
+	(rb_player_gst_xfade_in_transition), (rb_player_gst_xfade_playing),
+	(tee_op), (filter_op):
+	If only one stream is playing, pause the sink rather than blocking and
+	unlinking the stream.
+
 2007-04-01  Christophe Fergeau  <teuf@gnome.org>
 
 	patch by: Ed Catmur  <ed@catmur.co.uk>
