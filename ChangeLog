@@ -1,3 +1,12 @@
+2007-04-01  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Steven Walter  <stevenrwalter@gmail.com>
+
+	* plugins/ipod/rb-ipod-source.c: (add_rb_playlist),
+	(create_ipod_song_from_entry), (add_to_podcasts),
+	(impl_track_added): Mark podcasts copied to iPods as such, and add
+	them to the podcast "playlist". Fixes #424086
+
 2007-03-30  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (link_unblocked_cb):
