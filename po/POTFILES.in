@@ -1,11 +1,13 @@
 [encoding: UTF-8]
 backends/gstreamer/rb-encoder-gst.c
 backends/gstreamer/rb-player-gst.c
+backends/gstreamer/rb-player-gst-xfade.c
 backends/rb-player.c
 data/glade/create-playlist.glade
 data/glade/druid.glade
 data/glade/general-prefs.glade
 data/glade/library-prefs.glade
+data/glade/playback-prefs.glade
 data/glade/playlist-save.glade
 data/glade/plugins.glade
 data/glade/podcast-feed-properties.glade
@@ -103,6 +105,7 @@ plugins/sample-python/sample-python.py
 plugins/sample-python/sample-python.rb-plugin.desktop.in
 plugins/sample/rb-sample-plugin.c
 plugins/sample/sample.rb-plugin.desktop.in
+plugins/sample-vala/sample-vala.rb-plugin.desktop.in
 plugins/visualizer/rb-visualizer-plugin.c
 plugins/visualizer/visualizer-controls.glade
 plugins/visualizer/visualizer.rb-plugin.desktop.in

@@ -1,7 +1,7 @@
 # arch-tag: Swedish messages for rhythmbox.
 # Copyright © 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
-# Fredrik Tuomas <fredrik@jpl.se>, 2005, 2006, 2007.
 # Daniel Nylander <po@danielnylander.se>, 2006, 2007.
+# Fredrik Tuomas <fredrik@jpl.se>, 2005, 2006, 2007.
 # Christian Rose <menthos@menthos.com>, 2002, 2003, 2004.
 #
 # $Id: sv.po,v 1.75 2006/12/14 22:41:16 dnylande Exp $
@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-12 03:43+0000\n"
-"PO-Revision-Date: 2007-03-12 13:00+0100\n"
+"POT-Creation-Date: 2007-04-01 09:22+0200\n"
+"PO-Revision-Date: 2007-04-01 09:22+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -19,22 +19,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:551
+#: ../backends/gstreamer/rb-encoder-gst.c:576
 #, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Vill du skriva över filen \"%s\"?"
 
-#: ../backends/gstreamer/rb-player-gst.c:769
-#: ../metadata/rb-metadata-gst.c:875
-#: ../metadata/rb-metadata-gst.c:1435
+#: ../backends/gstreamer/rb-player-gst.c:788 ../metadata/rb-metadata-gst.c:893
+#: ../metadata/rb-metadata-gst.c:1453
 #: ../plugins/cd-recorder/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Misslyckades med att skapa %s-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst.c:846
+#: ../backends/gstreamer/rb-player-gst.c:865
 msgid "Unknown playback error"
 msgstr "Okänt uppspelningsfel"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1024
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1038
+msgid "Failed to link new stream into GStreamer pipeline"
+msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1062
+msgid "Failed to start new stream"
+msgstr "Misslyckades med att starta ny ström"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2391
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2479
+msgid "Failed to create GStreamer element; check your installation"
+msgstr ""
+"Misslyckades med att skapa GStreamer-element; kontrollera din installation"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2404
+msgid "Failed to create audio output element; check your installation"
+msgstr ""
+"Misslyckades med att skapa ljudutmatningselement; kontrollera din "
+"installation"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2453
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2495
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2521
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2530
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2539
+msgid "Failed to link GStreamer pipeline; check your installation"
+msgstr ""
+"Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2628
+#, c-format
+msgid "Failed to create GStreamer pipeline to play %s"
+msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
+
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2654
+#, c-format
+msgid "Failed to start playback of %s"
+msgstr "Misslyckades med att starta uppspelning av %s"
 
 #: ../data/glade/create-playlist.glade.h:1
 msgid "A_dd if any criteria are matched"
@@ -68,23 +107,27 @@ msgstr "_När sorterad efter:"
 msgid "songs"
 msgstr "låtar"
 
-#: ../data/glade/druid.glade.h:1
-#: ../data/glade/uri.glade.h:1
+#: ../data/glade/druid.glade.h:1 ../data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
 
 #: ../data/glade/druid.glade.h:2
 msgid ""
-"Rhythmbox manages all of your music in a central music \"library\", so you can easily view, search, and organize it.\n"
-"In order to use this feature, you need to tell Rhythmbox where to find your music.  You may choose to skip this step; instead, you can add music to your library at any point later.\n"
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox hanterar all din musik i ett centralt musikbibliotek, så att du enkelt kan visa, söka i och organisera det.\n"
-"För att kunna använda denna funktion måste du tala om för Rhythmbox var den kan hitta din musik. Du kan välja att hoppa över detta steg och istället lägga till musik till ditt bibliotek vid ett senare tillfälle.\n"
+"Rhythmbox hanterar all din musik i ett centralt musikbibliotek, så att du "
+"enkelt kan visa, söka i och organisera det.\n"
+"För att kunna använda denna funktion måste du tala om för Rhythmbox var den "
+"kan hitta din musik. Du kan välja att hoppa över detta steg och istället "
+"lägga till musik till ditt bibliotek vid ett senare tillfälle.\n"
 "Välj ett av alternativen nedan:"
 
-#: ../data/glade/druid.glade.h:5
-#: ../data/glade/library-prefs.glade.h:5
+#: ../data/glade/druid.glade.h:5 ../data/glade/library-prefs.glade.h:5
 msgid "_Browse..."
 msgstr "_Bläddra..."
 
@@ -185,6 +228,7 @@ msgid "_Year"
 msgstr "Å_r"
 
 #: ../data/glade/library-prefs.glade.h:1
+#: ../data/glade/playback-prefs.glade.h:1
 msgid "    "
 msgstr "    "
 
@@ -215,6 +259,30 @@ msgstr "_Föredraget format:"
 #: ../data/glade/library-prefs.glade.h:9
 msgid "_Watch my library for new files"
 msgstr "Bevaka mitt _bibliotek efter nya filer"
+
+#: ../data/glade/playback-prefs.glade.h:2
+msgid "Crossfade between songs on the same album"
+msgstr "Korstona mellan låtar på samma album"
+
+#: ../data/glade/playback-prefs.glade.h:3
+msgid "Crossfade duration"
+msgstr "Längd på korstoning"
+
+#: ../data/glade/playback-prefs.glade.h:4
+msgid "Crossfade type"
+msgstr "Korstoningstyp"
+
+#: ../data/glade/playback-prefs.glade.h:5
+msgid "Network buffer size (kB)"
+msgstr "Storlek på nätverksbuffert (kB)"
+
+#: ../data/glade/playback-prefs.glade.h:6
+msgid "Player backend"
+msgstr "Bakände för uppspelare"
+
+#: ../data/glade/playback-prefs.glade.h:7
+msgid "Use crossfading backend (requires restart)"
+msgstr "Använd bakände för korstoning (kräver omstart)"
 
 #: ../data/glade/playlist-save.glade.h:1
 msgid "<b>Playlist format</b>"
@@ -262,8 +330,7 @@ msgstr "Webbplats:"
 
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
-#: ../data/glade/podcast-properties.glade.h:1
-#: ../widgets/bacon-volume.c:224
+#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:224
 msgid "-"
 msgstr "-"
 
@@ -448,8 +515,7 @@ msgstr "Senast spelade"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:181
-#: ../shell/rb-shell.c:1041
-#: ../shell/rb-shell.c:2131
+#: ../shell/rb-shell.c:1040 ../shell/rb-shell.c:2130
 #: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Musikspelare"
@@ -510,8 +576,7 @@ msgstr "Rhythmbox saknar stöd för automatisk proxykonfiguration"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:641
-#: ../lib/rb-util.c:855
+#: ../lib/rb-util.c:648 ../lib/rb-util.c:875
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
@@ -526,62 +591,53 @@ msgstr "Rhythmbox saknar stöd för automatisk proxykonfiguration"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1083
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/daap/rb-daap-connection.c:677
-#: ../plugins/generic-player/rb-generic-player-source.c:763
-#: ../plugins/ipod/rb-ipod-source.c:269
-#: ../plugins/iradio/rb-iradio-source.c:493
-#: ../plugins/iradio/rb-iradio-source.c:1084
+#: ../plugins/generic-player/rb-generic-player-source.c:762
+#: ../plugins/ipod/rb-ipod-source.c:286
+#: ../plugins/iradio/rb-iradio-source.c:497
+#: ../plugins/iradio/rb-iradio-source.c:1089
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
-#: ../podcast/rb-podcast-manager.c:1557
+#: ../podcast/rb-podcast-manager.c:1567
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
-#: ../remote/dbus/rb-client.c:134
-#: ../rhythmdb/rhythmdb-tree.c:1147
-#: ../rhythmdb/rhythmdb-tree.c:1151
-#: ../rhythmdb/rhythmdb-tree.c:1155
-#: ../rhythmdb/rhythmdb-tree.c:1159
-#: ../rhythmdb/rhythmdb.c:1370
-#: ../shell/rb-shell.c:3041
-#: ../sources/rb-podcast-source.c:1642
-#: ../widgets/rb-entry-view.c:812
-#: ../widgets/rb-entry-view.c:837
-#: ../widgets/rb-entry-view.c:1121
-#: ../widgets/rb-entry-view.c:1133
-#: ../widgets/rb-entry-view.c:1145
-#: ../widgets/rb-song-info.c:766
-#: ../widgets/rb-song-info.c:930
+#: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
+#: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
+#: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1404
+#: ../shell/rb-shell-player.c:1406 ../shell/rb-shell.c:3037
+#: ../sources/rb-podcast-source.c:1642 ../widgets/rb-entry-view.c:815
+#: ../widgets/rb-entry-view.c:840 ../widgets/rb-entry-view.c:1124
+#: ../widgets/rb-entry-view.c:1136 ../widgets/rb-entry-view.c:1148
+#: ../widgets/rb-song-info.c:766 ../widgets/rb-song-info.c:930
 #: ../widgets/rb-song-info.c:1200
 msgid "Unknown"
 msgstr "Okänd"
 
-#: ../lib/rb-util.c:643
-#: ../remote/dbus/rb-client.c:136
+#: ../lib/rb-util.c:650 ../remote/dbus/rb-client.c:136
 #, c-format
 msgid "%d:%02d"
 msgstr "%d.%02d"
 
-#: ../lib/rb-util.c:645
-#: ../remote/dbus/rb-client.c:138
+#: ../lib/rb-util.c:652 ../remote/dbus/rb-client.c:138
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d.%02d:%02d"
 
-#: ../lib/rb-util.c:680
+#: ../lib/rb-util.c:687
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d.%02d av %d.%02d återstår"
 
-#: ../lib/rb-util.c:684
+#: ../lib/rb-util.c:691
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d.%02d.%02d av %d.%02d.%02d återstår"
 
-#: ../lib/rb-util.c:689
+#: ../lib/rb-util.c:696
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d.%02d av %d.%02d"
 
-#: ../lib/rb-util.c:693
+#: ../lib/rb-util.c:700
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d.%02d:%02d av %d.%02d:%02d"
@@ -601,42 +657,42 @@ msgstr "Internt GStreamer-problem; skapa en felrapport"
 msgid "D-BUS communication error"
 msgstr "DBUS-kommunikationsfel"
 
-#: ../metadata/rb-metadata-gst.c:621
+#: ../metadata/rb-metadata-gst.c:639
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr "GStreamer-insticksmodulen för att avkoda \"%s\"-filer kan inte hittas"
 
-#: ../metadata/rb-metadata-gst.c:624
+#: ../metadata/rb-metadata-gst.c:642
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Filen innehåller en ström av typen %s, som inte är avkodningsbar"
 
-#: ../metadata/rb-metadata-gst.c:1030
+#: ../metadata/rb-metadata-gst.c:1048
 msgid "Failed to create a source element; check your installation"
 msgstr "Misslyckades med att skapa källelement; kontrollera din installation"
 
-#: ../metadata/rb-metadata-gst.c:1103
+#: ../metadata/rb-metadata-gst.c:1121
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer-fel: kunde inte byta tillstånd"
 
-#: ../metadata/rb-metadata-gst.c:1226
+#: ../metadata/rb-metadata-gst.c:1244
 msgid "The MIME type of the file could not be identified"
 msgstr "MIME-typen för filen kunde inte identifieras"
 
-#: ../metadata/rb-metadata-gst.c:1363
+#: ../metadata/rb-metadata-gst.c:1381
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Filtypen stöds inte: %s"
 
-#: ../metadata/rb-metadata-gst.c:1372
+#: ../metadata/rb-metadata-gst.c:1390
 msgid "Unable to create tag-writing elements"
 msgstr "Kan inte skapa taggskrivningselement"
 
-#: ../metadata/rb-metadata-gst.c:1395
+#: ../metadata/rb-metadata-gst.c:1413
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Tidsgränsen överstegs när rörledningen ställdes in till NULL"
 
-#: ../metadata/rb-metadata-gst.c:1415
+#: ../metadata/rb-metadata-gst.c:1433
 msgid "File corrupted during write"
 msgstr "Filen förstörd under skrivning"
 
@@ -661,8 +717,12 @@ msgid "Multiple Albums Found"
 msgstr "Flera album hittade"
 
 #: ../plugins/audiocd/multiple-album.glade.h:2
-msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
-msgstr "Denna cd kan vara mer än ett album. Välj vilket album det är nedan och tryck på <i>Fortsätt</i>"
+msgid ""
+"This CD could be more than one album. Please select which album it is below "
+"and press <i>Continue</i>."
+msgstr ""
+"Denna cd kan vara mer än ett album. Välj vilket album det är nedan och tryck "
+"på <i>Fortsätt</i>"
 
 #: ../plugins/audiocd/multiple-album.glade.h:3
 msgid "_Continue"
@@ -680,7 +740,7 @@ msgstr "Spår %u"
 #: ../plugins/audiocd/rb-audiocd-source.c:342
 #: ../plugins/audiocd/rb-audiocd-source.c:352
 #: ../plugins/audiocd/rb-audiocd-source.c:359
-#: ../plugins/audiocd/rb-audiocd-source.c:671
+#: ../plugins/audiocd/rb-audiocd-source.c:682
 msgid "Couldn't load Audio CD"
 msgstr "Kunde inte läsa in ljud-cd"
 
@@ -694,23 +754,21 @@ msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox kunde inte läsa cd-informationen."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:465
-#: ../sources/rb-library-source.c:133
-#: ../widgets/rb-entry-view.c:1077
+#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1080
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Title"
 msgstr "Titel"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:472
-#: ../sources/rb-library-source.c:124
-#: ../widgets/rb-entry-view.c:1087
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1090
 #: ../widgets/rb-library-browser.c:100
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
 msgid "Artist"
 msgstr "Artist"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:672
+#: ../plugins/audiocd/rb-audiocd-source.c:683
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox kunde inte komma åt cd-enheten"
 
@@ -740,8 +798,12 @@ msgid "Track %d"
 msgstr "Spår %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:283
-msgid "MusicBrainz metadata object is not valid. This is bad, check your console for errors."
-msgstr "MusicBrainz metadataobjekt är felaktigt. Detta är ett problem, se konsollen för fel."
+msgid ""
+"MusicBrainz metadata object is not valid. This is bad, check your console "
+"for errors."
+msgstr ""
+"MusicBrainz metadataobjekt är felaktigt. Detta är ett problem, se konsollen "
+"för fel."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:450
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:457
@@ -757,8 +819,11 @@ msgstr "Enheten \"%s\" innehåller inte något media"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:539
 #, c-format
-msgid "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr "Enheten \"%s\" kunde inte öppnas. Kontrollera åtkomsträttigheterna på enheten."
+msgid ""
+"Device '%s' could not be opened. Check the access permissions on the device."
+msgstr ""
+"Enheten \"%s\" kunde inte öppnas. Kontrollera åtkomsträttigheterna på "
+"enheten."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:575
 msgid "Various"
@@ -779,7 +844,8 @@ msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
 msgid "Submits song information to last.fm and plays last.fm radio streams"
-msgstr "Skickar in låtinformation till last.fm och spelar radioströmmar från last.fm"
+msgstr ""
+"Skickar in låtinformation till last.fm och spelar radioströmmar från last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:1
 msgid "0"
@@ -812,10 +878,8 @@ msgstr "Last.fm-profil"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2932
-#: ../widgets/rb-entry-view.c:760
-#: ../widgets/rb-entry-view.c:1179
-#: ../widgets/rb-entry-view.c:1192
+#: ../rhythmdb/rhythmdb.c:3000 ../widgets/rb-entry-view.c:763
+#: ../widgets/rb-entry-view.c:1182 ../widgets/rb-entry-view.c:1195
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
 msgstr "Aldrig"
@@ -980,7 +1044,7 @@ msgid "The server marked you as banned"
 msgstr "Servern markerade dig som bannlyst"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:598
-#: ../plugins/iradio/rb-iradio-source.c:556
+#: ../plugins/iradio/rb-iradio-source.c:560
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1320,7 +1384,8 @@ msgstr "Mata in en tom cd"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1011
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
-msgstr "Var vänlig byt ut skivan i enheten mot en återskrivningsbar eller tom cd"
+msgstr ""
+"Var vänlig byt ut skivan i enheten mot en återskrivningsbar eller tom cd"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1012
 msgid "Reload a rewritable or blank CD"
@@ -1415,8 +1480,14 @@ msgstr "Kan inte få fritt utrymme på %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1755
 #, c-format
-msgid "This playlist is %s minutes long.  This exceeds the length of a standard audio CD.  If the destination media is larger than a standard audio CD please insert it in the drive and try again."
-msgstr "Denna spellista är %s minuter lång. Det är längre än längden på en vanlig ljud-cd. Om destinationsmediet är större än en standard ljud-cd var vänlig mata in den i enheten och försök igen."
+msgid ""
+"This playlist is %s minutes long.  This exceeds the length of a standard "
+"audio CD.  If the destination media is larger than a standard audio CD "
+"please insert it in the drive and try again."
+msgstr ""
+"Denna spellista är %s minuter lång. Det är längre än längden på en vanlig "
+"ljud-cd. Om destinationsmediet är större än en standard ljud-cd var vänlig "
+"mata in den i enheten och försök igen."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1766
 msgid "Playlist too long"
@@ -1428,8 +1499,12 @@ msgstr "Kunde inte hitta temporärt utrymme!"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1807
 #, c-format
-msgid "Could not find enough temporary space to convert audio tracks.  %s MiB required."
-msgstr "Kunde inte hitta tillräckligt temporärt utrymme för att konvertera ljudspår. %s MiB behövs."
+msgid ""
+"Could not find enough temporary space to convert audio tracks.  %s MiB "
+"required."
+msgstr ""
+"Kunde inte hitta tillräckligt temporärt utrymme för att konvertera ljudspår. "
+"%s MiB behövs."
 
 #: ../plugins/cd-recorder/recorder.glade.h:1
 msgid "Create audio CD from playlist?"
@@ -1471,8 +1546,7 @@ msgstr "<b>Utdelning</b>"
 msgid "Require _password:"
 msgstr "Kräv _lösenord:"
 
-#: ../plugins/daap/daap-prefs.glade.h:3
-#: ../plugins/daap/rb-daap-dialog.c:74
+#: ../plugins/daap/daap-prefs.glade.h:3 ../plugins/daap/rb-daap-dialog.c:74
 msgid "Shared music _name:"
 msgstr "Nam_n på utdelad musik:"
 
@@ -1602,8 +1676,7 @@ msgstr "Bärbara spelare - iPod"
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "Stöd för Apple iPod-enheter (visa innehållet, spela från enhet)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:86
-#: ../shell/rb-playlist-manager.c:145
+#: ../plugins/ipod/rb-ipod-plugin.c:86 ../shell/rb-playlist-manager.c:145
 msgid "_Rename"
 msgstr "_Byt namn"
 
@@ -1650,16 +1723,23 @@ msgstr "http://www.jamendo.com/"
 #. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages.
 #. You should take a look on this site and check if you can't reuse it.
 #: ../plugins/jamendo/jamendo-loading.glade.h:3
-msgid "     * A legal framework protecting the artists (thanks to the Creative Commons licenses)."
-msgstr "     * Ett legalt ramverk som skyddar artisterna (tack vare Creative Commons-licenserna)."
+msgid ""
+"     * A legal framework protecting the artists (thanks to the Creative "
+"Commons licenses)."
+msgstr ""
+"     * Ett legalt ramverk som skyddar artisterna (tack vare Creative Commons-"
+"licenserna)."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:4
 msgid ""
-"     * An adaptive music recommendation system based on iRATE to help listeners discover new artists based on their tastes\n"
+"     * An adaptive music recommendation system based on iRATE to help "
+"listeners discover new artists based on their tastes\n"
 "       and on other criteria such as their location."
 msgstr ""
-"     * Ett anpassningsbart system för musikrekommendationer baserat på iRATE för att hjälpa lyssnare att upptäcka nya\n"
-"     artister baserat på deras musiksmak och på andra kriterier såsom deras plats."
+"     * Ett anpassningsbart system för musikrekommendationer baserat på iRATE "
+"för att hjälpa lyssnare att upptäcka nya\n"
+"     artister baserat på deras musiksmak och på andra kriterier såsom deras "
+"plats."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:6
 msgid "     * Free, simple and quick access to the music, for everyone."
@@ -1679,29 +1759,42 @@ msgstr "<b>Jamendo</b>"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:10
 msgid ""
-"On jamendo, the artists distribute their music under Creative Commons licenses.\n"
-"In a nutshell, they allow you to download, remix and share their music freely.\n"
-"It's a \"Some rights reserved\" agreement, perfectly suited for the new century."
+"On jamendo, the artists distribute their music under Creative Commons "
+"licenses.\n"
+"In a nutshell, they allow you to download, remix and share their music "
+"freely.\n"
+"It's a \"Some rights reserved\" agreement, perfectly suited for the new "
+"century."
 msgstr ""
-"På jamendo distribuerar artisterna sin musik under Creative Commons-licenser.\n"
+"På jamendo distribuerar artisterna sin musik under Creative Commons-"
+"licenser.\n"
 "Alltså, de låter dig hämta ner, mixa om och dela ut sin musik fritt.\n"
-"Det är ett \"med vissa reserveringar\"-avtal som passar perfekt för det nya århundradet."
+"Det är ett \"med vissa reserveringar\"-avtal som passar perfekt för det nya "
+"århundradet."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:13
 msgid ""
-"These new rules make jamendo able to use the new powerful means of digital distribution like\n"
-"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute albums at near-zero cost."
+"These new rules make jamendo able to use the new powerful means of digital "
+"distribution like\n"
+"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
+"albums at near-zero cost."
 msgstr ""
-"Dessa nya regler gör att jamendo kan använda de kraftfulla digitala distributionskanalerna för\n"
-"Peer-to-Peer-nätverk såsom BitTorrent eller eMule för att distribuera album legalt nästan utan kostnad."
+"Dessa nya regler gör att jamendo kan använda de kraftfulla digitala "
+"distributionskanalerna för\n"
+"Peer-to-Peer-nätverk såsom BitTorrent eller eMule för att distribuera album "
+"legalt nästan utan kostnad."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:15
 msgid "You can find more information at http://www.jamendo.com/"
 msgstr "Du kan hitta mer information på http://www.jamendo.com/"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:16
-msgid "jamendo is a new model for artists to promote, publish, and be paid for their music."
-msgstr "jamendo är en ny modell för artister för att promotera, publicera och få betalt för sin musik."
+msgid ""
+"jamendo is a new model for artists to promote, publish, and be paid for "
+"their music."
+msgstr ""
+"jamendo är en ny modell för artister för att promotera, publicera och få "
+"betalt för sin musik."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:17
 msgid "jamendo is the only platform that joins together :"
@@ -1709,17 +1802,21 @@ msgstr "jamendo är den enda plattformen som sammanför :"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:18
 msgid ""
-"jamendo users can discover and share albums, but also review them or start a discussion on the forums.\n"
+"jamendo users can discover and share albums, but also review them or start a "
+"discussion on the forums.\n"
 "Albums are democratically rated based on the visitors’ reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
-"jamendo-användare kan hitta och dela album, men även recensera dem eller påbörja en diskussion i forumet.\n"
+"jamendo-användare kan hitta och dela album, men även recensera dem eller "
+"påbörja en diskussion i forumet.\n"
 "Album poängsätts demokratiskt baserat på besökarnas recensioner.\n"
 "Om de tycker om en artist kan de göra en donation."
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:1
-msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
-msgstr "Lägger till stöd i Rhythmbox för att spela och hämta musik från Jamendo"
+msgid ""
+"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+msgstr ""
+"Lägger till stöd i Rhythmbox för att spela och hämta musik från Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
 #: ../plugins/jamendo/jamendo/JamendoSource.py:51
@@ -1743,46 +1840,43 @@ msgstr "Hämta det här albumet med BitTorrent"
 msgid "Loading Jamendo catalogue"
 msgstr "Läser in Jamendo-katalog"
 
-#: ../plugins/iradio/rb-iradio-source.c:162
+#: ../plugins/iradio/rb-iradio-source.c:166
 msgid "New Internet _Radio Station"
 msgstr "Ny internet_radiokanal"
 
-#: ../plugins/iradio/rb-iradio-source.c:163
+#: ../plugins/iradio/rb-iradio-source.c:167
 msgid "Create a new Internet Radio station"
 msgstr "Skapa en ny internetradiokanal"
 
-#: ../plugins/iradio/rb-iradio-source.c:328
-#: ../widgets/rb-entry-view.c:1107
+#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1110
 #: ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Genre"
 msgstr "Genre"
 
-#: ../plugins/iradio/rb-iradio-source.c:422
+#: ../plugins/iradio/rb-iradio-source.c:426
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:997
+#: ../plugins/iradio/rb-iradio-source.c:1001
 #: ../plugins/iradio/rb-station-properties-dialog.c:393
 msgid "New Internet Radio Station"
 msgstr "Ny internetradiokanal"
 
-#: ../plugins/iradio/rb-iradio-source.c:997
+#: ../plugins/iradio/rb-iradio-source.c:1001
 msgid "URL of internet radio station:"
 msgstr "URL till internetradiokanal:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:389
 #: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:355
-#: ../widgets/rb-song-info.c:870
+#: ../podcast/rb-podcast-properties-dialog.c:355 ../widgets/rb-song-info.c:870
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:481
-#: ../podcast/rb-podcast-properties-dialog.c:465
-#: ../widgets/rb-song-info.c:928
+#: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:928
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
@@ -1794,7 +1888,8 @@ msgstr "Kunde inte ändra stationsegenskap"
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr "Kunde inte ändra stationens uri till %s eftersom den stationen redan finns"
+msgstr ""
+"Kunde inte ändra stationens uri till %s eftersom den stationen redan finns"
 
 #: ../plugins/iradio/station-properties.glade.h:5
 msgid "L_ocation:"
@@ -1808,8 +1903,7 @@ msgstr "Styr Rhythmbox med en infraröd fjärrkontroll"
 msgid "LIRC "
 msgstr "LIRC"
 
-#: ../plugins/lyrics/lyrics.py:85
-#: ../plugins/lyrics/lyrics.py:126
+#: ../plugins/lyrics/lyrics.py:85 ../plugins/lyrics/lyrics.py:126
 msgid "Searching for lyrics..."
 msgstr "Söker efter låttext..."
 
@@ -1838,59 +1932,149 @@ msgid "Song Lyrics"
 msgstr "Låttexter"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:1
-msgid "<b>Magnatune online music store</b>"
-msgstr "<b>Magnatune onlinemusikbutik</b>"
+msgid "     * Founder/owner runs it -- support a small business"
+msgstr "     * Grundaren/ägaren sköter bolaget - stöd små företag"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:3
 #, no-c-format
 msgid ""
-"Magnatune is an online record label that is not evil. Some of their key attributes are:\n"
-"\n"
-"    * Free listening of all songs\n"
-"    * All albums and artists hand-picked\n"
-"    * Very simple user interface, quick to play music\n"
-"    * Radio stations and \"genre mix\" playlists allow background listening - can do work while listening to our music\n"
-"    * No need to \"register\" to listen or buy\n"
-"    * Smaller selection means easier to find good music\n"
-"    * Wide variety of genres, can fit any mood\n"
-"    * Our genres are hard to find in record stores and not on radio (though do appear on college radio)\n"
-"    * Downloads and CDs are both available (no other site on the internet sells both)\n"
-"    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)\n"
-"    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)\n"
-"    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist\n"
-"    * Full color, high quality cover art PDF available for most albums - easy to print\n"
-"    * Variable pricing scheme means you can pay as little as $5 for an album if you choose\n"
-"    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)\n"
-"    * Not venture-capital backed big business\n"
-"    * Not part of the \"evil\" major label machine - for those that hate the music biz and want to help topple it\n"
-"    * Founder/owner runs it -- support a small business\n"
-"    * Low pressure environment - nothing flashing, no audio ads while listening to albums\n"
-"    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection\n"
-"\n"
-"You can find more information at http://www.magnatune.com/"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
+"the world)"
 msgstr ""
-"Magnatune är ett onlineskivbolag som är inte elakt. Några av deras fördelar är:\n"
-"\n"
-"    * Fri lyssning av alla låtar\n"
-"    * Alla album och artister är handplockade\n"
-"    * Väldigt enkelt gränssnitt, spelar snabbt musik\n"
-"    * Radiostationer och \"genremix\"-spellistor fungerar bra som bakgrundsmusik - du kan arbeta samtidigt som du lyssnar till vår musik\n"
-"    * Inget krav att registrera sig för att lyssna eller köpa\n"
-"    * Mindre utbud gör det enklare att hitta bra musik\n"
-"    * Stor spridning av genrer, passar varje humör\n"
-"    * Våra genrer är svåra att hitta i skivbutiker och spelas inte på radio (kan förekomma på studentradio)\n"
-"    * Både hämtningar och cd-skivor är tillgängliga (ingen annan sajt på nätet säljer båda)\n"
-"    * De hämtningsbara filerna är av perfekt kvalitet (cd-kopia, inte lägre ljudkvalitet)\n"
-"    * Inget kopieringsskydd (DRM) på musiken vilket möjliggör uppspelning på vilken spelare som helst (vilket inte går med iTunes/MSN/etc)\n"
-"    * Omfattande biografisk information om varje artist, och foto på varje artist - känn en stark koppling till artisten\n"
-"    * Fullfärgs, högkvalitativt omslag i PDF tillgängligt för de flesta album - enkelt att skriva ut\n"
-"    * Variabelt prissättningschema medger att du kan betala så lite som $5 för ett album om du vill\n"
-"    * 50% av betalningen går till artisten (detta gör att köparen får gott samvete, de hjälper till på jorden)\n"
-"    * Inget riskkapital-uppbackat storföretag    * Inte en del av den \"elaka\" skivbolagsvärlden - för de som hatar musikbranchen och vill hjälpa till att stjälpa den\n"
-"    * Grundaren/ägaren sköter bolaget - stöd små företag    * En vänlig miljö - inget blinkande, ingen ljudreklam vid avlyssning av album\n"
-"    * Musikutbudet är unikt för Magnatune, olikt de flesta andra onlinebutiker som har ungefär samma (gigantiska) utbud\n"
-"\n"
-"Du kan hitta mer information på http://www.magnatune.com"
+"    * 50% av betalningen går till artisten (detta gör att köparen får gott "
+"samvete, de hjälper till på jorden)"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:4
+msgid "    * All albums and artists hand-picked"
+msgstr "    * Alla album och artister är handplockade"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:5
+msgid ""
+"    * Downloads and CDs are both available (no other site on the internet "
+"sells both)"
+msgstr ""
+"    * Både hämtningar och cd-skivor är tillgängliga (ingen annan sajt på "
+"nätet säljer båda)"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:6
+msgid ""
+"    * Extensive biographical info about each musician, and artist photo -- "
+"feel a strong connection to the artist"
+msgstr ""
+"    * Omfattande biografisk information om varje artist, och foto på varje "
+"artist - känn en stark koppling till artisten"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:7
+msgid "    * Free listening of all songs"
+msgstr "    * Fri lyssning av alla låtar"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:8
+msgid ""
+"    * Full color, high quality cover art PDF available for most albums - "
+"easy to print"
+msgstr ""
+"    * Fullfärgs, högkvalitativt omslag i PDF tillgängligt för de flesta "
+"album - enkelt att skriva ut"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:9
+msgid ""
+"    * Low pressure environment - nothing flashing, no audio ads while "
+"listening to albums"
+msgstr ""
+"    * En vänlig miljö - inget blinkande, ingen ljudreklam vid avlyssning av "
+"album"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:10
+msgid ""
+"    * Music selection is unique to Magnatune, unlike most on-line stores "
+"that have more-or-less the same (gigantic) selection\n"
+msgstr ""
+"    * Musikutbudet är unikt för Magnatune, olikt de flesta andra "
+"onlinebutiker som har ungefär samma (gigantiska) utbud\n"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:12
+msgid ""
+"    * No copy protection on the music (DRM) which allows playing music on "
+"any device (unlike iTunes/MSN/etc)"
+msgstr ""
+"    * Inget kopieringsskydd (DRM) på musiken vilket möjliggör uppspelning på "
+"vilken spelare som helst (vilket inte går med iTunes/MSN/etc)"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:13
+msgid "    * No need to \"register\" to listen or buy"
+msgstr "    * Inget krav att registrera sig för att lyssna eller köpa"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:14
+msgid ""
+"    * Not part of the \"evil\" major label machine - for those that hate the "
+"music biz and want to help topple it"
+msgstr ""
+"    * Inte en del av den \"elaka\" skivbolagsvärlden - för de som hatar "
+"musikbranchen och vill hjälpa till att stjälpa den"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:15
+msgid "    * Not venture-capital backed big business"
+msgstr "    * Inget riskkapital-uppbackat storföretag"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:16
+msgid ""
+"    * Our genres are hard to find in record stores and not on radio (though "
+"do appear on college radio)"
+msgstr ""
+"    * Våra genrer är svåra att hitta i skivbutiker och spelas inte på radio "
+"(kan förekomma på studentradio)"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:17
+msgid ""
+"    * Perfect quality downloads (CD copy) are available when you download "
+"(not inferior quality sound)"
+msgstr ""
+"    * De hämtningsbara filerna är av perfekt kvalitet (cd-kopia, inte lägre "
+"ljudkvalitet)"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:18
+msgid ""
+"    * Radio stations and \"genre mix\" playlists allow background listening "
+"- can do work while listening to our music"
+msgstr ""
+"    * Radiostationer och \"genremix\"-spellistor fungerar bra som "
+"bakgrundsmusik - du kan arbeta samtidigt som du lyssnar till vår musik"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:19
+msgid "    * Smaller selection means easier to find good music"
+msgstr "    * Mindre utbud gör det enklare att hitta bra musik"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:20
+msgid ""
+"    * Variable pricing scheme means you can pay as little as $5 for an album "
+"if you choose"
+msgstr ""
+"    * Variabel prissättning betyder att du kan betala så lite som $5 för ett "
+"album om du vill"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:21
+msgid "    * Very simple user interface, quick to play music"
+msgstr "    * Väldigt enkelt gränssnitt, spelar snabbt musik"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:22
+msgid "    * Wide variety of genres, can fit any mood"
+msgstr "    * Stor spridning av genrer, passar varje humör"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:23
+msgid "<b>Magnatune online music store</b>"
+msgstr "<b>Magnatune onlinemusikbutik</b>"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:24
+msgid ""
+"Magnatune is an online record label that is not evil. Some of their key "
+"attributes are:\n"
+msgstr ""
+"Magnatune är ett skivbolag på nätet som är inte elakt. Några av deras "
+"fördelar är:\n"
+
+#: ../plugins/magnatune/magnatune-loading.glade.h:26
+msgid "You can find more information at http://www.magnatune.com/"
+msgstr "Du kan hitta mer information på http://www.magnatune.com/"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:1
 msgid ""
@@ -1953,8 +2137,12 @@ msgstr ""
 "12"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:27
-msgid "<span weight=\"bold\" foreground=\"red\">Your credit card is past the expiration date listed.</span>"
-msgstr "<span weight=\"bold\" foreground=\"red\">Ditt kreditkort har passerat giltighetsdatumet som är listat.</span>\""
+msgid ""
+"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
+"expiration date listed.</span>"
+msgstr ""
+"<span weight=\"bold\" foreground=\"red\">Ditt kreditkort har passerat "
+"giltighetsdatumet som är listat.</span>\""
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:28
 msgid "C_redit Card:"
@@ -2020,7 +2208,6 @@ msgid "_Month:"
 msgstr "_Månad:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:45
-#: ../plugins/magnatune/magnatune-purchase.glade.h:39
 msgid "_Name:"
 msgstr "_Namn:"
 
@@ -2081,8 +2268,8 @@ msgid "Expiry _month:"
 msgstr "Utgångsdatum _månad:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:18
-msgid "Expiry _year:"
-msgstr "Utgångsdatum _år:"
+msgid "Expiry _year (last two digits):"
+msgstr "Utgångs_år (sista två siffrorna):"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:19
 msgid ""
@@ -2117,12 +2304,16 @@ msgid "Purchase Magnatune Tracks"
 msgstr "Köp Magnatune-spår"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:37
-msgid "_Amount to pay:"
-msgstr "Belopp _att betala:"
+msgid "_Amount to pay (US Dollars):"
+msgstr "Belopp _att betala (US-dollar):"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:38
 msgid "_Email address:"
 msgstr "_E-postadress:"
+
+#: ../plugins/magnatune/magnatune-purchase.glade.h:39
+msgid "_Name (as printed on card):"
+msgstr "_Namn (som det är skrivet på kortet):"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:40
 msgid "_Purchase"
@@ -2133,8 +2324,12 @@ msgid "_Remember my credit card details"
 msgstr "_Kom ihåg mina kreditkortsdetaljer"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
-msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
-msgstr "Lägger till stöd i Rhythmbox för att spela och köpa musik från nätbutiken Magnatune"
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr ""
+"Lägger till stöd i Rhythmbox för att spela och köpa musik från nätbutiken "
+"Magnatune"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
 msgid "Magnatune Store"
@@ -2165,7 +2360,11 @@ msgstr "Du måste ha en biblioteksplats inställd för att köpa ett album."
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Vill du köpa albumet <i>%(album)s</i> av \"%(artist)s\"?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:417
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:477
+msgid "Purchase Error"
+msgstr "Fel vid köp"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:478
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2174,6 +2373,22 @@ msgid ""
 msgstr ""
 "Ett fel uppstod när albumet skulle köpas.\n"
 "Magnatuneservern returnerade:\n"
+"%s"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:481
+#: ../widgets/rb-entry-view.c:1233
+msgid "Error"
+msgstr "Fel"
+
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:482
+#, python-format
+msgid ""
+"An error occurred while trying to purchase the album.\n"
+"The error text is:\n"
+"%s"
+msgstr ""
+"Ett fel inträffade när albumet skulle köpas.\n"
+"Felmeddelandet var:\n"
 "%s"
 
 #. Add the popup menu actions
@@ -2289,52 +2504,60 @@ msgstr "Exempelinsticksmodul"
 msgid "A sample plugin in C with no features"
 msgstr "En exempelinsticksmodul i C utan funktioner"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:235
+#: ../plugins/sample-vala/sample-vala.rb-plugin.desktop.in.h:1
+msgid "A sample plugin in Vala with no features"
+msgstr "En exempelinsticksmodul i Vala utan funktioner"
+
+#: ../plugins/sample-vala/sample-vala.rb-plugin.desktop.in.h:2
+msgid "Vala Sample Plugin"
+msgstr "Exempelinsticksmodul för Vala"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:229
 #: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
 msgid "Visualization"
 msgstr "Visualisering"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:236
+#: ../plugins/visualizer/rb-visualizer-plugin.c:230
 msgid "Start or stop visualization"
 msgstr "Starta eller stoppa visualisering"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:242
+#: ../plugins/visualizer/rb-visualizer-plugin.c:236
 msgid "Small"
 msgstr "Liten"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:243
+#: ../plugins/visualizer/rb-visualizer-plugin.c:237
 msgid "Normal"
 msgstr "Normal"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:244
+#: ../plugins/visualizer/rb-visualizer-plugin.c:238
 msgid "Large"
 msgstr "Stor"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:245
+#: ../plugins/visualizer/rb-visualizer-plugin.c:239
 msgid "Extra Large"
 msgstr "Extra stor"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:256
+#: ../plugins/visualizer/rb-visualizer-plugin.c:250
 msgid "Embedded"
 msgstr "Inbäddad"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:257
+#: ../plugins/visualizer/rb-visualizer-plugin.c:251
 msgid "Fullscreen"
 msgstr "Helskärm"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:258
+#: ../plugins/visualizer/rb-visualizer-plugin.c:252
 msgid "Desktop"
 msgstr "Skrivbord"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:259
+#: ../plugins/visualizer/rb-visualizer-plugin.c:253
 msgid "Window"
 msgstr "Fönster"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1103
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1200
 msgid "Enable visual effects?"
 msgstr "Aktivera visuella effekter?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1105
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1202
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -2342,7 +2565,7 @@ msgstr ""
 "Det verkar som du kör Rhythmbox via en fjärrsession.\n"
 "Är du säker på att du vill aktivera visuella effekter?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1395
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1525
 msgid "Music Player Visualization"
 msgstr "Visualisering för musikspelare"
 
@@ -2370,38 +2593,50 @@ msgstr "Visualisering:"
 msgid "Displays visualizations"
 msgstr "Visar visualiseringar"
 
-#: ../podcast/rb-podcast-manager.c:820
+#: ../podcast/rb-podcast-manager.c:830
 msgid "Invalid URL"
 msgstr "Ogiltig URL"
 
-#: ../podcast/rb-podcast-manager.c:821
+#: ../podcast/rb-podcast-manager.c:831
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "\"%s\" är inte en korrekt URL, kontrollera att den stämmer."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:829
+#: ../podcast/rb-podcast-manager.c:839
 msgid "URL already added"
 msgstr "URL:en är redan tillagd"
 
-#: ../podcast/rb-podcast-manager.c:830
+#: ../podcast/rb-podcast-manager.c:840
 #, c-format
-msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
-msgstr "\"%s\" har redan lagts till som en radiostation. Om det är en poddradiokanal, ta bort radiostationen."
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"\"%s\" har redan lagts till som en radiostation. Om det är en "
+"poddradiokanal, ta bort radiostationen."
 
-#: ../podcast/rb-podcast-manager.c:871
+#: ../podcast/rb-podcast-manager.c:881
 #, c-format
 msgid "There was a problem adding this podcast. Please verify the URL: %s"
-msgstr "Det uppstod ett problem när denna poddradiokanal lades till. Var vänlig kontrollera url:en: %s"
+msgstr ""
+"Det uppstod ett problem när denna poddradiokanal lades till. Var vänlig "
+"kontrollera url:en: %s"
 
-#: ../podcast/rb-podcast-manager.c:949
+#: ../podcast/rb-podcast-manager.c:959
 msgid "Podcast"
 msgstr "Poddsändning"
 
 #: ../podcast/rb-podcast-parse.c:464
 #, c-format
-msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
-msgstr "URL:en  \"%s\" verkar inte vara en poddradiokanal. Det kan vara fel URL eller så kan kanalen vara trasig. Vill du att Rhythmbox ska försöka använda den ändå?"
+msgid ""
+"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
+"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
+"anyway?"
+msgstr ""
+"URL:en  \"%s\" verkar inte vara en poddradiokanal. Det kan vara fel URL "
+"eller så kan kanalen vara trasig. Vill du att Rhythmbox ska försöka använda "
+"den ändå?"
 
 #: ../podcast/rb-podcast-properties-dialog.c:415
 msgid "Not Downloaded"
@@ -2411,8 +2646,7 @@ msgstr "Inte hämtad"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Starta inte en ny instans av Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:74
-#: ../shell/main.c:122
+#: ../remote/dbus/rb-client.c:74 ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
@@ -2497,8 +2731,7 @@ msgstr "Tysta uppspelningen"
 msgid "Unmute playback"
 msgstr "Normal uppspelningsvolym"
 
-#: ../remote/dbus/rb-client.c:395
-#: ../shell/rb-shell.c:2106
+#: ../remote/dbus/rb-client.c:395 ../shell/rb-shell.c:2105
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -2517,49 +2750,52 @@ msgid "Couldn't monitor %s: %s"
 msgstr "Kunde inte övervaka %s: %s"
 
 #: ../rhythmdb/rhythmdb-property-model.c:430
-#: ../sources/rb-auto-playlist-source.c:73
-#: ../sources/rb-browser-source.c:153
+#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
 #: ../sources/rb-podcast-source.c:311
 #: ../sources/rb-static-playlist-source.c:90
 msgid "All"
 msgstr "Alla"
 
-#: ../rhythmdb/rhythmdb-tree.c:348
-msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
-msgstr "Databasen är skapad av en senare version av Rhythmbox. Denna version av Rhythmbox kan inte läsa databasen."
+#: ../rhythmdb/rhythmdb-tree.c:367
+msgid ""
+"The database was created by a later version of rhythmbox.  This version of "
+"rhythmbox cannot read the database."
+msgstr ""
+"Databasen är skapad av en senare version av Rhythmbox. Denna version av "
+"Rhythmbox kan inte läsa databasen."
 
-#: ../rhythmdb/rhythmdb.c:505
+#: ../rhythmdb/rhythmdb.c:531
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kunde inte komma åt %s: %s"
 
-#: ../rhythmdb/rhythmdb.c:1476
+#: ../rhythmdb/rhythmdb.c:1546
 msgid "<invalid filename>"
 msgstr "<ogiltigt filnamn>"
 
-#: ../rhythmdb/rhythmdb.c:1733
+#: ../rhythmdb/rhythmdb.c:1803
 msgid "invalid unicode in error message"
 msgstr "ogiltig unicode i felmeddelande"
 
-#: ../rhythmdb/rhythmdb.c:2466
+#: ../rhythmdb/rhythmdb.c:2518
 msgid "Could not load the music database"
 msgstr "Kunde inte läsa in musikdatabasen"
 
-#: ../rhythmdb/rhythmdb.c:3840
+#: ../rhythmdb/rhythmdb.c:3914
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: ../rhythmdb/rhythmdb.c:3841
+#: ../rhythmdb/rhythmdb.c:3915
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: ../rhythmdb/rhythmdb.c:3842
+#: ../rhythmdb/rhythmdb.c:3916
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2567,7 +2803,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3848
+#: ../rhythmdb/rhythmdb.c:3922
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -2575,9 +2811,8 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3854
-#: ../rhythmdb/rhythmdb.c:3862
-#: ../rhythmdb/rhythmdb.c:3873
+#: ../rhythmdb/rhythmdb.c:3928 ../rhythmdb/rhythmdb.c:3936
+#: ../rhythmdb/rhythmdb.c:3947
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -2614,9 +2849,7 @@ msgstr "Sökväg till spellistefiler att använda"
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:160
-#: ../shell/main.c:169
-#: ../widgets/rb-druid.c:184
+#: ../shell/main.c:160 ../shell/main.c:169 ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -2741,8 +2974,7 @@ msgstr "MPEG version 3.0 URL"
 msgid "Shoutcast playlist"
 msgstr "Shoutcast-spellista"
 
-#: ../shell/rb-playlist-manager.c:1347
-#: ../sources/rb-playlist-source.c:546
+#: ../shell/rb-playlist-manager.c:1347 ../sources/rb-playlist-source.c:546
 msgid "Couldn't save playlist"
 msgstr "Kunde inte spara spellista"
 
@@ -2755,16 +2987,13 @@ msgstr "Angiven filändelse stöds inte."
 msgid "Playlist %s already exists"
 msgstr "Spellistan %s finns redan"
 
-#: ../shell/rb-playlist-manager.c:1678
-#: ../shell/rb-playlist-manager.c:1711
-#: ../shell/rb-playlist-manager.c:1751
-#: ../shell/rb-playlist-manager.c:1794
+#: ../shell/rb-playlist-manager.c:1678 ../shell/rb-playlist-manager.c:1711
+#: ../shell/rb-playlist-manager.c:1751 ../shell/rb-playlist-manager.c:1794
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Okänd spellista: %s"
 
-#: ../shell/rb-playlist-manager.c:1719
-#: ../shell/rb-playlist-manager.c:1759
+#: ../shell/rb-playlist-manager.c:1719 ../shell/rb-playlist-manager.c:1759
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Spellistan %s är en automatisk spellista"
@@ -2841,8 +3070,7 @@ msgstr "Klistra in markering"
 msgid "_Remove"
 msgstr "_Ta bort"
 
-#: ../shell/rb-shell-clipboard.c:143
-#: ../shell/rb-shell-clipboard.c:157
+#: ../shell/rb-shell-clipboard.c:143 ../shell/rb-shell-clipboard.c:157
 msgid "Remove selection"
 msgstr "Ta bort markering"
 
@@ -2878,140 +3106,139 @@ msgstr "Lägg till de markerade låtarna i spelkön"
 msgid "Remove"
 msgstr "Ta bort"
 
-#: ../shell/rb-shell-clipboard.c:160
-#: ../shell/rb-shell-clipboard.c:163
+#: ../shell/rb-shell-clipboard.c:160 ../shell/rb-shell-clipboard.c:163
 #: ../sources/rb-podcast-source.c:295
 msgid "_Properties"
 msgstr "_Egenskaper"
 
-#: ../shell/rb-shell-clipboard.c:161
-#: ../shell/rb-shell-clipboard.c:164
+#: ../shell/rb-shell-clipboard.c:161 ../shell/rb-shell-clipboard.c:164
 msgid "Show information on the selected song"
 msgstr "Visa information om den markerade låten"
 
-#: ../shell/rb-shell-player.c:230
+#: ../shell/rb-shell-player.c:255
 msgid "P_revious"
 msgstr "F_öregående"
 
-#: ../shell/rb-shell-player.c:231
+#: ../shell/rb-shell-player.c:256
 msgid "Start playing the previous song"
 msgstr "Spela föregående låt"
 
-#: ../shell/rb-shell-player.c:233
+#: ../shell/rb-shell-player.c:258
 msgid "_Next"
 msgstr "_Nästa"
 
-#: ../shell/rb-shell-player.c:234
+#: ../shell/rb-shell-player.c:259
 msgid "Start playing the next song"
 msgstr "Spela nästa låt"
 
-#: ../shell/rb-shell-player.c:236
+#: ../shell/rb-shell-player.c:261
 msgid "_Increase Volume"
 msgstr "_Höj volymen"
 
-#: ../shell/rb-shell-player.c:237
+#: ../shell/rb-shell-player.c:262
 msgid "Increase playback volume"
 msgstr "Höj uppspelningsvolymen"
 
-#: ../shell/rb-shell-player.c:239
+#: ../shell/rb-shell-player.c:264
 msgid "_Decrease Volume"
 msgstr "_Sänk volymen"
 
-#: ../shell/rb-shell-player.c:240
+#: ../shell/rb-shell-player.c:265
 msgid "Decrease playback volume"
 msgstr "Sänk uppspelningsvolymen"
 
-#: ../shell/rb-shell-player.c:247
+#: ../shell/rb-shell-player.c:272
 msgid "_Play"
 msgstr "_Spela"
 
-#: ../shell/rb-shell-player.c:248
-#: ../shell/rb-shell-player.c:2902
+#: ../shell/rb-shell-player.c:273 ../shell/rb-shell-player.c:3150
 msgid "Start playback"
 msgstr "Börja spela"
 
-#: ../shell/rb-shell-player.c:250
+#: ../shell/rb-shell-player.c:275
 msgid "Sh_uffle"
 msgstr "_Blanda"
 
-#: ../shell/rb-shell-player.c:251
+#: ../shell/rb-shell-player.c:276
 msgid "Play songs in a random order"
 msgstr "Spela låtar i slumpmässig ordning"
 
-#: ../shell/rb-shell-player.c:253
+#: ../shell/rb-shell-player.c:278
 msgid "_Repeat"
 msgstr "_Upprepa"
 
-#: ../shell/rb-shell-player.c:254
+#: ../shell/rb-shell-player.c:279
 msgid "Play first song again after all songs are played"
 msgstr "Spela första låten igen efter det att alla låtar spelats"
 
-#: ../shell/rb-shell-player.c:256
+#: ../shell/rb-shell-player.c:281
 msgid "_Song Position Slider"
 msgstr "Låtpo_sitionsväljare"
 
-#: ../shell/rb-shell-player.c:257
+#: ../shell/rb-shell-player.c:282
 msgid "Change the visibility of the song position slider"
 msgstr "Ändra synligheten på låtpositionsväljaren"
 
-#: ../shell/rb-shell-player.c:598
+#: ../shell/rb-shell-player.c:661
 msgid "Stream error"
 msgstr "Flödesfel"
 
-#: ../shell/rb-shell-player.c:599
+#: ../shell/rb-shell-player.c:662
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på ström!"
 
-#: ../shell/rb-shell-player.c:683
+#: ../shell/rb-shell-player.c:760
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: ../shell/rb-shell-player.c:1126
+#: ../shell/rb-shell-player.c:1226
 msgid "Playlist was empty"
 msgstr "Spellistan var tom"
 
-#: ../shell/rb-shell-player.c:1578
+#: ../shell/rb-shell-player.c:1682
 msgid "Not currently playing"
 msgstr "Spelar inte för tillfället"
 
-#: ../shell/rb-shell-player.c:1616
+#: ../shell/rb-shell-player.c:1720
 msgid "No previous song"
 msgstr "Ingen föregående låt"
 
-#: ../shell/rb-shell-player.c:1693
+#: ../shell/rb-shell-player.c:1798
 msgid "No next song"
 msgstr "Ingen nästa låt"
 
-#: ../shell/rb-shell-player.c:1808
-#: ../shell/rb-shell-player.c:2775
+#: ../shell/rb-shell-player.c:1919 ../shell/rb-shell-player.c:2890
 msgid "Couldn't start playback"
 msgstr "Kunde inte starta uppspelning"
 
-#: ../shell/rb-shell-player.c:2606
+#: ../shell/rb-shell-player.c:2721
 msgid "Couldn't stop playback"
 msgstr "Kunde inte stoppa uppspelning"
 
-#: ../shell/rb-shell-player.c:2695
+#: ../shell/rb-shell-player.c:2810
 msgid "Current song is not seekable"
 msgstr "Det går inte att söka i aktuell låt"
 
-#: ../shell/rb-shell-player.c:2900
+#: ../shell/rb-shell-player.c:3148
 msgid "Stop playback"
 msgstr "Stoppa uppspelning"
 
-#: ../shell/rb-shell-preferences.c:119
-#: ../shell/rb-shell.c:2340
+#: ../shell/rb-shell-preferences.c:137 ../shell/rb-shell.c:2339
 msgid "Couldn't display help"
 msgstr "Kunde inte visa hjälp"
 
-#: ../shell/rb-shell-preferences.c:154
+#: ../shell/rb-shell-preferences.c:172
 msgid "Music Player Preferences"
 msgstr "Musikspelarinställningar"
 
-#: ../shell/rb-shell-preferences.c:207
+#: ../shell/rb-shell-preferences.c:225
 msgid "General"
 msgstr "Allmänt"
+
+#: ../shell/rb-shell-preferences.c:285
+msgid "Playback"
+msgstr "Uppspelning"
 
 #: ../shell/rb-shell.c:413
 msgid "_Music"
@@ -3165,37 +3392,37 @@ msgstr "S_tatusrad"
 msgid "Change the visibility of the statusbar"
 msgstr "Ändra synligheten på statusraden"
 
-#: ../shell/rb-shell.c:1289
+#: ../shell/rb-shell.c:1288
 msgid "Change the music volume"
 msgstr "Ändra musikvolymen"
 
-#: ../shell/rb-shell.c:1724
+#: ../shell/rb-shell.c:1723
 msgid "Error while saving song information"
 msgstr "Kunde inte spara låtinformation"
 
-#: ../shell/rb-shell.c:1880
+#: ../shell/rb-shell.c:1879
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Överför spår %d av %d (%.0f%%)"
 
-#: ../shell/rb-shell.c:1883
+#: ../shell/rb-shell.c:1882
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Överför spår %d av %d"
 
 #. Translators: the %s is the elapsed and total time
-#: ../shell/rb-shell.c:2109
+#: ../shell/rb-shell.c:2108
 #, c-format
 msgid "Paused, %s"
 msgstr "Pausad, %s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2151
+#: ../shell/rb-shell.c:2150
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausad)"
 
-#: ../shell/rb-shell.c:2256
+#: ../shell/rb-shell.c:2255
 msgid "translator-credits"
 msgstr ""
 "Daniel Nylander\n"
@@ -3205,7 +3432,7 @@ msgstr ""
 "Skicka synpunkter på översättningen till\n"
 "tp-sv@listor.tp-sv.se"
 
-#: ../shell/rb-shell.c:2259
+#: ../shell/rb-shell.c:2258
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3217,18 +3444,20 @@ msgstr ""
 "av Free Software Foundation; antingen version 2 av licensen, eller\n"
 "(om du vill) vilken senare version som helst.\n"
 
-#: ../shell/rb-shell.c:2263
+#: ../shell/rb-shell.c:2262
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Rhythmbox är distribuerat med förhoppningen att det ska vara användbart, men UTAN NÅGON SOM HELST GARANTI; till och med utan den underförstådda\n"
-" garantin att det ska fungera eller passa ett speciellt syfte. Se GNUs generella\n"
+"Rhythmbox är distribuerat med förhoppningen att det ska vara användbart, men "
+"UTAN NÅGON SOM HELST GARANTI; till och med utan den underförstådda\n"
+" garantin att det ska fungera eller passa ett speciellt syfte. Se GNUs "
+"generella\n"
 "publika licens för mer detaljer.\n"
 
-#: ../shell/rb-shell.c:2267
+#: ../shell/rb-shell.c:2266
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3238,63 +3467,62 @@ msgstr ""
 "med Rhythmbox. Om inte, skriv till Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2276
+#: ../shell/rb-shell.c:2275
 msgid "Maintainers:"
 msgstr "Underhållare:"
 
-#: ../shell/rb-shell.c:2279
+#: ../shell/rb-shell.c:2278
 msgid "Former Maintainers:"
 msgstr "Tidigare underhållare:"
 
-#: ../shell/rb-shell.c:2282
+#: ../shell/rb-shell.c:2281
 msgid "Contributors:"
 msgstr "Bidragsgivare:"
 
-#: ../shell/rb-shell.c:2284
+#: ../shell/rb-shell.c:2283
 msgid "Music management and playback software for GNOME."
 msgstr "Programvara för hantering och uppspelning av musik för Gnome."
 
-#: ../shell/rb-shell.c:2387
+#: ../shell/rb-shell.c:2386
 msgid "Configure Plugins"
 msgstr "Konfigurera insticksmoduler"
 
-#: ../shell/rb-shell.c:2458
+#: ../shell/rb-shell.c:2457
 msgid "Import Folder into Library"
 msgstr "Importera mapp till bibliotek"
 
-#: ../shell/rb-shell.c:2480
+#: ../shell/rb-shell.c:2479
 msgid "Import File into Library"
 msgstr "Importera fil till biblitek"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2987
+#: ../shell/rb-shell.c:2983
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "av <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:3008
+#: ../shell/rb-shell.c:3004
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "från <i>%s</i>"
 
-#: ../shell/rb-shell.c:3213
+#: ../shell/rb-shell.c:3209
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
 
-#: ../shell/rb-shell.c:3448
-#: ../shell/rb-shell.c:3477
+#: ../shell/rb-shell.c:3444 ../shell/rb-shell.c:3473
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Okänd URI för låt: %s"
 
-#: ../shell/rb-shell.c:3486
+#: ../shell/rb-shell.c:3482
 #, c-format
 msgid "Unknown property %s"
 msgstr "Okänd egenskap %s"
 
-#: ../shell/rb-shell.c:3496
+#: ../shell/rb-shell.c:3492
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Okänd egenskapstyp %s för egenskap %s"
@@ -3331,45 +3559,38 @@ msgstr "Visa _notifieringar"
 msgid "Show notifications of song changes and other events"
 msgstr "Visa notifieringar när låt ändras och andra händelser"
 
-#: ../sources/rb-auto-playlist-source.c:73
-#: ../sources/rb-browser-source.c:153
+#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
 #: ../sources/rb-podcast-source.c:311
 #: ../sources/rb-static-playlist-source.c:90
 msgid "Search all fields"
 msgstr "Sök i alla fält"
 
-#: ../sources/rb-auto-playlist-source.c:74
-#: ../sources/rb-browser-source.c:154
+#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
 #: ../sources/rb-static-playlist-source.c:91
 msgid "Artists"
 msgstr "Artister"
 
-#: ../sources/rb-auto-playlist-source.c:74
-#: ../sources/rb-browser-source.c:154
+#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
 #: ../sources/rb-static-playlist-source.c:91
 msgid "Search artists"
 msgstr "Sök artister"
 
-#: ../sources/rb-auto-playlist-source.c:75
-#: ../sources/rb-browser-source.c:155
+#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:92
 msgid "Albums"
 msgstr "Album"
 
-#: ../sources/rb-auto-playlist-source.c:75
-#: ../sources/rb-browser-source.c:155
+#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:92
 msgid "Search albums"
 msgstr "Sök album"
 
-#: ../sources/rb-auto-playlist-source.c:76
-#: ../sources/rb-browser-source.c:156
+#: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:93
 msgid "Titles"
 msgstr "Titlar"
 
-#: ../sources/rb-auto-playlist-source.c:76
-#: ../sources/rb-browser-source.c:156
+#: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:93
 msgid "Search titles"
 msgstr "Sök titlar"
@@ -3421,8 +3642,7 @@ msgstr "Artist/Album"
 msgid "Artist - Album"
 msgstr "Artist - Album"
 
-#: ../sources/rb-library-source.c:123
-#: ../widgets/rb-entry-view.c:1097
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1100
 #: ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:95
@@ -3484,19 +3704,16 @@ msgstr "Rensa spel_kö"
 msgid "Remove all songs from the play queue"
 msgstr "Ta bort alla låtar från spelkön"
 
-#: ../sources/rb-play-queue-source.c:204
-#: ../sources/rb-play-queue-source.c:253
+#: ../sources/rb-play-queue-source.c:204 ../sources/rb-play-queue-source.c:253
 #: ../sources/rb-play-queue-source.c:375
 msgid "Play Queue"
 msgstr "Spelkö"
 
-#: ../sources/rb-play-queue-source.c:343
-#: ../widgets/rb-header.c:100
+#: ../sources/rb-play-queue-source.c:343 ../widgets/rb-header.c:100
 msgid "from"
 msgstr "från"
 
-#: ../sources/rb-play-queue-source.c:343
-#: ../widgets/rb-header.c:101
+#: ../sources/rb-play-queue-source.c:343 ../widgets/rb-header.c:101
 msgid "by"
 msgstr "av"
 
@@ -3568,35 +3785,29 @@ msgstr "Avsnitt"
 msgid "Search podcast episodes"
 msgstr "Sök poddradioavsnitt"
 
-#: ../sources/rb-podcast-source.c:592
-#: ../sources/rb-podcast-source.c:603
+#: ../sources/rb-podcast-source.c:592 ../sources/rb-podcast-source.c:603
 msgid "Date"
 msgstr "Datum"
 
 #. configure feed view
-#: ../sources/rb-podcast-source.c:624
-#: ../sources/rb-podcast-source.c:688
+#: ../sources/rb-podcast-source.c:624 ../sources/rb-podcast-source.c:688
 #: ../sources/rb-podcast-source.c:718
 msgid "Feed"
 msgstr "Kanal"
 
-#: ../sources/rb-podcast-source.c:643
-#: ../sources/rb-podcast-source.c:661
+#: ../sources/rb-podcast-source.c:643 ../sources/rb-podcast-source.c:661
 msgid "Status"
 msgstr "Status"
 
-#: ../sources/rb-podcast-source.c:644
-#: ../sources/rb-podcast-source.c:1493
+#: ../sources/rb-podcast-source.c:644 ../sources/rb-podcast-source.c:1493
 msgid "Downloaded"
 msgstr "Hämtat"
 
-#: ../sources/rb-podcast-source.c:645
-#: ../sources/rb-podcast-source.c:1501
+#: ../sources/rb-podcast-source.c:645 ../sources/rb-podcast-source.c:1501
 msgid "Waiting"
 msgstr "Väntar"
 
-#: ../sources/rb-podcast-source.c:646
-#: ../sources/rb-podcast-source.c:1497
+#: ../sources/rb-podcast-source.c:646 ../sources/rb-podcast-source.c:1497
 msgid "Failed"
 msgstr "Misslyckades"
 
@@ -3609,8 +3820,14 @@ msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ta bort detta poddradioavsnitt och hämtad fil?"
 
 #: ../sources/rb-podcast-source.c:908
-msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
-msgstr "Om du väljer att ta bort avsnittet och filen kommer de att vara permanent förlorade. Observera att du kan ta bort avsnittet men behålla den hämtade filen genom att välja att ta bort endast avsnittet."
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"Om du väljer att ta bort avsnittet och filen kommer de att vara permanent "
+"förlorade. Observera att du kan ta bort avsnittet men behålla den hämtade "
+"filen genom att välja att ta bort endast avsnittet."
 
 #: ../sources/rb-podcast-source.c:916
 msgid "Delete _Episode Only"
@@ -3625,8 +3842,14 @@ msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ta bort poddradiokanalen och hämtade filer?"
 
 #: ../sources/rb-podcast-source.c:1390
-msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
-msgstr "Om du väljer att ta bort kanalen och filerna, kommer de att vara permanent förlorade. Observera att du kan ta bort kanalen men behålla filerna genom att välja att endast ta bort kanalen."
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"Om du väljer att ta bort kanalen och filerna, kommer de att vara permanent "
+"förlorade. Observera att du kan ta bort kanalen men behålla filerna genom "
+"att välja att endast ta bort kanalen."
 
 #: ../sources/rb-podcast-source.c:1398
 msgid "Delete _Feed Only"
@@ -3752,13 +3975,18 @@ msgstr "Välkommen till Rhythmbox"
 
 #: ../widgets/rb-druid.c:209
 msgid ""
-"Rhythmbox is the GNOME music player that lets you do everything: play your music files, listen to Internet Radio, import music from CDs, and much more.\n"
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
 "\n"
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
-"Rhythmbox är GNOME-musikspelaren som låter dig göra allting: spela dina musikfiler, lyssna på internetradio, importera musik från cd-skivor och mycket mera.\n"
+"Rhythmbox är GNOME-musikspelaren som låter dig göra allting: spela dina "
+"musikfiler, lyssna på internetradio, importera musik från cd-skivor och "
+"mycket mera.\n"
 "\n"
-"Denna guide kommer att hjälpa dig komma igång genom att ställa några enkla frågor."
+"Denna guide kommer att hjälpa dig komma igång genom att ställa några enkla "
+"frågor."
 
 #: ../widgets/rb-druid.c:215
 msgid "Music library setup"
@@ -3772,82 +4000,77 @@ msgstr "Slutför"
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
-"Remember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
 msgstr ""
 "Du är nu redo att starta Rhythmbox.\n"
 "\n"
-"Kom ihåg att du kan lägga till musik i biblioteket genom att använda \"Musik\", sedan \"Importera mapp\", eller genom att importera den från cd-skivor."
+"Kom ihåg att du kan lägga till musik i biblioteket genom att använda \"Musik"
+"\", sedan \"Importera mapp\", eller genom att importera den från cd-skivor."
 
 #: ../widgets/rb-druid.c:286
 msgid "Load folder into Library"
 msgstr "Läs in mapp till biblioteket"
 
-#: ../widgets/rb-entry-view.c:833
+#: ../widgets/rb-entry-view.c:836
 #, c-format
 msgid "%u kbps"
 msgstr "%u kb/s"
 
-#: ../widgets/rb-entry-view.c:1066
+#: ../widgets/rb-entry-view.c:1069
 msgid "Track"
 msgstr "Spår"
 
-#: ../widgets/rb-entry-view.c:1117
+#: ../widgets/rb-entry-view.c:1120
 msgid "Time"
 msgstr "Tid"
 
-#: ../widgets/rb-entry-view.c:1129
-#: ../widgets/rb-query-creator-properties.c:71
+#: ../widgets/rb-entry-view.c:1132 ../widgets/rb-query-creator-properties.c:71
 #: ../widgets/rb-query-creator-properties.c:100
 msgid "Year"
 msgstr "År"
 
-#: ../widgets/rb-entry-view.c:1141
+#: ../widgets/rb-entry-view.c:1144
 msgid "Quality"
 msgstr "Kvalitet"
 
-#: ../widgets/rb-entry-view.c:1144
+#: ../widgets/rb-entry-view.c:1147
 msgid "000 kbps"
 msgstr "000 kb/s"
 
-#: ../widgets/rb-entry-view.c:1154
-#: ../widgets/rb-query-creator-properties.c:72
+#: ../widgets/rb-entry-view.c:1157 ../widgets/rb-query-creator-properties.c:72
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "Rating"
 msgstr "Betyg"
 
-#: ../widgets/rb-entry-view.c:1176
-#: ../widgets/rb-query-creator-properties.c:75
+#: ../widgets/rb-entry-view.c:1179 ../widgets/rb-query-creator-properties.c:75
 #: ../widgets/rb-query-creator-properties.c:99
 msgid "Play Count"
 msgstr "Antal spelningar"
 
-#: ../widgets/rb-entry-view.c:1188
+#: ../widgets/rb-entry-view.c:1191
 #: ../widgets/rb-query-creator-properties.c:103
 msgid "Last Played"
 msgstr "Senast spelad"
 
-#: ../widgets/rb-entry-view.c:1200
+#: ../widgets/rb-entry-view.c:1203
 #: ../widgets/rb-query-creator-properties.c:104
 msgid "Date Added"
 msgstr "Tillagd datum"
 
-#: ../widgets/rb-entry-view.c:1211
+#: ../widgets/rb-entry-view.c:1214
 msgid "Last Seen"
 msgstr "Senast sedd"
 
-#: ../widgets/rb-entry-view.c:1222
+#: ../widgets/rb-entry-view.c:1225
 msgid "Location"
 msgstr "Plats"
 
-#: ../widgets/rb-entry-view.c:1230
-msgid "Error"
-msgstr "Fel"
-
-#: ../widgets/rb-entry-view.c:1443
+#: ../widgets/rb-entry-view.c:1446
 msgid "Now Playing"
 msgstr "Spelar nu"
 
-#: ../widgets/rb-entry-view.c:1518
+#: ../widgets/rb-entry-view.c:1521
 msgid "Playback Error"
 msgstr "Uppspelningsfel"
 
@@ -4064,124 +4287,255 @@ msgstr "På skrivbordet"
 msgid "Unknown location"
 msgstr "Okänd plats"
 
+#~ msgid ""
+#~ "Magnatune is an online record label that is not evil. Some of their key "
+#~ "attributes are:\n"
+#~ "\n"
+#~ "    * Free listening of all songs\n"
+#~ "    * All albums and artists hand-picked\n"
+#~ "    * Very simple user interface, quick to play music\n"
+#~ "    * Radio stations and \"genre mix\" playlists allow background "
+#~ "listening - can do work while listening to our music\n"
+#~ "    * No need to \"register\" to listen or buy\n"
+#~ "    * Smaller selection means easier to find good music\n"
+#~ "    * Wide variety of genres, can fit any mood\n"
+#~ "    * Our genres are hard to find in record stores and not on radio "
+#~ "(though do appear on college radio)\n"
+#~ "    * Downloads and CDs are both available (no other site on the internet "
+#~ "sells both)\n"
+#~ "    * Perfect quality downloads (CD copy) are available when you download "
+#~ "(not inferior quality sound)\n"
+#~ "    * No copy protection on the music (DRM) which allows playing music on "
+#~ "any device (unlike iTunes/MSN/etc)\n"
+#~ "    * Extensive biographical info about each musician, and artist photo "
+#~ "-- feel a strong connection to the artist\n"
+#~ "    * Full color, high quality cover art PDF available for most albums - "
+#~ "easy to print\n"
+#~ "    * Variable pricing scheme means you can pay as little as $5 for an "
+#~ "album if you choose\n"
+#~ "    * 50% of payment goes to artist (makes buyer feel good: they're "
+#~ "helping the world)\n"
+#~ "    * Not venture-capital backed big business\n"
+#~ "    * Not part of the \"evil\" major label machine - for those that hate "
+#~ "the music biz and want to help topple it\n"
+#~ "    * Founder/owner runs it -- support a small business\n"
+#~ "    * Low pressure environment - nothing flashing, no audio ads while "
+#~ "listening to albums\n"
+#~ "    * Music selection is unique to Magnatune, unlike most on-line stores "
+#~ "that have more-or-less the same (gigantic) selection\n"
+#~ "\n"
+#~ "You can find more information at http://www.magnatune.com/"
+#~ msgstr ""
+#~ "Magnatune är ett onlineskivbolag som är inte elakt. Några av deras "
+#~ "fördelar är:\n"
+#~ "\n"
+#~ "    * Fri lyssning av alla låtar\n"
+#~ "    * Alla album och artister är handplockade\n"
+#~ "    * Väldigt enkelt gränssnitt, spelar snabbt musik\n"
+#~ "    * Radiostationer och \"genremix\"-spellistor fungerar bra som "
+#~ "bakgrundsmusik - du kan arbeta samtidigt som du lyssnar till vår musik\n"
+#~ "    * Inget krav att registrera sig för att lyssna eller köpa\n"
+#~ "    * Mindre utbud gör det enklare att hitta bra musik\n"
+#~ "    * Stor spridning av genrer, passar varje humör\n"
+#~ "    * Våra genrer är svåra att hitta i skivbutiker och spelas inte på "
+#~ "radio (kan förekomma på studentradio)\n"
+#~ "    * Både hämtningar och cd-skivor är tillgängliga (ingen annan sajt på "
+#~ "nätet säljer båda)\n"
+#~ "    * De hämtningsbara filerna är av perfekt kvalitet (cd-kopia, inte "
+#~ "lägre ljudkvalitet)\n"
+#~ "    * Inget kopieringsskydd (DRM) på musiken vilket möjliggör uppspelning "
+#~ "på vilken spelare som helst (vilket inte går med iTunes/MSN/etc)\n"
+#~ "    * Omfattande biografisk information om varje artist, och foto på "
+#~ "varje artist - känn en stark koppling till artisten\n"
+#~ "    * Fullfärgs, högkvalitativt omslag i PDF tillgängligt för de flesta "
+#~ "album - enkelt att skriva ut\n"
+#~ "    * Variabelt prissättningschema medger att du kan betala så lite som "
+#~ "$5 för ett album om du vill\n"
+#~ "    * 50% av betalningen går till artisten (detta gör att köparen får "
+#~ "gott samvete, de hjälper till på jorden)\n"
+#~ "    * Inget riskkapital-uppbackat storföretag    * Inte en del av den "
+#~ "\"elaka\" skivbolagsvärlden - för de som hatar musikbranchen och vill "
+#~ "hjälpa till att stjälpa den\n"
+#~ "    * Grundaren/ägaren sköter bolaget - stöd små företag    * En vänlig "
+#~ "miljö - inget blinkande, ingen ljudreklam vid avlyssning av album\n"
+#~ "    * Musikutbudet är unikt för Magnatune, olikt de flesta andra "
+#~ "onlinebutiker som har ungefär samma (gigantiska) utbud\n"
+#~ "\n"
+#~ "Du kan hitta mer information på http://www.magnatune.com"
+
+#~ msgid "Expiry _year:"
+#~ msgstr "Utgångsdatum _år:"
+
 #~ msgid "Leave Fullscreen"
 #~ msgstr "Lämna helskärm"
+
 #~ msgid ""
 #~ "%s\n"
 #~ "%s"
 #~ msgstr ""
 #~ "%s\n"
 #~ "%s"
+
 #~ msgid "by %s"
 #~ msgstr "av %s"
+
 #~ msgid "Artists like by fans of %s"
 #~ msgstr "Artister gillade av fans till %s"
+
 #~ msgid "%Y-%m-%d %H:%M"
 #~ msgstr "%Y-%m-%d %H.%M"
+
 #~ msgid "_Disc Number:"
 #~ msgstr "_Skivnummer:"
+
 #~ msgid "Art Display"
 #~ msgstr "Grafikvisare"
+
 #~ msgid "Displays art for the playing track"
 #~ msgstr "Visar grafik för det aktuella spåret"
+
 #~ msgid "Support for audio CDs"
 #~ msgstr "Stöd för ljud-cd"
+
 #~ msgid "Last.fm Profile "
 #~ msgstr "Last.fm-profil"
+
 #~ msgid "Submits songs to last.fm"
 #~ msgstr "Rapporterar låtar till last.fm"
+
 #~ msgid "Last.fm Profile Preferences"
 #~ msgstr "Last.fm-profil inställningar"
+
 #~ msgid "Generic Audio Player"
 #~ msgstr "Generisk ljudspelare"
+
 #~ msgid ""
 #~ "Adds iPod support to Rhythmbox so that it can show an iPod content, and "
 #~ "play from there"
 #~ msgstr ""
 #~ "Lägger till iPod-stöd till Rhythmbox så att det kan visa innehåll och "
 #~ "spela det därifrån"
+
 #~ msgid "iPod support"
 #~ msgstr "iPod-stöd"
+
 #~ msgid " doesn't do much"
 #~ msgstr "gör inte mycket"
+
 #~ msgid "Does a whole lot of not much"
 #~ msgstr "Gör inte alls mycket"
+
 #~ msgid "by %s from %s"
 #~ msgstr "av %s från albumet %s"
+
 #~ msgid "_Date"
 #~ msgstr "_Datum"
+
 #~ msgid "_Feed"
 #~ msgstr "_Kanal"
+
 #~ msgid "_Title"
 #~ msgstr "_Titel"
+
 #~ msgid "Art_ist"
 #~ msgstr "Art_ist"
+
 #~ msgid "_Album"
 #~ msgstr "_Album"
+
 #~ msgid "Tim_e"
 #~ msgstr "Ti_d"
+
 #~ msgid "_Play Count"
 #~ msgstr "Antal s_pelningar"
+
 #~ msgid "_Last Played"
 #~ msgstr "_Senast spelad"
+
 #~ msgid "_Date Added"
 #~ msgstr "_Datum tillagd"
+
 #~ msgid "L_ocation"
 #~ msgstr "P_lats"
+
 #~ msgid "Import _Audio CD..."
 #~ msgstr "Importera _ljud-cd..."
+
 #~ msgid "Extract and import songs from a CD"
 #~ msgstr "Extrahera och importera låtar från en cd"
+
 #~ msgid "CD Ripper not found"
 #~ msgstr "Cd-extraherare ej funnen"
+
 #~ msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 #~ msgstr ""
 #~ "För att extrahera cd-skivor måste du installera paketet Sound Juicer."
+
 #~ msgid "Couldn't run CD Ripper"
 #~ msgstr "Kunde inte köra cd-extraheraren"
+
 #~ msgid "An error occurred while running sound-juicer: %s"
 #~ msgstr "Ett fel inträffade när sound-juicer kördes: %s"
+
 #~ msgid "Show _Browser"
 #~ msgstr "Visa _bläddrare"
+
 #~ msgid "Hide _Browser"
 #~ msgstr "Dölj _bläddrare"
+
 #~ msgid "Get information on this album from the web"
 #~ msgstr "Hämta information om detta album från webben"
+
 #~ msgid "The following files couldn't be loaded:"
 #~ msgstr "Följande filer kunde inte läsas in:"
+
 #~ msgid "AudioScrobbler"
 #~ msgstr "AudioScrobbler"
+
 #~ msgid "_Enable AudioScrobbler"
 #~ msgstr "_Aktivera AudioScrobbler"
+
 #~ msgid ""
 #~ "Download\n"
 #~ "Location:"
 #~ msgstr ""
 #~ "_Plats att\n"
 #~ "hämta till:"
+
 #~ msgid "Rhythmbox shell"
 #~ msgstr "Rhythmbox-skal"
+
 #~ msgid "Rhythmbox shell factory"
 #~ msgstr "Rhythmbox-skalfabrik"
+
 #~ msgid "The file is not an audio stream"
 #~ msgstr "Filen är inte en ljudström"
+
 #~ msgid "The file is not an audio stream, but is being ignored"
 #~ msgstr "Filen är inte en ljudström, men ignoreras"
+
 #~ msgid "There is no plugin installed to handle a %s file."
 #~ msgstr ""
 #~ "Det finns ingen insticksmodul installerad för att hantera en %s-fil."
+
 #~ msgid "Whether the main window is visible"
 #~ msgstr "Huruvida huvudfönstret är synligt"
+
 #~ msgid "Whether shuffle is enabled"
 #~ msgstr "Huruvida upprepa är aktiverat"
+
 #~ msgid "Whether repeat is enabled"
 #~ msgstr "Huruvida blanda är aktiverat"
+
 #~ msgid "Properties for the current song"
 #~ msgstr "Egenskaper för den aktuella låten"
+
 #~ msgid "Whether Rhythmbox is currently playing"
 #~ msgstr "Huruvida Rhythmbox spelar för tillfället"
+
 #~ msgid "What play order to use"
 #~ msgstr "Vilken spelordning att använda"
+
 #~ msgid ""
 #~ "Failed to register the shell: %s\n"
 #~ "This probably means that you installed Rhythmbox in a different prefix "
@@ -4191,61 +4545,88 @@ msgstr "Okänd plats"
 #~ "Detta betyder troligtvis att du installerade Rhythmbox i ett annat prefix "
 #~ "än bonobo-activation. Denna varning är inte allvarlig, men IPC kommer "
 #~ "inte att fungera."
+
 #~ msgid "An exception occured '%s'"
 #~ msgstr "Ett undantag inträffade \"%s\""
+
 #~ msgid "Add to Music Library"
 #~ msgstr "Lägg till i musikbiblioteket"
+
 #~ msgid "Nautilus context menu extension for Rhythmbox"
 #~ msgstr "Nautilus-snabbvalsmenytillägg för Rhythmbox"
+
 #~ msgid "Rhythmbox Nautilus Context Menu Item"
 #~ msgstr "Nautilus-snabbvalsmenypost för Rhythmbox"
+
 #~ msgid "Print the playing song and exit"
 #~ msgstr "Skriv ut den spelade låten och avsluta"
+
 #~ msgid "Print the playing song artist and exit"
 #~ msgstr "Skriv ut den spelade låtens artist och avsluta"
+
 #~ msgid "Print the playing song album and exit"
 #~ msgstr "Skriv ut den spelade låtens album och avsluta"
+
 #~ msgid "Print the playing song track and exit"
 #~ msgstr "Skriv ut den spelade låtens spårnummer och avsluta"
+
 #~ msgid "Print the playing song genre and exit"
 #~ msgstr "Skriv ut den spelade låtens genre och avsluta"
+
 #~ msgid "Print the playing song URI and exit"
 #~ msgstr "Skriv ut URI:n för den spelade låten och avsluta"
+
 #~ msgid "Print the playing song length in seconds and exit"
 #~ msgstr "Skriv ut den spelade låtlängden i sekunder och avsluta"
+
 #~ msgid "Seek to the specified time in playing song if possible and exit"
 #~ msgstr "Spola om möjligt till den angivna tiden och avsluta"
+
 #~ msgid "Seek by the specified amount if possible and exit"
 #~ msgstr ""
 #~ "Spola om möjligt till den angivna tiden i den spelade låten och avsluta"
+
 #~ msgid "Set the rating of the currently playing song and exit"
 #~ msgstr "Sätt betyget för denna låt och avsluta"
+
 #~ msgid "Focus the running player"
 #~ msgstr "Fokusera den exekverande spelaren"
+
 #~ msgid "Toggle shuffling"
 #~ msgstr "Växla blanda"
+
 #~ msgid "Toggle repeat"
 #~ msgstr "Växla upprepningsläge"
+
 #~ msgid "Set the volume level"
 #~ msgstr "Ställ in volymnivå"
+
 #~ msgid "Change visibility of the main Rhythmbox window"
 #~ msgstr "Ändra synligheten på Rhythmbox huvudfönster"
+
 #~ msgid "Source _List"
 #~ msgstr "Käl_lista"
+
 #~ msgid "Change the visibility of the source list"
 #~ msgstr "Ändra synligheten på källistan"
+
 #~ msgid "_Duration"
 #~ msgstr "_Speltid"
+
 #~ msgid "Automatically rate:"
 #~ msgstr "Betygsätt automatiskt:"
+
 #~ msgid "Play Count:"
 #~ msgstr "Spelräknare:"
+
 #~ msgid "Wed, Jan 01, 1970 00:00:00 -0500"
 #~ msgstr "ons jan 01 1970 00.00.00 +0100"
+
 #~ msgid "Eject Audio-CD"
 #~ msgstr "Mata ut ljud-cd"
+
 #~ msgid "Add Lo_cation..."
 #~ msgstr "Lägg till p_lats..."
+
 #~ msgid "Choose a location (URI) to be added to the library"
 #~ msgstr "Välj en plats (URI) att lägga till i biblioteket"
-
