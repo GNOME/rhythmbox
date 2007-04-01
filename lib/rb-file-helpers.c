@@ -38,6 +38,7 @@
 static GHashTable *files = NULL;
 
 static char *dot_dir = NULL;
+static char *music_dir = NULL;
 
 const char *
 rb_file (const char *filename)
@@ -90,6 +91,137 @@ rb_dot_dir (void)
 	return dot_dir;
 }
 
+/* Copied from xdg-user-dir-lookup.c */
+#include <stdlib.h>
+
+static char *
+xdg_user_dir_lookup (const char *type)
+{
+  FILE *file;
+  char *home_dir, *config_home, *config_file;
+  char buffer[512];
+  char *user_dir;
+  char *p, *d;
+  int len;
+  int relative;
+  
+  home_dir = getenv ("HOME");
+
+  if (home_dir == NULL)
+    return strdup ("/tmp");
+
+  config_home = getenv ("XDG_CONFIG_HOME");
+  if (config_home == NULL || config_home[0] == 0)
+    {
+      config_file = malloc (strlen (home_dir) + strlen ("/.config/user-dirs.dirs") + 1);
+      strcpy (config_file, home_dir);
+      strcat (config_file, "/.config/user-dirs.dirs");
+    }
+  else
+    {
+      config_file = malloc (strlen (config_home) + strlen ("/user-dirs.dirs") + 1);
+      strcpy (config_file, config_home);
+      strcat (config_file, "/user-dirs.dirs");
+    }
+
+  file = fopen (config_file, "r");
+  free (config_file);
+  if (file == NULL)
+    goto error;
+
+  user_dir = NULL;
+  while (fgets (buffer, sizeof (buffer), file))
+    {
+      /* Remove newline at end */
+      len = strlen (buffer);
+      if (len > 0 && buffer[len-1] == '\n')
+	buffer[len-1] = 0;
+      
+      p = buffer;
+      while (*p == ' ' || *p == '\t')
+	p++;
+      
+      if (strncmp (p, "XDG_", 4) != 0)
+	continue;
+      p += 4;
+      if (strncmp (p, type, strlen (type)) != 0)
+	continue;
+      p += strlen (type);
+      if (strncmp (p, "_DIR", 4) != 0)
+	continue;
+      p += 4;
+
+      while (*p == ' ' || *p == '\t')
+	p++;
+
+      if (*p != '=')
+	continue;
+      p++;
+      
+      while (*p == ' ' || *p == '\t')
+	p++;
+
+      if (*p != '"')
+	continue;
+      p++;
+      
+      relative = 0;
+      if (strncmp (p, "$HOME/", 6) == 0)
+	{
+	  p += 6;
+	  relative = 1;
+	}
+      else if (*p != '/')
+	continue;
+      
+      if (relative)
+	{
+	  user_dir = malloc (strlen (home_dir) + 1 + strlen (p) + 1);
+	  strcpy (user_dir, home_dir);
+	  strcat (user_dir, "/");
+	}
+      else
+	{
+	  user_dir = malloc (strlen (p) + 1);
+	  *user_dir = 0;
+	}
+      
+      d = user_dir + strlen (user_dir);
+      while (*p && *p != '"')
+	{
+	  if ((*p == '\\') && (*(p+1) != 0))
+	    p++;
+	  *d++ = *p++;
+	}
+      *d = 0;
+    }  
+  fclose (file);
+
+  if (user_dir)
+    return user_dir;
+
+ error:
+  /* Special case desktop for historical compatibility */
+  if (strcmp (type, "DESKTOP") == 0)
+    {
+      user_dir = malloc (strlen (home_dir) + strlen ("/Desktop") + 1);
+      strcpy (user_dir, home_dir);
+      strcat (user_dir, "/Desktop");
+      return user_dir;
+    }
+  else
+    return strdup (home_dir);
+}
+
+const char *
+rb_music_dir (void)
+{
+	if (music_dir != NULL)
+		return (const char *) music_dir;
+	music_dir = xdg_user_dir_lookup ("MUSIC");
+	return (const char *) music_dir;
+}
+
 void
 rb_file_helpers_init (void)
 {
@@ -103,7 +235,7 @@ void
 rb_file_helpers_shutdown (void)
 {
 	g_hash_table_destroy (files);
-
+	g_free (music_dir);
 	g_free (dot_dir);
 }
 

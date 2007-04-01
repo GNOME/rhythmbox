@@ -1,3 +1,29 @@
+2007-04-01  Bastien Nocera  <hadess@hadess.net>
+
+	* data/glade/Makefile.am:
+	* data/glade/druid.glade:
+	* widgets/Makefile.am:
+	* widgets/rb-druid.c:
+	* widgets/rb-druid.h: Kill the first-time druid
+
+	* shell/rb-shell.c: (rb_shell_constructor),
+	* sources/rb-library-source.c: (rb_library_source_constructor),
+	(rb_library_source_library_location_cb): Don't run a first time
+	druid on startup, and setup automatically a music library directory
+	if the list is empty
+
+	* lib/rb-file-helpers.c: (xdg_user_dir_lookup), (rb_music_dir),
+	(rb_file_helpers_shutdown):
+	* lib/rb-file-helpers.h:
+	Add helper function to get the user's music directory using
+	xsg-user-dirs
+
+	* sources/rb-podcast-source.c: (impl_get_config_widget):
+	* widgets/rb-dialog.c: (rb_file_chooser_new):
+	Add the default music directory to the filechooser dialogues
+
+	(Closes: #411247)
+
 2007-04-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:

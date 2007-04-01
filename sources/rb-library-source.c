@@ -281,6 +281,7 @@ rb_library_source_constructor (GType type,
 	RBLibrarySource *source;
 	RBShell *shell;
 	RBEntryView *songs;
+	GSList *list;
 
 	source = RB_LIBRARY_SOURCE (G_OBJECT_CLASS (rb_library_source_parent_class)
 			->constructor (type, n_construct_properties, construct_properties));
@@ -289,6 +290,15 @@ rb_library_source_constructor (GType type,
 	g_object_get (shell, "db", &source->priv->db, NULL);
 
 	rb_library_source_ui_prefs_sync (source);
+
+	/* Set up the default library location if there's no library location set */
+	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
+	if (g_slist_length (list) == 0) {
+		list = g_slist_prepend (list, g_strdup (rb_music_dir ()));
+		eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
+	}
+	g_slist_foreach (list, (GFunc) g_free, NULL);
+	g_slist_free (list);
 
 	source->priv->library_location_notify_id =
 		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
@@ -608,10 +618,6 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 	g_free (uri);
 	if (list)
 		g_slist_free (list);
-
-	/* don't do the first-run druid if the user sets the library location */
-	if (list)
-		eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
 
 	return FALSE;
 }

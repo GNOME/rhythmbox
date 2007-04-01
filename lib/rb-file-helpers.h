@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 
 const char *	rb_file			(const char *filename);
 const char *	rb_dot_dir		(void);
+const char *	rb_music_dir		(void);
 
 char *		rb_canonicalise_uri	(const char *uri);
 

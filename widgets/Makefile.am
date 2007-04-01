@@ -18,8 +18,6 @@ librbwidgets_la_SOURCES =				\
 	rb-header.h					\
 	bacon-volume.c					\
 	bacon-volume.h					\
-	rb-druid.c					\
-	rb-druid.h					\
 	eggtrayicon.c					\
 	eggtrayicon.h					\
 	rb-dialog.c					\

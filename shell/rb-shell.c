@@ -60,7 +60,6 @@
 #include "rb-playlist-manager.h"
 #include "rb-removable-media-manager.h"
 #include "rb-preferences.h"
-#include "rb-druid.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
 #include "rb-source-header.h"
@@ -141,9 +140,6 @@ static void rb_shell_db_metadata_art_cb (RhythmDB *db,
 					 RhythmDBEntry *entry,
 					 const char *field,
 					 GValue *metadata,
-					 RBShell *shell);
-static void rb_shell_druid_response_cb (GtkDialog *druid,
-					guint response,
 					 RBShell *shell);
 
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
@@ -1406,20 +1402,8 @@ rb_shell_constructor (GType type,
 	rb_shell_sync_paned (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
-	/* Stop here if this is the first time. */
-	if (!eel_gconf_get_boolean (CONF_FIRST_TIME)) {
-		RBDruid *druid;
-		druid = rb_druid_new (shell->priv->db);
-		g_signal_connect (G_OBJECT (druid),
-				  "response",
-				  G_CALLBACK (rb_shell_druid_response_cb),
-				  shell);
-
-		gtk_widget_show_all (GTK_WIDGET (druid));
-	} else {
-		rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
-		gdk_notify_startup_complete ();
-	}
+	rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
+	gdk_notify_startup_complete ();
 
 	/* focus play if small, the entry view if not */
 	if (shell->priv->window_small) {
@@ -3224,8 +3208,7 @@ typedef struct {
 static void
 handle_playlist_entry_cb (TotemPlParser *playlist,
 			  const char *uri,
-			  const char *title,
-			  const char *genre,
+			  GHashTable *metadata,
 			  PlaylistParseData *data)
 {
 	RBSource *source;
@@ -3522,15 +3505,6 @@ rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 				       volume);
 	shell->priv->syncing_volume = FALSE;
 
-}
-
-static void
-rb_shell_druid_response_cb (GtkDialog *druid,
-			    guint response,
-			    RBShell *shell)
-{
-	gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
-	gtk_widget_destroy (GTK_WIDGET (druid));
 }
 
 static GtkBox*
