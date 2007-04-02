@@ -1,9 +1,59 @@
+Overview of changes in Rhythmbox 0.10.0 ""
+==========================================
+
+* Fix assorted crashers (410601, 411783, 411558, 411189, 413206, 393642, 416024)
+* fix build issues (411141, 380411, 411145, 413301, 419874)
+* Fix typos (411584, 413640)
+* stop some critical warnings (411703)
+* Improve Jamendo error handling (411038)
+* Make compatible with libsoup other than 2.2.99 (410940)
+* Italisise Magnatune text correctly (412931)
+* Fix some memory leaks
+* Use AudioScobbler logo properly (409164)
+* Don't cause gnome-power-manager to start (416213)
+* Fix some threading issues (420444)
+* Don't add files starting with a period (395124)
+* Improve Magnatune error handling (414980)
+* Fix sizing of playlist format combo box (419153)
+* Copy MP3s to audio players without lame installed
+
+Contributors to the release:
+- Kjell Bradan
+- Gilles Dartiguelongue
+- Nguyen Thai Ngoc Duy
+- Christophe Fergeau
+- Andreas Hanke
+- Irene Huang
+- Alex Jones
+- James Livingston
+- Og Maciel
+- Jonathan Matthew
+- Julien Puydt
+- Edward Rudd
+- Adam Zimmerman
+
+
+Updated translations
+--------------------
+
+ar	Ahmad Farghal
+da	Peter Bach
+dz	Pema Geyleg
+en_GB	David Lodge
+fr	Claude Paroz and Stéphane Raimbault
+hu	Gabor Kelemen
+it	Luca Ferretti
+pt_BR	Lucas Mazzardo Veloso, Og Maciel and Raul Pereira
+sv	Daniel Nylander
+zh_CN	Funda Wang
+
+
 Overview of changes in Rhythmbox 0.9.8 "Type slowly"
 =====================================================
 
 * move to SVN and move round lots of files. yay!
 * use "friendly" date-time in track list (William Jon McCann)
-* add visualisation plugin (JOnathan Matthew)
+* add visualisation plugin (Jonathan Matthew)
 * support more lastfm:// URIs (Jonathan Matthew)
 * split code out into a library common to plugins and the binary (Jonathan Matthew)
 * display cover art in the tray icon tooltop and song-change notification (Ed Catmur)
