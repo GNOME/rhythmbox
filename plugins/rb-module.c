@@ -137,7 +137,7 @@ rb_module_finalize (GObject *object)
 {
 	RBModule *module = RB_MODULE (object);
 
-	rb_debug ("GeditModule %p finalising", module);
+	rb_debug ("RBModule %p finalising", module);
 
 	g_free (module->path);
 
