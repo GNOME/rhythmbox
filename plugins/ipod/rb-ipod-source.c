@@ -902,7 +902,7 @@ impl_move_to_trash (RBSource *asource)
 	}
 
 	if (sel != NULL) {
-		itdb_write (priv->ipod_db, NULL);
+                itdb_schedule_save (RB_IPOD_SOURCE (asource));
 	}
 
   	g_object_unref (db);
