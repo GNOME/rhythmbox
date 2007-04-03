@@ -1071,16 +1071,22 @@ request_artwork (RBiPodSource *isource,
 }
 
 static void
-add_to_podcasts (RBiPodSourcePrivate *priv, Itdb_Track *song)
+add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 {
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	gchar *filename;
 	Itdb_Playlist *ipod_playlist;
 
-	if (priv->podcast_pl == NULL)
-		return;
+	if (priv->podcast_pl == NULL) {
+		/* No Podcast playlist on the iPod, create a new one */
+		ipod_playlist = itdb_playlist_new (_("Podcasts"), FALSE);
+		itdb_playlist_set_podcasts (ipod_playlist);
+		itdb_playlist_add (priv->ipod_db, ipod_playlist, -1);
+		add_rb_playlist (source, ipod_playlist);
+	}
 
 	ipod_playlist = g_object_get_data (G_OBJECT (priv->podcast_pl), ITDB_PLAYLIST_DATA);
-	itdb_playlist_add_track (ipod_playlist, song, -1);
+	itdb_playlist_add_track (ipod_playlist, song, 1);
 
 	filename = ipod_path_to_uri (priv->ipod_mount_path, song->ipod_path);
 	rb_static_playlist_source_add_location (priv->podcast_pl, filename, -1);
@@ -1111,7 +1117,7 @@ impl_track_added (RBRemovableMediaSource *source,
 		itdb_playlist_add_track (itdb_playlist_mpl (priv->ipod_db),
 					 song, -1);
 		if (song->mediatype == MEDIATYPE_PODCAST) {
-			add_to_podcasts (priv, song);
+			add_to_podcasts (isource, song);
 		}
 		request_artwork (isource, entry, db, song);
 

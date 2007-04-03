@@ -1,3 +1,10 @@
+2007-04-03  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: (add_to_podcasts),
+	(impl_track_added): create the iPod Podcasts playlist if it doesn't
+	exist. Fixes bug #424086, thanks to Steven Walter for the review and
+	the testing.
+
 2007-04-02  Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/rb-module.c: (rb_module_finalize): Fix mention of
