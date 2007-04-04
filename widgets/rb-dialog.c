@@ -33,6 +33,7 @@
 #include <stdarg.h>
 
 #include "rb-dialog.h"
+#include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 
 void
@@ -104,6 +105,9 @@ rb_file_chooser_new (const char *title,
 	}
 
 	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (dialog), local_only);
+	gtk_file_chooser_add_shortcut_folder (GTK_FILE_CHOOSER (dialog),
+					      rb_music_dir (),
+					      NULL);
 
 	if (parent != NULL) {
 		gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (parent));
