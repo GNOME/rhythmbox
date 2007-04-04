@@ -1,3 +1,9 @@
+2007-04-04  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_bus_cb): don't crash when we get a GStreamer
+	error.
+
 2007-04-03  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: (add_to_podcasts),

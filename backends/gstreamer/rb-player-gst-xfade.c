@@ -1365,13 +1365,14 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		int code;
 		gboolean emit = TRUE;
 
+		gst_message_parse_error (message, &error, &debug);
+
 		if (stream == NULL) {
-			rb_debug ("Couldn't find stream for error \"%s\"", error->message);
+			rb_debug ("Couldn't find stream for error \"%s\": %s", error->message, debug);
 			g_error_free (error);
+			g_free (debug);
 			break;
 		}
-
-		gst_message_parse_error (message, &error, &debug);
 
 		/* If we've already got an error, ignore 'internal data flow error'
 		 * type messages, as they're too generic to be helpful.
