@@ -42,7 +42,6 @@
 #include "rb-property-view.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
-#include "totem-pl-parser.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-uri-dialog.h"
@@ -1246,6 +1245,9 @@ impl_get_config_widget (RBSource *asource, RBShellPreferences *prefs)
 	source->priv->config_widget = glade_xml_get_widget (xml, "podcast_vbox");
 
 	btn_file = glade_xml_get_widget (xml, "location_chooser");
+	gtk_file_chooser_add_shortcut_folder (GTK_FILE_CHOOSER (btn_file),
+					      rb_music_dir (),
+					      NULL);
 	download_dir = rb_podcast_manager_get_podcast_dir (source->priv->podcast_mgr);
 	gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (btn_file),
 						 download_dir);

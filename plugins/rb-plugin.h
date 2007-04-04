@@ -200,4 +200,4 @@ type_name##_register_type (GTypeModule *module) 				\
 
 G_END_DECLS
 
-#endif  /* __GEDIT_PLUGIN_H__ */
+#endif  /* __RB_PLUGIN_H__ */

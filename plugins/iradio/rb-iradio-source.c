@@ -840,13 +840,27 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	source->priv->setting_new_query = FALSE;
 }
 
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+static void
+handle_playlist_entry_cb (TotemPlParser *playlist,
+			  const char *uri,
+			  GHashTable *metadata,
+			  RBIRadioSource *source)
+#else
 static void
 handle_playlist_entry_cb (TotemPlParser *playlist,
 			  const char *uri,
 			  const char *title,
 			  const char *genre,
 			  RBIRadioSource *source)
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 {
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+	const char *title, *genre;
+
+	title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
+	genre = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_GENRE);
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 	rb_iradio_source_add_station (source, uri, title, genre);
 }
 
@@ -861,9 +875,15 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 	if (real_uri)
 		uri = real_uri;
 
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+	g_signal_connect_object (parser, "entry-parsed",
+				 G_CALLBACK (handle_playlist_entry_cb),
+				 source, 0);
+#else
 	g_signal_connect_object (parser, "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 		g_object_set (parser, "recurse", FALSE, NULL);
 

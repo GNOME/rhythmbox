@@ -527,10 +527,17 @@ typedef struct {
 	RBStaticPlaylistSource *source;
 } HandlePlaylistEntryData;
 
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+static void
+handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri,
+			  GHashTable *metadata,
+			  HandlePlaylistEntryData *data)
+#else
 static void
 handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri,
 			  const char *title,
 			  const char *genre, HandlePlaylistEntryData *data)
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 {
 	char *local_uri;
 	char *name;
@@ -575,9 +582,15 @@ load_playlist_file (RBGenericPlayerSource *source,
 
 	parser = totem_pl_parser_new ();
 
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+	g_signal_connect (parser,
+			  "entry-parsed", G_CALLBACK (handle_playlist_entry_cb),
+			  data);
+#else
 	g_signal_connect (parser,
 			  "entry", G_CALLBACK (handle_playlist_entry_cb),
 			  data);
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 

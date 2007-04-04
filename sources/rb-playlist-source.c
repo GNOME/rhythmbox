@@ -541,10 +541,13 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 					  playlist_iter_func, uri, name,
 					  m3u_format ? TOTEM_PL_PARSER_M3U : TOTEM_PL_PARSER_PLS,
 					  NULL, &error);
+	g_object_unref (playlist);
 	g_free (name);
-	if (error != NULL)
+	if (error != NULL) {
 		rb_error_dialog (NULL, _("Couldn't save playlist"),
 				 "%s", error->message);
+		g_error_free (error);
+	}
 }
 
 /* Adapted from yelp-toc-pager.c */

@@ -1193,12 +1193,20 @@ typedef struct {
 	PlaybackStartType play_type;
 } OpenLocationThreadData;
 
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+static void
+playlist_entry_cb (TotemPlParser *playlist,
+		   const char *uri,
+		   GHashTable *metadata,
+		   RBShellPlayer *player)
+#else
 static void
 playlist_entry_cb (TotemPlParser *playlist,
 		   const char *uri,
 		   const char *title,
 		   const char *genre,
 		   RBShellPlayer *player)
+#endif
 {
 	rb_debug ("adding stream url %s", uri);
 	g_queue_push_tail (player->priv->playlist_urls, g_strdup (uri));
@@ -1211,9 +1219,17 @@ open_location_thread (OpenLocationThreadData *data)
 	TotemPlParserResult playlist_result;
 
 	playlist = totem_pl_parser_new ();
+
+#if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
+	g_signal_connect_data (G_OBJECT (playlist), "entry-parsed",
+			       G_CALLBACK (playlist_entry_cb),
+			       data->player, NULL, 0);
+#else
 	g_signal_connect_data (G_OBJECT (playlist), "entry",
 			       G_CALLBACK (playlist_entry_cb),
 			       data->player, NULL, 0);
+#endif /* TOTEM_PL_PARSER_CHECK_VERSION */
+
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 
 	playlist_result = totem_pl_parser_parse (playlist, data->location, FALSE);
