@@ -1,3 +1,26 @@
+2007-04-04  Bastien Nocera  <hadess@hadess.net>
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_save_playlist):
+	Fix object and error leak
+
+	* sources/rb-podcast-source.c: (impl_get_config_widget):
+	Remove unneeded include, and *really* add the Music directory
+	to the filechooser sidebar
+
+	* plugins/rb-plugin.h: Fix typo
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(handle_playlist_entry_cb), (load_playlist_file):
+	* plugins/iradio/rb-iradio-source.c: (handle_playlist_entry_cb),
+	(rb_iradio_source_add_from_playlist):
+	* shell/rb-playlist-manager.c: (handle_playlist_entry_cb),
+	(rb_playlist_manager_parse_file):
+	* shell/rb-shell-player.c: (playlist_entry_cb),
+	(open_location_thread):
+	* shell/rb-shell.c: (handle_playlist_entry_cb),
+	(rb_shell_load_uri): Convert to using the new totem-pl-parser
+	API, with a compile-time fallback on the old API
+
 2007-04-04  James Livingston  <doclivingston@gmail.com>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:
