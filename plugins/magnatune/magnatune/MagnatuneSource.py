@@ -56,6 +56,7 @@ class MagnatuneSource(rb.BrowserSource):
 	def __init__(self):
 
 		rb.BrowserSource.__init__(self, name=_("Magnatune"))
+		self.__db = None
 
 		# track data
 		self.__sku_dict = {}
