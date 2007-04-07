@@ -1023,7 +1023,7 @@ rb_player_gst_close (RBPlayer *player, const char *uri, GError **error)
 	mp->priv->playing = FALSE;
 	mp->priv->buffering = FALSE;
 
-	if (uri != NULL && strcmp (mp->priv->uri, uri) == 0) {
+	if ((uri != NULL) && (mp->priv->uri != NULL) && strcmp (mp->priv->uri, uri) == 0) {
 		rb_debug ("URI doesn't match current playing URI; ignoring");
 		return TRUE;
 	}
