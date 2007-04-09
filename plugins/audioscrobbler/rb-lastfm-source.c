@@ -132,7 +132,10 @@ static char *rb_lastfm_source_title_from_uri (char *uri);
 static void rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data);
 static void rb_lastfm_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry, RBLastfmSource *source);
 
-static void rb_lastfm_source_new_song_cb (GObject *player_backend, gpointer data, RBLastfmSource *source);
+static void rb_lastfm_source_new_song_cb (GObject *player_backend,
+					  gpointer stream_data,
+					  gpointer data,
+					  RBLastfmSource *source);
 static void rb_lastfm_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBLastfmSource *source);
 
 static void show_entry_popup (RBEntryView *view,
@@ -1229,6 +1232,7 @@ rb_lastfm_source_metadata_cb (SoupMessage *req, RBLastfmSource *source)
 
 static void
 rb_lastfm_source_new_song_cb (GObject *player_backend,
+			      gpointer stream_data,
 			      gpointer data,
 			      RBLastfmSource *source)
 {

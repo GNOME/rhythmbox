@@ -1,3 +1,10 @@
+2007-04-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_new_song_cb):
+	Use the right number of arguments for the player event signal.
+	Fixes #427288.
+
 2007-04-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* metadata/rb-metadata-gst.c: (rb_add_id3_tagger):
