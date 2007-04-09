@@ -216,7 +216,6 @@ rb_add_id3_tagger (RBMetaData *md, GstElement *element)
 
 	g_signal_connect (demux, "pad-added", (GCallback)id3_pad_added_cb, mux);
 
-	g_printerr ("priv->tags = %s\n", gst_structure_to_string ((GstStructure *) md->priv->tags));
 	gst_tag_setter_merge_tags (GST_TAG_SETTER (mux), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
 
 	return mux;
