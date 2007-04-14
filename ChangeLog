@@ -1,5 +1,11 @@
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac: move track transfer configure magic before the iPod
+	checks, otherwise iPod write supports (which depends on track
+	transfer) can't work
+
+2007-04-14  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac:
 	* plugins/generic-player/rb-generic-player-source.c:
 	* plugins/generic-player/rb-nokia770-source.c:

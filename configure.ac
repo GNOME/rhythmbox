@@ -83,8 +83,28 @@ if test "x$with_hal" != "xno"; then
 fi
 AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
 
-dnl iPod support
+dnl transfers
+AC_ARG_ENABLE(track-transfer,
+	      AC_HELP_STRING([--disable-track-transfer],
+			     [Disable track transfer support in rhythmbox]))
+if test x"$enable_track_transfer" != xno; then
+   PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
+      gnome-media-profiles >= 2.8,
+      with_track_transfer=yes,
+      with_track_transfer=no)
 
+   if test "x$with_track_transfer" = xno -a "x$enable_track_transfer" = xyes; then
+      AC_MSG_ERROR([Track transfer support explicitly requested but gnome-media-profiles not found.])
+   fi
+
+   if test "x$with_track_transfer" = xyes; then
+      AC_DEFINE(ENABLE_TRACK_TRANSFER, 1, [Define if track transfer should be enabled])
+   fi
+fi
+AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
+
+
+dnl iPod support
 AC_ARG_WITH(ipod,
             AC_HELP_STRING([--with-ipod],
 			   [Enable iPod support]),,
@@ -219,26 +239,6 @@ AC_ARG_ENABLE(tag-writing,
 if test x"$enable_tag_writing" != xno; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
-
-dnl transfers
-AC_ARG_ENABLE(track-transfer,
-	      AC_HELP_STRING([--disable-track-transfer],
-			     [Disable track transfer support in rhythmbox]))
-if test x"$enable_track_transfer" != xno; then
-   PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
-      gnome-media-profiles >= 2.8,
-      with_track_transfer=yes,
-      with_track_transfer=no)
-
-   if test "x$with_track_transfer" = xno -a "x$enable_track_transfer" = xyes; then
-      AC_MSG_ERROR([Track transfer support explicitly requested but gnome-media-profiles not found.])
-   fi
-
-   if test "x$with_track_transfer" = xyes; then
-      AC_DEFINE(ENABLE_TRACK_TRANSFER, 1, [Define if track transfer should be enabled])
-   fi
-fi
-AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
 
 dnl Audioscrobbler
 AC_ARG_ENABLE(audioscrobbler,
