@@ -127,6 +127,28 @@ fi
 AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
 
+dnl ipod writing
+AC_ARG_ENABLE(ipod-writing,
+	      AC_HELP_STRING([--disable-ipod-writing],
+			     [Disable support for writing to ipods in rhythmbox]))
+if test x"$enable_ipod_writing" != xno; then
+   if test "x$use_ipod" != xyes; then
+      if test "x$enable_ipod_writing" = xyes; then
+         AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
+      fi
+      enable_ipod_writing=no
+   elif test "x$with_track_transfer" != xyes; then
+      if test "x$enable_ipod_writing" = xyes; then
+         AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
+      fi
+      enable_ipod_writing=no
+   else
+      AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
+   fi
+fi
+
+
+
 dnl gnome-keyring support
 
 AC_ARG_WITH(gnome-keyring,
@@ -231,27 +253,6 @@ if test x"$enable_track_transfer" != xno; then
    fi
 fi
 AM_CONDITIONAL(ENABLE_TRACK_TRANSFER, test "x$with_track_transfer" = "xyes")
-
-dnl ipod writing
-AC_ARG_ENABLE(ipod-writing,
-	      AC_HELP_STRING([--disable-ipod-writing],
-			     [Disable support for writing to ipods in rhythmbox]))
-if test x"$enable_ipod_writing" != xno; then
-   if test "x$use_ipod" != xyes; then
-      if test "x$enable_ipod_writing" = xyes; then
-         AC_MSG_ERROR([iPod write support explicitly requested but iPod support is disabled.])
-      fi
-      enable_ipod_writing=no
-   elif test "x$with_track_transfer" != xyes; then
-      if test "x$enable_ipod_writing" = xyes; then
-         AC_MSG_ERROR([iPod write support explicitly requested but track transfer support is disabled.])
-      fi
-      enable_ipod_writing=no
-   else
-      AC_DEFINE(ENABLE_IPOD_WRITING, 1, [Define if ipod writing should be enabled])
-   fi
-fi
-
 
 dnl Audioscrobbler
 AC_ARG_ENABLE(audioscrobbler,
@@ -1010,11 +1011,6 @@ if test x"$with_track_transfer" = xyes; then
 else
 	AC_MSG_NOTICE([   Track transfer is disabled])
 fi
-if test x"$enable_ipod_writing" != xno; then
-        AC_MSG_NOTICE([** iPod write support is enabled])
-else
-	AC_MSG_NOTICE([   iPod write support is disabled])
-fi
 if test x"$enable_mmkeys" != "xyes"; then
 	AC_MSG_NOTICE([   Multimedia keys support is disabled])
 else
@@ -1033,7 +1029,11 @@ else
 fi
 
 if test x"$use_ipod" = xyes; then
-	AC_MSG_NOTICE([** iPod integration enabled])
+	if test x"$enable_ipod_writing" != xno; then
+		AC_MSG_NOTICE([** iPod integration enabled])
+	else
+		AC_MSG_NOTICE([** iPod integration enabled (read-only)])
+	fi
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
 fi
