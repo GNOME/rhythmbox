@@ -120,7 +120,6 @@ INCLUDES += $(GNOME_MEDIA_PROFILES_CFLAGS)
 endif
 
 
-if WITH_DBUS
 rb-shell-glue.h: rb-shell.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
 rb-shell-player-glue.h: rb-shell-player.xml Makefile
@@ -134,12 +133,7 @@ rb-shell-player-binding.h: rb-shell-player.xml Makefile
 
 BUILT_SOURCES += rb-shell-glue.h rb-shell-binding.h rb-shell-player-glue.h rb-shell-player-binding.h rb-playlist-manager-glue.h
 EXTRA_DIST += rb-shell.xml rb-shell-player.xml rb-playlist-manager.xml
-
 rhythmbox_LDADD += $(DBUS_LIBS)
-endif
-if WITH_OLD_DBUS
-rhythmbox_LDADD += $(DBUS_LIBS)
-endif
 
 rhythmbox_LDADD += \
 	$(top_builddir)/backends/librbbackends.la	\

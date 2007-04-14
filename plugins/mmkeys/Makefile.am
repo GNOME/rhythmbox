@@ -11,6 +11,7 @@ libmmkeys_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 libmmkeys_la_LIBADD =					\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
+	$(DBUS_LIBS)					\
 	$(NULL)
 
 INCLUDES = 						\
@@ -30,13 +31,9 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(WARN_CFLAGS)					\
+	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
 	$(NULL)
-
-if WITH_DBUS
-INCLUDES += $(DBUS_CFLAGS)
-libmmkeys_la_LIBADD += $(DBUS_LIBS)
-endif
 
 gladedir = $(datadir)/rhythmbox/glade
 glade_DATA =

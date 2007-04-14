@@ -4,6 +4,7 @@ SUBDIRS = 						\
 	generic-player					\
 	iradio						\
 	mmkeys						\
+	power-manager					\
 	sample						\
 	visualizer
 
@@ -39,10 +40,6 @@ if USE_CD_BURNING
 SUBDIRS += 						\
 	audiocd						\
 	cd-recorder
-endif
-
-if WITH_DBUS
-SUBDIRS += power-manager
 endif
 
 if USE_DAAP

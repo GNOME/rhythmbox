@@ -71,9 +71,7 @@
 /*#include "visualization-icon.h"*/
 #define VISUALIZATION_ICON_NAME	"visualization"
 
-#ifdef WITH_DBUS
 #include <dbus/dbus-glib.h>
-#endif
 
 #include "rb-vis-widget.h"
 
@@ -192,9 +190,7 @@ typedef struct
 	GtkWidget *play_button;
 	gboolean syncing_play;
 
-#ifdef WITH_DBUS
 	gboolean dbus_interface_registered;
-#endif
 	gboolean plugin_enabled;
 
 } RBVisualizerPlugin;
@@ -217,12 +213,10 @@ static void enable_visualization (RBVisualizerPlugin *pi);
 static gboolean disable_visualization (RBVisualizerPlugin *pi, gboolean set_action);
 static void update_window (RBVisualizerPlugin *plugin, VisualizerMode mode, int screen, int monitor);
 
-#ifdef WITH_DBUS
 gboolean rb_visualizer_start_remote (RBVisualizerPlugin *plugin, unsigned long window_id, GError **error);
 gboolean rb_visualizer_stop_remote (RBVisualizerPlugin *plugin, GError **error);
 
 #include "rb-visualizer-glue.h"
-#endif
 
 static GtkToggleActionEntry rb_visualizer_plugin_toggle_actions [] =
 {
@@ -1584,7 +1578,6 @@ impl_activate (RBPlugin *plugin,
 					 G_CALLBACK (rb_visualizer_plugin_window_title_change_cb),
 					 pi, 0);
 
-#ifdef WITH_DBUS
 	/* add dbus interface */
 	if (pi->dbus_interface_registered == FALSE) {
 		DBusGConnection *conn;
@@ -1600,7 +1593,6 @@ impl_activate (RBPlugin *plugin,
 			pi->dbus_interface_registered = TRUE;
 		}
 	}
-#endif
 	pi->plugin_enabled = TRUE;
 }
 
@@ -2164,8 +2156,6 @@ rb_visualizer_plugin_class_init (RBVisualizerPluginClass *klass)
 	plugin_class->deactivate = impl_deactivate;
 }
 
-#ifdef WITH_DBUS
-
 gboolean
 rb_visualizer_start_remote (RBVisualizerPlugin *plugin, unsigned long window_id, GError **error)
 {
@@ -2190,6 +2180,3 @@ rb_visualizer_stop_remote (RBVisualizerPlugin *plugin, GError **error)
 	update_window (plugin, EMBEDDED, -1, -1);
 	return TRUE;
 }
-
-#endif
-

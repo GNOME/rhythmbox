@@ -82,7 +82,6 @@ DISTCLEANFILES =		\
 	$(BUILT_SOURCES)	\
 	$(NULL)
 
-if WITH_DBUS
 rb-visualizer-glue.h: rb-visualizer.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_visualizer --mode=glib-server --output=$@ $<
 
@@ -90,5 +89,4 @@ BUILT_SOURCES += rb-visualizer-glue.h
 EXTRA_DIST += rb-visualizer.xml
 
 libvisualizer_la_LIBADD += $(DBUS_LIBS)
-endif
 

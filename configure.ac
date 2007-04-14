@@ -24,7 +24,6 @@ AC_CHECK_SIZEOF(long)
 GTK_REQS=2.6.0
 GNOME_VFS_REQS=2.7.4
 NCB_MIN_REQS=2.9.0
-OLD_DBUS_MIN_REQS=0.31
 DBUS_MIN_REQS=0.35
 TOTEM_PLPARSER_REQS=1.1.5
 
@@ -605,38 +604,21 @@ fi
 AC_SUBST(MKINSTALLDIRS)
 
 dnl DBUS
-PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
-if test "x$enable_dbus" = xno; then
-   PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $OLD_DBUS_MIN_REQS, enable_old_dbus=yes, enable_old_dbus=no)
-   if test "x$enable_old_dbus" = xno; then
-      AC_MSG_ERROR([DBUS not found or too old])
-   fi
-   AC_DEFINE(WITH_OLD_DBUS, 1, [Define if old D-BUS is enabled])
-else
-   AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])
-fi
+PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS)
 
 DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
 DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
 AC_SUBST(DBUS_GLIB_BIN)
-AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
-AM_CONDITIONAL(WITH_OLD_DBUS, test "x$enable_old_dbus" = "xyes")
 
 dnl out-of-process metadata reader (requires dbus)
 AC_ARG_WITH(metadata-helper,
 	    AC_HELP_STRING([--with-metadata-helper],
 	    		   [Use a separate process for metadata reading]),,
 	    with_metadata_helper=auto)
-enable_metadata_helper=no
 if test "x$with_metadata_helper" != xno; then
-	if test "x$enable_dbus" = xyes || test "x$enable_old_dbus" = xyes; then
-		AC_DEFINE(WITH_METADATA_HELPER, 1, [Define if the metadata helper process is enabled])
-		enable_metadata_helper=yes
-	elif test "x$with_metadata_helper" = xyes; then
-		AC_MSG_ERROR([Metadata helper process explicitly requested, but D-BUS is not enabled])
-	fi
+	AC_DEFINE(WITH_METADATA_HELPER, 1, [Define if the metadata helper process is enabled])
 fi
-AM_CONDITIONAL(WITH_METADATA_HELPER, test "x$enable_metadata_helper" = "xyes")
+AM_CONDITIONAL(WITH_METADATA_HELPER, test "x$with_metadata_helper" != "xno")
 
 AM_GCONF_SOURCE_2
 
@@ -1057,9 +1039,6 @@ if test x"$enable_hal" = xyes; then
 else
 	AC_MSG_NOTICE([   HAL support disabled])
 fi
-if test x"$enable_old_dbus" = xyes; then
-	AC_MSG_NOTICE([** using D-BUS < 0.35 control/activation])
-fi
 if test x"$enable_python" != xno; then
 	AC_MSG_NOTICE([** Python plugin support enabled])
 else
@@ -1080,7 +1059,7 @@ if test x"$enable_audioscrobbler" != xno; then
 else
 	AC_MSG_NOTICE([   Audioscrobbler support disabled])
 fi
-if test x"$enable_metadata_helper" = xyes; then
+if test x"$with_metadata_helper" != xno; then
 	AC_MSG_NOTICE([** Separate metadata helper process enabled])
 else
 	AC_MSG_NOTICE([   Separate metadata helper process disabled])

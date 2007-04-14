@@ -1,5 +1,20 @@
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac:
+	* metadata/rb-metadata-dbus-client.c:
+	* metadata/rb-metadata-dbus-service.c:
+	* plugins/Makefile.am:
+	* plugins/mmkeys/Makefile.am:
+	* plugins/mmkeys/rb-mmkeys-plugin.c:
+	* plugins/visualizer/Makefile.am:
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	* remote/Makefile.am:
+	* shell/Makefile.am:
+	* shell/main.c: get rid of dbus <= 0.35 support (fixes part of
+	#425103)
+
+2007-04-14  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac: rework iPod handling a bit
 
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>

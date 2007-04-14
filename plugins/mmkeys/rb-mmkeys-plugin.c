@@ -26,6 +26,7 @@
 #endif
 
 #include <string.h> /* For strlen */
+#include <dbus/dbus-glib.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gtk/gtk.h>
@@ -38,9 +39,6 @@
 #include "rb-shell-player.h"
 #include "rb-marshal.h"
 
-#ifdef WITH_DBUS
-#include <dbus/dbus-glib.h>
-#endif
 
 #ifdef HAVE_MMKEYS
 #include <X11/Xlib.h>
@@ -65,9 +63,7 @@ typedef struct
 		X_KEY_GRAB
 	} grab_type;
 	RBShellPlayer *shell_player;
-#ifdef WITH_DBUS
 	DBusGProxy *proxy;
-#endif
 } RBMMKeysPlugin;
 
 typedef struct
@@ -89,7 +85,6 @@ rb_mmkeys_plugin_init (RBMMKeysPlugin *plugin)
 	rb_debug ("RBMMKeysPlugin initialising");
 }
 
-#ifdef WITH_DBUS
 static void
 media_player_key_pressed (DBusGProxy *proxy,
 			  const gchar *application,
@@ -129,8 +124,6 @@ window_focus_cb (GtkWidget *window,
 
 	return FALSE;
 }
-
-#endif
 
 #ifdef HAVE_MMKEYS
 
@@ -286,9 +279,7 @@ static void
 impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
-#ifdef WITH_DBUS
 	DBusGConnection *bus;
-#endif
 	RBMMKeysPlugin *plugin;
 
 	rb_debug ("activating media player keys plugin");
@@ -298,7 +289,6 @@ impl_activate (RBPlugin *bplugin,
 		      "shell-player", &plugin->shell_player,
 		      NULL);
 
-#ifdef WITH_DBUS
 	bus = dbus_g_bus_get (DBUS_BUS_SESSION, NULL);
 	if (plugin->grab_type == NONE && bus != NULL) {
 		GError *error = NULL;
@@ -355,7 +345,6 @@ impl_activate (RBPlugin *bplugin,
 	} else {
 		rb_debug ("couldn't get dbus session bus");
 	}
-#endif
 
 #ifdef HAVE_MMKEYS
 	if (plugin->grab_type == NONE) {
@@ -378,7 +367,6 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->shell_player = NULL;
 	}
 
-#ifdef WITH_DBUS
 	if (plugin->proxy != NULL) {
 		GError *error = NULL;
 
@@ -397,7 +385,7 @@ impl_deactivate	(RBPlugin *bplugin,
 		g_object_unref (plugin->proxy);
 		plugin->proxy = NULL;
 	}
-#endif
+
 #ifdef HAVE_MMKEYS
 	if (plugin->grab_type == X_KEY_GRAB) {
 		rb_debug ("undoing old-style key grabs");
