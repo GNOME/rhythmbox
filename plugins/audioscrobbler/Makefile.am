@@ -7,12 +7,9 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-plugin.c			\
 	rb-audioscrobbler.c				\
 	rb-audioscrobbler.h				\
+	rb-lastfm-gst-src.c				\
 	rb-lastfm-source.c				\
 	rb-lastfm-source.h
-
-if USE_GSTREAMER_0_10
-libaudioscrobbler_la_SOURCES += rb-lastfm-gst-src.c
-endif
 
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBADD = 				\

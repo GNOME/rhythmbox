@@ -25,19 +25,10 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
+#include <gst/gsttagsetter.h>
 #include <gst/tag/tag.h>
 #include <gst/gsturi.h>
 
-#ifdef HAVE_GSTREAMER_0_8
-#include <gst/gsttag.h>
-#define gst_caps_unref gst_caps_free
-#define gst_tag_setter_add_tag_values gst_tag_setter_add_values
-#define gst_tag_setter_set_tag_merge_mode gst_tag_setter_set_merge_mode
-#define gst_tag_setter_merge_tags gst_tag_setter_merge
-#endif
-#ifdef HAVE_GSTREAMER_0_10
-#include <gst/gsttagsetter.h>
-#endif
 
 #include "rb-metadata.h"
 #include "rb-debug.h"
@@ -99,7 +90,6 @@ struct RBMetaDataPrivate
 
 #define RB_METADATA_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_METADATA, RBMetaDataPrivate))
 
-#ifdef HAVE_GSTREAMER_0_10
 static void
 gst_date_gulong_transform (const GValue *src, GValue *dest)
 {
@@ -118,8 +108,6 @@ gulong_gst_date_transform (const GValue *src, GValue *dest)
 	g_date_free (date);
 }
 
-#endif
-
 static void
 rb_metadata_class_init (RBMetaDataClass *klass)
 {
@@ -128,10 +116,8 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 	object_class->finalize = rb_metadata_finalize;
 
 	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
-#ifdef HAVE_GSTREAMER_0_10
 	g_value_register_transform_func (GST_TYPE_DATE, G_TYPE_ULONG, gst_date_gulong_transform);
 	g_value_register_transform_func (G_TYPE_ULONG, GST_TYPE_DATE, gulong_gst_date_transform);
-#endif
 }
 
 static GstElement *
@@ -150,7 +136,6 @@ rb_add_flac_tagger (RBMetaData *md, GstElement *element)
 	return tagger;
 }
 
-#ifdef HAVE_GSTREAMER_0_10
 static void
 id3_pad_added_cb (GstElement *demux, GstPad *pad, GstElement *mux)
 {
@@ -312,41 +297,6 @@ error:
 	return NULL;
 }
 
-#elif HAVE_GSTREAMER_0_8
-static GstElement *
-rb_add_id3_tagger (RBMetaData *md, GstElement *element)
-{
-	GstElement *tagger, *identity;
-	GstCaps *filtercaps = NULL;
-
-	if (!(tagger = gst_element_factory_make ("id3tag", "tagger")))
-		return NULL;
-
-	if (!(identity = gst_element_factory_make ("identity", "identity"))) {
-		gst_object_unref (GST_OBJECT (tagger));
-		return NULL;
-	}
-
-	gst_bin_add_many (GST_BIN (md->priv->pipeline), tagger, identity, NULL);
-
-	filtercaps = gst_caps_new_simple ("application/x-id3", NULL);
-	if (!gst_element_link_filtered (tagger, identity, filtercaps)) {
-		g_warning ("Linking id3tag and identity failed");
-		gst_caps_free (filtercaps);
-		gst_object_unref (GST_OBJECT(tagger));
-		gst_object_unref (GST_OBJECT(identity));
-		return NULL;
-        }
-	gst_caps_free (filtercaps);
-
-	gst_element_link_many(element, tagger, NULL);
-
-	gst_tag_setter_merge_tags (GST_TAG_SETTER (tagger), md->priv->tags, GST_TAG_MERGE_REPLACE_ALL);
-
-	return identity;
-}
-#endif
-
 static void
 add_supported_type (RBMetaData *md,
 		    const char *mime,
@@ -382,17 +332,11 @@ rb_metadata_init (RBMetaData *md)
  	 */
 	has_gnomevfssink = (gst_element_factory_find ("gnomevfssrc") != NULL &&
 			    gst_element_factory_find ("gnomevfssink") != NULL);
-#ifdef HAVE_GSTREAMER_0_10
 	has_id3 = (gst_element_factory_find ("id3v2mux") != NULL);
-#elif HAVE_GSTREAMER_0_8
-	has_id3 = (gst_element_factory_find ("id3tag") != NULL);
-#endif
-
 	tagger = (has_gnomevfssink && has_id3) ?  rb_add_id3_tagger : NULL;
 	add_supported_type (md, "application/x-id3", tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", tagger, "MP3");
 
-#ifdef HAVE_GSTREAMER_0_10
 	{
 		gboolean has_vorbis;
 
@@ -402,9 +346,6 @@ rb_metadata_init (RBMetaData *md)
 			      gst_default_registry_check_feature_version ("oggdemux", 0, 10, 6));
 		tagger = (has_gnomevfssink && has_vorbis) ?  rb_add_ogg_tagger : NULL;
 	}
-#else
-	tagger = NULL;
-#endif
 	add_supported_type (md, "application/ogg", tagger, "Ogg Vorbis");
 	add_supported_type (md, "audio/x-vorbis", tagger, "Ogg Vorbis");
 
@@ -727,62 +668,6 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 			     newval);
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-static void
-rb_metadata_gst_found_tag (GObject *pipeline, GstElement *source, GstTagList *tags, RBMetaData *md)
-{
-	gst_tag_list_foreach (tags, (GstTagForeachFunc) rb_metadata_gst_load_tag, md);
-}
-
-static void
-rb_metadata_gst_fakesink_handoff_cb (GstElement *fakesink, GstBuffer *buf, GstPad *pad, RBMetaData *md)
-{
-	if (md->priv->handoff) {
-		/* we get lots of these with decodebin.  why? */
-		/* rb_debug ("caught recursive handoff!"); */
-		return;
-	} else if (md->priv->eos) {
-		rb_debug ("caught handoff after eos!");
-		return;
-	}
-
-	rb_debug ("in fakesink handoff");
-	md->priv->handoff = TRUE;
-}
-
-static void
-rb_metadata_gst_error_cb (GstElement *element,
-			  GstElement *source,
-			  GError *error,
-			  gchar *debug,
-			  RBMetaData *md)
-{
-	if (error->domain == GST_STREAM_ERROR &&
-	    error->code == GST_STREAM_ERROR_TYPE_NOT_FOUND) {
-		rb_debug ("caught type not found error");
-
-	} else {
-		rb_debug ("caught error: %s ", error->message);
-		md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
-						       RB_METADATA_ERROR_GENERAL,
-						       error->message);
-	}
-}
-
-static void
-rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
-{
-	rb_debug ("caught eos");
-	if (md->priv->eos) {
-		rb_debug ("RENTERED EOS!");
-		return;
-	}
-	gst_element_set_state (md->priv->sink, GST_STATE_NULL);
-	md->priv->eos = TRUE;
-}
-
-#endif
-
 static void
 rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *caps, RBMetaData *md)
 {
@@ -837,7 +722,6 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 
 	gst_caps_unref (caps);
 
-#ifdef HAVE_GSTREAMER_0_10
 	/* if this is non-audio, cancel the operation
 	 * under 0.8 this causes assertion faliures when a pad with no caps in found
 	 * it isn't /needed/ under 0.8, so we don't do it.
@@ -847,7 +731,6 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 	 */
 	if (cancel)
 		gst_element_set_state (md->priv->pipeline, GST_STATE_NULL);
-#endif
 }
 
 static void
@@ -871,7 +754,6 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 		rb_debug ("decodebin emitted unknown type signal");
 	}
 
-#ifdef HAVE_GSTREAMER_0_10
 	{
 		char *msg;
 
@@ -879,7 +761,6 @@ rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *ca
 		GST_ELEMENT_ERROR (md->priv->pipeline, STREAM, CODEC_NOT_FOUND, ("%s", msg), (NULL));
 		g_free (msg);
 	}
-#endif
 }
 
 static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
@@ -898,7 +779,6 @@ static GstElement *make_pipeline_element (GstElement *pipeline, const char *elem
 	return elem;
 }
 
-#ifdef HAVE_GSTREAMER_0_10
 static gboolean
 rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 {
@@ -984,7 +864,6 @@ rb_metadata_event_loop (RBMetaData *md, GstElement *element, gboolean block)
 	}
 	gst_object_unref (bus);
 }
-#endif
 
 void
 rb_metadata_load (RBMetaData *md,
@@ -997,10 +876,8 @@ rb_metadata_load (RBMetaData *md,
 	GstElement *typefind = NULL;
 	gint64 file_size = -1;
 	GstFormat file_size_format = GST_FORMAT_BYTES;
-#ifdef HAVE_GSTREAMER_0_10
 	GstStateChangeReturn state_ret;
 	int change_timeout;
-#endif
 
 	g_free (md->priv->uri);
 	md->priv->uri = NULL;
@@ -1057,15 +934,6 @@ rb_metadata_load (RBMetaData *md,
  		goto out;
  	}
 
-#ifdef HAVE_GSTREAMER_0_8
-	g_object_set (G_OBJECT (md->priv->sink), "signal-handoffs", TRUE, NULL);
-
- 	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
- 	g_signal_connect_object (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md, 0);
-
-	g_signal_connect_object (md->priv->sink, "handoff", G_CALLBACK (rb_metadata_gst_fakesink_handoff_cb), md, 0);
-	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
-#endif
  	g_signal_connect_object (decodebin, "new-decoded-pad", G_CALLBACK (rb_metadata_gst_new_decoded_pad_cb), md, 0);
  	g_signal_connect_object (decodebin, "unknown-type", G_CALLBACK (rb_metadata_gst_unknown_type_cb), md, 0);
 
@@ -1086,17 +954,6 @@ rb_metadata_load (RBMetaData *md,
  	gst_element_link (urisrc, decodebin);
 
 	md->priv->pipeline = pipeline;
-#ifdef HAVE_GSTREAMER_0_8
-	gst_element_set_state (pipeline, GST_STATE_PLAYING);
-	while (gst_bin_iterate (GST_BIN (pipeline))
-	       && md->priv->error == NULL
-	       && !md->priv->handoff
-	       && !md->priv->eos)
-		;
-
-	if (md->priv->handoff) {
-#endif
-#ifdef HAVE_GSTREAMER_0_10
 	rb_debug ("going to PAUSED for metadata, uri: %s", uri);
 	state_ret = gst_element_set_state (pipeline, GST_STATE_PAUSED);
 	change_timeout = 5;
@@ -1134,7 +991,7 @@ rb_metadata_load (RBMetaData *md,
 
 		/* Poll the bus for messages */
 		rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
-#endif
+
 		/* We caught the first buffer(0.8) or went to PAUSED (0.10),
 		 * which means the decoder should have read all
 		 * of the metadata, and should know the length now.
@@ -1144,13 +1001,8 @@ rb_metadata_load (RBMetaData *md,
 			gint64 length;
 			GValue *newval;
 
-#ifdef HAVE_GSTREAMER_0_8
-			if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL, &format, &length)) {
-#endif
-#ifdef HAVE_GSTREAMER_0_10
 			if (gst_element_query_duration (md->priv->sink, &format, &length)) {
 				g_assert (format == GST_FORMAT_TIME);
-#endif
 				newval = g_new0 (GValue, 1);
 
 				rb_debug ("duration query succeeded");
@@ -1165,20 +1017,10 @@ rb_metadata_load (RBMetaData *md,
 			}
 		}
 	}
-#ifdef HAVE_GSTREAMER_0_8
-	else if (md->priv->eos) {
-		g_warning ("caught eos without handoff!");
-	}
-#endif
 
 	/* Get the file size, since it might be interesting, and return
 	 * the pipeline to NULL state.
 	 */
-#ifdef HAVE_GSTREAMER_0_8
-	gst_element_query (urisrc, GST_QUERY_TOTAL, &file_size_format, &file_size);
-	gst_element_set_state (pipeline, GST_STATE_NULL);
-#endif
-#ifdef HAVE_GSTREAMER_0_10
 	if (gst_element_query_duration (urisrc, &file_size_format, &file_size))
 		g_assert (file_size_format == GST_FORMAT_BYTES);
 
@@ -1187,7 +1029,6 @@ rb_metadata_load (RBMetaData *md,
 		g_warning ("Failed to return metadata reader to NULL state");
 	}
 	md->priv->handoff = (state_ret == GST_STATE_CHANGE_SUCCESS);
-#endif
 
 	/* report errors for various failure cases.
 	 * these don't include the URI as the import errors source
@@ -1344,10 +1185,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	pipeline = gst_pipeline_new ("pipeline");
 	md->priv->pipeline = pipeline;
 
-#ifdef HAVE_GSTREAMER_0_8
-	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
-#endif
-
 	/* Source */
 	plugin_name = "gnomevfssrc";
 	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
@@ -1361,9 +1198,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto missing_plugin;
 
 	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
-#if HAVE_GSTREAMER_0_8
-	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
-#endif
 
 	md->priv->tags = gst_tag_list_new ();
 	g_hash_table_foreach (md->priv->metadata,
@@ -1395,14 +1229,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
 
-#ifdef HAVE_GSTREAMER_0_8
-	while (gst_bin_iterate (GST_BIN (pipeline))
-	       && md->priv->error == NULL
-	       && !md->priv->eos)
-		;
-	gst_element_set_state (pipeline, GST_STATE_NULL);
-#endif
-#ifdef HAVE_GSTREAMER_0_10
 	rb_metadata_event_loop (md, GST_ELEMENT (pipeline), TRUE);
 	if (gst_element_set_state (pipeline, GST_STATE_NULL) == GST_STATE_CHANGE_ASYNC) {
 		if (gst_element_get_state (pipeline, NULL, NULL, 3 * GST_SECOND) != GST_STATE_CHANGE_SUCCESS) {
@@ -1413,7 +1239,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 			goto out_error;
 		}
 	}
-#endif
 
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);

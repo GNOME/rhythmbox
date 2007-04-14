@@ -1,5 +1,26 @@
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>
 
+	* backends/gstreamer/rb-encoder-gst.c:
+	* backends/gstreamer/rb-player-gst.c:
+	* configure.ac:
+	* metadata/rb-metadata-dbus-service.c:
+	* metadata/rb-metadata-gst.c:
+	* plugins/Makefile.am:
+	* plugins/audiocd/rb-audiocd-plugin.c:
+	* plugins/audiocd/rb-audiocd-source.c:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	* plugins/cd-recorder/rb-recorder-gst.c:
+	* plugins/daap/rb-daap-source.c:
+	* plugins/daap/rb-daap-source.h:
+	* plugins/daap/rb-daap-src.c:
+	* plugins/daap/rb-daap-src.h:
+	* rhythmdb/rhythmdb.c:
+	* shell/Makefile.am:
+	* shell/main.c: get rid of gstreamer 0.8 support (part of bug #425103)
+
+2007-04-14  Christophe Fergeau  <teuf@gnome.org>
+
 	* plugins/ipod/rb-ipod-source.c: (add_rb_playlist),
 	(load_ipod_playlists), (add_to_podcasts), (impl_delete_thyself):
 	rework iPod playlist handling, use Itdb_Playlist::userdata member to

@@ -42,9 +42,7 @@
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
-#ifdef HAVE_GSTREAMER
 #include "rb-daap-src.h"
-#endif
 
 #include "rb-daap-connection.h"
 #include "rb-daap-mdns-browser.h"
@@ -674,51 +672,6 @@ rb_daap_source_show_popup (RBSource *source)
 	return TRUE;
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-char *
-rb_daap_source_get_headers (RBDAAPSource *source,
-			    const char *uri,
-			    glong time,
-			    gint64 *bytes_out)
-{
-	gint64 bytes = 0;
-
-	if (bytes_out != NULL) {
-		*bytes_out = 0;
-	}
-
-	/* If there is no connection then bail */
-	if (source->priv->connection == NULL) {
-		return NULL;
-	}
-
-	if (time != 0) {
-		RhythmDB *db;
-		RBShell *shell;
-		RhythmDBEntry *entry;
-		gulong bitrate;
-
-		g_object_get (source, "shell", &shell, NULL);
-		g_object_get (shell, "db", &db, NULL);
-
-		entry = rhythmdb_entry_lookup_by_location (db, uri);
-
-		g_object_unref (shell);
-		g_object_unref (db);
-
-		bitrate = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE);
-		/* bitrate is kilobits per second */
-		/* a kilobit is 128 bytes */
-		bytes = (time * bitrate) * 128;
-	}
-
-	if (bytes_out != NULL) {
-		*bytes_out = bytes;
-	}
-
-	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
-}
-#else
 char *
 rb_daap_source_get_headers (RBDAAPSource *source,
 			    const char *uri,
@@ -731,7 +684,6 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 
 	return rb_daap_connection_get_headers (source->priv->connection, uri, bytes);
 }
-#endif
 
 static char *
 rb_daap_source_get_browser_key (RBSource *source)

@@ -39,10 +39,8 @@
 
 #include <glib/gi18n.h>
 #include <gst/gst.h>
-#ifdef HAVE_GSTREAMER_0_10
 #include <gst/base/gstbasesrc.h>
 #include <gst/base/gstpushsrc.h>
-#endif
 
 #include "rb-daap-source.h"
 #include "rb-daap-src.h"
@@ -57,25 +55,12 @@
 
 #define RESPONSE_BUFFER_SIZE	(4096)
 
-#ifdef HAVE_GSTREAMER_0_8
-typedef enum {
-	RB_DAAP_SRC_OPEN = GST_ELEMENT_FLAG_LAST,
-
-	RB_DAAP_SRC_FLAG_LAST = GST_ELEMENT_FLAG_LAST + 2
-} RBDAAPSrcFlags;
-#endif
-
 typedef struct _RBDAAPSrc RBDAAPSrc;
 typedef struct _RBDAAPSrcClass RBDAAPSrcClass;
 
 struct _RBDAAPSrc
 {
-#ifdef HAVE_GSTREAMER_0_8
-	GstElement element;
-	GstPad *srcpad;
-#else
 	GstPushSrc parent;
-#endif
 
 	/* uri */
 	gchar *daap_uri;
@@ -95,29 +80,17 @@ struct _RBDAAPSrc
 	gint64 curoffset;
 	gint64 seek_bytes;
 	gboolean do_seek;
-#ifdef HAVE_GSTREAMER_0_8
-	gboolean need_flush;
-	gboolean send_discont;
-	glong seek_time_to_return;
-	glong seek_time;
-#endif
 };
 
 struct _RBDAAPSrcClass
 {
-#ifdef HAVE_GSTREAMER_0_8
-	GstElementClass parent_class;
-#else
 	GstPushSrcClass parent_class;
-#endif
 };
 
-#ifdef HAVE_GSTREAMER_0_10
 static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
 	GST_PAD_SRC,
 	GST_PAD_ALWAYS,
 	GST_STATIC_CAPS_ANY);
-#endif
 
 GST_DEBUG_CATEGORY_STATIC (rb_daap_src_debug);
 #define GST_CAT_DEFAULT rb_daap_src_debug
@@ -148,11 +121,7 @@ _do_init (GType daap_src_type)
 			&urihandler_info);
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-GST_BOILERPLATE_FULL (RBDAAPSrc, rb_daap_src, GstElement, GST_TYPE_ELEMENT, _do_init);
-#else
 GST_BOILERPLATE_FULL (RBDAAPSrc, rb_daap_src, GstElement, GST_TYPE_PUSH_SRC, _do_init);
-#endif
 
 static void rb_daap_src_finalize (GObject *object);
 static void rb_daap_src_set_property (GObject *object,
@@ -164,27 +133,12 @@ static void rb_daap_src_get_property (GObject *object,
 			  GValue *value,
 			  GParamSpec *pspec);
 
-#ifdef HAVE_GSTREAMER_0_8
-static GstData *rb_daap_src_get (GstPad *pad);
-
-static GstElementStateReturn rb_daap_src_change_state (GstElement *element);
-
-static void rb_daap_src_close_file (RBDAAPSrc *src);
-static gboolean rb_daap_src_open_file (RBDAAPSrc *src);
-static gboolean rb_daap_src_srcpad_event (GstPad *pad,
-			  GstEvent *event);
-static gboolean rb_daap_src_srcpad_query (GstPad *pad,
-			  GstQueryType type,
-			  GstFormat *format,
-			  gint64 *value);
-#else
 static gboolean rb_daap_src_start (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_stop (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_is_seekable (GstBaseSrc *bsrc);
 static gboolean rb_daap_src_get_size (GstBaseSrc *src, guint64 *size);
 static gboolean rb_daap_src_do_seek (GstBaseSrc *src, GstSegment *segment);
 static GstFlowReturn rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf);
-#endif
 
 void
 rb_daap_src_set_plugin (RBPlugin *plugin)
@@ -192,46 +146,6 @@ rb_daap_src_set_plugin (RBPlugin *plugin)
 	g_assert (RB_IS_DAAP_PLUGIN (plugin));
 	daap_plugin = RB_DAAP_PLUGIN (plugin);
 }
-
-#ifdef HAVE_GSTREAMER_0_8
-
-static const GstFormat *
-rb_daap_src_get_formats (GstPad *pad)
-{
-	static const GstFormat formats[] = {
-		GST_FORMAT_BYTES,
-		0,
-	};
-
-	return formats;
-}
-
-static const GstQueryType *
-rb_daap_src_get_query_types (GstPad *pad)
-{
-  	static const GstQueryType types[] = {
-    		GST_QUERY_TOTAL,
-    		GST_QUERY_POSITION,
-    		0,
-  	};
-
-  	return types;
-}
-
-static const GstEventMask *
-rb_daap_src_get_event_mask (GstPad *pad)
-{
-  	static const GstEventMask masks[] = {
-//    		{GST_EVENT_SEEK, GST_SEEK_METHOD_CUR | GST_SEEK_METHOD_SET | GST_SEEK_METHOD_END | GST_SEEK_FLAG_FLUSH},
-    		{GST_EVENT_FLUSH, 0},
-    		{GST_EVENT_SIZE, 0},
-    		{0, 0},
-  	};
-
-  	return masks;
-}
-
-#endif
 
 enum
 {
@@ -245,44 +159,14 @@ static void
 rb_daap_src_base_init (gpointer g_class)
 {
 	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
-#ifdef HAVE_GSTREAMER_0_10
 	gst_element_class_add_pad_template (element_class,
 		gst_static_pad_template_get (&srctemplate));
-#endif
 	gst_element_class_set_details (element_class, &rb_daap_src_details);
 }
 
 static void
 rb_daap_src_class_init (RBDAAPSrcClass *klass)
 {
-#ifdef HAVE_GSTREAMER_0_8
-	GObjectClass *gobject_class;
-	GstElementClass *gstelement_class;
-
-	gobject_class = (GObjectClass *) klass;
-	gstelement_class = (GstElementClass *) klass;
-
-	parent_class = g_type_class_ref (GST_TYPE_ELEMENT);
-
-	gst_element_class_install_std_props (GST_ELEMENT_CLASS (klass),
-		"bytesperread", PROP_BYTESPERREAD, G_PARAM_READWRITE,
-		"location", PROP_LOCATION, G_PARAM_READWRITE, NULL);
-
-	gobject_class->finalize = rb_daap_src_finalize;
-
-	g_object_class_install_property (gobject_class,
-					 PROP_SEEKABLE,
-					 g_param_spec_boolean ("seekable",
-						 	       "seekable",
-							       "TRUE if stream is seekable",
-							       TRUE,
-							       G_PARAM_READABLE));
-
-	gstelement_class->set_property = rb_daap_src_set_property;
-	gstelement_class->get_property = rb_daap_src_get_property;
-
-	gstelement_class->change_state = rb_daap_src_change_state;
-#else
 	GObjectClass *gobject_class;
 	GstElementClass *gstelement_class;
 	GstBaseSrcClass *gstbasesrc_class;
@@ -313,43 +197,15 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 	gstbasesrc_class->do_seek = GST_DEBUG_FUNCPTR (rb_daap_src_do_seek);
 
 	gstpushsrc_class->create = GST_DEBUG_FUNCPTR (rb_daap_src_create);
-#endif
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-static void
-rb_daap_src_init (RBDAAPSrc *src)
-#else
 static void
 rb_daap_src_init (RBDAAPSrc *src, RBDAAPSrcClass *klass)
-#endif
 {
 	src->daap_uri = NULL;
 	src->sock_fd = -1;
 	src->curoffset = 0;
 	src->bytes_per_read = 4096 * 2;
-
-#ifdef HAVE_GSTREAMER_0_8
-	src->seek_bytes = 0;
-
-	src->send_discont = FALSE;
-	src->need_flush = FALSE;
-
-	src->srcpad = gst_pad_new ("src", GST_PAD_SRC);
-	gst_pad_set_get_function (src->srcpad,
-				  rb_daap_src_get);
-	gst_pad_set_event_mask_function (src->srcpad,
-					 rb_daap_src_get_event_mask);
-	gst_pad_set_event_function (src->srcpad,
-				    rb_daap_src_srcpad_event);
-	gst_pad_set_query_type_function (src->srcpad,
-					 rb_daap_src_get_query_types);
-	gst_pad_set_query_function (src->srcpad,
-				    rb_daap_src_srcpad_query);
-	gst_pad_set_formats_function (src->srcpad,
-				      rb_daap_src_get_formats);
-	gst_element_add_pad (GST_ELEMENT (src), src->srcpad);
-#endif
 }
 
 static void
@@ -357,12 +213,6 @@ rb_daap_src_finalize (GObject *object)
 {
 	RBDAAPSrc *src;
 	src = RB_DAAP_SRC (object);
-
-#ifdef HAVE_GSTREAMER_0_8
-	if (GST_FLAG_IS_SET (src, RB_DAAP_SRC_OPEN)) {
-		rb_daap_src_close_file (src);
-	}
-#endif
 
 	g_free (src->daap_uri);
 	src->daap_uri = NULL;
@@ -385,26 +235,13 @@ rb_daap_src_set_property (GObject *object,
 
 	switch (prop_id) {
 		case PROP_LOCATION:
-#ifdef HAVE_GSTREAMER_0_8
-			/* the element must be stopped or paused in order to do src */
-			if (GST_STATE (src) == GST_STATE_PLAYING || GST_STATE (src) == GST_STATE_PAUSED) {
-				break;
-			}
-#else
 			/* XXX check stuff */
-#endif
-
 			if (src->daap_uri) {
 				g_free (src->daap_uri);
 				src->daap_uri = NULL;
 			}
 			src->daap_uri = g_strdup (g_value_get_string (value));
 			break;
-#ifdef HAVE_GSTREAMER_0_8
-		case PROP_BYTESPERREAD:
-			src->bytes_per_read = g_value_get_int (value);
-			break;
-#endif
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 			break;
@@ -423,14 +260,6 @@ rb_daap_src_get_property (GObject *object,
 		case PROP_LOCATION:
 			g_value_set_string (value, src->daap_uri);
 			break;
-#ifdef HAVE_GSTREAMER_0_8
-		case PROP_SEEKABLE:
-			g_value_set_boolean (value, FALSE);
-			break;
-		case PROP_BYTESPERREAD:
-			g_value_set_int (value, src->bytes_per_read);
-			break;
-#endif
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 			break;
@@ -656,11 +485,7 @@ rb_daap_src_open (RBDAAPSrc *src)
 	}
 
 	/* The following can fail if the source is no longer connected */
-#ifdef HAVE_GSTREAMER_0_8
-	headers = rb_daap_source_get_headers (source, src->daap_uri, src->seek_time, &src->seek_bytes);
-#else
 	headers = rb_daap_source_get_headers (source, src->daap_uri, src->seek_bytes);
-#endif
 	if (headers == NULL) {
 		g_free (host);
 		g_free (path);
@@ -796,14 +621,9 @@ rb_daap_src_open (RBDAAPSrc *src)
 }
 
 static gboolean
-#ifdef HAVE_GSTREAMER_0_8
-rb_daap_src_open_file (RBDAAPSrc *src)
-{
-#else
 rb_daap_src_start (GstBaseSrc *bsrc)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (bsrc);
-#endif
 	if (src->sock_fd != -1) {
 		close (src->sock_fd);
 	}
@@ -812,16 +632,7 @@ rb_daap_src_start (GstBaseSrc *bsrc)
 
 	if (rb_daap_src_open (src)) {
 		src->buffer = src->buffer_base;
-#ifdef HAVE_GSTREAMER_0_8
-		src->seek_time_to_return = src->seek_time;
-		if (src->seek_bytes != 0) {
-			src->need_flush = TRUE;
-			src->send_discont = TRUE;
-		}
-		GST_FLAG_SET (src, RB_DAAP_SRC_OPEN);
-#else
 		src->curoffset = src->seek_bytes;
-#endif
 		if (src->chunked) {
 			src->first_chunk = TRUE;
 			src->size = 0;
@@ -832,22 +643,6 @@ rb_daap_src_start (GstBaseSrc *bsrc)
 	}
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-static void
-rb_daap_src_close_file (RBDAAPSrc *src)
-{
-	if (src->sock_fd != -1) {
-		close (src->sock_fd);
-		src->sock_fd = -1;
-	}
-	src->seek_bytes = 0;
-	src->curoffset = 0;
-	src->size = 0;
-	src->send_discont = FALSE;
-
-	GST_FLAG_UNSET (src, RB_DAAP_SRC_OPEN);
-}
-#else
 static gboolean
 rb_daap_src_stop (GstBaseSrc *bsrc)
 {
@@ -856,86 +651,32 @@ rb_daap_src_stop (GstBaseSrc *bsrc)
 	 */
 	return TRUE;
 }
-#endif
 
-#ifdef HAVE_GSTREAMER_0_8
-static GstData *
-rb_daap_src_get (GstPad *pad)
-#else
 static GstFlowReturn
 rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf)
-#endif
 {
 	RBDAAPSrc *src;
 	size_t readsize;
 	GstBuffer *buf = NULL;
 
-#ifdef HAVE_GSTREAMER_0_8
-	g_return_val_if_fail (pad != NULL, NULL);
-	g_return_val_if_fail (GST_IS_PAD (pad), NULL);
-	src = RB_DAAP_SRC (GST_OBJECT_PARENT (pad));
-	g_return_val_if_fail (GST_FLAG_IS_SET (src, RB_DAAP_SRC_OPEN), NULL);
-#else
 	src = RB_DAAP_SRC (psrc);
-#endif
-
 	if (src->do_seek) {
 		if (src->sock_fd != -1) {
 			close (src->sock_fd);
 			src->sock_fd = -1;
 		}
-#ifdef HAVE_GSTREAMER_0_8
-		if (!rb_daap_src_open_file (src))
-			return GST_DATA (gst_event_new (GST_EVENT_EOS));
-#else
 		if (!rb_daap_src_start (GST_BASE_SRC (src)))
 			return GST_FLOW_ERROR;
-#endif
 		src->do_seek = FALSE;
 	}
-
-#ifdef HAVE_GSTREAMER_0_8
-	/* try to negotiate here */
-	if (!gst_pad_is_negotiated (pad)) {
-		if (GST_PAD_LINK_FAILED (gst_pad_renegotiate (pad))) {
-			GST_ELEMENT_ERROR (src, CORE, NEGOTIATION, (NULL), GST_ERROR_SYSTEM);
-			gst_buffer_unref (buf);
-			return GST_DATA (gst_event_new (GST_EVENT_EOS));
-		}
-	}
-
-	if (src->need_flush) {
-		GstEvent *event = gst_event_new_flush ();
-
-		src->need_flush = FALSE;
-		return GST_DATA (event);
-	}
-
-	if (src->send_discont) {
-		GstEvent *event;
-
-		src->send_discont = FALSE;
-		event = gst_event_new_discontinuous (FALSE, GST_FORMAT_BYTES, src->curoffset + src->seek_bytes, NULL);
-		return GST_DATA (event);
-	}
-#endif
 
 	/* get a new chunk, if we need one */
 	if (src->chunked && src->size == 0) {
 		if (!rb_daap_src_read_chunk_size (src, src->first_chunk, &src->size)) {
-#ifdef HAVE_GSTREAMER_0_8
-			return GST_DATA (gst_event_new (GST_EVENT_EOS));
-#else
 			return GST_FLOW_ERROR;
-#endif
 		} else if (src->size == 0) {
 			/* EOS */
-#ifdef HAVE_GSTREAMER_0_8
-			gst_element_set_eos (GST_ELEMENT (src));
-			return GST_DATA (gst_event_new (GST_EVENT_EOS));
-#else
 			return GST_FLOW_UNEXPECTED;
-#endif
 		}
 		src->first_chunk = FALSE;
 	}
@@ -944,36 +685,20 @@ rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf)
 	if (src->chunked && readsize > src->size)
 		readsize = src->size;
 
-#ifdef HAVE_GSTREAMER_0_8
-	buf = gst_buffer_new ();
-	g_return_val_if_fail (buf, NULL);
-	GST_BUFFER_DATA (buf) = g_malloc0 (readsize);
-	g_return_val_if_fail (GST_BUFFER_DATA (buf) != NULL, NULL);
-#else
 	buf = gst_buffer_new_and_alloc (readsize);
-#endif
 
 	GST_LOG_OBJECT (src, "Reading %d bytes", readsize);
 	readsize = rb_daap_src_read (src, GST_BUFFER_DATA (buf), readsize);
 	if (readsize < 0) {
 		GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
 		gst_buffer_unref (buf);
-#ifdef HAVE_GSTREAMER_0_8
-		return GST_DATA (gst_event_new (GST_EVENT_EOS));
-#else
 		return GST_FLOW_ERROR;
-#endif
 	}
 
 	if (readsize == 0) {
 		GST_DEBUG ("blocking read returns 0, EOS");
 		gst_buffer_unref (buf);
-#ifdef HAVE_GSTREAMER_0_8
-		gst_element_set_eos (GST_ELEMENT (src));
-		return GST_DATA (gst_event_new (GST_EVENT_EOS));
-#else
 		return GST_FLOW_UNEXPECTED;
-#endif
 	}
 
 	if (src->chunked)
@@ -991,143 +716,9 @@ rb_daap_src_create (GstPushSrc *psrc, GstBuffer **outbuf)
 			GST_BUFFER_SIZE (buf), GST_TIME_ARGS (GST_BUFFER_TIMESTAMP (buf)),
 			GST_TIME_ARGS (GST_BUFFER_DURATION (buf)),
 			GST_BUFFER_OFFSET (buf), GST_BUFFER_OFFSET_END (buf));
-#ifdef HAVE_GSTREAMER_0_8
-	return GST_DATA (buf);
-#else
 	*outbuf = buf;
 	return GST_FLOW_OK;
-#endif
 }
-
-#ifdef HAVE_GSTREAMER_0_8
-static GstElementStateReturn
-rb_daap_src_change_state (GstElement *element)
-{
-	g_return_val_if_fail (RB_IS_DAAP_SRC (element), GST_STATE_FAILURE);
-
-	switch (GST_STATE_TRANSITION (element)) {
-		case GST_STATE_READY_TO_PAUSED:
-			if (!GST_FLAG_IS_SET (element, RB_DAAP_SRC_OPEN)) {
-				if (!rb_daap_src_open_file (RB_DAAP_SRC (element))) {
-					return GST_STATE_FAILURE;
-				}
-			}
-			break;
-		case GST_STATE_PAUSED_TO_READY:
-			if (GST_FLAG_IS_SET (element, RB_DAAP_SRC_OPEN)) {
-				rb_daap_src_close_file (RB_DAAP_SRC (element));
-			}
-			break;
-		case GST_STATE_NULL_TO_READY:
-		case GST_STATE_READY_TO_NULL:
-		default:
-			break;
-	}
-
-	if (GST_ELEMENT_CLASS (parent_class)->change_state) {
-		return GST_ELEMENT_CLASS (parent_class)->change_state (element);
-	}
-
-	return GST_STATE_SUCCESS;
-}
-
-static gboolean
-rb_daap_src_srcpad_event (GstPad *pad,
-			  GstEvent *event)
-{
-	RBDAAPSrc *src = RB_DAAP_SRC (GST_PAD_PARENT (pad));
-
-	switch (GST_EVENT_TYPE (event)) {
-		case GST_EVENT_SEEK: {
-			gint64 desired_offset = 0;
-
-			if (GST_EVENT_SEEK_FORMAT (event) != GST_FORMAT_BYTES) {
-				gst_event_unref (event);
-				return FALSE;
-			}
-
-			switch (GST_EVENT_SEEK_METHOD (event)) {
-				case GST_SEEK_METHOD_SET:
-					desired_offset = (gint64) GST_EVENT_SEEK_OFFSET (event);
-					break;
-				case GST_SEEK_METHOD_CUR:
-					desired_offset = src->curoffset + GST_EVENT_SEEK_OFFSET (event);
-					break;
-				case GST_SEEK_METHOD_END:
-					if (src->size == 0) {
-						return FALSE;
-					}
-					desired_offset = src->size - ABS (GST_EVENT_SEEK_OFFSET (event));
-					break;
-				default:
-					gst_event_unref (event);
-					return FALSE;
-			}
-
-			return FALSE;
-			break;
-		}
-		case GST_EVENT_SIZE:
-			if (GST_EVENT_SIZE_FORMAT (event) != GST_FORMAT_BYTES) {
-				gst_event_unref (event);
-				return FALSE;
-			}
-			src->bytes_per_read = GST_EVENT_SIZE_VALUE (event);
-			g_object_notify (G_OBJECT (src), "bytesperread");
-			break;
-		case GST_EVENT_FLUSH:
-			src->need_flush = TRUE;
-			break;
-		default:
-			gst_event_unref (event);
-			return FALSE;
-			break;
-	}
-
-	gst_event_unref (event);
-
-	return TRUE;
-}
-
-static gboolean
-rb_daap_src_srcpad_query (GstPad *pad,
-			  GstQueryType type,
-			  GstFormat *format,
-			  gint64 *value)
-{
-	RBDAAPSrc *src = RB_DAAP_SRC (gst_pad_get_parent (pad));
-
-	switch (type) {
-		case GST_QUERY_TOTAL:
-			if (*format != GST_FORMAT_BYTES || src->size == 0) {
-				return FALSE;
-			}
-			*value = src->size;
-			break;
-		case GST_QUERY_POSITION:
-			switch (*format) {
-				case GST_FORMAT_BYTES:
-					*value = src->curoffset;
-					break;
-				case GST_FORMAT_PERCENT:
-					return FALSE; /* FIXME */
-					if (src->size == 0) {
-						return FALSE;
-					}
-					*value = src->curoffset * GST_FORMAT_PERCENT_MAX / src->size;
-					break;
-				default:
-					return FALSE;
-			}
-			break;
-		default:
-			return FALSE;
-			break;
-	}
-
-	return TRUE;
-}
-#else
 
 gboolean
 rb_daap_src_is_seekable (GstBaseSrc *bsrc)
@@ -1159,8 +750,6 @@ rb_daap_src_get_size (GstBaseSrc *bsrc, guint64 *size)
 	return FALSE;
 }
 
-#endif
-
 static gboolean
 plugin_init (GstPlugin *plugin)
 {
@@ -1178,25 +767,6 @@ GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
 			  PACKAGE,
 			  "");
 
-#ifdef HAVE_GSTREAMER_0_8
-/*** RB DAAP SEEK INTERFACE **************************************************/
-
-void
-rb_daap_src_set_time (GstElement *element, glong time)
-{
-	RBDAAPSrc *src = RB_DAAP_SRC (element);
-	src->seek_time = time;
-	src->do_seek = TRUE;
-}
-
-glong
-rb_daap_src_get_time (GstElement *element)
-{
-	RBDAAPSrc *src = RB_DAAP_SRC (element);
-	return src->seek_time_to_return;
-}
-
-#endif
 /*** GSTURIHANDLER INTERFACE *************************************************/
 
 static guint

@@ -4,7 +4,8 @@ SUBDIRS = 						\
 	generic-player					\
 	iradio						\
 	mmkeys						\
-	sample
+	sample						\
+	visualizer
 
 if WITH_AUDIOSCROBBLER
 SUBDIRS += audioscrobbler
@@ -38,10 +39,6 @@ if USE_CD_BURNING
 SUBDIRS += 						\
 	audiocd						\
 	cd-recorder
-endif
-
-if USE_GSTREAMER_0_10
-SUBDIRS += visualizer
 endif
 
 if WITH_DBUS

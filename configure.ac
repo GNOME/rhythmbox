@@ -185,76 +185,24 @@ fi
 dnl Sound system
 dnl Now we're ready to ask for gstreamer libs and cflags
 dnl And we can also ask for the right version of gstreamer
-HAVE_SOUNDSYSTEM=no
-
-GST_0_8_MAJORMINOR=0.8
-GST_0_8_REQUIRED_VERSION=0.8.2
-PKG_CHECK_MODULES(GSTREAMER_0_8, \
-	gstreamer-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION gstreamer-libs-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION
-	gstreamer-control-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION
-	gstreamer-gconf-$GST_0_8_MAJORMINOR >= $GST_0_8_REQUIRED_VERSION,
-	have_gstreamer_0_8=yes,have_gstreamer_0_8=no)
-
-GST_0_10_MAJORMINOR=0.10
-GST_0_10_REQUIRED_VERSION=0.9.7
+GST_0_10_REQUIRED_VERSION=0.10.4
 PKG_CHECK_MODULES(GSTREAMER_0_10, \
-	gstreamer-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION
-	gstreamer-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION
-	gstreamer-plugins-base-$GST_0_10_MAJORMINOR >= $GST_0_10_REQUIRED_VERSION,
-	have_gstreamer_0_10=yes,have_gstreamer_0_10=no)
+	gstreamer-0.10 >= $GST_0_10_REQUIRED_VERSION
+	gstreamer-base-0.10 >= $GST_0_10_REQUIRED_VERSION
+	gstreamer-plugins-base-0.10 >= $GST_0_10_REQUIRED_VERSION)
+
+RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_10_CFLAGS"
+RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS"
 
 GST_0_10_XFADE_REQUIRED_VERSION=0.10.11
 PKG_CHECK_MODULES(GSTREAMER_0_10_XFADE, \
-	gstreamer-$GST_0_10_MAJORMINOR >= $GST_0_10_XFADE_REQUIRED_VERSION,
+	gstreamer-0.10 >= $GST_0_10_XFADE_REQUIRED_VERSION,
 	have_gstreamer_0_10_xfade=yes,have_gstreamer_0_10_xfade=no)
 
-AC_ARG_WITH(playback,
-   AC_HELP_STRING([--with-playback=auto|gstreamer-0-8|gstreamer-0-10],
-   [Select the playback backend to use (default auto)]),,
-   with_playback=auto)
-
-if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-10; then
-	if test x"$have_gstreamer_0_10" = xyes; then
-		with_playback=gstreamer_0_10
-		SOUNDSYSTEM_DEPS="gstreamer-$GST_0_10_MAJORMINOR"
-		AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
-		AC_DEFINE(HAVE_GSTREAMER_0_10,1,[Define if you want to use the GStreamer 0.10])
-		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_10_CFLAGS"
-		SOUNDSYSTEM_LIBS="$GSTREAMER_0_10_LIBS"
-
-		if test x"$have_gstreamer_0_10_xfade" = xyes; then
-			with_xfade_backend=yes
-			AC_DEFINE(HAVE_GSTREAMER_0_10_XFADE,1,[Define if you want to use the crossfading GStreamer 0.10 backend])
-		fi
-	elif test x$with_playback = xgstreamer-0-10; then
-		AC_MSG_ERROR([GStreamer 0.10 explicitly requested, and it was not found or older than version $GST_0_10_REQUIRED_VERSION, or gst-plugins-base was missing])
-	fi
+if test x"$have_gstreamer_0_10_xfade" = xyes; then
+	AC_DEFINE(HAVE_GSTREAMER_0_10_XFADE,1,[Define if you want to use the crossfading GStreamer 0.10 backend])
 fi
-if test x$with_playback = xauto -o x$with_playback = xgstreamer-0-8; then
-	if test x"$have_gstreamer_0_8" = xyes; then
-		with_playback=gstreamer_0_8
-		SOUNDSYSTEM_DEPS="gstreamer-$GST_0_8_MAJORMINOR"
-		AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
-		AC_DEFINE(HAVE_GSTREAMER_0_8,1,[Define if you want to use the GStreamer 0.8])
-		SOUNDSYSTEM_CFLAGS="$GSTREAMER_0_8_CFLAGS"
-		SOUNDSYSTEM_LIBS="$GSTREAMER_0_8_LIBS"
-	elif test x$with_playback = xgstreamer-0-8; then
-		AC_MSG_ERROR([GStreamer 0.8 explicitly requested, and it was not found or older than version $GST_0_8_REQUIRED_VERSION])
-	fi
-fi
-AM_CONDITIONAL(USE_GSTREAMER_0_10, test x"$with_playback" = xgstreamer_0_10)
-AM_CONDITIONAL(USE_GSTREAMER_0_8, test x"$with_playback" = xgstreamer_0_8)
-AM_CONDITIONAL(USE_GSTREAMER_0_10_XFADE, test x"$with_xfade_backend" = xyes)
-
-dnl Give error and exit if we don't have gstreamer
-if test x$with_playback = xauto; then
-	AC_MSG_ERROR([GStreamer not found, or older than version $GST_0_8_REQUIRED_VERSION/$GST_0_10_REQUIRED_VERSION])
-fi
-
-AC_SUBST(SOUNDSYSTEM_DEPS)
-RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
-RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
-
+AM_CONDITIONAL(USE_GSTREAMER_0_10_XFADE, test x"$have_gstreamer_0_10_xfade" = xyes)
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
@@ -497,11 +445,6 @@ if test "x$enable_daap" != "xno"; then
 	elif test x"$have_mdns" = xno; then
 		if test "x$enable_daap" = "xyes"; then
 			AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implementation found.  Install Howl or Avahi])
-		fi
-		enable_daap=no
-	elif test x"$with_playback" = xgstreamer_0_8; then
-		if test "x$enable_daap" = "xyes"; then
-			AC_MSG_ERROR([DAAP support explicitly requested, but not supported with GStreamer 0.8])
 		fi
 		enable_daap=no
 	else
@@ -1083,15 +1026,10 @@ else
 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 fi
 
-if test x"$with_playback" = xgstreamer_0_8; then
-	AC_MSG_NOTICE([** GStreamer 0.8 player is enabled])
-elif test x"$with_playback" = xgstreamer_0_10; then
-	AC_MSG_NOTICE([** GStreamer 0.10 player is enabled])
-	if test x"$with_xfade_backend" = xyes; then
-		AC_MSG_NOTICE([** GStreamer 0.10 crossfading player is enabled])
-	fi
+if test x"$have_gstreamer_0_10_xfade" != xyes; then
+	AC_MSG_NOTICE([   Crossfading player is disabled])
 else
-	AC_MSG_ERROR([   Playback engine set incorrectly])
+	AC_MSG_NOTICE([** Crossfading player is enabled])
 fi
 
 if test x"$use_ipod" = xyes; then

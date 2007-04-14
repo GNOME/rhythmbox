@@ -43,9 +43,7 @@
 #define nautilus_burn_drive_unref nautilus_burn_drive_free
 #endif
 
-#ifdef HAVE_GSTREAMER_0_10
 #include <gst/gst.h>
-#endif
 
 #include "rb-plugin.h"
 #include "rb-debug.h"
@@ -355,8 +353,6 @@ rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer   *player,
 	plugin->playing_uri = uri ? g_strdup (uri) : NULL;
 }
 
-#ifdef HAVE_GSTREAMER_0_10
-
 static gboolean
 rb_audiocd_plugin_can_reuse_stream_cb (RBPlayer *player,
 				       const char *new_uri,
@@ -422,8 +418,6 @@ rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 	gst_object_unref (pad);
 }
 
-#endif
-
 #if !NAUTILUS_BURN_CHECK_VERSION(2,15,3)
 static const char *
 nautilus_burn_drive_get_device (NautilusBurnDrive *drive)
@@ -477,9 +471,7 @@ impl_activate (RBPlugin *plugin,
 	GList                   *it;
 	GnomeVFSVolumeMonitor   *monitor;
 	GObject                 *shell_player;
-#ifdef HAVE_GSTREAMER_0_10
 	RBPlayer                *player_backend;
-#endif
 	GtkUIManager            *uimanager;
 	char                    *filename;
 
@@ -526,7 +518,6 @@ impl_activate (RBPlugin *plugin,
 	 * (and prevent it from even thinking about crossfading songs on the same cd)
 	 */
 	shell_player = rb_shell_get_player (shell);
-#ifdef HAVE_GSTREAMER_0_10
 	g_object_get (shell_player, "player", &player_backend, NULL);
 	if (player_backend) {
 		GObjectClass *klass = G_OBJECT_GET_CLASS (player_backend);
@@ -541,7 +532,6 @@ impl_activate (RBPlugin *plugin,
 						 plugin, 0);
 		}
 	}
-#endif
 
 	/* monitor the playing song, to disable cd drive polling */
 	g_signal_connect_object (shell_player, "playing-uri-changed",

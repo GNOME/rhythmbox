@@ -1009,13 +1009,6 @@ process_added_entries_cb (RhythmDBEntry *entry,
 		if (uri == NULL)
 			return TRUE;
 
-#ifdef HAVE_GSTREAMER_0_8
-		/* always start remote files hidden*/
-		if (!g_str_has_prefix (uri, "file://")) {
-			entry->flags |= RHYTHMDB_ENTRY_HIDDEN;
-		}
-#endif
-
 		queue_stat_uri (uri, db, RHYTHMDB_ENTRY_TYPE_INVALID);
 	}
 

@@ -39,13 +39,8 @@
 #include <libgnomeui/gnome-app-helper.h>
 #include <libgnomeui/gnome-authentication-manager.h>
 
-#ifdef HAVE_GSTREAMER
 #include <gst/gst.h>
-#ifdef HAVE_GSTREAMER_0_8
-#include <gst/gconf/gconf.h>
-#include <gst/control/control.h>
-#endif
-#endif
+
 #ifdef WITH_RHYTHMDB_GDA
 #include <libgda/libgda.h>
 #endif
@@ -138,16 +133,9 @@ main (int argc, char **argv)
 	new_argv[argc] = g_strdup ("--disable-sound");
 	new_argv[argc+1] = NULL;
 
-#ifdef HAVE_GSTREAMER_0_8
-        /* To pass options to GStreamer in 0.8, RB needs to use popt, for
-         * now, GStreamer can live without them (people can still use env
-         * vars, after all) */
-	gst_init (NULL, NULL);
-#elif HAVE_GSTREAMER_0_10
 	rb_profile_start ("initializing gstreamer");
 	g_option_context_add_group (context, gst_init_get_option_group ());
 	rb_profile_end ("initializing gstreamer");
-#endif
 
 	gtk_set_locale ();
 	rb_profile_start ("initializing gnome program");
@@ -187,16 +175,8 @@ main (int argc, char **argv)
 	/* ask for utf-8 message text from GStreamer too,
 	 * since it doesn't do that itself.
 	 */
-#ifdef HAVE_GSTREAMER_0_10
 	bind_textdomain_codeset ("gstreamer-0.10", "UTF-8");
-#else
-	bind_textdomain_codeset ("gstreamer-0.8", "UTF-8");
-#endif
 	textdomain (GETTEXT_PACKAGE);
-#endif
-
-#ifdef HAVE_GSTREAMER_0_8
-	gst_control_init (&argc, &argv);
 #endif
 
 	if (!debug && debug_match)
@@ -393,9 +373,7 @@ main (int argc, char **argv)
 		gnome_vfs_shutdown ();
 	}
 
-#ifdef HAVE_GSTREAMER_0_10
 	gst_deinit ();
-#endif
 
 	g_strfreev (new_argv);
 

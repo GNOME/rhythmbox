@@ -142,11 +142,8 @@ static void show_entry_popup (RBEntryView *view,
 			      gboolean over_entry,
 			      RBSource *source);
 
-#ifdef HAVE_GSTREAMER_0_10
 /* can't be bothered creating a whole header file just for this: */
 GType rb_lastfm_src_get_type (void);
-#endif
-
 
 static const char* const radio_options[][3] = {
 	{N_("Similar Artists radio"), "lastfm://artist/%s/similarartists", N_("Artists similar to %s")},
@@ -268,9 +265,7 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 							      G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 	g_type_class_add_private (klass, sizeof (RBLastfmSourcePrivate));
 
-#ifdef HAVE_GSTREAMER_0_10
 	rb_lastfm_src_get_type ();
-#endif
 }
 
 static void

@@ -30,13 +30,11 @@
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <gst/gst.h>
+#include <gst/tag/tag.h>
 #include <string.h>
 #include <profiles/gnome-media-profiles.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_GSTREAMER_0_10
-#include <gst/tag/tag.h>
-#endif
 
 #include "rhythmdb.h"
 #include "eel-gconf-extensions.h"
@@ -45,13 +43,6 @@
 #include "rb-encoder-gst.h"
 #include "rb-debug.h"
 #include "rb-util.h"
-
-#ifdef HAVE_GSTREAMER_0_8
-#define GstStateChangeReturn GstElementStateReturn
-#define GstState GstElementState
-#define GST_STATE_CHANGE_FAILURE GST_STATE_FAILURE
-#define gst_caps_unref gst_caps_free
-#endif
 
 static void rb_encoder_gst_class_init (RBEncoderGstClass *klass);
 static void rb_encoder_gst_init       (RBEncoderGst *encoder);
@@ -200,7 +191,6 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 	_rb_encoder_emit_completed (RB_ENCODER (encoder));
 }
 
-#ifdef HAVE_GSTREAMER_0_10
 static gboolean
 bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 {
@@ -248,36 +238,6 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 	g_object_unref (G_OBJECT (encoder));
 	return TRUE;
 }
-#endif
-
-#ifdef HAVE_GSTREAMER_0_8
-static void
-gst_eos_cb (GstElement *element, RBEncoderGst *encoder)
-{
-	rb_debug ("received EOS");
-
-	gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
-
-	rb_encoder_gst_emit_completed (encoder);
-
-	g_object_unref (encoder->priv->pipeline);
-	encoder->priv->pipeline = NULL;
-}
-
-static void
-gst_error_cb (GstElement *element,
-			  GstElement *source,
-			  GError *error,
-			  gchar *debug,
-			  RBEncoderGst *encoder)
-{
-	rb_encoder_gst_emit_error (encoder, error);
-	rb_debug ("received error %s", debug);
-
-	rb_encoder_cancel (RB_ENCODER (encoder));
-}
-
-#endif
 
 static gboolean
 progress_timeout_cb (RBEncoderGst *encoder)
@@ -291,7 +251,6 @@ progress_timeout_cb (RBEncoderGst *encoder)
 
 	format = encoder->priv->position_format;
 
-#ifdef HAVE_GSTREAMER_0_10
 	gst_element_get_state (encoder->priv->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
 	if (state != GST_STATE_PLAYING)
 		return FALSE;
@@ -300,16 +259,6 @@ progress_timeout_cb (RBEncoderGst *encoder)
 		g_warning ("Could not get current track position");
 		return TRUE;
 	}
-#elif HAVE_GSTREAMER_0_8
-	state = gst_element_get_state (encoder->priv->pipeline);
-	if (state != GST_STATE_PLAYING)
-		return FALSE;
-
-	if (!gst_element_query (encoder->priv->pipeline, GST_QUERY_POSITION, &format, &position)) {
-		g_warning ("Could not get current track position");
-		return TRUE;
-	}
-#endif
 
 	if (format == GST_FORMAT_TIME) {
 		gint secs;
@@ -335,7 +284,6 @@ static gboolean
 start_pipeline (RBEncoderGst *encoder, GError **error)
 {
 	GstStateChangeReturn result;
-#ifdef HAVE_GSTREAMER_0_10
 	GstBus *bus;
 
 	g_return_val_if_fail (encoder->priv->pipeline != NULL, FALSE);
@@ -344,18 +292,6 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 	gst_bus_add_watch (bus, bus_watch_cb, encoder);
 
 	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
-#elif HAVE_GSTREAMER_0_8
-
-	g_return_val_if_fail (encoder->priv->pipeline != NULL, FALSE);
-
-	g_signal_connect_object (G_OBJECT (encoder->priv->pipeline),
-				 "error", G_CALLBACK (gst_error_cb),
-				 encoder, 0);
-	g_signal_connect_object (G_OBJECT (encoder->priv->pipeline),
-				 "eos", G_CALLBACK (gst_eos_cb),
-				 encoder, 0);
-	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
-#endif
 
 	if (result != GST_STATE_CHANGE_FAILURE) {
 		/* start reporting progress */
@@ -370,37 +306,7 @@ start_pipeline (RBEncoderGst *encoder, GError **error)
 	return (result != GST_STATE_CHANGE_FAILURE);
 }
 
-#ifdef HAVE_GSTREAMER_0_8
-/* this is basically what the function in 0.10 does */
-static GstPad*
-rb_gst_bin_find_unconnected_pad (GstBin *bin, GstPadDirection dir)
-{
-	const GList *elements, *el;
-
-	elements = gst_bin_get_list (GST_BIN (bin));
-	for (el = elements; el != NULL; el = el->next) {
-		GstElement *element = GST_ELEMENT (el->data);
-		const GList *pads, *pl;
-
-		pads = gst_element_get_pad_list (element);
-
-		for (pl = pads; pl != NULL; pl = pl->next) {
-			GstPad *pad = GST_PAD (pl->data);
-
-			if (!GST_PAD_IS_LINKED (pad) && GST_PAD_DIRECTION (pad) == dir)
-				return pad;
-		}
-	}
-
-	return NULL;
-}
-
-#define gst_bin_find_unconnected_pad rb_gst_bin_find_unconnected_pad
-
-const char *GST_ENCODING_PROFILE = "audioscale ! audioconvert ! %s";
-#elif HAVE_GSTREAMER_0_10
-const char *GST_ENCODING_PROFILE = "audioresample ! audioconvert ! %s";
-#endif
+static const char *GST_ENCODING_PROFILE = "audioresample ! audioconvert ! %s";
 
 static GstElement*
 add_encoding_pipeline (RBEncoderGst *encoder,
@@ -511,7 +417,6 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	}
 #endif
 
-#ifdef HAVE_GSTREAMER_0_10
 	{
 		GstIterator *iter;
 		gboolean done;
@@ -546,15 +451,6 @@ add_tags_from_entry (RBEncoderGst *encoder,
 		}
 		gst_iterator_free (iter);
 	}
-#elif HAVE_GSTREAMER_0_8
-	{
-		GstElement *tagger;
-
-		tagger = gst_bin_get_by_interface (GST_BIN (encoder->priv->pipeline), GST_TYPE_TAG_SETTER);
-		if (tagger)
-			gst_tag_setter_merge (GST_TAG_SETTER (tagger), tags, GST_TAG_MERGE_REPLACE_ALL);
-	}
-#endif
 
 	gst_tag_list_free (tags);
 	return result;
@@ -731,7 +627,6 @@ end:
 static GstElement *
 profile_bin_find_encoder (GstBin *profile_bin)
 {
-#ifdef HAVE_GSTREAMER_0_10
 	GstElementFactory *factory;
 	GstElement *encoder = NULL;
 	GstIterator *iter;
@@ -766,9 +661,6 @@ profile_bin_find_encoder (GstBin *profile_bin)
 	gst_iterator_free (iter);
 
 	return encoder;
-#else
-	return NULL;
-#endif
 }
 
 static GMAudioProfile*

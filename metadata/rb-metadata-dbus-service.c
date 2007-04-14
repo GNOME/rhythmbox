@@ -435,10 +435,8 @@ main (int argc, char **argv)
 	g_type_init ();
 	gnome_vfs_init ();
 	gnome_authentication_manager_init ();
-#ifdef HAVE_GSTREAMER
 	gst_init (NULL, NULL);
 	g_set_prgname ("rhythmbox-metadata");
-#endif
 
 	if (argv[1] != NULL && strcmp(argv[1], "--debug") == 0) {
 		argv++;
@@ -514,8 +512,7 @@ main (int argc, char **argv)
 
 	dbus_server_disconnect (svc.server);
 	dbus_server_unref (svc.server);
-#ifdef HAVE_GSTREAMER_0_10
 	gst_deinit ();
-#endif
+
 	return 0;
 }
