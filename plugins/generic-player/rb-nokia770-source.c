@@ -118,7 +118,7 @@ impl_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 }
 
 
-#ifdef HAVE_HAL_0_5
+#ifdef HAVE_HAL
 
 static gboolean
 hal_udi_is_nokia770 (const char *udi)
@@ -207,46 +207,6 @@ end:
 
 	return result;
 }
-
-#elif HAVE_HAL_0_2
-
-static gboolean
-hal_udi_is_nokia770 (const char *udi)
-{
-	LibHalContext *ctx;
-	char *parent_udi;
-	char *parent_name;
-	gboolean result;
-
-	result = FALSE;
-	ctx = hal_initialize (NULL, FALSE);
-	if (ctx == NULL) {
-		return FALSE;
-	}
-	parent_udi = hal_device_get_property_string (ctx, udi,
-						     "info.parent");
-
-	parent_name = hal_device_get_property_string (ctx, parent_udi,
-						      "info.vendor");
-	if (parent_name != NULL && strcmp (parent_name, "Nokia") == 0) {
-		g_free (parent_udi);
-		parent_name = hal_device_get_property_string (ctx, parent_udi,
-							      "info.product");
-		if (parent_name != NULL && strcmp (parent_name, "770") == 0) {
-			result = TRUE;
-		} else if (parent_name != NULL && strcmp (parent_name, "N800") == 0) {
-			result = TRUE;
-		}
-	}
-
-	g_free (parent_name);
-	g_free (parent_udi);
-
-	hal_shutdown (ctx);
-
-	return result;
-}
-
 #endif
 
 gboolean

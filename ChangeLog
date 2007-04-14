@@ -1,6 +1,15 @@
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac:
+	* plugins/generic-player/rb-generic-player-source.c:
+	* plugins/generic-player/rb-nokia770-source.c:
+	* plugins/generic-player/rb-psp-source.c:
+	* plugins/ipod/rb-ipod-source.c: get rid of hal 0.2x support
+	(fixes part of #425103)
+
+2007-04-14  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.ac:
 	* metadata/rb-metadata-dbus-client.c:
 	* metadata/rb-metadata-dbus-service.c:
 	* plugins/Makefile.am:

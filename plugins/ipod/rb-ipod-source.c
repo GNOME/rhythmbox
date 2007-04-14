@@ -724,7 +724,7 @@ rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 	return rb_ipod_volume_has_ipod_db (volume);
 }
 
-#ifdef HAVE_HAL_0_5
+#ifdef HAVE_HAL
 
 static gboolean
 hal_udi_is_ipod (const char *udi)
@@ -794,41 +794,6 @@ end:
 
 	return result;
 }
-
-#elif HAVE_HAL_0_2
-
-static gboolean
-hal_udi_is_ipod (const char *udi)
-{
-	LibHalContext *ctx;
-	char *parent_udi;
-	char *parent_name;
-	gboolean result;
-
-	result = FALSE;
-	ctx = hal_initialize (NULL, FALSE);
-	if (ctx == NULL) {
-		/* FIXME: should we return an error somehow so that we can
-		 * fall back to a check for iTunesDB presence instead ?
-		 */
-		return FALSE;
-	}
-	parent_udi = hal_device_get_property_string (ctx, udi,
-			"info.parent");
-	parent_name = hal_device_get_property_string (ctx, parent_udi,
-			"storage.model");
-	g_free (parent_udi);
-
-	if (parent_name != NULL && strcmp (parent_name, "iPod") == 0) {
-		result = TRUE;
-	}
-
-	g_free (parent_name);
-	hal_shutdown (ctx);
-
-	return result;
-}
-
 #endif
 
 static GList*

@@ -29,7 +29,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#ifdef HAVE_HAL_0_5
+#ifdef HAVE_HAL
 #include <libhal.h>
 #include <dbus/dbus.h>
 #endif
@@ -72,7 +72,7 @@ static void default_load_playlists (RBGenericPlayerSource *source);
 static char * default_transform_playlist_uri (RBGenericPlayerSource *source,
 					      const char *uri);
 
-#if HAVE_HAL_0_5
+#if HAVE_HAL
 static LibHalContext *get_hal_context (void);
 static void cleanup_hal_context (LibHalContext *ctx);
 static char * get_hal_udi_for_player (LibHalContext *ctx, GnomeVFSVolume *volume);
@@ -180,7 +180,7 @@ rb_generic_player_source_constructor (GType type,
 static void
 rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 {
-#if HAVE_HAL_0_5
+#if HAVE_HAL
 	GnomeVFSVolume *volume;
 	LibHalContext *ctx = get_hal_context ();
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
@@ -421,7 +421,7 @@ gboolean
 rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
 {
 	gboolean result = FALSE;
-#ifdef HAVE_HAL_0_5
+#ifdef HAVE_HAL
 	LibHalContext *ctx;
 
 	ctx = get_hal_context ();
@@ -451,7 +451,7 @@ rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
 	}
 	cleanup_hal_context (ctx);
 
-#endif /* HAVE_HAL_0_5 */
+#endif /* HAVE_HAL */
 
 	/* treat as audio player if ".is_audio_player" exists in the root of the volume  */
 	if (!result) {
@@ -832,7 +832,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 
 /* generic HAL-related code */
 
-#ifdef HAVE_HAL_0_5
+#ifdef HAVE_HAL
 static LibHalContext *
 get_hal_context (void)
 {

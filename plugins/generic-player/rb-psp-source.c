@@ -189,7 +189,7 @@ rb_psp_source_create_playlists (RBGenericPlayerSource *source)
 	g_free (mount_path);
 }
 
-#ifdef HAVE_HAL_0_5
+#ifdef HAVE_HAL
 
 static gboolean
 hal_udi_is_psp (const char *udi)
@@ -257,38 +257,6 @@ end:
 
 	return result;
 }
-
-#elif HAVE_HAL_0_2
-
-static gboolean
-hal_udi_is_psp (const char *udi)
-{
-	LibHalContext *ctx;
-	char *parent_udi;
-	char *parent_name;
-	gboolean result;
-
-	result = FALSE;
-	ctx = hal_initialize (NULL, FALSE);
-	if (ctx == NULL) {
-		return FALSE;
-	}
-	parent_udi = hal_device_get_property_string (ctx, udi,
-						     "info.parent");
-	parent_name = hal_device_get_property_string (ctx, parent_udi,
-						      "storage.model");
-	g_free (parent_udi);
-
-	if (parent_name != NULL && strcmp (parent_name, "PSP") == 0) {
-		result = TRUE;
-	}
-
-	g_free (parent_name);
-	hal_shutdown (ctx);
-
-	return result;
-}
-
 #endif
 
 gboolean

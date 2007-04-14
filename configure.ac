@@ -72,28 +72,15 @@ AC_ARG_WITH(hal,
 	      AC_HELP_STRING([--without-hal],
 			     [Disable HAL support]))
 if test "x$with_hal" != "xno"; then
-  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal05=yes, enable_hal05=no)
-  if test x$enable_hal05 != xyes; then
-     PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5, enable_hal02=yes, enable_hal02=no)
+  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal=yes, enable_hal=no)
+  if test "x$enable_hal" != "xyes" -a "x$with_hal" = "xyes"; then
+      AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
   fi
-  if test x$enable_hal05 = xyes || test x$enable_hal02 = xyes; then
-      enable_hal=yes
-      AC_DEFINE(HAVE_HAL, 1, [Define if you HAL support])
-      if test x$enable_hal05 = xyes; then
-         AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
-      else
-         AC_DEFINE(HAVE_HAL_0_2, 1, [Define if you have HAL 0.2 or later])
-      fi
-  	  AC_SUBST(HAL_CFLAGS)
-  	  AC_SUBST(HAL_LIBS)
-  else
-    if test "x$with_hal" = "xyes"; then
-	  AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
-    fi
-  fi
+
+  AC_DEFINE(HAVE_HAL, 1, [Define if you HAL support])
+  AC_SUBST(HAL_CFLAGS)
+  AC_SUBST(HAL_LIBS)
 fi
-AM_CONDITIONAL(HAVE_HAL_0_5, test x"$enable_hal05" = xyes)
-AM_CONDITIONAL(HAVE_HAL_0_2, test x"$enable_hal02" = xyes)
 AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
 
 dnl iPod support
