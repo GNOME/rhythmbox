@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.ar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-05 19:47+0100\n"
+"POT-Creation-Date: 2007-04-14 18:23+0100\n"
 "PO-Revision-Date: 2007-04-02 13:04+0200\n"
 "Last-Translator: Ahmad Farghal <ahmad.farghal@gmail.com>\n"
 "Language-Team: Arabic <support@arabeyes.org>\n"
@@ -23,19 +23,19 @@ msgstr ""
 "n<=10 ? 2 : 3\n"
 "X-Generator: KBabel 1.11.2\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:576
+#: ../backends/gstreamer/rb-encoder-gst.c:472
 #, fuzzy, c-format
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "الملف موجود. هل تريد تنميقه؟"
 
-#: ../backends/gstreamer/rb-player-gst.c:788 ../metadata/rb-metadata-gst.c:893
-#: ../metadata/rb-metadata-gst.c:1453
-#: ../plugins/cd-recorder/rb-recorder-gst.c:668
+#: ../backends/gstreamer/rb-player-gst.c:628 ../metadata/rb-metadata-gst.c:773
+#: ../metadata/rb-metadata-gst.c:1277
+#: ../plugins/cd-recorder/rb-recorder-gst.c:507
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "فشل إنشاء الجزء %s، تأكد من تثبيتك"
 
-#: ../backends/gstreamer/rb-player-gst.c:865
+#: ../backends/gstreamer/rb-player-gst.c:695
 #, fuzzy
 msgid "Unknown playback error"
 msgstr "حدث خطأ مجهول."
@@ -589,7 +589,7 @@ msgstr "لا يدعم رذمبوكس التكوين الآلي للوكيل"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/daap/rb-daap-connection.c:677
 #: ../plugins/generic-player/rb-generic-player-source.c:775
-#: ../plugins/ipod/rb-ipod-source.c:290
+#: ../plugins/ipod/rb-ipod-source.c:281
 #: ../plugins/iradio/rb-iradio-source.c:497
 #: ../plugins/iradio/rb-iradio-source.c:1109
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
@@ -599,7 +599,7 @@ msgstr "لا يدعم رذمبوكس التكوين الآلي للوكيل"
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
 #: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
-#: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1404
+#: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1397
 #: ../shell/rb-shell-player.c:1422 ../shell/rb-shell.c:3021
 #: ../sources/rb-podcast-source.c:1644 ../widgets/rb-entry-view.c:815
 #: ../widgets/rb-entry-view.c:840 ../widgets/rb-entry-view.c:1124
@@ -639,59 +639,59 @@ msgstr "%d:%02d of %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d"
 
-#: ../metadata/rb-metadata-dbus-client.c:299
+#: ../metadata/rb-metadata-dbus-client.c:295
 msgid "Internal GStreamer problem; file a bug"
 msgstr ""
 
-#: ../metadata/rb-metadata-dbus-client.c:317
-#: ../metadata/rb-metadata-dbus-client.c:367
-#: ../metadata/rb-metadata-dbus-client.c:372
-#: ../metadata/rb-metadata-dbus-client.c:392
-#: ../metadata/rb-metadata-dbus-client.c:402
-#: ../metadata/rb-metadata-dbus-client.c:410
-#: ../metadata/rb-metadata-dbus-client.c:550
-#: ../metadata/rb-metadata-dbus-client.c:560
+#: ../metadata/rb-metadata-dbus-client.c:313
+#: ../metadata/rb-metadata-dbus-client.c:363
+#: ../metadata/rb-metadata-dbus-client.c:368
+#: ../metadata/rb-metadata-dbus-client.c:388
+#: ../metadata/rb-metadata-dbus-client.c:398
+#: ../metadata/rb-metadata-dbus-client.c:406
+#: ../metadata/rb-metadata-dbus-client.c:546
+#: ../metadata/rb-metadata-dbus-client.c:556
 #, fuzzy
 msgid "D-BUS communication error"
 msgstr "حدث خطأ خلال فتح %s."
 
-#: ../metadata/rb-metadata-gst.c:639
+#: ../metadata/rb-metadata-gst.c:579
 #, c-format
 msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:642
+#: ../metadata/rb-metadata-gst.c:582
 #, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1048
+#: ../metadata/rb-metadata-gst.c:924
 #, fuzzy
 msgid "Failed to create a source element; check your installation"
 msgstr "فشل إنشاء جسم عرض جستريمر. الرجاء مراجعة تثبيت GStreamer."
 
-#: ../metadata/rb-metadata-gst.c:1121
+#: ../metadata/rb-metadata-gst.c:977
 msgid "GStreamer error: failed to change state"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1244
+#: ../metadata/rb-metadata-gst.c:1084
 msgid "The MIME type of the file could not be identified"
 msgstr "غير قادر على التعرف على نوع MIME الخاص بالملف"
 
-#: ../metadata/rb-metadata-gst.c:1381
+#: ../metadata/rb-metadata-gst.c:1214
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "نوع ملف غير مدعوم: %s"
 
-#: ../metadata/rb-metadata-gst.c:1390
+#: ../metadata/rb-metadata-gst.c:1223
 msgid "Unable to create tag-writing elements"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1413
+#: ../metadata/rb-metadata-gst.c:1238
 msgid "Timeout while setting pipeline to NULL"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:1433
+#: ../metadata/rb-metadata-gst.c:1257
 #, fuzzy
 msgid "File corrupted during write"
 msgstr "حصل خطأ عند الكتابة."
@@ -742,31 +742,29 @@ msgstr " (يونيكود غير صحيح)"
 msgid "Track %u"
 msgstr "المقطع %s"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:342
-#: ../plugins/audiocd/rb-audiocd-source.c:352
-#: ../plugins/audiocd/rb-audiocd-source.c:359
-#: ../plugins/audiocd/rb-audiocd-source.c:682
+#: ../plugins/audiocd/rb-audiocd-source.c:325
+#: ../plugins/audiocd/rb-audiocd-source.c:331
+#: ../plugins/audiocd/rb-audiocd-source.c:650
 #, fuzzy
 msgid "Couldn't load Audio CD"
 msgstr "أمر كتابة قرص الصوت"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:343
-#: ../plugins/audiocd/rb-audiocd-source.c:353
+#: ../plugins/audiocd/rb-audiocd-source.c:326
 msgid "Rhythmbox couldn't access the CD."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:360
+#: ../plugins/audiocd/rb-audiocd-source.c:332
 msgid "Rhythmbox couldn't read the CD information."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:465
+#: ../plugins/audiocd/rb-audiocd-source.c:433
 #: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1080
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Title"
 msgstr "عنوان"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:472
+#: ../plugins/audiocd/rb-audiocd-source.c:440
 #: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1090
 #: ../widgets/rb-library-browser.c:100
 #: ../widgets/rb-query-creator-properties.c:68
@@ -774,7 +772,7 @@ msgstr "عنوان"
 msgid "Artist"
 msgstr "فنان"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:683
+#: ../plugins/audiocd/rb-audiocd-source.c:651
 msgid "Rhythmbox could not get access to the CD device."
 msgstr ""
 
@@ -845,7 +843,7 @@ msgid "Could not create CD lookup thread"
 msgstr "لم يمكن إنشاء بريمج مراقبة القرص"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:519
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:517
 msgid "Last.fm"
 msgstr "لاست . إف إم"
 
@@ -884,7 +882,7 @@ msgstr "حساب لاست . إف إم"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:3000 ../widgets/rb-entry-view.c:763
+#: ../rhythmdb/rhythmdb.c:2993 ../widgets/rb-entry-view.c:763
 #: ../widgets/rb-entry-view.c:1182 ../widgets/rb-entry-view.c:1195
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
@@ -948,7 +946,7 @@ msgid "Incorrect password"
 msgstr "كلمة السر غير صحيحة"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:930
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:581
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:579
 #, fuzzy
 msgid "Handshake failed"
 msgstr "فشل الاختبار %d"
@@ -978,7 +976,7 @@ msgid "Similar Artists radio"
 msgstr "عنصر قائمة مشع"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:149
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1040
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1038
 #, fuzzy, c-format
 msgid "Artists similar to %s"
 msgstr "ا_ستعادة الحالة الأصلية"
@@ -998,7 +996,7 @@ msgid "Artist Fan radio"
 msgstr "راديو محبي الفنان"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:151
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1042
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1040
 #, c-format
 msgid "Artists liked by fans of %s"
 msgstr "الفنانون الذين يحبهم محبي %s"
@@ -1037,72 +1035,72 @@ msgstr "امنع الأغنية"
 msgid "Ban the current track from being played again"
 msgstr "امنع تشغيل المسار الحالي في المستقبل"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:339
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:337
 msgid "Enter the item to build a Last.fm station out of:"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:342
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:340
 msgid "Add"
 msgstr "أضف"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:537
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:535
 #, fuzzy
 msgid "Neighbour Radio"
 msgstr "زر مشع"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:577
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:575
 msgid "No such artist.  Check your spelling"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:585
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:583
 msgid "The server marked you as banned"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:598
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:596
 #: ../plugins/iradio/rb-iradio-source.c:560
 #, fuzzy, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "كولدج ستيشن"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:976
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:974
 msgid "Marking song loved..."
 msgstr "جاري وضع علامة \"أحبها\" للأغنية..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:982
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:980
 msgid "Skipping song..."
 msgstr "جاري تخطي الاغنية..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:988
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:986
 msgid "Banning song..."
 msgstr "جاري منع الأغنية..."
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1031
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1029
 #, fuzzy, c-format
 msgid "Global Tag %s"
 msgstr "قائمة"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1050
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1048
 #, fuzzy, c-format
 msgid "%s's Neighbour Radio"
 msgstr "زر مشع"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1052
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1050
 #, fuzzy, c-format
 msgid "%s's Recommended Radio: %s percent"
 msgstr "عرض بالحجم الأصلي"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1054
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1052
 #, c-format
 msgid "%s's Personal Radio"
 msgstr "راديو %s الشخصي"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1060
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1058
 #, c-format
 msgid "%s's %s Radio"
 msgstr "راديو %s %s"
 
-#: ../plugins/audioscrobbler/rb-lastfm-source.c:1064
+#: ../plugins/audioscrobbler/rb-lastfm-source.c:1062
 #, fuzzy, c-format
 msgid "%s Group Radio"
 msgstr "زر مشع"
@@ -1130,81 +1128,68 @@ msgstr "أنشئ قرصاً صوتياً من قائمة التشغيل"
 msgid "Unable to create audio CD"
 msgstr "لا يمكن انشاء CD/DVD"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:544
+#: ../plugins/cd-recorder/rb-recorder-gst.c:429
 #, fuzzy
 msgid "Failed to create pipeline"
 msgstr "فشل وصل الوصلة الرمزيّة"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:574
-#, fuzzy
-msgid "Could not access source pad"
-msgstr "لم يمكن إغلاق المجلّد المصدر %s: %s"
-
-#: ../plugins/cd-recorder/rb-recorder-gst.c:686
-#: ../plugins/cd-recorder/rb-recorder-gst.c:692
+#: ../plugins/cd-recorder/rb-recorder-gst.c:525
+#: ../plugins/cd-recorder/rb-recorder-gst.c:531
 #, fuzzy, c-format
 msgid "Unable to unlink '%s'"
 msgstr "لا يمكن تحميل·'%s':·%s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:733
-msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+#: ../plugins/cd-recorder/rb-recorder-gst.c:586
+msgid "Could not retrieve state from processing pipeline"
 msgstr ""
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:769
-#: ../plugins/cd-recorder/rb-recorder-gst.c:774
-#: ../plugins/cd-recorder/rb-recorder-gst.c:840
+#: ../plugins/cd-recorder/rb-recorder-gst.c:600
 #, fuzzy
 msgid "Could not get current track position"
 msgstr "لا يمكن تلقي موقع القطعة الحالي"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:826
-msgid "Could not retrieve state from processing pipeline"
-msgstr ""
-
-#: ../plugins/cd-recorder/rb-recorder-gst.c:891
-#: ../plugins/cd-recorder/rb-recorder-gst.c:943
+#: ../plugins/cd-recorder/rb-recorder-gst.c:648
 #, fuzzy
 msgid "Could not start pipeline playing"
 msgstr "لم أستطع بدء قناة الحالة: %s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:906
-#: ../plugins/cd-recorder/rb-recorder-gst.c:954
+#: ../plugins/cd-recorder/rb-recorder-gst.c:659
 #, fuzzy
 msgid "Could not pause playback"
 msgstr "تعذّر تشغيل التّطبيق"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1161
+#: ../plugins/cd-recorder/rb-recorder-gst.c:856
 #, fuzzy
 msgid "Cannot find drive"
 msgstr "لا يمكنني ايجاد المستضيف"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1224
+#: ../plugins/cd-recorder/rb-recorder-gst.c:919
 #, fuzzy, c-format
 msgid "Cannot find drive %s"
 msgstr "لا يمكنني ايجاد المستضيف"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1233
+#: ../plugins/cd-recorder/rb-recorder-gst.c:928
 #, fuzzy, c-format
 msgid "Drive %s is not a recorder"
 msgstr "“%s” لا يجيب"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1399
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1592
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1094
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1287
 #, fuzzy
 msgid "No writable drives found."
 msgstr "لم توجد سوّاقات أقراص مدمجة"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1542
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1237
 #, c-format
 msgid "Could not get track time for file: %s"
 msgstr ""
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1601
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1296
 #, fuzzy
 msgid "Could not determine audio track durations."
 msgstr "فشل إنشاء جزء الإخراج الصوتي، تأكد من تعييناتك"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1651
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1346
 #, fuzzy, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -1213,7 +1198,7 @@ msgstr ""
 "حدث خطأ عند الكتابة على القرص المدمج:\n"
 "%s"
 
-#: ../plugins/cd-recorder/rb-recorder-gst.c:1655
+#: ../plugins/cd-recorder/rb-recorder-gst.c:1350
 #, fuzzy
 msgid "There was an error writing to the CD"
 msgstr ""
@@ -1717,30 +1702,30 @@ msgstr "تفضيلات عازف الموسيقى"
 msgid "%s's Music"
 msgstr "موسيقى %s"
 
-#: ../plugins/daap/rb-daap-source.c:343
+#: ../plugins/daap/rb-daap-source.c:341
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-source.c:345
+#: ../plugins/daap/rb-daap-source.c:343
 #, fuzzy
 msgid "Password Required"
 msgstr "طلب كلمة السر"
 
-#: ../plugins/daap/rb-daap-source.c:417
+#: ../plugins/daap/rb-daap-source.c:415
 msgid "Connecting to music share"
 msgstr "جاري الاتصال بمشاركة الموسيقى"
 
-#: ../plugins/daap/rb-daap-source.c:424
+#: ../plugins/daap/rb-daap-source.c:422
 msgid "Retrieving songs from music share"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-source.c:511
+#: ../plugins/daap/rb-daap-source.c:509
 #, fuzzy
 msgid "Could not connect to shared music"
 msgstr "لم يمكن الاتصال بالمضيف البعيد"
 
-#: ../plugins/daap/rb-daap-src.c:639
+#: ../plugins/daap/rb-daap-src.c:468
 #, fuzzy, c-format
 msgid "Connection to %s:%d refused."
 msgstr "“%s” رفض الإتصال"
@@ -1771,8 +1756,7 @@ msgstr "أ_عد التسمية"
 msgid "Rename iPod"
 msgstr "أعد تسمية iPod"
 
-#. No Podcast playlist on the iPod, create a new one
-#: ../plugins/ipod/rb-ipod-source.c:1082 ../sources/rb-podcast-source.c:820
+#: ../plugins/ipod/rb-ipod-source.c:992 ../sources/rb-podcast-source.c:820
 msgid "Podcasts"
 msgstr ""
 
@@ -2381,36 +2365,36 @@ msgstr "جاري فتح المخزن %s"
 msgid "Magnatune"
 msgstr "ماجناتيون"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:109
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:110
 #, fuzzy
 msgid "Loading Magnatune catalogue"
 msgstr "خطأ عند تحميل الرزنامة"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:112
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
 #, fuzzy
 msgid "Downloading Magnatune Album(s)"
 msgstr "فنان الألبوم، عنوان الألبوم"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:198
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
 #, fuzzy
 msgid "Couldn't purchase album"
 msgstr "ألبوم مجهول"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:200
 msgid "You must have a library location set to purchase an album."
 msgstr ""
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:217
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:218
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:477
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:478
 #, fuzzy
 msgid "Purchase Error"
 msgstr "_لصق"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:478
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:479
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2418,12 +2402,12 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:481
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:482
 #: ../widgets/rb-entry-view.c:1233
 msgid "Error"
 msgstr "خطأ"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:482
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:483
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2568,58 +2552,58 @@ msgstr ""
 msgid "Vala Sample Plugin"
 msgstr "مُلحق الصوت"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:229
+#: ../plugins/visualizer/rb-visualizer-plugin.c:223
 #: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
 msgid "Visualization"
 msgstr "مجموعة مرئية"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:230
+#: ../plugins/visualizer/rb-visualizer-plugin.c:224
 msgid "Start or stop visualization"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:236
+#: ../plugins/visualizer/rb-visualizer-plugin.c:230
 msgid "Small"
 msgstr "صغير"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:237
+#: ../plugins/visualizer/rb-visualizer-plugin.c:231
 msgid "Normal"
 msgstr "عادي"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:238
+#: ../plugins/visualizer/rb-visualizer-plugin.c:232
 msgid "Large"
 msgstr "كبير"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:239
+#: ../plugins/visualizer/rb-visualizer-plugin.c:233
 msgid "Extra Large"
 msgstr "ضخم"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:250
+#: ../plugins/visualizer/rb-visualizer-plugin.c:244
 msgid "Embedded"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:251
+#: ../plugins/visualizer/rb-visualizer-plugin.c:245
 msgid "Fullscreen"
 msgstr "كامل الشاشة"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:252
+#: ../plugins/visualizer/rb-visualizer-plugin.c:246
 msgid "Desktop"
 msgstr "سطح المكتب"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:253
+#: ../plugins/visualizer/rb-visualizer-plugin.c:247
 msgid "Window"
 msgstr "نافذة"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1200
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1194
 msgid "Enable visual effects?"
 msgstr "تمكين المؤثرات المرئية؟"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1202
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1196
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
 msgstr ""
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1525
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1519
 #, fuzzy
 msgid "Music Player Visualization"
 msgstr "مجموعة مرئية"
@@ -2699,7 +2683,7 @@ msgstr "غير صحيح"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:74 ../shell/main.c:122
+#: ../remote/dbus/rb-client.c:74 ../shell/main.c:101
 msgid "Quit Rhythmbox"
 msgstr "إنهاء رذمبكس"
 
@@ -2834,20 +2818,20 @@ msgstr ""
 msgid "Couldn't access %s: %s"
 msgstr "تعذّر الوصول إلى سلّة المهملات."
 
-#: ../rhythmdb/rhythmdb.c:1546
+#: ../rhythmdb/rhythmdb.c:1539
 msgid "<invalid filename>"
 msgstr "<اسم ملف غير صالح>"
 
-#: ../rhythmdb/rhythmdb.c:1803
+#: ../rhythmdb/rhythmdb.c:1796
 msgid "invalid unicode in error message"
 msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:2518
+#: ../rhythmdb/rhythmdb.c:2511
 #, fuzzy
 msgid "Could not load the music database"
 msgstr "لم يمكن تحميل الملخّص لـ %s"
 
-#: ../rhythmdb/rhythmdb.c:3914
+#: ../rhythmdb/rhythmdb.c:3907
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -2856,7 +2840,7 @@ msgstr[1] "%ld دقيقتان"
 msgstr[2] "%ld دقائق"
 msgstr[3] "%ld دقيقة"
 
-#: ../rhythmdb/rhythmdb.c:3915
+#: ../rhythmdb/rhythmdb.c:3908
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -2865,7 +2849,7 @@ msgstr[1] "%ld ساعتان"
 msgstr[2] "%ld ساعات"
 msgstr[3] "%ld ساعة"
 
-#: ../rhythmdb/rhythmdb.c:3916
+#: ../rhythmdb/rhythmdb.c:3909
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2875,7 +2859,7 @@ msgstr[2] "%ld أيام"
 msgstr[3] "%ld يوما"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3922
+#: ../rhythmdb/rhythmdb.c:3915
 #, fuzzy, c-format
 msgid "%s, %s and %s"
 msgstr "و"
@@ -2883,49 +2867,49 @@ msgstr "و"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3928 ../rhythmdb/rhythmdb.c:3936
-#: ../rhythmdb/rhythmdb.c:3947
+#: ../rhythmdb/rhythmdb.c:3921 ../rhythmdb/rhythmdb.c:3929
+#: ../rhythmdb/rhythmdb.c:3940
 #, c-format
 msgid "%s and %s"
 msgstr "%s و %s"
 
-#: ../shell/main.c:115
+#: ../shell/main.c:94
 #, fuzzy
 msgid "Enable debug output"
 msgstr "تمكين اخراج مسهب"
 
-#: ../shell/main.c:116
+#: ../shell/main.c:95
 msgid "Enable debug output matching a specified string"
 msgstr ""
 
-#: ../shell/main.c:117
+#: ../shell/main.c:96
 msgid "Do not update the library with file changes"
 msgstr ""
 
-#: ../shell/main.c:118
+#: ../shell/main.c:97
 msgid "Do not register the shell"
 msgstr "لا تسجل الهيكل"
 
-#: ../shell/main.c:119
+#: ../shell/main.c:98
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "حفظ البيانات بشكل غير دائم (يتطلب --no-registration("
 
-#: ../shell/main.c:120
+#: ../shell/main.c:99
 #, fuzzy
 msgid "Path for database file to use"
 msgstr "الملف الذي سيستعمل كصورة خلفية"
 
-#: ../shell/main.c:121
+#: ../shell/main.c:100
 #, fuzzy
 msgid "Path for playlists file to use"
 msgstr "الملف الذي سيستعمل كصورة خلفية"
 
-#: ../shell/main.c:123
+#: ../shell/main.c:102
 #, fuzzy
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:160 ../shell/main.c:169
+#: ../shell/main.c:132 ../shell/main.c:141
 msgid "Rhythmbox"
 msgstr "رذمبوكس"
 
@@ -4383,6 +4367,10 @@ msgstr "على سطح المكتب"
 #: ../widgets/rb-song-info.c:1012
 msgid "Unknown location"
 msgstr "موقع مجهول"
+
+#, fuzzy
+#~ msgid "Could not access source pad"
+#~ msgstr "لم يمكن إغلاق المجلّد المصدر %s: %s"
 
 #~ msgid ""
 #~ "Rhythmbox manages all of your music in a central music \"library\", so "
