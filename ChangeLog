@@ -1,3 +1,10 @@
+2007-04-16  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(stream_queue_probe_cb), (create_stream):
+	Use the right type for the queue threshold.  Fixes crashes on ppc,
+	weirdness elsewhere.
+
 2007-04-14  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: move track transfer configure magic before the iPod

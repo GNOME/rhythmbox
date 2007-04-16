@@ -287,7 +287,7 @@ typedef struct
 	gint crossfade;
 	gboolean fading;
 
-	guint64 queue_threshold;
+	guint queue_threshold;
 	gulong queue_threshold_id;
 	gulong underrun_id;
 	gulong queue_probe_id;
@@ -1514,7 +1514,7 @@ stream_queue_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
 		progress = 99;
 	}
 	rb_debug ("current network buffer level: %" G_GUINT64_FORMAT
-		  "; threshold %" G_GUINT64_FORMAT
+		  "; threshold %u"
 		  " - %" G_GUINT64_FORMAT "%%",
 		  level, stream->queue_threshold, progress);
 
@@ -1828,7 +1828,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 			      "max-size-bytes",
 			      MAX_NETWORK_BUFFER_SIZE * 2 * 1024,
 			      "max-size-buffers", 0,
-			      "max-size-time", 0,
+			      "max-size-time", (gint64)0,
 			      NULL);
 
 		stream->underrun_id =
