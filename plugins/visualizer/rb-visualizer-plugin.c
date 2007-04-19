@@ -1055,6 +1055,10 @@ rb_visualizer_plugin_window_title_change_cb (RBShellPlayer *player,
 {
 	char *markup;
 
+	if (title == NULL) {
+		title = "";
+	}
+
 	markup = g_markup_printf_escaped ("<big><b>%s</b></big>", title);
 	gtk_label_set_markup (GTK_LABEL (plugin->song_info_label), markup);
 	g_free (markup);
