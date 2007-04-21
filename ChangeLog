@@ -1,5 +1,17 @@
 2007-04-21  Bastien Nocera  <hadess@hadess.net>
 
+	* metadata/rb-metadata.h: Add RB_METADATA_ERROR_EMPTY_FILE type
+	error
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_load_tag),
+	(rb_metadata_load):
+	Don't replace a string with another shorter version of it, avoids
+	problems with ID3v1 tags being preferred to ID3v2 tags when they have
+	the same data (Closes: #428276)
+	Don't complain about non-identifiable files when parsing empty
+	files, and say that they are empty instead (Closes: #431027)
+
+2007-04-21  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-shell.c: (rb_shell_constructor): Set the first-time
 	flag when we've started Rhythmbox for the first-time, fixes
 	first-time radio listing load (Closes: #431167)

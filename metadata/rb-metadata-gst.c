@@ -619,10 +619,12 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 
 	switch (type) {
 	case G_TYPE_STRING: {
-		/* Reject invalid utf-8 strings, and then
-		 * remove leading and trailing whitespace.
+		/* Reject invalid utf-8 strings, shorter duplicated tags
+		 * and then remove leading and trailing whitespace.
 		 */
 		char *str;
+		const char *old_str;
+
 		str = g_value_dup_string (newval);
 
 		if (!g_utf8_validate (str, -1, NULL)) {
@@ -633,6 +635,20 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 			return;
 		}
 		str = g_strstrip (str);
+
+		/* Check whether we have a shorter duplicate tag,
+		 * Doesn't work with non-normalised UTF-8 strings */
+		old_str = g_value_get_string (val);
+		if (old_str != NULL
+		    && g_utf8_strlen (old_str, -1) > g_utf8_strlen (str, -1)) {
+			if (g_str_has_prefix (old_str, str) != FALSE) {
+				rb_debug ("Got shorter duplicate tag");
+				g_free (str);
+				g_value_unset (newval);
+				g_free (newval);
+				return;
+			}
+		}
 		g_value_take_string (newval, str);
 		break;
 	}
@@ -1075,6 +1091,13 @@ rb_metadata_load (RBMetaData *md,
 		if (file_size > 0 && file_size < REALLY_SMALL_FILE_SIZE) {
 			rb_debug ("ignoring %s because it's too small to care about", md->priv->uri);
 			error_code = RB_METADATA_ERROR_NOT_AUDIO_IGNORE;
+		} else if (file_size == 0) {
+			g_clear_error (error);
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_EMPTY_FILE,
+				     _("Empty file"));
+			return;
 		}
 
 		g_clear_error (error);
