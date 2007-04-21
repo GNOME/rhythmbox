@@ -498,9 +498,14 @@ metadata_cb (SjMetadata *metadata,
 	g_assert (metadata == priv->metadata);
 
 	if (error != NULL) {
-		rb_debug ("Failed to load cd metadata: %s\n", error->message);
+		rb_debug ("Failed to load cd metadata: %s", error->message);
 		/* TODO display error to user? */
 		g_error_free (error);
+		g_object_unref (metadata);
+		return;
+	}
+	if (albums == NULL) {
+		rb_debug ("Musicbrainz didn't return any CD metadata, but didn't give an error");
 		g_object_unref (metadata);
 		return;
 	}
