@@ -162,6 +162,10 @@ rb_python_module_init_python (void)
 	/* import gobject */
 	init_pygobject ();
 
+	/* disable pyg* log hooks, since ours is more interesting */
+#ifdef pyg_disable_warning_redirections
+	pyg_disable_warning_redirections ();
+#endif
 #ifndef PYGOBJECT_CAN_MARSHAL_GVALUE
 	pyg_register_gtype_custom (G_TYPE_VALUE, pyg_value_g_value_as_pyobject, pyg_value_g_value_from_pyobject);
 #endif
