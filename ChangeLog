@@ -1,3 +1,10 @@
+2007-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/rb-python-module.c: (rb_python_module_init_python):
+	Disable pyg* log hooks, since they appear to cause crashes when used
+	from multiple threads, and they're annoying anyway.  Probably fixes
+	#429687.
+
 2007-04-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch mostly by: Irene Huang  <Irene.Huang@sun.com>
