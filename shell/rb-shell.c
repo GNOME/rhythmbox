@@ -1402,6 +1402,10 @@ rb_shell_constructor (GType type,
 	rb_shell_sync_paned (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
+	/* Do as if we ran the first time druid */
+	if (!eel_gconf_get_boolean (CONF_FIRST_TIME))
+		eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
+
 	rb_shell_set_visibility (shell, eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE), TRUE);
 	gdk_notify_startup_complete ();
 
