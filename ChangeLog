@@ -1,5 +1,11 @@
 2007-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/audiocd/rb-audiocd-source.c: (metadata_cb):
+	Apparently metadata_cb can be called with no error set and
+	albums == NULL.  Don't crash in this case.  Fixes #414864.
+
+2007-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/rb-python-module.c: (rb_python_module_init_python):
 	Disable pyg* log hooks, since they appear to cause crashes when used
 	from multiple threads, and they're annoying anyway.  Probably fixes
