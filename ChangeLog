@@ -1,3 +1,10 @@
+2007-04-21  Bastien Nocera  <hadess@hadess.net>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_load_tag):
+	Don't replace a string with another shorter version of it, avoids
+	problems with ID3v1 tags being preferred to ID3v2 tags when they have
+	the same data (Closes: #428276)
+
 2007-04-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/audiocd/rb-audiocd-source.c: (metadata_cb):
