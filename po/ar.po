@@ -13,14 +13,13 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.ar\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-04-23 03:58+0100\n"
-"PO-Revision-Date: 2007-04-22 11:55+0200\n"
+"PO-Revision-Date: 2007-04-23 10:47+0200\n"
 "Last-Translator: Ahmad Farghal <ahmad.farghal@gmail.com>\n"
 "Language-Team: Arabic <support@arabeyes.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: Plural-Forms: nplurals=4; plural=n==1 ? 0 : n==2 ? 1 : n>=3 && "
-"n<=10 ? 2 : 3\n"
+"Plural-Forms: Plural-Forms: nplurals=4; plural=n==1 ? 0 : n==2 ? 1 : n>=3 && n<=10 ? 2 : 3\n"
 "X-Generator: KBabel 1.11.2\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:551
@@ -28,7 +27,8 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "هل تريد طمس الملف \"%s\"؟"
 
-#: ../backends/gstreamer/rb-player-gst.c:689 ../metadata/rb-metadata-gst.c:891
+#: ../backends/gstreamer/rb-player-gst.c:689
+#: ../metadata/rb-metadata-gst.c:891
 #: ../metadata/rb-metadata-gst.c:1451
 #: ../plugins/cd-recorder/rb-recorder-gst.c:668
 #, c-format
@@ -49,7 +49,7 @@ msgstr "أنشئ قائمة تشغيل تجدد نفسها آلياً يكون �
 
 #: ../data/glade/create-playlist.glade.h:3
 msgid "GB"
-msgstr "غب"
+msgstr "جب"
 
 #: ../data/glade/create-playlist.glade.h:4
 msgid "MB"
@@ -71,26 +71,23 @@ msgstr "_عند الترتيب حسب:"
 msgid "songs"
 msgstr "أغاني"
 
-#: ../data/glade/druid.glade.h:1 ../data/glade/uri.glade.h:1
+#: ../data/glade/druid.glade.h:1
+#: ../data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
 
 #: ../data/glade/druid.glade.h:2
 msgid ""
-"Rhythmbox manages all of your music in a central music \"library\", so you "
-"can easily view, search, and organize it.\n"
-"In order to use this feature, you need to tell Rhythmbox where to find your "
-"music.  You may choose to skip this step; instead, you can add music to your "
-"library at any point later.\n"
+"Rhythmbox manages all of your music in a central music \"library\", so you can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your music.  You may choose to skip this step; instead, you can add music to your library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"يدير رذمبوكس جميع موسيقاك في \"مكتبة\" مركزية، مما يمكن من مراجعتهاو البحث "
-"عنها و تنظيمها بسهولة.\n"
-"حتى تتمكن من استعمال هذه  يجب عليك ادلال رذمبوكس على موقع موسيقاك. يمكنكتخطي "
-"هذه الخطوة، و اضافة موسيقى لمكتبتك في وقت لاحق.\n"
-"رجاء اختر أحد الخيارات الموجودة في الأسفل:"
+"يدير أنغام جميع موسيقاك في \"مكتبة\" مركزية، مما يمكنك من مراجعتها و البحث عنها و تنظيمها بسهولة.\n"
+"حتى تتمكن من استعمال هذه الميزة يجب عليك ادلال أنغام على موقع موسيقاك. يمكنك تخطي هذه الخطوة، و اضافة الموسيقى لمكتبتك في وقت لاحق.\n"
+"رجاءً اختر أحد الخيارات الموجودة أدناه:"
 
-#: ../data/glade/druid.glade.h:5 ../data/glade/library-prefs.glade.h:5
+#: ../data/glade/druid.glade.h:5
+#: ../data/glade/library-prefs.glade.h:5
 msgid "_Browse..."
 msgstr "ت_صفح..."
 
@@ -104,7 +101,7 @@ msgstr "ال_مسار:"
 
 #: ../data/glade/druid.glade.h:8
 msgid "_Skip this step"
-msgstr "تخ_طي هذه الخطوة"
+msgstr "تخ_طى هذه الخطوة"
 
 #: ../data/glade/general-prefs.glade.h:1
 msgid "A_lbum"
@@ -112,7 +109,7 @@ msgstr "أ_لبوم"
 
 #: ../data/glade/general-prefs.glade.h:2
 msgid "Browser Views"
-msgstr "معارض المتصفح"
+msgstr "مشاهد المتصفح"
 
 #: ../data/glade/general-prefs.glade.h:3
 msgid "Da_te added"
@@ -268,7 +265,8 @@ msgstr "الموقع:"
 
 #. -
 #: ../data/glade/podcast-feed-properties.glade.h:1
-#: ../data/glade/podcast-properties.glade.h:1 ../widgets/bacon-volume.c:224
+#: ../data/glade/podcast-properties.glade.h:1
+#: ../widgets/bacon-volume.c:224
 msgid "-"
 msgstr "-"
 
@@ -329,9 +327,8 @@ msgstr ""
 "يدوياً"
 
 #: ../data/glade/podcast-prefs.glade.h:7
-#, fuzzy
 msgid "Select Folder For Podcasts"
-msgstr "جاري تحضير المجلّد '%s' لنسق عدم الإتّصال"
+msgstr "انتق مجلداً للنشرات الصوتية"
 
 #: ../data/glade/podcast-prefs.glade.h:8
 msgid "_Download location:"
@@ -454,7 +451,8 @@ msgstr "ملعوب حديثاُ"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:181
-#: ../shell/rb-shell.c:1041 ../shell/rb-shell.c:2131
+#: ../shell/rb-shell.c:1041
+#: ../shell/rb-shell.c:2131
 #: ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "مشغل الموسيقى"
@@ -501,9 +499,8 @@ msgid "%b %d %Y"
 msgstr "%b %d %Y"
 
 #: ../lib/rb-proxy-config.c:189
-#, fuzzy
 msgid "HTTP proxy configuration error"
-msgstr "عنوان الإعداد الآلي للبروكسي"
+msgstr "خطأ في تشكيل وكيل HTTP"
 
 #: ../lib/rb-proxy-config.c:190
 msgid "Rhythmbox does not support automatic proxy configuration"
@@ -516,7 +513,8 @@ msgstr "لا يدعم أنغام التكوين الآلي للوكيل"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:641 ../lib/rb-util.c:868
+#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:868
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
@@ -540,23 +538,33 @@ msgstr "لا يدعم أنغام التكوين الآلي للوكيل"
 #: ../podcast/rb-podcast-manager.c:1557
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
-#: ../remote/dbus/rb-client.c:118 ../rhythmdb/rhythmdb-tree.c:1147
-#: ../rhythmdb/rhythmdb-tree.c:1151 ../rhythmdb/rhythmdb-tree.c:1155
-#: ../rhythmdb/rhythmdb-tree.c:1159 ../rhythmdb/rhythmdb.c:1353
-#: ../shell/rb-shell.c:3041 ../sources/rb-podcast-source.c:1641
-#: ../widgets/rb-entry-view.c:812 ../widgets/rb-entry-view.c:837
-#: ../widgets/rb-entry-view.c:1121 ../widgets/rb-entry-view.c:1133
-#: ../widgets/rb-entry-view.c:1145 ../widgets/rb-song-info.c:766
-#: ../widgets/rb-song-info.c:930 ../widgets/rb-song-info.c:1200
+#: ../remote/dbus/rb-client.c:118
+#: ../rhythmdb/rhythmdb-tree.c:1147
+#: ../rhythmdb/rhythmdb-tree.c:1151
+#: ../rhythmdb/rhythmdb-tree.c:1155
+#: ../rhythmdb/rhythmdb-tree.c:1159
+#: ../rhythmdb/rhythmdb.c:1353
+#: ../shell/rb-shell.c:3041
+#: ../sources/rb-podcast-source.c:1641
+#: ../widgets/rb-entry-view.c:812
+#: ../widgets/rb-entry-view.c:837
+#: ../widgets/rb-entry-view.c:1121
+#: ../widgets/rb-entry-view.c:1133
+#: ../widgets/rb-entry-view.c:1145
+#: ../widgets/rb-song-info.c:766
+#: ../widgets/rb-song-info.c:930
+#: ../widgets/rb-song-info.c:1200
 msgid "Unknown"
 msgstr "مجهول"
 
-#: ../lib/rb-util.c:643 ../remote/dbus/rb-client.c:120
+#: ../lib/rb-util.c:643
+#: ../remote/dbus/rb-client.c:120
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:645 ../remote/dbus/rb-client.c:122
+#: ../lib/rb-util.c:645
+#: ../remote/dbus/rb-client.c:122
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -593,9 +601,8 @@ msgstr "مشكلة داخلية في جيستريمر، قم بالإبلاغ ع
 #: ../metadata/rb-metadata-dbus-client.c:410
 #: ../metadata/rb-metadata-dbus-client.c:550
 #: ../metadata/rb-metadata-dbus-client.c:560
-#, fuzzy
 msgid "D-BUS communication error"
-msgstr "حدث خطأ خلال فتح %s."
+msgstr "خطأ في اتصال D-BUS"
 
 #: ../metadata/rb-metadata-gst.c:621
 #, c-format
@@ -603,14 +610,13 @@ msgid "The GStreamer plugins to decode \"%s\" files cannot be found"
 msgstr "غير قادر على إيجاد ملحقات جيستريمر لفك تشفير ملفات \"%s\""
 
 #: ../metadata/rb-metadata-gst.c:624
-#, fuzzy, c-format
+#, c-format
 msgid "The file contains a stream of type %s, which is not decodable"
-msgstr "The file contains a stream of type %s, which is not decodable"
+msgstr "الملف يحتوي على دفق من نوع %s، الذي لا يمكن فك تشفيره"
 
 #: ../metadata/rb-metadata-gst.c:1046
-#, fuzzy
 msgid "Failed to create a source element; check your installation"
-msgstr "فشل إنشاء جسم عرض جستريمر. الرجاء مراجعة تثبيت GStreamer."
+msgstr "فشل إنشاء عنصر مصدر، تفحص تركيب البرنامج"
 
 #: ../metadata/rb-metadata-gst.c:1119
 msgid "GStreamer error: failed to change state"
@@ -631,12 +637,11 @@ msgstr "لا يمكن كتابة الوسم"
 
 #: ../metadata/rb-metadata-gst.c:1411
 msgid "Timeout while setting pipeline to NULL"
-msgstr ""
+msgstr "انتهت المهلة أثناء تعيين خط الأنابيب إلى NULL"
 
 #: ../metadata/rb-metadata-gst.c:1431
-#, fuzzy
 msgid "File corrupted during write"
-msgstr "حصل خطأ عند الكتابة."
+msgstr "فسد الملف أثناء الكتابة"
 
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:1
 msgid "Cover art"
@@ -659,12 +664,8 @@ msgid "Multiple Albums Found"
 msgstr "وجدت ألبومات عديدة"
 
 #: ../plugins/audiocd/multiple-album.glade.h:2
-msgid ""
-"This CD could be more than one album. Please select which album it is below "
-"and press <i>Continue</i>."
-msgstr ""
-"يمكن أن يكون القرص المدمج هذا أكثر من ألبوم. رجاء اختر إلى الأسفل ﻷي ألبوم "
-"هو و أنقر <i>مواصلة</i>."
+msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
+msgstr "يمكن أن يكون القرص المدمج هذا أكثر من ألبوم. رجاء اختر إلى الأسفل ﻷي ألبوم هو و أنقر <i>مواصلة</i>."
 
 #: ../plugins/audiocd/multiple-album.glade.h:3
 msgid "_Continue"
@@ -683,9 +684,8 @@ msgstr "المقطع %u"
 #: ../plugins/audiocd/rb-audiocd-source.c:352
 #: ../plugins/audiocd/rb-audiocd-source.c:359
 #: ../plugins/audiocd/rb-audiocd-source.c:676
-#, fuzzy
 msgid "Couldn't load Audio CD"
-msgstr "أمر كتابة قرص الصوت"
+msgstr "غير قادر على تحميل القرص الصوتي"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:343
 #: ../plugins/audiocd/rb-audiocd-source.c:353
@@ -697,14 +697,16 @@ msgid "Rhythmbox couldn't read the CD information."
 msgstr "انغام لا يستطيع قراءة بيانات القرص المدمج"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:465
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1077
+#: ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1077
 #: ../widgets/rb-query-creator-properties.c:65
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "Title"
 msgstr "الاسم"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:472
-#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1087
+#: ../sources/rb-library-source.c:124
+#: ../widgets/rb-entry-view.c:1087
 #: ../widgets/rb-library-browser.c:100
 #: ../widgets/rb-query-creator-properties.c:66
 #: ../widgets/rb-query-creator-properties.c:92
@@ -716,15 +718,14 @@ msgid "Rhythmbox could not get access to the CD device."
 msgstr "انغام لا يستطيع الحصول على صلاحيات مشغل الاقراص المدمجة"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:114
-#, fuzzy
 msgid "Cannot create MusicBrainz client"
-msgstr "لا يمكن انشاء عميل MusicBrainz"
+msgstr "غير قادر على إنشاء عميل MusicBrainz"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:239
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:540
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot read CD: %s"
-msgstr "لا يمكن قراءة القرص المدمج: %s"
+msgstr "غير قادر على قراءة القرص المدمج: %s"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:246
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:578
@@ -742,11 +743,8 @@ msgid "Track %d"
 msgstr "المقطوعة %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:281
-#, fuzzy
-msgid ""
-"MusicBrainz metadata object is not valid. This is bad, check your console "
-"for errors."
-msgstr "معلومات MusicBrainz غير متوفرة. هذا سيء, تحقق من أخطاء في الهيكل."
+msgid "MusicBrainz metadata object is not valid. This is bad, check your console for errors."
+msgstr "معلومات MusicBrainz غير متوفرة. هذا سيء، تحقق من أخطاء في لوحة العرض."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:448
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:455
@@ -762,8 +760,7 @@ msgstr "لا يحوي الجهاز '%s' وسيطا"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:537
 #, c-format
-msgid ""
-"Device '%s' could not be opened. Check the access permissions on the device."
+msgid "Device '%s' could not be opened. Check the access permissions on the device."
 msgstr "لم يمكن فتح الجهاز '%s'. الرجاء مراجعة تصريحات النّفاذ للجهاز."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:573
@@ -775,9 +772,8 @@ msgid "Incomplete metadata for this CD"
 msgstr "معلومات غير كاملة للقرص"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:705
-#, fuzzy
 msgid "Could not create CD lookup thread"
-msgstr "لم يمكن إنشاء بريمج مراقبة القرص"
+msgstr "غير قادر على إنشاء عملية البحث عن الأقراص"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:1
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:517
@@ -786,7 +782,7 @@ msgstr "لاست . إف إم"
 
 #: ../plugins/audioscrobbler/audioscrobbler.rb-plugin.desktop.in.h:2
 msgid "Submits song information to last.fm and plays last.fm radio streams"
-msgstr ""
+msgstr "يقوم بإرسال معلومات الأغنية إلى لاست . إف إم ويقوم بتشغيل دفوق إذاعة لاست . إف إم"
 
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:1
 msgid "0"
@@ -819,8 +815,10 @@ msgstr "حساب لاست . إف إم"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2897 ../widgets/rb-entry-view.c:760
-#: ../widgets/rb-entry-view.c:1179 ../widgets/rb-entry-view.c:1192
+#: ../rhythmdb/rhythmdb.c:2897
+#: ../widgets/rb-entry-view.c:760
+#: ../widgets/rb-entry-view.c:1179
+#: ../widgets/rb-entry-view.c:1192
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
 msgstr "أبدا"
@@ -870,9 +868,8 @@ msgid "Logging in"
 msgstr "جاري تسجيل الدخول"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:921
-#, fuzzy
 msgid "Request failed"
-msgstr "فشل الاختبار %d"
+msgstr "فشل الطلب"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:924
 msgid "Incorrect username"
@@ -884,19 +881,16 @@ msgstr "كلمة السر غير صحيحة"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:930
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:578
-#, fuzzy
 msgid "Handshake failed"
-msgstr "فشل الاختبار %d"
+msgstr "فشلت المصافحة"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:933
-#, fuzzy
 msgid "Client update required"
-msgstr "الاسم مطلوب"
+msgstr "تحديث العميل مطلوب"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:936
-#, fuzzy
 msgid "Track submission failed"
-msgstr "فشل تسجيل %s إلى %s"
+msgstr "فشل إرسال المقطوعات"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:939
 msgid "Queue is too long"
@@ -1052,9 +1046,8 @@ msgid "Create an audio CD from playlist"
 msgstr "أنشئ قرصاً صوتياً من قائمة التشغيل"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:191
-#, fuzzy
 msgid "Unable to create audio CD"
-msgstr "لا يمكن انشاء CD/DVD"
+msgstr "غير قادر على إنشاء قرص صوتي"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:544
 #, fuzzy
@@ -1068,13 +1061,13 @@ msgstr "لم يمكن إغلاق المجلّد المصدر %s: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:686
 #: ../plugins/cd-recorder/rb-recorder-gst.c:692
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink '%s'"
-msgstr "لا يمكن تحميل·'%s':·%s"
+msgstr "غير قادر على إزالة ربط '%s'"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:733
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr "لا يمكن بدء تشغيل الجدولة. هل قمت بتشغبل الامر gst-register ؟"
+msgstr "لا يمكن بدء تشغيل الجدولة. هل قمت بتشغبل الامر gst-register؟"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:769
 #: ../plugins/cd-recorder/rb-recorder-gst.c:774
@@ -1095,29 +1088,27 @@ msgstr "لم أستطع بدء قناة الحالة: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:906
 #: ../plugins/cd-recorder/rb-recorder-gst.c:954
-#, fuzzy
 msgid "Could not pause playback"
-msgstr "تعذّر تشغيل التّطبيق"
+msgstr "غير قادر على إيقاف التشغيل مؤقتاً"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1161
 msgid "Cannot find drive"
-msgstr "لا يمكن ايجاد المشغل"
+msgstr "غير قادر على إيجاد محرك الأقراص"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1224
 #, c-format
 msgid "Cannot find drive %s"
-msgstr "لا يمكن ايجاد المشغل %s"
+msgstr "غير قادر على إيجاد محرك الأقراص %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1233
-#, fuzzy, c-format
+#, c-format
 msgid "Drive %s is not a recorder"
-msgstr "“%s” لا يجيب"
+msgstr "محرك الأقراص %s ليست مُسَجِّلاً"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1399
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1592
-#, fuzzy
 msgid "No writable drives found."
-msgstr "لم توجد سوّاقات أقراص مدمجة"
+msgstr "غير قادر على إيجاد محركات أقراص يمكن الكتابة إليها."
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1542
 #, c-format
@@ -1125,17 +1116,16 @@ msgid "Could not get track time for file: %s"
 msgstr "لايمكن إيجاد مدة الملف: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1601
-#, fuzzy
 msgid "Could not determine audio track durations."
-msgstr "فشل إنشاء جزء الإخراج الصوتي، تأكد من تعييناتك"
+msgstr "غير قادر على التعرف على مُدَد المقطوعات الصوتية."
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1651
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "There was an error writing to the CD:\n"
 "%s"
 msgstr ""
-"حدث خطأ عند الكتابة على القرص المدمج:\n"
+"حدث خطأ عند الكتابة للقرص المدمج:\n"
 "%s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1655
@@ -1208,7 +1198,7 @@ msgstr "تقريبا %s متبقية"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:620
 msgid "Could not determine media type because CD drive is busy"
-msgstr "لا يمكن تحديد نوع الوسيط لأن القرص مشغول"
+msgstr "غير قادر على تحديد نوع الوسيط لأن محرك الأقراص المدمجة مشغول"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:622
 msgid "Couldn't open media"
@@ -1263,9 +1253,8 @@ msgid "Writing audio to CD"
 msgstr "كتابة الملفات للقرص"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:678
-#, fuzzy
 msgid "Finished creating audio CD."
-msgstr "أمر كتابة قرص الصوت"
+msgstr "انتهى إنشاء القرص الصوتي."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:696
 msgid ""
@@ -1284,21 +1273,16 @@ msgid "Writing cancelled.  Try again?"
 msgstr "أُلغِيَت الكتابة. المحاولة مرة أخرى؟"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:768
-#, fuzzy
 msgid "Audio recording error"
-msgstr " تسجيل الصوت GConf"
+msgstr "خطأ أثناء تسجيل الصوت"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:797
-#, fuzzy
 msgid "Audio Conversion Error"
-msgstr "خطأ أثناء التحويل: %s"
+msgstr "خطأ أثناء تحويل الصوت"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:827
-#, fuzzy
 msgid "Recording error"
-msgstr ""
-"خطأ GConf:\n"
-"  %s"
+msgstr "خطأ أثناء التسجيل"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:947
 msgid "Do you wish to interrupt writing this disc?"
@@ -1317,71 +1301,68 @@ msgid "_Interrupt"
 msgstr "_قاطع"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:980
-#, fuzzy
 msgid "Could not create audio CD"
-msgstr "عدم انشاء قاريء قرص GStreamer"
+msgstr "غير قادر على انشاء القرص الصوتي"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1002
-#, fuzzy
 msgid "Please make sure another application is not using the drive."
-msgstr "رجاءً تأكّد من عدم وجود تطبيقٍ آخر يستخدم القرص."
+msgstr "رجاءً تأكّد من عدم وجود تطبيقٍ آخر يستخدم محرك الأقراص."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1003
 msgid "Drive is busy"
-msgstr "المشغل مشغول"
+msgstr "محرك الأقراص مشغول"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1005
 msgid "Please put a rewritable or blank CD in the drive."
-msgstr "الرجاء وضع قرص قابل للكتابة او فارغ في ناسخة الاقراص"
+msgstr "رجاءً ضع قرصاً فارغاً أو قابلاً لإعادة الكتابة في محرك الاقراص."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1006
 msgid "Insert a rewritable or blank CD"
-msgstr "أدخل الوسيط الفارغ أو القابل لإعادة الكتابة"
+msgstr "أدخل قرصاً فارغاً أو قابلاًَ لإعادة الكتابة"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1008
 msgid "Please put a blank CD in the drive."
-msgstr "يرجى ادخال قرص فارغ لإتمام عملية الكتابة"
+msgstr "رجاءً ضع قرصاً فارغاً في محرك الاقراص."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1009
 msgid "Insert a blank CD"
-msgstr "قم بإدراج قرص فارغ."
+msgstr "أدخل قرصاً فارغاً"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1011
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
-msgstr "الرجاء استبدال القرص في الناسخة بقرص اخر قابل للكتابة او فارغ"
+msgstr "رجاء استبدل القرص في محرك الأقراص بقرص آخر فارغ او قابل لإعادة الكتابة."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1012
 msgid "Reload a rewritable or blank CD"
-msgstr "إعادة تحميل الوسيط الفارغ أو القابل لإعادة الكتابة"
+msgstr "أعد تحميل قرصاً فارغاً أو قابلاً لإعادة الكتابة"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1014
 msgid "Please replace the disc in the drive with a blank CD."
-msgstr "رجاءً أبدل القرص الموجود في محرك الأقراص بقرص فارغ."
+msgstr "رجاءً استبدل القرص الموجود في محرك الأقراص بقرص فارغ."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1015
 msgid "Reload a blank CD"
-msgstr "إعادة تحميل القرص الفارغ"
+msgstr "أعد تحميل قرصاً فارغاً"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1066
-#, fuzzy
 msgid "Converting audio tracks"
-msgstr "افتح قرص صوتي %s"
+msgstr "جاري تحويل المقطوعات الصوتية"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1069
 msgid "Preparing to write CD"
-msgstr "بصدد التحضير لكتابة القرص المدمج"
+msgstr "جاري التحضير للكتابة للقرص المدمج"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1072
 msgid "Writing CD"
-msgstr "بصدد كتابة القرص المدمج"
+msgstr "جاري كتابة القرص المدمج"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1075
 msgid "Finishing write"
-msgstr "إنهاء الكتابة"
+msgstr "جاري إنهاء الكتابة"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1078
 msgid "Erasing CD"
-msgstr "بصدد مسح القرص المدمج"
+msgstr "جاري مسح القرص المدمج"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1081
 msgid "Unhandled action in burn_action_changed_cb"
@@ -1390,7 +1371,7 @@ msgstr ""
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1109
 #, c-format
 msgid "This %s appears to have information already recorded on it."
-msgstr "يبدو أن هذا %s له معلومات مسجّلة مسبقا."
+msgstr "يبدو أن الـ%s هذا عليه معلومات مسجّلة مسبقاً."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1116
 msgid "Erase information on this disc?"
@@ -1414,9 +1395,9 @@ msgid "Failed to create the recorder: %s"
 msgstr "فشل إنشاء المسجل: %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1484
-#, fuzzy, c-format
+#, c-format
 msgid "Could not remove temporary directory '%s': %s"
-msgstr "فشل إنشاء دليل مؤقت في %s."
+msgstr "غير قادر على إزالة الدليل المؤقت '%s': %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1504
 msgid "Create Audio CD"
@@ -1444,13 +1425,8 @@ msgstr "لا يمكن إيجاد مساخة خالية على %s"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1755
 #, c-format
-msgid ""
-"This playlist is %s minutes long.  This exceeds the length of a standard "
-"audio CD.  If the destination media is larger than a standard audio CD "
-"please insert it in the drive and try again."
-msgstr ""
-"مدة القائمة %s دقيقة. لقد تم تخطى المدة عن القرص الاعتيادي , اذا كام حجم "
-"القرص اكبر من الحجم الاعتيادي يرجي ادخال القرص مرة اخرى"
+msgid "This playlist is %s minutes long.  This exceeds the length of a standard audio CD.  If the destination media is larger than a standard audio CD please insert it in the drive and try again."
+msgstr "مدة القائمة %s دقيقة. لقد تم تخطى المدة عن القرص الاعتيادي , اذا كام حجم القرص اكبر من الحجم الاعتيادي يرجي ادخال القرص مرة اخرى"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1766
 msgid "Playlist too long"
@@ -1462,11 +1438,8 @@ msgstr "لم يمكن ايجاد مساحة مؤقتة!"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1807
 #, c-format
-msgid ""
-"Could not find enough temporary space to convert audio tracks.  %s MiB "
-"required."
-msgstr ""
-"لايمكن ايجاد مساحة مؤقتة كافية لتحويل الملفات الصوتية %s ميغابايت مطلوبة."
+msgid "Could not find enough temporary space to convert audio tracks.  %s MiB required."
+msgstr "لايمكن ايجاد مساحة مؤقتة كافية لتحويل الملفات الصوتية %s ميغابايت مطلوبة."
 
 #: ../plugins/cd-recorder/recorder.glade.h:1
 msgid "Create audio CD from playlist?"
@@ -1508,7 +1481,8 @@ msgstr "<b>المشاركة</b>"
 msgid "Require _password:"
 msgstr "أطلب كلمة _سر:"
 
-#: ../plugins/daap/daap-prefs.glade.h:3 ../plugins/daap/rb-daap-dialog.c:74
+#: ../plugins/daap/daap-prefs.glade.h:3
+#: ../plugins/daap/rb-daap-dialog.c:74
 msgid "Shared music _name:"
 msgstr "اسم الموسي_قى المشتركة:"
 
@@ -1517,9 +1491,8 @@ msgid "_Share my music"
 msgstr "_شارك موسيقاتي"
 
 #: ../plugins/daap/rb-daap-dialog.c:47
-#, fuzzy
 msgid "Invalid share name"
-msgstr "اسم صورة غير صحيح: \"%s\"."
+msgstr "اسم مشاركة غير صحيحة"
 
 #: ../plugins/daap/rb-daap-dialog.c:66
 #, c-format
@@ -1530,37 +1503,31 @@ msgstr "اسم مشاركة الموسيقى '%s' مأخوذ مسبقاً. ال�
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:343
 #: ../plugins/daap/rb-daap-mdns-browser-howl.c:318
 #: ../plugins/daap/rb-daap-mdns-browser-howl.c:364
-#, fuzzy
 msgid "MDNS service is not running"
-msgstr "رقيب حزمة مفاتيح جنوم غير مشغل"
+msgstr "خدمة MDNS لا تعمل"
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:306
 #: ../plugins/daap/rb-daap-mdns-browser-howl.c:327
-#, fuzzy
 msgid "Browser already active"
-msgstr "قائمة التمديدات النشطة"
+msgstr "المتصفح نشط مسبقاً"
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:326
 #: ../plugins/daap/rb-daap-mdns-browser-howl.c:347
-#, fuzzy
 msgid "Unable to activate browser"
-msgstr "ضبط إلى صحيح للتفعيل"
+msgstr "غير قادر على تنشيط المتصفح"
 
 #: ../plugins/daap/rb-daap-mdns-browser-avahi.c:351
 #: ../plugins/daap/rb-daap-mdns-browser-howl.c:372
-#, fuzzy
 msgid "Browser is not active"
-msgstr "الواجهة %s ليست نشطة"
+msgstr "المتصفح غير نشط"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:199
-#, fuzzy
 msgid "Could not create AvahiEntryGroup for publishing"
-msgstr "لم يمكن إنشاء ملف الإقفال لـ %s: %s"
+msgstr "غير قادر على إنشاء AvahiEntryGroup للنشر"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:235
-#, fuzzy
 msgid "Could not add service"
-msgstr "تعذّرت إضافة التّطبيق"
+msgstr "غير قادر على إضافة الخدمة"
 
 #: ../plugins/daap/rb-daap-mdns-publisher-avahi.c:247
 #, fuzzy
@@ -1596,9 +1563,8 @@ msgid "Disconnect from DAAP share"
 msgstr ""
 
 #: ../plugins/daap/rb-daap-plugin.c:794
-#, fuzzy
 msgid "DAAP Music Sharing Preferences"
-msgstr "تفضيلات عازف الموسيقى"
+msgstr "تفضيلات مشاركة DAAP للموسيقى"
 
 #: ../plugins/daap/rb-daap-sharing.c:54
 #, c-format
@@ -1623,9 +1589,8 @@ msgid "Retrieving songs from music share"
 msgstr "استقبال الملف من الملفات المشاركة"
 
 #: ../plugins/daap/rb-daap-source.c:511
-#, fuzzy
 msgid "Could not connect to shared music"
-msgstr "لم يمكن الاتصال بالمضيف البعيد"
+msgstr "غير قادر على الاتصال بالموسيقى المشتركة"
 
 #: ../plugins/daap/rb-daap-src.c:639
 #, c-format
@@ -1648,7 +1613,8 @@ msgstr "أجهزة الموسيقى المحمولة - iPod"
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "دعم اجهزة  Apple iPod (عرض المحتويات، تشغيل من داخل الجهاز)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:86 ../shell/rb-playlist-manager.c:145
+#: ../plugins/ipod/rb-ipod-plugin.c:86
+#: ../shell/rb-playlist-manager.c:145
 msgid "_Rename"
 msgstr "أ_عد التسمية"
 
@@ -1695,19 +1661,15 @@ msgstr "http://www.jamendo.com/"
 #. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages.
 #. You should take a look on this site and check if you can't reuse it.
 #: ../plugins/jamendo/jamendo-loading.glade.h:3
-msgid ""
-"     * A legal framework protecting the artists (thanks to the Creative "
-"Commons licenses)."
+msgid "     * A legal framework protecting the artists (thanks to the Creative Commons licenses)."
 msgstr "     * إطار عمل قانوني يحمي الفنانين (بفضل رخص التشارك الإبداعي)."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:4
 msgid ""
-"     * An adaptive music recommendation system based on iRATE to help "
-"listeners discover new artists based on their tastes\n"
+"     * An adaptive music recommendation system based on iRATE to help listeners discover new artists based on their tastes\n"
 "       and on other criteria such as their location."
 msgstr ""
-"     * نظام اقتراحات للموسيقى قابل للتأقلم مبني على iRate لمساعدة المستمع في "
-"إيجاد فنانين جدد مناسبون لذوقه\n"
+"     * نظام اقتراحات للموسيقى قابل للتأقلم مبني على iRate لمساعدة المستمع في إيجاد فنانين جدد مناسبون لذوقه\n"
 "       و قريبين له من الناحية الجغرافية."
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:6
@@ -1728,20 +1690,15 @@ msgstr "<b>جامندو</b>"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:10
 msgid ""
-"On jamendo, the artists distribute their music under Creative Commons "
-"licenses.\n"
-"In a nutshell, they allow you to download, remix and share their music "
-"freely.\n"
-"It's a \"Some rights reserved\" agreement, perfectly suited for the new "
-"century."
+"On jamendo, the artists distribute their music under Creative Commons licenses.\n"
+"In a nutshell, they allow you to download, remix and share their music freely.\n"
+"It's a \"Some rights reserved\" agreement, perfectly suited for the new century."
 msgstr ""
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:13
 msgid ""
-"These new rules make jamendo able to use the new powerful means of digital "
-"distribution like\n"
-"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
-"albums at near-zero cost."
+"These new rules make jamendo able to use the new powerful means of digital distribution like\n"
+"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute albums at near-zero cost."
 msgstr ""
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:15
@@ -1749,9 +1706,7 @@ msgid "You can find more information at http://www.jamendo.com/"
 msgstr "بامكانك ايجاد المزيد من المعلومات على http://www.jamendo.com/"
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:16
-msgid ""
-"jamendo is a new model for artists to promote, publish, and be paid for "
-"their music."
+msgid "jamendo is a new model for artists to promote, publish, and be paid for their music."
 msgstr ""
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:17
@@ -1760,15 +1715,13 @@ msgstr "جامندو هي المنصة الوحيدة التي تجمع هذه �
 
 #: ../plugins/jamendo/jamendo-loading.glade.h:18
 msgid ""
-"jamendo users can discover and share albums, but also review them or start a "
-"discussion on the forums.\n"
+"jamendo users can discover and share albums, but also review them or start a discussion on the forums.\n"
 "Albums are democratically rated based on the visitors’ reviews.\n"
 "If they fancy an artist they can support him by making a donation."
 msgstr ""
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:1
-msgid ""
-"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
 msgstr "إضافة دعم تشغيل وتنزيل الألبومات من جامندو لبرنامج أنغام"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
@@ -1796,7 +1749,8 @@ msgstr "محطة إ_ذاعة انترنت جديدة"
 msgid "Create a new Internet Radio station"
 msgstr "أنشئ محطة إذاعة جديدة"
 
-#: ../plugins/iradio/rb-iradio-source.c:328 ../widgets/rb-entry-view.c:1107
+#: ../plugins/iradio/rb-iradio-source.c:328
+#: ../widgets/rb-entry-view.c:1107
 #: ../widgets/rb-library-browser.c:99
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
@@ -1818,26 +1772,27 @@ msgstr "عنوان محطة إذاعة انترنت:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:389
 #: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:355 ../widgets/rb-song-info.c:870
+#: ../podcast/rb-podcast-properties-dialog.c:355
+#: ../widgets/rb-song-info.c:870
 #, c-format
 msgid "%s Properties"
 msgstr "خصائص %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:481
-#: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:928
+#: ../podcast/rb-podcast-properties-dialog.c:465
+#: ../widgets/rb-song-info.c:928
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu ك بت/ث"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
-#, fuzzy
 msgid "Unable to change station property"
-msgstr "ضبط إلى صحيح للتفعيل"
+msgstr "غير قادر على تغيير خاصية المحطة"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:572
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr ""
+msgstr "غير قادر على تغيير عنوان المحطة إلى %s، لأن هذه المحطة موجودة مسبقاً"
 
 #: ../plugins/iradio/station-properties.glade.h:5
 msgid "L_ocation:"
@@ -1851,7 +1806,8 @@ msgstr "تحكم في أنغام باستخدام جهاز تحكم عن بعد 
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/lyrics.py:85 ../plugins/lyrics/lyrics.py:126
+#: ../plugins/lyrics/lyrics.py:85
+#: ../plugins/lyrics/lyrics.py:126
 msgid "Searching for lyrics..."
 msgstr "جاري البحث عن الكلمات..."
 
@@ -1886,41 +1842,28 @@ msgstr "<b>متجر الموسيقى عبر انترنت ماجناتيون</b>"
 #: ../plugins/magnatune/magnatune-loading.glade.h:3
 #, no-c-format
 msgid ""
-"Magnatune is an online record label that is not evil. Some of their key "
-"attributes are:\n"
+"Magnatune is an online record label that is not evil. Some of their key attributes are:\n"
 "\n"
 "    * Free listening of all songs\n"
 "    * All albums and artists hand-picked\n"
 "    * Very simple user interface, quick to play music\n"
-"    * Radio stations and \"genre mix\" playlists allow background listening "
-"- can do work while listening to our music\n"
+"    * Radio stations and \"genre mix\" playlists allow background listening - can do work while listening to our music\n"
 "    * No need to \"register\" to listen or buy\n"
 "    * Smaller selection means easier to find good music\n"
 "    * Wide variety of genres, can fit any mood\n"
-"    * Our genres are hard to find in record stores and not on radio (though "
-"do appear on college radio)\n"
-"    * Downloads and CDs are both available (no other site on the internet "
-"sells both)\n"
-"    * Perfect quality downloads (CD copy) are available when you download "
-"(not inferior quality sound)\n"
-"    * No copy protection on the music (DRM) which allows playing music on "
-"any device (unlike iTunes/MSN/etc)\n"
-"    * Extensive biographical info about each musician, and artist photo -- "
-"feel a strong connection to the artist\n"
-"    * Full color, high quality cover art PDF available for most albums - "
-"easy to print\n"
-"    * Variable pricing scheme means you can pay as little as $5 for an album "
-"if you choose\n"
-"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
-"the world)\n"
+"    * Our genres are hard to find in record stores and not on radio (though do appear on college radio)\n"
+"    * Downloads and CDs are both available (no other site on the internet sells both)\n"
+"    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)\n"
+"    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)\n"
+"    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist\n"
+"    * Full color, high quality cover art PDF available for most albums - easy to print\n"
+"    * Variable pricing scheme means you can pay as little as $5 for an album if you choose\n"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)\n"
 "    * Not venture-capital backed big business\n"
-"    * Not part of the \"evil\" major label machine - for those that hate the "
-"music biz and want to help topple it\n"
+"    * Not part of the \"evil\" major label machine - for those that hate the music biz and want to help topple it\n"
 "    * Founder/owner runs it -- support a small business\n"
-"    * Low pressure environment - nothing flashing, no audio ads while "
-"listening to albums\n"
-"    * Music selection is unique to Magnatune, unlike most on-line stores "
-"that have more-or-less the same (gigantic) selection\n"
+"    * Low pressure environment - nothing flashing, no audio ads while listening to albums\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection\n"
 "\n"
 "You can find more information at http://www.magnatune.com/"
 msgstr ""
@@ -1929,35 +1872,23 @@ msgstr ""
 "    * الاستماع المجاني لجميع الأغاني\n"
 "    * كل الألبومات والفنانين منتقون بعناية\n"
 "    * واجهة مستخدم سهلة جداً، سرعة التشغيل\n"
-"    * محطات الراديو وقوائم التشغيل مختلطة الأجناس تسمح بالاستماع إلى "
-"الموسيقى في الخلفية - فتمكنك من الاستماع أثناء العمل\n"
+"    * محطات الراديو وقوائم التشغيل مختلطة الأجناس تسمح بالاستماع إلى الموسيقى في الخلفية - فتمكنك من الاستماع أثناء العمل\n"
 "    * لا تتطلب \"التسجيل\" للاستماع أو الشراء\n"
 "    * صغر حجم المجموعة يسهل العثور على موسيقى جيدة\n"
 "    * تشكيلة واسعة من الأجناس، تناسب أي مزاج\n"
-"    * أجناسنا صعب العثور عليها في متاجر التسجيلات ولا يتم تشغيلها على "
-"الراديو (رغم أنها قد تظهر في المحطات الجامعية)\n"
-"    * Downloads and CDs are both available (no other site on the internet "
-"sells both)\n"
-"    * Perfect quality downloads (CD copy) are available when you download "
-"(not inferior quality sound)\n"
-"    * No copy protection on the music (DRM) which allows playing music on "
-"any device (unlike iTunes/MSN/etc)\n"
-"    * Extensive biographical info about each musician, and artist photo -- "
-"feel a strong connection to the artist\n"
-"    * Full color, high quality cover art PDF available for most albums - "
-"easy to print\n"
-"    * Variable pricing scheme means you can pay as little as $5 for an album "
-"if you choose\n"
-"    * 50% of payment goes to artist (makes buyer feel good: they're helping "
-"the world)\n"
+"    * أجناسنا صعب العثور عليها في متاجر التسجيلات ولا يتم تشغيلها على الراديو (رغم أنها قد تظهر في المحطات الجامعية)\n"
+"    * Downloads and CDs are both available (no other site on the internet sells both)\n"
+"    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)\n"
+"    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)\n"
+"    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist\n"
+"    * Full color, high quality cover art PDF available for most albums - easy to print\n"
+"    * Variable pricing scheme means you can pay as little as $5 for an album if you choose\n"
+"    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)\n"
 "    * Not venture-capital backed big business\n"
-"    * Not part of the \"evil\" major label machine - for those that hate the "
-"music biz and want to help topple it\n"
+"    * Not part of the \"evil\" major label machine - for those that hate the music biz and want to help topple it\n"
 "    * Founder/owner runs it -- support a small business\n"
-"    * Low pressure environment - nothing flashing, no audio ads while "
-"listening to albums\n"
-"    * Music selection is unique to Magnatune, unlike most on-line stores "
-"that have more-or-less the same (gigantic) selection\n"
+"    * Low pressure environment - nothing flashing, no audio ads while listening to albums\n"
+"    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection\n"
 "\n"
 "يمكنك إيجاد المزيد من المعلومات عند http://www.magnatune.com/"
 
@@ -2022,21 +1953,16 @@ msgstr ""
 "12"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:27
-msgid ""
-"<span weight=\"bold\" foreground=\"red\">Your credit card is past the "
-"expiration date listed.</span>"
-msgstr ""
-"<span weight=\"bold\" foreground=\"red\">تعدت بطاقة الائتمان الخاصة بك تاريخ "
-"انتهاء الصلاحية المذكور.</span>"
+msgid "<span weight=\"bold\" foreground=\"red\">Your credit card is past the expiration date listed.</span>"
+msgstr "<span weight=\"bold\" foreground=\"red\">تعدت بطاقة الائتمان الخاصة بك تاريخ انتهاء الصلاحية المذكور.</span>"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:28
 msgid "C_redit Card:"
 msgstr "ب_طاقة الائتمان:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:29
-#, fuzzy
 msgid "Default _amount to pay:"
-msgstr "القاموس الافتراضي المستخدم"
+msgstr "المقدار الافترا_ضي لدفعه:"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:30
 msgid "Expiry:"
@@ -2047,14 +1973,12 @@ msgid "Find out about Magnatune at "
 msgstr "إعرف المزيد عن ماجناتيون على"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:32
-#, fuzzy
 msgid "Magnatune Information"
-msgstr "بيانات سيّئة"
+msgstr "معلومات ماجناتيون"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:33
-#, fuzzy
 msgid "Magnatune Preferences"
-msgstr "خيارات داشر"
+msgstr "تفضيلات ماجناتيون"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:34
 #: ../plugins/magnatune/magnatune-purchase.glade.h:31
@@ -2065,6 +1989,11 @@ msgid ""
 "VBR MP3\n"
 "128K MP3"
 msgstr ""
+"Ogg Vorbis\n"
+"FLAC\n"
+"WAV\n"
+"VBR MP3\n"
+"128K MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:39
 msgid "Preferred audio _format:"
@@ -2124,6 +2053,20 @@ msgid ""
 "$17\n"
 "$18 (We love you!)"
 msgstr ""
+"$5\n"
+"$6\n"
+"$7\n"
+"$8 (المقدار العادي)\n"
+"$9\n"
+"$10 (أفضل من المتوسط)\n"
+"$11\n"
+"$12 (كريم)\n"
+"$13\n"
+"$14\n"
+"$15 (كريم جداً!)\n"
+"$16\n"
+"$17\n"
+"$18 (نحن نحبك!)"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:15
 msgid "Audio _format:"
@@ -2138,9 +2081,8 @@ msgid "Expiry _month:"
 msgstr "شهر انتهاء ال_صلاحية:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:18
-#, fuzzy
 msgid "Expiry _year:"
-msgstr "السّنة المنتقاة (%Y)"
+msgstr "_سنة انتهاء الصلاحية:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:19
 msgid ""
@@ -2171,14 +2113,12 @@ msgstr ""
 "ديسمبر (12)"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:36
-#, fuzzy
 msgid "Purchase Magnatune Tracks"
-msgstr "تمّ نسخ المقطوعات بنجاح."
+msgstr "اشترِ مقطوعات ماجناتيون"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:37
-#, fuzzy
 msgid "_Amount to pay:"
-msgstr "القاموس الافتراضي المستخدم"
+msgstr "_مقدار ما سيتم دفعه:"
 
 #: ../plugins/magnatune/magnatune-purchase.glade.h:38
 msgid "_Email address:"
@@ -2193,11 +2133,8 @@ msgid "_Remember my credit card details"
 msgstr "ت_ذكر تفاصيل بطاقة الائتمان الخاصة بي"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:1
-msgid ""
-"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
-"online music store"
-msgstr ""
-"إضافة دعم تشغيل وشراء الموسيقى من متجر موسيقى على انترنت ماجناتيون إلى أنغام"
+msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
+msgstr "إضافة دعم تشغيل وشراء الموسيقى من متجر موسيقى على انترنت ماجناتيون إلى أنغام"
 
 #: ../plugins/magnatune/magnatune.rb-plugin.desktop.in.h:2
 msgid "Magnatune Store"
@@ -2221,7 +2158,7 @@ msgstr "غير قادر على شراء الألبوم"
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:181
 msgid "You must have a library location set to purchase an album."
-msgstr ""
+msgstr "يجب أن تقوم بتعيين موقع المكتبة قبل شراء ألبوم."
 
 #: ../plugins/magnatune/magnatune/MagnatuneSource.py:199
 #, python-format
@@ -2258,14 +2195,12 @@ msgid "Artist Information"
 msgstr "معلومات الفنان"
 
 #: ../plugins/magnatune/magnatune/__init__.py:91
-#, fuzzy
 msgid "Get information about this artist"
-msgstr "تلقي معلومات عن هذا الفنان من الواب"
+msgstr "اجلب معلومات عن هذا الفنان"
 
 #: ../plugins/magnatune/magnatune/__init__.py:95
-#, fuzzy
 msgid "Cancel Downloads"
-msgstr "تنزيلات آلية"
+msgstr "إلغِ التنزيلات"
 
 #: ../plugins/magnatune/magnatune/__init__.py:96
 msgid "Stop downloading purchased albums"
@@ -2281,7 +2216,7 @@ msgstr "مفاتيح مشغل الموسيقى"
 
 #: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:1
 msgid "Inhibit Power Manager from suspending the machine while playing"
-msgstr ""
+msgstr "امنع مدير الطاقة من تعليق الجهاز أثناء التشغيل"
 
 #: ../plugins/power-manager/power-manager.rb-plugin.desktop.in.h:2
 msgid "Power Manager"
@@ -2293,26 +2228,24 @@ msgstr "يجري التشغيل"
 
 #: ../plugins/pythonconsole/pythonconsole.py:57
 msgid "_Python Console"
-msgstr "_كونسول بيثون"
+msgstr "_لوحة عرض بايثون"
 
 #: ../plugins/pythonconsole/pythonconsole.py:58
 msgid "Show Rhythmbox's python console"
-msgstr "عرض طرفية البايثون في برنامج انغام"
+msgstr "أظهر لوحة عرض بايثون في برنامج انغام"
 
 #: ../plugins/pythonconsole/pythonconsole.py:93
 msgid "You can access the main window through the 'shell' variable :"
-msgstr "بامكانك الوصول للنافذة الرئيسية عن طريق متغير الصدفة"
+msgstr "بامكانك الوصول للنافذة الرئيسية عن طريق متغير الصدفة :"
 
 #. ex:noet:ts=8:
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:1
-#, fuzzy
 msgid "Interactive python console"
-msgstr "خروج متفاعل لجنوم"
+msgstr "لوحة عرض بايثون التفاعلية"
 
 #: ../plugins/pythonconsole/pythonconsole.rb-plugin.desktop.in.h:2
-#, fuzzy
 msgid "Python Console"
-msgstr "مطراف بيثون"
+msgstr "لوحة عرض بايثون"
 
 #: ../plugins/rb-plugin-manager.c:47
 msgid "Plugin"
@@ -2323,41 +2256,35 @@ msgid "Enabled"
 msgstr "مُمَكَّن"
 
 #: ../plugins/rb-plugins-engine.c:514
-#, fuzzy
 msgid "Plugin Error"
-msgstr ""
-"خطأ GConf:\n"
-"  %s"
+msgstr "خطأ بالملحق"
 
 #: ../plugins/rb-plugins-engine.c:514
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to activate plugin %s"
-msgstr "ضبط إلى صحيح للتفعيل"
+msgstr "غير قادر على تنشيط الملحق %s"
 
 #: ../plugins/sample-python/sample-python.py:14
-#, fuzzy
 msgid "Python Source"
-msgstr "_مصدر الصفحة"
+msgstr "مصدر بايثون"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:1
 msgid "A sample plugin in Python with no features"
 msgstr "عينة الاضافة في بايثون بدون ميزات"
 
 #: ../plugins/sample-python/sample-python.rb-plugin.desktop.in.h:2
-#, fuzzy
 msgid "Python Sample Plugin"
-msgstr "إعداد الملحق المنتقى"
+msgstr "ملحق بايثون اختباري"
 
 #: ../plugins/sample/rb-sample-plugin.c:115
 #: ../plugins/sample/rb-sample-plugin.c:122
 #: ../plugins/sample/sample.rb-plugin.desktop.in.h:2
-#, fuzzy
 msgid "Sample Plugin"
-msgstr "مُلحق الصوت"
+msgstr "ملحق اختباري"
 
 #: ../plugins/sample/sample.rb-plugin.desktop.in.h:1
 msgid "A sample plugin in C with no features"
-msgstr "عينة الاضافة في سي بدون ميزات"
+msgstr "ملحق اختباري مكتوب بلغة C بدون ميزات"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:226
 #: ../plugins/visualizer/visualizer.rb-plugin.desktop.in.h:2
@@ -2366,7 +2293,7 @@ msgstr "مجموعات مرئية"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:227
 msgid "Start or stop visualization"
-msgstr "بدء او ايقاف المجموعات المرئية"
+msgstr "ابدأ او أوقف المجموعات المرئية"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:233
 msgid "Small"
@@ -2394,7 +2321,7 @@ msgid ""
 "Are you sure you want to enable the visual effects?"
 msgstr ""
 "يبدو انك تقوم بتشغبل برنامج انغام عن بعد .\n"
-"هل انت متاكد من رغبتك في تمكين المؤثرات المرئية ؟"
+"هل انت متاكد من رغبتك في تمكين المؤثرات المرئية؟"
 
 #: ../plugins/visualizer/visualizer-controls.glade.h:1
 msgid "Desktop"
@@ -2435,15 +2362,12 @@ msgstr "الرابط \"%s\" غير صحيح, يرجى مراجعته."
 
 #. added as something else, probably iradio
 #: ../podcast/rb-podcast-manager.c:829
-#, fuzzy
 msgid "URL already added"
-msgstr "تمت إضافة بريمج لوحة المهام '%s'"
+msgstr "العنوان تمت إضافته مسبقاً"
 
 #: ../podcast/rb-podcast-manager.c:830
 #, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
+msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
 msgstr ""
 
 #: ../podcast/rb-podcast-manager.c:871
@@ -2457,13 +2381,8 @@ msgstr "النشرة الصوتية"
 
 #: ../podcast/rb-podcast-parse.c:462
 #, c-format
-msgid ""
-"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
-"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
-"anyway?"
-msgstr ""
-"يبدو أن العنوان '%s' ليس عنوان تلقيم نشرة صوتية. قد يكون السبب أن العنوان "
-"خطأ، أو أن التلقيم معطوب. هل ترغب في أن يحاول أنغام استخدامه على أي حال؟"
+msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
+msgstr "يبدو أن العنوان '%s' ليس عنوان تلقيم نشرة صوتية. قد يكون السبب أن العنوان خطأ، أو أن التلقيم معطوب. هل ترغب في أن يحاول أنغام استخدامه على أي حال؟"
 
 #: ../podcast/rb-podcast-properties-dialog.c:415
 msgid "Not Downloaded"
@@ -2473,7 +2392,8 @@ msgstr "لم يتم التنزيل"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "لا تقم بتشغيل تطبيق اخر لأنغام"
 
-#: ../remote/dbus/rb-client.c:67 ../shell/main.c:122
+#: ../remote/dbus/rb-client.c:67
+#: ../shell/main.c:122
 msgid "Quit Rhythmbox"
 msgstr "إنهاء أنغام"
 
@@ -2502,14 +2422,12 @@ msgid "Resume playback if currently paused"
 msgstr "مواصلة العرض إذا كان متوقفا"
 
 #: ../remote/dbus/rb-client.c:78
-#, fuzzy
 msgid "Pause playback if currently playing"
-msgstr "غير عازف"
+msgstr "أوقف التشغيل مؤقتاً ان كان في وضع التشغيل"
 
 #: ../remote/dbus/rb-client.c:79
-#, fuzzy
 msgid "Toggle play/pause mode"
-msgstr "تشغيل إو إيقاف الفيلم"
+msgstr "بدّل بين وضعي التشغيل والإيقاف المؤقت"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
 #: ../remote/dbus/rb-client.c:82
@@ -2529,42 +2447,39 @@ msgid "Empty the play queue before adding new tracks"
 msgstr "قم بافراغ الطابور قبل اضافة قطع جديدة"
 
 #: ../remote/dbus/rb-client.c:86
-#, fuzzy
 msgid "Print the title and artist of the playing song"
-msgstr "مرّر العرض إلى الأغنية التي تعرض حالياً"
+msgstr "اطبع اسم وفنان الأغنية التي يتم تشغيلها"
 
 #: ../remote/dbus/rb-client.c:87
 msgid "Print formatted details of the song"
 msgstr "عرض بيانات الملف"
 
-#: ../remote/dbus/rb-client.c:379 ../shell/rb-shell.c:2106
+#: ../remote/dbus/rb-client.c:379
+#: ../shell/rb-shell.c:2106
 msgid "Not playing"
 msgstr "غير مشغل"
 
 #: ../rhythmdb/rhythmdb-monitor.c:319
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't monitor %s: %s"
-msgstr "مراقب النظام"
+msgstr "غير قادر على مراقبة %s: %s"
 
 #: ../rhythmdb/rhythmdb-property-model.c:430
-#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
+#: ../sources/rb-auto-playlist-source.c:73
+#: ../sources/rb-browser-source.c:153
 #: ../sources/rb-podcast-source.c:311
 #: ../sources/rb-static-playlist-source.c:90
 msgid "All"
 msgstr "الكل"
 
 #: ../rhythmdb/rhythmdb-tree.c:348
-msgid ""
-"The database was created by a later version of rhythmbox.  This version of "
-"rhythmbox cannot read the database."
-msgstr ""
-"لقد تم إنشاء قاعدة البيانات بإصدارة احدث من برنامج أنغام. هذه الاصدارة من "
-"أنغام لا تستطيع قراءة قاعدة البيانات"
+msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
+msgstr "لقد تم إنشاء قاعدة البيانات بإصدارة احدث من برنامج أنغام. هذه الاصدارة من أنغام لا تستطيع قراءة قاعدة البيانات"
 
 #: ../rhythmdb/rhythmdb.c:493
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't access %s: %s"
-msgstr "تعذّر الوصول إلى سلّة المهملات."
+msgstr "غير قادر على الوصول إلى %s: %s"
 
 #: ../rhythmdb/rhythmdb.c:1459
 msgid "<invalid filename>"
@@ -2575,9 +2490,8 @@ msgid "invalid unicode in error message"
 msgstr "الترميز غير متوفر لرسالة الخطأ"
 
 #: ../rhythmdb/rhythmdb.c:2431
-#, fuzzy
 msgid "Could not load the music database"
-msgstr "لم يمكن تحميل الملخّص لـ %s"
+msgstr "غير قادر على تحميل فاعدة بيانات الموسيقى"
 
 #: ../rhythmdb/rhythmdb.c:3818
 #, c-format
@@ -2615,16 +2529,16 @@ msgstr "%s و %s و %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3832 ../rhythmdb/rhythmdb.c:3840
+#: ../rhythmdb/rhythmdb.c:3832
+#: ../rhythmdb/rhythmdb.c:3840
 #: ../rhythmdb/rhythmdb.c:3851
 #, c-format
 msgid "%s and %s"
 msgstr "%s و %s"
 
 #: ../shell/main.c:115
-#, fuzzy
 msgid "Enable debug output"
-msgstr "تمكين اخراج مسهب"
+msgstr "مكِّن إخراج التنقيح"
 
 #: ../shell/main.c:116
 msgid "Enable debug output matching a specified string"
@@ -2643,20 +2557,20 @@ msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "احفظ البيانات بشكل غير دائم (يتطلب --no-registration)"
 
 #: ../shell/main.c:120
-#, fuzzy
 msgid "Path for database file to use"
-msgstr "الملف الذي سيستعمل كصورة خلفية"
+msgstr "مسار ملف قاعدة البيانات الذي سيتم استخدامه"
 
 #: ../shell/main.c:121
-#, fuzzy
 msgid "Path for playlists file to use"
-msgstr "الملف الذي سيستعمل كصورة خلفية"
+msgstr "مسار ملف قائمة التشغيل الذي سيتم استخدامه"
 
 #: ../shell/main.c:123
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:160 ../shell/main.c:169 ../widgets/rb-druid.c:184
+#: ../shell/main.c:160
+#: ../shell/main.c:169
+#: ../widgets/rb-druid.c:184
 msgid "Rhythmbox"
 msgstr "أنغام"
 
@@ -2767,9 +2681,8 @@ msgid "Untitled Playlist"
 msgstr "قائمة تشغيل بلا اسم"
 
 #: ../shell/rb-playlist-manager.c:1258
-#, fuzzy
 msgid "Couldn't read playlist"
-msgstr "اختر نوع القائمة"
+msgstr "غير قادر على فراءة قائمة التشغيل"
 
 #: ../shell/rb-playlist-manager.c:1273
 msgid "Load Playlist"
@@ -2783,27 +2696,30 @@ msgstr "عنوان MPEG الإصدار 3.0"
 msgid "Shoutcast playlist"
 msgstr "قائمة تشغيل شاوتكاست"
 
-#: ../shell/rb-playlist-manager.c:1340 ../sources/rb-playlist-source.c:546
+#: ../shell/rb-playlist-manager.c:1340
+#: ../sources/rb-playlist-source.c:546
 msgid "Couldn't save playlist"
 msgstr "غير قادر على حفظ قائمة التشغيل"
 
 #: ../shell/rb-playlist-manager.c:1340
-#, fuzzy
 msgid "Unsupported file extension given."
-msgstr "تحميل ملف الجلسة المعطى"
+msgstr "امتداد الملف المقدم غير مدعوم."
 
 #: ../shell/rb-playlist-manager.c:1641
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "قائمة التشغيل %s موجودة مسبقاً"
 
-#: ../shell/rb-playlist-manager.c:1671 ../shell/rb-playlist-manager.c:1704
-#: ../shell/rb-playlist-manager.c:1744 ../shell/rb-playlist-manager.c:1787
+#: ../shell/rb-playlist-manager.c:1671
+#: ../shell/rb-playlist-manager.c:1704
+#: ../shell/rb-playlist-manager.c:1744
+#: ../shell/rb-playlist-manager.c:1787
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "قائمة تشغيل غير معروفة: %s"
 
-#: ../shell/rb-playlist-manager.c:1712 ../shell/rb-playlist-manager.c:1752
+#: ../shell/rb-playlist-manager.c:1712
+#: ../shell/rb-playlist-manager.c:1752
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "قائمة التشغيل %s هي قائمة تشغيل آلية"
@@ -2880,7 +2796,8 @@ msgstr "الصق المنتقى"
 msgid "_Remove"
 msgstr "ا_حذف"
 
-#: ../shell/rb-shell-clipboard.c:144 ../shell/rb-shell-clipboard.c:158
+#: ../shell/rb-shell-clipboard.c:144
+#: ../shell/rb-shell-clipboard.c:158
 msgid "Remove selection"
 msgstr "احذف المنتقى"
 
@@ -2916,12 +2833,14 @@ msgstr "اضف الملفات المنتقاة الى اصطفاف التشغي�
 msgid "Remove"
 msgstr "أزل"
 
-#: ../shell/rb-shell-clipboard.c:161 ../shell/rb-shell-clipboard.c:164
+#: ../shell/rb-shell-clipboard.c:161
+#: ../shell/rb-shell-clipboard.c:164
 #: ../sources/rb-podcast-source.c:295
 msgid "_Properties"
 msgstr "_خصائص"
 
-#: ../shell/rb-shell-clipboard.c:162 ../shell/rb-shell-clipboard.c:165
+#: ../shell/rb-shell-clipboard.c:162
+#: ../shell/rb-shell-clipboard.c:165
 msgid "Show information on the selected song"
 msgstr "أظهر معلومات عن الأغنية المنتقاة"
 
@@ -2961,7 +2880,8 @@ msgstr "أخفض شدة الصوت"
 msgid "_Play"
 msgstr "_شَغِّل"
 
-#: ../shell/rb-shell-player.c:248 ../shell/rb-shell-player.c:2902
+#: ../shell/rb-shell-player.c:248
+#: ../shell/rb-shell-player.c:2902
 msgid "Start playback"
 msgstr "ابدأ العزف"
 
@@ -3009,9 +2929,8 @@ msgid "Playlist was empty"
 msgstr "كانت قائمة التشغيل فارغة"
 
 #: ../shell/rb-shell-player.c:1578
-#, fuzzy
 msgid "Not currently playing"
-msgstr "فيلم غير مشتغل."
+msgstr "ليس في وضع التشغيل"
 
 #: ../shell/rb-shell-player.c:1616
 msgid "No previous song"
@@ -3021,7 +2940,8 @@ msgstr "لا أغنية سابقة"
 msgid "No next song"
 msgstr "لا أغنية تالية"
 
-#: ../shell/rb-shell-player.c:1808 ../shell/rb-shell-player.c:2775
+#: ../shell/rb-shell-player.c:1808
+#: ../shell/rb-shell-player.c:2775
 msgid "Couldn't start playback"
 msgstr "غير قادر على بدء تشغيل الموسيقى"
 
@@ -3030,18 +2950,17 @@ msgid "Couldn't stop playback"
 msgstr "غير قادر على إيقاف تشغيل الموسيقى"
 
 #: ../shell/rb-shell-player.c:2695
-#, fuzzy
 msgid "Current song is not seekable"
-msgstr "مالك %s ليس المستخدم الحالي"
+msgstr "لا يمكن السعي في الأغنية الحالية"
 
 #: ../shell/rb-shell-player.c:2900
 msgid "Stop playback"
 msgstr "أوقِف التشغيل"
 
-#: ../shell/rb-shell-preferences.c:119 ../shell/rb-shell.c:2340
-#, fuzzy
+#: ../shell/rb-shell-preferences.c:119
+#: ../shell/rb-shell.c:2340
 msgid "Couldn't display help"
-msgstr "تعذّر عرض المساعدة: %s"
+msgstr "غير قادر على عرض المساعدة"
 
 #: ../shell/rb-shell-preferences.c:154
 msgid "Music Player Preferences"
@@ -3121,7 +3040,7 @@ msgstr "إ_نهي"
 
 #: ../shell/rb-shell.c:436
 msgid "Quit the music player"
-msgstr "أنه مشغل الموسيقى"
+msgstr "أنهي مشغل الموسيقى"
 
 #: ../shell/rb-shell.c:438
 msgid "Prefere_nces..."
@@ -3129,16 +3048,15 @@ msgstr "تف_ضيلات..."
 
 #: ../shell/rb-shell.c:439
 msgid "Edit music player preferences"
-msgstr "حرر تفضيلات مشغل الموسيقى"
+msgstr "حرّر تفضيلات مشغل الموسيقى"
 
 #: ../shell/rb-shell.c:441
 msgid "Plu_gins..."
 msgstr "مل_حقات..."
 
 #: ../shell/rb-shell.c:442
-#, fuzzy
 msgid "Change and configure plugins"
-msgstr "تاريخ ولحظة التغيير"
+msgstr "غيِّر واضبط الملحقات"
 
 #: ../shell/rb-shell.c:444
 msgid "Show _All Tracks"
@@ -3146,7 +3064,7 @@ msgstr "أظهر _كل المقطوعات"
 
 #: ../shell/rb-shell.c:445
 msgid "Show all tracks in this music source"
-msgstr "عرض جميع القطع في المصدر الصوتي"
+msgstr "أظهر كل المقطوعات الموجودة في المصدر الصوتي"
 
 #: ../shell/rb-shell.c:447
 msgid "_Jump to Playing Song"
@@ -3161,18 +3079,16 @@ msgid "Side _Pane"
 msgstr "ال_لوحة الجانبية"
 
 #: ../shell/rb-shell.c:456
-#, fuzzy
 msgid "Change the visibility of the side pane"
-msgstr "اللوحة الجانبية ظاهرة"
+msgstr "غيِّر مدى ظهور اللوح الجانبي"
 
 #: ../shell/rb-shell.c:458
 msgid "_Toolbar"
 msgstr "شريط الأ_دوات"
 
 #: ../shell/rb-shell.c:459
-#, fuzzy
 msgid "Change the visibility of the toolbar"
-msgstr "غيّر ظهور الشريط الجانبي لهذه النافذة"
+msgstr "غيِّر مدى ظهور شريط الأدوات"
 
 #: ../shell/rb-shell.c:461
 msgid "_Small Display"
@@ -3180,7 +3096,7 @@ msgstr "شاشة _صغيرة"
 
 #: ../shell/rb-shell.c:462
 msgid "Make the main window smaller"
-msgstr "تصغير النافذة الرئيسية"
+msgstr "صغِّر النافذة الرئيسية"
 
 #: ../shell/rb-shell.c:464
 msgid "_Party Mode"
@@ -3188,7 +3104,7 @@ msgstr "وضع _كامل الشاشة"
 
 #: ../shell/rb-shell.c:465
 msgid "Change the status of the party mode"
-msgstr "غير حالة وضع كامل الشاشة"
+msgstr "غيِّر حالة وضع كامل الشاشة"
 
 #: ../shell/rb-shell.c:467
 msgid "Play _Queue as Side Pane"
@@ -3196,7 +3112,7 @@ msgstr "اصطفاف التشغيل كلوح جانبي"
 
 #: ../shell/rb-shell.c:468
 msgid "Change whether the queue is visible as a source or a sidebar"
-msgstr "تغيير ظهور القائمة كمصدر او كشريط جانبي"
+msgstr "غيّر ظهور الاصطفاف كمصدر او كشريط جانبي"
 
 #: ../shell/rb-shell.c:470
 msgid "S_tatusbar"
@@ -3292,9 +3208,8 @@ msgid "Music management and playback software for GNOME."
 msgstr "برنامج إدارة و تشغيل موسيقى لجنوم."
 
 #: ../shell/rb-shell.c:2387
-#, fuzzy
 msgid "Configure Plugins"
-msgstr "تنشيط الملحقات %s"
+msgstr "اضبط الملحقات"
 
 #: ../shell/rb-shell.c:2458
 msgid "Import Folder into Library"
@@ -3319,22 +3234,23 @@ msgstr "من <i>%s</i>"
 #: ../shell/rb-shell.c:3213
 #, c-format
 msgid "No registered source can handle URI %s"
-msgstr "المصدر الغير مسجل لايستطيع التعامل مع URI %s"
+msgstr "لا يوجد مصدر مُسَجَّل للتعامل مع العنوان %s"
 
-#: ../shell/rb-shell.c:3447 ../shell/rb-shell.c:3473
+#: ../shell/rb-shell.c:3447
+#: ../shell/rb-shell.c:3473
 #, fuzzy, c-format
 msgid "Unknown song URI: %s"
 msgstr "عنوان مصدر POP"
 
 #: ../shell/rb-shell.c:3482
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown property %s"
-msgstr "أسماء الخصائص"
+msgstr "خاصية غير معروفة %s"
 
 #: ../shell/rb-shell.c:3492
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid property type %s for property %s"
-msgstr "الصفة ذات نوع غير صالح"
+msgstr "نوع غير صالح %s للخاصية %s"
 
 #: ../shell/rb-source-header.c:111
 msgid "_Browse"
@@ -3366,40 +3282,47 @@ msgstr "أظهر التنبي_هات"
 
 #: ../shell/rb-tray-icon.c:136
 msgid "Show notifications of song changes and other events"
-msgstr "بدء او ايقاف المجموعة المرئية"
+msgstr "أظهر تنبيهات عند تغير الأغنية وغيرها من الأحداث"
 
-#: ../sources/rb-auto-playlist-source.c:73 ../sources/rb-browser-source.c:153
+#: ../sources/rb-auto-playlist-source.c:73
+#: ../sources/rb-browser-source.c:153
 #: ../sources/rb-podcast-source.c:311
 #: ../sources/rb-static-playlist-source.c:90
 msgid "Search all fields"
 msgstr "ابحث في كل الحقول"
 
-#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
+#: ../sources/rb-auto-playlist-source.c:74
+#: ../sources/rb-browser-source.c:154
 #: ../sources/rb-static-playlist-source.c:91
 msgid "Artists"
 msgstr "الفنانون"
 
-#: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
+#: ../sources/rb-auto-playlist-source.c:74
+#: ../sources/rb-browser-source.c:154
 #: ../sources/rb-static-playlist-source.c:91
 msgid "Search artists"
 msgstr "ابحث عن فنان"
 
-#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
+#: ../sources/rb-auto-playlist-source.c:75
+#: ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:92
 msgid "Albums"
 msgstr "الألبومات"
 
-#: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
+#: ../sources/rb-auto-playlist-source.c:75
+#: ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:92
 msgid "Search albums"
 msgstr "ابحث عن ألبوم"
 
-#: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
+#: ../sources/rb-auto-playlist-source.c:76
+#: ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:93
 msgid "Titles"
 msgstr "الأسماء"
 
-#: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
+#: ../sources/rb-auto-playlist-source.c:76
+#: ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:93
 msgid "Search titles"
 msgstr "ابحث عن اسم أغنية"
@@ -3453,7 +3376,8 @@ msgstr "الفنان/الألبوم"
 msgid "Artist - Album"
 msgstr "الفنان - الألبوم"
 
-#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1097
+#: ../sources/rb-library-source.c:123
+#: ../widgets/rb-entry-view.c:1097
 #: ../widgets/rb-library-browser.c:101
 #: ../widgets/rb-query-creator-properties.c:67
 #: ../widgets/rb-query-creator-properties.c:93
@@ -3489,9 +3413,8 @@ msgid "Choose Library Location"
 msgstr "اختر موقع المكتبة"
 
 #: ../sources/rb-library-source.c:551
-#, fuzzy
 msgid "Multiple locations set"
-msgstr "ضبط ك_خلفية"
+msgstr "تم تعيين أماكن متعددة"
 
 #: ../sources/rb-library-source.c:653
 msgid "Add Location"
@@ -3518,16 +3441,19 @@ msgstr "ام_سح الاصطفاف"
 msgid "Remove all songs from the play queue"
 msgstr "إزالة جميع الملفات من اصطفاف التشغيل"
 
-#: ../sources/rb-play-queue-source.c:204 ../sources/rb-play-queue-source.c:253
+#: ../sources/rb-play-queue-source.c:204
+#: ../sources/rb-play-queue-source.c:253
 #: ../sources/rb-play-queue-source.c:374
 msgid "Play Queue"
 msgstr "اصطفاف التشغيل"
 
-#: ../sources/rb-play-queue-source.c:342 ../widgets/rb-header.c:100
+#: ../sources/rb-play-queue-source.c:342
+#: ../widgets/rb-header.c:100
 msgid "from"
 msgstr "من"
 
-#: ../sources/rb-play-queue-source.c:342 ../widgets/rb-header.c:101
+#: ../sources/rb-play-queue-source.c:342
+#: ../widgets/rb-header.c:101
 msgid "by"
 msgstr "أداء"
 
@@ -3537,71 +3463,59 @@ msgstr "تلقيم نشرة صوتية _جديد"
 
 #: ../sources/rb-podcast-source.c:286
 msgid "Subscribe to a new Podcast Feed"
-msgstr ""
+msgstr "اشترك في تلقيم نشرة صوتية جديد"
 
 #: ../sources/rb-podcast-source.c:289
-#, fuzzy
 msgid "Download _Episode"
-msgstr "وصلة التنزيل"
+msgstr "نزِّل الح_لقة"
 
 #: ../sources/rb-podcast-source.c:290
-#, fuzzy
 msgid "Download Podcast Episode"
-msgstr "تنزيل الملف؟"
+msgstr "نزِّل حلقة من النشرة الصوتية"
 
 #: ../sources/rb-podcast-source.c:292
-#, fuzzy
 msgid "_Cancel Download"
-msgstr "وصلة التنزيل"
+msgstr "إل_غِ التنزيل"
 
 #: ../sources/rb-podcast-source.c:293
-#, fuzzy
 msgid "Cancel Episode Download"
-msgstr "تنزيل الملف؟"
+msgstr "إلغِ تنزيل الحلقة"
 
 #: ../sources/rb-podcast-source.c:296
-#, fuzzy
 msgid "Episode Properties"
-msgstr "خصائص القائمة"
+msgstr "خصائص الحلقة"
 
 #: ../sources/rb-podcast-source.c:298
-#, fuzzy
 msgid "_Update Podcast Feed"
-msgstr "تحديث علامة الموقع “%s”؟"
+msgstr "حدِّ_ث تلقيم النشرة الصوتية"
 
 #: ../sources/rb-podcast-source.c:299
-#, fuzzy
 msgid "Update Feed"
-msgstr "ا_تجاه الإدخال:"
+msgstr "حدِّث التلقيم"
 
 #: ../sources/rb-podcast-source.c:301
-#, fuzzy
 msgid "_Delete Podcast Feed"
-msgstr "حذف هذا الموضوع؟"
+msgstr "ا_حذف تلقيم النشرة الصوتية"
 
 #: ../sources/rb-podcast-source.c:302
-#, fuzzy
 msgid "Delete Feed"
-msgstr "ا_تجاه الإدخال:"
+msgstr "احذف التلقيم"
 
 #: ../sources/rb-podcast-source.c:304
-#, fuzzy
 msgid "_Update All Feeds"
-msgstr "أظهر كل المكونات"
+msgstr "حدِّ_ث كل التلقيمات"
 
 #: ../sources/rb-podcast-source.c:305
-#, fuzzy
 msgid "Update all feeds"
-msgstr "أظهر كل المكونات"
+msgstr "حدِّث كل التلقيمات"
 
 #: ../sources/rb-podcast-source.c:312
 msgid "Feeds"
 msgstr "تلقيمات"
 
 #: ../sources/rb-podcast-source.c:312
-#, fuzzy
 msgid "Search podcast feeds"
-msgstr "اظهر مُدْخل البحث"
+msgstr "ابحث عن تلقيمات نشرات صوتية"
 
 #: ../sources/rb-podcast-source.c:313
 msgid "Episodes"
@@ -3611,29 +3525,35 @@ msgstr "حلقات"
 msgid "Search podcast episodes"
 msgstr "ابحث عن حلقات النشرات الصوتية"
 
-#: ../sources/rb-podcast-source.c:592 ../sources/rb-podcast-source.c:603
+#: ../sources/rb-podcast-source.c:592
+#: ../sources/rb-podcast-source.c:603
 msgid "Date"
 msgstr "التاريخ"
 
 #. configure feed view
-#: ../sources/rb-podcast-source.c:624 ../sources/rb-podcast-source.c:688
+#: ../sources/rb-podcast-source.c:624
+#: ../sources/rb-podcast-source.c:688
 #: ../sources/rb-podcast-source.c:718
 msgid "Feed"
 msgstr "التلقيم"
 
-#: ../sources/rb-podcast-source.c:643 ../sources/rb-podcast-source.c:661
+#: ../sources/rb-podcast-source.c:643
+#: ../sources/rb-podcast-source.c:661
 msgid "Status"
 msgstr "الحالة"
 
-#: ../sources/rb-podcast-source.c:644 ../sources/rb-podcast-source.c:1492
+#: ../sources/rb-podcast-source.c:644
+#: ../sources/rb-podcast-source.c:1492
 msgid "Downloaded"
 msgstr "تم تنزيل"
 
-#: ../sources/rb-podcast-source.c:645 ../sources/rb-podcast-source.c:1500
+#: ../sources/rb-podcast-source.c:645
+#: ../sources/rb-podcast-source.c:1500
 msgid "Waiting"
 msgstr "جاري الإنتظار..."
 
-#: ../sources/rb-podcast-source.c:646 ../sources/rb-podcast-source.c:1496
+#: ../sources/rb-podcast-source.c:646
+#: ../sources/rb-podcast-source.c:1496
 msgid "Failed"
 msgstr "فشل"
 
@@ -3643,49 +3563,35 @@ msgstr "النشرات الصوتية"
 
 #: ../sources/rb-podcast-source.c:904
 msgid "Delete the podcast episode and downloaded file?"
-msgstr ""
+msgstr "حذف حلقة النشرة الصوتية والملف المُنَزَّل؟"
 
 #: ../sources/rb-podcast-source.c:907
-msgid ""
-"If you choose to delete the episode and file, they will be permanently "
-"lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
-msgstr ""
-"في حال رغبتك في حذف الملف والحلقة سيتم حذفهم بشكل دائم علما بانه بامكانك حذف "
-"الحلقة والاحتفاظ بالملف با ختيارك حذف الحلقة فقط"
+msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
+msgstr "في حال رغبتك في حذف الملف والحلقة سيتم حذفهم بشكل دائم علما بانه بامكانك حذف الحلقة والاحتفاظ بالملف با ختيارك حذف الحلقة فقط"
 
 #: ../sources/rb-podcast-source.c:915
-#, fuzzy
 msgid "Delete _Episode Only"
-msgstr "الاتّصالات المشفّرة فقط"
+msgstr "احذف الح_لقة فقط"
 
 #: ../sources/rb-podcast-source.c:921
-#, fuzzy
 msgid "_Delete Episode And File"
-msgstr "إسم و أيقونة الملف."
+msgstr "ا_حذف الحلقة والملف"
 
 #: ../sources/rb-podcast-source.c:1386
 msgid "Delete the podcast feed and downloaded files?"
-msgstr ""
+msgstr "حذف تلقيم النشرة الصوتية وكل الملفات المُنَزَّلة؟"
 
 #: ../sources/rb-podcast-source.c:1389
-msgid ""
-"If you choose to delete the feed and files, they will be permanently lost.  "
-"Please note that you can delete the feed but keep the downloaded files by "
-"choosing to delete the feed only."
-msgstr ""
-"في حال رغبتك في حذف الناقل والملفات سيتم حذفهم بشكل دائم بامكانك حذف الناقل "
-"والاحتفاظ بالملفات المنزلة باختارك حذف الناقل فقط"
+msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
+msgstr "في حال رغبتك في حذف الناقل والملفات سيتم حذفهم بشكل دائم بامكانك حذف الناقل والاحتفاظ بالملفات المنزلة باختارك حذف الناقل فقط"
 
 #: ../sources/rb-podcast-source.c:1397
-#, fuzzy
 msgid "Delete _Feed Only"
-msgstr "الاتّصالات المشفّرة فقط"
+msgstr "احذف التل_قيم فقط"
 
 #: ../sources/rb-podcast-source.c:1404
-#, fuzzy
 msgid "_Delete Feed And Files"
-msgstr "انشيء واحذف الملفات"
+msgstr "ا_حذف التلقيم والملفات"
 
 #: ../sources/rb-podcast-source.c:1611
 #, c-format
@@ -3789,41 +3695,35 @@ msgstr "pixbuf الذي سيتم تصييره."
 
 #: ../widgets/rb-druid.c:205
 msgid "Welcome to Rhythmbox"
-msgstr "مرحبا بك في رذمبوكس"
+msgstr "مرحبا بك في أنغام"
 
 #: ../widgets/rb-druid.c:209
 msgid ""
-"Rhythmbox is the GNOME music player that lets you do everything: play your "
-"music files, listen to Internet Radio, import music from CDs, and much "
-"more.\n"
+"Rhythmbox is the GNOME music player that lets you do everything: play your music files, listen to Internet Radio, import music from CDs, and much more.\n"
 "\n"
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
-"رذمبكس مشغل جنوم الذي يمكنك من القيام بكل شيئ: تشغيل ملفاتك الموسيقية، "
-"الاستماع لراديو الانترنت، استيراد الموسيقى من الأقراص المدمجة و العديد "
-"العديد.\n"
+"أنغام مشغل جنوم الذي يُمَكِّنُك من القيام بكل شئ: تشغيل ملفاتك الموسيقية، الاستماع لإذاعات إنترنت، استيراد الموسيقى من الأقراص المدمجة و العديد العديد.\n"
 "\n"
 "سيساعدك هذا المساعد بسؤلك بعض الأسئلة البسيطة."
 
 #: ../widgets/rb-druid.c:215
 msgid "Music library setup"
-msgstr "تعيين مكتبة الموسيقى"
+msgstr "ضبط مكتبة الموسيقى"
 
 #: ../widgets/rb-druid.c:224
 msgid "Finish"
-msgstr "انهاء"
+msgstr "أن_هي"
 
 #: ../widgets/rb-druid.c:226
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
-"Remember that you may add music to the library using \"Music\" then \"Import "
-"Folder\", or by importing it from CDs."
+"Remember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."
 msgstr ""
-"أنت الآن مستعد لتشغيل رذمبوكس.\n"
+"أنت الآن مستعد لتشغيل أنغام.\n"
 "\n"
-"\"تذكر أنه يمكنك إضافة الموسيقى للمكتبة باستعمال \"موسيقى\" ثم \"إضافة "
-"للمكتبة\"، أوباستيرادها من أقراص مدمجة."
+"\"تذكر أنه يمكنك إضافة الموسيقى للمكتبة باستعمال \"موسيقى\" ثم \"استورد مجلد\"، أوباستيرادها من أقراص مدمجة."
 
 #: ../widgets/rb-druid.c:286
 msgid "Load folder into Library"
@@ -3842,7 +3742,8 @@ msgstr "المقطوعة"
 msgid "Time"
 msgstr "الوقت"
 
-#: ../widgets/rb-entry-view.c:1129 ../widgets/rb-query-creator-properties.c:69
+#: ../widgets/rb-entry-view.c:1129
+#: ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:98
 msgid "Year"
 msgstr "السّنة"
@@ -3855,12 +3756,14 @@ msgstr "الجودة"
 msgid "000 kbps"
 msgstr "000 ك بت/ث"
 
-#: ../widgets/rb-entry-view.c:1154 ../widgets/rb-query-creator-properties.c:70
+#: ../widgets/rb-entry-view.c:1154
+#: ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Rating"
 msgstr "التقييم"
 
-#: ../widgets/rb-entry-view.c:1176 ../widgets/rb-query-creator-properties.c:73
+#: ../widgets/rb-entry-view.c:1176
+#: ../widgets/rb-query-creator-properties.c:73
 #: ../widgets/rb-query-creator-properties.c:97
 msgid "Play Count"
 msgstr "مرّات التشغيل"
@@ -3892,11 +3795,8 @@ msgid "Now Playing"
 msgstr "التشغيل الآن"
 
 #: ../widgets/rb-entry-view.c:1518
-#, fuzzy
 msgid "Playback Error"
-msgstr ""
-"خطأ GConf:\n"
-"  %s"
+msgstr "خطأ عند التشغيل"
 
 #: ../widgets/rb-header.c:427
 msgid "Not Playing"
@@ -4144,19 +4044,14 @@ msgstr "موقع مجهول"
 #, fuzzy
 #~ msgid "Player backend"
 #~ msgstr " العرض في الوضع الصامت. \n"
-
 #~ msgid "%s Group Radio"
 #~ msgstr "إذاعة المجموعة %s"
-
 #~ msgid "Stores"
 #~ msgstr "المتاجر"
-
 #~ msgid "You can find more information at http://www.magnatune.com/"
 #~ msgstr "بامكانك ايجاد المزيد من المعلومات على http://www.magnatune.com/"
-
 #~ msgid "_Amount to pay (US Dollars):"
 #~ msgstr "مقدار ما سيتم _دفعه (بالدولار الأمريكي):"
-
 #~ msgid "Purchase Error"
 #~ msgstr "خطأ أثناء الشراء"
 
@@ -4167,19 +4062,14 @@ msgstr "موقع مجهول"
 #, fuzzy
 #~ msgid "Vala Sample Plugin"
 #~ msgstr "مُلحق الصوت"
-
 #~ msgid "Embedded"
 #~ msgstr "مضمّن"
-
 #~ msgid "Window"
 #~ msgstr "نافذة"
-
 #~ msgid "Music Player Visualization"
 #~ msgstr "مجموعات مشغل الموسيقى المرئية"
-
 #~ msgid "Disable"
 #~ msgstr "عطّل"
-
 #~ msgid "Mode:"
 #~ msgstr "الوضع:"
 
@@ -4206,25 +4096,18 @@ msgstr "موقع مجهول"
 #, fuzzy
 #~ msgid "Unmute playback"
 #~ msgstr "أوقِف التشغيل"
-
 #~ msgid "Playback is muted.\n"
 #~ msgstr " العرض في الوضع الصامت. \n"
-
 #~ msgid "Playback volume is %f.\n"
 #~ msgstr "قياس الصوت %f. \n"
-
 #~ msgid "Playback"
 #~ msgstr "العزف"
-
 #~ msgid "Music"
 #~ msgstr "موسيقى"
-
 #~ msgid "Playlists"
 #~ msgstr "قوائم التشغيل"
-
 #~ msgid "Devices"
 #~ msgstr "أجهزة"
-
 #~ msgid "Shared"
 #~ msgstr "مشترك"
 
@@ -4235,10 +4118,8 @@ msgstr "موقع مجهول"
 #, fuzzy
 #~ msgid "Name:"
 #~ msgstr "اسم:"
-
 #~ msgid "%Y-%m-%d %H:%M"
 #~ msgstr "%Y-%m-%d %H:%M"
-
 #~ msgid ""
 #~ "%s\n"
 #~ "%s"
@@ -4269,20 +4150,16 @@ msgstr "موقع مجهول"
 #, fuzzy
 #~ msgid "_Feed"
 #~ msgstr "ال_ملف"
-
 #~ msgid "_Title"
 #~ msgstr "ال_عنوان"
-
 #~ msgid "Art_ist"
 #~ msgstr "الف_نان"
-
 #~ msgid "_Album"
 #~ msgstr "_ألبوم"
 
 #, fuzzy
 #~ msgid "Tim_e"
 #~ msgstr "ال_وقت"
-
 #~ msgid "_Play Count"
 #~ msgstr "_عزف العد"
 
@@ -4293,3 +4170,4 @@ msgstr "موقع مجهول"
 #, fuzzy
 #~ msgid "L_ocation"
 #~ msgstr "المو_قع:"
+
