@@ -613,6 +613,7 @@ _wrap_RBSource__proxy_do_impl_get_search_actions (RBSource *self)
 	PyObject *py_method;
 	PyObject *py_retval;
 	GList *ret = NULL;
+	GList *list;
 
 	__py_state = pyg_gil_state_ensure();
 	py_self = pygobject_new((GObject *)self);
@@ -642,13 +643,15 @@ _wrap_RBSource__proxy_do_impl_get_search_actions (RBSource *self)
 		return NULL;
 	}
 
-	ret = _helper_unwrap_string_pylist (py_retval);
+	list = _helper_unwrap_string_pylist (py_retval);
 
 	Py_DECREF(py_retval);
 	Py_DECREF(py_method);
 	Py_DECREF(py_self);
 	pyg_gil_state_release(__py_state);
 
+	ret = rb_string_list_copy (list);
+	g_list_free (list);
 	return ret;
 }
 %%
@@ -691,7 +694,7 @@ _wrap_rb_entry_view_set_fixed_column_width(PyGObject *self, PyObject *args, PyOb
 	const char **strings;
 	int length, i;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBEntryView.set_fixed_column_width", kwlist,
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO:RBEntryView.set_fixed_column_width", kwlist,
 	    &py_column, &py_renderer, &py_strings))
 		return NULL;
 
@@ -699,7 +702,7 @@ _wrap_rb_entry_view_set_fixed_column_width(PyGObject *self, PyObject *args, PyOb
 	length = PySequence_Length (py_strings);
 	if (length < 0)
 		return NULL;
-	strings = g_new0(const char*, length);
+	strings = g_new0(const char*, length+1);
 	for (i = 0; i < length; i++) {
 		PyObject *o;
 
