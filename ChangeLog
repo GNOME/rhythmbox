@@ -1,5 +1,10 @@
 2007-04-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* backends/gstreamer/Makefile.am: link the crossfading backend with
+	libgstcontroller, fixes bug #430213
+
+2007-04-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* plugins/ipod/rb-ipod-source.c: working patch with proper #ifdefs to
 	detect itdb_device_supports_artwork availability
 

@@ -34,4 +34,5 @@ if USE_GSTREAMER_0_10_XFADE
 librbbackendsgstreamer_la_SOURCES +=	\
 	rb-player-gst-xfade.h		\
 	rb-player-gst-xfade.c
+librbbackendsgstreamer_la_LIBADD += -lgstcontroller-0.10
 endif
