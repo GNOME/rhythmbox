@@ -1032,8 +1032,9 @@ impl_track_added (RBRemovableMediaSource *source,
 		if (song->mediatype == MEDIATYPE_PODCAST) {
 			add_to_podcasts (isource, song);
 		}
-		request_artwork (isource, entry, db, song);
-
+		if (itdb_device_supports_artwork (priv->ipod_db->device)) {
+			request_artwork (isource, entry, db, song);
+		}
 		add_ipod_song_to_db (isource, db, song);
 		itdb_schedule_save (isource);
 	}
