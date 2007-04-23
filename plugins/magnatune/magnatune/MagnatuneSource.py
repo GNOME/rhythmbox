@@ -333,6 +333,7 @@ class MagnatuneSource(rb.BrowserSource):
 			gnomevfs.unlink(local_song_info_temp_uri)
 			self.__updating = False
 			self.__load_catalogue()
+			self.__xfer_handle = None
 		else:
 			#print info
 			pass

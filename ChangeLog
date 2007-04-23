@@ -1,3 +1,9 @@
+2007-04-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	Clear the async xfer handle when it's done; fixes warnings on
+	shutdown.
+
 2007-04-21  Bastien Nocera  <hadess@hadess.net>
 
 	* metadata/rb-metadata.h: Add RB_METADATA_ERROR_EMPTY_FILE type
