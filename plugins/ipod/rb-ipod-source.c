@@ -1032,9 +1032,16 @@ impl_track_added (RBRemovableMediaSource *source,
 		if (song->mediatype == MEDIATYPE_PODCAST) {
 			add_to_podcasts (isource, song);
 		}
+#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
+		/* reuse that #define since both functions were added to 
+		 * libgpod CVS HEAD around the same time
+		 */
 		if (itdb_device_supports_artwork (priv->ipod_db->device)) {
 			request_artwork (isource, entry, db, song);
 		}
+#else 
+		request_artwork (isource, entry, db, song);
+#endif
 		add_ipod_song_to_db (isource, db, song);
 		itdb_schedule_save (isource);
 	}

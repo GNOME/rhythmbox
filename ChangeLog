@@ -1,5 +1,10 @@
 2007-04-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* plugins/ipod/rb-ipod-source.c: working patch with proper #ifdefs to
+	detect itdb_device_supports_artwork availability
+
+2007-04-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* plugins/ipod/rb-ipod-source.c: use the new
 	itdb_device_supports_artwork method if using libgpod CVS. This allows
 	us to detect art capable iPods
