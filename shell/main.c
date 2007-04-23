@@ -274,19 +274,7 @@ main (int argc, char **argv)
 	} else if (!no_registration && session_bus != NULL) {
 		DBusGProxy *shell_proxy;
 		guint32 current_time;
-#if GTK_MINOR_VERSION >= 8
 		current_time = gdk_x11_display_get_user_time (gdk_display_get_default ());
-#else
-		/* FIXME - this does not work; it will return 0 since
-		 * we're not in an event.  When we pass this to
-		 * gtk_window_present_with_time, it ignores the value
-		 * since it's 0.  The only alternative is to parse the
-		 * startup-notification junk from the environment
-		 * ourself...
-		 */
-		current_time = GDK_CURRENT_TIME;
-#endif	/* GTK_MINOR_VERSION */
-
 		shell_proxy = dbus_g_proxy_new_for_name_owner (session_bus,
 							       "org.gnome.Rhythmbox",
 							       "/org/gnome/Rhythmbox/Shell",

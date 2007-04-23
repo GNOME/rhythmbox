@@ -1,5 +1,16 @@
 2007-04-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac:
+	* lib/rb-cut-and-paste-code.c:
+	* lib/rb-cut-and-paste-code.h:
+	* rhythmdb/rb-refstring.c:
+	* shell/main.c:
+	* shell/rb-shell.c:
+	* widgets/rb-dialog.c: raise gtk+ requirement to gtk+ 2.8, get rid of
+	rb_utf8_collate_key_for_filename which was cut'n'pasted from glib 2.8
+
+2007-04-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac: move library prerequisite versions to the beginning of
 	configure.ac for easier maintainance (raise gnome-vfs version from
 	2.7.something to 2.8.0 while I'm at it), part of bug #425103

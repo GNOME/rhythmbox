@@ -192,7 +192,7 @@ rb_refstring_get_sort_key (RBRefString *val)
 		const char *s;
 
 		s = rb_refstring_get_folded (val);
-		newstring = rb_utf8_collate_key_for_filename (s, -1);
+		newstring = g_utf8_collate_key_for_filename (s, -1);
 
 		if (g_atomic_pointer_compare_and_exchange (ptr, NULL, newstring)) {
 			string = newstring;
