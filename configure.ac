@@ -21,11 +21,19 @@ AC_STDC_HEADERS
 AM_PROG_LIBTOOL
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
-GTK_REQS=2.6.0
-GNOME_VFS_REQS=2.7.4
-NCB_MIN_REQS=2.9.0
+
 DBUS_MIN_REQS=0.35
+GST_0_10_REQS=0.10.4
+GST_0_10_XFADE_REQS=0.10.11
+GTK_REQS=2.6.0
+GNOME_MEDIA_PROFILES_REQS=2.8
+GNOME_VFS_REQS=2.8.0
+LIBNOTIFY_REQS=0.2.2
+LIBGPOD_REQS=0.4
+MUSICBRAINZ_REQS=2.1.0
+NCB_MIN_REQS=2.9.0
 TOTEM_PLPARSER_REQS=1.1.5
+VALA_REQS=0.0.8
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
@@ -89,7 +97,7 @@ AC_ARG_ENABLE(track-transfer,
 			     [Disable track transfer support in rhythmbox]))
 if test x"$enable_track_transfer" != xno; then
    PKG_CHECK_MODULES(GNOME_MEDIA_PROFILES,
-      gnome-media-profiles >= 2.8,
+      gnome-media-profiles >= $GNOME_MEDIA_PROFILES_REQS,
       with_track_transfer=yes,
       with_track_transfer=no)
 
@@ -110,8 +118,8 @@ AC_ARG_WITH(ipod,
 			   [Enable iPod support]),,
 	      with_ipod=auto)
 if test "x$with_ipod" != "xno"; then
-
-	PKG_CHECK_MODULES(IPOD, libgpod-1.0 >= 0.4, have_libgpod=yes, have_libgpod=no)
+	PKG_CHECK_MODULES(IPOD, libgpod-1.0 >= $LIBGPOD_REQS,
+	                  have_libgpod=yes, have_libgpod=no)
 	if test "x$have_libgpod" = "xno" -a "x$with_ipod" = "xyes"; then
 	  AC_MSG_ERROR([iPod explicitly requested but libgpod couldn't be found])
 	fi
@@ -213,18 +221,16 @@ fi
 dnl Sound system
 dnl Now we're ready to ask for gstreamer libs and cflags
 dnl And we can also ask for the right version of gstreamer
-GST_0_10_REQUIRED_VERSION=0.10.4
 PKG_CHECK_MODULES(GSTREAMER_0_10, \
-	gstreamer-0.10 >= $GST_0_10_REQUIRED_VERSION
-	gstreamer-base-0.10 >= $GST_0_10_REQUIRED_VERSION
-	gstreamer-plugins-base-0.10 >= $GST_0_10_REQUIRED_VERSION)
+	gstreamer-0.10 >= $GST_0_10_REQS
+	gstreamer-base-0.10 >= $GST_0_10_REQS
+	gstreamer-plugins-base-0.10 >= $GST_0_10_REQS)
 
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_10_CFLAGS"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS"
 
-GST_0_10_XFADE_REQUIRED_VERSION=0.10.11
 PKG_CHECK_MODULES(GSTREAMER_0_10_XFADE, \
-	gstreamer-0.10 >= $GST_0_10_XFADE_REQUIRED_VERSION,
+	gstreamer-0.10 >= $GST_0_10_XFADE_REQS,
 	have_gstreamer_0_10_xfade=yes,have_gstreamer_0_10_xfade=no)
 
 if test x"$have_gstreamer_0_10_xfade" = xyes; then
@@ -345,14 +351,13 @@ fi
 AM_CONDITIONAL(USE_HOWL, test "x$use_howl" = "xyes")
 AM_CONDITIONAL(USE_AVAHI, test "x$use_avahi" = "xyes")
 
-LIBNOTIFY_REQUIRED=0.2.2
 AC_ARG_ENABLE(libnotify,
             AC_HELP_STRING([--disable-libnotify],
 			   [Disable libnotify support]),,
 	      enable_libnotify=auto)
 if test "x$enable_libnotify" != "xno"; then
 	PKG_CHECK_MODULES(NOTIFY,                            \
-			  libnotify >= $LIBNOTIFY_REQUIRED,
+			  libnotify >= $LIBNOTIFY_REQS,
 			  have_libnotify=yes,
 			  have_libnotify=no)
 	if test "x$have_libnotify" = "xno" -a "x$enable_libnotify" = "xyes"; then
@@ -446,12 +451,12 @@ AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" != "xno")
 AC_CHECK_LIB(z, uncompress)
 
 
-
 dnl check for MusicBrainz
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
 				[don't build with MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
-	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= 2.1.0, enable_musicbrainz=yes,
+	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= $MUSICBRAINZ_REQS,
+                          enable_musicbrainz=yes,
 		          enable_musicbrainz=no)
 fi
 if test x"$enable_musicbrainz" = xyes; then
@@ -642,7 +647,8 @@ AC_ARG_WITH(internal-libsexy,
 			   [Build using internal libsexy library]),,
 	      with_internal_libsexy=no)
 if test "x$with_internal_libsexy" = "xno"; then
-	PKG_CHECK_MODULES(LIBSEXY, libsexy >= 0.1.5, with_internal_libsexy=no,
+	PKG_CHECK_MODULES(LIBSEXY, libsexy >= 0.1.5,
+		          with_internal_libsexy=no,
 		          with_internal_libsexy=yes)
 fi
 AC_SUBST(LIBSEXY_CFLAGS)
@@ -868,7 +874,7 @@ AC_ARG_ENABLE([vala],
 	[enable_vala=autodetect have_vala=yes])
 AC_MSG_RESULT([$enable_vala])
 if test "x$enable_vala" != "xno"; then
-	PKG_CHECK_MODULES(VALA, vala-1.0 >= 0.0.8, with_vala=yes,
+	PKG_CHECK_MODULES(VALA, vala-1.0 >= VALA_REQS, with_vala=yes,
 		          with_vala=no)
 	if test "x$with_vala" = "xyes"; then
 		VALAC="`pkg-config --variable=prefix vala-1.0`/bin/valac"

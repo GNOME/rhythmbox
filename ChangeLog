@@ -1,5 +1,11 @@
 2007-04-23  Christophe Fergeau  <teuf@gnome.org>
 
+	* configure.ac: move library prerequisite versions to the beginning of
+	configure.ac for easier maintainance (raise gnome-vfs version from
+	2.7.something to 2.8.0 while I'm at it), part of bug #425103
+
+2007-04-23  Christophe Fergeau  <teuf@gnome.org>
+
 	* backends/gstreamer/Makefile.am: link the crossfading backend with
 	libgstcontroller, fixes bug #430213
 
