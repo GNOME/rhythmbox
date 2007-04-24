@@ -46,21 +46,29 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 
 				# if year is not set, use launch date instead
 				try:
-					year = int(self.__track['year'])
-					if (year <= 0):
+					year = parse_int(self.__track['year'])
+					if year <= 0:
 						raise ValueError
 				except ValueError:
-					year = int(self.__track['launchdate'][0:4])
+					year = parse_int(self.__track['launchdate'][0:4])
 
 				date = datetime.date(year, 1, 1).toordinal()
-
+				try:
+					tracknum = parse_int(self.__track['tracknum'])
+				except ValueError:
+					tracknum = 0
+				try:
+					duration = parse_int(self.__track['seconds'])
+				except ValueError:
+					duration = 0
+				
 				self.__db.set(entry, rhythmdb.PROP_ARTIST, self.__track['artist'])
 				self.__db.set(entry, rhythmdb.PROP_ALBUM, self.__track['albumname'])
 				self.__db.set(entry, rhythmdb.PROP_TITLE, self.__track['trackname'])
-				self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(self.__track['tracknum']))
+				self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, tracknum)
 				self.__db.set(entry, rhythmdb.PROP_DATE, date)
 				self.__db.set(entry, rhythmdb.PROP_GENRE, self.__track['mp3genre'])
-				self.__db.set(entry, rhythmdb.PROP_DURATION, int(self.__track['seconds']))
+				self.__db.set(entry, rhythmdb.PROP_DURATION, duration)
 				self.__sku_dict[self.__track['url']] = self.__track['albumsku']
 				self.__home_dict[self.__track['url']] = self.__track['home']
 				self.__buy_dict[self.__track['url']] = self.__track['buy'].replace("buy_album", "buy_cd", 1)
@@ -78,3 +86,13 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 
 	def characters(self, content):
 		self.__text = self.__text + content
+
+# parses partial integers
+def parse_int(s):
+	news = ""
+	for c in s:
+		if c in '0123456789': # only positive integers allowed
+			news += c
+		else:
+			break
+	return int(news)
