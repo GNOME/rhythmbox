@@ -1611,7 +1611,7 @@ rb_podcast_source_feed_title_cell_data_func (GtkTreeViewColumn *column,
 		/* Subtract one for the All node */
 		nodes--;
 
-		fmt = ngettext ("All %d feed", "All %d feeds", nodes);
+		fmt = ngettext ("%d feed", "All %d feeds", nodes);
 
 		str = g_strdup_printf (fmt, nodes, number);
 	} else {
