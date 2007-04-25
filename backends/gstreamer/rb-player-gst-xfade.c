@@ -330,6 +330,7 @@ struct _RBPlayerGstXFadePrivate
 		SINK_PAUSED,
 		SINK_PLAYING
 	} sink_state;
+	GStaticRecMutex sink_lock;
 
 	GList *waiting_tees;
 	GList *waiting_filters;
@@ -677,6 +678,7 @@ rb_player_gst_xfade_init (RBPlayerGstXFade *player)
 	player->priv = GET_PRIVATE (player);
 
 	g_static_rec_mutex_init (&player->priv->stream_list_lock);
+	g_static_rec_mutex_init (&player->priv->sink_lock);
 	player->priv->cur_volume = 1.0f;
 }
 
@@ -690,10 +692,12 @@ rb_player_gst_xfade_dispose (GObject *object)
 	player = RB_PLAYER_GST_XFADE (object);
 
 	/* if the sink is paused, unpause it while we clean up streams */
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
 	if (player->priv->sink_state == SINK_PAUSED) {
 		rb_debug ("unpausing sink for shutdown");
 		start_sink (player);
 	}
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	/* clean up streams */
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
@@ -709,7 +713,9 @@ rb_player_gst_xfade_dispose (GObject *object)
 	player->priv->streams = NULL;
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
 	stop_sink (player);
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	if (player->priv->pipeline != NULL) {
 		/* maybe we should keep references to the adder, sink, etc.? */
@@ -822,9 +828,9 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	format = GST_FORMAT_TIME;
 	gst_element_query_position (stream->volume, &format, &stream_pos);
 	if (stream_pos != -1) {
-		rb_debug ("adjusting base time: %" G_GINT64_FORMAT 
-		    " - %" G_GINT64_FORMAT " => %" G_GINT64_FORMAT, 
-		    stream->base_time, stream_pos, 
+		rb_debug ("adjusting base time: %" G_GINT64_FORMAT
+		    " - %" G_GINT64_FORMAT " => %" G_GINT64_FORMAT,
+		    stream->base_time, stream_pos,
 		    stream->base_time - stream_pos);
 		stream->base_time -= stream_pos;
 	}
@@ -1022,7 +1028,9 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 
 	rb_debug ("linking stream %s", stream->uri);
 
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
 	start_sink (player);
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	if (GST_ELEMENT_PARENT (stream->bin) == NULL)
 		gst_bin_add (GST_BIN (player->priv->pipeline), stream->bin);
@@ -1426,7 +1434,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			gint64 duration;
 			GstFormat format;
 			gst_message_parse_duration (message, &format, &duration);
-			rb_debug ("got duration %" G_GINT64_FORMAT 
+			rb_debug ("got duration %" G_GINT64_FORMAT
 			    " for stream %s", duration, stream->uri);
 		}
 		break;
@@ -2302,7 +2310,19 @@ start_sink (RBPlayerGstXFade *player)
 			return FALSE;
 		}
 
-		if (wait && sr == GST_STATE_CHANGE_ASYNC) {
+		if (wait) {
+			sr = gst_element_get_state (player->priv->silencebin, &state, NULL, GST_CLOCK_TIME_NONE);
+			if (sr == GST_STATE_CHANGE_FAILURE) {
+				rb_debug ("silence bin state change failed (async)");
+				return FALSE;
+			}
+
+			sr = gst_element_get_state (player->priv->adder, &state, NULL, GST_CLOCK_TIME_NONE);
+			if (sr == GST_STATE_CHANGE_FAILURE) {
+				rb_debug ("adder state change failed (async)");
+				return FALSE;
+			}
+
 			sr = gst_element_get_state (player->priv->outputbin, &state, NULL, GST_CLOCK_TIME_NONE);
 			if (sr == GST_STATE_CHANGE_FAILURE) {
 				rb_debug ("output bin state change failed (async)");
@@ -2722,12 +2742,7 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 	if (preroll_stream (player, stream) == FALSE) {
 		char *err;
 
-		/* need to set errors here etc. .. */
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-		player->priv->streams = g_list_remove (player->priv->streams, stream);
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-
-		g_object_unref (stream);
+		rb_debug ("unable to preroll stream %s", uri);
 
 		err = g_strdup_printf (_("Failed to start playback of %s"),
 				       uri);
@@ -2753,8 +2768,11 @@ rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
 		GList *list;
 		GList *l;
 
-		if (player->priv->sink_state == SINK_PAUSED)
+		g_static_rec_mutex_lock (&player->priv->sink_lock);
+		if (player->priv->sink_state == SINK_PAUSED) {
 			start_sink (player);
+		}
+		g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 		/* need to copy the list as unlink_and_dispose_stream modifies it */
 		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
@@ -2790,7 +2808,9 @@ rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
 	}
 
 	if (player->priv->streams == NULL) {
+		g_static_rec_mutex_lock (&player->priv->sink_lock);
 		ret = stop_sink (player);
+		g_static_rec_mutex_unlock (&player->priv->sink_lock);
 	}
 
 	return ret;
@@ -2892,9 +2912,11 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 	g_object_unref (stream);
 
 	/* make sure the sink is playing */
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
 	if (start_sink (player) == FALSE) {
 		ret = FALSE;
 	}
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	return ret;
 }
@@ -2908,7 +2930,9 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 
 	/* if we're only playing one stream, just pause the sink */
 	if (rb_player_gst_xfade_in_transition (player) == FALSE) {
+		g_static_rec_mutex_lock (&player->priv->sink_lock);
 		pause_sink (player);
+		g_static_rec_mutex_unlock (&player->priv->sink_lock);
 		return;
 	}
 
