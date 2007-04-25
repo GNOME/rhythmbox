@@ -119,6 +119,11 @@ _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)
 	if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
 		return NULL;
 
+	if (pyg_boxed_check(entry, RHYTHMDB_TYPE_ENTRY) == FALSE) {
+		PyErr_SetString(PyExc_TypeError, "entry should be a RhythmDBEntry");
+		return NULL;
+	}
+
 	db = RHYTHMDB (self->obj);
 	g_value_init (&value, rhythmdb_get_property_type (db, propid));
 	rhythmdb_entry_get(db, pyg_boxed_get (entry, RhythmDBEntry), propid, &value);

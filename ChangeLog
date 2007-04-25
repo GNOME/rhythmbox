@@ -1,5 +1,11 @@
 2007-04-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* bindings/python/rhythmdb.override:
+	Check that an entry was actually passed to db.entry_get().
+	Fixes #432949.
+
+2007-04-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* backends/gstreamer/rb-player-gst-xfade.c:
 	(rb_player_gst_xfade_init), (rb_player_gst_xfade_dispose),
 	(link_and_unblock_stream), (start_sink),
