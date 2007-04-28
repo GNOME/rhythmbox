@@ -161,7 +161,7 @@ class MagnatuneSource(rb.BrowserSource):
 			self.__notify_id = 0
 
 		if self.__xfer_handle is not None:
-			self.__xfer_handle.close(lambda handle, exc: None) #FIXME: report it?
+			self.__xfer_handle.cancel()
 			self.__xfer_handle = None
 
 		self.__client.set_string("/apps/rhythmbox/plugins/magnatune/sorting", self.get_entry_view().get_sorting_type())
