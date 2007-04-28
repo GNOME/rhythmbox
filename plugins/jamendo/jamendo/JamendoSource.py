@@ -143,7 +143,7 @@ class JamendoSource(rb.BrowserSource):
 			self.__notify_id = 0
 
 		if self.__xfer_handle is not None:
-			self.__xfer_handle.close(lambda handle, exc: None) #FIXME: report it?
+			self.__xfer_handle.cancel()
 			self.__xfer_handle = None
 
 		gconf.client_get_default().set_string(JamendoConfigureDialog.gconf_keys['sorting'], self.get_entry_view().get_sorting_type())
@@ -219,6 +219,7 @@ class JamendoSource(rb.BrowserSource):
 		self.__notify_status_changed()
 
 		if info.phase == gnomevfs.XFER_PHASE_COMPLETED:
+			self.__xfer_handle = None
 			# done downloading, unzip to real location
 			catalog = gzip.open(local_song_info_temp_uri.path)
 			out = create_if_needed(local_song_info_uri, gnomevfs.OPEN_WRITE)

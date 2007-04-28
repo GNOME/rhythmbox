@@ -1,3 +1,11 @@
+2007-04-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	Cancel outstanding async transfers when the source is deleted, rather
+	than trying to close the target file, which won't actually do anything
+	anyway.  Fixes #434003.
+
 2007-04-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* bindings/python/rhythmdb.override:
