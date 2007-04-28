@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-13 03:44+0000\n"
-"PO-Revision-Date: 2007-04-21 11:52+0200\n"
+"POT-Creation-Date: 2007-04-21 11:38+0100\n"
+"PO-Revision-Date: 2007-04-28 21:17+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng@gnome.hu>\n"
 "Language-Team: Hungarian <gnome@gnome.hu>\n"
 "MIME-Version: 1.0\n"
@@ -510,7 +510,7 @@ msgstr "A Rhythmbox nem támogatja az automatikus proxybeállítást"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:641 ../lib/rb-util.c:855
+#: ../lib/rb-util.c:641 ../lib/rb-util.c:868
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
@@ -526,7 +526,7 @@ msgstr "A Rhythmbox nem támogatja az automatikus proxybeállítást"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/daap/rb-daap-connection.c:677
 #: ../plugins/generic-player/rb-generic-player-source.c:763
-#: ../plugins/ipod/rb-ipod-source.c:269
+#: ../plugins/ipod/rb-ipod-source.c:279
 #: ../plugins/iradio/rb-iradio-source.c:492
 #: ../plugins/iradio/rb-iradio-source.c:1083
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
@@ -536,7 +536,7 @@ msgstr "A Rhythmbox nem támogatja az automatikus proxybeállítást"
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:118 ../rhythmdb/rhythmdb-tree.c:1147
 #: ../rhythmdb/rhythmdb-tree.c:1151 ../rhythmdb/rhythmdb-tree.c:1155
-#: ../rhythmdb/rhythmdb-tree.c:1159 ../rhythmdb/rhythmdb.c:1362
+#: ../rhythmdb/rhythmdb-tree.c:1159 ../rhythmdb/rhythmdb.c:1353
 #: ../shell/rb-shell.c:3041 ../sources/rb-podcast-source.c:1641
 #: ../widgets/rb-entry-view.c:812 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:1121 ../widgets/rb-entry-view.c:1133
@@ -673,7 +673,7 @@ msgstr "%u. szám"
 #: ../plugins/audiocd/rb-audiocd-source.c:342
 #: ../plugins/audiocd/rb-audiocd-source.c:352
 #: ../plugins/audiocd/rb-audiocd-source.c:359
-#: ../plugins/audiocd/rb-audiocd-source.c:671
+#: ../plugins/audiocd/rb-audiocd-source.c:676
 msgid "Couldn't load Audio CD"
 msgstr "Nem tölthető be a hang CD"
 
@@ -701,7 +701,7 @@ msgstr "Cím"
 msgid "Artist"
 msgstr "Előadó"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:672
+#: ../plugins/audiocd/rb-audiocd-source.c:677
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "A Rhythmbox nem képes elérni a CD eszközt."
 
@@ -809,7 +809,7 @@ msgstr "Last.fm profil"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:895
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2924 ../widgets/rb-entry-view.c:760
+#: ../rhythmdb/rhythmdb.c:2897 ../widgets/rb-entry-view.c:760
 #: ../widgets/rb-entry-view.c:1179 ../widgets/rb-entry-view.c:1192
 #: ../widgets/rb-song-info.c:1173
 msgid "Never"
@@ -1898,6 +1898,28 @@ msgid ""
 "\n"
 "You can find more information at http://www.magnatune.com/"
 msgstr ""
+"A Magnatune egy online zenebolt, amely nem gonosz. Legfontosabb jellemzőik:"
+"     * Az összes szám ingyenesen meghallgatható"
+"     * Minden album és előadó egyedileg kerül kiválasztásra"
+"     * Nagyon egyszerű felhasználói felület, a zene gyorsan lejátszható"
+"     * A rádióállomások és \"stílusmixek\" lehetővé teszik a háttérben hallgatást - a zene hallgatása közben akár dolgozhat is"
+"     * Nincs szükség regisztrációra a hallgatáshoz vagy vásárláshoz"
+"     * A kisebb választék egyszerűbbé teszi a jó zenék megtalálását"
+"     * Stílusok széles választéka, minden hangulathoz megfelel"
+"     * A stílusainkat nehéz megtalálni a zeneboltokban és a rádiókban"
+"     * Letöltések és CD-k egyaránt elérhetők (egyetlen más internetes oldal sem kínálja mindkettőt)"
+"     * Tökéletes (CD másolat) minőségű letöltések (nincs alacsonyabb minőségű zene)"
+"     * A zenén nincs másolásvédelem (DRM), így a zene bármely eszközön lejátszható (szemben az iTunes/MSN/stb boltokkal)"
+"     * Kimerítő életrajzi információk minden zenészről és az előadó fényképe -- erős kapcsolat az előadóval"
+"     * A legtöbb albumhoz színes, jó minőségű borító PDF érhető el - egyszerűen nyomtatható"
+"     * A változó árazási mód lehetővé teszi az albumok megvásárlását akár már 5$-tól"
+"     * A bevétel 50 %-át az előadó kapja (a vásárló jobban érezheti magát: segít a világon)"
+"     * Nem egy karvalytőkés hátterű nagy üzlet"
+"     * Nem része a \"gonosz\" nagy kiadók gépezetének - azoknak, akik utálják a zeneipart és szeretnének segíteni a megdöntésében"
+"     * Alapító/tulajdonos működteti"
+"     * Pihentető környezet - semmi csillogás, nincsenek hangos reklámok az albumok hallgatása közben"
+"     * A Magnatune zenei választéka egyedi, szemben a legtöbb online bolttal, amelyek többé-kevésbé ugyanazzal a (hatalmas) válogatással rendelkeznek"
+"További információkat a http://www.magnatune.com/ oldalon talál"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:1
 msgid ""
@@ -2504,38 +2526,38 @@ msgstr ""
 "Az adatbázist a Rhythmbox egy újabb verziója hozta létre. A Rhythmbox ezen "
 "verziója nem képes beolvasni az adatbázist."
 
-#: ../rhythmdb/rhythmdb.c:501
+#: ../rhythmdb/rhythmdb.c:493
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "A(z) %s nem érhető el: %s"
 
-#: ../rhythmdb/rhythmdb.c:1468
+#: ../rhythmdb/rhythmdb.c:1459
 msgid "<invalid filename>"
 msgstr "<érvénytelen fájlnév>"
 
-#: ../rhythmdb/rhythmdb.c:1725
+#: ../rhythmdb/rhythmdb.c:1716
 msgid "invalid unicode in error message"
 msgstr "érvénytelen unicode a hibaüzenetben"
 
-#: ../rhythmdb/rhythmdb.c:2458
+#: ../rhythmdb/rhythmdb.c:2431
 msgid "Could not load the music database"
 msgstr "A zeneadatbázis nem tölthető be"
 
-#: ../rhythmdb/rhythmdb.c:3845
+#: ../rhythmdb/rhythmdb.c:3818
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld perc"
 msgstr[1] "%ld perc"
 
-#: ../rhythmdb/rhythmdb.c:3846
+#: ../rhythmdb/rhythmdb.c:3819
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld óra"
 msgstr[1] "%ld óra"
 
-#: ../rhythmdb/rhythmdb.c:3847
+#: ../rhythmdb/rhythmdb.c:3820
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2543,7 +2565,7 @@ msgstr[0] "%ld nap"
 msgstr[1] "%ld nap"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3853
+#: ../rhythmdb/rhythmdb.c:3826
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s és %s"
@@ -2551,8 +2573,8 @@ msgstr "%s, %s és %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3859 ../rhythmdb/rhythmdb.c:3867
-#: ../rhythmdb/rhythmdb.c:3878
+#: ../rhythmdb/rhythmdb.c:3832 ../rhythmdb/rhythmdb.c:3840
+#: ../rhythmdb/rhythmdb.c:3851
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
@@ -3234,7 +3256,7 @@ msgstr "Fájl importálása a gyűjteménybe"
 #: ../shell/rb-shell.c:2987
 #, c-format
 msgid "by <i>%s</i>"
-msgstr "<i>%s</i> szerint"
+msgstr "<i>%s</i> előadó"
 
 #. Translators: from Album
 #: ../shell/rb-shell.c:3008
