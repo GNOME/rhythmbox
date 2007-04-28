@@ -55,6 +55,7 @@ struct RBEntryViewColumnSortData
 {
 	GCompareDataFunc func;
 	gpointer data;
+	GDestroyNotify data_destroy;
 };
 
 static void rb_entry_view_class_init (RBEntryViewClass *klass);
@@ -63,6 +64,9 @@ static GObject *rb_entry_view_constructor (GType type, guint n_construct_propert
 					   GObjectConstructParam *construct_properties);
 static void rb_entry_view_dispose (GObject *object);
 static void rb_entry_view_finalize (GObject *object);
+static void rb_entry_view_sort_data_finalize (gpointer column,
+					      gpointer sort_data,
+					      gpointer user_data);
 static void rb_entry_view_set_property (GObject *object,
 				       guint prop_id,
 				       const GValue *value,
@@ -466,6 +470,8 @@ rb_entry_view_finalize (GObject *object)
 	g_return_if_fail (view->priv != NULL);
 
 	g_hash_table_destroy (view->priv->propid_column_map);
+	g_hash_table_foreach (view->priv->column_sort_data_map,
+			      rb_entry_view_sort_data_finalize, NULL);
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 	g_hash_table_destroy (view->priv->column_key_map);
 
@@ -473,6 +479,22 @@ rb_entry_view_finalize (GObject *object)
 	g_free (view->priv->sorting_column_name);
 
 	G_OBJECT_CLASS (rb_entry_view_parent_class)->finalize (object);
+}
+
+static void
+rb_entry_view_sort_data_finalize (gpointer column,
+				  gpointer gsort_data,
+				  gpointer user_data)
+{
+	struct RBEntryViewColumnSortData *sort_data = gsort_data;
+
+	if (sort_data->data_destroy) {
+		sort_data->data_destroy (sort_data->data);
+
+		sort_data->data_destroy = NULL;
+		sort_data->data = NULL;
+		sort_data->func = NULL;
+	}
 }
 
 static void
@@ -1279,7 +1301,7 @@ rb_entry_view_append_column (RBEntryView *view,
 
 	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
 
-	rb_entry_view_append_column_custom (view, column, title, key, sort_func, GINT_TO_POINTER (sort_propid));
+	rb_entry_view_append_column_custom (view, column, title, key, sort_func, GINT_TO_POINTER (sort_propid), NULL);
 }
 
 void
@@ -1288,9 +1310,10 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 				    const char *title,
 				    const char *key,
 				    GCompareDataFunc sort_func,
-				    gpointer data)
+				    gpointer data,
+				    GDestroyNotify data_destroy)
 {
-	rb_entry_view_insert_column_custom (view, column, title, key, sort_func, data, -1);
+	rb_entry_view_insert_column_custom (view, column, title, key, sort_func, data, data_destroy, -1);
 }
 
 void
@@ -1300,6 +1323,7 @@ rb_entry_view_insert_column_custom (RBEntryView *view,
 				    const char *key,
 				    GCompareDataFunc sort_func,
 				    gpointer data,
+				    GDestroyNotify data_destroy,
 				    gint position)
 {
 	struct RBEntryViewColumnSortData *sortdata;
@@ -1322,6 +1346,7 @@ rb_entry_view_insert_column_custom (RBEntryView *view,
 		sortdata = g_new (struct RBEntryViewColumnSortData, 1);
 		sortdata->func = (GCompareDataFunc) sort_func;
 		sortdata->data = data;
+		sortdata->data_destroy = data_destroy;
 		g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
 	}
 	g_hash_table_insert (view->priv->column_key_map, g_strdup (key), column);
@@ -2099,7 +2124,7 @@ rb_entry_view_resort_model (RBEntryView *view)
 	rhythmdb_query_model_set_sort_order (view->priv->model,
 					     sort_data->func,
 					     sort_data->data,
-					     NULL,
+					     sort_data->data_destroy,
 					     (view->priv->sorting_order == GTK_SORT_DESCENDING));
 }
 

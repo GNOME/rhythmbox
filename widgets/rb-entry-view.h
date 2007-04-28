@@ -113,7 +113,8 @@ void		rb_entry_view_append_column_custom	(RBEntryView *view,
 							 const char *title,
                                                          const char *key,
 							 GCompareDataFunc sort_func,
-							 gpointer data);
+							 gpointer data,
+							 GDestroyNotify data_destroy);
 
 void		rb_entry_view_insert_column_custom	(RBEntryView *view,
                                                          GtkTreeViewColumn *column,
@@ -121,6 +122,7 @@ void		rb_entry_view_insert_column_custom	(RBEntryView *view,
                                                          const char *key,
 							 GCompareDataFunc sort_func,
 							 gpointer data,
+							 GDestroyNotify data_destroy,
 							 gint position);
 
 void		rb_entry_view_set_columns_clickable	(RBEntryView *view,

@@ -600,7 +600,7 @@ rb_podcast_source_constructor (GType type,
 
 	rb_entry_view_append_column_custom (source->priv->posts, column,
 					    _("Date"), "Date",
-					    (GCompareDataFunc) rb_podcast_source_post_date_cell_sort_func, 0);
+					    (GCompareDataFunc) rb_podcast_source_post_date_cell_sort_func, 0, NULL);
 
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 
@@ -621,7 +621,7 @@ rb_podcast_source_constructor (GType type,
 
 	rb_entry_view_append_column_custom (source->priv->posts, column,
 					    _("Feed"), "Feed",
-					    (GCompareDataFunc) rb_podcast_source_post_feed_cell_sort_func, 0);
+					    (GCompareDataFunc) rb_podcast_source_post_feed_cell_sort_func, 0, NULL);
 
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_DURATION, FALSE);
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -658,7 +658,7 @@ rb_podcast_source_constructor (GType type,
 
 	rb_entry_view_append_column_custom (source->priv->posts, column,
 					    _("Status"), "Status",
-					    (GCompareDataFunc) rb_podcast_source_post_status_cell_sort_func, 0);
+					    (GCompareDataFunc) rb_podcast_source_post_status_cell_sort_func, 0, NULL);
 
 	g_signal_connect_object (G_OBJECT (source->priv->posts),
 				 "sort-order-changed",

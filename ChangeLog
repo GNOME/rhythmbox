@@ -1,3 +1,19 @@
+2007-04-28  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Tim Retout  <tim@retout.co.uk>
+
+	* sources/rb-play-queue-source.c:
+	(rb_play_queue_source_constructor):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-podcast-source.c: (rb_podcast_source_constructor):
+	* widgets/rb-entry-view.c: (rb_entry_view_finalize),
+	(rb_entry_view_sort_data_finalize), (rb_entry_view_append_column),
+	(rb_entry_view_append_column_custom),
+	(rb_entry_view_insert_column_custom), (rb_entry_view_resort_model):
+	* widgets/rb-entry-view.h: add data_destroy to
+	{append,insert}_custom_column, so we don't leak stuff in bindings.
+	Fixes #432318
+
 2007-04-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* bindings/python/rhythmdb.override:
