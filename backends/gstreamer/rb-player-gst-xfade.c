@@ -295,6 +295,7 @@ typedef struct
 	float replaygain_scale;
 	double fade_end;
 
+	gboolean emitted_error;
 	gulong error_idle_id;
 	GError *error;
 } RBXFadeStream;
@@ -340,7 +341,6 @@ struct _RBPlayerGstXFadePrivate
 
 	gboolean can_signal_direct_error;
 	GError *error;
-	gboolean emitted_error;
 
 	gboolean playing;
 
@@ -1239,7 +1239,8 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		stream->adder_pad = NULL;
 	}
 
-	gst_bin_remove (GST_BIN (player->priv->pipeline), stream->bin);
+	if (GST_ELEMENT_PARENT (stream->bin) == player->priv->pipeline)
+		gst_bin_remove (GST_BIN (player->priv->pipeline), stream->bin);
 
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 	player->priv->streams = g_list_remove (player->priv->streams, stream);
@@ -1385,7 +1386,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		/* If we've already got an error, ignore 'internal data flow error'
 		 * type messages, as they're too generic to be helpful.
 		 */
-		if (player->priv->emitted_error &&
+		if (stream->emitted_error &&
 		    error->domain == GST_STREAM_ERROR &&
 		    error->code == GST_STREAM_ERROR_FAILED) {
 			rb_debug ("Ignoring generic error \"%s\"", error->message);
@@ -1404,12 +1405,9 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			sig_error = g_error_new_literal (RB_PLAYER_ERROR,
 							 code,
 							 error->message);
-			player->priv->emitted_error = TRUE;
+			stream->emitted_error = TRUE;
 			_rb_player_emit_error (RB_PLAYER (player), stream->stream_data, sig_error);
 		}
-
-		/* kill the stream? */
-		unlink_and_dispose_stream (player, stream);
 
 		g_error_free (error);
 		g_free (debug);
@@ -2104,10 +2102,16 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		stream->state = WAITING;
 		break;
 	case GST_STATE_CHANGE_SUCCESS:
-		rb_debug ("stream %s prerolled synchronously -> WAITING", stream->uri);
-		stream->state = WAITING;
-		/* expect pad block callback to have been called */
-		g_assert (stream->src_blocked);
+		if (stream->decoder_linked) {
+			rb_debug ("stream %s prerolled synchronously -> WAITING", stream->uri);
+			stream->state = WAITING;
+			/* expect pad block callback to have been called */
+			g_assert (stream->src_blocked);
+			unblock = TRUE;
+		} else {
+			rb_debug ("stream %s did not preroll; probably missing a decoder", stream->uri);
+			ret = FALSE;
+		}
 		break;
 	case GST_STATE_CHANGE_ASYNC:
 		stream->state = PREROLLING;
@@ -3251,9 +3255,21 @@ free_pipeline_op (RBPlayerGstXFadePipelineOp *op)
 }
 
 static void
-pipeline_op_done (GstPad *pad, gboolean blocked, gpointer nothing)
+pipeline_op_done (GstPad *pad, gboolean blocked, GstPad *new_pad)
 {
-	rb_debug ("pipeline unblocked after op.  yay.");
+	GstEvent *segment;
+	if (new_pad == NULL)
+		return;
+
+	/* send a very unimaginative new segment through the new pad */
+	segment = gst_event_new_new_segment (TRUE,
+					     1.0,
+					     GST_FORMAT_DEFAULT,
+					     0,
+					     GST_CLOCK_TIME_NONE,
+					     0);
+	gst_pad_send_event (new_pad, segment);
+	gst_object_unref (new_pad);
 }
 
 static void
@@ -3290,10 +3306,18 @@ really_add_tee (GstPad *pad, gboolean blocked, RBPlayerGstXFadePipelineOp *op)
 	/* if we're supposed to be playing, unblock the sink */
 	if (blocked) {
 		rb_debug ("unblocking pad after adding tee");
-		gst_element_set_state (bin, GST_STATE_PLAYING);
-		gst_pad_set_blocked_async (pad, FALSE, (GstPadBlockCallback)pipeline_op_done, NULL);
+
+		gst_element_set_state (op->player->priv->outputbin,
+				       GST_STATE_PLAYING);
+		gst_object_ref (ghostpad);
+		gst_pad_set_blocked_async (pad,
+					   FALSE,
+					   (GstPadBlockCallback)pipeline_op_done,
+					   ghostpad);
 	} else {
 		gst_element_set_state (bin, GST_STATE_PAUSED);
+		gst_object_ref (ghostpad);
+		pipeline_op_done (NULL, FALSE, ghostpad);
 	}
 
 	free_pipeline_op (op);
@@ -3460,7 +3484,7 @@ really_add_filter (GstPad *pad,
 
 	/* if we're supposed to be playing, unblock the sink */
 	if (blocked) {
-		rb_debug ("unblocking pad after adding tee");
+		rb_debug ("unblocking pad after adding filter");
 		gst_element_set_state (bin, GST_STATE_PLAYING);
 		gst_pad_set_blocked_async (pad, FALSE, (GstPadBlockCallback)pipeline_op_done, NULL);
 	} else {
@@ -3528,7 +3552,7 @@ really_remove_filter (GstPad *pad,
 
 	/* if we're supposed to be playing, unblock the sink */
 	if (blocked) {
-		rb_debug ("unblocking pad after adding tee");
+		rb_debug ("unblocking pad after removing filter");
 		gst_pad_set_blocked_async (pad, FALSE, (GstPadBlockCallback)pipeline_op_done, NULL);
 	}
 

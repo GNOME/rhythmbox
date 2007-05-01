@@ -1,3 +1,13 @@
+2007-05-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(unlink_and_dispose_stream), (rb_player_gst_xfade_bus_cb),
+	(preroll_stream), (pipeline_op_done), (really_add_tee),
+	(really_add_filter), (really_remove_filter):
+	Send a new segment event down newly added tees; fix some debug output;
+	improve playback error reporting a bit; don't explode when a stream
+	changes state without prerolling due to missing decoders (#424734).
+
 2007-04-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/jamendo/jamendo/JamendoSource.py:
