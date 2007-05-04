@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-21 11:38+0100\n"
-"PO-Revision-Date: 2007-04-28 21:17+0200\n"
+"POT-Creation-Date: 2007-04-28 20:22+0100\n"
+"PO-Revision-Date: 2007-05-04 23:17+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng@gnome.hu>\n"
 "Language-Team: Hungarian <gnome@gnome.hu>\n"
 "MIME-Version: 1.0\n"
@@ -23,8 +23,8 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Felül kívánja írni a következő fájlt: \"%s\"?"
 
-#: ../backends/gstreamer/rb-player-gst.c:689 ../metadata/rb-metadata-gst.c:875
-#: ../metadata/rb-metadata-gst.c:1435
+#: ../backends/gstreamer/rb-player-gst.c:689 ../metadata/rb-metadata-gst.c:891
+#: ../metadata/rb-metadata-gst.c:1451
 #: ../plugins/cd-recorder/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -445,7 +445,7 @@ msgstr "Legutóbb hozzáadott"
 
 #: ../data/playlists.xml.in.h:3
 msgid "Recently Played"
-msgstr "Legutóbb lejátszva"
+msgstr "Legutóbb lejátszott"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:181
@@ -600,32 +600,32 @@ msgstr "A(z) \"%s\" fájlok dekódolásához nem található GStreamer bővítm�
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "A fájl %s típusú adatfolyamot tartalmaz, amely nem dekódolható"
 
-#: ../metadata/rb-metadata-gst.c:1030
+#: ../metadata/rb-metadata-gst.c:1046
 msgid "Failed to create a source element; check your installation"
 msgstr "Nem sikerült létrehozni a forráselemet; ellenőrizze a telepítését"
 
-#: ../metadata/rb-metadata-gst.c:1103
+#: ../metadata/rb-metadata-gst.c:1119
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer hiba: az állapot módosítása meghiúsult"
 
-#: ../metadata/rb-metadata-gst.c:1226
+#: ../metadata/rb-metadata-gst.c:1242
 msgid "The MIME type of the file could not be identified"
 msgstr "A fájl MIME típusa nem azonosítható"
 
-#: ../metadata/rb-metadata-gst.c:1363
+#: ../metadata/rb-metadata-gst.c:1379
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Nem támogatott fájltípus: %s"
 
-#: ../metadata/rb-metadata-gst.c:1372
+#: ../metadata/rb-metadata-gst.c:1388
 msgid "Unable to create tag-writing elements"
 msgstr "Nem hozhatók létre címkeíró elemek"
 
-#: ../metadata/rb-metadata-gst.c:1395
+#: ../metadata/rb-metadata-gst.c:1411
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Időtúllépés a csővezeték NULL értékre állítása közben"
 
-#: ../metadata/rb-metadata-gst.c:1415
+#: ../metadata/rb-metadata-gst.c:1431
 msgid "File corrupted during write"
 msgstr "A fájl megsérült az írás közben"
 
@@ -1898,27 +1898,31 @@ msgid ""
 "\n"
 "You can find more information at http://www.magnatune.com/"
 msgstr ""
-"A Magnatune egy online zenebolt, amely nem gonosz. Legfontosabb jellemzőik:"
-"     * Az összes szám ingyenesen meghallgatható"
-"     * Minden album és előadó egyedileg kerül kiválasztásra"
-"     * Nagyon egyszerű felhasználói felület, a zene gyorsan lejátszható"
-"     * A rádióállomások és \"stílusmixek\" lehetővé teszik a háttérben hallgatást - a zene hallgatása közben akár dolgozhat is"
-"     * Nincs szükség regisztrációra a hallgatáshoz vagy vásárláshoz"
-"     * A kisebb választék egyszerűbbé teszi a jó zenék megtalálását"
-"     * Stílusok széles választéka, minden hangulathoz megfelel"
-"     * A stílusainkat nehéz megtalálni a zeneboltokban és a rádiókban"
-"     * Letöltések és CD-k egyaránt elérhetők (egyetlen más internetes oldal sem kínálja mindkettőt)"
-"     * Tökéletes (CD másolat) minőségű letöltések (nincs alacsonyabb minőségű zene)"
-"     * A zenén nincs másolásvédelem (DRM), így a zene bármely eszközön lejátszható (szemben az iTunes/MSN/stb boltokkal)"
-"     * Kimerítő életrajzi információk minden zenészről és az előadó fényképe -- erős kapcsolat az előadóval"
-"     * A legtöbb albumhoz színes, jó minőségű borító PDF érhető el - egyszerűen nyomtatható"
-"     * A változó árazási mód lehetővé teszi az albumok megvásárlását akár már 5$-tól"
-"     * A bevétel 50 %-át az előadó kapja (a vásárló jobban érezheti magát: segít a világon)"
-"     * Nem egy karvalytőkés hátterű nagy üzlet"
-"     * Nem része a \"gonosz\" nagy kiadók gépezetének - azoknak, akik utálják a zeneipart és szeretnének segíteni a megdöntésében"
-"     * Alapító/tulajdonos működteti"
-"     * Pihentető környezet - semmi csillogás, nincsenek hangos reklámok az albumok hallgatása közben"
-"     * A Magnatune zenei választéka egyedi, szemben a legtöbb online bolttal, amelyek többé-kevésbé ugyanazzal a (hatalmas) válogatással rendelkeznek"
+"A Magnatune egy online zenebolt, amely nem gonosz. Legfontosabb "
+"jellemzőik:\n"
+"\n"
+"     * Az összes szám ingyenesen meghallgatható\n"
+"     * Minden album és előadó egyedileg kerül kiválasztásra\n"
+"     * Nagyon egyszerű felhasználói felület, a zene gyorsan lejátszható\n"
+"     * A rádióállomások és \"stílusmixek\" lehetővé teszik a háttérben hallgatást - a zene hallgatása közben akár dolgozhat is\n"
+"     * Nincs szükség regisztrációra a hallgatáshoz vagy vásárláshoz\n"
+"     * A kisebb választék egyszerűbbé teszi a jó zenék megtalálását\n"
+"     * Stílusok széles választéka, minden hangulathoz megfelel\n"
+"     * A stílusainkat nehéz megtalálni a zeneboltokban és a rádiókban\n"
+"     * Letöltések és CD-k egyaránt elérhetők (egyetlen más internetes oldal sem kínálja mindkettőt)\n"
+"     * Tökéletes (CD másolat) minőségű letöltések (nincs alacsonyabb minőségű zene)\n"
+"     * A zenén nincs másolásvédelem (DRM), így a zene bármely eszközön lejátszható (szemben az iTunes/MSN/stb boltokkal)\n"
+"     * Kimerítő életrajzi információk minden zenészről és az előadó fényképe -- erős kapcsolat az előadóval\n"
+"     * A legtöbb albumhoz színes, jó minőségű borító PDF érhető el - egyszerűen nyomtatható\n"
+"     * A változó árazási mód lehetővé teszi az albumok megvásárlását akár már 5$-tól\n"
+"     * A bevétel 50 %-át az előadó kapja (a vásárló jobban érezheti magát: segít a világon)\n"
+"     * Nem egy nagytőkés hátterű üzlet\n"
+"     * Nem része a \"gonosz\" nagy kiadók gépezetének - azoknak, akik utálják a zeneipart és szeretnének segíteni a megdöntésében\n"
+"     * Alapító/tulajdonos működteti\n"
+"     * Pihentető környezet - semmi csillogás, nincsenek hangos reklámok az albumok hallgatása közben\n"
+"     * A Magnatune zenei választéka egyedi, szemben a legtöbb online bolttal, "
+"amelyek többé-kevésbé ugyanazzal a (hatalmas) készlettel rendelkeznek\n"
+"\n"
 "További információkat a http://www.magnatune.com/ oldalon talál"
 
 #: ../plugins/magnatune/magnatune-prefs.glade.h:1
@@ -2202,7 +2206,7 @@ msgstr "Album megvásárlásához be kell állítania a gyűjtemény helyét."
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Meg kívánja vásárolni %(artist)s előadó <i>%(album)s</i> című albumát?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:401
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:402
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
