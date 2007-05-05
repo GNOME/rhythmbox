@@ -1,3 +1,12 @@
+2007-05-05  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_init), (rb_audioscrobbler_timeout_cb),
+	(rb_audioscrobbler_do_handshake), (rb_audioscrobbler_submit_queue),
+	(rb_audioscrobbler_preferences_sync),
+	(rb_audioscrobbler_gconf_changed_cb):
+	Handle last.fm username or password being unset.  Fixes #426312.
+
 2007-05-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:

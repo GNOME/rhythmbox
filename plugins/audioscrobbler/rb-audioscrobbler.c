@@ -257,8 +257,8 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 	audioscrobbler->priv->submit_next = 0;
 	audioscrobbler->priv->should_queue = FALSE;
 	audioscrobbler->priv->md5_challenge = g_strdup ("");
-	audioscrobbler->priv->username = g_strdup ("");
-	audioscrobbler->priv->password = g_strdup ("");
+	audioscrobbler->priv->username = NULL;
+	audioscrobbler->priv->password = NULL;
 	audioscrobbler->priv->submit_url = g_strdup ("");
 	audioscrobbler->priv->artist = g_strdup ("");
 	audioscrobbler->priv->album = g_strdup ("");
@@ -491,11 +491,7 @@ rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler)
 	}
 
 	/* do handshake if we need to */
-	if (! audioscrobbler->priv->handshake &&
-		time (NULL) > audioscrobbler->priv->handshake_next &&
-		strcmp (audioscrobbler->priv->username, "") != 0) {
-		rb_audioscrobbler_do_handshake (audioscrobbler);
-	}
+	rb_audioscrobbler_do_handshake (audioscrobbler);
 
 	/* if there's something in the queue, submit it if we can, save it otherwise */
 	if (audioscrobbler->priv->queue != NULL) {
@@ -678,50 +674,56 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 static void
 rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 {
+	gchar *username;
+	gchar *url;
+
 	/* Perform handshake if necessary. Only perform handshake if
 	 *   - we have no current handshake; AND
 	 *   - we have waited the appropriate amount of time between
 	 *     handshakes; AND
 	 *   - we have a username
 	 */
-
-	if (! audioscrobbler->priv->handshake &&
-	    time (NULL) >= audioscrobbler->priv->handshake_next &&
-	    strcmp (audioscrobbler->priv->username, "") != 0) {
-		gchar *username;
-		gchar *url;
-
-		username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
-		url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s",
-				       SCROBBLER_URL,
-				       SCROBBLER_VERSION,
-				       CLIENT_ID,
-				       CLIENT_VERSION,
-				       username);
-		g_free (username);
-
-		/* Make sure we wait at least 30 minutes between handshakes. */
-		audioscrobbler->priv->handshake_next = time (NULL) + 1800;
-
-		rb_debug ("Performing handshake with Audioscrobbler server: %s", url);
-
-		audioscrobbler->priv->status = HANDSHAKING;
-		rb_audioscrobbler_preferences_sync (audioscrobbler);
-
-		rb_audioscrobbler_perform (audioscrobbler, url, NULL, rb_audioscrobbler_do_handshake_cb);
-
-		g_free (url);
-	} else {
-		rb_debug ("Will not attempt handshake:");
-		if (audioscrobbler->priv->handshake)
-			rb_debug ("We already have a valid handshake");
-		if (time (NULL) < audioscrobbler->priv->handshake_next)
-			rb_debug ("time=%lu; handshake_next=%lu",
-				  time (NULL),
-				  audioscrobbler->priv->handshake_next);
-		if (strcmp (audioscrobbler->priv->username, "") == 0)
-			rb_debug ("Username not set");
+	if (audioscrobbler->priv->handshake) {
+		rb_debug ("Not doing handshake; we already have one");
+		return;
 	}
+
+	if (time (NULL) < audioscrobbler->priv->handshake_next) {
+		rb_debug ("Too soon; time=%lu, handshake_next=%lu",
+			  time (NULL),
+			  audioscrobbler->priv->handshake_next);
+		return;
+	}
+
+	if ((audioscrobbler->priv->username == NULL) ||
+	    (strcmp (audioscrobbler->priv->username, "") == 0)) {
+		rb_debug ("No username set");
+		return;
+	}
+
+	username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
+	url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s",
+			       SCROBBLER_URL,
+			       SCROBBLER_VERSION,
+			       CLIENT_ID,
+			       CLIENT_VERSION,
+			       username);
+	g_free (username);
+
+	/* Make sure we wait at least 30 minutes between handshakes. */
+	audioscrobbler->priv->handshake_next = time (NULL) + 1800;
+
+	rb_debug ("Performing handshake with Audioscrobbler server: %s", url);
+
+	audioscrobbler->priv->status = HANDSHAKING;
+	rb_audioscrobbler_preferences_sync (audioscrobbler);
+
+	rb_audioscrobbler_perform (audioscrobbler,
+				   url,
+				   NULL,
+				   rb_audioscrobbler_do_handshake_cb);
+
+	g_free (url);
 }
 
 
@@ -758,79 +760,94 @@ rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
 	 *   - Queue must not be empty
 	 */
 
+	gchar *md5_password;
+	gchar *md5_temp;
+	gchar *md5_response;
+	gchar *username;
+	gchar *post_data;
+	GSList *l;
+	int i = 0;
 	time_t now;
-	time(&now);
 
-	if (strcmp (audioscrobbler->priv->username, "") != 0 &&
-	    strcmp (audioscrobbler->priv->password, "") != 0 &&
-	    strcmp (audioscrobbler->priv->md5_challenge, "") != 0 &&
-	    now > audioscrobbler->priv->submit_next &&
-	    audioscrobbler->priv->queue != NULL) {
-		GSList *l;
-
-		int i = 0;
-
-		gchar *md5_password = mkmd5 (audioscrobbler->priv->password);
-		gchar *md5_temp = g_strconcat (md5_password,
-			       audioscrobbler->priv->md5_challenge,
-			       NULL);
-		gchar *md5_response = mkmd5 (md5_temp);
-
-		gchar *username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
-		gchar *post_data = g_strdup_printf ("u=%s&s=%s&", username, md5_response);
-
-		g_free (md5_password);
-		g_free (md5_temp);
-		g_free (md5_response);
-		g_free (username);
-
-		do {
-			AudioscrobblerEntry *entry;
-
-			/* remove first queue entry */
-			l = audioscrobbler->priv->queue;
-			audioscrobbler->priv->queue = g_slist_remove_link (l, l);
-			entry = (AudioscrobblerEntry *)l->data;
-
-			gchar *new = g_strdup_printf ("%sa[%d]=%s&t[%d]=%s&b[%d]=%s&m[%d]=%s&l[%d]=%d&i[%d]=%s&",
-						      post_data,
-						      i, entry->artist,
-						      i, entry->title,
-						      i, entry->album,
-						      i, entry->mbid,
-						      i, entry->length,
-						      i, entry->timestamp);
-
-			g_free (post_data);
-			post_data = new;
-
-			/* add to submission list */
-			audioscrobbler->priv->submission = g_slist_concat (audioscrobbler->priv->submission, l);
-			i++;
-		} while (audioscrobbler->priv->queue && (i < MAX_SUBMIT_SIZE));
-
-		rb_debug ("Submitting queue to Audioscrobbler");
-		rb_audioscrobbler_print_queue (audioscrobbler, TRUE);
-
-		rb_audioscrobbler_perform (audioscrobbler,
-					   audioscrobbler->priv->submit_url,
-					   post_data,
-					   rb_audioscrobbler_submit_queue_cb);
-
-		/* libsoup will free post_data when the request is finished */
-	} else {
-		rb_debug ("Not submitting queue because:");
-		if (strcmp (audioscrobbler->priv->username, "") == 0)
-			rb_debug ("Blank username");
-		if (strcmp (audioscrobbler->priv->password, "") == 0)
-			rb_debug ("Blank password");
-		if (strcmp (audioscrobbler->priv->md5_challenge, "") == 0)
-			rb_debug ("Blank md5_challenge");
-		if (now <= audioscrobbler->priv->submit_next)
-			rb_debug ("Too soon (next submission in %ld seconds)", audioscrobbler->priv->submit_next - now);
-		if (!audioscrobbler->priv->queue)
-			rb_debug ("Queue is empty");
+	if (audioscrobbler->priv->username == NULL ||
+	    strcmp (audioscrobbler->priv->username, "") == 0) {
+		rb_debug ("No username set");
+		return;
 	}
+
+	if (audioscrobbler->priv->password == NULL ||
+	    strcmp (audioscrobbler->priv->password , "") == 0) {
+		rb_debug ("No password set");
+		return;
+	}
+
+	if (strcmp (audioscrobbler->priv->md5_challenge, "") == 0) {
+		rb_debug ("No md5 challenge");
+		return;
+	}
+
+	time(&now);
+	if (now < audioscrobbler->priv->submit_next) {
+		rb_debug ("Too soon (next submission in %ld seconds)",
+			  audioscrobbler->priv->submit_next - now);
+		return;
+	}
+
+	if (audioscrobbler->priv->queue == NULL) {
+		rb_debug ("No queued songs to submit");
+		return;
+	}
+
+	md5_password = mkmd5 (audioscrobbler->priv->password);
+	md5_temp = g_strconcat (md5_password,
+				audioscrobbler->priv->md5_challenge,
+				NULL);
+	md5_response = mkmd5 (md5_temp);
+
+	username = soup_uri_encode (audioscrobbler->priv->username,
+				    EXTRA_URI_ENCODE_CHARS);
+	post_data = g_strdup_printf ("u=%s&s=%s&", username, md5_response);
+
+	g_free (md5_password);
+	g_free (md5_temp);
+	g_free (md5_response);
+	g_free (username);
+
+	do {
+		AudioscrobblerEntry *entry;
+		gchar *new;
+
+		/* remove first queue entry */
+		l = audioscrobbler->priv->queue;
+		audioscrobbler->priv->queue = g_slist_remove_link (l, l);
+		entry = (AudioscrobblerEntry *)l->data;
+
+		new = g_strdup_printf ("%sa[%d]=%s&t[%d]=%s&b[%d]=%s&m[%d]=%s&l[%d]=%d&i[%d]=%s&",
+				       post_data,
+				       i, entry->artist,
+				       i, entry->title,
+				       i, entry->album,
+				       i, entry->mbid,
+				       i, entry->length,
+				       i, entry->timestamp);
+
+		g_free (post_data);
+		post_data = new;
+
+		/* add to submission list */
+		audioscrobbler->priv->submission = g_slist_concat (audioscrobbler->priv->submission, l);
+		i++;
+	} while (audioscrobbler->priv->queue && (i < MAX_SUBMIT_SIZE));
+
+	rb_debug ("Submitting queue to Audioscrobbler");
+	rb_audioscrobbler_print_queue (audioscrobbler, TRUE);
+
+	rb_audioscrobbler_perform (audioscrobbler,
+				   audioscrobbler->priv->submit_url,
+				   post_data,
+				   rb_audioscrobbler_submit_queue_cb);
+
+	/* libsoup will free post_data when the request is finished */
 }
 
 static void
@@ -900,15 +917,18 @@ rb_audioscrobbler_preferences_sync (RBAudioscrobbler *audioscrobbler)
 {
 	const char *status;
 	char *free_this = NULL;
+	char *v;
 
-	if (!audioscrobbler->priv->config_widget)
+	if (audioscrobbler->priv->config_widget == NULL)
 		return;
 
 	rb_debug ("Syncing data with preferences window");
+	v = audioscrobbler->priv->username;
 	gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->username_entry),
-			    audioscrobbler->priv->username);
+			    v ? v : "");
+	v = audioscrobbler->priv->password;
 	gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->password_entry),
-			    audioscrobbler->priv->password);
+			    v ? v : "");
 
 	switch (audioscrobbler->priv->status) {
 	case STATUS_OK:
@@ -1029,21 +1049,39 @@ rb_audioscrobbler_gconf_changed_cb (GConfClient *client,
 {
 	rb_debug ("GConf key updated: \"%s\"", entry->key);
 	if (strcmp (entry->key, CONF_AUDIOSCROBBLER_USERNAME) == 0) {
-		g_free (audioscrobbler->priv->username);
-		audioscrobbler->priv->username = g_strdup (gconf_value_get_string (entry->value));
+		const gchar *username;
 
-		if (audioscrobbler->priv->username_entry)
+		g_free (audioscrobbler->priv->username);
+		audioscrobbler->priv->username = NULL;
+
+		username = gconf_value_get_string (entry->value);
+		if (username != NULL) {
+			audioscrobbler->priv->username = g_strdup (username);
+		}
+
+		if (audioscrobbler->priv->username_entry) {
+			char *v = audioscrobbler->priv->username;
 			gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->username_entry),
-					    gconf_value_get_string (entry->value));
+					    v ? v : "");
+		}
 
 		audioscrobbler->priv->handshake = FALSE;
 	} else if (strcmp (entry->key, CONF_AUDIOSCROBBLER_PASSWORD) == 0) {
-		g_free (audioscrobbler->priv->password);
-		audioscrobbler->priv->password = g_strdup (gconf_value_get_string (entry->value));
+		const gchar *password;
 
-		if (audioscrobbler->priv->password_entry)
+		g_free (audioscrobbler->priv->password);
+		audioscrobbler->priv->password = NULL;
+
+		password = gconf_value_get_string (entry->value);
+		if (password != NULL) {
+			audioscrobbler->priv->password = g_strdup (password);
+		}
+
+		if (audioscrobbler->priv->password_entry) {
+			char *v = audioscrobbler->priv->password;
 			gtk_entry_set_text (GTK_ENTRY (audioscrobbler->priv->password_entry),
-					    gconf_value_get_string (entry->value));
+					    v ? v : "");
+		}
 	} else {
 		rb_debug ("Unhandled GConf key updated: \"%s\"", entry->key);
 	}
