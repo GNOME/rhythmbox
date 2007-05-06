@@ -10,14 +10,15 @@
 # Og Maciel <ogmaciel@ubuntu.com>, 2006-2007.
 # Lucas Mazzardo Veloso <lmveloso@gmail.com>, 2007.
 # Raul Pereira <contato@raulpereira.com>, 2007.
+# Washington Lins <washington-lins@uol.com.br>, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-31 15:08-0300\n"
-"PO-Revision-Date: 2007-03-31 15:10-0300\n"
-"Last-Translator: Raul Pereira <contato@raulpereira.com>\n"
+"POT-Creation-Date: 2007-05-05 22:43-0300\n"
+"PO-Revision-Date: 2007-04-08 09:48-0400\n"
+"Last-Translator: Washington Lins <washington-lins@uol.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,8 +30,8 @@ msgstr ""
 msgid "Do you want to overwrite the file \"%s\"?"
 msgstr "Você deseja sobrescrever o arquivo \"%s\"?"
 
-#: ../backends/gstreamer/rb-player-gst.c:689 ../metadata/rb-metadata-gst.c:875
-#: ../metadata/rb-metadata-gst.c:1435
+#: ../backends/gstreamer/rb-player-gst.c:689 ../metadata/rb-metadata-gst.c:891
+#: ../metadata/rb-metadata-gst.c:1451
 #: ../plugins/cd-recorder/rb-recorder-gst.c:668
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -86,7 +87,7 @@ msgid ""
 "Please choose one of the options below:"
 msgstr ""
 "O Rhythmbox gerencia todas as suas músicas em uma \"biblioteca\" central, "
-"para que você possa visualizar, procurar e organizá-las facilmente.\n"
+"para que você possa visualizar, pesquisar e organizá-las facilmente.\n"
 "Para utilizar este recurso, você deve informar ao Rhythmbox onde encontrar "
 "suas músicas. Se você decidir pular este passo, você poderá adicionar "
 "músicas à sua biblioteca mais tarde.\n"
@@ -532,7 +533,7 @@ msgstr "Rhythmbox não suporta a configuração automática de proxy"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1084
 #: ../plugins/daap/rb-daap-connection.c:677
 #: ../plugins/generic-player/rb-generic-player-source.c:763
-#: ../plugins/ipod/rb-ipod-source.c:269
+#: ../plugins/ipod/rb-ipod-source.c:279
 #: ../plugins/iradio/rb-iradio-source.c:492
 #: ../plugins/iradio/rb-iradio-source.c:1083
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
@@ -608,33 +609,33 @@ msgstr ""
 msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "O arquivo contém um fluxo do tipo %s, que não é decodificável"
 
-#: ../metadata/rb-metadata-gst.c:1030
+#: ../metadata/rb-metadata-gst.c:1046
 msgid "Failed to create a source element; check your installation"
 msgstr "Falha ao criar um elemento fonte; verifique a sua instalação"
 
-#: ../metadata/rb-metadata-gst.c:1103
+#: ../metadata/rb-metadata-gst.c:1119
 msgid "GStreamer error: failed to change state"
 msgstr "Erro do GStreamer: falha ao alterar o estado"
 
-#: ../metadata/rb-metadata-gst.c:1226
+#: ../metadata/rb-metadata-gst.c:1242
 msgid "The MIME type of the file could not be identified"
 msgstr "O tipo MIME do arquivo não pôde ser identificado"
 
-#: ../metadata/rb-metadata-gst.c:1363
+#: ../metadata/rb-metadata-gst.c:1379
 #, c-format
 msgid "Unsupported file type: %s"
 msgstr "Tipo de arquivo não suportado: %s"
 
-#: ../metadata/rb-metadata-gst.c:1372
+#: ../metadata/rb-metadata-gst.c:1388
 msgid "Unable to create tag-writing elements"
 msgstr "Não foi possível criar elementos de escrita para marcas"
 
-#: ../metadata/rb-metadata-gst.c:1395
+#: ../metadata/rb-metadata-gst.c:1411
 msgid "Timeout while setting pipeline to NULL"
 msgstr ""
 "O tempo esgotou durante a definição da linha de processamento para NULL"
 
-#: ../metadata/rb-metadata-gst.c:1415
+#: ../metadata/rb-metadata-gst.c:1431
 msgid "File corrupted during write"
 msgstr "O arquivo foi corrompido durante a escrita"
 
@@ -682,7 +683,7 @@ msgstr "Faixa %u"
 #: ../plugins/audiocd/rb-audiocd-source.c:342
 #: ../plugins/audiocd/rb-audiocd-source.c:352
 #: ../plugins/audiocd/rb-audiocd-source.c:359
-#: ../plugins/audiocd/rb-audiocd-source.c:671
+#: ../plugins/audiocd/rb-audiocd-source.c:676
 msgid "Couldn't load Audio CD"
 msgstr "Não foi possível carregar o CD de Áudio"
 
@@ -710,7 +711,7 @@ msgstr "Título"
 msgid "Artist"
 msgstr "Artista"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:672
+#: ../plugins/audiocd/rb-audiocd-source.c:677
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "O Rhythmbox não pôde obter acesso ao dispositivo de CD."
 
@@ -2237,7 +2238,7 @@ msgstr ""
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Você gostaria de comprar o álbum <i>%(album)s</i> de \"%(artist)s\"?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:401
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:402
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -3366,7 +3367,7 @@ msgstr "Notificar alterações de músicas e outros eventos"
 #: ../sources/rb-podcast-source.c:311
 #: ../sources/rb-static-playlist-source.c:90
 msgid "Search all fields"
-msgstr "Procurar em todos os campos"
+msgstr "Pesquisar em todos os campos"
 
 #: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
 #: ../sources/rb-static-playlist-source.c:91
@@ -3376,7 +3377,7 @@ msgstr "Artistas"
 #: ../sources/rb-auto-playlist-source.c:74 ../sources/rb-browser-source.c:154
 #: ../sources/rb-static-playlist-source.c:91
 msgid "Search artists"
-msgstr "Procurar artistas"
+msgstr "Pesquisar artistas"
 
 #: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:92
@@ -3386,7 +3387,7 @@ msgstr "Álbuns"
 #: ../sources/rb-auto-playlist-source.c:75 ../sources/rb-browser-source.c:155
 #: ../sources/rb-static-playlist-source.c:92
 msgid "Search albums"
-msgstr "Procurar álbuns"
+msgstr "Pesquisar álbuns"
 
 #: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:93
@@ -3396,7 +3397,7 @@ msgstr "Títulos"
 #: ../sources/rb-auto-playlist-source.c:76 ../sources/rb-browser-source.c:156
 #: ../sources/rb-static-playlist-source.c:93
 msgid "Search titles"
-msgstr "Procurar títulos"
+msgstr "Pesquisar títulos"
 
 #: ../sources/rb-browser-source.c:140
 msgid "Browse This _Genre"
@@ -4058,7 +4059,7 @@ msgstr "Editar uma Lista de Reprodução Automática"
 #. this string can only be so long, or there wont be a search entry :)
 #: ../widgets/rb-search-entry.c:115
 msgid "_Search:"
-msgstr "_Procurar:"
+msgstr "_Pesquisar:"
 
 #: ../widgets/rb-song-info.c:272
 msgid "Song Properties"
