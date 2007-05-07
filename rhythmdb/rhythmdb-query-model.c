@@ -2391,7 +2391,7 @@ rhythmdb_query_model_base_rows_reordered (GtkTreeModel *base_model,
 		return;
 
 	data.new_entries = g_sequence_new (NULL);
-	data.model = base_query_model;
+	data.model = model;
 	g_sequence_foreach (base_query_model->priv->entries, (GFunc)_base_rows_reordered_foreach_cb, &data);
 	apply_updated_entry_sequence (model, data.new_entries);
 }
