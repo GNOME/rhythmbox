@@ -91,7 +91,7 @@ typedef struct
 	GHashTable *entry_map;
 
 	gboolean needs_shuffle_db;
-	Itdb_Playlist *podcast_pl;
+	RBStaticPlaylistSource *podcast_pl;
 
 	guint load_idle_id;
 
@@ -302,6 +302,69 @@ ipod_path_to_uri (const char *mount_point, const char *ipod_path)
  	return uri;
 }
 
+static Itdb_Track *
+find_ipod_track (RBiPodSource *source, RhythmDBEntry *entry)
+{
+	GList *it;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	const gchar *uri = rhythmdb_entry_get_string (entry,
+						      RHYTHMDB_PROP_LOCATION);
+
+	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
+		Itdb_Track *song;
+		gchar *ipod_uri;
+		gbooleam match;
+
+		song = (Itdb_Track *)it->data;
+		ipod_uri = ipod_path_to_uri (priv->ipod_mount_path, song->ipod_path);
+
+		match = (strcmp(uri, ipod_uri) == 0);
+		g_free (ipod_uri);
+
+		if (match)
+			continue;
+
+		return song;
+	}
+
+	return NULL;
+}
+
+static void
+playlist_track_removed (RhythmDBQueryModel *m,
+			RhythmDBEntry *entry,
+			gpointer data)
+{
+	RBStaticPlaylistSource *playlist = RB_STATIC_PLAYLIST_SOURCE (data);
+	Itdb_Playlist *ipod_pl = g_object_get_data (G_OBJECT (playlist), "itdb-playlist");
+	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
+	Itdb_Track *track;
+
+	track = find_ipod_track (ipod, entry);
+	g_return_if_fail (track != NULL);
+
+	itdb_playlist_remove_track (ipod_pl, track);
+	itdb_schedule_save (ipod);
+}
+
+static void
+playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
+		      GtkTreeIter *iter, gpointer data)
+{
+	RBStaticPlaylistSource *playlist = RB_STATIC_PLAYLIST_SOURCE (data);
+	Itdb_Playlist *ipod_pl = g_object_get_data (G_OBJECT (playlist), "itdb-playlist");
+	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
+	Itdb_Track *track;
+	RhythmDBEntry *entry;
+
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
+	track = find_ipod_track (ipod, entry);
+	g_return_if_fail (track != NULL);
+
+	itdb_playlist_add_track (ipod_pl, track, -1);
+	itdb_schedule_save (ipod);
+}
+
 static void
 add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 {
@@ -310,11 +373,12 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
+		RhythmDBQueryModel *model;
 
 	g_object_get (source,
-		      "shell", &shell,
-		      "entry-type", &entry_type,
-		      NULL);
+			  "shell", &shell,
+			  "entry-type", &entry_type,
+			  NULL);
 
 	playlist_source = rb_static_playlist_source_new (shell,
 							 playlist->name,
@@ -335,10 +399,24 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	}
 
 	g_object_ref (G_OBJECT(playlist_source));
-	playlist->userdata = playlist_source;
-	playlist->userdata_destroy = g_object_unref;
-	playlist->userdata_duplicate = g_object_ref;
+		playlist->userdata = playlist_source;
+		playlist->userdata_destroy = g_object_unref;
+		playlist->userdata_duplicate = g_object_ref;
 
+		model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (playlist_source));
+		g_signal_connect (model, "row-inserted",
+				          G_CALLBACK (playlist_track_added),
+				          playlist_source);
+		g_signal_connect (model, "entry-removed",
+				          G_CALLBACK (playlist_track_removed),
+				          playlist_source);
+
+		g_object_set_data (G_OBJECT (playlist_source),
+				           "ipod-source", source);
+		g_object_set_data (G_OBJECT (playlist_source),
+				           "itdb-playlist", playlist);
+		if (itdb_playlist_is_podcasts(playlist))
+				priv->podcast_pl = RB_STATIC_PLAYLIST_SOURCE (playlist_source);
 	rb_shell_append_source (shell, playlist_source, RB_SOURCE (source));
 	g_object_unref (shell);
 }
@@ -355,9 +433,6 @@ load_ipod_playlists (RBiPodSource *source)
 		playlist = (Itdb_Playlist *)it->data;
 		if (itdb_playlist_is_mpl (playlist)) {
 			continue;
-		}
-		if (itdb_playlist_is_podcasts (playlist)) {
-			priv->podcast_pl = playlist;
 		}
 		if (playlist->is_spl) {
 			continue;
@@ -984,7 +1059,6 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	gchar *filename;
-	RBStaticPlaylistSource *rbpl; 
 
 	if (priv->podcast_pl == NULL) {
 		/* No Podcast playlist on the iPod, create a new one */
@@ -993,16 +1067,10 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 		itdb_playlist_set_podcasts (ipod_playlist);
 		itdb_playlist_add (priv->ipod_db, ipod_playlist, -1);
 		add_rb_playlist (source, ipod_playlist);
-		priv->podcast_pl = ipod_playlist;
 	}
 
- 	g_return_if_fail (priv->podcast_pl != NULL);
- 	itdb_playlist_add_track (priv->podcast_pl, song, -1);
-
   	filename = ipod_path_to_uri (priv->ipod_mount_path, song->ipod_path);
- 	rbpl = RB_STATIC_PLAYLIST_SOURCE (priv->podcast_pl->userdata);
- 	rb_static_playlist_source_add_location (rbpl, filename, -1);
-
+ 	rb_static_playlist_source_add_location (priv->podcast_pl, filename, -1);
 	g_free (filename);
 }
 

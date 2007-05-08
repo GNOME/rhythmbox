@@ -1,5 +1,15 @@
 2007-05-08  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Steven Walter  <stevenrwalter@gmail.com>
+
+	* plugins/ipod/rb-ipod-source.c: (find_ipod_track),
+	(playlist_track_removed), (playlist_track_added),
+	(add_rb_playlist), (load_ipod_playlists), (add_to_podcasts): Save the
+	playlists back to the ipod when the user adds/removes tracks from
+	them. Fixes #436744
+
+2007-05-08  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Paul Drain  <paul@operationaldynamics.com>
 
 	* plugins/audioscrobbler/Makefile.am: fix make fist, #436793
