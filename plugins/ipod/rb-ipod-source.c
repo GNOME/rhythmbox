@@ -313,7 +313,7 @@ find_ipod_track (RBiPodSource *source, RhythmDBEntry *entry)
 	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
 		Itdb_Track *song;
 		gchar *ipod_uri;
-		gbooleam match;
+		gboolean match;
 
 		song = (Itdb_Track *)it->data;
 		ipod_uri = ipod_path_to_uri (priv->ipod_mount_path, song->ipod_path);
