@@ -292,6 +292,11 @@ rb_visualizer_plugin_dispose (GObject *object)
 		plugin->player = NULL;
 	}
 
+	if (plugin->hide_controls_id != 0) {
+		g_source_remove (plugin->hide_controls_id);
+		plugin->hide_controls_id = 0;
+	}
+
 	G_OBJECT_CLASS (rb_visualizer_plugin_parent_class)->dispose (object);
 }
 

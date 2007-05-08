@@ -1,3 +1,9 @@
+2007-05-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(rb_visualizer_plugin_dispose): remove timeout callback in dispose,
+        fixes bug #436355
+
 2007-05-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-query-model.c:
