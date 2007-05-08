@@ -1,5 +1,11 @@
 2007-05-08  Christophe Fergeau  <teuf@gnome.org>
 
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(rb_visualizer_plugin_dispose): remove timeout callback in dispose,
+	fixes bug #436355
+
+2007-05-08  Christophe Fergeau  <teuf@gnome.org>
+
 	* plugins/ipod/rb-ipod-source.c: (find_ipod_track): fix typo
 
 2007-05-07  Brian Pepple  <bpepple@fedoraproject.org>
