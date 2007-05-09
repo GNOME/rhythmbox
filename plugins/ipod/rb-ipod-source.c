@@ -302,34 +302,6 @@ ipod_path_to_uri (const char *mount_point, const char *ipod_path)
  	return uri;
 }
 
-static Itdb_Track *
-find_ipod_track (RBiPodSource *source, RhythmDBEntry *entry)
-{
-	GList *it;
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-	const gchar *uri = rhythmdb_entry_get_string (entry,
-						      RHYTHMDB_PROP_LOCATION);
-
-	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
-		Itdb_Track *song;
-		gchar *ipod_uri;
-		gboolean match;
-
-		song = (Itdb_Track *)it->data;
-		ipod_uri = ipod_path_to_uri (priv->ipod_mount_path, song->ipod_path);
-
-		match = (strcmp(uri, ipod_uri) == 0);
-		g_free (ipod_uri);
-
-		if (match)
-			continue;
-
-		return song;
-	}
-
-	return NULL;
-}
-
 static void
 playlist_track_removed (RhythmDBQueryModel *m,
 			RhythmDBEntry *entry,
@@ -338,9 +310,9 @@ playlist_track_removed (RhythmDBQueryModel *m,
 	RBStaticPlaylistSource *playlist = RB_STATIC_PLAYLIST_SOURCE (data);
 	Itdb_Playlist *ipod_pl = g_object_get_data (G_OBJECT (playlist), "itdb-playlist");
 	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
 	Itdb_Track *track;
-
-	track = find_ipod_track (ipod, entry);
+        track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
 
 	itdb_playlist_remove_track (ipod_pl, track);
@@ -354,11 +326,12 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 	RBStaticPlaylistSource *playlist = RB_STATIC_PLAYLIST_SOURCE (data);
 	Itdb_Playlist *ipod_pl = g_object_get_data (G_OBJECT (playlist), "itdb-playlist");
 	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
 	Itdb_Track *track;
 	RhythmDBEntry *entry;
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
-	track = find_ipod_track (ipod, entry);
+        track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
 
 	itdb_playlist_add_track (ipod_pl, track, -1);

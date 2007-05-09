@@ -1,3 +1,9 @@
+2007-05-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: (playlist_track_removed),
+	(playlist_track_added): use priv->entry_map instead of reimplementing
+	a find_ipod_track function, see bug #436744
+
 2007-05-08  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/visualizer/rb-visualizer-plugin.c:
