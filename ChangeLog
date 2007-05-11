@@ -1,3 +1,9 @@
+2007-05-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element):
+	Drop entries with empty (as well as missing) location fields.
+	Fixes #437558.
+
 2007-05-09  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/ipod/rb-ipod-source.c: (playlist_track_removed),

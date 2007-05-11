@@ -484,7 +484,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx,
 			}
 		}
 
-		if (ctx->entry->location != NULL) {
+		if (ctx->entry->location != NULL && rb_refstring_get (ctx->entry->location)[0] != '\0') {
 			RhythmDBEntry *entry;
 
 			g_mutex_lock (ctx->db->priv->entries_lock);
