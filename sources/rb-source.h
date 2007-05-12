@@ -49,6 +49,8 @@ GType rb_source_eof_type_get_type (void);
 #define RB_IS_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SOURCE))
 #define RB_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE, RBSourceClass))
 
+#define RB_SOURCE_ICON_SIZE	GTK_ICON_SIZE_LARGE_TOOLBAR
+
 typedef struct _RBSourceClass	RBSourceClass;
 typedef struct _RBSource		RBSource;
 typedef struct _RBSourcePrivate	RBSourcePrivate;

@@ -35,12 +35,12 @@ struct _RBRatingPixbufs {
 void
 rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs)
 {
-	if (pixbufs->pix_star)
-		g_object_unref (G_OBJECT (pixbufs->pix_star));
-	if (pixbufs->pix_dot)
-		g_object_unref (G_OBJECT (pixbufs->pix_dot));
-	if (pixbufs->pix_blank)
-		g_object_unref (G_OBJECT (pixbufs->pix_blank));
+	if (pixbufs->pix_star != NULL)
+		g_object_unref (pixbufs->pix_star);
+	if (pixbufs->pix_dot != NULL)
+		g_object_unref (pixbufs->pix_dot);
+	if (pixbufs->pix_blank != NULL)
+		g_object_unref (pixbufs->pix_blank);
 }
 
 void
@@ -59,53 +59,40 @@ rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
 RBRatingPixbufs *
 rb_rating_pixbufs_new (void)
 {
-	GtkWidget *dummy;
 	RBRatingPixbufs *pixbufs;
+	GtkIconTheme *theme;
+	gint width;
 
 	pixbufs = g_new0 (RBRatingPixbufs, 1);
 	if (pixbufs == NULL) {
 		return NULL;
 	}
 
-	dummy = gtk_label_new (NULL);
-	pixbufs->pix_star = gtk_widget_render_icon (dummy,
-						    RB_STOCK_SET_STAR,
-						    GTK_ICON_SIZE_MENU,
-						    NULL);
-	if (pixbufs->pix_star == NULL) {
-		goto error;
-	}
+	theme = gtk_icon_theme_get_default ();
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, NULL, &width);
 
-	pixbufs->pix_dot = gtk_widget_render_icon (dummy,
-						   RB_STOCK_UNSET_STAR,
-						   GTK_ICON_SIZE_MENU,
-						   NULL);
-	if (pixbufs->pix_dot == NULL) {
-		goto error;
-	}
-
-	pixbufs->pix_blank = gtk_widget_render_icon (dummy,
-						     RB_STOCK_NO_STAR,
-						     GTK_ICON_SIZE_MENU,
+	pixbufs->pix_star = gtk_icon_theme_load_icon (theme,
+						      RB_STOCK_SET_STAR,
+						      width,
+						      0,
+						      NULL);
+	pixbufs->pix_dot = gtk_icon_theme_load_icon (theme,
+						     RB_STOCK_UNSET_STAR,
+						     width,
+						     0,
 						     NULL);
-	if (pixbufs->pix_blank == NULL) {
-		goto error;
+	pixbufs->pix_blank = gtk_icon_theme_load_icon (theme,
+						       RB_STOCK_NO_STAR,
+						       width,
+						       0,
+						       NULL);
+	if (pixbufs->pix_star != NULL &&
+	    pixbufs->pix_dot != NULL &&
+	    pixbufs->pix_blank != NULL) {
+		return pixbufs;
 	}
 
-	gtk_widget_destroy (dummy);
-	return pixbufs;
-
- error:
-	if (pixbufs->pix_star != NULL) {
-		g_object_unref (G_OBJECT (pixbufs->pix_star));
-	}
-	if (pixbufs->pix_dot != NULL) {
-		g_object_unref (G_OBJECT (pixbufs->pix_dot));
-	}
-	if (pixbufs->pix_blank != NULL) {
-		g_object_unref (G_OBJECT (pixbufs->pix_blank));
-	}
-	gtk_widget_destroy (dummy);
+	rb_rating_pixbufs_free (pixbufs);
 	g_free (pixbufs);
 	return NULL;
 }

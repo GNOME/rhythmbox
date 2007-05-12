@@ -111,7 +111,7 @@ rb_missing_files_source_init (RBMissingFilesSource *source)
 
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_MISSING_FILES_SOURCE, RBMissingFilesSourcePrivate);
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					   GTK_STOCK_MISSING_IMAGE,
 					   size,

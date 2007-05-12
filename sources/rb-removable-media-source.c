@@ -151,7 +151,7 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 
 	icon_name = gnome_vfs_volume_get_icon (volume);
 	theme = gtk_icon_theme_get_default ();
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
 	g_free (icon_name);
 

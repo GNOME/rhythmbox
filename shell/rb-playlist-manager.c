@@ -130,10 +130,10 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	/* Submenu of Music */
 	{ "Playlist", NULL, N_("_Playlist") },
 
-	{ "MusicPlaylistNewPlaylist", GNOME_MEDIA_PLAYLIST, N_("_New Playlist"), "<control>N",
+	{ "MusicPlaylistNewPlaylist", RB_STOCK_PLAYLIST, N_("_New Playlist"), "<control>N",
 	  N_("Create a new playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_new_playlist) },
-	{ "MusicPlaylistNewAutomaticPlaylist", GNOME_MEDIA_AUTO_PLAYLIST, N_("New _Automatic Playlist..."), NULL,
+	{ "MusicPlaylistNewAutomaticPlaylist", RB_STOCK_AUTO_PLAYLIST, N_("New _Automatic Playlist..."), NULL,
 	  N_("Create a new automatically updating playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_new_automatic_playlist) },
 	{ "MusicPlaylistLoadPlaylist", NULL, N_("_Load from File..."), NULL,

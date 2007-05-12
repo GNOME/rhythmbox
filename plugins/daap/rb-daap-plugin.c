@@ -378,7 +378,7 @@ create_pixbufs (RBDaapPlugin *plugin)
 
 	theme = gtk_icon_theme_get_default ();
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	plugin->priv->daap_share_pixbuf =
 		gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
 

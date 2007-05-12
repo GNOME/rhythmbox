@@ -153,9 +153,9 @@ rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 {
 	if (playlist_pixbuf == NULL) {
 		gint size;
-		gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+		gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 		playlist_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							    GNOME_MEDIA_PLAYLIST,
+							    RB_STOCK_PLAYLIST,
 							    size,
 							    0, NULL);
 		if (playlist_pixbuf) {

@@ -93,6 +93,8 @@ struct RBTrayIconPrivate
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
 
+	GtkWidget *playing_image;
+	GtkWidget *not_playing_image;
 	GtkWidget *ebox;
 
 	GtkWidget *tooltip;
@@ -182,8 +184,6 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 static void
 rb_tray_icon_init (RBTrayIcon *icon)
 {
-	GtkWidget *image;
-
 	rb_debug ("setting up tray icon");
 
 	icon->priv = RB_TRAY_ICON_GET_PRIVATE (icon);
@@ -211,9 +211,14 @@ rb_tray_icon_init (RBTrayIcon *icon)
 	g_signal_connect_object (G_OBJECT (icon->priv->ebox), "drag_data_received",
 				 G_CALLBACK (rb_tray_icon_drop_cb), icon, 0);
 
-	image = gtk_image_new_from_stock (RB_STOCK_TRAY_ICON,
-					  GTK_ICON_SIZE_SMALL_TOOLBAR);
-	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), image);
+	icon->priv->playing_image = gtk_image_new_from_icon_name (RB_STOCK_TRAY_ICON_PLAYING,
+								  GTK_ICON_SIZE_SMALL_TOOLBAR);
+	icon->priv->not_playing_image = gtk_image_new_from_icon_name (RB_STOCK_TRAY_ICON_NOT_PLAYING,
+								      GTK_ICON_SIZE_SMALL_TOOLBAR);
+	g_object_ref (icon->priv->playing_image);
+	g_object_ref (icon->priv->not_playing_image);
+
+	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), icon->priv->not_playing_image);
 
 	gtk_container_add (GTK_CONTAINER (icon), icon->priv->ebox);
 	gtk_widget_show_all (GTK_WIDGET (icon->priv->ebox));
@@ -267,6 +272,16 @@ rb_tray_icon_dispose (GObject *object)
 		tray->priv->shell_player = NULL;
 	}
 
+	if (tray->priv->playing_image != NULL) {
+		g_object_unref (tray->priv->playing_image);
+		tray->priv->playing_image = NULL;
+	}
+
+	if (tray->priv->not_playing_image != NULL) {
+		g_object_unref (tray->priv->not_playing_image);
+		tray->priv->not_playing_image = NULL;
+	}
+
 	if (tray->priv->actiongroup != NULL) {
 		if (tray->priv->ui_manager != NULL) {
 			gtk_ui_manager_remove_action_group (tray->priv->ui_manager,
@@ -298,7 +313,7 @@ rb_tray_icon_finalize (GObject *object)
 	if (tray->priv->tooltip_unhide_id > 0)
 		g_source_remove (tray->priv->tooltip_unhide_id);
 	gtk_object_destroy (GTK_OBJECT (tray->priv->tooltip));
- 
+
 	G_OBJECT_CLASS (rb_tray_icon_parent_class)->finalize (object);
 }
 
@@ -327,6 +342,22 @@ rb_tray_icon_sync_action (RBShell *shell, gboolean visible, RBTrayIcon *tray)
 }
 
 static void
+rb_tray_icon_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBTrayIcon *tray)
+{
+	GtkWidget *image;
+
+	if (playing)
+		image = tray->priv->playing_image;
+	else
+		image = tray->priv->not_playing_image;
+
+	gtk_container_remove (GTK_CONTAINER (tray->priv->ebox),
+			      gtk_bin_get_child (GTK_BIN (tray->priv->ebox)));
+	gtk_container_add (GTK_CONTAINER (tray->priv->ebox), image);
+	gtk_widget_show_all (GTK_WIDGET (tray->priv->ebox));
+}
+
+static void
 rb_tray_icon_set_property (GObject *object,
 			   guint prop_id,
 			   const GValue *value,
@@ -345,6 +376,10 @@ rb_tray_icon_set_property (GObject *object,
 		g_object_get (tray->priv->shell,
 			      "shell-player", &tray->priv->shell_player,
 			      NULL);
+		g_signal_connect_object (tray->priv->shell_player,
+					 "playing-changed",
+					 G_CALLBACK (rb_tray_icon_playing_changed_cb),
+					 tray, 0);
 		rb_tray_icon_sync_action (NULL, FALSE, tray);
 		break;
 	case PROP_UI_MANAGER:

@@ -60,23 +60,14 @@ rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
 
 # inline icons
-rhythmbox-set-star-inline.h: $(top_srcdir)/data/art/rhythmbox-set-star.png
+rhythmbox-set-star-inline.h: $(top_srcdir)/data/icons/16x16/status/rhythmbox-set-star.png
 	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_set_star_inline $< > $@
 
-rhythmbox-unset-star-inline.h: $(top_srcdir)/data/art/rhythmbox-unset-star.png
+rhythmbox-unset-star-inline.h: $(top_srcdir)/data/icons/16x16/status/rhythmbox-unset-star.png
 	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_unset_star_inline $< > $@
 
-rhythmbox-no-star-inline.h: $(top_srcdir)/data/art/rhythmbox-no-star.png
+rhythmbox-no-star-inline.h: $(top_srcdir)/data/icons/16x16/status/rhythmbox-no-star.png
 	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_no_star_inline $< > $@
-
-rhythmbox-podcast-inline.h: $(top_srcdir)/data/art/rhythmbox-podcast.png
-	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_podcast_inline $< > $@
-
-rhythmbox-tray-icon-inline.h: $(top_srcdir)/data/art/rhythmbox-tray-icon.png
-	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_tray_icon_inline $< > $@
-
-media-eject-inline.h: $(top_srcdir)/data/art/media-eject.png
-	@GDK_PIXBUF_CSOURCE@ --raw --name=media_eject_inline $< > $@
 
 
 BUILT_SOURCES += 				\
@@ -84,10 +75,7 @@ BUILT_SOURCES += 				\
 	rb-marshal.h 				\
 	rhythmbox-set-star-inline.h		\
 	rhythmbox-unset-star-inline.h		\
-	rhythmbox-no-star-inline.h		\
-	rhythmbox-podcast-inline.h		\
-	rhythmbox-tray-icon-inline.h		\
-	media-eject-inline.h
+	rhythmbox-no-star-inline.h
 
 librb_la_SOURCES += $(BUILT_SOURCES)
 

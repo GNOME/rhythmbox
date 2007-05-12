@@ -331,7 +331,7 @@ rb_library_source_new (RBShell *shell)
 
 	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
+	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					 "audio-x-generic",
 					 size,

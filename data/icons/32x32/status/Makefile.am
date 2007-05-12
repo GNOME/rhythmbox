@@ -1,15 +1,14 @@
 themedir = $(pkgdatadir)/icons/hicolor
-size = 16x16
-context = actions
+size = 32x32
+context = status
 
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	internet-radio-new.png 		\
-	media-eject.png
+	rhythmbox-notplaying.png
 
 noinst_DATA = \
-	internet-radio-new.xcf
+	rhythmbox-notplaying.svg
 
 EXTRA_DIST = \
 	$(icons_DATA)	\

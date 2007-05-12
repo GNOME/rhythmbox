@@ -6,7 +6,8 @@ iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
 	library-internet-radio.svg	\
-	playlist.svg
+	playlist.svg			\
+	playlist-automatic.svg
 
 noinst_DATA = 
 

@@ -1,3 +1,72 @@
+2007-05-12  Jonathan Matthew,,,  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	* data/art/Makefile.am:
+	* data/icons/16x16/Makefile.am:
+	* data/icons/16x16/actions/Makefile.am:
+	* data/icons/16x16/apps/Makefile.am:
+	* data/icons/16x16/apps/rhythmbox.svg:
+	* data/icons/16x16/status/Makefile.am:
+	* data/icons/16x16/status/rhythmbox-notplaying.svg:
+	* data/icons/22x22/Makefile.am:
+	* data/icons/22x22/apps/Makefile.am:
+	* data/icons/22x22/apps/rhythmbox.svg:
+	* data/icons/22x22/status/Makefile.am:
+	* data/icons/22x22/status/rhythmbox-notplaying.svg:
+	* data/icons/32x32/Makefile.am:
+	* data/icons/32x32/apps/Makefile.am:
+	* data/icons/32x32/places/Makefile.am:
+	* data/icons/32x32/places/playlist-automatic.svg:
+	* data/icons/32x32/status/Makefile.am:
+	* data/icons/32x32/status/rhythmbox-notplaying.svg:
+	* data/icons/scalable/Makefile.am:
+	* data/icons/scalable/apps/Makefile.am:
+	* data/icons/scalable/apps/rhythmbox.svg:
+	* data/icons/scalable/places/Makefile.am:
+	* data/icons/scalable/places/playlist-automatic.svg:
+	* data/icons/scalable/status/Makefile.am:
+	* data/icons/scalable/status/rhythmbox-notplaying.svg:
+	* lib/Makefile.am:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init),
+	(rb_stock_icons_shutdown):
+	* lib/rb-stock-icons.h:
+	* plugins/daap/rb-daap-plugin.c: (create_pixbufs):
+	* plugins/iradio/rb-iradio-source.c: (rb_iradio_source_init):
+	* shell/rb-playlist-manager.c:
+	* shell/rb-tray-icon.c: (rb_tray_icon_init),
+	(rb_tray_icon_dispose), (rb_tray_icon_playing_changed_cb),
+	(rb_tray_icon_set_property):
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_init):
+	* sources/rb-import-errors-source.c:
+	(rb_import_errors_source_init):
+	* sources/rb-library-source.c: (rb_library_source_new):
+	* sources/rb-missing-files-source.c:
+	(rb_missing_files_source_init):
+	* sources/rb-podcast-source.c: (rb_podcast_source_init):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_constructor):
+	* sources/rb-source.h:
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_init):
+	* widgets/rb-rating-helper.c: (rb_rating_pixbufs_free),
+	(rb_rating_pixbufs_new):
+	Add missing sizes for playlist-automatic icon (by Andreas Nilsson),
+	use the new playlist and playlist-automatic icons.
+
+	Add new application icon (by Andreas Nilsson and Hylke Bons), use it
+	as the tray icon (when playing); use the new rhythmbox-notplaying
+	icon (also by Andreas) when not playing to indicate the status change.
+	Fixes bug #314608.
+
+	Use the new podcast icon, remove the weird resizing code.
+	Move the various star icons into data/icons/.
+	Only inline the star icons as we can live without the rest, more or
+	less.  Remove the now-unnecessary icon loading code; icon search paths
+	do it all for us now.
+
+	From bug #380896.
+
 2007-05-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element):
