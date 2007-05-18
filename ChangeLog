@@ -1,3 +1,12 @@
+2007-05-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(update_playbin_visualizer), (update_visualizer):
+	Use the playbin mutate signal handler ID to decide whether we're
+	playbin-based or tee-based, rather than the playbin pointer. Fixes
+	crashes on updates that occur before the playbin is created
+	(bug #438897).
+
 2007-05-12  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* configure.ac:

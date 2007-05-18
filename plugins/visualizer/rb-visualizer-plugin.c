@@ -509,6 +509,9 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 	GstPad *pad;
 	GstElement *vis_plugin;
 
+	if (plugin->playbin == NULL)
+		return;
+
 	if (plugin->visualizer)
 		g_object_unref (plugin->visualizer);
 
@@ -632,7 +635,7 @@ update_visualizer (RBVisualizerPlugin *plugin,
 		   const char *vis_override,
 		   int quality)
 {
-	if (plugin->playbin != NULL) {
+	if (plugin->playbin_notify_id != 0) {
 		update_playbin_visualizer (plugin, vis_override, quality);
 	} else {
 		update_tee_visualizer (plugin, vis_override, quality);
