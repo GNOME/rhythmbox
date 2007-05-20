@@ -1685,7 +1685,7 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 
 	g_assert (rb_is_main_thread ());
 
-	lst = g_list_reverse (pd->priv->download_list);
+	lst = g_list_reverse (g_list_copy (pd->priv->download_list));
 	for (l = lst; l != NULL; l = l->next) {
 		RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) l->data;
 		cancel_job (data);
