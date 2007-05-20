@@ -32,7 +32,9 @@ librb_la_SOURCES =					\
 	rb-proxy-config.c				\
 	rb-proxy-config.h				\
 	rb-string-value-map.c				\
-	rb-string-value-map.h
+	rb-string-value-map.h				\
+	rb-async-queue-watch.c				\
+	rb-async-queue-watch.h
 
 if WITH_INTERNAL_GSEQUENCE
 librb_la_SOURCES += gsequence.c gsequence.h

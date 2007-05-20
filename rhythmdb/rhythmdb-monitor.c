@@ -167,6 +167,11 @@ rhythmdb_check_changed_file (RBRefString *uri, gpointer data, RhythmDB *db)
 static gboolean
 rhythmdb_process_changed_files (RhythmDB *db)
 {
+	if (g_hash_table_size (db->priv->changed_files) == 0) {
+		db->priv->changed_files_id = 0;
+		return FALSE;
+	}
+
 	g_hash_table_foreach_remove (db->priv->changed_files,
 				     (GHRFunc)rhythmdb_check_changed_file, db);
 	return TRUE;
@@ -183,14 +188,25 @@ _monitor_entry_thread (RhythmDB *db)
 void
 rhythmdb_start_monitoring (RhythmDB *db)
 {
-	db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
-						    (GSourceFunc) rhythmdb_process_changed_files, db);
-
 	g_thread_create ((GThreadFunc)_monitor_entry_thread, g_object_ref (db), FALSE, NULL);
 
 	/* monitor all library locations */
 	if (db->priv->library_locations)
 		g_slist_foreach (db->priv->library_locations, (GFunc) monitor_library_directory, db);
+}
+
+static void
+add_changed_file (RhythmDB *db, const char *uri)
+{
+	GTimeVal time;
+
+	g_get_current_time (&time);
+	g_hash_table_replace (db->priv->changed_files,
+			      rb_refstring_new (uri),
+			      GINT_TO_POINTER (time.tv_sec));
+	if (db->priv->changed_files_id == 0)
+		db->priv->changed_files_id = g_timeout_add (RHYTHMDB_FILE_MODIFY_PROCESS_TIME * 1000,
+							    (GSourceFunc) rhythmdb_process_changed_files, db);
 }
 
 static void
@@ -235,23 +251,13 @@ rhythmdb_directory_change_cb (GnomeVFSMonitorHandle *handle,
 			rhythmdb_monitor_uri_path (db, canon_uri, NULL);
 			rhythmdb_add_uri (db, canon_uri);
 		} else {
-			GTimeVal time;
-
-			g_get_current_time (&time);
-			g_hash_table_replace (db->priv->changed_files,
-					      rb_refstring_new (canon_uri),
-					      GINT_TO_POINTER (time.tv_sec));
+			add_changed_file (db, canon_uri);
 		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_CHANGED:
         case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
 		if (rhythmdb_entry_lookup_by_location (db, canon_uri)) {
-			GTimeVal time;
-
-			g_get_current_time (&time);
-			g_hash_table_replace (db->priv->changed_files,
-					      rb_refstring_new (canon_uri),
-					      GINT_TO_POINTER (time.tv_sec));
+			add_changed_file (db, canon_uri);
 		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:

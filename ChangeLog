@@ -1,3 +1,24 @@
+2007-05-20  James Livingston  <doclivingston@gmail.com>
+
+	* lib/Makefile.am:
+	* lib/rb-async-queue-watch.c:
+	* lib/rb-async-queue-watch.h:
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb):
+	* rhythmdb/rhythmdb-monitor.c: (rhythmdb_process_changed_files),
+	(rhythmdb_start_monitoring), (add_changed_file),
+	(rhythmdb_directory_change_cb):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_push_event), (rhythmdb_init),
+	(rhythmdb_execute_multi_stat_info_cb), (rhythmdb_shutdown),
+	(rhythmdb_dispose), (rhythmdb_process_stat_event),
+	(rhythmdb_process_metadata_load), (rhythmdb_process_one_event),
+	(rhythmdb_execute_stat_info_cb), (rhythmdb_execute_stat),
+	(queue_stat_uri), (rhythmdb_execute_load), (action_thread_main),
+	(rhythmdb_load_thread_main), (rhythmdb_save_thread_main),
+	(rhythmdb_entry_set), (rhythmdb_query_internal),
+	(query_thread_main): Patch mostly by Jonathan Matthew to fix the
+	database to not wake up all the time. From #399012
+
 2007-05-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/visualizer/rb-visualizer-plugin.c:

@@ -47,6 +47,7 @@
 #include "rhythmdb-property-model.h"
 #include "rb-dialog.h"
 #include "rb-string-value-map.h"
+#include "rb-async-queue-watch.h"
 
 
 #define RB_PARSE_NICK_START (xmlChar *) "["
@@ -77,7 +78,8 @@ typedef struct
 	enum {
 		RHYTHMDB_ACTION_STAT,
 		RHYTHMDB_ACTION_LOAD,
-		RHYTHMDB_ACTION_SYNC
+		RHYTHMDB_ACTION_SYNC,
+		RHYTHMDB_ACTION_QUIT,
 	} type;
 	RBRefString *uri;
  	RhythmDBEntryType entry_type;
@@ -99,7 +101,7 @@ static void rhythmdb_thread_create (RhythmDB *db,
 				    gpointer data);
 static void rhythmdb_read_enter (RhythmDB *db);
 static void rhythmdb_read_leave (RhythmDB *db);
-static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
+static void rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db);
 static gpointer action_thread_main (RhythmDB *db);
 static gpointer query_thread_main (RhythmDBQueryThreadData *data);
 static void rhythmdb_entry_set_mount_point (RhythmDB *db,
@@ -314,6 +316,13 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	g_type_class_add_private (klass, sizeof (RhythmDBPrivate));
 }
 
+static void
+rhythmdb_push_event (RhythmDB *db, RhythmDBEvent *event)
+{
+	g_async_queue_push (db->priv->event_queue, event);
+	g_main_context_wakeup (g_main_context_default ());
+}
+
 static gboolean
 metadata_field_from_prop (RhythmDBPropType prop,
 			  RBMetaDataField *field)
@@ -434,6 +443,13 @@ rhythmdb_init (RhythmDB *db)
 
 	db->priv->action_queue = g_async_queue_new ();
 	db->priv->event_queue = g_async_queue_new ();
+	db->priv->event_queue_watch_id = rb_async_queue_watch_new (db->priv->event_queue,
+								   G_PRIORITY_LOW,		/* really? */
+								   (RBAsyncQueueWatchFunc) rhythmdb_process_one_event,
+								   db,
+								   NULL,
+								   NULL);
+
 	db->priv->restored_queue = g_async_queue_new ();
 
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc)query_thread_main,
@@ -491,8 +507,6 @@ rhythmdb_init (RhythmDB *db)
 							   NULL,
 							   (GDestroyNotify) rhythmdb_entry_unref,
 							   NULL);
-
-	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
 
 	db->priv->saving_condition = g_cond_new ();
 	db->priv->saving_mutex = g_mutex_new ();
@@ -571,8 +585,11 @@ rhythmdb_execute_multi_stat_info_cb (GnomeVFSAsyncHandle *handle,
 
 		results = results->next;
 	}
+
 	db->priv->stat_handle = NULL;
 	g_mutex_unlock (db->priv->stat_mutex);
+
+	g_main_context_wakeup (g_main_context_default ());
 }
 
 void
@@ -666,6 +683,11 @@ rhythmdb_shutdown (RhythmDB *db)
 
 	db->priv->exiting = TRUE;
 
+	/* force the action thread to wake up and exit */
+	action = g_new0 (RhythmDBAction, 1);
+	action->type = RHYTHMDB_ACTION_QUIT;
+	g_async_queue_push (db->priv->action_queue, action);
+
 	eel_gconf_notification_remove (db->priv->library_location_notify_id);
 	db->priv->library_location_notify_id = 0;
 	g_slist_foreach (db->priv->library_locations, (GFunc) g_free, NULL);
@@ -722,9 +744,9 @@ rhythmdb_dispose (GObject *object)
 
 	rhythmdb_dispose_monitoring (db);
 
-	if (db->priv->event_poll_id != 0) {
-		g_source_remove (db->priv->event_poll_id);
-		db->priv->event_poll_id = 0;
+	if (db->priv->event_queue_watch_id != 0) {
+		g_source_remove (db->priv->event_queue_watch_id);
+		db->priv->event_queue_watch_id = 0;
 	}
 
 	if (db->priv->save_timeout_id != 0) {
@@ -1707,8 +1729,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 				new_event->db = db;
 				new_event->uri = rb_refstring_ref (event->real_uri);
 				new_event->type = RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED;
-				g_async_queue_push (db->priv->event_queue,
-						    new_event);
+				rhythmdb_push_event (db, new_event);
 			}
 		}
 
@@ -1823,12 +1844,6 @@ rhythmdb_process_metadata_load (RhythmDB *db,
 	GValue value = {0,};
 	const char *mime;
 	GTimeVal time;
-
-	if (rhythmdb_get_readonly (db)) {
-		rb_debug ("database is read-only right now, re-queuing event");
-		g_async_queue_push (db->priv->event_queue, event);
-		return FALSE;
-	}
 
 	if (event->error) {
 		rhythmdb_add_import_error_entry (db, event);
@@ -1966,149 +1981,75 @@ rhythmdb_process_file_deleted (RhythmDB *db,
 	}
 }
 
-static gboolean
-rhythmdb_process_events (RhythmDB *db,
-			 GTimeVal *timeout)
+static void
+rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 {
-	RhythmDBEvent *event;
-	guint count = 0;
+	gboolean free = TRUE;
 
-	while ((event = g_async_queue_try_pop (db->priv->event_queue)) != NULL) {
-		gboolean free = TRUE;
-
-		/* if the database is read-only, we can't process those events
-		 * since they call rhythmdb_entry_set. Doing it this way
-		 * is safe if we assume all calls to read_enter/read_leave
-		 * are done from the main thread (the thread this function
-		 * runs in).
-		 */
-		if (rhythmdb_get_readonly (db) &&
-		    ((event->type == RHYTHMDB_EVENT_STAT)
-		     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD)
-		     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
-			if (count >= g_async_queue_length (db->priv->event_queue)) {
-				rb_debug ("Database is read-only, and we can't process any more events");
-				/* give the running query some time to complete */
-				return FALSE;
-			}
-			rb_debug ("Database is read-only, delaying event processing\n");
-			g_async_queue_push (db->priv->event_queue, event);
-			goto next_event;
-		}
-
-		switch (event->type) {
-		case RHYTHMDB_EVENT_STAT:
-			rb_debug ("processing RHYTHMDB_EVENT_STAT");
-			rhythmdb_process_stat_event (db, event);
-			break;
-		case RHYTHMDB_EVENT_METADATA_LOAD:
-			rb_debug ("processing RHYTHMDB_EVENT_METADATA_LOAD");
-			free = rhythmdb_process_metadata_load (db, event);
-			break;
-		case RHYTHMDB_EVENT_ENTRY_SET:
-			rb_debug ("processing RHYTHMDB_EVENT_ENTRY_SET");
-			rhythmdb_process_queued_entry_set_event (db, event);
-			break;
-		case RHYTHMDB_EVENT_DB_LOAD:
-			rb_debug ("processing RHYTHMDB_EVENT_DB_LOAD");
-			g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
-
-			/* save the db every five minutes */
-			if (db->priv->save_timeout_id > 0) {
-				g_source_remove (db->priv->save_timeout_id);
-			}
-			db->priv->save_timeout_id = g_timeout_add_full (G_PRIORITY_LOW,
-									5 * 60 * 1000,
-									(GSourceFunc) rhythmdb_idle_save,
-									db,
-									NULL);
-			break;
-		case RHYTHMDB_EVENT_THREAD_EXITED:
-			rb_debug ("processing RHYTHMDB_EVENT_THREAD_EXITED");
-			break;
-		case RHYTHMDB_EVENT_DB_SAVED:
-			rb_debug ("processing RHYTHMDB_EVENT_DB_SAVED");
-			rhythmdb_read_leave (db);
-			break;
-		case RHYTHMDB_EVENT_QUERY_COMPLETE:
-			rb_debug ("processing RHYTHMDB_EVENT_QUERY_COMPLETE");
-			rhythmdb_read_leave (db);
-			break;
-		case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
-			rb_debug ("processing RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED");
-			rhythmdb_process_file_created_or_modified (db, event);
-			break;
-		case RHYTHMDB_EVENT_FILE_DELETED:
-			rb_debug ("processing RHYTHMDB_EVENT_FILE_DELETED");
-			rhythmdb_process_file_deleted (db, event);
-			break;
-		}
-		if (free)
-			rhythmdb_event_free (db, event);
-
-		count++;
-	next_event:
-		if (timeout && (count % 8 == 0)) {
-			GTimeVal now;
-			g_get_current_time (&now);
-			if (rb_compare_gtimeval (timeout,&now) < 0) {
-				/* probably more work to do, so try to come back as soon as possible */
-				return TRUE;
-			}
-		}
+	/* if the database is read-only, we can't process those events
+	 * since they call rhythmdb_entry_set. Doing it this way
+	 * is safe if we assume all calls to read_enter/read_leave
+	 * are done from the main thread (the thread this function
+	 * runs in).
+	 */
+	if (rhythmdb_get_readonly (db) &&
+	    ((event->type == RHYTHMDB_EVENT_STAT)
+	     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD)
+	     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
+		rb_debug ("Database is read-only, delaying event processing\n");
+		g_async_queue_push (db->priv->event_queue, event);
+		return;
 	}
 
-	/* queue is empty, so we can wait a while before checking it again */
-	return FALSE;
-}
+	switch (event->type) {
+	case RHYTHMDB_EVENT_STAT:
+		rb_debug ("processing RHYTHMDB_EVENT_STAT");
+		rhythmdb_process_stat_event (db, event);
+		break;
+	case RHYTHMDB_EVENT_METADATA_LOAD:
+		rb_debug ("processing RHYTHMDB_EVENT_METADATA_LOAD");
+		free = rhythmdb_process_metadata_load (db, event);
+		break;
+	case RHYTHMDB_EVENT_ENTRY_SET:
+		rb_debug ("processing RHYTHMDB_EVENT_ENTRY_SET");
+		rhythmdb_process_queued_entry_set_event (db, event);
+		break;
+	case RHYTHMDB_EVENT_DB_LOAD:
+		rb_debug ("processing RHYTHMDB_EVENT_DB_LOAD");
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
 
-static gboolean
-rhythmdb_idle_poll_events (RhythmDB *db)
-{
-	gboolean poll_soon;
-	GTimeVal timeout;
-
-	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
-
-	GDK_THREADS_ENTER ();
-
-	poll_soon = rhythmdb_process_events (db, &timeout);
-
-	if (poll_soon)
-		db->priv->event_poll_id =
-			g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) rhythmdb_idle_poll_events,
-					 db, NULL);
-	else
-		db->priv->event_poll_id =
-			g_timeout_add (1000, (GSourceFunc) rhythmdb_idle_poll_events, db);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
-#define READ_QUEUE_TIMEOUT G_USEC_PER_SEC / 10
-
-static gpointer
-read_queue (GAsyncQueue *queue, gboolean *cancel)
-{
-	GTimeVal timeout;
-	gpointer ret;
-
-	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, READ_QUEUE_TIMEOUT);
-
-	if (G_UNLIKELY (*cancel))
-		return NULL;
-	while ((ret = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
-		if (G_UNLIKELY (*cancel))
-			return NULL;
-		g_get_current_time (&timeout);
-		g_time_val_add (&timeout, G_USEC_PER_SEC);
+		/* save the db every five minutes */
+		if (db->priv->save_timeout_id > 0) {
+			g_source_remove (db->priv->save_timeout_id);
+		}
+		db->priv->save_timeout_id = g_timeout_add_full (G_PRIORITY_LOW,
+								5 * 60 * 1000,
+								(GSourceFunc) rhythmdb_idle_save,
+								db,
+								NULL);
+		break;
+	case RHYTHMDB_EVENT_THREAD_EXITED:
+		rb_debug ("processing RHYTHMDB_EVENT_THREAD_EXITED");
+		break;
+	case RHYTHMDB_EVENT_DB_SAVED:
+		rb_debug ("processing RHYTHMDB_EVENT_DB_SAVED");
+		rhythmdb_read_leave (db);
+		break;
+	case RHYTHMDB_EVENT_QUERY_COMPLETE:
+		rb_debug ("processing RHYTHMDB_EVENT_QUERY_COMPLETE");
+		rhythmdb_read_leave (db);
+		break;
+	case RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED:
+		rb_debug ("processing RHYTHMDB_EVENT_FILE_CREATED_OR_MODIFIED");
+		rhythmdb_process_file_created_or_modified (db, event);
+		break;
+	case RHYTHMDB_EVENT_FILE_DELETED:
+		rb_debug ("processing RHYTHMDB_EVENT_FILE_DELETED");
+		rhythmdb_process_file_deleted (db, event);
+		break;
 	}
-
-	return ret;
+	if (free)
+		rhythmdb_event_free (db, event);
 }
 
 static void
@@ -2132,7 +2073,7 @@ rhythmdb_execute_stat_info_cb (GnomeVFSAsyncHandle *handle,
 							 info_result->result);
 		event->vfsinfo = NULL;
 	}
-	g_async_queue_push (event->db->priv->event_queue, event);
+	rhythmdb_push_event (event->db, event);
 }
 
 static void
@@ -2148,7 +2089,7 @@ rhythmdb_execute_stat (RhythmDB *db,
 	vfs_uri = gnome_vfs_uri_new (uri);
 	if (vfs_uri == NULL) {
 		event->error = make_access_failed_error (uri, GNOME_VFS_ERROR_INVALID_URI);
-		g_async_queue_push (db->priv->event_queue, event);
+		rhythmdb_push_event (db, event);
 		return;
 	}
 
@@ -2202,7 +2143,7 @@ queue_stat_uri (const char *uri,
 		if (vfs_uri == NULL) {
 			result->real_uri = rb_refstring_new (uri);
 			result->error = make_access_failed_error (uri, GNOME_VFS_ERROR_INVALID_URI);
-			g_async_queue_push (db->priv->event_queue, result);
+			rhythmdb_push_event (db, result);
 		} else {
 			/* construct a list of URIs and a hash table containing
 			 * stat events to fill in and post on the event queue.
@@ -2265,7 +2206,7 @@ rhythmdb_execute_load (RhythmDB *db,
 		}
 	}
 
-	g_async_queue_push (db->priv->event_queue, event);
+	rhythmdb_push_event (db, event);
 }
 
 /**
@@ -2361,84 +2302,86 @@ action_thread_main (RhythmDB *db)
 {
 	RhythmDBEvent *result;
 
-	while (TRUE) {
+	while (!db->priv->exiting) {
 		RhythmDBAction *action;
 
-		action = read_queue (db->priv->action_queue, &db->priv->exiting);
+		action = g_async_queue_pop (db->priv->action_queue);
 
-		if (action == NULL)
-			break;
+		if (!db->priv->exiting) {
+			switch (action->type) {
+			case RHYTHMDB_ACTION_STAT:
+				result = g_new0 (RhythmDBEvent, 1);
+				result->db = db;
+				result->type = RHYTHMDB_EVENT_STAT;
+				result->entry_type = action->entry_type;
 
-		switch (action->type) {
-		case RHYTHMDB_ACTION_STAT:
-		{
-			result = g_new0 (RhythmDBEvent, 1);
-			result->db = db;
-			result->type = RHYTHMDB_EVENT_STAT;
-			result->entry_type = action->entry_type;
+				rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", rb_refstring_get (action->uri));
 
-			rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", rb_refstring_get (action->uri));
+				rhythmdb_execute_stat (db, rb_refstring_get (action->uri), result);
+				break;
 
-			rhythmdb_execute_stat (db, rb_refstring_get (action->uri), result);
-		}
-		break;
-		case RHYTHMDB_ACTION_LOAD:
-		{
-			result = g_new0 (RhythmDBEvent, 1);
-			result->db = db;
-			result->type = RHYTHMDB_EVENT_METADATA_LOAD;
-			result->entry_type = action->entry_type;
+			case RHYTHMDB_ACTION_LOAD:
+				result = g_new0 (RhythmDBEvent, 1);
+				result->db = db;
+				result->type = RHYTHMDB_EVENT_METADATA_LOAD;
+				result->entry_type = action->entry_type;
 
-			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", rb_refstring_get (action->uri));
+				rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", rb_refstring_get (action->uri));
 
-			rhythmdb_execute_load (db, rb_refstring_get (action->uri), result);
-		}
-		break;
-		case RHYTHMDB_ACTION_SYNC:
-		{
-			GError *error = NULL;
-			RhythmDBEntry *entry;
-			RhythmDBEntryType entry_type;
+				rhythmdb_execute_load (db, rb_refstring_get (action->uri), result);
+				break;
 
-			if (db->priv->dry_run) {
-				rb_debug ("dry run is enabled, not syncing metadata");
+			case RHYTHMDB_ACTION_SYNC:
+			{
+				GError *error = NULL;
+				RhythmDBEntry *entry;
+				RhythmDBEntryType entry_type;
+
+				if (db->priv->dry_run) {
+					rb_debug ("dry run is enabled, not syncing metadata");
+					break;
+				}
+
+				entry = rhythmdb_entry_lookup_by_location_refstring (db, action->uri);
+				if (!entry)
+					break;
+
+				entry_type = rhythmdb_entry_get_entry_type (entry);
+				entry_type->sync_metadata (db, entry, &error, entry_type->sync_metadata_data);
+
+				if (error != NULL) {
+					RhythmDBSaveErrorData *data;
+
+					data = g_new0 (RhythmDBSaveErrorData, 1);
+					g_object_ref (db);
+					data->db = db;
+					data->uri = g_strdup (rb_refstring_get (action->uri));
+					data->error = error;
+					g_idle_add ((GSourceFunc)emit_save_error_idle, data);
+					break;
+				}
 				break;
 			}
 
-			entry = rhythmdb_entry_lookup_by_location_refstring (db, action->uri);
-			if (!entry)
+			case RHYTHMDB_ACTION_QUIT:
+				/* don't do any real work here, since we may not process it */
+				rb_debug ("received QUIT action");
 				break;
 
-			entry_type = rhythmdb_entry_get_entry_type (entry);
-			entry_type->sync_metadata (db, entry, &error, entry_type->sync_metadata_data);
-
-			if (error != NULL) {
-				RhythmDBSaveErrorData *data;
-
-				data = g_new0 (RhythmDBSaveErrorData, 1);
-				g_object_ref (db);
-				data->db = db;
-				data->uri = g_strdup (rb_refstring_get (action->uri));
-				data->error = error;
-				g_idle_add ((GSourceFunc)emit_save_error_idle, data);
+			default:
+				g_assert_not_reached ();
 				break;
 			}
-			break;
 		}
-		break;
-		default:
-			g_assert_not_reached ();
-			break;
-		}
+
 		rhythmdb_action_free (db, action);
-
 	}
 
-	rb_debug ("exiting main thread");
+	rb_debug ("exiting action thread");
 	result = g_new0 (RhythmDBEvent, 1);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
-	g_async_queue_push (db->priv->event_queue, result);
+	rhythmdb_push_event (db, result);
 
 	return NULL;
 }
@@ -2546,7 +2489,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	rb_debug ("exiting");
 	result = g_new0 (RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
-	g_async_queue_push (db->priv->event_queue, result);
+	rhythmdb_push_event (db, result);
 
 	rb_profile_end ("loading db");
 	return NULL;
@@ -2606,7 +2549,7 @@ out:
 	result = g_new0 (RhythmDBEvent, 1);
 	result->db = db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
-	g_async_queue_push (db->priv->event_queue, result);
+	rhythmdb_push_event (db, result);
 	return NULL;
 }
 
@@ -2694,7 +2637,7 @@ rhythmdb_entry_set (RhythmDB *db,
 			result->signal_change = TRUE;
 			g_value_init (&result->change.new, G_VALUE_TYPE (value));
 			g_value_copy (value, &result->change.new);
-			g_async_queue_push (db->priv->event_queue, result);
+			rhythmdb_push_event (db, result);
 		}
 	} else {
 		rhythmdb_entry_set_internal (db, entry, FALSE, propid, value);
@@ -3456,7 +3399,7 @@ rhythmdb_query_internal (RhythmDBQueryThreadData *data)
 	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_QUERY_COMPLETE;
 	result->results = data->results;
-	g_async_queue_push (data->db->priv->event_queue, result);
+	rhythmdb_push_event (data->db, result);
 
 	rhythmdb_query_free (data->query);
 }
@@ -3473,7 +3416,7 @@ query_thread_main (RhythmDBQueryThreadData *data)
 	result = g_new0 (RhythmDBEvent, 1);
 	result->db = data->db;
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
-	g_async_queue_push (data->db->priv->event_queue, result);
+	rhythmdb_push_event (data->db, result);
 	g_free (data);
 	return NULL;
 }

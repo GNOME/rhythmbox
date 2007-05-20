@@ -818,7 +818,7 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 	dir = (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY);
 
 	if (data->cancel_flag && *data->cancel_flag)
-		return TRUE;
+		return FALSE;
 
 	/* skip hidden and unreadable files and directories */
 	sep = strrchr (rel_path, G_DIR_SEPARATOR);
