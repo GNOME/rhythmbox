@@ -708,10 +708,6 @@ rhythmdb_shutdown (RhythmDB *db)
 	db->priv->outstanding_stats = NULL;
 	g_mutex_unlock (db->priv->stat_mutex);
 
-	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
-		rhythmdb_action_free (db, action);
-	}
-
 	rb_debug ("%d outstanding threads", g_atomic_int_get (&db->priv->outstanding_threads));
 	while (g_atomic_int_get (&db->priv->outstanding_threads) > 0) {
 		result = g_async_queue_pop (db->priv->event_queue);
@@ -721,6 +717,10 @@ rhythmdb_shutdown (RhythmDB *db)
 	/* FIXME */
 	while ((result = g_async_queue_try_pop (db->priv->event_queue)) != NULL)
 		rhythmdb_event_free (db, result);
+
+	while ((action = g_async_queue_try_pop (db->priv->action_queue)) != NULL) {
+		rhythmdb_action_free (db, action);
+	}
 }
 
 static void

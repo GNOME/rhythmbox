@@ -1,3 +1,12 @@
+2007-05-22  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_shutdown):
+	Now that we use the action queue to shut down the action thread, we
+	need to empty the event queue (thus waiting for the thread to shut
+	down) before emptying the action queue.  Otherwise the main thread
+	races the action thread to get to the shutdown event, and if it wins,
+	the process never exits.
+
 2007-05-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (create_sink):
