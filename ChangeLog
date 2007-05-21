@@ -1,3 +1,10 @@
+2007-05-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (create_sink):
+	If we haven't yet created the sink elements correctly, keep trying.
+	Leaks memory, but we can't do anything useful in this situation
+	anyway.  At least this doesn't crash when you hit play a few times.
+
 2007-05-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_shutdown):

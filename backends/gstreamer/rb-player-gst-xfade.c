@@ -2444,7 +2444,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	GstPadLinkReturn plr;
 	GList *l;
 
-	if (player->priv->pipeline != NULL)
+	if (player->priv->sink_state != SINK_NULL)
 		return TRUE;
 
 	/* set filter caps.
