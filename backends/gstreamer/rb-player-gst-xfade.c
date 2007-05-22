@@ -3288,6 +3288,15 @@ really_add_tee (GstPad *pad, gboolean blocked, RBPlayerGstXFadePipelineOp *op)
 	queue = gst_element_factory_make ("queue", NULL);
 	audioconvert = gst_element_factory_make ("audioconvert", NULL);
 
+	/* The bin contains elements that change state asynchronously
+	 * and not as part of a state change in the entire pipeline.
+	 * With GStreamer core 0.10.13+, we need to ask the bin to
+	 * handle this specifically using its 'async-handling' property.
+	 */
+	if (g_object_class_find_property (G_OBJECT_GET_CLASS (bin), "async-handling")) {
+		g_object_set (bin, "async-handling", TRUE, NULL);
+	}
+
 	g_object_set (queue, "max-size-buffers", 3, NULL);
 
 	gst_bin_add_many (GST_BIN (bin), queue, audioconvert, op->element, NULL);
