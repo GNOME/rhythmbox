@@ -1,3 +1,21 @@
+2007-05-23  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(handle_playlist_entry_cb), (load_playlist_file):
+	* plugins/iradio/rb-iradio-source.c: (handle_playlist_entry_cb),
+	(rb_iradio_source_add_from_playlist):
+	* shell/rb-playlist-manager.c: (handle_playlist_entry_cb),
+	(rb_playlist_manager_parse_file):
+	* shell/rb-shell-player.c: (playlist_entry_cb),
+	(open_location_thread):
+	* shell/rb-shell.c: (handle_playlist_entry_cb),
+	(rb_shell_load_uri):
+	* sources/rb-playlist-source.c: (rb_playlist_source_save_playlist): Convert
+	to using the new totem-pl-parser API, with a compile-time fallback on the
+	old API
+
 2007-05-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_shutdown):
