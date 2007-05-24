@@ -48,8 +48,8 @@ GTKDOC_LIBS=\
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/lib/librb.la	                \
-	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/plugins/librbplugins.la		\
+	$(top_builddir)/backends/librbbackends.la	\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(HAL_LIBS)					\
 	$(LIBNAUTILUS_BURN_LIBS)			\

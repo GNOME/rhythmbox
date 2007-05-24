@@ -36,7 +36,7 @@ create_entry (RhythmDB *db, const char *name, const char *album,
 	RhythmDBEntry *entry;
 	GValue val = {0, };
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///yay.ogg");
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///yay.ogg");
 	g_assert (entry);
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, genre);

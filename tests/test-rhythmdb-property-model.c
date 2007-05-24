@@ -44,8 +44,8 @@ START_TEST (test_rhythmdb_property_model_static)
 	g_object_set (propmodel, "query-model", model, NULL);
 
 	/* create test entries */
-	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///a.ogg");
-	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///b.ogg");
+	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///a.ogg");
+	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///b.ogg");
 	rhythmdb_commit (db);
 
 	/* set artist values */
@@ -173,7 +173,7 @@ START_TEST (test_rhythmdb_property_model_query)
 	/* setup */
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
-				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				      RHYTHMDB_QUERY_PROP_LIKE,
 				        RHYTHMDB_PROP_ARTIST, "x",
 				      RHYTHMDB_QUERY_END);
@@ -183,7 +183,7 @@ START_TEST (test_rhythmdb_property_model_query)
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
-				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				      RHYTHMDB_QUERY_PROP_LIKE,
 				        RHYTHMDB_PROP_ARTIST, "y",
 				      RHYTHMDB_QUERY_END);
@@ -198,8 +198,8 @@ START_TEST (test_rhythmdb_property_model_query)
 
 	/* create test entries */
 	set_waiting_signal (G_OBJECT (db), "entry_added");
-	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///a.ogg");
-	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///b.ogg");
+	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///a.ogg");
+	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///b.ogg");
 	set_entry_string (db, a, RHYTHMDB_PROP_ARTIST, "x");
 	set_entry_string (db, b, RHYTHMDB_PROP_ARTIST, "y");
 	rhythmdb_commit (db);
@@ -303,7 +303,7 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 	/* setup */
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
-				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				      RHYTHMDB_QUERY_PROP_LIKE,
 				        RHYTHMDB_PROP_SEARCH_MATCH, "y",
 				      RHYTHMDB_QUERY_END);
@@ -313,7 +313,7 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
-				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				        RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				        RHYTHMDB_PROP_TRACK_NUMBER, 1,
 				      RHYTHMDB_QUERY_END);
@@ -327,14 +327,14 @@ START_TEST (test_rhythmdb_property_model_query_chain)
 
 	/* create test entries */
 	set_waiting_signal (G_OBJECT (db), "entry_added");
-	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///a.ogg");
+	a = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///a.ogg");
 	set_entry_string (db, a, RHYTHMDB_PROP_ALBUM, "x");
 	set_entry_ulong (db, a, RHYTHMDB_PROP_TRACK_NUMBER, 1);
 	rhythmdb_commit (db);
 	wait_for_signal ();
 
 	set_waiting_signal (G_OBJECT (db), "entry_added");
-	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///b.ogg");
+	b = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///b.ogg");
 	set_entry_string (db, b, RHYTHMDB_PROP_ALBUM, "y");
 	set_entry_ulong (db, b, RHYTHMDB_PROP_TRACK_NUMBER, 1);
 	rhythmdb_commit (db);

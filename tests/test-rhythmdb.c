@@ -33,7 +33,7 @@ START_TEST (test_rhythmdb_indexing)
 	GValue val = {0,};
 	gboolean b;
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///whee.ogg");
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
 	fail_unless (entry != NULL, "failed to create entry");
 
 	g_value_init (&val, G_TYPE_STRING);
@@ -121,17 +121,17 @@ START_TEST (test_rhythmdb_multiple)
 	RhythmDBEntry *entry1, *entry2, *entry3;
 
 	/* add multiple entries */
-	entry1 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///foo.mp3");
+	entry1 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///foo.mp3");
 	rhythmdb_commit (db);
 	fail_unless (entry1 != NULL, "failed to create entry");
 	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
 
-	entry2 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///bar.mp3");
+	entry2 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///bar.mp3");
 	rhythmdb_commit (db);
 	fail_unless (entry2 != NULL, "failed to create entry");
 	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == entry2, "entry missing");
 
-	entry3 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///baz.mp3");
+	entry3 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///baz.mp3");
 	rhythmdb_commit (db);
 	fail_unless (entry3 != NULL, "failed to create entry");
 	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
@@ -166,7 +166,7 @@ START_TEST (test_rhythmdb_mirroring)
 	RhythmDBEntry *entry;
 	const char *str;
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///foo.mp3");
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///foo.mp3");
 	fail_unless (entry != NULL, "failed to create entry");
 
 	/* check the last-played date is mirrored */
@@ -230,7 +230,7 @@ START_TEST (test_rhythmdb_keywords)
 	keyword_bar = rb_refstring_new ("bar");
 	keyword_baz = rb_refstring_new ("baz");
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///foo.mp3");
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///foo.mp3");
 	fail_unless (entry != NULL, "failed to create entry");
 
 	/* new entries should have 0 keywords */
@@ -316,7 +316,7 @@ START_TEST (test_rhythmdb_deserialisation1)
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (model),
 				NULL,
 				RHYTHMDB_QUERY_PROP_EQUALS,
-				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				RHYTHMDB_QUERY_END);
 	wait_for_signal ();
 	fail_unless (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 0, "deserialisation incorrect");
@@ -339,7 +339,7 @@ START_TEST (test_rhythmdb_deserialisation2)
 	set_waiting_signal (G_OBJECT (model), "complete");
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (model),
 				RHYTHMDB_QUERY_PROP_EQUALS,
-				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				RHYTHMDB_QUERY_END);
 	wait_for_signal ();
 	/* FIXME: this fails for some reason
@@ -366,7 +366,7 @@ START_TEST (test_rhythmdb_deserialisation3)
 	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (model),
 				NULL,
 				RHYTHMDB_QUERY_PROP_EQUALS,
-				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				RHYTHMDB_QUERY_END);
 	wait_for_signal ();
 	/* FIXME: this fails for some reason

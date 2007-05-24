@@ -3038,6 +3038,8 @@ rhythmdb_entry_delete (RhythmDB *db,
 	g_return_if_fail (RHYTHMDB_IS (db));
 	g_return_if_fail (entry != NULL);
 
+	rb_debug ("deleting entry %p", entry);
+
 	/* ref the entry before adding to hash, it is unreffed when removed */
 	rhythmdb_entry_ref (entry);
 
@@ -4119,6 +4121,8 @@ rhythmdb_register_core_entry_types (RhythmDB *db)
 	ignore_type = rhythmdb_entry_register_type (db, "ignore");
 	ignore_type->save_to_disk = TRUE;
 	ignore_type->category = RHYTHMDB_ENTRY_VIRTUAL;
+	ignore_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc) rb_true_function;
+	ignore_type->sync_metadata = (RhythmDBEntrySyncFunc) rb_null_function;
 
 	/* podcast posts */
 	podcast_post_type = rhythmdb_entry_register_type (db, "podcast-post");

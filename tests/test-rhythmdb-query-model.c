@@ -17,7 +17,7 @@ START_TEST (test_rhythmdb_db_queries)
 
 	start_test_case ();
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///whee.ogg");
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
 	fail_unless (entry != NULL, "failed to create entry");
 
 	g_value_init (&val, G_TYPE_STRING);
@@ -44,7 +44,7 @@ START_TEST (test_rhythmdb_db_queries)
 
 	/* basic queries and conjunctions */
 	query = rhythmdb_query_parse (db,
-				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TITLE, "Sin",
 				      RHYTHMDB_QUERY_END);
 	fail_unless (rhythmdb_evaluate_query (db, query, entry), "query evaluated incorrectly");
@@ -137,7 +137,7 @@ START_TEST (test_hidden_chain_filter)
 	g_object_set (filter_model, "query", query, NULL);
 	rhythmdb_query_free (query);
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///whee.ogg");
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
 	rhythmdb_commit (db);
 
 	g_value_init (&val, G_TYPE_BOOLEAN);

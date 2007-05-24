@@ -1,3 +1,21 @@
+2007-05-24  James Livingston  <doclivingston@gmail.com>
+
+	* NEWS: add some news for the upcoming release
+
+	* bindings/python/rb.defs: fix building with gtk-doc
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_delete),
+	(rhythmdb_register_core_entry_types): allow metadata syncs on ignored
+	files
+
+	* tests/test-rhythmdb-property-model.c: (START_TEST):
+	* tests/test-rhythmdb-query-model.c: (START_TEST):
+	* tests/test-rhythmdb-query.c: (create_entry), (main):
+	* tests/test-rhythmdb-tree-serialization.c: (create_entry):
+	* tests/test-rhythmdb-view.c: (create_entry), (main):
+	* tests/test-rhythmdb.c: (START_TEST): don't use SONG entries since rh
+	db will try to stat them, and cause them to be deleted.
+
 2007-05-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst-xfade.c: (really_add_tee):
@@ -1450,8 +1468,6 @@
 	From #399012
 
 2007-02-25  James Livingston  <doclivingston@gmail.com>
-
-	reviewed by: <delete if not using a buddy>
 
 	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_init),
 	(rb_player_gst_finalize):

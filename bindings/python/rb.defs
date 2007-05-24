@@ -133,11 +133,11 @@
   (gtype-id "RB_TYPE_PLAYER_GST_TEE")
 )
 
-(define-interface PlayerGstDataTee
-  (in-module "RB")
-  (c-name "RBPlayerGstDataTee")
-  (gtype-id "RB_TYPE_PLAYER_GST_DATA_TEE")
-)
+;(define-interface PlayerGstDataTee
+;  (in-module "RB")
+;  (c-name "RBPlayerGstDataTee")
+;  (gtype-id "RB_TYPE_PLAYER_GST_DATA_TEE")
+;)
 
 
 ;; Enumerations and flags ...
@@ -2251,23 +2251,24 @@
   )
 )
 
-(define-method add_data_tee
-  (of-object "RBPlayerGstDataTee")
-  (c-name "rb_player_gst_data_tee_add_data_tee")
-  (return-type "none")
-  (parameters
-    '("GObject*" "element")
-  )
-)
 
-(define-method remove_data_tee
-  (of-object "RBPlayerGstDataTee")
-  (c-name "rb_player_gst_data_tee_remove_data_tee")
-  (return-type "none")
-  (parameters
-    '("GObject*" "element")
-  )
-)
+;(define-method add_data_tee
+;  (of-object "RBPlayerGstDataTee")
+;  (c-name "rb_player_gst_data_tee_add_data_tee")
+;  (return-type "none")
+;  (parameters
+;    '("GObject*" "element")
+;  )
+;)
+;
+;(define-method remove_data_tee
+;  (of-object "RBPlayerGstDataTee")
+;  (c-name "rb_player_gst_data_tee_remove_data_tee")
+;  (return-type "none")
+;  (parameters
+;    '("GObject*" "element")
+;  )
+;)
 
 (define-method add_filter
   (of-object "RBPlayerGstFilter")

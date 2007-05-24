@@ -37,7 +37,7 @@ create_entry (RhythmDB *db,
 	RhythmDBEntry *entry;
 	GValue val = {0, };
 
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, location);
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, location);
 	g_assert (entry);
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, genre);
@@ -178,7 +178,7 @@ begin:
 	main_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (db));
 	qfunc (db, main_model,
 	       RHYTHMDB_QUERY_PROP_EQUALS,
-	       RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_SONG,
+	       RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 	       RHYTHMDB_QUERY_END);
 	wait_for_model_completion (RHYTHMDB_QUERY_MODEL (main_model));
 

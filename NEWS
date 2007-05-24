@@ -1,3 +1,145 @@
+Overview of changes in Rhythmbox 0.11.0 "Rough in the diamond"
+==============================================================
+
+* Add gapless/cross-fading playback backend (130426)
+* Add awesome Tango-style icons (388648, 380896, 388650, 314608)
+* Don't wake up the CPU all the time while doing nothing (399012)
+* Allow plugins to add filer and tee elements/sub-piplines
+  to the gstreamer pipeline (345181)
+* Group sources together (359740)
+* Add DB support for keywords (324540)
+* Save modified iPod playlists (436744), and
+  marks podcasts as such (424086)
+* Fix Unicode normalisation, which also makes searching
+  ignore diacritical marks (421253, 338824)
+* Use xdg-user-dirs, and kill the druid (yay!) (411247)
+* Write art out to the DB on iPods (357400)
+* Parse last.fm group radio URLs too (407320)
+* Add support for MusicBrainz id tags (410681)
+* Minor improvements to the cover-art plugin
+* Retrieve cover art from last.fm (414065) and Magnatune (411622)
+* Add some more useful options to rhythmbox-client (414648)
+* Add preliminary support for Vala plugins
+* Use GSequence instead of EggSequence (419599)
+
+This release also drops support for:
+- GStreamer 0.8
+- GTK+ 2.6
+- DBus 0.3x before 0.35
+- HAL 0.2
+
+Contributors to the release:
+- Hylke Bons
+- Kjell Braden
+- Ed Catumur
+- Christophe Dehais
+- Paul Drain
+- Edward Duffy
+- Christophe Fergeau
+- Andreas Hanke
+- Denis Jacquerye
+- Alex "weej" Jones
+- Gabor Kelemen
+- Alex Lancaster
+- James Livingston
+- Jonathan Matthew
+- William Jon McCann
+- Matt N
+- Andreas Nilsson
+- Jonty Pearson
+- Brian Pepple
+- Tim Retout
+- Edward Rudd
+- Robin Sonefors
+- Adam Zimmerman
+- 'William'
+
+
+Updated translations
+--------------------
+
+writeme
+
+
+Overview of changes in Rhythmbox 0.10.1 "Diamond in the rough"
+==============================================================
+
+* fix saving of db on iPod shuffles (386662)
+* fix some crashes on Solaris (418886)
+* fix crasher due to python logging (429687)
+* fix crash when MusicBrainz returns nothing (414864)
+* prefer id3v2 over v1, even when they arrive later (428276)
+* fix crash when doing entry.get() from python (432949)
+* cancel async gnomevfs transfers correctly (434003)
+* fix query model reorder issues (436329)
+* remove timeout correctly (436355)
+* don't remove items from list being iterated (404169)
+* build against totem-plparser 2.19's new API
+
+Contributors to the release:
+- Christophe Fergeau
+- Irene Huang
+- James Livingston
+- Jonathan Matthew
+- Bastien Nocera
+
+
+Updated translations
+--------------------
+
+writeme
+
+
+Overview of changes in Rhythmbox 0.10.0 "The City Above"
+========================================================
+
+* Fix assorted crashers (410601, 411783, 411558, 411189, 413206, 393642, 416024)
+* fix build issues (411141, 380411, 411145, 413301, 419874)
+* Fix typos (411584, 413640)
+* stop some critical warnings (411703)
+* Improve Jamendo error handling (411038)
+* Make compatible with libsoup other than 2.2.99 (410940)
+* Italisise Magnatune text correctly (412931)
+* Fix some memory leaks
+* Use AudioScobbler logo properly (409164)
+* Don't cause gnome-power-manager to start (416213)
+* Fix some threading issues (420444)
+* Don't add files starting with a period (395124)
+* Improve Magnatune error handling (414980)
+* Fix sizing of playlist format combo box (419153)
+* Copy MP3s to audio players without lame installed
+
+Contributors to the release:
+- Kjell Bradan
+- Gilles Dartiguelongue
+- Nguyen Thai Ngoc Duy
+- Christophe Fergeau
+- Andreas Hanke
+- Irene Huang
+- Alex Jones
+- James Livingston
+- Og Maciel
+- Jonathan Matthew
+- Julien Puydt
+- Edward Rudd
+- Adam Zimmerman
+
+
+Updated translations
+--------------------
+
+ar	Ahmad Farghal
+da	Peter Bach
+dz	Pema Geyleg
+en_GB	David Lodge
+fr	Claude Paroz and Stéphane Raimbault
+hu	Gabor Kelemen
+it	Luca Ferretti
+pt_BR	Lucas Mazzardo Veloso, Og Maciel and Raul Pereira
+sv	Daniel Nylander
+zh_CN	Funda Wang
+
+
 Overview of changes in Rhythmbox 0.9.8 "Type slowly"
 =====================================================
 

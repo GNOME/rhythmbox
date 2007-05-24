@@ -402,12 +402,6 @@ rb-station-properties-dialog
 </para>
 
 
-<!-- ##### STRUCT GSequence ##### -->
-<para>
-
-</para>
-
-
 <!-- ##### TYPEDEF GSequencePtr ##### -->
 <para>
 
@@ -669,6 +663,12 @@ rb-station-properties-dialog
 
 @RB_DIRECTION_UP: 
 @RB_DIRECTION_DOWN: 
+
+<!-- ##### TYPEDEF RBDruidPrivate ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### TYPEDEF RBIRadioSourcePrivate ##### -->
 <para>
@@ -1057,14 +1057,6 @@ rb-station-properties-dialog
 @bubble: 
 @timeout: 
 
-<!-- ##### FUNCTION g_sequence_append ##### -->
-<para>
-
-</para>
-
-@seq: 
-@data: 
-
 <!-- ##### FUNCTION g_sequence_calc_tree_height ##### -->
 <para>
 
@@ -1081,13 +1073,6 @@ rb-station-properties-dialog
 @seq1: 
 @seq: 
 
-<!-- ##### FUNCTION g_sequence_free ##### -->
-<para>
-
-</para>
-
-@seq: 
-
 <!-- ##### FUNCTION g_sequence_get_begin_ptr ##### -->
 <para>
 
@@ -1097,14 +1082,6 @@ rb-station-properties-dialog
 @Returns: 
 
 <!-- ##### FUNCTION g_sequence_get_end_ptr ##### -->
-<para>
-
-</para>
-
-@seq: 
-@Returns: 
-
-<!-- ##### FUNCTION g_sequence_get_length ##### -->
 <para>
 
 </para>
@@ -1136,33 +1113,6 @@ rb-station-properties-dialog
 
 @ptr: 
 @other_seq: 
-
-<!-- ##### FUNCTION g_sequence_insert_sorted ##### -->
-<para>
-
-</para>
-
-@seq: 
-@data: 
-@cmp_func: 
-@cmp_data: 
-@Returns: 
-
-<!-- ##### FUNCTION g_sequence_new ##### -->
-<para>
-
-</para>
-
-@data_destroy: 
-@Returns: 
-
-<!-- ##### FUNCTION g_sequence_prepend ##### -->
-<para>
-
-</para>
-
-@seq: 
-@data: 
 
 <!-- ##### FUNCTION g_sequence_ptr_get_data ##### -->
 <para>
@@ -1227,40 +1177,6 @@ rb-station-properties-dialog
 </para>
 
 @ptr: 
-@cmp_func: 
-@cmp_data: 
-
-<!-- ##### FUNCTION g_sequence_remove ##### -->
-<para>
-
-</para>
-
-@ptr: 
-
-<!-- ##### FUNCTION g_sequence_remove_range ##### -->
-<para>
-
-</para>
-
-@begin: 
-@end: 
-@removed: 
-
-<!-- ##### FUNCTION g_sequence_search ##### -->
-<para>
-
-</para>
-
-@seq: 
-@f: 
-@data: 
-
-<!-- ##### FUNCTION g_sequence_sort ##### -->
-<para>
-
-</para>
-
-@seq: 
 @cmp_func: 
 @cmp_data: 
 
@@ -1574,6 +1490,14 @@ rb-station-properties-dialog
 
 @structure: 
 @length: 
+@Returns: 
+
+<!-- ##### FUNCTION rb_druid_new ##### -->
+<para>
+
+</para>
+
+@db: 
 @Returns: 
 
 <!-- ##### FUNCTION rb_druid_show ##### -->
