@@ -1721,12 +1721,12 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 		if (new_source != player->priv->current_playing_source)
 			swap_playing_source (player, new_source);
 
+		player->priv->jump_to_playing_entry = TRUE;
 		if (!rb_shell_player_set_playing_entry (player, entry, FALSE, FALSE, error)) {
 			rhythmdb_entry_unref (entry);
 			return FALSE;
 		}
 
-		player->priv->jump_to_playing_entry = TRUE;
 		rhythmdb_entry_unref (entry);
 	} else {
 		rb_debug ("no previous song found, signaling error");
@@ -1803,10 +1803,9 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, GErr
 		if (new_source != player->priv->current_playing_source)
 			swap_playing_source (player, new_source);
 
+		player->priv->jump_to_playing_entry = TRUE;
 		if (!rb_shell_player_set_playing_entry (player, entry, FALSE, from_eos, error))
 			rv = FALSE;
-
-		player->priv->jump_to_playing_entry = TRUE;
 	} else {
 		g_set_error (error,
 			     RB_SHELL_PLAYER_ERROR,
@@ -1903,11 +1902,11 @@ rb_shell_player_play_entry (RBShellPlayer *player,
 		source = player->priv->selected_source;
 	rb_shell_player_set_playing_source (player, source);
 
+	player->priv->jump_to_playing_entry = FALSE;
 	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
 		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
 	}
-	player->priv->jump_to_playing_entry = FALSE;
 }
 
 static void
@@ -2029,7 +2028,6 @@ rb_shell_player_playpause (RBShellPlayer *player,
 				player->priv->jump_to_playing_entry = TRUE;
 				if (!rb_shell_player_set_playing_entry (player, entry, out_of_order, FALSE, error))
 					ret = FALSE;
-
 			}
 		} else {
 			if (!rb_shell_player_play (player, error)) {
@@ -2318,11 +2316,11 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 		source_set = TRUE;
 	}
 
+	playa->priv->jump_to_playing_entry = jump_to_entry;
 	if (!rb_shell_player_set_playing_entry (playa, entry, TRUE, FALSE, &error)) {
 		rb_shell_player_error (playa, FALSE, error);
 		g_clear_error (&error);
 	}
-	playa->priv->jump_to_playing_entry = jump_to_entry;
 
 	/* if we were previously playing from the queue, clear its playing entry,
 	 * so we'll start again from the start.
@@ -2362,12 +2360,12 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 
 	rb_play_order_go_next (player->priv->play_order);
 
+	player->priv->jump_to_playing_entry = TRUE;	/* ? */
 	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
 		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
 	}
 
-	player->priv->jump_to_playing_entry = TRUE;	/* ? */
 	if (entry != NULL) {
 		rhythmdb_entry_unref (entry);
 	}
