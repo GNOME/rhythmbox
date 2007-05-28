@@ -1,5 +1,12 @@
 2007-05-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* metadata/rb-metadata-gst.c: (rb_metadata_bus_handler),
+	(rb_metadata_load):
+	Use gst_bus_timed_pop to wait for state changes, so if an error is
+	posted we process it immediately.  Fixes #441157.
+
+2007-05-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-player.c: (rb_shell_player_do_previous),
 	(rb_shell_player_do_next_internal), (rb_shell_player_play_entry),
 	(rb_shell_player_playpause), (rb_shell_player_entry_activated_cb),

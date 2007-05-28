@@ -802,7 +802,8 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 	case GST_MESSAGE_EOS:
 		rb_debug ("EOS reached");
 		md->priv->eos = TRUE;
-		break;
+		return TRUE;
+
 	case GST_MESSAGE_ERROR:
 	{
 		GError *gerror;
@@ -823,9 +824,12 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 							       gerror->message);
 		}
 
+		/* treat this as equivalent to EOS */
+		md->priv->eos = TRUE;
+
 		g_error_free (gerror);
 		g_free (debug);
-		break;
+		return TRUE;
 	}
 	case GST_MESSAGE_TAG:
 	{
@@ -894,6 +898,7 @@ rb_metadata_load (RBMetaData *md,
 	GstFormat file_size_format = GST_FORMAT_BYTES;
 	GstStateChangeReturn state_ret;
 	int change_timeout;
+	GstBus *bus;
 
 	g_free (md->priv->uri);
 	md->priv->uri = NULL;
@@ -972,17 +977,28 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->pipeline = pipeline;
 	rb_debug ("going to PAUSED for metadata, uri: %s", uri);
 	state_ret = gst_element_set_state (pipeline, GST_STATE_PAUSED);
-	change_timeout = 5;
-        while (state_ret == GST_STATE_CHANGE_ASYNC &&
+	bus = gst_element_get_bus (GST_ELEMENT (pipeline));
+	change_timeout = 0;
+	while (state_ret == GST_STATE_CHANGE_ASYNC &&
 	       !md->priv->eos &&
 	       !md->priv->non_audio &&
-	       change_timeout > 0) {
-	    GstState state;
-	    rb_debug ("element state changing asynchronously: %d, %d", state_ret, state);
-	    state_ret = gst_element_get_state (GST_ELEMENT (pipeline),
-			    &state, NULL, 1 * GST_SECOND);
-	    change_timeout--;
+	       change_timeout < 5) {
+		GstMessage *msg;
+
+		msg = gst_bus_timed_pop (bus, 1 * GST_SECOND);
+		if (msg) {
+			rb_metadata_bus_handler (bus, msg, md);
+			gst_message_unref (msg);
+			change_timeout = 0;
+		} else {
+			change_timeout++;
+		}
+
+		state_ret = gst_element_get_state (pipeline, NULL, NULL, 0);
 	}
+	gst_object_unref (GST_OBJECT (bus));
+
+
 	if (state_ret != GST_STATE_CHANGE_SUCCESS) {
 		rb_debug ("failed to go to PAUSED for %s", uri);
 		rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
@@ -995,20 +1011,8 @@ rb_metadata_load (RBMetaData *md,
 		rb_debug ("gone to PAUSED for %s", uri);
 
 	if (state_ret == GST_STATE_CHANGE_SUCCESS) {
-		/* Post application specific message so we'll know when to stop
-		 * the message loop */
-		GstBus *bus;
-		bus = gst_element_get_bus (GST_ELEMENT (pipeline));
-		if (bus) {
-			gst_bus_post (bus,
-			gst_message_new_application (GST_OBJECT (pipeline), NULL));
-			gst_object_unref (bus);
-		}
 
-		/* Poll the bus for messages */
-		rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
-
-		/* We caught the first buffer(0.8) or went to PAUSED (0.10),
+		/* We caught the went to PAUSED,
 		 * which means the decoder should have read all
 		 * of the metadata, and should know the length now.
 		 */
@@ -1083,8 +1087,9 @@ rb_metadata_load (RBMetaData *md,
 				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
 				     " ");
 		}
-	} else if (md->priv->error) {
+	} else if (md->priv->error != NULL) {
 		g_propagate_error (error, md->priv->error);
+		md->priv->error = NULL;
 	} else if (!md->priv->type) {
 		/* ignore really small files that can't be identified */
 		gint error_code = RB_METADATA_ERROR_UNRECOGNIZED;
@@ -1097,7 +1102,7 @@ rb_metadata_load (RBMetaData *md,
 				     RB_METADATA_ERROR,
 				     RB_METADATA_ERROR_EMPTY_FILE,
 				     _("Empty file"));
-			return;
+			goto out;
 		}
 
 		g_clear_error (error);
