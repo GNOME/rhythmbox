@@ -1,3 +1,19 @@
+============ Version 0.10.1
+
+2007-05-28  James Livingston  <doclivingston@gmail.com>
+
+	* configure.ac: bump version for the release
+	* NEWS:
+
+2007-05-28  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	(rb_audioscrobbler_init), (rb_audioscrobbler_timeout_cb),
+	(rb_audioscrobbler_do_handshake), (rb_audioscrobbler_submit_queue),
+	(rb_audioscrobbler_preferences_sync),
+	(rb_audioscrobbler_gconf_changed_cb): don't crash if the
+	username/password isn't set. Fixes #426312
+
 2007-05-28  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/ipod/rb-ipod-source.c: (rb_ipod_source_constructor),
