@@ -1,5 +1,32 @@
-Overview of changes in Rhythmbox 0.10.0 ""
-==========================================
+Overview of changes in Rhythmbox 0.10.1 "Diamond in the rough"
+
+* fix saving of db on iPod shuffles (386662)
+* fix some crashes on Solaris (418886)
+* fix crasher due to python logging (429687)
+* fix crash when MusicBrainz returns nothing (414864)
+* prefer id3v2 over v1, even when they arrive later (428276)
+* fix crash when doing entry.get() from python (432949)
+* cancel async gnomevfs transfers correctly (434003)
+* fix query model reorder issues (436329)
+* remove timeout correctly (436355)
+* don't remove items from list being iterated (404169)
+* build against totem-plparser 2.19's new API
+
+Contributors to the release:
+- Christophe Fergeau
+- Irene Huang
+- James Livingston
+- Jonathan Matthew
+- Bastien Nocera
+
+Updated translations
+--------------------
+
+writeme
+
+
+Overview of changes in Rhythmbox 0.10.0 "The City Above"
+========================================================
 
 * Fix assorted crashers (410601, 411783, 411558, 411189, 413206, 393642, 416024)
 * fix build issues (411141, 380411, 411145, 413301, 419874)
