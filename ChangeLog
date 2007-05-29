@@ -1,3 +1,9 @@
+2007-05-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_load):
+	Use gst_bus_poll instead of gst_bus_timed_pop to avoid requiring
+	GStreamer 0.10.12.
+
 ============ Version 0.11.0
 
 2007-05-28  James Livingston  <doclivingston@gmail.com>

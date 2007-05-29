@@ -985,7 +985,7 @@ rb_metadata_load (RBMetaData *md,
 	       change_timeout < 5) {
 		GstMessage *msg;
 
-		msg = gst_bus_timed_pop (bus, 1 * GST_SECOND);
+		msg = gst_bus_poll (bus, GST_MESSAGE_ANY, 1 * GST_SECOND);
 		if (msg) {
 			rb_metadata_bus_handler (bus, msg, md);
 			gst_message_unref (msg);
