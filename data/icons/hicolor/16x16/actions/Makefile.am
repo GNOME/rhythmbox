@@ -6,10 +6,16 @@ iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
 	internet-radio-new.png 		\
-	media-eject.png
+	media-eject.png			\
+	playlist-automatic-new.png	\
+	playlist-new.png		\
+	podcast-new.png
 
 noinst_DATA = \
-	internet-radio-new.xcf
+	internet-radio-new.xcf		\
+	playlist-automatic-new.xcf	\
+	playlist-new.xcf		\
+	podcast-new.xcf
 
 EXTRA_DIST = \
 	$(icons_DATA)	\

@@ -5,10 +5,16 @@ context = actions
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	internet-radio-new.png
+	internet-radio-new.png		\
+	playlist-automatic-new.png	\
+	playlist-new.png		\
+	podcast-new.png
 
 noinst_DATA = \
-	internet-radio-new.svg
+	internet-radio-new.svg		\
+	playlist-automatic-new.xcf	\
+	playlist-new.xcf		\
+	podcast-new.xcf
 
 EXTRA_DIST = \
 	$(icons_DATA)	\

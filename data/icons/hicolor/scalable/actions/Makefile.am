@@ -5,7 +5,9 @@ context = actions
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	internet-radio-new.svg
+	internet-radio-new.svg		\
+	playlist-automatic-new.svg	\
+	playlist-new.svg
 
 noinst_DATA = 
 
