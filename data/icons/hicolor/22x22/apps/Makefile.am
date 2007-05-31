@@ -1,4 +1,4 @@
-themedir = $(pkgdatadir)/icons/hicolor
+themedir = $(datadir)/icons/hicolor
 size = 22x22
 context = apps
 
