@@ -738,10 +738,7 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 
 	gst_caps_unref (caps);
 
-	/* if this is non-audio, cancel the operation
-	 * under 0.8 this causes assertion faliures when a pad with no caps in found
-	 * it isn't /needed/ under 0.8, so we don't do it.
-	 *
+	/* If this is non-audio, cancel the operation.
 	 * This seems to cause some deadlocks with video files, so only do it
 	 * when we get no/any caps.
 	 */
@@ -1012,7 +1009,7 @@ rb_metadata_load (RBMetaData *md,
 
 	if (state_ret == GST_STATE_CHANGE_SUCCESS) {
 
-		/* We caught the went to PAUSED,
+		/* The pipeline went to PAUSED,
 		 * which means the decoder should have read all
 		 * of the metadata, and should know the length now.
 		 */
