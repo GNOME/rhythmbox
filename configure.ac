@@ -6,6 +6,8 @@ AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(rhythmbox, 0.11.0)
 
+AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
+
 AM_MAINTAINER_MODE
 
 dnl XXXX hack to kill off all the libtool tags ...
