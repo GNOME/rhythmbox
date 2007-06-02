@@ -123,12 +123,14 @@ static void impl_get_status (RBSource *asource, char **text, char **progress_tex
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static void impl_activate (RBSource *source);
 static gboolean impl_show_popup (RBSource *source);
+static guint impl_want_uri (RBSource *source, const char *uri);
+static gboolean impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre);
 
-static void rb_lastfm_source_new_station (char *uri, char *title, RBLastfmSource *source);
+static void rb_lastfm_source_new_station (const char *uri, const char *title, RBLastfmSource *source);
 static void rb_lastfm_source_skip_track (GtkAction *action, RBLastfmSource *source);
 static void rb_lastfm_source_love_track (GtkAction *action, RBLastfmSource *source);
 static void rb_lastfm_source_ban_track (GtkAction *action, RBLastfmSource *source);
-static char *rb_lastfm_source_title_from_uri (char *uri);
+static char *rb_lastfm_source_title_from_uri (const char *uri);
 static void rb_lastfm_source_add_station_cb (GtkButton *button, gpointer *data);
 static void rb_lastfm_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry, RBLastfmSource *source);
 
@@ -248,6 +250,8 @@ rb_lastfm_source_class_init (RBLastfmSourceClass *klass)
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_activate = impl_activate;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_want_uri = impl_want_uri;
+	source_class->impl_add_uri = impl_add_uri;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -907,12 +911,12 @@ rb_lastfm_proxy_config_changed_cb (RBProxyConfig *config,
 }
 
 static void
-rb_lastfm_source_new_station (char *uri, char *title, RBLastfmSource *source)
+rb_lastfm_source_new_station (const char *uri, const char *title, RBLastfmSource *source)
 {
 	RhythmDBEntry *entry;
 	GValue v = {0,};
 
-	rb_debug ("adding lastfm: %s, %s",uri, title);
+	rb_debug ("adding lastfm: %s, %s", uri, title);
 
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
 	if (entry) {
@@ -1019,7 +1023,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *selection_data)
 
 
 static char *
-rb_lastfm_source_title_from_uri (char *uri)
+rb_lastfm_source_title_from_uri (const char *uri)
 {
 	char *title = NULL;
 	char *unesc_title;
@@ -1063,7 +1067,7 @@ rb_lastfm_source_title_from_uri (char *uri)
 	}
 
 	if (title == NULL) {
-		title = g_strdup (g_strstrip (uri));
+		title = g_strstrip (g_strdup (uri));
 	}
 
 	g_strfreev (data);
@@ -1305,5 +1309,28 @@ show_entry_popup (RBEntryView *view,
 	} else {
 		rb_source_show_popup (source);
 	}
+}
+
+guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	if (g_str_has_prefix (uri, "lastfm://"))
+		return 100;
+
+	return 0;
+}
+
+static gboolean
+impl_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
+{
+	char *name;
+
+	if (strstr (uri, "lastfm://") == NULL)
+		return FALSE;
+
+	name = rb_lastfm_source_title_from_uri (uri);
+
+	rb_lastfm_source_new_station (uri, name, RB_LASTFM_SOURCE (source));
+	return TRUE;
 }
 

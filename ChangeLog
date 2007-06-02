@@ -1,5 +1,13 @@
 2007-06-02  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_class_init), (rb_lastfm_source_new_station),
+	(rb_lastfm_source_title_from_uri), (impl_want_uri), (impl_add_uri):
+	make the last.fm source handle lastfm:// URIs, so you can play things
+	by clicking on link in your browser
+
+2007-06-02  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Bastien Nocera  <hadess@hadess.net>
 
 	* plugins/rb-plugin.h: remove some relocations due to plugins. Fixes #431414
