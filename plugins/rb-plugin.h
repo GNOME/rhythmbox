@@ -117,7 +117,7 @@ static void     plugin_name##_class_intern_init (gpointer klass)		\
 G_MODULE_EXPORT GType								\
 register_rb_plugin (GTypeModule *module)					\
 {										\
-	static const GTypeInfo our_info =					\
+	const GTypeInfo our_info =						\
 	{									\
 		sizeof (PluginName##Class),					\
 		NULL, /* base_init */						\
@@ -175,7 +175,7 @@ type_name##_register_type (GTypeModule *module) 				\
 { 										\
 										\
 	if ((type_name##_type_id == 0)) { 					\
-		static const GTypeInfo g_define_type_info = { 			\
+		const GTypeInfo g_define_type_info = { 				\
 			sizeof (TypeName##Class), 				\
 			(GBaseInitFunc) ((void *)0), 				\
 			(GBaseFinalizeFunc) ((void *)0), 			\
