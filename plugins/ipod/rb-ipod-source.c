@@ -1330,7 +1330,7 @@ impl_delete_thyself (RBSource *source)
 
 	for (p = priv->ipod_db->playlists; p != NULL; p = p->next) {
 		Itdb_Playlist *playlist = (Itdb_Playlist *)p->data;
-		if (!itdb_playlist_is_mpl (playlist)) {
+		if (!itdb_playlist_is_mpl (playlist) && !playlist->is_spl) {
 			RBSource *rb_playlist = RB_SOURCE (playlist->userdata);
 			rb_source_delete_thyself (rb_playlist);
 		}

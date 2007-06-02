@@ -1,5 +1,12 @@
 2007-06-02  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/rb-ipod-source.c: (impl_delete_thyself):
+	* sources/rb-source.c: (rb_source_delete_thyself): fix a crasher, #442378
+
+2007-06-02  James Livingston  <doclivingston@gmail.com>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (really_add_tee),
 	(really_remove_tee), (really_add_filter), (really_remove_filter):
 	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_add_tee),

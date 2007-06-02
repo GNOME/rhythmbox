@@ -1025,8 +1025,10 @@ default_delete_thyself (RBSource *source)
 void
 rb_source_delete_thyself (RBSource *source)
 {
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	RBSourceClass *klass;
 
+	g_return_if_fail (source != NULL);
+	klass = RB_SOURCE_GET_CLASS (source);
 	klass->impl_delete_thyself (source);
 	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
 }
