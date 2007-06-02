@@ -1,3 +1,9 @@
+2007-06-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_bus_handler):
+	Ignore "this appears to be a text file" errors from decodebin.
+	Fixes #442793.
+
 2007-06-02  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Tom Parker  <palfrey@tevp.net>

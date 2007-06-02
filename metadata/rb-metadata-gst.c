@@ -810,6 +810,12 @@ rb_metadata_bus_handler (GstBus *bus, GstMessage *message, RBMetaData *md)
 		if (gerror->domain == GST_STREAM_ERROR &&
 		    gerror->code == GST_STREAM_ERROR_TYPE_NOT_FOUND) {
 			rb_debug ("caught type not found error");
+		} else if (gerror->domain == GST_STREAM_ERROR &&
+			   gerror->code == GST_STREAM_ERROR_WRONG_TYPE &&
+			   md->priv->type != NULL &&
+			   strcmp (md->priv->type, "text/plain") == 0) {
+			rb_debug ("got WRONG_TYPE error for text/plain: setting non-audio flag");
+			md->priv->non_audio = TRUE;
 		} else if (md->priv->error) {
 			rb_debug ("caught error: %s, but we've already got one", gerror->message);
 		} else {
