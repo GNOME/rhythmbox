@@ -23,10 +23,51 @@
 #include "rb-player-gst-tee.h"
 #include "rb-marshal.h"
 
+
+enum {
+	TEE_INSERTED,
+	TEE_PRE_REMOVE,
+	LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+
 static void
 rb_player_gst_tee_interface_init (RBPlayerGstTeeIface *iface)
 {
+	/**
+	 * RBPlayerGstTee::tee-inserted
+	 * @tee: the element which has been inserted
+	 *
+	 * The 'tee-inserted' signal is emitted when the tee element has been
+	 * inserted into the pipeline and fully linked
+	 **/
+	signals[TEE_INSERTED] =
+		g_signal_new ("tee-inserted",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+			      G_STRUCT_OFFSET (RBPlayerGstTeeIface, tee_inserted),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
 
+	/**
+	 * RBPlayerGstTee::tee-pre-remove
+	 * @tee: the element which is about to be removed
+	 *
+	 * The 'tee-pre-remove' signal is emitted immediately before the element
+	 * is unlinked and removed from the pipeline
+	 **/
+	signals[TEE_PRE_REMOVE] =
+		g_signal_new ("tee-pre-remove",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+			      G_STRUCT_OFFSET (RBPlayerGstTeeIface, tee_pre_remove),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
 }
 
 GType
@@ -67,5 +108,17 @@ rb_player_gst_tee_remove_tee (RBPlayerGstTee *player, GstElement *element)
 	RBPlayerGstTeeIface *iface = RB_PLAYER_GST_TEE_GET_IFACE (player);
 
 	return iface->remove_tee (player, element);
+}
+
+void
+_rb_player_gst_tee_emit_tee_inserted (RBPlayerGstTee *player, GstElement *tee)
+{
+	g_signal_emit (player, signals[TEE_INSERTED], 0, tee);
+}
+
+void
+_rb_player_gst_tee_emit_tee_pre_remove (RBPlayerGstTee *player, GstElement *tee)
+{
+	g_signal_emit (player, signals[TEE_PRE_REMOVE], 0, tee);
 }
 

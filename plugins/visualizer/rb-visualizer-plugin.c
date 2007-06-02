@@ -68,7 +68,6 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
-/*#include "visualization-icon.h"*/
 #define VISUALIZATION_ICON_NAME	"visualization"
 
 #include <dbus/dbus-glib.h>
@@ -396,6 +395,8 @@ bus_sync_message_cb (GstBus *bus, GstMessage *msg, RBVisualizerPlugin *plugin)
 		return;
 	}
 
+	rb_debug ("handling prepare-xwindow-id message");
+
 	/* update our idea of where the xoverlay is */
 	find_xoverlay (plugin);
 
@@ -544,6 +545,65 @@ update_playbin_visualizer (RBVisualizerPlugin *plugin,
 	g_object_ref (plugin->visualizer);
 
 	g_object_set (plugin->playbin, "vis-plugin", plugin->visualizer, NULL);
+}
+
+static void
+tee_visualizer_inserted (RBPlayerGstTee *player, GstElement *tee, RBVisualizerPlugin *plugin)
+{
+	GstBus *bus;
+	GstElement *p = tee;
+
+	if (tee != plugin->visualizer)
+		return;
+
+	rb_debug ("tee visualizer inserted into pipeline");
+
+	/* find the pipeline, extract its bus */
+	while (GST_ELEMENT_PARENT (p) != NULL) {
+		p = GST_ELEMENT_PARENT (p);
+	}
+	bus = gst_element_get_bus (p);
+
+	/* XXX sort of nasty, but avoids a g_warning */
+	if (bus->sync_handler == NULL) {
+		gst_bus_set_sync_handler (bus, gst_bus_sync_signal_handler, plugin);
+	}
+
+	if (plugin->bus_sync_id == 0) {
+		plugin->bus_sync_id = g_signal_connect (bus,
+							"sync-message::element",
+							G_CALLBACK (bus_sync_message_cb),
+							plugin);
+		rb_debug ("connected signal handler %d to bus %p", plugin->bus_sync_id, bus);
+	}
+
+	gst_object_unref (bus);
+}
+
+static void
+tee_visualizer_pre_remove (RBPlayerGstTee *player, GstElement *tee, RBVisualizerPlugin *plugin)
+{
+	GstBus *bus;
+	GstElement *p = tee;
+
+	if (tee != plugin->visualizer)
+		return;
+
+	rb_debug ("tee visualizer about to be removed from pipeline");
+
+	/* find the pipeline, extract its bus */
+	while (GST_ELEMENT_PARENT (p) != NULL) {
+		p = GST_ELEMENT_PARENT (p);
+	}
+	bus = gst_element_get_bus (p);
+
+	if (plugin->bus_sync_id != 0) {
+		rb_debug ("disconnecting handler %d from bus %p", plugin->bus_sync_id, bus);
+		g_signal_handler_disconnect (bus, plugin->bus_sync_id);
+		plugin->bus_sync_id = 0;
+	}
+
+	gst_object_unref (bus);
 }
 
 static void
@@ -1465,6 +1525,15 @@ impl_activate (RBPlugin *plugin,
 		GstPad *pad;
 
 		rb_debug ("using tee-based visualization");
+
+		g_signal_connect_object (pi->player,
+					 "tee-inserted",
+					 G_CALLBACK (tee_visualizer_inserted),
+					 plugin, 0);
+		g_signal_connect_object (pi->player,
+					 "tee-pre-remove",
+					 G_CALLBACK (tee_visualizer_pre_remove),
+					 plugin, 0);
 
 		/* create the sink */
 		pi->video_sink = gst_element_factory_make ("gconfvideosink", "videosink");

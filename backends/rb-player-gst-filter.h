@@ -42,13 +42,21 @@ typedef struct
 
 	/* virtual functions */
 	gboolean	(*add_filter)		(RBPlayerGstFilter *player, GstElement *element);
-	gboolean	(*remove_filter)		(RBPlayerGstFilter *player, GstElement *element);
+	gboolean	(*remove_filter)	(RBPlayerGstFilter *player, GstElement *element);
+
+	/* signals */
+	void		(*filter_inserted)	(RBPlayerGstFilter *player, GstElement *filter);
+	void		(*filter_pre_remove)	(RBPlayerGstFilter *player, GstElement *filter);
 } RBPlayerGstFilterIface;
 
 GType		rb_player_gst_filter_get_type   (void);
 
 gboolean	rb_player_gst_filter_add_filter (RBPlayerGstFilter *player, GstElement *element);
 gboolean	rb_player_gst_filter_remove_filter (RBPlayerGstFilter *player, GstElement *element);
+
+/* only to be called by implementing classes */
+void _rb_player_gst_filter_emit_filter_inserted (RBPlayerGstFilter *player, GstElement *filter);
+void _rb_player_gst_filter_emit_filter_pre_remove (RBPlayerGstFilter *player, GstElement *filter);
 
 G_END_DECLS
 

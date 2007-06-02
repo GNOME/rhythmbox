@@ -23,10 +23,51 @@
 #include "rb-player-gst-data-tee.h"
 #include "rb-marshal.h"
 
+
+enum {
+	DATA_TEE_INSERTED,
+	DATA_TEE_PRE_REMOVE,
+	LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL] = { 0 };
+
 static void
 rb_player_gst_data_tee_interface_init (RBPlayerGstDataTeeIface *iface)
 {
+	/**
+	 * RBPlayerGstDataTee::tee-inserted
+	 * @data_tee: the element which has been inserted
+	 *
+	 * The 'data_tee-inserted' signal is emitted when the tee element has been
+	 * inserted into the pipeline and fully linked
+	 **/
+	signals[DATA_TEE_INSERTED] =
+		g_signal_new ("data-tee-inserted",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+			      G_STRUCT_OFFSET (RBPlayerGstDataTeeIface, data_tee_inserted),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
 
+	/**
+	 * RBPlayerGstDataTee::tee-pre-remove
+	 * @data_tee: the element which is about to be removed
+	 *
+	 * The 'data_tee-pre-remove' signal is emitted immediately before the element
+	 * is unlinked and removed from the pipeline
+	 **/
+	signals[DATA_TEE_PRE_REMOVE] =
+		g_signal_new ("data-tee-pre-remove",
+			      G_TYPE_FROM_INTERFACE (iface),
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
+			      G_STRUCT_OFFSET (RBPlayerGstDataTeeIface, data_tee_pre_remove),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
 }
 
 GType
@@ -67,5 +108,17 @@ rb_player_gst_data_tee_remove_data_tee (RBPlayerGstDataTee *player, GstElement *
 	RBPlayerGstDataTeeIface *iface = RB_PLAYER_GST_DATA_TEE_GET_IFACE (player);
 
 	return iface->remove_data_tee (player, element);
+}
+
+void
+_rb_player_gst_data_tee_emit_data_tee_inserted (RBPlayerGstDataTee *player, GstElement *data_tee)
+{
+	g_signal_emit (player, signals[DATA_TEE_INSERTED], 0, data_tee);
+}
+
+void
+_rb_player_gst_data_tee_emit_data_tee_pre_remove (RBPlayerGstDataTee *player, GstElement *data_tee)
+{
+	g_signal_emit (player, signals[DATA_TEE_PRE_REMOVE], 0, data_tee);
 }
 

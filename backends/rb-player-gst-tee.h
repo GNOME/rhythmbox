@@ -43,12 +43,20 @@ typedef struct
 	/* virtual functions */
 	gboolean	(*add_tee)		(RBPlayerGstTee *player, GstElement *element);
 	gboolean	(*remove_tee)		(RBPlayerGstTee *player, GstElement *element);
+
+	/* signals */
+	void		(*tee_inserted)		(RBPlayerGstTee *player, GstElement *tee);
+	void		(*tee_pre_remove)	(RBPlayerGstTee *player, GstElement *tee);
 } RBPlayerGstTeeIface;
 
 GType		rb_player_gst_tee_get_type   (void);
 
 gboolean	rb_player_gst_tee_add_tee (RBPlayerGstTee *player, GstElement *element);
 gboolean	rb_player_gst_tee_remove_tee (RBPlayerGstTee *player, GstElement *element);
+
+/* only to be called by implementing classes */
+void _rb_player_gst_tee_emit_tee_inserted (RBPlayerGstTee *player, GstElement *tee);
+void _rb_player_gst_tee_emit_tee_pre_remove (RBPlayerGstTee *player, GstElement *tee);
 
 G_END_DECLS
 

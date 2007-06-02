@@ -1,3 +1,34 @@
+2007-06-02  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (really_add_tee),
+	(really_remove_tee), (really_add_filter), (really_remove_filter):
+	* backends/gstreamer/rb-player-gst.c: (rb_player_gst_add_tee),
+	(rb_player_gst_remove_tee), (rb_player_gst_add_filter),
+	(rb_player_gst_remove_filter):
+	* backends/rb-player-gst-data-tee.c:
+	(rb_player_gst_data_tee_interface_init),
+	(_rb_player_gst_data_tee_emit_data_tee_inserted),
+	(_rb_player_gst_data_tee_emit_data_tee_pre_remove):
+	* backends/rb-player-gst-data-tee.h:
+	* backends/rb-player-gst-filter.c:
+	(rb_player_gst_filter_interface_init),
+	(_rb_player_gst_filter_emit_filter_inserted),
+	(_rb_player_gst_filter_emit_filter_pre_remove):
+	* backends/rb-player-gst-filter.h:
+	* backends/rb-player-gst-tee.c: (rb_player_gst_tee_interface_init),
+	(_rb_player_gst_tee_emit_tee_inserted),
+	(_rb_player_gst_tee_emit_tee_pre_remove):
+	* backends/rb-player-gst-tee.h: add signals to indicate when a
+	tee/filter/data-tee has been inserted, or is about to be removed, from
+	a playback backend. Fixes #425580
+
+	patch by: Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/visualizer/rb-visualizer-plugin.c: (bus_sync_message_cb),
+	(tee_visualizer_inserted), (tee_visualizer_pre_remove),
+	(impl_activate): use the above to fix visualisation "popping out" when
+	enabled for a second time with non-playbin backends. Fixes #441927
+
 2007-05-31  Luca Ferretti  <elle.uca@libero.it>
 
 	* data/icons/hicolor/16x16/apps/Makefile.am:

@@ -42,13 +42,21 @@ typedef struct
 
 	/* virtual functions */
 	gboolean	(*add_data_tee)		(RBPlayerGstDataTee *player, GstElement *element);
-	gboolean	(*remove_data_tee)		(RBPlayerGstDataTee *player, GstElement *element);
+	gboolean	(*remove_data_tee)	(RBPlayerGstDataTee *player, GstElement *element);
+
+	/* signals */
+	void		(*data_tee_inserted)	(RBPlayerGstDataTee *player, GstElement *data_tee);
+	void		(*data_tee_pre_remove)	(RBPlayerGstDataTee *player, GstElement *data_tee);
 } RBPlayerGstDataTeeIface;
 
 GType		rb_player_gst_data_tee_get_type   (void);
 
 gboolean	rb_player_gst_data_tee_add_data_tee (RBPlayerGstDataTee *player, GstElement *element);
 gboolean	rb_player_gst_data_tee_remove_data_tee (RBPlayerGstDataTee *player, GstElement *element);
+
+/* only to be called by implementing classes */
+void _rb_player_gst_data_tee_emit_data_tee_inserted (RBPlayerGstDataTee *player, GstElement *data_tee);
+void _rb_player_gst_data_tee_emit_data_tee_pre_remove (RBPlayerGstDataTee *player, GstElement *data_tee);
 
 G_END_DECLS
 

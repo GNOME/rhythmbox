@@ -1125,6 +1125,8 @@ rb_player_gst_add_tee (RBPlayerGstTee *player, GstElement *element)
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
 
+	_rb_player_gst_tee_emit_tee_inserted (player, element);
+
 	return TRUE;
 }
 
@@ -1141,6 +1143,8 @@ rb_player_gst_remove_tee (RBPlayerGstTee *player, GstElement *element)
 		mp->priv->waiting_tees = g_list_remove (mp->priv->waiting_tees, element);
 		return TRUE;
 	}
+
+	_rb_player_gst_tee_emit_tee_pre_remove (player, element);
 
 	if (mp->priv->playing) {
 		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {
@@ -1262,6 +1266,8 @@ rb_player_gst_add_filter (RBPlayerGstFilter *player, GstElement *element)
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
 
+	_rb_player_gst_filter_emit_filter_inserted (player, element);
+
 	return TRUE;
 }
 
@@ -1284,8 +1290,9 @@ rb_player_gst_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 		return TRUE;
 	}
 
-	if (mp->priv->playing) {
+	_rb_player_gst_filter_emit_filter_pre_remove (player, element);
 
+	if (mp->priv->playing) {
 		/* it'd be more fun to do this by blocking a pad.. */
 
 		if (gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_ASYNC) {

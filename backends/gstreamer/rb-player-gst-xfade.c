@@ -3329,6 +3329,8 @@ really_add_tee (GstPad *pad, gboolean blocked, RBPlayerGstXFadePipelineOp *op)
 		pipeline_op_done (NULL, FALSE, ghostpad);
 	}
 
+	_rb_player_gst_tee_emit_tee_inserted (RB_PLAYER_GST_TEE (op->player), op->element);
+
 	free_pipeline_op (op);
 }
 
@@ -3338,6 +3340,8 @@ really_remove_tee (GstPad *pad, gboolean blocked, RBPlayerGstXFadePipelineOp *op
 	GstElement *bin;
 
 	rb_debug ("really removing tee %p", op->element);
+
+	_rb_player_gst_tee_emit_tee_pre_remove (RB_PLAYER_GST_TEE (op->player), op->element);
 
 	/* find bin, remove everything */
 	bin = GST_ELEMENT_PARENT (op->element);
@@ -3500,6 +3504,8 @@ really_add_filter (GstPad *pad,
 		gst_element_set_state (bin, GST_STATE_PAUSED);
 	}
 
+	_rb_player_gst_filter_emit_filter_inserted (RB_PLAYER_GST_FILTER (op->player), op->element);
+
 	free_pipeline_op (op);
 }
 
@@ -3521,6 +3527,7 @@ really_remove_filter (GstPad *pad,
 	}
 
 	rb_debug ("removing filter %p", op->element);
+	_rb_player_gst_filter_emit_filter_pre_remove (RB_PLAYER_GST_FILTER (op->player), op->element);
 
 	/* probably check return? */
 	gst_element_set_state (bin, GST_STATE_NULL);
@@ -3622,8 +3629,4 @@ rb_player_gst_xfade_remove_filter (RBPlayerGstFilter *iplayer, GstElement *eleme
 			  element,
 			  (GstPadBlockCallback) really_remove_filter);
 }
-
-
-
-
 
