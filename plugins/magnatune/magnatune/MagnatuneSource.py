@@ -567,10 +567,13 @@ class MagnatuneSource(rb.BrowserSource):
 
 		if entry.get_entry_type() != self.__db.entry_type_get_by_name("MagnatuneEntryType"):
 			return
-		
+
+		gobject.idle_add (self.emit_cover_art_uri, entry)
+
+	def emit_cover_art_uri (self, entry):
 		url = str(self.__art_dict[self.__db.entry_get(entry, rhythmdb.PROP_LOCATION)])
-		
 		self.__db.emit_entry_extra_metadata_notify (entry, 'rb:coverArt-uri', url)
+		return False
 
 gobject.type_register(MagnatuneSource)
 

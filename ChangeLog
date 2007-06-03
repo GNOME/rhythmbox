@@ -1,5 +1,11 @@
 2007-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	Emit cover art notification in an idle handler so the art display
+	plugin will have the right playing entry when it gets the signal.
+
+2007-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-clipboard.c:
 	Use the new 'new playlist' icon here too.
 
