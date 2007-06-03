@@ -665,7 +665,6 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		 * and then remove leading and trailing whitespace.
 		 */
 		char *str;
-		const char *old_str;
 
 		str = g_value_dup_string (newval);
 
@@ -680,15 +679,20 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 
 		/* Check whether we have a shorter duplicate tag,
 		 * Doesn't work with non-normalised UTF-8 strings */
-		old_str = g_value_get_string (val);
-		if (old_str != NULL
-		    && g_utf8_strlen (old_str, -1) > g_utf8_strlen (str, -1)) {
-			if (g_str_has_prefix (old_str, str) != FALSE) {
-				rb_debug ("Got shorter duplicate tag");
-				g_free (str);
-				g_value_unset (newval);
-				g_free (newval);
-				return;
+		val = g_hash_table_lookup (md->priv->metadata,
+					   GINT_TO_POINTER (field));
+		if (val != NULL) {
+			const char *old_str;
+			old_str = g_value_get_string (val);
+			if (old_str != NULL
+			    && g_utf8_strlen (old_str, -1) > g_utf8_strlen (str, -1)) {
+				if (g_str_has_prefix (old_str, str) != FALSE) {
+					rb_debug ("Got shorter duplicate tag");
+					g_free (str);
+					g_value_unset (newval);
+					g_free (newval);
+					return;
+				}
 			}
 		}
 		g_value_take_string (newval, str);
