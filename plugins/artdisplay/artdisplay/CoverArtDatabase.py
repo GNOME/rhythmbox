@@ -152,6 +152,10 @@ class CoverArtDatabase (object):
 				if not results:
 					break
 				for url in engine.get_best_match_urls (results):
+					if str(url) == "":
+						print "got empty url from engine %s." % (engine)
+						continue
+
 					yield self.loader.get_url (str (url), plexer.send ())
 					_, (data, ) = plexer.receive ()
 					pixbuf = self.image_data_load (data)

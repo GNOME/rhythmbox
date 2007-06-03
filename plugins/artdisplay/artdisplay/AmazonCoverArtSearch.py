@@ -218,14 +218,22 @@ class AmazonCoverArtSearch (object):
 
 		return s
 
+	def __valid_match (self, item):
+		if item.ImageUrlLarge == "" and item.ImageUrlMedium == "":
+			print "%s doesn't have image URLs; ignoring" % (item.URL)
+			return False
+		return True
+
 	def get_best_match_urls (self, search_results):
 		# Default to "no match", our results must match our criteria
 		best_match = None
 
+		search_results = filter(self.__valid_match, search_results)
 		try:
 			if self.search_album != _("Unknown"):
 				album_check = self.__tidy_up_string (self.search_album)
 				for item in search_results:
+
 					# Check for album name in ProductName
 					product_name = self.__tidy_up_string (item.ProductName)
 
@@ -244,6 +252,7 @@ class AmazonCoverArtSearch (object):
 					# Check if artist appears in the Artists list
 					hit = False
 					for item in search_results:
+
 						if type (item.Artists.Artist) <> type ([]):
 							artists = [item.Artists.Artist]
 						else:
@@ -253,13 +262,13 @@ class AmazonCoverArtSearch (object):
 							artist = self.__tidy_up_string (artist)
 							if artist.find (artist_check) != -1:
 								best_match = item
-								hit = True						
+								hit = True
 								break
 						if hit:
 							break
 
-			if best_match: 
-				return [best_match.ImageUrlLarge, best_match.ImageUrlMedium]
+			if best_match:
+				return filter(lambda x: x != "", [item.ImageUrlLarge, item.ImageUrlMedium])
 			else:
 				return []
 
