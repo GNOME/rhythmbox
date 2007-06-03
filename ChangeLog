@@ -1,3 +1,9 @@
+2007-06-03  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_load):
+	Make sure we process all pending messages on the bus.
+	Stops tags from randomly being ignored.
+
 2007-06-03  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Peter Grundström  <pete@openfestis.org>

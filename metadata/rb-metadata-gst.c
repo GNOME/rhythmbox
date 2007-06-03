@@ -1001,10 +1001,10 @@ rb_metadata_load (RBMetaData *md,
 	}
 	gst_object_unref (GST_OBJECT (bus));
 
+	rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
 
 	if (state_ret != GST_STATE_CHANGE_SUCCESS) {
 		rb_debug ("failed to go to PAUSED for %s", uri);
-		rb_metadata_event_loop (md, GST_ELEMENT (pipeline), FALSE);
 		if (!md->priv->non_audio && md->priv->error == NULL)
 			g_set_error (error,
 				     RB_METADATA_ERROR,
