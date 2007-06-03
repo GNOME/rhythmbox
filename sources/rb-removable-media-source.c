@@ -139,17 +139,24 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 			->constructor (type, n_construct_properties, construct_properties);
 
 	g_object_get (source, "volume", &volume, NULL);
-	drive = gnome_vfs_volume_get_drive (volume);
-	if (drive != NULL) {
-		display_name = gnome_vfs_drive_get_display_name (drive);
-		gnome_vfs_drive_unref (drive);
+	if (volume != NULL) {
+		drive = gnome_vfs_volume_get_drive (volume);
+		if (drive != NULL) {
+			display_name = gnome_vfs_drive_get_display_name (drive);
+			gnome_vfs_drive_unref (drive);
+		} else {
+			display_name = gnome_vfs_volume_get_display_name (volume);
+		}
+		icon_name = gnome_vfs_volume_get_icon (volume);
+		g_object_unref (volume);
 	} else {
-		display_name = gnome_vfs_volume_get_display_name (volume);
+		display_name = g_strdup ("Unknown Device");
+		icon_name = g_strdup ("multimedia-player");
 	}
+
 	g_object_set (source, "name", display_name, NULL);
 	g_free (display_name);
 
-	icon_name = gnome_vfs_volume_get_icon (volume);
 	theme = gtk_icon_theme_get_default ();
 	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (theme, icon_name, size, 0, NULL);
@@ -159,8 +166,6 @@ rb_removable_media_source_constructor (GType type, guint n_construct_properties,
 	if (pixbuf != NULL) {
 		g_object_unref (pixbuf);
 	}
-
-	g_object_unref (volume);
 
 	return source;
 }

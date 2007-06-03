@@ -1,3 +1,11 @@
+2007-06-03  James Livingston  <doclivingston@gmail.com>
+
+	patch by: Peter Grundström  <pete@openfestis.org>
+
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_constructor): allow use of this class
+	without a GnomeVFSVolume. Fixes #443367
+
 2007-06-02  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/audioscrobbler/rb-lastfm-source.c:
