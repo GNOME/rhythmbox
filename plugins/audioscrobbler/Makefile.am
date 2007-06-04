@@ -54,14 +54,14 @@ BUILT_SOURCES =							\
 
 plugin_DATA = 					\
 	$(BUILT_SOURCES)			\
-	$(top_srcdir)/plugins/audioscrobbler/as-icon.svg		\
+	$(top_srcdir)/plugins/audioscrobbler/as-icon.png		\
 	$(NULL)
 
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
 	$(uixml_DATA)				\
 	$(glade_DATA)				\
-	$(top_srcdir)/plugins/audioscrobbler/as-icon.svg		\
+	$(top_srcdir)/plugins/audioscrobbler/as-icon.png		\
 	$(top_srcdir)/plugins/audioscrobbler/as-powered.png		\
 	$(NULL)
 

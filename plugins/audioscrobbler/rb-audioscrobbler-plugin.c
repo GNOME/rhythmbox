@@ -150,7 +150,7 @@ impl_activate (RBPlugin *bplugin,
 
 	plugin->lastfm_source = rb_lastfm_source_new (shell);
     
-    icon_filename = rb_plugin_find_file (bplugin, "as-icon.svg");
+    icon_filename = rb_plugin_find_file (bplugin, "as-icon.png");
     gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
     icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename,
                                                     icon_size, icon_size,
