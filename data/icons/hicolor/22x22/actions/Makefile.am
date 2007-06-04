@@ -11,7 +11,7 @@ icons_DATA = \
 	podcast-new.png
 
 noinst_DATA = \
-	internet-radio-new.svg		\
+	internet-radio-new.xcf		\
 	playlist-automatic-new.xcf	\
 	playlist-new.xcf		\
 	podcast-new.xcf
