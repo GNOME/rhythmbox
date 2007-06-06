@@ -191,7 +191,19 @@ class MagnatuneSource(rb.BrowserSource):
 			if url not in urls:
 				gnomevfs.url_show(url)
 				urls.add(url)
-
+	
+	def radio_toggled(self, gladexml):
+		gc = gladexml.get_widget("radio_gc").get_active()
+		gladexml.get_widget("remember_cc_details").set_sensitive(not gc)
+		gladexml.get_widget("name_entry").set_sensitive(not gc)
+		gladexml.get_widget("cc_entry").set_sensitive(not gc)
+		gladexml.get_widget("mm_entry").set_sensitive(not gc)
+		gladexml.get_widget("yy_entry").set_sensitive(not gc)
+		
+		gladexml.get_widget("gc_entry").set_sensitive(gc)
+		if not gc:
+			gladexml.get_widget("gc_entry").set_text("")
+	
 	def purchase_album(self):
 		try:
 			library_location = self.__client.get_list("/apps/rhythmbox/library_locations", gconf.VALUE_STRING)[0] # Just use the first library location
@@ -212,7 +224,10 @@ class MagnatuneSource(rb.BrowserSource):
 			album = self.__db.entry_get(track, rhythmdb.PROP_ALBUM)
 
 			gladexml = gtk.glade.XML(self.__plugin.find_file("magnatune-purchase.glade"))
-
+			cb_dict = {"rb_magnatune_on_radio_cc_toggled_cb":lambda w:self.radio_toggled(gladexml)}
+			gladexml.signal_autoconnect(cb_dict)
+			
+			gladexml.get_widget("gc_entry").set_sensitive(False)
 			gladexml.get_widget("pay_combobox").set_active(self.__client.get_int(self.__plugin.gconf_keys['pay']) - 5)
 			gladexml.get_widget("audio_combobox").set_active(self.__plugin.format_list.index(self.__client.get_string(self.__plugin.gconf_keys['format'])))
 			gladexml.get_widget("info_label").set_markup(_("Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?") % {"album":album, "artist":artist})
@@ -238,7 +253,6 @@ class MagnatuneSource(rb.BrowserSource):
 
 				gladexml.get_widget("remember_cc_details").set_active(False)
 
-
 			window = gladexml.get_widget("purchase_dialog")
 			if window.run() == gtk.RESPONSE_ACCEPT:
 				amount = gladexml.get_widget("pay_combobox").get_active() + 5
@@ -248,13 +262,15 @@ class MagnatuneSource(rb.BrowserSource):
 				ccmonth = str(gladexml.get_widget("mm_entry").get_active() + 1).zfill(2)
 				name = gladexml.get_widget("name_entry").get_text()
 				email = gladexml.get_widget("email_entry").get_text()
+				gc = gladexml.get_widget("radio_gc").get_active()
+				gc_text = gladexml.get_widget("gc_entry").get_text()
 
 				if gladexml.get_widget("remember_cc_details").props.active:
 					self.__plugin.store_cc_details(ccnumber, ccyear, ccmonth, name, email)
 				else:
 					self.__plugin.clear_cc_details()
 
-				self.__buy_album (sku, amount, format, ccnumber, ccyear, ccmonth, name, email)
+				self.__buy_album (sku, amount, format, ccnumber, ccyear, ccmonth, name, email, gc, gc_text)
 
 			window.destroy()
 
@@ -409,19 +425,23 @@ class MagnatuneSource(rb.BrowserSource):
 	#
 	# internal purchasing code
 	#
-	def __buy_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email): # http://magnatune.com/info/api#purchase
+	def __buy_album(self, sku, pay, format, ccnumber, ccyear, ccmonth, name, email, gc, gc_text): # http://magnatune.com/info/api#purchase
 		print "purchasing tracks:", sku, pay, format, name, email
-		url = "https://magnatune.com/buy/buy_dl_cc_xml?"
-		url = url + urllib.urlencode({
+		url_dict = {
 						'id':	magnatune_partner_id,
 						'sku':	sku,
 						'amount': pay,
-						'cc':	ccnumber,
-						'yy':	ccyear,
-						'mm':	ccmonth,
 						'name': name,
 						'email':email
-					})
+			}
+		if gc:
+			url_dict['gc'] = gc
+		else:
+			url_dict['cc'] = ccnumber
+			url_dict['yy'] = ccyear
+			url_dict['mm'] = ccmonth
+		url = "https://magnatune.com/buy/buy_dl_cc_xml?"
+		url = url + urllib.urlencode(url_dict)
 
 		buy_album_handler = BuyAlbumHandler(format) # so we can get the url and auth info
 		auth_parser = xml.sax.make_parser()
