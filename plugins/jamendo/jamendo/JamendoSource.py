@@ -282,8 +282,8 @@ class JamendoSource(rb.BrowserSource):
 	def __show_loading_screen(self, show):
 		if self.__info_screen is None:
 			# load the glade stuff
-			gladexml = gtk.glade.XML(self.__plugin.find_file("jamendo-loading.glade"), root="jamendo_loading_vbox")
-			self.__info_screen = gladexml.get_widget("jamendo_loading_vbox")
+			gladexml = gtk.glade.XML(self.__plugin.find_file("jamendo-loading.glade"), root="jamendo_loading_scrolledwindow")
+			self.__info_screen = gladexml.get_widget("jamendo_loading_scrolledwindow")
 			self.pack_start(self.__info_screen)
 			self.get_entry_view().set_no_show_all (True)
 			self.__info_screen.set_no_show_all (True)
