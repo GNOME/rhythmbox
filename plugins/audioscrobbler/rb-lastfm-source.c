@@ -783,7 +783,7 @@ rb_lastfm_message_cb (SoupMessage *req, gpointer user_data)
 	}
 
 	g_strstrip (body);
-	pieces = g_strsplit (body, "\n", 6);
+	pieces = g_strsplit (body, "\n", 0);
 	for (i = 0; pieces[i] != NULL; i++) {
 		gchar **values = g_strsplit (pieces[i], "=", 2);
 		if (strcmp (values[0], "session") == 0) {
