@@ -1,3 +1,10 @@
+2007-06-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_message_cb):
+	Don't limit the number of response lines we process here.
+	The number of lines in the response recently changed from 6 to 7.
+
 2007-06-04  Luca Ferretti  <elle.uca@libero.it>
 
 	* data/icons/hicolor/22x22/actions/Makefile.am:
