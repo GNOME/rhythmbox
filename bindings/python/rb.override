@@ -73,7 +73,7 @@ _wrap_rb_entry_view_get_selected_entries(PyGObject *self)
     PyObject *py_list;
 
     list = rb_entry_view_get_selected_entries (RB_ENTRY_VIEW(self->obj));
-    py_list = _helper_wrap_pointer_glist (list, RHYTHMDB_TYPE_ENTRY);
+    py_list = _helper_wrap_boxed_glist (list, RHYTHMDB_TYPE_ENTRY, TRUE, TRUE);
     g_list_free (list);
 
     return py_list;
