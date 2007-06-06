@@ -88,7 +88,7 @@ _helper_wrap_boxed_glist (const GList *list,
         return NULL;
     }
     for (tmp = list; tmp != NULL; tmp = tmp->next) {
-        PyObject *py_obj = pyg_boxed_new(boxed_type, G_OBJECT(tmp->data), copy_boxed, own_ref);
+        PyObject *py_obj = pyg_boxed_new(boxed_type, tmp->data, copy_boxed, own_ref);
 
         if (py_obj == NULL) {
             Py_DECREF(py_list);
