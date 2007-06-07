@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Implementation of ipod source object
  *
- *  Copyright (C) 2004 Christophe Fergeau  <teuf@gnome.org>
+ *  Copyright (C) 2004, 2007 Christophe Fergeau  <teuf@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 
 #include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
+#include "rb-ipod-db.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-plugin.h"
@@ -57,7 +58,6 @@ static void rb_ipod_source_dispose (GObject *object);
 static gboolean impl_show_popup (RBSource *source);
 static void impl_move_to_trash (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
-static gchar *rb_ipod_get_mount_path (GnomeVFSVolume *volume);
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
 #ifdef HAVE_HAL
@@ -81,13 +81,11 @@ static gchar* ipod_get_filename_for_uri (const gchar *mount_point,
 static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 					const gchar *unix_path);
 #endif
-static void itdb_schedule_save (RBiPodSource *source);
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
 typedef struct
 {
-	Itdb_iTunesDB *ipod_db;
-	gchar *ipod_mount_path;
+	RbIpodDb *ipod_db;
 	GHashTable *entry_map;
 
 	gboolean needs_shuffle_db;
@@ -135,27 +133,13 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
 
+
 static void
 rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 {
-	Itdb_Playlist *mpl;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 
-	mpl = itdb_playlist_mpl (priv->ipod_db);
-	if (mpl != NULL) {
-		if (mpl->name != NULL) {
-			rb_debug ("Renaming iPod from %s to %s", mpl->name, name);
-			if (strcmp (mpl->name, name) == 0) {
-				rb_debug ("iPod is already named %s", name);
-				return;
-			}
-		}
-		g_free (mpl->name);
-		mpl->name = g_strdup (name);
-		itdb_schedule_save (source);
-	} else {
-		g_warning ("iPod's master playlist is missing");
-	}
+	rb_ipod_db_set_ipod_name (priv->ipod_db, name);
 }
 
 static void
@@ -171,7 +155,7 @@ rb_ipod_source_name_changed_cb (RBiPodSource *source, GParamSpec *spec,
 
 static void
 rb_ipod_source_init (RBiPodSource *source)
-{
+{	
 	g_signal_connect (G_OBJECT (source), "notify::name",
 			  (GCallback)rb_ipod_source_name_changed_cb, NULL);
 }
@@ -182,12 +166,9 @@ rb_ipod_source_constructor (GType type, guint n_construct_properties,
 {
 	RBiPodSource *source;
 	RBEntryView *songs;
-	RBiPodSourcePrivate *priv;
 
 	source = RB_IPOD_SOURCE (G_OBJECT_CLASS (rb_ipod_source_parent_class)->
 			constructor (type, n_construct_properties, construct_properties));
-	priv = IPOD_SOURCE_GET_PRIVATE (source);
-
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
@@ -202,14 +183,9 @@ rb_ipod_source_dispose (GObject *object)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
 
- 	if (priv->ipod_db != NULL) {
- 		itdb_free (priv->ipod_db);
- 		priv->ipod_db = NULL;
-	}
-
-	if (priv->ipod_mount_path) {
-		g_free (priv->ipod_mount_path);
-		priv->ipod_mount_path = NULL;
+	if (priv->ipod_db) {
+		g_object_unref (G_OBJECT (priv->ipod_db));
+		priv->ipod_db = NULL;
 	}
 
 	if (priv->entry_map) {
@@ -314,9 +290,7 @@ playlist_track_removed (RhythmDBQueryModel *m,
 	Itdb_Track *track;
         track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
-
-	itdb_playlist_remove_track (ipod_pl, track);
-	itdb_schedule_save (ipod);
+	rb_ipod_db_remove_from_playlist (priv->ipod_db, ipod_pl, track);
 }
 
 static void
@@ -334,8 +308,7 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
         track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
 
-	itdb_playlist_add_track (ipod_pl, track, -1);
-	itdb_schedule_save (ipod);
+	rb_ipod_db_add_to_playlist (priv->ipod_db, ipod_pl, track);
 }
 
 static void
@@ -362,10 +335,11 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	for (it = playlist->members; it != NULL; it = it->next) {
 		Itdb_Track *song;
 		char *filename;
+		const char *mount_path;
 
 		song = (Itdb_Track *)it->data;
- 		filename = ipod_path_to_uri (priv->ipod_mount_path,
- 					    song->ipod_path);
+		mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
+ 		filename = ipod_path_to_uri (mount_path, song->ipod_path);
 		rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (playlist_source),
 							filename, -1);
 		g_free (filename);
@@ -400,7 +374,9 @@ load_ipod_playlists (RBiPodSource *source)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GList *it;
 
-	for (it = priv->ipod_db->playlists; it != NULL; it = it->next) {
+	for (it = rb_ipod_db_get_playlists (priv->ipod_db);
+	     it != NULL;
+	     it = it->next) {
 		Itdb_Playlist *playlist;
 
 		playlist = (Itdb_Playlist *)it->data;
@@ -465,13 +441,13 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	RhythmDBEntryType entry_type;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	char *pc_path;
+	const char *mount_path;
 
 	/* Set URI */
 	g_object_get (source, "entry-type", &entry_type,
 		      NULL);
-
-	pc_path = ipod_path_to_uri (priv->ipod_mount_path,
-				    song->ipod_path);
+	mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
+	pc_path = ipod_path_to_uri (mount_path, song->ipod_path);
 	entry = rhythmdb_entry_new (RHYTHMDB (db), entry_type,
 				    pc_path);
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
@@ -639,7 +615,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	db = get_db_for_source (source);
 
 	g_assert (db != NULL);
- 	for (it = priv->ipod_db->tracks; it != NULL; it = it->next) {
+ 	for (it = rb_ipod_db_get_tracks (priv->ipod_db);
+	     it != NULL;
+	     it = it->next) {
 		add_ipod_song_to_db (source, db, (Itdb_Track *)it->data);
 	}
 
@@ -657,52 +635,23 @@ rb_ipod_load_songs (RBiPodSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GnomeVFSVolume *volume;
-	const Itdb_IpodInfo *info;
 
 	g_object_get (source, "volume", &volume, NULL);
-	priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
-
- 	priv->ipod_db = itdb_parse (priv->ipod_mount_path, NULL);
-
-	info = itdb_device_get_ipod_info(priv->ipod_db->device);
-	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
-	    info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE) {
-		priv->needs_shuffle_db = TRUE;
-	} else {
-		priv->needs_shuffle_db = FALSE;
-	}
-
+ 	priv->ipod_db = rb_ipod_db_new (volume);
 	priv->entry_map = g_hash_table_new (g_direct_hash, g_direct_equal);
-	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
-		Itdb_Playlist *mpl;
 
-		/* FIXME: we could set a different icon depending on the iPod
-		 * model
-		 */
-		mpl = itdb_playlist_mpl (priv->ipod_db);
-		if (mpl && mpl->name) {
+	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
+		const char *name;
+		name = rb_ipod_db_get_ipod_name (priv->ipod_db);
+		if (name) {
 			g_object_set (RB_SOURCE (source),
-				      "name", mpl->name,
+				      "name", name,
 				      NULL);
 		}
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
 
 	g_object_unref (volume);
-}
-
-static gchar *
-rb_ipod_get_mount_path (GnomeVFSVolume *volume)
-{
-	gchar *path;
-	gchar *uri;
-
-	uri = gnome_vfs_volume_get_activation_uri (volume);
-	path = g_filename_from_uri (uri, NULL, NULL);
-	g_assert (path != NULL);
-	g_free (uri);
-
-	return path;
 }
 
 static gchar *
@@ -862,17 +811,6 @@ impl_show_popup (RBSource *source)
 }
 
 static void
-remove_track_from_db (Itdb_Track *track)
-{
-	GList *it;
-
-	for (it = track->itdb->playlists; it != NULL; it = it->next) {
-		itdb_playlist_remove_track ((Itdb_Playlist *)it->data, track);
-	}
-	itdb_track_remove (track);
-}
-
-static void
 impl_move_to_trash (RBSource *asource)
 {
 	GList *sel, *tem;
@@ -899,38 +837,15 @@ impl_move_to_trash (RBSource *asource)
 			continue;
 		}
 
- 		remove_track_from_db (track);
+		rb_ipod_db_remove_track (priv->ipod_db, track);
 		g_hash_table_remove (priv->entry_map, entry);
 		rhythmdb_entry_move_to_trash (db, entry);
 		rhythmdb_commit (db);
 	}
 
-	if (sel != NULL) {
-		itdb_schedule_save (RB_IPOD_SOURCE (asource));
-	}
-
 	g_object_unref (db);
 
 	g_list_free (sel);
-}
-
-static void
-itdb_schedule_save (RBiPodSource *source)
-{
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-
-	/* FIXME: should probably be delayed a bit to avoid doing
-	 * it after each file when we are copying several files
-	 * consecutively
-	 * FIXME: or this function could be called itdb_set_dirty, and we'd
-	 * have a timeout firing every 5 seconds and saving the db if it's
-	 * dirty
-	 */
-	itdb_write (priv->ipod_db, NULL);
-
-	if (priv->needs_shuffle_db) {
-		itdb_shuffle_write (priv->ipod_db, NULL);
-	}
 }
 
 #ifdef ENABLE_IPOD_WRITING
@@ -943,9 +858,12 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	const char *uri;
 	char *dest;
+	const char *mount_path;
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	dest = ipod_get_filename_for_uri (priv->ipod_mount_path,  uri, mimetype, extension);
+	mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
+	dest = ipod_get_filename_for_uri (mount_path,  uri, 
+					  mimetype, extension);
 	if (dest != NULL) {
 		char *dest_uri;
 
@@ -966,39 +884,17 @@ artwork_notify_cb (RhythmDB *db,
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (isource);
 	Itdb_Track *song;
-#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
-#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
-	gchar *image_data;
-	gsize image_data_len;
-	GError *err = NULL;
-	gboolean success;
-#endif /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
-	
+	GdkPixbuf *pixbuf;
+
+	g_return_if_fail (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF));
+	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
+		
 	song = g_hash_table_lookup (priv->artwork_request_map, entry);
 	if (song == NULL)
 		return;
 
-	g_return_if_fail (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF));
-#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
-	itdb_track_set_thumbnails_from_pixbuf (song, g_value_get_object (metadata));
-#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
-	success = gdk_pixbuf_save_to_buffer (GDK_PIXBUF (g_value_get_object (metadata)),
-					     &image_data, &image_data_len,
-					     "jpeg", &err,
-					     "quality", "100",
-					     NULL);
-	if (!success) {
-		g_assert (image_data == NULL);
-		g_warning ("Failed to save pixbuf to buffer %s", err->message);
-		g_error_free (err);
-		return;
-	}
-
+	rb_ipod_db_set_thumbnail (priv->ipod_db, song, pixbuf);
 	g_hash_table_remove (priv->artwork_request_map, entry);
-	itdb_track_set_thumbnails_from_data (song, (guchar *) image_data, image_data_len);
-	g_free (image_data);
-#endif /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
-	itdb_schedule_save (isource);
 }
 
 static void
@@ -1032,17 +928,19 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	gchar *filename;
+	const gchar *mount_path;
 
 	if (priv->podcast_pl == NULL) {
 		/* No Podcast playlist on the iPod, create a new one */
 		Itdb_Playlist *ipod_playlist;
 		ipod_playlist = itdb_playlist_new (_("Podcasts"), FALSE);
 		itdb_playlist_set_podcasts (ipod_playlist);
-		itdb_playlist_add (priv->ipod_db, ipod_playlist, -1);
+		rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
 		add_rb_playlist (source, ipod_playlist);
 	}
 
-  	filename = ipod_path_to_uri (priv->ipod_mount_path, song->ipod_path);
+	mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
+  	filename = ipod_path_to_uri (mount_path, song->ipod_path);
  	rb_static_playlist_source_add_location (priv->podcast_pl, filename, -1);
 	g_free (filename);
 }
@@ -1063,13 +961,14 @@ impl_track_added (RBRemovableMediaSource *source,
 	if (song != NULL) {
 		RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 		char *filename;
+		const char *mount_path;
 
 		filename = g_filename_from_uri (dest, NULL, NULL);
-		song->ipod_path = ipod_path_from_unix_path (priv->ipod_mount_path, filename);
+		mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
+		song->ipod_path = ipod_path_from_unix_path (mount_path,
+							    filename);
 		g_free (filename);
-		itdb_track_add (priv->ipod_db, song, -1);
-		itdb_playlist_add_track (itdb_playlist_mpl (priv->ipod_db),
-					 song, -1);
+
 		if (song->mediatype == MEDIATYPE_PODCAST) {
 			add_to_podcasts (isource, song);
 		}
@@ -1077,14 +976,16 @@ impl_track_added (RBRemovableMediaSource *source,
 		/* reuse that #define since both functions were added to 
 		 * libgpod CVS HEAD around the same time
 		 */
-		if (itdb_device_supports_artwork (priv->ipod_db->device)) {
+		Itdb_Device *device;
+		device = rb_ipod_db_get_device (priv->ipod_db);		
+		if (device && itdb_device_supports_artwork (device)) {
 			request_artwork (isource, entry, db, song);
 		}
 #else 
 		request_artwork (isource, entry, db, song);
 #endif
 		add_ipod_song_to_db (isource, db, song);
-		itdb_schedule_save (isource);
+		rb_ipod_db_add_track (priv->ipod_db, song);
 	}
 
 	g_object_unref (db);
@@ -1328,7 +1229,9 @@ impl_delete_thyself (RBSource *source)
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GList *p;
 
-	for (p = priv->ipod_db->playlists; p != NULL; p = p->next) {
+	for (p = rb_ipod_db_get_playlists (priv->ipod_db);
+	     p != NULL;
+	     p = p->next) {
 		Itdb_Playlist *playlist = (Itdb_Playlist *)p->data;
 		if (!itdb_playlist_is_mpl (playlist) && !playlist->is_spl) {
 			RBSource *rb_playlist = RB_SOURCE (playlist->userdata);
@@ -1336,8 +1239,10 @@ impl_delete_thyself (RBSource *source)
 		}
 	}
 
-	itdb_free (priv->ipod_db);
-	priv->ipod_db = NULL;
+	if (priv->ipod_db != NULL) {
+		g_object_unref (G_OBJECT (priv->ipod_db));
+		priv->ipod_db = NULL;
+	}
 
 	RB_SOURCE_CLASS (rb_ipod_source_parent_class)->impl_delete_thyself (source);
 }

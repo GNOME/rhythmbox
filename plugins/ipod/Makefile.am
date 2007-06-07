@@ -2,6 +2,8 @@ plugindir = $(PLUGINDIR)/ipod
 plugin_LTLIBRARIES = libipod.la
 
 libipod_la_SOURCES = \
+	rb-ipod-db.c				\
+	rb-ipod-db.h				\
 	rb-ipod-plugin.c			\
 	rb-ipod-source.c			\
 	rb-ipod-source.h

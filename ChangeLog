@@ -1,3 +1,12 @@
+2007-06-07  Christophe Fergeau  <teuf@gnome.org>
+
+	* plugins/ipod/Makefile.am:
+	* plugins/ipod/rb-ipod-db.c:
+	* plugins/ipod/rb-ipod-db.h:
+	* plugins/ipod/rb-ipod-source.c: reworked ipod db handling to be able
+	to write it from a different thread, this makes the UI much more
+	responsive during iPod database saving, fixes bug #436319
+
 2007-06-07  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Adam Zimmerman  <adam_zimmerman@sfu.ca>
