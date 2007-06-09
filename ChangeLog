@@ -1,3 +1,10 @@
+2007-06-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (start_stream_fade):
+	Add a control pointer at timestamp 0 with the start volume, since
+	GstController adds one there with the default volume now.  Makes
+	fading in work with gstreamer core 0.10.13.1+.
+
 2007-06-07  Christophe Fergeau  <teuf@gnome.org>
 
 	* plugins/ipod/Makefile.am:

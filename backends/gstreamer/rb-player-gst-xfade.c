@@ -960,6 +960,9 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 	if (gst_controller_set (stream->fader, "volume", pos, &v) == FALSE) {
 		rb_debug ("controller didn't like our start point");
 	}
+	if (gst_controller_set (stream->fader, "volume", 0, &v) == FALSE) {
+		rb_debug ("controller didn't like our 0 start point");
+	}
 	g_value_unset (&v);
 
 	g_value_init (&v, G_TYPE_DOUBLE);
