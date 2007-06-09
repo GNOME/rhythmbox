@@ -148,7 +148,7 @@ static GtkActionEntry rb_shell_clipboard_actions [] =
 	  G_CALLBACK (rb_shell_clipboard_cmd_move_to_trash) },
 
 	{ "EditPlaylistAdd", NULL, N_("Add to P_laylist") },
-	{ "EditPlaylistAddNew", RB_STOCK_PLAYLIST_NEW, N_("_New Playlist..."), NULL,
+	{ "EditPlaylistAddNew", RB_STOCK_PLAYLIST_NEW, N_("_New Playlist"), NULL,
 	  N_("Add the selected songs to a new playlist"),
 	  G_CALLBACK (rb_shell_clipboard_cmd_add_to_playlist_new) },
 	{ "AddToQueue", GTK_STOCK_ADD, N_("Add _to Play Queue"), NULL,

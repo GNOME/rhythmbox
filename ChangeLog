@@ -1,5 +1,17 @@
 2007-06-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	Patch mostly by:  Michael Monreal.
+
+	* plugins/iradio/rb-iradio-source.c:
+	* sources/rb-podcast-source.c:
+	Add ellipses for the new iradio station and new podcast actions,
+	since they bring up dialogs.  Fixes #445149.
+
+	* shell/rb-shell-clipboard.c:
+	And remove the one in the 'new playlist' action, since it doesn't.
+
+2007-06-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (start_stream_fade):
 	Add a control pointer at timestamp 0 with the start volume, since
 	GstController adds one there with the default volume now.  Makes

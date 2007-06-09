@@ -163,7 +163,7 @@ struct RBIRadioSourcePrivate
 
 static GtkActionEntry rb_iradio_source_actions [] =
 {
-	{ "MusicNewInternetRadioStation", IRADIO_NEW_STATION_ICON, N_("New Internet _Radio Station"), "<control>I",
+	{ "MusicNewInternetRadioStation", IRADIO_NEW_STATION_ICON, N_("New Internet _Radio Station..."), "<control>I",
 	  N_("Create a new Internet Radio station"),
 	  G_CALLBACK (rb_iradio_source_cmd_new_station) }
 };
