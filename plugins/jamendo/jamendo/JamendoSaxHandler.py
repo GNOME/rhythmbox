@@ -21,6 +21,7 @@
 import xml.sax, xml.sax.handler
 
 markups = ["JamendoData", "Artists", "artist", "Albums", "album", "Covers", "cover", "P2PLinks", "p2plink", "Tracks", "track"]
+ignore = ["lyrics", "description"]
 
 class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
@@ -30,20 +31,25 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 
 	def startElement(self, name, attrs):
 		self.__text = ""
+		self.__ignore = False
 
 		if name in markups:
 			fct = getattr (self, "start" + name)
 			fct (attrs)
 
+		if name in ignore:
+			self.__ignore = True
+
 	def endElement(self, name):
 		if name in markups:
 			fct = getattr (self, "end" + name)
 			fct ()
-		else:
+		elif self.__ignore is False:
 			self.current[name] = self.__text
 
 	def characters(self, content):
-		self.__text = self.__text + content
+		if self.__ignore is False:
+			self.__text = self.__text + content
 
 	# start markups
 	def startJamendoData (self, attrs):

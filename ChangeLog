@@ -1,5 +1,12 @@
 2007-06-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/jamendo/jamendo/JamendoSaxHandler.py:
+	Ignore the contents of the 'lyrics' and 'description' tags,
+	which we don't use anyway.  Reduces peak memory usage by ~20MB.
+	From #424423.
+
+2007-06-09  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	Patch mostly by:  Michael Monreal.
 
 	* plugins/iradio/rb-iradio-source.c:
