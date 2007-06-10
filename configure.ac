@@ -144,6 +144,31 @@ if test "x$with_ipod" != "xno"; then
 fi
 AM_CONDITIONAL(USE_IPOD, test x"$use_ipod" = xyes)
 
+dnl mtp support
+
+AC_ARG_WITH(mtp,
+            AC_HELP_STRING([--with-mtp],
+			   [Enable MTP support]),,
+	      with_mtp=auto)
+if test "x$with_mtp" != "xno"; then
+
+	PKG_CHECK_MODULES(MTP, libmtp, have_libmtp=yes, have_libmtp=no)
+	if test "x$have_libmtp" = "xno" -a "x$with_mtp" = "xyes"; then
+	  AC_MSG_ERROR([MTP explicitly requested but libmtp couldn't be found])
+	fi
+	if test "x$have_libmtp" = "xyes"; then
+          if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
+	     AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])
+	  fi
+          if test "x$enable_hal" = xyes; then
+	     use_mtp=yes
+          fi
+	  AC_SUBST(MTP_CFLAGS)
+	  AC_SUBST(MTP_LIBS)
+	fi
+fi			  
+AM_CONDITIONAL(USE_MTP, test x"$use_mtp" = xyes)
+
 
 dnl ipod writing
 AC_ARG_ENABLE(ipod-writing,
@@ -945,6 +970,7 @@ plugins/audioscrobbler/Makefile
 plugins/cd-recorder/Makefile
 plugins/daap/Makefile
 plugins/ipod/Makefile
+plugins/mtpdevice/Makefile
 plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
@@ -1024,6 +1050,11 @@ if test x"$use_ipod" = xyes; then
 	fi
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+if test x"$use_mtp" = xyes; then
+	AC_MSG_NOTICE([** MTP integration enabled])
+else
+	AC_MSG_NOTICE([   MTP integration disabled])
 fi
 if test x"$enable_cd_burning" != xno; then
 	AC_MSG_NOTICE([** CD burning support enabled])

@@ -46,6 +46,10 @@ if USE_DAAP
 SUBDIRS += daap
 endif
 
+if USE_MTP
+SUBDIRS += mtpdevice
+endif
+
 noinst_LTLIBRARIES = librbplugins.la
 
 librbplugins_la_SOURCES =				\
