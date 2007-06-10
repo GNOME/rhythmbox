@@ -421,6 +421,7 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 	track->time_played = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_PLAYED);
 	track->time_played = itdb_time_host_to_mac (track->time_played);
 	track->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING);
+	track->rating *= ITDB_RATING_STEP;
 	track->app_rating = track->rating;
 	track->playcount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 
@@ -553,7 +554,7 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	if (song->rating != 0) {
 		GValue value = {0, };
 		g_value_init (&value, G_TYPE_DOUBLE);
-		g_value_set_double (&value, song->rating/20.0);
+		g_value_set_double (&value, song->rating/ITDB_RATING_STEP);
 		rhythmdb_entry_set (RHYTHMDB (db), entry,
 					       RHYTHMDB_PROP_RATING,
 					       &value);
@@ -603,6 +604,105 @@ get_db_for_source (RBiPodSource *source)
 	return db;
 }
 
+
+static void
+rb_ipod_source_entry_changed_cb (RhythmDB *db,
+				 RhythmDBEntry *entry,
+				 GSList *changes,
+				 RBiPodSource *source)
+{
+	GSList *t;
+
+	/* Ignore entries which are not iPod entries */
+	RhythmDBEntryType entry_type;
+	RhythmDBEntryType ipod_entry_type;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	entry_type = rhythmdb_entry_get_pointer (entry, RHYTHMDB_PROP_TYPE);
+	g_object_get (G_OBJECT (source),
+		      "entry-type", &ipod_entry_type,
+		      NULL);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, ipod_entry_type);
+	/* ipod_entry_type can no longer be dereferenced, but its value 
+	 * hasn't been changed, so this comparison is valid
+	 */
+	if (entry_type != ipod_entry_type) {
+		return; 
+	};
+
+
+	/* If an interesting property was changed, update it on the iPod */
+	/* If the iPod database is being saved in a separate thread, this 
+	 * might not be 100% thread-safe, but at worse we'll modify a field
+	 * at the time it's being saved which will get a wrong value, but
+	 * that's the worse that can happen and that's pretty theoritical, 
+	 * I don't think avoiding it is worth the effort.
+	 */
+	for (t = changes; t; t = t->next) {
+		RhythmDBEntryChange *change = t->data;
+		switch (change->prop) {
+		case RHYTHMDB_PROP_RATING: {
+			Itdb_Track *track;
+			double old_rating;
+			double new_rating;
+
+			old_rating = g_value_get_double (&change->old);
+			new_rating = g_value_get_double (&change->new);
+			if (old_rating != new_rating) {
+				track = g_hash_table_lookup (priv->entry_map, 
+							     entry);
+				track->rating = new_rating * ITDB_RATING_STEP;
+				track->app_rating = track->rating;
+				rb_debug ("rating changed, saving db");
+				rb_ipod_db_save_async (priv->ipod_db);
+			} else {
+				rb_debug ("rating didn't change");
+			}
+			break;
+		}
+		case RHYTHMDB_PROP_PLAY_COUNT: {
+			Itdb_Track *track;
+			gulong old_playcount;
+			gulong new_playcount;
+
+			old_playcount = g_value_get_ulong (&change->old);
+			new_playcount = g_value_get_ulong (&change->new);
+			if (old_playcount != new_playcount) {
+				track = g_hash_table_lookup (priv->entry_map, 
+							     entry);
+				track->playcount = new_playcount;
+				rb_debug ("playcount changed, saving db");
+				rb_ipod_db_save_async (priv->ipod_db);
+			} else {
+				rb_debug ("playcount didn't change");
+			}
+			break;
+		}
+		case RHYTHMDB_PROP_LAST_PLAYED: {
+			Itdb_Track *track;
+			gulong old_lastplay;
+			gulong new_lastplay;
+
+			old_lastplay = g_value_get_ulong (&change->old);
+			new_lastplay = g_value_get_ulong (&change->new);
+			if (old_lastplay != new_lastplay) {
+				track = g_hash_table_lookup (priv->entry_map, 
+							     entry);
+				track->time_played = itdb_time_host_to_mac (new_lastplay);
+				rb_debug ("last play time changed, saving db");
+				rb_ipod_db_save_async (priv->ipod_db);
+			} else {
+				rb_debug ("last play time didn't change");
+			}
+			break;			
+		}
+		default:
+			rb_debug ("Ignoring property %d\n", change->prop);
+			break;
+		}
+	}
+}
+
 static gboolean
 load_ipod_db_idle_cb (RBiPodSource *source)
 {
@@ -622,6 +722,10 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	}
 
 	load_ipod_playlists (source);
+
+	g_signal_connect_object(G_OBJECT(db), "entry-changed", 
+				G_CALLBACK (rb_ipod_source_entry_changed_cb),
+				source, 0);
 
 	g_object_unref (db);
 
@@ -650,7 +754,6 @@ rb_ipod_load_songs (RBiPodSource *source)
 		}
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
-
 	g_object_unref (volume);
 }
 
