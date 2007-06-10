@@ -56,19 +56,20 @@ typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
 typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
 
-enum RhythmDBEntryCategory {
+#define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_type_get_type ())
+typedef enum {
 	RHYTHMDB_ENTRY_NORMAL,		/* anything that doesn't match the other categories */
 	RHYTHMDB_ENTRY_STREAM,		/* endless streams (eg shoutcast, last.fm) */
 	RHYTHMDB_ENTRY_CONTAINER,	/* things that point to other entries (eg podcast feeds) */
 	RHYTHMDB_ENTRY_VIRTUAL		/* import errors, ignored files */
-};
+} RhythmDBEntryCategory;
 
 typedef struct {
 	char 				*name;
 
 	guint				entry_type_data_size;
 	gboolean			save_to_disk;
-	enum RhythmDBEntryCategory	category;
+	 RhythmDBEntryCategory		category;
 
 	/* virtual functions here */
 	RhythmDBEntryActionFunc		post_entry_create;

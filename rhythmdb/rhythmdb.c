@@ -3554,6 +3554,28 @@ rhythmdb_query_type_get_type (void)
 }
 
 GType
+rhythmdb_entry_category_type_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)
+	{
+		static const GEnumValue values[] =
+		{
+			ENUM_ENTRY (RHYTHMDB_ENTRY_NORMAL, "Anything that doesn't match the other categories"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_STREAM, "Endless streams (eg. shoutcast, last.fm)"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_CONTAINER, "Entries that point to other entries (eg. podcast feeds)"),
+			ENUM_ENTRY (RHYTHMDB_ENTRY_VIRTUAL, "Import errors, ignored files"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RhythmDBEntryCategoryType", values);
+	}
+
+	return etype;
+}
+
+GType
 rhythmdb_prop_type_get_type (void)
 {
 	static GType etype = 0;

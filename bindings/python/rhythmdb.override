@@ -564,6 +564,42 @@ _wrap_rhythmdb_entry_type__set_can_sync_metadata (PyGBoxed *self, PyObject *valu
 	return 0;
 }
 %%
+override-attr  RhythmDBEntryType_.category
+
+static PyObject *
+_wrap_rhythmdb_entry_type__get_category(PyGBoxed *self, void *closure)
+{
+    RhythmDBEntryType et;
+
+    if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE))
+	    et = pyg_boxed_get(self, RhythmDBEntryType_);
+    else {
+	    char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+	    PyErr_SetString(PyExc_TypeError, s);
+	    g_free (s);
+	    return -1;
+    }
+    return pyg_enum_from_gtype(RHYTHMDB_TYPE_ENTRY_CATEGORY, et->category);
+}
+
+static int
+_wrap_rhythmdb_entry_type__set_category(PyGBoxed *self, PyObject *value)
+{
+    RhythmDBEntryType et;
+
+    if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE))
+	    et = pyg_boxed_get(self, RhythmDBEntryType_);
+    else {
+	    char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+	    PyErr_SetString(PyExc_TypeError, s);
+	    g_free (s);
+	    return -1;
+    }
+
+    return pyg_enum_get_value (RHYTHMDB_TYPE_ENTRY_CATEGORY, value, &et->category);
+}
+
+%%
 override rhythmdb_entry_request_extra_metadata kwargs
 
 static PyObject *

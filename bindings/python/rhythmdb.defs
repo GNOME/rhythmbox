@@ -30,6 +30,7 @@
     '("gpointer" "get_playback_uri" (access readwrite))
     '("char*" "can_sync_metadata" (access readwrite))
     '("char*" "sync_metadata" (access readwrite))
+    '("RhythmDBEntryCategory" "category" (access readwrite))
   )
 )
 
@@ -160,6 +161,17 @@
   )
 )
 
+(define-enum EntryCategory
+  (in-module "RhythmDB")
+  (c-name "RhythmDBEntryCategory")
+  (gtype-id "RHYTHMDB_TYPE_ENTRY_CATEGORY")
+  (values
+    '("normal" "RHYTHMDB_ENTRY_NORMAL")
+    '("stream" "RHYTHMDB_ENTRY_STREAM")
+    '("container" "RHYTHMDB_ENTRY_CONTAINER")
+    '("virtual" "RHYTHMDB_ENTRY_VIRTUAL")
+  )
+)
 
 ;; From ../../rhythmdb/rhythmdb-query-results.h
 
