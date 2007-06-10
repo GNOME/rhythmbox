@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-10 01:16+0200\n"
-"PO-Revision-Date: 2007-06-10 01:10+0100\n"
+"POT-Creation-Date: 2007-06-11 00:19+0200\n"
+"PO-Revision-Date: 2007-06-10 20:06+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <gnome-l10n@lists.aviary.pl>\n"
 "MIME-Version: 1.0\n"
@@ -235,8 +235,8 @@ msgid "Crossfade between songs on the same album"
 msgstr "Płynne przechodzenie między utworami na tym samym albumie"
 
 #: ../data/glade/playback-prefs.glade.h:3
-msgid "Crossfade duration"
-msgstr "Czas trwania płynnego przechodzenia"
+msgid "Crossfade duration (seconds)"
+msgstr "Czas trwania płynnego przechodzenia (w sekundach)"
 
 #: ../data/glade/playback-prefs.glade.h:4
 msgid "Crossfade type"
@@ -1664,7 +1664,7 @@ msgstr "Zmień _nazwę"
 msgid "Rename iPod"
 msgstr "Zmień nazwę iPoda"
 
-#: ../plugins/ipod/rb-ipod-source.c:936 ../sources/rb-podcast-source.c:806
+#: ../plugins/ipod/rb-ipod-source.c:1039 ../sources/rb-podcast-source.c:806
 msgid "Podcasts"
 msgstr "Podcasty"
 
@@ -2779,7 +2779,7 @@ msgstr "Nieprawidłowy unikod w wiadomości błędu"
 msgid "Could not load the music database"
 msgstr "Nie można wczytać bazy danych muzyki"
 
-#: ../rhythmdb/rhythmdb.c:3852
+#: ../rhythmdb/rhythmdb.c:3874
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -2787,7 +2787,7 @@ msgstr[0] "%ld minuta"
 msgstr[1] "%ld minuty"
 msgstr[2] "%ld minut"
 
-#: ../rhythmdb/rhythmdb.c:3853
+#: ../rhythmdb/rhythmdb.c:3875
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -2795,7 +2795,7 @@ msgstr[0] "%ld godzina"
 msgstr[1] "%ld godziny"
 msgstr[2] "%ld godzin"
 
-#: ../rhythmdb/rhythmdb.c:3854
+#: ../rhythmdb/rhythmdb.c:3876
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2804,7 +2804,7 @@ msgstr[1] "%ld dni"
 msgstr[2] "%ld dni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3860
+#: ../rhythmdb/rhythmdb.c:3882
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s i %s"
@@ -2812,8 +2812,8 @@ msgstr "%s, %s i %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3866 ../rhythmdb/rhythmdb.c:3874
-#: ../rhythmdb/rhythmdb.c:3885
+#: ../rhythmdb/rhythmdb.c:3888 ../rhythmdb/rhythmdb.c:3896
+#: ../rhythmdb/rhythmdb.c:3907
 #, c-format
 msgid "%s and %s"
 msgstr "%s i %s"
@@ -3537,7 +3537,7 @@ msgstr "Wczytywanie..."
 
 #: ../shell/rb-tray-icon.c:134
 msgid "_Show Music Player"
-msgstr "_Wyświetl odtwarzacz muzyczny"
+msgstr "_Wyświetlanie odtwarzacza muzyki"
 
 #: ../shell/rb-tray-icon.c:135
 msgid "Choose music to play"
@@ -3545,7 +3545,7 @@ msgstr "Wybierz muzykę do odtwarzania"
 
 #: ../shell/rb-tray-icon.c:137
 msgid "Show N_otifications"
-msgstr "Wyświetlanie powiadomień"
+msgstr "Wyświetlanie p_owiadomień"
 
 #: ../shell/rb-tray-icon.c:138
 msgid "Show notifications of song changes and other events"
