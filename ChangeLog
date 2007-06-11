@@ -1,5 +1,12 @@
 2007-06-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/visualizer/rb-visualizer-plugin.c: (fixate_vis_caps):
+	Use the visualization element's template caps, rather than what's
+	already set, as the basis for fixating new caps.  Makes quality
+	changes work with the crossfading backend.
+
+2007-06-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_category_get_type):
 	* rhythmdb/rhythmdb.h:
 	Fix declaration of RhythmDBEntryCategory stuff so it actually

@@ -432,6 +432,7 @@ fixate_vis_caps (RBVisualizerPlugin *pi, GstElement *vis_element, GstElement *ca
 {
 	GstPad *pad;
 	GstCaps *caps = NULL;
+	const GstCaps *template_caps;
 	const VisualizerQuality *q;
 
 	if (quality < 0)
@@ -446,13 +447,23 @@ fixate_vis_caps (RBVisualizerPlugin *pi, GstElement *vis_element, GstElement *ca
 		q = &fake_vis_quality;
 
 	pad = gst_element_get_pad (vis_element, "src");
-	caps = gst_pad_get_allowed_caps (pad);
+	template_caps = gst_pad_get_pad_template_caps (pad);
 	gst_object_unref (pad);
 
-	if (caps && !gst_caps_is_fixed (caps)) {
+	if (template_caps == NULL) {
+		rb_debug ("vis element has no template caps?");
+		return;
+	}
+
+	caps = gst_caps_copy (template_caps);
+
+	if (gst_caps_is_fixed (caps) == FALSE) {
 		guint i;
 		char *dbg;
 
+		rb_debug ("fixating caps towards %dx%d, %d/%d",
+			  q->width, q->height,
+			  q->fps_n, q->fps_d);
 		caps = gst_caps_make_writable (caps);
 		for (i = 0; i < gst_caps_get_size (caps); i++) {
 			GstStructure *s = gst_caps_get_structure (caps, i);
@@ -467,16 +478,13 @@ fixate_vis_caps (RBVisualizerPlugin *pi, GstElement *vis_element, GstElement *ca
 		g_free (dbg);
 
 		g_object_set (capsfilter, "caps", caps, NULL);
-	} else if (caps) {
+	} else {
 		char *dbg = gst_caps_to_string (caps);
 		rb_debug ("vis element caps already fixed: %s", dbg);
 		g_free (dbg);
-	} else {
-		rb_debug ("vis element has no caps");
 	}
 
-	if (GST_IS_CAPS (caps))
-		gst_caps_unref (caps);
+	gst_caps_unref (caps);
 }
 
 static GstElement *
