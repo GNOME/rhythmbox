@@ -56,7 +56,8 @@ typedef char* (*RhythmDBEntryStringFunc) (RhythmDBEntry *entry, gpointer data);
 typedef gboolean (*RhythmDBEntryCanSyncFunc) (RhythmDB *db, RhythmDBEntry *entry, gpointer data);
 typedef void (*RhythmDBEntrySyncFunc) (RhythmDB *db, RhythmDBEntry *entry, GError **error, gpointer data);
 
-#define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_type_get_type ())
+GType rhythmdb_entry_category_get_type (void);
+#define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_get_type ())
 typedef enum {
 	RHYTHMDB_ENTRY_NORMAL,		/* anything that doesn't match the other categories */
 	RHYTHMDB_ENTRY_STREAM,		/* endless streams (eg shoutcast, last.fm) */

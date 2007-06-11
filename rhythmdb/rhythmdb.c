@@ -3554,7 +3554,7 @@ rhythmdb_query_type_get_type (void)
 }
 
 GType
-rhythmdb_entry_category_type_get_type (void)
+rhythmdb_entry_category_get_type (void)
 {
 	static GType etype = 0;
 
@@ -3569,7 +3569,7 @@ rhythmdb_entry_category_type_get_type (void)
 			{ 0, 0, 0 }
 		};
 
-		etype = g_enum_register_static ("RhythmDBEntryCategoryType", values);
+		etype = g_enum_register_static ("RhythmDBEntryCategory", values);
 	}
 
 	return etype;
