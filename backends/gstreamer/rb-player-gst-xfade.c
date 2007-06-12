@@ -739,6 +739,11 @@ rb_player_gst_xfade_finalize (GObject *object)
 	}
 	g_list_free (player->priv->waiting_tees);
 
+	if (player->priv->waiting_filters) {
+		g_list_foreach (player->priv->waiting_filters, (GFunc)gst_object_sink, NULL);
+	}
+	g_list_free (player->priv->waiting_filters);
+
 	G_OBJECT_CLASS (rb_player_gst_xfade_parent_class)->finalize (object);
 }
 
@@ -3365,24 +3370,25 @@ really_remove_tee (GstPad *pad, gboolean blocked, RBPlayerGstXFadePipelineOp *op
 }
 
 static gboolean
-tee_op (RBPlayerGstXFade *player,
-	GstElement *element,
-	GstPadBlockCallback callback)
+pipeline_op (RBPlayerGstXFade *player,
+	     GstElement *element,
+	     GstElement *previous_element,
+	     GstPadBlockCallback callback)
 {
 	RBPlayerGstXFadePipelineOp *op;
 	GstPad *block_pad;
 
 	op = new_pipeline_op (player, element);
 
-	block_pad = gst_element_get_pad (player->priv->volume, "src");
+	block_pad = gst_element_get_pad (previous_element, "src");
 	if (player->priv->sink_state == SINK_PLAYING) {
-		rb_debug ("blocking the volume src pad to perform a tee operation");
+		rb_debug ("blocking the volume src pad to perform an operation");
 		gst_pad_set_blocked_async (block_pad,
 					   TRUE,
 					   callback,
 					   op);
 	} else {
-		rb_debug ("sink not playing; calling tee op directly");
+		rb_debug ("sink not playing; calling op directly");
 		(*callback) (block_pad, FALSE, op);
 	}
 
@@ -3399,9 +3405,10 @@ rb_player_gst_xfade_add_tee (RBPlayerGstTee *iplayer, GstElement *element)
 		return TRUE;
 	}
 
-	return tee_op (player,
-		       element,
-		       (GstPadBlockCallback) really_add_tee);
+	return pipeline_op (player,
+			    element,
+			    player->priv->volume,
+			    (GstPadBlockCallback) really_add_tee);
 }
 
 static gboolean
@@ -3414,9 +3421,10 @@ rb_player_gst_xfade_remove_tee (RBPlayerGstTee *iplayer, GstElement *element)
 		return TRUE;
 	}
 
-	return tee_op (RB_PLAYER_GST_XFADE (iplayer),
-		       element,
-		       (GstPadBlockCallback) really_remove_tee);
+	return pipeline_op (RB_PLAYER_GST_XFADE (iplayer),
+			    element,
+			    player->priv->volume,
+			    (GstPadBlockCallback) really_remove_tee);
 }
 
 
@@ -3579,32 +3587,6 @@ really_remove_filter (GstPad *pad,
 }
 
 static gboolean
-filter_op (RBPlayerGstXFade *player,
-	   GstElement *element,
-	   GstPadBlockCallback callback)
-{
-	RBPlayerGstXFadePipelineOp *op;
-	GstPad *block_pad;
-
-	op = new_pipeline_op (player, element);
-
-	block_pad = gst_element_get_pad (player->priv->filterbin, "sink");
-	if (player->priv->sink_state == SINK_PLAYING) {
-		rb_debug ("blocking the filterbin sink pad to perform a filter operation");
-		gst_pad_set_blocked_async (block_pad,
-					   TRUE,
-					   callback,
-					   op);
-	} else {
-		rb_debug ("sink not playing; calling filter op directly");
-		(*callback) (block_pad, FALSE, op);
-	}
-
-	gst_object_unref (block_pad);
-	return TRUE;
-}
-
-static gboolean
 rb_player_gst_xfade_add_filter (RBPlayerGstFilter *iplayer, GstElement *element)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
@@ -3613,9 +3595,10 @@ rb_player_gst_xfade_add_filter (RBPlayerGstFilter *iplayer, GstElement *element)
 		return TRUE;
 	}
 
-	return filter_op (player,
-			  element,
-			  (GstPadBlockCallback) really_add_filter);
+	return pipeline_op (player,
+			    element,
+			    player->priv->filterbin,
+			    (GstPadBlockCallback) really_add_filter);
 }
 
 
@@ -3628,8 +3611,9 @@ rb_player_gst_xfade_remove_filter (RBPlayerGstFilter *iplayer, GstElement *eleme
 		player->priv->waiting_filters = g_list_remove (player->priv->waiting_filters, element);
 		return TRUE;
 	}
-	return filter_op (player,
-			  element,
-			  (GstPadBlockCallback) really_remove_filter);
+	return pipeline_op (player,
+			    element,
+			    player->priv->filterbin,
+			    (GstPadBlockCallback) really_remove_filter);
 }
 

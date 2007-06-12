@@ -1,3 +1,16 @@
+2007-06-12  James Livingston  <doclivingston@gmail.com>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_finalize): free the waiting filter elements as
+	well as the tee ones.
+	
+	(pipeline_op),
+	(rb_player_gst_xfade_add_tee), (rb_player_gst_xfade_remove_tee),
+	(rb_player_gst_xfade_add_filter),
+	(rb_player_gst_xfade_remove_filter): merge tee_op and filter_op
+	together into pipeline_op, as they are identical apart from the
+	previous element in the pipeline
+
 2007-06-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/visualizer/rb-visualizer-plugin.c: (fixate_vis_caps):
