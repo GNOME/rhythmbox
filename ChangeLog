@@ -1,3 +1,10 @@
+2007-06-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* podcast/rb-podcast-manager.c: (rb_podcast_manager_next_file):
+	Search for the start of the query string from the start of the URL,
+	not the end, since the query string sometimes contains question
+	marks.  Fixes #446796.
+
 2007-06-12  James Livingston  <doclivingston@gmail.com>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:

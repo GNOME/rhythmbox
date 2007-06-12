@@ -596,12 +596,12 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	/* gnome-vfs currently doesn't handle HTTP query strings correctly.
 	 * so we do it ourselves.
 	 */
-	query_string = strrchr (location, '?');
+	query_string = strchr (location, '?');
 	if (query_string != NULL) {
 		char *base_uri;
 
 		base_uri = g_strdup (location);
-		query_string = strrchr (base_uri, '?');
+		query_string = strchr (base_uri, '?');
 		*query_string++ = '\0';
 		rb_debug ("hiding query string %s from gnome-vfs", query_string);
 
