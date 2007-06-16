@@ -1192,5 +1192,28 @@
 	<long>True if the media player keys plugin is hidden.</long>
 	</locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/lyrics/engines</key>
+	<applyto>/apps/rhythmbox/plugins/lyrics/engines</applyto>
+	<owner>rhythmbox</owner>
+        <type>list</type>
+        <list_type>string</list_type>
+        <default>[astraweb.com,lyrc.com.ar,leoslyrics.com]</default>
+	<locale name="C">
+	  <short>The list of sites to search for lyrics.</short>
+	  <long>The list of sites to search for lyrics.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/lyrics/folder</key>
+	<applyto>/apps/rhythmbox/plugins/lyrics/folder</applyto>
+	<owner>rhythmbox</owner>
+        <type>string</type>
+        <default>~/.lyrics</default>
+	<locale name="C">
+	  <short>The directory to store lyrics in</short>
+	  <long>The directory to store lyrics in</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

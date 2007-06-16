@@ -974,6 +974,7 @@ plugins/mtpdevice/Makefile
 plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
+plugins/lyrics/lyrics/Makefile
 plugins/sample-python/Makefile
 plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile

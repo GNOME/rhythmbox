@@ -1,3 +1,24 @@
+2007-06-16  James Livingston  <doclivingston@gmail.com>
+
+	patch mostly by: Sirio Bolaños Puchet <vorstar@mac.com>
+
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* plugins/lyrics/Makefile.am:
+	* plugins/lyrics/lyrics-prefs.glade:
+	* plugins/lyrics/lyrics.py:
+	* plugins/lyrics/lyrics.rb-plugin.desktop.in:
+	* plugins/lyrics/lyrics/AstrawebParser.py:
+	* plugins/lyrics/lyrics/LeoslyricsParser.py:
+	* plugins/lyrics/lyrics/LyrcParser.py:
+	* plugins/lyrics/lyrics/LyricsConfigureDialog.py:
+	* plugins/lyrics/lyrics/LyricsParse.py:
+	* plugins/lyrics/lyrics/Makefile.am:
+	* plugins/lyrics/lyrics/__init__.py: Add support for multiple lyric
+	searching backends (including lyrc.co.ar and astraweb.com), and
+	generally improve things. use rb.Loader() to retrieve data instead of
+	urllib.
+
 2007-06-13  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-manager.c: (rb_podcast_manager_next_file):
