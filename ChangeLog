@@ -1,5 +1,12 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Riley Patterson  <rileypatterson@gmail.com>
+
+	* plugins/mtpdevice/rb-mtp-source.c: (transfer_track): use the
+	basename of the file, not the full path. Fixes #446813
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Jaap A. Haitsma <jaap@haitsma.org>
 
 	* data/Makefile.am:
