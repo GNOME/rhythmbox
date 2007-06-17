@@ -1,5 +1,13 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/audioscrobbler/rb-lastfm-source.c:
+	(rb_lastfm_source_love_track), (rb_lastfm_source_skip_track),
+	(rb_lastfm_source_ban_track), (rb_lastfm_source_new_song_cb): disable
+	the last.fm buttons while we are in the middle of changing tracks.
+	Fixes #416202
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_register_type): require entry
 	types to have a name. Should catch any occurrances of 388783 if they
 	happend again

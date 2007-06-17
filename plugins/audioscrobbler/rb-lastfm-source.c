@@ -973,21 +973,47 @@ rb_lastfm_source_command (RBLastfmSource *source, const char *query_string, cons
 }
 
 static void
-rb_lastfm_source_love_track (GtkAction *action, RBLastfmSource *source)
+rb_lastfm_source_love_track (GtkAction *run_action, RBLastfmSource *source)
 {
+	GtkAction *action;
+
 	rb_lastfm_source_command (source, "command=love", _("Marking song loved..."));
+
+	/* disable love/ban */
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
+	gtk_action_set_sensitive (action, FALSE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
+	gtk_action_set_sensitive (action, FALSE);
 }
 
 static void
-rb_lastfm_source_skip_track (GtkAction *action, RBLastfmSource *source)
+rb_lastfm_source_skip_track (GtkAction *run_action, RBLastfmSource *source)
 {
+	GtkAction *action;
+
 	rb_lastfm_source_command (source, "command=skip", _("Skipping song..."));
+
+	/* disable love/ban and skip */
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmSkipSong");
+	gtk_action_set_sensitive (action, FALSE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
+	gtk_action_set_sensitive (action, FALSE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
+	gtk_action_set_sensitive (action, FALSE);
 }
 
 static void
-rb_lastfm_source_ban_track (GtkAction *action, RBLastfmSource *source)
+rb_lastfm_source_ban_track (GtkAction *run_action, RBLastfmSource *source)
 {
+	GtkAction *action;
+
 	rb_lastfm_source_command (source, "command=ban", _("Banning song..."));
+
+	/* disable love/ban */
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
+	gtk_action_set_sensitive (action, FALSE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
+	gtk_action_set_sensitive (action, FALSE);
 }
 
 
@@ -1235,15 +1261,24 @@ rb_lastfm_source_new_song_cb (GObject *player_backend,
 			      gpointer data,
 			      RBLastfmSource *source)
 {
+	GtkAction *action;
 	char *uri;
-	rb_debug ("got new song");
 
+	rb_debug ("got new song");
 	uri = g_strdup_printf ("http://%s%s/np.php?session=%s&debug=0",
 			       source->priv->base_url,
 			       source->priv->base_path,
 			       source->priv->session);
 	rb_lastfm_perform (source, uri, NULL, (SoupMessageCallbackFn) rb_lastfm_source_metadata_cb);
 	g_free (uri);
+
+	/* re-enable actions */
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmSkipSong");
+	gtk_action_set_sensitive (action, TRUE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmLoveSong");
+	gtk_action_set_sensitive (action, TRUE);
+	action = gtk_action_group_get_action (source->priv->action_group, "LastfmBanSong");
+	gtk_action_set_sensitive (action, TRUE);
 }
 
 static gboolean
