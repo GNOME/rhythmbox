@@ -124,6 +124,7 @@ main (int argc, char **argv)
 	gtk_set_locale ();
 	rb_profile_start ("initializing gnome program");
 
+	g_set_application_name (_("Rhythmbox"));
 #if HAVE_LIBGNOME_GOPTION
 	program = gnome_program_init (PACKAGE, VERSION,
 				      LIBGNOMEUI_MODULE,

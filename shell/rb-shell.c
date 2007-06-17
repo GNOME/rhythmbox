@@ -2221,7 +2221,6 @@ rb_shell_cmd_about (GtkAction *action,
 {
 	const char **tem;
 	GString *comment;
-	GdkPixbuf *pixbuf = NULL;
 
 	const char *authors[] = {
 		"",
@@ -2258,8 +2257,6 @@ rb_shell_cmd_about (GtkAction *action,
 
 	char *license_trans;
 
-	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
-
 	authors[0] = _("Maintainers:");
 	for (tem = authors; *tem != NULL; tem++)
 		;
@@ -2274,19 +2271,17 @@ rb_shell_cmd_about (GtkAction *action,
 				     _(license[2]), "\n", NULL);
 
 	gtk_show_about_dialog (GTK_WINDOW (shell->priv->window),
-			       "name", "Rhythmbox",
 			       "version", VERSION,
-			       "copyright", "Copyright \xc2\xa9 2005 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
+			       "copyright", "Copyright \xc2\xa9 2005 - 2007 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
 			       "license", license_trans,
+			       "website-label", _("Rhythmbox Website"),
 			       "website", "http://www.gnome.org/projects/rhythmbox",
 			       "comments", comment->str,
 			       "authors", (const char **) authors,
 			       "documenters", (const char **) documenters,
 			       "translator-credits", strcmp (translator_credits, "translator-credits") != 0 ? translator_credits : NULL,
-			       "logo", pixbuf,
+			       "logo-icon-name", "rhythmbox",
 			       NULL);
-	if (pixbuf)
-		g_object_unref (pixbuf);
 	g_string_free (comment, TRUE);
 	g_free (license_trans);
 }

@@ -1,6 +1,6 @@
 ## arch-tag: Automake rules for various data files
 
-SUBDIRS = ui glade art icons
+SUBDIRS = ui glade icons
 
 @INTLTOOL_XML_RULE@
 @INTLTOOL_DESKTOP_RULE@
@@ -8,9 +8,6 @@ SUBDIRS = ui glade art icons
 Multimediadir = $(datadir)/applications
 Multimedia_in_files = rhythmbox.desktop.in
 Multimedia_DATA = $(Multimedia_in_files:.desktop.in=.desktop)
-
-appicon_DATA = rhythmbox.png
-appicondir = $(datadir)/icons/hicolor/48x48/apps
 
 schemadir = @GCONF_SCHEMA_FILE_DIR@
 schema_DATA = rhythmbox.schemas
