@@ -612,7 +612,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	RhythmDBEntryType type;
 
 	if (daap_source->priv->connection == NULL
-	 || daap_source->priv->disconnecting == FALSE) {
+	 || daap_source->priv->disconnecting == TRUE) {
 		return;
 	}
 

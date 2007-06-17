@@ -937,7 +937,6 @@ shell/Makefile
 data/Makefile
 data/rhythmbox.desktop.in
 data/ui/Makefile
-data/art/Makefile
 data/glade/Makefile
 data/icons/Makefile
 data/icons/hicolor/Makefile

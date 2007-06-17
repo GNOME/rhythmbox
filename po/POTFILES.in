@@ -65,6 +65,7 @@ plugins/generic-player/rb-generic-player-source.c
 plugins/generic-player/rb-nokia770-source.c
 plugins/generic-player/rb-psp-source.c
 plugins/ipod/ipod.rb-plugin.desktop.in
+plugins/ipod/ipod_init.glade
 plugins/ipod/rb-ipod-plugin.c
 plugins/ipod/rb-ipod-source.c
 plugins/iradio/iradio.rb-plugin.desktop.in
@@ -80,8 +81,14 @@ plugins/iradio/rb-station-properties-dialog.c
 plugins/iradio/station-properties.glade
 plugins/lirc/lirc.rb-plugin.desktop.in
 plugins/lirc/rb-lirc-plugin.c
-plugins/lyrics/lyrics.py
+plugins/lyrics/lyrics/__init__.py
+plugins/lyrics/lyrics/AstrawebParser.py
+plugins/lyrics/lyrics/LeoslyricsParser.py
+plugins/lyrics/lyrics/LyrcParser.py
+plugins/lyrics/lyrics/LyricsConfigureDialog.py
+plugins/lyrics/lyrics/LyricsParse.py
 plugins/lyrics/lyrics.rb-plugin.desktop.in
+plugins/lyrics/lyrics-prefs.glade
 plugins/magnatune/magnatune-loading.glade
 plugins/magnatune/magnatune-prefs.glade
 plugins/magnatune/magnatune-purchase.glade
@@ -89,6 +96,9 @@ plugins/magnatune/magnatune.rb-plugin.desktop.in
 plugins/magnatune/magnatune/MagnatuneSource.py
 plugins/magnatune/magnatune/__init__.py
 plugins/mmkeys/mmkeys.rb-plugin.desktop.in
+plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in
+plugins/mtpdevice/rb-mtp-plugin.c
+plugins/mtpdevice/rb-mtp-source.c
 plugins/power-manager/power-manager.rb-plugin.desktop.in
 plugins/power-manager/rb-power-manager-plugin.c
 plugins/pythonconsole/pythonconsole.py

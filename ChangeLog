@@ -1,5 +1,12 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* configure.ac:  remove data/art/Makefile.in from the output
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_disconnect): fix a
+	braino
+	* po/POTFILES.in update for MTP and lyric plugins
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/daap/rb-daap-source.c: (rb_daap_source_disconnect): don't
 	attempt to disconnect if we aready are. Fixes #330201
 
