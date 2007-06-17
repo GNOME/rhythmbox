@@ -61,7 +61,7 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 					duration = parse_int(self.__track['seconds'])
 				except ValueError:
 					duration = 0
-				
+
 				self.__db.set(entry, rhythmdb.PROP_ARTIST, self.__track['artist'])
 				self.__db.set(entry, rhythmdb.PROP_ALBUM, self.__track['albumname'])
 				self.__db.set(entry, rhythmdb.PROP_TITLE, self.__track['trackname'])
@@ -69,10 +69,13 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				self.__db.set(entry, rhythmdb.PROP_DATE, date)
 				self.__db.set(entry, rhythmdb.PROP_GENRE, self.__track['mp3genre'])
 				self.__db.set(entry, rhythmdb.PROP_DURATION, duration)
-				self.__sku_dict[self.__track['url']] = self.__track['albumsku']
-				self.__home_dict[self.__track['url']] = self.__track['home']
-				self.__buy_dict[self.__track['url']] = self.__track['buy'].replace("buy_album", "buy_cd", 1)
-				self.__art_dict[self.__track['url']] = self.__track['cover_small']
+
+				key = str(self.__track['url'])
+				sku = intern(str(self.__track['albumsku']))
+				self.__sku_dict[key] = sku
+				self.__home_dict[sku] = str(self.__track['home'])
+				self.__buy_dict[sku] = str(self.__track['buy'].replace("buy_album", "buy_cd", 1))
+				self.__art_dict[sku] = str(self.__track['cover_small'])
 
 				self.__db.commit()
 			except Exception,e: # This happens on duplicate uris being added

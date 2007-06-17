@@ -177,21 +177,23 @@ class MagnatuneSource(rb.BrowserSource):
 		urls = set([])
 
 		for tr in tracks:
-			url = self.__home_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			url = self.__home_dict[sku]
 			if url not in urls:
 				gnomevfs.url_show(url)
 				urls.add(url)
-	
+
 	def buy_cd(self):
 		tracks = self.get_entry_view().get_selected_entries()
 		urls = set([])
 
 		for tr in tracks:
-			url = self.__buy_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			sku = self.__sku_dict[self.__db.entry_get(tr, rhythmdb.PROP_LOCATION)]
+			url = self.__buy_dict[sku]
 			if url not in urls:
 				gnomevfs.url_show(url)
 				urls.add(url)
-	
+
 	def radio_toggled(self, gladexml):
 		gc = gladexml.get_widget("radio_gc").get_active()
 		gladexml.get_widget("remember_cc_details").set_sensitive(not gc)
@@ -591,7 +593,8 @@ class MagnatuneSource(rb.BrowserSource):
 		gobject.idle_add (self.emit_cover_art_uri, entry)
 
 	def emit_cover_art_uri (self, entry):
-		url = str(self.__art_dict[self.__db.entry_get(entry, rhythmdb.PROP_LOCATION)])
+		sku = self.__sku_dict[self.__db.entry_get(entry, rhythmdb.PROP_LOCATION)]
+		url = self.__art_dict[sku]
 		self.__db.emit_entry_extra_metadata_notify (entry, 'rb:coverArt-uri', url)
 		return False
 

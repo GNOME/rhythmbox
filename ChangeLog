@@ -1,3 +1,12 @@
+2007-06-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py:
+	* plugins/magnatune/magnatune/TrackListHandler.py:
+	Store per-album info (cover art, artist info, purchase URLs) in
+	per-album dicts, rather than per-track, and use the SKU to find the
+	album info for a given track.  Reduces memory usage by about 10MB
+	(or about 50%).  From #424423.
+
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/lyrics/lyrics/LyricsConfigureDialog.py:
