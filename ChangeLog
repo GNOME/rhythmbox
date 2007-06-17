@@ -1,5 +1,11 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/daap/rb-daap-src.c: define MSG_NOSIGNAL as 0 to be a no-op
+	flag, if it isn't defined already. This hack is needed for platform
+	which don't have it, such as Solaris. Fixes #447951
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/ipod/rb-ipod-db.c: (rb_ipod_db_set_thumbnail_internal): fix
 	C89 compatibility, add g_return_if_fail for some parameter checking
 
