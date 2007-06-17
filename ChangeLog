@@ -1,5 +1,10 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_disconnect): don't
+	attempt to disconnect if we aready are. Fixes #330201
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	patch by: Riley Patterson  <rileypatterson@gmail.com>
 
 	* plugins/mtpdevice/rb-mtp-source.c: (transfer_track): use the

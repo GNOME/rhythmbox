@@ -611,7 +611,8 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	RhythmDB *db;
 	RhythmDBEntryType type;
 
-	if (daap_source->priv->connection == NULL) {
+	if (daap_source->priv->connection == NULL
+	 || daap_source->priv->disconnecting == FALSE) {
 		return;
 	}
 
