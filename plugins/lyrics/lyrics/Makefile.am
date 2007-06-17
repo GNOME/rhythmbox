@@ -6,5 +6,5 @@ plugin_PYTHON =			\
        LyricsConfigureDialog.py		\
        __init__.py			\
        LyrcParser.py			\
-       AstrawebParse.py			\
-       LyeoslyricsParser.py
+       AstrawebParser.py			\
+       LeoslyricsParser.py

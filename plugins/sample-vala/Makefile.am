@@ -2,9 +2,11 @@ plugindir = $(PLUGINDIR)
 plugin_LTLIBRARIES = libsample-vala.la
 #noinst_LTLIBRARIES = libsample-vala.la
 
-libsample_vala_la_SOURCES = \
+nodist_libsample_vala_la_SOURCES = \
 	rb-sample-vala-plugin.c				\
-	rb-sample-vala-plugin.h				\
+	rb-sample-vala-plugin.h
+
+libsample_vala_la_SOURCES = \
 	rb-sample-vala-plugin.vala
 	
 libsample_vala_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
