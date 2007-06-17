@@ -310,13 +310,17 @@ static void
 rb_ipod_db_set_thumbnail_internal (RbIpodDb *ipod_db, Itdb_Track *track, 
 				   GdkPixbuf *pixbuf)
 {
-#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
-	itdb_track_set_thumbnails_from_pixbuf (track, pixbuf);
-#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 	gchar *image_data;
 	gsize image_data_len;
 	GError *err = NULL;
 	gboolean success;
+
+	g_return_if_fail (track != NULL);
+	g_return_if_fail (pixbuf != NULL);
+
+#ifdef HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF
+	itdb_track_set_thumbnails_from_pixbuf (track, pixbuf);
+#else /* HAVE_ITDB_TRACK_SET_THUMBNAILS_FROM_PIXBUF */
 
 	success = gdk_pixbuf_save_to_buffer (pixbuf,
 					     &image_data, &image_data_len,

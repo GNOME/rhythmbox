@@ -1,5 +1,10 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/ipod/rb-ipod-db.c: (rb_ipod_db_set_thumbnail_internal): fix
+	C89 compatibility, add g_return_if_fail for some parameter checking
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/audioscrobbler/rb-lastfm-source.c:
 	(rb_lastfm_source_love_track), (rb_lastfm_source_skip_track),
 	(rb_lastfm_source_ban_track), (rb_lastfm_source_new_song_cb): disable
