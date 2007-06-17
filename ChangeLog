@@ -1,5 +1,11 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/lyrics/lyrics/LyricsConfigureDialog.py:
+	* plugins/lyrics/lyrics/__init__.py: don't do crazy things when the
+	gconf key for folders isn't set
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/daap/rb-daap-src.c: define MSG_NOSIGNAL as 0 to be a no-op
 	flag, if it isn't defined already. This hack is needed for platform
 	which don't have it, such as Solaris. Fixes #447951

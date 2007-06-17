@@ -42,6 +42,8 @@ class LyricsConfigureDialog (object):
 
 		# set fields from gconf
 		engines, self.folder = self.get_prefs()
+		if self.folder is None:
+			self.folder = '~/.lyrics'
 		self.path_display.set_text(self.folder)
 		self.toggle1.set_active('astraweb.com' in engines)
 		self.toggle2.set_active('lyrc.com.ar' in engines)
