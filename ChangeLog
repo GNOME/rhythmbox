@@ -1,3 +1,9 @@
+2007-06-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_new):
+	Replace the source-must-have-a-name assertion with a warning, and just
+	skip any sources that don't have names.  Fixes #409540.
+
 2007-06-07  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/python/override_common.c: (_helper_wrap_boxed_glist): make

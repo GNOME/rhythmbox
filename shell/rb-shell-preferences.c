@@ -283,7 +283,12 @@ rb_shell_preferences_new (GList *views)
 	{
 		char *name = NULL;
 		g_object_get (views->data, "name", &name, NULL);
-		g_assert (name != NULL);
+		if (name == NULL) {
+			g_warning ("Source %p of type %s has no name",
+				   views->data,
+				   G_OBJECT_TYPE_NAME (views->data));
+			continue;
+		}
 		rb_shell_preferences_append_view_page (shell_preferences,
 						       name,
 						       RB_SOURCE (views->data));
