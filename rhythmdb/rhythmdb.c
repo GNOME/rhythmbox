@@ -3986,6 +3986,8 @@ rhythmdb_entry_register_type (RhythmDB *db,
 	RhythmDBEntryType type;
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
+	g_assert (name != NULL);
+
 	type = g_new0 (RhythmDBEntryType_, 1);
 	type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_false_function;
 	type->sync_metadata = default_sync_metadata;

@@ -1,5 +1,18 @@
 2007-06-17  James Livingston  <doclivingston@gmail.com>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_register_type): require entry
+	types to have a name. Should catch any occurrances of 388783 if they
+	happend again
+
+	* plugins/audiocd/rb-audiocd-source.c: (rb_audiocd_source_new):
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_new):
+	* plugins/generic-player/rb-nokia770-source.c:
+	(rb_nokia770_source_new):
+	* plugins/generic-player/rb-psp-source.c: (rb_psp_source_new): give
+	these entry types a name
+
+2007-06-17  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/lyrics/lyrics/Makefile.am:
 	* plugins/sample-vala/Makefile.am: fix some distcheck stuff
 

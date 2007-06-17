@@ -268,9 +268,12 @@ rb_daap_source_new (RBShell *shell,
 	RhythmDBEntryType type;
 	GdkPixbuf *icon;
 	RhythmDB *db;
+	char *entry_type_name;
 
 	g_object_get (shell, "db", &db, NULL);
-	type = rhythmdb_entry_register_type (db, NULL);
+	entry_type_name = g_strdup_printf ("daap:%s:%s:%s", service_name, name, host);
+	type = rhythmdb_entry_register_type (db, entry_type_name);
+	g_free (entry_type_name);
 	type->save_to_disk = FALSE;
 	type->category = RHYTHMDB_ENTRY_NORMAL;
 	g_object_unref (db);

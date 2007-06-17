@@ -163,13 +163,19 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	GObject *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
+	char *name;
+	char *path;
 
 	if (!rb_audiocd_is_volume_audiocd (volume))
 		return NULL;
 
-	g_object_get (shell, "db", &db, NULL);
-	entry_type =  rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (db);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	path = gnome_vfs_volume_get_device_path (volume);
+	name = g_strdup_printf ("audiocd: %s", path);
+	entry_type = rhythmdb_entry_register_type (db, name);
+	g_object_unref (G_OBJECT (db));
+	g_free (name);
+	g_free (path);
 
 	entry_type->category = RHYTHMDB_ENTRY_NORMAL;
 	entry_type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_true_function;

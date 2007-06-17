@@ -79,12 +79,18 @@ rb_nokia770_source_new (RBShell *shell, GnomeVFSVolume *volume)
 	RBNokia770Source *source;
 	RhythmDBEntryType entry_type;
 	RhythmDB *db;
+	char *name;
+	char *path;
 
 	g_assert (rb_nokia770_is_volume_player (volume));
 
-	g_object_get (shell, "db", &db, NULL);
-	entry_type = rhythmdb_entry_register_type (db, NULL);
-	g_object_unref (db);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	path = gnome_vfs_volume_get_device_path (volume);
+	name = g_strdup_printf ("nokia770: %s", path);
+	entry_type = rhythmdb_entry_register_type (db, name);
+	g_object_unref (G_OBJECT (db));
+	g_free (name);
+	g_free (path);
 
 	source = RB_NOKIA770_SOURCE (g_object_new (RB_TYPE_NOKIA770_SOURCE,
 						   "entry-type", entry_type,
