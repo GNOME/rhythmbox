@@ -1202,8 +1202,9 @@ rb_metadata_save (RBMetaData *md, GError **error)
 {
 	GstElement *pipeline = NULL;
 	GstElement *gnomevfssrc = NULL;
-        GstElement *retag_end = NULL; /* the last elemet after retagging subpipeline */
+        GstElement *retag_end = NULL; /* the last element after retagging subpipeline */
 	const char *plugin_name = NULL;
+	char *tmpname_prefix = NULL;
 	char *tmpname = NULL;
 	GnomeVFSHandle *handle = NULL;
 	GnomeVFSResult result;
@@ -1214,7 +1215,12 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	rb_debug ("saving metadata for uri: %s", md->priv->uri);
 
-	if ((result = rb_uri_mkstemp (md->priv->uri, &tmpname, &handle)) != GNOME_VFS_OK)
+	tmpname_prefix = rb_uri_make_hidden (md->priv->uri);
+	rb_debug ("temporary file name prefix: %s", tmpname_prefix);
+
+	result = rb_uri_mkstemp (tmpname_prefix, &tmpname, &handle);
+	g_free (tmpname_prefix);
+	if (result != GNOME_VFS_OK)
 		goto vfs_error;
 
 	pipeline = gst_pipeline_new ("pipeline");

@@ -748,6 +748,44 @@ rb_uri_is_hidden (const char *text_uri)
 	return g_utf8_strrchr (text_uri, -1, GNOME_VFS_URI_PATH_CHR)[1] == '.';
 }
 
+char *
+rb_uri_make_hidden (const char *text_uri)
+{
+	GnomeVFSURI *uri;
+	GnomeVFSURI *parent;
+	char *shortname;
+	char *dotted;
+	char *ret;
+
+	if (rb_uri_is_hidden (text_uri))
+		return g_strdup (text_uri);
+
+	uri = gnome_vfs_uri_new (text_uri);
+	if (uri == NULL) {
+		return g_strdup (text_uri);
+	}
+
+	parent = gnome_vfs_uri_get_parent (uri);
+	if (parent == NULL) {
+		gnome_vfs_uri_unref (uri);
+		return g_strdup (text_uri);
+	}
+
+	shortname = gnome_vfs_uri_extract_short_name (uri);
+	gnome_vfs_uri_unref (uri);
+
+	dotted = g_strdup_printf (".%s", shortname);
+	g_free (shortname);
+
+	uri = gnome_vfs_uri_append_file_name (parent, dotted);
+	gnome_vfs_uri_unref (parent);
+	g_free (dotted);
+
+	ret = gnome_vfs_uri_to_string (uri, GNOME_VFS_URI_HIDE_NONE);
+	gnome_vfs_uri_unref (uri);
+	return ret;
+}
+
 /*
  * gnome_vfs_uri_new escapes a few extra characters that
  * gnome_vfs_escape_path doesn't ('&' and '=').  If we
