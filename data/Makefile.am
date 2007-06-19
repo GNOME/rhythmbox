@@ -45,7 +45,6 @@ update-icon-cache:
 	fi
 
 EXTRA_DIST = $(service_in_files)    \
-	     $(appicon_DATA)        \
 	     $(schema_DATA)	    \
 	     $(playlists_in_files)  \
 	     rhythmbox.desktop.in.in
