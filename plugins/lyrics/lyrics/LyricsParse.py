@@ -19,6 +19,7 @@
 
 import urllib
 import re
+import gobject
 import gconf
 import rb
 
@@ -38,7 +39,14 @@ class Parser (object):
 	def __init__(self, gconf_keys, artist, title):
 		self.title = title
 		self.artist = artist
-		self.engines = gconf.client_get_default().get_list(gconf_keys['engines'], gconf.VALUE_STRING)
+
+		try:
+			self.engines = gconf.client_get_default().get_list(gconf_keys['engines'], gconf.VALUE_STRING)
+			if self.engines is None:
+				self.engines = []
+		except gobject.GError, e:
+			print e
+			self.engines = []
 
 	def searcher(self, plexer, callback, *data):
 		for e in self.engines:

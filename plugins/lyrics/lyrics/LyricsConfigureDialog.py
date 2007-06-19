@@ -19,7 +19,7 @@
 
 
 
-import gtk, gtk.glade
+import gobject, gtk, gtk.glade
 import gconf
 from os import system, path
 
@@ -98,7 +98,13 @@ class LyricsConfigureDialog (object):
 		return self.dialog
 	
 	def get_prefs (self):
-		engines = gconf.client_get_default().get_list(self.gconf_keys['engines'], gconf.VALUE_STRING)
+		try:
+			engines = gconf.client_get_default().get_list(self.gconf_keys['engines'], gconf.VALUE_STRING)
+			if engines is None:
+				engines = []
+		except gobject.GError, e:
+			print e
+			engines = []
 		folder = gconf.client_get_default().get_string(self.gconf_keys['folder'])
 
 		print "lyric engines: " + str (engines)

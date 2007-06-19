@@ -1,5 +1,11 @@
 2007-06-19  James Livingston  <doclivingston@gmail.com>
 
+	* plugins/lyrics/lyrics/LyricsConfigureDialog.py:
+	* plugins/lyrics/lyrics/LyricsParse.py: handle the engines gconf key
+	being unset better
+
+2007-06-19  James Livingston  <doclivingston@gmail.com>
+
 	* plugins/ipod/rb-ipod-source.c: (playlist_track_removed),
 	(playlist_track_added), (impl_delete_thyself): disconnect the signals
 	from the ipod playlist's query model before asking it to be destroyed.
