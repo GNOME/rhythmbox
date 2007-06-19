@@ -1,5 +1,12 @@
 2007-06-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/audioscrobbler/rb-lastfm-gst-src.c:
+	(rb_lastfm_src_set_uri), (rb_lastfm_src_uri_set_uri):
+	Return FALSE from set_uri when we can't create a http source element.
+	Fixes #441785.
+
+2007-06-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/ipod/rb-ipod-db.c: (rb_ipod_db_queue_set_thumbnail):
 	Reference the right object (pixbuf, not track)
 
