@@ -638,7 +638,7 @@ static void rb_ipod_db_queue_set_thumbnail (RbIpodDb *ipod_db,
 	action = g_new0 (RbIpodDelayedAction, 1);
 	action->type = RB_IPOD_ACTION_SET_THUMBNAIL;
 	action->thumbnail_data.track = track;
-	action->thumbnail_data.pixbuf = g_object_ref (G_OBJECT (track));
+	action->thumbnail_data.pixbuf = g_object_ref (pixbuf);
 	g_queue_push_tail (priv->delayed_actions, action);
 }
 
