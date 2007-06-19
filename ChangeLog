@@ -1,6 +1,13 @@
 2007-06-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_bus_cb):
+	Pretend the function logging the imperfect stream details is called
+	'check-imperfect', just to make it a bit more usable.
+
+2007-06-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
 	(rb_player_gst_xfade_bus_cb), (create_stream):
 	If appropriate debug output is enabled, include an identity in the
 	stream bin with check-imperfect-timestamp and/or
