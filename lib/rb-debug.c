@@ -43,6 +43,19 @@ static void log_handler (const char *domain,
 static const char *debug_everything = "everything";
 static const char *debug_match = NULL;
 
+gboolean
+rb_debug_matches (const char *func,
+		  const char *file)
+{
+	if (debug_match == NULL ||
+	   (debug_match != debug_everything &&
+	   (strstr (file, debug_match) == NULL) &&
+	   (strstr (func, debug_match) == NULL)))
+		return FALSE;
+
+	return TRUE;
+}
+
 /* Our own funky debugging function, should only be used when something
  * is not going wrong, if something *is* wrong use g_warning.
  */
@@ -58,10 +71,7 @@ rb_debug_real (const char *func,
 	char str_time[255];
 	time_t the_time;
 
-	if (debug_match == NULL ||
-	   (debug_match != debug_everything &&
-	   (strstr (file, debug_match) == NULL) &&
-	   (strstr (func, debug_match) == NULL)))
+	if (!rb_debug_matches (func, file))
 		return;
 
 	va_start (args, format);

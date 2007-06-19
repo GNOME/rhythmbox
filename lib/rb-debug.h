@@ -39,6 +39,8 @@ G_BEGIN_DECLS
 void rb_debug_init             (gboolean debug);
 void rb_debug_init_match       (const char *match);
 
+gboolean rb_debug_matches      (const char *func,
+				const char *file);
 void rb_debug_real             (const char *func,
 				const char *file,
 				int line,

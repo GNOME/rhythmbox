@@ -1,3 +1,17 @@
+2007-06-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(rb_player_gst_xfade_bus_cb), (create_stream):
+	If appropriate debug output is enabled, include an identity in the
+	stream bin with check-imperfect-timestamp and/or
+	check-imperfect-offset set, and report resulting messages through
+	rb_debug.  Should help us figure out why particular files don't play
+	well with the crossfading backend.
+
+	* lib/rb-debug.c: (rb_debug_matches), (rb_debug_real):
+	* lib/rb-debug.h:
+	Add rb_debug_matches(), used in the above.
+
 2007-06-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* data/Makefile.am:

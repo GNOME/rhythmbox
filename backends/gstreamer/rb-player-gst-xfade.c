@@ -1499,6 +1499,31 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		}
 		break;
 	}
+	case GST_MESSAGE_ELEMENT:
+	{
+		/* currently only used to report imperfect stream messages */
+		const GstStructure *s;
+		const char *name;
+
+		s = gst_message_get_structure (message);
+		name = gst_structure_get_name (s);
+		if ((strcmp (name, "imperfect-timestamp") == 0) ||
+		    (strcmp (name, "imperfect-offset") == 0)) {
+			char *details;
+			RBXFadeStream *stream;
+			const char *uri = "unknown stream";;
+
+			stream = find_stream_by_element (player, GST_ELEMENT (GST_MESSAGE_SRC (message)));
+			if (stream != NULL) {
+				uri = stream->uri;
+			}
+
+			details = gst_structure_to_string (s);
+			rb_debug ("%s: %s", uri, details);
+			g_free (details);
+		}
+		break;
+	}
 	default:
 		break;
 	}
@@ -1892,8 +1917,28 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				       NULL);
 	}
 
-	/* ghost the volume src pad up to the bin */
-	stream->src_pad = gst_element_get_pad (stream->volume, "src");
+	/* optionally splice in an identity with
+	 * check-imperfect-timestamp and/or check-imperfect-offset set.
+	 */
+	if (rb_debug_matches ("check-imperfect", __FILE__)) {
+		GstElement *identity;
+
+		identity = gst_element_factory_make ("identity", NULL);
+		gst_bin_add (GST_BIN (stream->bin), identity);
+		gst_element_link (stream->volume, identity);
+		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
+			g_object_set (identity, "check-imperfect-timestamp", TRUE, NULL);
+		}
+		if (rb_debug_matches ("check-imperfect-offset", __FILE__)) {
+			g_object_set (identity, "check-imperfect-offset", TRUE, NULL);
+		}
+
+		stream->src_pad = gst_element_get_pad (identity, "src");
+	} else {
+		stream->src_pad = gst_element_get_pad (stream->volume, "src");
+	}
+
+	/* ghost the stream src pad up to the bin */
 	stream->ghost_pad = gst_ghost_pad_new ("src", stream->src_pad);
 	gst_element_add_pad (stream->bin, stream->ghost_pad);
 
