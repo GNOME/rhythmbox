@@ -1,3 +1,10 @@
+2007-06-19  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/ipod/rb-ipod-source.c: (playlist_track_removed),
+	(playlist_track_added), (impl_delete_thyself): disconnect the signals
+	from the ipod playlist's query model before asking it to be destroyed.
+	Stops us receiving the signals during destruction. Fixes #445699
+
 2007-06-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/audioscrobbler/rb-lastfm-gst-src.c:

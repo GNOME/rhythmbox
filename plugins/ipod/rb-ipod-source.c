@@ -288,6 +288,10 @@ playlist_track_removed (RhythmDBQueryModel *m,
 	RBiPodSource *ipod = g_object_get_data (G_OBJECT (playlist), "ipod-source");
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
 	Itdb_Track *track;
+
+	g_return_if_fail (ipod != NULL);
+	g_return_if_fail (ipod_pl != NULL);
+
         track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
 	rb_ipod_db_remove_from_playlist (priv->ipod_db, ipod_pl, track);
@@ -304,6 +308,9 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 	Itdb_Track *track;
 	RhythmDBEntry *entry;
 
+	g_return_if_fail (ipod != NULL);
+	g_return_if_fail (ipod_pl != NULL);
+
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
         track = g_hash_table_lookup (priv->entry_map, entry);
 	g_return_if_fail (track != NULL);
@@ -319,7 +326,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType entry_type;
-		RhythmDBQueryModel *model;
+	RhythmDBQueryModel *model;
 
 	g_object_get (source,
 			  "shell", &shell,
@@ -346,24 +353,24 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	}
 
 	g_object_ref (G_OBJECT(playlist_source));
-		playlist->userdata = playlist_source;
-		playlist->userdata_destroy = g_object_unref;
-		playlist->userdata_duplicate = g_object_ref;
+	playlist->userdata = playlist_source;
+	playlist->userdata_destroy = g_object_unref;
+	playlist->userdata_duplicate = g_object_ref;
 
-		model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (playlist_source));
-		g_signal_connect (model, "row-inserted",
-				          G_CALLBACK (playlist_track_added),
-				          playlist_source);
-		g_signal_connect (model, "entry-removed",
-				          G_CALLBACK (playlist_track_removed),
-				          playlist_source);
+	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (playlist_source));
+	g_signal_connect (model, "row-inserted",
+			          G_CALLBACK (playlist_track_added),
+			          playlist_source);
+	g_signal_connect (model, "entry-removed",
+			          G_CALLBACK (playlist_track_removed),
+			          playlist_source);
 
-		g_object_set_data (G_OBJECT (playlist_source),
-				           "ipod-source", source);
-		g_object_set_data (G_OBJECT (playlist_source),
-				           "itdb-playlist", playlist);
-		if (itdb_playlist_is_podcasts(playlist))
-				priv->podcast_pl = RB_STATIC_PLAYLIST_SOURCE (playlist_source);
+	g_object_set_data (G_OBJECT (playlist_source),
+			           "ipod-source", source);
+	g_object_set_data (G_OBJECT (playlist_source),
+			           "itdb-playlist", playlist);
+	if (itdb_playlist_is_podcasts(playlist))
+			priv->podcast_pl = RB_STATIC_PLAYLIST_SOURCE (playlist_source);
 	rb_shell_append_source (shell, playlist_source, RB_SOURCE (source));
 	g_object_unref (shell);
 }
@@ -1337,7 +1344,19 @@ impl_delete_thyself (RBSource *source)
 	     p = p->next) {
 		Itdb_Playlist *playlist = (Itdb_Playlist *)p->data;
 		if (!itdb_playlist_is_mpl (playlist) && !playlist->is_spl) {
-			RBSource *rb_playlist = RB_SOURCE (playlist->userdata);
+			RBSource *rb_playlist;
+			RhythmDBQueryModel *model;
+
+			rb_playlist = RB_SOURCE (playlist->userdata);
+			model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (rb_playlist));
+
+			/* remove these to ensure they aren't called during source deletion */
+			g_signal_handlers_disconnect_by_func (model,
+							      G_CALLBACK (playlist_track_added),
+							      rb_playlist);
+			g_signal_handlers_disconnect_by_func (model,
+							      G_CALLBACK (playlist_track_removed),
+							      rb_playlist);
 			rb_source_delete_thyself (rb_playlist);
 		}
 	}
