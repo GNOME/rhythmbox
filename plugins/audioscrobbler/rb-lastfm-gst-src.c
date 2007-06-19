@@ -44,6 +44,7 @@ struct _RBLastFMSrc
 	char *lastfm_uri;
 	GstElement *http_src;
 	GstPad *ghostpad;
+	gulong probe_id;
 };
 
 struct _RBLastFMSrcClass
@@ -121,7 +122,7 @@ rb_lastfm_src_pad_probe_cb (GstPad *pad, GstBuffer *buffer, RBLastFMSrc *src)
 	return TRUE;
 }
 
-static void
+static gboolean
 rb_lastfm_src_set_uri (RBLastFMSrc *src, const char *uri)
 {
 	GstPad *pad;
@@ -130,11 +131,19 @@ rb_lastfm_src_set_uri (RBLastFMSrc *src, const char *uri)
 	g_free (src->lastfm_uri);
 	src->lastfm_uri = g_strdup (uri);
 
-	if (src->http_src) {
+	if (src->http_src != NULL) {
+		/* remove probe */
+		pad = gst_element_get_pad (src->http_src, "src");
+		gst_pad_remove_buffer_probe (pad, src->probe_id);
+		src->probe_id = 0;
+		gst_object_unref (pad);
+
+		/* remove ghostpad */
 		gst_element_remove_pad (GST_ELEMENT (src), src->ghostpad);
 		gst_object_unref (src->ghostpad);
 		src->ghostpad = NULL;
 
+		/* destroy actual source */
 		gst_bin_remove (GST_BIN (src), src->http_src);
 		gst_object_unref (src->http_src);
 		src->http_src = NULL;
@@ -142,6 +151,10 @@ rb_lastfm_src_set_uri (RBLastFMSrc *src, const char *uri)
 
 	/* create actual HTTP source */
 	src->http_src = gst_element_make_from_uri (GST_URI_SRC, src->lastfm_uri, NULL);
+	if (src->http_src == NULL) {
+		rb_debug ("couldn't create http src element for %s", src->lastfm_uri);
+		return FALSE;
+	}
 	gst_bin_add (GST_BIN (src), src->http_src);
 	gst_object_ref (src->http_src);
 
@@ -150,10 +163,11 @@ rb_lastfm_src_set_uri (RBLastFMSrc *src, const char *uri)
 	src->ghostpad = gst_ghost_pad_new ("src", pad);
 	gst_element_add_pad (GST_ELEMENT (src), src->ghostpad);
 	gst_object_ref (src->ghostpad);
-	gst_object_unref (pad);
 
 	/* attach probe */
-	gst_pad_add_buffer_probe (pad, G_CALLBACK (rb_lastfm_src_pad_probe_cb), src);
+	src->probe_id = gst_pad_add_buffer_probe (pad, G_CALLBACK (rb_lastfm_src_pad_probe_cb), src);
+	gst_object_unref (pad);
+	return TRUE;
 }
 
 static void
@@ -261,6 +275,7 @@ rb_lastfm_src_uri_set_uri (GstURIHandler *handler,
 {
 	RBLastFMSrc *src = RB_LASTFM_SRC (handler);
 	char *http_uri;
+	gboolean ret;
 
 	if (GST_STATE (src) == GST_STATE_PLAYING || GST_STATE (src) == GST_STATE_PAUSED) {
 		return FALSE;
@@ -271,10 +286,10 @@ rb_lastfm_src_uri_set_uri (GstURIHandler *handler,
 	}
 
 	http_uri = g_strdup_printf ("http://%s", uri + strlen ("xrblastfm://"));
-	g_object_set (src, "uri", http_uri, NULL);
+	ret = rb_lastfm_src_set_uri (src, http_uri);
 	g_free (http_uri);
 
-	return TRUE;
+	return ret;
 }
 
 static void
