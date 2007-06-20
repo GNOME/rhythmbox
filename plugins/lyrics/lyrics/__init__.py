@@ -306,6 +306,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 		sp = shell.get_player ()
 		sp.disconnect (self.pec_id)
+		shell.disconnect (self.csi_id)
 
 		if self.window is not None:
 			self.window.destroy ()
