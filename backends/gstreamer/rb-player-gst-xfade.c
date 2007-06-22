@@ -350,6 +350,7 @@ struct _RBPlayerGstXFadePrivate
 	guint tick_timeout_id;
 
 	guint stream_reap_id;
+	guint stop_sink_id;
 };
 
 
@@ -1864,7 +1865,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		g_object_set (stream->queue,
 			      "min-threshold-bytes",
 			      stream->queue_threshold,
-			      "max-size-bytes",
+			      "max-size-bytes", 
 			      MAX_NETWORK_BUFFER_SIZE * 2 * 1024,
 			      "max-size-buffers", 0,
 			      "max-size-time", (gint64)0,
@@ -2814,6 +2815,17 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 	return TRUE;
 }
 
+static gboolean
+stop_sink_later (RBPlayerGstXFade *player)
+{
+	player->priv->stop_sink_id = 0;
+
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	stop_sink (player);
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+
+	return FALSE;
+}
 
 static gboolean
 rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
@@ -2864,11 +2876,16 @@ rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
 		}
 	}
 
+	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 	if (player->priv->streams == NULL) {
-		g_static_rec_mutex_lock (&player->priv->sink_lock);
-		ret = stop_sink (player);
-		g_static_rec_mutex_unlock (&player->priv->sink_lock);
+		if (player->priv->stop_sink_id == 0) {
+			player->priv->stop_sink_id =
+				g_timeout_add (10000,
+					       (GSourceFunc) stop_sink_later,
+					       player);
+		}
 	}
+	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	return ret;
 }
