@@ -782,6 +782,12 @@ rb_list_deep_free (GList *list)
 	g_list_free (list);
 }
 
+void
+rb_slist_deep_free (GSList *list)
+{
+	g_slist_foreach (list, (GFunc)g_free, NULL);
+	g_slist_free (list);
+}
 
 static void
 collate_keys_cb (gpointer key, gpointer value, GList **list)

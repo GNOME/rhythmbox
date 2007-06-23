@@ -1,5 +1,20 @@
 2007-06-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* lib/rb-util.c: (rb_slist_deep_free):
+	* lib/rb-util.h:
+	New utility function to free a GSList and its contents.
+
+	* sources/rb-library-source.c: (rb_library_source_constructor),
+	(rb_library_source_preferences_sync),
+	(rb_library_source_library_location_cb), (sanitize_pattern),
+	(layout_example_label_update), (build_filename), (impl_can_paste),
+	(impl_paste), (rb_library_source_sync_child_sources):
+	When library_strip_chars is set in gconf, replace whitespace in the
+	filename pattern with underscores.  Fix numerous memory leaks while
+	we're at it.  Fixes #450281.
+
+2007-06-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* shell/rb-shell-player.c: (rb_shell_player_dispose),
 	(rb_shell_player_jump_to_current_cb), (new_playing_stream_idle_cb),
 	(current_playing_stream_idle_cb), (playing_stream_cb),

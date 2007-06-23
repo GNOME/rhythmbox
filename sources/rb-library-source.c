@@ -297,8 +297,7 @@ rb_library_source_constructor (GType type,
 		list = g_slist_prepend (list, g_strdup (rb_music_dir ()));
 		eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
 	}
-	g_slist_foreach (list, (GFunc) g_free, NULL);
-	g_slist_free (list);
+	rb_slist_deep_free (list);
 
 	source->priv->library_location_notify_id =
 		eel_gconf_notification_add (CONF_LIBRARY_LOCATION,
@@ -530,7 +529,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 {
 	GSList *list;
 #ifdef ENABLE_TRACK_TRANSFER
-	const char *str;
+	char *str;
 	GConfClient *gconf_client;
 #endif
 
@@ -566,8 +565,7 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 					   G_CALLBACK (rb_library_source_library_location_cb),
 					   source);
 
-	g_slist_foreach (list, (GFunc) g_free, NULL);
-	g_slist_free (list);
+	rb_slist_deep_free (list);
 
 	/* watch checkbox */
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (source->priv->watch_library_check),
@@ -576,8 +574,10 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 #ifdef ENABLE_TRACK_TRANSFER
 	/* preferred format */
 	str = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
-	if (str)
+	if (str) {
 		gm_audio_profile_choose_set_active (source->priv->preferred_format_menu, str);
+		g_free (str);
+	}
 
 	source->priv->layout_path_notify_id =
 		eel_gconf_notification_add (CONF_LIBRARY_LAYOUT_PATH,
@@ -617,7 +617,7 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 
 	g_free (uri);
 	if (list)
-		g_slist_free (list);
+		rb_slist_deep_free (list);
 
 	return FALSE;
 }
@@ -827,6 +827,20 @@ sanitize_path (const char *str)
 	return res ? res : g_strdup(str);
 }
 
+static char *
+sanitize_pattern (const char *pat)
+{
+	if (eel_gconf_get_boolean (CONF_LIBRARY_STRIP_CHARS)) {
+		gchar *s;
+
+		s = g_strdup (pat);
+		g_strdelimit (s, "\t ", '_');
+		return s;
+	} else {
+		return g_strdup (pat);
+	}
+}
+
 /**
  * Parse a filename pattern and replace markers with values from a TrackDetails
  * structure.
@@ -973,6 +987,7 @@ layout_example_label_update (RBLibrarySource *source)
 	char *path_value;
 	char *example;
 	char *format;
+	char *tmp;
 	GMAudioProfile *profile;
 	RhythmDBEntryType entry_type;
 	RhythmDBEntry *sample_entry;
@@ -984,6 +999,10 @@ layout_example_label_update (RBLibrarySource *source)
 	if (file_pattern == NULL) {
 		file_pattern = g_strdup (library_layout_filenames[0].path);
 	}
+	tmp = sanitize_pattern (file_pattern);
+	g_free (file_pattern);
+	file_pattern = tmp;
+
 	path_pattern = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH);
 	if (path_pattern == NULL) {
 		path_pattern = g_strdup (library_layout_paths[0].path);
@@ -1095,12 +1114,13 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	char *realfile;
 	char *realpath;
 	char *filename;
-	char *string;
+	char *string = NULL;
 	char *extension = NULL;
+	char *tmp;
 	GSList *list;
-	const char *layout_path;
-	const char *layout_filename;
-	const char *preferred_format;
+	char *layout_path;
+	char *layout_filename;
+	char *preferred_format;
 
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 	layout_path = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH);
@@ -1110,18 +1130,17 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 	if (list == NULL || layout_path == NULL || layout_filename == NULL || preferred_format == NULL) {
 		/* emit warning */
 		rb_debug ("Could not retrieve settings from GConf");
-		g_slist_free (list);
-		return NULL;
+		goto out;
 	}
+
+	tmp = sanitize_pattern (layout_filename);
+	g_free (layout_filename);
+	layout_filename = tmp;
 
 	uri = gnome_vfs_uri_new ((const char *)list->data);
 	if (uri == NULL) {
-		/* do something.. */
-		g_slist_free (list);
-		return NULL;
+		goto out;
 	}
-
-	g_slist_free (list);
 
 	realpath = filepath_parse_pattern (layout_path, entry);
 	new = gnome_vfs_uri_append_path (uri, realpath);
@@ -1172,6 +1191,12 @@ build_filename (RBLibrarySource *source, RhythmDBEntry *entry)
 
 	string = gnome_vfs_uri_to_string (uri, 0);
 	gnome_vfs_uri_unref (uri);
+ out:
+	rb_slist_deep_free (list);
+	g_free (layout_path);
+	g_free (layout_filename);
+	g_free (preferred_format);
+
 	return string;
 }
 #endif
@@ -1182,14 +1207,23 @@ impl_can_paste (RBSource *asource)
 #ifdef ENABLE_TRACK_TRANSFER
 	GSList *list;
 	gboolean can_paste = TRUE;
+	char *str;
 
 	list = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
-	can_paste = ((list != NULL) &&
-		     (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH) != NULL ) &&
-		     (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME) != NULL) &&
-		     (eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT) != NULL));
+	can_paste = (list != NULL);
+	rb_slist_deep_free (list);
 
-	g_slist_free (list);
+	str = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH);
+	can_paste &= (str != NULL);
+	g_free (str);
+
+	str = eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME);
+	can_paste &= (str != NULL);
+	g_free (str);
+
+	str = eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT);
+	can_paste &= (str != NULL);
+	g_free (str);
 	return can_paste;
 #else
 	return FALSE;
@@ -1213,15 +1247,12 @@ impl_paste (RBSource *asource, GList *entries)
 	RBShell *shell;
 	RhythmDBEntryType source_entry_type;
 
-	sl = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
-	if ((sl == NULL) ||
-	    (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_PATH) == NULL )||
-	    (eel_gconf_get_string (CONF_LIBRARY_LAYOUT_FILENAME) == NULL) ||
-	    (eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT) == NULL)) {
-		g_slist_free (sl);
+	if (impl_can_paste (asource) == FALSE) {
 		g_warning ("RBLibrarySource impl_paste called when gconf keys unset");
 		return;
 	}
+
+	sl = eel_gconf_get_string_list (CONF_LIBRARY_LOCATION);
 
 	g_object_get (source,
 		      "shell", &shell,
@@ -1356,6 +1387,6 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 
 	if (g_slist_length (list) > 1)
 		g_slist_foreach (list, (GFunc)rb_library_source_add_child_source, source);
-	g_slist_foreach (list, (GFunc) g_free, NULL);
-	g_slist_free (list);
+	rb_slist_deep_free (list);
 }
+
