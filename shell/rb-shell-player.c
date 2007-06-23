@@ -157,8 +157,6 @@ static gboolean rb_shell_player_do_next_internal (RBShellPlayer *player,
 						  gboolean from_eos,
 						  GError **error);
 
-static gboolean rb_shell_player_jump_to_current_idle (RBShellPlayer *player);
-
 #define CONF_STATE		CONF_PREFIX "/state"
 
 /* number of seconds before the end of a track to start prerolling the next */
@@ -217,6 +215,9 @@ struct RBShellPlayerPrivate
 	float volume;
 
 	guint do_next_idle_id;
+	guint emit_playing_id;
+	guint unblock_play_id;
+	guint jump_to_current_id;
 };
 
 #define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
@@ -994,6 +995,26 @@ rb_shell_player_dispose (GObject *object)
 		player->priv->queue_play_order = NULL;
 	}
 
+	if (player->priv->do_next_idle_id != 0) {
+		g_source_remove (player->priv->do_next_idle_id);
+		player->priv->do_next_idle_id = 0;
+	}
+
+	if (player->priv->emit_playing_id != 0) {
+		g_source_remove (player->priv->emit_playing_id);
+		player->priv->emit_playing_id = 0;
+	}
+
+	if (player->priv->unblock_play_id != 0) {
+		g_source_remove (player->priv->unblock_play_id);
+		player->priv->unblock_play_id = 0;
+	}
+
+	if (player->priv->jump_to_current_id != 0) {
+		g_source_remove (player->priv->jump_to_current_id);
+		player->priv->jump_to_current_id = 0;
+	}
+
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
 }
 
@@ -1614,9 +1635,10 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 }
 
 static gboolean
-rb_shell_player_jump_to_current_idle (RBShellPlayer *player)
+rb_shell_player_jump_to_current_cb (RBShellPlayer *player)
 {
 	GDK_THREADS_ENTER ();
+	player->priv->jump_to_current_id = 0;
 	rb_shell_player_jump_to_current (player);
 	GDK_THREADS_LEAVE ();
 	return FALSE;
@@ -2932,6 +2954,8 @@ new_playing_stream_idle_cb (RBShellPlayer *player)
 
 	GDK_THREADS_ENTER ();
 
+	player->priv->emit_playing_id = 0;
+
 	/* emit some interesting signals */
 	entry = rb_shell_player_get_playing_entry (player);
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
@@ -2957,6 +2981,8 @@ current_playing_stream_idle_cb (RBShellPlayer *player)
 {
 	GDK_THREADS_ENTER ();
 
+	player->priv->emit_playing_id = 0;
+
 	/* resync UI */
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -2973,11 +2999,14 @@ playing_stream_cb (RBPlayer *mmplayer,
 {
 	GDK_THREADS_ENTER ();
 
+	if (player->priv->emit_playing_id != 0)
+		g_source_remove (player->priv->emit_playing_id);
+
 	/* only emit playing-song-changed etc. when the entry changes */
 	if (player->priv->playing_entry != entry) {
-		g_idle_add ((GSourceFunc) new_playing_stream_idle_cb, player);
+		player->priv->emit_playing_id = g_idle_add ((GSourceFunc) new_playing_stream_idle_cb, player);
 	} else {
-		g_idle_add ((GSourceFunc) current_playing_stream_idle_cb, player);
+		player->priv->emit_playing_id = g_idle_add ((GSourceFunc) current_playing_stream_idle_cb, player);
 	}
 
 	/* update playing entry */
@@ -2992,7 +3021,12 @@ playing_stream_cb (RBPlayer *mmplayer,
 		 * I have no idea why this is.  Even 250ms later, it's mostly OK and
 		 * the UI doesn't look too sluggish.  hmm.
 		 */
-		g_timeout_add (250, (GSourceFunc) rb_shell_player_jump_to_current_idle, player);
+		if (player->priv->jump_to_current_id == 0) {
+			player->priv->jump_to_current_id =
+				g_timeout_add (250,
+					       (GSourceFunc) rb_shell_player_jump_to_current_cb,
+					       player);
+		}
 		player->priv->jump_to_playing_entry = FALSE;
 	}
 
@@ -3133,6 +3167,8 @@ _idle_unblock_signal_cb (gpointer data)
 
 	GDK_THREADS_ENTER ();
 
+	player->priv->unblock_play_id = 0;
+
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
 
@@ -3171,7 +3207,10 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 	 */
 	g_signal_handlers_block_by_func (action, rb_shell_player_cmd_play, player);
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
-	g_idle_add (_idle_unblock_signal_cb, player);
+
+	if (player->priv->unblock_play_id == 0) {
+		player->priv->unblock_play_id = g_idle_add (_idle_unblock_signal_cb, player);
+	}
 }
 
 /* This should really be standard. */

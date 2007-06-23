@@ -1,5 +1,14 @@
 2007-06-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* shell/rb-shell-player.c: (rb_shell_player_dispose),
+	(rb_shell_player_jump_to_current_cb), (new_playing_stream_idle_cb),
+	(current_playing_stream_idle_cb), (playing_stream_cb),
+	(_idle_unblock_signal_cb), (rb_shell_player_playing_changed_cb):
+	Clean up all rb-shell-player idle and timeout handlers when disposed.
+	Should fix #450108.
+
+2007-06-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (stop_sink_later),
 	(rb_player_gst_xfade_close):
 	Don't shut the sink down straight away if we stop the last playing
