@@ -218,6 +218,20 @@ _wrap_rb_property_view_set_selection(PyGObject *self, PyObject *args, PyObject *
     Py_RETURN_NONE;
 }
 %%
+override rb_property_view_get_selection noargs
+static PyObject *
+_wrap_rb_property_view_get_selection(PyGObject *self)
+{
+    GList *list;
+    PyObject *py_list;
+
+    list = rb_property_view_get_selection (RB_PROPERTY_VIEW(self->obj));
+    py_list = _helper_wrap_string_glist (list);
+    rb_list_deep_free (list);
+
+    return py_list;
+}
+%%
 override rb_shell_player_get_volume noargs
 static PyObject *
 _wrap_rb_shell_player_get_volume(PyGObject *self)

@@ -74,6 +74,8 @@ void		rb_property_view_reset			(RBPropertyView *view);
 void		rb_property_view_set_selection		(RBPropertyView *view,
 							 const GList *names);
 
+GList *		rb_property_view_get_selection		(RBPropertyView *view);
+
 RhythmDBPropertyModel * rb_property_view_get_model	(RBPropertyView *view);
 
 void		rb_property_view_set_model		(RBPropertyView *view,

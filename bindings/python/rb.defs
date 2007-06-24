@@ -1526,6 +1526,12 @@
   (return-type "none")
 )
 
+(define-method get_selection
+  (of-object "RBPropertyView")
+  (c-name "rb_property_view_get_selection")
+  (return-type "GList*")
+)
+
 (define-method set_selection
   (of-object "RBPropertyView")
   (c-name "rb_property_view_set_selection")

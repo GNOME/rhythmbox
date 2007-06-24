@@ -1,5 +1,16 @@
 2007-06-24  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Tim Retout  <tim@retout.co.uk>
+
+	* widgets/rb-property-view.c: (rb_property_view_get_selection):
+	* widgets/rb-property-view.h: add rb_property_view_get_selection()
+	method
+
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override: bind the above. Fixes #449925
+
+2007-06-24  James Livingston  <doclivingston@gmail.com>
+
 	* bindings/python/override_common.c: (_helper_wrap_string_glist),
 	(_helper_unwrap_boxed_pylist), (_helper_unwrap_gobject_pylist),
 	(_helper_unwrap_string_pylist), (_helper_unwrap_boxed_gptrarray):

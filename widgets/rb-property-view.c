@@ -649,6 +649,38 @@ rb_property_view_set_selection (RBPropertyView *view,
 	rb_property_view_selection_changed_cb (view->priv->selection, view);
 }
 
+GList *
+rb_property_view_get_selection (RBPropertyView *view)
+{
+	gboolean is_all = TRUE;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	GList *selected_rows, *tem;
+	GList *selected_properties = NULL;
+
+	selected_rows = gtk_tree_selection_get_selected_rows (view->priv->selection, &model);
+	for (tem = selected_rows; tem; tem = tem->next) {
+		char *selected_prop = NULL;
+
+		g_assert (gtk_tree_model_get_iter (model, &iter, tem->data));
+		gtk_tree_model_get (model, &iter,
+				    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &selected_prop,
+				    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
+		if (is_all) {
+			rb_list_deep_free (selected_properties);
+			selected_properties = NULL;
+			break;
+		}
+		selected_properties = g_list_prepend (selected_properties,
+						      selected_prop);
+	}
+
+	g_list_foreach (selected_rows, (GFunc) gtk_tree_path_free, NULL);
+	g_list_free (selected_rows);
+	
+	return selected_properties;
+}
+
 static void
 rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				       RBPropertyView *view)
