@@ -1,3 +1,21 @@
+2007-06-24  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/override_common.c: (_helper_wrap_string_glist),
+	(_helper_unwrap_boxed_pylist), (_helper_unwrap_gobject_pylist),
+	(_helper_unwrap_string_pylist), (_helper_unwrap_boxed_gptrarray):
+	* bindings/python/override_common.h: add some new wrap/unwrap methods
+	and fix bugs in some existing ones.
+
+	* bindings/python/rb.defs:
+	* bindings/python/rb.override:
+	* bindings/python/rhythmdb.override: bind a few more methods, as well
+	as fixing lots of bugs: leaks when wrap/unwrapping lists, leaks from
+	boxed_new, thread safety of some vfuncs
+
+	* lib/rb-util.c: (rb_list_destroy_free), (rb_list_deep_free):
+	* lib/rb-util.h: add a function similar to rb_list_deep_free, but
+	taking the GDestroyNotify function to use, instead of g_free
+
 2007-06-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* lib/rb-util.c: (rb_slist_deep_free):

@@ -32,6 +32,16 @@ void pyrhythmdb_add_constants (PyObject *module, const gchar *strip_prefix);
 static PyObject* _wrap_rb_string_value_map_mp_subscript (PyObject *self, PyObject *subscript);
 static int _wrap_rb_string_value_map_mp_ass_subscript (PyObject *self, PyObject *subscript, PyObject *py_value);
 
+
+static inline PyObject *
+py_return_boolean (gboolean val)
+{
+	if (val)
+		Py_RETURN_TRUE;
+	else
+		Py_RETURN_FALSE;
+}
+
 static void
 _py_decref (PyObject *o)
 {
@@ -48,9 +58,14 @@ typedef struct {
 static void
 _rhythmdb_query_model_sort_data_free (PyRhythmDBQueryModelSortData *data)
 {
+	PyGILState_STATE __py_state;
+	__py_state = pyg_gil_state_ensure();
+
 	Py_DECREF (data->func);
 	Py_DECREF (data->data);
 	g_free (data);
+
+	pyg_gil_state_release(__py_state);
 }
 
 static int
@@ -60,9 +75,12 @@ _rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQ
 	PyObject *py_result;
 	PyObject *py_a, *py_b;
 	int result;
+	PyGILState_STATE __py_state;
 
-	py_a = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, a, TRUE, TRUE);
-	py_b = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, b, TRUE, TRUE);
+	__py_state = pyg_gil_state_ensure();
+
+	py_a = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, a, FALSE, FALSE);
+	py_b = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, b, FALSE, FALSE);
 	if (data->data)
 		args = Py_BuildValue ("(OOO)", py_a, py_b, data->data);
 	else
@@ -75,6 +93,8 @@ _rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQ
 	Py_DECREF (py_b);
 	Py_DECREF (args);
 	Py_DECREF (py_result);
+	pyg_gil_state_release(__py_state);
+
 	return result;
 }
 /* end query model sorting stuff */
@@ -110,13 +130,13 @@ _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)
 	PyObject *py_propid = NULL;
 	PyObject *py_entry = NULL;
 	RhythmDB *db;
-	RhythmDBPropType propid;
+	int propid;
 	GValue value = {0,};
 	PyObject *ret;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO:RhythmDB.entry_get", kwlist, &py_entry, &py_propid))
 		return NULL;
-	if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
+	if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, &propid))
 		return NULL;
 
 	if (!pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
@@ -127,14 +147,13 @@ _wrap_rhythmdb_entry_get(PyGObject *self, PyObject *args, PyObject *kwargs)
 	}
 
 	db = RHYTHMDB (self->obj);
-	g_value_init (&value, rhythmdb_get_property_type (db, propid));
-	rhythmdb_entry_get(db, pyg_boxed_get (py_entry, RhythmDBEntry), propid, &value);
+	g_value_init (&value, rhythmdb_get_property_type (db, (RhythmDBPropType)propid));
+	rhythmdb_entry_get(db, pyg_boxed_get (py_entry, RhythmDBEntry), (RhythmDBPropType)propid, &value);
 	ret = pyg_value_as_pyobject (&value, TRUE);
 	g_value_unset (&value);
 	if (ret)
 		return ret;
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
 %%
 override rhythmdb_entry_set kwargs
@@ -146,7 +165,7 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 	PyObject *py_propid = NULL;
 	PyObject *py_value = NULL;
 	RhythmDBEntry *entry;
-	RhythmDBPropType propid;
+	int propid;
 	GValue value = {0,};
 	GType prop_type;
 
@@ -160,10 +179,10 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 		g_free (s);
 		return NULL;
 	}
-	if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, (gint *)&propid))
+	if (pyg_enum_get_value(RHYTHMDB_TYPE_PROP_TYPE, py_propid, &propid))
 		return NULL;
 
-	prop_type = rhythmdb_get_property_type (RHYTHMDB(self->obj), propid);
+	prop_type = rhythmdb_get_property_type (RHYTHMDB(self->obj), (RhythmDBPropType)propid);
 	g_value_init(&value, prop_type);
 	if (pyg_value_from_pyobject(&value, py_value) < 0) {
 		char *s;
@@ -176,10 +195,9 @@ _wrap_rhythmdb_entry_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 		g_free (s);
 		return NULL;
 	}
-	rhythmdb_entry_set(RHYTHMDB(self->obj), entry, propid, &value);
+	rhythmdb_entry_set(RHYTHMDB(self->obj), entry, (RhythmDBPropType)propid, &value);
 	g_value_unset (&value);
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
 %%
 override rhythmdb_query_results_add_results kwargs
@@ -188,34 +206,16 @@ _wrap_rhythmdb_query_results_add_results (PyGObject *self, PyObject *args, PyObj
 {
 	static char *kwlist[] = { "entries", NULL };
 	PyObject *py_entries = NULL;
-	int size, i;
 	GPtrArray *array;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RhythmDBQueryResults.add_results", kwlist, &py_entries))
 		return NULL;
 
-	array = g_ptr_array_new();
-	size = PyList_Size(py_entries);
-	for (i = 0; i < size; i++) {
-		PyObject *py_entry;
-		RhythmDBEntry *entry;
-
-		py_entry = PyList_GetItem(py_entries, i);
-		if (!pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
-			g_ptr_array_free(array, FALSE);
-			return NULL;
-		}
-
-	entry = pyg_boxed_get(py_entry, RhythmDBEntry);
-		g_ptr_array_add(array, entry);
-	}
-
+	array = _helper_unwrap_boxed_gptrarray (py_entries, RHYTHMDB_TYPE_ENTRY);
 	rhythmdb_query_results_add_results (RHYTHMDB_QUERY_RESULTS(self->obj), array);
 	g_ptr_array_free(array, FALSE);
 
-	Py_INCREF(Py_None);
-	return Py_None;
-
+	Py_RETURN_NONE;
 }
 %%
 override rhythmdb_entry_foreach kwargs
@@ -232,7 +232,9 @@ _rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  
 	PyObject *result;
 	PyObject *py_entry;
 
-	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, TRUE, TRUE);
+	/* no need to ensure GIL state, since it's only called from within _wrap_rhythmdb_entry_foreach */
+
+	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
 	if (data->data) {
 		args = Py_BuildValue ("(OO)", py_entry, data->data);
 	} else {
@@ -265,8 +267,109 @@ _wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
 
 	rhythmdb_entry_foreach (RHYTHMDB (self->obj), (GFunc)_rhythmdb_entry_foreach_func, &data);
 
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
+}
+%%
+override rhythmdb_entry_keyword_has kwargs
+static PyObject *
+_wrap_rhythmdb_entry_keyword_has (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "entry", "keyword", NULL };
+	PyObject *py_entry = NULL;
+	const char *string = NULL;
+	RhythmDBEntry *entry;
+	RBRefString *refstring;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Os:RhythmDBEntry.keyword_has", kwlist, &py_entry, &string))
+		return NULL;
+	if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+		entry = pyg_boxed_get(py_entry, RhythmDBEntry);
+	} else {
+		char *s = g_strdup_printf ("entry should be a RhythmDBEntry, is a %s", g_type_name (pyg_type_from_object (py_entry)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
+	}
+
+	if (string == NULL) {
+		PyErr_SetString(PyExc_TypeError, "cannot pass None as the keyword string");
+		return NULL;
+	}
+
+	refstring = rb_refstring_find (string);
+	if (refstring != NULL) {
+		return py_return_boolean (rhythmdb_entry_keyword_has (RHYTHMDB (self->obj), entry, refstring));
+	} else {
+		Py_RETURN_FALSE;
+	}
+}
+%%
+override rhythmdb_entry_keyword_add kwargs
+static PyObject *
+_wrap_rhythmdb_entry_keyword_add (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "entry", "keyword", NULL };
+	PyObject *py_entry = NULL;
+	const char *string = NULL;
+	RhythmDBEntry *entry;
+	RBRefString *refstring;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Os:RhythmDBEntry.keyword_add", kwlist, &py_entry, &string))
+		return NULL;
+	if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+		entry = pyg_boxed_get(py_entry, RhythmDBEntry);
+	} else {
+		char *s = g_strdup_printf ("entry should be a RhythmDBEntry, is a %s", g_type_name (pyg_type_from_object (py_entry)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
+	}
+
+	if (string == NULL) {
+		PyErr_SetString(PyExc_TypeError, "cannot pass None as the keyword string");
+		return NULL;
+	}
+
+	refstring = rb_refstring_find (string);
+	if (refstring != NULL) {
+		return py_return_boolean (rhythmdb_entry_keyword_add (RHYTHMDB (self->obj), entry, refstring));
+	} else {
+		Py_RETURN_FALSE;
+	}
+}
+%%
+override rhythmdb_entry_keyword_remove kwargs
+static PyObject *
+_wrap_rhythmdb_entry_keyword_remove (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "entry", "keyword", NULL };
+	PyObject *py_entry = NULL;
+	const char *string = NULL;
+	RhythmDBEntry *entry;
+	RBRefString *refstring;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Os:RhythmDBEntry.keyword_remove", kwlist, &py_entry, &string))
+		return NULL;
+	if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+		entry = pyg_boxed_get(py_entry, RhythmDBEntry);
+	} else {
+		char *s = g_strdup_printf ("entry should be a RhythmDBEntry, is a %s", g_type_name (pyg_type_from_object (py_entry)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
+	}
+
+	if (string == NULL) {
+		PyErr_SetString(PyExc_TypeError, "cannot pass None as the keyword string");
+		return NULL;
+	}
+
+	refstring = rb_refstring_find (string);
+	if (refstring != NULL) {
+		return py_return_boolean (rhythmdb_entry_keyword_remove (RHYTHMDB (self->obj), entry, refstring));
+	} else {
+		Py_RETURN_FALSE;
+	}
 }
 %%
 override rhythmdb_query_model_new kwargs
@@ -349,8 +452,7 @@ _wrap_rhythmdb_query_model_set_sort_order (PyGObject *self, PyObject *args, PyOb
 						 data, (GDestroyNotify) _rhythmdb_query_model_sort_data_free,
 						 (reverse != 0));
 
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
 %%
 override-attr  RhythmDBEntryType_.sync_metadata
@@ -359,12 +461,15 @@ static void
 _wrap_py_entry_type_sync_metadata (RhythmDB *db, RhythmDBEntry *entry,
 				   GError **error, PyObject *py_call)
 {
+	PyGILState_STATE __py_state;
+	__py_state = pyg_gil_state_ensure();
+
 	if (PyCallable_Check (py_call)) {
 		PyObject *ret, *args, *error;
 		PyObject *py_db, *py_entry;
 
 		py_db = pygobject_new (G_OBJECT (db));
-		py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, TRUE, TRUE);
+		py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
 		args = Py_BuildValue ("(OO)", py_db, py_entry);
 		ret = PyObject_Call (py_call, args, NULL);
 
@@ -380,6 +485,8 @@ _wrap_py_entry_type_sync_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	} else {
 		/* TODO: set error */
 	}
+
+	pyg_gil_state_release(__py_state);
 }
 
 static PyObject*
@@ -398,8 +505,7 @@ _wrap_rhythmdb_entry_type__get_sync_metadata (PyGBoxed *self, void *closure)
 
 	if (et->sync_metadata == (RhythmDBEntrySyncFunc)rb_null_function) {
 		/* nothing */
-		Py_INCREF (Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	} else if (et->sync_metadata == (RhythmDBEntrySyncFunc)_wrap_py_entry_type_sync_metadata) {
 		/* it's python */
 		PyObject *value = (PyObject*)et->sync_metadata_data;
@@ -426,8 +532,8 @@ _wrap_rhythmdb_entry_type__set_sync_metadata (PyGBoxed *self, PyObject *value, v
 		return -1;
 	}
 
-	if (et->sync_metadata_data && et->sync_metadata_destroy)
-		et->sync_metadata_destroy (et->sync_metadata);
+	if (et->sync_metadata_destroy)
+		et->sync_metadata_destroy (et->sync_metadata_data);
 
 	if (value == Py_None) {
 		et->sync_metadata = (RhythmDBEntrySyncFunc)rb_null_function;
@@ -441,6 +547,9 @@ _wrap_rhythmdb_entry_type__set_sync_metadata (PyGBoxed *self, PyObject *value, v
 		et->sync_metadata_destroy = (GDestroyNotify)_py_decref;
 	} else {
 		PyErr_SetString(PyExc_TypeError, "value must be callable");
+		et->sync_metadata = NULL;
+		et->sync_metadata_data = NULL;
+		et->sync_metadata_destroy = NULL;
 		return -1;
 	}
 
@@ -453,7 +562,10 @@ static gboolean
 _wrap_py_entry_type_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry,
 					  PyObject *py_call)
 {
-	gboolean retval = FALSE;
+	gboolean retval;
+	PyGILState_STATE __py_state;
+
+	__py_state = pyg_gil_state_ensure();
 
 	if (PyCallable_Check (py_call)) {
 		PyObject *ret, *args;
@@ -461,7 +573,7 @@ _wrap_py_entry_type_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry,
 		int i;
 
 		py_db = pygobject_new (G_OBJECT (db));
-		py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, TRUE, TRUE);
+		py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
 		args = Py_BuildValue ("(OO)", py_db, py_entry);
 		ret = PyObject_Call (py_call, args, NULL);
 
@@ -476,11 +588,14 @@ _wrap_py_entry_type_can_sync_metadata (RhythmDB *db, RhythmDBEntry *entry,
 			retval = TRUE;
 		} else {
 			/*TODO: emit error */
+			retval = FALSE;
 		}
 	} else {
 		/* TODO: emit error */
+		retval = FALSE;
 	}
 
+	pyg_gil_state_release(__py_state);
 	return retval;
 }
 
@@ -500,15 +615,12 @@ _wrap_rhythmdb_entry_type__get_can_sync_metadata (PyGBoxed *self, void *closure)
 
 	if (et->can_sync_metadata == (RhythmDBEntryCanSyncFunc)rb_false_function) {
 		/* always false */
-		Py_INCREF (Py_False);
-		return Py_False;
+		Py_RETURN_FALSE;
 	} else if (et->can_sync_metadata == (RhythmDBEntryCanSyncFunc)rb_true_function) {
 		/* always true */
-		Py_INCREF (Py_True);
-		return Py_True;
+		Py_RETURN_TRUE;
 	} else if (et->can_sync_metadata == (RhythmDBEntryCanSyncFunc)rb_null_function) {
-		Py_INCREF (Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	} else if (et->can_sync_metadata == (RhythmDBEntryCanSyncFunc)_wrap_py_entry_type_can_sync_metadata) {
 		/* it's python */
 		PyObject *value = (PyObject*)et->can_sync_metadata_data;
@@ -535,8 +647,8 @@ _wrap_rhythmdb_entry_type__set_can_sync_metadata (PyGBoxed *self, PyObject *valu
 		return -1;
 	}
 
-	if (et->can_sync_metadata_data && et->can_sync_metadata_destroy)
-		et->can_sync_metadata_destroy (et->can_sync_metadata);
+	if (et->can_sync_metadata_destroy)
+		et->can_sync_metadata_destroy (et->can_sync_metadata_data);
 
 	if (value == Py_False) {
 		et->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_false_function;
@@ -558,6 +670,113 @@ _wrap_rhythmdb_entry_type__set_can_sync_metadata (PyGBoxed *self, PyObject *valu
 		et->can_sync_metadata_destroy = (GDestroyNotify)_py_decref;
 	} else {
 		PyErr_SetString(PyExc_TypeError, "value must be callable");
+		et->can_sync_metadata = NULL;
+		et->can_sync_metadata_data = NULL;
+		et->can_sync_metadata_destroy = NULL;
+		return -1;
+	}
+
+	return 0;
+}
+%%
+override-attr  RhythmDBEntryType_.get_playback_uri
+
+static char*
+_wrap_py_entry_type_get_playback_uri (RhythmDB *db, RhythmDBEntry *entry, PyObject *py_call)
+{
+	if (PyCallable_Check (py_call)) {
+		PyObject *py_ret, *args;
+		PyObject *py_db, *py_entry;
+		char *ret;
+
+		py_db = pygobject_new (G_OBJECT (db));
+		py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
+		args = Py_BuildValue ("(OO)", py_db, py_entry);
+		py_ret = PyObject_Call (py_call, args, NULL);
+
+		Py_DECREF (py_db);
+		Py_DECREF (py_entry);
+
+		if (py_ret != Py_None) {
+			ret = g_strdup (PyString_AsString (py_ret));
+		} else {
+			ret = NULL;
+		}
+		Py_DECREF (py_ret);
+		return ret;
+	} else {
+		/* TODO: emit error */
+		return NULL;
+	}
+}
+
+static PyObject*
+_wrap_rhythmdb_entry_type__get_get_playback_uri (PyGBoxed *self, void *closure)
+{
+	RhythmDBEntryType et;
+	PyGILState_STATE __py_state;
+
+	__py_state = pyg_gil_state_ensure();
+
+	if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE))
+		et = pyg_boxed_get(self, RhythmDBEntryType_);
+	else {
+		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	if (et->get_playback_uri == (RhythmDBEntryStringFunc)rb_null_function) {
+		pyg_gil_state_release(__py_state);
+		Py_RETURN_NONE;
+	} else if (et->get_playback_uri == (RhythmDBEntryStringFunc)_wrap_py_entry_type_get_playback_uri) {
+		/* it's python */
+		PyObject *value = (PyObject*)et->get_playback_uri_data;
+
+		Py_INCREF (value);
+		pyg_gil_state_release(__py_state);
+		return value;
+	} else {
+		/* FIXME: it's a non-python function */
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+}
+
+static int
+_wrap_rhythmdb_entry_type__set_get_playback_uri (PyGBoxed *self, PyObject *value, void *closure)
+{
+	RhythmDBEntryType et;
+
+	if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE))
+		et = pyg_boxed_get(self, RhythmDBEntryType_);
+	else {
+		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return -1;
+	}
+
+	if (et->get_playback_uri_destroy)
+		et->get_playback_uri_destroy (et->get_playback_uri_data);
+
+	if (value == Py_None) {
+		et->get_playback_uri = (RhythmDBEntryStringFunc)rb_null_function;
+		et->get_playback_uri_data = NULL;
+		et->get_playback_uri_destroy = NULL;
+	} else if (PyCallable_Check (value)) {
+		/* method */
+		et->get_playback_uri = (RhythmDBEntryStringFunc)_wrap_py_entry_type_get_playback_uri;
+		Py_INCREF (value);
+		et->get_playback_uri_data = value;
+		et->get_playback_uri_destroy = (GDestroyNotify)_py_decref;
+	} else {
+		PyErr_SetString(PyExc_TypeError, "value must be callable");
+		et->get_playback_uri = NULL;
+		et->get_playback_uri_data = NULL;
+		et->get_playback_uri_destroy = NULL;
 		return -1;
 	}
 
@@ -577,7 +796,7 @@ _wrap_rhythmdb_entry_type__get_category(PyGBoxed *self, void *closure)
 	    char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
 	    PyErr_SetString(PyExc_TypeError, s);
 	    g_free (s);
-	    return -1;
+	    return NULL;
     }
     return pyg_enum_from_gtype(RHYTHMDB_TYPE_ENTRY_CATEGORY, et->category);
 }
@@ -585,18 +804,24 @@ _wrap_rhythmdb_entry_type__get_category(PyGBoxed *self, void *closure)
 static int
 _wrap_rhythmdb_entry_type__set_category(PyGBoxed *self, PyObject *value)
 {
-    RhythmDBEntryType et;
+	RhythmDBEntryType et;
+	int category;
+	int ret;
 
-    if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE))
-	    et = pyg_boxed_get(self, RhythmDBEntryType_);
-    else {
-	    char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
-	    PyErr_SetString(PyExc_TypeError, s);
-	    g_free (s);
-	    return -1;
-    }
+	if (pyg_boxed_check(self, RHYTHMDB_TYPE_ENTRY_TYPE)) {
+		et = pyg_boxed_get(self, RhythmDBEntryType_);
+	} else {
+		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return -1;
+	}
 
-    return pyg_enum_get_value (RHYTHMDB_TYPE_ENTRY_CATEGORY, value, &et->category);
+	ret = pyg_enum_get_value (RHYTHMDB_TYPE_ENTRY_CATEGORY, value, &category);
+	if (ret == 0) {
+		et->category = category;
+	}
+	return ret;
 }
 
 %%
@@ -630,8 +855,7 @@ _wrap_rhythmdb_entry_request_extra_metadata(PyGObject *self, PyObject *args, PyO
 		g_free(ret);
 		return py_ret;
 	}
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
 %%
 override rhythmdb_emit_entry_extra_metadata_notify kwargs
@@ -670,8 +894,7 @@ _wrap_rhythmdb_emit_entry_extra_metadata_notify(PyGObject *self, PyObject *args,
 	rhythmdb_emit_entry_extra_metadata_notify(RHYTHMDB_RHYTHMDB(self->obj), entry, property_name, &val);
 	g_value_unset (&val);
 	
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
 %%
 override rhythmdb_query_new noargs
@@ -684,7 +907,7 @@ _wrap_rhythmdb_query_new(PyGObject *self)
     ret = rhythmdb_query_parse(RHYTHMDB_RHYTHMDB(self->obj), RHYTHMDB_QUERY_END);
     
     /* pyg_boxed_new handles NULL checking */
-    return pyg_boxed_new(RHYTHMDB_TYPE_QUERY, ret, TRUE, TRUE);
+    return pyg_boxed_new(RHYTHMDB_TYPE_QUERY, ret, FALSE, TRUE);
 }
 %%
 override rhythmdb_query_append kwargs
@@ -802,8 +1025,7 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 		Py_DECREF (py_type);
 	}
 	
-	Py_INCREF (Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
 %%
 override-slot RBStringValueMap.tp_as_mapping
@@ -831,8 +1053,7 @@ _wrap_rb_string_value_map_mp_subscript (PyObject *self, PyObject *subscript)
 	key = PyString_AsString (subscript);
 	
 	if (!rb_string_value_map_get (map, key, &value)) {
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	}
 
 	py_value = pyg_value_as_pyobject (&value, TRUE);
@@ -906,6 +1127,6 @@ _wrap_rb_string_value_map_set (PyGObject *self, PyObject *args, PyObject *kwargs
 		return NULL;
 	}
 
-	Py_INCREF (Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 }
+

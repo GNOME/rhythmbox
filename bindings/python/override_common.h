@@ -26,8 +26,8 @@
 #ifndef __OVERRIDE_COMMON_H
 #define __OVERRIDE_COMMON_H
 
-PyObject * _helper_wrap_gobject_glist (const GList *list);
-PyObject * _helper_wrap_string_glist (const GList *list);
+PyObject * _helper_wrap_gobject_glist (const GList *list); /* references objects */
+PyObject * _helper_wrap_string_glist (const GList *list); /* duplicated strings */
 PyObject * _helper_wrap_pointer_glist (const GList *list,
 				       GType boxed_type);
 PyObject * _helper_wrap_boxed_glist (const GList *list,
@@ -38,10 +38,12 @@ PyObject * _helper_wrap_boxed_gptrarray (GPtrArray *list,
 					 GType type,
 					 gboolean own_ref,
 					 gboolean dealloc);
-GList * _helper_unwrap_string_pylist (PyObject *py_list);
+GList * _helper_unwrap_string_pylist (PyObject *py_list, gboolean duplicate);
 GList * _helper_unwrap_pointer_pylist (PyObject *py_list,
 				       GType type);
-GPtrArray* _helper_unwrap_boxed_gptrarray (PyObject *list,
-					   GType type);
+GList * _helper_unwrap_boxed_pylist (PyObject *py_list, /* does not copy boxed */
+					GType type);
+GList * _helper_unwrap_gobject_pylist (PyObject *py_list); /* does not reference objects */
+GPtrArray* _helper_unwrap_boxed_gptrarray (PyObject *list, GType type); /* does not copy boxed */
 #endif /* __OVERRIDE_COMMON_H */
 

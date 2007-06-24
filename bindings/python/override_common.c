@@ -25,8 +25,7 @@
 
 #include "config.h"
 
-#define NO_IMPORT_PYGOBJECT
-#include "pygobject.h"
+#include <pygobject.h>
 #include <pygtk/pygtk.h>
 
 #include "override_common.h"
@@ -110,7 +109,7 @@ _helper_wrap_string_glist (const GList *list)
         return NULL;
     }
     for (tmp = list; tmp != NULL; tmp = tmp->next) {
-        PyObject *str_obj =  PyString_FromString ((char*)tmp->data);
+        PyObject *str_obj =  PyString_FromString (tmp->data);
 
         if (str_obj == NULL) {
             Py_DECREF(py_list);
@@ -165,7 +164,51 @@ _helper_unwrap_pointer_pylist (PyObject *py_list, GType type)
 }
 
 GList *
-_helper_unwrap_string_pylist (PyObject *py_list)
+_helper_unwrap_boxed_pylist (PyObject *py_list, GType type)
+{
+	int size, i;
+	GList *list = NULL;
+
+	size = PyList_Size (py_list);
+	for (i = 0; i < size; i++) {
+        	PyObject *py_ptr;
+        	gpointer ptr;
+
+		py_ptr = PyList_GetItem (py_list, i);
+		if (!pyg_boxed_check (py_ptr, type)) {
+			g_list_free (list);
+			return NULL;
+		}
+		ptr = pyg_boxed_get (py_ptr, void);
+		list = g_list_prepend (list, ptr);
+	}
+
+	list = g_list_reverse (list);
+	return list;
+}
+
+GList *
+_helper_unwrap_gobject_pylist (PyObject *py_list)
+{
+	int size, i;
+	GList *list = NULL;
+
+	size = PyList_Size (py_list);
+	for (i = 0; i < size; i++) {
+        	PyObject *py_ptr;
+        	gpointer ptr;
+
+		py_ptr = PyList_GetItem (py_list, i);
+		ptr = pygobject_get (py_ptr);
+		list = g_list_prepend (list, ptr);
+	}
+
+	list = g_list_reverse (list);
+	return list;
+}
+
+GList *
+_helper_unwrap_string_pylist (PyObject *py_list, gboolean duplicate)
 {
     int size, i;
     GList *list = NULL;
@@ -177,10 +220,38 @@ _helper_unwrap_string_pylist (PyObject *py_list)
 
 	py_str = PyList_GetItem (py_list, i);
 	str = PyString_AsString (py_str);
-	list = g_list_prepend (list, str);
+	if (duplicate)
+		list = g_list_prepend (list, g_strdup (str));
+	else
+		list = g_list_prepend (list, str);
     }
 
     list = g_list_reverse (list);
     return list;
+}
+
+GPtrArray*
+_helper_unwrap_boxed_gptrarray (PyObject *list, GType type)
+{
+	int size, i;
+	GPtrArray *array;
+
+	array = g_ptr_array_new ();
+	size = PyList_Size (list);
+	for (i = 0; i < size; i++) {
+		PyObject *py_boxed;
+		gpointer boxed;
+
+		py_boxed = PyList_GetItem (list, i);
+		if (!pyg_boxed_check (py_boxed, type)) {
+			g_ptr_array_free (array, FALSE);
+			return NULL;
+		}
+
+		boxed = pyg_boxed_get (py_boxed, void);
+		g_ptr_array_add (array, boxed);
+	}
+
+	return array;
 }
 

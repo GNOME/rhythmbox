@@ -1746,7 +1746,7 @@
 
 (define-virtual impl_track_added
   (of-object "RBRemovableMediaSource")
-  (return-type "none")
+  (return-type "gboolean")
   (parameters
     '("RhythmDBEntry*" "entry")
     '("const-char*" "uri")
@@ -1781,7 +1781,7 @@
   (parameters
     '("RhythmDBEntry*" "entry")
     '("const-char*" "dest")
-    '("GList*" "mime_type")
+    '("GList*" "mime_types")
     '("RBTranferCompleteCallback" "callback")
     '("gpointer" "userdata")
   )
@@ -2102,15 +2102,6 @@
   )
 )
 
-(define-method get_group_path
-  (of-object "RBSourceListModel")
-  (c-name "rb_sourcelist_model_get_group_path")
-  (return-type "GtkTreePath*")
-  (parameters
-    '("RBSourceListGroup" "group")
-  )
-)
-
 
 ;; From ../../backends/rb-player.h
 
@@ -2238,7 +2229,7 @@
   (c-name "rb_player_gst_tee_add_tee")
   (return-type "none")
   (parameters
-    '("GObject*" "element")
+    '("GstElement*" "element")
   )
 )
 
@@ -2247,7 +2238,7 @@
   (c-name "rb_player_gst_tee_remove_tee")
   (return-type "none")
   (parameters
-    '("GObject*" "element")
+    '("GstElement*" "element")
   )
 )
 
@@ -2257,7 +2248,7 @@
 ;  (c-name "rb_player_gst_data_tee_add_data_tee")
 ;  (return-type "none")
 ;  (parameters
-;    '("GObject*" "element")
+;    '("GstElement*" "element")
 ;  )
 ;)
 ;
@@ -2266,7 +2257,7 @@
 ;  (c-name "rb_player_gst_data_tee_remove_data_tee")
 ;  (return-type "none")
 ;  (parameters
-;    '("GObject*" "element")
+;    '("GstElement*" "element")
 ;  )
 ;)
 
@@ -2275,7 +2266,7 @@
   (c-name "rb_player_gst_filter_add_filter")
   (return-type "none")
   (parameters
-    '("GObject*" "element")
+    '("GstElement*" "element")
   )
 )
 
@@ -2284,7 +2275,7 @@
   (c-name "rb_player_gst_filter_remove_filter")
   (return-type "none")
   (parameters
-    '("GObject*" "element")
+    '("GstElement*" "element")
   )
 )
 

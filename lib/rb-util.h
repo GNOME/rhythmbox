@@ -57,9 +57,11 @@ gchar** rb_string_split_words (const gchar *string);
 
 gboolean rb_string_list_equal (GList *a, GList *b);
 gboolean rb_string_list_contains (GList *list, const char *s);
-void rb_list_deep_free (GList *list);
-void rb_slist_deep_free (GSList *list);
 GList* rb_string_list_copy (GList *list);
+
+void rb_list_deep_free (GList *list);
+void rb_list_destroy_free (GList *list, GDestroyNotify destroyer);
+void rb_slist_deep_free (GSList *list);
 
 gboolean rb_str_in_strv (const char *needle, char **haystack);
 

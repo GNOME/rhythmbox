@@ -776,10 +776,17 @@ rb_string_list_contains (GList *list, const char *s)
 }
 
 void
+rb_list_destroy_free (GList *list, GDestroyNotify destroyer)
+{
+	g_list_foreach (list, (GFunc)destroyer, NULL);
+	g_list_free (list);
+
+}
+
+void
 rb_list_deep_free (GList *list)
 {
-	g_list_foreach (list, (GFunc)g_free, NULL);
-	g_list_free (list);
+	rb_list_destroy_free (list, (GDestroyNotify)g_free);
 }
 
 void
