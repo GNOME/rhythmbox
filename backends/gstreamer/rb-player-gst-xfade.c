@@ -2818,11 +2818,19 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 static gboolean
 stop_sink_later (RBPlayerGstXFade *player)
 {
+	gboolean stop;
+
 	player->priv->stop_sink_id = 0;
 
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	stop_sink (player);
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	stop = (player->priv->streams == NULL);
+	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+	if (stop) {
+		g_static_rec_mutex_lock (&player->priv->sink_lock);
+		stop_sink (player);
+		g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	}
 
 	return FALSE;
 }
@@ -2934,6 +2942,13 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 		return FALSE;
 	}
 
+	/* make sure the sink is playing */
+	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	if (start_sink (player) == FALSE) {
+		ret = FALSE;
+	}
+	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+
 	stream = g_list_first (player->priv->streams)->data;
 	g_object_ref (stream);
 	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
@@ -2984,13 +2999,6 @@ rb_player_gst_xfade_play (RBPlayer *iplayer, gint crossfade, GError **error)
 	}
 
 	g_object_unref (stream);
-
-	/* make sure the sink is playing */
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
-	if (start_sink (player) == FALSE) {
-		ret = FALSE;
-	}
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
 
 	return ret;
 }
