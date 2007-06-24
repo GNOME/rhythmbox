@@ -173,6 +173,18 @@
   )
 )
 
+(define-enum QueryModelLimitType
+  (in-module "RhythmDB")
+  (c-name "RhythmDBQueryModelLimitType")
+  (gtype-id "RHYTHMDB_TYPE_QUERY_MODEL_LIMIT_TYPE")
+  (values
+    '("none" "RHYTHMDB_QUERY_MODEL_LIMIT_NONE")
+    '("count" "RHYTHMDB_QUERY_MODEL_LIMIT_COUNT")
+    '("size" "RHYTHMDB_QUERY_MODEL_LIMIT_SIZE")
+    '("time" "RHYTHMDB_QUERY_MODEL_LIMIT_TIME")
+  )
+)
+
 ;; From ../../rhythmdb/rhythmdb-query-results.h
 
 (define-function rhythmdb_query_results_get_type

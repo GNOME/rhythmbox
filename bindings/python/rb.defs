@@ -1207,8 +1207,8 @@
   (c-name "rb_sourcelist_new")
   (is-constructor-of "RBSourcelist")
   (return-type "GtkWidget*")
-  (parameters
-    '("RBShell*" "shell")
+  (properties
+    '("shell")
   )
 )
 
@@ -1291,12 +1291,12 @@
   (c-name "rb_entry_view_new")
   (is-constructor-of "RBEntryView")
   (return-type "RBEntryView*")
-  (parameters
-    '("RhythmDB*" "db")
-    '("GObject*" "shell_player")
-    '("const-char*" "sort_key")
-    '("gboolean" "drag_source")
-    '("gboolean" "drag_dest")
+  (properties
+    '("db")
+    '("shell_player")
+    '("sort_key")
+    '("drag_source")
+    '("drag_dest")
   )
 )
 
@@ -1585,9 +1585,9 @@
   (c-name "rb_library_browser_new")
   (is-constructor-of "RBLibraryBrowser")
   (return-type "RBLibraryBrowser*")
-  (parameters
-    '("RhythmDB*" "db")
-    '("RhythmDBEntryType_*" "entry_type")
+  (properties
+    '("db")
+    '("entry_type")
   )
 )
 
@@ -1805,9 +1805,9 @@
   (c-name "rb_song_info_new")
   (is-constructor-of "RBSongInfo")
   (return-type "GtkWidget*")
-  (parameters
-    '("RBSource*" "source")
-    '("RBEntryView*" "entry_view")
+  (properties
+    '("source")
+    '("entry_view" (optional))
   )
 )
 
@@ -2137,6 +2137,7 @@
   (parameters
     '("const-char*" "uri")
     '("gpointer" "stream_data")
+    '("GDestroyNotify" "stream_data_destroy")
     '("GError**" "error")
   )
 )

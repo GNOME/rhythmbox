@@ -66,6 +66,7 @@ import rhythmdb.PropType as PyRhythmDBPropType_Type
 import rhythmdb.Query as PyRhythmDBQuery_Type
 import rhythmdb.QueryModel as PyRhythmDBQueryModel_Type
 import rhythmdb.QueryResults as PyRhythmDBQueryResults_Type
+import rhythmdb.QueryModelLimitType as PyRhythmDBQueryModelLimitType_Type
 import rhythmdb.QueryType as PyRhythmDBQueryType_Type
 import rhythmdb.RhythmDB as PyRhythmDB_Type
 %%
@@ -1177,5 +1178,165 @@ _wrap_rb_removable_media_source_get_mime_types(PyGObject *self)
     rb_list_deep_free (list);
 
     return py_list;
+}
+%%
+override rb_static_playlist_source_add_locations kwargs
+static PyObject *
+_wrap_rb_static_playlist_source_add_locations (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "locations", NULL };
+    PyObject *py_locations = NULL;
+    GList *locations;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:RBStaticPlaylistSoruce.add_locations", kwlist, &py_locations))
+        return NULL;
+
+    locations = _helper_unwrap_string_pylist (py_locations, FALSE);
+    rb_static_playlist_source_add_locations (RB_STATIC_PLAYLIST_SOURCE (self->obj), locations);
+    g_list_free (locations);
+
+    Py_RETURN_NONE;
+}
+%%
+override RBRemovableMediaSource__do_impl_get_mime_types
+static PyObject *
+_wrap_RBRemovableMediaSource__do_impl_get_mime_types(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+	gpointer klass;
+	static char *kwlist[] = { "self", NULL };
+	PyGObject *self;
+	GList *ret;
+	PyObject *py_ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!:RBRemovableMediaSource.impl_get_mime_types", kwlist, &PyRBSource_Type, &self))
+		return NULL;
+	klass = g_type_class_ref(pyg_type_from_object(cls));
+	if (RB_REMOVABLE_MEDIA_SOURCE_CLASS(klass)->impl_get_mime_types)
+		ret = RB_REMOVABLE_MEDIA_SOURCE_CLASS(klass)->impl_get_mime_types(RB_REMOVABLE_MEDIA_SOURCE(self->obj));
+	else {
+		PyErr_SetString(PyExc_NotImplementedError, "virtual method RBRemovableMediaSource.impl_get_mime_types not implemented");
+		g_type_class_unref(klass);
+		return NULL;
+	}
+	g_type_class_unref(klass);
+	py_ret = _helper_wrap_string_glist (ret);
+	rb_list_deep_free (ret);
+	return py_ret;
+}
+%%
+override RBRemovableMediaSource__proxy_do_impl_get_mime_types
+static GList *
+_wrap_RBRemovableMediaSource__proxy_do_impl_get_mime_types (RBSource *self)
+{
+	PyGILState_STATE __py_state;
+	PyObject *py_self;
+	PyObject *py_method;
+	PyObject *py_retval;
+	GList *ret;
+
+	__py_state = pyg_gil_state_ensure();
+	py_self = pygobject_new((GObject *)self);
+	if (!py_self) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_method = PyObject_GetAttrString(py_self, "do_impl_get_mime_types");
+	if (!py_method) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	py_retval = PyObject_CallObject(py_method, NULL);
+	if (!py_retval) {
+		if (PyErr_Occurred())
+			PyErr_Print();
+		Py_DECREF(py_method);
+		Py_DECREF(py_self);
+		pyg_gil_state_release(__py_state);
+		return NULL;
+	}
+
+	ret = _helper_unwrap_string_pylist (py_retval, TRUE);
+
+	Py_DECREF(py_retval);
+	Py_DECREF(py_method);
+	Py_DECREF(py_self);
+	pyg_gil_state_release(__py_state);
+
+	return ret;
+}
+%%
+override rb_removable_media_manager_queue_transfer kwargs
+
+typedef struct {
+	PyObject *func;
+	PyObject *data;
+} PyCallbackData;
+
+static void
+_rb_removable_media_manager_queue_transfer_func (RhythmDBEntry *entry, const char *dest, PyCallbackData *data)
+{
+	PyObject *args;
+	PyObject *result;
+	PyObject *py_entry;
+	PyGILState_STATE __py_state;
+
+	__py_state = pyg_gil_state_ensure();
+
+	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
+	if (data->data) {
+		args = Py_BuildValue ("(OsO)", py_entry, dest, data->data);
+	} else {
+		args = Py_BuildValue ("(Os)", py_entry, dest);
+	}
+
+	result = PyEval_CallObject (data->func, args);
+	Py_DECREF (py_entry);
+	Py_DECREF (args);
+	Py_XDECREF (result);
+
+	Py_DECREF (data->func);
+	Py_DECREF (data->data);
+	pyg_gil_state_release(__py_state);
+}
+
+static PyObject *
+_wrap_rb_removable_media_manager_queue_transfer(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "entry", "dest", "mimetypes", "callback", "data", NULL };
+	PyObject *py_entry, *py_mimes;
+	char *dest = NULL;
+	GList *mimes;
+	RhythmDBEntry *entry;
+	PyCallbackData *data;
+
+	data = g_new0(PyCallbackData, 1);
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs,"OsOO|O:RBRemovableMediaManager.queue_transfer", kwlist,
+					 &py_entry, &dest, &py_mimes, &data->func, &data->data))
+		return NULL;
+	if (pyg_boxed_check(py_entry, RHYTHMDB_TYPE_ENTRY)) {
+		entry = pyg_boxed_get(py_entry, RhythmDBEntry);
+	} else {
+		PyErr_SetString(PyExc_TypeError, "entry should be a RhythmDBEntry");
+		return NULL;
+	}
+	if (!PyCallable_Check (data->func)) {
+		PyErr_SetString (PyExc_TypeError, "func must be callable");
+		return NULL;
+	}
+   	mimes = _helper_unwrap_string_pylist (py_mimes, FALSE);
+
+	rb_removable_media_manager_queue_transfer(RB_REMOVABLE_MEDIA_MANAGER(self->obj), entry, dest, mimes,
+		(RBTranferCompleteCallback)_rb_removable_media_manager_queue_transfer_func, data);
+
+	g_list_free (mimes);
+	Py_INCREF(Py_None);
+	return Py_None;
 }
 

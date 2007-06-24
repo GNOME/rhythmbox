@@ -99,6 +99,37 @@ _rhythmdb_query_model_sort_func (RhythmDBEntry *a, RhythmDBEntry *b, PyRhythmDBQ
 }
 /* end query model sorting stuff */
 
+typedef struct {
+	PyObject *func;
+	PyObject *data;
+} PyRhythmDBEntryForeachData;
+
+static void
+_rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  *data)
+{
+	PyObject *args;
+	PyObject *result;
+	PyObject *py_entry;
+
+	/* no need to ensure GIL state, since it's only called from within _wrap_rhythmdb_entry_foreach */
+
+	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
+	if (data->data) {
+		args = Py_BuildValue ("(OO)", py_entry, data->data);
+	} else {
+		args = Py_BuildValue ("(O)", py_entry);
+	}
+
+	result = PyEval_CallObject (data->func, args);
+	Py_DECREF (py_entry);
+	Py_DECREF (args);
+	if (result != NULL) {
+		Py_DECREF (result);
+	}
+}
+
+
+
 %%
 modulename rhythmdb 
 %%
@@ -121,6 +152,31 @@ ignore
   rhythmdb_entry_get_double
   rhythmdb_query_model_tree_path_to_entry
   rhythmdb_query_model_iter_to_entry
+%%
+override rhythmdb_entry_count_by_type kwargs
+static PyObject *
+_wrap_rhythmdb_entry_count_by_type(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = { "entrytype", NULL };
+	PyObject *py_entrytype = NULL;
+	RhythmDBEntryType et;
+	gint64 ret;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO:RhythmDB.entry_count_by_type", kwlist, &py_entrytype))
+		return NULL;
+	if (pyg_boxed_check(py_entrytype, RHYTHMDB_TYPE_ENTRY_TYPE))
+		et = pyg_boxed_get(self, RhythmDBEntryType_);
+	else {
+		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
+	}
+
+	ret = rhythmdb_entry_count_by_type(RHYTHMDB_RHYTHMDB(self->obj), et);
+
+	return PyLong_FromLongLong(ret);
+}
 %%
 override rhythmdb_entry_get kwargs
 static PyObject *
@@ -219,36 +275,6 @@ _wrap_rhythmdb_query_results_add_results (PyGObject *self, PyObject *args, PyObj
 }
 %%
 override rhythmdb_entry_foreach kwargs
-
-typedef struct {
-	PyObject *func;
-	PyObject *data;
-} PyRhythmDBEntryForeachData;
-
-static void
-_rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  *data)
-{
-	PyObject *args;
-	PyObject *result;
-	PyObject *py_entry;
-
-	/* no need to ensure GIL state, since it's only called from within _wrap_rhythmdb_entry_foreach */
-
-	py_entry = pyg_boxed_new (RHYTHMDB_TYPE_ENTRY, entry, FALSE, FALSE);
-	if (data->data) {
-		args = Py_BuildValue ("(OO)", py_entry, data->data);
-	} else {
-		args = Py_BuildValue ("(O)", py_entry);
-	}
-
-	result = PyEval_CallObject (data->func, args);
-	Py_DECREF (py_entry);
-	Py_DECREF (args);
-	if (result != NULL) {
-		Py_DECREF (result);
-	}
-}
-
 static PyObject*
 _wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -266,6 +292,37 @@ _wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
 	}
 
 	rhythmdb_entry_foreach (RHYTHMDB (self->obj), (GFunc)_rhythmdb_entry_foreach_func, &data);
+
+	Py_RETURN_NONE;
+}
+%%
+override rhythmdb_entry_foreach_by_type kwargs
+static PyObject*
+_wrap_rhythmdb_entry_foreach_by_type (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+	static char *kwlist[] = {"entrytype", "func", "data", NULL};
+	PyObject *py_entrytype;
+	RhythmDBEntryType et;
+	PyRhythmDBEntryForeachData data;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|O:RhythmDB.entry_foreach_by_type",
+					 kwlist, &py_entrytype, &data.func, &data.data))
+		return NULL;
+
+	if (pyg_boxed_check(py_entrytype, RHYTHMDB_TYPE_ENTRY_TYPE)) {
+		et = pyg_boxed_get(self, RhythmDBEntryType_);
+	} else {
+		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
+		PyErr_SetString(PyExc_TypeError, s);
+		g_free (s);
+		return NULL;
+	}
+	if (!PyCallable_Check (data.func)) {
+		PyErr_SetString (PyExc_TypeError, "func must be callable");
+		return NULL;
+	}
+
+	rhythmdb_entry_foreach_by_type (RHYTHMDB (self->obj), et, (GFunc)_rhythmdb_entry_foreach_func, &data);
 
 	Py_RETURN_NONE;
 }
