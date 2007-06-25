@@ -233,6 +233,7 @@
     '("sidebar" "RB_SHELL_UI_LOCATION_SIDEBAR")
     '("main-top" "RB_SHELL_UI_LOCATION_MAIN_TOP")
     '("main-bottom" "RB_SHELL_UI_LOCATION_MAIN_BOTTOM")
+    '("main-notebook" "RB_SHELL_UI_LOCATION_MAIN_NOTEBOOK")
   )
 )
 
@@ -1239,6 +1240,15 @@
   (parameters
     '("GtkWidget*" "widget")
     '("RBShellUILocation" "location")
+  )
+)
+
+(define-method notebook_set_page
+  (of-object "RBShell")
+  (c-name "rb_shell_notebook_set_page")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
   )
 )
 
