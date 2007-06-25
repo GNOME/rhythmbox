@@ -3204,8 +3204,11 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 
 	/* block the signal, so that it doesn't get stuck by triggering recursively,
 	 * and don't unblock it until whatever else is happening has finished.
+	 * don't block it again if it's already blocked, though.
 	 */
-	g_signal_handlers_block_by_func (action, rb_shell_player_cmd_play, player);
+	if (player->priv->unblock_play_id == 0) {
+		g_signal_handlers_block_by_func (action, rb_shell_player_cmd_play, player);
+	}
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
 
 	if (player->priv->unblock_play_id == 0) {
