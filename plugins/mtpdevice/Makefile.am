@@ -48,3 +48,5 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
 EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
 
+CLEANFILES = $(plugin_DATA)
+DISTCLEANFILES = $(plugin_DATA)
