@@ -774,8 +774,14 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	 */
 	if (strcmp (artist, _("Unknown")) == 0 && strcmp (album, _("Unknown")) == 0 &&
 	    g_str_has_suffix (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), title)) {
-		/* file isn't tagged, so just use the filename as-is */
-		file = g_strdup (title);
+		/* file isn't tagged, so just use the filename as-is, replacing the extension */
+		char *p;
+
+		p = g_utf8_strrchr (title, -1, '.');
+		if (p != NULL) {
+			*p = '\0';
+		}
+		file = g_strdup_printf ("%s%s", title, ext);
 	}
 
 	if (file == NULL) {

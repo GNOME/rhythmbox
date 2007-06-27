@@ -1,3 +1,10 @@
+2007-06-27  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(impl_build_dest_uri):
+	For untagged files, replace the original file extension with
+	that of the output format.  Fixes #451455.
+
 2007-06-26  James Livingston  <doclivingston@gmail.com>
 
 	* plugins/mtpdevice/Makefile.am:make distcheck pass
