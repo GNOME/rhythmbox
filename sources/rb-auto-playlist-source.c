@@ -232,12 +232,15 @@ rb_auto_playlist_source_constructor (GType type, guint n_construct_properties,
 							       "AutoPlaylistActions",
 							       NULL, 0,
 							       shell);
-	gtk_action_group_add_radio_actions (priv->action_group,
-					    rb_auto_playlist_source_radio_actions,
-					    G_N_ELEMENTS (rb_auto_playlist_source_radio_actions),
-					    0,
-					    (GCallback)search_action_changed,
-					    shell);
+	if (gtk_action_group_get_action (priv->action_group,
+					 rb_auto_playlist_source_radio_actions[0].name) == NULL) {
+		gtk_action_group_add_radio_actions (priv->action_group,
+						    rb_auto_playlist_source_radio_actions,
+						    G_N_ELEMENTS (rb_auto_playlist_source_radio_actions),
+						    0,
+						    (GCallback)search_action_changed,
+						    shell);
+	}
 	priv->search_prop = RHYTHMDB_PROP_SEARCH_MATCH;
 	g_object_unref (shell);
 

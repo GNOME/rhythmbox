@@ -1,3 +1,11 @@
+2007-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-auto-playlist-source.c:
+	(rb_auto_playlist_source_constructor):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_constructor):
+	Only add the search actions once.  Fixes #451268.
+
 2007-06-19  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/audioscrobbler/rb-lastfm-gst-src.c:
