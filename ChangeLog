@@ -1,3 +1,13 @@
+2007-06-29  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(update_playbin_visualizer), (tee_visualizer_inserted),
+	(tee_visualizer_pre_remove), (update_tee_visualizer),
+	(update_visualizer), (impl_activate):
+	In tee mode, only start the video sink as necessary.  If it
+	refuses to start, disable visualization and report the error
+	to the user.  From bug #406807.
+
 2007-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-auto-playlist-source.c:

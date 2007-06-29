@@ -513,7 +513,8 @@ create_visualizer_element (const char *vis_override)
 static void
 update_playbin_visualizer (RBVisualizerPlugin *plugin,
 			   const char *vis_override,
-			   int quality)
+			   int quality,
+			   GError **error)
 {
 	GstPad *pad;
 	GstElement *vis_plugin;
@@ -582,7 +583,6 @@ tee_visualizer_inserted (RBPlayerGstTee *player, GstElement *tee, RBVisualizerPl
 							"sync-message::element",
 							G_CALLBACK (bus_sync_message_cb),
 							plugin);
-		rb_debug ("connected signal handler %d to bus %p", plugin->bus_sync_id, bus);
 	}
 
 	gst_object_unref (bus);
@@ -606,7 +606,6 @@ tee_visualizer_pre_remove (RBPlayerGstTee *player, GstElement *tee, RBVisualizer
 	bus = gst_element_get_bus (p);
 
 	if (plugin->bus_sync_id != 0) {
-		rb_debug ("disconnecting handler %d from bus %p", plugin->bus_sync_id, bus);
 		g_signal_handler_disconnect (bus, plugin->bus_sync_id);
 		plugin->bus_sync_id = 0;
 	}
@@ -617,7 +616,8 @@ tee_visualizer_pre_remove (RBPlayerGstTee *player, GstElement *tee, RBVisualizer
 static void
 update_tee_visualizer (RBVisualizerPlugin *plugin,
 		       const char *vis_override,
-		       int quality)
+		       int quality,
+		       GError **error)
 {
 	GstElement *old_vis_plugin = NULL;
 	GstPad *blocked_pad = NULL;
@@ -653,6 +653,60 @@ update_tee_visualizer (RBVisualizerPlugin *plugin,
 			rb_debug ("blocked visualizer bin sink pad");
 		}
 	} else {
+		GstStateChangeReturn state_ret;
+		GstBus *realbus;
+		GstBus *bus;
+		gboolean new_bus = FALSE;
+		gboolean failed = FALSE;
+
+		add_tee = TRUE;
+
+		/* put the sink in READY state so it grabs XV ports etc.
+		 * if it refuses to change state, disable visualization.
+		 */
+		bus = gst_element_get_bus (plugin->visualizer);
+		if (bus == NULL) {
+			bus = gst_bus_new ();
+			new_bus = TRUE;
+			gst_element_set_bus (plugin->visualizer, bus);
+		}
+
+		state_ret = gst_element_set_state (plugin->video_sink, GST_STATE_READY);
+		if (state_ret == GST_STATE_CHANGE_FAILURE) {
+			/* look for error messages on the bus */
+			while (gst_bus_have_pending (bus)) {
+				GstMessage *msg;
+
+				msg = gst_bus_pop (bus);
+				if (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_ERROR) {
+					char *debug;
+
+					gst_message_parse_error (msg, error, &debug);
+					failed = TRUE;
+				}
+
+				gst_message_unref (msg);
+			}
+
+			if (failed == FALSE) {
+				g_set_error (error,
+					     RB_PLAYER_ERROR,
+					     RB_PLAYER_ERROR_GENERAL,
+					     _("Unable to start video output"));
+				failed = TRUE;
+			}
+		}
+
+		if (new_bus) {
+			gst_element_set_bus (plugin->visualizer, NULL);
+		}
+		gst_object_unref (bus);
+
+		if (failed) {
+			rb_debug ("sink failed to change state");
+			return;
+		}
+
 		add_tee = TRUE;
 	}
 
@@ -670,7 +724,12 @@ update_tee_visualizer (RBVisualizerPlugin *plugin,
 
 	if (gst_element_link_many (plugin->identity, plugin->vis_plugin, plugin->capsfilter, NULL) == FALSE) {
 		rb_debug ("failed to link in new visualizer element");
-		/* um, what now? */
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     _("Failed to link new visual effect into the GStreamer pipeline"));
+
+		return;
 	}
 
 	/* update the capsfilter */
@@ -703,10 +762,22 @@ update_visualizer (RBVisualizerPlugin *plugin,
 		   const char *vis_override,
 		   int quality)
 {
+	GError *error = NULL;
+
 	if (plugin->playbin_notify_id != 0) {
-		update_playbin_visualizer (plugin, vis_override, quality);
+		update_playbin_visualizer (plugin, vis_override, quality, &error);
 	} else {
-		update_tee_visualizer (plugin, vis_override, quality);
+		update_tee_visualizer (plugin, vis_override, quality, &error);
+	}
+
+	if (error != NULL) {
+		/* unfortunately recursive */
+		disable_visualization (plugin, TRUE);
+
+		rb_error_dialog (NULL,
+				 _("Unable to start visualization"),
+				 "%s",
+				 error->message);
 	}
 }
 
@@ -1543,15 +1614,11 @@ impl_activate (RBPlugin *plugin,
 					 G_CALLBACK (tee_visualizer_pre_remove),
 					 plugin, 0);
 
-		/* create the sink */
-		pi->video_sink = gst_element_factory_make ("gconfvideosink", "videosink");
-		gst_element_set_state (pi->video_sink, GST_STATE_READY);
-		find_xoverlay (pi);
 
-		/* create the rest of the bin */
 		pi->visualizer = gst_bin_new (NULL);
 		g_object_ref (pi->visualizer);
 
+		pi->video_sink = gst_element_factory_make ("gconfvideosink", "videosink");
 		pi->identity = gst_element_factory_make ("identity", NULL);
 		pi->capsfilter = gst_element_factory_make ("capsfilter", NULL);
 		colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
