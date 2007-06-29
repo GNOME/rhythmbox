@@ -654,7 +654,6 @@ update_tee_visualizer (RBVisualizerPlugin *plugin,
 		}
 	} else {
 		GstStateChangeReturn state_ret;
-		GstBus *realbus;
 		GstBus *bus;
 		gboolean new_bus = FALSE;
 		gboolean failed = FALSE;
