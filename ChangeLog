@@ -1,3 +1,11 @@
+2007-07-01  James Livingston  <doclivingston@gmail.com>
+
+	* shell/main.c: (main):
+	* shell/rb-shell.c: (rb_shell_class_init), (rb_shell_set_property),
+	(rb_shell_get_property), (rb_shell_new):
+	* shell/rb-shell.h: remove the argc and argv properties from the
+	shell, as they're not used. Fixes #448538
+
 2007-06-30  Jürg Billeter  <j@bitron.ch>
 
 	* configure.ac: fix Vala version check

@@ -253,8 +253,6 @@ static void rb_shell_session_init (RBShell *shell);
 enum
 {
 	PROP_NONE,
-	PROP_ARGC,
-	PROP_ARGV,
 	PROP_NO_REGISTRATION,
 	PROP_NO_UPDATE,
 	PROP_DRY_RUN,
@@ -330,8 +328,6 @@ struct RBShellPrivate
 	gboolean shutting_down;
 	gboolean load_complete;
 
-	int argc;
-	char **argv;
 	gboolean no_registration;
 	gboolean no_update;
 	gboolean dry_run;
@@ -478,21 +474,6 @@ rb_shell_class_init (RBShellClass *klass)
 	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
 	object_class->constructor = rb_shell_constructor;
-
-	g_object_class_install_property (object_class,
-					 PROP_ARGC,
-					 g_param_spec_int ("argc",
-							   "argc",
-							   "Argument count",
-							   0, 128,
-							   0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
-					 PROP_ARGV,
-					 g_param_spec_pointer ("argv",
-							       "argv",
-							       "Arguments",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_NO_REGISTRATION,
@@ -699,12 +680,6 @@ rb_shell_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_ARGC:
-		shell->priv->argc = g_value_get_int (value);
-		break;
-	case PROP_ARGV:
-		shell->priv->argv = g_value_get_pointer (value);
-		break;
 	case PROP_NO_REGISTRATION:
 		shell->priv->no_registration = g_value_get_boolean (value);
 		break;
@@ -743,12 +718,6 @@ rb_shell_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_ARGC:
-		g_value_set_int (value, shell->priv->argc);
-		break;
-	case PROP_ARGV:
-		g_value_set_pointer (value, shell->priv->argv);
-		break;
 	case PROP_NO_REGISTRATION:
 		g_value_set_boolean (value, shell->priv->no_registration);
 		break;
@@ -964,9 +933,7 @@ rb_shell_finalize (GObject *object)
 }
 
 RBShell *
-rb_shell_new (int argc,
-	      char **argv,
-	      gboolean no_registration,
+rb_shell_new (gboolean no_registration,
 	      gboolean no_update,
 	      gboolean dry_run,
 	      char *rhythmdb,
@@ -981,7 +948,7 @@ rb_shell_new (int argc,
 	else 
 		pathname = g_build_filename (rb_dot_dir (), "playlists.xml", NULL); 
 	
-	s = g_object_new (RB_TYPE_SHELL, "argc", argc, "argv", argv,
+	s = g_object_new (RB_TYPE_SHELL,
 			  "no-registration", no_registration,
 			  "no-update", no_update,
 			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, 
