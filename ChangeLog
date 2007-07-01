@@ -1,5 +1,11 @@
 2007-07-01  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):
+	Ignore the query string when checking if a podcast URL has a .rss or
+	.xml extension.  Fixes #437911, sort of.
+
+2007-07-01  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* plugins/ipod/rb-ipod-db.c: (rb_ipod_db_set_thumbnail_internal):
 	Fix build with newer versions of libgpod.
 

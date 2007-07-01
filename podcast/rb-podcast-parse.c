@@ -426,14 +426,27 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	GnomeVFSFileInfo *info;
 	gint file_size;
 	gchar *buffer = NULL;
+	const char *query_string;
 
 	struct RBPoadcastLoadContext *ctx = NULL;
 
 	data->url = xmlCharStrdup (file_name);
 
-	if (!g_str_has_suffix (file_name, ".rss") && !g_str_has_suffix (file_name, ".xml")) {
+	/* if the URL has a .rss or .xml extension (before the query string),
+	 * don't bother checking the MIME type.
+	 */
+	query_string = strchr (file_name, '?');
+	if (query_string == NULL) {
+		query_string = file_name + strlen (file_name);
+	}
+
+	if (strncmp (query_string - 4, ".rss", 4) == 0 ||
+	    strncmp (query_string - 4, ".xml", 4) == 0) {
+		rb_debug ("not checking mime type for %s", file_name);
+	} else {
 		gboolean invalid_mime_type;
 
+		rb_debug ("checking mime type for %s", file_name);
 		info = gnome_vfs_file_info_new ();
 
 		result = gnome_vfs_get_file_info (file_name, info, GNOME_VFS_FILE_INFO_DEFAULT);
@@ -480,6 +493,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	}
 
 	/* first download file by gnome_vfs for use gnome network configuration */
+	rb_debug ("reading podcast feed %s", file_name);
 	result = gnome_vfs_read_entire_file (file_name, &file_size, &buffer);
 	if (result != GNOME_VFS_OK)
 		return TRUE;
