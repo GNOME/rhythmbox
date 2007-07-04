@@ -48,7 +48,7 @@
 	      <child>
 		<widget class="GtkLabel" id="backend_label">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Player backend</property>
+		  <property name="label" translatable="yes">Player Backend</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -105,7 +105,7 @@
 		    <widget class="GtkCheckButton" id="use_xfade_backend">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Use crossfading backend (requires restart)</property>
+		      <property name="label" translatable="yes">_Use crossfading backend (requires restart)</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -143,7 +143,7 @@
 	      <child>
 		<widget class="GtkLabel" id="duration_label">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Crossfade duration (seconds)</property>
+		  <property name="label" translatable="yes">Crossfade Duration (Seconds)</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -232,12 +232,12 @@
 	    <widget class="GtkVBox" id="vbox7">
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
-	      <property name="spacing">0</property>
+	      <property name="spacing">6</property>
 
 	      <child>
 		<widget class="GtkLabel" id="crossfade_type_label">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Crossfade type</property>
+		  <property name="label" translatable="yes">Crossfade Type</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -294,7 +294,7 @@
 		    <widget class="GtkCheckButton" id="album_check">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Crossfade between songs on the same album</property>
+		      <property name="label" translatable="yes">C_rossfade between songs on the same album</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -332,7 +332,7 @@
 	      <child>
 		<widget class="GtkLabel" id="buffer_size_label">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Network buffer size (kB)</property>
+		  <property name="label" translatable="yes">Network Buffer Size (kB)</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
