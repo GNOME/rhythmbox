@@ -474,6 +474,7 @@ rb_python_module_new (const gchar *path,
 
 /* --- these are not module methods, they are here out of convenience --- */
 
+#if 0
 static gint idle_garbage_collect_id = 0;
 
 static gboolean
@@ -486,15 +487,19 @@ run_gc (gpointer data)
 
 	return ret;
 }
+#endif
 
 void
 rb_python_garbage_collect ()
 {
+#if 0
 	if (Py_IsInitialized() && idle_garbage_collect_id == 0) {
 		idle_garbage_collect_id = g_idle_add (run_gc, NULL);
 	}
+#endif
 }
 
+#if 0
 static gboolean
 finalise_collect_cb (gpointer data)
 {
@@ -507,10 +512,12 @@ finalise_collect_cb (gpointer data)
 
 	return TRUE;
 }
+#endif
 
 void
 rb_python_shutdown ()
 {
+#if 0
 	if (Py_IsInitialized ()) {
 		if (idle_garbage_collect_id != 0) {
 			g_source_remove (idle_garbage_collect_id);
@@ -526,4 +533,5 @@ rb_python_shutdown ()
 		/* disable for now, due to bug 334188
 		Py_Finalize ();*/
 	}
+#endif
 }

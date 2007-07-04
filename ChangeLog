@@ -1,3 +1,20 @@
+2007-07-04  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/rb-python-module.c: (rb_python_garbage_collect),
+	(rb_python_shutdown): disable our manual python garbage collection for
+	now, since it explodes if something imports twisted's gtk2 reactor. It
+	doesn't make much of a difference anyway, since the python runtime
+	runs GC itself.
+
+	* configure.ac:
+	* plugins/Makefile.am:
+	* plugins/coherence/Makefile.am:
+	* plugins/coherence/coherence.rb-plugin.desktop.in:
+	* plugins/coherence/upnp_coherence/UpnpSource.py:
+	* plugins/coherence/upnp_coherence/__init__.py: add the start of a
+	UPnP A/V plugin, using Coherence. It currently adds entries for all
+	audio items and can play them
+
 2007-07-01  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* podcast/rb-podcast-parse.c: (rb_podcast_parse_load_feed):

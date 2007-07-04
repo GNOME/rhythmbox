@@ -24,6 +24,7 @@ SUBDIRS += 						\
 	lyrics						\
 	magnatune					\
 	jamendo						\
+	coherence					\
 	rb
 endif
 
