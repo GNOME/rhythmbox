@@ -85,7 +85,7 @@ class UpnpSource(rb.BrowserSource):
 
 						if url is None:
 							# use transcoded format, since we can't find a normal one
-							url = r[0][0]
+							url = resources[0][0]
 
 						entry = self.__db.entry_lookup_by_location (url)
 						if entry == None:
