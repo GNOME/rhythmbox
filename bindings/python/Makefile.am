@@ -51,6 +51,7 @@ BINDING_HEADERS_SRCDIR_IN = \
 	backends/gstreamer/rb-player-gst.h	\
 	plugins/rb-plugin.h			\
 	lib/rb-string-value-map.h		\
+	lib/rb-cut-and-paste-code.h		\
 	rhythmdb/rhythmdb.h			\
 	rhythmdb/rhythmdb-property-model.h	\
 	rhythmdb/rhythmdb-query-model.h		\

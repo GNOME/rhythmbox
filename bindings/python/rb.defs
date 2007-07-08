@@ -2296,3 +2296,14 @@
   )
 )
 
+;; From rb-cut-and-paste-code.h
+
+(define-function utf_friendly_time
+  (in-module "rb")
+  (c-name "rb_utf_friendly_time")
+  (return-type "char*")
+  (parameters
+    '("time_t" "date")
+  )
+)
+
