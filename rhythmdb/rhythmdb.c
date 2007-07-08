@@ -3592,7 +3592,7 @@ rhythmdb_prop_type_get_type (void)
 			* Finally, there is the XML element name in brackets.
 			*/
 			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gpointer) [type]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ENTRY_ID, "Numeric ID (guint) [entry-id]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ENTRY_ID, "Numeric ID (gulong) [entry-id]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title (gchararray) [title]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray) [genre]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray) [artist]"),
@@ -3991,12 +3991,11 @@ rhythmdb_entry_register_type (RhythmDB *db,
 	type = g_new0 (RhythmDBEntryType_, 1);
 	type->can_sync_metadata = (RhythmDBEntryCanSyncFunc)rb_false_function;
 	type->sync_metadata = default_sync_metadata;
-	if (name) {
-		type->name = g_strdup (name);
-		g_mutex_lock (db->priv->entry_type_map_mutex);
-		g_hash_table_insert (db->priv->entry_type_map, g_strdup (type->name), type);
-		g_mutex_unlock (db->priv->entry_type_map_mutex);
-	}
+	type->name = g_strdup (name);
+
+	g_mutex_lock (db->priv->entry_type_map_mutex);
+	g_hash_table_insert (db->priv->entry_type_map, g_strdup (type->name), type);
+	g_mutex_unlock (db->priv->entry_type_map_mutex);
 
 	if (klass->impl_entry_type_registered)
 		klass->impl_entry_type_registered (db, name, type);

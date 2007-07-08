@@ -986,8 +986,7 @@ client_requested (bitwise bits,
 #define DAAP_SONG_DATA_KIND_NONE 0
 
 static void
-add_entry_to_mlcl (RhythmDB *db,
-		   RhythmDBEntry *entry,
+add_entry_to_mlcl (RhythmDBEntry *entry,
 		   struct MLCL_Bits *mb)
 {
 	GNode *mlit;

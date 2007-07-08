@@ -2292,15 +2292,28 @@ rhythmdb_tree_entry_count (RhythmDB *rdb)
 	return g_hash_table_size (db->priv->entries);
 }
 
+typedef struct {
+	GFunc foreach_func;
+	gpointer data;
+} ForeachTypeData;
+
+static void
+_foreach_by_type_cb (RhythmDB *db, RhythmDBEntry *entry, ForeachTypeData *data)
+{
+	data->foreach_func (entry, data->data);
+}
+
 static void
 rhythmdb_tree_entry_foreach_by_type (RhythmDB *db,
 				     RhythmDBEntryType type,
 				     GFunc foreach_func,
 				     gpointer data)
 {
+	ForeachTypeData ftdata = {foreach_func, data};
+
 	rhythmdb_hash_tree_foreach (db, type,
-				    (RBTreeEntryItFunc) foreach_func,
-				    NULL, NULL, NULL, data);
+				    (RBTreeEntryItFunc) _foreach_by_type_cb,
+				    NULL, NULL, NULL, &ftdata);
 }
 
 static void

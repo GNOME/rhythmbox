@@ -1,3 +1,14 @@
+2007-07-08  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/python/rhythmdb.defs:
+	* bindings/python/rhythmdb.override:
+	* plugins/daap/rb-daap-share.c: (add_entry_to_mlcl):
+	* rhythmdb/rhythmdb-tree.c: (_foreach_by_type_cb),
+	(rhythmdb_tree_entry_foreach_by_type):
+	* rhythmdb/rhythmdb.c: (rhythmdb_prop_type_get_type),
+	(rhythmdb_entry_register_type): fix python bindings of the rhythmdb
+	foreach methods.
+
 2007-07-08  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Tim Retout  <tim@retout.co.uk>

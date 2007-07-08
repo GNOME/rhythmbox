@@ -99,6 +99,7 @@
   (gtype-id "RHYTHMDB_TYPE_PROP_TYPE")
   (values
     '("prop-type" "RHYTHMDB_PROP_TYPE")
+    '("prop-entry-id" "RHYTHMDB_PROP_ENTRY_ID")
     '("prop-title" "RHYTHMDB_PROP_TITLE")
     '("prop-genre" "RHYTHMDB_PROP_GENRE")
     '("prop-artist" "RHYTHMDB_PROP_ARTIST")
@@ -457,6 +458,15 @@
   (return-type "RhythmDBEntry*")
   (parameters
     '("const-char*" "uri")
+  )
+)
+
+(define-method entry_lookup_by_id
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_entry_lookup_by_id")
+  (return-type "RhythmDBEntry*")
+  (parameters
+    '("gint" "id")
   )
 )
 

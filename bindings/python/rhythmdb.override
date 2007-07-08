@@ -105,7 +105,7 @@ typedef struct {
 } PyRhythmDBEntryForeachData;
 
 static void
-_rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData  *data)
+_rhythmdb_entry_foreach_func (RhythmDBEntry *entry, PyRhythmDBEntryForeachData *data)
 {
 	PyObject *args;
 	PyObject *result;
@@ -279,7 +279,7 @@ static PyObject*
 _wrap_rhythmdb_entry_foreach (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
 	static char *kwlist[] = {"func", "data", NULL};
-	PyRhythmDBEntryForeachData data;
+	PyRhythmDBEntryForeachData data = {NULL, NULL};
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|O:RhythmDB.entry_foreach",
 					 kwlist, &data.func, &data.data))
@@ -301,16 +301,16 @@ static PyObject*
 _wrap_rhythmdb_entry_foreach_by_type (PyGObject *self, PyObject *args, PyObject *kwargs)
 {
 	static char *kwlist[] = {"entrytype", "func", "data", NULL};
+	PyRhythmDBEntryForeachData data = {NULL, NULL};
 	PyObject *py_entrytype;
 	RhythmDBEntryType et;
-	PyRhythmDBEntryForeachData data;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OO|O:RhythmDB.entry_foreach_by_type",
 					 kwlist, &py_entrytype, &data.func, &data.data))
 		return NULL;
 
 	if (pyg_boxed_check(py_entrytype, RHYTHMDB_TYPE_ENTRY_TYPE)) {
-		et = pyg_boxed_get(self, RhythmDBEntryType_);
+		et = pyg_boxed_get(py_entrytype, RhythmDBEntryType_);
 	} else {
 		char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object ((PyObject*)self)));
 		PyErr_SetString(PyExc_TypeError, s);
