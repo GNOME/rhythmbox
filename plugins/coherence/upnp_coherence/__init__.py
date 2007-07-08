@@ -1,7 +1,6 @@
 import rhythmdb, rb
 import gobject, gtk
-
-from UpnpSource import UpnpSource
+import louie
 
 
 class CoherencePlugin(rb.Plugin):
@@ -17,14 +16,21 @@ class CoherencePlugin(rb.Plugin):
 		self.coherence = self.get_coherence()
 		self.sources = {}
 
-		import louie
-
+		# watch for media servers
 		louie.connect(self.detected_media_server,
 				'Coherence.UPnP.ControlPoint.MediaServer.detected',
 				louie.Any)
 		louie.connect(self.removed_media_server,
 				'Coherence.UPnP.ControlPoint.MediaServer.removed',
 				louie.Any)
+
+		# create our own media server
+		from coherence.upnp.devices.media_server import MediaServer
+		from MediaStore import MediaStore
+		server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self)
+
+		# hack to work around the fact RB doesn't do python threading
+		#server.backend = MediaStore(server, db=self.shell.props.db, plugin=self)
 	
 	def deactivate(self, shell):
 		print "coherence UPnP plugin deactivated"
@@ -38,7 +44,7 @@ class CoherencePlugin(rb.Plugin):
 		del self.shell
 		del self.coherence
 
-		for usn, source in self.sources.itemiter():
+		for usn, source in self.sources.iteritems():
 			source.delete_thyself()
 		del self.sources
 
@@ -47,7 +53,7 @@ class CoherencePlugin(rb.Plugin):
 
 	def get_coherence (self):
 		coherence_instance = None
-		required_version = (0, 2, 1)
+		required_version = (0, 3, 2)
 
 		from coherence.base import Coherence
 		from coherence import __version_info__
@@ -79,6 +85,7 @@ class CoherencePlugin(rb.Plugin):
 		group = rb.rb_source_group_get_by_name ("shared")
 		entry_type = db.entry_register_type("CoherenceUpnp:" + usn)
 
+		from UpnpSource import UpnpSource
 		source = gobject.new (UpnpSource,
 					shell=self.shell,
 					entry_type=entry_type,
