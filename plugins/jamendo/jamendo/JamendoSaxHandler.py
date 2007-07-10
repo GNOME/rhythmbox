@@ -22,6 +22,7 @@ import xml.sax, xml.sax.handler
 
 markups = ["JamendoData", "Artists", "artist", "Albums", "album", "Covers", "cover", "P2PLinks", "p2plink", "Tracks", "track"]
 ignore = ["lyrics", "description"]
+ignore_attr = ["licenseURL", "link"]
 
 class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def __init__(self):
@@ -61,7 +62,8 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def startartist (self, attrs):
 		self.artist = {}
 		for attr in attrs.getNames():
-			self.artist[attr] = attrs[attr]
+			if attr not in ignore_attr:
+				self.artist[attr] = attrs[attr]
 		self.current = self.artist
 
 	def startAlbums (self, attrs):
@@ -70,7 +72,8 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def startalbum (self, attrs):
 		self.album = {}
 		for attr in attrs.getNames():
-			self.album[attr] = attrs[attr]
+			if attr not in ignore_attr:
+				self.album[attr] = attrs[attr]
 		self.current = self.album
 
 	def startCovers (self, attrs):
@@ -81,7 +84,8 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def startcover (self, attrs):
 		self.cover = {}
 		for attr in attrs.getNames():
-			self.cover[attr] = attrs[attr]
+			if attr not in ignore_attr:
+				self.cover[attr] = attrs[attr]
 
 	def startP2PLinks (self, attrs):
 		self.album['P2PLinks'] = []
@@ -89,7 +93,8 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def startp2plink (self, attrs):
 		self.p2plink = {}
 		for attr in attrs.getNames():
-			self.p2plink[attr] = attrs[attr]
+			if attr not in ignore_attr:
+				self.p2plink[attr] = attrs[attr]
 
 	def startTracks (self, attrs):
 		self.tracks = {}
@@ -97,7 +102,8 @@ class JamendoSaxHandler(xml.sax.handler.ContentHandler):
 	def starttrack (self, attrs):
 		self.track = {}
 		for attr in attrs.getNames():
-			self.track[attr] = attrs[attr]
+			if attr not in ignore_attr:
+				self.track[attr] = attrs[attr]
 		self.current = self.track
 
 	# end markups

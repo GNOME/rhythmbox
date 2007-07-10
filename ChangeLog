@@ -1,3 +1,14 @@
+2007-07-10  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/jamendo/jamendo/JamendoSaxHandler.py:
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	Throw away data as early as possible, and abuse the musicbrainz album
+	ID field to store jamendo album IDs.  Reduces memory usage by about
+	30MB.  From bug #424423.
+
+	Also, emit cover art notifications in an idle handler, so they
+	actually work.
+
 2007-07-09  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* plugins/coherence/Makefile.am (plugindir): 

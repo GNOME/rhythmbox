@@ -51,7 +51,6 @@ class JamendoSource(rb.BrowserSource):
 		rb.BrowserSource.__init__(self, name=_("Jamendo"))
 
 		self.__p2plinks = {}
-		self.__album_id = {}
 
 		# catalogue stuff
 		self.__db = None
@@ -296,6 +295,18 @@ class JamendoSource(rb.BrowserSource):
 		albums = self.__saxHandler.albums
 		artists = self.__saxHandler.artists
 
+		# map album ID -> { format -> torrent URL }
+		for album_key in albums.keys():
+			album = albums[album_key]
+			id = album['id']
+			formats = {}
+			self.__p2plinks[id] = formats
+			for p2plink in album['P2PLinks']:
+				if p2plink['network'] == 'bittorrent':
+					fmt = p2plink['audioEncoding']
+					link = p2plink['p2plink']
+					formats[fmt] = link
+
 		for track_key in tracks.keys():
 			track = tracks[track_key]
 			album = albums.get(track['albumID'])
@@ -313,16 +324,16 @@ class JamendoSource(rb.BrowserSource):
 					date = datetime.date(year, 1, 1).toordinal()
 					self.__db.set(entry, rhythmdb.PROP_DATE, date)
 
-					self.__db.set(entry, rhythmdb.PROP_TITLE, track['dispname'])
-					if artist != None:
-						self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['dispname'])
-						self.__db.set(entry, rhythmdb.PROP_GENRE, artist['genre'])
-					self.__db.set(entry, rhythmdb.PROP_ALBUM, album['dispname'])
-					self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(track['trackno']))
-					self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
-
-					self.__p2plinks[stream] = album['P2PLinks']
-					self.__album_id[stream] = track['albumID']
+				self.__db.set(entry, rhythmdb.PROP_TITLE, track['dispname'])
+				if artist != None:
+					self.__db.set(entry, rhythmdb.PROP_ARTIST, artist['dispname'])
+					self.__db.set(entry, rhythmdb.PROP_GENRE, artist['genre'])
+				self.__db.set(entry, rhythmdb.PROP_ALBUM, album['dispname'])
+				self.__db.set(entry, rhythmdb.PROP_TRACK_NUMBER, int(track['trackno']))
+				self.__db.set(entry, rhythmdb.PROP_DURATION, int(track['lengths']))
+				# slight misuse, but this is far more efficient than having a python dict
+				# containing this data.
+				self.__db.set(entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID, track['albumID'])
 
 		self.__db.commit()
 		self.__saxHandler = None
@@ -349,11 +360,11 @@ class JamendoSource(rb.BrowserSource):
 		#without any track selected
 		if len(tracks) == 1:
 			track = tracks[0]
-			stream = self.__db.entry_get(track, rhythmdb.PROP_LOCATION)
-			for p2plink in self.__p2plinks[stream]:
-				if p2plink['network'] == 'bittorrent' and p2plink['audioEncoding'] == format:
-					break
-			self.__download_p2plink (p2plink['p2plink'])
+			albumid = self.__db.entry_get(track, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+			formats = self.__p2plinks[albumid]
+			p2plink = formats[format]
+			self.__download_p2plink (p2plink)
+
 
 	def __download_p2plink (self, link):
 		gnomevfs.url_show(link)
@@ -372,10 +383,15 @@ class JamendoSource(rb.BrowserSource):
 		if entry.get_entry_type() != self.__db.entry_type_get_by_name("JamendoEntryType"):
 			return
 
+		gobject.idle_add(self.emit_cover_art_uri, entry)
+
+	def emit_cover_art_uri (self, entry):
 		stream = self.__db.entry_get (entry, rhythmdb.PROP_LOCATION)
-		url = artwork_url % self.__album_id[stream]
+		albumid = self.__db.entry_get (entry, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+		url = artwork_url % albumid
 
 		self.__db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", str(url))
+		return False
 
 gobject.type_register(JamendoSource)
 
