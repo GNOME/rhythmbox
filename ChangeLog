@@ -1,3 +1,9 @@
+2007-07-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/daap/rb-daap-source.c: (connection_auth_cb):
+	Don't assume gnome-keyring actually gave us a password.
+	Should fix #453897.
+
 2007-07-11  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Adam Zimmerman  <adam_zimmerman@sfu.ca>

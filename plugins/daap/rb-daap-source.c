@@ -309,7 +309,7 @@ connection_auth_cb (RBDAAPConnection *connection,
 		    const char       *name,
 		    RBDAAPSource     *source)
 {
-	gchar *password;
+	gchar *password = NULL;
 #ifdef WITH_GNOME_KEYRING
 	GnomeKeyringResult keyringret;
 	gchar *keyring;
@@ -330,10 +330,14 @@ connection_auth_cb (RBDAAPConnection *connection,
 	if (keyringret == GNOME_KEYRING_RESULT_OK) {
 		GnomeKeyringNetworkPasswordData *pwd_data;
 
-		pwd_data = (GnomeKeyringNetworkPasswordData*)list->data;
-		password = g_strdup (pwd_data->password);
+		if (list != NULL) {
+			pwd_data = (GnomeKeyringNetworkPasswordData*)list->data;
+			password = g_strdup (pwd_data->password);
+		}
 		source->priv->tried_password = TRUE;
-	} else {
+	}
+
+	if (password == NULL) {
 #endif
 		GtkWindow *parent;
 		GnomePasswordDialog *dialog;
