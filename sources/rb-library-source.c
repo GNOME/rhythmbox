@@ -615,9 +615,7 @@ rb_library_source_library_location_cb (GtkEntry *entry,
 
 	eel_gconf_set_string_list (CONF_LIBRARY_LOCATION, list);
 
-	g_free (uri);
-	if (list)
-		rb_slist_deep_free (list);
+	rb_slist_deep_free (list);
 
 	return FALSE;
 }

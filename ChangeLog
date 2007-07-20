@@ -1,3 +1,9 @@
+2007-07-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* sources/rb-library-source.c:
+	(rb_library_source_library_location_cb):
+	Don't free the library location URI twice.  Fixes #455232.
+
 2007-07-18  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/daap/rb-daap-source.c: (connection_auth_cb):
