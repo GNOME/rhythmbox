@@ -98,7 +98,9 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+#ifdef ENABLE_TRACK_TRANSFER
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
+#endif
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -109,7 +111,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_delete = impl_delete;
 	source_class->impl_copy = impl_copy;
 
-	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;

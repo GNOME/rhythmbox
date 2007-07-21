@@ -1,3 +1,9 @@
+2007-07-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_class_init):
+	Don't set source_class->impl_can_paste unless track transfer is
+	enabled.  Fixes #449286.
+
 2007-07-20  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-library-source.c:
