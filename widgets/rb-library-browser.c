@@ -79,6 +79,9 @@ typedef struct
 
 	GHashTable *property_views;
 	GHashTable *selections;
+
+	gint rebuild_idle_id;
+	gint rebuild_prop_index;
 } RBLibraryBrowserPrivate;
 
 enum
@@ -597,6 +600,33 @@ rebuild_child_model (RBLibraryBrowser *widget,
 	g_object_unref (base_model);
 }
 
+static gboolean
+idle_rebuild_model (RBLibraryBrowser *widget)
+{
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+
+	priv->rebuild_idle_id = 0;
+	rebuild_child_model (widget, priv->rebuild_prop_index, FALSE);
+	return FALSE;
+}
+
+static void
+destroy_idle_rebuild_model (RBLibraryBrowser *widget)
+{
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+	RBPropertyView *view;
+	RhythmDBPropType prop_type;
+	
+	prop_type = browser_properties[priv->rebuild_prop_index].type;
+	view = g_hash_table_lookup (priv->property_views, (gpointer)prop_type);
+	if (view != NULL) {
+		ignore_selection_changes (widget, view, FALSE);
+	}
+	priv->rebuild_prop_index = 0;
+
+	g_object_unref (widget);
+}
+
 void
 rb_library_browser_set_selection (RBLibraryBrowser *widget,
 				  RhythmDBPropType type,
@@ -605,6 +635,7 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 	GList *old_selection;
 	RBPropertyView *view;
+	int rebuild_index;
 
 	old_selection = g_hash_table_lookup (priv->selections, (gpointer)type);
 
@@ -616,13 +647,28 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
 	else
 		g_hash_table_remove (priv->selections, (gpointer)type);
 
-	view = g_hash_table_lookup (priv->property_views, (gpointer)type);
-	if (view)
-		ignore_selection_changes (widget, view, TRUE);
+	rebuild_index = prop_to_index (type);
+	if (priv->rebuild_idle_id != 0) {
+		if (priv->rebuild_prop_index <= rebuild_index) {
+			/* already rebuilding a model further up the chain,
+			 * so we don't need to do anything for this one.
+			 */
+			return;
+		}
+		g_source_remove (priv->rebuild_idle_id);
+	}
 
-	rebuild_child_model (widget, prop_to_index (type), FALSE);
-	if (view)
-		ignore_selection_changes (widget, view, FALSE);
+	view = g_hash_table_lookup (priv->property_views, (gpointer)type);
+	if (view) {
+		ignore_selection_changes (widget, view, TRUE);
+	}
+
+	priv->rebuild_prop_index = rebuild_index;
+	priv->rebuild_idle_id = 
+		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+				 (GSourceFunc)idle_rebuild_model,
+				 g_object_ref (widget),
+				 (GDestroyNotify)destroy_idle_rebuild_model);
 }
 
 GList*

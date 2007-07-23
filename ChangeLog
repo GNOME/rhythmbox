@@ -1,3 +1,13 @@
+2007-07-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-library-browser.c: (idle_rebuild_model),
+	(destroy_idle_rebuild_model), (rb_library_browser_set_selection):
+	When the browser selection changes, use an idle handler to rebuild the
+	query models.  Sometimes the selection change occurs while an entry
+	property change is propagating through the query chain, and if we
+	rebuild the query chain before it's done, property models can get out
+	of sync, causing assertion failures.  Should fix #452703.
+
 2007-07-21  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/mtpdevice/rb-mtp-source.c: (rb_mtp_source_class_init):
