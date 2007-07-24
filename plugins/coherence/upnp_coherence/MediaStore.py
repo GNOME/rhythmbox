@@ -84,26 +84,29 @@ class Track:
 		# create item
 		item = DIDLLite.MusicTrack(self.id + CONTAINER_COUNT)
 		item.album = self.store.db.entry_get (entry, rhythmdb.PROP_ALBUM)
-		#item.albumArtURI = ## can we somehow store art in the upnp share??
+		##item.albumArtURI = ## can we somehow store art in the upnp share??
 		item.artist = self.store.db.entry_get (entry, rhythmdb.PROP_ARTIST)
-		#item.date =
+		##item.date =
 		item.genre = self.store.db.entry_get (entry, rhythmdb.PROP_GENRE)
-		item.originalTrackNumber = self.store.db.entry_get (entry, rhythmdb.PROP_TRACK_NUMBER)
+		item.originalTrackNumber = str(self.store.db.entry_get (entry, rhythmdb.PROP_TRACK_NUMBER))
 		item.title = self.store.db.entry_get (entry, rhythmdb.PROP_TITLE) # much nicer if it was entry.title
 		item.res = []
 
 		# add internal resource
-		res = DIDLLite.Resource(location, 'internal:%s:%s:*' % (host, mimetype))
-		res.size = size
-		res.duration = duration
-		res.bitrate = bitrate
-		item.res.append(res)
+		#res = DIDLLite.Resource(location, 'internal:%s:%s:*' % (host, mimetype))
+		#res.size = size
+		#res.duration = duration
+		#res.bitrate = bitrate
+		#item.res.append(res)
 
 		# add http resource
 		res = DIDLLite.Resource(self.get_url(), 'http-get:*:%s:*' % mimetype)
-		res.size = size
-		res.duration = duration
-		res.bitrate = bitrate
+		if size > 0:
+			res.size = size
+		if duration > 0:
+			res.duration = str(duration)
+		if bitrate > 0:
+			res.bitrate = str(bitrate)
 		item.res.append(res)
 
 		return item
@@ -156,7 +159,7 @@ class MediaStore:
 		louie.send('Coherence.UPnP.Backend.init_completed', None, backend=self)
 
 	def get_by_id(self,id):
-		print "get_by_id %s" % id
+		print "getting resource id " + str(id)
 		if id.startswith('artist_all_tracks_'):
 			return self.containers[id]
 
@@ -164,16 +167,16 @@ class MediaStore:
 		if id < 1000:
 			item = self.containers[id]
 		else:
-			item = Track(self.db, id-CONTAINER_COUNT)
+			item = Track(self, (id - CONTAINER_COUNT))
 
-		print "get_by_id found %s" % item
 		return item
 
 	def upnp_init(self):
 		if self.server:
-		    self.server.connection_manager_server.set_variable(0, 'SourceProtocolInfo',
-		                    ['internal:%s:*:*' % self.name,
-		                     'http-get:*:audio/mpeg:*'])
+		    self.server.connection_manager_server.set_variable(0, 'SourceProtocolInfo', [
+				#'internal:%s:*:*' % self.name,
+				'http-get:*:audio/mpeg:*',
+			])
 
 	def children_tracks(self):
 		tracks = []

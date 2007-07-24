@@ -64,7 +64,7 @@ class CoherencePlugin(rb.Plugin):
 			raise ("Coherence %s required. %s found. Please upgrade" % (required, found))
 		else:
 			coherence_config = {
-				'logmode': 'info',
+				#'logmode': 'info',
 				'controlpoint': 'yes',
 				'plugins':{}
 			}

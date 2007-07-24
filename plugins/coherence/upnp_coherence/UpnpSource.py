@@ -74,10 +74,12 @@ class UpnpSource(rb.BrowserSource):
 						resources = [(k, v.split(':')) for (k, v) in values['resources'].iteritems()]
 						# break data into map
 						for r in resources:
-							r[1][3] = dict([v.split('=') for v in r[1][3].split(';')])
+							if r[1][3] is not '*':
+								r[1][3] = dict([v.split('=') for v in r[1][3].split(';')])
+							else:
+								r[1][3] = dict()
 
 						url = None
-						print resources
 						for r in resources:
 							if r[1][3].has_key('DLNA.ORG_CI') and r[1][3]['DLNA.ORG_CI'] is not '1':
 								url = r[0]

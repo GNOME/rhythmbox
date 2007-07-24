@@ -1,3 +1,12 @@
+2007-07-25  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/coherence/upnp_coherence/MediaStore.py:
+	* plugins/coherence/upnp_coherence/UpnpSource.py:
+	* plugins/coherence/upnp_coherence/__init__.py: fix assorted bits, and
+	make the content directory (MediaStore) actually work. You can now
+	chew large amounts of CPU while sending/receiving the track data,
+	before not playing any of the tracks
+
 2007-07-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* widgets/rb-library-browser.c: (idle_rebuild_model),
