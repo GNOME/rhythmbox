@@ -1,3 +1,10 @@
+2007-07-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_add_station):
+	Ensure the strings we get from totem-plparser are valid utf8.
+	Fixes #459093.
+
 2007-06-28  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* sources/rb-auto-playlist-source.c:

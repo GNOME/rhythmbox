@@ -50,6 +50,7 @@
 #include "rb-player.h"
 #include "rb-metadata.h"
 #include "rb-plugin.h"
+#include "rb-cut-and-paste-code.h"
 
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
@@ -457,6 +458,8 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	RhythmDBEntry *entry;
 	GValue val = { 0, };
 	char *real_uri = NULL;
+	char *fixed_title;
+	char *fixed_genre = NULL;
 	RhythmDBEntryType entry_type;
 
 	real_uri = guess_uri_scheme (uri);
@@ -479,20 +482,27 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	}
 
 	g_value_init (&val, G_TYPE_STRING);
-	if (title)
-		g_value_set_static_string (&val, title);
-	else
-		g_value_take_string (&val,
-				     gnome_vfs_format_uri_for_display (uri));
+	if (title) {
+		fixed_title = rb_make_valid_utf8 (title, '?');
+	} else {
+		fixed_title = gnome_vfs_format_uri_for_display (uri);
+	}
+	g_value_take_string (&val, fixed_title);
 
 	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_reset (&val);
 
-	if ((!genre) || (strcmp (genre, "") == 0))
+	if ((!genre) || (strcmp (genre, "") == 0)) {
 		genre = _("Unknown");
+	} else {
+		fixed_genre = rb_make_valid_utf8 (genre, '?');
+		genre = fixed_genre;
+	}
+
 	g_value_set_string (&val, genre);
 	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
+	g_free (fixed_genre);
 
 	g_value_init (&val, G_TYPE_DOUBLE);
 	g_value_set_double (&val, 0.0);
