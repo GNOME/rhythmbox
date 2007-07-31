@@ -47,7 +47,6 @@ INCLUDES =						\
 	-DDATADIR=\""$(datadir)"\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/widgets				\
-	$(WARN_CFLAGS)					\
 	$(SOUP_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 

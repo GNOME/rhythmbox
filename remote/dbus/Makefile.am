@@ -17,7 +17,6 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
-	$(WARN_CFLAGS)					\
 	$(RB_CLIENT_CFLAGS)				\
 	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE

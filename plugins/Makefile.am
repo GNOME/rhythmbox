@@ -78,7 +78,6 @@ INCLUDES =						\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/widgets                    	\
-	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-DRB_PLUGIN_DIR=\"$(PLUGINDIR)\"
 

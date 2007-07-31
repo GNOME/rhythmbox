@@ -1,3 +1,31 @@
+2007-07-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* configure.ac:
+	Enable warnings when we appear to be in a git tree
+
+	* lib/Makefile.am:
+	* plugins/Makefile.am:
+	* plugins/audiocd/Makefile.am:
+	* plugins/audioscrobbler/Makefile.am:
+	* plugins/cd-recorder/Makefile.am:
+	* plugins/daap/Makefile.am:
+	* plugins/generic-player/Makefile.am:
+	* plugins/ipod/Makefile.am:
+	* plugins/iradio/Makefile.am:
+	* plugins/lirc/Makefile.am:
+	* plugins/mmkeys/Makefile.am:
+	* plugins/mtpdevice/Makefile.am:
+	* plugins/power-manager/Makefile.am:
+	* plugins/sample-vala/Makefile.am:
+	* plugins/sample/Makefile.am:
+	* plugins/visualizer/Makefile.am:
+	* remote/dbus/Makefile.am:
+	* shell/Makefile.am:
+	* sources/Makefile.am:
+	* widgets/Makefile.am:
+	Remove WARN_CFLAGS from all makefiles.  It doesn't get substituted,
+	and it's included in RHYTHMBOX_CFLAGS anyway.
+
 2007-07-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* plugins/iradio/rb-iradio-source.c:

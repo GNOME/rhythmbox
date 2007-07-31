@@ -38,7 +38,6 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	-DPLUGIN_SRC_DIR=\""$(ROOT_UNINSTALLED_DIR)/plugins/visualizer"\" \
 	$(RHYTHMBOX_CFLAGS)				\
-	$(WARN_CFLAGS)					\
 	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 

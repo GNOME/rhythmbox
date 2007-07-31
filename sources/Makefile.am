@@ -58,7 +58,6 @@ INCLUDES =						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
-	$(WARN_CFLAGS)					\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)

@@ -35,7 +35,6 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(SOUP_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gladedir = $(plugindir)

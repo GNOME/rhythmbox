@@ -37,7 +37,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(WARN_CFLAGS)					\
 	$(HAL_CFLAGS)					\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE			\

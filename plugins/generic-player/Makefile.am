@@ -38,7 +38,6 @@ INCLUDES = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 uixmldir = $(plugindir)

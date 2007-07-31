@@ -30,7 +30,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(WARN_CFLAGS)					\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 

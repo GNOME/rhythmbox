@@ -44,7 +44,6 @@ INCLUDES = 						\
 	$(HAL_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(LIBNAUTILUS_BURN_CFLAGS)			\
-	$(WARN_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 gladedir = $(plugindir)
