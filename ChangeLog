@@ -1,5 +1,18 @@
 2007-07-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_constructor), (get_is_audio_player_path),
+	(set_playlist_path), (set_playlist_formats), (debug_device_info),
+	(rb_generic_player_source_get_device_info),
+	(rb_generic_player_is_volume_player), (load_playlist_file),
+	(visit_playlist_dirs), (default_load_playlists):
+	Read device info from the .is_audio_player file (a la Banshee) to 
+	override the information we get from HAL.  Change our interpretation
+	of playlist_path to be closer to what I think the HAL spec means.
+	From bug #380960.
+
+2007-07-31  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	* configure.ac:
 	Enable warnings when we appear to be in a git tree
 

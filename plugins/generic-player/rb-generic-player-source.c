@@ -103,7 +103,6 @@ typedef struct
 
 } RBGenericPlayerSourcePrivate;
 
-
 RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define GENERIC_PLAYER_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
 
@@ -154,15 +153,15 @@ rb_generic_player_source_constructor (GType type,
 
 	priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (source, "shell", &shell, NULL);
 
-	g_object_get (G_OBJECT (shell), "db", &priv->db, NULL);
-	g_object_unref (G_OBJECT (shell));
+	g_object_get (shell, "db", &priv->db, NULL);
+	g_object_unref (shell);
 
-	g_object_get (G_OBJECT (source), "volume", &volume, NULL);
+	g_object_get (source, "volume", &volume, NULL);
 	priv->handles_trash = gnome_vfs_volume_handles_trash (volume);
 	priv->read_only = gnome_vfs_volume_is_read_only (volume);
-	g_object_unref (G_OBJECT (volume));
+	g_object_unref (volume);
 
 	priv->folder_depth = -1;	/* 0 is a possible value, I guess */
 	priv->playlist_format_unknown = TRUE;
@@ -177,20 +176,140 @@ rb_generic_player_source_constructor (GType type,
 	return G_OBJECT (source);
 }
 
+static char *
+get_is_audio_player_path (GnomeVFSVolume *volume)
+{
+	char *path = gnome_vfs_volume_get_activation_uri (volume);
+	char *file = g_build_filename (path, ".is_audio_player", NULL);
+	g_free (path);
+
+	if (rb_uri_is_local (file) && rb_uri_exists (file)) {
+		return file;
+	}
+
+	g_free (file);
+	return NULL;
+}
+
+static void
+set_playlist_path (RBGenericPlayerSource *source, const char *path)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+
+	g_free (priv->playlist_path);
+
+	/*
+	 * The HAL spec allows the use of a '%File' variable to substitute
+	 * the playlist name.  All current examples are of the form 'playlists/%File',
+	 * so we'll just make that work.
+	 */
+	if (g_str_has_suffix (path, "/%File")) {
+
+		priv->playlist_path = g_strdup (path);
+		priv->playlist_path[strlen (path) - strlen("/%File")] = '\0';
+	} else {
+		priv->playlist_path = g_strdup (path);
+	}
+	rb_debug ("playlist path set to %s", priv->playlist_path);
+}
+
+static void
+set_playlist_formats (RBGenericPlayerSource *source, char **formats)
+{
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	RhythmDBEntryType entry_type;
+	int fmt;
+
+	priv->playlist_format_unknown = TRUE;
+	priv->playlist_format_m3u = FALSE;
+	priv->playlist_format_pls = FALSE;
+	for (fmt = 0; formats[fmt] != NULL; fmt++) {
+		char *format;
+		char *stripped;
+
+		format = g_strdup (formats[fmt]);
+		stripped = g_strstrip (format);
+
+		if (strcmp (stripped, "audio/x-mpegurl") == 0) {
+			priv->playlist_format_unknown = FALSE;
+			priv->playlist_format_m3u = TRUE;
+		} else if (strcmp (stripped, "audio/x-scpls") == 0) {
+			priv->playlist_format_unknown = FALSE;
+			priv->playlist_format_pls = TRUE;
+		} else {
+			rb_debug ("unrecognized playlist format: %s", stripped);
+		}
+
+		g_free (format);
+	}
+}
+
+static void
+debug_device_info (RBGenericPlayerSource *source, GnomeVFSVolume *volume, const char *what)
+{
+	char *dbg;
+	char *path;
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+
+	path = gnome_vfs_volume_get_activation_uri (volume);
+	rb_debug ("device information for %s from %s", path, what);
+	g_free (path);
+
+	if (priv->audio_folders != NULL) {
+		dbg = g_strjoinv (", ", priv->audio_folders);
+		rb_debug ("audio folders: %s", dbg);
+		g_free (dbg);
+	} else {
+		rb_debug ("no audio folders set");
+	}
+
+	if (priv->output_mime_types != NULL) {
+		dbg = g_strjoinv (", ", priv->output_mime_types);
+		rb_debug ("output types: %s", dbg);
+		g_free (dbg);
+	} else {
+		rb_debug ("no output types set");
+	}
+
+	if (priv->playlist_format_unknown) {
+		rb_debug ("playlist format is unknown");
+	} else {
+		if (priv->playlist_format_m3u)
+			rb_debug ("M3U playlist format is supported");
+		if (priv->playlist_format_pls)
+			rb_debug ("PLS playlist format is supported");
+	}
+
+	if (priv->playlist_path != NULL) {
+		rb_debug ("playlist path: %s", priv->playlist_path);
+	} else {
+		rb_debug ("no playlist path is set");
+	}
+
+	if (priv->folder_depth == -1) {
+		rb_debug ("audio folder depth is not set");
+	} else {
+		rb_debug ("audio folder depth: %d", priv->folder_depth);
+	}
+}
+
 static void
 rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 {
-#if HAVE_HAL
-	GnomeVFSVolume *volume;
-	LibHalContext *ctx = get_hal_context ();
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
+	GnomeVFSVolume *volume;
+	char *is_audio_player;
+#ifdef HAVE_HAL
+	LibHalContext *ctx;
+#endif
+	g_object_get (source, "volume", &volume, NULL);
 
+#ifdef HAVE_HAL
+	ctx = get_hal_context ();
 	if (ctx != NULL) {
 		gchar *udi;
 
-		g_object_get (G_OBJECT (source), "volume", &volume, NULL);
 		udi = get_hal_udi_for_player (ctx, volume);
-		g_object_unref (G_OBJECT (volume));
 
 		if (udi != NULL) {
 			DBusError error;
@@ -203,13 +322,7 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.audio_folders", &error);
 			if (proplist) {
 				if (!dbus_error_is_set (&error)) {
-					char *dbg;
-
 					priv->audio_folders = g_strdupv (proplist);
-
-					dbg = g_strjoinv(", ", priv->audio_folders);
-					rb_debug ("got audio player folder list: %s", dbg);
-					g_free (dbg);
 				}
 				libhal_free_string_array (proplist);
 			}
@@ -220,13 +333,7 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.output_formats", &error);
 			if (proplist) {
 				if (!dbus_error_is_set (&error)) {
-					char *dbg;
-
 					priv->output_mime_types = g_strdupv (proplist);
-
-					dbg = g_strjoinv (", ", priv->output_mime_types);
-					rb_debug ("got output mime-type list: %s", dbg);
-					g_free (dbg);
 				}
 				libhal_free_string_array (proplist);
 			}
@@ -237,26 +344,8 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 			proplist = libhal_device_get_property_strlist (ctx, udi, "portable_audio_player.playlist_format", &error);
 			if (proplist) {
 				if (!dbus_error_is_set (&error)) {
-					int fmt;
-					for (fmt = 0; proplist[fmt] != NULL; fmt++) {
-						if (strcmp (proplist[fmt], "audio/x-mpegurl") == 0) {
-							rb_debug ("device supports M3U playlists");
-							priv->playlist_format_unknown = FALSE;
-							priv->playlist_format_m3u = TRUE;
-						} else if (strcmp (proplist[fmt], "audio/x-scpls") == 0) {
-							rb_debug ("device supports PLS playlists");
-							priv->playlist_format_unknown = FALSE;
-							priv->playlist_format_pls = TRUE;
-						} else {
-							rb_debug ("unrecognized playlist format: %s", proplist[fmt]);
-						}
-					}
+					set_playlist_formats (source, proplist);
 				}
-
-				if (priv->playlist_format_unknown) {
-					rb_debug ("didn't find a playlist format");
-				}
-
 				libhal_free_string_array (proplist);
 			}
 			free_dbus_error ("getting playlist format", &error);
@@ -265,8 +354,7 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 			dbus_error_init (&error);
 			prop = libhal_device_get_property_string (ctx, udi, "portable_audio_player.playlist_path", &error);
 			if (prop && !dbus_error_is_set (&error)) {
-				rb_debug ("got playlist path: %s", prop);
-				priv->playlist_path = g_strdup (prop);
+				set_playlist_path (source, prop);
 				libhal_free_string (prop);
 			}
 			free_dbus_error ("getting playlist path", &error);
@@ -275,20 +363,100 @@ rb_generic_player_source_get_device_info (RBGenericPlayerSource *source)
 			dbus_error_init (&error);
 			value = libhal_device_get_property_int (ctx, udi, "portable_audio_player.folder_depth", &error);
 			if (!dbus_error_is_set (&error)) {
-				rb_debug ("got max folder depth %d", value);
 				priv->folder_depth = value;
 			}
 			free_dbus_error ("getting max folder depth", &error);
 
+			debug_device_info (source, volume, "HAL");
 		} else {
 			rb_debug ("no player info available (HAL doesn't recognise it as a player");
 		}
 		g_free (udi);
 	}
 	cleanup_hal_context (ctx);
-#else
-	rb_debug ("no player info available (no HAL)");
 #endif
+
+	/* allow HAL info to be overridden with .is_audio_player file */
+	is_audio_player = get_is_audio_player_path (volume);
+	if (is_audio_player != NULL) {
+		char *data = NULL;
+		int data_size = 0;
+		GnomeVFSResult result;
+
+		rb_debug ("reading .is_audio_player file %s", is_audio_player);
+		result = gnome_vfs_read_entire_file (is_audio_player, &data_size, &data);
+		if (result != GNOME_VFS_OK) {
+			/* can we sensibly report this anywhere? */
+			rb_debug ("error reading .is_audio_player file: %s", gnome_vfs_result_to_string (result));
+		} else {
+			GKeyFile *keyfile;
+			GError *error = NULL;
+			char *munged;
+			gsize munged_size;
+			const char *fake_group = "[x-rb-data]\n";
+			char *group;
+
+			/* prepend a group name to the file contents */
+			munged_size = data_size + strlen (fake_group);
+			munged = g_malloc0 (munged_size + 1);
+			strcpy (munged, fake_group);
+			memcpy (munged + strlen (fake_group), data, data_size);
+
+			keyfile = g_key_file_new ();
+			g_key_file_set_list_separator (keyfile, ',');
+			if (g_key_file_load_from_data (keyfile, munged, munged_size, G_KEY_FILE_NONE, &error) == FALSE) {
+				/* and this */
+				rb_debug ("error loading .is_audio_player file: %s", error->message);
+				g_error_free (error);
+			} else {
+				char *value;
+				char **list;
+
+				group = g_key_file_get_start_group (keyfile);
+				
+				list = g_key_file_get_string_list (keyfile, group, "audio_folders", NULL, NULL);
+				if (list != NULL) {
+					g_strfreev (priv->audio_folders);
+					priv->audio_folders = list;
+				}
+
+				list = g_key_file_get_string_list (keyfile, group, "output_formats", NULL, NULL);
+				if (list != NULL) {
+					g_strfreev (priv->output_mime_types);
+					priv->output_mime_types = list;
+				}
+				
+				list = g_key_file_get_string_list (keyfile, group, "playlist_format", NULL, NULL);
+				if (list != NULL) {
+					set_playlist_formats (source, list);
+					g_strfreev (list);
+				}
+
+				value = g_key_file_get_string (keyfile, group, "playlist_path", NULL);
+				if (value != NULL) {
+					set_playlist_path (source, value);
+					g_free (value);
+				}
+
+				if (g_key_file_has_key (keyfile, group, "folder_depth", NULL)) {
+					priv->folder_depth = g_key_file_get_integer (keyfile, group, "folder_depth", NULL);
+				}
+				g_free (group);
+			}
+
+			g_key_file_free (keyfile);
+			g_free (munged);
+			
+			debug_device_info (source, volume, ".is_audio_player file");
+		}
+		g_free (data);
+
+		g_free (is_audio_player);
+	} else {
+		rb_debug ("no .is_audio_player file found on this device");
+	}
+
+	g_object_unref (volume);
 }
 
 static void
@@ -455,13 +623,10 @@ rb_generic_player_is_volume_player (GnomeVFSVolume *volume)
 
 	/* treat as audio player if ".is_audio_player" exists in the root of the volume  */
 	if (!result) {
-		char *path = gnome_vfs_volume_get_activation_uri (volume);
-		char *file = g_build_filename (path, ".is_audio_player", NULL);
+		char *path;
+		path = get_is_audio_player_path (volume);
+		result = (path != NULL);
 
-		if (rb_uri_is_local (file) && rb_uri_exists (file))
-			result = TRUE;
-
-		g_free (file);
 		g_free (path);
 	}
 
@@ -563,6 +728,7 @@ load_playlist_file (RBGenericPlayerSource *source,
 	TotemPlParser *parser;
 	HandlePlaylistEntryData *data;
 	RBShell *shell;
+	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
 	g_object_get (G_OBJECT (source),
 		      "shell", &shell,
@@ -594,9 +760,20 @@ load_playlist_file (RBGenericPlayerSource *source,
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (parser), "recurse"))
 		g_object_set (G_OBJECT (parser), "recurse", FALSE, NULL);
 
-	if (totem_pl_parser_parse (parser, playlist_path, TRUE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
+	/* ignore directories and unsupported playlist formats */
+	if (priv->playlist_format_unknown == FALSE) {
+		if (priv->playlist_format_m3u == FALSE)
+			totem_pl_parser_add_ignored_mimetype (parser, "audio/x-mpegurl");
+		if (priv->playlist_format_pls == FALSE)
+			totem_pl_parser_add_ignored_mimetype (parser, "audio/x-scpls");
+	}
+	totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
+
+	if (totem_pl_parser_parse (parser, playlist_path, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
 		rb_debug ("unable to parse %s as playlist", playlist_path);
-		g_object_unref (G_OBJECT (playlist));
+		if (g_object_is_floating (playlist))
+			g_object_ref_sink (playlist);
+		g_object_unref (playlist);
 	} else {
 		rb_generic_player_source_add_playlist (source, shell, RB_SOURCE (playlist));
 	}
@@ -616,19 +793,16 @@ visit_playlist_dirs (const gchar *rel_path,
 {
 	char *main_path;
 	char *playlist_path;
-	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
 
 	*recurse = TRUE;
+	if (strcmp (rel_path, ".is_audio_player") == 0)
+		return TRUE;
 
 	main_path = rb_generic_player_source_get_mount_path (source);
 	playlist_path = rb_uri_append_path (main_path, rel_path);
 	g_free (main_path);
 
-	/* don't add playlists in formats we know the player can't handle  */
-	if ((g_str_has_suffix (playlist_path, ".m3u") && (priv->playlist_format_unknown || priv->playlist_format_m3u)) ||
-	   (g_str_has_suffix (playlist_path, ".pls") && (priv->playlist_format_unknown || priv->playlist_format_pls))) {
-		load_playlist_file (source, playlist_path, rel_path);
-	}
+	load_playlist_file (source, playlist_path, rel_path);
 	g_free (playlist_path);
 
 	return TRUE;
@@ -643,8 +817,10 @@ default_load_playlists (RBGenericPlayerSource *source)
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
 	if (priv->playlist_path) {
+
 		/* If the device only supports a single playlist, just load that */
-		if (strstr (priv->playlist_path, "%File") == NULL) {
+		if (g_str_has_suffix (priv->playlist_path, ".m3u") ||
+		    g_str_has_suffix (priv->playlist_path, ".pls")) {
 			char *playlist_path = rb_uri_append_path (mount_path, priv->playlist_path);
 			if (rb_uri_exists (playlist_path)) {
 				load_playlist_file (source, playlist_path, priv->playlist_path);
@@ -653,22 +829,12 @@ default_load_playlists (RBGenericPlayerSource *source)
 			return;
 		}
 
-		/* Otherwise, limit the search to the playlist folder.
-		 * The HAL spec is pretty vague on what the playlist path
-		 * actually means when it includes '%File'.  All current
-		 * examples are 'folder/%File', so we'll just make it work
-		 * for that.
+		/* Otherwise, limit the search to the device's playlist folder.
+		 * The optional trailing '/%File' is stripped in set_playlist_path
 		 */
-		if (g_str_has_suffix (priv->playlist_path, "/%File")) {
-			char *playlist_folder = g_strdup (priv->playlist_path);
-			playlist_folder[strlen (playlist_folder) - strlen("/%File")] = '\0';
-			playlist_path = rb_uri_append_path (mount_path, playlist_folder);
-			g_free (playlist_folder);
-			rb_debug ("constructed playlist search path %s", playlist_path);
-		} else {
-			/* fall back to searching the whole volume */
-			rb_debug ("Unsupported playlist path format: %s", priv->playlist_path);
-		}
+		playlist_path = rb_uri_append_path (mount_path, priv->playlist_path);
+		rb_debug ("constructed playlist search path %s", playlist_path);
+
 	}
 
 	gnome_vfs_directory_visit (playlist_path ? playlist_path : mount_path,
