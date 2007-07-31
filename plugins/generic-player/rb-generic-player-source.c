@@ -217,7 +217,6 @@ static void
 set_playlist_formats (RBGenericPlayerSource *source, char **formats)
 {
 	RBGenericPlayerSourcePrivate *priv = GENERIC_PLAYER_SOURCE_GET_PRIVATE (source);
-	RhythmDBEntryType entry_type;
 	int fmt;
 
 	priv->playlist_format_unknown = TRUE;
