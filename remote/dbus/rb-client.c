@@ -391,8 +391,8 @@ print_playing_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, const cha
 	org_gnome_Rhythmbox_Player_get_elapsed (player_proxy, &elapsed, &error);
 	annoy (&error);
 
-	if (!playing_uri) {
-		g_print (_("Not playing"));
+	if (!playing_uri || playing_uri[0] == '\0') {
+		g_print ("%s\n", _("Not playing"));
 		return;
 	}
 	rb_debug ("playing song is %s", playing_uri);
