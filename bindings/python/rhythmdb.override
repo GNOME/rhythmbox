@@ -995,6 +995,8 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 		RhythmDBPropType propid = -1;
 		GType gtype;
 		GValue value = {0,};
+		int increment, remaining;
+		int index = 0;
 
 		criteria = PyTuple_GetItem (args, i);
 		if (!PySequence_Check (criteria)) {
@@ -1002,85 +1004,105 @@ _wrap_rhythmdb_query_append (PyGObject *self, PyObject *args, PyObject *kwargs)
 			return NULL;
 		}
 
-		py_type = PySequence_GetItem (criteria, 0);
-		if (py_type == NULL) {
+		remaining = PySequence_Size (criteria);
+		if (!remaining) {
 			PyErr_SetString (PyExc_TypeError, "criteria sequence has no elements");
 			return NULL;
 		}
-		if (pyg_enum_get_value (RHYTHMDB_TYPE_QUERY_TYPE, py_type, (gpointer)&type)) {
-			PyErr_SetString (PyExc_TypeError, "criteria operator is invalid");
-			return NULL;
-		}
 
-		switch (type) {
-		case RHYTHMDB_QUERY_END:
-		case RHYTHMDB_QUERY_DISJUNCTION:
-			break;
-		case RHYTHMDB_QUERY_SUBQUERY:
-			if (PySequence_Size (args) != 2) {
-				PyErr_SetString (PyExc_TypeError, "wrong number arguments for criteria");
-			}
-			g_value_init (&value, G_TYPE_POINTER);
-			obj = PySequence_GetItem (criteria, 1);
-			if (obj && pyg_boxed_check (obj, RHYTHMDB_TYPE_QUERY)) {
-				g_value_set_pointer (&value, pyg_boxed_get ( obj, RhythmDBQuery));
-			} else {
-				Py_XDECREF (obj);
-				g_value_unset (&value);
-				PyErr_SetString (PyExc_TypeError, "query should be a RhythmDBQuery");
+		while (remaining) {
+			/* Fetch type of first element. */
+			py_type = PySequence_GetItem (criteria, index);
+			if (pyg_enum_get_value (RHYTHMDB_TYPE_QUERY_TYPE, py_type, (gpointer)&type)) {
+				Py_DECREF (py_type);
+				PyErr_SetString (PyExc_TypeError, "criteria operator is invalid");
 				return NULL;
 			}
-			Py_DECREF (obj);
-			break;
-		default:
-			if (PySequence_Size (criteria) != 3) {
+			Py_DECREF (py_type);
+	
+			/* Check that there are enough elements left. */
+			switch (type) {
+			case RHYTHMDB_QUERY_END:
+			case RHYTHMDB_QUERY_DISJUNCTION:
+				increment = 1;
+				break;
+			case RHYTHMDB_QUERY_SUBQUERY:
+				increment = 2;
+				break;
+			default:
+				increment = 3;
+			}
+			if (remaining < increment) {
 				PyErr_SetString (PyExc_TypeError, "wrong number arguments for criteria");
 				return NULL;
 			}
 
-			obj = PySequence_GetItem (criteria, 1);
-			if (obj == NULL || pyg_enum_get_value (RHYTHMDB_TYPE_PROP_TYPE, obj, (gpointer)&propid)) {
-				Py_XDECREF (obj);
-				PyErr_SetString (PyExc_TypeError, "criteria propid is of wrong type");
-				return NULL;
-			}
-			Py_DECREF (obj);
-
-			obj = PySequence_GetItem (criteria, 2);
-			if (propid == RHYTHMDB_PROP_TYPE) {
-				RhythmDBEntryType et;
-				if (pyg_boxed_check(obj, RHYTHMDB_TYPE_ENTRY_TYPE)) {
-					et = pyg_boxed_get(obj, RhythmDBEntryType_);
+			/* Process arguments. */
+			switch (type) {
+			case RHYTHMDB_QUERY_END:
+			case RHYTHMDB_QUERY_DISJUNCTION:
+				break;
+			case RHYTHMDB_QUERY_SUBQUERY:
+				obj = PySequence_GetItem (criteria, index+1);
+				if (obj && pyg_boxed_check (obj, RHYTHMDB_TYPE_QUERY)) {
+					g_value_init (&value, G_TYPE_POINTER);
+					g_value_set_pointer (&value, pyg_boxed_get ( obj, RhythmDBQuery));
 				} else {
-					char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s", g_type_name (pyg_type_from_object (obj)));
-					PyErr_SetString(PyExc_TypeError, s);
-					g_free (s);
-					return NULL;
-				}
-				g_value_init (&value, rhythmdb_get_property_type (RHYTHMDB_RHYTHMDB(self->obj), propid));
-				g_value_set_pointer (&value, et);
-			} else {
-				gtype = pyg_type_from_object ((PyObject *)obj->ob_type);
-				if (!gtype) {
-					PyErr_SetString (PyExc_TypeError, "can't map metadata to GType system");
-					return NULL;
-				}
-				g_value_init (&value, gtype);
-				if (pyg_value_from_pyobject  (&value, obj) < 0) {
 					Py_XDECREF (obj);
-					PyErr_SetString (PyExc_TypeError, "could not access value for criteria");
+					PyErr_SetString (PyExc_TypeError, "query should be a RhythmDBQuery");
 					return NULL;
 				}
+				Py_DECREF (obj);
+				break;
+			default:
+				obj = PySequence_GetItem (criteria, index+1);
+				if (obj == NULL || pyg_enum_get_value (RHYTHMDB_TYPE_PROP_TYPE, obj, (gpointer)&propid)) {
+					Py_XDECREF (obj);
+					PyErr_SetString (PyExc_TypeError, "criteria propid is of wrong type");
+					return NULL;
+				}
+				Py_DECREF (obj);
+	
+				obj = PySequence_GetItem (criteria, index+2);
+				if (propid == RHYTHMDB_PROP_TYPE) {
+					RhythmDBEntryType et;
+					if (pyg_boxed_check(obj, RHYTHMDB_TYPE_ENTRY_TYPE)) {
+						et = pyg_boxed_get(obj, RhythmDBEntryType_);
+					} else {
+						char *s = g_strdup_printf ("self should be a RhythmDBEntryType, is a %s",
+									   g_type_name (pyg_type_from_object (obj)));
+						PyErr_SetString(PyExc_TypeError, s);
+						g_free (s);
+						return NULL;
+					}
+					g_value_init (&value, rhythmdb_get_property_type (RHYTHMDB_RHYTHMDB(self->obj), propid));
+					g_value_set_pointer (&value, et);
+				} else {
+					gtype = pyg_type_from_object ((PyObject *)obj->ob_type);
+					if (!gtype) {
+						PyErr_SetString (PyExc_TypeError, "can't map metadata to GType system");
+						return NULL;
+					}
+					g_value_init (&value, gtype);
+					if (pyg_value_from_pyobject  (&value, obj) < 0) {
+						Py_XDECREF (obj);
+						g_value_unset (&value);
+						PyErr_SetString (PyExc_TypeError, "could not access value for criteria");
+						return NULL;
+					}
+				}
+				Py_DECREF (obj);
+				break;
 			}
-			Py_DECREF (obj);
-			break;
-		}
-
-		rhythmdb_query_append_params (RHYTHMDB_RHYTHMDB (self->obj), query, type, propid, &value);
-		if (G_IS_VALUE (&value))
-			g_value_unset (&value);
-		Py_DECREF (py_type);
-	}
+	
+			rhythmdb_query_append_params (RHYTHMDB_RHYTHMDB (self->obj), query, type, propid, &value);
+			if (G_IS_VALUE (&value))
+				g_value_unset (&value);
+	
+			index = index + increment;
+			remaining = remaining - increment;
+		} /* End criteria loop */
+	} /* End args loop */
 	
 	Py_RETURN_NONE;
 }
