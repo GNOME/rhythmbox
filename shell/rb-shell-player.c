@@ -28,6 +28,10 @@
 #include <time.h>
 #include <string.h>
 
+#ifdef HAVE_XIDLE_EXTENSION
+#include <X11/extensions/xidle.h>
+#endif /* HAVE_XIDLE_EXTENSION */
+
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
@@ -59,9 +63,15 @@
 #include "rb-podcast-manager.h"
 #include "rb-marshal.h"
 
-#ifdef HAVE_XIDLE_EXTENSION
-#include <X11/extensions/xidle.h>
-#endif /* HAVE_XIDLE_EXTENSION */
+/* Play Orders */
+#include "rb-play-order-linear.h"
+#include "rb-play-order-linear-loop.h"
+#include "rb-play-order-shuffle.h"
+#include "rb-play-order-random-equal-weights.h"
+#include "rb-play-order-random-by-age.h"
+#include "rb-play-order-random-by-rating.h"
+#include "rb-play-order-random-by-age-and-rating.h"
+#include "rb-play-order-queue.h"
 
 static const char* const state_to_play_order[2][2] =
 	{{"linear",	"linear-loop"},
@@ -157,6 +167,23 @@ static gboolean rb_shell_player_do_next_internal (RBShellPlayer *player,
 						  gboolean from_eos,
 						  GError **error);
 
+
+
+typedef struct {
+	/** Value of the state/play-order gconf key */
+	char *name;
+	/** Contents of the play order dropdown; should be gettext()ed before use. */
+	char *description;
+	/** the play order's gtype id */
+	GType order_type;
+	/** TRUE if the play order should appear in the dropdown */
+	gboolean is_in_dropdown;
+} RBPlayOrderDescription;
+
+static void _play_order_description_free (RBPlayOrderDescription *order);
+
+static RBPlayOrder* rb_play_order_new (RBShellPlayer *player, const char* porder_name);
+
 #define CONF_STATE		CONF_PREFIX "/state"
 
 /* number of seconds before the end of a track to start prerolling the next */
@@ -179,6 +206,8 @@ struct RBShellPlayerPrivate
 	RBSource *source;
 	RBPlayQueueSource *queue_source;
 	RBSource *current_playing_source;
+
+	GHashTable *play_orders; /* char* -> RBPlayOrderDescription* map */
 
 	gboolean did_retry;
 	GTimeVal last_retry;
@@ -751,6 +780,25 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
 
+	player->priv->play_orders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)_play_order_description_free);
+	
+	rb_shell_player_add_play_order (player, "linear", N_("Linear"),
+					RB_TYPE_LINEAR_PLAY_ORDER, FALSE);
+	rb_shell_player_add_play_order (player, "linear-loop", N_("Linear looping"),
+					RB_TYPE_LINEAR_PLAY_ORDER_LOOP, FALSE);
+	rb_shell_player_add_play_order (player, "shuffle", N_("Shuffle"),
+					RB_TYPE_SHUFFLE_PLAY_ORDER, FALSE);
+	rb_shell_player_add_play_order (player, "random-equal-weights", N_("Random with equal weights"),
+					RB_TYPE_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS, FALSE);
+	rb_shell_player_add_play_order (player, "random-by-age", N_("Random by time since last play"),
+					RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE, FALSE);
+	rb_shell_player_add_play_order (player, "random-by-rating", N_("Random by rating"),
+					RB_TYPE_RANDOM_PLAY_ORDER_BY_RATING, FALSE);
+	rb_shell_player_add_play_order (player, "random-by-age-and-rating", N_("Random by time since last play and rating"),
+					RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING, FALSE);
+	rb_shell_player_add_play_order (player, "queue", N_("Linear, removing entries once played"),
+					RB_TYPE_QUEUE_PLAY_ORDER, TRUE);
+
 	player->priv->mmplayer = rb_player_new (eel_gconf_get_boolean (CONF_PLAYER_USE_XFADE_BACKEND),
 					        &error);
 	if (error != NULL) {
@@ -943,7 +991,7 @@ rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
 	if (player->priv->queue_source != NULL) {
 		RBEntryView *sidebar;
 
-		player->priv->queue_play_order = rb_play_order_new ("queue", player);
+		player->priv->queue_play_order = rb_play_order_new (player, "queue");
 		g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
 					 "have_next_previous_changed",
 					 G_CALLBACK (rb_shell_player_play_order_update_cb),
@@ -1030,6 +1078,8 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
+	g_hash_table_destroy (player->priv->play_orders);
+	
 	eel_gconf_set_float (CONF_STATE_VOLUME, player->priv->volume);
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
@@ -1572,7 +1622,8 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 		g_object_unref (player->priv->play_order);
 	}
 
-	player->priv->play_order = rb_play_order_new (new_play_order, player);
+	player->priv->play_order = rb_play_order_new (player, new_play_order);
+
 	g_signal_connect_object (player->priv->play_order,
 				 "have_next_previous_changed",
 				 G_CALLBACK (rb_shell_player_play_order_update_cb),
@@ -3279,5 +3330,68 @@ gconf_network_buffer_size_changed (GConfClient *client,
 		buffer_size = 64;
 
 	g_object_set (player->priv->mmplayer, "buffer-size", buffer_size, NULL);
+}
+
+
+static void
+_play_order_description_free (RBPlayOrderDescription *order)
+{
+	g_free (order->name);
+	g_free (order->description);
+	g_free (order);
+}
+
+/**
+ * rb_play_order_new:
+ * @porder_name: Play order type name
+ * @player: #RBShellPlayer instance to attach to
+ *
+ * Creates a new #RBPlayOrder of the specified type.
+ *
+ * Returns: #RBPlayOrder instance
+ **/
+
+#define DEFAULT_PLAY_ORDER "linear"
+
+static RBPlayOrder *
+rb_play_order_new (RBShellPlayer *player, const char* porder_name)
+{
+	RBPlayOrderDescription *order;
+
+	g_return_val_if_fail (porder_name != NULL, NULL);
+	g_return_val_if_fail (player != NULL, NULL);
+
+	order = g_hash_table_lookup (player->priv->play_orders, porder_name);
+
+	if (order == NULL) {
+		g_warning ("Unknown value \"%s\" in GConf key \"" CONF_STATE_PLAY_ORDER
+				"\". Using %s play order.", porder_name, DEFAULT_PLAY_ORDER);
+		order = g_hash_table_lookup (player->priv->play_orders, DEFAULT_PLAY_ORDER);
+	}
+
+	return RB_PLAY_ORDER (g_object_new (order->order_type, "player", player, NULL));
+}
+
+void
+rb_shell_player_add_play_order (RBShellPlayer *player, const char *name,
+				const char *description, GType order_type, gboolean hidden)
+{
+	RBPlayOrderDescription *order;
+
+	g_return_if_fail (g_type_is_a (order_type, RB_TYPE_PLAY_ORDER));
+
+	order = g_new0(RBPlayOrderDescription, 1);
+	order->name = g_strdup (name);
+	order->description = g_strdup (description);
+	order->order_type = order_type;
+	order->is_in_dropdown = !hidden;
+
+	g_hash_table_insert (player->priv->play_orders, order->name, order);
+}
+
+void
+rb_shell_player_remove_play_order (RBShellPlayer *player, const char *name)
+{
+	g_hash_table_remove (player->priv->play_orders, name);
 }
 

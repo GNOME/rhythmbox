@@ -154,6 +154,13 @@ gboolean		rb_shell_player_set_mute	(RBShellPlayer *player,
 gboolean		rb_shell_player_get_mute	(RBShellPlayer *player,
 							 gboolean *mute,
 							 GError **error);
+void			rb_shell_player_add_play_order (RBShellPlayer *player,
+							const char *name,
+							const char *description,
+							GType order_type,
+							gboolean hidden);
+void			rb_shell_player_remove_play_order (RBShellPlayer *player,
+							   const char *name);
 
 G_END_DECLS
 

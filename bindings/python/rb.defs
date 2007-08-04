@@ -678,6 +678,28 @@
   )
 )
 
+(define-method add_play_order
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_add_play_order")
+  (return-type "none")
+  (parameters
+    '("const-char*" "name")
+    '("const-char*" "description")
+    '("GType" "order_type")
+    '("gboolean" "hidden" (default "FALSE"))
+  )
+)
+
+(define-method remove_play_order
+  (of-object "RBShellPlayer")
+  (c-name "rb_shell_player_remove_play_order")
+  (return-type "none")
+  (parameters
+    '("const-char*" "name")
+  )
+)
+
+
 
 ;; From ../../sources/rb-source-group.h
 

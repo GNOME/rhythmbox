@@ -33,16 +33,6 @@
 #include "rb-preferences.h"
 #include "rb-marshal.h"
 
-/* Play Orders */
-#include "rb-play-order-linear.h"
-#include "rb-play-order-linear-loop.h"
-#include "rb-play-order-shuffle.h"
-#include "rb-play-order-random-equal-weights.h"
-#include "rb-play-order-random-by-age.h"
-#include "rb-play-order-random-by-rating.h"
-#include "rb-play-order-random-by-age-and-rating.h"
-#include "rb-play-order-queue.h"
-
 static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
 static GObject *rb_play_order_constructor (GType type, guint n_construct_properties,
@@ -287,72 +277,6 @@ rb_play_order_get_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-/**
- * rb_play_order_get_orders:
- *
- * Defines the set of available play orders, their translatable descriptions, their
- * constructor functions, whether they should appear in a drop-down list of
- * play orders, and which one is the default.
- *
- * This should be the only function with full knowledge of what play orders are
- * available.
- */
-const RBPlayOrderDescription *
-rb_play_order_get_orders (void)
-{
-	/* Exactly one entry must have is_default==TRUE. Otherwise you will
-	 * cause a g_assert(). */
-	static const RBPlayOrderDescription orders[] = {
-		{ "linear", N_("Linear"), rb_linear_play_order_new, TRUE, TRUE },
-		{ "linear-loop", N_("Linear looping"), rb_linear_play_order_loop_new, TRUE, FALSE },
-		{ "shuffle", N_("Shuffle"), rb_shuffle_play_order_new, TRUE, FALSE },
-		{ "random-equal-weights", N_("Random with equal weights"), rb_random_play_order_equal_weights_new, TRUE, FALSE },
-		{ "random-by-age", N_("Random by time since last play"), rb_random_play_order_by_age_new, TRUE, FALSE },
-		{ "random-by-rating", N_("Random by rating"), rb_random_play_order_by_rating_new, TRUE, FALSE },
-		{ "random-by-age-and-rating", N_("Random by time since last play and rating"), rb_random_play_order_by_age_and_rating_new, TRUE, FALSE },
-		{ "queue", N_("Linear, removing entries once played"), rb_queue_play_order_new, FALSE, FALSE },
-		{ NULL, NULL, NULL },
-	};
-	return orders;
-}
-
-/**
- * rb_play_order_new:
- * @porder_name: Play order type name
- * @player: #RBShellPlayer instance to attach to
- *
- * Creates a new #RBPlayOrder of the specified type.
- *
- * Returns: #RBPlayOrder instance
- **/
-RBPlayOrder *
-rb_play_order_new (const char* porder_name,
-		   RBShellPlayer *player)
-{
-	int default_index = -1;
-	const RBPlayOrderDescription *orders = rb_play_order_get_orders ();
-	int i;
-
-	g_return_val_if_fail (porder_name != NULL, NULL);
-	g_return_val_if_fail (player != NULL, NULL);
-
-	for (i=0; orders[i].name != NULL; ++i) {
-		if (strcmp (orders[i].name, porder_name) == 0)
-			return orders[i].constructor (player);
-		if (orders[i].is_default) {
-			/* There must not be two default play orders */
-			g_assert (default_index == -1);
-			default_index = i;
-		}
-	}
-	/* There must be a default play order */
-	g_assert (default_index != -1);
-
-	g_warning ("Unknown value \"%s\" in GConf key \"" CONF_STATE_PLAY_ORDER
-			"\". Using %s play order.", porder_name, orders[default_index].name);
-	return orders[default_index].constructor (player);
 }
 
 /**

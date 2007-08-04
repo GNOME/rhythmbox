@@ -133,22 +133,6 @@ typedef struct
 
 GType			rb_play_order_get_type		(void);
 
-RBPlayOrder *		rb_play_order_new		(const char* play_order_name, RBShellPlayer *player);
-
-typedef struct {
-	/** Value of the state/play-order gconf key */
-	char *name;
-	/** Contents of the play order dropdown; should be gettext()ed before use. */
-	char *description;
-	/** the play order's _new function */
-	RBPlayOrder *(*constructor)(RBShellPlayer *player);
-	/** TRUE if the play order should appear in the dropdown */
-	gboolean is_in_dropdown;
-	/** If the value of the state/play-order gconf key isn't found, the one
-	 * with is_default==TRUE will be used. */
-	gboolean is_default;
-} RBPlayOrderDescription;
-const RBPlayOrderDescription *	rb_play_order_get_orders	(void);
 
 void			rb_play_order_playing_source_changed	(RBPlayOrder *porder,
 								 RBSource *source);

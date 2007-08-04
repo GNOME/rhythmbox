@@ -1,3 +1,18 @@
+2007-08-04  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-play-order.c:
+	* shell/rb-play-order.h:
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_set_queue_source_internal),
+	(rb_shell_player_finalize), (rb_shell_player_sync_play_order),
+	(_play_order_description_free), (rb_play_order_new),
+	(rb_shell_player_add_play_order),
+	(rb_shell_player_remove_play_order):
+	* shell/rb-shell-player.h: allow dynamic addition (and removal) of
+	play orders, mostly interesting for plugins. Fixes #462470
+
+	* bindings/python/rb.defs: bind to python
+
 2007-08-02  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* remote/dbus/rb-client.c: (print_playing_song):
