@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-10 20:45+0300\n"
+"POT-Creation-Date: 2007-08-06 17:19+0300\n"
 "PO-Revision-Date: 2007-04-18 08:58+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
@@ -39,7 +39,7 @@ msgstr "Tuntematon virhe toistettaessa"
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1054
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1068
 msgid "Failed to link new stream into GStreamer pipeline"
-msgstr "Uutta virtaa ei voitu linkitttää gstreamerin liukuhihnaan"
+msgstr "Uutta virtaa ei voitu linkittää gstreamerin liukuhihnaan"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1092
 msgid "Failed to start new stream"
@@ -564,12 +564,12 @@ msgstr "Rytmilaatikko ei tue automaattista välimuistiasetusten hakua"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1121
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1122
 #: ../plugins/daap/rb-daap-connection.c:677
-#: ../plugins/generic-player/rb-generic-player-source.c:775
+#: ../plugins/generic-player/rb-generic-player-source.c:940
 #: ../plugins/ipod/rb-ipod-source.c:257
-#: ../plugins/iradio/rb-iradio-source.c:497
-#: ../plugins/iradio/rb-iradio-source.c:1109
+#: ../plugins/iradio/rb-iradio-source.c:501
+#: ../plugins/iradio/rb-iradio-source.c:1119
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
-#: ../plugins/mtpdevice/rb-mtp-source.c:236
+#: ../plugins/mtpdevice/rb-mtp-source.c:237
 #: ../podcast/rb-feed-podcast-properties-dialog.c:301
 #: ../podcast/rb-podcast-manager.c:1567
 #: ../podcast/rb-podcast-properties-dialog.c:467
@@ -577,7 +577,7 @@ msgstr "Rytmilaatikko ei tue automaattista välimuistiasetusten hakua"
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
 #: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
 #: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1419
-#: ../shell/rb-shell-player.c:1443 ../shell/rb-shell.c:2987
+#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:2987
 #: ../sources/rb-podcast-source.c:1630 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -738,7 +738,7 @@ msgstr "Kappale"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:446
 #: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1112
-#: ../widgets/rb-library-browser.c:100
+#: ../widgets/rb-library-browser.c:109
 #: ../widgets/rb-query-creator-properties.c:68
 #: ../widgets/rb-query-creator-properties.c:94
 msgid "Artist"
@@ -1017,7 +1017,7 @@ msgid "The server marked you as banned"
 msgstr "Sinut on merkitty palvelimella estetyksi"
 
 #: ../plugins/audioscrobbler/rb-lastfm-source.c:600
-#: ../plugins/iradio/rb-iradio-source.c:560
+#: ../plugins/iradio/rb-iradio-source.c:570
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1595,24 +1595,24 @@ msgstr "DAAP-musiikkijaon asetukset"
 msgid "%s's Music"
 msgstr "%s - musiikit"
 
-#: ../plugins/daap/rb-daap-source.c:344
+#: ../plugins/daap/rb-daap-source.c:348
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Musiikkijakoon '%s' yhteydenotto vaatii salasanan"
 
-#: ../plugins/daap/rb-daap-source.c:346
+#: ../plugins/daap/rb-daap-source.c:350
 msgid "Password Required"
 msgstr "Salasana vaaditaan"
 
-#: ../plugins/daap/rb-daap-source.c:418
+#: ../plugins/daap/rb-daap-source.c:422
 msgid "Connecting to music share"
 msgstr "Yhdistetään musiikkijakoon"
 
-#: ../plugins/daap/rb-daap-source.c:425
+#: ../plugins/daap/rb-daap-source.c:429
 msgid "Retrieving songs from music share"
 msgstr "Haetaan kappaleita musiikkijaosta"
 
-#: ../plugins/daap/rb-daap-source.c:512
+#: ../plugins/daap/rb-daap-source.c:516
 msgid "Could not connect to shared music"
 msgstr "Jaettuun musiikkiin ei saatu yhteyttä"
 
@@ -1803,31 +1803,31 @@ msgstr "Nouda tämä levy BitTorrentilla"
 msgid "Loading Jamendo catalogue"
 msgstr "Ladataan Jamendon luetteloa"
 
-#: ../plugins/iradio/rb-iradio-source.c:166
+#: ../plugins/iradio/rb-iradio-source.c:167
 msgid "New Internet _Radio Station..."
 msgstr "Uusi Internet-_radiokanava..."
 
-#: ../plugins/iradio/rb-iradio-source.c:167
+#: ../plugins/iradio/rb-iradio-source.c:168
 msgid "Create a new Internet Radio station"
 msgstr "Luo uusi Internetradiokanava"
 
-#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1132
-#: ../widgets/rb-library-browser.c:99
+#: ../plugins/iradio/rb-iradio-source.c:333 ../widgets/rb-entry-view.c:1132
+#: ../widgets/rb-library-browser.c:108
 #: ../widgets/rb-query-creator-properties.c:70
 #: ../widgets/rb-query-creator-properties.c:96
 msgid "Genre"
 msgstr "Tyyli"
 
-#: ../plugins/iradio/rb-iradio-source.c:426
+#: ../plugins/iradio/rb-iradio-source.c:427
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:1021
+#: ../plugins/iradio/rb-iradio-source.c:1031
 #: ../plugins/iradio/rb-station-properties-dialog.c:393
 msgid "New Internet Radio Station"
 msgstr "Uusi radiokanava"
 
-#: ../plugins/iradio/rb-iradio-source.c:1021
+#: ../plugins/iradio/rb-iradio-source.c:1031
 msgid "URL of internet radio station:"
 msgstr "Internetradiokanavan URL:"
 
@@ -1940,6 +1940,8 @@ msgid ""
 "    * Extensive biographical info about each musician, and artist photo -- "
 "feel a strong connection to the artist"
 msgstr ""
+"    * Kattavat taustatiedot jokaisesta muusikosta ja esittäjän kuva -- voit "
+"kokea yhteenkuuluvuuttaa esittäjän kanssa"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:7
 msgid "    * Free listening of all songs"
@@ -1950,28 +1952,36 @@ msgid ""
 "    * Full color, high quality cover art PDF available for most albums - "
 "easy to print"
 msgstr ""
+"    * Täysiväriset, korkealaatuiset kansikuvat on saatavilla PDF-muodossa "
+"useimmille levyille, joten ne on helppo tulostaa"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:9
 msgid ""
 "    * Low pressure environment - nothing flashing, no audio ads while "
 "listening to albums"
 msgstr ""
+"    * Painostamaton ympäristö - ei ylimääräisiä mainoksia sivuilla tai "
+"kuunneltaessa levyjä"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:10
 msgid ""
 "    * Music selection is unique to Magnatune, unlike most on-line stores "
 "that have more-or-less the same (gigantic) selection\n"
 msgstr ""
+"    * Musiikivalinta on Magnatunelle ominainen, toisin kuin useimmat muut "
+"verkkokaupat, joissa on lähes sama, vaikkakin valtava, valikoima\n"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:12
 msgid ""
 "    * No copy protection on the music (DRM) which allows playing music on "
 "any device (unlike iTunes/MSN/etc)"
 msgstr ""
+"    * Musiikissa ei ole kopiointisuojauksia (DRM) ja siten tiedostoja voi "
+"soittaa millä tahansa laitteella (toisin kuin iTunes, MSN jne.)"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:13
 msgid "    * No need to \"register\" to listen or buy"
-msgstr ""
+msgstr "    * Kuuntelu tai ostaminen ei vaadi rekisteröintiä"
 
 #: ../plugins/magnatune/magnatune-loading.glade.h:14
 msgid ""
@@ -2407,7 +2417,8 @@ msgstr "Kannettavat soittimet - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr "Tuki MTP-laitteille (näytä sisältö, siirrä tietoja ja soita laitteelta)"
+msgstr ""
+"Tuki MTP-laitteille (näytä sisältö, siirrä tietoja ja soita laitteelta)"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:99
 #: ../shell/rb-removable-media-manager.c:133
@@ -2548,9 +2559,8 @@ msgid "Unable to start video output"
 msgstr "Videoulostuloa ei voi käynnistää"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:729
-#, fuzzy
 msgid "Failed to link new visual effect into the GStreamer pipeline"
-msgstr "Uutta virtaa ei voitu linkitttää gstreamerin liukuhihnaan"
+msgstr "Uutta tehostetta ei voitu linkittää GStreamerin liukuhihnaan"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:777
 msgid "Unable to start visualization"
@@ -2855,38 +2865,6 @@ msgstr "[URI...]"
 msgid "Rhythmbox"
 msgstr "Rytmilaatikko"
 
-#: ../shell/rb-play-order.c:308
-msgid "Linear"
-msgstr "Lineaarinen"
-
-#: ../shell/rb-play-order.c:309
-msgid "Linear looping"
-msgstr "Lineaarinen silmukka"
-
-#: ../shell/rb-play-order.c:310
-msgid "Shuffle"
-msgstr "Satunnaistoisto"
-
-#: ../shell/rb-play-order.c:311
-msgid "Random with equal weights"
-msgstr "Satunnaisuus yhtäsuurilla painoarvoilla"
-
-#: ../shell/rb-play-order.c:312
-msgid "Random by time since last play"
-msgstr "Satunnaisuus viimeisestä soittokerrasta kuluneen ajan perusteella"
-
-#: ../shell/rb-play-order.c:313
-msgid "Random by rating"
-msgstr "Satunnaisuus arvostelun perusteella"
-
-#: ../shell/rb-play-order.c:314
-msgid "Random by time since last play and rating"
-msgstr "Satunnaisuus viimeisen soiton ja arvostelun perusteella"
-
-#: ../shell/rb-play-order.c:315
-msgid "Linear, removing entries once played"
-msgstr "Lineaarinen, kappaleet poistetaan kun ne on soitettu"
-
 #. Submenu of Music
 #: ../shell/rb-playlist-manager.c:131
 msgid "_Playlist"
@@ -3105,112 +3083,144 @@ msgstr "_Ominaisuudet"
 msgid "Show information on the selected song"
 msgstr "Näytä tietoja valitusta kappaleesta"
 
-#: ../shell/rb-shell-player.c:256
+#: ../shell/rb-shell-player.c:285
 msgid "P_revious"
 msgstr "E_dellinen"
 
-#: ../shell/rb-shell-player.c:257
+#: ../shell/rb-shell-player.c:286
 msgid "Start playing the previous song"
 msgstr "Soita edellinen kappale "
 
-#: ../shell/rb-shell-player.c:259
+#: ../shell/rb-shell-player.c:288
 msgid "_Next"
 msgstr "_Seuraava"
 
-#: ../shell/rb-shell-player.c:260
+#: ../shell/rb-shell-player.c:289
 msgid "Start playing the next song"
 msgstr "Soita seuraava kappale"
 
-#: ../shell/rb-shell-player.c:262
+#: ../shell/rb-shell-player.c:291
 msgid "_Increase Volume"
 msgstr "_Kasvata äänenvoimakkuutta"
 
-#: ../shell/rb-shell-player.c:263
+#: ../shell/rb-shell-player.c:292
 msgid "Increase playback volume"
 msgstr "Kasvata soiton äänenvoimakkuutta"
 
-#: ../shell/rb-shell-player.c:265
+#: ../shell/rb-shell-player.c:294
 msgid "_Decrease Volume"
 msgstr "_Vähennä äänenvoimakkuutta"
 
-#: ../shell/rb-shell-player.c:266
+#: ../shell/rb-shell-player.c:295
 msgid "Decrease playback volume"
 msgstr "Vähennä soiton äänenvoimakkuutta"
 
-#: ../shell/rb-shell-player.c:273
+#: ../shell/rb-shell-player.c:302
 msgid "_Play"
 msgstr "_Soita"
 
-#: ../shell/rb-shell-player.c:274 ../shell/rb-shell-player.c:3200
+#: ../shell/rb-shell-player.c:303 ../shell/rb-shell-player.c:3251
 msgid "Start playback"
 msgstr "Aloita soitto"
 
-#: ../shell/rb-shell-player.c:276
+#: ../shell/rb-shell-player.c:305
 msgid "Sh_uffle"
 msgstr "_Satunnaistoisto"
 
-#: ../shell/rb-shell-player.c:277
+#: ../shell/rb-shell-player.c:306
 msgid "Play songs in a random order"
 msgstr "Soita kappaleita satunnaisessa järjestyksessä"
 
-#: ../shell/rb-shell-player.c:279
+#: ../shell/rb-shell-player.c:308
 msgid "_Repeat"
 msgstr "_Toistuva soitto"
 
-#: ../shell/rb-shell-player.c:280
+#: ../shell/rb-shell-player.c:309
 msgid "Play first song again after all songs are played"
 msgstr "Soita ensimmäinen kappale uudestaan"
 
-#: ../shell/rb-shell-player.c:282
+#: ../shell/rb-shell-player.c:311
 msgid "_Song Position Slider"
 msgstr "_Levyn sijainnin osoitin"
 
-#: ../shell/rb-shell-player.c:283
+#: ../shell/rb-shell-player.c:312
 msgid "Change the visibility of the song position slider"
 msgstr "Valitse näytetäänkö kappaleen kohdan näytin"
 
-#: ../shell/rb-shell-player.c:662
+#: ../shell/rb-shell-player.c:691
 msgid "Stream error"
 msgstr "Virhe virrassa"
 
-#: ../shell/rb-shell-player.c:663
+#: ../shell/rb-shell-player.c:692
 msgid "Unexpected end of stream!"
 msgstr "Äänivirta loppui yllättäen kesken."
 
-#: ../shell/rb-shell-player.c:761
+#: ../shell/rb-shell-player.c:785
+msgid "Linear"
+msgstr "Lineaarinen"
+
+#: ../shell/rb-shell-player.c:787
+msgid "Linear looping"
+msgstr "Lineaarinen silmukka"
+
+#: ../shell/rb-shell-player.c:789
+msgid "Shuffle"
+msgstr "Satunnaistoisto"
+
+#: ../shell/rb-shell-player.c:791
+msgid "Random with equal weights"
+msgstr "Satunnaisuus yhtäsuurilla painoarvoilla"
+
+#: ../shell/rb-shell-player.c:793
+msgid "Random by time since last play"
+msgstr "Satunnaisuus viimeisestä soittokerrasta kuluneen ajan perusteella"
+
+#: ../shell/rb-shell-player.c:795
+msgid "Random by rating"
+msgstr "Satunnaisuus arvostelun perusteella"
+
+#: ../shell/rb-shell-player.c:797
+msgid "Random by time since last play and rating"
+msgstr "Satunnaisuus viimeisen soiton ja arvostelun perusteella"
+
+#: ../shell/rb-shell-player.c:799
+msgid "Linear, removing entries once played"
+msgstr "Lineaarinen, kappaleet poistetaan kun ne on soitettu"
+
+#: ../shell/rb-shell-player.c:809
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Soittimen luonti epäonnistui: %s"
 
-#: ../shell/rb-shell-player.c:1263
+#: ../shell/rb-shell-player.c:1313
 msgid "Playlist was empty"
 msgstr "Soittolista oli tyhjä"
 
-#: ../shell/rb-shell-player.c:1720
+#: ../shell/rb-shell-player.c:1771
 msgid "Not currently playing"
 msgstr "Soitto on pysäytetty"
 
-#: ../shell/rb-shell-player.c:1758
+#: ../shell/rb-shell-player.c:1809
 msgid "No previous song"
 msgstr "Ei edellistä kappaletta"
 
-#: ../shell/rb-shell-player.c:1835
+#: ../shell/rb-shell-player.c:1886
 msgid "No next song"
 msgstr "Ei seuraavaa kappaletta"
 
-#: ../shell/rb-shell-player.c:1956 ../shell/rb-shell-player.c:2926
+#: ../shell/rb-shell-player.c:2007 ../shell/rb-shell-player.c:2977
 msgid "Couldn't start playback"
 msgstr "Soiton aloitus epäonnistui"
 
-#: ../shell/rb-shell-player.c:2757
+#: ../shell/rb-shell-player.c:2808
 msgid "Couldn't stop playback"
 msgstr "Soiton lopetus epäonnistui"
 
-#: ../shell/rb-shell-player.c:2846
+#: ../shell/rb-shell-player.c:2897
 msgid "Current song is not seekable"
 msgstr "Tämänhetkisessä kappaleessa ei voi kelata"
 
-#: ../shell/rb-shell-player.c:3198
+#: ../shell/rb-shell-player.c:3249
 msgid "Stop playback"
 msgstr "Lopeta soitto"
 
@@ -3636,7 +3646,7 @@ msgid "Artist - Album"
 msgstr "Esittäjä - Levy"
 
 #: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1122
-#: ../widgets/rb-library-browser.c:101
+#: ../widgets/rb-library-browser.c:110
 #: ../widgets/rb-query-creator-properties.c:69
 #: ../widgets/rb-query-creator-properties.c:95
 msgid "Album"
@@ -3674,11 +3684,11 @@ msgstr "Valitse kirjaston _sijainti"
 msgid "Multiple locations set"
 msgstr "Useita sijainteja on asetettu"
 
-#: ../sources/rb-library-source.c:660
+#: ../sources/rb-library-source.c:658
 msgid "Add Location"
 msgstr "Lisää sijainti"
 
-#: ../sources/rb-library-source.c:1026
+#: ../sources/rb-library-source.c:1024
 msgid "Example Path:"
 msgstr "Esimerkkipolku:"
 
