@@ -69,6 +69,13 @@ G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
 
 typedef struct
 {
+	RBLibraryBrowser *widget;
+	int rebuild_prop_index;
+	int rebuild_idle_id;
+} RBLibraryBrowserRebuildData;
+
+typedef struct
+{
 	RhythmDB *db;
 	RhythmDBEntryType entry_type;
 	RhythmDBQueryModel *input_model;
@@ -80,8 +87,7 @@ typedef struct
 	GHashTable *property_views;
 	GHashTable *selections;
 
-	gint rebuild_idle_id;
-	gint rebuild_prop_index;
+	RBLibraryBrowserRebuildData *rebuild_data;
 } RBLibraryBrowserPrivate;
 
 enum
@@ -601,30 +607,31 @@ rebuild_child_model (RBLibraryBrowser *widget,
 }
 
 static gboolean
-idle_rebuild_model (RBLibraryBrowser *widget)
+idle_rebuild_model (RBLibraryBrowserRebuildData *data)
 {
-	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (data->widget);
 
-	priv->rebuild_idle_id = 0;
-	rebuild_child_model (widget, priv->rebuild_prop_index, FALSE);
+	priv->rebuild_data = NULL;
+	rebuild_child_model (data->widget, data->rebuild_prop_index, FALSE);
 	return FALSE;
 }
 
 static void
-destroy_idle_rebuild_model (RBLibraryBrowser *widget)
+destroy_idle_rebuild_model (RBLibraryBrowserRebuildData *data)
 {
-	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
+	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (data->widget);
 	RBPropertyView *view;
 	RhythmDBPropType prop_type;
 	
-	prop_type = browser_properties[priv->rebuild_prop_index].type;
+	prop_type = browser_properties[data->rebuild_prop_index].type;
 	view = g_hash_table_lookup (priv->property_views, (gpointer)prop_type);
 	if (view != NULL) {
-		ignore_selection_changes (widget, view, FALSE);
+		ignore_selection_changes (data->widget, view, FALSE);
 	}
-	priv->rebuild_prop_index = 0;
 
-	g_object_unref (widget);
+	priv->rebuild_data = NULL;
+	g_object_unref (data->widget);
+	g_free (data);
 }
 
 void
@@ -636,6 +643,7 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
 	GList *old_selection;
 	RBPropertyView *view;
 	int rebuild_index;
+	RBLibraryBrowserRebuildData *rebuild_data;
 
 	old_selection = g_hash_table_lookup (priv->selections, (gpointer)type);
 
@@ -648,14 +656,16 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
 		g_hash_table_remove (priv->selections, (gpointer)type);
 
 	rebuild_index = prop_to_index (type);
-	if (priv->rebuild_idle_id != 0) {
-		if (priv->rebuild_prop_index <= rebuild_index) {
+	if (priv->rebuild_data != NULL) {
+		rebuild_data = priv->rebuild_data;
+		if (rebuild_data->rebuild_prop_index <= rebuild_index) {
 			/* already rebuilding a model further up the chain,
 			 * so we don't need to do anything for this one.
 			 */
 			return;
 		}
-		g_source_remove (priv->rebuild_idle_id);
+		g_source_remove (rebuild_data->rebuild_idle_id);
+		rebuild_data = NULL;
 	}
 
 	view = g_hash_table_lookup (priv->property_views, (gpointer)type);
@@ -663,12 +673,15 @@ rb_library_browser_set_selection (RBLibraryBrowser *widget,
 		ignore_selection_changes (widget, view, TRUE);
 	}
 
-	priv->rebuild_prop_index = rebuild_index;
-	priv->rebuild_idle_id = 
+	rebuild_data = g_new0 (RBLibraryBrowserRebuildData, 1);
+	rebuild_data->widget = g_object_ref (widget);
+	rebuild_data->rebuild_prop_index = rebuild_index;
+	rebuild_data->rebuild_idle_id =
 		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-				 (GSourceFunc)idle_rebuild_model,
-				 g_object_ref (widget),
-				 (GDestroyNotify)destroy_idle_rebuild_model);
+				 (GSourceFunc) idle_rebuild_model,
+				 rebuild_data,
+				 (GDestroyNotify) destroy_idle_rebuild_model);
+	priv->rebuild_data = rebuild_data;
 }
 
 GList*

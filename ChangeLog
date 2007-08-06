@@ -1,3 +1,11 @@
+2007-08-06  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* widgets/rb-library-browser.c: (idle_rebuild_model),
+	(destroy_idle_rebuild_model), (rb_library_browser_set_selection):
+	Store data for child model rebuild idle handlers in a separate data
+	structure, rather than in the browser object itself.  Otherwise it
+	trips on its own feet and breaks the browser.  Fixes #452703 again.
+
 2007-08-04  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Tim Retout  <tim@retout.co.uk>
