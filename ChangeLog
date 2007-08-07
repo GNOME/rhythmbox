@@ -1,3 +1,14 @@
+2007-08-07  Christophe Fergeau  <cfergeau@gmail.com>
+
+	* configure.ac:
+	* plugins/audioscrobbler/rb-audioscrobbler.c:
+	* plugins/coherence/Makefile.am:
+	* plugins/ipod/rb-ipod-source.c: notify last.fm about the songs 
+	played on the iPod while it wasn't connected to a computer. Fixes 
+	bug #334488. It doesn't handle songs played multiple times, and the 
+	last.fm will reject the submission if any songs were submitted to 
+	last.fm after the songs were played on the iPod
+
 2007-08-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Tim Retout  <tim@retout.co.uk>

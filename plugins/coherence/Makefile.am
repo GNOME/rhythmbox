@@ -1,6 +1,5 @@
 # Coherence UPNP Python Plugin
 
-SUBDIRS = upnp_coherence
 
 plugindir = $(PLUGINDIR)/upnp_coherence
 

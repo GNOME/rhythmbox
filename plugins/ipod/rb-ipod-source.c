@@ -21,9 +21,11 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <string.h>
 
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #ifdef HAVE_HAL
 #include <libhal.h>
@@ -83,6 +85,13 @@ static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 #endif
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
+struct _PlayedEntry {
+	RhythmDBEntry *entry;
+	guint play_count;
+};
+
+typedef struct _PlayedEntry PlayedEntry;
+
 typedef struct
 {
 	RbIpodDb *ipod_db;
@@ -95,6 +104,8 @@ typedef struct
 
 	GHashTable *artwork_request_map;
 	guint artwork_notify_id;
+
+	GQueue *offline_plays;
 } RBiPodSourcePrivate;
 
 RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
@@ -208,6 +219,13 @@ rb_ipod_source_dispose (GObject *object)
 		g_signal_handler_disconnect (db, priv->artwork_notify_id);
 		priv->artwork_notify_id = 0;
 		g_object_unref (db);
+	}
+
+	if (priv->offline_plays) {
+		g_queue_foreach (priv->offline_plays,
+				 (GFunc)g_free, NULL);
+		g_queue_free (priv->offline_plays);
+		priv->offline_plays = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
@@ -442,6 +460,28 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, const char *mimetype)
 }
 #endif
 
+static void add_offline_played_entry (RBiPodSource *source,
+				      RhythmDBEntry *entry,
+				      guint play_count)
+{
+	PlayedEntry *played_entry;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	if (play_count == 0) {
+		return;
+	}
+
+	if (priv->offline_plays == NULL) {
+		priv->offline_plays = g_queue_new();
+	}
+
+	played_entry = g_new0 (PlayedEntry, 1);
+	played_entry->entry = entry;
+	played_entry->play_count = play_count;
+
+	g_queue_push_tail (priv->offline_plays, played_entry);
+}
+
 static void
 add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 {
@@ -595,6 +635,11 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 
 	g_hash_table_insert (priv->entry_map, entry, song);
 
+	if (song->recent_playcount != 0) {
+		add_offline_played_entry (source, entry,
+					  song->recent_playcount);
+	}
+
 	rhythmdb_commit (RHYTHMDB (db));
 }
 
@@ -611,6 +656,88 @@ get_db_for_source (RBiPodSource *source)
 	return db;
 }
 
+static gint
+compare_timestamps (gconstpointer a, gconstpointer b, gpointer data)
+{
+	PlayedEntry *lhs = (PlayedEntry *)a;
+	PlayedEntry *rhs = (PlayedEntry *)b;
+
+	gulong lhs_timestamp;
+	gulong rhs_timestamp;
+
+	lhs_timestamp =  rhythmdb_entry_get_ulong (lhs->entry,
+						   RHYTHMDB_PROP_LAST_PLAYED);
+
+	rhs_timestamp =  rhythmdb_entry_get_ulong (rhs->entry,
+						   RHYTHMDB_PROP_LAST_PLAYED);
+
+
+	return (int) (lhs_timestamp - rhs_timestamp);
+}
+
+static void
+remove_playcount_file (RBiPodSource *source)
+{
+        RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+        char *itunesdb_dir;
+        char *playcounts_file;
+        int result;
+	const char *mountpoint;
+	
+	mountpoint = rb_ipod_db_get_mount_path (priv->ipod_db);
+        itunesdb_dir = itdb_get_itunes_dir (mountpoint);
+        playcounts_file = itdb_get_path (itunesdb_dir, "Play Counts");
+        result = g_unlink (playcounts_file);
+        if (result == 0) {
+                rb_debug ("iPod Play Counts file successfully deleted");
+        } else {
+                rb_debug ("Failed to remove iPod Play Counts file: %s",
+                          strerror (errno));
+        }
+        g_free (itunesdb_dir);
+        g_free (playcounts_file);
+
+}
+
+static void
+send_offline_plays_notification (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RhythmDB *db;
+	GValue val = {0, };
+
+	if (priv->offline_plays == NULL) {
+		return;
+	}
+
+	/* audioscrobbler expects data to arrive with increasing timestamps,
+	 * dunno if the sorting should be done in the audioscrobbler plugin,
+	 * or if this kind of "insider knowledge" is OK here
+	 */
+	g_queue_sort (priv->offline_plays,
+		      (GCompareDataFunc)compare_timestamps,
+		      NULL);
+
+	db = get_db_for_source (source);
+	g_value_init (&val, G_TYPE_ULONG);
+
+	while (!g_queue_is_empty (priv->offline_plays)) {
+		gulong last_play;
+		PlayedEntry *entry;
+		entry = (PlayedEntry*)g_queue_pop_head (priv->offline_plays);
+		last_play = rhythmdb_entry_get_ulong (entry->entry,
+						      RHYTHMDB_PROP_LAST_PLAYED);
+		g_value_set_ulong (&val, last_play);
+		rhythmdb_emit_entry_extra_metadata_notify (db, entry->entry,
+							   "rb:offlinePlay",
+							   &val);
+		g_free (entry);
+	}
+	g_value_unset (&val);
+	g_object_unref (G_OBJECT (db));
+
+	remove_playcount_file (source);
+}
 
 static void
 rb_ipod_source_entry_changed_cb (RhythmDB *db,
@@ -729,6 +856,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	}
 
 	load_ipod_playlists (source);
+	send_offline_plays_notification (source);
 
 	g_signal_connect_object(G_OBJECT(db), "entry-changed", 
 				G_CALLBACK (rb_ipod_source_entry_changed_cb),

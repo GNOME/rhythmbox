@@ -4,6 +4,7 @@
  *
  *  Copyright (C) 2005 Alex Revo <xiphoidappendix@gmail.com>,
  *		       Ruben Vermeersch <ruben@Lambda1.be>
+ *            (C) 2007 Christophe Fergeau <teuf@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -60,6 +61,8 @@
 #define SCROBBLER_URL "http://post.audioscrobbler.com/"
 #define SCROBBLER_VERSION "1.1"
 
+#define SCROBBLER_DATE_FORMAT "%Y%%2D%m%%2D%d%%20%H%%3A%M%%3A%S"
+
 #define EXTRA_URI_ENCODE_CHARS	"&+"
 
 typedef struct
@@ -69,8 +72,19 @@ typedef struct
 	gchar *title;
 	guint length;
 	gchar *mbid;
-	gchar *timestamp;
+	time_t play_time;
 } AudioscrobblerEntry;
+
+typedef struct
+{
+	gchar *artist;
+	gchar *album;
+	gchar *title;
+	guint length;
+	gchar *mbid;
+	gchar *timestamp;
+} AudioscrobblerEncodedEntry;
+
 
 struct _RBAudioscrobblerPrivate
 {
@@ -106,9 +120,9 @@ struct _RBAudioscrobblerPrivate
 	char *status_msg;
 
 	/* Submission queue */
-	GSList *queue;
+	GQueue *queue;
 	/* Entries currently being submitted */
-	GSList *submission;
+	GQueue *submission;
 
 	guint failures;
 	/* Handshake has been done? */
@@ -117,10 +131,6 @@ struct _RBAudioscrobblerPrivate
 	time_t submit_next;
 	time_t submit_interval;
 
-	/* Whether this song should be queued once enough of it has been played;
-	 * will be set to false when queued, or if the song shouldn't be submitted
-	 */
-	gboolean should_queue;
 	/* Only write the queue to a file if it has been changed */
 	gboolean queue_changed;
 
@@ -130,13 +140,11 @@ struct _RBAudioscrobblerPrivate
 	gchar *password;
 	gchar *submit_url;
 
-	/* Currently playing song info, will be queued if priv->should_queue == TRUE */
-	gchar *artist;
-	gchar *album;
-	gchar *title;
-	gchar *mbid;
-	guint duration;
-	guint elapsed;
+	/* Currently playing song info, if NULL this means the currently
+	 * playing song isn't eligible to be queued
+	 */
+	AudioscrobblerEntry *currently_playing;
+	guint current_elapsed;
 
 	/* Preference notifications */
 	guint notification_username_id;
@@ -147,6 +155,9 @@ struct _RBAudioscrobblerPrivate
 	/* HTTP requests session */
 	SoupSession *soup_session;
 	RBProxyConfig *proxy_config;
+
+	/* callback for songs that were played offline (eg on an iPod) */
+	gulong offline_play_notify_id;
 };
 
 #define RB_AUDIOSCROBBLER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER, RBAudioscrobblerPrivate))
@@ -154,11 +165,15 @@ struct _RBAudioscrobblerPrivate
 
 static void	     audioscrobbler_entry_init (AudioscrobblerEntry *entry);
 static void	     audioscrobbler_entry_free (AudioscrobblerEntry *entry);
+static void          audioscrobbler_encoded_entry_free (AudioscrobblerEncodedEntry *entry);
+static AudioscrobblerEncodedEntry *audioscrobbler_entry_encode (AudioscrobblerEntry *entry);
+
+
 
 static gboolean	     rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler);
 static int	     rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_print_queue (RBAudioscrobbler *audioscrobbler, gboolean submission);
-static void	     rb_audioscrobbler_free_queue_entries (RBAudioscrobbler *audioscrobbler, GSList **queue);
+static void	     rb_audioscrobbler_free_queue_entries (RBAudioscrobbler *audioscrobbler, GQueue **queue);
 
 static void	     rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass);
 static void	     rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler);
@@ -199,6 +214,14 @@ static void	     rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 							RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_proxy_config_changed_cb (RBProxyConfig *config,
 								RBAudioscrobbler *audioscrobbler);
+static void          rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
+							       RhythmDBEntry *rb_entry,
+							       const gchar *property_name,
+							       const GValue *metadata,
+							       RBAudioscrobbler *audioscrobbler);
+
+
+
 enum
 {
 	PROP_0,
@@ -209,6 +232,38 @@ enum
 G_DEFINE_TYPE (RBAudioscrobbler, rb_audioscrobbler, G_TYPE_OBJECT)
 
 
+static GObject *
+rb_audioscrobbler_constructor (GType type,
+			       guint n_construct_properties,
+			       GObjectConstructParam *construct_properties)
+{
+	GObject *obj;
+	RBAudioscrobbler *audioscrobbler;
+	RhythmDB *db;
+
+	/* Invoke parent constructor. */
+	RBAudioscrobblerClass *klass;
+	GObjectClass *parent_class;  
+	klass = RB_AUDIOSCROBBLER_CLASS (g_type_class_peek (RB_TYPE_AUDIOSCROBBLER));
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	obj = parent_class->constructor (type,
+					 n_construct_properties,
+					 construct_properties);
+
+	audioscrobbler = RB_AUDIOSCROBBLER (obj);
+	g_object_get (G_OBJECT (audioscrobbler->priv->shell_player),
+		      "db", &db, 
+		      NULL);
+
+	audioscrobbler->priv->offline_play_notify_id = 
+		g_signal_connect_object (db, 
+					 "entry-extra-metadata-notify::rb:offlinePlay",
+					 (GCallback)rb_audioscrobbler_offline_play_notify_cb, 
+					 audioscrobbler, 0);
+	g_object_unref (G_OBJECT (db));
+
+	return obj;
+}
 
 /* Class-related functions: */
 static void
@@ -216,6 +271,8 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+
+	object_class->constructor = rb_audioscrobbler_constructor;
 	object_class->dispose = rb_audioscrobbler_dispose;
 	object_class->finalize = rb_audioscrobbler_finalize;
 
@@ -249,24 +306,12 @@ rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler)
 
 	audioscrobbler->priv = RB_AUDIOSCROBBLER_GET_PRIVATE (audioscrobbler);
 
-	audioscrobbler->priv->queue = NULL;
-	audioscrobbler->priv->submission= NULL;
-	audioscrobbler->priv->failures = 0;
-	audioscrobbler->priv->handshake = FALSE;
-	audioscrobbler->priv->handshake_next = 0;
-	audioscrobbler->priv->submit_next = 0;
-	audioscrobbler->priv->should_queue = FALSE;
+	audioscrobbler->priv->queue = g_queue_new();
+	audioscrobbler->priv->submission = g_queue_new();
 	audioscrobbler->priv->md5_challenge = g_strdup ("");
 	audioscrobbler->priv->username = NULL;
 	audioscrobbler->priv->password = NULL;
 	audioscrobbler->priv->submit_url = g_strdup ("");
-	audioscrobbler->priv->artist = g_strdup ("");
-	audioscrobbler->priv->album = g_strdup ("");
-	audioscrobbler->priv->title = g_strdup ("");
-	audioscrobbler->priv->mbid = g_strdup ("");
-	audioscrobbler->priv->duration = 0;
-	audioscrobbler->priv->elapsed = 0;
-	audioscrobbler->priv->timeout_id = 0;
 
 	rb_audioscrobbler_load_queue (audioscrobbler);
 
@@ -294,6 +339,18 @@ rb_audioscrobbler_dispose (GObject *object)
 	g_return_if_fail (RB_IS_AUDIOSCROBBLER (object));
 
 	audioscrobbler = RB_AUDIOSCROBBLER (object);
+
+	if (audioscrobbler->priv->offline_play_notify_id != 0) {
+		RhythmDB *db;
+
+		g_object_get (G_OBJECT (audioscrobbler->priv->shell_player),
+			      "db", &db, 
+			      NULL);
+		g_signal_handler_disconnect (db, audioscrobbler->priv->offline_play_notify_id);
+		audioscrobbler->priv->offline_play_notify_id = 0;
+		g_object_unref (db);
+	}
+
 
 	if (audioscrobbler->priv->notification_username_id != 0) {
 		eel_gconf_notification_remove (audioscrobbler->priv->notification_username_id);
@@ -347,10 +404,10 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_free (audioscrobbler->priv->username);
 	g_free (audioscrobbler->priv->password);
 	g_free (audioscrobbler->priv->submit_url);
-	g_free (audioscrobbler->priv->artist);
-	g_free (audioscrobbler->priv->album);
-	g_free (audioscrobbler->priv->title);
-	g_free (audioscrobbler->priv->mbid);
+	if (audioscrobbler->priv->currently_playing != NULL) {
+		audioscrobbler_entry_free (audioscrobbler->priv->currently_playing);
+		audioscrobbler->priv->currently_playing = NULL;
+	}
 
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->queue);
 	rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);
@@ -429,72 +486,128 @@ rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler)
 	}
 }
 
+static gboolean
+rb_audioscrobbler_is_queueable (RhythmDBEntry *entry)
+{
+	const char *title;
+	const char *artist;
+	gulong duration;
+	RhythmDBEntryType type;
+
+	/* First, check if the entry is appropriate for sending to 
+	 * audioscrobbler
+	 */
+	type = rhythmdb_entry_get_entry_type (entry);
+	if (type->category != RHYTHMDB_ENTRY_NORMAL) {
+		return FALSE;
+	}
+	if (type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST) {
+		return FALSE;
+	}
+	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
+		return FALSE;
+	}
+
+	title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
+	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+	duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
+
+	/* The specification (v1.1) tells us to ignore entries which do not
+	 * verify those conditions
+	 */
+	return 	((duration >= 30) &&
+		 (strcmp (artist, _("Unknown")) != 0) &&
+		 (strcmp (title, _("Unknown")) != 0));
+}
+
+static AudioscrobblerEntry *
+rb_audioscrobbler_create_entry (RhythmDBEntry *rb_entry)
+{
+	AudioscrobblerEntry *as_entry = g_new0 (AudioscrobblerEntry, 1);
+
+	as_entry->title = rhythmdb_entry_dup_string (rb_entry,
+						     RHYTHMDB_PROP_TITLE);
+	as_entry->artist = rhythmdb_entry_dup_string (rb_entry,
+						      RHYTHMDB_PROP_ARTIST);
+	as_entry->album = rhythmdb_entry_dup_string (rb_entry,
+						     RHYTHMDB_PROP_ALBUM);
+	if (strcmp (as_entry->album, _("Unknown")) == 0) {
+		g_free (as_entry->album);
+		as_entry->album = g_strdup ("");
+	}
+	as_entry->length = rhythmdb_entry_get_ulong (rb_entry,
+						     RHYTHMDB_PROP_DURATION);
+	as_entry->mbid = rhythmdb_entry_dup_string (rb_entry,
+						    RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
+
+	return as_entry;
+}
+
+static gboolean
+rb_audioscrobbler_add_to_queue (RBAudioscrobbler *audioscrobbler,
+				AudioscrobblerEntry *entry)
+{	
+	if (g_queue_get_length (audioscrobbler->priv->queue) < MAX_QUEUE_SIZE){
+		g_queue_push_tail (audioscrobbler->priv->queue, entry);
+		audioscrobbler->priv->queue_changed = TRUE;
+		audioscrobbler->priv->queue_count++;
+		return TRUE;
+	} else {
+		rb_debug ("Queue is too long.  Not adding song to queue");
+		g_free (audioscrobbler->priv->status_msg);
+		audioscrobbler->priv->status = QUEUE_TOO_LONG;
+		audioscrobbler->priv->status_msg = NULL;
+		return FALSE;
+	}
+}
+
+static void
+maybe_add_current_song_to_queue (RBAudioscrobbler *audioscrobbler)
+{
+	guint elapsed;
+	int elapsed_delta;
+	AudioscrobblerEntry *cur_entry;
+
+	cur_entry = audioscrobbler->priv->currently_playing;
+	if (cur_entry == NULL) {
+		return;
+	}
+
+	rb_debug ("Adding currently playing song to queue");
+
+	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &elapsed, NULL);
+	elapsed_delta = elapsed - audioscrobbler->priv->current_elapsed;
+	audioscrobbler->priv->current_elapsed = elapsed;
+	
+	if ((elapsed >= cur_entry->length / 2 || elapsed >= 240) && elapsed_delta < 20) {
+		time (&cur_entry->play_time);
+		if (rb_audioscrobbler_add_to_queue (audioscrobbler, cur_entry)){
+			audioscrobbler->priv->currently_playing = NULL;
+		}
+		
+		rb_audioscrobbler_preferences_sync (audioscrobbler);
+	} else if (elapsed_delta > 20) {
+		rb_debug ("Skipping detected; not submitting current song");
+		/* not sure about this - what if I skip to somewhere towards
+		 * the end, but then go back and listen to the whole song?
+		 */
+		audioscrobbler_entry_free (audioscrobbler->priv->currently_playing);
+		audioscrobbler->priv->currently_playing = NULL;
+
+	}
+}
+
 /* updates the queue and submits entries as required */
 static gboolean
 rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler)
 {
-	guint elapsed;
-	int elapsed_delta;
-
-	/* should we add this song to the queue? */
-	if (audioscrobbler->priv->should_queue) {
-
-		rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &elapsed, NULL);
-		elapsed_delta = elapsed - audioscrobbler->priv->elapsed;
-		audioscrobbler->priv->elapsed = elapsed;
-
-		if ((elapsed >= audioscrobbler->priv->duration / 2 || elapsed >= 240) && elapsed_delta < 20) {
-
-			/* Add song to queue, if the queue isn't too long already */
-			if (g_slist_length (audioscrobbler->priv->queue) < MAX_QUEUE_SIZE) {
-
-				AudioscrobblerEntry *entry = g_new0 (AudioscrobblerEntry, 1);
-				time_t tt;
-
-				time (&tt);
-
-				rb_debug ("Adding song to queue");
-
-				entry->artist = soup_uri_encode (audioscrobbler->priv->artist, EXTRA_URI_ENCODE_CHARS);
-				if (strcmp (audioscrobbler->priv->album, _("Unknown")) != 0)
-					entry->album = soup_uri_encode (audioscrobbler->priv->album, EXTRA_URI_ENCODE_CHARS);
-				else
-					entry->album = g_strdup ("");
-				entry->title = soup_uri_encode (audioscrobbler->priv->title, EXTRA_URI_ENCODE_CHARS);
-				entry->mbid = soup_uri_encode (audioscrobbler->priv->mbid, EXTRA_URI_ENCODE_CHARS);
-				entry->length = audioscrobbler->priv->duration;
-				entry->timestamp = g_new0 (gchar, 30);
-				strftime (entry->timestamp, 30, "%Y%%2D%m%%2D%d%%20%H%%3A%M%%3A%S", gmtime (&tt));
-
-				audioscrobbler->priv->queue = g_slist_append (audioscrobbler->priv->queue,
-									      entry);
-				audioscrobbler->priv->queue_changed = TRUE;
-				audioscrobbler->priv->queue_count++;
-			} else {
-				rb_debug ("Queue is too long.  Not adding song to queue");
-				g_free (audioscrobbler->priv->status_msg);
-				audioscrobbler->priv->status = QUEUE_TOO_LONG;
-				audioscrobbler->priv->status_msg = NULL;
-			}
-
-			/* Mark current track as having been queued. */
-			audioscrobbler->priv->should_queue = FALSE;
-
-			rb_audioscrobbler_preferences_sync (audioscrobbler);
-		} else if (elapsed_delta > 20) {
-			rb_debug ("Skipping detected; not submitting current song");
-			/* not sure about this - what if I skip to somewhere towards
-			 * the end, but then go back and listen to the whole song?
-			 */
-			audioscrobbler->priv->should_queue = FALSE;
-		}
-	}
+	maybe_add_current_song_to_queue (audioscrobbler);
 
 	/* do handshake if we need to */
 	rb_audioscrobbler_do_handshake (audioscrobbler);
 
 	/* if there's something in the queue, submit it if we can, save it otherwise */
-	if (audioscrobbler->priv->queue != NULL) {
+	if (!g_queue_is_empty(audioscrobbler->priv->queue)) {
 		if (audioscrobbler->priv->handshake)
 			rb_audioscrobbler_submit_queue (audioscrobbler);
 		else
@@ -502,6 +615,26 @@ rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler)
 	}
 	return TRUE;
 }
+
+static void
+rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
+					  RhythmDBEntry *rb_entry,
+					  const gchar *property_name,
+					  const GValue *metadata,
+					  RBAudioscrobbler *audioscrobbler)
+{
+	g_return_if_fail (G_VALUE_HOLDS_ULONG (metadata));
+
+	/* FIXME: do sanity checks on play_date value? */
+	if (rb_audioscrobbler_is_queueable (rb_entry)) {
+		AudioscrobblerEntry *as_entry;
+		
+		as_entry = rb_audioscrobbler_create_entry (rb_entry);
+		as_entry->play_time = g_value_get_ulong (metadata);
+		rb_audioscrobbler_add_to_queue (audioscrobbler, as_entry);
+	}
+}
+
 
 
 /* Audioscrobbler functions: */
@@ -671,33 +804,43 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 				    g_object_ref (audioscrobbler));
 }
 
-static void
-rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
+static gboolean
+rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 {
-	gchar *username;
-	gchar *url;
-
 	/* Perform handshake if necessary. Only perform handshake if
 	 *   - we have no current handshake; AND
 	 *   - we have waited the appropriate amount of time between
 	 *     handshakes; AND
-	 *   - we have a username
+	 *   - we have a non-empty username
 	 */
 	if (audioscrobbler->priv->handshake) {
 		rb_debug ("Not doing handshake; we already have one");
-		return;
+		return FALSE;
 	}
 
 	if (time (NULL) < audioscrobbler->priv->handshake_next) {
 		rb_debug ("Too soon; time=%lu, handshake_next=%lu",
 			  time (NULL),
 			  audioscrobbler->priv->handshake_next);
-		return;
+		return FALSE;
 	}
 
 	if ((audioscrobbler->priv->username == NULL) ||
 	    (strcmp (audioscrobbler->priv->username, "") == 0)) {
 		rb_debug ("No username set");
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+static void
+rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
+{
+	gchar *username;
+	gchar *url;
+
+	if (!rb_audioscrobbler_should_handshake (audioscrobbler)) {
 		return;
 	}
 
@@ -751,51 +894,49 @@ rb_audioscrobbler_do_handshake_cb (SoupMessage *msg, gpointer user_data)
 	g_idle_add ((GSourceFunc) idle_unref_cb, audioscrobbler);
 }
 
-static void
-rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
-{
-	/* Conditions:
-	 *   - Must have username and password
-	 *   - Must have md5_challenge
-	 *   - Queue must not be empty
-	 */
 
+static gchar *
+rb_audioscrobbler_build_authentication_data (RBAudioscrobbler *audioscrobbler)
+{
 	gchar *md5_password;
 	gchar *md5_temp;
 	gchar *md5_response;
 	gchar *username;
 	gchar *post_data;
-	GSList *l;
-	int i = 0;
 	time_t now;
 
-	if (audioscrobbler->priv->username == NULL ||
-	    strcmp (audioscrobbler->priv->username, "") == 0) {
+	/* Conditions:
+	 *   - Must have username and password
+	 *   - Must have md5_challenge
+	 *   - Queue must not be empty
+	 */
+	if ((audioscrobbler->priv->username == NULL) 
+	    || (*audioscrobbler->priv->username == '\0')) {
 		rb_debug ("No username set");
-		return;
+		return NULL;
 	}
-
-	if (audioscrobbler->priv->password == NULL ||
-	    strcmp (audioscrobbler->priv->password , "") == 0) {
+	
+	if ((audioscrobbler->priv->password == NULL) 
+	    || (*audioscrobbler->priv->password == '\0')) {
 		rb_debug ("No password set");
-		return;
+		return NULL;
 	}
-
-	if (strcmp (audioscrobbler->priv->md5_challenge, "") == 0) {
+		
+	if (*audioscrobbler->priv->md5_challenge == '\0') {
 		rb_debug ("No md5 challenge");
-		return;
+		return NULL;
 	}
 
 	time(&now);
 	if (now < audioscrobbler->priv->submit_next) {
 		rb_debug ("Too soon (next submission in %ld seconds)",
 			  audioscrobbler->priv->submit_next - now);
-		return;
+		return NULL;
 	}
 
-	if (audioscrobbler->priv->queue == NULL) {
+	if (g_queue_is_empty (audioscrobbler->priv->queue)) {
 		rb_debug ("No queued songs to submit");
-		return;
+		return NULL;
 	}
 
 	md5_password = mkmd5 (audioscrobbler->priv->password);
@@ -803,51 +944,88 @@ rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
 				audioscrobbler->priv->md5_challenge,
 				NULL);
 	md5_response = mkmd5 (md5_temp);
-
-	username = soup_uri_encode (audioscrobbler->priv->username,
+	
+	username = soup_uri_encode (audioscrobbler->priv->username, 
 				    EXTRA_URI_ENCODE_CHARS);
 	post_data = g_strdup_printf ("u=%s&s=%s&", username, md5_response);
-
+	
 	g_free (md5_password);
 	g_free (md5_temp);
 	g_free (md5_response);
 	g_free (username);
+	
+	return post_data;
+}
 
+static gchar *
+rb_audioscrobbler_build_post_data (RBAudioscrobbler *audioscrobbler,
+				   const gchar *authentication_data)
+{
+	g_return_val_if_fail (!g_queue_is_empty (audioscrobbler->priv->queue),
+			      NULL);
+
+	gchar *post_data = g_strdup (authentication_data);
+	int i = 0;
 	do {
 		AudioscrobblerEntry *entry;
+		AudioscrobblerEncodedEntry *encoded;
 		gchar *new;
-
 		/* remove first queue entry */
-		l = audioscrobbler->priv->queue;
-		audioscrobbler->priv->queue = g_slist_remove_link (l, l);
-		entry = (AudioscrobblerEntry *)l->data;
-
+		entry = g_queue_pop_head (audioscrobbler->priv->queue);
+		encoded = audioscrobbler_entry_encode (entry);
 		new = g_strdup_printf ("%sa[%d]=%s&t[%d]=%s&b[%d]=%s&m[%d]=%s&l[%d]=%d&i[%d]=%s&",
 				       post_data,
-				       i, entry->artist,
-				       i, entry->title,
-				       i, entry->album,
-				       i, entry->mbid,
-				       i, entry->length,
-				       i, entry->timestamp);
-
+				       i, encoded->artist,
+				       i, encoded->title,
+				       i, encoded->album,
+				       i, encoded->mbid,
+				       i, encoded->length,
+				       i, encoded->timestamp);
+		audioscrobbler_encoded_entry_free (encoded);
 		g_free (post_data);
 		post_data = new;
 
 		/* add to submission list */
-		audioscrobbler->priv->submission = g_slist_concat (audioscrobbler->priv->submission, l);
+		g_queue_push_tail (audioscrobbler->priv->submission, 
+				   entry);
 		i++;
-	} while (audioscrobbler->priv->queue && (i < MAX_SUBMIT_SIZE));
+	} while ((!g_queue_is_empty(audioscrobbler->priv->queue)) && (i < MAX_SUBMIT_SIZE));
+	
+	return post_data;
+}
 
-	rb_debug ("Submitting queue to Audioscrobbler");
-	rb_audioscrobbler_print_queue (audioscrobbler, TRUE);
+static void
+rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
+{
+	gchar *auth_data;
 
-	rb_audioscrobbler_perform (audioscrobbler,
-				   audioscrobbler->priv->submit_url,
-				   post_data,
-				   rb_audioscrobbler_submit_queue_cb);
+	auth_data = rb_audioscrobbler_build_authentication_data (audioscrobbler);
+	if (auth_data != NULL) {
+		gchar *post_data;
+	
+		post_data = rb_audioscrobbler_build_post_data (audioscrobbler,
+							       auth_data);
+		g_free (auth_data);
+		rb_debug ("Submitting queue to Audioscrobbler");
+		rb_audioscrobbler_print_queue (audioscrobbler, TRUE);
 
-	/* libsoup will free post_data when the request is finished */
+		rb_audioscrobbler_perform (audioscrobbler,
+					   audioscrobbler->priv->submit_url,
+					   post_data,
+					   rb_audioscrobbler_submit_queue_cb);
+		 /* libsoup will free post_data when the request is finished */
+	}
+}
+
+static void
+rb_g_queue_concat (GQueue *q1, GQueue *q2)
+{
+	GList *elem;
+
+	while (!g_queue_is_empty (q2)) {
+		elem = g_queue_pop_head_link (q2);
+		g_queue_push_tail_link (q1, elem);
+	}
 }
 
 static void
@@ -861,6 +1039,7 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 	if (audioscrobbler->priv->status == STATUS_OK) {
 		rb_debug ("Queue submitted successfully");
 		rb_audioscrobbler_free_queue_entries (audioscrobbler, &audioscrobbler->priv->submission);
+		audioscrobbler->priv->submission = g_queue_new ();
 		rb_audioscrobbler_save_queue (audioscrobbler);
 
 		audioscrobbler->priv->submit_count += audioscrobbler->priv->queue_count;
@@ -872,9 +1051,12 @@ rb_audioscrobbler_submit_queue_cb (SoupMessage *msg, gpointer user_data)
 		++audioscrobbler->priv->failures;
 
 		/* add failed submission entries back to queue */
-		audioscrobbler->priv->queue =
-			g_slist_concat (audioscrobbler->priv->submission, audioscrobbler->priv->queue);
-		audioscrobbler->priv->submission = NULL;
+		rb_g_queue_concat (audioscrobbler->priv->submission, 
+				   audioscrobbler->priv->queue);
+		g_assert (g_queue_is_empty (audioscrobbler->priv->queue));
+		g_queue_free (audioscrobbler->priv->queue);
+		audioscrobbler->priv->queue = audioscrobbler->priv->submission;
+		audioscrobbler->priv->submission = g_queue_new ();;
 		rb_audioscrobbler_save_queue (audioscrobbler);
 
 		rb_audioscrobbler_print_queue (audioscrobbler, FALSE);
@@ -1092,40 +1274,29 @@ rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 				   RhythmDBEntry *entry,
 				   RBAudioscrobbler *audioscrobbler)
 {
-	RhythmDBEntryType type;
+	guint time;
+
+	if (audioscrobbler->priv->currently_playing != NULL) {
+		audioscrobbler_entry_free (audioscrobbler->priv->currently_playing);
+		audioscrobbler->priv->currently_playing = NULL;
+	}
 
 	if (entry == NULL) {
-		audioscrobbler->priv->should_queue = FALSE;
 		return;
 	}
 
-	type = rhythmdb_entry_get_entry_type (entry);
-	if (type->category != RHYTHMDB_ENTRY_NORMAL ||
-	    type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
-	    rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR) != NULL) {
-		audioscrobbler->priv->should_queue = FALSE;
-		return;
-	}
+	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player,
+					  &time, NULL);
+	audioscrobbler->priv->current_elapsed = (int) time;
 
-	audioscrobbler->priv->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	audioscrobbler->priv->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
-	audioscrobbler->priv->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
-	audioscrobbler->priv->duration = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
-	audioscrobbler->priv->mbid = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
-	guint time;
-	rb_shell_player_get_playing_time (audioscrobbler->priv->shell_player, &time, NULL);
-	audioscrobbler->priv->elapsed = (int) time;
-
-	/* Ignore tracks that violate the specification (v1.1) */
-	if (audioscrobbler->priv->duration < 30 ||
-	    ! strcmp (audioscrobbler->priv->artist, _("Unknown")) ||
-	    ! strcmp (audioscrobbler->priv->title, _("Unknown"))) {
-		audioscrobbler->priv->should_queue = FALSE;
-	} else if (time < 15) {
+	if (rb_audioscrobbler_is_queueable (entry) && (time < 15)) {
+		AudioscrobblerEntry *as_entry;
+		
 		/* even if it's the same song, it's being played again from
 		 * the start so we can queue it again.
 		 */
-		audioscrobbler->priv->should_queue = TRUE;
+		as_entry = rb_audioscrobbler_create_entry (entry);
+		audioscrobbler->priv->currently_playing = as_entry;
 	}
 }
 
@@ -1168,12 +1339,48 @@ audioscrobbler_entry_init (AudioscrobblerEntry *entry)
 	entry->album = g_strdup ("");
 	entry->title = g_strdup ("");
 	entry->length = 0;
+	entry->play_time = 0;
 	entry->mbid = g_strdup ("");
-	entry->timestamp = g_strdup ("");
 }
 
 static void
 audioscrobbler_entry_free (AudioscrobblerEntry *entry)
+{
+	g_free (entry->artist);
+	g_free (entry->album);
+	g_free (entry->title);
+	g_free (entry->mbid);
+
+	g_free (entry);
+}
+
+static AudioscrobblerEncodedEntry *
+audioscrobbler_entry_encode (AudioscrobblerEntry *entry)
+{
+
+	AudioscrobblerEncodedEntry *encoded;
+
+	encoded = g_new0 (AudioscrobblerEncodedEntry, 1);
+	
+	encoded->artist = soup_uri_encode (entry->artist, 
+					   EXTRA_URI_ENCODE_CHARS);
+	encoded->title = soup_uri_encode (entry->title,
+					  EXTRA_URI_ENCODE_CHARS);
+	encoded->album = soup_uri_encode (entry->album, 
+					  EXTRA_URI_ENCODE_CHARS);
+	encoded->mbid = soup_uri_encode (entry->mbid, 
+					 EXTRA_URI_ENCODE_CHARS);
+	encoded->timestamp = g_new0 (gchar, 30);
+	strftime (encoded->timestamp, 30, SCROBBLER_DATE_FORMAT, 
+		  gmtime (&entry->play_time));
+
+	encoded->length = entry->length;
+
+	return encoded;
+}
+
+static 
+void audioscrobbler_encoded_entry_free (AudioscrobblerEncodedEntry *entry)
 {
 	g_free (entry->artist);
 	g_free (entry->album);
@@ -1206,25 +1413,31 @@ rb_audioscrobbler_load_entry_from_string (const char *string)
 			if (g_str_has_prefix (breaks2[0], "a")) {
 				g_free (entry->artist);
 				entry->artist = g_strdup (breaks2[1]);
+				soup_uri_decode (entry->artist);
 			}
 			if (g_str_has_prefix (breaks2[0], "t")) {
 				g_free (entry->title);
 				entry->title = g_strdup (breaks2[1]);
+				soup_uri_decode (entry->title);
 			}
 			if (g_str_has_prefix (breaks2[0], "b")) {
 				g_free (entry->album);
 				entry->album = g_strdup (breaks2[1]);
+				soup_uri_decode (entry->album);
 			}
 			if (g_str_has_prefix (breaks2[0], "m")) {
 				g_free (entry->mbid);
 				entry->mbid = g_strdup (breaks2[1]);
+				soup_uri_decode (entry->mbid);
 			}
 			if (g_str_has_prefix (breaks2[0], "l")) {
 				entry->length = atoi (breaks2[1]);
 			}
 			if (g_str_has_prefix (breaks2[0], "i")) {
-				g_free (entry->timestamp);
-				entry->timestamp = g_strdup (breaks2[1]);
+				struct tm tm;
+				strptime (breaks2[1], SCROBBLER_DATE_FORMAT, 
+					  &tm);
+				entry->play_time = mktime (&tm);
 			}
 		}
 
@@ -1273,7 +1486,8 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 
 			entry = rb_audioscrobbler_load_entry_from_string (start);
 			if (entry) {
-				audioscrobbler->priv->queue = g_slist_append (audioscrobbler->priv->queue, entry);
+				g_queue_push_tail (audioscrobbler->priv->queue,
+						   entry);
 				audioscrobbler->priv->queue_count++;
 			}
 
@@ -1288,6 +1502,24 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 
 	g_free (data);
 	return (result == GNOME_VFS_OK);
+}
+
+static char *
+rb_audioscrobbler_save_entry_to_string (AudioscrobblerEntry *entry)
+{
+	char *result;
+	AudioscrobblerEncodedEntry *encoded;
+
+	encoded = audioscrobbler_entry_encode (entry);
+	result = g_strdup_printf ("a=%s&t=%s&b=%s&m=%s&l=%d&i=%s\n",
+				  encoded->artist, 
+				  encoded->title,
+				  encoded->album, 
+				  encoded->mbid,
+				  encoded->length,
+				  encoded->timestamp);
+	audioscrobbler_encoded_entry_free (encoded);
+	return result;
 }
 
 static gboolean
@@ -1309,20 +1541,18 @@ rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 
 	if (result == GNOME_VFS_OK) {
 		GString *s = g_string_new (NULL);
-		GSList *l;
+		GList *l;
 
-		for (l = audioscrobbler->priv->queue; l; l = g_slist_next (l)) {
+		for (l = audioscrobbler->priv->queue->head;
+		     l != NULL;
+		     l = g_list_next (l)) {
 			AudioscrobblerEntry *entry;
-
+			char *str;
 			entry = (AudioscrobblerEntry *) l->data;
-			g_string_printf (s, "a=%s&t=%s&b=%s&m=%s&l=%d&i=%s\n",
-					    entry->artist,
-					    entry->title,
-					    entry->album,
-					    entry->mbid,
-					    entry->length,
-					    entry->timestamp);
-			result = gnome_vfs_write (handle, s->str, s->len, NULL);
+			str = rb_audioscrobbler_save_entry_to_string (entry);
+			result = gnome_vfs_write (handle, str, strlen (str), 
+						  NULL);
+			g_free (str);
 			if (result != GNOME_VFS_OK)
 				break;
 		}
@@ -1344,32 +1574,40 @@ rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 static void
 rb_audioscrobbler_print_queue (RBAudioscrobbler *audioscrobbler, gboolean submission)
 {
-	GSList *l;
+	GList *l;
 	AudioscrobblerEntry *entry;
 	int i = 0;
 
-	if (submission)
-		l = audioscrobbler->priv->submission;
-	else
-		l = audioscrobbler->priv->queue;
-	rb_debug ("Audioscrobbler %s (%d entries):", submission ? "submission" : "queue", g_slist_length (l));
+	if (submission) {
+		l = audioscrobbler->priv->submission->head;
+		rb_debug ("Audioscrobbler submission (%d entries): ", 
+			  g_queue_get_length (audioscrobbler->priv->submission));
 
-	for (; l; l = g_slist_next (l)) {
+	} else {
+		l = audioscrobbler->priv->queue->head;
+		rb_debug ("Audioscrobbler queue (%d entries): ", 
+			  g_queue_get_length (audioscrobbler->priv->queue));
+	}
+
+	for (; l != NULL; l = g_list_next (l)) {
+		char timestamp[30];
 		entry = (AudioscrobblerEntry *) l->data;
-
+		
 		rb_debug ("%-3d  artist: %s", ++i, entry->artist);
 		rb_debug ("      album: %s", entry->album);
 		rb_debug ("      title: %s", entry->title);
 		rb_debug ("     length: %d", entry->length);
-		rb_debug ("  timestamp: %s", entry->timestamp);
+		strftime (timestamp, 30, SCROBBLER_DATE_FORMAT, 
+			  gmtime (&entry->play_time));
+		rb_debug ("  timestamp: %s", timestamp);
 	}
 }
 
 static void
-rb_audioscrobbler_free_queue_entries (RBAudioscrobbler *audioscrobbler, GSList **queue)
+rb_audioscrobbler_free_queue_entries (RBAudioscrobbler *audioscrobbler, GQueue **queue)
 {
-	g_slist_foreach (*queue, (GFunc) audioscrobbler_entry_free, NULL);
-	g_slist_free (*queue);
+	g_queue_foreach (*queue, (GFunc) audioscrobbler_entry_free, NULL);
+	g_queue_free (*queue);
 	*queue = NULL;
 
 	audioscrobbler->priv->queue_changed = TRUE;

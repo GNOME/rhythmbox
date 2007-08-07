@@ -966,7 +966,6 @@ plugins/Makefile
 plugins/sample/Makefile
 plugins/audiocd/Makefile
 plugins/coherence/Makefile
-plugins/coherence/upnp_coherence/Makefile
 plugins/audioscrobbler/Makefile
 plugins/cd-recorder/Makefile
 plugins/daap/Makefile
