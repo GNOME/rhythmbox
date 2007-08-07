@@ -658,7 +658,7 @@ rb_ipod_db_get_volume_path (GnomeVFSVolume *volume)
 	return path;
 }
 
-static void rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
+static gboolean rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
 {
 	char *mount_path;
 	const Itdb_IpodInfo *info;
@@ -668,6 +668,10 @@ static void rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
  	priv->itdb = itdb_parse (mount_path, NULL);
 	g_free (mount_path);
 
+        if (priv->itdb == NULL) {
+            return FALSE;
+        }
+
 	info = itdb_device_get_ipod_info(priv->itdb->device);
 	if (info->ipod_generation == ITDB_IPOD_GENERATION_UNKNOWN ||
 	    info->ipod_model == ITDB_IPOD_MODEL_SHUFFLE) {
@@ -675,11 +679,14 @@ static void rb_ipod_db_load (RbIpodDb *ipod_db, GnomeVFSVolume *volume)
 	} else {
 		priv->needs_shuffle_db = FALSE;
 	}
+
+        return TRUE;
 }
 
 RbIpodDb *rb_ipod_db_new (GnomeVFSVolume *volume)
 {
 	RbIpodDb *db;
+        gboolean success;
 
 	g_return_val_if_fail (volume != NULL, NULL);
 
@@ -688,9 +695,13 @@ RbIpodDb *rb_ipod_db_new (GnomeVFSVolume *volume)
 		return NULL;
 	}
 
-	rb_ipod_db_load (db, volume);
+	success = rb_ipod_db_load (db, volume);
 
+        if (success == FALSE) {
+            return NULL;
+        } else {
 	return db;
+}
 }
 
 
