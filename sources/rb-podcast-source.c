@@ -1054,6 +1054,7 @@ rb_podcast_source_feeds_show_popup_cb (RBPropertyView *view,
 		act_delete = gtk_action_group_get_action (source->priv->action_group, "PodcastFeedDelete");
 
 		if (lst) {
+			gtk_action_set_visible (act_update, TRUE);
 			gtk_action_set_visible (act_properties, TRUE);
 			gtk_action_set_visible (act_delete, TRUE);
 		} else {
