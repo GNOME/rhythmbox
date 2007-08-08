@@ -8,12 +8,20 @@ class CoherencePlugin(rb.Plugin):
 		rb.Plugin.__init__(self)
 			
 	def activate(self, shell):
+		self.coherence = self.get_coherence()
+		if self.coherence is None:
+			print "Coherence is not installed or too old, aborting"
+			return
+
 		from twisted.internet import gtk2reactor
-		gtk2reactor.install()
+		try:
+			gtk2reactor.install()
+		except AssertionError, e:
+			# sometimes it's already installed
+			print e
 
 		print "coherence UPnP plugin activated"
 		self.shell = shell
-		self.coherence = self.get_coherence()
 		self.sources = {}
 
 		# watch for media servers
@@ -29,11 +37,11 @@ class CoherencePlugin(rb.Plugin):
 		from MediaStore import MediaStore
 		server = MediaServer(self.coherence, MediaStore, no_thread_needed=True, db=self.shell.props.db, plugin=self)
 
-		# hack to work around the fact RB doesn't do python threading
-		#server.backend = MediaStore(server, db=self.shell.props.db, plugin=self)
-	
 	def deactivate(self, shell):
 		print "coherence UPnP plugin deactivated"
+		if self.coherence is None:
+			return
+
 		louie.disconnect(self.detected_media_server,
 				'Coherence.UPnP.ControlPoint.MediaServer.detected',
 				louie.Any)
@@ -48,27 +56,33 @@ class CoherencePlugin(rb.Plugin):
 			source.delete_thyself()
 		del self.sources
 
-		# uninstall twisted reactor?
+		# uninstall twisted reactor? probably not, since other thigngs may have used it
 
 
 	def get_coherence (self):
 		coherence_instance = None
 		required_version = (0, 3, 2)
 
-		from coherence.base import Coherence
-		from coherence import __version_info__
+		try:
+			from coherence.base import Coherence
+			from coherence import __version_info__
+		except ImportError, e:
+			print "Coherence not found"
+			return None
 
 		if __version_info__ < required_version:
 			required = '.'.join([str(i) for i in required_version])
 			found = '.'.join([str(i) for i in __version_info__])
-			raise ("Coherence %s required. %s found. Please upgrade" % (required, found))
-		else:
-			coherence_config = {
-				#'logmode': 'info',
-				'controlpoint': 'yes',
-				'plugins':{}
-			}
-			coherence_instance = Coherence(coherence_config)
+			print "Coherence %s required. %s found. Please upgrade" % (required, found)
+			return None
+
+		coherence_config = {
+			#'logmode': 'info',
+			'controlpoint': 'yes',
+			'plugins':{}
+		}
+		coherence_instance = Coherence(coherence_config)
+
 		return coherence_instance
 
 

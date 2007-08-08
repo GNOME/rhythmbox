@@ -121,6 +121,14 @@ class Track:
 	def get_url(self):
 		return self.store.urlbase + str(self.id + CONTAINER_COUNT)
 
+	def get_path(self):
+		entry = self.store.db.entry_lookup_by_id (self.id)
+		uri = self.store.db.entry_get (entry, rhythmdb.PROP_LOCATION)
+		if uri.startswith("file://"):
+			return uri[len("file://"):]
+		else:
+			return None
+
 
 class MediaStore: 
 	implements = ['MediaServer']

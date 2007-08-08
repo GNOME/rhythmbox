@@ -336,6 +336,12 @@ class MagnatuneSource(rb.BrowserSource):
 		self.__notify_status_changed()
 		self.__load_handle = gnomevfs.async.open (local_song_info_uri, self.__load_catalogue_open_cb)
 
+	def __find_song_info(self, catalogue):
+		for info in catalogue.infolist():
+			if info.filename.endswith("song_info.xml"):
+				return info.filename;
+		return None
+
 	def __download_update_cb (self, _reserved, info, moving):
 		self.__load_current_size = info.bytes_copied
 		self.__load_total_size = info.bytes_total
@@ -345,7 +351,11 @@ class MagnatuneSource(rb.BrowserSource):
 			# done downloading, unzip to real location
 			catalog = zipfile.ZipFile(local_song_info_temp_uri.path)
 			out = create_if_needed(local_song_info_uri, gnomevfs.OPEN_WRITE)
-			out.write(catalog.read("opt/magnatune/info/song_info.xml"))
+			filename = self.__find_song_info(catalog)
+			if filename is None:
+				rb.error_dialog(title="Unable to load catalogue", message=_("Rhythmbox could not understand the Magnatune catalogue, please file a bug."))
+				return
+			out.write(catalog.read(filename))
 			out.close()
 			catalog.close()
 			gnomevfs.unlink(local_song_info_temp_uri)

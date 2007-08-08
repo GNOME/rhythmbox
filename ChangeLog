@@ -1,3 +1,16 @@
+2007-08-08  James Livingston  <doclivingston@gmail.com>
+
+	* plugins/coherence/upnp_coherence/__init__.py: be nicer if Coherence
+	isn't present.
+
+	* plugins/coherence/upnp_coherence/MediaStore.py: set the path so that
+	local files will be server. Need a propert http server that can read
+	from gnomevfs/gstreamer
+
+	* plugins/magnatune/magnatune/MagnatuneSource.py: adapt to the change
+	MagnaTune seems to have made to the location of the file in the zip
+	file.
+
 2007-08-07  Christophe Fergeau  <cfergeau@gmail.com>
 
 	* configure.ac: revert another bogus change in last.fm ipod commit :-/
