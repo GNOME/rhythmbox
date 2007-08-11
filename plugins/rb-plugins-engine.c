@@ -665,6 +665,8 @@ rb_plugins_engine_get_plugin_copyright (RBPluginInfo *info)
 GdkPixbuf *
 rb_plugins_engine_get_plugin_icon (RBPluginInfo *info)
 {
+	g_return_val_if_fail (info != NULL, NULL);
+
 	if (info->icon_name == NULL)
 		return NULL;
 
