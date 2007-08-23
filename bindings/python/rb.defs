@@ -115,6 +115,13 @@
   (gtype-id "RB_TYPE_SONG_INFO")
 )
 
+(define-object UriDialog
+  (in-module "RB")
+  (parent "GtkDialog")
+  (c-name "RBUriDialog")
+  (gtype-id "RB_TYPE_URI_DIALOG")
+)
+
 (define-interface Player
   (in-module "RB")
   (c-name "RBPlayer")
@@ -2326,6 +2333,23 @@
   (return-type "char*")
   (parameters
     '("time_t" "date")
+  )
+)
+
+;; From rb-uri-dialog.h
+
+(define-function rb_uri_dialog_get_type
+  (c-name "rb_uri_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function uri_dialog_new
+  (c-name "rb_uri_dialog_new")
+  (is-constructor-of "RBUriDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("const-char*" "title")
+    '("const-char*" "label")
   )
 )
 
