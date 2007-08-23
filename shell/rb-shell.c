@@ -2647,6 +2647,7 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	GtkAction *action;
 	GtkAction *queue_action;
 	GtkAction *party_mode_action;
+	GtkAction *jump_to_playing_action;
 	GtkWidget *toolbar;
 
 	rb_shell_sync_window_state (shell, FALSE);
@@ -2657,6 +2658,8 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 						    "ViewQueueAsSidebar");
 	party_mode_action = gtk_action_group_get_action (shell->priv->actiongroup,
 							 "ViewPartyMode");
+	jump_to_playing_action = gtk_action_group_get_action (shell->priv->actiongroup,
+							      "ViewJumpToPlaying");
 
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 
@@ -2664,12 +2667,20 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", FALSE, NULL);
 		g_object_set (G_OBJECT (party_mode_action), "sensitive", FALSE, NULL);
+		g_object_set (G_OBJECT (jump_to_playing_action), "sensitive", FALSE, NULL);
 
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
 	} else {
+		RhythmDBEntry *playing;
+
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (queue_action), "sensitive", TRUE, NULL);
 		g_object_set (G_OBJECT (party_mode_action), "sensitive", TRUE, NULL);
+
+		playing = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+		g_object_set (G_OBJECT (jump_to_playing_action), "sensitive", playing != NULL, NULL);
+		if (playing)
+			rhythmdb_entry_unref (playing);
 
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
 	}

@@ -1,5 +1,13 @@
 2007-08-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch by:  Kouhei Sutou  <kou@cozmixng.org>
+
+	* shell/rb-shell.c: (rb_shell_sync_smalldisplay):
+	Make the 'jump to playing song' action insensitive in small display
+	mode, where it makes no sense.  Fixes #416650.
+
+2007-08-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch mostly by: Brian Cameron <brian.cameron@sun.com>
 
 	* plugins/visualizer/rb-visualizer-plugin.c:
