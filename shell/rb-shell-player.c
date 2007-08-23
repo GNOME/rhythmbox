@@ -2610,6 +2610,8 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 			g_string_append_printf (title_str, " (%s)", stream_name);
 
 		title = g_string_free (title_str, FALSE);
+	} else {
+		title = g_strdup (_("Music Player"));
 	}
 
 	elapsed = rb_player_get_time (player->priv->mmplayer);

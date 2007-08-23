@@ -1471,7 +1471,7 @@ rb_visualizer_plugin_window_title_change_cb (RBShellPlayer *player,
 	char *markup;
 
 	if (title == NULL) {
-		title = "";
+		title = _("Music Player");
 	}
 
 	markup = g_markup_printf_escaped ("<big><b>%s</b></big>", title);

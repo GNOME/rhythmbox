@@ -1,3 +1,13 @@
+2007-08-23  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	patch mostly by: Brian Cameron <brian.cameron@sun.com>
+
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(rb_visualizer_plugin_window_title_change_cb):
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_source):
+	Don't crash on Solaris when we don't have a title for the playing
+	song.  Fixes #466752.
+
 2007-08-11  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Eduardo Lima
