@@ -1,5 +1,14 @@
 2007-08-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
+	patch mostly by:  Cosimo Cecchi  <anarki@lilik.it>
+
+	* plugins/lyrics/lyrics/__init__.py:
+	Clarify the optional 'mode' parameter to the search_lyrics method, and
+	then don't use it; fixes lyrics not being refreshed on song changes,
+	bug #453034.
+
+2007-08-24  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
 	patch by:  Tim Chevalier  <chevalier@alum.wellesley.edu>
 
 	* plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:

@@ -112,7 +112,7 @@ class LyricGrabber(object):
 	def verify_lyric(self):
 		return os.path.exists(self.cache_path)
 	  
-	def search_lyrics(self, callback, mode=None):
+	def search_lyrics(self, callback, cache_only=False):
 		self.callback = callback
 		
 		status = self.verify_lyric()
@@ -120,7 +120,7 @@ class LyricGrabber(object):
 		if status:
 			self.loader.get_url(self.cache_path, callback)
 		else:
-			if mode is not None:
+			if cache_only:
 				self.callback(_("No lyrics found"))
 			else:
 				def lyric_callback (text):
@@ -340,7 +340,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 		self.window.s_title(title, artist)
 		lyrics_grabber = LyricGrabber(db, entry)
-		lyrics_grabber.search_lyrics(self.window.buffer.set_text, True)
+		lyrics_grabber.search_lyrics(self.window.buffer.set_text)
 
 	def show_song_lyrics (self, action, shell):
 
