@@ -242,7 +242,11 @@ class AmazonCoverArtSearch (object):
 						best_match = item
 						break
 					# If we already found a best_match, just keep checking for exact one
-					elif (best_match is None) and (product_name.find (album_check) != -1):
+					# Check the results for both an album name that contains the name
+					# we're searching for, and an album name that's a substring of the
+					# name we're searching for
+					elif (best_match is None) and (product_name.find (album_check) != -1 
+                                                                  or album_check.find (product_name) != -1):
 						best_match = item
 
 			# If we still have no definite hit, use first result where artist matches
