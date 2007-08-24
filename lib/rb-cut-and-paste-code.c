@@ -320,6 +320,11 @@ rb_utf_friendly_time (time_t date)
 		str = eel_strdup_strftime (format, &then);
 	}
 
+	if (str == NULL) {
+		/* impossible time or broken locale settings */
+		str = g_strdup (_("Unknown"));
+	}
+
 	return str;
 }
 
