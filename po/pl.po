@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-19 15:23+0200\n"
-"PO-Revision-Date: 2007-08-11 23:17+0100\n"
+"POT-Creation-Date: 2007-08-24 18:25+0200\n"
+"PO-Revision-Date: 2007-08-24 10:35+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <gnome-l10n@lists.aviary.pl>\n"
 "MIME-Version: 1.0\n"
@@ -496,8 +496,9 @@ msgstr "Ostatnio odtwarzane"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:181
-#: ../shell/rb-shell.c:1003 ../shell/rb-shell.c:2085
-#: ../shell/rb-tray-icon.c:43
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1474
+#: ../shell/rb-shell-player.c:2614 ../shell/rb-shell.c:1003
+#: ../shell/rb-shell.c:2085 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Odtwarzacz muzyki"
 
@@ -542,15 +543,7 @@ msgstr "%b %d %I:%M %p"
 msgid "%b %d %Y"
 msgstr "%d %b %Y"
 
-#: ../lib/rb-proxy-config.c:189
-msgid "HTTP proxy configuration error"
-msgstr "Błąd konfiguracji pośrednika sieciowego HTTP"
-
-#: ../lib/rb-proxy-config.c:190
-msgid "Rhythmbox does not support automatic proxy configuration"
-msgstr ""
-"Rhythmbox nie obsługuje automatycznej konfiguracji pośrednika sieciowego"
-
+#. impossible time or broken locale settings
 #. TODO: Improve to decrease wrong cover downloads, maybe add severity?
 #. Assemble list of search keywords (and thus search queries)
 #. If we still have no definite hit, use first result where artist matches
@@ -558,14 +551,15 @@ msgstr ""
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:648 ../lib/rb-util.c:888
+#: ../lib/rb-cut-and-paste-code.c:325 ../lib/rb-util.c:648
+#: ../lib/rb-util.c:888
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:107
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:117
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:233
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:249
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:253
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:122
 #: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:123
 #: ../plugins/audiocd/rb-audiocd-source.c:213
@@ -586,7 +580,7 @@ msgstr ""
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
 #: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
 #: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1419
-#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:2987
+#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:2998
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -594,6 +588,15 @@ msgstr ""
 #: ../widgets/rb-song-info.c:1200
 msgid "Unknown"
 msgstr "Nieznany"
+
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr "Błąd konfiguracji pośrednika sieciowego HTTP"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr ""
+"Rhythmbox nie obsługuje automatycznej konfiguracji pośrednika sieciowego"
 
 #: ../lib/rb-util.c:650 ../remote/dbus/rb-client.c:136
 #, c-format
@@ -2966,8 +2969,8 @@ msgstr "Rhythmbox"
 msgid "_Playlist"
 msgstr "_Lista odtwarzania"
 
-#: ../shell/rb-playlist-manager.c:133 ../shell/rb-shell-clipboard.c:151
-msgid "_New Playlist"
+#: ../shell/rb-playlist-manager.c:133
+msgid "_New Playlist..."
 msgstr "Nowa lista od_twarzania"
 
 #: ../shell/rb-playlist-manager.c:134
@@ -3154,6 +3157,10 @@ msgstr "Przenieś zaznaczenie do kosza"
 msgid "Add to P_laylist"
 msgstr "Dodaj do _listy odtwarzania"
 
+#: ../shell/rb-shell-clipboard.c:151
+msgid "_New Playlist"
+msgstr "Nowa lista od_twarzania"
+
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Add the selected songs to a new playlist"
 msgstr "Dodaj zaznaczone utwory do nowej listy odtwarzania"
@@ -3215,7 +3222,7 @@ msgstr "Zmniejsz głośność odtwarzania"
 msgid "_Play"
 msgstr "_Odtwarzanie"
 
-#: ../shell/rb-shell-player.c:303 ../shell/rb-shell-player.c:3251
+#: ../shell/rb-shell-player.c:303 ../shell/rb-shell-player.c:3253
 msgid "Start playback"
 msgstr "Rozpocznij odtwarzanie"
 
@@ -3309,20 +3316,20 @@ msgstr "Brak poprzedniego utworu"
 msgid "No next song"
 msgstr "Brak następnego utworu"
 
-#: ../shell/rb-shell-player.c:2007 ../shell/rb-shell-player.c:2977
+#: ../shell/rb-shell-player.c:2007 ../shell/rb-shell-player.c:2979
 msgid "Couldn't start playback"
 msgstr "Nie można uruchomić odtwarzania"
 
-#: ../shell/rb-shell-player.c:2808
+#: ../shell/rb-shell-player.c:2810
 msgid "Couldn't stop playback"
 msgstr "Nie można wstrzymać odtwarzania"
 
-#: ../shell/rb-shell-player.c:2897
+#: ../shell/rb-shell-player.c:2899
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Nie ma możliwości przewijania bieżącego utworu"
 
-#: ../shell/rb-shell-player.c:3249
+#: ../shell/rb-shell-player.c:3251
 msgid "Stop playback"
 msgstr "Zatrzymanie odtwarzania"
 
@@ -3415,16 +3422,16 @@ msgid "Quit the music player"
 msgstr "Kończy działanie odtwarzacza muzycznego"
 
 #: ../shell/rb-shell.c:430
-msgid "Prefere_nces..."
-msgstr "Prefere_ncje..."
+msgid "Prefere_nces"
+msgstr "Prefere_ncje"
 
 #: ../shell/rb-shell.c:431
 msgid "Edit music player preferences"
 msgstr "Modyfikuje preferencje odtwarzacza muzyki"
 
 #: ../shell/rb-shell.c:433
-msgid "Plu_gins..."
-msgstr "Wt_yczki..."
+msgid "Plu_gins"
+msgstr "Wt_yczki"
 
 #: ../shell/rb-shell.c:434
 msgid "Change and configure plugins"
@@ -3599,33 +3606,33 @@ msgid "Import File into Library"
 msgstr "Importuj plik do kolekcji"
 
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2933
+#: ../shell/rb-shell.c:2944
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "przez <i>%s</i>"
 
 #. Translators: from Album
-#: ../shell/rb-shell.c:2954
+#: ../shell/rb-shell.c:2965
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
-#: ../shell/rb-shell.c:3159
+#: ../shell/rb-shell.c:3170
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Żadne zarejestrowane źródło nie obsługuje URI %s"
 
-#: ../shell/rb-shell.c:3403 ../shell/rb-shell.c:3432
+#: ../shell/rb-shell.c:3414 ../shell/rb-shell.c:3443
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nieznane URI utworu: %s"
 
-#: ../shell/rb-shell.c:3441
+#: ../shell/rb-shell.c:3452
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nieznana właściwość %s"
 
-#: ../shell/rb-shell.c:3451
+#: ../shell/rb-shell.c:3462
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Nieprawidłowa rodzaj właściwości %s dla właściwości %s"
@@ -4361,6 +4368,9 @@ msgstr "Na pulpicie"
 msgid "Unknown location"
 msgstr "Nieznane położenie"
 
+#~ msgid "Plu_gins..."
+#~ msgstr "Wt_yczki..."
+
 #~ msgid "gtk-cancel"
 #~ msgstr "Anuluj"
 
@@ -4481,9 +4491,6 @@ msgstr "Nieznane położenie"
 
 #~ msgid "Leave Fullscreen"
 #~ msgstr "Opuść pełny ekran"
-
-#~ msgid "_New Playlist..."
-#~ msgstr "Nowa lista od_twarzania"
 
 #~ msgid "Welcome to Rhythmbox"
 #~ msgstr "Witaj w programie Rhytmbox"
