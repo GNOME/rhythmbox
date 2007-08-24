@@ -1,3 +1,9 @@
+2007-08-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+
+	* lib/rb-cut-and-paste-code.c: (rb_utf_friendly_time):
+	If eel_strdup_strftime returns NULL (which usually indicates broken
+	locale settings), return "Unknown" rather than NULL.  Fixes #437967.
+
 2007-08-07  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	patch by: Tim Retout  <tim@retout.co.uk>
