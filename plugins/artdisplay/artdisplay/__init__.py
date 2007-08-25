@@ -260,6 +260,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.eemr_art_id = db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request)
 		self.eemn_art_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify)
 		self.eemn_art_uri_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify)
+		self.eemg_art_uri_id = db.connect_after ('entry-extra-metadata-gather', self.cover_art_uri_gather)
 		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
 		shell.add_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_db = CoverArtDatabase ()
@@ -275,6 +276,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		db.disconnect (self.eemr_art_id)
 		db.disconnect (self.eemn_art_id)
 		db.disconnect (self.eemn_art_uri_id)
+		db.disconnect (self.eemg_art_uri_id)
 		shell.remove_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
@@ -352,4 +354,8 @@ class ArtDisplayPlugin (rb.Plugin):
 
 		print "got cover art URI notification: %s" % (uri)
 		rb.Loader().get_url (uri, loader_cb)
+
+	def cover_art_uri_gather (self, db, entry, metadata):
+		if entry == self.current_entry and self.art_widget.current_uri:
+			metadata ['coverArt-uri'] = self.art_widget.current_uri
 

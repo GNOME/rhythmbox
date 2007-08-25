@@ -1,3 +1,10 @@
+2007-08-25  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
+
+	* plugins/artdisplay/artdisplay/CoverArtDatabase.py: unquote the 
+	resulting URI if local.
+	* plugins/artdisplay/artdisplay/__init__.py: Add 'coverArt-uri' as 
+	a new extra metadata.  Fixes #412843.
+
 2007-08-25  Jonathan Matthew  <jonathan@kaolin.wh9.net>
 
 	* lib/rb-cut-and-paste-code.c: (rb_utf_friendly_time):

@@ -27,6 +27,8 @@ from PodcastCoverArtSearch import PodcastCoverArtSearch
 from AmazonCoverArtSearch import AmazonCoverArtSearch
 from LocalCoverArtSearch import LocalCoverArtSearch
 
+from urllib import unquote
+
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, AmazonCoverArtSearch]
 ART_FOLDER = '~/.gnome2/rhythmbox/covers'
@@ -165,7 +167,7 @@ class CoverArtDatabase (object):
 								pixbuf.save (art_location, ART_CACHE_FORMAT, ART_CACHE_SETTINGS)
 								uri = art_location
 							else:
-								uri = str (url)
+								uri = unquote (str (url))
 							callback (entry, pixbuf, uri)
 						self.write_blist (blist_location, blist)
 						return
