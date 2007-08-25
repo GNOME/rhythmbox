@@ -53,11 +53,11 @@ class LocalCoverArtSearch:
 			pass
 
 		if self.uri is None or self.uri.scheme == 'http':
-			print 'not searching for local art to', self.uri
+			print 'not searching for local art for %s' % (self.uri)
 			on_search_completed_cb (self, entry, [], *args)
 			return
 
-		print 'searching for art local to', self.uri
+		print 'searching for local art for %s' % (self.uri)
 		gnomevfs.async.load_directory (self.uri.parent, self._load_dir_cb, LOAD_DIRECTORY_FLAGS, ITEMS_PER_NOTIFICATION, data=([], on_search_completed_cb, entry, args))
 
 	def search_next (self):
