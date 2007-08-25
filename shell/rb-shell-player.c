@@ -1669,12 +1669,11 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 		if (player->priv->current_playing_source &&
 		    (rb_source_handle_eos (player->priv->current_playing_source) == RB_SOURCE_EOF_NEXT)) {
 			have_next = rb_play_order_has_next (player->priv->play_order);
-			have_previous = rb_play_order_has_previous (player->priv->play_order);
 		}
 		if (player->priv->queue_play_order) {
 			have_next |= rb_play_order_has_next (player->priv->queue_play_order);
-			have_previous |= rb_play_order_has_previous (player->priv->queue_play_order);
 		}
+		have_previous = (player->priv->current_playing_source != NULL);
 	}
 
 	action = gtk_action_group_get_action (player->priv->actiongroup,
@@ -1916,19 +1915,10 @@ rb_shell_player_do_previous_or_seek (RBShellPlayer *player,
 	if (player->priv->current_playing_source != NULL
 	    && rb_source_can_pause (player->priv->source)
 	    && rb_player_get_time (player->priv->mmplayer) > 3) {
-
-		/* see if there's anything to go back to */
-		gboolean have_previous;
-		have_previous = rb_play_order_has_previous (player->priv->play_order);
-		if (player->priv->queue_play_order)
-			have_previous |= rb_play_order_has_previous (player->priv->queue_play_order);
-
-		if (have_previous) {
-			rb_debug ("after 3 second previous, restarting song");
-			rb_player_set_time (player->priv->mmplayer, 0);
-			rb_header_sync_time (player->priv->header_widget);
-			return TRUE;
-		}
+		rb_debug ("after 3 second previous, restarting song");
+		rb_player_set_time (player->priv->mmplayer, 0);
+		rb_header_sync_time (player->priv->header_widget);
+		return TRUE;
 	}
 
 	return rb_shell_player_do_previous (player, error);
