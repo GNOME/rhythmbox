@@ -1,5 +1,19 @@
 <ui>
+  <menubar name="MenuBar">
+    <menu name="MusicMenu" action="Music">
+      <placeholder name="MusicMenuNewPluginPlaceholder">
+        <menuitem name="MusicNewDAAPShareMenu" action="MusicNewDAAPShare"/>
+      </placeholder>
+    </menu>
+  </menubar>
+
   <popup name="DAAPSourcePopup">
     <menuitem name="DAAPSrcPopupDisconnect" action="DaapSourceDisconnect"/>
+  </popup>
+
+  <popup name="SourceListPopup">
+    <placeholder name="SourceListPopupPluginPlaceholder">
+      <menuitem name="SourceListPopupNewDAAPShare" action="MusicNewDAAPShare"/>
+    </placeholder>
   </popup>
 </ui>

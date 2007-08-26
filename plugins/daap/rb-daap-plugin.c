@@ -29,6 +29,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libsoup/soup.h>
+#include <libsoup/soup-address.h>
+
 #include "rb-daap-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
@@ -39,6 +42,7 @@
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
 #include "rb-daap-src.h"
+#include "rb-uri-dialog.h"
 
 #include "rb-daap-mdns-browser.h"
 
@@ -88,6 +92,7 @@ static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static GtkWidget* impl_create_configure_dialog (RBPlugin *plugin);
 static void rb_daap_plugin_cmd_disconnect (GtkAction *action, RBDaapPlugin *plugin);
+static void rb_daap_plugin_cmd_connect (GtkAction *action, RBDaapPlugin *plugin);
 
 static void create_pixbufs (RBDaapPlugin *plugin);
 static void start_browsing (RBDaapPlugin *plugin);
@@ -104,30 +109,10 @@ static GtkActionEntry rb_daap_source_actions [] =
 	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL,
 	  N_("Disconnect from DAAP share"),
 	  G_CALLBACK (rb_daap_plugin_cmd_disconnect) },
+	{ "MusicNewDAAPShare", GTK_STOCK_CONNECT, N_("Connect to DAAP share"), NULL,
+	  N_("Connect to a new DAAP share"),
+	  G_CALLBACK (rb_daap_plugin_cmd_connect) },
 };
-
-static void
-rb_daap_plugin_cmd_disconnect (GtkAction *action,
-			       RBDaapPlugin *plugin)
-{
-	RBSource *source;
-
-	g_object_get (plugin->priv->shell,
-		      "selected-source", &source,
-		      NULL);
-
-	if (!RB_IS_DAAP_SOURCE (source)) {
-		g_critical ("got non-Daap source for Daap action");
-		return;
-	}
-
-	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
-
-	if (source != NULL) {
-		g_object_unref (source);
-	}
-}
-
 
 static void
 rb_daap_plugin_class_init (RBDaapPluginClass *klass)
@@ -574,6 +559,112 @@ enable_browsing_changed_cb (GConfClient *client,
 		stop_browsing (plugin);
 	}
 }
+
+/* daap share connect/disconnect commands */
+
+static void
+rb_daap_plugin_cmd_disconnect (GtkAction *action,
+			       RBDaapPlugin *plugin)
+{
+	RBSource *source;
+
+	g_object_get (plugin->priv->shell,
+		      "selected-source", &source,
+		      NULL);
+
+	if (!RB_IS_DAAP_SOURCE (source)) {
+		g_critical ("got non-Daap source for Daap action");
+		return;
+	}
+
+	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
+
+	if (source != NULL) {
+		g_object_unref (source);
+	}
+}
+
+typedef struct {
+	RBDaapPlugin *plugin;
+	char *location;
+} RBDaapShareResolveData;
+
+static void
+new_daap_share_resolve_cb (SoupAddress *addr,
+			   guint status,
+			   RBDaapShareResolveData *data)
+{
+	GDK_THREADS_ENTER ();
+
+	if (status == SOUP_STATUS_OK) {
+		rb_debug ("adding manually specified DAAP share at %s", data->location);
+		mdns_service_added (NULL,
+				    data->location,
+				    data->location,
+				    soup_address_get_physical (addr),
+				    soup_address_get_port (addr),
+				    FALSE,
+				    data->plugin);
+	} else {
+		rb_debug ("unable to resolve DAAP share address %s",
+			  data->location);
+		rb_error_dialog (NULL, _("Could not connect to shared music"),
+				 _("Unable to resolve hostname %s"),
+				 data->location);
+	}
+
+	g_object_unref (data->plugin);
+	g_free (data->location);
+	g_free (data);
+	g_object_unref (addr);
+
+	GDK_THREADS_LEAVE ();
+}
+
+static void
+new_daap_share_location_added_cb (RBURIDialog *dialog,
+				  const char *location,
+				  RBDaapPlugin *plugin)
+{
+	char *host;
+	char *p;
+	int port = 3689;
+	SoupAddress *addr;
+	RBDaapShareResolveData *data;
+
+	data = g_new0 (RBDaapShareResolveData, 1);
+	data->plugin = g_object_ref (plugin);
+	data->location = g_strdup (location);
+
+	host = g_strdup (location);
+	p = strrchr (host, ':');
+	if (p != NULL) {
+		port = strtoul (p+1, NULL, 10);
+		*p = '\0';
+	}
+
+	addr = soup_address_new (host, port);
+	g_free (host);
+
+	soup_address_resolve_async (addr,
+				    (SoupAddressCallback) new_daap_share_resolve_cb,
+				    data);
+}
+
+static void
+rb_daap_plugin_cmd_connect (GtkAction *action,
+			    RBDaapPlugin *plugin)
+{
+	GtkWidget *dialog;
+
+	dialog = rb_uri_dialog_new (_("New DAAP share"), _("Host:port of DAAP share:"));
+	g_signal_connect_object (dialog, "location-added",
+				 G_CALLBACK (new_daap_share_location_added_cb),
+				 plugin, 0);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+}
+
 
 /* daap:// URI -> RBDAAPSource mapping */
 

@@ -1,4 +1,14 @@
-2007-08-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+2007-08-26  Jonathan Matthew  <notverysmart@gmail.com>
+
+	* data/ui/rhythmbox-ui.xml:
+	* plugins/daap/daap-ui.xml:
+	* plugins/daap/rb-daap-plugin.c: (rb_daap_plugin_cmd_disconnect),
+	(new_daap_share_resolve_cb), (new_daap_share_location_added_cb),
+	(rb_daap_plugin_cmd_connect):
+	Add the ability to manually connect to a DAAP share by host:port.
+	Fixes #343248.
+
+2007-08-26  Jonathan Matthew  <notverysmart@gmail.com>
 
 	* widgets/rb-uri-dialog.c: (rb_uri_dialog_class_init),
 	(rb_uri_dialog_init), (rb_uri_dialog_set_property),
@@ -9,7 +19,7 @@
 	* bindings/python/rb.defs:  Fix remaining warnings about old-style
 	constructors, bug #432228.
 
-2007-08-26  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+2007-08-26  Jonathan Matthew  <notverysmart@gmail.com>
 
 	patch mostly by: Bastien Nocera  <hadess@hadess.net>
 
