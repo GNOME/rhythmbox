@@ -234,17 +234,82 @@ gobject.type_register (FadingImage)
 
 
 class ArtDisplayWidget (FadingImage):
+	__gsignals__ = {
+			'pixbuf-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (rhythmdb.Entry, gtk.gdk.Pixbuf)),
+			'uri-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (rhythmdb.Entry, gobject.TYPE_STRING))
+			}
+
 	def __init__ (self, missing_image):
 		super (ArtDisplayWidget, self).__init__ (missing_image)
 		self.set_padding (0, 5)
+		self.ddg_id = self.connect ('drag-data-get', self.drag_data_get)
+		self.ddr_id = self.connect ('drag-data-received', self.drag_data_received)
 		self.current_entry, self.working = None, False
 		self.current_pixbuf, self.current_uri = None, None
+
+		self.tooltips = gtk.Tooltips ()
+		self.tooltips.enable ()
+	
+	def disconnect_handlers (self):
+ 		super (ArtDisplayWidget, self).disconnect_handlers ()
+		self.disconnect (self.ddg_id)
+		self.disconnect (self.ddr_id)
+	
+	def update_dnd_targets (self):
+		targets = None
+		if self.current_entry:
+			targets = gtk.target_list_add_image_targets (targets)
+			targets = gtk.target_list_add_uri_targets (targets)
+			targets = gtk.target_list_add_text_targets (targets)
+		if targets:
+			self.drag_dest_set (gtk.DEST_DEFAULT_ALL, targets, gtk.gdk.ACTION_COPY)
+		else:
+			self.drag_dest_unset ()
+
+		targets = None
+		if self.current_pixbuf:
+			targets = gtk.target_list_add_image_targets (targets, writable=True)
+		if self.current_uri:
+			targets = gtk.target_list_add_uri_targets (targets)
+		if targets:
+			self.drag_source_set (gtk.gdk.BUTTON1_MASK, targets, gtk.gdk.ACTION_COPY)
+		else:
+			self.drag_source_unset ()
+
+	def update_tooltips (self, working):
+		if not self.current_entry:
+			self.tooltips.set_tip (self, None)
+		elif working:
+			self.tooltips.set_tip (self, _("Searching... drop artwork here"))
+		else:
+			self.tooltips.set_tip (self, _("Drop artwork here"))
 
 	def set (self, entry, pixbuf, uri, working):
 		self.current_entry = entry
 		self.current_pixbuf = pixbuf
 		self.current_uri = uri
 		self.set_current_art (pixbuf, working)
+		self.update_dnd_targets ()
+		self.update_tooltips (working)
+
+	def drag_data_get (self, widget, drag_context, selection_data, info, timestamp):
+		if self.current_pixbuf:
+			selection_data.set_pixbuf (self.current_pixbuf)
+		if self.current_uri:
+			selection_data.set_uris ([self.current_uri])
+
+	def drag_data_received (self, widget, drag_context, x, y, selection_data, info, timestamp):
+		entry = self.current_entry
+		pixbuf = selection_data.get_pixbuf ()
+		uris = selection_data.get_uris ()
+		text = selection_data.get_text ()
+		if pixbuf:
+			self.emit ('pixbuf-dropped', entry, pixbuf)
+		elif uris:
+			self.emit ('uri-dropped', entry, uris[0])
+		elif text:
+			self.emit ('uri-dropped', entry, text)
+gobject.type_register (ArtDisplayWidget)
 
 
 class ArtDisplayPlugin (rb.Plugin):
@@ -262,6 +327,8 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.eemn_art_uri_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify)
 		self.eemg_art_uri_id = db.connect_after ('entry-extra-metadata-gather', self.cover_art_uri_gather)
 		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
+		self.art_widget.connect ('pixbuf-dropped', self.on_set_pixbuf)
+		self.art_widget.connect ('uri-dropped', self.on_set_uri)
 		shell.add_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_db = CoverArtDatabase ()
 		self.current_entry, self.current_pixbuf = None, None
@@ -359,3 +426,10 @@ class ArtDisplayPlugin (rb.Plugin):
 		if entry == self.current_entry and self.art_widget.current_uri:
 			metadata ['coverArt-uri'] = self.art_widget.current_uri
 
+	def on_set_pixbuf (self, widget, entry, pixbuf):
+		db = self.shell.get_property ("db")
+		self.art_db.set_pixbuf (db, entry, pixbuf, self.on_get_pixbuf_completed)
+
+	def on_set_uri (self, widget, entry, uri):
+		db = self.shell.get_property ("db")
+		self.art_db.set_pixbuf_from_uri (db, entry, uri, self.on_get_pixbuf_completed)
