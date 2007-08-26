@@ -43,6 +43,14 @@ static void rb_uri_dialog_response_cb (GtkDialog *gtkdialog,
 				       RBURIDialog *dialog);
 static void rb_uri_dialog_text_changed (GtkEditable *buffer,
 					RBURIDialog *dialog);
+static void rb_uri_dialog_set_property (GObject *object,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *pspec);
+static void rb_uri_dialog_get_property (GObject *object,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *pspec);
 
 struct RBURIDialogPrivate
 {
@@ -60,6 +68,12 @@ enum
 	LAST_SIGNAL
 };
 
+enum
+{
+	PROP_0,
+	PROP_LABEL
+};
+
 static guint rb_uri_dialog_signals [LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBURIDialog, rb_uri_dialog, GTK_TYPE_DIALOG)
@@ -68,8 +82,18 @@ static void
 rb_uri_dialog_class_init (RBURIDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
+	
 	object_class->finalize = rb_uri_dialog_finalize;
+	object_class->set_property = rb_uri_dialog_set_property;
+	object_class->get_property = rb_uri_dialog_get_property;
+
+	g_object_class_install_property (object_class,
+					 PROP_LABEL,
+					 g_param_spec_string ("label",
+					                      "label",
+					                      "label",
+							      "",
+					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_uri_dialog_signals [LOCATION_ADDED] =
 		g_signal_new ("location-added",
@@ -101,8 +125,6 @@ rb_uri_dialog_init (RBURIDialog *dialog)
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
-
-	/*gtk_window_set_title (GTK_WINDOW (dialog), _("New Internet Radio Station"));*/
 
 	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							    GTK_STOCK_CANCEL,
@@ -153,16 +175,51 @@ rb_uri_dialog_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_uri_dialog_parent_class)->finalize (object);
 }
 
+static void
+rb_uri_dialog_set_property (GObject *object,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *pspec)
+{
+	RBURIDialog *dialog = RB_URI_DIALOG (object);
+
+	switch (prop_id) {
+	case PROP_LABEL:
+		gtk_label_set_text (GTK_LABEL (dialog->priv->label), g_value_get_string (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_uri_dialog_get_property (GObject *object,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *pspec)
+{
+	RBURIDialog *dialog = RB_URI_DIALOG (object);
+
+	switch (prop_id) {
+	case PROP_LABEL:
+		g_value_set_string (value, gtk_label_get_text (GTK_LABEL (dialog->priv->label)));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 GtkWidget *
 rb_uri_dialog_new (const char *title, const char *label)
 {
 	RBURIDialog *dialog;
 
-	dialog = g_object_new (RB_TYPE_URI_DIALOG, NULL);
-
-	gtk_window_set_title (GTK_WINDOW (dialog), title);
-	gtk_label_set_text (GTK_LABEL (dialog->priv->label), label);
-
+	dialog = g_object_new (RB_TYPE_URI_DIALOG,
+			       "title", title,
+			       "label", label,
+			       NULL);
 	return GTK_WIDGET (dialog);
 }
 
@@ -198,3 +255,4 @@ rb_uri_dialog_text_changed (GtkEditable *buffer,
 
 	gtk_widget_set_sensitive (dialog->priv->okbutton, has_text);
 }
+

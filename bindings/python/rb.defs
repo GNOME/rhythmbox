@@ -1235,7 +1235,7 @@
 (define-function sourcelist_new
   (in-module "rb")
   (c-name "rb_sourcelist_new")
-  (is-constructor-of "RBSourcelist")
+  (is-constructor-of "RBSourceList")
   (return-type "GtkWidget*")
   (properties
     '("shell")
@@ -2134,7 +2134,7 @@
 
 (define-function rb_sourcelist_model_new
   (c-name "rb_sourcelist_model_new")
-  (is-constructor-of "RbSourcelistModel")
+  (is-constructor-of "RBSourceListModel")
   (return-type "GtkTreeModel*")
 )
 
@@ -2347,9 +2347,9 @@
   (c-name "rb_uri_dialog_new")
   (is-constructor-of "RBUriDialog")
   (return-type "GtkWidget*")
-  (parameters
-    '("const-char*" "title")
-    '("const-char*" "label")
+  (properties
+    '("title")
+    '("label")
   )
 )
 
