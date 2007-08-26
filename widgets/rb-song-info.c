@@ -151,7 +151,8 @@ enum
 	PROP_0,
 	PROP_SOURCE,
 	PROP_ENTRY_VIEW,
-	PROP_CURRENT_ENTRY
+	PROP_CURRENT_ENTRY,
+	PROP_SELECTED_ENTRIES
 };
 
 static guint rb_song_info_signals[LAST_SIGNAL] = { 0 };
@@ -191,6 +192,18 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 					                     "RhythmDBEntry object",
 							     RHYTHMDB_TYPE_ENTRY,
 					                     G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_SELECTED_ENTRIES,
+					 g_param_spec_value_array ("selected-entries",
+								   "Selected entries",
+								   "List of selected entries, if this is a multiple-entry dialog",
+								   g_param_spec_boxed ("selected-entry",
+										       "Selected entry",
+										       "RhythmDBEntry for a selected entry",
+										       RHYTHMDB_TYPE_ENTRY,
+										       G_PARAM_READABLE),
+								   G_PARAM_READABLE));
 
 	object_class->dispose = rb_song_info_dispose;
 	object_class->finalize = rb_song_info_finalize;
@@ -635,6 +648,24 @@ rb_song_info_get_property (GObject *object,
 		break;
 	case PROP_CURRENT_ENTRY:
 		g_value_set_boxed (value, song_info->priv->current_entry);
+		break;
+	case PROP_SELECTED_ENTRIES:
+		if (song_info->priv->selected_entries) {
+			GValueArray *value_array;
+			GValue entry_value = { 0, };
+			GList *entry_list;
+
+			value_array = g_value_array_new (1);
+			g_value_init (&entry_value, RHYTHMDB_TYPE_ENTRY);
+			for (entry_list = song_info->priv->selected_entries; entry_list; entry_list = entry_list->next) {
+				g_value_set_boxed (&entry_value, entry_list->data);
+				g_value_array_append (value_array, &entry_value);
+			}
+			g_value_unset (&entry_value);
+			g_value_take_boxed (value, value_array);
+		} else {
+			g_value_set_boxed (value, NULL);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

@@ -2,6 +2,15 @@
 
 	patch by: Ed Catmur  <ed@catmur.co.uk>
 
+	* widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_get_property):
+	Add 'selected-entries' property to expose the selected entries in the
+	multiple-entry case.  Fixes #409673.
+
+2007-08-26  Jonathan Matthew  <notverysmart@gmail.com>
+
+	patch by: Ed Catmur  <ed@catmur.co.uk>
+
 	* plugins/artdisplay/artdisplay/__init__.py:
 	Drag & drop support for cover art.  Drag images or URLs to the art
 	display area to set cover art for an album, and drag from the art
