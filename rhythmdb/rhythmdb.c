@@ -2648,7 +2648,8 @@ static void
 record_entry_change (RhythmDB *db,
 		     RhythmDBEntry *entry,
 		     guint propid,
-		     const GValue *value)
+		     const GValue *old_value,
+		     const GValue *new_value)
 {
 	RhythmDBEntryChange *changedata;
 	GSList *changelist;
@@ -2656,18 +2657,10 @@ record_entry_change (RhythmDB *db,
 	changedata = g_new0 (RhythmDBEntryChange, 1);
 	changedata->prop = propid;
 
-	/* Copy a temporary gvalue, since _entry_get uses
-	 * _set_static_string to avoid memory allocations. */
-	{
-		GValue tem = {0,};
-		g_value_init (&tem, G_VALUE_TYPE (value));
-		rhythmdb_entry_get (db, entry, propid, &tem);
-		g_value_init (&changedata->old, G_VALUE_TYPE (value));
-		g_value_copy (&tem, &changedata->old);
-		g_value_unset (&tem);
-	}
-	g_value_init (&changedata->new, G_VALUE_TYPE (value));
-	g_value_copy (value, &changedata->new);
+	g_value_init (&changedata->old, G_VALUE_TYPE (old_value));
+	g_value_init (&changedata->new, G_VALUE_TYPE (new_value));
+	g_value_copy (old_value, &changedata->old);
+	g_value_copy (new_value, &changedata->new);
 
 	g_mutex_lock (db->priv->change_mutex);
 	/* ref the entry before adding to hash, it is unreffed when removed */
@@ -2688,30 +2681,51 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	gboolean handled;
 	RhythmDBPodcastFields *podcast = NULL;
+	GValue old_value = {0,};
+	gboolean nop;
 
 	g_return_if_fail (entry != NULL);
 
-#ifndef G_DISABLE_ASSERT
+	/* compare the value with what's already there */
+	g_value_init (&old_value, G_VALUE_TYPE (value));
+	rhythmdb_entry_get (db, entry, propid, &old_value);
 	switch (G_VALUE_TYPE (value)) {
 	case G_TYPE_STRING:
+#ifndef G_DISABLE_ASSERT
 		/* the playback error is allowed to be NULL */
 		if (propid != RHYTHMDB_PROP_PLAYBACK_ERROR || g_value_get_string (value))
 			g_assert (g_utf8_validate (g_value_get_string (value), -1, NULL));
+#endif
+		if (g_value_get_string (value) && g_value_get_string (&old_value)) {
+			nop = (strcmp (g_value_get_string (value), g_value_get_string (&old_value)) == 0);
+		} else {
+			nop = FALSE;
+		}
 		break;
 	case G_TYPE_BOOLEAN:
+		nop = (g_value_get_boolean (value) == g_value_get_boolean (&old_value));
+		break;
 	case G_TYPE_ULONG:
+		nop = (g_value_get_ulong (value) == g_value_get_ulong (&old_value));
+		break;
 	case G_TYPE_UINT64:
+		nop = (g_value_get_uint64 (value) == g_value_get_uint64 (&old_value));
+		break;
 	case G_TYPE_DOUBLE:
+		nop = (g_value_get_double (value) == g_value_get_double (&old_value));
 		break;
 	default:
 		g_assert_not_reached ();
 		break;
 	}
-#endif
-
-	if ((entry->flags & RHYTHMDB_ENTRY_INSERTED) && notify_if_inserted) {
-		record_entry_change (db, entry, propid, value);
+	
+	if (nop == FALSE && (entry->flags & RHYTHMDB_ENTRY_INSERTED) && notify_if_inserted) {
+		record_entry_change (db, entry, propid, &old_value, value);
 	}
+	g_value_unset (&old_value);
+
+	if (nop)
+		return;
 
 	handled = klass->impl_entry_set (db, entry, propid, value);
 

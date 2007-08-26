@@ -1,3 +1,9 @@
+2007-08-27  Jonathan Matthew  <notverysmart@gmail.com>
+
+	* rhythmdb/rhythmdb.c: (record_entry_change),
+	(rhythmdb_entry_set_internal):
+	Ignore entry changes where new value == old value.  Bug #459562.
+
 2007-08-26  Jonathan Matthew  <notverysmart@gmail.com>
 
 	* data/ui/rhythmbox-ui.xml:
