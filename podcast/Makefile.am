@@ -1,6 +1,10 @@
 ## arch-tag: Automake rules for podcast library
 
-noinst_LTLIBRARIES = librbpodcast.la
+noinst_LTLIBRARIES = librbpodcast.la librbpodcast_parse.la
+
+librbpodcast_parse_la_SOURCES = 			\
+	rb-podcast-parse.c				\
+	rb-podcast-parse.h
 
 librbpodcast_la_SOURCES =				\
 	rb-feed-podcast-properties-dialog.c		\
@@ -11,7 +15,15 @@ librbpodcast_la_SOURCES =				\
 	rb-podcast-parse.h				\
 	rb-podcast-manager.c				\
 	rb-podcast-manager.h
+librbpodcast_la_LIBADD =				\
+	librbpodcast_parse.la
 
+noinst_PROGRAMS = test-podcast-parse
+test_podcast_parse_SOURCES =				\
+	test-podcast-parse.c
+test_podcast_parse_LDADD =				\
+	librbpodcast_parse.la				\
+	$(RHYTHMBOX_LIBS)
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -23,6 +23,8 @@
 #define RB_PODCAST_PARSE_H
 
 #include <glib.h>
+#include <libxml/xmlstring.h>
+#include <inttypes.h>
 
 typedef struct
 {
