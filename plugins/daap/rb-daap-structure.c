@@ -122,7 +122,8 @@ static const RBDAAPContentCodeDefinition cc_defs[] = {
 	{RB_DAAP_CC_AESV, MAKE_CONTENT_CODE('a','e','S','V'), "com.applie.itunes.music-sharing-version", "aesv", RB_DAAP_TYPE_INT},
 	{RB_DAAP_CC_MSAS, MAKE_CONTENT_CODE('m','s','a','s'), "daap.authentication.schemes", "msas", RB_DAAP_TYPE_BYTE},
 	{RB_DAAP_CC_AGRP, MAKE_CONTENT_CODE('a','g','r','p'), "daap.songgrouping", "agrp", RB_DAAP_TYPE_STRING},
-	{RB_DAAP_CC_ASCP, MAKE_CONTENT_CODE('a','s','c','p'), "daap.songcomposer", "ascp", RB_DAAP_TYPE_STRING}
+	{RB_DAAP_CC_ASCP, MAKE_CONTENT_CODE('a','s','c','p'), "daap.songcomposer", "ascp", RB_DAAP_TYPE_STRING},
+	{RB_DAAP_CC_AESP, MAKE_CONTENT_CODE('a','e','S','P'), "com.apple.itunes.smart-playlist", "aesp", RB_DAAP_TYPE_BYTE}
 	};
 
 const gchar *

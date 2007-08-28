@@ -114,6 +114,7 @@ typedef enum {
 	RB_DAAP_CC_MSAS,
 	RB_DAAP_CC_AGRP,
 	RB_DAAP_CC_ASCP,
+	RB_DAAP_CC_AESP
 } RBDAAPContentCode;
 
 typedef struct _RBDAAPItem RBDAAPItem;
