@@ -48,7 +48,8 @@ char *		rb_uri_make_hidden      (const char *uri);
 char *		rb_uri_get_dir_name	(const char *uri);
 char *		rb_uri_get_short_path_name (const char *uri);
 
-typedef void (*RBUriRecurseFunc) (const char *uri, gboolean dir, gpointer data);
+/* return TRUE to recurse further, FALSE to stop */
+typedef gboolean (*RBUriRecurseFunc) (const char *uri, gboolean dir, gpointer data);
 
 void		rb_uri_handle_recursively(const char *uri,
 					  RBUriRecurseFunc func,

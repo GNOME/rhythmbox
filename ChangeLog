@@ -1,5 +1,24 @@
 2007-08-28  Jonathan Matthew  <notverysmart@gmail.com>
 
+	patch by: Tom Parker  <palfrey@tevp.net>
+
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively_cb),
+	(_recurse_async_cb):
+	* lib/rb-file-helpers.h:
+	* rhythmdb/rhythmdb-monitor.c: (monitor_subdirectory):
+	* rhythmdb/rhythmdb.c: (queue_stat_uri_tad):
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_add_location_cb):
+	Use the return value from the callback to determine whether to recurse
+	further or not.
+	
+	* plugins/rb-plugins-engine.c: (rb_plugins_engine_load_cb),
+	(rb_plugins_engine_load_dir):
+	Don't recurse into directories that look like darcs or CVS control
+	directories.  Fixes #434374.
+
+2007-08-28  Jonathan Matthew  <notverysmart@gmail.com>
+
 	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
 
 	* plugins/daap/rb-daap-structure.c:

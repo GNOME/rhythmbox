@@ -656,13 +656,14 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 	rb_playlist_source_mark_dirty (psource);
 }
 
-static void
+static gboolean
 rb_static_playlist_source_add_location_cb (const char *uri,
 					   gboolean dir,
 					   RBStaticPlaylistSource *source)
 {
 	if (!dir)
 		rb_static_playlist_source_add_location_internal (source, uri, -1);
+	return TRUE;	
 }
 
 void

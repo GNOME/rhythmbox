@@ -244,27 +244,43 @@ error:
 	return NULL;
 }
 
-static void
+static gboolean
 rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
 {
 	gchar *plugin_file;
 	RBPluginInfo *info;
 	char *key_name;
 	gboolean activate;
-
-	if (dir || !g_str_has_suffix (uri, PLUGIN_EXT))
-		return;
+	const char *sep;
 
 	plugin_file = gnome_vfs_get_local_path_from_uri (uri);
+
+	sep = strrchr (plugin_file, G_DIR_SEPARATOR);
+	if (sep == NULL)
+		sep = plugin_file;
+	else
+		sep += 1;
+	
+	/* don't look inside version control system directories.
+	 * most are already covered by excluding hidden files/directories.
+	 */
+	if (dir && (g_str_has_prefix (sep, "_darcs") || g_str_has_prefix (sep, "CVS"))) {
+		rb_debug ("not loading plugin from hidden/VCS directory %s", plugin_file);
+		return FALSE;
+	}
+
+	if (dir || !g_str_has_suffix (uri, PLUGIN_EXT))
+		return TRUE;
+
 	info = rb_plugins_engine_load (plugin_file);
 	g_free (plugin_file);
 
 	if (info == NULL)
-		return;
+		return TRUE;
 
 	if (g_hash_table_lookup (rb_plugins, info->location)) {
 		rb_plugin_info_free (info);
-		return;
+		return TRUE;
 	}
 
 	g_hash_table_insert (rb_plugins, info->location, info);
@@ -286,6 +302,7 @@ rb_plugins_engine_load_cb (const char *uri, gboolean dir, gpointer userdata)
 
 	if (activate)
 		rb_plugins_engine_activate_plugin (info);
+	return TRUE;	
 }
 
 static void
@@ -294,7 +311,7 @@ rb_plugins_engine_load_dir (const gchar *path)
 	char *uri;
 
 	uri = rb_uri_resolve_relative (path);
-	rb_uri_handle_recursively (uri, (RBUriRecurseFunc)rb_plugins_engine_load_cb, NULL, NULL);
+	rb_uri_handle_recursively (uri, rb_plugins_engine_load_cb, NULL, NULL);
 	g_free (uri);
 }
 

@@ -2162,13 +2162,14 @@ queue_stat_uri (const char *uri,
 	}
 }
 
-static void
+static gboolean
 queue_stat_uri_tad (const char *uri,
 		    gboolean dir,
 		    RhythmDBAddThreadData *data)
 {
 	if (!dir)
 		queue_stat_uri (uri, data->db, data->type);
+	return TRUE;	
 }
 
 static void

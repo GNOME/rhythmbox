@@ -116,13 +116,14 @@ monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
 	}
 }
 
-static void
+static gboolean
 monitor_subdirectory (const char *uri, gboolean dir, RhythmDB *db)
 {
 	if (dir)
 		rhythmdb_monitor_uri_path (db, uri, NULL);
 	else
 		rhythmdb_add_uri (db, uri);
+	return TRUE;	
 }
 
 static void

@@ -852,6 +852,7 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 	char *path, *escaped_rel_path;
 	char *sep;
 	gboolean dir;
+	gboolean ret;
 
 	dir = (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY);
 
@@ -870,11 +871,12 @@ rb_uri_handle_recursively_cb (const gchar *rel_path,
 	escaped_rel_path = gnome_vfs_escape_path_string (rel_path);
 	escaped_rel_path = escape_extra_gnome_vfs_chars (escaped_rel_path);
 	path = g_build_filename (data->uri, escaped_rel_path, NULL);
-	(data->func) (path, dir, data->user_data);
+	ret = (data->func) (path, dir, data->user_data);
 	g_free (escaped_rel_path);
 	g_free (path);
 
-	*recurse = !recursing_will_loop;
+	/* if recursing will not loop, and function wants to recurse, then do so */
+	*recurse = !recursing_will_loop && ret;
 	return TRUE;
 }
 
@@ -956,7 +958,7 @@ _recurse_async_data_free (RBUriHandleRecursivelyAsyncData *data)
 }
 
 /* runs in worker thread */
-static void
+static gboolean
 _recurse_async_cb (const char *uri, gboolean dir, RBUriHandleRecursivelyAsyncData *data)
 {
 	g_mutex_lock (data->results_lock);
@@ -967,6 +969,7 @@ _recurse_async_cb (const char *uri, gboolean dir, RBUriHandleRecursivelyAsyncDat
 		g_idle_add ((GSourceFunc)_recurse_async_idle_cb, data);
 
 	g_mutex_unlock (data->results_lock);
+	return TRUE;
 }
 
 static gpointer
