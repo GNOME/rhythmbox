@@ -31,6 +31,7 @@
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-directory.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
@@ -38,7 +39,9 @@
 static GHashTable *files = NULL;
 
 static char *dot_dir = NULL;
+#ifndef HAVE_G_GET_USER_SPECIAL_DIR
 static char *music_dir = NULL;
+#endif
 
 const char *
 rb_file (const char *filename)
@@ -91,8 +94,10 @@ rb_dot_dir (void)
 	return dot_dir;
 }
 
+
+#ifndef HAVE_G_GET_USER_SPECIAL_DIR
+
 /* Copied from xdg-user-dir-lookup.c */
-#include <stdlib.h>
 
 static char *
 xdg_user_dir_lookup (const char *type)
@@ -222,6 +227,25 @@ rb_music_dir (void)
 	return (const char *) music_dir;
 }
 
+#else		/* HAVE_G_GET_USER_SPECIAL_DIR */
+
+const char *
+rb_music_dir (void)
+{
+	const char *dir;
+	dir = g_get_user_special_dir (G_USER_DIRECTORY_MUSIC);
+	if (dir == NULL) {
+		dir = getenv ("HOME");
+		if (dir == NULL) {
+			dir = "/tmp";
+		}
+	}
+	rb_debug ("user music dir: %s", dir);
+	return dir;
+}
+
+#endif
+
 void
 rb_file_helpers_init (void)
 {
@@ -235,8 +259,10 @@ void
 rb_file_helpers_shutdown (void)
 {
 	g_hash_table_destroy (files);
-	g_free (music_dir);
 	g_free (dot_dir);
+#ifndef HAVE_G_GET_USER_SPECIAL_DIR
+	g_free (music_dir);
+#endif
 }
 
 #define MAX_LINK_LEVEL 5

@@ -57,10 +57,16 @@ AC_CHECK_FUNC(mkdtemp,
     mkdtemp_missing=true)
 AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
+PKG_CHECK_MODULES(GLIB_TESTS, glib-2.0)
 AC_CHECK_LIB(glib-2.0, g_utf8_collate_key_for_filename,
-    [AC_DEFINE([HAVE_COLLATE_KEY_FILENAME], 1, [Have glib function to collate filename sort keys])])
+    [AC_DEFINE([HAVE_COLLATE_KEY_FILENAME], 1, [Have glib function to collate filename sort keys])],
+    ,[$GLIB_TESTS_LIBS $GLIB_TESTS_CFLAGS])
 AC_CHECK_LIB(glib-2.0, g_mapped_file_new,
-    [AC_DEFINE([HAVE_G_MAPPED_FILE], 1, [Have glib mmap wrapper])])
+    [AC_DEFINE([HAVE_G_MAPPED_FILE], 1, [Have glib mmap wrapper])],
+    ,[$GLIB_TESTS_LIBS $GLIB_TESTS_CFLAGS])
+AC_CHECK_LIB(glib-2.0, g_get_user_special_dir,
+    [AC_DEFINE([HAVE_G_GET_USER_SPECIAL_DIR], 1, [Have glib function to find user special dirs])],
+    ,[$GLIB_TESTS_LIBS $GLIB_TESTS_CFLAGS])
 
 PKG_PROG_PKG_CONFIG
 

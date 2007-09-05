@@ -1,3 +1,11 @@
+2007-09-05  Jonathan Matthew  <notverysmart@gmail.com>
+
+	* configure.ac:
+	* lib/rb-file-helpers.c: (rb_music_dir),
+	(rb_file_helpers_shutdown):
+	Use g_get_user_special_dir instead of xdg_user_dir_lookup
+	where available.  Fixes #448330.
+
 2007-08-28  Jonathan Matthew  <notverysmart@gmail.com>
 
 	patch by: Tom Parker  <palfrey@tevp.net>
