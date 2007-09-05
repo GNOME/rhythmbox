@@ -76,6 +76,8 @@ static char **remaining_args    = NULL;
 
 static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
 static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
+static void removable_media_scan_finished (RBShell *shell, gpointer data);
+static void local_load_uri (const char *filename, RBShell *shell);
 
 static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
 
@@ -271,6 +273,11 @@ main (int argc, char **argv)
 			obj = rb_shell_get_playlist_manager (rb_shell);
 			path = rb_shell_get_playlist_manager_path (rb_shell);
 			dbus_g_connection_register_g_object (session_bus, path, obj);
+
+			g_signal_connect (G_OBJECT (rb_shell),
+					  "removable_media_scan_finished",
+					  G_CALLBACK (removable_media_scan_finished),
+					  NULL);
 		}
 	} else if (!no_registration && session_bus != NULL) {
 		DBusGProxy *shell_proxy;
@@ -362,9 +369,11 @@ dbus_load_uri (const char *filename, DBusGProxy *proxy)
 				G_TYPE_STRING, filename,
 				G_TYPE_BOOLEAN, TRUE,
 				G_TYPE_INVALID,
-				G_TYPE_INVALID))
+				G_TYPE_INVALID)) {
 		g_printerr ("Failed to load %s: %s",
 			    filename, error->message);
+		g_error_free (error);
+	}
 }
 
 static void
@@ -373,3 +382,22 @@ main_shell_weak_ref_cb (gpointer data, GObject *objptr)
 	rb_debug ("caught shell finalization");
 	gtk_main_quit ();
 }
+
+static void
+removable_media_scan_finished (RBShell *shell, gpointer data)
+{
+	load_uri_args ((const char **) remaining_args, (GFunc) local_load_uri, shell);
+}
+
+static void
+local_load_uri (const char *filename, RBShell *shell)
+{
+	GError *error = NULL;
+	rb_debug ("Using load_uri for %s", filename);
+	if (!rb_shell_load_uri (shell, filename, TRUE, &error)) {
+		g_printerr ("Failed to load %s: %s",
+			    filename, error->message);
+		g_error_free (error);
+	}
+}
+

@@ -54,8 +54,12 @@ static GObject *rb_audiocd_source_constructor (GType type, guint n_construct_pro
 					        GObjectConstructParam *construct_properties);
 
 static gboolean impl_show_popup (RBSource *source);
+static guint impl_want_uri (RBSource *source, const char *uri);
+static gboolean impl_uri_is_source (RBSource *source, const char *uri);
+
 static void impl_delete_thyself (RBSource *source);
 static GList* impl_get_ui_actions (RBSource *source);
+static gboolean impl_try_playlist (RBSource *source);
 
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
@@ -100,6 +104,9 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
 	source_class->impl_get_ui_actions = impl_get_ui_actions;
+	source_class->impl_uri_is_source = impl_uri_is_source;
+	source_class->impl_try_playlist = impl_try_playlist;
+	source_class->impl_want_uri = impl_want_uri;
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
 }
@@ -753,4 +760,48 @@ impl_get_ui_actions (RBSource *source)
 	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
 
 	return actions;
+}
+
+static guint
+impl_want_uri (RBSource *source, const char *uri)
+{
+	GnomeVFSVolume *volume;
+	char *activation_uri;
+	int retval;
+
+	retval = 0;
+
+	if (g_str_has_prefix (uri, "cdda://") == FALSE)
+		return 0;
+
+	g_object_get (G_OBJECT (source),
+		      "volume", &volume,
+		      NULL);
+	if (volume == NULL)
+		return 0;
+
+	activation_uri = gnome_vfs_volume_get_activation_uri (volume);
+	if (activation_uri == NULL)
+		return 0;
+
+	if (strcmp (activation_uri, uri) == 0)
+		retval = 100;
+
+	g_free (activation_uri);
+
+	return retval;
+}
+
+static gboolean
+impl_uri_is_source (RBSource *source, const char *uri)
+{
+	if (impl_want_uri (source, uri) == 100)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean
+impl_try_playlist (RBSource *source)
+{
+	return TRUE;
 }

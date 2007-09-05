@@ -943,6 +943,15 @@ rb_source_want_uri (RBSource *source, const char *uri)
 }
 
 gboolean
+rb_source_uri_is_source (RBSource *source, const char *uri)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	if (klass->impl_uri_is_source)
+		return klass->impl_uri_is_source (source, uri);
+	return FALSE;
+}
+
+gboolean
 rb_source_add_uri (RBSource *source, const char *uri, const char *title, const char *genre)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);

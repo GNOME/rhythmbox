@@ -76,6 +76,7 @@ typedef struct
 	/* signals */
 	void	(*visibility_changed)	(RBShell *shell, gboolean visible);
 	void	(*create_song_info)	(RBShell *shell, RBSongInfo *song_info, gboolean multi);
+	void	(*removable_media_scan_finished) (RBShell *shell);
 } RBShellClass;
 
 GType		rb_shell_get_type	(void);

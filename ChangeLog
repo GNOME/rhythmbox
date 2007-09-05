@@ -1,3 +1,38 @@
+2007-09-05  Bastien Nocera  <hadess@hadess.net>
+
+	* sources/rb-source.c: (rb_source_uri_is_source):
+	* sources/rb-source.h: Add _uri_is_source, to allow
+	sources to tell us that they are the URI that's being
+	passed, as opposed to an item of the source being handled
+
+	* shell/rb-shell.c: (rb_shell_class_init), (_scan_idle),
+	(source_activated_cb), (rb_shell_activate_source),
+	(handle_playlist_entry_cb), (rb_shell_load_uri):
+	* shell/rb-shell.h: emit the removable_media_scan_finished
+	signal when we're done scanning removable media on startup,
+	Add rb_shell_activate_source to activate a particular source,
+	When parsing URIs given on the command-line, check if a source
+	is the URI and activate it
+
+	* shell/main.c: (main), (dbus_load_uri),
+	(removable_media_scan_finished), (local_load_uri):
+	When starting up Rhythmbox, handle filenames passed after scanning
+	for removable media has finished, fix a small memory leak in an
+	error path
+
+	* plugins/audiocd/rb-audiocd-source.c:
+	(rb_audiocd_source_class_init), (impl_want_uri),
+	(impl_uri_is_source), (impl_try_playlist): Implement want_uri,
+	try_playlist and uri_is_source, Say we want the URI when
+	the URI passed matches the device we handle
+
+	(Closes: #471887)
+
+	* plugins/iradio/rb-iradio-source.c:
+	(rb_iradio_source_add_from_playlist): Don't use any fallback when
+	parsing the playlist, we already fallback by adding the item
+	to the source ourselves
+
 2007-09-05  Jonathan Matthew  <notverysmart@gmail.com>
 
 	* configure.ac:

@@ -130,6 +130,8 @@ static void rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
+static void rb_shell_activate_source (RBShell *shell,
+				      RBSource *source);
 static void rb_shell_db_save_error_cb (RhythmDB *db,
 				       const char *uri, const GError *error,
 				       RBShell *shell);
@@ -290,6 +292,7 @@ enum
 {
 	VISIBILITY_CHANGED,
 	CREATE_SONG_INFO,
+	REMOVABLE_MEDIA_SCAN_FINISHED,
 	LAST_SIGNAL
 };
 
@@ -654,6 +657,15 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      2,
 			      RB_TYPE_SONG_INFO, G_TYPE_BOOLEAN);
+	rb_shell_signals[REMOVABLE_MEDIA_SCAN_FINISHED] =
+		g_signal_new ("removable_media_scan_finished",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, removable_media_scan_finished),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }
@@ -1265,6 +1277,7 @@ _scan_idle (RBShell *shell)
 	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
 	GDK_THREADS_LEAVE ();
+	g_signal_emit (shell, rb_shell_signals[REMOVABLE_MEDIA_SCAN_FINISHED], 0);
 	return FALSE;
 }
 
@@ -1659,6 +1672,12 @@ source_activated_cb (RBSourceList *sourcelist,
 {
 	rb_debug ("source activated");
 
+	rb_shell_activate_source (shell, source);
+}
+
+static void
+rb_shell_activate_source (RBShell *shell, RBSource *source)
+{
 	/* Stop the playing source, if any */
 	rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
 
@@ -3178,8 +3197,9 @@ rb_shell_add_uri (RBShell *shell,
 
 typedef struct {
 	RBShell *shell;
-	gboolean can_use_playlist;
 	RBSource *playlist_source;
+	gboolean can_use_playlist;
+	gboolean source_is_entry;
 } PlaylistParseData;
 
 #if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
@@ -3211,6 +3231,7 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 	if (data->playlist_source == NULL) {
 		if (source != NULL && rb_source_try_playlist (source)) {
 			data->playlist_source = RB_SOURCE (g_object_ref (source));
+			data->source_is_entry = rb_source_uri_is_source (source, uri);
 		} else {
 			data->can_use_playlist = FALSE;
 		}
@@ -3238,7 +3259,10 @@ rb_shell_load_uri (RBShell *shell,
 		   GError **error)
 {
 	RhythmDBEntry *entry;
+	RBSource *playlist_source;
+
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+	playlist_source = NULL;
 
 	if (entry == NULL) {
 		TotemPlParser *parser;
@@ -3247,9 +3271,10 @@ rb_shell_load_uri (RBShell *shell,
 
 		data.shell = shell;
 		data.can_use_playlist = TRUE;
+		data.source_is_entry = FALSE;
 		data.playlist_source = NULL;
 
-		rb_debug ("adding uri %s", uri);
+		rb_debug ("adding uri %s, play %d", uri, play);
 		parser = totem_pl_parser_new ();
 
 #if TOTEM_PL_PARSER_CHECK_VERSION(2,19,0)
@@ -3273,14 +3298,13 @@ rb_shell_load_uri (RBShell *shell,
 			if (data.can_use_playlist && data.playlist_source) {
 				rb_debug ("adding playlist %s to source", uri);
 				rb_source_add_uri (data.playlist_source, uri, NULL, NULL);
-				g_object_unref (data.playlist_source);
 
 				/* FIXME: We need some way to determine whether the URI as
 				 * given will appear in the db, or whether something else will.
 				 * This hack assumes we'll never add local playlists to the db
 				 * directly.
 				 */
-				if (rb_uri_is_local (uri)) {
+				if (rb_uri_is_local (uri) && (data.source_is_entry == FALSE)) {
 					play = FALSE;
 				}
 			} else {
@@ -3294,9 +3318,20 @@ rb_shell_load_uri (RBShell *shell,
 			if (!rb_shell_add_uri (shell, uri, NULL, NULL, error))
 				return FALSE;
 		}
+
+		if (data.source_is_entry != FALSE)
+			playlist_source = data.playlist_source;
+		else
+			g_object_unref (data.playlist_source);
 	}
 
 	if (play) {
+		if (playlist_source != NULL) {
+			rb_shell_activate_source (shell, playlist_source);
+			g_object_unref (playlist_source);
+			return TRUE;
+		}
+
 		if (entry == NULL)
 			entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
 
