@@ -33,8 +33,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-09 14:42+0100\n"
-"PO-Revision-Date: 2007-08-18 01:53+0200\n"
+"POT-Creation-Date: 2007-08-27 03:47+0100\n"
+"PO-Revision-Date: 2007-09-06 02:38+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
@@ -104,7 +104,7 @@ msgstr "_Toevoegen als aan één van de criteria is voldaan"
 
 #: ../data/glade/create-playlist.glade.h:2
 msgid "Create automatically updating playlist where:"
-msgstr "Locatie van nieuwe zelfvernieuwende luisterlijst:"
+msgstr "Locatie van nieuwe zelfvernieuwende afspeellijst:"
 
 #: ../data/glade/create-playlist.glade.h:3
 msgid "GB"
@@ -172,7 +172,7 @@ msgstr "Ti_jd"
 
 #: ../data/glade/general-prefs.glade.h:12
 msgid "Toolbar Button Labels"
-msgstr "Werkbalk knoppenlabels"
+msgstr "Werkbalkknoppen"
 
 # nummer/spoornummer
 #: ../data/glade/general-prefs.glade.h:13
@@ -271,11 +271,11 @@ msgstr "_Nieuwe bestanden in mijn collectie bijhouden"
 
 #: ../data/glade/playback-prefs.glade.h:2
 msgid "C_rossfade between songs on the same album"
-msgstr "_Overvloeien tussen nummers op hetzelfde album"
+msgstr "Alleen _overvloeien tussen nummers van hetzelfde album"
 
 #: ../data/glade/playback-prefs.glade.h:3
 msgid "Crossfade Duration (Seconds)"
-msgstr "Overvloei-duur (in seconden)"
+msgstr "Tijdsduur van overvloeien (in seconden)"
 
 #: ../data/glade/playback-prefs.glade.h:4
 msgid "Crossfade Type"
@@ -285,18 +285,19 @@ msgstr "Type overvloeien"
 msgid "Network Buffer Size (kB)"
 msgstr "Netwerkbuffergrootte (kB)"
 
-# niet helemaal tevreden met de term 'backend'
+# de term 'backend' niet gebruiken, niemand begrijpt dat.
+#
 #: ../data/glade/playback-prefs.glade.h:6
 msgid "Player Backend"
-msgstr "Afspeel-backend"
+msgstr "Afspelen"
 
 #: ../data/glade/playback-prefs.glade.h:7
 msgid "_Use crossfading backend (requires restart)"
-msgstr "_Overvloeiend backend gebruiken (vereist herstart)"
+msgstr "_Nummers in elkaar laten overvloeien (vereist een herstart)"
 
 #: ../data/glade/playlist-save.glade.h:1
 msgid "<b>Playlist format</b>"
-msgstr "<b>Luisterlijstformaat</b>"
+msgstr "<b>Afspeellijstformaat</b>"
 
 #: ../data/glade/playlist-save.glade.h:2
 msgid "By extension"
@@ -304,11 +305,11 @@ msgstr "Op extensie"
 
 #: ../data/glade/playlist-save.glade.h:3
 msgid "Save Playlist"
-msgstr "Luisterlijst opslaan"
+msgstr "Afspeellijst opslaan"
 
 #: ../data/glade/playlist-save.glade.h:4
 msgid "Select playlist format:"
-msgstr "Luisterlijstformaat selecteren:"
+msgstr "Afspeellijstformaat selecteren:"
 
 #: ../data/glade/plugins.glade.h:1
 #: ../data/glade/podcast-feed-properties.glade.h:2
@@ -535,8 +536,9 @@ msgstr "Recentelijk beluisterd"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:181
-#: ../shell/rb-shell.c:1003 ../shell/rb-shell.c:2085
-#: ../shell/rb-tray-icon.c:43
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1474
+#: ../shell/rb-shell-player.c:2604 ../shell/rb-shell.c:1003
+#: ../shell/rb-shell.c:2085 ../shell/rb-tray-icon.c:43
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -584,14 +586,7 @@ msgstr "%b %d %I:%M %p"
 msgid "%b %d %Y"
 msgstr "%d %b %Y"
 
-#: ../lib/rb-proxy-config.c:189
-msgid "HTTP proxy configuration error"
-msgstr "HTTP proxy-configuratiefout"
-
-#: ../lib/rb-proxy-config.c:190
-msgid "Rhythmbox does not support automatic proxy configuration"
-msgstr "Rhythmbox kan niet automatisch een proxy configureren"
-
+#. impossible time or broken locale settings
 #. TODO: Improve to decrease wrong cover downloads, maybe add severity?
 #. Assemble list of search keywords (and thus search queries)
 #. If we still have no definite hit, use first result where artist matches
@@ -599,16 +594,17 @@ msgstr "Rhythmbox kan niet automatisch een proxy configureren"
 #. * a translated string.
 #.
 #. Translators: unknown track title
-#: ../lib/rb-util.c:648 ../lib/rb-util.c:888
+#: ../lib/rb-cut-and-paste-code.c:325 ../lib/rb-util.c:648
+#: ../lib/rb-util.c:888
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:67
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:68
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:101
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:107
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:117
 #: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:233
-#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:249
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:122
-#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:123
+#: ../plugins/artdisplay/artdisplay/AmazonCoverArtSearch.py:253
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:124
+#: ../plugins/artdisplay/artdisplay/CoverArtDatabase.py:125
 #: ../plugins/audiocd/rb-audiocd-source.c:213
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:519
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:520
@@ -627,14 +623,22 @@ msgstr "Rhythmbox kan niet automatisch een proxy configureren"
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
 #: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
 #: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1419
-#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:2987
+#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:2998
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
-#: ../widgets/rb-song-info.c:766 ../widgets/rb-song-info.c:930
-#: ../widgets/rb-song-info.c:1200
+#: ../widgets/rb-song-info.c:797 ../widgets/rb-song-info.c:961
+#: ../widgets/rb-song-info.c:1231
 msgid "Unknown"
 msgstr "Onbekend"
+
+#: ../lib/rb-proxy-config.c:189
+msgid "HTTP proxy configuration error"
+msgstr "HTTP proxy-configuratiefout"
+
+#: ../lib/rb-proxy-config.c:190
+msgid "Rhythmbox does not support automatic proxy configuration"
+msgstr "Rhythmbox kan niet automatisch een proxy configureren"
 
 #: ../lib/rb-util.c:650 ../remote/dbus/rb-client.c:136
 #, c-format
@@ -734,6 +738,14 @@ msgstr "Albumhoezen"
 #: ../plugins/artdisplay/artdisplay.rb-plugin.desktop.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "Albumhoezen van het internet halen"
+
+#: ../plugins/artdisplay/artdisplay/__init__.py:283
+msgid "Searching... drop artwork here"
+msgstr "Zoeken… sleep albumhoezen hier naar toe"
+
+#: ../plugins/artdisplay/artdisplay/__init__.py:285
+msgid "Drop artwork here"
+msgstr "Sleep albumhoezen hier naar toe"
 
 # impliceert muziek-cd speler, muziek hier weglaten
 #: ../plugins/audiocd/audiocd.rb-plugin.desktop.in.h:1
@@ -911,9 +923,9 @@ msgstr "Last.fm profiel"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2936 ../widgets/rb-entry-view.c:785
+#: ../rhythmdb/rhythmdb.c:2950 ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204 ../widgets/rb-entry-view.c:1217
-#: ../widgets/rb-song-info.c:1173
+#: ../widgets/rb-song-info.c:1204
 msgid "Never"
 msgstr "Nooit"
 
@@ -1150,7 +1162,7 @@ msgstr "Cd-recorder"
 
 #: ../plugins/cd-recorder/cd-recorder.rb-plugin.desktop.in.h:2
 msgid "Support for recording audio CDs from playlists"
-msgstr "Ondersteuning voor het aanmaken van muziek-cd's van luisterlijsten"
+msgstr "Ondersteuning voor het aanmaken van muziek-cd's van afspeellijsten"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:86
 msgid "_Create Audio CD..."
@@ -1158,7 +1170,7 @@ msgstr "Muziek-_cd aanmaken…"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:87
 msgid "Create an audio CD from playlist"
-msgstr "Muziek-cd aanmaken van luisterlijst"
+msgstr "Muziek-cd aanmaken van afspeellijst"
 
 #: ../plugins/cd-recorder/rb-cd-recorder-plugin.c:191
 msgid "Unable to create audio CD"
@@ -1525,17 +1537,17 @@ msgstr "Muziek-cd aanmaken"
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1522
 #, c-format
 msgid "Create audio CD from '%s'?"
-msgstr "Muziek-cd aanmaken van luisterlijst ‘%s’?"
+msgstr "Muziek-cd aanmaken van afspeellijst ‘%s’?"
 
 # wat is een audio track list? bedoelen ze hetzelfde als playlist?
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
 msgid "Unable to build an audio track list."
-msgstr "Kan geen luisterlijst aanmaken."
+msgstr "Kan geen afspeellijst aanmaken."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
 msgid "This playlist is too long to write to an audio CD."
-msgstr "Deze luisterlijst is te lang om een muziek-cd van te maken."
+msgstr "Deze afspeellijst is te lang om een muziek-cd van te maken."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1661
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1670
@@ -1574,7 +1586,7 @@ msgstr ""
 
 #: ../plugins/cd-recorder/recorder.glade.h:1
 msgid "Create audio CD from playlist?"
-msgstr "Muziek-cd aanmaken van luisterlijst?"
+msgstr "Muziek-cd aanmaken van afspeellijst?"
 
 #: ../plugins/cd-recorder/recorder.glade.h:2
 msgid "Options"
@@ -1600,7 +1612,9 @@ msgstr "_Meerdere kopieën maken"
 msgid ""
 "Adds support for playing media from, and sending media to UPnP/DLNA network "
 "devices"
-msgstr "Geeft ondersteuning voor het afspelen vanaf, en verzenden van media naar UPnP/DLNA-netwerkapparaten"
+msgstr ""
+"Geeft ondersteuning voor het afspelen vanaf, en verzenden van media naar "
+"UPnP/DLNA-netwerkapparaten"
 
 #: ../plugins/coherence/coherence.rb-plugin.desktop.in.h:2
 msgid "UPnP sharing support"
@@ -1702,15 +1716,40 @@ msgstr "Fout bij het initialiseren van Howl voor publicatie"
 msgid "The howl MDNS service is not running"
 msgstr "De howl MDNS-service is niet opgestart"
 
-#: ../plugins/daap/rb-daap-plugin.c:104
+#: ../plugins/daap/rb-daap-plugin.c:109
 msgid "_Disconnect"
 msgstr "_Verbinding verbreken"
 
-#: ../plugins/daap/rb-daap-plugin.c:105
+#: ../plugins/daap/rb-daap-plugin.c:110
 msgid "Disconnect from DAAP share"
 msgstr "Verbinding met de DAAP-bron verbreken"
 
-#: ../plugins/daap/rb-daap-plugin.c:794
+#: ../plugins/daap/rb-daap-plugin.c:112
+msgid "Connect to DAAP share"
+msgstr "Verbinden met de DAAP-bron"
+
+#: ../plugins/daap/rb-daap-plugin.c:113
+msgid "Connect to a new DAAP share"
+msgstr "Verbinden met een nieuwe DAAP-bron"
+
+#: ../plugins/daap/rb-daap-plugin.c:611 ../plugins/daap/rb-daap-source.c:516
+msgid "Could not connect to shared music"
+msgstr "Kon geen verbinding maken met de muziekbron"
+
+#: ../plugins/daap/rb-daap-plugin.c:612
+#, c-format
+msgid "Unable to resolve hostname %s"
+msgstr "Kon de hostnaam %s niet vinden"
+
+#: ../plugins/daap/rb-daap-plugin.c:660
+msgid "New DAAP share"
+msgstr "Nieuwe DAAP-bron"
+
+#: ../plugins/daap/rb-daap-plugin.c:660
+msgid "Host:port of DAAP share:"
+msgstr "Host:poort van DAAP-bron:"
+
+#: ../plugins/daap/rb-daap-plugin.c:885
 msgid "DAAP Music Sharing Preferences"
 msgstr "Voorkeuren voor DAAP muziek delen"
 
@@ -1722,8 +1761,7 @@ msgstr "%s's muziek"
 #: ../plugins/daap/rb-daap-source.c:348
 #, c-format
 msgid "The music share '%s' requires a password to connect"
-msgstr ""
-"De muziekbron '%s' vereist een wachtwoord om een verbinding te kunnen maken"
+msgstr "De muziekbron ‘%s’ vereist een wachtwoord om een verbinding te kunnen maken"
 
 #: ../plugins/daap/rb-daap-source.c:350
 msgid "Password Required"
@@ -1736,10 +1774,6 @@ msgstr "Verbinden met muziekbron"
 #: ../plugins/daap/rb-daap-source.c:429
 msgid "Retrieving songs from music share"
 msgstr "Nummers van de muziekbron ophalen"
-
-#: ../plugins/daap/rb-daap-source.c:516
-msgid "Could not connect to shared music"
-msgstr "Kon geen verbinding maken met de muziekbron"
 
 #: ../plugins/daap/rb-daap-src.c:474
 #, c-format
@@ -1980,13 +2014,13 @@ msgstr "URL van internet radiostation:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:389
 #: ../podcast/rb-feed-podcast-properties-dialog.c:209
-#: ../podcast/rb-podcast-properties-dialog.c:355 ../widgets/rb-song-info.c:870
+#: ../podcast/rb-podcast-properties-dialog.c:355 ../widgets/rb-song-info.c:901
 #, c-format
 msgid "%s Properties"
 msgstr "%s-eigenschappen"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:481
-#: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:928
+#: ../podcast/rb-podcast-properties-dialog.c:465 ../widgets/rb-song-info.c:959
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2027,9 +2061,10 @@ msgstr "Songteksten"
 msgid "Searching for lyrics..."
 msgstr "Songteksten opzoeken…"
 
+# de _s wordt al gebruikt voor _Statusbalk, sneltoets=Ctrl+L
 #: ../plugins/lyrics/lyrics/__init__.py:278
 msgid "Song L_yrics"
-msgstr "_Songteksten"
+msgstr "Song_teksten"
 
 #: ../plugins/lyrics/lyrics/__init__.py:279
 msgid "Display lyrics for the playing song"
@@ -2619,7 +2654,8 @@ msgstr "Draagbare spelers - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.rb-plugin.desktop.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr "Ondersteuning voor MTP-apparaten (inhoud tonen, overdrachten, beluisteren)"
+msgstr ""
+"Ondersteuning voor MTP-apparaten (inhoud tonen, overdrachten, beluisteren)"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:99
 #: ../shell/rb-removable-media-manager.c:133
@@ -2766,7 +2802,9 @@ msgstr "Kon dez videouitvoer niet starten"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:729
 msgid "Failed to link new visual effect into the GStreamer pipeline"
-msgstr "Het koppelen van het nieuwe visuele effect in de GStreamer-pijplijn is mislukt"
+msgstr ""
+"Het koppelen van het nieuwe visuele effect in de GStreamer-pijplijn is "
+"mislukt"
 
 # visualization=visual effects
 #: ../plugins/visualizer/rb-visualizer-plugin.c:777
@@ -3012,7 +3050,7 @@ msgstr "ongeldige unicode in foutmelding"
 msgid "Could not load the music database"
 msgstr "Kon de muziek-database niet laden"
 
-#: ../rhythmdb/rhythmdb.c:3874
+#: ../rhythmdb/rhythmdb.c:3888
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3022,14 +3060,14 @@ msgstr[1] "%ld minuten"
 # meervoud van uur is uren, maar je zegt:
 # 1 dag 5 uur en 10 minuten    en niet:
 # 1 dag 5 uren en 10 minuten
-#: ../rhythmdb/rhythmdb.c:3875
+#: ../rhythmdb/rhythmdb.c:3889
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld uur"
 msgstr[1] "%ld uur"
 
-#: ../rhythmdb/rhythmdb.c:3876
+#: ../rhythmdb/rhythmdb.c:3890
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3037,7 +3075,7 @@ msgstr[0] "%.ld dag"
 msgstr[1] "%.ld dagen"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3882
+#: ../rhythmdb/rhythmdb.c:3896
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s en %s"
@@ -3045,8 +3083,8 @@ msgstr "%s, %s en %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3888 ../rhythmdb/rhythmdb.c:3896
-#: ../rhythmdb/rhythmdb.c:3907
+#: ../rhythmdb/rhythmdb.c:3902 ../rhythmdb/rhythmdb.c:3910
+#: ../rhythmdb/rhythmdb.c:3921
 #, c-format
 msgid "%s and %s"
 msgstr "%s en %s"
@@ -3080,7 +3118,7 @@ msgstr "Pad naar het database-bestand"
 # 'te gebruiken' weggelaten
 #: ../shell/main.c:100
 msgid "Path for playlists file to use"
-msgstr "Pad naar het luisterlijst-bestand"
+msgstr "Pad naar het afspeellijst-bestand"
 
 #: ../shell/main.c:102
 msgid "[URI...]"
@@ -3093,23 +3131,23 @@ msgstr "Rhythmbox"
 #. Submenu of Music
 #: ../shell/rb-playlist-manager.c:131
 msgid "_Playlist"
-msgstr "_Luisterlijst"
+msgstr "_Afspeellijst"
 
-#: ../shell/rb-playlist-manager.c:133 ../shell/rb-shell-clipboard.c:151
-msgid "_New Playlist"
-msgstr "_Nieuwe luisterlijst"
+#: ../shell/rb-playlist-manager.c:133
+msgid "_New Playlist..."
+msgstr "_Nieuwe afspeellijst…"
 
 #: ../shell/rb-playlist-manager.c:134
 msgid "Create a new playlist"
-msgstr "Nieuwe luisterlijst aanmaken"
+msgstr "Nieuwe afspeellijst aanmaken"
 
 #: ../shell/rb-playlist-manager.c:136
 msgid "New _Automatic Playlist..."
-msgstr "Nieuwe _automatische luisterlijst…"
+msgstr "Nieuwe _automatische afspeellijst…"
 
 #: ../shell/rb-playlist-manager.c:137
 msgid "Create a new automatically updating playlist"
-msgstr "Nieuwe zelfverversende luisterlijst aanmaken"
+msgstr "Nieuwe zelfverversende afspeellijst aanmaken"
 
 #: ../shell/rb-playlist-manager.c:139
 msgid "_Load from File..."
@@ -3117,7 +3155,7 @@ msgstr "_Laden uit bestand…"
 
 #: ../shell/rb-playlist-manager.c:140
 msgid "Choose a playlist to be loaded"
-msgstr "Kies een te laden luisterlijst"
+msgstr "Kies een te laden afspeellijst"
 
 #: ../shell/rb-playlist-manager.c:142
 msgid "_Save to File..."
@@ -3125,11 +3163,11 @@ msgstr "_Opslaan naar bestand…"
 
 #: ../shell/rb-playlist-manager.c:143
 msgid "Save a playlist to a file"
-msgstr "Luisterlijst naar een bestand opslaan"
+msgstr "Afspeellijst naar een bestand opslaan"
 
 #: ../shell/rb-playlist-manager.c:146
 msgid "Rename playlist"
-msgstr "Luisterlijst hernoemen"
+msgstr "Afspeellijst hernoemen"
 
 #: ../shell/rb-playlist-manager.c:148
 msgid "_Delete"
@@ -3137,11 +3175,11 @@ msgstr "Ver_wijderen"
 
 #: ../shell/rb-playlist-manager.c:149
 msgid "Delete playlist"
-msgstr "Luisterlijst verwijderen"
+msgstr "Afspeellijst verwijderen"
 
 #: ../shell/rb-playlist-manager.c:152
 msgid "Change this automatic playlist"
-msgstr "Deze automatische luisterlijst aanpassen"
+msgstr "Deze automatische afspeellijst aanpassen"
 
 # plaatsen/zetten
 #: ../shell/rb-playlist-manager.c:154
@@ -3150,24 +3188,24 @@ msgstr "Alle nummers in de _wachtrij zetten"
 
 #: ../shell/rb-playlist-manager.c:155
 msgid "Add all tracks in this playlist to the queue"
-msgstr "Alle nummers in deze luisterlijst aan de wachtrij toevoegen"
+msgstr "Alle nummers in deze afspeellijst aan de wachtrij toevoegen"
 
 #: ../shell/rb-playlist-manager.c:620
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
-"Het luisterlijstbestand is wellicht in een onbekend formaat, of beschadigd."
+"Het afspeellijstbestand is wellicht in een onbekend formaat, of beschadigd."
 
 #: ../shell/rb-playlist-manager.c:1024
 msgid "Untitled Playlist"
-msgstr "Luisterlijst zonder naam"
+msgstr "Afspeellijst zonder naam"
 
 #: ../shell/rb-playlist-manager.c:1285
 msgid "Couldn't read playlist"
-msgstr "Kon luisterlijst niet inlezen"
+msgstr "Kon afspeellijst niet inlezen"
 
 #: ../shell/rb-playlist-manager.c:1300
 msgid "Load Playlist"
-msgstr "Luisterlijst laden"
+msgstr "Afspeellijst laden"
 
 #: ../shell/rb-playlist-manager.c:1321
 msgid "MPEG Version 3.0 URL"
@@ -3175,11 +3213,11 @@ msgstr "MPEG versie 3.0 URL"
 
 #: ../shell/rb-playlist-manager.c:1322
 msgid "Shoutcast playlist"
-msgstr "Shoutcast luisterlijst"
+msgstr "Shoutcast afspeellijst"
 
 #: ../shell/rb-playlist-manager.c:1367 ../sources/rb-playlist-source.c:547
 msgid "Couldn't save playlist"
-msgstr "Kon luisterlijst niet opslaan"
+msgstr "Kon afspeellijst niet opslaan"
 
 # onbekende/niet ondersteunde
 #: ../shell/rb-playlist-manager.c:1367
@@ -3189,18 +3227,18 @@ msgstr "Niet ondersteunde bestandsextensie gegeven."
 #: ../shell/rb-playlist-manager.c:1668
 #, c-format
 msgid "Playlist %s already exists"
-msgstr "Luisterlijst %s bestaat al"
+msgstr "Afspeellijst %s bestaat al"
 
 #: ../shell/rb-playlist-manager.c:1698 ../shell/rb-playlist-manager.c:1731
 #: ../shell/rb-playlist-manager.c:1771 ../shell/rb-playlist-manager.c:1814
 #, c-format
 msgid "Unknown playlist: %s"
-msgstr "Onbekende luisterlijst: %s"
+msgstr "Onbekende afspeellijst: %s"
 
 #: ../shell/rb-playlist-manager.c:1739 ../shell/rb-playlist-manager.c:1779
 #, c-format
 msgid "Playlist %s is an automatic playlist"
-msgstr "Luisterlijst %s is een automatische luisterlijst"
+msgstr "Afspeellijst %s is een automatische afspeellijst"
 
 # schijfje/medium
 #: ../shell/rb-removable-media-manager.c:134
@@ -3278,9 +3316,10 @@ msgstr "V_erwijderen"
 msgid "Remove selection"
 msgstr "Selectie verwijderen"
 
+# _P wordt al gebruikt voor _plakken
 #: ../shell/rb-shell-clipboard.c:146
 msgid "_Move to Trash"
-msgstr "Naar _prullenbak verplaatsen"
+msgstr "Naa_r prullenbak verplaatsen"
 
 #: ../shell/rb-shell-clipboard.c:147
 msgid "Move selection to the trash"
@@ -3288,15 +3327,19 @@ msgstr "De selectie naar de prullenbak verplaatsen"
 
 #: ../shell/rb-shell-clipboard.c:150
 msgid "Add to P_laylist"
-msgstr "_Toevoegen aan luisterlijst"
+msgstr "_Toevoegen aan afspeellijst"
+
+#: ../shell/rb-shell-clipboard.c:151
+msgid "_New Playlist"
+msgstr "_Nieuwe afspeellijst"
 
 #: ../shell/rb-shell-clipboard.c:152
 msgid "Add the selected songs to a new playlist"
-msgstr "De geselecteerde nummers toevoegen aan een nieuwe luisterlijst"
+msgstr "De geselecteerde nummers toevoegen aan een nieuwe afspeellijst"
 
 #: ../shell/rb-shell-clipboard.c:154
 msgid "Add _to Play Queue"
-msgstr "_Toevoegen aan de wachtrij"
+msgstr "Toevoegen aan de _wachtrij"
 
 #: ../shell/rb-shell-clipboard.c:155
 msgid "Add the selected songs to the play queue"
@@ -3352,7 +3395,7 @@ msgstr "Het geluidsniveau verlagen"
 msgid "_Play"
 msgstr "_Afspelen"
 
-#: ../shell/rb-shell-player.c:303 ../shell/rb-shell-player.c:3251
+#: ../shell/rb-shell-player.c:303 ../shell/rb-shell-player.c:3243
 msgid "Start playback"
 msgstr "Afspelen starten"
 
@@ -3431,38 +3474,38 @@ msgstr "Kon geen speler aanmaken: %s"
 
 #: ../shell/rb-shell-player.c:1313
 msgid "Playlist was empty"
-msgstr "Luisterlijst was leeg"
+msgstr "Afspeellijst was leeg"
 
 # momenteel niet spelend
 # niet bezig met afspelen
 # afspelen gestopt
-#: ../shell/rb-shell-player.c:1771
+#: ../shell/rb-shell-player.c:1770
 msgid "Not currently playing"
 msgstr "Niet bezig met afspelen"
 
-#: ../shell/rb-shell-player.c:1809
+#: ../shell/rb-shell-player.c:1808
 msgid "No previous song"
 msgstr "Geen vorig nummer"
 
-#: ../shell/rb-shell-player.c:1886
+#: ../shell/rb-shell-player.c:1885
 msgid "No next song"
 msgstr "Geen volgend nummer"
 
 # Kon het afspelen niet starten/ kon niet beginnen met afspelen
-#: ../shell/rb-shell-player.c:2007 ../shell/rb-shell-player.c:2977
+#: ../shell/rb-shell-player.c:1997 ../shell/rb-shell-player.c:2969
 msgid "Couldn't start playback"
 msgstr "Kon niet beginnen met afspelen"
 
-#: ../shell/rb-shell-player.c:2808
+#: ../shell/rb-shell-player.c:2800
 msgid "Couldn't stop playback"
 msgstr "Kon het afspelen niet stoppen"
 
 # hmm, betere vertaling voor doorzoekbaar
-#: ../shell/rb-shell-player.c:2897
+#: ../shell/rb-shell-player.c:2889
 msgid "Current song is not seekable"
 msgstr "Huidige nummer is niet te doorzoeken"
 
-#: ../shell/rb-shell-player.c:3249
+#: ../shell/rb-shell-player.c:3241
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
@@ -3555,16 +3598,16 @@ msgid "Quit the music player"
 msgstr "Muziekspeler afsluiten"
 
 #: ../shell/rb-shell.c:430
-msgid "Prefere_nces..."
-msgstr "_Voorkeuren…"
+msgid "Prefere_nces"
+msgstr "_Voorkeuren"
 
 #: ../shell/rb-shell.c:431
 msgid "Edit music player preferences"
 msgstr "Muziekspeler-voorkeuren bewerken"
 
 #: ../shell/rb-shell.c:433
-msgid "Plu_gins..."
-msgstr "_Plugins…"
+msgid "Plu_gins"
+msgstr "Plu_gins"
 
 #: ../shell/rb-shell.c:434
 msgid "Change and configure plugins"
@@ -3591,7 +3634,7 @@ msgstr "De weergave verschuiven naar het nummer dat afgespeeld wordt"
 
 #: ../shell/rb-shell.c:447
 msgid "Side _Pane"
-msgstr "Zijbal_k"
+msgstr "_Zijbalk"
 
 # statusbalkmelding
 #: ../shell/rb-shell.c:448
@@ -3737,9 +3780,10 @@ msgstr "Ex-ontwikkelaars:"
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
+# Een muziekbeheer en -afspeelprogramma voor Gnome.
 #: ../shell/rb-shell.c:2235
 msgid "Music management and playback software for GNOME."
-msgstr "Een muziekbeheer en -afspeelprogramma voor Gnome."
+msgstr "Een muziekbeheerprogramma en jukebox voor Gnome."
 
 #: ../shell/rb-shell.c:2244
 msgid "Rhythmbox Website"
@@ -3763,7 +3807,7 @@ msgstr "Bestand importeren in collectie"
 # (bij klassieke muziek klinkt 'door' raar als de artiest bijv. Bach is,
 # vandaar beter 'van') (tino)
 #. Translators: by Artist
-#: ../shell/rb-shell.c:2933
+#: ../shell/rb-shell.c:2944
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "van <i>%s</i>"
@@ -3771,27 +3815,27 @@ msgstr "van <i>%s</i>"
 # Trackname from Albumname by Artistname
 # uit [album]/van het album[album]
 #. Translators: from Album
-#: ../shell/rb-shell.c:2954
+#: ../shell/rb-shell.c:2965
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "van <i>%s</i>"
 
-#: ../shell/rb-shell.c:3159
+#: ../shell/rb-shell.c:3170
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Geen bron kan met URI %s omgaan"
 
-#: ../shell/rb-shell.c:3403 ../shell/rb-shell.c:3432
+#: ../shell/rb-shell.c:3414 ../shell/rb-shell.c:3443
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Onbekend nummer URI: %s"
 
-#: ../shell/rb-shell.c:3441
+#: ../shell/rb-shell.c:3452
 #, c-format
 msgid "Unknown property %s"
 msgstr "Onbekende eigenschap %s"
 
-#: ../shell/rb-shell.c:3451
+#: ../shell/rb-shell.c:3462
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ongeldig type %s voor eigenschap %s"
@@ -4195,7 +4239,7 @@ msgstr "Collectie"
 
 #: ../sources/rb-source-group.c:45
 msgid "Playlists"
-msgstr "Luisterlijsten"
+msgstr "Afspeellijsten"
 
 #: ../sources/rb-source-group.c:46
 msgid "Devices"
@@ -4520,11 +4564,11 @@ msgstr "weken"
 # nieuwe is overbodig maar wel mooi hier
 #: ../widgets/rb-query-creator.c:178
 msgid "Create Automatic Playlist"
-msgstr "Nieuwe automatische luisterlijst aanmaken"
+msgstr "Nieuwe automatische afspeellijst aanmaken"
 
 #: ../widgets/rb-query-creator.c:180
 msgid "Edit Automatic Playlist"
-msgstr "Automatische luisterlijst bewerken"
+msgstr "Automatische afspeellijst bewerken"
 
 # zoekopdracht is beter dan Zoeken (net als in nautilus)
 # valt wel mee met de lengte-eis
@@ -4533,31 +4577,31 @@ msgstr "Automatische luisterlijst bewerken"
 msgid "_Search:"
 msgstr "_Zoekopdracht:"
 
-#: ../widgets/rb-song-info.c:272
+#: ../widgets/rb-song-info.c:285
 msgid "Song Properties"
 msgstr "Eigenschappen van het nummer"
 
-#: ../widgets/rb-song-info.c:319
+#: ../widgets/rb-song-info.c:332
 msgid "Multiple Song Properties"
 msgstr "Eigenschappen meerdere nummers"
 
-#: ../widgets/rb-song-info.c:984
+#: ../widgets/rb-song-info.c:1015
 msgid "Unknown file name"
 msgstr "Onbekende bestandsnaam"
 
-#: ../widgets/rb-song-info.c:1003
+#: ../widgets/rb-song-info.c:1034
 msgid "On the desktop"
 msgstr "Op het werkblad"
 
-#: ../widgets/rb-song-info.c:1012
+#: ../widgets/rb-song-info.c:1043
 msgid "Unknown location"
 msgstr "Onbekende locatie:"
 
+#~ msgid "Plu_gins..."
+#~ msgstr "_Plugins…"
+
 #~ msgid "Lyrics provided by leoslyrics.com"
 #~ msgstr "Songteksten geleverd door leoslyrics.com"
-
-#~ msgid "_New Playlist..."
-#~ msgstr "_Nieuwe luisterlijst…"
 
 #~ msgid ""
 #~ "Rhythmbox manages all of your music in a central music \"library\", so "
@@ -4637,7 +4681,7 @@ msgstr "Onbekende locatie:"
 #~ "    * Gratis alle nummers beluisteren\n"
 #~ "    * Alle albums en artiesten zelf uitgekozen\n"
 #~ "    * Eenvoudige bediening, snel luisteren naar muziek\n"
-#~ "    * Radiostations en \"genre mix\" luisterlijsten waardoor u tijdens uw "
+#~ "    * Radiostations en \"genre mix\" afspeellijsten waardoor u tijdens uw "
 #~ "werk onze muziek als achtergrond kunt gebruiken\n"
 #~ "    * Geen noodzaak om te \"registreren\" om te kunnen luisteren of "
 #~ "kopen\n"
