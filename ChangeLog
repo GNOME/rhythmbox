@@ -1,3 +1,12 @@
+2007-09-10  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (create_stream),
+	(stream_src_blocked_cb):
+	Use time rather than buffer count thresholds for the preroll
+	queue size.  Rather than 10 buffers (which could be any amount,
+	really), require one second of decoded audio.  This allows WMA files
+	to play, and doesn't seem to break anything else  From #424836.
+
 2007-09-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	* AUTHORS:

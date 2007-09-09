@@ -1843,10 +1843,10 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 		g_object_unref (stream);
 		return NULL;
 	}
-	/* decode a couple of seconds during prerolling, to hopefully avoid underruns.
+	/* decode at least a second during prerolling, to hopefully avoid underruns.
 	 * we clear this when prerolling is finished.
 	 */
-	g_object_set (stream->preroll, "min-threshold-buffers", 10, NULL);
+	g_object_set (stream->preroll, "min-threshold-time", GST_SECOND, NULL);
 
 	/* probably could stand to make this check a bit smarter..
 	 */
@@ -2099,7 +2099,7 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	GError *error = NULL;
 	stream->src_blocked = TRUE;
 
-	g_object_set (stream->preroll, "min-threshold-buffers", 0, NULL);
+	g_object_set (stream->preroll, "min-threshold-time", 0, NULL);
 
 	/* update stream state */
 	switch (stream->state) {
