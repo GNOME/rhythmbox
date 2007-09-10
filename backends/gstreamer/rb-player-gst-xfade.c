@@ -1576,7 +1576,7 @@ stream_queue_threshold_cb (GstElement *queue, RBXFadeStream *stream)
 	stream->queue_probe_id = 0;
 	gst_object_unref (sinkpad);
 
-	g_object_set (stream->queue, "min-threshold-bytes", 0, NULL);
+	g_object_set (stream->queue, "min-threshold-bytes", G_GINT64_CONSTANT (0), NULL);
 
 	/* detach self */
 	g_signal_handler_disconnect (stream->queue,

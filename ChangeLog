@@ -1,5 +1,11 @@
 2007-09-10  Jonathan Matthew  <jonathan@d14n.org>
 
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(stream_queue_threshold_cb):
+	Fix crashes on PPC (and probably elsewhere) caused by the last commit.
+
+2007-09-10  Jonathan Matthew  <jonathan@d14n.org>
+
 	* backends/gstreamer/rb-player-gst-xfade.c: (create_stream),
 	(stream_src_blocked_cb):
 	Use time rather than buffer count thresholds for the preroll
