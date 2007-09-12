@@ -2099,7 +2099,7 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	GError *error = NULL;
 	stream->src_blocked = TRUE;
 
-	g_object_set (stream->preroll, "min-threshold-time", 0, NULL);
+	g_object_set (stream->preroll, "min-threshold-time", G_GINT64_CONSTANT (0), NULL);
 
 	/* update stream state */
 	switch (stream->state) {
