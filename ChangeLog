@@ -1,3 +1,12 @@
+2007-09-16  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  Torsten Schoenfeld <kaffeetisch@gmx.de>
+
+	* plugins/generic-player/rb-generic-player-source.c:
+	(impl_build_dest_uri):
+	Zero-pad track and disc numbers in destination file names.
+	Fixes #440457.
+
 2007-09-15  James Livingston  <doclivingston@gmail.com>
 
 	* NEWS:

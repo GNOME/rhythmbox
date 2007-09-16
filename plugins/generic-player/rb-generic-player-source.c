@@ -953,9 +953,9 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 		track_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
 		disc_number = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
 		if (disc_number > 0)
-			number = g_strdup_printf ("%u.%u", (guint)disc_number, (guint)track_number);
+			number = g_strdup_printf ("%.02u.%.02u", (guint)disc_number, (guint)track_number);
 		else
-			number = g_strdup_printf ("%u", (guint)track_number);
+			number = g_strdup_printf ("%.02u", (guint)track_number);
 
 		switch (priv->folder_depth) {
 		case 0:
