@@ -914,6 +914,7 @@ handle_song_listing (RBDAAPConnection *connection,
 		const gchar *artist = NULL;
 		const gchar *format = NULL;
 		const gchar *genre = NULL;
+		const gchar *streamURI = NULL;
 		gint length = 0;
 		gint track_number = 0;
 		gint disc_number = 0;
@@ -962,6 +963,9 @@ handle_song_listing (RBDAAPConnection *connection,
 					break;
 				case RB_DAAP_CC_ASBR:
 					bitrate = g_value_get_int (&(meta_item->content));
+					break;
+				case RB_DAAP_CC_ASUL:
+					streamURI = g_value_get_string (&(meta_item->content));
 					break;
 				default:
 					break;
@@ -1049,6 +1053,11 @@ handle_song_listing (RBDAAPConnection *connection,
 
 		/* genre */
 		entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_GENRE, genre);
+
+		/* stream URI property is stored as a mountpoint for get_playback_uri */
+		if (streamURI) {
+			entry_set_string_prop (priv->db, entry, RHYTHMDB_PROP_MOUNTPOINT, streamURI);
+		}
 
 		if (i % commit_batch == 0) {
 			connection->priv->progress = ((float)i / (float)returned_count);
@@ -1544,7 +1553,7 @@ rb_daap_connection_do_something (RBDAAPConnection *connection)
 					"daap.songartist,daap.daap.songgenre,daap.songsize,"
 					"daap.songtime,daap.songtrackcount,daap.songtracknumber,"
 					"daap.songyear,daap.songformat,daap.songgenre,"
-					"daap.songbitrate,daap.songdiscnumber",
+					"daap.songbitrate,daap.songdiscnumber,daap.songdataurl",
 					priv->database_id,
 					priv->session_id,
 					priv->revision_number);

@@ -1,5 +1,16 @@
 2007-09-18  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Jay Cornwall  <jay@jcornwall.me.uk>
+
+	* plugins/daap/rb-daap-connection.c: (handle_song_listing),
+	(rb_daap_connection_do_something):
+	* plugins/daap/rb-daap-source.c: (rb_daap_source_new),
+	(rb_daap_source_get_playback_uri):
+	Add support for the daap.songdataurl DAAP property, apparently useful
+	for radio streams.  From #470711.
+
+2007-09-18  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/rb-plugin.c: (rb_plugin_find_file):
 	Don't crash (here, at least) if we can't find the file.
 

@@ -66,6 +66,7 @@ static gboolean rb_daap_source_show_popup (RBSource *source);
 static char * rb_daap_source_get_browser_key (RBSource *source);
 static char * rb_daap_source_get_paned_key (RBBrowserSource *source);
 static void rb_daap_source_get_status (RBSource *source, char **text, char **progress_text, float *progress);
+static char * rb_daap_source_get_playback_uri (RhythmDBEntry *entry, gpointer data);
 
 #define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
@@ -276,6 +277,7 @@ rb_daap_source_new (RBShell *shell,
 	g_free (entry_type_name);
 	type->save_to_disk = FALSE;
 	type->category = RHYTHMDB_ENTRY_NORMAL;
+	type->get_playback_uri = (RhythmDBEntryStringFunc) rb_daap_source_get_playback_uri;
 	g_object_unref (db);
 
 	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin), password_protected, FALSE);
@@ -737,3 +739,17 @@ rb_daap_source_get_status (RBSource *source,
 
 	RB_SOURCE_CLASS (rb_daap_source_parent_class)->impl_get_status (source, text, progress_text, progress);
 }
+
+static char *
+rb_daap_source_get_playback_uri (RhythmDBEntry *entry, gpointer data)
+{
+	const char *location;
+
+	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (location == NULL) {
+		location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	}
+
+	return g_strdup (location);
+}
+
