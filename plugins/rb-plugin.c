@@ -255,7 +255,7 @@ rb_plugin_find_file (RBPlugin *plugin,
 		  ret, file, priv->name);
 
 	/* ensure it's an absolute path, so doesn't confuse rb_glade_new et al */
-	if (ret[0] != '/') {
+	if (ret != NULL && ret[0] != '/') {
 		char *pwd = g_get_current_dir ();
 		char *path = g_strconcat (pwd, G_DIR_SEPARATOR_S, ret, NULL);
 		g_free (ret);
