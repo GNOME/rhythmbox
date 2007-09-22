@@ -790,6 +790,15 @@ AC_ARG_ENABLE([python],
 	[enable_python=autodetect have_python=yes])
 AC_MSG_RESULT([$enable_python])
 
+if test "x$have_python" != "xyes"; then
+	if test "x$enable_python" = "xyes"; then
+		AC_MSG_ERROR([Python not found])
+	elif test "x$enable_python" = "xautodetect"; then
+		enable_python=no
+		AC_MSG_WARN([Python not found, disabling python support])
+	fi
+fi
+
 if test "x$have_python" != "xno"; then
 	AM_PATH_PYTHON([2.3],[],[no])
 	if test "x$PYTHON" = "x:"; then
@@ -844,7 +853,17 @@ if test "x$have_python" != "xno"; then
 
 	PKG_CHECK_MODULES([PYGTK], [
 		pygtk-2.0 >= $PYGTK_REQUIRED],
-		[],[have_python=no])
+		[],
+		[
+		have_python=no
+		if test "x$enable_python" = "xyes"; then
+			AC_MSG_ERROR([$PYGTK_PKG_ERRORS])
+		elif test "x$enable_python" = "xautodetect"; then
+			enable_python=no
+			AC_MSG_WARN([$PYGTK_PKG_ERRORS])
+			AC_MSG_WARN([Disabling python support])
+		fi
+		])
 
 	AC_SUBST([PYGTK_CFLAGS])
 	AC_SUBST([PYGTK_LIBS])
@@ -885,14 +904,7 @@ dnl			 AC_DEFINE([PYGOBJECT_CAN_MARSHAL_GVALUE]))
 	AC_SUBST([NO_STRICT_ALIASING_CFLAGS])
 fi
 
-if test "x$have_python" != "xyes"; then
-	if test "x$enable_python" = "xyes"; then
-		AC_MSG_ERROR([Python plugin support explicitly requested, but not found])
-	elif test "x$enable_python" != "xno"; then
-		enable_python=no
-		AC_MSG_WARN([Python plugin not found, disabling python support])
-	fi
-elif test "x$enable_python" != "xno"; then
+if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then
 	enable_python=yes
 	AC_DEFINE([ENABLE_PYTHON],[1],[Define to compile with python plugin support])
 fi
