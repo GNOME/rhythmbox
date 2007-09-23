@@ -79,11 +79,16 @@ load_metadata_cb (gpointer file)
 
 	if (strncmp (uri, "file://", 7)) {
 		if (uri[0] == '/') {
-			uri = g_strdup_printf ("file://%s", uri);
+			uri = g_filename_to_uri (uri, NULL, NULL);
 		} else {
 			char buf[600];
-			if (getcwd (buf, sizeof (buf)) != NULL)
-				uri = g_strdup_printf ("file://%s/%s", buf, uri);
+			if (getcwd (buf, sizeof (buf)) != NULL) {
+				char *filename;
+
+				filename = g_build_filename (buf, uri, NULL);
+				uri = g_filename_to_uri (filename, NULL, NULL);
+				g_free (filename);
+			}
 		}
 	}
 	printf ("%s\n", (const char *)uri);
