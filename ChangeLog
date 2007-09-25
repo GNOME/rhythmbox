@@ -1,3 +1,9 @@
+2007-09-25  Jonathan Matthew  <jonathan@d14n.org>
+
+	* shell/rb-shell.c: (rb_shell_load_uri):
+	Don't try to unref the playlist source if we didn't find one
+	for the new entry.  Fixes #479369.
+
 2007-09-23  Bastien Nocera  <hadess@hadess.net>
 
 	* metadata/test-metadata.c: (load_metadata_cb):

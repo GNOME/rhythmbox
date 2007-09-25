@@ -3319,10 +3319,11 @@ rb_shell_load_uri (RBShell *shell,
 				return FALSE;
 		}
 
-		if (data.source_is_entry != FALSE)
+		if (data.source_is_entry != FALSE) {
 			playlist_source = data.playlist_source;
-		else
+		} else if (data.playlist_source != NULL) {
 			g_object_unref (data.playlist_source);
+		}
 	}
 
 	if (play) {
