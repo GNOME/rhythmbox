@@ -102,7 +102,7 @@ _wrap_rb_source_get_property_views(PyGObject *self)
 
     list = rb_source_get_property_views (RB_SOURCE(self->obj));
     py_list = _helper_wrap_gobject_glist (list);
-    rb_list_destroy_free (list, (GDestroyNotify)g_object_unref);
+    g_list_free (list);
 
     return py_list;
 }
