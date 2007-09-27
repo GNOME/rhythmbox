@@ -1,3 +1,12 @@
+2007-09-27  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/lyrics/lyrics/AstrawebParser.py:
+	Don't use re.search(a, b) for arbitrary substring searching, as it
+	breaks horribly when string a doesn't form a valid regex.
+
+	* plugins/lyrics/lyrics/__init__.py:
+	Stop updating lyrics when the window is closed.
+
 2007-09-26  Jonathan Matthew  <jonathan@d14n.org>
 
 	* bindings/python/rb.override:

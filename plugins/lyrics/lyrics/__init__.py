@@ -346,6 +346,7 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 		if self.window is not None:
 			self.window.destroy ()
+			self.window = None
 
 		db = shell.get_property ("db")
 		sp = shell.get_player ()
@@ -359,8 +360,13 @@ class LyricsDisplayPlugin(rb.Plugin):
 
 		self.window = LyricWindow()
 		self.window.s_title(title, artist)
+		self.window.connect("destroy", self.window_deleted)
 		lyrics_grabber = LyricGrabber(db, entry)
 		lyrics_grabber.search_lyrics(self.window.buffer.set_text)
+
+	def window_deleted (self, window):
+		print "lyrics window destroyed"
+		self.window = None
 	
 	def create_song_info (self, shell, song_info, is_multiple):
 
