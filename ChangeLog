@@ -1,5 +1,15 @@
 2007-09-27  Jonathan Matthew  <jonathan@d14n.org>
 
+	patch by:  Jeff Craig <foxxtrot@foxxtrot.net>
+
+	* plugins/jamendo/jamendo/JamendoSource.py:
+	* plugins/jamendo/jamendo/__init__.py:
+	Add a 'donate to this artist' menu item/toolbar button
+	that links to the artist donation page on the jamendo website.
+	Fixes #417485.
+
+2007-09-27  Jonathan Matthew  <jonathan@d14n.org>
+
 	* shell/rb-playlist-manager.c: (_is_dirty_playlist),
 	(rb_playlist_manager_is_dirty):  The sourcelist is no longer flat.
 	Iterating across it with gtk_tree_model_iter_get_next won't find

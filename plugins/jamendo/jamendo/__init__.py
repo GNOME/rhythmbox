@@ -33,6 +33,7 @@ popup_ui = """
   <popup name="JamendoSourceViewPopup">
     <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
     <menuitem name="JamendoDownloadAlbum" action="JamendoDownloadAlbum"/>
+    <menuitem name="JamendoDonateArtist" action="JamendoDonateArtist"/>
     <separator/>
     <menuitem name="BrowseGenreLibraryPopup" action="BrowserSrcChooseGenre"/>
     <menuitem name="BrowseArtistLibraryPopup" action="BrowserSrcChooseArtist"/>
@@ -77,6 +78,13 @@ class Jamendo(rb.Plugin):
 				'gtk-save')
 		action.connect('activate', lambda a: shell.get_property("selected-source").download_album())
 		self.action_group = gtk.ActionGroup('JamendoPluginActions')
+		self.action_group.add_action(action)
+		
+		# Add Button for Donate
+		action = gtk.Action('JamendoDonateArtist', _('_Donate to Artist'),
+				_("Donate Money to this Artist"),
+				'gtk-jump-to')
+		action.connect('activate', lambda a: shell.get_property("selected-source").launch_donate())
 		self.action_group.add_action(action)
 
 		manager.insert_action_group(self.action_group, 0)

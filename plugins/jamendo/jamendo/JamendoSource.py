@@ -40,6 +40,7 @@ local_song_info_temp_uri = gnomevfs.URI(jamendo_dir + "dbdump.en.xml.tmp")
 
 stream_url = "http://www.jamendo.com/get/track/id/track/audio/redirect/%s/?aue=ogg2"
 artwork_url = "http://www.jamendo.com/get/album/id/album/artworkurl/redirect/%s/?artwork_size=200"
+artist_url = "http://www.jamendo.com/get/artist/id/album/page/plain/"
 
 class JamendoSource(rb.BrowserSource):
 	__gproperties__ = {
@@ -51,6 +52,7 @@ class JamendoSource(rb.BrowserSource):
 		rb.BrowserSource.__init__(self, name=_("Jamendo"))
 
 		self.__p2plinks = {}
+		self.__loader = rb.Loader()
 
 		# catalogue stuff
 		self.__db = None
@@ -97,7 +99,7 @@ class JamendoSource(rb.BrowserSource):
 		self.show_source_popup ("/JamendoSourceViewPopup")
 
 	def do_impl_get_ui_actions(self):
-		return ["JamendoDownloadAlbum"]
+		return ["JamendoDownloadAlbum","JamendoDonateArtist"]
 
 
 	def do_impl_get_status(self):
@@ -365,10 +367,29 @@ class JamendoSource(rb.BrowserSource):
 			p2plink = formats[format]
 			self.__download_p2plink (p2plink)
 
-
 	def __download_p2plink (self, link):
 		gnomevfs.url_show(link)
+	
+	# Donate to Artist
+	def launch_donate (self):
+		tracks = self.get_entry_view().get_selected_entries()
 
+		#TODO: this should work if the artist was selected in the browser
+		#without any track selected
+		if len(tracks) == 1:
+			track = tracks[0]
+			# The Album ID can be used to lookup the artist, and issue a clean redirect.
+			albumid = self.__db.entry_get(track, rhythmdb.PROP_MUSICBRAINZ_ALBUMID)
+			artist = self.__db.entry_get(track, rhythmdb.PROP_ARTIST)
+			url = artist_url + albumid.__str__() + "/"
+			self.__loader.get_url(url, self.__open_donate, artist)
+
+	def __open_donate (self, result, artist):
+		if result is None:
+			emsg = _("Error looking up artist %s on jamendo.com") % (artist)
+			gtk.MessageDialog(None, 0, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, emsg).run()
+			return
+		gnomevfs.url_show(result + "donate/")
 
 	def __p2plink_download_update_cb (self, _reserved, info, moving):
 		if info.phase == gnomevfs.XFER_PHASE_COMPLETED:
