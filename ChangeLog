@@ -1,5 +1,12 @@
 2007-09-27  Jonathan Matthew  <jonathan@d14n.org>
 
+	* shell/rb-playlist-manager.c: (_is_dirty_playlist),
+	(rb_playlist_manager_is_dirty):  The sourcelist is no longer flat.
+	Iterating across it with gtk_tree_model_iter_get_next won't find
+	any sources at all.  Instead, use gtk_tree_model_foreach.
+
+2007-09-27  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/lyrics/lyrics/AstrawebParser.py:
 	Don't use re.search(a, b) for arbitrary substring searching, as it
 	breaks horribly when string a doesn't form a valid regex.

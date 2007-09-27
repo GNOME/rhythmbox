@@ -722,6 +722,47 @@ rb_playlist_manager_set_dirty (RBPlaylistManager *mgr, gboolean dirty)
 	g_atomic_int_compare_and_exchange (&mgr->priv->dirty, dirty == FALSE, dirty == TRUE);
 }
 
+static gboolean
+_is_dirty_playlist (GtkTreeModel *model,
+		    GtkTreePath *path,
+		    GtkTreeIter *iter,
+		    gboolean *dirty)
+{
+	RBSource *source;
+	gboolean local;
+	gboolean ret;
+
+	gtk_tree_model_get (model,
+			    iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+			    &source,
+			    -1);
+	if (source == NULL) {
+		return FALSE;
+	}
+	if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
+		g_object_unref (source);
+		return FALSE;
+	}
+
+	g_object_get (source,
+		      "is-local", &local,
+		      NULL);
+	ret = FALSE;
+	if (local) {
+		gboolean pdirty;
+
+		g_object_get (source, "dirty", &pdirty, NULL);
+		if (pdirty) {
+			*dirty = TRUE;
+			ret = TRUE;
+		}
+	}
+	g_object_unref (source);
+
+	return ret;
+}
+
 /* returns TRUE if a playlist has been created, modified, or deleted since last save */
 static gboolean
 rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
@@ -729,41 +770,12 @@ rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 	gboolean dirty = FALSE;
 	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
-	GtkTreeIter iter;
 
 	g_object_get (mgr->priv->sourcelist, "model", &fmodel, NULL);
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
 	g_object_unref (fmodel);
 
-	if (gtk_tree_model_get_iter_first (model, &iter)) {
-		do {
-			RBSource *source;
-			gboolean local;
-
-			gtk_tree_model_get (model,
-					    &iter,
-					    RB_SOURCELIST_MODEL_COLUMN_SOURCE,
-					    &source,
-					    -1);
-			if (source == NULL) {
-				continue;
-			}
-			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE) {
-				g_object_unref (source);
-				continue;
-			}
-
-			g_object_get (source,
-				      "is-local", &local,
-				      NULL);
-			if (local) {
-				g_object_get (source, "dirty", &dirty, NULL);
-				if (dirty)
-					break;
-			}
-			g_object_unref (source);
-		} while (gtk_tree_model_iter_next (model, &iter));
-	}
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc) _is_dirty_playlist, &dirty);
 
 	if (!dirty)
 		dirty = g_atomic_int_get (&mgr->priv->dirty);
