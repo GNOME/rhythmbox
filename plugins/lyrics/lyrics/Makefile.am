@@ -8,4 +8,5 @@ plugin_PYTHON =				\
        LyrcParser.py			\
        AstrawebParser.py		\
        LeoslyricsParser.py		\
-       LyricWikiParser.py
+       LyricWikiParser.py		\
+       WinampcnParser.py

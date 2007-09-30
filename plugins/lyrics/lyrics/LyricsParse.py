@@ -27,6 +27,7 @@ from LyrcParser import LyrcParser
 from AstrawebParser import AstrawebParser
 from LeoslyricsParser import LeoslyricsParser
 from LyricWikiParser import LyricWikiParser
+from WinampcnParser import WinampcnParser
 
 
 engines_map = {
@@ -34,6 +35,7 @@ engines_map = {
 	'astraweb.com': AstrawebParser,
 	'leoslyrics.com': LeoslyricsParser,
 	'lyricwiki.org': LyricWikiParser
+	'winampcn.com': WinampcnParser
 }
 
 

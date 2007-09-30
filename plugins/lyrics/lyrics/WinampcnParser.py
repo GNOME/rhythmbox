@@ -1,0 +1,95 @@
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#
+# Copyright (C) 2007 Austin  <austiny@sohu.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+
+import sys
+import urllib
+import gettext
+import re
+import rb
+from xml.dom import minidom
+
+def detect_charset(s):
+	charsets = ('iso-8859-1', 'gbk', 'utf-8')
+	for charset in charsets:
+		try:
+			return unicode(unicode(s, 'utf-8').encode(charset), 'gbk')
+		except:
+			continue
+	return s
+
+class WinampcnParser(object):
+	def __init__(self, artist, title):
+		self.artist = artist
+		self.title = title
+	
+	def search(self, callback, *data):
+
+		# encode search string
+                title_encode = urllib.quote(detect_charset(self.title).encode('gbk').replace(' ', ''))
+		artist_encode = urllib.quote(detect_charset(self.artist).encode('gbk').replace(' ',''))
+		url = 'http://www.winampcn.com/lyrictransfer/get.aspx?song=%s&artist=%s&lsong=%s&Datetime=20060601' % (title_encode, artist_encode, title_encode)
+		
+		loader = rb.Loader()
+		loader.get_url (url, self.got_lyrics, callback, *data)
+		
+	def got_lyrics(self, xmltext, callback, *data):
+		# retrieve xml content
+		if xmltext is None:
+			callback (None, *data)
+			return
+
+		try:
+			xmltext = xmltext.decode('gbk').encode('UTF-8')
+			xmltext = xmltext.replace('encoding="gb2312"', 'encoding="UTF-8"')
+			xmldoc = minidom.parseString(xmltext)
+			root = xmldoc.documentElement
+
+			lrcurl = root.getElementsByTagName('LyricUrl')[0].childNodes[0].data
+			if lrcurl is None:
+				callback (xmltext, *data)
+				return
+
+			# download the lyrics file
+			lrcurl_encode = urllib.quote(detect_charset(lrcurl).encode('gbk'))
+			lrcurl_encode = lrcurl_encode.replace('%3A', ':');
+
+			loader = rb.Loader()
+			loader.get_url (lrcurl_encode, self.parse_lyrics, callback, *data)
+		except:
+			callback (None, *data)
+
+
+	def parse_lyrics(self, lyrics, callback, *data):
+
+		if lyrics is None:
+			callback (None, *data)
+			return
+
+		# transform it into plain text
+		lrcplaintext = lyrics
+		try:
+			lrcplaintext = re.sub('\[.*?\]', '', lrcplaintext)
+			lrcplaintext = lrcplaintext.decode('gbk').encode('UTF-8')
+		except:
+			callback (lrcplaintext, *data)
+			return
+
+		# callback and show
+		lrcplaintext += "\n\nLyrics provided by winampcn.com"
+		callback(lrcplaintext, *data)
+
