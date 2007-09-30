@@ -1,3 +1,13 @@
+2007-10-01  Jonathan Matthew  <jonathan@d14n.org>
+
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_save_thread_main),
+	(rhythmdb_save):
+	Track the number of times we've saved the database.  When saving the
+	database synchronously, wait until the save count has actually been
+	incremented before returning.  Otherwise, rhythmdb_save often returns
+	before the thread has even started saving the database.
+
 2007-09-30  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Stephane Loeuillet  <leroutier@gmail.com>

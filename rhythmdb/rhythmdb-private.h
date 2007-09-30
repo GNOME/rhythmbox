@@ -168,6 +168,7 @@ struct RhythmDBPrivate
 
 	GCond *saving_condition;
 	GMutex *saving_mutex;
+	guint save_count;
 
 	guint event_queue_watch_id;
 	guint commit_timeout_id;

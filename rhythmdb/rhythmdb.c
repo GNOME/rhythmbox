@@ -2518,6 +2518,9 @@ rhythmdb_save_thread_main (RhythmDB *db)
 
 	g_mutex_lock (db->priv->saving_mutex);
 
+	db->priv->save_count++;
+	g_cond_broadcast (db->priv->saving_condition);
+
 	if (!db->priv->dirty && !db->priv->can_save) {
 		rb_debug ("no save needed, ignoring");
 		g_mutex_unlock (db->priv->saving_mutex);
@@ -2579,14 +2582,26 @@ rhythmdb_save_async (RhythmDB *db)
 void
 rhythmdb_save (RhythmDB *db)
 {
+	int new_save_count;
+	
 	rb_debug("saving the rhythmdb and blocking");
 
-	rhythmdb_save_async (db);
-
 	g_mutex_lock (db->priv->saving_mutex);
-
-	while (db->priv->saving)
+	new_save_count = db->priv->save_count + 1;
+	
+	rhythmdb_save_async (db);
+	
+	/* wait until this save request is being processed */
+	while (db->priv->save_count < new_save_count) {
 		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
+	}
+	
+	/* wait until it's done */
+	while (db->priv->saving) {
+		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
+	}
+
+	rb_debug ("done");
 
 	g_mutex_unlock (db->priv->saving_mutex);
 }
