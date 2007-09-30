@@ -26,12 +26,14 @@ import rb
 from LyrcParser import LyrcParser
 from AstrawebParser import AstrawebParser
 from LeoslyricsParser import LeoslyricsParser
+from LyricWikiParser import LyricWikiParser
 
 
 engines_map = {
 	'lyrc.com.ar': LyrcParser,
 	'astraweb.com': AstrawebParser,
-	'leoslyrics.com': LeoslyricsParser
+	'leoslyrics.com': LeoslyricsParser,
+	'lyricwiki.org': LyricWikiParser
 }
 
 

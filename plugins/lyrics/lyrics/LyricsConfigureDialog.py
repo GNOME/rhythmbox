@@ -34,6 +34,7 @@ class LyricsConfigureDialog (object):
 		self.toggle1 = self.gladexml.get_widget("engine1")
 		self.toggle2 = self.gladexml.get_widget("engine2")
 		self.toggle3 = self.gladexml.get_widget("engine3")
+		self.toggle4 = self.gladexml.get_widget("engine4")
 		self.choose_button = self.gladexml.get_widget("choose_button")
 		self.path_display = self.gladexml.get_widget("path_display")
 
@@ -48,6 +49,7 @@ class LyricsConfigureDialog (object):
 		self.toggle1.set_active('astraweb.com' in engines)
 		self.toggle2.set_active('lyrc.com.ar' in engines)
 		self.toggle3.set_active('leoslyrics.com' in engines)
+		self.toggle4.set_active('lyricwiki.org' in engines)
 
 	def dialog_response(self, dialog, response):
 		if response == gtk.RESPONSE_OK:
@@ -67,6 +69,8 @@ class LyricsConfigureDialog (object):
 			engines.append('lyrc.com.ar')
 		if self.toggle3.get_active():
 			engines.append('leoslyrics.com')
+		if self.toggle4.get_active():
+			engines.append('lyricwiki.org')
 
 		if len(self.path_display.get_text()) is not 0:
 			self.folder = self.path_display.get_text()
@@ -110,3 +114,4 @@ class LyricsConfigureDialog (object):
 		print "lyric engines: " + str (engines)
 		print "lyric folder: " + folder
 		return (engines, folder)
+

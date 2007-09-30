@@ -1,3 +1,16 @@
+2007-09-30  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/lyrics/lyrics-prefs.glade:
+	* plugins/lyrics/lyrics/LyricWikiParser.py:
+	* plugins/lyrics/lyrics/LyricsConfigureDialog.py:
+	* plugins/lyrics/lyrics/LyricsParse.py:
+	* plugins/lyrics/lyrics/Makefile.am:
+	Add (refreshingly simple) lyrics parser for lyricwiki.org.
+	
+	* data/rhythmbox.schemas:
+	Disable leoslyrics in the default configuration until it wakes up
+	again, enable lyricwiki instead.
+
 2007-09-27  Jonathan Matthew  <jonathan@d14n.org>
 
 	patch by:  Jeff Craig <foxxtrot@foxxtrot.net>
