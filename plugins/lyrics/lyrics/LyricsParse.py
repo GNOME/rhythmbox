@@ -34,7 +34,7 @@ engines_map = {
 	'lyrc.com.ar': LyrcParser,
 	'astraweb.com': AstrawebParser,
 	'leoslyrics.com': LeoslyricsParser,
-	'lyricwiki.org': LyricWikiParser
+	'lyricwiki.org': LyricWikiParser,
 	'winampcn.com': WinampcnParser
 }
 
