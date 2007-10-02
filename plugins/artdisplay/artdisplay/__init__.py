@@ -319,13 +319,18 @@ class ArtDisplayPlugin (rb.Plugin):
 	def activate (self, shell):
 		self.shell = shell
 		sp = shell.get_player ()
-		self.pec_id = sp.connect ('playing-song-changed', self.playing_entry_changed)
-		self.pc_id = sp.connect ('playing-changed', self.playing_changed)
+		self.player_cb_ids = (
+			sp.connect ('playing-song-changed', self.playing_entry_changed),
+			sp.connect ('playing-changed', self.playing_changed)
+		)
 		db = shell.get_property ("db")
-		self.eemr_art_id = db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request)
-		self.eemn_art_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify)
-		self.eemn_art_uri_id = db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify)
-		self.eemg_art_uri_id = db.connect_after ('entry-extra-metadata-gather', self.cover_art_uri_gather)
+		self.db_cb_ids = (
+			db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request),
+			db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify),
+			db.connect_after ('entry-extra-metadata-request::rb:coverArt-uri', self.cover_art_uri_request)
+			db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify),
+			db.connect_after ('entry-extra-metadata-gather', self.cover_art_uri_gather),
+		)
 		self.art_widget = ArtDisplayWidget (self.find_file (ART_MISSING_ICON + ".svg"))
 		self.art_widget.connect ('pixbuf-dropped', self.on_set_pixbuf)
 		self.art_widget.connect ('uri-dropped', self.on_set_uri)
@@ -336,14 +341,17 @@ class ArtDisplayPlugin (rb.Plugin):
 
 	def deactivate (self, shell):
 		self.shell = None
+
 		sp = shell.get_player ()
-		sp.disconnect (self.pec_id)
-		sp.disconnect (self.pc_id)
+		for id in self.player_cb_ids:
+			sp.disconnect (id)
+		self.player_cb_ids = ()
+
 		db = shell.get_property ("db")
-		db.disconnect (self.eemr_art_id)
-		db.disconnect (self.eemn_art_id)
-		db.disconnect (self.eemn_art_uri_id)
-		db.disconnect (self.eemg_art_uri_id)
+		for id in self.db_cb_ids:
+			db.disconnect (id)
+		self.db_cb_ids = ()
+
 		shell.remove_widget (self.art_widget, rb.SHELL_UI_LOCATION_SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
@@ -422,9 +430,13 @@ class ArtDisplayPlugin (rb.Plugin):
 		print "got cover art URI notification: %s" % (uri)
 		rb.Loader().get_url (uri, loader_cb)
 
+	def cover_art_uri_request (self, db, entry):
+		if entry == self.current_entry:
+			return self.art_widget.current_uri
+
 	def cover_art_uri_gather (self, db, entry, metadata):
 		if entry == self.current_entry and self.art_widget.current_uri:
-			metadata ['coverArt-uri'] = self.art_widget.current_uri
+			metadata ['rb:coverArt-uri'] = self.art_widget.current_uri
 
 	def on_set_pixbuf (self, widget, entry, pixbuf):
 		db = self.shell.get_property ("db")
