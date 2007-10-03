@@ -327,7 +327,7 @@ class ArtDisplayPlugin (rb.Plugin):
 		self.db_cb_ids = (
 			db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request),
 			db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify),
-			db.connect_after ('entry-extra-metadata-request::rb:coverArt-uri', self.cover_art_uri_request)
+			db.connect_after ('entry-extra-metadata-request::rb:coverArt-uri', self.cover_art_uri_request),
 			db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify),
 			db.connect_after ('entry-extra-metadata-gather', self.cover_art_uri_gather),
 		)
