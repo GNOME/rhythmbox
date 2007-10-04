@@ -2248,7 +2248,9 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 			}
 		}
 		got_time = TRUE;
-		g_object_unref (stream);
+		if (pstream == NULL) {
+			g_object_unref (stream);
+		}
 	} else {
 		rb_debug ("not playing");
 	}
@@ -2265,6 +2267,7 @@ tick_timeout (RBPlayerGstXFade *player)
 
 	if (get_times_and_stream (player, &stream, &pos, &duration)) {
 		_rb_player_emit_tick (RB_PLAYER (player), stream->stream_data, pos, duration);
+		g_object_unref (stream);
 	}
 
 	return TRUE;

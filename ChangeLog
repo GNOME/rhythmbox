@@ -1,3 +1,12 @@
+2007-10-05  Jonathan Matthew  <jonathan@d14n.org>
+
+	based on a patch by:  John Bryant  <bryantk@sover.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c: (get_times_and_stream),
+	(tick_timeout):  Only unref the stream inside get_times_and_stream if
+	not returning it.  In tick_timeout, unref once we're done with it.
+	Fixes #482458.
+
 2007-10-02  Alex Lancaster  <alexl@users.sourceforge.net>
 
 	* plugins/artdisplay/artdisplay/__init__.py (ArtDisplayPlugin.activate):
