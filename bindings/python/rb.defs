@@ -1334,8 +1334,8 @@
     '("db")
     '("shell_player")
     '("sort_key")
-    '("drag_source")
-    '("drag_dest")
+    '("is_drag_source")
+    '("is_drag_dest")
   )
 )
 
@@ -1535,9 +1535,10 @@
   (is-constructor-of "RBPropertyView")
   (return-type "RBPropertyView*")
   (properties
-    '("db" (argname "db"))
-    '("propid" (argment "propid"))
-    '("title" (argname "title"))
+    '("db")
+    '("prop")
+    '("title")
+    '("draggable" (optional))
   )
 )
 
