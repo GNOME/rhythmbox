@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-18 23:26+0200\n"
-"PO-Revision-Date: 2007-09-18 23:26+0100\n"
+"POT-Creation-Date: 2007-10-09 22:15+0200\n"
+"PO-Revision-Date: 2007-10-09 22:15+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -35,43 +35,43 @@ msgstr "Misslyckades med att skapa %s-element; kontrollera din installation"
 msgid "Unknown playback error"
 msgstr "Okänt uppspelningsfel"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1054
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1068
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1056
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1070
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1092
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1094
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2546
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2634
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2551
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2639
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2559
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2564
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Misslyckades med att skapa ljudutmatningselement; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2608
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2650
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2676
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2685
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2694
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2613
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2655
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2681
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2690
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2699
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2789
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2805
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2810
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Misslyckades med att starta uppspelning av %s"
@@ -493,7 +493,7 @@ msgid "Recently Played"
 msgstr "Senast spelade"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../plugins/power-manager/rb-power-manager-plugin.c:181
+#: ../plugins/power-manager/rb-power-manager-plugin.c:199
 #: ../plugins/visualizer/rb-visualizer-plugin.c:1474
 #: ../shell/rb-shell-player.c:2604
 #: ../shell/rb-shell.c:1015
@@ -886,7 +886,7 @@ msgstr "Last.fm-profil"
 #: ../plugins/audioscrobbler/audioscrobbler-prefs.glade.h:8
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:1094
 #: ../plugins/iradio/rb-station-properties-dialog.c:490
-#: ../rhythmdb/rhythmdb.c:2951
+#: ../rhythmdb/rhythmdb.c:2966
 #: ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204
 #: ../widgets/rb-entry-view.c:1217
@@ -1827,26 +1827,40 @@ msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo
 msgstr "Lägger till stöd i Rhythmbox för att spela och hämta musik från Jamendo"
 
 #: ../plugins/jamendo/jamendo.rb-plugin.desktop.in.h:2
-#: ../plugins/jamendo/jamendo/JamendoSource.py:51
+#: ../plugins/jamendo/jamendo/JamendoSource.py:52
 msgid "Jamendo"
 msgstr "Jamendo"
 
-#: ../plugins/jamendo/jamendo/__init__.py:66
+#: ../plugins/jamendo/jamendo/__init__.py:67
 #: ../plugins/magnatune/magnatune/__init__.py:88
 msgid "Stores"
 msgstr "Butiker"
 
-#: ../plugins/jamendo/jamendo/__init__.py:75
+#: ../plugins/jamendo/jamendo/__init__.py:76
 msgid "_Download Album"
 msgstr "_Hämta album"
 
-#: ../plugins/jamendo/jamendo/__init__.py:76
+#: ../plugins/jamendo/jamendo/__init__.py:77
 msgid "Download this album using BitTorrent"
 msgstr "Hämta det här albumet med BitTorrent"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:109
+#. Add Button for Donate
+#: ../plugins/jamendo/jamendo/__init__.py:84
+msgid "_Donate to Artist"
+msgstr "_Donera till artist"
+
+#: ../plugins/jamendo/jamendo/__init__.py:85
+msgid "Donate Money to this Artist"
+msgstr "Donera pengar till denna artist"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:111
 msgid "Loading Jamendo catalogue"
 msgstr "Läser in Jamendo-katalog"
+
+#: ../plugins/jamendo/jamendo/JamendoSource.py:389
+#, python-format
+msgid "Error looking up artist %s on jamendo.com"
+msgstr "Fel vid uppslagning av artisten %s på jamendo.com"
 
 #: ../plugins/iradio/rb-iradio-source.c:167
 msgid "New Internet _Radio Station..."
@@ -1934,7 +1948,7 @@ msgstr "Låtte_xt"
 msgid "Display lyrics for the playing song"
 msgstr "Visa låttext för aktuell låt"
 
-#: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:88
+#: ../plugins/lyrics/lyrics/LyricsConfigureDialog.py:96
 msgid "Choose lyrics folder..."
 msgstr "Välj låttextmapp..."
 
@@ -2448,7 +2462,7 @@ msgstr "Låt inte strömhanteraren försätta datorn i viloläge under spelning"
 msgid "Power Manager"
 msgstr "Strömhanterare"
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:182
+#: ../plugins/power-manager/rb-power-manager-plugin.c:200
 msgid "Playing"
 msgstr "Spelar"
 
@@ -2792,21 +2806,21 @@ msgstr "ogiltig unicode i felmeddelande"
 msgid "Could not load the music database"
 msgstr "Kunde inte läsa in musikdatabasen"
 
-#: ../rhythmdb/rhythmdb.c:3889
+#: ../rhythmdb/rhythmdb.c:3904
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: ../rhythmdb/rhythmdb.c:3890
+#: ../rhythmdb/rhythmdb.c:3905
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: ../rhythmdb/rhythmdb.c:3891
+#: ../rhythmdb/rhythmdb.c:3906
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -2814,7 +2828,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3897
+#: ../rhythmdb/rhythmdb.c:3912
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -2822,9 +2836,9 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:3903
-#: ../rhythmdb/rhythmdb.c:3911
-#: ../rhythmdb/rhythmdb.c:3922
+#: ../rhythmdb/rhythmdb.c:3918
+#: ../rhythmdb/rhythmdb.c:3926
+#: ../rhythmdb/rhythmdb.c:3937
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -2932,50 +2946,50 @@ msgstr "Lägg till alla spår i denna spellista till kön"
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Spellistefilen kan vara i ett okänt format eller skadad."
 
-#: ../shell/rb-playlist-manager.c:1024
+#: ../shell/rb-playlist-manager.c:1036
 msgid "Untitled Playlist"
 msgstr "Namnlös spellista"
 
-#: ../shell/rb-playlist-manager.c:1285
+#: ../shell/rb-playlist-manager.c:1297
 msgid "Couldn't read playlist"
 msgstr "Kunde inte läsa spellista"
 
-#: ../shell/rb-playlist-manager.c:1300
+#: ../shell/rb-playlist-manager.c:1312
 msgid "Load Playlist"
 msgstr "Läs in spellista"
 
-#: ../shell/rb-playlist-manager.c:1321
+#: ../shell/rb-playlist-manager.c:1333
 msgid "MPEG Version 3.0 URL"
 msgstr "MPEG version 3.0 URL"
 
-#: ../shell/rb-playlist-manager.c:1322
+#: ../shell/rb-playlist-manager.c:1334
 msgid "Shoutcast playlist"
 msgstr "Shoutcast-spellista"
 
-#: ../shell/rb-playlist-manager.c:1367
+#: ../shell/rb-playlist-manager.c:1379
 #: ../sources/rb-playlist-source.c:547
 msgid "Couldn't save playlist"
 msgstr "Kunde inte spara spellista"
 
-#: ../shell/rb-playlist-manager.c:1367
+#: ../shell/rb-playlist-manager.c:1379
 msgid "Unsupported file extension given."
 msgstr "Angiven filändelse stöds inte."
 
-#: ../shell/rb-playlist-manager.c:1668
+#: ../shell/rb-playlist-manager.c:1680
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "Spellistan %s finns redan"
 
-#: ../shell/rb-playlist-manager.c:1698
-#: ../shell/rb-playlist-manager.c:1731
-#: ../shell/rb-playlist-manager.c:1771
-#: ../shell/rb-playlist-manager.c:1814
+#: ../shell/rb-playlist-manager.c:1710
+#: ../shell/rb-playlist-manager.c:1743
+#: ../shell/rb-playlist-manager.c:1783
+#: ../shell/rb-playlist-manager.c:1826
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Okänd spellista: %s"
 
-#: ../shell/rb-playlist-manager.c:1739
-#: ../shell/rb-playlist-manager.c:1779
+#: ../shell/rb-playlist-manager.c:1751
+#: ../shell/rb-playlist-manager.c:1791
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Spellistan %s är en automatisk spellista"
@@ -3535,18 +3549,18 @@ msgstr "från <i>%s</i>"
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
 
-#: ../shell/rb-shell.c:3449
-#: ../shell/rb-shell.c:3478
+#: ../shell/rb-shell.c:3450
+#: ../shell/rb-shell.c:3479
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Okänd URI för låt: %s"
 
-#: ../shell/rb-shell.c:3487
+#: ../shell/rb-shell.c:3488
 #, c-format
 msgid "Unknown property %s"
 msgstr "Okänd egenskap %s"
 
-#: ../shell/rb-shell.c:3497
+#: ../shell/rb-shell.c:3498
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Okänd egenskapstyp %s för egenskap %s"
