@@ -1,3 +1,10 @@
+2007-10-09  Jonathan Matthew  <jonathan@d14n.org>
+
+	* plugins/power-manager/rb-power-manager-plugin.c:
+	(create_dbus_proxy), (inhibit_cb), (uninhibit_cb):
+	Try the new dbus name/path/interface for power management first, then
+	fall back to the old org.gnome.PowerManager names.  Fixes #483721.
+
 2007-10-08  Jonathan Matthew  <jonathan@d14n.org>
 
 	* bindings/python/rb.defs:

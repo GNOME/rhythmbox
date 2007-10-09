@@ -110,24 +110,41 @@ create_dbus_proxy (RBGPMPlugin *plugin)
 		return TRUE;
 	}
 
+	/* try new name first */
 	plugin->proxy = dbus_g_proxy_new_for_name_owner (plugin->bus,
-						   "org.gnome.PowerManager",
-						   "/org/gnome/PowerManager",
-						   "org.gnome.PowerManager",
+						   "org.freedesktop.PowerManagement",
+						   "/org/freedesktop/PowerManagement/Inhibit",
+						   "org.freedesktop.PowerManagement.Inhibit",
 						   &error);
-	if (error != NULL) {
-		if (ignore_error (error) == FALSE) {
-			g_warning ("Failed to create dbus proxy for org.gnome.PowerManager: %s",
-				   error->message);
-		}
+	if (error != NULL && ignore_error (error) == FALSE) {
+		g_warning ("Failed to create dbus proxy for org.gnome.PowerManager: %s",
+			   error->message);
 		g_error_free (error);
 		return FALSE;
-	} else {
-		g_signal_connect_object (plugin->proxy,
-					 "destroy",
-					 G_CALLBACK (proxy_destroy_cb),
-					 plugin, 0);
+	} else if (error != NULL) {
+		g_error_free (error);
+		error = NULL;
+
+		/* fall back to original name */
+		plugin->proxy = dbus_g_proxy_new_for_name_owner (plugin->bus,
+							   "org.gnome.PowerManager",
+							   "/org/gnome/PowerManager",
+							   "org.gnome.PowerManager",
+							   &error);
+		if (error != NULL) {
+			if (ignore_error (error) == FALSE) {
+				g_warning ("Failed to create dbus proxy for org.gnome.PowerManager: %s",
+					   error->message);
+			}
+			g_error_free (error);
+			return FALSE;
+		}
 	}
+
+	g_signal_connect_object (plugin->proxy,
+				 "destroy",
+				 G_CALLBACK (proxy_destroy_cb),
+				 plugin, 0);
 	return TRUE;
 }
 
@@ -145,7 +162,8 @@ inhibit_cb (DBusGProxy *proxy,
 			       G_TYPE_INVALID);
 	if (error != NULL) {
 		if (!ignore_error (error)) {
-			g_warning ("Failed to invoke org.gnome.PowerManager.Inhibit: %s",
+			g_warning ("Failed to invoke %s.Inhibit: %s",
+				   dbus_g_proxy_get_interface (proxy),
 				   error->message);
 		} else {
 			rb_debug ("inhibit failed: %s", error->message);
@@ -198,7 +216,8 @@ uninhibit_cb (DBusGProxy *proxy,
 			       G_TYPE_INVALID);
 	if (error != NULL) {
 		if (!ignore_error (error)) {
-			g_warning ("Failed to invoke org.gnome.PowerManager.Inhibit: %s",
+			g_warning ("Failed to invoke %s.Inhibit: %s",
+				   dbus_g_proxy_get_interface (proxy),
 				   error->message);
 		} else {
 			rb_debug ("uninhibit failed: %s", error->message);
