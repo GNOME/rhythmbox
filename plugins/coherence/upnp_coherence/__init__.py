@@ -8,17 +8,17 @@ class CoherencePlugin(rb.Plugin):
 		rb.Plugin.__init__(self)
 			
 	def activate(self, shell):
-		self.coherence = self.get_coherence()
-		if self.coherence is None:
-			print "Coherence is not installed or too old, aborting"
-			return
-
 		from twisted.internet import gtk2reactor
 		try:
 			gtk2reactor.install()
 		except AssertionError, e:
 			# sometimes it's already installed
 			print e
+
+		self.coherence = self.get_coherence()
+		if self.coherence is None:
+			print "Coherence is not installed or too old, aborting"
+			return
 
 		print "coherence UPnP plugin activated"
 		self.shell = shell
@@ -41,6 +41,8 @@ class CoherencePlugin(rb.Plugin):
 		print "coherence UPnP plugin deactivated"
 		if self.coherence is None:
 			return
+
+		self.coherence.shutdown()
 
 		louie.disconnect(self.detected_media_server,
 				'Coherence.UPnP.ControlPoint.MediaServer.detected',

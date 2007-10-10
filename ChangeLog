@@ -1,5 +1,24 @@
 2007-10-10  Bastien Nocera  <hadess@hadess.net>
 
+	* plugins/coherence/upnp_coherence/MediaStore.py:
+	* plugins/coherence/upnp_coherence/__init__.py:
+	- Couple of changes I don't really understand by Frank in the
+	Container __init__
+	- Give out the "bitrate" in bytes/sec as the spec says it "could" be
+	(fixes extremely low bitrates showing up with the PS3 UI)
+	- Give out the duration in HH:MM:SS as per the spec (fixes the tracks
+	showing up as X hours long instead of X seconds long)
+	- Correctly escape filepaths so the web server knows where to find them
+	- Force GStreamer application/x-id3 mime-type to audio/mpeg
+	- Start the coherence server after the twisted reactor, otherwise
+	coherence doesn't get hooked up and nothing works
+	- Shutdown coherence so it disappears from the local network
+
+	With help from Frank Scholz <coherence@beebits.net>
+	(Closes: #482548)
+
+2007-10-10  Bastien Nocera  <hadess@hadess.net>
+
 	* plugins/rb-python-module.c: (rb_python_module_init_python):
 	Fix crash when activating a Python plugin that uses threads,
 	the UPNP plugin in this case (Closes: #469852)

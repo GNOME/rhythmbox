@@ -2,6 +2,7 @@
 
 import rhythmdb
 import louie
+import urllib
 from coherence.upnp.core import DIDLLite
 
 
@@ -22,12 +23,13 @@ class Container(object):
         self.parent_id = parent_id
         self.name = name
         self.mimetype = 'directory'
-        self.item = DIDLLite.StorageFolder(id, parent_id,self.name)
+        self.item = DIDLLite.Container(id, parent_id,self.name)
         self.update_id = 0
         if children_callback != None:
             self.children = children_callback
         else:
             self.children = []
+        self.item.childCount = self.get_child_count()
 
     def add_child(self, child):
         self.children.append(child)
@@ -75,18 +77,33 @@ class Track:
 
 		# load common values
 		entry = self.store.db.entry_lookup_by_id (self.id)
-		bitrate = self.store.db.entry_get (entry, rhythmdb.PROP_BITRATE)
-		duration = self.store.db.entry_get (entry, rhythmdb.PROP_DURATION)
+		# Bitrate is in bytes/second, not kilobits/second
+		bitrate = self.store.db.entry_get (entry, rhythmdb.PROP_BITRATE) * 1024 / 8
+		# Duration is in HH:MM:SS format
+		seconds = self.store.db.entry_get (entry, rhythmdb.PROP_DURATION)
+		hours = seconds / 3600
+		seconds = seconds - hours * 3600
+		minutes = seconds / 60
+		seconds = seconds - minutes * 60
+		duration = ("%02d:%02d:%02d") % (hours, minutes, seconds)
+
 		location = self.store.db.entry_get (entry, rhythmdb.PROP_LOCATION)
+		if location.startswith("file://"):
+			location = unicode(urllib.url2pathname(location)[len("file://"):])
+		else:
+			location = None
 		mimetype = self.store.db.entry_get (entry, rhythmdb.PROP_MIMETYPE)
+		# This isn't a real mime-type
+		if mimetype == "application/x-id3":
+			mimetype = "audio/mpeg"
 		size = self.store.db.entry_get (entry, rhythmdb.PROP_FILE_SIZE)
 
 		# create item
 		item = DIDLLite.MusicTrack(self.id + CONTAINER_COUNT)
 		item.album = self.store.db.entry_get (entry, rhythmdb.PROP_ALBUM)
-		##item.albumArtURI = ## can we somehow store art in the upnp share??
+		#item.albumArtURI = ## can we somehow store art in the upnp share??
 		item.artist = self.store.db.entry_get (entry, rhythmdb.PROP_ARTIST)
-		##item.date =
+		#item.date =
 		item.genre = self.store.db.entry_get (entry, rhythmdb.PROP_GENRE)
 		item.originalTrackNumber = str(self.store.db.entry_get (entry, rhythmdb.PROP_TRACK_NUMBER))
 		item.title = self.store.db.entry_get (entry, rhythmdb.PROP_TITLE) # much nicer if it was entry.title
@@ -125,10 +142,9 @@ class Track:
 		entry = self.store.db.entry_lookup_by_id (self.id)
 		uri = self.store.db.entry_get (entry, rhythmdb.PROP_LOCATION)
 		if uri.startswith("file://"):
-			return uri[len("file://"):]
+			return unicode(urllib.url2pathname(uri)[len("file://"):])
 		else:
 			return None
-
 
 class MediaStore: 
 	implements = ['MediaServer']
