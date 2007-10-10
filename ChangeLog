@@ -1,3 +1,9 @@
+2007-10-10  Bastien Nocera  <hadess@hadess.net>
+
+	* plugins/rb-python-module.c: (rb_python_module_init_python):
+	Fix crash when activating a Python plugin that uses threads,
+	the UPNP plugin in this case (Closes: #469852)
+
 2007-10-09  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/power-manager/rb-power-manager-plugin.c:

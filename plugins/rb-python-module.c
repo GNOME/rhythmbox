@@ -173,6 +173,8 @@ rb_python_module_init_python (void)
 	/* import gtk */
 	init_pygtk ();
 
+	pyg_enable_threads ();
+
 	gtk = PyImport_ImportModule ("gtk");
 	if (gtk == NULL) {
 		g_warning ("Could not import gtk");
