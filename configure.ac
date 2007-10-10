@@ -164,7 +164,7 @@ if test "x$with_mtp" != "xno"; then
 	fi
 	if test "x$have_libmtp" = "xyes"; then
           if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
-	     AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])
+	     AC_MSG_ERROR([MTP explicitly requested but HAL not found or too old])
 	  fi
           if test "x$enable_hal" = xyes; then
 	     use_mtp=yes
