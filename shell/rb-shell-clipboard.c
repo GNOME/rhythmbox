@@ -596,8 +596,12 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
 	if (clipboard->priv->source != NULL) {
 		g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
-		gtk_action_set_sensitive (action, entry_type->has_playlists);
-		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		if (entry_type != RHYTHMDB_ENTRY_TYPE_INVALID) {
+			gtk_action_set_sensitive (action, entry_type->has_playlists);
+			g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+		} else {
+			gtk_action_set_sensitive (action, FALSE);
+		}
 	} else {
 		gtk_action_set_sensitive (action, FALSE);
 	}
