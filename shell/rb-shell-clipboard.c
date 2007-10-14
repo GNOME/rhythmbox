@@ -592,13 +592,11 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditSelectNone");
 	g_object_set (G_OBJECT (action), "sensitive", have_selection, NULL);
 
-	/* disable the whole add-to-playlist menu if we can't add to a playlist
-	 * FIXME: change this when we support non-library playlist adding
-	 */
+	/* disable the whole add-to-playlist menu if the source's entry type doesn't have playlists */
 	action = gtk_action_group_get_action (clipboard->priv->actiongroup, "EditPlaylistAdd");
 	if (clipboard->priv->source != NULL) {
 		g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
-		gtk_action_set_sensitive (action, (entry_type == RHYTHMDB_ENTRY_TYPE_SONG));
+		gtk_action_set_sensitive (action, entry_type->has_playlists);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	} else {
 		gtk_action_set_sensitive (action, FALSE);
@@ -904,14 +902,16 @@ add_playlist_to_menu (GtkTreeModel *model,
 		return FALSE;
 	}
 
-	/* FIXME: allow add-to-playlist for iPods and the like,
-	 * based on the currently selected source
+	/* FIXME this isn't quite right; we'd want to be able to add
+	 * songs from the library to playlists on devices (transferring
+	 * the song to the device first), surely?
 	 */
-	entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
+	g_object_get (clipboard->priv->source, "entry-type", &entry_type, NULL);
 	g_object_get (source, "entry-type", &source_entry_type, NULL);
 	if (source_entry_type != entry_type) {
 		g_object_unref (source);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 		return FALSE;
 	}
 
@@ -949,6 +949,7 @@ add_playlist_to_menu (GtkTreeModel *model,
 	}
 
 	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, source_entry_type);
+	g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 	g_free (action_name);
 	g_object_unref (source);
 

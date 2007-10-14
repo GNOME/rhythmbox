@@ -205,6 +205,8 @@ typedef struct
 	RBRefString *uri;
 	RBRefString *real_uri; /* Target of a symlink, if any */
 	RhythmDBEntryType entry_type;
+	RhythmDBEntryType ignore_type;
+	RhythmDBEntryType error_type;
 
 	GError *error;
 	RhythmDB *db;
@@ -224,7 +226,7 @@ typedef struct
 } RhythmDBEvent;
 
 /* from rhythmdb.c */
-void queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type);
+void queue_stat_uri (const char *uri, RhythmDB *db, RhythmDBEntryType type, RhythmDBEntryType ignore_type, RhythmDBEntryType error_type);
 void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 				    gboolean visibility);
 void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,

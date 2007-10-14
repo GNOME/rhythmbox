@@ -5,6 +5,8 @@ libgeneric_player_la_SOURCES =				\
 	rb-generic-player-plugin.c			\
 	rb-generic-player-source.c 			\
 	rb-generic-player-source.h	 		\
+	rb-generic-player-playlist-source.c		\
+	rb-generic-player-playlist-source.h		\
 	rb-psp-source.c					\
 	rb-psp-source.h
 
@@ -14,7 +16,9 @@ libgeneric_player_la_SOURCES +=				\
 	rb-nokia770-source.h
 endif
 
-libgeneric_player_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libgeneric_player_la_LDFLAGS = 				\
+	$(TOTEM_PLPARSER_LIBS)				\
+	$(PLUGIN_LIBTOOL_FLAGS)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

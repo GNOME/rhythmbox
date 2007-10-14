@@ -55,6 +55,7 @@ typedef struct
 	/* methods */
 	void	(*impl_show_entry_view_popup)	(RBPlaylistSource *source, RBEntryView *view, gboolean over_entry);
 	void	(*impl_save_contents_to_xml)	(RBPlaylistSource *source, xmlNodePtr node);
+	void	(*impl_mark_dirty)		(RBPlaylistSource *source);
 
 } RBPlaylistSourceClass;
 

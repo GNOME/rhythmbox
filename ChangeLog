@@ -1,3 +1,114 @@
+2007-10-14  Jonathan Matthew  <jonathan@d14n.org>
+
+	* lib/rb-file-helpers.c: (rb_uri_append_uri):
+	Fix rb_uri_append_uri when operating on two URIs.
+	
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(default_mark_dirty), (rb_playlist_source_mark_dirty):
+	* sources/rb-playlist-source.h:
+	* sources/rb-static-playlist-source.c:
+	(rb_static_playlist_source_constructor),
+	(rb_static_playlist_source_rows_reordered):
+	Add a new method on the playlist source class, called when the
+	playlist becomes dirty.  Mark static playlists dirty when rows are
+	reordered.
+	
+	* shell/Makefile.am:
+	* corelib/Makefile.am:
+	Link rhythmdb into the core shared library rather than the rhythmbox
+	binary.
+	
+	* lib/rb-marshal.list:
+	* rhythmdb/Makefile.am:
+	* rhythmdb/rhythmdb-import-job.c:
+	* rhythmdb/rhythmdb-import-job.h:
+	* bindings/python/Makefile.am:
+	* bindings/python/rhythmdb.defs:
+	New object for tracking the progress of the importing of a set of
+	paths.  Counts the total number of database entries to be added, and
+	emits a signal when the whole job is done.
+	
+	* shell/rb-shell.c: (construct_sources):
+	* sources/rb-import-errors-source.c: (rb_import_errors_source_new):
+	* sources/rb-import-errors-source.h:
+	Take entry type as a parameter so we can have import error sources
+	attached to devices etc.
+	
+	* rhythmdb/rhythmdb-monitor.c: (entry_volume_mounted_or_unmounted):
+	* rhythmdb/rhythmdb-private.h:
+	* rhythmdb/rhythmdb.h:
+	* rhythmdb/rhythmdb.c: (process_added_entries_cb),
+	(rhythmdb_process_stat_event), (rhythmdb_add_import_error_entry),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_file_created_or_modified), (queue_stat_uri),
+	(queue_stat_uri_tad), (action_thread_main), (rhythmdb_add_uri),
+	(rhythmdb_add_uri_with_types), (default_sync_metadata),
+	(rhythmdb_register_core_entry_types):
+	* sources/rb-removable-media-source.c:
+	(rb_removable_media_source_track_added):
+	When adding paths to the database, carry around entry types to use for
+	ignored files and import errors, as well as for successful imports.
+	Allows use of per-device entry types for these.
+	
+	* sources/rb-sourcelist.c: (rb_sourcelist_edit_source_name):
+	When editing a source's name, expand the tree so the source is
+	visible.
+	
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync),
+	(add_playlist_to_menu):  Disable the add-to-playlist menu when the
+	selected source's entry type doesn't have playlists.
+	
+	* shell/rb-statusbar.c: (rb_statusbar_sync_status):
+	Adjust the statusbar progress bar logic so the library being busy
+	doesn't take precedence over all other progress values.
+
+	* plugins/generic-player/Makefile.am:
+	* plugins/generic-player/generic-player-ui.xml:
+	* plugins/generic-player/rb-generic-player-playlist-source.c:
+	* plugins/generic-player/rb-generic-player-playlist-source.h:
+	* plugins/generic-player/rb-generic-player-plugin.c:
+	(rb_generic_player_plugin_class_init),
+	(rb_generic_player_plugin_new_playlist),
+	(rb_generic_player_plugin_delete_playlist), (create_source_cb):
+	* plugins/generic-player/rb-generic-player-source.c:
+	(rb_generic_player_source_class_init), (impl_constructor),
+	(impl_set_property), (impl_get_property), (set_playlist_formats),
+	(debug_device_info), (get_device_info), (impl_dispose),
+	(impl_finalize), (rb_generic_player_source_new),
+	(impl_delete_thyself), (import_complete_cb),
+	(import_status_changed_cb), (load_songs), (default_get_mount_path),
+	(impl_get_status), (playlist_deleted_cb),
+	(rb_generic_player_source_add_playlist),
+	(default_uri_from_playlist_uri), (default_uri_to_playlist_uri),
+	(rb_generic_player_source_uri_from_playlist_uri),
+	(rb_generic_player_source_uri_to_playlist_uri),
+	(load_playlist_file),
+	(rb_generic_player_source_set_supported_formats),
+	(rb_generic_player_source_get_playlist_format),
+	(rb_generic_player_source_get_playlist_path):
+	* plugins/generic-player/rb-generic-player-source.h:
+	* plugins/generic-player/rb-nokia770-source.c:
+	(rb_nokia770_source_class_init), (impl_uri_from_playlist_uri):
+	Use RhythmDBImportJob to add files from the player.  Use its signals
+	to display import status.  Only load playlists from the device when
+	the import is complete, so the ordering doesn't get lost.
+	
+	Add import error and ignored file entry types for each generic player
+	device.  Create an import errors source so they don't go into the main 
+	import errors source.
+
+	Add methods to map URIs from the file system to the device, so we can
+	write playlists to the device that it can understand.  Default mapping
+	from the file system to the device is to strip the device's mount
+	point.
+
+	Move playlist load/save methods to a new generic player playlist
+	source class.  Add methods and UI actions to create and delete playlists 
+	on the device.  When these playlists are marked dirty, save them to
+	the device after a short delay.
+
+	Add support for iRiver .pla playlists if totem is new enough.
+
 2007-10-10  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac: fix cut'n'paste error in the MTP detection code

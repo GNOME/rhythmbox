@@ -96,8 +96,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/corelib/librhythmbox-core.la	\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/podcast/librbpodcast.la	        \
-	$(top_builddir)/plugins/librbplugins.la		\
-	$(top_builddir)/rhythmdb/librhythmdb.la
+	$(top_builddir)/plugins/librbplugins.la	
 
 if USE_LIBSOUP
 rhythmbox_LDADD += $(SOUP_LIBS)

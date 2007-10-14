@@ -92,6 +92,7 @@ static void rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entr
 static void rb_playlist_source_track_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 						     GtkTreeModel *tree_model, GtkTreeIter *iter,
 						     RBPlaylistSource *source);
+static void default_mark_dirty (RBPlaylistSource *source);
 
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
 #define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
@@ -154,6 +155,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
+	klass->impl_mark_dirty = default_mark_dirty;
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -810,12 +812,20 @@ rb_playlist_source_get_query_model (RBPlaylistSource *source)
 	return source->priv->model;
 }
 
+static void
+default_mark_dirty (RBPlaylistSource *source)
+{
+	source->priv->dirty = TRUE;
+}
+
 void
 rb_playlist_source_mark_dirty (RBPlaylistSource *source)
 {
+	RBPlaylistSourceClass *klass;
 	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
-	source->priv->dirty = TRUE;
+	klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
+	klass->impl_mark_dirty (source);
 }
 
 gboolean
@@ -857,3 +867,4 @@ rb_playlist_source_add_to_map (RBPlaylistSource *source,
 
 	return TRUE;
 }
+

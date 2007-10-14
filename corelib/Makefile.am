@@ -9,6 +9,7 @@ librhythmbox_core_la_LIBADD = 				\
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/metadata/librbmetadata.la	\
 	$(top_builddir)/widgets/librbwidgets.la         \
+	$(top_builddir)/rhythmdb/librhythmdb.la		\
 	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/lib/librb.la
 

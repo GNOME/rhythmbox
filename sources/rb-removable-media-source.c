@@ -506,7 +506,7 @@ rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 		g_object_unref (shell);
 
 		g_object_get (source, "entry-type", &entry_type, NULL);
-		rhythmdb_add_uri_with_type (db, uri, entry_type);
+		rhythmdb_add_uri_with_types (db, uri, entry_type, RHYTHMDB_ENTRY_TYPE_INVALID, RHYTHMDB_ENTRY_TYPE_INVALID);
 		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
 
 		g_object_unref (db);

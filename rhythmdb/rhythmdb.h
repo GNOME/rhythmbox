@@ -70,7 +70,8 @@ typedef struct {
 
 	guint				entry_type_data_size;
 	gboolean			save_to_disk;
-	 RhythmDBEntryCategory		category;
+	gboolean			has_playlists;
+	RhythmDBEntryCategory		category;
 
 	/* virtual functions here */
 	RhythmDBEntryActionFunc		post_entry_create;
@@ -358,7 +359,11 @@ RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, RhythmDBEntryType type, const 
 RhythmDBEntry *	rhythmdb_entry_example_new	(RhythmDB *db, RhythmDBEntryType type, const char *uri);
 
 void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
-void		rhythmdb_add_uri_with_type	(RhythmDB *db, const char *uri, RhythmDBEntryType type);
+void		rhythmdb_add_uri_with_types (RhythmDB *db,
+					     const char *uri,
+					     RhythmDBEntryType type,
+					     RhythmDBEntryType ignore_type,
+					     RhythmDBEntryType error_type);
 
 void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,

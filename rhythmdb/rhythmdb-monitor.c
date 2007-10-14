@@ -366,7 +366,9 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 			rhythmdb_entry_set_visibility (ctxt->db, entry, TRUE);
 			queue_stat_uri (location,
 					ctxt->db,
-					RHYTHMDB_ENTRY_TYPE_SONG);
+					RHYTHMDB_ENTRY_TYPE_SONG,
+					RHYTHMDB_ENTRY_TYPE_IGNORE,
+					RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
 		} else {
 			GTimeVal time;
 			GValue val = {0, };

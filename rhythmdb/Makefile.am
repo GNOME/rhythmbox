@@ -30,7 +30,9 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-query-model.h				\
 	rhythmdb-query-model.c				\
 	rhythmdb-query-results.h			\
-	rhythmdb-query-results.c
+	rhythmdb-query-results.c			\
+	rhythmdb-import-job.h				\
+	rhythmdb-import-job.c
 
 
 if USE_TREEDB

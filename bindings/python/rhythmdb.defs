@@ -404,13 +404,15 @@
   )
 )
 
-(define-method add_uri_with_type
+(define-method add_uri_with_types
   (of-object "RhythmDB")
-  (c-name "rhythmdb_add_uri_with_type")
+  (c-name "rhythmdb_add_uri_with_types")
   (return-type "none")
   (parameters
     '("const-char*" "uri")
     '("RhythmDBEntryType_*" "type")
+    '("RhythmDBEntryType_*" "ignore_type")
+    '("RhythmDBEntryType_*" "error_type")
   )
 )
 
@@ -1109,4 +1111,67 @@
   (of-object "RBStringValueMap")
   (c-name "rb_string_value_map_size")
   (return-type "guint")
+)
+
+;; From rhythmdb-import-job.h
+
+(define-function rhythmdb_import_job_get_type
+  (c-name "rhythmdb_import_job_get_type")
+  (return-type "GType")
+)
+
+(define-method import_job_new
+  (of-object "RhythmDB")
+  (c-name "rhythmdb_import_job_new")
+  (return-type "RhythmDBImportJob*")
+  (parameters
+    '("RhythmDBEntryType" "entry_type")
+    '("RhythmDBEntryType" "ignore_type")
+    '("RhythmDBEntryType" "error_type")
+  )
+)
+
+(define-method add_uri
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_add_uri")
+  (return-type "none")
+  (parameters
+    '("const-char*" "uri")
+  )
+)
+
+(define-method start
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_start")
+  (return-type "none")
+)
+
+(define-method cancel
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_cancel")
+  (return-type "none")
+)
+
+(define-method complete
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_complete")
+  (return-type "gboolean")
+)
+
+(define-method scan_complete
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_scan_complete")
+  (return-type "gboolean")
+)
+
+(define-method get_total
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_get_total")
+  (return-type "int")
+)
+
+(define-method get_imported
+  (of-object "RhythmDBImportJob")
+  (c-name "rhythmdb_import_job_get_imported")
+  (return-type "int")
 )

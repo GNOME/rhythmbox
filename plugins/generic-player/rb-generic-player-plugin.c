@@ -37,11 +37,14 @@
 #include "rb-dialog.h"
 #include "rb-removable-media-manager.h"
 #include "rb-generic-player-source.h"
+#include "rb-generic-player-playlist-source.h"
 #include "rb-psp-source.h"
 #ifdef HAVE_HAL
 #include "rb-nokia770-source.h"
 #endif
 #include "rb-file-helpers.h"
+#include "rb-stock-icons.h"
+#include "rb-sourcelist.h"
 
 
 #define RB_TYPE_GENERIC_PLAYER_PLUGIN		(rb_generic_player_plugin_get_type ())
@@ -59,6 +62,7 @@ typedef struct
 	guint ui_merge_id;
 
 	GList *player_sources;
+	GtkActionGroup *actions;
 } RBGenericPlayerPlugin;
 
 typedef struct
@@ -75,7 +79,21 @@ static void rb_generic_player_plugin_finalize (GObject *object);
 static void impl_activate (RBPlugin *plugin, RBShell *shell);
 static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
+static void rb_generic_player_plugin_new_playlist (GtkAction *action,
+						   RBGenericPlayerPlugin *plugin);
+static void rb_generic_player_plugin_delete_playlist (GtkAction *action,
+						      RBGenericPlayerPlugin *plugin);
+
 RB_PLUGIN_REGISTER(RBGenericPlayerPlugin, rb_generic_player_plugin)
+
+static GtkActionEntry rb_generic_player_plugin_actions[] = {
+	{ "GenericPlayerSourceNewPlaylist", RB_STOCK_PLAYLIST_NEW, N_("New Playlist"), NULL,
+	  N_("Create a new playlist on this device"),
+	  G_CALLBACK (rb_generic_player_plugin_new_playlist) },
+	{ "GenericPlayerPlaylistDelete", GTK_STOCK_DELETE, N_("Delete Playlist"), NULL,
+	  N_("Delete this playlist"),
+	  G_CALLBACK (rb_generic_player_plugin_delete_playlist) },
+};
 
 static void
 rb_generic_player_plugin_class_init (RBGenericPlayerPluginClass *klass)
@@ -89,6 +107,7 @@ rb_generic_player_plugin_class_init (RBGenericPlayerPluginClass *klass)
 	plugin_class->deactivate = impl_deactivate;
 
 	RB_PLUGIN_REGISTER_TYPE(rb_generic_player_source);
+	RB_PLUGIN_REGISTER_TYPE(rb_generic_player_playlist_source);
 	RB_PLUGIN_REGISTER_TYPE(rb_psp_source);
 #ifdef HAVE_HAL
 	RB_PLUGIN_REGISTER_TYPE(rb_nokia770_source);
@@ -118,6 +137,56 @@ rb_generic_player_plugin_source_deleted (RBGenericPlayerSource *source, RBGeneri
 	plugin->player_sources = g_list_remove (plugin->player_sources, source);
 }
 
+static void
+rb_generic_player_plugin_new_playlist (GtkAction *action, RBGenericPlayerPlugin *plugin)
+{
+	RBSource *source;
+	RBSourceList *sourcelist;
+
+	g_object_get (plugin->shell,
+		      "selected-source", &source,
+		      "sourcelist", &sourcelist,
+		      NULL);
+	if (source != NULL && RB_IS_GENERIC_PLAYER_SOURCE (source)) {
+		RBSource *playlist;
+		RhythmDBEntryType entry_type;
+
+		g_object_get (source, "entry-type", &entry_type, NULL);
+
+		playlist = rb_generic_player_playlist_source_new (plugin->shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, entry_type);
+		g_boxed_free (RHYTHMDB_TYPE_ENTRY_TYPE, entry_type);
+
+		rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
+						       plugin->shell,
+						       playlist);
+
+		rb_sourcelist_edit_source_name (sourcelist, playlist);
+	}
+
+	if (source != NULL) {
+		g_object_unref (source);
+	}
+	g_object_unref (sourcelist);
+}
+
+static void
+rb_generic_player_plugin_delete_playlist (GtkAction *actino, RBGenericPlayerPlugin *plugin)
+{
+	RBSource *source;
+	
+	g_object_get (plugin->shell,
+		      "selected-source", &source,
+		      NULL);
+	if (source != NULL && RB_IS_GENERIC_PLAYER_PLAYLIST_SOURCE (source)) {
+		if (RB_IS_GENERIC_PLAYER_PLAYLIST_SOURCE (source)) {
+			rb_generic_player_playlist_delete_from_player (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (source));
+			rb_source_delete_thyself (source);
+		}
+
+		g_object_unref (source);
+	}
+}
+
 static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBGenericPlayerPlugin *plugin)
 {
@@ -132,12 +201,24 @@ create_source_cb (RBRemovableMediaManager *rmm, GnomeVFSVolume *volume, RBGeneri
 	if (source == NULL && rb_generic_player_is_volume_player (volume))
 		source = RB_SOURCE (rb_generic_player_source_new (plugin->shell, volume));
 
+	if (plugin->actions == NULL) {
+		plugin->actions = gtk_action_group_new ("GenericPlayerActions");
+		gtk_action_group_set_translation_domain (plugin->actions, GETTEXT_PACKAGE);
+		gtk_action_group_add_actions (plugin->actions,
+					      rb_generic_player_plugin_actions,
+					      G_N_ELEMENTS (rb_generic_player_plugin_actions),
+					      plugin);
+	}
+
 	if (source) {
 		if (plugin->ui_merge_id == 0) {
 			GtkUIManager *uimanager = NULL;
 			char *file = NULL;
 
 			g_object_get (G_OBJECT (plugin->shell), "ui-manager", &uimanager, NULL);
+
+			gtk_ui_manager_insert_action_group (uimanager, plugin->actions, 0);
+
 			file = rb_plugin_find_file (RB_PLUGIN (plugin), "generic-player-ui.xml");
 			plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
 									       file,

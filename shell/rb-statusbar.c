@@ -407,8 +407,17 @@ rb_statusbar_sync_status (RBStatusbar *status)
          * Behaviour of status bar:
 	 * - use source's status text
 	 * - use source's progress value and text, unless internal progress value is set,
-	 *     or the library is busy
+	 * - if no source progress value or internal progress value and library is busy,
+	 *    pulse the progress bar
          */
+        
+	/* library busy? */
+        if (rhythmdb_is_busy (status->priv->db)) {
+		/*g_free (status_text);
+		status_text = g_strdup (status->priv->loading_text); */
+		progress = -1.0f;
+		changed = TRUE;
+        }
 
 	/* get source details */
         if (status->priv->selected_source) {
@@ -419,18 +428,12 @@ rb_statusbar_sync_status (RBStatusbar *status)
 
         /* internal progress bar moving? */
         if (status->priv->progress_fraction < (1.0 - EPSILON) || status->priv->progress_changed) {
-		progress = status->priv->progress_fraction;
+		g_free (progress_text);
                 progress_text = g_strdup (status->priv->progress_text);
+		progress = status->priv->progress_fraction;
+
                 status->priv->progress_changed = FALSE;
 		show_progress = TRUE;
-		changed = TRUE;
-        }
-
-        /* library busy? */
-        if (rhythmdb_is_busy (status->priv->db)) {
-		/*g_free (status_text);
-		status_text = g_strdup (status->priv->loading_text); */
-		progress = -1.0f;
 		changed = TRUE;
         }
 

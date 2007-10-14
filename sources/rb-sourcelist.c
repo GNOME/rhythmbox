@@ -1188,6 +1188,7 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist,
 	g_assert (rb_sourcelist_visible_source_to_iter (sourcelist, source, &iter));
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (sourcelist->priv->filter_model),
 					&iter);
+	gtk_tree_view_expand_to_path (GTK_TREE_VIEW (sourcelist->priv->treeview), path);
 
 	/* Make cell editable just for the moment.
 	   We'll turn it off once editing is done. */

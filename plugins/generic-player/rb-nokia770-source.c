@@ -42,7 +42,7 @@
 #include "rb-plugin.h"
 
 
-static char * impl_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri);
+static char * impl_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri);
 
 
 typedef struct {
@@ -62,7 +62,7 @@ rb_nokia770_source_class_init (RBNokia770SourceClass *klass)
 {
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
 
-	generic_class->impl_transform_playlist_uri = impl_transform_playlist_uri;
+	generic_class->impl_uri_from_playlist_uri = impl_uri_from_playlist_uri;
 
 	g_type_class_add_private (klass, sizeof (RBNokia770SourcePrivate));
 }
@@ -105,7 +105,7 @@ rb_nokia770_source_new (RBShell *shell, GnomeVFSVolume *volume)
 }
 
 static char *
-impl_transform_playlist_uri (RBGenericPlayerSource *source, const char *uri)
+impl_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 {
 	const char *path;
 	char *local_uri;

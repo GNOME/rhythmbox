@@ -80,6 +80,11 @@ static void rb_static_playlist_source_non_entry_dropped (GtkTreeModel *model,
 							 const char *uri,
 							 int position,
 							 RBStaticPlaylistSource *source);
+static void rb_static_playlist_source_rows_reordered (GtkTreeModel *model,
+						      GtkTreePath *path,
+						      GtkTreeIter *iter,
+						      gint *order_map,
+						      RBStaticPlaylistSource *source);
 
 static void search_action_changed (GtkRadioAction *action,
 				   GtkRadioAction *current,
@@ -281,6 +286,9 @@ rb_static_playlist_source_constructor (GType type,
 				 source, 0);
 	g_signal_connect_object (priv->base_model, "non-entry-dropped",
 				 G_CALLBACK (rb_static_playlist_source_non_entry_dropped),
+				 source, 0);
+	g_signal_connect_object (priv->base_model, "rows-reordered",
+				 G_CALLBACK (rb_static_playlist_source_rows_reordered),
 				 source, 0);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
@@ -781,6 +789,17 @@ rb_static_playlist_source_row_inserted (GtkTreeModel *model,
 
 	rhythmdb_entry_unref (entry);
 }
+
+static void
+rb_static_playlist_source_rows_reordered (GtkTreeModel *model,
+					  GtkTreePath *path,
+					  GtkTreeIter *iter,
+					  gint *order_map,
+					  RBStaticPlaylistSource *source)
+{
+	rb_playlist_source_mark_dirty (RB_PLAYLIST_SOURCE (source));
+}
+
 
 static GList *
 impl_get_search_actions (RBSource *source)

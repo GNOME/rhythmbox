@@ -26,6 +26,9 @@
 #include "rb-removable-media-source.h"
 #include "rhythmdb.h"
 
+#include <totem-pl-parser.h>
+#include <libgnomevfs/gnome-vfs-volume.h>
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_GENERIC_PLAYER_SOURCE         (rb_generic_player_source_get_type ())
@@ -48,8 +51,8 @@ typedef struct
 	void		(*impl_load_playlists) (RBGenericPlayerSource *source);
 	char **		(*impl_get_audio_folders) (RBGenericPlayerSource *source);
 
-	/* used internally in the base load_playlist implementation*/
-	char *		(*impl_transform_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
+	char *		(*impl_uri_from_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
+	char *		(*impl_uri_to_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
 
 #if ENABLE_TRACK_TRANSFER
 	/* used for track transfer - returns the filename relative to the audio folder on the device */
@@ -57,13 +60,22 @@ typedef struct
 #endif
 } RBGenericPlayerSourceClass;
 
-RBRemovableMediaSource *	rb_generic_player_source_new		(RBShell *shell, GnomeVFSVolume *volume);
+RBRemovableMediaSource *rb_generic_player_source_new			(RBShell *shell, GnomeVFSVolume *volume);
 GType			rb_generic_player_source_get_type		(void);
 GType			rb_generic_player_source_register_type		(GTypeModule *module);
 
 char *			rb_generic_player_source_get_mount_path		(RBGenericPlayerSource *source);
+char *			rb_generic_player_source_uri_from_playlist_uri  (RBGenericPlayerSource *source,
+									 const char *uri);
+char *			rb_generic_player_source_uri_to_playlist_uri    (RBGenericPlayerSource *source,
+									 const char *uri);
+void			rb_generic_player_source_set_supported_formats  (RBGenericPlayerSource *source,
+									 TotemPlParser *parser);
+TotemPlParserType	rb_generic_player_source_get_playlist_format	(RBGenericPlayerSource *source);
+char *			rb_generic_player_source_get_playlist_path	(RBGenericPlayerSource *source);
 
 gboolean		rb_generic_player_is_volume_player		(GnomeVFSVolume *volume);
+
 
 /* for subclasses */
 void			rb_generic_player_source_add_playlist		(RBGenericPlayerSource *source,

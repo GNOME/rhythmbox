@@ -56,6 +56,7 @@ BINDING_HEADERS_SRCDIR_IN = \
 	rhythmdb/rhythmdb-property-model.h	\
 	rhythmdb/rhythmdb-query-model.h		\
 	rhythmdb/rhythmdb-query-results.h	\
+	rhythmdb/rhythmdb-import-job.h		\
 	shell/rb-shell.h			\
 	shell/rb-shell-player.h			\
 	shell/rb-removable-media-manager.h	\

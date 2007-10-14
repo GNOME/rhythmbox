@@ -22,7 +22,7 @@
 
 #include "rb-shell.h"
 #include "rb-source.h"
-#include "rb-library-source.h"
+#include "rhythmdb.h"
 
 G_BEGIN_DECLS
 
@@ -50,7 +50,7 @@ typedef struct
 GType		rb_import_errors_source_get_type		(void);
 
 RBSource *      rb_import_errors_source_new			(RBShell *shell,
-								 RBLibrarySource *library_source);
+								 RhythmDBEntryType entry_type);
 
 G_END_DECLS
 
