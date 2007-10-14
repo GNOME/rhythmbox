@@ -280,7 +280,7 @@ impl_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_DB:
-		job->priv->db = g_value_dup_object (value);
+		job->priv->db = RHYTHMDB (g_value_dup_object (value));
 		g_signal_connect_object (job->priv->db,
 					 "entry-added",
 					 G_CALLBACK (entry_added_cb),
