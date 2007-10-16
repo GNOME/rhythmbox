@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-15 02:48+0300\n"
+"POT-Creation-Date: 2007-10-16 14:26+0300\n"
 "PO-Revision-Date: 2007-10-15 02:54+0300\n"
 "Last-Translator: Žygimantas Beručka <zygis@gnome.org>\n"
 "Language-Team: Lithuanian <gnome-lt@lists.akl.lt>\n"
@@ -33,29 +33,24 @@ msgid "Failed to create %s element; check your installation"
 msgstr "Nepavyko sukurti %s elemento; patikrinkite įdiegimą"
 
 #: ../backends/gstreamer/rb-player-gst.c:695
-#, c-format
 msgid "Unknown playback error"
 msgstr "Nežinoma grojimo klaida"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1056
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1070
-#, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Nepavyko susieti naujo srauto su GStreamer konvejeriu"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1094
-#, c-format
 msgid "Failed to start new stream"
 msgstr "Nepavyko paleisti naujo srauto"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2551
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2639
-#, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Nepavyko sukurti GStreamer elemento; patikrinkite įdiegimą"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2564
-#, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Nepavyko sukurti garso išvesties elemento; patikrinkite įdiegimą"
 
@@ -64,7 +59,6 @@ msgstr "Nepavyko sukurti garso išvesties elemento; patikrinkite įdiegimą"
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2681
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2690
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2699
-#, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Nepavyko susieti GStreamer konvejerio; patikrinkite įdiegimą"
 
@@ -627,7 +621,6 @@ msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d iš %d:%02d:%02d"
 
 #: ../metadata/rb-metadata-dbus-client.c:295
-#, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Vidinė GStreamer klaida; praneškite apie ją"
 
@@ -639,7 +632,6 @@ msgstr "Vidinė GStreamer klaida; praneškite apie ją"
 #: ../metadata/rb-metadata-dbus-client.c:406
 #: ../metadata/rb-metadata-dbus-client.c:546
 #: ../metadata/rb-metadata-dbus-client.c:556
-#, c-format
 msgid "D-BUS communication error"
 msgstr "D-BUS komunikacijos klaida"
 
@@ -654,22 +646,18 @@ msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Faile yra %s tipo srautas, kurio dekoduoti nepavyko"
 
 #: ../metadata/rb-metadata-gst.c:952
-#, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Nepavyko sukurti šaltinio elemento; patikrinkite įdiegimą"
 
 #: ../metadata/rb-metadata-gst.c:1016
-#, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "GStreamer klaida: nepavyko pakeisti būsenos"
 
 #: ../metadata/rb-metadata-gst.c:1111
-#, c-format
 msgid "Empty file"
 msgstr "Tuščias failas"
 
 #: ../metadata/rb-metadata-gst.c:1119
-#, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Nepavyko atpažinti failo MIME tipo"
 
@@ -679,17 +667,14 @@ msgid "Unsupported file type: %s"
 msgstr "Pateiktas failo tipas: %s"
 
 #: ../metadata/rb-metadata-gst.c:1264
-#, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Nepavyko sukurti žymų rašymo elementų"
 
 #: ../metadata/rb-metadata-gst.c:1279
-#, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Baigėsi laiko limitas nustatant konvejerį į NULL"
 
 #: ../metadata/rb-metadata-gst.c:1298
-#, c-format
 msgid "File corrupted during write"
 msgstr "Failas rašymo metu sugadintas"
 
@@ -776,7 +761,6 @@ msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox nepavyko gauti priėjimo prie CD įrenginio."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:116
-#, c-format
 msgid "Cannot create MusicBrainz client"
 msgstr "Nepavyko sukurti MusicBrainz kliento"
 
@@ -802,7 +786,6 @@ msgid "Track %d"
 msgstr "Takelis %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:283
-#, c-format
 msgid ""
 "MusicBrainz metadata object is not valid. This is bad, check your console "
 "for errors."
@@ -838,7 +821,6 @@ msgid "Incomplete metadata for this CD"
 msgstr "Šio CD metaduomenys nepilni"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:707
-#, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Nepavyko sukurti CD peržiūros gijos"
 
@@ -1119,7 +1101,6 @@ msgid "Unable to create audio CD"
 msgstr "Nepavyko sukurti audio CD"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:429
-#, c-format
 msgid "Failed to create pipeline"
 msgstr "Nepavyko sukurti konvejerio"
 
@@ -1138,17 +1119,14 @@ msgid "Could not get current track position"
 msgstr "Nepavyko gauti takelio dabartinės pozicijos"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:648
-#, c-format
 msgid "Could not start pipeline playing"
 msgstr "Nepavyko pradėti konvejerinio grojimo"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:659
-#, c-format
 msgid "Could not pause playback"
 msgstr "Nepavyko pristabdyti grojimo"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:856
-#, c-format
 msgid "Cannot find drive"
 msgstr "Nepavyko rasti įrenginio"
 
@@ -1164,7 +1142,6 @@ msgstr "Įrenginys %s negali rašyti diskų"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1094
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1287
-#, c-format
 msgid "No writable drives found."
 msgstr "Nerasta rašomų įrenginių."
 
@@ -1174,7 +1151,6 @@ msgid "Could not get track time for file: %s"
 msgstr "Nepavyko gauti failo trukmės: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1296
-#, c-format
 msgid "Could not determine audio track durations."
 msgstr "Nepavyko nustatyti garso takelių trukmės."
 
@@ -1467,12 +1443,10 @@ msgstr "Sukurti audio CD iš „%s“?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
-#, c-format
 msgid "Unable to build an audio track list."
 msgstr "Nepavyko sudaryti audio takelių sąrašo."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
-#, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Šis grojaraštis per ilgas, kad jį būtų galima įrašyti į audio CD."
 
@@ -2692,12 +2666,10 @@ msgid "Window"
 msgstr "Langas"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:694
-#, c-format
 msgid "Unable to start video output"
 msgstr "Nepavyko paleisti vaizdo išvesties"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:729
-#, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Nepavyko susieti naujo vaizdo efekto su GStreamer konvejeriu"
 
@@ -2885,7 +2857,6 @@ msgid "Not playing"
 msgstr "Negroja"
 
 #: ../remote/dbus/rb-client.c:616
-#, c-format
 msgid "Playback is muted.\n"
 msgstr "Grojimas nutildytas.\n"
 
@@ -2907,7 +2878,6 @@ msgid "All"
 msgstr "Visi"
 
 #: ../rhythmdb/rhythmdb-tree.c:367
-#, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
@@ -3339,22 +3309,18 @@ msgid "Failed to create the player: %s"
 msgstr "Nepavyko sukurti grotuvo: %s"
 
 #: ../shell/rb-shell-player.c:1313
-#, c-format
 msgid "Playlist was empty"
 msgstr "Grojaraštis buvo tuščias"
 
 #: ../shell/rb-shell-player.c:1770
-#, c-format
 msgid "Not currently playing"
 msgstr "Šiuo metu negroja"
 
 #: ../shell/rb-shell-player.c:1808
-#, c-format
 msgid "No previous song"
 msgstr "Nėra ankstesnės dainos"
 
 #: ../shell/rb-shell-player.c:1885
-#, c-format
 msgid "No next song"
 msgstr "Nėra sekančios dainos"
 
@@ -3367,7 +3333,6 @@ msgid "Couldn't stop playback"
 msgstr "Nepavyko sustabdyti grojimo"
 
 #: ../shell/rb-shell-player.c:2889
-#, c-format
 msgid "Current song is not seekable"
 msgstr "Šios dainos prasukti negalima"
 
@@ -3649,13 +3614,13 @@ msgstr "Įtraukti failą į biblioteką"
 #: ../shell/rb-shell.c:2963
 #, c-format
 msgid "by <i>%s</i>"
-msgstr "atliekama <b>%s</b>"
+msgstr "atliekama <i>%s</i>"
 
 #. Translators: from Album
 #: ../shell/rb-shell.c:2984
 #, c-format
 msgid "from <i>%s</i>"
-msgstr "iš <b>%s<b>"
+msgstr "iš <i>%s</i>"
 
 #: ../shell/rb-shell.c:3189
 #, c-format
