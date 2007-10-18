@@ -23,6 +23,17 @@
 
 #include <config.h>
 
+#ifdef ENABLE_PYTHON
+/* pyconfig.h usually defines _XOPEN_SOURCE */
+#undef _XOPEN_SOURCE
+#include <pygobject.h>
+
+/* make sure it's defined somehow */
+#ifndef _XOPEN_SOURCE
+#define _XOPEN_SOURCE
+#endif
+#endif
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
@@ -310,7 +321,13 @@ main (int argc, char **argv)
 	} else {
 
 		rb_profile_start ("mainloop");
+#ifdef ENABLE_PYTHON
+		pyg_begin_allow_threads;
+#endif
 		gtk_main ();
+#ifdef ENABLE_PYTHON
+		pyg_end_allow_threads;
+#endif
 		rb_profile_end ("mainloop");
 
 		rb_debug ("out of toplevel loop");

@@ -109,6 +109,7 @@ INCLUDES += $(NOTIFY_CFLAGS)
 endif
 
 if ENABLE_PYTHON
+INCLUDES += $(PYGTK_CFLAGS)  $(PYTHON_CFLAGS)
 rhythmbox_LDADD += $(PYTHON_LIBS) $(top_builddir)/bindings/python/rb.la
 endif
 
