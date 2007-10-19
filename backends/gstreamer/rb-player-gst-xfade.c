@@ -1544,8 +1544,8 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 static gboolean
 stream_queue_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
 {
-	guint64 level = 0;
-	guint64 progress = 0;
+	guint level = 0;
+	guint progress = 0;
 
 	g_object_get (stream->queue, "current-level-bytes", &level, NULL);
 	if (stream->queue_threshold > 0) {
@@ -1555,9 +1555,7 @@ stream_queue_probe_cb (GstPad *pad, GstBuffer *data, RBXFadeStream *stream)
 	} else {
 		progress = 99;
 	}
-	rb_debug ("current network buffer level: %" G_GUINT64_FORMAT
-		  "; threshold %u"
-		  " - %" G_GUINT64_FORMAT "%%",
+	rb_debug ("current network buffer level: %u; threshold %u - %u%%",
 		  level, stream->queue_threshold, progress);
 
 	post_buffering_message (stream, progress);

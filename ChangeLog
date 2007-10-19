@@ -1,3 +1,10 @@
+2007-10-20  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(stream_queue_probe_cb):
+	The queue element's 'current-level-bytes' property isn't actually a
+	guint64.
+
 2007-10-18  Jonathan Matthew  <jonathan@d14n.org>
 
 	* shell/Makefile.am:
