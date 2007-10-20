@@ -966,6 +966,9 @@ rebuild_playlist_menu (RBShellClipboard *clipboard)
 	GtkTreeModel *model = NULL;
 	GObject *sourcelist = NULL;
 
+	if (clipboard->priv->source == NULL)
+		return;
+
 	rb_debug ("rebuilding add-to-playlist menu");
 
 	if (clipboard->priv->playlist_menu_ui_id != 0) {

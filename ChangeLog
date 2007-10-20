@@ -1,3 +1,9 @@
+2007-10-20  James Livingston  <doclivingston@gmail.com>
+
+	* shell/rb-shell-clipboard.c: (rebuild_playlist_menu): fix a warning
+	on startup, by not trying to re-build the playlist menu if there is no
+	active clipboard source.
+
 2007-10-20  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:
