@@ -163,6 +163,9 @@ cursor_changed_cb (GtkTreeSelection *selection,
 
 	view = gtk_tree_selection_get_tree_view (selection);
 	info = plugin_manager_get_selected_plugin (pm);
+	if (info == NULL) {
+		return;
+	}
 
 	/* update info widgets */
 	string = g_strdup_printf ("<span size=\"x-large\">%s</span>",
@@ -411,6 +414,7 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *cell;
 	GtkTreeModel *filter;
+	GtkTreeSelection *selection;
 
 	pm->priv->plugin_model = GTK_TREE_MODEL (gtk_list_store_new (N_COLUMNS, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN, G_TYPE_POINTER));
 	filter = gtk_tree_model_filter_new (pm->priv->plugin_model, NULL);
@@ -420,6 +424,9 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (pm->priv->tree), TRUE);
 	gtk_tree_view_set_headers_clickable (GTK_TREE_VIEW (pm->priv->tree), TRUE);
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree));
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_BROWSE);
 
 	/* first column */
 	cell = gtk_cell_renderer_toggle_new ();
@@ -452,7 +459,7 @@ plugin_manager_construct_tree (RBPluginManager *pm)
 					     NULL,
 					     NULL);
 
-	g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (pm->priv->tree)),
+	g_signal_connect (selection,
 			  "changed",
 			  G_CALLBACK (cursor_changed_cb),
 			  pm);

@@ -1,5 +1,13 @@
 2007-10-20  Jonathan Matthew  <jonathan@d14n.org>
 
+	based on a patch by:  Philip Withnall <pwithnall@svn.gnome.org>
+
+	* plugins/rb-plugin-manager.c: (cursor_changed_cb),
+	(plugin_manager_construct_tree):
+	Prevent crash when using find on the plugins list.  Fixes #441902.
+
+2007-10-20  Jonathan Matthew  <jonathan@d14n.org>
+
 	* podcast/rb-feed-podcast-properties-dialog.c:
 	(rb_feed_podcast_properties_dialog_update_summary):
 	If the feed has no summary, try the description and subtitle.
