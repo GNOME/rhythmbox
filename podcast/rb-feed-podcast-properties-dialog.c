@@ -288,7 +288,17 @@ rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog 
 {
 	const char *summary;
 
-	summary = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_SUMMARY);
+	summary = rhythmdb_entry_get_string (dialog->priv->current_entry,
+					     RHYTHMDB_PROP_SUMMARY);
+	if (summary == NULL) {
+		summary = rhythmdb_entry_get_string (dialog->priv->current_entry,
+						     RHYTHMDB_PROP_DESCRIPTION);
+	}
+	if (summary == NULL) {
+		summary = rhythmdb_entry_get_string (dialog->priv->current_entry,
+						     RHYTHMDB_PROP_SUBTITLE);
+	}
+
 	gtk_label_set (GTK_LABEL (dialog->priv->summary), summary);
 }
 
