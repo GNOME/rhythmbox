@@ -324,6 +324,19 @@ rb_python_module_load (GTypeModule *gmodule)
 	return FALSE;
 }
 
+static gboolean
+rb_python_module_load_with_gil (GTypeModule *module)
+{
+	PyGILState_STATE state;
+	gboolean ret;
+
+	state = pyg_gil_state_ensure ();
+	ret = rb_python_module_load (module);
+	pyg_gil_state_release (state);
+
+	return ret;
+}
+
 static void
 rb_python_module_unload (GTypeModule *module)
 {
@@ -338,14 +351,18 @@ rb_python_module_new_object (RBPythonModule *module)
 {
 	RBPythonModulePrivate *priv = RB_PYTHON_MODULE_GET_PRIVATE (module);
 	RBPythonObject *object;
+	PyGILState_STATE state;
 
 	if (priv->type == 0)
 		return NULL;
 
+	state = pyg_gil_state_ensure ();
 	rb_debug ("Creating object of type %s", g_type_name (priv->type));
 	object = (RBPythonObject*) (g_object_new (priv->type,
 						  "name", priv->module,
 						  NULL));
+	pyg_gil_state_release (state);
+
 	if (object->instance == NULL) {
 		g_warning ("could not instantiate python object");
 		return NULL;
@@ -443,7 +460,7 @@ rb_python_module_class_init (RBPythonModuleClass *class)
 
 	g_type_class_add_private (object_class, sizeof (RBPythonModulePrivate));
 
-	module_class->load = rb_python_module_load;
+	module_class->load = rb_python_module_load_with_gil;
 	module_class->unload = rb_python_module_unload;
 
 	/* Init python subsystem, this should happen only once
