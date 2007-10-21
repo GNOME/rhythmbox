@@ -31,7 +31,14 @@ import traceback
 import gobject
 import gtk
 import pango
+import gconf
 import rhythmdb, rb
+
+try:
+	import rpdb2
+	have_rpdb2 = True
+except:
+	have_rpdb2 = False
 
 ui_str = """
 <ui>
@@ -39,6 +46,7 @@ ui_str = """
     <menu name="ToolsMenu" action="Tools">
       <placeholder name="ToolsOps_5">
         <menuitem name="PythonConsole" action="PythonConsole"/>
+        <menuitem name="PythonDebugger" action="PythonDebugger"/>
       </placeholder>
     </menu>
   </menubar>
@@ -54,13 +62,23 @@ class PythonConsolePlugin(rb.Plugin):
 		data = dict()
 		manager = shell.get_player().get_property('ui-manager')
 		
+		data['action_group'] = gtk.ActionGroup('PythonConsolePluginActions')
+
 		action = gtk.Action('PythonConsole', _('_Python Console'),
 		                    _("Show Rhythmbox's python console"),
-		                    'gnome-mime-text-x-python');
+		                    'gnome-mime-text-x-python')
 		action.connect('activate', self.show_console, shell)
-				
-		data['action_group'] = gtk.ActionGroup('PythonConsolePluginActions')
 		data['action_group'].add_action(action)
+
+		action = gtk.Action('PythonDebugger', _('Python Debugger'),
+				    _("Enable remote python debugging with rpdb2"),
+				    None)
+		if have_rpdb2:
+			action.connect('activate', self.enable_debugging, shell)
+		else:
+			action.set_visible(False)
+		data['action_group'].add_action(action)
+				
 		manager.insert_action_group(data['action_group'], 0)
 		data['ui_id'] = manager.add_ui_from_string(ui_str)
 		manager.ensure_update()
@@ -102,6 +120,11 @@ class PythonConsolePlugin(rb.Plugin):
 		else:
 			self.window.show_all()
 		self.window.grab_focus()
+
+	def enable_debugging(self, action, shell):
+		gconfclient = gconf.client_get_default()
+		password = gconfclient.get_string('/apps/rhythmbox/plugins/pythonconsole/rpdb2_password')
+		rpdb2.start_embedded_debugger(password)
 	
 	def destroy_console(self, *args):
 		self.window.destroy()
