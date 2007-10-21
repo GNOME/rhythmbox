@@ -3078,7 +3078,7 @@ rhythmdb_entry_sync_mirrored (RhythmDBEntry *entry,
 			new = NULL;
 		}
 
-		if (g_atomic_pointer_compare_and_exchange (&entry->first_seen_str, old, new)) {
+		if (g_atomic_pointer_compare_and_exchange (&entry->last_seen_str, old, new)) {
 			if (old != NULL) {
 				rb_refstring_unref (old);
 			}

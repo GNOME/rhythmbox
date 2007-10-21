@@ -1,5 +1,11 @@
 2007-10-21  Jonathan Matthew  <jonathan@d14n.org>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_sync_mirrored):
+	When updating the last-seen string, update the right member of the
+	entry structure.  Fixes #482130.
+
+2007-10-21  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/rb-python-module.c: (rb_python_module_load_with_gil),
 	(rb_python_module_new_object), (rb_python_module_class_init):
 	Ensure we hold the GIL when loading and instantiating python plugins.
