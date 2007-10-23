@@ -36,12 +36,14 @@ rb_la_CFLAGS = \
 rhythmdb.c: rhythmdb.defs rhythmdb.override
 	( cd $(srcdir) && $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
+		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--override $*.override \
 		--prefix py$* $(<F) ) > $@ 
 
 rb.c: rb.defs rb.override
 	( cd $(srcdir) && $(PYGTK_CODEGEN) \
 		--register $(PYGTK_DEFSDIR)/gtk-types.defs \
+		--register $(GST_PYTHON_DEFSDIR)/gst-types.defs \
 		--register rhythmdb.defs \
 		--override $*.override \
 		--prefix py$* $(<F) ) > $@ 

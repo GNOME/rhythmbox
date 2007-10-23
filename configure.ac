@@ -850,9 +850,11 @@ fi
 
 if test "x$have_python" != "xno"; then
 	PYGTK_REQUIRED=2.8.0
+	GST_PYTHON_REQUIRED=0.10.1
 
 	PKG_CHECK_MODULES([PYGTK], [
-		pygtk-2.0 >= $PYGTK_REQUIRED],
+		pygtk-2.0 >= $PYGTK_REQUIRED] \
+		gst-python-0.10 >= $GST_PYTHON_REQUIRED,
 		[],
 		[
 		have_python=no
@@ -874,6 +876,10 @@ if test "x$have_python" != "xno"; then
 	PYGTK_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygtk-2.0`
 	AC_MSG_RESULT([$PYGTK_DEFSDIR])
 
+	AC_MSG_CHECKING([for gst-python defs])
+	GST_PYTHON_DEFSDIR=`$PKG_CONFIG --variable=defsdir gst-python-0.10`
+	AC_MSG_RESULT([$GST_PYTHON_DEFSDIR])
+
 	AC_MSG_CHECKING([for pygtk codegen])
 	PYGTK_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygtk-2.0`/codegen.py"
 	AC_MSG_RESULT([$PYGTK_CODEGEN])
@@ -883,6 +889,7 @@ if test "x$have_python" != "xno"; then
 	AC_MSG_RESULT([$PYGTK_H2DEF])
 
 	AC_SUBST([PYGTK_DEFSDIR])
+	AC_SUBST([GST_PYTHON_DEFSDIR])
 	AC_SUBST([PYGTK_CODEGEN])
 	AC_SUBST([PYGTK_H2DEF])
 

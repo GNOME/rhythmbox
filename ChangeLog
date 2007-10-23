@@ -1,3 +1,14 @@
+2007-10-24  Jonathan Matthew  <jonathan@d14n.org>
+
+	* configure.ac:
+	Require gst-python if python is enabled.
+
+	* bindings/python/Makefile.am:
+	* bindings/python/rb.override:
+	Include gst-python's gst-types.defs file when generating python
+	binding code so the player tee and filter methods actually get 
+	generated.  Fixes #487847.
+
 2007-10-21  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/pythonconsole/pythonconsole.py:
