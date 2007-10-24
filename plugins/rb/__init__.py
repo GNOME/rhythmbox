@@ -10,6 +10,26 @@ from Coroutine import Coroutine
 #	sys.__excepthook__ (exc_class, exc_inst, trace)
 
 
+def try_load_icon(theme, icon, size, flags):
+	try:
+		return theme.load_icon(icon, size, flags)
+	except:
+		return None
+
+def append_plugin_source_path(theme, iconpath):
+	# check for a Makefile.am in the dir the file was loaded from
+	import sys, os
+	fr = sys._getframe(1)
+	co = fr.f_code
+	filename = co.co_filename
+
+	# and if found, append the icon path
+	dir = filename[:filename.rfind(os.sep)]
+	if os.path.exists(dir + "/Makefile.am"):
+		plugindir = dir[:dir.rfind(os.sep)]
+		icondir = plugindir + iconpath
+		theme.append_search_path(icondir)
+
 class _rbdebugfile:
 	def __init__(self, fn):
 		self.fn = fn

@@ -70,13 +70,6 @@ class JamendoSource(rb.BrowserSource):
 	def do_set_property(self, property, value):
 		if property.name == 'plugin':
 			self.__plugin = value
-
-			# we have to wait until we get the plugin to do this
-			circle_file_name = self.__plugin.find_file("jamendo_logo_small.png")
-			width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
-			icon = gtk.gdk.pixbuf_new_from_file_at_size(circle_file_name, width, height)
-			self.set_property("icon", icon)
-
 		else:
 			raise AttributeError, 'unknown property %s' % property.name
 

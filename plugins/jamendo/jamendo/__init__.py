@@ -67,7 +67,18 @@ class Jamendo(rb.Plugin):
  							     _("Stores"),
  							     rb.SOURCE_GROUP_CATEGORY_FIXED)
 
-		self.source = gobject.new (JamendoSource, shell=shell, entry_type=self.entry_type, plugin=self, source_group=group)
+		theme = gtk.icon_theme_get_default()
+		rb.append_plugin_source_path(theme, "/icons/")
+
+		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+		icon = rb.try_load_icon(theme, "jamendo", width, 0)
+
+		self.source = gobject.new (JamendoSource,
+					   shell=shell,
+					   entry_type=self.entry_type,
+					   plugin=self,
+					   icon=icon,
+					   source_group=group)
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_source(self.source, None) # Add the source to the list
 

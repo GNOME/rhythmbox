@@ -76,7 +76,7 @@ class Magnatune(rb.Plugin):
 	
 	def __init__(self):
 		rb.Plugin.__init__(self)
-		
+
 	def activate(self, shell):
 		self.shell = shell # so the source can update the progress bar
 		self.db = shell.get_property("db")
@@ -92,11 +92,19 @@ class Magnatune(rb.Plugin):
 		# allow changes which don't do anything
 		self.entry_type.can_sync_metadata = True
 		self.entry_type.sync_metadata = None
+		self.entry_type.category = rhythmdb.ENTRY_STREAM
+
+		theme = gtk.icon_theme_get_default()
+		rb.append_plugin_source_path(theme, "/icons")
+
+		width, height = gtk.icon_size_lookup(gtk.ICON_SIZE_LARGE_TOOLBAR)
+		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
 		self.source = gobject.new (MagnatuneSource,
  					   shell=shell,
  					   entry_type=self.entry_type,
  					   source_group=group,
+					   icon=icon,
  					   plugin=self)
 
 		shell.register_entry_type_for_source(self.source, self.entry_type)

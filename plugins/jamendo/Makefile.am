@@ -14,8 +14,13 @@ glade_DATA =	\
 		jamendo-loading.glade                 \
 		jamendo-prefs.glade		      \
 		jamendo_logo.png		      \
-		jamendo_logo_medium.png		      \
-		jamendo_logo_small.png			
+		jamendo_logo_medium.png
+
+themedir = $(pkgdatadir)/icons/hicolor
+size = 24x24
+context = places
+icondir = $(themedir)/$(size)/$(context)
+icon_DATA = icons/hicolor/$(size)/$(context)/jamendo.png
 
 gladedir = $(plugindir)
 EXTRA_DIST = $(plugin_in_files) $(glade_DATA)

@@ -15,11 +15,16 @@ glade_DATA =	\
 		magnatune-purchase.glade		\
 		magnatune-prefs.glade			\
 		magnatune_logo_color_small.png		\
-		magnatune_logo_color_tiny.png		\
-		magnatune_circle_small.png
+		magnatune_logo_color_tiny.png
+
+themedir = $(pkgdatadir)/icons/hicolor
+size = 24x24
+context = places
+icondir = $(themedir)/$(size)/$(context)
+icon_DATA = icons/hicolor/$(size)/$(context)/magnatune.png
 
 gladedir = $(plugindir)
-EXTRA_DIST = $(plugin_in_files) $(glade_DATA)
+EXTRA_DIST = $(plugin_in_files) $(glade_DATA) $(icon_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
 
