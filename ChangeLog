@@ -1,5 +1,13 @@
 2007-10-25  Jonathan Matthew  <jonathan@d14n.org>
 
+	* bindings/python/rb.override:
+	#ifdef out the wrapping code for
+	rb_removable_media_manager_queue_transfer and instead raise a 
+	NotImplementedError when track transfer was not built in.
+	Fixes #453156.
+
+2007-10-25  Jonathan Matthew  <jonathan@d14n.org>
+
 	* plugins/rb/__init__.py:
 	Add some hackery to allow python plugins to add their own source
 	directories to the icon search path.
