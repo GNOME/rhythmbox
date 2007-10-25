@@ -549,7 +549,7 @@ make_access_failed_error (const char *uri, GnomeVFSResult result)
 			     _("Couldn't access %s: %s"),
 			     utf8ised,
 			     gnome_vfs_result_to_string (result));
-	rb_debug ("got error on %s: %s", utf8ised, error->message);
+	rb_debug ("got error on %s: %s", uri, error->message);
 	g_free (unescaped);
 	g_free (utf8ised);
 	return error;

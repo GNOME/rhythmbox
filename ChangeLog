@@ -1,5 +1,11 @@
 2007-10-25  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb.c: (make_access_failed_error):
+	Print the proper URI in rb_debug, escaped/sanitised URIs are useless
+	to people debugging
+
+2007-10-25  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-shell.c: (rb_shell_construct_notify_titles):
 	Don't escape the primary text for the notification popup, as the
 	spec says we shouldn't, fix "&amp;" showing up in the notification
