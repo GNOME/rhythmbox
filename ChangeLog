@@ -1,5 +1,12 @@
 2007-10-25  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-shell.c: (rb_shell_construct_notify_titles):
+	Don't escape the primary text for the notification popup, as the
+	spec says we shouldn't, fix "&amp;" showing up in the notification
+	popup (Closes: #445659)
+
+2007-10-25  Bastien Nocera  <hadess@hadess.net>
+
 	* README: Patch from John Bryant and myself to cleanup the
 	README wrt. metadata testing/GStreamer 0.10 usage (Closes: #478911)
 

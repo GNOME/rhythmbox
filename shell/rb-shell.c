@@ -2930,7 +2930,7 @@ rb_shell_construct_notify_titles (RBShell *shell,
 				  RhythmDBEntry *entry)
 {
 	GValue *value;
-	char *stream_title = NULL;
+	const char *stream_title = NULL;
 	char *artist = NULL;
 	char *album = NULL;
 	char *title = NULL;
@@ -2993,22 +2993,25 @@ rb_shell_construct_notify_titles (RBShell *shell,
 						       entry,
 						       RHYTHMDB_PROP_STREAM_SONG_TITLE);
 	if (value != NULL) {
-		title = markup_escape (g_value_get_string (value));
+		title = g_value_dup_string (value);
 		g_value_unset (value);
 		g_free (value);
 
-		stream_title = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		stream_title = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
 	} else {
-		title = markup_escape (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		title = g_strdup (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 	}
 
 	if (stream_title != NULL && stream_title[0] != '\0') {
+		char *escaped;
+
+		escaped = markup_escape (stream_title);
 		if (secondary->len == 0)
-			g_string_append (secondary, stream_title);
+			g_string_append (secondary, escaped);
 		else
-			g_string_append_printf (secondary, " (%s)", stream_title);
+			g_string_append_printf (secondary, " (%s)", escaped);
+		g_free (escaped);
 	}
-	g_free (stream_title);
 
 	if (title != NULL)
 		shell->priv->cached_notify_primary = title;
