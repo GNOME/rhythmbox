@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-14 19:18+0300\n"
+"POT-Creation-Date: 2007-10-27 13:14+0300\n"
 "PO-Revision-Date: 2007-10-14 20:48+0300\n"
 "Last-Translator: Ihar Hrachyshka <ihar.hrachyshka@gmail.com>\n"
 "Language-Team: Belarusian Latin <i18n@mova.org>\n"
@@ -30,41 +30,47 @@ msgid "Failed to create %s element; check your installation"
 msgstr "Pamyłka stvareńnia elementu %s; pravier instalacyju"
 
 #: ../backends/gstreamer/rb-player-gst.c:695
+#, c-format
 msgid "Unknown playback error"
 msgstr "Nieviadomaja pamyłka hrańnia"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1056
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1070
+#, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Pamyłka ŭłučeńnia novaj płyni ŭ kanvejer GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1094
+#, c-format
 msgid "Failed to start new stream"
 msgstr "Pamyłka ŭruchamleńnia novaj płyni"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2551
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2639
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2549
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2637
+#, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Pamyłka stvareńnia elementu GStreamer; pravier instalacyju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2564
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2562
+#, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Pamyłka stvareńnia elementu aŭdyjovyjścia; pravier instalacyju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2613
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2655
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2681
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2690
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2699
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2611
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2653
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2679
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2688
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2697
+#, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Pamyłka ŭłučeńnia ŭ kanvejer GStreamer; pravier instalacyju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2789
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2787
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Pamyłka stvareńnia kanvejera GStreamer, kab vykanać %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2810
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2808
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Pamyłka pačatku vykanańnia %s"
@@ -562,14 +568,14 @@ msgstr "%b %d %Y"
 #: ../plugins/iradio/rb-iradio-source.c:1119
 #: ../plugins/iradio/rb-station-properties-dialog.c:479
 #: ../plugins/mtpdevice/rb-mtp-source.c:237
-#: ../podcast/rb-feed-podcast-properties-dialog.c:301
+#: ../podcast/rb-feed-podcast-properties-dialog.c:311
 #: ../podcast/rb-podcast-manager.c:1567
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:134 ../rhythmdb/rhythmdb-tree.c:1211
 #: ../rhythmdb/rhythmdb-tree.c:1215 ../rhythmdb/rhythmdb-tree.c:1219
 #: ../rhythmdb/rhythmdb-tree.c:1223 ../rhythmdb/rhythmdb.c:1427
-#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:3017
+#: ../shell/rb-shell-player.c:1493 ../shell/rb-shell.c:3020
 #: ../sources/rb-podcast-source.c:1631 ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862 ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158 ../widgets/rb-entry-view.c:1170
@@ -617,6 +623,7 @@ msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d z %d:%02d:%02d"
 
 #: ../metadata/rb-metadata-dbus-client.c:295
+#, c-format
 msgid "Internal GStreamer problem; file a bug"
 msgstr "Unutranaja pamyłka GStreamer; paviedam ab joj"
 
@@ -628,6 +635,7 @@ msgstr "Unutranaja pamyłka GStreamer; paviedam ab joj"
 #: ../metadata/rb-metadata-dbus-client.c:406
 #: ../metadata/rb-metadata-dbus-client.c:546
 #: ../metadata/rb-metadata-dbus-client.c:556
+#, c-format
 msgid "D-BUS communication error"
 msgstr "Pamyłka suviazi z D-BUS"
 
@@ -642,18 +650,22 @@ msgid "The file contains a stream of type %s, which is not decodable"
 msgstr "Fajł źmiaščaje płyń typu %s, jakuju niemahčyma dekadavać"
 
 #: ../metadata/rb-metadata-gst.c:952
+#, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Pamyłka stvareńnia kryničnaha elementu; pravier instalacyju"
 
 #: ../metadata/rb-metadata-gst.c:1016
+#, c-format
 msgid "GStreamer error: failed to change state"
 msgstr "Pamyłka GStreamer: pamyłka źmianieńnia stanu"
 
 #: ../metadata/rb-metadata-gst.c:1111
+#, c-format
 msgid "Empty file"
 msgstr "Pusty fajł"
 
 #: ../metadata/rb-metadata-gst.c:1119
+#, c-format
 msgid "The MIME type of the file could not be identified"
 msgstr "Niemahčyma vaznačyć typ MIME dla fajłu"
 
@@ -663,14 +675,17 @@ msgid "Unsupported file type: %s"
 msgstr "Niepadtrymany typ fajłu: %s"
 
 #: ../metadata/rb-metadata-gst.c:1264
+#, c-format
 msgid "Unable to create tag-writing elements"
 msgstr "Niemahčyma stvaryć elementy dla zapisu tagaŭ"
 
 #: ../metadata/rb-metadata-gst.c:1279
+#, c-format
 msgid "Timeout while setting pipeline to NULL"
 msgstr "Skončyŭsia termin čakańnia pry akreśleńni kanvejera jak NULL"
 
 #: ../metadata/rb-metadata-gst.c:1298
+#, c-format
 msgid "File corrupted during write"
 msgstr "Fajł paškodžany padčas zapisu"
 
@@ -757,6 +772,7 @@ msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox nia moža atrymać dostup da pryvodu CD."
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:116
+#, c-format
 msgid "Cannot create MusicBrainz client"
 msgstr "Niemahčyma stvaryć klijenta MusicBrainz"
 
@@ -782,6 +798,7 @@ msgid "Track %d"
 msgstr "Ściežka %d"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:283
+#, c-format
 msgid ""
 "MusicBrainz metadata object is not valid. This is bad, check your console "
 "for errors."
@@ -816,6 +833,7 @@ msgid "Incomplete metadata for this CD"
 msgstr "Niapoŭnyja metaźviestki dla hetaha CD"
 
 #: ../plugins/audiocd/sj-metadata-musicbrainz.c:707
+#, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Niemahčyma stvaryć nić pošuku CD"
 
@@ -1097,6 +1115,7 @@ msgid "Unable to create audio CD"
 msgstr "Niemahčyma stvaryć aŭdyjo CD"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:429
+#, c-format
 msgid "Failed to create pipeline"
 msgstr "Pamyłka stvareńnia kanvejera"
 
@@ -1115,14 +1134,17 @@ msgid "Could not get current track position"
 msgstr "Niemahčyma atrymać źviestki ab pałažeńni dziejnaje ściežki"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:648
+#, c-format
 msgid "Could not start pipeline playing"
 msgstr "Niemahčyma pačać vykanańnie kanvejera"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:659
+#, c-format
 msgid "Could not pause playback"
 msgstr "Niemahčyma prypynić vykanańnie"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:856
+#, c-format
 msgid "Cannot find drive"
 msgstr "Niemahčyma znajści pryvod"
 
@@ -1138,6 +1160,7 @@ msgstr "Pryvod %s nie źjaŭlajecca zapisvalnym"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1094
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1287
+#, c-format
 msgid "No writable drives found."
 msgstr "Zapisvalnyja pryvody nia znojdzienyja."
 
@@ -1147,6 +1170,7 @@ msgid "Could not get track time for file: %s"
 msgstr "Niemahčyma atrymać źviestki ab praciahłaści ściežki dla fajłu: %s"
 
 #: ../plugins/cd-recorder/rb-recorder-gst.c:1296
+#, c-format
 msgid "Could not determine audio track durations."
 msgstr "Niemahčyma vyznačyć praciahłaść aŭdyjo ściežak."
 
@@ -1438,10 +1462,12 @@ msgstr "Stvaryć aŭdyjo CD z \"%s\"?"
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1568
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1586
+#, c-format
 msgid "Unable to build an audio track list."
 msgstr "Niemahčyma stvaryć śpis aŭdyjo ściežak."
 
 #: ../plugins/cd-recorder/rb-playlist-source-recorder.c:1596
+#, c-format
 msgid "This playlist is too long to write to an audio CD."
 msgstr "Hety śpis nadta daŭhi, kab zapisvać jaho na aŭdyjo CD."
 
@@ -1861,28 +1887,28 @@ msgstr "Jamendo"
 msgid "Stores"
 msgstr "Zapasy"
 
-#: ../plugins/jamendo/jamendo/__init__.py:76
+#: ../plugins/jamendo/jamendo/__init__.py:87
 msgid "_Download Album"
 msgstr "_Zahruzi albom"
 
-#: ../plugins/jamendo/jamendo/__init__.py:77
+#: ../plugins/jamendo/jamendo/__init__.py:88
 msgid "Download this album using BitTorrent"
 msgstr "Zahruzi hety albom praź BitTorrent"
 
 #. Add Button for Donate
-#: ../plugins/jamendo/jamendo/__init__.py:84
+#: ../plugins/jamendo/jamendo/__init__.py:95
 msgid "_Donate to Artist"
 msgstr "_Materyjalna addziač vykanaŭcu"
 
-#: ../plugins/jamendo/jamendo/__init__.py:85
+#: ../plugins/jamendo/jamendo/__init__.py:96
 msgid "Donate Money to this Artist"
 msgstr "Materyjalna addziač vykanaŭcu"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:111
+#: ../plugins/jamendo/jamendo/JamendoSource.py:104
 msgid "Loading Jamendo catalogue"
 msgstr "Zahruzka katalohu Jamendo"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:389
+#: ../plugins/jamendo/jamendo/JamendoSource.py:382
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Pamyłka pošuku vykanaŭcy %s na jamendo.com"
@@ -2419,39 +2445,39 @@ msgstr "Krama Magnatune"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:110
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:104
 msgid "Loading Magnatune catalogue"
 msgstr "Zahruzka katalohu Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:107
 msgid "Downloading Magnatune Album(s)"
 msgstr "Zahruzka alboma(ŭ) z Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:213
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:207
 msgid "Couldn't purchase album"
 msgstr "Niemahčyma kupić albom"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:214
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:208
 msgid "You must have a library location set to purchase an album."
 msgstr "Ty pavinny akreślić pałažeńnie biblijateki, kab kupić albom."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:235
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:229
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Chočaš kupić albom <i>%(album)s</i> ad \"%(artist)s\"?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:356
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:350
 msgid ""
 "Rhythmbox could not understand the Magnatune catalogue, please file a bug."
 msgstr ""
 "Rhythmbox nia zmoh zrazumieć kataloh Magnatune, kali łaska, paviedam ab "
 "pamyłcy."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:511
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:505
 msgid "Purchase Error"
 msgstr "Pamyłka nabyćcia"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:512
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2462,12 +2488,12 @@ msgstr ""
 "Server Magnatune viarnuŭ:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:515
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:509
 #: ../widgets/rb-entry-view.c:1255
 msgid "Error"
 msgstr "Pamyłka"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:516
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2479,35 +2505,35 @@ msgstr ""
 "%s"
 
 #. Add the popup menu actions
-#: ../plugins/magnatune/magnatune/__init__.py:107
+#: ../plugins/magnatune/magnatune/__init__.py:115
 msgid "Purchase Album"
 msgstr "Kupi albom"
 
-#: ../plugins/magnatune/magnatune/__init__.py:108
+#: ../plugins/magnatune/magnatune/__init__.py:116
 msgid "Purchase this album from Magnatune"
 msgstr "Kupi hety albom na Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:113
+#: ../plugins/magnatune/magnatune/__init__.py:121
 msgid "Purchase Physical CD"
 msgstr "Kupi sapraŭdny dysk"
 
-#: ../plugins/magnatune/magnatune/__init__.py:114
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Purchase a physical CD from Magnatune"
 msgstr "Kupi sapraŭdny dysk na Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:126
 msgid "Artist Information"
 msgstr "Źviestki ab vykanaŭcy"
 
-#: ../plugins/magnatune/magnatune/__init__.py:119
+#: ../plugins/magnatune/magnatune/__init__.py:127
 msgid "Get information about this artist"
 msgstr "Atrymaj źviestki ab hetym vykanaŭcy"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:131
 msgid "Cancel Downloads"
 msgstr "Anuluj zahruzki"
 
-#: ../plugins/magnatune/magnatune/__init__.py:124
+#: ../plugins/magnatune/magnatune/__init__.py:132
 msgid "Stop downloading purchased albums"
 msgstr "Spyni zahruzku kuplenych albomaŭ"
 
@@ -2553,15 +2579,23 @@ msgstr "Kiraŭnik enerhii"
 msgid "Playing"
 msgstr "Hrańnie"
 
-#: ../plugins/pythonconsole/pythonconsole.py:57
+#: ../plugins/pythonconsole/pythonconsole.py:67
 msgid "_Python Console"
 msgstr "Kansol _Python"
 
-#: ../plugins/pythonconsole/pythonconsole.py:58
+#: ../plugins/pythonconsole/pythonconsole.py:68
 msgid "Show Rhythmbox's python console"
 msgstr "Pakažy kansol python dla prahramy Rhythmbox"
 
-#: ../plugins/pythonconsole/pythonconsole.py:93
+#: ../plugins/pythonconsole/pythonconsole.py:73
+msgid "Python Debugger"
+msgstr "Debuger Python"
+
+#: ../plugins/pythonconsole/pythonconsole.py:74
+msgid "Enable remote python debugging with rpdb2"
+msgstr "Uklučy addalenaje debugavańnie pythona z dapamohaj rpdb2"
+
+#: ../plugins/pythonconsole/pythonconsole.py:111
 msgid "You can access the main window through the 'shell' variable :"
 msgstr "Ty možaš atrymać dostup da hałoŭnaha vakna praź źmiennuju \"shell\":"
 
@@ -2663,10 +2697,12 @@ msgid "Window"
 msgstr "Vakno"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:694
+#, c-format
 msgid "Unable to start video output"
 msgstr "Niemahčyma pačać videavyvad"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:729
+#, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Pamyłka ŭłučeńnia novaha vizualnaha efektu ŭ kanvejer GStreamer"
 
@@ -2765,7 +2801,7 @@ msgstr "Nie zahružany"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nie ŭruchamlaj novuju kopiju prahramy Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:74 ../shell/main.c:103
+#: ../remote/dbus/rb-client.c:74 ../shell/main.c:114
 msgid "Quit Rhythmbox"
 msgstr "Vyjdzi z prahramy Rhythmbox"
 
@@ -2855,6 +2891,7 @@ msgid "Not playing"
 msgstr "Nie vykonvajecca"
 
 #: ../remote/dbus/rb-client.c:616
+#, c-format
 msgid "Playback is muted.\n"
 msgstr "Vykanańnie abiazhučana.\n"
 
@@ -2876,6 +2913,7 @@ msgid "All"
 msgstr "Usie"
 
 #: ../rhythmdb/rhythmdb-tree.c:367
+#, c-format
 msgid ""
 "The database was created by a later version of rhythmbox.  This version of "
 "rhythmbox cannot read the database."
@@ -2939,39 +2977,39 @@ msgstr "%s, %s i %s"
 msgid "%s and %s"
 msgstr "%s i %s"
 
-#: ../shell/main.c:96
+#: ../shell/main.c:107
 msgid "Enable debug output"
 msgstr "Uklučy debugavaje vyjście"
 
-#: ../shell/main.c:97
+#: ../shell/main.c:108
 msgid "Enable debug output matching a specified string"
 msgstr "Uklučy debugavaje vyjście, adpaviednaje akreślenamu tekstu"
 
-#: ../shell/main.c:98
+#: ../shell/main.c:109
 msgid "Do not update the library with file changes"
 msgstr "Nie aktualizuj biblijateku źmienami fajłaŭ"
 
-#: ../shell/main.c:99
+#: ../shell/main.c:110
 msgid "Do not register the shell"
 msgstr "Nie rehistruj abałonku"
 
-#: ../shell/main.c:100
+#: ../shell/main.c:111
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Nie zachoŭvaj nijakich stałych źviestak (aznačaje --no-registration)"
 
-#: ../shell/main.c:101
+#: ../shell/main.c:112
 msgid "Path for database file to use"
 msgstr "Ściežka da fajłu bazy źviestak"
 
-#: ../shell/main.c:102
+#: ../shell/main.c:113
 msgid "Path for playlists file to use"
 msgstr "Ściežka da fajłaŭ śpisaŭ"
 
-#: ../shell/main.c:104
+#: ../shell/main.c:115
 msgid "[URI...]"
 msgstr "[URI...]"
 
-#: ../shell/main.c:129 ../shell/main.c:135 ../shell/main.c:144
+#: ../shell/main.c:140 ../shell/main.c:146 ../shell/main.c:155
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -3307,18 +3345,22 @@ msgid "Failed to create the player: %s"
 msgstr "Pamyłka stvareńnia playera: %s"
 
 #: ../shell/rb-shell-player.c:1313
+#, c-format
 msgid "Playlist was empty"
 msgstr "Śpis byŭ pustym"
 
 #: ../shell/rb-shell-player.c:1770
+#, c-format
 msgid "Not currently playing"
 msgstr "Dziejna nie vykonvajecca"
 
 #: ../shell/rb-shell-player.c:1808
+#, c-format
 msgid "No previous song"
 msgstr "Niama papiaredniaj pieśni"
 
 #: ../shell/rb-shell-player.c:1885
+#, c-format
 msgid "No next song"
 msgstr "Niama nastupnaj pieśni"
 
@@ -3331,6 +3373,7 @@ msgid "Couldn't stop playback"
 msgstr "Niemahčyma spynić vykanańnie"
 
 #: ../shell/rb-shell-player.c:2889
+#, c-format
 msgid "Current song is not seekable"
 msgstr "Niemahčyma skakać pa dziejnaj pieśni"
 
@@ -3619,23 +3662,23 @@ msgstr "ad <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
-#: ../shell/rb-shell.c:3189
+#: ../shell/rb-shell.c:3192
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 "Nivodnaja z zarehistravanych krynic nia moža pracavać z adrasam (URI) %s"
 
-#: ../shell/rb-shell.c:3450 ../shell/rb-shell.c:3479
+#: ../shell/rb-shell.c:3453 ../shell/rb-shell.c:3482
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nieviadomy adras (URI) pieśni: %s"
 
-#: ../shell/rb-shell.c:3488
+#: ../shell/rb-shell.c:3491
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nieviadomaja ŭłaścivaść %s"
 
-#: ../shell/rb-shell.c:3498
+#: ../shell/rb-shell.c:3501
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Niapravilny typ %s ułaścivaści %s"
