@@ -1638,12 +1638,7 @@ stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXF
 	mediatype = gst_structure_get_name (structure);
 	if (g_str_has_prefix (mediatype, "audio/x-raw") == FALSE) {
 		rb_debug ("got non-audio decoded caps: %s", mediatype);
-		gst_caps_unref (caps);
-		return;
-	}
-
-	/* link to the audioconvert element for the stream */
-	if (stream->decoder_linked) {
+	} else if (stream->decoder_linked) {
 		/* probably should never happen */
 		rb_debug ("hmm, decoder is already linked");
 	} else {
@@ -1653,6 +1648,8 @@ stream_new_decoded_pad_cb (GstElement *decoder, GstPad *pad, gboolean last, RBXF
 		gst_object_unref (vpad);
 		stream->decoder_linked = TRUE;
 	}
+	
+	gst_caps_unref (caps);
 }
 
 /* handles EOS events on stream bins.  since the pipeline as a whole

@@ -1,3 +1,10 @@
+2007-10-29  Jonathan Matthew  <jonathan@d14n.org>
+
+	based on a patch by:  John Bryant  <bryantk@sover.net>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(stream_new_decoded_pad_cb):  Fix caps leak, bug #491115.
+
 2007-10-28  Bastien Nocera  <hadess@hadess.net>
 
 	* lib/rb-file-helpers.c: (rb_canonicalise_uri):
