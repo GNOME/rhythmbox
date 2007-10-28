@@ -1070,41 +1070,37 @@ rb_canonicalise_uri (const char *uri)
 {
 	char *result = NULL;
 
+	g_return_val_if_fail (uri != NULL, NULL);
+
 	if (uri[0] == '/') {
 		/* local path */
 		char *tmp;
 		result = gnome_vfs_make_path_name_canonical (uri);
-		tmp = gnome_vfs_escape_path_string (result);
+		tmp = gnome_vfs_get_uri_from_local_path (result);
 		g_free (result);
 		if (tmp == NULL)
 			return NULL;
-		tmp = escape_extra_gnome_vfs_chars (tmp);
-		result = g_strconcat ("file://", tmp, NULL);
-		g_free (tmp);
-	} else  if (g_str_has_prefix (uri, "file://")) {
-	    	/* local file, rhythmdb wants this path escaped */
-		char *tmp1, *tmp2;
-		tmp1  = gnome_vfs_unescape_string (uri + 7, NULL);  /* ignore "file://" */
-		tmp2 = gnome_vfs_escape_path_string (tmp1);
-		g_free (tmp1);
-		if (tmp2 == NULL)
-			return NULL;
-		tmp2 = escape_extra_gnome_vfs_chars (tmp2);
-		result = g_strconcat ("file://", tmp2, NULL); /* re-add scheme */
-		g_free (tmp2);
-	} else {
-		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+		result = tmp;
+	} else if (strstr (uri, "://") == NULL) {
+		/* local relative path */
+		char *curdir, *escaped, *curdir_withslash;
 
-		if (vfsuri != NULL) {
-			/* non-local uri, leave as-is */
-			gnome_vfs_uri_unref (vfsuri);
+		curdir = g_get_current_dir ();
+		escaped = gnome_vfs_escape_path_string (curdir);
+		curdir_withslash = g_strdup_printf ("file://%s%c",
+						    escaped, G_DIR_SEPARATOR);
+		g_free (escaped);
+		g_free (curdir);
+
+		escaped = gnome_vfs_escape_path_string (uri);
+		result = gnome_vfs_uri_make_full_from_relative
+			(curdir_withslash, escaped);
+		g_free (curdir_withslash);
+		g_free (escaped);
+	} else {
+		result = gnome_vfs_make_uri_canonical (uri);
+		if (result == NULL)
 			result = g_strdup (uri);
-		} else {
-			/* this may just mean that gnome-vfs doesn't recognise the
-			 * uri scheme, so return it as is */
-			rb_debug ("Error processing probable URI %s", uri);
-			result = g_strdup (uri);
-		}
 	}
 
 	return result;

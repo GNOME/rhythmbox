@@ -1,3 +1,16 @@
+2007-10-28  Bastien Nocera  <hadess@hadess.net>
+
+	* lib/rb-file-helpers.c: (rb_canonicalise_uri):
+	Use gnome-vfs functions to canonicalise the local file:/// URIs,
+	rather than escaping and unescaping them (Closes: #487415)
+	* rhythmdb/rhythmdb-tree.c: (version_to_int),
+	(rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (save_entry_uint64),
+	(save_entry_double), (save_entry), (rhythmdb_tree_entry_delete),
+	(search_match_properties): Fix the DB upgrade code to handle
+	upgrading from one version to version+2 properly (and not miss
+	necessary upgrades)
+
 2007-10-25  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb.c: (make_access_failed_error):

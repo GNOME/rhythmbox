@@ -107,7 +107,9 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					RBTreePropertyItFunc genres_func,
 					gpointer data);
 
-#define RHYTHMDB_TREE_XML_VERSION "1.3"
+/* Update both of those! */
+#define RHYTHMDB_TREE_XML_VERSION "1.4"
+#define RHYTHMDB_TREE_XML_VERSION_INT 140
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -326,6 +328,20 @@ struct RhythmDBTreeLoadContext
 	gboolean reload_all_metadata;
 };
 
+/* Returns the version as an int, multiplied by 100,
+ * eg. "1.4" becomes 140 */
+static int
+version_to_int (const char *version)
+{
+	float ver;
+
+	if (sscanf (version, "%f", &ver) != 1) {
+		return (int) (1.0 * 100);
+	}
+
+	return ver * 100;
+}
+
 static void
 rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				    const char *name,
@@ -351,22 +367,32 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				if (!strcmp (*attrs, "version")) {
 					const char *version = *(attrs+1);
 
-					if (!strcmp (version, "1.0") || !strcmp (version, "1.1")) {
+					switch (version_to_int (version)) {
+					case 100:
+					case 110:
+						rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries (DB version 1.0 or 1.1)");
 						ctx->canonicalise_uris = TRUE;
-						rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries");
-					} else if (!strcmp (version, "1.2")) {
-						/* current version*/
-						rb_debug ("reloading all file metadata to get MusicBrainz tags");
+					case 120:
+						rb_debug ("reloading all file metadata to get MusicBrainz tags (DB version 1.2)");
 						ctx->reload_all_metadata = TRUE;
-					} else if (!strcmp (version, "1.3")) {
-						/* current version*/
-					} else {
-						g_set_error (ctx->error,
-							     RHYTHMDB_TREE_ERROR,
-							     RHYTHMDB_TREE_ERROR_DATABASE_TOO_NEW,
-							     _("The database was created by a later version of rhythmbox."
-							       "  This version of rhythmbox cannot read the database."));
-						xmlStopParser (ctx->xmlctx);
+					case 130:
+						/* Avoid being warned twice for very old DBs */
+						if (ctx->canonicalise_uris == FALSE) {
+							rb_debug ("old version of rhythmdb, performing URI canonicalisation for all entries (DB version 1.3)");
+							ctx->canonicalise_uris = TRUE;
+						}
+					case RHYTHMDB_TREE_XML_VERSION_INT:
+						/* current version */
+						break;
+					default:
+						if (version_to_int (version) > RHYTHMDB_TREE_XML_VERSION_INT) {
+							g_set_error (ctx->error,
+								     RHYTHMDB_TREE_ERROR,
+								     RHYTHMDB_TREE_ERROR_DATABASE_TOO_NEW,
+								     _("The database was created by a later version of rhythmbox."
+								       "  This version of rhythmbox cannot read the database."));
+							xmlStopParser (ctx->xmlctx);
+						}
 					}
 				} else {
 					g_assert_not_reached ();
