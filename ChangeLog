@@ -1,5 +1,14 @@
 2007-10-29  James Livingston  <doclivingston@gmail.com>
 
+	patch by: Mika Wahlroos  <mika.wahlroos@iki.fi>
+
+	* data/glade/song-info.glade:
+	* widgets/rb-song-info.c: (rb_song_info_construct_single),
+	(rb_song_info_populate_dialog), (rb_song_info_update_date_added): add
+	a "date added" field to the song-info dialog. Fixes #480269
+
+2007-10-29  James Livingston  <doclivingston@gmail.com>
+
 	patch by: James Henstridge  <james@jamesh.id.au> to add a new plugin
 	to use FM radio tuners. Fixes bug #168735
 

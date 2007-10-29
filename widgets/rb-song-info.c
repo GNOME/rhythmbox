@@ -80,6 +80,7 @@ static void rb_song_info_update_bitrate (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
 static void rb_song_info_update_year (RBSongInfo *song_info);
+static void rb_song_info_update_date_added (RBSongInfo *song_info);
 static void rb_song_info_update_playback_error (RBSongInfo *song_info);
 
 static void rb_song_info_backward_clicked_cb (GtkWidget *button,
@@ -128,6 +129,7 @@ struct RBSongInfoPrivate
 	GtkWidget   *name;
 	GtkWidget   *location;
 	GtkWidget   *filesize;
+	GtkWidget   *date_added;
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
 	GtkWidget   *rating;
@@ -292,6 +294,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
 	song_info->priv->location = glade_xml_get_widget (xml, "song_info_location");
 	song_info->priv->filesize = glade_xml_get_widget (xml, "song_info_filesize");
+	song_info->priv->date_added    = glade_xml_get_widget (xml, "song_info_dateadded");
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
 	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
@@ -301,6 +304,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	rb_glade_boldify_label (xml, "name_label");
 	rb_glade_boldify_label (xml, "location_label");
 	rb_glade_boldify_label (xml, "filesize_label");
+	rb_glade_boldify_label (xml, "date_added_label");
 	rb_glade_boldify_label (xml, "last_played_label");
 	rb_glade_boldify_label (xml, "play_count_label");
 	rb_glade_boldify_label (xml, "duration_label");
@@ -917,6 +921,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
 	rb_song_info_update_filesize (song_info);
+	rb_song_info_update_date_added (song_info);
 	rb_song_info_update_play_count (song_info);
 	rb_song_info_update_last_played (song_info);
 	rb_song_info_update_bitrate (song_info);
@@ -1232,6 +1237,14 @@ rb_song_info_update_year (RBSongInfo *song_info)
 	}
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->year), text);
 	g_free (text);
+}
+
+static void
+rb_song_info_update_date_added (RBSongInfo *song_info)
+{
+	const char *str;
+	str = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_FIRST_SEEN_STR);
+	gtk_label_set_text (GTK_LABEL (song_info->priv->date_added), str);
 }
 
 static void
