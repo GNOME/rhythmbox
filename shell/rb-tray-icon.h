@@ -66,7 +66,7 @@ void                    rb_tray_icon_notify     (RBTrayIcon *icon,
 
 void                    rb_tray_icon_cancel_notify (RBTrayIcon *icon);
 
-void rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon, const char *primary_markup);
+void rb_tray_icon_set_tooltip_primary_text (RBTrayIcon *icon, const char *primary_text);
 void rb_tray_icon_set_tooltip_icon (RBTrayIcon *icon, GtkWidget *msgicon);
 void rb_tray_icon_set_tooltip_secondary_markup (RBTrayIcon *icon, const char *secondary_markup);
 

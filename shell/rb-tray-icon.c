@@ -640,16 +640,16 @@ rb_tray_icon_unhide_cb (RBTrayIcon *icon)
 }
 
 void
-rb_tray_icon_set_tooltip_primary_markup (RBTrayIcon *icon,
-					 const char *primary_markup)
+rb_tray_icon_set_tooltip_primary_text (RBTrayIcon *icon,
+				       const char *primary_text)
 {
 	/* hide, then reshow in the right position & size */
 	gtk_widget_hide (icon->priv->tooltip);
 
-	if (primary_markup == NULL)
-		primary_markup = TRAY_ICON_DEFAULT_TOOLTIP;
-	gtk_label_set_markup (GTK_LABEL (icon->priv->tooltip_primary),
-			      primary_markup);
+	if (primary_text == NULL)
+		primary_text = TRAY_ICON_DEFAULT_TOOLTIP;
+	gtk_label_set_text (GTK_LABEL (icon->priv->tooltip_primary),
+			    primary_text);
 
 	if (icon->priv->tooltip_unhide_id > 0)
 		g_source_remove (icon->priv->tooltip_unhide_id);

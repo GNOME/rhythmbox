@@ -1964,7 +1964,7 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 
 	rb_shell_notify_playing_entry (shell, entry, FALSE);
 
-	rb_tray_icon_set_tooltip_primary_markup (shell->priv->tray_icon, shell->priv->cached_notify_primary);
+	rb_tray_icon_set_tooltip_primary_text (shell->priv->tray_icon, shell->priv->cached_notify_primary);
 	rb_tray_icon_set_tooltip_icon (shell->priv->tray_icon, shell->priv->cached_art_icon);
 	rb_shell_update_tray_tooltip_elapsed (shell);
 }
@@ -2044,7 +2044,7 @@ rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 	 */
 	entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
 	rb_shell_construct_notify_titles (shell, entry);
-	rb_tray_icon_set_tooltip_primary_markup (shell->priv->tray_icon, shell->priv->cached_notify_primary);
+	rb_tray_icon_set_tooltip_primary_text (shell->priv->tray_icon, shell->priv->cached_notify_primary);
 	rb_shell_update_tray_tooltip_elapsed (shell);
 	
 	if (entry)
