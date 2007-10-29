@@ -1,0 +1,63 @@
+/*
+ *  Copyright (C) 2007 James Henstridge <james@jamesh.id.au>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+ *
+ */
+
+#ifndef RB_FM_RADIO_SOURCE_H
+#define RB_FM_RADIO_SOURCE_H
+
+#include "rb-shell.h"
+#include "rb-plugin.h"
+#include "rb-source.h"
+#include "rb-radio-tuner.h"
+
+G_BEGIN_DECLS
+
+#define RB_TYPE_FM_RADIO_SOURCE         (rb_fm_radio_source_get_type ())
+#define RB_FM_RADIO_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_FM_RADIO_SOURCE, RBFMRadioSource))
+#define RB_FM_RADIO_SOURCE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_FM_RADIO_SOURCE, RBFMRadioSourceClass))
+#define RB_IS_FM_RADIO_SOURCE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_FM_RADIO_SOURCE))
+#define RB_IS_FM_RADIO_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_FM_RADIO_SOURCE))
+#define RB_FM_RADIO_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_FM_RADIO_SOURCE, RBFMRadioSourceClass))
+
+typedef struct _RBFMRadioSource RBFMRadioSource;
+typedef struct _RBFMRadioSourceClass RBFMRadioSourceClass;
+typedef struct _RBFMRadioSourcePrivate RBFMRadioSourcePrivate;
+
+struct _RBFMRadioSource {
+	RBSource parent;
+
+	RBFMRadioSourcePrivate *priv;
+};
+
+struct _RBFMRadioSourceClass {
+	RBSourceClass parent;
+};
+
+GType     rb_fm_radio_source_get_type	       (void);
+GType     rb_fm_radio_source_register_type     (GTypeModule *plugin);
+
+RBSource *rb_fm_radio_source_new               (RBShell *shell,
+						RBRadioTuner *tuner);
+
+void	  rb_fm_radio_source_add_station       (RBFMRadioSource *source,
+						const char *frequency,
+						const char *title);
+
+G_END_DECLS
+
+#endif /* RB_FM_RADIO_SOURCE_H */

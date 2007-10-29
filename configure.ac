@@ -748,6 +748,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 		unset SAVE_CFLAGS
 	done
 	unset option
+	AC_SUBST(WARN_CFLAGS)
 
 	SAVE_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS -Wno-error"
@@ -939,6 +940,19 @@ if test "x$enable_vala" != "xno"; then
 fi
 AM_CONDITIONAL(ENABLE_VALA, test "x$with_vala" = "xyes")
 
+dnl ================================================================
+dnl FM Radio Plugin
+dnl ================================================================
+AC_CHECK_HEADER
+AC_MSG_CHECKING([whether FM radio support is requested])
+AC_ARG_ENABLE([fm-radio],
+  AC_HELP_STRING([--disable-fm-radio],[Disable FM radio support]),,
+  enable_fm_radio=yes)
+if test "x$enable_fm_radio" != xno; then
+  AC_CHECK_HEADER([linux/videodev2.h],,[enable_fm_radio=no])
+fi
+AM_CONDITIONAL(ENABLE_FM_RADIO, test "x$enable_fm_radio" != xno)
+
 
 dnl check, for unit tests
 AM_PATH_CHECK([], have_check=yes, have_check=no)
@@ -995,6 +1009,7 @@ plugins/coherence/upnp_coherence/Makefile
 plugins/audioscrobbler/Makefile
 plugins/cd-recorder/Makefile
 plugins/daap/Makefile
+plugins/fmradio/Makefile
 plugins/ipod/Makefile
 plugins/mtpdevice/Makefile
 plugins/iradio/Makefile
@@ -1137,6 +1152,11 @@ if test x"$with_internal_gsequence" = xyes; then
 	AC_MSG_NOTICE([   using internal copy of gsequence])
 else
 	AC_MSG_NOTICE([** using glib 2.13 version of gsequence])
+fi
+if test "x$enable_fm_radio" != xno; then
+	AC_MSG_NOTICE([** FM radio support enabled])
+else
+	AC_MSG_NOTICE([   FM radio support disabled])
 fi
 
 AC_MSG_NOTICE([End options])

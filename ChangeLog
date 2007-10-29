@@ -1,3 +1,21 @@
+2007-10-29  James Livingston  <doclivingston@gmail.com>
+
+	patch by: James Henstridge  <james@jamesh.id.au> to add a new plugin
+	to use FM radio tuners. Fixes bug #168735
+
+	* configure.ac:
+	* data/rhythmbox.schemas:
+	* plugins/Makefile.am:
+	+ plugins/fmradio/Makefile.am:
+	+ plugins/fmradio/fmradio-ui.xml:
+	+ plugins/fmradio/fmradio.rb-plugin.desktop.in:
+	+ plugins/fmradio/rb-fm-radio-gst-src.c: (_do_init),
+	+ plugins/fmradio/rb-fm-radio-plugin.c: (rb_fm_radio_plugin_init),
+	+ plugins/fmradio/rb-fm-radio-source.c:
+	+ plugins/fmradio/rb-fm-radio-source.h:
+	+ plugins/fmradio/rb-radio-tuner-v4l2.c:
+	+ plugins/fmradio/rb-radio-tuner.h:
+
 2007-10-29  Jonathan Matthew  <jonathan@d14n.org>
 
 	based on a patch by:  John Bryant  <bryantk@sover.net>

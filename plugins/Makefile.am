@@ -51,6 +51,10 @@ if USE_MTP
 SUBDIRS += mtpdevice
 endif
 
+if ENABLE_FM_RADIO
+SUBDIRS += fmradio
+endif
+
 noinst_LTLIBRARIES = librbplugins.la
 
 librbplugins_la_SOURCES =				\

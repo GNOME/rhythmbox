@@ -1,0 +1,42 @@
+
+plugindir = $(PLUGINDIR)/fmradio
+plugin_LTLIBRARIES = libfmradio.la
+
+libfmradio_la_SOURCES = \
+  rb-fm-radio-plugin.h \
+  rb-fm-radio-plugin.c \
+  rb-fm-radio-source.c \
+  rb-fm-radio-source.h \
+  rb-fm-radio-gst-src.c \
+  rb-radio-tuner.h \
+  rb-radio-tuner-v4l2.c
+
+libfmradio_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
+libfmradio_la_LIBADD = $(top_builddir)/corelib/librhythmbox-core.la
+
+INCLUDES = \
+  -DGNOMELOCALEDIR=\""$(datadir)/locale"\" \
+  -DG_LOG_DOMAIN=\"Rhythmbox\" \
+  -I$(top_srcdir) \
+  -I$(top_srcdir)/lib \
+  -I$(top_srcdir)/metadata \
+  -I$(top_srcdir)/rhythmdb \
+  -I$(top_srcdir)/widgets \
+  -I$(top_srcdir)/sources \
+  -I$(top_srcdir)/plugins \
+  -I$(top_srcdir)/shell \
+  -I$(top_srcdir)/backends \
+  -DPIXMAP_DIR=\""$(datadir)/pixmaps"\" \
+  -DSHARE_DIR=\"$(pkgdatadir)\" \
+  -DDATADIR=\""$(datadir)"\" \
+  $(RHYTHMBOX_CFLAGS) \
+  $(TOTEM_PLPARSER_CFLAGS) \
+  $(WARN_CFLAGS) \
+  -D_XOPEN_SOURCE -D_BSD_SOURCE
+
+plugin_in_files = fmradio.rb-plugin.desktop.in
+%.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+
+BUILT_SOURCES = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+
+plugin_DATA = fmradio-ui.xml $(BUILT_SOURCES)

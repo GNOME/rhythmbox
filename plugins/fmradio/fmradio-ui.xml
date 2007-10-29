@@ -1,0 +1,19 @@
+<ui>
+  <menubar name="MenuBar">
+    <menu name="MusicMenu" action="Music">
+      <placeholder name="MusicMenuNewPluginPlaceholder">
+        <menuitem name="MusicNewFMRadioStationMenu" action="MusicNewFMRadioStation"/>
+      </placeholder>
+    </menu>
+  </menubar>
+
+  <popup name="FMRadioSourcePopup">
+    <menuitem name="FMRadioSrcPopupNewStation" action="MusicNewFMRadioStation"/>
+  </popup>
+
+  <popup name="FMRadioViewPopup">
+    <menuitem name="DeleteFMRadioPopup" action="EditDelete"/>
+    <separator/>
+    <menuitem name="PropertiesFMRadioPopup" action="MusicProperties"/>
+  </popup>
+</ui>

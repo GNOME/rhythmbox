@@ -1215,5 +1215,27 @@
 	  <long>The directory to store lyrics in</long>
 	</locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/fmradio/active</key>
+        <applyto>/apps/rhythmbox/plugins/fmradio/active</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the FM radio plugin is enabled.</short>
+	<long>True if the FM radio plugin is enabled.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/plugins/fmradio/hidden</key>
+        <applyto>/apps/rhythmbox/plugins/fmradio/hidden</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>FALSE</default>
+        <locale name="C">
+        <short>True if the FM radio plugin is hidden.</short>
+	<long>True if the FM radio plugin is hidden.</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>
