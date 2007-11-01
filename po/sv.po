@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-22 20:26+0200\n"
-"PO-Revision-Date: 2007-10-22 20:27+0100\n"
+"POT-Creation-Date: 2007-11-01 17:37+0100\n"
+"PO-Revision-Date: 2007-11-01 17:37+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -46,32 +46,32 @@ msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
 msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2549
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2637
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2546
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2634
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2562
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2559
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Misslyckades med att skapa ljudutmatningselement; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2611
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2653
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2679
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2688
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2697
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2608
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2650
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2676
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2685
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2694
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2787
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2808
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2805
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Misslyckades med att starta uppspelning av %s"
@@ -318,7 +318,7 @@ msgstr "Enkel"
 
 #: ../data/glade/podcast-feed-properties.glade.h:6
 #: ../data/glade/podcast-properties.glade.h:6
-#: ../data/glade/song-info.glade.h:3
+#: ../data/glade/song-info.glade.h:4
 #: ../plugins/iradio/station-properties.glade.h:3
 msgid "Details"
 msgstr "Detaljer"
@@ -388,7 +388,7 @@ msgid "Download location:"
 msgstr "Plats att hämta till:"
 
 #: ../data/glade/podcast-properties.glade.h:8
-#: ../data/glade/song-info.glade.h:4
+#: ../data/glade/song-info.glade.h:5
 msgid "Duration:"
 msgstr "Speltid:"
 
@@ -397,74 +397,78 @@ msgid "Feed:"
 msgstr "Kanal:"
 
 #: ../data/glade/podcast-properties.glade.h:10
-#: ../data/glade/song-info.glade.h:8
+#: ../data/glade/song-info.glade.h:9
 #: ../plugins/iradio/station-properties.glade.h:6
 msgid "Last played:"
 msgstr "Senast spelad:"
 
 #: ../data/glade/podcast-properties.glade.h:11
-#: ../data/glade/song-info.glade.h:10
+#: ../data/glade/song-info.glade.h:11
 #: ../plugins/iradio/station-properties.glade.h:7
 msgid "Play count:"
 msgstr "Antal spelningar:"
 
 #: ../data/glade/podcast-properties.glade.h:14
 #: ../data/glade/song-info-multiple.glade.h:5
-#: ../data/glade/song-info.glade.h:15
+#: ../data/glade/song-info.glade.h:16
 #: ../plugins/iradio/station-properties.glade.h:9
 msgid "_Rating:"
 msgstr "_Betyg:"
 
 #: ../data/glade/song-info-multiple.glade.h:1
-#: ../data/glade/song-info.glade.h:11
+#: ../data/glade/song-info.glade.h:12
 msgid "_Album:"
 msgstr "_Album:"
 
 #: ../data/glade/song-info-multiple.glade.h:2
-#: ../data/glade/song-info.glade.h:12
+#: ../data/glade/song-info.glade.h:13
 msgid "_Artist:"
 msgstr "_Artist:"
 
 #: ../data/glade/song-info-multiple.glade.h:3
-#: ../data/glade/song-info.glade.h:13
+#: ../data/glade/song-info.glade.h:14
 msgid "_Disc number:"
 msgstr "_Skivnummer:"
 
 #: ../data/glade/song-info-multiple.glade.h:4
-#: ../data/glade/song-info.glade.h:14
+#: ../data/glade/song-info.glade.h:15
 #: ../plugins/iradio/station-properties.glade.h:8
 msgid "_Genre:"
 msgstr "_Genre:"
 
 #: ../data/glade/song-info-multiple.glade.h:6
-#: ../data/glade/song-info.glade.h:18
+#: ../data/glade/song-info.glade.h:19
 #: ../plugins/magnatune/magnatune-prefs.glade.h:46
 msgid "_Year:"
 msgstr "Å_r:"
 
-#: ../data/glade/song-info.glade.h:5
+#: ../data/glade/song-info.glade.h:3
+msgid "Date added:"
+msgstr "Lades till den:"
+
+#: ../data/glade/song-info.glade.h:6
 #: ../plugins/iradio/station-properties.glade.h:4
 msgid "Error message"
 msgstr "Felmeddelande"
 
-#: ../data/glade/song-info.glade.h:6
+#: ../data/glade/song-info.glade.h:7
 msgid "File name:"
 msgstr "Filnamn:"
 
-#: ../data/glade/song-info.glade.h:7
+#: ../data/glade/song-info.glade.h:8
 msgid "File size:"
 msgstr "Filstorlek:"
 
-#: ../data/glade/song-info.glade.h:9
+#: ../data/glade/song-info.glade.h:10
 msgid "Location:"
 msgstr "Plats:"
 
-#: ../data/glade/song-info.glade.h:16
+#: ../data/glade/song-info.glade.h:17
 #: ../plugins/iradio/station-properties.glade.h:10
 msgid "_Title:"
 msgstr "_Titel:"
 
-#: ../data/glade/song-info.glade.h:17
+#: ../data/glade/song-info.glade.h:18
 msgid "_Track number:"
 msgstr "_Spårnummer:"
 
@@ -579,22 +583,22 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:467
 #: ../podcast/rb-podcast-properties-dialog.c:520
 #: ../remote/dbus/rb-client.c:134
-#: ../rhythmdb/rhythmdb-tree.c:1211
-#: ../rhythmdb/rhythmdb-tree.c:1215
-#: ../rhythmdb/rhythmdb-tree.c:1219
-#: ../rhythmdb/rhythmdb-tree.c:1223
+#: ../rhythmdb/rhythmdb-tree.c:1237
+#: ../rhythmdb/rhythmdb-tree.c:1241
+#: ../rhythmdb/rhythmdb-tree.c:1245
+#: ../rhythmdb/rhythmdb-tree.c:1249
 #: ../rhythmdb/rhythmdb.c:1427
 #: ../shell/rb-shell-player.c:1493
-#: ../shell/rb-shell.c:3017
+#: ../shell/rb-shell.c:3020
 #: ../sources/rb-podcast-source.c:1631
 #: ../widgets/rb-entry-view.c:837
 #: ../widgets/rb-entry-view.c:862
 #: ../widgets/rb-entry-view.c:1146
 #: ../widgets/rb-entry-view.c:1158
 #: ../widgets/rb-entry-view.c:1170
-#: ../widgets/rb-song-info.c:797
-#: ../widgets/rb-song-info.c:961
-#: ../widgets/rb-song-info.c:1231
+#: ../widgets/rb-song-info.c:801
+#: ../widgets/rb-song-info.c:966
+#: ../widgets/rb-song-info.c:1236
 msgid "Unknown"
 msgstr "Okänd"
 
@@ -890,7 +894,7 @@ msgstr "Last.fm-profil"
 #: ../widgets/rb-entry-view.c:785
 #: ../widgets/rb-entry-view.c:1204
 #: ../widgets/rb-entry-view.c:1217
-#: ../widgets/rb-song-info.c:1204
+#: ../widgets/rb-song-info.c:1209
 msgid "Never"
 msgstr "Aldrig"
 
@@ -1857,28 +1861,28 @@ msgstr "Jamendo"
 msgid "Stores"
 msgstr "Butiker"
 
-#: ../plugins/jamendo/jamendo/__init__.py:76
+#: ../plugins/jamendo/jamendo/__init__.py:87
 msgid "_Download Album"
 msgstr "_Hämta album"
 
-#: ../plugins/jamendo/jamendo/__init__.py:77
+#: ../plugins/jamendo/jamendo/__init__.py:88
 msgid "Download this album using BitTorrent"
 msgstr "Hämta det här albumet med BitTorrent"
 
 #. Add Button for Donate
-#: ../plugins/jamendo/jamendo/__init__.py:84
+#: ../plugins/jamendo/jamendo/__init__.py:95
 msgid "_Donate to Artist"
 msgstr "_Donera till artist"
 
-#: ../plugins/jamendo/jamendo/__init__.py:85
+#: ../plugins/jamendo/jamendo/__init__.py:96
 msgid "Donate Money to this Artist"
 msgstr "Donera pengar till denna artist"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:111
+#: ../plugins/jamendo/jamendo/JamendoSource.py:104
 msgid "Loading Jamendo catalogue"
 msgstr "Läser in Jamendo-katalog"
 
-#: ../plugins/jamendo/jamendo/JamendoSource.py:389
+#: ../plugins/jamendo/jamendo/JamendoSource.py:385
 #, python-format
 msgid "Error looking up artist %s on jamendo.com"
 msgstr "Fel vid uppslagning av artisten %s på jamendo.com"
@@ -1915,14 +1919,14 @@ msgstr "URL till internetradiokanal:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:389
 #: ../podcast/rb-feed-podcast-properties-dialog.c:209
 #: ../podcast/rb-podcast-properties-dialog.c:355
-#: ../widgets/rb-song-info.c:901
+#: ../widgets/rb-song-info.c:905
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:481
 #: ../podcast/rb-podcast-properties-dialog.c:465
-#: ../widgets/rb-song-info.c:959
+#: ../widgets/rb-song-info.c:964
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
@@ -2357,36 +2361,36 @@ msgstr "Magnatunebutik"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:110
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:104
 msgid "Loading Magnatune catalogue"
 msgstr "Läser in Magnatune-katalog"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:113
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:107
 msgid "Downloading Magnatune Album(s)"
 msgstr "Hämtar Magnatune-album"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:213
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:207
 msgid "Couldn't purchase album"
 msgstr "Kunde inte köpa album"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:214
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:208
 msgid "You must have a library location set to purchase an album."
 msgstr "Du måste ha en biblioteksplats inställd för att köpa ett album."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:235
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:229
 #, python-format
 msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 msgstr "Vill du köpa albumet <i>%(album)s</i> av \"%(artist)s\"?"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:356
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:350
 msgid "Rhythmbox could not understand the Magnatune catalogue, please file a bug."
 msgstr "Rhythmbox kunde inte förstå Magnatune-katalogen. Skicka in en felrapport."
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:511
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:505
 msgid "Purchase Error"
 msgstr "Fel vid köp"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:512
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:506
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2397,12 +2401,12 @@ msgstr ""
 "Magnatuneservern returnerade:\n"
 "%s"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:515
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:509
 #: ../widgets/rb-entry-view.c:1255
 msgid "Error"
 msgstr "Fel"
 
-#: ../plugins/magnatune/magnatune/MagnatuneSource.py:516
+#: ../plugins/magnatune/magnatune/MagnatuneSource.py:510
 #, python-format
 msgid ""
 "An error occurred while trying to purchase the album.\n"
@@ -2414,35 +2418,35 @@ msgstr ""
 "%s"
 
 #. Add the popup menu actions
-#: ../plugins/magnatune/magnatune/__init__.py:107
+#: ../plugins/magnatune/magnatune/__init__.py:115
 msgid "Purchase Album"
 msgstr "Köp album"
 
-#: ../plugins/magnatune/magnatune/__init__.py:108
+#: ../plugins/magnatune/magnatune/__init__.py:116
 msgid "Purchase this album from Magnatune"
 msgstr "Köp detta album från Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:113
+#: ../plugins/magnatune/magnatune/__init__.py:121
 msgid "Purchase Physical CD"
 msgstr "Köp fysisk skiva"
 
-#: ../plugins/magnatune/magnatune/__init__.py:114
+#: ../plugins/magnatune/magnatune/__init__.py:122
 msgid "Purchase a physical CD from Magnatune"
 msgstr "Köp en fysisk skiva från Magnatune"
 
-#: ../plugins/magnatune/magnatune/__init__.py:118
+#: ../plugins/magnatune/magnatune/__init__.py:126
 msgid "Artist Information"
 msgstr "Artistinformation"
 
-#: ../plugins/magnatune/magnatune/__init__.py:119
+#: ../plugins/magnatune/magnatune/__init__.py:127
 msgid "Get information about this artist"
 msgstr "Hämta information om denna artist"
 
-#: ../plugins/magnatune/magnatune/__init__.py:123
+#: ../plugins/magnatune/magnatune/__init__.py:131
 msgid "Cancel Downloads"
 msgstr "Avbryt hämtningar"
 
-#: ../plugins/magnatune/magnatune/__init__.py:124
+#: ../plugins/magnatune/magnatune/__init__.py:132
 msgid "Stop downloading purchased albums"
 msgstr "Stoppa hämtningen av köpta album"
 
@@ -2813,7 +2817,7 @@ msgstr "Kunde inte övervaka %s: %s"
 msgid "All"
 msgstr "Alla"
 
-#: ../rhythmdb/rhythmdb-tree.c:367
+#: ../rhythmdb/rhythmdb-tree.c:392
 #, c-format
 msgid "The database was created by a later version of rhythmbox.  This version of rhythmbox cannot read the database."
 msgstr "Databasen är skapad av en senare version av Rhythmbox. Denna version av Rhythmbox kan inte läsa databasen."
@@ -3573,23 +3577,23 @@ msgstr "av <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "från <i>%s</i>"
 
-#: ../shell/rb-shell.c:3189
+#: ../shell/rb-shell.c:3192
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
 
-#: ../shell/rb-shell.c:3450
-#: ../shell/rb-shell.c:3479
+#: ../shell/rb-shell.c:3453
+#: ../shell/rb-shell.c:3482
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Okänd URI för låt: %s"
 
-#: ../shell/rb-shell.c:3488
+#: ../shell/rb-shell.c:3491
 #, c-format
 msgid "Unknown property %s"
 msgstr "Okänd egenskap %s"
 
-#: ../shell/rb-shell.c:3498
+#: ../shell/rb-shell.c:3501
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Okänd egenskapstyp %s för egenskap %s"
@@ -4301,23 +4305,23 @@ msgstr "Ändra automatisk spellista"
 msgid "_Search:"
 msgstr "_Sök:"
 
-#: ../widgets/rb-song-info.c:285
+#: ../widgets/rb-song-info.c:287
 msgid "Song Properties"
 msgstr "Låtegenskaper"
 
-#: ../widgets/rb-song-info.c:332
+#: ../widgets/rb-song-info.c:336
 msgid "Multiple Song Properties"
 msgstr "Egenskaper för flera låtar"
 
-#: ../widgets/rb-song-info.c:1015
+#: ../widgets/rb-song-info.c:1020
 msgid "Unknown file name"
 msgstr "Okänt filnamn"
 
-#: ../widgets/rb-song-info.c:1034
+#: ../widgets/rb-song-info.c:1039
 msgid "On the desktop"
 msgstr "På skrivbordet"
 
-#: ../widgets/rb-song-info.c:1043
+#: ../widgets/rb-song-info.c:1048
 msgid "Unknown location"
 msgstr "Okänd plats"
 
