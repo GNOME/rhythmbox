@@ -1,3 +1,13 @@
+2007-11-04  Jonathan Matthew  <jonathan@d14n.org>
+
+	based on a patch by: Nguyen Thai Ngoc Duy  <pclouds@gmail.com>
+
+	* configure.ac:
+	* widgets/eggtrayicon.c: (egg_tray_icon_unrealize),
+	(egg_tray_icon_cancel_message), (egg_tray_icon_notify):
+	Drop libnotify 0.2 support, clean up notification code a bit.
+	Bug #348619.
+
 2007-10-31  Jonathan Matthew  <jonathan@d14n.org>
 
 	* plugins/jamendo/jamendo/JamendoSource.py:

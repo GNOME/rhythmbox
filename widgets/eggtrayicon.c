@@ -62,13 +62,7 @@ enum {
 
 #ifdef HAVE_NOTIFY
 struct _Notify {
-#if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR == 2)
-  NotifyHints *hints;
-  NotifyIcon *icon;
-  NotifyHandle *handle;
-#elif (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
   NotifyNotification *handle;
-#endif
 };
 #endif
 
@@ -295,11 +289,7 @@ egg_tray_icon_unrealize (GtkWidget *widget)
 #ifdef HAVE_NOTIFY
 
   if (EGG_TRAY_ICON (widget)->notify->handle) {
-#if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
     notify_notification_close (EGG_TRAY_ICON (widget)->notify->handle, NULL);
-#elif (LIBNOTIFY_VERSION_MINOR == 2)
-    notify_close (EGG_TRAY_ICON (widget)->notify->handle);
-#endif
   }
 
   g_free (EGG_TRAY_ICON (widget)->notify);
@@ -543,12 +533,7 @@ egg_tray_icon_cancel_message (EggTrayIcon *icon,
 #ifdef HAVE_NOTIFY
   if (icon->notify->handle)
   {
-#if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
     notify_notification_close (icon->notify->handle, NULL);
-#elif (LIBNOTIFY_VERSION_MINOR == 2)
-    notify_close (icon->notify->handle);
-    icon->notify->handle = NULL;
-#endif
   }
 #endif
 }
@@ -569,9 +554,7 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 		      const char *secondary_markup)
 {
 #ifdef HAVE_NOTIFY
-#if (LIBNOTIFY_VERSION_MAJOR > 0 || LIBNOTIFY_VERSION_MINOR >= 3)
   GtkRequisition size;
-  GdkPixbuf *pixbuf;
   int x;
   int y;
 
@@ -609,30 +592,18 @@ egg_tray_icon_notify (EggTrayIcon *icon,
 
   if (msgicon)
     {
+      GdkPixbuf *pixbuf;
+
       pixbuf = g_object_ref (gtk_image_get_pixbuf (GTK_IMAGE (msgicon)));
-    }
-  else
-    {
-      GtkIconTheme *theme;
-      gint icon_size;
-
-      theme = gtk_icon_theme_get_default ();
-      gtk_icon_size_lookup (GTK_ICON_SIZE_DIALOG, &icon_size, NULL);
-      pixbuf = gtk_icon_theme_load_icon (theme,
-                                         "gnome-media-player",
-                                         icon_size,
-                                         0,
-                                         NULL);
-    }
-
-  if (pixbuf)
-    {
+      if (pixbuf)
+	{
 #if (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR <=3 && LIBNOTIFY_VERSION_MICRO < 2)
-      notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
+	  notify_notification_set_icon_data_from_pixbuf (icon->notify->handle, pixbuf);
 #else
-      notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
+	  notify_notification_set_icon_from_pixbuf (icon->notify->handle, pixbuf);
 #endif
-      g_object_unref (pixbuf);
+	  g_object_unref (pixbuf);
+	}
     }
 
   gdk_window_get_origin (GTK_WIDGET (icon)->window, &x, &y);
@@ -648,70 +619,5 @@ egg_tray_icon_notify (EggTrayIcon *icon,
     }
 
   return;
-#elif (LIBNOTIFY_VERSION_MAJOR == 0 && LIBNOTIFY_VERSION_MINOR == 2)
-  gint x, y;
-  GtkRequisition size;
-  NotifyIcon *icon_notify = NULL;
-  NotifyHints *hints;
-  char *fn;
-
-  if (!notify_is_initted ())
-    if (!notify_init ("rhythmbox"))
-      return;
-
-  gdk_window_get_origin (GTK_WIDGET (icon)->window, &x, &y);
-  gtk_widget_size_request (GTK_WIDGET (icon), &size);
-  x += size.width / 2;
-  y += size.height;
-
-  hints = notify_hints_new ();
-  notify_hints_set_int (hints, "x", x);
-  notify_hints_set_int (hints, "y", y);
-
-  if (msgicon)
-    {
-      GdkPixbuf *pix;
-      pix = gtk_image_get_pixbuf (GTK_IMAGE (msgicon));
-      if (pix)
-        {
-	  char *tmp;
-	  GError *error = NULL;
-	  tmp = g_strdup_printf ("%s/.gnome2/rb-notify-icon.png", g_get_home_dir ());
-	  if (gdk_pixbuf_save (pix, tmp, "png", &error, NULL))
-	    {
-	      icon_notify = notify_icon_new_from_uri (tmp);
-	    }
-	  else
-	    {
-	      icon_notify = NULL;
-	    }
-	  g_free (tmp);
-	}
-    }
-  else
-    {
-      fn = g_strconcat (RB_STOCK_TRAY_ICON, ".png", NULL);
-      icon_notify = notify_icon_new_from_uri (rb_file (fn));
-      g_free (fn);
-    }
-
-  if (icon->notify->handle)
-    {
-      notify_close (icon->notify->handle);
-    }
-
-  icon->notify->hints = hints;
-  icon->notify->icon = icon_notify;
-  icon->notify->handle = notify_send_notification (NULL, "transfer",
- 	 	  	  	            	   NOTIFY_URGENCY_LOW,
-			           	    	   primary_markup,
-			    	   	    	   secondary_markup,
-			    	   	           icon_notify,
-			    	   	           TRUE, timeout/1000,
-			    	   	           hints,
-			    	   	           NULL,
-			    	   	           0);
-  return;
-#endif
 #endif
 }
