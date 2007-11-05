@@ -3,7 +3,6 @@ plugindir = $(PLUGINDIR)/fmradio
 plugin_LTLIBRARIES = libfmradio.la
 
 libfmradio_la_SOURCES = \
-  rb-fm-radio-plugin.h \
   rb-fm-radio-plugin.c \
   rb-fm-radio-source.c \
   rb-fm-radio-source.h \

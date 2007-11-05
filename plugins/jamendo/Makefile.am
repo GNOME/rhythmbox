@@ -23,7 +23,7 @@ icondir = $(themedir)/$(size)/$(context)
 icon_DATA = icons/hicolor/$(size)/$(context)/jamendo.png
 
 gladedir = $(plugindir)
-EXTRA_DIST = $(plugin_in_files) $(glade_DATA)
+EXTRA_DIST = $(plugin_in_files) $(glade_DATA) $(icon_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
 
