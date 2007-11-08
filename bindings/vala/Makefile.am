@@ -1,5 +1,5 @@
 dist_noinst_DATA = \
 	rhythmdb.deps		\
-	rhythmdb.vala		\
+	rhythmdb.vapi		\
 	rb.deps			\
-	rb.vala
+	rb.vapi

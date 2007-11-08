@@ -36,6 +36,13 @@ INCLUDES = \
 plugin_in_files = fmradio.rb-plugin.desktop.in
 %.rb-plugin: %.rb-plugin.desktop.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-BUILT_SOURCES = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+uixmldir = $(plugindir)
+uixml_DATA = fmradio-ui.xml
 
-plugin_DATA = fmradio-ui.xml $(BUILT_SOURCES)
+plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
+
+EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
+
+CLEANFILES = $(plugin_DATA)
+DISTCLEANFILES = $(plugin_DATA)
+

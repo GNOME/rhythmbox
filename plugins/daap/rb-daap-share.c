@@ -478,6 +478,7 @@ rb_daap_share_dispose (GObject *object)
 
 	g_list_foreach (share->priv->playlist_ids, (GFunc) rb_daap_share_forget_playlist, share);
 	g_list_foreach (share->priv->playlist_ids, (GFunc) g_free, NULL);
+	g_list_free (share->priv->playlist_ids);
 
 	if (share->priv->publisher) {
 		g_object_unref (share->priv->publisher);

@@ -317,7 +317,11 @@ rb_visualizer_plugin_dispose (GObject *object)
 static void
 rb_visualizer_plugin_finalize (GObject *object)
 {
+	RBVisualizerPlugin *plugin = RB_VISUALIZER_PLUGIN (object);
 	rb_debug ("RBVisualizerPlugin finalising");
+
+	g_list_foreach (plugin->vis_plugin_list, (GFunc)g_free, NULL);
+	g_list_free (plugin->vis_plugin_list);
 
 	G_OBJECT_CLASS (rb_visualizer_plugin_parent_class)->finalize (object);
 }

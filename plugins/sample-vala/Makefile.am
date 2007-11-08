@@ -48,5 +48,5 @@ plugin_DATA = $(plugin_in_files:.rb-plugin.desktop.in=.rb-plugin)
 
 EXTRA_DIST = $(glade_DATA) $(plugin_in_files)
 
-CLEANFILES = $(plugin_DATA)
-DISTCLEANFILES = $(plugin_DATA)
+CLEANFILES = $(plugin_DATA) $(libsample_vala_la_SOURCES:.vala=.h) $(libsample_vala_la_SOURCES:.vala=.c)
+DISTCLEANFILES = $(CLEANFILES)

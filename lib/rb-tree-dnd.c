@@ -267,7 +267,12 @@ rb_tree_dnd_data_free (gpointer data)
 {
   RbTreeDndData *priv_data = data;
 
-  gtk_target_list_unref (priv_data->source_target_list);
+  if (priv_data->source_target_list != NULL) {
+	  gtk_target_list_unref (priv_data->source_target_list);
+  }
+  if (priv_data->dest_target_list != NULL) {
+	  gtk_target_list_unref (priv_data->dest_target_list);
+  }
 
   g_free (priv_data);
 }

@@ -1,3 +1,30 @@
+2007-11-08  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/vala/Makefile.am:
+	* bindings/vala/rb.vala:
+	* bindings/vala/rhythmdb.vala:
+	* plugins/sample-vala/Makefile.am: Vala building fixes
+
+	* plugins/fmradio/Makefile.am: fix make distcheck
+
+	* lib/rb-tree-dnd.c: (rb_tree_dnd_data_free):
+	* plugins/daap/rb-daap-share.c: (rb_daap_share_dispose):
+	* plugins/visualizer/rb-visualizer-plugin.c:
+	(rb_visualizer_plugin_finalize): fix some memory leaks
+
+	* configure.ac:
+	* NEWS: bump version and update NEWS
+
+2007-11-07  James Livingston  <doclivingston@gmail.com>
+
+	* bindings/vala/Makefile.am:
+	* bindings/vala/rb.vala:
+	* bindings/vala/rhythmdb.vala:
+	* plugins/fmradio/Makefile.am:
+	* plugins/sample-vala/Makefile.am: fix make distcheck issues
+
+	* configure.ac: bump version to 0.11.3
+
 2007-11-05  James Livingston  <doclivingston@gmail.com>
 
 	patch by: Paul Drain  <funkey@gmail.com>
