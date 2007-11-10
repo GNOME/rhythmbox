@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-11-01 17:37+0100\n"
-"PO-Revision-Date: 2007-11-01 17:37+0100\n"
+"POT-Creation-Date: 2007-11-10 13:18+0100\n"
+"PO-Revision-Date: 2007-11-10 13:19+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
@@ -46,32 +46,32 @@ msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
 msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2546
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2634
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2553
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2641
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2559
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2566
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Misslyckades med att skapa ljudutmatningselement; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2608
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2650
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2676
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2685
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2694
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2615
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2657
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2683
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2692
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2701
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2784
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2791
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2805
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2812
 #, c-format
 msgid "Failed to start playback of %s"
 msgstr "Misslyckades med att starta uppspelning av %s"
@@ -498,7 +498,7 @@ msgstr "Senast spelade"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../plugins/power-manager/rb-power-manager-plugin.c:199
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1474
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1478
 #: ../shell/rb-shell-player.c:2604
 #: ../shell/rb-shell.c:1015
 #: ../shell/rb-shell.c:2104
@@ -1690,6 +1690,31 @@ msgstr "Hämtar låtar från musikutdelning"
 msgid "Connection to %s:%d refused."
 msgstr "Anslutning till %s:%d nekades."
 
+#: ../plugins/fmradio/fmradio.rb-plugin.desktop.in.h:1
+#: ../plugins/fmradio/rb-fm-radio-source.c:195
+msgid "FM Radio"
+msgstr "FM-radio"
+
+#: ../plugins/fmradio/fmradio.rb-plugin.desktop.in.h:2
+msgid "Support for FM radio broadcasting services"
+msgstr "Stöd för FM-radiosändningar"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:80
+msgid "New FM R_adio Station"
+msgstr "Ny FM-r_adiokanal"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:81
+msgid "Create a new FM Radio station"
+msgstr "Skapa en ny FM-radiokanal"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:339
+msgid "New FM Radio Station"
+msgstr "Ny FM-radiokanal"
+
+#: ../plugins/fmradio/rb-fm-radio-source.c:340
+msgid "Frequency of radio station"
+msgstr "Frekvens för radiokanal"
+
 #: ../plugins/generic-player/generic-player.rb-plugin.desktop.in.h:1
 msgid "Portable Players"
 msgstr "Bärbara spelare"
@@ -2608,25 +2633,25 @@ msgstr "Skrivbord"
 msgid "Window"
 msgstr "Fönster"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:694
+#: ../plugins/visualizer/rb-visualizer-plugin.c:698
 #, c-format
 msgid "Unable to start video output"
 msgstr "Kunde inte starta videoutmatning"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:729
+#: ../plugins/visualizer/rb-visualizer-plugin.c:733
 #, c-format
 msgid "Failed to link new visual effect into the GStreamer pipeline"
 msgstr "Misslyckades med att länka ny visuell effekt in i GStreamer-rörledning"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:777
+#: ../plugins/visualizer/rb-visualizer-plugin.c:781
 msgid "Unable to start visualization"
 msgstr "Kunde inte starta visualisering"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1340
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1344
 msgid "Enable visual effects?"
 msgstr "Aktivera visuella effekter?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1342
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1346
 msgid ""
 "It seems you are running Rhythmbox remotely.\n"
 "Are you sure you want to enable the visual effects?"
@@ -2634,7 +2659,7 @@ msgstr ""
 "Det verkar som du kör Rhythmbox via en fjärrsession.\n"
 "Är du säker på att du vill aktivera visuella effekter?"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:1674
+#: ../plugins/visualizer/rb-visualizer-plugin.c:1678
 msgid "Music Player Visualization"
 msgstr "Visualisering för musikspelare"
 
@@ -4025,15 +4050,15 @@ msgstr "Sänk volymen"
 msgid "Volume Up"
 msgstr "Höj volymen"
 
-#: ../widgets/eggtrayicon.c:153
+#: ../widgets/eggtrayicon.c:147
 msgid "Orientation"
 msgstr "Orientering"
 
-#: ../widgets/eggtrayicon.c:154
+#: ../widgets/eggtrayicon.c:148
 msgid "The orientation of the tray."
 msgstr "Orienteringen på lådan."
 
-#: ../widgets/eggtrayicon.c:531
+#: ../widgets/eggtrayicon.c:521
 msgid "Notification"
 msgstr "Notifiering"
 
