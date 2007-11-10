@@ -1996,10 +1996,17 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 
 				start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade * GST_SECOND);
 				break;
+
 			case PAUSED:
+			case WAITING_EOS:
+			case SEEKING:
+			case SEEKING_PAUSED:
+			case PREROLLING:
+			case PREROLL_PLAY:
 				rb_debug ("stream %s is paused; replacing it", pstream->uri);
 				unlink_and_dispose_stream (player, pstream);
 				break;
+
 			default:
 				break;
 			}

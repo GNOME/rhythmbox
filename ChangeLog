@@ -1,3 +1,12 @@
+2007-11-10  Jonathan Matthew  <jonathan@d14n.org>
+
+	* backends/gstreamer/rb-player-gst-xfade.c:
+	(actually_start_stream):
+	When starting a new stream with crossfading enabled, remove all
+	existing streams except any we're going to fade out and any that are
+	already fading out.  Otherwise, we can end up playing two tracks at
+	once.  Fixes #480764.
+
 2007-11-08  James Livingston  <doclivingston@gmail.com>
 
 	* bindings/vala/Makefile.am:
