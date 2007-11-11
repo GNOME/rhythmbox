@@ -1,3 +1,11 @@
+2007-11-11  Jonathan Matthew  <jonathan@d14n.org>
+
+	patch by:  louisfrancis.rb@gmail.com
+
+	* widgets/rb-rating-helper.c: (rb_rating_render_stars):
+	Don't use the deprecated gdk_pixbuf_render_to_drawable,
+	use the equivalent gdk_draw_pixbuf call.  Fixes #495779.
+
 2007-11-10  Jonathan Matthew  <jonathan@d14n.org>
 
 	* backends/gstreamer/rb-player-gst-xfade.c:

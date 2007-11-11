@@ -163,17 +163,13 @@ rb_rating_render_stars (GtkWidget *widget,
 			star_offset = i * icon_width;
 		}
 
-		gdk_pixbuf_render_to_drawable_alpha (buf,
-						     window,
-						     x, y,
-						     x_offset + star_offset,
-						     y_offset,
-						     icon_width,
-						     icon_width,
-						     GDK_PIXBUF_ALPHA_FULL,
-						     0,
-						     GDK_RGB_DITHER_NORMAL,
-						     0, 0);
+		gdk_draw_pixbuf (window,
+				 NULL,
+				 buf,
+				 x, y,
+				 x_offset + star_offset, y_offset,
+				 icon_width, icon_width,
+				 GDK_RGB_DITHER_NORMAL, 0, 0);
 		g_object_unref (G_OBJECT (buf));
 	}
 
